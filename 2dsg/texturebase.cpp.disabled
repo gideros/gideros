@@ -1,0 +1,249 @@
+#include "texturebase.h"
+#include "ogl.h"
+#include "dib.h"
+#include <pystring.h>
+#include <PVRTResourceFile.h>
+#include <PVRTTexture.h>
+#include <gfile.h>
+#include <gfile_p.h>
+
+int TextureBase::totalMemory_ = 0;
+
+std::map<TextureBase::TextureElementKey, TextureBase::TextureElementValue> TextureBase::textureCache_;
+
+TextureBase::TextureBase(Application* application,
+						 const char* filename, Filter filter/* = eNearest*/, Wrap wrap/* = eClamp*/,
+						 bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/) :
+	filename_(filename),
+	filter_(filter),
+	wrap_(wrap)
+{
+	id = 0;
+
+	TextureElementKey key(filename, filter, wrap, false);
+
+	std::map<TextureElementKey, TextureElementValue>::iterator iter = textureCache_.find(key);
+	
+	if (iter != textureCache_.end())
+	{
+		// we found the texture in the cache
+	
+		// get the data
+		id = iter->second.id;
+		width = iter->second.width;
+		height = iter->second.height;
+		exwidth = iter->second.exwidth;
+		exheight = iter->second.exheight;
+		baseWidth = iter->second.baseWidth;
+		baseHeight = iter->second.baseHeight;
+		baseExWidth = iter->second.baseExWidth;
+		baseExHeight = iter->second.baseExHeight;
+		memory = iter->second.memory;
+		base = iter->second.base;
+		scalex = iter->second.scalex;
+		scaley = iter->second.scaley;
+
+		// increase the ref count
+		iter->second.refcount++;
+
+		debuglog("Increasing refcount of %s. New refcount is %d.", filename, iter->second.refcount);
+
+		return;
+	}
+
+	const char* dot = strrchr(filename, '.');
+
+	if (dot == 0)
+	{
+		throw GiderosException(GStatus(6005, filename));		// Error #6005: %s: Image format is not supported.
+		return;
+	}
+
+	std::string suffix = pystring::lower(dot + 1);
+
+	if (suffix == "png" || suffix == "jpg" || suffix == "jpeg")
+	{
+		Dib dib(application, filename, true, true, 0x00000000, maketransparent, transparentcolor);
+
+		if (dib.width() == 0 || dib.height() == 0)
+			return;
+
+		oglEnable(GL_TEXTURE_2D);
+
+		glGenTextures(1, &id);
+
+		oglBindTexture(GL_TEXTURE_2D, id);
+
+		if (filter == eNearest)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		}
+		else
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}
+
+		if (wrap == eClamp)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+		else
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, dib.width(), dib.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, dib.data());
+
+		width = dib.originalWidth();
+		height = dib.originalHeight();
+		exwidth = dib.width();
+		exheight = dib.height();
+		baseWidth = dib.baseOriginalWidth();
+		baseHeight = dib.baseOriginalHeight();
+		baseExWidth = dib.baseWidth();
+		baseExHeight = dib.baseHeight();
+		memory = dib.width() * dib.height() * 4;
+		base = false;
+		scalex = (float)dib.baseOriginalWidth() / (float)dib.originalWidth();
+		scaley = (float)dib.baseOriginalHeight() / (float)dib.originalHeight();
+
+		if (getFileType(filename) == eResourceFile)
+		{
+			TextureElementValue& value = textureCache_[key];
+
+			value.id = id;
+			value.width = width;
+			value.height = height;
+			value.exwidth = exwidth;
+			value.exheight = exheight;
+			value.baseWidth = baseWidth;
+			value.baseHeight = baseHeight;
+			value.baseExWidth = baseExWidth;
+			value.baseExHeight =  baseExHeight;
+			value.memory = memory;
+			value.base = base;
+			value.scalex = scalex;
+			value.scaley = scaley;
+		}
+
+		totalMemory_ += memory;
+
+		debuglog("Inserting %s to the texture cache. Total memory is %g KB.", filename, totalMemory_ / 1024.0);
+	}
+#if 0	// currently we drop support for pvrt
+	else if (suffix == "pvr")
+	{
+		CPVRTResourceFile file(pathForFile(NULL, filename));
+
+		if (file.IsOpen() == false)
+			throw GiderosException(GStatus(6000, filename));		// Error #6000: %s: No such file or directory.
+
+		if (file.Size() < sizeof(PVR_Texture_Header))
+			throw GiderosException(GStatus(6006, filename));		// Error #6006: %s: File is not a PVR file.
+
+		PVR_Texture_Header* header = (PVR_Texture_Header*)file.DataPtr();
+
+		width = exwidth = header->dwWidth;
+		height = exheight = header->dwHeight;
+		PVRTuint32 pixelType = header->dwpfFlags & PVRTEX_PIXELTYPE;
+		
+		if (width < 8 || height < 8 || width != height || width != nextpow2(width) || height != nextpow2(height))
+			throw GiderosException(GStatus(6006, filename));		// Error #6006: %s: File is not a PVR file.
+
+		if (pixelType != OGL_PVRTC2 && pixelType != OGL_PVRTC4)
+			throw GiderosException(GStatus(6007, filename));		// Error #6007: %s: PVR pixel type is not supported.
+
+		void* ptr = (char*)file.DataPtr() + header->dwHeaderSize;
+
+		oglEnable(GL_TEXTURE_2D);
+
+		glGenTextures(1, &id);
+
+		oglBindTexture(GL_TEXTURE_2D, id);
+
+		if (filter == eNearest)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		}
+		else
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}
+
+		if (wrap == eClamp)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+		else
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+		GLenum internalformat = pixelType == OGL_PVRTC2 ? GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG : GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
+
+		int compressedImageSize = (width * height * header->dwBitCount) / 8;
+		glCompressedTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, compressedImageSize, ptr);
+
+
+		TextureElementValue& value = textureCache_[key];
+
+		value.id = id;
+		value.width = width;
+		value.height = height;
+		value.exwidth = exwidth;
+		value.exheight = exheight;
+		value.memory = compressedImageSize;
+
+		totalMemory_ += value.memory;
+
+		debuglog("Inserting %s to the texture cache. Total memory is %d.\n", filename, totalMemory_);
+	}
+#endif
+	else
+		throw GiderosException(GStatus(6005, dot + 1));		// Error #6005: %s: Image format is not supported.
+
+	//totalMemory_ += memory_;
+	//printf("TextureBase(\"%s\"): %g KB\n", filename_.c_str(), totalMemory_ / 1024.0);
+}
+
+TextureBase::~TextureBase()
+{
+	if (id)
+	{
+		TextureElementKey key(filename_, filter_, wrap_, false);
+
+		std::map<TextureElementKey, TextureElementValue>::iterator iter = textureCache_.find(key);
+
+		if (iter != textureCache_.end())
+		{
+			if (--iter->second.refcount == 0)
+			{
+				glDeleteTextures(1, &id);
+				oglBindTexture(GL_TEXTURE_2D, 0);
+				totalMemory_ -= memory;
+				textureCache_.erase(iter);
+
+				debuglog("Deleting %s from the texture memory. Total memory is %g KB.", filename_.c_str(), totalMemory_ / 1024.0);
+			}
+			else
+				debuglog("Decreasing refcount of %s. New refcount is %d.", filename_.c_str(), iter->second.refcount);
+		}
+		else
+		{
+			glDeleteTextures(1, &id);
+			oglBindTexture(GL_TEXTURE_2D, 0);
+			totalMemory_ -= memory;
+
+			debuglog("Deleting %s from the texture memory. Total memory is %g KB.", filename_.c_str(), totalMemory_ / 1024.0);
+		}
+	}
+
+	//printf("~TextureBase(\"%s\"): %g KB\n", filename_.c_str(), totalMemory_ / 1024.0);
+}

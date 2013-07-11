@@ -1,0 +1,17 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="0">
+  <imageScales/>
+ </properties>
+ <file file="arial-18.png"/>
+ <file file="arial-18.txt"/>
+ <file file="arial-36.png"/>
+ <file file="arial-36.txt"/>
+ <file file="compass-background.png"/>
+ <file file="compass-pointer.png"/>
+ <file file="mag-up.png"/>
+ <file file="mag-down.png"/>
+ <file file="true-up.png"/>
+ <file file="true-down.png"/>
+ <file file="button.lua"/>
+ <file file="main.lua"/>
+</project>

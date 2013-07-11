@@ -1,0 +1,14 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="1">
+  <imageScales/>
+ </properties>
+ <file file="gfx/bird_black_01.png"/>
+ <file file="gfx/bird_black_02.png"/>
+ <file file="gfx/bird_black_03.png"/>
+ <file file="gfx/bird_white_01.png"/>
+ <file file="gfx/bird_white_02.png"/>
+ <file file="gfx/bird_white_03.png"/>
+ <file file="gfx/sky_world.png"/>
+ <file file="bird.lua"/>
+ <file file="main.lua"/>
+</project>

@@ -1,0 +1,113 @@
+#ifndef BOX2DBINDER
+#define BOX2DBINDER
+
+#include "binder.h"
+
+class Box2DBinder
+{
+public:
+	Box2DBinder(lua_State* L);
+
+private:
+	static int b2Vec2_create(lua_State* L);
+	static int b2Vec2_destruct(lua_State* L);
+	static int b2Vec2_getX(lua_State* L);
+	static int b2Vec2_getY(lua_State* L);
+	static int b2Vec2_setX(lua_State* L);
+	static int b2Vec2_setY(lua_State* L);
+	static int b2Vec2_Set(lua_State* L);
+
+	static int b2AABB_create(lua_State* L);
+	static int b2AABB_destruct(lua_State* L);
+
+	static int b2World_create(lua_State* L);
+	static int b2World_destruct(lua_State* L);
+	static int b2World_CreateBody(lua_State* L);
+	static int b2World_Step(lua_State* L);
+	static int b2World_DestroyBody(lua_State* L);
+	static int b2World_ClearForces(lua_State* L);
+	static int b2World_QueryAABB(lua_State* L);
+
+	//static int b2MassData_create(lua_State* L);
+	//static int b2MassData_destruct(lua_State* L);
+
+	static int b2BodyDef_create(lua_State* L);
+	static int b2BodyDef_destruct(lua_State* L);
+	static int b2BodyDef_getAngle(lua_State* L);
+	static int b2BodyDef_setAngle(lua_State* L);
+	static int b2BodyDef_getLinearDamping(lua_State* L);
+	static int b2BodyDef_setLinearDamping(lua_State* L);
+	static int b2BodyDef_getAngularDamping(lua_State* L);
+	static int b2BodyDef_setAngularDamping(lua_State* L);
+	static int b2BodyDef_getAllowSleep(lua_State* L);
+	static int b2BodyDef_setAllowSleep(lua_State* L);
+	static int b2BodyDef_getFixedRotation(lua_State* L);
+	static int b2BodyDef_setFixedRotation(lua_State* L);
+	static int b2BodyDef_getBullet(lua_State* L);
+	static int b2BodyDef_setBullet(lua_State* L);
+
+	static int b2Body_destruct(lua_State* L);
+	//static int b2Body_CreateShape(lua_State* L);
+	static int b2Body_CreateFixture(lua_State* L);
+	static int b2Body_DestroyFixture(lua_State* L);
+	//static int b2Body_SetMassFromShapes(lua_State* L);
+	static int b2Body_GetPosition(lua_State* L);
+	static int b2Body_SetPosition(lua_State* L);
+	static int b2Body_GetAngle(lua_State* L);
+	static int b2Body_GetLinearVelocity(lua_State* L);
+	static int b2Body_SetLinearVelocity(lua_State* L);
+	//static int b2Body_SetMass(lua_State* L);
+	//static int b2Body_SetXForm(lua_State* L);
+	//static int b2Body_GetXForm(lua_State* L);
+	static int b2Body_GetWorldCenter(lua_State* L);
+	static int b2Body_GetLocalCenter(lua_State* L);
+	static int b2Body_SetAngularVelocity(lua_State* L);
+	static int b2Body_GetAngularVelocity(lua_State* L);
+	static int b2Body_ApplyForce(lua_State* L);
+	static int b2Body_ApplyTorque(lua_State* L);
+	static int b2Body_ApplyLinearImpulse(lua_State* L);
+	static int b2Body_ApplyAngularImpulse(lua_State* L);
+	
+	static int b2Mat22_create(lua_State* L);
+	static int b2Mat22_destruct(lua_State* L);
+
+	//static int b2XForm_create(lua_State* L);
+	//static int b2XForm_destruct(lua_State* L);
+
+	//static int b2ContactPointEvent_create(lua_State* L);
+	//static int b2ContactPointEvent_destruct(lua_State* L);
+
+	static int b2FixtureDef_create(lua_State* L);
+	static int b2FixtureDef_destruct(lua_State* L);
+	static int b2FixtureDef_setShape(lua_State* L);
+	static int b2FixtureDef_setDensity(lua_State* L);
+
+	static int b2Fixture_destruct(lua_State* L);
+	static int b2Fixture_GetBody(lua_State* L);
+	static int b2Fixture_SetSensor(lua_State* L);
+	static int b2Fixture_IsSensor(lua_State* L);
+	static int b2Fixture_SetFilterData(lua_State* L);
+	static int b2Fixture_GetFilterData(lua_State* L);
+
+	static int b2Shape_destruct(lua_State* L);// TODO: buna gerek yok gibi
+
+	static int b2CircleShape_create(lua_State* L);
+	static int b2CircleShape_destruct(lua_State* L);
+
+	static int b2PolygonShape_create(lua_State* L);
+	static int b2PolygonShape_destruct(lua_State* L);
+	static int b2PolygonShape_SetAsBox(lua_State* L);
+	static int b2PolygonShape_SetAsEdge(lua_State* L);
+	static int b2PolygonShape_Set(lua_State* L);
+
+	static int b2Contact_create(lua_State* L);
+	static int b2Contact_destruct(lua_State* L);
+	static int b2Contact_GetFixtureA(lua_State* L);
+	static int b2Contact_GetFixtureB(lua_State* L);
+	static int b2Contact_IsTouching(lua_State* L);
+
+	static int b2ContactEvent_create(lua_State* L);
+	static int b2ContactEvent_destruct(lua_State* L);
+};
+
+#endif

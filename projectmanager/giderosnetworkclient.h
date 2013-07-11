@@ -1,0 +1,58 @@
+#ifndef GIDEROSNETWORKCLIENT_H
+#define GIDEROSNETWORKCLIENT_H
+
+#include <QObject>
+#include <QTcpSocket>
+#include <QStringList>
+
+class GiderosNetworkClient : public QObject
+{
+	Q_OBJECT
+
+public:
+	GiderosNetworkClient(const QString& hostName, quint16 port, QObject* parent = 0);
+	~GiderosNetworkClient();
+
+	unsigned int sendFile(const QString& remoteName, const QString& localFileName);
+	unsigned int sendCreateFolder(const QString& folderName);
+	unsigned int sendPlay(const QStringList& luafiles);
+	unsigned int sendProjectName(const QString& projectName);
+	unsigned int sendStop();
+	unsigned int sendDeleteFiles();
+	unsigned int sendGetFileList();
+	unsigned int sendDeleteFile(const QString& fileName);
+	void connectToHost(const QString& hostName, quint16 port);
+
+	qint64 bytesToWrite() const;
+
+	bool isConnected() const
+	{
+		return connected_;
+	}
+
+signals:
+	void connected();
+	void disconnected();
+	void dataReceived(const QByteArray& data);
+	void ackReceived(unsigned int id);
+
+private slots:
+	void onConnected();
+	void onDisconnected();
+	void error(QAbstractSocket::SocketError socketError);
+	void bytesWritten(qint64 bytes);
+	void readyRead();
+
+	unsigned int sendData(const void* data, unsigned int size, unsigned int type);
+	void sendAck(unsigned int id);
+
+private:
+	QString hostName_;
+	quint16 port_;
+	QTcpSocket* client_;
+	unsigned int nextid_;
+	bool connected_;
+	QByteArray readArray_;
+};
+
+#endif // GIDEROSNETWORKCLIENT_H

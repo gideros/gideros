@@ -1,0 +1,10 @@
+<library>
+ <file file="ball1.png"/>
+ <file file="ball2.png"/>
+ <file file="ball3.png"/>
+ <file file="ball4.png"/>
+ <file file="ball5.png"/>
+ <file file="field.png"/>
+ <file file="ball.lua"/>
+ <file file="main.lua"/>
+</library>

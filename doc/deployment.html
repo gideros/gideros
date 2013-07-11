@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Documentation</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="/assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/gdocs-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/gdocs-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/gdocs-72.png">
+		<link rel="apple-touch-icon-precomposed" href="/assets/gdocs-57.png">
+
+		<!-- Le styles -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar" data-offset="20">
+
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+		 <div class="span4 bs-docs-sidebar">
+		<div id='contents' data-spy="affix" data-offset-top="150">
+		<h1>Table of Contents</h1>
+        <ul class="nav nav-list bs-docs-sidenav">
+          <li><a href="./getting_started.html"><i class="icon-chevron-right"></i> <strong>1. Getting started</strong></a></li>
+          <li><a href="./deployment.html"><i class="icon-chevron-right"></i> <strong>2. Deployment to device</strong></a></li>
+          <li><a href="./reference_manual.html" target='_blank'><i class="icon-chevron-right"></i> <strong>3. Reference manual</strong></a></li>
+          <li><a href="./classes_in_gideros.html"><i class="icon-chevron-right"></i> <strong>4. Classes in Gideros</strong></a></li>
+          <li><a href="./events.htm"><i class="icon-chevron-right"></i> <strong>5. Event system</strong></a></li>
+          <li><a href="./file_system.html"><i class="icon-chevron-right"></i> <strong>6. File system</strong></a></li>
+          <li><a href="./automatic_image_resolution.html"><i class="icon-chevron-right"></i> <strong>7. Automatic image resolution</strong></a></li>
+          <li><a href="./automatic_screen_scaling.html"><i class="icon-chevron-right"></i> <strong>8. Automatic screen scaling</strong></a></li>
+        </ul>
+		</div>
+      </div>
+      <div class="span8">
+	
+		<h1>Deployment</h1>
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#intro" data-toggle="tab">Introduction</a></li>
+  <li><a href="#player" data-toggle="tab">Gideros Device Player</a></li>
+  <li><a href="#devices" data-toggle="tab">Deploy to devices</a></li>
+  <li><a href="#plugins" data-toggle="tab">Device player with plugins</a></li>
+</ul>
+<div class="tab-content">
+<section class="tab-pane active" id="intro">
+<p>This document will discuss the build and deployment processes of Gideros Player
+and your application to devices. </p>
+<p>For IOS devices, you must be an approved Apple Developer for iOS and install the
+iOS SDK (requires Intel-based Mac running Snow Leopard).</p>
+<p>For Android devices you'll need Android SDK and Eclipse or other Android project compatible IDE.</p>
+
+<p>Gideros Player for devices allows you to see and test your application on device
+<strong>instantly</strong>. After you deploy and open Gideros Player on your device,
+you see the IP of your device. Enter this IP from &ldquo;Player→Player Settings&rdquo; menu:</p>
+
+<p><img src="images/player_settings.png" alt="Player Settings" /></p>
+
+<p>When you press start button, your codes and asset files are transferred to
+your iOS device via WiFi and your application starts.</p>
+</section>
+<section class="tab-pane" id="player">
+<h2>Deploy Gideros Player to Devices</h2>
+<p><strong>For IOS</strong></p>
+<p>There is a universal project <code>GiderosiOSPlayer.zip</code>, which
+comes with the installation. You need to extract this zip file and
+open, build, deploy this project from Xcode.</p>
+<p><strong>For Android</strong></p>
+<p>There is a ready to use application for Android development <code>GiderosAndroidPlayer.apk</code> which comes with the installation. You can install it directly on your usin USB data transfer cable, or memory card on your phone, or uploading it to a server (as dropbox) and accessing it from there.</p>
+</section>
+
+<section class="tab-pane" id="devices">
+<h2>Deploy Your Application to iOS Devices</h2>
+
+<p><strong>To deploy your application to iPhone/iPad you need to:</strong></p>
+
+<ol>
+<li>Export your application as Xcode project</li>
+<li>Build and deploy Xcode project to actual device</li>
+</ol>
+
+<p>For the second step, you need Intel-based Mac running Snow Leopard and
+Apple Developer License.</p>
+
+<p><strong>To deploy your application to Android you need to:</strong></p>
+
+<ol>
+<li>Export your application as Android project</li>
+<li>Import exported project into Eclipse</li>
+<li>Run project from Eclipse</li>
+</ol>
+
+<p>First step is done through &ldquo;File→Export Project&rdquo; menu:</p>
+
+<p><img src="images/export_project.png" alt="Export Project" /></p>
+	
+</section>	
+<section class="tab-pane" id="plugins">
+<p>Similar to how you can deploy players on devices, you can also build a custom player, with built in plugins for specific platforms.</p>
+<p>For example, if you have an Ad framework plugin for Android, you simply build Gideros Android player with this plugin and deploy it to device, to test it as you would with normal Android device player.</p>
+<p><strong>To deploy custom player with plugins to Android</strong></p>
+<ol>
+<li>Export your Gideros project as Android project</li>
+<li>Add plugin as described in your specific plugin installation instruction</li>
+<li>In your exported project, inside assets folder there is another assets folder, simply delete it, leaving upper assets folder empty</li>
+<li>Build this project to run on your device</li>
+<li>You now have Gideros Android player which behaves exactly the same as normal player, but has the functionalities of applied plugin</li>
+</ol>
+<p><strong>To deploy custom player with plugins to IOS</strong></p>
+<ol>
+<li>Export your Gideros project as IOS project</li>
+<li>Add plugin as described in your specific plugin installation instruction</li>
+<li>In your exported project, open AppDelegate.m file</li>
+<li>Change gdr_initialize(..., false) to gdr_initialize(..., true)</li>
+<li>You now have Gideros IOS player which behaves exactly the same as normal player, but has the functionalities of applied plugin</li>
+</ol>
+</section>
+</div>
+	</div>
+	</div>
+
+  </div>
+
+
+
+    <!-- Footer
+    ================================================== -->
+	<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/jquery-1.8.3.min.js"><\/script>')</script>
+		<script src="js/bootstrap.js"></script>
+		<script type="text/javascript" src="js/fittext.js"></script>
+		<script type="text/javascript" src="js/prettify.js"></script>
+		<script type="text/javascript" src="js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.closed").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+				$("section h1").fitText(3, { minFontSize: '14px', maxFontSize: '28px' });
+				$("#contents h1").fitText(1, { minFontSize: '20px', maxFontSize: '28px' });
+				$("#contents li > a").fitText(0.1, { minFontSize: '12px', maxFontSize: '14px' });
+			});
+		</script>
+
+  </body>
+</html>

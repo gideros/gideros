@@ -1,0 +1,12 @@
+<project>
+ <properties scaleMode="3" iosDevice="0" xcodeVersion="0" packageName="com.yourdomain.yourapp" logicalHeight="480" logicalWidth="320" assetsOnly="0" orientation="0" architecture="0">
+  <imageScales>
+   <scale suffix="@2x" scale="2"/>
+  </imageScales>
+ </properties>
+ <file file="base/pack.png"/>
+ <file file="base/pack.txt"/>
+ <file file="@2x/pack@2x.png"/>
+ <file file="@2x/pack@2x.txt"/>
+ <file file="main.lua"/>
+</project>

@@ -1,0 +1,381 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D3623260D0F684500981E51 /* GiderosiPhonePlayerAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* GiderosiPhonePlayerAppDelegate.mm */; };
+		1D60589B0D05DD56006BFB54 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.mm */; };
+		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		28EC4C5911D54ECE0027AA9F /* GiderosiPhonePlayerViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 28EC4C5711D54ECE0027AA9F /* GiderosiPhonePlayerViewController.mm */; };
+		28FD14FE0DC6FC130079059D /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 28FD14FD0DC6FC130079059D /* EAGLView.mm */; };
+		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
+		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
+		5F0DD6BC14C45E3E0018D97F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6BB14C45E3E0018D97F /* AudioToolbox.framework */; };
+		5F0DD6BE14C45E3E0018D97F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6BD14C45E3E0018D97F /* AVFoundation.framework */; };
+		5F0DD6C014C45E3E0018D97F /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6BF14C45E3E0018D97F /* CFNetwork.framework */; };
+		5F0DD6C214C45E3E0018D97F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6C114C45E3E0018D97F /* CoreGraphics.framework */; };
+		5F0DD6C414C45E3E0018D97F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6C314C45E3E0018D97F /* CoreLocation.framework */; };
+		5F0DD6C614C45E3E0018D97F /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6C514C45E3E0018D97F /* CoreMotion.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		5F0DD6C814C45E3E0018D97F /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6C714C45E3E0018D97F /* GameKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		5F0DD6CA14C45E3E0018D97F /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6C914C45E3E0018D97F /* MobileCoreServices.framework */; };
+		5F0DD6CC14C45E3E0018D97F /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6CB14C45E3E0018D97F /* OpenAL.framework */; };
+		5F0DD6CE14C45E3E0018D97F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6CD14C45E3E0018D97F /* SystemConfiguration.framework */; };
+		5F0DD6D014C45E3E0018D97F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6CF14C45E3E0018D97F /* libz.dylib */; };
+		5F0DD6F614C45E7E0018D97F /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0DD6F514C45E7E0018D97F /* libgideros.a */; };
+		5F0DD83314C4BC640018D97F /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F0DD83114C4BC640018D97F /* Icon.png */; };
+		5F0DD83414C4BC640018D97F /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F0DD83214C4BC640018D97F /* Icon@2x.png */; };
+		5F6E459E14F53A8F002F21DC /* lsqlite3_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F6E459C14F53A8F002F21DC /* lsqlite3_stub.cpp */; };
+		5F6E459F14F53A8F002F21DC /* lsqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F6E459D14F53A8F002F21DC /* lsqlite3.c */; };
+		5F6E45FA14F53CB5002F21DC /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F6E45F914F53CB5002F21DC /* libsqlite3.dylib */; };
+		5F72D2221566F8C900FD1C55 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F72D2211566F8C900FD1C55 /* libluasocket.a */; };
+		5F72D2241566F8D600FD1C55 /* luasocket_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F72D2231566F8D600FD1C55 /* luasocket_stub.cpp */; };
+		5FC75FEF15209CA000A512BE /* storekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5FC75FEE15209CA000A512BE /* storekit.mm */; };
+		5FC7600D15209CB500A512BE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FC7600C15209CB500A512BE /* StoreKit.framework */; };
+		5FE2F03114D87C73004A8D58 /* gamekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5FE2F02614D87C73004A8D58 /* gamekit.mm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1D3623240D0F684500981E51 /* GiderosiPhonePlayerAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GiderosiPhonePlayerAppDelegate.h; sourceTree = "<group>"; };
+		1D3623250D0F684500981E51 /* GiderosiPhonePlayerAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GiderosiPhonePlayerAppDelegate.mm; sourceTree = "<group>"; };
+		1D6058910D05DD3D006BFB54 /* GiderosiPhonePlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GiderosiPhonePlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		28EC4C5611D54ECE0027AA9F /* GiderosiPhonePlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GiderosiPhonePlayerViewController.h; sourceTree = "<group>"; };
+		28EC4C5711D54ECE0027AA9F /* GiderosiPhonePlayerViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GiderosiPhonePlayerViewController.mm; sourceTree = "<group>"; };
+		28FD14FC0DC6FC130079059D /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
+		28FD14FD0DC6FC130079059D /* EAGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EAGLView.mm; sourceTree = "<group>"; };
+		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		29B97316FDCFA39411CA2CEA /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		32CA4F630368D1EE00C91783 /* GiderosiPhonePlayer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GiderosiPhonePlayer_Prefix.pch; sourceTree = "<group>"; };
+		5F0DD6BB14C45E3E0018D97F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		5F0DD6BD14C45E3E0018D97F /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		5F0DD6BF14C45E3E0018D97F /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		5F0DD6C114C45E3E0018D97F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		5F0DD6C314C45E3E0018D97F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		5F0DD6C514C45E3E0018D97F /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		5F0DD6C714C45E3E0018D97F /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		5F0DD6C914C45E3E0018D97F /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		5F0DD6CB14C45E3E0018D97F /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		5F0DD6CD14C45E3E0018D97F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		5F0DD6CF14C45E3E0018D97F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		5F0DD6F514C45E7E0018D97F /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgideros.a; sourceTree = "<group>"; };
+		5F0DD83114C4BC640018D97F /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		5F0DD83214C4BC640018D97F /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
+		5F6E459C14F53A8F002F21DC /* lsqlite3_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lsqlite3_stub.cpp; path = Plugins/lsqlite3_stub.cpp; sourceTree = "<group>"; };
+		5F6E459D14F53A8F002F21DC /* lsqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lsqlite3.c; path = Plugins/lsqlite3.c; sourceTree = "<group>"; };
+		5F6E45F914F53CB5002F21DC /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		5F72D2211566F8C900FD1C55 /* libluasocket.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libluasocket.a; path = Plugins/libluasocket.a; sourceTree = "<group>"; };
+		5F72D2231566F8D600FD1C55 /* luasocket_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = luasocket_stub.cpp; path = Plugins/luasocket_stub.cpp; sourceTree = "<group>"; };
+		5FC75FEE15209CA000A512BE /* storekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = storekit.mm; path = Plugins/storekit.mm; sourceTree = "<group>"; };
+		5FC7600C15209CB500A512BE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		5FE2F02614D87C73004A8D58 /* gamekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = gamekit.mm; path = Plugins/gamekit.mm; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* GiderosiPhonePlayer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GiderosiPhonePlayer-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */,
+				28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */,
+				5F0DD6BC14C45E3E0018D97F /* AudioToolbox.framework in Frameworks */,
+				5F0DD6BE14C45E3E0018D97F /* AVFoundation.framework in Frameworks */,
+				5F0DD6C014C45E3E0018D97F /* CFNetwork.framework in Frameworks */,
+				5F0DD6C214C45E3E0018D97F /* CoreGraphics.framework in Frameworks */,
+				5F0DD6C414C45E3E0018D97F /* CoreLocation.framework in Frameworks */,
+				5F0DD6C614C45E3E0018D97F /* CoreMotion.framework in Frameworks */,
+				5F0DD6C814C45E3E0018D97F /* GameKit.framework in Frameworks */,
+				5F0DD6CA14C45E3E0018D97F /* MobileCoreServices.framework in Frameworks */,
+				5F0DD6CC14C45E3E0018D97F /* OpenAL.framework in Frameworks */,
+				5F0DD6CE14C45E3E0018D97F /* SystemConfiguration.framework in Frameworks */,
+				5F0DD6D014C45E3E0018D97F /* libz.dylib in Frameworks */,
+				5F0DD6F614C45E7E0018D97F /* libgideros.a in Frameworks */,
+				5F6E45FA14F53CB5002F21DC /* libsqlite3.dylib in Frameworks */,
+				5FC7600D15209CB500A512BE /* StoreKit.framework in Frameworks */,
+				5F72D2221566F8C900FD1C55 /* libluasocket.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				28FD14FC0DC6FC130079059D /* EAGLView.h */,
+				28FD14FD0DC6FC130079059D /* EAGLView.mm */,
+				1D3623240D0F684500981E51 /* GiderosiPhonePlayerAppDelegate.h */,
+				1D3623250D0F684500981E51 /* GiderosiPhonePlayerAppDelegate.mm */,
+				28EC4C5611D54ECE0027AA9F /* GiderosiPhonePlayerViewController.h */,
+				28EC4C5711D54ECE0027AA9F /* GiderosiPhonePlayerViewController.mm */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D6058910D05DD3D006BFB54 /* GiderosiPhonePlayer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				080E96DDFE201D6D7F000001 /* Classes */,
+				5FE2F02214D87BD3004A8D58 /* Plugins */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32CA4F630368D1EE00C91783 /* GiderosiPhonePlayer_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.mm */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5F0DD83114C4BC640018D97F /* Icon.png */,
+				5F0DD83214C4BC640018D97F /* Icon@2x.png */,
+				8D1107310486CEB800E47090 /* GiderosiPhonePlayer-Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5F0DD6F514C45E7E0018D97F /* libgideros.a */,
+				28FD15070DC6FC5B0079059D /* QuartzCore.framework */,
+				28FD14FF0DC6FC520079059D /* OpenGLES.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				5F0DD6BB14C45E3E0018D97F /* AudioToolbox.framework */,
+				5F0DD6BD14C45E3E0018D97F /* AVFoundation.framework */,
+				5F0DD6BF14C45E3E0018D97F /* CFNetwork.framework */,
+				5F0DD6C114C45E3E0018D97F /* CoreGraphics.framework */,
+				5F0DD6C314C45E3E0018D97F /* CoreLocation.framework */,
+				5F0DD6C514C45E3E0018D97F /* CoreMotion.framework */,
+				5F0DD6C714C45E3E0018D97F /* GameKit.framework */,
+				5F0DD6C914C45E3E0018D97F /* MobileCoreServices.framework */,
+				5F0DD6CB14C45E3E0018D97F /* OpenAL.framework */,
+				5F0DD6CD14C45E3E0018D97F /* SystemConfiguration.framework */,
+				5F0DD6CF14C45E3E0018D97F /* libz.dylib */,
+				5F6E45F914F53CB5002F21DC /* libsqlite3.dylib */,
+				5FC7600C15209CB500A512BE /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5FE2F02214D87BD3004A8D58 /* Plugins */ = {
+			isa = PBXGroup;
+			children = (
+				5F72D2231566F8D600FD1C55 /* luasocket_stub.cpp */,
+				5F72D2211566F8C900FD1C55 /* libluasocket.a */,
+				5FC75FEE15209CA000A512BE /* storekit.mm */,
+				5F6E459C14F53A8F002F21DC /* lsqlite3_stub.cpp */,
+				5F6E459D14F53A8F002F21DC /* lsqlite3.c */,
+				5FE2F02614D87C73004A8D58 /* gamekit.mm */,
+			);
+			name = Plugins;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* GiderosiPhonePlayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "GiderosiPhonePlayer" */;
+			buildPhases = (
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GiderosiPhonePlayer;
+			productName = GiderosiPhonePlayer;
+			productReference = 1D6058910D05DD3D006BFB54 /* GiderosiPhonePlayer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GiderosiPhonePlayer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* GiderosiPhonePlayer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F0DD83314C4BC640018D97F /* Icon.png in Resources */,
+				5F0DD83414C4BC640018D97F /* Icon@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589B0D05DD56006BFB54 /* main.mm in Sources */,
+				1D3623260D0F684500981E51 /* GiderosiPhonePlayerAppDelegate.mm in Sources */,
+				28FD14FE0DC6FC130079059D /* EAGLView.mm in Sources */,
+				28EC4C5911D54ECE0027AA9F /* GiderosiPhonePlayerViewController.mm in Sources */,
+				5FE2F03114D87C73004A8D58 /* gamekit.mm in Sources */,
+				5F6E459E14F53A8F002F21DC /* lsqlite3_stub.cpp in Sources */,
+				5F6E459F14F53A8F002F21DC /* lsqlite3.c in Sources */,
+				5FC75FEF15209CA000A512BE /* storekit.mm in Sources */,
+				5F72D2241566F8D600FD1C55 /* luasocket_stub.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = GiderosiPhonePlayer_Prefix.pch;
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				INFOPLIST_FILE = "GiderosiPhonePlayer-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/Plugins\"",
+				);
+				PRODUCT_NAME = GiderosiPhonePlayer;
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = GiderosiPhonePlayer_Prefix.pch;
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				INFOPLIST_FILE = "GiderosiPhonePlayer-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/Plugins\"",
+				);
+				PRODUCT_NAME = GiderosiPhonePlayer;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					armv6,
+					armv7,
+				);
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COMPRESS_PNG_FILES = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					armv6,
+					armv7,
+				);
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COMPRESS_PNG_FILES = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "GiderosiPhonePlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GiderosiPhonePlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

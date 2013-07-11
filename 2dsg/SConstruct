@@ -1,0 +1,12 @@
+CPPPATH = [
+"../libpng",
+"../zlib",
+"../libplatform",
+"../libsound",
+"../pystring",
+"../libpvrt",
+"."]
+
+CCFLAGS = ['-Wall', '-g']
+
+Library('lib2dsg', [Glob('*.cpp'), 'gpc.c', Glob('GLES/*.cpp')], CPPPATH=CPPPATH, CCFLAGS=CCFLAGS)

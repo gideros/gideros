@@ -1,0 +1,16 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="0">
+  <imageScales/>
+ </properties>
+ <file file="0.1-up.png"/>
+ <file file="0.1-down.png"/>
+ <file file="0.2-up.png"/>
+ <file file="0.2-down.png"/>
+ <file file="0.5-up.png"/>
+ <file file="0.5-down.png"/>
+ <file file="1.0-up.png"/>
+ <file file="1.0-down.png"/>
+ <file file="dot.png"/>
+ <file file="button.lua"/>
+ <file file="main.lua"/>
+</project>

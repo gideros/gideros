@@ -1,0 +1,282 @@
+#include "ghttp.h"
+#include "ghttp-qt.h"
+
+HTTPManager::HTTPManager()
+{
+    manager_ = new QNetworkAccessManager();
+    connect(manager_, SIGNAL(finished(QNetworkReply*)),
+            this,		SLOT(finished(QNetworkReply*)));
+    nextid_ = 1;
+}
+
+HTTPManager::~HTTPManager()
+{
+    closeAll();
+    delete manager_;
+}
+
+void HTTPManager::deleteCallbackElement(CallbackElement& element)
+{
+    if (element.type == GHTTP_RESPONSE)
+    {
+        ghttp_Response* data = (ghttp_Response*)element.data;
+        free(data->data);
+    }
+    else if (element.type == GHTTP_ERROR)
+    {
+    }
+    else if (element.type == GHTTP_PROGRESS)
+    {
+    }
+
+    free(element.data);
+}
+
+void HTTPManager::tick()
+{
+    while (!callbackQueue_.empty())
+    {
+        CallbackElement element = callbackQueue_.front();
+        callbackQueue_.pop_front();
+
+        element.callback(element.id, element.type, element.data, element.udata);
+
+        deleteCallbackElement(element);
+    }
+}
+
+void HTTPManager::close(int id)
+{
+    std::map<QNetworkReply*, NetworkReply>::iterator iter = map_.begin(), e = map_.end();
+    for (; iter != e; ++iter)
+    {
+        if (iter->second.id == id)
+        {
+            iter->first->deleteLater();
+            map_.erase(iter);
+            break;
+        }
+    }
+
+    if (!callbackQueue_.empty())
+        for (int i = callbackQueue_.size() - 1; i >= 0; --i)
+            if (callbackQueue_[i].id == id)
+            {
+                deleteCallbackElement(callbackQueue_[i]);
+                callbackQueue_.erase(callbackQueue_.begin() + i);
+            }
+}
+
+void HTTPManager::closeAll()
+{
+    std::map<QNetworkReply*, NetworkReply>::iterator iter = map_.begin(), e = map_.end();
+    for (; iter != e; ++iter)
+        iter->first->deleteLater();
+    map_.clear();
+
+    for (size_t i = 0; i < callbackQueue_.size(); ++i)
+        deleteCallbackElement(callbackQueue_[i]);
+    callbackQueue_.clear();
+}
+
+int HTTPManager::get(const char* url, const ghttp_Header *header, ghttp_Callback callback, void* udata)
+{
+    QNetworkRequest request(QUrl::fromEncoded(url));
+
+    for (; header && header->name; ++header)
+        request.setRawHeader(QByteArray(header->name), QByteArray(header->value));
+
+    QNetworkReply* reply = manager_->get(request);
+
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
+            this,	 SLOT(downloadProgress(qint64, qint64)));
+
+    NetworkReply reply2;
+    reply2.id = nextid_;
+    reply2.callback = callback;
+    reply2.udata = udata;
+    map_[reply] = reply2;
+
+    return nextid_++;
+}
+
+
+int HTTPManager::post(const char* url, const ghttp_Header *header, const void* data, size_t size, ghttp_Callback callback, void* udata)
+{
+    QNetworkRequest request(QUrl::fromEncoded(url));
+
+    for (; header && header->name; ++header)
+        request.setRawHeader(QByteArray(header->name), QByteArray(header->value));
+
+    QNetworkReply* reply = manager_->post(request, QByteArray((char*)data, size));
+
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
+            this,	 SLOT(downloadProgress(qint64, qint64)));
+
+    NetworkReply reply2;
+    reply2.id = nextid_;
+    reply2.callback = callback;
+    reply2.udata = udata;
+    map_[reply] = reply2;
+
+    return nextid_++;
+}
+
+int HTTPManager::deleteResource(const char* url, const ghttp_Header *header, ghttp_Callback callback, void* udata)
+{
+    QNetworkRequest request(QUrl::fromEncoded(url));
+
+    for (; header && header->name; ++header)
+        request.setRawHeader(QByteArray(header->name), QByteArray(header->value));
+
+    QNetworkReply* reply = manager_->deleteResource(request);
+
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
+            this,	 SLOT(downloadProgress(qint64, qint64)));
+
+    NetworkReply reply2;
+    reply2.id = nextid_;
+    reply2.callback = callback;
+    reply2.udata = udata;
+    map_[reply] = reply2;
+
+    return nextid_++;
+}
+
+int HTTPManager::put(const char* url, const ghttp_Header *header, const void* data, size_t size, ghttp_Callback callback, void* udata)
+{
+    QNetworkRequest request(QUrl::fromEncoded(url));
+
+    for (; header && header->name; ++header)
+        request.setRawHeader(QByteArray(header->name), QByteArray(header->value));
+
+    QNetworkReply* reply = manager_->put(request, QByteArray((char*)data, size));
+
+    connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
+            this,	 SLOT(downloadProgress(qint64, qint64)));
+
+    NetworkReply reply2;
+    reply2.id = nextid_;
+    reply2.callback = callback;
+    reply2.udata = udata;
+    map_[reply] = reply2;
+
+    return nextid_++;
+}
+
+void HTTPManager::finished(QNetworkReply* reply)
+{
+    if (map_.find(reply) == map_.end())
+        return;
+
+    if (reply->error() != QNetworkReply::NoError)
+    {
+        NetworkReply reply2 = map_[reply];
+
+        ghttp_Error* data = (ghttp_Error*)malloc(sizeof(ghttp_Error));
+
+        CallbackElement element;
+        element.id = reply2.id;
+        element.callback = reply2.callback;
+        element.type = GHTTP_ERROR;
+        element.data = data;
+        element.udata = reply2.udata;
+        callbackQueue_.push_back(element);
+    }
+    else
+    {
+        QByteArray bytes = reply->readAll();
+
+        NetworkReply reply2 = map_[reply];
+
+        ghttp_Response* data = (ghttp_Response*)malloc(sizeof(ghttp_Response));
+        data->data = malloc(bytes.size());
+        memcpy(data->data, bytes.constData(), bytes.size());
+        data->size = bytes.size();
+
+        CallbackElement element;
+        element.id = reply2.id;
+        element.callback = reply2.callback;
+        element.type = GHTTP_RESPONSE;
+        element.data = data;
+        element.udata = reply2.udata;
+        callbackQueue_.push_back(element);
+    }
+
+    map_.erase(reply);
+    reply->deleteLater();
+}
+
+void HTTPManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+{
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+
+    if (map_.find(reply) == map_.end())
+        return;
+
+    NetworkReply reply2 = map_[reply];
+
+    ghttp_Progress* data = (ghttp_Progress*)malloc(sizeof(ghttp_Progress));
+    data->bytesLoaded = bytesReceived;
+    data->bytesTotal = bytesTotal;
+
+    CallbackElement element;
+    element.id = reply2.id;
+    element.callback = reply2.callback;
+    element.type = GHTTP_PROGRESS;
+    element.data = data;
+    element.udata = reply2.udata;
+    callbackQueue_.push_back(element);
+}
+
+static HTTPManager* s_manager = NULL;
+
+extern "C" {
+
+void ghttp_init()
+{
+    s_manager = new HTTPManager();
+}
+
+void ghttp_cleanup()
+{
+    delete s_manager;
+    s_manager = NULL;
+}
+
+void ghttp_tick()
+{
+    s_manager->tick();
+}
+
+int ghttp_get(const char* url, const ghttp_Header *header, ghttp_Callback callback, void* udata)
+{
+    return s_manager->get(url, header, callback, udata);
+}
+
+int ghttp_post(const char* url, const ghttp_Header *header, const void* data, size_t size, ghttp_Callback callback, void* udata)
+{
+    return s_manager->post(url, header, data, size, callback, udata);
+}
+
+int ghttp_delete(const char* url, const ghttp_Header *header, ghttp_Callback callback, void* udata)
+{
+    return s_manager->deleteResource(url, header, callback, udata);
+}
+
+int ghttp_put(const char* url, const ghttp_Header *header, const void* data, size_t size, ghttp_Callback callback, void* udata)
+{
+    return s_manager->put(url, header, data, size, callback, udata);
+}
+
+void ghttp_close(int id)
+{
+    s_manager->close(id);
+}
+
+void ghttp_closeAll()
+{
+    s_manager->closeAll();
+}
+
+}

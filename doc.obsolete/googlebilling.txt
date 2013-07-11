@@ -1,0 +1,115 @@
+Class: GoogleBilling > EventDispatcher
+
+The `GoogleBilling` class is defined in the module "googlebilling". Therefore, you need to call
+`require("googlebilling")` before using it. Loading the Google Billing module 
+also creates a global variable `googlebilling` of type `GoogleBilling` for direct use. 
+ 
+### GoogleBilling Events and Response Codes
+
+`GoogleBilling` class dispatches 5 events: `Event.CHECK_BILLING_SUPPORTED_COMPLETE`,
+`Event.REQUEST_PURCHASE_COMPLETE`,`Event.RESTORE_TRANSACTIONS_COMPLETE`,
+`Event.CONFIRM_NOTIFICATION_COMPLETE` and `Event.PURCHASE_STATE_CHANGE`.
+
+`Event.*_COMPLETE` events contains a field `event.responseCode` which provides status information 
+and error information about a request. Response code can be one of these values:
+
+* `GoogleBilling.OK`: Indicates that the request was sent to the server successfully. When this code is returned 
+in response to a `checkBillingSupported` function, indicates that billing is supported.
+* `GoogleBilling.USER_CANCELED`: Indicates that the user pressed the back button on the checkout page instead of buying the item.
+* `GoogleBilling.SERVICE_UNAVAILABLE`: Indicates that the network connection is down.
+* `GoogleBilling.BILLING_UNAVAILABLE`: Indicates that in-app billing is not available because the API version that 
+you specified is not recognized by the Google Play application or the user is ineligible for in-app billing 
+(for example, the user resides in a country that prohibits in-app purchases).
+* `GoogleBilling.ITEM_UNAVAILABLE`: Indicates that Google Play cannot find the requested item in the application's product list. 
+This can happen if the product ID is misspelled in your `requestPurchase` function or if an item is unpublished in the application's product list.
+* `GoogleBilling.DEVELOPER_ERROR`: Indicates that an application is trying to make an in-app billing request but the application has not declared the 
+com.android.vending.BILLING permission in its manifest. Can also indicate that an application is not properly signed, 
+or that you sent a malformed request, such as a request with missing Bundle keys or a request that uses an unrecognized request type.
+* `GoogleBilling.ERROR`: Indicates an unexpected server error. For example, this error is triggered if you try to purchase an item from yourself, which is not allowed by Google Wallet.
+
+#### Event.CHECK_BILLING_SUPPORTED_COMPLETE
+Dispatched when `checkBillingSuported` function completes. It contains `event.responseCode` and `event.productType` fields.
+
+#### Event.REQUEST_PURCHASE_COMPLETE
+Dispatched when `requestPurchase` function completes. It contains `event.responseCode`, `event.productId`, `event.productType` and `event.developerPayload` fields.
+
+#### Event.RESTORE_TRANSACTIONS_COMPLETE
+Dispatched when `restoreTransactions` function completes. It contains `event.responseCode` fields.
+
+#### Event.CONFIRM_NOTIFICATION_COMPLETE
+Dispatched when `confirmNotification` function completes. It contains `event.responseCode` and `event.notificationId` fields.
+
+#### Event.PURCHASE_STATE_CHANGE
+Dispatched when information about a transaction is received. It contains `event.purchaseState`, `event.productId`, `event.notificationId`, `event.purchaseTime` and `event.developerPayload` fields.
+
+---------------------------------------
+
+Function: GoogleBilling:setPublicKey
+
+Sets the public key. You can find the public key portion of this key pair on your Google Play account's profile page.
+
+Parameters:
+	publicKey - (string) Your Google Play public key
+
+---------------------------------------
+
+Function: GoogleBilling:setApiVersion
+
+Sets the API version. You can find more information http://developer.android.com/guide/google/play/billing/billing_reference.html#billing-versions
+
+Parameters:
+	apiVersion - (number) 
+
+---------------------------------------
+
+Function: GoogleBilling:checkBillingSupported
+
+This request verifies that the Google Play application supports in-app billing.
+You usually send this request when your application first starts up. This request is
+useful if you want to enable or disable certain UI features that are relevant only to
+in-app billing.
+
+Parameters:
+	productType - (string, optional) The item type. It can be GoogleBilling.INAPP or GoogleBilling.SUBS.
+
+Returns:
+`true` if in-app billing service is available, `false` otherwise.
+	
+---------------------------------------
+
+Function: GoogleBilling:requestPurchase
+
+This request sends a purchase message to the Google Play application and is the foundation of in-app billing.
+You send this request when a user indicates that he or she wants to purchase an item in your application.
+Google Play then handles the financial transaction by displaying the checkout user interface.
+
+Parameters:
+	productId - (string)
+	productType - (string, optional)
+	developerPayload - (string, optional)
+
+Returns:
+`true` if in-app billing service is available, `false` otherwise.
+
+---------------------------------------
+
+Function: GoogleBilling:confirmNotification
+
+This request acknowledges that your application received the details of a purchase state change.
+
+Parameters:
+	notificationId - (string)
+
+Returns:
+`true` if in-app billing service is available, `false` otherwise.
+
+---------------------------------------
+
+Function: GoogleBilling:restoreTransactions
+
+This request retrieves a user's transaction status for managed purchases. You should send this message only when you need to
+retrieve a user's transaction status, which is usually only when your application is reinstalled or installed for the first time on a device.
+
+Returns:
+`true` if in-app billing service is available, `false` otherwise.
+---------------------------------------

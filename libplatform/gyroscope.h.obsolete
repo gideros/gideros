@@ -1,0 +1,22 @@
+#ifndef GYROSCOPE_H
+#define GYROSCOPE_H
+
+class Gyroscope
+{
+public:
+	Gyroscope();
+	~Gyroscope();
+
+	bool isAvailable() const;
+	void start();
+	void stop();
+	void getRotationRate(double* x, double* y, double* z) const;
+
+public:
+	class GyroscopeImpl;
+
+private:
+	GyroscopeImpl* pimpl_;
+};
+
+#endif

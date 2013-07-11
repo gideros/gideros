@@ -1,0 +1,423 @@
+#include "requester.h"
+
+#import <Foundation/Foundation.h>
+#import "ASIHTTPRequest.h"
+#include <map>
+#include <vector>
+#include <set>
+#include <deque>
+
+typedef void(*FinishedCallback)(int id, const void* ptr, size_t size, void* data);
+typedef void(*ErrorCallback)(int id, void* data);
+typedef void(*ProgressCallback)(int, size_t, size_t, void* data);
+
+@interface RequestNetworkManagerHelper : NSObject<ASIProgressDelegate, ASIHTTPRequestDelegate>
+{
+@private
+	int nextid_;
+	std::map<int, ASIHTTPRequest*> requests_;
+@public
+	FinishedCallback finishedCallback;
+	ErrorCallback errorCallback;
+	ProgressCallback progressCallback;
+	void* data;
+}
+
+- (RequestNetworkManagerHelper*) init;
+- (int)load:(NSString *)url withVariables:(const URLVariables*)variables;
+- (void)requestFinished:(ASIHTTPRequest *)request;
+- (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)request:(ASIHTTPRequest *)request didReceiveBytes:(long long)bytes;
+- (void)request:(ASIHTTPRequest *)request incrementDownloadSizeBy:(long long)newLength;
+- (void)setProgress:(float)newProgress;
+- (void)close:(int)id;
+- (void)dealloc;
+
+@end
+
+@implementation RequestNetworkManagerHelper
+
+-(RequestNetworkManagerHelper*) init
+{
+    self = [super init];
+	
+    if (self)
+	{
+		nextid_ = 1;
+		finishedCallback = NULL;
+		errorCallback = NULL;
+		progressCallback = NULL;
+		data = NULL;
+	}
+	
+    return self;
+}
+
+- (int)load:(NSString *)url withVariables:(const URLVariables *)variables
+{
+	NSURL *nsurl = [NSURL URLWithString:url];
+	ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:nsurl];
+	
+	if (variables && variables->method == URLVariables::ePost)
+	{
+		[request setRequestMethod:@"PUT"];
+		
+		if (variables->post.empty())
+		{
+			NSData* postdata = [NSData dataWithBytesNoCopy:(void*)&variables->post[0] length:variables->post.size() freeWhenDone:NO];
+			[request appendPostData:postdata];
+		}
+	}
+	
+	request.showAccurateProgress = YES;
+	request.tag = nextid_;
+	requests_[nextid_] = request;
+	[request setDelegate:self];
+	[request setDownloadProgressDelegate:self];
+	[request startAsynchronous];
+	return nextid_++;
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request
+{
+	//printf("requestFinished\n");
+
+	int id = request.tag;
+		
+	requests_.erase(id);
+
+	if (finishedCallback)
+	{
+		NSData* response = [request responseData];
+		finishedCallback(id, response.bytes, response.length, data);
+	}
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+	//printf("requestFailed\n");
+	
+	//NSError *error = [request error];
+	
+	int id = request.tag;
+	
+	requests_.erase(id);
+
+	if (errorCallback)
+		errorCallback(id, data);
+}
+
+
+- (void)request:(ASIHTTPRequest *)request didReceiveBytes:(long long)bytes
+{
+	int id = request.tag;
+
+	if (progressCallback)
+		progressCallback(id, request.totalBytesRead, request.contentLength, data);
+}
+
+- (void)request:(ASIHTTPRequest *)request incrementDownloadSizeBy:(long long)newLength
+{
+	
+}
+
+- (void)setProgress:(float)newProgress
+{
+
+}
+
+- (void)close:(int)id
+{
+	if (requests_.find(id) != requests_.end())
+	{
+		[requests_[id] clearDelegatesAndCancel];
+		requests_.erase(id);
+	}
+}
+
+
+- (void)dealloc
+{
+	for (std::map<int, ASIHTTPRequest*>::iterator iter = requests_.begin(); iter != requests_.end(); ++iter)
+		[iter->second clearDelegatesAndCancel];
+	
+	[super dealloc];
+}
+
+@end
+
+class RequestNetworkManager
+{
+public:
+	RequestNetworkManager()
+	{
+		helper_ = [[RequestNetworkManagerHelper alloc] init];
+		helper_->finishedCallback = finished_s;
+		helper_->errorCallback = error_s;
+		helper_->progressCallback = progress_s;
+		helper_->data = this;
+	}
+	
+	~RequestNetworkManager()
+	{
+		[helper_ release];
+	}
+	
+	int load(const char* url,
+			 req_callback_type callback,
+			 req_progress_callback_type progresscallback,
+			 void* callbackdata,
+			 const URLVariables* variables = NULL);
+
+	void close(int id);
+	void del(int id);
+	void deleteall();
+	void tick();
+	
+private:
+	static void finished_s(int id, const void* ptr, size_t size, void* data)
+	{
+		static_cast<RequestNetworkManager*>(data)->finished(id, ptr, size);
+	}
+	static void error_s(int id, void* data)
+	{
+		static_cast<RequestNetworkManager*>(data)->error(id);
+	}
+	static void progress_s(int id, size_t bytesLoaded, size_t bytesTotal, void* data)
+	{
+		static_cast<RequestNetworkManager*>(data)->progress(id, bytesLoaded, bytesTotal);
+	}
+	
+	void finished(int id, const void* ptr, size_t size);
+	void error(int id);
+	void progress(int id, size_t bytesLoaded, size_t bytesTotal);
+	
+	struct NetworkReply
+	{
+		req_callback_type callback;
+		req_progress_callback_type progresscallback;
+		void* callbackdata;
+		std::vector<char> data;
+	};
+	
+	RequestNetworkManagerHelper* helper_;
+	std::map<int, bool> nr1_;
+	std::map<int, NetworkReply*> nr2_;	
+
+	struct CallbackQueueElement
+	{
+		int id;
+		int error;
+		void* ptr;
+		size_t size;
+		
+		size_t bytesLoaded;
+		size_t bytesTotal;
+		
+		req_callback_type callback;
+		req_progress_callback_type progresscallback;
+		void* callbackdata;
+	};
+	
+	std::deque<CallbackQueueElement> callbackqueue_;
+};
+
+
+int RequestNetworkManager::load(const char* url,
+								req_callback_type callback,
+								req_progress_callback_type progresscallback,
+								void* callbackdata,
+								const URLVariables* variables/* = NULL*/)
+{
+	int id = [helper_ load:[NSString stringWithUTF8String:url] withVariables:variables];
+	NetworkReply* reply = new NetworkReply;
+	
+	reply->callback = callback;
+	reply->progresscallback = progresscallback;
+	reply->callbackdata = callbackdata;
+	
+	nr1_[id] = true;
+	nr2_[id] = reply;
+	
+	return id;
+}
+
+void RequestNetworkManager::finished(int id, const void* ptr, size_t size)
+{
+	if (nr1_.find(id) != nr1_.end())
+	{
+		NetworkReply* reply = nr2_[id];
+
+		if (size != 0)
+		{
+			reply->data.resize(size);
+			memcpy(&reply->data[0], ptr, size);
+		}
+		else
+		{
+			reply->data.clear();
+		}		
+				
+		nr1_.erase(id);
+		
+		if (reply->callback)
+		{
+			CallbackQueueElement e;
+			e.id = id;
+			e.error = 0;
+			e.ptr = &reply->data[0];
+			e.size = reply->data.size();
+			e.callback = reply->callback;
+			e.progresscallback = NULL;
+			e.callbackdata = reply->callbackdata;
+			
+			callbackqueue_.push_back(e);
+		}
+	}
+}
+
+
+void RequestNetworkManager::error(int id)
+{
+	if (nr1_.find(id) != nr1_.end())
+	{
+		NetworkReply* reply = nr2_[id];
+		
+		nr1_.erase(id);
+		
+		if (reply->callback)
+		{
+			CallbackQueueElement e;
+			e.id = id;
+			e.error = 1;
+			e.ptr = NULL;
+			e.size = 0;
+			e.callback = reply->callback;
+			e.progresscallback = NULL;
+			e.callbackdata = reply->callbackdata;
+			
+			callbackqueue_.push_back(e); 
+		}
+	}
+}
+
+void RequestNetworkManager::progress(int id, size_t bytesLoaded, size_t bytesTotal)
+{
+	if (nr1_.find(id) != nr1_.end())
+	{
+		NetworkReply* reply = nr2_[id];
+		
+		if (reply->progresscallback)
+		{
+			CallbackQueueElement e;
+			e.id = id;
+			e.bytesLoaded = bytesLoaded;
+			e.bytesTotal = bytesTotal;
+			e.callback = NULL;
+			e.progresscallback = reply->progresscallback;
+			e.callbackdata = reply->callbackdata;
+			
+			callbackqueue_.push_back(e);
+		}
+	}	
+}
+
+void RequestNetworkManager::tick()
+{
+	while (!callbackqueue_.empty())
+	{
+		CallbackQueueElement e = callbackqueue_.front();
+		callbackqueue_.pop_front();
+		
+		if (e.callback)
+			e.callback(e.id, e.error, e.ptr, e.size, e.callbackdata);
+		
+		if (e.progresscallback)
+			e.progresscallback(e.id, e.bytesLoaded, e.bytesTotal, e.callbackdata);
+	}
+}
+
+
+
+void RequestNetworkManager::close(int id)
+{
+	if (nr2_.find(id) != nr2_.end())
+	{		
+		if (nr1_.find(id) != nr1_.end())
+		{
+			nr1_.erase(id);
+			[helper_ close:id];
+		}
+	}
+	
+	if (!callbackqueue_.empty())
+		for (size_t i = callbackqueue_.size() - 1; i >= 0; --i)
+			if (callbackqueue_[i].id == id)
+				callbackqueue_.erase(callbackqueue_.begin() + i);
+}
+
+
+void RequestNetworkManager::del(int id)
+{
+	close(id);
+	
+	if (nr2_.find(id) != nr2_.end())
+	{
+		delete nr2_[id];
+		nr2_.erase(id);
+	}
+}
+
+void RequestNetworkManager::deleteall()
+{
+	callbackqueue_.clear();
+		
+	nr1_.clear();
+	
+	for (std::map<int, NetworkReply*>::iterator iter = nr2_.begin(); iter != nr2_.end(); ++iter)
+		delete iter->second;
+
+	nr2_.clear();
+}
+
+RequestNetworkManager* g_manager = NULL;
+
+void req_init()
+{
+	g_manager = new RequestNetworkManager;
+}
+
+void req_cleanup()
+{
+	delete g_manager;
+	g_manager = NULL;
+}
+
+int req_load(const char* url,
+			 req_callback_type callback,
+			 req_progress_callback_type progresscallback,
+			 void* callbackdata,
+			 const URLVariables* variables/* = NULL*/)
+{
+	return g_manager->load(url, callback, progresscallback, callbackdata, variables);
+}
+
+void req_tick()
+{
+	g_manager->tick();
+}
+
+void req_close(int id)
+{
+	g_manager->close(id);
+}
+
+void req_delete(int id)
+{
+	g_manager->del(id);
+}
+
+void req_deleteall()
+{
+	g_manager->deleteall();
+}

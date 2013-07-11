@@ -1,0 +1,1 @@
+#include "snappy-stubs-internal.cc"

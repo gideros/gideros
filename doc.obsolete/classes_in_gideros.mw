@@ -1,0 +1,76 @@
+
+
+
+= Classes in Gideros =
+
+Lua does not support classes the way that languages like C++, Java and
+ActionScript do. But Lua is a multi-paradigm language and have roots from
+prototype-based languages. In Lua, each object can define its own behaviour
+through metatables. Therefore, it is possible to emulate OO programming and
+classes in Lua.
+
+''(For the detailed discussion of object oriented programming in Lua, please refer to [http://www.lua.org/pil/16.html http://www.lua.org/pil/16.html])''
+
+Gideros follows the same paradigm in its API design. Each instance created by
+Gideros API is a Lua table with a metatable attached.
+
+== Creating Instances ==
+
+Instances in Gideros is created through <code>new</code> function. For example, to create
+a <code>Sprite</code>, <code>Texture</code>, <code>Bitmap</code> and a <code>Timer</code> instance:
+
+<source lang="lua">
+local sprite = Sprite.new()
+local texture = Texture.new("image.png")
+local bitmap = Bitmap.new(texture)
+local timer = Timer.new(1000, 0)
+</source>
+
+== Inheritance ==
+
+<code>gideros.class</code> function is used to create your own classes through inheritance. You
+can only inherit from Gideros API's own classes (<code>EventDispathcher</code>, <code>Sprite</code>, etc.) and
+you cannot inherit from your own classes.
+
+For example, you can create your EventDispathcher class like:
+
+<source lang="lua">
+MyEventDispathcher = gideros.class(EventDispathcher)
+</source>
+
+By using Inheritance, you can design and implement the visual elements of your game separately:
+
+<source lang="lua">
+StartButton = gideros.class(Sprite)     -- create your own start button class
+Menu = gideros.class(Sprite)            -- create your own menu class
+
+Player = gideros.class(Sprite)          -- create your own player class
+
+function Player:walk()
+	-- walk logic
+end
+
+function Player:jump()
+	-- jump logic
+end
+
+stage:addChild(Player.new())            -- create and add a player instance to the stage
+</source>
+
+When an instance is created, <code>init</code> function is called to do the initialization:
+
+<source lang="lua">
+Player = gideros.class(Sprite)
+
+function Player:init()
+	-- do the initialization of Player instance
+	self.health = 100
+	self.speed = 3
+end
+
+local player = Player.new()		-- after Player instance is created, init function is called
+</source>
+
+Whether to use inheritance or not is related to your programming taste. It's possible to implement
+a whole game without creating custom classes. You can refer to "Jumping Ball" and "Jumping Balls" examples
+to see the difference between designing your code with classes or not.

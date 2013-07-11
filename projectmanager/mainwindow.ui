@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>223</width>
+    <height>389</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>223</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <widget class="QMenu" name="menuRecent_Projects">
+     <property name="title">
+      <string>Recent Projects</string>
+     </property>
+     <addaction name="actionProject1"/>
+     <addaction name="actionProject2"/>
+     <addaction name="actionProject3"/>
+     <addaction name="actionProject4"/>
+     <addaction name="actionProject5"/>
+    </widget>
+    <addaction name="actionNew_Project"/>
+    <addaction name="actionOpen_Project"/>
+    <addaction name="actionSave_Project"/>
+    <addaction name="actionClose_Project"/>
+    <addaction name="separator"/>
+    <addaction name="menuRecent_Projects"/>
+    <addaction name="separator"/>
+    <addaction name="actionExport_Project"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Player</string>
+    </property>
+    <addaction name="actionStart_Local_Player"/>
+    <addaction name="actionPlayer_Settings"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings_2">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionFile_Associations"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuSettings_2"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionStart_Player"/>
+   <addaction name="actionStart"/>
+   <addaction name="actionStop"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionStart">
+   <property name="text">
+    <string>Run</string>
+   </property>
+   <property name="toolTip">
+    <string>Run</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="text">
+    <string>Stop</string>
+   </property>
+  </action>
+  <action name="actionStart_Player">
+   <property name="text">
+    <string>Start Player</string>
+   </property>
+  </action>
+  <action name="actionNew_Project">
+   <property name="text">
+    <string>New Project...</string>
+   </property>
+  </action>
+  <action name="actionOpen_Project">
+   <property name="text">
+    <string>Open Project...</string>
+   </property>
+  </action>
+  <action name="actionSave_Project">
+   <property name="text">
+    <string>Save Project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionClose_Project">
+   <property name="text">
+    <string>Close Project</string>
+   </property>
+  </action>
+  <action name="actionProject1">
+   <property name="text">
+    <string>project1</string>
+   </property>
+  </action>
+  <action name="actionProject2">
+   <property name="text">
+    <string>project2</string>
+   </property>
+  </action>
+  <action name="actionProject3">
+   <property name="text">
+    <string>project3</string>
+   </property>
+  </action>
+  <action name="actionProject4">
+   <property name="text">
+    <string>project4</string>
+   </property>
+  </action>
+  <action name="actionProject5">
+   <property name="text">
+    <string>project5</string>
+   </property>
+  </action>
+  <action name="actionExport_Project">
+   <property name="text">
+    <string>Export Project...</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="actionFile_Associations">
+   <property name="text">
+    <string>File Associations...</string>
+   </property>
+  </action>
+  <action name="actionPlayer_Settings">
+   <property name="text">
+    <string>Player Settings...</string>
+   </property>
+  </action>
+  <action name="actionStart_Local_Player">
+   <property name="text">
+    <string>Start Local Player</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

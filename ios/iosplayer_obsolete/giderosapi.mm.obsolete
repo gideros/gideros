@@ -1,0 +1,1252 @@
+#include "giderosapi.h"
+
+#include <platform.h>
+#include <luaapplication.h>
+#include <libnetwork.h>
+#include <soundimplementation.h>
+#include <soundsystemopenal.h>
+#include <sounddecoderwav.h>
+#include <sounddecoderavaudioplayer.h>
+#include <binder.h>
+
+#include <pthread.h>
+#include <semaphore.h>
+
+#include "uitouchmanager.h"
+#include "uitouchqueue.h"
+
+#include <vector>
+#include <string>
+
+#include <sys/stat.h>	// header for mkdir function
+
+#include <bytebuffer.h>
+
+#include <platformutil.h>
+
+#include <ogl.h>
+
+#include <ghttp.h>
+
+#include <event.h>
+
+#include <gfile.h>
+#include <gfile_p.h>
+
+#include <splashscreen.h>
+#include <application.h>
+#include <stage.h>
+
+void g_setFps(int);
+int g_getFps();
+
+static SplashScreen* splashScreen_ = NULL;
+
+static volatile const char* licenseKey_ = "9852564f4728e0c11e34ca3eb5fe20b2";
+//-----------------------------------------01234567890123456------------------
+static sem_t* my_sem_open(int* sem_id)
+{
+	char name[] = "gideros_sem_";
+	int last = strlen(name) - 1;
+
+	// try to find an unexist semaphore
+	for (int c = '0'; c <= '9'; ++c)
+	{
+		name[last] = c;
+		sem_t* sem = sem_open(name, O_CREAT | O_EXCL, S_IRWXU, 0);
+		
+		if (sem != SEM_FAILED)
+		{
+			if (sem_id)
+				*sem_id = c;
+			return sem;	
+		}
+	}
+
+	// we don't have any available semaphores, unlink all
+	for (int c = '0'; c <= '9'; ++c)
+	{
+		name[last] = c;
+		sem_unlink(name);
+	}
+
+	// and try to find again
+	for (int c = '0'; c <= '9'; ++c)
+	{
+		name[last] = c;
+		sem_t* sem = sem_open(name, O_CREAT | O_EXCL, S_IRWXU, 0);
+		
+		if (sem != SEM_FAILED)
+		{
+			if (sem_id)
+				*sem_id = c;
+			return sem;	
+		}
+	}
+	
+	// very unlikely we're here... open a random semaphore	
+	int c = (rand() % ('9' - '0' + 1)) + '0';
+	name[last] = c;
+	if (sem_id)
+		*sem_id = c;
+	return sem_open(name, O_CREAT, S_IRWXU, 0); 
+}
+
+static void my_sem_unlink(int sem_id)
+{
+	char name[] = "gideros_sem_";
+	int last = strlen(name) - 1;
+	
+	name[last] = sem_id;
+	sem_unlink(name);
+}
+
+
+#define THREADED_GAME_LOOP 1
+
+static pthread_mutex_t eventMutex;
+static pthread_mutex_t touchMutex;
+static pthread_mutex_t autorotationMutex;
+static pthread_t gameThreadHandle;
+static sem_t* sem;
+static int sem_id;
+static bool gameLoopActive = true;
+
+static UIView* view_;
+
+static SoundImplementation* soundImplementation_ = NULL;
+static LuaApplication* application_ = NULL;
+static Server* g_server = NULL;
+static UITouchManager* uiTouchManager_ = NULL;
+static TouchQueue* uiTouchQueue_ = NULL;
+
+static bool player_;
+static int width_, height_;
+
+static std::string resourceDirectory_;
+
+static bool running_ = false;
+
+static std::string md5filename_;
+static std::map<std::string, std::vector<unsigned char> > md5_;
+
+static float contentScaleFactor_ = 1;
+
+static int nframe = 0;
+static int frameSkip_ = 1;
+static int autorotation_ = 0;
+
+static void loadMD5()
+{
+	md5_.clear();
+
+	FILE* fis = fopen(md5filename_.c_str(), "rb");
+
+	if (fis == NULL)
+		return;
+
+	int nfiles;
+	fread(&nfiles, sizeof(int), 1, fis);
+
+	for (int i = 0; i < nfiles; ++i)
+	{
+		int strlen;
+		fread(&strlen, sizeof(int), 1, fis);
+
+		char* buffer = (char*)malloc(strlen);
+		fread(buffer, 1, strlen, fis);
+		std::string filename(buffer, strlen);
+		free(buffer);
+
+		std::vector<unsigned char> md5(16);
+		fread(&md5[0], 1, 16, fis);
+
+		md5_[filename] = md5;
+	}
+}
+void saveMD5()
+{
+	FILE* fos = fopen(md5filename_.c_str(), "wb");
+	if (fos == NULL)
+		return;
+
+	int nfiles = md5_.size();
+	fwrite(&nfiles, sizeof(int), 1, fos);
+
+	int i = 0;
+	std::map<std::string, std::vector<unsigned char> >::iterator iter, end = md5_.end();
+	for (iter = md5_.begin(); iter != end; ++iter, ++i)
+	{
+		int strlen = iter->first.size();
+		fwrite(&strlen, sizeof(int), 1, fos);
+		fwrite(iter->first.c_str(), 1, strlen, fos);
+		fwrite(&iter->second[0], 1, 16, fos);
+	}
+
+	fclose(fos);
+}
+static void calculateMD5(const char* file)
+{
+	std::vector<unsigned char> md5(16);
+	if (md5_fromfile(g_pathForFile(file), &md5[0]))
+		md5_[file] = md5;
+}
+
+
+static void drawIPs()
+{
+	if (player_ == true && running_ == false)
+	{
+		void drawInfo();
+		drawInfo();
+	}
+}
+
+
+static void printToServer(const char* str, void* data)
+{
+	if (g_server == NULL)
+		return;
+
+	unsigned int size = 1 + strlen(str) + 1;
+	char* buffer = (char*)malloc(size);
+	
+	int pos = 0;
+	buffer[pos] = 4;
+	pos += 1;
+	strcpy(buffer + pos, str);
+	pos += strlen(str) + 1;
+	
+	g_server->sendData(buffer, size);
+	
+	free(buffer);
+}
+
+static void luaError(const char* error)
+{
+	debuglog("%s", error);
+	
+	if (player_ == true)
+	{
+		running_ = false;
+		
+		printToServer(error, NULL);
+		printToServer("\n", NULL);
+		application_->deinitialize();
+		application_->initialize();	
+	}
+	else
+	{
+		extern void g_exit();
+		g_exit();
+	}
+}
+
+static void* gameThread(void* args)
+{
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+	
+	printf("starting game thread\n");
+	
+	//	[NSThread setThreadPriority:0.5];
+	
+	sem_wait(sem);
+	
+	printf("starting game loop\n");
+	
+	while (gameLoopActive)
+	{
+		int deltaFrame = 1;
+		
+		sem_wait(sem);
+		
+		// drain any extra values in the semaphore
+		while (sem_trywait(sem) != -1)
+			deltaFrame += 1;
+
+		frameSkip_ = g_getFps() == 30 ? 2 : 1;
+
+		if ((nframe++ % frameSkip_) != 0)
+			continue;
+		
+		pthread_mutex_lock(&autorotationMutex);
+		pthread_mutex_lock(&eventMutex);
+		[view_ setFramebuffer];
+				
+		if (application_)
+			application_->clearBuffers();
+		if (application_)
+			application_->renderScene(deltaFrame);
+		drawIPs();				
+		[view_ presentFramebuffer];				
+		pthread_mutex_unlock(&eventMutex);
+		pthread_mutex_unlock(&autorotationMutex);
+	}
+	
+	printf("ending game loop\n");
+	
+	[pool release];
+	
+	return NULL;
+}
+
+
+void gdr_exitGameLoop()
+{
+	if (running_ == true)
+	{
+		pthread_mutex_lock(&eventMutex);
+		try
+		{
+			Event event(Event::APPLICATION_EXIT);
+			application_->broadcastEvent(&event);
+		}
+		catch (LuaException e)
+		{
+			luaError(e.what());
+		} 
+		pthread_mutex_unlock(&eventMutex);	
+
+		if (g_server)
+		{
+			NetworkEvent event;
+			g_server->tick(&event);
+		}
+	}
+
+#if THREADED_GAME_LOOP
+	gameLoopActive = false;
+	sem_post(sem);
+	void* thread_return = 0;
+	pthread_join(gameThreadHandle, &thread_return);
+	
+	sem_close(sem);
+	my_sem_unlink(sem_id);
+#endif
+}
+
+
+static void loadLuaFiles()
+{
+	{
+		FILE* fis = fopen(g_pathForFile("luafiles.txt"), "rt");
+		
+		if (fis)
+		{
+			while (true)
+			{
+				char line[256] = "";
+				fgets(line, 255, fis);
+				
+				char* c;		
+				if ((c = strrchr(line, '\r')))
+					*c = '\0';
+				if ((c = strrchr(line, '\n')))
+					*c = '\0';
+				
+				if (line[0] == '\0')
+					break;
+				
+				//printf("*%s*\n", line);
+				application_->loadFile(line);
+			}
+			
+			fclose(fis);
+		}
+	}
+	
+	Event event(Event::APPLICATION_START);
+	application_->broadcastEvent(&event);
+}
+
+void gdr_initialize(UIView* view, int width, int height, bool player)
+{
+	view_ = view;
+	width_ = width;
+	height_ = height;
+	player_ = player;
+	
+	if (player == false)
+	{
+		NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+		NSString* documentsDirectory = [paths objectAtIndex:0];
+		printf("%s\n", [documentsDirectory UTF8String]);
+		
+		NSString* temporaryDirectory = NSTemporaryDirectory();
+		printf("%s\n", [temporaryDirectory UTF8String]);
+		
+		NSString* resourceDirectory = [[NSBundle mainBundle] resourcePath];
+		printf("%s\n", [resourceDirectory UTF8String]);
+		
+		setDocumentsDirectory([documentsDirectory UTF8String]);
+		setTemporaryDirectory([temporaryDirectory UTF8String]);
+		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));
+	}
+	 
+	ghttp_init();
+	
+	soundImplementation_ = new SoundImplementation;
+	soundImplementation_->addSoundSystem<SoundSystemOpenAL>();
+	
+	setSoundInterface(soundImplementation_);
+	
+	initializeSound();
+	
+	SoundDecoder* wav = soundImplementation_->addSoundDecoder<SoundDecoderWav>(1);
+	soundImplementation_->addExtension("wav", wav);
+	
+	SoundDecoder* mp3 = soundImplementation_->addSoundDecoder<SoundDecoderAVAudioPlayer>(0x80000000);
+	soundImplementation_->addExtension("mp3", mp3);
+	
+	if (player)
+		g_server = new Server(15000);
+	else
+		g_server = NULL;
+	
+	application_ = new LuaApplication;
+	application_->setPrintFunc(printToServer);
+	application_->enableExceptions();
+	application_->initialize();		
+	application_->setResolution(width_ * contentScaleFactor_, height_ * contentScaleFactor_);
+	
+	Binder::disableTypeChecking();
+	
+	
+	uiTouchManager_ = new UITouchManager;	
+	uiTouchQueue_ = new TouchQueue;
+/*	
+	UIAccelerometer* accelerometer = [UIAccelerometer sharedAccelerometer];
+	accelerometer.delegate = self;
+	accelerometer.updateInterval = 1.0 / 60.0;
+	*/ // TODO (test edip bunu kaldir. cunku acceleromater gdr_setAccelerometer tarafindan setleniyor)
+	
+
+	
+	if (player == false)
+	{
+		// load properties.bin
+		{
+			FILE* fis = fopen(g_pathForFile("properties.bin"), "rb");
+			
+			if (fis)
+			{
+				fseek(fis, 0, SEEK_END);
+				int len = ftell(fis);
+				fseek(fis, 0, SEEK_SET);
+				
+				std::vector<char> buf(len);
+				fread(&buf[0], 1, len, fis);
+				fclose(fis);
+				
+				ByteBuffer buffer(&buf[0], buf.size());
+				
+				int scaleMode, logicalWidth, logicalHeight;
+				buffer >> scaleMode;
+				buffer >> logicalWidth;
+				buffer >> logicalHeight;
+				
+				application_->setLogicalDimensions(logicalWidth, logicalHeight);
+				application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
+				
+				int scaleCount;
+				buffer >> scaleCount;
+				std::vector<std::pair<std::string, float> > imageScales(scaleCount);
+				for (int i = 0; i < scaleCount; ++i)
+				{
+					buffer >> imageScales[i].first;
+					buffer >> imageScales[i].second;
+				}
+				
+				application_->setImageScales(imageScales);
+
+				int orientation;
+				buffer >> orientation;
+				application_->setOrientation((Orientation)orientation);
+				
+				int fps;
+				buffer >> fps;
+				g_setFps(fps);
+				
+				int retinaDisplay;
+				buffer >> retinaDisplay;
+				[view_ enableRetinaDisplay:(retinaDisplay ? YES : NO)];
+				if ([(UIView*)view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
+					contentScaleFactor_ = ((UIView*)view_).contentScaleFactor;
+				application_->setResolution(width_ * contentScaleFactor_, height_ * contentScaleFactor_);
+				
+				buffer >> autorotation_;
+			}
+		}
+		
+		bool licensed = (licenseKey_[15] == 'f' && licenseKey_[16] == 'f');
+		
+		// load lua files
+		if (licensed)
+		{
+			loadLuaFiles();
+		}
+		else
+		{
+			application_->getApplication()->setBackgroundColor(0, 0, 0);
+			splashScreen_ = new SplashScreen(application_->getApplication());
+			application_->getApplication()->stage()->addChild(splashScreen_);
+			splashScreen_->unref();
+		}
+	}	// if (player == false)
+	
+	
+	if (pthread_mutex_init(&eventMutex, NULL) == -1)
+	{
+		perror("pthread_mutex_init");
+	}
+	if (pthread_mutex_init(&touchMutex, NULL) == -1)
+	{
+		perror("pthread_mutex_init");
+	}
+	if (pthread_mutex_init(&autorotationMutex, NULL) == -1)
+	{
+		perror("pthread_mutex_init");
+	}
+#if THREADED_GAME_LOOP
+	printf("THREADED_GAME_LOOP\n");
+	[NSThread setThreadPriority:1.0];
+	sem = my_sem_open(&sem_id);
+	printf("sem_id: %d\n", sem_id);
+	pthread_create(&gameThreadHandle, NULL, gameThread, NULL);	
+#endif
+	
+	[view_ setFramebuffer];
+	if (application_)
+	{
+		application_->clearBuffers();
+		application_->renderScene(1);
+	}
+	drawIPs();
+	[view_ presentFramebuffer];
+}
+
+
+static void setProjectName(const char* projectName)
+{
+	printf("setProjectName: %s\n", projectName);
+	
+	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	std::string dir = [[paths objectAtIndex:0] UTF8String];
+
+	if (dir[dir.size() - 1] != '/')
+		dir += "/";
+	
+	dir += projectName;
+
+	printf("mkdir: %d\n", mkdir(dir.c_str(), 0755));
+	
+	dir += "/";
+
+	md5filename_ = dir + "md5.txt";
+	loadMD5();
+	
+	std::string documents = dir + "documents";
+	std::string temporary = dir + "temporary";
+	std::string resource = dir + "resource";
+
+	printf("documents: %s\n", documents.c_str());
+	printf("temporary: %s\n", temporary.c_str());
+	printf("resource: %s\n", resource.c_str());
+
+	printf("mkdir: %d\n", mkdir(documents.c_str(), 0755));
+	printf("mkdir: %d\n", mkdir(temporary.c_str(), 0755));
+	printf("mkdir: %d\n", mkdir(resource.c_str(), 0755));
+	
+	setDocumentsDirectory(documents.c_str());
+	setTemporaryDirectory(temporary.c_str());
+	setResourceDirectory(resource.c_str());
+
+	resourceDirectory_ = resource;
+}
+
+static void sendFileList()
+{
+	Server* server_ = g_server;
+		
+	ByteBuffer buffer;
+	
+	// type(byte) 6
+	// D or F, file (zero ended string), age (int)
+	// D or F, file (zero ended string), age (int)
+	// ....
+	
+	buffer.append((char)6);
+	
+	std::vector<std::string> files, directories;
+	getDirectoryListingR(resourceDirectory_.c_str(), &files, &directories);
+	
+	for (std::size_t i = 0; i < files.size(); ++i)
+	{
+		buffer.append('F');
+		buffer.append(files[i]);
+		int age = fileAge(pathForFileEx(resourceDirectory_.c_str(), files[i].c_str()));
+		buffer.append(age);
+
+		std::map<std::string, std::vector<unsigned char> >::iterator iter = md5_.find(files[i]);
+		if (iter == md5_.end())
+		{
+			calculateMD5(files[i].c_str());
+			saveMD5();
+			iter = md5_.find(files[i]);
+		}
+		buffer.append(&iter->second[0], 16);
+	}
+	
+	for (std::size_t i = 0; i < directories.size(); ++i)
+	{
+		buffer.append('D');
+		buffer.append(directories[i]);
+	}
+	
+	server_->sendData(buffer.data(), buffer.size());
+}
+
+void gdr_drawFrame()
+{
+	if (g_server != NULL)
+	{
+#if THREADED_GAME_LOOP
+		pthread_mutex_lock(&eventMutex);		
+#endif
+		
+		Server* server_ = g_server;
+		
+		int dataTotal = 0;
+		
+		while (true)
+		{
+			int dataSent0 = server_->dataSent();
+			int dataReceived0 = server_->dataReceived();
+			
+			NetworkEvent event;
+			server_->tick(&event);
+			
+			//		if (event.eventCode != eNone)
+			//			printf("%s\n", eventCodeString(event.eventCode));
+			
+			int dataSent1 = server_->dataSent();
+			int dataReceived1 = server_->dataReceived();
+			
+			if (event.eventCode == eDataReceived)
+			{
+				const std::vector<char>& data = event.data;
+				
+				switch (data[0])
+				{
+					case 0:			// create folder
+					{
+						std::string folderName = &data[1];
+						mkdir(g_pathForFile(folderName.c_str()), 0755);
+						break;
+					}
+						
+					case 1:			// create file
+					{
+						std::string fileName = &data[1];
+						const char* absfilename = g_pathForFile(fileName.c_str());
+						printf("%s\n", absfilename);
+						FILE* fos = fopen(absfilename, "wb");
+						int pos = 1 + fileName.size() + 1;
+						if (data.size() > pos)
+							fwrite(&data[pos], data.size() - pos, 1, fos);
+						fclose(fos);
+						calculateMD5(fileName.c_str());
+						saveMD5();
+						break;
+					}
+					case 2:
+					{
+						printf("play message is received\n");
+						
+						running_ = true;
+
+						std::vector<std::string> luafiles;
+						
+						ByteBuffer buffer(&data[0], data.size());
+						
+						char chr;
+						buffer >> chr;
+						
+						while (buffer.eob() == false)
+						{
+							std::string str;
+							buffer >> str;
+							luafiles.push_back(str);
+						}						
+						
+						
+						try
+						{
+							for (std::size_t i = 0; i < luafiles.size(); ++i)
+								application_->loadFile(luafiles[i].c_str());
+
+							Event event(Event::APPLICATION_START);
+							application_->broadcastEvent(&event);
+						}
+						catch (LuaException e)
+						{
+							luaError(e.what());
+						}
+						
+						break;
+					}
+					case 3:
+					{
+						printf("stop message is received\n");
+
+						if (running_ == true)
+						{
+							try
+							{
+								Event event(Event::APPLICATION_EXIT);
+								application_->broadcastEvent(&event);
+							}
+							catch (LuaException e)
+							{
+								printf("%s\n", e.what());
+								printToServer(e.what(), NULL);
+								printToServer("\n", NULL);
+							}
+						}
+
+						running_ = false;
+
+						application_->deinitialize();
+						application_->initialize();
+//						application_->setHardwareOrientation(orientation_);
+						application_->setResolution(width_ * contentScaleFactor_, height_ * contentScaleFactor_);
+						break;
+					}
+					case 5:
+					{
+						// deleteFiles();
+						break;
+					}	
+					case 7:
+					{
+						sendFileList();
+						break;
+					}
+					case 8:
+					{
+						// set project name
+						ByteBuffer buffer(&data[0], data.size());
+						
+						char chr;
+						buffer >> chr;
+						
+						std::string str;
+						buffer >> str;
+						
+						setProjectName(str.c_str());
+						break;
+					}
+					case 9:
+					{
+						// delete file
+						ByteBuffer buffer(&data[0], data.size());
+						
+						char chr;
+						buffer >> chr;
+						
+						std::string fileName;
+						buffer >> fileName;
+						
+						remove(g_pathForFile(fileName.c_str()));						
+
+						{
+							std::map<std::string, std::vector<unsigned char> >::iterator iter = md5_.find(fileName);
+							if (iter != md5_.end())
+							{
+								md5_.erase(iter);
+								saveMD5();
+							}
+						}
+						
+						break;
+					}
+					case 11:
+					{
+						ByteBuffer buffer(&data[0], data.size());
+
+						char chr;
+						buffer >> chr;
+
+						int scaleMode, logicalWidth, logicalHeight;
+						buffer >> scaleMode;
+						buffer >> logicalWidth;
+						buffer >> logicalHeight;
+
+						application_->deinitialize();
+						application_->initialize();
+//						application_->setHardwareOrientation(orientation_);
+//						application_->orientationChange(orientation_);
+						application_->setResolution(width_ * contentScaleFactor_, height_ * contentScaleFactor_);
+						application_->setLogicalDimensions(logicalWidth, logicalHeight);
+						application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
+
+						int scaleCount;
+						buffer >> scaleCount;
+						std::vector<std::pair<std::string, float> > imageScales(scaleCount);
+						for (int i = 0; i < scaleCount; ++i)
+						{
+							buffer >> imageScales[i].first;
+							buffer >> imageScales[i].second;
+						}
+
+						application_->setImageScales(imageScales);
+
+						int orientation;
+						buffer >> orientation;
+						application_->setOrientation((Orientation)orientation);
+						
+						int fps;
+						buffer >> fps;
+						g_setFps(fps);
+						
+						int retinaDisplay;
+						buffer >> retinaDisplay;
+						[view_ enableRetinaDisplay:(retinaDisplay ? YES : NO)];
+						if ([(UIView*)view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
+							contentScaleFactor_ = ((UIView*)view_).contentScaleFactor;
+						application_->setResolution(width_ * contentScaleFactor_, height_ * contentScaleFactor_);
+						
+						buffer >> autorotation_;
+						
+						break;
+					}
+				}
+			}
+			
+			int dataDelta = (dataSent1 - dataSent0) + (dataReceived1 - dataReceived0);
+			dataTotal += dataDelta;
+			
+			if (dataDelta == 0 || dataTotal > 1024)
+				break;
+		}
+		
+#if THREADED_GAME_LOOP
+		pthread_mutex_unlock(&eventMutex);
+#endif
+	}
+
+	
+#if THREADED_GAME_LOOP
+	pthread_mutex_lock(&eventMutex);
+#endif
+	if (splashScreen_ && splashScreen_->isFinished())
+	{
+		application_->getApplication()->stage()->removeChild(splashScreen_);
+		splashScreen_ = NULL;
+		application_->getApplication()->setBackgroundColor(1, 1, 1);
+		loadLuaFiles();
+	}
+#if THREADED_GAME_LOOP
+	pthread_mutex_unlock(&eventMutex);
+#endif	
+
+	
+#if THREADED_GAME_LOOP
+	
+	pthread_mutex_lock(&eventMutex);
+
+	if (application_->isErrorSet())
+	{
+		luaError(application_->getError());
+	}	
+	
+	pthread_mutex_lock(&touchMutex);
+	try
+	{
+		while (!uiTouchQueue_->empty())
+		{
+			TouchQueueElement* touches = uiTouchQueue_->front();
+			uiTouchQueue_->pop();
+			
+			TouchQueueElement* allTouches = uiTouchQueue_->front();
+			uiTouchQueue_->pop();
+			
+			switch (touches->type)
+			{
+				case 0:
+					if (application_)
+						application_->touchesBegan(touches->touches, allTouches->touches);
+					break;
+				case 1:
+					if (application_)
+						application_->touchesMoved(touches->touches, allTouches->touches);
+					break;
+				case 2:
+					if (application_)
+						application_->touchesEnded(touches->touches, allTouches->touches);
+					break;
+				case 3:
+					if (application_)
+						application_->touchesCancelled(touches->touches, allTouches->touches);
+					break;
+			}
+		}
+	}
+	catch (LuaException e)
+	{
+		luaError(e.what());
+	}
+	pthread_mutex_unlock(&touchMutex);
+
+	try
+	{
+		if (application_)
+			application_->enterFrame();
+	}
+	catch (LuaException e)
+	{
+		luaError(e.what());
+	}
+	pthread_mutex_unlock(&eventMutex);
+	
+	sem_post(sem);
+#else
+	try
+	{
+		if (application_)
+			application_->enterFrame();
+	}
+	catch (LuaException e)
+	{
+		luaError(e.what());
+	}
+	[view_ setFramebuffer];
+	if (application_)
+	{
+		application_->clearBuffers();
+		application_->renderScene(1);
+	}
+	drawIPs();
+	[view_ presentFramebuffer];
+#endif
+}
+
+void gdr_resize(int width, int height)
+{
+	width_ = width;
+	height_ = height;
+	application_->setResolution(width_ * contentScaleFactor_, height_ * contentScaleFactor_);	
+}
+
+void gdr_deinitialize()
+{
+	
+	application_->deinitialize();
+	delete application_;
+	application_ = 0;    
+		
+	ghttp_cleanup();
+	
+	deinitializeSound();
+	setSoundInterface(NULL);
+	delete soundImplementation_;
+	
+	delete g_server;
+	g_server = NULL;
+	
+	delete uiTouchManager_;
+	delete uiTouchQueue_;
+}
+
+void gdr_touchesBegan(NSSet* touches, NSSet* allTouches)
+{
+	NSArray* touchesArray = [touches allObjects];
+	static std::vector<UITouch*> uiTouches;
+	uiTouches.clear();
+	for (int i = 0; i < [touchesArray count]; ++i)
+	{
+		UITouch* touch = [touchesArray objectAtIndex:i];
+		uiTouches.push_back(touch);
+	}
+	
+	NSArray* allTouchesArray = [allTouches allObjects];
+	static std::vector<UITouch*> uiAllTouches;
+	uiAllTouches.clear();
+	for (int i = 0; i < [allTouchesArray count]; ++i)
+	{
+		UITouch* touch = [allTouchesArray objectAtIndex:i];
+		uiAllTouches.push_back(touch);
+	}
+	
+	
+	static std::vector<Touch*> touchesSet;
+	static std::vector<Touch*> allTouchesSet;
+	touchesSet.clear();
+	allTouchesSet.clear();
+	
+	uiTouchManager_->update((UIView*)view_, uiTouches, uiAllTouches, &touchesSet, &allTouchesSet);
+	pthread_mutex_lock(&touchMutex);
+	uiTouchQueue_->push(0, touchesSet);
+	uiTouchQueue_->push(0, allTouchesSet);
+	pthread_mutex_unlock(&touchMutex);	
+	
+/*	
+	pthread_mutex_lock(&eventMutex);
+	try
+	{
+		application_->touchesBegan(touchesSet, allTouchesSet);
+	}
+	catch (LuaException e)
+	{
+		running_ = false;
+
+		printf("%s\n", e.what());
+		printToServer(e.what(), NULL);
+		printToServer("\n", NULL);
+		application_->deinitialize();
+		application_->initialize();
+	}
+	pthread_mutex_unlock(&eventMutex);
+*/
+}
+
+void gdr_touchesMoved(NSSet* touches, NSSet* allTouches)
+{
+	NSArray* touchesArray = [touches allObjects];
+	static std::vector<UITouch*> uiTouches;
+	uiTouches.clear();
+	for (int i = 0; i < [touchesArray count]; ++i)
+	{
+		UITouch* touch = [touchesArray objectAtIndex:i];
+		uiTouches.push_back(touch);
+	}
+	
+	NSArray* allTouchesArray = [allTouches allObjects];
+	static std::vector<UITouch*> uiAllTouches;
+	uiAllTouches.clear();
+	for (int i = 0; i < [allTouchesArray count]; ++i)
+	{
+		UITouch* touch = [allTouchesArray objectAtIndex:i];
+		uiAllTouches.push_back(touch);
+	}
+	
+	
+	static std::vector<Touch*> touchesSet;
+	static std::vector<Touch*> allTouchesSet;
+	touchesSet.clear();
+	allTouchesSet.clear();
+	
+	uiTouchManager_->update((UIView*)view_, uiTouches, uiAllTouches, &touchesSet, &allTouchesSet);
+	pthread_mutex_lock(&touchMutex);
+	uiTouchQueue_->push(1, touchesSet);
+	uiTouchQueue_->push(1, allTouchesSet);
+	pthread_mutex_unlock(&touchMutex);
+	
+/*	
+	pthread_mutex_lock(&eventMutex);
+	
+	try	
+	{
+		application_->touchesMoved(touchesSet, allTouchesSet);
+	}
+	catch (LuaException e)
+	{
+		running_ = false;
+
+		printf("%s\n", e.what());
+		printToServer(e.what(), NULL);
+		printToServer("\n", NULL);
+		application_->deinitialize();
+		application_->initialize();
+	}
+	
+	pthread_mutex_unlock(&eventMutex);
+*/
+}
+void gdr_touchesEnded(NSSet* touches, NSSet* allTouches)
+{
+	NSArray* touchesArray = [touches allObjects];
+	static std::vector<UITouch*> uiTouches;
+	uiTouches.clear();
+	for (int i = 0; i < [touchesArray count]; ++i)
+	{
+		UITouch* touch = [touchesArray objectAtIndex:i];
+		uiTouches.push_back(touch);
+	}
+	
+	NSArray* allTouchesArray = [allTouches allObjects];
+	static std::vector<UITouch*> uiAllTouches;
+	uiAllTouches.clear();
+	for (int i = 0; i < [allTouchesArray count]; ++i)
+	{
+		UITouch* touch = [allTouchesArray objectAtIndex:i];
+		uiAllTouches.push_back(touch);
+	}
+	
+	
+	static std::vector<Touch*> touchesSet;
+	static std::vector<Touch*> allTouchesSet;
+	touchesSet.clear();
+	allTouchesSet.clear();
+	
+	uiTouchManager_->update((UIView*)view_, uiTouches, uiAllTouches, &touchesSet, &allTouchesSet);
+	pthread_mutex_lock(&touchMutex);
+	uiTouchQueue_->push(2, touchesSet);
+	uiTouchQueue_->push(2, allTouchesSet);
+	pthread_mutex_unlock(&touchMutex);
+	
+/*	
+	pthread_mutex_lock(&eventMutex);
+	try
+	{
+		application_->touchesEnded(touchesSet, allTouchesSet);
+	}
+	catch (LuaException e)
+	{
+		running_ = false;
+
+		printf("%s\n", e.what());
+		printToServer(e.what(), NULL);
+		printToServer("\n", NULL);
+		application_->deinitialize();
+		application_->initialize();
+	} 
+	pthread_mutex_unlock(&eventMutex);
+*/
+}
+void gdr_touchesCancelled(NSSet* touches, NSSet* allTouches)
+{
+	NSArray* touchesArray = [touches allObjects];
+	static std::vector<UITouch*> uiTouches;
+	uiTouches.clear();
+	for (int i = 0; i < [touchesArray count]; ++i)
+	{
+		UITouch* touch = [touchesArray objectAtIndex:i];
+		uiTouches.push_back(touch);
+	}
+	
+	NSArray* allTouchesArray = [allTouches allObjects];
+	static std::vector<UITouch*> uiAllTouches;
+	uiAllTouches.clear();
+	for (int i = 0; i < [allTouchesArray count]; ++i)
+	{
+		UITouch* touch = [allTouchesArray objectAtIndex:i];
+		uiAllTouches.push_back(touch);
+	}
+	
+	
+	static std::vector<Touch*> touchesSet;
+	static std::vector<Touch*> allTouchesSet;
+	touchesSet.clear();
+	allTouchesSet.clear();
+	
+	uiTouchManager_->update((UIView*)view_, uiTouches, uiAllTouches, &touchesSet, &allTouchesSet);
+	pthread_mutex_lock(&touchMutex);
+	uiTouchQueue_->push(3, touchesSet);
+	uiTouchQueue_->push(3, allTouchesSet);
+	pthread_mutex_unlock(&touchMutex);
+
+/*
+	pthread_mutex_lock(&eventMutex);
+	try
+	{
+		application_->touchesCancelled(touchesSet, allTouchesSet);
+	}
+	catch (LuaException e)
+	{
+		running_ = false;
+
+		printf("%s\n", e.what());
+		printToServer(e.what(), NULL);
+		printToServer("\n", NULL);
+		application_->deinitialize();
+		application_->initialize();
+	} 
+	pthread_mutex_unlock(&eventMutex);
+*/
+}
+
+void gdr_setAccelerometer(double x, double y, double z)
+{
+	::setAccelerometer(x, y, z);
+}
+
+void gdr_suspend()
+{
+	pthread_mutex_lock(&eventMutex);
+	try
+	{
+		Event event(Event::APPLICATION_SUSPEND);
+		application_->broadcastEvent(&event);
+	}
+	catch (LuaException e)
+	{
+		luaError(e.what());
+	} 
+	pthread_mutex_unlock(&eventMutex);	
+
+	if (g_server)
+	{
+		NetworkEvent event;
+		g_server->tick(&event);
+	}
+}
+
+void gdr_resume()
+{
+	pthread_mutex_lock(&eventMutex);
+	try
+	{
+		Event event(Event::APPLICATION_RESUME);
+		application_->broadcastEvent(&event);
+	}
+	catch (LuaException e)
+	{
+		luaError(e.what());
+	} 
+	pthread_mutex_unlock(&eventMutex);	
+}
+
+BOOL gdr_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation)
+{
+	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
+		
+	if (autorotation_ == 0)
+		return (interfaceOrientation == UIInterfaceOrientationPortrait);
+	else if (autorotation_ == 1 && !phone)
+		return (interfaceOrientation == UIInterfaceOrientationPortrait);
+	else if (autorotation_ == 2 && phone)
+		return (interfaceOrientation == UIInterfaceOrientationPortrait);
+		
+	if (application_->orientation() == eLandscapeLeft || application_->orientation() == eLandscapeRight)
+	{
+		return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft ||
+				interfaceOrientation == UIInterfaceOrientationLandscapeRight);
+	}
+	
+	return (interfaceOrientation == UIInterfaceOrientationPortrait || 
+			interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown);
+}
+
+void gdr_willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
+{
+	pthread_mutex_lock(&autorotationMutex);
+
+	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
+	
+	if ((autorotation_ == 0) || (autorotation_ == 1 && !phone) || (autorotation_ == 2 && phone))
+		application_->setHardwareOrientation(ePortrait);
+	else
+		application_->setHardwareOrientation(application_->orientation());
+}
+
+void gdr_didRotateFromInterfaceOrientation(UIInterfaceOrientation fromInterfaceOrientation)
+{
+	pthread_mutex_unlock(&autorotationMutex);
+}
+
+void gdr_didReceiveMemoryWarning()
+{
+	application_->collectGarbage();
+	application_->collectGarbage();
+}

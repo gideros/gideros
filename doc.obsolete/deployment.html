@@ -1,0 +1,95 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="css/bundle_common.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/bundle_github.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/extra.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="prettify/prettify.js"></script>
+<script type="text/javascript" src="prettify/lang-lua.js"></script>
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+
+<style>
+</style>
+
+<script>
+
+$(document).ready(function(){
+
+	$("code").addClass("prettyprint").addClass("lang-lua");
+
+
+});
+
+
+</script>
+
+</head>
+
+
+<body onload="prettyPrint()">
+
+<div class="site">
+<div id="readme" class="blob">
+<div class="wikistyle">
+
+
+
+
+
+	
+		<h1>Deployment</h1>
+
+<p>This document will discuss the build and deployment processes of Gideros Player
+and your application to iPhone/iPad devices. To follow these steps,
+you must be an approved Apple Developer for iOS and install the
+iOS SDK (requires Intel-based Mac running Snow Leopard). In the future,
+we are planning to wake up our Mac build server to allow developers to
+build Gideros Player and your projects for iPhone/iPad remotely on
+Windows without having to install the Xcode.</p>
+
+<p>Gideros Player for iOS devices allows you to see and test your application on device
+<strong>instantly</strong>. After you deploy and open Gideros Player on your iPhone or iPad,
+you see the IP of your device. Enter this IP from &ldquo;Player→Player Settings&rdquo; menu:</p>
+
+<p><img src="images/player_settings.png" alt="Player Settings" /></p>
+
+<p>When you press start button, your codes and asset files are transferred to
+your iOS device via WiFi and your application starts.</p>
+
+<h2>Deploy Gideros Player to iOS Devices</h2>
+
+<p>There are two projects <code>GiderosiPhonePlayer.zip</code> and <code>GiderosiPadPlayer.zip</code>
+comes with the installation. You need to extract these zip files and
+open, build, deploy these projects from Xcode.</p>
+
+<h2>Deploy Your Application to iOS Devices</h2>
+
+<p>To deploy your application to iPhone/iPad you need to:</p>
+
+<ol>
+<li>Export your application as Xcode project</li>
+<li>Build and deploy Xcode project to actual device</li>
+</ol>
+
+
+<p>First step is done through &ldquo;File→Export Project&rdquo; menu:</p>
+
+<p><img src="images/export_project.png" alt="Export Project" /></p>
+
+<p>For the second step, you need Intel-based Mac running Snow Leopard and
+Apple Developer License.</p>
+
+<p><strong>Note:</strong> Currently, exported Xcode project only includes the libraries for
+the real device and not for the simulator.</p>
+	
+
+
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

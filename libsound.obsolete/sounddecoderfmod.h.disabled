@@ -1,0 +1,87 @@
+#ifndef SOUNDDECODERFMOD_H
+#define SOUNDDECODERFMOD_H
+
+#include "soundimplementation.h"
+#include "soundsystemfmod.h"
+
+#include <fmod.h>
+#include <fmod_errors.h>
+
+#include <set>
+
+class SoundDecoderFMOD : public SoundDecoder
+{
+public:
+	SoundDecoderFMOD(unsigned int nextid, const SoundSystemFMOD& soundSystemFMOD) : nextid_(nextid), system_(soundSystemFMOD.system)
+	{
+		soundError_ = eNoSoundError;
+	}
+
+	virtual ~SoundDecoderFMOD() {}
+
+	virtual unsigned int createSound(const char* fileName);
+	virtual void destroySound(unsigned int sound);
+	virtual double getSoundLength(unsigned int sound);
+
+	virtual unsigned int playSound(unsigned int sound, double msec, int loops);
+	virtual void destroySoundChannel(unsigned int soundChannel);
+	virtual double getSoundChannelOffset(unsigned int soundChannel);
+	virtual void setSoundCompleteCallback(unsigned int soundChannel, void(*callback)(unsigned int, void*), void* data);
+
+	virtual SoundError getSoundError()
+	{
+		SoundError result = soundError_;
+		soundError_ = eNoSoundError;
+		return result;
+	}
+
+	virtual void tickSound()
+	{
+		FMOD_System_Update(system_);
+	}
+
+	virtual void destroyAll();
+
+	struct SoundChannel_t;
+
+	struct Sound_t
+	{
+		Sound_t() {}
+		Sound_t(FMOD_SOUND* sound, double length) : sound(sound), length(length) {}
+		FMOD_SOUND* sound;
+		double length;
+		std::set<SoundChannel_t*> soundChannels;
+	};
+
+	struct SoundChannel_t
+	{
+		SoundChannel_t() {}
+		SoundChannel_t(Sound_t* sound, FMOD_CHANNEL* channel, unsigned int id, bool isPlaying, double lastPosition) : sound(sound), channel(channel), id(id), isPlaying(isPlaying), lastPosition(lastPosition), callback(0), data(0) {}
+		Sound_t* sound;
+		FMOD_CHANNEL* channel;
+		unsigned int id;
+		bool isPlaying;
+		double lastPosition;
+		void(*callback)(unsigned int, void*);
+		void* data;
+	};
+
+private:
+	unsigned int nextid_;
+	std::map<unsigned int, Sound_t*> sounds_;
+	std::map<unsigned int, SoundChannel_t*> soundChannels_;
+
+private:
+	FMOD_SYSTEM* system_;
+
+	SoundError soundError_;
+
+	void setSoundError(SoundError soundError)
+	{
+		if (soundError_ == eNoSoundError)
+			soundError_ = soundError;
+	}
+};
+
+
+#endif

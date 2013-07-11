@@ -1,0 +1,7 @@
+<library>
+ <file file="anim.png"/>
+ <file file="anim.txt"/>
+ <file file="animatedsprite.lua"/>
+ <file file="main.lua"/>
+ <dependency from="main.lua" to="animatedsprite.lua"/>
+</library>

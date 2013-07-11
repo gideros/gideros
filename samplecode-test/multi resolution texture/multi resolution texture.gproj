@@ -1,0 +1,10 @@
+<project>
+ <properties autorotation="0" fps="60" scaleMode="5" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="480" logicalWidth="320" mouseTouchOrder="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="0" architecture="0">
+  <imageScales>
+   <scale suffix="@1.5" scale="1.5"/>
+  </imageScales>
+ </properties>
+ <file source="main.lua"/>
+ <file source="image@1.5.png"/>
+ <file source="image.png"/>
+</project>

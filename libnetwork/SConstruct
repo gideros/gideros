@@ -1,0 +1,6 @@
+#DefaultEnvironment(tools = ['mingw'])
+
+Library('libnetwork', Glob('libnetwork.cpp'), CPPPATH=[], CCFLAGS=['-Wall', '-g'])
+
+#Program('server', 'server.cpp', LIBS = ['libnetwork', 'wsock32'], LIBPATH=['.'])
+#Program('client', 'client.cpp', LIBS = ['libnetwork', 'wsock32'], LIBPATH=['.'])

@@ -1,0 +1,412 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="css/bundle_common.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/bundle_github.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/extra.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="prettify/prettify.js"></script>
+<script type="text/javascript" src="prettify/lang-lua.js"></script>
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+
+<style>
+</style>
+
+<script>
+
+$(document).ready(function(){
+
+	$("code").addClass("prettyprint").addClass("lang-lua");
+
+
+	$(function(){
+		$(".uplist").children("a.closed").click(function(){
+			if($(this).hasClass("closed"))
+			{
+				$(this).addClass("opened").removeClass("closed");
+				$(this).parent().find("ul").slideDown();
+			}
+			else
+			{
+				$(this).addClass("closed").removeClass("opened");
+				$(this).parent().find("ul").slideUp();
+			}
+		});
+	});
+
+});
+
+
+</script>
+
+</head>
+
+
+<body onload="prettyPrint()">
+
+<div class="site">
+<div id="readme" class="blob">
+<div class="wikistyle">
+
+
+<div id="contents">
+<h1>Table of Contents</h1>
+<ul>
+
+	<li class='uplist'><a href="#EventDispatcher" class='closed'><strong>EventDispatcher</strong></a>
+		<ul>
+			
+			<li><a href="#EventDispatcher:addEventListener">EventDispatcher:addEventListener</a></li>
+			
+			<li><a href="#EventDispatcher:removeEventListener">EventDispatcher:removeEventListener</a></li>
+			
+			<li><a href="#EventDispatcher:dispatchEvent">EventDispatcher:dispatchEvent</a></li>
+			
+			<li><a href="#EventDispatcher:hasEventListener">EventDispatcher:hasEventListener</a></li>
+			
+		</ul>
+	</li>
+
+	<li class='uplist'><a href="#Event" class='closed'><strong>Event</strong></a>
+		<ul>
+			
+			<li><a href="#Event.new">Event.new</a></li>
+			
+			<li><a href="#Event:getType">Event:getType</a></li>
+			
+			<li><a href="#Event:getTarget">Event:getTarget</a></li>
+			
+			<li><a href="#Event:stopPropagation">Event:stopPropagation</a></li>
+			
+		</ul>
+	</li>
+
+</ul>
+<p>&nbsp;</p>
+</div>
+
+
+
+
+	
+		<a name="EventDispatcher"></a><h1>EventDispatcher</h1>
+		<p>All classes that dispatch events inherit from <code>EventDispatcher</code>. The target of
+an event is a listener function and an optional data value.
+When an event is dispatched, the registered function is called.
+If the optional data value is given, it is used as a first parameter
+while calling the listener function.</p>
+
+<p>Event dispatching and event targets are the core part of the
+Gideros event model. Different event types (such as <code>Event.ENTER_FRAME</code>,
+<code>Event.TOUCHES_BEGIN</code> or <code>Event.MOUSE_DOwN</code>)
+flow through the scene tree hierarchy differently. When a touch or mouse event occurs,
+Gideros dispatches an event object into the event flow from the root of the scene tree.
+On the other hand, <code>Event.ENTER_FRAME</code> event is dispatched to all <code>Sprite</code> objects.</p>
+
+<p>If you want to define a class that dispatches events, you can inherit your class
+from <code>EventDispatcher</code>.</p>
+		
+			<h4>Example:</h4>
+			<pre><code>-- example 1
+ClassA = Core.class(EventDispatcher)
+ClassB = Core.class(EventDispatcher)
+
+function ClassA:funcA(event)
+    print("funcA", self, event:getType(), event:getTarget())
+end
+
+local a = ClassA.new()
+local b = ClassB.new()
+
+b:addEventListener("myevent", a.funcA, a)   -- when b dispatches an "myevent" event,
+                                            -- a.funcA will be called with 'a'
+                                            -- as first parameter
+
+b:dispatchEvent(Event.new("myevent"))       -- will print "funcA"
+
+
+-- example 2
+Ball = Core.class(Sprite)
+
+function Ball:onEnterFrame()
+    self:setX(self:getX() + 1)
+end
+
+ball = Ball.new()
+ball:addEventListener(Event.ENTER_FRAME, ball.onEnterFrame, ball)
+</code></pre>
+		
+	
+
+
+
+	
+		<a name="EventDispatcher:addEventListener"></a><h2>EventDispatcher:addEventListener(type, listener, data)</h2>
+		<p>Registers a listener function and an optional data value so that the listener function is called when an event
+of a particular type occurs.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>type:</strong>&nbsp;&nbsp;(string) The type of event.</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>listener:</strong>&nbsp;&nbsp;(function) The listener function that processes the event.</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>data:</strong>&nbsp;&nbsp;(optional) An optional data parameter that is passed as a first argument to the listener function.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+			<h4>See Also:</h4>
+			<p><a href="#EventDispatcher:removeEventListener">EventDispatcher:removeEventListener</a></p>
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="EventDispatcher:removeEventListener"></a><h2>EventDispatcher:removeEventListener(type, listener, data)</h2>
+		<p>Removes a listener from the <code>EventDispatcher</code> object. <code>removeEventListener()</code> function expects
+the same arguments with <code>addEventListener()</code> to remove the event. If there is no matching listener
+registered, a call to this function has no effect.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>type:</strong>&nbsp;&nbsp;(string) The type of event.</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>listener:</strong>&nbsp;&nbsp;(function) The listener object to remove.</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>data:</strong>&nbsp;&nbsp;The data parameter that is used while registering the event.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+			<h4>See Also:</h4>
+			<p><a href="#EventDispatcher:addEventListener">EventDispatcher:addEventListener</a></p>
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="EventDispatcher:dispatchEvent"></a><h2>EventDispatcher:dispatchEvent(event)</h2>
+		<p>Dispatches an event to this <code>EventDispatcher</code> instance.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>event:</strong>&nbsp;&nbsp;(Event) The `Event` object to be dispatched.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="EventDispatcher:hasEventListener"></a><h2>EventDispatcher:hasEventListener(type)</h2>
+		<p>Checks if the <code>EventDispatcher</code> object has a event listener registered for the specified type of event.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>type:</strong>&nbsp;&nbsp;(string) The type of event.</br>
+
+				
+			
+			</p>
+		
+
+		
+			<h4>Returns:</h4>
+			<p>A value of <code>true</code> if a listener of the specified type is registered; <code>false</code> otherwise.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Event"></a><h1>Event</h1>
+		<p>The objects of <code>Event</code> class contains information about an event that has occurred. <code>Event</code> objects
+are passed to event listeners when an event occurs.</p>
+
+<p>Usually event objects contains specific additional information about the event that has occured. For example,
+when an <code>Event.MOUSE_DOWN</code> event occurs, <code>x</code> and <code>y</code> fields contain the coordinates:</p>
+
+<pre><code>function onMouseDown(event)
+    print(event.x, event.y)
+end
+
+mysprite:addEventListener(Event.MOUSE_DOWN, onMouseDown)
+</code></pre>
+
+<p>Users can create their own events and dispatch through the event mechanism:</p>
+
+<pre><code>local event = Event.new("myevent")
+event.data1 = "12345"
+event.data2 = "abcde"
+
+mydispatcher:dispatchEvent(event)
+</code></pre>
+		
+	
+
+
+
+	
+		<a name="Event.new"></a><h2>Event.new(type)</h2>
+		<p>Creates a new <code>Event</code> object to be dispatched from an <code>EventDispatcher</code>.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>type:</strong>&nbsp;&nbsp;(string)</br>
+
+				
+			
+			</p>
+		
+
+		
+			<h4>Returns:</h4>
+			<p>New <code>Event</code> object.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Event:getType"></a><h2>Event:getType()</h2>
+		<p>Returns a string that represents the type of the event.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>Type of event.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Event:getTarget"></a><h2>Event:getTarget()</h2>
+		<p>Returns the element on which the event listener was registered.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>Target of event.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Event:stopPropagation"></a><h2>Event:stopPropagation()</h2>
+		<p>Disables the propagation of the current event in the scene tree hierarchy.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+#include "soundcontainer.h"
+#include "soundchannel.h"
+#include <cassert>
+
+SoundContainer& SoundContainer::instance()
+{
+	static SoundContainer soundContainer;
+	return soundContainer;
+}
+
+void SoundContainer::addSoundChannel(SoundChannel* soundChannel)
+{
+	assert(soundChannels_.find(soundChannel) == soundChannels_.end());
+
+	soundChannel->ref();
+	soundChannels_.insert(soundChannel);
+}
+
+void SoundContainer::removeSoundChannel(SoundChannel* soundChannel)
+{
+	assert(soundChannels_.find(soundChannel) != soundChannels_.end());
+
+	soundChannels_.erase(soundChannel);
+	soundChannel->unref();
+}
+
+
+void SoundContainer::stopAllSounds()
+{
+	std::vector<SoundChannel*> v(soundChannels_.begin(), soundChannels_.end());
+
+	for (std::size_t i = 0; i < v.size(); ++i)
+		v[i]->stop();
+}

@@ -1,0 +1,54 @@
+#ifndef B2CONTACTPOINTEVENT
+#define B2CONTACTPOINTEVENT
+
+#include <event.h>
+#include <eventvisitor.h>
+#include <Box2D/Box2D.h>
+
+// TODO: this will be obsolute
+class b2ContactPointEvent : public Event
+{
+public:
+	typedef EventType<b2ContactPointEvent> Type;
+
+	b2ContactPointEvent(const Type& type, const b2ContactPoint* point) : Event(type.type()), point(point)
+	{
+
+	}
+
+	const b2ContactPoint* point;
+
+	static Type ADD;
+	static Type PERSIST;
+	static Type REMOVE;
+
+	virtual void apply(EventVisitor* v);
+};
+
+
+class b2ContactEvent : public Event
+{
+public:
+	typedef EventType<b2ContactPointEvent> Type;
+
+
+b2ContactEvent(const Type& type, b2Contact* contact, const b2Manifold* oldManifold, const b2ContactImpulse* impulse) : Event(type.type()), contact(contact), oldManifold(oldManifold), impulse(impulse)
+	{
+
+	}
+
+
+	static Type BEGIN_CONTACT;
+	static Type END_CONTACT;
+	static Type PRE_SOLVE;
+	static Type POST_SOLVE;
+
+	b2Contact* contact;
+	const b2Manifold* oldManifold;
+	const b2ContactImpulse* impulse;
+
+	virtual void apply(EventVisitor* v);
+};
+
+
+#endif

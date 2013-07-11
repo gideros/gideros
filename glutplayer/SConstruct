@@ -1,0 +1,8 @@
+
+CPPPATH=['../lua/src', '../box2d_v2.1.2/Box2D', '../libpng', '../zlib', '../box2d/Include', '../2dsg', '../libplatform', '../libsound', '../libnetwork', '../luabinding']
+CCFLAGS = ['-g']
+
+LIBPATH=['../libnetwork', '../2dsg', '../libplatform', '../luabinding', '../lua/src', '../box2d_v2.1.2/Box2D/Build/Box2D', '../libpvrt', '../pystring']
+LIBS=['network', 'platform', 'luabinding', 'lua', 'Box2D', '2dsg', 'GL', 'png', 'pvrt', 'pystring', 'glut']
+
+Program('glutplayer', Glob('*.cpp'), CPPPATH=CPPPATH, CCFLAGS=CCFLAGS, LIBPATH=LIBPATH, LIBS=LIBS)

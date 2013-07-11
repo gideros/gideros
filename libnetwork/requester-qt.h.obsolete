@@ -1,0 +1,81 @@
+#ifndef REQUESTER_QT_H
+#define REQUESTER_QT_H
+
+#include <QObject>
+
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QAuthenticator>
+#include <QList>
+#include <QSslError>
+#include "requester.h"
+#include <deque>
+
+class RequestNetworkManager : public QObject
+{
+	Q_OBJECT
+
+public:
+	RequestNetworkManager();
+	virtual ~RequestNetworkManager();
+
+public:
+	int load(const char* url,
+			 req_callback_type callback,
+			 req_progress_callback_type progresscallback,
+			 void* callbackdata,
+			 const URLVariables* variables = NULL);
+
+	void close(int id);
+	void del(int id);
+	void deleteall();
+	void tick();
+
+private slots:
+	void authenticationRequired(QNetworkReply* reply, QAuthenticator* authenticator);
+	void finished(QNetworkReply* reply);
+//	void networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accessible);
+	void proxyAuthenticationRequired(const QNetworkProxy& proxy, QAuthenticator* authenticator);
+	void sslErrors(QNetworkReply* reply, const QList<QSslError>& errors);
+
+	void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+	void error(QNetworkReply::NetworkError code);
+	void finished();
+	void metaDataChanged();
+	void sslErrors(const QList<QSslError>& errors);
+	void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
+
+private:
+	struct NetworkReply
+	{
+		QNetworkReply* reply;
+		req_callback_type callback;
+		req_progress_callback_type progresscallback;
+		void* callbackdata;
+		QByteArray data;
+	};
+
+	QNetworkAccessManager* manager_;
+	int nextid_;
+	std::map<QNetworkReply*, int> nr1_;
+	std::map<int, NetworkReply*> nr2_;
+
+	struct CallbackQueueElement
+	{
+		int id;
+		int error;
+		void* ptr;
+		size_t size;
+
+		size_t bytesLoaded;
+		size_t bytesTotal;
+
+		req_callback_type callback;
+		req_progress_callback_type progresscallback;
+		void* callbackdata;
+	};
+
+	std::deque<CallbackQueueElement> callbackqueue_;
+};
+
+#endif

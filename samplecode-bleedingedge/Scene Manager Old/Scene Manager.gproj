@@ -1,0 +1,23 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="0">
+  <imageScales/>
+ </properties>
+ <file file="button.lua"/>
+ <file file="right-up.png"/>
+ <file file="right-down.png"/>
+ <file file="left-up.png"/>
+ <file file="left-down.png"/>
+ <file file="scene4.jpg"/>
+ <file file="scene4.lua"/>
+ <file file="scene3.lua"/>
+ <file file="scene2.lua"/>
+ <file file="scene1.lua"/>
+ <file file="scene1.jpg"/>
+ <file file="scene2.jpg"/>
+ <file file="scene3.jpg"/>
+ <file file="scenemanager.lua"/>
+ <file file="main.lua"/>
+ <dependency from="scenemanager.lua" to="scene3.lua"/>
+ <dependency from="scenemanager.lua" to="scene2.lua"/>
+ <dependency from="scenemanager.lua" to="scene1.lua"/>
+</project>

@@ -1,0 +1,37 @@
+<project>
+ <properties autorotation="0" fps="60" scaleMode="0" iosDevice="0" xcodeVersion="0" packageName="com.yourdomain.yourapp" logicalHeight="480" logicalWidth="320" retinaDisplay="0" assetsOnly="0" orientation="0" architecture="0">
+  <imageScales/>
+ </properties>
+ <folder name="gfx">
+  <file file="gfx/scene1.jpg"/>
+  <file file="gfx/scene2.jpg"/>
+  <file file="gfx/scene3.jpg"/>
+  <file file="gfx/scene4.jpg"/>
+  <file file="gfx/over-up.png"/>
+  <file file="gfx/over-down.png"/>
+  <file file="gfx/over with fade-up.png"/>
+  <file file="gfx/over with fade-down.png"/>
+  <file file="gfx/move-up.png"/>
+  <file file="gfx/move-down.png"/>
+  <file file="gfx/move with fade-up.png"/>
+  <file file="gfx/move with fade-down.png"/>
+  <file file="gfx/flip-up.png"/>
+  <file file="gfx/flip-down.png"/>
+  <file file="gfx/flip with shade-up.png"/>
+  <file file="gfx/flip with shade-down.png"/>
+  <file file="gfx/flip with fade-up.png"/>
+  <file file="gfx/flip with fade-down.png"/>
+  <file file="gfx/fade-up.png"/>
+  <file file="gfx/fade-down.png"/>
+  <file file="gfx/crossfade-up.png"/>
+  <file file="gfx/crossfade-down.png"/>
+ </folder>
+ <file file="scene1.lua"/>
+ <file file="scene2.lua"/>
+ <file file="scene3.lua"/>
+ <file file="scene4.lua"/>
+ <file file="button.lua"/>
+ <file file="easing.lua"/>
+ <file file="scenemanager.lua"/>
+ <file file="main.lua"/>
+</project>

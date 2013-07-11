@@ -1,0 +1,39 @@
+#ifndef SOUNDIMPLEMENTATION_H
+#define SOUNDIMPLEMENTATION_H
+
+#include "platform.h"
+#include <map>
+
+class SoundImplementation : public SoundInterface
+{
+public:
+	SoundImplementation(void);
+	virtual ~SoundImplementation(void);
+
+	virtual void initializeSound();
+	virtual void deinitializeSound();
+
+	virtual unsigned int loadSound(const char* fileName);
+	virtual void destroySound(unsigned int sound);
+	virtual double getSoundLength(unsigned int sound);
+
+	virtual unsigned int createSoundChannel(unsigned int sound);
+	virtual void destroySoundChannel(unsigned int soundChannel);
+	virtual void playSoundChannel(unsigned int soundChannel, double msec);
+	virtual void stopSoundChannel(unsigned int soundChannel);
+	virtual double getSoundChannelOffset(unsigned int soundChannel);
+	virtual SoundChannelState getSoundChannelState(unsigned int soundChannel);
+
+	virtual SoundError getSoundError();
+
+private:
+	friend class SoundDecoder;
+	SoundDecoder* soundDecoderWav_;
+	SoundDecoder* soundDecoderMp3_;
+	std::map<unsigned int, SoundDecoder*> decoderMap_;
+	SoundError soundError_;
+
+	void setSoundError(SoundError soundError);
+};
+
+#endif

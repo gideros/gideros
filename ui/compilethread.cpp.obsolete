@@ -1,0 +1,143 @@
+#include "compilethread.h"
+
+//extern "C"
+//{
+//#include "lua.h"
+//#include "lauxlib.h"
+//#include "lualib.h"
+//}
+#include "lua.hpp"
+
+#include <QFileInfo>
+#include <QDateTime>
+
+CompileThread::CompileThread(	const QStringList& fileNames,
+								bool skipUpToDates,
+								const QString& ext,
+								const QString& dir,
+								QObject *parent) :
+	QThread(parent),
+	fileNames_(fileNames),
+	skipUpToDates_(skipUpToDates),
+	ext_(ext),
+	dir_(dir)
+{
+	emptydir_ = dir.isEmpty();
+
+	if (!emptydir_)
+	{
+		QString dirname = dir_.dirName();
+		dir_.cdUp();
+		dir_.mkdir(dirname);
+		dir_.cd(dirname);
+	}
+}
+
+CompileThread::~CompileThread()
+{
+
+}
+
+static int writer(lua_State* L, const void* p, size_t size, void* u)
+{
+	return (fwrite(p,size,1,(FILE*)u)!=1) && (size!=0);
+}
+
+void CompileThread::run()
+{
+	int nSuccess = 0;
+	int nFail = 0;
+	int nUpToDate = 0;
+
+	QString dt = QDateTime::currentDateTime().toString("hh:mm:ss.zzz");
+
+	emit message((tr("---------- Compile started at %1 ----------") + "\n").arg(dt));
+
+	for (int i = 0; i < fileNames_.size(); ++i)
+	{
+		if (skipUpToDates_ == true)
+		{
+			QFileInfo fileInfo0(fileNames_[i]);
+			QString destfile;
+			if (emptydir_)
+				destfile = fileNames_[i] + ext_;
+			else
+				destfile = QDir::cleanPath(dir_.absoluteFilePath(QFileInfo(fileNames_[i]).fileName() + ext_));
+			QFileInfo fileInfo1(destfile);
+
+			if (fileInfo0.exists() == true && fileInfo1.exists() == true)
+			{
+				QDateTime dt0 = fileInfo0.lastModified(); // source file
+				QDateTime dt1 = fileInfo1.lastModified(); // target file
+				
+				// target must be rebuilt if if a source file's modification time is newer than the target file
+				if ((dt0 > dt1) == false)
+				{
+					nUpToDate++;
+					continue;
+				}
+			}
+		}
+
+		QFileInfo fileInfo(fileNames_[i]);
+
+		emit message(tr("Compiling ") + fileInfo.fileName() + "\n");
+
+		lua_State* L = lua_open();
+		if (luaL_loadfile(L, qPrintable(fileNames_[i])) != 0)
+		{
+			// error
+			emit message(QString(lua_tostring(L, -1)) + "\n");
+			lua_pop(L, 1);
+			nFail++;
+		}
+		else
+		{
+			// success, dump the file
+			QString destfile;
+			if (emptydir_)
+				destfile = fileNames_[i] + ext_;
+			else
+				destfile = QDir::cleanPath(dir_.absoluteFilePath(QFileInfo(fileNames_[i]).fileName() + ext_));
+			FILE* fos = fopen(qPrintable(destfile), "wb");
+			lua_dump(L, writer, fos);
+			fclose(fos);
+
+			lua_pop(L, 1);
+			nSuccess++;
+		}
+
+		lua_close(L);
+	}
+
+	emit message((tr("========== Compile: %1 succeeded, %2 failed, %3 up-to-date ==========") + "\n").arg(nSuccess).arg(nFail).arg(nUpToDate));
+
+	emit compileFinished(nFail == 0);
+}
+
+bool CompileThread::isUpToDate() const
+{
+	bool result = true;
+	for (int i = 0; i < fileNames_.size(); ++i)
+	{
+		QFileInfo fileInfo0(fileNames_[i]);
+		QString destfile;
+		if (emptydir_)
+			destfile = fileNames_[i] + ext_;
+		else
+			destfile = QDir::cleanPath(dir_.absoluteFilePath(QFileInfo(fileNames_[i]).fileName() + ext_));
+		QFileInfo fileInfo1(destfile);
+
+		if (fileInfo0.exists() == true && fileInfo1.exists() == true)
+		{
+			QDateTime dt0 = fileInfo0.lastModified(); // source file
+			QDateTime dt1 = fileInfo1.lastModified(); // target file
+				
+			// target must be rebuilt if if a source file's modification time is newer than the target file
+			if ((dt0 > dt1) == true)
+				result = false;
+		}
+	}
+
+	return result;
+}

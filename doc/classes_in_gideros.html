@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Documentation</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="/assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/gdocs-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/gdocs-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/gdocs-72.png">
+		<link rel="apple-touch-icon-precomposed" href="/assets/gdocs-57.png">
+
+		<!-- Le styles -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar" data-offset="20">
+
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+		 <div class="span4 bs-docs-sidebar">
+		<div id='contents' data-spy="affix" data-offset-top="150">
+		<h1>Table of Contents</h1>
+        <ul class="nav nav-list bs-docs-sidenav">
+          <li><a href="./getting_started.html"><i class="icon-chevron-right"></i> <strong>1. Getting started</strong></a></li>
+          <li><a href="./deployment.html"><i class="icon-chevron-right"></i> <strong>2. Deployment to device</strong></a></li>
+          <li><a href="./reference_manual.html" target='_blank'><i class="icon-chevron-right"></i> <strong>3. Reference manual</strong></a></li>
+          <li><a href="./classes_in_gideros.html"><i class="icon-chevron-right"></i> <strong>4. Classes in Gideros</strong></a></li>
+          <li><a href="./events.htm"><i class="icon-chevron-right"></i> <strong>5. Event system</strong></a></li>
+          <li><a href="./file_system.html"><i class="icon-chevron-right"></i> <strong>6. File system</strong></a></li>
+          <li><a href="./automatic_image_resolution.html"><i class="icon-chevron-right"></i> <strong>7. Automatic image resolution</strong></a></li>
+          <li><a href="./automatic_screen_scaling.html"><i class="icon-chevron-right"></i> <strong>8. Automatic screen scaling</strong></a></li>
+        </ul>
+		</div>
+      </div>
+      <div class="span8">
+		<h1>Classes in Gideros</h1>
+
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#intro" data-toggle="tab">Intro</a></li>
+  <li><a href="#instance" data-toggle="tab">Creating Instances</a></li>
+  <li><a href="#inheritance" data-toggle="tab">Inheritance</a></li>
+</ul>
+<div class="tab-content">
+<section class="tab-pane active" id="intro">
+
+<p>Lua does not support classes the way that languages like C++, Java and
+ActionScript do. But Lua is a multi-paradigm language and have roots from
+prototype-based languages. In Lua, each object can define its own behaviour
+through metatables. Therefore, it is possible to emulate OO programming and
+classes in Lua.</p>
+
+<p><em>(For the detailed discussion of object oriented programming in Lua, please refer to <a href="http://www.lua.org/pil/16.html">http://www.lua.org/pil/16.html</a>)</em></p>
+
+<p>Gideros follows the same paradigm in its API design. Each instance created by
+Gideros API is a Lua table with a metatable attached.</p>
+
+</section>
+
+<section class="tab-pane" id="instance">
+
+<h2>Creating Instances</h2>
+
+<p>Instances in Gideros is created through <code>new</code> function. For example, to create
+a <code>Sprite</code>, <code>Texture</code>, <code>Bitmap</code> and a <code>Timer</code> instance:</p>
+
+<pre><code>local sprite = Sprite.new()
+local texture = Texture.new("image.png")
+local bitmap = Bitmap.new(texture)
+local timer = Timer.new(1000, 0)
+</code></pre>
+
+</section>
+
+<section class="tab-pane" id="inheritance">
+<h2>Inheritance</h2>
+
+<p><code>Core.class</code> function is used to create your own classes through inheritance. You
+can create your own classes like:</p>
+
+<pre><code>MyClass = Core.class()
+</code></pre>
+
+<p>or inherit from Gideros API&rsquo;s own classes (<code>EventDispatcher</code>, <code>Sprite</code>, etc.). For example, you can create your EventDispatcher class as:</p>
+
+<pre><code>MyEventDispatcher = Core.class(EventDispatcher)
+</code></pre>
+
+<p>By using Inheritance, you can design and implement the visual elements of your game separately:</p>
+
+<pre><code>StartButton = Core.class(Sprite)     -- create your own start button class
+Menu = Core.class(Sprite)            -- create your own menu class
+
+Player = Core.class(Sprite)          -- create your own player class
+
+function Player:walk()
+    -- walk logic
+end
+
+function Player:jump()
+    -- jump logic
+end
+
+stage:addChild(Player.new())            -- create and add a player instance to the stage
+</code></pre>
+
+<p>When an instance is created, <code>init</code> function is called to do the initialization:</p>
+
+<pre><code>Player = Core.class(Sprite)
+
+function Player:init()
+    -- do the initialization of Player instance
+    self.health = 100
+    self.speed = 3
+end
+
+local player = Player.new()     -- after Player instance is created, init function is called
+</code></pre>
+
+<p>Whether to use inheritance or not is related to your programming taste. It&rsquo;s possible to implement
+a whole game without creating custom classes. You can refer to &ldquo;Jumping Ball&rdquo; and &ldquo;Jumping Balls&rdquo; examples
+to see the difference between designing your code with classes or not.</p>
+</section>	
+</div>
+	</div>
+	</div>
+
+  </div>
+
+
+
+    <!-- Footer
+    ================================================== -->
+	<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/jquery-1.8.3.min.js"><\/script>')</script>
+		<script src="js/bootstrap.js"></script>
+		<script type="text/javascript" src="js/fittext.js"></script>
+		<script type="text/javascript" src="js/prettify.js"></script>
+		<script type="text/javascript" src="js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.closed").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+				$("section h1").fitText(3, { minFontSize: '14px', maxFontSize: '28px' });
+				$("#contents h1").fitText(1, { minFontSize: '20px', maxFontSize: '28px' });
+				$("#contents li > a").fitText(0.1, { minFontSize: '12px', maxFontSize: '14px' });
+			});
+		</script>
+
+  </body>
+</html>

@@ -1,0 +1,386 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="css/bundle_common.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/bundle_github.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/extra.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="prettify/prettify.js"></script>
+<script type="text/javascript" src="prettify/lang-lua.js"></script>
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+
+<style>
+</style>
+
+<script>
+
+$(document).ready(function(){
+
+	$("code").addClass("prettyprint").addClass("lang-lua");
+
+
+	$(function(){
+		$(".uplist").children("a.closed").click(function(){
+			if($(this).hasClass("closed"))
+			{
+				$(this).addClass("opened").removeClass("closed");
+				$(this).parent().find("ul").slideDown();
+			}
+			else
+			{
+				$(this).addClass("closed").removeClass("opened");
+				$(this).parent().find("ul").slideUp();
+			}
+		});
+	});
+
+});
+
+
+</script>
+
+</head>
+
+
+<body onload="prettyPrint()">
+
+<div class="site">
+<div id="readme" class="blob">
+<div class="wikistyle">
+
+
+<div id="contents">
+<h1>Table of Contents</h1>
+<ul>
+
+	<li class='uplist'><a href="#Geolocation" class='closed'><strong>Geolocation > EventDispatcher</strong></a>
+		<ul>
+			
+			<li><a href="#Geolocation.isAvailable">Geolocation.isAvailable</a></li>
+			
+			<li><a href="#Geolocation.isHeadingAvailable">Geolocation.isHeadingAvailable</a></li>
+			
+			<li><a href="#Geolocation.setAccuracy">Geolocation.setAccuracy</a></li>
+			
+			<li><a href="#Geolocation.getAccuracy">Geolocation.getAccuracy</a></li>
+			
+			<li><a href="#Geolocation.setThreshold">Geolocation.setThreshold</a></li>
+			
+			<li><a href="#Geolocation.getThreshold">Geolocation.getThreshold</a></li>
+			
+			<li><a href="#Geolocation:start">Geolocation:start</a></li>
+			
+			<li><a href="#Geolocation:stop">Geolocation:stop</a></li>
+			
+			<li><a href="#Geolocation:startUpdatingLocation">Geolocation:startUpdatingLocation</a></li>
+			
+			<li><a href="#Geolocation:stopUpdatingLocation">Geolocation:stopUpdatingLocation</a></li>
+			
+			<li><a href="#Geolocation:startUpdatingHeading">Geolocation:startUpdatingHeading</a></li>
+			
+			<li><a href="#Geolocation:stopUpdatingHeading">Geolocation:stopUpdatingHeading</a></li>
+			
+		</ul>
+	</li>
+
+</ul>
+<p>&nbsp;</p>
+</div>
+
+
+
+
+	
+		<a name="Geolocation"></a><h1>Geolocation > EventDispatcher</h1>
+		<p>The <code>Geolocation</code> class is used to configure the parameters and dispatching of location and heading related events.</p>
+
+<h4>Events:</h4>
+
+<ul>
+<li><code>Event.LOCATION_UPDATE = "locationUpdate"</code></li>
+<li><code>Event.HEADING_UPDATE = "headingUpdate"</code></li>
+<li><code>Event.ERROR = "error"</code></li>
+</ul>
+
+
+<p><code>LOCATION_UPDATE</code> event contains the fields <code>latitude</code>, <code>longitude</code> and <code>altitude</code>.<br/>
+<code>HEADING_UPDATE</code> event contains the fields <code>magneticHeading</code> and <code>trueHeading</code>.</p>
+		
+			<h4>Example:</h4>
+			<pre><code>geolocation = Geolocation.new()
+
+local function onLocationUpdate(event)
+    print("location: ", event.latitude, event.longitude, event.altitude)
+end
+
+local function onHeadingUpdate(event)
+    print("heading: ", event.magneticHeading, event.trueHeading)
+end
+
+geolocation:addEventListener(Event.LOCATION_UPDATE, onLocationUpdate)
+geolocation:addEventListener(Event.HEADING_UPDATE, onHeadingUpdate)
+geolocation:start()
+</code></pre>
+		
+	
+
+
+
+	
+		<a name="Geolocation.isAvailable"></a><h2>Geolocation.isAvailable()</h2>
+		<p>Returns <code>true</code> if the device has the capability to determine current location and this capability is enabled, <code>false</code> otherwise.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p><code>true</code> if geolocation is available, <code>false</code> otherwise</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation.isHeadingAvailable"></a><h2>Geolocation.isHeadingAvailable()</h2>
+		<p>Returns <code>true</code> if the device has the capability to determine heading, <code>false</code> otherwise.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p><code>true</code> if heading is available, <code>false</code> otherwise</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation.setAccuracy"></a><h2>Geolocation.setAccuracy(accuracy)</h2>
+		<p>Sets the desired accuracy (in meters) of the location data. The receiver does its best to achieve the requested
+accuracy. However the actual accuracy is not guaranteed. The default value is 0 (best accuracy).</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>accuracy:</strong>&nbsp;&nbsp;(number) the desired accuracy</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation.getAccuracy"></a><h2>Geolocation.getAccuracy()</h2>
+		<p>Returns the previously set desired accuracy.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>The previously set desired accuracy</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation.setThreshold"></a><h2>Geolocation.setThreshold(threshold)</h2>
+		<p>Sets the minimum distance (in meters) threshold. If threshold distance is greater than 0,
+a location event will only be dispatched if the device moves by threshold. The default value
+is 0 (as frequently as possible).</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>threshold:</strong>&nbsp;&nbsp;(number) the minimum distance threshold</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation.getThreshold"></a><h2>Geolocation.getThreshold()</h2>
+		<p>Returns the previously set minimum distance threshold.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>The previously set minimum distance threshold</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation:start"></a><h2>Geolocation:start()</h2>
+		<p>Starts the generation of updates that report the current location and heading.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation:stop"></a><h2>Geolocation:stop()</h2>
+		<p>Stops the generation of updates that report the current location and heading.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation:startUpdatingLocation"></a><h2>Geolocation:startUpdatingLocation()</h2>
+		<p>Starts the generation of updates that report the current location.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation:stopUpdatingLocation"></a><h2>Geolocation:stopUpdatingLocation()</h2>
+		<p>Stops the generation of updates that report the current location.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation:startUpdatingHeading"></a><h2>Geolocation:startUpdatingHeading()</h2>
+		<p>Starts the generation of updates that report the heading.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Geolocation:stopUpdatingHeading"></a><h2>Geolocation:stopUpdatingHeading()</h2>
+		<p>Stops the generation of updates that report the heading.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

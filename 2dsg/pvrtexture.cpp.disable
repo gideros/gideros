@@ -1,0 +1,17 @@
+#include "pvrtexture.h"
+#include "OGLESTools.h"
+
+PVRTexture::PVRTexture(const char* filename)
+{
+	CPVRTResourceFile TexFile(filename);
+	if (!TexFile.IsOpen())
+		return;
+
+	if (PVRTTextureLoadFromPointer(TexFile.DataPtr(), &id) == PVR_SUCCESS)
+	{
+		const PVR_Texture_Header* header = static_cast<const PVR_Texture_Header *>(TexFile.DataPtr());
+
+		width = exwidth = header->dwWidth;
+		height = exheight = header->dwHeight;
+	}
+}

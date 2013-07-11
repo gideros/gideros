@@ -1,0 +1,73 @@
+Flurry iPad SDK v3.0.0
+Build: 53
+Released: 7/8/11
+
+Release notes for v3.0.0:
+------------------------------------------------
+The Flurry iOS 3.0.0 SDK introduces a new modularized library structure, separating Analytics API
+functionality and AppCircle API functionality into FlurryAnalytics and FlurryAppCircle libraries.
+Developers still get all the same functions and features as before but with the following added
+advantages of a new modularized library structure:
+- logical groupings of API functionality and features
+- reduced overhead of application size and memory footprint with independence to linking
+Advertisement libraries as desired
+
+The FlurryAnalytics library has a new API method to optionally set session reporting requests
+to HTTPS.
+
+Release notes for v2.8.5:
+------------------------------------------------
+First release of AppCircle Clips
+
+Release notes for v2.8.4:
+------------------------------------------------
+- Disabled check for Jailbroken devices
+
+Release notes for v2.8.3:
+------------------------------------------------
+- Added a new recommendation type (takeover) for iPhone AppCircle
+
+Release notes for v2.8.2:
+------------------------------------------------
+- Change multiple method signatures to standardize SDK methods in different platforms
+- Remove libFlurryWithLocation and replaced with a generalized setLocation() function 
+
+Release notes for v2.8.1:
+------------------------------------------------
+- Added support for AppCircle in iPad applications including a new recommendation type (take over)
+- Improved speed of reporting on session start
+
+Release notes for v2.7a:
+------------------------------------------------
+- Supports Xcode 3.2.3 and above
+- Configurable pause time before new session is started
+- Allow endTimedEvent to update event parameters
+- Change setAppVersion to be configured before session starts
+
+Release notes for v2.6a:
+------------------------------------------------
+- Improve memory usage in pause/resume cycle
+- Pausing the app will not send sessions by default
+
+Release notes for v2.5a:
+------------------------------------------------
+- Send sessions data when paused. 
+- May create a new session depending on length of pause or will continue the current session on resume. 
+
+Release notes for v2.4a:
+------------------------------------------------
+- Supports Xcode 3.2.3 and below
+- Removed device data collection including Model Name, OS Version and Firmware Version
+
+Release notes for v2.3a:
+------------------------------------------------
+- Support PinchMedia API
+- Adds the ability to:
+* Track page views
+* Time events
+* Acquire age demographics
+
+Release notes for v1.4:
+------------------------------------------------
+- First version of the Flurry iPad SDK for use with applications targeted exclusively for the iPad
+

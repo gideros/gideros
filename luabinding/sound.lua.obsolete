@@ -1,0 +1,3 @@
+function Sound:play(startTime, loops)
+	return SoundChannel.new(self, startTime, loops)
+end

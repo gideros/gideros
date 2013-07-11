@@ -1,0 +1,53 @@
+#ifndef BINDER_H
+#define BINDER_H
+
+//extern "C"
+//{
+//#include "lua.h"
+//#include "lauxlib.h"
+//#include "lualib.h"
+//}
+#include "lua.hpp"
+
+class Binder
+{
+public:
+	explicit Binder(lua_State* L) : L(L)
+	{
+	}
+	
+	void createClass(const char* classname,
+					 const char* basename,
+					 int (*constructor) (lua_State*),
+					 int (*destructor) (lua_State*),
+					 const luaL_reg* functionlist);
+
+	void pushInstance(const char* classname, void* ptr);
+
+	void* getInstance(const char* classname, int index = 1) const;
+
+	void setInstance(int index, void* ptr);
+
+	bool isInstanceOf(const char* classname, int index) const;
+
+#if 0
+	void pushInstance(void* ptr)
+	{
+		lua_pushlightuserdata(L, ptr);
+		lua_rawget(L, LUA_ENVIRONINDEX);
+	}
+#endif
+	
+	static void disableTypeChecking();
+	static void enableTypeChecking();
+
+	lua_State* L;
+
+protected:
+	static bool disableTypeChecking_;
+};
+
+/* convert a stack index to positive */
+#define abs_index(L, i)		((i) > 0 || (i) <= LUA_REGISTRYINDEX ? (i) : \
+					lua_gettop(L) + (i) + 1)
+#endif

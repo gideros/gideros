@@ -1,0 +1,187 @@
+#include "graphicsbinder.h"
+#include "graphics.h"
+#include "stackchecker.h"
+#include "sprite.h"
+
+GraphicsBinder::GraphicsBinder(lua_State* L)
+{
+	Binder binder(L);
+	
+	static const luaL_Reg functionList[] = {
+		{"beginFill", GraphicsBinder::beginFill},
+		{"endFill", GraphicsBinder::endFill},
+		{"moveTo", GraphicsBinder::moveTo},
+		{"lineTo", GraphicsBinder::lineTo},
+		{"lineStyle", GraphicsBinder::lineStyle},
+		{"clear", GraphicsBinder::clear},
+		{NULL, NULL},
+	};
+
+	binder.createClass("Graphics", NULL, create, destruct, functionList);
+}
+
+int GraphicsBinder::create(lua_State* L)
+{
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+	sprite->ref();
+	binder.pushInstance("Graphics", sprite);
+
+	return 1;
+}
+
+int GraphicsBinder::destruct(lua_State* L)
+{
+	void* ptr = *(void**)lua_touserdata(L, 1);
+	Sprite* sprite = static_cast<Sprite*>(ptr);
+	sprite->unref();
+
+	return 0;
+}
+
+int GraphicsBinder::beginFill(lua_State* L)
+{
+	StackChecker checker(L);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Graphics"));
+
+	switch (lua_gettop(L) - 1)
+	{
+	case 0:
+	case 1:
+	{
+		unsigned int color = luaL_checkinteger(L, 2);
+		sprite->graphics().beginFill(color);
+		break;
+	}
+	case 2:
+	{
+		unsigned int color = luaL_checkinteger(L, 2);
+		double alpha = luaL_checknumber(L, 3);
+		sprite->graphics().beginFill(color, alpha);
+		break;
+	}
+	case 3:
+	{
+		double r = luaL_checknumber(L, 2);
+		double g = luaL_checknumber(L, 3);
+		double b = luaL_checknumber(L, 4);
+		sprite->graphics().beginFill(r, g, b);
+		break;
+	}
+	default:
+	{
+		double r = luaL_checknumber(L, 2);
+		double g = luaL_checknumber(L, 3);
+		double b = luaL_checknumber(L, 4);
+		double a = luaL_checknumber(L, 5);
+		sprite->graphics().beginFill(r, g, b, a);
+		break;
+	}
+	}
+	
+	return 0;
+}
+
+int GraphicsBinder::endFill(lua_State* L)
+{
+	StackChecker checker(L);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Graphics"));
+
+	sprite->graphics().endFill();
+
+	return 0;
+}
+
+int GraphicsBinder::moveTo(lua_State* L)
+{
+	StackChecker checker(L);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Graphics"));
+
+	double x = luaL_checknumber(L, 2);
+	double y = luaL_checknumber(L, 3);
+
+	sprite->graphics().moveTo(x, y);
+
+	return 0;
+}
+
+int GraphicsBinder::lineTo(lua_State* L)
+{
+	StackChecker checker(L);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Graphics"));
+
+	double x = luaL_checknumber(L, 2);
+	double y = luaL_checknumber(L, 3);
+
+	sprite->graphics().lineTo(x, y);
+
+	return 0;
+}
+
+int GraphicsBinder::lineStyle(lua_State* L)
+{
+	StackChecker checker(L);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Graphics"));
+
+	double thickness = luaL_checknumber(L, 2);
+
+	switch (lua_gettop(L) - 2)
+	{
+	case 0:
+	case 1:
+	{
+		unsigned int color = luaL_checkinteger(L, 3);
+		sprite->graphics().lineStyle(thickness, color);
+		break;
+	}
+	case 2:
+	{
+		unsigned int color = luaL_checkinteger(L, 3);
+		double alpha = luaL_checknumber(L, 4);
+		sprite->graphics().lineStyle(thickness, color, alpha);
+		break;
+	}
+	case 3:
+	{
+		double r = luaL_checknumber(L, 3);
+		double g = luaL_checknumber(L, 4);
+		double b = luaL_checknumber(L, 5);
+		sprite->graphics().lineStyle(thickness, r, g, b);
+		break;
+	}
+	default:
+	{
+		double r = luaL_checknumber(L, 3);
+		double g = luaL_checknumber(L, 4);
+		double b = luaL_checknumber(L, 5);
+		double a = luaL_checknumber(L, 6);
+		sprite->graphics().lineStyle(thickness, r, g, b, a);
+		break;
+	}
+	}
+
+	return 0;
+}
+
+
+int GraphicsBinder::clear(lua_State* L)
+{
+	StackChecker checker(L, "GraphicsBinder::clear", 0);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Graphics"));
+
+	sprite->graphics().clear();
+
+	return 0;
+}

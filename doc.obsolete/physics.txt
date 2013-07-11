@@ -1,0 +1,2192 @@
+Class: b2
+
+To load the Box2D library, call `require "box2d"`. After loading Box2D library, `b2` table stores all 
+classes and functions related to Box2D physics library. 
+
+Category: Physics
+
+---------------------------------------
+
+Function: b2.setScale
+
+Box2D is tuned for MKS (meters-kilogram-second) units and the size of moving objects should roughly between 0.1 and 10 meters.
+If you directly use the pixels as your units, unfortunately this will lead to a poor simulation and possibly weird behavior.
+
+Gideros uses an internal scale system to convert between meters and pixels. By default, the value of this scale is 30
+which means 1 meter = 30 pixels. This is a global value and effects all the physics system. Therefore, it is recommended to set this
+value once before any physical objects are instantiated (e.g. right after calling `require "box2d"`)
+
+Parameters:
+	scale - (number) - the global pixels to meters scale
+
+See Also:
+[[b2.getScale]]
+
+---------------------------------------
+
+Function: b2.getScale
+
+Returns the global pixels to meters scale (Please refer to [[b2.setScale]] function for more information about pixels to meters scaling).
+
+Returns:
+The global pixels to meters scale
+
+See Also:
+[[b2.setScale]]
+
+---------------------------------------
+
+Function: b2.createRevoluteJointDef
+
+Creates and returns a revolute joint definition table with the bodies, local anchors, and reference angle using a world anchor point.
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a revolute joint).
+
+Parameters:
+	bodyA - (b2.Body) the first attached body
+	bodyB - (b2.Body) the second attached body
+	anchorx - (number) the x coordinate of the world anchor point
+	anchory - (number) the y coordinate of the world anchor point
+
+Returns:
+A new revolute joint definition table
+
+Example:
+	local jointdef = b2.createRevoluteJointDef(bodyA, bodyB, anchorx, anchory)
+	local joint = b2.World:createJoint(jointdef)
+
+See Also:
+[[b2.World:createJoint]]  
+[[b2.RevoluteJoint]]
+
+---------------------------------------
+
+Function: b2.createPrismaticJointDef
+
+Creates and returns a prismatic joint definition table with the bodies, anchors, axis, and reference angle using the world anchor and world axis.
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a prismatic joint).
+
+Parameters:
+	bodyA - (b2.Body) the first attached body
+	bodyB - (b2.Body) the second attached body
+	anchorx - (number) the x coordinate of the world anchor point
+	anchory - (number) the y coordinate of the world anchor point
+	axisx - (number) the x coordinate of the world axis
+	axisy - (number) the y coordinate of the world axis
+
+Returns:
+A new prismatic joint definition table
+
+See Also:
+[[b2.World:createJoint]]  
+[[b2.PrismaticJoint]]
+
+---------------------------------------
+
+Function: b2.createDistanceJointDef
+
+Creates and returns a distance joint definition table with the bodies, anchors, and length using the world anchors.
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a distance joint).
+
+Parameters:
+	bodyA - (b2.Body) the first attached body
+	bodyB - (b2.Body) the second attached body
+	anchorAx - (number) the x coordinate of the world anchor point of bodyA
+	anchorAy - (number) the y coordinate of the world anchor point of bodyA
+	anchorBx - (number) the x coordinate of the world anchor point of bodyB
+	anchorBy - (number) the y coordinate of the world anchor point of bodyB
+
+Returns:
+A new distance joint definition table
+
+See Also:
+[[b2.World:createJoint]]  
+[[b2.DistanceJoint]]
+
+---------------------------------------
+
+Function: b2.createPulleyJointDef
+
+Creates and returns a pulley joint definition table with the bodies, anchors, lengths, max lengths, and ratio using the world anchors.
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a pulley joint).
+
+Parameters:
+	bodyA - (b2.Body) the first attached body
+	bodyB - (b2.Body) the second attached body
+	groundAnchorAx - (number) the x coordinate of the first ground anchor in world coordinates. This point never moves.
+	groundAnchorAy - (number) the y coordinate of the first ground anchor in world coordinates. This point never moves.
+	groundAnchorBx - (number) the x coordinate of the second ground anchor in world coordinates. This point never moves.
+	groundAnchorBy - (number) the y coordinate of the second ground anchor in world coordinates. This point never moves.
+	anchorAx - (number) the x coordinate of the world anchor point of bodyA
+	anchorAy - (number) the y coordinate of the world anchor point of bodyA
+	anchorBx - (number) the x coordinate of the world anchor point of bodyB
+	anchorBy - (number) the y coordinate of the world anchor point of bodyB
+	ratio - (number) the pulley ratio, used to simulate a block-and-tackle
+
+Returns:
+A new pulley joint definition table
+
+See Also:
+[[b2.World:createJoint]]  
+[[b2.PulleyJoint]]
+
+---------------------------------------
+
+Function: b2.createMouseJointDef
+
+Creates and returns a mouse joint definition table with the bodies, world target point, maxForce and optional frequencyHz and dampingRatio.
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a mouse joint).
+
+Parameters:
+	bodyA - (b2.Body) the first attached body
+	bodyB - (b2.Body) the second attached body
+	targetx - (number) the x coordinate of the world target point
+	targety - (number) the y coordinate of the world target point
+	maxForce - (number) the maximum constraint force that can be exerted to move the candidate body
+	frequencyHz - (number, default = 5) the response speed
+	dampingRatio - (number, default = 0.7) the damping ratio. 0 = no damping, 1 = critical damping
+
+Returns:
+A new mouse joint definition table
+
+See Also:
+[[b2.World:createJoint]]  
+[[b2.MouseJoint]]
+
+---------------------------------------
+
+Function: b2.createGearJointDef
+
+Creates and returns a gear joint definition table.
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a gear joint).
+
+Parameters:
+	bodyA - (b2.Body) the first attached body
+	bodyB - (b2.Body) the second attached body
+	joint1 - (b2.Joint) the first revolute/prismatic joint attached to the gear joint
+	joint2 - (b2.Joint) the second revolute/prismatic joint attached to the gear joint
+	ratio - (number, default = 1) the gear ratio
+
+Returns:
+A new gear joint definition table
+
+See Also:
+[[b2.World:createJoint]]  
+[[b2.GearJoint]]
+
+---------------------------------------
+
+Function: b2.createWheelJointDef
+
+Creates and returns a wheel joint definition table.
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a wheel joint).
+
+Parameters:
+	bodyA - (b2.Body) the first attached body
+	bodyB - (b2.Body) the second attached body
+	anchorx - (number) the x coordinate of the world anchor point
+	anchory - (number) the y coordinate of the world anchor point
+	axisx - (number) the x coordinate of the world translation axis in bodyA
+	axisy - (number) the y coordinate of the world translation axis in bodyA
+
+Returns:
+A new wheel joint definition table
+
+See Also:
+[[b2.World:createJoint]]  
+[[b2.WheelJoint]]
+
+---------------------------------------
+
+Function: b2.createWeldJointDef
+
+Creates and returns a weld joint definition table with the bodies, anchors, and reference angle using a world anchor point.
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a weld joint).
+
+Parameters:
+	bodyA - (b2.Body) the first attached body
+	bodyB - (b2.Body) the second attached body
+	anchorAx - (number) the x coordinate of the world anchor point of bodyA
+	anchorAy - (number) the y coordinate of the world anchor point of bodyA
+	anchorBx - (number) the x coordinate of the world anchor point of bodyB
+	anchorBy - (number) the y coordinate of the world anchor point of bodyB
+
+Returns:
+A new weld joint definition table
+
+See Also:
+[[b2.World:createJoint]]  
+[[b2.WeldJoint]]
+
+---------------------------------------
+
+Function: b2.createFrictionJointDef
+
+Creates and returns a friction joint definition table with the bodies and local anchors using a world anchor point.
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a friction joint).
+
+Parameters:
+	bodyA - (b2.Body) the first attached body
+	bodyB - (b2.Body) the second attached body
+	anchorx - (number) the x coordinate of the world anchor point
+	anchory - (number) the y coordinate of the world anchor point
+
+Returns:
+A new friction joint definition table
+
+See Also:
+[[b2.World:createJoint]]  
+[[b2.FrictionJoint]]
+
+---------------------------------------
+
+Function: b2.createRopeJointDef
+
+Creates and returns a rope joint definition table with the bodies and local anchors using a world anchor point.
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a rope joint).
+
+Parameters:
+	bodyA - (b2.Body) the first attached body
+	bodyB - (b2.Body) the second attached body
+	anchorAx - (number) the x coordinate of the world anchor point of bodyA
+	anchorAy - (number) the y coordinate of the world anchor point of bodyA
+	anchorBx - (number) the x coordinate of the world anchor point of bodyB
+	anchorBy - (number) the y coordinate of the world anchor point of bodyB
+	maxLength - (number) the maximum length of the rope 
+
+Returns:
+A new rope joint definition table
+
+See Also:
+[[b2.World:createJoint]]  
+[[b2.RopeJoint]]
+
+---------------------------------------
+
+Class: b2.World > EventDispatcher
+The `b2.World` class inherits from the following class: `EventDispatcher`.
+
+The `b2.World` class manages all physics entities and dynamic simulation. It is possible to create and manage more than one `b2.World` instance.
+
+Category: Physics
+
+---------------------------------------
+
+Function: b2.World.new
+
+Creates a new `b2.World` object. You can create more then one `b2.World` object to manage independent worlds.
+
+Parameters:
+	gravityx - (number) the x component the gravity
+	gravityy - (number) the y component the gravity
+	doSleep - (boolean, default = true) improve performance by not simulating inactive bodies
+
+Returns:
+A new `b2.World` object.
+	
+---------------------------------------
+
+Function: b2.World:createBody
+
+Creates a rigid body given a definition. The body definition is given as an ordinary table. The fields of the body definition table are:
+
+* **type**: (number) The body type: `b2.STATIC_BODY`, `b2.KINEMATIC_BODY`, or `b2.DYNAMIC_BODY`. Note: if a dynamic body would have zero mass, the mass is set to one.
+* **position**: (table) The world position of the body (see the example below to understand how this table is set). Avoid creating bodies at the origin since this can lead to many overlapping shapes.
+* **angle**: (number) The world angle of the body in radians.
+* **linearVelocity**: (table) The linear velocity of the body's origin in world co-ordinates (see the example below to understand how this table is set).
+* **angularVelocity**: (number) The angular velocity of the body.
+* **linearDamping**: (number) Linear damping is use to reduce the linear velocity. The damping parameter can be larger than 1.0 but the damping effect becomes sensitive to the time step when the damping parameter is large.
+* **angularDamping**: (number) Angular damping is use to reduce the angular velocity. The damping parameter can be larger than 1.0 but the damping effect becomes sensitive to the time step when the damping parameter is large.
+* **allowSleep**: (boolean) Set this flag to false if this body should never fall asleep. Note that this increases CPU usage.
+* **awake**: (boolean) Is this body initially awake or sleeping?
+* **fixedRotation**: (boolean) Should this body be prevented from rotating? Useful for characters.
+* **bullet**: (boolean) Is this a fast moving body that should be prevented from tunneling through other moving bodies? Note that all bodies are prevented from tunneling through kinematic and static bodies. This setting is only considered on dynamic bodies. **Warning:** You should use this flag sparingly since it increases processing time.
+* **active**: (boolean) Does this body start out active?
+* **gravityScale**: (number) Scale the gravity applied to this body.
+
+The unset fields gets default values.
+
+**Warning:** This function is locked during callbacks.
+
+Parameters:
+	bodyDef - (table)
+
+Returns:
+The created `b2.Body` instance.
+
+Example:
+
+	local body = world:createBody{
+		type = b2.STATIC_BODY,
+		position = {x=0, y=0.5},
+		angle = math.pi/4,
+		linearVelocity = {x=0.1, y=0.2},
+	}
+
+---------------------------------------
+
+Function: b2.World:destroyBody
+
+Destroys a rigid body. This function is locked during callbacks.
+
+**Warning:**
+
+* This automatically deletes all associated shapes and joints.
+* This function is locked during callbacks.
+
+Parameters:
+	body - (b2.Body) body to be destroyed
+
+---------------------------------------
+
+Function: b2.World:step
+
+Take a time step. This performs collision detection, integration, and constraint solution.
+
+Parameters:
+	timeStep - (number) the amount of time to simulate, this should not vary
+	velocityIterations - (number) for the velocity constraint solver
+	positionIterations - (number) for the position constraint solver
+
+---------------------------------------
+
+Function: b2.World:clearForces
+
+Call this after you are done with time steps to clear the forces. You normally call this after each call to `b2.World:step`,
+unless you are performing sub-steps. By default, forces will be automatically cleared, so you don't need to call this function.
+
+---------------------------------------
+
+Function: b2.World:setGravity
+
+Sets the gravity vector.
+
+Parameters:
+	gravityx - (number) the x component the gravity
+	gravityy - (number) the y component the gravity
+
+---------------------------------------
+
+Function: b2.World:getGravity
+
+Returns the gravity vector.
+
+Returns:
+x and y component of gravity vector.
+
+---------------------------------------
+
+Function: b2.World:queryAABB
+
+Query the world for all fixtures that potentially overlap the provided AABB.
+
+Parameters:
+	lowerx - (number) the lower x coordinate of the query box
+	lowery - (number) the lower y coordinate of the query box
+	upperx - (number) the upper x coordinate of the query box
+	uppery - (number) the upper y coordinate of the query box
+
+Returns:
+Array of fixtures that potentially overlaps the provided AABB
+
+---------------------------------------
+
+Function: b2.World:rayCast
+
+Ray-cast the world for all fixtures in the path of the ray. Your callback controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. 
+
+Listener function is called for each fixture found in the query and accepts 6 parameters (7 if data parameter is provided):
+
+1. the fixture hit by the ray
+2. the x coordinate of the point of initial intersection 
+3. the y coordinate of the point of initial intersection
+4. the x coordinate of the normal vector at the point of intersection 
+5. the y coordinate of the normal vector at the point of intersection 
+6. fraction
+
+You control how the ray cast proceeds by returning a number:
+
+* return no value or -1: ignore this fixture and continue
+* return 0: terminate the ray cast
+* return fraction: clip the ray to this point
+* return 1: don't clip the ray and continue	
+
+
+Parameters:
+	x1 - (number) the x coordinate of the ray starting point 
+	y1 - (number) the y coordinate of the ray starting point 
+	x2 - (number) the x coordinate of the ray ending point
+	y2 - (number) the y coordinate of the ray ending point
+	listener - (function) the listener function that processes the results
+	data - (optional) an optional data parameter that is passed as a first argument to the listener function
+
+---------------------------------------
+
+Function: b2.World:createJoint
+
+Creates a joint given a definition. All 10 types of joints is created by using this function:
+
+
+### Revolute Joint
+
+Revolute joint definition. This requires defining an anchor point where the bodies are joined. The definition uses
+local anchor points so that the initial configuration can violate the constraint slightly. You also need to specify the
+initial relative angle for joint limits. This helps when saving and loading a game. The local anchor points are measured from
+the body's origin rather than the center of mass because:
+
+1. you might not know where the center of mass will be.
+2. if you add/remove shapes from a body
+
+and recompute the mass, the joints will be broken.
+
+* **type**: (number) b2.REVOLUTE_JOINT
+* **bodyA**: (b2.Body) The first attached body.
+* **bodyB**: (b2.Body) The second attached body.
+* **collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.
+* **localAnchorA**: (table) The local anchor point relative to bodyA's origin.
+* **localAnchorB**: (table) The local anchor point relative to bodyB's origin.
+* **referenceAngle**: (number) The bodyB angle minus bodyA angle in the reference state (radians).
+* **enableLimit**: (boolean) A flag to enable joint limits.
+* **lowerAngle**: (number) The lower angle for the joint limit (radians).
+* **upperAngle**: (number) The upper angle for the joint limit (radians).
+* **enableMotor**: (boolean) A flag to enable the joint motor.
+* **motorSpeed**: (number) The desired motor speed. Usually in radians per second.
+* **maxMotorTorque**: (number) The maximum motor torque used to achieve the desired motor speed. Usually in N-m.
+
+Also, you can use [[b2.createRevoluteJointDef]] function to create a revolute joint definiton table easier.
+
+
+### Prismatic Joint
+
+Prismatic joint definition. This requires defining a line of motion using an axis and an anchor point. The definition uses
+local anchor points and a local axis so that the initial configuration can violate the constraint slightly. The joint translation is
+zero when the local anchor points coincide in world space. Using local anchors and a local axis helps when saving and loading a game.
+
+* **type**: (number) b2.PRISMATIC_JOINT
+* **bodyA**: (b2.Body) The first attached body.
+* **bodyB**: (b2.Body) The second attached body.
+* **collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.
+* **localAnchorA**: (table) The local anchor point relative to bodyA's origin.
+* **localAnchorB**: (table) The local anchor point relative to bodyB's origin.
+* **localAxisA**: (table) The local translation axis in bodyA.
+* **referenceAngle**: (number) The body2 angle minus body1 angle in the reference state (radians).
+* **enableLimit**: (boolean) A flag to enable joint limits.
+* **lowerTranslation**: (number) The lower translation limit, usually in meters.
+* **upperTranslation**: (number) The upper translation limit, usually in meters.
+* **enableMotor**: (boolean) A flag to enable the joint motor.
+* **maxMotorForce**: (number) The maximum motor torque, usually in N-m.
+* **motorSpeed**: (number) The desired motor speed in radians per second.
+
+Also, you can use [[b2.createPrismaticJointDef]] function to create a prismatic joint definiton table easier.
+
+
+### Distance Joint
+
+Distance joint definition. This requires defining an anchor point on both bodies and the non-zero length of the distance joint.
+The definition uses local anchor points so that the initial configuration can violate the constraint slightly.
+This helps when saving and loading a game.
+
+* **type**: (number) b2.DISTANCE_JOINT
+* **bodyA**: (b2.Body) The first attached body.
+* **bodyB**: (b2.Body) The second attached body.
+* **collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.
+* **localAnchorA**: (table) The local anchor point relative to bodyA's origin.
+* **localAnchorB**: (table) The local anchor point relative to bodyB's origin.
+* **length**: (number) The natural length between the anchor points. Do not use a zero or short length.
+* **frequencyHz**: (number) The mass-spring-damper frequency in Hertz.
+* **dampingRatio**: (number) The damping ratio. 0 = no damping, 1 = critical damping.
+
+Also, you can use [[b2.createDistanceJointDef]] function to create a distance joint definiton table easier.
+
+
+### Pulley Joint
+
+Pulley joint definition. This requires two ground anchors, two dynamic body anchor points, max lengths for each side, and a pulley ratio.
+
+* **type**: (number) b2.PULLEY_JOINT
+* **bodyA**: (b2.Body) The first attached body.
+* **bodyB**: (b2.Body) The second attached body.
+* **collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.
+* **groundAnchorA**: (table) The first ground anchor in world coordinates. This point never moves.
+* **groundAnchorB**: (table) The second ground anchor in world coordinates. This point never moves.
+* **localAnchorA**: (table) The local anchor point relative to bodyA's origin.
+* **localAnchorB**: (table) The local anchor point relative to bodyB's origin.
+* **lengthA**: (number) The a reference length for the segment attached to bodyA.
+* **lengthB**: (number) The a reference length for the segment attached to bodyB.
+* **ratio**: (number) The pulley ratio, used to simulate a block-and-tackle.
+
+Also, you can use [[b2.createPulleyJointDef]] function to create a pulley joint definiton table easier.
+
+
+### Mouse Joint
+
+Mouse joint definition. This requires a world target point, tuning parameters, and the time step.
+
+* **type**: (number) b2.MOUSE_JOINT
+* **bodyA**: (b2.Body) The first attached body.
+* **bodyB**: (b2.Body) The second attached body.
+* **collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.
+* **target**: (table) The initial world target point. This is assumed to coincide with the body anchor initially.
+* **maxForce**: (number) The maximum constraint force that can be exerted to move the candidate body. Usually you will express as some multiple of the weight (multiplier * mass * gravity).
+* **frequencyHz**: (number) The response speed.
+* **dampingRatio**: (number) The damping ratio. 0 = no damping, 1 = critical damping.
+
+Also, you can use [[b2.createMouseJointDef]] function to create a mouse joint definiton table easier.
+
+### Gear Joint
+
+Gear joint definition. This definition requires two existing revolute or prismatic joints (any combination will work). The provided joints
+must attach a dynamic body to a static body.
+
+* **type**: (number) b2.GEAR_JOINT
+* **bodyA**: (b2.Body) The first attached body.
+* **bodyB**: (b2.Body) The second attached body.
+* **collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.
+* **joint1**: (b2.Joint) The first revolute/prismatic joint attached to the gear joint.
+* **joint2**: (b2.Joint) The second revolute/prismatic joint attached to the gear joint.
+* **ratio**: (number) The gear ratio.
+
+Also, you can use [[b2.createGearJointDef]] function to create a gear joint definiton table easier.
+
+### Wheel Joint
+
+Wheel joint definition. This requires defining a line of motion using an axis and an anchor point. 
+The definition uses local anchor points and a local axis so that the initial configuration can violate 
+the constraint slightly. The joint translation is zero when the local anchor points coincide in world space. 
+Using local anchors and a local axis helps when saving and loading a game.
+
+* **type**: (number) b2.WHEEL_JOINT
+* **bodyA**: (b2.Body) The first attached body.
+* **bodyB**: (b2.Body) The second attached body.
+* **collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.
+* **localAnchorA**: (table) The local anchor point relative to bodyA's origin.
+* **localAnchorB**: (table) The local anchor point relative to bodyB's origin.
+* **localAxisA**: (table) The local translation axis in bodyA.
+* **enableMotor**: (boolean) A flag to enable the joint motor.
+* **maxMotorTorque**: (number) The maximum motor torque, usually in N-m. 
+* **motorSpeed**: (number) The desired motor speed in radians per second. 
+* **frequencyHz**: (number) Suspension frequency, zero indicates no suspension.
+* **dampingRatio**: (number) Suspension damping ratio, one indicates critical damping. 
+
+Also, you can use [[b2.createWheelJointDef]] function to create a wheel joint definiton table easier.
+
+### Weld Joint
+
+Weld joint definition. You need to specify local anchor points where they are attached and the relative
+body angle. The position of the anchor points is important for computing the reaction torque.
+
+* **type**: (number) b2.WELD_JOINT
+* **bodyA**: (b2.Body) The first attached body.
+* **bodyB**: (b2.Body) The second attached body.
+* **collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.
+* **localAnchorA**: (table) The local anchor point relative to bodyA's origin.
+* **localAnchorB**: (table) The local anchor point relative to bodyB's origin.
+* **referenceAngle**: (number) The bodyB angle minus bodyA angle in the reference state (radians).
+
+Also, you can use [[b2.createWeldJointDef]] function to create a weld joint definiton table easier.
+
+### Friction Joint
+
+Friction joint definition.
+
+* **type**: (number) b2.LINE_JOINT
+* **bodyA**: (b2.Body) The first attached body.
+* **bodyB**: (b2.Body) The second attached body.
+* **collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.
+* **localAnchorA**: (table) The local anchor point relative to bodyA's origin.
+* **localAnchorB**: (table) The local anchor point relative to bodyB's origin.
+* **maxForce**: (number) The maximum friction force in N.
+* **maxTorque**: (number) The maximum friction torque in N-m.
+
+
+### Rope Joint
+
+Rope joint definition. This requires two body anchor points and a maximum length.
+
+* **type**: (number) b2.ROPE_JOINT
+* **bodyA**: (b2.Body) The first attached body.
+* **bodyB**: (b2.Body) The second attached body.
+* **collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.
+* **localAnchorA**: (table) The local anchor point relative to bodyA's origin.
+* **localAnchorB**: (table) The local anchor point relative to bodyB's origin.
+* **maxLength**: (number) The maximum length of the rope.
+
+Also, you can use [[b2.createRopeJointDef]] function to create a rope joint definiton table easier.
+
+Parameters:
+	jointDef - (table)
+
+Returns:
+The created joint instance.
+
+---------------------------------------
+
+Function: b2.World:destroyJoint
+
+Destroy a joint. This may cause the connected bodies to begin colliding. 
+
+**Warning:** This function is locked during callbacks.
+
+Parameters:
+  joint - (b2.Joint) joint to be destroyed
+
+---------------------------------------
+
+Function: b2.World:setDebugDraw
+
+Registers a b2.DebugDraw instance for debug drawing.
+
+Parameters:
+
+
+See Also:
+[[b2.DebugDraw]]
+
+---------------------------------------
+
+Class: b2.Body
+
+A rigid body. These are created via `b2.World:createBody`.
+
+Category: Physics
+
+---------------------------------------
+
+Function: b2.Body:getPosition
+
+Returns the world body origin position.
+
+Returns:
+x and y coordinates of the position
+
+---------------------------------------
+
+Function: b2.Body:setPosition
+
+Sets the world body origin position.
+
+Parameters:
+	x - (number) x coordinate of the position
+	y - (number) y coordinate of the position
+
+---------------------------------------
+
+Function: b2.Body:setAngle
+
+Sets the current world rotation angle in radians.
+
+Parameters:
+	angle - (number) world rotation angle in radians
+
+---------------------------------------
+
+Function: b2.Body:getAngle
+
+Returns the current world rotation angle in radians.
+
+Returns:
+Current body angle in radians
+
+---------------------------------------
+
+Function: b2.Body:getLinearVelocity
+
+Returns the linear velocity of the center of mass.
+
+Returns:
+x and y coordinates of the linear velocity
+
+---------------------------------------
+
+Function: b2.Body:setLinearVelocity
+
+Sets the linear velocity of the center of mass.
+
+Parameters:
+	x - (number) x coordinate of the linear velocity
+	y - (number) y coordinate of the linear velocity
+
+
+---------------------------------------
+
+Function: b2.Body:setAngularVelocity
+
+Sets the angular velocity.
+
+Parameters:
+	omega - (number) the new angular velocity in radians/second
+
+---------------------------------------
+
+Function: b2.Body:getAngularVelocity
+
+Returns the angular velocity.
+
+Returns:
+Angular velocity in radians/second
+
+---------------------------------------
+
+Function: b2.Body:createFixture
+
+Creates a fixture and attach it to this body. If the density is non-zero, this function automatically
+updates the mass of the body. Contacts are not created until the next time step. The fixture definition is given
+as a ordinary table. The fields of the fixture definition table are:
+
+* **shape**: (b2.Shape) The shape, this must be set.
+* **friction**: (number) The friction coefficient, usually in the range [0,1].
+* **restitution**: (number) The restitution (elasticity) usually in the range [0,1].
+* **density**: (number) The density, usually in kg/m^2.
+* **isSensor**: (boolean) A sensor shape collects contact information but never generates a collision response.
+* **filter**: (table) Contact filtering data. The definition of contact filtering data is given at `b2.Fixture:setFilterData` function.
+
+The unset fields gets default values.
+
+**Warning:** This function is locked during callbacks.
+
+Parameters:
+	fixtureDef - (table)
+
+Returns:
+The created fixture instance.
+
+
+---------------------------------------
+
+Function: b2.Body:destroyFixture
+
+Destroy a fixture. This removes the fixture from the broad-phase and destroys all
+contacts associated with this fixture. This will automatically adjust the mass of the body if the
+body is dynamic and the fixture has positive density. All fixtures attached to a body are implicitly
+destroyed when the body is destroyed.
+
+**Warning:** This function is locked during callbacks.
+
+Parameters:
+	fixture - (b2.Fixture) 	the fixture to be removed
+
+---------------------------------------
+
+Function: b2.Body:applyForce
+
+Applies a force at a world point. If the force is not
+applied at the center of mass, it will generate a torque and
+affect the angular velocity. This wakes up the body.
+
+Parameters:
+	forcex - (number) the x coordinate of the world force vector, usually in Newtons (N)
+	forcey - (number) the y coordinate of the world force vector, usually in Newtons (N)
+	pointx - (number) the x coordinate of the world position of the point of application
+	pointy - (number) the y coordinate of the world position of the point of application
+
+---------------------------------------
+
+Function: b2.Body:applyTorque
+
+Applies a torque. This affects the angular velocity without affecting
+the linear velocity of the center of mass. This wakes up the body.
+
+Parameters:
+	torque - (number) about the z-axis (out of the screen), usually in N-m
+
+---------------------------------------
+
+Function: b2.Body:applyLinearImpulse
+
+Applies an impulse at a point. This immediately modifies the velocity. It also
+modifies the angular velocity if the point of application is not at the center of
+mass. This wakes up the body.
+
+Parameters:
+	impulsex - (number) the x coordinate of the world impulse vector, usually in N-seconds or kg-m/s
+	impulsey - (number) the y coordinate of the world impulse vector, usually in N-seconds or kg-m/s
+	pointx - (number) the x coordinate of the world position of the point of application
+	pointy - (number) the y coordinate of the world position of the point of application
+
+---------------------------------------
+
+Function: b2.Body:applyAngularImpulse
+
+Applies an angular impulse.
+
+Parameters:
+	impulse - (number) the angular impulse in units of kg*m*m/s
+
+---------------------------------------
+
+Function: b2.Body:isAwake
+
+Returns the sleeping state of this body. Returns `true` if body is awake (not sleeping), `false` otherwise.
+
+Returns:
+The sleeping state of this body. 
+
+---------------------------------------
+
+Function: b2.Body:setAwake
+
+Set the sleep state of the body. A sleeping body has very low CPU cost.
+
+Parameters:
+	awake - (boolean) set to true to wake body, false to put it to sleep
+
+---------------------------------------
+
+Function: b2.Body:setActive
+
+Sets the active state of the body. An inactive body is not simulated and cannot be collided with or woken up. 
+If you pass a flag of true, all fixtures will be added to the broad-phase. If you pass a flag of false,
+all fixtures will be removed from the broad-phase and all contacts will be destroyed. Fixtures and joints are 
+otherwise unaffected. You may continue to create/destroy fixtures and joints on inactive bodies. 
+Fixtures on an inactive body are implicitly inactive and will not participate in collisions, ray-casts, or queries. 
+Joints connected to an inactive body are implicitly inactive. An inactive body is still owned by a [[b2.World]] object and 
+remains in the body list.
+
+Parameters:
+	flag - (boolean) active flag
+
+---------------------------------------
+
+Function: b2.Body:isActive
+
+Returns the active state of the body.
+
+Returns:
+`true` if the body is active, `false` otherwise
+
+---------------------------------------
+
+Function: b2.Body:getLinearDamping
+
+Returns the linear damping of the body. 
+
+Returns:
+The linear damping of the body
+
+---------------------------------------
+
+Function: b2.Body:setLinearDamping
+
+Sets the linear damping of the body. 
+
+Parameters:
+	linearDamping - (number) new linear damping of the body
+
+---------------------------------------
+
+Function: b2.Body:getAngularDamping
+
+Returns the angular damping of the body. 
+
+Returns:
+The angular damping of the body
+
+---------------------------------------
+
+Function: b2.Body:setAngularDamping
+
+Sets the angular damping of the body. 
+
+Parameters:
+	angularDamping - (number) new angular damping of the body
+
+---------------------------------------
+
+Function: b2.Body:getWorldCenter
+
+Returns the world position of the center of mass.
+
+Returns:
+x and y coordinates of the world position of the center of mass
+
+---------------------------------------
+
+Function: b2.Body:getLocalCenter
+
+Returns the local position of the center of mass. 
+
+Returns:
+x and y coordinates of the local position of the center of mass
+
+---------------------------------------
+
+Function: b2.Body:getMass
+
+Returns the total mass of the body in kilograms (kg).
+
+Returns:
+The total mass of the body in kilograms (kg)
+
+---------------------------------------
+
+Function: b2.Body:getInertia
+
+Returns the rotational inertia of the body about the local origin in kg-m^2.
+
+Returns:
+The rotational inertia of the body about the local origin in kg-m^2.
+
+---------------------------------------
+
+Function: b2.Body:setGravityScale
+
+Sets the gravity scale of the body. 
+
+Parameters:
+	scale - (number) new gravity scale of the body
+
+---------------------------------------
+
+Function: b2.Body:getGravityScale
+
+Returns the gravity scale of the body. 
+
+Returns:
+The gravity scale of the body
+
+---------------------------------------
+
+Function: b2.Body:getWorldPoint
+
+Returns the world coordinates of a point given the local coordinates.
+
+Parameters:
+	x - (number) x coordinate of the local point
+	y - (number) y coordinate of the local point
+	
+Returns:
+x and y coordinates of the same point expressed in world coordinates
+
+---------------------------------------
+
+Function: b2.Body:getWorldVector
+
+Returns the world coordinates of a vector given the local coordinates. 
+
+Parameters:
+	x - (number) x coordinate of the local vector
+	y - (number) y coordinate of the local vector
+	
+Returns:
+x and y coordinates of the same vector expressed in world coordinates
+
+---------------------------------------
+
+Function: b2.Body:getLocalPoint
+
+Returns the local coordinates of a point given the world coordinates.
+
+Parameters:
+	x - (number) x coordinate of the world point
+	y - (number) y coordinate of the world point
+	
+Returns:
+x and y coordinates of the same point expressed in local coordinates
+
+---------------------------------------
+
+Function: b2.Body:getLocalVector
+
+Returns the local coordinates of a vector given the world coordinates. 
+
+Parameters:
+	x - (number) x coordinate of the world vector
+	y - (number) y coordinate of the world vector
+	
+Returns:
+x and y coordinates of the same vector expressed in local coordinates
+
+---------------------------------------
+
+Function: b2.Body:setFixedRotation
+
+Parameters:
+	flag - (boolean)
+
+---------------------------------------
+
+Function: b2.Body:isFixedRotation
+
+---------------------------------------
+
+Function: b2.Body:setBullet
+
+Parameters:
+	flag - (boolean)
+
+---------------------------------------
+
+Function: b2.Body:isBullet
+
+---------------------------------------
+
+Function: b2.Body:setSleepingAllowed
+
+Parameters:
+	flag - (boolean)
+
+---------------------------------------
+
+Function: b2.Body:isSleepingAllowed
+
+---------------------------------------
+
+Class: b2.Fixture
+
+A fixture is used to attach a shape to a body for collision detection. A fixture inherits its
+transform from its parent. Fixtures hold additional non-geometric data such as friction, collision filters, etc.
+Fixtures are created via [[b2.Body:createFixture]].
+
+Category: Physics
+
+---------------------------------------
+
+Function: b2.Fixture:getBody
+
+Returns the parent body of this fixture. This is `nil` if the fixture is not attached.
+
+Returns:
+The parent body.
+
+---------------------------------------
+
+Function: b2.Fixture:setSensor
+
+Sets if this fixture is a sensor.
+
+Parameters:
+	sensor - (boolean)
+
+---------------------------------------
+
+Function: b2.Fixture:isSensor
+
+Is this fixture a sensor (non-solid)?
+
+Returns:
+`true` if the shape is a sensor, `false` otherwise.
+
+---------------------------------------
+
+Function: b2.Fixture:setFilterData
+
+Sets the contact filtering data. This will not update contacts until the next time step
+when either parent body is active and awake. The filter data definition is given
+as a ordinary table. The fields of the filter data table are:
+
+* **categoryBits**: (number) The collision category bits. Normally you would just set one bit.
+* **maskBits**: (number) The collision mask bits. This states the categories that this shape would accept for collision.
+* **groupIndex**: (number) Collision groups allow a certain group of objects to never collide (negative) or always collide (positive). Zero means no collision group. Non-zero group filtering always wins against the mask bits.
+
+Parameters:
+	filterData - (table)
+
+---------------------------------------
+
+Function: b2.Fixture:getFilterData
+
+Returns the contact filtering data.
+
+Returns:
+contact filtering data table
+
+---------------------------------------
+
+Class: b2.Shape
+
+A shape is used for collision detection. It is the base class of [[b2.CircleShape]] and [[b2.PolygonShape]] classes.
+You can not create a `b2.Shape` instance directly, but instead you create [[b2.CircleShape]] and [[b2.PolygonShape]] instances.
+
+Category: Physics
+
+---------------------------------------
+
+Class: b2.PolygonShape > b2.Shape
+
+A convex polygon. It is assumed that the interior of the polygon is to the left of each edge.
+
+Category: Physics
+
+---------------------------------------
+
+Function: b2.PolygonShape.new
+
+Creates a new `b2.PolygonShape` instance.
+
+Returns:
+A new `b2.PolygonShape` object.
+
+---------------------------------------
+
+Function: b2.PolygonShape:setAsBox
+
+Build vertices to represent an oriented box.
+
+Parameters:
+	hx - (number) the half-width
+	hy - (number) the half-heigh
+	centerx - (number, default = 0) the x coordinate of the center of the box in local coordinates
+	centery - (number, default = 0) the y coordinate of the center of the box in local coordinates
+	angle - (number, default = 0) the rotation of the box in local coordinates
+
+---------------------------------------
+
+Function: b2.PolygonShape:set
+
+Copy vertices. This assumes the vertices define a convex polygon. It is assumed that the exterior is the the right of each edge.
+
+Parameters:
+	vertices - A list of numbers that contains the x, y coordinates of the vertices sequentially
+
+Example:
+	local polygonShape = b2.PolygonShape.new()
+	polygonShape:set(1,4, 2,6, 3,7)
+
+---------------------------------------
+
+Class: b2.CircleShape > b2.Shape
+
+A circle shape.
+
+Category: Physics
+
+---------------------------------------
+
+Function: b2.CircleShape.new
+
+Creates a new `b2.CircleShape` instance and optionally set its center point and radius.
+If this function is called with more than 3 parameters, `b2.CircleShape` instance
+is created and its center point and radius are set. If this function is called without any 
+paramaters, only `b2.CircleShape` instance is created and you should set the center
+point and radius with [[b2.CircleShape:set]] function.
+
+Parameters:
+	centerx - (number, optional) the x coordinate of the center
+	centery - (number, optional) the y coordinate of the center
+	radius - (number, optional) the radius
+
+Returns:
+A new `b2.CircleShape` object.
+
+---------------------------------------
+
+Function: b2.CircleShape:set
+
+Sets the center point and radius of this instance.
+
+Parameters:
+	centerx - (number, optional) the x coordinate of the center
+	centery - (number, optional) the y coordinate of the center
+	radius - (number, optional) the radius
+
+---------------------------------------
+
+Class: b2.EdgeShape > b2.Shape
+
+A line segment (edge) shape. These can be connected in chains or loops to other edge shapes.
+
+Category: Physics
+
+------------------------------------------------------------------------------
+
+Function: b2.EdgeShape.new
+
+Creates a new `b2.EdgeShape` instance and optionally sets its 2 vertices. 
+If this function is called with more than 4 parameters, `b2.EdgeShape` instance
+is created and its 2 vertices are set. If this function is called without any 
+paramaters, only `b2.EdgeShape` instance is created and you should set the 2 
+vertices with [[b2.EdgeShape:set]] function. 
+
+Parameters:
+	v1x - (number, optional) - the x coordinate of 1st point of edge
+	v1y - (number, optional) - the y coordinate of 1st point of edge
+	v2x - (number, optional) - the x coordinate of 2nd point of edge
+	v2y - (number, optional) - the y coordinate of 2nd point of edge
+
+------------------------------------------------------------------------------
+
+Function: b2.EdgeShape:set
+
+Sets the two vertices of this instance.
+
+Parameters:
+	v1x - (number) - the x coordinate of 1st point of edge
+	v1y - (number) - the y coordinate of 1st point of edge
+	v2x - (number) - the x coordinate of 2nd point of edge
+	v2y - (number) - the y coordinate of 2nd point of edge
+
+---------------------------------------
+
+Class: b2.ChainShape > b2.Shape
+
+A chain shape is a free form sequence of line segments. The chain has two-sided collision, so you can use inside 
+and outside collision. Therefore, you may use any winding order. Connectivity information is used to create smooth collisions.
+
+**Note:** The chain will not collide properly if there are self-intersections.
+
+Category: Physics
+
+------------------------------------------------------------------------------
+
+Function: b2.ChainShape.new
+
+Creates a new `b2.ChainShape` object.
+
+------------------------------------------------------------------------------
+
+Function: b2.ChainShape:createChain
+
+Creates a chain with isolated end vertices.
+
+Parameters:
+	vertices - A list of numbers that contains the x, y coordinates of the vertices sequentially
+
+------------------------------------------------------------------------------
+
+Function: b2.ChainShape:createLoop
+
+Creates a loop. This automatically adjusts connectivity.
+
+Parameters:
+	vertices - A list of numbers that contains the x, y coordinates of the vertices sequentially
+
+------------------------------------------------------------------------------
+
+Class: b2.Joint
+
+The `b2.Joint` class is the base joint class. Joints are used to constraint two bodies together in various fashions. Some joints also feature limits and motors. 
+
+Category: Physics
+
+---------------------------------------
+
+Function: b2.Joint:getType
+
+Returns the type of the concrete joint. The return value can be one of the `b2.REVOLUTE_JOINT`, `b2.PRISMATIC_JOINT`, `b2.DISTANCE_JOINT`, `b2.PULLEY_JOINT`,
+`b2,MOUSE_JOINT`, `b2.GEAR_JOINT`, `b2.LINE_JOINT`, `b2.WELD_JOINT`, `b2.FRICTION_JOINT`, `b2.ROPE_JOINT`.
+
+Returns:
+The type of the concrete joint
+
+---------------------------------------
+
+Function: b2.Joint:getBodyA
+
+Returns the first body attached to this joint.
+
+Returns:
+The first body attached to this joint
+
+---------------------------------------
+
+Function: b2.Joint:getBodyB
+
+Returns the second body attached to this joint.
+
+Returns:
+The second body attached to this joint
+
+---------------------------------------
+
+Function: b2.Joint:getAnchorA
+
+Returns the anchor point on bodyA in world coordinates.
+
+Returns:
+The x and y coordinates of the anchor point
+
+
+---------------------------------------
+
+Function: b2.Joint:getAnchorB
+
+Returns the anchor point on bodyB in world coordinates.
+
+Returns:
+The x and y coordinates of the anchor point
+
+---------------------------------------
+
+Function: b2.Joint:isActive
+
+Short-cut function to determine if either body is inactive. 
+
+Returns:
+`true` if both bodyA and bodyB is active, `false` otherwise
+
+---------------------------------------
+
+Function: b2.Joint:getReactionForce
+
+Returns the reaction force on bodyB at the joint anchor in Newtons.
+
+Parameters:
+	inv_dt - (number)
+
+Returns:
+2 values as x and y components of the reaction force on bodyB at the joint anchor in Newtons
+	
+---------------------------------------
+
+Function: b2.Joint:getReactionTorque
+
+Returns the reaction torque on bodyB in N*m. 
+
+Parameters:
+	inv_dt - (number)
+
+Returns:
+The reaction torque on bodyB in N*m
+	
+---------------------------------------
+
+Class: b2.RevoluteJoint > b2.Joint
+
+A revolute joint constrains two bodies to share a common point while they are free to rotate about the point. The relative rotation about the shared point is the joint angle. You can limit the relative rotation with a joint limit that specifies a lower and upper angle. You can use a motor to drive the relative rotation about the shared point. A maximum motor torque is provided so that infinite forces are not generated. 
+
+---------------------------------------
+
+Function: b2.RevoluteJoint:getJointAngle
+
+Returns the current joint angle in radians.
+
+Returns:
+The current joint angle in radians
+
+---------------------------------------
+Function: b2.RevoluteJoint:getJointSpeed
+
+Returns the current joint angle speed in radians per second. 
+
+Returns:
+The current joint angle speed in radians per second
+
+---------------------------------------
+
+Function: b2.RevoluteJoint:isLimitEnabled
+
+Is the joint limit enabled? 
+
+Returns:
+`true` if joint limit is enabled, `false` otherwise
+
+---------------------------------------
+
+Function: b2.RevoluteJoint:enableLimit
+
+Enables or disables the joint limit. 
+
+Parameters:
+	flag - (boolean) enable flag of joint limit
+
+---------------------------------------
+
+Function: b2.RevoluteJoint:getLimits
+
+Returns the lower and upper joint limit in radians. 
+
+Returns:
+The lower and upper joint limit in radians
+
+---------------------------------------
+Function: b2.RevoluteJoint:setLimits
+
+Sets the joint limits in radians. 
+
+Parameters:
+	lower - (number) lower joint limit in radians
+	upper - (number) upper joint limit in radians
+
+---------------------------------------
+Function: b2.RevoluteJoint:isMotorEnabled
+
+Is the joint motor enabled? 
+
+Returns:
+`true` if joint motor is enabled, `false` otherwise
+
+---------------------------------------
+Function: b2.RevoluteJoint:enableMotor
+
+Enables or disables the joint motor. 
+
+Parameters:
+	flag - (boolean) enable flag of joint motor
+
+---------------------------------------
+
+Function: b2.RevoluteJoint:setMotorSpeed
+
+Sets the motor speed in radians per second. 
+
+Parameters:
+	speed - (number) motor speed in radians per second
+
+---------------------------------------
+
+Function: b2.RevoluteJoint:getMotorSpeed
+
+Returns the motor speed in radians per second. 
+
+Returns:
+The motor speed in radians per second
+
+---------------------------------------
+
+Function: b2.RevoluteJoint:setMaxMotorTorque
+
+Sets the maximum motor torque, usually in N-m. 
+
+Parameters:
+	torque - (number) the maximum motor torque, usually in N-m
+
+---------------------------------------
+
+Function: b2.RevoluteJoint:getMotorTorque
+
+Returns the current motor torque given the inverse time step. Unit is N*m. 
+
+Parameters:
+	inv_dt - (number)
+	
+Returns:
+The current motor torque given the inverse time step. Unit is N*m
+
+---------------------------------------
+
+Class: b2.PrismaticJoint > b2.Joint
+
+A prismatic joint. This joint provides one degree of freedom: translation along an axis fixed in body1. Relative rotation is prevented. You can use a joint limit to restrict the range of motion and a joint motor to drive the motion or to model joint friction. 
+
+---------------------------------------
+Function: b2.PrismaticJoint:getJointTranslation
+
+Returns the current joint translation, usually in meters. 
+
+Returns:
+The current joint translation, usually in meters
+
+---------------------------------------
+
+Function: b2.PrismaticJoint:getJointSpeed
+
+Returns the current joint translation speed, usually in meters per second. 
+
+Returns:
+The current joint translation speed, usually in meters per second
+
+---------------------------------------
+Function: b2.PrismaticJoint:isLimitEnabled
+Is the joint limit enabled? 
+
+Returns:
+`true` if joint limit is enabled, `false` otherwise
+
+---------------------------------------
+
+Function: b2.PrismaticJoint:enableLimit
+
+Enables or disables the joint limit. 
+
+Parameters:
+	flag - (boolean) enable flag of joint limit
+
+---------------------------------------
+
+Function: b2.PrismaticJoint:getLimits
+
+Returns the lower and upper joint limit, usually in meters. 
+
+Returns:
+The lower and upper joint limit, usually in meters
+
+---------------------------------------
+Function: b2.PrismaticJoint:setLimits
+
+Sets the joint limits, usually in meters. 
+
+Parameters:
+	lower - (number) lower joint limit in meters
+	upper - (number) upper joint limit in meters
+
+---------------------------------------
+
+Function: b2.PrismaticJoint:isMotorEnabled
+
+Is the joint motor enabled? 
+
+Returns:
+`true` if joint motor is enabled, `false` otherwise
+
+---------------------------------------
+
+Function: b2.PrismaticJoint:enableMotor
+
+Enables or disables the joint motor. 
+
+Parameters:
+	flag - (boolean) enable flag of joint motor
+
+---------------------------------------
+
+Function: b2.PrismaticJoint:setMotorSpeed
+
+Sets the motor speed in meters per second. 
+
+Parameters:
+	speed - (number) motor speed in meters per second
+
+---------------------------------------
+
+Function: b2.PrismaticJoint:getMotorSpeed
+
+Returns the motor speed in meters per second. 
+
+Returns:
+The motor speed in meters per second
+
+---------------------------------------
+
+Function: b2.PrismaticJoint:setMaxMotorForce
+
+Sets the maximum motor force, usually in N. 
+
+Parameters:
+	force - (number) the maximum motor force, usually in N. 
+
+---------------------------------------
+
+Function: b2.RevoluteJoint:getMotorForce
+
+Returns the current motor force given the inverse time step, usually in N. 
+
+Parameters:
+	inv_dt - (number)
+
+Returns:
+The current motor force given the inverse time step, usually in N
+	
+---------------------------------------
+
+Class: b2.DistanceJoint > b2.Joint
+
+A distance joint constrains two points on two bodies to remain at a fixed distance from each other. You can view this as a massless, rigid rod. 
+
+---------------------------------------
+Function: b2.DistanceJoint:setLength
+
+Sets the natural length. Manipulating the length can lead to non-physical behavior when the frequency is zero. 
+
+Parameters:
+	length - (number) the length of this distance joint, usually in meters.
+
+---------------------------------------
+Function: b2.DistanceJoint:getLength
+
+Returns the length of this distance joint, usually in meters.
+
+Returns:
+The length of this distance joint, usually in meters
+
+---------------------------------------
+
+Function: b2.DistanceJoint:setFrequency
+
+Sets the mass-spring-damper frequency in Hertz.
+
+Parameters:
+	frequency - (number) the mass-spring-damper frequency in Hertz
+
+---------------------------------------
+
+Function: b2.DistanceJoint:getFrequency
+
+Returns the mass-spring-damper frequency of this distance joint in Hertz.
+
+Returns:
+The mass-spring-damper frequency in Hertz.
+
+---------------------------------------
+
+Function: b2.DistanceJoint:setDampingRatio
+
+Sets the damping ratio of this distance joint. 0 = no damping, 1 = critical damping. 
+
+Parameters:
+	ratio - (number) the damping ratio
+
+---------------------------------------
+
+Function: b2.DistanceJoint:getDampingRatio
+
+Returns the damping ratio of this distance joint.
+
+Returns:
+The damping ratio of this distance joint
+
+---------------------------------------
+
+Class: b2.PulleyJoint > b2.Joint
+
+The pulley joint is connected to two bodies and two fixed ground points. The pulley supports a ratio such that: length1 + ratio * length2 <= constant Yes, the force transmitted is scaled by the ratio. The pulley also enforces a maximum length limit on both sides. This is useful to prevent one side of the pulley hitting the top. 
+
+---------------------------------------
+
+Function: b2.PulleyJoint:getGroundAnchorA
+
+Returns the x and y coordinates of the first ground anchor. 
+
+Returns:
+The x and y coordinates of the first ground anchor
+
+---------------------------------------
+
+Function: b2.PulleyJoint:getGroundAnchorB
+
+Returns the x and y coordinates of the second ground anchor. 
+
+Returns:
+The x and y coordinates of the second ground anchor
+
+---------------------------------------
+
+Function: b2.PulleyJoint:getLengthA
+
+Returns the current length of the segment attached to bodyA. 
+
+Returns:
+The current length of the segment attached to bodyA
+	
+---------------------------------------
+
+Function: b2.PulleyJoint:getLengthB
+
+Returns the current length of the segment attached to bodyB. 
+
+Returns:
+The current length of the segment attached to bodyB
+
+---------------------------------------
+
+Function: b2.PulleyJoint:getRatio
+
+Returns the pulley ratio.
+
+Returns:
+The pulley ratio
+
+---------------------------------------
+
+Class: b2.MouseJoint > b2.Joint
+
+A mouse joint is used to make a point on a body track a specified world point. This a soft constraint with a maximum force. This allows the constraint to stretch and without applying huge forces.
+
+---------------------------------------
+Function: b2.MouseJoint:setTarget
+
+Updates the target point.
+
+Parameters:
+	x - (number) x coordinate of the target point
+	y - (number) y coordinate of the target point
+
+---------------------------------------
+
+Function: b2.MouseJoint:getTarget
+
+Returns the x and y coordinates of the target point.
+
+Returns:
+The x and y coordinates of the target point
+
+---------------------------------------
+
+Function: b2.MouseJoint:setMaxForce
+
+Sets the maximum force in Newtons.
+
+Parameters:
+force - (number) the maximum force in Newtons
+
+---------------------------------------
+
+Function: b2.MouseJoint:getMaxForce
+
+Returns the maximum force in Newtons.
+
+Returns:
+The maximum force in Newtons.
+
+---------------------------------------
+Function: b2.MouseJoint:setFrequency
+
+Sets the response speed in Hertz.
+
+Parameters:
+frequency - (number) the response speed in Hertz
+
+---------------------------------------
+
+Function: b2.MouseJoint:getFrequency
+
+Returns the response speed in Hertz.
+
+Returns:
+The response speed in Hertz
+
+---------------------------------------
+
+Function: b2.MouseJoint:setDampingRatio
+
+Sets the damping ratio. 0 = no damping, 1 = critical damping. 
+
+Parameters:
+ratio - (number) the damping ratio
+
+---------------------------------------
+
+Function: b2.MouseJoint:getDampingRatio
+
+Returns the damping ratio. 0 = no damping, 1 = critical damping. 
+
+Returns:
+The damping ratio
+
+---------------------------------------
+
+Class: b2.GearJoint > b2.Joint
+
+A gear joint is used to connect two joints together. Either joint can be a revolute or prismatic joint. You specify a gear ratio to bind the motions together: coordinate1 + ratio * coordinate2 = constant The ratio can be negative or positive. If one joint is a revolute joint and the other joint is a prismatic joint, then the ratio will have units of length or units of 1/length.
+
+---------------------------------------
+Function: b2.GearJoint:setRatio
+
+Sets the gear ratio. 
+
+Parameters:
+ratio - (number) the gear ratio
+
+---------------------------------------
+
+Function: b2.GearJoint:getRatio
+
+Returns the gear ratio. 
+
+Returns:
+The gear ratio 
+
+
+---------------------------------------
+
+Class: b2.WheelJoint > b2.Joint
+
+A wheel joint provides two degrees of freedom: translation along an axis fixed in bodyA and rotation in the plane. You can use a 
+joint limit to restrict the range of motion and a joint motor to drive the rotation or to model rotational friction. This joint 
+is designed for vehicle suspensions.
+
+---------------------------------------
+
+Function: b2.WheelJoint:getJointTranslation
+
+Returns the current joint translation in meters.
+
+Returns:
+The current joint translation in meters
+
+---------------------------------------
+
+Function: b2.WheelJoint:getJointSpeed
+
+Returns the current joint translation speed in meters per second. 
+
+Returns:
+The current joint translation speed in meters per second
+
+---------------------------------------
+
+Function: b2.WheelJoint:isMotorEnabled
+
+Is the joint motor enabled? 
+
+Returns:
+`true` if joint motor is enabled, `false` otherwise
+
+---------------------------------------
+
+Function: b2.WheelJoint:enableMotor
+
+Enables or disables the joint motor. 
+
+Parameters:
+	flag - (boolean) enable flag of joint motor
+
+---------------------------------------
+
+Function: b2.WheelJoint:setMotorSpeed
+
+Sets the motor speed in radians per second. 
+
+Parameters:
+	speed - (number) motor speed in radians per second
+
+---------------------------------------
+
+Function: b2.WheelJoint:getMotorSpeed
+
+Returns the motor speed in radians per second. 
+
+Returns:
+The motor speed in radians per second
+
+---------------------------------------
+
+Function: b2.WheelJoint:setMaxMotorTorque 
+
+Sets the maximum motor torque in N-m. 
+
+Parameters:
+	torque - (number) the maximum motor torque in N-m
+
+---------------------------------------
+
+Function: b2.WheelJoint:getMaxMotorTorque 
+
+Returns the maximum motor torque in N-m. 
+
+Returns:
+The maximum motor torque in N-m
+
+---------------------------------------
+
+Function: b2.WheelJoint:setSpringFrequencyHz 
+ 
+Sets the spring frequency in hertz. Setting the frequency to zero disables the spring.
+
+Parameters:
+	frequency - (number) spring frequency in hertz
+
+---------------------------------------
+
+Function: b2.WheelJoint:getSpringFrequencyHz
+
+Returns the spring frequency in hertz.
+
+Returns:
+The spring frequency in hertz.
+
+---------------------------------------
+
+Function: b2.WheelJoint:setSpringDampingRatio   
+
+Sets the spring damping ratio. 
+
+Parameters:
+	damping - (number) damping ratio
+
+---------------------------------------
+
+Function: b2.WheelJoint:getSpringDampingRatio   
+
+Returns the spring damping ratio. 
+
+Returns:
+The spring damping ratio
+
+---------------------------------------
+
+Class: b2.WeldJoint > b2.Joint
+
+A weld joint essentially glues two bodies together. A weld joint may distort somewhat because the island constraint solver is approximate. 
+
+---------------------------------------
+
+Function: b2.WeldJoint:setFrequency
+
+Sets frequency in Hz.
+
+Parameters:
+	frequency - (number) frequency in Hz
+
+---------------------------------------
+
+Function: b2.WeldJoint:getFrequency
+
+Returns frequency in Hz. 
+
+Returns:
+Frequency in Hz
+
+---------------------------------------
+
+Function: b2.WeldJoint:setDampingRatio
+
+Sets damping ratio. 
+
+Parameters:
+	damping - (number) damping ratio
+
+---------------------------------------
+
+Function: b2.WeldJoint:getDampingRatio
+
+Returns damping ratio. 
+
+Returns:
+Damping ratio
+
+---------------------------------------
+
+Class: b2.FrictionJoint > b2.Joint
+
+Friction joint. This is used for top-down friction. It provides 2D translational friction and angular friction. 
+
+---------------------------------------
+
+Function: b2.FrictionJoint:setMaxForce
+
+Sets the maximum friction force in N. 
+
+Parameters:
+	force - (number) the maximum friction force in N
+
+---------------------------------------
+
+Function: b2.FrictionJoint:getMaxForce
+
+Returns the maximum friction force in N. 
+
+Returns:
+The maximum friction force in N
+
+---------------------------------------
+
+Function: b2.FrictionJoint:setMaxTorque
+
+Sets the maximum friction torque in N*m. 
+
+Parameters:
+	torque - (number)the maximum friction torque in N*m
+
+---------------------------------------
+
+Function: b2.FrictionJoint:getMaxTorque
+
+Returns the maximum friction torque in N*m. 
+
+Returns:
+The maximum friction torque in N*m
+
+---------------------------------------
+
+Class: b2.RopeJoint > b2.Joint
+
+A rope joint enforces a maximum distance between two points on two bodies. It has no other effect.
+Warning: if you attempt to change the maximum length during the simulation you will get some non-physical behavior.
+A model that would allow you to dynamically modify the length would have some sponginess, so I chose not to implement it that way.
+See [[b2.DistanceJoint]] if you want to dynamically control length. 
+
+---------------------------------------
+Function: b2.RopeJoint:setMaxLength
+
+Sets the maximum length of the rope. 
+
+Parameters:
+	maxLength - (number)
+
+---------------------------------------
+Function: b2.RopeJoint:getMaxLength
+
+Returns the maximum length of the rope. 
+
+Returns:
+The maximum length of the rope. 
+
+---------------------------------------
+
+Class: b2.DebugDraw > Sprite
+
+The `b2.DebugDraw` class is used to provide debug drawing of physical entities in your application. 
+
+Example:
+	local debugDraw = b2.DebugDraw.new()
+	world:setDebugDraw(debugDraw)
+	stage:addChild(debugDraw)
+
+---------------------------------------
+
+Function: b2.DebugDraw.new
+
+Creates a new `b2.DebugDraw` instance.
+
+See Also:
+[[b2.World:setDebugDraw]]
+
+---------------------------------------
+
+Function: b2.DebugDraw:setFlags
+
+Sets the debug drawing flags. These flags are available:
+
+* `b2.DebugDraw.SHAPE_BIT`
+* `b2.DebugDraw.JOINT_BIT`
+* `b2.DebugDraw.AABB_BIT`
+* `b2.DebugDraw.PAIR_BIT`
+* `b2.DebugDraw.CENTER_OF_MASS_BIT`
+
+`b2.DebugDraw.SHAPE_BIT` is set by default. 
+
+Because Lua doesn't support bitwise operations by default, you can use `+` operator to combine flags.
+
+Parameters:
+	flags - (number) debug draw flags
+
+Example:
+	local debugDraw = b2.DebugDraw.new()
+	debugDraw:setFlags(b2.DebugDraw.SHAPE_BIT + b2.DebugDraw.JOINT_BIT)
+
+---------------------------------------
+
+Function: b2.DebugDraw:getFlags
+
+Returns the debug drawing flags.
+
+Returns:
+The debug drawing flags
+
+---------------------------------------
+
+Function: b2.DebugDraw:appendFlags
+
+Append flags to the current flags.
+
+Parameters:
+	flags - (number) debug draw flags
+
+---------------------------------------
+
+Function: b2.DebugDraw:clearFlags
+
+Clear flags from the current flags.
+
+Parameters:
+	flags - (number) debug draw flags
+
+---------------------------------------
+
+Class: b2.Contact
+
+The class manages contact between two shapes. A contact exists for each overlapping AABB in the broad-phase (except if filtered). Therefore a contact object may exist that has no contact points.
+
+---------------------------------------
+
+Function: b2.Contact:getManifold
+
+Returns the contact manifold as a table. This table contains `points`, `localNormal`, `localPoint` and `type` fields.
+
+---------------------------------------
+
+Function: b2.Contact:getWorldManifold
+
+Returns the world manifold as a table. This table contains `normal` and `points` fields.
+
+---------------------------------------
+
+Function: b2.Contact:isTouching
+
+Returns whether the contact is touching or not.
+
+Returns:
+Whether the contact is touching or not.
+
+---------------------------------------
+
+Function: b2.Contact:setEnabled
+
+Enables/disables the contact. This can be used inside the pre-solve contact listener. The contact is only disabled for the current time step (or sub-step in continuous collisions).
+
+Parameters:
+	flag - (boolean)
+
+---------------------------------------
+
+Function: b2.Contact:getFixtureA
+
+Returns fixture A in this contact. 
+
+Returns:
+Fixture A in this contact. 
+
+---------------------------------------
+
+Function: b2.Contact:getChildIndexA
+
+Returns the child primitive index for fixture A. 
+
+Returns:
+The child primitive index for fixture A. 
+
+---------------------------------------
+
+Function: b2.Contact:getFixtureB
+
+Returns fixture B in this contact. 
+
+Returns:
+Fixture B in this contact. 
+
+---------------------------------------
+
+Function: b2.Contact:getChildIndexB
+
+Returns the child primitive index for fixture B. 
+
+Returns:
+The child primitive index for fixture B. 
+
+---------------------------------------
+
+Function: b2.Contact:setFriction
+
+Overrides the default friction mixture. You can call this in pre-solve event. This value persists until set or reset. 
+
+Parameters:
+	friction - (number)
+
+---------------------------------------
+
+Function: b2.Contact:getFriction
+
+Returns the friction.
+
+Returns:
+The friction.
+
+---------------------------------------
+
+Function: b2.Contact:resetFriction
+
+Resets the friction mixture to the default value. 
+
+---------------------------------------
+
+Function: b2.Contact:setRestitution
+
+Overrides the default restitution mixture. You can call this in pre-solve event. This value persists until set or reset. 
+
+Parameters:
+	restitution - (number)
+
+---------------------------------------
+
+Function: b2.Contact:getRestitution
+
+Returns the restitution.
+
+Returns:
+The restitution.
+
+---------------------------------------
+
+Function: b2.Contact:resetRestitution
+
+Resets the restitution mixture to the default value. 
+

@@ -1,0 +1,164 @@
+Class: StoreKit > EventDispathcer
+
+The `StoreKit` class provides the functionality that allow an application to request payment from a user. 
+This class is only available to iOS platforms.
+
+The `StoreKit` class is defined in module "storekit". Therefore, you need to call
+`require("storekit")` before using it. Loading the "storekit" module 
+also creates a global variable `storekit` of type `StoreKit` for direct use. 
+
+### State of a Transaction
+
+The state of a transaction is defined by 3 string constants:
+
+* **StoreKit.PURCHASED = "purchased"**: The App Store successfully processed payment. Your application should provide the content the user purchased.
+* **StoreKit.FAILED = "failed"**: The transaction failed. Check the `event.errorCode` and `event.errorDescription` fields to determine what happened.
+* **StoreKit.RESTORED = "restored"**: This transaction restores content previously purchased by the user. Read the `event.originalTransaction` field to obtain information about the original purchase.
+
+### StoreKit Events
+
+The `StoreKit` class dispatches the events `Event.REQUEST_PRODUCTS_COMPLETE`, `Event.TRANSACTION` and `Event.RESTORE_TRANSACTIONS_COMPLETE`.
+
+#### Event.REQUEST_PRODUCTS_COMPLETE
+The function [[StoreKit:requestProducts]] is used to retrieve localized information about a list of products from the Apple App Store. 
+When the request completes, `Event.REQUEST_PRODUCTS_COMPLETE` event is dispatched. The resulting event table contains 
+these additional fields about the products:
+
+* **event.error:** (number) error code if the request failed to execute
+* **event.errorDescription:** (string) error description if the request failed to execute
+* **event.products:** (table) array of products where each element is a table which contains the product information 
+* **event.invalidProductIdentifiers:** (table) array of product identifier strings that were not recognized by the Apple App Store
+
+Each table in `event.products` array contains these fields:
+
+* **title:** (number) localized name of the product
+* **description:** (string) localized description of the product
+* **price:** (number) cost of the product in the local currency
+* **productIdentifier:** (string) string that identifies the product to the Apple App Store
+
+For example, this code can be used to print the retrieved product information:
+	
+	local function onRequestProductsComplete(event)
+		if event.errorCode ~= nil then
+			print("error", event.errorCode, event.errorDescription)
+			return
+		end
+
+		print("products:")
+		for i=1,#event.products do
+			print("title", event.products[i].title)
+			print("description", event.products[i].description)
+			print("price", event.products[i].price)
+			print("productIdentifier", event.products[i].productIdentifier)
+		end
+
+		print("invalidProductIdentifiers:")
+		for i=1,#event.invalidProductIdentifiers do
+			print(event.invalidProductIdentifiers[i])
+		end
+	end
+
+#### Event.TRANSACTION
+
+This event is dispatched when a transaction is updated. The event listener should process all successful transactions, 
+unlock the functionality purchased by the user, and then finish the transaction by calling [[StoreKit:finishTransaction]] method. The resulting event table can 
+contain these additional fields about the products:
+
+* **event.errorCode:** (number) error code if `event.transaction.state` is set to `StoreKit.FAILED`
+* **event.errorDescription:** (string) error description if `event.transaction.state` is set to `StoreKit.FAILED`
+* **event.payment.productIdentifier:** (string) product identifier of the transaction
+* **event.payment.quantity:** (number) number of items the user wants to purchase
+* **event.transaction.state:** (string) current state of the transaction
+* **event.transaction.identifier:** (string) string that uniquely identifies a successful payment transaction
+* **event.transaction.receipt:** (string) signed receipt that records all information about a successful payment transaction
+* **event.transaction.date:** (string) date the transaction was added to the App Store's payment queue
+* **event.originalTransaction.identifier:** (string) identifier of original transaction
+* **event.originalTransaction.date:** (string) date of the original transaction
+
+This code can be used to print the transaction information and unlock the functionality purchased by the user:
+
+	local function onTransaction(event)
+		print("payment.productIdentifier", event.payment.productIdentifier)
+		print("payment.quantity", event.payment.quantity)
+		
+		print("transaction.state", event.transaction.state)
+
+		if event.transaction.state == StoreKit.FAILED then
+			print("error", event.errorCode, event.errorDescription)
+		else		
+			print("transaction.identifier", event.transaction.identifier)
+			print("transaction.date", event.transaction.date)
+
+			if event.transaction.state == StoreKit.PURCHASED then
+				print("transaction.receipt", event.transaction.receipt)
+			end
+			
+			if event.transaction.state == StoreKit.RESTORED then
+				print("originalTransaction.identifier", event.originalTransaction.identifier)
+				print("originalTransaction.date", event.originalTransaction.date)
+			end
+			
+			-- unlock the functionality purchased by the user
+		end
+			
+		storekit:finishTransaction(event.transaction)
+	end
+
+#### Event.RESTORE_TRANSACTIONS_COMPLETE
+
+This event is dispatched after the transactions are delivered. The resulting event table can contain these additional fields:
+
+* **event.errorCode:** (number) error code if an error occurred while restoring transactions
+* **event.errorDescription:** (string) description of the error if an error occurred while restoring transactions
+
+If all transactions are delivered successfully, `event.errorCode` and `event.errorDescription` will be `nil`.
+
+---------------------------------------
+
+Function: StoreKit:canMakePayments
+
+Returns whether the user is allowed to make payments.
+
+Returns:
+`true` if the user is allowed to authorize payment. `false` if they do not have permission.
+
+---------------------------------------
+
+Function: StoreKit:requestProducts
+
+Retrieve localized information about a list of products from the Apple App Store. When the request completes, `Event.REQUEST_PRODUCTS_COMPLETE` event is dispatched.
+
+Parameters:
+	productIdentifiers - (table) An array of product identifiers for the products you wish to retrieve descriptions of.
+
+---------------------------------------
+
+Function: StoreKit:purchase
+
+Process a payment request. When that transaction is complete or if a failure occurs, `Event.TRANSACTION` event is dispatched.
+
+Parameters:
+	productIdentifier - (string) A string used to identify a product that can be purchased from within your application.
+	quantity - (number, default = 1) The number of items the user wants to purchase. This value should be greater than or equal to 1.
+
+---------------------------------------
+
+Function: StoreKit:restoreCompletedTransactions
+
+Restore previously completed purchases. `Event.TRANSACTION` event is dispatched for each previously completed transaction that can be restored. 
+Each transaction includes a copy of the original transaction.
+
+After the transactions are delivered, `Event.RESTORE_TRANSACTIONS_COMPLETE` event is dispatched. If an error occurred while restoring transactions, `event.errorCode` and 
+`event.errorDescription` fields contain the details of the error.
+
+---------------------------------------
+
+Function: StoreKit:finishTransaction
+
+Completes a pending transaction. Your application should call this function only after it has successfully processed the transaction and unlocked the functionality 
+purchased by the user.
+
+Parameters:
+	transaction - (table) transaction information recevied with the event Event.TRANSACTION.
+	
+

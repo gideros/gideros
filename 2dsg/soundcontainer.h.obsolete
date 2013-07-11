@@ -1,0 +1,21 @@
+#ifndef SOUNDCONTAINER_H
+#define SOUNDCONTAINER_H
+
+#include <set>
+
+class SoundChannel;
+
+class SoundContainer
+{
+public:
+	static SoundContainer& instance();
+	void addSoundChannel(SoundChannel* soundChannel);
+	void removeSoundChannel(SoundChannel* soundChannel);
+
+	void stopAllSounds();
+
+private:
+	std::set<SoundChannel*> soundChannels_;
+};
+
+#endif

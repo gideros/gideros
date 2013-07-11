@@ -1,0 +1,5 @@
+<library>
+ <file file="gfx/star.png"/>
+ <file file="fade.lua"/>
+ <file file="main.lua"/>
+</library>

@@ -1,0 +1,139 @@
+#include <gaudio.h>
+#include "../ggaudiomanager.h"
+
+#if defined(OPENAL_SUBDIR_OPENAL)
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
+#elif defined(OPENAL_SUBDIR_AL)
+#include <AL/al.h>
+#include <AL/alc.h>
+#else
+#include <al.h>
+#include <alc.h>
+#endif
+
+#import <AVFoundation/AVFoundation.h>
+
+@interface GGAVAudioSessionDelegate : NSObject<AVAudioSessionDelegate>
+{
+    GGAudioManager *audioManager_;
+}
+
+@property (nonatomic, assign) GGAudioManager *audioManager;
+
+@end
+
+@implementation GGAVAudioSessionDelegate
+
+@synthesize audioManager = audioManager_;
+
+- (void)beginInterruption
+{
+    audioManager_->beginInterruption();
+}
+
+- (void)endInterruptionWithFlags:(NSUInteger)flags
+{
+    if (flags & AVAudioSessionInterruptionFlags_ShouldResume)
+        audioManager_->endInterruption();
+}
+
+- (void)endInterruption
+{
+    audioManager_->endInterruption();
+}
+
+@end
+
+extern "C" {
+GGSampleInterface *GGSampleOpenALManagerCreate();
+void GGSampleOpenALManagerDelete(GGSampleInterface *manager);
+
+GGStreamInterface *GGStreamOpenALManagerCreate();
+void GGStreamOpenALManagerDelete(GGStreamInterface *manager);
+
+GGBackgroundMusicInterface *GGBackgroundAVAudioPlayerManagerCreate();
+void GGBackgroundAVAudioPlayerManagerDelete(GGBackgroundMusicInterface *manager);
+}
+
+struct GGAudioSystemData
+{
+    ALCdevice *device;
+    ALCcontext *context;
+    GGAVAudioSessionDelegate *delegate;
+};
+
+void GGAudioManager::systemInit()
+{
+    systemData_ = (GGAudioSystemData*)malloc(sizeof(GGAudioSystemData));
+
+    [[AVAudioSession sharedInstance] setActive:YES error:nil];
+    
+    systemData_->delegate = [[GGAVAudioSessionDelegate alloc] init];
+    systemData_->delegate.audioManager = this;
+    [[AVAudioSession sharedInstance] setDelegate:systemData_->delegate];
+
+    systemData_->device = alcOpenDevice(NULL);
+
+    systemData_->context = alcCreateContext(systemData_->device, NULL);
+
+    alcMakeContextCurrent(systemData_->context);
+}
+
+void GGAudioManager::systemCleanup()
+{
+    alcMakeContextCurrent(NULL);
+    alcDestroyContext(systemData_->context);
+    alcCloseDevice(systemData_->device);
+
+    [[AVAudioSession sharedInstance] setDelegate:nil];
+    [systemData_->delegate release];
+
+    [[AVAudioSession sharedInstance] setActive:NO error:nil];
+
+    free(systemData_);
+}
+
+void GGAudioManager::createBackgroundMusicInterface()
+{
+    backgroundMusicInterface_ = GGBackgroundAVAudioPlayerManagerCreate();
+}
+
+void GGAudioManager::deleteBackgroundMusicInterface()
+{
+    GGBackgroundAVAudioPlayerManagerDelete(backgroundMusicInterface_);
+}
+
+void GGAudioManager::beginInterruption()
+{
+    if (interrupted_ == true)
+        return;
+
+    alcMakeContextCurrent(NULL);
+    
+    interrupted_ = true;
+}
+
+void GGAudioManager::endInterruption()
+{
+    if (interrupted_ == false)
+        return;
+    
+    alcMakeContextCurrent(systemData_->context);
+
+    interrupted_ = false;
+}
+
+void GGSoundManager::interfacesInit()
+{
+    loaders_["wav"] = GGAudioLoader(gaudio_WavOpen, gaudio_WavClose, gaudio_WavRead, gaudio_WavSeek, gaudio_WavTell);
+
+    sampleInterface_ = GGSampleOpenALManagerCreate();
+    streamInterface_ = GGStreamOpenALManagerCreate();
+}
+
+void GGSoundManager::interfacesCleanup()
+{
+    GGSampleOpenALManagerDelete(sampleInterface_);
+    GGStreamOpenALManagerDelete(streamInterface_);
+}

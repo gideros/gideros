@@ -1,0 +1,10 @@
+Gideros 2011.6.1
+----------------
+[new]
+Added application.getAccelerometer() function.
+Added export Xcode project functionality.
+
+
+Gideros 2011.6
+--------------
+Initial release.

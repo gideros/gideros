@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgid", "libgid.vcxproj", "{33152CB2-94EA-4EA3-B0AC-36E2D5494C8D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33152CB2-94EA-4EA3-B0AC-36E2D5494C8D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{33152CB2-94EA-4EA3-B0AC-36E2D5494C8D}.Debug|Win32.Build.0 = Debug|Win32
+		{33152CB2-94EA-4EA3-B0AC-36E2D5494C8D}.Release|Win32.ActiveCfg = Release|Win32
+		{33152CB2-94EA-4EA3-B0AC-36E2D5494C8D}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

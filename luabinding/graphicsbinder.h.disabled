@@ -1,0 +1,24 @@
+#ifndef GRAPHICSBINDER_H
+#define GRAPHICSBINDER_H
+
+#include "binder.h"
+
+class GraphicsBinder
+{
+public:
+	GraphicsBinder(lua_State* L);
+
+private:
+	static int create(lua_State* L);
+	static int destruct(lua_State* L);
+
+	static int beginFill(lua_State* L);
+	static int endFill(lua_State* L);
+	static int moveTo(lua_State* L);
+	static int lineTo(lua_State* L);
+	static int lineStyle(lua_State* L);
+	static int clear(lua_State* L);
+};
+
+#endif
+

@@ -1,0 +1,285 @@
+#include "ghttp.h"
+#include <map>
+#include <stdlib.h>
+#include <deque>
+
+struct Connection
+{
+    int id;
+    ghttp_Callback callback;
+    void* udata;
+    NSMutableData* data;
+	long long expectedContentLength;
+	NSData* postData;
+};
+
+struct CallbackElement
+{
+    int id;
+    ghttp_Callback callback;
+    int type;
+    void* data;
+    void* udata;
+};
+
+@interface HTTPManager : NSObject
+{
+    std::map<NSURLConnection*, Connection> map_;
+    std::deque<CallbackElement> callbackQueue_;
+    int nextid_;
+}
+
+@end
+
+@implementation HTTPManager
+
+- (id) init
+{
+    if (self = [super init])
+    {
+        nextid_ = 1;
+    }
+    return self;
+}
+
+- (int)request:(const char*)url :(NSString*)method :(const ghttp_Header *)header :(const void*)data :(size_t)size :(ghttp_Callback)callback :(void*)udata
+{
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
+	
+	[request setHTTPMethod:method];
+	
+    for (; header && header->name; ++header)
+		[request setValue:[NSString stringWithUTF8String:header->value] forHTTPHeaderField:[NSString stringWithUTF8String:header->name]];
+	
+	NSData* postData = nil;
+	if (size > 0)
+	{
+		postData = [[NSData alloc] initWithBytes:data length:size];
+		[request setHTTPBody:postData];
+	}
+	
+    NSURLConnection* connection = [NSURLConnection connectionWithRequest:request delegate:self];
+    
+    Connection connection2;
+    connection2.id = nextid_;
+    connection2.callback = callback;
+    connection2.udata = udata;
+    connection2.data = [[NSMutableData alloc] init];
+	connection2.postData = postData;
+	
+    map_[connection] = connection2;
+    
+    return nextid_++;
+}
+
+static void deleteCallbackElement(CallbackElement& element)
+{
+    if (element.type == GHTTP_RESPONSE)
+    {
+        ghttp_Response* data = (ghttp_Response*)element.data;
+        free(data->data);
+    }
+    else if (element.type == GHTTP_ERROR)
+    {
+    }
+    else if (element.type == GHTTP_PROGRESS)
+    {
+    }
+    
+    free(element.data);
+}
+
+- (void)tick
+{
+    while (!callbackQueue_.empty())
+    {
+        CallbackElement element = callbackQueue_.front();
+        callbackQueue_.pop_front();
+        
+        element.callback(element.id, element.type, element.data, element.udata);
+        
+        deleteCallbackElement(element);
+    }    
+}
+
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+    if (map_.find(connection) == map_.end())
+        return;
+
+    Connection& connection2 = map_[connection];
+	
+	[connection2.data setLength:0];
+	
+	connection2.expectedContentLength = response.expectedContentLength;
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    if (map_.find(connection) == map_.end())
+        return;
+
+    Connection& connection2 = map_[connection];
+    
+    [connection2.data appendData:data];
+	
+    ghttp_Progress* progress = (ghttp_Progress*)malloc(sizeof(ghttp_Progress));
+    progress->bytesLoaded = connection2.data.length;
+    progress->bytesTotal = connection2.expectedContentLength;
+	
+    CallbackElement element;
+    element.id = connection2.id;
+    element.callback = connection2.callback;
+    element.type = GHTTP_PROGRESS;
+    element.data = progress;
+    element.udata = connection2.udata;
+    callbackQueue_.push_back(element);
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    if (map_.find(connection) == map_.end())
+        return;
+	
+    Connection& connection2 = map_[connection];
+	
+	size_t size = connection2.data.length;
+	char* data = (char*)malloc(size + 1);
+	memcpy(data, connection2.data.bytes, size);
+	data[size] = 0;
+	ghttp_Response* response = (ghttp_Response*)malloc(sizeof(ghttp_Response));
+	response->data = data;
+	response->size = size;
+
+	CallbackElement element;
+	element.id = connection2.id;
+	element.callback = connection2.callback;
+	element.type = GHTTP_RESPONSE;
+	element.data = response;
+	element.udata = connection2.udata;
+	callbackQueue_.push_back(element);
+	
+	[connection2.data release];
+	if (connection2.postData)
+		[connection2.postData release];
+	map_.erase(connection);
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)err
+{
+    if (map_.find(connection) == map_.end())
+        return;
+	
+    Connection& connection2 = map_[connection];
+		
+	ghttp_Error* error = (ghttp_Error*)malloc(sizeof(ghttp_Error));
+	
+	CallbackElement element;
+	element.id = connection2.id;
+	element.callback = connection2.callback;
+	element.type = GHTTP_ERROR;
+	element.data = error;
+	element.udata = connection2.udata;
+	callbackQueue_.push_back(element);
+
+	[connection2.data release];
+	if (connection2.postData)
+		[connection2.postData release];
+	map_.erase(connection);
+}
+
+
+-(void) close:(int)id
+{
+    std::map<NSURLConnection*, Connection>::iterator iter = map_.begin(), e = map_.end();
+    for (; iter != e; ++iter)
+    {
+        if (iter->second.id == id)
+        {
+			[iter->first cancel];
+			[iter->second.data release];
+			if (iter->second.postData)
+				[iter->second.postData release];
+            map_.erase(iter);
+            break;
+        }
+    }
+	
+    if (!callbackQueue_.empty())
+        for (int i = callbackQueue_.size() - 1; i >= 0; --i)
+            if (callbackQueue_[i].id == id)
+            {
+                deleteCallbackElement(callbackQueue_[i]);
+                callbackQueue_.erase(callbackQueue_.begin() + i);
+            }	
+}
+
+-(void) closeAll
+{
+    std::map<NSURLConnection*, Connection>::iterator iter = map_.begin(), e = map_.end();
+    for (; iter != e; ++iter)
+    {
+		[iter->first cancel];
+		[iter->second.data release];
+		if (iter->second.postData)
+			[iter->second.postData release];
+    }
+	map_.clear();
+	
+	for (size_t i = 0; i < callbackQueue_.size(); ++i)
+		deleteCallbackElement(callbackQueue_[i]);
+	callbackQueue_.clear();
+}
+
+@end
+
+static HTTPManager* s_manager = nil;
+
+void ghttp_init()
+{
+    s_manager = [[HTTPManager alloc] init];
+}
+
+void ghttp_cleanup()
+{
+    ghttp_closeAll();
+
+	[s_manager release];
+    s_manager = nil;
+}
+
+void ghttp_tick()
+{
+    [s_manager tick];
+}
+
+int ghttp_get(const char* url, const ghttp_Header *header, ghttp_Callback callback, void* udata)
+{
+    return [s_manager request:url:@"GET":header:NULL:0:callback:udata];
+}
+
+int ghttp_post(const char* url, const ghttp_Header *header, const void* data, size_t size, ghttp_Callback callback, void* udata)
+{
+	return [s_manager request:url:@"POST":header:data:size:callback:udata];
+}
+
+int ghttp_put(const char* url, const ghttp_Header *header, const void* data, size_t size, ghttp_Callback callback, void* udata)
+{
+	return [s_manager request:url:@"PUT":header:data:size:callback:udata];
+}
+
+int ghttp_delete(const char* url, const ghttp_Header *header, ghttp_Callback callback, void* udata)
+{
+    return [s_manager request:url:@"DELETE":header:NULL:0:callback:udata];
+}
+
+void ghttp_close(int id)
+{
+	[s_manager close:id];
+}
+
+void ghttp_closeAll()
+{
+	[s_manager closeAll];
+}

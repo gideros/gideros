@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StartPageWidget2</class>
+ <widget class="QWidget" name="StartPageWidget2">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>821</width>
+    <height>460</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Start Page</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#StartPageWidget2 {
+	background-color: rgb(250, 250, 250);
+}
+
+</string>
+  </property>
+  <widget class="QWidget" name="container" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>781</width>
+     <height>411</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#container {
+/*	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 255, 255, 255), stop:0.3 rgba(255, 255, 255, 255), stop:0.301 rgba(240, 240, 240, 255), stop:0.4 rgba(250, 250, 250, 255)); */
+}
+
+
+QPushButton {
+border: none;
+border: 1px solid gray;
+border-radius: 4px; 
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(250, 250, 250, 255), stop:0.49 rgba(250, 250, 250, 255), stop:0.51 rgba(240, 240, 240, 255));
+}
+QPushButton:pressed{ 
+border: 1px solid gray;
+border-radius: 4px; 
+
+background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(230, 230, 230, 255), stop:0.49 rgba(230, 230, 230, 255), stop:0.51 rgba(220, 220, 220, 255));
+}
+
+
+QPushButton:hover:!pressed{ 
+border: 1px solid gray;
+border-radius: 4px; 
+background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 255, 255, 255), stop:0.49 rgba(255, 255, 255, 255), stop:0.51 rgba(245, 245, 245, 255));
+}</string>
+   </property>
+   <widget class="QPushButton" name="referenceManual">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>320</y>
+      <width>191</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Opens Reference Manual (API Documentation)</string>
+    </property>
+    <property name="text">
+     <string>Reference Manual</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="createNewProject">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>200</y>
+      <width>191</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Creates a new Gideros Studio project from scratch</string>
+    </property>
+    <property name="text">
+     <string>Create New Project</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="gettingStarted">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>260</y>
+      <width>191</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Opens the Getting Started Guide</string>
+    </property>
+    <property name="text">
+     <string>Getting Started</string>
+    </property>
+   </widget>
+   <widget class="RecentProjectsWidget" name="recentProjects" native="true">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>30</y>
+      <width>241</width>
+      <height>331</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="ExampleProjectsWidget" name="exampleProjects" native="true">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>30</y>
+      <width>241</width>
+      <height>331</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>20</y>
+      <width>151</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="ui.qrc">:/Resources Embedded/gideros_studio_160x160.png</pixmap>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ExampleProjectsWidget</class>
+   <extends>QWidget</extends>
+   <header>exampleprojectswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RecentProjectsWidget</class>
+   <extends>QWidget</extends>
+   <header>recentprojectswidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="ui.qrc"/>
+ </resources>
+ <connections/>
+</ui>

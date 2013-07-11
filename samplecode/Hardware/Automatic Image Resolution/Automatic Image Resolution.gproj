@@ -1,0 +1,12 @@
+<project>
+ <properties scaleMode="3" logicalHeight="480" logicalWidth="320" orientation="0">
+  <imageScales>
+   <scale suffix="@2x" scale="2"/>
+   <scale suffix="@1.5x" scale="1.5"/>
+  </imageScales>
+ </properties>
+ <file file="image.png"/>
+ <file file="image@1.5x.png"/>
+ <file file="image@2x.png"/>
+ <file file="main.lua"/>
+</project>

@@ -1,0 +1,33 @@
+body
+{
+	background-color:#F8F8F8;
+}
+#contents
+{
+	position: fixed;
+	left: 0;
+	top: 0;
+	border-right: 1px solid black;
+	width: 300px;
+	padding: 10px;
+	height: 100%;
+	overflow: auto;
+}
+
+.site
+{
+	margin-left: 350px;
+	marginright: 0;
+}
+#readme div.wikistyle
+{
+	width: 90%;
+	padding-left: 30px;
+	padding-right: 30px;
+	
+}
+
+.uplist ul
+{
+	display: none;
+}

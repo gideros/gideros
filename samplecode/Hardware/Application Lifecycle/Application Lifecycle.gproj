@@ -1,0 +1,11 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="0">
+  <imageScales/>
+ </properties>
+ <file file="pause-up.png"/>
+ <file file="pause-down.png"/>
+ <file file="resume-up.png"/>
+ <file file="resume-down.png"/>
+ <file file="button.lua"/>
+ <file file="main.lua"/>
+</project>

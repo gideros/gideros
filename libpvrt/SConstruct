@@ -1,0 +1,2 @@
+Library('libpvrt', Glob('*.cpp'), CPPPATH=[], CCFLAGS=['-Wall'])
+

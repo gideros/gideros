@@ -1,0 +1,33 @@
+<project>
+ <properties autorotation="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="480" logicalWidth="320" mouseTouchOrder="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="0" architecture="0">
+  <imageScales>
+   <scale suffix="@2x" scale="2"/>
+  </imageScales>
+ </properties>
+ <file source="arial.ttf"/>
+ <file source="arial_10_new.png"/>
+ <file source="arial_10_new.txt"/>
+ <file source="arial_10_new@2x.png"/>
+ <file source="arial_10_new@2x.txt"/>
+ <file source="arial_10_old.png"/>
+ <file source="arial_10_old.txt"/>
+ <file source="arial_10_old@2x.png"/>
+ <file source="arial_10_old@2x.txt"/>
+ <file source="arial_20_intr_new.png"/>
+ <file source="arial_20_intr_new.txt"/>
+ <file source="arial_20_intr_new@2x.png"/>
+ <file source="arial_20_intr_new@2x.txt"/>
+ <file source="arial_20_intr_old.png"/>
+ <file source="arial_20_intr_old.txt"/>
+ <file source="arial_20_intr_old@2x.png"/>
+ <file source="arial_20_intr_old@2x.txt"/>
+ <file source="arial_50_new.png"/>
+ <file source="arial_50_new.txt"/>
+ <file source="arial_50_new@2x.png"/>
+ <file source="arial_50_new@2x.txt"/>
+ <file source="arial_50_old.png"/>
+ <file source="arial_50_old.txt"/>
+ <file source="arial_50_old@2x.png"/>
+ <file source="arial_50_old@2x.txt"/>
+ <file source="main.lua"/>
+</project>

@@ -1,0 +1,131 @@
+#ifndef TEXTUREBASE_H
+#define TEXTUREBASE_H
+
+#include "refptr.h"
+#include <map>
+class Application;
+
+class TextureBase : public Referenced
+{
+public:
+	enum Filter
+	{
+		eNearest,
+		eLinear,
+	};
+
+	enum Wrap
+	{
+		eClamp,
+		eRepeat,
+	};
+
+public:
+	unsigned int id;
+	int width, height;
+	int exwidth, exheight;
+	int baseWidth, baseHeight;
+	int baseExWidth, baseExHeight;
+
+	int memory;
+
+	bool base;
+
+	float scalex, scaley;
+
+protected:
+	TextureBase(Application* application)
+	{
+		id = 0;
+		width = height = 0;
+		exwidth = exheight = 0;
+		baseWidth = baseHeight = 0;
+		baseExWidth = baseExHeight = 0;
+
+		base = false;
+
+		scalex = 1;
+		scaley = 1;
+	}
+
+	TextureBase(Application* application,
+				const char* filename, Filter filter = eNearest, Wrap wrap = eClamp,
+				bool maketransparent = false, unsigned int transparentcolor = 0x00000000);
+
+	virtual ~TextureBase();
+
+private:
+	//int memory_;
+	static int totalMemory_;
+	std::string filename_;
+	Filter filter_;
+	Wrap wrap_;
+
+private:
+	struct TextureElementKey
+	{
+		TextureElementKey(	const std::string& filename,
+							Filter filter,
+							Wrap wrap,
+							bool mipmap) :
+			filename(filename),
+			filter(filter),
+			wrap(wrap),
+			mipmap(mipmap)
+		{
+
+		}
+
+		std::string filename;
+		Filter filter;
+		Wrap wrap;
+		bool mipmap;
+
+		inline friend bool operator < (const TextureElementKey& k0, const TextureElementKey& k1)
+		{
+			if (k0.filename < k1.filename)
+				return true;
+			if (k0.filename > k1.filename)
+				return false;
+
+			if (k0.filter < k1.filter)
+				return true;
+			if (k0.filter > k1.filter)
+				return false;
+
+			if (k0.wrap < k1.wrap)
+				return true;
+			if (k0.wrap > k1.wrap)
+				return false;
+
+			if (k0.mipmap < k1.mipmap)
+				return true;
+			if (k0.mipmap > k1.mipmap)
+				return false;
+
+			return false;
+		}
+	};
+	struct TextureElementValue
+	{
+		TextureElementValue() : refcount(1) {}
+
+		unsigned int id;
+		unsigned int refcount;
+
+		int width, height;
+		int exwidth, exheight;
+		int baseWidth, baseHeight;
+		int baseExWidth, baseExHeight;
+
+		int memory;
+
+		bool base;
+
+		float scalex, scaley;
+	};
+
+	static std::map<TextureElementKey, TextureElementValue> textureCache_;
+};
+
+#endif

@@ -1,0 +1,1 @@
+copy ..\..\debug\gid.dll debug

@@ -1,0 +1,1865 @@
+Class: Sprite > EventDispatcher
+
+The `Sprite` class is the base class for all objects that can
+be placed on the scene tree. It is the basic scene tree building block.
+
+A sprite can contain child sprites which makes the scene tree hierarchy.
+Transformations such as translation, rotation, scaling and
+color transforms propogates its effect to all of its children.
+
+The drawing order is defined by the order of children. First child is
+drawn first and last child is drawn last. It is possible to change
+the drawing order by modifying the order of child list.
+
+A `Sprite` instance can exists without attaching the scene tree.
+An unattached sprite can receive `Event.ENTER_FRAME` event but
+it will only receive mouse and touch events when it is
+attached to the scene tree.
+
+
+### Sprite Events
+
+* Event.ENTER_FRAME = "enterFrame"
+* Event.ADDED_TO_STAGE = "addedToStage"
+* Event.REMOVED_FROM_STAGE = "removedFromStage"
+* Event.MOUSE_DOWN = "mouseDown"
+* Event.MOUSE_MOVE = "mouseMove"
+* Event.MOUSE_UP = "mouseUp"
+* Event.TOUCHES_BEGIN = "touchesBegin"
+* Event.TOUCHES_MOVE = "touchesMove"
+* Event.TOUCHES_END = "touchesEnd"
+* Event.TOUCHES_CANCEL = "touchesCancel"
+
+Category: Graphics
+
+---------------------------------------
+
+Function: Sprite:addChild
+
+Adds a sprite as a child to this sprite. The child is
+added as a last child of this `Sprite` instance.
+
+Sprites can have only one parent. Therefore if you add a child
+object that already has a different sprite as a parent,
+the sprite is removed from the child list of the other sprite
+and then added to this sprite.
+
+Parameters:
+	child - (Sprite) The child sprite to add.
+
+See Also:
+[[Sprite:addChildAt]]
+
+---------------------------------------
+
+Function: Sprite:addChildAt
+
+Adds a sprite as a child to this sprite. The child is
+added at the index position specified. Indices start from 1.
+
+Sprites can have only one parent. Therefore if you add a child
+object that already has a different sprite as a parent,
+the sprite is removed from the child list of the other sprite
+and then added to this sprite.
+
+Parameters:
+	child - (Sprite) The child sprite to add.
+	index - (number) The index position to which the child is added. 
+
+See Also:
+[[Sprite:addChild]]
+
+---------------------------------------
+
+Function: Sprite:removeChild
+
+Removes the specified child `Sprite` instance from the child list of this `Sprite` instance.
+
+Parameters:
+	child - (Sprite) The child sprite to remove.
+
+See Also:
+[[removeChildAt]]
+
+
+---------------------------------------
+
+Function: Sprite:removeChildAt
+
+Removes the child `Sprite` instance at the specifed index. Index of the first child is 1
+and index of the last child can be get from `Sprite:getNumChildren` function.
+
+Parameters:
+	index - (number) The child index of the sprite to remove.
+
+
+---------------------------------------
+
+Function: Sprite:contains
+
+Determines whether the specified sprite is contained in the subtree of
+this `Sprite` instance.
+
+Parameters:
+	child - (Sprite) The child object to test.
+
+
+Returns:
+`true` if the child object is contained in the subtree of this `Sprite` instance, otherwise `false`.
+
+---------------------------------------
+
+Function: Sprite:globalToLocal
+
+Converts the x,y coordinates from the global to the sprite's (local) coordinates.
+
+
+Parameters:
+	x - (number) x coordinate of the global coordinate.
+	y - (number) y coordinate of the global coordinate.
+
+Returns:
+
+1. x coordinate relative to the display object.
+2. y coordinate relative to the display object.
+
+See Also:
+[[Sprite:localToGlobal]]
+
+
+
+---------------------------------------
+
+Function: Sprite:localToGlobal
+
+Converts the x,y coordinates from the sprites's (local) coordinates to the global coordinates.
+
+Parameters:
+	x - (number) x coordinate of the local coordinate.
+	y - (number) y coordinate of the local coordinate.
+
+Returns:
+
+1. x coordinate relative to the display area.
+2. y coordinate relative to the display area.
+
+See Also:
+[[Sprite:globalToLocal]]
+
+
+---------------------------------------
+
+Function: Sprite:getChildAt
+
+Returns the child `Sprite` instance that exists at the specified index. First child is at index 1.
+
+Parameters:
+	index - (number) The index position of the child object.
+
+Returns:
+The child sprite at the specified index position.
+
+---------------------------------------
+
+Function: Sprite:getChildIndex
+
+Returns the index of the specified child sprite.
+
+Parameters:
+	child - (Sprite) The child sprite to identify.
+	
+Returns:
+The index of the specified child sprite.
+
+---------------------------------------
+
+Function: Sprite:getHeight
+
+Returns the height of the sprite, in pixels. The height is calculated based on the
+bounds of the content of the sprite.
+
+Returns:
+Height of the sprite.
+
+
+---------------------------------------
+
+Function: Sprite:getWidth
+
+Returns the width of the sprite, in pixels. The width is calculated based on the
+bounds of the content of the sprite.
+
+Returns:
+Width of the sprite.
+
+---------------------------------------
+
+Function: Sprite:getRotation
+
+Returns the rotation of the sprite in degrees.
+
+Returns:
+Rotation of the sprite.
+
+
+---------------------------------------
+
+Function: Sprite:setRotation
+
+Sets the rotation of the sprite in degrees.
+
+Parameters:
+	rotation - (number) rotation of the sprite
+
+
+---------------------------------------
+
+Function: Sprite:getScaleX
+
+Returns the horizontal scale of the sprite.
+
+Returns:
+The horizontal scale (percentage) of the sprite.
+
+
+---------------------------------------
+
+Function: Sprite:setScaleX
+
+Sets the horizontal scale of the sprite.
+
+Parameters:
+	scaleX - (number) horizontal scale of the sprite
+
+
+---------------------------------------
+
+Function: Sprite:getScaleY
+
+Returns the vertical scale of the sprite.
+
+Returns:
+The vertical scale of the object.
+
+---------------------------------------
+
+Function: Sprite:setScaleY
+
+Sets the vertical scale of the sprite.
+
+Parameters:
+	scaleY - (number) vertical scale (percentage) of the object
+
+---------------------------------------
+
+Function: Sprite:getScale
+
+Returns the horizontal and vertical scales of the sprite.
+
+Returns:
+The horizontal and vertical scales of the sprite
+
+---------------------------------------
+
+Function: Sprite:setScale
+
+Sets the horizontal and vertical scales of the sprite.
+
+Parameters:
+	scaleX - (number) horizontal scale (percentage) of the object
+	scaleY - (number, default = scaleX) vertical scale (percentage) of the object
+
+---------------------------------------
+
+Function: Sprite:isVisible
+
+Returns whether or not the sprite is visible. Child sprites that are not visible are also taken
+into consideration while calculating bounds.
+
+Returns:
+A value of `true` if sprite is visible; `false` otherwise.
+
+
+
+---------------------------------------
+
+Function: Sprite:setVisible
+
+Sets whether or not the sprite is visible. Sprites that are not visible are also taken
+into consideration while calculating bounds.
+
+Parameters:
+	visible - (bool) whether or not the sprite is visible
+
+
+---------------------------------------
+
+Function: Sprite:getX
+
+Returns the x coordinate of the sprite.
+
+Returns:
+The x coordinate of the sprite
+
+
+---------------------------------------
+
+Function: Sprite:setX
+
+Sets the x coordinate of the sprite
+
+Parameters:
+	x - (number) The new x coordinate of the sprite
+
+
+---------------------------------------
+
+Function: Sprite:getY
+
+Returns the y coordinate of the sprite.
+
+Returns:
+The y coordinate of the sprite
+
+
+---------------------------------------
+
+Function: Sprite:setY
+
+Sets the y coordinate of the sprite.
+
+Parameters:
+	y - (number) The new y coordinate of the sprite
+
+---------------------------------------
+
+Function: Sprite:getPosition
+
+Returns the x and y coordinates of the sprite.
+
+Returns:
+The x and y coordinates of the sprite
+
+---------------------------------------
+
+Function: Sprite:setPosition
+
+Sets the x and y coordinates of the sprite.
+
+Parameters:
+	x - (number) The new x coordinate of the sprite
+	y - (number) The new y coordinate of the sprite
+
+---------------------------------------
+
+Function: Sprite:set
+
+Sets the specified property of this sprite instance by its name. These names are supported:
+
+* `"x"`
+* `"y"`
+* `"rotation"`
+* `"scaleX"`
+* `"scaleY"`
+* `"scale"`
+* `"alpha"`
+* `"redMultiplier"`
+* `"greenMultiplier"`
+* `"blueMultiplier"`
+* `"alphaMultiplier"`
+
+Parameters:
+	param - (string) The name of the parameter
+	value - (number) The new value of the specified parameter
+
+Example:
+	-- the following two lines do the same thing
+	sprite:setX(10)
+	sprite:set("x", 10)
+		
+	-- the following two lines do the same thing
+	sprite:setY(10)
+	sprite:set("y", 10)
+
+	-- the following two lines do the same thing
+	sprite:setRotation(10)
+	sprite:set("rotation", 10)
+	
+	-- the following two lines do the same thing
+	sprite:setScaleX(0.5)
+	sprite:set("scaleX", 0.5)
+
+	-- the following two lines do the same thing
+	sprite:setScaleY(0.5)
+	sprite:set("scaleY", 0.5)
+
+	-- the following two lines do the same thing
+	sprite:setScale(0.5)
+	sprite:set("scale", 0.5)
+
+---------------------------------------
+
+Function: Sprite:get
+
+Returns the specified property of this sprite instance by its name. These names are supported:
+
+* `"x"`
+* `"y"`
+* `"rotation"`
+* `"scaleX"`
+* `"scaleY"`
+* `"alpha"`
+* `"redMultiplier"`
+* `"greenMultiplier"`
+* `"blueMultiplier"`
+* `"alphaMultiplier"`
+
+Parameters:
+	param - (string) The name of the parameter
+
+Returns:
+The value of the parameter
+
+Example:
+	-- the following two lines do the same thing
+	x = sprite:getX()
+	x = sprite:get("x")
+		
+	-- the following two lines do the same thing
+	y = sprite:getY()
+	y = sprite:get("y")
+
+	-- the following two lines do the same thing
+	rotation = sprite:getRotation()
+	rotation = sprite:get("rotation")
+	
+	-- the following two lines do the same thing
+	scaleX = sprite:getScaleX()
+	scaleX = sprite:get("scaleX")
+
+	-- the following two lines do the same thing
+	scaleY = sprite:getScaleY()
+	scaleY = sprite:get("scaleY")
+	
+---------------------------------------
+
+Function: Sprite:getParent
+
+Returns the `Sprite` object that contains this `Sprite` object.
+
+Returns:
+The parent sprite.
+
+---------------------------------------
+
+Function: Sprite:getNumChildren
+
+Returns the number of children of this sprite.
+
+Returns:
+The number of children of this sprite.
+
+
+Example:
+	local container1 = Sprite.new()
+	local container2 = Sprite.new()
+
+	local sprite1 = Sprite.new();
+	local sprite2 = Sprite.new();
+
+	container2:addChild(container1)
+	container1:addChild(sprite1)
+	container1:addChild(sprite2)
+
+	print(container1:getNumChildren()) --> 2
+	print(container2:getNumChildren()) --> 1
+	print(sprite1:getNumChildren()) --> 0
+	print(sprite2:getNumChildren()) --> 0
+
+---------------------------------------
+
+Function: Sprite:getAlpha
+
+Returns the alpha transparency of this sprite. 0 means fully transparent and 1 means fully opaque.
+
+Returns:
+The alpha of the sprite
+
+
+---------------------------------------
+
+Function: Sprite:setAlpha
+
+Sets the alpha transparency of this sprite. 0 means fully transparent and 1 means fully opaque.
+
+Parameters:
+	alpha - (number) The new alpha transparency of the sprite
+
+
+---------------------------------------
+
+Function: Sprite:setColorTransform
+
+Sets the red, green, blue and alpha channel multipliers. This function lets you adjust the color multipliers of a display object.
+This adjustment also applies to the children of this sprite instance.
+
+Parameters:
+	redMultiplier - (number, default = 1) The red multiplier of this sprite
+	greenMultiplier - (number, default = 1) The green multiplier of this sprite
+	blueMultiplier - (number, default = 1) The blue multiplier of this sprite
+	alphaMultiplier - (number, default = 1) The alpha multiplier of this sprite
+
+---------------------------------------
+
+Function: Sprite:getColorTransform
+Returns the red, green, blue and alpha channel multipliers.
+
+Returns:
+4 values: redMultiplier, greenMultiplier, blueMultiplier and alphaMultiplier
+
+---------------------------------------
+
+Function: Sprite:hitTestPoint
+
+Checks whether the given coordinates (in global coordinate system) is in bounds of the sprite.
+
+
+Parameters:
+	x - (number)
+	y - (number)
+
+Returns:
+`true` if the given global coordinates are in bounds of the sprite, `false` otherwise.
+
+---------------------------------------
+
+Function: Sprite:getMatrix
+
+Returns the transformation matrix of the sprite. Each invocation of this function returns a new `Matrix` object.
+
+Returns:
+The transformation matrix of the sprite
+
+---------------------------------------
+
+Function: Sprite:setMatrix
+
+Sets the transformation matrix of the sprite.
+
+Parameters:
+matrix - (Matrix)
+
+---------------------------------------
+
+Function: Sprite:removeFromParent
+
+If the sprite has a parent, removes the sprite from the child list of its parent sprite. This function is equilavent to:
+
+	function Sprite:removeFromParent()
+		local parent = self:getParent()
+		if parent ~= nil then
+			parent:removeChild(self)
+		end
+	end
+
+---------------------------------------
+
+Function: Sprite:setBlendMode
+
+Sets the blend mode of the sprite. Currently supported blending modes are:
+
+* Sprite.ALPHA = "alpha" 
+* Sprite.NO_ALPHA = "noAlpha"
+* Sprite.ADD = "add"
+* Sprite.MULTIPLY = "multiply"
+* Sprite.SCREEN = "screen"
+
+If a `Sprite` object doesn't set any blending mode, it takes the blending mode from its parent sprite.
+
+**Note:** The following two lines are completely same:
+	sprite:setBlendMode("add")
+	sprite:setBlendMode(Sprite.ADD)
+It's a matter of taste which one to choose.
+
+Parameters:
+blendMode - (String)
+
+---------------------------------------
+
+Function: Sprite:clearBlendMode
+
+Clears the blending mode.
+
+---------------------------------------
+
+Function: Sprite:getBounds
+
+Returns a rectangle (as x, y, width and height) that encloses the sprite as it appears in another sprite's coordinate system.
+
+Parameters:
+targetSprite - (Sprite) the sprite that defines the other coordinate system to transform
+
+Example:
+	local x, y, width, height = sprite:getBounds(sprite) -- returns local (untransformed) bounds
+	local x, y, width, height = sprite:getBounds(stage) -- returns bounds as transformed to stage's coordinate system
+
+Returns:
+4 values as x, y, width and height of bounds
+	
+---------------------------------------
+
+Class: Stage > Sprite
+
+
+The `Stage` class represents the top of the scene tree hierarchy. The instances of `Stage` is not created directly (there is not any `Stage.new` function) but
+there is already a global variable `stage`.
+
+Category: Graphics
+
+
+---------------------------------------
+
+Function: Stage:setBackgroundColor (obsolete)
+
+**This function is obsolete. Use [[Application:setBackgroundColor]] instead.**
+
+Sets the background color (or clear color) of the application. Default background color is white (1, 1, 1).
+
+Parameters:
+	r - (number) red component of background color
+	g - (number) green component of background color
+	b - (number) blue component of background color
+
+---------------------------------------
+
+Function: Stage:getBackgroundColor (obsolete)
+
+**This function is obsolete. Use [[Application:getBackgroundColor]] instead.**
+
+Returns the r, g, b values of background color.
+
+Returns:
+The r, g, b values of background color.
+
+---------------------------------------
+
+Function: Stage:setOrientation (obsolete)
+
+**This function is obsolete. Use [[Application:setOrientation]] instead.**
+
+* Stage.PORTRAIT = "portrait"
+* Stage.PORTRAIT_UPSIDE_DOWN = "portraitUpsideDown"
+* Stage.LANDSCAPE_LEFT = "landscapeLeft"
+* Stage.LANDSCAPE_RIGHT = "landscapeRight"
+
+
+Parameters:
+	orientation - (string)
+
+Example:
+	stage:setOrientation(Stage.PORTRAIT)             -- the buttons are on the bottom
+	stage:setOrientation(Stage.PORTRAIT_UPSIDE_DOWN) -- the buttons are at the top
+	stage:setOrientation(Stage.LANDSCAPE_LEFT)       -- the buttons are on the right side
+	stage:setOrientation(Stage.LANDSCAPE_RIGHT)      -- the buttons are on the left side
+
+---------------------------------------
+
+Function: Stage:getOrientation (obsolete)
+
+**This function is obsolete. Use [[Application:getOrientation]] instead.**
+
+Returns the orientation of the stage.
+
+Returns:
+The orientation of the stage
+
+---------------------------------------
+
+Class: TextureBase
+
+`TextureBase` is the base class for `Texture` and `TexturePack` classes. It provides a common functionaly to texture related classes.
+
+* TextureBase.CLAMP = "clamp"
+* TextureBase.REPEAT = "repeat"
+
+Category: Graphics
+
+---------------------------------------
+
+Function: TextureBase:getWidth
+
+Returns the width of the texture in pixels.
+
+Returns:
+The width of the texture in pixels.
+
+
+---------------------------------------
+
+Function: TextureBase:getHeight
+
+Returns the height of the texture in pixels.
+
+Returns:
+The height of the texture in pixels.
+
+---------------------------------------
+
+Class: Texture > TextureBase
+
+
+The `Texture` class lets you work with textures in an application. The `Texture` class lets you create
+a new `Texture` object to load from an image file and display in scene tree.
+
+Category: Graphics
+
+---------------------------------------
+
+Function: Texture.new
+
+Creates a new Texture object.
+
+Parameters:
+	filename - (string) The name of the texture file to be loaded.
+	filtering - (boolean, default = false) Whether or not the texture is filtered.
+	options - (table, optional) A table that specifies optional paramaters. Currently, "transparentColor" and "wrap" fields are supported.
+	
+Example:
+	local texture = Texture.new("image.png", false, {transparentColor = 0xff00ff})	-- do not filter and make the color 0xff00ff transparent
+	local texture = Texture.new("image.png", true, {wrap = Texture.REPEAT})	-- enable filtering and repeat the texture
+	
+---------------------------------------
+
+Class: TextureRegion
+
+The `TextureRegion` class specifies a texture and a rectangular region in it. It is used to define independent texture regions
+within a texture atlas which is a large image, which contains many smaller sub-images.
+
+Category: Graphics
+
+Example:
+	local texture = Texture.new("atlas.png")
+
+	-- define 4 equal regions of size 100x100 from "atlas.png"
+	local region1 = TextureRegion.new(texture, 0,   0,   100, 100)
+	local region2 = TextureRegion.new(texture, 100, 0,   100, 100)
+	local region3 = TextureRegion.new(texture, 100, 100, 100, 100)
+	local region4 = TextureRegion.new(texture, 0,   100, 100, 100)
+
+	-- add these regions to scene tree
+	local bitmap1 = Bitmap.new(region1)
+	local bitmap2 = Bitmap.new(region2)
+	local bitmap3 = Bitmap.new(region3)
+	local bitmap4 = Bitmap.new(region4)
+
+	stage:addChild(bitmap1)
+	stage:addChild(bitmap2)
+	stage:addChild(bitmap3)
+	stage:addChild(bitmap4)
+
+---------------------------------------
+
+Function: TextureRegion.new
+
+Creates a new TextureRegion object.
+
+Parameters:
+	texture - (TextureBase) texture object
+
+
+---------------------------------------
+
+Function: TextureRegion.new
+
+Creates a new TextureRegion object.
+
+* If TextureRegion object is created with 1 parameter (texture), it specifies the whole texture.
+* If TextureRegion object is created with 5 parameters (texture, x, y, width, height), if specifies a rectangular region within texture.
+
+Parameters:
+	texture - (TextureBase) texture object
+	x - (number) left coordinate of the region
+	y - (number) top coordinate of the region
+	width - (number) width of the region
+	height - (number) height of the region
+
+---------------------------------------
+
+Function: TextureRegion:setRegion
+
+Sets the coordinates of the region.
+
+Parameters:
+	x - (number) left coordinate of the region
+	y - (number) top coordinate of the region
+	width - (number) width of the region
+	height - (number) height of the region
+
+
+---------------------------------------
+
+Function: TextureRegion:getRegion
+
+Returns the coordinates of the region.
+
+Returns:
+The coordinates of the region as 4 values: x, y, width and height
+
+
+---------------------------------------
+
+
+Class: TexturePack > TextureBase
+
+The `TexturePack` class specifies a texture pack (or texture atlas). A texture atlas is a large image which contains many smaller sub-images.
+Gideros supports dynamic creation of texture atlases and pre-packed texture atlasses by using "Gideros Texture Packer" tool.
+
+
+### Dynamic Creation of Texture Packs
+
+To create a texture pack dynamically (at run-time), create `TexturePack` object with a table of file names of textures.
+
+	local pack = TexturePack.new({"1.png", "2.png", "3.png", "4.png")}
+
+
+### Static Creation of Texture Packs
+
+To create a pre-packed texture atlas, use "Gideros Texture Packer" tool:
+
+![Gideros Texture Packer](images/texture_packer.png "Gideros Texture Packer")
+
+
+This tool exports two files: A **.txt** file that specifes the positions of texture regions and a **.png** file of packed texture.
+Use these two files to create texture pack:
+
+
+	local pack = TexturePack.new("pack.txt", "pack.png")
+
+Category: Graphics
+
+---------------------------------------
+
+
+Function: TexturePack.new
+
+Creates a new `TexturePack` object. This function creates the texture pack at runtime.
+
+Parameters:
+	textures - (table) file names of textures.
+	padding - (number) the spacing between textures in pixels
+	filtering - (boolean, default = false) Whether or not the texture is filtered.
+	options - (table, optional) A table that specifies optional paramaters. Currently "transparentColor" field is supported.
+	
+
+---------------------------------------
+
+Function: TexturePack.new
+
+Creates a new `TexturePack` object. This function loads the pre-packed texture atlas created by "Gideros Texture Packer" tool.
+
+Parameters:
+	txtfile - (string)
+	imagefile - (string)
+	filtering - (boolean, default = false) Whether or not the texture is filtered.
+	options - (table, optional) A table that specifies optional paramaters. Currently "transparentColor" field is supported.
+
+---------------------------------------
+
+Function: TexturePack:getTextureRegion
+
+Returns the texture region of texture pack.
+
+Returns:
+`TextureRegion` object that specifies the region within the texture pack.
+
+Parameters:
+	texturename - (string)
+
+
+Example:
+
+	local pack = TexturePack.new({"gfx/1.png", "gfx/2.png", "gfx/3.png", "gfx/4.png"})
+
+	local region1 = pack:getTextureRegion("gfx/1.png")
+	local region2 = pack:getTextureRegion("gfx/2.png")
+	local region3 = pack:getTextureRegion("gfx/3.png")
+	local region4 = pack:getTextureRegion("gfx/4.png")
+
+
+---------------------------------------
+
+Class: Bitmap > Sprite
+
+The `Bitmap` class is used to display texture related objects in the scene tree. It is possible to create Bitmap object from `TextureBase` or `TextureRegion` instances.
+
+Category: Graphics
+
+---------------------------------------
+
+Function: Bitmap.new
+
+Creates a new `Bitmap` object.
+
+
+Parameters:
+	texture - (TextureBase or TextureRegion)
+
+
+Example:
+
+	local texture = Texture.new("image.png")
+
+	local region = TextureRegion.new(texture, 0, 0, 100, 50)
+
+	local bitmap1 = Bitmap.new(texture)
+	local bitmap2 = Bitmap.new(region)
+
+	stage:addChild(bitmap1)
+	stage:addChild(bitmap2)
+
+---------------------------------------
+
+Function: Bitmap:setAnchorPoint
+
+Sets the anchor point of `Bitmap` object. 
+
+Each `Bitmap` object has an anchor point that affects the positioning of the texture displayed. By modifying the anchor point, you change the origin of the texture. For example, setting the anchor point to (0.5, 0.5) moves the center of the texture to the origin. If you set the anchor point to (1, 1) instead, the bottom-right corner of the texture will be the origin. The default value of anchor point is (0, 0) which means top-left of the texture is the origin by default.
+
+Parameters:
+	x - (number) The x coordinate of anchor point. Usually between [0, 1].
+	y - (number) The y coordinate of anchor point. Usually between [0, 1].
+
+---------------------------------------
+
+Function: Bitmap:getAnchorPoint
+
+Returns the x and y coordinates of the anchor point.
+
+Returns:
+The x and y coordinates of the anchor point.
+
+---------------------------------------
+
+Function: Bitmap:setTexture
+
+Sets the texture.
+
+Parameters:
+	texture - (TextureBase)
+
+---------------------------------------
+
+Function: Bitmap:setTextureRegion
+
+Sets the texture region.
+
+Parameters:
+	textureRegion - (TextureRegion)
+
+---------------------------------------
+
+Class: FontBase
+
+`FontBase` is the base class for `Font` and `TTFont` classes.
+
+Category: Graphics
+
+---------------------------------------
+
+Function: FontBase:getBounds
+
+Returns the tight bounding rectangle of the characters in the string specified by `text`.
+
+Parameters:
+	text - (string)
+
+Returns:
+4 values as x, y, width and height of bounds
+
+---------------------------------------
+
+Function: FontBase:getAdvanceX
+
+Returns the width of the first `size` characters of `text`. 
+Note that this value is not equal to the 3rd return value (width) of `getBounds()`. 
+`getBounds()` returns a rectangle describing the bounds this string will cover 
+whereas `getAdvanceX()` returns the distance to where the next string should be drawn.
+
+Parameters:
+	text - (string)
+	letterSpacing - (number, default = 0)
+	size - (number, optional) 
+
+Returns:
+The width of the first size characters of text. 
+
+---------------------------------------
+
+Function: FontBase:getAscender
+
+Returns the ascender of the font. The ascender of a font is the distance from the baseline to the highest position characters extend to.
+
+Returns:
+The ascender of the font
+
+---------------------------------------
+
+Function: FontBase:getLineHeight
+
+Returns the distance from one base line to the next.
+
+Returns:
+The distance from one base line to the next.
+
+---------------------------------------
+
+Class: Font > FontBase
+
+The 'Font' class is used to load fonts created by "Gideros Font Creator".
+
+![Gideros Font Creator](images/font_creator.png "Gideros Font Creator")
+
+
+Gideros Font Creator exports two files: A **.txt** file that specifes the positions of character glyph a **.png** file of font.
+Use these two files to create `Font` object as:
+
+
+	local font = Font.new("font.txt", "font.png")
+
+Category: Graphics
+
+---------------------------------------
+
+Function: Font.new
+
+Creates a new `Font` object.
+
+Parameters:
+	txtfile - (string)
+	imagefile - (string)
+	filtering - (boolean, default = false) Whether or not the font texture is filtered
+
+---------------------------------------
+
+Class: TTFont > FontBase
+
+The `TTFont` class is used to load true type fonts. 
+
+---------------------------------------
+
+Function: TTFont.new
+
+Creates a new `TTFont` object.
+
+Parameters:
+	filename - (string) The name of the TTF file to be loaded
+	size - (number) size of the font
+	text - (string, optional) if specified, TTFont caches the characters of this test to speed up the rendering
+	filtering - (boolean, default = false) Whether or not the font texture is filtered
+
+---------------------------------------
+
+Class: TextField > Sprite
+
+The `TextField` class is used to create display objects for text display.
+
+Category: Graphics
+
+Example:
+
+	local font = Font.new("myfont.txt", "myfont.png")
+
+	local textfield = TextField.new(font, "some text")
+
+	stage:addChild(textfield)
+
+	textfield:setText("some other text")		-- change the text
+
+	-- to use the default font, pass nil value for the font parameter
+	local textfield2 = TextField.new(nil, "some other text with default font")
+
+---------------------------------------
+
+Function: TextField.new
+
+Creates a new `TextField` object with the specified font and text. Gideros runtime includes a
+default font. If you specify `nil` for the font parameter while creating the `TextField` object, default font is used.
+
+Parameters:
+	font - (FontBase) The font used for displaying this `TextField` object. If nil, default font is used.
+	text - (string, optional) The text to be displayed.
+
+---------------------------------------
+
+
+Function: TextField:setText
+
+Sets the text to be displayed.
+
+Parameters:
+	text - (string) The text to be displayed.
+
+
+---------------------------------------
+
+Function: TextField:getText
+
+Returns the text displayed.
+
+Returns:
+	The text displayed.
+
+
+---------------------------------------
+
+
+Function: TextField:setTextColor
+
+
+Sets the color of the text in a text field in hexadecimal format.
+
+
+Parameters:
+	color - (number) color of the text in hexadecimal format.
+
+
+Example:
+	textfield:setTextColor(0xff0000)	-- red
+	textfield:setTextColor(0x00ff00)	-- green
+	textfield:setTextColor(0x0000ff)	-- blue
+
+
+---------------------------------------
+
+Function: TextField:getTextColor
+
+Returns:
+The color of the text in a text field, in hexadecimal format.
+
+
+---------------------------------------
+
+Function: TextField:setLetterSpacing
+
+Sets the letter-spacing property which is used to increase or decrease the space between characters in a text.
+
+Parameters:
+	spacing - (number)
+
+---------------------------------------
+
+Function: TextField:getLetterSpacing
+
+Returns the letter-spacing property which is used to increase or decrease the space between characters in a text.
+
+Returns:
+The letter-spacing property of the text field.
+
+
+---------------------------------------
+
+Class: Shape > Sprite
+
+The `Shape` class is used create and display vector graphics.
+
+Category: Graphics
+
+---------------------------------------
+
+Function: Shape.new
+
+Creates a new `Shape` object.
+
+---------------------------------------
+
+Function: Shape:setFillStyle
+
+Sets the fill style that `Shape` object uses for subsequent drawings. The fill style remains in effect until you call `setFillStyle()` function with different
+parameters.
+
+`type` parameter can be one of the following values:
+
+* **Shape.NONE:** Clears the fill style.
+* **Shape.SOLID:** Sets the fill style as a solid color. In this mode, the parameters are color (in hexedecial value) and an optional alpha value.
+* **Shape.TEXTURE:** Sets the fill style as a textured. In this mode, the parameters are texture and an optional transformation matrix.
+
+See the following example for more detailed usage of this function.
+
+Parameters:
+	type - (string) The type of the fill. Can be one of the Shape.NONE, Shape.SOLID or Shape.TEXTURE.
+	... - Parameters of the fill style.
+
+Example:
+	setFillStyle(Shape.NONE)						-- clears the fill style
+
+	setFillStyle(Shape.SOLID, 0xff0000)				-- sets the fill style as solid red color
+
+	setFillStyle(Shape.SOLID, 0xff0000, 0.5)		-- sets the fill style as solid red color with 0.5 transparency
+
+	local texture = Texture.new("image.png")
+	setFillStyle(Shape.TEXTURE, texture)			-- sets the fill style as texture with "image.png"
+
+	local matrix = Matrix.new(0.5, 0, 0, 0.5, 0, 0)
+	setFillStyle(Shape.TEXTURE, texture, matrix)	-- sets the fill style as texture with "image.png" with a transformation matrix
+<!--
+	setFillStyle(Shape.LINEAR_GRADIENT, {}, {}, {}, (optional) matrix)		-- not supported yet
+	setFillStyle(Shape.RADIAL_GRADIENT, {}, {}, {}, (optional) matrix)		-- not supported yet
+-->
+
+---------------------------------------
+
+Function: Shape:setLineStyle
+
+Sets the line style that `Shape` object uses for subsequent drawings. The line style remains in effect until you call `setLineStyle()` function with different
+parameters.
+
+Parameters:
+	width - (number) The width of the line. If this parameter is 0, line is not drawn.
+	color - (number, default = 0x000000) A hexadecimal color value of the line. For example, red is 0xFF0000, blue is 0x0000FF, and so on.
+	alpha - (number, default = 1) The alpha value of the color of the line.
+
+---------------------------------------
+
+Function: Shape:beginPath
+
+Resets the current path.
+
+Parameters:
+	winding - (string, default = Shape.EVEN_ODD) Specifies the winding rule. It can be either Shape.EVEN_ODD or Shape.NON_ZERO.
+
+---------------------------------------
+
+Function: Shape:moveTo
+
+Creates a new subpath with the given point.
+
+Parameters:
+	x - (number) x coordinate of the point.
+	y - (number) y coordinate of the point.
+
+---------------------------------------
+
+Function: Shape:lineTo
+
+Adds the given point to the current subpath, connected to the previous one by a straight line.
+
+Parameters:
+	x - (number) x coordinate of the point.
+	y - (number) y coordinate of the point.
+
+---------------------------------------
+
+Function: Shape:endPath
+
+Ends the current path and draws the geometry by using the specified line and fill styles. 
+
+---------------------------------------
+
+Function: Shape:closePath
+
+Marks the current subpath as closed, and starts a new subpath with a point the same as the start and end of the newly closed subpath.
+
+---------------------------------------
+
+Function: Shape:clear
+
+Clears the graphics that were drawn to this `Shape` object, and resets fill and line style settings.
+
+---------------------------------------
+
+Class: TileMap > Sprite
+
+The `TileMap` class is used to work with tile maps easily and efficiently.
+
+Category: Graphics
+
+---------------------------------------
+
+Function: TileMap.new
+
+Creates a new `TileMap` instance.
+
+Parameters:
+	width - (number) The width of the map in tiles
+	height - (number) The height of the map in tiles
+	texture - (TextureBase) The texture used in rendering tile map
+	tilewidth - (number) The width of a tile in pixels
+	tileheight - (number) The height of a tile in pixels
+	spacingx - (number, default = 0) The x-spacing in pixels between the tiles in this tileset
+	spacingy - (number, default = 0) The y-spacing in pixels between the tiles in this tileset
+	marginx - (number, default = 0) The x-margin from the top-left of the texture
+	marginy - (number, default = 0) The y-margin from the top-left of the texture
+	displaywidth - (number, default = tilewidth) The display width of a tile in pixels
+	displayheight - (number, default = tileheight) The display height of a tile in pixels
+	
+
+---------------------------------------
+
+Function: TileMap:getTile
+
+Returns the index of the tile. The tile indices are starting from 1.
+
+Parameters:
+	x - (number) The x-position of tile
+	y - (number) The y-position of tile
+
+Returns:
+If the tile is empty, returns `nil`, otherwise returns x,y index and flip flag of the tile.
+
+
+---------------------------------------
+
+Function: TileMap:setTile
+
+Sets the index of the tile. The tile indices are starting from 1.
+
+Parameters:
+	x - (number) The x-position of tile
+	y - (number) The y-position of tile
+	tx - (number) The x-index of the tile
+	ty - (number) The y-index of the tile
+	flip - (number, default = 0) flip flag of tile. Can be combination of TileMap.FLIP_HORIZONTAL, TileMap.FLIP_VERTICAL and TileMap.FLIP_DIAGONAL
+
+
+---------------------------------------
+
+Function: TileMap:clearTile
+
+Set an empty tile at given indices. The tile indices are starting from 1.
+
+Parameters:
+	x - (number) The x-position of tile
+	y - (number) The y-position of tile
+
+---------------------------------------
+
+Function: TileMap:shift
+Shifts the tile map. The arguments are in tiles, not in pixels. By shifting the tile map one by one as needed, you can create dynamic tile maps.
+
+Parameters:
+	dx - (number) The x amount of shift in tiles
+	dy - (number) The y amount of shift in tiles
+
+Example:
+
+	tilemap:shift(-1, 0)  -- shifts the tile map to the left
+	tilemap:shift(1, 0)	  -- shifts the tile map to the right
+	tilemap:shift(0, -1)  -- shifts the tile map to the up
+	tilemap:shift(0, 1)   -- shifts the tile map to the down
+
+---------------------------------------
+
+Class: MovieClip > Sprite
+
+The `MovieClip` class inherits from the following classes: `Sprite` > `EventDispatcher`.
+
+The `MovieClip` class is used create static timedlined animations. The timeline parameters are given as an array. 
+Each array element specifies one timeline element and consists of the starting frame, ending frame, sprite and 
+optional tweening parameters. Frame numbers start from 1.
+
+When a `MovieClip` object finishes it playing (by reaching its final frame or a frame with stop action), 
+it dispatches an `Event.COMPLETE` event.
+
+The following properties can be tweened:
+
+* `x`
+* `y`
+* `rotation`
+* `scale`
+* `scaleX`
+* `scaleY`
+* `alpha`
+
+The following easing functions can be used:
+
+ * `"inBack"`
+ * `"outBack"`
+ * `"inOutBack"`
+ * `"inBounce"`
+ * `"outBounce"`
+ * `"inOutBounce"`
+ * `"inCircular"`
+ * `"outCircular"`
+ * `"inOutCircular"`
+ * `"inCubic"`
+ * `"outCubic"`
+ * `"inOutCubic"`
+ * `"inElastic"`
+ * `"outElastic"`
+ * `"inOutElastic"`
+ * `"inExponential"`
+ * `"outExponential"`
+ * `"inOutExponential"`
+ * `"linear"`
+ * `"inQuadratic"`
+ * `"outQuadratic"`
+ * `"inOutQuadratic"`
+ * `"inQuartic"`
+ * `"outQuartic"`
+ * `"inOutQuartic"`
+ * `"inQuintic"`
+ * `"outQuintic"`
+ * `"inOutQuintic"`
+ * `"inSine"`
+ * `"outSine"`
+ * `"inOutSine"`
+
+Following examples demonstrates the possible uses of MovieClip class.
+
+Example:
+	-- construct a 100 frame animation where x coordinate of sprite tweens from 0 to 200 linearly
+	local mc = MovieClip.new{
+		{1, 100, sprite, {x = {0, 200, "linear"}}}
+	}
+
+	-- construct a 100 frame animation where x coordinate of sprite is 50 (constant) and 
+	-- y coordinate of sprite tweens from 50 to 150 by using inBounce function
+	local mc = MovieClip.new{
+		{1, 100, sprite, {x = 50, y = {50, 150, "inBounce"}}}
+	}
+	
+	-- construct a 200 frame animation where sprite1 and sprite2 tweens differently
+	-- here sprite1 is visible between frames [1, 150]
+	-- and sprite2 is visible between frames [100, 200]
+	local mc = MovieClip.new{
+		{1, 100, sprite1, {x = {0, 200, "linear"}}},
+		{50, 150, sprite1, {y = {0, 100, "linear"}}, {alpha = {0, 1, "easeOut"}}},
+		{100, 200, sprite2, {x = {0, 200, "linear"}}},
+	}
+
+	-- construct a looping 6 frame animation where each frame is a different sprite
+	local mc = MovieClip.new{
+		{1, 1, frame1},	
+		{2, 2, frame2},	
+		{3, 3, frame3},	
+		{4, 4, frame4},	
+		{5, 5, frame5},	
+		{6, 6, frame6},
+	}
+	mc:setGotoAction(6, 1)	-- if the animation reaches frame 6 then go to frame 1
+							
+	-- construct a looping 6 frame animation playing 5 times slower than the previous example
+	local mc = MovieClip.new{
+		{1, 5, frame1},	
+		{5, 10, frame2},	
+		{11, 15, frame3},	
+		{16, 20, frame4},	
+		{21, 25, frame5},	
+		{26, 30, frame6},
+	}
+	mc:setGotoAction(30, 1)	-- if the animation reaches frame 30 then go to frame 1
+
+Category: Graphics
+
+---------------------------------------
+
+Function: MovieClip.new
+
+Creates a new `MovieClip` object. After constructing the MovieClip object, it starts playing. You don't need to
+call [[MovieClip:play]].
+
+Parameters:
+	timeline - (table) array of timeline elements
+
+---------------------------------------
+
+Function: MovieClip:play
+
+Starts playing the movie clip.
+
+---------------------------------------
+
+Function: MovieClip:stop
+
+Stops playing the movie clip.
+
+---------------------------------------
+
+Function: MovieClip:gotoAndPlay
+
+Goes to the specified frame and starts playing.
+
+Parameters:
+	frame - (int) the frame number
+
+---------------------------------------
+
+Function: MovieClip:gotoAndStop
+
+Goes to the specified frame and stops.
+
+Parameters:
+	frame - (int) the frame number
+
+---------------------------------------
+
+Function: MovieClip:setGotoAction
+
+Sets a *goto* action to the specified frame. When the movie clip reaches a frame 
+with goto action, it jumps to the destination frame and continues to play. 
+This function is usually used to create looping animations.
+
+Parameters:
+	frame - (int) the frame number
+	destframe - (int) the destination frame number
+
+---------------------------------------
+
+Function: MovieClip:setStopAction
+
+Sets a *stop* action to the specified frame. When the movie clip reaches a frame 
+with stop action, it stops playing. This function is usually used to divide
+the animation into independent parts.
+
+Parameters:
+	frame - (int) the frame number
+
+---------------------------------------
+
+Function: MovieClip:clearAction
+
+Clears the action (goto or stop) at the specified frame.
+
+
+Parameters:
+	frame - (int) the frame number
+---------------------------------------
+
+Class: Mesh > Sprite
+
+Mesh class is used to create and display custom constructed set of triangles (triangle meshes). It basically consists of
+4 arrays: vertex, index, color (optional), textureCoordinate (optional) and a texture (optional) and it provides more than
+one way to set/modify these arrays.
+
+**Note 1:** Mesh class doesn't do bounds check. If an element at index array points to an non-existent vertex, the application may crash.  
+**Note 2:** If color array is set, then `setAlpha` and `setColorTransform` functions doesn't effect the Mesh sprite.
+
+---------------------------------------
+
+Function: Mesh.new
+
+Creates a new `Mesh` object.
+
+---------------------------------------
+
+Function: Mesh:setVertex
+
+Sets a vertex at vertex array. Indices are start from 1. If the vertex array is not large enough, it's expanded automatically.
+
+Parameters:
+	i - (number) index
+	x - (number) x coordinate
+	y - (number) y coordinate
+	
+Example:
+	-- set the first 3 vertex positions as (100, 100), (150, 100) and (100, 150).
+	mesh:setVertex(1, 100, 100)
+	mesh:setVertex(2, 150, 100)
+	mesh:setVertex(3, 100, 150)
+
+---------------------------------------
+
+Function: Mesh:setIndex
+
+Sets a index at index array. Indices are start from 1. If the index array is not large enough, it's expanded automatically.
+
+Parameters:
+	i - (number) index
+	index - (number) index
+
+Example:
+	-- set the first 3 indices as 10, 11 and 12.
+	mesh:setIndex(1, 10)
+	mesh:setIndex(2, 11)
+	mesh:setIndex(3, 12)
+	
+---------------------------------------
+	
+Function: Mesh:setColor
+
+Sets a color at color array. Indices are start from 1. If the color array is not large enough, it's expanded automatically.
+
+Parameters:
+	i - (number) index
+	color - (number) color in hexedecial value
+	alpha - (number, default=1.0) alpha value
+
+Example:
+	-- set the first 3 colors as (0xff0000, 0.5), (0x00ff00, 0.7) and (0x0000ff, 1.0).
+	mesh:setColor(1, 0xff0000, 0.5)  -- red with 0.5 alpha
+	mesh:setColor(2, 0x00ff00, 0.7)  -- green with 0.7 alpha
+	mesh:setColor(3, 0x0000ff)       -- blue with 1.0 alpha
+
+---------------------------------------
+	
+Function: Mesh:setTextureCoordinate
+
+Sets a texture coordinate at texture coordinate array. Indices are start from 1. If the texture coordinate array is not large enough, it's expanded automatically.
+
+Parameters:
+	i - (number) index
+	u - (number) u coordinate
+	v - (number) v coordinate
+	
+Example:
+	-- set the first 3 texture coordinates as (0, 0), (100, 0) and (0, 100).
+	mesh:setTextureCoordinate(1, 0, 0)
+	mesh:setTextureCoordinate(2, 100, 0)
+	mesh:setTextureCoordinate(3, 0, 100)
+
+---------------------------------------
+
+Function: Mesh:setVertices
+
+Sets zero or more vertices at vertex array with a single function call. It accepts multiple values or a Lua array.
+
+Parameters:
+	vertices - 
+
+Example:
+	-- set 3 vertices with seperate function calls
+	mesh:setVertex(1, 100, 100)
+	mesh:setVertex(2, 150, 100)
+	mesh:setVertex(3, 100, 150)
+
+	-- set 3 vertices with one function call
+	mesh:setVertices(1, 100, 100, 2, 150, 100, 3, 100, 150)
+
+	-- same as above
+	mesh:setVertices{1, 100, 100, 2, 150, 100, 3, 100, 150}
+
+	-- these two functions do nothing
+	mesh:setVertices()
+	mesh:setVertices{}
+
+---------------------------------------
+
+Function: Mesh:setIndices
+
+Sets zero or more indices at index array with a single function call. It accepts multiple values or a Lua array.
+
+Parameters:
+	indices - 
+
+Example:
+	-- set 3 indices with seperate function calls
+	mesh:setIndex(1, 10)
+	mesh:setIndex(2, 11)
+	mesh:setIndex(3, 12)
+
+	-- set 3 indices with one function call
+	mesh:setIndices(1, 10, 2, 11, 3, 12)
+
+	-- same as above
+	mesh:setIndices{1, 10, 2, 11, 3, 12}
+
+	-- these two functions do nothing
+	mesh:setIndices()
+	mesh:setIndices{}
+
+---------------------------------------
+
+Function: Mesh:setColors
+
+Sets zero or more colors at color array with a single function call. It accepts multiple values or a Lua array.
+
+Parameters:
+	colors - 
+
+Example:
+	-- set 3 colors with seperate function calls
+	mesh:setColor(1, 0xff0000, 0.5)
+	mesh:setColor(2, 0x00ff00, 0.7)
+	mesh:setColor(3, 0x0000ff)
+	
+	-- set 3 colors with one function call
+	mesh:setColors(1, 0xff0000, 0.5, 2, 0x00ff00, 0.7, 3, 0x0000ff, 1.0)
+
+	-- same as above
+	mesh:setColors{1, 0xff0000, 0.5, 2, 0x00ff00, 0.7, 3, 0x0000ff, 1.0}
+
+	-- these two functions do nothing
+	mesh:setColors()
+	mesh:setColors{}
+
+---------------------------------------
+
+Function: Mesh:setTextureCoordinates
+
+Parameters:
+	textureCoordinates - 
+
+Sets zero or more texture coordinates at texture coordinate array with a single function call. It accepts multiple values or a Lua array.
+
+Example:
+	-- set 3 texture coordinates with seperate function calls
+	mesh:setTextureCoordinate(1, 0, 0)
+	mesh:setTextureCoordinate(2, 100, 0)
+	mesh:setTextureCoordinate(3, 0, 100)
+	
+	-- set 3 texture coordinates with one function call
+	mesh:setTextureCoordinates(1, 0, 0, 2, 100, 0, 3, 0, 100)
+	
+	-- same as above
+	mesh:setTextureCoordinates{1, 0, 0, 2, 100, 0, 3, 0, 100}
+
+	-- these two functions do nothing
+	mesh:setTextureCoordinates()
+	mesh:setTextureCoordinates{}
+	
+---------------------------------------
+	
+Function: Mesh:setVertexArray
+
+Assigns new content to the vertex array, dropping all the elements contained in the vertex array before the call and replacing them by those specified by the parameters. It accepts multiple values or a Lua array.
+
+Parameters:
+	vertices - 
+	
+Example:
+	-- set the vertex array as (100, 100), (150, 100) and (100, 150)
+	mesh:setVertexArray(100, 100, 150, 100, 100, 150)
+
+	-- same as above
+	mesh:setVertexArray{100, 100, 150, 100, 100, 150}
+
+---------------------------------------
+	
+Function: Mesh:setIndexArray
+
+Assigns new content to the index array, dropping all the elements contained in the index array before the call and replacing them by those specified by the parameters. It accepts multiple values or a Lua array.
+
+Parameters:
+	indices - 
+
+Example:
+	-- set the index array as 10, 11 and 12.
+	mesh:setIndexArray(10, 11, 12)
+
+	-- same as above
+	mesh:setIndexArray{10, 11, 12}
+
+---------------------------------------
+	
+Function: Mesh:setColorArray
+
+Assigns new content to the color array, dropping all the elements contained in the color array before the call and replacing them by those specified by the parameters. It accepts multiple values or a Lua array.
+
+Parameters:
+	colors - 
+
+Example:
+	-- set the color array as (0xff0000, 0.5), (0x00ff00, 0.7) and (0x0000ff, 1.0).
+	mesh:setColorArray(0xff0000, 0.5, 0x00ff00, 0.7, 0x0000ff, 1.0)
+
+	-- same as above
+	mesh:setColorArray{0xff0000, 0.5, 0x00ff00, 0.7, 0x0000ff, 1.0}
+
+---------------------------------------
+	
+Function: Mesh:setTextureCoordinateArray
+
+Assigns new content to the texture coordinate array, dropping all the elements contained in the texture coordinate array before the call and replacing them by those specified by the parameters. It accepts multiple values or a Lua array.
+
+Parameters:
+	textureCoordinates - 
+
+Example:
+	-- set the color array as (0, 0), (100, 0) and (0, 100)
+	mesh:setTextureCoordinateArray(0, 0, 100, 0, 0, 100)
+
+	-- same as above
+	mesh:setTextureCoordinateArray{0, 0, 100, 0, 0, 100}
+
+---------------------------------------
+	
+Function: Mesh:resizeVertexArray
+
+Resizes the vertex array to contain `size` elements.
+
+If `size` is smaller than the current vertex array size, the content is reduced to its first `size` elements, the rest being dropped.
+
+If `size` is greater than the current vertex array size, the content is expanded by inserting at the end as many copies of 0s as needed to reach a size of `size` elements.
+
+Parameters:
+	size - (number) new vertex array size
+
+---------------------------------------
+	
+Function: Mesh:resizeIndexArray
+
+Resizes the index array to contain `size` elements.
+
+If `size` is smaller than the current index array size, the content is reduced to its first `size` elements, the rest being dropped.
+
+If `size` is greater than the current index array size, the content is expanded by inserting at the end as many copies of 0s as needed to reach a size of `size` elements.
+
+Parameters:
+	size - (number) new index array size
+
+---------------------------------------
+	
+Function: Mesh:resizeColorArray
+
+Resizes the color array to contain `size` elements.
+
+If `size` is smaller than the current color array size, the content is reduced to its first `size` elements, the rest being dropped.
+
+If `size` is greater than the current color array size, the content is expanded by inserting at the end as many copies of 0s as needed to reach a size of `size` elements.
+
+Parameters:
+	size - (number) new color array size
+
+---------------------------------------
+	
+Function: Mesh:resizeTextureCoordinateArray
+
+Resizes the texture coordinate array to contain `size` elements.
+
+If `size` is smaller than the current texture coordinate array size, the content is reduced to its first `size` elements, the rest being dropped.
+
+If `size` is greater than the current texture coordinate array size, the content is expanded by inserting at the end as many copies of 0s as needed to reach a size of `size` elements.
+
+Parameters:
+	size - (number) new texture coordinate array size
+
+---------------------------------------
+	
+Function: Mesh:clearVertexArray
+
+Clears the vertex array.
+
+---------------------------------------
+	
+Function: Mesh:clearIndexArray
+
+Clears the index array.
+
+---------------------------------------
+	
+Function: Mesh:clearColorArray
+
+Clears the color array.
+
+---------------------------------------
+	
+Function: Mesh:clearTextureCoordinateArray
+
+Clears the texture coordinate array.
+
+---------------------------------------
+	
+Function: Mesh:setTexture
+
+Sets the texture.
+
+Parameters:
+	texture - (TextureBase)
+
+---------------------------------------
+
+Function: Mesh:clearTexture
+
+Clears the texture.
+
+---------------------------------------

@@ -1,0 +1,49 @@
+rm -rf ~/myprojects/gideros/ui-build-desktop/Gideros\ Studio.app/Contents/Templates
+svn export ~/myprojects/gideros/ui/Templates/ ~/myprojects/gideros/ui-build-desktop/Gideros\ Studio.app/Contents/Templates
+
+rm -rf ~/myprojects/gideros/ui-build-desktop/Gideros\ Studio.app/Contents/Resources/start/
+svn export ~/myprojects/gideros/ui/Resources/start/ ~/myprojects/gideros/ui-build-desktop/Gideros\ Studio.app/Contents/Resources/start
+cp ~/myprojects/gideros/ui/Resources/images.png ~/myprojects/gideros/ui-build-desktop/Gideros\ Studio.app/Contents/Resources/
+cp ~/myprojects/gideros/ui/Resources/images.png ~/myprojects/gideros/texturepacker-build-desktop/Texture\ Packer.app/Contents/Resources/
+
+cp ~/myprojects/gideros/iosplayer/build/Release-iphoneos/libiosplayer.a ~/myprojects/gideros/ui-build-desktop/Gideros\ Studio.app/Contents/Templates/Xcode3/iPhone\ Template/
+cp ~/myprojects/gideros/iosplayer/build/Release-iphoneos/libiosplayer.a ~/myprojects/gideros/ui-build-desktop/Gideros\ Studio.app/Contents/Templates/Xcode3/iPad\ Template/
+cp ~/myprojects/gideros/iosplayer/giderosapi.h ~/myprojects/gideros/ui-build-desktop/Gideros\ Studio.app/Contents/Templates/Xcode3/iPhone\ Template/
+cp ~/myprojects/gideros/iosplayer/giderosapi.h ~/myprojects/gideros/ui-build-desktop/Gideros\ Studio.app/Contents/Templates/Xcode3/iPad\ Template/
+
+rm -rf ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1
+
+mkdir  ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1
+
+cp -R ~/myprojects/gideros/ui-build-desktop/Gideros\ Studio.app/ ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Gideros\ Studio.app
+cp -R ~/myprojects/gideros/player-build-desktop/Gideros\ Player.app/ ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Gideros\ Player.app
+cp -R ~/myprojects/gideros/texturepacker-build-desktop/Texture\ Packer.app/ ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Texture\ Packer.app
+cp -R ~/myprojects/gideros/fontcreator-build-desktop/Font\ Creator.app/ ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Font\ Creator.app
+
+svn export ~/myprojects/gideros/samplecode/ ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Examples
+rm -rf ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Examples/Shapes
+
+mkdir ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Documentation
+svn export ~/myprojects/gideros/doc/css ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Documentation/css
+svn export ~/myprojects/gideros/doc/assets ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Documentation/assets
+svn export ~/myprojects/gideros/doc/images ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Documentation/images
+svn export ~/myprojects/gideros/doc/prettify ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Documentation/prettify
+cp ~/myprojects/gideros/doc/reference_manual.html ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Documentation/
+cp ~/myprojects/gideros/doc/getting_started.html ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Documentation/
+cp ~/myprojects/gideros/doc/jquery-1.4.4.min.js ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/Documentation/
+
+svn export ~/myprojects/gideros/GiderosiPhonePlayer/ ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/GiderosiPhonePlayer
+svn export ~/myprojects/gideros/GiderosiPadPlayer/ ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/GiderosiPadPlayer
+cp ~/myprojects/gideros/iosplayer/build/Release-iphoneos/libiosplayer.a ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/GiderosiPhonePlayer
+cp ~/myprojects/gideros/iosplayer/build/Release-iphoneos/libiosplayer.a ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/GiderosiPadPlayer
+cp ~/myprojects/gideros/iosplayer/giderosapi.h ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/GiderosiPhonePlayer
+cp ~/myprojects/gideros/iosplayer/giderosapi.h ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/GiderosiPadPlayer
+
+cd ~/Desktop/Gideros\ Pack/Gideros\ 2011.6.1/
+zip -r GiderosiPhonePlayer.zip GiderosiPhonePlayer/
+zip -r GiderosiPadPlayer.zip GiderosiPadPlayer/
+rm -rf GiderosiPhonePlayer
+rm -rf GiderosiPadPlayer
+cd -
+
+

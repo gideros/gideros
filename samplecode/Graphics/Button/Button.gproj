@@ -1,0 +1,9 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320">
+  <imageScales/>
+ </properties>
+ <file file="button_down.png"/>
+ <file file="button_up.png"/>
+ <file file="button.lua"/>
+ <file file="main.lua"/>
+</project>

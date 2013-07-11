@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Documentation</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="/assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/gdocs-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/gdocs-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/gdocs-72.png">
+		<link rel="apple-touch-icon-precomposed" href="/assets/gdocs-57.png">
+
+		<!-- Le styles -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar" data-offset="20">
+
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+		 <div class="span4 bs-docs-sidebar">
+		<div id='contents' data-spy="affix" data-offset-top="150">
+		<h1>Table of Contents</h1>
+        <ul class="nav nav-list bs-docs-sidenav">
+          <li><a href="./getting_started.html"><i class="icon-chevron-right"></i> <strong>1. Getting started</strong></a></li>
+          <li><a href="./deployment.html"><i class="icon-chevron-right"></i> <strong>2. Deployment to device</strong></a></li>
+          <li><a href="./reference_manual.html" target='_blank'><i class="icon-chevron-right"></i> <strong>3. Reference manual</strong></a></li>
+          <li><a href="./classes_in_gideros.html"><i class="icon-chevron-right"></i> <strong>4. Classes in Gideros</strong></a></li>
+          <li><a href="./events.htm"><i class="icon-chevron-right"></i> <strong>5. Event system</strong></a></li>
+          <li><a href="./file_system.html"><i class="icon-chevron-right"></i> <strong>6. File system</strong></a></li>
+          <li><a href="./automatic_image_resolution.html"><i class="icon-chevron-right"></i> <strong>7. Automatic image resolution</strong></a></li>
+          <li><a href="./automatic_screen_scaling.html"><i class="icon-chevron-right"></i> <strong>8. Automatic screen scaling</strong></a></li>
+        </ul>
+		</div>
+      </div>
+      <div class="span8">
+	  
+		<h1>File System</h1>
+
+		<ul class="nav nav-tabs">
+  <li class="active"><a href="#intro" data-toggle="tab">Intro</a></li>
+  <li><a href="#resource" data-toggle="tab">Resource directory</a></li>
+  <li><a href="#document" data-toggle="tab">Document directory</a></li>
+  <li><a href="#temp" data-toggle="tab">Temporary directory</a></li>
+  <li><a href="#files" data-toggle="tab">Execution Order</a></li>
+  <li><a href="#strict" data-toggle="tab">strict.lua</a></li>
+</ul>
+<div class="tab-content">
+<section class="tab-pane active" id="intro">
+
+<p>In Gideros runtime, there are 3 kinds of directories: <strong>resource</strong>, <strong>document</strong>,
+and <strong>temporary</strong>.</p>
+
+<p>You can access these directories using the <code>io</code> library provided by Lua:</p>
+
+<pre><code>io.read("data/list.txt")
+</code></pre>
+
+<p>You don&rsquo;t need to know the exact path of resource, document and temporary directories because Gideros provides an easy way
+to specify files at these directories.</p>
+
+<p><strong>To sum up:</strong></p>
+<ul>
+<li><strong>Resource</strong> - stores your code and assets (can not be modified by the app)</li>
+<li><strong>Document</strong> - can be used as persistent storages for files (can be modified by the app)</li>
+<li><strong>Temporary</strong> - can be used as temporary storages for files (can be modified by the app)</li>
+</ul>
+
+<p>Example of accessing each directory:</p>
+<pre><code>io.read("file.txt")       --&gt; open file.txt at resource directory to read
+io.read("|R|file.txt")    --&gt; open file.txt at resource directory to read (same as above)
+io.read("|D|file.txt")    --&gt; open file.txt at documents directory to read
+io.read("|T|file.txt")    --&gt; open file.txt at temporary directory to read
+</code></pre>
+
+</section>
+
+<section class="tab-pane" id="resource">
+<h2>Resource directory</h2>
+
+<p>Your code, image, audio and all other files are reside at <em>resource directory</em>.
+The file and folder structure of your asset library shown below</p>
+
+<p><img src="images/library.png" alt="Library" /></p>
+
+<p>is stored at real device and Gideros Player like:</p>
+
+<pre><code>{resource directory}/gfx/sprite1.png
+{resource directory}/gfx/sprite2.png
+{resource directory}/gfx/background.png
+{resource directory}/audio/game-music.mp3
+{resource directory}/audio/click.wav
+{resource directory}/data/list.txt
+{resource directory}/main.lua
+{resource directory}/game.lua
+</code></pre>
+
+<p>Resource directory is the default directory. Therefore, to access the files at resource directory, specify the file path as it is:</p>
+
+<pre><code>local sprite1 = Texture.new("gfx/sprite1.png")
+local sprite2 = Texture.new("gfx/sprite2.png")
+local background = Texture.new("gfx/background.png")
+local music = Sound.new("audio/game-music.mp3")
+local click = Sound.new("audio/click.wav")
+</code></pre>
+
+<p><strong>Note:</strong> Optionally, you can access the files at resource directory by adding <code>"|R|"</code> to the begining of the file name (but you don&rsquo;t need to):</p>
+
+<pre><code>local sprite1 = Texture.new("|R|gfx/sprite1.png")
+</code></pre>
+
+<p><strong>Note:</strong> Resource directory is <em>read-only</em> and you should not try to write any files there.</p>
+
+</section>
+
+<section class="tab-pane" id="document">
+
+<h2>Document directory</h2>
+
+<p>You can store application created files at <em>document directory</em>.
+The files created at document directory is permanent between different application sessions. For example,
+you can create and then read files at document directory to save player progress.
+To specify a file at document directory, append <code>"|D|"</code> to the begining of the file name:</p>
+
+<pre><code>io.write("|D|save.txt")
+</code></pre>
+
+<p>The main advantage of <em>document directory</em> are that:
+<ul>
+<li>Files can be modified</li>
+<li>Files can be stored persistantly</li>
+</ul>
+</p>
+
+<p>That is for example it is recommended to store database files or other user generated information in <em>document directory</em></p>
+
+<p>Here is a quick example how you can copy file from <em>resource directory</em> to <em>document directory</em>:</p>
+
+<pre><code>--function to copy file
+local function copy(src, dst)
+    local srcf = io.open(src, "rb")
+    local dstf = io.open(dst, "wb")
+
+    local size = 2^13      -- good buffer size (8K)
+    while true do
+        local block = srcf:read(size)
+        if not block then break end
+        dstf:write(block)
+    end
+
+    srcf:close()
+    dstf:close()
+end
+
+--function to check if file exists
+local function exists(file)
+    local f = io.open(file, "rb")
+    if f == nil then
+        return false
+    end
+    f:close()
+    return true
+end
+
+--usage
+if not exists("|D|database.db") then
+    copy("database.db", "|D|database.db")
+end
+</code></pre>
+
+</section>
+
+<section class="tab-pane" id="temp">
+
+<h3>Temporary directory</h3>
+
+<p>You can create and store temporary files at <em>temporary directory</em>.
+The files created at temporary directory are not guaranteed to exists between
+different application sessions. They may be deleted after your application
+session finishes. To specify a file at temporary directory, append <code>"|T|"</code> to the begining of the file name:</p>
+
+<pre><code>io.write("|T|temp.txt")
+</code></pre>
+
+<p>This storage may be used for example, to display some temporary data, like images downloaded from somewhere:</p>
+
+<pre><code>
+--download completed
+local function onComplete(event)
+
+	--store image in temporary folder
+	local out = io.open("|T|image.png", "wb")
+    out:write(event.data)
+    out:close()
+
+	--display it to user
+    local b = Bitmap.new(Texture.new("|T|image.png"))
+	b:setAnchorPoint(0.5, 0.5)
+	b:setPosition(160, 240)
+    stage:addChild(b)
+end
+
+--load image
+local loader = UrlLoader.new("http://www.giderosmobile.com/giderosmobile.png")
+
+--add event listener
+loader:addEventListener(Event.COMPLETE, onComplete)
+</code></pre>
+
+</section>
+
+<section class="tab-pane" id="files">
+
+<h2>Lua Files and Execution Order</h2>
+
+<p>By default Gideros executes all lua files on both players and in real app.</p>
+<p>We can assume that the order of execution is pretty random, but there are two things guaranteed:</p>
+<ul>
+<li><i class="icon-arrow-right"></i> <strong>init.lua</strong> will always be executed first</li>
+<li><i class="icon-arrow-right"></i> <strong>main.lua</strong> will always be executed last</li>
+</ul>
+
+<p><strong>So the best practice is:</strong></p>
+<ul>
+<li><i class="icon-arrow-right"></i> to add all additional functionality and modifications to existing classes in init.lua</li>
+<li><i class="icon-arrow-right"></i> do all initialization of app etc in main.lua (when all other code was already loaded)</li>
+<li><i class="icon-arrow-right"></i> wrap the code in any other lua file in a scope as function</li>
+</ul>
+<p>Yet better create each lua file as a separate Gideros class, either it will be a scene shown in scene manager or some simple object represented by class, but there should not be some plain code executed in these files, only in main.lua</p>
+
+<p><strong>Of course, all can be configured</strong></p>
+
+<p>Before an Gideros application starts, all Lua files at asset library are executed one by one. So it is possible to arrange the
+order of execution by setting the code dependencies between Lua files.</p>
+
+<p>If you right click a Lua file and select &ldquo;Code Dependencies&hellip;&rdquo; from popup menu, &ldquo;Code Dependencies&rdquo; dialog opens:</p>
+
+<p><img src="images/code_dependencies_1.png" alt="Code Dependencies fig.1" /></p>
+
+<p>In this menu, you can set the dependencies between Lua files. For example,
+if <code>a.lua</code> is dependent to <code>b.lua</code>, <code>b.lua</code> is always executed befure <code>a.lua</code>.</p>
+
+<p>If you select &ldquo;Call Order&rdquo; tab, you can see the execution order:</p>
+
+<p><img src="images/code_dependencies_2.png" alt="Code Dependencies fig.2" /></p>
+
+<p><strong>Note:</strong> The file names <code>main.lua</code> and <code>init.lua</code> have special meaning: When an application starts,
+Gideros runtime tries to execute <code>init.lua</code> first and <code>main.lua</code> last.</p>
+</section>
+
+<section class="tab-pane" id="strict">
+<h2>strict.lua</h2>
+
+<p><em>For the detailed explanation of <code>strict.lua</code>, please refer to <a href="http://www.lua.org/pil/14.2.html">http://www.lua.org/pil/14.2.html</a></em></p>
+
+<p><code>strict.lua</code> checks uses of undeclared global variables. If <code>strict.lua</code> is executed, all global
+variables must be &lsquo;declared&rsquo; through a regular assignment (even assigning nil will do) in a main
+chunk before being used anywhere or assigned to inside a function. Although optional, it is a
+good habit to use it when developing Lua code.</p>
+
+<p>To execute <code>strict.lua</code> before all other Lua files, simply add <code>strict.lua</code> and <code>init.lua</code> to
+asset library and make <code>strict.lua</code> dependent to <code>init.lua</code>.</p>
+
+<p>You can download <code>strict.lua</code> from <a href="assets/strict.lua">here</a> that originally comes with the Lua distribution.</p>
+	
+</section>	
+</div>
+	</div>
+	</div>
+
+  </div>
+
+
+
+    <!-- Footer
+    ================================================== -->
+	<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/jquery-1.8.3.min.js"><\/script>')</script>
+		<script src="js/bootstrap.js"></script>
+		<script type="text/javascript" src="js/fittext.js"></script>
+		<script type="text/javascript" src="js/prettify.js"></script>
+		<script type="text/javascript" src="js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.closed").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+				$("section h1").fitText(3, { minFontSize: '14px', maxFontSize: '28px' });
+				$("#contents h1").fitText(1, { minFontSize: '20px', maxFontSize: '28px' });
+				$("#contents li > a").fitText(0.1, { minFontSize: '12px', maxFontSize: '14px' });
+			});
+		</script>
+
+  </body>
+</html>

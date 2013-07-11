@@ -1,0 +1,122 @@
+Class: Geolocation > EventDispatcher
+
+The `Geolocation` class is used to configure the parameters and dispatching of location and heading related events.
+
+####Events:
+
+* `Event.LOCATION_UPDATE = "locationUpdate"`
+* `Event.HEADING_UPDATE = "headingUpdate"`
+* `Event.ERROR = "error"`
+
+`LOCATION_UPDATE` event contains the fields `latitude`, `longitude` and `altitude`.  
+`HEADING_UPDATE` event contains the fields `magneticHeading` and `trueHeading`.
+
+Example:
+	geolocation = Geolocation.new()
+	
+	local function onLocationUpdate(event)
+		print("location: ", event.latitude, event.longitude, event.altitude)
+	end
+
+	local function onHeadingUpdate(event)
+		print("heading: ", event.magneticHeading, event.trueHeading)
+	end
+
+	geolocation:addEventListener(Event.LOCATION_UPDATE, onLocationUpdate)
+	geolocation:addEventListener(Event.HEADING_UPDATE, onHeadingUpdate)
+	geolocation:start()
+
+---------------------------------------
+
+Function: Geolocation.isAvailable
+
+Returns `true` if the device has the capability to determine current location and this capability is enabled, `false` otherwise.
+
+Returns:
+`true` if geolocation is available, `false` otherwise
+
+---------------------------------------
+
+Function: Geolocation.isHeadingAvailable
+
+Returns `true` if the device has the capability to determine heading, `false` otherwise.
+
+Returns:
+`true` if heading is available, `false` otherwise
+
+---------------------------------------
+
+Function: Geolocation.setAccuracy
+
+Sets the desired accuracy (in meters) of the location data. The receiver does its best to achieve the requested 
+accuracy. However the actual accuracy is not guaranteed. The default value is 0 (best accuracy).
+
+Parameters:
+	accuracy - (number) the desired accuracy
+
+---------------------------------------
+
+Function: Geolocation.getAccuracy
+
+Returns the previously set desired accuracy.
+
+Returns:
+The previously set desired accuracy
+
+---------------------------------------
+
+Function: Geolocation.setThreshold
+
+Sets the minimum distance (in meters) threshold. If threshold distance is greater than 0, 
+a location event will only be dispatched if the device moves by threshold. The default value 
+is 0 (as frequently as possible).
+
+Parameters:
+	threshold - (number) the minimum distance threshold
+
+---------------------------------------
+
+Function: Geolocation.getThreshold
+
+Returns the previously set minimum distance threshold.
+
+Returns:
+The previously set minimum distance threshold
+
+---------------------------------------
+
+Function: Geolocation:start
+
+Starts the generation of updates that report the current location and heading.
+
+---------------------------------------
+
+Function: Geolocation:stop
+
+Stops the generation of updates that report the current location and heading.
+
+---------------------------------------
+
+Function: Geolocation:startUpdatingLocation
+
+Starts the generation of updates that report the current location.
+
+---------------------------------------
+
+Function: Geolocation:stopUpdatingLocation
+
+Stops the generation of updates that report the current location.
+
+---------------------------------------
+
+Function: Geolocation:startUpdatingHeading 
+
+Starts the generation of updates that report the heading.
+
+---------------------------------------
+
+Function: Geolocation:stopUpdatingHeading 
+
+Stops the generation of updates that report the heading.
+
+---------------------------------------

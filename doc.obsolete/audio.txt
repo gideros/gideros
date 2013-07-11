@@ -1,0 +1,168 @@
+Class: Sound
+
+The `Sound` class lets you load and play WAV or MP3 sound files.
+Control of the playing sound is performed through the `SoundChannel`
+object.
+
+Category: Audio
+
+Example:
+	local sound = Sound.new("music.mp3")
+
+	local channel = sound:play()
+
+	-- after some time --
+
+	channel:stop()
+
+---------------------------------------
+
+Function: Sound.new
+
+Creates a new `Sound` object.
+
+Parameters:
+	filename - (string) The name of the sound file to be loaded.
+
+---------------------------------------
+
+Function: Sound:play
+
+Creates a new `SoundChannel` object to play the sound. By using the retured `SoundChannel` object,
+you can stop the sound and monitor the position.
+
+Parameters:
+	startTime - (number, default = 0) The initial position in milliseconds at which playback should start.
+	looping - (boolean, default = false)
+	paused - (boolean, default = false) 
+
+Returns:
+A `SoundChannel` object, which you use to control the sound. This function returns `nil` if you run out of available sound channels.
+
+---------------------------------------
+
+Function: Sound:getLength
+
+Returns the duration of the sound in miliseconds.
+
+Returns:
+The duration of the sound in miliseconds.
+
+---------------------------------------
+
+Class: SoundChannel
+
+The `SoundChannel` class is used to control and monitor a playing sound.
+
+### SoundChannel Events
+* **Event.COMPLETE = "complete"** When the sound channel has finished playing, `Event.COMPLETE` event is dispatched.
+
+Category: Audio
+
+---------------------------------------
+
+Function: SoundChannel:stop
+
+Stops the sound playing in the channel.
+
+---------------------------------------
+
+Function: SoundChannel:setPosition
+
+Sets the current playback position in miliseconds.
+
+Parameters:
+	position - (number) position of the channel to set in miliseconds
+
+---------------------------------------
+
+Function: SoundChannel:getPosition
+
+If the sound is playing, `getPosition` returns the position of the current playback, measured in miliseconds from the start of the sound.
+If the sound is not playing (paused or stopped), `getPosition` returns the last point that was played.
+
+Returns:
+The position of the sound in miliseconds.
+
+---------------------------------------
+
+Function: SoundChannel:setVolume
+
+Sets the volume of the sound channel.
+
+Parameters:
+	volume - (number) The new volume of the sound channel. Valid range of this parameter is between 0.0 and 1.0, where 1.0 is the maximum volume value.
+
+---------------------------------------
+
+Function: SoundChannel:getVolume
+
+Returns the current volume of the sound channel.
+
+Returns:
+The current volume of the sound channel.
+
+---------------------------------------
+
+Function: SoundChannel:setPitch
+
+Sets the pitch of the sound channel. You cannot set the pitch of a background music.
+
+Parameters:
+	pitch - (number) The new pitch of the sound channel.
+
+---------------------------------------
+
+Function: SoundChannel:getPitch
+
+Returns the current pitch of the sound channel.
+
+Returns:
+The current pitch of the sound channel.
+
+---------------------------------------
+
+Function: SoundChannel:setPaused
+
+Sets the paused state of the channel.  
+
+Parameters:
+	paused - (boolean) paused state to set
+
+---------------------------------------
+
+Function: SoundChannel:isPaused
+
+Returns the paused state of the channel.  
+
+Returns:
+`true` if the channel is paused, `false` otherwise.
+
+---------------------------------------
+
+Function: SoundChannel:setLooping
+
+Sets the looping state of the channel.  
+
+Parameters:
+	looping - (boolean) looping state to set
+
+---------------------------------------
+
+Function: SoundChannel:isLooping
+
+Returns the looping state of the channel.  
+
+Returns:
+`true` if the channel is looping, `false` otherwise.
+
+---------------------------------------
+
+Function: SoundChannel:isPlaying
+
+Returns the playing state for the sound channel.  
+
+Returns:
+`true` if the channel is currently playing a sound, `false` otherwise.
+
+---------------------------------------

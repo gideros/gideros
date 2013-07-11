@@ -1,0 +1,9 @@
+<project>
+ <properties autorotation="0" fps="60" scaleMode="0" iosDevice="0" xcodeVersion="0" packageName="com.yourdomain.yourapp" logicalHeight="480" logicalWidth="320" retinaDisplay="0" assetsOnly="0" orientation="0" architecture="0">
+  <imageScales/>
+ </properties>
+ <file source="on.png"/>
+ <file source="off.png"/>
+ <file source="main.lua"/>
+ <file source="switch.lua"/>
+</project>

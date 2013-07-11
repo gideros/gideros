@@ -1,0 +1,344 @@
+#include "ghttp.h"
+#include <jni.h>
+#include <javanativebridge.h>
+#include <map>
+
+static jobjectArray toJava(JNIEnv *env, const ghttp_Header *headers)
+{
+	int headerCount = 0;
+	const ghttp_Header *headers2 = headers;
+	for (; headers2 && headers2->name; ++headers2)
+		headerCount++;
+		
+	if (headerCount == 0)
+		return NULL;
+	
+	jobjectArray jheaders = (jobjectArray)env->NewObjectArray(headerCount * 2,
+											env->FindClass("java/lang/String"),
+											env->NewStringUTF(""));
+
+	for (int i = 0; headers && headers->name; ++headers, ++i)
+	{
+		jstring jname = env->NewStringUTF(headers->name);
+		jstring jvalue = env->NewStringUTF(headers->value);
+		
+		env->SetObjectArrayElement(jheaders, i * 2, jname);
+		env->SetObjectArrayElement(jheaders, i * 2 + 1, jvalue);
+		
+		env->DeleteLocalRef(jname);
+		env->DeleteLocalRef(jvalue);
+	}
+	
+	return jheaders;
+}
+
+class HTTPManager
+{
+public:
+	HTTPManager()
+	{
+		JNIEnv* env = g_getJNIEnv();
+
+		jclass localRefCls = env->FindClass("com/giderosmobile/android/player/HTTPManager");
+		javaNativeBridge_ = (jclass)env->NewGlobalRef(localRefCls);
+		env->DeleteLocalRef(localRefCls);
+
+		initID_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_init", "()V");
+		cleanupID_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_cleanup", "()V");
+		getID_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_get", "(Ljava/lang/String;[Ljava/lang/String;J)I");
+		postID_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_post", "(Ljava/lang/String;[Ljava/lang/String;[BJ)I");
+		putID_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_put", "(Ljava/lang/String;[Ljava/lang/String;[BJ)I");
+		deleteID_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_delete", "(Ljava/lang/String;[Ljava/lang/String;J)I");
+		tickID_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_tick", "()V");
+		closeID_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_close", "(I)V");
+		closeAllID_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_closeAll", "()V");
+
+		env->CallStaticVoidMethod(javaNativeBridge_, initID_);
+	}
+	
+	~HTTPManager()
+	{
+		JNIEnv* env = g_getJNIEnv();
+		env->CallStaticVoidMethod(javaNativeBridge_, cleanupID_);
+		env->DeleteGlobalRef(javaNativeBridge_);
+	}
+	
+	void tick()
+	{
+		JNIEnv* env = g_getJNIEnv();
+		env->CallStaticVoidMethod(javaNativeBridge_, tickID_);
+	}
+	
+	int get(const char* url, const ghttp_Header *headers, ghttp_Callback callback, void* udata)
+	{
+		JNIEnv* env = g_getJNIEnv();
+
+		jstring jurl = env->NewStringUTF(url);
+
+		jobjectArray jheaders = toJava(env, headers);
+		
+		int id = env->CallStaticIntMethod(javaNativeBridge_, getID_, jurl, jheaders, (jlong)this);
+
+		if (jheaders)
+			env->DeleteLocalRef(jheaders);
+		
+		env->DeleteLocalRef(jurl);
+
+		CallbackElement element;
+		element.callback = callback;
+		element.udata = udata;
+		map_[id] = element;
+		
+		return id;
+	}
+
+	int post(const char* url, const ghttp_Header *headers, const void* data, size_t size, ghttp_Callback callback, void* udata)
+	{
+		JNIEnv* env = g_getJNIEnv();
+
+		jstring jurl = env->NewStringUTF(url);
+
+		jobjectArray jheaders = toJava(env, headers);
+
+		jbyteArray jdata = NULL;
+		if (size > 0)
+		{
+			jdata = env->NewByteArray(size);
+			env->SetByteArrayRegion(jdata, 0, size, (jbyte*)data);
+		}
+
+		int id = env->CallStaticIntMethod(javaNativeBridge_, postID_, jurl, jheaders, jdata, (jlong)this);
+
+		if (jdata)
+			env->DeleteLocalRef(jdata);
+
+		if (jheaders)
+			env->DeleteLocalRef(jheaders);
+
+		env->DeleteLocalRef(jurl);
+
+		CallbackElement element;
+		element.callback = callback;
+		element.udata = udata;
+		map_[id] = element;
+		
+		return id;
+	}
+
+	int put(const char* url, const ghttp_Header *headers, const void* data, size_t size, ghttp_Callback callback, void* udata)
+	{
+		JNIEnv* env = g_getJNIEnv();
+
+		jstring jurl = env->NewStringUTF(url);
+
+		jobjectArray jheaders = toJava(env, headers);
+
+		jbyteArray jdata = NULL;
+		if (size > 0)
+		{
+			jdata = env->NewByteArray(size);
+			env->SetByteArrayRegion(jdata, 0, size, (jbyte*)data);
+		}
+
+		int id = env->CallStaticIntMethod(javaNativeBridge_, putID_, jurl, jheaders, jdata, (jlong)this);
+
+		if (jdata)
+			env->DeleteLocalRef(jdata);
+
+		if (jheaders)
+			env->DeleteLocalRef(jheaders);
+
+		env->DeleteLocalRef(jurl);
+
+		CallbackElement element;
+		element.callback = callback;
+		element.udata = udata;
+		map_[id] = element;
+		
+		return id;
+	}
+	
+	int deleteResource(const char* url, const ghttp_Header *headers, ghttp_Callback callback, void* udata)
+	{
+		JNIEnv* env = g_getJNIEnv();
+
+		jstring jurl = env->NewStringUTF(url);
+
+		jobjectArray jheaders = toJava(env, headers);
+
+		int id = env->CallStaticIntMethod(javaNativeBridge_, deleteID_, jurl, jheaders, (jlong)this);
+
+		if (jheaders)
+			env->DeleteLocalRef(jheaders);
+
+		env->DeleteLocalRef(jurl);
+
+		CallbackElement element;
+		element.callback = callback;
+		element.udata = udata;
+		map_[id] = element;
+		
+		return id;
+	}
+		
+	void close(int id)
+	{
+		JNIEnv* env = g_getJNIEnv();
+		env->CallStaticVoidMethod(javaNativeBridge_, closeID_, (jint)id);
+	
+		map_.erase(id);
+	}
+
+	void closeAll()
+	{
+		JNIEnv* env = g_getJNIEnv();
+		env->CallStaticVoidMethod(javaNativeBridge_, closeAllID_);
+		
+		map_.clear();	
+	}
+		
+	struct CallbackElement
+	{
+		ghttp_Callback callback;
+		void* udata;	
+	};
+	
+	void ghttp_responseCallback(JNIEnv* env, jint id, jbyteArray jdata, jint size)
+	{
+		if (map_.find(id) == map_.end())
+			return;
+
+		CallbackElement& element = map_[id];
+			
+		jbyte* data = (jbyte*)env->GetPrimitiveArrayCritical(jdata, 0);
+		
+		ghttp_Response* response = (ghttp_Response*)malloc(sizeof(ghttp_Response));
+		response->data = data;
+		response->size = size;
+	
+		element.callback(id, GHTTP_RESPONSE, response, element.udata);
+		
+		free(response);
+
+		env->ReleasePrimitiveArrayCritical(jdata, data, 0);
+			
+		map_.erase(id);
+	}
+	
+	void ghttp_errorCallback(JNIEnv* env, jint id)
+	{
+		if (map_.find(id) == map_.end())
+			return;
+
+		CallbackElement& element = map_[id];
+
+		ghttp_Error* error = (ghttp_Error*)malloc(sizeof(ghttp_Error));
+
+		element.callback(id, GHTTP_ERROR, error, element.udata);
+		
+		free(error);
+
+		map_.erase(id);
+	}
+	
+	void ghttp_progressCallback(JNIEnv* env, jint id, jint bytesLoaded, jint bytesTotal)
+	{
+		if (map_.find(id) == map_.end())
+			return;
+
+		CallbackElement& element = map_[id];
+
+		ghttp_Progress* progress = (ghttp_Progress*)malloc(sizeof(ghttp_Progress));
+		progress->bytesLoaded = bytesLoaded;
+		progress->bytesTotal = bytesTotal;
+		
+		element.callback(id, GHTTP_PROGRESS, progress, element.udata);
+		
+		free(progress);	
+	}
+	
+private:
+	jclass javaNativeBridge_;
+
+	jmethodID initID_;
+	jmethodID cleanupID_;
+	jmethodID getID_;
+	jmethodID postID_;
+	jmethodID putID_;
+	jmethodID deleteID_;
+	jmethodID tickID_;
+	jmethodID closeID_;
+	jmethodID closeAllID_;
+
+	std::map<int, CallbackElement> map_;
+};
+
+extern "C" {
+
+void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpResponseCallback(JNIEnv* env, jclass cls, jint id, jbyteArray data, jint size, jlong udata)
+{
+	HTTPManager* that = (HTTPManager*)udata;
+	that->ghttp_responseCallback(env, id, data, size);
+}
+
+void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpErrorCallback(JNIEnv* env, jclass cls, jint id, jlong udata)
+{
+	HTTPManager* that = (HTTPManager*)udata;
+	that->ghttp_errorCallback(env, id);
+}
+
+void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpProgressCallback(JNIEnv* env, jclass cls, jint id, jint bytesLoaded, jint bytesTotal, jlong udata)
+{
+	HTTPManager* that = (HTTPManager*)udata;
+	that->ghttp_progressCallback(env, id, bytesLoaded, bytesTotal);
+}
+
+}
+
+static HTTPManager* s_manager = NULL;
+
+void ghttp_init()
+{
+	s_manager = new HTTPManager();
+}
+
+void ghttp_cleanup()
+{
+	delete s_manager;
+	s_manager = NULL;
+}
+
+void ghttp_tick()
+{
+	s_manager->tick();
+}
+
+int ghttp_get(const char* url, const ghttp_Header *header, ghttp_Callback callback, void* udata)
+{
+	return s_manager->get(url, header, callback, udata);
+}
+
+int ghttp_post(const char* url, const ghttp_Header *header, const void* data, size_t size, ghttp_Callback callback, void* udata)
+{
+	return s_manager->post(url, header, data, size, callback, udata);
+}
+
+int ghttp_delete(const char* url, const ghttp_Header *header, ghttp_Callback callback, void* udata)
+{
+	return s_manager->deleteResource(url, header, callback, udata);
+}
+
+int ghttp_put(const char* url, const ghttp_Header *header, const void* data, size_t size, ghttp_Callback callback, void* udata)
+{
+	return s_manager->put(url, header, data, size, callback, udata);
+}
+
+void ghttp_close(int id)
+{
+	s_manager->close(id);
+}
+
+void ghttp_closeAll()
+{
+	s_manager->closeAll();
+}

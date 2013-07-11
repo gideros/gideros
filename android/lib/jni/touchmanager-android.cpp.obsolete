@@ -1,0 +1,175 @@
+#include "touchmanager-android.h"
+#include <stdlib.h>
+
+TouchManager::TouchManager()
+{
+	nextid_ = 1;
+}
+
+TouchManager::~TouchManager()
+{
+	for (size_t i = 0; i < deleteList_.size(); ++i)
+		delete deleteList_[i];
+}
+
+void TouchManager::touchesBegin(int size,
+								int* id, int* x, int *y,
+								int actionIndex,
+								std::vector<Touch*>* touches,
+								std::vector<Touch*>* allTouches)
+{
+	for (int i = 0; i < size; ++i)
+	{
+		Touch* touch = NULL;
+		std::map<int, Touch*>::iterator iter = touchMap_.find(id[i]);
+
+		if (iter == touchMap_.end())
+		{
+			touch = newTouch();
+			touchMap_[id[i]] = touch;
+		}
+		else
+		{
+			touch = iter->second;
+		}
+		
+		touch->x = x[i];
+		touch->y = y[i];
+	}
+	
+	(*touches).clear();
+	(*touches).push_back(touchMap_[actionIndex]);
+
+	(*allTouches).clear();
+	for (int i = 0; i < size; ++i)
+		(*allTouches).push_back(touchMap_[id[i]]);
+}
+
+void TouchManager::touchesMove(	int size,
+								int* id, int* x, int *y,
+								std::vector<Touch*>* touches,
+								std::vector<Touch*>* allTouches)
+{
+	(*touches).clear();
+
+	for (int i = 0; i < size; ++i)
+	{
+//		bool changed = false;
+		
+		Touch* touch = NULL;
+		std::map<int, Touch*>::iterator iter = touchMap_.find(id[i]);
+
+		if (iter == touchMap_.end())
+		{
+			touch = newTouch();
+			touchMap_[id[i]] = touch;
+//			changed = true;
+		}
+		else
+		{
+			touch = iter->second;
+		}
+		
+//		if (touch->x != x[i] || touch->y != y[i])
+//			changed = true;
+
+		touch->x = x[i];
+		touch->y = y[i];
+		
+//		if (changed)
+			(*touches).push_back(touch);
+	}
+
+	(*allTouches).clear();
+	for (int i = 0; i < size; ++i)
+		(*allTouches).push_back(touchMap_[id[i]]);
+}
+
+void TouchManager::touchesEnd(	int size,
+								int* id, int* x, int *y,
+								int actionIndex,
+								std::vector<Touch*>* touches,
+								std::vector<Touch*>* allTouches)
+{
+	for (int i = 0; i < size; ++i)
+	{
+		Touch* touch = NULL;
+		std::map<int, Touch*>::iterator iter = touchMap_.find(id[i]);
+
+		if (iter == touchMap_.end())
+		{
+			touch = newTouch();
+			touchMap_[id[i]] = touch;
+		}
+		else
+		{
+			touch = iter->second;
+		}
+		
+		touch->x = x[i];
+		touch->y = y[i];
+	}
+	
+	(*touches).clear();
+	(*touches).push_back(touchMap_[actionIndex]);
+
+	(*allTouches).clear();
+	for (int i = 0; i < size; ++i)
+		(*allTouches).push_back(touchMap_[id[i]]);
+}
+
+void TouchManager::touchesCancel(	int size,
+					int* id, int* x, int *y,
+					std::vector<Touch*>* touches,
+					std::vector<Touch*>* allTouches)
+{
+	for (int i = 0; i < size; ++i)
+	{
+		Touch* touch = NULL;
+		std::map<int, Touch*>::iterator iter = touchMap_.find(id[i]);
+
+		if (iter == touchMap_.end())
+		{
+			touch = newTouch();
+			touchMap_[id[i]] = touch;
+		}
+		else
+		{
+			touch = iter->second;
+		}
+
+		touch->x = x[i];
+		touch->y = y[i];
+	}
+
+	(*touches).clear();
+	for (int i = 0; i < size; ++i)
+		(*touches).push_back(touchMap_[id[i]]);
+
+	(*allTouches).clear();
+	for (int i = 0; i < size; ++i)
+		(*allTouches).push_back(touchMap_[id[i]]);
+}
+
+
+Touch* TouchManager::newTouch()
+{
+	if (touchPool_.empty() == false)
+	{
+		Touch* touch = touchPool_.begin()->second;
+		touchPool_.erase(touchPool_.begin());
+		return touch;
+	}
+
+	Touch* touch = new Touch;
+	touch->id = nextid_++;
+
+	deleteList_.push_back(touch);
+
+	return touch;
+}
+
+void TouchManager::deleteTouch(Touch* touch)
+{
+	touchPool_[touch->id] = touch;
+}

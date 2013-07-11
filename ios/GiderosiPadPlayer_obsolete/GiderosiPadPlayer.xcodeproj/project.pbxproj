@@ -1,0 +1,373 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D3623260D0F684500981E51 /* GiderosiPadPlayerAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* GiderosiPadPlayerAppDelegate.mm */; };
+		1D60589B0D05DD56006BFB54 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.mm */; };
+		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		283D33F112AEDA3000C06CB4 /* GiderosiPadPlayerViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 283D33F012AEDA3000C06CB4 /* GiderosiPadPlayerViewController.mm */; };
+		28FD14FE0DC6FC130079059D /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 28FD14FD0DC6FC130079059D /* EAGLView.mm */; };
+		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
+		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
+		5F00DA7514C6B77A00FFF289 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA7414C6B77A00FFF289 /* AudioToolbox.framework */; };
+		5F00DA7714C6B77A00FFF289 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA7614C6B77A00FFF289 /* AVFoundation.framework */; };
+		5F00DA7914C6B77A00FFF289 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA7814C6B77A00FFF289 /* CFNetwork.framework */; };
+		5F00DA7B14C6B77A00FFF289 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA7A14C6B77A00FFF289 /* CoreGraphics.framework */; };
+		5F00DA7D14C6B77A00FFF289 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA7C14C6B77A00FFF289 /* CoreLocation.framework */; };
+		5F00DA7F14C6B77A00FFF289 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA7E14C6B77A00FFF289 /* CoreMotion.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		5F00DA8114C6B77A00FFF289 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA8014C6B77A00FFF289 /* GameKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		5F00DA8314C6B77A00FFF289 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA8214C6B77A00FFF289 /* MobileCoreServices.framework */; };
+		5F00DA8514C6B77A00FFF289 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA8414C6B77A00FFF289 /* OpenAL.framework */; };
+		5F00DA8714C6B77A00FFF289 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA8614C6B77A00FFF289 /* SystemConfiguration.framework */; };
+		5F00DA8914C6B77A00FFF289 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA8814C6B77A00FFF289 /* libz.dylib */; };
+		5F00DA8B14C6B7A300FFF289 /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F00DA8A14C6B7A300FFF289 /* libgideros.a */; };
+		5F00DAEA14C6BEA200FFF289 /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F00DAE914C6BEA200FFF289 /* Icon-72.png */; };
+		5F3BF39A14D9F81400A280CA /* gamekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F3BF39914D9F81400A280CA /* gamekit.mm */; };
+		5F6E45B014F53AAC002F21DC /* lsqlite3_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F6E45AE14F53AAC002F21DC /* lsqlite3_stub.cpp */; };
+		5F6E45B114F53AAC002F21DC /* lsqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F6E45AF14F53AAC002F21DC /* lsqlite3.c */; };
+		5F6E462314F53CD8002F21DC /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F6E462214F53CD8002F21DC /* libsqlite3.dylib */; };
+		5F72D2081566F7CF00FD1C55 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F72D2071566F7CF00FD1C55 /* libluasocket.a */; };
+		5F72D20A1566F7D600FD1C55 /* luasocket_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F72D2091566F7D600FD1C55 /* luasocket_stub.cpp */; };
+		5FC7605615209CFE00A512BE /* storekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5FC7605515209CFE00A512BE /* storekit.mm */; };
+		5FC7607415209D0C00A512BE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FC7607315209D0C00A512BE /* StoreKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1D3623240D0F684500981E51 /* GiderosiPadPlayerAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GiderosiPadPlayerAppDelegate.h; sourceTree = "<group>"; };
+		1D3623250D0F684500981E51 /* GiderosiPadPlayerAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GiderosiPadPlayerAppDelegate.mm; sourceTree = "<group>"; };
+		1D6058910D05DD3D006BFB54 /* GiderosiPadPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GiderosiPadPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		283D33EF12AEDA3000C06CB4 /* GiderosiPadPlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GiderosiPadPlayerViewController.h; sourceTree = "<group>"; };
+		283D33F012AEDA3000C06CB4 /* GiderosiPadPlayerViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GiderosiPadPlayerViewController.mm; sourceTree = "<group>"; };
+		28FD14FC0DC6FC130079059D /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
+		28FD14FD0DC6FC130079059D /* EAGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EAGLView.mm; sourceTree = "<group>"; };
+		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		29B97316FDCFA39411CA2CEA /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		32CA4F630368D1EE00C91783 /* GiderosiPadPlayer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GiderosiPadPlayer_Prefix.pch; sourceTree = "<group>"; };
+		5F00DA7414C6B77A00FFF289 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		5F00DA7614C6B77A00FFF289 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		5F00DA7814C6B77A00FFF289 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		5F00DA7A14C6B77A00FFF289 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		5F00DA7C14C6B77A00FFF289 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		5F00DA7E14C6B77A00FFF289 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		5F00DA8014C6B77A00FFF289 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		5F00DA8214C6B77A00FFF289 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		5F00DA8414C6B77A00FFF289 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		5F00DA8614C6B77A00FFF289 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		5F00DA8814C6B77A00FFF289 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		5F00DA8A14C6B7A300FFF289 /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgideros.a; sourceTree = "<group>"; };
+		5F00DAE914C6BEA200FFF289 /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
+		5F3BF39914D9F81400A280CA /* gamekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = gamekit.mm; path = Plugins/gamekit.mm; sourceTree = "<group>"; };
+		5F6E45AE14F53AAC002F21DC /* lsqlite3_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lsqlite3_stub.cpp; path = Plugins/lsqlite3_stub.cpp; sourceTree = "<group>"; };
+		5F6E45AF14F53AAC002F21DC /* lsqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lsqlite3.c; path = Plugins/lsqlite3.c; sourceTree = "<group>"; };
+		5F6E462214F53CD8002F21DC /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		5F72D2071566F7CF00FD1C55 /* libluasocket.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libluasocket.a; path = Plugins/libluasocket.a; sourceTree = "<group>"; };
+		5F72D2091566F7D600FD1C55 /* luasocket_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = luasocket_stub.cpp; path = Plugins/luasocket_stub.cpp; sourceTree = "<group>"; };
+		5FC7605515209CFE00A512BE /* storekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = storekit.mm; path = Plugins/storekit.mm; sourceTree = "<group>"; };
+		5FC7607315209D0C00A512BE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		8D1107310486CEB800E47090 /* GiderosiPadPlayer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GiderosiPadPlayer-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */,
+				28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */,
+				5F00DA7514C6B77A00FFF289 /* AudioToolbox.framework in Frameworks */,
+				5F00DA7714C6B77A00FFF289 /* AVFoundation.framework in Frameworks */,
+				5F00DA7914C6B77A00FFF289 /* CFNetwork.framework in Frameworks */,
+				5F00DA7B14C6B77A00FFF289 /* CoreGraphics.framework in Frameworks */,
+				5F00DA7D14C6B77A00FFF289 /* CoreLocation.framework in Frameworks */,
+				5F00DA7F14C6B77A00FFF289 /* CoreMotion.framework in Frameworks */,
+				5F00DA8114C6B77A00FFF289 /* GameKit.framework in Frameworks */,
+				5F00DA8314C6B77A00FFF289 /* MobileCoreServices.framework in Frameworks */,
+				5F00DA8514C6B77A00FFF289 /* OpenAL.framework in Frameworks */,
+				5F00DA8714C6B77A00FFF289 /* SystemConfiguration.framework in Frameworks */,
+				5F00DA8914C6B77A00FFF289 /* libz.dylib in Frameworks */,
+				5F00DA8B14C6B7A300FFF289 /* libgideros.a in Frameworks */,
+				5F6E462314F53CD8002F21DC /* libsqlite3.dylib in Frameworks */,
+				5FC7607415209D0C00A512BE /* StoreKit.framework in Frameworks */,
+				5F72D2081566F7CF00FD1C55 /* libluasocket.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				283D33EF12AEDA3000C06CB4 /* GiderosiPadPlayerViewController.h */,
+				283D33F012AEDA3000C06CB4 /* GiderosiPadPlayerViewController.mm */,
+				28FD14FC0DC6FC130079059D /* EAGLView.h */,
+				28FD14FD0DC6FC130079059D /* EAGLView.mm */,
+				1D3623240D0F684500981E51 /* GiderosiPadPlayerAppDelegate.h */,
+				1D3623250D0F684500981E51 /* GiderosiPadPlayerAppDelegate.mm */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D6058910D05DD3D006BFB54 /* GiderosiPadPlayer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				080E96DDFE201D6D7F000001 /* Classes */,
+				5F3BF39314D9F78F00A280CA /* Plugins */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32CA4F630368D1EE00C91783 /* GiderosiPadPlayer_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.mm */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5F00DAE914C6BEA200FFF289 /* Icon-72.png */,
+				8D1107310486CEB800E47090 /* GiderosiPadPlayer-Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5F00DA8A14C6B7A300FFF289 /* libgideros.a */,
+				28FD15070DC6FC5B0079059D /* QuartzCore.framework */,
+				28FD14FF0DC6FC520079059D /* OpenGLES.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				5F00DA7414C6B77A00FFF289 /* AudioToolbox.framework */,
+				5F00DA7614C6B77A00FFF289 /* AVFoundation.framework */,
+				5F00DA7814C6B77A00FFF289 /* CFNetwork.framework */,
+				5F00DA7A14C6B77A00FFF289 /* CoreGraphics.framework */,
+				5F00DA7C14C6B77A00FFF289 /* CoreLocation.framework */,
+				5F00DA7E14C6B77A00FFF289 /* CoreMotion.framework */,
+				5F00DA8014C6B77A00FFF289 /* GameKit.framework */,
+				5F00DA8214C6B77A00FFF289 /* MobileCoreServices.framework */,
+				5F00DA8414C6B77A00FFF289 /* OpenAL.framework */,
+				5F00DA8614C6B77A00FFF289 /* SystemConfiguration.framework */,
+				5F00DA8814C6B77A00FFF289 /* libz.dylib */,
+				5F6E462214F53CD8002F21DC /* libsqlite3.dylib */,
+				5FC7607315209D0C00A512BE /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5F3BF39314D9F78F00A280CA /* Plugins */ = {
+			isa = PBXGroup;
+			children = (
+				5F72D2091566F7D600FD1C55 /* luasocket_stub.cpp */,
+				5F72D2071566F7CF00FD1C55 /* libluasocket.a */,
+				5FC7605515209CFE00A512BE /* storekit.mm */,
+				5F6E45AE14F53AAC002F21DC /* lsqlite3_stub.cpp */,
+				5F6E45AF14F53AAC002F21DC /* lsqlite3.c */,
+				5F3BF39914D9F81400A280CA /* gamekit.mm */,
+			);
+			name = Plugins;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* GiderosiPadPlayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "GiderosiPadPlayer" */;
+			buildPhases = (
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GiderosiPadPlayer;
+			productName = GiderosiPadPlayer;
+			productReference = 1D6058910D05DD3D006BFB54 /* GiderosiPadPlayer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GiderosiPadPlayer" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* GiderosiPadPlayer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F00DAEA14C6BEA200FFF289 /* Icon-72.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589B0D05DD56006BFB54 /* main.mm in Sources */,
+				1D3623260D0F684500981E51 /* GiderosiPadPlayerAppDelegate.mm in Sources */,
+				28FD14FE0DC6FC130079059D /* EAGLView.mm in Sources */,
+				283D33F112AEDA3000C06CB4 /* GiderosiPadPlayerViewController.mm in Sources */,
+				5F3BF39A14D9F81400A280CA /* gamekit.mm in Sources */,
+				5F6E45B014F53AAC002F21DC /* lsqlite3_stub.cpp in Sources */,
+				5F6E45B114F53AAC002F21DC /* lsqlite3.c in Sources */,
+				5FC7605615209CFE00A512BE /* storekit.mm in Sources */,
+				5F72D20A1566F7D600FD1C55 /* luasocket_stub.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = GiderosiPadPlayer_Prefix.pch;
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				INFOPLIST_FILE = "GiderosiPadPlayer-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/Plugins\"",
+				);
+				PRODUCT_NAME = GiderosiPadPlayer;
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = GiderosiPadPlayer_Prefix.pch;
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				INFOPLIST_FILE = "GiderosiPadPlayer-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/Plugins\"",
+				);
+				PRODUCT_NAME = GiderosiPadPlayer;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COMPRESS_PNG_FILES = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COMPRESS_PNG_FILES = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "GiderosiPadPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GiderosiPadPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

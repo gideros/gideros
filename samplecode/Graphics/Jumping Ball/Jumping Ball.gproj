@@ -1,0 +1,5 @@
+<library>
+ <file file="ball.png"/>
+ <file file="field.png"/>
+ <file file="main.lua"/>
+</library>

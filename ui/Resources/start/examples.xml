@@ -1,0 +1,206 @@
+<examples>
+
+<category name="Graphics 1">
+	<example 	name="Bird Animation"
+				description="A bird animation example with classes"
+				path="Graphics/Bird Animation/Bird Animation.gproj"
+				image = "bird animation.png"
+				/>
+
+	<example 	name="Button"
+				description="Showing a generic Button class"
+				path="Graphics/Button/Button.gproj"
+				image = "button.png"
+				/>
+
+	<example 	name="Color Transform"
+				description="Changing the RGB channel multipliers of an image"
+				path="Graphics/Color Transform/Color Transform.gproj"
+				image = "color transform.png"
+				/>
+
+	<example 	name="Drag Me"
+				description="Moving the sprites around with mouse or touch"
+				path="Graphics/Drag Me/Drag Me.gproj"
+				image = "drag me.png"
+				/>
+				
+	<example 	name="Fading Stars"
+				description="Coding a generic fade class for all sprites"
+				path="Graphics/Fading Stars/Fading Stars.gproj"
+				image = "fading_stars.png"
+				/>
+</category>
+
+<category name="Graphics 2">
+	<example 	name="Fonts"
+				description="Loading and rendering bitmap fonts"
+				path="Graphics/Fonts/Fonts.gproj"
+				image = "fonts.png"
+				/>
+
+	<example 	name="GTween"
+				description="Tweening example"
+				path="Graphics/GTween/GTween.gproj"
+				/>
+
+	<example 	name="Hierarchy"
+				description="Scene tree construction"
+				path="Graphics/Hierarchy/Hierarchy.gproj"
+				image="hierarchy.png"
+				/>
+
+	<example 	name="Jumping Ball"
+				description="A simple jumping ball example"
+				path="Graphics/Jumping Ball/Jumping Ball.gproj"
+				image="jumping ball.png"
+				/>
+
+	<example 	name="Jumping Balls"
+				description="A multiple jumping balls example with classes"
+				path="Graphics/Jumping Balls/Jumping Balls2.gproj"
+				image="jumping balls.png"
+				/>
+</category>
+
+<category name="Graphics 3">
+	<example 	name="Shapes"
+				description="Demonstrates shape drawing capabilites"
+				path="Graphics/Shapes/Shapes.gproj"
+				image="shapes.png"
+				/>
+
+	<example 	name="Texture Pack"
+				description="Using texture atlasses"
+				path="Graphics/Texture Pack/Texture Pack.gproj"
+				image="texture pack.png"
+				/>
+
+	<example 	name="Desert"
+				description="Desert example of Tiled Map Editor"
+				path="Graphics/Tiled Map Editor/Desert/Desert.gproj"
+				image="desert.png"
+				/>
+
+	<example 	name="Sewers"
+				description="Sewers example of Tiled Map Editor"
+				path="Graphics/Tiled Map Editor/Sewers/Sewers.gproj"
+				image="sewers.png"
+				/>
+</category>
+
+<category name="Audio">
+	<example 	name="Audio Buttons"
+				description="Playing different wav files"
+				path="Audio/Audio Example/Audio Example.gproj"
+				image="audio_buttons.png" 
+				/>
+	<example 	name="Music Player"
+				description="A minimal music player"
+				path="Audio/Music Player/Music Player.gproj"
+				image="music_player.png" 
+				/>
+</category>
+
+<category name="Hardware">
+	<example 	name="Accelerometer"
+				description="An accelerometer example with filtering"
+				path="Hardware/Accelerometer/Accelerometer.gproj"
+				image = "accelerometer.png"
+				/>
+
+	<example 	name="Application Lifecycle"
+				description="Demonstrates start, stop, suspend and resume events"
+				path="Hardware/Application Lifecycle/Application Lifecycle.gproj"
+				image = "application lifecycle.png"
+				/>
+
+	<example 	name="GPS and Compass"
+				description="A minimal GPS and compass example"
+				path="Hardware/GPS and Compass/GPS and Compass.gproj"
+				image = "gps and compass.png"
+				/>
+
+	<example 	name="Keyboard"
+				description="Using physical keyboard"
+				path="Hardware/Keyboard/Keyboard.gproj"
+				/>
+
+	<example 	name="Touch Explorer"
+				description="Demonstrates the displaying and printing of all touches"
+				path="Hardware/Touch Explorer/Touch Explorer.gproj"
+				image = "touch explorer.png"
+				/>
+</category>
+
+<category name="Network">
+	<example 	name="Image Loader"
+				description="Loading and displaying an image from network"
+				path="Network/Image Loader/Image Loader.gproj"
+				image="image loader.png"
+				/>
+
+	<example 	name="Weather"
+				description="Weather forecast using Yahoo Weather API"
+				path="Network/Weather/Weather.gproj"
+				image = "weather.png"
+				/>
+</category>
+
+
+<category name="Physics 1">
+	<example 	name="Bridge"
+				description="Bridge example by using revolute joints"
+				path="Physics/Bridge/Bridge.gproj"
+				image="bridge.png"
+				/>
+				
+	<example 	name="Chain"
+				description="Chain example by using revolute joints"
+				path="Physics/Chain/Chain.gproj"
+				image="chain.png"
+				/>
+
+	<example 	name="Collision Detection"
+				description="Collision detection through events"
+				path="Physics/Collision Detection/Collision Detection.gproj"
+				image = "collision detection.png"
+				/>
+
+	<example 	name="Collision Filtering"
+				description="Collision filtering by using fixture's filter data"
+				path="Physics/Collision Filtering/Collision Filtering.gproj"
+				image = "collision filtering.png"
+				/>
+				
+	<example 	name="Elastic Joints"
+				description="Elastic joints example"
+				path="Physics/Elastic Joints/Elastic Joints.gproj"
+				image="elastic joints.png"
+				/>
+</category>
+
+<category name="Physics 2">
+	<example 	name="Sleeping bodies"
+				description="Using isSleeping() function"
+				path="Physics/Sleeping bodies/Sleeping bodies.gproj"
+				image = "sleeping bodies.png"
+				/>
+				
+	<example 	name="Vertical Stack"
+				description="Vertical stack and bullet example"
+				path="Physics/Vertical Stack/Vertical Stack.gproj"
+				image="vertical stack.png"
+				/>
+</category>
+
+
+<category name="Timers">
+	<example 	name="Timers"
+				description="Showing timers"
+				path="Timers/Timers/Timers.gproj"
+				image="timers.png"
+				/>
+</category>
+
+</examples>

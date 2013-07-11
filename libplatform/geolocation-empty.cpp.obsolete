@@ -1,0 +1,79 @@
+#include "geolocation.h"
+
+Geolocation::Geolocation(LocationCallback locationCallback,
+						 HeadingCallback headingCallback,
+						 ErrorCallback errorCallback,
+						 void* callbackData)
+{
+
+}
+
+Geolocation::~Geolocation()
+{
+
+}
+
+bool Geolocation::isAvailable() const
+{
+	return false;
+}
+
+bool Geolocation::isHeadingAvailable() const
+{
+	return false;
+}
+
+void Geolocation::setAccuracy(double accuracy)
+{
+
+}
+
+double Geolocation::getAccuracy() const
+{
+	return 0;
+}
+
+void Geolocation::setThreshold(double threshold)
+{
+
+}
+
+double Geolocation::getThreshold() const
+{
+	return 0;
+}
+
+void Geolocation::start()
+{
+
+}
+
+void Geolocation::stop()
+{
+
+}
+
+void Geolocation::startUpdatingLocation()
+{
+
+}
+
+void Geolocation::stopUpdatingLocation()
+{
+
+}
+
+void Geolocation::startUpdatingHeading()
+{
+
+}
+
+void Geolocation::stopUpdatingHeading()
+{
+
+}
+
+void Geolocation::tick()
+{
+
+}

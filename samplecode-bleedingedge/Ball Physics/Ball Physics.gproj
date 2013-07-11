@@ -1,0 +1,10 @@
+<library>
+ <file file="main.lua"/>
+ <file file="ball.lua"/>
+ <file file="gfx/ball20x20.png"/>
+ <file file="gfx/ball30x30.png"/>
+ <file file="gfx/ball40x40.png"/>
+ <file file="gfx/ball_ice_02_20.png"/>
+ <file file="gfx/ball_ice_02_30.png"/>
+ <file file="gfx/ball_ice_02_40.png"/>
+</library>

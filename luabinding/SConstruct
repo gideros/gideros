@@ -1,0 +1,5 @@
+
+CPPPATH=['../lua/src', '../box2d_v2.1.2/Box2D', '../libpng', '../zlib', '../box2d/Include', '../2dsg', '../libplatform', '../libsound']
+CCFLAGS = ['-Wall', '-g']
+
+Library('luabinding', [Glob('*.cpp'), Glob('modules/*.cpp')], CPPPATH=CPPPATH, CCFLAGS=CCFLAGS)

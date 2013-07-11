@@ -1,0 +1,124 @@
+#include "soundchannel.h"
+#include "sound.h"
+#include "platform.h"
+#include "soundcontainer.h"
+
+
+SoundChannel::SoundChannel(Sound* sound, double startTime, int loops)
+{
+//	printf("SoundChannel()\n");
+	sound_ = sound;
+	sound_->ref();
+
+	finished_ = false;
+
+	id_ = playSound(sound->id(), startTime, loops);					// TODO: error check
+	setSoundCompleteCallback(id_, completeCallback_s, this);		// TODO: callback'i set edemeden once sesin calmasi bitebilir mi?
+
+	soundContainer_ = &SoundContainer::instance();
+	soundContainer_->addSoundChannel(this);
+
+	lastPosition_ = 0;
+}
+
+SoundChannel::~SoundChannel()
+{
+//	printf("~SoundChannel()\n");
+
+	if (id_ != 0)
+	{
+		destroySoundChannel(id_);
+		id_ = 0;
+	}
+
+	if (sound_ != 0)
+	{
+		sound_->unref();
+		sound_ = 0;
+	}
+}
+
+double SoundChannel::position() const
+{
+	if (id_ == 0)
+		return lastPosition_;
+	
+	return getSoundChannelOffset(id_);
+}
+
+void SoundChannel::setVolume(float volume)
+{
+	if (id_ == 0)
+		return;
+
+	setSoundChannelVolume(id_, volume);
+}
+
+float SoundChannel::getVolume() const
+{
+	if (id_ == 0)
+		return 0;
+
+	return getSoundChannelVolume(id_);
+}
+
+bool SoundChannel::isPlaying() const
+{
+	return !finished_;
+}
+
+void SoundChannel::stop()
+{
+	if (finished_ == true)
+		return;
+	finished_ = true;
+
+	ref();
+
+	if (id_ != 0)
+	{
+		lastPosition_ = getSoundChannelOffset(id_);
+		destroySoundChannel(id_);
+		id_ = 0;
+	}
+
+	if (soundContainer_ != NULL)
+	{
+		soundContainer_->removeSoundChannel(this);
+		soundContainer_ = 0;
+	}
+
+	if (sound_ != 0)
+	{
+		sound_->unref();
+		sound_ = 0;
+	}
+	
+	unref();
+}
+
+void SoundChannel::completeCallback_s(unsigned int id, void* data)
+{
+//	printf("completeCallback_s\n");
+	static_cast<SoundChannel*>(data)->completeCallback(id);
+}
+
+void SoundChannel::completeCallback(unsigned int id)
+{
+	ref();
+
+	stop();
+
+	try
+	{
+		Event event(Event::COMPLETE);
+		dispatchEvent(&event);
+	}
+	catch(...)
+	{
+		unref();
+		throw;
+	}
+
+	unref();
+}

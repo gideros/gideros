@@ -1,0 +1,134 @@
+#include "urlloader2.h"
+#include <stdio.h>
+
+static inline bool ishex(char c)
+{
+    return	('0' <= c && c <= '9') ||
+            ('a' <= c && c <= 'f') ||
+            ('A' <= c && c <= 'F');
+}
+
+static std::string encode(const char* url)
+{
+    std::string eurl;
+
+    size_t len = strlen(url);
+
+    for (size_t i = 0; i < len; ++i)
+    {
+        bool notencoded = false;
+        if (url[i] == 0x25)
+        {
+            if (i + 2 < len)
+            {
+                if (!ishex(url[i + 1]) || !ishex(url[i + 2]))
+                    notencoded = true;
+            }
+            else
+            {
+                notencoded = true;
+            }
+        }
+
+        // we get this from from QUrl:toEncoded
+        if (url[i] == 0x20 ||	// ' '
+            url[i] == 0x22 ||	// '"'
+//			url[i] == 0x25 ||	// '%'
+            url[i] == 0x3C ||	// '<'
+            url[i] == 0x3E ||	// '>'
+            url[i] == 0x5B ||	// '['
+            url[i] == 0x5C ||	// '\'
+            url[i] == 0x5D ||	// ']'
+            url[i] == 0x5E ||	// '^'
+            url[i] == 0x60 ||	// '`'
+            url[i] == 0x7B ||	// '{'
+            url[i] == 0x7C ||	// '|'
+            url[i] == 0x7D ||	// '}'
+            url[i] == 0x7F ||	// control character
+            notencoded ||
+            (unsigned char)url[i] >= 128)
+        {
+            char buf[4];
+            sprintf(buf, "%c%X%X", 0x25, (url[i] & 0xf0) >> 4, url[i] & 0x0f);
+            eurl += buf;
+        }
+        else
+        {
+            eurl += url[i];
+        }
+    }
+
+    return eurl;
+}
+
+UrlLoader2::UrlLoader2()
+{
+    current_ = 0;
+}
+
+UrlLoader2::~UrlLoader2()
+{
+    close();
+}
+
+void UrlLoader2::get(const char* url, const ghttp_Header *header)
+{
+    close();
+
+    std::string eurl = encode(url);
+    current_ = ghttp_get(eurl.c_str(), header, callback_s, this);
+}
+
+void UrlLoader2::post(const char* url, const ghttp_Header *header, const void* data, size_t size)
+{
+    close();
+
+    std::string eurl = encode(url);
+    current_ = ghttp_post(eurl.c_str(), header, data, size, callback_s, this);
+}
+
+void UrlLoader2::put(const char* url, const ghttp_Header *header, const void* data, size_t size)
+{
+    close();
+
+    std::string eurl = encode(url);
+    current_ = ghttp_put(eurl.c_str(), header, data, size, callback_s, this);
+}
+
+void UrlLoader2::deleteResource(const char* url, const ghttp_Header *header)
+{
+    close();
+
+    std::string eurl = encode(url);
+    current_ = ghttp_delete(eurl.c_str(), header, callback_s, this);
+}
+
+void UrlLoader2::close()
+{
+    if (current_ != 0)
+    {
+        ghttp_close(current_);
+        current_ = 0;
+    }
+}
+
+void UrlLoader2::callback_s(int id, int type, void* data, void* udata)
+{
+    static_cast<UrlLoader2*>(udata)->callback(id, type, data);
+}
+
+void UrlLoader2::callback(int id, int type, void* data)
+{
+    if (type == GHTTP_RESPONSE || type == GHTTP_ERROR)
+        current_ = 0;
+
+    callback_(type, data, udata1_, udata2_);
+}
+
+void UrlLoader2::setCallback(void(*callback)(int type, void* data, void* udata1, void* udata2),
+                             void* udata1, void* udata2)
+{
+    callback_ = callback;
+    udata1_ = udata1;
+    udata2_ = udata2;
+}

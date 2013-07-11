@@ -1,0 +1,13 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="1">
+  <imageScales/>
+ </properties>
+ <file file="bird.png"/>
+ <file file="blue-bar.png"/>
+ <file file="blue-dot.png"/>
+ <file file="green-bar.png"/>
+ <file file="green-dot.png"/>
+ <file file="red-bar.png"/>
+ <file file="red-dot.png"/>
+ <file file="main.lua"/>
+</project>

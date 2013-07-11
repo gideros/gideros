@@ -1,0 +1,8 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="0">
+  <imageScales/>
+ </properties>
+ <file file="happy-box.png"/>
+ <file file="sad-box.png"/>
+ <file file="main.lua"/>
+</project>

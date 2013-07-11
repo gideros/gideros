@@ -1,0 +1,97 @@
+#include "startpagewidget.h"
+#include <QWebView>
+#include <QUrl>
+#include <Qsci/qsciscintilla.h>
+#include <QDir>
+#include <QSettings>
+#include <QCloseEvent>
+#include <QMdiArea>
+#include <QDebug>
+#include <QDesktopServices>
+
+StartPageWidget::StartPageWidget(QWidget *parent)
+	: QMdiSubWindow(parent)
+{
+//	setAttribute(Qt::WA_DeleteOnClose);
+	setWindowTitle(tr("Start Page"));
+	
+	webview_ = new QWebView(this);
+	setWidget(webview_);
+	
+	webview_->setContextMenuPolicy(Qt::NoContextMenu);
+
+	load();
+
+	webview_->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+	connect(webview_, SIGNAL(linkClicked(const QUrl&)), this, SLOT(linkClicked(const QUrl&)));
+}
+
+StartPageWidget::~StartPageWidget()
+{
+
+}
+
+void StartPageWidget::load()
+{
+	QFile file(QDir::current().absoluteFilePath("Resources/start/index.tpl"));
+
+	if (!file.open(QFile::ReadOnly))
+		return;
+
+	QString index = QString::fromUtf8(file.readAll());
+
+	QSettings settings;
+	QStringList files = settings.value("recentProjectList").toStringList();
+	QString projects;
+
+	for (int i = 0; i < files.size(); ++i)
+	{
+		QString filename = QFileInfo(files[i]).fileName();
+		projects += QString("<li><a href=\"#%1\">%2</a></li>\n").arg(files[i]).arg(filename);
+	}
+
+	index = index.arg(projects);
+
+	//	view->load(QUrl::fromLocalFile(QDir::current().absoluteFilePath("Resources/start/index.html")));
+	webview_->setHtml(index, QUrl::fromLocalFile(QDir::current().absoluteFilePath("Resources/start/")));
+
+	adjustSize();
+}
+
+void StartPageWidget::linkClicked(const QUrl& url) 
+{
+	QString str = url.toString();
+
+	if (str.startsWith("file://"))
+	{
+		str = str.mid(str.lastIndexOf("#") + 1);
+
+		if (str == "OpenProject")
+		{
+			emit openProject();
+		}
+		else if (str == "NewProject")
+		{
+			emit newProject();
+		}
+		else
+		{
+			emit openProject(str);
+		}
+	}
+	else
+	{
+		QDesktopServices::openUrl(url);
+	}
+}
+
+void StartPageWidget::closeEvent(QCloseEvent * event)
+{
+	event->ignore();
+
+	if (mdiArea())
+	{
+		hide();
+		mdiArea()->removeSubWindow(this);
+	}
+}

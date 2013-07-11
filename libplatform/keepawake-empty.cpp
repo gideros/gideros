@@ -1,0 +1,4 @@
+void setKeepAwake(bool awake)
+{
+
+}

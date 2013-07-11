@@ -1,0 +1,19 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320">
+  <imageScales/>
+ </properties>
+ <file file="1-up.png"/>
+ <file file="1-down.png"/>
+ <file file="2-up.png"/>
+ <file file="2-down.png"/>
+ <file file="3-up.png"/>
+ <file file="3-down.png"/>
+ <file file="1.wav"/>
+ <file file="2.wav"/>
+ <file file="3.wav"/>
+ <file file="button.lua"/>
+ <file file="soundbutton.lua"/>
+ <file file="main.lua"/>
+ <dependency from="soundbutton.lua" to="button.lua"/>
+ <dependency from="main.lua" to="soundbutton.lua"/>
+</project>

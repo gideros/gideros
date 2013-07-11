@@ -1,0 +1,22 @@
+MSVC 2010
+---------
+freetype -> static library, builds/win32/vc2010/freetype.sln, use freetype2412.lib (which is Multi-threaded DLL)
+glew -> shared library, build/vc10/glew.sln, use glew32.lib, glew32.dll
+jpeg -> static library, jpeg.pro
+libpng -> static library, libpng.pro
+mpg123 -> static library, src/libmpg123/libmpg123.pro
+zlib -> shared library, zlib.pro
+openal soft -> shared library, cmake
+
+
+mingw
+-----
+freetype -> static library, mingw32-make.exe; copy ftmodule.h to objs; touch ftmodule.h; mingw32-make.exe again
+glew -> shared library, build_mingw.bat
+jpeg -> static library, jpeg.pro
+libpng -> static library, libpng.pro
+mpg123 -> static library, src/libmpg123/libmpg123.pro
+openal soft -> shared library, cmake
+
+TODO: we should rebuild mingw32_48 port of freetype with touch obj/ftmodule.h
+TODO: we should rebuild clang_65 port of mpg123

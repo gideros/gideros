@@ -1,0 +1,11 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="0">
+  <imageScales/>
+ </properties>
+ <file file="box.png"/>
+ <file file="strict.lua"/>
+ <file file="init.lua"/>
+ <file file="tweennano.lua"/>
+ <file file="main.lua"/>
+ <dependency from="init.lua" to="strict.lua"/>
+</project>

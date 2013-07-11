@@ -1,0 +1,409 @@
+#include "graphics1.h"
+#include "color.h"
+
+#include "ogl.h"
+#include <cmath>
+
+extern "C"
+{
+#include "gpc.h"
+}
+
+class GraphicsItem
+{
+public:
+	virtual ~GraphicsItem() {}
+
+	virtual void draw() = 0;
+	virtual void bounds(Point2f* min, Point2f* max) = 0;
+};
+
+class SolidGraphicItem : public GraphicsItem
+{
+public:
+	SolidGraphicItem(	float r, float g, float b, float a,
+						GLenum mode,
+						const std::vector<float>& vertices)
+	{
+		r_ = r;
+		g_ = g;
+		b_ = b;
+		a_ = a;
+
+		mode_ = mode;
+
+		vertices_ = vertices;
+
+		min_ = Point2f( 1e30f,  1e30f);
+		max_ = Point2f(-1e30f, -1e30f);
+		for (std::size_t i = 0; i < vertices_.size() / 2; ++i)
+		{
+			float x = vertices_[i * 2 + 0];
+			float y = vertices_[i * 2 + 1];
+
+			min_.x = std::min(x, min_.x);
+			min_.y = std::min(y, min_.y);
+			max_.x = std::max(x, max_.x);
+			max_.y = std::max(y, max_.y);
+		}
+	}
+
+	virtual void draw()
+	{
+		oglDisable(GL_TEXTURE_2D);
+
+		glPushColor();
+		glMultColor(r_, g_, b_, a_);
+
+		oglEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(2, GL_FLOAT, 0, &vertices_[0]);
+		oglDrawArrays(mode_, 0, vertices_.size() / 2);
+		oglDisableClientState(GL_VERTEX_ARRAY);
+
+		glPopColor();
+	}
+
+	virtual void bounds(Point2f* min, Point2f* max)
+	{
+		if (min)
+			*min = min_;
+		if (max)
+			*max = max_;
+	}
+
+private:
+	float r_, g_, b_, a_;
+	GLenum mode_;
+	std::vector<float> vertices_;
+	Point2f min_, max_;
+};
+
+
+class SolidLineGraphicsItem : public GraphicsItem
+{
+public:
+	SolidLineGraphicsItem(	float r, float g, float b, float a,
+							float thickness,
+							float x0, float y0, float x1, float y1)
+	{
+		r_ = r;
+		g_ = g;
+		b_ = b;
+		a_ = a;
+
+		float tx = x1 - x0;
+		float ty = y1 - y0;
+		
+		float l = std::sqrt(tx * tx + ty * ty);
+
+		tx /= l;
+		ty /= l;
+
+		float nx = -ty;
+		float ny = tx;
+
+		float h = thickness * 0.5f;
+
+		pushxy(x0 - (nx * h) - (tx * h), y0 - (ny * h) - (ty * h));
+		pushxy(x1 - (nx * h) + (tx * h), y1 - (ny * h) + (ty * h));
+		pushxy(x0 + (nx * h) - (tx * h), y0 + (ny * h) - (ty * h));
+		pushxy(x1 + (nx * h) + (tx * h), y1 + (ny * h) + (ty * h));
+
+		min_ = Point2f( 1e30f,  1e30f);
+		max_ = Point2f(-1e30f, -1e30f);
+
+		for (std::size_t i = 0; i < vertices_.size() / 2; ++i)
+		{
+			float x = vertices_[i * 2 + 0];
+			float y = vertices_[i * 2 + 1];
+
+			min_.x = std::min(min_.x, x);
+			min_.y = std::min(min_.y, y);
+			max_.x = std::max(max_.x, x);
+			max_.y = std::max(max_.y, y);
+		}
+	}
+
+	virtual void bounds(Point2f* min, Point2f* max)
+	{
+		if (min)
+			*min = min_;
+		if (max)
+			*max = max_;
+	}
+
+	virtual void draw()
+	{
+		oglDisable(GL_TEXTURE_2D);
+
+		glPushColor();
+		glMultColor(r_, g_, b_, a_);
+
+		oglEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(2, GL_FLOAT, 0, &vertices_[0]);
+		oglDrawArrays(GL_TRIANGLE_STRIP, 0, vertices_.size() / 2);
+		oglDisableClientState(GL_VERTEX_ARRAY);
+
+		glPopColor();
+	}
+
+private:
+	float r_, g_, b_, a_;
+	Point2f min_, max_;
+	std::vector<float> vertices_;
+	void pushxy(float x, float y)
+	{
+		vertices_.push_back(x);
+		vertices_.push_back(y);
+	}
+};
+
+Graphics::Graphics()
+{
+	penx_ = 0;
+	peny_ = 0;
+
+	contours_.push_back(std::vector<Point2f>());
+	contours_.back().push_back(Point2f(0, 0));
+
+	thickness_ = -1;
+
+	fill_ = false;
+
+	min_ = Point2f( 1e30f,  1e30f);
+	max_ = Point2f(-1e30f, -1e30f);
+
+	isDirty_ = true;
+}
+
+Graphics::~Graphics()
+{
+	for (std::size_t i = 0; i < items_.size(); ++i)
+		delete items_[i];
+}
+
+void Graphics::draw()
+{
+	endFill();
+
+	for (std::size_t i = 0; i < items_.size(); ++i)
+		items_[i]->draw();
+}
+
+void Graphics::moveTo(float x, float y)
+{
+	if (fill_ == true)
+	{
+		if (thickness_ > 0 && contours_.empty() == false && contours_.back().empty() == false && contours_.front().empty() == false)
+		{
+			float x0 = contours_.back().back().x;
+			float y0 = contours_.back().back().y;
+			float x1 = contours_.back().front().x;
+			float y1 = contours_.back().front().y;
+
+			lineItems_.push_back(new SolidLineGraphicsItem(liner_, lineg_, lineb_, linea_, thickness_, x0, y0, x1, y1));
+		}
+
+		contours_.push_back(std::vector<Point2f>());
+		contours_.back().push_back(Point2f(x, y));
+	}
+
+	penx_ = x;
+	peny_ = y;
+}
+
+void Graphics::lineTo(float x, float y)
+{
+	if (fill_ == true)
+		contours_.back().push_back(Point2f(x, y));
+
+	if (thickness_ > 0)
+	{
+		GraphicsItem* item = new SolidLineGraphicsItem(liner_, lineg_, lineb_, linea_, thickness_, penx_, peny_, x, y);
+		if (fill_ == true)
+			lineItems_.push_back(item);
+		else
+		{
+			items_.push_back(item);
+			isDirty_ = true;
+			updateBoundingBox(items_.back());
+		}
+	}
+
+	penx_ = x;
+	peny_ = y;
+}
+
+void Graphics::beginFill(float r, float g, float b, float a)
+{
+	endFill();
+
+	fillr_ = r;
+	fillg_ = g;
+	fillb_ = b;
+	filla_ = a;
+
+	contours_.clear();
+
+	contours_.push_back(std::vector<Point2f>());
+	contours_.back().push_back(Point2f(penx_, peny_));
+
+	fill_ = true;
+}
+
+void Graphics::endFill()
+{
+	if (fill_ == true)
+	{
+		if (thickness_ > 0 && contours_.empty() == false && contours_.back().empty() == false && contours_.front().empty() == false)
+		{
+			float x0 = contours_.back().back().x;
+			float y0 = contours_.back().back().y;
+			float x1 = contours_.back().front().x;
+			float y1 = contours_.back().front().y;
+			lineItems_.push_back(new SolidLineGraphicsItem(liner_, lineg_, lineb_, linea_, thickness_, x0, y0, x1, y1));
+		}
+
+		createPolygon();
+
+		for (std::size_t i = 0; i < lineItems_.size(); ++i)
+		{
+			items_.push_back(lineItems_[i]);
+			isDirty_ = true;
+			updateBoundingBox(items_.back());
+		}
+		lineItems_.clear();
+
+		fill_ = false;
+		contours_.clear();
+	}
+}
+
+void Graphics::createPolygon()
+{
+	// create the polygon
+	gpc_polygon p = {0};
+
+	for (std::size_t i = 0; i < contours_.size(); ++i)
+	{
+		const std::vector<Point2f>& contour = contours_[i];
+
+		gpc_vertex_list c = {contour.size(), new gpc_vertex[contour.size()]};
+
+		for (std::size_t j = 0; j < contour.size(); ++j)
+		{
+			c.vertex[j].x = contour[j].x;
+			c.vertex[j].y = contour[j].y;
+		}
+
+		gpc_add_contour(&p, &c, 0);
+
+		delete [] c.vertex;
+	}
+
+	// create the triangle strips
+	gpc_tristrip tristrip = {0};
+	gpc_polygon_to_tristrip(&p, &tristrip);
+
+	for (int i = 0; i < tristrip.num_strips; ++i)
+	{
+		std::vector<float> vertices(tristrip.strip[i].num_vertices * 2);
+
+		for (int j = 0; j < tristrip.strip[i].num_vertices; ++j)
+		{
+			vertices[j * 2 + 0] = tristrip.strip[i].vertex[j].x;
+			vertices[j * 2 + 1] = tristrip.strip[i].vertex[j].y;
+		}
+
+		items_.push_back(new SolidGraphicItem(fillr_, fillg_, fillb_, filla_, GL_TRIANGLE_STRIP, vertices));
+		isDirty_ = true;
+		updateBoundingBox(items_.back());
+	}
+
+	gpc_free_tristrip(&tristrip);
+	gpc_free_polygon(&p);
+
+	contours_.clear();
+}
+
+void Graphics::lineStyle(float thickness, float r, float g, float b, float a)
+{
+	thickness_ = thickness;
+
+	liner_ = r;
+	lineg_ = g;
+	lineb_ = b;
+	linea_ = a;
+}
+
+void Graphics::drawRect(float x, float y, float width, float height)
+{
+	moveTo(x,         y);
+	lineTo(x + width, y);
+	lineTo(x + width, y + height);
+	lineTo(x,         y + height);
+	lineTo(x,         y);
+}
+
+void Graphics::beginFill(unsigned int color, float alpha)
+{
+	int r = (color >> 16) & 0xff;
+	int g = (color >> 8) & 0xff;
+	int b = color & 0xff;
+
+	beginFill(r / 255.f, g / 255.f, b / 255.f, alpha);
+}
+
+void Graphics::lineStyle(float thickness, unsigned int color, float alpha)
+{
+	int r = (color >> 16) & 0xff;
+	int g = (color >> 8) & 0xff;
+	int b = color & 0xff;
+
+	lineStyle(thickness, r / 255.f, g / 255.f, b / 255.f, alpha);
+}
+
+void Graphics::bounds(Point2f* min, Point2f* max) const
+{
+	if (min)
+		*min = min_;
+	if (max)
+		*max = max_;
+}
+
+void Graphics::updateBoundingBox(GraphicsItem* item)
+{
+	Point2f min, max;
+	item->bounds(&min, &max);
+
+	min_.x = std::min(min.x, min_.x);
+	min_.y = std::min(min.y, min_.y);
+	max_.x = std::max(max.x, max_.x);
+	max_.y = std::max(max.y, max_.y);
+}
+
+void Graphics::clear()
+{
+	endFill();
+
+	for (std::size_t i = 0; i < items_.size(); ++i)
+		delete items_[i];
+
+	items_.clear();
+	contours_.clear();
+
+	penx_ = 0;
+	peny_ = 0;
+
+	contours_.push_back(std::vector<Point2f>());
+	contours_.back().push_back(Point2f(0, 0));
+
+	thickness_ = -1;
+
+	fill_ = false;
+
+	min_ = Point2f( 1e30f,  1e30f);
+	max_ = Point2f(-1e30f, -1e30f);
+
+	isDirty_ = true;
+}

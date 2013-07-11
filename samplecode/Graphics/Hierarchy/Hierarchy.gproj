@@ -1,0 +1,7 @@
+<library>
+ <file file="main.lua"/>
+ <file file="dot-1.png"/>
+ <file file="dot-2.png"/>
+ <file file="group-1.png"/>
+ <file file="group-2.png"/>
+</library>

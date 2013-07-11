@@ -1,0 +1,12 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="1">
+  <imageScales/>
+ </properties>
+ <file file="bar.png"/>
+ <file file="play.png"/>
+ <file file="pause.png"/>
+ <file file="marker.png"/>
+ <file file="Pitx_-_Black_Rainbow.mp3"/>
+ <file file="button.lua"/>
+ <file file="main.lua"/>
+</project>

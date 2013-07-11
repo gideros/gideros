@@ -1,0 +1,67 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="0">
+  <imageScales/>
+ </properties>
+ <folder name="images">
+  <file file="images/3200.png"/>
+  <file file="images/47.png"/>
+  <file file="images/46.png"/>
+  <file file="images/45.png"/>
+  <file file="images/44.png"/>
+  <file file="images/43.png"/>
+  <file file="images/42.png"/>
+  <file file="images/41.png"/>
+  <file file="images/40.png"/>
+  <file file="images/39.png"/>
+  <file file="images/38.png"/>
+  <file file="images/37.png"/>
+  <file file="images/36.png"/>
+  <file file="images/35.png"/>
+  <file file="images/34.png"/>
+  <file file="images/33.png"/>
+  <file file="images/32.png"/>
+  <file file="images/31.png"/>
+  <file file="images/30.png"/>
+  <file file="images/29.png"/>
+  <file file="images/28.png"/>
+  <file file="images/27.png"/>
+  <file file="images/26.png"/>
+  <file file="images/25.png"/>
+  <file file="images/24.png"/>
+  <file file="images/23.png"/>
+  <file file="images/22.png"/>
+  <file file="images/21.png"/>
+  <file file="images/20.png"/>
+  <file file="images/19.png"/>
+  <file file="images/18.png"/>
+  <file file="images/17old.png"/>
+  <file file="images/17.png"/>
+  <file file="images/16old.png"/>
+  <file file="images/16.png"/>
+  <file file="images/14.png"/>
+  <file file="images/13.png"/>
+  <file file="images/12.png"/>
+  <file file="images/11.png"/>
+  <file file="images/10.png"/>
+  <file file="images/9.png"/>
+  <file file="images/09.png"/>
+  <file file="images/8.png"/>
+  <file file="images/7.png"/>
+  <file file="images/6.png"/>
+  <file file="images/06.png"/>
+  <file file="images/5.png"/>
+  <file file="images/4.png"/>
+  <file file="images/3.png"/>
+  <file file="images/2.png"/>
+  <file file="images/1.png"/>
+  <file file="images/0.png"/>
+ </folder>
+ <file file="cloud_background.png"/>
+ <file file="arial-12.png"/>
+ <file file="arial-12.txt"/>
+ <file file="arial-24.png"/>
+ <file file="arial-24.txt"/>
+ <file file="vardump.lua"/>
+ <file file="xml.lua"/>
+ <file file="main.lua"/>
+</project>

@@ -1,0 +1,103 @@
+#include "soundchannelbinder.h"
+#include "soundchannel.h"
+#include "stackchecker.h"
+#include "keys.h"
+#include "luautil.h"
+
+SoundChannelBinder::SoundChannelBinder(lua_State* L)
+{
+	Binder binder(L);
+
+	static const luaL_Reg functionList[] = {
+		{"stop", stop},
+		{"getPosition", getPosition},
+		{"setVolume", setVolume},
+		{"getVolume", getVolume},
+		{NULL, NULL},
+	};
+
+	binder.createClass("SoundChannel", "EventDispatcher", create, destruct, functionList);
+}
+
+int SoundChannelBinder::create(lua_State* L)
+{
+	StackChecker checker(L, "SoundBinder::create", 1);
+	
+	Binder binder(L);
+
+	Sound* sound = static_cast<Sound*>(binder.getInstance("Sound", 1));
+	double startTime = luaL_optnumber(L, 2, 0);
+    int loops = (int)std::min(luaL_optnumber(L, 3, 0), 2000000.0);
+
+	SoundChannel* soundChannel = new SoundChannel(sound, startTime, loops);
+	binder.pushInstance("SoundChannel", soundChannel);
+
+	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_soundChannels);
+	lua_pushvalue(L, -2);
+	luaL_rawsetptr(L, -2, soundChannel);
+	lua_pop(L, 1);
+	
+	return 1;
+}
+
+
+int SoundChannelBinder::destruct(lua_State* L)
+{
+	void* ptr = *(void**)lua_touserdata(L, 1);
+	SoundChannel* soundChannel = static_cast<SoundChannel*>(ptr);
+	soundChannel->unref();
+
+	return 0;
+}
+
+
+int SoundChannelBinder::getPosition(lua_State* L)
+{
+	StackChecker checker(L, "SoundChannelBinder::getPosition", 1);
+	
+	Binder binder(L);
+	SoundChannel* soundChannel = static_cast<SoundChannel*>(binder.getInstance("SoundChannel"));
+
+	lua_pushnumber(L, soundChannel->position());
+
+	return 1;
+}
+
+int SoundChannelBinder::setVolume(lua_State* L)
+{
+	StackChecker checker(L, "SoundChannelBinder::setVolume", 0);
+
+	Binder binder(L);
+	SoundChannel* soundChannel = static_cast<SoundChannel*>(binder.getInstance("SoundChannel"));
+
+	lua_Number volume = luaL_checknumber(L, 2);
+	soundChannel->setVolume(volume);
+
+	return 0;
+}
+
+
+int SoundChannelBinder::getVolume(lua_State* L)
+{
+	StackChecker checker(L, "SoundChannelBinder::getVolume", 1);
+
+	Binder binder(L);
+	SoundChannel* soundChannel = static_cast<SoundChannel*>(binder.getInstance("SoundChannel"));
+
+	lua_pushnumber(L, soundChannel->getVolume());
+
+	return 1;
+}
+
+int SoundChannelBinder::stop(lua_State* L)
+{
+	StackChecker checker(L, "SoundChannelBinder::stop", 0);
+	
+	Binder binder(L);
+	SoundChannel* soundChannel = static_cast<SoundChannel*>(binder.getInstance("SoundChannel"));
+
+	soundChannel->stop();
+
+	return 0;
+}
+

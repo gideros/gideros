@@ -1,0 +1,63 @@
+#include "colortransformbinder.h"
+#include "stackchecker.h"
+
+ColorTransformBinder::ColorTransformBinder(lua_State* L)
+{
+	Binder binder(L);
+	
+	static const luaL_Reg functionList[] = {
+		{NULL, NULL},
+	};
+
+	binder.createClass("ColorTransform", NULL, create, destruct, functionList);
+}
+
+
+int ColorTransformBinder::create(lua_State* L)
+{
+	StackChecker checker(L, "ColorTransformBinder", 1);
+
+	lua_Number redMultiplier =   luaL_optnumber(L, 1, 1);
+	lua_Number greenMultiplier = luaL_optnumber(L, 2, 1);
+	lua_Number blueMultiplier =  luaL_optnumber(L, 3, 1);
+	lua_Number alphaMultiplier = luaL_optnumber(L, 4, 1);
+
+	lua_Number redOffset =       luaL_optnumber(L, 5, 0);
+	lua_Number greenOffset =     luaL_optnumber(L, 6, 0);
+	lua_Number blueOffset =      luaL_optnumber(L, 7, 0);
+	lua_Number alphaOffset =     luaL_optnumber(L, 8, 0);
+	
+	Binder binder(L);
+	binder.pushInstance("ColorTransform", 0);
+
+	lua_pushnumber(L, redMultiplier);
+	lua_setfield(L, -2, "redMultiplier");
+
+	lua_pushnumber(L, greenMultiplier);
+	lua_setfield(L, -2, "greenMultiplier");
+
+	lua_pushnumber(L, blueMultiplier);
+	lua_setfield(L, -2, "blueMultiplier");
+
+	lua_pushnumber(L, alphaMultiplier);
+	lua_setfield(L, -2, "alphaMultiplier");
+
+	lua_pushnumber(L, redOffset);
+	lua_setfield(L, -2, "redOffset");
+
+	lua_pushnumber(L, blueOffset);
+	lua_setfield(L, -2, "blueOffset");
+
+	lua_pushnumber(L, greenOffset);
+	lua_setfield(L, -2, "greenOffset");
+
+	lua_pushnumber(L, alphaOffset);
+	lua_setfield(L, -2, "alphaOffset");
+
+	return 1;
+}
+
+int ColorTransformBinder::destruct(lua_State* L)
+{
+	return 0;
+}

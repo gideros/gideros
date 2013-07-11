@@ -1,0 +1,31 @@
+#ifndef SOUNDCHANNEL_H
+#define SOUNDCHANNEL_H
+
+#include "eventdispatcher.h"
+
+class Sound;
+class SoundContainer;
+
+class SoundChannel : public EventDispatcher
+{
+public:
+	SoundChannel(Sound* sound, double startTime = 0, int loops = 0);
+	virtual ~SoundChannel();
+	void stop();
+	double position() const;
+	void setVolume(float volume);
+	float getVolume() const;
+	bool isPlaying() const;
+
+	static void completeCallback_s(unsigned int id, void* data);
+	void completeCallback(unsigned int id);
+
+private:
+	unsigned int id_;
+	bool finished_;
+	Sound* sound_;
+	SoundContainer* soundContainer_;
+	double lastPosition_;
+};
+
+#endif

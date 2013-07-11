@@ -1,0 +1,25 @@
+<project>
+ <properties scaleMode="0" iosDevice="0" xcodeVersion="0" packageName="com.yourdomain.yourapp" logicalHeight="480" logicalWidth="320" assetsOnly="0" orientation="1" architecture="0">
+  <imageScales/>
+ </properties>
+ <file file="poof.png"/>
+ <file file="easing.lua"/>
+ <file file="gtween.lua"/>
+ <file file="squirrel_2.png"/>
+ <file file="squirrel_1.png"/>
+ <file file="head_dog.png"/>
+ <file file="head_cat.png"/>
+ <file file="fire.png"/>
+ <file file="fg.png"/>
+ <file file="catapult_cup.png"/>
+ <file file="catapult_base_2.png"/>
+ <file file="catapult_base_1.png"/>
+ <file file="catapult_arm.png"/>
+ <file file="brick_platform.png"/>
+ <file file="brick_3.png"/>
+ <file file="brick_2.png"/>
+ <file file="brick_1.png"/>
+ <file file="bg.png"/>
+ <file file="acorn.png"/>
+ <file file="main.lua"/>
+</project>

@@ -1,0 +1,365 @@
+extern "C"
+{
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+}
+
+#include "luautil.h"
+
+#include <string>
+#include <cmath>
+#include <algorithm>
+
+#include "eventdispatcher.h"
+
+#include "stackchecker.h"
+#include "binder.h"
+#include "eventbinder.h"
+#include "mouseeventbinder.h"
+#include "eventdispatcherbinder.h"
+#include "enterframeevent.h"
+#include "spritebinder.h"
+#include "graphicsbinder.h"
+#include "colortransformbinder.h"
+#include "texturebinder.h"
+#include "bitmapdatabinder.h"
+#include "bitmapbinder.h"
+#include "stagebinder.h"
+#include "timerbinder.h"
+#include "timereventbinder.h"
+
+#include "application.h"
+
+#include <GL/glut.h>
+#include <GL/gl.h>
+
+static lua_State* g_L;
+static Application* g_application;
+static bool g_isDragging = false;
+
+static int environTable(lua_State* L)
+{
+	StackChecker checker(L, "environTable", 1);
+
+	static char k = ' ';		// todo: maybe we address the table with this pointer
+
+	lua_pushlightuserdata(L, &k);
+	lua_rawget(L, LUA_REGISTRYINDEX);
+	
+	if (lua_isnil(L, -1) == 1)
+	{
+		lua_pop(L, 1);			// pop nil
+
+		lua_pushlightuserdata(L, &k);
+		lua_newtable(L);
+		lua_rawset(L, LUA_REGISTRYINDEX);
+
+		lua_pushlightuserdata(L, &k);
+		lua_rawget(L, LUA_REGISTRYINDEX);
+		
+		luaL_newweaktable(L);
+		lua_setfield(L, -2, "bridges");
+
+		lua_newtable(L);
+		lua_setfield(L, -2, "timers");
+	}
+
+	return 1;
+}
+
+static int setEnvironTable(lua_State* L)
+{
+	StackChecker checker(L, "setEnvironTable", 0);
+
+	environTable(L);
+	lua_replace(L, LUA_ENVIRONINDEX);
+
+	return 0;
+}
+
+static int mouseDown(lua_State* L)
+{
+	double x = lua_tonumber(L, 1);
+	double y = lua_tonumber(L, 2);
+	lua_pop(L, 2);				// TODO: event system requires an empty stack, preferibly correct this silly requirement
+
+	StackChecker checker(L, "mouseDown", 0);
+
+	setEnvironTable(L);
+	
+	lua_newtable(L);
+	lua_setfield(L, LUA_ENVIRONINDEX, "events");
+
+	g_application->mouseDown(x, y);
+
+	lua_pushnil(L);
+	lua_setfield(L, LUA_ENVIRONINDEX, "events");
+
+	return 0;
+}
+
+static int mouseUp(lua_State* L)
+{
+	int x = lua_tointeger(L, 1);
+	int y = lua_tointeger(L, 2);
+	lua_pop(L, 2);
+
+	StackChecker checker(L, "mouseUp", 0);
+
+	setEnvironTable(L);
+	
+	lua_newtable(L);
+	lua_setfield(L, LUA_ENVIRONINDEX, "events");
+
+	g_application->mouseUp(x, y);
+
+	lua_pushnil(L);
+	lua_setfield(L, LUA_ENVIRONINDEX, "events");
+
+	return 0;
+}
+
+static int mouseMove(lua_State* L)
+{
+	int x = lua_tointeger(L, 1);
+	int y = lua_tointeger(L, 2);
+	lua_pop(L, 2);
+
+	StackChecker checker(L, "mouseMove", 0);
+
+	setEnvironTable(L);
+	
+	lua_newtable(L);
+	lua_setfield(L, LUA_ENVIRONINDEX, "events");
+
+	g_application->mouseMove(x, y);
+
+	lua_pushnil(L);
+	lua_setfield(L, LUA_ENVIRONINDEX, "events");
+
+	return 0;
+}
+
+static void mouseCallback(int button, int state, int x, int y)
+{
+	lua_State* L = g_L;
+
+	StackChecker checker(L, "mouseCallback", 0);
+
+	if (button != GLUT_LEFT_BUTTON)
+		return;
+
+	g_isDragging = (state == GLUT_DOWN);
+
+	if (state == GLUT_DOWN)
+		lua_pushcfunction(L, mouseDown);
+	else
+		lua_pushcfunction(L, mouseUp);
+
+	lua_pushinteger(L, x);
+	lua_pushinteger(L, y);
+	
+	lua_call(L, 2, 0);
+}
+
+static void motionCallback(int x, int y)
+{
+	lua_State* L = g_L;
+
+	StackChecker checker(L, "motionCallback", 0);
+
+	if (g_isDragging == false)
+		return;
+
+	lua_pushcfunction(L, mouseMove);
+	lua_pushinteger(L, x);
+	lua_pushinteger(L, y);
+	
+	lua_call(L, 2, 0);
+}
+
+static int renderScene(lua_State* L)
+{
+	StackChecker checker(L, "renderScene", 0);
+
+	setEnvironTable(L);
+	
+	lua_newtable(L);
+	lua_setfield(L, LUA_ENVIRONINDEX, "events");
+
+	g_application->renderScene();
+
+	lua_pushnil(L);
+	lua_setfield(L, LUA_ENVIRONINDEX, "events");
+
+	return 0;
+}
+
+static int clearNotRunningTimers(lua_State* L)
+{
+	StackChecker checker(L, "clearNotRunningTimers", 0);
+	
+	setEnvironTable(L);
+
+	// remove the not running timers from "timers" envTable
+	// TODO: her bir tick'te tum timer'lara bastan bakiyoruz. belki burayi hizlandirmak gerekebilir
+	lua_getglobal(L, "Timer");		// push Timer
+	lua_getfield(L, -1, "getRunning"); // push Timer.getRunning
+	lua_getfield(L, LUA_ENVIRONINDEX, "timers");
+	lua_pushnil(L);				 // first key 
+	while (lua_next(L, -2) != 0) // table is in the stack at index -2
+	{
+		lua_pushvalue(L, -4);	// push Timer.getRunning
+		lua_pushvalue(L, -3);	// push key
+		lua_call(L, 1, 1);		// call Timer.getRunning
+
+		if (lua_toboolean(L, -1) == 0) // if the Timer is not running
+		{
+			lua_pushvalue(L, -3);
+			lua_pushnil(L);
+			lua_settable(L, -6); // timers[timer] = nil
+		}
+		
+		lua_pop(L, 1);			// remove the boolean result of Timer.running
+
+		lua_pop(L, 1);			// removes 'value'; now 'key' is at index -2
+	}
+	lua_pop(L, 3); 				// pop timers, Timer.getRunning and Timer
+
+	return 0;
+}
+
+static void displayCallback()
+{
+	lua_State* L = g_L;
+
+	StackChecker checker(L, "displayCallback", 0);
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+	lua_pushcfunction(L, renderScene);
+	lua_call(L, 0, 0);
+
+#if 0
+	lua_pushcfunction(L, clearNotRunningTimers);
+	lua_call(L, 0, 0);
+#endif
+
+	glutPostRedisplay();
+	glutSwapBuffers();
+}
+
+static void reshapeCallback(int w, int h)
+{
+
+}
+
+
+int bindAll(lua_State* L)
+{
+	setEnvironTable(L);
+	
+	EventBinder eventBinder(L);
+	MouseEventBinder mouseEventBinder(L);
+	TimerEventBinder timerEventBinder(L);
+	EventDispatcherBinder eventDispatcherBinder(L);
+	TimerBinder timerBinder(L);
+	GraphicsBinder graphicsBinder(L);
+	ColorTransformBinder colorTransformBinder(L);
+	SpriteBinder spriteBinder(L);
+	TextureBinder textureBinder(L);
+	BitmapDataBinder bitmapDataBinder(L);
+	BitmapBinder bitmapBinder(L);
+	StageBinder stageBinder(L, g_application);
+
+	return 0;
+}
+
+int loadFile(lua_State* L)
+{
+	StackChecker checker(L, "loadFile");
+
+	setEnvironTable(L);
+	
+	if (luaL_loadfile(L, "test.lua"))
+	{
+		printf("compile error: %s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+		return 0;
+	}
+
+	lua_call(L, 0, 0);
+
+	return 0;
+}
+
+
+int luaMainLoop(lua_State* L)
+{
+	setEnvironTable(L);
+
+	glutMainLoop();
+
+	return 0;
+}
+
+
+int main(int argc, char* argv[])
+{
+	glutInit(&argc, argv);
+	glutInitWindowSize(320, 480);
+
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+	glutCreateWindow("lua");
+
+	glutDisplayFunc(displayCallback);
+	glutReshapeFunc(reshapeCallback);
+	glutMouseFunc(mouseCallback);
+	glutMotionFunc(motionCallback);
+
+	lua_State* L = lua_open();
+	g_L = L;
+	if (L == NULL)
+	{
+		fprintf(stderr, "cannot create Lua state\n");
+		return 1;
+	}
+
+	luaL_openlibs(L);
+
+	g_application = new Application;
+	g_application->initView();
+
+
+	lua_pushcfunction(L, bindAll);
+	lua_call(L, 0, 0);
+
+	lua_pushcfunction(L, loadFile);
+	if (lua_pcall(L, 0, 0, 0))
+	{
+		printf("runtime error while loading file: %s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+	}
+
+/*
+    lua_pushcfunction(L, luaMainLoop);
+	if (lua_pcall(L, 0, 0, 0))
+	{
+		printf("runtime error: %s\n", lua_tostring(L, -1));
+		lua_pop(L, 1);
+	}
+*/
+
+	glutMainLoop();
+	
+	lua_close(L);
+
+	g_application->releaseView();
+	delete g_application;
+
+	Referenced::emptyPool();
+
+	return 0;
+}
+

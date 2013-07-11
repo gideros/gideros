@@ -1,0 +1,875 @@
+#include "soundimplementation.h"
+#include <al.h>
+#include <alc.h>
+#include <set>
+#include "CWaves.h"
+#include <Phonon/MediaObject>
+#include <QApplication>
+#include <QFileInfo>
+#include <QString>
+#include <fmod.hpp>
+#include <fmod_errors.h>
+
+static void ERRCHECK(FMOD_RESULT result)
+{
+	if (result != FMOD_OK)
+	{
+		printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+		exit(-1);
+	}
+}
+
+static ALboolean LoadWaveToBuffer(const char *szWaveFile, ALuint uiBufferID)
+{
+	WAVEID			WaveID;
+	ALint			iDataSize, iFrequency;
+	ALenum			eBufferFormat;
+	ALchar			*pData;
+	ALboolean		bReturn;
+	CWaves* g_pWaveLoader = new CWaves;
+
+	bReturn = AL_FALSE;
+	if (SUCCEEDED(g_pWaveLoader->LoadWaveFile(szWaveFile, &WaveID)))
+	{
+		if ((SUCCEEDED(g_pWaveLoader->GetWaveSize(WaveID, (unsigned long*)&iDataSize))) &&
+			(SUCCEEDED(g_pWaveLoader->GetWaveData(WaveID, (void**)&pData))) &&
+			(SUCCEEDED(g_pWaveLoader->GetWaveFrequency(WaveID, (unsigned long*)&iFrequency))) &&
+			(SUCCEEDED(g_pWaveLoader->GetWaveALBufferFormat(WaveID, &alGetEnumValue, (unsigned long*)&eBufferFormat))))
+		{
+			// Set XRAM Mode (if application)
+//			if (eaxSetBufferMode && eXRAMBufferMode)
+//				eaxSetBufferMode(1, &uiBufferID, eXRAMBufferMode);
+
+			alGetError();
+			alBufferData(uiBufferID, eBufferFormat, pData, iDataSize, iFrequency);
+			if (alGetError() == AL_NO_ERROR)
+				bReturn = AL_TRUE;
+
+			g_pWaveLoader->DeleteWaveFile(WaveID);
+		}
+	}
+
+	delete g_pWaveLoader;
+
+	return bReturn;
+}
+
+class SoundDecoder
+{
+public:
+	virtual void initializeSound() = 0;
+	virtual void deinitializeSound() = 0;
+	
+	virtual unsigned int loadSound(const char* fileName) = 0;
+	virtual void destroySound(unsigned int sound) = 0;
+	virtual double getSoundLength(unsigned int sound) = 0;
+	
+	virtual unsigned int createSoundChannel(unsigned int sound) = 0;
+	virtual void destroySoundChannel(unsigned int soundChannel) = 0;
+	virtual void playSoundChannel(unsigned int soundChannel, double msec) = 0;
+	virtual void stopSoundChannel(unsigned int soundChannel) = 0;
+	virtual double getSoundChannelOffset(unsigned int soundChannel) = 0;
+	virtual SoundChannelState getSoundChannelState(unsigned int soundChannel) = 0;
+};
+
+class SoundDecoderWav : public SoundDecoder
+{
+public:
+	SoundDecoderWav()
+	{
+		nextid_ = 1;
+	}
+	
+	virtual void initializeSound();
+	virtual void deinitializeSound();
+
+	virtual unsigned int loadSound(const char* fileName);
+	virtual void destroySound(unsigned int sound);
+	virtual double getSoundLength(unsigned int sound);
+	
+	virtual unsigned int createSoundChannel(unsigned int sound);
+	virtual void destroySoundChannel(unsigned int soundChannel);
+	virtual void playSoundChannel(unsigned int soundChannel, double msec);
+	virtual void stopSoundChannel(unsigned int soundChannel);
+	virtual double getSoundChannelOffset(unsigned int soundChannel);
+	virtual SoundChannelState getSoundChannelState(unsigned int soundChannel);
+
+private:
+	struct SoundChannel_t;
+	
+	struct Sound_t
+	{
+		ALuint buffer;
+		double length;
+		std::set<SoundChannel_t*> soundChannels;
+	};
+
+	struct SoundChannel_t
+	{
+		Sound_t* sound;
+		ALuint source;	
+	};
+
+	unsigned int nextid_;
+	std::map<unsigned int, Sound_t*> sounds_;
+	std::map<unsigned int, SoundChannel_t*> soundChannels_;
+};
+
+class SoundDecoderMp3 : public SoundDecoder
+{
+public:
+	SoundDecoderMp3()
+	{
+		nextid_ = 0x80000000;
+	}
+
+	virtual void initializeSound() {}
+	virtual void deinitializeSound();
+
+	virtual unsigned int loadSound(const char* fileName);
+	virtual void destroySound(unsigned int sound);
+	virtual double getSoundLength(unsigned int sound);
+	
+	virtual unsigned int createSoundChannel(unsigned int sound);
+	virtual void destroySoundChannel(unsigned int soundChannel);
+	virtual void playSoundChannel(unsigned int soundChannel, double msec);
+	virtual void stopSoundChannel(unsigned int soundChannel);
+	virtual double getSoundChannelOffset(unsigned int soundChannel);
+	virtual SoundChannelState getSoundChannelState(unsigned int soundChannel);
+
+private:
+	struct SoundChannel_t;
+
+	struct Sound_t
+	{
+		Phonon::MediaSource* mediaSource;
+		double length;
+		std::set<SoundChannel_t*> soundChannels;
+	};
+
+	struct SoundChannel_t
+	{
+		Sound_t* sound;
+		Phonon::MediaObject* mediaObject;
+		bool playing;
+	};
+
+	unsigned int nextid_;
+	std::map<unsigned int, Sound_t*> sounds_;
+	std::map<unsigned int, SoundChannel_t*> soundChannels_;
+};
+
+class SoundDecoderFMOD : public SoundDecoder
+{
+public:
+	SoundDecoderFMOD()
+	{
+		nextid_ = 0x80000000;
+	}
+
+	virtual void initializeSound();
+	virtual void deinitializeSound();
+
+	virtual unsigned int loadSound(const char* fileName);
+	virtual void destroySound(unsigned int sound);
+	virtual double getSoundLength(unsigned int sound);
+
+	virtual unsigned int createSoundChannel(unsigned int sound);
+	virtual void destroySoundChannel(unsigned int soundChannel);
+	virtual void playSoundChannel(unsigned int soundChannel, double msec);
+	virtual void stopSoundChannel(unsigned int soundChannel);
+	virtual double getSoundChannelOffset(unsigned int soundChannel);
+	virtual SoundChannelState getSoundChannelState(unsigned int soundChannel);
+
+private:
+	struct SoundChannel_t;
+
+	struct Sound_t
+	{
+		Sound_t() {}
+		Sound_t(FMOD::Sound* sound, double length) : sound(sound), length(length) {}
+		FMOD::Sound* sound;
+		double length;
+		std::set<SoundChannel_t*> soundChannels;
+	};
+
+	struct SoundChannel_t
+	{
+		SoundChannel_t() {}
+		SoundChannel_t(Sound_t* sound, FMOD::Channel* channel) : sound(sound), channel(channel) {}
+		Sound_t* sound;
+		FMOD::Channel* channel;
+	};
+
+	unsigned int nextid_;
+	std::map<unsigned int, Sound_t*> sounds_;
+	std::map<unsigned int, SoundChannel_t*> soundChannels_;
+
+private:
+	FMOD::System* system_;
+};
+
+void SoundDecoderFMOD::initializeSound()
+{
+	FMOD::System_Create(&system_);
+	system_->init(1, FMOD_INIT_NORMAL, 0);
+}
+
+
+void SoundDecoderFMOD::deinitializeSound()
+{
+	while (soundChannels_.empty() == false)
+		destroySoundChannel(soundChannels_.begin()->first);
+
+	while (sounds_.empty() == false)
+		destroySound(sounds_.begin()->first);
+
+	system_->close();
+	system_->release();
+}
+
+unsigned int SoundDecoderFMOD::loadSound(const char* fileName)
+{
+	FMOD::Sound* sound;
+	FMOD_RESULT result = system_->createStream(fileName, FMOD_DEFAULT, 0, &sound);
+
+	if (result != FMOD_OK)
+		return 0;
+
+	unsigned int length;
+	sound->getLength(&length, FMOD_TIMEUNIT_MS);
+
+	sounds_[nextid_] = new Sound_t(sound, length);
+
+	return nextid_++;
+}
+
+void SoundDecoderFMOD::destroySound(unsigned int sound)
+{
+	std::map<unsigned int, Sound_t*>::iterator iter = sounds_.find(sound);
+
+	if (iter == sounds_.end())
+		return;
+
+	if (iter->second->soundChannels.empty() == false)
+		return;
+
+	iter->second->sound->release();
+
+	delete iter->second;
+
+	sounds_.erase(iter);
+}
+
+double SoundDecoderFMOD::getSoundLength(unsigned int sound)
+{
+	std::map<unsigned int, Sound_t*>::iterator iter = sounds_.find(sound);
+
+	if (iter == sounds_.end())
+		return 0;
+
+	return iter->second->length;
+}
+
+unsigned int SoundDecoderFMOD::createSoundChannel(unsigned int sound)
+{
+	std::map<unsigned int, Sound_t*>::iterator iter = sounds_.find(sound);
+
+	if (iter == sounds_.end())
+		return 0;
+
+	SoundChannel_t* soundChannel = new SoundChannel_t(iter->second, 0);
+
+	iter->second->soundChannels.insert(soundChannel);
+
+	soundChannels_[nextid_] = soundChannel;
+
+	return nextid_++;
+
+}
+
+void SoundDecoderFMOD::destroySoundChannel(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return;
+
+	iter->second->sound->soundChannels.erase(iter->second);
+	if (iter->second->channel != 0)
+		iter->second->channel->stop();
+	delete iter->second;
+	soundChannels_.erase(iter);
+}
+
+void SoundDecoderFMOD::playSoundChannel(unsigned int soundChannel, double msec)
+{
+	printf("playSoundChannel: %g\n", msec);
+
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return;
+
+	if (iter->second->channel != 0)
+		iter->second->channel->stop();
+
+	iter->second->channel = 0;
+	system_->playSound(FMOD_CHANNEL_FREE, iter->second->sound->sound, false, &iter->second->channel);
+	iter->second->channel->setPosition(msec, FMOD_TIMEUNIT_MS);
+}
+
+void SoundDecoderFMOD::stopSoundChannel(unsigned int soundChannel)
+{
+	printf("stopSoundChannel\n");
+
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return;
+
+	if (iter->second->channel == 0)
+		return;
+
+	iter->second->channel->stop();
+	iter->second->channel = 0;
+}
+
+double SoundDecoderFMOD::getSoundChannelOffset(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return 0;
+
+	if (iter->second->channel == 0)
+		return 0;
+
+	unsigned int position;
+	iter->second->channel->getPosition(&position, FMOD_TIMEUNIT_MS);
+
+	return position;
+}
+
+SoundChannelState SoundDecoderFMOD::getSoundChannelState(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return eStopped;
+
+	if (iter->second->channel == 0)
+		return eStopped;
+
+	bool isPlaying;
+	iter->second->channel->isPlaying(&isPlaying);
+	return isPlaying ? ePlaying : eStopped;
+}
+
+
+void SoundDecoderWav::initializeSound()
+{
+	ALCdevice* device = alcOpenDevice(NULL);
+	ALCcontext* context = alcCreateContext(device, NULL);
+	alcMakeContextCurrent(context);
+}
+
+void SoundDecoderWav::deinitializeSound()
+{
+	while (soundChannels_.empty() == false)
+		destroySoundChannel(soundChannels_.begin()->first);
+	
+	while (sounds_.empty() == false)
+		destroySound(sounds_.begin()->first);
+
+	ALCcontext* context;
+	ALCdevice* device;
+	
+	context = alcGetCurrentContext();
+	device = alcGetContextsDevice(context);
+	
+	alcMakeContextCurrent(NULL);
+	alcDestroyContext(context);
+	alcCloseDevice(device);
+}
+
+unsigned int SoundDecoderWav::loadSound(const char* fileName)
+{
+	ALuint buffer;
+	alGenBuffers(1, &buffer);
+
+	if (!LoadWaveToBuffer(fileName, buffer))
+	{
+		alDeleteBuffers(1, &buffer);
+		return 0;
+	}
+
+	Sound_t* sound = new Sound_t;
+	sound->buffer = buffer;
+
+	// TODO: grab these values from wave loader function
+	{
+		ALint frequency, bits, channels, size;
+		
+		alGetBufferi(buffer, AL_FREQUENCY, &frequency);
+		alGetBufferi(buffer, AL_BITS, &bits);
+		alGetBufferi(buffer, AL_CHANNELS, &channels);
+		alGetBufferi(buffer, AL_SIZE, &size);
+
+		double length = (double)size / (double)frequency;
+		length /= channels;
+		length /= bits / 8;
+		length *= 1000;
+
+		sound->length = length;
+	}
+
+	sounds_[nextid_] = sound;
+	
+	return nextid_++;
+}
+
+
+void SoundDecoderWav::destroySound(unsigned int sound)
+{
+	std::map<unsigned int, Sound_t*>::iterator iter = sounds_.find(sound);
+
+	if (iter == sounds_.end())
+		return;
+
+	if (iter->second->soundChannels.empty() == false)
+		return;
+
+	alDeleteBuffers(1, &iter->second->buffer);
+
+	delete iter->second;
+
+	sounds_.erase(iter);
+}
+
+double SoundDecoderWav::getSoundLength(unsigned int sound)
+{
+	std::map<unsigned int, Sound_t*>::iterator iter = sounds_.find(sound);
+
+	if (iter == sounds_.end())
+		return 0;
+
+	return iter->second->length;
+}
+
+
+unsigned int SoundDecoderWav::createSoundChannel(unsigned int sound)
+{
+	std::map<unsigned int, Sound_t*>::iterator iter = sounds_.find(sound);
+
+	if (iter == sounds_.end())
+		return 0;
+
+	SoundChannel_t* soundChannel = new SoundChannel_t;
+
+	ALuint source;
+	alGenSources(1, &source);
+	alSourcei(source, AL_BUFFER, iter->second->buffer);
+
+	soundChannel->source = source;
+	soundChannel->sound = iter->second;
+
+	iter->second->soundChannels.insert(soundChannel);
+
+	soundChannels_[nextid_] = soundChannel;
+	
+	return nextid_++;
+}
+
+void SoundDecoderWav::destroySoundChannel(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return;
+
+	iter->second->sound->soundChannels.erase(iter->second);
+	alDeleteSources(1, &iter->second->source);
+	delete iter->second;
+	soundChannels_.erase(iter);
+}
+
+
+void SoundDecoderWav::playSoundChannel(unsigned int soundChannel, double msec)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return;
+
+	alSourcef(iter->second->source, AL_SEC_OFFSET, msec / 1000.0);
+    alSourcePlay(iter->second->source);
+}
+
+
+void SoundDecoderWav::stopSoundChannel(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return;
+
+	alSourceStop(iter->second->source);
+}
+
+double SoundDecoderWav::getSoundChannelOffset(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return 0;
+
+	ALfloat offset;
+	alGetSourcef(iter->second->source, AL_SEC_OFFSET, &offset);
+	return offset * 1000.0;
+}
+
+SoundChannelState SoundDecoderWav::getSoundChannelState(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return eStopped;
+
+	ALint state;
+	alGetSourcei(iter->second->source, AL_SOURCE_STATE, &state);
+
+	switch (state)
+	{
+		case AL_INITIAL:
+		case AL_PAUSED:  
+		case AL_STOPPED: 
+			return eStopped;
+			break;
+		case AL_PLAYING: 
+			return ePlaying;
+			break;
+	}
+
+	return eStopped;
+}
+
+void SoundDecoderMp3::deinitializeSound()
+{
+	while (soundChannels_.empty() == false)
+		destroySoundChannel(soundChannels_.begin()->first);
+
+	while (sounds_.empty() == false)
+		destroySound(sounds_.begin()->first);
+}
+
+unsigned int SoundDecoderMp3::loadSound(const char* fileName)
+{
+	Phonon::MediaSource* mediaSource = new Phonon::MediaSource(fileName);
+
+	if (mediaSource->type() == Phonon::MediaSource::Invalid)
+	{
+		delete mediaSource;
+		return 0;
+	}
+
+	Sound_t* sound = new Sound_t;
+
+	sound->mediaSource = mediaSource;
+
+	Phonon::MediaObject* mediaObject = Phonon::createPlayer(Phonon::GameCategory, *mediaSource);
+	while (mediaObject->state() == Phonon::LoadingState)
+		QApplication::processEvents();
+	sound->length = mediaObject->totalTime();
+	delete mediaObject;
+
+	sounds_[nextid_] = sound;
+	
+	return nextid_++;
+}
+
+
+void SoundDecoderMp3::destroySound(unsigned int sound)
+{
+	std::map<unsigned int, Sound_t*>::iterator iter = sounds_.find(sound);
+
+	if (iter == sounds_.end())
+		return;
+
+	if (iter->second->soundChannels.empty() == false)
+		return;
+
+	delete iter->second->mediaSource;
+	delete iter->second;
+	sounds_.erase(iter);
+}
+
+double SoundDecoderMp3::getSoundLength(unsigned int sound)
+{
+	std::map<unsigned int, Sound_t*>::iterator iter = sounds_.find(sound);
+
+	if (iter == sounds_.end())
+		return 0;
+
+	return iter->second->length;
+}
+
+unsigned int SoundDecoderMp3::createSoundChannel(unsigned int sound)
+{
+	std::map<unsigned int, Sound_t*>::iterator iter = sounds_.find(sound);
+
+	if (iter == sounds_.end())
+		return 0;
+
+	SoundChannel_t* soundChannel = new SoundChannel_t;
+
+	soundChannel->mediaObject = Phonon::createPlayer(Phonon::GameCategory, *iter->second->mediaSource);
+
+	while (soundChannel->mediaObject->state() == Phonon::LoadingState)
+		QApplication::processEvents();
+
+	soundChannel->sound = iter->second;
+	soundChannel->playing = false;
+	iter->second->soundChannels.insert(soundChannel);
+
+	soundChannels_[nextid_] = soundChannel;
+	
+	return nextid_++;
+}
+
+
+void SoundDecoderMp3::destroySoundChannel(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return;
+
+	iter->second->sound->soundChannels.erase(iter->second);
+	delete iter->second->mediaObject;
+	delete iter->second;
+	soundChannels_.erase(iter);
+}
+
+void SoundDecoderMp3::playSoundChannel(unsigned int soundChannel, double msec)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return;
+
+	iter->second->playing = true;
+
+    iter->second->mediaObject->play();
+}
+
+void SoundDecoderMp3::stopSoundChannel(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return;
+
+	iter->second->playing = false;
+
+    iter->second->mediaObject->stop();
+}
+
+double SoundDecoderMp3::getSoundChannelOffset(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return 0;
+
+	if (getSoundChannelState(soundChannel) == eStopped)
+		return 0;
+	
+	return iter->second->mediaObject->currentTime();
+}
+
+SoundChannelState SoundDecoderMp3::getSoundChannelState(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundChannel_t*>::iterator iter = soundChannels_.find(soundChannel);
+
+	if (iter == soundChannels_.end())
+		return eStopped;
+
+/*	Phonon::State state = iter->second->mediaObject->state();
+	if (state == Phonon::PlayingState || state == Phonon::BufferingState)
+		return ePlaying; */
+
+	if (iter->second->playing == true)
+	{
+		return ePlaying;
+	}
+	
+	return eStopped;
+}
+
+SoundImplementation::SoundImplementation()
+{
+	soundDecoderWav_ = 0;
+	soundDecoderMp3_ = 0;
+	soundError_ = eNoSoundError;
+}
+
+SoundImplementation::~SoundImplementation()
+{
+	Q_ASSERT(soundDecoderWav_ == 0);
+	Q_ASSERT(soundDecoderMp3_ == 0);
+}
+
+void SoundImplementation::initializeSound()
+{
+	soundDecoderWav_ = new SoundDecoderWav;
+	soundDecoderMp3_ = new SoundDecoderFMOD;
+	soundDecoderWav_->initializeSound();
+	soundDecoderMp3_->initializeSound();
+}
+
+void SoundImplementation::deinitializeSound()
+{
+	soundDecoderWav_->deinitializeSound();
+	soundDecoderMp3_->deinitializeSound();
+	delete soundDecoderWav_;
+	delete soundDecoderMp3_;
+	soundDecoderWav_ = 0;
+	soundDecoderMp3_ = 0;
+}
+
+unsigned int SoundImplementation::loadSound(const char* fileName)
+{
+	FILE* fis = fopen(fileName, "rb");
+	if (fis == 0)
+	{
+		setSoundError(eSoundFileNotFound);
+		return 0;
+	}
+	fclose(fis);
+
+	QString suffix = QFileInfo(fileName).suffix().toLower();
+
+	if (suffix == "wav")
+	{
+		unsigned int sound = soundDecoderWav_->loadSound(fileName);
+		if (sound == 0)
+		{
+			setSoundError(eSoundFormatNotRecognized);		
+			return 0;
+		}
+
+		decoderMap_[sound] = soundDecoderWav_;
+
+		return sound;
+	}
+	else if (suffix == "mp3")
+	{
+		unsigned int sound = soundDecoderMp3_->loadSound(fileName);
+		if (sound == 0)
+		{
+			setSoundError(eSoundFormatNotRecognized);		
+			return 0;
+		}
+
+		decoderMap_[sound] = soundDecoderMp3_;
+
+		return sound;
+	}
+
+	return 0;
+}
+
+void SoundImplementation::destroySound(unsigned int sound)
+{
+	std::map<unsigned int, SoundDecoder*>::iterator iter = decoderMap_.find(sound);
+	if (iter == decoderMap_.end())
+		return;
+
+	iter->second->destroySound(sound);
+
+	decoderMap_.erase(iter);
+}
+
+double SoundImplementation::getSoundLength(unsigned int sound)
+{
+	std::map<unsigned int, SoundDecoder*>::iterator iter = decoderMap_.find(sound);
+	if (iter == decoderMap_.end())
+		return 0;
+
+	return iter->second->getSoundLength(sound);
+}
+
+unsigned int SoundImplementation::createSoundChannel(unsigned int sound)
+{
+	std::map<unsigned int, SoundDecoder*>::iterator iter = decoderMap_.find(sound);
+	if (iter == decoderMap_.end())
+		return 0;
+
+	int soundChannel = iter->second->createSoundChannel(sound);
+	if (soundChannel == 0)
+		return 0;
+
+	decoderMap_[soundChannel] = iter->second;
+
+	return soundChannel;
+}
+
+void SoundImplementation::destroySoundChannel(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundDecoder*>::iterator iter = decoderMap_.find(soundChannel);
+	if (iter == decoderMap_.end())
+		return;
+
+	iter->second->destroySoundChannel(soundChannel);
+
+	decoderMap_.erase(iter);
+}
+
+void SoundImplementation::playSoundChannel(unsigned int soundChannel, double msec)
+{
+	std::map<unsigned int, SoundDecoder*>::iterator iter = decoderMap_.find(soundChannel);
+	if (iter == decoderMap_.end())
+		return;
+
+	iter->second->playSoundChannel(soundChannel, msec);
+}
+void SoundImplementation::stopSoundChannel(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundDecoder*>::iterator iter = decoderMap_.find(soundChannel);
+	if (iter == decoderMap_.end())
+		return;
+
+	iter->second->stopSoundChannel(soundChannel);
+}
+
+double SoundImplementation::getSoundChannelOffset(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundDecoder*>::iterator iter = decoderMap_.find(soundChannel);
+	if (iter == decoderMap_.end())
+		return 0;
+
+	return iter->second->getSoundChannelOffset(soundChannel);
+}
+
+SoundChannelState SoundImplementation::getSoundChannelState(unsigned int soundChannel)
+{
+	std::map<unsigned int, SoundDecoder*>::iterator iter = decoderMap_.find(soundChannel);
+	if (iter == decoderMap_.end())
+		return eStopped;
+
+	return iter->second->getSoundChannelState(soundChannel);
+}
+
+SoundError SoundImplementation::getSoundError()
+{
+	SoundError result = soundError_;
+	soundError_ = eNoSoundError;
+	return result;
+}
+
+void SoundImplementation::setSoundError(SoundError soundError)
+{
+	if (soundError_ == eNoSoundError)
+		soundError_ = soundError;
+}

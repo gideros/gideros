@@ -1,0 +1,522 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="css/bundle_common.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/bundle_github.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/extra.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="prettify/prettify.js"></script>
+<script type="text/javascript" src="prettify/lang-lua.js"></script>
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+
+<style>
+</style>
+
+<script>
+
+$(document).ready(function(){
+
+	$("code").addClass("prettyprint").addClass("lang-lua");
+
+
+	$(function(){
+		$(".uplist").children("a.closed").click(function(){
+			if($(this).hasClass("closed"))
+			{
+				$(this).addClass("opened").removeClass("closed");
+				$(this).parent().find("ul").slideDown();
+			}
+			else
+			{
+				$(this).addClass("closed").removeClass("opened");
+				$(this).parent().find("ul").slideUp();
+			}
+		});
+	});
+
+});
+
+
+</script>
+
+</head>
+
+
+<body onload="prettyPrint()">
+
+<div class="site">
+<div id="readme" class="blob">
+<div class="wikistyle">
+
+
+<div id="contents">
+<h1>Table of Contents</h1>
+<ul>
+
+	<li class='uplist'><a href="#Sound" class='closed'><strong>Sound</strong></a>
+		<ul>
+			
+			<li><a href="#Sound.new">Sound.new</a></li>
+			
+			<li><a href="#Sound:play">Sound:play</a></li>
+			
+			<li><a href="#Sound:getLength">Sound:getLength</a></li>
+			
+		</ul>
+	</li>
+
+	<li class='uplist'><a href="#SoundChannel" class='closed'><strong>SoundChannel</strong></a>
+		<ul>
+			
+			<li><a href="#SoundChannel:stop">SoundChannel:stop</a></li>
+			
+			<li><a href="#SoundChannel:setPosition">SoundChannel:setPosition</a></li>
+			
+			<li><a href="#SoundChannel:getPosition">SoundChannel:getPosition</a></li>
+			
+			<li><a href="#SoundChannel:setVolume">SoundChannel:setVolume</a></li>
+			
+			<li><a href="#SoundChannel:getVolume">SoundChannel:getVolume</a></li>
+			
+			<li><a href="#SoundChannel:setPitch">SoundChannel:setPitch</a></li>
+			
+			<li><a href="#SoundChannel:getPitch">SoundChannel:getPitch</a></li>
+			
+			<li><a href="#SoundChannel:setPaused">SoundChannel:setPaused</a></li>
+			
+			<li><a href="#SoundChannel:isPaused">SoundChannel:isPaused</a></li>
+			
+			<li><a href="#SoundChannel:setLooping">SoundChannel:setLooping</a></li>
+			
+			<li><a href="#SoundChannel:isLooping">SoundChannel:isLooping</a></li>
+			
+			<li><a href="#SoundChannel:isPlaying">SoundChannel:isPlaying</a></li>
+			
+		</ul>
+	</li>
+
+</ul>
+<p>&nbsp;</p>
+</div>
+
+
+
+
+	
+		<a name="Sound"></a><h1>Sound</h1>
+		<p>The <code>Sound</code> class lets you load and play WAV or MP3 sound files.
+Control of the playing sound is performed through the <code>SoundChannel</code>
+object.</p>
+		
+			<h4>Example:</h4>
+			<pre><code>local sound = Sound.new("music.mp3")
+
+local channel = sound:play()
+
+-- after some time --
+
+channel:stop()
+</code></pre>
+		
+	
+
+
+
+	
+		<a name="Sound.new"></a><h2>Sound.new(filename)</h2>
+		<p>Creates a new <code>Sound</code> object.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>filename:</strong>&nbsp;&nbsp;(string) The name of the sound file to be loaded.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Sound:play"></a><h2>Sound:play(startTime, looping, paused)</h2>
+		<p>Creates a new <code>SoundChannel</code> object to play the sound. By using the retured <code>SoundChannel</code> object,
+you can stop the sound and monitor the position.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>startTime:</strong>&nbsp;&nbsp;(number, default = 0) The initial position in milliseconds at which playback should start.</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>looping:</strong>&nbsp;&nbsp;(boolean, default = false)</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>paused:</strong>&nbsp;&nbsp;(boolean, default = false)</br>
+
+				
+			
+			</p>
+		
+
+		
+			<h4>Returns:</h4>
+			<p>A <code>SoundChannel</code> object, which you use to control the sound. This function returns <code>nil</code> if you run out of available sound channels.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Sound:getLength"></a><h2>Sound:getLength()</h2>
+		<p>Returns the duration of the sound in miliseconds.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>The duration of the sound in miliseconds.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel"></a><h1>SoundChannel</h1>
+		<p>The <code>SoundChannel</code> class is used to control and monitor a playing sound.</p>
+
+<h3>SoundChannel Events</h3>
+
+<ul>
+<li><strong>Event.COMPLETE = &ldquo;complete&rdquo;</strong> When the sound channel has finished playing, <code>Event.COMPLETE</code> event is dispatched.</li>
+</ul>
+
+		
+	
+
+
+
+	
+		<a name="SoundChannel:stop"></a><h2>SoundChannel:stop()</h2>
+		<p>Stops the sound playing in the channel.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:setPosition"></a><h2>SoundChannel:setPosition(position)</h2>
+		<p>Sets the current playback position in miliseconds.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>position:</strong>&nbsp;&nbsp;(number) position of the channel to set in miliseconds</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:getPosition"></a><h2>SoundChannel:getPosition()</h2>
+		<p>If the sound is playing, <code>getPosition</code> returns the position of the current playback, measured in miliseconds from the start of the sound.
+If the sound is not playing (paused or stopped), <code>getPosition</code> returns the last point that was played.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>The position of the sound in miliseconds.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:setVolume"></a><h2>SoundChannel:setVolume(volume)</h2>
+		<p>Sets the volume of the sound channel.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>volume:</strong>&nbsp;&nbsp;(number) The new volume of the sound channel. Valid range of this parameter is between 0.0 and 1.0, where 1.0 is the maximum volume value.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:getVolume"></a><h2>SoundChannel:getVolume()</h2>
+		<p>Returns the current volume of the sound channel.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>The current volume of the sound channel.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:setPitch"></a><h2>SoundChannel:setPitch(pitch)</h2>
+		<p>Sets the pitch of the sound channel. You cannot set the pitch of a background music.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>pitch:</strong>&nbsp;&nbsp;(number) The new pitch of the sound channel.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:getPitch"></a><h2>SoundChannel:getPitch()</h2>
+		<p>Returns the current pitch of the sound channel.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>The current pitch of the sound channel.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:setPaused"></a><h2>SoundChannel:setPaused(paused)</h2>
+		<p>Sets the paused state of the channel.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>paused:</strong>&nbsp;&nbsp;(boolean) paused state to set</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:isPaused"></a><h2>SoundChannel:isPaused()</h2>
+		<p>Returns the paused state of the channel.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p><code>true</code> if the channel is paused, <code>false</code> otherwise.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:setLooping"></a><h2>SoundChannel:setLooping(looping)</h2>
+		<p>Sets the looping state of the channel.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>looping:</strong>&nbsp;&nbsp;(boolean) looping state to set</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:isLooping"></a><h2>SoundChannel:isLooping()</h2>
+		<p>Returns the looping state of the channel.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p><code>true</code> if the channel is looping, <code>false</code> otherwise.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="SoundChannel:isPlaying"></a><h2>SoundChannel:isPlaying()</h2>
+		<p>Returns the playing state for the sound channel.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p><code>true</code> if the channel is currently playing a sound, <code>false</code> otherwise.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

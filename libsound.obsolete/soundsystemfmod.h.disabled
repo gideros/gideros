@@ -1,0 +1,19 @@
+#ifndef SOUNDSYSTEMFMOD_H
+#define SOUNDSYSTEMFMOD_H
+
+#include "soundimplementation.h"
+
+#include <fmod.h>
+#include <fmod_errors.h>
+
+class SoundSystemFMOD : public SoundSystem
+{
+public:
+	virtual void initialize();
+	virtual void deinitialize();
+
+	FMOD_SYSTEM* system;
+};
+
+
+#endif

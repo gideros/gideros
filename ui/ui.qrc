@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resources Embedded/gideros_studio_120x120.png</file>
+        <file>Resources Embedded/gideros_studio_160x160.png</file>
+        <file>Resources Embedded/landscape_left.png</file>
+        <file>Resources Embedded/landscape_right.png</file>
+        <file>Resources Embedded/portrait.png</file>
+        <file>Resources Embedded/portrait_upside_down.png</file>
+    </qresource>
+</RCC>

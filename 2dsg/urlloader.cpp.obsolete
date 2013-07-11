@@ -1,0 +1,454 @@
+#include "urlloader.h"
+#include "application.h"
+#include <requester.h>
+#include <errorevent.h>
+#include <progressevent.h>
+#include <uriparser/Uri.h>
+#include <string>
+//#include <wchar.h>
+//#include <utf8.h>
+#include "giderosexception.h"
+
+static inline bool ishex(wchar_t c)
+{
+	return	('0' <= c && c <= '9') ||
+			('a' <= c && c <= 'f') ||
+			('A' <= c && c <= 'F');
+}
+
+static std::string encode(const char* url)
+{
+	std::string eurl;
+
+	size_t len = strlen(url);
+
+	for (size_t i = 0; i < len; ++i)
+	{
+		bool notencoded = false;
+		if (url[i] == 0x25)
+		{
+			if (i + 2 < len)
+			{
+				if (!ishex(url[i + 1]) || !ishex(url[i + 2]))
+					notencoded = true;
+			}
+			else
+			{
+				notencoded = true;
+			}
+		}
+
+		// we get this from from QUrl:toEncoded
+		if (url[i] == 0x20 ||	// ' '
+			url[i] == 0x22 ||	// '"'
+//			url[i] == 0x25 ||	// '%'
+			url[i] == 0x3C ||	// '<'
+			url[i] == 0x3E ||	// '>'
+			url[i] == 0x5B ||	// '['
+			url[i] == 0x5C ||	// '\'
+			url[i] == 0x5D ||	// ']'
+			url[i] == 0x5E ||	// '^'
+			url[i] == 0x60 ||	// '`'
+			url[i] == 0x7B ||	// '{'
+			url[i] == 0x7C ||	// '|'
+			url[i] == 0x7D ||	// '}'
+			url[i] == 0x7F ||	// control character
+			notencoded ||
+			(unsigned char)url[i] >= 128)
+		{
+			char buf[4];
+			sprintf(buf, "%c%X%X", 0x25, (url[i] & 0xf0) >> 4, url[i] & 0x0f);
+			eurl += buf;
+		}
+		else
+		{
+			eurl += url[i];
+		}
+	}
+
+	return eurl;
+}
+
+/*
+static bool injectGETVariablesW(const wchar_t* url,
+								const std::vector<std::pair<std::wstring, std::wstring> >& get,
+								std::wstring* newUrlp)
+{
+	UriParserStateW state;
+	UriUriW uri;
+
+	// parse uri
+	state.uri = &uri;
+	if (uriParseUriW(&state, url) != URI_SUCCESS)
+	{
+		uriFreeUriMembersW(&uri);
+		return false;
+	}
+
+	// uncompose query to queryList
+	UriQueryListW* queryList = NULL;
+	if (uri.query.first == uri.query.afterLast)
+	{
+		// query is empty string
+		queryList = NULL;
+	}
+	else
+	{
+		int itemCount;
+		if (uriDissectQueryMallocW(&queryList, &itemCount, uri.query.first, uri.query.afterLast) != URI_SUCCESS)
+		{
+			uriFreeQueryListW(queryList);	// note: it's safe, FreeQueryList already does the NULL check
+			uriFreeUriMembersW(&uri);
+			return false;
+		}
+	}
+
+	// add new items to queryList
+	UriQueryListW* head = queryList;
+	UriQueryListW* last = head;
+	while (last != NULL && last->next != NULL)
+		last = last->next;
+
+	for (size_t i = 0; i < get.size(); ++i)
+	{
+		UriQueryListW* item = (UriQueryListW*)malloc(sizeof(UriQueryListW));
+		item->key = (wchar_t*)malloc((get[i].first.size() + 1) * sizeof(wchar_t));
+		wcscpy((wchar_t*)item->key, get[i].first.c_str());
+		item->value = (wchar_t*)malloc((get[i].second.size() + 1) * sizeof(wchar_t));
+		wcscpy((wchar_t*)item->value, get[i].second.c_str());
+		item->next = NULL;
+
+		if (last == NULL)
+		{
+			head = item;
+			last = item;
+		}
+		else
+		{
+			last->next = item;
+			last = item;
+		}
+	}
+	queryList = head;
+
+	// recompose queryList to newQuery string (and free queryList)
+	wchar_t* newQuery = NULL;
+	if (queryList == NULL)
+	{
+		newQuery = NULL;
+	}
+	else
+	{
+		uriComposeQueryMallocW(&newQuery, queryList);
+		uriFreeQueryListW(queryList);
+		queryList = NULL;
+	}
+
+	// save original query
+	UriTextRangeW originalQuery = uri.query;
+
+	// inject new query into uri
+	if (newQuery != NULL)
+	{
+		uri.query.first = newQuery;
+		uri.query.afterLast = newQuery + wcslen(newQuery);
+	}
+	else
+	{
+		uri.query.first = NULL;
+		uri.query.afterLast = NULL;
+	}
+
+	// recompose uri
+	wchar_t* newUrl = NULL;
+	{
+		int size;
+		if (uriToStringCharsRequiredW(&uri, &size) != URI_SUCCESS)
+		{
+			free(newQuery);
+			uri.query = originalQuery;
+			uriFreeUriMembersW(&uri);
+			return false;
+		}
+		size++;
+		newUrl = (wchar_t*)malloc(size * sizeof(wchar_t));
+		if (uriToStringW(newUrl, &uri, size, NULL) != URI_SUCCESS)
+		{
+			free(newUrl);
+			free(newQuery);
+			uri.query = originalQuery;
+			uriFreeUriMembersW(&uri);
+			return false;
+		}
+	}
+
+	if (newUrlp)
+		*newUrlp = newUrl;
+
+	free(newUrl);
+	free(newQuery);
+	uri.query = originalQuery;
+	uriFreeUriMembersW(&uri);
+
+	return true;
+}
+*/
+
+static bool injectGETVariablesA(const char* url,
+								const std::vector<std::pair<std::string, std::string> >& get,
+								std::string* newUrlp)
+{
+	UriParserStateA state;
+	UriUriA uri;
+
+	// parse uri
+	state.uri = &uri;
+	if (uriParseUriA(&state, url) != URI_SUCCESS)
+	{
+		uriFreeUriMembersA(&uri);
+		return false;
+	}
+
+	// uncompose query to queryList
+	UriQueryListA* queryList = NULL;
+	if (uri.query.first == uri.query.afterLast)
+	{
+		// query is empty string
+		queryList = NULL;
+	}
+	else
+	{
+		int itemCount;
+		if (uriDissectQueryMallocA(&queryList, &itemCount, uri.query.first, uri.query.afterLast) != URI_SUCCESS)
+		{
+			uriFreeQueryListA(queryList);	// note: it's safe, FreeQueryList already does the NULL check
+			uriFreeUriMembersA(&uri);
+			return false;
+		}
+	}
+
+	// add new items to queryList
+	UriQueryListA* head = queryList;
+	UriQueryListA* last = head;
+	while (last != NULL && last->next != NULL)
+		last = last->next;
+
+	for (size_t i = 0; i < get.size(); ++i)
+	{
+		UriQueryListA* item = (UriQueryListA*)malloc(sizeof(UriQueryListA));
+		item->key = (char*)malloc((get[i].first.size() + 1) * sizeof(char));
+		strcpy((char*)item->key, get[i].first.c_str());
+		item->value = (char*)malloc((get[i].second.size() + 1) * sizeof(char));
+		strcpy((char*)item->value, get[i].second.c_str());
+		item->next = NULL;
+
+		if (last == NULL)
+		{
+			head = item;
+			last = item;
+		}
+		else
+		{
+			last->next = item;
+			last = item;
+		}
+	}
+	queryList = head;
+
+	// recompose queryList to newQuery string (and free queryList)
+	char* newQuery = NULL;
+	if (queryList == NULL)
+	{
+		newQuery = NULL;
+	}
+	else
+	{
+		uriComposeQueryMallocA(&newQuery, queryList);
+		uriFreeQueryListA(queryList);
+		queryList = NULL;
+	}
+
+	// save original query
+	UriTextRangeA originalQuery = uri.query;
+
+	// inject new query into uri
+	if (newQuery != NULL)
+	{
+		uri.query.first = newQuery;
+		uri.query.afterLast = newQuery + strlen(newQuery);
+	}
+	else
+	{
+		uri.query.first = NULL;
+		uri.query.afterLast = NULL;
+	}
+
+	// recompose uri
+	char* newUrl = NULL;
+	{
+		int size;
+		if (uriToStringCharsRequiredA(&uri, &size) != URI_SUCCESS)
+		{
+			free(newQuery);
+			uri.query = originalQuery;
+			uriFreeUriMembersA(&uri);
+			return false;
+		}
+		size++;
+		newUrl = (char*)malloc(size * sizeof(char));
+		if (uriToStringA(newUrl, &uri, size, NULL) != URI_SUCCESS)
+		{
+			free(newUrl);
+			free(newQuery);
+			uri.query = originalQuery;
+			uriFreeUriMembersA(&uri);
+			return false;
+		}
+	}
+
+	if (newUrlp)
+		*newUrlp = newUrl;
+
+	free(newUrl);
+	free(newQuery);
+	uri.query = originalQuery;
+	uriFreeUriMembersA(&uri);
+
+	return true;
+}
+
+URLLoader::URLLoader(const char* url, const URLVariables* variables/* = NULL*/)
+{
+	callback_ = NULL;
+	data1_ = NULL;
+	data2_ = NULL;
+
+	current_ = -1;
+
+	if (url != NULL)
+		load(url, variables);
+}
+
+URLLoader::~URLLoader()
+{
+	if (current_ != -1)
+	{
+		req_delete(current_);
+		current_ = -1;
+	}
+}
+
+/*
+static std::wstring c(const std::string& str)
+{
+	size_t newsize = utf8_to_wchar(str.c_str(), str.size(), NULL, 0, 0);
+	wchar_t* wstr = (wchar_t*)calloc(newsize + 1,sizeof(wchar_t));
+	utf8_to_wchar(str.c_str(), str.size(), wstr, newsize, 0);
+	std::wstring result = wstr;
+	free(wstr);
+	return result;
+}
+
+static std::string c(const std::wstring& wstr)
+{
+	size_t newsize = wchar_to_utf8(wstr.c_str(), wstr.size(), NULL, 0, 0);
+	char* str = (char*)calloc(newsize + 1, sizeof(char));
+	wchar_to_utf8(wstr.c_str(), wstr.size(), str, newsize, 0);
+	std::string result = str;
+	free(str);
+	return result;
+}
+*/
+void URLLoader::load(const char* url, const URLVariables* variablesp/* = NULL*/)
+{
+	if (current_ != -1)
+	{
+		req_delete(current_);
+		current_ = -1;
+	}
+
+	std::vector<std::pair<std::string, std::string> > get;
+	if (variablesp)
+		for (size_t i = 0; i < variablesp->get.size(); ++i)
+		{
+			const std::string& key = variablesp->get[i].first;
+			const std::string& value = variablesp->get[i].second;
+			get.push_back(std::make_pair(key, value));
+		}
+
+
+	std::string newurl;
+	if (injectGETVariablesA(encode(url).c_str(),
+						   get,
+						   &newurl) == false)
+	{
+		throw GiderosException(GStatus(7000));		// Error #7000: URL parse error.
+	}
+
+	current_ = req_load(newurl.c_str(), s_callback, s_progress, this, variablesp);
+}
+
+void URLLoader::s_callback(int id, int res, void* ptr, size_t size, void* data)
+{
+	static_cast<URLLoader*>(data)->callback(id, res, ptr, size);
+}
+
+void URLLoader::s_progress(int id, size_t bytesLoaded, size_t bytesTotal, void* data)
+{
+	static_cast<URLLoader*>(data)->progress(id, bytesLoaded, bytesTotal);
+}
+
+void URLLoader::callback(int id, int res, void* ptr, size_t size)
+{
+	if (res == 0)
+	{
+		if (size == 0)
+		{
+			data.clear();
+		}
+		else
+		{
+			data.resize(size);
+			memcpy(&data[0], ptr, size);
+		}
+
+		if (callback_)
+			callback_(data1_, data2_);
+
+		Event event(Event::COMPLETE);
+		dispatchEvent(&event);
+	}
+	else
+	{
+		ErrorEvent event(ErrorEvent::ERROR);
+		dispatchEvent(&event);
+	}
+
+	req_delete(id);
+
+	if (id == current_)		// id must always be equal to current_. we do this test, ne olur ne olmaz
+		current_ = -1;
+}
+
+
+void URLLoader::progress(int id, size_t bytesLoaded, size_t bytesTotal)
+{
+	ProgressEvent event(ProgressEvent::PROGRESS, bytesLoaded, bytesTotal);
+	dispatchEvent(&event);
+}
+
+void URLLoader::setCallback(void (*callback)(void*, void*), void* data1, void* data2)
+{
+	callback_ = callback;
+	data1_ = data1;
+	data2_ = data2;
+}
+
+void URLLoader::close()
+{
+	if (current_ != -1)
+	{
+		req_delete(current_);
+		current_ = -1;
+	}
+}

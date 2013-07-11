@@ -1,0 +1,177 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="css/bundle_common.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/bundle_github.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/extra.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="prettify/prettify.js"></script>
+<script type="text/javascript" src="prettify/lang-lua.js"></script>
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+
+<style>
+</style>
+
+<script>
+
+$(document).ready(function(){
+
+	$("code").addClass("prettyprint").addClass("lang-lua");
+
+
+	$(function(){
+		$(".uplist").children("a.closed").click(function(){
+			if($(this).hasClass("closed"))
+			{
+				$(this).addClass("opened").removeClass("closed");
+				$(this).parent().find("ul").slideDown();
+			}
+			else
+			{
+				$(this).addClass("closed").removeClass("opened");
+				$(this).parent().find("ul").slideUp();
+			}
+		});
+	});
+
+});
+
+
+</script>
+
+</head>
+
+
+<body onload="prettyPrint()">
+
+<div class="site">
+<div id="readme" class="blob">
+<div class="wikistyle">
+
+
+<div id="contents">
+<h1>Table of Contents</h1>
+<ul>
+
+	<li class='uplist'><a href="#Accelerometer" class='closed'><strong>Accelerometer</strong></a>
+		<ul>
+			
+			<li><a href="#Accelerometer.isAvailable">Accelerometer.isAvailable</a></li>
+			
+			<li><a href="#Accelerometer:start">Accelerometer:start</a></li>
+			
+			<li><a href="#Accelerometer:stop">Accelerometer:stop</a></li>
+			
+			<li><a href="#Accelerometer:getAcceleration">Accelerometer:getAcceleration</a></li>
+			
+		</ul>
+	</li>
+
+</ul>
+<p>&nbsp;</p>
+</div>
+
+
+
+
+	
+		<a name="Accelerometer"></a><h1>Accelerometer</h1>
+		<p>The <code>Accelerometer</code> class is used to access accelerometer data.</p>
+		
+			<h4>Example:</h4>
+			<pre><code>local accelerometer = Accelerometer.new()
+accelerometer:start()
+---
+local x, y, z = accelerometer:getAcceleration()
+print(x, y, z)
+</code></pre>
+		
+	
+
+
+
+	
+		<a name="Accelerometer.isAvailable"></a><h2>Accelerometer.isAvailable()</h2>
+		<p>Returns <code>true</code> if accelerometer is available for this platform, <code>false</code> otherwise.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p><code>true</code> if accelerometer is available for this platform, <code>false</code> otherwise.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Accelerometer:start"></a><h2>Accelerometer:start()</h2>
+		<p>Starts the generation of accelerometer samples.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Accelerometer:stop"></a><h2>Accelerometer:stop()</h2>
+		<p>Stops the generation of accelerometer samples.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Accelerometer:getAcceleration"></a><h2>Accelerometer:getAcceleration()</h2>
+		<p>Returns the 3-axis acceleration measured by the accelerometer.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>3 values as x-axis, y-axis and z-axis acceleration in G&rsquo;s</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+<project>
+ <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="0">
+  <imageScales/>
+ </properties>
+ <file file="right-down.png"/>
+ <file file="left-up.png"/>
+ <file file="left-down.png"/>
+ <file file="right-up.png"/>
+ <file file="spots.png"/>
+ <file file="button.lua"/>
+ <file file="main.lua"/>
+</project>

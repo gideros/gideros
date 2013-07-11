@@ -1,0 +1,8 @@
+<project>
+ <properties>
+  <imageScales/>
+ </properties>
+ <file source="sewers.lua" excludeFromExecution="1"/>
+ <file source="sewer_tileset.png"/>
+ <file source="main.lua"/>
+</project>

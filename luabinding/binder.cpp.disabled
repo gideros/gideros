@@ -1,0 +1,217 @@
+#include "binder.h"
+#include "stackchecker.h"
+
+bool Binder::disableTypeChecking_ = false;
+
+void Binder::disableTypeChecking()
+{
+	disableTypeChecking_ = true;
+}
+void Binder::enableTypeChecking()
+{
+	disableTypeChecking_ = false;
+}
+
+void Binder::createClass(const char* classname,
+						 const char* basename,
+						 int (*constructor) (lua_State*),
+						 int (*destructor) (lua_State*),
+						 const luaL_reg* functionlist)
+{
+	StackChecker checker(L, "createClass");
+		
+	luaL_newmetatable(L, classname); // registry[classname] = {} and new empty metatable is now at top
+
+	lua_pushvalue(L, -1);			// duplicate metatable
+	lua_setfield(L, -2, "__index"); // mt.__index = mt
+
+	if (destructor)
+	{
+		lua_pushcfunction(L, destructor); 
+		lua_setfield(L, -2, "__gc"); // mt.__gc = destructor
+	}
+
+	luaL_register(L, NULL, functionlist); // simply register all functions into the metatable (which is on top)
+
+	if (basename)
+	{
+		luaL_getmetatable(L, basename);
+		lua_setmetatable(L, -2); // mt.mt = basemt
+	}
+
+	if (constructor)
+	{
+		lua_pushcfunction(L, constructor);
+		lua_setfield(L, -2, "new");
+	//	lua_newtable(L);
+	//	lua_pushcfunction(L, constructor);
+	//	lua_setfield(L, -2, "new");
+	//	lua_setglobal(L, classname);
+
+	//	lua_pushcfunction(L, constructor);
+	//	lua_setglobal(L, classname);
+	}
+
+	lua_setglobal(L, classname); // set metatable as global variable
+}
+
+void Binder::pushInstance(const char* classname, void* ptr)
+{
+	StackChecker checker(L, "pushInstance", 1);
+		
+	lua_newtable(L);                 // create table to be the object
+
+	luaL_getmetatable(L, classname); // get metatable 
+	lua_setmetatable(L, -2);		 // set metatable for table and pop metatable
+
+	void** userdata = (void**)lua_newuserdata(L,sizeof(void*)); // create userdata and push it onto the stack
+	*userdata = ptr;											// store adress in userdata
+
+	luaL_getmetatable(L, classname);  // get metatable
+	lua_setmetatable(L, -2);          // set metatable for userdata and pop metatable
+
+	lua_setfield(L, -2, "__userdata");   // table.__userdata = userdata	
+
+	// stack top is the new instance (table)
+
+#if 0
+	lua_pushlightuserdata(L, ptr); // push pointer
+	lua_pushvalue(L, -2);	// push new instance (table)
+	lua_rawset(L, LUA_ENVIRONINDEX); // envtable[pointer] = instance
+
+	// still stack top is the new instance (table)
+#endif
+}
+
+
+bool Binder::isInstanceOf(const char* classname, int index) const
+{
+	index = abs_index(L, index);
+
+	StackChecker checker(L, "Binder::isInstanceOf", 0);
+	if (lua_istable(L, index) == 0)	// check if the index is table
+		return false;
+
+	lua_getfield(L, LUA_REGISTRYINDEX, classname); // get metatable of given type
+	if (lua_getmetatable(L, index) == 0)		// get metatable of given table. if table doesn't have metatable return false
+	{
+		lua_pop(L, 1);		// pop metatable of given type
+		return false;
+	}
+
+	while (true)
+	{
+		if (lua_rawequal(L, -1, -2) != 0)
+		{
+			lua_pop(L, 2);                      // pop both same metatables
+			return true;
+		}
+
+		if (lua_getmetatable(L, -1) == 0) //  if the table does not have a metatable
+		{
+			lua_pop(L, 2);
+			break;
+		}
+
+		lua_replace(L, -2);
+	}
+
+	return false;
+}
+
+
+/*
+  check if the bottom of stack is table
+  grab the table on bottom of stack
+  make typecheck
+  return *table.__userdata
+  (optional and not necessary) leave stack as it is
+*/
+void* Binder::getInstance(const char* classname, int index) const
+{
+	index = abs_index(L, index);
+
+	if (disableTypeChecking_ == true)
+	{
+		if (!lua_istable(L, index))	// check if the bottom of stack (first paramater, i.e. self) is table
+		{
+			luaL_typerror(L, index, classname);
+			return NULL;
+		}
+
+		lua_getfield(L, index, "__userdata"); // get adress
+		if (lua_isnil(L, -1) != 0)
+		{
+			lua_pop(L, 1);
+			luaL_error(L, "index '__userdata' cannot be found");
+			return NULL;
+		}
+		void* ptr = *(void**)lua_touserdata(L, -1);
+		lua_pop(L, 1);
+
+		return ptr;
+	}
+	else
+	{
+		StackChecker checker(L, "getInstance");
+		if (lua_istable(L, index) == 0)	// check if the bottom of stack (first paramater, i.e. self) is table
+		{
+			luaL_typerror(L, index, classname);
+			return NULL;
+		}
+
+		lua_getfield(L, LUA_REGISTRYINDEX, classname); // get metatable of given type
+		if (lua_getmetatable(L, index) == 0)		// get metatable of given table. if table doesn't have metatable, give type error
+		{
+			lua_pop(L, 1);		// pop metatable of given type
+			luaL_typerror(L, index, classname);
+			return NULL;
+		}
+
+		while (true)
+		{
+			if (lua_rawequal(L, -1, -2) != 0)
+			{
+				lua_pop(L, 2);                      // pop both same metatables
+
+				lua_getfield(L, index, "__userdata"); // get adress
+				if (lua_isnil(L, -1) != 0)
+				{
+					lua_pop(L, 1);
+					luaL_error(L, "index '__userdata' cannot be found");
+					return NULL;
+				}
+				void* ptr = *(void**)lua_touserdata(L, -1);
+				lua_pop(L, 1);
+
+				return ptr;
+			}
+			
+			if (lua_getmetatable(L, -1) == 0) //  if the table does not have a metatable
+			{
+				lua_pop(L, 2);
+				break;
+			}
+			 
+			lua_replace(L, -2);
+		}
+		
+		luaL_typerror(L, index, classname);
+		return NULL;
+	}
+
+	return NULL;
+}
+
+void Binder::setInstance(int index, void* ptr)
+{
+	lua_getfield(L, index, "__userdata"); // get adress
+	if (lua_isnil(L, -1) != 0)
+	{
+		lua_pop(L, 1);
+		luaL_error(L, "index '__userdata' cannot be found");
+	}
+	*(void**)lua_touserdata(L, -1) = ptr;
+	lua_pop(L, 1);
+}
+

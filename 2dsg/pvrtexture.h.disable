@@ -1,0 +1,12 @@
+#ifndef PVRTEXTURE_H
+#define PVRTEXTURE_H
+
+#include "texturebase.h"
+
+class PVRTexture : public TextureBase
+{
+public:
+	PVRTexture(const char* filename);
+};
+
+#endif

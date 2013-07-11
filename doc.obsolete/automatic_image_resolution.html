@@ -1,0 +1,123 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="css/bundle_common.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/bundle_github.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/extra.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="prettify/prettify.js"></script>
+<script type="text/javascript" src="prettify/lang-lua.js"></script>
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+
+<style>
+</style>
+
+<script>
+
+$(document).ready(function(){
+
+	$("code").addClass("prettyprint").addClass("lang-lua");
+
+
+});
+
+
+</script>
+
+</head>
+
+
+<body onload="prettyPrint()">
+
+<div class="site">
+<div id="readme" class="blob">
+<div class="wikistyle">
+
+
+
+
+
+	
+		<h1>Automatic Image Resolution</h1>
+
+<p>With the introduction of iPad, iPhone 4 and variety of devices running Android, now there are multiple
+resolutions that game developers should consider. To efficiently use texture memory and processing power
+of GPUs, applications should use low-resolution images on devices with low-resolution screens
+and high-resolution images on devices with high-resolution screens. With the help of <em>automatic image resolution</em>,
+you can bundle both low and high resolution images together with your application and Gideros automatically selects
+the best resolution according to your scaling.</p>
+
+<p>Automatic image resolution is directly related to automatic screen scaling.
+For example, if your screen is automatically scaled by 2, then using the double-sized image
+is the best choice in terms of quality and efficiency.</p>
+
+<p>Open the project &ldquo;Hardware/Automatic Image Resolution&rdquo; to see automatic image resolution
+in action. Run this example multiple times by selecting different resolutions
+on Gideros Player such as 320x480, 640x960 and 480x800. As you can see, for the different
+resolutions, the original 200x200 image or high-resolution variants (300x300 and 400x400) are
+selected and displayed automatically.</p>
+
+<p>Now right click on the project name and select &ldquo;Properties&hellip;&rdquo; to understand how we configure
+automatic image resolution parameters:</p>
+
+<p><img src="images/project_properties.png" title="Project Properties" alt="Project Properties" /></p>
+
+<p>In this example, our logical dimensions are 320x480 and scale mode is
+Letterbox. So the scaling factor for a device with screen resolution 320x480 (older iPhones) is 1,
+scaling factor for 480x960 (iPhone 4) is 2 and scaling factor for 480x800 (Samsung Galaxy S) is around 1.5.</p>
+
+<p>As you can see, we&rsquo;ve configured image scales as:</p>
+
+<p><img src="images/image_scales.png" title="Image Scales" alt="Images Scales" /></p>
+
+<p>So if you have a base image with resolution 200x200 with name &ldquo;image.png&rdquo;, you
+provide these 3 images:</p>
+
+<ul>
+<li>image.png (200x200)</li>
+<li>image@1.5x.png (300x300)</li>
+<li>image@2x.png (400x400)</li>
+</ul>
+
+
+<p>and let Gideros pick the appropriate one.</p>
+
+<p>Providing the alternative images (in our example, these are image@1.5x.png and image@2x.png)
+is optional but you should always provide the base image (image.png). When Gideros
+cannot find the alternative image to load, it loads the base image. Also size calculations
+are done according to the size of the base image.</p>
+
+<h2>Design for High Resolution Devices</h2>
+
+<p>In our example, we set the logical dimensions as 320x480 and provide higher-resolution
+alternative images. On the other hand, it&rsquo;s possible to set logical dimensions as 480x960 or 768x1024
+and provide lower-resolution images. In this case, we can configure the image scales like:</p>
+
+<p><img src="images/image_scales_2.png" title="Image Scales 2" alt="Images Scales 2" /></p>
+
+<p>and provide alternative images with suffix &ldquo;@half&rdquo; as half-resolution of the original ones.</p>
+
+<h2>Bitmap Fonts and Texture Packs</h2>
+
+<p>Automatic image resolution works with bitmap fonts and texture packs also. Assume
+you create a bitmap font with size 20 and export it as &ldquo;font.txt&rdquo; + &ldquo;font.png&rdquo;.
+To obtain the double-resolution alternative, export the same font with size 40 as
+&ldquo;font@2x.txt&rdquo; + &ldquo;font@2x.png&rdquo;.</p>
+
+<p>A texture pack is a large image which contains many smaller sub-images. There is
+one thing to remember while creating multi-resolution texture packs: the names of
+the sub-images must be same across the texture pack variants. A practical way to
+achieve this is to store different resolution sub-image sets into their own
+directories. You can check the sample &ldquo;Hardware/Automatic Texture Pack Resolution&rdquo;
+about this.</p>
+	
+
+
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

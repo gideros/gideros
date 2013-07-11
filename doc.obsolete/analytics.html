@@ -1,0 +1,238 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="css/bundle_common.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/bundle_github.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/extra.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="prettify/prettify.js"></script>
+<script type="text/javascript" src="prettify/lang-lua.js"></script>
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+
+<style>
+</style>
+
+<script>
+
+$(document).ready(function(){
+
+	$("code").addClass("prettyprint").addClass("lang-lua");
+
+
+	$(function(){
+		$(".uplist").children("a.closed").click(function(){
+			if($(this).hasClass("closed"))
+			{
+				$(this).addClass("opened").removeClass("closed");
+				$(this).parent().find("ul").slideDown();
+			}
+			else
+			{
+				$(this).addClass("closed").removeClass("opened");
+				$(this).parent().find("ul").slideUp();
+			}
+		});
+	});
+
+});
+
+
+</script>
+
+</head>
+
+
+<body onload="prettyPrint()">
+
+<div class="site">
+<div id="readme" class="blob">
+<div class="wikistyle">
+
+
+<div id="contents">
+<h1>Table of Contents</h1>
+<ul>
+
+	<li class='uplist'><a href="#flurry" class='closed'><strong>flurry</strong></a>
+		<ul>
+			
+			<li><a href="#flurry.isAvailable">flurry.isAvailable</a></li>
+			
+			<li><a href="#flurry.startSession">flurry.startSession</a></li>
+			
+			<li><a href="#flurry.logEvent">flurry.logEvent</a></li>
+			
+			<li><a href="#flurry.endTimedEvent">flurry.endTimedEvent</a></li>
+			
+		</ul>
+	</li>
+
+</ul>
+<p>&nbsp;</p>
+</div>
+
+
+
+
+	
+		<a name="flurry"></a><h1>flurry</h1>
+		<p>This table stores all the functions related to Flurry analytics library.</p>
+
+<p>Flurry is available only for iOS as an external plugin. To use flurry:</p>
+
+<ol>
+<li>Create an account on <a href="http://www.flurry.com">http://www.flurry.com</a> and follow the instructions about creating a new application.</li>
+<li>Download Flurry header and libraries and add them to your Xcode project.</li>
+<li>Add {Gideros Installation Directory}/All Plugins/Flurry/source/iOS/flurry.mm file to your Xcode project.</li>
+</ol>
+
+
+<p>To load the Flurry library, call <code>require "flurry"</code>.</p>
+		
+	
+
+
+
+	
+		<a name="flurry.isAvailable"></a><h2>flurry.isAvailable()</h2>
+		<p>Returns <code>true</code> if Flurry is available for this platform. Currently, Flurry is available only for iOS.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p><code>true</code> if Flurry is available for this platform, <code>false</code> otherwise.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="flurry.startSession"></a><h2>flurry.startSession(apiKey)</h2>
+		<p>Starts the Flurry session with your API key. To create an account on Flurry and to obtain the API key specific to your application,
+please visit <a href="http://www.flurry.com">http://www.flurry.com</a> and follow the instructions there.</p>
+
+<p>You need to call this function once after your application starts. For example, <code>init.lua</code> is suitable to call this function.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>apiKey:</strong>&nbsp;&nbsp;(string) The Flurry API key.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="flurry.logEvent"></a><h2>flurry.logEvent(eventName, parameters, timed)</h2>
+		<p>Use this function to count the number of times certain events happen during a session of your application and to pass dynamic parameters
+to be recorded with that event. Event parameters is optional and can be passed in as a table value. Your application is currently limited to counting
+occurrences for 100 different event ids (maximum length 255 characters). Maximum of 10 event parameters per event is supported.</p>
+
+<p>To start a timed event, pass <code>timed</code> parameter as <code>true</code>.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>eventName:</strong>&nbsp;&nbsp;(string) The event name to be logged at Flurry service.</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>parameters:</strong>&nbsp;&nbsp;(table, optional) Optional paramaters to be recorted with this event.</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>timed:</strong>&nbsp;&nbsp;(boolean, optional) Specifies this is a timed event.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+			<h4>Example:</h4>
+			<pre><code>require "flurry"
+
+flurry.logEvent("myEvent1")
+flurry.logEvent("myEvent2", {key="value"})
+flurry.logEvent("myEvent3", {key="value"}, true)
+</code></pre>
+		
+
+
+	
+
+
+
+	
+		<a name="flurry.endTimedEvent"></a><h2>flurry.endTimedEvent(eventName, parameters)</h2>
+		<p>Use this function to end timed event before app exists, otherwise timed events automatically end when app exists. When ending the timed event,
+a new event parameters table can be used to update event parameters. If you don&rsquo;t specify a new event parameters table, event parameters are kept the same.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>eventName:</strong>&nbsp;&nbsp;(string) The event name of end timed event.</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>parameters:</strong>&nbsp;&nbsp;(table, optional) If specified, event paramaters updated for this event.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

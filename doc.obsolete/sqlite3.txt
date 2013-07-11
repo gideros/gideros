@@ -1,0 +1,43 @@
+Class: sqlite3
+
+Gideros runtime supports public domain SQLite3 database engine for iOS, Android and Desktop platforms. 
+For more information and detailed documentation, please visit [http://lua.sqlite.org](http://lua.sqlite.org).
+
+### SQLite3 on Android platforms
+Currently, LuaSQLite3 plugin cannot open databases stored in APK files. Therefore, database file should be
+copied from resource directory to documents directory.
+
+To copy a file, this function can be used:
+
+	local function copy(src, dst)
+		local srcf = io.open(src, "rb")
+		local dstf = io.open(dst, "wb")
+	 
+		local size = 2^13      -- good buffer size (8K)
+		while true do
+			local block = srcf:read(size)
+			if not block then break end
+			dstf:write(block)
+		end
+	 
+		srcf:close()
+		dstf:close()
+	end
+
+Also it's better to check if the database file is previously copied or not. To check if a file can be found 
+on the underlying file system, this function can be used:
+
+	local function exists(file)
+		local f = io.open(file, "rb")
+		if f == nil then
+			return false
+		end
+		f:close()
+		return true
+	end
+
+By using these two function, you can copy the database file from resource to documents directory before using it:
+
+	if not exists("|D|database.db") then
+		copy("database.db", "|D|database.db")
+	end

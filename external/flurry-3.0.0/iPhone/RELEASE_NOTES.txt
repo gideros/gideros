@@ -1,0 +1,117 @@
+Flurry iPhone SDK v3.0.0
+Build: 53
+Released: 7/8/11
+
+Release notes for v3.0.0:
+------------------------------------------------
+The Flurry iOS 3.0.0 SDK introduces a new modularized library structure, separating Analytics API
+functionality and AppCircle API functionality into FlurryAnalytics and FlurryAppCircle libraries.
+Developers still get all the same functions and features as before but with the following added
+advantages of a new modularized library structure:
+- logical groupings of API functionality and features
+- reduced overhead of application size and memory footprint with independence to linking
+Advertisement libraries as desired
+
+The FlurryAnalytics library has a new API method to optionally set session reporting requests
+to HTTPS.
+
+Release notes for v2.8.5:
+------------------------------------------------
+Marks the first release including AppCircle Clips.
+
+Release notes for v2.8.4:
+------------------------------------------------
+- Disabled check for Jailbroken devices
+
+Release notes for v2.8.3:
+------------------------------------------------
+- Added a new recommendation type (takeover) for iPhone AppCircle
+
+Release notes for v2.8.2:
+------------------------------------------------
+- Change multiple method signatures to standardize SDK methods in different platforms
+- Remove libFlurryWithLocation and replaced with a generalized setLocation() function 
+
+Release notes for v2.8.1:
+------------------------------------------------
+- Added support for AppCircle in iPad applications including a new recommendation type (take over)
+- Improved speed of reporting on session start
+
+Release notes for v2.7:
+------------------------------------------------
+- Supports Xcode 3.2.3 and above
+- Default pause session reporting is on for applications using iOS4 features
+- Configurable pause time before new session is started
+- Displaying and closing canvas can be animated
+- Allow endTimedEvent to update event parameters
+- Change setAppVersion to be configured before session starts
+- To support OS 3.x, please set Base SDK to iPhone Device 4.0 and iPhone
+OS Deployment Target to iPhone OS 3.0. Extra linker flags may be
+needed if NSConcreteGlobalBlock and UIBackgroundTaskInvalid runtime
+error occur under 3.x.
+
+The linker flags are:
+-weak_framework UIKit
+-weak_library /usr/lib/libSystem.B.dylib
+
+Release notes for v2.6:
+------------------------------------------------
+- Improve memory usage in pause/resume cycle
+- Pausing the app will not send sessions by default
+- Fix AppCircle image parse error 
+- Close AppCircle canvas on pause
+
+Release notes for v2.5:
+------------------------------------------------
+- Send sessions data when paused. 
+- May create a new session depending on length of pause or will continue the current session on resume. 
+
+Release notes for v2.4:
+------------------------------------------------
+- Supports Xcode 3.2.3 and below
+- Removed device data collection including Model Name, OS Version and Firmware Version
+
+Release notes for v2.3:
+------------------------------------------------
+- Adds support for features from the old PinchMedia API including the ability to:
+* Track page views
+* Time events
+* Acquire age demographics
+
+Release notes for v2.2:
+------------------------------------------------
+- AppCircle is now available to all developers!
+- Applications will attempt to send session reports at the end of the session by default to improve
+  reporting speed. This can be disabled via the SDK.
+- Note thatAppCircle is disabled by default, please enable AppCircle from the SDK before using
+  AppCircle banners.
+
+Release notes for v2.1:
+------------------------------------------------
+- AppCircle release candidate SDK for use in the Beta program
+
+Release notes for v2.0b18:
+------------------------------------------------
+- Added tracking of when sessions are paused for new analytics
+- Fixed jailbreak metrics reporting in the iPhone simulator
+
+Release notes for v1.4:
+------------------------------------------------
+- Added the ability to detect jailbroken devices which will be shown as a metric soon. 
+- Add automatic detection of the AppStore Id of the application to make categorization easier.
+
+Release notes for v1.3:
+------------------------------------------------
+- Includes minor bug fixes including minor memory leak fixes.
+
+Release notes for v1.2:
+------------------------------------------------
+- Added the option to enable session reports to be sent at the end of a user session. This will 
+  increase the speed at which event data, error logging and session length metrics are updated as it 
+  does not require waiting until the next session to report. 
+
+Release notes for v1.1:
+------------------------------------------------
+- Added the ability to track user paths and event parameters to allow for more robust reporting around
+  custom events.
+

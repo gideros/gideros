@@ -1,0 +1,487 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="css/bundle_common.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/bundle_github.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/extra.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="prettify/prettify.js"></script>
+<script type="text/javascript" src="prettify/lang-lua.js"></script>
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+
+<style>
+</style>
+
+<script>
+
+$(document).ready(function(){
+
+	$("code").addClass("prettyprint").addClass("lang-lua");
+
+
+	$(function(){
+		$(".uplist").children("a.closed").click(function(){
+			if($(this).hasClass("closed"))
+			{
+				$(this).addClass("opened").removeClass("closed");
+				$(this).parent().find("ul").slideDown();
+			}
+			else
+			{
+				$(this).addClass("closed").removeClass("opened");
+				$(this).parent().find("ul").slideUp();
+			}
+		});
+	});
+
+});
+
+
+</script>
+
+</head>
+
+
+<body onload="prettyPrint()">
+
+<div class="site">
+<div id="readme" class="blob">
+<div class="wikistyle">
+
+
+<div id="contents">
+<h1>Table of Contents</h1>
+<ul>
+
+	<li class='uplist'><a href="#Timer" class='closed'><strong>Timer</strong></a>
+		<ul>
+			
+			<li><a href="#Timer.new">Timer.new</a></li>
+			
+			<li><a href="#Timer:start">Timer:start</a></li>
+			
+			<li><a href="#Timer:stop">Timer:stop</a></li>
+			
+			<li><a href="#Timer:reset">Timer:reset</a></li>
+			
+			<li><a href="#Timer:getDelay">Timer:getDelay</a></li>
+			
+			<li><a href="#Timer:getCurrentCount">Timer:getCurrentCount</a></li>
+			
+			<li><a href="#Timer:getRepeatCount">Timer:getRepeatCount</a></li>
+			
+			<li><a href="#Timer:isRunning">Timer:isRunning</a></li>
+			
+			<li><a href="#Timer:setDelay">Timer:setDelay</a></li>
+			
+			<li><a href="#Timer:setRepeatCount">Timer:setRepeatCount</a></li>
+			
+			<li><a href="#Timer.delayedCall">Timer.delayedCall</a></li>
+			
+			<li><a href="#Timer.pauseAllTimers">Timer.pauseAllTimers</a></li>
+			
+			<li><a href="#Timer.resumeAllTimers">Timer.resumeAllTimers</a></li>
+			
+			<li><a href="#Timer.pauseAll">Timer.pauseAll</a></li>
+			
+			<li><a href="#Timer.resumeAll">Timer.resumeAll</a></li>
+			
+			<li><a href="#Timer.stopAll">Timer.stopAll</a></li>
+			
+		</ul>
+	</li>
+
+</ul>
+<p>&nbsp;</p>
+</div>
+
+
+
+
+	
+		<a name="Timer"></a><h1>Timer</h1>
+		<p>The <code>Timer</code> class is used to execute a code at specified intervals. The listener functions are registered
+through <code>Event.TIMER</code> and <code>Event.TIMER_COMPLETE</code> events.</p>
+
+<h3>Timer Events</h3>
+
+<ul>
+<li>Event.TIMER = &ldquo;timer&rdquo;</li>
+<li>Event.TIMER_COMPLETE = &ldquo;timerComplete&rdquo;</li>
+</ul>
+
+		
+	
+
+
+
+	
+		<a name="Timer.new"></a><h2>Timer.new(delay, repeatCount)</h2>
+		<p>Creates a new <code>Timer</code> object with the specified delay and repeatCount states.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>delay:</strong>&nbsp;&nbsp;The time interval between timer events in milliseconds.</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>repeatCount:</strong>&nbsp;&nbsp;(default = 0) The number of repetitions. A value of 0 runs the timer infinitely. If nonzero, the timer runs the specified number of times and then stops.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer:start"></a><h2>Timer:start()</h2>
+		<p>Starts the timer.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer:stop"></a><h2>Timer:stop()</h2>
+		<p>Stops the timer. This function doesn&rsquo;t change the <code>currentCount</code> property.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer:reset"></a><h2>Timer:reset()</h2>
+		<p>Stops the timer and sets the <code>currentCount</code> property to 0.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer:getDelay"></a><h2>Timer:getDelay()</h2>
+		<p>Returns the time interval between timer events in milliseconds.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>The time interval between timer events in milliseconds.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer:getCurrentCount"></a><h2>Timer:getCurrentCount()</h2>
+		<p>Returns the current trigger count of the timer. It starts with 0 and if it reaches <code>repeatCount</code> value, timer stops.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>The current trigger count.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer:getRepeatCount"></a><h2>Timer:getRepeatCount()</h2>
+		<p>Returns the number of repetitions the timer will make. A value of 0 means the timer runs infinitely. If nonzero, the timer runs the specified number of times and then stops.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>The number of repetitions.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer:isRunning"></a><h2>Timer:isRunning()</h2>
+		<p>Returns the current running status of timer.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p><code>true</code> if the timer is running, <code>false</code> otherwise.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer:setDelay"></a><h2>Timer:setDelay(delay)</h2>
+		<p>Sets the time interval between timer events in milliseconds.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>delay:</strong>&nbsp;&nbsp;(number) The time interval between timer events in milliseconds.</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer:setRepeatCount"></a><h2>Timer:setRepeatCount(repeatCount)</h2>
+		<p>Sets the number of repetitions the timer will make. A value of 0 means the timer runs infinitely. If nonzero, the timer runs the specified number of times and then stops.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>repeatCount:</strong>&nbsp;&nbsp;(number) the number of repetitions the timer will make</br>
+
+				
+			
+			</p>
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer.delayedCall"></a><h2>Timer.delayedCall(delay, func, data)</h2>
+		<p>Provides a simple way to call a function after a set amount of time. This function returns the
+<code>Timer</code> object created inside.</p>
+
+		
+			<h4>Parameters:</h4>
+			<p>
+			
+
+				&nbsp;&nbsp;<strong>delay:</strong>&nbsp;&nbsp;(number) Delay in miliseconds before the function is called</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>func:</strong>&nbsp;&nbsp;(function) Function to call</br>
+
+				
+			
+
+				&nbsp;&nbsp;<strong>data:</strong>&nbsp;&nbsp;(optional) An optional data parameter that is passed as a first argument to the function</br>
+
+				
+			
+			</p>
+		
+
+		
+			<h4>Returns:</h4>
+			<p>The <code>Timer</code> object</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer.pauseAllTimers"></a><h2>Timer.pauseAllTimers()<span style='color:#a00000;'> (obsolete)</span></h2>
+		<p><strong>This function is obsolete. Use <a href="#Timer.pauseAll">Timer.pauseAll</a> instead.</strong></p>
+
+<p>Pause all timers. Suitable for temporarily pausing all timers when application is paused.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer.resumeAllTimers"></a><h2>Timer.resumeAllTimers()<span style='color:#a00000;'> (obsolete)</span></h2>
+		<p><strong>This function is obsolete. Use <a href="#Timer.resumeAll">Timer.resumeAll</a> instead.</strong></p>
+
+<p>Resume all timers.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer.pauseAll"></a><h2>Timer.pauseAll()</h2>
+		<p>Pause all timers. Suitable for temporarily pausing all timers when application is paused.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer.resumeAll"></a><h2>Timer.resumeAll()</h2>
+		<p>Resume all timers.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Timer.stopAll"></a><h2>Timer.stopAll()</h2>
+		<p>Stop all timers.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

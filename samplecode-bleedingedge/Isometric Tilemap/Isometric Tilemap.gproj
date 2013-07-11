@@ -1,0 +1,9 @@
+<project>
+ <properties autorotation="0" encrypt="0" fps="60" scaleMode="0" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="480" logicalWidth="320" mouseTouchOrder="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="0" architecture="0">
+  <imageScales/>
+ </properties>
+ <file source="iso-test.png"/>
+ <file source="iso-test-vertexz.lua" excludeFromExecution="1"/>
+ <file source="isometrictilemap.lua"/>
+ <file source="main.lua"/>
+</project>

@@ -1,0 +1,21 @@
+<project>
+ <properties autorotation="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="480" logicalWidth="320" mouseTouchOrder="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="0" architecture="0">
+  <imageScales/>
+ </properties>
+ <folder name="gfx">
+  <file source="../gfx/tyrian.shp.007D3C.png"/>
+  <file source="../gfx/newshh.shp.000000.png"/>
+  <file source="../gfx/newsh6.shp.000000.png"/>
+  <file source="../gfx/newsh(.shp.000000.png"/>
+ </folder>
+ <folder name="sound">
+  <file source="../sound/hit.wav"/>
+ </folder>
+ <file source="bulletlayer.lua"/>
+ <file source="enemy.lua"/>
+ <file source="explosionlayer.lua"/>
+ <file source="game.lua"/>
+ <file source="main.lua"/>
+ <file source="player.lua"/>
+ <file source="soundmanager.lua"/>
+</project>

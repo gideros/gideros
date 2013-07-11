@@ -1,0 +1,189 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="css/bundle_common.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/bundle_github.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="css/extra.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="prettify/prettify.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="prettify/prettify.js"></script>
+<script type="text/javascript" src="prettify/lang-lua.js"></script>
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+
+<style>
+</style>
+
+<script>
+
+$(document).ready(function(){
+
+	$("code").addClass("prettyprint").addClass("lang-lua");
+
+
+	$(function(){
+		$(".uplist").children("a.closed").click(function(){
+			if($(this).hasClass("closed"))
+			{
+				$(this).addClass("opened").removeClass("closed");
+				$(this).parent().find("ul").slideDown();
+			}
+			else
+			{
+				$(this).addClass("closed").removeClass("opened");
+				$(this).parent().find("ul").slideUp();
+			}
+		});
+	});
+
+});
+
+
+</script>
+
+</head>
+
+
+<body onload="prettyPrint()">
+
+<div class="site">
+<div id="readme" class="blob">
+<div class="wikistyle">
+
+
+<div id="contents">
+<h1>Table of Contents</h1>
+<ul>
+
+	<li class='uplist'><a href="#Gyroscope" class='closed'><strong>Gyroscope</strong></a>
+		<ul>
+			
+			<li><a href="#Gyroscope.isAvailable">Gyroscope.isAvailable</a></li>
+			
+			<li><a href="#Gyroscope:start">Gyroscope:start</a></li>
+			
+			<li><a href="#Gyroscope:stop">Gyroscope:stop</a></li>
+			
+			<li><a href="#Gyroscope:getRotationRate">Gyroscope:getRotationRate</a></li>
+			
+		</ul>
+	</li>
+
+</ul>
+<p>&nbsp;</p>
+</div>
+
+
+
+
+	
+		<a name="Gyroscope"></a><h1>Gyroscope</h1>
+		<p>The <code>Gyroscope</code> class is used to access gyroscope data.</p>
+		
+			<h4>Example:</h4>
+			<pre><code>local gyroscope = Gyroscope.new()
+gyroscope:start()
+
+local angx = 0
+local angy = 0
+local angz = 0
+local function onEnterFrame(event)
+    local x, y, z = gyroscope:getRotationRate()
+
+    angx = angx + x * event.deltaTime
+    angy = angy + y * event.deltaTime
+    angz = angz + z * event.deltaTime
+
+    print(angx * 180 / math.pi, angy * 180 / math.pi, angz * 180 / math.pi)
+end
+
+stage:addEventListener("enterFrame", onEnterFrame)
+</code></pre>
+		
+	
+
+
+
+	
+		<a name="Gyroscope.isAvailable"></a><h2>Gyroscope.isAvailable()</h2>
+		<p>Returns <code>true</code> if gyroscope is available for this platform, <code>false</code> otherwise.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p><code>true</code> if gyroscope is available for this platform, <code>false</code> otherwise.</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Gyroscope:start"></a><h2>Gyroscope:start()</h2>
+		<p>Starts the generation of gyroscope samples.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Gyroscope:stop"></a><h2>Gyroscope:stop()</h2>
+		<p>Stops the generation of gyroscope samples.</p>
+
+		
+
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+	
+		<a name="Gyroscope:getRotationRate"></a><h2>Gyroscope:getRotationRate()</h2>
+		<p>Returns the device&rsquo;s rate of rotation around three axes in radians per second.</p>
+
+		
+
+		
+			<h4>Returns:</h4>
+			<p>3 values as rate of rotation around x, y and z axes</p>
+		
+
+
+		
+
+		
+
+
+	
+
+
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+Class: Accelerometer
+
+The `Accelerometer` class is used to access accelerometer data. 
+
+Example:
+	local accelerometer = Accelerometer.new()
+	accelerometer:start()
+	---
+	local x, y, z = accelerometer:getAcceleration()
+	print(x, y, z)
+
+---------------------------------------
+
+Function: Accelerometer.isAvailable
+
+Returns `true` if accelerometer is available for this platform, `false` otherwise.
+
+Returns:
+`true` if accelerometer is available for this platform, `false` otherwise.
+
+---------------------------------------
+
+Function: Accelerometer:start
+
+Starts the generation of accelerometer samples.
+
+---------------------------------------
+
+Function: Accelerometer:stop
+
+Stops the generation of accelerometer samples.
+
+---------------------------------------
+
+Function: Accelerometer:getAcceleration
+
+Returns the 3-axis acceleration measured by the accelerometer.
+
+Returns:
+3 values as x-axis, y-axis and z-axis acceleration in G's
+
+---------------------------------------

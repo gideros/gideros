@@ -1,0 +1,372 @@
+package com.giderosmobile.android.player;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+
+import android.app.Activity;
+import android.content.res.AssetFileDescriptor;
+import android.media.MediaPlayer;
+
+public class MediaPlayerManager
+{
+	public static final int eNoSoundError = 0;
+	public static final int eSoundFileNotFound = 1;
+	public static final int eSoundFormatNotRecognized = 2;
+	public static final int eSoundFileFormatNotSupported = 3;
+	
+	private static final boolean disableCaching = true;
+		
+	private boolean player_;
+
+	public MediaPlayerManager(boolean player)
+	{
+		player_ = player;
+	}
+
+	public void onRestart()
+	{
+		Iterator<Entry<Integer, SoundChannel_t>> it = soundCbannels_.entrySet()
+				.iterator();
+		while (it.hasNext())
+		{
+			Entry<Integer, SoundChannel_t> pairs = it.next();
+			SoundChannel_t soundChannel = pairs.getValue();
+
+			if (soundChannel.isPaused)
+			{
+				soundChannel.mediaPlayer.start();
+				soundChannel.isPaused = false;
+				MediaPlayerManager.nativeSoundChannelResumed(soundChannel.id, soundChannel.data);
+			}
+		}
+	}
+
+	public void onStop()
+	{
+		Iterator<Entry<Integer, SoundChannel_t>> it = soundCbannels_.entrySet()
+				.iterator();
+		while (it.hasNext())
+		{
+			Entry<Integer, SoundChannel_t> pairs = it.next();
+			SoundChannel_t soundChannel = pairs.getValue();
+
+			if (soundChannel.mediaPlayer.isPlaying())
+			{
+				soundChannel.mediaPlayer.pause();
+				soundChannel.isPaused = true;
+				MediaPlayerManager.nativeSoundChannelPaused(soundChannel.id, soundChannel.data);
+			} else
+				soundChannel.isPaused = false;
+		}
+	}
+	
+	public int createSound(String fileName, boolean resource)
+	{
+		if (!resource || player_)
+		{
+			File file = new File(fileName);
+			if (!file.isFile())
+			{
+				setSoundError(eSoundFileNotFound);
+				return 0;
+			}
+		}
+
+		MediaPlayer mediaPlayer = new MediaPlayer();
+
+		int duration = 0;
+		
+		try
+		{
+			if (resource && !player_)
+			{
+				AssetFileDescriptor fd = WeakActivityHolder.get().getAssets().openFd("assets/" + fileName);
+				mediaPlayer.setDataSource(	fd.getFileDescriptor(), 
+											fd.getStartOffset(),
+											fd.getLength() );
+		        fd.close();			
+			}
+			else
+			{
+				mediaPlayer.setDataSource(fileName);
+			}
+			mediaPlayer.prepare();
+			duration = mediaPlayer.getDuration();
+			if (disableCaching)
+			{
+				mediaPlayer.release();
+				mediaPlayer = null;
+			}
+		} catch (Exception e)
+		{
+			setSoundError(eSoundFormatNotRecognized);
+			return 0;
+		}
+
+		sounds_.put(nextid_,
+				new Sound_t(mediaPlayer, fileName, resource, duration));
+
+		return nextid_++;
+	}
+
+	public void destroySound(int soundid)
+	{
+		if (!sounds_.containsKey(soundid))
+			return;
+
+		Sound_t sound = sounds_.get(soundid);
+
+		if (sound.mediaPlayer != null)
+		{
+			sound.mediaPlayer.stop();
+			sound.mediaPlayer.release();
+		}
+
+		sounds_.remove(soundid);
+	}
+
+	public double getSoundLength(int soundid)
+	{
+		if (!sounds_.containsKey(soundid))
+			return 0;
+
+		Sound_t sound = sounds_.get(soundid);
+
+		return sound.length;
+	}
+
+	public int playSound(int soundid, double msec, boolean looping, long data)
+	{
+		if (!sounds_.containsKey(soundid))
+			return 0;
+
+		Sound_t sound = sounds_.get(soundid);
+
+		MediaPlayer mediaPlayer = null;
+		if (sound.mediaPlayer != null)
+		{
+			mediaPlayer = sound.mediaPlayer;
+			sound.mediaPlayer = null;
+		} else
+		{
+			mediaPlayer = new MediaPlayer();
+
+			try
+			{
+				if (sound.resource && !player_)
+				{
+					AssetFileDescriptor fd = WeakActivityHolder.get().getAssets().openFd("assets/" + sound.fileName);
+					mediaPlayer.setDataSource(	fd.getFileDescriptor(), 
+												fd.getStartOffset(),
+												fd.getLength() );
+			        fd.close();					
+				}
+				else
+				{
+					mediaPlayer.setDataSource(sound.fileName);					
+				}
+				mediaPlayer.prepare();
+			} catch (Exception e)
+			{
+				return 0;
+			}
+		}
+
+		SoundChannel_t soundChannel = new SoundChannel_t(sound, mediaPlayer,
+				nextid_, true, msec, data);
+
+		mediaPlayer.setOnCompletionListener(new OnCompletionListener(
+				soundChannel));
+
+		mediaPlayer.seekTo((int) msec);
+		mediaPlayer.setLooping(looping);
+		mediaPlayer.start();
+
+		soundCbannels_.put(nextid_, soundChannel);
+
+		return nextid_++;
+	}
+
+	public void destroySoundChannel(int id)
+	{
+		if (!soundCbannels_.containsKey(id))
+			return;
+
+		SoundChannel_t soundChannel = soundCbannels_.get(id);
+
+		soundChannel.mediaPlayer.pause();
+		
+		if (disableCaching)
+		{
+			soundChannel.mediaPlayer.release();
+			soundChannel.mediaPlayer = null;
+		}
+
+		if (soundChannel.sound.mediaPlayer != null)
+			soundChannel.sound.mediaPlayer.release();
+
+		soundChannel.sound.mediaPlayer = soundChannel.mediaPlayer;
+
+		soundCbannels_.remove(id);
+	}
+
+	public double getSoundChannelOffset(int id)
+	{
+		if (!soundCbannels_.containsKey(id))
+			return 0;
+
+		SoundChannel_t soundChannel = soundCbannels_.get(id);
+
+		double lastPosition = soundChannel.mediaPlayer.getCurrentPosition();
+
+		if (soundChannel.isPlaying)
+		{
+			if (soundChannel.mediaPlayer.isPlaying())
+			{
+				soundChannel.lastPosition = lastPosition;
+			}
+		}
+
+		return soundChannel.lastPosition;
+	}
+
+	public void setSoundChannelVolume(int id, float volume)
+	{
+		if (!soundCbannels_.containsKey(id))
+			return;
+
+		SoundChannel_t soundChannel = soundCbannels_.get(id);
+
+		soundChannel.mediaPlayer.setVolume(volume, volume);
+		soundChannel.volume = volume;
+	}
+
+	public float getSoundChannelVolume(int id)
+	{
+		if (!soundCbannels_.containsKey(id))
+			return 0;
+
+		SoundChannel_t soundChannel = soundCbannels_.get(id);
+
+		return soundChannel.volume;
+	}
+	
+	public void setSoundChannelLooping(int id, boolean looping)
+	{
+		if (!soundCbannels_.containsKey(id))
+			return;
+
+		SoundChannel_t soundChannel = soundCbannels_.get(id);
+		
+		soundChannel.mediaPlayer.setLooping(looping);
+	}
+
+	public void destroyAll()
+	{
+		while (!soundCbannels_.isEmpty())
+		{
+			int id = soundCbannels_.keySet().iterator().next();
+			destroySoundChannel(id);
+		}
+
+		while (!sounds_.isEmpty())
+		{
+			int id = sounds_.keySet().iterator().next();
+			destroySound(id);
+		}
+	}
+
+	public int getSoundError()
+	{
+		int result = soundError_;
+		soundError_ = eNoSoundError;
+		return result;
+	}
+
+	private void setSoundError(int soundError)
+	{
+		if (soundError_ == eNoSoundError)
+			soundError_ = soundError;
+	}
+
+	private int soundError_ = eNoSoundError;
+	private int nextid_ = 1;
+	private HashMap<Integer, Sound_t> sounds_ = new HashMap<Integer, Sound_t>();
+	private HashMap<Integer, SoundChannel_t> soundCbannels_ = new HashMap<Integer, SoundChannel_t>();
+
+
+	public static native void nativeSoundCompleteCallback(int soundChannel,
+			long data);
+	
+	public static native void nativeSoundChannelPaused(int soundChannel, long data);
+
+	public static native void nativeSoundChannelResumed(int soundChannel, long data);
+}
+
+class Sound_t
+{
+	public Sound_t(MediaPlayer mediaPlayer, String fileName, boolean resource, double length)
+	{
+		this.mediaPlayer = mediaPlayer;
+		this.fileName = fileName;
+		this.resource = resource;
+		this.length = length;
+	}
+
+	public MediaPlayer mediaPlayer;
+	public String fileName;
+	public double length;
+	public boolean resource;
+}
+
+class SoundChannel_t
+{
+	public SoundChannel_t(Sound_t sound, MediaPlayer mediaPlayer, int id,
+			boolean isPlaying, double lastPosition, long data)
+	{
+		this.sound = sound;
+		this.mediaPlayer = mediaPlayer;
+		this.id = id;
+		this.isPlaying = isPlaying;
+		this.lastPosition = lastPosition;
+		this.data = data;
+		this.isPaused = false;
+		this.volume = 1;
+	}
+
+	public Sound_t sound;
+	public MediaPlayer mediaPlayer;
+	int id;
+	boolean isPlaying;
+	boolean isPaused;
+	double lastPosition;
+	long data;
+	float volume;
+}
+
+class OnCompletionListener implements MediaPlayer.OnCompletionListener
+{
+	private Object lock = GiderosApplication.getInstance().lock;
+
+	public OnCompletionListener(SoundChannel_t soundChannel)
+	{
+		soundChannel_ = soundChannel;
+	}
+
+	@Override
+	public void onCompletion(MediaPlayer mediaPlayer)
+	{
+		soundChannel_.isPlaying = false;
+		soundChannel_.lastPosition = soundChannel_.sound.length;
+
+		synchronized (lock)
+		{
+			MediaPlayerManager.nativeSoundCompleteCallback(soundChannel_.id,
+					soundChannel_.data);
+		}
+	}
+
+	private SoundChannel_t soundChannel_;
+}

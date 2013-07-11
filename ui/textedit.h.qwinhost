@@ -1,0 +1,98 @@
+#ifndef TEXTEDIT_H
+#define TEXTEDIT_H
+
+#include "QWinHost"
+#include <Windows.h>
+#include <QMdiSubWindow>
+
+
+class ScintillaWinHost : public QWinHost
+{
+public:
+	Q_OBJECT
+
+public:
+	ScintillaWinHost(QWidget* parent = 0);
+	~ScintillaWinHost();
+
+	void setLuaLexer();
+
+private:
+	void SetAStyle(int style, COLORREF fore, COLORREF back, int size=-1, const char *face=0);
+
+public:
+	HWND createWindow(HWND parent, HINSTANCE instance);
+
+	int SendEditor(int Msg, int wParam = 0, int lParam = 0) const
+	{
+		return fn(ptr,Msg,wParam,lParam);
+	}
+
+	int SendEditor(int Msg, int wParam, const void* lParam) const
+	{
+		return SendEditor(Msg, wParam, (int)lParam);
+	}
+
+
+	int (*fn)(void*,int,int,int);
+	void * ptr;
+};
+
+class TextEdit : public QMdiSubWindow
+{
+	Q_OBJECT
+
+public:
+	TextEdit(QWidget* parent = 0);
+	~TextEdit();
+
+	void newFile();
+	bool loadFile(const QString& fileName);
+	const QString& fileName() const;
+	bool save();
+
+	bool hasSelectedText() const;
+	bool isRedoAvailable() const;
+	bool isUndoAvailable() const;
+
+	void gotoLine(int line);
+
+	bool isModified() const;
+
+	bool findFirst(	const QString &expr, bool re, bool cs, bool wo,
+		bool wrap, bool forward = true, int line = -1, int index = -1,
+		bool show = true)  { return true; }
+
+	bool findNext()  { return true; }
+
+public slots:
+	// bookmarks
+	void toogleBookmark();
+	void nextBookmark();
+	void previousBookmark();
+	void clearBookmarks();
+
+	// undo-redo
+	void undo() {}
+	void redo() {}
+
+private slots:
+	void onNotify(MSG * message, long * result);
+
+private:
+	ScintillaWinHost* scintilla_;
+	bool isUntitled_;
+	QString fileName_;
+
+	int SendEditor(int Msg, int wParam = 0, int lParam = 0) const
+	{
+		return scintilla_->SendEditor(Msg,wParam,lParam);
+	}
+
+	int SendEditor(int Msg, int wParam, const void* lParam) const
+	{
+		return scintilla_->SendEditor(Msg, wParam, lParam);
+	}
+};
+
+#endif // TEXTEDIT_H

@@ -1,0 +1,71 @@
+package com.giderosmobile.android.player;
+
+import java.util.List;
+
+import android.app.Activity;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.view.Surface;
+
+public class Accelerometer implements SensorEventListener
+{
+	private Activity activity_;
+	
+	private SensorManager sensorManager;
+	private List<Sensor> sensors;
+	private Sensor sensor;
+	private boolean swap_ = false;
+
+	Accelerometer(Activity activity)
+	{
+		activity_ = activity;		
+
+	
+		sensorManager = (SensorManager)activity_.getSystemService(Context.SENSOR_SERVICE);
+        sensors = sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);		
+        if (sensors.size() > 0)
+        {
+            sensor = sensors.get(0);
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
+        }	
+	}
+
+	public void swap(boolean isLandscape, int rotation)
+	{
+		if (isLandscape == false && rotation == Surface.ROTATION_270)
+		{
+			swap_ = true;
+		}
+		else if (isLandscape == true && rotation == Surface.ROTATION_0)
+		{
+			swap_ = true;
+		}
+		else
+		{
+			swap_ = false;
+		}		
+	}
+	
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+	@Override
+	public void onSensorChanged(SensorEvent event)
+	{
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+        
+        if (swap_)
+        {
+        	float temp = x;
+        	x = y;
+        	y = -temp;
+        }
+        
+        JavaNativeBridge.setAccelerometer(x, y, z);		
+	}
+}

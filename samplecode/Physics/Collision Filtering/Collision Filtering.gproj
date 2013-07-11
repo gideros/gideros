@@ -1,0 +1,9 @@
+<project>
+ <properties autorotation="0" fps="60" scaleMode="0" iosDevice="0" xcodeVersion="0" packageName="com.yourdomain.yourapp" logicalHeight="480" logicalWidth="320" retinaDisplay="0" assetsOnly="0" orientation="1" architecture="0">
+  <imageScales/>
+ </properties>
+ <file file="ground.png"/>
+ <file file="red-circle.png"/>
+ <file file="blue-circle.png"/>
+ <file file="main.lua"/>
+</project>

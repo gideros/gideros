@@ -1,0 +1,631 @@
+package com.giderosmobile.android.player;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Locale;
+
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.Vibrator;
+import android.view.Display;
+import android.view.KeyEvent;
+import android.view.WindowManager;
+
+public class JavaNativeBridge
+{
+	//public static Object lock = new Object();
+
+	//public static Object touchLock = new Object();
+/*
+	public static native void nativeCreate(boolean player);
+	
+	public static native void nativeSetDirectories(String externalDir, String internalDir, String cacheDir);
+	
+	public static native void nativeSetFileSystem(String files);
+
+	public static native void nativePause();
+
+	public static native void nativeResume();
+
+	public static native void nativeDestroy();
+
+	public static native void nativeSurfaceCreated();
+
+	public static native void nativeSurfaceChanged(int w, int h);
+
+	public static native void nativeDrawFrame();
+
+	public static native void nativeTouchesBegin(int size, int[] id, int[] x,
+			int[] y, int actionIndex);
+
+	public static native void nativeTouchesMove(int size, int[] id, int[] x,
+			int[] y);
+
+	public static native void nativeTouchesEnd(int size, int[] id, int[] x,
+			int[] y, int actionIndex);
+
+	public static native void nativeTouchesCancel(int size, int[] id, int[] x,
+			int[] y);
+	
+	public static native void nativeProcessTouches();
+	*/
+
+	//public static native void nativeSetAccelerometer(float x, float y, float z);
+
+	//public static native void nativeSetGyroscope(float x, float y, float z, long data);
+	/*
+	public static native void nativeSoundCompleteCallback(int soundChannel,
+			long data);
+	
+	public static native void nativeSoundChannelPaused(int soundChannel, long data);
+
+	public static native void nativeSoundChannelResumed(int soundChannel, long data);
+*/
+	//public static native void nativeRequesterCompleteCallback(int id, byte[] ptr, int length, long data);
+	
+	//public static native void nativeRequesterErrorCallback(int id, long data);
+	
+	/*
+	static private String allfiles_ = null;
+
+	static private void populateAllFiles()
+	{
+		allfiles_ = null;
+		
+		AssetManager assetManager = WeakActivityHolder.get().getAssets();
+
+		ArrayList<String> lines = new ArrayList<String>();
+
+		try
+		{
+			InputStream in = assetManager.open("assets/allfiles.txt");
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			while (true)
+			{
+				String line = br.readLine();
+				if (line == null)
+					break;
+				lines.add(line);
+			}
+			in.close();
+		} catch (IOException e)
+		{
+			Logger.log("player mode");
+			return;
+		}		
+				
+		StringBuilder sb = new StringBuilder();
+
+		ApplicationInfo applicationInfo = WeakActivityHolder.get().getApplicationInfo();
+		sb.append(applicationInfo.sourceDir).append("|");
+
+		lines.add("properties.bin*");
+		lines.add("luafiles.txt*");
+					
+		for (int i = 0; i < lines.size(); ++i)
+		{
+			String line = lines.get(i);				
+			
+			String suffix = "";
+			
+			if (line.endsWith("*"))
+			{
+				line = line.substring(0, line.length() - 1);
+				suffix = ".jet";
+			}
+			
+			try
+			{
+				AssetFileDescriptor fd = assetManager.openFd("assets/" + line + suffix);
+				sb.append(line).append("|").append(fd.getStartOffset()).append("|").append(fd.getLength()).append("|");
+				fd.close();
+			} catch (IOException e)
+			{
+				Logger.log(e.toString());
+			}		
+		}
+
+		sb.deleteCharAt(sb.length() - 1);
+		
+		allfiles_ = sb.toString();
+	}
+	
+	static String externalDir_, internalDir_, cacheDir_;
+	static private void getDirectories()
+	{
+		boolean mExternalStorageAvailable = false;
+		boolean mExternalStorageWriteable = false;
+		String state = Environment.getExternalStorageState();
+
+		if (Environment.MEDIA_MOUNTED.equals(state))
+		{
+			// We can read and write the media
+			mExternalStorageAvailable = mExternalStorageWriteable = true;
+		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state))
+		{
+			// We can only read the media
+			mExternalStorageAvailable = true;
+			mExternalStorageWriteable = false;
+		} else
+		{
+			// Something else is wrong. It may be one of many other states, but
+			// all we need
+			// to know is we can neither read nor write
+			mExternalStorageAvailable = mExternalStorageWriteable = false;
+		}
+
+		externalDir_ = Environment.getExternalStorageDirectory().getAbsolutePath();
+		internalDir_ = WeakActivityHolder.get().getFilesDir().getAbsolutePath();
+		cacheDir_ = WeakActivityHolder.get().getCacheDir().getAbsolutePath();
+
+		Logger.log("externalDir: " + externalDir_);
+		Logger.log("internalDir: " + internalDir_);
+		Logger.log("cacheDir: " + cacheDir_);
+	}
+
+*/
+	/*
+	static public void onDestroy()
+	{
+		synchronized (lock)
+		{
+			GiderosApplication.nativeDestroy();
+		}
+	}
+	*/
+	/*
+	static public void onStart()
+	{		
+	}
+
+	static public void onRestart()
+	{
+	}
+
+	static public void onStop()
+	{
+	} */
+	
+	/*
+	static public void onPause()
+	{
+		if (isSurfaceCreated_ == false)
+			return;
+		
+		mediaPlayerManager_.onStop();
+		synchronized (lock)
+		{
+			GiderosApplication.nativePause();
+		}
+	}
+*/
+	/*
+	static public void onResume()
+	{
+		if (isSurfaceCreated_ == false)
+			return;
+
+		mediaPlayerManager_.onRestart();
+		synchronized (lock)
+		{
+			GiderosApplication.nativeResume();
+		}
+	}
+	*/
+/*
+	public static void onTouchesBegin(int size, int[] id, int[] x,
+			int[] y, int actionIndex)
+	{
+		synchronized (touchLock)
+		{
+			GiderosApplication.nativeTouchesBegin(size, id, x, y, actionIndex);
+		}		
+	}
+
+	public static void onTouchesMove(int size, int[] id, int[] x,
+			int[] y)
+	{	
+		synchronized (touchLock)
+		{
+			GiderosApplication.nativeTouchesMove(size, id, x, y);
+		}
+	}
+
+	public static void onTouchesEnd(int size, int[] id, int[] x,
+			int[] y, int actionIndex)
+	{
+		synchronized (touchLock)
+		{
+			GiderosApplication.nativeTouchesEnd(size, id, x, y, actionIndex);
+		}		
+	}
+
+	public static void onTouchesCancel(int size, int[] id, int[] x,
+			int[] y)
+	{
+		synchronized (touchLock)
+		{
+			GiderosApplication.nativeTouchesCancel(size, id, x, y);
+		}		
+	} */
+	
+	//public static native void nativeLocationChanged(double latitude, double longitude, double altitude, long data);
+	//public static native void nativeHeadingChanged(double magneticHeading, double trueHeading, long data);
+	/*	
+	static private volatile float accx_ = 0;
+	static private volatile float accy_ = 0;
+	static private volatile float accz_ = 0;
+	
+	
+	static public void setAccelerometer(float x, float y, float z)
+	{
+		accx_ = x / -9.81f;
+		accy_ = y / -9.81f;
+		accz_ = z / -9.81f;
+	}
+	*/
+	/*
+	static private boolean isSurfaceCreated_ = false;
+	
+	static public void onSurfaceCreated()
+	{
+		synchronized (lock)
+		{
+			GiderosApplication.nativeSurfaceCreated();
+			isSurfaceCreated_ = true;
+		}		
+	}
+
+	static public void onSurfaceChanged(int w, int h)
+	{	
+		
+		//Display display = ((WindowManager)activity_.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+		//int rotation = display.getRotation();
+		
+		//boolean isLandscape = w > h;
+		
+		//accelerometer_.swap(isLandscape, rotation);
+		
+		synchronized (lock)
+		{
+			GiderosApplication.nativeSurfaceChanged(w, h);
+		}		
+	}
+
+	static private void sleep(long time)
+	{
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {
+		}
+	}
+
+	static private long startTime = System.currentTimeMillis(), endTime;
+	
+	static public void onDrawFrame()
+	{
+		if (fps_ == 30)
+		{
+		    endTime = System.currentTimeMillis();
+		    long dt = endTime - startTime;
+		    if (dt < 0)
+		    	dt = 0;
+		    if (dt < 33)
+		    	sleep(33 - dt);
+		    startTime = System.currentTimeMillis();
+		}
+	    
+	    synchronized (lock)
+		{
+			synchronized (touchLock)
+			{
+				GiderosApplication.nativeProcessTouches();
+			}
+		
+			//JavaNativeBridge.nativeSetAccelerometer(accx_, accy_, accz_);
+			GiderosApplication.nativeDrawFrame();
+		}
+	} */
+
+	/*
+	public static String getLocalIPs()
+	{
+		StringBuilder sb = new StringBuilder();
+
+		try
+		{
+			for (Enumeration<NetworkInterface> en = NetworkInterface
+					.getNetworkInterfaces(); en.hasMoreElements();)
+			{
+				NetworkInterface intf = en.nextElement();
+				for (Enumeration<InetAddress> enumIpAddr = intf
+						.getInetAddresses(); enumIpAddr.hasMoreElements();)
+				{
+					InetAddress inetAddress = enumIpAddr.nextElement();
+					if (!inetAddress.isLoopbackAddress())
+					{
+						sb.append(inetAddress.getHostAddress().toString());
+						sb.append("|");
+					}
+				}
+			}
+		} catch (SocketException ex)
+		{
+		}
+
+		if (sb.length() != 0)
+			sb.deleteCharAt(sb.length() - 1);
+
+		return sb.toString();
+	}
+*/
+	/*
+	static private MediaPlayerManager mediaPlayerManager_;
+
+	static public int createSound(String fileName, boolean resource)
+	{
+		return mediaPlayerManager_.createSound(fileName, resource);
+	}
+
+	static public void destroySound(int sound)
+	{
+		mediaPlayerManager_.destroySound(sound);
+	}
+
+	static public double getSoundLength(int sound)
+	{
+		return mediaPlayerManager_.getSoundLength(sound);
+	}
+
+	static public int playSound(int sound, double msec, boolean looping, long data)
+	{
+		return mediaPlayerManager_.playSound(sound, msec, looping, data);
+	}
+	
+	static public void destroySoundChannel(int soundChannel)
+	{
+		mediaPlayerManager_.destroySoundChannel(soundChannel);
+	}
+
+	static public double getSoundChannelOffset(int soundChannel)
+	{
+		return mediaPlayerManager_.getSoundChannelOffset(soundChannel);
+	}
+
+	static public void setSoundChannelLooping(int soundChannel, boolean looping)
+	{
+		mediaPlayerManager_.setSoundChannelLooping(soundChannel, looping);
+	}
+	
+	static public void setSoundChannelVolume(int soundChannel, float volume)
+	{
+		mediaPlayerManager_.setSoundChannelVolume(soundChannel, volume);
+	}
+
+	static public float getSoundChannelVolume(int soundChannel)
+	{
+		return mediaPlayerManager_.getSoundChannelVolume(soundChannel);
+	}
+
+	static public void destroyAll()
+	{
+		mediaPlayerManager_.destroyAll();
+	}
+
+	static public int getSoundError()
+	{
+		return mediaPlayerManager_.getSoundError();
+	}
+	*/
+
+	//static private Accelerometer accelerometer_;
+	
+	/*
+	static public void onCreate()
+	{		
+		populateAllFiles();
+		getDirectories();
+		
+		mediaPlayerManager_ = new MediaPlayerManager(allfiles_ == null);
+		//geolocation_ = new Geolocation(activity_);
+		//accelerometer_ = new Accelerometer(activity_);
+		//gyroscope_ = new Gyroscope(activity_);
+		isSurfaceCreated_ = false;
+
+		synchronized (lock)
+		{
+			GiderosApplication.nativeCreate(allfiles_ == null);
+			GiderosApplication.nativeSetDirectories(externalDir_, internalDir_, cacheDir_);
+			if (allfiles_ != null)
+				GiderosApplication.nativeSetFileSystem(allfiles_);
+		}	
+	}
+*/
+/*		
+	static private Geolocation geolocation_;
+	
+	static public void setGeolocationCallbackData(long data)
+	{
+		geolocation_.setCallbackData(data);
+	}
+
+	static public boolean isGeolocationAvailable()
+	{
+		return geolocation_.isAvailable();
+	}
+
+	static public boolean isHeadingAvailable()
+	{
+		return geolocation_.isHeadingAvailable();
+	}
+
+	static public void setGeolocationAccuracy(double accuracy)
+	{
+		geolocation_.setAccuracy(accuracy);
+	}
+	static public double getGeolocationAccuracy()
+	{
+		return geolocation_.getAccuracy();
+	}
+	static public void setGeolocationThreshold(double threshold)
+	{			
+		geolocation_.setThreshold(threshold);
+	}
+	static public double getGeolocationThreshold()
+	{
+		return geolocation_.getThreshold();
+	}
+	static public void startGeolocation()
+	{
+		geolocation_.start();
+	}
+	static public void stopGeolocation()
+	{
+		geolocation_.stop();
+	}
+	static public void startUpdatingLocation()
+	{
+		geolocation_.startUpdatingLocation();
+	}
+	static public void stopUpdatingLocation()
+	{
+		geolocation_.stopUpdatingLocation();
+	}
+	static public void startUpdatingHeading()
+	{
+		geolocation_.startUpdatingHeading();
+	}
+	static public void stopUpdatingHeading()
+	{
+		geolocation_.stopUpdatingHeading();		
+	}
+*/
+	/*
+	static private Gyroscope gyroscope_;
+
+	static public boolean isGyroscopeAvailable()
+	{
+		return gyroscope_.isAvailable();
+	}
+
+	static public void startGyroscope(long data)
+	{
+		gyroscope_.start(data);
+	}
+
+	static public void stopGyroscope()
+	{
+		gyroscope_.stop();
+	}
+
+	static public void setGyroscope(float x, float y, float z, long data)
+	{
+		JavaNativeBridge.nativeSetGyroscope(x, y, z, data);
+	}
+	*/
+	/*
+	static public void openUrl(String url)
+	{
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+		try
+		{
+			activity_.startActivity(intent);
+		}
+		catch (ActivityNotFoundException e) 
+		{
+			Logger.log(e.toString());
+		}
+	}
+	*/
+	/*
+	static public void vibrate()	
+	{
+		try
+		{
+			((Vibrator)activity_.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(300);
+		}
+		catch (SecurityException e)
+		{
+			Logger.log(e.toString());			
+		}
+	}
+	*/
+	/*
+	static public String getLocale()
+	{
+		Locale locale = Locale.getDefault();
+		return locale.getLanguage() + "_" + locale.getCountry();
+	}
+
+	static public String getLanguage()
+	{
+		Locale locale = Locale.getDefault();
+		return locale.getLanguage();
+	}
+	
+	static public void setKeepAwake(boolean awake)
+	{
+		if (awake)
+			activity_.runOnUiThread(new Runnable() {public void run() {activity_.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);}});
+		else
+			activity_.runOnUiThread(new Runnable() {public void run() {activity_.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);}});
+	}
+	
+	static public String getAndroidVersion()
+	{
+		return android.os.Build.VERSION.RELEASE;
+	}
+	*/
+	/*
+	static public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+		synchronized (touchLock)
+		{
+			return nativeKeyDown(keyCode);
+		}
+	}
+	
+	static public boolean onKeyUp(int keyCode, KeyEvent event)
+	{
+		synchronized (touchLock)
+		{
+			return nativeKeyUp(keyCode);
+		}
+	}
+
+	public static native boolean nativeKeyDown(int keyCode);
+	public static native boolean nativeKeyUp(int keyCode);
+	*/
+	/*
+	static int fps_ = 60;
+	static public void setFps(int fps)
+	{
+		fps_ = fps;		
+	}*/
+	/*
+	static public void finishActivity()
+	{
+		activity_.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+            	activity_.finish();
+            }
+        });
+	}
+	*/
+}
