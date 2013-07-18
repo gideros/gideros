@@ -196,6 +196,7 @@ public:
 #endif
 	
 	void exitRenderLoop();
+	void exitRenderLoopHelper();
 	
 	void didReceiveMemoryWarning();
 	
@@ -595,12 +596,12 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	running_ = false;
 
 #if THREADED_RENDER_LOOP
-	renderLoopActive_ = true;
-	renderTick_ = false;
 	pthread_mutex_init(&renderMutex_, NULL);
 	pthread_mutex_init(&autorotationMutex_, NULL);
 	pthread_cond_init(&renderCond_, NULL);
-	pthread_create(&renderThread_, NULL, renderLoop_s, this);
+	//renderLoopActive_ = true;
+	//renderTick_ = false;
+	//pthread_create(&renderThread_, NULL, renderLoop_s, this);
 	
 	autorotating_ = false;
 #endif
@@ -1073,6 +1074,8 @@ void ApplicationManager::suspend()
 #if THREADED_RENDER_LOOP
     pthread_mutex_unlock(&renderMutex_);
 #endif
+    
+    exitRenderLoopHelper();
 }
 
 void ApplicationManager::resume()
@@ -1092,6 +1095,12 @@ void ApplicationManager::resume()
 	}
 #if THREADED_RENDER_LOOP
     pthread_mutex_unlock(&renderMutex_);
+#endif
+    
+#if THREADED_RENDER_LOOP
+    renderLoopActive_ = true;
+	renderTick_ = false;
+    pthread_create(&renderThread_, NULL, renderLoop_s, this);
 #endif
 }
 
@@ -1113,15 +1122,21 @@ void ApplicationManager::exitRenderLoop()
 #if THREADED_RENDER_LOOP
     pthread_mutex_unlock(&renderMutex_);
 #endif
+    
+    exitRenderLoopHelper();
+}
 
+void ApplicationManager::exitRenderLoopHelper()
+{
 #if THREADED_RENDER_LOOP
 	pthread_mutex_lock(&renderMutex_);
 	renderLoopActive_ = false;
 	renderTick_ = true;
-    pthread_cond_signal(&renderCond_);	
+    pthread_cond_signal(&renderCond_);
 	pthread_mutex_unlock(&renderMutex_);
-
+    
 	pthread_join(renderThread_, NULL);
+    renderThread_ = NULL;
 #endif
 }
 
