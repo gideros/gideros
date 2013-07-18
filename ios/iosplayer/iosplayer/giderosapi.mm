@@ -51,6 +51,8 @@
 
 #include <gaudio.h>
 
+#define THREADED_RENDER_LOOP 1
+
 extern "C" {
 void g_setFps(int);
 int g_getFps();
@@ -188,7 +190,7 @@ public:
 	void suspend();
 	void resume();
 	
-#if 0
+#if THREADED_RENDER_LOOP
 	static void *renderLoop_s(void *args);
 	void *renderLoop();
 #endif
@@ -231,7 +233,7 @@ private:
 
 	bool luaFilesLoaded_;
 
-#if 0
+#if THREADED_RENDER_LOOP
 	pthread_mutex_t renderMutex_, autorotationMutex_;
 	pthread_cond_t renderCond_;
 	pthread_t renderThread_;
@@ -592,7 +594,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 
 	running_ = false;
 
-#if 0
+#if THREADED_RENDER_LOOP
 	renderLoopActive_ = true;
 	renderTick_ = false;
 	pthread_mutex_init(&renderMutex_, NULL);
@@ -699,7 +701,7 @@ void ApplicationManager::drawFirstFrame()
 	[view_ presentFramebuffer];
 }
 
-#if 0
+#if THREADED_RENDER_LOOP
 void *ApplicationManager::renderLoop_s(void *args)
 {
 	return static_cast<ApplicationManager*>(args)->renderLoop();
@@ -743,13 +745,13 @@ void *ApplicationManager::renderLoop()
 
 void ApplicationManager::drawFrame()
 {
-#if 0
+#if THREADED_RENDER_LOOP
 	if (autorotating_)
 		return;
 #endif
 	
 	nframe_++;
-#if 0
+#if THREADED_RENDER_LOOP
 	pthread_mutex_lock(&renderMutex_);
 #endif
 	
@@ -769,12 +771,17 @@ void ApplicationManager::drawFrame()
 		drawIPs();
 		[view_ presentFramebuffer]; 
 
-#if 0
+#if THREADED_RENDER_LOOP
 		pthread_mutex_unlock(&renderMutex_);
 #endif
 		
 		return;
 	}
+
+#if !THREADED_RENDER_LOOP
+    [view_ setFramebuffer];
+    application_->clearBuffers();
+#endif
 
 	if (application_->isErrorSet())
 		luaError(application_->getError());
@@ -790,20 +797,17 @@ void ApplicationManager::drawFrame()
 		}
 	}
 
-#if 1
-    [view_ setFramebuffer];
-    application_->clearBuffers();
-    application_->renderScene(1);
-    drawIPs();
-    [view_ presentFramebuffer];
-#endif
-    
-    
-#if 0
+#if THREADED_RENDER_LOOP
 	renderTick_ = true;
     pthread_cond_signal(&renderCond_);
 	
 	pthread_mutex_unlock(&renderMutex_);
+#endif
+    
+#if !THREADED_RENDER_LOOP
+    application_->renderScene(1);
+    drawIPs();
+    [view_ presentFramebuffer];
 #endif
 }
 	
@@ -1055,7 +1059,7 @@ void ApplicationManager::setProjectProperties(const ProjectProperties &propertie
 void ApplicationManager::suspend()
 {
     gapplication_enqueueEvent(GAPPLICATION_PAUSE_EVENT, NULL, 0);
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_lock(&renderMutex_);
 #endif
 	try
@@ -1066,7 +1070,7 @@ void ApplicationManager::suspend()
 	{
 		luaError(e.what());
 	}
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_unlock(&renderMutex_);
 #endif
 }
@@ -1075,7 +1079,7 @@ void ApplicationManager::resume()
 {
     gapplication_enqueueEvent(GAPPLICATION_RESUME_EVENT, NULL, 0);
 
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_lock(&renderMutex_);
 #endif
 	try
@@ -1086,7 +1090,7 @@ void ApplicationManager::resume()
 	{
 		luaError(e.what());
 	}
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_unlock(&renderMutex_);
 #endif
 }
@@ -1095,7 +1099,7 @@ void ApplicationManager::exitRenderLoop()
 {
     gapplication_enqueueEvent(GAPPLICATION_EXIT_EVENT, NULL, 0);
     
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_lock(&renderMutex_);
 #endif
     try
@@ -1106,11 +1110,11 @@ void ApplicationManager::exitRenderLoop()
     {
         luaError(e.what());
     }
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_unlock(&renderMutex_);
 #endif
 
-#if 0
+#if THREADED_RENDER_LOOP
 	pthread_mutex_lock(&renderMutex_);
 	renderLoopActive_ = false;
 	renderTick_ = true;
@@ -1145,7 +1149,7 @@ void ApplicationManager::didReceiveMemoryWarning()
 {
     gapplication_enqueueEvent(GAPPLICATION_MEMORY_LOW_EVENT, NULL, 0);
     
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_lock(&renderMutex_);
 #endif
     try
@@ -1156,7 +1160,7 @@ void ApplicationManager::didReceiveMemoryWarning()
     {
         luaError(e.what());
     }
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_unlock(&renderMutex_);
 #endif
 }
@@ -1225,7 +1229,7 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 
 void ApplicationManager::willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
 {
-#if 0
+#if THREADED_RENDER_LOOP
 	pthread_mutex_lock(&autorotationMutex_);
 	autorotating_ = true;
 #endif
@@ -1242,7 +1246,7 @@ void ApplicationManager::willRotateToInterfaceOrientation(UIInterfaceOrientation
 
 void ApplicationManager::didRotateFromInterfaceOrientation(UIInterfaceOrientation fromInterfaceOrientation)
 {
-#if 0
+#if THREADED_RENDER_LOOP
 	autorotating_ = false;
 	pthread_mutex_unlock(&autorotationMutex_);
 #endif
@@ -1261,7 +1265,7 @@ void ApplicationManager::foreground()
 {
     gapplication_enqueueEvent(GAPPLICATION_FOREGROUND_EVENT, NULL, 0);
 
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_lock(&renderMutex_);
 #endif
 	try
@@ -1272,7 +1276,7 @@ void ApplicationManager::foreground()
 	{
 		luaError(e.what());
 	}
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_unlock(&renderMutex_);
 #endif
 }
@@ -1281,7 +1285,7 @@ void ApplicationManager::background()
 {
     gapplication_enqueueEvent(GAPPLICATION_BACKGROUND_EVENT, NULL, 0);
 
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_lock(&renderMutex_);
 #endif
 	try
@@ -1292,7 +1296,7 @@ void ApplicationManager::background()
 	{
 		luaError(e.what());
 	}
-#if 0
+#if THREADED_RENDER_LOOP
     pthread_mutex_unlock(&renderMutex_);
 #endif
 }
