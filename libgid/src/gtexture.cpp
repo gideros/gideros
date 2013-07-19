@@ -340,6 +340,9 @@ public:
 
     void RestoreRenderTargets()
     {
+        if (renderTargetElements_.empty())
+            return;
+
         GLint oldFBO = 0;
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
 
@@ -463,6 +466,9 @@ public:
 
     void SaveRenderTargets()
     {
+        if (renderTargetElements_.empty())
+            return;
+
         GLint oldFBO = 0;
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
 
