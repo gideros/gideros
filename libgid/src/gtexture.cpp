@@ -500,6 +500,9 @@ public:
             element->width = width;
             element->height = height;
 
+            GLint oldTex = 0;
+            glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTex);
+
             glGenTextures(1, &element->name);
             glBindTexture(GL_TEXTURE_2D, element->name);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -507,6 +510,8 @@ public:
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+            glBindTexture(GL_TEXTURE_2D, oldTex);
 
             tempTextureElements_[nextid_] = element;
         }
@@ -556,6 +561,9 @@ public:
 
     void RestoreTempTextures()
     {
+        GLint oldTex = 0;
+        glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTex);
+
         std::set<TempTextureElement*> tempTextureElements;
         std::map<g_id, TempTextureElement*>::iterator iter2, e2 = tempTextureElements_.end();
         for (iter2 = tempTextureElements_.begin(); iter2 != e2; ++iter2)
@@ -574,6 +582,8 @@ public:
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, element->width, element->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         }
+
+        glBindTexture(GL_TEXTURE_2D, oldTex);
     }
 
 private:
@@ -619,6 +629,9 @@ private:
             break;
         }
 
+        GLint oldTex = 0;
+        glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTex);
+
         glGenTextures(1, &element->internalId);
         glBindTexture(GL_TEXTURE_2D, element->internalId);
         switch (element->wrap)
@@ -645,6 +658,8 @@ private:
         }
 
         glTexImage2D(GL_TEXTURE_2D, 0, format, element->width, element->height, 0, format, type, pixels);
+
+        glBindTexture(GL_TEXTURE_2D, oldTex);
     }
 
 private:
