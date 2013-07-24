@@ -10,6 +10,7 @@
 		5F0104061776F719002E6C6E /* grendertarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0104041776F719002E6C6E /* grendertarget.cpp */; };
 		5F0104071776F719002E6C6E /* grendertarget.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F0104051776F719002E6C6E /* grendertarget.h */; };
 		5F01040A1776F857002E6C6E /* rendertargetbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0104091776F857002E6C6E /* rendertargetbinder.cpp */; };
+		5F0B588817A0663000E3668E /* completeevent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0B588717A0663000E3668E /* completeevent.cpp */; };
 		5F0CD76115BAFADE00479287 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F0CD76015BAFADE00479287 /* Foundation.framework */; };
 		5F0CD7C115BB020800479287 /* snappy-c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7BD15BB020800479287 /* snappy-c.cpp */; };
 		5F0CD7C215BB020800479287 /* snappy-sinksource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7BE15BB020800479287 /* snappy-sinksource.cpp */; };
@@ -379,6 +380,7 @@
 		5F0104041776F719002E6C6E /* grendertarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = grendertarget.cpp; path = ../../2dsg/grendertarget.cpp; sourceTree = "<group>"; };
 		5F0104051776F719002E6C6E /* grendertarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = grendertarget.h; path = ../../2dsg/grendertarget.h; sourceTree = "<group>"; };
 		5F0104091776F857002E6C6E /* rendertargetbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rendertargetbinder.cpp; path = ../../luabinding/rendertargetbinder.cpp; sourceTree = "<group>"; };
+		5F0B588717A0663000E3668E /* completeevent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = completeevent.cpp; path = ../../2dsg/completeevent.cpp; sourceTree = "<group>"; };
 		5F0CD75D15BAFADE00479287 /* libiosplayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiosplayer.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F0CD76015BAFADE00479287 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5F0CD76415BAFADE00479287 /* iosplayer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iosplayer-Prefix.pch"; sourceTree = "<group>"; };
@@ -1249,6 +1251,7 @@
 				5F321EB215BBC3FC00542289 /* blendfunc.cpp */,
 				5F321EB315BBC3FC00542289 /* color.cpp */,
 				5F321EB415BBC3FC00542289 /* colortransform.cpp */,
+				5F0B588717A0663000E3668E /* completeevent.cpp */,
 				5F321EB515BBC3FC00542289 /* dib.cpp */,
 				5F321EB615BBC3FC00542289 /* enterframeevent.cpp */,
 				5F321EB715BBC3FC00542289 /* errorevent.cpp */,
@@ -1804,6 +1807,7 @@
 				5F79FE27177740F900ACC87A /* trees.c in Sources */,
 				5F79FE28177740F900ACC87A /* uncompr.c in Sources */,
 				5F79FE29177740F900ACC87A /* zutil.c in Sources */,
+				5F0B588817A0663000E3668E /* completeevent.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
