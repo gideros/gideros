@@ -377,7 +377,7 @@ static int bindAll(lua_State* L)
     lua_pushinteger(L, GINPUT_KEY_Q);
     lua_setfield(L, -2, "Q");
     lua_pushinteger(L, GINPUT_KEY_R);
-    lua_setfield(L, -2, "E");
+    lua_setfield(L, -2, "R");
     lua_pushinteger(L, GINPUT_KEY_S);
     lua_setfield(L, -2, "S");
     lua_pushinteger(L, GINPUT_KEY_T);
