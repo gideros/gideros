@@ -756,7 +756,7 @@ void *ApplicationManager::renderLoop()
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-	printf("starting render thread\n");
+	glog_d("[gideros] starting render thread.");
 
     while (renderLoopActive_)
     {
@@ -782,7 +782,7 @@ void *ApplicationManager::renderLoop()
     }	
 	
 	
-	printf("ending render thread\n");
+	glog_d("[gideros] ending render thread.");
 	
 	[pool release];
 	
@@ -1147,6 +1147,7 @@ void ApplicationManager::resume()
     renderLoopActive_ = true;
 	renderTick_ = false;
     renderThread_ = [[CustomThread alloc] initWithStartRoutine:renderLoop_s withArg:this];
+    [renderThread_ start];
 #endif
 }
 
