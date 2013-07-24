@@ -5,7 +5,6 @@
 #include <map>
 #include <vector>
 #include <gevent.h>
-#include <pthread.h>
 
 class GGInputManager;
 
@@ -92,8 +91,8 @@ public:
         isTouchToMouseEnabled_ = 0;
         mouseTouchOrder_= 0;
 		
-        pthread_mutex_init(&touchPoolMutex_, NULL);
-		pthread_mutex_init(&mousePoolMutex_, NULL);
+        touchPoolMutex_ = [[NSLock alloc] init];
+		mousePoolMutex_ = [[NSLock alloc] init];
         
         gevent_AddCallback(posttick_s, this);
         
@@ -110,7 +109,7 @@ public:
         
         gevent_RemoveCallback(posttick_s, this);
 		
-		pthread_mutex_lock(&touchPoolMutex_);
+		[touchPoolMutex_ lock];
 		std::map<size_t, std::vector<ginput_TouchEvent*> >::iterator iter;
 		for (iter = touchPool1_.begin(); iter != touchPool1_.end(); ++iter)
 		{
@@ -130,19 +129,19 @@ public:
 				delete v[i];
 			}
 		}
-		pthread_mutex_unlock(&touchPoolMutex_);
+		[touchPoolMutex_ unlock];
         
-        pthread_mutex_destroy(&touchPoolMutex_);
+        [touchPoolMutex_ release];
 	
         
-        pthread_mutex_lock(&mousePoolMutex_);
+        [mousePoolMutex_ lock];
         for (size_t i = 0; i < mousePool1_.size(); ++i)
             delete mousePool1_[i];
         for (size_t i = 0; i < mousePool2_.size(); ++i)
             delete mousePool2_[i];
-		pthread_mutex_unlock(&mousePoolMutex_);
+		[mousePoolMutex_ unlock];
         
-        pthread_mutex_destroy(&mousePoolMutex_);
+        [mousePoolMutex_ release];
     }
     
     bool isAccelerometerAvailable()
@@ -242,7 +241,7 @@ private:
     
     void posttick()
     {
-		pthread_mutex_lock(&touchPoolMutex_);
+		[touchPoolMutex_ lock];
 		std::map<size_t, std::vector<ginput_TouchEvent*> >::iterator iter;
 		for (iter = touchPool2_.begin(); iter != touchPool2_.end(); ++iter)
 		{
@@ -251,13 +250,13 @@ private:
 				touchPool1_[iter->first].push_back(v[i]);
 		}
 		touchPool2_.clear();
-		pthread_mutex_unlock(&touchPoolMutex_);
+		[touchPoolMutex_ unlock];
 
-		pthread_mutex_lock(&mousePoolMutex_);
+		[mousePoolMutex_ lock];
         for (size_t i = 0; i < mousePool2_.size(); ++i)
             mousePool1_.push_back(mousePool2_[i]);
         mousePool2_.clear();
-		pthread_mutex_unlock(&mousePoolMutex_);
+		[mousePoolMutex_ unlock];
     }
     
 public:
@@ -520,7 +519,7 @@ private:
 
     ginput_TouchEvent *newTouchEvent(size_t allTouchesCount)
 	{
-		pthread_mutex_lock(&touchPoolMutex_);
+		[touchPoolMutex_ lock];
 		std::vector<ginput_TouchEvent*> &pool = touchPool1_[allTouchesCount];
         
         ginput_TouchEvent *event;
@@ -535,7 +534,7 @@ private:
             event = pool.back();
             pool.pop_back();
         }
-		pthread_mutex_unlock(&touchPoolMutex_);
+		[touchPoolMutex_ unlock];
         
         event->allTouchesCount = allTouchesCount;
         
@@ -544,14 +543,14 @@ private:
     
 	void deleteTouchEvent(ginput_TouchEvent *event)
 	{
-		pthread_mutex_lock(&touchPoolMutex_);
+		[touchPoolMutex_ lock];
 		touchPool2_[event->allTouchesCount].push_back(event);
-		pthread_mutex_unlock(&touchPoolMutex_);
+		[touchPoolMutex_ unlock];
 	}
 
     ginput_MouseEvent *newMouseEvent(int x, int y, int button)
     {
-        pthread_mutex_lock(&mousePoolMutex_);
+        [mousePoolMutex_ lock];
         ginput_MouseEvent *event;
         
         if (mousePool1_.empty())
@@ -563,7 +562,7 @@ private:
             event = mousePool1_.back();
             mousePool1_.pop_back();
         }
-        pthread_mutex_unlock(&mousePoolMutex_);
+        [mousePoolMutex_ unlock];
         
         event->x = x;
         event->y = y;
@@ -574,9 +573,9 @@ private:
     
     void deleteMouseEvent(ginput_MouseEvent *event)
     {
-        pthread_mutex_lock(&mousePoolMutex_);
+        [mousePoolMutex_ lock];
         mousePool2_.push_back(event);
-        pthread_mutex_unlock(&mousePoolMutex_);
+        [mousePoolMutex_ unlock];
     }
     
     std::vector<UITouch*> touches_;
@@ -584,8 +583,8 @@ private:
 	std::map<size_t, std::vector<ginput_TouchEvent*> > touchPool2_;
     std::vector<ginput_MouseEvent*> mousePool1_;
     std::vector<ginput_MouseEvent*> mousePool2_;
-    pthread_mutex_t touchPoolMutex_;
-    pthread_mutex_t mousePoolMutex_;
+    NSLock *touchPoolMutex_;
+    NSLock *mousePoolMutex_;
     
     int isMouseToTouchEnabled_;
     int isTouchToMouseEnabled_;
