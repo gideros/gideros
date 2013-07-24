@@ -53,6 +53,52 @@
 
 #define THREADED_RENDER_LOOP 1
 
+@interface CustomThread : NSThread
+
+- (id)init;
+- (void)main;
+
+@property (nonatomic, assign) void *(*startRoutine)(void *);
+@property (nonatomic, assign) void *arg;
+
+@end
+
+
+@implementation CustomThread
+
+@synthesize startRoutine = startRoutine_;
+@synthesize arg = arg_;
+
+- (id)init
+{
+    if (self = [super init])
+    {
+        startRoutine_ = NULL;
+        arg_ = NULL;
+    }
+    
+    return self;    
+}
+
+- (id)initWithStartRoutine:(void *(*)(void *))startRoutine withArg:(void*)arg
+{
+    if (self = [super init])
+    {
+        startRoutine_ = startRoutine;
+        arg_ = arg;
+    }
+    
+    return self;
+}
+
+- (void)main
+{
+    startRoutine_(arg_);
+}
+
+@end
+
+
 extern "C" {
 void g_setFps(int);
 int g_getFps();
@@ -235,9 +281,9 @@ private:
 	bool luaFilesLoaded_;
 
 #if THREADED_RENDER_LOOP
-	pthread_mutex_t renderMutex_, autorotationMutex_;
-	pthread_cond_t renderCond_;
-	pthread_t renderThread_;
+	NSCondition *renderCond_;
+	NSLock *autorotationMutex_;
+    CustomThread *renderThread_;
 	
 	bool renderLoopActive_;
 	bool renderTick_;
@@ -596,13 +642,8 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	running_ = false;
 
 #if THREADED_RENDER_LOOP
-	pthread_mutex_init(&renderMutex_, NULL);
-	pthread_mutex_init(&autorotationMutex_, NULL);
-	pthread_cond_init(&renderCond_, NULL);
-	//renderLoopActive_ = true;
-	//renderTick_ = false;
-	//pthread_create(&renderThread_, NULL, renderLoop_s, this);
-	
+	autorotationMutex_ = [[NSLock alloc] init];
+    renderCond_ = [[NSCondition alloc] init];
 	autorotating_ = false;
 #endif
 	
@@ -682,6 +723,9 @@ ApplicationManager::~ApplicationManager()
 	gvfs_cleanup();
 
 	gpath_cleanup();
+    
+    [renderCond_ release];
+    [autorotationMutex_ release];
 }
 
 void ApplicationManager::drawFirstFrame()
@@ -716,22 +760,25 @@ void *ApplicationManager::renderLoop()
 
     while (renderLoopActive_)
     {
-        pthread_mutex_lock(&renderMutex_);
+        [renderCond_ lock];
         while (!renderTick_)
-            pthread_cond_wait(&renderCond_, &renderMutex_);
+            [renderCond_ wait];
 
-        pthread_mutex_lock(&autorotationMutex_);
+        [autorotationMutex_ lock];
 
-		[view_ setFramebuffer];
-		application_->clearBuffers();
-		application_->renderScene(1);
-		drawIPs();
-		[view_ presentFramebuffer];        
+        if (renderLoopActive_)
+        {
+            [view_ setFramebuffer];
+            application_->clearBuffers();
+            application_->renderScene(1);
+            drawIPs();
+            [view_ presentFramebuffer];
+        }
 		
-        pthread_mutex_unlock(&autorotationMutex_);
+        [autorotationMutex_ unlock];
 
 		renderTick_ = false;
-        pthread_mutex_unlock(&renderMutex_);
+        [renderCond_ unlock];
     }	
 	
 	
@@ -753,7 +800,7 @@ void ApplicationManager::drawFrame()
 	
 	nframe_++;
 #if THREADED_RENDER_LOOP
-	pthread_mutex_lock(&renderMutex_);
+    [renderCond_ lock];
 #endif
 	
 	if (networkManager_)
@@ -773,7 +820,7 @@ void ApplicationManager::drawFrame()
 		[view_ presentFramebuffer]; 
 
 #if THREADED_RENDER_LOOP
-		pthread_mutex_unlock(&renderMutex_);
+        [renderCond_ unlock];
 #endif
 		
 		return;
@@ -800,9 +847,8 @@ void ApplicationManager::drawFrame()
 
 #if THREADED_RENDER_LOOP
 	renderTick_ = true;
-    pthread_cond_signal(&renderCond_);
-	
-	pthread_mutex_unlock(&renderMutex_);
+    [renderCond_ signal];
+    [renderCond_ unlock];
 #endif
     
 #if !THREADED_RENDER_LOOP
@@ -1061,7 +1107,7 @@ void ApplicationManager::suspend()
 {
     gapplication_enqueueEvent(GAPPLICATION_PAUSE_EVENT, NULL, 0);
 #if THREADED_RENDER_LOOP
-    pthread_mutex_lock(&renderMutex_);
+    [renderCond_ lock];
 #endif
 	try
 	{
@@ -1072,7 +1118,7 @@ void ApplicationManager::suspend()
 		luaError(e.what());
 	}
 #if THREADED_RENDER_LOOP
-    pthread_mutex_unlock(&renderMutex_);
+    [renderCond_ unlock];
 #endif
     
     exitRenderLoopHelper();
@@ -1083,7 +1129,7 @@ void ApplicationManager::resume()
     gapplication_enqueueEvent(GAPPLICATION_RESUME_EVENT, NULL, 0);
 
 #if THREADED_RENDER_LOOP
-    pthread_mutex_lock(&renderMutex_);
+    [renderCond_ lock];
 #endif
 	try
 	{
@@ -1094,13 +1140,13 @@ void ApplicationManager::resume()
 		luaError(e.what());
 	}
 #if THREADED_RENDER_LOOP
-    pthread_mutex_unlock(&renderMutex_);
+    [renderCond_ unlock];
 #endif
     
 #if THREADED_RENDER_LOOP
     renderLoopActive_ = true;
 	renderTick_ = false;
-    pthread_create(&renderThread_, NULL, renderLoop_s, this);
+    renderThread_ = [[CustomThread alloc] initWithStartRoutine:renderLoop_s withArg:this];
 #endif
 }
 
@@ -1109,7 +1155,7 @@ void ApplicationManager::exitRenderLoop()
     gapplication_enqueueEvent(GAPPLICATION_EXIT_EVENT, NULL, 0);
     
 #if THREADED_RENDER_LOOP
-    pthread_mutex_lock(&renderMutex_);
+    [renderCond_ lock];
 #endif
     try
     {
@@ -1120,7 +1166,7 @@ void ApplicationManager::exitRenderLoop()
         luaError(e.what());
     }
 #if THREADED_RENDER_LOOP
-    pthread_mutex_unlock(&renderMutex_);
+    [renderCond_ unlock];
 #endif
     
     exitRenderLoopHelper();
@@ -1129,14 +1175,16 @@ void ApplicationManager::exitRenderLoop()
 void ApplicationManager::exitRenderLoopHelper()
 {
 #if THREADED_RENDER_LOOP
-	pthread_mutex_lock(&renderMutex_);
+    [renderCond_ lock];
 	renderLoopActive_ = false;
 	renderTick_ = true;
-    pthread_cond_signal(&renderCond_);
-	pthread_mutex_unlock(&renderMutex_);
+    [renderCond_ signal];
+    [renderCond_ unlock];
     
-	pthread_join(renderThread_, NULL);
-    renderThread_ = NULL;
+    while (![renderThread_ isFinished])
+        [NSThread sleepForTimeInterval:0.01];
+    [renderThread_ release];
+    renderThread_ = nil;
 #endif
 }
 
@@ -1165,7 +1213,7 @@ void ApplicationManager::didReceiveMemoryWarning()
     gapplication_enqueueEvent(GAPPLICATION_MEMORY_LOW_EVENT, NULL, 0);
     
 #if THREADED_RENDER_LOOP
-    pthread_mutex_lock(&renderMutex_);
+    [renderCond_ lock];
 #endif
     try
     {
@@ -1176,7 +1224,7 @@ void ApplicationManager::didReceiveMemoryWarning()
         luaError(e.what());
     }
 #if THREADED_RENDER_LOOP
-    pthread_mutex_unlock(&renderMutex_);
+    [renderCond_ unlock];
 #endif
 }
 
@@ -1245,7 +1293,7 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 void ApplicationManager::willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
 {
 #if THREADED_RENDER_LOOP
-	pthread_mutex_lock(&autorotationMutex_);
+    [autorotationMutex_ lock];
 	autorotating_ = true;
 #endif
 	
@@ -1263,7 +1311,7 @@ void ApplicationManager::didRotateFromInterfaceOrientation(UIInterfaceOrientatio
 {
 #if THREADED_RENDER_LOOP
 	autorotating_ = false;
-	pthread_mutex_unlock(&autorotationMutex_);
+    [autorotationMutex_ unlock];
 #endif
 }
 
@@ -1281,7 +1329,7 @@ void ApplicationManager::foreground()
     gapplication_enqueueEvent(GAPPLICATION_FOREGROUND_EVENT, NULL, 0);
 
 #if THREADED_RENDER_LOOP
-    pthread_mutex_lock(&renderMutex_);
+    [renderCond_ lock];
 #endif
 	try
 	{
@@ -1292,7 +1340,7 @@ void ApplicationManager::foreground()
 		luaError(e.what());
 	}
 #if THREADED_RENDER_LOOP
-    pthread_mutex_unlock(&renderMutex_);
+    [renderCond_ unlock];
 #endif
 }
 
@@ -1301,7 +1349,7 @@ void ApplicationManager::background()
     gapplication_enqueueEvent(GAPPLICATION_BACKGROUND_EVENT, NULL, 0);
 
 #if THREADED_RENDER_LOOP
-    pthread_mutex_lock(&renderMutex_);
+    [renderCond_ lock];
 #endif
 	try
 	{
@@ -1312,7 +1360,7 @@ void ApplicationManager::background()
 		luaError(e.what());
 	}
 #if THREADED_RENDER_LOOP
-    pthread_mutex_unlock(&renderMutex_);
+    [renderCond_ unlock];
 #endif
 }
 
