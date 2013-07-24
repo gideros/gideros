@@ -201,10 +201,20 @@ class GiderosGLSurfaceView extends GLSurfaceView
 	public GiderosGLSurfaceView(Context context)
 	{
 		super(context);
+		setEGLConfigChooser(8, 8, 8, 0, 0, 0);
 		mRenderer = new GiderosRenderer();
 		setRenderer(mRenderer);
 		if (android.os.Build.VERSION.SDK_INT >= 11)
-			setPreserveEGLContextOnPause(true);
+		{
+			try
+			{
+				Method method = getClass().getMethod("setPreserveEGLContextOnPause", boolean.class);
+				method.invoke(this, true);
+			}
+			catch (Exception e)
+			{	
+			}
+		}
 	}
 
 	GiderosRenderer mRenderer;
@@ -224,6 +234,8 @@ class GiderosRenderer implements GLSurfaceView.Renderer
 
 	public void onDrawFrame(GL10 gl)
 	{
-		GiderosApplication.getInstance().onDrawFrame();
+		GiderosApplication app = GiderosApplication.getInstance();
+		if (app != null)
+			app.onDrawFrame();
 	}
 }
