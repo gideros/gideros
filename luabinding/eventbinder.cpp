@@ -9,6 +9,7 @@
 #include "errorevent.h"
 #include "progressevent.h"
 #include "keyboardevent.h"
+#include "completeevent.h"
 
 EventBinder::EventBinder(lua_State* L)
 {
@@ -47,7 +48,7 @@ EventBinder::EventBinder(lua_State* L)
 	lua_setfield(L, -2, "APPLICATION_WILL_TERMINATE");
 	*/
 
-	lua_pushstring(L, Event::COMPLETE.type());
+    lua_pushstring(L, CompleteEvent::COMPLETE.type());
 	lua_setfield(L, -2, "COMPLETE");
 
 	lua_pushstring(L, Event::APPLICATION_START.type());

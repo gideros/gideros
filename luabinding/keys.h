@@ -7,6 +7,7 @@ extern char key_MouseEvent;
 extern char key_TouchEvent;
 extern char key_TimerEvent;
 extern char key_KeyboardEvent;
+extern char key_CompleteEvent;
 
 extern char key_tickFunction;
 extern char key_enterFrameFunction;

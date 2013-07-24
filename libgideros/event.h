@@ -65,7 +65,6 @@ public:
 //	static Type APPLICATION_DID_FINISH_LAUNCHING;
 //	static Type APPLICATION_WILL_TERMINATE;
 	static Type MEMORY_WARNING;
-	static Type COMPLETE;
 	static Type APPLICATION_START;
 	static Type APPLICATION_EXIT;
 	static Type APPLICATION_SUSPEND;

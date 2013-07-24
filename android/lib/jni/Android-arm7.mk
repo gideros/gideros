@@ -257,7 +257,8 @@ LOCAL_SRC_FILES += \
 	../../../2dsg/gmesh.cpp \
 	../../../2dsg/ttbmfont.cpp \
 	../../../2dsg/ftlibrarysingleton.cpp \
-	../../../2dsg/grendertarget.cpp
+	../../../2dsg/grendertarget.cpp \
+	../../../2dsg/completeevent.cpp
 	
 # LOCAL_SRC_FILES += ../../../2dsg/clipper.cpp
 

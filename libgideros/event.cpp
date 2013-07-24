@@ -9,7 +9,6 @@ Event::Type Event::REMOVED_FROM_STAGE("removedFromStage");
 //Event::Type Event::APPLICATION_DID_FINISH_LAUNCHING("applicationDidFinishLaunching");
 //Event::Type Event::APPLICATION_WILL_TERMINATE("applicationWillTerminate");
 Event::Type Event::MEMORY_WARNING("memoryWarning");
-Event::Type Event::COMPLETE("complete");
 Event::Type Event::APPLICATION_START("applicationStart");
 Event::Type Event::APPLICATION_EXIT("applicationExit");
 Event::Type Event::APPLICATION_SUSPEND("applicationSuspend");

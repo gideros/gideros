@@ -12,6 +12,7 @@
 #include "errorevent.h"
 #include "progressevent.h"
 #include "keyboardevent.h"
+#include "completeevent.h"
 #include "luaapplication.h"
 
 #include <algorithm>
@@ -171,6 +172,11 @@ public:
 		type = eKeyboardEvent;
 	}
 
+    virtual void visit(CompleteEvent* v)
+    {
+        type = eCompleteEvent;
+    }
+
 	virtual void visitOther(Event* v, void* data)
 	{
 		type = eLuaEvent;
@@ -188,6 +194,7 @@ public:
 		eErrorEvent,
 		eProgressEvent,
 		eKeyboardEvent,
+        eCompleteEvent,
 		eLuaEvent,
 	};
 
@@ -635,7 +642,7 @@ public:
 
 	virtual void visit(KeyboardEvent* v)
 	{
-		StackChecker checker(L, "visit(MouseEvent* v)", 0);
+        StackChecker checker(L, "visit(KeyboardEvent* v)", 0);
 
 		Binder binder(L);
 
@@ -671,6 +678,42 @@ public:
 
 		lua_call(L, 1, 0);
 	}
+
+    virtual void visit(CompleteEvent* v)
+    {
+        StackChecker checker(L, "visit(CompleteEvent* v)", 0);
+
+        Binder binder(L);
+
+        // get closure
+        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_eventClosures);
+        lua_pushlightuserdata(L, bridge_);
+        lua_rawget(L, -2);
+        lua_remove(L, -2);		// remove env["eventClosures"]
+
+        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_CompleteEvent);
+
+        lua_getfield(L, -1, "__uniqueid");
+
+        if (lua_isnil(L, -1) || lua_tointeger(L, -1) != v->uniqueid())
+        {
+            lua_pop(L, 1);
+
+            lua_pushinteger(L, v->uniqueid());
+            lua_setfield(L, -2, "__uniqueid");
+
+            binder.setInstance(-1, v);
+
+            lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
+            lua_setfield(L, -2, "type");
+        }
+        else
+        {
+            lua_pop(L, 1);
+        }
+
+        lua_call(L, 1, 0);
+    }
 
 private:
 	bool pushEventTable(Event* v, const char* eventName)

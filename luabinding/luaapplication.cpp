@@ -302,6 +302,13 @@ static int bindAll(lua_State* L)
 	lua_remove(L, -2);
 	luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_KeyboardEvent);
 
+    lua_getglobal(L, "Event");
+    lua_getfield(L, -1, "new");
+    lua_pushlightuserdata(L, NULL);
+    lua_call(L, 1, -2);
+    lua_remove(L, -2);
+    luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_CompleteEvent);
+
 #include "property.c.in"
 #include "texturepack.c.in"
 #include "sprite.c.in"

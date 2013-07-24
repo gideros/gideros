@@ -6,6 +6,7 @@ char key_MouseEvent = ' ';
 char key_TouchEvent = ' ';
 char key_TimerEvent = ' ';
 char key_KeyboardEvent = ' ';
+char key_CompleteEvent = ' ';
 
 char key_tickFunction = ' ';
 char key_enterFrameFunction = ' ';

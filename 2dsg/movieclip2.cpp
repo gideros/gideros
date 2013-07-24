@@ -1,5 +1,6 @@
 #include "movieclip2.h"
 #include <algorithm>
+#include "completeevent.h"
 
 
 /*
@@ -1020,7 +1021,7 @@ void MovieClip::nextFrame(EnterFrameEvent* event)
 		if (iter2->second == 0)
         {
 			stop();
-            Event event(Event::COMPLETE);
+            CompleteEvent event(CompleteEvent::COMPLETE);
             dispatchEvent(&event);
         }
 		else
@@ -1032,7 +1033,7 @@ void MovieClip::nextFrame(EnterFrameEvent* event)
 	if (frame_ == maxframe_)
 	{
 		stop();
-        Event event(Event::COMPLETE);
+        CompleteEvent event(CompleteEvent::COMPLETE);
         dispatchEvent(&event);
         return;
 	}

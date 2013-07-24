@@ -11,6 +11,7 @@ class StageOrientationEvent;
 class ErrorEvent;
 class ProgressEvent;
 class KeyboardEvent;
+class CompleteEvent;
 
 class EventVisitor
 {
@@ -25,6 +26,7 @@ public:
 	virtual void visit(ErrorEvent* v) = 0;
 	virtual void visit(ProgressEvent* v) = 0;
 	virtual void visit(KeyboardEvent* v) = 0;
+    virtual void visit(CompleteEvent* v) = 0;
 
 	virtual void visitOther(Event* v, void* data) {}
 };
