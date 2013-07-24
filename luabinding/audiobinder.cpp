@@ -6,12 +6,10 @@
 #include <sys/stat.h>
 #include <stackchecker.h>
 #include <gstdio.h>
+#include <completeevent.h>
 
-static char keyWeak = ' ';
 static char keyStrong = ' ';
 static char keySound = ' ';
-
-static Event::Type COMPLETE("complete");
 
 namespace {
 
@@ -339,36 +337,13 @@ private:
             lastPosition_ = interface.ChannelGetPosition(gid);
             gid = 0;
 
-            luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
-            luaL_rawgetptr(L, -1, this);
-
-            if (lua_isnil(L, -1))
-            {
-                lua_pop(L, 2);
-                return;
-            }
+            CompleteEvent event(CompleteEvent::COMPLETE);
+            dispatchEvent(&event);
 
             luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyStrong);
-            lua_pushvalue(L, -2);
             lua_pushnil(L);
-            lua_settable(L, -3);
+            luaL_rawsetptr(L, -2, this);
             lua_pop(L, 1);
-
-            if (!hasEventListener(COMPLETE))
-            {
-                lua_pop(L, 2);
-                return;
-            }
-
-            lua_getfield(L, -1, "dispatchEvent");
-
-            lua_pushvalue(L, -2);
-
-            getOrCreateEvent("complete", "__completeEvent");
-
-            lua_call(L, 2, 0);
-
-            lua_pop(L, 2);
         }
     }
 };
@@ -410,14 +385,6 @@ AudioBinder::AudioBinder(lua_State *L)
     {
         lua_newtable(L);
         luaL_rawsetptr(L, LUA_REGISTRYINDEX, &keyStrong);
-    }
-    lua_pop(L, 1);
-
-    luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
-    if (lua_isnil(L, -1))
-    {
-        luaL_newweaktable(L);
-        luaL_rawsetptr(L, LUA_REGISTRYINDEX, &keyWeak);
     }
     lua_pop(L, 1);
 
@@ -572,15 +539,9 @@ int AudioBinder::Sound_play(lua_State *L)
     {
         binder.pushInstance("SoundChannel", soundChannel);
 
-        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
-        lua_pushvalue(L, -2);
-        luaL_rawsetptr(L, -2, soundChannel);
-        lua_pop(L, 1);
-
         luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyStrong);
         lua_pushvalue(L, -2);
-        lua_pushboolean(L, 1);
-        lua_settable(L, -3);
+        luaL_rawsetptr(L, -2, soundChannel);
         lua_pop(L, 1);
     }
 
@@ -606,9 +567,8 @@ int AudioBinder::SoundChannel_stop(lua_State *L)
     soundChannel->stop();
 
     luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyStrong);
-    lua_pushvalue(L, 1);
     lua_pushnil(L);
-    lua_settable(L, -3);
+    luaL_rawsetptr(L, -2, soundChannel);
     lua_pop(L, 1);
 
     return 0;
