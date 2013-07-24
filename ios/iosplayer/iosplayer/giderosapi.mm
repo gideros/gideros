@@ -1147,6 +1147,7 @@ void ApplicationManager::resume()
     renderLoopActive_ = true;
 	renderTick_ = false;
     renderThread_ = [[CustomThread alloc] initWithStartRoutine:renderLoop_s withArg:this];
+    [renderThread_ start];
 #endif
 }
 
