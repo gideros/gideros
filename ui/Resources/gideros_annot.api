@@ -18,7 +18,8 @@ return
 then
 true
 until
-whileassert(v [, message]) error if v nil or false, otherwise returns v
+while
+assert(v [, message]) error if v nil or false, otherwise returns v
 collectgarbage(opt [, arg]) opts: stop, restart, collect, count, step, setpause, setstepmul
 dofile(filename) executes as Lua chunk, default stdin, returns value
 error(message [, level]) terminates protected func, never returns, level 1(default-, 2=parent
@@ -56,6 +57,7 @@ hide() AlertDialog
 show() AlertDialog
 Application
 application
+canOpenUrl(url) Application - Tests if it is possible to open provided url
 exit() Application - terminates the application
 getApiVersion() Application - returns the API version
 getBackgroundColor() Application - returns the background color in hexadecimal format
@@ -77,7 +79,7 @@ getOrientation() Application - returns the orientation of the application
 getScaleMode() Application - returns the automatic scale mode of the application
 getScreenDensity() Application - returns the screen density in pixels per inch
 getTextureMemoryUsage() Application - returns the texture memory usage in Kbytes
-openUrl() Application - opens the given URL in the appropriate application
+openUrl(url) Application - opens the given URL in the appropriate application
 setBackgroundColor(color) Application - sets the background color in hexadecimal format
 setFps(fps) Application - sets the frame rate of the application
 setKeepAwake(keepAwake) Application - enables/disables screen dimming and device sleeping
@@ -325,21 +327,21 @@ Core
 core
 Core.class([base]) Core - Creates and returns new Gideros class
 coroutine
-create(f) coroutine - creates coroutine from function f, returns coroutine
-resume(co, val1, ...) coroutine - continues execution of co, returns bool status plus any values
-status(co) coroutine - returns co status: &quot;running&quot;, &quot;suspended&quot; or &quot;dead&quot;
-wrap(f) coroutine - creates coroutine with body f, returns function that resumes co
-yield(val1, ...) coroutine - suspend execution of calling coroutine
+coroutine.create(f) coroutine - creates coroutine from function f, returns coroutine
+coroutine.resume(co, val1, ...) coroutine - continues execution of co, returns bool status plus any values
+coroutine.status(co) coroutine - returns co status: &quot;running&quot;, &quot;suspended&quot; or &quot;dead&quot;
+coroutine.wrap(f) coroutine - creates coroutine with body f, returns function that resumes co
+coroutine.yield(val1, ...) coroutine - suspend execution of calling coroutine
 debug
-debug() debug - enters interactive debug mode, line with only &quot;cont&quot; terminates
-gethook() debug - returns current hook function, hook mask, hook count
-getinfo(function [, what]) debug - returns table with information about a function
-getlocal(level, local) debug - returns name and value of local variable with index local at stack level
-getupvalue(func, up) debug - returns name and value of upvalue with index up of function func
-sethook(hook, mask [, count]) debug - sets given function as a hook, mask=&quot;[crl]&quot;
-setlocal(level, local, value) debug - sets local variable with index local at stack level with value
-setupvalue(func, up, value) debug - sets upvalue with index up of function func with value
-traceback(message) debug - returns a string with a traceback of the call stack
+debug.debug() debug - enters interactive debug mode, line with only &quot;cont&quot; terminates
+debug.gethook() debug - returns current hook function, hook mask, hook count
+debug.getinfo(function [, what]) debug - returns table with information about a function
+debug.getlocal(level, local) debug - returns name and value of local variable with index local at stack level
+debug.getupvalue(func, up) debug - returns name and value of upvalue with index up of function func
+debug.sethook(hook, mask [, count]) debug - sets given function as a hook, mask=&quot;[crl]&quot;
+debug.setlocal(level, local, value) debug - sets local variable with index local at stack level with value
+debug.setupvalue(func, up, value) debug - sets upvalue with index up of function func with value
+debug.traceback(message) debug - returns a string with a traceback of the call stack
 Event
 Event.new(type) Event - creates a new Event object
 getTarget() Event - returns the element on which the event listener was registered
@@ -423,12 +425,12 @@ setAppId(appId) Facebook
 setExpirationDate(expirationDate) Facebook
 shouldExtendAccessToken() Facebook
 file
-close() file - closes file
-flush() file - saves any written data to file
-lines() file - returns iterator function to return lines, nil ends
-read(format1, ...) file - reads file according to given formats, returns read values or nil
-seek(whence [, offset]) file - sets file pos, whence=&quot;set&quot;|&quot;cur&quot;|&quot;end&quot;, defaults &quot;curr&quot;,0, returns file pos
-write(value1, ...) file - writes strings or numbers to file
+file.close() file - closes file
+file.flush() file - saves any written data to file
+file.lines() file - returns iterator function to return lines, nil ends
+file.read(format1, ...) file - reads file according to given formats, returns read values or nil
+file.seek(whence [, offset]) file - sets file pos, whence=&quot;set&quot;|&quot;cur&quot;|&quot;end&quot;, defaults &quot;curr&quot;,0, returns file pos
+file.write(value1, ...) file - writes strings or numbers to file
 flurry
 flurry.endTimedEvent(eventName, parameters) flurry - ends Flurry timed event
 flurry.isAvailable() flurry - returns true if Flurry is available
@@ -496,16 +498,16 @@ iad.Banner.LANDSCAPE - value "landscape"
 iad.Banner.PORTRAIT - value "portrait"
 iad.Banner.TOP - value "top"
 io
-close(file) io - closes file, or the default output file
-flush() io - flushes the default output file
-input(file) io - opens file in text mode, sets as default input file, or returns current default input file
-lines(filename) io - open file in read mode, returns iterator function to return lines, nil ends
-open(filename [, mode]) io - opens file in specified mode &quot;[rawb ]&quot;, returns handle or nil
-output(file) io - opens file in text mode, sets as default output file, or returns current default output file
-read(format1, ...) io - reads file according to given formats, returns read values or nil
-tmpfile() io - returns a handle for a temporary file, opened in update mode
-type(obj) io - returns &quot;file&quot; if obj is an open file handle, &quot;close file&quot; if closed, or nil if not a file handle
-write(value1, ...) io - writes strings or numbers to file
+io.close(file) io - closes file, or the default output file
+io.flush() io - flushes the default output file
+io.input(file) io - opens file in text mode, sets as default input file, or returns current default input file
+io.lines(filename) io - open file in read mode, returns iterator function to return lines, nil ends
+io.open(filename [, mode]) io - opens file in specified mode &quot;[rawb ]&quot;, returns handle or nil
+io.output(file) io - opens file in text mode, sets as default output file, or returns current default output file
+io.read(format1, ...) io - reads file according to given formats, returns read values or nil
+io.tmpfile() io - returns a handle for a temporary file, opened in update mode
+io.type(obj) io - returns &quot;file&quot; if obj is an open file handle, &quot;close file&quot; if closed, or nil if not a file handle
+io.write(value1, ...) io - writes strings or numbers to file
 KeyCode
 keycode
 KeyCode.A - value 65
@@ -558,30 +560,30 @@ KeyCode.Z - value 90
 lfs
 lpeg
 math
-abs(v) math - returns absolute value of v
-acos(v) math - returns arc cosine value of v in radians
-asin(v) math - returns arc sine value of v in radians
-atan(v) math - returns arc tangent value of v in radians
-atan2(v1, v2) math - returns arc tangent value of v1/v2 in radians
-ceil(v) math - returns smallest integer &gt;= v
-cos(rad) math - returns cosine value of angle rad
-deg(rad) math - returns angle in degrees of radians rad
-exp(v) math - returns e^v
-floor(v) math - returns largest integer &lt;= v
-fmod(v1, v2) math - returns remainder of v1/v2 which is v1 - iV2 for some integer i
-frexp(v) math - returns mantissa [0.5,1- and exponent values of v
-ldexp(v1, v2) math - returns v1*2^v2
-log(v) math - returns natural logarithm of v
-log10(v) math - returns logarithm 10 of v
-max(v1, ...) math - returns maximum in a list of one or more values
-min(v1, ...) math - returns minimum in a list of one or more values
-pow(v1, v2) math - returns v1 raised to the power of v2
-rad(deg) math - returns angle in radians of degrees deg
-random(n [, u]) math - returns random real [0,1-, integer [1,n] or real [1,u](with n=1-
-randomseed(seed) math - sets seed for pseudo-random number generator
-sin(rad) math - returns sine value of angle rad
-sqrt(v) math - returns square root of v
-tan(rad) math - returns tangent value of angle rad
+math.abs(v) math - returns absolute value of v
+math.acos(v) math - returns arc cosine value of v in radians
+math.asin(v) math - returns arc sine value of v in radians
+math.atan(v) math - returns arc tangent value of v in radians
+math.atan2(v1, v2) math - returns arc tangent value of v1/v2 in radians
+math.ceil(v) math - returns smallest integer &gt;= v
+math.cos(rad) math - returns cosine value of angle rad
+math.deg(rad) math - returns angle in degrees of radians rad
+math.exp(v) math - returns e^v
+math.floor(v) math - returns largest integer &lt;= v
+math.fmod(v1, v2) math - returns remainder of v1/v2 which is v1 - iV2 for some integer i
+math.frexp(v) math - returns mantissa [0.5,1- and exponent values of v
+math.ldexp(v1, v2) math - returns v1*2^v2
+math.log(v) math - returns natural logarithm of v
+math.log10(v) math - returns logarithm 10 of v
+math.max(v1, ...) math - returns maximum in a list of one or more values
+math.min(v1, ...) math - returns minimum in a list of one or more values
+math.pow(v1, v2) math - returns v1 raised to the power of v2
+math.rad(deg) math - returns angle in radians of degrees deg
+math.random(n [, u]) math - returns random real [0,1-, integer [1,n] or real [1,u](with n=1-
+math.randomseed(seed) math - sets seed for pseudo-random number generator
+math.sin(rad) math - returns sine value of angle rad
+math.sqrt(v) math - returns square root of v
+math.tan(rad) math - returns tangent value of angle rad
 huge - value "1.#INF"
 pi - value "3.1415926535898"
 Matrix
@@ -647,20 +649,20 @@ setGotoAction(frame, destframe) MovieClip - sets a &quot;go to&quot; action to t
 setStopAction(frame) MovieClip - sets a &quot;stop&quot; action to the specified frame
 stop() MovieClip - stops playing the movie clip
 os
-clock() os - returns CPU time used by program in seconds
-date(format [, time]) os - returns a string or table containing date and time, &quot;*t&quot; returns a table
-difftime(t2, t1) os - returns number of seconds from time t1 to time t2
-execute(command) os - executes command using C function system, returns status code
-exit(code) os - terminates host program with optional code, default is success code
-getenv(varname) os - returns value of environment variable varname. nil if not defined
-remove(filename) os - deletes file with given name, nil if fails
-rename(oldname, newname) os - renames file oldname to newname, nil if fails
-setlocale(locale [, category]) os - set current locale of program, returns name of new locate or nil
-time(table) os - returns current time(usually seconds- or time as represented by table
-timer() os - returns precise time in seconds relative to some arbitrary point
-tmpname() os - returns a string with a filename for a temporary file(dangerous! tmpfile is better-
+os.clock() os - returns CPU time used by program in seconds
+os.date(format [, time]) os - returns a string or table containing date and time, &quot;*t&quot; returns a table
+os.difftime(t2, t1) os - returns number of seconds from time t1 to time t2
+os.execute(command) os - executes command using C function system, returns status code
+os.exit(code) os - terminates host program with optional code, default is success code
+os.getenv(varname) os - returns value of environment variable varname. nil if not defined
+os.remove(filename) os - deletes file with given name, nil if fails
+os.rename(oldname, newname) os - renames file oldname to newname, nil if fails
+os.setlocale(locale [, category]) os - set current locale of program, returns name of new locate or nil
+os.time(table) os - returns current time(usually seconds- or time as represented by table
+os.timer() os - returns precise time in seconds relative to some arbitrary point
+os.tmpname() os - returns a string with a filename for a temporary file(dangerous! tmpfile is better-
 package
-loadlib(libname, funcname) package
+package.loadlib(libname, funcname) package
 RenderTarget > TextureBase
 RenderTarget.new(width, height, filtering) RenderTarget - Creates new RenderTarget object
 clear(color, alpha) RenderTarget - Clears rendered texture
@@ -761,25 +763,25 @@ StoreKit.FAILED - value "failed"
 StoreKit.PURCHASED - value "purchased"
 StoreKit.RESTORED - value "restored"
 string
-byte(s [, i]) string - returns numerical code, nil if index out of range, default i=1
-char(i1, i2, ...) string - returns a string built from 0 or more integers
-dump(function) string - returns binary representation of function, used with loadstring
-find(s, pattern [, init, plain]) string - matches pattern in s, returns start,end indices, else nil
-format(formatstring, e1, e2, ...) string - returns formatted string, printf-style
-gmatch(s, pat) string - returns iterator function that returns next captures from pattern pat on s
-gsub(s, pat, repl [, n]) string - returns copy of s with pat replaced by repl, and substitutions made
-len(s) string - returns string length
-lower(s) string - returns string with letters in lower case
-rep(s, n) string - returns string with n copies of string s
-sub(s, i [, j]) string - returns substring from index i to j of s, default j=-1(string length-
-upper(s) string - returns string with letters in upper case
+string.byte(s [, i]) string - returns numerical code, nil if index out of range, default i=1
+string.char(i1, i2, ...) string - returns a string built from 0 or more integers
+string.dump(function) string - returns binary representation of function, used with loadstring
+string.find(s, pattern [, init, plain]) string - matches pattern in s, returns start,end indices, else nil
+string.format(formatstring, e1, e2, ...) string - returns formatted string, printf-style
+string.gmatch(s, pat) string - returns iterator function that returns next captures from pattern pat on s
+string.gsub(s, pat, repl [, n]) string - returns copy of s with pat replaced by repl, and substitutions made
+string.len(s) string - returns string length
+string.lower(s) string - returns string with letters in lower case
+string.rep(s, n) string - returns string with n copies of string s
+string.sub(s, i [, j]) string - returns substring from index i to j of s, default j=-1(string length-
+string.upper(s) string - returns string with letters in upper case
 table
-concat(table [, sep, i, j]) table - returns concatenated table elements i to j separated by sep
-getn(table) table - returns size of table, or n field, or table.setn value, or 1 less first index with nil value
+table.concat(table [, sep, i, j]) table - returns concatenated table elements i to j separated by sep
+table.getn(table) table - returns size of table, or n field, or table.setn value, or 1 less first index with nil value
  [Deprecated in Lua 5.1, use # operator]
-insert(table, pos [, value]) table - insert value at location pos in table, default pos=n 1
-remove(table [, pos]) table - removes element at pos from table, default pos=n
-sort(table [, comp]) table - sorts in-place elements 1 to n, comp(v1,v2- true if v1&lt;v2, default &lt;
+table.insert(table, pos [, value]) table - insert value at location pos in table, default pos=n 1
+table.remove(table [, pos]) table - removes element at pos from table, default pos=n
+table.sort(table [, comp]) table - sorts in-place elements 1 to n, comp(v1,v2- true if v1&lt;v2, default &lt;
 TextField > Sprite
 TextField.new(font, text) TextField - creates a new TextField object with the specified font and text
 getLetterSpacing() TextField - returns the letter-spacing property which is used to increase or decrease the space between characters in a text
