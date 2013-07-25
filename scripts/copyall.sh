@@ -102,8 +102,8 @@ cp ../plugins/Microphone/source/libmicrophone.dylib ~/Desktop/release/Plugins/mi
 #rm -rf GiderosiPadPlayer
 #cd -
 
-mkdir ~/Desktop/release/Gideros\ 2013.06.1
-mkdir ~/Desktop/release/Gideros\ 2013.06.1/Gideros\ Studio
-mv ~/Desktop/release/* ~/Desktop/release/Gideros\ 2013.06.1/Gideros\ Studio
-ln -s /Applications/ ~/Desktop/release/Gideros\ 2013.06.1/Applications
+mkdir ~/Desktop/release/Gideros\ 2013.06.2
+mkdir ~/Desktop/release/Gideros\ 2013.06.2/Gideros\ Studio
+mv ~/Desktop/release/* ~/Desktop/release/Gideros\ 2013.06.2/Gideros\ Studio
+ln -s /Applications/ ~/Desktop/release/Gideros\ 2013.06.2/Applications
 
