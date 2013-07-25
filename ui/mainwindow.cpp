@@ -2241,7 +2241,7 @@ void MainWindow::exportProject()
 			};
 
             if (dialog.assetsOnly())
-                copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a", QStringList());
+                copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar", QStringList());
             else
                 copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "*", QStringList());
 		}
