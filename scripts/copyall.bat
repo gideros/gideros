@@ -36,13 +36,37 @@ cp ..\texturepacker\release\GiderosTexturePacker.exe ..\..\release
 cp ..\fontcreator\release\GiderosFontCreator.exe ..\..\release
 cp ..\licensemanager\release\GiderosLicenseManager.exe ..\..\release
 
-svn export ..\ui\Resources ..\..\release\Resources
-svn export ..\ui\Tools ..\..\release\Tools
+rem svn export ..\ui\Resources ..\..\release\Resources
+rm -rf ..\..\temp
+hg archive -I ..\ui\Resources ..\..\temp
+mv ..\..\temp\ui\Resources ..\..\release
+
+rem svn export ..\ui\Tools ..\..\release\Tools
+rm -rf ..\..\temp
+hg archive -I ..\ui\Tools ..\..\temp
+mv ..\..\temp\ui\Tools ..\..\release
+
 mkdir ..\..\release\Templates
-svn export ..\ui\Templates\Eclipse ..\..\release\Templates\Eclipse
-svn export ..\ui\Templates\Xcode4 ..\..\release\Templates\Xcode4
-svn export ..\samplecode ..\..\release\Examples
-svn export ..\ios\GiderosiOSPlayer ..\..\release\GiderosiOSPlayer
+
+rem svn export ..\ui\Templates\Eclipse ..\..\release\Templates\Eclipse
+rm -rf ..\..\temp
+hg archive -I ..\ui\Templates\Eclipse ..\..\temp
+mv ..\..\temp\ui\Templates\Eclipse ..\..\release\Templates
+
+rem svn export ..\ui\Templates\Xcode4 ..\..\release\Templates\Xcode4
+rm -rf ..\..\temp
+hg archive -I ..\ui\Templates\Xcode4 ..\..\temp
+mv ..\..\temp\ui\Templates\Xcode4 ..\..\release\Templates
+
+rem svn export ..\samplecode ..\..\release\Examples
+rm -rf ..\..\temp
+hg archive -I ..\samplecode ..\..\temp
+mv ..\..\temp\samplecode ..\..\release\Examples
+
+rem svn export ..\ios\GiderosiOSPlayer ..\..\release\GiderosiOSPlayer
+rm -rf ..\..\temp
+hg archive -I ..\ios\GiderosiOSPlayer ..\..\temp
+mv ..\..\temp\ios\GiderosiOSPlayer ..\..\release
 
 cp ..\gdrdeamon\release\gdrdeamon.exe ..\..\release\Tools
 cp ..\gdrbridge\release\gdrbridge.exe ..\..\release\Tools
@@ -85,10 +109,11 @@ cp ..\plugins\LuaSQLite3\source\libs\armeabi\liblsqlite3.so "..\..\release\Templ
 cp ..\plugins\LuaSQLite3\source\libs\armeabi-v7a\liblsqlite3.so "..\..\release\Templates\Eclipse\Android Template\libs\armeabi-v7a"
 
 rm -rf ..\..\temp
-mkdir ..\..\temp
-svn export "..\plugins\Google Billing\source\Android\com" ..\..\temp\com
-cp -R ..\..\temp\com "..\..\release\Templates\Eclipse\Android Template\src"
-cp -R ..\..\temp\com ..\android\GiderosAndroidPlayer\src
+rem mkdir ..\..\temp
+rem svn export "..\plugins\Google Billing\source\Android\com" ..\..\temp\com
+hg archive -I "..\plugins\Google Billing\source\Android\com" ..\..\temp
+cp -R "..\..\temp\plugins\Google Billing\source\Android\com" "..\..\release\Templates\Eclipse\Android Template\src"
+cp -R "..\..\temp\plugins\Google Billing\source\Android\com" ..\android\GiderosAndroidPlayer\src
 
 rm -rf ..\android\GiderosAndroidPlayer\libs
 cp -R "..\..\release\Templates\Eclipse\Android Template\libs" ..\android\GiderosAndroidPlayer
@@ -104,21 +129,32 @@ zip -r GiderosiOSPlayer.zip GiderosiOSPlayer
 rm -rf GiderosiOSPlayer
 cd ..\gideros\scripts
 
-svn export ..\doc ..\..\release\Documentation
+rem svn export ..\doc ..\..\release\Documentation
+rm -rf ..\..\temp
+hg archive -I  ..\doc ..\..\temp
+mv ..\..\temp\doc ..\..\release\Documentation
 
 cp ..\licenses.txt ..\..\release\licenses.txt
 
 cp -R ..\Sdk ..\..\release
 
-svn export ..\plugins "..\..\release\All Plugins"
+rem svn export ..\plugins "..\..\release\All Plugins"
+rm -rf ..\..\temp
+hg archive -I ..\plugins ..\..\temp
+mv ..\..\temp\plugins "..\..\release\All Plugins"
+mkdir "..\..\release\All Plugins\BitOp\bin"
 mkdir "..\..\release\All Plugins\BitOp\bin\Windows"
 cp ..\plugins\BitOp\source\release\bitop.dll "..\..\release\All Plugins\BitOp\bin\Windows"
+mkdir "..\..\release\All Plugins\LuaSQLite3\bin"
 mkdir "..\..\release\All Plugins\LuaSQLite3\bin\Windows"
 cp "..\plugins\LuaSQLite3\source\release\lsqlite3.dll" "..\..\release\All Plugins\LuaSQLite3\bin\Windows"
+mkdir "..\..\release\All Plugins\LuaSocket\bin"
 mkdir "..\..\release\All Plugins\LuaSocket\bin\Windows"
 cp "..\plugins\LuaSocket\source\release\luasocket.dll" "..\..\release\All Plugins\LuaSocket\bin\Windows"
+mkdir "..\..\release\All Plugins\LuaFileSystem\bin"
 mkdir "..\..\release\All Plugins\LuaFileSystem\bin\Windows"
 cp "..\plugins\LuaFileSystem\source\release\lfs.dll" "..\..\release\All Plugins\LuaFileSystem\bin\Windows"
+mkdir "..\..\release\All Plugins\LPeg\bin"
 mkdir "..\..\release\All Plugins\LPeg\bin\Windows"
 cp "..\plugins\LPeg\source\release\lpeg.dll" "..\..\release\All Plugins\LPeg\bin\Windows"
 mkdir "..\..\release\All Plugins\Microphone\bin"
