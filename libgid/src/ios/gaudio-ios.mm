@@ -13,6 +13,7 @@
 #endif
 
 #import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
 @interface GGAVAudioSessionDelegate : NSObject<AVAudioSessionDelegate>
 {
@@ -39,6 +40,11 @@
 }
 
 - (void)endInterruption
+{
+    audioManager_->endInterruption();
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     audioManager_->endInterruption();
 }
@@ -72,7 +78,12 @@ void GGAudioManager::systemInit()
     systemData_->delegate = [[GGAVAudioSessionDelegate alloc] init];
     systemData_->delegate.audioManager = this;
     [[AVAudioSession sharedInstance] setDelegate:systemData_->delegate];
-
+    [[NSNotificationCenter defaultCenter]
+     addObserver:systemData_->delegate
+     selector:@selector(applicationDidBecomeActive:)
+     name:UIApplicationDidBecomeActiveNotification
+     object:nil];
+    
     systemData_->device = alcOpenDevice(NULL);
 
     systemData_->context = alcCreateContext(systemData_->device, NULL);
@@ -87,6 +98,7 @@ void GGAudioManager::systemCleanup()
     alcCloseDevice(systemData_->device);
 
     [[AVAudioSession sharedInstance] setDelegate:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:systemData_->delegate];
     [systemData_->delegate release];
 
     [[AVAudioSession sharedInstance] setActive:NO error:nil];
@@ -119,6 +131,7 @@ void GGAudioManager::endInterruption()
     if (interrupted_ == false)
         return;
     
+    [NSThread sleepForTimeInterval:0.1];
     alcMakeContextCurrent(systemData_->context);
 
     interrupted_ = false;
