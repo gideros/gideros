@@ -30,7 +30,24 @@ cp /Volumes/release/GiderosAndroidPlayer.apk ~/Desktop/release/
 cp -R ../Sdk ~/Desktop/release
 cp -R /Volumes/release/Sdk/lib/android ~/Desktop/release/Sdk/lib
 
-svn export ../plugins ~/Desktop/release/All\ Plugins
+#svn export ../plugins ~/Desktop/release/All\ Plugins
+rm -rf ~/Desktop/temp
+hg archive -I ../plugins ~/Desktop/temp
+mv ~/Desktop/temp/plugins ~/Desktop/release/All\ Plugins
+
+mkdir ~/Desktop/release/All\ Plugins/BitOp/bin
+mkdir ~/Desktop/release/All\ Plugins/Facebook/bin
+mkdir ~/Desktop/release/All\ Plugins/Flurry/bin
+mkdir ~/Desktop/release/All\ Plugins/Game\ Kit/bin
+mkdir ~/Desktop/release/All\ Plugins/Google\ Billing/bin
+mkdir ~/Desktop/release/All\ Plugins/iAd/bin
+mkdir ~/Desktop/release/All\ Plugins/LPeg/bin
+mkdir ~/Desktop/release/All\ Plugins/LuaFileSystem/bin
+mkdir ~/Desktop/release/All\ Plugins/LuaSocket/bin
+mkdir ~/Desktop/release/All\ Plugins/LuaSQLite3/bin
+mkdir ~/Desktop/release/All\ Plugins/Microphone/bin
+mkdir ~/Desktop/release/All\ Plugins/Store\ Kit/bin
+
 mkdir ~/Desktop/release/All\ Plugins/BitOp/bin/Mac\ OS
 cp ../plugins/BitOp/source/libbitop.dylib ~/Desktop/release/All\ Plugins/BitOp/bin/Mac\ OS/bitop.dylib
 mkdir ~/Desktop/release/All\ Plugins/LuaSQLite3/bin/Mac\ OS
@@ -41,7 +58,6 @@ mkdir ~/Desktop/release/All\ Plugins/LPeg/bin/Mac\ OS
 cp ../plugins/LPeg/source/liblpeg.dylib ~/Desktop/release/All\ Plugins/LPeg/bin/Mac\ OS/lpeg.dylib
 mkdir ~/Desktop/release/All\ Plugins/LuaFileSystem/bin/Mac\ OS
 cp ../plugins/LuaFileSystem/source/liblfs.dylib ~/Desktop/release/All\ Plugins/LuaFileSystem/bin/Mac\ OS/lfs.dylib
-mkdir ~/Desktop/release/All\ Plugins/Microphone/bin
 mkdir ~/Desktop/release/All\ Plugins/Microphone/bin/Mac\ OS
 cp ../plugins/Microphone/source/libmicrophone.dylib ~/Desktop/release/All\ Plugins/Microphone/bin/Mac\ OS/microphone.dylib
 
