@@ -450,6 +450,12 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    projectFileName = QDir::current().absoluteFilePath(projectFileName);
+
+    QDir dir = QCoreApplication::applicationDirPath();
+    dir.cdUp();
+    QDir::setCurrent(dir.absolutePath());
+
     bool licensed = (licenseType == 2 || licenseType == 3);
 
     if (licensed == false)
