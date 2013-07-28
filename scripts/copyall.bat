@@ -58,6 +58,11 @@ rm -rf ..\..\temp
 hg archive -I ..\ui\Templates\Xcode4 ..\..\temp
 mv ..\..\temp\ui\Templates\Xcode4 ..\..\release\Templates
 
+mkdir "..\..\release\Templates\Eclipse\Android Template\assets"
+mkdir "..\..\release\Templates\Eclipse\Android Template\gen"
+mkdir "..\..\release\Templates\Eclipse\Android Template\res\layout"
+mkdir "..\..\release\Templates\Xcode4\iOS Template\iOS Template\assets"
+
 rem svn export ..\samplecode ..\..\release\Examples
 rm -rf ..\..\temp
 hg archive -I ..\samplecode ..\..\temp
@@ -82,6 +87,7 @@ copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\libgideros.a" "..\..\rele
 copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\giderosapi.h" "..\..\release\GiderosiOSPlayer\GiderosiOSPlayer"
 copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\libgideros.a" "..\..\release\GiderosiOSPlayer\GiderosiOSPlayer"
 
+mkdir ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\Sdk\include\*.h                                                        ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy "..\plugins\Game Kit\source\iOS\gamekit.mm"                               ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy "..\plugins\Store Kit\source\iOS\storekit.mm"                             ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
@@ -93,6 +99,7 @@ copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\Plugins\libluasocket.a" .
 copy ..\plugins\LuaFileSystem\source\lfs.h                                     ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\plugins\LuaFileSystem\source\lfs.c                                     ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\plugins\LuaFileSystem\source\lfs_stub.cpp                              ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
+mkdir "..\..\release\Templates\Xcode4\iOS Template\iOS Template\Plugins"
 copy ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins\* "..\..\release\Templates\Xcode4\iOS Template\iOS Template\Plugins"
 
 cp ..\android\GiderosAndroidPlayer\gideros.jar "..\..\release\Templates\Eclipse\Android Template"
@@ -143,21 +150,27 @@ rm -rf ..\..\temp
 hg archive -I ..\plugins ..\..\temp
 mv ..\..\temp\plugins "..\..\release\All Plugins"
 mkdir "..\..\release\All Plugins\BitOp\bin"
+mkdir "..\..\release\All Plugins\Facebook\bin"
+mkdir "..\..\release\All Plugins\Flurry\bin"
+mkdir "..\..\release\All Plugins\Game Kit\bin"
+mkdir "..\..\release\All Plugins\Google Billing\bin"
+mkdir "..\..\release\All Plugins\iAd\bin"
+mkdir "..\..\release\All Plugins\LPeg\bin"
+mkdir "..\..\release\All Plugins\LuaFileSystem\bin"
+mkdir "..\..\release\All Plugins\LuaSocket\bin"
+mkdir "..\..\release\All Plugins\LuaSQLite3\bin"
+mkdir "..\..\release\All Plugins\Microphone\bin"
+mkdir "..\..\release\All Plugins\Store Kit\bin"
 mkdir "..\..\release\All Plugins\BitOp\bin\Windows"
 cp ..\plugins\BitOp\source\release\bitop.dll "..\..\release\All Plugins\BitOp\bin\Windows"
-mkdir "..\..\release\All Plugins\LuaSQLite3\bin"
 mkdir "..\..\release\All Plugins\LuaSQLite3\bin\Windows"
 cp "..\plugins\LuaSQLite3\source\release\lsqlite3.dll" "..\..\release\All Plugins\LuaSQLite3\bin\Windows"
-mkdir "..\..\release\All Plugins\LuaSocket\bin"
 mkdir "..\..\release\All Plugins\LuaSocket\bin\Windows"
 cp "..\plugins\LuaSocket\source\release\luasocket.dll" "..\..\release\All Plugins\LuaSocket\bin\Windows"
-mkdir "..\..\release\All Plugins\LuaFileSystem\bin"
 mkdir "..\..\release\All Plugins\LuaFileSystem\bin\Windows"
 cp "..\plugins\LuaFileSystem\source\release\lfs.dll" "..\..\release\All Plugins\LuaFileSystem\bin\Windows"
-mkdir "..\..\release\All Plugins\LPeg\bin"
 mkdir "..\..\release\All Plugins\LPeg\bin\Windows"
 cp "..\plugins\LPeg\source\release\lpeg.dll" "..\..\release\All Plugins\LPeg\bin\Windows"
-mkdir "..\..\release\All Plugins\Microphone\bin"
 mkdir "..\..\release\All Plugins\Microphone\bin\Windows"
 cp "..\plugins\Microphone\source\release\microphone.dll" "..\..\release\All Plugins\Microphone\bin\Windows"
 
@@ -204,3 +217,12 @@ cp ..\plugins\LuaSQLite3\source\release\lsqlite3.dll ..\..\release\Plugins
 cp ..\plugins\LuaSocket\source\release\luasocket.dll ..\..\release\Plugins
 cp ..\plugins\LuaFileSystem\source\release\lfs.dll ..\..\release\Plugins
 cp ..\plugins\Microphone\source\release\microphone.dll ..\..\release\Plugins
+
+
+cd ..\..
+rm -rf release2
+mkdir release2
+cp -R release\* release2
+rm -rf release\*
+cp -R release2\* release
+rm -rf release2
