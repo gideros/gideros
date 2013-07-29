@@ -620,6 +620,7 @@ int main(int argc, char *argv[])
     DependencyGraph dependencyGraph;
     if (readProjectFile(projectFileName, properties, fileQueue, folderList, dependencyGraph) == false)
     {
+		fprintf(stderr, "Cannot parse project file\n");
         return 1;
     }
 
