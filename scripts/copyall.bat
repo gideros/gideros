@@ -226,3 +226,4 @@ cp -R release\* release2
 rm -rf release\*
 cp -R release2\* release
 rm -rf release2
+cd gideros\scripts
