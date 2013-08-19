@@ -1176,6 +1176,8 @@ void ApplicationManager::exitRenderLoop()
 void ApplicationManager::exitRenderLoopHelper()
 {
 #if THREADED_RENDER_LOOP
+    if (renderThread_ == nil)
+        return;
     [renderCond_ lock];
 	renderLoopActive_ = false;
 	renderTick_ = true;
