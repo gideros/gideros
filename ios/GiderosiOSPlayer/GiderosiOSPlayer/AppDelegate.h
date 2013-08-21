@@ -12,7 +12,6 @@
 {
     UIWindow *window;
     ViewController *viewController;
-    NSString *currentAudioSessionCategory;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;

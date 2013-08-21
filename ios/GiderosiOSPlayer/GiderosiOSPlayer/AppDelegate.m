@@ -27,8 +27,7 @@
 
 	[self.viewController view];
 
-    currentAudioSessionCategory = AVAudioSessionCategorySoloAmbient;
-    [[AVAudioSession sharedInstance] setCategory:currentAudioSessionCategory error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategorySoloAmbient error:nil];
 
 	gdr_initialize(self.viewController.glView, bounds.size.width, bounds.size.height, true);
 
@@ -66,16 +65,10 @@
 {
 	gdr_suspend();
     [self.viewController stopAnimation];
-
-    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-    currentAudioSessionCategory = audioSession.category;
-    [audioSession setCategory:AVAudioSessionCategoryAmbient error:nil];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    [[AVAudioSession sharedInstance] setCategory:currentAudioSessionCategory error:nil];
-
 	gdr_resume();
     [self.viewController startAnimation];
 }
