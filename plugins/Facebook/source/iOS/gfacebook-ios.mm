@@ -1,4 +1,4 @@
-#include <gfacebook.h>
+#include "gfacebook.h"
 #include "Facebook.h"
 #include <gapplication.h>
 
@@ -337,22 +337,30 @@ private:
 // FBDialogDelegate
 - (void)dialogDidComplete:(FBDialog *)dialog
 {
-    if (facebook_)
-        facebook_->dialogDidComplete();
 }
 
 - (void)dialogCompleteWithUrl:(NSURL *)url
 {
+    if (url.query)
+    {
+        if (facebook_)
+            facebook_->dialogDidComplete();
+    }
+    else
+    {
+        if (facebook_)
+            facebook_->dialogDidNotComplete();        
+    }
 }
 
 - (void)dialogDidNotCompleteWithUrl:(NSURL *)url
 {
+    if (facebook_)
+        facebook_->dialogDidNotComplete();
 }
 
 - (void)dialogDidNotComplete:(FBDialog *)dialog
 {
-    if (facebook_)
-        facebook_->dialogDidNotComplete();
 }
 
 - (void)dialog:(FBDialog*)dialog didFailWithError:(NSError *)error
