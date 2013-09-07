@@ -46,10 +46,12 @@ static const char *REQUEST_ERROR = "requestError";
 
 static char keyWeak = ' ';
 
+static lua_State *L = NULL;
+
 class GFacebook : public GEventDispatcherProxy
 {
 public:
-    GFacebook(lua_State *L) : L(L)
+    GFacebook()
     {
         gfacebook_init();
         gfacebook_addCallback(callback_s, this);
@@ -63,7 +65,7 @@ public:
         gfacebook_cleanup();
     }
 
-    void setAppId(const char *appId)
+    void setAppId(lua_State *L, const char *appId)
     {
         if (initialized_)
             luaL_error(L, "Facebook App ID is already set.");
@@ -72,92 +74,92 @@ public:
         initialized_ = true;
     }
 
-    void checkInit()
+    void checkInit(lua_State *L)
     {
         if (!initialized_)
             luaL_error(L, "Facebook App ID is not set.");
     }
 
-    void authorize(const char * const *permissions)
+    void authorize(lua_State *L, const char * const *permissions)
     {
-        checkInit();
+        checkInit(L);
 
         gfacebook_authorize(permissions);
     }
 
-    void logout()
+    void logout(lua_State *L)
     {
-        checkInit();
+        checkInit(L);
 
         gfacebook_logout();
     }
 
-    int isSessionValid()
+    int isSessionValid(lua_State *L)
     {
-        checkInit();
+        checkInit(L);
 
         return gfacebook_isSessionValid();
     }
     
-    void dialog(const char *action, gfacebook_Parameter *params)
+    void dialog(lua_State *L, const char *action, gfacebook_Parameter *params)
     {
-        checkInit();
+        checkInit(L);
 
         gfacebook_dialog(action, params);
     }
 
-    void graphRequest(const char *graphPath, gfacebook_Parameter *params, const char *httpMethod)
+    void graphRequest(lua_State *L, const char *graphPath, gfacebook_Parameter *params, const char *httpMethod)
     {
-        checkInit();
+        checkInit(L);
 
         gfacebook_graphRequest(graphPath, params, httpMethod);
     }
     
-    void setAccessToken(const char *accessToken)
+    void setAccessToken(lua_State *L, const char *accessToken)
     {
-        checkInit();
+        checkInit(L);
 
         gfacebook_setAccessToken(accessToken);
     }
     
-    const char *getAccessToken()
+    const char *getAccessToken(lua_State *L)
     {
-        checkInit();
+        checkInit(L);
 
         return gfacebook_getAccessToken();
     }
     
-    void setExpirationDate(time_t time)
+    void setExpirationDate(lua_State *L, time_t time)
     {
-        checkInit();
+        checkInit(L);
 
         gfacebook_setExpirationDate(time);
     }
     
-    time_t getExpirationDate()
+    time_t getExpirationDate(lua_State *L)
     {
-        checkInit();
+        checkInit(L);
 
         return gfacebook_getExpirationDate();
     }
     
-    void extendAccessToken()
+    void extendAccessToken(lua_State *L)
     {
-        checkInit();
+        checkInit(L);
 
         gfacebook_extendAccessToken();
     }
     
-    void extendAccessTokenIfNeeded()
+    void extendAccessTokenIfNeeded(lua_State *L)
     {
-        checkInit();
+        checkInit(L);
 
         gfacebook_extendAccessTokenIfNeeded();
     }
     
-    int shouldExtendAccessToken()
+    int shouldExtendAccessToken(lua_State *L)
     {
-        checkInit();
+        checkInit(L);
 
         return gfacebook_shouldExtendAccessToken();
     }
@@ -175,6 +177,9 @@ private:
 
 	void dispatchEvent(int type, void *event)
 	{
+        if (L == NULL)
+            return;
+        
         luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
         luaL_rawgetptr(L, -1, this);
 		
@@ -258,7 +263,6 @@ private:
 	}
 
 private:
-    lua_State *L;
     bool initialized_;
 };
 
@@ -287,7 +291,7 @@ static int setAppId(lua_State *L)
     
     const char *appId = luaL_checkstring(L, 2);
     
-    facebook->setAppId(appId);
+    facebook->setAppId(L, appId);
     
     return 0;
 }
@@ -339,7 +343,7 @@ static int authorize(lua_State *L)
     GFacebook *facebook = getInstance(L, 1);
     
     if (lua_isnoneornil(L, 2))
-        facebook->authorize(NULL);
+        facebook->authorize(L, NULL);
     else
     {
         std::vector<std::string> permissions = tableToVector(L, 2);
@@ -349,7 +353,7 @@ static int authorize(lua_State *L)
             permissions2.push_back(permissions[i].c_str());
         permissions2.push_back(NULL);
 
-        facebook->authorize(&permissions2[0]);
+        facebook->authorize(L, &permissions2[0]);
     }
     
     return 0;
@@ -359,7 +363,7 @@ static int logout(lua_State *L)
 {
     GFacebook *facebook = getInstance(L, 1);
     
-    facebook->logout();
+    facebook->logout(L);
     
     return 0;
 }
@@ -368,7 +372,7 @@ static int isSessionValid(lua_State *L)
 {
     GFacebook *facebook = getInstance(L, 1);
     
-    lua_pushboolean(L, facebook->isSessionValid());
+    lua_pushboolean(L, facebook->isSessionValid(L));
     
     return 1;
 }
@@ -381,7 +385,7 @@ static int dialog(lua_State *L)
     
     if (lua_isnoneornil(L, 3))
     {
-        facebook->dialog(action, NULL);
+        facebook->dialog(L, action, NULL);
     }
     else
     {
@@ -398,7 +402,7 @@ static int dialog(lua_State *L)
         gfacebook_Parameter param = {NULL, NULL};
         params2.push_back(param);
         
-        facebook->dialog(action, &params2[0]);
+        facebook->dialog(L, action, &params2[0]);
     }
     
     return 0;
@@ -412,7 +416,7 @@ static int graphRequest(lua_State *L)
     
     if (lua_isnoneornil(L, 3) && lua_isnoneornil(L, 4))
     {
-        facebook->graphRequest(graphPath, NULL, NULL);
+        facebook->graphRequest(L, graphPath, NULL, NULL);
     }
     else
     {
@@ -431,12 +435,12 @@ static int graphRequest(lua_State *L)
         
         if (lua_isnoneornil(L, 4))
         {
-            facebook->graphRequest(graphPath, &params2[0], NULL);
+            facebook->graphRequest(L, graphPath, &params2[0], NULL);
         }
         else
         {
             const char *httpMethod = luaL_checkstring(L, 4);
-            facebook->graphRequest(graphPath, &params2[0], httpMethod);
+            facebook->graphRequest(L, graphPath, &params2[0], httpMethod);
         }
     }
     
@@ -449,7 +453,7 @@ static int setAccessToken(lua_State *L)
     
     const char *accessToken = luaL_checkstring(L, 2);
     
-    facebook->setAccessToken(accessToken);
+    facebook->setAccessToken(L, accessToken);
     
     return 0;
 }
@@ -458,7 +462,7 @@ static int getAccessToken(lua_State *L)
 {
     GFacebook *facebook = getInstance(L, 1);
     
-    const char *accessToken = facebook->getAccessToken();
+    const char *accessToken = facebook->getAccessToken(L);
     
     if (accessToken)
         lua_pushstring(L, accessToken);
@@ -488,7 +492,7 @@ static int setExpirationDate(lua_State *L)
     GFacebook *facebook = getInstance(L, 1);
     const char *date = luaL_checkstring(L, 2);
 
-    facebook->setExpirationDate(str2time(date));
+    facebook->setExpirationDate(L, str2time(date));
 
     return 0;
 }
@@ -497,7 +501,7 @@ static int getExpirationDate(lua_State *L)
 {
     GFacebook *facebook = getInstance(L, 1);
     
-    time_t expirationDate = facebook->getExpirationDate();
+    time_t expirationDate = facebook->getExpirationDate(L);
     
     if (expirationDate == -1)
     {
@@ -517,7 +521,7 @@ static int extendAccessToken(lua_State *L)
 {
     GFacebook *facebook = getInstance(L, 1);
     
-    facebook->extendAccessToken();
+    facebook->extendAccessToken(L);
     
     return 0;
 }
@@ -526,7 +530,7 @@ static int extendAccessTokenIfNeeded(lua_State *L)
 {
     GFacebook *facebook = getInstance(L, 1);
     
-    facebook->extendAccessTokenIfNeeded();
+    facebook->extendAccessTokenIfNeeded(L);
     
     return 0;
 }
@@ -535,7 +539,7 @@ static int shouldExtendAccessToken(lua_State *L)
 {
     GFacebook *facebook = getInstance(L, 1);
     
-    lua_pushboolean(L, facebook->shouldExtendAccessToken());
+    lua_pushboolean(L, facebook->shouldExtendAccessToken(L));
     
     return 1;
 }
@@ -586,7 +590,7 @@ static int loader(lua_State *L)
 	lua_setfield(L, -2, "REQUEST_ERROR");
 	lua_pop(L, 1);
 	
-    GFacebook *facebook = new GFacebook(L);
+    GFacebook *facebook = new GFacebook;
 	g_pushInstance(L, "Facebook", facebook->object());
     
 	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
@@ -602,6 +606,8 @@ static int loader(lua_State *L)
     
 static void g_initializePlugin(lua_State *L)
 {
+    ::L = L;
+    
     lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	
@@ -613,7 +619,7 @@ static void g_initializePlugin(lua_State *L)
 
 static void g_deinitializePlugin(lua_State *L)
 {
-    
+    ::L = NULL;
 }
 
 REGISTER_PLUGIN("Facebook", "1.0")
