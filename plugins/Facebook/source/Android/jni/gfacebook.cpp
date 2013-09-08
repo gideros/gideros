@@ -2,6 +2,7 @@
 #include <jni.h>
 #include <stdlib.h>
 #include <glog.h>
+#include <string>
 
 extern "C" {
 JavaVM *g_getJavaVM();
@@ -30,12 +31,12 @@ public:
     
     ~GGFacebook()
     {
-        
         JNIEnv *env = g_getJNIEnv();
 
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "cleanup", "()V"));
 		
 		env->DeleteGlobalRef(cls_);
+		env->DeleteGlobalRef(clsBundle_);
 
 		gevent_RemoveEventsWithGid(gid_);
     }
@@ -47,24 +48,35 @@ public:
 		jstring jappId = env->NewStringUTF(appId);
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "setAppId", "(Ljava/lang/String;)V"), jappId);
 		env->DeleteLocalRef(jappId);
-
     }
 	
-	void authorize(const char * const *permissions, int size)
+	void authorize(const char * const *permissions)
     {
 		JNIEnv *env = g_getJNIEnv();
 		if(permissions)
 		{
+			int size = 0;
+			const char * const *permissions2 = permissions;
+			while (*permissions2)
+			{
+				size++;
+				permissions2++;
+			}
+		
 			jobjectArray ret = (jobjectArray)env->NewObjectArray(size,  
 				env->FindClass("java/lang/String"),  
-				env->NewStringUTF(""));  
+				NULL);  
    
 			for(int i=0; i<size; i++) {  
-				env->SetObjectArrayElement(ret,i,env->NewStringUTF(*permissions));
+				jstring jstr = env->NewStringUTF(*permissions);
+				env->SetObjectArrayElement(ret,i,jstr);
+				env->DeleteLocalRef(jstr);
 				permissions++;
 			} 
 			
 			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "authorize", "([Ljava/lang/Object;)V"), ret);
+
+			env->DeleteLocalRef(ret);
 		}
 		else
 		{
@@ -122,9 +134,10 @@ public:
 		
 		jstring jgraphPath = env->NewStringUTF(graphPath);
 		
+		jobject jbundleobj = NULL;
 		if (params)
         {
-			jobject jbundleobj = env->NewObject(clsBundle_, env->GetMethodID(clsBundle_, "<init>", "()V"));
+			jbundleobj = env->NewObject(clsBundle_, env->GetMethodID(clsBundle_, "<init>", "()V"));
 			while (params->key)
             {
 				jstring jKey = env->NewStringUTF(params->key);
@@ -134,23 +147,38 @@ public:
 				env->DeleteLocalRef(jVal);
 				++params;
 			}
-			
-			if(httpMethod)
-			{
-				jstring jhttpMethod = env->NewStringUTF(httpMethod);
-				env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V"), jgraphPath, jbundleobj, jhttpMethod);
-				env->DeleteLocalRef(jhttpMethod);
-			}
-			else
-			{
-				env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;Ljava/lang/Object;)V"), jgraphPath, jbundleobj);
-			}
-			env->DeleteLocalRef(jbundleobj);
 		}
-		else
+		
+		jstring jhttpMethod = NULL;
+		if(httpMethod)
 		{
-			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;)V"), jgraphPath);
+			jhttpMethod = env->NewStringUTF(httpMethod);
 		}
+
+        if (jbundleobj && jhttpMethod)
+        {
+			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V"), jgraphPath, jbundleobj, jhttpMethod);
+        }
+        else if (!jbundleobj && jhttpMethod)
+        {
+			jbundleobj = env->NewObject(clsBundle_, env->GetMethodID(clsBundle_, "<init>", "()V"));
+			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V"), jgraphPath, jbundleobj, jhttpMethod);
+        }
+        else if (jbundleobj && !jhttpMethod)
+        {
+			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;Ljava/lang/Object;)V"), jgraphPath, jbundleobj);
+        }
+        else if (!jbundleobj && !jhttpMethod)
+        {
+			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;)V"), jgraphPath);
+        }
+		
+		if (jbundleobj)
+			env->DeleteLocalRef(jbundleobj);
+
+		if (jhttpMethod)
+			env->DeleteLocalRef(jhttpMethod);
+
 		env->DeleteLocalRef(jgraphPath);
     }
 
@@ -169,8 +197,10 @@ public:
 		
 		jstring jtoken = (jstring)env->CallStaticObjectMethod(cls_, env->GetStaticMethodID(cls_, "getAccessToken", "()Ljava/lang/String;"));
        const char *token = env->GetStringUTFChars(jtoken, NULL);
+	   accessToken_ = token;
+	   env->ReleaseStringUTFChars(jtoken, token);
 	   
-	   return token;
+	   return accessToken_.c_str();
     }
     
     void setExpirationDate(time_t time)
@@ -273,7 +303,7 @@ public:
 		env->ReleaseStringUTFChars(jerrorDescr, error);
     }
 	
-	void onRequestComplete(jstring jresponse, jint length)
+	void onRequestComplete(jstring jresponse)
     {
 		JNIEnv *env = g_getJNIEnv();
 
@@ -283,7 +313,7 @@ public:
             sizeof(gfacebook_RequestCompleteEvent),
             offsetof(gfacebook_RequestCompleteEvent, response), response);
         
-		event->responseLength = (int)length;
+		event->responseLength = strlen(response);
 		
         gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_REQUEST_COMPLETE_EVENT, event, 1, this);
 		
@@ -321,6 +351,7 @@ private:
 	jclass cls_;
 	jclass clsBundle_;
 	g_id gid_;
+	std::string accessToken_;
 };
 
 
@@ -361,9 +392,9 @@ void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onDialogCancel(JN
 	((GGFacebook*)data)->onDialogCancel();
 }
 
-void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onRequestComplete(JNIEnv *env, jclass clz, jstring jresponse, jint length, jlong data)
+void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onRequestComplete(JNIEnv *env, jclass clz, jstring jresponse, jlong data)
 {
-	((GGFacebook*)data)->onRequestComplete(jresponse, length);
+	((GGFacebook*)data)->onRequestComplete(jresponse);
 }
 
 void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onRequestError(JNIEnv *env, jclass clz, jint jerrorCode, jstring jerrorDescr, jlong data)
@@ -389,7 +420,7 @@ void gfacebook_init()
 
 void gfacebook_cleanup()
 {
-    //delete s_facebook;
+    delete s_facebook;
     s_facebook = NULL;
 }
 
@@ -398,9 +429,9 @@ void gfacebook_setAppId(const char *appId)
     s_facebook->setAppId(appId);
 }
 
-void gfacebook_authorize(const char * const *permissions, int size)
+void gfacebook_authorize(const char * const *permissions)
 {
-    s_facebook->authorize(permissions, size);
+    s_facebook->authorize(permissions);
 }
 
 void gfacebook_logout()

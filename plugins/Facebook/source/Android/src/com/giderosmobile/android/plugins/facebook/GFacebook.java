@@ -5,18 +5,17 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Base64;
+import android.util.Log;
 
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
@@ -41,24 +40,18 @@ public class GFacebook
 		 * Uncomment and replace "com.yourdomain.yourapp" with your package
 		 * to get hash key for FaceBook app
 		 **********************/
-		/*PackageInfo info;
+		/*
 		try {
-			info = sActivity.get().getPackageManager().getPackageInfo("com.yourdomain.yourapp", PackageManager.GET_SIGNATURES);
+			PackageInfo info = sActivity.get().getPackageManager().getPackageInfo("com.yourdomain.yourapp", PackageManager.GET_SIGNATURES);
 			for (Signature signature : info.signatures) {
-				        MessageDigest md;
-				        md = MessageDigest.getInstance("SHA");
-				        md.update(signature.toByteArray());
-				        String something = new String(Base64.encode(md.digest(), 0));
-				        //String something = new String(Base64.encodeBytes(md.digest()));
-				        Log.e("hash key", something);
-				    }
-		} catch (NameNotFoundException e1) {
-			    Log.e("name not found", e1.toString());
-		} catch (NoSuchAlgorithmException e) {
-			    Log.e("no such an algorithm", e.toString());
+				MessageDigest md = MessageDigest.getInstance("SHA");
+				md.update(signature.toByteArray());
+				Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+			}
 		} catch (Exception e) {
-			    Log.e("exception", e.toString());
-		}*/
+			Log.e("Exception", e.toString());
+		}
+		*/
 	}
 	
 	public static void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -73,12 +66,9 @@ public class GFacebook
 	
 	static public void cleanup()
 	{
-    	if (fb != null)
-    	{
-    		sData = 0;
-    		fb = null;
-    		fbr = null;
-    	}
+		sData = 0;
+		fb = null;
+		fbr = null;
 	}
 
 	private static void setAppId(String appId){
@@ -209,7 +199,7 @@ public class GFacebook
 	public static native void onDialogComplete(long data);
 	public static native void onDialogError(int errorCode, String errorDescription, long data);
 	public static native void onDialogCancel(long data);
-	public static native void onRequestComplete(String response, int length, long data);
+	public static native void onRequestComplete(String response, long data);
 	public static native void onRequestError(int errorCode, String errorDescription, long data);
 
 }
@@ -309,7 +299,7 @@ class GFacebookRequest implements RequestListener
 	public void onComplete(String response, Object state) {
 		if (GFacebook.sData != 0)
     	{
-			GFacebook.onRequestComplete(response, response.length(), GFacebook.sData);
+			GFacebook.onRequestComplete(response, GFacebook.sData);
     	}
 		
 	}
@@ -357,9 +347,9 @@ class GFacebookLogout implements RequestListener
 
 	@Override
 	public void onComplete(String response, Object state) {
+		GFacebook.deleteFBToken();
 		if (GFacebook.sData != 0)
     	{
-			GFacebook.deleteFBToken();
 			GFacebook.onLogoutComplete(GFacebook.sData);
     	}
 		

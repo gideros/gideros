@@ -55,7 +55,7 @@ G_API void gfacebook_cleanup();
 
 G_API void gfacebook_setAppId(const char *appId);
 
-G_API void gfacebook_authorize(const char * const *permissions, int size);
+G_API void gfacebook_authorize(const char * const *permissions);
 G_API void gfacebook_logout();
 G_API int gfacebook_isSessionValid();
     
