@@ -17,7 +17,7 @@ static int isAvailable(lua_State *L)
 
 static int startSession(lua_State *L)
 {
-	if (!isSessionStarted)
+	if (isSessionStarted)
 		return 0;
     
     gflurry_StartSession(luaL_checkstring(L, 1));
@@ -40,9 +40,10 @@ static char **copyParameters(lua_State *L, int index)
 		lua_pop(L, 1);
     }
     
-    char **parameters2 = (char**)malloc(parameters.size() * sizeof(char*));
+    char **parameters2 = (char**)malloc((parameters.size() + 1) * sizeof(char*));
     for (std::size_t i = 0; i < parameters.size(); ++i)
         parameters2[i] = strdup(parameters[i].c_str());
+    parameters2[parameters.size()] = NULL;
 
     return parameters2;
 }
@@ -52,8 +53,10 @@ static void freeParameters(char **parameters)
     if (parameters == NULL)
         return;
     
-    while (*parameters)
-        free(*parameters++);
+    char **parameters2 = parameters;
+    
+    while (*parameters2)
+        free(*parameters2++);
 
     free(parameters);
 }
