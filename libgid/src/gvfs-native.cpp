@@ -48,12 +48,16 @@ static int s_open(const char *pathname, int flags)
     {
         const char *ext = strrchr(pathname, '.');
 
-        if (ext &&
-            tolower(ext[1]) == 'l' &&
-            tolower(ext[2]) == 'u' &&
-            tolower(ext[3]) == 'a')
+        if (ext)
         {
-            fi.encrypted = true;
+            if (!stricmp(ext, "lua") ||
+                !stricmp(ext, "jpeg") ||
+                !stricmp(ext, "jpg") ||
+                !stricmp(ext, "png") ||
+                !stricmp(ext, "wav"))
+            {
+                fi.encrypted = true;
+            }
         }
     }
 

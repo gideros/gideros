@@ -704,12 +704,18 @@ int main(int argc, char *argv[])
         }
     }
 
-    // encrypt lua files
+    // encrypt lua, png, jpg, jpeg and wav files
     if (true)
     {
-        for (int i = 0; i < allluafiles_abs.size(); ++i)
+        for (int i = 0; i < allfiles_abs.size(); ++i)
         {
-            QFile fis(allluafiles_abs[i]);
+            QString filename = allfiles_abs[i];
+            QString ext = QFileInfo(filename).suffix().toLower();
+
+            if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg" && ext != "wav")
+                continue;
+
+            QFile fis(filename);
             if (!fis.open(QIODevice::ReadOnly))
                 continue;
             QByteArray data = fis.readAll();
@@ -718,7 +724,7 @@ int main(int argc, char *argv[])
             for (int j = 0; j < data.size(); ++j)
                 data[j] = data[j] ^ encryptionKey[j % encryptionKey.size()];
 
-            QFile fos(allluafiles_abs[i]);
+            QFile fos(filename);
             if (!fos.open(QIODevice::WriteOnly))
                 continue;
             fos.write(data);
