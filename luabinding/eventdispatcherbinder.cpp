@@ -953,16 +953,19 @@ static void createEventsTable(lua_State* L, int index)
 		lua_pop(L, 1);		// pop __events
 }
 
+
+static char key_map = ' ';
+
 static EventBinderMap& getOrCreateEventBinderMap(EventDispatcher* eventDispatcher)
 {
-	if (eventDispatcher->data() == 0)
+    if (eventDispatcher->data(&key_map) == 0)
 	{
 		EventBinderMap* map = new EventBinderMap;
-		eventDispatcher->setData(map);
+        eventDispatcher->setData(&key_map, map);
 		map->unref();
 	}
 
-	return *static_cast<EventBinderMap*>(eventDispatcher->data());
+    return *static_cast<EventBinderMap*>(eventDispatcher->data(&key_map));
 }
 
 int EventDispatcherBinder::addEventListener(lua_State* L)
@@ -1205,13 +1208,13 @@ int EventDispatcherBinder::hasEventListener(lua_State* L)
 
 	luaL_checktype(L, 2, LUA_TSTRING);
 
-	if (eventDispatcher->data() == 0)
+    if (eventDispatcher->data(&key_map) == NULL)
 	{
 		lua_pushboolean(L, 0);
 	}
 	else
 	{
-		EventBinderMap& map = *static_cast<EventBinderMap*>(eventDispatcher->data());
+        EventBinderMap& map = *static_cast<EventBinderMap*>(eventDispatcher->data(&key_map));
 		
 		const char* event = lua_tostring(L, 2);
 		int eventid = StringId::instance().id(event);
