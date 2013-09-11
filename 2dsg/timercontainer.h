@@ -11,12 +11,14 @@ class Timer;
 class TimerContainer
 {
 public:
-	static TimerContainer& instance();
+    static TimerContainer& instance();
 
-	void addTimer(Timer* timer);
+    void addTimer(Timer* timer, double additionalDelay);
 	void removeTimer(Timer* timer);
 	void removeAllTimers();
 	void tick();
+
+    double getAdditionalDelay(const Timer *timer);
 
 	void pauseAllTimers();
 	void resumeAllTimers();

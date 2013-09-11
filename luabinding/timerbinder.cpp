@@ -4,6 +4,9 @@
 #include "keys.h"
 #include "luautil.h"
 #include "platformutil.h"
+#include "timerevent.h"
+#include "luaapplication.h"
+#include <glog.h>
 
 TimerBinder::TimerBinder(lua_State* L)
 {
@@ -13,6 +16,7 @@ TimerBinder::TimerBinder(lua_State* L)
 		{"start", TimerBinder::start},
 		{"stop", TimerBinder::stop},
 		{"reset", TimerBinder::reset},
+		{"pause", TimerBinder::pause},
 
 		{"getDelay", TimerBinder::getDelay},
 		{"getCurrentCount", TimerBinder::getCurrentCount},
@@ -32,75 +36,57 @@ TimerBinder::TimerBinder(lua_State* L)
 	binder.createClass("Timer", "EventDispatcher", create, destruct, functionList);
 }
 
-#ifndef abs_index
-
-/* convert a stack index to positive */
-#define abs_index(L, i)		((i) > 0 || (i) <= LUA_REGISTRYINDEX ? (i) : \
-	lua_gettop(L) + (i) + 1)
-
-#endif
-
-
-static void clearNotRunningTimers(lua_State* L)
+class TimerListener : public EventDispatcher
 {
-	lua_getfield(L, LUA_ENVIRONINDEX, "timers");
+public:
+    TimerListener(lua_State *L, Timer *timer) :
+        L(L),
+        timer(timer)
+    {
+    }
 
-	int t = abs_index(L, -1);
+    ~TimerListener()
+    {
+    }
 
-	/* table is in the stack at index 't' */
-	lua_pushnil(L);  /* first key */
-	while (lua_next(L, t) != 0) {
-	  /* uses 'key' (at index -2) and 'value' (at index -1) */
-#if 0
-	  printf("%s - %s\n",
-			 lua_typename(L, lua_type(L, -2)),
-			 lua_typename(L, lua_type(L, -1)));
-#endif
+    void timerCompleteEvent(TimerEvent *event)
+    {
+        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_timers);
+        lua_pushnil(L);
+        luaL_rawsetptr(L, -2, timer);
+        lua_pop(L, 1);
+    }
 
-	  Timer* timer = static_cast<Timer*>(lua_touserdata(L, -2));
+    lua_State *L;
+    Timer *timer;
+};
 
-	  if (timer->running())
-	  {
-		  lua_pushvalue(L, -2);
-		  lua_pushnil(L);
-		  lua_settable(L, t);		// table[key] = nil
-	  }
-
-	  /* removes 'value'; keeps 'key' for next iteration */
-	  lua_pop(L, 1);
-	}
-
-	lua_pop(L, 1);
-}
+static char key_timer = ' ';
 
 int TimerBinder::create(lua_State* L)
 {
-//	printf("TimerBinder::create()\n");
-	StackChecker checker(L, "Timer", 1);
+    StackChecker checker(L, "TimerBinder::create", 1);
 
 	double delay = luaL_checknumber(L, 1);
 	int repeatCount = luaL_optinteger(L, 2, 0);
 
 	Binder binder(L);
-	Timer* timer = new Timer(delay, repeatCount);
+    Timer *timer = new Timer(delay, repeatCount);
 	binder.pushInstance("Timer", timer);
 
-	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_timers);
-	lua_pushvalue(L, -2);
-	luaL_rawsetptr(L, -2, timer);
-	lua_pop(L, 1);
+    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+    lua_State *mainL = application->getLuaState();
 
-#if 0
-	clearNotRunningTimers(L);
-#endif
+    TimerListener *timerListener = new TimerListener(mainL, timer);
+    timer->setData(&key_timer, timerListener);
+    timerListener->unref();
+    timer->addEventListener(TimerEvent::TIMER_COMPLETE, timerListener, &TimerListener::timerCompleteEvent);
 
 	return 1;
 }
 
 int TimerBinder::destruct(lua_State* L)
 {
-	//debuglog("TimerBinder::destruct()");
-
 	void* ptr = *(void**)lua_touserdata(L, 1);
 	Timer* timer = static_cast<Timer*>(ptr);
 	timer->unref();
@@ -110,19 +96,16 @@ int TimerBinder::destruct(lua_State* L)
 
 int TimerBinder::start(lua_State* L)
 {
-	StackChecker checker(L, "TimerBinder::start()", 0);
+    StackChecker checker(L, "TimerBinder::start", 0);
 
 	Binder binder(L);
 	Timer* timer = static_cast<Timer*>(binder.getInstance("Timer", 1));
 	timer->start();
 
-#if 0
-	lua_getfield(L, LUA_ENVIRONINDEX, "timers");
-	lua_pushlightuserdata(L, timer);
-	lua_pushvalue(L, 1);
-	lua_settable(L, -3);
-	lua_pop(L, 1);
-#endif
+    luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_timers);
+    lua_pushvalue(L, -2);
+    luaL_rawsetptr(L, -2, timer);
+    lua_pop(L, 1);
 
 	return 0;
 }
@@ -135,13 +118,10 @@ int TimerBinder::stop(lua_State* L)
 	Timer* timer = static_cast<Timer*>(binder.getInstance("Timer", 1));
 	timer->stop();
 
-#if 0
-	lua_getfield(L, LUA_ENVIRONINDEX, "timers");
-	lua_pushlightuserdata(L, timer);
-	lua_pushnil(L);
-	lua_settable(L, -3);
-	lua_pop(L, 1);
-#endif
+    luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_timers);
+    lua_pushnil(L);
+    luaL_rawsetptr(L, -2, timer);
+    lua_pop(L, 1);
 
 	return 0;
 }
@@ -155,17 +135,29 @@ int TimerBinder::reset(lua_State* L)
 	Timer* timer = static_cast<Timer*>(binder.getInstance("Timer", 1));
 	timer->reset();
 
-#if 0
-	lua_getfield(L, LUA_ENVIRONINDEX, "timers");
-	lua_pushlightuserdata(L, timer);
-	lua_pushnil(L);
-	lua_settable(L, -3);
-	lua_pop(L, 1);
-#endif
+    luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_timers);
+    lua_pushnil(L);
+    luaL_rawsetptr(L, -2, timer);
+    lua_pop(L, 1);
 
 	return 0;
 }
 
+int TimerBinder::pause(lua_State* L)
+{
+    StackChecker checker(L, "TimerBinder::pause()", 0);
+
+    Binder binder(L);
+    Timer* timer = static_cast<Timer*>(binder.getInstance("Timer", 1));
+    timer->pause();
+
+    luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_timers);
+    lua_pushnil(L);
+    luaL_rawsetptr(L, -2, timer);
+    lua_pop(L, 1);
+
+    return 0;
+}
 
 int TimerBinder::getDelay(lua_State* L)
 {
@@ -244,20 +236,23 @@ int TimerBinder::setRepeatCount(lua_State* L)
 int TimerBinder::pauseAllTimers(lua_State* L)
 {
 	Timer::pauseAllTimers();
-	return 0;
+
+    return 0;
 }
 
 int TimerBinder::resumeAllTimers(lua_State* L)
 {
 	Timer::resumeAllTimers();
-	return 0;
+
+    return 0;
 }
 
 int TimerBinder::stopAllTimers(lua_State* L)
 {
 	Timer::stopAllTimers();
-#if 0
-	clearNotRunningTimers(L);
-#endif
+
+    lua_newtable(L);
+    luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_timers);
+
 	return 0;
 }

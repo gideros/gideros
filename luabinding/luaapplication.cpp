@@ -832,25 +832,6 @@ void LuaApplication::deinitialize()
 
 #endif
 
-static void clearNotRunningTimers(lua_State* L)
-{
-	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_timers);
-	int t = abs_index(L, -1);
-	lua_pushnil(L);
-	while (lua_next(L, t) != 0)
-	{
-		Timer* timer = static_cast<Timer*>(lua_touserdata(L, -2));
-		if (timer->running() == false)
-		{
-			lua_pushvalue(L, -2);
-			lua_pushnil(L);
-			lua_rawset(L, t);
-		}
-		lua_pop(L, 1);
-	}
-	lua_pop(L, 1);
-}
-
 static int tick(lua_State *L)
 {
     gevent_Tick();
@@ -867,8 +848,6 @@ static int enterFrame(lua_State* L)
 
 	setEnvironTable(L);
 
-	clearNotRunningTimers(L);
-
 	luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_events);
 	luaL_nullifytable(L, -1);
 	lua_pop(L, 1);
@@ -884,42 +863,6 @@ static int enterFrame(lua_State* L)
 
 	return 0;
 }
-
-#if 0
-static int clearNotRunningTimers(lua_State* L)
-{
-	StackChecker checker(L, "clearNotRunningTimers", 0);
-	
-	setEnvironTable(L);
-
-	// remove the not running timers from "timers" envTable
-	// TODO: her bir tick'te tum timer'lara bastan bakiyoruz. belki burayi hizlandirmak gerekebilir
-	lua_getglobal(L, "Timer");		// push Timer
-	lua_getfield(L, -1, "getRunning"); // push Timer.getRunning
-	lua_getfield(L, LUA_ENVIRONINDEX, "timers");
-	lua_pushnil(L);				 // first key 
-	while (lua_next(L, -2) != 0) // table is in the stack at index -2
-	{
-		lua_pushvalue(L, -4);	// push Timer.getRunning
-		lua_pushvalue(L, -3);	// push key
-		lua_call(L, 1, 1);		// call Timer.getRunning
-
-		if (lua_toboolean(L, -1) == 0) // if the Timer is not running
-		{
-			lua_pushvalue(L, -3);
-			lua_pushnil(L);
-			lua_settable(L, -6); // timers[timer] = nil
-		}
-		
-		lua_pop(L, 1);			// remove the boolean result of Timer.running
-
-		lua_pop(L, 1);			// removes 'value'; now 'key' is at index -2
-	}
-	lua_pop(L, 3); 				// pop timers, Timer.getRunning and Timer
-
-	return 0;
-}
-#endif
 
 void LuaApplication::tick()
 {

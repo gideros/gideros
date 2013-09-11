@@ -15,6 +15,7 @@ private:
 	static int start(lua_State* L);
 	static int stop(lua_State* L);
 	static int reset(lua_State* L);
+	static int pause(lua_State* L);
 
 	static int getDelay(lua_State* L);
 	static int getCurrentCount(lua_State* L);

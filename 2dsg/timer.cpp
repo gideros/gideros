@@ -2,45 +2,56 @@
 #include "timercontainer.h"
 #include "timerevent.h"
 #include "platform.h"
+#include <glog.h>
 
 Timer::Timer(double delay, int repeatCount)
 {
-	//debuglog("Timer()");
 	delay_ = delay;
 	repeatCount_ = repeatCount;
 	running_ = false;
 	currentCount_ = 0;
+    additionalDelay_ = 0;
 
 	container_ = &TimerContainer::instance();
 }
 
 Timer::~Timer()
 {
-	//debuglog("~Timer()");
-	stop();
+    stop();
 }
 
 void Timer::start()
 {
-	if (running_ == true)
-		return;
-	running_ = true;
-
-	container_->addTimer(this);
+    if (!running_)
+    {
+        container_->addTimer(this, additionalDelay_);
+        additionalDelay_ = 0;
+        running_ = true;
+    }
 }
 
 void Timer::stop()
 {
-	if (running_ == false)
-		return;
-	running_ = false;
+    additionalDelay_ = 0;
+    if (running_)
+    {
+        container_->removeTimer(this);
+        running_ = false;
+    }
+}
 
-	container_->removeTimer(this);
+void Timer::pause()
+{
+    if (running_)
+    {
+        additionalDelay_ = container_->getAdditionalDelay(this);
+        container_->removeTimer(this);
+        running_ = false;
+    }
 }
 
 void Timer::tick()
 {
-//	printf("Timer::tick()\n");
 	ref();
 
 	currentCount_++;
@@ -80,6 +91,7 @@ void Timer::pauseAllTimers()
 {
 	TimerContainer::instance().pauseAllTimers();
 }
+
 void Timer::resumeAllTimers()
 {
 	TimerContainer::instance().resumeAllTimers();

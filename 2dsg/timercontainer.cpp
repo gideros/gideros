@@ -5,13 +5,13 @@
 
 TimerContainer& TimerContainer::instance()
 {
-	static TimerContainer container;
-	return container;
+    static TimerContainer container;
+    return container;
 }
 
-void TimerContainer::addTimer(Timer* timer)
+void TimerContainer::addTimer(Timer* timer, double additionalDelay)
 {
-	double clock = stopWatch_.clock();
+    double clock = stopWatch_.clock() - additionalDelay;
 
 	timers_.insert(timer);
 	timer->ref();
@@ -61,11 +61,25 @@ void TimerContainer::tick()
 	}
 }
 
+double TimerContainer::getAdditionalDelay(const Timer *timer)
+{
+    std::map<double, std::vector<Timer*> >::iterator iter, e = queue_.end();
+    for (iter = queue_.begin(); iter != e; ++iter)
+    {
+        const std::vector<Timer*> &timers = iter->second;
+        if (std::find(timers.begin(), timers.end(), timer) != timers.end())
+            return (timer->delay() / 1000) - (iter->first - stopWatch_.clock());
+    }
+
+    return 0;
+}
+
 
 void TimerContainer::pauseAllTimers()
 {
 	stopWatch_.pause();
 }
+
 void TimerContainer::resumeAllTimers()
 {
 	stopWatch_.resume();

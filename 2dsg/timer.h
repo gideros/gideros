@@ -18,6 +18,7 @@ public:
 		stop();
 		currentCount_ = 0;
 	}
+    void pause();
 
 	virtual void tick();
 
@@ -69,6 +70,7 @@ private:
 	int repeatCount_;
 	bool running_;
 	int currentCount_;
+    double additionalDelay_;
 
 	TimerContainer* container_;
 };
