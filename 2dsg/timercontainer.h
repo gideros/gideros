@@ -11,7 +11,8 @@ class Timer;
 class TimerContainer
 {
 public:
-    static TimerContainer& instance();
+    TimerContainer();
+    ~TimerContainer();
 
     void addTimer(Timer* timer, double additionalDelay);
 	void removeTimer(Timer* timer);

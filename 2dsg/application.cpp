@@ -2,7 +2,6 @@
 #include "touchevent.h"
 #include "ogl.h"
 #include <time.h>
-#include "timercontainer.h"
 #include "stageorientationevent.h"
 #include "font.h"
 #include "stage.h"
@@ -82,8 +81,6 @@ Application::Application() : textureManager_(this)
 
 Application::~Application()
 {
-    Timer::resumeAllTimers();
-//	Referenced::emptyPool();
 }
 
 Stage* Application::stage() const
@@ -98,13 +95,13 @@ void Application::initView()
 	backb_ = 1.f;
 
 	stage_ = new Stage(this);
-
-//	Referenced::emptyPool();
 }
 
 void Application::releaseView()
 {
-	TimerContainer::instance().removeAllTimers();		// let lua remove all the timers ?? neden daha once bunu commentledigimizi anlamadim
+    timerContainer_.removeAllTimers();
+    timerContainer_.resumeAllTimers();
+
     ghttp_CloseAll();
 
 	if (defaultFont_)
@@ -122,7 +119,7 @@ void Application::releaseView()
 
 void Application::enterFrame()
 {
-	TimerContainer::instance().tick();
+    timerContainer_.tick();
 
 	tickersIteratorInvalid_ = false;
 	std::set<Ticker*>::iterator iter, e = tickers_.end();

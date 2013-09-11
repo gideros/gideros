@@ -6,6 +6,8 @@
 #include "platformutil.h"
 #include "timerevent.h"
 #include "luaapplication.h"
+#include <application.h>
+#include <timercontainer.h>
 #include <glog.h>
 
 TimerBinder::TimerBinder(lua_State* L)
@@ -70,11 +72,12 @@ int TimerBinder::create(lua_State* L)
 	double delay = luaL_checknumber(L, 1);
 	int repeatCount = luaL_optinteger(L, 2, 0);
 
+    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+
 	Binder binder(L);
-    Timer *timer = new Timer(delay, repeatCount);
+    Timer *timer = new Timer(application->getApplication(), delay, repeatCount);
 	binder.pushInstance("Timer", timer);
 
-    LuaApplication *application = (LuaApplication*)lua_getdata(L);
     lua_State *mainL = application->getLuaState();
 
     TimerListener *timerListener = new TimerListener(mainL, timer);
@@ -235,21 +238,30 @@ int TimerBinder::setRepeatCount(lua_State* L)
 
 int TimerBinder::pauseAllTimers(lua_State* L)
 {
-	Timer::pauseAllTimers();
+    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+    TimerContainer *timerContainer = application->getApplication()->getTimerContainer();
+
+    timerContainer->pauseAllTimers();
 
     return 0;
 }
 
 int TimerBinder::resumeAllTimers(lua_State* L)
 {
-	Timer::resumeAllTimers();
+    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+    TimerContainer *timerContainer = application->getApplication()->getTimerContainer();
+
+    timerContainer->resumeAllTimers();
 
     return 0;
 }
 
 int TimerBinder::stopAllTimers(lua_State* L)
 {
-	Timer::stopAllTimers();
+    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+    TimerContainer *timerContainer = application->getApplication()->getTimerContainer();
+
+    timerContainer->removeAllTimers();
 
     lua_newtable(L);
     luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_timers);

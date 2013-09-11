@@ -3,12 +3,14 @@
 
 #include "eventdispatcher.h"
 
+class Application;
+
 class TimerContainer;
 
 class Timer : public EventDispatcher
 {
 public:
-	Timer(double delay, int repeatCount = 0);
+    Timer(Application *application, double delay, int repeatCount = 0);
 	virtual ~Timer();
 
 	void start();
@@ -60,10 +62,6 @@ public:
 		if (repeatCount_ != 0 && currentCount_ >= repeatCount_)
 			stop();
 	}
-
-	static void pauseAllTimers();
-	static void resumeAllTimers();
-	static void stopAllTimers();
 	
 private:
 	double delay_;
@@ -73,6 +71,8 @@ private:
     double additionalDelay_;
 
 	TimerContainer* container_;
+
+    Application *application_;
 };
 
 #endif

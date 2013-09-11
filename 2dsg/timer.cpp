@@ -3,16 +3,18 @@
 #include "timerevent.h"
 #include "platform.h"
 #include <glog.h>
+#include "application.h"
 
-Timer::Timer(double delay, int repeatCount)
+Timer::Timer(Application *application, double delay, int repeatCount)
 {
+    application_ = application;
 	delay_ = delay;
 	repeatCount_ = repeatCount;
 	running_ = false;
 	currentCount_ = 0;
     additionalDelay_ = 0;
 
-	container_ = &TimerContainer::instance();
+    container_ = application_->getTimerContainer();
 }
 
 Timer::~Timer()
@@ -84,20 +86,4 @@ void Timer::tick()
 	}
 
 	unref();
-}
-
-
-void Timer::pauseAllTimers()
-{
-	TimerContainer::instance().pauseAllTimers();
-}
-
-void Timer::resumeAllTimers()
-{
-	TimerContainer::instance().resumeAllTimers();
-}
-
-void Timer::stopAllTimers()
-{
-	TimerContainer::instance().removeAllTimers();
 }

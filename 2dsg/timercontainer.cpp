@@ -3,10 +3,14 @@
 #include "platform.h"
 #include <algorithm>
 
-TimerContainer& TimerContainer::instance()
+TimerContainer::TimerContainer()
 {
-    static TimerContainer container;
-    return container;
+
+}
+
+TimerContainer::~TimerContainer()
+{
+
 }
 
 void TimerContainer::addTimer(Timer* timer, double additionalDelay)

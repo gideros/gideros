@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <ginput.h>
+#include <timercontainer.h>
 
 class Font;
 class Stage;
@@ -105,6 +106,11 @@ public:
 		return &textureManager_;
 	}
 
+    TimerContainer *getTimerContainer()
+    {
+        return &timerContainer_;
+    }
+
 private:
 	TextureManager textureManager_;
 	Stage* stage_;
@@ -139,6 +145,8 @@ private:
 	bool tickersIteratorInvalid_;
 
 	float backr_, backg_, backb_;
+
+    TimerContainer timerContainer_;
 };
 
 #endif
