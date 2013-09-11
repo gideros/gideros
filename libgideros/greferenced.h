@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <set>
+#include <map>
 #include <cassert>
 #include <string>
 #include "gexport.h"
@@ -14,8 +15,8 @@ public:
 	void unref();
 	int refCount() const;
 
-	void setData(GReferenced* data);
-	GReferenced* data() const;
+    void setData(void *key, GReferenced* data);
+    GReferenced* data(void *key) const;
 
 	void setProxy(GReferenced* proxy);
 	GReferenced* proxy() const;
@@ -28,7 +29,7 @@ protected:
 
 private:
 	int refcount_;
-	GReferenced* data_;
+    std::map<void *, GReferenced*> data_;
 	GReferenced* proxy_;
 
 private:
