@@ -69,6 +69,9 @@ EventBinder::EventBinder(lua_State* L)
     lua_pushstring(L, Event::APPLICATION_FOREGROUND.type());
     lua_setfield(L, -2, "APPLICATION_FOREGROUND");
 
+    lua_pushstring(L, Event::MEMORY_WARNING.type());
+    lua_setfield(L, -2, "MEMORY_WARNING");
+
 	lua_pushstring(L, StageOrientationEvent::ORIENTATION_CHANGE.type());
 	lua_setfield(L, -2, "ORIENTATION_CHANGE");
 

@@ -559,6 +559,9 @@ void LuaApplication::callback(int type, void *event)
     }
     else if (type == GAPPLICATION_MEMORY_LOW_EVENT)
     {
+        Event event(Event::MEMORY_WARNING);
+        application_->broadcastEvent(&event);
+
         lua_gc(L, LUA_GCCOLLECT, 0);
         lua_gc(L, LUA_GCCOLLECT, 0);
     }
