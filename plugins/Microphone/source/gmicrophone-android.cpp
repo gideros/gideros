@@ -92,7 +92,7 @@ public:
 	GMicrophoneManager()
 	{
 		JNIEnv *env = g_getJNIEnv();
-		jclass localClass = env->FindClass("com/giderosmobile/android/plugins/GMicrophone");
+		jclass localClass = env->FindClass("com/giderosmobile/android/plugins/microphone/GMicrophone");
 		cls_ = (jclass)env->NewGlobalRef(localClass);
 		env->DeleteLocalRef(localClass);
 
@@ -316,7 +316,7 @@ static GMicrophoneManager *s_manager = NULL;
 
 extern "C" {
 
-JNIEXPORT void JNICALL Java_com_giderosmobile_android_plugins_GMicrophone_onDataAvailableByte(JNIEnv *env, jclass clz, jlong id, jbyteArray jaudioData, jint size, jlong data)
+JNIEXPORT void JNICALL Java_com_giderosmobile_android_plugins_microphone_GMicrophone_onDataAvailableByte(JNIEnv *env, jclass clz, jlong id, jbyteArray jaudioData, jint size, jlong data)
 {
 	jbyte *audioData = env->GetByteArrayElements(jaudioData, 0);
 	unsigned char *audioData2 = (unsigned char*)audioData;
@@ -326,7 +326,7 @@ JNIEXPORT void JNICALL Java_com_giderosmobile_android_plugins_GMicrophone_onData
 	env->ReleaseByteArrayElements(jaudioData, audioData, 0);	
 }
 
-JNIEXPORT void JNICALL Java_com_giderosmobile_android_plugins_GMicrophone_onDataAvailableShort(JNIEnv *env, jclass clz, jlong id, jshortArray jaudioData, jint size, jlong data)
+JNIEXPORT void JNICALL Java_com_giderosmobile_android_plugins_microphone_GMicrophone_onDataAvailableShort(JNIEnv *env, jclass clz, jlong id, jshortArray jaudioData, jint size, jlong data)
 {
 	jshort *audioData = env->GetShortArrayElements(jaudioData, 0);
 	((GMicrophoneManager*)data)->onDataAvailable(id, audioData, size);

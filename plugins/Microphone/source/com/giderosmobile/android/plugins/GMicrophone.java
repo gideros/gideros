@@ -1,4 +1,4 @@
-package com.giderosmobile.android.plugins;
+package com.giderosmobile.android.plugins.microphone;
 
 import java.util.HashMap;
 
@@ -93,7 +93,7 @@ class GMicrophone {
 		if (audioRecord.getState() == AudioRecord.STATE_UNINITIALIZED)
 			return GMICROPHONE_CANNOT_OPEN_DEVICE;
 
-		sInstance.mMicrophones.put(id, new Microphone(id, audioRecord, sData));
+		sInstance.mMicrophones.put(id, new Microphone(id, audioRecord, sampleRate, channelConfig, audioFormat, bufferSize, sData));
 
 		return GMICROPHONE_NO_ERROR;
 	}
@@ -135,8 +135,6 @@ class GMicrophone {
 
 		stopThread(microphone);
 
-		microphone.audioRecord.release();
-
 		sInstance.mMicrophones.remove(id);
 	}
 
@@ -164,20 +162,43 @@ class GMicrophone {
 	static class Microphone implements Runnable {
 		public long id;
 		public AudioRecord audioRecord;
+		int sampleRate, channelConfig, audioFormat, bufferSize;
 		public long data;
 		public volatile boolean exit;
 		public boolean toBeResumed;
 		public Thread thread;
 
-		public Microphone(long id, AudioRecord audioRecord, long data) {
+		public Microphone(long id, AudioRecord audioRecord, int sampleRate, int channelConfig, int audioFormat, int bufferSize, long data) {
 			this.id = id;
 			this.audioRecord = audioRecord;
+			this.sampleRate = sampleRate;
+			this.channelConfig = channelConfig;
+			this.audioFormat = audioFormat;
+			this.bufferSize = bufferSize;
 			this.data = data;
 			this.toBeResumed = false;
 		}
 
 		@Override
 		public void run() {
+			if (audioRecord == null)
+				audioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, sampleRate, channelConfig, audioFormat, bufferSize);
+			
+			if (audioRecord.getState() == AudioRecord.STATE_UNINITIALIZED) {
+				while (!exit) {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+
+				audioRecord.release();
+				audioRecord = null;
+
+				return;
+			}			
+			
 			byte[] audioDataByte = null;
 			short[] audioDataShort = null;
 
@@ -204,6 +225,8 @@ class GMicrophone {
 			}
 
 			audioRecord.stop();
+			audioRecord.release();
+			audioRecord = null;
 		}
 	}
 
