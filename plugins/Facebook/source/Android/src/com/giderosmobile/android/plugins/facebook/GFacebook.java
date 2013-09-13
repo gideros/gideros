@@ -162,11 +162,23 @@ public class GFacebook
 	}
 	
 	private static void extendAccessToken(){
-		fb.extendAccessToken(sActivity.get(), new GFacebookService());
+		sActivity.get().runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				fb.extendAccessToken(sActivity.get(), new GFacebookService());
+			}
+		});
 	}
 	
 	private static void extendAccessTokenIfNeeded(){
-		fb.extendAccessTokenIfNeeded(sActivity.get(), new GFacebookService());
+		sActivity.get().runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				fb.extendAccessTokenIfNeeded(sActivity.get(), new GFacebookService());
+			}
+		});
 	}
 	
 	private static boolean shouldExtendAccessToken(){
