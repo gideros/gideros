@@ -8,7 +8,7 @@
 
   ;Name and file
   Name "Gideros"
-  OutFile "gideros_2013.06.3.exe"
+  OutFile "gideros_2013.09.exe"
 
   ;Default installation folder
   InstallDir $PROGRAMFILES\Gideros

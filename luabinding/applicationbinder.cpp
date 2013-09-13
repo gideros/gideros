@@ -544,7 +544,7 @@ int ApplicationBinder::getApiVersion(lua_State* L)
 
     LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
 
-    lua_pushliteral(L, "2013.06.3");
+    lua_pushliteral(L, "2013.09");
 
     return 1;
 }
