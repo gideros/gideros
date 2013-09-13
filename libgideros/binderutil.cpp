@@ -30,6 +30,9 @@ static int constructor_postInit(lua_State *L)
         lua_pushvalue(L, i);
     lua_call(L, n, 1);
 
+    if (lua_isnil(L, -1))
+        return 1;
+
     lua_getfield(L, -1, "postInit");
     if (lua_type(L, -1) == LUA_TFUNCTION)
     {
