@@ -167,7 +167,7 @@ on the disk, click this option to export only the Lua codes and assets.
    <item>
     <widget class="QCheckBox" name="encrypt">
      <property name="text">
-      <string>Encrypt Lua files</string>
+      <string>Encrypt code and asset files</string>
      </property>
     </widget>
    </item>
