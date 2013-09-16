@@ -47,11 +47,12 @@ cd ..\..
 
 cd Microphone
 cd source
+cd Desktop
 qmake microphone.pro
 mingw32-make.exe clean
 mingw32-make.exe release
 mingw32-make.exe release
-cd ..\..
+cd ..\..\..
 
 cd ..
 cd scripts
