@@ -14,12 +14,12 @@ mkdir libs2\armeabi-v7a
 
 cp jni\Application-arm6.mk jni\Application.mk
 cp jni\Android-arm6.mk jni\Android.mk
-call C:\android-ndk-r8e\ndk-build
+call c:\android-ndk-r9\ndk-build
 cp libs\armeabi\libgideros.so libs2\armeabi
 
 cp jni\Application-arm7.mk jni\Application.mk
 cp jni\Android-arm7.mk jni\Android.mk
-call C:\android-ndk-r8e\ndk-build
+call c:\android-ndk-r9\ndk-build
 cp libs\armeabi-v7a\libgideros.so libs2\armeabi-v7a
 
 rm -rf libs

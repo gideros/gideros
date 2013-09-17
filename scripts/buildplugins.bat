@@ -54,5 +54,13 @@ mingw32-make.exe release
 mingw32-make.exe release
 cd ..\..\..
 
+cd JSON
+cd source
+qmake json.pro
+mingw32-make.exe clean
+mingw32-make.exe release
+mingw32-make.exe release
+cd ..\..
+
 cd ..
 cd scripts

@@ -18,7 +18,7 @@ static void log(const char *buffer)
 #if defined(QT_CORE_LIB)
     qDebug() << buffer;
 #elif defined(__ANDROID__)
-    __android_log_print(ANDROID_LOG_DEBUG, "Gideros", buffer);
+    __android_log_print(ANDROID_LOG_DEBUG, "Gideros", "%s", buffer);
 #else
     printf("%s\n", buffer);
 #endif
