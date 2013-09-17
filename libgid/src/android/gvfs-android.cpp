@@ -19,6 +19,10 @@
 
 #include <pystring.h>
 
+#ifdef _WIN32
+#define strcasecmp stricmp
+#endif
+
 struct FileInfo
 {
 	int zipFile;
@@ -80,12 +84,16 @@ static int s_open(const char *pathname, int flags)
     {
         char *ext = strrchr(pathname, '.');
 
-        if (ext &&
-            tolower(ext[1]) == 'l' &&
-            tolower(ext[2]) == 'u' &&
-            tolower(ext[3]) == 'a')
+        if (ext)
         {
-            fi.encrypted = true;
+            if (!strcasecmp(ext, "lua") ||
+                !strcasecmp(ext, "jpeg") ||
+                !strcasecmp(ext, "jpg") ||
+                !strcasecmp(ext, "png") ||
+                !strcasecmp(ext, "wav"))
+            {
+                fi.encrypted = true;
+            }
         }
     }
 

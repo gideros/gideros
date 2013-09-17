@@ -15,6 +15,10 @@
 #include <string.h>
 #include <ctype.h>
 
+#ifdef _WIN32
+#define strcasecmp stricmp
+#endif
+
 struct FileInfo
 {
     bool encrypted;
@@ -50,11 +54,11 @@ static int s_open(const char *pathname, int flags)
 
         if (ext)
         {
-            if (!stricmp(ext, "lua") ||
-                !stricmp(ext, "jpeg") ||
-                !stricmp(ext, "jpg") ||
-                !stricmp(ext, "png") ||
-                !stricmp(ext, "wav"))
+            if (!strcasecmp(ext, "lua") ||
+                !strcasecmp(ext, "jpeg") ||
+                !strcasecmp(ext, "jpg") ||
+                !strcasecmp(ext, "png") ||
+                !strcasecmp(ext, "wav"))
             {
                 fi.encrypted = true;
             }
