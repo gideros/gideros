@@ -39,6 +39,12 @@
 		5F9FBB2E15BC106F00C898DA /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9FBB2D15BC106F00C898DA /* OpenGLES.framework */; };
 		5F9FBB3415BC106F00C898DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5F9FBB3215BC106F00C898DA /* InfoPlist.strings */; };
 		5F9FBB3615BC106F00C898DA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F9FBB3515BC106F00C898DA /* main.m */; };
+		5FC825EA17E88FCC00751626 /* bit.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825E917E88FCC00751626 /* bit.c */; };
+		5FC825ED17E88FD300751626 /* bit_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825EC17E88FD300751626 /* bit_stub.cpp */; };
+		5FC825EF17E88FE800751626 /* fpconv.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825EE17E88FE800751626 /* fpconv.c */; };
+		5FC825F117E88FF700751626 /* strbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825F017E88FF700751626 /* strbuf.c */; };
+		5FC825F317E88FFE00751626 /* lua_cjson.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825F217E88FFE00751626 /* lua_cjson.c */; };
+		5FC825F517E8901000751626 /* lua_cjson_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825F417E8901000751626 /* lua_cjson_stub.cpp */; };
 		5FEA848C178166D400DC0157 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FEA8489178166D400DC0157 /* Default-568h@2x.png */; };
 		5FEA848D178166D400DC0157 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FEA848A178166D400DC0157 /* Default.png */; };
 		5FEA848E178166D400DC0157 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FEA848B178166D400DC0157 /* Default@2x.png */; };
@@ -85,6 +91,12 @@
 		5F9FBB3315BC106F00C898DA /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5F9FBB3515BC106F00C898DA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		5F9FBB3715BC106F00C898DA /* GiderosiOSPlayer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GiderosiOSPlayer-Prefix.pch"; sourceTree = "<group>"; };
+		5FC825E917E88FCC00751626 /* bit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bit.c; path = Plugins/bit.c; sourceTree = "<group>"; };
+		5FC825EC17E88FD300751626 /* bit_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bit_stub.cpp; path = Plugins/bit_stub.cpp; sourceTree = "<group>"; };
+		5FC825EE17E88FE800751626 /* fpconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fpconv.c; path = Plugins/fpconv.c; sourceTree = "<group>"; };
+		5FC825F017E88FF700751626 /* strbuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = strbuf.c; path = Plugins/strbuf.c; sourceTree = "<group>"; };
+		5FC825F217E88FFE00751626 /* lua_cjson.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lua_cjson.c; path = Plugins/lua_cjson.c; sourceTree = "<group>"; };
+		5FC825F417E8901000751626 /* lua_cjson_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lua_cjson_stub.cpp; path = Plugins/lua_cjson_stub.cpp; sourceTree = "<group>"; };
 		5FEA8489178166D400DC0157 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		5FEA848A178166D400DC0157 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		5FEA848B178166D400DC0157 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
@@ -123,6 +135,12 @@
 		5F576F0C15BC2E4800991AD4 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				5FC825E917E88FCC00751626 /* bit.c */,
+				5FC825EC17E88FD300751626 /* bit_stub.cpp */,
+				5FC825EE17E88FE800751626 /* fpconv.c */,
+				5FC825F017E88FF700751626 /* strbuf.c */,
+				5FC825F217E88FFE00751626 /* lua_cjson.c */,
+				5FC825F417E8901000751626 /* lua_cjson_stub.cpp */,
 				5F41547815CEFA56007B5365 /* iad.mm */,
 				5F576F0D15BC2E7D00991AD4 /* gamekit.mm */,
 				5F576F0E15BC2E7D00991AD4 /* storekit.mm */,
@@ -290,6 +308,12 @@
 				5F41547915CEFA56007B5365 /* iad.mm in Sources */,
 				5FFCA6FB15DD31AD00741085 /* lfs_stub.cpp in Sources */,
 				5FFCA6FC15DD31AD00741085 /* lfs.c in Sources */,
+				5FC825EA17E88FCC00751626 /* bit.c in Sources */,
+				5FC825ED17E88FD300751626 /* bit_stub.cpp in Sources */,
+				5FC825EF17E88FE800751626 /* fpconv.c in Sources */,
+				5FC825F117E88FF700751626 /* strbuf.c in Sources */,
+				5FC825F317E88FFE00751626 /* lua_cjson.c in Sources */,
+				5FC825F517E8901000751626 /* lua_cjson_stub.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

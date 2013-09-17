@@ -38,12 +38,18 @@ cd ../..
 
 cd Microphone
 cd source
+cd Desktop
 /Qt/1.2.1/Desktop/Qt/4.8.1/gcc/bin/qmake microphone.pro
 make clean
 make
-cd ..\..
+cd ../../..
 
-
+cd JSON
+cd source
+/Qt/1.2.1/Desktop/Qt/4.8.1/gcc/bin/qmake json.pro
+make clean
+make
+cd ../..
 
 cd ..
 cd scripts

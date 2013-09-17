@@ -33,6 +33,12 @@
 		5F58D85015D9263F00137D76 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F58D84415D9263F00137D76 /* QuartzCore.framework */; };
 		5F58D85115D9263F00137D76 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F58D84515D9263F00137D76 /* StoreKit.framework */; };
 		5F58D85315D9268900137D76 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
+		5FC825FB17E890B300751626 /* bit.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825FA17E890B300751626 /* bit.c */; };
+		5FC825FE17E890E600751626 /* bit_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825FD17E890E600751626 /* bit_stub.cpp */; };
+		5FC8260017E8922300751626 /* fpconv.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825FF17E8922300751626 /* fpconv.c */; };
+		5FC8260217E8922F00751626 /* strbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC8260117E8922F00751626 /* strbuf.c */; };
+		5FC8260417E8923A00751626 /* lua_cjson.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC8260317E8923A00751626 /* lua_cjson.c */; };
+		5FC8260617E8924100751626 /* lua_cjson_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FC8260517E8924100751626 /* lua_cjson_stub.cpp */; };
 		5FD896EC15CED77F00D34824 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896EB15CED77F00D34824 /* UIKit.framework */; };
 		5FD896EE15CED77F00D34824 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896ED15CED77F00D34824 /* Foundation.framework */; };
 		5FD896F015CED77F00D34824 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896EF15CED77F00D34824 /* CoreGraphics.framework */; };
@@ -73,6 +79,12 @@
 		5F58D84415D9263F00137D76 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		5F58D84515D9263F00137D76 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		5F58D85215D9268900137D76 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
+		5FC825FA17E890B300751626 /* bit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bit.c; path = Plugins/bit.c; sourceTree = "<group>"; };
+		5FC825FD17E890E600751626 /* bit_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bit_stub.cpp; path = Plugins/bit_stub.cpp; sourceTree = "<group>"; };
+		5FC825FF17E8922300751626 /* fpconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fpconv.c; path = Plugins/fpconv.c; sourceTree = "<group>"; };
+		5FC8260117E8922F00751626 /* strbuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = strbuf.c; path = Plugins/strbuf.c; sourceTree = "<group>"; };
+		5FC8260317E8923A00751626 /* lua_cjson.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lua_cjson.c; path = Plugins/lua_cjson.c; sourceTree = "<group>"; };
+		5FC8260517E8924100751626 /* lua_cjson_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lua_cjson_stub.cpp; path = Plugins/lua_cjson_stub.cpp; sourceTree = "<group>"; };
 		5FD896E715CED77F00D34824 /* iOS Template.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Template.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FD896EB15CED77F00D34824 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		5FD896ED15CED77F00D34824 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -117,6 +129,12 @@
 		5F58D82915D925B400137D76 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				5FC825FA17E890B300751626 /* bit.c */,
+				5FC825FD17E890E600751626 /* bit_stub.cpp */,
+				5FC825FF17E8922300751626 /* fpconv.c */,
+				5FC8260117E8922F00751626 /* strbuf.c */,
+				5FC8260317E8923A00751626 /* lua_cjson.c */,
+				5FC8260517E8924100751626 /* lua_cjson_stub.cpp */,
 				5F58D82B15D925D100137D76 /* iad.mm */,
 				5F58D82A15D925D100137D76 /* gamekit.mm */,
 				5F58D83015D925D100137D76 /* storekit.mm */,
@@ -278,6 +296,12 @@
 				5F58D83715D925D100137D76 /* storekit.mm in Sources */,
 				5FFCA70915DD337700741085 /* lfs_stub.cpp in Sources */,
 				5FFCA70A15DD337700741085 /* lfs.c in Sources */,
+				5FC825FB17E890B300751626 /* bit.c in Sources */,
+				5FC825FE17E890E600751626 /* bit_stub.cpp in Sources */,
+				5FC8260017E8922300751626 /* fpconv.c in Sources */,
+				5FC8260217E8922F00751626 /* strbuf.c in Sources */,
+				5FC8260417E8923A00751626 /* lua_cjson.c in Sources */,
+				5FC8260617E8924100751626 /* lua_cjson_stub.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
