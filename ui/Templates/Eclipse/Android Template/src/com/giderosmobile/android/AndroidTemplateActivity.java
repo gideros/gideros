@@ -26,6 +26,8 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		System.loadLibrary("lfs");
 		System.loadLibrary("ggooglebilling");
 		System.loadLibrary("lsqlite3");
+		System.loadLibrary("json");
+		System.loadLibrary("bitop");
 	}
 
 	static private String[] externalClasses = {
