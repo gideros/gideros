@@ -96,11 +96,6 @@
 	self.context = nil;	
 }
 
-- (BOOL)prefersStatusBarHidden
-{
-    return YES;
-}
-
 - (NSInteger)animationFrameInterval
 {
     return animationFrameInterval;
