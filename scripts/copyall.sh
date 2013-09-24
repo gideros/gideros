@@ -41,6 +41,7 @@ mkdir ~/Desktop/release/All\ Plugins/Flurry/bin
 mkdir ~/Desktop/release/All\ Plugins/Game\ Kit/bin
 mkdir ~/Desktop/release/All\ Plugins/Google\ Billing/bin
 mkdir ~/Desktop/release/All\ Plugins/iAd/bin
+mkdir ~/Desktop/release/All\ Plugins/JSON/bin
 mkdir ~/Desktop/release/All\ Plugins/LPeg/bin
 mkdir ~/Desktop/release/All\ Plugins/LuaFileSystem/bin
 mkdir ~/Desktop/release/All\ Plugins/LuaSocket/bin
@@ -59,7 +60,9 @@ cp ../plugins/LPeg/source/liblpeg.dylib ~/Desktop/release/All\ Plugins/LPeg/bin/
 mkdir ~/Desktop/release/All\ Plugins/LuaFileSystem/bin/Mac\ OS
 cp ../plugins/LuaFileSystem/source/liblfs.dylib ~/Desktop/release/All\ Plugins/LuaFileSystem/bin/Mac\ OS/lfs.dylib
 mkdir ~/Desktop/release/All\ Plugins/Microphone/bin/Mac\ OS
-cp ../plugins/Microphone/source/libmicrophone.dylib ~/Desktop/release/All\ Plugins/Microphone/bin/Mac\ OS/microphone.dylib
+cp ../plugins/Microphone/source/Desktop/libmicrophone.dylib ~/Desktop/release/All\ Plugins/Microphone/bin/Mac\ OS/microphone.dylib
+mkdir ~/Desktop/release/All\ Plugins/JSON/bin/Mac\ OS
+cp ../plugins/JSON/source/libjson.dylib ~/Desktop/release/All\ Plugins/JSON/bin/Mac\ OS/json.dylib
 
 
 cp -R /Volumes/release/All\ Plugins/BitOp/bin/Android ~/Desktop/release/All\ Plugins/BitOp/bin
@@ -68,12 +71,15 @@ cp -R /Volumes/release/All\ Plugins/LPeg/bin/Android ~/Desktop/release/All\ Plug
 cp -R /Volumes/release/All\ Plugins/LuaFileSystem/bin/Android ~/Desktop/release/All\ Plugins/LuaFileSystem/bin
 cp -R /Volumes/release/All\ Plugins/LuaSQLite3/bin/Android ~/Desktop/release/All\ Plugins/LuaSQLite3/bin
 cp -R /Volumes/release/All\ Plugins/Microphone/bin/Android ~/Desktop/release/All\ Plugins/Microphone/bin
+cp -R /Volumes/release/All\ Plugins/JSON/bin/Android ~/Desktop/release/All\ Plugins/JSON/bin
 
 mkdir ~/Desktop/release/Plugins
 cp ../plugins/LuaSQLite3/source/liblsqlite3.dylib ~/Desktop/release/Plugins/lsqlite3.dylib
 cp ../plugins/LuaSocket/source/libluasocket.dylib ~/Desktop/release/Plugins/luasocket.dylib
 cp ../plugins/LuaFileSystem/source/liblfs.dylib ~/Desktop/release/Plugins/lfs.dylib
-cp ../plugins/Microphone/source/libmicrophone.dylib ~/Desktop/release/Plugins/microphone.dylib
+cp ../plugins/Microphone/source/Desktop/libmicrophone.dylib ~/Desktop/release/Plugins/microphone.dylib
+cp ../plugins/BitOp/source/libbitop.dylib ~/Desktop/release/Plugins/bitop.dylib
+cp ../plugins/JSON/source/libjson.dylib ~/Desktop/release/Plugins/json.dylib
 
 
 #svn export --force ../ui/Resources ~/Desktop/release/Gideros\ Studio.app/Contents/Resources
