@@ -99,6 +99,12 @@ copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\Plugins\libluasocket.a" .
 copy ..\plugins\LuaFileSystem\source\lfs.h                                     ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\plugins\LuaFileSystem\source\lfs.c                                     ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\plugins\LuaFileSystem\source\lfs_stub.cpp                              ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
+copy ..\plugins\BitOp\source\bit.c                                             ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
+copy ..\plugins\BitOp\source\bit_stub.cpp                                      ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
+copy ..\plugins\JSON\source\fpconv.c                                           ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
+copy ..\plugins\JSON\source\strbuf.c                                           ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
+copy ..\plugins\JSON\source\lua_cjson.c                                        ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
+copy ..\plugins\JSON\source\lua_cjson_stub.cpp                                 ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 mkdir "..\..\release\Templates\Xcode4\iOS Template\iOS Template\Plugins"
 copy ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins\* "..\..\release\Templates\Xcode4\iOS Template\iOS Template\Plugins"
 
@@ -114,6 +120,10 @@ cp "..\plugins\Google Billing\source\Android\libs\armeabi\libggooglebilling.so" 
 cp "..\plugins\Google Billing\source\Android\libs\armeabi-v7a\libggooglebilling.so" "..\..\release\Templates\Eclipse\Android Template\libs\armeabi-v7a"
 cp ..\plugins\LuaSQLite3\source\libs\armeabi\liblsqlite3.so "..\..\release\Templates\Eclipse\Android Template\libs\armeabi"
 cp ..\plugins\LuaSQLite3\source\libs\armeabi-v7a\liblsqlite3.so "..\..\release\Templates\Eclipse\Android Template\libs\armeabi-v7a"
+cp ..\plugins\BitOp\source\libs\armeabi\libbitop.so "..\..\release\Templates\Eclipse\Android Template\libs\armeabi"
+cp ..\plugins\BitOp\source\libs\armeabi-v7a\libbitop.so "..\..\release\Templates\Eclipse\Android Template\libs\armeabi-v7a"
+cp ..\plugins\JSON\source\libs\armeabi\libjson.so "..\..\release\Templates\Eclipse\Android Template\libs\armeabi"
+cp ..\plugins\JSON\source\libs\armeabi-v7a\libjson.so "..\..\release\Templates\Eclipse\Android Template\libs\armeabi-v7a"
 
 rm -rf ..\..\temp
 rem mkdir ..\..\temp
@@ -155,6 +165,7 @@ mkdir "..\..\release\All Plugins\Flurry\bin"
 mkdir "..\..\release\All Plugins\Game Kit\bin"
 mkdir "..\..\release\All Plugins\Google Billing\bin"
 mkdir "..\..\release\All Plugins\iAd\bin"
+mkdir "..\..\release\All Plugins\JSON\bin"
 mkdir "..\..\release\All Plugins\LPeg\bin"
 mkdir "..\..\release\All Plugins\LuaFileSystem\bin"
 mkdir "..\..\release\All Plugins\LuaSocket\bin"
@@ -172,7 +183,9 @@ cp "..\plugins\LuaFileSystem\source\release\lfs.dll" "..\..\release\All Plugins\
 mkdir "..\..\release\All Plugins\LPeg\bin\Windows"
 cp "..\plugins\LPeg\source\release\lpeg.dll" "..\..\release\All Plugins\LPeg\bin\Windows"
 mkdir "..\..\release\All Plugins\Microphone\bin\Windows"
-cp "..\plugins\Microphone\source\release\microphone.dll" "..\..\release\All Plugins\Microphone\bin\Windows"
+cp "..\plugins\Microphone\source\Desktop\release\microphone.dll" "..\..\release\All Plugins\Microphone\bin\Windows"
+mkdir "..\..\release\All Plugins\JSON\bin\Windows"
+cp "..\plugins\JSON\source\release\json.dll" "..\..\release\All Plugins\JSON\bin\Windows"
 
 
 mkdir "..\..\release\All Plugins\BitOp\bin\Android"
@@ -208,16 +221,22 @@ cp ..\plugins\LuaSQLite3\source\libs\armeabi-v7a\liblsqlite3.so "..\..\release\A
 mkdir "..\..\release\All Plugins\Microphone\bin\Android"
 mkdir "..\..\release\All Plugins\Microphone\bin\Android\armeabi"
 mkdir "..\..\release\All Plugins\Microphone\bin\Android\armeabi-v7a"
-cp ..\plugins\Microphone\source\libs\armeabi\libmicrophone.so "..\..\release\All Plugins\Microphone\bin\Android\armeabi" 
-cp ..\plugins\Microphone\source\libs\armeabi-v7a\libmicrophone.so "..\..\release\All Plugins\Microphone\bin\Android\armeabi-v7a"
+cp ..\plugins\Microphone\source\Android\libs\armeabi\libmicrophone.so "..\..\release\All Plugins\Microphone\bin\Android\armeabi" 
+cp ..\plugins\Microphone\source\Android\libs\armeabi-v7a\libmicrophone.so "..\..\release\All Plugins\Microphone\bin\Android\armeabi-v7a"
 
+mkdir "..\..\release\All Plugins\JSON\bin\Android"
+mkdir "..\..\release\All Plugins\JSON\bin\Android\armeabi"
+mkdir "..\..\release\All Plugins\JSON\bin\Android\armeabi-v7a"
+cp ..\plugins\JSON\source\libs\armeabi\libjson.so "..\..\release\All Plugins\JSON\bin\Android\armeabi" 
+cp ..\plugins\JSON\source\libs\armeabi-v7a\libjson.so "..\..\release\All Plugins\JSON\bin\Android\armeabi-v7a"
 
 mkdir ..\..\release\Plugins
 cp ..\plugins\LuaSQLite3\source\release\lsqlite3.dll ..\..\release\Plugins
 cp ..\plugins\LuaSocket\source\release\luasocket.dll ..\..\release\Plugins
 cp ..\plugins\LuaFileSystem\source\release\lfs.dll ..\..\release\Plugins
-cp ..\plugins\Microphone\source\release\microphone.dll ..\..\release\Plugins
-
+cp ..\plugins\Microphone\source\Desktop\release\microphone.dll ..\..\release\Plugins
+cp ..\plugins\BitOp\source\release\bitop.dll ..\..\release\Plugins
+cp ..\plugins\JSON\source\release\json.dll ..\..\release\Plugins
 
 cd ..\..
 rm -rf release2
