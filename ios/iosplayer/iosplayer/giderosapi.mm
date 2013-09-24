@@ -1251,28 +1251,6 @@ BOOL ApplicationManager::shouldAutorotateToInterfaceOrientation(UIInterfaceOrien
 	return result;
 }
 
-#if (__cplusplus && __cplusplus >= 201103L && (__has_extension(cxx_strong_enums) || __has_feature(objc_fixed_enum))) || (!__cplusplus && __has_feature(objc_fixed_enum))
-#define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
-#if (__cplusplus)
-#define NS_OPTIONS(_type, _name) _type _name; enum : _type
-#else
-#define NS_OPTIONS(_type, _name) enum _name : _type _name; enum _name : _type
-#endif
-#else
-#define NS_ENUM(_type, _name) _type _name; enum
-#define NS_OPTIONS(_type, _name) _type _name; enum
-#endif
-
-typedef NS_OPTIONS(NSUInteger, UIInterfaceOrientationMask) {
-    UIInterfaceOrientationMaskPortrait = (1 << UIInterfaceOrientationPortrait),
-    UIInterfaceOrientationMaskLandscapeLeft = (1 << UIInterfaceOrientationLandscapeLeft),
-    UIInterfaceOrientationMaskLandscapeRight = (1 << UIInterfaceOrientationLandscapeRight),
-    UIInterfaceOrientationMaskPortraitUpsideDown = (1 << UIInterfaceOrientationPortraitUpsideDown),
-    UIInterfaceOrientationMaskLandscape = (UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight),
-    UIInterfaceOrientationMaskAll = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight | UIInterfaceOrientationMaskPortraitUpsideDown),
-    UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight),
-};
-
 NSUInteger ApplicationManager::supportedInterfaceOrientations()
 {
 	NSUInteger result;

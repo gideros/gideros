@@ -60,6 +60,7 @@ typedef int socklen_t;
 #include <netdb.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #define BACKLOG 5
 #define INVALID_SOCKET (-1)

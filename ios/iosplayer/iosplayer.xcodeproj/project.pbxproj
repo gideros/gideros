@@ -1862,7 +1862,7 @@
 					../../libgid/include/ios,
 					"../../libgid/external/zlib-1.2.8",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -1911,7 +1911,7 @@
 					../../libgid/include/ios,
 					"../../libgid/external/zlib-1.2.8",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};

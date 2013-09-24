@@ -25,7 +25,7 @@ static Dib logo2dib(Application* application, unsigned char* logo, size_t logoSi
 			unsigned int b = image[index + 2];
 			unsigned int a = image[index + 3];
 			
-			unsigned char rgba[] = {r, g, b, a};
+			unsigned char rgba[] = {(unsigned char)r, (unsigned char)g, (unsigned char)b, (unsigned char)a};
 			dib.setPixel(x, y, rgba);
 		}
 

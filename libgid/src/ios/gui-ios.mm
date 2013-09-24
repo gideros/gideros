@@ -165,7 +165,7 @@ private:
 		
         message_ = [[UILabel alloc] initWithFrame:CGRectZero];
         message_.backgroundColor = [UIColor clearColor];        
-        message_.textAlignment = UITextAlignmentCenter; 
+        message_.textAlignment = NSTextAlignmentCenter;
         message_.textColor = [UIColor whiteColor];
         message_.font = [UIFont systemFontOfSize:16];
         message_.text = message;
