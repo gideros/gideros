@@ -317,6 +317,19 @@ rayCast(x1, y1, x2, y2, listener [, data]) b2.World - raycast the world for all 
 setDebugDraw() b2.World - registers a b2.DebugDraw instance for debug drawing
 setGravity(gravityx, gravityy) b2.World - sets the gravity vector
 step(timeStep, velocityIterations, positionIterations) b2.World - takes a time step
+bit
+bit.arshift(x, n) bit - Returns the bitwise arithmetic right-shift
+bit.band(x1 [, x2]) bit - Returns the bitwise and of its argument.
+bit.bnot(x) bit - Returns the bitwise not of its argument.
+bit.bor(x1 [, x2]) bit - Returns the bitwise or of its argument.
+bit.bswap(x) bit - Swaps the bytes of its argument and returns it
+bit.bxor(x1 [, x2]) bit - Returns the bitwise xor of its argument.
+bit.lshift(x, n) bit - Returns the bitwise logical left-shift
+bit.rol(x, n) bit - Returns the bitwise left rotation
+bit.ror(x, n) bit - Returns the bitwise right rotation
+bit.rshift(x, n) bit - Returns the bitwise logical right-shift
+bit.tobit(x) bit - Normalizes a number to the numeric range for bit operations
+bit.tohex(x [, n]) bit - Converts its first argument to a hex string.
 Bitmap > Sprite
 Bitmap.new(texture) Bitmap - creates a new Bitmap object
 getAnchorPoint() Bitmap - returns the x and y coordinates of the anchor point
@@ -382,6 +395,7 @@ Event.LOGIN_CANCEL - value "loginCancel"
 Event.LOGIN_COMPLETE - value "loginComplete"
 Event.LOGIN_ERROR - value "loginError"
 Event.LOGOUT_COMPLETE - value "logoutComplete"
+Event.MEMORY_WARNING - value "memoryWarning"
 Event.MOUSE_DOWN - value "mouseDown"
 Event.MOUSE_MOVE - value "mouseMove"
 Event.MOUSE_UP - value "mouseUp"
@@ -508,6 +522,9 @@ io.read(format1, ...) io - reads file according to given formats, returns read v
 io.tmpfile() io - returns a handle for a temporary file, opened in update mode
 io.type(obj) io - returns &quot;file&quot; if obj is an open file handle, &quot;close file&quot; if closed, or nil if not a file handle
 io.write(value1, ...) io - writes strings or numbers to file
+json
+json.decode(jsondata) json - Returns Lua table from provided json encoded string
+json.encode(data) json - Returns encoded json string from provided Lua table
 KeyCode
 keycode
 KeyCode.A - value 65
