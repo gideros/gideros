@@ -46,6 +46,9 @@
 #include "mdiarea.h"
 #include <licensemanager.h>
 #include <QDateTime>
+#include "countly.h"
+
+extern Countly *g_countly;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -441,6 +444,8 @@ void MainWindow::start()
 	client_->sendStop();
 	client_->sendProjectName(QFileInfo(projectFileName_).baseName());
 	client_->sendGetFileList();
+
+    g_countly->projectPlayed();
 }
 
 #if 0
@@ -822,6 +827,8 @@ void MainWindow::newProject()
 			settings.setValue("location", newProjectDialog->location());
 
 			addToRecentProjects(projectFileName_);
+
+            g_countly->projectCreated();
 		}
 	}
 }
@@ -2527,6 +2534,8 @@ void MainWindow::exportProject()
 			QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully."));
 		else
 			QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully with splash screen."));
+
+        g_countly->projectExported();
 	}
 }
 

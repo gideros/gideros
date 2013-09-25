@@ -30,47 +30,50 @@ TARGET = "Gideros Studio"
 
 TEMPLATE = app
 
-INCLUDEPATH +=	"../iconlibrary" \
-				"../libpreviewwidget"\
-				"../libnetwork"\
-				"../libplatform"\
-				"../lua/src"\
-				"../libpvrt" \
-                "../libgid/include" \
-                "../libgfile" \
-                "../libgideros" \
-				"../liblicensemanager"
+INCLUDEPATH +=	\
+    "../iconlibrary" \
+    "../libpreviewwidget"\
+    "../libnetwork"\
+    "../libplatform"\
+    "../lua/src"\
+    "../libpvrt" \
+    "../libgid/include" \
+    "../libgfile" \
+    "../libgideros" \
+    "../liblicensemanager"
 
-SOURCES += main.cpp\
-		mainwindow.cpp\
-		librarywidget.cpp\
-		giderosnetworkclient2.cpp\
-		finddialog.cpp\
-		replacedialog.cpp\
-		findinfilesdialog.cpp\
-		newprojectdialog.cpp\
-		fileassociationsdialog.cpp\
-		fileassociationeditdialog.cpp\
-		textedit.cpp\
-		playersettingsdialog.cpp\
-		gotolinedialog.cpp\
-		savechangesdialog.cpp\
-		librarytreewidget.cpp\
-		codedependenciesdialog.cpp\
-		addnewfiledialog.cpp\
-		"../libpreviewwidget/previewwidget.cpp"\
-		"../iconlibrary/iconlibrary.cpp"\
-		"../libnetwork/bytebuffer.cpp" \
+SOURCES += \
+    main.cpp\
+    mainwindow.cpp\
+    librarywidget.cpp\
+    giderosnetworkclient2.cpp\
+    finddialog.cpp\
+    replacedialog.cpp\
+    findinfilesdialog.cpp\
+    newprojectdialog.cpp\
+    fileassociationsdialog.cpp\
+    fileassociationeditdialog.cpp\
+    textedit.cpp\
+    playersettingsdialog.cpp\
+    gotolinedialog.cpp\
+    savechangesdialog.cpp\
+    librarytreewidget.cpp\
+    codedependenciesdialog.cpp\
+    addnewfiledialog.cpp\
+    "../libpreviewwidget/previewwidget.cpp"\
+    "../iconlibrary/iconlibrary.cpp"\
+    "../libnetwork/bytebuffer.cpp" \
     exportprojectdialog.cpp \
     aboutdialog.cpp \
     projectpropertiesdialog.cpp \
     startpagewidget2.cpp \
     recentprojectswidget.cpp \
     exampleprojectswidget.cpp \
-	projectproperties.cpp \
-	mdiarea.cpp \
-	mdisubwindow.cpp \
-	dependencygraph.cpp
+    projectproperties.cpp \
+    mdiarea.cpp \
+    mdisubwindow.cpp \
+    dependencygraph.cpp \
+    countly.cpp
 
 SOURCES += $$files(../libpvrt/*.cpp)
 
@@ -81,33 +84,35 @@ HEADERS += ../liblicensemanager/licensemanager.h
 SOURCES +=	../liblicensemanager/licensemanager.cpp \
 			../liblicensemanager/uid.cpp
 
-HEADERS  += mainwindow.h\
-		librarywidget.h\
-		giderosnetworkclient2.h\
-		finddialog.h\
-		replacedialog.h\
-		findinfilesdialog.h\
-		newprojectdialog.h\
-		fileassociationsdialog.h\
-		fileassociationeditdialog.h\
-		textedit.h\
-		playersettingsdialog.h\
-		gotolinedialog.h\
-		savechangesdialog.h\
-		librarytreewidget.h\
-		codedependenciesdialog.h\
-		addnewfiledialog.h\
-		"../libpreviewwidget/previewwidget.h" \
+HEADERS  += \
+    mainwindow.h\
+    librarywidget.h\
+    giderosnetworkclient2.h\
+    finddialog.h\
+    replacedialog.h\
+    findinfilesdialog.h\
+    newprojectdialog.h\
+    fileassociationsdialog.h\
+    fileassociationeditdialog.h\
+    textedit.h\
+    playersettingsdialog.h\
+    gotolinedialog.h\
+    savechangesdialog.h\
+    librarytreewidget.h\
+    codedependenciesdialog.h\
+    addnewfiledialog.h\
+    "../libpreviewwidget/previewwidget.h" \
     exportprojectdialog.h \
     aboutdialog.h \
     projectpropertiesdialog.h \
     projectproperties.h \
     startpagewidget2.h \
     recentprojectswidget.h \
-	exampleprojectswidget.h \
-	mdiarea.h \
-	mdisubwindow.h \
-	dependencygraph.h
+    exampleprojectswidget.h \
+    mdiarea.h \
+    mdisubwindow.h \
+    dependencygraph.h \
+    countly.h
 
 FORMS    += mainwindow.ui \
     savechangesdialog.ui \

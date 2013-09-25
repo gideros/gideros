@@ -4,6 +4,9 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <licensemanager.h>
+#include "countly.h"
+
+Countly *g_countly = NULL;
 
 int main(int argc, char *argv[])
 {
@@ -27,7 +30,17 @@ int main(int argc, char *argv[])
 #endif
 	QDir::setCurrent(dir.absolutePath());
 
+    LicenseManager licenseManager;
+    g_countly = new Countly("2013.09", licenseManager.getLicenseType());
+    g_countly->beginSession();
+
 	MainWindow w;
 	w.show();
-	return a.exec();
+    int result = a.exec();
+
+    g_countly->endSession();
+    g_countly->waitForFinished(3000);
+    delete g_countly;
+
+    return result;
 }
