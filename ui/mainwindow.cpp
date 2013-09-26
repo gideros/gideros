@@ -246,6 +246,14 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui.actionProject5, SIGNAL(triggered()), this, SLOT(openRecentProject()));
 	connect(ui.actionProject6, SIGNAL(triggered()), this, SLOT(openRecentProject()));
 	connect(ui.actionProject7, SIGNAL(triggered()), this, SLOT(openRecentProject()));
+    connect(ui.actionProject8, SIGNAL(triggered()), this, SLOT(openRecentProject()));
+    connect(ui.actionProject9, SIGNAL(triggered()), this, SLOT(openRecentProject()));
+    connect(ui.actionProject10, SIGNAL(triggered()), this, SLOT(openRecentProject()));
+    connect(ui.actionProject11, SIGNAL(triggered()), this, SLOT(openRecentProject()));
+    connect(ui.actionProject12, SIGNAL(triggered()), this, SLOT(openRecentProject()));
+    connect(ui.actionProject13, SIGNAL(triggered()), this, SLOT(openRecentProject()));
+    connect(ui.actionProject14, SIGNAL(triggered()), this, SLOT(openRecentProject()));
+    connect(ui.actionProject15, SIGNAL(triggered()), this, SLOT(openRecentProject()));
 
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 
@@ -1501,7 +1509,7 @@ void MainWindow::compileFinished(bool success)
 }
 #endif
 
-#define MAX_RECENT_FILES 7
+#define MAX_RECENT_FILES 15
 void MainWindow::addToRecentProjects(const QString& fileName)
 {
 	QSettings settings;
@@ -1525,6 +1533,14 @@ void MainWindow::updateRecentProjectActions()
 	recentProjectActions[4] = ui.actionProject5;
 	recentProjectActions[5] = ui.actionProject6;
 	recentProjectActions[6] = ui.actionProject7;
+    recentProjectActions[7] = ui.actionProject8;
+    recentProjectActions[8] = ui.actionProject9;
+    recentProjectActions[9] = ui.actionProject10;
+    recentProjectActions[10] = ui.actionProject11;
+    recentProjectActions[11] = ui.actionProject12;
+    recentProjectActions[12] = ui.actionProject13;
+    recentProjectActions[13] = ui.actionProject14;
+    recentProjectActions[14] = ui.actionProject15;
 
 	QSettings settings;
 	QStringList files = settings.value("recentProjectList").toStringList();

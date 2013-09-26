@@ -51,6 +51,14 @@ QMainWindow::separator {
      <addaction name="actionProject5"/>
      <addaction name="actionProject6"/>
      <addaction name="actionProject7"/>
+     <addaction name="actionProject8"/>
+     <addaction name="actionProject9"/>
+     <addaction name="actionProject10"/>
+     <addaction name="actionProject11"/>
+     <addaction name="actionProject12"/>
+     <addaction name="actionProject13"/>
+     <addaction name="actionProject14"/>
+     <addaction name="actionProject15"/>
     </widget>
     <addaction name="actionNew_Project"/>
     <addaction name="actionOpen_Project"/>
@@ -479,6 +487,46 @@ Gideros Player, Play button is enabled.</string>
   <action name="actionProject7">
    <property name="text">
     <string>project7</string>
+   </property>
+  </action>
+  <action name="actionProject8">
+   <property name="text">
+    <string>project8</string>
+   </property>
+  </action>
+  <action name="actionProject9">
+   <property name="text">
+    <string>project9</string>
+   </property>
+  </action>
+  <action name="actionProject10">
+   <property name="text">
+    <string>project10</string>
+   </property>
+  </action>
+  <action name="actionProject11">
+   <property name="text">
+    <string>project11</string>
+   </property>
+  </action>
+  <action name="actionProject12">
+   <property name="text">
+    <string>project12</string>
+   </property>
+  </action>
+  <action name="actionProject13">
+   <property name="text">
+    <string>project13</string>
+   </property>
+  </action>
+  <action name="actionProject14">
+   <property name="text">
+    <string>project14</string>
+   </property>
+  </action>
+  <action name="actionProject15">
+   <property name="text">
+    <string>project15</string>
    </property>
   </action>
  </widget>
