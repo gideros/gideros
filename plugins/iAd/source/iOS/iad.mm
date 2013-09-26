@@ -93,22 +93,12 @@ static bool isiAdAvailable()
 
 static NSString *getContentSizeIdentifierPortrait()
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_2
-	if (&ADBannerContentSizeIdentifierPortrait != nil)
-		return ADBannerContentSizeIdentifierPortrait;
-#endif
-
-	return ADBannerContentSizeIdentifier320x50;
+    return ADBannerContentSizeIdentifierPortrait;
 }
 
 static NSString *getContentSizeIdentifierLandscape()
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_2
-	if (&ADBannerContentSizeIdentifierLandscape != nil)
-		return ADBannerContentSizeIdentifierLandscape;
-#endif
-	
-	return ADBannerContentSizeIdentifier480x32;
+    return ADBannerContentSizeIdentifierLandscape;
 }
 
 class Banner;
@@ -373,9 +363,7 @@ static int create(lua_State *L)
 	else if (strcmp(alignmentstr, BOTTOM) == 0)
 		alignment = kBOTTOM;
 	else
-	{		
-		luaL_error(L, "Parameter 'alignment' must be one of the accepted values.");
-	}
+		return luaL_error(L, "Parameter 'alignment' must be one of the accepted values.");
 
 	int orientation;
 	const char *orientationstr = luaL_checkstring(L, 2);
@@ -384,9 +372,7 @@ static int create(lua_State *L)
 	else if (strcmp(orientationstr, LANDSCAPE) == 0)
 		orientation = kLANDSCAPE;
 	else
-	{		
-		luaL_error(L, "Parameter 'orientation' must be one of the accepted values.");
-	}
+		return luaL_error(L, "Parameter 'orientation' must be one of the accepted values.");
 		
 	Banner *banner = new Banner(L, alignment, orientation);
 	g_pushInstance(L, "iad.Banner", banner->object());
@@ -457,9 +443,7 @@ static int setAlignment(lua_State *L)
 	else if (strcmp(alignmentstr, BOTTOM) == 0)
 		alignment = kBOTTOM;
 	else
-	{		
-		luaL_error(L, "Parameter 'alignment' must be one of the accepted values.");
-	}
+		return luaL_error(L, "Parameter 'alignment' must be one of the accepted values.");
 	
 	banner->setAlignment(alignment);
 
