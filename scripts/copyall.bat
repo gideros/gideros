@@ -26,7 +26,7 @@ mkdir ..\..\release\imageformats
 cp C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\plugins\imageformats\qjpeg4.dll ..\..\release\imageformats
 
 cp ..\libgid\external\zlib-1.2.8\build\mingw\zlib.dll ..\..\release
-cp ..\libgid\external\glew-1.9.0\lib\mingw\glew32.dll ..\..\release
+cp ..\libgid\external\glew-1.10.0\lib\mingw\glew32.dll ..\..\release
 cp ..\libgid\external\openal-soft-1.13\build\mingw\OpenAL32.dll ..\..\release
 cp ..\libgid\external\pthreads-w32-2-8-0-release\Pre-built.2\lib\pthreadGC2.dll ..\..\release
 
