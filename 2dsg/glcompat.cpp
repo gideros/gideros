@@ -1,9 +1,5 @@
 #include "glcompat.h"
 
-void glOrthof(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near_val, GLfloat far_val)
-{
-	glOrtho(left, right, bottom, top, near_val, far_val);
-}
 
 #if 0
 

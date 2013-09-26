@@ -122,11 +122,11 @@ INCLUDEPATH += ./external/snappy-1.1.0
 win32 {
 INCLUDEPATH += "./external/libpng-1.6.2"
 INCLUDEPATH += "./external/jpeg-9"
-INCLUDEPATH += "./external/glew-1.9.0/include"
+INCLUDEPATH += "./external/glew-1.10.0/include"
 DEFINES += OPENAL_SUBDIR_AL
 INCLUDEPATH += "./external/openal-soft-1.13/include"
 LIBS += -L"../libgid/external/openal-soft-1.13/build/mingw" -lOpenAL32
-LIBS += -L"../libgid/external/glew-1.9.0/lib/mingw" -lglew32
+LIBS += -L"../libgid/external/glew-1.10.0/lib/mingw" -lglew32
 LIBS += -L"../libgid/external/libpng-1.6.2/build/mingw" -lpng
 LIBS += -L"../libgid/external/jpeg-9/build/mingw" -ljpeg
 

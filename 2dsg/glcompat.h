@@ -3,12 +3,14 @@
 
 #include "glcommon.h"
 
-void glOrthof(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near_val, GLfloat far_val);
+#ifndef glOrthof
+#undef glOrthof
+#define glOrthof glOrtho
+#endif
 
 #ifndef GL_CLAMP_TO_EDGE
 #define GL_CLAMP_TO_EDGE GL_CLAMP
 #endif
-
 
 #if 0
 void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid *data);
