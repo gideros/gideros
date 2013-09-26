@@ -102,7 +102,9 @@ copy ..\plugins\LuaFileSystem\source\lfs_stub.cpp                              .
 copy ..\plugins\BitOp\source\bit.c                                             ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\plugins\BitOp\source\bit_stub.cpp                                      ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\plugins\JSON\source\fpconv.c                                           ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
+copy ..\plugins\JSON\source\fpconv.h                                           ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\plugins\JSON\source\strbuf.c                                           ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
+copy ..\plugins\JSON\source\strbuf.h                                           ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\plugins\JSON\source\lua_cjson.c                                        ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\plugins\JSON\source\lua_cjson_stub.cpp                                 ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 mkdir "..\..\release\Templates\Xcode4\iOS Template\iOS Template\Plugins"
