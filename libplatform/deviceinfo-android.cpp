@@ -16,12 +16,29 @@ std::vector<std::string> getDeviceInfo()
 	result.push_back("Android");
 
 	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
-	jmethodID getAndroidVersionID = env->GetStaticMethodID(localRefCls, "getAndroidVersion", "()Ljava/lang/String;");
-	jstring jstr = (jstring)env->CallStaticObjectMethod(localRefCls, getAndroidVersionID);
-	const char *str = env->GetStringUTFChars(jstr, NULL);
-	result.push_back(str);
-	env->ReleaseStringUTFChars(jstr, str);
-	env->DeleteLocalRef(jstr);
+
+	{
+		jstring jstr = (jstring)env->CallStaticObjectMethod(localRefCls, env->GetStaticMethodID(localRefCls, "getVersion", "()Ljava/lang/String;"));
+		const char *str = env->GetStringUTFChars(jstr, NULL);
+		result.push_back(str);
+		env->ReleaseStringUTFChars(jstr, str);
+		env->DeleteLocalRef(jstr);
+	}
+	{
+		jstring jstr = (jstring)env->CallStaticObjectMethod(localRefCls, env->GetStaticMethodID(localRefCls, "getManufacturer", "()Ljava/lang/String;"));
+		const char *str = env->GetStringUTFChars(jstr, NULL);
+		result.push_back(str);
+		env->ReleaseStringUTFChars(jstr, str);
+		env->DeleteLocalRef(jstr);
+	}
+	{
+		jstring jstr = (jstring)env->CallStaticObjectMethod(localRefCls, env->GetStaticMethodID(localRefCls, "getModel", "()Ljava/lang/String;"));
+		const char *str = env->GetStringUTFChars(jstr, NULL);
+		result.push_back(str);
+		env->ReleaseStringUTFChars(jstr, str);
+		env->DeleteLocalRef(jstr);
+	}
+
 	env->DeleteLocalRef(localRefCls);
 
 	return result;

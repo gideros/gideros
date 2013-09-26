@@ -800,9 +800,19 @@ public class GiderosApplication
 		return locale.getLanguage();
 	}
 
-	static public String getAndroidVersion()
+	static public String getVersion()
 	{
 		return android.os.Build.VERSION.RELEASE;
+	}
+
+	static public String getManufacturer()
+	{
+		return android.os.Build.MANUFACTURER;
+	}
+
+	static public String getModel()
+	{
+		return android.os.Build.MODEL;
 	}
 
 	static public void openUrl(String url)
