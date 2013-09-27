@@ -192,6 +192,8 @@ static void dispatchEvent(lua_State* L, const char* type,
 	lua_pop(L, 2);
 }
 
+static std::set<SKRequest*> s_requests;
+
 @interface StoreKitHelper : NSObject<SKProductsRequestDelegate, SKPaymentTransactionObserver>
 {
 	lua_State* L;
@@ -211,16 +213,23 @@ static void dispatchEvent(lua_State* L, const char* type,
 	return self;
 }
 
+- (void)requestDidFinish:(SKRequest *)request
+{
+    s_requests.erase(request);
+    [request release];
+}
+
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error
 {
 	dispatchEvent(L, REQUEST_PRODUCTS_COMPLETE, error, NULL, NULL, NULL);
+
+    s_requests.erase(request);
+    [request release];
 }
 
 - (void)productsRequest:(SKProductsRequest*)request didReceiveResponse:(SKProductsResponse*)response
 {
 	dispatchEvent(L, REQUEST_PRODUCTS_COMPLETE, NULL, response.products, response.invalidProductIdentifiers, NULL);
-	
-    [request autorelease];
 }
 
 - (void)paymentQueue:(SKPaymentQueue*)queue updatedTransactions:(NSArray*)transactions
@@ -263,6 +272,14 @@ public:
 	~StoreKit()
 	{
 		[[SKPaymentQueue defaultQueue] removeTransactionObserver:helper];
+        
+        for (std::set<SKRequest*>::iterator iter = s_requests.begin(); iter != s_requests.end(); ++iter)
+        {
+            SKRequest *request = *iter;
+            [request cancel];
+            [request release];
+        }
+        s_requests.clear();
 
 		[helper release];
 	}
@@ -276,6 +293,7 @@ public:
 	{
 		SKProductsRequest* request = [[SKProductsRequest alloc] initWithProductIdentifiers:productIdentifiers];
 		request.delegate = helper;
+        s_requests.insert(request);
 		[request start];
 	}
 
