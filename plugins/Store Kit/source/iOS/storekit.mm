@@ -229,7 +229,15 @@ static std::set<SKRequest*> s_requests;
 
 - (void)productsRequest:(SKProductsRequest*)request didReceiveResponse:(SKProductsResponse*)response
 {
-	dispatchEvent(L, REQUEST_PRODUCTS_COMPLETE, NULL, response.products, response.invalidProductIdentifiers, NULL);
+    if (response.products && response.invalidProductIdentifiers)
+    {
+        dispatchEvent(L, REQUEST_PRODUCTS_COMPLETE, NULL, response.products, response.invalidProductIdentifiers, NULL);
+    }
+    else
+    {
+        NSError *error = [NSError errorWithDomain:@"NSURLErrorDomain" code:-1009 userInfo:nil];
+        dispatchEvent(L, REQUEST_PRODUCTS_COMPLETE, error, NULL, NULL, NULL);
+    }
 }
 
 - (void)paymentQueue:(SKPaymentQueue*)queue updatedTransactions:(NSArray*)transactions
