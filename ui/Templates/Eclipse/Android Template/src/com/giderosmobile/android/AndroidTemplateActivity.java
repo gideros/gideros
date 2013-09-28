@@ -182,7 +182,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
 		GiderosApplication app = GiderosApplication.getInstance();
-		if (app != null && app.onKeyDown(keyCode, event) == true)
+		if (app != null && event.getRepeatCount() == 0 && app.onKeyDown(keyCode, event) == true)
 			return true;
 		
 		return super.onKeyDown(keyCode, event);
@@ -193,7 +193,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
 		GiderosApplication app = GiderosApplication.getInstance();
-		if (app != null && app.onKeyUp(keyCode, event) == true)
+		if (app != null && event.getRepeatCount() == 0 && app.onKeyUp(keyCode, event) == true)
 			return true;
 		
 		return super.onKeyUp(keyCode, event);
