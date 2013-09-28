@@ -462,6 +462,8 @@ public:
 
             if (channel2->source == 0)
             {
+                channel2->sound->loader.close(channel2->file);
+
                 channel2->sound->channels.erase(channel2);
                 delete channel2;
                 channels_.erase(iter++);
