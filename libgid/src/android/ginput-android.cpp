@@ -617,28 +617,34 @@ private:
     int mouseTouchOrder_;
 
 public:
-    int keyDown(int keyCode)
+    int keyDown(int keyCode, int repeatCount)
     {
         keyCode = convertKeyCode(keyCode);
         if (keyCode == 0)
             return 0;
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode);
-        gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
-        deleteKeyEvent(event);
+		if (repeatCount == 0)
+		{
+			ginput_KeyEvent *event = newKeyEvent(keyCode);
+			gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
+			deleteKeyEvent(event);
+		}
 		
 		return 1;
     }
 
-    int keyUp(int keyCode)
+    int keyUp(int keyCode, int repeatCount)
     {
         keyCode = convertKeyCode(keyCode);
         if (keyCode == 0)
             return 0;
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode);
-        gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
-        deleteKeyEvent(event);
+		if (repeatCount == 0)
+		{
+			ginput_KeyEvent *event = newKeyEvent(keyCode);
+			gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
+			deleteKeyEvent(event);
+		}
 
 		return 1;
     }
@@ -830,17 +836,17 @@ void ginputp_touchesCancel(int size, int *id, int *x, int *y)
         s_manager->touchesCancel(size, id, x, y);
 }
 
-g_bool ginputp_keyDown(int keyCode)
+g_bool ginputp_keyDown(int keyCode, int repeatCount)
 {
     if (s_manager)
-        return s_manager->keyDown(keyCode);
+        return s_manager->keyDown(keyCode, repeatCount);
     return g_false;
 }
 
-g_bool ginputp_keyUp(int keyCode)
+g_bool ginputp_keyUp(int keyCode, int repeatCount)
 {
     if (s_manager)
-        return s_manager->keyUp(keyCode);
+        return s_manager->keyUp(keyCode, repeatCount);
     return g_false;
 }
 

@@ -184,8 +184,8 @@ public:
 	void touchesEnd(int size, int *id, int *x, int *y, int actionIndex);
 	void touchesCancel(int size, int *id, int *x, int *y);
 	
-	bool keyDown(int keyCode);
-	bool keyUp(int keyCode);
+	bool keyDown(int keyCode, int repeatCount);
+	bool keyUp(int keyCode, int repeatCount);
 	
 	void pause();
 	void resume();
@@ -1008,9 +1008,9 @@ void ApplicationManager::touchesCancel(int size, int *id, int *x, int *y)
 	ginputp_touchesCancel(size, id, x, y);
 }
 
-bool ApplicationManager::keyDown(int keyCode)
+bool ApplicationManager::keyDown(int keyCode, int repeatCount)
 {
-	int result = ginputp_keyDown(keyCode);
+	int result = ginputp_keyDown(keyCode, repeatCount);
 	if (result == 0)
 		return false;
 
@@ -1020,9 +1020,9 @@ bool ApplicationManager::keyDown(int keyCode)
 	return true;
 }
 
-bool ApplicationManager::keyUp(int keyCode)
+bool ApplicationManager::keyUp(int keyCode, int repeatCount)
 {
-	int result = ginputp_keyUp(keyCode);
+	int result = ginputp_keyUp(keyCode, repeatCount);
 	if (result == 0)
 		return false;
 
@@ -1214,14 +1214,14 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesCance
 	env->ReleasePrimitiveArrayCritical(jy, y, 0);
 }
 
-jboolean Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyDown(JNIEnv* env, jclass cls, jint keyCode)
+jboolean Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyDown(JNIEnv* env, jclass cls, jint keyCode, jint repeatCount)
 {
-	return s_applicationManager->keyDown(keyCode);
+	return s_applicationManager->keyDown(keyCode, repeatCount);
 }
 
-jboolean Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyUp(JNIEnv* env, jclass cls, jint keyCode)
+jboolean Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyUp(JNIEnv* env, jclass cls, jint keyCode, jint repeatCount)
 {
-	return s_applicationManager->keyUp(keyCode);
+	return s_applicationManager->keyUp(keyCode, repeatCount);
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativePause(JNIEnv* env, jclass cls)

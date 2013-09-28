@@ -517,12 +517,12 @@ public class GiderosApplication
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event)
 	{
-		return nativeKeyDown(keyCode);
+		return nativeKeyDown(keyCode, event.getRepeatCount());
 	}
 	
 	public boolean onKeyUp(int keyCode, KeyEvent event)
 	{
-		return nativeKeyUp(keyCode);
+		return nativeKeyUp(keyCode, event.getRepeatCount());
 	}
 	
 	public boolean isAccelerometerAvailable()
@@ -898,8 +898,8 @@ public class GiderosApplication
 	}	
 	
 	static private native void nativeLowMemory();
-	static private native boolean nativeKeyDown(int keyCode);
-	static private native boolean nativeKeyUp(int keyCode);
+	static private native boolean nativeKeyDown(int keyCode, int repeatCount);
+	static private native boolean nativeKeyUp(int keyCode, int repeatCount);
 	static private native void nativeCreate(boolean player);
 	static private native void nativeSetDirectories(String externalDir, String internalDir, String cacheDir);
 	static private native void nativeSetFileSystem(String files);
