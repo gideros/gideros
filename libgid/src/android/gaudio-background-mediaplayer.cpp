@@ -2,6 +2,8 @@
 #include <jni.h>
 #include <gpath.h>
 
+#include <pystring.h>
+
 extern "C" {
 JavaVM *g_getJavaVM();
 JNIEnv *g_getJNIEnv();
@@ -51,7 +53,9 @@ public:
 	{
 		JNIEnv *env = g_getJNIEnv();
 
-		jstring jfileName = env->NewStringUTF(gpath_transform(fileName));
+		std::string fileName2 = pystring::os::path::normpath(gpath_transform(fileName));
+		
+		jstring jfileName = env->NewStringUTF(fileName2.c_str());
 		
 		jintArray jerrorArray = env->NewIntArray(1);
 		
