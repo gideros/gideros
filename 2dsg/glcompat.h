@@ -3,7 +3,7 @@
 
 #include "glcommon.h"
 
-#ifndef glOrthof
+#ifdef glOrthof
 #undef glOrthof
 #define glOrthof glOrtho
 #endif
