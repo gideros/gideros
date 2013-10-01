@@ -86,6 +86,7 @@ static int s_open(const char *pathname, int flags)
 
         if (ext)
         {
+            ext++;
             if (!strcasecmp(ext, "lua") ||
                 !strcasecmp(ext, "jpeg") ||
                 !strcasecmp(ext, "jpg") ||
