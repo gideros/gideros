@@ -48,8 +48,6 @@ void gflurry_LogEvent(const char *eventName, const char **parameters, int timed)
 void gflurry_EndTimedEvent(const char *eventName, const char **parameters)
 {
     NSDictionary *parameters2 = getDictionary(parameters);
-    if (parameters2 == nil)
-        parameters2 = [NSDictionary dictionary];
     
     NSString *eventName2 = [NSString stringWithUTF8String:eventName];
     
