@@ -232,6 +232,19 @@ mkdir "..\..\release\All Plugins\JSON\bin\Android\armeabi-v7a"
 cp ..\plugins\JSON\source\libs\armeabi\libjson.so "..\..\release\All Plugins\JSON\bin\Android\armeabi" 
 cp ..\plugins\JSON\source\libs\armeabi-v7a\libjson.so "..\..\release\All Plugins\JSON\bin\Android\armeabi-v7a"
 
+mkdir "..\..\release\All Plugins\Flurry\bin\Android"
+mkdir "..\..\release\All Plugins\Flurry\bin\Android\armeabi"
+mkdir "..\..\release\All Plugins\Flurry\bin\Android\armeabi-v7a"
+cp ..\plugins\Flurry\source\Android\libs\armeabi\libflurry.so "..\..\release\All Plugins\Flurry\bin\Android\armeabi" 
+cp ..\plugins\Flurry\source\Android\libs\armeabi-v7a\libflurry.so "..\..\release\All Plugins\Flurry\bin\Android\armeabi-v7a"
+
+mkdir "..\..\release\All Plugins\Facebook\bin\Android"
+mkdir "..\..\release\All Plugins\Facebook\bin\Android\armeabi"
+mkdir "..\..\release\All Plugins\Facebook\bin\Android\armeabi-v7a"
+cp ..\plugins\Facebook\source\Android\libs\armeabi\libfacebook.so "..\..\release\All Plugins\Facebook\bin\Android\armeabi" 
+cp ..\plugins\Facebook\source\Android\libs\armeabi-v7a\libfacebook.so "..\..\release\All Plugins\Facebook\bin\Android\armeabi-v7a"
+
+
 mkdir ..\..\release\Plugins
 cp ..\plugins\LuaSQLite3\source\release\lsqlite3.dll ..\..\release\Plugins
 cp ..\plugins\LuaSocket\source\release\luasocket.dll ..\..\release\Plugins
