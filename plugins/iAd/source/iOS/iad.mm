@@ -9,7 +9,7 @@
 #include "lua.h"
 #include "lauxlib.h"
 
-#include <iAd/iAd.h>
+#import <iAd/iAd.h>
 
 // some Lua helper functions
 #ifndef abs_index

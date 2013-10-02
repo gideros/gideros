@@ -1,6 +1,7 @@
 #include "gfacebook.h"
-#include "Facebook.h"
-#include <gapplication.h>
+#include "gapplication.h"
+
+#import "Facebook.h"
 
 class GGFacebook;
 

@@ -9,7 +9,7 @@ This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.ph
 #include "lua.h"
 #include "lauxlib.h"
 
-#include <StoreKit/StoreKit.h>
+#import <StoreKit/StoreKit.h>
 
 static const char KEY_OBJECTS = ' ';
 
