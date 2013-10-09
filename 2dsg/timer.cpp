@@ -71,6 +71,8 @@ void Timer::tick()
 	
 	if (repeatCount_ != 0 && currentCount_ >= repeatCount_)
 	{
+		stop();
+
 		try
 		{
 			TimerEvent timerEvent(TimerEvent::TIMER_COMPLETE);
@@ -81,8 +83,6 @@ void Timer::tick()
 			unref();
 			throw;
 		}
-
-		stop();
 	}
 
 	unref();
