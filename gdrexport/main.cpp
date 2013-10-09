@@ -709,11 +709,11 @@ int main(int argc, char *argv[])
     {
         for (int i = 0; i < allfiles_abs.size(); ++i)
         {
-            QString filename = allfiles_abs[i];
-            QString ext = QFileInfo(filename).suffix().toLower();
-
+            QString ext = QFileInfo(allfiles[i]).suffix().toLower();
             if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg" && ext != "wav")
                 continue;
+
+            QString filename = allfiles_abs[i];
 
             QFile fis(filename);
             if (!fis.open(QIODevice::ReadOnly))
