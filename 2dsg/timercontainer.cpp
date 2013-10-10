@@ -2,6 +2,9 @@
 #include "timer.h"
 #include "platform.h"
 #include <algorithm>
+#include <glog.h>
+#include "timerevent.h"
+
 
 TimerContainer::TimerContainer()
 {
@@ -63,6 +66,45 @@ void TimerContainer::tick()
 			if (timers[i]->running() == true)
 				queue_[clock + timers[i]->delay() / 1000].push_back(timers[i]);
 	}
+
+    while (!eventQueue_.empty())
+    {
+        Timer *timer = eventQueue_.front().first;
+        int type = eventQueue_.front().second;
+        eventQueue_.pop_front();
+
+        timer->ref();
+
+        if (type == 0)
+        {
+            try
+            {
+                TimerEvent timerEvent(TimerEvent::TIMER);
+                timer->dispatchEvent(&timerEvent);
+            }
+            catch(...)
+            {
+                timer->unref();
+                throw;
+            }
+        }
+
+        if (type == 1)
+        {
+            try
+            {
+                TimerEvent timerEvent(TimerEvent::TIMER_COMPLETE);
+                timer->dispatchEvent(&timerEvent);
+            }
+            catch(...)
+            {
+                timer->unref();
+                throw;
+            }
+        }
+
+        timer->unref();
+    }
 }
 
 double TimerContainer::getAdditionalDelay(const Timer *timer)
@@ -78,6 +120,21 @@ double TimerContainer::getAdditionalDelay(const Timer *timer)
     return 0;
 }
 
+void TimerContainer::queueTimerEvent(Timer *timer)
+{
+    eventQueue_.push_back(std::make_pair(timer, 0));
+}
+
+void TimerContainer::queueTimerCompleteEvent(Timer *timer)
+{
+    eventQueue_.push_back(std::make_pair(timer, 1));
+}
+
+void TimerContainer::removeEvents(Timer *timer)
+{
+    eventQueue_.erase(std::remove(eventQueue_.begin(), eventQueue_.end(), std::make_pair(timer, 0)), eventQueue_.end());
+    eventQueue_.erase(std::remove(eventQueue_.begin(), eventQueue_.end(), std::make_pair(timer, 1)), eventQueue_.end());
+}
 
 void TimerContainer::pauseAllTimers()
 {

@@ -40,6 +40,7 @@ void Timer::stop()
         container_->removeTimer(this);
         running_ = false;
     }
+    container_->removeEvents(this);
 }
 
 void Timer::pause()
@@ -54,36 +55,15 @@ void Timer::pause()
 
 void Timer::tick()
 {
-	ref();
-
 	currentCount_++;
 
-	try
-	{
-		TimerEvent timerEvent(TimerEvent::TIMER);
-		dispatchEvent(&timerEvent);
-	}
-	catch(...)
-	{
-		unref();
-		throw;
-	}
-	
+    container_->queueTimerEvent(this);
+
 	if (repeatCount_ != 0 && currentCount_ >= repeatCount_)
 	{
-		stop();
-
-		try
-		{
-			TimerEvent timerEvent(TimerEvent::TIMER_COMPLETE);
-			dispatchEvent(&timerEvent);
-		}
-		catch(...)
-		{
-			unref();
-			throw;
-		}
-	}
-
-	unref();
+        additionalDelay_ = 0;
+        container_->removeTimer(this);
+        running_ = false;
+        container_->queueTimerCompleteEvent(this);
+    }
 }

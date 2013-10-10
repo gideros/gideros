@@ -4,6 +4,7 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <deque>
 #include "stopwatch.h"
 
 class Timer;
@@ -25,10 +26,15 @@ public:
 	void resumeAllTimers();
 	bool isAllTimersPaused() const;
 
+    void queueTimerEvent(Timer *timer);
+    void queueTimerCompleteEvent(Timer *timer);
+    void removeEvents(Timer *timer);
+
 private:
 	std::set<Timer*> timers_;
 	std::map<double, std::vector<Timer*> > queue_;
 	StopWatch stopWatch_;
+    std::deque<std::pair<Timer*, int> > eventQueue_;
 };
 
 #endif
