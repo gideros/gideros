@@ -11,7 +11,8 @@ extern "C" {
 G_API void gvfs_init();
 G_API void gvfs_cleanup();
 
-G_API void gvfs_setEncryptionKey(const char key[16]);
+G_API void gvfs_setCodeKey(const char key[16]);
+G_API void gvfs_setAssetsKey(const char key[16]);
 
 #ifdef __cplusplus
 }

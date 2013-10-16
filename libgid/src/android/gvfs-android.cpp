@@ -28,7 +28,7 @@ struct FileInfo
 	int zipFile;
     size_t startOffset;
     size_t length;
-    bool encrypted;
+    int encrypt;    // 0 no encryption, 1:encrypt code, 2:encrypt assets
 };
 
 static std::vector<std::string> s_zipFiles;
@@ -36,7 +36,8 @@ static std::map<std::string, FileInfo> s_files;
 static std::map<int, FileInfo> s_fileInfos;
 static bool s_playerModeEnabled = false;
 
-static char s_key[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static char s_codeKey[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static char s_assetsKey[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 static int s_open(const char *pathname, int flags)
 {
@@ -49,7 +50,7 @@ static int s_open(const char *pathname, int flags)
         if (fd < 0)
             return fd;
 
-        FileInfo fi = {-1, (size_t)-1, (size_t)-1, false};
+        FileInfo fi = {-1, (size_t)-1, (size_t)-1, 0};
         s_fileInfos[fd] = fi;
 
         return fd;
@@ -82,18 +83,21 @@ static int s_open(const char *pathname, int flags)
 
     if (drive == 0)
     {
-        char *ext = strrchr(pathname, '.');
+        const char *ext = strrchr(pathname, '.');
 
         if (ext)
         {
             ext++;
-            if (!strcasecmp(ext, "lua") ||
-                !strcasecmp(ext, "jpeg") ||
-                !strcasecmp(ext, "jpg") ||
-                !strcasecmp(ext, "png") ||
-                !strcasecmp(ext, "wav"))
+            if (!strcasecmp(ext, "lua"))
             {
-                fi.encrypted = true;
+                fi.encrypt = 1;
+            }
+            else if (!strcasecmp(ext, "jpeg") ||
+                     !strcasecmp(ext, "jpg") ||
+                     !strcasecmp(ext, "png") ||
+                     !strcasecmp(ext, "wav"))
+            {
+                fi.encrypt = 2;
             }
         }
     }
@@ -219,14 +223,28 @@ static size_t s_read(int fd, void* buf, size_t count)
 
     size_t size;
 
-    if (iter->second.encrypted)
+    char *key;
+    switch (iter->second.encrypt)
+    {
+    case 0:
+        key = NULL;
+        break;
+    case 1:
+        key = s_codeKey;
+        break;
+    case 2:
+        key = s_assetsKey;
+        break;
+    }
+
+    if (key)
     {
         off_t curr = s_lseek(fd, 0, SEEK_CUR);
         size = readHelper(fd, buf, count);
 
         if (curr != (off_t)-1 && size != (size_t)-1)
             for (size_t i = 0; i < size; ++i)
-                ((char*)buf)[i] ^= s_key[(curr + i) % 16];
+                ((char*)buf)[i] ^= key[(curr + i) % 16];
     }
     else
     {
@@ -299,9 +317,14 @@ void gvfs_addFile(const char *pathname, int zipFile, size_t startOffset, size_t 
     s_files[pathname] = f;
 }
 
-void gvfs_setEncryptionKey(const char key[16])
+void gvfs_setCodeKey(const char key[16])
 {
-    memcpy(s_key, key, 16);
+    memcpy(s_codeKey, key, 16);
+}
+
+void gvfs_setAssetsKey(const char key[16])
+{
+    memcpy(s_assetsKey, key, 16);
 }
 
 }

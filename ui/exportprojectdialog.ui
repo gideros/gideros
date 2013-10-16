@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>450</width>
-    <height>300</height>
+    <height>350</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -165,9 +165,16 @@ on the disk, click this option to export only the Lua codes and assets.
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="encrypt">
+    <widget class="QCheckBox" name="encryptCode">
      <property name="text">
-      <string>Encrypt code and asset files</string>
+      <string>Encrypt code files</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="encryptAssets">
+     <property name="text">
+      <string>Encrypt asset files</string>
      </property>
     </widget>
    </item>

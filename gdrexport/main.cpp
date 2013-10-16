@@ -88,8 +88,10 @@ static bool readProjectFile(const QString& fileName,
             properties_.iosDevice = properties.attribute("iosDevice").toInt();
         if (!properties.attribute("packageName").isEmpty())
             properties_.packageName = properties.attribute("packageName");
-        if (!properties.attribute("encrypt").isEmpty())
-            properties_.encrypt = properties.attribute("encrypt").toInt() != 0;
+        if (!properties.attribute("encryptCode").isEmpty())
+            properties_.encryptCode = properties.attribute("encryptCode").toInt() != 0;
+        if (!properties.attribute("encryptAssets").isEmpty())
+            properties_.encryptAssets = properties.attribute("encryptAssets").toInt() != 0;
     }
 
 
@@ -315,7 +317,7 @@ static void copyFolder(	const QDir& sourceDir,
 
 void usage()
 {
-    fprintf(stderr, "Usage: gdrexport -platform <platform_name> -package <package_name> -encrypt -assets-only <project_file> <output_dir>\n");
+    fprintf(stderr, "Usage: gdrexport -platform <platform_name> -package <package_name> -encrypt -encrypt-code -encrypt-assets -assets-only <project_file> <output_dir>\n");
 }
 
 int main(int argc, char *argv[])
@@ -328,7 +330,8 @@ int main(int argc, char *argv[])
     QString packageName;
     QString projectFileName;
     QString output;
-    bool encrypt = false;
+    bool encryptCode = false;
+    bool encryptAssets = false;
     bool assetsOnly = false;
 
     int i = 1;
@@ -361,7 +364,18 @@ int main(int argc, char *argv[])
         }
         else if (arguments[i] == "-encrypt")
         {
-            encrypt = true;
+            encryptCode = true;
+            encryptAssets = true;
+            i++;
+        }
+        else if (arguments[i] == "-encrypt-code")
+        {
+            encryptCode = true;
+            i++;
+        }
+        else if (arguments[i] == "-encrypt-assets")
+        {
+            encryptAssets = true;
             i++;
         }
         else if (arguments[i] == "-assets-only")
@@ -459,7 +473,10 @@ int main(int argc, char *argv[])
     bool licensed = (licenseType == 2 || licenseType == 3);
 
     if (licensed == false)
-        encrypt = false;
+    {
+        encryptCode = false;
+        encryptAssets = false;
+    }
 
     QString templatedir;
     QString templatename;
@@ -529,23 +546,42 @@ int main(int argc, char *argv[])
     outputDir.mkdir(base);
     outputDir.cd(base);
 
-    QByteArray encryptionPrefix("312e68c04c6fd22922b5b232ea6fb3e8");
+    QByteArray codePrefix("312e68c04c6fd22922b5b232ea6fb3e1");
+    QByteArray assetsPrefix("312e68c04c6fd22922b5b232ea6fb3e2");
     QByteArray encryptionZero(16, '\0');
-    QByteArray encryptionKey(16, '\0');
-    if (encrypt)
+    QByteArray codeKey(16, '\0');
+    QByteArray assetsKey(16, '\0');
+    if (encryptCode)
     {
         QSettings settings;
-        if (settings.contains("encryptionKey"))
+        if (settings.contains("codeKey"))
         {
-            encryptionKey = settings.value("encryptionKey").toByteArray();
+            codeKey = settings.value("codeKey").toByteArray();
         }
         else
         {
             qsrand(time(NULL));
             for (int i = 0; i < 16; ++i)
-                encryptionKey[i] = qrand() % 256;
+                codeKey[i] = qrand() % 256;
 
-            settings.setValue("encryptionKey", encryptionKey);
+            settings.setValue("codeKey", codeKey);
+            settings.sync();
+        }
+    }
+    if (encryptAssets)
+    {
+        QSettings settings;
+        if (settings.contains("assetsKey"))
+        {
+            assetsKey = settings.value("assetsKey").toByteArray();
+        }
+        else
+        {
+            qsrand(time(NULL));
+            for (int i = 0; i < 16; ++i)
+                assetsKey[i] = qrand() % 256;
+
+            settings.setValue("assetsKey", assetsKey);
             settings.sync();
         }
     }
@@ -590,7 +626,8 @@ int main(int argc, char *argv[])
 
             QList<QPair<QByteArray, QByteArray> > replaceList2;
             replaceList2 << qMakePair(QByteArray("9852564f4728e0c11e34ca3eb5fe20b2"), QByteArray("9852564f4728e0cffe34ca3eb5fe20b2"));
-            replaceList2 << qMakePair(encryptionPrefix + encryptionZero, encryptionPrefix + encryptionKey);
+            replaceList2 << qMakePair(codePrefix + encryptionZero, codePrefix + codeKey);
+            replaceList2 << qMakePair(assetsPrefix + encryptionZero, assetsPrefix + assetsKey);
             replaceList << replaceList2;
         };
 
@@ -712,6 +749,8 @@ int main(int argc, char *argv[])
             QString ext = QFileInfo(allfiles[i]).suffix().toLower();
             if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg" && ext != "wav")
                 continue;
+
+            QByteArray encryptionKey = (ext == "lua") ? codeKey : assetsKey;
 
             QString filename = allfiles_abs[i];
 

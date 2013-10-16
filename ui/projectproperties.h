@@ -35,8 +35,9 @@ struct ProjectProperties
 		assetsOnly = false;
 		iosDevice = 0;
 		packageName = "com.yourdomain.yourapp";
-        encrypt = false;
-	}
+        encryptCode = false;
+        encryptAssets = false;
+    }
 
 	// graphics options
 	int scaleMode;
@@ -60,7 +61,8 @@ struct ProjectProperties
 	bool assetsOnly;
 	int iosDevice;
 	QString packageName;
-    bool encrypt;
+    bool encryptCode;
+    bool encryptAssets;
 };
 
 #endif

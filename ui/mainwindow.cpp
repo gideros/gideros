@@ -2198,23 +2198,42 @@ void MainWindow::exportProject()
 
 		saveAll();
 
-        QByteArray encryptionPrefix("312e68c04c6fd22922b5b232ea6fb3e8");
+        QByteArray codePrefix("312e68c04c6fd22922b5b232ea6fb3e1");
+        QByteArray assetsPrefix("312e68c04c6fd22922b5b232ea6fb3e2");
         QByteArray encryptionZero(16, '\0');
-        QByteArray encryptionKey(16, '\0');
-        if (dialog.encrypt())
+        QByteArray codeKey(16, '\0');
+        QByteArray assetsKey(16, '\0');
+        if (dialog.encryptCode())
         {
             QSettings settings;
-            if (settings.contains("encryptionKey"))
+            if (settings.contains("codeKey"))
             {
-                encryptionKey = settings.value("encryptionKey").toByteArray();
+                codeKey = settings.value("codeKey").toByteArray();
             }
             else
             {
                 qsrand(time(NULL));
                 for (int i = 0; i < 16; ++i)
-                    encryptionKey[i] = qrand() % 256;
+                    codeKey[i] = qrand() % 256;
 
-                settings.setValue("encryptionKey", encryptionKey);
+                settings.setValue("codeKey", codeKey);
+                settings.sync();
+            }
+        }
+        if (dialog.encryptAssets())
+        {
+            QSettings settings;
+            if (settings.contains("assetsKey"))
+            {
+                assetsKey = settings.value("assetsKey").toByteArray();
+            }
+            else
+            {
+                qsrand(time(NULL));
+                for (int i = 0; i < 16; ++i)
+                    assetsKey[i] = qrand() % 256;
+
+                settings.setValue("assetsKey", assetsKey);
                 settings.sync();
             }
         }
@@ -2259,8 +2278,9 @@ void MainWindow::exportProject()
 
 				QList<QPair<QByteArray, QByteArray> > replaceList2;
 				replaceList2 << qMakePair(QByteArray("9852564f4728e0c11e34ca3eb5fe20b2"), QByteArray("9852564f4728e0cffe34ca3eb5fe20b2"));
-                replaceList2 << qMakePair(encryptionPrefix + encryptionZero, encryptionPrefix + encryptionKey);
-				replaceList << replaceList2;
+                replaceList2 << qMakePair(codePrefix + encryptionZero, codePrefix + codeKey);
+                replaceList2 << qMakePair(assetsPrefix + encryptionZero, assetsPrefix + assetsKey);
+                replaceList << replaceList2;
 			};
 
             if (dialog.assetsOnly())
@@ -2443,6 +2463,8 @@ void MainWindow::exportProject()
                 QString ext = QFileInfo(allfiles[i]).suffix().toLower();
                 if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg" && ext != "wav")
                     continue;
+
+                QByteArray encryptionKey = (ext == "lua") ? codeKey : assetsKey;
 
                 QString filename = allfiles_abs[i];
 

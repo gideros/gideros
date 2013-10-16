@@ -110,7 +110,8 @@ void g_exit();
 static volatile const char* licenseKey_ = "9852564f4728e0c11e34ca3eb5fe20b2";
 //-----------------------------------------01234567890123456------------------
 
-static const char *encryptionKey_ = "312e68c04c6fd22922b5b232ea6fb3e8\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+static const char *codeKey_   = "312e68c04c6fd22922b5b232ea6fb3e1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+static const char *assetsKey_ = "312e68c04c6fd22922b5b232ea6fb3e2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
 struct ProjectProperties
 {
@@ -595,7 +596,8 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
     gpath_setDefaultDrive(0);
 	
 	gvfs_init();
-	gvfs_setEncryptionKey(encryptionKey_ + 32);
+	gvfs_setCodeKey(codeKey_ + 32);
+	gvfs_setAssetsKey(assetsKey_ + 32);
 
 	// event
 	gevent_Init();

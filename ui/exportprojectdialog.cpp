@@ -19,13 +19,17 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 
     if (licensed)
     {
-        ui->encrypt->setEnabled(true);
-        ui->encrypt->setChecked(properties_->encrypt);
+        ui->encryptCode->setEnabled(true);
+        ui->encryptCode->setChecked(properties_->encryptCode);
+        ui->encryptAssets->setEnabled(true);
+        ui->encryptAssets->setChecked(properties_->encryptAssets);
     }
     else
     {
-        ui->encrypt->setEnabled(false);
-        ui->encrypt->setChecked(false);
+        ui->encryptCode->setEnabled(false);
+        ui->encryptCode->setChecked(false);
+        ui->encryptAssets->setEnabled(false);
+        ui->encryptAssets->setChecked(false);
     }
 
 	connect(this, SIGNAL(accepted()), this, SLOT(onAccepted()));
@@ -51,9 +55,14 @@ bool ExportProjectDialog::assetsOnly() const
 	return ui->assetsOnly->isChecked();
 }
 
-bool ExportProjectDialog::encrypt() const
+bool ExportProjectDialog::encryptCode() const
 {
-    return ui->encrypt->isChecked();
+    return ui->encryptCode->isChecked();
+}
+
+bool ExportProjectDialog::encryptAssets() const
+{
+    return ui->encryptAssets->isChecked();
 }
 
 void ExportProjectDialog::onAccepted()
@@ -61,5 +70,6 @@ void ExportProjectDialog::onAccepted()
 	properties_->architecture = ui->architecture->currentIndex();
 	properties_->assetsOnly = ui->assetsOnly->isChecked();
 	properties_->packageName = ui->packageName->text();
-    properties_->encrypt = ui->encrypt->isChecked();
+    properties_->encryptCode = ui->encryptCode->isChecked();
+    properties_->encryptAssets = ui->encryptAssets->isChecked();
 }

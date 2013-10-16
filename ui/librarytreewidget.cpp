@@ -353,7 +353,8 @@ QDomDocument LibraryTreeWidget::toXml() const
 	properties.setAttribute("assetsOnly", properties_.assetsOnly ? 1 : 0);
 	properties.setAttribute("iosDevice", properties_.iosDevice);
 	properties.setAttribute("packageName", properties_.packageName);
-    properties.setAttribute("encrypt", properties_.encrypt);
+    properties.setAttribute("encryptCode", properties_.encryptCode);
+    properties.setAttribute("encryptAssets", properties_.encryptAssets);
 
 
 	root.appendChild(properties);
@@ -500,8 +501,10 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 			properties_.iosDevice = properties.attribute("iosDevice").toInt();
 		if (!properties.attribute("packageName").isEmpty())
 			properties_.packageName = properties.attribute("packageName");
-        if (!properties.attribute("encrypt").isEmpty())
-            properties_.encrypt = properties.attribute("encrypt").toInt() != 0;
+        if (!properties.attribute("encryptCode").isEmpty())
+            properties_.encryptCode = properties.attribute("encryptCode").toInt() != 0;
+        if (!properties.attribute("encryptAssets").isEmpty())
+            properties_.encryptAssets = properties.attribute("encryptAssets").toInt() != 0;
     }
 
 	QTreeWidgetItem* rootitem = createProjectItem(QFileInfo(projectFileName).completeBaseName());

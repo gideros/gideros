@@ -25,7 +25,8 @@ public:
 	DeviceFamily deviceFamily() const;
 	QString packageName() const;
     bool assetsOnly() const;
-    bool encrypt() const;
+    bool encryptCode() const;
+    bool encryptAssets() const;
 
 private slots:
 	void onAccepted();
