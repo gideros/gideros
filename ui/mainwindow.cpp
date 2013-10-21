@@ -2203,6 +2203,10 @@ void MainWindow::exportProject()
         QByteArray encryptionZero(16, '\0');
         QByteArray codeKey(16, '\0');
         QByteArray assetsKey(16, '\0');
+        QByteArray randomKey(16, '\0');
+        qsrand(time(NULL));
+        for (int i = 0; i < 16; ++i)
+            randomKey[i] = qrand() % 256;
         if (dialog.encryptCode())
         {
             QSettings settings;
@@ -2212,10 +2216,7 @@ void MainWindow::exportProject()
             }
             else
             {
-                qsrand(time(NULL));
-                for (int i = 0; i < 16; ++i)
-                    codeKey[i] = qrand() % 256;
-
+                codeKey = randomKey;
                 settings.setValue("codeKey", codeKey);
                 settings.sync();
             }
@@ -2229,10 +2230,7 @@ void MainWindow::exportProject()
             }
             else
             {
-                qsrand(time(NULL));
-                for (int i = 0; i < 16; ++i)
-                    assetsKey[i] = qrand() % 256;
-
+                assetsKey = randomKey;
                 settings.setValue("assetsKey", assetsKey);
                 settings.sync();
             }

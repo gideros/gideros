@@ -322,6 +322,12 @@ void usage()
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setOrganizationName("GiderosMobile");
+    QCoreApplication::setOrganizationDomain("giderosmobile.com");
+    QCoreApplication::setApplicationName("GiderosStudio");
+
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+
     QCoreApplication a(argc, argv);
 
     QStringList arguments = a.arguments();
@@ -551,6 +557,10 @@ int main(int argc, char *argv[])
     QByteArray encryptionZero(16, '\0');
     QByteArray codeKey(16, '\0');
     QByteArray assetsKey(16, '\0');
+    QByteArray randomKey(16, '\0');
+    qsrand(time(NULL));
+    for (int i = 0; i < 16; ++i)
+        randomKey[i] = qrand() % 256;
     if (encryptCode)
     {
         QSettings settings;
@@ -560,10 +570,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            qsrand(time(NULL));
-            for (int i = 0; i < 16; ++i)
-                codeKey[i] = qrand() % 256;
-
+            codeKey = randomKey;
             settings.setValue("codeKey", codeKey);
             settings.sync();
         }
@@ -577,10 +584,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            qsrand(time(NULL));
-            for (int i = 0; i < 16; ++i)
-                assetsKey[i] = qrand() % 256;
-
+            assetsKey = randomKey;
             settings.setValue("assetsKey", assetsKey);
             settings.sync();
         }
