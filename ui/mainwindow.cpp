@@ -2203,38 +2203,29 @@ void MainWindow::exportProject()
         QByteArray encryptionZero(16, '\0');
         QByteArray codeKey(16, '\0');
         QByteArray assetsKey(16, '\0');
-        QByteArray randomKey(16, '\0');
-        qsrand(time(NULL));
-        for (int i = 0; i < 16; ++i)
-            randomKey[i] = qrand() % 256;
+        QByteArray encryptionKey(16, '\0');
+
+        {
+            QSettings settings;
+            if (settings.contains("encryptionKey"))
+            {
+                encryptionKey = settings.value("encryptionKey").toByteArray();
+            }
+            else
+            {
+                qsrand(time(NULL));
+                for (int i = 0; i < 16; ++i)
+                    encryptionKey[i] = qrand() % 256;
+                settings.setValue("encryptionKey", encryptionKey);
+                settings.sync();
+            }
+        }
+
         if (dialog.encryptCode())
-        {
-            QSettings settings;
-            if (settings.contains("codeKey"))
-            {
-                codeKey = settings.value("codeKey").toByteArray();
-            }
-            else
-            {
-                codeKey = randomKey;
-                settings.setValue("codeKey", codeKey);
-                settings.sync();
-            }
-        }
+            codeKey = encryptionKey;
+
         if (dialog.encryptAssets())
-        {
-            QSettings settings;
-            if (settings.contains("assetsKey"))
-            {
-                assetsKey = settings.value("assetsKey").toByteArray();
-            }
-            else
-            {
-                assetsKey = randomKey;
-                settings.setValue("assetsKey", assetsKey);
-                settings.sync();
-            }
-        }
+            assetsKey = encryptionKey;
 
 		// copy template
         if (true)
