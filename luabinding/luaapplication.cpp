@@ -1099,11 +1099,6 @@ void LuaApplication::initialize()
 	lua_pushcfunction(L, ::enterFrame);
 	lua_rawset(L, LUA_REGISTRYINDEX);
 
-	lua_pushlightuserdata(L, &key_tracebackFunction);
-	lua_pushcfunction(L, ::luaC_traceback);
-	lua_rawset(L, LUA_REGISTRYINDEX);
-
-
 #if 0
 	if (L == NULL)
 	{

@@ -1,5 +1,4 @@
 #include "luautil.h"
-#include "keys.h"
 
 extern "C" {
 
@@ -148,6 +147,7 @@ static int db_errorfb (lua_State *L) {
   return 1;
 }
 
+static char key_tracebackFunction = ' ';
 
 int lua_pcall_traceback(lua_State* L, int nargs, int nresults, int unused)
 {
@@ -157,6 +157,14 @@ int lua_pcall_traceback(lua_State* L, int nargs, int nresults, int unused)
 
 	lua_pushlightuserdata(L, &key_tracebackFunction);
 	lua_rawget(L, LUA_REGISTRYINDEX);
+    if (lua_isnil(L, -1))
+    {
+        lua_pop(L, 1);
+        lua_pushcfunction(L, ::luaC_traceback);
+        lua_pushlightuserdata(L, &key_tracebackFunction);
+        lua_pushvalue(L, -2);
+        lua_rawset(L, LUA_REGISTRYINDEX);
+    }
 //	lua_pushcfunction(L, luaC_traceback);  /* push traceback function */
 
 	lua_insert(L, base);  /* put it under chunk and args */

@@ -17,7 +17,6 @@ char key_touchesBeganFunction = ' ';
 char key_touchesMovedFunction = ' ';
 char key_touchesEndedFunction = ' ';
 char key_touchesCancelledFunction = ' ';
-char key_tracebackFunction = ' ';
 
 char key_b2 = ' ';
 char key_eventClosures = ' ';

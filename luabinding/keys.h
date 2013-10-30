@@ -11,7 +11,6 @@ extern char key_CompleteEvent;
 
 extern char key_tickFunction;
 extern char key_enterFrameFunction;
-extern char key_tracebackFunction;
 
 extern char key_b2;
 extern char key_eventClosures;
