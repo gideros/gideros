@@ -18,7 +18,8 @@ SOURCES += \
     event.cpp \
     refptr.cpp \
     eventvisitor.cpp \
-    pluginmanager.cpp
+    pluginmanager.cpp \
+    luautil.cpp
 
 HEADERS += \
 	gplugin.h \
@@ -31,7 +32,8 @@ HEADERS += \
     gideros_p.h \
     gproxy.h \
     gideros.h \
-    pluginmanager.h
+    pluginmanager.h \
+    luautil.h
 
 INCLUDEPATH += \
 	. \

@@ -3,6 +3,7 @@
 #include "eventdispatcher.h"
 #include "gproxy.h"
 #include "pystring.h"
+#include <luautil.h>
 
 bool disableTypeChecking_ = false;
 
@@ -266,7 +267,7 @@ void g_setInstance(lua_State* L, int index, void* ptr)
 
 int g_error(lua_State* L, const char* msg)
 {
-	LuaApplicationBase* application = static_cast<LuaApplicationBase*>(lua_getdata(L));
+    LuaApplicationBase* application = static_cast<LuaApplicationBase*>(luaL_getdata(L));
 
     application->setError(msg);
 #if 0
