@@ -16,7 +16,7 @@ INCLUDEPATH +=	src \
                 ../libgid/include \
                 ../libgideros
 
-SOURCES += etc/all_lua.cpp
+SOURCES += etc/all_lua.c
 
 HEADERS += \
     src/lzio.h \
