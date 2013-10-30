@@ -3,6 +3,7 @@
 #include "stackchecker.h"
 #include "luaapplication.h"
 #include "giderosexception.h"
+#include <luautil.h>
 
 FontBinder::FontBinder(lua_State* L)
 {
@@ -19,7 +20,7 @@ int FontBinder::create(lua_State* L)
 {
 	StackChecker checker(L, "FontBinder::create", 1);
 
-	LuaApplication* luaapplication = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* luaapplication = static_cast<LuaApplication*>(luaL_getdata(L));
 	Application* application = luaapplication->getApplication();
 
 	const char* glympfile = luaL_checkstring(L, 1);

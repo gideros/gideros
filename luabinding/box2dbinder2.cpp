@@ -1032,7 +1032,7 @@ int Box2DBinder2::loader(lua_State *L)
 
 int Box2DBinder2::b2GetScale(lua_State* L)
 {
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	lua_pushnumber(L, application->getPhysicsScale());
 
@@ -1041,7 +1041,7 @@ int Box2DBinder2::b2GetScale(lua_State* L)
 
 int Box2DBinder2::b2SetScale(lua_State* L)
 {
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	lua_Number scale = luaL_checknumber(L, 1);
 	application->setPhysicsScale(scale);
@@ -1146,7 +1146,7 @@ int Box2DBinder2::b2World_CreateBody(lua_State* L)
 {
 	StackChecker checker(L, "b2World_CreateBody", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	Binder binder(L);
 	b2WorldED* world = static_cast<b2WorldED*>(binder.getInstance("b2World", 1));
@@ -1315,7 +1315,7 @@ int Box2DBinder2::b2World_QueryAABB(lua_State* L)
 {
 	StackChecker checker(L, "b2World_Query", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -1365,7 +1365,7 @@ public:
     virtual float32 ReportFixture(	b2Fixture* fixture, const b2Vec2& point,
                                     const b2Vec2& normal, float32 fraction)
     {
-        LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+        LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
         float physicsScale = application->getPhysicsScale();
 
         bool data = !lua_isnone(L, 7);
@@ -1399,7 +1399,7 @@ int Box2DBinder2::b2World_rayCast(lua_State* L)
 {
     StackChecker checker(L, "b2World_rayCast", 0);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     Binder binder(L);
@@ -1588,7 +1588,7 @@ int Box2DBinder2::b2Body_GetPosition(lua_State* L)
 {
 	StackChecker checker(L, "b2Body_GetPosition", 2);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -1614,7 +1614,7 @@ int Box2DBinder2::b2Body_SetPosition(lua_State* L)
 {
 	StackChecker checker(L, "b2Body_SetPosition", 0);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -1727,7 +1727,7 @@ int Box2DBinder2::b2Body_ApplyForce(lua_State* L)
 {
 	StackChecker checker(L, "b2Body_ApplyForce", 0);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -1762,7 +1762,7 @@ int Box2DBinder2::b2Body_ApplyLinearImpulse(lua_State* L)
 {
 	StackChecker checker(L, "b2Body_ApplyLinearImpulse", 0);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -1930,7 +1930,7 @@ int Box2DBinder2::b2Body_getWorldCenter(lua_State* L)
 
     b2Body* body = toBody(binder, 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     b2Vec2 center = body->GetWorldCenter();
@@ -1948,7 +1948,7 @@ int Box2DBinder2::b2Body_getLocalCenter(lua_State* L)
 
     b2Body* body = toBody(binder, 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     b2Vec2 center = body->GetLocalCenter();
@@ -2010,7 +2010,7 @@ int Box2DBinder2::b2Body_getWorldPoint(lua_State* L)
 {
     StackChecker checker(L, "b2Body_getWorldPoint", 2);
 
-    LuaApplication *application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication *application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     Binder binder(L);
@@ -2049,7 +2049,7 @@ int Box2DBinder2::b2Body_getLocalPoint(lua_State* L)
 {
     StackChecker checker(L, "b2Body_getLocalPoint", 2);
 
-    LuaApplication *application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication *application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     Binder binder(L);
@@ -2257,7 +2257,7 @@ int Box2DBinder2::b2CircleShape_create(lua_State* L)
 {
 	StackChecker checker(L, "b2CircleShape_create", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -2292,7 +2292,7 @@ int Box2DBinder2::b2CircleShape_set(lua_State* L)
 {
 	StackChecker checker(L, "b2CircleShape_set", 0);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -2337,7 +2337,7 @@ int Box2DBinder2::b2PolygonShape_SetAsBox(lua_State* L)
 {
 	StackChecker checker(L, "b2PolygonShape_SetAsBox", 0);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -2370,7 +2370,7 @@ int Box2DBinder2::b2PolygonShape_SetAsEdge(lua_State* L)
 {
 	StackChecker checker(L, "b2PolygonShape_SetAsEdge", 0);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -2391,7 +2391,7 @@ int Box2DBinder2::b2PolygonShape_Set(lua_State* L)
 {
 	StackChecker checker(L, "b2PolygonShape_Set", 0);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -2474,7 +2474,7 @@ int Box2DBinder2::b2EdgeShape_create(lua_State* L)
 {
 	StackChecker checker(L, "b2EdgeShape_create", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -2510,7 +2510,7 @@ int Box2DBinder2::b2EdgeShape_set(lua_State* L)
 {
 	StackChecker checker(L, "b2EdgeShape_set", 0);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -2553,7 +2553,7 @@ int Box2DBinder2::b2ChainShape_createLoop(lua_State* L)
 {
     StackChecker checker(L, "b2ChainShape_createLoop", 0);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     Binder binder(L);
@@ -2593,7 +2593,7 @@ int Box2DBinder2::b2ChainShape_createChain(lua_State* L)
 {
     StackChecker checker(L, "b2ChainShape_createChain", 0);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     Binder binder(L);
@@ -2717,7 +2717,7 @@ int Box2DBinder2::b2World_createJoint(lua_State* L)
 {
 	StackChecker checker(L, "b2World_createJoint", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -3314,7 +3314,7 @@ int Box2DBinder2::b2Joint_getAnchorA(lua_State* L)
 {
 	StackChecker checker(L, "b2Joint_getAnchorA", 2);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -3332,7 +3332,7 @@ int Box2DBinder2::b2Joint_getAnchorB(lua_State* L)
 {
 	StackChecker checker(L, "b2Joint_getAnchorB", 2);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	Binder binder(L);
@@ -3433,7 +3433,7 @@ int Box2DBinder2::getRevoluteJointDef(lua_State* L)
 {
 	StackChecker checker(L, "getRevoluteJointDef", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	b2RevoluteJointDef jd;
@@ -3481,7 +3481,7 @@ int Box2DBinder2::getPrismaticJointDef(lua_State* L)
 {
 	StackChecker checker(L, "getPrismaticJointDef", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	b2PrismaticJointDef jd;
@@ -3537,7 +3537,7 @@ int Box2DBinder2::getDistanceJointDef(lua_State* L)
 {
 	StackChecker checker(L, "getDistanceJointDef", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	b2DistanceJointDef jd;
@@ -3586,7 +3586,7 @@ int Box2DBinder2::getPulleyJointDef(lua_State* L)
 {
 	StackChecker checker(L, "getPulleyJointDef", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	b2PulleyJointDef jd;
@@ -3755,7 +3755,7 @@ int Box2DBinder2::getWheelJointDef(lua_State* L)
 {
 	StackChecker checker(L, "getWheelJointDef", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	b2WheelJointDef jd;
@@ -3808,7 +3808,7 @@ int Box2DBinder2::getWeldJointDef(lua_State* L)
 {
 	StackChecker checker(L, "getWeldJointDef", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	b2WeldJointDef jd;
@@ -3856,7 +3856,7 @@ int Box2DBinder2::getFrictionJointDef(lua_State* L)
 {
 	StackChecker checker(L, "getFrictionJointDef", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	b2FrictionJointDef jd;
@@ -3901,7 +3901,7 @@ int Box2DBinder2::getRopeJointDef(lua_State* L)
 {
     StackChecker checker(L, "getRopeJointDef", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     Binder binder(L);
@@ -4062,7 +4062,7 @@ int Box2DBinder2::b2PrismaticJoint_getJointTranslation(lua_State* L)
 	Binder binder(L);
 	b2PrismaticJoint* joint = static_cast<b2PrismaticJoint*>(toJoint(binder, 1, "b2PrismaticJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	lua_pushnumber(L, joint->GetJointTranslation() * physicsScale);
@@ -4101,7 +4101,7 @@ int Box2DBinder2::b2PrismaticJoint_getLimits(lua_State* L)
 	Binder binder(L);
 	b2PrismaticJoint* joint = static_cast<b2PrismaticJoint*>(toJoint(binder, 1, "b2PrismaticJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	lua_pushnumber(L, joint->GetLowerLimit() * physicsScale);
@@ -4114,7 +4114,7 @@ int Box2DBinder2::b2PrismaticJoint_setLimits(lua_State* L)
 	Binder binder(L);
 	b2PrismaticJoint* joint = static_cast<b2PrismaticJoint*>(toJoint(binder, 1, "b2PrismaticJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	joint->SetLimits(luaL_checknumber(L, 2) / physicsScale, luaL_checknumber(L, 3) / physicsScale);
@@ -4183,7 +4183,7 @@ int Box2DBinder2::b2DistanceJoint_setLength(lua_State* L)
 	Binder binder(L);
 	b2DistanceJoint* joint = static_cast<b2DistanceJoint*>(toJoint(binder, 1, "b2DistanceJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	joint->SetLength(luaL_checknumber(L, 2) / physicsScale);
@@ -4195,7 +4195,7 @@ int Box2DBinder2::b2DistanceJoint_getLength(lua_State* L)
 	Binder binder(L);
 	b2DistanceJoint* joint = static_cast<b2DistanceJoint*>(toJoint(binder, 1, "b2DistanceJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	lua_pushnumber(L, joint->GetLength() * physicsScale);
@@ -4244,7 +4244,7 @@ int Box2DBinder2::b2PulleyJoint_getGroundAnchorA(lua_State* L)
 	Binder binder(L);
 	b2PulleyJoint* joint = static_cast<b2PulleyJoint*>(toJoint(binder, 1, "b2PulleyJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	b2Vec2 v = joint->GetGroundAnchorA();
@@ -4260,7 +4260,7 @@ int Box2DBinder2::b2PulleyJoint_getGroundAnchorB(lua_State* L)
 	Binder binder(L);
 	b2PulleyJoint* joint = static_cast<b2PulleyJoint*>(toJoint(binder, 1, "b2PulleyJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	b2Vec2 v = joint->GetGroundAnchorB();
@@ -4277,7 +4277,7 @@ int Box2DBinder2::b2PulleyJoint_getLengthA(lua_State* L)
 	Binder binder(L);
 	b2PulleyJoint* joint = static_cast<b2PulleyJoint*>(toJoint(binder, 1, "b2PulleyJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	lua_pushnumber(L, joint->GetLengthA() * physicsScale);
@@ -4291,7 +4291,7 @@ int Box2DBinder2::b2PulleyJoint_getLengthB(lua_State* L)
 	Binder binder(L);
 	b2PulleyJoint* joint = static_cast<b2PulleyJoint*>(toJoint(binder, 1, "b2PulleyJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	lua_pushnumber(L, joint->GetLengthB() * physicsScale);
@@ -4315,7 +4315,7 @@ int Box2DBinder2::b2MouseJoint_setTarget(lua_State* L)
 	Binder binder(L);
 	b2MouseJoint* joint = static_cast<b2MouseJoint*>(toJoint(binder, 1, "b2MouseJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	joint->SetTarget(b2Vec2(luaL_checknumber(L, 2) / physicsScale, luaL_checknumber(L, 3) / physicsScale));
@@ -4327,7 +4327,7 @@ int Box2DBinder2::b2MouseJoint_getTarget(lua_State* L)
 	Binder binder(L);
 	b2MouseJoint* joint = static_cast<b2MouseJoint*>(toJoint(binder, 1, "b2MouseJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	b2Vec2 v = joint->GetTarget();
@@ -4417,7 +4417,7 @@ int Box2DBinder2::b2WheelJoint_getJointTranslation(lua_State* L)
 	Binder binder(L);
 	b2WheelJoint* joint = static_cast<b2WheelJoint*>(toJoint(binder, 1, "b2WheelJoint"));
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	float physicsScale = application->getPhysicsScale();
 
 	lua_pushnumber(L, joint->GetJointTranslation() * physicsScale);
@@ -4626,7 +4626,7 @@ int Box2DBinder2::b2RopeJoint_setMaxLength(lua_State* L)
     Binder binder(L);
     b2RopeJoint* joint = static_cast<b2RopeJoint*>(toJoint(binder, 1, "b2RopeJoint"));
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     joint->SetMaxLength(luaL_checknumber(L, 2) / physicsScale);
@@ -4639,7 +4639,7 @@ int Box2DBinder2::b2RopeJoint_getMaxLength(lua_State* L)
     Binder binder(L);
     b2RopeJoint* joint = static_cast<b2RopeJoint*>(toJoint(binder, 1, "b2RopeJoint"));
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     lua_pushnumber(L, joint->GetMaxLength() * physicsScale);
@@ -4787,7 +4787,7 @@ int Box2DBinder2::b2DebugDraw_create(lua_State* L)
 {
 	Binder binder(L);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	b2DebugDraw* debugDraw = new b2DebugDraw(application);
 	binder.pushInstance("b2DebugDraw", debugDraw);
@@ -4880,7 +4880,7 @@ int Box2DBinder2::b2Contact_getManifold(lua_State *L)
 {
     StackChecker checker(L, "b2Contact_getManifold", 1);
 
-    LuaApplication *application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication *application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     Binder binder(L);
@@ -4944,7 +4944,7 @@ int Box2DBinder2::b2Contact_getWorldManifold(lua_State *L)
 {
     StackChecker checker(L, "b2Contact_getWorldManifold", 1);
 
-    LuaApplication *application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication *application = static_cast<LuaApplication*>(luaL_getdata(L));
     float physicsScale = application->getPhysicsScale();
 
     Binder binder(L);

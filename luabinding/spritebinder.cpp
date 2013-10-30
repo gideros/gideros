@@ -3,6 +3,7 @@
 #include "colortransform.h"
 #include "stackchecker.h"
 #include "luaapplication.h"
+#include <luautil.h>
 
 SpriteBinder::SpriteBinder(lua_State* L)
 {
@@ -96,7 +97,7 @@ int SpriteBinder::create(lua_State* L)
 {
 	StackChecker checker(L, "Sprite", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	Binder binder(L);
     Sprite* sprite = new Sprite(application->getApplication());

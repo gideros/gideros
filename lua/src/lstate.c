@@ -104,7 +104,6 @@ static void preinit_state (lua_State *L, global_State *g) {
   L->errfunc = 0;
   L->printfunc = default_printfunc;
   L->printfuncdata = NULL;
-  L->data = NULL;
   setnilvalue(gt(L));
 }
 
@@ -135,7 +134,6 @@ lua_State *luaE_newthread (lua_State *L) {
 
   L1->printfunc = L->printfunc;
   L1->printfuncdata = L->printfuncdata;
-  L1->data = L->data;
 
   resethookcount(L1);
   lua_assert(iswhite(obj2gco(L1)));
@@ -239,13 +237,4 @@ LUA_API void lua_setprintfunc(lua_State* L, lua_PrintFunc printfunc, void* data)
 {
 	L->printfunc = printfunc;
 	L->printfuncdata = data;
-}
-
-LUA_API void lua_setdata(lua_State* L, void* data)
-{
-	L->data = data;
-}
-LUA_API void* lua_getdata(lua_State* L)
-{
-	return L->data;
 }

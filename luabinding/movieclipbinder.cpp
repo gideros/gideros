@@ -3,6 +3,7 @@
 #include "stackchecker.h"
 #include "stringid.h"
 #include "luaapplication.h"
+#include <luautil.h>
 
 MovieClipBinder::MovieClipBinder(lua_State* L)
 {
@@ -57,7 +58,7 @@ int MovieClipBinder::create(lua_State* L)
 {
 	StackChecker checker(L, "MovieClipBinder::create", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     Binder binder(L);
 

@@ -2,6 +2,7 @@
 #include "stackchecker.h"
 #include <dib.h>
 #include "luaapplication.h"
+#include <luautil.h>
 
 DibBinder::DibBinder(lua_State* L)
 {
@@ -19,7 +20,7 @@ int DibBinder::create(lua_State* L)
 {
 	StackChecker checker(L, "DibBinder::create", 1);
 
-	LuaApplication* luaapplication = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* luaapplication = static_cast<LuaApplication*>(luaL_getdata(L));
 	Application* application = luaapplication->getApplication();
 
 	const char* filename = luaL_checkstring(L, 1);

@@ -4,6 +4,7 @@
 #include "luaapplication.h"
 #include "giderosexception.h"
 #include <string.h>
+#include <luautil.h>
 
 TexturePackBinder::TexturePackBinder(lua_State* L)
 {
@@ -21,7 +22,7 @@ int TexturePackBinder::create(lua_State* L)
 {
 	StackChecker checker(L, "TexturePackBinder::create", 1);
 
-	LuaApplication* luaapplication = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* luaapplication = static_cast<LuaApplication*>(luaL_getdata(L));
 	Application* application = luaapplication->getApplication();
 
 	if (lua_type(L, 1) == LUA_TTABLE)

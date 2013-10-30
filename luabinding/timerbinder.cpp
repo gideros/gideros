@@ -72,7 +72,7 @@ int TimerBinder::create(lua_State* L)
 	double delay = luaL_checknumber(L, 1);
 	int repeatCount = luaL_optinteger(L, 2, 0);
 
-    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+    LuaApplication *application = (LuaApplication*)luaL_getdata(L);
 
 	Binder binder(L);
     Timer *timer = new Timer(application->getApplication(), delay, repeatCount);
@@ -238,7 +238,7 @@ int TimerBinder::setRepeatCount(lua_State* L)
 
 int TimerBinder::pauseAllTimers(lua_State* L)
 {
-    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+    LuaApplication *application = (LuaApplication*)luaL_getdata(L);
     TimerContainer *timerContainer = application->getApplication()->getTimerContainer();
 
     timerContainer->pauseAllTimers();
@@ -248,7 +248,7 @@ int TimerBinder::pauseAllTimers(lua_State* L)
 
 int TimerBinder::resumeAllTimers(lua_State* L)
 {
-    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+    LuaApplication *application = (LuaApplication*)luaL_getdata(L);
     TimerContainer *timerContainer = application->getApplication()->getTimerContainer();
 
     timerContainer->resumeAllTimers();
@@ -258,7 +258,7 @@ int TimerBinder::resumeAllTimers(lua_State* L)
 
 int TimerBinder::stopAllTimers(lua_State* L)
 {
-    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+    LuaApplication *application = (LuaApplication*)luaL_getdata(L);
     TimerContainer *timerContainer = application->getApplication()->getTimerContainer();
 
     timerContainer->removeAllTimers();

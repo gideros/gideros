@@ -7,6 +7,7 @@
 #include <ginput.h>
 #include <gtexture.h>
 #include <gapplication.h>
+#include <luautil.h>
 
 #define PORTRAIT "portrait"
 #define PORTRAIT_UPSIDE_DOWN "portraitUpsideDown"
@@ -108,7 +109,7 @@ int ApplicationBinder::getLogicalWidth(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	lua_pushnumber(L, application->getLogicalWidth());
 
@@ -120,7 +121,7 @@ int ApplicationBinder::getLogicalHeight(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	lua_pushnumber(L, application->getLogicalHeight());
 
@@ -132,7 +133,7 @@ int ApplicationBinder::getDeviceWidth(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	lua_pushnumber(L, application->getHardwareWidth());
 
@@ -144,7 +145,7 @@ int ApplicationBinder::getDeviceHeight(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	lua_pushnumber(L, application->getHardwareHeight());
 
@@ -197,7 +198,7 @@ int ApplicationBinder::getLogicalTranslateX(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	lua_pushnumber(L, application->getLogicalTranslateX());
 
@@ -209,7 +210,7 @@ int ApplicationBinder::getLogicalTranslateY(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	lua_pushnumber(L, application->getLogicalTranslateY());
 
@@ -221,7 +222,7 @@ int ApplicationBinder::getLogicalScaleX(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	lua_pushnumber(L, application->getLogicalScaleX());
 
@@ -233,7 +234,7 @@ int ApplicationBinder::getLogicalScaleY(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	lua_pushnumber(L, application->getLogicalScaleY());
 
@@ -258,7 +259,7 @@ int ApplicationBinder::getContentWidth(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	Orientation orientation = application->orientation();
 
@@ -275,7 +276,7 @@ int ApplicationBinder::getContentHeight(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	Orientation orientation = application->orientation();
 
@@ -292,7 +293,7 @@ int ApplicationBinder::setBackgroundColor(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	unsigned int color = luaL_checkinteger(L, 2);
 
@@ -310,7 +311,7 @@ int ApplicationBinder::getBackgroundColor(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	float r, g, b;
 	application->getApplication()->getBackgroundColor(&r, &g, &b);
@@ -329,7 +330,7 @@ int ApplicationBinder::setOrientation(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	const char* orientation = luaL_checkstring(L, 2);
 
@@ -363,7 +364,7 @@ int ApplicationBinder::getOrientation(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	switch (application->getApplication()->orientation())
 	{
@@ -389,7 +390,7 @@ int ApplicationBinder::setScaleMode(lua_State *L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     const char* scaleMode = luaL_checkstring(L, 2);
 
@@ -439,7 +440,7 @@ int ApplicationBinder::getScaleMode(lua_State* L)
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     switch (application->getApplication()->getLogicalScaleMode())
     {
@@ -477,7 +478,7 @@ int ApplicationBinder::setLogicalDimensions(lua_State* L)
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     int width = luaL_checkinteger(L, 2);
     int height = luaL_checkinteger(L, 3);
@@ -497,7 +498,7 @@ int ApplicationBinder::getFps(lua_State* L)
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     lua_pushinteger(L, g_getFps());
 
@@ -509,7 +510,7 @@ int ApplicationBinder::setFps(lua_State* L)
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     int fps = luaL_checkinteger(L, 2);
 
@@ -529,7 +530,7 @@ int ApplicationBinder::exit(lua_State *L)
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     extern void g_exit();
     g_exit();
@@ -542,7 +543,7 @@ int ApplicationBinder::getApiVersion(lua_State* L)
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     lua_pushliteral(L, "2013.09.1");
 
@@ -554,7 +555,7 @@ int ApplicationBinder::getTextureMemoryUsage(lua_State* L)
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     lua_pushnumber(L, gtexture_getMemoryUsage() / 1024.0);
 

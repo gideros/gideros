@@ -1,6 +1,8 @@
 #include "luautil.h"
 #include "keys.h"
 
+extern "C" {
+
 #ifndef abs_index
 
 /* convert a stack index to positive */
@@ -180,5 +182,24 @@ void luaL_rawsetptr(lua_State *L, int idx, void* ptr)
 	lua_pushlightuserdata(L, ptr);
 	lua_insert(L, -2);
 	lua_rawset(L, idx);
+}
+
+static char key_data = ' ';
+
+void luaL_setdata(lua_State *L, void *data)
+{
+    lua_pushlightuserdata(L, data);
+    luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_data);
+}
+
+void *luaL_getdata(lua_State *L)
+{
+    luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_data);
+    void *result = lua_touserdata(L, -1);
+    lua_pop(L, 1);
+    return result;
+
+}
+
 }
 

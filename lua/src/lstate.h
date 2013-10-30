@@ -129,8 +129,6 @@ struct lua_State {
 
   lua_PrintFunc printfunc;
   void* printfuncdata;
-
-  void* data;
 };
 
 

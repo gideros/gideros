@@ -1116,7 +1116,7 @@ void LuaApplication::initialize()
 
 
     lua_setprintfunc(L, printFunc_, printData_);
-	lua_setdata(L, this);
+    luaL_setdata(L, this);
 
 	luaL_openlibs(L);
 

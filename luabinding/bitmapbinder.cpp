@@ -3,6 +3,7 @@
 #include "bitmapdata.h"
 #include "stackchecker.h"
 #include "luaapplication.h"
+#include <luautil.h>
 
 BitmapBinder::BitmapBinder(lua_State* L)
 {
@@ -23,7 +24,7 @@ int BitmapBinder::create(lua_State* L)
 {
 	StackChecker checker(L, "BitmapBinder::create", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     Binder binder(L);
 

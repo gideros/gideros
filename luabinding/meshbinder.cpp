@@ -1,6 +1,7 @@
 #include "meshbinder.h"
 #include <gmesh.h>
 #include "luaapplication.h"
+#include <luautil.h>
 
 MeshBinder::MeshBinder(lua_State *L)
 {
@@ -53,7 +54,7 @@ MeshBinder::MeshBinder(lua_State *L)
 
 int MeshBinder::create(lua_State *L)
 {
-    LuaApplication* application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     Binder binder(L);
 

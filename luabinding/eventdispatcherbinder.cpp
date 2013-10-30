@@ -1025,7 +1025,7 @@ int EventDispatcherBinder::addEventListener(lua_State* L)
 		return 0;
 	}
 
-    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+    LuaApplication *application = (LuaApplication*)luaL_getdata(L);
     lua_State *mainL = application->getLuaState();
 
     CppLuaBridge* bridge = new CppLuaBridge(mainL);
@@ -1109,7 +1109,7 @@ int EventDispatcherBinder::dispatchEvent(lua_State* L)
 	lua_pop(L, 1);
 	LuaEvent e = LuaEvent(LuaEvent::Type(event.c_str()));
 
-    LuaApplication *application = (LuaApplication*)lua_getdata(L);
+    LuaApplication *application = (LuaApplication*)luaL_getdata(L);
     lua_State *mainL = application->getLuaState();
 
     lua_pushvalue(L, 2);    // push event to main thread

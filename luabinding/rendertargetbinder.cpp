@@ -1,6 +1,7 @@
 #include "rendertargetbinder.h"
 #include <grendertarget.h>
 #include "luaapplication.h"
+#include <luautil.h>
 
 RenderTargetBinder::RenderTargetBinder(lua_State *L)
 {
@@ -18,7 +19,7 @@ RenderTargetBinder::RenderTargetBinder(lua_State *L)
 
 int RenderTargetBinder::create(lua_State *L)
 {
-    LuaApplication *application = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication *application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     Binder binder(L);
 

@@ -4,6 +4,7 @@
 #include "luaapplication.h"
 #include "giderosexception.h"
 #include "ttbmfont.h"
+#include <luautil.h>
 
 TTFontBinder::TTFontBinder(lua_State* L)
 {
@@ -18,7 +19,7 @@ TTFontBinder::TTFontBinder(lua_State* L)
 
 int TTFontBinder::create(lua_State* L)
 {
-    LuaApplication *luaapplication = static_cast<LuaApplication*>(lua_getdata(L));
+    LuaApplication *luaapplication = static_cast<LuaApplication*>(luaL_getdata(L));
     Application *application = luaapplication->getApplication();
 
     Binder binder(L);
