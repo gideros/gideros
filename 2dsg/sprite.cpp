@@ -6,6 +6,7 @@
 #include "color.h"
 #include "blendfunc.h"
 #include "stage.h"
+#include <application.h>
 
 std::set<Sprite*> Sprite::allSprites_;
 std::set<Sprite*> Sprite::allSpritesWithListeners_;
@@ -426,21 +427,13 @@ void Sprite::removeChildAt(int index, GStatus* status)
 	child->parent_ = 0;
 	children_.erase(children_.begin() + index);
 
-	if (connected)
-	{
-		try
-		{
-			Event event(Event::REMOVED_FROM_STAGE);
-			child->recursiveDispatchEvent(&event, false, false);
-		}
-		catch(...)
-		{
-			child->unref();
-			throw;
-		}
-	}
+    application_->autounref(child);
 
-	child->unref();
+    if (connected)
+	{
+        Event event(Event::REMOVED_FROM_STAGE);
+        child->recursiveDispatchEvent(&event, false, false);
+	}
 }
 
 void Sprite::removeChild(Sprite* child, GStatus* status)
@@ -765,27 +758,18 @@ void Sprite::recursiveDispatchEvent(Event* event, bool canBeStopped, bool revers
 		std::reverse(sprites.begin(), sprites.end());
 
 	for (std::size_t i = 0; i < sprites.size(); ++i)
+    {
 		sprites[i]->ref();
+        application_->autounref(sprites[i]);
+    }
 	
-	try
-	{
-		for (std::size_t i = 0; i < sprites.size(); ++i)
-		{
-			if (canBeStopped == false || event->propagationStopped() == false)
-				sprites[i]->dispatchEvent(event);
-			else
-				break;
-		}
-	}
-	catch(...)
-	{
-		for (std::size_t i = 0; i < sprites.size(); ++i)
-			sprites[i]->unref();
-		throw;
-	}
-
-	for (std::size_t i = 0; i < sprites.size(); ++i)
-		sprites[i]->unref();
+    for (std::size_t i = 0; i < sprites.size(); ++i)
+    {
+        if (canBeStopped == false || event->propagationStopped() == false)
+            sprites[i]->dispatchEvent(event);
+        else
+            break;
+    }
 }
 
 float Sprite::alpha() const

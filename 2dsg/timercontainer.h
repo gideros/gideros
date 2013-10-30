@@ -8,11 +8,12 @@
 #include "stopwatch.h"
 
 class Timer;
+class Application;
 
 class TimerContainer
 {
 public:
-    TimerContainer();
+    TimerContainer(Application *application);
     ~TimerContainer();
 
     void addTimer(Timer* timer, double additionalDelay);
@@ -31,7 +32,8 @@ public:
     void removeEvents(Timer *timer);
 
 private:
-	std::set<Timer*> timers_;
+    Application *application_;
+    std::set<Timer*> timers_;
 	std::map<double, std::vector<Timer*> > queue_;
 	StopWatch stopWatch_;
     std::deque<std::pair<Timer*, int> > eventQueue_;

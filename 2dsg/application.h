@@ -11,6 +11,8 @@
 #include <string>
 #include <ginput.h>
 #include <timercontainer.h>
+#include <refptr.h>
+
 
 class Font;
 class Stage;
@@ -111,6 +113,9 @@ public:
         return &timerContainer_;
     }
 
+    void autounref(GReferenced *referenced);
+    void unrefPool();
+
 private:
 	TextureManager textureManager_;
 	Stage* stage_;
@@ -147,6 +152,8 @@ private:
 	float backr_, backg_, backb_;
 
     TimerContainer timerContainer_;
+
+    std::vector<GReferenced*> unrefPool_;
 };
 
 #endif

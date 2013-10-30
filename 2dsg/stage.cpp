@@ -4,6 +4,7 @@
 #include "enterframeevent.h"
 #include "platform.h"
 #include "keyboardevent.h"
+#include <application.h>
 
 #include <stack>
 
@@ -60,24 +61,14 @@ void Stage::enterFrame(int deltaFrameCount)
 //	v.insert(v.end(), allSprites_.begin(), allSprites_.end());
 
 	for (std::size_t i = 0; i < v.size(); ++i)
+    {
 		v[i]->ref();
+        application_->autounref(v[i]);
+    }
 
-	try
-	{
-		EnterFrameEvent event(EnterFrameEvent::ENTER_FRAME, frameCount, deltaFrameCount, time, deltaTime);
-		for (std::size_t i = 0; i < v.size(); ++i)
-			v[i]->dispatchEvent(&event);
-	}
-	catch(...)
-	{
-		for (std::size_t i = 0; i < v.size(); ++i)
-			v[i]->unref();
-
-		throw;
-	}
-
-	for (std::size_t i = 0; i < v.size(); ++i)
-		v[i]->unref();
+    EnterFrameEvent event(EnterFrameEvent::ENTER_FRAME, frameCount, deltaFrameCount, time, deltaTime);
+    for (std::size_t i = 0; i < v.size(); ++i)
+        v[i]->dispatchEvent(&event);
 }
 
 void Stage::touchesBegin(ginput_TouchEvent *event, float sx, float sy, float tx, float ty)
@@ -157,28 +148,18 @@ void Stage::dispatchToSpritesWithListeners(Event *event)
         isSpritesWithListenersDirty_ = false;
     }
 
-
     for (std::size_t i = 0; i < spritesWithListeners_.size(); ++i)
+    {
         spritesWithListeners_[i]->ref();
-
-    try
-    {
-        for (std::size_t i = 0; i < spritesWithListeners_.size(); ++i)
-        {
-            if (event->propagationStopped())
-                break;
-
-            spritesWithListeners_[i]->dispatchEvent(event);
-        }
-    }
-    catch(...)
-    {
-        for (std::size_t i = 0; i < spritesWithListeners_.size(); ++i)
-            spritesWithListeners_[i]->unref();
-        throw;
+        application_->autounref(spritesWithListeners_[i]);
     }
 
     for (std::size_t i = 0; i < spritesWithListeners_.size(); ++i)
-        spritesWithListeners_[i]->unref();
+    {
+        if (event->propagationStopped())
+            break;
+
+        spritesWithListeners_[i]->dispatchEvent(event);
+    }
 }
 

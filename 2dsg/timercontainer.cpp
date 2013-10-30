@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <glog.h>
 #include "timerevent.h"
+#include <application.h>
 
-
-TimerContainer::TimerContainer()
+TimerContainer::TimerContainer(Application *application) : application_(application)
 {
 
 }
@@ -74,36 +74,18 @@ void TimerContainer::tick()
         eventQueue_.pop_front();
 
         timer->ref();
+        application_->autounref(timer);
 
         if (type == 0)
         {
-            try
-            {
-                TimerEvent timerEvent(TimerEvent::TIMER);
-                timer->dispatchEvent(&timerEvent);
-            }
-            catch(...)
-            {
-                timer->unref();
-                throw;
-            }
+            TimerEvent timerEvent(TimerEvent::TIMER);
+            timer->dispatchEvent(&timerEvent);
         }
-
-        if (type == 1)
+        else if (type == 1)
         {
-            try
-            {
-                TimerEvent timerEvent(TimerEvent::TIMER_COMPLETE);
-                timer->dispatchEvent(&timerEvent);
-            }
-            catch(...)
-            {
-                timer->unref();
-                throw;
-            }
+            TimerEvent timerEvent(TimerEvent::TIMER_COMPLETE);
+            timer->dispatchEvent(&timerEvent);
         }
-
-        timer->unref();
     }
 }
 

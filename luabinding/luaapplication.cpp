@@ -885,6 +885,8 @@ void LuaApplication::tick()
             lua_pop(L, lua_gettop(L)); // we always clean the stack when there is an error
         }
     }
+
+    application_->unrefPool();
 }
 
 void LuaApplication::enterFrame()
@@ -910,7 +912,8 @@ void LuaApplication::enterFrame()
 		}
 	}
 
-	//lua_pushcfunction(L, clearNotRunningTimers);
+    application_->unrefPool();
+    //lua_pushcfunction(L, clearNotRunningTimers);
 	//lua_call(L, 0, 0);
 }
 

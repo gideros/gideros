@@ -51,7 +51,9 @@ static double GetCounter()
 #endif
 }
 
-Application::Application() : textureManager_(this)
+Application::Application() :
+    textureManager_(this),
+    timerContainer_(this)
 {
 	stage_ = 0;
 	
@@ -766,4 +768,16 @@ float Application::getLogicalScaleX() const
 float Application::getLogicalScaleY() const
 {
 	return logicalScaleY_;
+}
+
+void Application::autounref(GReferenced *referenced)
+{
+    unrefPool_.push_back(referenced);
+}
+
+void Application::unrefPool()
+{
+    for (std::size_t i = 0; i < unrefPool_.size(); ++i)
+        unrefPool_[i]->unref();
+    unrefPool_.clear();
 }
