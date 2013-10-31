@@ -33,6 +33,8 @@
 #define fputc g_fputc
 #undef getc_unlocked
 #define getc_unlocked g_getc_unlocked
+#undef putc_unlocked
+#define putc_unlocked g_putc_unlocked
 #define __srget g__srget
 #define fgets g_fgets
 #define ungetc g_ungetc
@@ -43,6 +45,8 @@
 #define setvbuf g_setvbuf
 #define tmpfile g_tmpfile
 #define fputs g_fputs
+#define __swbuf g__swbuf
+#define __sputc g__sputc
 
 #define __sF g__sF
 

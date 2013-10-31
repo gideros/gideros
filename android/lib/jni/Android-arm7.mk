@@ -69,6 +69,9 @@ LOCAL_SRC_FILES += \
     ../../../libgid/src/stdio/setvbuf.c \
     ../../../libgid/src/stdio/tmpfile.c \
     ../../../libgid/src/stdio/fputs.c \
+    ../../../libgid/src/stdio/fputc.c \
+    ../../../libgid/src/stdio/putc.c \
+    ../../../libgid/src/stdio/wbuf.c
 
 
 LOCAL_SRC_FILES += \
@@ -258,7 +261,8 @@ LOCAL_SRC_FILES += \
 	../../../2dsg/ttbmfont.cpp \
 	../../../2dsg/ftlibrarysingleton.cpp \
 	../../../2dsg/grendertarget.cpp \
-	../../../2dsg/completeevent.cpp
+	../../../2dsg/completeevent.cpp \
+	../../../libgideros/luautil.cpp
 	
 # LOCAL_SRC_FILES += ../../../2dsg/clipper.cpp
 
@@ -410,7 +414,6 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/fontbinder.cpp \
 	../../../luabinding/keys.cpp \
 	../../../luabinding/luaapplication.cpp \
-	../../../luabinding/luautil.cpp \
 	../../../luabinding/matrixbinder.cpp \
 	../../../luabinding/movieclipbinder.cpp \
 	../../../luabinding/registermodules.cpp \
