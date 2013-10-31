@@ -28,6 +28,9 @@
 #undef getc
 #define getc g_getc
 #define fgetc g_fgetc
+#undef putc
+#define putc g_putc
+#define fputc g_fputc
 #undef getc_unlocked
 #define getc_unlocked g_getc_unlocked
 #define __srget g__srget

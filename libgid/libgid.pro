@@ -49,6 +49,9 @@ SOURCES += \
     src/stdio/setvbuf.c \
     src/stdio/tmpfile.c \
     src/stdio/fputs.c \
+    src/stdio/fputc.c \
+    src/stdio/putc.c \
+    src/stdio/wbuf.c
 
 SOURCES += \
     src/gvfs-native.cpp

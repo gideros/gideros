@@ -91,6 +91,8 @@ G_API int	 g_ferror(G_FILE *);
 G_API void	 g_clearerr(G_FILE *);
 G_API int	 g_fgetc(G_FILE *);
 G_API int	 g_getc(G_FILE *);
+G_API int	 g_fputc(int c, G_FILE *fp);
+G_API int	 g_putc(int c, G_FILE *fp);
 G_API char	*g_fgets(char *, int, G_FILE *);
 G_API int	 g_ungetc(int, G_FILE *);
 G_API int	 g_fscanf(G_FILE *, const char *, ...);
