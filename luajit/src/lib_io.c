@@ -7,7 +7,7 @@
 */
 
 #include <errno.h>
-#include <stdio.h>
+#include "stdio2.h"
 
 #define lib_io_c
 #define LUA_LIB
@@ -95,9 +95,9 @@ static int io_file_close(lua_State *L, IOFileUD *iof)
     ok = (fclose(iof->fp) == 0);
   } else if ((iof->type & IOFILE_TYPE_MASK) == IOFILE_TYPE_PIPE) {
     int stat = -1;
-#if LJ_TARGET_POSIX
+#if 0 && LJ_TARGET_POSIX
     stat = pclose(iof->fp);
-#elif LJ_TARGET_WINDOWS
+#elif 0 && LJ_TARGET_WINDOWS
     stat = _pclose(iof->fp);
 #else
     lua_assert(0);
@@ -323,22 +323,22 @@ LJLIB_CF(io_method_seek)
     else if (!tvisnil(o))
       lj_err_argt(L, 3, LUA_TNUMBER);
   }
-#if LJ_TARGET_POSIX
+#if 0 && LJ_TARGET_POSIX
   res = fseeko(fp, ofs, opt);
-#elif _MSC_VER >= 1400
+#elif 0 && _MSC_VER >= 1400
   res = _fseeki64(fp, ofs, opt);
-#elif defined(__MINGW32__)
+#elif 0 && defined(__MINGW32__)
   res = fseeko64(fp, ofs, opt);
 #else
   res = fseek(fp, (long)ofs, opt);
 #endif
   if (res)
     return luaL_fileresult(L, 0, NULL);
-#if LJ_TARGET_POSIX
+#if 0 && LJ_TARGET_POSIX
   ofs = ftello(fp);
-#elif _MSC_VER >= 1400
+#elif 0 && _MSC_VER >= 1400
   ofs = _ftelli64(fp);
-#elif defined(__MINGW32__)
+#elif 0 && defined(__MINGW32__)
   ofs = ftello64(fp);
 #else
   ofs = (int64_t)ftell(fp);
@@ -405,7 +405,7 @@ LJLIB_CF(io_open)
 
 LJLIB_CF(io_popen)
 {
-#if LJ_TARGET_POSIX || LJ_TARGET_WINDOWS
+#if 0 && (LJ_TARGET_POSIX || LJ_TARGET_WINDOWS)
   const char *fname = strdata(lj_lib_checkstr(L, 1));
   GCstr *s = lj_lib_optstr(L, 2);
   const char *mode = s ? strdata(s) : "r";

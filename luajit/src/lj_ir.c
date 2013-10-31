@@ -7,7 +7,7 @@
 #define LUA_CORE
 
 /* For pointers to libc/libm functions. */
-#include <stdio.h>
+#include "stdio2.h"
 #include <math.h>
 
 #include "lj_obj.h"

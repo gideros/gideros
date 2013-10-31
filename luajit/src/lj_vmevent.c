@@ -3,7 +3,7 @@
 ** Copyright (C) 2005-2013 Mike Pall. See Copyright Notice in luajit.h
 */
 
-#include <stdio.h>
+#include "stdio2.h"
 
 #define lj_vmevent_c
 #define LUA_CORE

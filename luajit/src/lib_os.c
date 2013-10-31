@@ -24,7 +24,7 @@
 #if LJ_TARGET_POSIX
 #include <unistd.h>
 #else
-#include <stdio.h>
+#include "stdio2.h"
 #endif
 
 /* ------------------------------------------------------------------------ */

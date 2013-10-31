@@ -90,7 +90,7 @@ static TraceNo trace_findfree(jit_State *J)
 **   perf report -s symbol
 **   rm perf.data /tmp/perf-*.map
 */
-#include <stdio.h>
+#include "stdio2.h"
 #include <unistd.h>
 
 static void perftools_addtrace(GCtrace *T)

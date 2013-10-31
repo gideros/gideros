@@ -22,7 +22,7 @@
 #if LJ_TARGET_DLOPEN
 
 #include <dlfcn.h>
-#include <stdio.h>
+#include "stdio2.h"
 
 #if defined(RTLD_DEFAULT)
 #define CLIB_DEFHANDLE	RTLD_DEFAULT

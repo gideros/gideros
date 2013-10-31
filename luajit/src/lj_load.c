@@ -4,7 +4,7 @@
 */
 
 #include <errno.h>
-#include <stdio.h>
+#include "stdio2.h"
 
 #define lj_load_c
 #define LUA_CORE

@@ -10,7 +10,7 @@
 
 
 #include <stddef.h>
-#include <stdio.h>
+#include "stdio2.h"
 
 #include "lua.h"
 

@@ -6,7 +6,7 @@
 ** Copyright (C) 1994-2011 Lua.org, PUC-Rio. See Copyright Notice in lua.h
 */
 
-#include <stdio.h>
+#include "stdio2.h"
 
 #define lib_base_c
 #define LUA_LIB

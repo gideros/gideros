@@ -6,7 +6,7 @@
 ** Copyright (C) 1994-2008 Lua.org, PUC-Rio. See Copyright Notice in lua.h
 */
 
-#include <stdio.h>
+#include "stdio2.h"
 #include <stdlib.h>
 #include <string.h>
 

@@ -8,7 +8,7 @@
 
 #include <errno.h>
 #include <stdarg.h>
-#include <stdio.h>
+#include "stdio2.h"
 
 #define lib_aux_c
 #define LUA_LIB

@@ -31,7 +31,7 @@
 #include "lj_target.h"
 
 #ifdef LUA_USE_ASSERT
-#include <stdio.h>
+#include "stdio2.h"
 #endif
 
 /* -- Assembler state and common macros ----------------------------------- */
@@ -185,7 +185,7 @@ IRFLDEF(FLOFS)
 
 #ifdef LUAJIT_DEBUG_RA
 
-#include <stdio.h>
+#include "stdio2.h"
 #include <stdarg.h>
 
 #define RIDNAME(name)	#name,
