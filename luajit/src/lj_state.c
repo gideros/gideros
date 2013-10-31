@@ -285,3 +285,20 @@ void LJ_FASTCALL lj_state_free(global_State *g, lua_State *L)
   lj_mem_freet(g, L);
 }
 
+LUA_API lua_PrintFunc lua_getprintfunc(lua_State* L)
+{
+	return NULL;
+	//return L->printfunc;
+}
+
+LUA_API void* lua_getprintfuncdata(lua_State* L)
+{
+	return NULL;
+	//return L->printfuncdata;
+}
+
+LUA_API void lua_setprintfunc(lua_State* L, lua_PrintFunc printfunc, void* data)
+{
+	//L->printfunc = printfunc;
+	//L->printfuncdata = data;
+}
