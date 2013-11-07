@@ -3,7 +3,7 @@
 
 
 #ifdef _WIN32
-#ifdef GID_LIBRARY
+#ifdef VFS_LIBRARY
 #define G_API __declspec(dllexport)
 #else
 #define G_API __declspec(dllimport)

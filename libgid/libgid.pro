@@ -15,45 +15,6 @@ SOURCES += \
     libgid.cpp \
 
 SOURCES += \
-    src/stdio/fileops.c \
-    src/stdio/extra.c \
-    src/stdio/stdio.c \
-    src/stdio/flags.c \
-    src/stdio/flockfile.c \
-    src/stdio/fwalk.c \
-    src/stdio/fflush.c \
-    src/stdio/findfp.c \
-    src/stdio/fopen.c \
-    src/stdio/freopen.c \
-    src/stdio/fclose.c \
-    src/stdio/makebuf.c \
-    src/stdio/refill.c \
-    src/stdio/fread.c \
-    src/stdio/fwrite.c \
-    src/stdio/fvwrite.c \
-    src/stdio/wsetup.c \
-    src/stdio/fseek.c \
-    src/stdio/ftell.c \
-    src/stdio/feof.c \
-    src/stdio/ferror.c \
-    src/stdio/clrerr.c \
-    src/stdio/getc.c \
-    src/stdio/fgetc.c \
-    src/stdio/rget.c \
-    src/stdio/fgets.c \
-    src/stdio/ungetc.c \
-    src/stdio/vfscanf.c \
-    src/stdio/fscanf.c \
-    src/stdio/vfprintf.c \
-    src/stdio/fprintf.c \
-    src/stdio/setvbuf.c \
-    src/stdio/tmpfile.c \
-    src/stdio/fputs.c \
-    src/stdio/fputc.c \
-    src/stdio/putc.c \
-    src/stdio/wbuf.c
-
-SOURCES += \
     src/gvfs-native.cpp
 
 SOURCES += \
@@ -85,7 +46,6 @@ HEADERS += src/ggaudiomanager.h
 HEADERS += \
     libgid.h \
     include/gglobal.h \
-    include/gstdio.h \
     include/gimage.h \
     include/gtexture.h \
     include/gpath.h \
@@ -108,6 +68,7 @@ INCLUDEPATH += \
     ./include \
     ./include/qt \
     ./include/private \
+    ../libvfs
 
 
 # snappy http://code.google.com/p/snappy/
@@ -153,5 +114,13 @@ LIBS += -framework OpenGL
 LIBS += -framework CoreFoundation
 LIBS += -L"/opt/local/lib" -lpng -ljpeg -lGLEW
 LIBS += -lpthread -lz
+}
+
+win32 {
+LIBS += -L"../libvfs/release" -lvfs
+}
+
+macx {
+LIBS += -L"../libvfs" -lvfs
 }
 

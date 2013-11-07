@@ -3,7 +3,7 @@ QT +=
 TARGET = vfs
 TEMPLATE = lib
 
-DEFINES += GID_LIBRARY
+DEFINES += VFS_LIBRARY
 
 INCLUDEPATH += . ./private
 
