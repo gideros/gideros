@@ -12,9 +12,10 @@ TEMPLATE = lib
 win32 {
 DEFINES += LUA_BUILD_AS_DLL
 }
-INCLUDEPATH +=	src \
-                ../libgid/include \
-                ../libgideros
+INCLUDEPATH += \
+	src \
+	../libvfs \
+	../libgid/include
 
 SOURCES += etc/all_lua.c
 
@@ -46,9 +47,11 @@ HEADERS += \
 
 win32 {
 LIBS += -L"../libgid/release" -lgid
+LIBS += -L"../libvfs/release" -lvfs
 }
 
 macx {
 LIBS += -L"../libgid" -lgid
+LIBS += -L"../libvfs" -lvfs
 }
 

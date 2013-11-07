@@ -7,7 +7,6 @@
 #include <map>
 #include <gpath.h>
 #include <gpath_p.h>
-#include <gstdio.h>
 
 const char* g_pathForFile(const char* filename)
 {

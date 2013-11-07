@@ -11,6 +11,13 @@ mingw32-make.exe release
 mingw32-make.exe release
 cd ..
 
+cd libvfs
+qmake libvfs.pro
+mingw32-make.exe clean
+mingw32-make.exe release
+mingw32-make.exe release
+cd ..
+
 cd libgid
 qmake libgid.pro
 mingw32-make.exe clean
@@ -66,6 +73,7 @@ cp ..\libgfile\release\libgfile.a lib\desktop
 cp ..\libgideros\release\libgideros.a lib\desktop
 cp ..\lua\release\liblua.a lib\desktop
 cp ..\libgid\release\libgid.a lib\desktop
+cp ..\libvfs\release\libvfs.a lib\desktop
 cp ..\libgid\external\openal-soft-1.13\build\mingw\libOpenAL32.dll.a lib\desktop
 cd ..
 
