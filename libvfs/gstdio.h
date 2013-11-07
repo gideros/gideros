@@ -1,7 +1,17 @@
 #ifndef _GSTDIO_H_
 #define _GSTDIO_H_
 
-#include <gglobal.h>
+
+#ifdef _WIN32
+#ifdef GID_LIBRARY
+#define G_API __declspec(dllexport)
+#else
+#define G_API __declspec(dllimport)
+#endif
+#else
+#define G_API
+#endif
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/types.h>
