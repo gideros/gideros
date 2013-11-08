@@ -9,7 +9,7 @@ QT += opengl network
 TARGET = gid
 TEMPLATE = lib
 
-DEFINES += GID_LIBRARY
+DEFINES += GIDEROS_LIBRARY
 
 SOURCES += \
     libgid.cpp \
@@ -23,7 +23,6 @@ SOURCES += \
     src/gimage.cpp \
     src/gtexture.cpp \
     src/gevent.cpp \
-    src/gpath.cpp \
     src/glog.cpp \
     src/gglobal.cpp
 
@@ -43,12 +42,13 @@ SOURCES += \
     src/gaudio-loader-mp3.cpp
 HEADERS += src/ggaudiomanager.h
 
+HEADERS += include/gexport.h
+
 HEADERS += \
     libgid.h \
     include/gglobal.h \
     include/gimage.h \
     include/gtexture.h \
-    include/gpath.h \
     include/gevent.h \
     include/glog.h \
     include/gvfs-native.h \

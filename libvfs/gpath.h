@@ -1,7 +1,7 @@
 #ifndef _GPATH_H_
 #define _GPATH_H_
 
-#include <gglobal.h>
+#include <gexport.h>
 
 /* path type */
 #define GPATH_ABSOLUTE -1

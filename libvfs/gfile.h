@@ -3,13 +3,13 @@
 
 #include <stdio.h>
 
-#include "gexport.h"
+#include <gexport.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-GIDEROS_API const char* g_pathForFile(const char* filename);
+G_API const char* g_pathForFile(const char* filename);
 
 #ifdef __cplusplus
 }

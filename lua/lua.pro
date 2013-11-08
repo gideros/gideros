@@ -14,8 +14,7 @@ DEFINES += LUA_BUILD_AS_DLL
 }
 INCLUDEPATH += \
 	src \
-	../libvfs \
-	../libgid/include
+        ../libvfs
 
 SOURCES += etc/all_lua.c
 
@@ -46,12 +45,10 @@ HEADERS += \
     src/lapi.h
 
 win32 {
-LIBS += -L"../libgid/release" -lgid
 LIBS += -L"../libvfs/release" -lvfs
 }
 
 macx {
-LIBS += -L"../libgid" -lgid
 LIBS += -L"../libvfs" -lvfs
 }
 

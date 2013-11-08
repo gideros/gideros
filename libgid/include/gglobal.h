@@ -1,15 +1,7 @@
 #ifndef _GGLOBAL_H_
 #define _GGLOBAL_H_
 
-#ifdef _WIN32
-#ifdef GID_LIBRARY
-#define G_API __declspec(dllexport)
-#else
-#define G_API __declspec(dllimport)
-#endif
-#else
-#define G_API
-#endif
+#include <gexport.h>
 
 typedef unsigned long g_id;
 

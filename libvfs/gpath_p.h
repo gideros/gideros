@@ -1,7 +1,7 @@
 #ifndef _GPATH_P_H_
 #define _GPATH_P_H_
 
-#include <gglobal.h>
+#include <gexport.h>
 
 #ifdef __cplusplus
 extern "C" {

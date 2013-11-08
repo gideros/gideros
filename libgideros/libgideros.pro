@@ -21,6 +21,8 @@ SOURCES += \
     pluginmanager.cpp \
     luautil.cpp
 
+HEADERS += gexport.h
+
 HEADERS += \
 	gplugin.h \
     stringid.h \

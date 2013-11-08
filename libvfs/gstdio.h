@@ -2,15 +2,7 @@
 #define _GSTDIO_H_
 
 
-#ifdef _WIN32
-#ifdef VFS_LIBRARY
-#define G_API __declspec(dllexport)
-#else
-#define G_API __declspec(dllimport)
-#endif
-#else
-#define G_API
-#endif
+#include <gexport.h>
 
 #include <stdarg.h>
 #include <stdio.h>

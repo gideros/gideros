@@ -3,9 +3,11 @@ QT +=
 TARGET = vfs
 TEMPLATE = lib
 
-DEFINES += VFS_LIBRARY
+DEFINES += GIDEROS_LIBRARY
 
 INCLUDEPATH += . ./private
+
+HEADERS += gexport.h
 
 HEADERS += \
     wcio.h \
@@ -15,7 +17,11 @@ HEADERS += \
     floatio.h \
     fileext.h \
     defines.h \
-    gstdio.h
+    gstdio.h \
+    gfile.h \
+    gfile_p.h \
+    gpath.h \
+    gpath_p.h
 
 SOURCES += \
     wsetup.c \
@@ -54,7 +60,9 @@ SOURCES += \
     feof.c \
     fclose.c \
     extra.c \
-    clrerr.c
+    clrerr.c \
+    gfile.cpp \
+    gpath.cpp
 
 LIBS += -lpthread
 
