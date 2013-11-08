@@ -563,6 +563,8 @@ int Box2DBinder2::loader(lua_State *L)
         {"isBullet", b2Body_isBullet},
         {"setSleepingAllowed", b2Body_setSleepingAllowed},
         {"isSleepingAllowed", b2Body_isSleepingAllowed},
+        {"setTransform", b2Body_setTransform},
+        {"getTransform", b2Body_getTransform},
         {NULL, NULL},
 	};
 	binder.createClass("b2Body", NULL, 0, b2Body_destruct, b2Body_functionList);
@@ -2149,6 +2151,47 @@ int Box2DBinder2::b2Body_isSleepingAllowed(lua_State* L)
 
     return 1;
 }
+
+int Box2DBinder2::b2Body_setTransform(lua_State* L)
+{
+    StackChecker checker(L, "b2Body_setTransform", 0);
+
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+    float physicsScale = application->getPhysicsScale();
+
+    Binder binder(L);
+    b2Body* body = toBody(binder, 1);
+
+    if (body->GetWorld()->IsLocked())
+        return luaL_error(L, GStatus(5004).errorString());	// Error #5004: World is locked.
+
+    lua_Number x = luaL_checknumber(L, 2);
+    lua_Number y = luaL_checknumber(L, 3);
+    lua_Number angle = luaL_checknumber(L, 3);
+    body->SetTransform(b2Vec2(x / physicsScale, y / physicsScale), angle);
+
+    return 0;
+}
+
+int Box2DBinder2::b2Body_getTransform(lua_State* L)
+{
+    StackChecker checker(L, "b2Body_getTransform", 3);
+
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+    float physicsScale = application->getPhysicsScale();
+
+    Binder binder(L);
+    b2Body* body = toBody(binder, 1);
+
+    const b2Transform &transform = body->GetTransform();
+
+    lua_pushnumber(L, transform.p.x * physicsScale);
+    lua_pushnumber(L, transform.p.y * physicsScale);
+    lua_pushnumber(L, transform.q.GetAngle());
+
+    return 3;
+}
+
 
 int Box2DBinder2::b2Fixture_destruct(lua_State* L)
 {

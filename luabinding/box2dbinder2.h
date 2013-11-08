@@ -76,6 +76,8 @@ private:
     static int b2Body_isBullet(lua_State* L);
     static int b2Body_setSleepingAllowed(lua_State* L);
     static int b2Body_isSleepingAllowed(lua_State* L);
+    static int b2Body_setTransform(lua_State* L);
+    static int b2Body_getTransform(lua_State* L);
 
 	static int b2Fixture_destruct(lua_State* L);
 	static int b2Fixture_GetBody(lua_State* L);
