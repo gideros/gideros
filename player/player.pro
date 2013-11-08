@@ -22,7 +22,7 @@ INCLUDEPATH += \
     ../luabinding\
     ../lua/src\
     ../libpvrt\
-    ../libgfile\
+    ../libvfs\
     ../libgid/include\
     ../libgid/include/qt\
     ../libgideros\
@@ -116,7 +116,7 @@ LIBS += -liphlpapi
 
 win32 {
 LIBS += -L"../libgid/release" -lgid
-LIBS += -L"../libgfile/release" -lgfile
+LIBS += -L"../libvfs/release" -lvfs
 LIBS += -L"../lua/release" -llua
 LIBS += -L"../libgideros/release" -lgideros
 LIBS += -L"../libpystring/release" -lpystring
@@ -124,7 +124,7 @@ LIBS += -L"../libpystring/release" -lpystring
 
 macx {
 LIBS += -L"../libgid" -lgid
-LIBS += -L"../libgfile" -lgfile
+LIBS += -L"../libvfs" -lvfs
 LIBS += -L"../lua" -llua
 LIBS += -L"../libgideros" -lgideros
 LIBS += -L"../libpystring" -lpystring
