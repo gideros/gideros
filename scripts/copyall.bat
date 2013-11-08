@@ -17,7 +17,7 @@ cp C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\bin\ssleay32.dll ..\..\release
 cp C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\lib\qscintilla2.dll ..\..\release
 
 cp ..\libgid\release\gid.dll ..\..\release
-cp ..\libgfile\release\gfile.dll ..\..\release
+cp ..\libvfs\release\vfs.dll ..\..\release
 cp ..\lua\release\lua.dll ..\..\release
 cp ..\libgideros\release\gideros.dll ..\..\release
 cp ..\libpystring\release\pystring.dll ..\..\release
