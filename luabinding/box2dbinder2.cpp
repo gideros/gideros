@@ -5215,9 +5215,9 @@ int Box2DBinder2::testOverlap(lua_State *L)
     Binder binder(L);
 
     b2Shape *shapeA = toShape(binder, 1);
-    int indexA = luaL_checkinteger(L, 2);
+    int indexA = luaL_checkinteger(L, 2) - 1;
     b2Shape *shapeB = toShape(binder, 3);
-    int indexB = luaL_checkinteger(L, 4);
+    int indexB = luaL_checkinteger(L, 4) - 1;
 
     lua_Number xa = luaL_checknumber(L, 5) / physicsScale;
     lua_Number ya = luaL_checknumber(L, 6) / physicsScale;
