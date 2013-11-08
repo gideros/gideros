@@ -1,6 +1,6 @@
 QT += 
 
-TARGET = vfs
+TARGET = gvfs
 TEMPLATE = lib
 
 DEFINES += GIDEROS_LIBRARY
