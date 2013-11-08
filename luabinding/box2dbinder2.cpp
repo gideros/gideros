@@ -1025,6 +1025,9 @@ int Box2DBinder2::loader(lua_State *L)
     lua_pushcfunction(L, getRopeJointDef);
     lua_setfield(L, -2, "createRopeJointDef");
 
+    lua_pushcfunction(L, testOverlap);
+    lua_setfield(L, -2, "testOverlap");
+
 	lua_pushvalue(L, -1);
 
 	lua_setglobal(L, "b2");
@@ -5126,7 +5129,7 @@ int Box2DBinder2::b2Contact_getChildIndexB(lua_State *L)
 
 int Box2DBinder2::b2Contact_setFriction(lua_State *L)
 {
-    StackChecker checker(L, "b2Contact_setFriction", 1);
+    StackChecker checker(L, "b2Contact_setFriction", 0);
 
     Binder binder(L);
 
@@ -5152,7 +5155,7 @@ int Box2DBinder2::b2Contact_getFriction(lua_State *L)
 
 int Box2DBinder2::b2Contact_resetFriction(lua_State *L)
 {
-    StackChecker checker(L, "b2Contact_resetFriction", 1);
+    StackChecker checker(L, "b2Contact_resetFriction", 0);
 
     Binder binder(L);
 
@@ -5165,7 +5168,7 @@ int Box2DBinder2::b2Contact_resetFriction(lua_State *L)
 
 int Box2DBinder2::b2Contact_setRestitution(lua_State *L)
 {
-    StackChecker checker(L, "b2Contact_setRestitution", 1);
+    StackChecker checker(L, "b2Contact_setRestitution", 0);
 
     Binder binder(L);
 
@@ -5191,7 +5194,7 @@ int Box2DBinder2::b2Contact_getRestitution(lua_State *L)
 
 int Box2DBinder2::b2Contact_resetRestitution(lua_State *L)
 {
-    StackChecker checker(L, "b2Contact_resetRestitution", 1);
+    StackChecker checker(L, "b2Contact_resetRestitution", 0);
 
     Binder binder(L);
 
@@ -5201,4 +5204,35 @@ int Box2DBinder2::b2Contact_resetRestitution(lua_State *L)
 
     return 0;
 }
+
+int Box2DBinder2::testOverlap(lua_State *L)
+{
+    StackChecker checker(L, "testOverlap", 1);
+
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+    float physicsScale = application->getPhysicsScale();
+
+    Binder binder(L);
+
+    b2Shape *shapeA = toShape(binder, 1);
+    int indexA = luaL_checkinteger(L, 2);
+    b2Shape *shapeB = toShape(binder, 3);
+    int indexB = luaL_checkinteger(L, 4);
+
+    lua_Number xa = luaL_checknumber(L, 5) / physicsScale;
+    lua_Number ya = luaL_checknumber(L, 6) / physicsScale;
+    lua_Number aa = luaL_checknumber(L, 7);
+
+    lua_Number xb = luaL_checknumber(L, 8) / physicsScale;
+    lua_Number yb = luaL_checknumber(L, 9) / physicsScale;
+    lua_Number ab = luaL_checknumber(L, 10);
+
+    b2Transform xfA(b2Vec2(xa, ya), b2Rot(aa));
+    b2Transform xfB(b2Vec2(xb, yb), b2Rot(ab));
+
+    lua_pushboolean(L, b2TestOverlap(shapeA, indexA, shapeB, indexB, xfA, xfB));
+
+    return 1;
+}
+
 

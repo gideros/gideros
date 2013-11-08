@@ -236,6 +236,8 @@ private:
     static int b2Contact_setRestitution(lua_State *L);
     static int b2Contact_getRestitution(lua_State *L);
     static int b2Contact_resetRestitution(lua_State *L);
+
+    static int testOverlap(lua_State *L);
 };
 
 #endif
