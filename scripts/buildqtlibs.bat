@@ -11,8 +11,8 @@ mingw32-make.exe release
 mingw32-make.exe release
 cd ..
 
-cd libvfs
-qmake libvfs.pro
+cd libgvfs
+qmake libgvfs.pro
 mingw32-make.exe clean
 mingw32-make.exe release
 mingw32-make.exe release
@@ -48,13 +48,13 @@ cp ..\libgideros\gplugin.h include
 cp ..\libgideros\gproxy.h include
 cp ..\libgideros\greferenced.h include
 cp ..\libgideros\gexport.h include
-cp ..\libvfs\gfile.h include
+cp ..\libgvfs\gfile.h include
 cp ..\lua\src\lua.h include
 cp ..\lua\src\luaconf.h include
 cp ..\lua\src\lualib.h include
 cp ..\lua\src\lauxlib.h include
 cp ..\libgid\include\gglobal.h include
-cp ..\libvfs\gpath.h include
+cp ..\libgvfs\gpath.h include
 cp ..\libgid\include\glog.h include
 cp ..\libgid\include\gapplication.h include
 cp ..\libgid\include\gevent.h include
@@ -65,7 +65,7 @@ mkdir lib\desktop
 cp ..\libgideros\release\libgideros.a lib\desktop
 cp ..\lua\release\liblua.a lib\desktop
 cp ..\libgid\release\libgid.a lib\desktop
-cp ..\libvfs\release\libvfs.a lib\desktop
+cp ..\libgvfs\release\libgvfs.a lib\desktop
 cp ..\libgid\external\openal-soft-1.13\build\mingw\libOpenAL32.dll.a lib\desktop
 cd ..
 

@@ -14,7 +14,7 @@ HEADERS += \
     gmicrophone.h \
     gsoundencoder.h
 
-LIBS += -L"../../../../Sdk/lib/desktop" -llua -lgid -lgideros -lvfs
+LIBS += -L"../../../../Sdk/lib/desktop" -llua -lgid -lgideros -lgvfs
 
 LIBS += -lpthread
 
@@ -32,5 +32,5 @@ macx {
 QMAKE_POST_LINK += install_name_tool -change liblua.1.dylib "@executable_path/../Frameworks/liblua.1.dylib" $(TARGET);
 QMAKE_POST_LINK += install_name_tool -change libgid.1.dylib "@executable_path/../Frameworks/libgid.1.dylib" $(TARGET);
 QMAKE_POST_LINK += install_name_tool -change libgideros.1.dylib "@executable_path/../Frameworks/libgideros.1.dylib" $(TARGET);
-QMAKE_POST_LINK += install_name_tool -change libvfs.1.dylib "@executable_path/../Frameworks/libvfs.1.dylib" $(TARGET);
+QMAKE_POST_LINK += install_name_tool -change libgvfs.1.dylib "@executable_path/../Frameworks/libgvfs.1.dylib" $(TARGET);
 }

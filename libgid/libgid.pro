@@ -68,7 +68,7 @@ INCLUDEPATH += \
     ./include \
     ./include/qt \
     ./include/private \
-    ../libvfs
+    ../libgvfs
 
 
 # snappy http://code.google.com/p/snappy/
@@ -117,10 +117,10 @@ LIBS += -lpthread -lz
 }
 
 win32 {
-LIBS += -L"../libvfs/release" -lvfs
+LIBS += -L"../libgvfs/release" -lgvfs
 }
 
 macx {
-LIBS += -L"../libvfs" -lvfs
+LIBS += -L"../libgvfs" -lgvfs
 }
 

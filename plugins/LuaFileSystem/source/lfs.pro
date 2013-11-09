@@ -11,9 +11,9 @@ SOURCES += \
 
 HEADERS +=
 
-LIBS += -L"../../../Sdk/lib/desktop" -llua -lvfs
+LIBS += -L"../../../Sdk/lib/desktop" -llua -lgvfs
 
 macx {
 QMAKE_POST_LINK += install_name_tool -change liblua.1.dylib "@executable_path/../Frameworks/liblua.1.dylib" $(TARGET);
-QMAKE_POST_LINK += install_name_tool -change libvfs.1.dylib "@executable_path/../Frameworks/libvfs.1.dylib" $(TARGET);
+QMAKE_POST_LINK += install_name_tool -change libgvfs.1.dylib "@executable_path/../Frameworks/libgvfs.1.dylib" $(TARGET);
 }
