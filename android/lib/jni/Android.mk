@@ -1,5 +1,16 @@
 LOCAL_PATH := $(call my-dir)
 
+####
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE            := gvfs
+LOCAL_SRC_FILES         := ../../../libgvfs/libs/$(TARGET_ARCH_ABI)/libgvfs.so
+
+include $(PREBUILT_SHARED_LIBRARY)
+
+####
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := gideros
@@ -22,7 +33,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../libgid/include/private \
 	$(LOCAL_PATH)/../../../libgid/include/android \
 	$(LOCAL_PATH)/../../../libgid/external/snappy-1.1.0 \
-	$(LOCAL_PATH)/../../../libgfile \
+	$(LOCAL_PATH)/../../../libgvfs \
 	$(LOCAL_PATH)/../../../libgideros \
 	$(LOCAL_PATH)/../../../libpystring \
 	$(LOCAL_PATH)/../../../external/Box2D_v2.2.1 \
@@ -35,54 +46,12 @@ LOCAL_SRC_FILES += gideros.cpp
 LOCAL_SRC_FILES += ../../../libplatform/javanativebridge.cpp
 LOCAL_SRC_FILES += audiodevice.cpp
 
-#stdio
-LOCAL_SRC_FILES += \
-    ../../../libgid/src/stdio/fileops.c \
-    ../../../libgid/src/stdio/extra.c \
-    ../../../libgid/src/stdio/stdio.c \
-    ../../../libgid/src/stdio/flags.c \
-    ../../../libgid/src/stdio/flockfile.c \
-    ../../../libgid/src/stdio/fwalk.c \
-    ../../../libgid/src/stdio/fflush.c \
-    ../../../libgid/src/stdio/findfp.c \
-    ../../../libgid/src/stdio/fopen.c \
-    ../../../libgid/src/stdio/freopen.c \
-    ../../../libgid/src/stdio/fclose.c \
-    ../../../libgid/src/stdio/makebuf.c \
-    ../../../libgid/src/stdio/refill.c \
-    ../../../libgid/src/stdio/fread.c \
-    ../../../libgid/src/stdio/fwrite.c \
-    ../../../libgid/src/stdio/fvwrite.c \
-    ../../../libgid/src/stdio/wsetup.c \
-    ../../../libgid/src/stdio/fseek.c \
-    ../../../libgid/src/stdio/ftell.c \
-    ../../../libgid/src/stdio/feof.c \
-    ../../../libgid/src/stdio/ferror.c \
-    ../../../libgid/src/stdio/clrerr.c \
-    ../../../libgid/src/stdio/getc.c \
-    ../../../libgid/src/stdio/fgetc.c \
-    ../../../libgid/src/stdio/rget.c \
-    ../../../libgid/src/stdio/fgets.c \
-    ../../../libgid/src/stdio/ungetc.c \
-    ../../../libgid/src/stdio/vfscanf.c \
-    ../../../libgid/src/stdio/fscanf.c \
-    ../../../libgid/src/stdio/vfprintf.c \
-    ../../../libgid/src/stdio/fprintf.c \
-    ../../../libgid/src/stdio/setvbuf.c \
-    ../../../libgid/src/stdio/tmpfile.c \
-    ../../../libgid/src/stdio/fputs.c \
-    ../../../libgid/src/stdio/fputc.c \
-    ../../../libgid/src/stdio/putc.c \
-    ../../../libgid/src/stdio/wbuf.c
-
-
 LOCAL_SRC_FILES += \
     ../../../libgid/src/gimage-png.cpp \
     ../../../libgid/src/gimage-jpg.cpp \
     ../../../libgid/src/gimage.cpp \
     ../../../libgid/src/gtexture.cpp \
     ../../../libgid/src/gevent.cpp \
-    ../../../libgid/src/gpath.cpp \
     ../../../libgid/src/glog.cpp \
 	../../../libgid/src/gglobal.cpp \
 	../../../libgid/src/gaudio.cpp \
@@ -270,7 +239,6 @@ LOCAL_SRC_FILES += \
 
 	
 LOCAL_SRC_FILES += \
-	../../../libgfile/gfile.cpp \
 	../../../libplatform/md5.c \
 	../../../libplatform/utf8.c \
 	../../../libplatform/platform.cpp \
@@ -443,5 +411,7 @@ LOCAL_SRC_FILES += \
 
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
+
+LOCAL_SHARED_LIBRARIES := gvfs
 
 include $(BUILD_SHARED_LIBRARY)
