@@ -13,6 +13,15 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 
+LOCAL_MODULE            := lua
+LOCAL_SRC_FILES         := ../../../lua/libs/$(TARGET_ARCH_ABI)/liblua.so
+
+include $(PREBUILT_SHARED_LIBRARY)
+
+####
+
+include $(CLEAR_VARS)
+
 LOCAL_MODULE := gideros
 
 LOCAL_ARM_MODE := arm
@@ -319,8 +328,6 @@ LOCAL_SRC_FILES += \
 	../../../libpvrt/PVRTResourceFile.cpp \
 	../../../libpvrt/PVRTString.cpp \
 	../../../libpvrt/PVRTTexture.cpp
-	
-LOCAL_SRC_FILES += ../../../lua/etc/all_lua.cpp
 
 # box2d (45 files)
 LOCAL_SRC_FILES += \
@@ -412,6 +419,6 @@ LOCAL_SRC_FILES += \
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
 
-LOCAL_SHARED_LIBRARIES := gvfs
+LOCAL_SHARED_LIBRARIES := gvfs lua
 
 include $(BUILD_SHARED_LIBRARY)

@@ -19,6 +19,8 @@ public class GiderosAndroidPlayerActivity extends Activity implements OnTouchLis
 {
 	static
 	{
+		System.loadLibrary("gvfs");
+		System.loadLibrary("lua");
 		System.loadLibrary("gideros");
 		System.loadLibrary("luasocket");
 		System.loadLibrary("lfs");
