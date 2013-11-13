@@ -22,43 +22,8 @@
 		5F0CD7D215BB025F00479287 /* gimage-png.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7CA15BB025F00479287 /* gimage-png.cpp */; };
 		5F0CD7D315BB025F00479287 /* gimage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7CB15BB025F00479287 /* gimage.cpp */; };
 		5F0CD7D415BB025F00479287 /* glog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7CC15BB025F00479287 /* glog.cpp */; };
-		5F0CD7D515BB025F00479287 /* gpath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7CD15BB025F00479287 /* gpath.cpp */; };
 		5F0CD7D615BB025F00479287 /* gtexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7CE15BB025F00479287 /* gtexture.cpp */; };
 		5F0CD7D715BB025F00479287 /* gvfs-native.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7CF15BB025F00479287 /* gvfs-native.cpp */; };
-		5F0CD7FB15BB033100479287 /* clrerr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7D915BB033100479287 /* clrerr.c */; };
-		5F0CD7FC15BB033100479287 /* extra.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7DA15BB033100479287 /* extra.c */; };
-		5F0CD7FD15BB033100479287 /* fclose.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7DB15BB033100479287 /* fclose.c */; };
-		5F0CD7FE15BB033100479287 /* feof.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7DC15BB033100479287 /* feof.c */; };
-		5F0CD7FF15BB033100479287 /* ferror.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7DD15BB033100479287 /* ferror.c */; };
-		5F0CD80015BB033100479287 /* fflush.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7DE15BB033100479287 /* fflush.c */; };
-		5F0CD80115BB033100479287 /* fgetc.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7DF15BB033100479287 /* fgetc.c */; };
-		5F0CD80215BB033100479287 /* fgets.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7E015BB033100479287 /* fgets.c */; };
-		5F0CD80315BB033100479287 /* fileops.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7E115BB033100479287 /* fileops.c */; };
-		5F0CD80415BB033100479287 /* findfp.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7E215BB033100479287 /* findfp.c */; };
-		5F0CD80515BB033100479287 /* flags.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7E315BB033100479287 /* flags.c */; };
-		5F0CD80615BB033100479287 /* flockfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7E415BB033100479287 /* flockfile.c */; };
-		5F0CD80715BB033100479287 /* fopen.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7E515BB033100479287 /* fopen.c */; };
-		5F0CD80815BB033100479287 /* fprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7E615BB033100479287 /* fprintf.c */; };
-		5F0CD80915BB033100479287 /* fputs.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7E715BB033100479287 /* fputs.c */; };
-		5F0CD80A15BB033100479287 /* fread.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7E815BB033100479287 /* fread.c */; };
-		5F0CD80B15BB033100479287 /* freopen.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7E915BB033100479287 /* freopen.c */; };
-		5F0CD80C15BB033100479287 /* fscanf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7EA15BB033100479287 /* fscanf.c */; };
-		5F0CD80D15BB033100479287 /* fseek.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7EB15BB033100479287 /* fseek.c */; };
-		5F0CD80E15BB033100479287 /* ftell.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7EC15BB033100479287 /* ftell.c */; };
-		5F0CD80F15BB033100479287 /* fvwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7ED15BB033100479287 /* fvwrite.c */; };
-		5F0CD81015BB033100479287 /* fwalk.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7EE15BB033100479287 /* fwalk.c */; };
-		5F0CD81115BB033100479287 /* fwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7EF15BB033100479287 /* fwrite.c */; };
-		5F0CD81215BB033100479287 /* getc.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7F015BB033100479287 /* getc.c */; };
-		5F0CD81315BB033100479287 /* makebuf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7F115BB033100479287 /* makebuf.c */; };
-		5F0CD81415BB033100479287 /* refill.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7F215BB033100479287 /* refill.c */; };
-		5F0CD81515BB033100479287 /* rget.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7F315BB033100479287 /* rget.c */; };
-		5F0CD81615BB033100479287 /* setvbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7F415BB033100479287 /* setvbuf.c */; };
-		5F0CD81715BB033100479287 /* stdio.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7F515BB033100479287 /* stdio.c */; };
-		5F0CD81815BB033100479287 /* tmpfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7F615BB033100479287 /* tmpfile.c */; };
-		5F0CD81915BB033100479287 /* ungetc.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7F715BB033100479287 /* ungetc.c */; };
-		5F0CD81A15BB033100479287 /* vfprintf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7F815BB033100479287 /* vfprintf.c */; };
-		5F0CD81B15BB033100479287 /* vfscanf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7F915BB033100479287 /* vfscanf.c */; };
-		5F0CD81C15BB033100479287 /* wsetup.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD7FA15BB033100479287 /* wsetup.c */; };
 		5F0CD83915BB0B3D00479287 /* png.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD82A15BB0B3D00479287 /* png.c */; };
 		5F0CD83A15BB0B3D00479287 /* pngerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD82B15BB0B3D00479287 /* pngerror.c */; };
 		5F0CD83B15BB0B3D00479287 /* pngget.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD82C15BB0B3D00479287 /* pngget.c */; };
@@ -229,7 +194,6 @@
 		5F0CD9F215BB4C3500479287 /* b2WheelJoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F0CD99615BB4C3500479287 /* b2WheelJoint.h */; };
 		5F0CD9F315BB4C3500479287 /* b2Rope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD99815BB4C3500479287 /* b2Rope.cpp */; };
 		5F0CD9F415BB4C3500479287 /* b2Rope.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F0CD99915BB4C3500479287 /* b2Rope.h */; };
-		5F0CD9FB15BB4D1100479287 /* all_lua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0CD9FA15BB4D1100479287 /* all_lua.cpp */; };
 		5F321E0315BB516F00542289 /* binderutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321DFC15BB516F00542289 /* binderutil.cpp */; };
 		5F321E0415BB516F00542289 /* event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321DFD15BB516F00542289 /* event.cpp */; };
 		5F321E0515BB516F00542289 /* eventdispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321DFE15BB516F00542289 /* eventdispatcher.cpp */; };
@@ -237,7 +201,6 @@
 		5F321E0715BB516F00542289 /* gplugin-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E0015BB516F00542289 /* gplugin-ios.mm */; };
 		5F321E0815BB516F00542289 /* refptr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E0115BB516F00542289 /* refptr.cpp */; };
 		5F321E0915BB516F00542289 /* stringid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E0215BB516F00542289 /* stringid.cpp */; };
-		5F321E1015BB529D00542289 /* gfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E0F15BB529D00542289 /* gfile.cpp */; };
 		5F321E1A15BBBA4600542289 /* exit-generic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E1915BBBA4600542289 /* exit-generic.cpp */; };
 		5F321E2415BBBA7E00542289 /* drawinfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E2315BBBA7E00542289 /* drawinfo.cpp */; };
 		5F321E2615BBBA8800542289 /* deviceinfo-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E2515BBBA8800542289 /* deviceinfo-ios.mm */; };
@@ -321,7 +284,6 @@
 		5F321F5515BBEB3200542289 /* gyroscopebinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321F3115BBEB3200542289 /* gyroscopebinder.cpp */; };
 		5F321F5615BBEB3200542289 /* keys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321F3215BBEB3200542289 /* keys.cpp */; };
 		5F321F5715BBEB3200542289 /* luaapplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321F3315BBEB3200542289 /* luaapplication.cpp */; };
-		5F321F5815BBEB3200542289 /* luautil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321F3415BBEB3200542289 /* luautil.cpp */; };
 		5F321F5915BBEB3200542289 /* matrixbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321F3515BBEB3200542289 /* matrixbinder.cpp */; };
 		5F321F5A15BBEB3200542289 /* movieclipbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321F3615BBEB3200542289 /* movieclipbinder.cpp */; };
 		5F321F5B15BBEB3200542289 /* registermodules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321F3715BBEB3200542289 /* registermodules.cpp */; };
@@ -371,6 +333,7 @@
 		5F880EA515DCF099001F889C /* urlloaderbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F880EA415DCF099001F889C /* urlloaderbinder.cpp */; };
 		5F9968A7160F190400CF791A /* gapplication-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F9968A6160F190400CF791A /* gapplication-ios.mm */; };
 		5FAC8AC615D59C56003E5781 /* ggeolocation-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5FAC8AC515D59C56003E5781 /* ggeolocation-ios.mm */; };
+		5FB68B761833C32A00D552A7 /* luautil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FB68B751833C32A00D552A7 /* luautil.cpp */; };
 		5FCA653215F8A804006011C1 /* pluginmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FCA653115F8A804006011C1 /* pluginmanager.cpp */; };
 		5FE385BB16B09353007A91E1 /* ftlibrarysingleton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FE385B916B09353007A91E1 /* ftlibrarysingleton.cpp */; };
 		5FE385BC16B09353007A91E1 /* ttbmfont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FE385BA16B09353007A91E1 /* ttbmfont.cpp */; };
@@ -394,43 +357,8 @@
 		5F0CD7CA15BB025F00479287 /* gimage-png.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gimage-png.cpp"; path = "../../../libgid/src/gimage-png.cpp"; sourceTree = "<group>"; };
 		5F0CD7CB15BB025F00479287 /* gimage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gimage.cpp; path = ../../../libgid/src/gimage.cpp; sourceTree = "<group>"; };
 		5F0CD7CC15BB025F00479287 /* glog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = glog.cpp; path = ../../../libgid/src/glog.cpp; sourceTree = "<group>"; };
-		5F0CD7CD15BB025F00479287 /* gpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gpath.cpp; path = ../../../libgid/src/gpath.cpp; sourceTree = "<group>"; };
 		5F0CD7CE15BB025F00479287 /* gtexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gtexture.cpp; path = ../../../libgid/src/gtexture.cpp; sourceTree = "<group>"; };
 		5F0CD7CF15BB025F00479287 /* gvfs-native.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gvfs-native.cpp"; path = "../../../libgid/src/gvfs-native.cpp"; sourceTree = "<group>"; };
-		5F0CD7D915BB033100479287 /* clrerr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = clrerr.c; path = ../../../libgid/src/stdio/clrerr.c; sourceTree = "<group>"; };
-		5F0CD7DA15BB033100479287 /* extra.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = extra.c; path = ../../../libgid/src/stdio/extra.c; sourceTree = "<group>"; };
-		5F0CD7DB15BB033100479287 /* fclose.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fclose.c; path = ../../../libgid/src/stdio/fclose.c; sourceTree = "<group>"; };
-		5F0CD7DC15BB033100479287 /* feof.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = feof.c; path = ../../../libgid/src/stdio/feof.c; sourceTree = "<group>"; };
-		5F0CD7DD15BB033100479287 /* ferror.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ferror.c; path = ../../../libgid/src/stdio/ferror.c; sourceTree = "<group>"; };
-		5F0CD7DE15BB033100479287 /* fflush.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fflush.c; path = ../../../libgid/src/stdio/fflush.c; sourceTree = "<group>"; };
-		5F0CD7DF15BB033100479287 /* fgetc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fgetc.c; path = ../../../libgid/src/stdio/fgetc.c; sourceTree = "<group>"; };
-		5F0CD7E015BB033100479287 /* fgets.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fgets.c; path = ../../../libgid/src/stdio/fgets.c; sourceTree = "<group>"; };
-		5F0CD7E115BB033100479287 /* fileops.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fileops.c; path = ../../../libgid/src/stdio/fileops.c; sourceTree = "<group>"; };
-		5F0CD7E215BB033100479287 /* findfp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = findfp.c; path = ../../../libgid/src/stdio/findfp.c; sourceTree = "<group>"; };
-		5F0CD7E315BB033100479287 /* flags.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = flags.c; path = ../../../libgid/src/stdio/flags.c; sourceTree = "<group>"; };
-		5F0CD7E415BB033100479287 /* flockfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = flockfile.c; path = ../../../libgid/src/stdio/flockfile.c; sourceTree = "<group>"; };
-		5F0CD7E515BB033100479287 /* fopen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fopen.c; path = ../../../libgid/src/stdio/fopen.c; sourceTree = "<group>"; };
-		5F0CD7E615BB033100479287 /* fprintf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fprintf.c; path = ../../../libgid/src/stdio/fprintf.c; sourceTree = "<group>"; };
-		5F0CD7E715BB033100479287 /* fputs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fputs.c; path = ../../../libgid/src/stdio/fputs.c; sourceTree = "<group>"; };
-		5F0CD7E815BB033100479287 /* fread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fread.c; path = ../../../libgid/src/stdio/fread.c; sourceTree = "<group>"; };
-		5F0CD7E915BB033100479287 /* freopen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = freopen.c; path = ../../../libgid/src/stdio/freopen.c; sourceTree = "<group>"; };
-		5F0CD7EA15BB033100479287 /* fscanf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fscanf.c; path = ../../../libgid/src/stdio/fscanf.c; sourceTree = "<group>"; };
-		5F0CD7EB15BB033100479287 /* fseek.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fseek.c; path = ../../../libgid/src/stdio/fseek.c; sourceTree = "<group>"; };
-		5F0CD7EC15BB033100479287 /* ftell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftell.c; path = ../../../libgid/src/stdio/ftell.c; sourceTree = "<group>"; };
-		5F0CD7ED15BB033100479287 /* fvwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fvwrite.c; path = ../../../libgid/src/stdio/fvwrite.c; sourceTree = "<group>"; };
-		5F0CD7EE15BB033100479287 /* fwalk.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fwalk.c; path = ../../../libgid/src/stdio/fwalk.c; sourceTree = "<group>"; };
-		5F0CD7EF15BB033100479287 /* fwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fwrite.c; path = ../../../libgid/src/stdio/fwrite.c; sourceTree = "<group>"; };
-		5F0CD7F015BB033100479287 /* getc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = getc.c; path = ../../../libgid/src/stdio/getc.c; sourceTree = "<group>"; };
-		5F0CD7F115BB033100479287 /* makebuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = makebuf.c; path = ../../../libgid/src/stdio/makebuf.c; sourceTree = "<group>"; };
-		5F0CD7F215BB033100479287 /* refill.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = refill.c; path = ../../../libgid/src/stdio/refill.c; sourceTree = "<group>"; };
-		5F0CD7F315BB033100479287 /* rget.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rget.c; path = ../../../libgid/src/stdio/rget.c; sourceTree = "<group>"; };
-		5F0CD7F415BB033100479287 /* setvbuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = setvbuf.c; path = ../../../libgid/src/stdio/setvbuf.c; sourceTree = "<group>"; };
-		5F0CD7F515BB033100479287 /* stdio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = stdio.c; path = ../../../libgid/src/stdio/stdio.c; sourceTree = "<group>"; };
-		5F0CD7F615BB033100479287 /* tmpfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tmpfile.c; path = ../../../libgid/src/stdio/tmpfile.c; sourceTree = "<group>"; };
-		5F0CD7F715BB033100479287 /* ungetc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ungetc.c; path = ../../../libgid/src/stdio/ungetc.c; sourceTree = "<group>"; };
-		5F0CD7F815BB033100479287 /* vfprintf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vfprintf.c; path = ../../../libgid/src/stdio/vfprintf.c; sourceTree = "<group>"; };
-		5F0CD7F915BB033100479287 /* vfscanf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vfscanf.c; path = ../../../libgid/src/stdio/vfscanf.c; sourceTree = "<group>"; };
-		5F0CD7FA15BB033100479287 /* wsetup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = wsetup.c; path = ../../../libgid/src/stdio/wsetup.c; sourceTree = "<group>"; };
 		5F0CD82A15BB0B3D00479287 /* png.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = png.c; path = "../../../libgid/external/libpng-1.6.2/png.c"; sourceTree = "<group>"; };
 		5F0CD82B15BB0B3D00479287 /* pngerror.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pngerror.c; path = "../../../libgid/external/libpng-1.6.2/pngerror.c"; sourceTree = "<group>"; };
 		5F0CD82C15BB0B3D00479287 /* pngget.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pngget.c; path = "../../../libgid/external/libpng-1.6.2/pngget.c"; sourceTree = "<group>"; };
@@ -601,7 +529,6 @@
 		5F0CD99615BB4C3500479287 /* b2WheelJoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2WheelJoint.h; sourceTree = "<group>"; };
 		5F0CD99815BB4C3500479287 /* b2Rope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Rope.cpp; sourceTree = "<group>"; };
 		5F0CD99915BB4C3500479287 /* b2Rope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Rope.h; sourceTree = "<group>"; };
-		5F0CD9FA15BB4D1100479287 /* all_lua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = all_lua.cpp; path = ../../lua/etc/all_lua.cpp; sourceTree = "<group>"; };
 		5F321DFC15BB516F00542289 /* binderutil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = binderutil.cpp; path = ../../libgideros/binderutil.cpp; sourceTree = "<group>"; };
 		5F321DFD15BB516F00542289 /* event.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = event.cpp; path = ../../libgideros/event.cpp; sourceTree = "<group>"; };
 		5F321DFE15BB516F00542289 /* eventdispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = eventdispatcher.cpp; path = ../../libgideros/eventdispatcher.cpp; sourceTree = "<group>"; };
@@ -609,7 +536,6 @@
 		5F321E0015BB516F00542289 /* gplugin-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "gplugin-ios.mm"; path = "../../libgideros/gplugin-ios.mm"; sourceTree = "<group>"; };
 		5F321E0115BB516F00542289 /* refptr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = refptr.cpp; path = ../../libgideros/refptr.cpp; sourceTree = "<group>"; };
 		5F321E0215BB516F00542289 /* stringid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stringid.cpp; path = ../../libgideros/stringid.cpp; sourceTree = "<group>"; };
-		5F321E0F15BB529D00542289 /* gfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gfile.cpp; path = ../../libgfile/gfile.cpp; sourceTree = "<group>"; };
 		5F321E1915BBBA4600542289 /* exit-generic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "exit-generic.cpp"; path = "../../libplatform/exit-generic.cpp"; sourceTree = "<group>"; };
 		5F321E2315BBBA7E00542289 /* drawinfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = drawinfo.cpp; path = ../../libplatform/drawinfo.cpp; sourceTree = "<group>"; };
 		5F321E2515BBBA8800542289 /* deviceinfo-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "deviceinfo-ios.mm"; path = "../../libplatform/deviceinfo-ios.mm"; sourceTree = "<group>"; };
@@ -693,7 +619,6 @@
 		5F321F3115BBEB3200542289 /* gyroscopebinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gyroscopebinder.cpp; path = ../../luabinding/gyroscopebinder.cpp; sourceTree = "<group>"; };
 		5F321F3215BBEB3200542289 /* keys.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = keys.cpp; path = ../../luabinding/keys.cpp; sourceTree = "<group>"; };
 		5F321F3315BBEB3200542289 /* luaapplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = luaapplication.cpp; path = ../../luabinding/luaapplication.cpp; sourceTree = "<group>"; };
-		5F321F3415BBEB3200542289 /* luautil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = luautil.cpp; path = ../../luabinding/luautil.cpp; sourceTree = "<group>"; };
 		5F321F3515BBEB3200542289 /* matrixbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = matrixbinder.cpp; path = ../../luabinding/matrixbinder.cpp; sourceTree = "<group>"; };
 		5F321F3615BBEB3200542289 /* movieclipbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = movieclipbinder.cpp; path = ../../luabinding/movieclipbinder.cpp; sourceTree = "<group>"; };
 		5F321F3715BBEB3200542289 /* registermodules.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = registermodules.cpp; path = ../../luabinding/registermodules.cpp; sourceTree = "<group>"; };
@@ -743,6 +668,7 @@
 		5F880EA415DCF099001F889C /* urlloaderbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = urlloaderbinder.cpp; path = ../../luabinding/urlloaderbinder.cpp; sourceTree = "<group>"; };
 		5F9968A6160F190400CF791A /* gapplication-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "gapplication-ios.mm"; path = "../../../libgid/src/ios/gapplication-ios.mm"; sourceTree = "<group>"; };
 		5FAC8AC515D59C56003E5781 /* ggeolocation-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "ggeolocation-ios.mm"; path = "../../../libgid/src/ios/ggeolocation-ios.mm"; sourceTree = "<group>"; };
+		5FB68B751833C32A00D552A7 /* luautil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = luautil.cpp; path = ../../libgideros/luautil.cpp; sourceTree = "<group>"; };
 		5FCA653115F8A804006011C1 /* pluginmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pluginmanager.cpp; path = ../../libgideros/pluginmanager.cpp; sourceTree = "<group>"; };
 		5FE385B916B09353007A91E1 /* ftlibrarysingleton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ftlibrarysingleton.cpp; path = ../../2dsg/ftlibrarysingleton.cpp; sourceTree = "<group>"; };
 		5FE385BA16B09353007A91E1 /* ttbmfont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ttbmfont.cpp; path = ../../2dsg/ttbmfont.cpp; sourceTree = "<group>"; };
@@ -765,14 +691,12 @@
 			children = (
 				5F321EAD15BBC3EF00542289 /* 2dsg */,
 				5F0CD93615BB4C1700479287 /* Box2D_v2.2.1 */,
-				5F321E0D15BB528300542289 /* libgfile */,
 				5F0CD7B915BB01EF00479287 /* libgid */,
 				5F321DFA15BB512A00542289 /* libgideros */,
 				5F321E3C15BBBCE200542289 /* libnetwork */,
 				5F321E1715BBBA2B00542289 /* libplatform */,
 				5F0CD8CD15BB32D200479287 /* libpystring */,
 				5F321F0D15BBC44200542289 /* libtess */,
-				5F0CD9F815BB4CF300479287 /* lua */,
 				5F321F2215BBCA8000542289 /* luabinding */,
 				5F0CD76215BAFADE00479287 /* iosplayer */,
 				5F0CD75F15BAFADE00479287 /* Frameworks */,
@@ -850,7 +774,6 @@
 		5F0CD7C515BB021500479287 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				5F0CD7D815BB028900479287 /* stdio */,
 				5F450BDD1665066A001D8D4B /* gaudio-loader-wav.cpp */,
 				5F450BDE1665066A001D8D4B /* gaudio-sample-openal.cpp */,
 				5F450BDF1665066A001D8D4B /* gaudio-stream-openal.cpp */,
@@ -861,7 +784,6 @@
 				5F0CD7CA15BB025F00479287 /* gimage-png.cpp */,
 				5F0CD7CB15BB025F00479287 /* gimage.cpp */,
 				5F0CD7CC15BB025F00479287 /* glog.cpp */,
-				5F0CD7CD15BB025F00479287 /* gpath.cpp */,
 				5F0CD7CE15BB025F00479287 /* gtexture.cpp */,
 				5F0CD7CF15BB025F00479287 /* gvfs-native.cpp */,
 				5F9968A6160F190400CF791A /* gapplication-ios.mm */,
@@ -873,47 +795,6 @@
 				5F3C823B1762100100E5E187 /* ghttp-ios.mm */,
 			);
 			name = src;
-			sourceTree = "<group>";
-		};
-		5F0CD7D815BB028900479287 /* stdio */ = {
-			isa = PBXGroup;
-			children = (
-				5F0CD7D915BB033100479287 /* clrerr.c */,
-				5F0CD7DA15BB033100479287 /* extra.c */,
-				5F0CD7DB15BB033100479287 /* fclose.c */,
-				5F0CD7DC15BB033100479287 /* feof.c */,
-				5F0CD7DD15BB033100479287 /* ferror.c */,
-				5F0CD7DE15BB033100479287 /* fflush.c */,
-				5F0CD7DF15BB033100479287 /* fgetc.c */,
-				5F0CD7E015BB033100479287 /* fgets.c */,
-				5F0CD7E115BB033100479287 /* fileops.c */,
-				5F0CD7E215BB033100479287 /* findfp.c */,
-				5F0CD7E315BB033100479287 /* flags.c */,
-				5F0CD7E415BB033100479287 /* flockfile.c */,
-				5F0CD7E515BB033100479287 /* fopen.c */,
-				5F0CD7E615BB033100479287 /* fprintf.c */,
-				5F0CD7E715BB033100479287 /* fputs.c */,
-				5F0CD7E815BB033100479287 /* fread.c */,
-				5F0CD7E915BB033100479287 /* freopen.c */,
-				5F0CD7EA15BB033100479287 /* fscanf.c */,
-				5F0CD7EB15BB033100479287 /* fseek.c */,
-				5F0CD7EC15BB033100479287 /* ftell.c */,
-				5F0CD7ED15BB033100479287 /* fvwrite.c */,
-				5F0CD7EE15BB033100479287 /* fwalk.c */,
-				5F0CD7EF15BB033100479287 /* fwrite.c */,
-				5F0CD7F015BB033100479287 /* getc.c */,
-				5F0CD7F115BB033100479287 /* makebuf.c */,
-				5F0CD7F215BB033100479287 /* refill.c */,
-				5F0CD7F315BB033100479287 /* rget.c */,
-				5F0CD7F415BB033100479287 /* setvbuf.c */,
-				5F0CD7F515BB033100479287 /* stdio.c */,
-				5F0CD7F615BB033100479287 /* tmpfile.c */,
-				5F0CD7F715BB033100479287 /* ungetc.c */,
-				5F0CD7F815BB033100479287 /* vfprintf.c */,
-				5F0CD7F915BB033100479287 /* vfscanf.c */,
-				5F0CD7FA15BB033100479287 /* wsetup.c */,
-			);
-			name = stdio;
 			sourceTree = "<group>";
 		};
 		5F0CD82915BB0B1500479287 /* libpng-1.6.2 */ = {
@@ -1183,14 +1064,6 @@
 			path = ../../external/Box2D_v2.2.1/Box2D/Rope;
 			sourceTree = "<group>";
 		};
-		5F0CD9F815BB4CF300479287 /* lua */ = {
-			isa = PBXGroup;
-			children = (
-				5F0CD9FA15BB4D1100479287 /* all_lua.cpp */,
-			);
-			name = lua;
-			sourceTree = "<group>";
-		};
 		5F321DFA15BB512A00542289 /* libgideros */ = {
 			isa = PBXGroup;
 			children = (
@@ -1200,18 +1073,11 @@
 				5F321DFE15BB516F00542289 /* eventdispatcher.cpp */,
 				5F321DFF15BB516F00542289 /* eventvisitor.cpp */,
 				5F321E0015BB516F00542289 /* gplugin-ios.mm */,
+				5FB68B751833C32A00D552A7 /* luautil.cpp */,
 				5F321E0115BB516F00542289 /* refptr.cpp */,
 				5F321E0215BB516F00542289 /* stringid.cpp */,
 			);
 			name = libgideros;
-			sourceTree = "<group>";
-		};
-		5F321E0D15BB528300542289 /* libgfile */ = {
-			isa = PBXGroup;
-			children = (
-				5F321E0F15BB529D00542289 /* gfile.cpp */,
-			);
-			name = libgfile;
 			sourceTree = "<group>";
 		};
 		5F321E1715BBBA2B00542289 /* libplatform */ = {
@@ -1335,7 +1201,6 @@
 				5F321F3115BBEB3200542289 /* gyroscopebinder.cpp */,
 				5F321F3215BBEB3200542289 /* keys.cpp */,
 				5F321F3315BBEB3200542289 /* luaapplication.cpp */,
-				5F321F3415BBEB3200542289 /* luautil.cpp */,
 				5F321F3515BBEB3200542289 /* matrixbinder.cpp */,
 				5F58B5401619A0E400B8E8FE /* meshbinder.cpp */,
 				5F321F3615BBEB3200542289 /* movieclipbinder.cpp */,
@@ -1500,43 +1365,8 @@
 				5F0CD7D215BB025F00479287 /* gimage-png.cpp in Sources */,
 				5F0CD7D315BB025F00479287 /* gimage.cpp in Sources */,
 				5F0CD7D415BB025F00479287 /* glog.cpp in Sources */,
-				5F0CD7D515BB025F00479287 /* gpath.cpp in Sources */,
 				5F0CD7D615BB025F00479287 /* gtexture.cpp in Sources */,
 				5F0CD7D715BB025F00479287 /* gvfs-native.cpp in Sources */,
-				5F0CD7FB15BB033100479287 /* clrerr.c in Sources */,
-				5F0CD7FC15BB033100479287 /* extra.c in Sources */,
-				5F0CD7FD15BB033100479287 /* fclose.c in Sources */,
-				5F0CD7FE15BB033100479287 /* feof.c in Sources */,
-				5F0CD7FF15BB033100479287 /* ferror.c in Sources */,
-				5F0CD80015BB033100479287 /* fflush.c in Sources */,
-				5F0CD80115BB033100479287 /* fgetc.c in Sources */,
-				5F0CD80215BB033100479287 /* fgets.c in Sources */,
-				5F0CD80315BB033100479287 /* fileops.c in Sources */,
-				5F0CD80415BB033100479287 /* findfp.c in Sources */,
-				5F0CD80515BB033100479287 /* flags.c in Sources */,
-				5F0CD80615BB033100479287 /* flockfile.c in Sources */,
-				5F0CD80715BB033100479287 /* fopen.c in Sources */,
-				5F0CD80815BB033100479287 /* fprintf.c in Sources */,
-				5F0CD80915BB033100479287 /* fputs.c in Sources */,
-				5F0CD80A15BB033100479287 /* fread.c in Sources */,
-				5F0CD80B15BB033100479287 /* freopen.c in Sources */,
-				5F0CD80C15BB033100479287 /* fscanf.c in Sources */,
-				5F0CD80D15BB033100479287 /* fseek.c in Sources */,
-				5F0CD80E15BB033100479287 /* ftell.c in Sources */,
-				5F0CD80F15BB033100479287 /* fvwrite.c in Sources */,
-				5F0CD81015BB033100479287 /* fwalk.c in Sources */,
-				5F0CD81115BB033100479287 /* fwrite.c in Sources */,
-				5F0CD81215BB033100479287 /* getc.c in Sources */,
-				5F0CD81315BB033100479287 /* makebuf.c in Sources */,
-				5F0CD81415BB033100479287 /* refill.c in Sources */,
-				5F0CD81515BB033100479287 /* rget.c in Sources */,
-				5F0CD81615BB033100479287 /* setvbuf.c in Sources */,
-				5F0CD81715BB033100479287 /* stdio.c in Sources */,
-				5F0CD81815BB033100479287 /* tmpfile.c in Sources */,
-				5F0CD81915BB033100479287 /* ungetc.c in Sources */,
-				5F0CD81A15BB033100479287 /* vfprintf.c in Sources */,
-				5F0CD81B15BB033100479287 /* vfscanf.c in Sources */,
-				5F0CD81C15BB033100479287 /* wsetup.c in Sources */,
 				5F0CD83915BB0B3D00479287 /* png.c in Sources */,
 				5F0CD83A15BB0B3D00479287 /* pngerror.c in Sources */,
 				5F0CD83B15BB0B3D00479287 /* pngget.c in Sources */,
@@ -1661,7 +1491,6 @@
 				5F0CD9EF15BB4C3500479287 /* b2WeldJoint.cpp in Sources */,
 				5F0CD9F115BB4C3500479287 /* b2WheelJoint.cpp in Sources */,
 				5F0CD9F315BB4C3500479287 /* b2Rope.cpp in Sources */,
-				5F0CD9FB15BB4D1100479287 /* all_lua.cpp in Sources */,
 				5F321E0315BB516F00542289 /* binderutil.cpp in Sources */,
 				5F321E0415BB516F00542289 /* event.cpp in Sources */,
 				5F321E0515BB516F00542289 /* eventdispatcher.cpp in Sources */,
@@ -1669,7 +1498,6 @@
 				5F321E0715BB516F00542289 /* gplugin-ios.mm in Sources */,
 				5F321E0815BB516F00542289 /* refptr.cpp in Sources */,
 				5F321E0915BB516F00542289 /* stringid.cpp in Sources */,
-				5F321E1015BB529D00542289 /* gfile.cpp in Sources */,
 				5F321E1A15BBBA4600542289 /* exit-generic.cpp in Sources */,
 				5F321E2415BBBA7E00542289 /* drawinfo.cpp in Sources */,
 				5F321E2615BBBA8800542289 /* deviceinfo-ios.mm in Sources */,
@@ -1753,7 +1581,6 @@
 				5F321F5515BBEB3200542289 /* gyroscopebinder.cpp in Sources */,
 				5F321F5615BBEB3200542289 /* keys.cpp in Sources */,
 				5F321F5715BBEB3200542289 /* luaapplication.cpp in Sources */,
-				5F321F5815BBEB3200542289 /* luautil.cpp in Sources */,
 				5F321F5915BBEB3200542289 /* matrixbinder.cpp in Sources */,
 				5F321F5A15BBEB3200542289 /* movieclipbinder.cpp in Sources */,
 				5F321F5B15BBEB3200542289 /* registermodules.cpp in Sources */,
@@ -1808,6 +1635,7 @@
 				5F79FE28177740F900ACC87A /* uncompr.c in Sources */,
 				5F79FE29177740F900ACC87A /* zutil.c in Sources */,
 				5F0B588817A0663000E3668E /* completeevent.cpp in Sources */,
+				5FB68B761833C32A00D552A7 /* luautil.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1844,7 +1672,7 @@
 					../../luabinding,
 					../../libnetwork,
 					../../external/glu/,
-					../../libgfile,
+					../../libgvfs,
 					../../libsound,
 					../../libplatform,
 					../../2dsg,
@@ -1893,7 +1721,7 @@
 					../../luabinding,
 					../../libnetwork,
 					../../external/glu/,
-					../../libgfile,
+					../../libgvfs,
 					../../libsound,
 					../../libplatform,
 					../../2dsg,
