@@ -29,6 +29,8 @@
 		5F576F1615BC2E9100991AD4 /* luasocket_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F576F1315BC2E9100991AD4 /* luasocket_stub.cpp */; };
 		5F576F1815BC2EC700991AD4 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F576F1715BC2EC700991AD4 /* libsqlite3.dylib */; };
 		5F576F1A15BC2EEB00991AD4 /* lsqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F576F1915BC2EEB00991AD4 /* lsqlite3.c */; };
+		5F863FB01834114D00A99C8C /* libgvfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F863FAF1834114D00A99C8C /* libgvfs.a */; };
+		5F863FB21834115500A99C8C /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F863FB11834115500A99C8C /* liblua.a */; };
 		5F880E9715D9A37C001F889C /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F880E9315D9A37C001F889C /* Icon-72.png */; };
 		5F880E9815D9A37C001F889C /* Icon-72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F880E9415D9A37C001F889C /* Icon-72@2x.png */; };
 		5F880E9915D9A37C001F889C /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F880E9515D9A37C001F889C /* Icon.png */; };
@@ -78,6 +80,8 @@
 		5F576F1315BC2E9100991AD4 /* luasocket_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = luasocket_stub.cpp; path = Plugins/luasocket_stub.cpp; sourceTree = "<group>"; };
 		5F576F1715BC2EC700991AD4 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		5F576F1915BC2EEB00991AD4 /* lsqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lsqlite3.c; path = Plugins/lsqlite3.c; sourceTree = "<group>"; };
+		5F863FAF1834114D00A99C8C /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgvfs.a; path = GiderosiOSPlayer/libgvfs.a; sourceTree = "<group>"; };
+		5F863FB11834115500A99C8C /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = GiderosiOSPlayer/liblua.a; sourceTree = "<group>"; };
 		5F880E9315D9A37C001F889C /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
 		5F880E9415D9A37C001F889C /* Icon-72@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72@2x.png"; sourceTree = "<group>"; };
 		5F880E9515D9A37C001F889C /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
@@ -120,6 +124,8 @@
 				5F576F0415BC2DF100991AD4 /* OpenAL.framework in Frameworks */,
 				5F576F0515BC2DF100991AD4 /* QuartzCore.framework in Frameworks */,
 				5F576F0615BC2DF100991AD4 /* StoreKit.framework in Frameworks */,
+				5F863FB21834115500A99C8C /* liblua.a in Frameworks */,
+				5F863FB01834114D00A99C8C /* libgvfs.a in Frameworks */,
 				5F9FBB2615BC106F00C898DA /* UIKit.framework in Frameworks */,
 				5F9FBB2815BC106F00C898DA /* Foundation.framework in Frameworks */,
 				5F9FBB2A15BC106F00C898DA /* CoreGraphics.framework in Frameworks */,
@@ -174,6 +180,8 @@
 		5F9FBB2415BC106F00C898DA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5F863FAF1834114D00A99C8C /* libgvfs.a */,
+				5F863FB11834115500A99C8C /* liblua.a */,
 				5F576F0A15BC2E0F00991AD4 /* libgideros.a */,
 				5F41547B15CEFA84007B5365 /* iAd.framework */,
 				5F576EF515BC2DF100991AD4 /* AudioToolbox.framework */,
