@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5F1183571833B78A00904D46 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F1183561833B78A00904D46 /* Foundation.framework */; };
-		5F11835C1833B78A00904D46 /* lua.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5F11835B1833B78A00904D46 /* lua.h */; };
-		5F11835E1833B78A00904D46 /* lua.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F11835D1833B78A00904D46 /* lua.m */; };
+		5FB68B741833BC2A00D552A7 /* all_lua.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FB68B731833BC2A00D552A7 /* all_lua.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -19,7 +17,6 @@
 			dstPath = "include/${PRODUCT_NAME}";
 			dstSubfolderSpec = 16;
 			files = (
-				5F11835C1833B78A00904D46 /* lua.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -27,10 +24,7 @@
 
 /* Begin PBXFileReference section */
 		5F1183531833B78A00904D46 /* liblua.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblua.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		5F1183561833B78A00904D46 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		5F11835A1833B78A00904D46 /* lua-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "lua-Prefix.pch"; sourceTree = "<group>"; };
-		5F11835B1833B78A00904D46 /* lua.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lua.h; sourceTree = "<group>"; };
-		5F11835D1833B78A00904D46 /* lua.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = lua.m; sourceTree = "<group>"; };
+		5FB68B731833BC2A00D552A7 /* all_lua.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = all_lua.c; path = etc/all_lua.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,7 +32,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F1183571833B78A00904D46 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,7 +42,6 @@
 			isa = PBXGroup;
 			children = (
 				5F1183581833B78A00904D46 /* lua */,
-				5F1183551833B78A00904D46 /* Frameworks */,
 				5F1183541833B78A00904D46 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -62,30 +54,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5F1183551833B78A00904D46 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				5F1183561833B78A00904D46 /* Foundation.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		5F1183581833B78A00904D46 /* lua */ = {
 			isa = PBXGroup;
 			children = (
-				5F11835B1833B78A00904D46 /* lua.h */,
-				5F11835D1833B78A00904D46 /* lua.m */,
-				5F1183591833B78A00904D46 /* Supporting Files */,
+				5FB68B731833BC2A00D552A7 /* all_lua.c */,
 			);
 			path = lua;
-			sourceTree = "<group>";
-		};
-		5F1183591833B78A00904D46 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				5F11835A1833B78A00904D46 /* lua-Prefix.pch */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,7 +113,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F11835E1833B78A00904D46 /* lua.m in Sources */,
+				5FB68B741833BC2A00D552A7 /* all_lua.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +143,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../libgvfs,
+					./src,
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -191,6 +169,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../libgvfs,
+					./src,
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -201,8 +183,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/lua.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "lua/lua-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -213,8 +193,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/lua.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "lua/lua-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -240,6 +218,7 @@
 				5F1183631833B78A00904D46 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
