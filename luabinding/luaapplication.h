@@ -26,6 +26,9 @@ struct Touch;
 
 class Event;
 
+#include <gstatus.h>
+
+/*
 class LuaException : public std::exception
 {
 public:
@@ -53,6 +56,7 @@ private:
 	Type type_;
 	std::string message_;
 };
+*/
 
 class LuaApplication : public LuaApplicationBase
 {
@@ -68,14 +72,14 @@ public:
 
 	virtual void initialize();
 
-	void loadFile(const char* filename);
+    void loadFile(const char* filename, GStatus *status);
 
-    void tick();
-	void enterFrame();
+    //void tick();
+    void enterFrame(GStatus *status);
 	void clearBuffers();
 	void renderScene(int deltaFrameCount = -1);
 	
-	virtual void deinitialize();
+    virtual void deinitialize();
 
 	bool isInitialized() const;
 
@@ -84,9 +88,9 @@ public:
 
 //	void broadcastApplicationDidFinishLaunching();
 //	void broadcastApplicationWillTerminate();
-	void broadcastMemoryWarning();
+//  void broadcastMemoryWarning();
 
-	void broadcastEvent(Event* event);
+    void broadcastEvent(Event* event, GStatus *status);
 
 	lua_State* luaState() const
 	{

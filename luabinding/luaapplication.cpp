@@ -716,43 +716,33 @@ static int callFile(lua_State* L)
 	return 0;
 }
 
-void LuaApplication::loadFile(const char* filename)
+void LuaApplication::loadFile(const char* filename, GStatus *status)
 {
-/*
-  lua_load: Loads a Lua chunk. If there are no errors, lua_load pushes the compiled
-  chunk as a Lua function on top of the stack. Otherwise, it pushes an error message.
-*/
-	lua_pushcfunction(L, ::callFile);
+    StackChecker checker(L, "loadFile", 0);
 
-	if (luaL_loadfile(L, filename))
+    lua_pushcfunction(L, ::callFile);
+
+    if (luaL_loadfile(L, filename))
 	{
 		if (exceptionsEnabled_ == true)
 		{
-			LuaException exception(LuaException::eLoadError, lua_tostring(L, -1));
-			lua_pop(L, 1);
-			throw exception;
+            if (status)
+                *status = GStatus(1, lua_tostring(L, -1));
 		}
-		else
-		{
-			lua_pop(L, 1);
-		}
-
-		return;
+        lua_pop(L, 2);
+        return;
 	}
 
-	if (lua_pcall_traceback(L, 1, 0, 0))
+    if (lua_pcall_traceback(L, 1, 0, 0))
 	{
 		if (exceptionsEnabled_ == true)
 		{
-			LuaException exception(LuaException::eRuntimeErrorAfterLoad, lua_tostring(L, -1));
-			lua_pop(L, 1);
-			throw exception;
+            if (status)
+                *status = GStatus(1, lua_tostring(L, -1));
 		}
-		else
-		{
-			lua_pop(L, 1);
-		}
-	}
+        lua_pop(L, 1);
+        return;
+    }
 }
 
 
@@ -761,18 +751,6 @@ LuaApplication::~LuaApplication(void)
 //	Referenced::emptyPool();
     ginput_removeCallback(callback_s, this);
     gapplication_removeCallback(callback_s, this);
-}
-
-static int releaseView(lua_State* L)
-{
-	Application* application = static_cast<Application*>(lua_touserdata(L, 1));
-	lua_pop(L, 1);
-
-	setEnvironTable(L);
-
-	application->releaseView();
-
-	return 0;
 }
 
 void LuaApplication::deinitialize()
@@ -792,25 +770,7 @@ void LuaApplication::deinitialize()
 
 //	SoundContainer::instance().stopAllSounds();
 
-#if 0
 	application_->releaseView();
-#else
-	lua_pushcfunction(L, ::releaseView);
-	lua_pushlightuserdata(L, application_);
-	if (lua_pcall_traceback(L, 1, 0, 0))
-	{
-		if (exceptionsEnabled_ == true)
-		{
-			LuaException exception(LuaException::eRuntimeError, lua_tostring(L, -1));
-			lua_pop(L, lua_gettop(L)); // we always clean the stack when there is an error
-			throw exception;
-		}
-		else
-		{
-			lua_pop(L, lua_gettop(L)); // we always clean the stack when there is an error
-		}
-	}
-#endif
 
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
@@ -820,7 +780,7 @@ void LuaApplication::deinitialize()
 	L = NULL;
 
 	delete application_;
-	application_ = 0;
+    application_ = NULL;
 
     clearError();
 //	Referenced::emptyPool();
@@ -843,11 +803,10 @@ static int tick(lua_State *L)
 
 static int enterFrame(lua_State* L)
 {
-	Application* application = static_cast<Application*>(lua_touserdata(L, 1));
-	int deltaFrameCount = lua_tointeger(L, 2);
-	lua_pop(L, 2);
+    StackChecker checker(L, "enterFrame", 0);
 
-	StackChecker checker(L, "enterFrame", 0);
+    LuaApplication *luaApplication = static_cast<LuaApplication*>(luaL_getdata(L));
+    Application *application = luaApplication->getApplication();
 
 	setEnvironTable(L);
 
@@ -866,6 +825,8 @@ static int enterFrame(lua_State* L)
 
 	return 0;
 }
+
+/*
 
 void LuaApplication::tick()
 {
@@ -889,32 +850,26 @@ void LuaApplication::tick()
     application_->unrefPool();
 }
 
-void LuaApplication::enterFrame()
+*/
+
+void LuaApplication::enterFrame(GStatus *status)
 {
 	StackChecker checker(L, "enterFrame", 0);
 
-	//lua_pushcfunction(L, ::renderScene);
-	lua_pushlightuserdata(L, &key_enterFrameFunction);
+    lua_pushlightuserdata(L, &key_enterFrameFunction);
 	lua_rawget(L, LUA_REGISTRYINDEX);
-	lua_pushlightuserdata(L, application_);
-	lua_pushinteger(L, 1); // deltaFrameCount
-	if (lua_pcall_traceback(L, 2, 0, 0))
+
+    if (lua_pcall_traceback(L, 0, 0, 0))
 	{
 		if (exceptionsEnabled_ == true)
 		{
-			LuaException exception(LuaException::eRuntimeError, lua_tostring(L, -1));
-			lua_pop(L, lua_gettop(L)); // we always clean the stack when there is an error
-			throw exception;
-		}
-		else
-		{
-			lua_pop(L, lua_gettop(L)); // we always clean the stack when there is an error
-		}
-	}
+            if (status)
+                *status = GStatus(1, lua_tostring(L, -1));
+        }
+        lua_pop(L, 1);
+    }
 
     application_->unrefPool();
-    //lua_pushcfunction(L, clearNotRunningTimers);
-	//lua_call(L, 0, 0);
 }
 
 void LuaApplication::clearBuffers()
@@ -994,20 +949,19 @@ void LuaApplication::broadcastApplicationWillTerminate()
 	Event event(Event::APPLICATION_WILL_TERMINATE);
 	broadcastEvent(&event);
 }
-*/
 
 void LuaApplication::broadcastMemoryWarning()
 {
 	Event event(Event::MEMORY_WARNING);
 	broadcastEvent(&event);
 }
+*/
 
 
 static int broadcastEvent(lua_State* L)
 {
-	Application* application = static_cast<Application*>(lua_touserdata(L, 1));
-	Event* event = static_cast<Event*>(lua_touserdata(L, 2));
-	lua_pop(L, 2);				// TODO: event system requires an empty stack, preferibly correct this silly requirement
+    Event* event = static_cast<Event*>(lua_touserdata(L, 1));
+    lua_pop(L, 1);				// TODO: event system requires an empty stack, preferibly correct this silly requirement
 
 	setEnvironTable(L);
 
@@ -1016,24 +970,19 @@ static int broadcastEvent(lua_State* L)
 	return 0;
 }
 
-void LuaApplication::broadcastEvent(Event* event)
+void LuaApplication::broadcastEvent(Event* event, GStatus *status)
 {
 	lua_pushcfunction(L, ::broadcastEvent);
-	lua_pushlightuserdata(L, application_);
 	lua_pushlightuserdata(L, event);
 
-	if (lua_pcall_traceback(L, 2, 0, 0))
+    if (lua_pcall_traceback(L, 1, 0, 0))
 	{
 		if (exceptionsEnabled_ == true)
 		{
-			LuaException exception(LuaException::eRuntimeError, lua_tostring(L, -1));
-			lua_pop(L, lua_gettop(L)); // we always clean the stack when there is an error
-			throw exception;
+            if (status)
+                *status = GStatus(1, lua_tostring(L, -1));
 		}
-		else
-		{
-			lua_pop(L, lua_gettop(L)); // we always clean the stack when there is an error
-		}
+        lua_pop(L, 1);
 	}
 }
 

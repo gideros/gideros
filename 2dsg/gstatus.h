@@ -33,7 +33,7 @@ private:
 	int errorCode_;
 	std::string* errorString_;
 
-	void init(int errorCode = 0);
+    void init(int errorCode);
 };
 
 #endif

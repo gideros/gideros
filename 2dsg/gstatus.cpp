@@ -12,7 +12,7 @@
 
 struct GStatusElement
 {
-	GStatusElement() : errorString(0) {}
+    GStatusElement() : errorString(NULL) {}
 
 	GStatusElement(GStatus::Type type, const char* errorString, bool vararg) :
 		type(type),
@@ -29,10 +29,12 @@ struct GStatusElement
 
 static std::map<int, GStatusElement> s_errors;
 
-void GStatus::init(int errorCode/* = 0*/)
+void GStatus::init(int errorCode)
 {
 	if (s_errors.empty() == true)
 	{
+        s_errors[1] = GStatusElement(eRuntimeError, "%s", true);
+
 		s_errors[2150] = GStatusElement(eArgumentError, "An object cannot be added as a child to one of it's children (or children's children, etc.).", false);
 		s_errors[2024] = GStatusElement(eArgumentError, "An object cannot be added as a child of itself.", false);
 		s_errors[2006] = GStatusElement(eRangeError, "The supplied index is out of bounds.", false);
@@ -73,12 +75,12 @@ void GStatus::init(int errorCode/* = 0*/)
 		s_errors[7000] = GStatusElement(eRuntimeError, "URL cannot be parsed.", false);
 	}
 	errorCode_ = errorCode;
-	errorString_ = 0;
+    errorString_ = NULL;
 }
 
 GStatus::GStatus()
 {
-	init();
+    init(0);
 }
 
 GStatus::GStatus(int errorCode, ...)
@@ -128,8 +130,8 @@ GStatus::GStatus(const GStatus& status)
 {
 	errorCode_ = status.errorCode_;
 
-	if (status.errorString_ == 0)
-		errorString_ = 0;
+    if (status.errorString_ == NULL)
+        errorString_ = NULL;
 	else
 		errorString_ = new std::string(*status.errorString_);
 }
@@ -157,7 +159,7 @@ bool GStatus::error() const
 
 const char* GStatus::errorString() const
 {
-	if (errorString_ != 0)
+    if (errorString_ != NULL)
 		return errorString_->c_str();
 
 	return s_errors[errorCode_].errorString;
@@ -167,7 +169,7 @@ void GStatus::clear()
 {
 	errorCode_ = 0;
 	delete errorString_;
-	errorString_ = 0;
+    errorString_ = NULL;
 }
 
 

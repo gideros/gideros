@@ -114,16 +114,14 @@ GLCanvas::~GLCanvas()
 {
 	if (running_ == true)
 	{
-		try
+        Event event(Event::APPLICATION_EXIT);
+        GStatus status;
+        application_->broadcastEvent(&event, &status);
+        if (status.error())
 		{
-			Event event(Event::APPLICATION_EXIT);
-			application_->broadcastEvent(&event);
-		}
-		catch(LuaException e)
-		{
-			errorDialog_.appendString(e.what());
+            errorDialog_.appendString(status.errorString());
 			errorDialog_.show();
-			printToServer(e.what(), NULL);
+            printToServer(status.errorString(), NULL);
 			printToServer("\n", NULL);
 		}
 	}
@@ -160,17 +158,15 @@ void GLCanvas::initializeGL()
 // TODO: belki de lua'yi exception'li derlemek lazim. koda baktigimda oyle birseyi destekliyordu
 void GLCanvas::paintGL()
 {
-	try
-	{
-		application_->enterFrame();
-	}
-	catch (LuaException e)
+    GStatus status;
+    application_->enterFrame(&status);
+    if (status.error())
 	{
 		running_ = false;
 
-		errorDialog_.appendString(e.what());
+        errorDialog_.appendString(status.errorString());
 		errorDialog_.show();
-		printToServer(e.what(), NULL);
+        printToServer(status.errorString(), NULL);
 		printToServer("\n", NULL);
 		application_->deinitialize();
 		application_->initialize();
@@ -286,25 +282,31 @@ void GLCanvas::timerEvent(QTimerEvent *)
 					luafiles.push_back(str);
 				}
 
-				try
-				{
-					for (std::size_t i = 0; i < luafiles.size(); ++i)
-						application_->loadFile(luafiles[i].c_str());
+                GStatus status;
+                for (std::size_t i = 0; i < luafiles.size(); ++i)
+                {
+                    application_->loadFile(luafiles[i].c_str(), &status);
+                    if (status.error())
+                        break;
+                }
 
-					Event event(Event::APPLICATION_START);
-					application_->broadcastEvent(&event);
-				}
-				catch (LuaException e)
-				{
-					running_ = false;
+                if (!status.error())
+                {
+                    Event event(Event::APPLICATION_START);
+                    application_->broadcastEvent(&event, &status);
+                }
 
-					errorDialog_.appendString(e.what());
-					errorDialog_.show();
-					printToServer(e.what(), NULL);
-					printToServer("\n", NULL);
-					application_->deinitialize();
-					application_->initialize();
-				}
+                if (status.error())
+                {
+                    running_ = false;
+
+                    errorDialog_.appendString(status.errorString());
+                    errorDialog_.show();
+                    printToServer(status.errorString(), NULL);
+                    printToServer("\n", NULL);
+                    application_->deinitialize();
+                    application_->initialize();
+                }
 
 				break;
 			}
@@ -314,16 +316,15 @@ void GLCanvas::timerEvent(QTimerEvent *)
 
 				if (running_ == true)
 				{
-					try
+                    Event event(Event::APPLICATION_EXIT);
+                    GStatus status;
+                    application_->broadcastEvent(&event, &status);
+
+                    if (status.error())
 					{
-						Event event(Event::APPLICATION_EXIT);
-						application_->broadcastEvent(&event);
-					}
-					catch(LuaException e)
-					{
-						errorDialog_.appendString(e.what());
+                        errorDialog_.appendString(status.errorString());
 						errorDialog_.show();
-						printToServer(e.what(), NULL);
+                        printToServer(status.errorString(), NULL);
 						printToServer("\n", NULL);
 					}
 				}
