@@ -742,14 +742,10 @@ void ApplicationManager::drawFrame()
 	}
 	else
 	{
-		try
-		{
-			application_->enterFrame();
-		}
-		catch (LuaException e)
-		{
-			luaError(e.what());
-		}
+		GStatus status;
+		application_->enterFrame(&status);
+		if (status.error())
+			luaError(status.errorString());
 	}
 
 	application_->clearBuffers();
@@ -836,19 +832,22 @@ void ApplicationManager::loadLuaFiles()
 		g_fclose(fis);
 	}
 	
-    try
-    {
-        for (size_t i = 0; i < luafiles.size(); ++i)
-			application_->loadFile(luafiles[i].c_str());
-
-        gapplication_enqueueEvent(GAPPLICATION_START_EVENT, NULL, 0);
-
-        application_->tick();
+	GStatus status;
+	for (size_t i = 0; i < luafiles.size(); ++i)
+	{
+		application_->loadFile(luafiles[i].c_str(), &status);
+		if (status.error())
+			break;
 	}
-    catch (LuaException e)
-    {
-        luaError(e.what());
-    }
+
+	if (!status.error())
+	{
+		gapplication_enqueueEvent(GAPPLICATION_START_EVENT, NULL, 0);
+		application_->tick(&status);
+	}
+
+	if (status.error())
+        luaError(status.errorString());
 }
 
 void ApplicationManager::setDirectories(const char *externalDir, const char *internalDir, const char *cacheDir)
@@ -894,19 +893,22 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	ginput_setTouchToMouseEnabled(properties_.touchToMouse);
 	ginput_setMouseTouchOrder(properties_.mouseTouchOrder);
 
-    try
+	GStatus status;
+	for (std::size_t i = 0; i < luafiles.size(); ++i)
 	{
-		for (std::size_t i = 0; i < luafiles.size(); ++i)
-			application_->loadFile(luafiles[i].c_str());
-
-        gapplication_enqueueEvent(GAPPLICATION_START_EVENT, NULL, 0);
-
-        application_->tick();
+		application_->loadFile(luafiles[i].c_str(), &status);
+		if (status.error())
+			break;
 	}
-	catch (LuaException e)
+
+	if (!status.error())
 	{
-		luaError(e.what());
+		gapplication_enqueueEvent(GAPPLICATION_START_EVENT, NULL, 0);
+		application_->tick(&status);
 	}
+
+	if (status.error())
+		luaError(status.errorString());
 }
 
 void ApplicationManager::stop()
@@ -915,14 +917,10 @@ void ApplicationManager::stop()
 	{
         gapplication_enqueueEvent(GAPPLICATION_EXIT_EVENT, NULL, 0);
 
-        try
-        {
-            application_->tick();
-        }
-        catch (LuaException e)
-        {
-            luaError(e.what());
-        }
+		GStatus status;
+		application_->tick(&status);
+		if (status.error())
+			luaError(status.errorString());
 	}
 
 	running_ = false;
@@ -1040,70 +1038,50 @@ void ApplicationManager::pause()
 
     gapplication_enqueueEvent(GAPPLICATION_PAUSE_EVENT, NULL, 0);
 
-	try
-	{
-        application_->tick();
-	}
-	catch (LuaException e)
-	{
-		luaError(e.what());
-	}
+	GStatus status;
+	application_->tick(&status);
+	if (status.error())
+		luaError(status.errorString());
  }
 
 void ApplicationManager::resume()
 {
     gapplication_enqueueEvent(GAPPLICATION_RESUME_EVENT, NULL, 0);
 
-	try
-	{
-        application_->tick();
-	}
-	catch (LuaException e)
-	{
-		luaError(e.what());
-	}
+	GStatus status;
+	application_->tick(&status);
+	if (status.error())
+		luaError(status.errorString());
  }
 
 void ApplicationManager::lowMemory()
 {
     gapplication_enqueueEvent(GAPPLICATION_MEMORY_LOW_EVENT, NULL, 0);
 
-	try
-    {
-        application_->tick();
-    }
-    catch (LuaException e)
-    {
-        luaError(e.what());
-    }
+	GStatus status;
+	application_->tick(&status);
+	if (status.error())
+		luaError(status.errorString());
 }
 
 void ApplicationManager::background()
 {
     gapplication_enqueueEvent(GAPPLICATION_BACKGROUND_EVENT, NULL, 0);
 
-	try
-	{
-        application_->tick();
-	}
-	catch (LuaException e)
-	{
-		luaError(e.what());
-	}
+	GStatus status;
+	application_->tick(&status);
+	if (status.error())
+		luaError(status.errorString());
  }
 
 void ApplicationManager::foreground()
 {
     gapplication_enqueueEvent(GAPPLICATION_FOREGROUND_EVENT, NULL, 0);
 
-	try
-	{
-        application_->tick();
-	}
-	catch (LuaException e)
-	{
-		luaError(e.what());
-	}
+	GStatus status;
+	application_->tick(&status);
+	if (status.error())
+		luaError(status.errorString());
  }
 
 static ApplicationManager *s_applicationManager = NULL;
