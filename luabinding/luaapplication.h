@@ -74,7 +74,7 @@ public:
 
     void loadFile(const char* filename, GStatus *status);
 
-    //void tick();
+    void tick(GStatus *status);
     void enterFrame(GStatus *status);
 	void clearBuffers();
 	void renderScene(int deltaFrameCount = -1);

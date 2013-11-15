@@ -826,9 +826,7 @@ static int enterFrame(lua_State* L)
 	return 0;
 }
 
-/*
-
-void LuaApplication::tick()
+void LuaApplication::tick(GStatus *status)
 {
     lua_pushlightuserdata(L, &key_tickFunction);
     lua_rawget(L, LUA_REGISTRYINDEX);
@@ -837,20 +835,14 @@ void LuaApplication::tick()
     {
         if (exceptionsEnabled_ == true)
         {
-            LuaException exception(LuaException::eRuntimeError, lua_tostring(L, -1));
-            lua_pop(L, lua_gettop(L)); // we always clean the stack when there is an error
-            throw exception;
+            if (status)
+                *status = GStatus(1, lua_tostring(L, -1));
         }
-        else
-        {
-            lua_pop(L, lua_gettop(L)); // we always clean the stack when there is an error
-        }
+        lua_pop(L, 1);
     }
 
     application_->unrefPool();
 }
-
-*/
 
 void LuaApplication::enterFrame(GStatus *status)
 {
