@@ -835,17 +835,11 @@ void ApplicationManager::drawFrame()
 
 	if (application_->isErrorSet())
 		luaError(application_->getError());
-		
-	{
-		try
-		{
-			application_->enterFrame();
-		}
-		catch (LuaException e)
-		{
-			luaError(e.what());
-		}
-	}
+
+    GStatus status;
+    application_->enterFrame(&status);
+    if (status.error())
+        luaError(status.errorString());
 
 #if THREADED_RENDER_LOOP
 	renderTick_ = true;
@@ -966,19 +960,22 @@ void ApplicationManager::loadLuaFiles()
 		g_fclose(fis);
 	}
 	
-    try
+    GStatus status;
+    for (size_t i = 0; i < luafiles.size(); ++i)
     {
-        for (size_t i = 0; i < luafiles.size(); ++i)
-			application_->loadFile(luafiles[i].c_str());
-
-        gapplication_enqueueEvent(GAPPLICATION_START_EVENT, NULL, 0);
-
-        application_->tick();
-	}
-    catch (LuaException e)
-    {
-        luaError(e.what());
+        application_->loadFile(luafiles[i].c_str(), &status);
+        if (status.error())
+            break;
     }
+
+    if (!status.error())
+    {
+        gapplication_enqueueEvent(GAPPLICATION_START_EVENT, NULL, 0);
+        application_->tick(&status);
+    }
+        
+    if (status.error())
+        luaError(status.errorString());
 }
 
 void ApplicationManager::play(const std::vector<std::string>& luafiles)
@@ -1008,19 +1005,23 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	ginput_setTouchToMouseEnabled(properties_.touchToMouse);
 	ginput_setMouseTouchOrder(properties_.mouseTouchOrder);
 	
-    try
-	{
-		for (std::size_t i = 0; i < luafiles.size(); ++i)
-			application_->loadFile(luafiles[i].c_str());
 
+    GStatus status;
+    for (std::size_t i = 0; i < luafiles.size(); ++i)
+    {
+        application_->loadFile(luafiles[i].c_str(), &status);
+        if (status.error())
+            break;
+    }
+
+    if (!status.error())
+    {
         gapplication_enqueueEvent(GAPPLICATION_START_EVENT, NULL, 0);
+        application_->tick(&status);
+    }
 
-        application_->tick();
-	}
-	catch (LuaException e)
-	{
-		luaError(e.what());
-	}
+    if (status.error())
+		luaError(status.errorString());
 }
 
 void ApplicationManager::stop()
@@ -1029,14 +1030,10 @@ void ApplicationManager::stop()
 	{
         gapplication_enqueueEvent(GAPPLICATION_EXIT_EVENT, NULL, 0);
 
-        try
-        {
-            application_->tick();
-        }
-        catch (LuaException e)
-        {
-            luaError(e.what());
-        }
+        GStatus status;
+        application_->tick(&status);
+        if (status.error())
+            luaError(status.errorString());
 	}
 	
 	running_ = false;
@@ -1111,14 +1108,10 @@ void ApplicationManager::suspend()
 #if THREADED_RENDER_LOOP
     [renderCond_ lock];
 #endif
-	try
-	{
-        application_->tick();
-	}
-	catch (LuaException e)
-	{
-		luaError(e.what());
-	}
+    GStatus status;
+    application_->tick(&status);
+    if (status.error())
+        luaError(status.errorString());
 #if THREADED_RENDER_LOOP
     [renderCond_ unlock];
 #endif
@@ -1133,14 +1126,10 @@ void ApplicationManager::resume()
 #if THREADED_RENDER_LOOP
     [renderCond_ lock];
 #endif
-	try
-	{
-        application_->tick();
-	}
-	catch (LuaException e)
-	{
-		luaError(e.what());
-	}
+    GStatus status;
+    application_->tick(&status);
+    if (status.error())
+        luaError(status.errorString());
 #if THREADED_RENDER_LOOP
     [renderCond_ unlock];
 #endif
@@ -1160,14 +1149,10 @@ void ApplicationManager::exitRenderLoop()
 #if THREADED_RENDER_LOOP
     [renderCond_ lock];
 #endif
-    try
-    {
-        application_->tick();
-    }
-    catch (LuaException e)
-    {
-        luaError(e.what());
-    }
+    GStatus status;
+    application_->tick(&status);
+    if (status.error())
+        luaError(status.errorString());
 #if THREADED_RENDER_LOOP
     [renderCond_ unlock];
 #endif
@@ -1220,14 +1205,10 @@ void ApplicationManager::didReceiveMemoryWarning()
 #if THREADED_RENDER_LOOP
     [renderCond_ lock];
 #endif
-    try
-    {
-        application_->tick();
-    }
-    catch (LuaException e)
-    {
-        luaError(e.what());
-    }
+    GStatus status;
+    application_->tick(&status);
+    if (status.error())
+        luaError(status.errorString());
 #if THREADED_RENDER_LOOP
     [renderCond_ unlock];
 #endif
@@ -1314,14 +1295,10 @@ void ApplicationManager::foreground()
 #if THREADED_RENDER_LOOP
     [renderCond_ lock];
 #endif
-	try
-	{
-        application_->tick();
-	}
-	catch (LuaException e)
-	{
-		luaError(e.what());
-	}
+    GStatus status;
+    application_->tick(&status);
+    if (status.error())
+        luaError(status.errorString());
 #if THREADED_RENDER_LOOP
     [renderCond_ unlock];
 #endif
@@ -1334,14 +1311,10 @@ void ApplicationManager::background()
 #if THREADED_RENDER_LOOP
     [renderCond_ lock];
 #endif
-	try
-	{
-        application_->tick();
-	}
-	catch (LuaException e)
-	{
-		luaError(e.what());
-	}
+    GStatus status;
+    application_->tick(&status);
+    if (status.error())
+        luaError(status.errorString());
 #if THREADED_RENDER_LOOP
     [renderCond_ unlock];
 #endif
