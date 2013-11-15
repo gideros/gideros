@@ -114,6 +114,9 @@ public:
         if (iter == sounds_.end())
             return 0;
 
+        if (channels_.size() >= 31)
+            return 0;
+
         Sound *sound2 = iter->second;
 
         ALuint source;
