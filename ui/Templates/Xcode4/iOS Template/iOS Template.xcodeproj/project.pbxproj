@@ -33,6 +33,8 @@
 		5F58D85015D9263F00137D76 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F58D84415D9263F00137D76 /* QuartzCore.framework */; };
 		5F58D85115D9263F00137D76 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F58D84515D9263F00137D76 /* StoreKit.framework */; };
 		5F58D85315D9268900137D76 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
+		5F9FF0A81838143600AEA72F /* libgvfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9FF0A71838143600AEA72F /* libgvfs.a */; };
+		5F9FF0AA1838143E00AEA72F /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9FF0A91838143E00AEA72F /* liblua.a */; };
 		5FC825FB17E890B300751626 /* bit.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825FA17E890B300751626 /* bit.c */; };
 		5FC825FE17E890E600751626 /* bit_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825FD17E890E600751626 /* bit_stub.cpp */; };
 		5FC8260017E8922300751626 /* fpconv.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825FF17E8922300751626 /* fpconv.c */; };
@@ -79,6 +81,8 @@
 		5F58D84415D9263F00137D76 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		5F58D84515D9263F00137D76 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		5F58D85215D9268900137D76 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
+		5F9FF0A71838143600AEA72F /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgvfs.a; path = "iOS Template/libgvfs.a"; sourceTree = "<group>"; };
+		5F9FF0A91838143E00AEA72F /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = "iOS Template/liblua.a"; sourceTree = "<group>"; };
 		5FC825FA17E890B300751626 /* bit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bit.c; path = Plugins/bit.c; sourceTree = "<group>"; };
 		5FC825FD17E890E600751626 /* bit_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bit_stub.cpp; path = Plugins/bit_stub.cpp; sourceTree = "<group>"; };
 		5FC825FF17E8922300751626 /* fpconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fpconv.c; path = Plugins/fpconv.c; sourceTree = "<group>"; };
@@ -120,6 +124,8 @@
 				5FD896F415CED77F00D34824 /* OpenGLES.framework in Frameworks */,
 				5F58D83315D925D100137D76 /* libluasocket.a in Frameworks */,
 				5F58D83915D925EA00137D76 /* libgideros.a in Frameworks */,
+				5F9FF0A81838143600AEA72F /* libgvfs.a in Frameworks */,
+				5F9FF0AA1838143E00AEA72F /* liblua.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,6 +174,8 @@
 		5FD896EA15CED77F00D34824 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5F9FF0A71838143600AEA72F /* libgvfs.a */,
+				5F9FF0A91838143E00AEA72F /* liblua.a */,
 				5F58D83815D925EA00137D76 /* libgideros.a */,
 				5F58D84015D9263F00137D76 /* iAd.framework */,
 				5F58D83A15D9263F00137D76 /* AudioToolbox.framework */,
