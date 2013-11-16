@@ -21,6 +21,8 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 {
 	static
 	{
+		System.loadLibrary("gvfs");
+		System.loadLibrary("lua");
 		System.loadLibrary("gideros");
 		System.loadLibrary("luasocket");
 		System.loadLibrary("lfs");
