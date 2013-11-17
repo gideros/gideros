@@ -514,6 +514,9 @@ endif
 ifeq (PS3,$(TARGET_SYS))
   BUILDMODE= static
 endif
+ifeq (iOS,$(TARGET_SYS))
+  BUILDMODE= static
+endif
 
 ifeq (Windows,$(HOST_SYS))
   MINILUA_T= host/minilua.exe
