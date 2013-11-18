@@ -87,6 +87,8 @@ void TimerContainer::tick()
             timer->dispatchEvent(&timerEvent);
         }
     }
+
+    application_->unrefPool();
 }
 
 double TimerContainer::getAdditionalDelay(const Timer *timer)

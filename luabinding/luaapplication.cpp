@@ -730,6 +730,7 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
                 *status = GStatus(1, lua_tostring(L, -1));
 		}
         lua_pop(L, 2);
+        application_->unrefPool();
         return;
 	}
 
@@ -741,8 +742,10 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
                 *status = GStatus(1, lua_tostring(L, -1));
 		}
         lua_pop(L, 1);
+        application_->unrefPool();
         return;
     }
+    application_->unrefPool();
 }
 
 
@@ -976,6 +979,8 @@ void LuaApplication::broadcastEvent(Event* event, GStatus *status)
 		}
         lua_pop(L, 1);
 	}
+
+    application_->unrefPool();
 }
 
 /*

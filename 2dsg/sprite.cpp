@@ -434,6 +434,8 @@ void Sprite::removeChildAt(int index, GStatus* status)
         Event event(Event::REMOVED_FROM_STAGE);
         child->recursiveDispatchEvent(&event, false, false);
 	}
+
+    application_->unrefPool();
 }
 
 void Sprite::removeChild(Sprite* child, GStatus* status)
@@ -770,6 +772,8 @@ void Sprite::recursiveDispatchEvent(Event* event, bool canBeStopped, bool revers
         else
             break;
     }
+
+    application_->unrefPool();
 }
 
 float Sprite::alpha() const

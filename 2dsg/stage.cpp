@@ -69,6 +69,8 @@ void Stage::enterFrame(int deltaFrameCount)
     EnterFrameEvent event(EnterFrameEvent::ENTER_FRAME, frameCount, deltaFrameCount, time, deltaTime);
     for (std::size_t i = 0; i < v.size(); ++i)
         v[i]->dispatchEvent(&event);
+
+    application_->unrefPool();
 }
 
 void Stage::touchesBegin(ginput_TouchEvent *event, float sx, float sy, float tx, float ty)
@@ -161,5 +163,7 @@ void Stage::dispatchToSpritesWithListeners(Event *event)
 
         spritesWithListeners_[i]->dispatchEvent(event);
     }
+
+    application_->unrefPool();
 }
 
