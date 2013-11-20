@@ -92,7 +92,10 @@ typedef struct global_State {
   UpVal uvhead;  /* head of double-linked list of all open upvalues */
   struct Table *mt[NUM_TAGS];  /* metatables for basic types */
   TString *tmname[TM_N];  /* array with tag-method names */
+
   int disablegc;
+  lua_PrintFunc printfunc;
+  void* printfuncdata;
 } global_State;
 
 
@@ -126,9 +129,6 @@ struct lua_State {
   GCObject *gclist;
   struct lua_longjmp *errorJmp;  /* current error recover point */
   ptrdiff_t errfunc;  /* current error handling function (stack index) */
-
-  lua_PrintFunc printfunc;
-  void* printfuncdata;
 };
 
 
