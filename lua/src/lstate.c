@@ -80,7 +80,7 @@ static void f_luaopen (lua_State *L, void *ud) {
   g->GCthreshold = 4*g->totalbytes;
 }
 
-static void default_printfunc(const char* str, void* data)
+static void default_printfunc(const char* str, int len, void* data)
 {
   fputs(str, stdout);
 }

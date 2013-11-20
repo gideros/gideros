@@ -41,11 +41,11 @@ static int luaB_print (lua_State *L) {
     if (s == NULL)
       return luaL_error(L, LUA_QL("tostring") " must return a string to "
                            LUA_QL("print"));
-    if (i>1) lua_getprintfunc(L)("\t", lua_getprintfuncdata(L));
-    lua_getprintfunc(L)(s, lua_getprintfuncdata(L));
+    if (i>1) lua_getprintfunc(L)("\t", -1, lua_getprintfuncdata(L));
+    lua_getprintfunc(L)(s, -1, lua_getprintfuncdata(L));
     lua_pop(L, 1);  /* pop result */
   }
-  lua_getprintfunc(L)("\n", lua_getprintfuncdata(L));
+  lua_getprintfunc(L)("\n", -1, lua_getprintfuncdata(L));
   return 0;
 }
 

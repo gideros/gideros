@@ -61,9 +61,9 @@ void PlatformImplementation::memoryWarning()
 }
 */
 static Server* g_server = NULL;
-static void printToServer(const char* str, void* data)
+static void printToServer(const char* str, int len, void* data)
 {
-	unsigned int size = 1 + strlen(str) + 1;
+    unsigned int size = 1 + ((len < 0) ? strlen(str) : len) + 1;
 	char* buffer = (char*)malloc(size);
 
 	int pos = 0;
@@ -121,8 +121,8 @@ GLCanvas::~GLCanvas()
 		{
             errorDialog_.appendString(status.errorString());
 			errorDialog_.show();
-            printToServer(status.errorString(), NULL);
-			printToServer("\n", NULL);
+            printToServer(status.errorString(), -1, NULL);
+            printToServer("\n", -1, NULL);
 		}
 	}
 
@@ -166,8 +166,8 @@ void GLCanvas::paintGL()
 
         errorDialog_.appendString(status.errorString());
 		errorDialog_.show();
-        printToServer(status.errorString(), NULL);
-		printToServer("\n", NULL);
+        printToServer(status.errorString(), -1, NULL);
+        printToServer("\n", -1, NULL);
 		application_->deinitialize();
 		application_->initialize();
 	}
@@ -302,8 +302,8 @@ void GLCanvas::timerEvent(QTimerEvent *)
 
                     errorDialog_.appendString(status.errorString());
                     errorDialog_.show();
-                    printToServer(status.errorString(), NULL);
-                    printToServer("\n", NULL);
+                    printToServer(status.errorString(), -1, NULL);
+                    printToServer("\n", -1, NULL);
                     application_->deinitialize();
                     application_->initialize();
                 }
@@ -324,8 +324,8 @@ void GLCanvas::timerEvent(QTimerEvent *)
 					{
                         errorDialog_.appendString(status.errorString());
 						errorDialog_.show();
-                        printToServer(status.errorString(), NULL);
-						printToServer("\n", NULL);
+                        printToServer(status.errorString(), -1, NULL);
+                        printToServer("\n", -1, NULL);
 					}
 				}
 
