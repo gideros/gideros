@@ -21,11 +21,13 @@
 #include "lj_err.h"
 #include "lj_lib.h"
 
+#include "stdio2.h"
+
 #if LJ_TARGET_POSIX
 #include <unistd.h>
-#else
-#include "stdio2.h"
 #endif
+
+#include <gpath.h>
 
 /* ------------------------------------------------------------------------ */
 
@@ -58,14 +60,17 @@ LJLIB_CF(os_execute)
 LJLIB_CF(os_remove)
 {
   const char *filename = luaL_checkstring(L, 1);
-  return luaL_fileresult(L, remove(filename) == 0, filename);
+  return luaL_fileresult(L, remove(gpath_transform(filename)) == 0, filename);
 }
 
 LJLIB_CF(os_rename)
 {
+  char fromname2[1024], toname2[1024];
   const char *fromname = luaL_checkstring(L, 1);
   const char *toname = luaL_checkstring(L, 2);
-  return luaL_fileresult(L, rename(fromname, toname) == 0, fromname);
+  strcpy(fromname2, gpath_transform(fromname));
+  strcpy(toname2, gpath_transform(toname));
+  return luaL_fileresult(L, rename(fromname2, toname2) == 0, fromname);
 }
 
 LJLIB_CF(os_tmpname)
