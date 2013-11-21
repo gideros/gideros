@@ -309,3 +309,8 @@ LUA_API void lua_setprintfunc(lua_State* L, lua_PrintFunc printfunc, void* data)
   G(L)->printfunc = printfunc;
   G(L)->printfuncdata = data;
 }
+
+LUA_API int lua_isjit()
+{
+  return 1;
+}

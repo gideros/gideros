@@ -436,7 +436,7 @@ static int bindAll(lua_State* L)
 
 LuaApplication::LuaApplication(void)
 {
-	L = lua_open();
+    L = luaL_newstate();
 	printFunc_ = lua_getprintfunc(L);
     printData_ = NULL;
 	lua_close(L);
@@ -1037,8 +1037,16 @@ void LuaApplication::initialize()
 	application_->setResolution(width_, height_);
 	application_->setScale(scale_);
 
-	//	L = lua_open();
-	L = lua_newstate(l_alloc, NULL);
+#if defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64)
+#define ARCH_X64 1
+#else
+#define ARCH_X64 0
+#endif
+
+    if (ARCH_X64 && lua_isjit())
+        L = luaL_newstate();
+    else
+        L = lua_newstate(l_alloc, NULL);
 
     lua_pushlightuserdata(L, &key_tickFunction);
     lua_pushcfunction(L, ::tick);
