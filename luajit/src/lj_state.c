@@ -9,6 +9,8 @@
 #define lj_state_c
 #define LUA_CORE
 
+#include "stdio2.h"
+
 #include "lj_obj.h"
 #include "lj_gc.h"
 #include "lj_err.h"
@@ -175,6 +177,11 @@ static void close_state(lua_State *L)
     g->allocf(g->allocd, G2GG(g), sizeof(GG_State), 0);
 }
 
+static void default_printfunc(const char* str, int len, void* data)
+{
+  fputs(str, stdout);
+}
+
 #if LJ_64
 lua_State *lj_state_newstate(lua_Alloc f, void *ud)
 #else
@@ -210,6 +217,8 @@ LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud)
   g->gc.total = sizeof(GG_State);
   g->gc.pause = LUAI_GCPAUSE;
   g->gc.stepmul = LUAI_GCMUL;
+  g->printfunc = default_printfunc;
+  g->printfuncdata = NULL;  
   lj_dispatch_init((GG_State *)L);
   L->status = LUA_ERRERR+1;  /* Avoid touching the stack upon memory error. */
   if (lj_vm_cpcall(L, NULL, NULL, cpluaopen) != 0) {
@@ -287,18 +296,16 @@ void LJ_FASTCALL lj_state_free(global_State *g, lua_State *L)
 
 LUA_API lua_PrintFunc lua_getprintfunc(lua_State* L)
 {
-	return NULL;
-	//return L->printfunc;
+  return G(L)->printfunc;
 }
 
 LUA_API void* lua_getprintfuncdata(lua_State* L)
 {
-	return NULL;
-	//return L->printfuncdata;
+  return G(L)->printfuncdata;
 }
 
 LUA_API void lua_setprintfunc(lua_State* L, lua_PrintFunc printfunc, void* data)
 {
-	//L->printfunc = printfunc;
-	//L->printfuncdata = data;
+  G(L)->printfunc = printfunc;
+  G(L)->printfuncdata = data;
 }

@@ -532,10 +532,10 @@ LJLIB_CF(print)
       L->top--;
     }
     if (i)
-      putchar('\t');
-    fwrite(str, 1, size, stdout);
+      lua_getprintfunc(L)("\t", -1, lua_getprintfuncdata(L));
+    lua_getprintfunc(L)(str, size, lua_getprintfuncdata(L));
   }
-  putchar('\n');
+  lua_getprintfunc(L)("\n", -1, lua_getprintfuncdata(L));
   return 0;
 }
 

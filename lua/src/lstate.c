@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <stdio.h>
+
 #define lstate_c
 #define LUA_CORE
 

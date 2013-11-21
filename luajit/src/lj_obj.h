@@ -539,6 +539,9 @@ typedef struct global_State {
   MRef jit_base;	/* Current JIT code L->base. */
   MRef ctype_state;	/* Pointer to C type state. */
   GCRef gcroot[GCROOT_MAX];  /* GC roots. */
+
+  lua_PrintFunc printfunc;
+  void* printfuncdata;
 } global_State;
 
 #define mainthread(g)	(&gcref(g->mainthref)->th)

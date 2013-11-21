@@ -13,8 +13,6 @@
 #include "ltm.h"
 #include "lzio.h"
 
-#include <stdio.h>
-
 
 struct lua_longjmp;  /* defined in ldo.c */
 
