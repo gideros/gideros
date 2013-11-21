@@ -157,3 +157,6 @@ win32 {
     LIBS += -L"../libgid/external/freetype-2.4.12/build/mingw" -lfreetype
 }
 
+macx {
+QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
+}
