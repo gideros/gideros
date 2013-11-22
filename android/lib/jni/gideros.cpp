@@ -116,14 +116,14 @@ public:
 		loadMD5();
 	}
 
-	static void printToServer_s(const char *str, void *data)
+	static void printToServer_s(const char *str, int len, void *data)
 	{
-		static_cast<NetworkManager*>(data)->printToServer(str);
+		static_cast<NetworkManager*>(data)->printToServer(str, len);
 	}
 
-	void printToServer(const char *str)
+	void printToServer(const char *str, int len)
 	{
-		unsigned int size = 1 + strlen(str) + 1;
+		unsigned int size = 1 + ((len < 0) ? strlen(str) : len) + 1;
 		char* buffer = (char*)malloc(size);
 
 		int pos = 0;
@@ -633,8 +633,8 @@ void ApplicationManager::luaError(const char *error)
 	{
 		running_ = false;
 
-		networkManager_->printToServer(error);
-		networkManager_->printToServer("\n");
+		networkManager_->printToServer(error, -1);
+		networkManager_->printToServer("\n", -1);
 		application_->deinitialize();
 		application_->initialize();	
 	}
