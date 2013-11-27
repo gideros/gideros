@@ -315,21 +315,6 @@
 		5F58B5411619A0E400B8E8FE /* meshbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F58B5401619A0E400B8E8FE /* meshbinder.cpp */; };
 		5F58D77015D8F16B00137D76 /* fps-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D76F15D8F16B00137D76 /* fps-ios.mm */; };
 		5F58D7D215D91D8000137D76 /* gglobal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D7D115D91D8000137D76 /* gglobal.cpp */; };
-		5F79FE1B177740F900ACC87A /* adler32.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE0C177740F900ACC87A /* adler32.c */; };
-		5F79FE1C177740F900ACC87A /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE0D177740F900ACC87A /* compress.c */; };
-		5F79FE1D177740F900ACC87A /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE0E177740F900ACC87A /* crc32.c */; };
-		5F79FE1E177740F900ACC87A /* deflate.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE0F177740F900ACC87A /* deflate.c */; };
-		5F79FE1F177740F900ACC87A /* gzclose.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE10177740F900ACC87A /* gzclose.c */; };
-		5F79FE20177740F900ACC87A /* gzlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE11177740F900ACC87A /* gzlib.c */; };
-		5F79FE21177740F900ACC87A /* gzread.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE12177740F900ACC87A /* gzread.c */; };
-		5F79FE22177740F900ACC87A /* gzwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE13177740F900ACC87A /* gzwrite.c */; };
-		5F79FE23177740F900ACC87A /* infback.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE14177740F900ACC87A /* infback.c */; };
-		5F79FE24177740F900ACC87A /* inffast.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE15177740F900ACC87A /* inffast.c */; };
-		5F79FE25177740F900ACC87A /* inflate.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE16177740F900ACC87A /* inflate.c */; };
-		5F79FE26177740F900ACC87A /* inftrees.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE17177740F900ACC87A /* inftrees.c */; };
-		5F79FE27177740F900ACC87A /* trees.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE18177740F900ACC87A /* trees.c */; };
-		5F79FE28177740F900ACC87A /* uncompr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE19177740F900ACC87A /* uncompr.c */; };
-		5F79FE29177740F900ACC87A /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F79FE1A177740F900ACC87A /* zutil.c */; };
 		5F880EA515DCF099001F889C /* urlloaderbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F880EA415DCF099001F889C /* urlloaderbinder.cpp */; };
 		5F9968A7160F190400CF791A /* gapplication-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F9968A6160F190400CF791A /* gapplication-ios.mm */; };
 		5FAC8AC615D59C56003E5781 /* ggeolocation-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5FAC8AC515D59C56003E5781 /* ggeolocation-ios.mm */; };
@@ -650,21 +635,6 @@
 		5F58B5401619A0E400B8E8FE /* meshbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = meshbinder.cpp; path = ../../luabinding/meshbinder.cpp; sourceTree = "<group>"; };
 		5F58D76F15D8F16B00137D76 /* fps-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "fps-ios.mm"; path = "../../libplatform/fps-ios.mm"; sourceTree = "<group>"; };
 		5F58D7D115D91D8000137D76 /* gglobal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gglobal.cpp; path = ../../../libgid/src/gglobal.cpp; sourceTree = "<group>"; };
-		5F79FE0C177740F900ACC87A /* adler32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = adler32.c; path = "../../../libgid/external/zlib-1.2.8/adler32.c"; sourceTree = "<group>"; };
-		5F79FE0D177740F900ACC87A /* compress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compress.c; path = "../../../libgid/external/zlib-1.2.8/compress.c"; sourceTree = "<group>"; };
-		5F79FE0E177740F900ACC87A /* crc32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = crc32.c; path = "../../../libgid/external/zlib-1.2.8/crc32.c"; sourceTree = "<group>"; };
-		5F79FE0F177740F900ACC87A /* deflate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = deflate.c; path = "../../../libgid/external/zlib-1.2.8/deflate.c"; sourceTree = "<group>"; };
-		5F79FE10177740F900ACC87A /* gzclose.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzclose.c; path = "../../../libgid/external/zlib-1.2.8/gzclose.c"; sourceTree = "<group>"; };
-		5F79FE11177740F900ACC87A /* gzlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzlib.c; path = "../../../libgid/external/zlib-1.2.8/gzlib.c"; sourceTree = "<group>"; };
-		5F79FE12177740F900ACC87A /* gzread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzread.c; path = "../../../libgid/external/zlib-1.2.8/gzread.c"; sourceTree = "<group>"; };
-		5F79FE13177740F900ACC87A /* gzwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzwrite.c; path = "../../../libgid/external/zlib-1.2.8/gzwrite.c"; sourceTree = "<group>"; };
-		5F79FE14177740F900ACC87A /* infback.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = infback.c; path = "../../../libgid/external/zlib-1.2.8/infback.c"; sourceTree = "<group>"; };
-		5F79FE15177740F900ACC87A /* inffast.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inffast.c; path = "../../../libgid/external/zlib-1.2.8/inffast.c"; sourceTree = "<group>"; };
-		5F79FE16177740F900ACC87A /* inflate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inflate.c; path = "../../../libgid/external/zlib-1.2.8/inflate.c"; sourceTree = "<group>"; };
-		5F79FE17177740F900ACC87A /* inftrees.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inftrees.c; path = "../../../libgid/external/zlib-1.2.8/inftrees.c"; sourceTree = "<group>"; };
-		5F79FE18177740F900ACC87A /* trees.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = trees.c; path = "../../../libgid/external/zlib-1.2.8/trees.c"; sourceTree = "<group>"; };
-		5F79FE19177740F900ACC87A /* uncompr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = uncompr.c; path = "../../../libgid/external/zlib-1.2.8/uncompr.c"; sourceTree = "<group>"; };
-		5F79FE1A177740F900ACC87A /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zutil.c; path = "../../../libgid/external/zlib-1.2.8/zutil.c"; sourceTree = "<group>"; };
 		5F880EA415DCF099001F889C /* urlloaderbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = urlloaderbinder.cpp; path = ../../luabinding/urlloaderbinder.cpp; sourceTree = "<group>"; };
 		5F9968A6160F190400CF791A /* gapplication-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "gapplication-ios.mm"; path = "../../../libgid/src/ios/gapplication-ios.mm"; sourceTree = "<group>"; };
 		5FAC8AC515D59C56003E5781 /* ggeolocation-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "ggeolocation-ios.mm"; path = "../../../libgid/src/ios/ggeolocation-ios.mm"; sourceTree = "<group>"; };
@@ -755,7 +725,6 @@
 				5F0CD84B15BB107900479287 /* jpeg-9 */,
 				5F0CD82915BB0B1500479287 /* libpng-1.6.2 */,
 				5F0CD7BC15BB01FD00479287 /* snappy-1.1.0 */,
-				5F79FE0A1777402400ACC87A /* zlib-1.2.8 */,
 			);
 			name = external;
 			sourceTree = "<group>";
@@ -1224,28 +1193,6 @@
 			name = luabinding;
 			sourceTree = "<group>";
 		};
-		5F79FE0A1777402400ACC87A /* zlib-1.2.8 */ = {
-			isa = PBXGroup;
-			children = (
-				5F79FE0C177740F900ACC87A /* adler32.c */,
-				5F79FE0D177740F900ACC87A /* compress.c */,
-				5F79FE0E177740F900ACC87A /* crc32.c */,
-				5F79FE0F177740F900ACC87A /* deflate.c */,
-				5F79FE10177740F900ACC87A /* gzclose.c */,
-				5F79FE11177740F900ACC87A /* gzlib.c */,
-				5F79FE12177740F900ACC87A /* gzread.c */,
-				5F79FE13177740F900ACC87A /* gzwrite.c */,
-				5F79FE14177740F900ACC87A /* infback.c */,
-				5F79FE15177740F900ACC87A /* inffast.c */,
-				5F79FE16177740F900ACC87A /* inflate.c */,
-				5F79FE17177740F900ACC87A /* inftrees.c */,
-				5F79FE18177740F900ACC87A /* trees.c */,
-				5F79FE19177740F900ACC87A /* uncompr.c */,
-				5F79FE1A177740F900ACC87A /* zutil.c */,
-			);
-			name = "zlib-1.2.8";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1619,21 +1566,6 @@
 				5F3C823C1762100100E5E187 /* ghttp-ios.mm in Sources */,
 				5F0104061776F719002E6C6E /* grendertarget.cpp in Sources */,
 				5F01040A1776F857002E6C6E /* rendertargetbinder.cpp in Sources */,
-				5F79FE1B177740F900ACC87A /* adler32.c in Sources */,
-				5F79FE1C177740F900ACC87A /* compress.c in Sources */,
-				5F79FE1D177740F900ACC87A /* crc32.c in Sources */,
-				5F79FE1E177740F900ACC87A /* deflate.c in Sources */,
-				5F79FE1F177740F900ACC87A /* gzclose.c in Sources */,
-				5F79FE20177740F900ACC87A /* gzlib.c in Sources */,
-				5F79FE21177740F900ACC87A /* gzread.c in Sources */,
-				5F79FE22177740F900ACC87A /* gzwrite.c in Sources */,
-				5F79FE23177740F900ACC87A /* infback.c in Sources */,
-				5F79FE24177740F900ACC87A /* inffast.c in Sources */,
-				5F79FE25177740F900ACC87A /* inflate.c in Sources */,
-				5F79FE26177740F900ACC87A /* inftrees.c in Sources */,
-				5F79FE27177740F900ACC87A /* trees.c in Sources */,
-				5F79FE28177740F900ACC87A /* uncompr.c in Sources */,
-				5F79FE29177740F900ACC87A /* zutil.c in Sources */,
 				5F0B588817A0663000E3668E /* completeevent.cpp in Sources */,
 				5FB68B761833C32A00D552A7 /* luautil.cpp in Sources */,
 			);

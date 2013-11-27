@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F3A7C5F1846A00A002F70C3 /* libzlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F3A7C5E1846A00A002F70C3 /* libzlib.a */; };
 		5F41547915CEFA56007B5365 /* iad.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F41547815CEFA56007B5365 /* iad.mm */; };
 		5F41547C15CEFA84007B5365 /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F41547B15CEFA84007B5365 /* iAd.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		5F576EE715BC287000991AD4 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F576EE215BC287000991AD4 /* EAGLView.m */; };
@@ -55,6 +56,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5F3A7C5E1846A00A002F70C3 /* libzlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzlib.a; path = GiderosiOSPlayer/libzlib.a; sourceTree = "<group>"; };
 		5F41547815CEFA56007B5365 /* iad.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = iad.mm; path = Plugins/iad.mm; sourceTree = "<group>"; };
 		5F41547B15CEFA84007B5365 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 		5F576EE115BC287000991AD4 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 				5F9FBB2E15BC106F00C898DA /* OpenGLES.framework in Frameworks */,
 				5F576F0B15BC2E0F00991AD4 /* libgideros.a in Frameworks */,
 				5F576F1415BC2E9100991AD4 /* libluasocket.a in Frameworks */,
+				5F3A7C5F1846A00A002F70C3 /* libzlib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,6 +183,7 @@
 		5F9FBB2415BC106F00C898DA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5F3A7C5E1846A00A002F70C3 /* libzlib.a */,
 				5F863FAF1834114D00A99C8C /* libgvfs.a */,
 				5F863FB11834115500A99C8C /* liblua.a */,
 				5F576F0A15BC2E0F00991AD4 /* libgideros.a */,

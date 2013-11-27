@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F3A7C611846A023002F70C3 /* libzlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F3A7C601846A023002F70C3 /* libzlib.a */; };
 		5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F515CEF227007B5365 /* AppDelegate.m */; };
 		5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F715CEF227007B5365 /* EAGLView.m */; };
 		5F4153FC15CEF227007B5365 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F915CEF227007B5365 /* ViewController.m */; };
@@ -52,6 +53,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5F3A7C601846A023002F70C3 /* libzlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzlib.a; path = "iOS Template/libzlib.a"; sourceTree = "<group>"; };
 		5F4153F415CEF227007B5365 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5F4153F515CEF227007B5365 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5F4153F615CEF227007B5365 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				5F58D83915D925EA00137D76 /* libgideros.a in Frameworks */,
 				5F9FF0A81838143600AEA72F /* libgvfs.a in Frameworks */,
 				5F9FF0AA1838143E00AEA72F /* liblua.a in Frameworks */,
+				5F3A7C611846A023002F70C3 /* libzlib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,6 +177,7 @@
 		5FD896EA15CED77F00D34824 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5F3A7C601846A023002F70C3 /* libzlib.a */,
 				5F9FF0A71838143600AEA72F /* libgvfs.a */,
 				5F9FF0A91838143E00AEA72F /* liblua.a */,
 				5F58D83815D925EA00137D76 /* libgideros.a */,
