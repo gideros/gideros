@@ -22,6 +22,15 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 
+LOCAL_MODULE            := zlib
+LOCAL_SRC_FILES         := ../../../libgid/external/zlib-1.2.8/libs/$(TARGET_ARCH_ABI)/libzlib.so
+
+include $(PREBUILT_SHARED_LIBRARY)
+
+####
+
+include $(CLEAR_VARS)
+
 LOCAL_MODULE := gideros
 
 LOCAL_ARM_MODE := arm
@@ -419,6 +428,6 @@ LOCAL_SRC_FILES += \
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
 
-LOCAL_SHARED_LIBRARIES := gvfs lua
+LOCAL_SHARED_LIBRARIES := gvfs lua zlib
 
 include $(BUILD_SHARED_LIBRARY)
