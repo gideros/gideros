@@ -1,6 +1,12 @@
 cd ..
 
 
+cd libgid/external/zlib-1.2.8
+xcodebuild -alltargets -sdk iphonesimulator7.0 -configuration Release -project zlib.xcodeproj
+xcodebuild -alltargets -sdk iphoneos7.0 -configuration Release -project zlib.xcodeproj
+lipo build/Release-iphoneos/libzlib.a build/Release-iphonesimulator/libzlib.a -create -output libzlib.a
+cd ../../..
+
 cd libgvfs
 xcodebuild -alltargets -sdk iphonesimulator7.0 -configuration Release -project gvfs.xcodeproj
 xcodebuild -alltargets -sdk iphoneos7.0 -configuration Release -project gvfs.xcodeproj
@@ -13,13 +19,11 @@ xcodebuild -alltargets -sdk iphoneos7.0 -configuration Release -project lua.xcod
 lipo build/Release-iphoneos/liblua.a build/Release-iphonesimulator/liblua.a -create -output liblua.a
 cd ..
 
-cd ios
-cd iosplayer
+cd ios/iosplayer
 xcodebuild -alltargets -sdk iphonesimulator7.0 -configuration Release -project iosplayer.xcodeproj
 xcodebuild -alltargets -sdk iphoneos7.0 -configuration Release -project iosplayer.xcodeproj
 lipo build/Release-iphoneos/libiosplayer.a build/Release-iphonesimulator/libiosplayer.a -create -output libgideros.a
-cd ..
-cd ..
+cd ../..
 
 
 cd scripts
