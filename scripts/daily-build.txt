@@ -10,6 +10,7 @@ buildqt.bat | grep first				-> 8 tane
 makejar.bat
 * now we have gideros.jar for android
 
+buildandroidlibs.bat
 buildandroidso.bat
 * now we're building android on windows
 
