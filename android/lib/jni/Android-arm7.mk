@@ -52,7 +52,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../libgvfs \
 	$(LOCAL_PATH)/../../../libgideros \
 	$(LOCAL_PATH)/../../../libpystring \
-	$(LOCAL_PATH)/../../../external/Box2D_v2.2.1 \
+	$(LOCAL_PATH)/../../../external/Box2D_v2.3.0/Box2D \
 	$(LOCAL_PATH)/../../openal-soft-1.13/include \
 	$(LOCAL_PATH)/../../openal-soft-1.13/OpenAL32/Include \
 	$(LOCAL_PATH)/../../../libgid/external/jpeg-9
@@ -336,53 +336,55 @@ LOCAL_SRC_FILES += \
 	../../../libpvrt/PVRTString.cpp \
 	../../../libpvrt/PVRTTexture.cpp
 
-# box2d (45 files)
+# box2d (46 files)
 LOCAL_SRC_FILES += \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/b2BroadPhase.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/b2CollideCircle.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/b2CollideEdge.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/b2CollidePolygon.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/b2Collision.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/b2Distance.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/b2DynamicTree.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/b2TimeOfImpact.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/Shapes/b2ChainShape.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/Shapes/b2CircleShape.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/Shapes/b2EdgeShape.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Collision/Shapes/b2PolygonShape.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Common/b2BlockAllocator.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Common/b2Draw.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Common/b2Math.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Common/b2Settings.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Common/b2StackAllocator.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Common/b2Timer.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/b2Body.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/b2ContactManager.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/b2Fixture.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/b2Island.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/b2World.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/b2WorldCallbacks.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Contacts/b2ChainAndCircleContact.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Contacts/b2ChainAndPolygonContact.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Contacts/b2CircleContact.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Contacts/b2Contact.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Contacts/b2ContactSolver.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Contacts/b2EdgeAndCircleContact.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Contacts/b2EdgeAndPolygonContact.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Contacts/b2PolygonAndCircleContact.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Contacts/b2PolygonContact.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2DistanceJoint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2FrictionJoint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2GearJoint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2Joint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2MouseJoint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2PrismaticJoint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2PulleyJoint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2RevoluteJoint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2RopeJoint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2WeldJoint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/b2WheelJoint.cpp \
-	../../../external/Box2D_v2.2.1/Box2D/Rope/b2Rope.cpp
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/b2BroadPhase.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/b2CollideCircle.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/b2CollideEdge.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/b2CollidePolygon.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/b2Collision.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/b2Distance.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/b2DynamicTree.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/b2TimeOfImpact.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/Shapes/b2ChainShape.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/Shapes/b2CircleShape.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/Shapes/b2EdgeShape.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Collision/Shapes/b2PolygonShape.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Common/b2BlockAllocator.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Common/b2Draw.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Common/b2Math.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Common/b2Settings.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Common/b2StackAllocator.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Common/b2Timer.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/b2Body.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/b2ContactManager.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/b2Fixture.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/b2Island.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/b2World.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/b2WorldCallbacks.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/b2ChainAndCircleContact.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/b2ChainAndPolygonContact.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/b2CircleContact.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/b2Contact.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/b2ContactSolver.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/b2EdgeAndCircleContact.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/b2EdgeAndPolygonContact.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/b2PolygonAndCircleContact.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/b2PolygonContact.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2DistanceJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2FrictionJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2GearJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2Joint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2MotorJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2MouseJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2PrismaticJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2PulleyJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2RevoluteJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2RopeJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2WeldJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/b2WheelJoint.cpp \
+	../../../external/Box2D_v2.3.0/Box2D/Box2D/Rope/b2Rope.cpp
+
 	
 # luabinding (35 files)
 LOCAL_SRC_FILES += \

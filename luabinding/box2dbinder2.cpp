@@ -1744,7 +1744,7 @@ int Box2DBinder2::b2Body_ApplyForce(lua_State* L)
 	lua_Number pointx = luaL_checknumber(L, 4) / physicsScale;
 	lua_Number pointy = luaL_checknumber(L, 5) / physicsScale;
 
-	body->ApplyForce(b2Vec2(forcex, forcey), b2Vec2(pointx, pointy));
+    body->ApplyForce(b2Vec2(forcex, forcey), b2Vec2(pointx, pointy), true);
 
 	return 0;
 }
@@ -1758,7 +1758,7 @@ int Box2DBinder2::b2Body_ApplyTorque(lua_State* L)
 	b2Body* body = toBody(binder, 1);
 	lua_Number torque = luaL_checknumber(L, 2);
 
-	body->ApplyTorque(torque);
+    body->ApplyTorque(torque, true);
 
 	return 0;
 }
@@ -1779,7 +1779,7 @@ int Box2DBinder2::b2Body_ApplyLinearImpulse(lua_State* L)
 	lua_Number pointx = luaL_checknumber(L, 4) / physicsScale;
 	lua_Number pointy = luaL_checknumber(L, 5) / physicsScale;
 
-	body->ApplyLinearImpulse(b2Vec2(impulsex, impulsey), b2Vec2(pointx, pointy));
+    body->ApplyLinearImpulse(b2Vec2(impulsex, impulsey), b2Vec2(pointx, pointy), true);
 
 	return 0;
 }
@@ -1793,7 +1793,7 @@ int Box2DBinder2::b2Body_ApplyAngularImpulse(lua_State* L)
 	b2Body* body = toBody(binder, 1);
 	lua_Number impulse = luaL_checknumber(L, 2);
 
-	body->ApplyAngularImpulse(impulse);
+    body->ApplyAngularImpulse(impulse, true);
 
 	return 0;
 }

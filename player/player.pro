@@ -44,14 +44,14 @@ TARGET = GiderosPlayer
 
 TEMPLATE = app
 
-INCLUDEPATH += ../external/Box2D_v2.2.1
-SOURCES += $$files(../external/Box2D_v2.2.1/Box2D/Common/*.cpp)
-SOURCES += $$files(../external/Box2D_v2.2.1/Box2D/Collision/*.cpp)
-SOURCES += $$files(../external/Box2D_v2.2.1/Box2D/Collision/Shapes/*.cpp)
-SOURCES += $$files(../external/Box2D_v2.2.1/Box2D/Dynamics/*.cpp)
-SOURCES += $$files(../external/Box2D_v2.2.1/Box2D/Dynamics/Contacts/*.cpp)
-SOURCES += $$files(../external/Box2D_v2.2.1/Box2D/Dynamics/Joints/*.cpp)
-SOURCES += $$files(../external/Box2D_v2.2.1/Box2D/Rope/*.cpp)
+INCLUDEPATH += ../external/Box2D_v2.3.0/Box2D
+SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Common/*.cpp)
+SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Collision/*.cpp)
+SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Collision/Shapes/*.cpp)
+SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/*.cpp)
+SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/*.cpp)
+SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/*.cpp)
+SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Rope/*.cpp)
 
 SOURCES += \
     main.cpp \
