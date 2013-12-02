@@ -83,9 +83,9 @@ cp C:\Qt\1.2.1\mingw\bin\mingwm10.dll ..\..\release\Tools
 cp C:\Qt\1.2.1\mingw\bin\libgcc_s_dw2-1.dll ..\..\release\Tools
 
 copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\giderosapi.h" "..\..\release\Templates\Xcode4\iOS Template\iOS Template"
-copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\libgideros.a" "..\..\release\Templates\Xcode4\iOS Template\iOS Template"
+copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\*.a"          "..\..\release\Templates\Xcode4\iOS Template\iOS Template"
 copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\giderosapi.h" "..\..\release\GiderosiOSPlayer\GiderosiOSPlayer"
-copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\libgideros.a" "..\..\release\GiderosiOSPlayer\GiderosiOSPlayer"
+copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\*.a"          "..\..\release\GiderosiOSPlayer\GiderosiOSPlayer"
 
 mkdir ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
 copy ..\Sdk\include\*.h                                                        ..\..\release\GiderosiOSPlayer\GiderosiOSPlayer\Plugins
