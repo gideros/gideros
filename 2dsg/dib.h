@@ -17,10 +17,10 @@ public:
 	// can throw GiderosException
 	Dib(Application* application,
 		const char* filename,
-		bool withsuffix = true,
-		bool pow2 = false,
-		bool maketransparent = false,
-		unsigned int transparentcolor = 0x00000000);
+        bool withsuffix,
+        bool pow2,
+        bool maketransparent,
+        unsigned int transparentcolor);
 
 	void fill(unsigned char rgba[4])
 	{
@@ -55,16 +55,6 @@ public:
 	int originalHeight() const
 	{
 		return originalHeight_;
-	}
-
-	int baseWidth() const
-	{
-		return baseWidth_;
-	}
-
-	int baseHeight() const
-	{
-		return baseHeight_;
 	}
 
 	int baseOriginalWidth() const
@@ -138,8 +128,6 @@ private:
 	int originalWidth_;
 	int originalHeight_;
 
-	int baseWidth_;
-	int baseHeight_;
 	int baseOriginalWidth_;
 	int baseOriginalHeight_;
 };

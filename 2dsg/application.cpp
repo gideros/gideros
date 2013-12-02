@@ -678,6 +678,17 @@ int Application::getHardwareHeight() const
 void Application::setImageScales(const std::vector<std::pair<std::string, float> >& imageScales)
 {
 	imageScales_ = imageScales;
+
+    imageScales2_.clear();
+
+    for (std::size_t i = 0; i < imageScales_.size(); ++i)
+        imageScales2_.push_back(ImageScale(imageScales_[i].first.c_str(), imageScales_[i].second));
+    imageScales2_.push_back(ImageScale(NULL, 1.f));
+
+    std::sort(imageScales2_.begin(), imageScales2_.end());
+
+    for (std::size_t i = 0; i < imageScales_.size() - 1; ++i)
+        imageScales2_[i].midscale = (imageScales2_[i].suffix.second + imageScales2_[i + 1].suffix.second) / 2;
 }
 
 const std::vector<std::pair<std::string, float> >& Application::getImageScales() const
@@ -717,6 +728,20 @@ const char *Application::getImageSuffix(float *pscale) const
 
 	return result;
 }
+
+std::vector<std::pair<const char*, float> > Application::getImageSuffixes() const
+{
+    std::vector<std::pair<const char*, float> > result;
+
+    float scale = (logicalScaleX_ + logicalScaleY_) / 2;
+
+    for (size_t i = 0; i < imageScales2_.size(); ++i)
+        if (scale >= imageScales2_[i].midscale)
+            result.push_back(imageScales2_[i].suffix);
+
+    return result;
+}
+
 
 void Application::addTicker(Ticker* ticker)
 {

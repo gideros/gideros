@@ -38,8 +38,6 @@ Dib::Dib(Application* application,
 		height_ = originalHeight_;
 	}
 
-	baseWidth_ = width_;
-	baseHeight_ = height_;
 	baseOriginalWidth_ = originalWidth_;
 	baseOriginalHeight_ = originalHeight_;
 
@@ -68,88 +66,97 @@ static void check(int result, const char* file)
 }
 
 Dib::Dib(Application* application,
-		 const char* file,
-		 bool withsuffix/* = true*/,
-		 bool pow2/* = false*/,
-		 bool maketransparent/* = false*/,
-		 unsigned int transparentcolor/* = 0x00000000*/)
+         const char* file,
+         bool withsuffix,
+         bool pow2,
+         bool maketransparent,
+         unsigned int transparentcolor)
 {
-    int width1, height1, comp1;
-    int width2, height2, comp2;
+    int width1, height1;
+    int width2, height2;
+    int comp;
 
-    check(gimage_parseImage(file, &width1, &height1, &comp1), file);
+    std::string filename;
 
-	width_ = 0;
-	height_ = 0;
-	originalWidth_ = 0;
-	originalHeight_ = 0;
-
-	baseWidth_ = 0;
-	baseHeight_ = 0;
-	baseOriginalWidth_ = 0;
-	baseOriginalHeight_ = 0;
-
-    std::string filename = file;
-    bool loadsuffix = false;
-
-	if (withsuffix)
-	{
-		const char* suffix = application->getImageSuffix();
-
-		if (suffix)
-		{
-			const char* ext = strrchr(file, '.');
-			if (ext)
-			{
-                std::string filewithsuffix = std::string(file, ext - file) + suffix + ext;
-
-                if (gimage_parseImage(filewithsuffix.c_str(), &width2, &height2, &comp2) == GIMAGE_NO_ERROR)
-                {
-                    filename = filewithsuffix;
-                    loadsuffix = true;
-                }
-			}
-		}
-	}
-
-    int width, height, comp;
-
-    if (loadsuffix)
+    if (withsuffix)
     {
-        width = width2;
-        height = height2;
-        comp = comp2;
+        const char *ext = strrchr(file, '.');
+
+        if (ext == NULL)
+            ext = file + strlen(file);
+
+        std::vector<std::pair<const char*, float> > suffixes = application->getImageSuffixes();
+
+        float scale = -1;
+        for (std::size_t i = 0; i < suffixes.size(); ++i)
+        {
+            const char *suffix = suffixes[i].first;
+            std::string filewithsuffix = std::string(file, ext - file) + (suffix ? suffix : "") + ext;
+
+            int result = gimage_parseImage(filewithsuffix.c_str(), &width2, &height2, &comp);
+
+            if (result == GIMAGE_NO_ERROR)
+            {
+                filename = filewithsuffix;
+                scale = suffixes[i].second;
+                break;
+            }
+            else if (result == GIMAGE_CANNOT_OPEN_FILE)
+            {
+                continue;
+            }
+            else
+            {
+                check(result, filewithsuffix.c_str());
+            }
+        }
+
+        if (scale < 0)
+        {
+            check(GIMAGE_CANNOT_OPEN_FILE, file);
+        }
+
+        int result = gimage_parseImage(file, &width1, &height1, NULL);
+        if (result != GIMAGE_NO_ERROR)
+        {
+            if (result == GIMAGE_CANNOT_OPEN_FILE)
+            {
+                width1 = width2 / scale;
+                height1 = height2 / scale;
+            }
+            else
+            {
+                check(result, file);
+            }
+        }
     }
     else
     {
-        width = width1;
-        height = height1;
-        comp = comp1;
+        check(gimage_parseImage(file, &width1, &height1, &comp), file);
+        filename = file;
+        width2 = width1;
+        height2 = height1;
     }
 
+    originalWidth_ = width2;
+    originalHeight_ = height2;
     baseOriginalWidth_ = width1;
     baseOriginalHeight_ = height1;
-    originalWidth_ = width;
-    originalHeight_ = height;
 
     if (pow2)
     {
-        baseWidth_ = nextpow2(baseOriginalWidth_);
-        baseHeight_ = nextpow2(baseOriginalHeight_);
         width_ = nextpow2(originalWidth_);
         height_ = nextpow2(originalHeight_);
     }
     else
     {
-        baseWidth_ = baseOriginalWidth_;
-        baseHeight_ = baseOriginalHeight_;
         width_ = originalWidth_;
         height_ = originalHeight_;
     }
 
     std::vector<unsigned char> buf(originalWidth_ * originalHeight_ * comp);
 
-    check(gimage_loadImage(filename.c_str(), &buf[0]), file);
+    check(gimage_loadImage(filename.c_str(), &buf[0]), filename.c_str());
 
     data_.resize(width_ * height_ * 4);
 

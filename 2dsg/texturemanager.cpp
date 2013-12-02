@@ -175,8 +175,6 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
     data->exheight = dib.height();
     data->baseWidth = dib.baseOriginalWidth();
     data->baseHeight = dib.baseOriginalHeight();
-    data->baseExWidth = dib.baseWidth();
-    data->baseExHeight = dib.baseHeight();
 
     TextureData* internal = new TextureData(*data);
     gtexture_setUserData(gid, internal);
@@ -287,8 +285,6 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
     data->exheight = dib.height();
     data->baseWidth = dib.baseOriginalWidth();
     data->baseHeight = dib.baseOriginalHeight();
-    data->baseExWidth = dib.baseWidth();
-    data->baseExHeight = dib.baseHeight();
 
     return data;
 }
@@ -335,8 +331,6 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
 
     int baseWidth = w;
     int baseHeight = h;
-    int baseExWidth = nextpow2(baseWidth);
-    int baseExHeight = nextpow2(baseHeight);
     int width = (int)floor(baseWidth * scalex + 0.5);
     int height = (int)floor(baseHeight * scaley + 0.5);
     int exwidth = nextpow2(width);
@@ -354,8 +348,6 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
     data->exheight = exheight;
     data->baseWidth = baseWidth;
     data->baseHeight = baseHeight;
-    data->baseExWidth = baseExWidth;
-    data->baseExHeight = baseExHeight;
 
     return data;
 }

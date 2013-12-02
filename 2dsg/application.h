@@ -92,6 +92,9 @@ public:
 
     const char *getImageSuffix(float *scale = NULL) const;
 
+    std::vector<std::pair<const char*, float> > getImageSuffixes() const;
+
+
 	void addTicker(Ticker* ticker);
 	void removeTicker(Ticker* ticker);
 
@@ -144,7 +147,26 @@ private:
 
 	int scale_;
 
-	std::vector<std::pair<std::string, float> > imageScales_;
+    std::vector<std::pair<std::string, float> > imageScales_;
+
+    struct ImageScale
+    {
+        ImageScale(const char *suffix, float scale) :
+            suffix(suffix, scale),
+            midscale(0)
+        {
+        }
+
+        std::pair<const char *, float> suffix;
+        float midscale;
+
+        bool operator < (const ImageScale &other) const
+        {
+            return midscale > other.midscale;
+        }
+    };
+
+    std::vector<ImageScale> imageScales2_;
 
 	std::set<Ticker*> tickers_;
 	bool tickersIteratorInvalid_;

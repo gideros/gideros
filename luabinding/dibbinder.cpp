@@ -27,7 +27,7 @@ int DibBinder::create(lua_State* L)
 	
 	Binder binder(L);
 
-	Dib* dib = new Dib(application, filename, false);
+    Dib* dib = new Dib(application, filename, false, false, false, 0x00000000);
 	binder.pushInstance("Dib", dib);
 
 	return 1;
