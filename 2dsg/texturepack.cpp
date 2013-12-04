@@ -15,53 +15,27 @@ TexturePack::TexturePack(Application* application,
 						 bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/) :
     TextureBase(application, imagefile, filter, wrap, format, maketransparent, transparentcolor)
 {
-	std::string texturelistfilex;
-	std::string imagefilex;
+    const char *ext = strrchr(texturelistfile, '.');
+    if (ext == NULL)
+        ext = texturelistfile + strlen(texturelistfile);
 
     float scale;
     const char *suffix = application->getImageSuffix(imagefile, &scale);
-	if (suffix)
-	{
-        {
-            const char *ext = strrchr(texturelistfile, '.');
-            if (ext == NULL)
-                ext = texturelistfile + strlen(texturelistfile);
-            texturelistfilex = std::string(texturelistfile, ext - texturelistfile) + suffix + ext;
-        }
 
-        {
-            const char *ext = strrchr(imagefile, '.');
-            if (ext == NULL)
-                ext = imagefile + strlen(imagefile);
-            imagefilex = std::string(imagefile, ext - imagefile) + suffix + ext;
-        }
+    std::string texturelistfilex = std::string(texturelistfile, ext - texturelistfile) + (suffix ? suffix : "") + ext;
 
-		// check if these files exists
-        {
-            G_FILE *f = g_fopen(texturelistfilex.c_str(), "r");
-            if (f == NULL)
-                texturelistfilex.clear();
-            else
-                g_fclose(f);
-        }
+    G_FILE *f = g_fopen(texturelistfilex.c_str(), "r");
 
-        {
-            G_FILE *f = g_fopen(imagefilex.c_str(), "r");
-            if (f == NULL)
-                imagefilex.clear();
-            else
-                g_fclose(f);
-        }
-	}
+    if (f != NULL)
+    {
+        g_fclose(f);
 
-	if (!texturelistfilex.empty() && !imagefilex.empty())
-	{
         readTextureList(texturelistfilex.c_str(), textures_, filenameMap_);
         sizescalex = 1 / scale;
         sizescaley = 1 / scale;
-		uvscalex = 1;
-		uvscaley = 1;
-	}
+        uvscalex = 1;
+        uvscaley = 1;
+    }
     else
     {
         readTextureList(texturelistfile, textures_, filenameMap_);
