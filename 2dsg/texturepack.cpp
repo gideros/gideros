@@ -15,21 +15,21 @@ TexturePack::TexturePack(Application* application,
 						 bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/) :
     TextureBase(application, imagefile, filter, wrap, format, maketransparent, transparentcolor)
 {
+    float scale;
+    const char *suffix = application->getImageSuffix(imagefile, &scale);
+
     const char *ext = strrchr(texturelistfile, '.');
     if (ext == NULL)
         ext = texturelistfile + strlen(texturelistfile);
 
-    float scale;
-    const char *suffix = application->getImageSuffix(imagefile, &scale);
-
     std::string texturelistfilex = std::string(texturelistfile, ext - texturelistfile) + (suffix ? suffix : "") + ext;
 
     G_FILE *f = g_fopen(texturelistfilex.c_str(), "r");
-
-    if (f != NULL)
-    {
+    if (f)
         g_fclose(f);
 
+    if (f)
+    {
         readTextureList(texturelistfilex.c_str(), textures_, filenameMap_);
         sizescalex = 1 / scale;
         sizescaley = 1 / scale;

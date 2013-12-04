@@ -85,42 +85,21 @@ void Font::constructor(const char *glympfile, const char *imagefile, bool filter
 {
     data_ = NULL;
 
-	std::string glympfilex;
-	std::string imagefilex;
-
     float scale;
-    const char* suffix = application_->getImageSuffix(&scale);
+    const char *suffix = application_->getImageSuffix(imagefile, &scale);
 
-    if (suffix)
-	{
-        const char *ext;
+    const char *ext = strrchr(glympfile, '.');
+    if (ext == NULL)
+        ext = glympfile + strlen(glympfile);
 
-		ext = strrchr(glympfile, '.');
-		if (ext)
-			glympfilex = std::string(glympfile, ext - glympfile) + suffix + ext;
+    std::string glympfilex = std::string(glympfile, ext - glympfile) + (suffix ? suffix : "") + ext;
 
-		ext = strrchr(imagefile, '.');
-		if (ext)
-			imagefilex = std::string(imagefile, ext - imagefile) + suffix + ext;
-
-		// check if these files exists
-        G_FILE *f;
-
-		f = g_fopen(glympfilex.c_str(), "r");
-		if (f == NULL)
-			glympfilex.clear();
-		else
-			g_fclose(f);
-
-		f = g_fopen(imagefilex.c_str(), "r");
-		if (f == NULL)
-			imagefilex.clear();
-		else
-			g_fclose(f);
-	}
+    G_FILE *f = g_fopen(glympfilex.c_str(), "r");
+    if (f)
+        g_fclose(f);
 
     int format;
-    if (!glympfilex.empty() && !imagefilex.empty())
+    if (f)
         format = getTextureGlyphsFormat(glympfilex.c_str());
     else
         format = getTextureGlyphsFormat(glympfile);
@@ -131,7 +110,7 @@ void Font::constructor(const char *glympfile, const char *imagefile, bool filter
     parameters.grayscale = (format == 0);
     data_ = application_->getTextureManager()->createTextureFromFile(imagefile, parameters);
 
-    if (!glympfilex.empty() && !imagefilex.empty())
+    if (f)
     {
         switch (format)
         {
