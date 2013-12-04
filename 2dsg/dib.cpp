@@ -6,6 +6,7 @@
 #include <pystring.h>
 #include "giderosexception.h"
 #include <gimage.h>
+#include <gstdio.h>
 
 static unsigned int nextpow2(unsigned int v)
 {
@@ -81,53 +82,26 @@ Dib::Dib(Application* application,
     if (withsuffix)
     {
         const char *ext = strrchr(file, '.');
-
         if (ext == NULL)
             ext = file + strlen(file);
 
-        std::vector<std::pair<const char*, float> > suffixes = application->getImageSuffixes();
+        float scale;
+        const char *suffix = application->getImageSuffix(file, &scale);
 
-        float scale = -1;
-        for (std::size_t i = 0; i < suffixes.size(); ++i)
+        filename = std::string(file, ext - file) + (suffix ? suffix : "") + ext;
+
+        check(gimage_parseImage(filename.c_str(), &width2, &height2, &comp), filename.c_str());
+
+        G_FILE *fis = g_fopen(file, "rb");
+        if (fis)
         {
-            const char *suffix = suffixes[i].first;
-            std::string filewithsuffix = std::string(file, ext - file) + (suffix ? suffix : "") + ext;
-
-            int result = gimage_parseImage(filewithsuffix.c_str(), &width2, &height2, &comp);
-
-            if (result == GIMAGE_NO_ERROR)
-            {
-                filename = filewithsuffix;
-                scale = suffixes[i].second;
-                break;
-            }
-            else if (result == GIMAGE_CANNOT_OPEN_FILE)
-            {
-                continue;
-            }
-            else
-            {
-                check(result, filewithsuffix.c_str());
-            }
+            g_fclose(fis);
+            check(gimage_parseImage(file, &width1, &height1, NULL), file);
         }
-
-        if (scale < 0)
+        else
         {
-            check(GIMAGE_CANNOT_OPEN_FILE, file);
-        }
-
-        int result = gimage_parseImage(file, &width1, &height1, NULL);
-        if (result != GIMAGE_NO_ERROR)
-        {
-            if (result == GIMAGE_CANNOT_OPEN_FILE)
-            {
-                width1 = width2 / scale;
-                height1 = height2 / scale;
-            }
-            else
-            {
-                check(result, file);
-            }
+            width1 = width2 / scale;
+            height1 = height2 / scale;
         }
     }
     else

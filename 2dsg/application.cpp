@@ -12,6 +12,7 @@
 #include <glog.h>
 #include <gtexture.h>
 #include <memory.h>
+#include <gstdio.h>
 
 #if 0 && defined(QT_CORE_LIB)
 #include <QDebug>
@@ -688,7 +689,7 @@ void Application::setImageScales(const std::vector<std::pair<std::string, float>
     std::sort(imageScales2_.begin(), imageScales2_.end());
 
     for (std::size_t i = 0; i < imageScales_.size() - 1; ++i)
-        imageScales2_[i].midscale = (imageScales2_[i].suffix.second + imageScales2_[i + 1].suffix.second) / 2;
+        imageScales2_[i].midscale = (imageScales2_[i].scale + imageScales2_[i + 1].scale) / 2;
 }
 
 const std::vector<std::pair<std::string, float> >& Application::getImageScales() const
@@ -729,19 +730,39 @@ const char *Application::getImageSuffix(float *pscale) const
 	return result;
 }
 
-std::vector<std::pair<const char*, float> > Application::getImageSuffixes() const
+const char *Application::getImageSuffix(const char *file, float *pscale) const
 {
-    std::vector<std::pair<const char*, float> > result;
-
     float scale = (logicalScaleX_ + logicalScaleY_) / 2;
 
-    for (size_t i = 0; i < imageScales2_.size(); ++i)
-        if (scale >= imageScales2_[i].midscale)
-            result.push_back(imageScales2_[i].suffix);
+    const char *ext = strrchr(file, '.');
 
-    return result;
+    if (ext == NULL)
+        ext = file + strlen(file);
+
+    for (std::size_t i = 0; i < imageScales2_.size(); ++i)
+    {
+        if (scale < imageScales2_[i].midscale)
+            continue;
+
+        const char *suffix = imageScales2_[i].suffix;
+
+        std::string filewithsuffix = std::string(file, ext - file) + (suffix ? suffix : "") + ext;
+
+        G_FILE *fis = g_fopen(filewithsuffix.c_str(), "rb");
+
+        if (fis != NULL)
+        {
+            g_fclose(fis);
+            if (pscale)
+                *pscale = imageScales2_[i].scale;
+            return suffix;
+        }
+    }
+
+    if (pscale)
+        *pscale = 1;
+    return NULL;
 }
-
 
 void Application::addTicker(Ticker* ticker)
 {

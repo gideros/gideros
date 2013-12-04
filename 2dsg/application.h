@@ -90,10 +90,9 @@ public:
 	void setImageScales(const std::vector<std::pair<std::string, float> >& imageScales);
 	const std::vector<std::pair<std::string, float> >& getImageScales() const;
 
-    const char *getImageSuffix(float *scale = NULL) const;
+    const char *getImageSuffix(float *scale) const;
 
-    std::vector<std::pair<const char*, float> > getImageSuffixes() const;
-
+    const char *getImageSuffix(const char *file, float *scale) const;
 
 	void addTicker(Ticker* ticker);
 	void removeTicker(Ticker* ticker);
@@ -152,12 +151,14 @@ private:
     struct ImageScale
     {
         ImageScale(const char *suffix, float scale) :
-            suffix(suffix, scale),
+            suffix(suffix),
+            scale(scale),
             midscale(0)
         {
         }
 
-        std::pair<const char *, float> suffix;
+        const char *suffix;
+        float scale;
         float midscale;
 
         bool operator < (const ImageScale &other) const
