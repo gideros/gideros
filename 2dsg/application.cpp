@@ -688,7 +688,7 @@ void Application::setImageScales(const std::vector<std::pair<std::string, float>
 
     std::sort(imageScales2_.begin(), imageScales2_.end());
 
-    for (std::size_t i = 0; i < imageScales_.size() - 1; ++i)
+    for (std::size_t i = 0; i < imageScales2_.size() - 1; ++i)
         imageScales2_[i].midscale = (imageScales2_[i].scale + imageScales2_[i + 1].scale) / 2;
 }
 
