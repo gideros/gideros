@@ -15,38 +15,43 @@ TexturePack::TexturePack(Application* application,
 						 bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/) :
     TextureBase(application, imagefile, filter, wrap, format, maketransparent, transparentcolor)
 {
-	// texturelistfile and imagefile with suffix
 	std::string texturelistfilex;
 	std::string imagefilex;
 
     float scale;
-    const char* suffix = application->getImageSuffix(&scale);
+    const char *suffix = application->getImageSuffix(imagefile, &scale);
 	if (suffix)
 	{
-		const char* ext;
+        {
+            const char *ext = strrchr(texturelistfile, '.');
+            if (ext == NULL)
+                ext = texturelistfile + strlen(texturelistfile);
+            texturelistfilex = std::string(texturelistfile, ext - texturelistfile) + suffix + ext;
+        }
 
-		ext = strrchr(texturelistfile, '.');
-		if (ext)
-			texturelistfilex = std::string(texturelistfile, ext - texturelistfile) + suffix + ext;
-
-		ext = strrchr(imagefile, '.');
-		if (ext)
-			imagefilex = std::string(imagefile, ext - imagefile) + suffix + ext;
+        {
+            const char *ext = strrchr(imagefile, '.');
+            if (ext == NULL)
+                ext = imagefile + strlen(imagefile);
+            imagefilex = std::string(imagefile, ext - imagefile) + suffix + ext;
+        }
 
 		// check if these files exists
-		G_FILE* f;
+        {
+            G_FILE *f = g_fopen(texturelistfilex.c_str(), "r");
+            if (f == NULL)
+                texturelistfilex.clear();
+            else
+                g_fclose(f);
+        }
 
-		f = g_fopen(texturelistfilex.c_str(), "r");
-		if (f == NULL)
-			texturelistfilex.clear();
-		else
-			g_fclose(f);
-
-		f = g_fopen(imagefilex.c_str(), "r");
-		if (f == NULL)
-			imagefilex.clear();
-		else
-			g_fclose(f);
+        {
+            G_FILE *f = g_fopen(imagefilex.c_str(), "r");
+            if (f == NULL)
+                imagefilex.clear();
+            else
+                g_fclose(f);
+        }
 	}
 
 	if (!texturelistfilex.empty() && !imagefilex.empty())
