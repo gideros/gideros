@@ -553,39 +553,22 @@ public:
 			lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
 			lua_setfield(L, -2, "type");
 
-			switch (v->beforeOrientation)
+            switch (v->orientation)
 			{
-			case ePortrait:
+            case GAPPLICATION_PORTRAIT:
 				lua_pushstring(L, "portrait");
 				break;
-			case ePortraitUpsideDown:
+            case GAPPLICATION_PORTRAIT_UPSIDE_DOWN:
 				lua_pushstring(L, "portraitUpsideDown");
 				break;
-			case eLandscapeLeft:
+            case GAPPLICATION_LANDSCAPE_LEFT:
 				lua_pushstring(L, "landscapeLeft");
 				break;
-			case eLandscapeRight:
+            case GAPPLICATION_LANDSCAPE_RIGHT:
 				lua_pushstring(L, "landscapeRight");
 				break;
 			}
-			lua_setfield(L, -2, "beforeOrientation");
-
-			switch (v->afterOrientation)
-			{
-			case ePortrait:
-				lua_pushstring(L, "portrait");
-				break;
-			case ePortraitUpsideDown:
-				lua_pushstring(L, "portraitUpsideDown");
-				break;
-			case eLandscapeLeft:
-				lua_pushstring(L, "landscapeLeft");
-				break;
-			case eLandscapeRight:
-				lua_pushstring(L, "landscapeRight");
-				break;
-			}
-			lua_setfield(L, -2, "afterOrientation");
+            lua_setfield(L, -2, "orientation");
 		}
 
 		lua_call(L, 1, 0);

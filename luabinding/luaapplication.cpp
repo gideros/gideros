@@ -42,6 +42,7 @@
 #include "meshbinder.h"
 #include "audiobinder.h"
 #include "rendertargetbinder.h"
+#include "stageorientationevent.h"
 
 #include "keys.h"
 
@@ -573,6 +574,12 @@ void LuaApplication::callback(int type, void *event)
     else if (type == GAPPLICATION_EXIT_EVENT)
     {
         Event event(Event::APPLICATION_EXIT);
+        application_->broadcastEvent(&event);
+    }
+    else if (type == GAPPLICATION_ORIENTATION_CHANGE_EVENT)
+    {
+        gapplication_OrientationChangeEvent *event2 = (gapplication_OrientationChangeEvent*)event;
+        StageOrientationEvent event(StageOrientationEvent::ORIENTATION_CHANGE, event2->orientation);
         application_->broadcastEvent(&event);
     }
 }

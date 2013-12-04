@@ -9,6 +9,19 @@ typedef struct gapplication_OpenUrlEvent
     const char *url;
 } gapplication_OpenUrlEvent;
 
+enum gapplication_Orientation
+{
+    GAPPLICATION_PORTRAIT,
+    GAPPLICATION_LANDSCAPE_LEFT,
+    GAPPLICATION_PORTRAIT_UPSIDE_DOWN,
+    GAPPLICATION_LANDSCAPE_RIGHT,
+};
+
+typedef struct gapplication_OrientationChangeEvent
+{
+    gapplication_Orientation orientation;
+} gapplication_OrientationChangeEvent;
+
 #ifdef __cplusplus
 extern "C" {
 #endif

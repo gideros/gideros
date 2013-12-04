@@ -2,7 +2,7 @@
 #define STAGE_ORIENTATION_EVENT
 
 #include "event.h"
-#include "orientation.h"
+#include <gapplication.h>
 
 class EventVisitor;
 
@@ -11,14 +11,13 @@ class StageOrientationEvent : public Event
 public:
 	typedef EventType<StageOrientationEvent> Type;
 
-	StageOrientationEvent(const Type& type, Orientation beforeOrientation, Orientation afterOrientation) : 
-		Event(type.type()), beforeOrientation(beforeOrientation), afterOrientation(afterOrientation)
+    StageOrientationEvent(const Type& type, gapplication_Orientation orientation) :
+        Event(type.type()), orientation(orientation)
 	{
 
 	}
 
-	Orientation beforeOrientation;
-	Orientation afterOrientation;
+    gapplication_Orientation orientation;
 
 	static Type ORIENTATION_CHANGE;
 
