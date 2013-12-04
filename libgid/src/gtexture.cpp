@@ -438,7 +438,7 @@ public:
         
         glog_v("Creating render target. Total memory is %g KB.", (bufferMemory_ + textureMemory_) / 1024.0);
 
-        GLint oldFBO;
+        GLint oldFBO = 0;
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
 
         glGenFramebuffers(1, &element->framebuffer);
