@@ -108,8 +108,8 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.actionStop->setEnabled(false);
 	connect(ui.actionStop, SIGNAL(triggered()), this, SLOT(stop()));
 
-	connect(ui.actionCompile, SIGNAL(triggered()), this, SLOT(compile()));
-	connect(ui.actionCompile_All, SIGNAL(triggered()), this, SLOT(compileAll()));
+    connect(ui.actionCheck_Syntax, SIGNAL(triggered()), this, SLOT(compile()));
+    connect(ui.actionCheck_Syntax_All, SIGNAL(triggered()), this, SLOT(compileAll()));
 	connect(ui.actionCancel, SIGNAL(triggered()), this, SLOT(cancel()));
 
 #if 0

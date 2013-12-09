@@ -95,10 +95,10 @@ QMainWindow::separator {
    </widget>
    <widget class="QMenu" name="menuCompile">
     <property name="title">
-     <string>Compile</string>
+     <string>&amp;Tools</string>
     </property>
-    <addaction name="actionCompile"/>
-    <addaction name="actionCompile_All"/>
+    <addaction name="actionCheck_Syntax"/>
+    <addaction name="actionCheck_Syntax_All"/>
    </widget>
    <widget class="QMenu" name="menuPlayer">
     <property name="title">
@@ -309,17 +309,17 @@ IP addresses it binds to.</string>
     <string>Clear Bookmarks</string>
    </property>
   </action>
-  <action name="actionCompile">
+  <action name="actionCheck_Syntax">
    <property name="text">
-    <string>Compile</string>
+    <string>Check Syntax</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+B</string>
    </property>
   </action>
-  <action name="actionCompile_All">
+  <action name="actionCheck_Syntax_All">
    <property name="text">
-    <string>Compile All</string>
+    <string>Check Syntax All</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>
