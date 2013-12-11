@@ -19,8 +19,6 @@ private:
 	static int getClearColorBuffer(lua_State* L);
 	static int setClearColorBuffer(lua_State* L);
 
-	static int getDeviceOrientation(lua_State* L);
-
 	static int setBackgroundColor(lua_State* L);
 	static int getBackgroundColor(lua_State* L);
 };

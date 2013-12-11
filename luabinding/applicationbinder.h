@@ -39,7 +39,7 @@ private:
     static int getApiVersion(lua_State* L);
     static int getTextureMemoryUsage(lua_State* L);
     static int getScreenDensity(lua_State* L);
-    static int getHardwareOrientation(lua_State *L);
+    static int getDeviceOrientation(lua_State *L);
 };
 
 #endif

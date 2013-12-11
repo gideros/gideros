@@ -32,6 +32,9 @@ public:
 	void setHardwareOrientation(Orientation orientation);
 	Orientation hardwareOrientation() const;
 
+    void setDeviceOrientation(Orientation orientation);
+    Orientation getDeviceOrientation() const;
+	
 	void setResolution(int width, int height);
 	void resolution(int* width, int* height);
 
@@ -65,10 +68,6 @@ public:
 	}
 
 	void broadcastEvent(Event* event);
-
-//	void orientationChange(Orientation orientation);
-
-	Orientation getDeviceOrientation() const;
 
 	Font* getDefaultFont();
 

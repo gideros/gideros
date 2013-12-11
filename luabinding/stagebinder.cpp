@@ -14,7 +14,6 @@ StageBinder::StageBinder(lua_State* L, Application* application)
 		{"setOrientation", StageBinder::setOrientation},
 		{"getClearColorBuffer", StageBinder::getClearColorBuffer},
 		{"setClearColorBuffer", StageBinder::setClearColorBuffer},
-		{"getDeviceOrientation", StageBinder::getDeviceOrientation},
 		{"setBackgroundColor",  StageBinder::setBackgroundColor},
 		{"getBackgroundColor",  StageBinder::getBackgroundColor},
 		{NULL, NULL},
@@ -153,35 +152,6 @@ int StageBinder::setClearColorBuffer(lua_State* L)
 	stage->application()->setClearColorBuffer(b);
 
 	return 0;
-}
-
-int StageBinder::getDeviceOrientation(lua_State* L)
-{
-	StackChecker checker(L, "getDeviceOrientation", 1);
-
-	Binder binder(L);
-	Stage* stage = static_cast<Stage*>(binder.getInstance("Stage"));
-
-	Orientation orientation = stage->application()->getDeviceOrientation();
-
-
-	switch (orientation)
-	{
-		case ePortrait:
-			lua_pushstring(L, "portrait");
-			break;
-		case ePortraitUpsideDown:
-			lua_pushstring(L, "portraitUpsideDown");
-			break;
-		case eLandscapeLeft:
-			lua_pushstring(L, "landscapeLeft");
-			break;
-		case eLandscapeRight:
-			lua_pushstring(L, "landscapeRight");
-			break;
-	}
-
-	return 1;
 }
 
 int StageBinder::setBackgroundColor(lua_State* L)

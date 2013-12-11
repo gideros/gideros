@@ -60,6 +60,7 @@ Application::Application() :
 	
 	orientation_ = ePortrait;
 	hardwareOrientation_ = ePortrait;
+    deviceOrientation_ = ePortrait;
 
 	nframe_ = -1;	// uninitialized yet
 	time_ = -1;
@@ -74,8 +75,6 @@ Application::Application() :
 	scaleMode_ = eNoScale;
 
 	calculateLogicalTransformation();
-
-	deviceOrientation_ = Orientation(-1);
 
 	defaultFont_ = NULL;
 
@@ -374,7 +373,6 @@ Orientation Application::orientation() const
 	return orientation_;
 }
 
-
 void Application::setHardwareOrientation(Orientation orientation)
 {
 	hardwareOrientation_ = orientation;
@@ -383,6 +381,16 @@ void Application::setHardwareOrientation(Orientation orientation)
 Orientation Application::hardwareOrientation() const
 {
 	return hardwareOrientation_;
+}
+
+void Application::setDeviceOrientation(Orientation orientation)
+{
+    deviceOrientation_ = orientation;
+}
+
+Orientation Application::getDeviceOrientation() const
+{
+    return deviceOrientation_;
 }
 
 void Application::setResolution(int width, int height)
@@ -451,25 +459,6 @@ void Application::broadcastEvent(Event* event)
 	EventDispatcher::broadcastEvent(event);
 }
 
-/*
-void Application::orientationChange(Orientation orientation)
-{
-	if (deviceOrientation_ != -1)
-	{
-		StageOrientationEvent event(StageOrientationEvent::ORIENTATION_CHANGE, deviceOrientation_, orientation);
-		deviceOrientation_ = orientation;
-		broadcastEvent(&event);
-	}
-	else
-		deviceOrientation_ = orientation;
-}
-*/
-
-Orientation Application::getDeviceOrientation() const
-{
-	return deviceOrientation_;
-}
-
 Font* Application::getDefaultFont()
 {
 	if (defaultFont_ == NULL)
@@ -477,7 +466,6 @@ Font* Application::getDefaultFont()
 
 	return defaultFont_;
 }
-
 
 void Application::calculateLogicalTransformation()
 {

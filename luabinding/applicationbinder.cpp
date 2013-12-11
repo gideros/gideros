@@ -58,7 +58,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"getApiVersion", ApplicationBinder::getApiVersion},
         {"getTextureMemoryUsage", ApplicationBinder::getTextureMemoryUsage},
         {"getScreenDensity", ApplicationBinder::getScreenDensity},
-        {"getHardwareOrientation", ApplicationBinder::getHardwareOrientation},
+        {"getDeviceOrientation", ApplicationBinder::getDeviceOrientation},
         {NULL, NULL},
 	};
 
@@ -578,14 +578,14 @@ int ApplicationBinder::getScreenDensity(lua_State* L)
     return 1;
 }
 
-int ApplicationBinder::getHardwareOrientation(lua_State *L)
+int ApplicationBinder::getDeviceOrientation(lua_State *L)
 {
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
     LuaApplication *application = static_cast<LuaApplication*>(luaL_getdata(L));
 
-    switch (application->getApplication()->hardwareOrientation())
+    switch (application->getApplication()->getDeviceOrientation())
     {
     case ePortrait:
         lua_pushstring(L, PORTRAIT);
