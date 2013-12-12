@@ -1,0 +1,1249 @@
+// !$*UTF8*$!
+{
+       archiveVersion = 1;
+       classes = {
+       };
+       objectVersion = 46;
+       objects = {
+
+/* Begin PBXAggregateTarget section */
+              78CE605356C14378B051C4BA /* ALL_BUILD */ = {
+                     isa = PBXAggregateTarget;
+                     buildConfigurationList = 0B231BCFAF0F4448819737D9 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+                     buildPhases = (
+                            B8D428FC32E543978653081A /* CMake Rules */,
+                     );
+                     dependencies = (
+                            AB16F821EE514E1C889FC593 /* PBXTargetDependency */,
+                            3A1A78D37CFD48F68E770CBB /* PBXTargetDependency */,
+                     );
+                     name = ALL_BUILD;
+                     productName = ALL_BUILD;
+              };
+              2AA30F7DC95A4D338A29E2FE /* install */ = {
+                     isa = PBXAggregateTarget;
+                     buildConfigurationList = 2842F0F447564ACD81C04698 /* Build configuration list for PBXAggregateTarget "install" */;
+                     buildPhases = (
+                            36AC2DAF2A45416CBEA2066F /* CMake PostBuild Rules */,
+                     );
+                     dependencies = (
+                            7E569669D19B4BEF9BCADAFD /* PBXTargetDependency */,
+                     );
+                     name = install;
+                     productName = install;
+              };
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+2A598A3CF0A9491F9A495DD7 /* ../../../freeglut/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = CA0922B9FF864A8ABB26E33F /* ../../../freeglut/CMakeLists.txt */; settings = { COMPILER_FLAGS = ""; }; };
+412C4E5CF0C34ABF8CA93D42 /* ../../../freeglut/include/GL/freeglut.h */ = {isa = PBXBuildFile; fileRef = DB7886CBB4C54470B831EFD6 /* ../../../freeglut/include/GL/freeglut.h */; settings = { COMPILER_FLAGS = ""; }; };
+0459813B899E45E08199858B /* ../../../freeglut/include/GL/freeglut_ext.h */ = {isa = PBXBuildFile; fileRef = DF4B1097BB27461096797FDE /* ../../../freeglut/include/GL/freeglut_ext.h */; settings = { COMPILER_FLAGS = ""; }; };
+9D1BDA1072C74F55B6ADF50A /* ../../../freeglut/include/GL/freeglut_std.h */ = {isa = PBXBuildFile; fileRef = 574300D2FA614856B2659246 /* ../../../freeglut/include/GL/freeglut_std.h */; settings = { COMPILER_FLAGS = ""; }; };
+6540F15144864B7BBC143A52 /* ../../../freeglut/include/GL/glut.h */ = {isa = PBXBuildFile; fileRef = 7906775075034BBAB9F6340B /* ../../../freeglut/include/GL/glut.h */; settings = { COMPILER_FLAGS = ""; }; };
+38DB355786D9471BB80189F2 /* ../../../freeglut/src/fg_callbacks.c */ = {isa = PBXBuildFile; fileRef = C60E5B486C6E4FB0882C862C /* ../../../freeglut/src/fg_callbacks.c */; settings = { COMPILER_FLAGS = ""; }; };
+2128C5AC41EC427EA095AE8B /* ../../../freeglut/src/fg_cursor.c */ = {isa = PBXBuildFile; fileRef = 7DE902C8CDB0434682B0E9CB /* ../../../freeglut/src/fg_cursor.c */; settings = { COMPILER_FLAGS = ""; }; };
+300416BA31E74BA1B4FFF137 /* ../../../freeglut/src/fg_display.c */ = {isa = PBXBuildFile; fileRef = 48AFDB2130D74A2DA7633D3E /* ../../../freeglut/src/fg_display.c */; settings = { COMPILER_FLAGS = ""; }; };
+38CD7E7537F240D4B81B2075 /* ../../../freeglut/src/fg_ext.c */ = {isa = PBXBuildFile; fileRef = A15386CA6CC749B28EA82D04 /* ../../../freeglut/src/fg_ext.c */; settings = { COMPILER_FLAGS = ""; }; };
+DC735883522A483AAF395182 /* ../../../freeglut/src/fg_font.c */ = {isa = PBXBuildFile; fileRef = F95CA4FEA0D6450D85582702 /* ../../../freeglut/src/fg_font.c */; settings = { COMPILER_FLAGS = ""; }; };
+61757EE64350420584414551 /* ../../../freeglut/src/fg_font_data.c */ = {isa = PBXBuildFile; fileRef = DF965B5CED994721AE142E28 /* ../../../freeglut/src/fg_font_data.c */; settings = { COMPILER_FLAGS = ""; }; };
+3B25A2F880A6410490B2D800 /* ../../../freeglut/src/fg_gamemode.c */ = {isa = PBXBuildFile; fileRef = 598331C54A6E41F8898AAB8B /* ../../../freeglut/src/fg_gamemode.c */; settings = { COMPILER_FLAGS = ""; }; };
+887401643CAB4B56BAEC0759 /* ../../../freeglut/src/fg_geometry.c */ = {isa = PBXBuildFile; fileRef = 474CF95A6D4B4519815F6238 /* ../../../freeglut/src/fg_geometry.c */; settings = { COMPILER_FLAGS = ""; }; };
+443F903217894964819B7397 /* ../../../freeglut/src/fg_gl2.c */ = {isa = PBXBuildFile; fileRef = 5A0A42A0A19B43FD84B8AD37 /* ../../../freeglut/src/fg_gl2.c */; settings = { COMPILER_FLAGS = ""; }; };
+4029C810009F4806A346FD5F /* ../../../freeglut/src/fg_gl2.h */ = {isa = PBXBuildFile; fileRef = C575305227604ECC82CA934B /* ../../../freeglut/src/fg_gl2.h */; settings = { COMPILER_FLAGS = ""; }; };
+83363067342E4FFCA558360A /* ../../../freeglut/src/fg_init.c */ = {isa = PBXBuildFile; fileRef = 5C23BC1AD3D2437E802FFAE0 /* ../../../freeglut/src/fg_init.c */; settings = { COMPILER_FLAGS = ""; }; };
+81C88698D6284461ADA7F86C /* ../../../freeglut/src/fg_init.h */ = {isa = PBXBuildFile; fileRef = F26B503261284A17B07364F8 /* ../../../freeglut/src/fg_init.h */; settings = { COMPILER_FLAGS = ""; }; };
+468467F9F3664ED0A5B1CF2E /* ../../../freeglut/src/fg_input_devices.c */ = {isa = PBXBuildFile; fileRef = DF1BA24DCDEF47A7814BD92A /* ../../../freeglut/src/fg_input_devices.c */; settings = { COMPILER_FLAGS = ""; }; };
+30A335C45002442AA6C2597D /* ../../../freeglut/src/fg_internal.h */ = {isa = PBXBuildFile; fileRef = 69416FC825C8462F86BAD49D /* ../../../freeglut/src/fg_internal.h */; settings = { COMPILER_FLAGS = ""; }; };
+6DA8C6B7DD5D402580DF2CAF /* ../../../freeglut/src/fg_joystick.c */ = {isa = PBXBuildFile; fileRef = 9D789FAB3C31409591517DCD /* ../../../freeglut/src/fg_joystick.c */; settings = { COMPILER_FLAGS = ""; }; };
+8209D76BCB0144B2BB933A3B /* ../../../freeglut/src/fg_main.c */ = {isa = PBXBuildFile; fileRef = 743B328A3D5B441FB8D66D05 /* ../../../freeglut/src/fg_main.c */; settings = { COMPILER_FLAGS = ""; }; };
+088671359F0E42D5A0835159 /* ../../../freeglut/src/fg_menu.c */ = {isa = PBXBuildFile; fileRef = 85EE0B6C7C30464AA1D9017D /* ../../../freeglut/src/fg_menu.c */; settings = { COMPILER_FLAGS = ""; }; };
+E9C5133D4F1644FABDD4071F /* ../../../freeglut/src/fg_misc.c */ = {isa = PBXBuildFile; fileRef = D237E0C1F37A45BE84AC4E68 /* ../../../freeglut/src/fg_misc.c */; settings = { COMPILER_FLAGS = ""; }; };
+3C57896A93074EE2B9696BAC /* ../../../freeglut/src/fg_overlay.c */ = {isa = PBXBuildFile; fileRef = 9C2473BCE6964324A62F6EBF /* ../../../freeglut/src/fg_overlay.c */; settings = { COMPILER_FLAGS = ""; }; };
+5B0A54B5782D48FEACDDF9C7 /* ../../../freeglut/src/fg_spaceball.c */ = {isa = PBXBuildFile; fileRef = E0B13546F80547B0AC617AB9 /* ../../../freeglut/src/fg_spaceball.c */; settings = { COMPILER_FLAGS = ""; }; };
+BFE3D842FF88483AA56A40DF /* ../../../freeglut/src/fg_state.c */ = {isa = PBXBuildFile; fileRef = 4BB92105D47D480AB4BE95D9 /* ../../../freeglut/src/fg_state.c */; settings = { COMPILER_FLAGS = ""; }; };
+954C7D4BDFA8410E856A8295 /* ../../../freeglut/src/fg_stroke_mono_roman.c */ = {isa = PBXBuildFile; fileRef = 98E7D853A5914764BB76CB91 /* ../../../freeglut/src/fg_stroke_mono_roman.c */; settings = { COMPILER_FLAGS = ""; }; };
+A8ED82BEDA5645E78596DCEE /* ../../../freeglut/src/fg_stroke_roman.c */ = {isa = PBXBuildFile; fileRef = 0448C6C724884913A09E5CE9 /* ../../../freeglut/src/fg_stroke_roman.c */; settings = { COMPILER_FLAGS = ""; }; };
+08C833838336434496EA830F /* ../../../freeglut/src/fg_structure.c */ = {isa = PBXBuildFile; fileRef = 6029035198BD483FAFA9ACD3 /* ../../../freeglut/src/fg_structure.c */; settings = { COMPILER_FLAGS = ""; }; };
+C2BC6B2C0AC045A59F5B8F29 /* ../../../freeglut/src/fg_teapot.c */ = {isa = PBXBuildFile; fileRef = 587C5B526F25441DA9EE3AF3 /* ../../../freeglut/src/fg_teapot.c */; settings = { COMPILER_FLAGS = ""; }; };
+8C1022F382594C949C453070 /* ../../../freeglut/src/fg_teapot_data.h */ = {isa = PBXBuildFile; fileRef = 9544BF43B4624D429DC324A9 /* ../../../freeglut/src/fg_teapot_data.h */; settings = { COMPILER_FLAGS = ""; }; };
+85147197F2FC42769B8F1B49 /* ../../../freeglut/src/fg_videoresize.c */ = {isa = PBXBuildFile; fileRef = A15561D849DA4FABA00D18E0 /* ../../../freeglut/src/fg_videoresize.c */; settings = { COMPILER_FLAGS = ""; }; };
+80E92E876C8D41E49F0F5BB8 /* ../../../freeglut/src/fg_window.c */ = {isa = PBXBuildFile; fileRef = 1F9C2C371ACE4A2FB3858027 /* ../../../freeglut/src/fg_window.c */; settings = { COMPILER_FLAGS = ""; }; };
+C936C40712EC4D0ABB4317D8 /* ../../../freeglut/src/util/xparsegeometry_repl.c */ = {isa = PBXBuildFile; fileRef = 60B0DDB13E8C4362A65423B5 /* ../../../freeglut/src/util/xparsegeometry_repl.c */; settings = { COMPILER_FLAGS = ""; }; };
+7D1284099DDB496084D9B2D9 /* ../../../freeglut/src/util/xparsegeometry_repl.h */ = {isa = PBXBuildFile; fileRef = 822EB456C562482EAA11BEAA /* ../../../freeglut/src/util/xparsegeometry_repl.h */; settings = { COMPILER_FLAGS = ""; }; };
+3B2FE6FB886C4F3395B61C32 /* ../../../freeglut/src/x11/fg_cursor_x11.c */ = {isa = PBXBuildFile; fileRef = 646339EB08464F54829EC24E /* ../../../freeglut/src/x11/fg_cursor_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+625379B7DF514D0BB328967B /* ../../../freeglut/src/x11/fg_display_x11_glx.c */ = {isa = PBXBuildFile; fileRef = 222A8114A3334D5DB4B5F480 /* ../../../freeglut/src/x11/fg_display_x11_glx.c */; settings = { COMPILER_FLAGS = ""; }; };
+135DB23CBE7B4F82ABFB5456 /* ../../../freeglut/src/x11/fg_ext_x11.c */ = {isa = PBXBuildFile; fileRef = 896CE41C34A9420B806C2510 /* ../../../freeglut/src/x11/fg_ext_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+8B36B0AE4D6F473CAD6C94A7 /* ../../../freeglut/src/x11/fg_gamemode_x11.c */ = {isa = PBXBuildFile; fileRef = 3D146F3EC2DD466AA4258ECC /* ../../../freeglut/src/x11/fg_gamemode_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+89252843A1094C9D9C561052 /* ../../../freeglut/src/x11/fg_glutfont_definitions_x11.c */ = {isa = PBXBuildFile; fileRef = E5349DCB25F64EF78BE8677A /* ../../../freeglut/src/x11/fg_glutfont_definitions_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+E4A4D72BAA11488BAA245806 /* ../../../freeglut/src/x11/fg_init_x11.c */ = {isa = PBXBuildFile; fileRef = C9D21C74DF0C43009036C995 /* ../../../freeglut/src/x11/fg_init_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+FF85BA3BAA05426E8CFEB2AA /* ../../../freeglut/src/x11/fg_input_devices_x11.c */ = {isa = PBXBuildFile; fileRef = 37C1C0CE494D4EA9954E0B1B /* ../../../freeglut/src/x11/fg_input_devices_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+9901DFDAB09C47F086DB0AB9 /* ../../../freeglut/src/x11/fg_internal_x11.h */ = {isa = PBXBuildFile; fileRef = 6349F565EA9640A985DFB370 /* ../../../freeglut/src/x11/fg_internal_x11.h */; settings = { COMPILER_FLAGS = ""; }; };
+C8D79F57E0394793B86EE089 /* ../../../freeglut/src/x11/fg_internal_x11_glx.h */ = {isa = PBXBuildFile; fileRef = 7920EEEF8C9B4C5EB89AD590 /* ../../../freeglut/src/x11/fg_internal_x11_glx.h */; settings = { COMPILER_FLAGS = ""; }; };
+E7AA1D1593CF41EE81E60A85 /* ../../../freeglut/src/x11/fg_joystick_x11.c */ = {isa = PBXBuildFile; fileRef = 2ADDC49E813F44299F1FB055 /* ../../../freeglut/src/x11/fg_joystick_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+F98DCA19D4764D44A09D3CC8 /* ../../../freeglut/src/x11/fg_main_x11.c */ = {isa = PBXBuildFile; fileRef = D5D4B7E9E6734ACCA7C0050C /* ../../../freeglut/src/x11/fg_main_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+827D0673BEF8416B992F300A /* ../../../freeglut/src/x11/fg_menu_x11.c */ = {isa = PBXBuildFile; fileRef = 8D3F6DE766724882A1F47D4D /* ../../../freeglut/src/x11/fg_menu_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+AE02A71A0D104798B818F479 /* ../../../freeglut/src/x11/fg_spaceball_x11.c */ = {isa = PBXBuildFile; fileRef = 18E87A18709A41A296505894 /* ../../../freeglut/src/x11/fg_spaceball_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+E9B4F163F83C452B8865BBA5 /* ../../../freeglut/src/x11/fg_state_x11.c */ = {isa = PBXBuildFile; fileRef = BBBBBDB9F9E14902BE8F7B12 /* ../../../freeglut/src/x11/fg_state_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+837C59493894427EBB3E277B /* ../../../freeglut/src/x11/fg_state_x11_glx.c */ = {isa = PBXBuildFile; fileRef = 842C19DCBD3247EE8A3E0CD8 /* ../../../freeglut/src/x11/fg_state_x11_glx.c */; settings = { COMPILER_FLAGS = ""; }; };
+E0AC5F1C13D748D28F65216B /* ../../../freeglut/src/x11/fg_state_x11_glx.h */ = {isa = PBXBuildFile; fileRef = A0EEF5E484304FFC9B4B6408 /* ../../../freeglut/src/x11/fg_state_x11_glx.h */; settings = { COMPILER_FLAGS = ""; }; };
+5D645CB06BE9423393847038 /* ../../../freeglut/src/x11/fg_structure_x11.c */ = {isa = PBXBuildFile; fileRef = E7C8C489A48448ED97A4886E /* ../../../freeglut/src/x11/fg_structure_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+BF28F73F8F364008B17E81C8 /* ../../../freeglut/src/x11/fg_window_x11.c */ = {isa = PBXBuildFile; fileRef = 33F1BFAE8CA7495DAE9CBCB9 /* ../../../freeglut/src/x11/fg_window_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+4482B838B94740CAB666D7D7 /* ../../../freeglut/src/x11/fg_window_x11_glx.c */ = {isa = PBXBuildFile; fileRef = 74154B07CB8A45D7B96C9EB6 /* ../../../freeglut/src/x11/fg_window_x11_glx.c */; settings = { COMPILER_FLAGS = ""; }; };
+804083D17EB04B6B85F181E7 /* ../../../freeglut/src/x11/fg_window_x11_glx.h */ = {isa = PBXBuildFile; fileRef = 0E46D8B9B3FE413CB8F44F55 /* ../../../freeglut/src/x11/fg_window_x11_glx.h */; settings = { COMPILER_FLAGS = ""; }; };
+E0475F0E506F4ABA9B7E4B06 /* ../../../freeglut/src/x11/fg_xinput_x11.c */ = {isa = PBXBuildFile; fileRef = 0506F76AE3F24217A70859D6 /* ../../../freeglut/src/x11/fg_xinput_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+DA04F84397154E13B5A77220 /* ../../../freeglut/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = CA0922B9FF864A8ABB26E33F /* ../../../freeglut/CMakeLists.txt */; settings = { COMPILER_FLAGS = ""; }; };
+F3100AD22BF44E9982D52187 /* ../../../freeglut/include/GL/freeglut.h */ = {isa = PBXBuildFile; fileRef = DB7886CBB4C54470B831EFD6 /* ../../../freeglut/include/GL/freeglut.h */; settings = { COMPILER_FLAGS = ""; }; };
+9FE6D04ACA9F460784438BA8 /* ../../../freeglut/include/GL/freeglut_ext.h */ = {isa = PBXBuildFile; fileRef = DF4B1097BB27461096797FDE /* ../../../freeglut/include/GL/freeglut_ext.h */; settings = { COMPILER_FLAGS = ""; }; };
+531C0C347A004C33A0112BA6 /* ../../../freeglut/include/GL/freeglut_std.h */ = {isa = PBXBuildFile; fileRef = 574300D2FA614856B2659246 /* ../../../freeglut/include/GL/freeglut_std.h */; settings = { COMPILER_FLAGS = ""; }; };
+8923FA002819453A87419524 /* ../../../freeglut/include/GL/glut.h */ = {isa = PBXBuildFile; fileRef = 7906775075034BBAB9F6340B /* ../../../freeglut/include/GL/glut.h */; settings = { COMPILER_FLAGS = ""; }; };
+A68E4AAF0BEC4EC1B0DFB3F4 /* ../../../freeglut/src/fg_callbacks.c */ = {isa = PBXBuildFile; fileRef = C60E5B486C6E4FB0882C862C /* ../../../freeglut/src/fg_callbacks.c */; settings = { COMPILER_FLAGS = ""; }; };
+D1E56E000A2343AD82A65406 /* ../../../freeglut/src/fg_cursor.c */ = {isa = PBXBuildFile; fileRef = 7DE902C8CDB0434682B0E9CB /* ../../../freeglut/src/fg_cursor.c */; settings = { COMPILER_FLAGS = ""; }; };
+EB34125A03D94557A63EFAF4 /* ../../../freeglut/src/fg_display.c */ = {isa = PBXBuildFile; fileRef = 48AFDB2130D74A2DA7633D3E /* ../../../freeglut/src/fg_display.c */; settings = { COMPILER_FLAGS = ""; }; };
+1535C9059D3C46A08098EFE3 /* ../../../freeglut/src/fg_ext.c */ = {isa = PBXBuildFile; fileRef = A15386CA6CC749B28EA82D04 /* ../../../freeglut/src/fg_ext.c */; settings = { COMPILER_FLAGS = ""; }; };
+E4E420040FF644A58AF7F643 /* ../../../freeglut/src/fg_font.c */ = {isa = PBXBuildFile; fileRef = F95CA4FEA0D6450D85582702 /* ../../../freeglut/src/fg_font.c */; settings = { COMPILER_FLAGS = ""; }; };
+F473C22DAEEE414DB3C894E7 /* ../../../freeglut/src/fg_font_data.c */ = {isa = PBXBuildFile; fileRef = DF965B5CED994721AE142E28 /* ../../../freeglut/src/fg_font_data.c */; settings = { COMPILER_FLAGS = ""; }; };
+1781DCF85120497A879C0A37 /* ../../../freeglut/src/fg_gamemode.c */ = {isa = PBXBuildFile; fileRef = 598331C54A6E41F8898AAB8B /* ../../../freeglut/src/fg_gamemode.c */; settings = { COMPILER_FLAGS = ""; }; };
+8B3EE00A2E074E648842D5FD /* ../../../freeglut/src/fg_geometry.c */ = {isa = PBXBuildFile; fileRef = 474CF95A6D4B4519815F6238 /* ../../../freeglut/src/fg_geometry.c */; settings = { COMPILER_FLAGS = ""; }; };
+1777E6E574894FC49AA3AE30 /* ../../../freeglut/src/fg_gl2.c */ = {isa = PBXBuildFile; fileRef = 5A0A42A0A19B43FD84B8AD37 /* ../../../freeglut/src/fg_gl2.c */; settings = { COMPILER_FLAGS = ""; }; };
+C0EA7DC4E1F44756A9B37EA3 /* ../../../freeglut/src/fg_gl2.h */ = {isa = PBXBuildFile; fileRef = C575305227604ECC82CA934B /* ../../../freeglut/src/fg_gl2.h */; settings = { COMPILER_FLAGS = ""; }; };
+0869125525B649C3910E402A /* ../../../freeglut/src/fg_init.c */ = {isa = PBXBuildFile; fileRef = 5C23BC1AD3D2437E802FFAE0 /* ../../../freeglut/src/fg_init.c */; settings = { COMPILER_FLAGS = ""; }; };
+DF50DE4A41D54E4395B4790E /* ../../../freeglut/src/fg_init.h */ = {isa = PBXBuildFile; fileRef = F26B503261284A17B07364F8 /* ../../../freeglut/src/fg_init.h */; settings = { COMPILER_FLAGS = ""; }; };
+F3B005134A00400491450F56 /* ../../../freeglut/src/fg_input_devices.c */ = {isa = PBXBuildFile; fileRef = DF1BA24DCDEF47A7814BD92A /* ../../../freeglut/src/fg_input_devices.c */; settings = { COMPILER_FLAGS = ""; }; };
+9877721A0C49432EBB0EDBE4 /* ../../../freeglut/src/fg_internal.h */ = {isa = PBXBuildFile; fileRef = 69416FC825C8462F86BAD49D /* ../../../freeglut/src/fg_internal.h */; settings = { COMPILER_FLAGS = ""; }; };
+EA0A7293EF034E619AF24F58 /* ../../../freeglut/src/fg_joystick.c */ = {isa = PBXBuildFile; fileRef = 9D789FAB3C31409591517DCD /* ../../../freeglut/src/fg_joystick.c */; settings = { COMPILER_FLAGS = ""; }; };
+C9AE01F8BB8C4B8097BB06ED /* ../../../freeglut/src/fg_main.c */ = {isa = PBXBuildFile; fileRef = 743B328A3D5B441FB8D66D05 /* ../../../freeglut/src/fg_main.c */; settings = { COMPILER_FLAGS = ""; }; };
+C6B751838C4E47DA8AB630F1 /* ../../../freeglut/src/fg_menu.c */ = {isa = PBXBuildFile; fileRef = 85EE0B6C7C30464AA1D9017D /* ../../../freeglut/src/fg_menu.c */; settings = { COMPILER_FLAGS = ""; }; };
+641ECA1FCB7F49B390CA52CC /* ../../../freeglut/src/fg_misc.c */ = {isa = PBXBuildFile; fileRef = D237E0C1F37A45BE84AC4E68 /* ../../../freeglut/src/fg_misc.c */; settings = { COMPILER_FLAGS = ""; }; };
+9CDA565BEAFD43DD8DD4F32B /* ../../../freeglut/src/fg_overlay.c */ = {isa = PBXBuildFile; fileRef = 9C2473BCE6964324A62F6EBF /* ../../../freeglut/src/fg_overlay.c */; settings = { COMPILER_FLAGS = ""; }; };
+757A75DE9DC34A6792DA3566 /* ../../../freeglut/src/fg_spaceball.c */ = {isa = PBXBuildFile; fileRef = E0B13546F80547B0AC617AB9 /* ../../../freeglut/src/fg_spaceball.c */; settings = { COMPILER_FLAGS = ""; }; };
+B3E5516B5972411F919AFFFF /* ../../../freeglut/src/fg_state.c */ = {isa = PBXBuildFile; fileRef = 4BB92105D47D480AB4BE95D9 /* ../../../freeglut/src/fg_state.c */; settings = { COMPILER_FLAGS = ""; }; };
+F2AB3D0097FD43E8B9FB41C5 /* ../../../freeglut/src/fg_stroke_mono_roman.c */ = {isa = PBXBuildFile; fileRef = 98E7D853A5914764BB76CB91 /* ../../../freeglut/src/fg_stroke_mono_roman.c */; settings = { COMPILER_FLAGS = ""; }; };
+17366DB595934E40986AB5F3 /* ../../../freeglut/src/fg_stroke_roman.c */ = {isa = PBXBuildFile; fileRef = 0448C6C724884913A09E5CE9 /* ../../../freeglut/src/fg_stroke_roman.c */; settings = { COMPILER_FLAGS = ""; }; };
+03BBCD9650A345C5B025EC9C /* ../../../freeglut/src/fg_structure.c */ = {isa = PBXBuildFile; fileRef = 6029035198BD483FAFA9ACD3 /* ../../../freeglut/src/fg_structure.c */; settings = { COMPILER_FLAGS = ""; }; };
+3707D5680A3B49239348F5F0 /* ../../../freeglut/src/fg_teapot.c */ = {isa = PBXBuildFile; fileRef = 587C5B526F25441DA9EE3AF3 /* ../../../freeglut/src/fg_teapot.c */; settings = { COMPILER_FLAGS = ""; }; };
+AB408F5B737A485483814BE2 /* ../../../freeglut/src/fg_teapot_data.h */ = {isa = PBXBuildFile; fileRef = 9544BF43B4624D429DC324A9 /* ../../../freeglut/src/fg_teapot_data.h */; settings = { COMPILER_FLAGS = ""; }; };
+EB9676DD25AF4A2CA03CD2D7 /* ../../../freeglut/src/fg_videoresize.c */ = {isa = PBXBuildFile; fileRef = A15561D849DA4FABA00D18E0 /* ../../../freeglut/src/fg_videoresize.c */; settings = { COMPILER_FLAGS = ""; }; };
+6FC0AA5D9EB24F9AA376F94C /* ../../../freeglut/src/fg_window.c */ = {isa = PBXBuildFile; fileRef = 1F9C2C371ACE4A2FB3858027 /* ../../../freeglut/src/fg_window.c */; settings = { COMPILER_FLAGS = ""; }; };
+C0C38FFF7A434C93B0859780 /* ../../../freeglut/src/util/xparsegeometry_repl.c */ = {isa = PBXBuildFile; fileRef = 60B0DDB13E8C4362A65423B5 /* ../../../freeglut/src/util/xparsegeometry_repl.c */; settings = { COMPILER_FLAGS = ""; }; };
+3867195DB86A4150AE076C7B /* ../../../freeglut/src/util/xparsegeometry_repl.h */ = {isa = PBXBuildFile; fileRef = 822EB456C562482EAA11BEAA /* ../../../freeglut/src/util/xparsegeometry_repl.h */; settings = { COMPILER_FLAGS = ""; }; };
+D41FFD8588E54AE8B0C61241 /* ../../../freeglut/src/x11/fg_cursor_x11.c */ = {isa = PBXBuildFile; fileRef = 646339EB08464F54829EC24E /* ../../../freeglut/src/x11/fg_cursor_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+1F3C02A5B1A74FD0B56A48EA /* ../../../freeglut/src/x11/fg_display_x11_glx.c */ = {isa = PBXBuildFile; fileRef = 222A8114A3334D5DB4B5F480 /* ../../../freeglut/src/x11/fg_display_x11_glx.c */; settings = { COMPILER_FLAGS = ""; }; };
+A56DF9DE88064F609EB42575 /* ../../../freeglut/src/x11/fg_ext_x11.c */ = {isa = PBXBuildFile; fileRef = 896CE41C34A9420B806C2510 /* ../../../freeglut/src/x11/fg_ext_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+FA5B7930BD9C493F93028355 /* ../../../freeglut/src/x11/fg_gamemode_x11.c */ = {isa = PBXBuildFile; fileRef = 3D146F3EC2DD466AA4258ECC /* ../../../freeglut/src/x11/fg_gamemode_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+DB5C102281C94B8586333A08 /* ../../../freeglut/src/x11/fg_glutfont_definitions_x11.c */ = {isa = PBXBuildFile; fileRef = E5349DCB25F64EF78BE8677A /* ../../../freeglut/src/x11/fg_glutfont_definitions_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+52F22C3D7EA4441EB7F1C104 /* ../../../freeglut/src/x11/fg_init_x11.c */ = {isa = PBXBuildFile; fileRef = C9D21C74DF0C43009036C995 /* ../../../freeglut/src/x11/fg_init_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+6935E5A4CC804287936D67F2 /* ../../../freeglut/src/x11/fg_input_devices_x11.c */ = {isa = PBXBuildFile; fileRef = 37C1C0CE494D4EA9954E0B1B /* ../../../freeglut/src/x11/fg_input_devices_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+DFD5A61CBABF480097A4BC44 /* ../../../freeglut/src/x11/fg_internal_x11.h */ = {isa = PBXBuildFile; fileRef = 6349F565EA9640A985DFB370 /* ../../../freeglut/src/x11/fg_internal_x11.h */; settings = { COMPILER_FLAGS = ""; }; };
+2E29D3FC0CC14491A34321ED /* ../../../freeglut/src/x11/fg_internal_x11_glx.h */ = {isa = PBXBuildFile; fileRef = 7920EEEF8C9B4C5EB89AD590 /* ../../../freeglut/src/x11/fg_internal_x11_glx.h */; settings = { COMPILER_FLAGS = ""; }; };
+4FC8D90E530D4439A22349C6 /* ../../../freeglut/src/x11/fg_joystick_x11.c */ = {isa = PBXBuildFile; fileRef = 2ADDC49E813F44299F1FB055 /* ../../../freeglut/src/x11/fg_joystick_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+B6682B373F26400FB332C435 /* ../../../freeglut/src/x11/fg_main_x11.c */ = {isa = PBXBuildFile; fileRef = D5D4B7E9E6734ACCA7C0050C /* ../../../freeglut/src/x11/fg_main_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+564E7820084B4C28AA07CCDC /* ../../../freeglut/src/x11/fg_menu_x11.c */ = {isa = PBXBuildFile; fileRef = 8D3F6DE766724882A1F47D4D /* ../../../freeglut/src/x11/fg_menu_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+493BE922D6DC45A18B998447 /* ../../../freeglut/src/x11/fg_spaceball_x11.c */ = {isa = PBXBuildFile; fileRef = 18E87A18709A41A296505894 /* ../../../freeglut/src/x11/fg_spaceball_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+98E0C870BAD246449EAD7275 /* ../../../freeglut/src/x11/fg_state_x11.c */ = {isa = PBXBuildFile; fileRef = BBBBBDB9F9E14902BE8F7B12 /* ../../../freeglut/src/x11/fg_state_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+ABB4A6C54D0F476EB86C7589 /* ../../../freeglut/src/x11/fg_state_x11_glx.c */ = {isa = PBXBuildFile; fileRef = 842C19DCBD3247EE8A3E0CD8 /* ../../../freeglut/src/x11/fg_state_x11_glx.c */; settings = { COMPILER_FLAGS = ""; }; };
+B3F39A9882E043BFB7DE71EC /* ../../../freeglut/src/x11/fg_state_x11_glx.h */ = {isa = PBXBuildFile; fileRef = A0EEF5E484304FFC9B4B6408 /* ../../../freeglut/src/x11/fg_state_x11_glx.h */; settings = { COMPILER_FLAGS = ""; }; };
+FC5A7CE870EB4E7CA52DF269 /* ../../../freeglut/src/x11/fg_structure_x11.c */ = {isa = PBXBuildFile; fileRef = E7C8C489A48448ED97A4886E /* ../../../freeglut/src/x11/fg_structure_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+4E35BE26B7C34551AEB19F8C /* ../../../freeglut/src/x11/fg_window_x11.c */ = {isa = PBXBuildFile; fileRef = 33F1BFAE8CA7495DAE9CBCB9 /* ../../../freeglut/src/x11/fg_window_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+C6B0E923C58144068A2FEDCE /* ../../../freeglut/src/x11/fg_window_x11_glx.c */ = {isa = PBXBuildFile; fileRef = 74154B07CB8A45D7B96C9EB6 /* ../../../freeglut/src/x11/fg_window_x11_glx.c */; settings = { COMPILER_FLAGS = ""; }; };
+FEC4D87DF9E046CD8886EB59 /* ../../../freeglut/src/x11/fg_window_x11_glx.h */ = {isa = PBXBuildFile; fileRef = 0E46D8B9B3FE413CB8F44F55 /* ../../../freeglut/src/x11/fg_window_x11_glx.h */; settings = { COMPILER_FLAGS = ""; }; };
+4DE9F47856584C1E93EB3FAB /* ../../../freeglut/src/x11/fg_xinput_x11.c */ = {isa = PBXBuildFile; fileRef = 0506F76AE3F24217A70859D6 /* ../../../freeglut/src/x11/fg_xinput_x11.c */; settings = { COMPILER_FLAGS = ""; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+              8283B0FA35854B978EFB0619 /*  */ = {
+                     isa = PBXBuildStyle;
+              };
+              A509737AFDFD42B48A0C179F /* Debug */ = {
+                     isa = PBXBuildStyle;
+                     buildSettings = {
+                            COPY_PHASE_STRIP = NO;
+                     };
+                     name = Debug;
+              };
+              0673B81D9DDE4B1E82D00A3A /* Release */ = {
+                     isa = PBXBuildStyle;
+                     buildSettings = {
+                            COPY_PHASE_STRIP = NO;
+                     };
+                     name = Release;
+              };
+              8CF368E55AEF4C41B8E1F43A /* MinSizeRel */ = {
+                     isa = PBXBuildStyle;
+                     buildSettings = {
+                            COPY_PHASE_STRIP = NO;
+                     };
+                     name = MinSizeRel;
+              };
+              6E3B2983A1F84AE089783DB6 /* RelWithDebInfo */ = {
+                     isa = PBXBuildStyle;
+                     buildSettings = {
+                            COPY_PHASE_STRIP = NO;
+                     };
+                     name = RelWithDebInfo;
+              };
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+              1BAE929C9F5446BFAF685FF7 /* PBXContainerItemProxy */ = {
+                     isa = PBXContainerItemProxy;
+                     containerPortal = 21E33C6FA7174847871E4035 /* Project object */;
+                     proxyType = 1;
+                     remoteGlobalIDString = 38A91461EC074390AECDCCE9;
+                     remoteInfo = freeglut;
+              };
+              DE730B5D52B34FC2AFD3B3D3 /* PBXContainerItemProxy */ = {
+                     isa = PBXContainerItemProxy;
+                     containerPortal = 21E33C6FA7174847871E4035 /* Project object */;
+                     proxyType = 1;
+                     remoteGlobalIDString = 0ACB6F5946644F2C8FB98EC7;
+                     remoteInfo = freeglut_static;
+              };
+              2BB67E471E5B4E34AAAB7578 /* PBXContainerItemProxy */ = {
+                     isa = PBXContainerItemProxy;
+                     containerPortal = 21E33C6FA7174847871E4035 /* Project object */;
+                     proxyType = 1;
+                     remoteGlobalIDString = 78CE605356C14378B051C4BA;
+                     remoteInfo = ALL_BUILD;
+              };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+CA0922B9FF864A8ABB26E33F /* ../../../freeglut/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = "sourcecode.text"; fileEncoding = 4; name = "CMakeLists.txt"; path = "CMakeLists.txt"; sourceTree = SOURCE_ROOT; };
+DB7886CBB4C54470B831EFD6 /* ../../../freeglut/include/GL/freeglut.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "freeglut.h"; path = "include/GL/freeglut.h"; sourceTree = SOURCE_ROOT; };
+DF4B1097BB27461096797FDE /* ../../../freeglut/include/GL/freeglut_ext.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "freeglut_ext.h"; path = "include/GL/freeglut_ext.h"; sourceTree = SOURCE_ROOT; };
+574300D2FA614856B2659246 /* ../../../freeglut/include/GL/freeglut_std.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "freeglut_std.h"; path = "include/GL/freeglut_std.h"; sourceTree = SOURCE_ROOT; };
+7906775075034BBAB9F6340B /* ../../../freeglut/include/GL/glut.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "glut.h"; path = "include/GL/glut.h"; sourceTree = SOURCE_ROOT; };
+C60E5B486C6E4FB0882C862C /* ../../../freeglut/src/fg_callbacks.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_callbacks.c"; path = "src/fg_callbacks.c"; sourceTree = SOURCE_ROOT; };
+7DE902C8CDB0434682B0E9CB /* ../../../freeglut/src/fg_cursor.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_cursor.c"; path = "src/fg_cursor.c"; sourceTree = SOURCE_ROOT; };
+48AFDB2130D74A2DA7633D3E /* ../../../freeglut/src/fg_display.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_display.c"; path = "src/fg_display.c"; sourceTree = SOURCE_ROOT; };
+A15386CA6CC749B28EA82D04 /* ../../../freeglut/src/fg_ext.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_ext.c"; path = "src/fg_ext.c"; sourceTree = SOURCE_ROOT; };
+F95CA4FEA0D6450D85582702 /* ../../../freeglut/src/fg_font.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_font.c"; path = "src/fg_font.c"; sourceTree = SOURCE_ROOT; };
+DF965B5CED994721AE142E28 /* ../../../freeglut/src/fg_font_data.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_font_data.c"; path = "src/fg_font_data.c"; sourceTree = SOURCE_ROOT; };
+598331C54A6E41F8898AAB8B /* ../../../freeglut/src/fg_gamemode.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_gamemode.c"; path = "src/fg_gamemode.c"; sourceTree = SOURCE_ROOT; };
+474CF95A6D4B4519815F6238 /* ../../../freeglut/src/fg_geometry.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_geometry.c"; path = "src/fg_geometry.c"; sourceTree = SOURCE_ROOT; };
+5A0A42A0A19B43FD84B8AD37 /* ../../../freeglut/src/fg_gl2.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_gl2.c"; path = "src/fg_gl2.c"; sourceTree = SOURCE_ROOT; };
+C575305227604ECC82CA934B /* ../../../freeglut/src/fg_gl2.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "fg_gl2.h"; path = "src/fg_gl2.h"; sourceTree = SOURCE_ROOT; };
+5C23BC1AD3D2437E802FFAE0 /* ../../../freeglut/src/fg_init.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_init.c"; path = "src/fg_init.c"; sourceTree = SOURCE_ROOT; };
+F26B503261284A17B07364F8 /* ../../../freeglut/src/fg_init.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "fg_init.h"; path = "src/fg_init.h"; sourceTree = SOURCE_ROOT; };
+DF1BA24DCDEF47A7814BD92A /* ../../../freeglut/src/fg_input_devices.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_input_devices.c"; path = "src/fg_input_devices.c"; sourceTree = SOURCE_ROOT; };
+69416FC825C8462F86BAD49D /* ../../../freeglut/src/fg_internal.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "fg_internal.h"; path = "src/fg_internal.h"; sourceTree = SOURCE_ROOT; };
+9D789FAB3C31409591517DCD /* ../../../freeglut/src/fg_joystick.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_joystick.c"; path = "src/fg_joystick.c"; sourceTree = SOURCE_ROOT; };
+743B328A3D5B441FB8D66D05 /* ../../../freeglut/src/fg_main.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_main.c"; path = "src/fg_main.c"; sourceTree = SOURCE_ROOT; };
+85EE0B6C7C30464AA1D9017D /* ../../../freeglut/src/fg_menu.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_menu.c"; path = "src/fg_menu.c"; sourceTree = SOURCE_ROOT; };
+D237E0C1F37A45BE84AC4E68 /* ../../../freeglut/src/fg_misc.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_misc.c"; path = "src/fg_misc.c"; sourceTree = SOURCE_ROOT; };
+9C2473BCE6964324A62F6EBF /* ../../../freeglut/src/fg_overlay.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_overlay.c"; path = "src/fg_overlay.c"; sourceTree = SOURCE_ROOT; };
+E0B13546F80547B0AC617AB9 /* ../../../freeglut/src/fg_spaceball.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_spaceball.c"; path = "src/fg_spaceball.c"; sourceTree = SOURCE_ROOT; };
+4BB92105D47D480AB4BE95D9 /* ../../../freeglut/src/fg_state.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_state.c"; path = "src/fg_state.c"; sourceTree = SOURCE_ROOT; };
+98E7D853A5914764BB76CB91 /* ../../../freeglut/src/fg_stroke_mono_roman.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_stroke_mono_roman.c"; path = "src/fg_stroke_mono_roman.c"; sourceTree = SOURCE_ROOT; };
+0448C6C724884913A09E5CE9 /* ../../../freeglut/src/fg_stroke_roman.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_stroke_roman.c"; path = "src/fg_stroke_roman.c"; sourceTree = SOURCE_ROOT; };
+6029035198BD483FAFA9ACD3 /* ../../../freeglut/src/fg_structure.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_structure.c"; path = "src/fg_structure.c"; sourceTree = SOURCE_ROOT; };
+587C5B526F25441DA9EE3AF3 /* ../../../freeglut/src/fg_teapot.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_teapot.c"; path = "src/fg_teapot.c"; sourceTree = SOURCE_ROOT; };
+9544BF43B4624D429DC324A9 /* ../../../freeglut/src/fg_teapot_data.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "fg_teapot_data.h"; path = "src/fg_teapot_data.h"; sourceTree = SOURCE_ROOT; };
+A15561D849DA4FABA00D18E0 /* ../../../freeglut/src/fg_videoresize.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_videoresize.c"; path = "src/fg_videoresize.c"; sourceTree = SOURCE_ROOT; };
+1F9C2C371ACE4A2FB3858027 /* ../../../freeglut/src/fg_window.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_window.c"; path = "src/fg_window.c"; sourceTree = SOURCE_ROOT; };
+60B0DDB13E8C4362A65423B5 /* ../../../freeglut/src/util/xparsegeometry_repl.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "xparsegeometry_repl.c"; path = "src/util/xparsegeometry_repl.c"; sourceTree = SOURCE_ROOT; };
+822EB456C562482EAA11BEAA /* ../../../freeglut/src/util/xparsegeometry_repl.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "xparsegeometry_repl.h"; path = "src/util/xparsegeometry_repl.h"; sourceTree = SOURCE_ROOT; };
+646339EB08464F54829EC24E /* ../../../freeglut/src/x11/fg_cursor_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_cursor_x11.c"; path = "src/x11/fg_cursor_x11.c"; sourceTree = SOURCE_ROOT; };
+222A8114A3334D5DB4B5F480 /* ../../../freeglut/src/x11/fg_display_x11_glx.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_display_x11_glx.c"; path = "src/x11/fg_display_x11_glx.c"; sourceTree = SOURCE_ROOT; };
+896CE41C34A9420B806C2510 /* ../../../freeglut/src/x11/fg_ext_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_ext_x11.c"; path = "src/x11/fg_ext_x11.c"; sourceTree = SOURCE_ROOT; };
+3D146F3EC2DD466AA4258ECC /* ../../../freeglut/src/x11/fg_gamemode_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_gamemode_x11.c"; path = "src/x11/fg_gamemode_x11.c"; sourceTree = SOURCE_ROOT; };
+E5349DCB25F64EF78BE8677A /* ../../../freeglut/src/x11/fg_glutfont_definitions_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_glutfont_definitions_x11.c"; path = "src/x11/fg_glutfont_definitions_x11.c"; sourceTree = SOURCE_ROOT; };
+C9D21C74DF0C43009036C995 /* ../../../freeglut/src/x11/fg_init_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_init_x11.c"; path = "src/x11/fg_init_x11.c"; sourceTree = SOURCE_ROOT; };
+37C1C0CE494D4EA9954E0B1B /* ../../../freeglut/src/x11/fg_input_devices_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_input_devices_x11.c"; path = "src/x11/fg_input_devices_x11.c"; sourceTree = SOURCE_ROOT; };
+6349F565EA9640A985DFB370 /* ../../../freeglut/src/x11/fg_internal_x11.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "fg_internal_x11.h"; path = "src/x11/fg_internal_x11.h"; sourceTree = SOURCE_ROOT; };
+7920EEEF8C9B4C5EB89AD590 /* ../../../freeglut/src/x11/fg_internal_x11_glx.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "fg_internal_x11_glx.h"; path = "src/x11/fg_internal_x11_glx.h"; sourceTree = SOURCE_ROOT; };
+2ADDC49E813F44299F1FB055 /* ../../../freeglut/src/x11/fg_joystick_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_joystick_x11.c"; path = "src/x11/fg_joystick_x11.c"; sourceTree = SOURCE_ROOT; };
+D5D4B7E9E6734ACCA7C0050C /* ../../../freeglut/src/x11/fg_main_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_main_x11.c"; path = "src/x11/fg_main_x11.c"; sourceTree = SOURCE_ROOT; };
+8D3F6DE766724882A1F47D4D /* ../../../freeglut/src/x11/fg_menu_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_menu_x11.c"; path = "src/x11/fg_menu_x11.c"; sourceTree = SOURCE_ROOT; };
+18E87A18709A41A296505894 /* ../../../freeglut/src/x11/fg_spaceball_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_spaceball_x11.c"; path = "src/x11/fg_spaceball_x11.c"; sourceTree = SOURCE_ROOT; };
+BBBBBDB9F9E14902BE8F7B12 /* ../../../freeglut/src/x11/fg_state_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_state_x11.c"; path = "src/x11/fg_state_x11.c"; sourceTree = SOURCE_ROOT; };
+842C19DCBD3247EE8A3E0CD8 /* ../../../freeglut/src/x11/fg_state_x11_glx.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_state_x11_glx.c"; path = "src/x11/fg_state_x11_glx.c"; sourceTree = SOURCE_ROOT; };
+A0EEF5E484304FFC9B4B6408 /* ../../../freeglut/src/x11/fg_state_x11_glx.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "fg_state_x11_glx.h"; path = "src/x11/fg_state_x11_glx.h"; sourceTree = SOURCE_ROOT; };
+E7C8C489A48448ED97A4886E /* ../../../freeglut/src/x11/fg_structure_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_structure_x11.c"; path = "src/x11/fg_structure_x11.c"; sourceTree = SOURCE_ROOT; };
+33F1BFAE8CA7495DAE9CBCB9 /* ../../../freeglut/src/x11/fg_window_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_window_x11.c"; path = "src/x11/fg_window_x11.c"; sourceTree = SOURCE_ROOT; };
+74154B07CB8A45D7B96C9EB6 /* ../../../freeglut/src/x11/fg_window_x11_glx.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_window_x11_glx.c"; path = "src/x11/fg_window_x11_glx.c"; sourceTree = SOURCE_ROOT; };
+0E46D8B9B3FE413CB8F44F55 /* ../../../freeglut/src/x11/fg_window_x11_glx.h */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.h"; fileEncoding = 4; name = "fg_window_x11_glx.h"; path = "src/x11/fg_window_x11_glx.h"; sourceTree = SOURCE_ROOT; };
+0506F76AE3F24217A70859D6 /* ../../../freeglut/src/x11/fg_xinput_x11.c */ = {isa = PBXFileReference; explicitFileType = "sourcecode.c.c"; fileEncoding = 4; name = "fg_xinput_x11.c"; path = "src/x11/fg_xinput_x11.c"; sourceTree = SOURCE_ROOT; };
+1BE79A74CB474179B9D2CBC1 /* freeglut */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = "libglut.dylib"; refType = 0; sourceTree = BUILT_PRODUCTS_DIR; };
+7A47097EB4D6479BA9835714 /* freeglut_static */ = {isa = PBXFileReference; explicitFileType = "archive.ar"; path = "libglut.a"; refType = 0; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+              57C13EE83A8A4C2B828E6F67  = {
+                     isa = PBXGroup;
+                     children = (
+                            86F3D87CE6934CD89ADB5E15 /* Sources */,
+                            1F4BF59B1EF54300932A14F0 /* Resources */,
+                            5572DB17F70C4B9384DBF796 /* Products */,
+                     );
+                     sourceTree = "<group>";
+              };
+              86F3D87CE6934CD89ADB5E15 /* Sources */ = {
+                     isa = PBXGroup;
+                     children = (
+                            384D97214CB540928EEB0476 /* ALL_BUILD */,
+                            73DD0C9D23A3416FBA11B588 /* freeglut */,
+                            3A59FF49768B4062A3328131 /* freeglut_static */,
+                     );
+                     name = Sources;
+                     sourceTree = "<group>";
+              };
+              1F4BF59B1EF54300932A14F0 /* Resources */ = {
+                     isa = PBXGroup;
+                     children = (
+                     );
+                     name = Resources;
+                     sourceTree = "<group>";
+              };
+              384D97214CB540928EEB0476 /* ALL_BUILD */ = {
+                     isa = PBXGroup;
+                     children = (
+                            BD3F337216494542A276C041 /* CMake Rules */,
+                            CA0922B9FF864A8ABB26E33F /* ../../../freeglut/CMakeLists.txt */,
+                     );
+                     name = ALL_BUILD;
+                     sourceTree = "<group>";
+              };
+              BD3F337216494542A276C041 /* CMake Rules */ = {
+                     isa = PBXGroup;
+                     children = (
+                     );
+                     name = "CMake Rules";
+                     sourceTree = "<group>";
+              };
+              73DD0C9D23A3416FBA11B588 /* freeglut */ = {
+                     isa = PBXGroup;
+                     children = (
+                            804F16FD6BCB47688F501055 /* Header Files */,
+                            5F5EDC53EA8B4CDABEF0BC8B /* Source Files */,
+                            CA0922B9FF864A8ABB26E33F /* ../../../freeglut/CMakeLists.txt */,
+                     );
+                     name = freeglut;
+                     sourceTree = "<group>";
+              };
+              804F16FD6BCB47688F501055 /* Header Files */ = {
+                     isa = PBXGroup;
+                     children = (
+                            DB7886CBB4C54470B831EFD6 /* ../../../freeglut/include/GL/freeglut.h */,
+                            DF4B1097BB27461096797FDE /* ../../../freeglut/include/GL/freeglut_ext.h */,
+                            574300D2FA614856B2659246 /* ../../../freeglut/include/GL/freeglut_std.h */,
+                            7906775075034BBAB9F6340B /* ../../../freeglut/include/GL/glut.h */,
+                            C575305227604ECC82CA934B /* ../../../freeglut/src/fg_gl2.h */,
+                            F26B503261284A17B07364F8 /* ../../../freeglut/src/fg_init.h */,
+                            69416FC825C8462F86BAD49D /* ../../../freeglut/src/fg_internal.h */,
+                            9544BF43B4624D429DC324A9 /* ../../../freeglut/src/fg_teapot_data.h */,
+                            822EB456C562482EAA11BEAA /* ../../../freeglut/src/util/xparsegeometry_repl.h */,
+                            6349F565EA9640A985DFB370 /* ../../../freeglut/src/x11/fg_internal_x11.h */,
+                            7920EEEF8C9B4C5EB89AD590 /* ../../../freeglut/src/x11/fg_internal_x11_glx.h */,
+                            A0EEF5E484304FFC9B4B6408 /* ../../../freeglut/src/x11/fg_state_x11_glx.h */,
+                            0E46D8B9B3FE413CB8F44F55 /* ../../../freeglut/src/x11/fg_window_x11_glx.h */,
+                     );
+                     name = "Header Files";
+                     sourceTree = "<group>";
+              };
+              5F5EDC53EA8B4CDABEF0BC8B /* Source Files */ = {
+                     isa = PBXGroup;
+                     children = (
+                            C60E5B486C6E4FB0882C862C /* ../../../freeglut/src/fg_callbacks.c */,
+                            7DE902C8CDB0434682B0E9CB /* ../../../freeglut/src/fg_cursor.c */,
+                            48AFDB2130D74A2DA7633D3E /* ../../../freeglut/src/fg_display.c */,
+                            A15386CA6CC749B28EA82D04 /* ../../../freeglut/src/fg_ext.c */,
+                            F95CA4FEA0D6450D85582702 /* ../../../freeglut/src/fg_font.c */,
+                            DF965B5CED994721AE142E28 /* ../../../freeglut/src/fg_font_data.c */,
+                            598331C54A6E41F8898AAB8B /* ../../../freeglut/src/fg_gamemode.c */,
+                            474CF95A6D4B4519815F6238 /* ../../../freeglut/src/fg_geometry.c */,
+                            5A0A42A0A19B43FD84B8AD37 /* ../../../freeglut/src/fg_gl2.c */,
+                            5C23BC1AD3D2437E802FFAE0 /* ../../../freeglut/src/fg_init.c */,
+                            DF1BA24DCDEF47A7814BD92A /* ../../../freeglut/src/fg_input_devices.c */,
+                            9D789FAB3C31409591517DCD /* ../../../freeglut/src/fg_joystick.c */,
+                            743B328A3D5B441FB8D66D05 /* ../../../freeglut/src/fg_main.c */,
+                            85EE0B6C7C30464AA1D9017D /* ../../../freeglut/src/fg_menu.c */,
+                            D237E0C1F37A45BE84AC4E68 /* ../../../freeglut/src/fg_misc.c */,
+                            9C2473BCE6964324A62F6EBF /* ../../../freeglut/src/fg_overlay.c */,
+                            E0B13546F80547B0AC617AB9 /* ../../../freeglut/src/fg_spaceball.c */,
+                            4BB92105D47D480AB4BE95D9 /* ../../../freeglut/src/fg_state.c */,
+                            98E7D853A5914764BB76CB91 /* ../../../freeglut/src/fg_stroke_mono_roman.c */,
+                            0448C6C724884913A09E5CE9 /* ../../../freeglut/src/fg_stroke_roman.c */,
+                            6029035198BD483FAFA9ACD3 /* ../../../freeglut/src/fg_structure.c */,
+                            587C5B526F25441DA9EE3AF3 /* ../../../freeglut/src/fg_teapot.c */,
+                            A15561D849DA4FABA00D18E0 /* ../../../freeglut/src/fg_videoresize.c */,
+                            1F9C2C371ACE4A2FB3858027 /* ../../../freeglut/src/fg_window.c */,
+                            60B0DDB13E8C4362A65423B5 /* ../../../freeglut/src/util/xparsegeometry_repl.c */,
+                            646339EB08464F54829EC24E /* ../../../freeglut/src/x11/fg_cursor_x11.c */,
+                            222A8114A3334D5DB4B5F480 /* ../../../freeglut/src/x11/fg_display_x11_glx.c */,
+                            896CE41C34A9420B806C2510 /* ../../../freeglut/src/x11/fg_ext_x11.c */,
+                            3D146F3EC2DD466AA4258ECC /* ../../../freeglut/src/x11/fg_gamemode_x11.c */,
+                            E5349DCB25F64EF78BE8677A /* ../../../freeglut/src/x11/fg_glutfont_definitions_x11.c */,
+                            C9D21C74DF0C43009036C995 /* ../../../freeglut/src/x11/fg_init_x11.c */,
+                            37C1C0CE494D4EA9954E0B1B /* ../../../freeglut/src/x11/fg_input_devices_x11.c */,
+                            2ADDC49E813F44299F1FB055 /* ../../../freeglut/src/x11/fg_joystick_x11.c */,
+                            D5D4B7E9E6734ACCA7C0050C /* ../../../freeglut/src/x11/fg_main_x11.c */,
+                            8D3F6DE766724882A1F47D4D /* ../../../freeglut/src/x11/fg_menu_x11.c */,
+                            18E87A18709A41A296505894 /* ../../../freeglut/src/x11/fg_spaceball_x11.c */,
+                            BBBBBDB9F9E14902BE8F7B12 /* ../../../freeglut/src/x11/fg_state_x11.c */,
+                            842C19DCBD3247EE8A3E0CD8 /* ../../../freeglut/src/x11/fg_state_x11_glx.c */,
+                            E7C8C489A48448ED97A4886E /* ../../../freeglut/src/x11/fg_structure_x11.c */,
+                            33F1BFAE8CA7495DAE9CBCB9 /* ../../../freeglut/src/x11/fg_window_x11.c */,
+                            74154B07CB8A45D7B96C9EB6 /* ../../../freeglut/src/x11/fg_window_x11_glx.c */,
+                            0506F76AE3F24217A70859D6 /* ../../../freeglut/src/x11/fg_xinput_x11.c */,
+                     );
+                     name = "Source Files";
+                     sourceTree = "<group>";
+              };
+              3A59FF49768B4062A3328131 /* freeglut_static */ = {
+                     isa = PBXGroup;
+                     children = (
+                            6C4FF623769B4AA3B6D74081 /* Header Files */,
+                            EF7627AAF2E641F192FB7D04 /* Source Files */,
+                            CA0922B9FF864A8ABB26E33F /* ../../../freeglut/CMakeLists.txt */,
+                     );
+                     name = freeglut_static;
+                     sourceTree = "<group>";
+              };
+              6C4FF623769B4AA3B6D74081 /* Header Files */ = {
+                     isa = PBXGroup;
+                     children = (
+                            DB7886CBB4C54470B831EFD6 /* ../../../freeglut/include/GL/freeglut.h */,
+                            DF4B1097BB27461096797FDE /* ../../../freeglut/include/GL/freeglut_ext.h */,
+                            574300D2FA614856B2659246 /* ../../../freeglut/include/GL/freeglut_std.h */,
+                            7906775075034BBAB9F6340B /* ../../../freeglut/include/GL/glut.h */,
+                            C575305227604ECC82CA934B /* ../../../freeglut/src/fg_gl2.h */,
+                            F26B503261284A17B07364F8 /* ../../../freeglut/src/fg_init.h */,
+                            69416FC825C8462F86BAD49D /* ../../../freeglut/src/fg_internal.h */,
+                            9544BF43B4624D429DC324A9 /* ../../../freeglut/src/fg_teapot_data.h */,
+                            822EB456C562482EAA11BEAA /* ../../../freeglut/src/util/xparsegeometry_repl.h */,
+                            6349F565EA9640A985DFB370 /* ../../../freeglut/src/x11/fg_internal_x11.h */,
+                            7920EEEF8C9B4C5EB89AD590 /* ../../../freeglut/src/x11/fg_internal_x11_glx.h */,
+                            A0EEF5E484304FFC9B4B6408 /* ../../../freeglut/src/x11/fg_state_x11_glx.h */,
+                            0E46D8B9B3FE413CB8F44F55 /* ../../../freeglut/src/x11/fg_window_x11_glx.h */,
+                     );
+                     name = "Header Files";
+                     sourceTree = "<group>";
+              };
+              EF7627AAF2E641F192FB7D04 /* Source Files */ = {
+                     isa = PBXGroup;
+                     children = (
+                            C60E5B486C6E4FB0882C862C /* ../../../freeglut/src/fg_callbacks.c */,
+                            7DE902C8CDB0434682B0E9CB /* ../../../freeglut/src/fg_cursor.c */,
+                            48AFDB2130D74A2DA7633D3E /* ../../../freeglut/src/fg_display.c */,
+                            A15386CA6CC749B28EA82D04 /* ../../../freeglut/src/fg_ext.c */,
+                            F95CA4FEA0D6450D85582702 /* ../../../freeglut/src/fg_font.c */,
+                            DF965B5CED994721AE142E28 /* ../../../freeglut/src/fg_font_data.c */,
+                            598331C54A6E41F8898AAB8B /* ../../../freeglut/src/fg_gamemode.c */,
+                            474CF95A6D4B4519815F6238 /* ../../../freeglut/src/fg_geometry.c */,
+                            5A0A42A0A19B43FD84B8AD37 /* ../../../freeglut/src/fg_gl2.c */,
+                            5C23BC1AD3D2437E802FFAE0 /* ../../../freeglut/src/fg_init.c */,
+                            DF1BA24DCDEF47A7814BD92A /* ../../../freeglut/src/fg_input_devices.c */,
+                            9D789FAB3C31409591517DCD /* ../../../freeglut/src/fg_joystick.c */,
+                            743B328A3D5B441FB8D66D05 /* ../../../freeglut/src/fg_main.c */,
+                            85EE0B6C7C30464AA1D9017D /* ../../../freeglut/src/fg_menu.c */,
+                            D237E0C1F37A45BE84AC4E68 /* ../../../freeglut/src/fg_misc.c */,
+                            9C2473BCE6964324A62F6EBF /* ../../../freeglut/src/fg_overlay.c */,
+                            E0B13546F80547B0AC617AB9 /* ../../../freeglut/src/fg_spaceball.c */,
+                            4BB92105D47D480AB4BE95D9 /* ../../../freeglut/src/fg_state.c */,
+                            98E7D853A5914764BB76CB91 /* ../../../freeglut/src/fg_stroke_mono_roman.c */,
+                            0448C6C724884913A09E5CE9 /* ../../../freeglut/src/fg_stroke_roman.c */,
+                            6029035198BD483FAFA9ACD3 /* ../../../freeglut/src/fg_structure.c */,
+                            587C5B526F25441DA9EE3AF3 /* ../../../freeglut/src/fg_teapot.c */,
+                            A15561D849DA4FABA00D18E0 /* ../../../freeglut/src/fg_videoresize.c */,
+                            1F9C2C371ACE4A2FB3858027 /* ../../../freeglut/src/fg_window.c */,
+                            60B0DDB13E8C4362A65423B5 /* ../../../freeglut/src/util/xparsegeometry_repl.c */,
+                            646339EB08464F54829EC24E /* ../../../freeglut/src/x11/fg_cursor_x11.c */,
+                            222A8114A3334D5DB4B5F480 /* ../../../freeglut/src/x11/fg_display_x11_glx.c */,
+                            896CE41C34A9420B806C2510 /* ../../../freeglut/src/x11/fg_ext_x11.c */,
+                            3D146F3EC2DD466AA4258ECC /* ../../../freeglut/src/x11/fg_gamemode_x11.c */,
+                            E5349DCB25F64EF78BE8677A /* ../../../freeglut/src/x11/fg_glutfont_definitions_x11.c */,
+                            C9D21C74DF0C43009036C995 /* ../../../freeglut/src/x11/fg_init_x11.c */,
+                            37C1C0CE494D4EA9954E0B1B /* ../../../freeglut/src/x11/fg_input_devices_x11.c */,
+                            2ADDC49E813F44299F1FB055 /* ../../../freeglut/src/x11/fg_joystick_x11.c */,
+                            D5D4B7E9E6734ACCA7C0050C /* ../../../freeglut/src/x11/fg_main_x11.c */,
+                            8D3F6DE766724882A1F47D4D /* ../../../freeglut/src/x11/fg_menu_x11.c */,
+                            18E87A18709A41A296505894 /* ../../../freeglut/src/x11/fg_spaceball_x11.c */,
+                            BBBBBDB9F9E14902BE8F7B12 /* ../../../freeglut/src/x11/fg_state_x11.c */,
+                            842C19DCBD3247EE8A3E0CD8 /* ../../../freeglut/src/x11/fg_state_x11_glx.c */,
+                            E7C8C489A48448ED97A4886E /* ../../../freeglut/src/x11/fg_structure_x11.c */,
+                            33F1BFAE8CA7495DAE9CBCB9 /* ../../../freeglut/src/x11/fg_window_x11.c */,
+                            74154B07CB8A45D7B96C9EB6 /* ../../../freeglut/src/x11/fg_window_x11_glx.c */,
+                            0506F76AE3F24217A70859D6 /* ../../../freeglut/src/x11/fg_xinput_x11.c */,
+                     );
+                     name = "Source Files";
+                     sourceTree = "<group>";
+              };
+              5572DB17F70C4B9384DBF796 /* Products */ = {
+                     isa = PBXGroup;
+                     children = (
+                            1BE79A74CB474179B9D2CBC1 /* freeglut */,
+                            7A47097EB4D6479BA9835714 /* freeglut_static */,
+                     );
+                     name = Products;
+                     sourceTree = "<group>";
+              };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+              38A91461EC074390AECDCCE9 /* freeglut */ = {
+                     isa = PBXNativeTarget;
+                     buildConfigurationList = F8ABD3BBE9164BC1A8A12426 /* Build configuration list for PBXNativeTarget "freeglut" */;
+                     buildPhases = (
+                            0133BF263047425F87FE19CA /* Sources */,
+                            E7D04A24EE1D4CB9A3BCA13F /* CMake PostBuild Rules */,
+                     );
+                     buildRules = (
+                     );
+                     dependencies = (
+                     );
+                     name = freeglut;
+                     productName = freeglut;
+                     productReference = 1BE79A74CB474179B9D2CBC1 /* freeglut */;
+                     productType = "com.apple.product-type.library.dynamic";
+              };
+              0ACB6F5946644F2C8FB98EC7 /* freeglut_static */ = {
+                     isa = PBXNativeTarget;
+                     buildConfigurationList = DEECE69B91E2474AB20D301C /* Build configuration list for PBXNativeTarget "freeglut_static" */;
+                     buildPhases = (
+                            CF6127E1B33D4CC9A11BF03D /* Sources */,
+                     );
+                     buildRules = (
+                     );
+                     dependencies = (
+                     );
+                     name = freeglut_static;
+                     productName = freeglut_static;
+                     productReference = 7A47097EB4D6479BA9835714 /* freeglut_static */;
+                     productType = "com.apple.product-type.library.static";
+              };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+              21E33C6FA7174847871E4035 /* Project object */ = {
+                     isa = PBXProject;
+                     attributes = {
+                            BuildIndependentTargetsInParallel = YES;
+                     };
+                     buildConfigurationList = F88C3C2A75864E11AF9D1636 /* Build configuration list for PBXProject  "freeglut" */;
+                     buildSettings = {
+                     };
+                     buildStyles = (
+                            A509737AFDFD42B48A0C179F /* Debug */,
+                            0673B81D9DDE4B1E82D00A3A /* Release */,
+                            8CF368E55AEF4C41B8E1F43A /* MinSizeRel */,
+                            6E3B2983A1F84AE089783DB6 /* RelWithDebInfo */,
+                     );
+                     compatibilityVersion = "Xcode 3.2";
+                     hasScannedForEncodings = 0;
+                     mainGroup = 57C13EE83A8A4C2B828E6F67;
+                     projectDirPath = ../../../freeglut;
+                     projectRoot = "";
+                     targets = (
+                            78CE605356C14378B051C4BA /* ALL_BUILD */,
+                            38A91461EC074390AECDCCE9 /* freeglut */,
+                            0ACB6F5946644F2C8FB98EC7 /* freeglut_static */,
+                            2AA30F7DC95A4D338A29E2FE /* install */,
+                     );
+              };
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+              75299F98EB2D4B77B711F739 /*  */ = {
+                     isa = PBXShellScriptBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                     );
+                     inputPaths = (
+                     );
+                     outputPaths = (
+                     );
+                     runOnlyForDeploymentPostprocessing = 0;
+                     shellPath = /bin/sh;
+                     shellScript = "## shell script goes here
+exit 0";
+                     showEnvVarsInLog = 0;
+              };
+              B8D428FC32E543978653081A /* CMake Rules */ = {
+                     isa = PBXShellScriptBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                     );
+                     name = "CMake Rules";
+                     runOnlyForDeploymentPostprocessing = 0;
+                     shellPath = /bin/sh;
+                     shellScript = "#make -C . -f CMakeScripts/ALL_BUILD_cmakeRulesBuildPhase.make$CONFIGURATION all";
+                     showEnvVarsInLog = 0;
+              };
+              E7D04A24EE1D4CB9A3BCA13F /* CMake PostBuild Rules */ = {
+                     isa = PBXShellScriptBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                     );
+                     name = "CMake PostBuild Rules";
+                     runOnlyForDeploymentPostprocessing = 0;
+                     shellPath = /bin/sh;
+                     shellScript = "#make -C . -f CMakeScripts/freeglut_postBuildPhase.make$CONFIGURATION all";
+                     showEnvVarsInLog = 0;
+              };
+              57DD52723C584975AE74166A /*  */ = {
+                     isa = PBXShellScriptBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                     );
+                     inputPaths = (
+                     );
+                     outputPaths = (
+                     );
+                     runOnlyForDeploymentPostprocessing = 0;
+                     shellPath = /bin/sh;
+                     shellScript = "## shell script goes here
+exit 0";
+                     showEnvVarsInLog = 0;
+              };
+              36AC2DAF2A45416CBEA2066F /* CMake PostBuild Rules */ = {
+                     isa = PBXShellScriptBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                     );
+                     name = "CMake PostBuild Rules";
+                     runOnlyForDeploymentPostprocessing = 0;
+                     shellPath = /bin/sh;
+                     shellScript = "#make -C . -f CMakeScripts/install_postBuildPhase.make$CONFIGURATION all";
+                     showEnvVarsInLog = 0;
+              };
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+              0133BF263047425F87FE19CA /* Sources */ = {
+                     isa = PBXSourcesBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                            38DB355786D9471BB80189F2 /* ../../../freeglut/src/fg_callbacks.c */,
+                            2128C5AC41EC427EA095AE8B /* ../../../freeglut/src/fg_cursor.c */,
+                            300416BA31E74BA1B4FFF137 /* ../../../freeglut/src/fg_display.c */,
+                            38CD7E7537F240D4B81B2075 /* ../../../freeglut/src/fg_ext.c */,
+                            DC735883522A483AAF395182 /* ../../../freeglut/src/fg_font.c */,
+                            61757EE64350420584414551 /* ../../../freeglut/src/fg_font_data.c */,
+                            3B25A2F880A6410490B2D800 /* ../../../freeglut/src/fg_gamemode.c */,
+                            887401643CAB4B56BAEC0759 /* ../../../freeglut/src/fg_geometry.c */,
+                            443F903217894964819B7397 /* ../../../freeglut/src/fg_gl2.c */,
+                            83363067342E4FFCA558360A /* ../../../freeglut/src/fg_init.c */,
+                            468467F9F3664ED0A5B1CF2E /* ../../../freeglut/src/fg_input_devices.c */,
+                            6DA8C6B7DD5D402580DF2CAF /* ../../../freeglut/src/fg_joystick.c */,
+                            8209D76BCB0144B2BB933A3B /* ../../../freeglut/src/fg_main.c */,
+                            088671359F0E42D5A0835159 /* ../../../freeglut/src/fg_menu.c */,
+                            E9C5133D4F1644FABDD4071F /* ../../../freeglut/src/fg_misc.c */,
+                            3C57896A93074EE2B9696BAC /* ../../../freeglut/src/fg_overlay.c */,
+                            5B0A54B5782D48FEACDDF9C7 /* ../../../freeglut/src/fg_spaceball.c */,
+                            BFE3D842FF88483AA56A40DF /* ../../../freeglut/src/fg_state.c */,
+                            954C7D4BDFA8410E856A8295 /* ../../../freeglut/src/fg_stroke_mono_roman.c */,
+                            A8ED82BEDA5645E78596DCEE /* ../../../freeglut/src/fg_stroke_roman.c */,
+                            08C833838336434496EA830F /* ../../../freeglut/src/fg_structure.c */,
+                            C2BC6B2C0AC045A59F5B8F29 /* ../../../freeglut/src/fg_teapot.c */,
+                            85147197F2FC42769B8F1B49 /* ../../../freeglut/src/fg_videoresize.c */,
+                            80E92E876C8D41E49F0F5BB8 /* ../../../freeglut/src/fg_window.c */,
+                            C936C40712EC4D0ABB4317D8 /* ../../../freeglut/src/util/xparsegeometry_repl.c */,
+                            3B2FE6FB886C4F3395B61C32 /* ../../../freeglut/src/x11/fg_cursor_x11.c */,
+                            625379B7DF514D0BB328967B /* ../../../freeglut/src/x11/fg_display_x11_glx.c */,
+                            135DB23CBE7B4F82ABFB5456 /* ../../../freeglut/src/x11/fg_ext_x11.c */,
+                            8B36B0AE4D6F473CAD6C94A7 /* ../../../freeglut/src/x11/fg_gamemode_x11.c */,
+                            89252843A1094C9D9C561052 /* ../../../freeglut/src/x11/fg_glutfont_definitions_x11.c */,
+                            E4A4D72BAA11488BAA245806 /* ../../../freeglut/src/x11/fg_init_x11.c */,
+                            FF85BA3BAA05426E8CFEB2AA /* ../../../freeglut/src/x11/fg_input_devices_x11.c */,
+                            E7AA1D1593CF41EE81E60A85 /* ../../../freeglut/src/x11/fg_joystick_x11.c */,
+                            F98DCA19D4764D44A09D3CC8 /* ../../../freeglut/src/x11/fg_main_x11.c */,
+                            827D0673BEF8416B992F300A /* ../../../freeglut/src/x11/fg_menu_x11.c */,
+                            AE02A71A0D104798B818F479 /* ../../../freeglut/src/x11/fg_spaceball_x11.c */,
+                            E9B4F163F83C452B8865BBA5 /* ../../../freeglut/src/x11/fg_state_x11.c */,
+                            837C59493894427EBB3E277B /* ../../../freeglut/src/x11/fg_state_x11_glx.c */,
+                            5D645CB06BE9423393847038 /* ../../../freeglut/src/x11/fg_structure_x11.c */,
+                            BF28F73F8F364008B17E81C8 /* ../../../freeglut/src/x11/fg_window_x11.c */,
+                            4482B838B94740CAB666D7D7 /* ../../../freeglut/src/x11/fg_window_x11_glx.c */,
+                            E0475F0E506F4ABA9B7E4B06 /* ../../../freeglut/src/x11/fg_xinput_x11.c */,
+                     );
+                     runOnlyForDeploymentPostprocessing = 0;
+              };
+              CF6127E1B33D4CC9A11BF03D /* Sources */ = {
+                     isa = PBXSourcesBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                            A68E4AAF0BEC4EC1B0DFB3F4 /* ../../../freeglut/src/fg_callbacks.c */,
+                            D1E56E000A2343AD82A65406 /* ../../../freeglut/src/fg_cursor.c */,
+                            EB34125A03D94557A63EFAF4 /* ../../../freeglut/src/fg_display.c */,
+                            1535C9059D3C46A08098EFE3 /* ../../../freeglut/src/fg_ext.c */,
+                            E4E420040FF644A58AF7F643 /* ../../../freeglut/src/fg_font.c */,
+                            F473C22DAEEE414DB3C894E7 /* ../../../freeglut/src/fg_font_data.c */,
+                            1781DCF85120497A879C0A37 /* ../../../freeglut/src/fg_gamemode.c */,
+                            8B3EE00A2E074E648842D5FD /* ../../../freeglut/src/fg_geometry.c */,
+                            1777E6E574894FC49AA3AE30 /* ../../../freeglut/src/fg_gl2.c */,
+                            0869125525B649C3910E402A /* ../../../freeglut/src/fg_init.c */,
+                            F3B005134A00400491450F56 /* ../../../freeglut/src/fg_input_devices.c */,
+                            EA0A7293EF034E619AF24F58 /* ../../../freeglut/src/fg_joystick.c */,
+                            C9AE01F8BB8C4B8097BB06ED /* ../../../freeglut/src/fg_main.c */,
+                            C6B751838C4E47DA8AB630F1 /* ../../../freeglut/src/fg_menu.c */,
+                            641ECA1FCB7F49B390CA52CC /* ../../../freeglut/src/fg_misc.c */,
+                            9CDA565BEAFD43DD8DD4F32B /* ../../../freeglut/src/fg_overlay.c */,
+                            757A75DE9DC34A6792DA3566 /* ../../../freeglut/src/fg_spaceball.c */,
+                            B3E5516B5972411F919AFFFF /* ../../../freeglut/src/fg_state.c */,
+                            F2AB3D0097FD43E8B9FB41C5 /* ../../../freeglut/src/fg_stroke_mono_roman.c */,
+                            17366DB595934E40986AB5F3 /* ../../../freeglut/src/fg_stroke_roman.c */,
+                            03BBCD9650A345C5B025EC9C /* ../../../freeglut/src/fg_structure.c */,
+                            3707D5680A3B49239348F5F0 /* ../../../freeglut/src/fg_teapot.c */,
+                            EB9676DD25AF4A2CA03CD2D7 /* ../../../freeglut/src/fg_videoresize.c */,
+                            6FC0AA5D9EB24F9AA376F94C /* ../../../freeglut/src/fg_window.c */,
+                            C0C38FFF7A434C93B0859780 /* ../../../freeglut/src/util/xparsegeometry_repl.c */,
+                            D41FFD8588E54AE8B0C61241 /* ../../../freeglut/src/x11/fg_cursor_x11.c */,
+                            1F3C02A5B1A74FD0B56A48EA /* ../../../freeglut/src/x11/fg_display_x11_glx.c */,
+                            A56DF9DE88064F609EB42575 /* ../../../freeglut/src/x11/fg_ext_x11.c */,
+                            FA5B7930BD9C493F93028355 /* ../../../freeglut/src/x11/fg_gamemode_x11.c */,
+                            DB5C102281C94B8586333A08 /* ../../../freeglut/src/x11/fg_glutfont_definitions_x11.c */,
+                            52F22C3D7EA4441EB7F1C104 /* ../../../freeglut/src/x11/fg_init_x11.c */,
+                            6935E5A4CC804287936D67F2 /* ../../../freeglut/src/x11/fg_input_devices_x11.c */,
+                            4FC8D90E530D4439A22349C6 /* ../../../freeglut/src/x11/fg_joystick_x11.c */,
+                            B6682B373F26400FB332C435 /* ../../../freeglut/src/x11/fg_main_x11.c */,
+                            564E7820084B4C28AA07CCDC /* ../../../freeglut/src/x11/fg_menu_x11.c */,
+                            493BE922D6DC45A18B998447 /* ../../../freeglut/src/x11/fg_spaceball_x11.c */,
+                            98E0C870BAD246449EAD7275 /* ../../../freeglut/src/x11/fg_state_x11.c */,
+                            ABB4A6C54D0F476EB86C7589 /* ../../../freeglut/src/x11/fg_state_x11_glx.c */,
+                            FC5A7CE870EB4E7CA52DF269 /* ../../../freeglut/src/x11/fg_structure_x11.c */,
+                            4E35BE26B7C34551AEB19F8C /* ../../../freeglut/src/x11/fg_window_x11.c */,
+                            C6B0E923C58144068A2FEDCE /* ../../../freeglut/src/x11/fg_window_x11_glx.c */,
+                            4DE9F47856584C1E93EB3FAB /* ../../../freeglut/src/x11/fg_xinput_x11.c */,
+                     );
+                     runOnlyForDeploymentPostprocessing = 0;
+              };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+              AB16F821EE514E1C889FC593 /* PBXTargetDependency */ = {
+                     isa = PBXTargetDependency;
+                     target = 38A91461EC074390AECDCCE9 /* freeglut */;
+                     targetProxy = 1BAE929C9F5446BFAF685FF7 /* PBXContainerItemProxy */;
+              };
+              3A1A78D37CFD48F68E770CBB /* PBXTargetDependency */ = {
+                     isa = PBXTargetDependency;
+                     target = 0ACB6F5946644F2C8FB98EC7 /* freeglut_static */;
+                     targetProxy = DE730B5D52B34FC2AFD3B3D3 /* PBXContainerItemProxy */;
+              };
+              7E569669D19B4BEF9BCADAFD /* PBXTargetDependency */ = {
+                     isa = PBXTargetDependency;
+                     target = 78CE605356C14378B051C4BA /* ALL_BUILD */;
+                     targetProxy = 2BB67E471E5B4E34AAAB7578 /* PBXContainerItemProxy */;
+              };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+              B628EEB95EE04513B8E2285F /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+                            ONLY_ACTIVE_ARCH = YES;
+                            SDKROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk";
+                            SYMROOT = ../freeglut/build;
+                     };
+                     name = Debug;
+              };
+              E0E6C362AA06423B9785DEEB /* Release */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+                            ONLY_ACTIVE_ARCH = YES;
+                            SDKROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk";
+                            SYMROOT = ../freeglut/build;
+                     };
+                     name = Release;
+              };
+              A9EC21527F8B4C33891F6F5B /* MinSizeRel */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+                            ONLY_ACTIVE_ARCH = YES;
+                            SDKROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk";
+                            SYMROOT = ../freeglut/build;
+                     };
+                     name = MinSizeRel;
+              };
+              4F0C6A907E3A4DD7985904E5 /* RelWithDebInfo */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+                            ONLY_ACTIVE_ARCH = YES;
+                            SDKROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk";
+                            SYMROOT = ../freeglut/build;
+                     };
+                     name = RelWithDebInfo;
+              };
+              449A63124F70413BBABD8E33 /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = ALL_BUILD;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Debug;
+              };
+              BADD4749390E450887005E02 /* Release */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = ALL_BUILD;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Release;
+              };
+              AB57ECEF3D944956B90961E6 /* MinSizeRel */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = ALL_BUILD;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = MinSizeRel;
+              };
+              D5E2A05A371144419098E58F /* RelWithDebInfo */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = ALL_BUILD;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = RelWithDebInfo;
+              };
+              A0AB815C04414C79A33F1FEF /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            CONFIGURATION_BUILD_DIR = ../freeglut/lib/Debug;
+                            DYLIB_COMPATIBILITY_VERSION = "3.0.0";
+                            DYLIB_CURRENT_VERSION = "3.9.0";
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".dylib";
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", freeglut_EXPORTS, HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            LD_RUNPATH_SEARCH_PATHS = /usr/X11/lib;
+                            LIBRARY_SEARCH_PATHS = " /usr/X11/lib/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME) /usr/X11/lib";
+                            LIBRARY_STYLE = DYNAMIC;
+                            OTHER_CFLAGS = "   -DDEBUG=1 -fPIC  ";
+                            OTHER_LDFLAGS = "  -dynamiclib -Wl,-headerpad_max_install_names -install_name ../freeglut/lib/Debug/libglut.3.dylib  -framework OpenGL -lm /usr/X11R6/lib/libSM.dylib /usr/X11R6/lib/libICE.dylib /usr/X11R6/lib/libX11.dylib /usr/X11R6/lib/libXext.dylib /usr/X11R6/lib/libXrandr.dylib /usr/X11R6/lib/libXxf86vm.dylib /usr/X11R6/lib/libXi.dylib -lGL";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = "glut.3.9.0";
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Debug;
+              };
+              86391F44F48242A58EEF9EFD /* Release */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            CONFIGURATION_BUILD_DIR = ../freeglut/lib/Release;
+                            DYLIB_COMPATIBILITY_VERSION = "3.0.0";
+                            DYLIB_CURRENT_VERSION = "3.9.0";
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".dylib";
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 3;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", freeglut_EXPORTS, HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            LD_RUNPATH_SEARCH_PATHS = /usr/X11/lib;
+                            LIBRARY_SEARCH_PATHS = " /usr/X11/lib/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME) /usr/X11/lib";
+                            LIBRARY_STYLE = DYNAMIC;
+                            OTHER_CFLAGS = "    -DNDEBUG -DDEBUG=0 -fPIC  ";
+                            OTHER_LDFLAGS = "  -dynamiclib -Wl,-headerpad_max_install_names -install_name ../freeglut/lib/Release/libglut.3.dylib  -framework OpenGL -lm /usr/X11R6/lib/libSM.dylib /usr/X11R6/lib/libICE.dylib /usr/X11R6/lib/libX11.dylib /usr/X11R6/lib/libXext.dylib /usr/X11R6/lib/libXrandr.dylib /usr/X11R6/lib/libXxf86vm.dylib /usr/X11R6/lib/libXi.dylib -lGL";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = "glut.3.9.0";
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Release;
+              };
+              073AFB8E61084251A8B149B7 /* MinSizeRel */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            CONFIGURATION_BUILD_DIR = ../freeglut/lib/MinSizeRel;
+                            DYLIB_COMPATIBILITY_VERSION = "3.0.0";
+                            DYLIB_CURRENT_VERSION = "3.9.0";
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".dylib";
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = s;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", freeglut_EXPORTS, HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            LD_RUNPATH_SEARCH_PATHS = /usr/X11/lib;
+                            LIBRARY_SEARCH_PATHS = " /usr/X11/lib/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME) /usr/X11/lib";
+                            LIBRARY_STYLE = DYNAMIC;
+                            OTHER_CFLAGS = "    -DNDEBUG -DDEBUG=0 -fPIC  ";
+                            OTHER_LDFLAGS = "  -dynamiclib -Wl,-headerpad_max_install_names -install_name ../freeglut/lib/MinSizeRel/libglut.3.dylib  -framework OpenGL -lm /usr/X11R6/lib/libSM.dylib /usr/X11R6/lib/libICE.dylib /usr/X11R6/lib/libX11.dylib /usr/X11R6/lib/libXext.dylib /usr/X11R6/lib/libXrandr.dylib /usr/X11R6/lib/libXxf86vm.dylib /usr/X11R6/lib/libXi.dylib -lGL";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = "glut.3.9.0";
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = MinSizeRel;
+              };
+              61F22B7D1B5440BD890EEC57 /* RelWithDebInfo */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            CONFIGURATION_BUILD_DIR = ../freeglut/lib/RelWithDebInfo;
+                            DYLIB_COMPATIBILITY_VERSION = "3.0.0";
+                            DYLIB_CURRENT_VERSION = "3.9.0";
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".dylib";
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 2;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", freeglut_EXPORTS, HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            LD_RUNPATH_SEARCH_PATHS = /usr/X11/lib;
+                            LIBRARY_SEARCH_PATHS = " /usr/X11/lib/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME) /usr/X11/lib";
+                            LIBRARY_STYLE = DYNAMIC;
+                            OTHER_CFLAGS = "       -DNDEBUG -DDEBUG=0 -fPIC  ";
+                            OTHER_LDFLAGS = "  -dynamiclib -Wl,-headerpad_max_install_names -install_name ../freeglut/lib/RelWithDebInfo/libglut.3.dylib  -framework OpenGL -lm /usr/X11R6/lib/libSM.dylib /usr/X11R6/lib/libICE.dylib /usr/X11R6/lib/libX11.dylib /usr/X11R6/lib/libXext.dylib /usr/X11R6/lib/libXrandr.dylib /usr/X11R6/lib/libXxf86vm.dylib /usr/X11R6/lib/libXi.dylib -lGL";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = "glut.3.9.0";
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = RelWithDebInfo;
+              };
+              6692E6FEE9D2446389B9CA0D /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            CONFIGURATION_BUILD_DIR = ../freeglut/lib/Debug;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = "   -DDEBUG=1  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = glut;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Debug;
+              };
+              CE919157DC2449AD916799A3 /* Release */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            CONFIGURATION_BUILD_DIR = ../freeglut/lib/Release;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 3;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = "    -DNDEBUG -DDEBUG=0  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = glut;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Release;
+              };
+              3BC78546396F4940AC38E0B5 /* MinSizeRel */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            CONFIGURATION_BUILD_DIR = ../freeglut/lib/MinSizeRel;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = s;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = "    -DNDEBUG -DDEBUG=0  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = glut;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = MinSizeRel;
+              };
+              F7C4213F1CFF4E6F93027687 /* RelWithDebInfo */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            CONFIGURATION_BUILD_DIR = ../freeglut/lib/RelWithDebInfo;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 2;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", HAVE_CONFIG_H, );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = "       -DNDEBUG -DDEBUG=0  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = glut;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = RelWithDebInfo;
+              };
+              8B5DF2D0E5DA4A2DBF1E6A40 /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = install;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Debug;
+              };
+              C03F847EFE024541B05CBDE3 /* Release */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = install;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Release;
+              };
+              C80D7CB8172B44D29E5D6303 /* MinSizeRel */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = install;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = MinSizeRel;
+              };
+              0101A415240F4527BDD6C0B0 /* RelWithDebInfo */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            FRAMEWORK_SEARCH_PATHS = ("/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks", );
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (."./Box2D/..", ../../../freeglut/include, ../../../freeglut/src, /usr/pkg/xorg/include, /usr/X11R6/include, /usr/X11R7/include, /usr/include/X11, /usr/openwin/include, /usr/openwin/share/include, /opt/graphics/OpenGL/include, /opt/X11/include, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = install;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../freeglut;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = RelWithDebInfo;
+              };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+              F88C3C2A75864E11AF9D1636 /* Build configuration list for PBXProject  "freeglut" */ = {
+                     isa = XCConfigurationList;
+                     buildConfigurations = (
+                            B628EEB95EE04513B8E2285F /* Debug */,
+                            E0E6C362AA06423B9785DEEB /* Release */,
+                            A9EC21527F8B4C33891F6F5B /* MinSizeRel */,
+                            4F0C6A907E3A4DD7985904E5 /* RelWithDebInfo */,
+                     );
+                     defaultConfigurationIsVisible = 0;
+                     defaultConfigurationName = Debug;
+              };
+              0B231BCFAF0F4448819737D9 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+                     isa = XCConfigurationList;
+                     buildConfigurations = (
+                            449A63124F70413BBABD8E33 /* Debug */,
+                            BADD4749390E450887005E02 /* Release */,
+                            AB57ECEF3D944956B90961E6 /* MinSizeRel */,
+                            D5E2A05A371144419098E58F /* RelWithDebInfo */,
+                     );
+                     defaultConfigurationIsVisible = 0;
+                     defaultConfigurationName = Debug;
+              };
+              F8ABD3BBE9164BC1A8A12426 /* Build configuration list for PBXNativeTarget "freeglut" */ = {
+                     isa = XCConfigurationList;
+                     buildConfigurations = (
+                            A0AB815C04414C79A33F1FEF /* Debug */,
+                            86391F44F48242A58EEF9EFD /* Release */,
+                            073AFB8E61084251A8B149B7 /* MinSizeRel */,
+                            61F22B7D1B5440BD890EEC57 /* RelWithDebInfo */,
+                     );
+                     defaultConfigurationIsVisible = 0;
+                     defaultConfigurationName = Debug;
+              };
+              DEECE69B91E2474AB20D301C /* Build configuration list for PBXNativeTarget "freeglut_static" */ = {
+                     isa = XCConfigurationList;
+                     buildConfigurations = (
+                            6692E6FEE9D2446389B9CA0D /* Debug */,
+                            CE919157DC2449AD916799A3 /* Release */,
+                            3BC78546396F4940AC38E0B5 /* MinSizeRel */,
+                            F7C4213F1CFF4E6F93027687 /* RelWithDebInfo */,
+                     );
+                     defaultConfigurationIsVisible = 0;
+                     defaultConfigurationName = Debug;
+              };
+              2842F0F447564ACD81C04698 /* Build configuration list for PBXAggregateTarget "install" */ = {
+                     isa = XCConfigurationList;
+                     buildConfigurations = (
+                            8B5DF2D0E5DA4A2DBF1E6A40 /* Debug */,
+                            C03F847EFE024541B05CBDE3 /* Release */,
+                            C80D7CB8172B44D29E5D6303 /* MinSizeRel */,
+                            0101A415240F4527BDD6C0B0 /* RelWithDebInfo */,
+                     );
+                     defaultConfigurationIsVisible = 0;
+                     defaultConfigurationName = Debug;
+              };
+/* End XCConfigurationList section */
+       };
+       rootObject = 21E33C6FA7174847871E4035;
+}

@@ -1,0 +1,24 @@
+file: warnF.txt
+root: /usr/local/google/home/smiles/src/mobile/android/ub-games-master/vendor/unbundled_google/libs/liquidfun/Box2D/Documentation
+date: Mon, 09 Dec 2013 18:35:30 (local)
+Linklint version: 2.3.5
+
+#------------------------------------------------------------
+# warn    4 files with warnings
+#------------------------------------------------------------
+/API-Ref.html
+    had 1 warning
+    re-direct should be absolute
+
+/Building.html
+    had 1 warning
+    re-direct should be absolute
+
+/Programmers-Guide.html
+    had 1 warning
+    re-direct should be absolute
+
+/Readme.html
+    had 1 warning
+    re-direct should be absolute
+

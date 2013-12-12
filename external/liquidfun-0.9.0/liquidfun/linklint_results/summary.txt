@@ -1,0 +1,19 @@
+file: summary.txt
+root: /usr/local/google/home/smiles/src/mobile/android/ub-games-master/vendor/unbundled_google/libs/liquidfun/Box2D/Documentation
+date: Mon, 09 Dec 2013 18:35:30 (local)
+Linklint version: 2.3.5
+
+Linklint found 415 files in 6 directories and checked 368 html files.
+There were no missing files. No files had broken links.
+No errors, 1 warning.
+
+found   6 directories with files
+found   1 default index
+found 367 html files
+found  34 image files
+found  13 other files
+found  26 http links
+found   2 https links
+found   2 javascript links
+----- 282 orphans
+warn    1 warning

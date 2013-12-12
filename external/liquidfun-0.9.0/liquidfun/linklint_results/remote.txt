@@ -1,0 +1,47 @@
+file: remote.txt
+root: /usr/local/google/home/smiles/src/mobile/android/ub-games-master/vendor/unbundled_google/libs/liquidfun/Box2D/Documentation
+date: Mon, 09 Dec 2013 18:35:30 (local)
+Linklint version: 2.3.5
+
+#------------------------------------------------------------
+# found  26 http links
+#------------------------------------------------------------
+http://box2d.org
+http://cmake.org
+http://code.google.com/p/LiquidFun/
+http://code.google.com/p/box2d/downloads/list
+http://developer.android.com/sdk/index.html
+http://developer.android.com/tools/devices/managing-avds.html
+http://developer.android.com/tools/sdk/eclipse-adt.html
+http://developer.android.com/tools/sdk/ndk/index.html
+http://en.wikipedia.org/wiki/Linux
+http://en.wikipedia.org/wiki/Software_versioning
+http://freeglut.sourceforge.net/
+http://github.com/google/liquidfun
+http://github.com/google/liquidfun/issues
+http://github.com/google/liquidfun/releases
+http://google.github.io/liquidfun
+http://group.google.com/group/liquidfun
+http://groups.google.com/forum/#!forum/liquidfun
+http://stackoverflow.com
+http://windows.microsoft.com/
+http://www.apple.com/osx/
+http://www.cmake.org
+http://www.codeproject.com/useritems/Small_Block_Allocator.asp
+http://www.cygwin.com/
+http://www.stackoverflow.com
+http://www.visualstudio.com/
+http://xquartz.macosforge.org/
+
+#------------------------------------------------------------
+# found   2 https links
+#------------------------------------------------------------
+https://developer.android.com/sdk/index.html
+https://developer.apple.com/xcode/
+
+#------------------------------------------------------------
+# found   2 javascript links
+#------------------------------------------------------------
+javascript:searchBox.CloseResultsWindow()
+javascript:void(0)
+
