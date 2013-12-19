@@ -13,4 +13,6 @@
 #include "gapplication.h"
 #include "gevent.h"
 
+#define GIDEROS_VERSION "2013.12"
+
 #endif

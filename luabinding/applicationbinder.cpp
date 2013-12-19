@@ -8,6 +8,7 @@
 #include <gtexture.h>
 #include <gapplication.h>
 #include <luautil.h>
+#include <gideros.h>
 
 #define PORTRAIT "portrait"
 #define PORTRAIT_UPSIDE_DOWN "portraitUpsideDown"
@@ -546,7 +547,7 @@ int ApplicationBinder::getApiVersion(lua_State* L)
 
     LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
-    lua_pushliteral(L, "2013.09.1");
+    lua_pushliteral(L, GIDEROS_VERSION);
 
     return 1;
 }
