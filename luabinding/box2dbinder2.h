@@ -3,6 +3,8 @@
 
 #include "binder.h"
 
+#define BIND_LIQUIDFUN 0
+
 class Box2DBinder2
 {
 public:
@@ -238,6 +240,12 @@ private:
     static int b2Contact_resetRestitution(lua_State *L);
 
     static int testOverlap(lua_State *L);
+
+#if BIND_LIQUIDFUN
+    static int b2World_createParticle(lua_State* L);
+    static int b2World_destroyParticle(lua_State* L);
+    static int b2World_createParticleGroup(lua_State* L);
+#endif
 };
 
 #endif
