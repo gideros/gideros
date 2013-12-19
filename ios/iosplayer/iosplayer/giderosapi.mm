@@ -248,6 +248,7 @@ public:
 	void didReceiveMemoryWarning();
 	
 	BOOL shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation);	
+	void willRotateToInterfaceOrientationHelper(UIInterfaceOrientation toInterfaceOrientation);
 	void willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation);
 	void didRotateFromInterfaceOrientation(UIInterfaceOrientation fromInterfaceOrientation);
     NSUInteger supportedInterfaceOrientations();
@@ -278,6 +279,8 @@ private:
 	ProjectProperties properties_;
 	
 	Orientation hardwareOrientation_;
+    
+    Orientation deviceOrientation_;
 
 	bool luaFilesLoaded_;
 
@@ -636,10 +639,13 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	application_->enableExceptions();
 	application_->initialize();
 	application_->setResolution(width_, height_);
-	
+    willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+
 	Binder::disableTypeChecking();
 	
 	hardwareOrientation_ = ePortrait;
+    
+    deviceOrientation_ = ePortrait;
 
 	running_ = false;
 
@@ -732,14 +738,7 @@ ApplicationManager::~ApplicationManager()
 
 void ApplicationManager::drawFirstFrame()
 {
-    bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
-    bool dontAutorotate = (properties_.autorotation == 0) || (properties_.autorotation == 1 && !phone) || (properties_.autorotation == 2 && phone);
-    
-    if (dontAutorotate)
-        hardwareOrientation_ = ePortrait;
-    else
-        hardwareOrientation_ = application_->orientation();
-    application_->setHardwareOrientation(hardwareOrientation_);
+    willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 
 	[view_ setFramebuffer];
 	application_->clearBuffers();
@@ -919,11 +918,13 @@ void ApplicationManager::loadProperties()
 		contentScaleFactor = view_.contentScaleFactor;
 	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
+	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
-	
+    willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+
 	g_setFps(properties_.fps);
 
 	ginput_setMouseToTouchEnabled(properties_.mouseToTouch);
@@ -994,11 +995,13 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 		contentScaleFactor = view_.contentScaleFactor;
 	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
+	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
-	
+    willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+
 	g_setFps(properties_.fps);
 	
 	ginput_setMouseToTouchEnabled(properties_.mouseToTouch);
@@ -1254,13 +1257,8 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
     return result;
 }
 
-void ApplicationManager::willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
+void ApplicationManager::willRotateToInterfaceOrientationHelper(UIInterfaceOrientation toInterfaceOrientation)
 {
-#if THREADED_RENDER_LOOP
-    [autorotationMutex_ lock];
-	autorotating_ = true;
-#endif
-	
 	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
 	bool dontAutorotate = (properties_.autorotation == 0) || (properties_.autorotation == 1 && !phone) || (properties_.autorotation == 2 && phone);
 	
@@ -1269,6 +1267,55 @@ void ApplicationManager::willRotateToInterfaceOrientation(UIInterfaceOrientation
 	else
 		hardwareOrientation_ = application_->orientation();
 	application_->setHardwareOrientation(hardwareOrientation_);
+    
+    if (dontAutorotate)
+    {
+        deviceOrientation_ = application_->orientation();
+    }
+    else
+    {
+        if (application_->orientation() == ePortrait || application_->orientation() == ePortraitUpsideDown)
+        {
+            switch (toInterfaceOrientation)
+            {
+                case UIInterfaceOrientationPortrait:
+                    deviceOrientation_ = ePortrait;
+                    break;
+                case UIInterfaceOrientationPortraitUpsideDown:
+                    deviceOrientation_ = ePortraitUpsideDown;
+                    break;
+                default:
+                    deviceOrientation_ = ePortrait;
+                    break;
+            }
+        }
+        else
+        {
+            switch (toInterfaceOrientation)
+            {
+                case UIInterfaceOrientationLandscapeRight:
+                    deviceOrientation_ = eLandscapeLeft;
+                    break;
+                case UIInterfaceOrientationLandscapeLeft:
+                    deviceOrientation_ = eLandscapeRight;
+                    break;
+                default:
+                    deviceOrientation_ = eLandscapeLeft;
+                    break;
+            }
+        }
+    }
+	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
+}
+
+void ApplicationManager::willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
+{
+#if THREADED_RENDER_LOOP
+    [autorotationMutex_ lock];
+	autorotating_ = true;
+#endif
+    
+    willRotateToInterfaceOrientationHelper(toInterfaceOrientation);
 }
 
 void ApplicationManager::didRotateFromInterfaceOrientation(UIInterfaceOrientation fromInterfaceOrientation)
