@@ -451,6 +451,7 @@ void GLCanvas::timerEvent(QTimerEvent *)
 				int orientation;
 				buffer >> orientation;
 				application_->setOrientation((Orientation)orientation);
+                application_->getApplication()->setDeviceOrientation((Orientation)orientation);
 
 				int fps;
 				buffer >> fps;
