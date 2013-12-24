@@ -7,38 +7,47 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.view.Display;
 import android.view.Surface;
-import android.view.WindowManager;
 
-/**
- * 
- * This class is used for controlling the Accelerometer
- *
- */
 public class Accelerometer implements SensorEventListener {
-	
-	private Context mContext;
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
-	private int mNaturalOrientation;
 	private boolean isEnabled_;
+	private int mNativeOrientation;
 
-	public Accelerometer(){
+	public Accelerometer() {
 		Activity activity = WeakActivityHolder.get();
 
-		//Get an instance of the SensorManager
-	    mSensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
-	    mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-	    
-	    Display display = ((WindowManager)activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-	    mNaturalOrientation = display.getRotation();
-	    
-	    isEnabled_ = false;
+		mSensorManager = (SensorManager)activity.getSystemService(Context.SENSOR_SERVICE);
+		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+		int rotation = 0;
+		switch (activity.getWindowManager().getDefaultDisplay().getRotation()) {
+		case Surface.ROTATION_0:
+			rotation = 0;
+			break;
+		case Surface.ROTATION_90:
+			rotation = 90;
+			break;
+		case Surface.ROTATION_180:
+			rotation = 180;
+			break;
+		case Surface.ROTATION_270:
+			rotation = 270;
+			break;
+		}
+
+		int orientation = activity.getResources().getConfiguration().orientation;
+		if (((rotation == 0 || rotation == 180) && (orientation == Configuration.ORIENTATION_LANDSCAPE)) || ((rotation == 90 || rotation == 270) && (orientation == Configuration.ORIENTATION_PORTRAIT))) {
+			mNativeOrientation = Configuration.ORIENTATION_LANDSCAPE;
+		} else {
+			mNativeOrientation = Configuration.ORIENTATION_PORTRAIT;
+		}
+
+		isEnabled_ = false;
 	}
 
-	boolean isAvailable()
-	{
+	boolean isAvailable() {
 		return mAccelerometer != null;
 	}
 
@@ -51,7 +60,7 @@ public class Accelerometer implements SensorEventListener {
 		isEnabled_ = true;
 	}
 
-	public void disable () {
+	public void disable() {
 		if (!isAvailable())
 			return;
 		if (!isEnabled_)
@@ -62,36 +71,22 @@ public class Accelerometer implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
-		Activity activity = WeakActivityHolder.get();
-		
-		if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER){
-            return;
+		if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER) {
+			return;
 		}
 
-		float x = event.values[0];
-		float y = event.values[1];
-		float z = event.values[2];
-		
-		/*
-		 * Because the axes are not swapped when the device's screen orientation changes. 
-		 * So we should swap it here.
-		 * In tablets such as Motorola Xoom, the default orientation is landscape, so should
-		 * consider this.
-		 */
-		int orientation = activity.getResources().getConfiguration().orientation;
-		if ((orientation == Configuration.ORIENTATION_LANDSCAPE) && (mNaturalOrientation != Surface.ROTATION_0)){
-			float tmp = x;
-			x = -y;
-			y = tmp;
+		float x, y, z;
+		if (mNativeOrientation == Configuration.ORIENTATION_PORTRAIT) {
+			x = event.values[0];
+			y = event.values[1];
+			z = event.values[2];
+		} else {
+			x = event.values[1];
+			y = -event.values[0];
+			z = event.values[2];
 		}
-		else if ((orientation == Configuration.ORIENTATION_PORTRAIT) && (mNaturalOrientation != Surface.ROTATION_0))
-		{
-			 float tmp = x;
-	         x = y;
-	         y = -tmp;
-		}
-		
-        onSensorChanged(-x / 9.80665f, -y / 9.80665f, -z / 9.80665f);
+
+		onSensorChanged(-x / 9.80665f, -y / 9.80665f, -z / 9.80665f);
 	}
 
 	@Override
