@@ -22,11 +22,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
+import android.view.Surface;
 import android.view.WindowManager;
 
 public class GiderosApplication
@@ -897,6 +899,29 @@ public class GiderosApplication
 		return sb.toString();
 	}	
 	
+	public static int getRotation()
+	{
+		Activity activity = WeakActivityHolder.get();
+
+		int orientation = activity.getResources().getConfiguration().orientation;
+		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+		
+		if (orientation == Configuration.ORIENTATION_PORTRAIT)
+		{
+			if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_270)
+				return 0;
+			else
+				return 180;
+		}
+		else
+		{
+			if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_90)
+				return 90;
+			else
+				return 270;
+		}
+	}
+
 	static private native void nativeLowMemory();
 	static private native boolean nativeKeyDown(int keyCode, int repeatCount);
 	static private native boolean nativeKeyUp(int keyCode, int repeatCount);
