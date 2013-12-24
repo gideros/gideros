@@ -438,7 +438,7 @@ public class GiderosApplication
 	{
 		synchronized (lock)
 		{
-			GiderosApplication.nativeSurfaceChanged(w, h);
+			GiderosApplication.nativeSurfaceChanged(w, h, getRotation());
 		}	
 	}
 
@@ -932,7 +932,7 @@ public class GiderosApplication
 	static private native void nativeResume();
 	static private native void nativeDestroy();
 	static private native void nativeSurfaceCreated();
-	static private native void nativeSurfaceChanged(int w, int h);
+	static private native void nativeSurfaceChanged(int w, int h, int rotation);
 	static private native void nativeDrawFrame();
 	static private native void nativeTouchesBegin(int size, int[] id, int[] x, int[] y, int actionIndex);
 	static private native void nativeTouchesMove(int size, int[] id, int[] x, int[] y);

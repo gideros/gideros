@@ -169,7 +169,7 @@ public:
 	void luaError(const char *msg);
 	
 	void surfaceCreated();
-	void surfaceChanged(int width, int height);
+	void surfaceChanged(int width, int height, int rotation);
 	void drawFrame();
 
 	void setDirectories(const char *externalDir, const char *internalDir, const char *cacheDir);
@@ -220,6 +220,8 @@ private:
 	ProjectProperties properties_;
 	
 	Orientation hardwareOrientation_;
+	
+	Orientation deviceOrientation_;
 	
 	int nframe_;
 	
@@ -659,7 +661,7 @@ void ApplicationManager::surfaceCreated()
 	}
 }
 
-void ApplicationManager::surfaceChanged(int width, int height)
+void ApplicationManager::surfaceChanged(int width, int height, int rotation)
 {
 	if (player_ == true)
 		refreshLocalIPs();
@@ -679,8 +681,28 @@ void ApplicationManager::surfaceChanged(int width, int height)
 	
 	application_->setResolution(width_, height_);
 	application_->setHardwareOrientation(hardwareOrientation_);
+	
+	switch (rotation)
+	{
+	case 0:
+		deviceOrientation_ = ePortrait;
+		break;
+	case 90:
+		deviceOrientation_ = eLandscapeLeft;
+		break;
+	case 180:
+		deviceOrientation_ = ePortraitUpsideDown;
+		break;
+	case 270:
+		deviceOrientation_ = eLandscapeRight;
+		break;
+	default:
+		deviceOrientation_ = ePortrait;
+		break;
+	}
+	
+	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 }
-
 
 void ApplicationManager::drawFrame()
 {
@@ -792,6 +814,7 @@ void ApplicationManager::loadProperties()
 	application_->setResolution(width_, height_);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
+	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
@@ -883,6 +906,7 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->setResolution(width_, height_);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
+	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
@@ -1106,9 +1130,9 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceCreat
 	s_applicationManager->surfaceCreated();
 }
 
-void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceChanged(JNIEnv *env, jclass cls, jint width, jint height)
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeSurfaceChanged(JNIEnv *env, jclass cls, jint width, jint height, jint rotation)
 {
-	s_applicationManager->surfaceChanged(width, height);
+	s_applicationManager->surfaceChanged(width, height, rotation);
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeDrawFrame(JNIEnv *env, jclass cls)
