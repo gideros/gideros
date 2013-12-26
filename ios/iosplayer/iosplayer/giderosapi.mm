@@ -1259,53 +1259,39 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 
 void ApplicationManager::willRotateToInterfaceOrientationHelper(UIInterfaceOrientation toInterfaceOrientation)
 {
-	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
-	bool dontAutorotate = (properties_.autorotation == 0) || (properties_.autorotation == 1 && !phone) || (properties_.autorotation == 2 && phone);
-	
-	if (dontAutorotate)
-		hardwareOrientation_ = ePortrait;
-	else
-		hardwareOrientation_ = application_->orientation();
-	application_->setHardwareOrientation(hardwareOrientation_);
+    switch (toInterfaceOrientation)
+    {
+        case UIInterfaceOrientationPortrait:
+            deviceOrientation_ = ePortrait;
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            deviceOrientation_ = ePortraitUpsideDown;
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            deviceOrientation_ = eLandscapeLeft;
+            break;
+        case UIInterfaceOrientationLandscapeLeft:
+            deviceOrientation_ = eLandscapeRight;
+            break;
+        default:
+            deviceOrientation_ = ePortrait;
+            break;
+    }
+    application_->getApplication()->setDeviceOrientation(deviceOrientation_);
+
+
     
-    if (dontAutorotate)
-    {
-        deviceOrientation_ = application_->orientation();
-    }
+    Orientation orientation = application_->orientation();
+
+    bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
+    bool b2 = deviceOrientation_ == ePortrait || deviceOrientation_ == ePortraitUpsideDown;
+
+    if (b1 != b2)
+        hardwareOrientation_ = deviceOrientation_;
     else
-    {
-        if (application_->orientation() == ePortrait || application_->orientation() == ePortraitUpsideDown)
-        {
-            switch (toInterfaceOrientation)
-            {
-                case UIInterfaceOrientationPortrait:
-                    deviceOrientation_ = ePortrait;
-                    break;
-                case UIInterfaceOrientationPortraitUpsideDown:
-                    deviceOrientation_ = ePortraitUpsideDown;
-                    break;
-                default:
-                    deviceOrientation_ = ePortrait;
-                    break;
-            }
-        }
-        else
-        {
-            switch (toInterfaceOrientation)
-            {
-                case UIInterfaceOrientationLandscapeRight:
-                    deviceOrientation_ = eLandscapeLeft;
-                    break;
-                case UIInterfaceOrientationLandscapeLeft:
-                    deviceOrientation_ = eLandscapeRight;
-                    break;
-                default:
-                    deviceOrientation_ = eLandscapeLeft;
-                    break;
-            }
-        }
-    }
-	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
+        hardwareOrientation_ = orientation;
+
+    application_->setHardwareOrientation(hardwareOrientation_);
 }
 
 void ApplicationManager::willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
