@@ -170,6 +170,7 @@ public:
 	
 	void surfaceCreated();
 	void surfaceChanged(int width, int height, int rotation);
+	void updateHardwareOrientation();
 	void drawFrame();
 
 	void setDirectories(const char *externalDir, const char *internalDir, const char *cacheDir);
@@ -670,17 +671,14 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation)
 	{
 		width_ = height;
 		height_ = width;
-		hardwareOrientation_ = eLandscapeLeft;
 	}
 	else
 	{
 		width_ = width;
 		height_ = height;
-		hardwareOrientation_ = ePortrait;
 	}
 	
 	application_->setResolution(width_, height_);
-	application_->setHardwareOrientation(hardwareOrientation_);
 	
 	switch (rotation)
 	{
@@ -702,6 +700,23 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation)
 	}
 	
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
+	
+	updateHardwareOrientation();
+}
+
+void ApplicationManager::updateHardwareOrientation()
+{
+    Orientation orientation = application_->orientation();
+
+    bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
+    bool b2 = deviceOrientation_ == ePortrait || deviceOrientation_ == ePortraitUpsideDown;
+
+    if (b1 != b2)
+        hardwareOrientation_ = deviceOrientation_;
+    else
+        hardwareOrientation_ = orientation;
+
+    application_->setHardwareOrientation(hardwareOrientation_);	
 }
 
 void ApplicationManager::drawFrame()
@@ -812,8 +827,8 @@ void ApplicationManager::loadProperties()
 
 	
 	application_->setResolution(width_, height_);
-	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
+	updateHardwareOrientation();
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
@@ -904,8 +919,8 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->deinitialize();
 	application_->initialize();
 	application_->setResolution(width_, height_);
-	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
+	updateHardwareOrientation();
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
