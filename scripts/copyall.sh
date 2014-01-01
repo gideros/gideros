@@ -124,8 +124,8 @@ cp ../plugins/JSON/source/libjson.dylib ~/Desktop/release/Plugins/json.dylib
 #rm -rf GiderosiPadPlayer
 #cd -
 
-mkdir ~/Desktop/release/Gideros\ 2013.09.1
-mkdir ~/Desktop/release/Gideros\ 2013.09.1/Gideros\ Studio
-mv ~/Desktop/release/* ~/Desktop/release/Gideros\ 2013.09.1/Gideros\ Studio
-ln -s /Applications/ ~/Desktop/release/Gideros\ 2013.09.1/Applications
+mkdir ~/Desktop/release/Gideros\ 2014.01
+mkdir ~/Desktop/release/Gideros\ 2014.01/Gideros\ Studio
+mv ~/Desktop/release/* ~/Desktop/release/Gideros\ 2014.01/Gideros\ Studio
+ln -s /Applications/ ~/Desktop/release/Gideros\ 2014.01/Applications
 
