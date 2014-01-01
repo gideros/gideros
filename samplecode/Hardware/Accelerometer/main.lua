@@ -31,9 +31,32 @@ end
 
 updateFilterText()
 
+local function compensateAccelerometer(x, y, z)
+	local orientation = application:getOrientation()
+	local deviceOrientation = application:getDeviceOrientation()
+
+	local p1 = orientation == "portrait" or orientation == "portraitUpsideDown"
+	local p2 = deviceOrientation == "portrait" or deviceOrientation == "portraitUpsideDown"
+	
+	local rotation = (p1 == p2) and deviceOrientation or orientation
+
+	if rotation == "portrait" then
+		return x, y, z
+	elseif rotation == "landscapeLeft" then
+		return -y, x, z
+	elseif rotation == "portraitUpsideDown" then
+		return -x, -y, z
+	elseif rotation == "landscapeRight" then
+		return y, -x, z
+	end	
+end
+
 local function onEnterFrame()
 	-- get accelerometer values
 	local x, y, z = accelerometer:getAcceleration()
+	
+	-- compensate accelerometer according to the screen and device orientataion
+	x, y, z = compensateAccelerometer(x, y, z)
 
 	-- do the low-pass filtering
 	fx = x * filter + fx * (1 - filter)
