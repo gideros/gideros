@@ -85,7 +85,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Copyright © 2011-2013 Gideros Mobile</string>
+          <string>Copyright © 2012-2014 Gideros Mobile</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
