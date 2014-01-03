@@ -40,9 +40,9 @@
         [self.window addSubview:self.viewController.view];
     }
 
-    gdr_drawFirstFrame();
-
     [self.window makeKeyAndVisible];
+
+    gdr_drawFirstFrame();
 
     return YES;
 }
