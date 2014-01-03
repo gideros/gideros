@@ -83,6 +83,10 @@ Application::Application() :
 
 Application::~Application()
 {
+    for (std::size_t i = 0; i < unrefPool_.size(); ++i)
+        delete unrefPool_[i];
+    for (std::size_t i = 0; i < unrefPoolTrash_.size(); ++i)
+        delete unrefPoolTrash_[i];
 }
 
 Stage* Application::stage() const
