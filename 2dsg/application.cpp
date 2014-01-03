@@ -811,7 +811,15 @@ void Application::autounref(GReferenced *referenced)
 
 void *Application::createAutounrefPool()
 {
-    std::vector<GReferenced*> *pool = new std::vector<GReferenced*>;
+    std::vector<GReferenced*> *pool;
+    if (unrefPoolTrash_.empty())
+        pool = new std::vector<GReferenced*>;
+    else
+    {
+        pool = unrefPoolTrash_.back();
+        unrefPoolTrash_.pop_back();
+    }
+
     unrefPool_.push_back(pool);
     return reinterpret_cast<void*>(pool);
 }
@@ -826,7 +834,7 @@ void Application::deleteAutounrefPool(void *pool)
         for (std::size_t i = 0; i < pool2->size(); ++i)
             (*pool2)[i]->unref();
         pool2->clear();
-        delete pool2;
+        unrefPoolTrash_.push_back(pool2);
 
         if (pool == pool2)
             break;
