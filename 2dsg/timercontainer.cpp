@@ -50,6 +50,8 @@ void TimerContainer::removeAllTimers()
 
 void TimerContainer::tick()
 {
+    void *pool = application_->createAutounrefPool();
+
 	double clock = stopWatch_.clock();
 
 	while (queue_.empty() == false && queue_.begin()->first < clock)
@@ -88,7 +90,7 @@ void TimerContainer::tick()
         }
     }
 
-    application_->unrefPool();
+    application_->deleteAutounrefPool(pool);
 }
 
 double TimerContainer::getAdditionalDelay(const Timer *timer)

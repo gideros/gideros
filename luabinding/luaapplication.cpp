@@ -727,6 +727,8 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
 {
     StackChecker checker(L, "loadFile", 0);
 
+    void *pool = application_->createAutounrefPool();
+
     lua_pushcfunction(L, ::callFile);
 
     if (luaL_loadfile(L, filename))
@@ -737,7 +739,7 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
                 *status = GStatus(1, lua_tostring(L, -1));
 		}
         lua_pop(L, 2);
-        application_->unrefPool();
+        application_->deleteAutounrefPool(pool);
         return;
 	}
 
@@ -749,10 +751,10 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
                 *status = GStatus(1, lua_tostring(L, -1));
 		}
         lua_pop(L, 1);
-        application_->unrefPool();
+        application_->deleteAutounrefPool(pool);
         return;
     }
-    application_->unrefPool();
+    application_->deleteAutounrefPool(pool);
 }
 
 
@@ -838,6 +840,8 @@ static int enterFrame(lua_State* L)
 
 void LuaApplication::tick(GStatus *status)
 {
+    void *pool = application_->createAutounrefPool();
+
     lua_pushlightuserdata(L, &key_tickFunction);
     lua_rawget(L, LUA_REGISTRYINDEX);
 
@@ -851,11 +855,13 @@ void LuaApplication::tick(GStatus *status)
         lua_pop(L, 1);
     }
 
-    application_->unrefPool();
+    application_->deleteAutounrefPool(pool);
 }
 
 void LuaApplication::enterFrame(GStatus *status)
 {
+    void *pool = application_->createAutounrefPool();
+
 	StackChecker checker(L, "enterFrame", 0);
 
     lua_pushlightuserdata(L, &key_enterFrameFunction);
@@ -871,7 +877,7 @@ void LuaApplication::enterFrame(GStatus *status)
         lua_pop(L, 1);
     }
 
-    application_->unrefPool();
+    application_->deleteAutounrefPool(pool);
 }
 
 void LuaApplication::clearBuffers()
@@ -974,6 +980,8 @@ static int broadcastEvent(lua_State* L)
 
 void LuaApplication::broadcastEvent(Event* event, GStatus *status)
 {
+    void *pool = application_->createAutounrefPool();
+
 	lua_pushcfunction(L, ::broadcastEvent);
 	lua_pushlightuserdata(L, event);
 
@@ -987,7 +995,7 @@ void LuaApplication::broadcastEvent(Event* event, GStatus *status)
         lua_pop(L, 1);
 	}
 
-    application_->unrefPool();
+    application_->deleteAutounrefPool(pool);
 }
 
 /*

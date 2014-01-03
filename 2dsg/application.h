@@ -114,8 +114,9 @@ public:
         return &timerContainer_;
     }
 
+    void *createAutounrefPool();
+    void deleteAutounrefPool(void *);
     void autounref(GReferenced *referenced);
-    void unrefPool();
 
 private:
 	TextureManager textureManager_;
@@ -175,7 +176,8 @@ private:
 
     TimerContainer timerContainer_;
 
-    std::vector<GReferenced*> unrefPool_;
+    std::vector<std::vector<GReferenced*>*> unrefPool_;
+    std::vector<std::vector<GReferenced*>*> unrefPoolTrash_;
 };
 
 #endif

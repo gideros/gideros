@@ -415,6 +415,8 @@ void Sprite::removeChildAt(int index, GStatus* status)
 		return;
 	}
 
+    void *pool = application_->createAutounrefPool();
+
 	Sprite* child = children_[index];
 
     Stage *stage = child->getStage();
@@ -435,7 +437,7 @@ void Sprite::removeChildAt(int index, GStatus* status)
         child->recursiveDispatchEvent(&event, false, false);
 	}
 
-    application_->unrefPool();
+    application_->deleteAutounrefPool(pool);
 }
 
 void Sprite::removeChild(Sprite* child, GStatus* status)
@@ -739,6 +741,8 @@ Stage *Sprite::getStage() const
 
 void Sprite::recursiveDispatchEvent(Event* event, bool canBeStopped, bool reverse)
 {
+    void *pool = application_->createAutounrefPool();
+
 	std::vector<Sprite*> sprites;		// NOTE: bunu static yapma. recursiveDispatchEvent icindeyken recursiveDispatchEvent cagirilabiliyor
 
 	std::stack<Sprite*> stack;
@@ -773,7 +777,7 @@ void Sprite::recursiveDispatchEvent(Event* event, bool canBeStopped, bool revers
             break;
     }
 
-    application_->unrefPool();
+    application_->deleteAutounrefPool(pool);
 }
 
 float Sprite::alpha() const

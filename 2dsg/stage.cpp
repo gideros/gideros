@@ -28,6 +28,8 @@ void Stage::mouseMove(int x, int y, float sx, float sy, float tx, float ty)
 
 void Stage::enterFrame(int deltaFrameCount)
 {
+    void *pool = application_->createAutounrefPool();
+
 	double t = iclock();
 
 	if (startTime_ < 0)
@@ -70,7 +72,7 @@ void Stage::enterFrame(int deltaFrameCount)
     for (std::size_t i = 0; i < v.size(); ++i)
         v[i]->dispatchEvent(&event);
 
-    application_->unrefPool();
+    application_->deleteAutounrefPool(pool);
 }
 
 void Stage::touchesBegin(ginput_TouchEvent *event, float sx, float sy, float tx, float ty)
@@ -144,6 +146,8 @@ void Stage::populateSpritesWithListeners()
 
 void Stage::dispatchToSpritesWithListeners(Event *event)
 {
+    void *pool = application_->createAutounrefPool();
+
     if (isSpritesWithListenersDirty_)
     {
         populateSpritesWithListeners();
@@ -164,6 +168,6 @@ void Stage::dispatchToSpritesWithListeners(Event *event)
         spritesWithListeners_[i]->dispatchEvent(event);
     }
 
-    application_->unrefPool();
+    application_->deleteAutounrefPool(pool);
 }
 
