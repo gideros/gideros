@@ -17,8 +17,6 @@ static jobject parametersToMap(const char **parameters)
 	jclass cls = env->FindClass("java/util/HashMap");	
 
 	jobject jmapobj = env->NewObject(cls, env->GetMethodID(cls, "<init>", "()V"));
-
-	env->DeleteLocalRef(cls);
 	
 	while (*parameters && *(parameters + 1))
     {
@@ -29,6 +27,8 @@ static jobject parametersToMap(const char **parameters)
 		env->DeleteLocalRef(jVal);	
 		parameters += 2;
 	}
+
+	env->DeleteLocalRef(cls);
 
 	return jmapobj;	
 }
