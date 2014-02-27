@@ -96,11 +96,11 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 		". .     . . . .   ... .";
 
 	static const char* version =
-        "... ... . .     ... ."
-        "  . . . . . .   . . ."
-        "... . . . . .   . . ."
-        ".   . . . ...   . . ."
-        "... ... .   . . ... .";
+        "... ... . .     ... .   ."
+        "  . . . . . .   . . .   ."
+        "... . . . . .   . . .   ."
+        ".   . . . ...   . . .   ."
+        "... ... .   . . ... . . .";
 
 	static const char* chars[] = {char0, char1, char2, char3, char4, char5, char6, char7, char8, char9};
 
