@@ -13,6 +13,8 @@
 #include "keys.h"
 #include "luautil.h"
 
+static lua_State *L = NULL;
+
 class b2WorldED;
 
 class b2DebugDraw : public Sprite, public b2Draw
@@ -159,7 +161,7 @@ Event::Type b2WorldED::POST_SOLVE("postSolve");
 class EventContactListener : public b2ContactListener
 {
 public:
-	EventContactListener(lua_State* L, b2WorldED* world) : L(L), world(world) {}
+    EventContactListener(b2WorldED* world) : world(world) {}
 
 private:
 	void dispatchEvent(const Event::Type& type, b2Contact* contact, const b2Manifold* oldManifold, const b2ContactImpulse* impulse)
@@ -271,14 +273,13 @@ public:
 	}
 
 private:
-	lua_State* L;
 	b2WorldED* world;
 };
 
 class DestructionListener : public b2DestructionListener
 {
 public:
-	DestructionListener(lua_State* L, b2WorldED* world) : L(L), world(world)
+    DestructionListener(b2WorldED* world) : world(world)
 	{
 
 	}
@@ -360,7 +361,6 @@ public:
 	}
 
 private:
-	lua_State* L;
 	b2WorldED* world;
 };
 
@@ -377,9 +377,9 @@ int Box2DBinder2::b2World_create(lua_State* L)
 		doSleep = lua_toboolean(L, 3);
 
 	b2WorldED* world = new b2WorldED(b2Vec2(gravityx, gravityy), doSleep);
-	EventContactListener* contactListener = new EventContactListener(L, world);
+    EventContactListener* contactListener = new EventContactListener(world);
 	world->SetContactListener(contactListener);
-	DestructionListener* destructionListener = new DestructionListener(L, world);
+    DestructionListener* destructionListener = new DestructionListener(world);
 	world->SetDestructionListener(destructionListener);
 
 	binder.pushInstance("b2World", world);
@@ -468,6 +468,8 @@ int Box2DBinder2::b2World_destruct(lua_State* L)
 
 Box2DBinder2::Box2DBinder2(lua_State* L)
 {
+    ::L = L;
+
 	StackChecker checker(L, "Box2DBinder2::Box2DBinder2", 0);
 
 	lua_getglobal(L, "package");
