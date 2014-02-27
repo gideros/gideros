@@ -72,6 +72,9 @@ cp -R /Volumes/release/All\ Plugins/LuaFileSystem/bin/Android ~/Desktop/release/
 cp -R /Volumes/release/All\ Plugins/LuaSQLite3/bin/Android ~/Desktop/release/All\ Plugins/LuaSQLite3/bin
 cp -R /Volumes/release/All\ Plugins/Microphone/bin/Android ~/Desktop/release/All\ Plugins/Microphone/bin
 cp -R /Volumes/release/All\ Plugins/JSON/bin/Android ~/Desktop/release/All\ Plugins/JSON/bin
+cp -R /Volumes/release/All\ Plugins/Facebook/bin/Android ~/Desktop/release/All\ Plugins/Facebook/bin
+cp -R /Volumes/release/All\ Plugins/Flurry/bin/Android ~/Desktop/release/All\ Plugins/Flurry/bin
+cp -R /Volumes/release/All\ Plugins/Google\ Billing/bin/Android ~/Desktop/release/All\ Plugins/Google\ Billing/bin
 
 mkdir ~/Desktop/release/Plugins
 cp ../plugins/LuaSQLite3/source/liblsqlite3.dylib ~/Desktop/release/Plugins/lsqlite3.dylib
