@@ -274,6 +274,14 @@ cp ..\plugins\Facebook\source\Android\libs\armeabi\libfacebook.so "..\..\release
 cp ..\plugins\Facebook\source\Android\libs\armeabi-v7a\libfacebook.so "..\..\release\All Plugins\Facebook\bin\Android\armeabi-v7a"
 cp ..\plugins\Facebook\source\Android\libs\x86\libfacebook.so "..\..\release\All Plugins\Facebook\bin\Android\x86"
 
+mkdir "..\..\release\All Plugins\Google Billing\bin\Android"
+mkdir "..\..\release\All Plugins\Google Billing\bin\Android\armeabi"
+mkdir "..\..\release\All Plugins\Google Billing\bin\Android\armeabi-v7a"
+mkdir "..\..\release\All Plugins\Google Billing\bin\Android\x86"
+cp "..\plugins\Google Billing\source\Android\libs\armeabi\libggooglebilling.so" "..\..\release\All Plugins\Google Billing\bin\Android\armeabi" 
+cp "..\plugins\Google Billing\source\Android\libs\armeabi-v7a\libggooglebilling.so" "..\..\release\All Plugins\Google Billing\bin\Android\armeabi-v7a"
+cp "..\plugins\Google Billing\source\Android\libs\x86\libggooglebilling.so" "..\..\release\All Plugins\Google Billing\bin\Android\x86"
+
 
 mkdir ..\..\release\Plugins
 cp ..\plugins\LuaSQLite3\source\release\lsqlite3.dll ..\..\release\Plugins
