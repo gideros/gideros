@@ -15,17 +15,17 @@ mkdir libs2\x86
 
 cp jni\Application-arm6.mk jni\Application.mk
 cp jni\Android-arm6.mk jni\Android.mk
-call c:\android-ndk-r9c\ndk-build
+call c:\android-ndk-r9d\ndk-build
 cp libs\armeabi\* libs2\armeabi
 
 cp jni\Application-arm7.mk jni\Application.mk
 cp jni\Android-arm7.mk jni\Android.mk
-call c:\android-ndk-r9c\ndk-build
+call c:\android-ndk-r9d\ndk-build
 cp libs\armeabi-v7a\* libs2\armeabi-v7a
 
 cp jni\Application-x86.mk jni\Application.mk
 cp jni\Android-x86.mk jni\Android.mk
-call c:\android-ndk-r9c\ndk-build
+call c:\android-ndk-r9d\ndk-build
 cp libs\x86\* libs2\x86
 
 rm -rf libs
