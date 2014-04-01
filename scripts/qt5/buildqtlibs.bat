@@ -19,7 +19,7 @@ mingw32-make.exe release
 cd ..
 
 cd libgid
-qmake libgid_mingw48_32.pro
+qmake libgid_qt5.pro
 mingw32-make.exe clean
 mingw32-make.exe release
 mingw32-make.exe release
