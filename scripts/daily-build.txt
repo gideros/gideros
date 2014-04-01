@@ -22,7 +22,7 @@ mac
 qt5/buildqtlibs.sh 2>&1 | grep "ln -s lib"
 qt5/buildplugins.sh 2>&1 | grep "ln -s lib"
 qt5/cleanqt.sh
-./buildqt.sh
+qt5/buildqt.sh
 * now we have Gideros[Studio,Player,TexturePacker,FontCreator].app for mac
 
 ./cleanioslibs.sh
