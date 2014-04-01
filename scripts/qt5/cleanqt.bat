@@ -24,7 +24,7 @@ cd ..
 
 cd player
 mingw32-make.exe clean
-qmake player.pro
+qmake player_qt5.pro
 mingw32-make.exe clean
 cd ..
 

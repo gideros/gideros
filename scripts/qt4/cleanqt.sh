@@ -20,7 +20,7 @@ cd ..
 
 cd player
 make clean
-/Qt/1.2.1/Desktop/Qt/4.8.1/gcc/bin/qmake player.pro
+/Qt/1.2.1/Desktop/Qt/4.8.1/gcc/bin/qmake player_qt4.pro
 make clean
 cd ..
 
