@@ -18,5 +18,4 @@ libpng -> static library, libpng.pro
 mpg123 -> static library, src/libmpg123/libmpg123.pro
 openal soft -> shared library, cmake
 
-TODO: we should rebuild mingw32_48 port of freetype with touch obj/ftmodule.h
-TODO: we should rebuild clang_65 port of mpg123
+TODO: we should rebuild clang_64 port of mpg123
