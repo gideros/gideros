@@ -19,8 +19,8 @@ buildandroidplugins.bat 2>&1 | grep SharedLibrary -> 10 tane
 
 mac
 ---
-./buildqtlibs.sh 2>&1 | grep "ln -s lib"
-./buildplugins.sh 2>&1 | grep "ln -s lib"
+qt5/buildqtlibs.sh 2>&1 | grep "ln -s lib"
+qt5/buildplugins.sh 2>&1 | grep "ln -s lib"
 ./cleanqt.sh
 ./buildqt.sh
 * now we have Gideros[Studio,Player,TexturePacker,FontCreator].app for mac
