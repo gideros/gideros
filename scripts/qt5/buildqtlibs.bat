@@ -1,5 +1,5 @@
 pushd \
-call C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\bin\qtenv2.bat
+call C:\Qt\Qt5.2.1\5.2.1\mingw48_32\bin\qtenv2.bat
 popd
 
 cd ..
@@ -66,7 +66,7 @@ cp ..\libgideros\release\libgideros.a lib\desktop
 cp ..\lua\release\liblua.a lib\desktop
 cp ..\libgid\release\libgid.a lib\desktop
 cp ..\libgvfs\release\libgvfs.a lib\desktop
-cp ..\libgid\external\openal-soft-1.13\build\mingw\libOpenAL32.dll.a lib\desktop
+cp ..\libgid\external\openal-soft-1.13\build\mingw48_32\libOpenAL32.dll.a lib\desktop
 cd ..
 
 cd scripts
