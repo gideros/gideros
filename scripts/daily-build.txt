@@ -3,7 +3,7 @@ windows
 
 qt5\buildqtlibs.bat 2>&1 | grep first       -> 5 tane
 qt5\buildplugins.bat 2>&1 | grep first      -> 7 tane
-cleanqt.bat
+qt5\cleanqt.bat
 qt5\buildqt.bat | grep first				-> 8 tane
 * now we have Gideros[Studio,Player,TexturePacker,FontCreator].exe for windows
 
