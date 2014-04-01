@@ -137,12 +137,14 @@ win32 {
 	LIBS += -liphlpapi
 }
 
-LIBS += -lqscintilla2
-
 macx {
 	LIBS += -framework CoreFoundation
 	LIBS += -framework IOKit
+    INCLUDEPATH += /Qt/Qt5.2.1/5.2.1/clang_64/include
+    LIBS += -L/Qt/Qt5.2.1/5.2.1/clang_64/lib
 }
+
+LIBS += -lqscintilla2
 
 RESOURCES += \
     ui.qrc
