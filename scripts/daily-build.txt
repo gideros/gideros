@@ -1,10 +1,10 @@
 windows
 -------
 
-buildqtlibs.bat 2>&1 | grep first       -> 5 tane
-buildplugins.bat 2>&1 | grep first      -> 7 tane
+qt5\buildqtlibs.bat 2>&1 | grep first       -> 5 tane
+qt5\buildplugins.bat 2>&1 | grep first      -> 7 tane
 cleanqt.bat
-buildqt.bat | grep first				-> 8 tane
+qt5\buildqt.bat | grep first				-> 8 tane
 * now we have Gideros[Studio,Player,TexturePacker,FontCreator].exe for windows
 
 makejar.bat

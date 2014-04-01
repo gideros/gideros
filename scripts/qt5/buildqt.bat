@@ -1,5 +1,5 @@
 pushd \
-call C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\bin\qtenv2.bat
+call C:\Qt\Qt5.2.1\5.2.1\mingw48_32\bin\qtenv2.bat
 popd
 
 cd ..
@@ -20,7 +20,7 @@ mingw32-make.exe release
 cd ..
 
 cd player
-qmake player.pro
+qmake player_qt5.pro
 mingw32-make.exe release
 cd ..
 
