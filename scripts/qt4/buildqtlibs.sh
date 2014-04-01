@@ -22,7 +22,7 @@ sudo cp libgvfs.1.dylib /usr/lib
 cd ..
 
 cd libgid
-/Qt/1.2.1/Desktop/Qt/4.8.1/gcc/bin/qmake libgid.pro
+/Qt/1.2.1/Desktop/Qt/4.8.1/gcc/bin/qmake libgid_qt4.pro
 make clean
 make
 sudo cp libgid.1.dylib /usr/lib
