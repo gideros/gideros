@@ -1,8 +1,6 @@
 rm -rf ..\..\release\*
 mkdir ..\..\release
 
-call copyqt5.bat
-
 cp ..\libgid\release\gid.dll ..\..\release
 cp ..\libgvfs\release\gvfs.dll ..\..\release
 cp ..\lua\release\lua.dll ..\..\release
@@ -24,6 +22,8 @@ rem svn export ..\ui\Tools ..\..\release\Tools
 rm -rf ..\..\temp
 hg archive -I ..\ui\Tools ..\..\temp
 mv ..\..\temp\ui\Tools ..\..\release
+
+call copyqt5.bat
 
 mkdir ..\..\release\Templates
 
@@ -55,11 +55,7 @@ mv ..\..\temp\ios\GiderosiOSPlayer ..\..\release
 cp ..\gdrdeamon\release\gdrdeamon.exe ..\..\release\Tools
 cp ..\gdrbridge\release\gdrbridge.exe ..\..\release\Tools
 cp ..\gdrexport\release\gdrexport.exe ..\..\release\Tools
-cp C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\bin\QtCore4.dll ..\..\release\Tools
-cp C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\bin\QtNetwork4.dll ..\..\release\Tools
-cp C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\bin\QtXml4.dll ..\..\release\Tools
-cp C:\Qt\1.2.1\mingw\bin\mingwm10.dll ..\..\release\Tools
-cp C:\Qt\1.2.1\mingw\bin\libgcc_s_dw2-1.dll ..\..\release\Tools
+
 
 copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\giderosapi.h" "..\..\release\Templates\Xcode4\iOS Template\iOS Template"
 copy "..\ui\Templates\Xcode4\iOS Template\iOS Template\*.a"          "..\..\release\Templates\Xcode4\iOS Template\iOS Template"

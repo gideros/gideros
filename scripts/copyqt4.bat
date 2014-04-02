@@ -21,3 +21,8 @@ cp ..\libgid\external\glew-1.10.0\lib\mingw\glew32.dll ..\..\release
 cp ..\libgid\external\openal-soft-1.13\build\mingw\OpenAL32.dll ..\..\release
 cp ..\libgid\external\pthreads-w32-2-8-0-release\Pre-built.2\lib\pthreadGC2.dll ..\..\release
 
+cp C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\bin\QtCore4.dll ..\..\release\Tools
+cp C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\bin\QtNetwork4.dll ..\..\release\Tools
+cp C:\Qt\1.2.1\Desktop\Qt\4.8.1\mingw\bin\QtXml4.dll ..\..\release\Tools
+cp C:\Qt\1.2.1\mingw\bin\mingwm10.dll ..\..\release\Tools
+cp C:\Qt\1.2.1\mingw\bin\libgcc_s_dw2-1.dll ..\..\release\Tools
