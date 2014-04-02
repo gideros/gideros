@@ -13,8 +13,17 @@ cp C:\Qt\Qt5.2.1\5.2.1\mingw48_32\bin\Qt5PrintSupport.dll ..\..\release
 cp C:\Qt\Qt5.2.1\5.2.1\mingw48_32\bin\Qt5Widgets.dll ..\..\release
 cp C:\Qt\Qt5.2.1\5.2.1\mingw48_32\bin\Qt5Xml.dll ..\..\release
 
+mkdir ..\..\release\imageformats
+cp C:\Qt\Qt5.2.1\5.2.1\mingw48_32\plugins\imageformats\qjpeg.dll ..\..\release\imageformats
+
+mkdir ..\..\release\platforms
+cp C:\Qt\Qt5.2.1\5.2.1\mingw48_32\plugins\platforms\qminimal.dll ..\..\release\platforms
+cp C:\Qt\Qt5.2.1\5.2.1\mingw48_32\plugins\platforms\qoffscreen.dll ..\..\release\platforms
+cp C:\Qt\Qt5.2.1\5.2.1\mingw48_32\plugins\platforms\qwindows.dll ..\..\release\platforms
+
 cp C:\Qt\Qt5.2.1\5.2.1\mingw48_32\lib\qscintilla2.dll ..\..\release
 
 cp ..\libgid\external\zlib-1.2.8\build\mingw48_32\zlib.dll ..\..\release
 cp ..\libgid\external\glew-1.10.0\lib\mingw48_32\glew32.dll ..\..\release
 cp ..\libgid\external\openal-soft-1.13\build\mingw48_32\OpenAL32.dll ..\..\release
+
