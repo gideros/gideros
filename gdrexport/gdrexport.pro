@@ -35,9 +35,3 @@ macx {
 	LIBS += -framework CoreFoundation
 	LIBS += -framework IOKit
 }
-
-macx {
-QMAKE_POST_LINK += install_name_tool -change "/Qt/1.2.1/Desktop/Qt/4.8.1/gcc/lib/QtCore.framework/Versions/4/QtCore" "@executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore" $(TARGET);
-QMAKE_POST_LINK += install_name_tool -change "/Qt/1.2.1/Desktop/Qt/4.8.1/gcc/lib/QtNetwork.framework/Versions/4/QtNetwork" "@executable_path/../Frameworks/QtNetwork.framework/Versions/4/QtNetwork" $(TARGET);
-QMAKE_POST_LINK += install_name_tool -change "/Qt/1.2.1/Desktop/Qt/4.8.1/gcc/lib/QtXml.framework/Versions/4/QtXml" "@executable_path/../Frameworks/QtXml.framework/Versions/4/QtXml" $(TARGET);
-}
