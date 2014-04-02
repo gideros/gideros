@@ -7,7 +7,7 @@ cp -R ../texturepacker/Gideros\ Texture\ Packer.app/ ~/Desktop/release/Gideros\ 
 cp -R ../fontcreator/Gideros\ Font\ Creator.app/ ~/Desktop/release/Gideros\ Font\ Creator.app
 cp -R ../licensemanager/Gideros\ License\ Manager.app/ ~/Desktop/release/Gideros\ License\ Manager.app
 
-./copyqt4.sh
+./copyqt5.sh
 
 cp -R /Volumes/release/Documentation ~/Desktop/release/Documentation
 cp -R /Volumes/release/Examples ~/Desktop/release/Examples
