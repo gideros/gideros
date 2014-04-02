@@ -44,7 +44,7 @@ cd ..
 
 cd gdrexport
 make clean
-/Qt/Qt5.2.1/5.2.1/clang_64/bin/qmakem gdrexport.pro
+/Qt/Qt5.2.1/5.2.1/clang_64/bin/qmake gdrexport.pro
 make clean
 cd ..
 
