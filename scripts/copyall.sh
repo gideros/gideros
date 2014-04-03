@@ -7,8 +7,6 @@ cp -R ../texturepacker/Gideros\ Texture\ Packer.app/ ~/Desktop/release/Gideros\ 
 cp -R ../fontcreator/Gideros\ Font\ Creator.app/ ~/Desktop/release/Gideros\ Font\ Creator.app
 cp -R ../licensemanager/Gideros\ License\ Manager.app/ ~/Desktop/release/Gideros\ License\ Manager.app
 
-./copyqt5.sh
-
 cp -R /Volumes/release/Documentation ~/Desktop/release/Documentation
 cp -R /Volumes/release/Examples ~/Desktop/release/Examples
 cp -R /Volumes/release/Resources ~/Desktop/release/Gideros\ Studio.app/Contents/
@@ -19,6 +17,8 @@ cp ../ui/Resources/images.png ~/Desktop/release/Gideros\ Texture\ Packer.app/Con
 cp ../gdrdeamon/gdrdeamon ~/Desktop/release/Gideros\ Studio.app/Contents/Tools
 cp ../gdrbridge/gdrbridge ~/Desktop/release/Gideros\ Studio.app/Contents/Tools
 cp ../gdrexport/gdrexport ~/Desktop/release/Gideros\ Studio.app/Contents/Tools
+
+./copyqt5.sh
 
 cp /Volumes/release/GiderosiOSPlayer.zip ~/Desktop/release/
 cp /Volumes/release/GiderosAndroidPlayer.apk ~/Desktop/release/
