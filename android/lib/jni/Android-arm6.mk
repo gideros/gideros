@@ -337,62 +337,64 @@ LOCAL_SRC_FILES += \
 	../../../libpvrt/PVRTString.cpp \
 	../../../libpvrt/PVRTTexture.cpp
 
-# liquidfun (50 files)
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../external/liquidfun-0.9.0/liquidfun/Box2D
+# liquidfun (53 files)
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../external/liquidfun-1.0.0/liquidfun/Box2D
 LOCAL_SRC_FILES += \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/b2BroadPhase.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/b2CollideCircle.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/b2CollideEdge.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/b2CollidePolygon.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/b2Collision.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/b2Distance.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/b2DynamicTree.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/b2TimeOfImpact.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/Shapes/b2ChainShape.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/Shapes/b2CircleShape.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/Shapes/b2EdgeShape.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/Shapes/b2PolygonShape.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Common/b2BlockAllocator.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Common/b2Draw.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Common/b2Math.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Common/b2Settings.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Common/b2StackAllocator.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Common/b2Timer.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/b2Body.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/b2ContactManager.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/b2Fixture.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/b2Island.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/b2World.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/b2WorldCallbacks.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2ChainAndCircleContact.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2ChainAndPolygonContact.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2CircleContact.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2Contact.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2ContactSolver.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2EdgeAndCircleContact.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2EdgeAndPolygonContact.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2PolygonAndCircleContact.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2PolygonContact.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2DistanceJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2FrictionJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2GearJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2Joint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2MotorJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2MouseJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2PrismaticJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2PulleyJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2RevoluteJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2RopeJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2WeldJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2WheelJoint.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Rope/b2Rope.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Particle/b2Particle.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Particle/b2ParticleGroup.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Particle/b2ParticleSystem.cpp \
-	../../../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Particle/b2VoronoiDiagram.cpp
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/b2BroadPhase.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/b2CollideCircle.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/b2CollideEdge.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/b2CollidePolygon.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/b2Collision.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/b2Distance.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/b2DynamicTree.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/b2TimeOfImpact.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes/b2ChainShape.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes/b2CircleShape.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes/b2EdgeShape.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes/b2PolygonShape.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/b2BlockAllocator.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/b2Draw.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/b2FreeList.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/b2Math.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/b2Settings.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/b2StackAllocator.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/b2Stat.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/b2Timer.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/b2TrackedBlock.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/b2Body.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/b2ContactManager.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/b2Fixture.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/b2Island.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/b2World.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/b2WorldCallbacks.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2ChainAndCircleContact.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2ChainAndPolygonContact.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2CircleContact.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2Contact.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2ContactSolver.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2EdgeAndCircleContact.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2EdgeAndPolygonContact.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2PolygonAndCircleContact.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/b2PolygonContact.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2DistanceJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2FrictionJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2GearJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2Joint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2MotorJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2MouseJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2PrismaticJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2PulleyJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2RevoluteJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2RopeJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2WeldJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/b2WheelJoint.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/b2Particle.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/b2ParticleGroup.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/b2ParticleSystem.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/b2VoronoiDiagram.cpp \
+	../../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Rope/b2Rope.cpp
 
 
-	
 # luabinding (35 files)
 LOCAL_SRC_FILES += \
 	../../../luabinding/accelerometerbinder.cpp \
