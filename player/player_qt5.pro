@@ -54,15 +54,15 @@ TEMPLATE = app
 #SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/*.cpp)
 #SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Rope/*.cpp)
 
-INCLUDEPATH += ../external/liquidfun-0.9.0/liquidfun/Box2D
-SOURCES += $$files(../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Common/*.cpp)
-SOURCES += $$files(../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/*.cpp)
-SOURCES += $$files(../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Collision/Shapes/*.cpp)
-SOURCES += $$files(../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/*.cpp)
-SOURCES += $$files(../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/*.cpp)
-SOURCES += $$files(../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Dynamics/Joints/*.cpp)
-SOURCES += $$files(../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Rope/*.cpp)
-SOURCES += $$files(../external/liquidfun-0.9.0/liquidfun/Box2D/Box2D/Particle/*.cpp)
+INCLUDEPATH += ../external/liquidfun-1.0.0/liquidfun/Box2D
+SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/*.cpp)
+SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/*.cpp)
+SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes/*.cpp)
+SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/*.cpp)
+SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/*.cpp)
+SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/*.cpp)
+SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Rope/*.cpp)
+SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/*.cpp)
 
 SOURCES += \
     main.cpp \
