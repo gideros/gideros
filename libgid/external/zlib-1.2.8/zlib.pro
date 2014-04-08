@@ -1,6 +1,6 @@
 QT       -= core gui
 
-TARGET = zlib
+TARGET = zlibx
 TEMPLATE = lib
 
 win32 {
