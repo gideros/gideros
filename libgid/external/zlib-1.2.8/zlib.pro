@@ -2,10 +2,7 @@ QT       -= core gui
 
 TARGET = zlibx
 TEMPLATE = lib
-
-win32 {
-DEFINES += ZLIB_DLL
-}
+CONFIG += staticlib
 
 SOURCES += \
         adler32.c \
