@@ -99,7 +99,7 @@ LIBS += -L"../libgid/external/mpg123-1.15.3/lib/mingw48_32" -lmpg123
 
 LIBS += -lpthread
 
-LIBS += -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlib
+LIBS += -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx
 }
 
 macx {
