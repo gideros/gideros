@@ -22,7 +22,6 @@ cp C:\Qt\Qt5.2.1\5.2.1\mingw48_32\plugins\platforms\qwindows.dll ..\..\release\p
 
 cp C:\Qt\Qt5.2.1\5.2.1\mingw48_32\lib\qscintilla2.dll ..\..\release
 
-cp ..\libgid\external\zlib-1.2.8\build\mingw48_32\zlib.dll ..\..\release
 cp ..\libgid\external\glew-1.10.0\lib\mingw48_32\glew32.dll ..\..\release
 cp ..\libgid\external\openal-soft-1.13\build\mingw48_32\OpenAL32.dll ..\..\release
 
