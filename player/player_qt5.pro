@@ -105,7 +105,7 @@ INCLUDEPATH += "../external/minizip-1.1/source"
 
 win32 {
 INCLUDEPATH += "../libgid/external/zlib-1.2.8"
-LIBS += -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlib
+LIBS += -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx
 INCLUDEPATH += "../libgid/external/glew-1.10.0/include"
 LIBS += -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32
 }
