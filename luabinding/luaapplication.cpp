@@ -63,10 +63,7 @@
 #include <ginput.h>
 #include <gapplication.h>
 
-extern "C"
-{
 #include "tlsf.h"
-}
 
 const char* LuaApplication::fileNameFunc_s(const char* filename, void* data)
 {
@@ -623,77 +620,87 @@ static void maxmem()
 */
 
 
-static unsigned int nextpow2(unsigned int v)
-{
-	v--;
-	v |= v >> 1;
-	v |= v >> 2;
-	v |= v >> 4;
-	v |= v >> 8;
-	v |= v >> 16;
-	v++;
+static tlsf_t memory_pool = NULL;
+static void *memory_pool_end = NULL;
 
-	return v;
+static void g_free(void *ptr)
+{
+    if (memory_pool <= ptr && ptr < memory_pool_end)
+        tlsf_free(memory_pool, ptr);
+    else
+        ::free(ptr);
+}
+
+static void *g_realloc(void *ptr, size_t osize, size_t size)
+{
+    void* p = NULL;
+
+    if (ptr && size == 0)
+    {
+        g_free(ptr);
+    }
+    else if (ptr == NULL)
+    {
+        if (size <= 256)
+            p = tlsf_malloc(memory_pool, size);
+
+        if (p == NULL)
+            p = ::malloc(size);
+    }
+    else
+    {
+        if (memory_pool <= ptr && ptr < memory_pool_end)
+        {
+            if (size <= 256)
+                p = tlsf_realloc(memory_pool, ptr, size);
+
+            if (p == NULL)
+            {
+                p = ::malloc(size);
+                memcpy(p, ptr, osize);
+                tlsf_free(memory_pool, ptr);
+            }
+        }
+        else
+        {
+            p = ::realloc(ptr, size);
+        }
+    }
+
+    return p;
 }
 
 #if 0
-static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize)
+static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
-	(void)ud;
-	(void)osize;
-	if (nsize == 0) {
-		g_free(ptr);
-		return NULL;
-	}
-	else
-		return g_realloc(ptr, nsize);
+    (void)ud;
+    (void)osize;
+    if (nsize == 0)
+    {
+        free(ptr);
+        return NULL;
+    }
+    else
+        return realloc(ptr, nsize);
 }
 #else
-static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize)
+static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
-/*
-	static int total = 0;
-	static double c = iclock();
-
-	total += abs((int)osize - (int)nsize);
-
-	if (iclock() - c > 1)
-	{
-		printf("total mem change: %d\n", total);
-		c = iclock();
-		total = 0;
-	}
-*/
-
-	static void* memory_pool = NULL;
 	if (memory_pool == NULL)
 	{
-        glog_v("init_memory_pool: %d", 1024 * 1024);
-		memory_pool = malloc(1024 * 1024);
-		init_memory_pool(1024 * 1024, memory_pool);
+        const size_t mpsize = 1024 * 1024;
+        glog_v("init_memory_pool: %dKb", mpsize / 1024);
+        memory_pool = tlsf_create_with_pool(malloc(mpsize), mpsize);
+        memory_pool_end = (char*)memory_pool + mpsize;
 	}
 
-	(void)ud;
-	(void)osize;
-	if (nsize == 0)
-	{
-		free_ex(ptr, memory_pool);
-		return NULL;
-	}
-	else
-	{
-		void* result = realloc_ex(ptr, nsize, memory_pool);
-
-		if (result == NULL)
-		{
-			size_t newsize = ((nsize / (1024 * 1024)) + 1) * (1024 * 1024);
-            glog_v("add_new_area: %d->%d", nsize, newsize);
-			add_new_area(malloc(newsize), newsize, memory_pool);
-			result = realloc_ex(ptr, nsize, memory_pool);
-		}
-
-		return result;
-	}
+    if (nsize == 0)
+    {
+        g_free(ptr);
+        return NULL;
+    }
+    else
+        return g_realloc(ptr, osize, nsize);
 }
 #endif
 
