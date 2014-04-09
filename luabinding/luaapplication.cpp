@@ -686,13 +686,13 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 #else
 static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
-	if (memory_pool == NULL)
-	{
+    if (memory_pool == NULL)
+    {
         const size_t mpsize = 1024 * 1024;
         glog_v("init_memory_pool: %dKb", mpsize / 1024);
         memory_pool = tlsf_create_with_pool(malloc(mpsize), mpsize);
         memory_pool_end = (char*)memory_pool + mpsize;
-	}
+    }
 
     if (nsize == 0)
     {
