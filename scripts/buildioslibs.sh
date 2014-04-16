@@ -1,11 +1,11 @@
 cd ..
 
 
-cd libgid/external/zlib-1.2.8
-xcodebuild -alltargets -sdk iphonesimulator7.1 -configuration Release -project zlib.xcodeproj
-xcodebuild -alltargets -sdk iphoneos7.1 -configuration Release -project zlib.xcodeproj
-lipo build/Release-iphoneos/libzlib.a build/Release-iphonesimulator/libzlib.a -create -output libzlib.a
-cd ../../..
+#cd libgid/external/zlib-1.2.8
+#xcodebuild -alltargets -sdk iphonesimulator7.1 -configuration Release -project zlib.xcodeproj
+#xcodebuild -alltargets -sdk iphoneos7.1 -configuration Release -project zlib.xcodeproj
+#lipo build/Release-iphoneos/libzlib.a build/Release-iphonesimulator/libzlib.a -create -output libzlib.a
+#cd ../../..
 
 cd libgvfs
 xcodebuild -alltargets -sdk iphonesimulator7.1 -configuration Release -project gvfs.xcodeproj

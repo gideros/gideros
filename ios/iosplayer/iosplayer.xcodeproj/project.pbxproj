@@ -147,8 +147,6 @@
 		5F276F8918F4020E00D78AE4 /* b2Timer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F276ED818F4020E00D78AE4 /* b2Timer.h */; };
 		5F276F8A18F4020E00D78AE4 /* b2TrackedBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F276ED918F4020E00D78AE4 /* b2TrackedBlock.cpp */; };
 		5F276F8B18F4020E00D78AE4 /* b2TrackedBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F276EDA18F4020E00D78AE4 /* b2TrackedBlock.h */; };
-		5F276F8C18F4020E00D78AE4 /* jquery.js in Sources */ = {isa = PBXBuildFile; fileRef = 5F276F1218F4020E00D78AE4 /* jquery.js */; };
-		5F276F8D18F4020E00D78AE4 /* jquery.js in Sources */ = {isa = PBXBuildFile; fileRef = 5F276F1518F4020E00D78AE4 /* jquery.js */; };
 		5F276F8E18F4020E00D78AE4 /* b2Body.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F276F1A18F4020E00D78AE4 /* b2Body.cpp */; };
 		5F276F8F18F4020E00D78AE4 /* b2Body.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F276F1B18F4020E00D78AE4 /* b2Body.h */; };
 		5F276F9018F4020E00D78AE4 /* b2ContactManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F276F1C18F4020E00D78AE4 /* b2ContactManager.cpp */; };
@@ -343,6 +341,21 @@
 		5FCA653215F8A804006011C1 /* pluginmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FCA653115F8A804006011C1 /* pluginmanager.cpp */; };
 		5FE385BB16B09353007A91E1 /* ftlibrarysingleton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FE385B916B09353007A91E1 /* ftlibrarysingleton.cpp */; };
 		5FE385BC16B09353007A91E1 /* ttbmfont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FE385BA16B09353007A91E1 /* ttbmfont.cpp */; };
+		5FE658AC18FBF0FB001D8EE3 /* adler32.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE6589D18FBF0FB001D8EE3 /* adler32.c */; };
+		5FE658AD18FBF0FB001D8EE3 /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE6589E18FBF0FB001D8EE3 /* compress.c */; };
+		5FE658AE18FBF0FB001D8EE3 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE6589F18FBF0FB001D8EE3 /* crc32.c */; };
+		5FE658AF18FBF0FB001D8EE3 /* deflate.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A018FBF0FB001D8EE3 /* deflate.c */; };
+		5FE658B018FBF0FB001D8EE3 /* gzclose.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A118FBF0FB001D8EE3 /* gzclose.c */; };
+		5FE658B118FBF0FB001D8EE3 /* gzlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A218FBF0FB001D8EE3 /* gzlib.c */; };
+		5FE658B218FBF0FB001D8EE3 /* gzread.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A318FBF0FB001D8EE3 /* gzread.c */; };
+		5FE658B318FBF0FB001D8EE3 /* gzwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A418FBF0FB001D8EE3 /* gzwrite.c */; };
+		5FE658B418FBF0FB001D8EE3 /* infback.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A518FBF0FB001D8EE3 /* infback.c */; };
+		5FE658B518FBF0FB001D8EE3 /* inffast.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A618FBF0FB001D8EE3 /* inffast.c */; };
+		5FE658B618FBF0FB001D8EE3 /* inflate.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A718FBF0FB001D8EE3 /* inflate.c */; };
+		5FE658B718FBF0FB001D8EE3 /* inftrees.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A818FBF0FB001D8EE3 /* inftrees.c */; };
+		5FE658B818FBF0FB001D8EE3 /* trees.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A918FBF0FB001D8EE3 /* trees.c */; };
+		5FE658B918FBF0FB001D8EE3 /* uncompr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658AA18FBF0FB001D8EE3 /* uncompr.c */; };
+		5FE658BA18FBF0FB001D8EE3 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658AB18FBF0FB001D8EE3 /* zutil.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -488,61 +501,6 @@
 		5F276ED818F4020E00D78AE4 /* b2Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Timer.h; sourceTree = "<group>"; };
 		5F276ED918F4020E00D78AE4 /* b2TrackedBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2TrackedBlock.cpp; sourceTree = "<group>"; };
 		5F276EDA18F4020E00D78AE4 /* b2TrackedBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2TrackedBlock.h; sourceTree = "<group>"; };
-		5F276EDD18F4020E00D78AE4 /* doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxyfile; sourceTree = "<group>"; };
-		5F276EDF18F4020E00D78AE4 /* Building.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Building.md; sourceTree = "<group>"; };
-		5F276EE018F4020E00D78AE4 /* BuildingAndroid.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BuildingAndroid.md; sourceTree = "<group>"; };
-		5F276EE118F4020E00D78AE4 /* BuildingLinux.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BuildingLinux.md; sourceTree = "<group>"; };
-		5F276EE218F4020E00D78AE4 /* BuildingOSX.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BuildingOSX.md; sourceTree = "<group>"; };
-		5F276EE318F4020E00D78AE4 /* BuildingWindows.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = BuildingWindows.md; sourceTree = "<group>"; };
-		5F276EE418F4020E00D78AE4 /* doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxyfile; sourceTree = "<group>"; };
-		5F276EE518F4020E00D78AE4 /* footer.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; path = footer.html; sourceTree = "<group>"; };
-		5F276EE718F4020E00D78AE4 /* Chapter01_Introduction.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter01_Introduction.md; sourceTree = "<group>"; };
-		5F276EE818F4020E00D78AE4 /* Chapter02_Hello_Box2D.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter02_Hello_Box2D.md; sourceTree = "<group>"; };
-		5F276EE918F4020E00D78AE4 /* Chapter03_Common.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter03_Common.md; sourceTree = "<group>"; };
-		5F276EEA18F4020E00D78AE4 /* Chapter04_Collision_Module.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter04_Collision_Module.md; sourceTree = "<group>"; };
-		5F276EEB18F4020E00D78AE4 /* Chapter05_Dynamics_Module.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter05_Dynamics_Module.md; sourceTree = "<group>"; };
-		5F276EEC18F4020E00D78AE4 /* Chapter06_Bodies.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter06_Bodies.md; sourceTree = "<group>"; };
-		5F276EED18F4020E00D78AE4 /* Chapter07_Fixtures.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter07_Fixtures.md; sourceTree = "<group>"; };
-		5F276EEE18F4020E00D78AE4 /* Chapter08_Joints.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter08_Joints.md; sourceTree = "<group>"; };
-		5F276EEF18F4020E00D78AE4 /* Chapter09_Contacts.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter09_Contacts.md; sourceTree = "<group>"; };
-		5F276EF018F4020E00D78AE4 /* Chapter10_World.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter10_World.md; sourceTree = "<group>"; };
-		5F276EF118F4020E00D78AE4 /* Chapter11_Particles.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter11_Particles.md; sourceTree = "<group>"; };
-		5F276EF218F4020E00D78AE4 /* Chapter12_Loose_Ends.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter12_Loose_Ends.md; sourceTree = "<group>"; };
-		5F276EF318F4020E00D78AE4 /* Chapter13_Debug_Drawing.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter13_Debug_Drawing.md; sourceTree = "<group>"; };
-		5F276EF418F4020E00D78AE4 /* Chapter14_Limitations.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter14_Limitations.md; sourceTree = "<group>"; };
-		5F276EF518F4020E00D78AE4 /* Chapter15_References.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Chapter15_References.md; sourceTree = "<group>"; };
-		5F276EF618F4020E00D78AE4 /* doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxyfile; sourceTree = "<group>"; };
-		5F276EF718F4020E00D78AE4 /* image_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_0.png; sourceTree = "<group>"; };
-		5F276EF818F4020E00D78AE4 /* image_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_1.png; sourceTree = "<group>"; };
-		5F276EF918F4020E00D78AE4 /* image_10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_10.png; sourceTree = "<group>"; };
-		5F276EFA18F4020E00D78AE4 /* image_11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_11.png; sourceTree = "<group>"; };
-		5F276EFB18F4020E00D78AE4 /* image_12.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_12.png; sourceTree = "<group>"; };
-		5F276EFC18F4020E00D78AE4 /* image_13.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_13.png; sourceTree = "<group>"; };
-		5F276EFD18F4020E00D78AE4 /* image_14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_14.png; sourceTree = "<group>"; };
-		5F276EFE18F4020E00D78AE4 /* image_15.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_15.png; sourceTree = "<group>"; };
-		5F276EFF18F4020E00D78AE4 /* image_16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_16.png; sourceTree = "<group>"; };
-		5F276F0018F4020E00D78AE4 /* image_17.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_17.png; sourceTree = "<group>"; };
-		5F276F0118F4020E00D78AE4 /* image_18.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = image_18.gif; sourceTree = "<group>"; };
-		5F276F0218F4020E00D78AE4 /* image_19.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = image_19.gif; sourceTree = "<group>"; };
-		5F276F0318F4020E00D78AE4 /* image_2.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = image_2.gif; sourceTree = "<group>"; };
-		5F276F0418F4020E00D78AE4 /* image_20.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = image_20.gif; sourceTree = "<group>"; };
-		5F276F0518F4020E00D78AE4 /* image_21.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = image_21.gif; sourceTree = "<group>"; };
-		5F276F0618F4020E00D78AE4 /* image_22.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = image_22.gif; sourceTree = "<group>"; };
-		5F276F0718F4020E00D78AE4 /* image_23.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_23.png; sourceTree = "<group>"; };
-		5F276F0818F4020E00D78AE4 /* image_24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_24.png; sourceTree = "<group>"; };
-		5F276F0918F4020E00D78AE4 /* image_3.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = image_3.gif; sourceTree = "<group>"; };
-		5F276F0A18F4020E00D78AE4 /* image_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_4.png; sourceTree = "<group>"; };
-		5F276F0B18F4020E00D78AE4 /* image_5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_5.png; sourceTree = "<group>"; };
-		5F276F0C18F4020E00D78AE4 /* image_6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_6.png; sourceTree = "<group>"; };
-		5F276F0D18F4020E00D78AE4 /* image_7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_7.png; sourceTree = "<group>"; };
-		5F276F0E18F4020E00D78AE4 /* image_8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_8.png; sourceTree = "<group>"; };
-		5F276F0F18F4020E00D78AE4 /* image_9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_9.png; sourceTree = "<group>"; };
-		5F276F1118F4020E00D78AE4 /* doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxyfile; sourceTree = "<group>"; };
-		5F276F1218F4020E00D78AE4 /* jquery.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = jquery.js; sourceTree = "<group>"; };
-		5F276F1418F4020E00D78AE4 /* doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxyfile; sourceTree = "<group>"; };
-		5F276F1518F4020E00D78AE4 /* jquery.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = jquery.js; sourceTree = "<group>"; };
-		5F276F1718F4020E00D78AE4 /* doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = doxyfile; sourceTree = "<group>"; };
-		5F276F1818F4020E00D78AE4 /* GettingStarted.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GettingStarted.md; sourceTree = "<group>"; };
 		5F276F1A18F4020E00D78AE4 /* b2Body.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2Body.cpp; sourceTree = "<group>"; };
 		5F276F1B18F4020E00D78AE4 /* b2Body.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2Body.h; sourceTree = "<group>"; };
 		5F276F1C18F4020E00D78AE4 /* b2ContactManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2ContactManager.cpp; sourceTree = "<group>"; };
@@ -737,6 +695,21 @@
 		5FCA653115F8A804006011C1 /* pluginmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pluginmanager.cpp; path = ../../libgideros/pluginmanager.cpp; sourceTree = "<group>"; };
 		5FE385B916B09353007A91E1 /* ftlibrarysingleton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ftlibrarysingleton.cpp; path = ../../2dsg/ftlibrarysingleton.cpp; sourceTree = "<group>"; };
 		5FE385BA16B09353007A91E1 /* ttbmfont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ttbmfont.cpp; path = ../../2dsg/ttbmfont.cpp; sourceTree = "<group>"; };
+		5FE6589D18FBF0FB001D8EE3 /* adler32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = adler32.c; path = "../../../libgid/external/zlib-1.2.8/adler32.c"; sourceTree = "<group>"; };
+		5FE6589E18FBF0FB001D8EE3 /* compress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compress.c; path = "../../../libgid/external/zlib-1.2.8/compress.c"; sourceTree = "<group>"; };
+		5FE6589F18FBF0FB001D8EE3 /* crc32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = crc32.c; path = "../../../libgid/external/zlib-1.2.8/crc32.c"; sourceTree = "<group>"; };
+		5FE658A018FBF0FB001D8EE3 /* deflate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = deflate.c; path = "../../../libgid/external/zlib-1.2.8/deflate.c"; sourceTree = "<group>"; };
+		5FE658A118FBF0FB001D8EE3 /* gzclose.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzclose.c; path = "../../../libgid/external/zlib-1.2.8/gzclose.c"; sourceTree = "<group>"; };
+		5FE658A218FBF0FB001D8EE3 /* gzlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzlib.c; path = "../../../libgid/external/zlib-1.2.8/gzlib.c"; sourceTree = "<group>"; };
+		5FE658A318FBF0FB001D8EE3 /* gzread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzread.c; path = "../../../libgid/external/zlib-1.2.8/gzread.c"; sourceTree = "<group>"; };
+		5FE658A418FBF0FB001D8EE3 /* gzwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzwrite.c; path = "../../../libgid/external/zlib-1.2.8/gzwrite.c"; sourceTree = "<group>"; };
+		5FE658A518FBF0FB001D8EE3 /* infback.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = infback.c; path = "../../../libgid/external/zlib-1.2.8/infback.c"; sourceTree = "<group>"; };
+		5FE658A618FBF0FB001D8EE3 /* inffast.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inffast.c; path = "../../../libgid/external/zlib-1.2.8/inffast.c"; sourceTree = "<group>"; };
+		5FE658A718FBF0FB001D8EE3 /* inflate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inflate.c; path = "../../../libgid/external/zlib-1.2.8/inflate.c"; sourceTree = "<group>"; };
+		5FE658A818FBF0FB001D8EE3 /* inftrees.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inftrees.c; path = "../../../libgid/external/zlib-1.2.8/inftrees.c"; sourceTree = "<group>"; };
+		5FE658A918FBF0FB001D8EE3 /* trees.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = trees.c; path = "../../../libgid/external/zlib-1.2.8/trees.c"; sourceTree = "<group>"; };
+		5FE658AA18FBF0FB001D8EE3 /* uncompr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = uncompr.c; path = "../../../libgid/external/zlib-1.2.8/uncompr.c"; sourceTree = "<group>"; };
+		5FE658AB18FBF0FB001D8EE3 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zutil.c; path = "../../../libgid/external/zlib-1.2.8/zutil.c"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -820,6 +793,7 @@
 				5F0CD84B15BB107900479287 /* jpeg-9 */,
 				5F0CD82915BB0B1500479287 /* libpng-1.6.2 */,
 				5F0CD7BC15BB01FD00479287 /* snappy-1.1.0 */,
+				5FE6589C18FBF08B001D8EE3 /* zlib-1.2.8 */,
 			);
 			name = external;
 			sourceTree = "<group>";
@@ -1035,117 +1009,6 @@
 			);
 			name = Common;
 			path = "../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common";
-			sourceTree = "<group>";
-		};
-		5F276EDB18F4020E00D78AE4 /* Documentation */ = {
-			isa = PBXGroup;
-			children = (
-				5F276EDC18F4020E00D78AE4 /* API-Ref */,
-				5F276EDE18F4020E00D78AE4 /* Building */,
-				5F276EE518F4020E00D78AE4 /* footer.html */,
-				5F276EE618F4020E00D78AE4 /* Programmers-Guide */,
-				5F276F1018F4020E00D78AE4 /* Readme */,
-				5F276F1318F4020E00D78AE4 /* ReleaseNotes */,
-				5F276F1618F4020E00D78AE4 /* SWIG */,
-			);
-			name = Documentation;
-			path = "../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Documentation";
-			sourceTree = "<group>";
-		};
-		5F276EDC18F4020E00D78AE4 /* API-Ref */ = {
-			isa = PBXGroup;
-			children = (
-				5F276EDD18F4020E00D78AE4 /* doxyfile */,
-			);
-			path = "API-Ref";
-			sourceTree = "<group>";
-		};
-		5F276EDE18F4020E00D78AE4 /* Building */ = {
-			isa = PBXGroup;
-			children = (
-				5F276EDF18F4020E00D78AE4 /* Building.md */,
-				5F276EE018F4020E00D78AE4 /* BuildingAndroid.md */,
-				5F276EE118F4020E00D78AE4 /* BuildingLinux.md */,
-				5F276EE218F4020E00D78AE4 /* BuildingOSX.md */,
-				5F276EE318F4020E00D78AE4 /* BuildingWindows.md */,
-				5F276EE418F4020E00D78AE4 /* doxyfile */,
-			);
-			path = Building;
-			sourceTree = "<group>";
-		};
-		5F276EE618F4020E00D78AE4 /* Programmers-Guide */ = {
-			isa = PBXGroup;
-			children = (
-				5F276EE718F4020E00D78AE4 /* Chapter01_Introduction.md */,
-				5F276EE818F4020E00D78AE4 /* Chapter02_Hello_Box2D.md */,
-				5F276EE918F4020E00D78AE4 /* Chapter03_Common.md */,
-				5F276EEA18F4020E00D78AE4 /* Chapter04_Collision_Module.md */,
-				5F276EEB18F4020E00D78AE4 /* Chapter05_Dynamics_Module.md */,
-				5F276EEC18F4020E00D78AE4 /* Chapter06_Bodies.md */,
-				5F276EED18F4020E00D78AE4 /* Chapter07_Fixtures.md */,
-				5F276EEE18F4020E00D78AE4 /* Chapter08_Joints.md */,
-				5F276EEF18F4020E00D78AE4 /* Chapter09_Contacts.md */,
-				5F276EF018F4020E00D78AE4 /* Chapter10_World.md */,
-				5F276EF118F4020E00D78AE4 /* Chapter11_Particles.md */,
-				5F276EF218F4020E00D78AE4 /* Chapter12_Loose_Ends.md */,
-				5F276EF318F4020E00D78AE4 /* Chapter13_Debug_Drawing.md */,
-				5F276EF418F4020E00D78AE4 /* Chapter14_Limitations.md */,
-				5F276EF518F4020E00D78AE4 /* Chapter15_References.md */,
-				5F276EF618F4020E00D78AE4 /* doxyfile */,
-				5F276EF718F4020E00D78AE4 /* image_0.png */,
-				5F276EF818F4020E00D78AE4 /* image_1.png */,
-				5F276EF918F4020E00D78AE4 /* image_10.png */,
-				5F276EFA18F4020E00D78AE4 /* image_11.png */,
-				5F276EFB18F4020E00D78AE4 /* image_12.png */,
-				5F276EFC18F4020E00D78AE4 /* image_13.png */,
-				5F276EFD18F4020E00D78AE4 /* image_14.png */,
-				5F276EFE18F4020E00D78AE4 /* image_15.png */,
-				5F276EFF18F4020E00D78AE4 /* image_16.png */,
-				5F276F0018F4020E00D78AE4 /* image_17.png */,
-				5F276F0118F4020E00D78AE4 /* image_18.gif */,
-				5F276F0218F4020E00D78AE4 /* image_19.gif */,
-				5F276F0318F4020E00D78AE4 /* image_2.gif */,
-				5F276F0418F4020E00D78AE4 /* image_20.gif */,
-				5F276F0518F4020E00D78AE4 /* image_21.gif */,
-				5F276F0618F4020E00D78AE4 /* image_22.gif */,
-				5F276F0718F4020E00D78AE4 /* image_23.png */,
-				5F276F0818F4020E00D78AE4 /* image_24.png */,
-				5F276F0918F4020E00D78AE4 /* image_3.gif */,
-				5F276F0A18F4020E00D78AE4 /* image_4.png */,
-				5F276F0B18F4020E00D78AE4 /* image_5.png */,
-				5F276F0C18F4020E00D78AE4 /* image_6.png */,
-				5F276F0D18F4020E00D78AE4 /* image_7.png */,
-				5F276F0E18F4020E00D78AE4 /* image_8.png */,
-				5F276F0F18F4020E00D78AE4 /* image_9.png */,
-			);
-			path = "Programmers-Guide";
-			sourceTree = "<group>";
-		};
-		5F276F1018F4020E00D78AE4 /* Readme */ = {
-			isa = PBXGroup;
-			children = (
-				5F276F1118F4020E00D78AE4 /* doxyfile */,
-				5F276F1218F4020E00D78AE4 /* jquery.js */,
-			);
-			path = Readme;
-			sourceTree = "<group>";
-		};
-		5F276F1318F4020E00D78AE4 /* ReleaseNotes */ = {
-			isa = PBXGroup;
-			children = (
-				5F276F1418F4020E00D78AE4 /* doxyfile */,
-				5F276F1518F4020E00D78AE4 /* jquery.js */,
-			);
-			path = ReleaseNotes;
-			sourceTree = "<group>";
-		};
-		5F276F1618F4020E00D78AE4 /* SWIG */ = {
-			isa = PBXGroup;
-			children = (
-				5F276F1718F4020E00D78AE4 /* doxyfile */,
-				5F276F1818F4020E00D78AE4 /* GettingStarted.md */,
-			);
-			path = SWIG;
 			sourceTree = "<group>";
 		};
 		5F276F1918F4020E00D78AE4 /* Dynamics */ = {
@@ -1420,12 +1283,33 @@
 				5F276EAC18F4020E00D78AE4 /* Box2D.h */,
 				5F276EAD18F4020E00D78AE4 /* Collision */,
 				5F276EC518F4020E00D78AE4 /* Common */,
-				5F276EDB18F4020E00D78AE4 /* Documentation */,
 				5F276F1918F4020E00D78AE4 /* Dynamics */,
 				5F276F5318F4020E00D78AE4 /* Particle */,
 				5F276F5D18F4020E00D78AE4 /* Rope */,
 			);
 			name = "liquidfun-1.0.0";
+			sourceTree = "<group>";
+		};
+		5FE6589C18FBF08B001D8EE3 /* zlib-1.2.8 */ = {
+			isa = PBXGroup;
+			children = (
+				5FE6589D18FBF0FB001D8EE3 /* adler32.c */,
+				5FE6589E18FBF0FB001D8EE3 /* compress.c */,
+				5FE6589F18FBF0FB001D8EE3 /* crc32.c */,
+				5FE658A018FBF0FB001D8EE3 /* deflate.c */,
+				5FE658A118FBF0FB001D8EE3 /* gzclose.c */,
+				5FE658A218FBF0FB001D8EE3 /* gzlib.c */,
+				5FE658A318FBF0FB001D8EE3 /* gzread.c */,
+				5FE658A418FBF0FB001D8EE3 /* gzwrite.c */,
+				5FE658A518FBF0FB001D8EE3 /* infback.c */,
+				5FE658A618FBF0FB001D8EE3 /* inffast.c */,
+				5FE658A718FBF0FB001D8EE3 /* inflate.c */,
+				5FE658A818FBF0FB001D8EE3 /* inftrees.c */,
+				5FE658A918FBF0FB001D8EE3 /* trees.c */,
+				5FE658AA18FBF0FB001D8EE3 /* uncompr.c */,
+				5FE658AB18FBF0FB001D8EE3 /* zutil.c */,
+			);
+			name = "zlib-1.2.8";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1560,6 +1444,7 @@
 				5F0CD7D315BB025F00479287 /* gimage.cpp in Sources */,
 				5F0CD7D415BB025F00479287 /* glog.cpp in Sources */,
 				5F0CD7D615BB025F00479287 /* gtexture.cpp in Sources */,
+				5FE658AE18FBF0FB001D8EE3 /* crc32.c in Sources */,
 				5F0CD7D715BB025F00479287 /* gvfs-native.cpp in Sources */,
 				5F0CD83915BB0B3D00479287 /* png.c in Sources */,
 				5F0CD83A15BB0B3D00479287 /* pngerror.c in Sources */,
@@ -1583,6 +1468,7 @@
 				5F276F6E18F4020E00D78AE4 /* b2ChainShape.cpp in Sources */,
 				5F0CD87C15BB112300479287 /* jaricom.c in Sources */,
 				5F0CD87D15BB112300479287 /* jcapimin.c in Sources */,
+				5FE658B118FBF0FB001D8EE3 /* gzlib.c in Sources */,
 				5F0CD87E15BB112300479287 /* jcapistd.c in Sources */,
 				5F276F6C18F4020E00D78AE4 /* b2TimeOfImpact.cpp in Sources */,
 				5F0CD87F15BB112300479287 /* jcarith.c in Sources */,
@@ -1590,6 +1476,7 @@
 				5F0CD88115BB112300479287 /* jccolor.c in Sources */,
 				5F0CD88215BB112300479287 /* jcdctmgr.c in Sources */,
 				5F0CD88315BB112300479287 /* jchuff.c in Sources */,
+				5FE658AC18FBF0FB001D8EE3 /* adler32.c in Sources */,
 				5F0CD88415BB112300479287 /* jcinit.c in Sources */,
 				5F0CD88515BB112300479287 /* jcmainct.c in Sources */,
 				5F0CD88615BB112300479287 /* jcmarker.c in Sources */,
@@ -1610,6 +1497,7 @@
 				5F276F7018F4020E00D78AE4 /* b2CircleShape.cpp in Sources */,
 				5F0CD89415BB112300479287 /* jddctmgr.c in Sources */,
 				5F0CD89515BB112300479287 /* jdhuff.c in Sources */,
+				5FE658AD18FBF0FB001D8EE3 /* compress.c in Sources */,
 				5F0CD89615BB112300479287 /* jdinput.c in Sources */,
 				5F0CD89715BB112300479287 /* jdmainct.c in Sources */,
 				5F0CD89815BB112300479287 /* jdmarker.c in Sources */,
@@ -1628,6 +1516,7 @@
 				5F0CD8A415BB112300479287 /* jidctint.c in Sources */,
 				5F0CD8A515BB112300479287 /* jmemmgr.c in Sources */,
 				5F0CD8A715BB112300479287 /* jmemnobs.c in Sources */,
+				5FE658B618FBF0FB001D8EE3 /* inflate.c in Sources */,
 				5F276FBD18F4020E00D78AE4 /* b2RevoluteJoint.cpp in Sources */,
 				5F276FB918F4020E00D78AE4 /* b2PrismaticJoint.cpp in Sources */,
 				5F276F8618F4020E00D78AE4 /* b2Stat.cpp in Sources */,
@@ -1642,6 +1531,8 @@
 				5F276F6618F4020E00D78AE4 /* b2Collision.cpp in Sources */,
 				5F0CD91615BB494600479287 /* ftlcdfil.c in Sources */,
 				5F0CD91815BB495000479287 /* ftstroke.c in Sources */,
+				5FE658B318FBF0FB001D8EE3 /* gzwrite.c in Sources */,
+				5FE658B818FBF0FB001D8EE3 /* trees.c in Sources */,
 				5F0CD91A15BB495900479287 /* ftxf86.c in Sources */,
 				5F0CD91C15BB496400479287 /* ftbase.c in Sources */,
 				5F0CD91E15BB496D00479287 /* ftsystem.c in Sources */,
@@ -1665,6 +1556,7 @@
 				5F321E0815BB516F00542289 /* refptr.cpp in Sources */,
 				5F321E0915BB516F00542289 /* stringid.cpp in Sources */,
 				5F321E1A15BBBA4600542289 /* exit-generic.cpp in Sources */,
+				5FE658B718FBF0FB001D8EE3 /* inftrees.c in Sources */,
 				5F321E2415BBBA7E00542289 /* drawinfo.cpp in Sources */,
 				5F321E2615BBBA8800542289 /* deviceinfo-ios.mm in Sources */,
 				5F321E2815BBBA9500542289 /* keepawake-ios.mm in Sources */,
@@ -1680,6 +1572,7 @@
 				5F276F7B18F4020E00D78AE4 /* b2FreeList.cpp in Sources */,
 				5F321EDE15BBC3FC00542289 /* application.cpp in Sources */,
 				5F276FCC18F4020E00D78AE4 /* b2VoronoiDiagram.cpp in Sources */,
+				5FE658AF18FBF0FB001D8EE3 /* deflate.c in Sources */,
 				5F321EDF15BBC3FC00542289 /* bitmap.cpp in Sources */,
 				5F276F9418F4020E00D78AE4 /* b2Island.cpp in Sources */,
 				5F321EE015BBC3FC00542289 /* bitmapdata.cpp in Sources */,
@@ -1691,7 +1584,6 @@
 				5F321EE615BBC3FC00542289 /* errorevent.cpp in Sources */,
 				5F276F6518F4020E00D78AE4 /* b2CollidePolygon.cpp in Sources */,
 				5F321EE715BBC3FC00542289 /* font.cpp in Sources */,
-				5F276F8D18F4020E00D78AE4 /* jquery.js in Sources */,
 				5F321EE815BBC3FC00542289 /* fontbase.cpp in Sources */,
 				5F276FA318F4020E00D78AE4 /* b2ContactSolver.cpp in Sources */,
 				5F321EE915BBC3FC00542289 /* graphicsbase.cpp in Sources */,
@@ -1703,7 +1595,6 @@
 				5F276F8118F4020E00D78AE4 /* b2Settings.cpp in Sources */,
 				5F321EEE15BBC3FC00542289 /* mouseevent.cpp in Sources */,
 				5F276F7718F4020E00D78AE4 /* b2BlockAllocator.cpp in Sources */,
-				5F276F8C18F4020E00D78AE4 /* jquery.js in Sources */,
 				5F321EEF15BBC3FC00542289 /* movieclip2.cpp in Sources */,
 				5F276FA118F4020E00D78AE4 /* b2Contact.cpp in Sources */,
 				5F276F9718F4020E00D78AE4 /* b2World.cpp in Sources */,
@@ -1711,6 +1602,7 @@
 				5F321EF015BBC3FC00542289 /* ogl.cpp in Sources */,
 				5F276F7418F4020E00D78AE4 /* b2PolygonShape.cpp in Sources */,
 				5F321EF115BBC3FC00542289 /* progressevent.cpp in Sources */,
+				5FE658B918FBF0FB001D8EE3 /* uncompr.c in Sources */,
 				5F321EF215BBC3FC00542289 /* shape.cpp in Sources */,
 				5F321EF615BBC3FC00542289 /* splashscreen.cpp in Sources */,
 				5F276FCE18F4020E00D78AE4 /* b2Rope.cpp in Sources */,
@@ -1727,6 +1619,7 @@
 				5F321EFC15BBC3FC00542289 /* textfieldbase.cpp in Sources */,
 				5F321EFD15BBC3FC00542289 /* texture.cpp in Sources */,
 				5F321EFE15BBC3FC00542289 /* texturebase.cpp in Sources */,
+				5FE658B518FBF0FB001D8EE3 /* inffast.c in Sources */,
 				5F321EFF15BBC3FC00542289 /* texturemanager.cpp in Sources */,
 				5F321F0015BBC3FC00542289 /* texturepack.cpp in Sources */,
 				5F321F0115BBC3FC00542289 /* texturepacker.cpp in Sources */,
@@ -1745,6 +1638,7 @@
 				5F276FB718F4020E00D78AE4 /* b2MouseJoint.cpp in Sources */,
 				5F321F1A15BBC47500542289 /* memalloc.c in Sources */,
 				5F321F1B15BBC47500542289 /* mesh.c in Sources */,
+				5FE658B418FBF0FB001D8EE3 /* infback.c in Sources */,
 				5F321F1C15BBC47500542289 /* normal.c in Sources */,
 				5F276F9B18F4020E00D78AE4 /* b2ChainAndCircleContact.cpp in Sources */,
 				5F321F1D15BBC47500542289 /* priorityq.c in Sources */,
@@ -1772,9 +1666,11 @@
 				5F321F5015BBEB3200542289 /* eventbinder.cpp in Sources */,
 				5F321F5115BBEB3200542289 /* eventdispatcherbinder.cpp in Sources */,
 				5F321F5215BBEB3200542289 /* fontbasebinder.cpp in Sources */,
+				5FE658B218FBF0FB001D8EE3 /* gzread.c in Sources */,
 				5F321F5315BBEB3200542289 /* fontbinder.cpp in Sources */,
 				5F321F5415BBEB3200542289 /* geolocationbinder.cpp in Sources */,
 				5F321F5515BBEB3200542289 /* gyroscopebinder.cpp in Sources */,
+				5FE658BA18FBF0FB001D8EE3 /* zutil.c in Sources */,
 				5F321F5615BBEB3200542289 /* keys.cpp in Sources */,
 				5F321F5715BBEB3200542289 /* luaapplication.cpp in Sources */,
 				5F321F5915BBEB3200542289 /* matrixbinder.cpp in Sources */,
@@ -1799,6 +1695,7 @@
 				5F276F8E18F4020E00D78AE4 /* b2Body.cpp in Sources */,
 				5F276FAD18F4020E00D78AE4 /* b2DistanceJoint.cpp in Sources */,
 				5FAC8AC615D59C56003E5781 /* ggeolocation-ios.mm in Sources */,
+				5FE658B018FBF0FB001D8EE3 /* gzclose.c in Sources */,
 				5F58D77015D8F16B00137D76 /* fps-ios.mm in Sources */,
 				5F58D7D215D91D8000137D76 /* gglobal.cpp in Sources */,
 				5F880EA515DCF099001F889C /* urlloaderbinder.cpp in Sources */,

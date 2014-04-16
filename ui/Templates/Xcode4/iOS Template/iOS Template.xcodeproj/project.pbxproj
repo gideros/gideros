@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5F3A7C611846A023002F70C3 /* libzlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F3A7C601846A023002F70C3 /* libzlib.a */; };
 		5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F515CEF227007B5365 /* AppDelegate.m */; };
 		5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F715CEF227007B5365 /* EAGLView.m */; };
 		5F4153FC15CEF227007B5365 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F915CEF227007B5365 /* ViewController.m */; };
@@ -48,12 +47,12 @@
 		5FD896F415CED77F00D34824 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896F315CED77F00D34824 /* OpenGLES.framework */; };
 		5FD896FA15CED77F00D34824 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5FD896F815CED77F00D34824 /* InfoPlist.strings */; };
 		5FD896FC15CED77F00D34824 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FD896FB15CED77F00D34824 /* main.m */; };
+		5FE658BE18FE68EA001D8EE3 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FE658BD18FE68EA001D8EE3 /* libz.dylib */; };
 		5FFCA70915DD337700741085 /* lfs_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FFCA70715DD337700741085 /* lfs_stub.cpp */; };
 		5FFCA70A15DD337700741085 /* lfs.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FFCA70815DD337700741085 /* lfs.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5F3A7C601846A023002F70C3 /* libzlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzlib.a; path = "iOS Template/libzlib.a"; sourceTree = "<group>"; };
 		5F4153F415CEF227007B5365 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5F4153F515CEF227007B5365 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5F4153F615CEF227007B5365 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
@@ -100,6 +99,7 @@
 		5FD896F915CED77F00D34824 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		5FD896FB15CED77F00D34824 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		5FD896FD15CED77F00D34824 /* iOS Template-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iOS Template-Prefix.pch"; sourceTree = "<group>"; };
+		5FE658BD18FE68EA001D8EE3 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5FFCA70715DD337700741085 /* lfs_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lfs_stub.cpp; path = Plugins/lfs_stub.cpp; sourceTree = "<group>"; };
 		5FFCA70815DD337700741085 /* lfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lfs.c; path = Plugins/lfs.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -109,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FE658BE18FE68EA001D8EE3 /* libz.dylib in Frameworks */,
 				5F58D84615D9263F00137D76 /* AudioToolbox.framework in Frameworks */,
 				5F58D84715D9263F00137D76 /* AVFoundation.framework in Frameworks */,
 				5F58D84815D9263F00137D76 /* CoreAudio.framework in Frameworks */,
@@ -128,7 +129,6 @@
 				5F58D83915D925EA00137D76 /* libgideros.a in Frameworks */,
 				5F9FF0A81838143600AEA72F /* libgvfs.a in Frameworks */,
 				5F9FF0AA1838143E00AEA72F /* liblua.a in Frameworks */,
-				5F3A7C611846A023002F70C3 /* libzlib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,7 +177,6 @@
 		5FD896EA15CED77F00D34824 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				5F3A7C601846A023002F70C3 /* libzlib.a */,
 				5F9FF0A71838143600AEA72F /* libgvfs.a */,
 				5F9FF0A91838143E00AEA72F /* liblua.a */,
 				5F58D83815D925EA00137D76 /* libgideros.a */,
@@ -195,6 +194,7 @@
 				5FD896ED15CED77F00D34824 /* Foundation.framework */,
 				5FD896EF15CED77F00D34824 /* CoreGraphics.framework */,
 				5FD896F315CED77F00D34824 /* OpenGLES.framework */,
+				5FE658BD18FE68EA001D8EE3 /* libz.dylib */,
 				5F58D84115D9263F00137D76 /* libsqlite3.dylib */,
 			);
 			name = Frameworks;
@@ -396,9 +396,7 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Template/iOS Template-Prefix.pch";
-				HEADER_SEARCH_PATHS = (
-					"\"iOS Template/Plugins\"",
-				);
+				HEADER_SEARCH_PATHS = "\"iOS Template/Plugins\"";
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -415,9 +413,7 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Template/iOS Template-Prefix.pch";
-				HEADER_SEARCH_PATHS = (
-					"\"iOS Template/Plugins\"",
-				);
+				HEADER_SEARCH_PATHS = "\"iOS Template/Plugins\"";
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
