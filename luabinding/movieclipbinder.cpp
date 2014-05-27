@@ -5,6 +5,9 @@
 #include "luaapplication.h"
 #include <luautil.h>
 
+#define FRAME "frame"
+#define TIME "time"
+
 MovieClipBinder::MovieClipBinder(lua_State* L)
 {
 	Binder binder(L);
@@ -21,6 +24,17 @@ MovieClipBinder::MovieClipBinder(lua_State* L)
 	};
 
 	binder.createClass("MovieClip", "Sprite", create, destruct, functionList);
+
+
+    lua_getglobal(L, "MovieClip");
+
+    lua_pushstring(L, FRAME);
+    lua_setfield(L, -2, "FRAME");
+
+    lua_pushstring(L, TIME);
+    lua_setfield(L, -2, "TIME");
+
+    lua_pop(L, 1);
 }
 
 
@@ -62,20 +76,50 @@ int MovieClipBinder::create(lua_State* L)
 
     Binder binder(L);
 
-    if (lua_type(L, 1) != LUA_TTABLE)
-        return luaL_typerror(L, 3, "table");
 
-    if (lua_objlen(L, 1) == 0)
+    int index;
+    MovieClip::Type type;
+
+    if (lua_type(L, 1) == LUA_TTABLE)
+    {
+        index = 1;
+        type = MovieClip::eFrame;
+    }
+    else if (lua_type(L, 1) == LUA_TSTRING)
+    {
+        if (lua_type(L, 2) != LUA_TTABLE)
+            return luaL_typerror(L, 2, "table");
+
+        const char *t = lua_tostring(L, 1);
+
+        if (!strcmp(t, FRAME))
+            type = MovieClip::eFrame;
+        if (!strcmp(t, TIME))
+            type = MovieClip::eTime;
+        else
+        {
+            GStatus status(2008, "type");	// Parameter %s must be one of the accepted values.
+            return luaL_error(binder.L, status.errorString());
+        }
+
+        index = 2;
+    }
+    else
+        return luaL_typerror(L, 1, "string or table");
+
+    if (lua_objlen(L, index) == 0)
         luaL_error(L, GStatus(2102).errorString());     // Error #2102 Timeline array doesn't contain any elements.
 
     MovieClip* movieclip = new MovieClip(application->getApplication());	// box movieclip to unref
 
 	AutoUnref autounref(movieclip);
 
-	int len = lua_objlen(L, 1);
+    movieclip->setType(type);
+
+    int len = lua_objlen(L, index);
 	for (int i = 1; i <= len; ++i)
 	{
-		lua_rawgeti(L, 1, i);
+        lua_rawgeti(L, index, i);
 
         if (lua_type(L, -1) != LUA_TTABLE)
             luaL_error(L, GStatus(2103).errorString());     // Error #2102 Timeline element is not a table

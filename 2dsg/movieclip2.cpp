@@ -1,6 +1,7 @@
 #include "movieclip2.h"
 #include <algorithm>
 #include "completeevent.h"
+#include "platformutil.h"
 
 
 /*
@@ -952,6 +953,7 @@ Parameter::Parameter(const char* strparam, float start, float end, const char* t
 
 MovieClip::MovieClip(Application *application) : Sprite(application)
 {
+    type_ = eFrame;
 }
 
 MovieClip::~MovieClip()
@@ -995,6 +997,16 @@ void MovieClip::addFrame(int start, int end, Sprite* sprite, const std::vector<P
 	frames_.push_back(frame);
 }
 
+void MovieClip::setType(MovieClip::Type type)
+{
+    type_ = type;
+}
+
+MovieClip::Type MovieClip::getType() const
+{
+    return type_;
+}
+
 void MovieClip::finalize()
 {
 	maxframe_ = 1;
@@ -1007,8 +1019,13 @@ void MovieClip::finalize()
 	gotoAndPlay(1);
 }
 
-void MovieClip::nextFrame(EnterFrameEvent* event)
+void MovieClip::oneFrame()
 {
+    if (!playing_)
+    {
+        return;
+    }
+
 	if (passoneframe_ == true)
 	{
 		passoneframe_ = false;
@@ -1063,6 +1080,28 @@ void MovieClip::nextFrame(EnterFrameEvent* event)
 	}
 	
 	interpolateParameters();
+}
+
+void MovieClip::nextFrame(EnterFrameEvent *)
+{
+    switch (type_)
+    {
+    case eFrame:
+        oneFrame();
+        break;
+    case eTime:
+    {
+        double curr = iclock();
+        int delta = (curr - prevClock_) * 1000;
+        prevClock_ = curr;
+
+        delta = std::min(std::max(delta, 0), 1000);
+
+        for (int i = 0; i < delta; ++i)
+            oneFrame();
+        break;
+    }
+    }
 }
 
 void MovieClip::gotoFrame(int frame)
@@ -1142,6 +1181,7 @@ void MovieClip::play()
 {
 	passoneframe_ = true;
 	playing_ = true;
+    prevClock_ = iclock();
 	addEventListener(EnterFrameEvent::ENTER_FRAME, &MovieClip::nextFrame);
 }
 

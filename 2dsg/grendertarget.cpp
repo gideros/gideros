@@ -44,11 +44,11 @@ void GRenderTarget::clear(unsigned int color, float a)
 
     glViewport(0, 0, data->width, data->height);
 
-    unsigned int r = (color >> 16) & 0xff;
-    unsigned int g = (color >> 8) & 0xff;
-    unsigned int b = color & 0xff;
+    float r = ((color >> 16) & 0xff) / 255.f;
+    float g = ((color >> 8) & 0xff) / 255.f;
+    float b = (color & 0xff) / 255.f;
 
-    glClearColor(r / 255.f, g / 255.f, b / 255.f, a);
+    glClearColor(r * a, g * a, b * a, a);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);

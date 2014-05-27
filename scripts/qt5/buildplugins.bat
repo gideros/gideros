@@ -1,5 +1,5 @@
 pushd \
-call C:\Qt\Qt5.2.1\5.2.1\mingw48_32\bin\qtenv2.bat
+call C:\Qt\Qt5.3.0\5.3\mingw482_32\bin\qtenv2.bat
 popd
 
 cd ..

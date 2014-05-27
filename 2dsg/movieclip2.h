@@ -74,11 +74,20 @@ struct Parameter
 class MovieClip : public Sprite
 {
 public:
+    enum Type
+    {
+        eFrame,
+        eTime
+    };
+
     MovieClip(Application *application);
 	virtual ~MovieClip();
 
 	// start >= 1 && end >= 1 && start <= end
 	void addFrame(int start, int end, Sprite* sprite, const std::vector<Parameter>& parameters, GStatus* status = NULL);
+
+    void setType(Type type);
+    Type getType() const;
 
 	void setStopAction(int frame);
 	void setGotoAction(int frame, int destframe);
@@ -96,9 +105,13 @@ private:
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
 
 private:
-	void nextFrame(EnterFrameEvent* event);
-	void gotoFrame(int frame);
+    void oneFrame();
+    void nextFrame(EnterFrameEvent* event);
+    void gotoFrame(int frame);
 	void interpolateParameters();
+
+    Type type_;
+    double prevClock_;
 
 	int frame_;
 	int maxframe_;
