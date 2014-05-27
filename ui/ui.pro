@@ -140,8 +140,8 @@ win32 {
 macx {
 	LIBS += -framework CoreFoundation
 	LIBS += -framework IOKit
-    INCLUDEPATH += /Qt/Qt5.2.1/5.2.1/clang_64/include
-    LIBS += -L/Qt/Qt5.2.1/5.2.1/clang_64/lib
+    INCLUDEPATH += /Qt/Qt5.3.0/5.3/clang_64/include
+    LIBS += -L/Qt/Qt5.3.0/5.3/clang_64/lib
 }
 
 LIBS += -lqscintilla2
