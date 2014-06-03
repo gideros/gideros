@@ -1134,6 +1134,20 @@ void MainWindow::compile()
 
     textEdit->save();
 
+    QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
+#if defined(Q_OS_MAC)
+    toolsDir.cdUp();
+#endif
+    toolsDir.cd("Tools");
+
+#if defined(Q_OS_WIN)
+    QString make = toolsDir.filePath("make.exe");
+    QString luac = toolsDir.filePath("luac.exe");
+#else
+    QString make = toolsDir.filePath("make");
+    QString luac = toolsDir.filePath("luac");
+#endif
+
     QDir dir = QFileInfo(projectFileName_).dir();
     dir.mkdir(".tmp");
 
@@ -1142,7 +1156,7 @@ void MainWindow::compile()
     {
         QTextStream out(&file);
 
-        out << "LUAC = luac" << "\n";
+        out << "LUAC = " << quote(luac) << "\n";
         out << "\n";
 
         QString f = dir.relativeFilePath(textEdit->fileName());
@@ -1155,17 +1169,6 @@ void MainWindow::compile()
     }
 
     makeProcess_->setWorkingDirectory(dir.path());
-    QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
-#if defined(Q_OS_MAC)
-    toolsDir.cdUp();
-#endif
-    toolsDir.cd("Tools");
-
-#if defined(Q_OS_WIN)
-    QString make = toolsDir.filePath("make.exe");
-#else
-    QString make = toolsDir.filePath("make");
-#endif
     makeProcess_->start(make, QStringList() << "-f" << ".tmp/makefile");
 }
 
@@ -1287,6 +1290,20 @@ void MainWindow::compileAll()
         }
     }
 
+    QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
+#if defined(Q_OS_MAC)
+    toolsDir.cdUp();
+#endif
+    toolsDir.cd("Tools");
+
+#if defined(Q_OS_WIN)
+    QString make = toolsDir.filePath("make.exe");
+    QString luac = toolsDir.filePath("luac.exe");
+#else
+    QString make = toolsDir.filePath("make");
+    QString luac = toolsDir.filePath("luac");
+#endif
+
     QString all = "all:";
     for (int i = 0; i < fileNames.size(); ++i)
     {
@@ -1303,7 +1320,7 @@ void MainWindow::compileAll()
     {
         QTextStream out(&file);
 
-        out << "LUAC = luac" << "\n";
+        out << "LUAC = " << quote(luac) << "\n";
         out << "\n";
 
         out << all << "\n";
@@ -1323,17 +1340,6 @@ void MainWindow::compileAll()
     }
 
     makeProcess_->setWorkingDirectory(dir.path());
-    QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
-#if defined(Q_OS_MAC)
-    toolsDir.cdUp();
-#endif
-    toolsDir.cd("Tools");
-
-#if defined(Q_OS_WIN)
-    QString make = toolsDir.filePath("make.exe");
-#else
-    QString make = toolsDir.filePath("make");
-#endif
     makeProcess_->start(make, QStringList() << "-f" << ".tmp/makefile");
 }
 
