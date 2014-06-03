@@ -110,11 +110,9 @@ int MovieClipBinder::create(lua_State* L)
     if (lua_objlen(L, index) == 0)
         luaL_error(L, GStatus(2102).errorString());     // Error #2102 Timeline array doesn't contain any elements.
 
-    MovieClip* movieclip = new MovieClip(application->getApplication());	// box movieclip to unref
+    MovieClip* movieclip = new MovieClip(type, application->getApplication());	// box movieclip to unref
 
 	AutoUnref autounref(movieclip);
-
-    movieclip->setType(type);
 
     int len = lua_objlen(L, index);
 	for (int i = 1; i <= len; ++i)

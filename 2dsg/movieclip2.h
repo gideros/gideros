@@ -80,14 +80,11 @@ public:
         eTime
     };
 
-    MovieClip(Application *application);
+    MovieClip(Type type, Application *application);
 	virtual ~MovieClip();
 
 	// start >= 1 && end >= 1 && start <= end
 	void addFrame(int start, int end, Sprite* sprite, const std::vector<Parameter>& parameters, GStatus* status = NULL);
-
-    void setType(Type type);
-    Type getType() const;
 
 	void setStopAction(int frame);
 	void setGotoAction(int frame, int destframe);

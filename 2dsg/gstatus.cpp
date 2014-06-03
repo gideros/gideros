@@ -44,9 +44,10 @@ void GStatus::init(int errorCode)
 		s_errors[2010] = GStatusElement(eArgumentError, "Field '%s' must be one of the accepted values.", true);
 
 		s_errors[2100] = GStatusElement(eArgumentError, "Start and end frames must be greater than or equal to 1.", false);
-		s_errors[2101] = GStatusElement(eArgumentError, "End frame must be greater than or equal to start frame.", false);
+        s_errors[2101] = GStatusElement(eArgumentError, "End frame/time must be greater than or equal to start frame/time.", false);
         s_errors[2102] = GStatusElement(eArgumentError, "Timeline array doesn't contain any elements.", false);
         s_errors[2103] = GStatusElement(eArgumentError, "Timeline element is not a table.", false);
+        s_errors[2104] = GStatusElement(eArgumentError, "Start and end time must be greater than or equal to 0.", false);
 
 		s_errors[5001] = GStatusElement(eRuntimeError, "Body is already destroyed.", false);
 		s_errors[5002] = GStatusElement(eRuntimeError, "Fixture is already destroyed.", false);

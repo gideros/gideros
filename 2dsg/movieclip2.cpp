@@ -3,7 +3,6 @@
 #include "completeevent.h"
 #include "platformutil.h"
 
-
 /*
 Disclaimer for Robert Penner's Easing Equations license:
 
@@ -951,9 +950,9 @@ Parameter::Parameter(const char* strparam, float start, float end, const char* t
 	tweenFunction = getTweenFunction((TweenType)StringId::instance().id(tweenType));
 }
 
-MovieClip::MovieClip(Application *application) : Sprite(application)
+MovieClip::MovieClip(Type type, Application *application) : Sprite(application)
 {
-    type_ = eFrame;
+    type_ = type;
 }
 
 MovieClip::~MovieClip()
@@ -964,19 +963,30 @@ MovieClip::~MovieClip()
 
 void MovieClip::addFrame(int start, int end, Sprite* sprite, const std::vector<Parameter>& parameters, GStatus* status/* = NULL*/)
 {
-	if (start < 1 || end < 1)
-	{
-		if (status)
-			*status = GStatus(2100);		// Error #2100: Start and end frames must be greater than or equal to 1.
-
-		return;
-	}
+    switch (type_)
+    {
+    case eFrame:
+        if (start < 1 || end < 1)
+        {
+            if (status)
+                *status = GStatus(2100);		// Error #2100: Start and end frames must be greater than or equal to 1.
+            return;
+        }
+        break;
+    case eTime:
+        if (start < 0 || end < 0)
+        {
+            if (status)
+                *status = GStatus(2104);		// Error #2100: Start and end times must be greater than or equal to 0.
+            return;
+        }
+        break;
+    }
 
 	if (start > end)
 	{
 		if (status)
-			*status = GStatus(2101);		// Error #2101: End frame must be greater than or equal to start frame.
-
+            *status = GStatus(2101);		// Error #2101: End frame/time must be greater than or equal to start frame/time.
 		return;
 	}
 
@@ -997,26 +1007,33 @@ void MovieClip::addFrame(int start, int end, Sprite* sprite, const std::vector<P
 	frames_.push_back(frame);
 }
 
-void MovieClip::setType(MovieClip::Type type)
-{
-    type_ = type;
-}
-
-MovieClip::Type MovieClip::getType() const
-{
-    return type_;
-}
-
 void MovieClip::finalize()
 {
-	maxframe_ = 1;
-	for (std::size_t i = 0; i < frames_.size(); ++i)
+    switch (type_)
+    {
+    case eFrame:
+        maxframe_ = 1;
+        break;
+    case eTime:
+        maxframe_ = 0;
+        break;
+    }
+
+    for (std::size_t i = 0; i < frames_.size(); ++i)
 	{
 		allFrames_[frames_[i].start].push_back(&frames_[i]);
 		maxframe_ = std::max(maxframe_, frames_[i].end);
 	}
 
-	gotoAndPlay(1);
+    switch (type_)
+    {
+    case eFrame:
+        gotoAndPlay(1);
+        break;
+    case eTime:
+        gotoAndPlay(0);
+        break;
+    }
 }
 
 void MovieClip::oneFrame()
@@ -1035,7 +1052,7 @@ void MovieClip::oneFrame()
 	std::map<int, int>::iterator iter2 = actions_.find(frame_);
 	if (iter2 != actions_.end())
 	{
-		if (iter2->second == 0)
+        if (iter2->second == -1)
         {
 			stop();
             CompleteEvent event(CompleteEvent::COMPLETE);
@@ -1194,7 +1211,7 @@ void MovieClip::stop()
 
 void MovieClip::setStopAction(int frame)
 {
-	actions_[frame] = 0;
+    actions_[frame] = -1;
 }
 
 void MovieClip::setGotoAction(int frame, int destframe)
