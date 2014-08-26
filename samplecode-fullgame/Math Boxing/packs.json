@@ -1,6 +1,0 @@
-{"packs":[
-	{"name":"Child","levels":7,"scene":"kindergarden","bossname":"Frank","sg1":"+","sg2":"+","sg3":"+","sg4":"-","maxresult":10,"maxcalc":10},
-	{"name":"Teenager","levels":9,"scene":"backalley","bossname":"Jamie","sg1":"+","sg2":"-","sg3":"-","sg4":"-","maxresult":20,"maxcalc":15},
-	{"name":"Young Adult","levels":10,"scene":"trainingring","bossname":"Herp derp","sg1":"+","sg2":"-","sg3":"*","sg4":"*","maxresult":50,"maxcalc":20},
-	{"name":"Adult","levels":15,"scene":"proring","bossname":"Durp derp","sg1":"+","sg2":"-","sg3":"*","sg4":"/","maxresult":100,"maxcalc":30}
-]}
