@@ -151,7 +151,6 @@ public class GGMediaPlayerManager
 
 			if (channel.player != null)
 			{
-				channel.player.stop();
 				channel.player.release();
 				channel.player = null;
 			}
@@ -247,7 +246,6 @@ public class GGMediaPlayerManager
 		
 		if (channel2.player != null)
 		{
-			channel2.player.stop();
 			channel2.player.release();
 			channel2.player = null;			
 		}
@@ -384,7 +382,6 @@ public class GGMediaPlayerManager
 
 		if (channel.player != null)
 		{
-			channel.player.stop();
 			channel.player.release();
 			channel.player = null;
 		}
