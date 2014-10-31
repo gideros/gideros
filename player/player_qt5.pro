@@ -30,8 +30,8 @@ INCLUDEPATH += \
     "../external/glu"
 
 macx {
-INCLUDEPATH += "/opt/local/include"
-INCLUDEPATH += "/opt/local/include/freetype2"
+INCLUDEPATH += "/usr/local/include"
+INCLUDEPATH += "/usr/local/include/freetype2"
 }
 
 macx {
@@ -117,7 +117,7 @@ LIBS += -framework OpenAL
 LIBS += -framework OpenGL
 LIBS += -framework CoreFoundation
 LIBS += -lz
-LIBS += -L"/opt/local/lib"
+LIBS += -L"/usr/local/lib"
 }
 
 win32 {
@@ -139,7 +139,7 @@ LIBS += -L"../libgvfs" -lgvfs
 LIBS += -L"../lua" -llua
 LIBS += -L"../libgideros" -lgideros
 LIBS += -L"../libpystring" -lpystring
-LIBS += -L"/opt/local/lib" -lGLEW -lfreetype
+LIBS += -L"/usr/local/lib" -lGLEW -lfreetype
 }
 
 

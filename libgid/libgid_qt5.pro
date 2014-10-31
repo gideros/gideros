@@ -104,7 +104,7 @@ LIBS += -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx
 
 macx {
 DEFINES += OPENAL_SUBDIR_OPENAL
-INCLUDEPATH += "/opt/local/include"
+INCLUDEPATH += "/usr/local/include"
 
 INCLUDEPATH += "../libgid/external/mpg123-1.15.3/src/libmpg123"
 LIBS += -L"../libgid/external/mpg123-1.15.3/lib/gcc_64" -lmpg123
@@ -112,7 +112,7 @@ LIBS += -L"../libgid/external/mpg123-1.15.3/lib/gcc_64" -lmpg123
 LIBS += -framework OpenAL
 LIBS += -framework OpenGL
 LIBS += -framework CoreFoundation
-LIBS += -L"/opt/local/lib" -lpng -ljpeg -lGLEW
+LIBS += -L"/usr/local/lib" -lpng -ljpeg -lGLEW
 LIBS += -lpthread -lz
 }
 
