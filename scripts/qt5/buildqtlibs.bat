@@ -1,5 +1,5 @@
 pushd \
-call C:\Qt\Qt5.3.0\5.3\mingw482_32\bin\qtenv2.bat
+call C:\Qt\Qt5.3.2\5.3\mingw482_32\bin\qtenv2.bat
 popd
 
 cd ..
@@ -39,36 +39,38 @@ mingw32-make.exe release
 mingw32-make.exe release
 cd ..
 
-rm -rf Sdk
+rmdir /s /q Sdk
 mkdir Sdk
 cd Sdk
 mkdir include
-cp ..\libgideros\gideros.h include
-cp ..\libgideros\gplugin.h include
-cp ..\libgideros\gproxy.h include
-cp ..\libgideros\greferenced.h include
-cp ..\libgideros\gexport.h include
-cp ..\libgvfs\gfile.h include
-cp ..\lua\src\lua.h include
-cp ..\lua\src\luaconf.h include
-cp ..\lua\src\lualib.h include
-cp ..\lua\src\lauxlib.h include
-cp ..\libgid\include\gglobal.h include
-cp ..\libgvfs\gpath.h include
-cp ..\libgid\include\glog.h include
-cp ..\libgid\include\gapplication.h include
-cp ..\libgid\include\gevent.h include
-cp -R ..\libgid\external\openal-soft-1.13\include\AL include
+copy ..\libgideros\gideros.h include
+copy ..\libgideros\gplugin.h include
+copy ..\libgideros\gproxy.h include
+copy ..\libgideros\greferenced.h include
+copy ..\libgideros\gexport.h include
+copy ..\libgvfs\gfile.h include
+copy ..\lua\src\lua.h include
+copy ..\lua\src\luaconf.h include
+copy ..\lua\src\lualib.h include
+copy ..\lua\src\lauxlib.h include
+copy ..\libgid\include\gglobal.h include
+copy ..\libgvfs\gpath.h include
+copy ..\libgid\include\glog.h include
+copy ..\libgid\include\gapplication.h include
+copy ..\libgid\include\gevent.h include
+mkdir include\AL
+copy ..\libgid\external\openal-soft-1.13\include\AL\al.h include\AL
+copy ..\libgid\external\openal-soft-1.13\include\AL\alc.h include\AL
+copy ..\libgid\external\openal-soft-1.13\include\AL\alext.h include\AL
 
 mkdir lib
 mkdir lib\desktop
-cp ..\libgideros\release\libgideros.a lib\desktop
-cp ..\lua\release\liblua.a lib\desktop
-cp ..\libgid\release\libgid.a lib\desktop
-cp ..\libgvfs\release\libgvfs.a lib\desktop
-cp ..\libgid\external\openal-soft-1.13\build\mingw48_32\libOpenAL32.dll.a lib\desktop
+copy ..\libgideros\release\libgideros.a lib\desktop
+copy ..\lua\release\liblua.a lib\desktop
+copy ..\libgid\release\libgid.a lib\desktop
+copy ..\libgvfs\release\libgvfs.a lib\desktop
+copy ..\libgid\external\openal-soft-1.13\build\mingw48_32\libOpenAL32.dll.a lib\desktop
 cd ..
 
 cd scripts
-
 
