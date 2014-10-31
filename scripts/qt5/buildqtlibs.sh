@@ -1,5 +1,3 @@
-QT=/Qt/Qt5.3.2/5.3
-
 sudo rm /usr/lib/libpystring.1.dylib
 sudo rm /usr/lib/libgvfs.1.dylib
 sudo rm /usr/lib/libgid.1.dylib
@@ -9,35 +7,35 @@ sudo rm /usr/lib/libgideros.1.dylib
 cd ..
 
 cd libpystring
-$QT/clang_64/bin/qmake libpystring.pro
+$QT/bin/qmake libpystring.pro
 make clean
 make
 sudo cp libpystring.1.dylib /usr/lib
 cd ..
 
 cd libgvfs
-$QT/clang_64/bin/qmake libgvfs.pro
+$QT/bin/qmake libgvfs.pro
 make clean
 make
 sudo cp libgvfs.1.dylib /usr/lib
 cd ..
 
 cd libgid
-$QT/clang_64/bin/qmake libgid_qt5.pro
+$QT/bin/qmake libgid_qt5.pro
 make clean
 make
 sudo cp libgid.1.dylib /usr/lib
 cd ..
 
 cd lua
-$QT/clang_64/bin/qmake lua.pro
+$QT/bin/qmake lua.pro
 make clean
 make
 sudo cp liblua.1.dylib /usr/lib
 cd ..
 
 cd libgideros
-$QT/clang_64/bin/qmake libgideros.pro
+$QT/bin/qmake libgideros.pro
 make clean
 make
 sudo cp libgideros.1.dylib /usr/lib
