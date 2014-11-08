@@ -8,7 +8,7 @@ brew install qt5
 brew install wine
 
 export QT=/usr/local/Cellar/qt5/5.3.2
-export IOS_SDK=8.1
+export IOS_SDK=8.0
 
 cd scripts
 
