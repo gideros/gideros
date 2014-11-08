@@ -26,3 +26,4 @@ wine cmd /c qt5\\buildplugins.bat
 wine cmd /c qt5\\cleanqt.bat
 wine cmd /c qt5\\buildqt.bat
 
+travis setup releases
