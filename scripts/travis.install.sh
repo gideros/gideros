@@ -9,6 +9,7 @@ brew install wine
 
 export QT=/usr/local/Cellar/qt5/5.3.2
 export IOS_SDK=8.0
+export ANDROID_NDK=~/android-ndk-r10c
 
 cd scripts
 
@@ -20,6 +21,9 @@ bash qt5/buildqt.sh
 
 bash cleanioslibs.sh
 bash buildioslibs.sh
+
+bash buildandroidlibs.sh
+bash buildandroidso.sh
 
 wine cmd /c qt5\\buildqtlibs.bat
 wine cmd /c qt5\\buildplugins.bat
