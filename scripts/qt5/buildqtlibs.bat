@@ -39,7 +39,7 @@ mingw32-make.exe release
 mingw32-make.exe release
 cd ..
 
-rmdir /s /q Sdk
+rem rmdir /s /q Sdk
 mkdir Sdk
 cd Sdk
 mkdir include

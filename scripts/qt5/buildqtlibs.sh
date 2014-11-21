@@ -41,7 +41,7 @@ make
 sudo cp libgideros.1.dylib /usr/lib
 cd ..
 
-rm -rf Sdk
+# rm -rf Sdk
 mkdir Sdk
 cd Sdk
 mkdir include
