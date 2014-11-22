@@ -1,3 +1,5 @@
+echo "Android home:" $ANDROID_HOME 
+
 brew update
 brew install jpeg
 brew install libpng
