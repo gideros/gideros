@@ -48,8 +48,3 @@ bash qt5/buildqtlibs.sh
 bash qt5/buildplugins.sh
 bash qt5/cleanqt.sh
 bash qt5/buildqt.sh
-
-
-travis setup releases
-
-
