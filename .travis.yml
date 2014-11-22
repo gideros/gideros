@@ -1,8 +1,19 @@
 language: objective-c
 android:
   components:
-    - platform-tools
-    - build-tools-21.0.2
-    - android-21
+  - platform-tools
+  - build-tools-21.0.2
+  - android-21
 install: true
 before_install: bash ./scripts/travis.install.sh
+deploy:
+  provider: releases
+  api_key:
+    secure: O+1H7MYM6x1ir7/BwIqLg8hj1wFCS5xaon81cRp1Mj079+CYk8kpP7mdwShzokyBPSmFmLh/ItBH6PDAkwZ9678DTG8SkovAH9sx8uJ22cUD7HZs+CD0NknlKfZ+N/UZQVlitOwPzSNG/JwyqECU8DqNI4vcW3v95VrAXn1Qzx0=
+  file:
+    - "gideros/tmp/win/gideros.exe"
+    - "gideros/tmp/mac/gideros.dmg"
+  skip_cleanup: true
+  on:
+    tags: true
+    all_branches: true
