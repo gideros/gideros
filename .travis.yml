@@ -1,9 +1,4 @@
 language: objective-c
-android:
-  components:
-  - platform-tools
-  - build-tools-21.0.2
-  - android-21
 install: true
 before_install: bash ./scripts/travis.install.sh
 deploy:
