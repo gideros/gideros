@@ -27,6 +27,7 @@ export ANDROID_NDK=/usr/local/opt/android-ndk
 
 cd scripts
 
+rm -rf ../tmp
 mkdir ../tmp
 
 bash downloadqscintilla.sh
