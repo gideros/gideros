@@ -59,9 +59,7 @@ copy ..\libgid\include\glog.h include
 copy ..\libgid\include\gapplication.h include
 copy ..\libgid\include\gevent.h include
 mkdir include\AL
-copy ..\libgid\external\openal-soft-1.13\include\AL\al.h include\AL
-copy ..\libgid\external\openal-soft-1.13\include\AL\alc.h include\AL
-copy ..\libgid\external\openal-soft-1.13\include\AL\alext.h include\AL
+copy ..\libgid\external\openal-soft-1.13\include\AL\* include\AL
 
 mkdir lib
 mkdir lib\desktop

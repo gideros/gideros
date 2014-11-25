@@ -1,6 +1,7 @@
 cd ..
 
-rm -rf tmp/win
+rm -rf tmp
+mkdir tmp
 mkdir tmp/win
 
 cp libgid/release/gid.dll tmp/win
@@ -118,7 +119,7 @@ cp tmp/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins/* tmp/win/Templates/Xcode4/
 
 cp android/GiderosAndroidPlayer/gideros.jar tmp/win/Templates/Eclipse/Android\ Template
 mkdir tmp/win/Templates/Eclipse/Android\ Template/jni
-cp android/lib/jni/Android.mk tmp/win/Templates/Eclipse/Android\ Template/jni
+cp android/lib/jni/Application.mk tmp/win/Templates/Eclipse/Android\ Template/jni
 cp -R android/build/libs tmp/win/Templates/Eclipse/Android\ Template
 
 
