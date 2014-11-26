@@ -10,6 +10,9 @@ brew install ant
 brew install android-sdk
 brew install android-ndk
 
+rm -rf ~/.wine
+wine xyz 
+
 expect -c '
 set timeout -1   ;
 spawn android update sdk -u -t tools,platform-tools,build-tools-21.1.1,android-21; 
@@ -29,6 +32,8 @@ cd scripts
 
 rm -rf ../tmp
 mkdir ../tmp
+
+bash installwinqt.sh
 
 bash downloadqscintilla.sh
 bash extractqscintilla.sh
