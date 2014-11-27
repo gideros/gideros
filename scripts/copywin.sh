@@ -2,8 +2,8 @@ BUILD_DIR=build
 
 cd ..
 
-rm -rf $BUILD_DIR
 mkdir $BUILD_DIR
+rm -rf $BUILD_DIR/win
 mkdir $BUILD_DIR/win
 
 cp libgid/release/gid.dll $BUILD_DIR/win

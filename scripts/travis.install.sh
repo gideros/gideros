@@ -9,6 +9,7 @@ brew install wine
 brew install ant
 brew install android-sdk
 brew install android-ndk
+brew install ncurses
 
 rm -rf ~/.wine
 wine xyz 
@@ -70,6 +71,7 @@ bash createwinpackage.sh
 
 
 echo 'Installing QScintilla for Mac...'
+bash downloadqscintilla.sh
 bash extractqscintilla.sh
 bash installqscintilla.sh
 
@@ -83,6 +85,9 @@ bash qt5/buildqt.sh
 
 echo 'Copying Mac files...'
 bash copymac.sh
+
+echo 'Creating Mac installation package...'
+bash createmacpackage.sh
 
 
 
