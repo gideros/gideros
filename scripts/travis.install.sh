@@ -24,7 +24,7 @@ expect {
 
 export QT=/usr/local/Cellar/qt5/5.3.2
 export QT_WIN=~/.wine/drive_c/Qt/Qt5.3.2
-export IOS_SDK=8.0
+export IOS_SDK=8.1
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
 
@@ -33,31 +33,47 @@ cd scripts
 rm -rf ../tmp
 mkdir ../tmp
 
+echo 'Installing Qt for Windows...'
 bash installwinqt.sh
 
+echo 'Installing NSIS for Windows...'
+bash installnsis.sh
+
+echo 'Installing QScintilla for Windows...'
 bash downloadqscintilla.sh
 bash extractqscintilla.sh
 wine cmd /c installqscintilla.bat
 
+echo 'Building Qt applications for Windows...'
 rm -rf ../Sdk
 wine cmd /c qt5\\buildqtlibs.bat
 wine cmd /c qt5\\buildplugins.bat
 wine cmd /c qt5\\cleanqt.bat
 wine cmd /c qt5\\buildqt.bat
 
+echo 'Building iOS libraries...'
 bash cleanioslibs.sh
 bash buildioslibs.sh
 bash buildiosplugins.sh
 
+echo 'Building Android libraries...'
 bash makejar.sh
 bash buildandroidlibs.sh
 bash buildandroidso.sh
 bash buildandroidplugins.sh
 
+echo 'Copying Windows files...'
+bash copywin.sh
 
+echo 'Creating Windows installation package...'
+bash createwinpackage.sh
+
+
+echo 'Installing QScintilla for Mac...'
 bash extractqscintilla.sh
 bash installqscintilla.sh
 
+echo 'Building Qt applications for Mac...'
 rm -rf ../Sdk
 bash qt5/buildqtlibs.sh
 bash qt5/buildplugins.sh
