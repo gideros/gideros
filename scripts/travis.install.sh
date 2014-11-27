@@ -28,10 +28,10 @@ export IOS_SDK=8.1
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
 
-cd scripts
+rm -rf build
+mkdir build
 
-rm -rf ../tmp
-mkdir ../tmp
+cd scripts
 
 echo 'Installing Qt for Windows...'
 bash installwinqt.sh
@@ -79,3 +79,11 @@ bash qt5/buildqtlibs.sh
 bash qt5/buildplugins.sh
 bash qt5/cleanqt.sh
 bash qt5/buildqt.sh
+
+
+echo 'Copying Mac files...'
+bash copymac.sh
+
+
+
+

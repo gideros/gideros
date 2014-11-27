@@ -1,8 +1,8 @@
-sudo rm /usr/lib/libpystring.1.dylib
-sudo rm /usr/lib/libgvfs.1.dylib
-sudo rm /usr/lib/libgid.1.dylib
-sudo rm /usr/lib/liblua.1.dylib
-sudo rm /usr/lib/libgideros.1.dylib
+# sudo rm /usr/lib/libpystring.1.dylib
+# sudo rm /usr/lib/libgvfs.1.dylib
+# sudo rm /usr/lib/libgid.1.dylib
+# sudo rm /usr/lib/liblua.1.dylib
+# sudo rm /usr/lib/libgideros.1.dylib
 
 cd ..
 
@@ -10,35 +10,35 @@ cd libpystring
 $QT/bin/qmake libpystring.pro
 make clean
 make
-sudo cp libpystring.1.dylib /usr/lib
+# sudo cp libpystring.1.dylib /usr/lib
 cd ..
 
 cd libgvfs
 $QT/bin/qmake libgvfs.pro
 make clean
 make
-sudo cp libgvfs.1.dylib /usr/lib
+# sudo cp libgvfs.1.dylib /usr/lib
 cd ..
 
 cd libgid
 $QT/bin/qmake libgid_qt5.pro
 make clean
 make
-sudo cp libgid.1.dylib /usr/lib
+# sudo cp libgid.1.dylib /usr/lib
 cd ..
 
 cd lua
 $QT/bin/qmake lua.pro
 make clean
 make
-sudo cp liblua.1.dylib /usr/lib
+# sudo cp liblua.1.dylib /usr/lib
 cd ..
 
 cd libgideros
 $QT/bin/qmake libgideros.pro
 make clean
 make
-sudo cp libgideros.1.dylib /usr/lib
+# sudo cp libgideros.1.dylib /usr/lib
 cd ..
 
 # rm -rf Sdk
