@@ -9,7 +9,6 @@ before_install:
   - brew install ant
   - brew install android-sdk
   - brew install android-ndk
-  - brew install ncurses
 install:
   - bash ./scripts/travis.install.sh
 deploy:
