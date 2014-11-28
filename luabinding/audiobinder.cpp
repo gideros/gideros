@@ -7,6 +7,7 @@
 #include <stackchecker.h>
 #include <gstdio.h>
 #include <completeevent.h>
+#include <luaapplication.h>
 
 static char keyStrong = ' ';
 static char keySound = ' ';
@@ -43,6 +44,11 @@ public:
         L(L),
         sig_(sig)
     {
+        LuaApplication *application = (LuaApplication*)luaL_getdata(L);
+        lua_State *mainL = application->getLuaState();
+        L = mainL;
+        this->L = mainL;
+
         const char *dot = strrchr(fileName, '.');
 
         std::string dot2 = dot ? (dot + 1) : "";
@@ -168,6 +174,11 @@ public:
     GGSoundChannel(lua_State *L, GGSound *sound, unsigned int startTime, bool looping, bool paused) :
         L(L), sound_(sound)
     {
+        LuaApplication *application = (LuaApplication*)luaL_getdata(L);
+        lua_State *mainL = application->getLuaState();
+        L = mainL;
+        this->L = mainL;
+
         interface = sound->interface;
 
         sound_->ref();
