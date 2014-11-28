@@ -4,7 +4,6 @@ before_install:
   - brew install jpeg
   - brew install freetype
   - brew install glew
-  - brew install wget
   - brew install qt5
   - brew install wine
   - brew install ant
