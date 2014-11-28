@@ -44,6 +44,7 @@ public:
         L(L),
         sig_(sig)
     {
+        /* TODO: create a better way to get main thread */
         LuaApplication *application = (LuaApplication*)luaL_getdata(L);
         lua_State *mainL = application->getLuaState();
         L = mainL;
@@ -174,6 +175,7 @@ public:
     GGSoundChannel(lua_State *L, GGSound *sound, unsigned int startTime, bool looping, bool paused) :
         L(L), sound_(sound)
     {
+        /* TODO: create a better way to get main thread */
         LuaApplication *application = (LuaApplication*)luaL_getdata(L);
         lua_State *mainL = application->getLuaState();
         L = mainL;
