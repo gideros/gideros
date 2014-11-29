@@ -8,5 +8,7 @@ Gideros is a cross-platform mobile development environment for creating amazing 
 
 * *Free:* Gideros is an open source project. Just download and use it for FREE.
 * *Instant testing:* While developing your game, it can be tested on a real device through Wifi in only 1 second – you don’t waste your time with an export or deploy process.
+* **Native speed:** Developed on top of C/C++ and OpenGL, your game runs at native speed and fully utilizes the power of CPUs and GPUs underneath.
+
 
 
