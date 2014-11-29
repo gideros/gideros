@@ -1,6 +1,0 @@
-Info:
-
-# Gideros Documentation
-
-### [Getting Started](getting_started.html)
-### [Reference Manual](reference_manual.html)
