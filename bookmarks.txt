@@ -1,2 +1,0 @@
-http://blog.allanbishop.com/wp-content/uploads/2010/09/Box2DJointTutorial.swf
-http://blog.allanbishop.com/parallax-scrolling/
