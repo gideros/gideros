@@ -17,9 +17,10 @@ Gideros is a cross-platform mobile development environment for creating amazing 
 
 ## Example code
 
-``local bmp = Bitmap.new(Texture.new("images/ball.png", true))
-``bmp:setPosition(100, 100)
-``stage:addChild(bmp)
-
+<pre>
+local bmp = Bitmap.new(Texture.new("images/ball.png", true))
+bmp:setPosition(100, 100)
+stage:addChild(bmp)
+</pre>
 
 
