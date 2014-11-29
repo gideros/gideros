@@ -1,5 +1,9 @@
 ## Gideros Cross-Platform Mobile Development Environment
 
+![Gideros](http://giderosmobile.com/cms.design/images/slider/apps.jpg)
+
+
+
 **Latest working release 2014.06**
 
 Gideros is a cross-platform mobile development environment for creating amazing games. In a couple of hours, you’ll find yourself building and running your next great game. Developers trust Gideros in building 1000s of games across AppStore, Google Play, Amazon Store, Ouya and more.
@@ -49,8 +53,19 @@ stage:addChild(shape)
 ## Where to start? 
 
 * [**Introduction:**](http://docs.giderosmobile.com/) Everything from creating your first project and running it on device, to the basic concepts of OOP, File system and Events. A must read for all new Developers. 
+* [**Reference Guide:**](http://docs.giderosmobile.com/reference) Information about every class, method, event, property, plugin avaialble with main Gideros SDK bundle and with examples. Bookmark it, you'll be using it a lot.
+* [**Developer Center:**](http://giderosmobile.com/DevCenter/index.php/Main_Page) Developer Center contains different articles and posts about Gideros, that might help you deal with some specific problems.
+* [**Everything else...**](http://giderosmobile.com/guide) All developer related documentation... 
 
-http://giderosmobile.com/guide
+##3rd party tools 
+
+Gideros runs with many 3rd party applications, from Particle Candy to Physics Editor to Texture Packer. [Here'a an incomplete list](http://giderosmobile.com/tools)
+
+
+
+
+
+
 
 
 
