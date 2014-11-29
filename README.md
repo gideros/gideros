@@ -59,7 +59,12 @@ stage:addChild(shape)
 
 ##3rd party tools 
 
-Gideros runs with many 3rd party applications, from Particle Candy to Physics Editor to Texture Packer. [Here'a an incomplete list](http://giderosmobile.com/tools)
+Gideros runs with many 3rd party applications, from Particle Candy to Physics Editor to Texture Packer. [Here'a an incomplete list](http://giderosmobile.com/tools).
+
+## Join Gideros community
+
+Gideros has an active, vivid community. We have a lively, helpful team of Gideros experts, users and newcomers discussing future of Gideros and mobile development. [Join us here](http://giderosmobile.com/forum)
+
 
 
 
