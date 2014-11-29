@@ -1,16 +1,6 @@
 language: objective-c
-before_install:
-  - brew update
-  - brew install jpeg
-  - brew install freetype
-  - brew install glew
-  - brew install qt5
-  - brew install wine
-  - brew install ant
-  - brew install android-sdk
-  - brew install android-ndk
-install:
-  - bash ./scripts/travis.install.sh
+install: true
+before_install: bash ./scripts/travis.install.sh
 deploy:
   provider: releases
   api_key:

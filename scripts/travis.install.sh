@@ -1,3 +1,16 @@
+brew update
+brew install jpeg
+brew install libpng
+brew install freetype
+brew install glew
+brew install wget
+brew install qt5
+brew install wine
+brew install ant
+brew install android-sdk
+brew install android-ndk
+brew install ncurses
+
 rm -rf ~/.wine
 wine xyz 
 
