@@ -17,10 +17,41 @@ Gideros is a cross-platform mobile development environment for creating amazing 
 
 ## Example code
 
+### Displaying an image
+
+To display image, we firstly create the Texture object with its name and optional boolean parameter which indicates if the image should be filtere (anti-alised). Then we create Bitmap object, position it at some coordinate (default are 0,0) and add it to the stage.
+
 <pre>
 local bmp = Bitmap.new(Texture.new("images/ball.png", true))
 bmp:setPosition(100, 100)
 stage:addChild(bmp)
 </pre>
+
+## Drawing a shape
+
+We will use a solid red color the fill style and 5px width blue line with 1 alpha (or full opacity). Easy, isn't it?
+
+<pre>
+local shape = Shape.new()
+shape:setFillStyle(Shape.SOLID, 0xff0000)
+shape:setLineStyle(5, 0x0000ff, 1)
+shape:beginPath()
+shape:moveTo(0,0)
+shape:lineTo(0, 100)
+shape:lineTo(100, 100)
+shape:lineTo(100, 0)
+shape:lineTo(0, 0)
+shape:endPath()
+shape:setPosition(200, 100)
+stage:addChild(shape)
+</pre>
+
+## Where to start? 
+
+* [**Introduction:**](http://docs.giderosmobile.com/) Everything from creating your first project and running it on device, to the basic concepts of OOP, File system and Events. A must read for all new Developers. 
+
+http://giderosmobile.com/guide
+
+
 
 
