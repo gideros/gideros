@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	QDir::setCurrent(dir.absolutePath());
 
     LicenseManager licenseManager;
-    g_countly = new Countly("2014.04", licenseManager.getLicenseType());
+    g_countly = new Countly("2014.10", licenseManager.getLicenseType());
     g_countly->beginSession();
 
 	MainWindow w;
