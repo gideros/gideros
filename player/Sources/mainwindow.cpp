@@ -13,6 +13,8 @@
 
 #include <algorithm>
 
+#include <QFileDialog>
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -224,6 +226,14 @@ MainWindow::~MainWindow()
 {
 }
 
+
+// action to open a project directly in the player
+void MainWindow::actionOpen()
+{
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::DirectoryOnly);
+    dialog.show();
+}
 
 void MainWindow::rotateLeft()
 {

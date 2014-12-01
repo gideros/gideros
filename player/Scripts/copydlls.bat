@@ -4,7 +4,6 @@ REM the bat are executed in main parent folder
 
 REM create the temp dirs to store the .dll and .exe files
 
-cd ..
 mkdir builded
 cd builded
 mkdir release
@@ -42,5 +41,9 @@ cp ..\luajit\src\lua51.dll builded\debug\lua.dll
 
 REM copy the builded player executable, debug and release
 
-cp debug\GiderosPlayer.exe builded\debug
 cp release\GiderosPlayer.exe builded\release
+cp debug\GiderosPlayer.exe builded\debug
+
+REM finish with success at custom step in qt creator
+
+cd..

@@ -40,6 +40,8 @@ private slots:
 
 	void actionScale();
 
+    void actionOpen();
+
 private slots:
 	void afterInitialization();
 
