@@ -626,7 +626,7 @@ static int showLeaderboard(lua_State* L)
 		category = [NSString stringWithUTF8String:luaL_checkstring(L, 2)];
 		
 	if (!lua_isnoneornil(L, 3))
-		timeScope= luaL_checktimescope(L, 3);
+		timeScope= (GKLeaderboardTimeScope)luaL_checktimescope(L, 3);
 
 	gamekit->showLeaderboard(category, timeScope);
 	
@@ -647,10 +647,10 @@ static int loadScores(lua_State* L)
 		category = [NSString stringWithUTF8String:luaL_checkstring(L, 2)];
 
 	if (!lua_isnoneornil(L, 3))
-		timeScope= luaL_checktimescope(L, 3);
+		timeScope= (GKLeaderboardTimeScope)luaL_checktimescope(L, 3);
 
     if (!lua_isnoneornil(L, 4))
-   		playerScope= luaL_checkplayerscope(L, 4);
+   		playerScope= (GKLeaderboardPlayerScope)luaL_checkplayerscope(L, 4);
 
     if (!lua_isnoneornil(L, 5))
    		startEntry= luaL_checknumber(L, 5);
