@@ -1,7 +1,10 @@
 *.user
-Makefile
 *.Debug
 *.Release
 ui_*.h
+Makefile
+builded
 release
 debug
+
+lua/Makefile

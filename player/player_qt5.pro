@@ -7,14 +7,17 @@
 QT       += core gui opengl network
 
 win32 {
-RC_FILE = player.rc
+RC_FILE = Other_files/player.rc
 }
 
 macx {
-ICON = player.icns
+ICON = Other_files/player.icns
 }
 
 INCLUDEPATH += \
+    Headers\
+    Sources\
+    Forms\
     ../2dsg\
     ../libplatform\
     ../libsound\
@@ -65,11 +68,11 @@ SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Rope/*.cpp)
 SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/*.cpp)
 
 SOURCES += \
-    main.cpp \
-    mainwindow.cpp \
-    errordialog.cpp \
-    glcanvas.cpp \
-    projectpropertiesdialog.cpp
+    Sources\main.cpp \
+    Sources\mainwindow.cpp \
+    Sources\errordialog.cpp \
+    Sources\glcanvas.cpp \
+    Sources\projectpropertiesdialog.cpp
 
 SOURCES += $$files(../luabinding/*.cpp)	../luabinding/tlsf.c
 
@@ -144,10 +147,10 @@ LIBS += -L"/usr/local/lib" -lGLEW -lfreetype
 
 
 HEADERS += \
-    mainwindow.h \
-    errordialog.h \
-    glcanvas.h \
-    projectpropertiesdialog.h
+    Headers\mainwindow.h \
+    Headers\errordialog.h \
+    Headers\glcanvas.h \
+    Headers\projectpropertiesdialog.h
 
 HEADERS += $$files(../libsound/*.h)
 HEADERS += $$files(../2dsg/*.h)
@@ -159,9 +162,9 @@ SOURCES += $$files(../libpvrt/*.h)
 
 
 FORMS += \
-    mainwindow.ui\
-    errordialog.ui \
-    projectpropertiesdialog.ui
+    Forms\mainwindow.ui\
+    Forms\errordialog.ui \
+    Forms\projectpropertiesdialog.ui
 
 win32 {
     INCLUDEPATH += ../libgid/external/freetype-2.4.12/include
