@@ -1,6 +1,6 @@
 REM bat to create a folder to execute the player
 REM some files are required to execute, build the dependency libraries first
-REM the bat are executed in main parent folder
+REM this bat file should run at main folder
 
 REM create the temp dirs to store the .dll and .exe files
 
@@ -44,6 +44,4 @@ REM copy the builded player executable, debug and release
 cp release\GiderosPlayer.exe builded\release
 cp debug\GiderosPlayer.exe builded\debug
 
-REM finish with success at custom step in qt creator
-
-cd..
+REM comment to finish with return 0 on qtcreator

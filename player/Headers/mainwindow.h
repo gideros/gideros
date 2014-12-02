@@ -16,51 +16,53 @@ public:
 	~MainWindow();
 
 protected:
-	virtual void closeEvent(QCloseEvent* event);
+    // protected actions based on events like close, resize, ...
+    virtual void closeEvent(QCloseEvent*);
+    virtual void resizeEvent(QResizeEvent*);
 
 private slots:
+    void setupUi();
+    void setupGroups();
+    void loadSettings();
+    void saveSettings();
+    void loadResolution(int resolution);
+    void loadScale(int scale);
+    void loadOrientation(Orientation orientation);
+    void loadFps(int fps);
+
+    void actionOpen();
+
+    void actionHide_Menu(bool checked);
+    void alwaysOnTop(bool checked);
+    void actionScale();
+
+    void actionAuto_Scale(bool checked);
 	void rotateLeft();
 	void rotateRight();
 	void portrait();
 	void portraitUpsideDown();
 	void landscapeLeft();
 	void landscapeRight();
-	void alwaysOnTop(bool checked);
-
+    void actionResolution();
 	void action15_fps();
 	void action30_fps();
 	void action60_fps();
 	void actionUnlimited();
 
-	void actionResolution();
+    void sendRun();
 
-    //void exportAccessedFiles();
-
-	void sendRun();
-
-	void actionScale();
-
-    void actionOpen();
-
-private slots:
-	void afterInitialization();
-
-private slots:
 	void projectNameChanged(const QString& projectName);
 
 private:
-	Orientation orientation() const;
+    Ui::MainWindowClass ui;
+    QActionGroup* orientationGroup_;
+    QActionGroup* resolutionGroup_;
+    QActionGroup* zoomGroup_;
+
+    int scale();
 	int hardwareWidth();
 	int hardwareHeight();
-	int scale();
-
-private:
-	Ui::MainWindowClass ui;
-
-private:
-	QActionGroup* orientationGroup_;
-	QActionGroup* resolutionGroup_;
-	QActionGroup* zoomGroup_;
+    Orientation orientation() const;
 };
 
 #endif // MAINWINDOW_H

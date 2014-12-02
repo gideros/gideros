@@ -181,8 +181,8 @@ void GLCanvas::paintGL()
 		glLoadIdentity();
 		glScalef(1.f / scale_, 1.f / scale_, 1);
 
-		void drawInfo();
-		drawInfo();
+        void drawInfoResolution(int width, int height);
+        drawInfoResolution(width_, height_);
 	}
 
 }
@@ -210,6 +210,85 @@ void GLCanvas::onTimer()
 		timerEvent(0);
 }
 
+
+// function to play an application into player passing path
+// TODO: pensar em um nome intuitivo
+void GLCanvas::play(QDir directory)
+{
+    // emmit a stop on player
+    if (running_ == true)
+    {
+        Event event(Event::APPLICATION_EXIT);
+        GStatus status;
+        application_->broadcastEvent(&event, &status);
+        running_ = false;
+
+        if (status.error())
+        {
+            errorDialog_.appendString(status.errorString());
+            errorDialog_.show();
+            printToServer(status.errorString(), -1, NULL);
+            printToServer("\n", -1, NULL);
+            return;
+        }
+    }
+
+    // reset the player settings
+    application_->deinitialize();
+    application_->initialize();
+    application_->setResolution(width_, height_);
+    application_->setHardwareOrientation(orientation_);
+    application_->setScale(scale_);
+
+    // next, send the project name
+    projectName_ = directory.dirName();
+
+    emit projectNameChanged(projectName_);
+
+    dir_ = QDir::temp();
+    dir_.mkdir("gideros");
+    dir_.cd("gideros");
+    dir_.mkdir(projectName_);
+    dir_.cd(projectName_);
+    dir_.mkdir("documents");
+    dir_.mkdir("temporary");
+
+    setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
+    setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
+    setResourceDirectory(directory.absolutePath().toStdString().c_str());
+
+    // play the loaded app
+    running_ = true;
+
+    QStringList filters;
+    filters << "*.lua";
+    directory.setNameFilters(filters);
+    QStringList directoryFiles = directory.entryList();
+
+    GStatus status;
+    foreach(QString directoryFile, directoryFiles){
+        application_->loadFile(directoryFile.toStdString().c_str(), &status);
+        if (status.error())
+            break;
+    }
+
+    Event event(Event::APPLICATION_START);
+    application_->broadcastEvent(&event, &status);
+
+    if (status.error())
+    {
+        running_ = false;
+
+        errorDialog_.appendString(status.errorString());
+        errorDialog_.show();
+        printToServer(status.errorString(), -1, NULL);
+        printToServer("\n", -1, NULL);
+        application_->deinitialize();
+        application_->initialize();
+
+        return;
+    }
+}
 
 // TODO: TimerEvent.TIMER'da bi exception olursa, o event bir daha cagirilmiyor. Bunun nedeini bulmak lazim
 void GLCanvas::timerEvent(QTimerEvent *)

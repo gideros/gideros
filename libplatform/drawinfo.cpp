@@ -4,74 +4,81 @@
 #include <vector>
 #include <string>
 #include <platform.h>
+#include <sstream>
 
 static void drawIP(const char* ip, int size, int xx, int yy)
 {
-	static const char* chardot =	" "
-							" "
-							" "
-							" "
-							".";
+    static const char* chardot = " "
+                                 " "
+                                 " "
+                                 " "
+                                 ".";
 
-	static const char* char0 =	"..."
-							". ."
-							". ."
-							". ."
-							"...";
+    static const char* char0 = "..."
+                               ". ."
+                               ". ."
+                               ". ."
+                               "...";
 
-	static const char* char1 =	"."
-							"."
-							"."
-							"."
-							".";
+    static const char* char1 = "."
+                               "."
+                               "."
+                               "."
+                               ".";
 
-	static const char* char2 =	"..."
-							"  ."
-							"..."
-							".  "
-							"...";
+    static const char* char2 = "..."
+                               "  ."
+                               "..."
+                               ".  "
+                               "...";
 
-	static const char* char3 =	"..."
-							"  ."
-							"..."
-							"  ."
-							"...";
+    static const char* char3 = "..."
+                               "  ."
+                               "..."
+                               "  ."
+                               "...";
 
-	static const char* char4 =	".  "
-							". ."
-							". ."
-							"..."
-							"  .";
+    static const char* char4 = ".  "
+                               ". ."
+                               ". ."
+                               "..."
+                               "  .";
 
-	static const char* char5 =	"..."
-							".  "
-							"..."
-							"  ."
-							"...";
+    static const char* char5 = "..."
+                               ".  "
+                               "..."
+                               "  ."
+                               "...";
 
-	static const char* char6 =	"..."
-							".  "
-							"..."
-							". ."
-							"...";
+    static const char* char6 = "..."
+                               ".  "
+                               "..."
+                               ". ."
+                               "...";
 
-	static const char* char7 =	"..."
-							"  ."
-							"  ."
-							"  ."
-							"  .";
+    static const char* char7 = "..."
+                               "  ."
+                               "  ."
+                               "  ."
+                               "  .";
 
-	static const char* char8 =	"..."
-							". ."
-							"..."
-							". ."
-							"...";
+    static const char* char8 = "..."
+                               ". ."
+                               "..."
+                               ". ."
+                               "...";
 
-	static const char* char9 =	"..."
-							". ."
-							"..."
-							"  ."
-							"...";
+    static const char* char9 = "..."
+                               ". ."
+                               "..."
+                               "  ."
+                               "...";
+
+    static const char* charx = "   "
+                               "   "
+                               ". ."
+                               " . "
+                               ". .";
 
 	static const char* loading =
 		".   ... ... ..  . ... ...      "
@@ -102,10 +109,19 @@ static void drawIP(const char* ip, int size, int xx, int yy)
         ".   . . . ...   . . ."
         "... ... .   . . . ...";
 
+    static const char* resolution =
+        "... ... ... ... .   . . ... . ... ...  "
+        ". . .   .   . . .   . .  .  . . . . . ."
+        "..  ... ... . . .   . .  .  . . . . .  "
+        ". . .     . . . .   . .  .  . . . . . ."
+        ". . ... ... ... ... ...  .  . ... . .  ";
+
 	static const char* chars[] = {char0, char1, char2, char3, char4, char5, char6, char7, char8, char9};
 
 	glPushColor();
-	glSetColor(0, 0, 0, 1);
+
+    // set info text color to white
+    glSetColor(1, 1, 1, 1);
 
 	oglDisable(GL_TEXTURE_2D);
 
@@ -118,14 +134,33 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 	for (int i = 0; i < len; ++i)
 	{
 		const char* chr;
-		if (ip[i] == '.')
+        if (ip[i] == '.')
 			chr = chardot;
-		else if (ip[i] == 'I')
+        else if(ip[i] == 'x')
+            chr = charx;
+        else if (ip[i] == 'I')
+        {
+            // set color of labels to gray
+            glSetColor(0.5, 0.5, 0.5, 1);
+
 			chr = localip;
-		else if (ip[i] == 'L')
+        }
+        else if (ip[i] == 'L')
 			chr = loading;
 		else if (ip[i] == 'V')
+        {
+            // set color of labels to gray
+            glSetColor(0.5, 0.5, 0.5, 1);
+
 			chr = version;
+        }
+
+        // if param is R, draw resolution label in gray color
+        else if (ip[i] == 'R')
+        {
+            glSetColor(0.5, 0.5, 0.5, 1);
+            chr = resolution;
+        }
 		else
 			chr = chars[ip[i] - '0'];
 
@@ -183,11 +218,15 @@ void drawInfo()
 #endif
 		refreshLocalIPs();
 
-    drawIP("V", 4, 2, 2);
-    drawIP("I", 4, 2, 2+3+7);
+    // set background color of opengl canvas to black and clear the buffer to render again
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    drawIP("V", 3, 2, 2);
+    drawIP("I", 3, 2, 2+7+3+7+3+7+3);
 
 	int x = 6;
-	int y = 2+3+7+7;
+    int y = 2+7+3+7+3+7+1;
 
 	for (std::size_t i = 0; i < ips.size(); ++i)
 	{
@@ -196,5 +235,48 @@ void drawInfo()
         drawIP(ips[i].c_str(), 4, x, y);
 		y = y + 7;
 	}
+}
+
+void drawInfoResolution(int width, int height)
+{
+    static int frame = 0;
+
+#ifdef __ANDROID__
+    if (frame++ == 0)
+#else
+    if ((frame++ % 60) == 0)
+#endif
+        refreshLocalIPs();
+
+    // set background color of opengl canvas to black and clear the buffer to render again
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    drawIP("V", 3, 2, 2);
+
+    // draw the resolution label and value on non running canvas
+    drawIP("R", 3, 2, 2+7+3);
+
+    std::ostringstream oWidth;
+    std::ostringstream oHeight;
+
+    oWidth << width;
+    oHeight << height;
+
+    std::string resolution = oWidth.str() + "x" + oHeight.str();
+    drawIP(resolution.c_str(), 4, 6, 2+7+3+3);
+
+    drawIP("I", 3, 2, 2+7+3+7+3+7+3);
+
+    int x = 6;
+    int y = 2+7+3+7+3+7+1;
+
+    for (std::size_t i = 0; i < ips.size(); ++i)
+    {
+        if (ips[i] == "0.0.0.0")
+            continue;
+        drawIP(ips[i].c_str(), 4, x, y);
+        y = y + 7;
+    }
 }
 

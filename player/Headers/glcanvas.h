@@ -53,6 +53,9 @@ public:
 
 	void setScale(int scale);
 
+    // function to play an application into player passing a directory
+    void play(QDir directory);
+
 private:
     //static void accessFileCallback_s(FileType type, const char* filename, void* data);
     //void accessFileCallback(FileType type, const char* filename);
