@@ -20,6 +20,8 @@ Gideros is a cross-platform mobile development environment for creating amazing 
 
 ## Example code
 
+Lua is used to build games with Gideros. Below you can find a few simple examples to show how easy to show basic screen elemens.
+
 ### Displaying an image
 
 To display image, we firstly create the Texture object with its name and optional boolean parameter which indicates if the image should be filtere (anti-alised). Then we create Bitmap object, position it at some coordinate (default are 0,0) and add it to the stage.
