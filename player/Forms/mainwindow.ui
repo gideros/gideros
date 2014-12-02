@@ -165,6 +165,7 @@
      <addaction name="actionHalf"/>
      <addaction name="actionOriginal"/>
     </widget>
+    <addaction name="actionFull_Screen"/>
     <addaction name="actionHide_Menu"/>
     <addaction name="actionAlways_on_Top"/>
     <addaction name="separator"/>
@@ -469,6 +470,9 @@
    <property name="text">
     <string>Auto Scale</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+A</string>
+   </property>
   </action>
   <action name="actionHide_Menu">
    <property name="checkable">
@@ -481,7 +485,20 @@
     <string>Alt+M</string>
    </property>
   </action>
+  <action name="actionFull_Screen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Full Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+S</string>
+   </property>
+  </action>
   <addaction name="actionHide_Menu"/>
+  <addaction name="actionFull_Screen"/>
+  <addaction name="actionAuto_Scale"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

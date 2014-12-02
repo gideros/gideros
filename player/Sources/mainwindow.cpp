@@ -36,6 +36,7 @@ void MainWindow::setupUi()
     connect(ui.actionExit,                 SIGNAL(triggered()),                        this, SLOT(close()));
 
     // view menu
+    connect(ui.actionFull_Screen,          SIGNAL(triggered(bool)),                    this, SLOT(actionFull_Screen(bool)));
     connect(ui.actionHide_Menu,            SIGNAL(triggered(bool)),                    this, SLOT(actionHide_Menu(bool)));
     connect(ui.actionAlways_on_Top,        SIGNAL(triggered(bool)),                    this, SLOT(alwaysOnTop(bool)));
     connect(ui.actionQuarter,              SIGNAL(triggered()),                        this, SLOT(actionScale()));
@@ -147,7 +148,6 @@ void MainWindow::loadSettings()
     loadOrientation(static_cast<Orientation>(settings.value("orientation", ePortrait).toInt()));
     loadFps(settings.value("fps2", 60).toInt());
 }
-
 
 // save the current player settings
 void MainWindow::saveSettings()
@@ -282,7 +282,6 @@ void MainWindow::loadResolution(int resolution)
     }
 }
 
-
 // load a scale to start player by scale factor
 void MainWindow::loadScale(int scale)
 {
@@ -349,7 +348,6 @@ int MainWindow::scale()
     return 1;
 }
 
-
 // get hardware width based on resolution or in screen if auto scale is on
 int MainWindow::hardwareWidth()
 {
@@ -404,7 +402,6 @@ int MainWindow::hardwareWidth()
 
     return 320;
 }
-
 
 // get hardware height based on resolution or in screen if auto scale is on
 int MainWindow::hardwareHeight()
@@ -666,6 +663,16 @@ void MainWindow::projectNameChanged(const QString& projectName)
 		setWindowTitle(projectName + " - Gideros Player");
 }
 
+// action to make full screen support
+void MainWindow::actionFull_Screen(bool checked)
+{
+    if(checked)
+        this->showFullScreen();
+    else
+        this->showNormal();
+}
+
+// action to hide top menu
 void MainWindow::actionHide_Menu(bool checked)
 {
     if (checked)

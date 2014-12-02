@@ -32,6 +32,7 @@ private slots:
 
     void actionOpen();
 
+    void actionFull_Screen(bool checked);
     void actionHide_Menu(bool checked);
     void alwaysOnTop(bool checked);
     void actionScale();
