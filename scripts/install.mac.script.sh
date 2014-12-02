@@ -1,10 +1,10 @@
-brew update
-brew install freetype
-brew install glew
-brew install qt5
-brew install ant
-brew install android-sdk
-brew install android-ndk
+brew update &> /dev/null
+brew install freetype &> /dev/null
+brew install glew &> /dev/null
+brew install qt5 &> /dev/null
+brew install ant &> /dev/null
+brew install android-sdk &> /dev/null
+brew install android-ndk &> /dev/null
 
 rm -rf ~/.wine
 wine xyz 
