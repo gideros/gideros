@@ -493,7 +493,7 @@
     <string>Full Screen</string>
    </property>
    <property name="shortcut">
-    <string>Alt+S</string>
+    <string>Alt+Return</string>
    </property>
   </action>
   <addaction name="actionHide_Menu"/>
