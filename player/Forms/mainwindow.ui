@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindowClass</class>
+ <widget class="QMainWindow" name="MainWindowClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>312</width>
+    <height>387</height>
+   </rect>
+  </property>
+  <property name="palette">
+   <palette>
+    <active>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>51</red>
+        <green>51</green>
+        <blue>51</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>51</red>
+        <green>51</green>
+        <blue>51</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>51</red>
+        <green>51</green>
+        <blue>51</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
+  </property>
+  <property name="windowTitle">
+   <string>Gideros Player</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="GLCanvas" name="glCanvas" native="true">
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>312</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHardware">
+    <property name="title">
+     <string>&amp;Hardware</string>
+    </property>
+    <widget class="QMenu" name="menuOrientation">
+     <property name="title">
+      <string>Orientation</string>
+     </property>
+     <addaction name="actionPortrait"/>
+     <addaction name="actionLandscape_Left"/>
+     <addaction name="actionPortrait_Upside_Down"/>
+     <addaction name="actionLandscape_Right"/>
+    </widget>
+    <widget class="QMenu" name="menuResolution">
+     <property name="title">
+      <string>Resolution</string>
+     </property>
+     <addaction name="action320x480"/>
+     <addaction name="action768x1024"/>
+     <addaction name="action640x960"/>
+     <addaction name="action1536x2048"/>
+     <addaction name="action320x568"/>
+     <addaction name="action640x1136"/>
+     <addaction name="separator"/>
+     <addaction name="action480x800"/>
+     <addaction name="action240x320"/>
+     <addaction name="action540x960"/>
+     <addaction name="action480x854"/>
+     <addaction name="action240x400"/>
+     <addaction name="action360x640"/>
+     <addaction name="action800x1280"/>
+     <addaction name="action600x1024"/>
+     <addaction name="action600x800"/>
+     <addaction name="action768x1366"/>
+     <addaction name="action720x1280"/>
+     <addaction name="action1080x1920"/>
+    </widget>
+    <widget class="QMenu" name="menuFrame_Rate">
+     <property name="title">
+      <string>Frame Rate</string>
+     </property>
+     <addaction name="action15_fps"/>
+     <addaction name="action30_fps"/>
+     <addaction name="action60_fps"/>
+     <addaction name="actionUnlimited"/>
+    </widget>
+    <addaction name="actionAuto_Scale"/>
+    <addaction name="separator"/>
+    <addaction name="actionRotate_Left"/>
+    <addaction name="actionRotate_Right"/>
+    <addaction name="separator"/>
+    <addaction name="menuOrientation"/>
+    <addaction name="menuResolution"/>
+    <addaction name="menuFrame_Rate"/>
+   </widget>
+   <widget class="QMenu" name="menu_View">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <widget class="QMenu" name="menuZoom">
+     <property name="title">
+      <string>Zoom</string>
+     </property>
+     <addaction name="actionQuarter"/>
+     <addaction name="actionHalf"/>
+     <addaction name="actionOriginal"/>
+    </widget>
+    <addaction name="actionFull_Screen"/>
+    <addaction name="actionHide_Menu"/>
+    <addaction name="actionAlways_on_Top"/>
+    <addaction name="separator"/>
+    <addaction name="menuZoom"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menu_View"/>
+   <addaction name="menuHardware"/>
+  </widget>
+  <action name="actionExit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="actionRotate_Left">
+   <property name="text">
+    <string>Rotate Left</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Left</string>
+   </property>
+  </action>
+  <action name="actionRotate_Right">
+   <property name="text">
+    <string>Rotate Right</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Right</string>
+   </property>
+  </action>
+  <action name="actionPortrait">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Portrait</string>
+   </property>
+  </action>
+  <action name="actionPortrait_Upside_Down">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Portrait Upside Down</string>
+   </property>
+  </action>
+  <action name="actionLandscape_Left">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Landscape Left</string>
+   </property>
+  </action>
+  <action name="actionLandscape_Right">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Landscape Right</string>
+   </property>
+  </action>
+  <action name="actionAlways_on_Top">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Always on Top</string>
+   </property>
+  </action>
+  <action name="action15_fps">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>15 fps</string>
+   </property>
+  </action>
+  <action name="action30_fps">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>30 fps</string>
+   </property>
+  </action>
+  <action name="action60_fps">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>60 fps</string>
+   </property>
+  </action>
+  <action name="actionUnlimited">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Unlimited</string>
+   </property>
+  </action>
+  <action name="action320x480">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>320x480 (iPhone)</string>
+   </property>
+  </action>
+  <action name="action768x1024">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>768x1024 (iPad)</string>
+   </property>
+  </action>
+  <action name="action640x960">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>640x960 (iPhone Retina)</string>
+   </property>
+  </action>
+  <action name="actionRun">
+   <property name="text">
+    <string>Run</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="text">
+    <string>Stop</string>
+   </property>
+  </action>
+  <action name="actionHalf">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>50%</string>
+   </property>
+  </action>
+  <action name="actionOriginal">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>100%</string>
+   </property>
+  </action>
+  <action name="action480x800">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>480x800</string>
+   </property>
+  </action>
+  <action name="action240x320">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>240x320</string>
+   </property>
+  </action>
+  <action name="action540x960">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>540x960</string>
+   </property>
+  </action>
+  <action name="action480x854">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>480x854</string>
+   </property>
+  </action>
+  <action name="action240x400">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>240x400</string>
+   </property>
+  </action>
+  <action name="action360x640">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>360x640</string>
+   </property>
+  </action>
+  <action name="action800x1280">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>800x1280</string>
+   </property>
+  </action>
+  <action name="action600x1024">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>600x1024</string>
+   </property>
+  </action>
+  <action name="action600x800">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>600x800</string>
+   </property>
+  </action>
+  <action name="action768x1366">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>768x1366</string>
+   </property>
+  </action>
+  <action name="actionQuarter">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>25 %</string>
+   </property>
+  </action>
+  <action name="action1536x2048">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1536x2048 (iPad Retina)</string>
+   </property>
+  </action>
+  <action name="action320x568">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>320x568 (iPhone 5)</string>
+   </property>
+  </action>
+  <action name="action640x1136">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>640x1136 (iPhone 5 Retina)</string>
+   </property>
+  </action>
+  <action name="action720x1280">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>720x1280</string>
+   </property>
+  </action>
+  <action name="action1080x1920">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1080x1920</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionAuto_Scale">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto Scale</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+A</string>
+   </property>
+  </action>
+  <action name="actionHide_Menu">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hide Menu</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+M</string>
+   </property>
+  </action>
+  <action name="actionFull_Screen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Full Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Return</string>
+   </property>
+  </action>
+  <addaction name="actionHide_Menu"/>
+  <addaction name="actionFull_Screen"/>
+  <addaction name="actionAuto_Scale"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>GLCanvas</class>
+   <extends>QWidget</extends>
+   <header>glcanvas.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
