@@ -121,6 +121,8 @@
      <addaction name="action1536x2048"/>
      <addaction name="action320x568"/>
      <addaction name="action640x1136"/>
+     <addaction name="action750x1334"/>
+     <addaction name="action1242x2208"/>
      <addaction name="separator"/>
      <addaction name="action480x800"/>
      <addaction name="action240x320"/>
@@ -133,6 +135,7 @@
      <addaction name="action600x800"/>
      <addaction name="action768x1366"/>
      <addaction name="action720x1280"/>
+     <addaction name="action900x1200"/>
      <addaction name="action1080x1920"/>
     </widget>
     <widget class="QMenu" name="menuFrame_Rate">
@@ -442,6 +445,22 @@
     <string>640x1136 (iPhone 5 Retina)</string>
    </property>
   </action>
+  <action name="action750x1334">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>750x1334 (iPhone 6)</string>
+   </property>
+  </action>
+  <action name="action1242x2208">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1242x2208 (iPhone 6 Plus)</string>
+   </property>
+  </action>
   <action name="action720x1280">
    <property name="checkable">
     <bool>true</bool>
@@ -456,6 +475,14 @@
    </property>
    <property name="text">
     <string>1080x1920</string>
+   </property>
+  </action>
+  <action name="action900x1200">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>900x1200</string>
    </property>
   </action>
   <action name="actionOpen">

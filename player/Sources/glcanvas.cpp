@@ -101,6 +101,7 @@ GLCanvas::GLCanvas(QWidget *parent)
 	width_ = 320;
 	height_ = 480;
 	scale_ = 1;
+	deviceScale_ = devicePixelRatio();
 
 	fps_ = 10000;
 	clock_ = iclock();
@@ -571,17 +572,17 @@ void GLCanvas::timerEvent(QTimerEvent *)
 
 void GLCanvas::mousePressEvent(QMouseEvent* event)
 {
-    ginputp_mouseDown(event->x() * scale_, event->y() * scale_, 0);
+    ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, 0);
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event)
 {
-    ginputp_mouseMove(event->x() * scale_, event->y() * scale_);
+    ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_);
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event)
 {
-    ginputp_mouseUp(event->x() * scale_, event->y() * scale_, 0);
+    ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, 0);
 }
 
 
@@ -901,6 +902,7 @@ void GLCanvas::printMD5()
 void GLCanvas::setScale(int scale)
 {
 	scale_ = scale;
+	deviceScale_ = scale * devicePixelRatio();
 
 	if (application_->isInitialized())
 		application_->setScale(scale_);

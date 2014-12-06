@@ -51,12 +51,18 @@ void MainWindow::setupUi()
     connect(ui.actionPortrait_Upside_Down, SIGNAL(triggered()),                        this, SLOT(portraitUpsideDown()));
     connect(ui.actionLandscape_Left,       SIGNAL(triggered()),                        this, SLOT(landscapeLeft()));
     connect(ui.actionLandscape_Right,      SIGNAL(triggered()),                        this, SLOT(landscapeRight()));
+
+    // resolution (iDevices)
     connect(ui.action320x480,              SIGNAL(triggered()),                        this, SLOT(actionResolution()));
     connect(ui.action768x1024,             SIGNAL(triggered()),                        this, SLOT(actionResolution()));
     connect(ui.action640x960,              SIGNAL(triggered()),                        this, SLOT(actionResolution()));
     connect(ui.action1536x2048,            SIGNAL(triggered()),                        this, SLOT(actionResolution()));
     connect(ui.action320x568,              SIGNAL(triggered()),                        this, SLOT(actionResolution()));
     connect(ui.action640x1136,             SIGNAL(triggered()),                        this, SLOT(actionResolution()));
+	connect(ui.action750x1334,             SIGNAL(triggered()),                        this, SLOT(actionResolution()));
+	connect(ui.action1242x2208,            SIGNAL(triggered()),                        this, SLOT(actionResolution()));
+
+    // resolution (other)
     connect(ui.action480x800,              SIGNAL(triggered()),                        this, SLOT(actionResolution()));
     connect(ui.action240x320,              SIGNAL(triggered()),                        this, SLOT(actionResolution()));
     connect(ui.action540x960,              SIGNAL(triggered()),                        this, SLOT(actionResolution()));
@@ -68,7 +74,9 @@ void MainWindow::setupUi()
     connect(ui.action600x800,              SIGNAL(triggered()),                        this, SLOT(actionResolution()));
     connect(ui.action768x1366,             SIGNAL(triggered()),                        this, SLOT(actionResolution()));
     connect(ui.action720x1280,             SIGNAL(triggered()),                        this, SLOT(actionResolution()));
+    connect(ui.action900x1200,             SIGNAL(triggered()),                        this, SLOT(actionResolution()));
     connect(ui.action1080x1920,            SIGNAL(triggered()),                        this, SLOT(actionResolution()));
+
     connect(ui.action15_fps,               SIGNAL(triggered()),                        this, SLOT(action15_fps()));
     connect(ui.action30_fps,               SIGNAL(triggered()),                        this, SLOT(action30_fps()));
     connect(ui.action60_fps,               SIGNAL(triggered()),                        this, SLOT(action60_fps()));
@@ -97,12 +105,18 @@ void MainWindow::setupGroups()
     orientationGroup_->addAction(ui.actionLandscape_Left);
     orientationGroup_->addAction(ui.actionLandscape_Right);
     resolutionGroup_ = new QActionGroup(this);
+
+    // resolution (iDevices)
     resolutionGroup_->addAction(ui.action320x480);
     resolutionGroup_->addAction(ui.action768x1024);
     resolutionGroup_->addAction(ui.action640x960);
     resolutionGroup_->addAction(ui.action1536x2048);
     resolutionGroup_->addAction(ui.action320x568);
     resolutionGroup_->addAction(ui.action640x1136);
+    resolutionGroup_->addAction(ui.action750x1334);
+    resolutionGroup_->addAction(ui.action1242x2208);
+
+ 	// resolution (other)
     resolutionGroup_->addAction(ui.action480x800);
     resolutionGroup_->addAction(ui.action240x320);
     resolutionGroup_->addAction(ui.action540x960);
@@ -114,6 +128,7 @@ void MainWindow::setupGroups()
     resolutionGroup_->addAction(ui.action600x800);
     resolutionGroup_->addAction(ui.action768x1366);
     resolutionGroup_->addAction(ui.action720x1280);
+    resolutionGroup_->addAction(ui.action900x1200);
     resolutionGroup_->addAction(ui.action1080x1920);
 }
 
@@ -141,7 +156,7 @@ void MainWindow::loadSettings()
 
     // set canvas settings, scale, size and resolution
     ui.glCanvas->setScale(scale());
-    ui.glCanvas->setFixedSize(hardwareWidth() / scale(), hardwareHeight() / scale());
+    ui.glCanvas->setFixedSize(hardwareWidth()/deviceScale(), hardwareHeight()/deviceScale());
     ui.glCanvas->setResolution(hardwareWidth(), hardwareHeight());
 
     // load orientation and fps of player
@@ -172,6 +187,7 @@ void MainWindow::saveSettings()
         settings.setValue("fps2", 10000);
 
     // save resolution setting
+    // iDevices
     if (resolutionGroup_->checkedAction() == ui.action320x480)
         settings.setValue("resolution", 320);
     else if (resolutionGroup_->checkedAction() == ui.action768x1024)
@@ -184,6 +200,11 @@ void MainWindow::saveSettings()
         settings.setValue("resolution", 320+1);
     else if (resolutionGroup_->checkedAction() == ui.action640x1136)
         settings.setValue("resolution", 640+1);
+    else if (resolutionGroup_->checkedAction() == ui.action750x1334)
+        settings.setValue("resolution", 750);
+    else if (resolutionGroup_->checkedAction() == ui.action1242x2208)
+        settings.setValue("resolution", 1242);
+    // other
     else if (resolutionGroup_->checkedAction() == ui.action480x800)
         settings.setValue("resolution", 480);
     else if (resolutionGroup_->checkedAction() == ui.action240x320)
@@ -206,6 +227,8 @@ void MainWindow::saveSettings()
         settings.setValue("resolution", 768+1);
     else if (resolutionGroup_->checkedAction() == ui.action720x1280)
         settings.setValue("resolution", 720);
+    else if (resolutionGroup_->checkedAction() == ui.action900x1200)
+        settings.setValue("resolution", 900);
     else if (resolutionGroup_->checkedAction() == ui.action1080x1920)
         settings.setValue("resolution", 1080);
     else
@@ -225,6 +248,7 @@ void MainWindow::loadResolution(int resolution)
 {
     switch (resolution)
     {
+    // iDevices
     case 320:
         ui.action320x480->setChecked(true);
         break;
@@ -243,6 +267,13 @@ void MainWindow::loadResolution(int resolution)
     case 640+1:
         ui.action640x1136->setChecked(true);
         break;
+    case 750:
+        ui.action750x1334->setChecked(true);
+        break;
+    case 1242:
+        ui.action1242x2208->setChecked(true);
+        break;
+    // other
     case 480:
         ui.action480x800->setChecked(true);
         break;
@@ -275,6 +306,9 @@ void MainWindow::loadResolution(int resolution)
         break;
     case 720:
         ui.action720x1280->setChecked(true);
+        break;
+    case 900:
+        ui.action900x1200->setChecked(true);
         break;
     case 1080:
         ui.action1080x1920->setChecked(true);
@@ -348,6 +382,11 @@ int MainWindow::scale()
     return 1;
 }
 
+int MainWindow::deviceScale()
+{
+    return scale() * devicePixelRatio();
+}
+
 // get hardware width based on resolution or in screen if auto scale is on
 int MainWindow::hardwareWidth()
 {
@@ -362,6 +401,7 @@ int MainWindow::hardwareWidth()
         case eLandscapeRight:
             return height();
         }
+    // iDevices
     else if (resolutionGroup_->checkedAction() == ui.action320x480)
         return 320;
     else if (resolutionGroup_->checkedAction() == ui.action768x1024)
@@ -374,6 +414,11 @@ int MainWindow::hardwareWidth()
         return 320;
     else if (resolutionGroup_->checkedAction() == ui.action640x1136)
         return 640;
+    else if (resolutionGroup_->checkedAction() == ui.action750x1334)
+        return 750;
+    else if (resolutionGroup_->checkedAction() == ui.action1242x2208)
+        return 1242;
+    // other
     else if (resolutionGroup_->checkedAction() == ui.action480x800)
         return 480;
     else if (resolutionGroup_->checkedAction() == ui.action240x320)
@@ -396,6 +441,8 @@ int MainWindow::hardwareWidth()
         return 768;
     else if (resolutionGroup_->checkedAction() == ui.action720x1280)
         return 720;
+    else if (resolutionGroup_->checkedAction() == ui.action900x1200)
+        return 900;
     else if (resolutionGroup_->checkedAction() == ui.action1080x1920)
         return 1080;
 
@@ -421,6 +468,7 @@ int MainWindow::hardwareHeight()
         case eLandscapeRight:
             return width();
         }
+    // iDevices
     else if (resolutionGroup_->checkedAction() == ui.action320x480)
         return 480;
     else if (resolutionGroup_->checkedAction() == ui.action768x1024)
@@ -433,6 +481,11 @@ int MainWindow::hardwareHeight()
         return 568;
     else if (resolutionGroup_->checkedAction() == ui.action640x1136)
         return 1136;
+    else if (resolutionGroup_->checkedAction() == ui.action750x1334)
+        return 1334;
+    else if (resolutionGroup_->checkedAction() == ui.action1242x2208)
+        return 2208;
+    // other
     else if (resolutionGroup_->checkedAction() == ui.action480x800)
         return 800;
     else if (resolutionGroup_->checkedAction() == ui.action240x320)
@@ -455,6 +508,8 @@ int MainWindow::hardwareHeight()
         return 1366;
     else if (resolutionGroup_->checkedAction() == ui.action720x1280)
         return 1280;
+    else if (resolutionGroup_->checkedAction() == ui.action900x1200)
+        return 1200;
     else if (resolutionGroup_->checkedAction() == ui.action1080x1920)
         return 1920;
 
@@ -464,28 +519,28 @@ int MainWindow::hardwareHeight()
 // player in portrait mode
 void MainWindow::portrait()
 {
-    ui.glCanvas->setFixedSize(hardwareWidth()/scale(), hardwareHeight()/scale());
+    ui.glCanvas->setFixedSize(hardwareWidth()/deviceScale(), hardwareHeight()/deviceScale());
     ui.glCanvas->setHardwareOrientation(ePortrait);
 }
 
 // player in portraitUpsideDown mode
 void MainWindow::portraitUpsideDown()
 {
-    ui.glCanvas->setFixedSize(hardwareWidth()/scale(), hardwareHeight()/scale());
+    ui.glCanvas->setFixedSize(hardwareWidth()/deviceScale(), hardwareHeight()/deviceScale());
     ui.glCanvas->setHardwareOrientation(ePortraitUpsideDown);
 }
 
 // player in landscapeLeft mode
 void MainWindow::landscapeLeft()
 {
-    ui.glCanvas->setFixedSize(hardwareHeight()/scale(), hardwareWidth()/scale());
+    ui.glCanvas->setFixedSize(hardwareHeight()/deviceScale(), hardwareWidth()/deviceScale());
     ui.glCanvas->setHardwareOrientation(eLandscapeLeft);
 }
 
 // player in landscapeRight mode
 void MainWindow::landscapeRight()
 {
-    ui.glCanvas->setFixedSize(hardwareHeight()/scale(), hardwareWidth()/scale());
+    ui.glCanvas->setFixedSize(hardwareHeight()/deviceScale(), hardwareWidth()/deviceScale());
     ui.glCanvas->setHardwareOrientation(eLandscapeRight);
 }
 
@@ -641,14 +696,14 @@ void MainWindow::actionResolution()
 	case ePortrait:
 	case ePortraitUpsideDown:
 		ui.glCanvas->setScale(scale());
-		ui.glCanvas->setFixedSize(hardwareWidth()/scale(), hardwareHeight()/scale());
+		ui.glCanvas->setFixedSize(hardwareWidth()/deviceScale(), hardwareHeight()/deviceScale());
 		ui.glCanvas->setResolution(hardwareWidth(), hardwareHeight());
 		break;
 
 	case eLandscapeLeft:
 	case eLandscapeRight:
 		ui.glCanvas->setScale(scale());
-		ui.glCanvas->setFixedSize(hardwareHeight()/scale(), hardwareWidth()/scale());
+		ui.glCanvas->setFixedSize(hardwareHeight()/deviceScale(), hardwareWidth()/deviceScale());
 		ui.glCanvas->setResolution(hardwareWidth(), hardwareHeight());
 		break;
 	}

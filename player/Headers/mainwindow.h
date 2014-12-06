@@ -61,6 +61,7 @@ private:
     QActionGroup* zoomGroup_;
 
     int scale();
+    int deviceScale();
 	int hardwareWidth();
 	int hardwareHeight();
     Orientation orientation() const;

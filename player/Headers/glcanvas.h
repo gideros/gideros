@@ -104,6 +104,7 @@ private:
 	bool running_;
 	std::map<std::string, std::vector<unsigned char> > md5_;
 	int scale_;
+	int deviceScale_;
 };
 
 #endif // GLCANVAS_H
