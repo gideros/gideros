@@ -8,6 +8,8 @@
 
 #import "EAGLView.h"
 
+#include "giderosapi.h"
+
 @interface EAGLView (PrivateMethods)
 - (void)createFramebuffer;
 - (void)deleteFramebuffer;
@@ -168,6 +170,23 @@
 	
     // The framebuffer will be re-created (with the new resolution) at the beginning of the next setFramebuffer method call.
 	[self deleteFramebuffer];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    gdr_touchesBegan(touches, [event allTouches]);
+}
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    gdr_touchesMoved(touches, [event allTouches]);
+}
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    gdr_touchesEnded(touches, [event allTouches]);
+}
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    gdr_touchesCancelled(touches, [event allTouches]);
 }
 
 @end
