@@ -6,3 +6,40 @@ Makefile
 builded
 release
 debug
+
+# Build results
+gideros.jar
+Sdk/
+build/
+android/GiderosAndroidPlayer/bin/
+android/GiderosAndroidPlayer/gen/
+android/GiderosAndroidPlayer/libs/
+libs/
+obj/
+
+# QT project files
+*.config
+*.creator
+*.files
+*.includes
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
+
+# Temp
+.tmp/
