@@ -9,7 +9,7 @@ echo 'Installing dependencies'
 (brew install android-sdk &> /dev/null) &
 (brew install android-ndk &> /dev/null) &
 wait
-echo 'Fiished installing dependencies'
+echo 'Finished installing dependencies'
 rm -rf ~/.wine
 wine xyz 
 

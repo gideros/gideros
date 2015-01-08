@@ -9,7 +9,7 @@ echo 'Installing dependencies'
 (brew install android-sdk &> /dev/null) &
 (brew install android-ndk &> /dev/null) &
 wait
-echo 'Fiished installing dependencies'
+echo 'Finished installing dependencies'
 expect -c '
 set timeout -1   ;
 spawn android update sdk -u -t tools,platform-tools,build-tools-21.1.1,android-21; 
@@ -19,7 +19,7 @@ expect {
 }
 '
 
-export QT=/usr/local/Cellar/qt5/5.3.2
+export QT=/usr/local/Cellar/qt5/5.4.0
 export QT_WIN=~/.wine/drive_c/Qt/Qt5.3.2
 export IOS_SDK=8.1
 export ANDROID_HOME=/usr/local/opt/android-sdk
