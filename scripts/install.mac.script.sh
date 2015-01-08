@@ -3,11 +3,11 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo 'Updating brew';
 brew update &> /dev/null
 echo 'Finished updating brew';
+echo 'Installing dependencies';
 (brew install freetype) &
 (brew install glew) &
 (brew install qt5) &
 (brew install ant) &
-(brew install android-sdk) &
 (brew install android-ndk) &
 wait
 
@@ -34,30 +34,30 @@ cd $DIR
 echo 'Building libs';
 (
 echo 'Building iOS libraries...'
-bash cleanioslibs.sh
-bash buildioslibs.sh
-bash buildiosplugins.sh
+bash cleanioslibs.sh &> /dev/null
+bash buildioslibs.sh &> /dev/null
+bash buildiosplugins.sh &> /dev/null
 ) &
 (
 echo 'Building Android libraries...'
-bash makejar.sh
-bash buildandroidlibs.sh
-bash buildandroidso.sh
-bash buildandroidplugins.sh
+bash makejar.sh &> /dev/null
+bash buildandroidlibs.sh &> /dev/null
+bash buildandroidso.sh &> /dev/null
+bash buildandroidplugins.sh &> /dev/null
 ) &
 (
 echo 'Installing QScintilla for Mac...'
-bash downloadqscintilla.sh
-bash extractqscintilla.sh
-bash installqscintilla.sh
+bash downloadqscintilla.sh &> /dev/null
+bash extractqscintilla.sh &> /dev/null
+bash installqscintilla.sh &> /dev/null
 ) &
 (
 echo 'Building Qt applications for Mac...'
 rm -rf Sdk
-bash qt5/buildqtlibs.sh
-bash qt5/buildplugins.sh
-bash qt5/cleanqt.sh
-bash qt5/buildqt.sh
+bash qt5/buildqtlibs.sh &> /dev/null
+bash qt5/buildplugins.sh &> /dev/null
+bash qt5/cleanqt.sh &> /dev/null
+bash qt5/buildqt.sh &> /dev/null
 ) &
 wait
 
