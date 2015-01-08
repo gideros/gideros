@@ -22,39 +22,50 @@ export IOS_SDK=8.1
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
 
-rm -rf $DIR/build
-mkdir $DIR/build
+rm -rf $DIR/../build
+mkdir $DIR/../build
 
+(
+cd $DIR/../
 echo 'Building iOS libraries...'
-bash $DIR/cleanioslibs.sh
-bash $DIR/buildioslibs.sh
-bash $DIR/buildiosplugins.sh
-
+bash cleanioslibs.sh
+bash buildioslibs.sh
+bash buildiosplugins.sh
+) &
+(
+cd $DIR/../
 echo 'Building Android libraries...'
-bash $DIR/makejar.sh
-bash $DIR/buildandroidlibs.sh
-bash $DIR/buildandroidso.sh
-bash $DIR/buildandroidplugins.sh
-
-
+bash makejar.sh
+bash buildandroidlibs.sh
+bash buildandroidso.sh
+bash buildandroidplugins.sh
+) &
+(
+cd $DIR/../
 echo 'Installing QScintilla for Mac...'
-bash $DIR/downloadqscintilla.sh
-bash $DIR/extractqscintilla.sh
-bash $DIR/installqscintilla.sh
-
+bash downloadqscintilla.sh
+bash extractqscintilla.sh
+bash installqscintilla.sh
+) &
+(
+cd $DIR/../
 echo 'Building Qt applications for Mac...'
-rm -rf $DIR/../Sdk
-bash $DIR/qt5/buildqtlibs.sh
-bash $DIR/qt5/buildplugins.sh
-bash $DIR/qt5/cleanqt.sh
-bash $DIR/qt5/buildqt.sh
+rm -rf Sdk
+bash qt5/buildqtlibs.sh
+bash qt5/buildplugins.sh
+bash qt5/cleanqt.sh
+bash qt5/buildqt.sh
+) &
+wait
 
-
+(
+cd $DIR/../
 echo 'Copying Mac files...'
-bash $DIR/copymac.sh
+bash copymac.sh
 
 echo 'Creating Mac installation package...'
-bash $DIR/createmacpackage.sh
+bash createmacpackage.sh
+)
 
 
 
