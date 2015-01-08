@@ -2,8 +2,7 @@ language: objective-c
 install: true
 env:
   - BUILD_TYPE=mac
-  - BUILD_TYPE=win
-before_install: bash ./scripts/install.$BUILD_TYPE.script.sh
+before_install: bash ./scripts/travis.install.sh
 deploy:
   provider: releases
   api_key:
