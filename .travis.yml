@@ -1,7 +1,6 @@
 language: objective-c
 install: true
 env:
-  - BUILD_TYPE=win
   - BUILD_TYPE=mac
 before_install: bash ./scripts/install.$BUILD_TYPE.script.sh
 deploy:
