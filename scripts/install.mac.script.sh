@@ -1,3 +1,5 @@
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 brew update &> /dev/null
 brew install freetype &> /dev/null
 brew install glew &> /dev/null
@@ -5,9 +7,6 @@ brew install qt5 &> /dev/null
 brew install ant &> /dev/null
 brew install android-sdk &> /dev/null
 brew install android-ndk &> /dev/null
-
-rm -rf ~/.wine
-wine xyz 
 
 expect -c '
 set timeout -1   ;
@@ -19,46 +18,43 @@ expect {
 '
 
 export QT=/usr/local/Cellar/qt5/5.3.2
-export QT_WIN=~/.wine/drive_c/Qt/Qt5.3.2
 export IOS_SDK=8.1
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
 
-rm -rf build
-mkdir build
-
-cd scripts
+rm -rf $DIR/build
+mkdir $DIR/build
 
 echo 'Building iOS libraries...'
-bash cleanioslibs.sh
-bash buildioslibs.sh
-bash buildiosplugins.sh
+bash $DIR/cleanioslibs.sh
+bash $DIR/buildioslibs.sh
+bash $DIR/buildiosplugins.sh
 
 echo 'Building Android libraries...'
-bash makejar.sh
-bash buildandroidlibs.sh
-bash buildandroidso.sh
-bash buildandroidplugins.sh
+bash $DIR/makejar.sh
+bash $DIR/buildandroidlibs.sh
+bash $DIR/buildandroidso.sh
+bash $DIR/buildandroidplugins.sh
 
 
 echo 'Installing QScintilla for Mac...'
-bash downloadqscintilla.sh
-bash extractqscintilla.sh
-bash installqscintilla.sh
+bash $DIR/downloadqscintilla.sh
+bash $DIR/extractqscintilla.sh
+bash $DIR/installqscintilla.sh
 
 echo 'Building Qt applications for Mac...'
-rm -rf ../Sdk
-bash qt5/buildqtlibs.sh
-bash qt5/buildplugins.sh
-bash qt5/cleanqt.sh
-bash qt5/buildqt.sh
+rm -rf $DIR/../Sdk
+bash $DIR/qt5/buildqtlibs.sh
+bash $DIR/qt5/buildplugins.sh
+bash $DIR/qt5/cleanqt.sh
+bash $DIR/qt5/buildqt.sh
 
 
 echo 'Copying Mac files...'
-bash copymac.sh
+bash $DIR/copymac.sh
 
 echo 'Creating Mac installation package...'
-bash createmacpackage.sh
+bash $DIR/createmacpackage.sh
 
 
 
