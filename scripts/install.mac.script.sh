@@ -6,13 +6,13 @@ echo 'Installing dependencies'
 (brew install glew &> /dev/null) &
 (brew install qt5 &> /dev/null) &
 (brew install ant &> /dev/null) &
-(brew install android-sdk &> /dev/null) &
-(brew install android-ndk &> /dev/null) &
+(brew install android-sdk &> /dev/null
+brew install android-ndk &> /dev/null) &
 wait
 echo 'Finished installing dependencies'
 expect -c '
 set timeout -1   ;
-spawn android update sdk -u -t tools,platform-tools,build-tools-21.1.1,android-21; 
+spawn android update sdk -u -t platform-tool,tool,build-tools-21.0.2,android-21; 
 expect { 
     "Do you accept the license" { exp_send "y\r" ; exp_continue }
     eof
@@ -47,8 +47,7 @@ echo 'Installing QScintilla for Mac...'
 bash downloadqscintilla.sh
 bash extractqscintilla.sh
 bash installqscintilla.sh
-) &
-(
+
 echo 'Building Qt applications for Mac...'
 rm -rf ../Sdk
 bash qt5/buildqtlibs.sh
