@@ -26,7 +26,7 @@ expect {
 }
 '
 
-export QT=/usr/local/Cellar/qt5/5.3.2
+export QT=/usr/local/Cellar/qt5/5.4.0
 export QT_WIN=~/.wine/drive_c/Qt/Qt5.3.2
 export IOS_SDK=8.1
 export ANDROID_HOME=/usr/local/opt/android-sdk
