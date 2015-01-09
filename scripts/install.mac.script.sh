@@ -31,9 +31,9 @@ mkdir build
 cd scripts
 (
 echo 'Building iOS libraries...'
-bash cleanioslibs.sh
-bash buildioslibs.sh
-bash buildiosplugins.sh
+bash cleanioslibs.sh &> /dev/null
+bash buildioslibs.sh &> /dev/null
+bash buildiosplugins.sh &> /dev/null
 ) &
 (
 echo 'Building Android libraries...'
@@ -44,9 +44,9 @@ bash buildandroidplugins.sh
 ) &
 (
 echo 'Installing QScintilla for Mac...'
-bash downloadqscintilla.sh
-bash extractqscintilla.sh
-bash installqscintilla.sh
+bash downloadqscintilla.sh &> /dev/null
+bash extractqscintilla.sh &> /dev/null
+bash installqscintilla.sh &> /dev/null
 
 echo 'Building Qt applications for Mac...'
 rm -rf ../Sdk
