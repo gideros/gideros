@@ -20,7 +20,7 @@ mingw32-make.exe release
 cd ..
 
 cd player
-qmake player_qt5.pro
+qmake player.pro
 mingw32-make.exe release
 cd ..
 
