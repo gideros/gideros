@@ -1,0 +1,1 @@
+﻿Constants files, to use in all Gideros projects.
