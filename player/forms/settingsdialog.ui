@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsDialogClass</class>
+ <widget class="QDialog" name="SettingsDialogClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>381</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Settings Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="_15">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <widget class="QWidget" name="widget">
+      <attribute name="title">
+       <string>Configurations</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="_3">
+       <item>
+        <layout class="QHBoxLayout" name="_4">
+         <item>
+          <layout class="QVBoxLayout" name="_5">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Resolution:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="_6">
+           <item>
+            <layout class="QHBoxLayout" name="_7">
+             <item>
+              <widget class="QLineEdit" name="lineEditWidth">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>x</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEditHeight">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>px</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="spacer_5">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>100</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="_2">
+         <item>
+          <layout class="QVBoxLayout" name="_10">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Orientation:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="_9">
+           <item>
+            <layout class="QHBoxLayout" name="_8">
+             <item>
+              <widget class="QComboBox" name="comboBoxOrientation"/>
+             </item>
+             <item>
+              <spacer name="spacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>100</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="_11">
+         <item>
+          <layout class="QVBoxLayout" name="_12">
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>FPS:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="_13">
+           <item>
+            <layout class="QHBoxLayout" name="_19">
+             <item>
+              <widget class="QComboBox" name="comboBoxFps"/>
+             </item>
+             <item>
+              <spacer name="spacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>100</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="_16">
+         <item>
+          <layout class="QVBoxLayout" name="_17">
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Scale:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="_18">
+           <item>
+            <layout class="QHBoxLayout" name="_14">
+             <item>
+              <widget class="QLineEdit" name="lineEditScale">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>%</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="spacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>100</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="spacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>200</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="widget_2">
+      <attribute name="title">
+       <string>Layout</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="_31">
+       <item>
+        <layout class="QHBoxLayout" name="_20">
+         <item>
+          <layout class="QVBoxLayout" name="_21">
+           <item>
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Window Background (RGB 0-255):</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="_22">
+           <item>
+            <layout class="QHBoxLayout" name="_23">
+             <item>
+              <widget class="QLineEdit" name="lineEditWindowRed">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEditWindowGreen">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEditWindowBlue">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="_24">
+         <item>
+          <layout class="QVBoxLayout" name="_25">
+           <item>
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Canvas Background (RGB 0-255):</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="_26">
+           <item>
+            <layout class="QHBoxLayout" name="_27">
+             <item>
+              <widget class="QLineEdit" name="lineEditCanvasRed">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEditCanvasGreen">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEditCanvasBlue">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="_28">
+         <item>
+          <layout class="QVBoxLayout" name="_29">
+           <item>
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>Info Text Color (RGB 0-255):</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="_30">
+           <item>
+            <layout class="QHBoxLayout" name="_32">
+             <item>
+              <widget class="QLineEdit" name="lineEditInfoRed">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEditInfoGreen">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="lineEditInfoBlue">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="spacer_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>200</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="dialogButtonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

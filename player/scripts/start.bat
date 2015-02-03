@@ -1,0 +1,1 @@
+start "" "..\release\GiderosPlayer.exe"

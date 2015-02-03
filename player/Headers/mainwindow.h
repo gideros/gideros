@@ -7,63 +7,109 @@
 class GLCanvas;
 class QActionGroup;
 
-class MainWindow : public QMainWindow
-{
+enum Scale{
+    eZoomIn,
+    eZoomOut,
+    eFitToWindow
+};
+
+enum Rotate{
+    eLeft,
+    eRight
+};
+
+class MainWindow : public QMainWindow{
 	Q_OBJECT
 
-public:
-    MainWindow(QWidget *parent = 0);
-	~MainWindow();
+    public:
+        MainWindow(QWidget *parent = 0);
+        ~MainWindow();
 
-protected:
-    // protected actions based on events like close, resize, ...
-    virtual void closeEvent(QCloseEvent*);
-    virtual void resizeEvent(QResizeEvent*);
+        int width();
+        int height();
+        int fps();
+        bool autoScale();
+        bool alwaysOnTop();
+        Orientation orientation();
+        int scale();
+        bool drawInfos();
+        bool fullScreen();
+        bool hideMenu();
+        QColor backgroundColor();
+        QColor canvasColor();
+        QColor infoColor();
 
-private slots:
-    void setupUi();
-    void setupGroups();
-    void loadSettings();
-    void saveSettings();
-    void loadResolution(int resolution);
-    void loadScale(int scale);
-    void loadOrientation(Orientation orientation);
-    void loadFps(int fps);
+        void setWidth(int width);
+        void setHeight(int height);
+        void setFps(int fps);
+        void setAutoScale(bool autoScale);
+        void setAlwaysOnTop(bool alwaysOnTop);
+        void setOrientation(Orientation orientation);
+        void setScale(int scale);
+        void setDrawInfos(bool drawInfos);
+        void setHideMenu(bool hideMenu);
+        void setFullScreen(bool fullScreen);
+        void setBackgroundColor(QColor backgroundColor);
+        void setCanvasColor(QColor canvasColor);
+        void setInfoColor(QColor infoColor);
 
-    void actionOpen();
+        void updateResolution();
+        void updateAutoScale();
+        void updateAlwaysOnTop();
+        void updateFps();
+        void updateOrientation();
+        void updateDrawInfos();
+        void updateFullScreen();
+        void updateHideMenu();
+        void updateBackgroundColor();
+        void updateCanvasColor();
+        void updateInfoColor();
+        void checkLoadedSettings();
+        void saveSettings();
+        void resizeWindow(int width, int height);
 
-    void actionFull_Screen(bool checked);
-    void actionHide_Menu(bool checked);
-    void alwaysOnTop(bool checked);
-    void actionScale();
+    protected:
+        virtual void closeEvent(QCloseEvent*);
+        virtual void resizeEvent(QResizeEvent*);
 
-    void actionAuto_Scale(bool checked);
-	void rotateLeft();
-	void rotateRight();
-	void portrait();
-	void portraitUpsideDown();
-	void landscapeLeft();
-	void landscapeRight();
-    void actionResolution();
-	void action15_fps();
-	void action30_fps();
-	void action60_fps();
-	void actionUnlimited();
+    private:
+        void setupUiActions();
+        void setupUiProperties();
+        void createUiGroups();
+        void loadSettings();
 
-    void sendRun();
+        Ui::MainWindowClass ui;
+        QActionGroup* resolutionGroup_;
+        QActionGroup* fpsGroup_;
+        QActionGroup* orientationGroup_;
+        int width_;
+        int height_;
+        int fps_;
+        bool autoScale_;
+        bool alwaysOnTop_;
+        int scale_;
+        bool hideMenu_;
+        bool fullScreen_;
+        Orientation orientation_;
+        bool drawInfos_;
+        QColor backgroundColor_;
+        QColor canvasColor_;
+        QColor infoColor_;
 
-	void projectNameChanged(const QString& projectName);
-
-private:
-    Ui::MainWindowClass ui;
-    QActionGroup* orientationGroup_;
-    QActionGroup* resolutionGroup_;
-    QActionGroup* zoomGroup_;
-
-    int scale();
-	int hardwareWidth();
-	int hardwareHeight();
-    Orientation orientation() const;
+    private slots:
+        void actionFull_Screen(bool checked);
+        void actionHide_Menu();
+        void actionAlwaysOnTop(bool checked);
+        void actionAuto_Scale(bool checked);
+        void actionResolution();
+        void actionFps();
+        void actionOrientation();
+        void actionScale();
+        void actionRotate();
+        void actionSettings();
+        void actionDraw_Infos(bool checked);
+        void actionOpen();
+        void projectNameChanged(const QString& projectName);
 };
 
 #endif // MAINWINDOW_H
