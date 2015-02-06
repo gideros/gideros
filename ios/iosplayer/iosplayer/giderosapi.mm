@@ -676,9 +676,13 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));		
 
 		loadProperties();
-		
+
+		// Gideros has became open source and free, because this, there's no more splash art
+		loadLuaFiles();
+
+		/*
 		bool licensed = (licenseKey_[15] == 'f' && licenseKey_[16] == 'f');
-		
+
 		if (licensed)
 		{
 			loadLuaFiles();
@@ -690,6 +694,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 			application_->getApplication()->stage()->addChild(splashScreen_);
 			splashScreen_->unref();
 		}		
+		*/
 	}
 }
 

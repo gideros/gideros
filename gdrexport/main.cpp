@@ -726,8 +726,10 @@ int main(int argc, char *argv[])
         QFile::copy(src, dst);
     }
 
-    // compile lua files (with luac)
-    if (true)
+	// compile lua files (with luac)
+	// disable compile with luac for iOS because 64 bit version
+	// http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
+	if (true && deviceFamily == e_Android)
     {
         for (int i = 0; i < allluafiles_abs.size(); ++i)
         {
