@@ -20,7 +20,7 @@ cd ..
 
 cd player
 make clean
-$QT/bin/qmake player.pro
+$QT/bin/qmake player_qt5.pro
 make clean
 cd ..
 

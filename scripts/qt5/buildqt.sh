@@ -16,7 +16,7 @@ make
 cd ..
 
 cd player
-$QT/bin/qmake player.pro
+$QT/bin/qmake player_qt5.pro
 make
 cd ..
 
