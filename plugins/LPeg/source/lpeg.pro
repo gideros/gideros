@@ -3,7 +3,7 @@ QT -= core gui
 TARGET = lpeg
 TEMPLATE = lib
 
-INCLUDEPATH += ../../../Sdk/include \
+INCLUDEPATH += ../../../Sdk/include
 
 SOURCES += \
 	lpvm.c lpcap.c lptree.c lpcode.c lpprint.c \

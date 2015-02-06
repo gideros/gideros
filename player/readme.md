@@ -23,6 +23,16 @@ Don't forget to build these dependencies, in this order, before build this proje
 * libgideros
 
 
+##### Requirements
+
+* Qt SDK 5.4 with mingw (Windows)
+The copy-required.bat will make an copy of some Qt files that is necessary to this software. Some files exist in their own versions, for example:
+In Qt 5.4, the dlls are icudt53.dll, icuin53.dll and icuuc53.dll.
+In Qt 5.3, the dlls are icudt52.dll, icuin52.dll and icuuc52.dll.
+
+Be carefull with this! :-)
+
+
 To make a easy workflow, add this custom steps (Add Build Step -> Custom Process Step) to Qt Creator:
 
 
