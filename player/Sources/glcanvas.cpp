@@ -77,9 +77,6 @@ GLCanvas::GLCanvas(QWidget *parent) : QGLWidget(parent){
     platformImplementation_ = new PlatformImplementation(application_);
     setPlatformInterface(platformImplementation_);
     */
-
-    // set the canvas in lua application
-    application_->setGLCanvas(this);
 }
 
 // destructor of player, clear timer and set app exit event

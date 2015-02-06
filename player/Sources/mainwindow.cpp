@@ -13,12 +13,9 @@
 #include "glcanvas.h"
 #include "platform.h"
 #include "settingsdialog.h"
-#include "themes.cpp"
 #include "constants.cpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
-    setDefaultTheme();
-
     setupUiActions();
     setupUiProperties();
 

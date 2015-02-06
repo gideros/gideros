@@ -129,7 +129,7 @@ void getDirectoryListingR(const char* dir, std::vector<std::string>* filesout, s
 
 
 #ifdef _WIN32
-//#include <winsock2.h>
+#include <winsock2.h>
 #include <iphlpapi.h>
 #pragma comment(lib, "IPHLPAPI.lib")
 

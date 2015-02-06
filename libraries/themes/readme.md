@@ -1,1 +1,0 @@
-﻿The theme library, to use on all windos of Gideros SDK.
