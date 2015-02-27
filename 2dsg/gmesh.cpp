@@ -311,8 +311,12 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
         glTexCoordPointer(2, GL_FLOAT, 0, &textureCoordinates_[0]);
         oglEnableClientState(GL_TEXTURE_COORD_ARRAY);
     }
+    
+    glEnable(GL_DEPTH_TEST);
 
     oglDrawElements(meshtype_, indices_.size(), GL_UNSIGNED_SHORT, &indices_[0]);
+
+    glDisable(GL_DEPTH_TEST);
 
     oglDisableClientState(GL_VERTEX_ARRAY);
 

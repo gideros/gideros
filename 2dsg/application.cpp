@@ -207,7 +207,7 @@ void Application::renderScene(int deltaFrameCount)
 			float hw=width_*0.5/scale_;
 			float hh=height_*0.5/scale_;
 			float np=hh/tan(fov_* M_PI / 360.0);
-			glFrustum(-hw, hw, hh, -hh, np,np+100);
+			glFrustum(-hw, hw, hh, -hh, np,np*100);
 			glTranslatef(-hw,-hh,-np-0.00001);
 		}
 		else
@@ -220,7 +220,7 @@ void Application::renderScene(int deltaFrameCount)
 			float hw=width_*0.5/scale_;
 			float hh=height_*0.5/scale_;
 			float np=hh/tan(fov_* M_PI / 360.0);
-			glFrustum(-hh,hh,hw,-hw,np,np+100);
+			glFrustum(-hh,hh,hw,-hw,np,np*100);
 			glTranslatef(-hh,-hw,-np-0.00001);
 		}
 		else
@@ -302,6 +302,11 @@ void Application::renderScene(int deltaFrameCount)
     float sy = (0 - lty) / lsy;
     float ex = (hw - ltx) / lsx;
     float ey = (hh - lty) / lsy;
+
+    glDepthFunc(GL_LEQUAL);
+    glClearDepth(1);
+    glClear(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    
 
 	CurrentTransform currentTransform;
     stage_->draw(currentTransform, sx, sy, ex, ey);
