@@ -1,84 +1,93 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2011-03-09T08:32:11
-#
-#-------------------------------------------------
+QT += core gui opengl network
 
-QT       += core gui opengl network
+win32{
+    RC_FILE = other_files/player.rc
 
-win32 {
-RC_FILE = Other_files/player.rc
+    TARGET = GiderosPlayer
+
+    INCLUDEPATH += \
+        "../libgid/external/zlib-1.2.8"\
+        "../libgid/external/glew-1.10.0/include"\
+        ../libgid/external/freetype-2.4.12/include
+
+    LIBS += \
+        -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx\
+        -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32\
+        -L"../libgid/external/freetype-2.4.12/build/mingw48_32" -lfreetype\
+        -lwsock32\
+        -liphlpapi\
+        -L"../libgid/release" -lgid\
+        -L"../libgvfs/release" -lgvfs\
+        -L"../lua/release" -llua\
+        -L"../libgideros/release" -lgideros\
+        -L"../libpystring/release" -lpystring
 }
 
 macx {
-ICON = Other_files/player.icns
-}
+    ICON = other_files/player.icns
 
-INCLUDEPATH += \
-    Headers\
-    Sources\
-    Forms\
-    ../2dsg\
-    ../libplatform\
-    ../libsound\
-    ../libnetwork\
-    ../luabinding\
-    ../lua/src\
-    ../libpvrt\
-    ../libgvfs\
-    ../libgid/include\
-    ../libgid/include/qt\
-    ../libgideros\
-    ../libpystring\
-    "../external/glu"
+    INCLUDEPATH += \
+        "/usr/local/include"\
+        "/usr/local/include/freetype2"
 
-macx {
-INCLUDEPATH += "/usr/local/include"
-INCLUDEPATH += "/usr/local/include/freetype2"
-}
+    TARGET = "Gideros Player"
 
-macx {
-TARGET = "Gideros Player"
-}
+    LIBS += \
+        -framework OpenAL\
+        -framework OpenGL\
+        -framework CoreFoundation\
+        -lz\
+        -L"/usr/local/lib"\
+        -L"../libgid" -lgid\
+        -L"../libgvfs" -lgvfs\
+        -L"../lua" -llua\
+        -L"../libgideros" -lgideros\
+        -L"../libpystring" -lpystring\
+        -L"/usr/local/lib" -lGLEW -lfreetype
 
-win32 {
-TARGET = GiderosPlayer
+    QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
 }
 
 TEMPLATE = app
 
-
-#INCLUDEPATH += ../external/Box2D_v2.3.0/Box2D
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Common/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Collision/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Collision/Shapes/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Rope/*.cpp)
-
-INCLUDEPATH += ../external/liquidfun-1.0.0/liquidfun/Box2D
-SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/*.cpp)
-SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/*.cpp)
-SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes/*.cpp)
-SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/*.cpp)
-SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/*.cpp)
-SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/*.cpp)
-SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Rope/*.cpp)
-SOURCES += $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/*.cpp)
-
-SOURCES += \
-    Sources\main.cpp \
-    Sources\mainwindow.cpp \
-    Sources\errordialog.cpp \
-    Sources\glcanvas.cpp \
-    Sources\projectpropertiesdialog.cpp
-
-SOURCES += $$files(../luabinding/*.cpp)	../luabinding/tlsf.c
-
-SOURCES += $$files(../libnetwork/*.cpp)
+INCLUDEPATH += \
+    headers \
+    sources \
+    forms \
+    ../2dsg \
+    ../libplatform \
+    ../libsound \
+    ../libnetwork \
+    ../luabinding \
+    ../lua/src \
+    ../libpvrt \
+    ../libgvfs \
+    ../libgid/include \
+    ../libgid/include/qt \
+    ../libgideros \
+    ../libpystring \
+    "../external/glu" \
+    ../external/liquidfun-1.0.0/liquidfun/Box2D \
+    "../external/minizip-1.1/source" \
+    ../libraries/themes \
+    ../libraries/constants \
 
 SOURCES += \
+    sources/main.cpp \
+    sources/mainwindow.cpp \
+    sources/errordialog.cpp \
+    sources/glcanvas.cpp \
+    sources/settingsdialog.cpp \
+    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/*.cpp) \
+    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/*.cpp) \
+    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes/*.cpp) \
+    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/*.cpp) \
+    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/*.cpp) \
+    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/*.cpp) \
+    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Rope/*.cpp) \
+    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/*.cpp) \
+    $$files(../luabinding/*.cpp)	../luabinding/tlsf.c \
+    $$files(../libnetwork/*.cpp) \
     ../libplatform/md5.c \
     ../libplatform/platform.cpp \
     ../libplatform/platformutil.cpp \
@@ -91,86 +100,40 @@ SOURCES += \
     ../libplatform/drawinfo.cpp \
     ../libplatform/fps-generic.cpp \
     ../libplatform/exit-generic.cpp \
-    ../libplatform/gtimer.cpp
+#    ../libplatform/windowsize-generic.cpp \
+    ../libplatform/gtimer.cpp \
+    $$files(../2dsg/*.cpp) \
+    $$files(../libpvrt/*.cpp) \
+    $$files(../external/glu/libtess/*.c) \
+    "../external/minizip-1.1/source/ioapi.c" \
+    "../external/minizip-1.1/source/unzip.c" \
+    $$files(../libpvrt/*.h)
 
-SOURCES += $$files(../2dsg/*.cpp)
+FORMS += \
+    forms\mainwindow.ui\
+    forms\errordialog.ui \
+    forms\settingsdialog.ui
 
-SOURCES += $$files(../libpvrt/*.cpp)
-
-SOURCES += $$files(../external/glu/libtess/*.c)
+HEADERS += \
+    headers\mainwindow.h \
+    headers\errordialog.h \
+    headers\glcanvas.h \
+    headers\settingsdialog.h\
+    $$files(../libsound/*.h)\
+    $$files(../2dsg/*.h)\
+    $$files(../luabinding/*.h)\
+    $$files(../libnetwork/*.h)\
+    $$files(../libplatform/*.h)\
 
 DEFINES += USE_FILE32API
-SOURCES += \
-    "../external/minizip-1.1/source/ioapi.c" \
-    "../external/minizip-1.1/source/unzip.c"
-
-INCLUDEPATH += "../external/minizip-1.1/source"
-
-win32 {
-INCLUDEPATH += "../libgid/external/zlib-1.2.8"
-LIBS += -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx
-INCLUDEPATH += "../libgid/external/glew-1.10.0/include"
-LIBS += -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32
-}
 
 LIBS += -lpthread
 
-macx {
-LIBS += -framework OpenAL
-LIBS += -framework OpenGL
-LIBS += -framework CoreFoundation
-LIBS += -lz
-LIBS += -L"/usr/local/lib"
-}
-
-win32 {
-LIBS += -lwsock32
-LIBS += -liphlpapi
-}
-
-win32 {
-LIBS += -L"../libgid/release" -lgid
-LIBS += -L"../libgvfs/release" -lgvfs
-LIBS += -L"../lua/release" -llua
-LIBS += -L"../libgideros/release" -lgideros
-LIBS += -L"../libpystring/release" -lpystring
-}
-
-macx {
-LIBS += -L"../libgid" -lgid
-LIBS += -L"../libgvfs" -lgvfs
-LIBS += -L"../lua" -llua
-LIBS += -L"../libgideros" -lgideros
-LIBS += -L"../libpystring" -lpystring
-LIBS += -L"/usr/local/lib" -lGLEW -lfreetype
-}
-
-
-HEADERS += \
-    Headers\mainwindow.h \
-    Headers\errordialog.h \
-    Headers\glcanvas.h \
-    Headers\projectpropertiesdialog.h
-
-HEADERS += $$files(../libsound/*.h)
-HEADERS += $$files(../2dsg/*.h)
-HEADERS += $$files(../luabinding/*.h)
-HEADERS += $$files(../libnetwork/*.h)
-HEADERS += $$files(../libplatform/*.h)
-
-SOURCES += $$files(../libpvrt/*.h)
-
-
-FORMS += \
-    Forms\mainwindow.ui\
-    Forms\errordialog.ui \
-    Forms\projectpropertiesdialog.ui
-
-win32 {
-    INCLUDEPATH += ../libgid/external/freetype-2.4.12/include
-    LIBS += -L"../libgid/external/freetype-2.4.12/build/mingw48_32" -lfreetype
-}
-
-macx {
-QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
-}
+#INCLUDEPATH += ../external/Box2D_v2.3.0/Box2D
+#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Common/*.cpp)
+#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Collision/*.cpp)
+#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Collision/Shapes/*.cpp)
+#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/*.cpp)
+#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/*.cpp)
+#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/*.cpp)
+#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Rope/*.cpp)

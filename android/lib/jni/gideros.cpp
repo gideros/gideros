@@ -743,7 +743,13 @@ void ApplicationManager::drawFrame()
 		if (applicationStarted_ == false)
 		{
 			loadProperties();
-			
+
+			// Gideros has became open source and free, because this, there's no more splash art			
+
+			loadLuaFiles();
+			skipFirstEnterFrame_ = true;
+
+			/*
 			bool licensed = (licenseKey_[15] == 'f' && licenseKey_[16] == 'f');
 
 			if (licensed)
@@ -758,6 +764,7 @@ void ApplicationManager::drawFrame()
 				application_->getApplication()->stage()->addChild(splashScreen_);
 				splashScreen_->unref();
 			}
+			*/
 
 			applicationStarted_ = true;
 		}

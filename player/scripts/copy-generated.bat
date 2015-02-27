@@ -1,0 +1,1 @@
+cp ..\player\release\GiderosPlayer.exe ..\release
