@@ -56,9 +56,11 @@ int MeshBinder::create(lua_State *L)
 {
     LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
+    bool is3d = lua_toboolean(L, 1);
+
     Binder binder(L);
 
-    binder.pushInstance("Mesh", new GMesh(application->getApplication()));
+    binder.pushInstance("Mesh", new GMesh(application->getApplication(),is3d));
 
     return 1;
 }
@@ -80,8 +82,9 @@ int MeshBinder::setVertex(lua_State *L)
     int i = luaL_checkinteger(L, 2) - 1;
     float x = luaL_checknumber(L, 3);
     float y = luaL_checknumber(L, 4);
+    float z = luaL_optnumber(L, 5, 0.0);
 
-    mesh->setVertex(i, x, y);
+    mesh->setVertex(i, x, y, z);
 
     return 0;
 }
@@ -131,37 +134,49 @@ int MeshBinder::setVertices(lua_State *L)
 {
     Binder binder(L);
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
+    
+    bool is3d=mesh->is3d();
+    int order=is3d?4:3;
 
     if (lua_type(L, 2) == LUA_TTABLE)
     {
         int n = lua_objlen(L, 2);
-        for (int k = 0; k < n/3; ++k)
+        for (int k = 0; k < n/order; ++k)
         {
-            lua_rawgeti(L, 2, k * 3 + 1);
+            lua_rawgeti(L, 2, k * order + 1);
             int i = luaL_checkinteger(L, -1) - 1;
             lua_pop(L, 1);
 
-            lua_rawgeti(L, 2, k * 3 + 2);
+            lua_rawgeti(L, 2, k * order + 2);
             float x = luaL_checknumber(L, -1);
             lua_pop(L, 1);
 
-            lua_rawgeti(L, 2, k * 3 + 3);
+            lua_rawgeti(L, 2, k * order + 3);
             float y = luaL_checknumber(L, -1);
             lua_pop(L, 1);
 
-            mesh->setVertex(i, x, y);
+            float z=0;
+            if (is3d)
+            {
+            	lua_rawgeti(L, 2, k * order + 4);
+            	z = luaL_checknumber(L, -1);
+            	lua_pop(L, 1);
+            }
+            mesh->setVertex(i, x, y, z);
         }
     }
     else
     {
         int n = lua_gettop(L) - 1;
-        for (int k = 0; k < n/3; ++k)
+        for (int k = 0; k < n/order; ++k)
         {
-            int i = luaL_checkinteger(L, k * 3 + 2) - 1;
-            float x = luaL_checknumber(L, k * 3 + 3);
-            float y = luaL_checknumber(L, k * 3 + 4);
-
-            mesh->setVertex(i, x, y);
+            int i = luaL_checkinteger(L, k * order + 2) - 1;
+            float x = luaL_checknumber(L, k * order + 3);
+            float y = luaL_checknumber(L, k * order + 4);
+            float z=0;
+            if (is3d) 
+            	z= luaL_checknumber(L, k * order + 5);
+            mesh->setVertex(i, x, y, z);
         }
     }
 
@@ -292,11 +307,13 @@ int MeshBinder::setVertexArray(lua_State *L)
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
 
     std::vector<float> vertices;
+    
+    int order=mesh->is3d()?3:2;
 
     if (lua_type(L, 2) == LUA_TTABLE)
     {
         int n = lua_objlen(L, 2);
-        n = (n / 2) * 2;
+        n = (n / order) * order;
         vertices.resize(n);
         for (int i = 0; i < n; ++i)
         {
@@ -308,7 +325,7 @@ int MeshBinder::setVertexArray(lua_State *L)
     else
     {
         int n = lua_gettop(L) - 1;
-        n = (n / 2) * 2;
+        n = (n / order) * order;
         vertices.resize(n);
         for (int i = 0; i < n; ++i)
             vertices[i] = luaL_checknumber(L, i + 2);
@@ -557,12 +574,15 @@ int MeshBinder::getVertex(lua_State *L)
     if (i < 0 || i >= mesh->getVertexArraySize())
         return luaL_error(L, "The supplied index is out of bounds.");
 
-    float x, y;
-    mesh->getVertex(i, &x, &y);
+    int order=mesh->is3d()?3:2;
+    float x, y, z;
+    mesh->getVertex(i, &x, &y, &z);
     lua_pushnumber(L, x);
     lua_pushnumber(L, y);
+    if (order==3)
+    	lua_pushnumber(L, z);
 
-    return 2;
+    return order;
 }
 
 int MeshBinder::getIndex(lua_State *L)

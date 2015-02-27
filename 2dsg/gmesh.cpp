@@ -2,7 +2,7 @@
 #include <ogl.h>
 #include <color.h>
 
-GMesh::GMesh(Application *application) : Sprite(application)
+GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
 {
     texture_ = NULL;
     sx_ = 1;
@@ -14,6 +14,8 @@ GMesh::GMesh(Application *application) : Sprite(application)
     boundsDirty_ = false;
     minx_ = miny_ = 1e30;
     maxx_ = maxy_ = -1e30;
+    meshtype_=GL_TRIANGLES;
+    mesh3d_=is3d;
 }
 
 GMesh::~GMesh()
@@ -22,13 +24,21 @@ GMesh::~GMesh()
         texture_->unref();
 }
 
-void GMesh::setVertex(int i, float x, float y)
+bool GMesh::is3d()
 {
-    if (i * 2 + 1 >= vertices_.size())
-        vertices_.resize(i * 2 + 1 + 1);
+	return mesh3d_;
+}
 
-    vertices_[i * 2] = x;
-    vertices_[i * 2 + 1] = y;
+void GMesh::setVertex(int i, float x, float y,float z)
+{
+	int order=mesh3d_?3:2;
+    if (i * order + order - 1 >= vertices_.size())
+        vertices_.resize(i * order + order);
+
+    vertices_[i * order] = x;
+    vertices_[i * order + 1] = y;
+    if (mesh3d_)
+        vertices_[i * order + 2] = z;
 
     boundsDirty_ = true;
 }
@@ -118,7 +128,7 @@ void GMesh::setTextureCoordinateArray(const float *textureCoordinates, size_t si
 
 void GMesh::resizeVertexArray(size_t size)
 {
-    vertices_.resize(size * 2);
+    vertices_.resize(size * (mesh3d_?3:2));
 
     boundsDirty_ = true;
 }
@@ -162,7 +172,7 @@ void GMesh::clearColorArray()
 
 size_t GMesh::getVertexArraySize() const
 {
-    return vertices_.size() / 2;
+    return vertices_.size() / (mesh3d_?3:2);
 }
 
 size_t GMesh::getIndexArraySize() const
@@ -180,10 +190,13 @@ size_t GMesh::getTextureCoordinateArraySize() const
     return originalTextureCoordinates_.size() / 2;
 }
 
-void GMesh::getVertex(int i, float *x, float *y) const
+void GMesh::getVertex(int i, float *x, float *y, float *z) const
 {
-    *x = vertices_[i * 2];
-    *y = vertices_[i * 2 + 1];
+	int order=mesh3d_?3:2;
+    *x = vertices_[i * order];
+    *y = vertices_[i * order + 1];
+    if (mesh3d_)
+    	*z = vertices_[i * order + 2];
 }
 
 void GMesh::getIndex(int i, unsigned short *index) const
@@ -256,7 +269,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
     else
         oglDisable(GL_TEXTURE_2D);
 
-    glVertexPointer(2, GL_FLOAT, 0, &vertices_[0]);
+    glVertexPointer(mesh3d_?3:2, GL_FLOAT, 0, &vertices_[0]);
     oglEnableClientState(GL_VERTEX_ARRAY);
 
     if (!colors_.empty())
@@ -299,7 +312,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
         oglEnableClientState(GL_TEXTURE_COORD_ARRAY);
     }
 
-    oglDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_SHORT, &indices_[0]);
+    oglDrawElements(meshtype_, indices_.size(), GL_UNSIGNED_SHORT, &indices_[0]);
 
     oglDisableClientState(GL_VERTEX_ARRAY);
 
@@ -319,14 +332,15 @@ void GMesh::extraBounds(float *minx, float *miny, float *maxx, float *maxy) cons
     {
         minx_ = miny_ = 1e30;
         maxx_ = maxy_ = -1e30;
+        int order=mesh3d_?3:2;
 
         for (size_t i = 0; i < indices_.size(); i += 3)
         {
             for (int j = 0; j < 3; ++j)
             {
                 int index = indices_[i + j];
-                float x = vertices_[index * 2];
-                float y = vertices_[index * 2 + 1];
+                float x = vertices_[index * order];
+                float y = vertices_[index * order + 1];
 
                 minx_ = std::min(minx_, x);
                 miny_ = std::min(miny_, y);

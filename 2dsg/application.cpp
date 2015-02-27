@@ -148,6 +148,20 @@ void Application::clearBuffers()
     }
 }
 
+void perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
+{
+    GLdouble xmin, xmax, ymin, ymax;
+
+    ymax = zNear * tan( fovy * M_PI / 360.0 );
+    ymin = -ymax;
+    xmin = ymin * aspect;
+    xmax = ymax * aspect;
+
+    glFrustum( xmin, xmax, ymin, ymax, zNear, zFar );
+
+
+}
+
 void Application::renderScene(int deltaFrameCount)
 {
 	if (nframe_ < 0 || time_ < 0)
@@ -192,13 +206,19 @@ void Application::renderScene(int deltaFrameCount)
 	{
 	case ePortrait:
 	case ePortraitUpsideDown:
-		glOrthof(0, width_/scale_, height_/scale_, 0, -1, 1);
+		//glOrthof(0, width_/scale_, height_/scale_, 0, -1,1);
+		glFrustum(-width_*0.5/scale_, width_*0.5/scale_, height_*0.5/scale_, -height_*0.5/scale_, 10,100);
+		glTranslatef(-width_*0.5/scale_,-height_*0.5/scale_, -10.00001);
 		break;
 	case eLandscapeLeft:
 	case eLandscapeRight:
-		glOrthof(0, height_/scale_, width_/scale_, 0, -1, 1);
+		//glOrthof(0, height_/scale_, width_/scale_, 0, -1,1);
+		glFrustum(-height_*0.5/scale_, height_*0.5/scale_, width_*0.5/scale_, -width_*0.5/scale_, 10,100);
+		glTranslatef(-height_*0.5/scale_,-width_*0.5/scale_, -10.00001);
 		break;
 	}
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
+	
 
 	switch (hardwareOrientation_)
 	{
