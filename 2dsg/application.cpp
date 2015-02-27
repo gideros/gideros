@@ -79,6 +79,7 @@ Application::Application() :
 	defaultFont_ = NULL;
 
 	scale_ = 1;
+	fov_=0;
 }
 
 Application::~Application()
@@ -148,18 +149,13 @@ void Application::clearBuffers()
     }
 }
 
-void perspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
+void Application::setFieldOfView(float fov)
 {
-    GLdouble xmin, xmax, ymin, ymax;
-
-    ymax = zNear * tan( fovy * M_PI / 360.0 );
-    ymin = -ymax;
-    xmin = ymin * aspect;
-    xmax = ymax * aspect;
-
-    glFrustum( xmin, xmax, ymin, ymax, zNear, zFar );
-
-
+	if (fov>179) //Do not allow 180°, this would cause infinite width
+		fov=179;
+	if (fov<0)
+		fov=0;
+	fov_=fov;
 }
 
 void Application::renderScene(int deltaFrameCount)
@@ -206,15 +202,29 @@ void Application::renderScene(int deltaFrameCount)
 	{
 	case ePortrait:
 	case ePortraitUpsideDown:
-		//glOrthof(0, width_/scale_, height_/scale_, 0, -1,1);
-		glFrustum(-width_*0.5/scale_, width_*0.5/scale_, height_*0.5/scale_, -height_*0.5/scale_, 10,100);
-		glTranslatef(-width_*0.5/scale_,-height_*0.5/scale_, -10.00001);
+		if (fov_>0)
+		{
+			float hw=width_*0.5/scale_;
+			float hh=height_*0.5/scale_;
+			float np=hh/tan(fov_* M_PI / 360.0);
+			glFrustum(-hw, hw, hh, -hh, np,np+100);
+			glTranslatef(-hw,-hh,-np-0.00001);
+		}
+		else
+			glOrthof(0, width_/scale_, height_/scale_, 0, -1,1);
 		break;
 	case eLandscapeLeft:
 	case eLandscapeRight:
-		//glOrthof(0, height_/scale_, width_/scale_, 0, -1,1);
-		glFrustum(-height_*0.5/scale_, height_*0.5/scale_, width_*0.5/scale_, -width_*0.5/scale_, 10,100);
-		glTranslatef(-height_*0.5/scale_,-width_*0.5/scale_, -10.00001);
+		if (fov_>0)
+		{
+			float hw=width_*0.5/scale_;
+			float hh=height_*0.5/scale_;
+			float np=hh/tan(fov_* M_PI / 360.0);
+			glFrustum(-hh,hh,hw,-hw,np,np+100);
+			glTranslatef(-hh,-hw,-np-0.00001);
+		}
+		else
+			glOrthof(0, height_/scale_, width_/scale_, 0, -1,1);
 		break;
 	}
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);

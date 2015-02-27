@@ -118,6 +118,8 @@ public:
     void deleteAutounrefPool(void *);
     void autounref(GReferenced *referenced);
 
+    void setFieldOfView(float fov);
+
 private:
 	TextureManager textureManager_;
 	Stage* stage_;
@@ -130,6 +132,7 @@ private:
 	LogicalScaleMode scaleMode_;
 	float logicalScaleX_, logicalScaleY_;
 	float logicalTranslateX_, logicalTranslateY_;
+	float fov_;
 	void calculateLogicalTransformation();
 	void correctTouchPositionLogical(int* x, int* y);
 

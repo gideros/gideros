@@ -60,6 +60,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"getTextureMemoryUsage", ApplicationBinder::getTextureMemoryUsage},
         {"getScreenDensity", ApplicationBinder::getScreenDensity},
         {"getDeviceOrientation", ApplicationBinder::getDeviceOrientation},
+        {"setFieldOfView", ApplicationBinder::setFieldOfView},
         {NULL, NULL},
 	};
 
@@ -605,3 +606,18 @@ int ApplicationBinder::getDeviceOrientation(lua_State *L)
     return 1;
 }
 
+int ApplicationBinder::setFieldOfView(lua_State* L)
+{
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+
+    lua_Number fov = luaL_checknumber(L, 2);
+    if (fov<0) fov=0;
+    if (fov>180) fov=180;
+
+    application->getApplication()->setFieldOfView(fov);
+
+    return 0;
+}
