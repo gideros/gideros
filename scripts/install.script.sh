@@ -1,29 +1,34 @@
+sudo chown -R $(whoami) /usr/local
+
 brew update
-brew install jpeg
-brew install libpng
-brew install freetype
+brew install jpeg --universal
+brew link --overwrite jpeg
+brew install libpng --universal
+brew link --overwrite libpng
+brew install freetype --universal
 brew install glew
+brew install Caskroom/cask/xquartz
 brew install wget
 brew install qt5
 brew install wine
 brew install ant
 brew install android-sdk
 brew install android-ndk
-brew install ncurses
+brew install homebrew/dupes/ncurses
 
 rm -rf ~/.wine
 wine xyz 
 
 expect -c '
 set timeout -1   ;
-spawn android update sdk -u -t tools,platform-tools,build-tools-21.1.1,android-21; 
+spawn android update sdk -u -a -t 1,2,3; 
 expect { 
     "Do you accept the license" { exp_send "y\r" ; exp_continue }
     eof
 }
 '
 
-export QT=/usr/local/Cellar/qt5/5.3.2
+export QT=/usr/local/Cellar/qt5/5.4.0
 export QT_WIN=~/.wine/drive_c/Qt/Qt5.3.2
 export IOS_SDK=8.1
 export ANDROID_HOME=/usr/local/opt/android-sdk
