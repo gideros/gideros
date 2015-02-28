@@ -2,15 +2,8 @@ echo 'Updating brew'
 brew update &> /dev/null
 echo 'Finished updating brew'
 echo 'Installing dependencies'
-brew install jpeg --universal
-brew link --overwrite jpeg
-brew install libpng --universal
-brew link --overwrite libpng
 brew install freetype --universal
 brew install glew
-brew install Caskroom/cask/xquartz
-brew install wget
-brew install qt5
 brew install wine
 brew install ant
 brew install android-sdk
