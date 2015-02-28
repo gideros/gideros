@@ -1,5 +1,5 @@
 echo 'Updating brew'
-brew update
+brew update &> /dev/null
 echo 'Finished updating brew'
 echo 'Installing dependencies'
 brew install freetype --with-freetype-dir=/usr/local/Cellar/freetype
@@ -11,7 +11,7 @@ brew install android-ndk
 echo 'Finished installing dependencies'
 expect -c '
 set timeout -1   ;
-android update sdk -u -a -t 1,2,3,android-21;
+android update sdk -u -a -t tool,platform-tool,3,android-21;
 expect { 
     "Do you accept the license" { exp_send "y\r" ; exp_continue }
     eof
