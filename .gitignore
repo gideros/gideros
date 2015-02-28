@@ -199,12 +199,35 @@ FakesAssemblies/
 *.Release
 ui_*.h
 Makefile
+builded
+release
+debug
+
+# Build results
+/gideros.jar
+/Sdk/
+/build/
+/android/GiderosAndroidPlayer/bin/
+/android/GiderosAndroidPlayer/gen/
+/android/GiderosAndroidPlayer/libs/
+/libs/
+/obj/
+
+# QT project files
+*.config
+*.creator
+*.files
+*.includes
+
+# Temp
+.tmp/
 
 # qt creator and vs generated files and folders
 *.user.*
 *.o
 tmp
 *.tlog
+.qmake.stash
 
 # other generated files and folders
 *.exe
@@ -221,9 +244,5 @@ libgideros.a
 !*.nsi
 
 # and others to exclude
-scripts/buildplugins.bat
-scripts/buildqt.bat
-scripts/buildqtlibs.bat
-scripts/cleanqt.bat
 *.filters
 *.vcxitems
