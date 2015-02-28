@@ -2,12 +2,12 @@ echo 'Updating brew'
 brew update &> /dev/null
 echo 'Finished updating brew'
 echo 'Installing dependencies'
-brew install freetype --with-freetype-dir=/usr/local/Cellar/freetype
-brew install glew
-brew install qt5
-brew install ant
-brew install android-sdk
-brew install android-ndk
+brew install freetype --with-freetype-dir=/usr/local/Cellar/freetype &> /dev/null
+brew install glew &> /dev/null
+brew install qt5 &> /dev/null
+brew install ant &> /dev/null
+brew install android-sdk &> /dev/null
+brew install android-ndk &> /dev/null
 echo 'Finished installing dependencies'
 expect -c '
 set timeout -1   ;
@@ -29,9 +29,9 @@ mkdir build
 
 cd scripts
 echo 'Building iOS libraries...'
-bash cleanioslibs.sh &> /dev/null
-bash buildioslibs.sh &> /dev/null
-bash buildiosplugins.sh &> /dev/null
+bash cleanioslibs.sh
+bash buildioslibs.sh
+bash buildiosplugins.sh
 
 echo 'Building Android libraries...'
 bash makejar.sh
