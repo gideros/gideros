@@ -130,11 +130,8 @@
      <addaction name="action640x1136"/>
      <addaction name="action750x1334"/>
      <addaction name="action1242x2208"/>
-<<<<<<< HEAD
      <addaction name="action768x1024"/>
      <addaction name="action1536x2048"/>
-=======
->>>>>>> d66c8d83ef6957dc919ff115e7b4884c4f545f99
      <addaction name="separator"/>
      <addaction name="action240x320"/>
      <addaction name="action240x400"/>
@@ -145,11 +142,8 @@
      <addaction name="action600x800"/>
      <addaction name="action600x1024"/>
      <addaction name="action720x1280"/>
-<<<<<<< HEAD
      <addaction name="action768x1366"/>
      <addaction name="action800x1280"/>
-=======
->>>>>>> d66c8d83ef6957dc919ff115e7b4884c4f545f99
      <addaction name="action900x1200"/>
      <addaction name="action1080x1920"/>
     </widget>
@@ -494,7 +488,6 @@
     <string>1080x1920</string>
    </property>
   </action>
-<<<<<<< HEAD
   <action name="action750x1334">
    <property name="checkable">
     <bool>true</bool>
@@ -511,8 +504,6 @@
     <string>1242x2208 (iPhone 6 Plus)</string>
    </property>
   </action>
-=======
->>>>>>> d66c8d83ef6957dc919ff115e7b4884c4f545f99
   <action name="action900x1200">
    <property name="checkable">
     <bool>true</bool>

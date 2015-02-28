@@ -257,3 +257,4 @@ tmp
 *.filters
 *.vcxitems
 plugins/LPeg/source/makefile
+/.project
