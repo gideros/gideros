@@ -226,8 +226,8 @@ Dib TTFont::renderFont(const wchar32_t *text, float letterSpacing, int *pminx, i
 
         FT_Bitmap &bitmap = face_->glyph->bitmap;
 
-        width = std::min(width, bitmap.width);
-        height = std::min(height, bitmap.rows);
+        width = std::min(width, (int)bitmap.width);
+        height = std::min(height, (int)bitmap.rows);
 
         x += kerning(prev, glyphIndex) >> 6;
         prev = glyphIndex;

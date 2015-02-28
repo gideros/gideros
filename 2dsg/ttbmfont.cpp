@@ -219,8 +219,8 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
         iter->second.x = xo;
         iter->second.y = yo;
 
-        width = std::min(width, bitmap.width);
-        height = std::min(height, bitmap.rows);
+        width = std::min(width, (int)bitmap.width);
+        height = std::min(height, (int)bitmap.rows);
 
         for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x)
