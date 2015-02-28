@@ -11,10 +11,20 @@
 
 #include "giderosapi.h"
 
+#ifndef NSFoundationVersionNumber_iOS_7_1
+# define NSFoundationVersionNumber_iOS_7_1 1047.25
+#endif
+
 @implementation AppDelegate
 
 @synthesize window;
 @synthesize viewController;
+
+- (BOOL)isNotRotatedBySystem{
+    BOOL OSIsBelowIOS8 = [[[UIDevice currentDevice] systemVersion] floatValue] < 8.0;
+    BOOL SDKIsBelowIOS8 = floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1;
+    return OSIsBelowIOS8 || SDKIsBelowIOS8;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -27,9 +37,17 @@
 
 	[self.viewController view];
 
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategorySoloAmbient error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
 
-	gdr_initialize(self.viewController.glView, bounds.size.width, bounds.size.height, true);
+    int width = bounds.size.width;
+    int height = bounds.size.height;
+    
+    if(![self isNotRotatedBySystem]){
+        height = bounds.size.width;
+        width = bounds.size.height;
+    }
+    
+    gdr_initialize(self.viewController.glView, width, height, false);
 
     if ([[[UIDevice currentDevice] systemVersion] compare:@"6.0" options:NSNumericSearch] != NSOrderedAscending)
     {
