@@ -193,12 +193,18 @@ FakesAssemblies/
 *.opt
 
 # Gideros specific files
+/gdrbridge/gdrbridge
+/gdrdeamon/gdrdeamon
+/gdrexport/gdrexport
+/ui/Templates/Xcode4/iOS Template/iOS Template/giderosapi.h
+/plugins/LPeg/source/makefile
 
 # build generated files
 *.Debug
 *.Release
 ui_*.h
 Makefile
+makefile
 builded
 release
 debug
@@ -210,6 +216,9 @@ debug
 /android/GiderosAndroidPlayer/bin/
 /android/GiderosAndroidPlayer/gen/
 /android/GiderosAndroidPlayer/libs/
+/android/GiderosAndroidPlayer/gideros.jar
+/android/GiderosAndroidPlayer/src/com/android/
+/android/GiderosAndroidPlayer/src/com/giderosmobile/android/plugins/
 /libs/
 /obj/
 
@@ -228,6 +237,8 @@ debug
 tmp
 *.tlog
 .qmake.stash
+*/moc_*.cpp
+*/qrc_*.cpp
 
 # other generated files and folders
 *.exe
@@ -235,9 +246,8 @@ tmp
 *.dylib
 *.so
 *.ini
-
-# the >100mb files
-libgideros.a
+*.app
+*.a
 
 # some files and folder to include
 !/release
@@ -246,3 +256,4 @@ libgideros.a
 # and others to exclude
 *.filters
 *.vcxitems
+plugins/LPeg/source/makefile
