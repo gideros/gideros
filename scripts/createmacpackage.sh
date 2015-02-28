@@ -1,10 +1,10 @@
 cd ..
 
-mkdir build/Gideros\ 2014.10
-mv build/mac build/Gideros\ 2014.10/Gideros\ Studio
-ln -s /Applications build/Gideros\ 2014.10/Applications
+mkdir build/Gideros
+mv build/mac build/Gideros/Gideros\ Studio
+ln -s /Applications build/Gideros/Applications
 
-rm build/gideros_2014.10.dmg
-hdiutil create build/gideros_2014.10.dmg -srcfolder build/Gideros\ 2014.10
+rm build/gideros_$GVERSION.dmg
+hdiutil create build/gideros_$GVERSION.dmg -srcfolder build/Gideros
 
 cd scripts

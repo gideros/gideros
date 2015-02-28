@@ -33,6 +33,7 @@ export QT_WIN=~/.wine/drive_c/Qt/Qt5.3.2
 export IOS_SDK=8.1
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
+export GVERSION=2015.02
 
 rm -rf build
 mkdir build
