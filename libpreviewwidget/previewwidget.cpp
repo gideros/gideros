@@ -74,7 +74,13 @@ public:
 		}
 		else
 #endif
-			image_.load(fileName);
+
+		image_.load(fileName);
+
+		if (image_.width() > 0 && image_.height() > 0)
+		{
+			info_ = QString("%1x%2").arg(QString::number(image_.width()), QString::number(image_.height()));
+		}
 	}
 
 protected:
@@ -84,10 +90,17 @@ protected:
 		painter.setBackground(brush_);
 		painter.eraseRect(0, 0, width(), height());
 
-		int x = (width() - image_.width()) / 2;
-		int y = (height() - image_.height()) / 2;
+		if (image_.width() > width() || image_.height() > height())
+		{
+			QImage fitted = image_.scaled(QSize(width(),height()),Qt::KeepAspectRatio);
+			QPoint center((width() - fitted.width()) / 2, (height() - fitted.height()) / 2);
+			painter.drawImage(center, fitted);
 
-		painter.drawImage(QPoint(x, y), image_);
+		} else
+		{
+			QPoint center((width() - image_.width()) / 2, (height() - image_.height()) / 2);
+			painter.drawImage(center, image_);
+		}
 
 		painter.setFont(QFont("arial", 16, QFont::Bold));
 
@@ -96,11 +109,23 @@ protected:
 
 		painter.setPen(QPen(Qt::black));
 		painter.drawText(7-2, 22-2, title_);
+
+		if (height() > 40)
+		{
+			painter.setFont(QFont("arial", 10, QFont::Bold));
+
+			painter.setPen(QPen(Qt::lightGray));
+			painter.drawText(7, height()-5, info_);
+
+			painter.setPen(QPen(Qt::black));
+			painter.drawText(7-1, height()-5-1, info_);
+		}
 	}
 
 private:
 	QImage image_;
 	QString title_;
+	QString info_;
 	static QBrush brush_;
 	static bool isBrushSet_;
 };
@@ -150,7 +175,7 @@ void PreviewWidget::setFileName(const QString& fileName, const QString& title)
 		ext == "pvr")
 		widget_ = new ImageWidget(fileName, title, this);
 	else
-		widget_ = new ImageWidget(QString(), QString(), this);
+		widget_ = new ImageWidget(QString(), title, this);
 
 	widget_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	layout()->addWidget(widget_);
