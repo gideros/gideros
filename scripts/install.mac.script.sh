@@ -29,9 +29,9 @@ mkdir build
 
 cd scripts
 echo 'Building iOS libraries...'
-bash cleanioslibs.sh
-bash buildioslibs.sh
-bash buildiosplugins.sh
+bash cleanioslibs.sh &> /dev/null
+bash buildioslibs.sh &> /dev/null
+bash buildiosplugins.sh &> /dev/null
 
 echo 'Building Android libraries...'
 bash makejar.sh
