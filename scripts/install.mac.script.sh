@@ -11,7 +11,7 @@ brew install android-ndk
 echo 'Finished installing dependencies'
 expect -c '
 set timeout -1   ;
-android update sdk -u -a -t tool,platform-tool,3,android-21;
+spawn android update sdk -u -a -t tool,platform-tool,3,android-21;
 expect { 
     "Do you accept the license" { exp_send "y\r" ; exp_continue }
     eof
