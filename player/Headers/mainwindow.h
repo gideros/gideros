@@ -32,6 +32,7 @@ class MainWindow : public QMainWindow{
         bool alwaysOnTop();
         Orientation orientation();
         int scale();
+		float deviceScale();
         bool drawInfos();
         bool fullScreen();
         bool hideMenu();

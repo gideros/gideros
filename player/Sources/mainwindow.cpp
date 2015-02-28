@@ -87,6 +87,11 @@ void MainWindow::setupUiActions(){
     connect(ui.glCanvas, SIGNAL(projectNameChanged(const QString&)), this, SLOT(projectNameChanged(const QString&)));
 }
 
+float MainWindow::deviceScale()
+{
+    return (float)((float)scale() * (float)devicePixelRatio());
+}
+
 void MainWindow::setupUiProperties(){
     ui.action320x480->setProperty("width",  320);
     ui.action320x480->setProperty("height", 480);
@@ -513,7 +518,7 @@ void MainWindow::updateResolution(){
             setHeight(height() + ui.menuBar->height());
     }
 
-    float scaleProperty = (float)100 / (float)((float)scale() * (float)devicePixelRatio());
+    float scaleProperty = deviceScale();
 
     ui.glCanvas->setScale(scaleProperty);
 

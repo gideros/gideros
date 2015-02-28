@@ -129,6 +129,14 @@ void GLCanvas::setupProperties(){
     g_server = server_;
 
     running_ = false;
+	orientation_ = ePortrait;
+
+	width_ = 320;
+	height_ = 480;
+	scale_ = 1;
+	deviceScale_ = devicePixelRatio();
+
+	fps_ = 10000;
     clock_ = iclock();
 
     setHardwareOrientation(ePortrait);
@@ -493,15 +501,15 @@ void GLCanvas::timerEvent(QTimerEvent *){
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event){
-    ginputp_mouseDown(event->x() * scale_, event->y() * scale_, 0);
+    ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, 0);
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event){
-    ginputp_mouseMove(event->x() * scale_, event->y() * scale_);
+    ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_);
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event){
-    ginputp_mouseUp(event->x() * scale_, event->y() * scale_, 0);
+    ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, 0);
 }
 
 void GLCanvas::keyPressEvent(QKeyEvent* event){
@@ -841,6 +849,7 @@ void GLCanvas::play(QDir directory){
 // setters
 void GLCanvas::setScale(float scale){
     scale_ = scale;
+	deviceScale_ = scale * devicePixelRatio();
 
     if (application_->isInitialized())
         application_->setScale(scale_);

@@ -57,6 +57,7 @@ private:
     bool running_;
     std::map<std::string, std::vector<unsigned char> > md5_;
     float scale_;
+	float deviceScale_;
     bool drawInfos_;
     float canvasColor_[3];
     float infoColor_[3];
