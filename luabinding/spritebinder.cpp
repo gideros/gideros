@@ -22,14 +22,22 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"removeFromParent", SpriteBinder::removeFromParent},
 		{"getX", SpriteBinder::getX},
 		{"getY", SpriteBinder::getY},
+		{"getZ", SpriteBinder::getZ},
 		{"getRotation", SpriteBinder::getRotation},
+		{"getRotationX", SpriteBinder::getRotationX},
+		{"getRotationY", SpriteBinder::getRotationY},
 		{"getScaleX", SpriteBinder::getScaleX},
 		{"getScaleY", SpriteBinder::getScaleY},
+		{"getScaleZ", SpriteBinder::getScaleZ},
 		{"setX", SpriteBinder::setX},
 		{"setY", SpriteBinder::setY},
+		{"setZ", SpriteBinder::setZ},
 		{"setRotation", SpriteBinder::setRotation},
+		{"setRotationX", SpriteBinder::setRotationX},
+		{"setRotationY", SpriteBinder::setRotationY},
 		{"setScaleX", SpriteBinder::setScaleX},
 		{"setScaleY", SpriteBinder::setScaleY},
+		{"setScaleZ", SpriteBinder::setScaleZ},
 		{"setPosition", SpriteBinder::setPosition},
 		{"getPosition", SpriteBinder::getPosition},
 		{"setScale", SpriteBinder::setScale},
@@ -43,8 +51,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"hitTestPoint", SpriteBinder::hitTestPoint},
 		{"getWidth", SpriteBinder::getWidth},
 		{"getHeight", SpriteBinder::getHeight},
-		{"getMatrix", SpriteBinder::getMatrix},
-		{"setMatrix", SpriteBinder::setMatrix},
+//		{"getMatrix", SpriteBinder::getMatrix}, XXX
+//		{"setMatrix", SpriteBinder::setMatrix},
 		{"getAlpha", SpriteBinder::getAlpha},
 		{"setAlpha", SpriteBinder::setAlpha},
 		{"getBounds", SpriteBinder::getBounds},
@@ -355,6 +363,18 @@ int SpriteBinder::getY(lua_State* L)
 	return 1;
 }
 
+int SpriteBinder::getZ(lua_State* L)
+{
+	StackChecker checker(L, "getZ", 1);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+	lua_pushnumber(L, sprite->z());
+
+	return 1;
+}
+
 int SpriteBinder::getRotation(lua_State* L)
 {
 	StackChecker checker(L, "getRotation", 1);
@@ -363,6 +383,30 @@ int SpriteBinder::getRotation(lua_State* L)
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
 	lua_pushnumber(L, sprite->rotation());
+
+	return 1;
+}
+
+int SpriteBinder::getRotationX(lua_State* L)
+{
+	StackChecker checker(L, "getRotationX", 1);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+	lua_pushnumber(L, sprite->rotationX());
+
+	return 1;
+}
+
+int SpriteBinder::getRotationY(lua_State* L)
+{
+	StackChecker checker(L, "getRotationY", 1);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+	lua_pushnumber(L, sprite->rotationY());
 
 	return 1;
 }
@@ -387,6 +431,18 @@ int SpriteBinder::getScaleY(lua_State* L)
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
 	lua_pushnumber(L, sprite->scaleY());
+
+	return 1;
+}
+
+int SpriteBinder::getScaleZ(lua_State* L)
+{
+	StackChecker checker(L, "getScaleZ", 1);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+	lua_pushnumber(L, sprite->scaleZ());
 
 	return 1;
 }
@@ -417,6 +473,19 @@ int SpriteBinder::setY(lua_State* L)
 	return 0;
 }
 
+int SpriteBinder::setZ(lua_State* L)
+{
+	StackChecker checker(L, "setZ");
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+	double z = luaL_checknumber(L, 2);
+	sprite->setZ(z);
+
+	return 0;
+}
+
 int SpriteBinder::setRotation(lua_State* L)
 {
 	StackChecker checker(L, "setRotation");
@@ -426,6 +495,32 @@ int SpriteBinder::setRotation(lua_State* L)
 
 	double rotation = luaL_checknumber(L, 2);
 	sprite->setRotation(rotation);
+
+	return 0;
+}
+
+int SpriteBinder::setRotationX(lua_State* L)
+{
+	StackChecker checker(L, "setRotationX");
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+	double rotation = luaL_checknumber(L, 2);
+	sprite->setRotationX(rotation);
+
+	return 0;
+}
+
+int SpriteBinder::setRotationY(lua_State* L)
+{
+	StackChecker checker(L, "setRotationY");
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+	double rotation = luaL_checknumber(L, 2);
+	sprite->setRotationY(rotation);
 
 	return 0;
 }
@@ -456,6 +551,19 @@ int SpriteBinder::setScaleY(lua_State* L)
 	return 0;
 }
 
+int SpriteBinder::setScaleZ(lua_State* L)
+{
+	StackChecker checker(L, "setScaleZ");
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+	double scaleZ = luaL_checknumber(L, 2);
+	sprite->setScaleZ(scaleZ);
+
+	return 0;
+}
+
 int SpriteBinder::setPosition(lua_State* L)
 {
 	StackChecker checker(L, "SpriteBinder::setPosition", 0);
@@ -465,7 +573,13 @@ int SpriteBinder::setPosition(lua_State* L)
 
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = luaL_checknumber(L, 3);
-	sprite->setXY(x, y);
+	if (lua_isnoneornil(L, 4))
+		sprite->setXY(x, y);
+	else
+	{
+		lua_Number z = luaL_checknumber(L, 4);
+		sprite->setXYZ(x, y, z);
+	}
 
 	return 0;
 }
@@ -479,8 +593,9 @@ int SpriteBinder::getPosition(lua_State* L)
 
 	lua_pushnumber(L, sprite->x());
 	lua_pushnumber(L, sprite->y());
+	lua_pushnumber(L, sprite->z());
 
-	return 2;
+	return 3;
 }
 
 
@@ -493,7 +608,8 @@ int SpriteBinder::setScale(lua_State* L)
 
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = lua_isnoneornil(L, 3) ? x : luaL_checknumber(L, 3);
-	sprite->setScaleXY(x, y);
+	lua_Number z = lua_isnoneornil(L, 4) ? x : luaL_checknumber(L, 4);
+	sprite->setScaleXYZ(x, y, z);
 
 	return 0;
 }
@@ -507,8 +623,9 @@ int SpriteBinder::getScale(lua_State* L)
 
 	lua_pushnumber(L, sprite->scaleX());
 	lua_pushnumber(L, sprite->scaleY());
+	lua_pushnumber(L, sprite->scaleZ());
 
-	return 2;
+	return 3;
 }
 
 
@@ -799,7 +916,7 @@ int SpriteBinder::getHeight(lua_State* L)
 	return 1;
 }
 
-
+/*
 int SpriteBinder::getMatrix(lua_State* L)
 {
 	StackChecker checker(L, "SpriteBinder::getMatrix", 1);
@@ -833,7 +950,7 @@ int SpriteBinder::setMatrix(lua_State* L)
 
 	return 0;
 }
-
+*/
 int SpriteBinder::getAlpha(lua_State* L)
 {
 	StackChecker checker(L, "getAlpha", 1);

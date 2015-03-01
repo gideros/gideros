@@ -1,36 +1,58 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include "matrix.h"
+#include "Matrices.h"
 
 class Transform
 {
 public:
 	Transform()
 	{
-		decompose();
-		isDirty_ = true;
+		scaleX_=1;
+		scaleY_=1;
+		scaleZ_=1;
+		tx_=0;
+		ty_=0;
+		tz_=0;
+		rotationX_=0;
+		rotationY_=0;
+		rotationZ_=0;
 	}
 
-	void setRotation(float r)
+	void setRotationZ(float r)
 	{
-		rotation_ = r;
+		rotationZ_ = r;
 		compose();
-		isDirty_ = true;
+	}
+
+	void setRotationY(float r)
+	{
+		rotationY_ = r;
+		compose();
+	}
+
+	void setRotationX(float r)
+	{
+		rotationX_ = r;
+		compose();
 	}
 
 	void setScaleX(float sx)
 	{
 		scaleX_ = sx;
 		compose();
-		isDirty_ = true;
 	}
 
 	void setScaleY(float sy)
 	{
 		scaleY_ = sy;
 		compose();
-		isDirty_ = true;
+	}
+
+	void setScaleZ(float sz)
+	{
+		scaleZ_ = sz;
+		compose();
 	}
 
 	void setScaleXY(float sx, float sy)
@@ -38,31 +60,62 @@ public:
 		scaleX_ = sx;
 		scaleY_ = sy;
 		compose();
-		isDirty_ = true;
+	}
+
+	void setScaleXYZ(float sx, float sy,float sz)
+	{
+		scaleX_ = sx;
+		scaleY_ = sy;
+		scaleZ_ = sz;
+		compose();
 	}
 
 	void setX(float x)
 	{
-		matrix_.setTx(x);
-		isDirty_ = true;
+		tx_=x;
+		compose();
 	}
 
 	void setY(float y)
 	{
-		matrix_.setTy(y);
-		isDirty_ = true;
+		ty_=y;
+		compose();
+	}
+
+	void setZ(float z)
+	{
+		tz_=z;
+		compose();
 	}
 
 	void setXY(float x, float y)
 	{
-		matrix_.setTx(x);
-		matrix_.setTy(y);
-		isDirty_ = true;
+		tx_=x;
+		ty_=y;
+		compose();
 	}
 
-	float rotation() const
+	void setXYZ(float x, float y, float z)
 	{
-		return rotation_;
+		tx_=x;
+		ty_=y;
+		tz_=z;
+		compose();
+	}
+
+	float rotationX() const
+	{
+		return rotationX_;
+	}
+
+	float rotationY() const
+	{
+		return rotationY_;
+	}
+
+	float rotationZ() const
+	{
+		return rotationZ_;
 	}
 
 	float scaleX() const
@@ -75,57 +128,43 @@ public:
 		return scaleY_;
 	}
 
+	float scaleZ() const
+	{
+		return scaleZ_;
+	}
+
 	float x() const
 	{
-		return matrix_.tx();
+		return tx_;
 	}
 
 	float y() const
 	{
-		return matrix_.ty();
+		return ty_;
 	}
 
-    void setMatrix(float m11, float m12, float m21, float m22, float tx, float ty)
+	float z() const
 	{
-        matrix_.set(m11, m12, m21, m22, tx, ty);
-		decompose();
-		isDirty_ = true;
+		return tz_;
 	}
 
-	void setMatrix(const Matrix& matrix)
-	{
-		matrix_ = matrix;
-		decompose();
-		isDirty_ = true;
-	}
-
-	const Matrix& matrix() const
+	const Matrix4& matrix() const
 	{
 		return matrix_;
 	}
-
-	bool isDirty() const
-	{
-		return isDirty_;
-	}
-
-	void setClean() const
-	{
-		isDirty_ = false;
-	}
-
 private:
-	Matrix matrix_;
+	Matrix4 matrix_;
 
-	float rotation_;
+	float rotationX_;
+	float rotationY_;
+	float rotationZ_;
 	float scaleX_;
 	float scaleY_;
-	float vx_, vy_;
-
-	void decompose();
-	void compose();
-
+	float scaleZ_;
+	float tx_,ty_,tz_;
 	mutable bool isDirty_;
+	void compose();
+	void decompose();
 };
 
 

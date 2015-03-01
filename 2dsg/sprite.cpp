@@ -785,7 +785,7 @@ float Sprite::alpha() const
 	return alpha_;
 }
 
-void Sprite::boundsHelper(const Matrix& transform, float* minx, float* miny, float* maxx, float* maxy) const
+void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy) const
 {
     {
         this->worldTransform_ = transform;
@@ -1042,8 +1042,17 @@ void Sprite::set(int param, float value, GStatus* status)
 	case eStringIdY:
 		setY(value);
 		break;
+	case eStringIdZ:
+		setZ(value);
+		break;
 	case eStringIdRotation:
 		setRotation(value);
+		break;
+	case eStringIdRotationX:
+		setRotationX(value);
+		break;
+	case eStringIdRotationY:
+		setRotationY(value);
 		break;
 	case eStringIdScale:
 		setScale(value);
@@ -1053,6 +1062,9 @@ void Sprite::set(int param, float value, GStatus* status)
 		break;
 	case eStringIdScaleY:
 		setScaleY(value);
+		break;
+	case eStringIdScaleZ:
+		setScaleZ(value);
 		break;
 	case eStringIdAlpha:
 		setAlpha(value);
@@ -1084,12 +1096,20 @@ float Sprite::get(int param, GStatus* status)
 		return x();
 	case eStringIdY:
 		return y();
+	case eStringIdZ:
+		return z();
 	case eStringIdRotation:
 		return rotation();
+	case eStringIdRotationX:
+		return rotationX();
+	case eStringIdRotationY:
+		return rotationY();
 	case eStringIdScaleX:
 		return scaleX();
 	case eStringIdScaleY:
 		return scaleY();
+	case eStringIdScaleZ:
+		return scaleZ();
 	case eStringIdAlpha:
 		return alpha();
     case eStringIdRedMultiplier:
