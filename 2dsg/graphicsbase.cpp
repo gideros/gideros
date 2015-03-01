@@ -30,28 +30,26 @@ void GraphicsBase::draw()
 
         oglBindTexture(GL_TEXTURE_2D, data->id());
 
-		oglEnableClientState(GL_VERTEX_ARRAY);
-		oglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-		glVertexPointer(2, GL_FLOAT, 0, &vertices[0]);
-		glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
+		oglEnableClientState(VertexArray);
+		oglEnableClientState(TextureArray);
+		oglArrayPointer(VertexArray,2,GL_FLOAT,&vertices[0]);
+		oglArrayPointer(TextureArray,2,GL_FLOAT,&texcoords[0]);
 
 		oglDrawElements(mode, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
 
-		oglDisableClientState(GL_VERTEX_ARRAY);
-		oglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		oglDisableClientState(VertexArray);
+		oglDisableClientState(TextureArray);
 	}
 	else
 	{
 		oglDisable(GL_TEXTURE_2D);
 
-		oglEnableClientState(GL_VERTEX_ARRAY);
-
-		glVertexPointer(2, GL_FLOAT, 0, &vertices[0]);
+		oglEnableClientState(VertexArray);
+		oglArrayPointer(VertexArray,2,GL_FLOAT,&vertices[0]);
 
 		oglDrawElements(mode, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
 
-		oglDisableClientState(GL_VERTEX_ARRAY);
+		oglDisableClientState(VertexArray);
 	}
 
 	if (isWhite_ == false)

@@ -70,12 +70,7 @@ void GRenderTarget::draw(const Sprite *sprite)
 
     glViewport(0, 0, data->width, data->height);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrthof(0, data->baseWidth, 0, data->baseHeight, -1, 1);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    //glOrthof(0, data->baseWidth, 0, data->baseHeight, -1, 1);
 
     CurrentTransform currentTransform;
     ((Sprite*)sprite)->draw(currentTransform, 0, 0, data->width, data->height);

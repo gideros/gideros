@@ -344,16 +344,16 @@ void TileMap::doDraw(const CurrentTransform& transform, float hsx, float hsy, fl
 
     oglBindTexture(GL_TEXTURE_2D, texture_->data->id());
 
-	glVertexPointer(2, GL_FLOAT, 0, &vertices[0]);
-	oglEnableClientState(GL_VERTEX_ARRAY);
+	oglArrayPointer(VertexArray,2, GL_FLOAT, &vertices[0]);
+	oglEnableClientState(VertexArray);
 
-	glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
-	oglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	oglArrayPointer(TextureArray,2, GL_FLOAT, &texcoords[0]);
+	oglEnableClientState(TextureArray);
 
 	oglDrawArrays(GL_TRIANGLES, 0, tileCount * 6);
 
-	oglDisableClientState(GL_VERTEX_ARRAY);
-	oglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	oglDisableClientState(VertexArray);
+	oglDisableClientState(TextureArray);
 }
 
 

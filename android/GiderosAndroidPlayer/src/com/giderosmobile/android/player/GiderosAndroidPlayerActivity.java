@@ -206,6 +206,7 @@ class GiderosGLSurfaceView extends GLSurfaceView
 	public GiderosGLSurfaceView(Context context)
 	{
 		super(context);
+		setEGLContextClientVersion(2);
 		mRenderer = new GiderosRenderer();
 		setRenderer(mRenderer);
 		if (android.os.Build.VERSION.SDK_INT >= 11)

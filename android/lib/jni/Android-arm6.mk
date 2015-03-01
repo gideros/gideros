@@ -241,6 +241,7 @@ LOCAL_SRC_FILES += \
 	../../../2dsg/ftlibrarysingleton.cpp \
 	../../../2dsg/grendertarget.cpp \
 	../../../2dsg/completeevent.cpp \
+	../../../2dsg/Matrices.cpp \
 	../../../libgideros/luautil.cpp
 	
 # LOCAL_SRC_FILES += ../../../2dsg/clipper.cpp

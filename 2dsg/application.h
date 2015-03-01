@@ -183,4 +183,5 @@ private:
     std::vector<std::vector<GReferenced*>*> unrefPoolTrash_;
 };
 
+
 #endif

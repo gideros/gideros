@@ -145,10 +145,10 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 
 	oglDisable(GL_TEXTURE_2D);
 
-	oglEnableClientState(GL_VERTEX_ARRAY);
+	oglEnableClientState(VertexArray);
 
 	float v[8];
-	glVertexPointer(2, GL_FLOAT, 0, v);
+	oglArrayPointer(VertexArray,2, GL_FLOAT, v);
 
 	int len = strlen(ip);
 	for (int i = 0; i < len; ++i)
@@ -204,7 +204,7 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 		xx = xx + width + 1;
 	}
 
-	oglDisableClientState(GL_VERTEX_ARRAY);
+	oglDisableClientState(VertexArray);
 
 	glPopColor();
 }

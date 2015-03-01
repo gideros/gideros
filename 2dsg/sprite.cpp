@@ -1,5 +1,5 @@
 #include "sprite.h"
-#include "glcommon.h"
+#include "ogl.h"
 #include <algorithm>
 #include <cassert>
 #include <stack>
@@ -194,7 +194,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy, float e
 			continue;
 		}
 
-        glLoadMatrixf(sprite->worldTransform_.data());
+        oglLoadMatrixf(sprite->worldTransform_);
 
 		if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1)
 		{

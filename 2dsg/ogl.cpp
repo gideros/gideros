@@ -16,47 +16,57 @@ static bool s_COLOR_ARRAY_enabled = false;
 
 static int s_clientStateCount = 0;
 
-void oglReset()
+GLuint shaderProgram=0;
+GLuint xformVShader=0;
+GLuint colorFShader=0;
+GLuint vertexVS=0;
+GLuint textureVS=0;
+GLuint colorVS=0;
+GLuint colorFS=0;
+
+/* Vertex shader*/
+const char *xformVShaderCode="\
+attribute vec4 vVertex;\
+attribute vec4 vColor;\
+attribute vec2 vTexCoord;\
+varying vec2 fTexCoord;\
+\
+void main() {\
+  gl_position = vVertex;\
+  fTexCoord=vTexCoord;\
+}";
+
+/* Fragment shader*/
+const char *colorFShaderCode="\
+precision mediump float;\
+uniform vec4 fColor;\
+void main() {\
+ gl_FragColor = fColor;\
+}";
+
+GLuint oglLoadShader(GLuint type,const char *code)
 {
-	s_texture = 0;
-	s_Texture2DEnabled = false;
+	return 0; //TODO
+}
 
-	glDisable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
+void oglSetupShaders()
+{
+	xformVShader=oglLoadShader(GL_VERTEX_SHADER,xformVShaderCode);
+	colorFShader=oglLoadShader(GL_FRAGMENT_SHADER,colorFShaderCode);
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, xformVShader);
+    glAttachShader(shaderProgram, colorFShader);
+    glLinkProgram(shaderProgram);
 
-	s_VERTEX_ARRAY_enabled = false;
-	s_TEXTURE_COORD_ARRAY_enabled = false;
-    s_COLOR_ARRAY_enabled = false;
-	s_VERTEX_ARRAY = 0;
-	s_TEXTURE_COORD_ARRAY = 0;
-    s_COLOR_ARRAY = 0;
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+	vertexVS=glGetAttribLocation(shaderProgram, "vPosition");
+	textureVS=glGetAttribLocation(shaderProgram, "vTexture");
+	colorVS=glGetAttribLocation(shaderProgram, "vColor");
+    colorFS=glGetUniformLocation(shaderProgram, "fColor");
+}
 
-	resetBindTextureCount();
-	resetClientStateCount();
-	resetTexture2DStateCount();
-
-    glEnable(GL_BLEND);
-
-#ifndef PREMULTIPLIED_ALPHA
-#error PREMULTIPLIED_ALPHA is not defined
-#endif
-
-#if PREMULTIPLIED_ALPHA
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-#else
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#endif
-
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	/* sanity set */
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+void oglLoadMatrixf(const Matrix4 m)
+{
+ //TODO
 }
 
 void oglEnable(GLenum cap)
@@ -131,19 +141,24 @@ int getBindTextureCount()
 	return s_BindTextureCount;
 }
 
-void oglEnableClientState(GLenum array)
+void oglColor4f(float r,float g,float b,float a)
+{
+	glUniform4f(colorFS,r,g,b,a);
+}
+
+void oglEnableClientState(enum OGLClientState array)
 {
 	switch (array)
 	{
-		case GL_VERTEX_ARRAY:
+		case VertexArray:
 			assert(s_VERTEX_ARRAY == 0);
 			s_VERTEX_ARRAY++;
 			break;
-		case GL_TEXTURE_COORD_ARRAY:
+		case TextureArray:
 			assert(s_TEXTURE_COORD_ARRAY == 0);
 			s_TEXTURE_COORD_ARRAY++;
 			break;
-        case GL_COLOR_ARRAY:
+        case ColorArray:
             assert(s_COLOR_ARRAY == 0);
             s_COLOR_ARRAY++;
             break;
@@ -153,19 +168,38 @@ void oglEnableClientState(GLenum array)
 	}
 }
 
-void oglDisableClientState(GLenum array)
+void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr)
 {
 	switch (array)
 	{
-		case GL_VERTEX_ARRAY:
+		case VertexArray:
+			glVertexAttribPointer(vertexVS, mult,type, false,0, ptr);
+			break;
+		case TextureArray:
+			glVertexAttribPointer(textureVS, mult,type, false,0, ptr);
+			break;
+        case ColorArray:
+			glVertexAttribPointer(colorVS, mult,type, false,0, ptr);
+            break;
+		default:
+			assert(1);
+			break;
+	}
+}
+
+void oglDisableClientState(enum OGLClientState array)
+{
+	switch (array)
+	{
+		case VertexArray:
 			assert(s_VERTEX_ARRAY == 1);
 			s_VERTEX_ARRAY--;
 			break;
-		case GL_TEXTURE_COORD_ARRAY:
+		case TextureArray:
 			assert(s_TEXTURE_COORD_ARRAY == 1);
 			s_TEXTURE_COORD_ARRAY--;
 			break;
-        case GL_COLOR_ARRAY:
+        case ColorArray:
             assert(s_COLOR_ARRAY == 1);
             s_COLOR_ARRAY--;
             break;
@@ -175,7 +209,7 @@ void oglDisableClientState(GLenum array)
 	}
 }
 
-void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
+void oglSetupArrays()
 {
 	if (s_VERTEX_ARRAY)
 	{
@@ -183,7 +217,7 @@ void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
 		{
 			s_VERTEX_ARRAY_enabled = true;
 			s_clientStateCount++;
-			glEnableClientState(GL_VERTEX_ARRAY);
+		    glEnableVertexAttribArray(vertexVS);
 		}
 	}
 	else
@@ -192,7 +226,7 @@ void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
 		{
 			s_VERTEX_ARRAY_enabled = false;
 			s_clientStateCount++;
-			glDisableClientState(GL_VERTEX_ARRAY);
+		    glDisableVertexAttribArray(vertexVS);
 		}
 	}
 
@@ -202,7 +236,7 @@ void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
 		{
 			s_TEXTURE_COORD_ARRAY_enabled = true;
 			s_clientStateCount++;
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		    glEnableVertexAttribArray(textureVS);
 		}
 	}
 	else
@@ -211,7 +245,7 @@ void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
 		{
 			s_TEXTURE_COORD_ARRAY_enabled = false;
 			s_clientStateCount++;
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		    glDisableVertexAttribArray(textureVS);
 		}
 	}
 
@@ -221,7 +255,7 @@ void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
         {
             s_COLOR_ARRAY_enabled = true;
             s_clientStateCount++;
-            glEnableClientState(GL_COLOR_ARRAY);
+		    glEnableVertexAttribArray(colorVS);
         }
     }
     else
@@ -230,10 +264,14 @@ void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
         {
             s_COLOR_ARRAY_enabled = false;
             s_clientStateCount++;
-            glDisableClientState(GL_COLOR_ARRAY);
+		    glDisableVertexAttribArray(colorVS);
         }
     }
+}
 
+void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
+{
+	oglSetupArrays();
 	glDrawArrays(mode, first, count);
 }
 
@@ -241,63 +279,7 @@ void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
 
 void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices)
 {
-	if (s_VERTEX_ARRAY)
-	{
-		if (s_VERTEX_ARRAY_enabled == false)
-		{
-			s_VERTEX_ARRAY_enabled = true;
-			s_clientStateCount++;
-			glEnableClientState(GL_VERTEX_ARRAY);
-		}
-	}
-	else
-	{
-		if (s_VERTEX_ARRAY_enabled == true)
-		{
-			s_VERTEX_ARRAY_enabled = false;
-			s_clientStateCount++;
-			glDisableClientState(GL_VERTEX_ARRAY);
-		}
-	}
-
-	if (s_TEXTURE_COORD_ARRAY)
-	{
-		if (s_TEXTURE_COORD_ARRAY_enabled == false)
-		{
-			s_TEXTURE_COORD_ARRAY_enabled = true;
-			s_clientStateCount++;
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
-	}
-	else
-	{
-		if (s_TEXTURE_COORD_ARRAY_enabled == true)
-		{
-			s_TEXTURE_COORD_ARRAY_enabled = false;
-			s_clientStateCount++;
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
-	}
-
-    if (s_COLOR_ARRAY)
-    {
-        if (s_COLOR_ARRAY_enabled == false)
-        {
-            s_COLOR_ARRAY_enabled = true;
-            s_clientStateCount++;
-            glEnableClientState(GL_COLOR_ARRAY);
-        }
-    }
-    else
-    {
-        if (s_COLOR_ARRAY_enabled == true)
-        {
-            s_COLOR_ARRAY_enabled = false;
-            s_clientStateCount++;
-            glDisableClientState(GL_COLOR_ARRAY);
-        }
-    }
-
+	oglSetupArrays();
 	glDrawElements(mode, count, type, indices);
 }
 
@@ -320,4 +302,39 @@ void resetClientStateCount()
 int getClientStateCount()
 {
 	return s_clientStateCount;
+}
+
+void oglReset()
+{
+	s_texture = 0;
+	s_Texture2DEnabled = false;
+
+	glDisable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	s_VERTEX_ARRAY_enabled = false;
+	s_TEXTURE_COORD_ARRAY_enabled = false;
+    s_COLOR_ARRAY_enabled = false;
+	s_VERTEX_ARRAY = 0;
+	s_TEXTURE_COORD_ARRAY = 0;
+    s_COLOR_ARRAY = 0;
+    oglSetupArrays();
+
+	resetBindTextureCount();
+	resetClientStateCount();
+	resetTexture2DStateCount();
+
+    glEnable(GL_BLEND);
+
+#ifndef PREMULTIPLIED_ALPHA
+#error PREMULTIPLIED_ALPHA is not defined
+#endif
+
+#if PREMULTIPLIED_ALPHA
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+#else
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
+
+    //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	/* sanity set */ XXX
 }

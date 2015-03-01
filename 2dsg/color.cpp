@@ -1,6 +1,6 @@
 #include "color.h"
 #include <stack>
-#include "glcommon.h"
+#include "ogl.h"
 
 struct Color
 {
@@ -20,9 +20,9 @@ static inline void setColor(float r, float g, float b, float a)
 #endif
 
 #if PREMULTIPLIED_ALPHA
-    glColor4f(r * a, g * a, b * a, a);
+	oglColor4f(r * a, g * a, b * a, a);
 #else
-    glColor4f(r, g, b, a);
+    oglColor4f(r, g, b, a);
 #endif
 }
 

@@ -269,8 +269,8 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
     else
         oglDisable(GL_TEXTURE_2D);
 
-    glVertexPointer(mesh3d_?3:2, GL_FLOAT, 0, &vertices_[0]);
-    oglEnableClientState(GL_VERTEX_ARRAY);
+    oglArrayPointer(VertexArray,mesh3d_?3:2, GL_FLOAT,&vertices_[0]);
+    oglEnableClientState(VertexArray);
 
     if (!colors_.empty())
     {
@@ -302,14 +302,14 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
             }
         }
 
-        glColorPointer(4, GL_UNSIGNED_BYTE, 0, &colors_[0]);
-        oglEnableClientState(GL_COLOR_ARRAY);
+        oglArrayPointer(ColorArray,4, GL_UNSIGNED_BYTE, &colors_[0]);
+        oglEnableClientState(ColorArray);
     }
 
     if (texture_ && !textureCoordinates_.empty())
     {
-        glTexCoordPointer(2, GL_FLOAT, 0, &textureCoordinates_[0]);
-        oglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        oglArrayPointer(TextureArray,2, GL_FLOAT, &textureCoordinates_[0]);
+        oglEnableClientState(TextureArray);
     }
     
     glEnable(GL_DEPTH_TEST);
@@ -318,16 +318,16 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 
     glDisable(GL_DEPTH_TEST);
 
-    oglDisableClientState(GL_VERTEX_ARRAY);
+    oglDisableClientState(VertexArray);
 
     if (!colors_.empty())
     {
-        oglDisableClientState(GL_COLOR_ARRAY);
+        oglDisableClientState(ColorArray);
         glMultColor(1, 1, 1, 1);
     }
 
     if (texture_ && !textureCoordinates_.empty())
-        oglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        oglDisableClientState(TextureArray);
 }
 
 void GMesh::extraBounds(float *minx, float *miny, float *maxx, float *maxy) const
