@@ -42,7 +42,7 @@
     int width = bounds.size.width;
     int height = bounds.size.height;
     
-    if(![self isNotRotatedBySystem]){
+    if(![self isNotRotatedBySystem] && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)){
         height = bounds.size.width;
         width = bounds.size.height;
     }
