@@ -161,6 +161,7 @@ void Application::renderScene(int deltaFrameCount)
 	{
 		double time = iclock();
 		double dtime = time - time_;
+        if(dtime == 0) dtime = 1;
 		time_ = time;
 
         glog_v("fps: %g %d", nframe_ / dtime, GReferenced::instanceCount);
@@ -172,6 +173,8 @@ void Application::renderScene(int deltaFrameCount)
     oglReset();
 
     gtexture_tick();
+    
+    if(scale_ == 0) scale_ = 1;
 
 	switch (hardwareOrientation_)
 	{
@@ -268,6 +271,8 @@ void Application::renderScene(int deltaFrameCount)
         std::swap(hw, hh);
 
     // hardware start/end x/y
+    if(lsx == 0) lsx = 1;
+    if(lsy == 0) lsy = 0;
     float sx = (0 - ltx) / lsx;
     float sy = (0 - lty) / lsy;
     float ex = (hw - ltx) / lsx;
