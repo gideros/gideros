@@ -47,7 +47,7 @@
         width = bounds.size.height;
     }
     
-    gdr_initialize(self.viewController.glView, width, height, false);
+    gdr_initialize(self.viewController.glView, width, height, true);
 
     if ([[[UIDevice currentDevice] systemVersion] compare:@"6.0" options:NSNumericSearch] != NSOrderedAscending)
     {
