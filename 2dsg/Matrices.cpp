@@ -157,17 +157,25 @@ Matrix4& Matrix4::transpose()
 
 void Matrix4::transformPoint(float x, float y, float* newx, float* newy) const
 {
-	Vector3 src=Vector3(x,y,0);
-	Vector3 dst=*this*src;
+	Vector4 src=Vector4(x,y,0,1);
+	Vector4 dst=*this*src;
 	*newx=dst.x;
 	*newy=dst.y;
 }
 
 void Matrix4::inverseTransformPoint(float x, float y, float* newx, float* newy) const
 {
-	Vector3 src=Vector3(x,y,0);
+	/*
+	printf("Matrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
+			m[0],m[4],m[8],m[12],
+			m[1],m[5],m[8],m[13],
+			m[2],m[6],m[10],m[14],
+			m[3],m[7],m[11],m[15]
+			);
+*/
+	Vector4 src=Vector4(x,y,0,1);
 	Matrix4 inv=inverse();
-	Vector3 dst=inv*src;
+	Vector4 dst=inv*src;
 	*newx=dst.x;
 	*newy=dst.y;
 }

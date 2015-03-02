@@ -427,7 +427,7 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/rendertargetbinder.cpp
 
 
-LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
+LOCAL_LDLIBS := -lGLESv2 -ldl -llog
 
 LOCAL_SHARED_LIBRARIES := gvfs lua
 

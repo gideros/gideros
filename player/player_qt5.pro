@@ -1,4 +1,5 @@
 QT += core gui opengl network
+CONFIG += console
 
 win32{
     RC_FILE = other_files/player.rc

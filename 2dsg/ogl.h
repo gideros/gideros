@@ -18,6 +18,7 @@ void oglEnableClientState(enum OGLClientState array);
 void oglDisableClientState(enum OGLClientState array);
 void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr);
 void oglLoadMatrixf(const Matrix4 m);
+void oglSetProjection(const Matrix4 m);
 void oglEnable(GLenum cap);
 void oglDisable(GLenum cap);
 

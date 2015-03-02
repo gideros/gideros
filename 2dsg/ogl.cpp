@@ -1,5 +1,6 @@
 #include "ogl.h"
 #include <cassert>
+#include <vector>
 
 static GLuint s_texture = 0;
 static int s_BindTextureCount = 0;
@@ -22,35 +23,67 @@ GLuint colorFShader=0;
 GLuint vertexVS=0;
 GLuint textureVS=0;
 GLuint colorVS=0;
+GLuint matrixVS=0;
 GLuint colorFS=0;
+GLuint colorSelFS=0;
+GLuint textureFS=0;
 
 /* Vertex shader*/
-const char *xformVShaderCode="\
-attribute vec4 vVertex;\
-attribute vec4 vColor;\
-attribute vec2 vTexCoord;\
-varying vec2 fTexCoord;\
-\
-void main() {\
-  gl_position = vVertex;\
-  fTexCoord=vTexCoord;\
-}";
+const char *xformVShaderCode=
+"attribute vec2 vTexCoord;\n"
+"attribute vec4 vVertex;\n"
+"attribute vec4 vColor;\n"
+"uniform mat4 vMatrix;\n"
+"varying vec2 fTexCoord;\n"
+"varying vec4 fInColor; "
+"\n"
+"void main() {\n"
+"  gl_Position = vMatrix*vVertex;\n"
+"  fTexCoord=vTexCoord;\n"
+"  fInColor=vColor;\n"
+"}\n";
 
 /* Fragment shader*/
 const char *colorFShaderCode="\
 precision mediump float;\
+uniform float fColorSel;\
 uniform vec4 fColor;\
+uniform sampler2D fTexture;\
+varying mediump vec2 fTexCoord;\
+varying vec4 fInColor;\
 void main() {\
- gl_FragColor = fColor;\
+ vec4 col=mix(fColor,fInColor,fColorSel);\
+ gl_FragColor = texture2D(fTexture, fTexCoord) * col;\
 }";
 
 GLuint oglLoadShader(GLuint type,const char *code)
 {
-	return 0; //TODO
+	GLuint shader = glCreateShader(type);
+    glShaderSource(shader, 1, &code,NULL);
+	glCompileShader(shader);
+
+	GLint isCompiled = 0;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
+	if(isCompiled == GL_FALSE)
+	{
+		GLint maxLength = 0;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+
+		//The maxLength includes the NULL character
+		std::vector<GLchar> infoLog(maxLength);
+		glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+
+		//printf(&infoLog[0]);
+		glDeleteShader(shader);
+		shader=0;
+	}
+	//printf("Loaded shader:%d\n",shader);
+	return shader;
 }
 
 void oglSetupShaders()
 {
+	if (xformVShader||colorFShader) return;
 	xformVShader=oglLoadShader(GL_VERTEX_SHADER,xformVShaderCode);
 	colorFShader=oglLoadShader(GL_FRAGMENT_SHADER,colorFShaderCode);
     shaderProgram = glCreateProgram();
@@ -58,15 +91,40 @@ void oglSetupShaders()
     glAttachShader(shaderProgram, colorFShader);
     glLinkProgram(shaderProgram);
 
-	vertexVS=glGetAttribLocation(shaderProgram, "vPosition");
-	textureVS=glGetAttribLocation(shaderProgram, "vTexture");
+    glUseProgram(shaderProgram);
+
+	vertexVS=glGetAttribLocation(shaderProgram, "vVertex");
+	textureVS=glGetAttribLocation(shaderProgram, "vTexCoord");
 	colorVS=glGetAttribLocation(shaderProgram, "vColor");
+    matrixVS=glGetUniformLocation(shaderProgram, "vMatrix");
+    colorSelFS=glGetUniformLocation(shaderProgram, "fColorSel");
     colorFS=glGetUniformLocation(shaderProgram, "fColor");
+    textureFS=glGetUniformLocation(shaderProgram, "fTexture");
+
+    //printf("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
+    //printf("FIndices: %d,%d\n", colorFS,textureFS);
+
+    glUniform1i(textureFS, 0);
+
+	GLint maxLength = 0;
+	glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
+	std::vector<GLchar> infoLog(maxLength);
+	glGetProgramInfoLog(shaderProgram, maxLength, &maxLength, &infoLog[0]);
+	//printf(&infoLog[0]);
+
 }
 
+Matrix4 oglProjection;
 void oglLoadMatrixf(const Matrix4 m)
 {
- //TODO
+	Matrix4 xform=oglProjection*m; //Maybe the other way ??
+
+	glUniformMatrix4fv(matrixVS, 1, false, xform.data());
+}
+
+void oglSetProjection(const Matrix4 m)
+{
+	oglProjection=m;
 }
 
 void oglEnable(GLenum cap)
@@ -120,6 +178,7 @@ void oglBindTexture(GLenum target, GLuint texture)
 	{
 		s_texture = texture;
 		glBindTexture(target, texture);
+
 		s_BindTextureCount++;
 	}
 }
@@ -143,6 +202,7 @@ int getBindTextureCount()
 
 void oglColor4f(float r,float g,float b,float a)
 {
+	//printf("glColor: %f,%f,%f,%f\n",r,g,b,a);
 	glUniform4f(colorFS,r,g,b,a);
 }
 
@@ -211,6 +271,11 @@ void oglDisableClientState(enum OGLClientState array)
 
 void oglSetupArrays()
 {
+	/*printf("OglArrays: %d:%d,%d:%d,%d:%d\n",
+			s_VERTEX_ARRAY,s_VERTEX_ARRAY_enabled,
+			s_TEXTURE_COORD_ARRAY,s_TEXTURE_COORD_ARRAY_enabled,
+			s_COLOR_ARRAY,s_COLOR_ARRAY_enabled
+	);*/
 	if (s_VERTEX_ARRAY)
 	{
 		if (s_VERTEX_ARRAY_enabled == false)
@@ -256,6 +321,7 @@ void oglSetupArrays()
             s_COLOR_ARRAY_enabled = true;
             s_clientStateCount++;
 		    glEnableVertexAttribArray(colorVS);
+		    glUniform1f(colorSelFS, 1);
         }
     }
     else
@@ -265,6 +331,7 @@ void oglSetupArrays()
             s_COLOR_ARRAY_enabled = false;
             s_clientStateCount++;
 		    glDisableVertexAttribArray(colorVS);
+		    glUniform1f(colorSelFS, 0);
         }
     }
 }
@@ -306,6 +373,8 @@ int getClientStateCount()
 
 void oglReset()
 {
+	oglSetupShaders();
+
 	s_texture = 0;
 	s_Texture2DEnabled = false;
 
@@ -318,11 +387,16 @@ void oglReset()
 	s_VERTEX_ARRAY = 0;
 	s_TEXTURE_COORD_ARRAY = 0;
     s_COLOR_ARRAY = 0;
-    oglSetupArrays();
+    glDisableVertexAttribArray(vertexVS);
+    glDisableVertexAttribArray(textureVS);
+    glDisableVertexAttribArray(colorVS);
 
 	resetBindTextureCount();
 	resetClientStateCount();
 	resetTexture2DStateCount();
+
+	glClearColor(0.5, 0.1, 0.2, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     glEnable(GL_BLEND);
 

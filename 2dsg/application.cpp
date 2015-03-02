@@ -220,63 +220,16 @@ void Application::renderScene(int deltaFrameCount)
 		break;
 	}
 
-	Matrix4 projection;
+	Matrix4 projection,frustum;
 	//glMatrixMode(GL_PROJECTION);
 	//glLoadIdentity();
 
-	switch (hardwareOrientation_)
-	{
-	case ePortrait:
-	case ePortraitUpsideDown:
-		if (fov_>0)
-		{
-			float hw=width_*0.5/scale_;
-			float hh=height_*0.5/scale_;
-			float np=hh/tan(fov_* M_PI / 360.0);
-			projection=setFrustum(-hw, hw, hh, -hh, np,np*100);
-			projection.translate(hw,hh,-np-0.00001);
-		}
-		else
-			projection=setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -1,1);
-		break;
-	case eLandscapeLeft:
-	case eLandscapeRight:
-		if (fov_>0)
-		{
-			float hw=width_*0.5/scale_;
-			float hh=height_*0.5/scale_;
-			float np=hh/tan(fov_* M_PI / 360.0);
-			projection=setFrustum(-hh,hh,hw,-hw,np,np*100);
-			projection.translate(hh,hw,-np-0.00001);
-		}
-		else
-			projection=setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -1,1);
-		break;
-	}
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 	
 
-	switch (hardwareOrientation_)
-	{
-		case ePortrait:
-			break;
-		case ePortraitUpsideDown:
-			projection.translate(-(width_/scale_)/2, -(height_/scale_)/2, 0);
-			projection.rotate(180, 0, 0, 1);
-			projection.translate((width_/scale_)/2, (height_/scale_)/2, 0);
-			break;
-		case eLandscapeLeft:
-			projection.translate(-(width_/scale_)/2, -(width_/scale_)/2, 0);
-			projection.rotate(-90, 0, 0, 1);
-			projection.translate((width_/scale_)/2, (width_/scale_)/2, 0);
-			break;
-		case eLandscapeRight:
-			projection.translate(-(height_/scale_)/2, -(height_/scale_)/2, 0);
-			projection.rotate(-270, 0, 0, 1);
-			projection.translate((height_/scale_)/2, (height_/scale_)/2, 0);
-			break;
-	}
-	
+	projection.scale(logicalScaleX_, logicalScaleY_, 1);
+	projection.translate(logicalTranslateX_, logicalTranslateY_, 0);
+	projection.scale(1.f / scale_, 1.f / scale_, 1.f);
 	switch (orientation_)
 	{
 		case ePortrait:
@@ -297,11 +250,58 @@ void Application::renderScene(int deltaFrameCount)
 			projection.translate((height_/scale_)/2, (height_/scale_)/2, 0);
 			break;
 	}
+	
+	switch (hardwareOrientation_)
+	{
+		case ePortrait:
+			break;
+		case ePortraitUpsideDown:
+			projection.translate(-(width_/scale_)/2, -(height_/scale_)/2, 0);
+			projection.rotate(180, 0, 0, 1);
+			projection.translate((width_/scale_)/2, (height_/scale_)/2, 0);
+			break;
+		case eLandscapeLeft:
+			projection.translate(-(width_/scale_)/2, -(width_/scale_)/2, 0);
+			projection.rotate(-90, 0, 0, 1);
+			projection.translate((width_/scale_)/2, (width_/scale_)/2, 0);
+			break;
+		case eLandscapeRight:
+			projection.translate(-(height_/scale_)/2, -(height_/scale_)/2, 0);
+			projection.rotate(-270, 0, 0, 1);
+			projection.translate((height_/scale_)/2, (height_/scale_)/2, 0);
+			break;
+	}
 
-	projection.scale(1.f / scale_, 1.f / scale_, 1.f);
-
-	projection.translate(logicalTranslateX_, logicalTranslateY_, 0);
-	projection.scale(logicalScaleX_, logicalScaleY_, 1);
+	switch (hardwareOrientation_)
+	{
+	case ePortrait:
+	case ePortraitUpsideDown:
+		if (fov_>0)
+		{
+			float hw=width_*0.5/scale_;
+			float hh=height_*0.5/scale_;
+			float np=hh/tan(fov_* M_PI / 360.0);
+			frustum=setFrustum(-hw, hw, hh, -hh, np,np*100);
+			projection.translate(-hw,-hh,-np-0.001);
+		}
+		else
+			frustum=setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -1,1);
+		break;
+	case eLandscapeLeft:
+	case eLandscapeRight:
+		if (fov_>0)
+		{
+			float hw=width_*0.5/scale_;
+			float hh=height_*0.5/scale_;
+			float np=hh/tan(fov_* M_PI / 360.0);
+			frustum=setFrustum(-hh,hh,hw,-hw,np,np*100);
+			projection.translate(-hh,-hw,-np-0.001);
+		}
+		else
+			frustum=setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -1,1);
+		break;
+	}
+	projection=frustum*projection;
 
     //glMatrixMode(GL_MODELVIEW);
     //glLoadIdentity();
@@ -323,13 +323,15 @@ void Application::renderScene(int deltaFrameCount)
     if (orientation == eLandscapeLeft || orientation == eLandscapeRight)
         std::swap(hw, hh);
 
+	oglSetProjection(projection);
+
     // hardware start/end x/y
     float sx = (0 - ltx) / lsx;
     float sy = (0 - lty) / lsy;
     float ex = (hw - ltx) / lsx;
     float ey = (hh - lty) / lsy;
 
-    glDepthFunc(GL_LEQUAL);
+    //glDepthFunc(GL_LEQUAL);
     glClearDepthf(1);
     glClear(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
     
