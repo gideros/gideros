@@ -24,12 +24,6 @@ make clean
 make clean
 cd ..
 
-cd licensemanager
-make clean
-/Qt/1.2.1/Desktop/Qt/4.8.1/gcc/bin/qmake licensemanager.pro
-make clean
-cd ..
-
 cd gdrdeamon
 make clean
 /Qt/1.2.1/Desktop/Qt/4.8.1/gcc/bin/qmake gdrdeamon.pro

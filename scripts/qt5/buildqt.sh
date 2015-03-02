@@ -20,11 +20,6 @@ $QT/bin/qmake player_qt5.pro
 make
 cd ..
 
-cd licensemanager
-$QT/bin/qmake licensemanager.pro
-make
-cd ..
-
 cd gdrdeamon
 $QT/bin/qmake gdrdeamon.pro
 make

@@ -3,7 +3,7 @@ sudo chown -R $(whoami) /usr/local
 brew update
 brew install jpeg --universal
 brew link --overwrite jpeg
-brew install libpng --universal
+brew install http://giderosmobile.com/libpng.rb --universal
 brew link --overwrite libpng
 brew install freetype --universal
 brew install glew

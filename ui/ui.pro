@@ -39,8 +39,7 @@ INCLUDEPATH +=	\
     "../libpvrt" \
     "../libgid/include" \
     "../libgfile" \
-    "../libgideros" \
-    "../liblicensemanager"
+    "../libgideros"
 
 SOURCES += \
     main.cpp\
@@ -72,17 +71,12 @@ SOURCES += \
     projectproperties.cpp \
     mdiarea.cpp \
     mdisubwindow.cpp \
-    dependencygraph.cpp \
-    countly.cpp
+    dependencygraph.cpp
 
 SOURCES += $$files(../libpvrt/*.cpp)
 
 SOURCES += "../libplatform/platformutil.cpp"\
 			"../libplatform/md5.c"
-
-HEADERS += ../liblicensemanager/licensemanager.h
-SOURCES +=	../liblicensemanager/licensemanager.cpp \
-			../liblicensemanager/uid.cpp
 
 HEADERS  += \
     mainwindow.h\
@@ -111,8 +105,7 @@ HEADERS  += \
     exampleprojectswidget.h \
     mdiarea.h \
     mdisubwindow.h \
-    dependencygraph.h \
-    countly.h
+    dependencygraph.h
 
 FORMS    += mainwindow.ui \
     savechangesdialog.ui \

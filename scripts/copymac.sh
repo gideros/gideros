@@ -10,7 +10,6 @@ cp -R ui/Gideros\ Studio.app $BUILD_DIR/mac
 cp -R player/Gideros\ Player.app $BUILD_DIR/mac
 cp -R texturepacker/Gideros\ Texture\ Packer.app $BUILD_DIR/mac
 cp -R fontcreator/Gideros\ Font\ Creator.app $BUILD_DIR/mac
-cp -R licensemanager/Gideros\ License\ Manager.app $BUILD_DIR/mac
 
 cp -R $BUILD_DIR/win/Documentation $BUILD_DIR/mac
 cp -R $BUILD_DIR/win/Examples $BUILD_DIR/mac
@@ -33,7 +32,6 @@ $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Studio.app
 $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Player.app
 $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Texture\ Packer.app
 $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Font\ Creator.app
-$QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ License\ Manager.app
 
 sudo rm /usr/lib/libqscintilla2.11.dylib
 sudo rm /usr/lib/libgid.1.dylib

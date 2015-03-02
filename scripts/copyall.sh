@@ -5,7 +5,6 @@ cp -R ../ui/Gideros\ Studio.app ~/Desktop/release/Gideros\ Studio.app
 cp -R ../player/Gideros\ Player.app/ ~/Desktop/release/Gideros\ Player.app
 cp -R ../texturepacker/Gideros\ Texture\ Packer.app/ ~/Desktop/release/Gideros\ Texture\ Packer.app
 cp -R ../fontcreator/Gideros\ Font\ Creator.app/ ~/Desktop/release/Gideros\ Font\ Creator.app
-cp -R ../licensemanager/Gideros\ License\ Manager.app/ ~/Desktop/release/Gideros\ License\ Manager.app
 
 cp -R /Volumes/release/Documentation ~/Desktop/release/Documentation
 cp -R /Volumes/release/Examples ~/Desktop/release/Examples
