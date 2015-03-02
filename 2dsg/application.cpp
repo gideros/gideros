@@ -272,7 +272,7 @@ void Application::renderScene(int deltaFrameCount)
 
     // hardware start/end x/y
     if(lsx == 0) lsx = 1;
-    if(lsy == 0) lsy = 0;
+    if(lsy == 0) lsy = 1;
     float sx = (0 - ltx) / lsx;
     float sy = (0 - lty) / lsy;
     float ex = (hw - ltx) / lsx;
