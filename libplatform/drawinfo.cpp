@@ -232,7 +232,7 @@ void drawInfo()
 		refreshLocalIPs();
 
     // set background color of opengl canvas to black and clear the buffer to render again
-    glClearColor(0, 0, 0, 1);
+    glClearColor(1, 1, 1, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
     drawIP("V", 3, 2, 2);
