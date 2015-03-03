@@ -43,7 +43,7 @@ int MatrixBinder::create(lua_State* L)
 	lua_Number tx = luaL_optnumber(L, 5, 0);
 	lua_Number ty = luaL_optnumber(L, 6, 0);
 
-    binder.pushInstance("Matrix", new Matrix(m11, m12, m21, m22, tx, ty));
+    binder.pushInstance("Matrix", new Matrix2D(m11, m12, m21, m22, tx, ty));
 
 	return 1;
 }
@@ -51,7 +51,7 @@ int MatrixBinder::create(lua_State* L)
 int MatrixBinder::destruct(lua_State* L)
 {
 	void* ptr = *(void**)lua_touserdata(L, 1);
-	Matrix* matrix = static_cast<Matrix*>(ptr);
+	Matrix2D* matrix = static_cast<Matrix2D*>(ptr);
 	delete matrix;
 
 	return 0;
@@ -61,7 +61,7 @@ int MatrixBinder::destruct(lua_State* L)
 int MatrixBinder::getM11(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
     lua_pushnumber(L, matrix->m11());
 
@@ -70,7 +70,7 @@ int MatrixBinder::getM11(lua_State* L)
 int MatrixBinder::getM12(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
     lua_pushnumber(L, matrix->m12());
 
@@ -79,7 +79,7 @@ int MatrixBinder::getM12(lua_State* L)
 int MatrixBinder::getM21(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
     lua_pushnumber(L, matrix->m21());
 
@@ -88,7 +88,7 @@ int MatrixBinder::getM21(lua_State* L)
 int MatrixBinder::getM22(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
     lua_pushnumber(L, matrix->m22());
 
@@ -97,7 +97,7 @@ int MatrixBinder::getM22(lua_State* L)
 int MatrixBinder::getTx(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
 	lua_pushnumber(L, matrix->tx());
 
@@ -106,7 +106,7 @@ int MatrixBinder::getTx(lua_State* L)
 int MatrixBinder::getTy(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
 	lua_pushnumber(L, matrix->ty());
 
@@ -117,7 +117,7 @@ int MatrixBinder::getTy(lua_State* L)
 int MatrixBinder::setM11(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
     matrix->setM11(luaL_checknumber(L, 2));
 
@@ -126,7 +126,7 @@ int MatrixBinder::setM11(lua_State* L)
 int MatrixBinder::setM12(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
     matrix->setM12(luaL_checknumber(L, 2));
 
@@ -135,7 +135,7 @@ int MatrixBinder::setM12(lua_State* L)
 int MatrixBinder::setM21(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
     matrix->setM21(luaL_checknumber(L, 2));
 
@@ -144,7 +144,7 @@ int MatrixBinder::setM21(lua_State* L)
 int MatrixBinder::setM22(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
     matrix->setM22(luaL_checknumber(L, 2));
 
@@ -153,7 +153,7 @@ int MatrixBinder::setM22(lua_State* L)
 int MatrixBinder::setTx(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
 	matrix->setTx(luaL_checknumber(L, 2));
 
@@ -162,7 +162,7 @@ int MatrixBinder::setTx(lua_State* L)
 int MatrixBinder::setTy(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
 	matrix->setTy(luaL_checknumber(L, 2));
 
@@ -172,7 +172,7 @@ int MatrixBinder::setTy(lua_State* L)
 int MatrixBinder::getElements(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
     lua_pushnumber(L, matrix->m11());
     lua_pushnumber(L, matrix->m12());
@@ -187,7 +187,7 @@ int MatrixBinder::getElements(lua_State* L)
 int MatrixBinder::setElements(lua_State* L)
 {
 	Binder binder(L);
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 1));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 1));
 
 	lua_Number m11 = luaL_optnumber(L, 2, 1);
 	lua_Number m12 = luaL_optnumber(L, 3, 0);

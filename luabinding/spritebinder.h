@@ -65,10 +65,10 @@ private:
 
 	static int getWidth(lua_State* L);
 	static int getHeight(lua_State* L);
-/*
+
 	static int getMatrix(lua_State* L);
 	static int setMatrix(lua_State* L);
-*/
+
 	static int getAlpha(lua_State* L);
 	static int setAlpha(lua_State* L);
 

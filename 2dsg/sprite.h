@@ -7,6 +7,7 @@
 #include "colortransform.h"
 #include "gstatus.h"
 #include "graphicsbase.h"
+#include "matrix.h"
 #include <list>
 
 typedef Matrix4 CurrentTransform;
@@ -194,17 +195,17 @@ public:
 	{
         return localTransform_.y();
 	}
-/*
+
     void setMatrix(float m11, float m12, float m21, float m22, float tx, float ty)
 	{
         localTransform_.setMatrix(m11, m12, m21, m22, tx, ty);
 	}
 
-	void setMatrix(const Matrix& matrix)
+	void setMatrix(const Matrix2D& matrix)
 	{
-        localTransform_.setMatrix(matrix);
+        localTransform_.setMatrix(matrix.m11(),matrix.m12(),matrix.m21(),matrix.m22(),matrix.tx(),matrix.ty());
 	}
-*/
+
 	const Matrix4& matrix() const
 	{
         return localTransform_.matrix();

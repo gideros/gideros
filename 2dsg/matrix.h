@@ -3,7 +3,7 @@
 
 #include <cmath>
 
-class Matrix
+class Matrix2D
 {
 public:
 	enum Type
@@ -13,7 +13,7 @@ public:
 		eArbitrary,
 	};
 
-    Matrix(float m11 = 1, float m12 = 0, float m21 = 0, float m22 = 1, float tx = 0, float ty = 0)
+    Matrix2D(float m11 = 1, float m12 = 0, float m21 = 0, float m22 = 1, float tx = 0, float ty = 0)
 	{
 		for (int i = 0; i < 16; ++i)
 			m_[i] = i % 5 ? 0.f : 1.f;
@@ -112,11 +112,11 @@ public:
 		return type_;
 	}
 
-	friend Matrix operator*(const Matrix& m0, const Matrix& m1);
-	friend bool operator==(const Matrix& m0, const Matrix& m1);
-	friend bool operator!=(const Matrix& m0, const Matrix& m1);
+	friend Matrix2D operator*(const Matrix2D& m0, const Matrix2D& m1);
+	friend bool operator==(const Matrix2D& m0, const Matrix2D& m1);
+	friend bool operator!=(const Matrix2D& m0, const Matrix2D& m1);
 
-	Matrix inverse() const;
+	Matrix2D inverse() const;
 
 private:
 	float m_[16];

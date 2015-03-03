@@ -152,6 +152,7 @@ public:
 	{
 		return matrix_;
 	}
+	void setMatrix(float m11,float m12,float m21,float m22,float tx,float ty);
 private:
 	Matrix4 matrix_;
 
@@ -164,7 +165,6 @@ private:
 	float tx_,ty_,tz_;
 	mutable bool isDirty_;
 	void compose();
-	void decompose();
 };
 
 

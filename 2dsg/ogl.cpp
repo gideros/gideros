@@ -26,6 +26,7 @@ GLuint colorVS=0;
 GLuint matrixVS=0;
 GLuint colorFS=0;
 GLuint colorSelFS=0;
+GLuint textureSelFS=0;
 GLuint textureFS=0;
 
 /* Vertex shader*/
@@ -47,13 +48,15 @@ const char *xformVShaderCode=
 const char *colorFShaderCode="\
 precision mediump float;\
 uniform float fColorSel;\
+uniform float fTextureSel;\
 uniform vec4 fColor;\
 uniform sampler2D fTexture;\
 varying mediump vec2 fTexCoord;\
 varying vec4 fInColor;\
 void main() {\
  vec4 col=mix(fColor,fInColor,fColorSel);\
- gl_FragColor = texture2D(fTexture, fTexCoord) * col;\
+ vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
+ gl_FragColor = tex * col;\
 }";
 
 GLuint oglLoadShader(GLuint type,const char *code)
@@ -98,6 +101,7 @@ void oglSetupShaders()
 	colorVS=glGetAttribLocation(shaderProgram, "vColor");
     matrixVS=glGetUniformLocation(shaderProgram, "vMatrix");
     colorSelFS=glGetUniformLocation(shaderProgram, "fColorSel");
+    textureSelFS=glGetUniformLocation(shaderProgram, "fTextureSel");
     colorFS=glGetUniformLocation(shaderProgram, "fColor");
     textureFS=glGetUniformLocation(shaderProgram, "fTexture");
 
@@ -302,6 +306,7 @@ void oglSetupArrays()
 			s_TEXTURE_COORD_ARRAY_enabled = true;
 			s_clientStateCount++;
 		    glEnableVertexAttribArray(textureVS);
+		    glUniform1f(textureSelFS, 1);
 		}
 	}
 	else
@@ -311,6 +316,7 @@ void oglSetupArrays()
 			s_TEXTURE_COORD_ARRAY_enabled = false;
 			s_clientStateCount++;
 		    glDisableVertexAttribArray(textureVS);
+		    glUniform1f(textureSelFS, 0);
 		}
 	}
 
@@ -390,13 +396,15 @@ void oglReset()
     glDisableVertexAttribArray(vertexVS);
     glDisableVertexAttribArray(textureVS);
     glDisableVertexAttribArray(colorVS);
+    glUniform1f(colorSelFS, 0);
+    glUniform1f(textureSelFS, 0);
 
 	resetBindTextureCount();
 	resetClientStateCount();
 	resetTexture2DStateCount();
 
-	glClearColor(0.5, 0.1, 0.2, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT);
+	//glClearColor(0.5, 0.1, 0.2, 1.f);
+    //glClear(GL_COLOR_BUFFER_BIT);
 
     glEnable(GL_BLEND);
 

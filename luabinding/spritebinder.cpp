@@ -1,5 +1,6 @@
 #include "spritebinder.h"
 #include "sprite.h"
+#include "matrix.h"
 #include "colortransform.h"
 #include "stackchecker.h"
 #include "luaapplication.h"
@@ -51,8 +52,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"hitTestPoint", SpriteBinder::hitTestPoint},
 		{"getWidth", SpriteBinder::getWidth},
 		{"getHeight", SpriteBinder::getHeight},
-//		{"getMatrix", SpriteBinder::getMatrix}, XXX
-//		{"setMatrix", SpriteBinder::setMatrix},
+		{"getMatrix", SpriteBinder::getMatrix},
+		{"setMatrix", SpriteBinder::setMatrix},
 		{"getAlpha", SpriteBinder::getAlpha},
 		{"setAlpha", SpriteBinder::setAlpha},
 		{"getBounds", SpriteBinder::getBounds},
@@ -916,7 +917,7 @@ int SpriteBinder::getHeight(lua_State* L)
 	return 1;
 }
 
-/*
+
 int SpriteBinder::getMatrix(lua_State* L)
 {
 	StackChecker checker(L, "SpriteBinder::getMatrix", 1);
@@ -927,12 +928,13 @@ int SpriteBinder::getMatrix(lua_State* L)
 	lua_getglobal(L, "Matrix");
 	lua_getfield(L, -1, "new");
 	lua_remove(L, -2);
-    lua_pushnumber(L, sprite->matrix().m11());
-    lua_pushnumber(L, sprite->matrix().m12());
-    lua_pushnumber(L, sprite->matrix().m21());
-    lua_pushnumber(L, sprite->matrix().m22());
-	lua_pushnumber(L, sprite->matrix().tx());
-	lua_pushnumber(L, sprite->matrix().ty());
+	const float *mdata=sprite->matrix().data();
+    lua_pushnumber(L, mdata[0]);
+    lua_pushnumber(L, mdata[4]);
+    lua_pushnumber(L, mdata[1]);
+    lua_pushnumber(L, mdata[5]);
+	lua_pushnumber(L, mdata[12]);
+	lua_pushnumber(L, mdata[13]);
 	lua_call(L, 6, 1);
 	
 	return 1;
@@ -944,13 +946,13 @@ int SpriteBinder::setMatrix(lua_State* L)
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	Matrix* matrix = static_cast<Matrix*>(binder.getInstance("Matrix", 2));
+	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 2));
 
 	sprite->setMatrix(*matrix);
 
 	return 0;
 }
-*/
+
 int SpriteBinder::getAlpha(lua_State* L)
 {
 	StackChecker checker(L, "getAlpha", 1);

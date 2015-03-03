@@ -1,9 +1,32 @@
 #include "transform.h"
 
-
-void Transform::decompose()
+static void multiply(const float m0[2][2], const float m1[2][2], float result[2][2])
 {
-/* TODO    float m[2][2] = {{matrix_.m11(), matrix_.m12()}, {matrix_.m21(), matrix_.m22()}};
+ float r[2][2];
+
+ r[0][0] = m0[0][0] * m1[0][0] + m0[0][1] * m1[1][0];
+ r[0][1] = m0[0][0] * m1[0][1] + m0[0][1] * m1[1][1];
+ r[1][0] = m0[1][0] * m1[0][0] + m0[1][1] * m1[1][0];
+ r[1][1] = m0[1][0] * m1[0][1] + m0[1][1] * m1[1][1];
+
+ result[0][0] = r[0][0];
+ result[0][1] = r[0][1];
+ result[1][0] = r[1][0];
+ result[1][1] = r[1][1];
+}
+
+
+static void rotation(float angle, float result[2][2])
+{
+ result[0][0] = std::cos(angle);
+ result[0][1] = -std::sin(angle);
+ result[1][0] = std::sin(angle);
+ result[1][1] = std::cos(angle);
+}
+
+void Transform::setMatrix(float m11,float m12,float m21,float m22,float tx,float ty)
+{
+   float m[2][2] = {{m11, m12}, {m21, m22}};
 
 	bool bx = m[0][0] == 0 && m[1][0] == 0;
 	bool by = m[0][1] == 0 && m[1][1] == 0;
@@ -19,13 +42,16 @@ void Transform::decompose()
 	if (m[1][1] < 0)
 		sy = -sy;
 
-	rotation_ = angle * 180 / M_PI;
+	rotationZ_ = angle * 180 / M_PI;
+	rotationX_=0;
+	rotationY_=0;
 	scaleX_ = bx ? 0 : sx;
 	scaleY_ = by ? 0 : sy;
+	scaleZ_=0;
 
-	vx_ = m[0][1] / sy;
-	vy_ = m[1][1] / sy;
-*/
+	tx_=tx;
+	ty_=ty;
+	tz_=0;
 }
 
 void Transform::compose()
