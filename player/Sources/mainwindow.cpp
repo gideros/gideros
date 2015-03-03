@@ -517,8 +517,10 @@ void MainWindow::updateResolution(){
         }else if(hideMenu())
             setHeight(height() + ui.menuBar->height());
     }
-
-    float scaleProperty = deviceScale();
+    float scaleProperty = 100;
+    if(deviceScale() != 0){
+        scaleProperty = (float)scaleProperty / deviceScale();
+    }
 
     ui.glCanvas->setScale(scaleProperty);
 

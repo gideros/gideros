@@ -129,14 +129,14 @@ void GLCanvas::setupProperties(){
     g_server = server_;
 
     running_ = false;
-	orientation_ = ePortrait;
+    orientation_ = ePortrait;
 
-	width_ = 320;
-	height_ = 480;
-	scale_ = 1;
-	deviceScale_ = devicePixelRatio();
+    width_ = 320;
+    height_ = 480;
+    scale_ = 1;
+    deviceScale_ = devicePixelRatio();
 
-	fps_ = 10000;
+    fps_ = 10000;
     clock_ = iclock();
 
     setHardwareOrientation(ePortrait);
@@ -849,7 +849,7 @@ void GLCanvas::play(QDir directory){
 // setters
 void GLCanvas::setScale(float scale){
     scale_ = scale;
-	deviceScale_ = scale * devicePixelRatio();
+    deviceScale_ = (float)scale * (float)devicePixelRatio();
 
     if (application_->isInitialized())
         application_->setScale(scale_);
