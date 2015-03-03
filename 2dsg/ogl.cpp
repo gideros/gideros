@@ -239,7 +239,7 @@ void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *
 			glVertexAttribPointer(textureVS, mult,type, false,0, ptr);
 			break;
         case ColorArray:
-			glVertexAttribPointer(colorVS, mult,type, false,0, ptr);
+			glVertexAttribPointer(colorVS, mult,type, true,0, ptr);
             break;
 		default:
 			assert(1);
