@@ -412,7 +412,7 @@ void MainWindow::actionScale(){
     QAction *action = (QAction*)sender();
 
     int scaleProperty = action->property("scale").toInt();
-    int scaleCurrent = scale();
+    int scaleCurrent = deviceScale();
 
     switch(scaleProperty){
         case(eZoomIn):
@@ -673,11 +673,11 @@ void MainWindow::setFullScreen(bool fullScreen){
     fullScreen_ = fullScreen;
 }
 
-int MainWindow::scale(){
+float MainWindow::scale(){
     return scale_;
 }
 
-void MainWindow::setScale(int scale){
+void MainWindow::setScale(float scale){
     scale_ = scale;
 }
 

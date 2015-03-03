@@ -114,7 +114,7 @@ public:
 		physicsScale_ = physicsScale;
 	}
 
-	void setScale(int scale);
+    void setScale(float scale);
 
 	void setLogicalDimensions(int width, int height);
 	void setLogicalScaleMode(LogicalScaleMode mode);
@@ -159,7 +159,7 @@ private:
 	Orientation orientation_;
 	int width_, height_;
 
-	int scale_;
+    float scale_;
 
     std::string error_;
 

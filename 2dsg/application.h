@@ -71,7 +71,7 @@ public:
 
 	Font* getDefaultFont();
 
-	void setScale(int scale)
+    void setScale(float scale)
 	{
 		scale_ = scale;
 	}
@@ -144,7 +144,7 @@ private:
 
 	Font* defaultFont_;
 
-	int scale_;
+    float scale_;
 
     std::vector<std::pair<std::string, float> > imageScales_;
 
