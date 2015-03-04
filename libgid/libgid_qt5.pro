@@ -83,10 +83,13 @@ HEADERS += \
     ./external/snappy-1.1.0/snappy-sinksource.h
 INCLUDEPATH += ./external/snappy-1.1.0
 
-win32 {
+
 INCLUDEPATH += "./external/libpng-1.6.2"
 INCLUDEPATH += "./external/jpeg-9"
 INCLUDEPATH += "./external/glew-1.10.0/include"
+INCLUDEPATH += "../libgid/external/mpg123-1.15.3/src/libmpg123"
+
+win32 {
 DEFINES += OPENAL_SUBDIR_AL
 INCLUDEPATH += "./external/openal-soft-1.13/include"
 LIBS += -L"../libgid/external/openal-soft-1.13/build/mingw48_32" -lOpenAL32
@@ -94,7 +97,6 @@ LIBS += -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32
 LIBS += -L"../libgid/external/libpng-1.6.2/build/mingw48_32" -lpng
 LIBS += -L"../libgid/external/jpeg-9/build/mingw48_32" -ljpeg
 
-INCLUDEPATH += "../libgid/external/mpg123-1.15.3/src/libmpg123"
 LIBS += -L"../libgid/external/mpg123-1.15.3/lib/mingw48_32" -lmpg123
 
 LIBS += -lpthread
@@ -104,16 +106,19 @@ LIBS += -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx
 
 macx {
 DEFINES += OPENAL_SUBDIR_OPENAL
-INCLUDEPATH += "/usr/local/include"
 
-INCLUDEPATH += "../libgid/external/mpg123-1.15.3/src/libmpg123"
 LIBS += -L"../libgid/external/mpg123-1.15.3/lib/gcc_64" -lmpg123
 
 LIBS += -framework OpenAL
 LIBS += -framework OpenGL
 LIBS += -framework CoreFoundation
-LIBS += -L"/usr/local/lib" -lpng -ljpeg -lGLEW
-LIBS += -lpthread -lz
+
+LIBS += -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW
+LIBS += -L"../libgid/external/libpng-1.6.2/build/clang_64" -lpng
+LIBS += -L"../libgid/external/jpeg-9/build/clang_64" -ljpeg
+LIBS += -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx
+
+LIBS += -lpthread
 }
 
 win32 {
