@@ -1,0 +1,80 @@
+QPATH=/c/Qt/5.3/mingw482_32/bin:/c/Qt/Tools/mingw482_32/bin:$(PATH)
+
+QMAKE=qmake
+MINGWMAKE=mingw32-make
+ROOT=.
+SDK=$(ROOT)/Sdk
+NDKBUILD=cmd /c C:\\Applications\\android-ndk-r10d\\ndk-build.cmd
+
+
+all:
+	PATH="$(QPATH)" make -f $(ROOT)/scripts/Makefile.gid all.q
+	
+all.q: buildqtlibs buildplugins buildqt android
+
+
+buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs) libgid.qmake5.rel $(addsuffix .qmake.rel,lua libgideros)
+	rm -rf $(SDK)
+	mkdir $(SDK)
+	mkdir $(SDK)/include
+	mkdir $(SDK)/include/AL
+	mkdir $(SDK)/lib
+	mkdir $(SDK)/lib/desktop	
+	cp $(addprefix $(ROOT)/libgideros/,$(addsuffix .h,gideros gplugin gproxy greferenced gexport)) $(SDK)/include
+	cp $(addprefix $(ROOT)/libgvfs/,$(addsuffix .h,gfile gpath)) $(SDK)/include
+	cp $(addprefix $(ROOT)/libgid/include/,$(addsuffix .h,gglobal glog gapplication gevent)) $(SDK)/include
+	cp $(addprefix $(ROOT)/lua/src/,$(addsuffix .h,lua luaconf lualib lauxlib)) $(SDK)/include
+	cp $(ROOT)/libgid/external/openal-soft-1.13/include/AL/* $(SDK)/include/AL/
+	cp $(ROOT)/libgideros/release/libgideros.a $(SDK)/lib/desktop
+	cp $(ROOT)/lua/release/liblua.a $(SDK)/lib/desktop
+	cp $(ROOT)/libgid/release/libgid.a $(SDK)/lib/desktop
+	cp $(ROOT)/libgvfs/release/libgvfs.a $(SDK)/lib/desktop
+	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/libOpenAL32.dll.a $(SDK)/lib/desktop
+
+%.plugin:
+	cd $(ROOT)/plugins/$*/source; $(QMAKE) *.pro
+	cd $(ROOT)/plugins/$*/source; $(MINGWMAKE) release
+
+buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel $(addsuffix .qmake.rel,licensemanager gdrdeamon gdrbridge gdrexport)
+		
+buildplugins:	$(addsuffix .plugin,BitOp LuaSQLite3 LuaSocket LPeg LuaFileSystem JSON) #Microphone in Desktop sub dir
+
+android: androidlibs androidso
+
+androidlibs: libgvfs.androidlib lua.androidlib
+
+androidso: androidso.prep arm6-armeabi.androidso arm7-v7a.androidso x86-x86.androidso
+	rm -rf $(ROOT)/android/build/libs
+	mv $(ROOT)/android/build/libs2 $(ROOT)/android/build/libs
+	rm -rf $(ROOT)/Sdk/lib/android
+	mkdir -p $(ROOT)/Sdk/lib/android
+	cp -R $(ROOT)/android/build/libs/* $(ROOT)/Sdk/lib/android 
+
+androidso.prep:
+	rm -rf $(ROOT)/android/build
+	mkdir  $(ROOT)/android/build
+	mkdir  $(ROOT)/android/build/jni
+	cp -R  $(ROOT)/android/lib/jni/*  $(ROOT)/android/build/jni
+
+%.androidso:
+	cp $(ROOT)/android/build/jni/Application-$(firstword $(subst -, ,$*)).mk $(ROOT)/android/build/jni/Application.mk
+	cp $(ROOT)/android/build/jni/Android-$(firstword $(subst -, ,$*)).mk $(ROOT)/android/build/jni/Android.mk
+	cd $(ROOT)/android/build; $(NDKBUILD)
+	mkdir -p $(ROOT)/android/build/libs2/$(lastword $(subst -, ,$*))
+	cp $(ROOT)/android/build/libs/$(lastword $(subst -, ,$*))/* $(ROOT)/android/build/libs2/$(lastword $(subst -, ,$*))
+
+
+%.androidlib:
+	rm -rf $(ROOT)/$*/libs $(ROOT)/$*/obj
+	cd $(ROOT)/$*; $(NDKBUILD)
+
+%.qmake.rel:
+	cd $(ROOT)/$*; $(QMAKE) $*.pro
+	#cd $(ROOT)/$*; $(MINGWMAKE) clean
+	cd $(ROOT)/$*; $(MINGWMAKE) release
+
+%.qmake5.rel:
+	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
+	#cd $(ROOT)/$*; $(MINGWMAKE) clean
+	cd $(ROOT)/$*; $(MINGWMAKE) release
+	

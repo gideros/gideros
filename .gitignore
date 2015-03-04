@@ -258,3 +258,4 @@ tmp
 *.vcxitems
 plugins/LPeg/source/makefile
 /.project
+/Default/
