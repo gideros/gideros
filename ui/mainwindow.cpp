@@ -4,6 +4,9 @@
 #include <QAction>
 #include <QIcon>
 #include <QPixmap>
+#include <QSet>
+#include <QString>
+#include <QTextStream>
 #include "iconlibrary.h"
 #include <stack>
 //#include "libnetwork.h"
@@ -44,11 +47,7 @@
 #include <QSplitter>
 #include <QImage>
 #include "mdiarea.h"
-#include <licensemanager.h>
 #include <QDateTime>
-#include "countly.h"
-
-extern Countly *g_countly;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -453,7 +452,6 @@ void MainWindow::start()
 	client_->sendProjectName(QFileInfo(projectFileName_).baseName());
 	client_->sendGetFileList();
 
-    g_countly->projectPlayed();
 }
 
 #if 0
@@ -836,7 +834,6 @@ void MainWindow::newProject()
 
 			addToRecentProjects(projectFileName_);
 
-            g_countly->projectCreated();
 		}
 	}
 }
@@ -2099,24 +2096,8 @@ static void copyFolder(	const QDir& sourceDir,
 
 void MainWindow::exportProject()
 {
-	if (g_checkHash() == false)
-	{
-		QMessageBox::information(this, tr("Gideros"), tr("Inconsistent license file. Please run Gideros License Manager and update your license."));
-		return;
-	}
 
-	LicenseManager licenseManager;
-	int licenseType = licenseManager.getLicenseType();
-
-	if (licenseType == -1)
-	{
-		QMessageBox::information(this, tr("Gideros"), tr("You do not have a license installed. Please run Gideros License Manager."));
-		return;
-	}
-
-	bool licensed = (licenseType == 2 || licenseType == 3);
-
-    ExportProjectDialog dialog(&libraryWidget_->getProjectProperties(), licensed, this);
+    ExportProjectDialog dialog(&libraryWidget_->getProjectProperties(), true, this);
 	if (dialog.exec() == QDialog::Accepted)
 	{
 		ExportProjectDialog::DeviceFamily deviceFamily = dialog.deviceFamily();
@@ -2265,8 +2246,6 @@ void MainWindow::exportProject()
 				replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), dialog.packageName().toUtf8());
 			replaceList << replaceList1;
 
-			if (licensed)
-			{
 				QStringList wildcards2;
                 wildcards2 << "libgideros.so" << "libgideros.a";
 				wildcards << wildcards2;
@@ -2276,7 +2255,6 @@ void MainWindow::exportProject()
                 replaceList2 << qMakePair(codePrefix + encryptionZero, codePrefix + codeKey);
                 replaceList2 << qMakePair(assetsPrefix + encryptionZero, assetsPrefix + assetsKey);
                 replaceList << replaceList2;
-			};
 
             if (dialog.assetsOnly())
                 copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar", QStringList());
@@ -2565,12 +2543,7 @@ void MainWindow::exportProject()
 
 		progress.setValue(fileQueue.size());
 
-		if (licensed)
-			QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully."));
-		else
-			QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully with splash screen."));
-
-        g_countly->projectExported();
+        QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully."));
 	}
 }
 

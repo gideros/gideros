@@ -1101,7 +1101,7 @@ void LuaApplication::initialize()
 	lua_call(L, 1, 0);
 }
 
-void LuaApplication::setScale(int scale)
+void LuaApplication::setScale(float scale)
 {
 	scale_ = scale;
 	application_->setScale(scale_);

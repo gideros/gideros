@@ -33,8 +33,6 @@ samplecode-bleedingedge/*/*.lua \
 image2array/*.cpp \
 doc/*.txt \
 libgfile/{*.cpp,*.h} \
-licensemanager/{*.cpp,*.h,*.php} \
-liblicensemanager/{*.cpp,*.h} \
 pystring/{*.cpp,*.h,*.pro}
 
 

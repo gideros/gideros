@@ -207,6 +207,8 @@ void Application::renderScene(int deltaFrameCount)
     oglReset();
 
     gtexture_tick();
+    
+    if(scale_ == 0) scale_ = 1;
 
 	switch (hardwareOrientation_)
 	{
@@ -326,6 +328,8 @@ void Application::renderScene(int deltaFrameCount)
 	oglSetProjection(projection);
 
     // hardware start/end x/y
+    //if(lsx == 0) lsx = 1;
+    //if(lsy == 0) lsy = 1;
     float sx = (0 - ltx) / lsx;
     float sy = (0 - lty) / lsy;
     float ex = (hw - ltx) / lsx;

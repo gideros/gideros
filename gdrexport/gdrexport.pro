@@ -17,16 +17,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
-INCLUDEPATH += ../liblicensemanager ../ui ../libnetwork
+INCLUDEPATH += ../ui ../libnetwork
 
 HEADERS += \
-    ../liblicensemanager/licensemanager.h \
     ../ui/projectproperties.h \
     ../ui/dependencygraph.h
 
 SOURCES += \
-    ../liblicensemanager/licensemanager.cpp \
-    ../liblicensemanager/uid.cpp \
     ../ui/projectproperties.cpp \
     ../ui/dependencygraph.cpp \
     ../libnetwork/bytebuffer.cpp

@@ -28,12 +28,6 @@ qmake player_qt4.pro
 mingw32-make.exe clean
 cd ..
 
-cd licensemanager
-mingw32-make.exe clean
-qmake licensemanager.pro
-mingw32-make.exe clean
-cd ..
-
 cd gdrdeamon
 mingw32-make.exe clean
 qmake gdrdeamon.pro

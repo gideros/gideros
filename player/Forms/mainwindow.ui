@@ -456,22 +456,6 @@
     <string>640x1136 (iPhone 5 Retina)</string>
    </property>
   </action>
-  <action name="action750x1334">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>750x1334 (iPhone 6)</string>
-   </property>
-  </action>
-  <action name="action1242x2208">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>1242x2208 (iPhone 6 Plus)</string>
-   </property>
-  </action>
   <action name="action720x1280">
    <property name="checkable">
     <bool>true</bool>

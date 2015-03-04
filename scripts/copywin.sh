@@ -16,7 +16,6 @@ cp ui/release/GiderosStudio.exe $BUILD_DIR/win
 cp player/release/GiderosPlayer.exe $BUILD_DIR/win
 cp texturepacker/release/GiderosTexturePacker.exe $BUILD_DIR/win
 cp fontcreator/release/GiderosFontCreator.exe $BUILD_DIR/win
-cp licensemanager/release/GiderosLicenseManager.exe $BUILD_DIR/win
 
 git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Resources
 mkdir $BUILD_DIR/win/Resources

@@ -11,7 +11,6 @@ cp ..\ui\release\GiderosStudio.exe ..\..\release
 cp ..\player\release\GiderosPlayer.exe ..\..\release
 cp ..\texturepacker\release\GiderosTexturePacker.exe ..\..\release
 cp ..\fontcreator\release\GiderosFontCreator.exe ..\..\release
-cp ..\licensemanager\release\GiderosLicenseManager.exe ..\..\release
 
 rem svn export ..\ui\Resources ..\..\release\Resources
 rm -rf ..\..\temp

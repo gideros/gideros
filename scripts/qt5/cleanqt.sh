@@ -24,12 +24,6 @@ $QT/bin/qmake player_qt5.pro
 make clean
 cd ..
 
-cd licensemanager
-make clean
-$QT/bin/qmake licensemanager.pro
-make clean
-cd ..
-
 cd gdrdeamon
 make clean
 $QT/bin/qmake gdrdeamon.pro

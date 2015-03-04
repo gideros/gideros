@@ -24,11 +24,6 @@ qmake player_qt4.pro
 mingw32-make.exe release
 cd ..
 
-cd licensemanager
-qmake licensemanager.pro
-mingw32-make.exe release
-cd ..
-
 cd gdrdeamon
 qmake gdrdeamon.pro
 mingw32-make.exe release

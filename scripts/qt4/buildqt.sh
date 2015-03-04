@@ -20,11 +20,6 @@ cd player
 make
 cd ..
 
-cd licensemanager
-/Qt/1.2.1/Desktop/Qt/4.8.1/gcc/bin/qmake licensemanager.pro
-make
-cd ..
-
 cd gdrdeamon
 /Qt/1.2.1/Desktop/Qt/4.8.1/gcc/bin/qmake gdrdeamon.pro
 make

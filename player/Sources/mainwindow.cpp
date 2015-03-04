@@ -87,6 +87,11 @@ void MainWindow::setupUiActions(){
     connect(ui.glCanvas, SIGNAL(projectNameChanged(const QString&)), this, SLOT(projectNameChanged(const QString&)));
 }
 
+float MainWindow::deviceScale()
+{
+    return (float)((float)scale() * (float)devicePixelRatio());
+}
+
 void MainWindow::setupUiProperties(){
     ui.action320x480->setProperty("width",  320);
     ui.action320x480->setProperty("height", 480);
@@ -407,7 +412,7 @@ void MainWindow::actionScale(){
     QAction *action = (QAction*)sender();
 
     int scaleProperty = action->property("scale").toInt();
-    int scaleCurrent = scale();
+    int scaleCurrent = deviceScale();
 
     switch(scaleProperty){
         case(eZoomIn):
@@ -512,8 +517,10 @@ void MainWindow::updateResolution(){
         }else if(hideMenu())
             setHeight(height() + ui.menuBar->height());
     }
-
-    float scaleProperty = (float)100 / (float)((float)scale() * (float)devicePixelRatio());
+    float scaleProperty = 100;
+    if(deviceScale() != 0){
+        scaleProperty = (float)scaleProperty / deviceScale();
+    }
 
     ui.glCanvas->setScale(scaleProperty);
 
@@ -666,11 +673,11 @@ void MainWindow::setFullScreen(bool fullScreen){
     fullScreen_ = fullScreen;
 }
 
-int MainWindow::scale(){
+float MainWindow::scale(){
     return scale_;
 }
 
-void MainWindow::setScale(int scale){
+void MainWindow::setScale(float scale){
     scale_ = scale;
 }
 

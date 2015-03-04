@@ -31,7 +31,8 @@ class MainWindow : public QMainWindow{
         bool autoScale();
         bool alwaysOnTop();
         Orientation orientation();
-        int scale();
+        float scale();
+        float deviceScale();
         bool drawInfos();
         bool fullScreen();
         bool hideMenu();
@@ -45,7 +46,7 @@ class MainWindow : public QMainWindow{
         void setAutoScale(bool autoScale);
         void setAlwaysOnTop(bool alwaysOnTop);
         void setOrientation(Orientation orientation);
-        void setScale(int scale);
+        void setScale(float scale);
         void setDrawInfos(bool drawInfos);
         void setHideMenu(bool hideMenu);
         void setFullScreen(bool fullScreen);
@@ -87,7 +88,7 @@ class MainWindow : public QMainWindow{
         int fps_;
         bool autoScale_;
         bool alwaysOnTop_;
-        int scale_;
+        float scale_;
         bool hideMenu_;
         bool fullScreen_;
         Orientation orientation_;

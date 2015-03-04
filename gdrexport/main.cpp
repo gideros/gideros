@@ -1,5 +1,7 @@
-#include <licensemanager.h>
 #include <QDir>
+#include <QSet>
+#include <QString>
+#include <QTextStream>
 #include <QSettings>
 #include <time.h>
 #include <QDomDocument>
@@ -455,34 +457,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    LicenseManager licenseManager;
-    int licenseType = licenseManager.getLicenseType();
-
-    if (licenseType == -1)
-    {
-        fprintf(stderr, "You do not have a license installed. Please run Gideros License Manager.\n");
-        return 1;
-    }
-
-    if (g_checkHash() == false)
-    {
-        fprintf(stderr, "Inconsistent license file. Please run Gideros License Manager and update your license.\n");
-        return 1;
-    }
-
     projectFileName = QDir::current().absoluteFilePath(projectFileName);
 
     QDir dir = QCoreApplication::applicationDirPath();
     dir.cdUp();
     QDir::setCurrent(dir.absolutePath());
-
-    bool licensed = (licenseType == 2 || licenseType == 3);
-
-    if (licensed == false)
-    {
-        encryptCode = false;
-        encryptAssets = false;
-    }
 
     QString templatedir;
     QString templatename;
@@ -613,8 +592,6 @@ int main(int argc, char *argv[])
             replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), packageName.toUtf8());
         replaceList << replaceList1;
 
-        if (licensed)
-        {
             QStringList wildcards2;
             wildcards2 << "libgideros.so" << "libgideros.a";
             wildcards << wildcards2;
@@ -624,7 +601,6 @@ int main(int argc, char *argv[])
             replaceList2 << qMakePair(codePrefix + encryptionZero, codePrefix + codeKey);
             replaceList2 << qMakePair(assetsPrefix + encryptionZero, assetsPrefix + assetsKey);
             replaceList << replaceList2;
-        };
 
         if (assetsOnly)
             copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar", QStringList());
