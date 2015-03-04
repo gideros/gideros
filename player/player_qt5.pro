@@ -1,14 +1,16 @@
 QT += core gui opengl network
 
+INCLUDEPATH += \
+    "../libgid/external/zlib-1.2.8"\
+    "../libgid/external/glew-1.10.0/include"\
+    ../libgid/external/freetype-2.4.12/include
+
+
 win32{
     RC_FILE = other_files/player.rc
 
     TARGET = GiderosPlayer
 
-    INCLUDEPATH += \
-        "../libgid/external/zlib-1.2.8"\
-        "../libgid/external/glew-1.10.0/include"\
-        ../libgid/external/freetype-2.4.12/include
 
     LIBS += \
         -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx\
@@ -26,24 +28,20 @@ win32{
 macx {
     ICON = other_files/player.icns
 
-    INCLUDEPATH += \
-        "/usr/local/include"\
-        "/usr/local/include/freetype2"
-
     TARGET = "Gideros Player"
 
     LIBS += \
         -framework OpenAL\
         -framework OpenGL\
         -framework CoreFoundation\
-        -lz\
-        -L"/usr/local/lib"\
         -L"../libgid" -lgid\
         -L"../libgvfs" -lgvfs\
         -L"../lua" -llua\
         -L"../libgideros" -lgideros\
         -L"../libpystring" -lpystring\
-        -L"/usr/local/lib" -lGLEW -lfreetype
+        -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx\
+        -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW\
+        -L"../libgid/external/freetype-2.4.12/build/clang_64" -lfreetype
 
     QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
 }
