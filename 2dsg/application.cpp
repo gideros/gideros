@@ -97,6 +97,7 @@ Stage* Application::stage() const
 
 void Application::initView()
 {
+	oglInitialize();
 	backr_ = 1.f;
 	backg_ = 1.f;
 	backb_ = 1.f;
@@ -119,6 +120,7 @@ void Application::releaseView()
 
 	stage_->unref();
 	stage_ = NULL;
+	oglCleanup();
 
 //	Referenced::emptyPool();
 }

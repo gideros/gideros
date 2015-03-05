@@ -84,9 +84,9 @@ GLuint oglLoadShader(GLuint type,const char *code)
 	return shader;
 }
 
+
 void oglSetupShaders()
 {
-	if (xformVShader||colorFShader) return;
 	xformVShader=oglLoadShader(GL_VERTEX_SHADER,xformVShaderCode);
 	colorFShader=oglLoadShader(GL_FRAGMENT_SHADER,colorFShaderCode);
     shaderProgram = glCreateProgram();
@@ -118,6 +118,20 @@ void oglSetupShaders()
 
 }
 
+void oglInitialize()
+{
+ oglSetupShaders();
+ glActiveTexture(GL_TEXTURE0);
+}
+
+void oglCleanup()
+{
+	glUseProgram(0);
+	glDeleteProgram(shaderProgram);
+	glDeleteShader(xformVShader);
+	glDeleteShader(colorFShader);
+}
+
 Matrix4 oglProjection;
 void oglLoadMatrixf(const Matrix4 m)
 {
@@ -138,7 +152,8 @@ void oglEnable(GLenum cap)
 	case GL_TEXTURE_2D:
 		if (s_Texture2DEnabled == false)
 		{
-			glEnable(GL_TEXTURE_2D);
+			//glEnable(GL_TEXTURE_2D);
+		    glUniform1f(textureSelFS, 1);
 			s_Texture2DEnabled = true;
 			s_Texture2DStateCount++;
 		}
@@ -156,7 +171,8 @@ void oglDisable(GLenum cap)
 	case GL_TEXTURE_2D:
 		if (s_Texture2DEnabled == true)
 		{
-			glDisable(GL_TEXTURE_2D);
+			//glDisable(GL_TEXTURE_2D);
+		    glUniform1f(textureSelFS, 0);
 			s_Texture2DEnabled = false;
 			s_Texture2DStateCount++;
 		}
@@ -306,7 +322,6 @@ void oglSetupArrays()
 			s_TEXTURE_COORD_ARRAY_enabled = true;
 			s_clientStateCount++;
 		    glEnableVertexAttribArray(textureVS);
-		    glUniform1f(textureSelFS, 1);
 		}
 	}
 	else
@@ -316,7 +331,6 @@ void oglSetupArrays()
 			s_TEXTURE_COORD_ARRAY_enabled = false;
 			s_clientStateCount++;
 		    glDisableVertexAttribArray(textureVS);
-		    glUniform1f(textureSelFS, 0);
 		}
 	}
 
@@ -397,7 +411,7 @@ void oglReset()
     glDisableVertexAttribArray(textureVS);
     glDisableVertexAttribArray(colorVS);
     glUniform1f(colorSelFS, 0);
-    glUniform1f(textureSelFS, 0);
+    //glUniform1f(textureSelFS, 0);
 
 	resetBindTextureCount();
 	resetClientStateCount();
