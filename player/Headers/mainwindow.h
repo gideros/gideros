@@ -78,6 +78,7 @@ class MainWindow : public QMainWindow{
         void setupUiProperties();
         void createUiGroups();
         void loadSettings();
+        QString getWorkingDirectory();
 
         Ui::MainWindowClass ui;
         QActionGroup* resolutionGroup_;
@@ -96,6 +97,7 @@ class MainWindow : public QMainWindow{
         QColor backgroundColor_;
         QColor canvasColor_;
         QColor infoColor_;
+        QString projectName_;
 
     private slots:
         void actionFull_Screen(bool checked);
@@ -111,6 +113,7 @@ class MainWindow : public QMainWindow{
         void actionSettings();
         void actionDraw_Infos(bool checked);
         void actionOpen();
+        void actionOpen_Directory();
         void projectNameChanged(const QString& projectName);
 };
 

@@ -102,6 +102,8 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionOpen"/>
+	<addaction name="actionOpen_Directory"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHardware">
@@ -578,6 +580,14 @@
    </property>
    <property name="shortcut">
     <string>Alt+F</string>
+   </property>
+  </action>
+  <action name="actionOpen_Directory">
+   <property name="text">
+    <string>Open Directory</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Gideros Directory</string>
    </property>
   </action>
   <addaction name="actionExit"/>

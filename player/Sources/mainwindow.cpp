@@ -3,6 +3,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <QFileDialog>
+#include <QDesktopServices>
 #include <QFile>
 #include <QTextStream>
 #include <QFileDialog>
@@ -16,6 +17,7 @@
 #include "constants.cpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
+    projectName_ = QString ();
     setupUiActions();
     setupUiProperties();
 
@@ -31,6 +33,7 @@ void MainWindow::setupUiActions(){
 
     connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(actionOpen()));
+    connect(ui.actionOpen_Directory, SIGNAL(triggered()), this, SLOT(actionOpen_Directory()));
 
     connect(ui.actionFull_Screen,   SIGNAL(triggered(bool)), this, SLOT(actionFull_Screen(bool)));
     connect(ui.actionHide_Menu,     SIGNAL(triggered()), this, SLOT(actionHide_Menu()));
@@ -351,8 +354,21 @@ void MainWindow::saveSettings(){
 }
 
 void MainWindow::actionOpen(){
-    QDir directory = QFileDialog::getExistingDirectory(this, Constants::PLAYER_OPEN_DIALOG_NAME, "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QDir directory = QFileDialog::getExistingDirectory(this, Constants::PLAYER_OPEN_DIALOG_NAME, getWorkingDirectory(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     ui.glCanvas->play(directory);
+}
+
+void MainWindow::actionOpen_Directory(){
+    QDesktopServices::openUrl(QUrl("file:///"+getWorkingDirectory(), QUrl::TolerantMode));
+}
+
+QString MainWindow::getWorkingDirectory(){
+    QDir dir = QDir::temp();
+    dir.mkdir("gideros");
+    dir.cd("gideros");
+    if(!projectName_.isEmpty())
+        dir.cd(projectName_);
+    return dir.absolutePath();
 }
 
 void MainWindow::actionDraw_Infos(bool checked){
@@ -731,6 +747,7 @@ void MainWindow::projectNameChanged(const QString& projectName){
     show();
     raise();
     activateWindow();
+    projectName_ = projectName;
     if (projectName.isEmpty() == true)
         setWindowTitle(Constants::PLAYER_WINDOW_TITLE);
     else
