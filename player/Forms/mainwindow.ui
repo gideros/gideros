@@ -58,7 +58,7 @@
      <x>0</x>
      <y>0</y>
      <width>320</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -180,6 +180,7 @@
      <addaction name="actionOriginal"/>
      <addaction name="separator"/>
      <addaction name="actionFit_To_Window"/>
+     <addaction name="actionFit_To_App"/>
     </widget>
     <addaction name="actionAlways_on_Top"/>
     <addaction name="actionHide_Menu"/>
@@ -566,6 +567,17 @@
    </property>
    <property name="text">
     <string>Draw Infos</string>
+   </property>
+  </action>
+  <action name="actionFit_To_App">
+   <property name="text">
+    <string>Fit To App</string>
+   </property>
+   <property name="toolTip">
+    <string>Fit To App</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F</string>
    </property>
   </action>
   <addaction name="actionExit"/>

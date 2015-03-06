@@ -43,6 +43,8 @@ void MainWindow::setupUiActions(){
     connect(ui.actionZoom_Out,      SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionFit_To_Window, SIGNAL(triggered()), this, SLOT(actionScale()));
 
+    connect(ui.actionFit_To_App, SIGNAL(triggered()), this, SLOT(actionFitWindow()));
+
     connect(ui.actionDraw_Infos, SIGNAL(triggered(bool)), this, SLOT(actionDraw_Infos(bool)));
 
     connect(ui.actionAuto_Scale, SIGNAL(triggered(bool)), this, SLOT(actionAuto_Scale(bool)));
@@ -437,6 +439,10 @@ void MainWindow::actionScale(){
     setScale(scaleProperty);
 
     updateResolution();
+}
+
+void MainWindow::actionFitWindow(){
+    resize(sizeHint());
 }
 
 void MainWindow::actionRotate(){

@@ -106,6 +106,7 @@ class MainWindow : public QMainWindow{
         void actionFps();
         void actionOrientation();
         void actionScale();
+        void actionFitWindow();
         void actionRotate();
         void actionSettings();
         void actionDraw_Infos(bool checked);
