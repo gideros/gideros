@@ -470,9 +470,11 @@ void GLCanvas::play(QDir directory){
     dir_.mkdir("documents");
     dir_.mkdir("temporary");
 
+    resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
+
     setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
     setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
-    setResourceDirectory(directory.absolutePath().toStdString().c_str());
+    setResourceDirectory(resourceDirectory_.c_str());
 
     QFile file(dir_.absolutePath()+"/properties.bin");
     file.open(QIODevice::ReadOnly);
@@ -484,6 +486,13 @@ void GLCanvas::play(QDir directory){
 
     running_ = true;
 
+    QFile luafiles(dir_.absolutePath()+"/luafiles.txt");
+    luafiles.open(QIODevice::ReadOnly);
+    QByteArray bas = luafiles.readAll();
+    luafiles.close();
+    std::vector<char> data2(bas.data(), bas.data() + bas.size());
+
+    loadFiles(data2);
 
 }
 

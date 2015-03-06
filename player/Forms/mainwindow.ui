@@ -103,7 +103,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
-	<addaction name="actionOpen_Directory"/>
+    <addaction name="actionOpen_Directory"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHardware">
@@ -501,7 +501,7 @@
   </action>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>Open Project</string>
    </property>
   </action>
   <action name="actionAuto_Scale">
