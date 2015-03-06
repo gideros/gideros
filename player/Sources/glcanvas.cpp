@@ -277,45 +277,21 @@ void GLCanvas::timerEvent(QTimerEvent *){
 
                     //accessedResourceFiles.clear();
 
-                    std::vector<std::string> luafiles;
+                    dir_ = QDir::temp();
+                    dir_.mkdir("gideros");
+                    dir_.cd("gideros");
+                    dir_.mkdir(projectName_);
+                    dir_.cd(projectName_);
 
-                    ByteBuffer buffer(&data[0], data.size());
+                    QByteArray ba;
+                    QDataStream datastream(&ba,QIODevice::ReadWrite);
+                    datastream.writeRawData((const char*)&data[0], data.size());
+                    QFile file(dir_.absolutePath()+"/luafiles.txt");
+                    file.open(QIODevice::WriteOnly);
+                    file.write(ba);
+                    file.close();
 
-                    char chr;
-                    buffer >> chr;
-
-                    while (buffer.eob() == false)
-                    {
-                        std::string str;
-                        buffer >> str;
-                        luafiles.push_back(str);
-                    }
-
-                    GStatus status;
-                    for (std::size_t i = 0; i < luafiles.size(); ++i)
-                    {
-                        application_->loadFile(luafiles[i].c_str(), &status);
-                        if (status.error())
-                            break;
-                    }
-
-                    if (!status.error())
-                    {
-                        Event event(Event::APPLICATION_START);
-                        application_->broadcastEvent(&event, &status);
-                    }
-
-                    if (status.error())
-                    {
-                        running_ = false;
-
-                        errorDialog_.appendString(status.errorString());
-                        errorDialog_.show();
-                        printToServer(status.errorString(), -1, NULL);
-                        printToServer("\n", -1, NULL);
-                        application_->deinitialize();
-                        application_->initialize();
-                    }
+                    loadFiles(data);
 
                     break;
                 }
@@ -430,59 +406,21 @@ void GLCanvas::timerEvent(QTimerEvent *){
 
                 case 11:
                 {
-                    ByteBuffer buffer(&data[0], data.size());
+                    dir_ = QDir::temp();
+                    dir_.mkdir("gideros");
+                    dir_.cd("gideros");
+                    dir_.mkdir(projectName_);
+                    dir_.cd(projectName_);
 
-                    char chr;
-                    buffer >> chr;
+                    QByteArray ba;
+                    QDataStream datastream(&ba,QIODevice::ReadWrite);
+                    datastream.writeRawData((const char*)&data[0], data.size());
+                    QFile file(dir_.absolutePath()+"/properties.bin");
+                    file.open(QIODevice::WriteOnly);
+                    file.write(ba);
+                    file.close();
 
-                    int scaleMode, logicalWidth, logicalHeight;
-                    buffer >> scaleMode;
-                    buffer >> logicalWidth;
-                    buffer >> logicalHeight;
-
-                    application_->deinitialize();
-                    application_->initialize();
-                    setupApplicationProperties();
-    //				application_->orientationChange(orientation_);
-                    application_->setLogicalDimensions(logicalWidth, logicalHeight);
-                    application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
-
-                    int scaleCount;
-                    buffer >> scaleCount;
-                    std::vector<std::pair<std::string, float> > imageScales(scaleCount);
-                    for (int i = 0; i < scaleCount; ++i)
-                    {
-                        buffer >> imageScales[i].first;
-                        buffer >> imageScales[i].second;
-                    }
-
-                    application_->setImageScales(imageScales);
-
-                    int orientation;
-                    buffer >> orientation;
-                    application_->setOrientation((Orientation)orientation);
-                    application_->getApplication()->setDeviceOrientation((Orientation)orientation);
-
-                    int fps;
-                    buffer >> fps;
-
-                    int retinaDisplay;
-                    buffer >> retinaDisplay;
-
-                    int autorotation;
-                    buffer >> autorotation;
-
-                    int mouseToTouch;
-                    buffer >> mouseToTouch;
-                    ginput_setMouseToTouchEnabled(mouseToTouch);
-
-                    int touchToMouse;
-                    buffer >> touchToMouse;
-                    ginput_setTouchToMouseEnabled(touchToMouse);
-
-                    int mouseTouchOrder;
-                    buffer >> mouseTouchOrder;
-                    ginput_setMouseTouchOrder(mouseTouchOrder);
+                    loadProperties(data);
 
                     break;
                 }
@@ -498,6 +436,153 @@ void GLCanvas::timerEvent(QTimerEvent *){
     }
 
     update();
+}
+
+// function to play an application into player passing path
+// TODO: pensar em um nome intuitivo
+void GLCanvas::play(QDir directory){
+    // emmit a stop on player
+    if(running_ == true){
+        Event event(Event::APPLICATION_EXIT);
+        GStatus status;
+        application_->broadcastEvent(&event, &status);
+        running_ = false;
+
+        if(status.error()){
+            errorDialog_.appendString(status.errorString());
+            errorDialog_.show();
+            printToServer(status.errorString(), -1, NULL);
+            printToServer("\n", -1, NULL);
+            return;
+        }
+    }
+
+    // next, send the project name
+    projectName_ = directory.dirName();
+
+    emit projectNameChanged(projectName_);
+
+    dir_ = QDir::temp();
+    dir_.mkdir("gideros");
+    dir_.cd("gideros");
+    dir_.mkdir(projectName_);
+    dir_.cd(projectName_);
+    dir_.mkdir("documents");
+    dir_.mkdir("temporary");
+
+    setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
+    setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
+    setResourceDirectory(directory.absolutePath().toStdString().c_str());
+
+    QFile file(dir_.absolutePath()+"/properties.bin");
+    file.open(QIODevice::ReadOnly);
+    QByteArray ba = file.readAll();
+    file.close();
+    std::vector<char> data(ba.data(), ba.data() + ba.size());
+
+    loadProperties(data);
+
+    running_ = true;
+
+
+}
+
+void GLCanvas::loadProperties(std::vector<char> data){
+    ByteBuffer buffer(&data[0], data.size());
+
+    char chr;
+    buffer >> chr;
+
+    int scaleMode, logicalWidth, logicalHeight;
+    buffer >> scaleMode;
+    buffer >> logicalWidth;
+    buffer >> logicalHeight;
+
+    application_->deinitialize();
+    application_->initialize();
+    setupApplicationProperties();
+//				application_->orientationChange(orientation_);
+    application_->setLogicalDimensions(logicalWidth, logicalHeight);
+    application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
+
+    int scaleCount;
+    buffer >> scaleCount;
+    std::vector<std::pair<std::string, float> > imageScales(scaleCount);
+    for (int i = 0; i < scaleCount; ++i)
+    {
+        buffer >> imageScales[i].first;
+        buffer >> imageScales[i].second;
+    }
+
+    application_->setImageScales(imageScales);
+
+    int orientation;
+    buffer >> orientation;
+    application_->setOrientation((Orientation)orientation);
+    application_->getApplication()->setDeviceOrientation((Orientation)orientation);
+
+    int fps;
+    buffer >> fps;
+
+    int retinaDisplay;
+    buffer >> retinaDisplay;
+
+    int autorotation;
+    buffer >> autorotation;
+
+    int mouseToTouch;
+    buffer >> mouseToTouch;
+    ginput_setMouseToTouchEnabled(mouseToTouch);
+
+    int touchToMouse;
+    buffer >> touchToMouse;
+    ginput_setTouchToMouseEnabled(touchToMouse);
+
+    int mouseTouchOrder;
+    buffer >> mouseTouchOrder;
+    ginput_setMouseTouchOrder(mouseTouchOrder);
+}
+
+void GLCanvas::loadFiles(std::vector<char> data){
+    std::vector<std::string> luafiles;
+
+    ByteBuffer buffer(&data[0], data.size());
+
+    char chr;
+    buffer >> chr;
+
+    while (buffer.eob() == false)
+    {
+        std::string str;
+        buffer >> str;
+        luafiles.push_back(str);
+    }
+
+    GStatus status;
+    for (std::size_t i = 0; i < luafiles.size(); ++i)
+    {
+        application_->loadFile(luafiles[i].c_str(), &status);
+        if (status.error())
+            break;
+    }
+
+    if (!status.error())
+    {
+        Event event(Event::APPLICATION_START);
+        application_->broadcastEvent(&event, &status);
+    }
+
+    if (status.error())
+    {
+        running_ = false;
+
+        errorDialog_.appendString(status.errorString());
+        errorDialog_.show();
+        printToServer(status.errorString(), -1, NULL);
+        printToServer("\n", -1, NULL);
+        application_->deinitialize();
+        application_->initialize();
+    }
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event){
@@ -769,82 +854,6 @@ void GLCanvas::printMD5(){
         qDebug() << buffer;
     }
 }
-
-// function to play an application into player passing path
-// TODO: pensar em um nome intuitivo
-void GLCanvas::play(QDir directory){
-    // emmit a stop on player
-    if(running_ == true){
-        Event event(Event::APPLICATION_EXIT);
-        GStatus status;
-        application_->broadcastEvent(&event, &status);
-        running_ = false;
-
-        if(status.error()){
-            errorDialog_.appendString(status.errorString());
-            errorDialog_.show();
-            printToServer(status.errorString(), -1, NULL);
-            printToServer("\n", -1, NULL);
-            return;
-        }
-    }
-
-    // reset the player settings
-    application_->deinitialize();
-    application_->initialize();
-    setupApplicationProperties();
-
-    // next, send the project name
-    projectName_ = directory.dirName();
-
-    emit projectNameChanged(projectName_);
-
-    dir_ = QDir::temp();
-    dir_.mkdir("gideros");
-    dir_.cd("gideros");
-    dir_.mkdir(projectName_);
-    dir_.cd(projectName_);
-    dir_.mkdir("documents");
-    dir_.mkdir("temporary");
-
-    setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
-    setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
-    setResourceDirectory(directory.absolutePath().toStdString().c_str());
-
-    // play the loaded app
-    running_ = true;
-
-    QStringList filters;
-    filters << "*.lua";
-    directory.setNameFilters(filters);
-    QStringList directoryFiles = directory.entryList();
-
-    GStatus status;
-    foreach(QString directoryFile, directoryFiles){
-        application_->loadFile(directoryFile.toStdString().c_str(), &status);
-        if (status.error())
-            break;
-    }
-
-    Event event(Event::APPLICATION_START);
-    application_->broadcastEvent(&event, &status);
-
-    if (status.error())
-    {
-        running_ = false;
-
-        errorDialog_.appendString(status.errorString());
-        errorDialog_.show();
-        printToServer(status.errorString(), -1, NULL);
-        printToServer("\n", -1, NULL);
-        application_->deinitialize();
-        application_->initialize();
-
-        return;
-    }
-}
-
-
 
 // setters
 void GLCanvas::setScale(float scale){

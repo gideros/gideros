@@ -80,6 +80,8 @@ private:
 	void saveMD5();
 	void calculateMD5(const char* file);
     void printMD5();
+    void loadProperties(std::vector<char> data);
+    void loadFiles(std::vector<char> data);
 
     //static void accessFileCallback_s(FileType type, const char* filename, void* data);
     //void accessFileCallback(FileType type, const char* filename);
