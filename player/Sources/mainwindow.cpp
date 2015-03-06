@@ -728,6 +728,9 @@ void MainWindow::closeEvent(QCloseEvent*){
 }
 
 void MainWindow::projectNameChanged(const QString& projectName){
+    show();
+    raise();
+    activateWindow();
     if (projectName.isEmpty() == true)
         setWindowTitle(Constants::PLAYER_WINDOW_TITLE);
     else
