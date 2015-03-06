@@ -8,7 +8,7 @@ class KeyboardEvent : public Event
 public:
 	typedef EventType<KeyboardEvent> Type;
 
-	KeyboardEvent(const Type& type, int keyCode) : Event(type.type()), keyCode(keyCode)
+    KeyboardEvent(const Type& type, int keyCode, int realCode) : Event(type.type()), keyCode(keyCode), realCode(realCode)
 	{
 
 	}
@@ -17,6 +17,7 @@ public:
 	static Type KEY_UP;
 
 	int keyCode;
+    int realCode;
 
 	virtual void apply(EventVisitor* v);
 };
