@@ -97,7 +97,7 @@ Stage* Application::stage() const
 
 void Application::initView()
 {
-	oglInitialize();
+	oglInitialize(width_,height_);
 	backr_ = 1.f;
 	backg_ = 1.f;
 	backb_ = 1.f;
@@ -337,7 +337,7 @@ void Application::renderScene(int deltaFrameCount)
     float ex = (hw - ltx) / lsx;
     float ey = (hh - lty) / lsy;
 
-    //glDepthFunc(GL_LEQUAL);
+    glDepthFunc(GL_LEQUAL);
     glClearDepthf(1);
     glClear(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
     

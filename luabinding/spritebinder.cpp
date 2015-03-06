@@ -587,7 +587,7 @@ int SpriteBinder::setPosition(lua_State* L)
 
 int SpriteBinder::getPosition(lua_State* L)
 {
-	StackChecker checker(L, "SpriteBinder::getPosition", 2);
+	StackChecker checker(L, "SpriteBinder::getPosition", 3);
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));

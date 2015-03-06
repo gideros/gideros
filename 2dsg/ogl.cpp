@@ -1,6 +1,7 @@
 #include "ogl.h"
 #include <cassert>
 #include <vector>
+#include "glog.h"
 
 static GLuint s_texture = 0;
 static int s_BindTextureCount = 0;
@@ -28,15 +29,16 @@ GLuint colorFS=0;
 GLuint colorSelFS=0;
 GLuint textureSelFS=0;
 GLuint textureFS=0;
+GLuint _depthRenderBuffer=0;
 
 /* Vertex shader*/
 const char *xformVShaderCode=
-"attribute vec2 vTexCoord;\n"
-"attribute vec4 vVertex;\n"
-"attribute vec4 vColor;\n"
-"uniform mat4 vMatrix;\n"
-"varying vec2 fTexCoord;\n"
-"varying vec4 fInColor; "
+"attribute mediump vec2 vTexCoord;\n"
+"attribute mediump vec4 vVertex;\n"
+"attribute mediump vec4 vColor;\n"
+"uniform mediump mat4 vMatrix;\n"
+"varying mediump vec2 fTexCoord;\n"
+"varying mediump vec4 fInColor; "
 "\n"
 "void main() {\n"
 "  gl_Position = vMatrix*vVertex;\n"
@@ -49,13 +51,13 @@ const char *colorFShaderCode="\
 precision mediump float;\
 uniform float fColorSel;\
 uniform float fTextureSel;\
-uniform vec4 fColor;\
+uniform mediump vec4 fColor;\
 uniform sampler2D fTexture;\
 varying mediump vec2 fTexCoord;\
-varying vec4 fInColor;\
+varying mediump vec4 fInColor;\
 void main() {\
- vec4 col=mix(fColor,fInColor,fColorSel);\
- vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
+ mediump vec4 col=mix(fColor,fInColor,fColorSel);\
+ mediump vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
  gl_FragColor = tex * col;\
 }";
 
@@ -76,11 +78,11 @@ GLuint oglLoadShader(GLuint type,const char *code)
 		std::vector<GLchar> infoLog(maxLength);
 		glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
 
-		//printf(&infoLog[0]);
+		glog_e("Shader Compile: %s\n",&infoLog[0]);
 		glDeleteShader(shader);
 		shader=0;
 	}
-	//printf("Loaded shader:%d\n",shader);
+	glog_i("Loaded shader:%d\n",shader);
 	return shader;
 }
 
@@ -105,8 +107,8 @@ void oglSetupShaders()
     colorFS=glGetUniformLocation(shaderProgram, "fColor");
     textureFS=glGetUniformLocation(shaderProgram, "fTexture");
 
-    //printf("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
-    //printf("FIndices: %d,%d\n", colorFS,textureFS);
+    glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
+    glog_i("FIndices: %d,%d,%d,%d\n", colorSelFS,textureSelFS,colorFS,textureFS);
 
     glUniform1i(textureFS, 0);
 
@@ -114,14 +116,28 @@ void oglSetupShaders()
 	glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
 	std::vector<GLchar> infoLog(maxLength);
 	glGetProgramInfoLog(shaderProgram, maxLength, &maxLength, &infoLog[0]);
-	//printf(&infoLog[0]);
+	glog_i("Program log:%s\n",&infoLog[0]);
 
 }
 
-void oglInitialize()
+void oglInitialize(unsigned int sw,unsigned int sh)
 {
  oglSetupShaders();
  glActiveTexture(GL_TEXTURE0);
+
+ int depthfmt=0;
+#ifdef GL_DEPTH24_STENCIL8_OES
+ depthfmt=GL_DEPTH24_STENCIL8_OES;
+#else
+ depthfmt=GL_DEPTH24_STENCIL8;
+#endif
+
+
+ glGenRenderbuffers(1, &_depthRenderBuffer);
+ glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
+ glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, sw,sh);
+ glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
 }
 
 void oglCleanup()
@@ -130,12 +146,13 @@ void oglCleanup()
 	glDeleteProgram(shaderProgram);
 	glDeleteShader(xformVShader);
 	glDeleteShader(colorFShader);
+	glDeleteRenderbuffers(1,&_depthRenderBuffer);
 }
 
 Matrix4 oglProjection;
 void oglLoadMatrixf(const Matrix4 m)
 {
-	Matrix4 xform=oglProjection*m; //Maybe the other way ??
+	Matrix4 xform=oglProjection*m;
 
 	glUniformMatrix4fv(matrixVS, 1, false, xform.data());
 }
@@ -154,6 +171,7 @@ void oglEnable(GLenum cap)
 		{
 			//glEnable(GL_TEXTURE_2D);
 		    glUniform1f(textureSelFS, 1);
+		    //glog_d("TextureSelFS:%d\n",1);
 			s_Texture2DEnabled = true;
 			s_Texture2DStateCount++;
 		}
@@ -173,6 +191,7 @@ void oglDisable(GLenum cap)
 		{
 			//glDisable(GL_TEXTURE_2D);
 		    glUniform1f(textureSelFS, 0);
+		    //glog_d("TextureSelFS:%d\n",0);
 			s_Texture2DEnabled = false;
 			s_Texture2DStateCount++;
 		}
@@ -197,6 +216,8 @@ void oglBindTexture(GLenum target, GLuint texture)
 	if (texture != s_texture)
 	{
 		s_texture = texture;
+		//glog_d("BindTexture:%d\n",s_texture);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(target, texture);
 
 		s_BindTextureCount++;
@@ -205,6 +226,7 @@ void oglBindTexture(GLenum target, GLuint texture)
 
 void oglForceBindTexture(GLenum target, GLuint texture)
 {
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(target, texture);
 	s_texture = texture;
 	s_BindTextureCount++;
@@ -250,6 +272,7 @@ void oglEnableClientState(enum OGLClientState array)
 
 void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr)
 {
+	//glog_d("OglArrayPtr: %d:%p[%f,%f,%f,%f]\n",array,ptr,((const float *)ptr)[0],((const float *)ptr)[1],((const float *)ptr)[2],((const float *)ptr)[3]);
 	switch (array)
 	{
 		case VertexArray:
@@ -291,11 +314,10 @@ void oglDisableClientState(enum OGLClientState array)
 
 void oglSetupArrays()
 {
-	/*printf("OglArrays: %d:%d,%d:%d,%d:%d\n",
+	/*glog_d("OglArrays: %d:%d,%d:%d,%d:%d\n",
 			s_VERTEX_ARRAY,s_VERTEX_ARRAY_enabled,
 			s_TEXTURE_COORD_ARRAY,s_TEXTURE_COORD_ARRAY_enabled,
-			s_COLOR_ARRAY,s_COLOR_ARRAY_enabled
-	);*/
+			s_COLOR_ARRAY,s_COLOR_ARRAY_enabled	);*/
 	if (s_VERTEX_ARRAY)
 	{
 		if (s_VERTEX_ARRAY_enabled == false)
@@ -393,12 +415,13 @@ int getClientStateCount()
 
 void oglReset()
 {
-	oglSetupShaders();
+	//oglSetupShaders();
 
 	s_texture = 0;
 	s_Texture2DEnabled = false;
 
-	glDisable(GL_TEXTURE_2D);
+	//glDisable(GL_TEXTURE_2D);
+	oglColor4f(1,1,1,1);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	s_VERTEX_ARRAY_enabled = false;
@@ -411,7 +434,7 @@ void oglReset()
     glDisableVertexAttribArray(textureVS);
     glDisableVertexAttribArray(colorVS);
     glUniform1f(colorSelFS, 0);
-    //glUniform1f(textureSelFS, 0);
+    glUniform1f(textureSelFS, 0);
 
 	resetBindTextureCount();
 	resetClientStateCount();

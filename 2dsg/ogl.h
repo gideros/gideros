@@ -21,7 +21,7 @@ void oglLoadMatrixf(const Matrix4 m);
 void oglSetProjection(const Matrix4 m);
 void oglEnable(GLenum cap);
 void oglDisable(GLenum cap);
-void oglInitialize();
+void oglInitialize(unsigned int sw,unsigned int sh);
 void oglCleanup();
 
 void resetBindTextureCount();
