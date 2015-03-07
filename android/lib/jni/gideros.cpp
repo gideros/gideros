@@ -942,7 +942,6 @@ void ApplicationManager::setOpenProject(const char* project){
 }
 
 void ApplicationManager::openProject(const char* project){
-	//stop();
 	
 	//setting project name
 	setProjectName(project);
@@ -950,71 +949,77 @@ void ApplicationManager::openProject(const char* project){
 	//setting properties
 	const char* propfilename = g_pathForFile("../properties.bin");
 	FILE* fis_prop = fopen(propfilename, "rb");
-
-	fseek(fis_prop, 0, SEEK_END);
-	int len = ftell(fis_prop);
-	fseek(fis_prop, 0, SEEK_SET);
-
-	std::vector<char> buf_prop(len);
-	fread(&buf_prop[0], 1, len, fis_prop);
-	fclose(fis_prop);
-
-	ProjectProperties properties;
-	
-	ByteBuffer buffer(&buf_prop[0], buf_prop.size());
-
-	char chr;
-	buffer >> chr;
-
-	buffer >> properties.scaleMode;
-	buffer >> properties.logicalWidth;
-	buffer >> properties.logicalHeight;
-
-	int scaleCount;
-	buffer >> scaleCount;
-	properties.imageScales.resize(scaleCount);
-	for (int i = 0; i < scaleCount; ++i)
-	{
-		buffer >> properties.imageScales[i].first;
-		buffer >> properties.imageScales[i].second;
-	}
-
-	buffer >> properties.orientation;
-	buffer >> properties.fps;
-	buffer >> properties.retinaDisplay;
-	buffer >> properties.autorotation;
-	buffer >> properties.mouseToTouch;
-	buffer >> properties.touchToMouse;
-	buffer >> properties.mouseTouchOrder;
-	
-	setProjectProperties(properties);
-	
-	//loading lua files
-	std::vector<std::string> luafiles;
 	
 	const char* luafilename = g_pathForFile("../luafiles.txt");
 	FILE* fis_lua = fopen(luafilename, "rb");
-
-	fseek(fis_lua, 0, SEEK_END);
-	len = ftell(fis_lua);
-	fseek(fis_lua, 0, SEEK_SET);
-
-	std::vector<char> buf_lua(len);
-	fread(&buf_lua[0], 1, len, fis_lua);
-	fclose(fis_lua);
-
-	ByteBuffer buffer2(&buf_lua[0], buf_lua.size());
-
-	buffer2 >> chr;
-
-	while (buffer2.eob() == false)
-	{
-		std::string str;
-		buffer2 >> str;
-		luafiles.push_back(str);
-	}
 	
-	play(luafiles);
+	if(fis_prop != NULL && fis_lua != NULL){
+
+		fseek(fis_prop, 0, SEEK_END);
+		int len = ftell(fis_prop);
+		fseek(fis_prop, 0, SEEK_SET);
+	
+		std::vector<char> buf_prop(len);
+		fread(&buf_prop[0], 1, len, fis_prop);
+		fclose(fis_prop);
+	
+		ProjectProperties properties;
+		
+		ByteBuffer buffer(&buf_prop[0], buf_prop.size());
+	
+		char chr;
+		buffer >> chr;
+	
+		buffer >> properties.scaleMode;
+		buffer >> properties.logicalWidth;
+		buffer >> properties.logicalHeight;
+	
+		int scaleCount;
+		buffer >> scaleCount;
+		properties.imageScales.resize(scaleCount);
+		for (int i = 0; i < scaleCount; ++i)
+		{
+			buffer >> properties.imageScales[i].first;
+			buffer >> properties.imageScales[i].second;
+		}
+	
+		buffer >> properties.orientation;
+		buffer >> properties.fps;
+		buffer >> properties.retinaDisplay;
+		buffer >> properties.autorotation;
+		buffer >> properties.mouseToTouch;
+		buffer >> properties.touchToMouse;
+		buffer >> properties.mouseTouchOrder;
+		
+		setProjectProperties(properties);
+		
+		//loading lua files
+		std::vector<std::string> luafiles;
+		
+		const char* luafilename = g_pathForFile("../luafiles.txt");
+		FILE* fis_lua = fopen(luafilename, "rb");
+	
+		fseek(fis_lua, 0, SEEK_END);
+		len = ftell(fis_lua);
+		fseek(fis_lua, 0, SEEK_SET);
+	
+		std::vector<char> buf_lua(len);
+		fread(&buf_lua[0], 1, len, fis_lua);
+		fclose(fis_lua);
+	
+		ByteBuffer buffer2(&buf_lua[0], buf_lua.size());
+	
+		buffer2 >> chr;
+	
+		while (buffer2.eob() == false)
+		{
+			std::string str;
+			buffer2 >> str;
+			luafiles.push_back(str);
+		}
+		
+		play(luafiles);
+	}
 }
 
 void ApplicationManager::play(const std::vector<std::string>& luafiles)

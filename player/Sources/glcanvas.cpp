@@ -466,59 +466,66 @@ void GLCanvas::timerEvent(QTimerEvent *){
 // function to play an application into player passing path
 // TODO: pensar em um nome intuitivo
 void GLCanvas::play(QDir directory){
-    // emmit a stop on player
-    if(running_ == true){
-        Event event(Event::APPLICATION_EXIT);
-        GStatus status;
-        application_->broadcastEvent(&event, &status);
-        running_ = false;
-
-        if(status.error()){
-            errorDialog_.appendString(status.errorString());
-            errorDialog_.show();
-            printToServer(status.errorString(), -1, NULL);
-            printToServer("\n", -1, NULL);
-            return;
-        }
-    }
-
-    // next, send the project name
-    projectName_ = directory.dirName();
-
-    emit projectNameChanged(projectName_);
-
-    dir_ = QDir::temp();
-    dir_.mkdir("gideros");
-    dir_.cd("gideros");
-    dir_.mkdir(projectName_);
-    dir_.cd(projectName_);
-    dir_.mkdir("documents");
-    dir_.mkdir("temporary");
-
-    resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
-
-    setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
-    setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
-    setResourceDirectory(resourceDirectory_.c_str());
-
     QFile file(dir_.absolutePath()+"/properties.bin");
-    file.open(QIODevice::ReadOnly);
-    QByteArray ba = file.readAll();
-    file.close();
-    std::vector<char> data(ba.data(), ba.data() + ba.size());
-
-    loadProperties(data);
-
-    running_ = true;
-
     QFile luafiles(dir_.absolutePath()+"/luafiles.txt");
-    luafiles.open(QIODevice::ReadOnly);
-    QByteArray bas = luafiles.readAll();
-    luafiles.close();
-    std::vector<char> data2(bas.data(), bas.data() + bas.size());
 
-    loadFiles(data2);
+    if(file.exists() && luafiles.exists()){
 
+        // emmit a stop on player
+        if(running_ == true){
+            Event event(Event::APPLICATION_EXIT);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+            running_ = false;
+
+            if(status.error()){
+                errorDialog_.appendString(status.errorString());
+                errorDialog_.show();
+                printToServer(status.errorString(), -1, NULL);
+                printToServer("\n", -1, NULL);
+                return;
+            }
+        }
+
+        // next, send the project name
+        projectName_ = directory.dirName();
+
+        emit projectNameChanged(projectName_);
+
+        dir_ = QDir::temp();
+        dir_.mkdir("gideros");
+        dir_.cd("gideros");
+        dir_.mkdir(projectName_);
+        dir_.cd(projectName_);
+        dir_.mkdir("documents");
+        dir_.mkdir("temporary");
+
+        resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
+
+        setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
+        setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
+        setResourceDirectory(resourceDirectory_.c_str());
+
+        file.open(QIODevice::ReadOnly);
+        QByteArray ba = file.readAll();
+        file.close();
+        std::vector<char> data(ba.data(), ba.data() + ba.size());
+
+        loadProperties(data);
+
+        running_ = true;
+
+        luafiles.open(QIODevice::ReadOnly);
+        QByteArray bas = luafiles.readAll();
+        luafiles.close();
+        std::vector<char> data2(bas.data(), bas.data() + bas.size());
+
+        loadFiles(data2);
+    }
+    else{
+        errorDialog_.appendString("Please re-export your project");
+        errorDialog_.show();
+    }
 }
 
 void GLCanvas::loadProperties(std::vector<char> data){
