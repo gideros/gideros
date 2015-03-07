@@ -104,6 +104,7 @@ public:
 	NetworkManager(ApplicationManager *application);
 	~NetworkManager();
 	void tick();
+	std::string openProject_;
 	
 	void setResourceDirectory(const char* resourceDirectory)
 	{
@@ -177,6 +178,7 @@ public:
 	void setFileSystem(const char *files);
 	
 	void openProject(const char* project);
+	void setOpenProject(const char* project);
 	void play(const std::vector<std::string>& luafiles);
 	void stop();
 	void setProjectName(const char *projectName);
@@ -249,6 +251,10 @@ void NetworkManager::tick()
 
 	while (true)
 	{
+		if(!openProject_.empty()){
+			application_->openProject(openProject_.c_str());
+			openProject_.clear();
+		}
 		int dataSent0 = server_->dataSent();
 		int dataReceived0 = server_->dataReceived();
 
@@ -931,7 +937,13 @@ void ApplicationManager::setFileSystem(const char *fileSystem)
 	setTemporaryDirectory(cacheDir_.c_str());
 }
 
+void ApplicationManager::setOpenProject(const char* project){
+	networkManager_->openProject_ = project;
+}
+
 void ApplicationManager::openProject(const char* project){
+	//stop();
+	
 	//setting project name
 	setProjectName(project);
 	
@@ -1280,7 +1292,7 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeOpenProject(
 	std::string project = sproject;
 	env->ReleaseStringUTFChars(jProject, sproject);
 	
-	s_applicationManager->openProject(project.c_str());
+	s_applicationManager->setOpenProject(project.c_str());
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesBegin(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy, jint actionIndex)
