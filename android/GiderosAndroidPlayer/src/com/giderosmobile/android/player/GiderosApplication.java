@@ -11,6 +11,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -23,13 +24,22 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.Surface;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 public class GiderosApplication
 {
@@ -57,6 +67,8 @@ public class GiderosApplication
 	private boolean isForeground_ = false;
 
 	private boolean isSurfaceCreated_ = false;
+	
+	private static boolean isPlayer_ = false;
 
 	private ArrayList<Integer> eventQueue_ = new ArrayList<Integer>();
 	private static final int PAUSE = 0;
@@ -156,6 +168,8 @@ public class GiderosApplication
 			in.close();
 		} catch (IOException e)
 		{
+			isPlayer_ = true;
+			loadProject();
 			Logger.log("player mode");
 			return;
 		}		
@@ -288,6 +302,50 @@ public class GiderosApplication
 		Logger.log("internalDir: " + internalDir_);
 		Logger.log("cacheDir: " + cacheDir_);
 	}
+	
+	private void loadProject(){
+		ListView projectList = new ListView(WeakActivityHolder.get());
+		ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(WeakActivityHolder.get(), android.R.layout.simple_list_item_1, android.R.id.text1, traverse(new File(Environment.getExternalStorageDirectory().toString()+"/gideros"))){
+			@Override
+	        public View getView(int position, View convertView, ViewGroup parent) {
+	            View view =super.getView(position, convertView, parent);
+
+	            TextView textView=(TextView) view.findViewById(android.R.id.text1);
+
+	            /*YOUR CHOICE OF COLOR*/
+	            textView.setTextColor(Color.BLACK);
+
+	            return view;
+	        }
+		};
+		projectList.setAdapter(modeAdapter);
+		projectList.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            	TextView textView=(TextView) view.findViewById(android.R.id.text1);
+            	Logger.log("Selected: " + textView.getText());
+            	nativeOpenProject((String) textView.getText());
+            }
+        });
+		FrameLayout layout = (FrameLayout)WeakActivityHolder.get().getWindow().getDecorView();
+		layout.addView(projectList);
+	}
+	
+	public List<String> traverse (File dir) {
+		Logger.log("Checking: " + dir.getAbsolutePath());
+		List<String> projects = new ArrayList<String>();
+	    if (dir.exists()) {
+	        File[] files = dir.listFiles();
+	        for (int i = 0; i < files.length; ++i) {
+	            File file = files[i];
+	            if (file.isDirectory()) {
+	                Logger.log("Found: " + file.getName());
+	                projects.add(file.getName());
+	            }
+	        }
+	    }
+	    return projects;
+	} 
 	
 	
 	static public void onCreate(String[] externalClasses)
@@ -816,6 +874,11 @@ public class GiderosApplication
 	{
 		return android.os.Build.MODEL;
 	}
+	
+	static public boolean isPlayerMode()
+	{
+		return isPlayer_;
+	}
 
 	static public void openUrl(String url)
 	{
@@ -922,6 +985,7 @@ public class GiderosApplication
 		}
 	}
 
+	static private native void nativeOpenProject(String project);
 	static private native void nativeLowMemory();
 	static private native boolean nativeKeyDown(int keyCode, int repeatCount);
 	static private native boolean nativeKeyUp(int keyCode, int repeatCount);
