@@ -56,6 +56,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"setFps", ApplicationBinder::setFps},
         {"getFps", ApplicationBinder::getFps},
         {"exit", ApplicationBinder::exit},
+        {"isPlayerMode", ApplicationBinder::isPlayerMode},
         {"getApiVersion", ApplicationBinder::getApiVersion},
         {"getTextureMemoryUsage", ApplicationBinder::getTextureMemoryUsage},
         {"getScreenDensity", ApplicationBinder::getScreenDensity},
@@ -102,6 +103,15 @@ int ApplicationBinder::canOpenUrl(lua_State* L)
 
     const char* url = luaL_checkstring(L, 2);
     lua_pushboolean(L, ::canOpenUrl(url));
+    return 1;
+}
+
+int ApplicationBinder::isPlayerMode(lua_State* L)
+{
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+    lua_pushboolean(L, application->isPlayerMode());
     return 1;
 }
 

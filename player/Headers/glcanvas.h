@@ -49,6 +49,7 @@ private:
     QDir dir_;
     Orientation orientation_;
     int width_, height_;
+    bool isPlayer_;
     std::string resourceDirectory_;
     std::string md5filename_;
     int fps_;

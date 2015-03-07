@@ -40,6 +40,7 @@ private:
     static int getTextureMemoryUsage(lua_State* L);
     static int getScreenDensity(lua_State* L);
     static int getDeviceOrientation(lua_State *L);
+    static int isPlayerMode(lua_State *L);
 };
 
 #endif

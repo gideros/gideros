@@ -83,6 +83,10 @@ public:
 
 	bool isInitialized() const;
 
+    void setPlayerMode(bool isPlayer);
+    bool isPlayerMode();
+    bool isPlayer_ = true;
+
 	void setHardwareOrientation(Orientation orientation);
 	void setResolution(int width, int height);
 

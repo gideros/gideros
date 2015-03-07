@@ -897,6 +897,16 @@ void LuaApplication::renderScene(int deltaFrameCount)
 	application_->renderScene();
 }
 
+void LuaApplication::setPlayerMode(bool isPlayer)
+{
+    isPlayer_ = isPlayer;
+}
+
+
+bool LuaApplication::isPlayerMode()
+{
+    return isPlayer_;
+}
 
 lua_PrintFunc LuaApplication::getPrintFunc(void)
 {
