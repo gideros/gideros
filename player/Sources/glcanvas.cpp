@@ -641,8 +641,8 @@ bool GLCanvas::event(QEvent *event){
         for( int i=0; i<size; ++i )
         {
             QTouchEvent::TouchPoint p = list[i];
-            xs[i] = p.pos().x();
-            ys[i] = p.pos().y();
+            xs[i] = p.pos().x() * deviceScale_;
+            ys[i] = p.pos().y() * deviceScale_;
             ids[i] = i;
         }
 
@@ -650,13 +650,13 @@ bool GLCanvas::event(QEvent *event){
         {
             QTouchEvent::TouchPoint p = list[i];
             if(p.state() == Qt::TouchPointPressed){
-                 ginputp_touchesBegin(p.pos().x(), p.pos().y(), i, size, xs, ys, ids);
+                 ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
             }
             else if(p.state() == Qt::TouchPointMoved){
-                ginputp_touchesMove(p.pos().x(), p.pos().y(), i, size, xs, ys, ids);
+                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
             }
             else if(p.state() == Qt::TouchPointReleased){
-                ginputp_touchesEnd(p.pos().x(), p.pos().y(), i, size, xs, ys, ids);
+                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
             }
         }
         return true;
