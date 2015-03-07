@@ -355,7 +355,10 @@ void MainWindow::saveSettings(){
 }
 
 void MainWindow::actionOpen(){
-    QDir directory = QFileDialog::getExistingDirectory(this, Constants::PLAYER_OPEN_DIALOG_NAME, getWorkingDirectory(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QDir dir = QDir::temp();
+    dir.mkdir("gideros");
+    dir.cd("gideros");
+    QDir directory = QFileDialog::getExistingDirectory(this, Constants::PLAYER_OPEN_DIALOG_NAME, dir.absolutePath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     ui.glCanvas->play(directory);
 }
 
