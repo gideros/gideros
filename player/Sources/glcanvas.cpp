@@ -628,7 +628,7 @@ void GLCanvas::keyReleaseEvent(QKeyEvent* event){
 
 bool GLCanvas::event(QEvent *event){
 
-    if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate || event->type() == QEvent::TouchEnd)
+    if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate || event->type() == QEvent::TouchEnd || event->type() == QEvent::TouchCancel)
     {
         QTouchEvent* touchEvent = (QTouchEvent*)event;
         const QList<QTouchEvent::TouchPoint> &list = touchEvent->touchPoints();
@@ -649,8 +649,11 @@ bool GLCanvas::event(QEvent *event){
         for( int i=0; i<size; ++i )
         {
             QTouchEvent::TouchPoint p = list[i];
-            if(p.state() == Qt::TouchPointPressed){
-                 ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+            if(event->type() == QEvent::TouchCancel){
+                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+            }
+            else if(p.state() == Qt::TouchPointPressed){
+                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
             }
             else if(p.state() == Qt::TouchPointMoved){
                 ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
