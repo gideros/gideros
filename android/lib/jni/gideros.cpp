@@ -568,6 +568,7 @@ ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 
 		// application
 	application_ = new LuaApplication;
+	application_->setPlayerMode(player_);
 	if (player_)
 		application_->setPrintFunc(NetworkManager::printToServer_s, networkManager_);
 	application_->enableExceptions();

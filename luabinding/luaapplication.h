@@ -85,7 +85,7 @@ public:
 
     void setPlayerMode(bool isPlayer);
     bool isPlayerMode();
-    bool isPlayer_ = true;
+    bool isPlayer_;
 
 	void setHardwareOrientation(Orientation orientation);
 	void setResolution(int width, int height);

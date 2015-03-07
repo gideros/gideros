@@ -442,6 +442,8 @@ LuaApplication::LuaApplication(void)
 
 	application_ = 0;
 
+    isPlayer_ = true;
+
 	exceptionsEnabled_ = true;
 
 	orientation_ = ePortrait;
