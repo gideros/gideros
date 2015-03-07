@@ -102,6 +102,7 @@
     <property name="title">
      <string>File</string>
     </property>
+	<addaction name="actionRestart"/>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_Directory"/>
     <addaction name="actionExit"/>
@@ -588,6 +589,17 @@
    </property>
    <property name="toolTip">
     <string>Open Gideros Directory</string>
+   </property>
+  </action>
+  <action name="actionRestart">
+   <property name="text">
+    <string>Restart</string>
+   </property>
+   <property name="toolTip">
+    <string>Restart Player</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <addaction name="actionExit"/>

@@ -32,6 +32,7 @@ void MainWindow::setupUiActions(){
     ui.setupUi(this);
 
     connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(ui.actionRestart, SIGNAL(triggered()), this, SLOT(actionRestart()));
     connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(actionOpen()));
     connect(ui.actionOpen_Directory, SIGNAL(triggered()), this, SLOT(actionOpen_Directory()));
 
@@ -356,6 +357,16 @@ void MainWindow::saveSettings(){
 void MainWindow::actionOpen(){
     QDir directory = QFileDialog::getExistingDirectory(this, Constants::PLAYER_OPEN_DIALOG_NAME, getWorkingDirectory(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     ui.glCanvas->play(directory);
+}
+
+void MainWindow::actionRestart(){
+    if(!projectName_.isEmpty()){
+        QDir dir = QDir::temp();
+        dir.mkdir("gideros");
+        dir.cd("gideros");
+        dir.cd(projectName_);
+        ui.glCanvas->play(dir);
+    }
 }
 
 void MainWindow::actionOpen_Directory(){

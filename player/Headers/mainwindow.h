@@ -114,6 +114,7 @@ class MainWindow : public QMainWindow{
         void actionDraw_Infos(bool checked);
         void actionOpen();
         void actionOpen_Directory();
+        void actionRestart();
         void projectNameChanged(const QString& projectName);
 };
 
