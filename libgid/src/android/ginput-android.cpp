@@ -646,7 +646,7 @@ public:
     }
 	
 private:
-    ginput_KeyEvent *newKeyEvent(int keyCode)
+    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode)
     {
 		pthread_mutex_lock(&keyPoolMutex_);
         ginput_KeyEvent *event;
