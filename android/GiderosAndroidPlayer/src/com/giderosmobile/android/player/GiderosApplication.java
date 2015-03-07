@@ -67,14 +67,14 @@ public class GiderosApplication
 	private boolean isForeground_ = false;
 
 	private boolean isSurfaceCreated_ = false;
-	
-	private static boolean isPlayer_ = false;
 
 	private ArrayList<Integer> eventQueue_ = new ArrayList<Integer>();
 	private static final int PAUSE = 0;
 	private static final int RESUME = 1;
 	private static final int STOP = 2;
 	private static final int START = 3;
+	
+	private ListView projectList;
 	
 	private GGMediaPlayerManager mediaPlayerManager_;
 	
@@ -168,8 +168,7 @@ public class GiderosApplication
 			in.close();
 		} catch (IOException e)
 		{
-			isPlayer_ = true;
-			loadProject();
+			loadProjects();
 			Logger.log("player mode");
 			return;
 		}		
@@ -303,17 +302,22 @@ public class GiderosApplication
 		Logger.log("cacheDir: " + cacheDir_);
 	}
 	
-	private void loadProject(){
-		ListView projectList = new ListView(WeakActivityHolder.get());
+	private void loadProjects(){
+		projectList = new ListView(WeakActivityHolder.get());
+		TextView text = new TextView(WeakActivityHolder.get());
+		text.setText("Gideros Projects");
+		text.setTextColor(Color.BLACK);
+		text.setTextSize(25);
+		text.setBackgroundColor(Color.WHITE);
+		projectList.addHeaderView(text);
 		ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(WeakActivityHolder.get(), android.R.layout.simple_list_item_1, android.R.id.text1, traverse(new File(Environment.getExternalStorageDirectory().toString()+"/gideros"))){
 			@Override
 	        public View getView(int position, View convertView, ViewGroup parent) {
 	            View view =super.getView(position, convertView, parent);
 
 	            TextView textView=(TextView) view.findViewById(android.R.id.text1);
-
-	            /*YOUR CHOICE OF COLOR*/
 	            textView.setTextColor(Color.BLACK);
+	            textView.setBackgroundColor(Color.WHITE);
 
 	            return view;
 	        }
@@ -323,10 +327,13 @@ public class GiderosApplication
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	TextView textView=(TextView) view.findViewById(android.R.id.text1);
-            	Logger.log("Selected: " + textView.getText());
-            	nativeOpenProject((String) textView.getText());
+            	if(textView != null){
+            		Logger.log("Selected: " + textView.getText());
+            		nativeOpenProject((String) textView.getText());
+            	}
             }
         });
+		projectList.setVisibility(View.GONE);
 		FrameLayout layout = (FrameLayout)WeakActivityHolder.get().getWindow().getDecorView();
 		layout.addView(projectList);
 	}
@@ -550,10 +557,12 @@ public class GiderosApplication
 			GiderosApplication.nativeDrawFrame();
 		}
 	}
+	
+	double touchStart = 0;
 
-	public void onTouchesBegin(int size, int[] id, int[] x,
-			int[] y, int actionIndex)
+	public void onTouchesBegin(int size, int[] id, int[] x, int[] y, int actionIndex)
 	{
+		touchStart = System.currentTimeMillis()/1000;
 		GiderosApplication.nativeTouchesBegin(size, id, x, y, actionIndex);
 	}
 
@@ -566,6 +575,12 @@ public class GiderosApplication
 	public void onTouchesEnd(int size, int[] id, int[] x,
 			int[] y, int actionIndex)
 	{
+		double touchEnd = System.currentTimeMillis()/1000;
+		if(touchEnd - touchStart >= 4){
+			if(projectList != null && projectList.getVisibility() == View.GONE){
+				projectList.setVisibility(View.VISIBLE);
+			}
+		}
 		GiderosApplication.nativeTouchesEnd(size, id, x, y, actionIndex);
 	}
 
@@ -577,6 +592,10 @@ public class GiderosApplication
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event)
 	{
+		if(projectList != null && projectList.getVisibility() == View.VISIBLE){
+			projectList.setVisibility(View.GONE);
+			return true;
+		}
 		return nativeKeyDown(keyCode, event.getRepeatCount());
 	}
 	
@@ -873,11 +892,6 @@ public class GiderosApplication
 	static public String getModel()
 	{
 		return android.os.Build.MODEL;
-	}
-	
-	static public boolean isPlayerMode()
-	{
-		return isPlayer_;
 	}
 
 	static public void openUrl(String url)
