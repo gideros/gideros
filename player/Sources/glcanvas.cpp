@@ -10,6 +10,8 @@
 #endif
 
 #include <QMouseEvent>
+#include <QTouchEvent>
+#include <QList>
 #include "platform.h"
 #include "refptr.h"
 #include <stack>
@@ -60,6 +62,7 @@ static void printToServer(const char* str, int len, void* data){
 
 // the constructor of canvas
 GLCanvas::GLCanvas(QWidget *parent) : QGLWidget(parent){
+    setAttribute(Qt::WA_AcceptTouchEvents);
     setupProperties();
 
     application_->enableExceptions();
@@ -169,6 +172,7 @@ void GLCanvas::setupApplicationProperties(){
 
 // initialize glcanvas, starting some app properties
 void GLCanvas::initializeGL(){
+
     glewInit();
 
     application_->initialize();
@@ -184,6 +188,7 @@ TODO: bu hata olayini iyi dusunmek lazim. bi timer event'inde hata olursa, o tim
 TODO: belki de lua'yi exception'li derlemek lazim. koda baktigimda oyle birseyi destekliyordu
 */
 void GLCanvas::paintGL(){
+
     // call enterframe event
     GStatus status;
     application_->enterFrame(&status);
@@ -221,6 +226,7 @@ void GLCanvas::paintGL(){
 // timer event for upload and configure the player for run
 // TODO: TimerEvent.TIMER'da bi exception olursa, o event bir daha cagirilmiyor. Bunun nedeini bulmak lazim
 void GLCanvas::timerEvent(QTimerEvent *){
+
     /*
     platformImplementation_->openUrls();
     printf(".");
@@ -618,6 +624,68 @@ void GLCanvas::keyReleaseEvent(QKeyEvent* event){
         return;
 
     ginputp_keyUp(event->key());
+}
+
+bool GLCanvas::event(QEvent *event){
+
+    if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate || event->type() == QEvent::TouchEnd)
+    {
+        QTouchEvent* touchEvent = (QTouchEvent*)event;
+        const QList<QTouchEvent::TouchPoint> &list = touchEvent->touchPoints();
+        int size = list.count();
+
+        int xs[size];
+        int ys[size];
+        int ids[size];
+
+        for( int i=0; i<size; ++i )
+        {
+            QTouchEvent::TouchPoint p = list[i];
+            xs[i] = p.pos().x();
+            ys[i] = p.pos().y();
+            ids[i] = i;
+        }
+
+        for( int i=0; i<size; ++i )
+        {
+            QTouchEvent::TouchPoint p = list[i];
+            if(p.state() == Qt::TouchPointPressed){
+                 ginputp_touchesBegin(p.pos().x(), p.pos().y(), i, size, xs, ys, ids);
+            }
+            else if(p.state() == Qt::TouchPointMoved){
+                ginputp_touchesMove(p.pos().x(), p.pos().y(), i, size, xs, ys, ids);
+            }
+            else if(p.state() == Qt::TouchPointReleased){
+                ginputp_touchesEnd(p.pos().x(), p.pos().y(), i, size, xs, ys, ids);
+            }
+        }
+        return true;
+    }
+    else if(event->type() == QEvent::MouseButtonPress){
+        mousePressEvent((QMouseEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::MouseMove){
+        mouseMoveEvent((QMouseEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::MouseButtonRelease){
+        mouseReleaseEvent((QMouseEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::KeyPress){
+        keyPressEvent((QKeyEvent*) event);
+        return true;
+    }
+    else if(event->type() == QEvent::KeyRelease){
+        keyReleaseEvent((QKeyEvent*) event);
+        return true;
+    }
+    else if(event->type() == QEvent::Timer){
+        timerEvent((QTimerEvent *) event);
+        return true;
+    }
+    return QGLWidget::event(event);
 }
 
 
