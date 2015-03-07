@@ -688,6 +688,13 @@ bool GLCanvas::event(QEvent *event){
         timerEvent((QTimerEvent *) event);
         return true;
     }
+    else if(event->type() == QEvent::Resize){
+        if(running_){
+            Event event(Event::APPLICATION_RESIZE);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
     return QGLWidget::event(event);
 }
 

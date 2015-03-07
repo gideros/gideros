@@ -71,6 +71,7 @@ public:
     static Type APPLICATION_RESUME;
     static Type APPLICATION_BACKGROUND;
     static Type APPLICATION_FOREGROUND;
+    static Type APPLICATION_RESIZE;
 
 	virtual void apply(EventVisitor* v);
 
