@@ -7,6 +7,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "EAGLView.h"
+#import "ViewController.h"
 
 #include "giderosapi.h"
 
@@ -172,8 +173,10 @@
 	[self deleteFramebuffer];
 }
 
+int touchStart;
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    touchStart = [[NSDate date] timeIntervalSince1970];
     gdr_touchesBegan(touches, [event allTouches]);
 }
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -182,6 +185,10 @@
 }
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if([[NSDate date] timeIntervalSince1970] - touchStart >= 4){
+        ViewController* view = (ViewController*)g_getRootViewController();
+        [view showTable];
+    }
     gdr_touchesEnded(touches, [event allTouches]);
 }
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
