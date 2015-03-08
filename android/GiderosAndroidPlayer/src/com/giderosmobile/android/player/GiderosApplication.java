@@ -328,7 +328,7 @@ public class GiderosApplication
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             	TextView textView=(TextView) view.findViewById(android.R.id.text1);
             	if(textView != null){
-            		Logger.log("Selected: " + textView.getText());
+            		projectList.setVisibility(View.GONE);
             		nativeOpenProject((String) textView.getText());
             	}
             }
