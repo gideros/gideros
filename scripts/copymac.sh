@@ -54,54 +54,30 @@ git archive -o $BUILD_DIR/tmp.tar HEAD:plugins
 mkdir $BUILD_DIR/mac/All\ Plugins
 tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/mac/All\ Plugins
 
-mkdir $BUILD_DIR/mac/All\ Plugins/BitOp/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/Facebook/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/Flurry/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/Game\ Kit/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/Google\ Billing/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/iAd/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/JSON/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/LPeg/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/LuaFileSystem/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/LuaSocket/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/LuaSQLite3/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/Microphone/bin
-mkdir $BUILD_DIR/mac/All\ Plugins/Store\ Kit/bin
-
-mkdir $BUILD_DIR/mac/All\ Plugins/BitOp/bin/Mac\ OS
-cp plugins/BitOp/source/libbitop.dylib $BUILD_DIR/mac/All\ Plugins/BitOp/bin/Mac\ OS/bitop.dylib
-mkdir $BUILD_DIR/mac/All\ Plugins/LuaSQLite3/bin/Mac\ OS
-cp plugins/LuaSQLite3/source/liblsqlite3.dylib $BUILD_DIR/mac/All\ Plugins/LuaSQLite3/bin/Mac\ OS/lsqlite3.dylib
-mkdir $BUILD_DIR/mac/All\ Plugins/LuaSocket/bin/Mac\ OS
-cp plugins/LuaSocket/source/libluasocket.dylib $BUILD_DIR/mac/All\ Plugins/LuaSocket/bin/Mac\ OS/luasocket.dylib
-mkdir $BUILD_DIR/mac/All\ Plugins/LPeg/bin/Mac\ OS
-cp plugins/LPeg/source/liblpeg.dylib $BUILD_DIR/mac/All\ Plugins/LPeg/bin/Mac\ OS/lpeg.dylib
-mkdir $BUILD_DIR/mac/All\ Plugins/LuaFileSystem/bin/Mac\ OS
-cp plugins/LuaFileSystem/source/liblfs.dylib $BUILD_DIR/mac/All\ Plugins/LuaFileSystem/bin/Mac\ OS/lfs.dylib
-mkdir $BUILD_DIR/mac/All\ Plugins/Microphone/bin/Mac\ OS
-cp plugins/Microphone/source/Desktop/libmicrophone.dylib $BUILD_DIR/mac/All\ Plugins/Microphone/bin/Mac\ OS/microphone.dylib
-mkdir $BUILD_DIR/mac/All\ Plugins/JSON/bin/Mac\ OS
-cp plugins/JSON/source/libjson.dylib $BUILD_DIR/mac/All\ Plugins/JSON/bin/Mac\ OS/json.dylib
-
-
-cp -R $BUILD_DIR/win/All\ Plugins/BitOp/bin/Android $BUILD_DIR/mac/All\ Plugins/BitOp/bin
-cp -R $BUILD_DIR/win/All\ Plugins/LuaSocket/bin/Android $BUILD_DIR/mac/All\ Plugins/LuaSocket/bin
-cp -R $BUILD_DIR/win/All\ Plugins/LPeg/bin/Android $BUILD_DIR/mac/All\ Plugins/LPeg/bin
-cp -R $BUILD_DIR/win/All\ Plugins/LuaFileSystem/bin/Android $BUILD_DIR/mac/All\ Plugins/LuaFileSystem/bin
-cp -R $BUILD_DIR/win/All\ Plugins/LuaSQLite3/bin/Android $BUILD_DIR/mac/All\ Plugins/LuaSQLite3/bin
-cp -R $BUILD_DIR/win/All\ Plugins/Microphone/bin/Android $BUILD_DIR/mac/All\ Plugins/Microphone/bin
-cp -R $BUILD_DIR/win/All\ Plugins/JSON/bin/Android $BUILD_DIR/mac/All\ Plugins/JSON/bin
-cp -R $BUILD_DIR/win/All\ Plugins/Facebook/bin/Android $BUILD_DIR/mac/All\ Plugins/Facebook/bin
-cp -R $BUILD_DIR/win/All\ Plugins/Flurry/bin/Android $BUILD_DIR/mac/All\ Plugins/Flurry/bin
-cp -R $BUILD_DIR/win/All\ Plugins/Google\ Billing/bin/Android $BUILD_DIR/mac/All\ Plugins/Google\ Billing/bin
-
-mkdir $BUILD_DIR/mac/Plugins
-cp plugins/LuaSQLite3/source/liblsqlite3.dylib $BUILD_DIR/mac/Plugins/lsqlite3.dylib
-cp plugins/LuaSocket/source/libluasocket.dylib $BUILD_DIR/mac/Plugins/luasocket.dylib
-cp plugins/LuaFileSystem/source/liblfs.dylib $BUILD_DIR/mac/Plugins/lfs.dylib
-cp plugins/Microphone/source/Desktop/libmicrophone.dylib $BUILD_DIR/mac/Plugins/microphone.dylib
-cp plugins/BitOp/source/libbitop.dylib $BUILD_DIR/mac/Plugins/bitop.dylib
-cp plugins/JSON/source/libjson.dylib $BUILD_DIR/mac/Plugins/json.dylib
+cd plugins
+for d in *; do
+cd $d/source
+mkdir ../../../$BUILD_DIR/mac/All\ Plugins/$d
+mkdir ../../../$BUILD_DIR/mac/All\ Plugins/$d/bin
+mkdir ../../../$BUILD_DIR/mac/Plugins
+if [ -f $d.pro ]; then
+mkdir ../../../$BUILD_DIR/mac/All\ Plugins/$d/bin/Mac\ OS
+cp lib$d.dylib ../../../$BUILD_DIR/mac/All\ Plugins/$d/bin/Mac\ OS/$d.dylib
+cp lib$d.dylib ../../../$BUILD_DIR/mac/Plugins/$d.dylib
+fi
+if [ -d Android ] || [ -d jni ] ; then
+if [ -d Android ]; then
+cd Android
+cp -R ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android ../../../../$BUILD_DIR/mac/All\ Plugins/$d/bin
+cd ..
+else
+cp -R ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android ../../../$BUILD_DIR/mac/All\ Plugins/$d/bin
+fi
+fi
+cd ..
+cd ..
+done
+cd ..
 
 cd scripts
 
