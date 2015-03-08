@@ -47,7 +47,33 @@
         width = bounds.size.height;
     }
     
-    gdr_initialize(self.viewController.glView, width, height, true);
+    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"assets"];
+    
+    NSFileManager *fileManager = [[NSFileManager alloc] init];
+    
+    BOOL isDir;
+    BOOL isPlayer = false;
+    BOOL exists = [fileManager fileExistsAtPath:path isDirectory:&isDir];
+    if (!exists || !isDir ) {
+        isPlayer = true;
+        
+        NSMutableArray *tableData = [[NSMutableArray alloc] init];
+        
+        
+        NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString* dir = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"gideros"];
+        
+        NSArray *files = [fileManager contentsOfDirectoryAtPath:dir error:nil];
+        if (files != nil) {
+            for (NSString *file in files) {
+                [self.viewController addProject:file];
+            }
+        }
+        [self.viewController initTable];
+        //[self.viewController showTable];
+    }
+    
+    gdr_initialize(self.viewController.glView, width, height, isPlayer);
 
     if ([[[UIDevice currentDevice] systemVersion] compare:@"6.0" options:NSNumericSearch] != NSOrderedAscending)
     {
