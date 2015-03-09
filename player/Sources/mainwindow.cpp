@@ -3,6 +3,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <QFileDialog>
+#include <QDesktopServices>
 #include <QFile>
 #include <QTextStream>
 #include <QFileDialog>
@@ -16,6 +17,7 @@
 #include "constants.cpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
+    projectName_ = QString ();
     setupUiActions();
     setupUiProperties();
 
@@ -30,7 +32,9 @@ void MainWindow::setupUiActions(){
     ui.setupUi(this);
 
     connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(ui.actionRestart, SIGNAL(triggered()), this, SLOT(actionRestart()));
     connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(actionOpen()));
+    connect(ui.actionOpen_Directory, SIGNAL(triggered()), this, SLOT(actionOpen_Directory()));
 
     connect(ui.actionFull_Screen,   SIGNAL(triggered(bool)), this, SLOT(actionFull_Screen(bool)));
     connect(ui.actionHide_Menu,     SIGNAL(triggered()), this, SLOT(actionHide_Menu()));
@@ -42,6 +46,8 @@ void MainWindow::setupUiActions(){
     connect(ui.actionZoom_In,       SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionZoom_Out,      SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionFit_To_Window, SIGNAL(triggered()), this, SLOT(actionScale()));
+
+    connect(ui.actionFit_To_App, SIGNAL(triggered()), this, SLOT(actionFitWindow()));
 
     connect(ui.actionDraw_Infos, SIGNAL(triggered(bool)), this, SLOT(actionDraw_Infos(bool)));
 
@@ -349,8 +355,34 @@ void MainWindow::saveSettings(){
 }
 
 void MainWindow::actionOpen(){
-    QDir directory = QFileDialog::getExistingDirectory(this, Constants::PLAYER_OPEN_DIALOG_NAME, "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QDir dir = QDir::temp();
+    dir.mkdir("gideros");
+    dir.cd("gideros");
+    QDir directory = QFileDialog::getExistingDirectory(this, Constants::PLAYER_OPEN_DIALOG_NAME, dir.absolutePath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     ui.glCanvas->play(directory);
+}
+
+void MainWindow::actionRestart(){
+    if(!projectName_.isEmpty()){
+        QDir dir = QDir::temp();
+        dir.mkdir("gideros");
+        dir.cd("gideros");
+        dir.cd(projectName_);
+        ui.glCanvas->play(dir);
+    }
+}
+
+void MainWindow::actionOpen_Directory(){
+    QDesktopServices::openUrl(QUrl("file:///"+getWorkingDirectory(), QUrl::TolerantMode));
+}
+
+QString MainWindow::getWorkingDirectory(){
+    QDir dir = QDir::temp();
+    dir.mkdir("gideros");
+    dir.cd("gideros");
+    if(!projectName_.isEmpty())
+        dir.cd(projectName_);
+    return dir.absolutePath();
 }
 
 void MainWindow::actionDraw_Infos(bool checked){
@@ -437,6 +469,10 @@ void MainWindow::actionScale(){
     setScale(scaleProperty);
 
     updateResolution();
+}
+
+void MainWindow::actionFitWindow(){
+    resize(sizeHint());
 }
 
 void MainWindow::actionRotate(){
@@ -722,6 +758,10 @@ void MainWindow::closeEvent(QCloseEvent*){
 }
 
 void MainWindow::projectNameChanged(const QString& projectName){
+    show();
+    raise();
+    activateWindow();
+    projectName_ = projectName;
     if (projectName.isEmpty() == true)
         setWindowTitle(Constants::PLAYER_WINDOW_TITLE);
     else

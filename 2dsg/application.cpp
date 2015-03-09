@@ -379,14 +379,14 @@ void Application::mouseMove(int x, int y)
     stage_->mouseMove(x, y, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
 }
 
-void Application::keyDown(int keyCode)
+void Application::keyDown(int keyCode, int realCode)
 {
-	stage_->keyDown(keyCode);
+    stage_->keyDown(keyCode, realCode);
 }
 
-void Application::keyUp(int keyCode)
+void Application::keyUp(int keyCode, int realCode)
 {
-	stage_->keyUp(keyCode);
+    stage_->keyUp(keyCode, realCode);
 }
 
 void Application::correctTouchPositions(ginput_TouchEvent *event)

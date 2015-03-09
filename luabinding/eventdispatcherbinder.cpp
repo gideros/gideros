@@ -653,6 +653,9 @@ public:
 
 			lua_pushinteger(L, v->keyCode);
 			lua_setfield(L, -2, "keyCode");
+
+            lua_pushinteger(L, v->realCode);
+            lua_setfield(L, -2, "realCode");
 		}
 		else
 		{

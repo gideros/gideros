@@ -15,7 +15,7 @@ Event::Type Event::APPLICATION_SUSPEND("applicationSuspend");
 Event::Type Event::APPLICATION_RESUME("applicationResume");
 Event::Type Event::APPLICATION_BACKGROUND("applicationBackground");
 Event::Type Event::APPLICATION_FOREGROUND("applicationForeground");
-
+Event::Type Event::APPLICATION_RESIZE("applicationResize");
 
 void Event::apply(EventVisitor* v)
 {

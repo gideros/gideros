@@ -49,6 +49,7 @@ private:
     QDir dir_;
     Orientation orientation_;
     int width_, height_;
+    bool isPlayer_;
     std::string resourceDirectory_;
     std::string md5filename_;
     int fps_;
@@ -68,18 +69,21 @@ private:
 	virtual void initializeGL();
 
 	virtual void paintGL();
-	virtual void timerEvent(QTimerEvent *);
-	virtual void mousePressEvent(QMouseEvent* event);
-	virtual void mouseMoveEvent(QMouseEvent* event);
-	virtual void mouseReleaseEvent(QMouseEvent* event);
-	virtual void keyPressEvent(QKeyEvent* event);
-	virtual void keyReleaseEvent(QKeyEvent* event);
+    void timerEvent(QTimerEvent *);
+    void mousePressEvent(QMouseEvent* event);
+    void mouseMoveEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
+    void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
+    virtual bool event(QEvent *event);
 	void deleteFiles();
 	void sendFileList();
 	void loadMD5();
 	void saveMD5();
 	void calculateMD5(const char* file);
     void printMD5();
+    void loadProperties(std::vector<char> data);
+    void loadFiles(std::vector<char> data);
 
     //static void accessFileCallback_s(FileType type, const char* filename, void* data);
     //void accessFileCallback(FileType type, const char* filename);

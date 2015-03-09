@@ -99,15 +99,15 @@ void Stage::touchesCancel(ginput_TouchEvent *event, float sx, float sy, float tx
     dispatchToSpritesWithListeners(&event2);
 }
 
-void Stage::keyDown(int keyCode)
+void Stage::keyDown(int keyCode, int realCode)
 {
-	KeyboardEvent event(KeyboardEvent::KEY_DOWN, keyCode);
+    KeyboardEvent event(KeyboardEvent::KEY_DOWN, keyCode, realCode);
     dispatchToSpritesWithListeners(&event);
 }
 
-void Stage::keyUp(int keyCode)
+void Stage::keyUp(int keyCode, int realCode)
 {
-	KeyboardEvent event(KeyboardEvent::KEY_UP, keyCode);
+    KeyboardEvent event(KeyboardEvent::KEY_UP, keyCode, realCode);
     dispatchToSpritesWithListeners(&event);
 }
 

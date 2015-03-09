@@ -10,6 +10,8 @@
 #endif
 
 #include <QMouseEvent>
+#include <QTouchEvent>
+#include <QList>
 #include "platform.h"
 #include "refptr.h"
 #include <stack>
@@ -60,8 +62,22 @@ static void printToServer(const char* str, int len, void* data){
 
 // the constructor of canvas
 GLCanvas::GLCanvas(QWidget *parent) : QGLWidget(parent){
+    setAttribute(Qt::WA_AcceptTouchEvents);
+
+    isPlayer_ = true;
+
+    /*QFile Props(":/Resources/properties.bin");
+    QFile LuaFiles(":/Resources/luafiles.txt");
+
+    if(Props.exists() && LuaFiles.exists())
+    {
+        isPlayer_ = false;
+        play(QDir(":/Resources"));
+    }*/
+
     setupProperties();
 
+    application_->setPlayerMode(isPlayer_);
     application_->enableExceptions();
     application_->setPrintFunc(printToServer);
 
@@ -111,9 +127,11 @@ GLCanvas::~GLCanvas(){
     delete platformImplementation_;
     */
 
-    // delete server and global server
-    delete server_;
-    g_server = 0;
+    if(isPlayer_){
+        // delete server and global server
+        delete server_;
+        g_server = 0;
+    }
 }
 
 
@@ -123,10 +141,12 @@ void GLCanvas::setupProperties(){
     // set the lua application to use in player
     application_ = new LuaApplication;
 
-    server_ = new Server(15000);
+    if(isPlayer_){
+        server_ = new Server(15000);
 
-    // set the global server var to use in print to server function
-    g_server = server_;
+        // set the global server var to use in print to server function
+        g_server = server_;
+    }
 
     running_ = false;
     orientation_ = ePortrait;
@@ -169,6 +189,7 @@ void GLCanvas::setupApplicationProperties(){
 
 // initialize glcanvas, starting some app properties
 void GLCanvas::initializeGL(){
+
     glewInit();
 
     application_->initialize();
@@ -184,6 +205,7 @@ TODO: bu hata olayini iyi dusunmek lazim. bi timer event'inde hata olursa, o tim
 TODO: belki de lua'yi exception'li derlemek lazim. koda baktigimda oyle birseyi destekliyordu
 */
 void GLCanvas::paintGL(){
+
     // call enterframe event
     GStatus status;
     application_->enterFrame(&status);
@@ -221,283 +243,387 @@ void GLCanvas::paintGL(){
 // timer event for upload and configure the player for run
 // TODO: TimerEvent.TIMER'da bi exception olursa, o event bir daha cagirilmiyor. Bunun nedeini bulmak lazim
 void GLCanvas::timerEvent(QTimerEvent *){
+
     /*
     platformImplementation_->openUrls();
     printf(".");
     printf("%d\n", Referenced::instanceCount);
     */
 
-    int dataTotal = 0;
+    if(isPlayer_){
+        int dataTotal = 0;
 
-    while(true){
-        int dataSent0 = server_->dataSent();
-        int dataReceived0 = server_->dataReceived();
+        while(true){
+            int dataSent0 = server_->dataSent();
+            int dataReceived0 = server_->dataReceived();
 
-        NetworkEvent event;
-        server_->tick(&event);
+            NetworkEvent event;
+            server_->tick(&event);
 
-        /*
-        if (event.eventCode != eNone)
-            printf("%s\n", eventCodeString(event.eventCode));
-        */
+            /*
+            if (event.eventCode != eNone)
+                printf("%s\n", eventCodeString(event.eventCode));
+            */
 
-        int dataSent1 = server_->dataSent();
-        int dataReceived1 = server_->dataReceived();
+            int dataSent1 = server_->dataSent();
+            int dataReceived1 = server_->dataReceived();
 
-        if(event.eventCode == eDataReceived){
-            const std::vector<char>& data = event.data;
+            if(event.eventCode == eDataReceived){
+                const std::vector<char>& data = event.data;
 
-            switch(data[0]){
-                case 0:			// create folder
-                {
-                    std::string folderName = &data[1];
-                    __mkdir(g_pathForFile(folderName.c_str()));
-                    break;
-                }
-
-                case 1:			// create file
-                {
-                    std::string fileName = &data[1];
-                    FILE* fos = fopen(g_pathForFile(fileName.c_str()), "wb");
-                    int pos = 1 + fileName.size() + 1;
-                    if(data.size() > pos)
-                        fwrite(&data[pos], data.size() - pos, 1, fos);
-                    fclose(fos);
-                    allResourceFiles.insert(fileName);
-                    calculateMD5(fileName.c_str());
-                    saveMD5();
-                    break;
-                }
-
-                case 2:
-                {
-                    glog_v("play message is received\n");
-
-                    running_ = true;
-
-                    //accessedResourceFiles.clear();
-
-                    std::vector<std::string> luafiles;
-
-                    ByteBuffer buffer(&data[0], data.size());
-
-                    char chr;
-                    buffer >> chr;
-
-                    while (buffer.eob() == false)
+                switch(data[0]){
+                    case 0:			// create folder
                     {
-                        std::string str;
-                        buffer >> str;
-                        luafiles.push_back(str);
+                        std::string folderName = &data[1];
+                        __mkdir(g_pathForFile(folderName.c_str()));
+                        break;
                     }
 
-                    GStatus status;
-                    for (std::size_t i = 0; i < luafiles.size(); ++i)
+                    case 1:			// create file
                     {
-                        application_->loadFile(luafiles[i].c_str(), &status);
-                        if (status.error())
-                            break;
+                        std::string fileName = &data[1];
+                        FILE* fos = fopen(g_pathForFile(fileName.c_str()), "wb");
+                        int pos = 1 + fileName.size() + 1;
+                        if(data.size() > pos)
+                            fwrite(&data[pos], data.size() - pos, 1, fos);
+                        fclose(fos);
+                        allResourceFiles.insert(fileName);
+                        calculateMD5(fileName.c_str());
+                        saveMD5();
+                        break;
                     }
 
-                    if (!status.error())
+                    case 2:
                     {
-                        Event event(Event::APPLICATION_START);
-                        application_->broadcastEvent(&event, &status);
-                    }
+                        glog_v("play message is received\n");
 
-                    if (status.error())
-                    {
-                        running_ = false;
+                        running_ = true;
 
-                        errorDialog_.appendString(status.errorString());
-                        errorDialog_.show();
-                        printToServer(status.errorString(), -1, NULL);
-                        printToServer("\n", -1, NULL);
-                        application_->deinitialize();
-                        application_->initialize();
-                    }
+                        //accessedResourceFiles.clear();
 
-                    break;
-                }
-
-                case 3:
-                {
-                    glog_v("stop message is received\n");
-
-                    if (running_ == true)
-                    {
-                        Event event(Event::APPLICATION_EXIT);
-                        GStatus status;
-                        application_->broadcastEvent(&event, &status);
-
-                        if (status.error())
-                        {
-                            errorDialog_.appendString(status.errorString());
-                            errorDialog_.show();
-                            printToServer(status.errorString(), -1, NULL);
-                            printToServer("\n", -1, NULL);
-                        }
-                    }
-
-                    running_ = false;
-
-                    application_->deinitialize();
-                    application_->initialize();
-                    setupApplicationProperties();
-                    break;
-                }
-
-                /*
-                case 5:
-                {
-                    // deleteFiles();
-                    break;
-                }
-                */
-
-                case 7:
-                {
-                    sendFileList();
-                    break;
-                }
-
-                case 8:
-                {
-                    ByteBuffer buffer(&data[0], data.size());
-
-                    char chr;
-                    buffer >> chr;
-
-                    std::string str;
-                    buffer >> str;
-
-                    projectName_ = str.c_str();
-
-                    if(projectName_.isEmpty() == false){
                         dir_ = QDir::temp();
                         dir_.mkdir("gideros");
                         dir_.cd("gideros");
                         dir_.mkdir(projectName_);
                         dir_.cd(projectName_);
 
-                        md5filename_ = qPrintable(dir_.absoluteFilePath("md5.txt"));
-                        loadMD5();
+                        QByteArray ba;
+                        QDataStream datastream(&ba,QIODevice::ReadWrite);
+                        datastream.writeRawData((const char*)&data[0], data.size());
+                        QFile file(dir_.absolutePath()+"/luafiles.txt");
+                        file.open(QIODevice::WriteOnly);
+                        file.write(ba);
+                        file.close();
 
-                        dir_.mkdir("documents");
-                        dir_.mkdir("temporary");
-                        dir_.mkdir("resource");
+                        loadFiles(data);
 
-                        resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
-
-                        setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
-                        setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
-                        setResourceDirectory(resourceDirectory_.c_str());
+                        break;
                     }
 
-                    emit projectNameChanged(projectName_);
-                    break;
-                }
-
-                case 9:
-                {
-                    ByteBuffer buffer(&data[0], data.size());
-
-                    char chr;
-                    buffer >> chr;
-
-                    std::string fileName;
-                    buffer >> fileName;
-
-                    remove(g_pathForFile(fileName.c_str()));
-
+                    case 3:
                     {
-                        std::set<std::string>::iterator iter = allResourceFiles.find(fileName);
-                        if (iter != allResourceFiles.end())		// this if statement is unnecessary, but we put it "ne olur ne olmaz"
-                            allResourceFiles.erase(iter);
-                    }
+                        glog_v("stop message is received\n");
 
-                    {
-                        std::map<std::string, std::vector<unsigned char> >::iterator iter = md5_.find(fileName);
-                        if (iter != md5_.end())
+                        if (running_ == true)
                         {
-                            md5_.erase(iter);
-                            saveMD5();
+                            Event event(Event::APPLICATION_EXIT);
+                            GStatus status;
+                            application_->broadcastEvent(&event, &status);
+
+                            if (status.error())
+                            {
+                                errorDialog_.appendString(status.errorString());
+                                errorDialog_.show();
+                                printToServer(status.errorString(), -1, NULL);
+                                printToServer("\n", -1, NULL);
+                            }
                         }
+
+                        running_ = false;
+
+                        application_->deinitialize();
+                        application_->initialize();
+                        setupApplicationProperties();
+                        break;
                     }
 
-                    break;
-                }
-
-                case 11:
-                {
-                    ByteBuffer buffer(&data[0], data.size());
-
-                    char chr;
-                    buffer >> chr;
-
-                    int scaleMode, logicalWidth, logicalHeight;
-                    buffer >> scaleMode;
-                    buffer >> logicalWidth;
-                    buffer >> logicalHeight;
-
-                    application_->deinitialize();
-                    application_->initialize();
-                    setupApplicationProperties();
-    //				application_->orientationChange(orientation_);
-                    application_->setLogicalDimensions(logicalWidth, logicalHeight);
-                    application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
-
-                    int scaleCount;
-                    buffer >> scaleCount;
-                    std::vector<std::pair<std::string, float> > imageScales(scaleCount);
-                    for (int i = 0; i < scaleCount; ++i)
+                    /*
+                    case 5:
                     {
-                        buffer >> imageScales[i].first;
-                        buffer >> imageScales[i].second;
+                        // deleteFiles();
+                        break;
+                    }
+                    */
+
+                    case 7:
+                    {
+                        sendFileList();
+                        break;
                     }
 
-                    application_->setImageScales(imageScales);
+                    case 8:
+                    {
+                        ByteBuffer buffer(&data[0], data.size());
 
-                    int orientation;
-                    buffer >> orientation;
-                    application_->setOrientation((Orientation)orientation);
-                    application_->getApplication()->setDeviceOrientation((Orientation)orientation);
+                        char chr;
+                        buffer >> chr;
 
-                    int fps;
-                    buffer >> fps;
+                        std::string str;
+                        buffer >> str;
 
-                    int retinaDisplay;
-                    buffer >> retinaDisplay;
+                        projectName_ = str.c_str();
 
-                    int autorotation;
-                    buffer >> autorotation;
+                        if(projectName_.isEmpty() == false){
+                            dir_ = QDir::temp();
+                            dir_.mkdir("gideros");
+                            dir_.cd("gideros");
+                            dir_.mkdir(projectName_);
+                            dir_.cd(projectName_);
 
-                    int mouseToTouch;
-                    buffer >> mouseToTouch;
-                    ginput_setMouseToTouchEnabled(mouseToTouch);
+                            md5filename_ = qPrintable(dir_.absoluteFilePath("md5.txt"));
+                            loadMD5();
 
-                    int touchToMouse;
-                    buffer >> touchToMouse;
-                    ginput_setTouchToMouseEnabled(touchToMouse);
+                            dir_.mkdir("documents");
+                            dir_.mkdir("temporary");
+                            dir_.mkdir("resource");
 
-                    int mouseTouchOrder;
-                    buffer >> mouseTouchOrder;
-                    ginput_setMouseTouchOrder(mouseTouchOrder);
+                            resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
 
-                    break;
+                            setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
+                            setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
+                            setResourceDirectory(resourceDirectory_.c_str());
+                        }
+
+                        emit projectNameChanged(projectName_);
+                        break;
+                    }
+
+                    case 9:
+                    {
+                        ByteBuffer buffer(&data[0], data.size());
+
+                        char chr;
+                        buffer >> chr;
+
+                        std::string fileName;
+                        buffer >> fileName;
+
+                        remove(g_pathForFile(fileName.c_str()));
+
+                        {
+                            std::set<std::string>::iterator iter = allResourceFiles.find(fileName);
+                            if (iter != allResourceFiles.end())		// this if statement is unnecessary, but we put it "ne olur ne olmaz"
+                                allResourceFiles.erase(iter);
+                        }
+
+                        {
+                            std::map<std::string, std::vector<unsigned char> >::iterator iter = md5_.find(fileName);
+                            if (iter != md5_.end())
+                            {
+                                md5_.erase(iter);
+                                saveMD5();
+                            }
+                        }
+
+                        break;
+                    }
+
+                    case 11:
+                    {
+                        dir_ = QDir::temp();
+                        dir_.mkdir("gideros");
+                        dir_.cd("gideros");
+                        dir_.mkdir(projectName_);
+                        dir_.cd(projectName_);
+
+                        QByteArray ba;
+                        QDataStream datastream(&ba,QIODevice::ReadWrite);
+                        datastream.writeRawData((const char*)&data[0], data.size());
+                        QFile file(dir_.absolutePath()+"/properties.bin");
+                        file.open(QIODevice::WriteOnly);
+                        file.write(ba);
+                        file.close();
+
+                        loadProperties(data);
+
+                        break;
+                    }
                 }
             }
+
+            int dataDelta = (dataSent1 - dataSent0) + (dataReceived1 - dataReceived0);
+            dataTotal += dataDelta;
+
+            // data upload complete
+            if(dataDelta == 0 || dataTotal > 1024)
+                break;
         }
-
-        int dataDelta = (dataSent1 - dataSent0) + (dataReceived1 - dataReceived0);
-        dataTotal += dataDelta;
-
-        // data upload complete
-        if(dataDelta == 0 || dataTotal > 1024)
-            break;
     }
 
     update();
+}
+
+// function to play an application into player passing path
+// TODO: pensar em um nome intuitivo
+void GLCanvas::play(QDir directory){
+    QFile file(dir_.absolutePath()+"/properties.bin");
+    QFile luafiles(dir_.absolutePath()+"/luafiles.txt");
+
+    if(file.exists() && luafiles.exists()){
+
+        // emmit a stop on player
+        if(running_ == true){
+            Event event(Event::APPLICATION_EXIT);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+            running_ = false;
+
+            if(status.error()){
+                errorDialog_.appendString(status.errorString());
+                errorDialog_.show();
+                printToServer(status.errorString(), -1, NULL);
+                printToServer("\n", -1, NULL);
+                return;
+            }
+        }
+
+        // next, send the project name
+        projectName_ = directory.dirName();
+
+        emit projectNameChanged(projectName_);
+
+        dir_ = QDir::temp();
+        dir_.mkdir("gideros");
+        dir_.cd("gideros");
+        dir_.mkdir(projectName_);
+        dir_.cd(projectName_);
+        dir_.mkdir("documents");
+        dir_.mkdir("temporary");
+
+        resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
+
+        setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
+        setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
+        setResourceDirectory(resourceDirectory_.c_str());
+
+        file.open(QIODevice::ReadOnly);
+        QByteArray ba = file.readAll();
+        file.close();
+        std::vector<char> data(ba.data(), ba.data() + ba.size());
+
+        loadProperties(data);
+
+        running_ = true;
+
+        luafiles.open(QIODevice::ReadOnly);
+        QByteArray bas = luafiles.readAll();
+        luafiles.close();
+        std::vector<char> data2(bas.data(), bas.data() + bas.size());
+
+        loadFiles(data2);
+    }
+    else{
+        errorDialog_.appendString("Please re-export your project");
+        errorDialog_.show();
+    }
+}
+
+void GLCanvas::loadProperties(std::vector<char> data){
+    ByteBuffer buffer(&data[0], data.size());
+
+    char chr;
+    buffer >> chr;
+
+    int scaleMode, logicalWidth, logicalHeight;
+    buffer >> scaleMode;
+    buffer >> logicalWidth;
+    buffer >> logicalHeight;
+
+    application_->deinitialize();
+    application_->initialize();
+    setupApplicationProperties();
+//				application_->orientationChange(orientation_);
+    application_->setLogicalDimensions(logicalWidth, logicalHeight);
+    application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
+
+    int scaleCount;
+    buffer >> scaleCount;
+    std::vector<std::pair<std::string, float> > imageScales(scaleCount);
+    for (int i = 0; i < scaleCount; ++i)
+    {
+        buffer >> imageScales[i].first;
+        buffer >> imageScales[i].second;
+    }
+
+    application_->setImageScales(imageScales);
+
+    int orientation;
+    buffer >> orientation;
+    application_->setOrientation((Orientation)orientation);
+    application_->getApplication()->setDeviceOrientation((Orientation)orientation);
+
+    int fps;
+    buffer >> fps;
+
+    int retinaDisplay;
+    buffer >> retinaDisplay;
+
+    int autorotation;
+    buffer >> autorotation;
+
+    int mouseToTouch;
+    buffer >> mouseToTouch;
+    ginput_setMouseToTouchEnabled(mouseToTouch);
+
+    int touchToMouse;
+    buffer >> touchToMouse;
+    ginput_setTouchToMouseEnabled(touchToMouse);
+
+    int mouseTouchOrder;
+    buffer >> mouseTouchOrder;
+    ginput_setMouseTouchOrder(mouseTouchOrder);
+}
+
+void GLCanvas::loadFiles(std::vector<char> data){
+    std::vector<std::string> luafiles;
+
+    ByteBuffer buffer(&data[0], data.size());
+
+    char chr;
+    buffer >> chr;
+
+    while (buffer.eob() == false)
+    {
+        std::string str;
+        buffer >> str;
+        luafiles.push_back(str);
+    }
+
+    GStatus status;
+    for (std::size_t i = 0; i < luafiles.size(); ++i)
+    {
+        application_->loadFile(luafiles[i].c_str(), &status);
+        if (status.error())
+            break;
+    }
+
+    if (!status.error())
+    {
+        Event event(Event::APPLICATION_START);
+        application_->broadcastEvent(&event, &status);
+    }
+
+    if (status.error())
+    {
+        running_ = false;
+
+        errorDialog_.appendString(status.errorString());
+        errorDialog_.show();
+        printToServer(status.errorString(), -1, NULL);
+        printToServer("\n", -1, NULL);
+        application_->deinitialize();
+        application_->initialize();
+    }
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event){
@@ -524,6 +650,78 @@ void GLCanvas::keyReleaseEvent(QKeyEvent* event){
         return;
 
     ginputp_keyUp(event->key());
+}
+
+bool GLCanvas::event(QEvent *event){
+
+    if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate || event->type() == QEvent::TouchEnd || event->type() == QEvent::TouchCancel)
+    {
+        QTouchEvent* touchEvent = (QTouchEvent*)event;
+        const QList<QTouchEvent::TouchPoint> &list = touchEvent->touchPoints();
+        int size = list.count();
+
+        int xs[size];
+        int ys[size];
+        int ids[size];
+
+        for( int i=0; i<size; ++i )
+        {
+            QTouchEvent::TouchPoint p = list[i];
+            xs[i] = p.pos().x() * deviceScale_;
+            ys[i] = p.pos().y() * deviceScale_;
+            ids[i] = i;
+        }
+
+        for( int i=0; i<size; ++i )
+        {
+            QTouchEvent::TouchPoint p = list[i];
+            if(event->type() == QEvent::TouchCancel){
+                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+            }
+            else if(p.state() == Qt::TouchPointPressed){
+                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+            }
+            else if(p.state() == Qt::TouchPointMoved){
+                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+            }
+            else if(p.state() == Qt::TouchPointReleased){
+                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+            }
+        }
+        return true;
+    }
+    else if(event->type() == QEvent::MouseButtonPress){
+        mousePressEvent((QMouseEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::MouseMove){
+        mouseMoveEvent((QMouseEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::MouseButtonRelease){
+        mouseReleaseEvent((QMouseEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::KeyPress){
+        keyPressEvent((QKeyEvent*) event);
+        return true;
+    }
+    else if(event->type() == QEvent::KeyRelease){
+        keyReleaseEvent((QKeyEvent*) event);
+        return true;
+    }
+    else if(event->type() == QEvent::Timer){
+        timerEvent((QTimerEvent *) event);
+        return true;
+    }
+    else if(event->type() == QEvent::Resize){
+        if(running_){
+            Event event(Event::APPLICATION_RESIZE);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
+    return QGLWidget::event(event);
 }
 
 
@@ -769,82 +967,6 @@ void GLCanvas::printMD5(){
         qDebug() << buffer;
     }
 }
-
-// function to play an application into player passing path
-// TODO: pensar em um nome intuitivo
-void GLCanvas::play(QDir directory){
-    // emmit a stop on player
-    if(running_ == true){
-        Event event(Event::APPLICATION_EXIT);
-        GStatus status;
-        application_->broadcastEvent(&event, &status);
-        running_ = false;
-
-        if(status.error()){
-            errorDialog_.appendString(status.errorString());
-            errorDialog_.show();
-            printToServer(status.errorString(), -1, NULL);
-            printToServer("\n", -1, NULL);
-            return;
-        }
-    }
-
-    // reset the player settings
-    application_->deinitialize();
-    application_->initialize();
-    setupApplicationProperties();
-
-    // next, send the project name
-    projectName_ = directory.dirName();
-
-    emit projectNameChanged(projectName_);
-
-    dir_ = QDir::temp();
-    dir_.mkdir("gideros");
-    dir_.cd("gideros");
-    dir_.mkdir(projectName_);
-    dir_.cd(projectName_);
-    dir_.mkdir("documents");
-    dir_.mkdir("temporary");
-
-    setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
-    setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
-    setResourceDirectory(directory.absolutePath().toStdString().c_str());
-
-    // play the loaded app
-    running_ = true;
-
-    QStringList filters;
-    filters << "*.lua";
-    directory.setNameFilters(filters);
-    QStringList directoryFiles = directory.entryList();
-
-    GStatus status;
-    foreach(QString directoryFile, directoryFiles){
-        application_->loadFile(directoryFile.toStdString().c_str(), &status);
-        if (status.error())
-            break;
-    }
-
-    Event event(Event::APPLICATION_START);
-    application_->broadcastEvent(&event, &status);
-
-    if (status.error())
-    {
-        running_ = false;
-
-        errorDialog_.appendString(status.errorString());
-        errorDialog_.show();
-        printToServer(status.errorString(), -1, NULL);
-        printToServer("\n", -1, NULL);
-        application_->deinitialize();
-        application_->initialize();
-
-        return;
-    }
-}
-
-
 
 // setters
 void GLCanvas::setScale(float scale){

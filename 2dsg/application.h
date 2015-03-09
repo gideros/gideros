@@ -54,8 +54,8 @@ public:
     void touchesEnd(ginput_TouchEvent *event);
     void touchesCancel(ginput_TouchEvent *event);
 
-	void keyDown(int keyCode);
-	void keyUp(int keyCode);
+    void keyDown(int keyCode, int realCode);
+    void keyUp(int keyCode, int realCode);
 
 	void setClearColorBuffer(bool b)
 	{

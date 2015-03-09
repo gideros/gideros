@@ -58,7 +58,7 @@
      <x>0</x>
      <y>0</y>
      <width>320</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="palette">
@@ -102,6 +102,9 @@
     <property name="title">
      <string>File</string>
     </property>
+	<addaction name="actionRestart"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionOpen_Directory"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHardware">
@@ -180,6 +183,7 @@
      <addaction name="actionOriginal"/>
      <addaction name="separator"/>
      <addaction name="actionFit_To_Window"/>
+     <addaction name="actionFit_To_App"/>
     </widget>
     <addaction name="actionAlways_on_Top"/>
     <addaction name="actionHide_Menu"/>
@@ -498,7 +502,7 @@
   </action>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>Open Project</string>
    </property>
   </action>
   <action name="actionAuto_Scale">
@@ -566,6 +570,36 @@
    </property>
    <property name="text">
     <string>Draw Infos</string>
+   </property>
+  </action>
+  <action name="actionFit_To_App">
+   <property name="text">
+    <string>Fit To App</string>
+   </property>
+   <property name="toolTip">
+    <string>Fit To App</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F</string>
+   </property>
+  </action>
+  <action name="actionOpen_Directory">
+   <property name="text">
+    <string>Open Directory</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Gideros Directory</string>
+   </property>
+  </action>
+  <action name="actionRestart">
+   <property name="text">
+    <string>Restart</string>
+   </property>
+   <property name="toolTip">
+    <string>Restart Player</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <addaction name="actionExit"/>

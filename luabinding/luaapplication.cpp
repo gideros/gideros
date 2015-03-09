@@ -442,6 +442,8 @@ LuaApplication::LuaApplication(void)
 
 	application_ = 0;
 
+    isPlayer_ = true;
+
 	exceptionsEnabled_ = true;
 
 	orientation_ = ePortrait;
@@ -479,12 +481,12 @@ void LuaApplication::callback(int type, void *event)
     else if (type == GINPUT_KEY_DOWN_EVENT)
     {
         ginput_KeyEvent *event2 = (ginput_KeyEvent*)event;
-        application_->keyDown(event2->keyCode);
+        application_->keyDown(event2->keyCode, event2->realCode);
     }
     else if (type == GINPUT_KEY_UP_EVENT)
     {
         ginput_KeyEvent *event2 = (ginput_KeyEvent*)event;
-        application_->keyUp(event2->keyCode);
+        application_->keyUp(event2->keyCode, event2->realCode);
     }
     else if (type == GINPUT_TOUCH_BEGIN_EVENT)
     {
@@ -897,6 +899,16 @@ void LuaApplication::renderScene(int deltaFrameCount)
 	application_->renderScene();
 }
 
+void LuaApplication::setPlayerMode(bool isPlayer)
+{
+    isPlayer_ = isPlayer;
+}
+
+
+bool LuaApplication::isPlayerMode()
+{
+    return isPlayer_;
+}
 
 lua_PrintFunc LuaApplication::getPrintFunc(void)
 {

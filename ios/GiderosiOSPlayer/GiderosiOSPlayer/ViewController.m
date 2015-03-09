@@ -18,10 +18,13 @@
 
 @implementation ViewController
 
-@synthesize animating, context, displayLink, glView;
+NSMutableArray *tableData;
+
+@synthesize animating, context, displayLink, glView, tableView;
 
 - (id)init
 {
+    tableData = [[NSMutableArray alloc] init];
 	if (self = [super init])
 	{
 		animating = FALSE;
@@ -68,6 +71,8 @@
         [EAGLContext setCurrentContext:nil];
     
     [context release];
+    
+    [tableData release];
     
     [super dealloc];
 }
@@ -174,6 +179,72 @@
 - (NSUInteger)supportedInterfaceOrientations
 {
     return gdr_supportedInterfaceOrientations();
+}
+
+- (void)initTable{
+    CGRect bounds = [[UIScreen mainScreen] bounds];
+    self.tableView=[[UITableView alloc]init];
+    self.tableView.frame = CGRectMake(0,0,bounds.size.width,bounds.size.height);
+    self.tableView.dataSource=self;
+    self.tableView.delegate=self;
+    self.tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+    
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width, 100)];
+    UILabel *labelView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width/2, 100)];
+    [labelView setText:@"Gideros Projects"];
+    labelView.font=[labelView.font fontWithSize:25];
+    labelView.textAlignment = NSTextAlignmentCenter;
+    [headerView addSubview:labelView];
+    self.tableView.tableHeaderView = headerView;
+    [labelView release];
+    [headerView release];
+    [self.tableView reloadData];
+    [self.view addSubview:self.tableView];
+}
+
+- (void)showTable{
+    if(self.tableView){
+        [self.tableView setHidden:false];
+    }
+}
+
+- (void)hideTable{
+    if(self.tableView){
+        [tableView setHidden:true];
+    }
+}
+
+- (void)addProject:(NSString*)project{
+    [tableData addObject:project];
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+
+    return [tableData count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *simpleTableIdentifier = @"SimpleTableItem";
+    
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
+    
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
+    }
+    cell.backgroundView = [[UIView alloc] init];
+    [cell.backgroundView setBackgroundColor:[UIColor whiteColor]];
+    [[[cell contentView] subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    cell.textLabel.text = [tableData objectAtIndex:indexPath.row];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self hideTable];
+    gdr_openProject([tableData objectAtIndex:indexPath.row]);
 }
 
 @end

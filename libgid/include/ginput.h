@@ -93,6 +93,7 @@ typedef struct ginput_TouchEvent
 typedef struct ginput_KeyEvent
 {
     int keyCode;
+    int realCode;
 } ginput_KeyEvent;
 
 #ifdef __cplusplus

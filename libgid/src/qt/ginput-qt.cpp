@@ -256,24 +256,188 @@ public:
         }
     }
 
-    void keyDown(int keyCode)
+    void touchesBegin(int x, int y, int id, int touches, int xs[], int ys[], int ids[])
     {
-        keyCode = convertKeyCode(keyCode);
-        if (keyCode == 0)
-            return;
+        ginput_TouchEvent *touchEvent = newTouchEvent(touches);
+        touchEvent->touch.x = x;
+        touchEvent->touch.y = y;
+        touchEvent->touch.id = id;
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode);
+        for(int i = 0; i < touches; i++){
+            touchEvent->allTouches[i].x = xs[i];
+            touchEvent->allTouches[i].y = ys[i];
+            touchEvent->allTouches[i].id = ids[i];
+        }
+
+        ginput_MouseEvent *mouseEvent = NULL;
+        if (isTouchToMouseEnabled_)
+        {
+            mouseEvent = newMouseEvent(x, y, 0);
+        }
+
+        if (mouseTouchOrder_ == 0)
+        {
+            if (mouseEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_DOWN_EVENT, mouseEvent, 0, this);
+                deleteMouseEvent(mouseEvent);
+            }
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_BEGIN_EVENT, touchEvent, 0, this);
+            deleteTouchEvent(touchEvent);
+
+        }
+        else
+        {
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_BEGIN_EVENT, touchEvent, 0, this);
+            deleteTouchEvent(touchEvent);
+            if (mouseEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_DOWN_EVENT, mouseEvent, 0, this);
+                deleteMouseEvent(mouseEvent);
+            }
+        }
+    }
+
+    void touchesMove(int x, int y, int id, int touches, int xs[], int ys[], int ids[])
+    {
+        ginput_MouseEvent *mouseEvent = NULL;
+
+        ginput_TouchEvent *touchEvent = touchEvent = newTouchEvent(touches);
+        touchEvent->touch.x = x;
+        touchEvent->touch.y = y;
+        touchEvent->touch.id = id;
+        for(int i = 0; i < touches; i++){
+            touchEvent->allTouches[i].x = xs[i];
+            touchEvent->allTouches[i].y = ys[i];
+            touchEvent->allTouches[i].id = ids[i];
+        }
+
+        if (isTouchToMouseEnabled_)
+        {
+            mouseEvent = newMouseEvent(x, y, GINPUT_NO_BUTTON);
+        }
+
+        if (mouseTouchOrder_ == 0)
+        {
+            if (mouseEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_MOVE_EVENT, mouseEvent, 0, this);
+                deleteMouseEvent(mouseEvent);
+            }
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_MOVE_EVENT, touchEvent, 0, this);
+            deleteTouchEvent(touchEvent);
+
+        }
+        else
+        {
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_MOVE_EVENT, touchEvent, 0, this);
+            deleteTouchEvent(touchEvent);
+            if (mouseEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_MOVE_EVENT, mouseEvent, 0, this);
+                deleteMouseEvent(mouseEvent);
+            }
+        }
+    }
+
+    void touchesEnd(int x, int y, int id, int touches, int xs[], int ys[], int ids[])
+    {
+        ginput_MouseEvent *mouseEvent = NULL;
+
+        ginput_TouchEvent *touchEvent = touchEvent = newTouchEvent(touches);
+        touchEvent->touch.x = x;
+        touchEvent->touch.y = y;
+        touchEvent->touch.id = id;
+        for(int i = 0; i < touches; i++){
+            touchEvent->allTouches[i].x = xs[i];
+            touchEvent->allTouches[i].y = ys[i];
+            touchEvent->allTouches[i].id = ids[i];
+        }
+
+        if (isTouchToMouseEnabled_)
+        {
+            mouseEvent = newMouseEvent(x, y, 0);
+        }
+
+        if (mouseTouchOrder_ == 0)
+        {
+            if (mouseEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_UP_EVENT, mouseEvent, 0, this);
+                deleteMouseEvent(mouseEvent);
+            }
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_END_EVENT, touchEvent, 0, this);
+            deleteTouchEvent(touchEvent);
+
+        }
+        else
+        {
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_END_EVENT, touchEvent, 0, this);
+            deleteTouchEvent(touchEvent);
+            if (mouseEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_UP_EVENT, mouseEvent, 0, this);
+                deleteMouseEvent(mouseEvent);
+            }
+        }
+    }
+
+    void touchesCancel(int x, int y, int id, int touches, int xs[], int ys[], int ids[])
+    {
+        ginput_MouseEvent *mouseEvent = NULL;
+
+        ginput_TouchEvent *touchEvent = touchEvent = newTouchEvent(touches);
+        touchEvent->touch.x = x;
+        touchEvent->touch.y = y;
+        touchEvent->touch.id = id;
+        for(int i = 0; i < touches; i++){
+            touchEvent->allTouches[i].x = xs[i];
+            touchEvent->allTouches[i].y = ys[i];
+            touchEvent->allTouches[i].id = ids[i];
+        }
+
+        if (isTouchToMouseEnabled_)
+        {
+            mouseEvent = newMouseEvent(x, y, 0);
+        }
+
+        if (mouseTouchOrder_ == 0)
+        {
+            if (mouseEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_UP_EVENT, mouseEvent, 0, this);
+                deleteMouseEvent(mouseEvent);
+            }
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_CANCEL_EVENT, touchEvent, 0, this);
+            deleteTouchEvent(touchEvent);
+
+        }
+        else
+        {
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_CANCEL_EVENT, touchEvent, 0, this);
+            deleteTouchEvent(touchEvent);
+            if (mouseEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_UP_EVENT, mouseEvent, 0, this);
+                deleteMouseEvent(mouseEvent);
+            }
+        }
+    }
+
+    void keyDown(int realCode)
+    {
+        int keyCode = convertKeyCode(realCode);
+
+        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
 
-    void keyUp(int keyCode)
+    void keyUp(int realCode)
     {
-        keyCode = convertKeyCode(keyCode);
-        if (keyCode == 0)
-            return;
+        int keyCode = convertKeyCode(realCode);
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
@@ -320,7 +484,7 @@ private:
         mousePool2_.push_back(event);
     }
 
-    ginput_KeyEvent *newKeyEvent(int keyCode)
+    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode)
     {
         ginput_KeyEvent *event;
 
@@ -335,7 +499,7 @@ private:
         }
 
         event->keyCode = keyCode;
-
+        event->realCode = realCode;
         return event;
     }
 
@@ -512,6 +676,30 @@ void ginputp_mouseUp(int x, int y, int button)
 {
     if (s_manager)
         s_manager->mouseUp(x, y, button);
+}
+
+void ginputp_touchesBegin(int x, int y, int id, int touches, int xs[], int ys[], int ids[])
+{
+    if (s_manager)
+        s_manager->touchesBegin(x, y, id, touches, xs, ys, ids);
+}
+
+void ginputp_touchesMove(int x, int y, int id, int touches, int xs[], int ys[], int ids[])
+{
+    if (s_manager)
+        s_manager->touchesMove(x, y, id, touches, xs, ys, ids);
+}
+
+void ginputp_touchesEnd(int x, int y, int id, int touches, int xs[], int ys[], int ids[])
+{
+    if (s_manager)
+        s_manager->touchesEnd(x, y, id, touches, xs, ys, ids);
+}
+
+void ginputp_touchesCancel(int x, int y, int id, int touches, int xs[], int ys[], int ids[])
+{
+    if (s_manager)
+        s_manager->touchesCancel(x, y, id, touches, xs, ys, ids);
 }
 
 void ginputp_keyDown(int keyCode)

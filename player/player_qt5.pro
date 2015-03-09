@@ -1,19 +1,19 @@
 QT += core gui opengl network
 
+INCLUDEPATH += \
+    "../libgid/external/zlib-1.2.8"\
+    "../libgid/external/glew-1.10.0/include"
+
+
 win32{
     RC_FILE = other_files/player.rc
 
     TARGET = GiderosPlayer
 
-    INCLUDEPATH += \
-        "../libgid/external/zlib-1.2.8"\
-        "../libgid/external/glew-1.10.0/include"\
-        ../libgid/external/freetype-2.4.12/include
 
     LIBS += \
         -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx\
         -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32\
-        -L"../libgid/external/freetype-2.4.12/build/mingw48_32" -lfreetype\
         -lwsock32\
         -liphlpapi\
         -L"../libgid/release" -lgid\
@@ -26,24 +26,19 @@ win32{
 macx {
     ICON = other_files/player.icns
 
-    INCLUDEPATH += \
-        "/usr/local/include"\
-        "/usr/local/include/freetype2"
-
     TARGET = "Gideros Player"
 
     LIBS += \
         -framework OpenAL\
         -framework OpenGL\
         -framework CoreFoundation\
-        -lz\
-        -L"/usr/local/lib"\
         -L"../libgid" -lgid\
         -L"../libgvfs" -lgvfs\
         -L"../lua" -llua\
         -L"../libgideros" -lgideros\
         -L"../libpystring" -lpystring\
-        -L"/usr/local/lib" -lGLEW -lfreetype
+        -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx\
+        -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW\
 
     QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
 }
@@ -137,3 +132,32 @@ LIBS += -lpthread
 #SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/*.cpp)
 #SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/*.cpp)
 #SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Rope/*.cpp)
+
+
+# modified from http://source-android.frandroid.com/external/freetype/Android.mk
+# also ftmodule.h should be configured like http://source-android.frandroid.com/external/freetype/include/freetype/config/ftmodule.h
+DEFINES += FT2_BUILD_LIBRARY
+DEFINES += DARWIN_NO_CARBON
+
+INCLUDEPATH += ../libgid/external/freetype-2.4.12/include
+INCLUDEPATH += ../libgid/external/freetype-2.4.12/src
+
+SOURCES += \
+    ../libgid/external/freetype-2.4.12/src/base/ftbbox.c \
+    ../libgid/external/freetype-2.4.12/src/base/ftbitmap.c \
+    ../libgid/external/freetype-2.4.12/src/base/ftglyph.c \
+    ../libgid/external/freetype-2.4.12/src/base/ftlcdfil.c \
+    ../libgid/external/freetype-2.4.12/src/base/ftstroke.c \
+    ../libgid/external/freetype-2.4.12/src/base/ftxf86.c \
+    ../libgid/external/freetype-2.4.12/src/base/ftbase.c \
+    ../libgid/external/freetype-2.4.12/src/base/ftsystem.c \
+    ../libgid/external/freetype-2.4.12/src/base/ftinit.c \
+    ../libgid/external/freetype-2.4.12/src/base/ftgasp.c \
+    ../libgid/external/freetype-2.4.12/src/raster/raster.c \
+    ../libgid/external/freetype-2.4.12/src/sfnt/sfnt.c \
+    ../libgid/external/freetype-2.4.12/src/smooth/smooth.c \
+    ../libgid/external/freetype-2.4.12/src/autofit/autofit.c \
+    ../libgid/external/freetype-2.4.12/src/truetype/truetype.c \
+    ../libgid/external/freetype-2.4.12/src/cff/cff.c \
+    ../libgid/external/freetype-2.4.12/src/psnames/psnames.c \
+    ../libgid/external/freetype-2.4.12/src/pshinter/pshinter.c

@@ -104,6 +104,7 @@ public:
 	NetworkManager(ApplicationManager *application);
 	~NetworkManager();
 	void tick();
+	std::string openProject_;
 	
 	void setResourceDirectory(const char* resourceDirectory)
 	{
@@ -176,6 +177,8 @@ public:
 	void setDirectories(const char *externalDir, const char *internalDir, const char *cacheDir);
 	void setFileSystem(const char *files);
 	
+	void openProject(const char* project);
+	void setOpenProject(const char* project);
 	void play(const std::vector<std::string>& luafiles);
 	void stop();
 	void setProjectName(const char *projectName);
@@ -248,6 +251,10 @@ void NetworkManager::tick()
 
 	while (true)
 	{
+		if(!openProject_.empty()){
+			application_->openProject(openProject_.c_str());
+			openProject_.clear();
+		}
 		int dataSent0 = server_->dataSent();
 		int dataReceived0 = server_->dataReceived();
 
@@ -269,8 +276,13 @@ void NetworkManager::tick()
 				case 1:
 					createFile(data);
 					break;
-				case 2:
+				case 2:{
+					const char* absfilename = g_pathForFile("../luafiles.txt");
+					FILE* fos = fopen(absfilename, "wb");
+					fwrite(&data[0], data.size(), 1, fos);
+					fclose(fos);
 					play(data);
+				}
 					break;
 				case 3:
 					stop();
@@ -284,8 +296,13 @@ void NetworkManager::tick()
 				case 9:
 					deleteFile(data);
 					break;
-				case 11:
+				case 11:{
+					const char* absfilename = g_pathForFile("../properties.bin");
+					FILE* fos = fopen(absfilename, "wb");
+					fwrite(&data[0], data.size(), 1, fos);
+					fclose(fos);
 					setProperties(data);
+				}
 					break;
 			}
 		}
@@ -568,6 +585,7 @@ ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 
 		// application
 	application_ = new LuaApplication;
+	application_->setPlayerMode(player_);
 	if (player_)
 		application_->setPrintFunc(NetworkManager::printToServer_s, networkManager_);
 	application_->enableExceptions();
@@ -919,6 +937,91 @@ void ApplicationManager::setFileSystem(const char *fileSystem)
 	setTemporaryDirectory(cacheDir_.c_str());
 }
 
+void ApplicationManager::setOpenProject(const char* project){
+	networkManager_->openProject_ = project;
+}
+
+void ApplicationManager::openProject(const char* project){
+	
+	//setting project name
+	setProjectName(project);
+	
+	//setting properties
+	const char* propfilename = g_pathForFile("../properties.bin");
+	FILE* fis_prop = fopen(propfilename, "rb");
+	
+	const char* luafilename = g_pathForFile("../luafiles.txt");
+	FILE* fis_lua = fopen(luafilename, "rb");
+	
+	if(fis_prop != NULL && fis_lua != NULL){
+
+		fseek(fis_prop, 0, SEEK_END);
+		int len = ftell(fis_prop);
+		fseek(fis_prop, 0, SEEK_SET);
+	
+		std::vector<char> buf_prop(len);
+		fread(&buf_prop[0], 1, len, fis_prop);
+		fclose(fis_prop);
+	
+		ProjectProperties properties;
+		
+		ByteBuffer buffer(&buf_prop[0], buf_prop.size());
+	
+		char chr;
+		buffer >> chr;
+	
+		buffer >> properties.scaleMode;
+		buffer >> properties.logicalWidth;
+		buffer >> properties.logicalHeight;
+	
+		int scaleCount;
+		buffer >> scaleCount;
+		properties.imageScales.resize(scaleCount);
+		for (int i = 0; i < scaleCount; ++i)
+		{
+			buffer >> properties.imageScales[i].first;
+			buffer >> properties.imageScales[i].second;
+		}
+	
+		buffer >> properties.orientation;
+		buffer >> properties.fps;
+		buffer >> properties.retinaDisplay;
+		buffer >> properties.autorotation;
+		buffer >> properties.mouseToTouch;
+		buffer >> properties.touchToMouse;
+		buffer >> properties.mouseTouchOrder;
+		
+		setProjectProperties(properties);
+		
+		//loading lua files
+		std::vector<std::string> luafiles;
+		
+		const char* luafilename = g_pathForFile("../luafiles.txt");
+		FILE* fis_lua = fopen(luafilename, "rb");
+	
+		fseek(fis_lua, 0, SEEK_END);
+		len = ftell(fis_lua);
+		fseek(fis_lua, 0, SEEK_SET);
+	
+		std::vector<char> buf_lua(len);
+		fread(&buf_lua[0], 1, len, fis_lua);
+		fclose(fis_lua);
+	
+		ByteBuffer buffer2(&buf_lua[0], buf_lua.size());
+	
+		buffer2 >> chr;
+	
+		while (buffer2.eob() == false)
+		{
+			std::string str;
+			buffer2 >> str;
+			luafiles.push_back(str);
+		}
+		
+		play(luafiles);
+	}
+}
+
 void ApplicationManager::play(const std::vector<std::string>& luafiles)
 {
 	running_ = true;
@@ -1186,6 +1289,15 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeSetFileSyste
 	env->ReleaseStringUTFChars(jFiles, szFiles);
 	
 	s_applicationManager->setFileSystem(files.c_str());
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeOpenProject(JNIEnv *env, jclass cls, jstring jProject)
+{
+	const char *sproject = env->GetStringUTFChars(jProject, NULL);
+	std::string project = sproject;
+	env->ReleaseStringUTFChars(jProject, sproject);
+	
+	s_applicationManager->setOpenProject(project.c_str());
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesBegin(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy, jint actionIndex)

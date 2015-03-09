@@ -617,15 +617,13 @@ private:
     int mouseTouchOrder_;
 
 public:
-    int keyDown(int keyCode, int repeatCount)
+    int keyDown(int realCode, int repeatCount)
     {
-        keyCode = convertKeyCode(keyCode);
-        if (keyCode == 0)
-            return 0;
+        int keyCode = convertKeyCode(realCode);
 
 		if (repeatCount == 0)
 		{
-			ginput_KeyEvent *event = newKeyEvent(keyCode);
+			ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
 			gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
 			deleteKeyEvent(event);
 		}
@@ -633,15 +631,13 @@ public:
 		return 1;
     }
 
-    int keyUp(int keyCode, int repeatCount)
+    int keyUp(int realCode, int repeatCount)
     {
-        keyCode = convertKeyCode(keyCode);
-        if (keyCode == 0)
-            return 0;
+        int keyCode = convertKeyCode(realCode);
 
 		if (repeatCount == 0)
 		{
-			ginput_KeyEvent *event = newKeyEvent(keyCode);
+			ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
 			gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
 			deleteKeyEvent(event);
 		}
@@ -650,7 +646,7 @@ public:
     }
 	
 private:
-    ginput_KeyEvent *newKeyEvent(int keyCode)
+    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode)
     {
 		pthread_mutex_lock(&keyPoolMutex_);
         ginput_KeyEvent *event;
@@ -667,6 +663,7 @@ private:
 		pthread_mutex_unlock(&keyPoolMutex_);
 
         event->keyCode = keyCode;
+        event->realCode = realCode;
 
         return event;
     }

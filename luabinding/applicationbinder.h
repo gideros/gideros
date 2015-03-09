@@ -41,6 +41,7 @@ private:
     static int getScreenDensity(lua_State* L);
     static int getDeviceOrientation(lua_State *L);
     static int setFieldOfView(lua_State* L);
+    static int isPlayerMode(lua_State *L);
 };
 
 #endif

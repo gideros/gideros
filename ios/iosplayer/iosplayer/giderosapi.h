@@ -20,7 +20,8 @@ void gdr_didReceiveMemoryWarning();
 void gdr_handleOpenUrl(NSURL *url);
 void gdr_foreground();
 void gdr_background();
-
+void gdr_openProject(NSString* project);
+    
 void gdr_touchesBegan(NSSet* touches, NSSet* allTouches);
 void gdr_touchesMoved(NSSet* touches, NSSet* allTouches);
 void gdr_touchesEnded(NSSet* touches, NSSet* allTouches);
