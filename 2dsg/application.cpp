@@ -229,7 +229,6 @@ void Application::renderScene(int deltaFrameCount)
 	//glLoadIdentity();
 
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
-	
 
 	projection.scale(logicalScaleX_, logicalScaleY_, 1);
 	projection.translate(logicalTranslateX_, logicalTranslateY_, 0);

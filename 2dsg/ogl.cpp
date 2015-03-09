@@ -30,6 +30,7 @@ GLuint colorSelFS=0;
 GLuint textureSelFS=0;
 GLuint textureFS=0;
 GLuint _depthRenderBuffer=0;
+bool oglInitialized=false;
 
 /* Vertex shader*/
 const char *xformVShaderCode=
@@ -107,8 +108,8 @@ void oglSetupShaders()
     colorFS=glGetUniformLocation(shaderProgram, "fColor");
     textureFS=glGetUniformLocation(shaderProgram, "fTexture");
 
-    glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
-    glog_i("FIndices: %d,%d,%d,%d\n", colorSelFS,textureSelFS,colorFS,textureFS);
+    //glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
+    //glog_i("FIndices: %d,%d,%d,%d\n", colorSelFS,textureSelFS,colorFS,textureFS);
 
     glUniform1i(textureFS, 0);
 
@@ -116,12 +117,13 @@ void oglSetupShaders()
 	glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
 	std::vector<GLchar> infoLog(maxLength);
 	glGetProgramInfoLog(shaderProgram, maxLength, &maxLength, &infoLog[0]);
-	glog_i("Program log:%s\n",&infoLog[0]);
+	glog_i("GL Program log:%s\n",&infoLog[0]);
 
 }
 
 void oglInitialize(unsigned int sw,unsigned int sh)
 {
+    if (oglInitialized) return;
  oglSetupShaders();
  glActiveTexture(GL_TEXTURE0);
 
@@ -137,11 +139,12 @@ void oglInitialize(unsigned int sw,unsigned int sh)
  glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
  glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, sw,sh);
  glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
+ oglInitialized=true;
 }
 
 void oglCleanup()
 {
+    oglInitialized=false;
 	glUseProgram(0);
 	glDeleteProgram(shaderProgram);
 	glDeleteShader(xformVShader);
@@ -415,8 +418,6 @@ int getClientStateCount()
 
 void oglReset()
 {
-	//oglSetupShaders();
-
 	s_texture = 0;
 	s_Texture2DEnabled = false;
 
