@@ -61,7 +61,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"getTextureMemoryUsage", ApplicationBinder::getTextureMemoryUsage},
         {"getScreenDensity", ApplicationBinder::getScreenDensity},
         {"getDeviceOrientation", ApplicationBinder::getDeviceOrientation},
-        {"setFieldOfView", ApplicationBinder::setFieldOfView},
+        {"configureFrustum", ApplicationBinder::configureFrustum},
         {NULL, NULL},
 	};
 
@@ -616,7 +616,7 @@ int ApplicationBinder::getDeviceOrientation(lua_State *L)
     return 1;
 }
 
-int ApplicationBinder::setFieldOfView(lua_State* L)
+int ApplicationBinder::configureFrustum(lua_State* L)
 {
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
@@ -627,7 +627,10 @@ int ApplicationBinder::setFieldOfView(lua_State* L)
     if (fov<0) fov=0;
     if (fov>180) fov=180;
 
-    application->getApplication()->setFieldOfView(fov);
+    lua_Number farplane=0;
+    if (!lua_isnoneornil(L, 3))
+    	farplane = luaL_checknumber(L, 3);
+    application->getApplication()->configureFrustum(fov,farplane);
 
     return 0;
 }

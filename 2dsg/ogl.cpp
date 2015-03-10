@@ -139,6 +139,8 @@ void oglInitialize(unsigned int sw,unsigned int sh)
  glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
  glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, sw,sh);
  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+ glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+ glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
  oglInitialized=true;
 }
 

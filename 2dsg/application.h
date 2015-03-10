@@ -118,7 +118,7 @@ public:
     void deleteAutounrefPool(void *);
     void autounref(GReferenced *referenced);
 
-    void setFieldOfView(float fov);
+    void configureFrustum(float fov,float farplane);
 
 private:
 	TextureManager textureManager_;
@@ -133,6 +133,7 @@ private:
 	float logicalScaleX_, logicalScaleY_;
 	float logicalTranslateX_, logicalTranslateY_;
 	float fov_;
+	float farplane_;
 	void calculateLogicalTransformation();
 	void correctTouchPositionLogical(int* x, int* y);
 

@@ -151,12 +151,15 @@ void Application::clearBuffers()
     }
 }
 
-void Application::setFieldOfView(float fov)
+void Application::configureFrustum(float fov,float farplane)
 {
 	if (fov>179) //Do not allow 180°, this would cause infinite width
 		fov=179;
 	if (fov<0)
 		fov=0;
+	if (farplane<=0)
+		farplane=0;
+	farplane_=farplane;
 	fov_=fov;
 }
 
@@ -284,7 +287,8 @@ void Application::renderScene(int deltaFrameCount)
 			float hw=width_*0.5/scale_;
 			float hh=height_*0.5/scale_;
 			float np=hh/tan(fov_* M_PI / 360.0);
-			frustum=setFrustum(-hw, hw, hh, -hh, np,np*100);
+			float fp=(farplane_>0)?(np+farplane_):(np*100);
+			frustum=setFrustum(-hw, hw, hh, -hh, np,fp);
 			projection.translate(-hw,-hh,-np-0.001);
 		}
 		else
@@ -297,7 +301,8 @@ void Application::renderScene(int deltaFrameCount)
 			float hw=width_*0.5/scale_;
 			float hh=height_*0.5/scale_;
 			float np=hh/tan(fov_* M_PI / 360.0);
-			frustum=setFrustum(-hh,hh,hw,-hw,np,np*100);
+			float fp=(farplane_>0)?(np+farplane_):(np*100);
+			frustum=setFrustum(-hh,hh,hw,-hw,np,fp);
 			projection.translate(-hh,-hw,-np-0.001);
 		}
 		else
