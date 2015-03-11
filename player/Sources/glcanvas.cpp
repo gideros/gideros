@@ -254,6 +254,12 @@ void GLCanvas::timerEvent(QTimerEvent *){
         int dataTotal = 0;
 
         while(true){
+
+            if(!projectDir_.isEmpty()){
+                play(QDir(projectDir_));
+                projectDir_.clear();
+            }
+
             int dataSent0 = server_->dataSent();
             int dataReceived0 = server_->dataReceived();
 
@@ -466,8 +472,8 @@ void GLCanvas::timerEvent(QTimerEvent *){
 // function to play an application into player passing path
 // TODO: pensar em um nome intuitivo
 void GLCanvas::play(QDir directory){
-    QFile file(dir_.absolutePath()+"/properties.bin");
-    QFile luafiles(dir_.absolutePath()+"/luafiles.txt");
+    QFile file(directory.absolutePath()+"/properties.bin");
+    QFile luafiles(directory.absolutePath()+"/luafiles.txt");
 
     if(file.exists() && luafiles.exists()){
 
@@ -523,7 +529,7 @@ void GLCanvas::play(QDir directory){
         loadFiles(data2);
     }
     else{
-        errorDialog_.appendString("Please re-export your project");
+        errorDialog_.appendString("Please relaunch project from Gideros Studio");
         errorDialog_.show();
     }
 }
