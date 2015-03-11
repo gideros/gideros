@@ -39,11 +39,13 @@ buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel 
 		
 buildplugins:	$(addsuffix .plugin,BitOp LuaSQLite3 LuaSocket LPeg LuaFileSystem JSON) #Microphone in Desktop sub dir
 
+android.clean: androidlib.clean androidso.clean
+
 android: androidlibs androidso
 
 androidlibs: libgvfs.androidlib lua.androidlib
 
-androidso: androidso.prep arm6-armeabi.androidso arm7-v7a.androidso x86-x86.androidso
+androidso: androidso.prep arm6_armeabi.androidso arm7_armeabi-v7a.androidso x86_x86.androidso
 	rm -rf $(ROOT)/android/build/libs
 	mv $(ROOT)/android/build/libs2 $(ROOT)/android/build/libs
 	rm -rf $(ROOT)/Sdk/lib/android
@@ -51,22 +53,26 @@ androidso: androidso.prep arm6-armeabi.androidso arm7-v7a.androidso x86-x86.andr
 	cp -R $(ROOT)/android/build/libs/* $(ROOT)/Sdk/lib/android 
 
 androidso.prep:
-	rm -rf $(ROOT)/android/build
-	mkdir  $(ROOT)/android/build
-	mkdir  $(ROOT)/android/build/jni
+	mkdir -p $(ROOT)/android/build
+	mkdir -p $(ROOT)/android/build/jni
 	cp -R  $(ROOT)/android/lib/jni/*  $(ROOT)/android/build/jni
 
+androidso.clean:
+	rm -rf $(ROOT)/android/build
+
 %.androidso:
-	cp $(ROOT)/android/build/jni/Application-$(firstword $(subst -, ,$*)).mk $(ROOT)/android/build/jni/Application.mk
-	cp $(ROOT)/android/build/jni/Android-$(firstword $(subst -, ,$*)).mk $(ROOT)/android/build/jni/Android.mk
+	cp $(ROOT)/android/build/jni/Application-$(firstword $(subst _, ,$*)).mk $(ROOT)/android/build/jni/Application.mk
+	cp $(ROOT)/android/build/jni/Android-$(firstword $(subst _, ,$*)).mk $(ROOT)/android/build/jni/Android.mk
 	cd $(ROOT)/android/build; $(NDKBUILD)
-	mkdir -p $(ROOT)/android/build/libs2/$(lastword $(subst -, ,$*))
-	cp $(ROOT)/android/build/libs/$(lastword $(subst -, ,$*))/* $(ROOT)/android/build/libs2/$(lastword $(subst -, ,$*))
+	mkdir -p $(ROOT)/android/build/libs2/$(word 2,$(subst _, ,$*))
+	cp $(ROOT)/android/build/libs/$(word 2,$(subst _, ,$*))/* $(ROOT)/android/build/libs2/$(word 2,$(subst _, ,$*))
 
 
 %.androidlib:
-	rm -rf $(ROOT)/$*/libs $(ROOT)/$*/obj
 	cd $(ROOT)/$*; $(NDKBUILD)
+
+%.androidlib.clean:
+	rm -rf $(ROOT)/$*/libs $(ROOT)/$*/obj
 
 %.qmake.rel:
 	cd $(ROOT)/$*; $(QMAKE) $*.pro

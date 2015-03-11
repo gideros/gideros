@@ -23,6 +23,8 @@ void oglEnable(GLenum cap);
 void oglDisable(GLenum cap);
 void oglInitialize(unsigned int sw,unsigned int sh);
 void oglCleanup();
+void oglReset();
+void oglColor4f(float,float,float,float);
 
 void resetBindTextureCount();
 int getBindTextureCount();
@@ -36,9 +38,6 @@ int getClientStateCount();
 void resetTexture2DStateCount();
 int getTexture2DStateCount();
 
-void oglReset();
-void oglSetupShaders();
-void oglColor4f(float,float,float,float);
 
 #endif
 

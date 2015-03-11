@@ -18,6 +18,9 @@ static bool s_COLOR_ARRAY_enabled = false;
 
 static int s_clientStateCount = 0;
 
+static bool oglInitialized=false;
+
+#ifndef GIDEROS_GL1
 GLuint shaderProgram=0;
 GLuint xformVShader=0;
 GLuint colorFShader=0;
@@ -30,7 +33,6 @@ GLuint colorSelFS=0;
 GLuint textureSelFS=0;
 GLuint textureFS=0;
 GLuint _depthRenderBuffer=0;
-bool oglInitialized=false;
 
 /* Vertex shader*/
 const char *xformVShaderCode=
@@ -120,12 +122,15 @@ void oglSetupShaders()
 	glog_i("GL Program log:%s\n",&infoLog[0]);
 
 }
+#endif
 
 void oglInitialize(unsigned int sw,unsigned int sh)
 {
     if (oglInitialized) return;
+#ifndef GIDEROS_GL1
  oglSetupShaders();
  glActiveTexture(GL_TEXTURE0);
+#endif
 
  int depthfmt=0;
 #ifdef GL_DEPTH24_STENCIL8_OES
@@ -147,24 +152,35 @@ void oglInitialize(unsigned int sw,unsigned int sh)
 void oglCleanup()
 {
     oglInitialized=false;
+#ifndef GIDEROS_GL1
 	glUseProgram(0);
 	glDeleteProgram(shaderProgram);
 	glDeleteShader(xformVShader);
 	glDeleteShader(colorFShader);
+#endif
 	glDeleteRenderbuffers(1,&_depthRenderBuffer);
 }
 
 Matrix4 oglProjection;
 void oglLoadMatrixf(const Matrix4 m)
 {
+#ifdef GIDEROS_GL1
+	 glMatrixMode(GL_MODELVIEW);
+	 glLoadMatrixf(m.data());
+#else
 	Matrix4 xform=oglProjection*m;
-
 	glUniformMatrix4fv(matrixVS, 1, false, xform.data());
+#endif
 }
 
 void oglSetProjection(const Matrix4 m)
 {
+#ifdef GIDEROS_GL1
+	 glMatrixMode(GL_PROJECTION);
+	 glLoadMatrixf(m.data());
+#else
 	oglProjection=m;
+#endif
 }
 
 void oglEnable(GLenum cap)
@@ -174,9 +190,12 @@ void oglEnable(GLenum cap)
 	case GL_TEXTURE_2D:
 		if (s_Texture2DEnabled == false)
 		{
-			//glEnable(GL_TEXTURE_2D);
+#ifdef GIDEROS_GL1
+			glEnable(GL_TEXTURE_2D);
+#else
 		    glUniform1f(textureSelFS, 1);
 		    //glog_d("TextureSelFS:%d\n",1);
+#endif
 			s_Texture2DEnabled = true;
 			s_Texture2DStateCount++;
 		}
@@ -194,9 +213,12 @@ void oglDisable(GLenum cap)
 	case GL_TEXTURE_2D:
 		if (s_Texture2DEnabled == true)
 		{
-			//glDisable(GL_TEXTURE_2D);
+#ifdef GIDEROS_GL1
+			glDisable(GL_TEXTURE_2D);
+#else
 		    glUniform1f(textureSelFS, 0);
 		    //glog_d("TextureSelFS:%d\n",0);
+#endif
 			s_Texture2DEnabled = false;
 			s_Texture2DStateCount++;
 		}
@@ -222,7 +244,9 @@ void oglBindTexture(GLenum target, GLuint texture)
 	{
 		s_texture = texture;
 		//glog_d("BindTexture:%d\n",s_texture);
+#ifndef GIDEROS_GL1
 		glActiveTexture(GL_TEXTURE0);
+#endif
 		glBindTexture(target, texture);
 
 		s_BindTextureCount++;
@@ -231,7 +255,9 @@ void oglBindTexture(GLenum target, GLuint texture)
 
 void oglForceBindTexture(GLenum target, GLuint texture)
 {
+#ifndef GIDEROS_GL1
 	glActiveTexture(GL_TEXTURE0);
+#endif
 	glBindTexture(target, texture);
 	s_texture = texture;
 	s_BindTextureCount++;
@@ -250,7 +276,11 @@ int getBindTextureCount()
 void oglColor4f(float r,float g,float b,float a)
 {
 	//printf("glColor: %f,%f,%f,%f\n",r,g,b,a);
+#ifdef GIDEROS_GL1
+	glColor4f(r,g,b,a);
+#else
 	glUniform4f(colorFS,r,g,b,a);
+#endif
 }
 
 void oglEnableClientState(enum OGLClientState array)
@@ -281,13 +311,25 @@ void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *
 	switch (array)
 	{
 		case VertexArray:
+#ifdef GIDEROS_GL1
+			glVertexPointer(mult,type, 0,ptr);
+#else
 			glVertexAttribPointer(vertexVS, mult,type, false,0, ptr);
+#endif
 			break;
 		case TextureArray:
+#ifdef GIDEROS_GL1
+			glTexCoordPointer(mult,type, 0,ptr);
+#else
 			glVertexAttribPointer(textureVS, mult,type, false,0, ptr);
+#endif
 			break;
         case ColorArray:
+#ifdef GIDEROS_GL1
+			glColorPointer(mult,type, 0,ptr);
+#else
 			glVertexAttribPointer(colorVS, mult,type, true,0, ptr);
+#endif
             break;
 		default:
 			assert(1);
@@ -329,7 +371,11 @@ void oglSetupArrays()
 		{
 			s_VERTEX_ARRAY_enabled = true;
 			s_clientStateCount++;
+#ifdef GIDEROS_GL1
+			glEnableClientState(GL_VERTEX_ARRAY);
+#else
 		    glEnableVertexAttribArray(vertexVS);
+#endif
 		}
 	}
 	else
@@ -338,7 +384,11 @@ void oglSetupArrays()
 		{
 			s_VERTEX_ARRAY_enabled = false;
 			s_clientStateCount++;
+#ifdef GIDEROS_GL1
+			glDisableClientState(GL_VERTEX_ARRAY);
+#else
 		    glDisableVertexAttribArray(vertexVS);
+#endif
 		}
 	}
 
@@ -348,7 +398,11 @@ void oglSetupArrays()
 		{
 			s_TEXTURE_COORD_ARRAY_enabled = true;
 			s_clientStateCount++;
+#ifdef GIDEROS_GL1
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#else
 		    glEnableVertexAttribArray(textureVS);
+#endif
 		}
 	}
 	else
@@ -357,7 +411,11 @@ void oglSetupArrays()
 		{
 			s_TEXTURE_COORD_ARRAY_enabled = false;
 			s_clientStateCount++;
+#ifdef GIDEROS_GL1
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+#else
 		    glDisableVertexAttribArray(textureVS);
+#endif
 		}
 	}
 
@@ -367,8 +425,12 @@ void oglSetupArrays()
         {
             s_COLOR_ARRAY_enabled = true;
             s_clientStateCount++;
+#ifdef GIDEROS_GL1
+			glEnableClientState(GL_COLOR_ARRAY);
+#else
 		    glEnableVertexAttribArray(colorVS);
 		    glUniform1f(colorSelFS, 1);
+#endif
         }
     }
     else
@@ -377,8 +439,12 @@ void oglSetupArrays()
         {
             s_COLOR_ARRAY_enabled = false;
             s_clientStateCount++;
+#ifdef GIDEROS_GL1
+			glDisableClientState(GL_COLOR_ARRAY);
+#else
 		    glDisableVertexAttribArray(colorVS);
 		    glUniform1f(colorSelFS, 0);
+#endif
         }
     }
 }
@@ -423,7 +489,9 @@ void oglReset()
 	s_texture = 0;
 	s_Texture2DEnabled = false;
 
-	//glDisable(GL_TEXTURE_2D);
+#ifdef GIDEROS_GL1
+	glDisable(GL_TEXTURE_2D);
+#endif
 	oglColor4f(1,1,1,1);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -433,12 +501,18 @@ void oglReset()
 	s_VERTEX_ARRAY = 0;
 	s_TEXTURE_COORD_ARRAY = 0;
     s_COLOR_ARRAY = 0;
+#ifdef GIDEROS_GL1
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	/* sanity set */
+#else
     glDisableVertexAttribArray(vertexVS);
     glDisableVertexAttribArray(textureVS);
     glDisableVertexAttribArray(colorVS);
     glUniform1f(colorSelFS, 0);
     glUniform1f(textureSelFS, 0);
-
+#endif
 	resetBindTextureCount();
 	resetClientStateCount();
 	resetTexture2DStateCount();
@@ -457,6 +531,4 @@ void oglReset()
 #else
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
-
-    //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	/* sanity set */ XXX
 }
