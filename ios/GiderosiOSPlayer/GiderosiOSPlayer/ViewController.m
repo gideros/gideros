@@ -191,16 +191,23 @@ NSMutableArray *tableData;
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
     
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width, 100)];
-    UILabel *labelView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width/2, 100)];
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [button addTarget:self
+               action:@selector(hideTable)
+     forControlEvents:UIControlEventTouchUpInside];
+    [button setTitle:@"Back" forState:UIControlStateNormal];
+    button.frame = CGRectMake(0.0, 30.0, 80.0, 40.0);
+    [headerView  addSubview:button];
+    UILabel *labelView = [[UILabel alloc] initWithFrame:CGRectMake(120, 0, 200, 100)];
     [labelView setText:@"Gideros Projects"];
     labelView.font=[labelView.font fontWithSize:25];
-    labelView.textAlignment = NSTextAlignmentCenter;
     [headerView addSubview:labelView];
     self.tableView.tableHeaderView = headerView;
     [labelView release];
     [headerView release];
     [self.tableView reloadData];
     [self.view addSubview:self.tableView];
+    [self.tableView setHidden:true];
 }
 
 - (void)showTable{
@@ -211,7 +218,7 @@ NSMutableArray *tableData;
 
 - (void)hideTable{
     if(self.tableView){
-        [tableView setHidden:true];
+        [self.tableView setHidden:true];
     }
 }
 

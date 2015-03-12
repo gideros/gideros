@@ -186,7 +186,7 @@ int touchStart;
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     if([[NSDate date] timeIntervalSince1970] - touchStart >= 4){
-        ViewController* view = (ViewController*)g_getRootViewController();
+        ViewController* view = (ViewController*)[self.superview nextResponder];
         [view showTable];
     }
     gdr_touchesEnded(touches, [event allTouches]);
