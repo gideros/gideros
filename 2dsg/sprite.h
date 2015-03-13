@@ -81,6 +81,15 @@ public:
     float getBlueMultiplier() const;
     float getAlphaMultiplier() const;
 
+    //Set clipping rectangle, cw or ch negative to disable
+    void setClip(float cx,float cy,float cw,float ch)
+    {
+    	clipx_=cx;
+    	clipy_=cy;
+    	clipw_=cw;
+    	cliph_=ch;
+    }
+
 	void setRotation(float r)
 	{
         localTransform_.setRotationZ(r);
@@ -336,9 +345,11 @@ private:
 
 	mutable ColorTransform* colorTransform_;
 	float alpha_;
+	float clipx_,clipy_,clipw_,cliph_;
 
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
+    virtual void childrenDrawn();
 
 protected:
 	static std::set<Sprite*> allSprites_;

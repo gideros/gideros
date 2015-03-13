@@ -278,6 +278,7 @@ void Application::renderScene(int deltaFrameCount)
 			break;
 	}
 
+	Matrix4 vpProjection=projection;
 	switch (hardwareOrientation_)
 	{
 	case ePortrait:
@@ -293,6 +294,8 @@ void Application::renderScene(int deltaFrameCount)
 		}
 		else
 			frustum=setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -1,1);
+		vpProjection.scale(1,-1,1);
+		vpProjection.translate(0,height_/scale_,0);
 		break;
 	case eLandscapeLeft:
 	case eLandscapeRight:
@@ -307,8 +310,11 @@ void Application::renderScene(int deltaFrameCount)
 		}
 		else
 			frustum=setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -1,1);
+		vpProjection.scale(1,-1,1);
+		vpProjection.translate(0,width_/scale_,0);
 		break;
 	}
+	oglViewportProjection(vpProjection);
 	projection=frustum*projection;
 
     //glMatrixMode(GL_MODELVIEW);
@@ -342,7 +348,9 @@ void Application::renderScene(int deltaFrameCount)
     float ey = (hh - lty) / lsy;
 
     glDepthFunc(GL_LEQUAL);
+#ifdef OPENGL_ES
     glClearDepthf(1);
+#endif
     glClear(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
     
 

@@ -49,6 +49,7 @@ public:
 
 private:
     virtual void doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey);
+    virtual void childrenDrawn();
     virtual void extraBounds(float *minx, float *miny, float *maxx, float *maxy) const;
 
 private:

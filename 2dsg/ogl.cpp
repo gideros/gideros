@@ -1,6 +1,7 @@
 #include "ogl.h"
 #include <cassert>
 #include <vector>
+#include <stack>
 #include "glog.h"
 
 static GLuint s_texture = 0;
@@ -17,6 +18,7 @@ static bool s_TEXTURE_COORD_ARRAY_enabled = false;
 static bool s_COLOR_ARRAY_enabled = false;
 
 static int s_clientStateCount = 0;
+static int s_depthEnable=0;
 
 static bool oglInitialized=false;
 
@@ -34,6 +36,7 @@ GLuint textureSelFS=0;
 GLuint textureFS=0;
 GLuint _depthRenderBuffer=0;
 
+#ifdef OPENGL_ES
 /* Vertex shader*/
 const char *xformVShaderCode=
 "attribute mediump vec2 vTexCoord;\n"
@@ -63,6 +66,36 @@ void main() {\
  mediump vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
  gl_FragColor = tex * col;\
 }";
+#else
+/* Vertex shader*/
+const char *xformVShaderCode=
+"attribute vec2 vTexCoord;\n"
+"attribute vec4 vVertex;\n"
+"attribute vec4 vColor;\n"
+"uniform mat4 vMatrix;\n"
+"varying vec2 fTexCoord;\n"
+"varying vec4 fInColor; "
+"\n"
+"void main() {\n"
+"  gl_Position = vMatrix*vVertex;\n"
+"  fTexCoord=vTexCoord;\n"
+"  fInColor=vColor;\n"
+"}\n";
+
+/* Fragment shader*/
+const char *colorFShaderCode="\
+uniform float fColorSel;\
+uniform float fTextureSel;\
+uniform vec4 fColor;\
+uniform sampler2D fTexture;\
+varying vec2 fTexCoord;\
+varying vec4 fInColor;\
+void main() {\
+ vec4 col=mix(fColor,fInColor,fColorSel);\
+ vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
+ gl_FragColor = tex * col;\
+}";
+#endif
 
 GLuint oglLoadShader(GLuint type,const char *code)
 {
@@ -139,13 +172,14 @@ void oglInitialize(unsigned int sw,unsigned int sh)
  depthfmt=GL_DEPTH24_STENCIL8;
 #endif
 
-
+#ifdef OPENGL_ES
  glGenRenderbuffers(1, &_depthRenderBuffer);
  glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
  glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, sw,sh);
  glBindRenderbuffer(GL_RENDERBUFFER, 0);
  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+#endif
  oglInitialized=true;
 }
 
@@ -158,19 +192,36 @@ void oglCleanup()
 	glDeleteShader(xformVShader);
 	glDeleteShader(colorFShader);
 #endif
+#ifdef OPENGL_ES
 	glDeleteRenderbuffers(1,&_depthRenderBuffer);
+#endif
 }
 
 Matrix4 oglProjection;
+Matrix4 oglVPProjection;
+Matrix4 oglModel;
+Matrix4 oglCombined;
+
+void oglViewport(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+	glViewport(x,y,width,height);
+}
+
 void oglLoadMatrixf(const Matrix4 m)
 {
+	oglModel=m;
+	oglCombined=oglProjection*oglModel;
 #ifdef GIDEROS_GL1
 	 glMatrixMode(GL_MODELVIEW);
 	 glLoadMatrixf(m.data());
 #else
-	Matrix4 xform=oglProjection*m;
-	glUniformMatrix4fv(matrixVS, 1, false, xform.data());
+	glUniformMatrix4fv(matrixVS, 1, false, oglCombined.data());
 #endif
+}
+
+void oglViewportProjection(const Matrix4 m)
+{
+	oglVPProjection=m;
 }
 
 void oglSetProjection(const Matrix4 m)
@@ -178,9 +229,8 @@ void oglSetProjection(const Matrix4 m)
 #ifdef GIDEROS_GL1
 	 glMatrixMode(GL_PROJECTION);
 	 glLoadMatrixf(m.data());
-#else
-	oglProjection=m;
 #endif
+	oglProjection=m;
 }
 
 void oglEnable(GLenum cap)
@@ -199,6 +249,10 @@ void oglEnable(GLenum cap)
 			s_Texture2DEnabled = true;
 			s_Texture2DStateCount++;
 		}
+		break;
+	case GL_DEPTH_TEST:
+		if (!(s_depthEnable++))
+			glEnable(cap);
 		break;
 	default:
 		glEnable(cap);
@@ -222,6 +276,10 @@ void oglDisable(GLenum cap)
 			s_Texture2DEnabled = false;
 			s_Texture2DStateCount++;
 		}
+		break;
+	case GL_DEPTH_TEST:
+		if (!(--s_depthEnable))
+			glDisable(cap);
 		break;
 	default:
 		glDisable(cap);
@@ -488,6 +546,7 @@ void oglReset()
 {
 	s_texture = 0;
 	s_Texture2DEnabled = false;
+	s_depthEnable=0;
 
 #ifdef GIDEROS_GL1
 	glDisable(GL_TEXTURE_2D);
@@ -531,4 +590,85 @@ void oglReset()
 #else
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
+}
+
+
+struct Scissor
+{
+	Scissor() {}
+	Scissor(int x,int y,int w,int h) : x(x), y(y), w(w), h(h) {}
+	Scissor(const Scissor &p,int nx,int ny,int nw,int nh) : x(nx), y(ny), w(nw), h(nh)
+	{
+		int x2=x+w-1;
+		int y2=y+h-1;
+		int px2=p.x+p.w-1;
+		int py2=p.y+p.h-1;
+		if (p.x>x)
+			x=p.x;
+		if (p.y>y)
+			y=p.y;
+		if (px2<x2)
+			x2=px2;
+		if (py2<y2)
+			y2=py2;
+		w=x2+1-x;
+		h=y2+1-y;
+	}
+
+	int x,y,w,h;
+};
+
+static std::stack<Scissor> scissorStack;
+
+//Coordinates are untransformed coordinates (ie, cuurent Sprite local)
+void oglPushScissor(float x,float y,float w,float h)
+{
+	Vector4 v1(x,y,0,1);
+	Vector4 v2(x+w,y+h,0,1);
+	Matrix4 xform=oglVPProjection*oglModel;
+	v1=xform*v1;
+	v2=xform*v2;
+	//glog_d("Scissor: [%f,%f->%f,%f] -> [%f,%f->%f,%f]",x,y,x+w,y+h,v1.x,v1.y,v2.x,v2.y);
+	x=v1.x;
+	w=v2.x-v1.x;
+	if (w<0)
+	{
+		x=v2.x;
+		w=-w;
+	}
+	y=v1.y;
+	h=v2.y-v1.y;
+	if (h<0)
+	{
+		y=v2.y;
+		h=-h;
+	}
+	if (scissorStack.empty())
+	{
+		Scissor s(x,y,w,h);
+		scissorStack.push(s);
+		glEnable(GL_SCISSOR_TEST);
+		glScissor(s.x,s.y,s.w,s.h);
+	}
+	else
+	{
+		Scissor s(scissorStack.top(),x,y,w,h);
+		scissorStack.push(s);
+		glScissor(s.x,s.y,s.w,s.h);
+	}
+}
+
+void oglPopScissor()
+{
+	if (scissorStack.empty()) return; //Probably a code issue
+	scissorStack.pop();
+	if (scissorStack.empty())
+	{
+		glDisable(GL_SCISSOR_TEST);
+	}
+	else
+	{
+		Scissor s=scissorStack.top();
+		glScissor(s.x,s.y,s.w,s.h);
+	}
 }

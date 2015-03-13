@@ -26,6 +26,9 @@ Sprite::Sprite(Application* application) :
 
 	sfactor_ = -1;
 	dfactor_ = -1;
+
+	clipw_=-1;
+	cliph_=-1;
 }
 
 Sprite::~Sprite()
@@ -41,6 +44,11 @@ Sprite::~Sprite()
 }
 
 void Sprite::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
+{
+
+}
+
+void Sprite::childrenDrawn()
 {
 
 }
@@ -182,10 +190,13 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy, float e
 
 		if (pop == true)
 		{
+			sprite->childrenDrawn();
 			if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1)
 				glPopColor();
 			if (sprite->sfactor_ != -1)
 				glPopBlendFunc();
+			if ((sprite->cliph_>=0)&&(sprite->clipw_>=0))
+				oglPopScissor();
 			continue;
 		}
 
@@ -218,6 +229,9 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy, float e
 			glPushBlendFunc();
 			glSetBlendFunc(sprite->sfactor_, sprite->dfactor_);
 		}
+
+		if ((sprite->cliph_>=0)&&(sprite->clipw_>=0))
+			oglPushScissor(sprite->clipx_,sprite->clipy_,sprite->clipw_,sprite->cliph_);
 
         sprite->doDraw(sprite->worldTransform_, sx, sy, ex, ey);
 

@@ -23,6 +23,7 @@ private:
 	static int getChildIndex(lua_State* L);
 	static int removeFromParent(lua_State* L);
 	
+	static int setClip(lua_State* L);
 	static int getX(lua_State* L);
 	static int getY(lua_State* L);
 	static int getZ(lua_State* L);

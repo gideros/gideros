@@ -21,6 +21,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"contains", SpriteBinder::contains},
 		{"getChildIndex", SpriteBinder::getChildIndex},
 		{"removeFromParent", SpriteBinder::removeFromParent},
+		{"setClip", SpriteBinder::setClip},
 		{"getX", SpriteBinder::getX},
 		{"getY", SpriteBinder::getY},
 		{"getZ", SpriteBinder::getZ},
@@ -338,6 +339,22 @@ int SpriteBinder::getChildAt(lua_State* L)
 	lua_remove(L, -2);					// pop sprite.__children
 
 	return 1;
+}
+
+int SpriteBinder::setClip(lua_State* L)
+{
+	StackChecker checker(L, "SpriteBinder::setClip", 0);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+
+	lua_Number x = luaL_checknumber(L, 2);
+	lua_Number y = luaL_checknumber(L, 3);
+	lua_Number w = luaL_checknumber(L, 4);
+	lua_Number h = luaL_checknumber(L, 5);
+	sprite->setClip(x, y, w, h);
+
+	return 0;
 }
 
 int SpriteBinder::getX(lua_State* L)

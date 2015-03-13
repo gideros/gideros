@@ -312,11 +312,11 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
         oglEnableClientState(TextureArray);
     }
     
-    glEnable(GL_DEPTH_TEST);
+    if (mesh3d_)
+    	glEnable(GL_DEPTH_TEST);
 
     oglDrawElements(meshtype_, indices_.size(), GL_UNSIGNED_SHORT, &indices_[0]);
 
-    glDisable(GL_DEPTH_TEST);
 
     oglDisableClientState(VertexArray);
 
@@ -328,6 +328,12 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 
     if (texture_ && !textureCoordinates_.empty())
         oglDisableClientState(TextureArray);
+}
+
+void GMesh::childrenDrawn()
+{
+    if (mesh3d_)
+    	glDisable(GL_DEPTH_TEST);
 }
 
 void GMesh::extraBounds(float *minx, float *miny, float *maxx, float *maxy) const

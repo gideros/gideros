@@ -19,12 +19,16 @@ void oglDisableClientState(enum OGLClientState array);
 void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr);
 void oglLoadMatrixf(const Matrix4 m);
 void oglSetProjection(const Matrix4 m);
+void oglViewportProjection(const Matrix4 m);
+void oglViewport(GLint x, GLint y, GLsizei width, GLsizei height);
 void oglEnable(GLenum cap);
 void oglDisable(GLenum cap);
 void oglInitialize(unsigned int sw,unsigned int sh);
 void oglCleanup();
 void oglReset();
 void oglColor4f(float,float,float,float);
+void oglPushScissor(float x,float y,float w,float h);
+void oglPopScissor();
 
 void resetBindTextureCount();
 int getBindTextureCount();
