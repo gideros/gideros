@@ -1,4 +1,5 @@
 #include "transform.h"
+#include <glog.h>
 
 static void multiply(const float m0[2][2], const float m1[2][2], float result[2][2])
 {
@@ -55,7 +56,7 @@ void Transform::decompose()
 void Transform::compose()
 {
 #if 1
-	float m[2][2] = {{scaleX_, vx_ * scaleY_}, {0, vy_ * scaleY_}};
+    float m[2][2] = {{scaleX_, vx_ * scaleY_}, {0, vy_ * scaleY_}};
 
 	float r[2][2];
 	::rotation(rotation_ * M_PI / 180, r);
@@ -65,6 +66,14 @@ void Transform::compose()
     matrix_.setM12(m[0][1]);
     matrix_.setM21(m[1][0]);
     matrix_.setM22(m[1][1]);
+
+    float c = cos(rotation_ * M_PI / 180);
+    float s = sin(rotation_ * M_PI / 180);
+    float npx = refX_*scaleX_;
+    float npy = refY_*scaleY_;
+    matrix_.setTx(x_-(npx*c) +(npy*s));
+    matrix_.setTy(y_-(npx*s) -(npy*c));
+
 #else
 	// optimized version of the code above
 	// {{cos(a),-sin(a)},{sin(a),cos(a)}} * {{x, u * y},{0,v * y}}

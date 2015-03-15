@@ -19,6 +19,8 @@ enum StringIdType
 	eStringIdScale,
 	eStringIdScaleX,
 	eStringIdScaleY,
+    eStringIdAnchorX,
+    eStringIdAnchorY,
 	eStringIdAlpha,
     eStringIdRedMultiplier,
     eStringIdGreenMultiplier,

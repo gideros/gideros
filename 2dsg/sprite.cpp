@@ -1054,6 +1054,12 @@ void Sprite::set(int param, float value, GStatus* status)
 	case eStringIdScaleY:
 		setScaleY(value);
 		break;
+    case eStringIdAnchorX:
+        setRefX(value);
+        break;
+    case eStringIdAnchorY:
+        setRefY(value);
+        break;
 	case eStringIdAlpha:
 		setAlpha(value);
 		break;
@@ -1090,6 +1096,10 @@ float Sprite::get(int param, GStatus* status)
 		return scaleX();
 	case eStringIdScaleY:
 		return scaleY();
+    case eStringIdAnchorX:
+        return refX();
+    case eStringIdAnchorY:
+        return refY();
 	case eStringIdAlpha:
 		return alpha();
     case eStringIdRedMultiplier:

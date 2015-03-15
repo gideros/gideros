@@ -37,6 +37,9 @@ private:
 
 	static int setPosition(lua_State* L);
 	static int getPosition(lua_State* L);
+
+    static int setAnchorPosition(lua_State* L);
+    static int getAnchorPosition(lua_State* L);
 	
 	static int setScale(lua_State* L);
 	static int getScale(lua_State* L);

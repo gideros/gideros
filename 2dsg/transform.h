@@ -10,6 +10,10 @@ public:
 	{
 		decompose();
 		isDirty_ = true;
+        x_ = 0;
+        y_ = 0;
+        refX_ = 0;
+        refY_ = 0;
 	}
 
 	void setRotation(float r)
@@ -43,22 +47,49 @@ public:
 
 	void setX(float x)
 	{
-		matrix_.setTx(x);
+        matrix_.setTx(x-refX_);
+        x_ = x;
 		isDirty_ = true;
 	}
 
 	void setY(float y)
 	{
-		matrix_.setTy(y);
+        matrix_.setTy(y-refY_);
+        y_ = y;
 		isDirty_ = true;
 	}
 
 	void setXY(float x, float y)
 	{
-		matrix_.setTx(x);
-		matrix_.setTy(y);
+        matrix_.setTx(x-refX_);
+        matrix_.setTy(y-refY_);
+        x_ = x;
+        y_ = y;
 		isDirty_ = true;
 	}
+
+    void setRefX(float x)
+    {
+        matrix_.setTx(x_-x);
+        refX_ = x;
+        isDirty_ = true;
+    }
+
+    void setRefY(float y)
+    {
+        matrix_.setTy(y_-y);
+        refY_ = y;
+        isDirty_ = true;
+    }
+
+    void setRefXY(float x, float y)
+    {
+        matrix_.setTx(x_-x);
+        matrix_.setTy(y_-y);
+        refX_ = x;
+        refY_ = y;
+        isDirty_ = true;
+    }
 
 	float rotation() const
 	{
@@ -77,13 +108,23 @@ public:
 
 	float x() const
 	{
-		return matrix_.tx();
+        return x_;
 	}
 
 	float y() const
 	{
-		return matrix_.ty();
+        return y_;
 	}
+
+    float refX() const
+    {
+        return refX_;
+    }
+
+    float refY() const
+    {
+        return refY_;
+    }
 
     void setMatrix(float m11, float m12, float m21, float m22, float tx, float ty)
 	{
@@ -120,6 +161,10 @@ private:
 	float rotation_;
 	float scaleX_;
 	float scaleY_;
+    float x_;
+    float y_;
+    float refX_;
+    float refY_;
 	float vx_, vy_;
 
 	void decompose();
