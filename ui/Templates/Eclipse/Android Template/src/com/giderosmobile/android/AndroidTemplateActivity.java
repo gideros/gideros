@@ -27,14 +27,12 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 
 		System.loadLibrary("luasocket");
 		System.loadLibrary("lfs");
-		System.loadLibrary("ggooglebilling");
 		System.loadLibrary("lsqlite3");
 		System.loadLibrary("json");
 		System.loadLibrary("bitop");
 	}
 
 	static private String[] externalClasses = {
-		"com.giderosmobile.android.plugins.googlebilling.GGoogleBilling",
 	};
 	
 	private GLSurfaceView mGLView;
