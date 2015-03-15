@@ -1,0 +1,6 @@
+<project>
+ <properties autorotation="0" encrypt="0" fps="60" scaleMode="0" mouseToTouch="1" iosDevice="0" packageName="com.jenots.playtest" logicalHeight="480" logicalWidth="320" mouseTouchOrder="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="0" architecture="1">
+  <imageScales/>
+ </properties>
+ <file source="main.lua"/>
+</project>

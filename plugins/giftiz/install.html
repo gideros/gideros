@@ -1,0 +1,46 @@
+<h1>Installation</h1>
+<h2>Android</h2>
+<p>Copy libs folder into your exported project</p>
+<p>Copy src folder into your exported project</p>
+<p>Add System.loadLibrary("giftiz"); to your main activity</p>
+<p>Add "com.giderosmobile.android.plugins.giftiz.GGiftiz" as external class in your main activity</p>
+<p>Add this permissiones to AndroidManifest.xml</p>
+<pre>
+&lt;uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"&gt;&lt;/uses-permission&gt;
+&lt;uses-permission android:name="android.permission.ACCESS_WIFI_STATE"&gt;&lt;/uses-permission&gt;
+&lt;uses-permission android:name="android.permission.INTERNET"&gt;&lt;/uses-permission&gt;
+&lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;
+</pre>
+<p>Add this to application tag in AndroidManifest.xml</p>
+<pre>
+&lt;activity android:name="com.purplebrain.giftiz.sdk.GiftizWebViewActivity" /&gt;
+&lt;meta-data android:name="GIFTIZ_PARTNER_KEY" android:value="TEST_PARTNER_KEY" /&gt;
+</pre>
+<p>Use <strong>TEST_PARTNER_KEY</strong> for testing purpose and then replace with your provided partner key</p>
+
+<h1>API Reference</h1>
+<h2>Methods</h2>
+<ul>
+<li>require "giftiz" -- initialize plugin</li>
+<li>giftiz:missionComplete() -- send a message that your app mission has been completed</li>
+<li>giftiz:purchaseMade(2.99) --report purchase made (for premium partners)</li>
+<li>giftiz:getButtonState() --return one of the four button states Giftiz.INVISIBLE, Giftiz.DEFAULT, Giftiz.BADGE, Giftiz.WARNING</li>
+<li>giftiz:buttonClicked() --indicates that button was clicked</li>
+</ul>
+<h2>Events</h2>
+<ul>
+<li>Event.BUTTON_STATE_CHANGE --buttone has changed it's state
+<ul>
+<li>e.buttoneState --one of the four button states Giftiz.INVISIBLE, Giftiz.DEFAULT, Giftiz.BADGE, Giftiz.WARNING</li>
+</ul>
+</li>
+</ul>
+
+<h2>GiftizButton.lua</h2>
+<p>This Gideros class provides an easy Giftiz Button wrapper so you would not have to manage all the states and clicks yourself</p>
+<p>Simply add giftiz Custom button images to your Gideros project and use it as:</p>
+<pre>
+local button = GiftizButton.new("images") --provide a path to where giftiz images are
+button:setPosition(100,100)
+stage:addChild(button)
+</pre>

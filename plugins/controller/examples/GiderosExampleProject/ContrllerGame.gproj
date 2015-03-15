@@ -1,0 +1,53 @@
+<project>
+ <properties autorotation="3" encrypt="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="800" logicalWidth="480" mouseTouchOrder="0" retinaDisplay="3" touchToMouse="1" assetsOnly="0" orientation="1" architecture="0">
+  <imageScales/>
+ </properties>
+ <folder name="images">
+  <file source="images/options_up.png"/>
+  <file source="images/options_down.png"/>
+  <file source="images/help_up.png"/>
+  <file source="images/help_down.png"/>
+  <file source="images/start_up.png"/>
+  <file source="images/start_down.png"/>
+  <file source="images/gideros_mobile.png"/>
+  <file source="images/tile1.png"/>
+  <file source="images/wheel0011.png"/>
+  <file source="images/wheel0010.png"/>
+  <file source="images/wheel0009.png"/>
+  <file source="images/wheel0008.png"/>
+  <file source="images/wheel0007.png"/>
+  <file source="images/wheel0006.png"/>
+  <file source="images/wheel0005.png"/>
+  <file source="images/wheel0004.png"/>
+  <file source="images/wheel0003.png"/>
+  <file source="images/wheel0002.png"/>
+  <file source="images/wheel0001.png"/>
+  <file source="images/wheel0000.png"/>
+  <file source="images/turret.png"/>
+  <file source="images/tank.png"/>
+ </folder>
+ <folder name="fonts">
+  <file source="fonts/tahoma.ttf"/>
+ </folder>
+ <folder name="scenes">
+  <file source="scenes/SelectScene.lua"/>
+  <file source="scenes/StartScene.lua"/>
+  <file source="scenes/GameScene.lua"/>
+ </folder>
+ <folder name="objects">
+  <file source="objects/Car.lua"/>
+  <file source="objects/Turret.lua"/>
+  <file source="objects/Player.lua"/>
+ </folder>
+ <folder name="classes">
+  <file source="classes/ControllerLayer.lua"/>
+  <file source="classes/button.lua"/>
+  <file source="classes/easing.lua"/>
+  <file source="classes/View.lua"/>
+  <file source="classes/Popup.lua"/>
+  <file source="classes/scenemanager.lua"/>
+  <file source="classes/gtween.lua"/>
+ </folder>
+ <file source="main.lua"/>
+ <file source="config.lua"/>
+</project>

@@ -1,0 +1,37 @@
+<h1>Bridge Examples</h1>
+<h3>Get native class</h3>
+<pre><code>local Integer = native.getClass("java.lang.Integer")</code></pre>
+<h3>Create native object</h3>
+<pre><code>local i = Integer.new(20)</code></pre>
+<h3>Call method of native object</h3>
+<pre><code>print(i:intValue())</code></pre>
+<h3>Call static method of native class</h3>
+<pre><code>local sys = native.getClass("java.lang.System")
+print(sys.currentTimeMillis()
+</code></pre>
+<h3>Convert Gideros path to real</h3>
+<pre><code>print(native.getPath("|D|image.png"))</code></pre>
+<h3>Create primitive type array</h3>
+<pre><code>local boolArray = native.newArray("bool", {true, false, true})</code></pre>
+<h3>Create array of Objects</h3>
+<pre><code>local String = native.getClass("java.lang.String")
+local objectArray = String.newArray({"test1", "test2", "test3"})</code></pre>
+<h3>Using proxies for events</h3>
+<pre><code>local Button = native.getClass("android.widget.Button")
+Button:setText("mybutton")
+local eventProxy = native.createProxy("android.view.View$OnClickListener", {onClick = function()
+	print("Button was clicked")
+end})
+Button:setOnClickListener(eventProxy)
+</code></pre>
+<h3>Accessing current activity and layout for adding new elements</h3>
+<p>Can be done through GBridge helping class</p>
+<pre><code>local bridge = native.getClass("com.giderosmobile.android.plugins.bridge.GBridge")
+local activity = bridge.getActivity()
+local layout = bridge.getLayout()</code></pre>
+<h1>Important notes on Native Bridge</h1>
+<ul>
+<li>Currently bridge is Android only and API may differ for IOS systems</li>
+<li>Bridge is not fool proof, meaning you can find 1000 and one way to crash it, but what works should be stable</li>
+<li>Strings are both primitive and Object type, you can pass simple string to methods which accept it like "my string" or create String objects and pass them</li>
+</ul>

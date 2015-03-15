@@ -1,0 +1,26 @@
+<plugin type="android">
+	<files>
+		<file>libs/armeabi/libcontroller.so</file>
+		<file>libs/armeabi-v7a/libcontroller.so</file>
+		<file>libs/x86/libcontroller.so</file>
+		<file>libs/com.bda.controller.jar</file>
+		<file>libs/JavaInputUnifier130220.jar</file>
+		<file>src/com/giderosmobile/android/plugins/controller/GController.java</file>
+		<file>src/com/giderosmobile/android/plugins/controller/GControllerDefault.java</file>
+		<file>src/com/giderosmobile/android/plugins/controller/GControllerGreenThrottle.java</file>
+		<file>src/com/giderosmobile/android/plugins/controller/GControllerInterface.java</file>
+		<file>src/com/giderosmobile/android/plugins/controller/GControllerManager.java</file>
+		<file>src/com/giderosmobile/android/plugins/controller/GControllerMoga.java</file>
+	</files>
+	<libs>
+		<lib>System.loadLibrary("controller");</lib>
+	</libs>
+	<externals>
+		<external>"com.giderosmobile.android.plugins.controller.GControllerManager"</external>
+	</externals>
+	<mods>
+		<mod type="insertLineAfter" prefix="		" reference="public boolean onKeyDown">if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyDown(keyCode, event)) return true;</mod>
+		<mod type="insertLineAfter" prefix="		" reference="public boolean onKeyUp">if(com.giderosmobile.android.plugins.controller.if(GControllerDefault.onKeyUp(keyCode, event)) return true;</mod>
+		<mod type="insertLineAfter" prefix="	" reference="super.onKeyUp"><![CDATA[public boolean onGenericMotionEvent(MotionEvent event) {if(com.giderosmobile.android.plugins.controller.GControllerDefault.onGenericMotionEvent(event)){return true;}return super.onGenericMotionEvent(event);}]]></mod>
+	</mods>
+</plugin>

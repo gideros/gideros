@@ -1,400 +1,438 @@
 package com.giderosmobile.android.plugins.facebook;
 
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import org.json.JSONObject;
+
+import com.facebook.AppLinkData;
+import com.facebook.FacebookException;
+import com.facebook.FacebookOperationCanceledException;
+import com.facebook.FacebookRequestError;
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.RequestAsyncTask;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphObject;
+import com.facebook.widget.WebDialog;
+import com.facebook.widget.WebDialog.OnCompleteListener;
+import com.giderosmobile.android.plugins.facebook.fbsimple.Permissions;
+import com.giderosmobile.android.plugins.facebook.fbsimple.SimpleFacebook;
+import com.giderosmobile.android.plugins.facebook.fbsimple.SimpleFacebookConfiguration;
+import com.giderosmobile.android.plugins.facebook.fbsimple.SimpleFacebook.OnReopenSessionListener;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Base64;
-import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
-import com.facebook.android.AsyncFacebookRunner;
-import com.facebook.android.AsyncFacebookRunner.RequestListener;
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.Facebook.DialogListener;
-import com.facebook.android.Facebook.ServiceListener;
-import com.facebook.android.FacebookError;
-
-@SuppressWarnings("deprecation")
 public class GFacebook
 {
 	private static WeakReference<Activity> sActivity;
 	public static long sData;
-	public static Facebook fb;
-	private static AsyncFacebookRunner fbr;
+	private static String[] PERMISSIONS = {"basic_info", "user_about_me"};
+	private static SimpleFacebook sfb;
 	
 	public static void onCreate(Activity activity)
 	{
 		sActivity =  new WeakReference<Activity>(activity);
+		sfb = SimpleFacebook.getInstance(sActivity.get());
+		
 		/**********************
 		 * Uncomment and replace "com.yourdomain.yourapp" with your package
 		 * to get hash key for FaceBook app
 		 **********************/
-		/*
-		try {
-			PackageInfo info = sActivity.get().getPackageManager().getPackageInfo("com.yourdomain.yourapp", PackageManager.GET_SIGNATURES);
-			for (Signature signature : info.signatures) {
-				MessageDigest md = MessageDigest.getInstance("SHA");
-				md.update(signature.toByteArray());
-				Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-			}
-		} catch (Exception e) {
-			Log.e("Exception", e.toString());
-		}
-		*/
+		//Log.d("FB", getHashKey());
 	}
 	
-	public static void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		fb.authorizeCallback(requestCode, resultCode, data);
+	public static void onResume(){
+		sfb = SimpleFacebook.getInstance(sActivity.get());
+	}
+	
+	public static void onActivityResult(int requestCode, int resultCode, Intent data){
+		sfb.onActivityResult(sActivity.get(), requestCode, resultCode, data); 
 	}
 	
 	static public void init(long data)
 	{
 		sData = data;
+		AppLinkData appLinkData = AppLinkData.createFromActivity(sActivity.get());
+	    if (appLinkData != null) {
+	        Bundle arguments = appLinkData.getArgumentBundle();
+	        if (arguments != null) {
+	            String targetUrl = arguments.getString("target_url");
+	            if (targetUrl != null && sData != 0) {
+	            	GFacebook.onOpenUrl(targetUrl, sData);
+	            }
+	        }
+	    }
 	}
 	
 	static public void cleanup()
 	{
 		sData = 0;
-		fb = null;
-		fbr = null;
 	}
 
-	private static void setAppId(String appId){
-		fb = new Facebook(appId);
-		String token = getFBToken();
-		if(token != "")
-		{
-			fb.setAccessToken(getFBToken());
-			fb.setAccessExpires(getFBTokenExpires());
-		}
-		fbr = new AsyncFacebookRunner(fb);
+	static public void login(String appId){
+		login(appId, null);
 	}
 	
-	private static void authorize(){
+	public static void login(String appId, Object[] permissions){
+		if(permissions != null)
+			PERMISSIONS = (String[])permissions;
+		SimpleFacebookConfiguration configuration = new SimpleFacebookConfiguration.Builder()
+	    	.setAppId(appId)
+	    	.setPermissions(PERMISSIONS)
+	    	.build();
+		SimpleFacebook.setConfiguration(configuration);
+		
 		sActivity.get().runOnUiThread(new Runnable() {
 			@Override
 			 public void run() {
-				fb.authorize(sActivity.get(), new GFacebookAuth());
+				sfb.login(new LoginCallback());
 			}
 		});
 	}
 	
-	private static void authorize(final Object[] permissions){
+	public static void logout(){
 		sActivity.get().runOnUiThread(new Runnable() {
 			@Override
 			 public void run() {
-				fb.authorize(sActivity.get(), (String[]) permissions, new GFacebookAuth());
+				sfb.logout(new LogoutCallback());
 			}
 		});
 	}
 	
-	private static void logout(){
-		sActivity.get().runOnUiThread(new Runnable() {
-			@Override
-			 public void run() {
-				fbr.logout(sActivity.get(), new GFacebookLogout());
-			}
-		});
+	public static String getAccessToken(){
+		if(Session.getActiveSession() != null)
+			return Session.getActiveSession().getAccessToken();
+		return "";
 	}
 	
-	private static boolean isSessionValid(){
-		return fb.isSessionValid();
+	public static long getExpirationDate(){
+		if(Session.getActiveSession() != null)
+			return (long)Session.getActiveSession().getExpirationDate().getTime()/1000;
+		return 0;
 	}
 	
-	private static void dialog(final String action){
-		sActivity.get().runOnUiThread(new Runnable() {
-			
-			@Override
-			public void run() {
-				fb.dialog(sActivity.get(), action, new GFacebookDialog());
-			}
-		});
+	public static void dialog(final String action){
+		dialog(action, null);
 	}
 	
-	private static void dialog(final String action, final Object parameters){
+	public static void dialog(final String action, final Object parameters){
 		sActivity.get().runOnUiThread(new Runnable() {
 			
 			@Override
 			public void run() {
-				fb.dialog(sActivity.get(), action, (Bundle)parameters, new GFacebookDialog());
+				 if (sfb.isLogin())
+	             {
+					 WebDialog dialog = (
+				        new WebDialog.Builder(sActivity.get(),
+				            Session.getActiveSession(), action, (Bundle)parameters))
+				            .setOnCompleteListener(new WebDialogCallback(action))
+				            .build();
+					 Window dialogWindow = dialog.getWindow();
+					 dialogWindow.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+					 dialog.show();
+	             }
 			}
 		});
 	}
 	
-	private static void graphRequest(String graphPath){
-		fbr.request(graphPath, new GFacebookRequest());
-	}
-	
-	private static void graphRequest(String graphPath, Object paramaters){
-		fbr.request(graphPath, (Bundle)paramaters, new GFacebookRequest());
-	}
-	
-	private static void graphRequest(String graphPath, Object paramaters, String method){	
-		fbr.request(graphPath, (Bundle)paramaters, method, new GFacebookRequest(), true);
-	}
-	
-	private static void setAccessToken(String accessToken){
-		fb.setAccessToken(accessToken);
-	}
-	
-	private static String getAccessToken(){
-		return fb.getAccessToken();
-	}
-	
-	private static void setExpirationDate(long timestampInMsec){
-		fb.setAccessExpires(timestampInMsec);
-	}
-	
-	private static long getExpirationDate(){
-		return fb.getAccessExpires();
-	}
-	
-	private static void extendAccessToken(){
+	public static void upload(final String path, final String orig){
 		sActivity.get().runOnUiThread(new Runnable() {
 			
 			@Override
 			public void run() {
-				fb.extendAccessToken(sActivity.get(), new GFacebookService());
+				String npath = path;
+				if (sfb.isLogin())
+				{
+					if (SimpleFacebook.getConfiguration().getPublishPermissions().contains(Permissions.PUBLISH_ACTION.getValue()))
+					{
+						if (!SimpleFacebook.getOpenSessionPermissions().contains(Permissions.PUBLISH_ACTION.getValue()))
+						{
+							sfb.setReopenSessionListener(new OnReopenSessionListener()
+							{
+								@Override
+								public void onSuccess()
+								{
+									stageResource(path, orig);
+								}
+									@Override
+								public void onNotAcceptingPermissions()
+								{
+									// this fail can happen when user doesn't accept the publish permissions
+									GFacebook.onRequestError(path, "Does not accept permission", sData);
+								}
+							});
+							// extend publish permissions automatically
+							SimpleFacebook.extendPublishPermissions();
+						}
+					}
+					else
+					{
+						GFacebook.onRequestError(path, "No permission", sData);
+						return;
+					}
+					stageResource(path, orig);
+				}
+				else
+				{
+					GFacebook.onRequestError(npath, "Not logged in", sData);
+				}
 			}
 		});
 	}
 	
-	private static void extendAccessTokenIfNeeded(){
+	public static void request(String path, int method){
+		request(path, method, null);
+	}
+	
+	public static void request(final String path, final int method, final Object parameters){
 		sActivity.get().runOnUiThread(new Runnable() {
 			
 			@Override
 			public void run() {
-				fb.extendAccessTokenIfNeeded(sActivity.get(), new GFacebookService());
+				String npath = path;
+				if (sfb.isLogin())
+				{
+					HttpMethod m = convertMethod(method);
+					Bundle params =  (Bundle)parameters;
+					if(m == HttpMethod.POST)
+					{
+						if (SimpleFacebook.getConfiguration().getPublishPermissions().contains(Permissions.PUBLISH_ACTION.getValue()))
+						{
+							if (!SimpleFacebook.getOpenSessionPermissions().contains(Permissions.PUBLISH_ACTION.getValue()))
+							{
+								sfb.setReopenSessionListener(new OnReopenSessionListener()
+								{
+									@Override
+									public void onSuccess()
+									{
+										request(path, method, parameters);
+									}
+
+									@Override
+									public void onNotAcceptingPermissions()
+									{
+										Session.getActiveSession().refreshPermissions();
+										// this fail can happen when user doesn't accept the publish permissions
+										GFacebook.onRequestError(path, "Does not accept permission", sData);
+									}
+								});
+
+								// extend publish permissions automatically
+								SimpleFacebook.extendPublishPermissions();
+							}
+						}
+						else
+						{
+							Session.getActiveSession().refreshPermissions();
+							GFacebook.onRequestError(path, "No permission", sData);
+							return;
+						}
+			
+						if(params != null && params.containsKey("path")){
+							Bitmap photo = loadBitmap(params.getString("path"));
+							params.remove("path");
+							params.putParcelable("picture", photo);
+							if(params.containsKey("album")){
+								String album = params.getString("album");
+								params.remove("album");
+								npath = album + "/photos";
+							}
+						}
+					}
+					graphRequest(npath, params, m);
+				}
+				else
+				{
+					GFacebook.onRequestError(npath, "Not logged in", sData);
+				}
 			}
 		});
-	}
-	
-	private static boolean shouldExtendAccessToken(){
-		return fb.shouldExtendAccessToken();
-	}
-	
-	public static void saveFBToken(String token, long tokenExpires){
-	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(sActivity.get());
-	    prefs.edit().putString("FacebookToken", token).putLong("FacebookTokenExpires", tokenExpires).commit();
-	}
-	
-	public static String getFBToken(){
-	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(sActivity.get());
-	    return prefs.getString("FacebookToken", "");
-	}
-	
-	public static long getFBTokenExpires(){
-	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(sActivity.get());
-	    return prefs.getLong("FacebookTokenExpires", 0);
-	}
-	public static void deleteFBToken(){
-	    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(sActivity.get());
-	    prefs.edit().remove("FacebookToken").remove("FacebookTokenExpires").commit();
 	}
 	
 	public static native void onLoginComplete(long data);
-	public static native void onLoginError(long data);
-	public static native void onLoginCancel(long data);
+	public static native void onLoginError(String error, long data);
 	public static native void onLogoutComplete(long data);
-	public static native void onDialogComplete(long data);
-	public static native void onDialogError(int errorCode, String errorDescription, long data);
-	public static native void onDialogCancel(long data);
-	public static native void onRequestComplete(String response, long data);
-	public static native void onRequestError(int errorCode, String errorDescription, long data);
+	public static native void onLogoutError(String error, long data);
+	public static native void onOpenUrl(String url, long data);
+	public static native void onDialogComplete(String type, String response, long data);
+	public static native void onDialogError(String type, String errorDescription, long data);
+	public static native void onRequestComplete(String type, String response, long data);
+	public static native void onRequestError(String type, String errorDescription, long data);
 
-}
-
-@SuppressWarnings("deprecation")
-class GFacebookAuth implements DialogListener
-{
-
-	@Override
-	public void onComplete(Bundle values) {
-		GFacebook.saveFBToken(GFacebook.fb.getAccessToken(), GFacebook.fb.getAccessExpires());
-		if (GFacebook.sData != 0)
-    	{
-			GFacebook.onLoginComplete(GFacebook.sData);
-    	}
+	private static void graphRequest(final String graphPath, final Bundle paramaters, final HttpMethod method){
+		Session session = SimpleFacebook.getOpenSession();
+		Request request = new Request(session, graphPath, paramaters, method, new RequestCallback(graphPath));
+		RequestAsyncTask task = new RequestAsyncTask(request);
+		task.execute();
 	}
-
-	@Override
-	public void onFacebookError(FacebookError e) {
-		 if (GFacebook.sData != 0)
-		 {
-			 GFacebook.onLoginError(GFacebook.sData);
-		 }
-		
-	}
-
-	@Override
-	public void onError(DialogError e) {
-		if (GFacebook.sData != 0)
-		{
-			GFacebook.onLoginError(GFacebook.sData);
+	
+	public static void stageResource(String path, String orig){
+		Session session = SimpleFacebook.getOpenSession();
+		File file = new File(path);
+		Request request;
+		try {
+			request = Request.newUploadStagingResourceWithImageRequest(session, file,  new RequestCallback(orig));
+			RequestAsyncTask task = new RequestAsyncTask(request);
+			task.execute();
+		} catch (FileNotFoundException e) {
+			GFacebook.onRequestError(orig, "File not found", sData);
+			e.printStackTrace();
 		}
-		
 	}
-
-	@Override
-	public void onCancel() {
-		if (GFacebook.sData != 0)
+	
+	private static Bitmap loadBitmap(String path){
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+		return BitmapFactory.decodeFile(path, options);
+	}
+	
+	private static HttpMethod convertMethod(int method){
+		HttpMethod realMethod = HttpMethod.GET;
+		if(method == 1)
+			realMethod = HttpMethod.POST;
+		else if(method == 2)
+			realMethod = HttpMethod.DELETE;
+		return realMethod;
+	}
+	
+	private static String getHashKey()
+	{
+		// Add code to print out the key hash
+		try
 		{
-			GFacebook.onLoginCancel(GFacebook.sData);
+			PackageInfo info = sActivity.get().getPackageManager().getPackageInfo(sActivity.get().getPackageName(), PackageManager.GET_SIGNATURES);
+			for (Signature signature: info.signatures)
+			{
+				MessageDigest md = MessageDigest.getInstance("SHA");
+				md.update(signature.toByteArray());
+				return Base64.encodeToString(md.digest(), Base64.DEFAULT);
+			}
 		}
-		
+		catch (NameNotFoundException e)
+		{
+
+		}
+		catch (NoSuchAlgorithmException e)
+		{
+
+		}
+		return null;
+	}
+}
+
+class LoginCallback implements SimpleFacebook.OnLoginListener{
+
+	@Override
+	public void onThinking() {}
+
+	@Override
+	public void onException(Throwable throwable) {
+		GFacebook.onLoginError(throwable.getLocalizedMessage(), GFacebook.sData);
+	}
+
+	@Override
+	public void onFail(String reason) {
+		GFacebook.onLoginError(reason, GFacebook.sData);
+	}
+
+	@Override
+	public void onLogin() {
+		Session.getActiveSession().refreshPermissions();
+		GFacebook.onLoginComplete(GFacebook.sData);
+	}
+
+	@Override
+	public void onNotAcceptingPermissions() {
+		GFacebook.onLoginError("User didn't accept read permissions", GFacebook.sData);
 	}
 	
 }
 
-@SuppressWarnings("deprecation")
-class GFacebookDialog implements DialogListener
-{
+class LogoutCallback implements SimpleFacebook.OnLogoutListener{
 
 	@Override
-	public void onComplete(Bundle values) {
-        //saveFBToken(GFacebook.fb.getAccessToken(), GFacebook.fb.getAccessExpires());
-		if (GFacebook.sData != 0)
-    	{
-			if(!values.isEmpty())
-				GFacebook.onDialogComplete(GFacebook.sData);
-			else
-				GFacebook.onDialogCancel(GFacebook.sData);
-    	}
+	public void onThinking() {}
+
+	@Override
+	public void onException(Throwable throwable) {
+		GFacebook.onLogoutError(throwable.getLocalizedMessage(), GFacebook.sData);
 	}
 
 	@Override
-	public void onFacebookError(FacebookError e) {
-		 if (GFacebook.sData != 0)
-		 {
-			 GFacebook.onDialogError(e.getErrorCode(), e.getLocalizedMessage(), GFacebook.sData);
-		 }
-		
+	public void onFail(String reason) {
+		GFacebook.onLogoutError(reason, GFacebook.sData);
 	}
 
 	@Override
-	public void onError(DialogError e) {
-		if (GFacebook.sData != 0)
-    	{
-			GFacebook.onDialogError(e.getErrorCode(), e.getLocalizedMessage(), GFacebook.sData);
-    	}
-		
-	}
-
-	@Override
-	public void onCancel() {
-		if (GFacebook.sData != 0)
-    	{
-			GFacebook.onDialogCancel(GFacebook.sData);
-    	}
-		
+	public void onLogout() {
+		GFacebook.onLogoutComplete(GFacebook.sData);
 	}
 	
 }
 
-@SuppressWarnings("deprecation")
-class GFacebookRequest implements RequestListener
-{
-
-	@Override
-	public void onComplete(String response, Object state) {
-		if (GFacebook.sData != 0)
-    	{
-			GFacebook.onRequestComplete(response, GFacebook.sData);
-    	}
-		
-	}
-
-	@Override
-	public void onIOException(IOException e, Object state) {
-		if (GFacebook.sData != 0)
-    	{
-			GFacebook.onRequestError(1, e.getLocalizedMessage(), GFacebook.sData);
-    	}
-		
-	}
-
-	@Override
-	public void onFileNotFoundException(FileNotFoundException e, Object state) {
-		if (GFacebook.sData != 0)
-    	{
-			GFacebook.onRequestError(2, e.getLocalizedMessage(), GFacebook.sData);
-    	}
-		
-	}
-
-	@Override
-	public void onMalformedURLException(MalformedURLException e, Object state) {
-		if (GFacebook.sData != 0)
-    	{
-			GFacebook.onRequestError(3, e.getLocalizedMessage(), GFacebook.sData);
-    	}
-	}
-
-	@Override
-	public void onFacebookError(FacebookError e, Object state) {
-		if (GFacebook.sData != 0)
-    	{
-			GFacebook.onRequestError(e.getErrorCode(), e.getLocalizedMessage(), GFacebook.sData);
-    	}
-		
-	}
+class RequestCallback implements Request.Callback {
+	private String path;
 	
-}
-
-@SuppressWarnings("deprecation")
-class GFacebookLogout implements RequestListener
-{
-
-	@Override
-	public void onComplete(String response, Object state) {
-		GFacebook.deleteFBToken();
-		if (GFacebook.sData != 0)
+	RequestCallback(String graphPath){
+		path = graphPath;
+	}
+    public void onCompleted(Response response) {
+    	String result = "[]";
+    	GraphObject graphObject = response.getGraphObject();
+    	if(graphObject != null)
     	{
-			GFacebook.onLogoutComplete(GFacebook.sData);
+    		JSONObject graphResponse = graphObject.getInnerJSONObject();
+    		result = graphResponse.toString();
     	}
-		
+        FacebookRequestError error = response.getError();
+        if (error != null) {
+            GFacebook.onRequestError(path, error.getErrorMessage(), GFacebook.sData);
+        } else {
+        	GFacebook.onRequestComplete(path, result, GFacebook.sData);
+        }
+    }
+};
+
+class WebDialogCallback implements OnCompleteListener {
+
+	String action;
+	WebDialogCallback(String type){
+		action = type;
 	}
-
 	@Override
-	public void onIOException(IOException e, Object state) {}
-
-	@Override
-	public void onFileNotFoundException(FileNotFoundException e, Object state) {}
-
-	@Override
-	public void onMalformedURLException(MalformedURLException e, Object state) {}
-
-	@Override
-	public void onFacebookError(FacebookError e, Object state) {}
-	
-}
-
-class GFacebookService implements ServiceListener
-{
-
-	@Override
-	public void onComplete(Bundle values) {
-	}
-
-	@Override
-	public void onFacebookError(FacebookError e) {
-	}
-
-	@Override
-	public void onError(Error e) {
-
-	}
-
+	public void onComplete(Bundle values, FacebookException error) {
+		if (error != null) {
+            if (error instanceof FacebookOperationCanceledException) {
+                GFacebook.onDialogError(action, "Canceled", GFacebook.sData);
+            } else {
+            	GFacebook.onDialogError(action, error.getLocalizedMessage(), GFacebook.sData);
+            }
+        } else {
+            if (values.containsKey("post_id")) {
+                GFacebook.onDialogComplete(action, values.getString("post_id"), GFacebook.sData);
+            }
+            else if(values.containsKey("request")){
+            	GFacebook.onDialogComplete(action, values.getString("request"), GFacebook.sData);
+            } else {
+            	GFacebook.onDialogError(action, "Canceled", GFacebook.sData);
+            }
+        }   
+    }
+				
 }

@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>텍스트 스크롤</title>
+        <style type="text/css">
+            * {margin:0;padding:0;}
+            #scroll {height:30px;}
+            </style>
+        
+
+
+<script type="text/javascript">
+    
+    function clickImage() {
+        window.location.href = "sadgpm://selectedImage";
+        //window.location.href = "http://st2.gsmarena.com/vv/pics/samsung/samsung-s5230-02.jpeg";
+        
+        //    ormma.open("(null)", false);
+    }
+    
+    function textScroll(scroll_el_id) {
+        this.objElement = document.getElementById(scroll_el_id);
+        this.objElement.style.position = 'relative';
+        this.objElement.style.overflow = 'hidden';
+        
+        this.objLi = this.objElement.getElementsByTagName('li');
+        this.height = this.objElement.offsetHeight; // li 엘리먼트가 움직이는 높이(외부에서 변경가능)
+        this.num = this.objLi.length; // li 엘리먼트의 총 갯수
+        this.totalHeight = this.height*this.num; // 총 높이
+        this.scrollspeed = 2; // 스크롤되는 px
+        this.objTop = new Array(); // 각 li의 top 위치를 저장
+        this.timer = null;
+        
+        for(var i=0; i<this.num; i++){
+            this.objLi[i].style.position = 'absolute';
+            this.objTop[i] = this.height*i;
+            this.objLi[i].style.top = this.objTop[i]+5+"px";
+        }
+    }
+    
+    textScroll.prototype.move = function(){
+        for(var i=0; i<this.num; i++) {
+            this.objTop[i] = this.objTop[i] - this.scrollspeed;
+            this.objLi[i].style.top = this.objTop[i]+5+"px";
+        }
+        if(this.objTop[0]%%this.height == 0){
+            this.jump();
+        }else{
+            clearTimeout(this.timer);
+            this.timer = setTimeout(this.name+".move()",50);
+        }
+    }
+    
+    textScroll.prototype.jump = function(){
+        for(var i=0; i<this.num; i++){
+            if(this.objTop[i] == this.height*(-2)){
+                this.objTop[i] = this.objTop[i] + this.totalHeight;
+                this.objLi[i].style.top = this.objTop[i]+5+"px";
+            }
+        }
+        clearTimeout(this.timer);
+        this.timer = setTimeout(this.name+".move()",3000);
+    }
+    
+    
+    textScroll.prototype.start = function() {
+        this.timer = setTimeout(this.name+".move()",3000);
+    }
+    </script>
+
+    </head>
+    <body>
+
+
+<style type="text/css">
+    <!--
+    table {
+        /* default background colour, for all layout engines that don't implement gradients */
+        /*background: #2a6da9;*/
+        
+        /* gecko based browsers */
+        background: -moz-linear-gradient(top, %@, %@);
+        
+        /* webkit based browsers */
+        background: -webkit-gradient(linear, left top, left bottom, from(%@), to(%@));
+        
+        color: %@; /* text colour (black) */
+        /*height: auto; /* gradient uses the full height of the element */
+        /*padding: 5px; /* distance from border edge to text */
+        
+        /*position:absolute;*/
+        
+        width:%dpx;
+        height:%dpx;
+    }
+    td {
+        text-align:center;
+        vertical-align:middle;
+    }
+    //-->
+</style>
+<table onclick="clickImage();">
+    <tr>
+        %@
+    </tr>
+</table>
+
+<script type="text/javascript">
+    var titles = new textScroll ('scroll');
+    titles.name = "titles";
+    titles.start();
+</script>
+
+    </body>
+</html>
+

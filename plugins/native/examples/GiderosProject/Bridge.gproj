@@ -1,0 +1,8 @@
+<project>
+ <properties autorotation="0" encryptAssets="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="800" logicalWidth="480" mouseTouchOrder="0" encryptCode="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="0" architecture="1">
+  <imageScales/>
+ </properties>
+ <file source="documentariesandyou.mp4"/>
+ <file source="ui-android.lua"/>
+ <file source="main.lua"/>
+</project>

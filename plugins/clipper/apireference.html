@@ -1,0 +1,52 @@
+<h1>API Reference</h1>
+<h2>Polygon</h2>
+<h3>Methods</h3>
+<ul>
+<li>Polygon.new() -- create polygon object</li>
+<li>Polygon:addPoints(x, y) -- add x and y points to polygon</li>
+<li>Polygon:getPoints() -- returns table with subtables where 1st element is x and 2nd element is y</li>
+<li>Polygon:getArea() -- returns area of polygon</li>
+<li>Polygon:isClockwise() -- return bool if polygon is clockwise</li>
+<li>Polygon:clean([distance]) -- cleans polygon (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Routines/CleanPolygon.htm' target='_blank'>CleanPolygon</a>)</li>
+<li>Polygon:reverse() -- reverses polygon (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Routines/ReversePolygon.htm' target='_blank'>ReversePolygon</a>)</li>
+<li>Polygon:simplify([fillType]) -- simplify polygon (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Routines/SimplifyPolygon.htm' target='_blank'>SimplifyPolygon</a>)</li>
+<li>Polygon:getLineOffset(delta [, jointype, endtype, limit]) -- get line offset polygons (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Routines/OffsetPolyLines.htm' target='_blank'>OffsetPolyLines</a>)</li>
+<li>Polygon:getPoligonOffset(delta [, jointype, limit, autoFix]) -- get polygon offset polygons (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Routines/OffsetPolygons.htm' target='_blank'>OffsetPolygons</a>)</li>
+</ul>
+
+<h3>Properties</h3>
+<h4>Fill types: (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Types/PolyFillType.htm' target='_blank'>PolyFillType</a>)</h4>
+<ul>
+<li>Polygon.FILL_EVEN_ODD -- even odd fill type</li>
+<li>Polygon.FILL_NON_ZERO -- non zero fill type</li>
+<li>Polygon.FILL_POSITIVE -- positive fill type</li>
+<li>Polygon.FILL_NEGATIVE -- negative fill type</li>
+</ul>
+<h4>Joint types: (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Types/JoinType.htm' target='_blank'>JoinType</a>)</h4>
+<ul>
+<li>Polygon.JOINT_SQUARE -- square joint type</li>
+<li>Polygon.JOINT_ROUND -- round joint type</li>
+<li>Polygon.JOINT_MITER -- miter joint type</li>
+</ul>
+
+<h4>End types: (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Types/EndType.htm' target='_blank'>EndType</a>)</h4>
+<ul>
+<li>Polygon.END_CLOSED -- closed end type</li>
+<li>Polygon.END_BUTT -- butt end type</li>
+<li>Polygon.END_SQUARE -- square end type</li>
+<li>Polygon.END_ROUND -- round end type</li>
+</ul>
+
+<h2>Clipper</h2>
+<h3>Methods</h3>
+<ul>
+<li>Clipper.new() -- create clipper object</li>
+<li>Clipper:addSubjectPolygon(polygon) -- add subject polygon (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Types/PolyType.htm' target='_blank'>PolyType</a>)</li>
+<li>Clipper:addClipPolygon(polygon) -- add clip polygon (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Types/PolyType.htm' target='_blank'>PolyType</a>)</li>
+<li>Clipper:clear() -- clear poligons</li>
+<li>Clipper:getBounds() -- returns x, y, width, height of bounds of all provided poligons</li>
+<li>Clipper:getIntersection([subjFillType, clipFillType]) -- intersection between subject and clip polygons (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Classes/Clipper/Methods/Execute.htm' target='_blank'>Execute</a>)</li>
+<li>Clipper:getUnion([subjFillType, clipFillType]) -- union between subject and clip polygons (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Classes/Clipper/Methods/Execute.htm' target='_blank'>Execute</a>)</li>
+<li>Clipper:getDifference([subjFillType, clipFillType]) -- difference between subject and clip polygons (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Classes/Clipper/Methods/Execute.htm' target='_blank'>Execute</a>)</li>
+<li>Clipper:getExclusion([subjFillType, clipFillType]) -- xor between subject and clip polygons (<a href='http://www.angusj.com/delphi/clipper/documentation/Docs/Units/ClipperLib/Classes/Clipper/Methods/Execute.htm' target='_blank'>Execute</a>)</li>
+</ul>
