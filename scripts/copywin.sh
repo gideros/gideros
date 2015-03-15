@@ -126,13 +126,13 @@ cp plugins/LuaSocket/source/libs/armeabi/libluasocket.so $BUILD_DIR/win/Template
 cp plugins/LuaSocket/source/libs/armeabi-v7a/libluasocket.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
 cp plugins/LuaSocket/source/libs/x86/libluasocket.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
 
-cp plugins/LuaFileSystem/source/libs/armeabi/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
-cp plugins/LuaFileSystem/source/libs/armeabi-v7a/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
-cp plugins/LuaFileSystem/source/libs/x86/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
+cp plugins/lfs/source/libs/armeabi/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/lfs/source/libs/armeabi-v7a/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/lfs/source/libs/x86/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
 
-cp plugins/LuaSQLite3/source/libs/armeabi/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
-cp plugins/LuaSQLite3/source/libs/armeabi-v7a/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
-cp plugins/LuaSQLite3/source/libs/x86/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
+cp plugins/lsqlite3/source/libs/armeabi/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/lsqlite3/source/libs/armeabi-v7a/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/lsqlite3/source/libs/x86/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
 
 cp plugins/BitOp/source/libs/armeabi/libbitop.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
 cp plugins/BitOp/source/libs/armeabi-v7a/libbitop.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
