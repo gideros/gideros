@@ -179,6 +179,7 @@ for d in *; do
 cd $d/source
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin
+cp -r examples ../../../$BUILD_DIR/win/All\ Plugins/$d
 if [ -f $d.pro ]; then
 cp release/$d.dll ../../../$BUILD_DIR/win/Plugins
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Windows
