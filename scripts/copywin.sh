@@ -131,6 +131,7 @@ cd Android
 cp libs/armeabi/lib$d.so ../../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
 cp libs/armeabi-v7a/lib$d.so ../../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
 cp libs/x86/lib$d.so ../../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
+cp -r src ../../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template
 cd ..
 else
 cp libs/armeabi/lib$d.so ../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
@@ -196,6 +197,7 @@ cd Android
 cp libs/armeabi/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi
 cp libs/armeabi-v7a/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi-v7a
 cp libs/x86/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/x86
+cp -r src ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
 cd ..
 else
 cp libs/armeabi/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi
