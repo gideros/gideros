@@ -187,22 +187,23 @@ cp release/$d.dll ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Windows
 fi
 if [ -d Android ] || [ -d jni ] ; then
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
-mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi
-mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi-v7a
-mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/x86
+mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs
+mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi
+mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi-v7a
+mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/x86
 if [ -d Android ] ; then
 cd Android
-cp libs/armeabi/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi
-cp libs/armeabi-v7a/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi-v7a
-cp libs/x86/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/x86
+cp libs/armeabi/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi
+cp libs/armeabi-v7a/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi-v7a
+cp libs/x86/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/x86
 cp -r src ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
 cp -r res ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
 cp -r assets ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
 cd ..
 else
-cp libs/armeabi/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi
-cp libs/armeabi-v7a/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi-v7a
-cp libs/x86/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/x86
+cp libs/armeabi/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi
+cp libs/armeabi-v7a/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi-v7a
+cp libs/x86/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/x86
 fi
 fi
 cd ..
