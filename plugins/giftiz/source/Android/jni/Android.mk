@@ -31,6 +31,6 @@ LOCAL_CFLAGS           := -O2
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/../../../../../Sdk/include $(LOCAL_PATH)/..
 LOCAL_SRC_FILES        := giftiz.cpp giftizbinder.cpp
 LOCAL_LDLIBS           := -ldl -llog
-LOCAL_SHARED_LIBRARIES := gideros
+LOCAL_SHARED_LIBRARIES := lua gideros
 
 include $(BUILD_SHARED_LIBRARY)
