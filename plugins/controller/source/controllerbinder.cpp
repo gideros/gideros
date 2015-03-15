@@ -1,5 +1,5 @@
-#include "controller.h"
 #include "gideros.h"
+#include "controller.h"
 
 // some Lua helper functions
 #ifndef abs_index

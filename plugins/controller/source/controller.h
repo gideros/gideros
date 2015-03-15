@@ -142,18 +142,18 @@ static const int R_TRIGGER = 5;
 extern "C" {
 #endif
 
-G_API void ghid_init();
-G_API void ghid_cleanup();
+void ghid_init();
+void ghid_cleanup();
 
-G_API int ghid_isAnyAvailable();
-G_API int ghid_getPlayerCount();
-G_API const char* ghid_getControllerName(int player);
-G_API void ghid_vibrate(int player, long ms);
-G_API int* ghid_getPlayers(int* size);
+int ghid_isAnyAvailable();
+int ghid_getPlayerCount();
+const char* ghid_getControllerName(int player);
+void ghid_vibrate(int player, long ms);
+int* ghid_getPlayers(int* size);
 
-G_API g_id ghid_addCallback(gevent_Callback callback, void *udata);
-G_API void ghid_removeCallback(gevent_Callback callback, void *udata);
-G_API void ghid_removeCallbackWithGid(g_id gid);
+g_id ghid_addCallback(gevent_Callback callback, void *udata);
+void ghid_removeCallback(gevent_Callback callback, void *udata);
+void ghid_removeCallbackWithGid(g_id gid);
 
 #ifdef __cplusplus
 }

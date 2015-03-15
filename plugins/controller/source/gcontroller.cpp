@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <cmath>
 #include <cstdio>
-#include <qt/qglobal.h>
+#include <QtCore/qglobal.h>
 
 static const float DEAD_ZONE = 0.25f;
 static const double MATH_PI = atan(1)*4;

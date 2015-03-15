@@ -1,4 +1,4 @@
-QT -= core gui
+QT -= gui
 
 TARGET = controller
 TEMPLATE = lib
