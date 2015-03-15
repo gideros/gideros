@@ -97,13 +97,13 @@ cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/*.a           $BUILD_DIR/win/
 mkdir $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp Sdk/include/*.h $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 
-cp plugins/LuaSQLite3/source/lsqlite3.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
-cp plugins/LuaSQLite3/source/lsqlite3_stub.cpp  $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/lsqlite3/source/lsqlite3.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/lsqlite3/source/lsqlite3_stub.cpp  $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/LuaSocket/source/luasocket_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins/libluasocket.a $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
-cp plugins/LuaFileSystem/source/lfs.h $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
-cp plugins/LuaFileSystem/source/lfs.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
-cp plugins/LuaFileSystem/source/lfs_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/lfs/source/lfs.h $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/lfs/source/lfs.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/lfs/source/lfs_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/BitOp/source/bit.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/BitOp/source/bit_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/JSON/source/fpconv.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
@@ -179,7 +179,7 @@ for d in *; do
 cd $d/source
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin
-cp -r examples ../../../$BUILD_DIR/win/All\ Plugins/$d
+cp -r ../examples ../../../$BUILD_DIR/win/All\ Plugins/$d
 if [ -f $d.pro ]; then
 cp release/$d.dll ../../../$BUILD_DIR/win/Plugins
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Windows
@@ -196,6 +196,8 @@ cp libs/armeabi/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/
 cp libs/armeabi-v7a/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi-v7a
 cp libs/x86/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/x86
 cp -r src ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
+cp -r res ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
+cp -r assets ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
 cd ..
 else
 cp libs/armeabi/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi
