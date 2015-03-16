@@ -4833,8 +4833,10 @@ void b2DebugDraw::doDraw(const CurrentTransform& , float sx, float sy, float ex,
 
 		float physicsScale = application_->getPhysicsScale();
 
-//XXX		glPushMatrix();
-//		glScalef(physicsScale, physicsScale, 1);
+		Matrix4 modelMat=oglGetModelMatrix();
+		Matrix4 scaledMat=modelMat;
+		scaledMat.scale(physicsScale,physicsScale,1);
+		oglLoadMatrixf(scaledMat);
 
 		oglEnableClientState(VertexArray);
 
@@ -4842,7 +4844,7 @@ void b2DebugDraw::doDraw(const CurrentTransform& , float sx, float sy, float ex,
 
 		oglDisableClientState(VertexArray);
 
-//		glPopMatrix();
+		oglLoadMatrixf(modelMat);
 	}
 }
 

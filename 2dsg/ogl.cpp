@@ -219,6 +219,11 @@ void oglLoadMatrixf(const Matrix4 m)
 #endif
 }
 
+Matrix4 oglGetModelMatrix()
+{
+	return oglModel;
+}
+
 void oglViewportProjection(const Matrix4 m)
 {
 	oglVPProjection=m;
