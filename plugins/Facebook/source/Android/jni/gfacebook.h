@@ -10,32 +10,32 @@ enum
 {
     GFACEBOOK_LOGIN_COMPLETE_EVENT,
     GFACEBOOK_LOGIN_ERROR_EVENT,
-    GFACEBOOK_LOGIN_CANCEL_EVENT,
     GFACEBOOK_LOGOUT_COMPLETE_EVENT,
+    GFACEBOOK_LOGOUT_ERROR_EVENT,
+	GFACEBOOK_OPEN_URL_EVENT,
     GFACEBOOK_DIALOG_COMPLETE_EVENT,
     GFACEBOOK_DIALOG_ERROR_EVENT,
-    GFACEBOOK_DIALOG_CANCEL_EVENT,
     GFACEBOOK_REQUEST_COMPLETE_EVENT,
     GFACEBOOK_REQUEST_ERROR_EVENT,
 };
 
-typedef struct gfacebook_DialogErrorEvent
+typedef struct gfacebook_SimpleEvent
 {
-    int errorCode;
-    const char *errorDescription;
-} gfacebook_DialogErrorEvent;
+    const char *value;
+} gfacebook_SimpleEvent;
 
-typedef struct gfacebook_RequestCompleteEvent
+typedef struct gfacebook_DoubleEvent
 {
+    const char *type;
+    const char *value;
+} gfacebook_DoubleEvent;
+
+typedef struct gfacebook_ResponseEvent
+{
+    const char *type;
     const char *response;
     size_t responseLength;
-} gfacebook_RequestCompleteEvent;
-
-typedef struct gfacebook_RequestErrorEvent
-{
-    int errorCode;
-    const char *errorDescription;
-} gfacebook_RequestErrorEvent;
+} gfacebook_ResponseEvent;
 
 typedef struct gfacebook_Parameter
 {
@@ -47,30 +47,18 @@ typedef struct gfacebook_Parameter
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
-G_API int gfacebook_isAvailable();
 
 G_API void gfacebook_init();
 G_API void gfacebook_cleanup();
 
-G_API void gfacebook_setAppId(const char *appId);
-
-G_API void gfacebook_authorize(const char * const *permissions);
+G_API void gfacebook_login(const char *appId, const char * const *permissions);
 G_API void gfacebook_logout();
-G_API int gfacebook_isSessionValid();
+G_API void gfacebook_upload(const char *path, const char *orig);
+G_API const char* gfacebook_getAccessToken();
+G_API time_t gfacebook_getExpirationDate();
     
 G_API void gfacebook_dialog(const char *action, const gfacebook_Parameter *params);
-G_API void gfacebook_graphRequest(const char *graphPath, const gfacebook_Parameter *params, const char *httpMethod);
-
-G_API void gfacebook_setAccessToken(const char *accessToken);
-G_API const char *gfacebook_getAccessToken();
-
-G_API void gfacebook_setExpirationDate(time_t time);
-G_API time_t gfacebook_getExpirationDate();
-
-G_API void gfacebook_extendAccessToken();
-G_API void gfacebook_extendAccessTokenIfNeeded();
-G_API int gfacebook_shouldExtendAccessToken();
+G_API void gfacebook_request(const char *graphPath, const gfacebook_Parameter *params, int method);
 
 G_API g_id gfacebook_addCallback(gevent_Callback callback, void *udata);
 G_API void gfacebook_removeCallback(gevent_Callback callback, void *udata);

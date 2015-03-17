@@ -1,0 +1,8 @@
+<project>
+ <properties autorotation="0" encrypt="0" fps="60" scaleMode="0" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="480" logicalWidth="320" mouseTouchOrder="0" retinaDisplay="0" touchToMouse="1" assetsOnly="1" orientation="0" architecture="1">
+  <imageScales/>
+ </properties>
+ <file source="main.lua"/>
+ <file source="controllerScene.lua" excludeFromExecution="1"/>
+ <file source="ControllerLayer.lua" excludeFromExecution="1"/>
+</project>

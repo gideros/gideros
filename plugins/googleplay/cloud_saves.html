@@ -1,0 +1,6 @@
+<h1>Cloud Saves basics</h1>
+<p>Google provides 4 slots, you can access each by keys from 0 to 3.</p>
+<p>Each slot provides 128Kb of memory</p>
+<p>The good practice is to load the state on app start and update it when needed</p>
+<p>There might be cases were there is a conflict between local data and cloud data, this conflict must be solved by developer inside STATE_CONFLICT event by calling googleplay:resolveState and providing resolved data</p>
+<p>More on Google Play Cloud Save and use cases: <a href='https://developers.google.com/games/services/common/concepts/cloudsave' target='_blank'>https://developers.google.com/games/services/common/concepts/cloudsave</a></p>

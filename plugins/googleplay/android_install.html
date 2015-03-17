@@ -1,0 +1,45 @@
+<h1>Android Game services installation instructions</h1>
+
+<h4>1) Prerequesites</h4>
+<ul>
+<li>Install Google Play Services: http://developer.android.com/google/play-services/setup.html<li>
+<li>Set up Google Play Services for your app: https://developers.google.com/games/services/android/quickstart</li>
+</ul>
+<p>Things to note:
+<ul>
+<li>You appID, which you will be using (don't mix with ClientID, you don't need it for Androids)</li>
+<li>When entering the SHA1 fingerprint for your app authorization, don't use the default one, you need to either:
+<ul>
+<li>Genereate your own for production key from your production certificate, but it means you will only be able to use it after you export and sign app, you won't be able to debug with it</li>
+<li>Use android debug key, which you can get in Eclipse, by choosing Window->Preferences->Android->Build, then you will be able to debug your app with Google Play Service</li>
+<ul></li>
+<li>Changing fingerprint from debug to production is a pain, better set up two diferent apps to do that.</li>
+<li>Add email of your google account used on phone for Test users, so you qill be able to test Google Services without publishing the app.</li>
+</ul></p>
+
+<h4>2) Gideros project</h4>
+<ul>
+<li>Create Gideros project</li>
+<li>Export it as Android project</li>
+<li>Import it in Eclipse</li>
+</ul>
+
+<h4>3) Copying files</h4>
+<ul>
+<li>Copy .so files from libs folder to each separate armeabi folder</li>
+<li>Copy from src/giderosmobile/android/plugins folder named "googleplaygame" into your project's src/giderosmobile/android/plugins folder</li>
+<li>Copy ids.xml from res/values to res/values in your project</li>
+</ul>
+
+<h4>4) Modify Project</h4>
+<ul>
+<li>Reference in Eclipse imported Google Play Service by making a right click on the project, select Properties, then Android and push Add button in a Lirary section and select google-play-services-lib (if it is not there, you haven't properly imported in Eclipse, see Prerequesites, Install Google Play Services) </li>
+<li>Add your appID to ids.xml inside res/values folder</li>
+<li>Add &lt;meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/app_id" /&gt; to AndroidManifest file inside application tag</li>
+<li>Add &lt;meta-data android:name="com.google.android.gms.appstate.APP_ID" android:value="@string/app_id" /&gt; to AndroidManifest file inside application tag</li>
+<li>Add &lt;meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" /&gt; to AndroidManifest file inside application tag</li>
+<li>Load plugin library in main Activity: System.loadLibrary("gms");</li>
+<li>Add external class: "com.giderosmobile.android.plugins.googleplaygame.GGooglePlay"</li>
+</ul>
+
+

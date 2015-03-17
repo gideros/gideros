@@ -160,6 +160,31 @@ public:
         localTransform_.setXYZ(x, y, z);
 	}
 
+    void setRefX(float x)
+    {
+        localTransform_.setRefX(x);
+    }
+
+    void setRefY(float y)
+    {
+        localTransform_.setRefY(y);
+    }
+
+    void setRefZ(float z)
+    {
+        localTransform_.setRefZ(z);
+    }
+
+    void setRefXY(float x, float y)
+    {
+        localTransform_.setRefXY(x, y);
+    }
+
+    void setRefXYZ(float x, float y, float z)
+    {
+        localTransform_.setRefXYZ(x, y, z);
+    }
+
 	float rotation() const
 	{
         return localTransform_.rotationZ();
@@ -204,6 +229,21 @@ public:
 	{
         return localTransform_.y();
 	}
+
+	float refX() const
+    {
+        return localTransform_.refX();
+    }
+
+    float refY() const
+    {
+        return localTransform_.refY();
+    }
+
+    float refZ() const
+    {
+        return localTransform_.refZ();
+    }
 
     void setMatrix(float m11, float m12, float m21, float m22, float tx, float ty)
 	{

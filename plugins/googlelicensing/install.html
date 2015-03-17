@@ -1,0 +1,44 @@
+<h1>Installation</h1>
+<h2>Android</h2>
+<p>Copy libs folder into your exported project</p>
+<p>Copy src folder into your exported project</p>
+<p>Add System.loadLibrary("googlelicensing"); to your main activity</p>
+<p>Add "com.giderosmobile.android.plugins.googlelicensing.GoogleLVL" as external class in your main activity</p>
+<p>Add &lt;uses-permission android:name="com.android.vending.CHECK_LICENSE" /&gt; to AndroidManifest file</p>
+<p>For APK expansion downloads:</p>
+<p>Add &lt;uses-permission android:name="android.permission.WAKE_LOCK" /&gt; to AndroidManifest file</p>
+<p>Add &lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt; to AndroidManifest file</p>
+<p>Add &lt;service android:name="com.giderosmobile.android.plugins.googlelicensing.GiderosAPKDownloader" /&gt; in application tag
+<p>Add &lt;receiver android:name="com.giderosmobile.android.plugins.googlelicensing.GiderosDownloadReceiver" /&gt; in application tag
+
+<h1>API Reference</h1>
+<h2>Methods</h2>
+<ul>
+<li>googlelicensing:setKey("your-public-key") -- set your public key</li>
+<li>googlelicensing:checkLicense() -- check license of your app</li>
+<li>googlelicensing:checkExpansion() -- check if expansions files need to be download (will attempt to download them if needed)</li>
+<li>googlelicensing:cellularDownload(allow) -- pass through to allow downloading files on cellular network, otherwise download will start only on when WIFI is available</li>
+</ul>
+<h2>Events</h2>
+<ul>
+<li>Event.LICENSE_ALLOWED --license is ok</li>
+<li>Event.LICENSE_DENIED --license is not ok</li>
+<li>Event.LICENSE_RETRY --can't check license now, no internet connection or server unreachable</li>
+<li>Event.DOWNLOAD_REQUIRED --download is required and will try to start automatically</li>
+<li>Event.DOWNLOAD_NOT_REQUIRED -- all files are here, no download required</li>
+<li>Event.DOWNLOAD_STATE --event for download state changed:
+<ul>
+<li>e.state --contains state string</li>
+<li>e.message --contains state explanatory message</li>
+</ul>
+</li>
+<li>Event.DOWNLOAD_PROGRESS --event with download state update
+<ul>
+<li>e.speed --contains download speed in KB/s</li>
+<li>e.timeLeft --contains estimated time left for download</li>
+<li>e.progress --contains amount of downloaded bytes</li>
+<li>e.total --contains total amount of bytes needed for download</li>
+</ul>
+</li>
+<li>Event.ERROR --there was some error checking the license (mostly developer error due to incorrect set up)</li>
+</ul>

@@ -97,21 +97,21 @@ cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/*.a           $BUILD_DIR/win/
 mkdir $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp Sdk/include/*.h $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 
-cd plugins
-
-for d in *; do
-cd $d/source
-if [ -d iOS ] ; then
-cp -r iOS/* ../../../$BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
-else
-if [ $d != luasocket ] ; then
-cp *.{h,c,cpp,m,mm,a} ../../../$BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
-fi
-fi
-cd ..
-cd ..
-done
-cd ..
+cp plugins/lsqlite3/source/lsqlite3.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/lsqlite3/source/lsqlite3_stub.cpp  $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/LuaSocket/source/luasocket_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins/libluasocket.a $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/lfs/source/lfs.h $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/lfs/source/lfs.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/lfs/source/lfs_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/BitOp/source/bit.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/BitOp/source/bit_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/JSON/source/fpconv.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/JSON/source/fpconv.h $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/JSON/source/strbuf.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/JSON/source/strbuf.h $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/JSON/source/lua_cjson.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/JSON/source/lua_cjson_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 
 mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins
 cp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins/* $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins
@@ -122,28 +122,26 @@ mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/jni
 cp android/lib/jni/Application.mk $BUILD_DIR/win/Templates/Eclipse/Android\ Template/jni
 cp -R android/build/libs $BUILD_DIR/win/Templates/Eclipse/Android\ Template
 
-cd plugins
-for d in *; do
-cd $d/source
-if [ -d Android ] || [ -d jni ] ; then
-if [ -d Android ]; then
-cd Android
-cp libs/armeabi/lib$d.so ../../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
-cp libs/armeabi-v7a/lib$d.so ../../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
-cp libs/x86/lib$d.so ../../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
-cd ..
-else
-cp libs/armeabi/lib$d.so ../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
-cp libs/armeabi-v7a/lib$d.so ../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
-cp libs/x86/lib$d.so ../../../$BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
-fi
-fi
-cd ..
-cd ..
-done
-cd ..
+cp plugins/LuaSocket/source/libs/armeabi/libluasocket.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/LuaSocket/source/libs/armeabi-v7a/libluasocket.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/LuaSocket/source/libs/x86/libluasocket.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
 
-git archive -o $BUILD_DIR/tmp.tar HEAD:plugins/Google\ Billing/source/Android/com
+cp plugins/lfs/source/libs/armeabi/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/lfs/source/libs/armeabi-v7a/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/lfs/source/libs/x86/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
+
+cp plugins/lsqlite3/source/libs/armeabi/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/lsqlite3/source/libs/armeabi-v7a/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/lsqlite3/source/libs/x86/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
+
+cp plugins/BitOp/source/libs/armeabi/libbitop.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/BitOp/source/libs/armeabi-v7a/libbitop.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/BitOp/source/libs/x86/libbitop.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
+
+cp plugins/JSON/source/libs/armeabi/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/JSON/source/libs/armeabi-v7a/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/JSON/source/libs/x86/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
+
 tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/Eclipse/Android\ Template/src/com
 tar xf $BUILD_DIR/tmp.tar -C android/GiderosAndroidPlayer/src/com
 
@@ -181,6 +179,7 @@ for d in *; do
 cd $d/source
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin
+cp -r ../examples ../../../$BUILD_DIR/win/All\ Plugins/$d
 if [ -f $d.pro ]; then
 cp release/$d.dll ../../../$BUILD_DIR/win/Plugins
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Windows
@@ -188,19 +187,23 @@ cp release/$d.dll ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Windows
 fi
 if [ -d Android ] || [ -d jni ] ; then
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
-mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi
-mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi-v7a
-mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/x86
+mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs
+mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi
+mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi-v7a
+mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/x86
 if [ -d Android ] ; then
 cd Android
-cp libs/armeabi/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi
-cp libs/armeabi-v7a/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi-v7a
-cp libs/x86/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/x86
+cp libs/armeabi/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi
+cp libs/armeabi-v7a/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi-v7a
+cp libs/x86/lib$d.so ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/x86
+cp -r src ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
+cp -r res ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
+cp -r assets ../../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android
 cd ..
 else
-cp libs/armeabi/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi
-cp libs/armeabi-v7a/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/armeabi-v7a
-cp libs/x86/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/x86
+cp libs/armeabi/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi
+cp libs/armeabi-v7a/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/armeabi-v7a
+cp libs/x86/lib$d.so ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Android/libs/x86
 fi
 fi
 cd ..

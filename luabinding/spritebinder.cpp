@@ -42,6 +42,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"setScaleZ", SpriteBinder::setScaleZ},
 		{"setPosition", SpriteBinder::setPosition},
 		{"getPosition", SpriteBinder::getPosition},
+        {"setAnchorPosition", SpriteBinder::setAnchorPosition},
+        {"getAnchorPosition", SpriteBinder::getAnchorPosition},
 		{"setScale", SpriteBinder::setScale},
 		{"getScale", SpriteBinder::getScale},
 		{"localToGlobal", SpriteBinder::localToGlobal},
@@ -615,6 +617,41 @@ int SpriteBinder::getPosition(lua_State* L)
 
 	return 3;
 }
+
+int SpriteBinder::setAnchorPosition(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::setAnchorPosition", 0);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+
+    lua_Number x = luaL_checknumber(L, 2);
+    lua_Number y = luaL_checknumber(L, 3);
+	if (lua_isnoneornil(L, 4))
+	    sprite->setRefXY(x, y);
+	else
+	{
+		lua_Number z = luaL_checknumber(L, 4);
+		sprite->setRefXYZ(x, y, z);
+	}
+
+    return 0;
+}
+
+int SpriteBinder::getAnchorPosition(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::getAnchorPosition", 2);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+
+    lua_pushnumber(L, sprite->refX());
+    lua_pushnumber(L, sprite->refY());
+    lua_pushnumber(L, sprite->refZ());
+
+    return 2;
+}
+
 
 
 int SpriteBinder::setScale(lua_State* L)

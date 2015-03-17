@@ -22,12 +22,27 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 
+LOCAL_MODULE            := gvfs
+LOCAL_SRC_FILES         := ../../../../../Sdk/lib/android/$(TARGET_ARCH_ABI)/libgvfs.so
+
+include $(PREBUILT_SHARED_LIBRARY)
+
+###
+
+#
+# Plugins
+#
+
+###
+
+include $(CLEAR_VARS)
+
 LOCAL_MODULE           := facebook
 LOCAL_ARM_MODE         := arm
 LOCAL_CFLAGS           := -O2
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/../../../../../Sdk/include $(LOCAL_PATH)/..
 LOCAL_SRC_FILES        := facebookbinder.cpp gfacebook.cpp
 LOCAL_LDLIBS           := -ldl -llog
-LOCAL_SHARED_LIBRARIES := lua gideros
+LOCAL_SHARED_LIBRARIES := lua gideros gvfs
 
 include $(BUILD_SHARED_LIBRARY)

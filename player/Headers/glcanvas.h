@@ -23,6 +23,7 @@ public:
 	GLCanvas(QWidget *parent);
 	~GLCanvas();
 
+    QString projectDir_;
 	void setHardwareOrientation(Orientation orientation);
 	void setResolution(int width, int height);
 	void setFps(int fps);

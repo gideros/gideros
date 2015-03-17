@@ -1,0 +1,125 @@
+<h1>Installation</h1>
+<h2>Android</h2>
+<p>Copy libs folder into your exported project</p>
+<p>Copy src folder into your exported project</p>
+<p>Add System.loadLibrary("gaming"); to your main activity</p>
+<p>Add "com.giderosmobile.android.plugins.gaming.Game" as external class in your main activity</p>
+<p>You must install each framework you want to use based on their instalation instructions (usually by adding .jar file to project and modifying AndroidManifest file)</p>
+
+<p><strong>Currently supports:</strong></p>
+<ul>
+<li>Gaming.new("heyzap")</li>
+<li>Gaming.new("googleplay")</li>
+<li>Gaming.new("gamecircle")</li>
+</ul>
+
+<h2>IOS</h2>
+<p>Copy files int your exported project</p>
+<p>Add files through xCode</p>
+
+<p><strong>Currently supports:</strong></p>
+<ul>
+<li>Gaming.new("gamekit")</li>
+</ul>
+
+<h1>API Reference</h1>
+<h2>Methods</h2>
+<ul class='space'>
+<li>Gaming.new(framework) -- initialize specified framework</li>
+<li>Gaming.login(param1, param2, ..., paramn) -- authenticate user</li>
+<li>Gaming.logout() -- logout user</li>
+<li>Gaming:showLeaderboard(id) --show leader board window (string leaderboard id)</li>
+<li>Gaming:showAchievements() --show achievements window</li>
+<li>Gaming:reportScore(id, score, immediate) --report new score (string leaderboard Id, number score, bool immediate (true will usually provide events))</li>
+<li>Gaming:reportAchievement(id, steps, immediate) --report new achievement (string achievement Id, number steps - progress of achievement, bool immediate (true will usually provide events))</li>
+<li>Gaming:loadAchievements() --load list of achievements, raises LOAD_ACHIEVEMENTS_COMPLETE or LOAD_ACHIEVEMENTS_ERROR</li>
+<li>Gaming:loadScores(id) --load list of scores for leaderboard Id, raises LOAD_SCORES_COMPLETE or LOAD_SCORES_ERROR</li>
+<li>Gaming:loadState(key) --numeric key, raised STATE_LOADED or STATE_ERROR</li>
+<li>Gaming:updateState(key, data[, immediate]) --update data, numeric key, can raise STATE_CONFLICT or STATE_ERROR</li>
+<li>Gaming:deleteState(key) --delete data for numeric key, can raise STATE_DELETED or STATE_ERROR</li>
+<li>Gaming:resolveState(key, version, data) --resolve state conflict for slot key with version and data, should be called if STATE_CONFLICT event was dispatched, may raise STATE_LOADED event for new resolved data </li>
+</ul>
+<h2>Events</h2>
+<ul class='space'>
+<li>Event.LOGIN_COMPLETE</li>
+<li>Event.LOGIN_ERROR
+<ul>
+<li>e.error - error message</li>
+</ul></li>
+<li>Event.LOAD_ACHIEVEMENTS_COMPLETE
+<ul>
+<li class='ios'>event.achievements</li>
+<li class='ios'>event.achievements[].id</li>
+<li class='ios'>event.achievements[].name</li>
+<li class='ios'>event.achievements[].description</li>
+<li class='ios'>event.achievements[].status</li>
+<li class='ios'>event.achievements[].currentSteps</li>
+<li class='ios'>event.achievements[].totalSteps</li>
+<li class='ios'>event.achievements[].lastUpdate</li>
+</ul></li>
+<li>Event.LOAD_ACHIEVEMENTS_ERROR
+<ul>
+<li>e.error - error message</li>
+</ul></li>
+<li>Event.REPORT_ACHIEVEMENT_COMPLETE<ul>
+<li>e.id -- achievement id</li>
+</ul></li>
+<li>Event.REPORT_ACHIEVEMENT_ERROR<ul>
+<li>e.id -- achievement id</li>
+<li>e.error - error message</li>
+</ul></li>
+<li>Event.LOAD_SCORES_COMPLETE<ul>
+	<li class='ios'>event.name -- leader board name</li>
+	<li class='ios'>event.id -- leader board ID</li>
+	<li class='ios'>event.scores</li>
+	<li class='ios'>event.scores[].name</li>
+	<li class='ios'>event.scores[].timestamp</li>
+	<li class='ios'>event.scores[].score</li>
+	<li class='ios'>event.scores[].rank</li>
+	<li class='ios'>event.scores[].playerId</li>
+</ul></li>
+<li>Event.LOAD_SCORES_ERROR
+<ul>
+<li>e.error - error message</li>
+<li>e.id -- leader board ID</li>
+</ul></li>
+<li>Event.REPORT_SCORE_COMPLETE
+<ul>
+<li>e.id - leaderboard id</li>
+<li>e.score -- score reported</li>
+</ul></li>
+<li>Event.REPORT_SCORE_ERROR
+<ul>
+<li>e.id - leaderboard id</li>
+<li>e.score -- score reported</li>
+<li>e.error -- error message</li>
+</ul></li>
+</ul>
+
+<h3>Cloud Events</h3>
+<ul>
+<li class='ios'>Event.STATE_LOADED
+<ul>
+	<li class='ios'>event.key</li>
+	<li class='ios'>event.data</li>
+</ul>
+</li>
+<li class='ios'>Event.STATE_ERROR
+<ul>
+	<li class='ios'>event.key</li>
+</ul>
+</li>
+<li class='ios'>Event.STATE_CONFLICT
+<ul>
+	<li class='ios'>event.key</li>
+	<li class='ios'>event.version</li>
+	<li class='ios'>event.localData</li>
+	<li class='ios'>event.serverData</li>
+</ul>
+</li>
+<li class='ios'>Event.STATE_DELETED
+<ul>
+	<li class='ios'>event.key</li>
+</ul>
+</li>
+</ul>

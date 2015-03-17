@@ -1354,8 +1354,12 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
 	bool dontAutorotate = (properties_.autorotation == 0) || (properties_.autorotation == 1 && !phone) || (properties_.autorotation == 2 && phone);
 
-	if (dontAutorotate)
-        result = UIInterfaceOrientationMaskPortrait;
+    if (dontAutorotate){
+        if (application_->orientation() == eLandscapeLeft || application_->orientation() == eLandscapeRight)
+            result = UIInterfaceOrientationMaskLandscapeLeft;
+        else
+            result = UIInterfaceOrientationMaskPortrait;
+    }
     else
     {
 		if (application_->orientation() == eLandscapeLeft || application_->orientation() == eLandscapeRight)

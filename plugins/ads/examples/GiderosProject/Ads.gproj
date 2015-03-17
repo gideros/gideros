@@ -1,0 +1,27 @@
+<project>
+ <properties autorotation="3" encryptAssets="0" fps="60" scaleMode="3" mouseToTouch="1" iosDevice="0" packageName="com.yourdomain.yourapp" logicalHeight="800" logicalWidth="480" mouseTouchOrder="0" encryptCode="0" retinaDisplay="0" touchToMouse="1" assetsOnly="0" orientation="1" architecture="1">
+  <imageScales/>
+ </properties>
+ <file source="test.lua" excludeFromExecution="1"/>
+ <file source="mix.lua" excludeFromExecution="1"/>
+ <folder name="adframeworks">
+  <file source="tapfortap.lua" excludeFromExecution="1"/>
+  <file source="mopub.lua" excludeFromExecution="1"/>
+  <file source="samsung.lua" excludeFromExecution="1"/>
+  <file source="vungle.lua" excludeFromExecution="1"/>
+  <file source="revmob.lua" excludeFromExecution="1"/>
+  <file source="heyzap.lua"/>
+  <file source="chartboost.lua" excludeFromExecution="1"/>
+  <file source="adcolony.lua" excludeFromExecution="1"/>
+  <file source="iads.lua" excludeFromExecution="1"/>
+  <file source="amazon.lua" excludeFromExecution="1"/>
+  <file source="tapjoy.lua" excludeFromExecution="1"/>
+  <file source="inmobi.lua" excludeFromExecution="1"/>
+  <file source="admob.lua" excludeFromExecution="1"/>
+ </folder>
+ <file source="easing.lua"/>
+ <file source="gtween.lua"/>
+ <file source="init.lua"/>
+ <dependency from="admob.lua" to="easing.lua"/>
+ <dependency from="admob.lua" to="gtween.lua"/>
+</project>

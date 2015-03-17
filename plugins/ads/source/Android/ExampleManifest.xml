@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.yourdomain.yourapp"
+      android:versionCode="1"
+      android:versionName="1.0"
+	  android:installLocation="preferExternal">
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="18" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+	<uses-permission android:name="android.permission.RECORD_AUDIO" />
+	
+	<uses-feature android:name="android.hardware.microphone" android:required="false" />
+    <uses-feature android:glEsVersion="0x00010001" />
+    <supports-screens android:largeScreens="true"
+                      android:smallScreens="true"
+                      android:normalScreens="true"
+                      android:xlargeScreens="true"
+                      android:anyDensity="true"/>
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:hardwareAccelerated="true">
+        <activity android:label="@string/app_name" android:name="com.giderosmobile.android.AdsActivity" android:launchMode="singleTask" android:screenOrientation="landscape" android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.chartboost.sdk.CBImpressionActivity" android:excludeFromRecents="true" android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        
+		<activity android:name="com.jirbo.adcolony.AdColonyOverlay" android:configChanges="keyboardHidden|orientation|screenSize" android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+		<activity android:name="com.jirbo.adcolony.AdColonyFullscreen" android:configChanges="keyboardHidden|orientation|screenSize" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
+		<activity android:name="com.jirbo.adcolony.AdColonyBrowser" android:configChanges="keyboardHidden|orientation|screenSize" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
+		
+		<meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+		<activity android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" android:name="com.google.ads.AdActivity"/>
+        <activity android:name="com.google.android.gms.ads.AdActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+        
+        <activity android:name="com.amazon.device.ads.AdActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
+        
+        <activity android:name="com.inmobi.androidsdk.IMBrowserActivity" android:configChanges="keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize" android:hardwareAccelerated="true" />
+        <receiver
+            android:name="com.inmobi.commons.analytics.androidsdk.IMAdTrackerReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+        
+        <activity android:name="com.revmob.ads.fullscreen.FullscreenActivity" android:theme="@android:style/Theme.Translucent" android:configChanges="keyboardHidden|orientation"/>
+        
+        <activity android:name="com.tapjoy.TJCOffersWebView" android:configChanges="orientation|keyboardHidden|screenSize" />
+		<activity android:name="com.tapjoy.TapjoyFullScreenAdWebView" android:configChanges="orientation|keyboardHidden|screenSize" />
+		<activity android:name="com.tapjoy.TapjoyDailyRewardAdWebView" android:configChanges="orientation|keyboardHidden|screenSize" />
+		<activity android:name="com.tapjoy.TapjoyVideoView" android:configChanges="orientation|keyboardHidden|screenSize" />
+		<activity android:name="com.tapjoy.TJAdUnitView" android:configChanges="orientation|keyboardHidden|screenSize" android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" android:hardwareAccelerated="true" />
+		<activity android:name="com.tapjoy.mraid.view.ActionHandler" android:configChanges="orientation|keyboardHidden|screenSize" />
+		<activity android:name="com.tapjoy.mraid.view.Browser" android:configChanges="orientation|keyboardHidden|screenSize" />
+		
+		<activity android:name="com.sec.android.ad.AdActivity" android:configChanges="keyboardHidden|orientation|screenSize" />
+		
+		<activity android:name="com.vungle.sdk.VungleAdvert" android:configChanges="keyboardHidden|orientation|screenSize" android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+		<service android:name="com.vungle.sdk.VungleIntentService"/>
+		
+		<activity android:name="com.tapfortap.FullScreenAdActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
+		
+		
+		<activity android:name="com.millennialmedia.android.MMActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:configChanges="keyboardHidden|orientation|keyboard" ></activity>
+		
+        <activity android:name="com.heyzap.sdk.ads.HeyzapInterstitialActivity" android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize" />
+		<activity android:name="com.heyzap.sdk.ads.HeyzapVideoActivity" android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize" />
+		<receiver android:name="com.heyzap.sdk.ads.PackageAddedReceiver">
+    		<intent-filter>
+        		<data android:scheme="package"/>
+        		<action android:name="android.intent.action.PACKAGE_ADDED"/>
+    		</intent-filter>
+		</receiver>
+		
+		<meta-data android:name="applovin.sdk.key" android:value="foTTHR80e36XxXglVHsIhmTAJfaBwTPZKu7cJGdyJkUFG9-mRr37abIvFt49QUkmMsNg6_dQi6gzFekhTnq3M6"  />
+		<activity android:name="com.applovin.adview.AppLovinInterstitialActivity" />
+		<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" />
+	</application>
+</manifest>

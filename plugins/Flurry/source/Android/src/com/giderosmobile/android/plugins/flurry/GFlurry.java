@@ -21,9 +21,9 @@ public class GFlurry
 
 	public static void onStart()
 	{
-		if (sApiKey != null && !sIsActive)
+		if (!sIsActive)
 		{
-			FlurryAgent.onStartSession(sActivity.get(), sApiKey);
+			FlurryAgent.onStartSession(sActivity.get());
 			sIsActive = true;
 		}
 	}
@@ -42,7 +42,7 @@ public class GFlurry
 		sApiKey = apiKey;
 		if (!sIsActive)
 		{
-			FlurryAgent.onStartSession(sActivity.get(), sApiKey);
+			FlurryAgent.init(sActivity.get(), sApiKey);
 			sIsActive = true;
 		}
 	}

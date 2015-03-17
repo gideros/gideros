@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <glog.h>
 #include <string>
+#include <gapplication.h>
 
 extern "C" {
 JavaVM *g_getJavaVM();
@@ -27,10 +28,13 @@ public:
 		jclass localClass2 = env->FindClass("android/os/Bundle");
 		clsBundle_ = (jclass)env->NewGlobalRef(localClass2);
 		env->DeleteLocalRef(localClass2);
+		
+		gapplication_addCallback(openUrl_s, this);
     }
     
     ~GGFacebook()
     {
+		 gapplication_removeCallback(openUrl_s, this);
         JNIEnv *env = g_getJNIEnv();
 
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "cleanup", "()V"));
@@ -40,19 +44,11 @@ public:
 
 		gevent_RemoveEventsWithGid(gid_);
     }
-    
-    void setAppId(const char *appId)
-    {
-        JNIEnv *env = g_getJNIEnv();
-		
-		jstring jappId = env->NewStringUTF(appId);
-		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "setAppId", "(Ljava/lang/String;)V"), jappId);
-		env->DeleteLocalRef(jappId);
-    }
 	
-	void authorize(const char * const *permissions)
+	void login(const char *appId, const char * const *permissions)
     {
 		JNIEnv *env = g_getJNIEnv();
+		jstring jappId = env->NewStringUTF(appId);
 		if(permissions)
 		{
 			int size = 0;
@@ -74,29 +70,51 @@ public:
 				permissions++;
 			} 
 			
-			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "authorize", "([Ljava/lang/Object;)V"), ret);
+			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "login", "(Ljava/lang/String;[Ljava/lang/Object;)V"), jappId, ret);
 
 			env->DeleteLocalRef(ret);
 		}
 		else
 		{
-			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "authorize", "()V"));
+			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "login", "(Ljava/lang/String;)V"), jappId);
 		}
+		env->DeleteLocalRef(jappId);
     }
     
     void logout()
     {
         JNIEnv *env = g_getJNIEnv();
-		
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "logout", "()V"));
     }
+	
+	const char* getAccessToken(){
+		JNIEnv *env = g_getJNIEnv();
+		
+		jstring jtoken = (jstring)env->CallStaticObjectMethod(cls_, env->GetStaticMethodID(cls_, "getAccessToken", "()Ljava/lang/String;"));
+		const char *token = env->GetStringUTFChars(jtoken, NULL);
+		accessToken_ = token;
+		env->ReleaseStringUTFChars(jtoken, token);
+	   
+		return accessToken_.c_str();
+    }
     
-    int isSessionValid()
+    time_t getExpirationDate(){
+        JNIEnv *env = g_getJNIEnv();
+		time_t time = (time_t)env->CallStaticLongMethod(cls_, env->GetStaticMethodID(cls_, "getExpirationDate", "()J"));
+        return time;
+    }
+	
+	void upload(const char *path, const char *orig)
     {
 		JNIEnv *env = g_getJNIEnv();
 		
-		int isValid = (int)env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "isSessionValid", "()Z"));
-        return isValid;
+		jstring jpath = env->NewStringUTF(path);
+		jstring jorig = env->NewStringUTF(orig);
+		
+		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "upload", "(Ljava/lang/String;Ljava/lang/String;)V"), jpath, jorig);
+		
+		env->DeleteLocalRef(jpath);
+		env->DeleteLocalRef(jorig);
     }
     
     void dialog(const char *action, const gfacebook_Parameter *params)
@@ -128,7 +146,7 @@ public:
 		env->DeleteLocalRef(jaction);
     }
 
-    void graphRequest(const char *graphPath, const gfacebook_Parameter *params, const char *httpMethod)
+    void request(const char *graphPath, const gfacebook_Parameter *params, int httpMethod)
     {
 		JNIEnv *env = g_getJNIEnv();
 		
@@ -148,95 +166,20 @@ public:
 				++params;
 			}
 		}
-		
-		jstring jhttpMethod = NULL;
-		if(httpMethod)
-		{
-			jhttpMethod = env->NewStringUTF(httpMethod);
-		}
 
-        if (jbundleobj && jhttpMethod)
+        if (jbundleobj)
         {
-			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V"), jgraphPath, jbundleobj, jhttpMethod);
+			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "request", "(Ljava/lang/String;ILjava/lang/Object;)V"), jgraphPath, (jint)httpMethod, jbundleobj);
         }
-        else if (!jbundleobj && jhttpMethod)
+        else
         {
-			jbundleobj = env->NewObject(clsBundle_, env->GetMethodID(clsBundle_, "<init>", "()V"));
-			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/String;)V"), jgraphPath, jbundleobj, jhttpMethod);
-        }
-        else if (jbundleobj && !jhttpMethod)
-        {
-			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;Ljava/lang/Object;)V"), jgraphPath, jbundleobj);
-        }
-        else if (!jbundleobj && !jhttpMethod)
-        {
-			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "graphRequest", "(Ljava/lang/String;)V"), jgraphPath);
+			env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "request", "(Ljava/lang/String;I)V"), jgraphPath, (jint)httpMethod);
         }
 		
 		if (jbundleobj)
 			env->DeleteLocalRef(jbundleobj);
-
-		if (jhttpMethod)
-			env->DeleteLocalRef(jhttpMethod);
-
+			
 		env->DeleteLocalRef(jgraphPath);
-    }
-
-    void setAccessToken(const char *accessToken)
-    {
-         JNIEnv *env = g_getJNIEnv();
-		
-		jstring jaccessToken = env->NewStringUTF(accessToken);
-		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "setAccessToken", "(Ljava/lang/String;)V"), jaccessToken);
-		env->DeleteLocalRef(jaccessToken);
-    }
-    
-    const char *getAccessToken()
-    {
-		JNIEnv *env = g_getJNIEnv();
-		
-		jstring jtoken = (jstring)env->CallStaticObjectMethod(cls_, env->GetStaticMethodID(cls_, "getAccessToken", "()Ljava/lang/String;"));
-       const char *token = env->GetStringUTFChars(jtoken, NULL);
-	   accessToken_ = token;
-	   env->ReleaseStringUTFChars(jtoken, token);
-	   
-	   return accessToken_.c_str();
-    }
-    
-    void setExpirationDate(time_t time)
-    {
-		JNIEnv *env = g_getJNIEnv();
-
-		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "setExpirationDate", "(J)V"), (jlong)time);
-    }
-    
-    time_t getExpirationDate()
-    {
-		JNIEnv *env = g_getJNIEnv();
-		time_t time = (time_t)env->CallStaticLongMethod(cls_, env->GetStaticMethodID(cls_, "getExpirationDate", "()J"));
-        return time;
-    }
-
-    void extendAccessToken()
-    {
-        JNIEnv *env = g_getJNIEnv();
-		
-		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "extendAccessToken", "()V"));
-    }
-    
-    void extendAccessTokenIfNeeded()
-    {
-        JNIEnv *env = g_getJNIEnv();
-		
-		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "extendAccessTokenIfNeeded", "()V"));
-    }
-
-    int shouldExtendAccessToken()
-    {
-		JNIEnv *env = g_getJNIEnv();
-		
-		int should = (int)env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "shouldExtendAccessToken", "()Z"));
-        return should;
     }
 	
     void onLoginComplete()
@@ -244,14 +187,19 @@ public:
         gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_LOGIN_COMPLETE_EVENT, NULL, 0, this);
     }
 	
-	void onLoginError()
+	void onLoginError(jstring jretValue)
     {
-        gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_LOGIN_ERROR_EVENT, NULL, 0, this);
-    }
-    
-	void onLoginCancel()
-    {
-       gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_LOGIN_CANCEL_EVENT, NULL, 0, this);
+		JNIEnv *env = g_getJNIEnv();
+
+		const char *value = env->GetStringUTFChars(jretValue, NULL);
+		
+        gfacebook_SimpleEvent *event = (gfacebook_SimpleEvent*)gevent_CreateEventStruct1(
+            sizeof(gfacebook_SimpleEvent),
+            offsetof(gfacebook_SimpleEvent, value), value);
+        
+        gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_LOGIN_ERROR_EVENT, event, 1, this);
+		
+		env->ReleaseStringUTFChars(jretValue, value);
     }
 	
 	void onLogoutComplete()
@@ -259,64 +207,107 @@ public:
        gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_LOGOUT_COMPLETE_EVENT, NULL, 0, this);
     }
 	
-	void onDialogComplete()
-    {
-       gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_DIALOG_COMPLETE_EVENT, NULL, 0, this);
-    }
-    
-	void onDialogCancel()
-    {
-       gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_DIALOG_CANCEL_EVENT, NULL, 0, this);
-    }
-	
-	void onDialogError(jint jerrorCode, jstring jerrorDescr)
+	void onLogoutError(jstring jretValue)
     {
 		JNIEnv *env = g_getJNIEnv();
 
-		const char *error = env->GetStringUTFChars(jerrorDescr, NULL);
+		const char *value = env->GetStringUTFChars(jretValue, NULL);
 		
-        gfacebook_DialogErrorEvent *event = (gfacebook_DialogErrorEvent*)gevent_CreateEventStruct1(
-            sizeof(gfacebook_DialogErrorEvent),
-            offsetof(gfacebook_DialogErrorEvent, errorDescription), error);
+        gfacebook_SimpleEvent *event = (gfacebook_SimpleEvent*)gevent_CreateEventStruct1(
+            sizeof(gfacebook_SimpleEvent),
+            offsetof(gfacebook_SimpleEvent, value), value);
         
-        event->errorCode = (int)jerrorCode;
+        gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_LOGOUT_ERROR_EVENT, event, 1, this);
+		
+		env->ReleaseStringUTFChars(jretValue, value);
+    }
+	
+	void onOpenUrl(jstring jretValue)
+    {
+		JNIEnv *env = g_getJNIEnv();
+
+		const char *value = env->GetStringUTFChars(jretValue, NULL);
+		
+        gfacebook_SimpleEvent *event = (gfacebook_SimpleEvent*)gevent_CreateEventStruct1(
+            sizeof(gfacebook_SimpleEvent),
+            offsetof(gfacebook_SimpleEvent, value), value);
+        
+        gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_OPEN_URL_EVENT, event, 1, this);
+		
+		env->ReleaseStringUTFChars(jretValue, value);
+    }
+	
+	void onDialogComplete(jstring jretType, jstring jretValue)
+    {
+       JNIEnv *env = g_getJNIEnv();
+
+		const char *type = env->GetStringUTFChars(jretType, NULL);
+		const char *value = env->GetStringUTFChars(jretValue, NULL);
+		
+        gfacebook_DoubleEvent *event = (gfacebook_DoubleEvent*)gevent_CreateEventStruct2(
+			sizeof(gfacebook_DoubleEvent),
+			offsetof(gfacebook_DoubleEvent, type), type,
+			offsetof(gfacebook_DoubleEvent, value), value);
+        
+        gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_DIALOG_COMPLETE_EVENT, event, 1, this);
+		
+		env->ReleaseStringUTFChars(jretType, type);
+		env->ReleaseStringUTFChars(jretValue, value);
+    }
+	
+	void onDialogError(jstring jretType, jstring jretValue)
+    {
+		JNIEnv *env = g_getJNIEnv();
+
+		const char *type = env->GetStringUTFChars(jretType, NULL);
+		const char *value = env->GetStringUTFChars(jretValue, NULL);
+		
+        gfacebook_DoubleEvent *event = (gfacebook_DoubleEvent*)gevent_CreateEventStruct2(
+			sizeof(gfacebook_DoubleEvent),
+			offsetof(gfacebook_DoubleEvent, type), type,
+			offsetof(gfacebook_DoubleEvent, value), value);
         
         gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_DIALOG_ERROR_EVENT, event, 1, this);
 		
-		env->ReleaseStringUTFChars(jerrorDescr, error);
+		env->ReleaseStringUTFChars(jretType, type);
+		env->ReleaseStringUTFChars(jretValue, value);
     }
 	
-	void onRequestError(jint jerrorCode, jstring jerrorDescr)
+	void onRequestError(jstring jretType, jstring jretValue)
     {
 		JNIEnv *env = g_getJNIEnv();
 
-		const char *error = env->GetStringUTFChars(jerrorDescr, NULL);
+		const char *type = env->GetStringUTFChars(jretType, NULL);
+		const char *value = env->GetStringUTFChars(jretValue, NULL);
 		
-        gfacebook_RequestErrorEvent *event = (gfacebook_RequestErrorEvent*)gevent_CreateEventStruct1(
-            sizeof(gfacebook_RequestErrorEvent),
-            offsetof(gfacebook_RequestErrorEvent, errorDescription), error);
-        
-        event->errorCode = (int)jerrorCode;
+        gfacebook_DoubleEvent *event = (gfacebook_DoubleEvent*)gevent_CreateEventStruct2(
+			sizeof(gfacebook_DoubleEvent),
+			offsetof(gfacebook_DoubleEvent, type), type,
+			offsetof(gfacebook_DoubleEvent, value), value);
         
         gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_REQUEST_ERROR_EVENT, event, 1, this);
 		
-		env->ReleaseStringUTFChars(jerrorDescr, error);
+		env->ReleaseStringUTFChars(jretType, type);
+		env->ReleaseStringUTFChars(jretValue, value);
     }
 	
-	void onRequestComplete(jstring jresponse)
+	void onRequestComplete(jstring jretType, jstring jresponse)
     {
 		JNIEnv *env = g_getJNIEnv();
-
+		
+		const char *type = env->GetStringUTFChars(jretType, NULL);
 		const char *response = env->GetStringUTFChars(jresponse, NULL);
 		
-        gfacebook_RequestCompleteEvent *event = (gfacebook_RequestCompleteEvent*)gevent_CreateEventStruct1(
-            sizeof(gfacebook_RequestCompleteEvent),
-            offsetof(gfacebook_RequestCompleteEvent, response), response);
+		gfacebook_ResponseEvent *event = (gfacebook_ResponseEvent*)gevent_CreateEventStruct2(
+			sizeof(gfacebook_ResponseEvent),
+			offsetof(gfacebook_ResponseEvent, type), type,
+			offsetof(gfacebook_ResponseEvent, response), response);
         
 		event->responseLength = strlen(response);
 		
         gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_REQUEST_COMPLETE_EVENT, event, 1, this);
 		
+		env->ReleaseStringUTFChars(jretType, type);
 		env->ReleaseStringUTFChars(jresponse, response);
     }   
     
@@ -334,6 +325,26 @@ public:
 	}
     
 private:
+	static void openUrl_s(int type, void *event, void *udata)
+    {
+        static_cast<GGFacebook*>(udata)->openUrl(type, event);
+    }
+    
+    void openUrl(int type, void *event)
+    {
+        if (type == GAPPLICATION_OPEN_URL_EVENT)
+        {
+            gapplication_OpenUrlEvent *event2 = (gapplication_OpenUrlEvent*)event;
+                
+            const char* url = event2->url;
+                
+            gfacebook_SimpleEvent *event3 = (gfacebook_SimpleEvent*)gevent_CreateEventStruct1(
+                sizeof(gfacebook_SimpleEvent),
+                offsetof(gfacebook_SimpleEvent, value), url);
+               
+            gevent_EnqueueEvent(gid_, callback_s, GFACEBOOK_OPEN_URL_EVENT, event3, 1, this);          
+        }
+    }
 	static void callback_s(int type, void *event, void *udata)
 	{
 		((GGFacebook*)udata)->callback(type, event);
@@ -362,14 +373,9 @@ void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onLoginComplete(J
 	((GGFacebook*)data)->onLoginComplete();
 }
 
-void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onLoginError(JNIEnv *env, jclass clz, jlong data)
+void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onLoginError(JNIEnv *env, jclass clz, jstring error, jlong data)
 {
-	((GGFacebook*)data)->onLoginError();
-}
-
-void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onLoginCancel(JNIEnv *env, jclass clz, jlong data)
-{
-	((GGFacebook*)data)->onLoginCancel();
+	((GGFacebook*)data)->onLoginError(error);
 }
 
 void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onLogoutComplete(JNIEnv *env, jclass clz, jlong data)
@@ -377,29 +383,34 @@ void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onLogoutComplete(
 	((GGFacebook*)data)->onLogoutComplete();
 }
 
-void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onDialogComplete(JNIEnv *env, jclass clz, jlong data)
+void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onLogoutError(JNIEnv *env, jclass clz, jstring error, jlong data)
 {
-	((GGFacebook*)data)->onDialogComplete();
+	((GGFacebook*)data)->onLogoutError(error);
 }
 
-void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onDialogError(JNIEnv *env, jclass clz, jint jerrorCode, jstring jerrorDescr, jlong data)
+void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onOpenUrl(JNIEnv *env, jclass clz, jstring url, jlong data)
 {
-	((GGFacebook*)data)->onDialogError(jerrorCode, jerrorDescr);
+	((GGFacebook*)data)->onOpenUrl(url);
 }
 
-void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onDialogCancel(JNIEnv *env, jclass clz, jlong data)
+void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onDialogComplete(JNIEnv *env, jclass clz, jstring type, jstring response, jlong data)
 {
-	((GGFacebook*)data)->onDialogCancel();
+	((GGFacebook*)data)->onDialogComplete(type, response);
 }
 
-void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onRequestComplete(JNIEnv *env, jclass clz, jstring jresponse, jlong data)
+void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onDialogError(JNIEnv *env, jclass clz, jstring type, jstring jerrorDescr, jlong data)
 {
-	((GGFacebook*)data)->onRequestComplete(jresponse);
+	((GGFacebook*)data)->onDialogError(type, jerrorDescr);
 }
 
-void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onRequestError(JNIEnv *env, jclass clz, jint jerrorCode, jstring jerrorDescr, jlong data)
+void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onRequestComplete(JNIEnv *env, jclass clz, jstring type, jstring jresponse, jlong data)
 {
-	((GGFacebook*)data)->onRequestError(jerrorCode, jerrorDescr);
+	((GGFacebook*)data)->onRequestComplete(type, jresponse);
+}
+
+void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onRequestError(JNIEnv *env, jclass clz, jstring type, jstring jerrorDescr, jlong data)
+{
+	((GGFacebook*)data)->onRequestError(type, jerrorDescr);
 }
 
 }
@@ -407,11 +418,6 @@ void Java_com_giderosmobile_android_plugins_facebook_GFacebook_onRequestError(JN
 static GGFacebook *s_facebook = NULL;
 
 extern "C" {
-
-int gfacebook_isAvailable()
-{
-    return 1;
-}
 
 void gfacebook_init()
 {
@@ -424,14 +430,9 @@ void gfacebook_cleanup()
     s_facebook = NULL;
 }
 
-void gfacebook_setAppId(const char *appId)
+void gfacebook_login(const char *appId, const char * const *permissions)
 {
-    s_facebook->setAppId(appId);
-}
-
-void gfacebook_authorize(const char * const *permissions)
-{
-    s_facebook->authorize(permissions);
+    s_facebook->login(appId, permissions);
 }
 
 void gfacebook_logout()
@@ -439,9 +440,17 @@ void gfacebook_logout()
     s_facebook->logout();
 }
 
-int gfacebook_isSessionValid()
+void gfacebook_upload(const char *path, const char *orig)
 {
-    return s_facebook->isSessionValid();
+    s_facebook->upload(path, orig);
+}
+
+const char* gfacebook_getAccessToken(){
+    return s_facebook->getAccessToken();
+}
+    
+time_t gfacebook_getExpirationDate(){
+    return s_facebook->getExpirationDate();
 }
     
 void gfacebook_dialog(const char *action, const gfacebook_Parameter *params)
@@ -449,44 +458,9 @@ void gfacebook_dialog(const char *action, const gfacebook_Parameter *params)
     s_facebook->dialog(action, params);
 }
 
-void gfacebook_graphRequest(const char *graphPath, const gfacebook_Parameter *params, const char *httpMethod)
+void gfacebook_request(const char *graphPath, const gfacebook_Parameter *params, int httpMethod)
 {
-    s_facebook->graphRequest(graphPath, params, httpMethod);
-}
-
-void gfacebook_setAccessToken(const char *accessToken)
-{
-    s_facebook->setAccessToken(accessToken);
-}
-
-const char *gfacebook_getAccessToken()
-{
-    return s_facebook->getAccessToken();
-}
-
-void gfacebook_setExpirationDate(time_t time)
-{
-    s_facebook->setExpirationDate(time);
-}
-
-time_t gfacebook_getExpirationDate()
-{
-    return s_facebook->getExpirationDate();
-}
-    
-void gfacebook_extendAccessToken()
-{
-	s_facebook->extendAccessToken();
-}
-
-void gfacebook_extendAccessTokenIfNeeded()
-{
-    s_facebook->extendAccessTokenIfNeeded();
-}
-    
-int gfacebook_shouldExtendAccessToken()
-{
-    return s_facebook->shouldExtendAccessToken();
+    s_facebook->request(graphPath, params, httpMethod);
 }
 
 g_id gfacebook_addCallback(gevent_Callback callback, void *udata)

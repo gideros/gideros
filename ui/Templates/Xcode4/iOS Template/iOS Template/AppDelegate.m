@@ -47,18 +47,14 @@
         width = bounds.size.height;
     }
     
-    NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"assets"];
+    NSString *path = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"assets"] stringByAppendingPathComponent:@"properties.bin"];
     
     NSFileManager *fileManager = [[NSFileManager alloc] init];
     
-    BOOL isDir;
     BOOL isPlayer = false;
-    BOOL exists = [fileManager fileExistsAtPath:path isDirectory:&isDir];
-    if (!exists || !isDir ) {
+    BOOL exists = [fileManager fileExistsAtPath:path];
+    if (!exists) {
         isPlayer = true;
-        
-        NSMutableArray *tableData = [[NSMutableArray alloc] init];
-        
         
         NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString* dir = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"gideros"];
@@ -70,7 +66,6 @@
             }
         }
         [self.viewController initTable];
-        //[self.viewController showTable];
     }
     
     gdr_initialize(self.viewController.glView, width, height, isPlayer);

@@ -17,6 +17,10 @@ public:
 		rotationX_=0;
 		rotationY_=0;
 		rotationZ_=0;
+        refX_ = 0;
+        refY_ = 0;
+        refZ_ = 0;
+        isDirty_=false;
 	}
 
 	void setRotationZ(float r)
@@ -103,6 +107,39 @@ public:
 		compose();
 	}
 
+    void setRefX(float x)
+    {
+        refX_ = x;
+		compose();
+    }
+
+    void setRefY(float y)
+    {
+        refY_ = y;
+		compose();
+    }
+
+    void setRefZ(float z)
+    {
+        refZ_ = z;
+		compose();
+    }
+
+    void setRefXY(float x, float y)
+    {
+        refX_ = x;
+        refY_ = y;
+		compose();
+    }
+
+    void setRefXYZ(float x, float y, float z)
+    {
+        refX_ = x;
+        refY_ = y;
+        refZ_ = z;
+		compose();
+    }
+
 	float rotationX() const
 	{
 		return rotationX_;
@@ -148,6 +185,21 @@ public:
 		return tz_;
 	}
 
+    float refX() const
+    {
+        return refX_;
+    }
+
+    float refY() const
+    {
+        return refY_;
+    }
+
+    float refZ() const
+    {
+        return refZ_;
+    }
+
 	const Matrix4& matrix() const
 	{
 		return matrix_;
@@ -163,6 +215,9 @@ private:
 	float scaleY_;
 	float scaleZ_;
 	float tx_,ty_,tz_;
+    float refX_;
+    float refY_;
+    float refZ_;
 	mutable bool isDirty_;
 	void compose();
 };

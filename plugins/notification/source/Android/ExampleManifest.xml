@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.yourdomain.yourapp"
+      android:versionCode="1"
+      android:versionName="1.0"
+	  android:installLocation="auto">
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <permission android:name="com.yourdomain.yourapp.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+	<uses-permission android:name="com.yourdomain.yourapp.permission.C2D_MESSAGE" />
+	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-feature android:glEsVersion="0x00010001" />
+    <supports-screens android:largeScreens="true"
+                      android:smallScreens="true"
+                      android:normalScreens="true"
+                      android:xlargeScreens="true"
+                      android:anyDensity="true"/>
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        <activity android:label="@string/app_name" android:name="com.giderosmobile.android.NotificationActivity" android:launchMode="singleTask" android:screenOrientation="portrait" android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <receiver android:name="com.giderosmobile.android.plugins.notification.NotificationClass"></receiver>
+
+		<receiver android:name="com.giderosmobile.android.plugins.notification.NotificationRestore" >
+   			<intent-filter>
+    			<action android:name="android.intent.action.BOOT_COMPLETED" />
+    		</intent-filter>
+		</receiver>
+		
+		<receiver android:name="com.giderosmobile.android.plugins.notification.GCMReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
+  			<intent-filter>
+  				<action android:name="com.google.android.c2dm.intent.RECEIVE" />
+  				<action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+  				<category android:name="com.yourdomain.yourapp" />
+  			</intent-filter>
+		</receiver>
+		<service android:name="com.giderosmobile.android.plugins.notification.GCMIntentService" />
+	</application>
+</manifest>
