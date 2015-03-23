@@ -326,15 +326,12 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
         break;
     }
 
-    float scalex = application_->getLogicalScaleX();
-    float scaley = application_->getLogicalScaleY();
-
     int baseWidth = w;
     int baseHeight = h;
-    int width = (int)floor(baseWidth * scalex + 0.5);
-    int height = (int)floor(baseHeight * scaley + 0.5);
-    int exwidth = nextpow2(width);
-    int exheight = nextpow2(height);
+    int width = w;
+    int height = h;
+    int exwidth = nextpow2(w);
+    int exheight = nextpow2(h);
 
     g_id gid = gtexture_RenderTargetCreate(exwidth, exheight, wrap, filter);
 
