@@ -21,6 +21,7 @@ void gdr_handleOpenUrl(NSURL *url);
 void gdr_foreground();
 void gdr_background();
 void gdr_openProject(NSString* project);
+BOOL gdr_isRunning();
     
 void gdr_touchesBegan(NSSet* touches, NSSet* allTouches);
 void gdr_touchesMoved(NSSet* touches, NSSet* allTouches);

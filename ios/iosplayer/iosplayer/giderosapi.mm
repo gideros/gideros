@@ -232,6 +232,7 @@ public:
 	void stop();
 	void setProjectName(const char *projectName);
 	void setProjectProperties(const ProjectProperties &properties);
+    bool isRunning();
 	
 	void touchesBegan(NSSet *touches, NSSet *allTouches);
 	void touchesMoved(NSSet *touches, NSSet *allTouches);
@@ -1155,6 +1156,11 @@ void ApplicationManager::stop()
 	application_->initialize();
 }
 
+bool ApplicationManager::isRunning()
+{
+    return running_;
+}
+
 void ApplicationManager::drawIPs()
 {
 	if (player_ == true && running_ == false)
@@ -1572,6 +1578,11 @@ void gdr_foreground()
 void gdr_background()
 {
     s_manager->background();
+}
+    
+BOOL gdr_isRunning()
+{
+    return s_manager->isRunning();
 }
     
 }
