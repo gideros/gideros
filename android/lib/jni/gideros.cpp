@@ -183,6 +183,7 @@ public:
 	void stop();
 	void setProjectName(const char *projectName);
 	void setProjectProperties(const ProjectProperties &properties);
+	bool isRunning();
 	
 	void touchesBegin(int size, int *id, int *x, int *y, int actionIndex);
 	void touchesMove(int size, int *id, int *x, int *y);
@@ -1078,6 +1079,11 @@ void ApplicationManager::stop()
 	application_->initialize();
 }
 
+bool ApplicationManager::isRunning()
+{
+	return running_;
+}
+
 void ApplicationManager::drawIPs()
 {
 	if (player_ == true && running_ == false)
@@ -1360,6 +1366,11 @@ jboolean Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyDown(
 jboolean Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyUp(JNIEnv* env, jclass cls, jint keyCode, jint repeatCount)
 {
 	return s_applicationManager->keyUp(keyCode, repeatCount);
+}
+
+jboolean Java_com_giderosmobile_android_player_GiderosApplication_isRunning(JNIEnv* env, jclass cls)
+{
+	return s_applicationManager->isRunning();
 }
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativePause(JNIEnv* env, jclass cls)
