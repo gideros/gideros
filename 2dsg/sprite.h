@@ -7,9 +7,11 @@
 #include "colortransform.h"
 #include "gstatus.h"
 #include "graphicsbase.h"
+#include "matrix.h"
 #include <list>
 
-typedef Matrix CurrentTransform;
+typedef Matrix4 CurrentTransform;
+typedef Matrix4 Matrix;
 
 class Application;
 class Stage;
@@ -79,9 +81,28 @@ public:
     float getBlueMultiplier() const;
     float getAlphaMultiplier() const;
 
+    //Set clipping rectangle, cw or ch negative to disable
+    void setClip(float cx,float cy,float cw,float ch)
+    {
+    	clipx_=cx;
+    	clipy_=cy;
+    	clipw_=cw;
+    	cliph_=ch;
+    }
+
 	void setRotation(float r)
 	{
-        localTransform_.setRotation(r);
+        localTransform_.setRotationZ(r);
+	}
+
+	void setRotationX(float r)
+	{
+        localTransform_.setRotationX(r);
+	}
+
+	void setRotationY(float r)
+	{
+        localTransform_.setRotationY(r);
 	}
 
 	void setScaleX(float sx)
@@ -94,14 +115,24 @@ public:
         localTransform_.setScaleY(sy);
 	}
 
+	void setScaleZ(float sz)
+	{
+        localTransform_.setScaleZ(sz);
+	}
+
 	void setScaleXY(float sx, float sy)
 	{
         localTransform_.setScaleXY(sx, sy);
 	}
 
+	void setScaleXYZ(float sx, float sy, float sz)
+	{
+        localTransform_.setScaleXYZ(sx, sy, sz);
+	}
+
 	void setScale(float s)
 	{
-        localTransform_.setScaleXY(s, s);
+        localTransform_.setScaleXYZ(s, s, s);
 	}
 
 	void setX(float x)
@@ -114,9 +145,19 @@ public:
         localTransform_.setY(y);
 	}
 
+	void setZ(float z)
+	{
+        localTransform_.setZ(z);
+	}
+
 	void setXY(float x, float y)
 	{
         localTransform_.setXY(x, y);
+	}
+
+	void setXYZ(float x, float y, float z)
+	{
+        localTransform_.setXYZ(x, y, z);
 	}
 
     void setRefX(float x)
@@ -129,14 +170,34 @@ public:
         localTransform_.setRefY(y);
     }
 
+    void setRefZ(float z)
+    {
+        localTransform_.setRefZ(z);
+    }
+
     void setRefXY(float x, float y)
     {
         localTransform_.setRefXY(x, y);
     }
 
+    void setRefXYZ(float x, float y, float z)
+    {
+        localTransform_.setRefXYZ(x, y, z);
+    }
+
 	float rotation() const
 	{
-        return localTransform_.rotation();
+        return localTransform_.rotationZ();
+	}
+
+	float rotationX() const
+	{
+        return localTransform_.rotationX();
+	}
+
+	float rotationY() const
+	{
+        return localTransform_.rotationY();
 	}
 
 	float scaleX() const
@@ -149,6 +210,11 @@ public:
         return localTransform_.scaleY();
 	}
 
+	float scaleZ() const
+	{
+        return localTransform_.scaleZ();
+	}
+
 	float x() const
 	{
         return localTransform_.x();
@@ -159,7 +225,12 @@ public:
         return localTransform_.y();
 	}
 
-    float refX() const
+	float z() const
+	{
+        return localTransform_.y();
+	}
+
+	float refX() const
     {
         return localTransform_.refX();
     }
@@ -169,17 +240,22 @@ public:
         return localTransform_.refY();
     }
 
+    float refZ() const
+    {
+        return localTransform_.refZ();
+    }
+
     void setMatrix(float m11, float m12, float m21, float m22, float tx, float ty)
 	{
         localTransform_.setMatrix(m11, m12, m21, m22, tx, ty);
 	}
 
-	void setMatrix(const Matrix& matrix)
+	void setMatrix(const Matrix2D& matrix)
 	{
-        localTransform_.setMatrix(matrix);
+        localTransform_.setMatrix(matrix.m11(),matrix.m12(),matrix.m21(),matrix.m22(),matrix.tx(),matrix.ty());
 	}
 
-	const Matrix& matrix() const
+	const Matrix4& matrix() const
 	{
         return localTransform_.matrix();
 	}
@@ -290,7 +366,7 @@ protected:
 
 private:
     Stage *getStage() const;
-    void boundsHelper(const Matrix& transform, float* minx, float* miny, float* maxx, float* maxy) const;
+    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy) const;
 
 protected:
     Application *application_;
@@ -298,7 +374,7 @@ protected:
 private:
 	bool isVisible_;
     Transform localTransform_;
-    mutable Matrix worldTransform_;
+    mutable Matrix4 worldTransform_;
 //	Graphics* graphics_;
 
 	unsigned int sfactor_, dfactor_;
@@ -309,9 +385,11 @@ private:
 
 	mutable ColorTransform* colorTransform_;
 	float alpha_;
+	float clipx_,clipy_,clipw_,cliph_;
 
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
+    virtual void childrenDrawn();
 
 protected:
 	static std::set<Sprite*> allSprites_;

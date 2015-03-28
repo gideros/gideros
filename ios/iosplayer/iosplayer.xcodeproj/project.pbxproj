@@ -356,6 +356,8 @@
 		5FE658B818FBF0FB001D8EE3 /* trees.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658A918FBF0FB001D8EE3 /* trees.c */; };
 		5FE658B918FBF0FB001D8EE3 /* uncompr.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658AA18FBF0FB001D8EE3 /* uncompr.c */; };
 		5FE658BA18FBF0FB001D8EE3 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658AB18FBF0FB001D8EE3 /* zutil.c */; };
+		EB08A3521AAA06F900D8F27D /* Matrices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB08A3501AAA06F900D8F27D /* Matrices.cpp */; };
+		EB08A3531AAA06F900D8F27D /* Matrices.h in Headers */ = {isa = PBXBuildFile; fileRef = EB08A3511AAA06F900D8F27D /* Matrices.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -710,6 +712,8 @@
 		5FE658A918FBF0FB001D8EE3 /* trees.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = trees.c; path = "../../../libgid/external/zlib-1.2.8/trees.c"; sourceTree = "<group>"; };
 		5FE658AA18FBF0FB001D8EE3 /* uncompr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = uncompr.c; path = "../../../libgid/external/zlib-1.2.8/uncompr.c"; sourceTree = "<group>"; };
 		5FE658AB18FBF0FB001D8EE3 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zutil.c; path = "../../../libgid/external/zlib-1.2.8/zutil.c"; sourceTree = "<group>"; };
+		EB08A3501AAA06F900D8F27D /* Matrices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Matrices.cpp; path = ../../2dsg/Matrices.cpp; sourceTree = "<group>"; };
+		EB08A3511AAA06F900D8F27D /* Matrices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrices.h; path = ../../2dsg/Matrices.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1164,6 +1168,8 @@
 		5F321EAD15BBC3EF00542289 /* 2dsg */ = {
 			isa = PBXGroup;
 			children = (
+				EB08A3501AAA06F900D8F27D /* Matrices.cpp */,
+				EB08A3511AAA06F900D8F27D /* Matrices.h */,
 				5F321EAF15BBC3FC00542289 /* application.cpp */,
 				5F321EB015BBC3FC00542289 /* bitmap.cpp */,
 				5F321EB115BBC3FC00542289 /* bitmapdata.cpp */,
@@ -1363,6 +1369,7 @@
 				5F276F6218F4020E00D78AE4 /* b2BroadPhase.h in Headers */,
 				5F321F7315BBF2E100542289 /* giderosapi.h in Headers */,
 				5F276F6D18F4020E00D78AE4 /* b2TimeOfImpact.h in Headers */,
+				EB08A3531AAA06F900D8F27D /* Matrices.h in Headers */,
 				5F0104071776F719002E6C6E /* grendertarget.h in Headers */,
 				5F276F7D18F4020E00D78AE4 /* b2GrowableStack.h in Headers */,
 				5F276FB218F4020E00D78AE4 /* b2GearJoint.h in Headers */,
@@ -1609,6 +1616,7 @@
 				5F276F6818F4020E00D78AE4 /* b2Distance.cpp in Sources */,
 				5F321EF715BBC3FC00542289 /* sprite.cpp in Sources */,
 				5F276F9218F4020E00D78AE4 /* b2Fixture.cpp in Sources */,
+				EB08A3521AAA06F900D8F27D /* Matrices.cpp in Sources */,
 				5F321EF815BBC3FC00542289 /* stage.cpp in Sources */,
 				5F276FC718F4020E00D78AE4 /* b2ParticleGroup.cpp in Sources */,
 				5F276F6418F4020E00D78AE4 /* b2CollideEdge.cpp in Sources */,

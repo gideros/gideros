@@ -239,6 +239,7 @@ LOCAL_SRC_FILES += \
 	../../../2dsg/ftlibrarysingleton.cpp \
 	../../../2dsg/grendertarget.cpp \
 	../../../2dsg/completeevent.cpp \
+	../../../2dsg/Matrices.cpp \
 	../../../libgideros/luautil.cpp
 	
 # LOCAL_SRC_FILES += ../../../2dsg/clipper.cpp
@@ -424,7 +425,7 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/rendertargetbinder.cpp
 
 
-LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
+LOCAL_LDLIBS := -lGLESv2 -ldl -llog
 
 LOCAL_SHARED_LIBRARIES := gvfs lua
 

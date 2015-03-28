@@ -9,10 +9,14 @@ StringId::StringId()
 
 	idmap_["x"] = eStringIdX;
 	idmap_["y"] = eStringIdY;
+	idmap_["z"] = eStringIdZ;
 	idmap_["rotation"] = eStringIdRotation;
+	idmap_["rotationX"] = eStringIdRotationX;
+	idmap_["rotationY"] = eStringIdRotationY;
 	idmap_["scale"] = eStringIdScale;
 	idmap_["scaleX"] = eStringIdScaleX;
 	idmap_["scaleY"] = eStringIdScaleY;
+	idmap_["scaleZ"] = eStringIdScaleZ;
 	idmap_["alpha"] = eStringIdAlpha;
     idmap_["redMultiplier"] = eStringIdRedMultiplier;
     idmap_["greenMultiplier"] = eStringIdGreenMultiplier;

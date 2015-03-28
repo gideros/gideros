@@ -118,6 +118,8 @@ public:
     void deleteAutounrefPool(void *);
     void autounref(GReferenced *referenced);
 
+    void configureFrustum(float fov,float farplane);
+
 private:
 	TextureManager textureManager_;
 	Stage* stage_;
@@ -130,6 +132,8 @@ private:
 	LogicalScaleMode scaleMode_;
 	float logicalScaleX_, logicalScaleY_;
 	float logicalTranslateX_, logicalTranslateY_;
+	float fov_;
+	float farplane_;
 	void calculateLogicalTransformation();
 	void correctTouchPositionLogical(int* x, int* y);
 
@@ -179,5 +183,6 @@ private:
     std::vector<std::vector<GReferenced*>*> unrefPool_;
     std::vector<std::vector<GReferenced*>*> unrefPoolTrash_;
 };
+
 
 #endif

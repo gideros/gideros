@@ -79,6 +79,7 @@ Application::Application() :
 	defaultFont_ = NULL;
 
 	scale_ = 1;
+	fov_=0;
 }
 
 Application::~Application()
@@ -96,6 +97,7 @@ Stage* Application::stage() const
 
 void Application::initView()
 {
+	oglInitialize(width_,height_);
 	backr_ = 1.f;
 	backg_ = 1.f;
 	backb_ = 1.f;
@@ -118,6 +120,7 @@ void Application::releaseView()
 
 	stage_->unref();
 	stage_ = NULL;
+	oglCleanup();
 
 //	Referenced::emptyPool();
 }
@@ -148,6 +151,43 @@ void Application::clearBuffers()
     }
 }
 
+void Application::configureFrustum(float fov,float farplane)
+{
+	if (fov>179) //Do not allow 180°, this would cause infinite width
+		fov=179;
+	if (fov<0)
+		fov=0;
+	if (farplane<=0)
+		farplane=0;
+	farplane_=farplane;
+	fov_=fov;
+}
+
+Matrix4 setFrustum(float l, float r, float b, float t, float n, float f)
+{
+    Matrix4 mat;
+    mat[0]  = 2 * n / (r - l);
+    mat[5]  = 2 * n / (t - b);
+    mat[8]  = (r + l) / (r - l);
+    mat[9]  = (t + b) / (t - b);
+    mat[10] = -(f + n) / (f - n);
+    mat[11] = -1;
+    mat[14] = -(2 * f * n) / (f - n);
+    mat[15] = 0;
+    return mat;
+}
+
+Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f)
+{
+    Matrix4 mat;
+    mat[0]  = 2 / (r - l);
+    mat[5]  = 2 / (t - b);
+    mat[10] = -2 / (f - n);
+    mat[12] = -(r + l) / (r - l);
+    mat[13] = -(t + b) / (t - b);
+    mat[14] = -(f + n) / (f - n);
+    return mat;
+}
 void Application::renderScene(int deltaFrameCount)
 {
 	if (nframe_ < 0 || time_ < 0)
@@ -187,70 +227,98 @@ void Application::renderScene(int deltaFrameCount)
 		break;
 	}
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	Matrix4 projection,frustum;
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
 
-	switch (hardwareOrientation_)
-	{
-	case ePortrait:
-	case ePortraitUpsideDown:
-		glOrthof(0, width_/scale_, height_/scale_, 0, -1, 1);
-		break;
-	case eLandscapeLeft:
-	case eLandscapeRight:
-		glOrthof(0, height_/scale_, width_/scale_, 0, -1, 1);
-		break;
-	}
+	//glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 
-	switch (hardwareOrientation_)
-	{
-		case ePortrait:
-			break;
-		case ePortraitUpsideDown:
-			glTranslatef((width_/scale_)/2, (height_/scale_)/2, 0);
-			glRotatef(180, 0, 0, 1);
-			glTranslatef(-(width_/scale_)/2, -(height_/scale_)/2, 0);
-			break;
-		case eLandscapeLeft:
-			glTranslatef((width_/scale_)/2, (width_/scale_)/2, 0);
-			glRotatef(-90, 0, 0, 1);
-			glTranslatef(-(width_/scale_)/2, -(width_/scale_)/2, 0);
-			break;
-		case eLandscapeRight:
-			glTranslatef((height_/scale_)/2, (height_/scale_)/2, 0);
-			glRotatef(-270, 0, 0, 1);
-			glTranslatef(-(height_/scale_)/2, -(height_/scale_)/2, 0);
-			break;
-	}
-	
+	projection.scale(logicalScaleX_, logicalScaleY_, 1);
+	projection.translate(logicalTranslateX_, logicalTranslateY_, 0);
+	projection.scale(1.f / scale_, 1.f / scale_, 1.f);
 	switch (orientation_)
 	{
 		case ePortrait:
 			break;
 		case ePortraitUpsideDown:
-			glTranslatef((width_/scale_)/2, (height_/scale_)/2, 0);
-			glRotatef(180, 0, 0, 1);
-			glTranslatef(-(width_/scale_)/2, -(height_/scale_)/2, 0);
+			projection.translate(-(width_/scale_)/2, -(height_/scale_)/2, 0);
+			projection.rotate(180, 0, 0, 1);
+			projection.translate((width_/scale_)/2, (height_/scale_)/2, 0);
 			break;
 		case eLandscapeLeft:
-			glTranslatef((width_/scale_)/2, (width_/scale_)/2, 0);
-			glRotatef(90, 0, 0, 1);
-			glTranslatef(-(width_/scale_)/2, -(width_/scale_)/2, 0);
+			projection.translate(-(width_/scale_)/2, -(width_/scale_)/2, 0);
+			projection.rotate(90, 0, 0, 1);
+			projection.translate((width_/scale_)/2, (width_/scale_)/2, 0);
 			break;
 		case eLandscapeRight:
-			glTranslatef((height_/scale_)/2, (height_/scale_)/2, 0);
-			glRotatef(270, 0, 0, 1);
-			glTranslatef(-(height_/scale_)/2, -(height_/scale_)/2, 0);
+			projection.translate(-(height_/scale_)/2, -(height_/scale_)/2, 0);
+			projection.rotate(270, 0, 0, 1);
+			projection.translate((height_/scale_)/2, (height_/scale_)/2, 0);
+			break;
+	}
+	
+	switch (hardwareOrientation_)
+	{
+		case ePortrait:
+			break;
+		case ePortraitUpsideDown:
+			projection.translate(-(width_/scale_)/2, -(height_/scale_)/2, 0);
+			projection.rotate(180, 0, 0, 1);
+			projection.translate((width_/scale_)/2, (height_/scale_)/2, 0);
+			break;
+		case eLandscapeLeft:
+			projection.translate(-(width_/scale_)/2, -(width_/scale_)/2, 0);
+			projection.rotate(-90, 0, 0, 1);
+			projection.translate((width_/scale_)/2, (width_/scale_)/2, 0);
+			break;
+		case eLandscapeRight:
+			projection.translate(-(height_/scale_)/2, -(height_/scale_)/2, 0);
+			projection.rotate(-270, 0, 0, 1);
+			projection.translate((height_/scale_)/2, (height_/scale_)/2, 0);
 			break;
 	}
 
-	glScalef(1.f / scale_, 1.f / scale_, 1.f);
+	Matrix4 vpProjection=projection;
+	switch (hardwareOrientation_)
+	{
+	case ePortrait:
+	case ePortraitUpsideDown:
+		if (fov_>0)
+		{
+			float hw=width_*0.5/scale_;
+			float hh=height_*0.5/scale_;
+			float np=hh/tan(fov_* M_PI / 360.0);
+			float fp=(farplane_>0)?(np+farplane_):(np*100);
+			frustum=setFrustum(-hw, hw, hh, -hh, np,fp);
+			projection.translate(-hw,-hh,-np-0.001);
+		}
+		else
+			frustum=setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -1,1);
+		vpProjection.scale(1,-1,1);
+		vpProjection.translate(0,height_/scale_,0);
+		break;
+	case eLandscapeLeft:
+	case eLandscapeRight:
+		if (fov_>0)
+		{
+			float hw=width_*0.5/scale_;
+			float hh=height_*0.5/scale_;
+			float np=hh/tan(fov_* M_PI / 360.0);
+			float fp=(farplane_>0)?(np+farplane_):(np*100);
+			frustum=setFrustum(-hh,hh,hw,-hw,np,fp);
+			projection.translate(-hh,-hw,-np-0.001);
+		}
+		else
+			frustum=setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -1,1);
+		vpProjection.scale(1,-1,1);
+		vpProjection.translate(0,width_/scale_,0);
+		break;
+	}
+	oglViewportProjection(vpProjection);
+	projection=frustum*projection;
 
-	glTranslatef(logicalTranslateX_, logicalTranslateY_, 0);
-	glScalef(logicalScaleX_, logicalScaleY_, 1);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    //glMatrixMode(GL_MODELVIEW);
+    //glLoadIdentity();
 
 #if 0 && defined(QT_CORE_LIB)
 	resetBindTextureCount();
@@ -269,6 +337,8 @@ void Application::renderScene(int deltaFrameCount)
     if (orientation == eLandscapeLeft || orientation == eLandscapeRight)
         std::swap(hw, hh);
 
+	oglSetProjection(projection);
+
     // hardware start/end x/y
     //if(lsx == 0) lsx = 1;
     //if(lsy == 0) lsy = 1;
@@ -276,6 +346,13 @@ void Application::renderScene(int deltaFrameCount)
     float sy = (0 - lty) / lsy;
     float ex = (hw - ltx) / lsx;
     float ey = (hh - lty) / lsy;
+
+    glDepthFunc(GL_LEQUAL);
+#ifdef OPENGL_ES
+    glClearDepthf(1);
+#endif
+    glClear(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    
 
 	CurrentTransform currentTransform;
     stage_->draw(currentTransform, sx, sy, ex, ey);

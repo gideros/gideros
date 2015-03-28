@@ -2,6 +2,7 @@
 #include "application.h"
 #include "sprite.h"
 #include "glcommon.h"
+#include "ogl.h"
 
 int GRenderTarget::qualcommFix_ = -1;
 
@@ -54,6 +55,8 @@ void GRenderTarget::clear(unsigned int color, float a)
     glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
 }
 
+extern Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
+
 void GRenderTarget::draw(const Sprite *sprite)
 {
     GLint oldFBO = 0;
@@ -70,12 +73,11 @@ void GRenderTarget::draw(const Sprite *sprite)
 
     glViewport(0, 0, data->width, data->height);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrthof(0, data->baseWidth, 0, data->baseHeight, -1, 1);
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    Matrix4 projection;
+
+    projection=setOrthoFrustum(0, data->baseWidth, 0, data->baseHeight, -1, 1);
+    oglSetProjection(projection);
 
     CurrentTransform currentTransform;
     ((Sprite*)sprite)->draw(currentTransform, 0, 0, data->width, data->height);

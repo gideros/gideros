@@ -10,10 +10,11 @@ class Application;
 class GMesh: public Sprite
 {
 public:
-    GMesh(Application *application);
+    GMesh(Application *application, bool is3d);
     virtual ~GMesh();
+    bool is3d();
 
-    void setVertex(int i, float x, float y);
+    void setVertex(int i, float x, float y, float z);
     void setIndex(int i, unsigned short index);
     void setColor(int i, unsigned int color, float alpha);
     void setTextureCoordinate(int i, float u, float v);
@@ -38,7 +39,7 @@ public:
     size_t getColorArraySize() const;
     size_t getTextureCoordinateArraySize() const;
 
-    void getVertex(int i, float *x, float *y) const;
+    void getVertex(int i, float *x, float *y, float *z) const;
     void getIndex(int i, unsigned short *index) const;
     void getColor(int i, unsigned int *color, float *alpha) const;
     void getTextureCoordinate(int i, float *u, float *v) const;
@@ -48,6 +49,7 @@ public:
 
 private:
     virtual void doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey);
+    virtual void childrenDrawn();
     virtual void extraBounds(float *minx, float *miny, float *maxx, float *maxy) const;
 
 private:
@@ -71,7 +73,8 @@ private:
 
     mutable float minx_, miny_, maxx_, maxy_;
     bool boundsDirty_;
+    unsigned int meshtype_;
+    bool mesh3d_;
 };
-
 
 #endif

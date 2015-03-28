@@ -23,17 +23,26 @@ private:
 	static int getChildIndex(lua_State* L);
 	static int removeFromParent(lua_State* L);
 	
+	static int setClip(lua_State* L);
 	static int getX(lua_State* L);
 	static int getY(lua_State* L);
+	static int getZ(lua_State* L);
 	static int getRotation(lua_State* L);
+	static int getRotationX(lua_State* L);
+	static int getRotationY(lua_State* L);
 	static int getScaleX(lua_State* L);
 	static int getScaleY(lua_State* L);
+	static int getScaleZ(lua_State* L);
 
 	static int setX(lua_State* L);
 	static int setY(lua_State* L);
+	static int setZ(lua_State* L);
 	static int setRotation(lua_State* L);
+	static int setRotationX(lua_State* L);
+	static int setRotationY(lua_State* L);
 	static int setScaleX(lua_State* L);
 	static int setScaleY(lua_State* L);
+	static int setScaleZ(lua_State* L);
 
 	static int setPosition(lua_State* L);
 	static int getPosition(lua_State* L);

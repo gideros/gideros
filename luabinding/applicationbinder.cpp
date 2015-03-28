@@ -61,6 +61,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"getTextureMemoryUsage", ApplicationBinder::getTextureMemoryUsage},
         {"getScreenDensity", ApplicationBinder::getScreenDensity},
         {"getDeviceOrientation", ApplicationBinder::getDeviceOrientation},
+        {"configureFrustum", ApplicationBinder::configureFrustum},
         {NULL, NULL},
 	};
 
@@ -615,3 +616,21 @@ int ApplicationBinder::getDeviceOrientation(lua_State *L)
     return 1;
 }
 
+int ApplicationBinder::configureFrustum(lua_State* L)
+{
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+
+    lua_Number fov = luaL_checknumber(L, 2);
+    if (fov<0) fov=0;
+    if (fov>180) fov=180;
+
+    lua_Number farplane=0;
+    if (!lua_isnoneornil(L, 3))
+    	farplane = luaL_checknumber(L, 3);
+    application->getApplication()->configureFrustum(fov,farplane);
+
+    return 0;
+}

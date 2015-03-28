@@ -1,5 +1,5 @@
 #include "sprite.h"
-#include "glcommon.h"
+#include "ogl.h"
 #include <algorithm>
 #include <cassert>
 #include <stack>
@@ -26,6 +26,9 @@ Sprite::Sprite(Application* application) :
 
 	sfactor_ = -1;
 	dfactor_ = -1;
+
+	clipw_=-1;
+	cliph_=-1;
 }
 
 Sprite::~Sprite()
@@ -41,6 +44,11 @@ Sprite::~Sprite()
 }
 
 void Sprite::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
+{
+
+}
+
+void Sprite::childrenDrawn()
 {
 
 }
@@ -182,10 +190,13 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy, float e
 
 		if (pop == true)
 		{
+			sprite->childrenDrawn();
 			if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1)
 				glPopColor();
 			if (sprite->sfactor_ != -1)
 				glPopBlendFunc();
+			if ((sprite->cliph_>=0)&&(sprite->clipw_>=0))
+				oglPopScissor();
 			continue;
 		}
 
@@ -194,7 +205,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy, float e
 			continue;
 		}
 
-        glLoadMatrixf(sprite->worldTransform_.data());
+        oglLoadMatrixf(sprite->worldTransform_);
 
 		if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1)
 		{
@@ -218,6 +229,9 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy, float e
 			glPushBlendFunc();
 			glSetBlendFunc(sprite->sfactor_, sprite->dfactor_);
 		}
+
+		if ((sprite->cliph_>=0)&&(sprite->clipw_>=0))
+			oglPushScissor(sprite->clipx_,sprite->clipy_,sprite->clipw_,sprite->cliph_);
 
         sprite->doDraw(sprite->worldTransform_, sx, sy, ex, ey);
 
@@ -785,7 +799,7 @@ float Sprite::alpha() const
 	return alpha_;
 }
 
-void Sprite::boundsHelper(const Matrix& transform, float* minx, float* miny, float* maxx, float* maxy) const
+void Sprite::boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy) const
 {
     {
         this->worldTransform_ = transform;
@@ -1042,8 +1056,17 @@ void Sprite::set(int param, float value, GStatus* status)
 	case eStringIdY:
 		setY(value);
 		break;
+	case eStringIdZ:
+		setZ(value);
+		break;
 	case eStringIdRotation:
 		setRotation(value);
+		break;
+	case eStringIdRotationX:
+		setRotationX(value);
+		break;
+	case eStringIdRotationY:
+		setRotationY(value);
 		break;
 	case eStringIdScale:
 		setScale(value);
@@ -1054,11 +1077,17 @@ void Sprite::set(int param, float value, GStatus* status)
 	case eStringIdScaleY:
 		setScaleY(value);
 		break;
+	case eStringIdScaleZ:
+		setScaleZ(value);
+		break;
     case eStringIdAnchorX:
         setRefX(value);
         break;
     case eStringIdAnchorY:
         setRefY(value);
+        break;
+    case eStringIdAnchorZ:
+        setRefZ(value);
         break;
 	case eStringIdAlpha:
 		setAlpha(value);
@@ -1090,16 +1119,26 @@ float Sprite::get(int param, GStatus* status)
 		return x();
 	case eStringIdY:
 		return y();
+	case eStringIdZ:
+		return z();
 	case eStringIdRotation:
 		return rotation();
+	case eStringIdRotationX:
+		return rotationX();
+	case eStringIdRotationY:
+		return rotationY();
 	case eStringIdScaleX:
 		return scaleX();
 	case eStringIdScaleY:
 		return scaleY();
+	case eStringIdScaleZ:
+		return scaleZ();
     case eStringIdAnchorX:
         return refX();
     case eStringIdAnchorY:
         return refY();
+    case eStringIdAnchorZ:
+        return refZ();
 	case eStringIdAlpha:
 		return alpha();
     case eStringIdRedMultiplier:

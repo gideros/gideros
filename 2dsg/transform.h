@@ -1,40 +1,62 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include "matrix.h"
+#include "Matrices.h"
 
 class Transform
 {
 public:
 	Transform()
 	{
-		decompose();
-		isDirty_ = true;
-        x_ = 0;
-        y_ = 0;
+		scaleX_=1;
+		scaleY_=1;
+		scaleZ_=1;
+		tx_=0;
+		ty_=0;
+		tz_=0;
+		rotationX_=0;
+		rotationY_=0;
+		rotationZ_=0;
         refX_ = 0;
         refY_ = 0;
+        refZ_ = 0;
+        isDirty_=false;
 	}
 
-	void setRotation(float r)
+	void setRotationZ(float r)
 	{
-		rotation_ = r;
+		rotationZ_ = r;
 		compose();
-		isDirty_ = true;
+	}
+
+	void setRotationY(float r)
+	{
+		rotationY_ = r;
+		compose();
+	}
+
+	void setRotationX(float r)
+	{
+		rotationX_ = r;
+		compose();
 	}
 
 	void setScaleX(float sx)
 	{
 		scaleX_ = sx;
 		compose();
-		isDirty_ = true;
 	}
 
 	void setScaleY(float sy)
 	{
 		scaleY_ = sy;
 		compose();
-		isDirty_ = true;
+	}
+
+	void setScaleZ(float sz)
+	{
+		scaleZ_ = sz;
+		compose();
 	}
 
 	void setScaleXY(float sx, float sy)
@@ -42,58 +64,95 @@ public:
 		scaleX_ = sx;
 		scaleY_ = sy;
 		compose();
-		isDirty_ = true;
+	}
+
+	void setScaleXYZ(float sx, float sy,float sz)
+	{
+		scaleX_ = sx;
+		scaleY_ = sy;
+		scaleZ_ = sz;
+		compose();
 	}
 
 	void setX(float x)
 	{
-        matrix_.setTx(x-refX_);
-        x_ = x;
-		isDirty_ = true;
+		tx_=x;
+		compose();
 	}
 
 	void setY(float y)
 	{
-        matrix_.setTy(y-refY_);
-        y_ = y;
-		isDirty_ = true;
+		ty_=y;
+		compose();
+	}
+
+	void setZ(float z)
+	{
+		tz_=z;
+		compose();
 	}
 
 	void setXY(float x, float y)
 	{
-        matrix_.setTx(x-refX_);
-        matrix_.setTy(y-refY_);
-        x_ = x;
-        y_ = y;
-		isDirty_ = true;
+		tx_=x;
+		ty_=y;
+		compose();
+	}
+
+	void setXYZ(float x, float y, float z)
+	{
+		tx_=x;
+		ty_=y;
+		tz_=z;
+		compose();
 	}
 
     void setRefX(float x)
     {
-        matrix_.setTx(x_-x);
         refX_ = x;
-        isDirty_ = true;
+		compose();
     }
 
     void setRefY(float y)
     {
-        matrix_.setTy(y_-y);
         refY_ = y;
-        isDirty_ = true;
+		compose();
+    }
+
+    void setRefZ(float z)
+    {
+        refZ_ = z;
+		compose();
     }
 
     void setRefXY(float x, float y)
     {
-        matrix_.setTx(x_-x);
-        matrix_.setTy(y_-y);
         refX_ = x;
         refY_ = y;
-        isDirty_ = true;
+		compose();
     }
 
-	float rotation() const
+    void setRefXYZ(float x, float y, float z)
+    {
+        refX_ = x;
+        refY_ = y;
+        refZ_ = z;
+		compose();
+    }
+
+	float rotationX() const
 	{
-		return rotation_;
+		return rotationX_;
+	}
+
+	float rotationY() const
+	{
+		return rotationY_;
+	}
+
+	float rotationZ() const
+	{
+		return rotationZ_;
 	}
 
 	float scaleX() const
@@ -106,14 +165,24 @@ public:
 		return scaleY_;
 	}
 
+	float scaleZ() const
+	{
+		return scaleZ_;
+	}
+
 	float x() const
 	{
-        return x_;
+		return tx_;
 	}
 
 	float y() const
 	{
-        return y_;
+		return ty_;
+	}
+
+	float z() const
+	{
+		return tz_;
 	}
 
     float refX() const
@@ -126,51 +195,31 @@ public:
         return refY_;
     }
 
-    void setMatrix(float m11, float m12, float m21, float m22, float tx, float ty)
-	{
-        matrix_.set(m11, m12, m21, m22, tx, ty);
-		decompose();
-		isDirty_ = true;
-	}
+    float refZ() const
+    {
+        return refZ_;
+    }
 
-	void setMatrix(const Matrix& matrix)
-	{
-		matrix_ = matrix;
-		decompose();
-		isDirty_ = true;
-	}
-
-	const Matrix& matrix() const
+	const Matrix4& matrix() const
 	{
 		return matrix_;
 	}
-
-	bool isDirty() const
-	{
-		return isDirty_;
-	}
-
-	void setClean() const
-	{
-		isDirty_ = false;
-	}
-
+	void setMatrix(float m11,float m12,float m21,float m22,float tx,float ty);
 private:
-	Matrix matrix_;
+	Matrix4 matrix_;
 
-	float rotation_;
+	float rotationX_;
+	float rotationY_;
+	float rotationZ_;
 	float scaleX_;
 	float scaleY_;
-    float x_;
-    float y_;
+	float scaleZ_;
+	float tx_,ty_,tz_;
     float refX_;
     float refY_;
-	float vx_, vy_;
-
-	void decompose();
-	void compose();
-
+    float refZ_;
 	mutable bool isDirty_;
+	void compose();
 };
 
 
