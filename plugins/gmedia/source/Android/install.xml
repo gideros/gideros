@@ -1,0 +1,23 @@
+<plugin type="android">
+	<files>
+		<file>libs/armeabi/libgmedia.so</file>
+		<file>libs/armeabi-v7a/libgmedia.so</file>
+		<file>libs/x86/libgmedia.so</file>
+		<file>src/com/giderosmobile/android/plugins/media/GMedia.java</file>
+	</files>
+	<libs>
+		<lib>System.loadLibrary("gmedia");</lib>
+	</libs>
+	<externals>
+		<external>"com.giderosmobile.android.plugins.media.GMedia"</external>
+	</externals>
+	<permissions>
+		<permission><![CDATA[<uses-feature android:name="android.hardware.camera" android:required="false" />]]></permission>
+	</permissions>
+	<activities>
+		<activity><![CDATA[<receiver android:name="com.giderosmobile.android.plugins.notification.NotificationRestore" ><intent-filter><action android:name="android.intent.action.BOOT_COMPLETED" /></intent-filter></receiver>]]></activity>
+	</activities>
+	<mods>
+		<mod type="insertAfter" prefix="		" reference="app.onDrawFrame">com.giderosmobile.android.plugins.media.GMedia.onDraw(gl);</mod>
+	</mods>
+</plugin>
