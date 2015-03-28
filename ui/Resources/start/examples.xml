@@ -89,6 +89,26 @@
 				/>
 </category>
 
+<category name="Graphics 3D">
+	<example 	name="3D Cube"
+				description="Drawing and rotating 3D cube using Shape and Mesh"
+				path="Graphics3D/3D-Cube/3D-Cube.gproj"
+				image="3dcube.png"
+				/>
+
+	<example 	name="3D Dice"
+				description="Drawing and rotating 3D dice using Shape and Mesh"
+				path="Graphics3D/3D-Dice/3D-Dice.gproj"
+				image="3ddice.png"
+				/>
+
+	<example 	name="3D Horse"
+				description="Drawing and rotating 3D horse created"
+				path="Graphics3D/3D-Horse/3D-Horse.gproj"
+				image="3dhorse.png"
+				/>
+</category>
+
 <category name="Audio">
 	<example 	name="Audio Buttons"
 				description="Playing different wav files"
