@@ -592,7 +592,11 @@ public class GiderosApplication
 			projectList.setVisibility(View.GONE);
 			return true;
 		}
-		return nativeKeyDown(keyCode, event.getRepeatCount());
+		boolean handled = nativeKeyDown(keyCode, event.getRepeatCount());
+		if(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE || keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_POWER){
+			return false;
+		}
+		return handled;
 	}
 	
 	public boolean onKeyUp(int keyCode, KeyEvent event)
