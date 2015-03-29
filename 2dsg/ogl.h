@@ -1,6 +1,6 @@
 #ifndef OGL_H_INCLUDED
 #define OGL_H_INCLUDED
-
+#define GIDEROS_GL1 1
 #include "glcommon.h"
 #include "Matrices.h"
 

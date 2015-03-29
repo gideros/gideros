@@ -1,5 +1,5 @@
 #include <gtexture.h>
-
+#define GIDEROS_GL1 1
 #ifdef __APPLE__
 #include <TargetConditionals.h>
 #endif
