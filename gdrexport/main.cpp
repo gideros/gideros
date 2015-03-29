@@ -6,6 +6,7 @@
 #include <time.h>
 #include <QDomDocument>
 #include <projectproperties.h>
+#include <orientation.h>
 #include <stack>
 #include <dependencygraph.h>
 #include <QProcess>
@@ -560,6 +561,17 @@ int main(int argc, char *argv[])
     if (encryptAssets)
         assetsKey = encryptionKey;
 
+
+    ProjectProperties properties;
+    std::vector<std::pair<QString, QString> > fileQueue;
+    std::vector<QString> folderList;
+    DependencyGraph dependencyGraph;
+    if (readProjectFile(projectFileName, properties, fileQueue, folderList, dependencyGraph) == false)
+    {
+        // error is displayed at readProjectFile function
+        return 1;
+    }
+
     // copy template
     if (true)
     {
@@ -588,8 +600,12 @@ int main(int argc, char *argv[])
         QList<QPair<QByteArray, QByteArray> > replaceList1;
         replaceList1 << qMakePair(templatename.toUtf8(), base.toUtf8());
         replaceList1 << qMakePair(templatenamews.toLatin1(), basews.toLatin1());
-        if (deviceFamily == e_Android)
+        if (deviceFamily == e_Android){
             replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), packageName.toUtf8());
+            if(properties.orientation == eLandscapeLeft || properties.orientation == eLandscapeRight){
+                replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), QString("android:screenOrientation=\"landscape\"").toUtf8());
+            }
+        }
         replaceList << replaceList1;
 
             QStringList wildcards2;
@@ -621,16 +637,6 @@ int main(int argc, char *argv[])
     outputDir.mkdir("assets");
     outputDir.cd("assets");
 
-
-    ProjectProperties properties;
-    std::vector<std::pair<QString, QString> > fileQueue;
-    std::vector<QString> folderList;
-    DependencyGraph dependencyGraph;
-    if (readProjectFile(projectFileName, properties, fileQueue, folderList, dependencyGraph) == false)
-    {
-		// error is displayed at readProjectFile function
-        return 1;
-    }
 
     for (std::size_t i = 0; i < folderList.size(); ++i)
         outputDir.mkdir(folderList[i]);
