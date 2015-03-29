@@ -142,9 +142,6 @@ cp plugins/JSON/source/libs/armeabi/libjson.so $BUILD_DIR/win/Templates/Eclipse/
 cp plugins/JSON/source/libs/armeabi-v7a/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
 cp plugins/JSON/source/libs/x86/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
 
-tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/Eclipse/Android\ Template/src/com
-tar xf $BUILD_DIR/tmp.tar -C android/GiderosAndroidPlayer/src/com
-
 rm -rf android/GiderosAndroidPlayer/libs
 cp -R $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs android/GiderosAndroidPlayer
 
