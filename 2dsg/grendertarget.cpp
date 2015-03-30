@@ -60,6 +60,7 @@ extern Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, floa
 void GRenderTarget::draw(const Sprite *sprite)
 {
     GLint oldFBO = 0;
+    oglReset();
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
 
     glBindFramebuffer(GL_FRAMEBUFFER, gtexture_RenderTargetGetFBO(data->gid));
