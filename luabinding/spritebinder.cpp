@@ -640,7 +640,7 @@ int SpriteBinder::setAnchorPosition(lua_State* L)
 
 int SpriteBinder::getAnchorPosition(lua_State* L)
 {
-    StackChecker checker(L, "SpriteBinder::getAnchorPosition", 2);
+    StackChecker checker(L, "SpriteBinder::getAnchorPosition", 3);
 
     Binder binder(L);
     Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
@@ -649,7 +649,7 @@ int SpriteBinder::getAnchorPosition(lua_State* L)
     lua_pushnumber(L, sprite->refY());
     lua_pushnumber(L, sprite->refZ());
 
-    return 2;
+    return 3;
 }
 
 
@@ -671,7 +671,7 @@ int SpriteBinder::setScale(lua_State* L)
 
 int SpriteBinder::getScale(lua_State* L)
 {
-	StackChecker checker(L, "SpriteBinder::getScale", 2);
+	StackChecker checker(L, "SpriteBinder::getScale", 3);
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));

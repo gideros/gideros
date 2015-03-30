@@ -69,32 +69,45 @@ void main() {\
 #else
 /* Vertex shader*/
 const char *xformVShaderCode=
+#ifdef OPENGL_ES
+    "#version 100\n"
+    "#define GLES2\n"
+#else
+    "#version 120\n"
+#endif
 "attribute vec2 vTexCoord;\n"
-"attribute vec4 vVertex;\n"
 "attribute vec4 vColor;\n"
+"attribute vec3 vVertex;\n"
 "uniform mat4 vMatrix;\n"
 "varying vec2 fTexCoord;\n"
 "varying vec4 fInColor; "
 "\n"
 "void main() {\n"
-"  gl_Position = vMatrix*vVertex;\n"
+"  vec4 vertex = vec4(vVertex,1.0f);\n"
+"  gl_Position = vMatrix*vertex;\n"
 "  fTexCoord=vTexCoord;\n"
 "  fInColor=vColor;\n"
 "}\n";
 
 /* Fragment shader*/
-const char *colorFShaderCode="\
-uniform float fColorSel;\
-uniform float fTextureSel;\
-uniform vec4 fColor;\
-uniform sampler2D fTexture;\
-varying vec2 fTexCoord;\
-varying vec4 fInColor;\
-void main() {\
- vec4 col=mix(fColor,fInColor,fColorSel);\
- vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
- gl_FragColor = tex * col;\
-}";
+const char *colorFShaderCode=
+#ifdef OPENGL_ES
+    "#version 100\n"
+    "#define GLES2\n"
+#else
+    "#version 120\n"
+#endif
+"uniform float fColorSel;"
+"uniform float fTextureSel;\n"
+"uniform vec4 fColor;\n"
+"uniform sampler2D fTexture;\n"
+"varying vec2 fTexCoord;\n"
+"varying vec4 fInColor;\n"
+"void main() {\n"
+" vec4 col=mix(fColor,fInColor,fColorSel);\n"
+" vec4 tex=mix(vec4(1.0f,1.0f,1.0f,1.0f),texture2D(fTexture, fTexCoord),fTextureSel);\n"
+" gl_FragColor = tex * col;\n"
+"}\n";
 #endif
 
 GLuint oglLoadShader(GLuint type,const char *code)
@@ -125,11 +138,16 @@ GLuint oglLoadShader(GLuint type,const char *code)
 
 void oglSetupShaders()
 {
+	glog_i("GL_VERSION:%s\n",glGetString(GL_VERSION));
+	glog_i("GLSL_VERSION:%s\n",glGetString(GL_SHADING_LANGUAGE_VERSION));
 	xformVShader=oglLoadShader(GL_VERTEX_SHADER,xformVShaderCode);
 	colorFShader=oglLoadShader(GL_FRAGMENT_SHADER,colorFShaderCode);
     shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, xformVShader);
     glAttachShader(shaderProgram, colorFShader);
+
+    glBindAttribLocation(shaderProgram, 0, "vVertex"); //Ensure vertex is at 0
+
     glLinkProgram(shaderProgram);
 
     glUseProgram(shaderProgram);
@@ -143,8 +161,8 @@ void oglSetupShaders()
     colorFS=glGetUniformLocation(shaderProgram, "fColor");
     textureFS=glGetUniformLocation(shaderProgram, "fTexture");
 
-    //glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
-    //glog_i("FIndices: %d,%d,%d,%d\n", colorSelFS,textureSelFS,colorFS,textureFS);
+    glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
+    glog_i("FIndices: %d,%d,%d,%d\n", colorSelFS,textureSelFS,colorFS,textureFS);
 
     glUniform1i(textureFS, 0);
 
@@ -585,6 +603,7 @@ void oglReset()
     //glClear(GL_COLOR_BUFFER_BIT);
 
     glEnable(GL_BLEND);
+	glDisable(GL_SCISSOR_TEST);
 
 #ifndef PREMULTIPLIED_ALPHA
 #error PREMULTIPLIED_ALPHA is not defined
