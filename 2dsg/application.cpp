@@ -347,8 +347,6 @@ void Application::renderScene(int deltaFrameCount)
     float ex = (hw - ltx) / lsx;
     float ey = (hh - lty) / lsy;
 
-    glDepthFunc(GL_LEQUAL);
-
 	CurrentTransform currentTransform;
     stage_->draw(currentTransform, sx, sy, ex, ey);
 

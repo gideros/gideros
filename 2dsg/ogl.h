@@ -30,10 +30,6 @@ void oglReset();
 void oglColor4f(float,float,float,float);
 void oglPushScissor(float x,float y,float w,float h);
 void oglPopScissor();
-GLint oglBindFramebuffer(GLint fbo);
-GLuint oglCreateTextureFBO(GLuint id);
-void oglDeleteFramebuffer(GLint fbo);
-
 
 void resetBindTextureCount();
 int getBindTextureCount();
