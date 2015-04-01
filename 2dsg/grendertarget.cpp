@@ -73,10 +73,15 @@ void GRenderTarget::draw(const Sprite *sprite)
 
     glViewport(0, 0, data->width, data->height);
 
-
+	// The WINSTORE glOrtho (for Direct3D) is what you would expect. The OpenGL call needs to be inverted in y-direction
     Matrix4 projection;
 
-    projection=setOrthoFrustum(0, data->baseWidth, 0, data->baseHeight, -1, 1);
+#ifdef WINSTORE
+	projection = setOrthoFrustum(0, data->baseWidth, data->baseHeight, 0, -1, 1);
+#else
+    projection = setOrthoFrustum(0, data->baseWidth, 0, data->baseHeight, -1, 1);
+#endif
+
     oglSetProjection(projection);
 
     CurrentTransform currentTransform;
