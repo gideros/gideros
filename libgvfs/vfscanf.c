@@ -50,6 +50,11 @@ static long double strtold(const char *s, char **sp)
 }
 #endif
 
+#ifdef WINSTORE
+#define __signed
+#define ssize_t size_t
+#endif
+
 #define	BUF		513	/* Maximum length of numeric string. */
 
 /*

@@ -32,7 +32,11 @@
  */
 
 #include <fcntl.h>
+#ifdef WINSTORE
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include <stdio.h>
 #include "local.h"
 

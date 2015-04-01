@@ -81,6 +81,6 @@ __swsetup(FILE *fp)
 		fp->_w = 0;
 		fp->_lbfsize = -fp->_bf._size;
 	} else
-		fp->_w = fp->_flags & __SNBF ? 0 : fp->_bf._size;
+        fp->_w = fp->_flags & __SNBF ? 0 : fp->_bf._size;
 	return (0);
 }

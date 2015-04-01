@@ -1,6 +1,9 @@
 /*	$OpenBSD: flockfile.c,v 1.7 2004/09/28 18:12:44 otto Exp $	*/
 
+#ifndef WINSTORE
 #include <sys/time.h>
+#endif
+
 #include <stdio.h>
 #include "local.h"
 
