@@ -19,6 +19,7 @@ static bool s_COLOR_ARRAY_enabled = false;
 
 static int s_clientStateCount = 0;
 static int s_depthEnable=0;
+static bool s_depthBufferCleared=false;
 
 static bool oglInitialized=false;
 
@@ -276,7 +277,17 @@ void oglEnable(GLenum cap)
 		break;
 	case GL_DEPTH_TEST:
 		if (!(s_depthEnable++))
+		{
+			if (!s_depthBufferCleared)
+			{
+#ifdef OPENGL_ES
+				glClearDepthf(1);
+#endif
+    			glClear(GL_DEPTH_BUFFER_BIT);
+    			s_depthBufferCleared=true;
+			}
 			glEnable(cap);
+		}
 		break;
 	default:
 		glEnable(cap);
@@ -632,6 +643,7 @@ void oglReset()
 	s_texture = 0;
 	s_Texture2DEnabled = false;
 	s_depthEnable=0;
+	s_depthBufferCleared=true;
 
 #ifdef GIDEROS_GL1
 	glDisable(GL_TEXTURE_2D);
