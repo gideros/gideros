@@ -198,6 +198,7 @@ void oglInitialize(unsigned int sw,unsigned int sh)
  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 #endif
+
  oglInitialized=true;
 }
 
@@ -565,6 +566,67 @@ int getClientStateCount()
 	return s_clientStateCount;
 }
 
+GLint oglBindFramebuffer(GLint fbo)
+{
+	GLint oldFBO=0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
+#ifdef OPENGL_DESKTOP
+        if (GLEW_ARB_framebuffer_object)
+#endif
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+#ifdef OPENGL_DESKTOP
+		else
+			glBindFramebufferEXT(GL_FRAMEBUFFER, fbo);
+#endif
+        return oldFBO;
+}
+
+GLuint oglCreateTextureFBO(GLuint id)
+{
+    GLint oldFBO = 0;
+    GLuint fbo=0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
+#ifdef OPENGL_DESKTOP
+    if (GLEW_ARB_framebuffer_object)
+    {
+#endif
+
+        glGenFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
+
+#ifdef OPENGL_DESKTOP
+    }
+	else
+	{
+
+    glGenFramebuffersEXT(1, &fbo);
+    glBindFramebufferEXT(GL_FRAMEBUFFER, fbo);
+
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0);
+
+    glBindFramebufferEXT(GL_FRAMEBUFFER, oldFBO);
+	}
+#endif
+    return fbo;
+}
+
+void oglDeleteFramebuffer(GLint fbo)
+{
+#ifdef OPENGL_DESKTOP
+    if (GLEW_ARB_framebuffer_object)
+#endif
+    	glDeleteFramebuffers(1,&fbo);
+#ifdef OPENGL_DESKTOP
+	else
+		glDeleteFramebuffersEXT(1,&fbo);
+#endif
+}
+
+
 void oglReset()
 {
 	s_texture = 0;
@@ -595,6 +657,11 @@ void oglReset()
     glUniform1f(colorSelFS, 0);
     glUniform1f(textureSelFS, 0);
 #endif
+    oglProjection.identity();
+    oglVPProjection.identity();
+    oglModel.identity();
+    oglCombined.identity();
+
 	resetBindTextureCount();
 	resetClientStateCount();
 	resetTexture2DStateCount();
