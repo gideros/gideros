@@ -5,6 +5,10 @@
 #include <ctype.h>
 #include <stdio.h>
 
+#ifdef WINSTORE
+#include "winrt/wave.h"
+#undef interface  // silly Microsoft!
+#endif
 
 GGSoundManager::GGSoundManager()
 {
@@ -21,7 +25,6 @@ GGSoundManager::~GGSoundManager()
 
     interfacesCleanup();
 }
-
 
 g_id GGSoundManager::SoundCreateFromFile(const char *fileName, bool stream, gaudio_Error *error)
 {
@@ -66,7 +69,7 @@ g_id GGSoundManager::SoundCreateFromFile(const char *fileName, bool stream, gaud
 
         free(data);
 
-        sounds_[sound] = new Sound(sound, sampleInterface_);
+		sounds_[sound] = new Sound(sound, sampleInterface_);
 
         return sound;
     }
@@ -824,6 +827,11 @@ void gaudio_BackgroundChannelRemoveCallback(g_id backgroundChannel, gevent_Callb
 void gaudio_BackgroundChannelRemoveCallbackWithGid(g_id backgroundChannel, g_id gid)
 {
     s_manager->BackgroundChannelRemoveCallbackWithGid(backgroundChannel, gid);
+}
+
+void gaudio_AdvanceStreamBuffers()
+{
+	s_manager->AdvanceStreamBuffers();
 }
 
 
