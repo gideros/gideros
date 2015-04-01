@@ -1,6 +1,6 @@
 #ifndef GLCOMMON_H_INCLUDED
 #define GLCOMMON_H_INCLUDED
-#define GIDEROS_GL1 1
+
 #ifdef __APPLE__
    #include <TargetConditionals.h>
 #endif
@@ -23,6 +23,9 @@
     #include <GLES2/gl2ext.h>
 #endif
 #define OPENGL_ES
+#elif WINSTORE
+#include "dxcompat.hpp"
+#define OPENGL_DESKTOP
 #else
 #include <GL/glew.h>
 #define OPENGL_DESKTOP
@@ -45,5 +48,15 @@
 #endif
 
 #define PREMULTIPLIED_ALPHA 1
+
+// remove any macros which will clash with C++ std::max, std::min
+#ifdef WINSTORE
+#undef min
+#undef max
+
+#ifndef M_PI
+#define M_PI 3.141592654
+#endif
+#endif
 
 #endif
