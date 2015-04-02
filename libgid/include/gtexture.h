@@ -68,6 +68,8 @@ G_API void gtexture_RestoreTempTextures();
 
 //void gtexture_replace(g_id oldId, int format, int width, int height, int type, void *pixels);
 
+G_API unsigned int gtexture_BindRenderTarget(unsigned int fbo);
+
 #ifdef __cplusplus
 }
 #endif

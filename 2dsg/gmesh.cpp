@@ -313,7 +313,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
     }
     
     if (mesh3d_)
-    	glEnable(GL_DEPTH_TEST);
+    	oglEnable(GL_DEPTH_TEST);
 
     oglDrawElements(meshtype_, indices_.size(), GL_UNSIGNED_SHORT, &indices_[0]);
 
@@ -333,7 +333,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 void GMesh::childrenDrawn()
 {
     if (mesh3d_)
-    	glDisable(GL_DEPTH_TEST);
+    	oglDisable(GL_DEPTH_TEST);
 }
 
 void GMesh::extraBounds(float *minx, float *miny, float *maxx, float *maxy) const

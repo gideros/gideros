@@ -63,6 +63,67 @@
 
 #include <algorithm>
 
+GLint oglBindFramebuffer(GLint fbo)
+{
+	GLint oldFBO=0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
+#ifdef OPENGL_DESKTOP
+        if (GLEW_ARB_framebuffer_object)
+#endif
+			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+#ifdef OPENGL_DESKTOP
+		else
+			glBindFramebufferEXT(GL_FRAMEBUFFER, fbo);
+#endif
+        return oldFBO;
+}
+
+GLuint oglCreateTextureFBO(GLuint id)
+{
+    GLint oldFBO = 0;
+    GLuint fbo=0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
+#ifdef OPENGL_DESKTOP
+    if (GLEW_ARB_framebuffer_object)
+    {
+#endif
+
+        glGenFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
+
+#ifdef OPENGL_DESKTOP
+    }
+	else
+	{
+
+    glGenFramebuffersEXT(1, &fbo);
+    glBindFramebufferEXT(GL_FRAMEBUFFER, fbo);
+
+    glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0);
+
+    glBindFramebufferEXT(GL_FRAMEBUFFER, oldFBO);
+	}
+#endif
+    return fbo;
+}
+
+void oglDeleteFramebuffer(GLuint fbo)
+{
+#ifdef OPENGL_DESKTOP
+    if (GLEW_ARB_framebuffer_object)
+#endif
+    	glDeleteFramebuffers(1,&fbo);
+#ifdef OPENGL_DESKTOP
+	else
+		glDeleteFramebuffersEXT(1,&fbo);
+#endif
+}
+
+
 namespace g_private {
 
 struct CommonElement
@@ -249,7 +310,7 @@ public:
 
                 glog_v("Deleting render target. Total memory is %g KB.", (bufferMemory_ + textureMemory_) / 1024.0);
 
-                glDeleteFramebuffers(1, &element->framebuffer);
+                oglDeleteFramebuffer(element->framebuffer);
 
                 glDeleteTextures(1, &element->internalId);
 
@@ -450,15 +511,7 @@ public:
         
         glog_v("Creating render target. Total memory is %g KB.", (bufferMemory_ + textureMemory_) / 1024.0);
 
-        GLint oldFBO = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
-
-        glGenFramebuffers(1, &element->framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, element->framebuffer);
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, element->internalId, 0);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
+        element->framebuffer=oglCreateTextureFBO(element->internalId);
 
         renderTargetElements_[nextid_] = element;
 
@@ -481,14 +534,11 @@ public:
         if (renderTargetElements_.empty())
             return;
 
-        GLint oldFBO = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
-
         std::map<g_id, RenderTargetElement*>::iterator iter, e = renderTargetElements_.end();
         for (iter = renderTargetElements_.begin(); iter != e; ++iter)
         {
             RenderTargetElement *element = iter->second;
-            glBindFramebuffer(GL_FRAMEBUFFER, element->framebuffer);
+            GLint oldFBO=oglBindFramebuffer(element->framebuffer);
             glPixelStorei(GL_PACK_ALIGNMENT, 1);
             element->buffer.resize(element->width * element->height * 4);
             glReadPixels(0, 0, element->width, element->height, GL_RGBA, GL_UNSIGNED_BYTE, &element->buffer[0]);
@@ -498,9 +548,9 @@ public:
             compressed.resize(output_length);
             element->buffer = compressed;
             glPixelStorei(GL_PACK_ALIGNMENT, 4);
+            oglBindFramebuffer(oldFBO);
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
     }
 
     g_id TempTextureCreate(int width, int height)
@@ -810,6 +860,11 @@ unsigned int gtexture_TempTextureGetName(g_id id)
 void gtexture_RestoreTempTextures()
 {
     s_manager->RestoreTempTextures();
+}
+
+unsigned int gtexture_BindRenderTarget(unsigned int fbo)
+{
+	return oglBindFramebuffer(fbo);
 }
 
 }

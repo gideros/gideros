@@ -38,12 +38,10 @@ GRenderTarget::~GRenderTarget()
 
 void GRenderTarget::clear(unsigned int color, float a)
 {
-    GLint oldFBO = 0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
+	unsigned int oldFBO=gtexture_BindRenderTarget(gtexture_RenderTargetGetFBO(data->gid));
 
-    glBindFramebuffer(GL_FRAMEBUFFER, gtexture_RenderTargetGetFBO(data->gid));
 
-    glViewport(0, 0, data->width, data->height);
+    oglViewport(0, 0, data->width, data->height);
 
     float r = ((color >> 16) & 0xff) / 255.f;
     float g = ((color >> 8) & 0xff) / 255.f;
@@ -52,17 +50,15 @@ void GRenderTarget::clear(unsigned int color, float a)
     glClearColor(r * a, g * a, b * a, a);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
+    gtexture_BindRenderTarget(oldFBO);
 }
 
 extern Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
 
 void GRenderTarget::draw(const Sprite *sprite)
 {
-    GLint oldFBO = 0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, gtexture_RenderTargetGetFBO(data->gid));
+    oglReset();
+	unsigned int oldFBO=gtexture_BindRenderTarget(gtexture_RenderTargetGetFBO(data->gid));
 
     if (qualcommFix_)
     {
@@ -71,7 +67,7 @@ void GRenderTarget::draw(const Sprite *sprite)
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gtexture_getInternalId(data->gid), 0);
     }
 
-    glViewport(0, 0, data->width, data->height);
+    oglViewport(0, 0, data->width, data->height);
 
 
     Matrix4 projection;
@@ -82,5 +78,5 @@ void GRenderTarget::draw(const Sprite *sprite)
     CurrentTransform currentTransform;
     ((Sprite*)sprite)->draw(currentTransform, 0, 0, data->width, data->height);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
+    gtexture_BindRenderTarget(oldFBO);
 }

@@ -64,6 +64,14 @@ static void printToServer(const char* str, int len, void* data){
 GLCanvas::GLCanvas(QWidget *parent) : QGLWidget(parent){
     setAttribute(Qt::WA_AcceptTouchEvents);
 
+/*    QGLFormat formatGL;
+    formatGL.setVersion(2, 0); // Version : 2.0
+    formatGL.setDoubleBuffer(true); // Double Buffer : Activé
+    formatGL.setDepthBufferSize(24);
+    formatGL.setStencilBufferSize(8);
+    formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'écran
+    this->setFormat(formatGL);*/
+
     isPlayer_ = true;
 
     /*QFile Props(":/Resources/properties.bin");

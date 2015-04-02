@@ -347,13 +347,6 @@ void Application::renderScene(int deltaFrameCount)
     float ex = (hw - ltx) / lsx;
     float ey = (hh - lty) / lsy;
 
-    glDepthFunc(GL_LEQUAL);
-#ifdef OPENGL_ES
-    glClearDepthf(1);
-#endif
-    glClear(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-    
-
 	CurrentTransform currentTransform;
     stage_->draw(currentTransform, sx, sy, ex, ey);
 
