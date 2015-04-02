@@ -334,7 +334,7 @@ int SpriteBinder::swapChildren(lua_State* L)
 
         sprite->swapChildren(sprite1,sprite2);
 
-        return 1;
+        return 0;
 }
 
 int SpriteBinder::swapChildrenAt(lua_State* L)
