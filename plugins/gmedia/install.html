@@ -1,0 +1,84 @@
+<h1>Installation</h1>
+<h2>Android</h2>
+<p>Copy libs folder into your exported project</p>
+<p>Copy src folder into your exported project</p>
+<p>Add System.loadLibrary("gmedia"); to your main activity</p>
+<p>Add "com.giderosmobile.android.plugins.media.GMedia" as external class in your main activity</p>
+<p>If your app will require Camera support add this to your manifest:</p>
+<p>&lt;uses-feature android:name="android.hardware.camera" android:required="true" /&gt;</p>
+<p>If Camera support is only optional, add this to your manifest:</p>
+<p>&lt;uses-feature android:name="android.hardware.camera" android:required="false" /&gt;</p>
+<p>If you need screenshots then add:</p>
+<p>com.giderosmobile.android.plugins.media.GMedia.onDraw(gl);</p>
+<p>inside public void onDrawFrame(GL10 gl) of class GiderosRenderer</p>
+<h2>IOS</h2>
+<p>Copy contents of Plugins directory into your exported project's Plugins directory</p>
+<p>Add copied files to your Xcode project (Check create groups for added folders)</p>
+<p>If you need screenshots then change:</p>
+<p>[NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO]</p>
+<p>to YES</p>
+<p>inside EAGLView.m method - (id)initWithFrame:(CGRect)rect</p>
+<h2>Windows and Mac</h2>
+<p>Copy contents of Plugins directory into your Gideros installation Plugins directory</p>
+
+<h1>Notes</h1>
+<p>By resizing image you will actually resize the file of the image, so there is no going back to upscale it later</p>
+<p>getPicture method gives you copies of the image, so you won't harm the original</p>
+<p>The dimensions when resizing are all actual dimensions of the image and not logical dimensions in your project</p>
+
+<h1>API Reference</h1>
+<ul>
+<li>require "media" -- initialize plugin</li>
+</ul>
+<h2>MediaManager class</h2>
+<h3>Methods</h3>
+<ul>
+<li>mediamanager:isCameraAvailable() -- returns true is you can get picture from camera</li>
+<li>mediamanager:takePicture() -- allow user to provide picture input from camera</li>
+<li>mediamanager:getPicture() -- allow user to select picture from gallery</li>
+<li>mediamanager:takeScreenshot() -- capture the screenshot of the app</li>
+<li>mediamanager:postPicture(path) -- add picture from given path to gallery (or open save file dialog on pc)</li>
+<li>mediamanager:playVideo(path, force) -- play viedo file in given path (bool force to watch till the end, or quit playing on tap)</li>
+<li>mediamanager:deleteFile(path) -- deletes file at provided path</li>
+</ul>
+
+<h3>Events</h3>
+<ul>
+<li>Event.MEDIA_RECEIVE --user selected image
+<ul>
+<li>e.path -- path to image</li>
+</ul>
+</li>
+<li>Event.MEDIA_CANCEL --user canceled media input</li>
+<li>Event.VIDEO_COMPLETE --user completed watching video</li>
+</ul>
+
+<h2>Media class</h2>
+<ul>
+<li>Media.new(path) -- create new Media object with provided image</li>
+<li>Media.new(width, height) -- create blank Media object with provided dimensions</li>
+<li>Media:getPath() -- returns the path that was used to create object</li>
+<li>Media:getWidth() -- returns the width of the image</li>
+<li>Media:getHeight() -- returns the height of the image</li>
+<li>Media:getPixel(x, y) -- returns r, g, b, a values of pixel at x,y coordinate (RGB are in range of 0 to 255, alpha is in range of 0 to 1)</li>
+<li>Media:setPixel(x, y, r, g, b, a) -- sets r, g, b, a values to pixel at x,y coordinate (RGB are in range of 0 to 255, alpha is in range of 0 to 1)</li>
+<li>Media:setPixel(x, y, hex, a, blendAlpha) -- sets hex, a values to pixel at x,y coordinate (alpha is in range of 0 to 1)</li>
+<li>Media:resizeWidth(newWidth, fixed) -- resize image width, if fixed is true image is resized with fixed aspect ratio</li>
+<li>Media:resizeHeight(newHeight, fixed) -- resize image height, if fixed is true image is resized with fixed aspect ratio</li>
+<li>Media:resize(newWidth, newHeight, fixed, crop) -- resize image to new width and new height, if fixed is true image is resized with fixed aspect ratio and takes crop value into account (by either cropping image if true, or doing letterbox resize if false)
+</li>
+<li>Media:crop(x, y, width, height) -- crop with and height from x and y point from a given image</li>
+<li>Media:copy(destination) -- make a copy of the image</li>
+<li>Media:save() -- save the changes made to file</li>
+<li>Media:setRotation() -- rotate image to provided angle in degrees</li>
+<li>Media:getRotation() -- return previously set rotation</li>
+<li>Media:getRotation() -- return previously set rotation</li>
+<li>Media:flipHorizontal() -- flip image horizontally</li>
+<li>Media:flipVertical() -- flip image vertically</li>
+<li>Media:drawImage(x, y, media, alpha) -- draw another image on current one at specific x and y coordinates. You can provide either another media object or string path to image file</li>
+<li>Media:drawText(x, y, text, hexColor, fontSize, alpha) -- draw a text at provided coorindates with provided settings</li>
+<li>Media:drawLine(x0, y0, x1, y0, hexColor, alpha, blendAlpha) -- draw a line from x0,y0 to x1,y1 with provided settings</li>
+<li>Media:drawFill(x, y, width, height, hexColor, alpha, blendAlpha) -- draw filled rectangle at x,y position with width,height dimensions and with provided settings</li>
+<li>Media:floodFill(x, y, hexColor, alpha, tolerance, blendAlpha) -- fill area with provided color based on tolerance to other colors</li>
+<li>Media:trim(hexColor) -- trim image by provided background color, if color is not provided, uses top left pixel to crop</li>
+</ul>

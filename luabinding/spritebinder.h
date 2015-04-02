@@ -17,6 +17,7 @@ private:
 	static int removeChild(lua_State* L);
 	static int removeChildAt(lua_State* L);
 	static int numChildren(lua_State* L);
+	static int swapChildrenAt(lua_State* L);
 	static int getChildAt(lua_State* L);
 	static int getParent(lua_State* L);
 	static int contains(lua_State* L);

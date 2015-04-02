@@ -1,0 +1,7 @@
+<project>
+ <properties architecture="0" fps="60" packageName="com.yourdomain.yourapp" assetsOnly="0" logicalHeight="480" mouseToTouch="1" scaleMode="0" orientation="0" touchToMouse="1" retinaDisplay="0" logicalWidth="320" iosDevice="0" autorotation="0" mouseTouchOrder="0" encryptAssets="0" encryptCode="0">
+  <imageScales/>
+ </properties>
+ <file source="ndshape.lua"/>
+ <file source="main.lua"/>
+</project>

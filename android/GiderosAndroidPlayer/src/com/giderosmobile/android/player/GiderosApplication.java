@@ -557,12 +557,14 @@ public class GiderosApplication
 			GiderosApplication.nativeDrawFrame();
 		}
 	}
-	
-	double touchStart = 0;
 
 	public void onTouchesBegin(int size, int[] id, int[] x, int[] y, int actionIndex)
 	{
-		touchStart = System.currentTimeMillis()/1000;
+		if(!isRunning()){
+			if(projectList != null && projectList.getVisibility() == View.GONE){
+				projectList.setVisibility(View.VISIBLE);
+			}
+		}
 		GiderosApplication.nativeTouchesBegin(size, id, x, y, actionIndex);
 	}
 
@@ -575,12 +577,6 @@ public class GiderosApplication
 	public void onTouchesEnd(int size, int[] id, int[] x,
 			int[] y, int actionIndex)
 	{
-		double touchEnd = System.currentTimeMillis()/1000;
-		if(touchEnd - touchStart >= 4){
-			if(projectList != null && projectList.getVisibility() == View.GONE){
-				projectList.setVisibility(View.VISIBLE);
-			}
-		}
 		GiderosApplication.nativeTouchesEnd(size, id, x, y, actionIndex);
 	}
 
@@ -596,7 +592,11 @@ public class GiderosApplication
 			projectList.setVisibility(View.GONE);
 			return true;
 		}
-		return nativeKeyDown(keyCode, event.getRepeatCount());
+		boolean handled = nativeKeyDown(keyCode, event.getRepeatCount());
+		if(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE || keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_POWER){
+			return false;
+		}
+		return handled;
 	}
 	
 	public boolean onKeyUp(int keyCode, KeyEvent event)
@@ -1001,6 +1001,7 @@ public class GiderosApplication
 
 	static private native void nativeOpenProject(String project);
 	static private native void nativeLowMemory();
+	static private native boolean isRunning();
 	static private native boolean nativeKeyDown(int keyCode, int repeatCount);
 	static private native boolean nativeKeyUp(int keyCode, int repeatCount);
 	static private native void nativeCreate(boolean player);

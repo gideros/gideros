@@ -173,10 +173,12 @@
 	[self deleteFramebuffer];
 }
 
-int touchStart;
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    touchStart = [[NSDate date] timeIntervalSince1970];
+    if(!gdr_isRunning()){
+        ViewController* view = (ViewController*)[self.superview nextResponder];
+        [view showTable];
+    }
     gdr_touchesBegan(touches, [event allTouches]);
 }
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -185,10 +187,6 @@ int touchStart;
 }
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if([[NSDate date] timeIntervalSince1970] - touchStart >= 4){
-        ViewController* view = (ViewController*)[self.superview nextResponder];
-        [view showTable];
-    }
     gdr_touchesEnded(touches, [event allTouches]);
 }
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event

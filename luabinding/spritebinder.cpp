@@ -16,6 +16,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"removeChild", SpriteBinder::removeChild},
 		{"removeChildAt", SpriteBinder::removeChildAt},
 		{"getNumChildren", SpriteBinder::numChildren},
+		{"swapChildrenAt", SpriteBinder::swapChildrenAt},
 		{"getChildAt", SpriteBinder::getChildAt},
 		{"getParent", SpriteBinder::getParent},
 		{"contains", SpriteBinder::contains},
@@ -320,6 +321,23 @@ int SpriteBinder::numChildren(lua_State* L)
 	lua_pushinteger(L, sprite->childCount());
 	
 	return 1;
+}
+
+int SpriteBinder::swapChildrenAt(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::swapChildrenAt",0);
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+	int index1 = luaL_checknumber(L, 2);
+	if (index1 < 1 || index1 > sprite->childCount())
+		return luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index1 is out of bounds.
+        int index2 = luaL_checknumber(L, 3);
+	if (index2 < 1 || index2 > sprite->childCount())
+		return luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index2 is out of bounds.
+
+	sprite->swapChildrenAt(index1-1,index2-1);
+
+	return 0;
 }
 
 int SpriteBinder::getChildAt(lua_State* L)

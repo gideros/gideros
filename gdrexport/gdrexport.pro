@@ -17,10 +17,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
-INCLUDEPATH += ../ui ../libnetwork
+INCLUDEPATH += ../ui ../libnetwork ../2dsg
 
 HEADERS += \
     ../ui/projectproperties.h \
+    ../2dsg/orientation.h \
     ../ui/dependencygraph.h
 
 SOURCES += \
