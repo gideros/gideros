@@ -1,0 +1,1641 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\asyncloader.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\bitmap.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\bitmapdata.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\blendfunc.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\color.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\colortransform.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\completeevent.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\dib.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\enterframeevent.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\errorevent.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\font.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\fontbase.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ftlibrarysingleton.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gbitmapbatch.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\glcompat.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gmesh.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\graphicsbase.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\grendertarget.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gstatus.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\keyboardevent.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\matrix.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\MaxRectsBinPack.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\mouseevent.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\movieclip2.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ogl.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\progressevent.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\shape.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\splashscreen.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\sprite.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\stage.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\stageorientationevent.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\stopwatch.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\textfield.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\textfieldbase.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\texture.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\texturebase.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\texturemanager.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\texturepack.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\texturepacker.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\tilemap.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\timer.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\timercontainer.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\timerevent.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\touch.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\touchevent.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\transform.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ttbmfont.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ttfont.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\tttextfield.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\urlrequest.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\dxcompat.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libpystring\pystring.cpp">
+      <Filter>libpystring</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\binderutil.cpp">
+      <Filter>libgideros</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\event.cpp">
+      <Filter>libgideros</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\eventdispatcher.cpp">
+      <Filter>libgideros</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\eventvisitor.cpp">
+      <Filter>libgideros</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\luautil.cpp">
+      <Filter>libgideros</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\pluginmanager.cpp">
+      <Filter>libgideros</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\refptr.cpp">
+      <Filter>libgideros</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\stringid.cpp">
+      <Filter>libgideros</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-loader-mp3.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-loader-wav.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gevent.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gglobal.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gimage.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gimage-jpg.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gimage-png.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\glog.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gtexture.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gvfs-native.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\ginput-winrt.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\tlsf.c">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\accelerometerbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\alertdialogbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\applicationbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\audiobinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\binder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapdatabinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\box2dbinder2.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\dibbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\eventbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\eventdispatcherbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\fontbasebinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\fontbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\geolocationbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\gyroscopebinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\keys.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\luaapplication.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\matrixbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\meshbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\movieclipbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\registermodules.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\rendertargetbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\shapebinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\spritebinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\stackchecker.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\stagebinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\textfieldbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\textinputdialogbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\texturebasebinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\texturebinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\texturepackbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\tilemapbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\timerbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\ttfontbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\urlloaderbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2BroadPhase.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2CollideCircle.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2CollideEdge.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2CollidePolygon.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2Collision.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2Distance.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2DynamicTree.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2TimeOfImpact.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\b2ChainShape.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\b2CircleShape.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\b2EdgeShape.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\b2PolygonShape.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2BlockAllocator.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2Draw.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2FreeList.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2Math.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2Settings.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2StackAllocator.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2Stat.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2Timer.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2TrackedBlock.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2Body.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2ContactManager.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2Fixture.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2Island.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2World.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2WorldCallbacks.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2CircleContact.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2Contact.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ContactSolver.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2PolygonContact.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2DistanceJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2FrictionJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2GearJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2Joint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2MotorJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2MouseJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2PrismaticJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2PulleyJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\b2Particle.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\b2ParticleGroup.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\b2ParticleSystem.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\b2VoronoiDiagram.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Rope\b2Rope.cpp">
+      <Filter>Box2d</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\bytebuffer.cpp">
+      <Filter>libnetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTDecompress.cpp">
+      <Filter>libpvrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTResourceFile.cpp">
+      <Filter>libpvrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTString.cpp">
+      <Filter>libpvrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTTexture.cpp">
+      <Filter>libpvrt</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\dict.c">
+      <Filter>libtess</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\geom.c">
+      <Filter>libtess</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\memalloc.c">
+      <Filter>libtess</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\mesh.c">
+      <Filter>libtess</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\normal.c">
+      <Filter>libtess</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\priorityq.c">
+      <Filter>libtess</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\render.c">
+      <Filter>libtess</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\sweep.c">
+      <Filter>libtess</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\tess.c">
+      <Filter>libtess</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\tessmono.c">
+      <Filter>libtess</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\md5.c">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\utf8.c">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\deviceinfo-winrt.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\drawinfo.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\exit-generic.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\fps-generic.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\gtimer.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\keepawake-empty.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\locale-winrt.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\openurl-winrt.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platform.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\vibrate-empty.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\ggeolocation-winrt.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\gaudio-winrt.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\gui-winrt.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\ghttp-winrt.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\gapplication-winrt.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jaricom.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcapimin.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcapistd.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcarith.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jccoefct.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jccolor.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcdctmgr.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jchuff.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcinit.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcmainct.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcmarker.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcmaster.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcomapi.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcparam.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcprepct.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jcsample.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jctrans.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdapimin.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdapistd.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdarith.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdatadst.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdatasrc.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdcoefct.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdcolor.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jddctmgr.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdhuff.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdinput.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdmainct.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdmarker.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdmaster.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdmerge.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdpostct.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdsample.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jdtrans.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jerror.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jfdctflt.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jfdctfst.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jfdctint.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jidctflt.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jidctfst.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jidctint.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jmemmgr.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jquant1.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jquant2.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jutils.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\png.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngerror.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngget.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngmem.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngpread.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngread.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngrio.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngrtran.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngrutil.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngset.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngtrans.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngwio.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngwrite.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngwtran.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libpng-1.6.2\pngwutil.c">
+      <Filter>png</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\dct64.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\dither.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\equalizer.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\feature.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\format.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\frame.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\icy.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\icy2utf8.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\id3.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\index.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\layer1.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\layer2.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\layer3.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\libmpg123.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\ntom.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\parse.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\readers.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\stringbuf.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\synth.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\synth_8bit.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\synth_real.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\synth_s32.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\tabinit.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\jpeg-9\jmemnobs.c">
+      <Filter>jpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\adler32.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\compress.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\crc32.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\deflate.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\gzclose.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\gzlib.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\gzread.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\gzwrite.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\infback.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\inffast.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\inflate.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\inftrees.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\trees.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\uncompr.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\zutil.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbase.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbbox.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbitmap.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftglyph.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftlcdfil.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftstroke.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftxf86.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftsystem.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftgasp.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftinit.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\raster\raster.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\sfnt\sfnt.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\smooth\smooth.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\autofit\autofit.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\truetype\truetype.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\cff\cff.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\psnames\psnames.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\pshinter\pshinter.c">
+      <Filter>freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\minizip-1.1\ioapi.c">
+      <Filter>minizip</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\minizip-1.1\iowin32.c">
+      <Filter>minizip</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\minizip-1.1\mztools.c">
+      <Filter>minizip</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\minizip-1.1\unzip.c">
+      <Filter>minizip</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\minizip-1.1\zip.c">
+      <Filter>minizip</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\snappy-1.1.0\snappy.cpp">
+      <Filter>snappy</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\snappy-1.1.0\snappy-c.cpp">
+      <Filter>snappy</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\snappy-1.1.0\snappy-sinksource.cpp">
+      <Filter>snappy</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\snappy-1.1.0\snappy-stubs-internal.cpp">
+      <Filter>snappy</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\compat.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\optimize.c">
+      <Filter>mpg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platformutil.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-sample-xaudio2.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-stream-xaudio2.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\Matrices.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\asyncloader.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\bitmap.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\bitmapdata.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\blendfunc.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\color.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\colortransform.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\completeevent.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\dib.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\enterframeevent.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\errorevent.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\font.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\fontbase.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ftlibrarysingleton.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gbitmapbatch.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\giderosexception.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\glcommon.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\glcompat.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gmesh.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\graphicsbase.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\grendertarget.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gstatus.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\keyboardevent.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\keycode.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\matrix.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\MaxRectsBinPack.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\mouseevent.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\movieclip2.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ogl.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\orientation.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\point.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\progressevent.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\Rect.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\shape.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\splashscreen.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\sprite.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\stage.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\stageorientationevent.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\stopwatch.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\textfield.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\textfieldbase.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\texture.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\texturebase.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\texturemanager.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\texturepack.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\texturepacker.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ticker.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\tilemap.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\timer.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\timercontainer.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\timerevent.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\touch.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\touchevent.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\transform.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ttbmfont.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ttfont.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\tttextfield.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\urlrequest.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\dxcompat.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\dxglobals.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libpystring\pystring.h">
+      <Filter>libpystring</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libpystring\pystring_export.h">
+      <Filter>libpystring</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\event.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\eventdispatcher.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\eventtype.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\eventvisitor.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\gexport.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\gideros.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\gideros_p.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\gplugin.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\gproxy.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\greferenced.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\luautil.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\pluginmanager.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\refptr.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\stringid.h">
+      <Filter>libgideros</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\ggaudiomanager.h">
+      <Filter>libgid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\accelerometerbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\alertdialogbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\applicationbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\audiobinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\binder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapdatabinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\box2dbinder2.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\dibbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\eventbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\eventdispatcherbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\fontbasebinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\fontbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\geolocationbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\gyroscopebinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\keys.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\luaapplication.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\matrixbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\meshbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\movieclipbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\rendertargetbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\shapebinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\spritebinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\stackchecker.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\stagebinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\target.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\textfieldbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\textinputdialogbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\texturebasebinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\texturebinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\texturepackbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\tilemapbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\timerbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\tlsf.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\tlsfbits.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\ttfontbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\urlloaderbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2BroadPhase.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2Collision.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2Distance.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2DynamicTree.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\b2TimeOfImpact.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\b2ChainShape.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\b2CircleShape.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\b2EdgeShape.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\b2PolygonShape.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\b2Shape.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2BlockAllocator.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2Draw.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2FreeList.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2GrowableStack.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2IntrusiveList.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2Math.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2Settings.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2SlabAllocator.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2StackAllocator.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2Stat.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2Timer.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\b2TrackedBlock.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2Body.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2ContactManager.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2Fixture.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2Island.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2TimeStep.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2World.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\b2WorldCallbacks.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2CircleContact.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2Contact.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ContactSolver.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2PolygonContact.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2DistanceJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2FrictionJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2GearJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2Joint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2MotorJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2MouseJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2PrismaticJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2PulleyJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\b2Particle.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\b2ParticleGroup.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\b2ParticleSystem.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\b2StackQueue.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\b2VoronoiDiagram.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Rope\b2Rope.h">
+      <Filter>Box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\bytebuffer.h">
+      <Filter>libnetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\libnetwork.h">
+      <Filter>libnetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTDecompress.h">
+      <Filter>libpvrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTGlobal.h">
+      <Filter>libpvrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTMemoryFileSystem.h">
+      <Filter>libpvrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTResourceFile.h">
+      <Filter>libpvrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTString.h">
+      <Filter>libpvrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTTexture.h">
+      <Filter>libpvrt</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\dict.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\dict-list.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\geom.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\memalloc.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\mesh.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\normal.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\priorityq.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\priorityq-heap.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\priorityq-sort.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\render.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\sweep.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\tess.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\tessmono.h">
+      <Filter>libtess</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\gtimer.h">
+      <Filter>libplatform</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\javanativebridge.h">
+      <Filter>libplatform</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\md5.h">
+      <Filter>libplatform</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platform.h">
+      <Filter>libplatform</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platformutil.h">
+      <Filter>libplatform</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\utf8.h">
+      <Filter>libplatform</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\wchar32.h">
+      <Filter>libplatform</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\embeddedfont.inc">
+      <Filter>2dsg</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\logo.inc">
+      <Filter>2dsg</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\SConstruct">
+      <Filter>2dsg</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\priorityq-heap.c.inc">
+      <Filter>libtess</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="2dsg">
+      <UniqueIdentifier>{5ecc3983-272f-49dd-9520-83a3eb525d97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libgideros">
+      <UniqueIdentifier>{c5215d9c-96bb-499a-ba16-daa9c7fa826d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libgid">
+      <UniqueIdentifier>{b4f91601-84b4-4f2e-b6b4-5679d0648731}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libpystring">
+      <UniqueIdentifier>{a3d57e4b-a1d7-4b8c-b1cb-241ca43831fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="luabinding">
+      <UniqueIdentifier>{4c6e63a1-fe68-4673-a301-b88f5de9cee2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Box2d">
+      <UniqueIdentifier>{c73c8fb1-743e-47aa-82de-63d2aafd26de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libnetwork">
+      <UniqueIdentifier>{4071b96b-b168-41df-a830-240e2afec4ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libpvrt">
+      <UniqueIdentifier>{7b566ae6-83f0-4bd5-b717-c356bac3496e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libtess">
+      <UniqueIdentifier>{1089be6a-83e8-472f-84de-c396d73a1413}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libplatform">
+      <UniqueIdentifier>{98cf81c2-b5a7-4057-bfe5-937c5a490d7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jpeg">
+      <UniqueIdentifier>{89687e64-7992-4b0c-8c20-8a1f1974705f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="png">
+      <UniqueIdentifier>{7ffb49fb-93e4-421e-b068-c12a2172e0a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mpg">
+      <UniqueIdentifier>{ecf468b6-f602-460e-b2a0-c42dafa2369e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zlib">
+      <UniqueIdentifier>{a49154fa-d99b-40b6-9282-8ad0965db02e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="freetype">
+      <UniqueIdentifier>{d13ef968-e842-473e-a4da-e141ee7091e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="minizip">
+      <UniqueIdentifier>{497dad76-40a0-4785-89a4-f0631b334d70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="snappy">
+      <UniqueIdentifier>{eeeb41ae-26bb-49f0-825d-70d39c0707c4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

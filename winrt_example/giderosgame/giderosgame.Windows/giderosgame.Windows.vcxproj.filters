@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>69d0dc6b-44c5-4d2e-a0ed-4ff49ce10786</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>4c66aa92-b2c2-4b70-9365-c9bac236cfcc</UniqueIdentifier>
+      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
+    </Filter>
+    <Filter Include="Content">
+      <UniqueIdentifier>915fca05-76ad-4f6f-952b-e8f562507971</UniqueIdentifier>
+    </Filter>
+    <Image Include="Assets\Logo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SmallLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="giderosgame.Windows_TemporaryKey.pfx" />
+    <None Include="Assets\main.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\PixelShader.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\VertexShader.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\bird.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\properties.bin">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\billo.fnt">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\button.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\soundbutton.lua">
+      <Filter>Assets</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\ego.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_black_01.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_black_02.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_black_03.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_white_01.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_white_02.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_white_03.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\sky_world.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\ball.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\billo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\button_down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\button_up.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\1-down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\1-up.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\2-down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\2-up.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\3-down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\3-up.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\luafiles.txt">
+      <Filter>Assets</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Assets\arial.ttf">
+      <Filter>Assets</Filter>
+    </Font>
+    <Font Include="Assets\billo.ttf">
+      <Filter>Assets</Filter>
+    </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Assets\1.wav">
+      <Filter>Assets</Filter>
+    </Media>
+    <Media Include="Assets\2.wav">
+      <Filter>Assets</Filter>
+    </Media>
+    <Media Include="Assets\3.wav">
+      <Filter>Assets</Filter>
+    </Media>
+    <Media Include="Assets\diving_turtle.mp3">
+      <Filter>Assets</Filter>
+    </Media>
+  </ItemGroup>
+</Project>

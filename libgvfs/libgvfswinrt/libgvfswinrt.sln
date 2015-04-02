@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libgvfswinrt", "libgvfswinrt", "{59762D79-D485-48B2-9201-48EA580B4BFD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgvfswinrt.Shared", "libgvfswinrt\libgvfswinrt.Shared\libgvfswinrt.Shared.vcxitems", "{8C3B6EEF-51E1-4593-AF79-3EF50E1B1BCC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgvfswinrt.Windows", "libgvfswinrt\libgvfswinrt.Windows\libgvfswinrt.Windows.vcxproj", "{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgvfswinrt.WindowsPhone", "libgvfswinrt\libgvfswinrt.WindowsPhone\libgvfswinrt.WindowsPhone.vcxproj", "{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		libgvfswinrt\libgvfswinrt.Shared\libgvfswinrt.Shared.vcxitems*{91c7aaa1-a5ff-4916-93c0-b2e8606b4502}*SharedItemsImports = 4
+		libgvfswinrt\libgvfswinrt.Shared\libgvfswinrt.Shared.vcxitems*{8c3b6eef-51e1-4593-af79-3ef50e1b1bcc}*SharedItemsImports = 9
+		libgvfswinrt\libgvfswinrt.Shared\libgvfswinrt.Shared.vcxitems*{edfc73b9-ada1-4555-bee5-b82eaf8a1df7}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|ARM = Release|ARM
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Debug|ARM.ActiveCfg = Debug|ARM
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Debug|ARM.Build.0 = Debug|ARM
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Debug|Win32.Build.0 = Debug|Win32
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Debug|x64.ActiveCfg = Debug|x64
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Debug|x64.Build.0 = Debug|x64
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Release|ARM.ActiveCfg = Release|ARM
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Release|ARM.Build.0 = Release|ARM
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Release|Win32.ActiveCfg = Release|Win32
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Release|Win32.Build.0 = Release|Win32
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Release|x64.ActiveCfg = Release|x64
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7}.Release|x64.Build.0 = Release|x64
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}.Debug|ARM.ActiveCfg = Debug|ARM
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}.Debug|ARM.Build.0 = Debug|ARM
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}.Debug|Win32.ActiveCfg = Debug|Win32
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}.Debug|Win32.Build.0 = Debug|Win32
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}.Debug|x64.ActiveCfg = Debug|Win32
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}.Release|ARM.ActiveCfg = Release|ARM
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}.Release|ARM.Build.0 = Release|ARM
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}.Release|Win32.ActiveCfg = Release|Win32
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}.Release|Win32.Build.0 = Release|Win32
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502}.Release|x64.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8C3B6EEF-51E1-4593-AF79-3EF50E1B1BCC} = {59762D79-D485-48B2-9201-48EA580B4BFD}
+		{EDFC73B9-ADA1-4555-BEE5-B82EAF8A1DF7} = {59762D79-D485-48B2-9201-48EA580B4BFD}
+		{91C7AAA1-A5FF-4916-93C0-B2E8606B4502} = {59762D79-D485-48B2-9201-48EA580B4BFD}
+	EndGlobalSection
+EndGlobal
