@@ -5,7 +5,11 @@
 #ifdef GIDEROS_LIBRARY
 #define GIDEROS_API __declspec(dllexport)
 #else
+#ifdef WINSTORE
+#define GIDEROS_API
+#else
 #define GIDEROS_API __declspec(dllimport)
+#endif
 #endif
 #else
 #define GIDEROS_API
