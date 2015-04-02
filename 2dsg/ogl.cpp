@@ -19,6 +19,7 @@ static bool s_COLOR_ARRAY_enabled = false;
 
 static int s_clientStateCount = 0;
 static int s_depthEnable=0;
+static bool s_depthBufferCleared=false;
 
 static bool oglInitialized=false;
 
@@ -69,32 +70,45 @@ void main() {\
 #else
 /* Vertex shader*/
 const char *xformVShaderCode=
+#ifdef OPENGL_ES
+    "#version 100\n"
+    "#define GLES2\n"
+#else
+    "#version 120\n"
+#endif
 "attribute vec2 vTexCoord;\n"
-"attribute vec4 vVertex;\n"
 "attribute vec4 vColor;\n"
+"attribute vec3 vVertex;\n"
 "uniform mat4 vMatrix;\n"
 "varying vec2 fTexCoord;\n"
 "varying vec4 fInColor; "
 "\n"
 "void main() {\n"
-"  gl_Position = vMatrix*vVertex;\n"
+"  vec4 vertex = vec4(vVertex,1.0f);\n"
+"  gl_Position = vMatrix*vertex;\n"
 "  fTexCoord=vTexCoord;\n"
 "  fInColor=vColor;\n"
 "}\n";
 
 /* Fragment shader*/
-const char *colorFShaderCode="\
-uniform float fColorSel;\
-uniform float fTextureSel;\
-uniform vec4 fColor;\
-uniform sampler2D fTexture;\
-varying vec2 fTexCoord;\
-varying vec4 fInColor;\
-void main() {\
- vec4 col=mix(fColor,fInColor,fColorSel);\
- vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
- gl_FragColor = tex * col;\
-}";
+const char *colorFShaderCode=
+#ifdef OPENGL_ES
+    "#version 100\n"
+    "#define GLES2\n"
+#else
+    "#version 120\n"
+#endif
+"uniform float fColorSel;"
+"uniform float fTextureSel;\n"
+"uniform vec4 fColor;\n"
+"uniform sampler2D fTexture;\n"
+"varying vec2 fTexCoord;\n"
+"varying vec4 fInColor;\n"
+"void main() {\n"
+" vec4 col=mix(fColor,fInColor,fColorSel);\n"
+" vec4 tex=mix(vec4(1.0f,1.0f,1.0f,1.0f),texture2D(fTexture, fTexCoord),fTextureSel);\n"
+" gl_FragColor = tex * col;\n"
+"}\n";
 #endif
 
 GLuint oglLoadShader(GLuint type,const char *code)
@@ -125,11 +139,16 @@ GLuint oglLoadShader(GLuint type,const char *code)
 
 void oglSetupShaders()
 {
+	glog_i("GL_VERSION:%s\n",glGetString(GL_VERSION));
+	glog_i("GLSL_VERSION:%s\n",glGetString(GL_SHADING_LANGUAGE_VERSION));
 	xformVShader=oglLoadShader(GL_VERTEX_SHADER,xformVShaderCode);
 	colorFShader=oglLoadShader(GL_FRAGMENT_SHADER,colorFShaderCode);
     shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, xformVShader);
     glAttachShader(shaderProgram, colorFShader);
+
+    glBindAttribLocation(shaderProgram, 0, "vVertex"); //Ensure vertex is at 0
+
     glLinkProgram(shaderProgram);
 
     glUseProgram(shaderProgram);
@@ -143,8 +162,8 @@ void oglSetupShaders()
     colorFS=glGetUniformLocation(shaderProgram, "fColor");
     textureFS=glGetUniformLocation(shaderProgram, "fTexture");
 
-    //glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
-    //glog_i("FIndices: %d,%d,%d,%d\n", colorSelFS,textureSelFS,colorFS,textureFS);
+    glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
+    glog_i("FIndices: %d,%d,%d,%d\n", colorSelFS,textureSelFS,colorFS,textureFS);
 
     glUniform1i(textureFS, 0);
 
@@ -180,6 +199,7 @@ void oglInitialize(unsigned int sw,unsigned int sh)
  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 #endif
+
  oglInitialized=true;
 }
 
@@ -257,7 +277,17 @@ void oglEnable(GLenum cap)
 		break;
 	case GL_DEPTH_TEST:
 		if (!(s_depthEnable++))
+		{
+			if (!s_depthBufferCleared)
+			{
+#ifdef OPENGL_ES
+				glClearDepthf(1);
+#endif
+    			glClear(GL_DEPTH_BUFFER_BIT);
+    			s_depthBufferCleared=true;
+			}
 			glEnable(cap);
+		}
 		break;
 	default:
 		glEnable(cap);
@@ -547,11 +577,14 @@ int getClientStateCount()
 	return s_clientStateCount;
 }
 
+
+
 void oglReset()
 {
 	s_texture = 0;
 	s_Texture2DEnabled = false;
 	s_depthEnable=0;
+	s_depthBufferCleared=false;
 
 #ifdef GIDEROS_GL1
 	glDisable(GL_TEXTURE_2D);
@@ -577,6 +610,11 @@ void oglReset()
     glUniform1f(colorSelFS, 0);
     glUniform1f(textureSelFS, 0);
 #endif
+    oglProjection.identity();
+    oglVPProjection.identity();
+    oglModel.identity();
+    oglCombined.identity();
+
 	resetBindTextureCount();
 	resetClientStateCount();
 	resetTexture2DStateCount();
@@ -585,6 +623,8 @@ void oglReset()
     //glClear(GL_COLOR_BUFFER_BIT);
 
     glEnable(GL_BLEND);
+	glDisable(GL_SCISSOR_TEST);
+    glDepthFunc(GL_LEQUAL);
 
 #ifndef PREMULTIPLIED_ALPHA
 #error PREMULTIPLIED_ALPHA is not defined
@@ -596,7 +636,6 @@ void oglReset()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 }
-
 
 struct Scissor
 {
