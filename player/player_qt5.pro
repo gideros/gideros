@@ -138,7 +138,6 @@ LIBS += -lpthread
 # also ftmodule.h should be configured like http://source-android.frandroid.com/external/freetype/include/freetype/config/ftmodule.h
 DEFINES += FT2_BUILD_LIBRARY
 DEFINES += DARWIN_NO_CARBON
-DEFINES += GIDEROS_GL1
 
 INCLUDEPATH += ../libgid/external/freetype-2.4.12/include
 INCLUDEPATH += ../libgid/external/freetype-2.4.12/src
