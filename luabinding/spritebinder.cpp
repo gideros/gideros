@@ -16,6 +16,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"removeChild", SpriteBinder::removeChild},
 		{"removeChildAt", SpriteBinder::removeChildAt},
 		{"getNumChildren", SpriteBinder::numChildren},
+                {"swapChildren", SpriteBinder::swapChildren},
 		{"swapChildrenAt", SpriteBinder::swapChildrenAt},
 		{"getChildAt", SpriteBinder::getChildAt},
 		{"getParent", SpriteBinder::getParent},
@@ -321,6 +322,19 @@ int SpriteBinder::numChildren(lua_State* L)
 	lua_pushinteger(L, sprite->childCount());
 	
 	return 1;
+}
+
+int SpriteBinder::swapChildren(lua_State* L)
+{
+        StackChecker checker(L, "SpriteBinder::swapChildren",0);
+        Binder binder(L);
+        Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+        Sprite* sprite1 = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+        Sprite* sprite2 = static_cast<Sprite*>(binder.getInstance("Sprite", 3));
+
+        sprite->swapChildren(sprite1,sprite2);
+
+        return 1;
 }
 
 int SpriteBinder::swapChildrenAt(lua_State* L)
