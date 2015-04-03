@@ -97,6 +97,9 @@ cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/*.a           $BUILD_DIR/win/
 mkdir $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp Sdk/include/*.h $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 
+cp plugins/gamekit/source/iOS/gamekit.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/storekit/source/iOS/storekit.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/iad/source/iOS/iad.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/lsqlite3/source/lsqlite3.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/lsqlite3/source/lsqlite3_stub.cpp  $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/LuaSocket/source/luasocket_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
