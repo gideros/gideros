@@ -4,10 +4,10 @@
 #include <gaudio.h>
 #include <gpath.h>
 #include <sys/stat.h>
-#include <stackchecker.h>
+#include "stackchecker.h"
 #include <gstdio.h>
 #include <completeevent.h>
-#include <luaapplication.h>
+#include "luaapplication.h"
 
 static char keyStrong = ' ';
 static char keySound = ' ';

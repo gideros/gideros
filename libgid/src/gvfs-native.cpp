@@ -1,7 +1,19 @@
 #include <stdio.h>
 #include <gstdio.h>
 
+#ifdef WINSTORE
+#include <io.h>
+/* Specifiy one of these flags to define the access mode. */
+#define	_O_RDONLY	0
+#define _O_WRONLY	1
+#define _O_RDWR		2
+
+/* Mask for access mode bits in the _open flags. */
+#define _O_ACCMODE	(_O_RDONLY|_O_WRONLY|_O_RDWR)
+#define O_ACCMODE	_O_ACCMODE
+#else
 #include <unistd.h>
+#endif
 
 #include <fcntl.h>
 #include <errno.h>

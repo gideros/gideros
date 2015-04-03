@@ -1,6 +1,7 @@
 #include "graphicsbase.h"
 #include "ogl.h"
 #include "color.h"
+#include <algorithm>
 
 void GraphicsBase::clear()
 {

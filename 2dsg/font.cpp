@@ -11,6 +11,7 @@
 #include "giderosexception.h"
 #include <string.h>
 #include <utf8.h>
+#include <algorithm>
 
 #include "embeddedfont.inc"
 

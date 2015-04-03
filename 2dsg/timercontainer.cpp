@@ -5,6 +5,7 @@
 #include <glog.h>
 #include "timerevent.h"
 #include <application.h>
+#include <functional>
 
 TimerContainer::TimerContainer(Application *application) : application_(application)
 {

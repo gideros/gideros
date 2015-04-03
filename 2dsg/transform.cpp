@@ -1,6 +1,10 @@
 #include "transform.h"
 #include <glog.h>
 
+#ifndef M_PI
+#define M_PI 3.141592654
+#endif
+
 static void multiply(const float m0[2][2], const float m1[2][2], float result[2][2])
 {
  float r[2][2];

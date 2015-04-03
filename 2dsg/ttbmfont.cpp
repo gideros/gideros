@@ -13,6 +13,7 @@
 #include <dib.h>
 #include <graphicsbase.h>
 #include <utf8.h>
+#include <algorithm>
 
 static unsigned long read(	FT_Stream stream,
                             unsigned long offset,

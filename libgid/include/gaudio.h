@@ -96,6 +96,8 @@ G_API void gaudio_BackgroundChannelRemoveCallbackWithGid(g_id backgroundChannel,
 G_API g_id gaudio_BackgroundChannelAddSyncPoint(g_id backgroundChannel, unsigned int position, void *udata);
 G_API void gaudio_BackgroundChannelDeleteSyncPoint(g_id backgroundChannel, g_id syncPoint);
 
+G_API void gaudio_AdvanceStreamBuffers();
+
 #ifdef __cplusplus
 }
 #endif

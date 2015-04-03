@@ -26,7 +26,11 @@ off_t fileSize(const char* file)
 	return s.st_size;
 }
 
-#ifdef _WIN32
+#if defined(WINSTORE)
+void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::vector<std::string>* directories)
+{
+}
+#elif defined(_WIN32)
 #include <Windows.h>
 void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::vector<std::string>* directories)
 {
@@ -128,7 +132,15 @@ void getDirectoryListingR(const char* dir, std::vector<std::string>* filesout, s
 }
 
 
-#ifdef _WIN32
+#if defined(WINSTORE)
+std::vector<std::string> getLocalIPs()
+{
+	std::vector<std::string> result;
+	result.clear();
+	result.push_back("WINSTORE placeholder getLocalIPs");
+	return result;
+}
+#elif defined(_WIN32)
 #include <winsock2.h>
 #include <iphlpapi.h>
 #pragma comment(lib, "IPHLPAPI.lib")
@@ -382,7 +394,7 @@ std::vector<std::string> getLocalIPs()
 #endif
 
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(WINSTORE)
 double iclock()
 {
 	static LARGE_INTEGER freq;
