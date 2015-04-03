@@ -107,6 +107,12 @@
 				path="Graphics3D/3D-Horse/3D-Horse.gproj"
 				image="3dhorse.png"
 				/>
+	
+	<example 	name="3D Maps"
+				description="Drawing and rotating 3D map by fetching Google Maps images"
+				path="Graphics3D/3D-Env/3D-Env.gproj"
+				image="3denv.png"
+				/>
 </category>
 
 <category name="Audio">
