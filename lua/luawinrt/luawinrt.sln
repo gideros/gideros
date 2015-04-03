@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "luawinrt", "luawinrt", "{AE8CDC17-3CD3-4003-BCD3-5A244AA6D2E3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luawinrt.Shared", "luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems", "{212298A0-62C1-48CB-85C0-00D2AFD482CD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luawinrt.Windows", "luawinrt\luawinrt.Windows\luawinrt.Windows.vcxproj", "{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luawinrt.WindowsPhone", "luawinrt\luawinrt.WindowsPhone\luawinrt.WindowsPhone.vcxproj", "{0466C708-60CA-45FA-9A51-569041204D31}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{f3a7dfcc-506a-4800-9df7-beb0541b21f2}*SharedItemsImports = 4
+		luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{0466c708-60ca-45fa-9a51-569041204d31}*SharedItemsImports = 4
+		luawinrt\luawinrt.Shared\luawinrt.Shared.vcxitems*{212298a0-62c1-48cb-85c0-00d2afd482cd}*SharedItemsImports = 9
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|ARM = Release|ARM
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Debug|ARM.ActiveCfg = Debug|ARM
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Debug|ARM.Build.0 = Debug|ARM
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Debug|Win32.Build.0 = Debug|Win32
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Debug|x64.ActiveCfg = Debug|x64
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Debug|x64.Build.0 = Debug|x64
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Release|ARM.ActiveCfg = Release|ARM
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Release|ARM.Build.0 = Release|ARM
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Release|Win32.ActiveCfg = Release|Win32
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Release|Win32.Build.0 = Release|Win32
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Release|x64.ActiveCfg = Release|x64
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2}.Release|x64.Build.0 = Release|x64
+		{0466C708-60CA-45FA-9A51-569041204D31}.Debug|ARM.ActiveCfg = Debug|ARM
+		{0466C708-60CA-45FA-9A51-569041204D31}.Debug|ARM.Build.0 = Debug|ARM
+		{0466C708-60CA-45FA-9A51-569041204D31}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0466C708-60CA-45FA-9A51-569041204D31}.Debug|Win32.Build.0 = Debug|Win32
+		{0466C708-60CA-45FA-9A51-569041204D31}.Debug|x64.ActiveCfg = Debug|Win32
+		{0466C708-60CA-45FA-9A51-569041204D31}.Release|ARM.ActiveCfg = Release|ARM
+		{0466C708-60CA-45FA-9A51-569041204D31}.Release|ARM.Build.0 = Release|ARM
+		{0466C708-60CA-45FA-9A51-569041204D31}.Release|Win32.ActiveCfg = Release|Win32
+		{0466C708-60CA-45FA-9A51-569041204D31}.Release|Win32.Build.0 = Release|Win32
+		{0466C708-60CA-45FA-9A51-569041204D31}.Release|x64.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{212298A0-62C1-48CB-85C0-00D2AFD482CD} = {AE8CDC17-3CD3-4003-BCD3-5A244AA6D2E3}
+		{F3A7DFCC-506A-4800-9DF7-BEB0541B21F2} = {AE8CDC17-3CD3-4003-BCD3-5A244AA6D2E3}
+		{0466C708-60CA-45FA-9A51-569041204D31} = {AE8CDC17-3CD3-4003-BCD3-5A244AA6D2E3}
+	EndGlobalSection
+EndGlobal

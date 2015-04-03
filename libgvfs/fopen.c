@@ -37,7 +37,11 @@
 #include <limits.h>
 #include <stdio.h>
 #include <errno.h>
+#ifdef WINSTORE
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 #include "local.h"
 
 FILE *

@@ -17,6 +17,8 @@
 #include <cmath>
 #include <cstdlib>
 
+#include <algorithm>
+
 using namespace std;
 
 MaxRectsBinPack::MaxRectsBinPack()

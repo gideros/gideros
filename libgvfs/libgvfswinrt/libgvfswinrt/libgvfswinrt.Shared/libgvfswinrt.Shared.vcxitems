@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{8c3b6eef-51e1-4593-af79-3ef50e1b1bcc}</ItemsProjectGuid>
+    <ItemsRootNamespace>libgvfswinrt</ItemsRootNamespace>
+    <ItemsProjectName>libgvfswinrt.Shared</ItemsProjectName>
+    <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\clrerr.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\extra.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fclose.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\feof.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\ferror.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fflush.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fgetc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fgets.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fileops.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\findfp.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\flags.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\flockfile.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fopen.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fprintf.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fputc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fputs.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fread.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\freopen.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fscanf.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fseek.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\ftell.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fvwrite.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fwalk.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\fwrite.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\getc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\gfile.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\gpath.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\makebuf.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\putc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\refill.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\rget.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\setvbuf.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\stdio.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\tmpfile.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\ungetc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\vfprintf.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\vfscanf.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\wbuf.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\wsetup.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\defines.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\fileext.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\floatio.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\fvwrite.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\gexport.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\gfile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\gfile_p.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\glue.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\gpath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\gpath_p.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\gstdio.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\local.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\wcio.h" />
+  </ItemGroup>
+</Project>

@@ -5,8 +5,9 @@
 
 #ifdef glOrthof
 #undef glOrthof
-#define glOrthof glOrtho
 #endif
+
+#define glOrthof glOrtho
 
 #ifndef GL_CLAMP_TO_EDGE
 #define GL_CLAMP_TO_EDGE GL_CLAMP

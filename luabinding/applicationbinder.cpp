@@ -9,6 +9,7 @@
 #include <gapplication.h>
 #include <luautil.h>
 #include <gideros.h>
+#include <algorithm>
 
 #define PORTRAIT "portrait"
 #define PORTRAIT_UPSIDE_DOWN "portraitUpsideDown"
@@ -23,6 +24,12 @@
 #define STRETCH "stretch"
 #define FIT_WIDTH "fitWidth"
 #define FIT_HEIGHT "fitHeight"
+
+#ifdef WINSTORE
+#undef max
+#undef min
+#endif
+
 
 ApplicationBinder::ApplicationBinder(lua_State* L)
 {

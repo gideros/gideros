@@ -31,6 +31,9 @@
     #include <GLES2/gl2ext.h>
 #endif
     #define OPENGL_ES
+#elif WINSTORE
+	#include "dxcompat.hpp"
+	#define OPENGL_DESKTOP
 #else
     #include <GL/glew.h>
     #define OPENGL_DESKTOP

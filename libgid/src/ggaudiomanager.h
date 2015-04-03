@@ -80,6 +80,7 @@ public:
     virtual ~GGStreamInterface() {}
 
     virtual g_id SoundCreateFromFile(const char *fileName, const GGAudioLoader& loader, gaudio_Error *error) = 0;
+	virtual void AdvanceStreamBuffers() {}
 };
 
 struct GGAudioLoader
@@ -141,6 +142,8 @@ public:
 
     void preTick();
     void postTick();
+
+	void AdvanceStreamBuffers();
 
 private:
     void interfacesInit();
@@ -238,6 +241,8 @@ public:
 
     void beginInterruption();
     void endInterruption();
+
+	void AdvanceStreamBuffers();
 
 private:
     static void tick_s(int type, void *event, void *udata);

@@ -30,7 +30,7 @@
 	#include <tchar.h>
 
 	#ifndef _ASSERT
-		#ifdef _DEBUG
+        #if defined(_DEBUG) && !defined(WINSTORE)
 			#define _ASSERT(X) { (X) ? 0 : DebugBreak(); }
 		#else
 			#define _ASSERT(X)

@@ -1,0 +1,70 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "giderosgame", "giderosgame", "{1AEC5570-E899-4829-ACEB-7329AFB77449}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "giderosgame.Shared", "giderosgame\giderosgame.Shared\giderosgame.Shared.vcxitems", "{DEC10227-BABD-485A-9E25-F3720A23C496}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "giderosgame.Windows", "giderosgame\giderosgame.Windows\giderosgame.Windows.vcxproj", "{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "giderosgame.WindowsPhone", "giderosgame\giderosgame.WindowsPhone\giderosgame.WindowsPhone.vcxproj", "{1024583A-3B31-4571-A69F-2215E3B7975C}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		giderosgame\giderosgame.Shared\giderosgame.Shared.vcxitems*{dec10227-babd-485a-9e25-f3720a23c496}*SharedItemsImports = 9
+		giderosgame\giderosgame.Shared\giderosgame.Shared.vcxitems*{1024583a-3b31-4571-a69f-2215e3b7975c}*SharedItemsImports = 4
+		giderosgame\giderosgame.Shared\giderosgame.Shared.vcxitems*{69d0dc6b-44c5-4d2e-a0ed-4ff49ce10786}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|ARM = Release|ARM
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Debug|ARM.ActiveCfg = Debug|ARM
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Debug|ARM.Build.0 = Debug|ARM
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Debug|ARM.Deploy.0 = Debug|ARM
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Debug|Win32.ActiveCfg = Debug|Win32
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Debug|Win32.Build.0 = Debug|Win32
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Debug|Win32.Deploy.0 = Debug|Win32
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Debug|x64.ActiveCfg = Debug|x64
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Debug|x64.Build.0 = Debug|x64
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Debug|x64.Deploy.0 = Debug|x64
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Release|ARM.ActiveCfg = Release|ARM
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Release|ARM.Build.0 = Release|ARM
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Release|ARM.Deploy.0 = Release|ARM
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Release|Win32.ActiveCfg = Release|Win32
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Release|Win32.Build.0 = Release|Win32
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Release|Win32.Deploy.0 = Release|Win32
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Release|x64.ActiveCfg = Release|x64
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Release|x64.Build.0 = Release|x64
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786}.Release|x64.Deploy.0 = Release|x64
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Debug|ARM.ActiveCfg = Debug|ARM
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Debug|ARM.Build.0 = Debug|ARM
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Debug|ARM.Deploy.0 = Debug|ARM
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Debug|Win32.Build.0 = Debug|Win32
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Debug|Win32.Deploy.0 = Debug|Win32
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Debug|x64.ActiveCfg = Debug|Win32
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Release|ARM.ActiveCfg = Release|ARM
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Release|ARM.Build.0 = Release|ARM
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Release|ARM.Deploy.0 = Release|ARM
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Release|Win32.ActiveCfg = Release|Win32
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Release|Win32.Build.0 = Release|Win32
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Release|Win32.Deploy.0 = Release|Win32
+		{1024583A-3B31-4571-A69F-2215E3B7975C}.Release|x64.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DEC10227-BABD-485A-9E25-F3720A23C496} = {1AEC5570-E899-4829-ACEB-7329AFB77449}
+		{69D0DC6B-44C5-4D2E-A0ED-4FF49CE10786} = {1AEC5570-E899-4829-ACEB-7329AFB77449}
+		{1024583A-3B31-4571-A69F-2215E3B7975C} = {1AEC5570-E899-4829-ACEB-7329AFB77449}
+	EndGlobalSection
+EndGlobal
