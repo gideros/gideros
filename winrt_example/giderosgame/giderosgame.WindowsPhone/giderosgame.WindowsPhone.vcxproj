@@ -71,26 +71,26 @@
   </ImportGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalLibraryDirectories>c:\gideros_liberton\gideros\winrt\Debug\gideros.WindowsPhone;c:\gideros_liberton\gideros\libgvfs\libgvfswinrt\Debug\libgvfswinrt.WindowsPhone;c:\gideros_liberton\gideros\lua\luawinrt\Debug\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\winrt\Debug\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\Debug\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\Debug\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <ClCompile>
       <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;PSAPI_VERSION=2;WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP;_UITHREADCTXT_SUPPORT=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>c:\gideros_liberton\gideros\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;c:\gideros_liberton\gideros\libgvfs;c:\gideros_liberton\gideros\lua\src;c:\gideros_liberton\gideros\libnetwork;c:\gideros_liberton\gideros\2dsg;c:\gideros_liberton\gideros\libplatform;c:\gideros_liberton\gideros\luabinding;c:\gideros_liberton\gideros\libgideros;c:\gideros_liberton\gideros\libgid\include\winrt;c:\gideros_liberton\gideros\libgid\include;c:\gideros_liberton\gideros\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\libgvfs;..\..\..\lua\src;..\..\..\libnetwork;..\..\..\2dsg;..\..\..\libplatform;..\..\..\luabinding;..\..\..\libgideros;..\..\..\libgid\include\winrt;..\..\..\libgid\include;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <SDLCheck>false</SDLCheck>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <AdditionalLibraryDirectories>c:\gideros_liberton\gideros\winrt\Release\gideros.WindowsPhone;c:\gideros_liberton\gideros\libgvfs\libgvfswinrt\Release\libgvfswinrt.WindowsPhone;c:\gideros_liberton\gideros\lua\luawinrt\Release\luawinrt.WindowsPhone;$(VCInstallDir)\lib\store;$(VCInstallDir)\lib;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\winrt\Release\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\Release\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\Release\luawinrt.WindowsPhone;$(VCInstallDir)\lib\store;$(VCInstallDir)\lib;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>c:\gideros_liberton\gideros\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;c:\gideros_liberton\gideros\libgvfs;c:\gideros_liberton\gideros\lua\src;c:\gideros_liberton\gideros\libnetwork;c:\gideros_liberton\gideros\2dsg;c:\gideros_liberton\gideros\libplatform;c:\gideros_liberton\gideros\luabinding;c:\gideros_liberton\gideros\libgideros;c:\gideros_liberton\gideros\libgid\include\winrt;c:\gideros_liberton\gideros\libgid\include;c:\gideros_liberton\gideros\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\libgvfs;..\..\..\lua\src;..\..\..\libnetwork;..\..\..\2dsg;..\..\..\libplatform;..\..\..\luabinding;..\..\..\libgideros;..\..\..\libgid\include\winrt;..\..\..\libgid\include;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile>
       <SDLCheck>false</SDLCheck>
@@ -100,12 +100,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
-      <AdditionalLibraryDirectories>c:\gideros_liberton\gideros\winrt\ARM\Debug\gideros.WindowsPhone;c:\gideros_liberton\gideros\libgvfs\libgvfswinrt\ARM\Debug\libgvfswinrt.WindowsPhone;c:\gideros_liberton\gideros\lua\luawinrt\ARM\Debug\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\winrt\ARM\Debug\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\ARM\Debug\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\ARM\Debug\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>c:\gideros_liberton\gideros\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;c:\gideros_liberton\gideros\libgvfs;c:\gideros_liberton\gideros\lua\src;c:\gideros_liberton\gideros\libnetwork;c:\gideros_liberton\gideros\2dsg;c:\gideros_liberton\gideros\libplatform;c:\gideros_liberton\gideros\luabinding;c:\gideros_liberton\gideros\libgideros;c:\gideros_liberton\gideros\libgid\include\winrt;c:\gideros_liberton\gideros\libgid\include;c:\gideros_liberton\gideros\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\libgvfs;..\..\..\lua\src;..\..\..\libnetwork;..\..\..\2dsg;..\..\..\libplatform;..\..\..\luabinding;..\..\..\libgideros;..\..\..\libgid\include\winrt;..\..\..\libgid\include;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile>
       <SDLCheck>false</SDLCheck>
@@ -115,12 +115,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
-      <AdditionalLibraryDirectories>c:\gideros_liberton\gideros\winrt\ARM\Release\gideros.WindowsPhone;c:\gideros_liberton\gideros\libgvfs\libgvfswinrt\ARM\Release\libgvfswinrt.WindowsPhone;c:\gideros_liberton\gideros\lua\luawinrt\ARM\Release\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\winrt\ARM\Release\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\ARM\Release\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\ARM\Release\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>c:\gideros_liberton\gideros\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;c:\gideros_liberton\gideros\libgvfs;c:\gideros_liberton\gideros\lua\src;c:\gideros_liberton\gideros\libnetwork;c:\gideros_liberton\gideros\2dsg;c:\gideros_liberton\gideros\libplatform;c:\gideros_liberton\gideros\luabinding;c:\gideros_liberton\gideros\libgideros;c:\gideros_liberton\gideros\libgid\include\winrt;c:\gideros_liberton\gideros\libgid\include;c:\gideros_liberton\gideros\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\libgvfs;..\..\..\lua\src;..\..\..\libnetwork;..\..\..\2dsg;..\..\..\libplatform;..\..\..\luabinding;..\..\..\libgideros;..\..\..\libgid\include\winrt;..\..\..\libgid\include;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;PSAPI_VERSION=2;WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP;_UITHREADCTXT_SUPPORT=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>

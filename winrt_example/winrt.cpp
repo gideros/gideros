@@ -259,7 +259,7 @@ void loadProperties()
 	int height = Window->Bounds.Width*scaley;
 #endif
 
-	properties.scaleMode = 0;
+	properties.scaleMode = 5;
 
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	Orientation hardwareOrientation = Orientation::ePortrait;

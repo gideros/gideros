@@ -1,58 +1,38 @@
+--[[
 
-t=0
+A frame by frame bird animation example
+The old frame is removed by Sprite:removeChild and the new frame is added by Sprite:addChild
 
-function update()
-  t=t+1
-  application:setBackgroundColor(0xff00+t%256)
+This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.php
+(C) 2010 - 2011 Gideros Mobile 
 
-  local x,y=rect:getPosition()
-  x=x+math.sin(0.01*t)
-  y=y+math.cos(0.01*t)
-  rect:setPosition(x,y)
-  rect:setRotation(t)
+]]
 
-  ego:setScale(2*math.sin(0.01*t))
-end
+application:setBackgroundColor(255)
 
-application:setBackgroundColor(0)
+-- load texture, create bitmap from it and set as background
+local background = Bitmap.new(Texture.new("sky_world.png"))
+stage:addChild(background)
 
-rect=Shape.new()
+-- these arrays contain the image file names of each frame
+local frames1 = {
+	"bird_black_01.png",
+	"bird_black_02.png",
+	"bird_black_03.png"}
 
-rect:setFillStyle(Shape.SOLID,0xff00ff)
-rect:setLineStyle(20,0x0000ff)
+local frames2 = {
+	"bird_white_01.png",
+	"bird_white_02.png",
+	"bird_white_03.png"}
 
-rect:beginPath()
-rect:moveTo(-50,-50)
-rect:lineTo(50,-50)
-rect:lineTo(50,50)
-rect:lineTo(-50,50)
-rect:closePath()
-rect:endPath()
+-- create 2 white and 2 black birds
+local bird1 = Bird.new(frames1)
+local bird2 = Bird.new(frames1)
+local bird3 = Bird.new(frames2)
+local bird4 = Bird.new(frames2)
 
-stage:addChild(rect)
-
-rect:setPosition(450,300)
-
-ego=Bitmap.new(Texture.new("ball.png"))
-stage:addChild(ego)
-ego:setPosition(600,200)
---ego:setAnchorPoint(0.5,0.5)
-
-text=TextField.new(nil,"Gideros on WinRT!")
-stage:addChild(text)
-text:setPosition(20,20)
-text:setScale(2)
-text:setRotation(45)
-text:setTextColor(0xff00ff)
-
-local rt1 = RenderTarget.new(500, 500, true)
-rt1:clear(0xff0000,1)
-brt1 = Bitmap.new(rt1)
-stage:addChild(brt1)
-brt1:setPosition(50,50)
-
-local bitmap = Bitmap.new(Texture.new("ball.png"))
-bitmap:setPosition(0,0)
-rt1:draw(bitmap)
-
-stage:addEventListener(Event.ENTER_FRAME,update)
+-- add birds to the stage
+stage:addChild(bird1)
+stage:addChild(bird2)
+stage:addChild(bird3)
+stage:addChild(bird4)
