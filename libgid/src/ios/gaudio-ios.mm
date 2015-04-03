@@ -150,3 +150,13 @@ void GGSoundManager::interfacesCleanup()
     GGSampleOpenALManagerDelete(sampleInterface_);
     GGStreamOpenALManagerDelete(streamInterface_);
 }
+
+void GGAudioManager::AdvanceStreamBuffers()
+{
+
+}
+
+void GGSoundManager::AdvanceStreamBuffers()
+{
+
+}
