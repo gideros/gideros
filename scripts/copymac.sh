@@ -23,8 +23,6 @@ cp gdrexport/gdrexport $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools
 
 sudo cp $QT/lib/libqscintilla2.11.dylib /usr/lib
 sudo cp libgid/libgid.1.dylib /usr/lib
-sudo cp libgid/external/freetype-2.4.12/build/clang_64/libfreetype.6.dylib /usr/lib
-sudo cp libgid/external/glew-1.10.0/lib/clang_64/libGLEW.1.10.0.dylib /usr/lib
 sudo cp libgvfs/libgvfs.1.dylib /usr/lib
 sudo cp lua/liblua.1.dylib /usr/lib
 sudo cp libgideros/libgideros.1.dylib /usr/lib
@@ -37,8 +35,6 @@ $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Font\ Creator.app
 
 sudo rm /usr/lib/libqscintilla2.11.dylib
 sudo rm /usr/lib/libgid.1.dylib
-sudo rm /usr/lib/libfreetype.6.dylib
-sudo rm /usr/lib/libGLEW.1.10.0.dylib
 sudo rm /usr/lib/libgvfs.1.dylib
 sudo rm /usr/lib/liblua.1.dylib
 sudo rm /usr/lib/libgideros.1.dylib
