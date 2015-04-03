@@ -1,24 +1,8 @@
-echo 'Updating brew'
-brew update  > /dev/null
-echo 'Finished updating brew'
-echo 'Installing dependencies'
-brew install freetype --with-freetype-dir=/usr/local/Cellar/freetype &> /dev/null
-brew install glew > /dev/null
-brew install qt5 > /dev/null
-brew install ant > /dev/null
-brew install android-sdk > /dev/null
-brew install android-ndk > /dev/null
-echo 'Finished installing dependencies'
-expect -c '
-set timeout -1   ;
-spawn android update sdk -u -a -t tool,platform-tool,3,android-21;
-expect { 
-    "Do you accept the license" { exp_send "y\r" ; exp_continue }
-    eof
-}
-'
+rm -rf ~/.wine
+wine xyz 
 
 export QT=/usr/local/Cellar/qt5/5.4.0
+export QT_WIN=~/.wine/drive_c/Qt/Qt5.3.2
 export IOS_SDK=8.2
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
@@ -28,6 +12,24 @@ rm -rf build
 mkdir build
 
 cd scripts
+
+echo 'Installing Qt for Windows...'
+tar zxf ../../dependencies/Qt5.3.2.tar.bz2 -C ~/.wine/drive_c
+
+echo 'Installing NSIS for Windows...'
+tar zxf ../../dependencies/NSIS.tar.bz2 -C ~/.wine/drive_c
+
+echo 'Installing QScintilla for Windows...'
+tar zxvf ../../dependencies/QScintilla-gpl-2.8.4.tar.gz -C ../build/
+wine cmd /c installqscintilla.bat
+
+echo 'Building Qt applications for Windows...'
+rm -rf ../Sdk
+wine cmd /c qt5\\buildqtlibs.bat > /dev/null
+wine cmd /c qt5\\buildplugins.bat > /dev/null
+wine cmd /c qt5\\cleanqt.bat > /dev/null
+wine cmd /c qt5\\buildqt.bat > /dev/null
+
 echo 'Building iOS libraries...'
 bash cleanioslibs.sh > /dev/null
 bash buildioslibs.sh > /dev/null
@@ -39,9 +41,16 @@ bash buildandroidlibs.sh > /dev/null
 bash buildandroidso.sh > /dev/null
 bash buildandroidplugins.sh > /dev/null
 
+echo 'Copying Windows files...'
+bash copywin.sh > /dev/null
+
+echo 'Creating Windows installation package...'
+bash createwinpackage.sh > /dev/null
+
+
 echo 'Installing QScintilla for Mac...'
-bash downloadqscintilla.sh > /dev/null
-bash extractqscintilla.sh > /dev/null
+rm -rf ../build/QScintilla-gpl-2.8.4
+tar zxvf ../../dependencies/QScintilla-gpl-2.8.4.tar.gz -C ../build/
 bash installqscintilla.sh > /dev/null
 
 echo 'Building Qt applications for Mac...'
@@ -51,11 +60,13 @@ bash qt5/buildplugins.sh > /dev/null
 bash qt5/cleanqt.sh > /dev/null
 bash qt5/buildqt.sh > /dev/null
 
+
 echo 'Copying Mac files...'
 bash copymac.sh
 
 echo 'Creating Mac installation package...'
 bash createmacpackage.sh
+
 
 
 
