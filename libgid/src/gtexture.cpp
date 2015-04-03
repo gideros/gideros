@@ -33,7 +33,6 @@
     #define OPENGL_ES
 #elif WINSTORE
 	#include "dxcompat.hpp"
-	#define OPENGL_DESKTOP
 #else
     #include <GL/glew.h>
     #define OPENGL_DESKTOP
