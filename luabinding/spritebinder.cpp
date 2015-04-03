@@ -16,7 +16,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"removeChild", SpriteBinder::removeChild},
 		{"removeChildAt", SpriteBinder::removeChildAt},
 		{"getNumChildren", SpriteBinder::numChildren},
-                {"swapChildren", SpriteBinder::swapChildren},
+        {"swapChildren", SpriteBinder::swapChildren},
 		{"swapChildrenAt", SpriteBinder::swapChildrenAt},
 		{"getChildAt", SpriteBinder::getChildAt},
 		{"getParent", SpriteBinder::getParent},
