@@ -5,7 +5,9 @@
 #include <string>
 #include <vector>
 
-#ifdef WIN32
+#ifdef WINSTORE
+typedef int SOCKET;
+#elif WIN32
 #include <WinSock.h>
 #else
 typedef int SOCKET;
