@@ -1,5 +1,11 @@
 #include <gapplication.h>
-#include <gapplication-winrt.h>
+#include <gapplication-android.h>
+#include <jni.h>
+
+extern "C" {
+JavaVM *g_getJavaVM();
+JNIEnv *g_getJNIEnv();
+}
 
 class GGApplicationManager
 {
@@ -14,6 +20,16 @@ public:
     {
         gevent_RemoveEventsWithGid(gid_);
     }
+    
+	int getScreenDensity()
+	{
+		JNIEnv *env = g_getJNIEnv();
+		jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+		jmethodID getScreenDensityID = env->GetStaticMethodID(localRefCls, "getScreenDensity", "()I");
+		jint result = env->CallStaticIntMethod(localRefCls, getScreenDensityID);
+		env->DeleteLocalRef(localRefCls);
+		return result;
+	}
 
     g_id addCallback(gevent_Callback callback, void *udata)
     {
@@ -79,6 +95,11 @@ void gapplication_removeCallbackWithGid(g_id gid)
 void gapplication_exit()
 {
         
+}
+
+int gapplication_getScreenDensity()
+{
+	return s_manager->getScreenDensity();
 }
 
 void gapplication_enqueueEvent(int type, void *event, int free)

@@ -977,6 +977,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\Matrices.cpp">
       <Filter>2dsg</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)giderosapi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">
@@ -1570,6 +1571,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\wchar32.h">
       <Filter>libplatform</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)giderosapi.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\embeddedfont.inc">
