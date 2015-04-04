@@ -14,6 +14,11 @@ public:
     {
         gevent_RemoveEventsWithGid(gid_);
     }
+	
+	int getScreenDensity()
+    {   
+        return 160;
+    }
 
     g_id addCallback(gevent_Callback callback, void *udata)
     {
