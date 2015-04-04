@@ -80,6 +80,7 @@ Application::Application() :
 
 	scale_ = 1;
 	fov_=0;
+	farplane_=1;
 }
 
 Application::~Application()
@@ -158,7 +159,7 @@ void Application::configureFrustum(float fov,float farplane)
 	if (fov<0)
 		fov=0;
 	if (farplane<=0)
-		farplane=0;
+		farplane=1;
 	farplane_=farplane;
 	fov_=fov;
 }
@@ -293,7 +294,7 @@ void Application::renderScene(int deltaFrameCount)
 			projection.translate(-hw,-hh,-np-0.001);
 		}
 		else
-			frustum=setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -1,1);
+			frustum=setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -farplane_,farplane_);
 		vpProjection.scale(1,-1,1);
 		vpProjection.translate(0,height_/scale_,0);
 		break;
@@ -309,7 +310,7 @@ void Application::renderScene(int deltaFrameCount)
 			projection.translate(-hh,-hw,-np-0.001);
 		}
 		else
-			frustum=setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -1,1);
+			frustum=setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -farplane_,farplane_);
 		vpProjection.scale(1,-1,1);
 		vpProjection.translate(0,width_/scale_,0);
 		break;
