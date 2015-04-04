@@ -150,7 +150,7 @@ private:
 class ApplicationManager
 {
 public:
-	ApplicationManager(int width, int height, bool player);
+	ApplicationManager(int width, int height, bool player, const char* resourcePath, const char* docsPath);
 	~ApplicationManager();
 
 	void drawFirstFrame();
@@ -187,6 +187,8 @@ private:
 	bool player_;
 	LuaApplication *application_;
 	NetworkManager *networkManager_;
+	const char* resourcePath_;
+	const char* docsPath_;
 
 	bool running_;
 
@@ -222,7 +224,7 @@ void NetworkManager::tick()
 	while (true)
 	{
 		if (!openProject_.empty()){
-			//application_->openProject(openProject_.c_str());
+			application_->openProject(openProject_.c_str());
 			openProject_.clear();
 		}
 		int dataSent0 = server_->dataSent();
@@ -320,12 +322,12 @@ void NetworkManager::play(const std::vector<char> &data)
 		luafiles.push_back(str);
 	}
 
-	//application_->play(luafiles);
+	application_->play(luafiles);
 }
 
 void NetworkManager::stop()
 {
-	//application_->stop();
+	application_->stop();
 }
 
 void NetworkManager::sendFileList()
@@ -378,7 +380,7 @@ void NetworkManager::setProjectName(const std::vector<char> &data)
 	std::string str;
 	buffer >> str;
 
-	//application_->setProjectName(str.c_str());
+	application_->setProjectName(str.c_str());
 }
 
 void NetworkManager::deleteFile(const std::vector<char> &data)
@@ -433,7 +435,7 @@ void NetworkManager::setProperties(const std::vector<char> &data)
 	buffer >> properties.touchToMouse;
 	buffer >> properties.mouseTouchOrder;
 
-	//application_->setProjectProperties(properties);
+	application_->setProjectProperties(properties);
 }
 
 void NetworkManager::loadMD5()
@@ -493,11 +495,13 @@ void NetworkManager::calculateMD5(const char* file)
 }
 
 
-ApplicationManager::ApplicationManager(int width, int height, bool player)
+ApplicationManager::ApplicationManager(int width, int height, bool player, const char* resourcePath, const char* docsPath)
 {
 	width_ = width;
 	height_ = height;
 	player_ = player;
+	resourcePath_ = resourcePath;
+	docsPath_ = docsPath;
 
 	// gpath & gvfs
 	gpath_init();
@@ -571,7 +575,7 @@ ApplicationManager::ApplicationManager(int width, int height, bool player)
 
 	if (player_ == false)
 	{
-		/*const wchar_t *installedLocation = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
+		const wchar_t *installedLocation = (const wchar_t*)resourcePath_;
 
 		char fileStem[MAX_PATH];
 		wcstombs(fileStem, installedLocation, MAX_PATH);
@@ -580,7 +584,7 @@ ApplicationManager::ApplicationManager(int width, int height, bool player)
 
 		gpath_setDrivePath(0, fileStem);
 
-		const wchar_t *docs = ApplicationData::Current->LocalFolder->Path->Data();
+		const wchar_t *docs = (const wchar_t*)docsPath_;
 
 		char docsPath[MAX_PATH];
 		wcstombs(docsPath, docs, MAX_PATH);
@@ -589,7 +593,7 @@ ApplicationManager::ApplicationManager(int width, int height, bool player)
 		setDocumentsDirectory(docsPath);
 		setTemporaryDirectory(docsPath);
 
-		gpath_setDrivePath(1, docsPath);*/
+		gpath_setDrivePath(1, docsPath);
 
 		loadProperties();
 
@@ -644,6 +648,28 @@ void ApplicationManager::drawFirstFrame()
 {
 
 	application_->clearBuffers();
+	application_->renderScene(1);
+	drawIPs();
+}
+
+void ApplicationManager::drawFrame()
+{
+
+	nframe_++;
+
+	if (networkManager_)
+		networkManager_->tick();
+
+	application_->clearBuffers();
+
+	if (application_->isErrorSet())
+		luaError(application_->getError());
+
+	GStatus status;
+	application_->enterFrame(&status);
+	if (status.error())
+		luaError(status.errorString());
+
 	application_->renderScene(1);
 	drawIPs();
 }
@@ -731,6 +757,55 @@ void ApplicationManager::openProject(const char* project){
 
 		play(luafiles);
 	}
+}
+
+void ApplicationManager::setProjectName(const char *projectName)
+{
+	glog_v("setProjectName: %s", projectName);
+	std::string dir = docsPath_;
+
+	if (dir[dir.size() - 1] != '/')
+		dir += "/";
+
+	dir += "gideros";
+
+	CreateDirectory((LPCWSTR)dir.c_str(), NULL);
+
+	dir += "/";
+
+	dir += projectName;
+
+	CreateDirectory((LPCWSTR)dir.c_str(), NULL);
+
+	dir += "/";
+
+	std::string md5filename_ = dir + "md5.txt";
+
+	std::string documents = dir + "documents";
+	std::string temporary = dir + "temporary";
+	std::string resource = dir + "resource";
+
+	glog_v("documents: %s", documents.c_str());
+	glog_v("temporary: %s", temporary.c_str());
+	glog_v("resource: %s", resource.c_str());
+
+	CreateDirectory((LPCWSTR)documents.c_str(), NULL);
+	CreateDirectory((LPCWSTR)temporary.c_str(), NULL);
+	CreateDirectory((LPCWSTR)resource.c_str(), NULL);
+
+	setDocumentsDirectory(documents.c_str());
+	setTemporaryDirectory(temporary.c_str());
+	setResourceDirectory(resource.c_str());
+
+	std::string resourceDirectory_ = resource;
+
+	networkManager_->setResourceDirectory(resourceDirectory_.c_str());
+	networkManager_->setMd5FileName(md5filename_.c_str());
+}
+
+void ApplicationManager::setProjectProperties(const ProjectProperties &properties)
+{
+	properties_ = properties;
 }
 
 
@@ -989,9 +1064,9 @@ static ApplicationManager *s_manager = NULL;
 
 extern "C" {
 
-	void gdr_initialize(int width, int height, bool player)
+	void gdr_initialize(int width, int height, bool player, const char* resourcePath, const char* docsPath)
 	{
-		s_manager = new ApplicationManager(width, height, player);
+		s_manager = new ApplicationManager(width, height, player, resourcePath, docsPath);
 	}
 
 	void gdr_drawFrame()

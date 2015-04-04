@@ -120,7 +120,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\libgvfs;..\..\..\lua\src;..\..\..\libnetwork;..\..\..\2dsg;..\..\..\libplatform;..\..\..\luabinding;..\..\..\libgideros;..\..\..\libgid\include\winrt;..\..\..\libgid\include;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\winrt\gideros\gideros.Shared;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\libgvfs;..\..\..\lua\src;..\..\..\libnetwork;..\..\..\2dsg;..\..\..\libplatform;..\..\..\luabinding;..\..\..\libgideros;..\..\..\libgid\include\winrt;..\..\..\libgid\include;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;PSAPI_VERSION=2;WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP;_UITHREADCTXT_SUPPORT=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>

@@ -28,6 +28,8 @@
 #include "gaudio.h"
 #include "ghttp.h"
 
+#include "giderosapi.h"
+
 #include "dxcompat.hpp"
 #include "dxglobals.h"
 //#include "gstdio.h"
@@ -50,82 +52,37 @@ extern bool dxcompat_force_lines;
 
 IXAudio2 *g_audioengine;
 IXAudio2MasteringVoice *g_masteringvoice;
-
-LuaApplication *g_application;
+IXAudio2SourceVoice* g_source;
 
 float screenw, screenh;
 
-struct ProjectProperties
+void getStdCoords(float xp, float yp, float &x, float &y)
 {
-	ProjectProperties()
-	{
-		clear();
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+
+	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+	DisplayOrientations Orientation = dinfo->CurrentOrientation;
+
+	if (Orientation == DisplayOrientations::Portrait){
+		x = xp;
+		y = yp;
 	}
-
-	void clear()
-	{
-		// graphics options
-		scaleMode = 0;
-		logicalWidth = 320;
-		logicalHeight = 480;
-		imageScales.clear();
-		orientation = 0;
-		fps = 60;
-
-		// iOS options
-		retinaDisplay = 0;
-		autorotation = 0;
-
-		// input options
-		mouseToTouch = true;
-		touchToMouse = true;
-		mouseTouchOrder = 0;
-
-		// export options
-		architecture = 0;
-		assetsOnly = false;
-		iosDevice = 0;
-		packageName = "com.yourdomain.yourapp";
-		encryptCode = false;
-		encryptAssets = false;
+	else if (Orientation == DisplayOrientations::Landscape){
+		x = screenw - yp;
+		y = xp;
 	}
-
-	// graphics options
-	int scaleMode;
-	int logicalWidth;
-	int logicalHeight;
-	std::vector<std::pair<std::string, float> > imageScales;
-	int orientation;
-	int fps;
-
-	// iOS options
-	int retinaDisplay;
-	int autorotation;
-
-	// input options
-	int mouseToTouch;
-	int touchToMouse;
-	int mouseTouchOrder;
-
-	// export options
-	int architecture;
-	bool assetsOnly;
-	int iosDevice;
-	std::string packageName;
-	bool encryptCode;
-	bool encryptAssets;
-};
-
-extern "C"
-{
-	wchar_t htonl(wchar_t w)
-	{
-		return w;
+	else if (Orientation == DisplayOrientations::LandscapeFlipped){
+		x = yp;
+		y = screenh - xp;
 	}
-
-	void ExitProcess(int i)
-	{
+	else {
+		x = screenw - xp;
+		y = screenh - yp;
 	}
+#else
+	x = xp;
+	y = yp;
+#endif
 }
 
 /*
@@ -188,159 +145,6 @@ int PTW32_CDECL pthread_join(pthread_t thread,
 	void **value_ptr)
 {
 	return 0;
-}
-
-void setWindowSize(LuaApplication *app, int width, int height)
-{
-}
-
-void setFullScreen(LuaApplication *app, bool fullscreen)
-{
-}
-
-void loadProperties()
-{
-
-	ProjectProperties properties;
-	G_FILE* fis = g_fopen("properties.bin", "rb");
-
-	g_fseek(fis, 0, SEEK_END);
-	int len = g_ftell(fis);
-	g_fseek(fis, 0, SEEK_SET);
-
-	std::vector<char> buf(len);
-	g_fread(&buf[0], 1, len, fis);
-	g_fclose(fis);
-
-	ByteBuffer buffer(&buf[0], buf.size());
-
-	buffer >> properties.scaleMode;
-	buffer >> properties.logicalWidth;
-	buffer >> properties.logicalHeight;
-
-	int scaleCount;
-	buffer >> scaleCount;
-	properties.imageScales.resize(scaleCount);
-	for (int i = 0; i < scaleCount; ++i)
-	{
-		buffer >> properties.imageScales[i].first;
-		buffer >> properties.imageScales[i].second;
-	}
-
-	buffer >> properties.orientation;
-	buffer >> properties.fps;
-	buffer >> properties.retinaDisplay;
-	buffer >> properties.autorotation;
-	buffer >> properties.mouseToTouch;
-	buffer >> properties.touchToMouse;
-	buffer >> properties.mouseTouchOrder;
-
-//	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
-//	bool notRetina = (properties.retinaDisplay == 0) || (properties.retinaDisplay == 1 && !phone) || (properties.retinaDisplay == 2 && phone);
-
-	CoreWindow^ Window = CoreWindow::GetForCurrentThread();
-
-	float scaley;
-
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
-	scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
-#else
-	scaley = 1.0f;   // Windows 8 PC
-#endif
-
-
-	float contentScaleFactor = 1;
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-	int height = Window->Bounds.Height*scaley;
-	int width = Window->Bounds.Width*scaley;
-#else
-	int width = Window->Bounds.Height*scaley;
-	int height = Window->Bounds.Width*scaley;
-#endif
-
-	properties.scaleMode = 5;
-
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-	Orientation hardwareOrientation = Orientation::ePortrait;
-	Orientation deviceOrientation = Orientation::ePortrait;
-#else
-	Orientation hardwareOrientation = Orientation::eLandscapeLeft;
-	Orientation deviceOrientation = Orientation::eLandscapeLeft;
-#endif
-
-	g_application->setResolution(width * contentScaleFactor, height * contentScaleFactor);
-	g_application->setHardwareOrientation(hardwareOrientation);
-	g_application->getApplication()->setDeviceOrientation(deviceOrientation);
-	g_application->setOrientation((Orientation)properties.orientation);
-	g_application->setLogicalDimensions(properties.logicalWidth, properties.logicalHeight);
-	g_application->setLogicalScaleMode((LogicalScaleMode)properties.scaleMode);
-	g_application->setImageScales(properties.imageScales);
-
-//	g_setFps(properties.fps);
-
-	ginput_setMouseToTouchEnabled(properties.mouseToTouch);
-	ginput_setTouchToMouseEnabled(properties.touchToMouse);
-	ginput_setMouseTouchOrder(properties.mouseTouchOrder);
-}
-
-
-// application.openUrl(application,uri)
-int openUrl(lua_State *L)
-{ 
-	const char *orig = lua_tostring(L, -1);
-	size_t newsize = strlen(orig) + 1;
-	wchar_t *wcstring = new wchar_t[newsize];
-
-	size_t convertedChars = 0;
-	mbstowcs_s(&convertedChars, wcstring, newsize, orig, _TRUNCATE);
-
-	Platform::String ^string = ref new String(wcstring);
-	auto uri = ref new Windows::Foundation::Uri(string);
-	Launcher::LaunchUriAsync(uri);
-
-	delete[] wcstring;
-	return 0; 
-}
-
-IXAudio2SourceVoice* g_source;
-
-void getStdCoords(float xp, float yp, float &x, float &y)
-{
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-
-	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
-	DisplayOrientations Orientation = dinfo->CurrentOrientation;
-
-	if (Orientation == DisplayOrientations::Portrait){
-		x = xp;
-		y = yp;
-	}
-	else if (Orientation == DisplayOrientations::Landscape){
-		x = screenw - yp;
-		y = xp;
-	}
-	else if (Orientation == DisplayOrientations::LandscapeFlipped){
-		x = yp;
-		y = screenh - xp;
-	}
-	else {
-		x = screenw - xp;
-		y = screenh - yp;
-	}
-#else
-	x = xp;
-	y = yp;
-#endif
-}
-
-// ######################################################################
-
-// OS specific function available as application:getDeviceInfo
-int getDeviceInfo(lua_State *L)
-{
-  lua_pushstring(L,"windows rt");
-  return 1;
 }
 
 // ######################################################################
@@ -457,18 +261,15 @@ void InitD3D()
   scaley = 1.0f;   // Windows 8 PC
 #endif
 
-  screenw = Window->Bounds.Width;
-  screenh = Window->Bounds.Height;
-
   float basex = 0;
   float basey = 0;
-  float windoww = screenw;  // default values means stretch to fit full screen
-  float windowh = screenh;  // Lua can change later. Note that screenw/h are in scaled coords
+  float windoww = Window->Bounds.Width;  // default values means stretch to fit full screen
+  float windowh = Window->Bounds.Height;  // Lua can change later. Note that screenw/h are in scaled coords
 
   viewport.TopLeftX = basex*scaley;
   viewport.TopLeftY = basey*scaley;
-  viewport.Width = screenw*scaley;  // Direct3D needs actual pixels
-  viewport.Height = screenh*scaley;
+  viewport.Width = windoww*scaley;  // Direct3D needs actual pixels
+  viewport.Height = windowh*scaley;
   
   g_devcon->RSSetViewports(1,&viewport);
 
@@ -645,6 +446,18 @@ void CleanXAudio2()
 	g_audioengine->Release();
 }
 
+extern "C"
+{
+	wchar_t htonl(wchar_t w)
+	{
+		return w;
+	}
+
+	void ExitProcess(int i)
+	{
+	}
+}
+
 // ######################################################################
 // the class definition for the core "framework" of our app
 ref class App sealed : public IFrameworkView
@@ -662,6 +475,15 @@ public:
         CoreApplication::Resuming +=
             ref new EventHandler<Object^>(this, &App::Resuming);
         WindowClosed = false;    // initialize to false
+
+		CoreWindow^ Window = CoreWindow::GetForCurrentThread();
+
+		screenw = Window->Bounds.Width;
+		screenh = Window->Bounds.Height;
+
+		const char* resourcePath = (const char*)Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
+		const char* docsPath = (const char*)ApplicationData::Current->LocalFolder->Path->Data();;
+		gdr_initialize(screenw, screenh, true, resourcePath, docsPath);
     }
 
     virtual void SetWindow(CoreWindow^ Window)
@@ -707,75 +529,9 @@ public:
 	  glBindFramebuffer(GL_FRAMEBUFFER, zero);
 	  assert(zero == 0);
 
-	  gpath_init();
+	  gdr_drawFirstFrame();
 
-      gpath_addDrivePrefix(0, "|R|");
-      gpath_addDrivePrefix(0, "|r|");
-      gpath_addDrivePrefix(1, "|D|");
-      gpath_addDrivePrefix(1, "|d|");
-      gpath_addDrivePrefix(2, "|T|");
-      gpath_addDrivePrefix(2, "|t|");
-      
-      gpath_setDriveFlags(0, GPATH_RO | GPATH_REAL);
-      gpath_setDriveFlags(1, GPATH_RW | GPATH_REAL);
-      gpath_setDriveFlags(2, GPATH_RW | GPATH_REAL);
-      
-      gpath_setAbsolutePathFlags(GPATH_RW | GPATH_REAL);
-      gpath_setDefaultDrive(0);
-
-      const wchar_t *installedLocation = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
-
-      char fileStem[MAX_PATH];
-      wcstombs(fileStem, installedLocation, MAX_PATH);
-      strcat(fileStem, "\\assets\\");
-
-      gpath_setDrivePath(0,fileStem);
-
-      const wchar_t *docs = ApplicationData::Current->LocalFolder->Path->Data();
-
-      char docsPath[MAX_PATH];
-      wcstombs(docsPath, docs, MAX_PATH);
-      strcat(docsPath, "\\");
-
-      gpath_setDrivePath(1,docsPath);
-
-      gvfs_init();
-      gevent_Init();
-      gapplication_init();
-      ginput_init();
-      ggeolocation_init();
-      ghttp_Init();
-      // gui_init();
-      gtexture_init();
-      gaudio_Init();
-      // loadPlugins();
-
-      g_application = new LuaApplication;
-	  g_application->initialize();
-
-	  loadProperties();
-
-	  char line[MAX_PATH];
-	  G_FILE *fp = g_fopen("luafiles.txt", "r");
-
-	  while (g_fgets(line, MAX_PATH-1, fp) != NULL){
-		  OutputDebugStringA(line);
-		  for (int i = strlen(line); i > 0; i--)
-			  if (line[i] == '\r' || line[i] == '\n') line[i] = '\0';
-		  g_application->loadFile(line, &status);
-		  if (status.error()) break;
-	  }
-
-	  g_fclose(fp);
-
-	  if (!status.error())
-	  {
-//		  gapplication_enqueueEvent(GAPPLICATION_START_EVENT, NULL, 0);
-//		  g_application->tick(&status);
-	  }
-
-	  if (status.error())
-		  OutputDebugStringA(status.errorString());
+	  
       
       CoreWindow^ Window = CoreWindow::GetForCurrentThread();
       
@@ -793,7 +549,6 @@ public:
 //	while (GetTickCount64() > next_game_tick && loops < MAX_FRAMESKIP) {
 		  Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
-		  g_application->enterFrame(&status);
 		  gaudio_AdvanceStreamBuffers();
 
 		  next_game_tick += SKIP_TICKS;
@@ -803,8 +558,7 @@ public:
 		  g_devcon->OMSetRenderTargets(1, &g_backbuffer, nullptr);
 		  g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
 
-          //	application_->clearBuffers();
-		  g_application->renderScene();   // optional argument deltaFrameCount
+		  gdr_drawFrame();
 	
 		  g_swapchain->Present(1, 0);
       }
@@ -813,15 +567,7 @@ public:
       CleanXAudio2();
 
       gaudio_Cleanup();
-      gtexture_cleanup();
-      // gui_cleanup();
-      ghttp_Cleanup();
-      ggeolocation_cleanup();
-      ginput_cleanup();
-      gapplication_cleanup();
-      gevent_Cleanup();
-      gvfs_cleanup();
-      gpath_cleanup();
+	  gdr_deinitialize();
     }
     
     virtual void Uninitialize() {}
@@ -842,6 +588,7 @@ public:
       Windows::ApplicationModel::SuspendingDeferral^ deferral = Args->SuspendingOperation->GetDeferral();
 	
       // Save application data
+	  gdr_suspend();
       
       dxgiDevice->Trim();
       deferral->Complete();
@@ -850,6 +597,7 @@ public:
     void Resuming(Object^ Sender, Object^ Args) 
     {
       next_game_tick = GetTickCount64();
+	  gdr_resume();
     }
 
     void OnSizeChanged(CoreWindow ^sender, WindowSizeChangedEventArgs ^args)
