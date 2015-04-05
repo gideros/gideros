@@ -475,15 +475,6 @@ public:
         CoreApplication::Resuming +=
             ref new EventHandler<Object^>(this, &App::Resuming);
         WindowClosed = false;    // initialize to false
-
-		CoreWindow^ Window = CoreWindow::GetForCurrentThread();
-
-		screenw = Window->Bounds.Width;
-		screenh = Window->Bounds.Height;
-
-		const char* resourcePath = (const char*)Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
-		const char* docsPath = (const char*)ApplicationData::Current->LocalFolder->Path->Data();;
-		gdr_initialize(screenw, screenh, true, resourcePath, docsPath);
     }
 
     virtual void SetWindow(CoreWindow^ Window)
@@ -513,6 +504,14 @@ public:
     virtual void Run()
     {
 
+		CoreWindow^ Window = CoreWindow::GetForCurrentThread();
+
+		screenw = Window->Bounds.Width;
+		screenh = Window->Bounds.Height;
+
+		const char* resourcePath = (const char*)Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
+		const char* docsPath = (const char*)ApplicationData::Current->LocalFolder->Path->Data();;
+
       GStatus status;
 
 	  dxcompat_force_lines = false;
@@ -529,11 +528,9 @@ public:
 	  glBindFramebuffer(GL_FRAMEBUFFER, zero);
 	  assert(zero == 0);
 
-	  gdr_drawFirstFrame();
+	  gdr_initialize(screenw, screenh, true, resourcePath, docsPath);
 
-	  
-      
-      CoreWindow^ Window = CoreWindow::GetForCurrentThread();
+	  gdr_drawFirstFrame();
       
       const int TICK_PER_SECOND = 60;
       const int SKIP_TICKS = 1000 / TICK_PER_SECOND;
@@ -546,22 +543,27 @@ public:
       while(!WindowClosed){
 
 		  loops = 0;
-//	while (GetTickCount64() > next_game_tick && loops < MAX_FRAMESKIP) {
+		  //	while (GetTickCount64() > next_game_tick && loops < MAX_FRAMESKIP) {
 		  Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
+		  //g_application->enterFrame(&status);
 		  gaudio_AdvanceStreamBuffers();
 
 		  next_game_tick += SKIP_TICKS;
 		  loops++;
-//	} 
+		  //	} 
 
 		  g_devcon->OMSetRenderTargets(1, &g_backbuffer, nullptr);
 		  g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
 
+		  //	application_->clearBuffers();
+		  //g_application->renderScene();   // optional argument deltaFrameCount
 		  gdr_drawFrame();
-	
+
 		  g_swapchain->Present(1, 0);
       }
+
+	  gdr_exitGameLoop();
 
       CleanD3D();
       CleanXAudio2();
