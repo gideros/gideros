@@ -1085,6 +1085,14 @@ extern "C" {
 		s_manager->setOpenProject(project);
 	}
 
+	void gdr_suspend(){
+		s_manager->suspend();
+	}
+
+	void gdr_resume(){
+		s_manager->resume();
+	}
+
 	void gdr_deinitialize()
 	{
 		delete s_manager;

@@ -588,7 +588,7 @@ public:
       Windows::ApplicationModel::SuspendingDeferral^ deferral = Args->SuspendingOperation->GetDeferral();
 	
       // Save application data
-	  //gdr_suspend();
+	  gdr_suspend();
       
       dxgiDevice->Trim();
       deferral->Complete();
@@ -597,7 +597,7 @@ public:
     void Resuming(Object^ Sender, Object^ Args) 
     {
       next_game_tick = GetTickCount64();
-	  //gdr_resume();
+	  gdr_resume();
     }
 
     void OnSizeChanged(CoreWindow ^sender, WindowSizeChangedEventArgs ^args)
