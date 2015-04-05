@@ -124,11 +124,14 @@ GLuint oglLoadShader(GLuint type,const char *code)
 		GLint maxLength = 0;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
-		//The maxLength includes the NULL character
-		std::vector<GLchar> infoLog(maxLength);
-		glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+		if (maxLength>0)
+		{
+			//The maxLength includes the NULL character
+			std::vector<GLchar> infoLog(maxLength);
+			glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
 
-		glog_e("Shader Compile: %s\n",&infoLog[0]);
+			glog_e("Shader Compile: %s\n",&infoLog[0]);
+		}
 		glDeleteShader(shader);
 		shader=0;
 	}
@@ -169,10 +172,12 @@ void oglSetupShaders()
 
 	GLint maxLength = 0;
 	glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
-	std::vector<GLchar> infoLog(maxLength);
-	glGetProgramInfoLog(shaderProgram, maxLength, &maxLength, &infoLog[0]);
-	glog_i("GL Program log:%s\n",&infoLog[0]);
-
+	if (maxLength>0)
+	{
+		std::vector<GLchar> infoLog(maxLength);
+		glGetProgramInfoLog(shaderProgram, maxLength, &maxLength, &infoLog[0]);
+		glog_i("GL Program log:%s\n",&infoLog[0]);
+	}
 }
 #endif
 
