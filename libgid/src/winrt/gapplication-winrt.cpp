@@ -86,6 +86,10 @@ void gapplication_exit()
         
 }
 
+int gapplication_getScreenDensity(){
+	return s_manager->getScreenDensity();
+}
+
 void gapplication_enqueueEvent(int type, void *event, int free)
 {
     s_manager->enqueueEvent(type, event, free);
