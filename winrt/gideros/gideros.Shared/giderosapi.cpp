@@ -148,7 +148,7 @@ private:
 class ApplicationManager
 {
 public:
-	ApplicationManager(int width, int height, bool player, const char* resourcePath, const char* docsPath);
+	ApplicationManager(int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath);
 	~ApplicationManager();
 
 	void drawFirstFrame();
@@ -185,8 +185,8 @@ private:
 	bool player_;
 	LuaApplication *application_;
 	NetworkManager *networkManager_;
-	const char* resourcePath_;
-	const char* docsPath_;
+	const wchar_t* resourcePath_;
+	const wchar_t* docsPath_;
 
 	bool running_;
 
@@ -493,7 +493,7 @@ void NetworkManager::calculateMD5(const char* file)
 }
 
 
-ApplicationManager::ApplicationManager(int width, int height, bool player, const char* resourcePath, const char* docsPath)
+ApplicationManager::ApplicationManager(int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath)
 {
 	width_ = width;
 	height_ = height;
@@ -573,7 +573,7 @@ ApplicationManager::ApplicationManager(int width, int height, bool player, const
 
 	if (player_ == false)
 	{
-		const wchar_t *installedLocation = (const wchar_t*)resourcePath_;
+		const wchar_t *installedLocation = resourcePath_;
 
 		char fileStem[MAX_PATH];
 		wcstombs(fileStem, installedLocation, MAX_PATH);
@@ -582,7 +582,7 @@ ApplicationManager::ApplicationManager(int width, int height, bool player, const
 
 		gpath_setDrivePath(0, fileStem);
 
-		const wchar_t *docs = (const wchar_t*)docsPath_;
+		const wchar_t *docs = docsPath_;
 
 		char docsPath[MAX_PATH];
 		wcstombs(docsPath, docs, MAX_PATH);
@@ -760,7 +760,8 @@ void ApplicationManager::openProject(const char* project){
 void ApplicationManager::setProjectName(const char *projectName)
 {
 	glog_v("setProjectName: %s", projectName);
-	std::string dir = docsPath_;
+	std::wstring ws(docsPath_);
+	std::string dir = std::string(ws.begin(), ws.end());
 
 	if (dir[dir.size() - 1] != '/')
 		dir += "/";
@@ -1062,7 +1063,7 @@ static ApplicationManager *s_manager = NULL;
 
 extern "C" {
 
-	void gdr_initialize(int width, int height, bool player, const char* resourcePath, const char* docsPath)
+	void gdr_initialize(int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath)
 	{
 		s_manager = new ApplicationManager(width, height, player, resourcePath, docsPath);
 	}

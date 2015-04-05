@@ -504,13 +504,13 @@ public:
     virtual void Run()
     {
 
-		CoreWindow^ Window = CoreWindow::GetForCurrentThread();
+	  CoreWindow^ Window = CoreWindow::GetForCurrentThread();
 
-		screenw = Window->Bounds.Width;
-		screenh = Window->Bounds.Height;
+	  screenw = Window->Bounds.Width;
+	  screenh = Window->Bounds.Height;
 
-		const char* resourcePath = (const char*)Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
-		const char* docsPath = (const char*)ApplicationData::Current->LocalFolder->Path->Data();;
+	  const wchar_t* resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
+	  const wchar_t* docsPath = ApplicationData::Current->LocalFolder->Path->Data();
 
       GStatus status;
 
@@ -528,7 +528,7 @@ public:
 	  glBindFramebuffer(GL_FRAMEBUFFER, zero);
 	  assert(zero == 0);
 
-	  gdr_initialize(screenw, screenh, true, resourcePath, docsPath);
+	  gdr_initialize(screenw, screenh, false, resourcePath, docsPath);
 
 	  gdr_drawFirstFrame();
       
