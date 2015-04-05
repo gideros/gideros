@@ -133,12 +133,27 @@ void getDirectoryListingR(const char* dir, std::vector<std::string>* filesout, s
 
 
 #if defined(WINSTORE)
+#include <algorithm>
+#include <collection.h>
 std::vector<std::string> getLocalIPs()
 {
-	std::vector<std::string> result;
-	result.clear();
-	result.push_back("WINSTORE placeholder getLocalIPs");
-	return result;
+	struct IPs {
+		IPs() { result.clear(); }
+		void operator()(Windows::Networking::HostName^ hostname) { 
+			if (hostname->IPInformation != nullptr)
+			{
+				std::wstring ws(hostname->CanonicalName->Data());
+				result.push_back(std::string(ws.begin(), ws.end()));
+			}
+		}
+
+		std::vector<std::string> result;
+	};
+
+	auto hostNames = Windows::Networking::Connectivity::NetworkInformation::GetHostNames();
+
+	IPs ip = std::for_each(begin(hostNames), end(hostNames), IPs());
+	return ip.result;
 }
 #elif defined(_WIN32)
 #include <winsock2.h>

@@ -36,8 +36,6 @@
 #include "dxcompat.hpp"
 #include "dxglobals.h"
 
-using namespace Windows;
-
 extern "C" {
 	void g_setFps(int);
 	int g_getFps();
