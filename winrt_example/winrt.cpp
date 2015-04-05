@@ -509,8 +509,8 @@ public:
 	  screenw = Window->Bounds.Width;
 	  screenh = Window->Bounds.Height;
 
-	  const wchar_t* resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
-	  const wchar_t* docsPath = ApplicationData::Current->LocalFolder->Path->Data();
+	  std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
+	  std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
 
       GStatus status;
 
@@ -528,7 +528,7 @@ public:
 	  glBindFramebuffer(GL_FRAMEBUFFER, zero);
 	  assert(zero == 0);
 
-	  gdr_initialize(screenw, screenh, false, resourcePath, docsPath);
+	  gdr_initialize(screenw, screenh, false, resourcePath.c_str(), docsPath.c_str());
 
 	  gdr_drawFirstFrame();
       
