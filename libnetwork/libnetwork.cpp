@@ -37,11 +37,7 @@ Winsock behavior
 */  
 
 
-#if defined(WINSTORE)
-
-
-
-#elif defined(WIN32) || defined(_WIN32)
+#if defined(WIN32) || defined(_WIN32)
 
 typedef int socklen_t;
 
