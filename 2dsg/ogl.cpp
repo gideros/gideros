@@ -65,7 +65,9 @@ varying mediump vec4 fInColor;\
 void main() {\
  mediump vec4 col=mix(fColor,fInColor,fColorSel);\
  mediump vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
- gl_FragColor = tex * col;\
+ mediump vec4 frag=tex *col;\
+ if (frag.a==0) discard;\
+ gl_FragColor = frag;\
 }";
 #else
 /* Vertex shader*/
@@ -107,7 +109,9 @@ const char *colorFShaderCode=
 "void main() {\n"
 " vec4 col=mix(fColor,fInColor,fColorSel);\n"
 " vec4 tex=mix(vec4(1.0f,1.0f,1.0f,1.0f),texture2D(fTexture, fTexCoord),fTextureSel);\n"
-" gl_FragColor = tex * col;\n"
+" vec4 frag=tex *col;\n"
+" if (frag.a==0) discard;\n"
+" gl_FragColor = frag;\n"
 "}\n";
 #endif
 
