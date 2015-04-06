@@ -293,6 +293,44 @@ public:
         mouseTouchOrder_ = order;
     }
 
+	void touchBegin(int x, int y, int id)
+	{
+		ginput_TouchEvent *touchEvent = newTouchEvent(1);
+
+		touchEvent->touch.x = x;
+		touchEvent->touch.y = y;
+		touchEvent->touch.id = id;
+
+		touchEvent->allTouches[0].x = x;
+		touchEvent->allTouches[0].y = y;
+		touchEvent->allTouches[0].id = id;
+
+		ginput_MouseEvent *mouseEvent = NULL;
+		if (isTouchToMouseEnabled_ && touchEvent->touch.id == 0)
+			mouseEvent = newMouseEvent(touchEvent->touch.x, touchEvent->touch.y, GINPUT_LEFT_BUTTON);
+
+		if (mouseTouchOrder_ == 0)
+		{
+			if (mouseEvent)
+			{
+				gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_DOWN_EVENT, mouseEvent, 0, this);
+				deleteMouseEvent(mouseEvent);
+			}
+			gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_BEGIN_EVENT, touchEvent, 0, this);
+			deleteTouchEvent(touchEvent);
+		}
+		else
+		{
+			gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_BEGIN_EVENT, touchEvent, 0, this);
+			deleteTouchEvent(touchEvent);
+			if (mouseEvent)
+			{
+				gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_DOWN_EVENT, mouseEvent, 0, this);
+				deleteMouseEvent(mouseEvent);
+			}
+		}
+	}
+
 private:
     ginput_MouseEvent *newMouseEvent(int x, int y, int button)
     {
@@ -554,6 +592,11 @@ void ginput_removeCallback(gevent_Callback callback, void *udata)
 void ginput_removeCallbackWithGid(g_id gid)
 {
     s_manager->removeCallbackWithGid(gid);
+}
+
+void ginputp_touchBegin(int x, int y, int id)
+{
+	s_manager->touchBegin(x,y,id);
 }
 
 }

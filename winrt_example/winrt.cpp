@@ -285,6 +285,11 @@ void loadProperties()
 }
 
 
+static void printFunc(const char *str, int len, void *data)
+{
+	OutputDebugStringA(str);
+}
+
 // application.openUrl(application,uri)
 int openUrl(lua_State *L)
 { 
@@ -755,11 +760,13 @@ public:
 
 	  loadProperties();
 
+	  g_application->setPrintFunc(printFunc);
+
 	  char line[MAX_PATH];
 	  G_FILE *fp = g_fopen("luafiles.txt", "r");
 
 	  while (g_fgets(line, MAX_PATH-1, fp) != NULL){
-		  OutputDebugStringA(line);
+		  glog_d(line);
 		  for (int i = strlen(line); i > 0; i--)
 			  if (line[i] == '\r' || line[i] == '\n') line[i] = '\0';
 		  g_application->loadFile(line, &status);
@@ -775,7 +782,7 @@ public:
 	  }
 
 	  if (status.error())
-		  OutputDebugStringA(status.errorString());
+		  glog_e(status.errorString());
       
       CoreWindow^ Window = CoreWindow::GetForCurrentThread();
       
@@ -856,17 +863,21 @@ public:
     {
     }
 
-    void PointerPressed(CoreWindow^ Window, PointerEventArgs^ Args)
-    {
+	void PointerPressed(CoreWindow^ Window, PointerEventArgs^ Args)
+	{
+		float xp = Args->CurrentPoint->Position.X;
+		float yp = Args->CurrentPoint->Position.Y;
 
-      float xp = Args->CurrentPoint->Position.X;
-      float yp = Args->CurrentPoint->Position.Y;
-      
-      float x, y;
-      getStdCoords(xp, yp, x, y);
-      
-      ginputp_mouseDown(x,y,0);
-    }
+		float x, y;
+		getStdCoords(xp, yp, x, y);
+
+		auto type = Args->CurrentPoint->PointerDevice->PointerDeviceType;
+
+		if (type == Windows::Devices::Input::PointerDeviceType::Touch)
+			ginputp_touchBegin(x, y, Args->CurrentPoint->PointerId);
+		else
+			ginputp_mouseDown(x, y, 0);
+	}
 
     void PointerReleased(CoreWindow^ Window, PointerEventArgs^ Args)
     {

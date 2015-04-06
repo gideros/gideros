@@ -8,6 +8,8 @@ This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.ph
 
 ]]
 
+print ("hello from lua!")
+
 application:setBackgroundColor(255)
 
 -- load texture, create bitmap from it and set as background
