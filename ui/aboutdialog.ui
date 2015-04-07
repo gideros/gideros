@@ -70,7 +70,7 @@
           </font>
          </property>
          <property name="text">
-          <string>v2015.04.04</string>
+          <string>v2015.04.08</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
