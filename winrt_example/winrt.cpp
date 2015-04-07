@@ -53,7 +53,7 @@ IXAudio2MasteringVoice *g_masteringvoice;
 
 LuaApplication *g_application;
 
-float screenw, screenh;
+float screenw, screenh, pixelscale;
 
 struct ProjectProperties
 {
@@ -240,26 +240,17 @@ void loadProperties()
 
 	CoreWindow^ Window = CoreWindow::GetForCurrentThread();
 
-	float scaley;
-
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
-	scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
-#else
-	scaley = 1.0f;   // Windows 8 PC
-#endif
-
 
 	float contentScaleFactor = 1;
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-	int height = Window->Bounds.Height*scaley;
-	int width = Window->Bounds.Width*scaley;
+	int height = Window->Bounds.Height*pixelscale;
+	int width = Window->Bounds.Width*pixelscale;
 #else
-	int width = Window->Bounds.Height*scaley;
-	int height = Window->Bounds.Width*scaley;
+	int width = Window->Bounds.Height*pixelscale;
+	int height = Window->Bounds.Width*pixelscale;
 #endif
 
-	properties.scaleMode = 5;
+//	properties.scaleMode = 5;
 
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	Orientation hardwareOrientation = Orientation::ePortrait;
@@ -453,27 +444,23 @@ void InitD3D()
   D3D11_VIEWPORT viewport;
   ZeroMemory(&viewport,sizeof(D3D11_VIEWPORT));
 
-  float scaley;
-
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
   DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
-  scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
+  pixelscale = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-  scaley = 1.0f;   // Windows 8 PC
+  pixelscale = 1.0f;   // Windows 8 PC
 #endif
 
-  screenw = Window->Bounds.Width;
-  screenh = Window->Bounds.Height;
+  screenw = Window->Bounds.Width*pixelscale;
+  screenh = Window->Bounds.Height*pixelscale;
 
   float basex = 0;
   float basey = 0;
-  float windoww = screenw;  // default values means stretch to fit full screen
-  float windowh = screenh;  // Lua can change later. Note that screenw/h are in scaled coords
 
-  viewport.TopLeftX = basex*scaley;
-  viewport.TopLeftY = basey*scaley;
-  viewport.Width = screenw*scaley;  // Direct3D needs actual pixels
-  viewport.Height = screenh*scaley;
+  viewport.TopLeftX = basex;
+  viewport.TopLeftY = basey;
+  viewport.Width = screenw;  // Direct3D needs actual pixels
+  viewport.Height = screenh;
   
   g_devcon->RSSetViewports(1,&viewport);
 
@@ -868,34 +855,44 @@ public:
 		float xp = Args->CurrentPoint->Position.X;
 		float yp = Args->CurrentPoint->Position.Y;
 
+		xp = xp*pixelscale;
+		yp = yp*pixelscale;
+
 		float x, y;
 		getStdCoords(xp, yp, x, y);
 
 		auto type = Args->CurrentPoint->PointerDevice->PointerDeviceType;
 
-		if (type == Windows::Devices::Input::PointerDeviceType::Touch)
+		// ginputp_touchBegin is not working yet. Multitouch works if mouse events create touch events
+		if (false)     // type == Windows::Devices::Input::PointerDeviceType::Touch)
 			ginputp_touchBegin(x, y, Args->CurrentPoint->PointerId);
 		else
 			ginputp_mouseDown(x, y, 0);
 	}
 
-    void PointerReleased(CoreWindow^ Window, PointerEventArgs^ Args)
-    {
-      
-      float xp = Args->CurrentPoint->Position.X;
-      float yp = Args->CurrentPoint->Position.Y;
-      
-      float x, y;
-      getStdCoords(xp, yp, x, y);
-      
-      ginputp_mouseUp(x,y,0);
-    }
+	void PointerReleased(CoreWindow^ Window, PointerEventArgs^ Args)
+	{
+
+		float xp = Args->CurrentPoint->Position.X;
+		float yp = Args->CurrentPoint->Position.Y;
+
+		xp = xp*pixelscale;
+		yp = yp*pixelscale;
+
+		float x, y;
+		getStdCoords(xp, yp, x, y);
+
+		ginputp_mouseUp(x, y, 0);
+	}
 
     void PointerMoved(CoreWindow^ Window, PointerEventArgs^ Args)
     {	
 		if (Args->CurrentPoint->IsInContact){
 			float xp = Args->CurrentPoint->Position.X;
 			float yp = Args->CurrentPoint->Position.Y;
+
+			xp = xp*pixelscale;
+			yp = yp*pixelscale;
 
 			float x, y;
 			getStdCoords(xp, yp, x, y);
