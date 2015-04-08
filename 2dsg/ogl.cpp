@@ -66,7 +66,7 @@ void main() {\
  mediump vec4 col=mix(fColor,fInColor,fColorSel);\
  mediump vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
  mediump vec4 frag=tex *col;\
- if (frag.a==0) discard;\
+ if (frag.a==0.0) discard;\
  gl_FragColor = frag;\
 }";
 #else
@@ -110,7 +110,7 @@ const char *colorFShaderCode=
 " vec4 col=mix(fColor,fInColor,fColorSel);\n"
 " vec4 tex=mix(vec4(1.0f,1.0f,1.0f,1.0f),texture2D(fTexture, fTexCoord),fTextureSel);\n"
 " vec4 frag=tex *col;\n"
-" if (frag.a==0) discard;\n"
+" if (frag.a==0.0) discard;\n"
 " gl_FragColor = frag;\n"
 "}\n";
 #endif
