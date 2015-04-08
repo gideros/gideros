@@ -349,7 +349,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\dxcompat.cpp">
       <CompileAsWinRT>true</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)giderosapi.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)giderosapi.cpp">
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h" />

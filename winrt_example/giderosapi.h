@@ -1,11 +1,13 @@
 #ifndef GIDEROSAPI_H
 #define GIDEROSAPI_H
 
+using namespace Windows::UI::Core;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-	void gdr_initialize(int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath);
+	void gdr_initialize(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath);
 	void gdr_drawFirstFrame();
 	void gdr_drawFrame();
 	void gdr_exitGameLoop();
