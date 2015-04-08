@@ -1,2 +1,2 @@
-bird.lua
+button.lua
 main.lua
