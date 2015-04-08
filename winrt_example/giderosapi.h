@@ -19,6 +19,15 @@ extern "C" {
 	void gdr_background();
 	void gdr_openProject(const char* project);
 	bool gdr_isRunning();
+	void gdr_keyDown(int keyCode);
+	void gdr_keyUp(int keyCode);
+	void gdr_mouseDown(int x, int y);
+	void gdr_mouseMove(int x, int y);
+	void gdr_mouseUp(int x, int y);
+	void gdr_touchBegin(int x, int y, int id);
+	void gdr_touchMove(int x, int y, int id);
+	void gdr_touchEnd(int x, int y, int id);
+	void gdr_touchCancel(int x, int y, int id);
 
 #ifdef __cplusplus
 }

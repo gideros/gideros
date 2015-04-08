@@ -235,13 +235,13 @@ void InitD3D(CoreWindow^ Window)
 
 	float basex = 0;
 	float basey = 0;
-	float windoww = Window->Bounds.Width;  // default values means stretch to fit full screen
-	float windowh = Window->Bounds.Height;  // Lua can change later. Note that screenw/h are in scaled coords
+	float windoww = Window->Bounds.Width*scaley;  // default values means stretch to fit full screen
+	float windowh = Window->Bounds.Height*scaley;  // Lua can change later. Note that screenw/h are in scaled coords
 
-	viewport.TopLeftX = basex*scaley;
-	viewport.TopLeftY = basey*scaley;
-	viewport.Width = windoww*scaley;  // Direct3D needs actual pixels
-	viewport.Height = windowh*scaley;
+	viewport.TopLeftX = basex;
+	viewport.TopLeftY = basey;
+	viewport.Width = windoww;  // Direct3D needs actual pixels
+	viewport.Height = windowh;
 
 	g_devcon->RSSetViewports(1, &viewport);
 
@@ -534,6 +534,8 @@ public:
 	ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath);
 	~ApplicationManager();
 
+	void getStdCoords(float xp, float yp, float &x, float &y);
+
 	void drawFirstFrame();
 
 	void luaError(const char *msg);
@@ -570,6 +572,8 @@ private:
 	NetworkManager *networkManager_;
 	const wchar_t* resourcePath_;
 	const wchar_t* docsPath_;
+
+	float contentScaleFactor;
 
 	bool running_;
 
@@ -892,6 +896,13 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 	glBindFramebuffer(GL_FRAMEBUFFER, zero);
 	assert(zero == 0);
 
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+	contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
+#else
+	contentScaleFactor = 1.0f;   // Windows 8 PC
+#endif
+
 	width_ = width;
 	height_ = height;
 	player_ = player;
@@ -1042,6 +1053,37 @@ ApplicationManager::~ApplicationManager()
 
 	gpath_cleanup();
 
+}
+
+void ApplicationManager::getStdCoords(float xp, float yp, float &x, float &y)
+{
+	xp = xp*contentScaleFactor;
+	yp = yp*contentScaleFactor;
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+
+	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+	DisplayOrientations orientation = dinfo->CurrentOrientation;
+
+	if (orientation == DisplayOrientations::Portrait){
+		x = xp;
+		y = yp;
+	}
+	else if (orientation == DisplayOrientations::Landscape){
+		x = width_ - yp;
+		y = xp;
+	}
+	else if (orientation == DisplayOrientations::LandscapeFlipped){
+		x = yp;
+		y = height_ - xp;
+	}
+	else {
+		x = width_ - xp;
+		y = height_ - yp;
+	}
+#else
+	x = xp;
+	y = yp;
+#endif
 }
 
 void ApplicationManager::drawFirstFrame()
@@ -1242,7 +1284,6 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 
 	application_->deinitialize();
 	application_->initialize();
-	float contentScaleFactor = 1;
 	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
@@ -1334,8 +1375,6 @@ void ApplicationManager::loadProperties()
 	buffer >> properties_.mouseToTouch;
 	buffer >> properties_.touchToMouse;
 	buffer >> properties_.mouseTouchOrder;
-
-	float contentScaleFactor = 1;
 
 	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
@@ -1522,6 +1561,58 @@ extern "C" {
 	bool gdr_isRunning()
 	{
 		return s_manager->isRunning();
+	}
+
+	void gdr_keyDown(int keyCode)
+	{
+		ginputp_keyDown(keyCode);
+	}
+
+	void gdr_keyUp(int keyCode)
+	{
+		ginputp_keyUp(keyCode);
+	}
+
+	void gdr_mouseDown(int x, int y){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_mouseDown(xn, yn, 0);
+	}
+
+	void gdr_mouseMove(int x, int y){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_mouseMove(xn, yn);
+	}
+
+	void gdr_mouseUp(int x, int y){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_mouseUp(xn, yn, 0);
+	}
+
+	void gdr_touchBegin(int x, int y, int id){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_touchBegin(xn, yn, id);
+	}
+
+	void gdr_touchMove(int x, int y, int id){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_touchMove(xn, yn, id);
+	}
+
+	void gdr_touchEnd(int x, int y, int id){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_touchEnd(xn, yn, id);
+	}
+
+	void gdr_touchCancel(int x, int y, int id){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_touchCancel(xn, yn, id);
 	}
 
 }

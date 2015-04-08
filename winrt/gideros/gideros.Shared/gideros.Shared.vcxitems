@@ -287,7 +287,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\gaudio-winrt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\ggeolocation-winrt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\ghttp-winrt.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\ginput-winrt.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\ginput-winrt.cpp">
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\gui-winrt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\bytebuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\deviceinfo-winrt.cpp" />

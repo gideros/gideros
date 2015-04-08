@@ -19,111 +19,6 @@ using namespace Windows::Graphics::Display;
 using namespace Platform;
 using namespace Windows::Storage;
 
-float screenw, screenh;
-
-void getStdCoords(float xp, float yp, float &x, float &y)
-{
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-
-	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
-	DisplayOrientations Orientation = dinfo->CurrentOrientation;
-
-	if (Orientation == DisplayOrientations::Portrait){
-		x = xp;
-		y = yp;
-	}
-	else if (Orientation == DisplayOrientations::Landscape){
-		x = screenw - yp;
-		y = xp;
-	}
-	else if (Orientation == DisplayOrientations::LandscapeFlipped){
-		x = yp;
-		y = screenh - xp;
-	}
-	else {
-		x = screenw - xp;
-		y = screenh - yp;
-	}
-#else
-	x = xp;
-	y = yp;
-#endif
-}
-
-/*
-* Mutex Functions
-*/
-
-#include "pthread.h"
-//#define PTW32_DLLPORT
-//#define PTW32_CDECL
-
-int PTW32_CDECL pthread_mutex_init(pthread_mutex_t * mutex,
-	const pthread_mutexattr_t * attr)
-{
-	return 0;
-}
-
-int PTW32_CDECL pthread_mutex_destroy(pthread_mutex_t * mutex)
-{
-	return 0;
-}
-
-
-int PTW32_CDECL pthread_mutex_lock(pthread_mutex_t * mutex)
-{
-	return 0;
-}
-
-
-int PTW32_CDECL pthread_mutex_timedlock(pthread_mutex_t * mutex,
-	const struct timespec *abstime)
-{
-	return 0;
-}
-
-
-int PTW32_CDECL pthread_mutex_trylock(pthread_mutex_t * mutex)
-{
-	return 0;
-}
-
-int PTW32_CDECL pthread_mutex_unlock(pthread_mutex_t * mutex)
-{
-	return 0;
-}
-
-int PTW32_CDECL pthread_mutex_consistent(pthread_mutex_t * mutex)
-{
-	return 0;
-}
-
-int PTW32_CDECL pthread_create(pthread_t * tid,
-	const pthread_attr_t * attr,
-	void *(PTW32_CDECL *start) (void *),
-	void *arg)
-{
-	return 0;
-}
-
-int PTW32_CDECL pthread_join(pthread_t thread,
-	void **value_ptr)
-{
-	return 0;
-}
-
-extern "C"
-{
-	wchar_t htonl(wchar_t w)
-	{
-		return w;
-	}
-
-	void ExitProcess(int i)
-	{
-	}
-}
-
 // ######################################################################
 // the class definition for the core "framework" of our app
 ref class App sealed : public IFrameworkView
@@ -153,6 +48,8 @@ public:
 			<CoreWindow^, PointerEventArgs^>(this, &App::PointerReleased);
 		Window->PointerMoved += ref new TypedEventHandler
 			<CoreWindow^, PointerEventArgs^>(this, &App::PointerMoved);
+		Window->PointerCaptureLost += ref new TypedEventHandler
+			<CoreWindow^, PointerEventArgs^>(this, &App::PointerLost);
       
 #if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
 		Window->SizeChanged += ref new TypedEventHandler
@@ -172,13 +69,10 @@ public:
 
 	  CoreWindow^ Window = CoreWindow::GetForCurrentThread();
 
-	  screenw = Window->Bounds.Width;
-	  screenh = Window->Bounds.Height;
-
 	  std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
 	  std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
 
-	  gdr_initialize(Window, screenw, screenh, false, resourcePath.c_str(), docsPath.c_str());
+	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, false, resourcePath.c_str(), docsPath.c_str());
 
 	  gdr_drawFirstFrame();
       
@@ -242,50 +136,47 @@ public:
     }
 
     void PointerPressed(CoreWindow^ Window, PointerEventArgs^ Args)
-    {
-
-      float xp = Args->CurrentPoint->Position.X;
-      float yp = Args->CurrentPoint->Position.Y;
-      
-      float x, y;
-      getStdCoords(xp, yp, x, y);
-      
-      //ginputp_mouseDown(x,y,0);
+    { 
+	  if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch) 
+		  gdr_touchBegin(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+	  else
+		  gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
     }
 
     void PointerReleased(CoreWindow^ Window, PointerEventArgs^ Args)
     {
-      
-      float xp = Args->CurrentPoint->Position.X;
-      float yp = Args->CurrentPoint->Position.Y;
-      
-      float x, y;
-      getStdCoords(xp, yp, x, y);
-      
-      //ginputp_mouseUp(x,y,0);
+		if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+			gdr_touchEnd(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+		else
+			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
     }
 
     void PointerMoved(CoreWindow^ Window, PointerEventArgs^ Args)
     {	
 		if (Args->CurrentPoint->IsInContact){
-			float xp = Args->CurrentPoint->Position.X;
-			float yp = Args->CurrentPoint->Position.Y;
-
-			float x, y;
-			getStdCoords(xp, yp, x, y);
-
-			//ginputp_mouseMove(x, y);
+			if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+				gdr_touchMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+			else
+				gdr_mouseMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
 		}
     }
 
+	void PointerLost(CoreWindow^ Window, PointerEventArgs^ Args)
+	{
+		if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+			gdr_touchCancel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+		else
+			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+	}
+
 	void KeyDown(CoreWindow^ Window, KeyEventArgs^ Args)
 	{
-		//ginputp_keyDown((int)Args->VirtualKey);
+		gdr_keyDown((int)Args->VirtualKey);
 	}
 
 	void KeyUp(CoreWindow^ Window, KeyEventArgs^ Args)
 	{
-		//ginputp_keyUp((int)Args->VirtualKey);
+		gdr_keyUp((int)Args->VirtualKey);
 	}
 
 
