@@ -40,6 +40,80 @@ using namespace Platform;
 using namespace Windows::UI::Core;
 using namespace Windows::Graphics::Display;
 
+/*
+* Mutex Functions
+*/
+
+#include "pthread.h"
+//#define PTW32_DLLPORT
+//#define PTW32_CDECL
+
+int PTW32_CDECL pthread_mutex_init(pthread_mutex_t * mutex,
+	const pthread_mutexattr_t * attr)
+{
+	return 0;
+}
+
+int PTW32_CDECL pthread_mutex_destroy(pthread_mutex_t * mutex)
+{
+	return 0;
+}
+
+
+int PTW32_CDECL pthread_mutex_lock(pthread_mutex_t * mutex)
+{
+	return 0;
+}
+
+
+int PTW32_CDECL pthread_mutex_timedlock(pthread_mutex_t * mutex,
+	const struct timespec *abstime)
+{
+	return 0;
+}
+
+
+int PTW32_CDECL pthread_mutex_trylock(pthread_mutex_t * mutex)
+{
+	return 0;
+}
+
+int PTW32_CDECL pthread_mutex_unlock(pthread_mutex_t * mutex)
+{
+	return 0;
+}
+
+int PTW32_CDECL pthread_mutex_consistent(pthread_mutex_t * mutex)
+{
+	return 0;
+}
+
+int PTW32_CDECL pthread_create(pthread_t * tid,
+	const pthread_attr_t * attr,
+	void *(PTW32_CDECL *start) (void *),
+	void *arg)
+{
+	return 0;
+}
+
+int PTW32_CDECL pthread_join(pthread_t thread,
+	void **value_ptr)
+{
+	return 0;
+}
+
+extern "C"
+{
+	wchar_t htonl(wchar_t w)
+	{
+		return w;
+	}
+
+	void ExitProcess(int i)
+	{
+	}
+}
+
 extern bool dxcompat_force_lines;
 
 IXAudio2 *g_audioengine;
