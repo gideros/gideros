@@ -39,8 +39,7 @@ INCLUDEPATH +=	\
     "../libpvrt" \
     "../libgid/include" \
     "../libgfile" \
-    "../libgideros" \
-    "c:\qscintilla\QScintilla-gpl-2.8.4\Qt4Qt5"
+    "../libgideros"
 
 SOURCES += \
     main.cpp\
