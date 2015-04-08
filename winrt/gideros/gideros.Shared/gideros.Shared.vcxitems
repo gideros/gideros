@@ -298,7 +298,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\keepawake-empty.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\locale-winrt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\md5.c" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\openurl-winrt.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\openurl-winrt.cpp">
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platform.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platformutil.cpp">
       <CompileAsWinRT>true</CompileAsWinRT>
