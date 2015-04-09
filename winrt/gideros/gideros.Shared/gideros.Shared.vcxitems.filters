@@ -978,6 +978,9 @@
       <Filter>2dsg</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)giderosapi.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\libnetwork.cpp">
+      <Filter>libnetwork</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">

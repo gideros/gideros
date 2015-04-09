@@ -292,6 +292,7 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\gui-winrt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\bytebuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\libnetwork.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\deviceinfo-winrt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\drawinfo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\exit-generic.cpp" />

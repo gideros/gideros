@@ -19,6 +19,20 @@ using namespace Windows::Graphics::Display;
 using namespace Platform;
 using namespace Windows::Storage;
 
+extern "C"
+{
+#ifdef _M_IX86
+	wchar_t htonl(wchar_t w)
+	{
+		return w;
+	}
+#endif
+
+	void ExitProcess(int i)
+	{
+	}
+}
+
 // ######################################################################
 // the class definition for the core "framework" of our app
 ref class App sealed : public IFrameworkView
@@ -71,8 +85,9 @@ public:
 
 	  std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
 	  std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
+	  bool isPlayer = true;
 
-	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, false, resourcePath.c_str(), docsPath.c_str());
+	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str());
 
 	  gdr_drawFirstFrame();
       

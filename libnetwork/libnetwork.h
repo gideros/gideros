@@ -6,7 +6,8 @@
 #include <vector>
 
 #ifdef WINSTORE
-typedef int SOCKET;
+#include <WinSock2.h>
+#pragma comment(lib, "Ws2_32.lib")
 #elif WIN32
 #include <WinSock.h>
 #else

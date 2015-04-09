@@ -10,7 +10,7 @@
 #include <string>
 #include <binder.h>
 #include <xaudio2.h>
-//#include <libnetwork.h>
+#include <libnetwork.h>
 #include "ginput-winrt.h"
 #include "luaapplication.h"
 #include "platform.h"
@@ -100,18 +100,6 @@ int PTW32_CDECL pthread_join(pthread_t thread,
 	void **value_ptr)
 {
 	return 0;
-}
-
-extern "C"
-{
-	wchar_t htonl(wchar_t w)
-	{
-		return w;
-	}
-
-	void ExitProcess(int i)
-	{
-	}
 }
 
 extern bool dxcompat_force_lines;
@@ -499,7 +487,7 @@ public:
 		strcpy(buffer + pos, str);
 		pos += strlen(str) + 1;
 
-		//server_->sendData(buffer, size);
+		server_->sendData(buffer, size);
 
 		free(buffer);
 	}
@@ -523,7 +511,7 @@ private:
 
 private:
 	ApplicationManager *application_;
-	//Server *server_;
+	Server *server_;
 	std::string resourceDirectory_;
 };
 
@@ -594,17 +582,17 @@ private:
 NetworkManager::NetworkManager(ApplicationManager* application)
 {
 	application_ = application;
-	//server_ = new Server(15000);
+	server_ = new Server(15000);
 }
 
 NetworkManager::~NetworkManager()
 {
-	//delete server_;
+	delete server_;
 }
 
 void NetworkManager::tick()
 {
-	/*int dataTotal = 0;
+	int dataTotal = 0;
 
 	while (true)
 	{
@@ -669,7 +657,7 @@ void NetworkManager::tick()
 
 		if (dataDelta == 0 || dataTotal > 1024)
 			break;
-	}*/
+	}
 }
 
 void NetworkManager::createFolder(const std::vector<char>& data)
@@ -752,7 +740,7 @@ void NetworkManager::sendFileList()
 		buffer.append(directories[i]);
 	}
 
-	//server_->sendData(buffer.data(), buffer.size());
+	server_->sendData(buffer.data(), buffer.size());
 }
 
 void NetworkManager::setProjectName(const std::vector<char> &data)
