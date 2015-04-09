@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stack>
 #include <string>
+#include <direct.h>
 #include <binder.h>
 #include <xaudio2.h>
 #include <libnetwork.h>
@@ -663,7 +664,7 @@ void NetworkManager::tick()
 void NetworkManager::createFolder(const std::vector<char>& data)
 {
 	std::string folderName = &data[1];
-	CreateDirectory((LPCWSTR)g_pathForFile(folderName.c_str()), NULL);
+	_mkdir(g_pathForFile(folderName.c_str()));
 }
 
 void NetworkManager::createFile(const std::vector<char>& data)
@@ -1207,13 +1208,13 @@ void ApplicationManager::setProjectName(const char *projectName)
 
 	dir += "gideros";
 
-	CreateDirectory((LPCWSTR)dir.c_str(), NULL);
+	_mkdir(dir.c_str());
 
 	dir += "/";
 
 	dir += projectName;
 
-	CreateDirectory((LPCWSTR)dir.c_str(), NULL);
+	_mkdir(dir.c_str());
 
 	dir += "/";
 
@@ -1227,9 +1228,9 @@ void ApplicationManager::setProjectName(const char *projectName)
 	glog_v("temporary: %s", temporary.c_str());
 	glog_v("resource: %s", resource.c_str());
 
-	CreateDirectory((LPCWSTR)documents.c_str(), NULL);
-	CreateDirectory((LPCWSTR)temporary.c_str(), NULL);
-	CreateDirectory((LPCWSTR)resource.c_str(), NULL);
+	_mkdir(documents.c_str());
+	_mkdir(temporary.c_str());
+	_mkdir(resource.c_str());
 
 	setDocumentsDirectory(documents.c_str());
 	setTemporaryDirectory(temporary.c_str());
