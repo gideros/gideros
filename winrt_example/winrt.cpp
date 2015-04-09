@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stack>
 #include <string>
-#include <glog.h>
 
 #include "giderosapi.h"
 
