@@ -147,7 +147,7 @@ void MainWindow::setupUiProperties(){
     ui.action768x1366->setProperty("width",  768);
     ui.action768x1366->setProperty("height", 1366);
 
-    ui.action720x1280->setProperty("width",  768);
+    ui.action720x1280->setProperty("width",  720);
     ui.action720x1280->setProperty("height", 1280);
 
     ui.action1080x1920->setProperty("width",  1080);
