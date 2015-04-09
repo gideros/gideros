@@ -77,7 +77,7 @@
     </Link>
     <ClCompile>
       <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;PSAPI_VERSION=2;WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP;_UITHREADCTXT_SUPPORT=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\libgvfs;..\..\..\lua\src;..\..\..\libnetwork;..\..\..\2dsg;..\..\..\libplatform;..\..\..\luabinding;..\..\..\libgideros;..\..\..\libgid\include\winrt;..\..\..\libgid\include;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <SDLCheck>false</SDLCheck>
     </ClCompile>
@@ -90,7 +90,7 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\libgvfs;..\..\..\lua\src;..\..\..\libnetwork;..\..\..\2dsg;..\..\..\libplatform;..\..\..\luabinding;..\..\..\libgideros;..\..\..\libgid\include\winrt;..\..\..\libgid\include;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile>
       <SDLCheck>false</SDLCheck>
