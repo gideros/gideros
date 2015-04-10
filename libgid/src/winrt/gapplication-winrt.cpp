@@ -1,6 +1,9 @@
 #include <gapplication.h>
 #include <gapplication-winrt.h>
 
+using namespace Windows::Graphics::Display;
+using namespace Windows::ApplicationModel::Core;
+
 class GGApplicationManager
 {
     
@@ -17,8 +20,14 @@ public:
 	
 	int getScreenDensity()
     {   
-        return 160;
+		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+		return dinfo->LogicalDpi;
     }
+
+	void exit()
+	{
+		//App.Current.Exit();
+	}
 
     g_id addCallback(gevent_Callback callback, void *udata)
     {
@@ -83,7 +92,7 @@ void gapplication_removeCallbackWithGid(g_id gid)
 
 void gapplication_exit()
 {
-        
+	s_manager->exit();
 }
 
 int gapplication_getScreenDensity(){
