@@ -551,9 +551,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\gtimer.cpp">
       <Filter>libplatform</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\keepawake-empty.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\locale-winrt.cpp">
       <Filter>libplatform</Filter>
     </ClCompile>
@@ -561,9 +558,6 @@
       <Filter>libplatform</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platform.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\vibrate-empty.cpp">
       <Filter>libplatform</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\ggeolocation-winrt.cpp">
@@ -980,6 +974,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)giderosapi.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\libnetwork.cpp">
       <Filter>libnetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\keepawake-winrt.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\vibrate-winrt.cpp">
+      <Filter>libplatform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
