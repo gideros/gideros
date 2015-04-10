@@ -43,6 +43,8 @@ void MainWindow::setupUiActions(){
     connect(ui.actionQuarter,       SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionHalf,          SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionOriginal,      SIGNAL(triggered()), this, SLOT(actionScale()));
+    connect(ui.actionDouble,        SIGNAL(triggered()), this, SLOT(actionScale()));
+    connect(ui.actionTriple,        SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionZoom_In,       SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionZoom_Out,      SIGNAL(triggered()), this, SLOT(actionScale()));
     connect(ui.actionFit_To_Window, SIGNAL(triggered()), this, SLOT(actionScale()));
@@ -175,6 +177,8 @@ void MainWindow::setupUiProperties(){
     ui.actionQuarter->setProperty("scale",       25);
     ui.actionHalf->setProperty("scale",          50);
     ui.actionOriginal->setProperty("scale",      100);
+    ui.actionDouble->setProperty("scale",        200);
+    ui.actionTriple->setProperty("scale",        300);
     ui.actionZoom_In->setProperty("scale",       eZoomIn);
     ui.actionZoom_Out->setProperty("scale",      eZoomOut);
     ui.actionFit_To_Window->setProperty("scale", eFitToWindow);
@@ -577,9 +581,16 @@ void MainWindow::updateResolution(){
 
 void MainWindow::updateAutoScale(){
     if(autoScale()){
+        ui.centralWidget->setMinimumSize(1, 1);
+
+    }else{
+        ui.centralWidget->setMinimumSize(0, 0);
+
         QAction *action = resolutionGroup_->checkedAction();
-        if(action)
-            action->setChecked(false);
+        if(action){
+            setWidth(action->property("width").toInt());
+            setHeight(action->property("height").toInt());
+        }
     }
 
     resolutionGroup_->setEnabled(!autoScale());
@@ -707,6 +718,7 @@ bool MainWindow::fullScreen(){
 
 void MainWindow::setFullScreen(bool fullScreen){
     fullScreen_ = fullScreen;
+    ui.actionFull_Screen->setChecked(fullScreen);
 }
 
 float MainWindow::scale(){
@@ -746,6 +758,11 @@ void MainWindow::resizeWindow(int width, int height){
         height = height + ui.menuBar->height();
 
     resize(width, height);
+}
+
+void MainWindow::fullScreenWindow(bool _fullScreen){
+    setFullScreen(_fullScreen);
+    actionFull_Screen(fullScreen());
 }
 
 void MainWindow::resizeEvent(QResizeEvent*){    

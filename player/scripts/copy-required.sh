@@ -1,0 +1,5 @@
+cp ../libgid/libgid.dylib "../release/Gideros Player.app/Contents/Frameworks"
+cp ../libgideros/libgideros.dylib "../release/Gideros Player.app/Contents/Frameworks"
+cp ../libgvfs/libgvfs.dylib "../release/Gideros Player.app/Contents/Frameworks"
+cp ../lua/liblua.dylib "../release/Gideros Player.app/Contents/Frameworks"
+cp ../libpystring/libpystring.dylib "../release/Gideros Player.app/Contents/Frameworks"

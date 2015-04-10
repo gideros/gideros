@@ -68,6 +68,7 @@ class MainWindow : public QMainWindow{
         void checkLoadedSettings();
         void saveSettings();
         void resizeWindow(int width, int height);
+        void fullScreenWindow(bool _fullScreen);
 
     protected:
         virtual void closeEvent(QCloseEvent*);

@@ -1,0 +1,2 @@
+install_name_tool -id @executable_path/../Frameworks/libpystring.dylib libpystring.dylib
+install_name_tool -change /Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/5/QtCore libpystring.dylib
