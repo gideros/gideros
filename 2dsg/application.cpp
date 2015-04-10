@@ -80,6 +80,7 @@ Application::Application() :
 
 	scale_ = 1;
 	fov_=0;
+	farplane_=0;
 }
 
 Application::~Application()
@@ -288,12 +289,15 @@ void Application::renderScene(int deltaFrameCount)
 			float hw=width_*0.5/scale_;
 			float hh=height_*0.5/scale_;
 			float np=hh/tan(fov_* M_PI / 360.0);
-			float fp=(farplane_>0)?(np+farplane_):(np*100);
-			frustum=setFrustum(-hw, hw, hh, -hh, np,fp);
+			float fp=(farplane_>0)?farplane_:hh*2;
+			frustum=setFrustum(-hw, hw, hh, -hh, np,np+fp);
 			projection.translate(-hw,-hh,-np-0.001);
 		}
 		else
-			frustum=setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -1,1);
+		{
+			float fp=(farplane_>0)?farplane_:1; //Conservative default
+			frustum=setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -fp,fp);
+		}
 		vpProjection.scale(1,-1,1);
 		vpProjection.translate(0,height_/scale_,0);
 		break;
@@ -304,12 +308,15 @@ void Application::renderScene(int deltaFrameCount)
 			float hw=width_*0.5/scale_;
 			float hh=height_*0.5/scale_;
 			float np=hh/tan(fov_* M_PI / 360.0);
-			float fp=(farplane_>0)?(np+farplane_):(np*100);
-			frustum=setFrustum(-hh,hh,hw,-hw,np,fp);
+			float fp=(farplane_>0)?farplane_:hh*2;
+			frustum=setFrustum(-hh,hh,hw,-hw,np,np+fp);
 			projection.translate(-hh,-hw,-np-0.001);
 		}
 		else
-			frustum=setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -1,1);
+		{
+			float fp=(farplane_>0)?farplane_:1; //Conservative default
+			frustum=setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -fp,fp);
+		}
 		vpProjection.scale(1,-1,1);
 		vpProjection.translate(0,width_/scale_,0);
 		break;

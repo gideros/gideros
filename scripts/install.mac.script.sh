@@ -19,7 +19,7 @@ expect {
 '
 
 export QT=/usr/local/Cellar/qt5/5.4.0
-export IOS_SDK=8.1
+export IOS_SDK=8.2
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
 export GVERSION=2015.02

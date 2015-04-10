@@ -227,7 +227,7 @@ public:
 
 	float z() const
 	{
-        return localTransform_.y();
+        return localTransform_.z();
 	}
 
 	float refX() const

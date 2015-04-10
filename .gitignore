@@ -254,8 +254,6 @@ tmp
 !*.nsi
 
 # and others to exclude
-*.filters
-*.vcxitems
 plugins/LPeg/source/makefile
 /.project
 /Default/

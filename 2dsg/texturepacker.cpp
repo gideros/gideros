@@ -1,6 +1,7 @@
 #include "texturepacker.h"
 #include "MaxRectsBinPack.h"
 #include <stdlib.h>
+#include <algorithm>
 
 class MyTexturePacker : public TexturePacker
 {

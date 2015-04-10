@@ -1,0 +1,13 @@
+This folder will contain an example winrt project. Eventually Gideros will 
+be able to output directories of this sort. 
+
+winrt.cpp is the main program for both the WP8 and Windows store app 
+(to be called gideros.Windows.exe and gideros.WindowsPhone.exe). 
+These EXEs are to be linked againsted two static libraries gideros.Windows.lib 
+and gideros.WindowsPhone.lib (in Visual Studio format) which are in turn generated 
+from the standard Gideros library code. 
+
+We need to generate a SLN file with two projects (vcxproj) for Windows
+and Windows phone. Both compile winrt.cpp but link against the appropriate
+static library. VS can then package and deploy these EXEs along with the users
+assets (including LUA files) and eventually upload to the Windows Store and Windows Phone Store.

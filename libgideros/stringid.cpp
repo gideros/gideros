@@ -17,6 +17,9 @@ StringId::StringId()
 	idmap_["scaleX"] = eStringIdScaleX;
 	idmap_["scaleY"] = eStringIdScaleY;
 	idmap_["scaleZ"] = eStringIdScaleZ;
+	idmap_["anchorX"] = eStringIdAnchorX;
+    idmap_["anchorY"] = eStringIdAnchorY;
+    idmap_["anchorZ"] = eStringIdAnchorZ;
 	idmap_["alpha"] = eStringIdAlpha;
     idmap_["redMultiplier"] = eStringIdRedMultiplier;
     idmap_["greenMultiplier"] = eStringIdGreenMultiplier;
