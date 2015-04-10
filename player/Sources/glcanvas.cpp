@@ -149,6 +149,9 @@ void GLCanvas::setupProperties(){
     // set the lua application to use in player
     application_ = new LuaApplication;
 
+    // set the canvas in luaapp to use in bind funcs
+    application_->setGLCanvas(this);
+
     if(isPlayer_){
         server_ = new Server(15000);
 

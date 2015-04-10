@@ -175,6 +175,19 @@ public:
 void setPlatformInterface(PlatformInterface* platformInterface);
 */
 
+#if defined(_WIN32) || defined(__APPLE__)
+    #include "../luabinding/luaapplication.h"
+
+    void setWindowSize(LuaApplication* application, int width, int height);
+    void setFullScreen(LuaApplication* application, bool fullScreen);
+#else
+    void setWindowSize(){
+    }
+
+    void setFullScreen(){
+    }
+#endif
+
 void vibrate();
 std::string getLocale();
 std::string getLanguage();
