@@ -42,6 +42,8 @@ private:
     static int getDeviceOrientation(lua_State *L);
     static int configureFrustum(lua_State* L);
     static int isPlayerMode(lua_State *L);
+    static int setWindowSize(lua_State *L);
+    static int setFullScreen(lua_State *L);
 };
 
 #endif

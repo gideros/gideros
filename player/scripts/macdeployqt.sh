@@ -1,0 +1,1 @@
+macdeployqt "Gideros Player.app"

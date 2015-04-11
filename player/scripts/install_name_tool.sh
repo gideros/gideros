@@ -1,0 +1,2 @@
+install_name_tool -change libgvfs.1.dylib @executable_path/../Frameworks/libgvfs.dylib "Gideros Player.app/Contents/MacOS/Gideros Player"
+install_name_tool -change libpystring.1.dylib @executable_path/../Frameworks/libpystring.dylib "Gideros Player.app/Contents/MacOS/Gideros Player"
