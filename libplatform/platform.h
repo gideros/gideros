@@ -175,7 +175,7 @@ public:
 void setPlatformInterface(PlatformInterface* platformInterface);
 */
 
-#if defined(_WIN32) || defined(__APPLE__)
+#ifdef QT_CORE_LIB
     void setWindowSize(int width, int height);
     void setFullScreen(bool fullScreen);
 #else
