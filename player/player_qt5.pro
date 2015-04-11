@@ -96,7 +96,6 @@ SOURCES += \
     ../libplatform/fps-generic.cpp \
     ../libplatform/exit-generic.cpp \
     ../libplatform/windowsize-qt.cpp \
-    ../libplatform/fullscreen-qt.cpp \
     ../libplatform/gtimer.cpp \
     $$files(../2dsg/*.cpp) \
     $$files(../libpvrt/*.cpp) \

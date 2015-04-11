@@ -1220,11 +1220,3 @@ lua_State *LuaApplication::getLuaState() const
 {
     return L;
 }
-
-void LuaApplication::setGLCanvas(GLCanvas* glcanvas){
-    glcanvas_ = glcanvas;
-}
-
-GLCanvas* LuaApplication::glcanvas(){
-    return glcanvas_;
-}

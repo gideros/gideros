@@ -649,12 +649,10 @@ int ApplicationBinder::setWindowSize(lua_State* L){
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
-
     int width = luaL_checkinteger(L, 2);
     int height = luaL_checkinteger(L, 3);
 
-    ::setWindowSize(application, width, height);
+    ::setWindowSize(width, height);
 
     return 0;
 }
@@ -663,10 +661,8 @@ int ApplicationBinder::setFullScreen(lua_State* L){
     Binder binder(L);
     (void)binder.getInstance("Application", 1);
 
-    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
-
     bool fullScreen = lua_toboolean(L, 2);
 
-    ::setFullScreen(application, fullScreen);
+    ::setFullScreen(fullScreen);
     return 0;
 }

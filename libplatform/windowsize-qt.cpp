@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 
-void setWindowSize(LuaApplication* application, int width, int height){
-    MainWindow* mainWindow = (MainWindow*)application->glcanvas()->parentWidget()->parentWidget();
-    mainWindow->resizeWindow(width, height);
+void setWindowSize(int width, int height){
+    MainWindow::getInstance()->resizeWindow(width, height);
+}
+
+void setFullScreen(bool fullScreen){
+    MainWindow::getInstance()->fullScreenWindow(fullScreen);
 }

@@ -70,11 +70,16 @@ class MainWindow : public QMainWindow{
         void resizeWindow(int width, int height);
         void fullScreenWindow(bool _fullScreen);
 
+        static MainWindow* getInstance(){
+            return instance;
+        }
+
     protected:
         virtual void closeEvent(QCloseEvent*);
         virtual void resizeEvent(QResizeEvent*);
 
     private:
+        static MainWindow* instance;
         void setupUiActions();
         void setupUiProperties();
         void createUiGroups();

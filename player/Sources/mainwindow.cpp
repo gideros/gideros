@@ -16,7 +16,10 @@
 #include "settingsdialog.h"
 #include "constants.cpp"
 
+MainWindow* MainWindow::instance;
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
+    MainWindow::instance = this;
     projectName_ = QString ();
     setupUiActions();
     setupUiProperties();

@@ -58,8 +58,6 @@ private:
 };
 */
 
-class GLCanvas;
-
 class LuaApplication : public LuaApplicationBase
 {
 public:
@@ -151,9 +149,6 @@ public:
 
     lua_State *getLuaState() const;
 
-    void setGLCanvas(GLCanvas* glcanvas);
-    GLCanvas* glcanvas();
-
 private:
 	float physicsScale_;
 
@@ -167,8 +162,6 @@ private:
 	bool exceptionsEnabled_;
 	Orientation orientation_;
 	int width_, height_;
-
-    GLCanvas* glcanvas_;
 
     float scale_;
 
