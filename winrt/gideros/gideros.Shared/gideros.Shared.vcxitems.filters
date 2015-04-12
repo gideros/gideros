@@ -551,9 +551,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\gtimer.cpp">
       <Filter>libplatform</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\keepawake-empty.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\locale-winrt.cpp">
       <Filter>libplatform</Filter>
     </ClCompile>
@@ -561,9 +558,6 @@
       <Filter>libplatform</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platform.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\vibrate-empty.cpp">
       <Filter>libplatform</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\ggeolocation-winrt.cpp">
@@ -976,6 +970,16 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\Matrices.cpp">
       <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)giderosapi.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\libnetwork.cpp">
+      <Filter>libnetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\keepawake-winrt.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\vibrate-winrt.cpp">
+      <Filter>libplatform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1570,6 +1574,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\wchar32.h">
       <Filter>libplatform</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)giderosapi.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\embeddedfont.inc">

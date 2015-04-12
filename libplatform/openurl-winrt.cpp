@@ -24,5 +24,5 @@ void openUrl(const char* url)
 
 bool canOpenUrl(const char *url)
 {
-    return true;
+	return true;
 }

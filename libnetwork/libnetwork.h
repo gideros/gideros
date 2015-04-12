@@ -5,7 +5,10 @@
 #include <string>
 #include <vector>
 
-#ifdef WIN32
+#ifdef WINSTORE
+#include <WinSock2.h>
+#pragma comment(lib, "Ws2_32.lib")
+#elif WIN32
 #include <WinSock.h>
 #else
 typedef int SOCKET;
