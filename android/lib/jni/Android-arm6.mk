@@ -260,6 +260,7 @@ LOCAL_SRC_FILES += \
 	../../../libplatform/drawinfo.cpp \
 	../../../libgideros/pluginmanager.cpp \
 	../../../libplatform/fps-android.cpp \
+	../../../libplatform/windowsize-empty.cpp \
 	../../../libplatform/exit-android.cpp
 
 
