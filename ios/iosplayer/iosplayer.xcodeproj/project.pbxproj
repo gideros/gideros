@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5ECDAB301ADAB63900278F39 /* windowsize-empty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5ECDAB2F1ADAB63900278F39 /* windowsize-empty.cpp */; };
 		5F0104061776F719002E6C6E /* grendertarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0104041776F719002E6C6E /* grendertarget.cpp */; };
 		5F0104071776F719002E6C6E /* grendertarget.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F0104051776F719002E6C6E /* grendertarget.h */; };
 		5F01040A1776F857002E6C6E /* rendertargetbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0104091776F857002E6C6E /* rendertargetbinder.cpp */; };
@@ -361,6 +362,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5ECDAB2F1ADAB63900278F39 /* windowsize-empty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "windowsize-empty.cpp"; path = "../../libplatform/windowsize-empty.cpp"; sourceTree = "<group>"; };
 		5F0104041776F719002E6C6E /* grendertarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = grendertarget.cpp; path = ../../2dsg/grendertarget.cpp; sourceTree = "<group>"; };
 		5F0104051776F719002E6C6E /* grendertarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = grendertarget.h; path = ../../2dsg/grendertarget.h; sourceTree = "<group>"; };
 		5F0104091776F857002E6C6E /* rendertargetbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rendertargetbinder.cpp; path = ../../luabinding/rendertargetbinder.cpp; sourceTree = "<group>"; };
@@ -1140,6 +1142,7 @@
 		5F321E1715BBBA2B00542289 /* libplatform */ = {
 			isa = PBXGroup;
 			children = (
+				5ECDAB2F1ADAB63900278F39 /* windowsize-empty.cpp */,
 				5F321E1915BBBA4600542289 /* exit-generic.cpp */,
 				5F58D76F15D8F16B00137D76 /* fps-ios.mm */,
 				5F321E2315BBBA7E00542289 /* drawinfo.cpp */,
@@ -1661,6 +1664,7 @@
 				5F321F4915BBEB3200542289 /* alertdialogbinder.cpp in Sources */,
 				5F276FC118F4020E00D78AE4 /* b2WeldJoint.cpp in Sources */,
 				5F321F4A15BBEB3200542289 /* applicationbinder.cpp in Sources */,
+				5ECDAB301ADAB63900278F39 /* windowsize-empty.cpp in Sources */,
 				5F276FA518F4020E00D78AE4 /* b2EdgeAndCircleContact.cpp in Sources */,
 				5F276F9D18F4020E00D78AE4 /* b2ChainAndPolygonContact.cpp in Sources */,
 				5F321F4B15BBEB3200542289 /* binder.cpp in Sources */,
