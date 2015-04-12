@@ -981,6 +981,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\vibrate-winrt.cpp">
       <Filter>libplatform</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\windowsize-empty.cpp">
+      <Filter>libplatform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">

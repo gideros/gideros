@@ -326,6 +326,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\vibrate-winrt.cpp">
       <CompileAsWinRT>true</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\windowsize-empty.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTDecompress.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTResourceFile.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libpvrt\PVRTString.cpp" />
