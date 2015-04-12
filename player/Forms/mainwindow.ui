@@ -105,6 +105,7 @@
 	<addaction name="actionRestart"/>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_Directory"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHardware">
@@ -181,6 +182,8 @@
      <addaction name="actionQuarter"/>
      <addaction name="actionHalf"/>
      <addaction name="actionOriginal"/>
+     <addaction name="actionDouble"/>
+     <addaction name="actionTriple"/>
      <addaction name="separator"/>
      <addaction name="actionFit_To_Window"/>
      <addaction name="actionFit_To_App"/>
@@ -197,9 +200,25 @@
     </property>
     <addaction name="actionSettings"/>
    </widget>
+   <widget class="QMenu" name="menuZoom2">
+<property name="title">
+<string>Zoom</string>
+</property>
+<addaction name="actionZoom_In"/>
+<addaction name="actionZoom_Out"/>
+<addaction name="separator"/>
+<addaction name="actionQuarter"/>
+<addaction name="actionHalf"/>
+<addaction name="actionOriginal"/>
+<addaction name="actionDouble"/>
+<addaction name="actionTriple"/>
+<addaction name="separator"/>
+<addaction name="actionFit_To_Window"/>
+</widget>
    <addaction name="menuFile"/>
    <addaction name="menu_View"/>
    <addaction name="menuHardware"/>
+   <addaction name="menuZoom2"/>
    <addaction name="menuConfigurations"/>
   </widget>
   <action name="actionExit">
@@ -351,6 +370,16 @@
     <string>Alt+O</string>
    </property>
   </action>
+  <action name="actionDouble">
+<property name="text">
+<string>200%</string>
+</property>
+</action>
+<action name="actionTriple">
+<property name="text">
+ <string>300%</string>
+</property>
+</action>
   <action name="action480x800">
    <property name="checkable">
     <bool>true</bool>
@@ -433,7 +462,7 @@
   </action>
   <action name="actionQuarter">
    <property name="text">
-    <string>25 %</string>
+    <string>25%</string>
    </property>
   </action>
   <action name="action1536x2048">

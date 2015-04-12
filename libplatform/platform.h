@@ -175,6 +175,15 @@ public:
 void setPlatformInterface(PlatformInterface* platformInterface);
 */
 
+#ifdef QT_CORE_LIB
+    void setWindowSize(int width, int height);
+    void setFullScreen(bool fullScreen);
+#else
+    void setWindowSize(int width, int height){}
+
+    void setFullScreen(bool fullScreen){}
+#endif
+
 void vibrate();
 std::string getLocale();
 std::string getLanguage();

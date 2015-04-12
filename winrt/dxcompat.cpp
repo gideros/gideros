@@ -4,10 +4,11 @@
 #include <d3dcompiler.h>
 #include <math.h>
 #include <vector>
-#include "glog.h"
 //#include "globals.h"
 #include "dxcompat.hpp"
 //#include "util.h"
+
+#include "glog.h"
 
 // This is needed for WinRT apps
 #ifdef WINSTORE
@@ -459,7 +460,7 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei widt
 	  tbsd.pSysMem = pixels2;
   }
   else {
-	  glog_e("glTexImage2D: unknown internal format");
+	  glog_w("glTexImage2D: unknown internal format");
 	  exit(1);
   }
 
@@ -717,7 +718,7 @@ const GLubyte *glGetString(GLenum name)
 
 void glTexEnvi(GLenum target, GLenum pname, GLint param)
 {
-//	glog_e("glTexEnvi not supported\n");
+	glog_v("glTexEnvi not supported\n");
 }
 
 void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices)
@@ -959,7 +960,7 @@ void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format
 
 void glTexParameteri(GLenum target, GLenum pname, GLint param)
 {
-	glog_w("glTexParameteri not supported\n");
+	glog_v("glTexParameteri not supported\n");
 }
 
 
