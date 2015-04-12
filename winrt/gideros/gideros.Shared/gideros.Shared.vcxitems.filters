@@ -530,36 +530,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\tessmono.c">
       <Filter>libtess</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\md5.c">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\utf8.c">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\deviceinfo-winrt.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\drawinfo.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\exit-generic.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\fps-generic.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\gtimer.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\locale-winrt.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\openurl-winrt.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platform.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\ggeolocation-winrt.cpp">
       <Filter>libgid</Filter>
     </ClCompile>
@@ -959,9 +929,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123\optimize.c">
       <Filter>mpg</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platformutil.cpp">
-      <Filter>libplatform</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-sample-xaudio2.cpp">
       <Filter>libgid</Filter>
     </ClCompile>
@@ -975,14 +942,23 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libnetwork\libnetwork.cpp">
       <Filter>libnetwork</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\keepawake-winrt.cpp">
-      <Filter>libplatform</Filter>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\drawinfo.cpp">
+      <Filter>libgid</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\vibrate-winrt.cpp">
-      <Filter>libplatform</Filter>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gtimer.cpp">
+      <Filter>libgid</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\windowsize-empty.cpp">
-      <Filter>libplatform</Filter>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\md5.c">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\platformutil.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\utf8.c">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\platform-winrt.cpp">
+      <Filter>libgid</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1556,28 +1532,25 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\tessmono.h">
       <Filter>libtess</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\gtimer.h">
-      <Filter>libplatform</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\javanativebridge.h">
-      <Filter>libplatform</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\md5.h">
-      <Filter>libplatform</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platform.h">
-      <Filter>libplatform</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\platformutil.h">
-      <Filter>libplatform</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\utf8.h">
-      <Filter>libplatform</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libplatform\wchar32.h">
-      <Filter>libplatform</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)giderosapi.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\gtimer.h">
+      <Filter>libgid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\md5.h">
+      <Filter>libgid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\platform.h">
+      <Filter>libgid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\platformutil.h">
+      <Filter>libgid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\utf8.h">
+      <Filter>libgid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\wchar32.h">
+      <Filter>libgid</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\embeddedfont.inc">
@@ -1620,9 +1593,6 @@
     </Filter>
     <Filter Include="libtess">
       <UniqueIdentifier>{1089be6a-83e8-472f-84de-c396d73a1413}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libplatform">
-      <UniqueIdentifier>{98cf81c2-b5a7-4057-bfe5-937c5a490d7b}</UniqueIdentifier>
     </Filter>
     <Filter Include="jpeg">
       <UniqueIdentifier>{89687e64-7992-4b0c-8c20-8a1f1974705f}</UniqueIdentifier>
