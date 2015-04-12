@@ -50,7 +50,6 @@ INCLUDEPATH += \
     sources \
     forms \
     ../2dsg \
-    ../libplatform \
     ../libsound \
     ../libnetwork \
     ../luabinding \
@@ -83,20 +82,12 @@ SOURCES += \
     $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/*.cpp) \
     $$files(../luabinding/*.cpp)	../luabinding/tlsf.c \
     $$files(../libnetwork/*.cpp) \
-    ../libplatform/md5.c \
-    ../libplatform/platform.cpp \
-    ../libplatform/platformutil.cpp \
-    ../libplatform/utf8.c \
-    ../libplatform/openurl-qt.cpp \
-    ../libplatform/vibrate-empty.cpp \
-    ../libplatform/locale-qt.cpp \
-    ../libplatform/keepawake-empty.cpp \
-    ../libplatform/deviceinfo-qt.cpp \
-    ../libplatform/drawinfo.cpp \
-    ../libplatform/fps-generic.cpp \
-    ../libplatform/exit-generic.cpp \
-    ../libplatform/windowsize-qt.cpp \
-    ../libplatform/gtimer.cpp \
+    ../libgid/src/md5.c \
+    ../libgid/src/platformutil.cpp \
+    ../libgid/src/utf8.c \
+    ../libgid/src/drawinfo.cpp \
+    ../libgid/src/qt/platform-qt.cpp \
+    ../libgid/src/gtimer.cpp \
     $$files(../2dsg/*.cpp) \
     $$files(../libpvrt/*.cpp) \
     $$files(../external/glu/libtess/*.c) \
@@ -118,7 +109,6 @@ HEADERS += \
     $$files(../2dsg/*.h)\
     $$files(../luabinding/*.h)\
     $$files(../libnetwork/*.h)\
-    $$files(../libplatform/*.h)\
 
 DEFINES += USE_FILE32API
 
@@ -139,6 +129,7 @@ LIBS += -lpthread
 DEFINES += FT2_BUILD_LIBRARY
 DEFINES += DARWIN_NO_CARBON
 
+INCLUDEPATH += ../libgid/include
 INCLUDEPATH += ../libgid/external/freetype-2.4.12/include
 INCLUDEPATH += ../libgid/external/freetype-2.4.12/src
 
