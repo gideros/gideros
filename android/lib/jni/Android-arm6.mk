@@ -32,7 +32,6 @@ LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES
 
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../2dsg \
-	$(LOCAL_PATH)/../../../libplatform \
 	$(LOCAL_PATH)/../../../libnetwork \
 	$(LOCAL_PATH)/../../../external/glu \
 	$(LOCAL_PATH)/../../../libpvrt \
@@ -51,7 +50,6 @@ LOCAL_C_INCLUDES += \
 
 LOCAL_SRC_FILES += gideros.cpp
 
-LOCAL_SRC_FILES += ../../../libplatform/javanativebridge.cpp
 LOCAL_SRC_FILES += audiodevice.cpp
 
 LOCAL_SRC_FILES += \
@@ -248,20 +246,13 @@ LOCAL_SRC_FILES += \
 
 	
 LOCAL_SRC_FILES += \
-	../../../libplatform/md5.c \
-	../../../libplatform/utf8.c \
-	../../../libplatform/platform.cpp \
-	../../../libplatform/platformutil.cpp \
-	../../../libplatform/openurl-android.cpp \
-	../../../libplatform/vibrate-android.cpp \
-	../../../libplatform/locale-android.cpp \
-	../../../libplatform/keepawake-android.cpp \
-	../../../libplatform/deviceinfo-android.cpp \
-	../../../libplatform/drawinfo.cpp \
-	../../../libgideros/pluginmanager.cpp \
-	../../../libplatform/fps-android.cpp \
-	../../../libplatform/windowsize-empty.cpp \
-	../../../libplatform/exit-android.cpp
+	../../../libgid/src/md5.c \
+	../../../libgid/src/utf8.c \
+	../../../libgid/src/platformutil.cpp \
+	../../../libgid/src/android/platform-android.cpp \
+	../../../libgid/src/drawinfo.cpp \
+	../../../libgid/src/android/javanativebridge.cpp \
+	../../../libgideros/pluginmanager.cpp
 
 
 LOCAL_SRC_FILES += \
