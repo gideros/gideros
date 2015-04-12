@@ -1,1 +1,0 @@
-Library('libplatform', Glob('platform.cpp'), CPPPATH=['../libsound'], CCFLAGS=['-Wall'])
