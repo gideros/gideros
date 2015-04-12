@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import <AudioToolbox/AudioToolbox.h>
 
 #include <vector>
 #include <string>

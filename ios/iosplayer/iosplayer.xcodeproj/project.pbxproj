@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5ECDAB301ADAB63900278F39 /* windowsize-empty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5ECDAB2F1ADAB63900278F39 /* windowsize-empty.cpp */; };
+		5ECDAB321ADADFEF00278F39 /* platform-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5ECDAB311ADADFEF00278F39 /* platform-ios.mm */; };
+		5ECDAB371ADAE0D100278F39 /* drawinfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5ECDAB331ADAE0D100278F39 /* drawinfo.cpp */; };
+		5ECDAB381ADAE0D100278F39 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 5ECDAB341ADAE0D100278F39 /* md5.c */; };
+		5ECDAB391ADAE0D100278F39 /* platformutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5ECDAB351ADAE0D100278F39 /* platformutil.cpp */; };
+		5ECDAB3A1ADAE0D100278F39 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 5ECDAB361ADAE0D100278F39 /* utf8.c */; };
 		5F0104061776F719002E6C6E /* grendertarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0104041776F719002E6C6E /* grendertarget.cpp */; };
 		5F0104071776F719002E6C6E /* grendertarget.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F0104051776F719002E6C6E /* grendertarget.h */; };
 		5F01040A1776F857002E6C6E /* rendertargetbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F0104091776F857002E6C6E /* rendertargetbinder.cpp */; };
@@ -221,17 +225,6 @@
 		5F321E0715BB516F00542289 /* gplugin-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E0015BB516F00542289 /* gplugin-ios.mm */; };
 		5F321E0815BB516F00542289 /* refptr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E0115BB516F00542289 /* refptr.cpp */; };
 		5F321E0915BB516F00542289 /* stringid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E0215BB516F00542289 /* stringid.cpp */; };
-		5F321E1A15BBBA4600542289 /* exit-generic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E1915BBBA4600542289 /* exit-generic.cpp */; };
-		5F321E2415BBBA7E00542289 /* drawinfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E2315BBBA7E00542289 /* drawinfo.cpp */; };
-		5F321E2615BBBA8800542289 /* deviceinfo-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E2515BBBA8800542289 /* deviceinfo-ios.mm */; };
-		5F321E2815BBBA9500542289 /* keepawake-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E2715BBBA9500542289 /* keepawake-ios.mm */; };
-		5F321E2A15BBBAA100542289 /* locale-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E2915BBBAA100542289 /* locale-ios.mm */; };
-		5F321E2C15BBBAAE00542289 /* vibrate-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E2B15BBBAAE00542289 /* vibrate-ios.mm */; };
-		5F321E2E15BBBAB600542289 /* openurl-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E2D15BBBAB600542289 /* openurl-ios.mm */; };
-		5F321E3015BBBAC000542289 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E2F15BBBAC000542289 /* utf8.c */; };
-		5F321E3215BBBAC500542289 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E3115BBBAC500542289 /* md5.c */; };
-		5F321E3615BBBADD00542289 /* platformutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E3515BBBADD00542289 /* platformutil.cpp */; };
-		5F321E3815BBBAE300542289 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E3715BBBAE300542289 /* platform.cpp */; };
 		5F321E4015BBBCFF00542289 /* bytebuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E3E15BBBCFF00542289 /* bytebuffer.cpp */; };
 		5F321E4115BBBCFF00542289 /* libnetwork.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321E3F15BBBCFF00542289 /* libnetwork.cpp */; };
 		5F321EDE15BBC3FC00542289 /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F321EAF15BBC3FC00542289 /* application.cpp */; };
@@ -333,7 +326,6 @@
 		5F450BF41665146B001D8D4B /* gaudio-background-avaudioplayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F450BF31665146B001D8D4B /* gaudio-background-avaudioplayer.mm */; };
 		5F58B53E1619A0BA00B8E8FE /* gmesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F58B53D1619A0BA00B8E8FE /* gmesh.cpp */; };
 		5F58B5411619A0E400B8E8FE /* meshbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F58B5401619A0E400B8E8FE /* meshbinder.cpp */; };
-		5F58D77015D8F16B00137D76 /* fps-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D76F15D8F16B00137D76 /* fps-ios.mm */; };
 		5F58D7D215D91D8000137D76 /* gglobal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D7D115D91D8000137D76 /* gglobal.cpp */; };
 		5F880EA515DCF099001F889C /* urlloaderbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F880EA415DCF099001F889C /* urlloaderbinder.cpp */; };
 		5F9968A7160F190400CF791A /* gapplication-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F9968A6160F190400CF791A /* gapplication-ios.mm */; };
@@ -362,7 +354,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5ECDAB2F1ADAB63900278F39 /* windowsize-empty.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "windowsize-empty.cpp"; path = "../../libplatform/windowsize-empty.cpp"; sourceTree = "<group>"; };
+		5ECDAB311ADADFEF00278F39 /* platform-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "platform-ios.mm"; path = "../../../libgid/src/ios/platform-ios.mm"; sourceTree = "<group>"; };
+		5ECDAB331ADAE0D100278F39 /* drawinfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = drawinfo.cpp; path = ../../../libgid/src/drawinfo.cpp; sourceTree = "<group>"; };
+		5ECDAB341ADAE0D100278F39 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = md5.c; path = ../../../libgid/src/md5.c; sourceTree = "<group>"; };
+		5ECDAB351ADAE0D100278F39 /* platformutil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = platformutil.cpp; path = ../../../libgid/src/platformutil.cpp; sourceTree = "<group>"; };
+		5ECDAB361ADAE0D100278F39 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf8.c; path = ../../../libgid/src/utf8.c; sourceTree = "<group>"; };
 		5F0104041776F719002E6C6E /* grendertarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = grendertarget.cpp; path = ../../2dsg/grendertarget.cpp; sourceTree = "<group>"; };
 		5F0104051776F719002E6C6E /* grendertarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = grendertarget.h; path = ../../2dsg/grendertarget.h; sourceTree = "<group>"; };
 		5F0104091776F857002E6C6E /* rendertargetbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rendertargetbinder.cpp; path = ../../luabinding/rendertargetbinder.cpp; sourceTree = "<group>"; };
@@ -578,17 +574,6 @@
 		5F321E0015BB516F00542289 /* gplugin-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "gplugin-ios.mm"; path = "../../libgideros/gplugin-ios.mm"; sourceTree = "<group>"; };
 		5F321E0115BB516F00542289 /* refptr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = refptr.cpp; path = ../../libgideros/refptr.cpp; sourceTree = "<group>"; };
 		5F321E0215BB516F00542289 /* stringid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stringid.cpp; path = ../../libgideros/stringid.cpp; sourceTree = "<group>"; };
-		5F321E1915BBBA4600542289 /* exit-generic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "exit-generic.cpp"; path = "../../libplatform/exit-generic.cpp"; sourceTree = "<group>"; };
-		5F321E2315BBBA7E00542289 /* drawinfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = drawinfo.cpp; path = ../../libplatform/drawinfo.cpp; sourceTree = "<group>"; };
-		5F321E2515BBBA8800542289 /* deviceinfo-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "deviceinfo-ios.mm"; path = "../../libplatform/deviceinfo-ios.mm"; sourceTree = "<group>"; };
-		5F321E2715BBBA9500542289 /* keepawake-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "keepawake-ios.mm"; path = "../../libplatform/keepawake-ios.mm"; sourceTree = "<group>"; };
-		5F321E2915BBBAA100542289 /* locale-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "locale-ios.mm"; path = "../../libplatform/locale-ios.mm"; sourceTree = "<group>"; };
-		5F321E2B15BBBAAE00542289 /* vibrate-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "vibrate-ios.mm"; path = "../../libplatform/vibrate-ios.mm"; sourceTree = "<group>"; };
-		5F321E2D15BBBAB600542289 /* openurl-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "openurl-ios.mm"; path = "../../libplatform/openurl-ios.mm"; sourceTree = "<group>"; };
-		5F321E2F15BBBAC000542289 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf8.c; path = ../../libplatform/utf8.c; sourceTree = "<group>"; };
-		5F321E3115BBBAC500542289 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = md5.c; path = ../../libplatform/md5.c; sourceTree = "<group>"; };
-		5F321E3515BBBADD00542289 /* platformutil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = platformutil.cpp; path = ../../libplatform/platformutil.cpp; sourceTree = "<group>"; };
-		5F321E3715BBBAE300542289 /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = platform.cpp; path = ../../libplatform/platform.cpp; sourceTree = "<group>"; };
 		5F321E3E15BBBCFF00542289 /* bytebuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bytebuffer.cpp; path = ../../libnetwork/bytebuffer.cpp; sourceTree = "<group>"; };
 		5F321E3F15BBBCFF00542289 /* libnetwork.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = libnetwork.cpp; path = ../../libnetwork/libnetwork.cpp; sourceTree = "<group>"; };
 		5F321EAF15BBC3FC00542289 /* application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = application.cpp; path = ../../2dsg/application.cpp; sourceTree = "<group>"; };
@@ -690,7 +675,6 @@
 		5F450BF31665146B001D8D4B /* gaudio-background-avaudioplayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "gaudio-background-avaudioplayer.mm"; path = "../../../libgid/src/ios/gaudio-background-avaudioplayer.mm"; sourceTree = "<group>"; };
 		5F58B53D1619A0BA00B8E8FE /* gmesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gmesh.cpp; path = ../../2dsg/gmesh.cpp; sourceTree = "<group>"; };
 		5F58B5401619A0E400B8E8FE /* meshbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = meshbinder.cpp; path = ../../luabinding/meshbinder.cpp; sourceTree = "<group>"; };
-		5F58D76F15D8F16B00137D76 /* fps-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "fps-ios.mm"; path = "../../libplatform/fps-ios.mm"; sourceTree = "<group>"; };
 		5F58D7D115D91D8000137D76 /* gglobal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gglobal.cpp; path = ../../../libgid/src/gglobal.cpp; sourceTree = "<group>"; };
 		5F880EA415DCF099001F889C /* urlloaderbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = urlloaderbinder.cpp; path = ../../luabinding/urlloaderbinder.cpp; sourceTree = "<group>"; };
 		5F9968A6160F190400CF791A /* gapplication-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "gapplication-ios.mm"; path = "../../../libgid/src/ios/gapplication-ios.mm"; sourceTree = "<group>"; };
@@ -737,7 +721,6 @@
 				5F0CD7B915BB01EF00479287 /* libgid */,
 				5F321DFA15BB512A00542289 /* libgideros */,
 				5F321E3C15BBBCE200542289 /* libnetwork */,
-				5F321E1715BBBA2B00542289 /* libplatform */,
 				5F0CD8CD15BB32D200479287 /* libpystring */,
 				5F321F0D15BBC44200542289 /* libtess */,
 				5FDD843B1863404300D646EF /* liquidfun-1.0.0 */,
@@ -818,6 +801,11 @@
 		5F0CD7C515BB021500479287 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				5ECDAB331ADAE0D100278F39 /* drawinfo.cpp */,
+				5ECDAB341ADAE0D100278F39 /* md5.c */,
+				5ECDAB351ADAE0D100278F39 /* platformutil.cpp */,
+				5ECDAB361ADAE0D100278F39 /* utf8.c */,
+				5ECDAB311ADADFEF00278F39 /* platform-ios.mm */,
 				5F450BDD1665066A001D8D4B /* gaudio-loader-wav.cpp */,
 				5F450BDE1665066A001D8D4B /* gaudio-sample-openal.cpp */,
 				5F450BDF1665066A001D8D4B /* gaudio-stream-openal.cpp */,
@@ -1137,26 +1125,6 @@
 				5F321E0215BB516F00542289 /* stringid.cpp */,
 			);
 			name = libgideros;
-			sourceTree = "<group>";
-		};
-		5F321E1715BBBA2B00542289 /* libplatform */ = {
-			isa = PBXGroup;
-			children = (
-				5ECDAB2F1ADAB63900278F39 /* windowsize-empty.cpp */,
-				5F321E1915BBBA4600542289 /* exit-generic.cpp */,
-				5F58D76F15D8F16B00137D76 /* fps-ios.mm */,
-				5F321E2315BBBA7E00542289 /* drawinfo.cpp */,
-				5F321E2515BBBA8800542289 /* deviceinfo-ios.mm */,
-				5F321E2715BBBA9500542289 /* keepawake-ios.mm */,
-				5F321E2915BBBAA100542289 /* locale-ios.mm */,
-				5F321E2B15BBBAAE00542289 /* vibrate-ios.mm */,
-				5F321E2D15BBBAB600542289 /* openurl-ios.mm */,
-				5F321E2F15BBBAC000542289 /* utf8.c */,
-				5F321E3115BBBAC500542289 /* md5.c */,
-				5F321E3515BBBADD00542289 /* platformutil.cpp */,
-				5F321E3715BBBAE300542289 /* platform.cpp */,
-			);
-			name = libplatform;
 			sourceTree = "<group>";
 		};
 		5F321E3C15BBBCE200542289 /* libnetwork */ = {
@@ -1554,6 +1522,7 @@
 				5F0CD92A15BB49B100479287 /* autofit.c in Sources */,
 				5F0CD92C15BB49BA00479287 /* truetype.c in Sources */,
 				5F276FC518F4020E00D78AE4 /* b2Particle.cpp in Sources */,
+				5ECDAB321ADADFEF00278F39 /* platform-ios.mm in Sources */,
 				5F0CD92E15BB49C100479287 /* cff.c in Sources */,
 				5F0CD93015BB49CB00479287 /* psnames.c in Sources */,
 				5F0CD93215BB49D600479287 /* pshinter.c in Sources */,
@@ -1565,18 +1534,7 @@
 				5F321E0715BB516F00542289 /* gplugin-ios.mm in Sources */,
 				5F321E0815BB516F00542289 /* refptr.cpp in Sources */,
 				5F321E0915BB516F00542289 /* stringid.cpp in Sources */,
-				5F321E1A15BBBA4600542289 /* exit-generic.cpp in Sources */,
 				5FE658B718FBF0FB001D8EE3 /* inftrees.c in Sources */,
-				5F321E2415BBBA7E00542289 /* drawinfo.cpp in Sources */,
-				5F321E2615BBBA8800542289 /* deviceinfo-ios.mm in Sources */,
-				5F321E2815BBBA9500542289 /* keepawake-ios.mm in Sources */,
-				5F321E2A15BBBAA100542289 /* locale-ios.mm in Sources */,
-				5F321E2C15BBBAAE00542289 /* vibrate-ios.mm in Sources */,
-				5F321E2E15BBBAB600542289 /* openurl-ios.mm in Sources */,
-				5F321E3015BBBAC000542289 /* utf8.c in Sources */,
-				5F321E3215BBBAC500542289 /* md5.c in Sources */,
-				5F321E3615BBBADD00542289 /* platformutil.cpp in Sources */,
-				5F321E3815BBBAE300542289 /* platform.cpp in Sources */,
 				5F321E4015BBBCFF00542289 /* bytebuffer.cpp in Sources */,
 				5F321E4115BBBCFF00542289 /* libnetwork.cpp in Sources */,
 				5F276F7B18F4020E00D78AE4 /* b2FreeList.cpp in Sources */,
@@ -1623,6 +1581,7 @@
 				5F321EF815BBC3FC00542289 /* stage.cpp in Sources */,
 				5F276FC718F4020E00D78AE4 /* b2ParticleGroup.cpp in Sources */,
 				5F276F6418F4020E00D78AE4 /* b2CollideEdge.cpp in Sources */,
+				5ECDAB381ADAE0D100278F39 /* md5.c in Sources */,
 				5F321EF915BBC3FC00542289 /* stageorientationevent.cpp in Sources */,
 				5F321EFA15BBC3FC00542289 /* stopwatch.cpp in Sources */,
 				5F321EFB15BBC3FC00542289 /* textfield.cpp in Sources */,
@@ -1664,11 +1623,11 @@
 				5F321F4915BBEB3200542289 /* alertdialogbinder.cpp in Sources */,
 				5F276FC118F4020E00D78AE4 /* b2WeldJoint.cpp in Sources */,
 				5F321F4A15BBEB3200542289 /* applicationbinder.cpp in Sources */,
-				5ECDAB301ADAB63900278F39 /* windowsize-empty.cpp in Sources */,
 				5F276FA518F4020E00D78AE4 /* b2EdgeAndCircleContact.cpp in Sources */,
 				5F276F9D18F4020E00D78AE4 /* b2ChainAndPolygonContact.cpp in Sources */,
 				5F321F4B15BBEB3200542289 /* binder.cpp in Sources */,
 				5F321F4C15BBEB3200542289 /* bitmapbinder.cpp in Sources */,
+				5ECDAB3A1ADAE0D100278F39 /* utf8.c in Sources */,
 				5F321F4D15BBEB3200542289 /* bitmapdatabinder.cpp in Sources */,
 				5F276F9F18F4020E00D78AE4 /* b2CircleContact.cpp in Sources */,
 				5F321F4E15BBEB3200542289 /* box2dbinder2.cpp in Sources */,
@@ -1684,6 +1643,7 @@
 				5F321F5515BBEB3200542289 /* gyroscopebinder.cpp in Sources */,
 				5FE658BA18FBF0FB001D8EE3 /* zutil.c in Sources */,
 				5F321F5615BBEB3200542289 /* keys.cpp in Sources */,
+				5ECDAB391ADAE0D100278F39 /* platformutil.cpp in Sources */,
 				5F321F5715BBEB3200542289 /* luaapplication.cpp in Sources */,
 				5F321F5915BBEB3200542289 /* matrixbinder.cpp in Sources */,
 				5F321F5A15BBEB3200542289 /* movieclipbinder.cpp in Sources */,
@@ -1708,12 +1668,12 @@
 				5F276FAD18F4020E00D78AE4 /* b2DistanceJoint.cpp in Sources */,
 				5FAC8AC615D59C56003E5781 /* ggeolocation-ios.mm in Sources */,
 				5FE658B018FBF0FB001D8EE3 /* gzclose.c in Sources */,
-				5F58D77015D8F16B00137D76 /* fps-ios.mm in Sources */,
 				5F58D7D215D91D8000137D76 /* gglobal.cpp in Sources */,
 				5F880EA515DCF099001F889C /* urlloaderbinder.cpp in Sources */,
 				5FCA653215F8A804006011C1 /* pluginmanager.cpp in Sources */,
 				5F9968A7160F190400CF791A /* gapplication-ios.mm in Sources */,
 				5F58B53E1619A0BA00B8E8FE /* gmesh.cpp in Sources */,
+				5ECDAB371ADAE0D100278F39 /* drawinfo.cpp in Sources */,
 				5F58B5411619A0E400B8E8FE /* meshbinder.cpp in Sources */,
 				5F450BE11665066A001D8D4B /* gaudio-loader-wav.cpp in Sources */,
 				5F450BE21665066A001D8D4B /* gaudio-sample-openal.cpp in Sources */,
