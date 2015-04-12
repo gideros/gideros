@@ -140,7 +140,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\pluginmanager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\refptr.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\stringid.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\autofit\autofit.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\autofit\autofit.c">
+      <Optimization>MinSpace</Optimization>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbase.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbbox.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbitmap.c" />
