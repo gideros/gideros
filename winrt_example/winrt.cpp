@@ -21,9 +21,16 @@ using namespace Windows::Storage;
 extern "C"
 {
 #ifdef _M_IX86
-	wchar_t htonl(wchar_t w)
+	uint32_t htonl(uint32_t val)
 	{
-		return w;
+		const uint32_t x = 0x12345678;
+
+		if (*(uint8_t*)&x == 0x12)    // big-endian machine
+			return val;
+
+		// little-endian machine
+		val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
+		return (val << 16) | (val >> 16);
 	}
 #endif
 
