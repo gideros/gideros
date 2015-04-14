@@ -422,6 +422,7 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/textinputdialogbinder.cpp \
 	../../../luabinding/meshbinder.cpp \
 	../../../luabinding/audiobinder.cpp \
+	../../../luabinding/zlibbinder.cpp \
 	../../../luabinding/rendertargetbinder.cpp
 
 

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <deque>
 
+static bool sslErrorsIgnore=false;
+
 struct Connection
 {
     g_id id;
@@ -12,6 +14,7 @@ struct Connection
 	long long expectedContentLength;
     int httpStatusCode;
 	NSData *postData;
+	NSDictionnary *headers;
 };
 
 @interface HTTPManager : NSObject
@@ -75,6 +78,7 @@ struct Connection
 	
 	connection2.expectedContentLength = response.expectedContentLength;
     connection2.httpStatusCode = [(NSHTTPURLResponse*)response statusCode];
+    connection2.headers=[[(NSHTTPURLResponse*)response allHeaderFields] copy];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
@@ -99,15 +103,47 @@ struct Connection
         return;
 	
     Connection& connection2 = map_[connection];
+    
+    NSInteger hdrCount=[connection2.headers count];
+	id hvalue[hdrCount];
+	id hname[hdrCount];
+	int hvptr[hdrCount]
+	int hnptr[hdrCount]
+	[connection2.headers getObjects:hvalue andKeys:hname];
+	NSMutableData hdrs=[[NSMutableData alloc] init];
+	char zero=0;
 
-    ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + connection2.data.length);
-    event->data = (char*)event + sizeof(ghttp_ResponseEvent);
+	for (int i = 0; i < hdrCount; i++) { 
+		hvptr[i]=hdrs.length;
+		NSData* d=[((NSString *)hname[i]) dataUsingEncoding:NSUTF8StringEncoding];
+		[hdrs appendData:d];
+		[hdrs appendBytes:&zero length:1];
+		hnptr[i]=hdrs.length;
+		d=[((NSString *)hvalue[i]) dataUsingEncoding:NSUTF8StringEncoding];
+		[hdrs appendData:d];
+		[hdrs appendBytes:&zero length:1];
+	}
+	int hdrSize=hdrs.length;
+
+    ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount  + connection2.data.length + hdrSize);
+    event->data = (char*)event + sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount ;
     memcpy(event->data, connection2.data.bytes, connection2.data.length);
-    event->size = connection2.data.length;
+	char *hdrData=(char *)(event->data)+connection2.data.length;
+    memcpy(hdrData, hdrs.bytes, hdrSize);
+    event->size = connection2.data.length+hdrSize;
     event->httpStatusCode = connection2.httpStatusCode;
+	for (int i = 0; i < hdrCount; i++) { 
+		event->headers[i].name=hdrData+hnptr[i];
+		event->headers[i].value=hdrData+hvptr[i];
+	}
+	event->headers[hdrCount].name=NULL;
+	event->headers[hdrCount].value=NULL;
+	[hdrs release]
 	
     gevent_EnqueueEvent(connection2.id, connection2.callback, GHTTP_RESPONSE_EVENT, event, 1, connection2.udata);
 
+	
+	[connection2.headers release];
 	[connection2.data release];
 	if (connection2.postData)
 		[connection2.postData release];
@@ -131,6 +167,15 @@ struct Connection
 	map_.erase(connection);
 }
 
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
+  return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+  if (sslErrorsIgnore)
+  	[challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
+  [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
+}
 
 -(void) close:(g_id)id
 {
@@ -162,6 +207,10 @@ struct Connection
 static HTTPManager* s_manager = nil;
 
 extern "C" {
+void ghttp_IgnoreSSLErrors()
+{
+	sslErrorsIgnore=true;
+}
 
 void ghttp_Init()
 {

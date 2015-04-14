@@ -14,6 +14,7 @@ private:
 
     static int load(lua_State* L);
     static int close(lua_State* L);
+    static int ignoreSslErrors(lua_State* L);
 };
 
 #endif
