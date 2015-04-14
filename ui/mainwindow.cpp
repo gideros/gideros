@@ -1625,6 +1625,7 @@ void MainWindow::playerSettings()
 		
 		QSettings settings;
 		QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
+        ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
 
 #ifndef NEW_CLIENT
 		delete client_;
