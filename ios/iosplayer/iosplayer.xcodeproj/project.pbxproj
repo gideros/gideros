@@ -351,6 +351,7 @@
 		5FE658BA18FBF0FB001D8EE3 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658AB18FBF0FB001D8EE3 /* zutil.c */; };
 		EB08A3521AAA06F900D8F27D /* Matrices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB08A3501AAA06F900D8F27D /* Matrices.cpp */; };
 		EB08A3531AAA06F900D8F27D /* Matrices.h in Headers */ = {isa = PBXBuildFile; fileRef = EB08A3511AAA06F900D8F27D /* Matrices.h */; };
+		EBD254CA1ADD149000CC57F9 /* zlibbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -700,6 +701,7 @@
 		5FE658AB18FBF0FB001D8EE3 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zutil.c; path = "../../../libgid/external/zlib-1.2.8/zutil.c"; sourceTree = "<group>"; };
 		EB08A3501AAA06F900D8F27D /* Matrices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Matrices.cpp; path = ../../2dsg/Matrices.cpp; sourceTree = "<group>"; };
 		EB08A3511AAA06F900D8F27D /* Matrices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrices.h; path = ../../2dsg/Matrices.h; sourceTree = "<group>"; };
+		EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zlibbinder.cpp; path = ../../luabinding/zlibbinder.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1214,6 +1216,7 @@
 		5F321F2215BBCA8000542289 /* luabinding */ = {
 			isa = PBXGroup;
 			children = (
+				EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */,
 				5F321F2415BBEB3200542289 /* accelerometerbinder.cpp */,
 				5F321F2515BBEB3200542289 /* alertdialogbinder.cpp */,
 				5F321F2615BBEB3200542289 /* applicationbinder.cpp */,
@@ -1614,6 +1617,7 @@
 				5F321F1D15BBC47500542289 /* priorityq.c in Sources */,
 				5F321F1E15BBC47500542289 /* render.c in Sources */,
 				5F321F1F15BBC47500542289 /* sweep.c in Sources */,
+				EBD254CA1ADD149000CC57F9 /* zlibbinder.cpp in Sources */,
 				5F276F6318F4020E00D78AE4 /* b2CollideCircle.cpp in Sources */,
 				5F276F7918F4020E00D78AE4 /* b2Draw.cpp in Sources */,
 				5F321F2015BBC47500542289 /* tess.c in Sources */,
