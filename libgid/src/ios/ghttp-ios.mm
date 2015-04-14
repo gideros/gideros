@@ -130,7 +130,7 @@ struct Connection
     memcpy(event->data, connection2.data.bytes, connection2.data.length);
 	char *hdrData=(char *)(event->data)+connection2.data.length;
     memcpy(hdrData, hdrs.bytes, hdrSize);
-    event->size = connection2.data.length+hdrSize;
+    event->size = connection2.data.length;
     event->httpStatusCode = connection2.httpStatusCode;
 	for (int i = 0; i < hdrCount; i++) { 
 		event->headers[i].name=hdrData+hnptr[i];
