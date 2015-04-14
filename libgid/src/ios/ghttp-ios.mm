@@ -14,7 +14,7 @@ struct Connection
 	long long expectedContentLength;
     int httpStatusCode;
 	NSData *postData;
-	NSDictionnary *headers;
+	NSDictionary *headers;
 };
 
 @interface HTTPManager : NSObject
@@ -107,23 +107,23 @@ struct Connection
     NSInteger hdrCount=[connection2.headers count];
 	id hvalue[hdrCount];
 	id hname[hdrCount];
-	int hvptr[hdrCount]
-	int hnptr[hdrCount]
+    unsigned long hvptr[hdrCount];
+    unsigned long hnptr[hdrCount];
 	[connection2.headers getObjects:hvalue andKeys:hname];
-	NSMutableData hdrs=[[NSMutableData alloc] init];
+	NSMutableData *hdrs=[[NSMutableData alloc] init];
 	char zero=0;
 
 	for (int i = 0; i < hdrCount; i++) { 
-		hvptr[i]=hdrs.length;
+		hnptr[i]=hdrs.length;
 		NSData* d=[((NSString *)hname[i]) dataUsingEncoding:NSUTF8StringEncoding];
 		[hdrs appendData:d];
 		[hdrs appendBytes:&zero length:1];
-		hnptr[i]=hdrs.length;
+		hvptr[i]=hdrs.length;
 		d=[((NSString *)hvalue[i]) dataUsingEncoding:NSUTF8StringEncoding];
 		[hdrs appendData:d];
 		[hdrs appendBytes:&zero length:1];
 	}
-	int hdrSize=hdrs.length;
+	unsigned long hdrSize=hdrs.length;
 
     ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount  + connection2.data.length + hdrSize);
     event->data = (char*)event + sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount ;
@@ -138,7 +138,7 @@ struct Connection
 	}
 	event->headers[hdrCount].name=NULL;
 	event->headers[hdrCount].value=NULL;
-	[hdrs release]
+    [hdrs release];
 	
     gevent_EnqueueEvent(connection2.id, connection2.callback, GHTTP_RESPONSE_EVENT, event, 1, connection2.udata);
 
