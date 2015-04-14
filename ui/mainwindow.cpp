@@ -198,7 +198,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 	QSettings settings;
 	QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
-	
+    ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
+
 #ifndef NEW_CLIENT
 	client_ = new Client(qPrintable(playerip), 15000);
 #else
@@ -258,7 +259,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 	connect(ui.actionPlayer_Settings, SIGNAL(triggered()), this, SLOT(playerSettings()));
-
+    connect(ui.actionLocalhostToggle, SIGNAL(triggered(bool)), this, SLOT(actionLocalhostToggle(bool)));
 	connect(ui.actionAbout_Gideros_Studio, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
 	connect(ui.actionDeveloper_Center, SIGNAL(triggered()), this, SLOT(developerCenter()));
 	connect(ui.actionHelp_Support, SIGNAL(triggered()), this, SLOT(helpAndSupport()));
@@ -1591,6 +1592,26 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	}
 }
 
+void MainWindow::actionLocalhostToggle(bool checked){
+    QSettings settings;
+    settings.setValue("player localhost", checked);
+
+    QString playerip = QString("127.0.0.1");
+
+    if(!checked){
+        playerip = settings.value("player original ip", QString("127.0.0.1")).toString();
+    }
+
+    settings.setValue("player ip", playerip);
+
+    #ifndef NEW_CLIENT
+        delete client_;
+        client_ = new Client(qPrintable(playerip), 15000);
+    #else
+        client_->connectToHost(playerip, 15000);
+    #endif
+}
+
 void MainWindow::playerSettings()
 {
 	PlayerSettingsDialog dialog(this);
@@ -2122,8 +2143,28 @@ void MainWindow::exportProject()
 				templatenamews = "AndroidTemplate";
 				underscore = false;
 				break;
-		}
 
+            case ExportProjectDialog::e_WindowsDesktop:
+                templatedir = "WindowsDesktop";
+                templatename = "WindowsDesktopTemplate";
+                templatenamews = "WindowsDesktopTemplate";
+                underscore = false;
+                break;
+
+            case ExportProjectDialog::e_MacOSXDesktop:
+                templatedir = "MacOSXDesktop";
+                templatename = "MacOSXDesktopTemplate";
+                templatenamews = "MacOSXDesktopTemplate";
+                underscore = false;
+                break;
+
+            case ExportProjectDialog::e_WindowsPhoneAndStore:
+                templatedir = "WindowsPhoneAndStore";
+                templatename = "WindowsPhoneAndStoreTemplate";
+                templatenamews = "WindowsPhoneAndStoreTemplate";
+                underscore = false;
+                break;
+        }
 
 		QSettings settings;
 		QString lastExportDirectory = settings.value("lastExportDirectory", QString()).toString();

@@ -34,7 +34,7 @@ INCLUDEPATH +=	\
     "../iconlibrary" \
     "../libpreviewwidget"\
     "../libnetwork"\
-    "../libplatform"\
+    "../libgid/src/qt"\
     "../lua/src"\
     "../libpvrt" \
     "../libgid/include" \
@@ -75,8 +75,8 @@ SOURCES += \
 
 SOURCES += $$files(../libpvrt/*.cpp)
 
-SOURCES += "../libplatform/platformutil.cpp"\
-			"../libplatform/md5.c"
+SOURCES += "../libgid/src/platformutil.cpp"\
+           "../libgid/src/md5.c"
 
 HEADERS  += \
     mainwindow.h\

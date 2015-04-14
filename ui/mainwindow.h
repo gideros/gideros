@@ -259,6 +259,8 @@ private slots:
 
 	void findInFiles();
 
+    void actionLocalhostToggle(bool checked);
+
 private slots:
 	void toogleBookmark();
 	void nextBookmark();

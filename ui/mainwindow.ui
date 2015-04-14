@@ -109,6 +109,7 @@ QMainWindow::separator {
     <addaction name="actionStop"/>
     <addaction name="separator"/>
     <addaction name="actionPlayer_Settings"/>
+    <addaction name="actionLocalhostToggle"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -527,6 +528,17 @@ Gideros Player, Play button is enabled.</string>
   <action name="actionProject15">
    <property name="text">
     <string>project15</string>
+   </property>
+  </action>
+  <action name="actionLocalhostToggle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Localhost Toggle</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>

@@ -17,6 +17,9 @@ public:
 	{
         e_iOS,
 		e_Android,
+        e_WindowsDesktop,
+        e_MacOSXDesktop,
+        e_WindowsPhoneAndStore,
 	};
 
     explicit ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent = 0);
