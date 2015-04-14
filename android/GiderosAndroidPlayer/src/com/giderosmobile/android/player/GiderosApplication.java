@@ -998,6 +998,10 @@ public class GiderosApplication
 				return 270;
 		}
 	}
+	
+	static public void throwLuaException(String error) throws LuaException{
+		throw new LuaException(error);
+	}
 
 	static private native void nativeOpenProject(String project);
 	static private native void nativeLowMemory();
