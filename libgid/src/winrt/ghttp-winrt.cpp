@@ -47,4 +47,8 @@ void ghttp_CloseAll()
 //    s_manager->CloseAll();
 }
 
+void ghttp_IgnoreSSLErrors()
+{
+}
+
 }

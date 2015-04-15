@@ -960,6 +960,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\winrt\platform-winrt.cpp">
       <Filter>libgid</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\zlibbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">

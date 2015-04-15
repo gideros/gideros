@@ -1,31 +1,29 @@
---[[ 
+--[[
 
-This example demonstrates a generic Button class
+An example of loading and displaying custom fonts
 
 This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.php
-(C) 2010 - 2011 Gideros Mobile 
+(C) 2010 - 2013 Gideros Mobile 
 
 ]]
 
--- create a label to show number of clicks
-local label = TextField.new(nil, "Clicked an amazing 0 time(s)")
-label:setPosition(120, 240)
-stage:addChild(label)
+local font1 = Font.new("billo.fnt", "billo.png")		-- this is bitmap font
+local font2 = TTFont.new("billo.ttf", 50, " !abcdefgh")	-- this is TTFont with caching
+local font3 = TTFont.new("arial.ttf", 20)				-- this is TTFont without caching
 
--- create the up and down sprites for the button
-local up = Bitmap.new(Texture.new("button_up.png"))
-local down = Bitmap.new(Texture.new("button_down.png"))
+local text1 = TextField.new(font1, "!!abcdefgh!!")
+local text2 = TextField.new(font2, "!!abcdefgh!!")
+local text3 = TextField.new(font3, "Îñţérñåţîöñåļîžåţîöñ (UTF-8)")
+local text4 = TextField.new(nil, "and this bottom line shows embedded system font")
 
--- create the button
-local button = Button.new(up, down)
+text2:setTextColor(0xff6090)
 
--- register to "click" event
-local click = 0
-button:addEventListener("click", 
-	function() 
-		click = click + 1
-		label:setText("Clicked " .. click .. " time(s)")
-	end)
+text1:setPosition(10, 100)
+text2:setPosition(10, 200)
+text3:setPosition(10, 300)
+text4:setPosition(10, 380)
 
-button:setPosition(40, 150)
-stage:addChild(button)
+stage:addChild(text1)
+stage:addChild(text2)
+stage:addChild(text3)
+stage:addChild(text4)

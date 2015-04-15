@@ -547,7 +547,7 @@ void glDrawArrays(GLenum pattern, GLint zero, GLsizei npoints)
   int i,j,k;
   float x,y,xp,yp,zp;
 
-  static VERTEX DxVertices[256];
+  static VERTEX DxVertices[1024];
   D3D11_MAPPED_SUBRESOURCE ms;    
 
   float mat[4][4];

@@ -960,9 +960,13 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 
 	Binder::disableTypeChecking();
 
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	hardwareOrientation_ = ePortrait;
-
 	deviceOrientation_ = ePortrait;
+#else
+	hardwareOrientation_ = eLandscapeLeft;
+	deviceOrientation_ = eLandscapeLeft;
+#endif
 
 	running_ = false;
 
@@ -1058,16 +1062,16 @@ void ApplicationManager::getStdCoords(float xp, float yp, float &x, float &y)
 		y = yp;
 	}
 	else if (orientation == DisplayOrientations::Landscape){
-		x = width_ - yp;
+		x = width_*contentScaleFactor - yp;
 		y = xp;
 	}
 	else if (orientation == DisplayOrientations::LandscapeFlipped){
 		x = yp;
-		y = height_ - xp;
+		y = height_*contentScaleFactor - xp;
 	}
 	else {
-		x = width_ - xp;
-		y = height_ - yp;
+		x = width_*contentScaleFactor - xp;
+		y = height_*contentScaleFactor - yp;
 	}
 #else
 	x = xp;
@@ -1273,7 +1277,13 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 
 	application_->deinitialize();
 	application_->initialize();
-	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
+
+    // First arg to setResolution should be the smaller dimension
+	if (width_ < height_)
+		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
+	else
+		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
+
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
@@ -1365,7 +1375,12 @@ void ApplicationManager::loadProperties()
 	buffer >> properties_.touchToMouse;
 	buffer >> properties_.mouseTouchOrder;
 
-	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
+	// the first arg to setResolution should be the smaller dimension
+	if (width_ < height_)
+		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
+	else
+		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
+
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);

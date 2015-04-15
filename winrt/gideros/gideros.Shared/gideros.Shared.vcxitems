@@ -354,6 +354,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\tlsf.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\ttfontbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\urlloaderbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\zlibbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\dxcompat.cpp">
       <CompileAsWinRT>true</CompileAsWinRT>
     </ClCompile>
