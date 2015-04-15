@@ -1,0 +1,5 @@
+cp ../../../libgid/libgid.dylib "Windows Desktop.app/Contents/Frameworks"
+cp ../../../libgideros/libgideros.dylib "Windows Desktop.app/Contents/Frameworks"
+cp ../../../libgvfs/libgvfs.dylib "Windows Desktop.app/Contents/Frameworks"
+cp ../../../lua/liblua.dylib "Windows Desktop.app/Contents/Frameworks"
+cp ../../../libpystring/libpystring.dylib "Windows Desktop.app/Contents/Frameworks"
