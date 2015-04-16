@@ -264,7 +264,7 @@ public class IabHelper {
 
         Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
         serviceIntent.setPackage("com.android.vending");
-        if (!mContext.getPackageManager().queryIntentServices(serviceIntent, 0).isEmpty()) {
+        if (mContext != null && !mContext.getPackageManager().queryIntentServices(serviceIntent, 0).isEmpty()) {
             // service available to handle that Intent
             mContext.bindService(serviceIntent, mServiceConn, Context.BIND_AUTO_CREATE);
         }
@@ -416,7 +416,7 @@ public class IabHelper {
             result = new IabResult(IABHELPER_SEND_INTENT_FAILED, "Failed to send intent.");
             if (listener != null) listener.onIabPurchaseFinished(result, null);
         }
-        catch (RemoteException e) {
+        catch (Exception e) {
             logError("RemoteException while launching purchase flow for sku " + sku);
             e.printStackTrace();
             flagEndAsync();
@@ -845,6 +845,9 @@ public class IabHelper {
         logDebug("Package name: " + mContext.getPackageName());
         boolean verificationFailed = false;
         String continueToken = null;
+        
+        if(mContext == null)
+        	return IABHELPER_VERIFICATION_FAILED;
 
         do {
             logDebug("Calling getPurchases with continuation token: " + continueToken);
@@ -918,6 +921,10 @@ public class IabHelper {
         if (skuList.size() == 0) {
             logDebug("queryPrices: nothing to do because there are no SKUs.");
             return BILLING_RESPONSE_RESULT_OK;
+        }
+        
+        if(mContext == null){
+        	return BILLING_RESPONSE_RESULT_ERROR;
         }
 
         // Split the sku list in blocks of no more than 20 elements.
