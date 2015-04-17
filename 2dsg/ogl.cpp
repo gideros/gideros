@@ -40,12 +40,12 @@ GLuint _depthRenderBuffer=0;
 #ifdef OPENGL_ES
 /* Vertex shader*/
 const char *xformVShaderCode=
-"attribute mediump vec2 vTexCoord;\n"
-"attribute mediump vec4 vVertex;\n"
-"attribute mediump vec4 vColor;\n"
-"uniform mediump mat4 vMatrix;\n"
-"varying mediump vec2 fTexCoord;\n"
-"varying mediump vec4 fInColor; "
+"attribute highp vec2 vTexCoord;\n"
+"attribute highp vec4 vVertex;\n"
+"attribute lowp vec4 vColor;\n"
+"uniform highp mat4 vMatrix;\n"
+"varying highp vec2 fTexCoord;\n"
+"varying lowp vec4 fInColor; "
 "\n"
 "void main() {\n"
 "  gl_Position = vMatrix*vVertex;\n"
@@ -58,14 +58,14 @@ const char *colorFShaderCode="\
 precision mediump float;\
 uniform float fColorSel;\
 uniform float fTextureSel;\
-uniform mediump vec4 fColor;\
+uniform lowp vec4 fColor;\
 uniform sampler2D fTexture;\
-varying mediump vec2 fTexCoord;\
-varying mediump vec4 fInColor;\
+varying highp vec2 fTexCoord;\
+varying lowp vec4 fInColor;\
 void main() {\
- mediump vec4 col=mix(fColor,fInColor,fColorSel);\
- mediump vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
- mediump vec4 frag=tex *col;\
+ lowp vec4 col=mix(fColor,fInColor,fColorSel);\
+ lowp vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
+ lowp vec4 frag=tex *col;\
  if (frag.a==0.0) discard;\
  gl_FragColor = frag;\
 }";
