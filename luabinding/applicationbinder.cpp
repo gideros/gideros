@@ -69,6 +69,8 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"getScreenDensity", ApplicationBinder::getScreenDensity},
         {"getDeviceOrientation", ApplicationBinder::getDeviceOrientation},
         {"configureFrustum", ApplicationBinder::configureFrustum},
+        {"setWindowSize", ApplicationBinder::setWindowSize},
+        {"setFullScreen", ApplicationBinder::setFullScreen},
         {NULL, NULL},
 	};
 
@@ -639,5 +641,28 @@ int ApplicationBinder::configureFrustum(lua_State* L)
     	farplane = luaL_checknumber(L, 3);
     application->getApplication()->configureFrustum(fov,farplane);
 
+    return 0;
+}
+
+
+int ApplicationBinder::setWindowSize(lua_State* L){
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    int width = luaL_checkinteger(L, 2);
+    int height = luaL_checkinteger(L, 3);
+
+    ::setWindowSize(width, height);
+
+    return 0;
+}
+
+int ApplicationBinder::setFullScreen(lua_State* L){
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    bool fullScreen = lua_toboolean(L, 2);
+
+    ::setFullScreen(fullScreen);
     return 0;
 }

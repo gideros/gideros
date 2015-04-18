@@ -1220,5 +1220,3 @@ lua_State *LuaApplication::getLuaState() const
 {
     return L;
 }
-
-

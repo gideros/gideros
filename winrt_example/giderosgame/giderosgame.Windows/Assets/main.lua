@@ -1,38 +1,29 @@
 --[[
 
-A frame by frame bird animation example
-The old frame is removed by Sprite:removeChild and the new frame is added by Sprite:addChild
+An example of loading and displaying custom fonts
 
 This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.php
-(C) 2010 - 2011 Gideros Mobile 
+(C) 2010 - 2013 Gideros Mobile 
 
 ]]
 
-application:setBackgroundColor(255)
+local font1 = Font.new("billo.fnt", "billo.png")		-- this is bitmap font
+local font2 = TTFont.new("billo.ttf", 50, " !abcdefgh")	-- this is TTFont with caching
+local font3 = TTFont.new("arial.ttf", 20)				-- this is TTFont without caching
 
--- load texture, create bitmap from it and set as background
-local background = Bitmap.new(Texture.new("sky_world.png"))
-stage:addChild(background)
+local text1 = TextField.new(font1, "!!abcdefgh!!")
+local text2 = TextField.new(font2, "!!abcdefgh!!")
+local text3 = TextField.new(font3, "Îñţérñåţîöñåļîžåţîöñ (UTF-8)")
+local text4 = TextField.new(nil, "and this bottom line shows embedded system font")
 
--- these arrays contain the image file names of each frame
-local frames1 = {
-	"bird_black_01.png",
-	"bird_black_02.png",
-	"bird_black_03.png"}
+text2:setTextColor(0xff6090)
 
-local frames2 = {
-	"bird_white_01.png",
-	"bird_white_02.png",
-	"bird_white_03.png"}
+text1:setPosition(10, 100)
+text2:setPosition(10, 200)
+text3:setPosition(10, 300)
+text4:setPosition(10, 380)
 
--- create 2 white and 2 black birds
-local bird1 = Bird.new(frames1)
-local bird2 = Bird.new(frames1)
-local bird3 = Bird.new(frames2)
-local bird4 = Bird.new(frames2)
-
--- add birds to the stage
-stage:addChild(bird1)
-stage:addChild(bird2)
-stage:addChild(bird3)
-stage:addChild(bird4)
+stage:addChild(text1)
+stage:addChild(text2)
+stage:addChild(text3)
+stage:addChild(text4)

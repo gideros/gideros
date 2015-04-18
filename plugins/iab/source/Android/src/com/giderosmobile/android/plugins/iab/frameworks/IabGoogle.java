@@ -92,7 +92,12 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 	@Override
 	public void purchase(String productId) {
 		mHelper.flagEndAsync();
-		mHelper.launchPurchaseFlow(sActivity.get(), productId, 10001, this);
+		try{
+			mHelper.launchPurchaseFlow(sActivity.get(), productId, 10001, this);
+		}
+		catch(Exception e){
+			Iab.purchaseError(this, e.getLocalizedMessage());
+		}
 	}
 
 
@@ -124,6 +129,10 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 			return;
 		}
 		Hashtable<String, String> products = Iab.getProducts(this);
+		if(products == null){
+			Iab.productsError(this, "Request Failed");
+			return;
+		}
 		SparseArray<Bundle> arr = new SparseArray<Bundle>();
 		Enumeration<String> e = products.keys();
 		int i = 0;

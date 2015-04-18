@@ -82,19 +82,19 @@
     <Image Include="Assets\ego.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\Logo.png">
-      <Filter>Assets</Filter>
-    </Image>
     <Image Include="Assets\sky_world.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\SmallLogo.png">
+    <Image Include="Assets\SmallLogo.scale-100.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\SplashScreen.png">
+    <Image Include="Assets\StoreLogo.scale-100.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\StoreLogo.png">
+    <Image Include="Assets\Logo.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-100.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>
@@ -180,5 +180,8 @@
     <Text Include="Assets\luafiles.txt">
       <Filter>Assets</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="StoreManifest.xml" />
   </ItemGroup>
 </Project>

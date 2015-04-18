@@ -1,2 +1,1 @@
-bird.lua
 main.lua

@@ -1,6 +1,8 @@
 #include <ghttp.h>
 #include <ghttp-qt.h>
 
+static bool sslErrorsIgnore=false;
+
 HTTPManager::HTTPManager()
 {
     manager_ = new QNetworkAccessManager();
@@ -47,6 +49,8 @@ g_id HTTPManager::Get(const char *url, const ghttp_Header *header, gevent_Callba
             request.setRawHeader(QByteArray(header->name), QByteArray(header->value));
 
     QNetworkReply *reply = manager_->get(request);
+    if (sslErrorsIgnore)
+    	reply->ignoreSslErrors();
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
             this,	 SLOT(downloadProgress(qint64, qint64)));
@@ -72,6 +76,8 @@ g_id HTTPManager::Post(const char *url, const ghttp_Header *header, const void *
             request.setRawHeader(QByteArray(header->name), QByteArray(header->value));
 
     QNetworkReply *reply = manager_->post(request, QByteArray((char*)data, size));
+    if (sslErrorsIgnore)
+    	reply->ignoreSslErrors();
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
             this,	 SLOT(downloadProgress(qint64, qint64)));
@@ -96,6 +102,8 @@ g_id HTTPManager::Delete(const char *url, const ghttp_Header *header, gevent_Cal
             request.setRawHeader(QByteArray(header->name), QByteArray(header->value));
 
     QNetworkReply *reply = manager_->deleteResource(request);
+    if (sslErrorsIgnore)
+    	reply->ignoreSslErrors();
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
             this,	 SLOT(downloadProgress(qint64, qint64)));
@@ -120,6 +128,8 @@ g_id HTTPManager::Put(const char *url, const ghttp_Header *header, const void *d
             request.setRawHeader(QByteArray(header->name), QByteArray(header->value));
 
     QNetworkReply *reply = manager_->put(request, QByteArray((char*)data, size));
+    if (sslErrorsIgnore)
+    	reply->ignoreSslErrors();
 
     connect(reply, SIGNAL(downloadProgress(qint64, qint64)),
             this,	 SLOT(downloadProgress(qint64, qint64)));
@@ -155,12 +165,22 @@ void HTTPManager::finished(QNetworkReply *reply)
     else
     {
         QByteArray bytes = reply->readAll();
+        QList<QNetworkReply::RawHeaderPair> headers=reply->rawHeaderPairs();
+        int hdrCount=headers.count();
+        int hdrSize=0;
+        QList<QNetworkReply::RawHeaderPair>::iterator h;
+        for (h = headers.begin(); h != headers.end(); ++h)
+        {
+        	hdrSize+=h.i->t().first.size();
+           	hdrSize+=h.i->t().second.size();
+           	hdrSize+=2;
+        }
 
         NetworkReply reply2 = map_[reply];
 
-        ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + bytes.size());
+        ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent)  + sizeof(ghttp_Header)*hdrCount + bytes.size() + hdrSize);
 
-        event->data = (char*)event + sizeof(ghttp_ResponseEvent);
+        event->data = (char*)event + sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount;
         memcpy(event->data, bytes.constData(), bytes.size());
         event->size = bytes.size();
 
@@ -169,6 +189,25 @@ void HTTPManager::finished(QNetworkReply *reply)
             event->httpStatusCode = httpStatusCode.toInt();
         else
             event->httpStatusCode = -1;
+
+		int hdrn=0;
+		char *hdrData=(char *)(event->data)+bytes.size();
+        for (h = headers.begin(); h != headers.end(); ++h)
+        {
+        	int ds=h.i->t().first.size();
+        	memcpy(hdrData,h.i->t().first.data(),ds);
+	 		event->headers[hdrn].name=hdrData;
+        	hdrData+=ds;
+        	*(hdrData++)=0;
+        	ds=h.i->t().second.size();
+        	memcpy(hdrData,h.i->t().second.data(),ds);
+	 		event->headers[hdrn].value=hdrData;
+        	hdrData+=ds;
+        	*(hdrData++)=0;
+			hdrn++;
+        }
+		event->headers[hdrn].name=NULL;
+		event->headers[hdrn].value=NULL;
 
         gevent_EnqueueEvent(reply2.id, reply2.callback, GHTTP_RESPONSE_EVENT, event, 1, reply2.udata);
     }
@@ -195,6 +234,11 @@ void HTTPManager::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 static HTTPManager* s_manager = NULL;
 
 extern "C" {
+
+void ghttp_IgnoreSSLErrors()
+{
+	sslErrorsIgnore=true;
+}
 
 void ghttp_Init()
 {

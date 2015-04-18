@@ -3,6 +3,7 @@
 #include "libnetwork.h"
 #include <stdlib.h>
 #include <memory.h>
+#include <algorithm>
 
 /*
 BSD behavior

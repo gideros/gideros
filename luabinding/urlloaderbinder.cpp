@@ -207,6 +207,15 @@ private:
                 lua_pushinteger(L, d->httpStatusCode);
                 lua_setfield(L, -2, "httpStatusCode");
             }
+           	lua_newtable(L);
+           	int hdr=0;
+           	while (d->headers[hdr].name)
+           	{
+           		lua_pushstring(L,d->headers[hdr].value);
+           		lua_setfield(L,-2,d->headers[hdr].name);
+				hdr++;
+           	}
+       		lua_setfield(L,-2,"headers");
         }
         else if (type == GHTTP_ERROR_EVENT)
         {
@@ -240,6 +249,7 @@ UrlLoaderBinder::UrlLoaderBinder(lua_State* L)
     static const luaL_Reg functionList[] = {
         {"load", load},
         {"close", close},
+        {"ignoreSslErrors", ignoreSslErrors},
         {NULL, NULL},
     };
 
@@ -422,6 +432,12 @@ int UrlLoaderBinder::load(lua_State* L)
     lua_pop(L, 1);
 
     return 0;
+}
+
+int UrlLoaderBinder::ignoreSslErrors(lua_State* L)
+{
+	ghttp_IgnoreSSLErrors();
+	return 0;
 }
 
 int UrlLoaderBinder::close(lua_State* L)

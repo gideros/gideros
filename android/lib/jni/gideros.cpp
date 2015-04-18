@@ -662,7 +662,14 @@ void ApplicationManager::luaError(const char *error)
 	}
 	else
 	{
-		g_exit();
+		JNIEnv *env = g_getJNIEnv();
+		jstring jerrormsg = env->NewStringUTF(error);
+		jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+		jmethodID throwError = env->GetStaticMethodID(localRefCls, "throwLuaException", "(Ljava/lang/String;)V");
+		env->CallStaticVoidMethod(localRefCls, throwError, jerrormsg);
+		env->DeleteLocalRef(jerrormsg);
+		env->DeleteLocalRef(localRefCls);
+		//g_exit();
 	}
 }
 

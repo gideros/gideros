@@ -1,4 +1,0 @@
-void setKeepAwake(bool awake)
-{
-
-}

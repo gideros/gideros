@@ -8,6 +8,10 @@
 #include <android/log.h>
 #endif
 
+#ifdef WINSTORE
+#include <Windows.h>
+#endif
+
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -19,6 +23,8 @@ static void log(const char *buffer)
     qDebug() << buffer;
 #elif defined(__ANDROID__)
     __android_log_print(ANDROID_LOG_DEBUG, "Gideros", "%s", buffer);
+#elif defined(WINSTORE)
+	OutputDebugStringA(buffer);
 #else
     printf("%s\n", buffer);
 #endif

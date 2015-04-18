@@ -1,0 +1,3 @@
+install_name_tool -id @executable_path/../Frameworks/libgvfs.dylib libgvfs.dylib
+install_name_tool -change /Applications/Qt/5.4/clang_64/lib/QtGui.framework/Versions/5/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/5/QtGui libgvfs.dylib
+install_name_tool -change /Applications/Qt/5.4/clang_64/lib/QtCore.framework/Versions/5/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/5/QtCore libgvfs.dylib

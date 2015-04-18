@@ -1,8 +1,0 @@
-#ifndef GRAPHICS_H_INCLUDED
-#define GRAPHICS_H_INCLUDED
-
-//#include "graphics1.h"
-#include "graphics2.h"
-
-typedef Graphics2 Graphics;
-#endif

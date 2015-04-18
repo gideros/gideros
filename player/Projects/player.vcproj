@@ -38,7 +38,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.;.\..\libnetwork;&quot;$(QTDIR)\include\QtOpenGL&quot;;.\..\luabinding;.\..\lua\src;.\..\2dsg;..\libplatform;..\libsound;&quot;..\external\openal-soft-1.13\include&quot;"
+				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.;.\..\libnetwork;&quot;$(QTDIR)\include\QtOpenGL&quot;;.\..\luabinding;.\..\lua\src;.\..\2dsg;..\libgid\include;..\libsound;&quot;..\external\openal-soft-1.13\include&quot;"
 				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;QT_DLL;NOMINMAX;_USE_MATH_DEFINES"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -107,7 +107,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.;.\..\libnetwork;&quot;$(QTDIR)\include\QtOpenGL&quot;;.\..\luabinding;.\..\lua\src;.\..\2dsg;..\libplatform;..\libsound;&quot;..\external\openal-soft-1.13\include&quot;"
+				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.;.\..\libnetwork;&quot;$(QTDIR)\include\QtOpenGL&quot;;.\..\luabinding;.\..\lua\src;.\..\2dsg;..\libgid\include;..\libsound;&quot;..\external\openal-soft-1.13\include&quot;"
 				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;QT_DLL;NOMINMAX;_USE_MATH_DEFINES"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
@@ -200,7 +200,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libplatform&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\errordialog.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libgid\include&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\errordialog.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -211,7 +211,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libplatform&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\errordialog.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libgid\include&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\errordialog.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -226,7 +226,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libplatform&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\glcanvas.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libgid\include&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\glcanvas.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -237,7 +237,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libplatform&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\glcanvas.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libgid\include&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\glcanvas.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -252,7 +252,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libplatform&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\mainwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libgid\include&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\mainwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -263,7 +263,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libplatform&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\mainwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_DLL -DNOMINMAX -D_USE_MATH_DEFINES  -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;.\..\libnetwork&quot; -I&quot;$(QTDIR)\include\QtOpenGL&quot; -I&quot;.\..\luabinding&quot; -I&quot;.\..\lua\src&quot; -I&quot;.\..\2dsg&quot; -I&quot;.\..\libgid\include&quot; -I&quot;.\..\libsound&quot; -I&quot;.\..\external\openal-soft-1.13\include&quot; &quot;.\mainwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>

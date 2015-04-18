@@ -8,6 +8,8 @@
 #include "dxcompat.hpp"
 //#include "util.h"
 
+#include "glog.h"
+
 // This is needed for WinRT apps
 #ifdef WINSTORE
 #include <memory>
@@ -384,7 +386,7 @@ void glBindTexture(GLenum target, GLuint texind)
 {
 
 	if (target != GL_TEXTURE_2D){
-		OutputDebugStringA("glBindTexture: wrong target\n");
+		glog_e("glBindTexture: wrong target\n");
 		exit(1);
 	}
 
@@ -409,20 +411,20 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei widt
   int i;
 
   if (target != GL_TEXTURE_2D){
-	  OutputDebugStringA("glTexImage2D: unknown target\n");
+	  glog_e("glTexImage2D: unknown target\n");
 	  exit(1);
   }
 
-  if (level != 0) OutputDebugStringA("glTexImage2D: level not zero\n");
+  if (level != 0) glog_w("glTexImage2D: level not zero\n");
 
   if (border != 0) {
-	  OutputDebugStringA("glTexImage2D: border must be zero\n");
+	  glog_e("glTexImage2D: border must be zero\n");
 	  exit(1);
   }
 
-  if (format != internalFormat) OutputDebugStringA("glTexImage2D: Warning format, internalFormat different\n");
+  if (format != internalFormat) glog_w("glTexImage2D: Warning format, internalFormat different\n");
 
-  if (type != GL_UNSIGNED_BYTE) OutputDebugStringA("glTexImage2D: unexpected pixel data type\n");
+  if (type != GL_UNSIGNED_BYTE) glog_w("glTexImage2D: unexpected pixel data type\n");
 
   pixels1 = (char *)pixels;
 
@@ -458,7 +460,7 @@ void glTexImage2D(GLenum target, GLint level, GLint internalFormat, GLsizei widt
 	  tbsd.pSysMem = pixels2;
   }
   else {
-	  OutputDebugString(L"glTexImage2D: unknown internal format");
+	  glog_w("glTexImage2D: unknown internal format");
 	  exit(1);
   }
 
@@ -545,10 +547,12 @@ void glDrawArrays(GLenum pattern, GLint zero, GLsizei npoints)
   int i,j,k;
   float x,y,xp,yp,zp;
 
-  static VERTEX DxVertices[256];
+  static VERTEX DxVertices[1024];
   D3D11_MAPPED_SUBRESOURCE ms;    
 
   float mat[4][4];
+
+  if (npoints > 1024) npoints = 1024;  // avoid overflow
 
   for (i=0;i<4;i++){
     for (j=0;j<4;j++){
@@ -615,7 +619,7 @@ void glDrawArrays(GLenum pattern, GLint zero, GLsizei npoints)
   else if (pattern==GL_LINES)
 	  g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
   else {
-	  OutputDebugStringA("glDrawArrays unknown pattern\n");
+	  glog_e("glDrawArrays unknown pattern\n");
 	  exit(1);
   }
 
@@ -645,54 +649,54 @@ void glColorPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *ptr)
 {
 
 	if (size != 4){
-		OutputDebugStringA("glColorPointer: size must be 4\n");
+		glog_e("glColorPointer: size must be 4\n");
 		exit(1);
 	}
 
 	if (type == GL_FLOAT)
 		g_colors = (GLfloat*)ptr;
 	else {
-		OutputDebugString(L"glColorPointer: illegal type\n");
+		glog_e("glColorPointer: illegal type\n");
 		exit(1);
 	}
 
-	if (stride != 0) OutputDebugStringA("glColorPointer. Stride should be zero\n");
+	if (stride != 0) glog_w("glColorPointer. Stride should be zero\n");
 }
 
 void glVertexPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *ptr)
 {
 
 	if (size != 2){
-		OutputDebugStringA("glVertexPointer: size must be 2\n");
+		glog_e("glVertexPointer: size must be 2\n");
 		exit(1);
 	}
 
 	if (type==GL_FLOAT)
     	g_vertices = (GLfloat*)ptr;
 	else {
-		OutputDebugStringA("glVertexPointer: illegal type\n");
+		glog_e("glVertexPointer: illegal type\n");
 		exit(1);
 	}
 
-	if (stride != 0) OutputDebugStringA("glVertexPointer. Stride should be zero\n");
+	if (stride != 0) glog_w("glVertexPointer. Stride should be zero\n");
 }
 
 void glTexCoordPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *ptr)
 {
 
 	if (size != 2){
-		OutputDebugStringA("glTexCoordPointer: size must be 2\n");
+		glog_e("glTexCoordPointer: size must be 2\n");
 		exit(1);
 	}
 
 	if (type==GL_FLOAT)
 	   g_tex_coord = (GLfloat*)ptr;
 	else {
-		OutputDebugStringA("glTexCoordPointer: illegal type\n");
+		glog_e("glTexCoordPointer: illegal type\n");
 		exit(1);
 	}
 
-	if (stride != 0) OutputDebugStringA("glVertexTexCoordPointer. Stride should be zero\n");
+	if (stride != 0) glog_w("glVertexTexCoordPointer. Stride should be zero\n");
 
 }
 
@@ -703,20 +707,20 @@ void glGetIntegerv(GLenum pname, GLint *params)
 	else if (pname == GL_FRAMEBUFFER_BINDING)
 		*params = g_curr_framebuffer;
 	else {
-		OutputDebugString(L"Warning, glGetIntegerv pname not supported\n");
+		glog_w("Warning, glGetIntegerv pname not supported\n");
 		*params = 0;
 	}
 }
 
 const GLubyte *glGetString(GLenum name)
 {
-	OutputDebugStringA("glGetString not supported\n");
+	glog_w("glGetString not supported\n");
 	return NULL;
 }
 
 void glTexEnvi(GLenum target, GLenum pname, GLint param)
 {
-//	OutputDebugString(L"glTexEnvi not supported\n");
+	glog_v("glTexEnvi not supported\n");
 }
 
 void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices)
@@ -724,7 +728,7 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indi
 	int i, j, k;
 	float x, y, xp, yp, zp;
 
-	static VERTEX DxVertices[256];
+	static VERTEX DxVertices[1024];
 	D3D11_MAPPED_SUBRESOURCE ms;
 
 	float mat[4][4];
@@ -732,6 +736,8 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indi
 	GLubyte *ub_indices;
 	GLushort *us_indices;
 	GLuint *ui_indices, ui_index;
+
+	if (count > 1024) count = 1024;  // prevent overflow
 
 	if (type == GL_UNSIGNED_BYTE)
 		ub_indices = (GLubyte *)indices;
@@ -813,7 +819,7 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indi
 	else if (mode == GL_LINES)
 		g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	else {
-		OutputDebugStringA("glDrawElements: bad mode\n");
+		glog_e("glDrawElements: bad mode\n");
 		exit(1);
 	}
 
@@ -889,7 +895,7 @@ void glGenFramebuffers(GLsizei n, GLuint *framebuffers)
 void glBindFramebuffer(GLenum target, GLuint framebuffer)
 {
 	if (target != GL_FRAMEBUFFER){
-		OutputDebugStringA("glBindFramebuffer: wrong target\n");
+		glog_e("glBindFramebuffer: wrong target\n");
 		exit(1);
 	}
 
@@ -915,22 +921,22 @@ void glFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, 
 	ID3D11Resource *res;
 
 	if (target != GL_FRAMEBUFFER){
-		OutputDebugStringA("glFramebufferTexture2D: bad target\n");
+		glog_e("glFramebufferTexture2D: bad target\n");
 		exit(1);
 	}
 
 	if (attachment != GL_COLOR_ATTACHMENT0){
-		OutputDebugStringA("glFramebufferTexture2D: bad attachment\n");
+		glog_e("glFramebufferTexture2D: bad attachment\n");
 		exit(1);
 	}
 
 	if (textarget != GL_TEXTURE_2D){
-		OutputDebugStringA("glFramebufferTexture2D: bad textarget\n");
+		glog_e("glFramebufferTexture2D: bad textarget\n");
 		exit(1);
 	}
 
 	if (level != 0){
-		OutputDebugStringA("glFramebufferTexture2D: bad level\n");
+		glog_e("glFramebufferTexture2D: bad level\n");
 		exit(1);
 	}
 
@@ -958,7 +964,7 @@ void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format
 
 void glTexParameteri(GLenum target, GLenum pname, GLint param)
 {
-	OutputDebugString(L"glTexParameteri not supported\n");
+	glog_v("glTexParameteri not supported\n");
 }
 
 
