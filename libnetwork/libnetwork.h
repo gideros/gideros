@@ -6,7 +6,15 @@
 #include <vector>
 
 #ifdef WINSTORE
-#include <WinSock2.h>
+
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#define WIN32_LEAN_AND_MEAN
+
+#include <winsock2.h>
+#include <Ws2tcpip.h>
 #pragma comment(lib, "Ws2_32.lib")
 #elif WIN32
 #include <WinSock.h>
