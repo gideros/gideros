@@ -8,8 +8,8 @@ JAR=$(JAVA_HOME)/bin/jar
 ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_HOME)/bin/java -classpath "$(ANT_HOME)\\lib\\ant-launcher.jar" "-Dant.home=$(ANT_HOME)" org.apache.tools.ant.launch.Launcher
 
 #DEFS
-PLUGINS_WIN=BitOp lsqlite3 LuaSocket LPeg lfs JSON Microphone
-PLUGINS_ANDROID=BitOp lsqlite3 LuaSocket LPeg lfs JSON Microphone Flurry Facebook googlebilling
+PLUGINS_WIN=bitop lsqlite3 luasocket lpeg lfs json microphone
+PLUGINS_ANDROID=bitop lsqlite3 luasocket lpeg lfs json microphone flurry Facebook googlebilling
 ROOT=.
 SDK=$(ROOT)/Sdk
 RELEASE=$(ROOT)/release
@@ -23,7 +23,8 @@ MINGWMAKE=mingw32-make
 all:
 	PATH="$(QPATH)" make -f $(ROOT)/scripts/Makefile.gid all.q
 
-clean:	qtapp.clean android.clean	
+#clean:	qtapp.clean android.clean
+clean: player.qmake.clean	
 
 all.q: qtapp.install android.install
 
@@ -60,15 +61,15 @@ qtlibs.install: buildqtlibs
 	cp $(ROOT)/libpystring/release/pystring.dll $(RELEASE)
 
 %.plugin:
-	cd $(ROOT)/plugins/$*/source; $(QMAKE) *.pro
-	cd $(ROOT)/plugins/$*/source; $(MINGWMAKE) release
+	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro
+	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) release
 
 %.plugin.clean:
 	cd $(ROOT)/plugins/$*/source; $(MINGWMAKE) clean
 
 %.plugin.install:
 	mkdir -p $(RELEASE)/Plugins
-	cp $(ROOT)/plugins/$*/source/release/*.dll $(RELEASE)/Plugins 
+	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp release/*.dll $(RELEASE)/Plugins	 
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 
@@ -119,7 +120,7 @@ buildplugins: $(addsuffix .plugin,$(PLUGINS_WIN))
 
 plugins.clean: $(addsuffix .plugin.clean,$(PLUGINS_WIN))
 
-plugins.install: $(addsuffix .plugin.install,$(PLUGINS_WIN))
+plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; $(MINGWMAKE) clean
@@ -131,6 +132,10 @@ plugins.install: $(addsuffix .plugin.install,$(PLUGINS_WIN))
 %.qmake5.rel:
 	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) release
+
+%.qmake5.dbg:
+	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
+	cd $(ROOT)/$*; $(MINGWMAKE) debug
 
 #ANDROID
 android.clean: androidlib.clean androidso.clean
@@ -172,6 +177,8 @@ androidso.clean:
 
 %.androidso:
 	cp -R  $(ROOT)/android/lib/jni/*.cpp $(ROOT)/android/$(firstword $(subst _, ,$*))/jni
+	cp $(ROOT)/android/lib/jni/Android-$(firstword $(subst _, ,$*)).mk $(ROOT)/android/$(firstword $(subst _, ,$*))/jni/Android.mk
+	cp $(ROOT)/android/lib/jni/Application-$(firstword $(subst _, ,$*)).mk $(ROOT)/android/$(firstword $(subst _, ,$*))/jni/Application.mk
 	cd $(ROOT)/android/$(firstword $(subst _, ,$*));$(NDKBUILD)
 	mkdir -p $(ROOT)/android/build/$(word 2,$(subst _, ,$*))
 	cp -R $(ROOT)/android/$(firstword $(subst _, ,$*))/libs/$(word 2,$(subst _, ,$*)) $(ROOT)/android/build/libs/

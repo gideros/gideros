@@ -1,7 +1,7 @@
 CPPPATH = [
 "../libpng",
 "../zlib",
-"../libplatform",
+"../libgid/src",
 "../libsound",
 "../pystring",
 "../libpvrt",

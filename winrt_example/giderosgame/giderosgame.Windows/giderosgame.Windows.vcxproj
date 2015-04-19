@@ -96,6 +96,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <PackageCertificateKeyFile>giderosgame.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <Import Project="..\giderosgame.Shared\giderosgame.Shared.vcxitems" Label="Shared" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -209,11 +210,22 @@
     <Image Include="Assets\button_down.png" />
     <Image Include="Assets\button_up.png" />
     <Image Include="Assets\ego.png" />
-    <Image Include="Assets\Logo.png" />
+    <Image Include="Assets\Logo.scale-100.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Assets\Logo.scale-80.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <Image Include="Assets\sky_world.png" />
-    <Image Include="Assets\SmallLogo.png" />
-    <Image Include="Assets\StoreLogo.png" />
-    <Image Include="Assets\SplashScreen.png" />
+    <Image Include="Assets\SmallLogo.scale-100.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-100.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Assets\StoreLogo.scale-100.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

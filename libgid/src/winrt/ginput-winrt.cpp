@@ -307,13 +307,13 @@ public:
 
 		touchEvent->touch.x = x;
 		touchEvent->touch.y = y;
-		touchEvent->touch.id = id;
+		touchEvent->touch.id = addTouch(id);
 
 		int i = 0;
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
-			touchEvent->allTouches[i].id = i+1;
+			touchEvent->allTouches[i].id = addTouch(it->second.id);
 			i++;
 		}
 
@@ -349,19 +349,19 @@ public:
 
 		touchEvent->touch.x = x;
 		touchEvent->touch.y = y;
-		touchEvent->touch.id = id;
+		touchEvent->touch.id = addTouch(id);
 
 		int i = 0;
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
-			touchEvent->allTouches[i].id = i + 1;
+			touchEvent->allTouches[i].id = addTouch(it->second.id);
 			i++;
 		}
 
 		ginput_MouseEvent *mouseEvent = NULL;
 		if (isTouchToMouseEnabled_ && touchEvent->touch.id == 0)
-			mouseEvent = newMouseEvent(touchEvent->touch.x, touchEvent->touch.y, GINPUT_LEFT_BUTTON);
+			mouseEvent = newMouseEvent(touchEvent->touch.x, touchEvent->touch.y, GINPUT_NO_BUTTON);
 
 		if (mouseTouchOrder_ == 0)
 		{
@@ -391,13 +391,13 @@ public:
 
 		touchEvent->touch.x = x;
 		touchEvent->touch.y = y;
-		touchEvent->touch.id = id;
+		touchEvent->touch.id = addTouch(id);
 
 		int i = 0;
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
-			touchEvent->allTouches[i].id = i + 1;
+			touchEvent->allTouches[i].id = addTouch(it->second.id);
 			i++;
 		}
 
@@ -425,6 +425,7 @@ public:
 				deleteMouseEvent(mouseEvent);
 			}
 		}
+		removeTouch(id);
 	}
 
 	void touchCancel(int x, int y, int id)
@@ -433,13 +434,13 @@ public:
 
 		touchEvent->touch.x = x;
 		touchEvent->touch.y = y;
-		touchEvent->touch.id = id;
+		touchEvent->touch.id = addTouch(id);
 
 		int i = 0;
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
-			touchEvent->allTouches[i].id = i + 1;
+			touchEvent->allTouches[i].id = addTouch(it->second.id);
 			i++;
 		}
 
@@ -467,9 +468,40 @@ public:
 				deleteMouseEvent(mouseEvent);
 			}
 		}
+		removeTouch(id);
 	}
 
 private:
+	int addTouch(int touch)
+	{
+		for (int i = 0; i < touches_.size(); ++i)
+			if (touches_[i] == touch)
+				return i;
+
+		for (int i = 0; i < touches_.size(); ++i)
+			if (touches_[i] == NULL)
+			{
+				touches_[i] = touch;
+				return i;
+			}
+
+		touches_.push_back(touch);
+
+		return touches_.size() - 1;
+	}
+
+	void removeTouch(int touch)
+	{
+		for (int i = 0; i < touches_.size(); ++i)
+			if (touches_[i] == touch)
+			{
+				touches_[i] = NULL;
+				break;
+			}
+	}
+
+	std::vector<int> touches_;
+
     ginput_MouseEvent *newMouseEvent(int x, int y, int button)
     {
         ginput_MouseEvent *event;
@@ -733,26 +765,37 @@ void ginputp_mouseUp(int x, int y, int button)
 }
 
 void ginputp_touchBegin(int x, int y, int id){
-	Pointer pointer;
-	pointer.x = x;
-	pointer.y = y;
-	pointer.id = id;
-	m_pointerIds.emplace(id, pointer);
-	s_manager->touchBegin(x,y,id);
+	if (s_manager){
+		Pointer pointer;
+		pointer.x = x;
+		pointer.y = y;
+		pointer.id = id;
+		m_pointerIds.emplace(id, pointer);
+		s_manager->touchBegin(x, y, id);
+	}
 }
 
 void ginputp_touchMove(int x, int y, int id){
-	s_manager->touchMove(x, y, id);
+	Pointer* p = &m_pointerIds[id];
+	if (s_manager && (x != p->x || y != p->y)){
+		p->x = x;
+		p->y = y;
+		s_manager->touchMove(x, y, id);
+	}
 }
 
 void ginputp_touchEnd(int x, int y, int id){
-	m_pointerIds.erase(id);
-	s_manager->touchEnd(x, y, id);
+	if (s_manager){
+		s_manager->touchEnd(x, y, id);
+		m_pointerIds.erase(id);
+	}
 }
 
 void ginputp_touchCancel(int x, int y, int id){
-	m_pointerIds.erase(id);
-	s_manager->touchCancel(x, y, id);
+	if (s_manager){
+		s_manager->touchCancel(x, y, id);
+		m_pointerIds.erase(id);
+	}
 }
 
 }

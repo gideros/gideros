@@ -23,7 +23,7 @@ SOURCES += main.cpp \
     qtlockedfile.cpp \
     qtlocalpeer.cpp \
     ../ui/projectproperties.cpp \
-    ../libplatform/md5.c \
+    ../libgid/src/md5.c \
     ../ui/dependencygraph.cpp
 
 HEADERS += \
@@ -37,7 +37,7 @@ HEADERS += \
     ../ui/projectproperties.h \
     ../ui/dependencygraph.h
 
-INCLUDEPATH += . ../libnetwork ../ui ../libplatform
+INCLUDEPATH += . ../libnetwork ../ui ../libgid/include
 
 win32 {
     SOURCES += qtlockedfile_win.cpp

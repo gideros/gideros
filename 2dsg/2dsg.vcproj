@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;&quot;..\external\libpng-1.5.2\include&quot;;&quot;..\external\zlib-1.2.5\include&quot;;..\libpvrt;..\pystring;..\libplatform;..\libsound;..\external\glu"
+				AdditionalIncludeDirectories=".;&quot;..\external\libpng-1.5.2\include&quot;;&quot;..\external\zlib-1.2.5\include&quot;;..\libpvrt;..\pystring;..\libgid\include;..\libsound;..\external\glu"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -105,7 +105,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=".;&quot;..\external\libpng-1.5.2\include&quot;;&quot;..\external\zlib-1.2.5\include&quot;;..\libpvrt;..\pystring;..\libplatform;..\libsound;..\external\glu"
+				AdditionalIncludeDirectories=".;&quot;..\external\libpng-1.5.2\include&quot;;&quot;..\external\zlib-1.2.5\include&quot;;..\libpvrt;..\pystring;...\libgid\include;..\libsound;..\external\glu"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;_USE_MATH_DEFINES;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

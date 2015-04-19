@@ -55,6 +55,7 @@ public:
 		deleteId_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_Delete", "(Ljava/lang/String;[Ljava/lang/String;JJ)V");
 		closeId_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_Close", "(J)V");
 		closeAllId_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_CloseAll", "()V");
+		ignoreSslErrorsId_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_IgnoreSslErrors", "()V");
 
 		env->CallStaticVoidMethod(javaNativeBridge_, initId_);
 	}
@@ -66,6 +67,12 @@ public:
 		env->DeleteGlobalRef(javaNativeBridge_);
 	}
 	
+	void IgnoreSslErrors()
+	{
+		JNIEnv *env = g_getJNIEnv();
+		env->CallStaticVoidMethod(javaNativeBridge_, ignoreSslErrorsId_);
+	}
+
 	g_id Get(const char *url, const ghttp_Header *headers, gevent_Callback callback, void *udata)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -208,7 +215,7 @@ public:
 		void *udata;	
 	};
 	
-	void ghttp_responseCallback(JNIEnv *env, jlong id, jbyteArray jdata, jint size, jint statusCode)
+	void ghttp_responseCallback(JNIEnv *env, jlong id, jbyteArray jdata, jint size, jint statusCode, jint hdrCount, jint hdrSize)
 	{
 		if (map_.find(id) == map_.end())
 			return;
@@ -217,12 +224,25 @@ public:
 			
 		jbyte *data = (jbyte*)env->GetPrimitiveArrayCritical(jdata, 0);
 		
-		ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + size);
+		ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount + size + hdrSize);
 
-		event->data = (char*)event + sizeof(ghttp_ResponseEvent);
-		memcpy(event->data, data, size);
+		event->data = (char*)event + sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount;
+		memcpy(event->data, data, size + hdrSize);
 		event->size = size;
 		event->httpStatusCode = statusCode;
+
+		int hdrn=0;
+		char *hdrData=(char *)(event->data)+size;
+		while (hdrCount--)
+		{
+	 		 event->headers[hdrn].name=hdrData;
+			 hdrData+=(strlen(hdrData)+1);
+	 		 event->headers[hdrn].value=hdrData;
+			 hdrData+=(strlen(hdrData)+1);
+			 hdrn++;
+		}
+		event->headers[hdrn].name=NULL;
+		event->headers[hdrn].value=NULL;
 
 		gevent_EnqueueEvent(id, element.callback, GHTTP_RESPONSE_EVENT, event, 1, element.udata);
 
@@ -270,16 +290,17 @@ private:
 	jmethodID deleteId_;
 	jmethodID closeId_;
 	jmethodID closeAllId_;
+	jmethodID ignoreSslErrorsId_;
 
 	std::map<g_id, CallbackElement> map_;
 };
 
 extern "C" {
 
-void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpResponseCallback(JNIEnv *env, jclass cls, jlong id, jbyteArray data, jint size, jint statusCode, jlong udata)
+void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpResponseCallback(JNIEnv *env, jclass cls, jlong id, jbyteArray data, jint size, jint statusCode, jint hdrCount, jint hdrSize, jlong udata)
 {
 	HTTPManager *that = (HTTPManager*)udata;
-	that->ghttp_responseCallback(env, id, data, size, statusCode);
+	that->ghttp_responseCallback(env, id, data, size, statusCode, hdrCount, hdrSize);
 }
 
 void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpErrorCallback(JNIEnv *env, jclass cls, jlong id, jlong udata)
@@ -299,6 +320,10 @@ void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpProgressCallba
 static HTTPManager* s_manager = NULL;
 
 extern "C" {
+void ghttp_IgnoreSSLErrors()
+{
+	s_manager->IgnoreSslErrors();
+}
 
 void ghttp_Init()
 {

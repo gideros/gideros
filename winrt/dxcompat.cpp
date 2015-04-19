@@ -547,10 +547,12 @@ void glDrawArrays(GLenum pattern, GLint zero, GLsizei npoints)
   int i,j,k;
   float x,y,xp,yp,zp;
 
-  static VERTEX DxVertices[256];
+  static VERTEX DxVertices[1024];
   D3D11_MAPPED_SUBRESOURCE ms;    
 
   float mat[4][4];
+
+  if (npoints > 1024) npoints = 1024;  // avoid overflow
 
   for (i=0;i<4;i++){
     for (j=0;j<4;j++){
@@ -726,7 +728,7 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indi
 	int i, j, k;
 	float x, y, xp, yp, zp;
 
-	static VERTEX DxVertices[256];
+	static VERTEX DxVertices[1024];
 	D3D11_MAPPED_SUBRESOURCE ms;
 
 	float mat[4][4];
@@ -734,6 +736,8 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indi
 	GLubyte *ub_indices;
 	GLushort *us_indices;
 	GLuint *ui_indices, ui_index;
+
+	if (count > 1024) count = 1024;  // prevent overflow
 
 	if (type == GL_UNSIGNED_BYTE)
 		ub_indices = (GLubyte *)indices;

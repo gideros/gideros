@@ -6,7 +6,6 @@ wc \
 fontcreator/{*.cpp,*.h} \
 libnetwork/{*.cpp,*.c,*.h,*.mm} \
 libsound/{*.cpp,*.h,*.mm} \
-libplatform/{*.cpp,*.h,*.mm} \
 libpreviewwidget/{*.cpp,*.h} \
 luabinding/{*.cpp,*.h,*.c,*.mm} \
 texturepacker/{*.cpp,*.h} \

@@ -76,7 +76,7 @@ SOURCES += \
 SOURCES += $$files(../libpvrt/*.cpp)
 
 SOURCES += "../libgid/src/platformutil.cpp"\
-           "../libgid/src/md5.c"
+			"../libgid/src/md5.c"
 
 HEADERS  += \
     mainwindow.h\

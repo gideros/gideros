@@ -141,7 +141,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\refptr.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\stringid.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\autofit\autofit.c">
-      <Optimization>MinSpace</Optimization>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbase.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbbox.c" />
@@ -354,6 +354,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\tlsf.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\ttfontbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\urlloaderbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\zlibbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\dxcompat.cpp">
       <CompileAsWinRT>true</CompileAsWinRT>
     </ClCompile>

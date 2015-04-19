@@ -112,9 +112,9 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 	static const char* version =
         " ..   ..   .  ....    ..    ..    .   .. "
         ".  . .  . ..  .      .  .  . .   ..  .  ."
-        "  .  .  .  .  ....   .  . .  .    .    . "
-        " .   .  .  .     .   .  . ....    .   .  "
-        "....  ..  ... ...  .  ..     . . ... ....";
+        "  .  .  .  .  ....   .  . .  .    .   .. "
+        " .   .  .  .     .   .  . ....    .  .  ."
+        "....  ..  ... ...  .  ..     . . ...  .. ";
 
     static const char* resolution =
         "...  ...  ...  ..  .   .  . ..... .  ..  .  .  "
