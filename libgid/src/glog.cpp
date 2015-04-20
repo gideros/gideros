@@ -9,6 +9,7 @@
 #endif
 
 #ifdef WINSTORE
+#include <string>
 #include <Windows.h>
 #endif
 
@@ -24,7 +25,9 @@ static void log(const char *buffer)
 #elif defined(__ANDROID__)
     __android_log_print(ANDROID_LOG_DEBUG, "Gideros", "%s", buffer);
 #elif defined(WINSTORE)
-	OutputDebugStringA(buffer);
+	std::string s(buffer);
+	std::wstring wsTmp(s.begin(), s.end());
+	OutputDebugString(wsTmp.c_str());
 #else
     printf("%s\n", buffer);
 #endif
