@@ -2560,7 +2560,9 @@ void MainWindow::exportProject()
 
 				buffer << properties.scaleMode;
 				buffer << properties.logicalWidth;
-				buffer << properties.logicalHeight;
+                buffer << properties.logicalHeight;
+                buffer << properties.windowWidth;
+                buffer << properties.windowHeight;
 
 				buffer << (int)properties.imageScales.size();
 				for (size_t i = 0; i < properties.imageScales.size(); ++i)

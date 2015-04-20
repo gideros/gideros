@@ -6,6 +6,7 @@
 //}
 
 #include "lua.hpp"
+#include "zlibbinder.cpp"
 
 void register_finishedGroups(lua_State* L);
 void register_zlib(lua_State *L);

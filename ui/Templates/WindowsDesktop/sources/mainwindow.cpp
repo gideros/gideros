@@ -23,10 +23,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 
     ui.setupUi(this);
 
+    ui.glCanvas->setDrawInfos(false);
+    ui.glCanvas->exportedApp_ = true;
+
     move(QPoint(0, 0));
 
-    QDir directory = QDir::currentPath();
-    directory.cd("Assets");
+    QDir directory = QDir("Assets");
     ui.glCanvas->projectDir_ = directory.absolutePath();
 }
 
@@ -47,8 +49,9 @@ void MainWindow::projectNameChanged(const QString& projectName){
     show();
     raise();
     activateWindow();
-    if (projectName.isEmpty() == true)
-        setWindowTitle(Constants::PLAYER_WINDOW_TITLE);
+
+    if(projectName.isEmpty() == true)
+        setWindowTitle(Constants::WINDESK_WINDOW_TITLE);
     else
-        setWindowTitle(projectName + " - " + Constants::PLAYER_WINDOW_TITLE);
+        setWindowTitle(projectName);
 }

@@ -40,7 +40,7 @@ SOURCES += \
     src/gaudio-stream-openal.cpp \
     src/gaudio-loader-wav.cpp \
     src/gaudio-loader-mp3.cpp
-HEADERS += src/ggaudiomanager.h
+#HEADERS += src/ggaudiomanager.h
 
 HEADERS += include/gexport.h
 

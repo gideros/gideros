@@ -39,6 +39,7 @@ public:
 
     //std::set<std::string> accessedResourceFiles;
     std::set<std::string> allResourceFiles;
+    bool exportedApp_;
 
 private slots:
 	void onTimer();

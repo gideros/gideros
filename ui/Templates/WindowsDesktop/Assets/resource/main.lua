@@ -12,9 +12,6 @@ local label = TextField.new(nil, "Clicked 0 time(s)")
 label:setPosition(application:getContentWidth()/2, application:getContentHeight()/2)
 stage:addChild(label)
 
-print(application:getContentWidth()/2)
-print(application:getContentHeight()/2)
-
 -- create the up and down sprites for the button
 local up = Bitmap.new(Texture.new("button_up.png"))
 local down = Bitmap.new(Texture.new("button_down.png"))
@@ -30,5 +27,5 @@ button:addEventListener("click",
 		label:setText("Clicked " .. click .. " time(s)")
 	end)
 
-button:setPosition(0, 0)
+button:setPosition(40, 150)
 stage:addChild(button)

@@ -234,7 +234,7 @@ void GLCanvas::paintGL(){
     application_->renderScene();
 
     // if not running or if is running with drawInfos enabled, draw some usefull infos on the canvas
-    if(!running_ || drawInfos_){
+    if((!running_ || drawInfos_) && !exportedApp_){
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         glScalef(1.f / scale_, 1.f / scale_, 1);
@@ -478,7 +478,6 @@ void GLCanvas::timerEvent(QTimerEvent *){
 }
 
 // function to play an application into player passing path
-// TODO: pensar em um nome intuitivo
 void GLCanvas::play(QDir directory){
     QFile file(directory.absolutePath()+"/properties.bin");
     QFile luafiles(directory.absolutePath()+"/luafiles.txt");
@@ -506,18 +505,31 @@ void GLCanvas::play(QDir directory){
 
         emit projectNameChanged(projectName_);
 
-        dir_ = QDir::temp();
-        dir_.mkdir("gideros");
-        dir_.cd("gideros");
-        dir_.mkdir(projectName_);
-        dir_.cd(projectName_);
-        dir_.mkdir("documents");
-        dir_.mkdir("temporary");
+        const char* documentsDirectory;
+        const char* temporaryDirectory;
 
-        resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
+        if(exportedApp_){
+            resourceDirectory_ = qPrintable(directory.absoluteFilePath("resource"));
+            documentsDirectory = qPrintable(directory.absoluteFilePath("documents"));
+            temporaryDirectory = qPrintable(directory.absoluteFilePath("temporary"));
 
-        setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
-        setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
+        }else{
+            dir_ = QDir::temp();
+            dir_.mkdir("gideros");
+            dir_.cd("gideros");
+            dir_.mkdir(projectName_);
+            dir_.cd(projectName_);
+            dir_.mkdir("documents");
+            dir_.mkdir("temporary");
+
+            resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
+
+            documentsDirectory = qPrintable(dir_.absoluteFilePath("documents"));
+            temporaryDirectory = qPrintable(dir_.absoluteFilePath("temporary"));
+        }
+
+        setDocumentsDirectory(documentsDirectory);
+        setTemporaryDirectory(temporaryDirectory);
         setResourceDirectory(resourceDirectory_.c_str());
 
         file.open(QIODevice::ReadOnly);
@@ -548,10 +560,12 @@ void GLCanvas::loadProperties(std::vector<char> data){
     char chr;
     buffer >> chr;
 
-    int scaleMode, logicalWidth, logicalHeight;
+    int scaleMode, logicalWidth, logicalHeight, windowWidth, windowHeight;
     buffer >> scaleMode;
     buffer >> logicalWidth;
     buffer >> logicalHeight;
+    buffer >> windowWidth;
+    buffer >> windowHeight;
 
     application_->deinitialize();
     application_->initialize();
@@ -559,6 +573,16 @@ void GLCanvas::loadProperties(std::vector<char> data){
 //				application_->orientationChange(orientation_);
     application_->setLogicalDimensions(logicalWidth, logicalHeight);
     application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
+
+    if(windowWidth <= 0){
+        windowWidth = 320;
+    }
+
+    if(windowHeight <= 0){
+        windowHeight = 480;
+    }
+
+    setWindowSize(windowWidth, windowHeight);
 
     int scaleCount;
     buffer >> scaleCount;
