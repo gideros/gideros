@@ -71,6 +71,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"configureFrustum", ApplicationBinder::configureFrustum},
         {"setWindowSize", ApplicationBinder::setWindowSize},
         {"setFullScreen", ApplicationBinder::setFullScreen},
+        {"getDeviceName", ApplicationBinder::getDeviceName},
         {NULL, NULL},
 	};
 
@@ -665,4 +666,14 @@ int ApplicationBinder::setFullScreen(lua_State* L){
 
     ::setFullScreen(fullScreen);
     return 0;
+}
+
+int ApplicationBinder::getDeviceName(lua_State *L)
+{
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    lua_pushstring(L, ::getDeviceName().c_str());
+
+    return 1;
 }
