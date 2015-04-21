@@ -125,6 +125,8 @@ public:
 
 private:
 	SOCKET serverSock_;
+    SOCKET broadcastSock_;
+    time_t lastBcastTime_;
 
 	void cleanup(void);
 };
