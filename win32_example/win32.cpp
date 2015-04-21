@@ -14,7 +14,7 @@
 #include <direct.h>
 #include <binder.h>
 #include <libnetwork.h>
-#include "ginput-winrt.h"
+#include "ginput-win32.h"
 #include "luaapplication.h"
 #include "platform.h"
 #include "refptr.h"
@@ -32,12 +32,13 @@
 #include "gvfs-native.h"
 #include "ggeolocation.h"
 #include "gapplication.h"
-#include "gapplication-winrt.h"
+#include "gapplication-win32.h"
 #include "gaudio.h"
 #include "ghttp.h"
 #include "orientation.h"
 
 LuaApplication *application_;
+HWND hwndcopy;
 
 #define ID_TIMER   1
 
@@ -496,6 +497,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		       NULL,                    // window menu handle
 		       hInstance,               // program instance handle
 		       NULL) ;		             // creation parameters
+
+  hwndcopy=hwnd;
 
   // ----------------------------------------------------------------------
   // Create window

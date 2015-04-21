@@ -1,5 +1,5 @@
-#ifndef GAPPLICATION_WINRT_H
-#define GAPPLICATION_WINRT_H
+#ifndef GAPPLICATION_WIN32_H
+#define GAPPLICATION_WIN32_H
 
 #include <gglobal.h>
 #include <gevent.h>

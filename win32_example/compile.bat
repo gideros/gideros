@@ -11,7 +11,7 @@ set include_paths= ^
 -I..\libgid\external\snappy-1.1.0 ^
 -I..\libgid\external\libpng-1.6.2 ^
 -I..\libgid\external\jpeg-9 ^
--I..\libgid\external\openal-soft-1.16.0\include\AL ^
+-I..\libgid\external\openal-soft-1.13\include\AL ^
 -I..\libgid\external\mpg123-1.15.3\src\libmpg123 ^
 -I..\lua\src ^
 -I..\libgid\external\zlib-1.2.8 ^
@@ -29,21 +29,21 @@ set preprocessor= ^
 -DFT2_BUILD_LIBRARY ^
 -DPYSTRING_LIBRARY
 
-g++ %include_paths% -O2 -c win.cpp 
+g++ %include_paths% -O2 -c win32.cpp 
 
-g++ %include_paths% -U_WIN32 -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\*.cpp
-g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\*.cpp
-g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\*.cpp
-g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\*.cpp
-g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\*.cpp
-g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\*.cpp
-g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Rope\*.cpp
-g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\*.cpp
+rem g++ %include_paths% -U_WIN32 -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\*.cpp
+rem g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\*.cpp
+rem g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\*.cpp
+rem g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\*.cpp
+rem g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Contacts\*.cpp
+rem g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Dynamics\Joints\*.cpp
+rem g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Rope\*.cpp
+rem g++ %include_paths% -O2 -c ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\*.cpp
 
-g++ %include_paths% -O2 -c ..\2dsg\*.cpp
+rem g++ %include_paths% -O2 -c ..\2dsg\*.cpp
 
-rem g++ %include_paths% -O2 -c ..\luabinding\*.cpp
-rem g++ %include_paths% -O2 -c ..\luabinding\tlsf.c
+g++ %include_paths% -O2 -c ..\luabinding\*.cpp
+g++ %include_paths% -O2 -c ..\luabinding\tlsf.c
 
 rem g++ %include_paths% -O2 -c ..\libnetwork\*.cpp
 
@@ -55,3 +55,6 @@ rem g++ %include_paths% -O2 -c ..\libgid\src\utf8.c
 
 rem g++ %include_paths% -O2 -c ..\libgid\src\*.cpp
 rem g++ %include_paths% -O2 -c ..\libgid\src\win32\*.cpp
+
+g++ %include_paths% -O2 -c ../external/minizip-1.1/source/ioapi.c
+g++ %include_paths% -O2 -c ../external/minizip-1.1/source/unzip.c
