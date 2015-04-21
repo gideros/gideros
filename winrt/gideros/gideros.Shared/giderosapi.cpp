@@ -583,7 +583,7 @@ private:
 NetworkManager::NetworkManager(ApplicationManager* application)
 {
 	application_ = application;
-	server_ = new Server(15000);
+	server_ = new Server(15000, ::getDeviceName().c_str());
 }
 
 NetworkManager::~NetworkManager()

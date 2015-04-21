@@ -33,7 +33,7 @@ local function onProgress(event)
     info:setText("progress: " .. event.bytesLoaded .. " of " .. event.bytesTotal)
 end
 
-local loader = UrlLoader.new("http://www.giderosmobile.com/giderosmobile.png")
+local loader = UrlLoader.new("http://giderosmobile.com/giderosmobile.png")
 
 loader:addEventListener(Event.COMPLETE, onComplete)
 loader:addEventListener(Event.ERROR, onError)

@@ -150,7 +150,7 @@ void GLCanvas::setupProperties(){
     application_ = new LuaApplication;
 
     if(isPlayer_){
-        server_ = new Server(15000);
+        server_ = new Server(15000, ::getDeviceName().c_str());
 
         // set the global server var to use in print to server function
         g_server = server_;

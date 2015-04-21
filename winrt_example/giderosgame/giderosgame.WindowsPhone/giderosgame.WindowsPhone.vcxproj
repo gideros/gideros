@@ -87,7 +87,7 @@
       <AdditionalLibraryDirectories>..\..\..\winrt\Release\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\Release\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\Release\luawinrt.WindowsPhone;$(VCInstallDir)\lib\store;$(VCInstallDir)\lib;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
@@ -118,6 +118,8 @@
       <AdditionalLibraryDirectories>..\..\..\winrt\ARM\Release\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\ARM\Release\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\ARM\Release\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <ImageHasSafeExceptionHandlers>
+      </ImageHasSafeExceptionHandlers>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
@@ -128,6 +130,8 @@
   </ItemDefinitionGroup>
   <PropertyGroup Label="UserMacros">
     <AppxBundle>Always</AppxBundle>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxBundlePlatforms>arm</AppxBundlePlatforms>
   </PropertyGroup>
   <ItemGroup>
     <Image Include="Assets\1-down.png" />
