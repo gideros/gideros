@@ -27,6 +27,9 @@ GiderosNetworkClient2::GiderosNetworkClient2(const QString& hostName, quint16 po
 	hostName_(hostName),
 	port_(port)
 {
+	advertisements_ = new QUdpSocket(this);
+	advertisements_->bind(15000,QUdpSocket::ShareAddress|QUdpSocket::ReuseAddressHint);
+
 	client_ = new QTcpSocket(this);
 
 	connect(client_, SIGNAL(connected()), this, SLOT(onConnected()));
@@ -122,6 +125,30 @@ void GiderosNetworkClient2::readyRead()
 
 void GiderosNetworkClient2::timerEvent(QTimerEvent *)
 {
+	while (advertisements_->hasPendingDatagrams())
+	{
+		QHostAddress host;
+		unsigned char dgram[49];
+		int dgramlen;
+		if ((dgramlen=advertisements_->readDatagram((char *) dgram,48,&host))>=16)
+		{
+			dgram[dgramlen]=0;
+			if (!memcmp(dgram,"Gideros0",8))
+			{
+				QString haddr;
+				if (!((dgram[8]==0)&&(dgram[9]==0)&&(dgram[10]==0)&&(dgram[11]==0)))
+					host.setAddress((dgram[8]<<24)|(dgram[9]<<16)|(dgram[10]<<8)|(dgram[11]<<0));
+				unsigned short port=(dgram[12]<<8)|(dgram[13]);
+				unsigned short flags=(dgram[14]<<8)|(dgram[15]);
+
+				QString name=host.toString()+':'+QString::number(port);
+				if (dgramlen>16)
+					name=QString((char *)(dgram+16));
+
+				emit advertisement(host.toString(),port,flags,name);
+			}
+		}
+	}
 	if (status_ == eDisconnected)
 	{
 		status_ = eTrying;
