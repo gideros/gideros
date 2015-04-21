@@ -28,6 +28,7 @@ class PreviewWidget;
 class FindInFilesDialog;
 class QSplitter;
 class QProcess;
+class QComboBox;
 
 #include "mdiarea.h"
 
@@ -186,6 +187,7 @@ private:
 	LibraryWidget* libraryWidget_;
 	QTextEditEx* outputWidget_;
 	PreviewWidget* previewWidget_;
+	QComboBox *players_;
 #ifndef NEW_CLIENT
 	Client* client_;
 #else
@@ -280,9 +282,11 @@ private slots:
 	void disconnected();
 	void dataReceived(const QByteArray& data);
 	void ackReceived(unsigned int id);
+    void advertisement(const QString&,unsigned short,unsigned short,const QString&);
 #endif
 
 private slots:
+	void playerChanged(const QString & text);
 	void showOutputPanel();
 	void showLibraryManager();
 

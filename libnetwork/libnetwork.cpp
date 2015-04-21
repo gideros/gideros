@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <algorithm>
+#include <time.h>
+#include <stdint.h>
 
 /*
 BSD behavior
@@ -447,13 +449,18 @@ void NetworkBase::sendAck(unsigned int id)
 	sendQueue_.push_back(queueElement);
 }
 
-Server::Server(unsigned short port)
+Server::Server(unsigned short port,const char *name)
 {
 	port_ = port;
 	serverSock_ = INVALID_SOCKET;
     broadcastSock_ = socket(PF_INET, SOCK_DGRAM,0);
+    lastBcastTime_=0;
     int bcast=1;
-    setsockopt(broadcastSock_, SOL_SOCKET, SO_BROADCAST, &bcast,  sizeof(bcast));
+    setsockopt(broadcastSock_, SOL_SOCKET, SO_BROADCAST, (char *) (&bcast),  sizeof(bcast));
+    if (name)
+    	strncpy(deviceName_,name,32);
+    else
+    	deviceName_[0]=0;
 }
 
 Server::~Server()
@@ -526,11 +533,13 @@ void Server::tick(NetworkEvent* event)
                         uint32_t ip; //INADDR_ANY for same as UDP peer
                         uint16_t port;
                         uint16_t flags;
+                        char devName[32];
                     } advPacket;
                     memcpy(advPacket.signature,"Gideros0",8);
                     advPacket.ip=htonl(INADDR_ANY);
                     advPacket.port=htons(port_);
                     advPacket.flags=0; // May be used to differentiate player platform/type
+                    memcpy(advPacket.devName,deviceName_,32);
                     
                     sockaddr_in ai_addr;
                     memset(&ai_addr, 0, sizeof(ai_addr));
@@ -538,7 +547,7 @@ void Server::tick(NetworkEvent* event)
                     ai_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
                     ai_addr.sin_port = htons(port_); //Should we hardcode to 15000 ?
 
-                    sendto(broadcastSock_,&advPacket,sizeof(advPacket),0,(sockaddr *)&ai_addr,sizeof(ai_addr));
+                    sendto(broadcastSock_,(char *) &advPacket,sizeof(advPacket),0,(sockaddr *)&ai_addr,sizeof(ai_addr));
                 }
 				return;
 			}

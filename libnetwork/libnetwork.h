@@ -113,7 +113,7 @@ protected:
 class Server : public NetworkBase
 {
 public:
-	Server(unsigned short port);
+	Server(unsigned short port,const char *name=NULL);
 	~Server();
 
 	void tick(NetworkEvent* event);
@@ -127,6 +127,7 @@ private:
 	SOCKET serverSock_;
     SOCKET broadcastSock_;
     time_t lastBcastTime_;
+    char deviceName_[32];
 
 	void cleanup(void);
 };
