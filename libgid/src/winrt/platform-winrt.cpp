@@ -68,6 +68,11 @@ void setFullScreen(bool fullScreen){
 
 }
 
+std::string getDeviceName(){
+	std::wstring data = Windows::Security::ExchangeActiveSyncProvisioning::EasClientDeviceInformation().FriendlyName->Data();
+	return std::string(data.begin(), data.end());
+}
+
 //using namespace Windows::Phone::Devices::Notification;
 //VibrationDevice testVibrationDevice = VibrationDevice.GetDefault();
 void vibrate()
