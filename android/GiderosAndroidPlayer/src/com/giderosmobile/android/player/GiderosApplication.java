@@ -999,6 +999,16 @@ public class GiderosApplication
 		}
 	}
 	
+	static public String getDeviceName() {
+		String manufacturer = android.os.Build.MANUFACTURER;
+		String model = android.os.Build.MODEL;
+		if (model.startsWith(manufacturer)) {
+			return model;
+		} else {
+			return manufacturer + " " + model;
+		}
+	}
+	
 	static public void throwLuaException(String error) throws LuaException{
 		throw new LuaException(error);
 	}
