@@ -11,6 +11,9 @@
     <Filter Include="Content">
       <UniqueIdentifier>915fca05-76ad-4f6f-952b-e8f562507971</UniqueIdentifier>
     </Filter>
+    <Filter Include="Plugins">
+      <UniqueIdentifier>{7df9ba0b-ce80-4074-97d5-8436d377e654}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
@@ -139,5 +142,13 @@
     <Media Include="Assets\diving_turtle.mp3">
       <Filter>Assets</Filter>
     </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Plugins\bit.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\bit_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

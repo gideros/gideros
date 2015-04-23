@@ -15,11 +15,11 @@ class ExportProjectDialog : public QDialog
 public:
 	enum DeviceFamily
 	{
-        e_iOS,
-		e_Android,
-        e_WindowsDesktop,
-        e_MacOSXDesktop,
-        e_WindowsPhoneAndStore,
+	  e_iOS,
+	  e_Android,
+      e_WindowsDesktop,
+      e_MacOSXDesktop,
+	  e_WinRT
 	};
 
     explicit ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent = 0);

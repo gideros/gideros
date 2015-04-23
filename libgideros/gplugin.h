@@ -133,6 +133,8 @@ int g_registerPlugin(void*(*main)(lua_State*, int));
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_STATIC(name, version)
 #elif __ANDROID__
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_ANDROID(name, version)
+#elif WINSTORE
+#define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_STATIC(name, version)
 #else
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_DYNAMIC(name, version)
 #endif
