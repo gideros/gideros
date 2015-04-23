@@ -22,14 +22,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     MainWindow::instance = this;
 
     ui.setupUi(this);
+    setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
-    ui.glCanvas->setDrawInfos(false);
-    ui.glCanvas->exportedApp_ = true;
+    move(0, 0);
 
-    move(QPoint(0, 0));
-
-    QDir directory = QDir("Assets");
-    ui.glCanvas->projectDir_ = directory.absolutePath();
+    ui.glCanvas->setExportedApp(true);
+    ui.glCanvas->projectDir_ = QDir("assets").absolutePath();
 }
 
 MainWindow::~MainWindow(){}
@@ -50,8 +48,8 @@ void MainWindow::projectNameChanged(const QString& projectName){
     raise();
     activateWindow();
 
-    if(projectName.isEmpty() == true)
-        setWindowTitle(Constants::WINDESK_WINDOW_TITLE);
+    if(projectName.isEmpty())
+        setWindowTitle(Constants::DESK_WINDOW_TITLE);
     else
         setWindowTitle(projectName);
 }

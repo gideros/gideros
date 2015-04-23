@@ -34,6 +34,7 @@ class MainWindow : public QMainWindow{
 
     private:
         static MainWindow* instance;
+        GLCanvas *glCanvas;
 
         Ui::MainWindowClass ui;
 

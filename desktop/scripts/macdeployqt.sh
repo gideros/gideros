@@ -1,0 +1,1 @@
+macdeployqt "MacOSXDesktopTemplate.app"

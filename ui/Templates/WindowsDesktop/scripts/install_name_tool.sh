@@ -1,2 +1,0 @@
-install_name_tool -change libgvfs.1.dylib @executable_path/../Frameworks/libgvfs.dylib "Windows Desktop.app/Contents/MacOS/Windows Desktop"
-install_name_tool -change libpystring.1.dylib @executable_path/../Frameworks/libpystring.dylib "Windows Desktop.app/Contents/MacOS/Windows Desktop"

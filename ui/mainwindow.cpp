@@ -2146,22 +2146,22 @@ void MainWindow::exportProject()
 				break;
 
             case ExportProjectDialog::e_WindowsDesktop:
-                templatedir = "WindowsDesktop";
+                templatedir = "Qt";
                 templatename = "WindowsDesktopTemplate";
                 templatenamews = "WindowsDesktopTemplate";
                 underscore = false;
                 break;
 
             case ExportProjectDialog::e_MacOSXDesktop:
-                templatedir = "MacOSXDesktop";
+                templatedir = "Qt";
                 templatename = "MacOSXDesktopTemplate";
                 templatenamews = "MacOSXDesktopTemplate";
                 underscore = false;
                 break;
 
             case ExportProjectDialog::e_WindowsPhoneAndStore:
-                templatedir = "WindowsPhoneAndStore";
-                templatename = "WindowsPhoneAndStoreTemplate";
+                templatedir = "VisualStudio";
+                templatename = "WindowsPhoneAndStore";
                 templatenamews = "WindowsPhoneAndStoreTemplate";
                 underscore = false;
                 break;
@@ -2314,8 +2314,21 @@ void MainWindow::exportProject()
             outputDir.mkdir("assets");
             outputDir.cd("assets");
         }
+        else if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop)
+        {
+            outputDir.cd(base + ".app");
+            outputDir.cd("Contents");
+        }
+
         outputDir.mkdir("assets");
         outputDir.cd("assets");
+
+        if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop || deviceFamily == ExportProjectDialog::e_WindowsDesktop){
+            outputDir.mkdir("resource");
+            outputDir.mkdir("temporary");
+            outputDir.mkdir("documents");
+            outputDir.cd("resource");
+        }
 
 		std::deque<QPair<QString, QString> > fileQueue;
 
@@ -2360,7 +2373,6 @@ void MainWindow::exportProject()
 			{
 				QString name = e.attribute("name");
 				dir.push_back(name);
-
 
 				QString n;
 				for (std::size_t i = 0; i < dir.size(); ++i)
@@ -2512,6 +2524,11 @@ void MainWindow::exportProject()
 			}
 		}
 
+        if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop || deviceFamily == ExportProjectDialog::e_WindowsDesktop)
+        {
+            outputDir.cd("..");
+        }
+
 		// write luafiles.txt
 		{
 			QString filename = "luafiles.txt";
@@ -2581,7 +2598,7 @@ void MainWindow::exportProject()
                 buffer << (properties.touchToMouse ? 1 : 0);
                 buffer << properties.mouseTouchOrder;
 
-				file.write(buffer.data(), buffer.size());
+                file.write(buffer.data(), buffer.size());
 			}
 		}
 

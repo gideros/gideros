@@ -1,1 +1,0 @@
-macdeployqt "Windows Desktop.app"

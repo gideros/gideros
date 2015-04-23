@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>320</width>
-    <height>480</height>
+    <width>1</width>
+    <height>1</height>
    </rect>
   </property>
   <widget class="QWidget" name="centralWidget">

@@ -44,14 +44,10 @@ static void loadPlugins(){
 	}
 }
 
-
-
 int main(int argc, char *argv[]){
     QCoreApplication::setOrganizationName(Constants::ORGANIZATION_NAME);
     QCoreApplication::setOrganizationDomain(Constants::ORGANIZATION_DOMAIN);
-    QCoreApplication::setApplicationName(Constants::PLAYER_APPLICATION_NAME);
-
-	QSettings::setDefaultFormat(QSettings::IniFormat);
+    QCoreApplication::setApplicationName(Constants::DESK_APPLICATION_NAME);
 
 	QApplication a(argc, argv);
 
@@ -103,7 +99,7 @@ int main(int argc, char *argv[]){
 	int result = 0;
 	{
 		MainWindow w;
-		w.show();
+        w.show();
 		result = a.exec();
 	}
 
