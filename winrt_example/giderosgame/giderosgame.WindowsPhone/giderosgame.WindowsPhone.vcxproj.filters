@@ -11,6 +11,9 @@
     <Filter Include="Content">
       <UniqueIdentifier>1024583a-3b31-4571-a69f-2215e3b7975c</UniqueIdentifier>
     </Filter>
+    <Filter Include="Plugins">
+      <UniqueIdentifier>{bd4a60c3-92c4-482d-84bb-7534afe89e88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Logo.scale-240.png">
@@ -183,5 +186,13 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="StoreManifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Plugins\bit.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\bit_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
