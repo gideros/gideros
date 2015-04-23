@@ -594,6 +594,7 @@ private:
         event->x = x;
         event->y = y;
         event->button = button;
+        event->wheel = 0;
 
         return event;
     }

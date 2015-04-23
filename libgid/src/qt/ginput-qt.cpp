@@ -256,6 +256,14 @@ public:
         }
     }
 
+    void mouseWheel(int x, int y, int buttons,int delta)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, buttons);
+        mouseEvent->wheel=delta;
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_WHEEL_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+
     void touchesBegin(int x, int y, int id, int touches, int xs[], int ys[], int ids[])
     {
         ginput_TouchEvent *touchEvent = newTouchEvent(touches);
@@ -475,6 +483,7 @@ private:
         event->x = x;
         event->y = y;
         event->button = button;
+        event->wheel = 0;
 
         return event;
     }
@@ -676,6 +685,12 @@ void ginputp_mouseUp(int x, int y, int button)
 {
     if (s_manager)
         s_manager->mouseUp(x, y, button);
+}
+
+void ginputp_mouseWheel(int x, int y, int buttons, int delta)
+{
+    if (s_manager)
+        s_manager->mouseWheel(x, y, buttons,delta);
 }
 
 void ginputp_touchesBegin(int x, int y, int id, int touches, int xs[], int ys[], int ids[])
