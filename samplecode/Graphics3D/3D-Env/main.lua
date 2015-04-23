@@ -10,7 +10,7 @@ local hdg=0 -- Initial heading
 application:setLogicalDimensions(320,480)
 
 -- Confiure a 3D frustum with 90° field of view
-application:configureFrustum(90)
+application:configureFrustum(90,10000)
 
 local LoadingImg=Texture.new("Hourglass.png") -- Texture used while loading the tiles
 

@@ -48,6 +48,7 @@
 #include <QImage>
 #include "mdiarea.h"
 #include <QDateTime>
+#include <QToolBar>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -196,6 +197,12 @@ MainWindow::MainWindow(QWidget *parent)
 	setCentralWidget(splitter1_);
 #endif
 
+	//Target player combobox
+	players_ = new QComboBox;
+	players_->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+	ui.mainToolBar->insertWidget(ui.actionStart_Player,players_);
+	connect(players_,SIGNAL(currentIndexChanged(const QString &)),this,SLOT(playerChanged(const QString &)));
+
 	QSettings settings;
 	QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
     ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
@@ -209,7 +216,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(client_, SIGNAL(disconnected()), this, SLOT(disconnected()));
 	connect(client_, SIGNAL(dataReceived(const QByteArray&)), this, SLOT(dataReceived(const QByteArray&)));
 	connect(client_, SIGNAL(ackReceived(unsigned int)), this, SLOT(ackReceived(unsigned int)));
-
+    connect(client_, SIGNAL(advertisement(const QString&,unsigned short,unsigned short,const QString&)), this, SLOT(advertisement(const QString&,unsigned short,unsigned short,const QString&)));
 #endif
 
 //	startTimer(1);
@@ -412,6 +419,27 @@ void MainWindow::hideStartPage()
 			break;
 		}
 	}
+}
+
+void MainWindow::advertisement(const QString& host,unsigned short port,unsigned short flags,const QString& name)
+{
+	QString nitem=QString("%1:%2:%3").arg(host).arg(port).arg(flags);
+	for (int k=0;k<players_->count();k++)
+		if (players_->itemData(k)==nitem)
+			return;
+	players_->addItem(name,nitem);
+}
+
+void MainWindow::playerChanged(const QString & text)
+{
+	QString hostData=text;
+	if (players_->currentData().isValid())
+		hostData=players_->currentData().toString();
+	QStringList parts=hostData.split(':');
+	if (parts.count()==1)
+		client_->connectToHost(parts[0],15000);
+	else
+		client_->connectToHost(parts[0],parts[1].toInt());
 }
 
 void MainWindow::start()

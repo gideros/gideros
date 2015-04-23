@@ -7,6 +7,7 @@
 #include <QLocale>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QHostInfo>
 #include "mainwindow.h"
 
 std::vector<std::string> getDeviceInfo()
@@ -38,6 +39,10 @@ void setWindowSize(int width, int height){
 
 void setFullScreen(bool fullScreen){
     MainWindow::getInstance()->fullScreenWindow(fullScreen);
+}
+
+std::string getDeviceName(){
+    return QHostInfo::localHostName().toStdString();
 }
 
 std::string getLocale()

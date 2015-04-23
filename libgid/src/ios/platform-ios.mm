@@ -58,6 +58,10 @@ void setFullScreen(bool fullScreen){
 
 }
 
+std::string getDeviceName(){
+    return [[[UIDevice currentDevice] name] UTF8String];
+}
+
 void vibrate()
 {
 	AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);

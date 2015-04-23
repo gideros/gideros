@@ -247,13 +247,16 @@ tmp
 *.ini
 *.app
 *.a
+*.dep
 
 # some files and folder to include
 !/release
 !*.nsi
+!/win32_example/makefile
 
 # and others to exclude
 plugins/LPeg/source/makefile
 /.project
 /Default/
 temp
+.tmp

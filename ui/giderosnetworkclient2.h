@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QString>
 #include <QTcpSocket>
+#include <QUdpSocket>
 
 struct ProjectProperties;
 
@@ -43,6 +44,7 @@ signals:
 	void disconnected();
 	void dataReceived(const QByteArray& data);
 	void ackReceived(unsigned int id);
+    void advertisement(const QString&,unsigned short,unsigned short,const QString&);
 
 public slots:
 
@@ -68,6 +70,7 @@ private:
 	QString hostName_;
 	quint16 port_;
 	QTcpSocket* client_;
+	QUdpSocket* advertisements_;
 	Status status_;
 	int nextid_;
 	QByteArray readArray_;

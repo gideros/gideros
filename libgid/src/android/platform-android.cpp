@@ -133,6 +133,21 @@ void setFullScreen(bool fullScreen){
 
 }
 
+std::string getDeviceName(){
+    JNIEnv *env = g_getJNIEnv();
+
+	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+	jmethodID getMethodID = env->GetStaticMethodID(localRefCls, "getDeviceName", "()Ljava/lang/String;");
+	jstring jresult = (jstring)env->CallStaticObjectMethod(localRefCls, getMethodID);
+	const char *result = env->GetStringUTFChars(jresult, NULL);
+	std::string sresult = result;
+	env->ReleaseStringUTFChars(jresult, result);
+	env->DeleteLocalRef(jresult);
+	env->DeleteLocalRef(localRefCls);
+
+	return sresult;
+}
+
 void g_exit()
 {
 	JNIEnv *env = g_getJNIEnv();

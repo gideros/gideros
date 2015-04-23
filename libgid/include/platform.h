@@ -177,6 +177,7 @@ void setPlatformInterface(PlatformInterface* platformInterface);
 
 void setWindowSize(int width, int height);
 void setFullScreen(bool fullScreen);
+std::string getDeviceName();
 
 void vibrate();
 std::string getLocale();

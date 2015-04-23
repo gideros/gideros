@@ -6,7 +6,15 @@
 #include <vector>
 
 #ifdef WINSTORE
-#include <WinSock2.h>
+
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#define WIN32_LEAN_AND_MEAN
+
+#include <winsock2.h>
+#include <Ws2tcpip.h>
 #pragma comment(lib, "Ws2_32.lib")
 #elif WIN32
 #include <WinSock.h>
@@ -105,7 +113,7 @@ protected:
 class Server : public NetworkBase
 {
 public:
-	Server(unsigned short port);
+	Server(unsigned short port,const char *name=NULL);
 	~Server();
 
 	void tick(NetworkEvent* event);
@@ -117,6 +125,9 @@ public:
 
 private:
 	SOCKET serverSock_;
+    SOCKET broadcastSock_;
+    time_t lastBcastTime_;
+    char deviceName_[32];
 
 	void cleanup(void);
 };
