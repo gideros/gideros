@@ -2137,19 +2137,25 @@ void MainWindow::exportProject()
 
 		switch (deviceFamily)
 		{
-            case ExportProjectDialog::e_iOS:
-                templatedir = "Xcode4";
-                templatename = "iOS Template";
-                templatenamews = "iOS_Template";
-				underscore = true;
-				break;
+		case ExportProjectDialog::e_iOS:
+		  templatedir = "Xcode4";
+		  templatename = "iOS Template";
+		  templatenamews = "iOS_Template";
+		  underscore = true;
+		  break;
+		  
+		case ExportProjectDialog::e_Android:
+		  templatedir = "Eclipse";
+		  templatename = "Android Template";
+		  templatenamews = "AndroidTemplate";
+		  underscore = false;
+		  break;
 
-			case ExportProjectDialog::e_Android:
-				templatedir = "Eclipse";
-				templatename = "Android Template";
-				templatenamews = "AndroidTemplate";
-				underscore = false;
-				break;
+		case ExportProjectDialog::e_WinRT:
+		  templatedir = "VisualStudio";
+		  templatename = "WinRT Template";
+		  templatenamews = "WinRTTemplate";
+		  break;
 		}
 
 
@@ -2292,16 +2298,25 @@ void MainWindow::exportProject()
 
         if (deviceFamily == ExportProjectDialog::e_iOS)
         {
-            outputDir.mkdir(base);
-            outputDir.cd(base);
+	  outputDir.mkdir(base);
+	  outputDir.cd(base);
         }
         else if (deviceFamily == ExportProjectDialog::e_Android)
-		{
-            outputDir.mkdir("assets");
-            outputDir.cd("assets");
+	{
+	  outputDir.mkdir("assets");
+	  outputDir.cd("assets");
         }
-        outputDir.mkdir("assets");
-        outputDir.cd("assets");
+	else if (deviceFamily == ExportProjectDialog::e_WinRT)
+	{
+	  outputDir.cd("giderosgame");
+	  outputDir.cd("giderosgame.Windows");
+	  outputDir.cd("Assets");
+	}
+
+	if (deviceFamily != ExportProjectDialog::e_WinRT){
+	  outputDir.mkdir("assets");
+	  outputDir.cd("assets");
+	}
 
 		std::deque<QPair<QString, QString> > fileQueue;
 
