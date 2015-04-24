@@ -74,6 +74,12 @@
     <None Include="Assets\properties.nebula.bin">
       <Filter>Assets</Filter>
     </None>
+    <None Include="Assets\desert.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\mainshapes.lua">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\ego.png">
@@ -158,6 +164,9 @@
       <Filter>Assets</Filter>
     </Image>
     <Image Include="Assets\spots.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\tmw_desert_spacing.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>

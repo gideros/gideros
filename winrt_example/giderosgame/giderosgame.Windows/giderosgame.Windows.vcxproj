@@ -239,6 +239,7 @@
     <Image Include="Assets\StoreLogo.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="Assets\tmw_desert_spacing.png" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -254,6 +255,9 @@
     <None Include="Assets\button.lua">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Assets\desert.lua">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Assets\main.lua">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -264,6 +268,7 @@
     <None Include="Assets\mainfont.lua" />
     <None Include="Assets\maininfballs.lua" />
     <None Include="Assets\mainr2t.lua" />
+    <None Include="Assets\mainshapes.lua" />
     <None Include="Assets\PixelShader.cso">
       <DeploymentContent>true</DeploymentContent>
     </None>

@@ -2248,53 +2248,53 @@ void MainWindow::exportProject()
         if (dialog.encryptAssets())
             assetsKey = encryptionKey;
 
-		// copy template
+	// copy template
         if (true)
-		{
-			QDir dir = QDir::currentPath();
-			dir.cd("Templates");
-			dir.cd(templatedir);
-			dir.cd(templatename);
+	{
+	  QDir dir = QDir::currentPath();
+	  dir.cd("Templates");
+	  dir.cd(templatedir);
+	  dir.cd(templatename);
+	  
+	  QList<QPair<QString, QString> > renameList;
+	  renameList << qMakePair(templatename, base);
+	  renameList << qMakePair(templatenamews, basews);
 
-			QList<QPair<QString, QString> > renameList;
-			renameList << qMakePair(templatename, base);
-			renameList << qMakePair(templatenamews, basews);
+	  QList<QStringList> wildcards;
+	  QList<QList<QPair<QByteArray, QByteArray> > > replaceList;
+	  
+	  QStringList wildcards1;
+	  wildcards1 <<
+	    "*.pch" <<
+	    "*.plist" <<
+	    "*.pbxproj" <<
+	    "*.java" <<
+	    "*.xml" <<
+	    "*.project";
+	  wildcards << wildcards1;
 
-			QList<QStringList> wildcards;
-			QList<QList<QPair<QByteArray, QByteArray> > > replaceList;
+	  QList<QPair<QByteArray, QByteArray> > replaceList1;
+	  replaceList1 << qMakePair(templatename.toUtf8(), base.toUtf8());
+	  replaceList1 << qMakePair(templatenamews.toLatin1(), basews.toLatin1());
+	  if (deviceFamily == ExportProjectDialog::e_Android)
+	    replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), dialog.packageName().toUtf8());
+	  replaceList << replaceList1;
 
-			QStringList wildcards1;
-			wildcards1 <<
-				"*.pch" <<
-				"*.plist" <<
-				"*.pbxproj" <<
-				"*.java" <<
-				"*.xml" <<
-				"*.project";
-			wildcards << wildcards1;
+	  QStringList wildcards2;
+	  wildcards2 << "libgideros.so" << "libgideros.a";
+	  wildcards << wildcards2;
 
-			QList<QPair<QByteArray, QByteArray> > replaceList1;
-			replaceList1 << qMakePair(templatename.toUtf8(), base.toUtf8());
-            replaceList1 << qMakePair(templatenamews.toLatin1(), basews.toLatin1());
-			if (deviceFamily == ExportProjectDialog::e_Android)
-				replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), dialog.packageName().toUtf8());
-			replaceList << replaceList1;
+	  QList<QPair<QByteArray, QByteArray> > replaceList2;
+	  replaceList2 << qMakePair(QByteArray("9852564f4728e0c11e34ca3eb5fe20b2"), QByteArray("9852564f4728e0cffe34ca3eb5fe20b2"));
+	  replaceList2 << qMakePair(codePrefix + encryptionZero, codePrefix + codeKey);
+	  replaceList2 << qMakePair(assetsPrefix + encryptionZero, assetsPrefix + assetsKey);
+	  replaceList << replaceList2;
 
-				QStringList wildcards2;
-                wildcards2 << "libgideros.so" << "libgideros.a";
-				wildcards << wildcards2;
-
-				QList<QPair<QByteArray, QByteArray> > replaceList2;
-				replaceList2 << qMakePair(QByteArray("9852564f4728e0c11e34ca3eb5fe20b2"), QByteArray("9852564f4728e0cffe34ca3eb5fe20b2"));
-                replaceList2 << qMakePair(codePrefix + encryptionZero, codePrefix + codeKey);
-                replaceList2 << qMakePair(assetsPrefix + encryptionZero, assetsPrefix + assetsKey);
-                replaceList << replaceList2;
-
-            if (dialog.assetsOnly())
-                copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar", QStringList());
-            else
-                copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "*", QStringList());
-		}
+	  if (dialog.assetsOnly())
+	    copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar", QStringList());
+	  else
+	    copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "*", QStringList());
+	}
 
         if (deviceFamily == ExportProjectDialog::e_iOS)
         {
@@ -2318,276 +2318,301 @@ void MainWindow::exportProject()
 	  outputDir.cd("assets");
 	}
 
-		std::deque<QPair<QString, QString> > fileQueue;
+	std::deque<QPair<QString, QString> > fileQueue;
 
-		QDomDocument doc = libraryWidget_->toXml();
+	QDomDocument doc = libraryWidget_->toXml();
+	
+	std::stack<QDomNode> stack;
+	stack.push(doc.documentElement());
+	
+	std::vector<QString> dir;
 
-		std::stack<QDomNode> stack;
-		stack.push(doc.documentElement());
+	while (stack.empty() == false)
+	{
+	  QDomNode n = stack.top();
+	  QDomElement e = n.toElement();
+	  stack.pop();
 
-		std::vector<QString> dir;
+	  if (n.isNull() == true)
+	  {
+	    dir.pop_back();
+	    continue;
+	  }
 
-		while (stack.empty() == false)
-		{
-			QDomNode n = stack.top();
-			QDomElement e = n.toElement();
-			stack.pop();
+	  QString type = e.tagName();
+	  
+	  if (type == "file")
+	  {
 
-			if (n.isNull() == true)
-			{
-				dir.pop_back();
-				continue;
-			}
+	    QString fileName = e.attribute("source");
+	    QString name = QFileInfo(fileName).fileName();
+	    
+	    QString n;
+	    for (std::size_t i = 0; i < dir.size(); ++i)
+	      n += dir[i] + "/";
+	    n += name;
+	    
+	    fileQueue.push_back(qMakePair(n, fileName));
+				
+	    continue;
+	  }
 
-			QString type = e.tagName();
+	  if (type == "folder")
+	  {
+	    QString name = e.attribute("name");
+	    dir.push_back(name);
+	    
 
-			if (type == "file")
-			{
+	    QString n;
+	    for (std::size_t i = 0; i < dir.size(); ++i)
+	      n += dir[i] + "/";
+	    
+	    outputDir.mkdir(n);
 
-				QString fileName = e.attribute("source");
-				QString name = QFileInfo(fileName).fileName();
+	    stack.push(QDomNode());
+	  }
 
-				QString n;
-				for (std::size_t i = 0; i < dir.size(); ++i)
-					n += dir[i] + "/";
-				n += name;
-
-				fileQueue.push_back(qMakePair(n, fileName));
-
-				continue;
-			}
-
-			if (type == "folder")
-			{
-				QString name = e.attribute("name");
-				dir.push_back(name);
-
-
-				QString n;
-				for (std::size_t i = 0; i < dir.size(); ++i)
-					n += dir[i] + "/";
-
-				outputDir.mkdir(n);
-
-				stack.push(QDomNode());
-			}
-
-			QDomNodeList childNodes = n.childNodes();
-			for (int i = 0; i < childNodes.size(); ++i)
-				stack.push(childNodes.item(i));
-		}
+	  QDomNodeList childNodes = n.childNodes();
+	  for (int i = 0; i < childNodes.size(); ++i)
+	    stack.push(childNodes.item(i));
+	}
 
 
         std::vector<std::pair<QString, bool> > topologicalSort = libraryWidget_->topologicalSort();
-		for (std::size_t i = 0; i < topologicalSort.size(); ++i)
-		{
-			int index = -1;
-			for (std::size_t j = 0; j < fileQueue.size(); ++j)
-			{
-                if (fileQueue[j].second == topologicalSort[i].first)
-				{
-					index = j;
-					break;
-				}
-			}
+	for (std::size_t i = 0; i < topologicalSort.size(); ++i)
+	{
+	  int index = -1;
+	  for (std::size_t j = 0; j < fileQueue.size(); ++j)
+	  {
+	    if (fileQueue[j].second == topologicalSort[i].first)
+	    {
+	      index = j;
+	      break;
+	    }
+	  }
 
-			if (index != -1)
-			{
-				QPair<QString, QString> item = fileQueue[index];
-				fileQueue.erase(fileQueue.begin() + index);
-				fileQueue.push_back(item);
-			}
-		}
+	  if (index != -1)
+	  {
+	    QPair<QString, QString> item = fileQueue[index];
+	    fileQueue.erase(fileQueue.begin() + index);
+	    fileQueue.push_back(item);
+	  }
+	}
 
-		QStringList luafiles;
-		QStringList luafiles_abs;
-		QStringList allfiles;
-		QStringList allfiles_abs;
-        QStringList allluafiles;
-        QStringList allluafiles_abs;
+	int npass,ipass;
 
-		QProgressDialog progress("Copying files...", QString(), 0, fileQueue.size(), this);
-		progress.setWindowModality(Qt::WindowModal);
+	if (deviceFamily == ExportProjectDialog::e_WinRT)
+	  npass=2;
+	else
+	  npass=1;
 
-		QSet<QString> jetset;
-		jetset << "mp3" << "png" << "jpg" << "jpeg" << "wav";
 
-		QDir path(QFileInfo(projectFileName_).path());
+	QStringList luafiles;
+	QStringList luafiles_abs;
+	QStringList allfiles;
+	QStringList allfiles_abs;
+	QStringList allluafiles;
+	QStringList allluafiles_abs;
 
-		for (std::size_t i = 0; i < fileQueue.size(); ++i)
-		{
-			const QString& s1 = fileQueue[i].first;
-			const QString& s2 = fileQueue[i].second;
+	for (ipass=1;ipass<=npass;ipass++){
 
-			QString src = QDir::cleanPath(path.absoluteFilePath(s2));
-			QString dst = QDir::cleanPath(outputDir.absoluteFilePath(s1));
+	  luafiles.clear();
+	  luafiles_abs.clear();
+	  allfiles.clear();
+	  allfiles_abs.clear();
+	  allluafiles.clear();
+	  allluafiles_abs.clear();
 
-			if (deviceFamily == ExportProjectDialog::e_Android)
-			{
-				QString suffix = QFileInfo(dst).suffix().toLower();
-				if (!jetset.contains(suffix))
-					dst += ".jet";
-			}
+	  if (ipass==2){
+	    outputDir.cdUp();
+	    outputDir.cdUp();
+	    outputDir.cd("giderosgame.WindowsPhone");
+	    outputDir.cd("Assets");
+	  }
 
-			allfiles.push_back(s1);
-			allfiles_abs.push_back(dst);
+	  QProgressDialog progress("Copying files...", QString(), 0, fileQueue.size(), this);
+	  progress.setWindowModality(Qt::WindowModal);
 
-			if (QFileInfo(src).suffix().toLower() == "lua")
-			{
-                allluafiles.push_back(s1);
-                allluafiles_abs.push_back(dst);
+	  QSet<QString> jetset;
+	  jetset << "mp3" << "png" << "jpg" << "jpeg" << "wav";
+	
+	  QDir path(QFileInfo(projectFileName_).path());
+	
+	  for (std::size_t i = 0; i < fileQueue.size(); ++i)
+	  {
+	    const QString& s1 = fileQueue[i].first;
+	    const QString& s2 = fileQueue[i].second;
 
-                if (std::find(topologicalSort.begin(), topologicalSort.end(), std::make_pair(s2, true)) == topologicalSort.end())
-                {
-                    luafiles.push_back(s1);
-                    luafiles_abs.push_back(dst);
-                }
-			}
+	    QString src = QDir::cleanPath(path.absoluteFilePath(s2));
+	    QString dst = QDir::cleanPath(outputDir.absoluteFilePath(s1));
+	    
+	    if (deviceFamily == ExportProjectDialog::e_Android)
+	    {
+	      QString suffix = QFileInfo(dst).suffix().toLower();
+	      if (!jetset.contains(suffix))
+		dst += ".jet";
+	    }
 
-			progress.setValue(i);
+	    allfiles.push_back(s1);
+	    allfiles_abs.push_back(dst);
 
-			QFile::remove(dst);
-			QFile::copy(src, dst);
-		}
+	    if (QFileInfo(src).suffix().toLower() == "lua")
+	    {
+	      allluafiles.push_back(s1);
+	      allluafiles_abs.push_back(dst);
+	      
+	      if (std::find(topologicalSort.begin(), topologicalSort.end(), std::make_pair(s2, true)) == topologicalSort.end())
+	      {
+		luafiles.push_back(s1);
+		luafiles_abs.push_back(dst);
+	      }
+	    }
+
+	    progress.setValue(i);
+
+	    QFile::remove(dst);
+	    QFile::copy(src, dst);
+	  }
 
 #if 0
-		// compile lua files
-		if (false)
-		{
-			compileThread_ = new CompileThread(luafiles_abs, false, "", QString(), this);
-			compileThread_->start();
-			compileThread_->wait();
-			delete compileThread_;
-		}
+	  // compile lua files
+	  if (false)
+	  {
+	    compileThread_ = new CompileThread(luafiles_abs, false, "", QString(), this);
+	    compileThread_->start();
+	    compileThread_->wait();
+	    delete compileThread_;
+	  }
 #endif
 
-		// compile lua files (with luac)
-		// disable compile with luac for iOS because 64 bit version
-		// http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
-		if (true && deviceFamily == ExportProjectDialog::e_Android)
-		{
-            for (int i = 0; i < allluafiles_abs.size(); ++i)
-			{
-                QString file = "\"" + allluafiles_abs[i] + "\"";
-                QProcess::execute("Tools/luac -o " + file + " " + file);
-			}
-		}
+	  // compile lua files (with luac)
+	  // disable compile with luac for iOS because 64 bit version
+	  // http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
+	  if (true && deviceFamily == ExportProjectDialog::e_Android)
+	  {
+	    for (int i = 0; i < allluafiles_abs.size(); ++i)
+	    {
+	      QString file = "\"" + allluafiles_abs[i] + "\"";
+	      QProcess::execute("Tools/luac -o " + file + " " + file);
+	    }
+	  }
 
-        // encrypt lua, png, jpg, jpeg and wav files
-        if (true)
-        {
+	  // encrypt lua, png, jpg, jpeg and wav files
+	  if (true)
+	  {
             for (int i = 0; i < allfiles_abs.size(); ++i)
-            {
-                QString ext = QFileInfo(allfiles[i]).suffix().toLower();
-                if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg" && ext != "wav")
-                    continue;
+	    {
+	      QString ext = QFileInfo(allfiles[i]).suffix().toLower();
+	      if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg" && ext != "wav")
+		continue;
 
-                QByteArray encryptionKey = (ext == "lua") ? codeKey : assetsKey;
-
-                QString filename = allfiles_abs[i];
-
-                QFile fis(filename);
-                if (!fis.open(QIODevice::ReadOnly))
-                    continue;
-                QByteArray data = fis.readAll();
-                fis.close();
-
-                for (int j = 0; j < data.size(); ++j)
-                    data[j] = data[j] ^ encryptionKey[j % encryptionKey.size()];
-
-                QFile fos(filename);
-                if (!fos.open(QIODevice::WriteOnly))
-                    continue;
-                fos.write(data);
-                fos.close();
+	      QByteArray encryptionKey = (ext == "lua") ? codeKey : assetsKey;
+	      
+	      QString filename = allfiles_abs[i];
+	      
+	      QFile fis(filename);
+	      if (!fis.open(QIODevice::ReadOnly))
+		continue;
+	      QByteArray data = fis.readAll();
+	      fis.close();
+	      
+	      for (int j = 0; j < data.size(); ++j)
+		data[j] = data[j] ^ encryptionKey[j % encryptionKey.size()];
+	      
+	      QFile fos(filename);
+	      if (!fos.open(QIODevice::WriteOnly))
+		continue;
+	      fos.write(data);
+	      fos.close();
             }
-        }
+	  }
 
-		// compress lua files
-		if (false)
-		{
-			for (int i = 0; i < luafiles_abs.size(); ++i)
-			{
-				QString file = "\"" + luafiles_abs[i] + "\"";
-				QProcess::execute("Tools/lua Tools/LuaSrcDiet.lua --quiet " + file + " -o " + file);
-			}
-		}
+	  // compress lua files
+	  if (false)
+	  {
+	    for (int i = 0; i < luafiles_abs.size(); ++i)
+	    {
+	      QString file = "\"" + luafiles_abs[i] + "\"";
+	      QProcess::execute("Tools/lua Tools/LuaSrcDiet.lua --quiet " + file + " -o " + file);
+	    }
+	  }
+	  
+	  // write luafiles.txt
+	  {
+	    QString filename = "luafiles.txt";
+	    if (deviceFamily == ExportProjectDialog::e_Android)
+	      filename += ".jet";
+	    QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+	    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+	    {
+	      QTextStream out(&file);
+	      
+	      for (int i = 0; i < luafiles.size(); ++i)
+		out << luafiles[i] << "\n";
+	    }
+	  }
 
-		// write luafiles.txt
-		{
-			QString filename = "luafiles.txt";
-			if (deviceFamily == ExportProjectDialog::e_Android)
-				filename += ".jet";
-			QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
-			if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-			{
-				QTextStream out(&file);
+	  // write allfiles.txt
+	  if (deviceFamily == ExportProjectDialog::e_Android)
+	  {
+	    QFile file(QDir::cleanPath(outputDir.absoluteFilePath("allfiles.txt")));
+	    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+	    {
+	      QTextStream out(&file);
+	      
+	      for (int i = 0; i < allfiles.size(); ++i)
+	      {
+		QString file = allfiles[i];
+		QString suffix = QFileInfo(file).suffix().toLower();
+		if (!jetset.contains(suffix))
+		  file += "*";
+		out << file << "\n";
+	      }
+	    }
+	  }
 
-				for (int i = 0; i < luafiles.size(); ++i)
-					out << luafiles[i] << "\n";
-			}
-		}
+	  // write properties.bin
+	  {
+	    QString filename = "properties.bin";
+	    if (deviceFamily == ExportProjectDialog::e_Android)
+	      filename += ".jet";
+	    QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+	    if (file.open(QIODevice::WriteOnly))
+	    {
+	      const ProjectProperties& properties = libraryWidget_->getProjectProperties();
+	      
+	      ByteBuffer buffer;
+	      
+	      buffer << properties.scaleMode;
+	      buffer << properties.logicalWidth;
+	      buffer << properties.logicalHeight;
+	      
+	      buffer << (int)properties.imageScales.size();
+	      for (size_t i = 0; i < properties.imageScales.size(); ++i)
+	      {
+		buffer << properties.imageScales[i].first.toUtf8().constData();
+		buffer << (float)properties.imageScales[i].second;
+	      }
 
-		// write allfiles.txt
-		if (deviceFamily == ExportProjectDialog::e_Android)
-		{
-			QFile file(QDir::cleanPath(outputDir.absoluteFilePath("allfiles.txt")));
-			if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-			{
-				QTextStream out(&file);
+	      buffer << properties.orientation;
+	      buffer << properties.fps;
+	      
+	      buffer << properties.retinaDisplay;
+	      buffer << properties.autorotation;
+	      
+	      buffer << (properties.mouseToTouch ? 1 : 0);
+	      buffer << (properties.touchToMouse ? 1 : 0);
+	      buffer << properties.mouseTouchOrder;
+	      
+	      file.write(buffer.data(), buffer.size());
+	    }
+	  }
 
-				for (int i = 0; i < allfiles.size(); ++i)
-				{
-					QString file = allfiles[i];
-					QString suffix = QFileInfo(file).suffix().toLower();
-					if (!jetset.contains(suffix))
-						file += "*";
-					out << file << "\n";
-				}
-			}
-		}
-
-		// write properties.bin
-		{
-			QString filename = "properties.bin";
-			if (deviceFamily == ExportProjectDialog::e_Android)
-				filename += ".jet";
-			QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
-			if (file.open(QIODevice::WriteOnly))
-			{
-				const ProjectProperties& properties = libraryWidget_->getProjectProperties();
-
-				ByteBuffer buffer;
-
-				buffer << properties.scaleMode;
-				buffer << properties.logicalWidth;
-				buffer << properties.logicalHeight;
-
-				buffer << (int)properties.imageScales.size();
-				for (size_t i = 0; i < properties.imageScales.size(); ++i)
-				{
-					buffer << properties.imageScales[i].first.toUtf8().constData();
-					buffer << (float)properties.imageScales[i].second;
-				}
-
-				buffer << properties.orientation;
-				buffer << properties.fps;
-
-                buffer << properties.retinaDisplay;
-				buffer << properties.autorotation;
-
-                buffer << (properties.mouseToTouch ? 1 : 0);
-                buffer << (properties.touchToMouse ? 1 : 0);
-                buffer << properties.mouseTouchOrder;
-
-				file.write(buffer.data(), buffer.size());
-			}
-		}
-
-		progress.setValue(fileQueue.size());
+	  progress.setValue(fileQueue.size());
+	} // end of pass loop
 
         QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully."));
-	}
+    }
 }
 
 std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downsizing)

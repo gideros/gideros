@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <gstdio.h>
 #include <string>
+#include <algorithm>
 
 #ifdef WINSTORE
 #include <io.h>
