@@ -273,7 +273,7 @@ void InitD3D(CoreWindow^ Window)
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU    
-	bd.ByteWidth = sizeof(VERTEX) * 256;             // size is the VERTEX struct * 256
+	bd.ByteWidth = sizeof(VERTEX) * 1024;             // size is the VERTEX struct * 1024
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer    
 

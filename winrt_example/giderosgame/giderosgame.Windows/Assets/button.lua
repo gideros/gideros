@@ -13,10 +13,8 @@ function Button:init(upState, downState)
 		
 	self.focus = false
 
-	-- set the visual state as "up"
 	self:updateVisualState(false)
 
-	-- register to all mouse and touch events
 	self:addEventListener(Event.MOUSE_DOWN, self.onMouseDown, self)
 	self:addEventListener(Event.MOUSE_MOVE, self.onMouseMove, self)
 	self:addEventListener(Event.MOUSE_UP, self.onMouseUp, self)
@@ -37,8 +35,8 @@ end
 
 function Button:onMouseMove(event)
 	if self.focus then
-		if not self:hitTestPoint(event.x, event.y) then	
-			self.focus = false
+		if not self:hitTestPoint(event.x, event.y) then
+			self.focus = false;
 			self:updateVisualState(false)
 		end
 		event:stopPropagation()
@@ -47,9 +45,9 @@ end
 
 function Button:onMouseUp(event)
 	if self.focus then
-		self.focus = false
+		self.focus = false;
 		self:updateVisualState(false)
-		self:dispatchEvent(Event.new("click"))	-- button is clicked, dispatch "click" event
+		self:dispatchEvent(Event.new("click"))
 		event:stopPropagation()
 	end
 end
