@@ -612,6 +612,11 @@ void GLCanvas::loadProperties(std::vector<char> data){
     int orientation;
     buffer >> orientation;
     application_->setOrientation((Orientation)orientation);
+
+    if(exportedApp_){
+        setHardwareOrientation((Orientation)orientation);
+    }
+
     application_->getApplication()->setDeviceOrientation((Orientation)orientation);
 
     int fps;

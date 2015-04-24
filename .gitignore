@@ -240,12 +240,8 @@ tmp
 */qrc_*.cpp
 
 # other generated files and folders
-*.exe
-*.dll
-*.dylib
 *.so
 *.ini
-*.app
 *.a
 *.dep
 

@@ -22,7 +22,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     MainWindow::instance = this;
 
     ui.setupUi(this);
-    setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+
+    #if defined(Q_OS_MAC)
+        setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+    #else
+        setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
+    #endif
 
     move(0, 0);
 

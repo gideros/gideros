@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>300</height>
+    <width>560</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,7 +85,7 @@ target platform to export the application source.</string>
       <string>Choose your platform here.</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -193,36 +193,36 @@ Example: com.giderosmobile.timthetimber</string>
        </item>
       </layout>
      </widget>
-    <widget class="QWidget" name="tab_4">
-     <attribute name="title">
-      <string>Mac OS X Desktop</string>
-     </attribute>
-     <layout class="QVBoxLayout" name="verticalLayout_5">
-      <item>
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>* No extra settings for this platform.</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>41</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>Mac OS X Desktop</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>* No extra settings for this platform.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>41</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tab1">
       <attribute name="title">
        <string>WinRT</string>
@@ -232,7 +232,7 @@ Example: com.giderosmobile.timthetimber</string>
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>
-Use this to create Windows Phone and Windows Store apps ("Metro Style" apps)
+Use this to create Windows Phone and Windows Store apps (&quot;Metro Style&quot; apps)
 A universal solution is created containing a Windows Phone and Windows Store project.
 
 * No extra settings for WinRT.</string>
