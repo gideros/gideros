@@ -34,7 +34,7 @@ INCLUDEPATH +=	\
     "../iconlibrary" \
     "../libpreviewwidget"\
     "../libnetwork"\
-    "../libgid/include"\
+    "../libgid/src/qt"\
     "../lua/src"\
     "../libpvrt" \
     "../libgid/include" \

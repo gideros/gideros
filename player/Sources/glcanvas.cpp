@@ -29,8 +29,6 @@
 #include <ginput-qt.h>
 #include <glog.h>
 
-
-
 static int __mkdir(const char* path){
     #ifdef _WIN32
         return _mkdir(path);
@@ -39,7 +37,6 @@ static int __mkdir(const char* path){
     #endif
 }
 
-// global var server to print to server function
 static Server* g_server = NULL;
 
 static void printToServer(const char* str, int len, void* data){
@@ -58,39 +55,47 @@ static void printToServer(const char* str, int len, void* data){
     free(buffer);
 }
 
+static void deltree(const char* dir){
+    std::stack<std::string> stack;
 
+    std::string directory = dir;
+    char back = directory[directory.size() - 1];
+    if (back == '/' || back == '\\')
+        directory.resize(directory.size() - 1);
 
-// the constructor of canvas
+    stack.push(directory);
+
+    while (!stack.empty()){
+        std::string dir = stack.top();
+        stack.pop();
+
+        std::vector<std::string> files, directories;
+        getDirectoryListing(dir.c_str(), &files, &directories);
+
+        for (std::size_t i = 0; i < files.size(); ++i)
+            remove((dir + "/" + files[i]).c_str());
+
+        for (std::size_t i = 0; i < directories.size(); ++i)
+            stack.push(dir + "/" + directories[i]);
+    }
+}
+
 GLCanvas::GLCanvas(QWidget *parent) : QGLWidget(parent){
     setAttribute(Qt::WA_AcceptTouchEvents);
     //setFocusPolicy(Qt::WheelFocus);
 
-/*    QGLFormat formatGL;
+    /*
+    QGLFormat formatGL;
     formatGL.setVersion(2, 0); // Version : 2.0
     formatGL.setDoubleBuffer(true); // Double Buffer : Activé
     formatGL.setDepthBufferSize(24);
     formatGL.setStencilBufferSize(8);
     formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'écran
-    this->setFormat(formatGL);*/
-
-    isPlayer_ = true;
-
-    /*QFile Props(":/Resources/properties.bin");
-    QFile LuaFiles(":/Resources/luafiles.txt");
-
-    if(Props.exists() && LuaFiles.exists())
-    {
-        isPlayer_ = false;
-        play(QDir(":/Resources"));
-    }*/
+    this->setFormat(formatGL);
+    */
 
     setupProperties();
 
-    application_->setPlayerMode(isPlayer_);
-    application_->enableExceptions();
-    application_->setPrintFunc(printToServer);
-
-    // set timer to get timeout if an error occur
     QTimer* timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
     timer->start(1);
@@ -104,10 +109,8 @@ GLCanvas::GLCanvas(QWidget *parent) : QGLWidget(parent){
     */
 }
 
-// destructor of player, clear timer and set app exit event
 GLCanvas::~GLCanvas(){
-    // if running, set app event exit
-    if (running_ == true){
+    if(running_ == true){
         Event event(Event::APPLICATION_EXIT);
         GStatus status;
         application_->broadcastEvent(&event, &status);
@@ -127,7 +130,6 @@ GLCanvas::~GLCanvas(){
 
     timerEvent(0); // TODO: network bufferinda ne kalmissa send etmek icin baska bi fonksiyon yaz
 
-    // delete app
     application_->deinitialize();
     delete application_;
 
@@ -137,18 +139,31 @@ GLCanvas::~GLCanvas(){
     */
 
     if(isPlayer_){
-        // delete server and global server
         delete server_;
         g_server = 0;
     }
 }
 
-
-
-// setup the initial properties of canvas
 void GLCanvas::setupProperties(){
-    // set the lua application to use in player
+    isPlayer_ = true;
+
+    /*
+    QFile Props(":/Resources/properties.bin");
+    QFile LuaFiles(":/Resources/luafiles.txt");
+
+    if(Props.exists() && LuaFiles.exists()){
+        isPlayer_ = false;
+        play(QDir(":/Resources"));
+    }
+    */
+
+    exportedApp_ = false;
+
     application_ = new LuaApplication;
+
+    application_->setPlayerMode(isPlayer_);
+    application_->enableExceptions();
+    application_->setPrintFunc(printToServer);
 
     if(isPlayer_){
         server_ = new Server(15000, ::getDeviceName().c_str());
@@ -158,54 +173,39 @@ void GLCanvas::setupProperties(){
     }
 
     running_ = false;
-    orientation_ = ePortrait;
 
-    width_ = 320;
-    height_ = 480;
-    scale_ = 1;
-    deviceScale_ = devicePixelRatio();
-
-    fps_ = 10000;
     clock_ = iclock();
 
-    setHardwareOrientation(ePortrait);
-    setResolution(320, 480);
-    setFps(10000);
-    setScale(1);
-    setDrawInfos(false);
+    if(!exportedApp_){
+        deviceScale_ = devicePixelRatio();
 
-    float canvasColor[3];
-    canvasColor[0] = 1;
-    canvasColor[1] = 1;
-    canvasColor[2] = 1;
+        setHardwareOrientation(ePortrait);
+        setResolution(320, 480);
+        setFps(60);
+        setScale(1);
+        setDrawInfos(false);
+    }
+
+    float canvasColor[3] = {1, 1, 1};
     setCanvasColor(canvasColor);
 
-    float infoColor[3];
-    infoColor[0] = 0;
-    infoColor[1] = 0;
-    infoColor[2] = 0;
+    float infoColor[3] = {0, 0, 0};
     setInfoColor(infoColor);
 }
 
-// set the properties in application var
 void GLCanvas::setupApplicationProperties(){
     application_->setHardwareOrientation(orientation_);
     application_->setResolution(width_, height_);
     application_->setScale(scale_);
 }
 
-
-
-// initialize glcanvas, starting some app properties
 void GLCanvas::initializeGL(){
-
     glewInit();
 
     application_->initialize();
     setupApplicationProperties();
 }
 
-// paint the application on each right time
 /*
 TODO: renderScene'e full try-catch icine aldigimiz icin. mesela enterFrame event'inde bi exception olursa,
 geriye kalanlar calistirilmadigi icin ekrana hicbirsey cizilmiyor. renderScene'inin icini parcalamak lazim.
@@ -214,10 +214,9 @@ TODO: bu hata olayini iyi dusunmek lazim. bi timer event'inde hata olursa, o tim
 TODO: belki de lua'yi exception'li derlemek lazim. koda baktigimda oyle birseyi destekliyordu
 */
 void GLCanvas::paintGL(){
-
-    // call enterframe event
     GStatus status;
     application_->enterFrame(&status);
+
     if(status.error()){
         running_ = false;
 
@@ -230,12 +229,11 @@ void GLCanvas::paintGL(){
         application_->initialize();
     }
 
-    // render the new scene frame
     application_->clearBuffers();
     application_->renderScene();
 
-    // if not running or if is running with drawInfos enabled, draw some usefull infos on the canvas
-    if(!running_ || drawInfos_){
+    // if not running or if drawInfos enabled, and is not an exported app
+    if((!running_ || drawInfos_) && !exportedApp_){
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         glScalef(1.f / scale_, 1.f / scale_, 1);
@@ -243,16 +241,15 @@ void GLCanvas::paintGL(){
         int lWidth = application_->getLogicalWidth();
         int lHeight = application_->getLogicalHeight();
         float scale = round((float)100 / (float)((float)scale_ * (float)devicePixelRatio()));
+
         void drawInfoResolution(int width, int height, int scale, int lWidth, int lHeight, bool drawRunning, float canvasColor[3], float infoColor[3]);
 
         drawInfoResolution(width_, height_, scale, lWidth, lHeight, running_ && drawInfos_, canvasColor_, infoColor_);
     }
 }
 
-// timer event for upload and configure the player for run
 // TODO: TimerEvent.TIMER'da bi exception olursa, o event bir daha cagirilmiyor. Bunun nedeini bulmak lazim
 void GLCanvas::timerEvent(QTimerEvent *){
-
     /*
     platformImplementation_->openUrls();
     printf(".");
@@ -263,7 +260,6 @@ void GLCanvas::timerEvent(QTimerEvent *){
         int dataTotal = 0;
 
         while(true){
-
             if(!projectDir_.isEmpty()){
                 play(QDir(projectDir_));
                 projectDir_.clear();
@@ -287,14 +283,14 @@ void GLCanvas::timerEvent(QTimerEvent *){
                 const std::vector<char>& data = event.data;
 
                 switch(data[0]){
-                    case 0:			// create folder
+                    case 0:
                     {
                         std::string folderName = &data[1];
                         __mkdir(g_pathForFile(folderName.c_str()));
                         break;
                     }
 
-                    case 1:			// create file
+                    case 1:
                     {
                         std::string fileName = &data[1];
                         FILE* fos = fopen(g_pathForFile(fileName.c_str()), "wb");
@@ -469,7 +465,6 @@ void GLCanvas::timerEvent(QTimerEvent *){
             int dataDelta = (dataSent1 - dataSent0) + (dataReceived1 - dataReceived0);
             dataTotal += dataDelta;
 
-            // data upload complete
             if(dataDelta == 0 || dataTotal > 1024)
                 break;
         }
@@ -478,15 +473,11 @@ void GLCanvas::timerEvent(QTimerEvent *){
     update();
 }
 
-// function to play an application into player passing path
-// TODO: pensar em um nome intuitivo
 void GLCanvas::play(QDir directory){
     QFile file(directory.absolutePath()+"/properties.bin");
     QFile luafiles(directory.absolutePath()+"/luafiles.txt");
 
     if(file.exists() && luafiles.exists()){
-
-        // emmit a stop on player
         if(running_ == true){
             Event event(Event::APPLICATION_EXIT);
             GStatus status;
@@ -502,23 +493,33 @@ void GLCanvas::play(QDir directory){
             }
         }
 
-        // next, send the project name
         projectName_ = directory.dirName();
-
         emit projectNameChanged(projectName_);
 
-        dir_ = QDir::temp();
-        dir_.mkdir("gideros");
-        dir_.cd("gideros");
-        dir_.mkdir(projectName_);
-        dir_.cd(projectName_);
-        dir_.mkdir("documents");
-        dir_.mkdir("temporary");
+        const char* documentsDirectory;
+        const char* temporaryDirectory;
 
-        resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
+        if(exportedApp_){
+            resourceDirectory_ = qPrintable(directory.absoluteFilePath("resource"));
+            documentsDirectory = qPrintable(directory.absoluteFilePath("documents"));
+            temporaryDirectory = qPrintable(directory.absoluteFilePath("temporary"));
 
-        setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
-        setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
+        }else{
+            dir_ = QDir::temp();
+            dir_.mkdir("gideros");
+            dir_.cd("gideros");
+            dir_.mkdir(projectName_);
+            dir_.cd(projectName_);
+            dir_.mkdir("documents");
+            dir_.mkdir("temporary");
+
+            resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
+            documentsDirectory = qPrintable(dir_.absoluteFilePath("documents"));
+            temporaryDirectory = qPrintable(dir_.absoluteFilePath("temporary"));
+        }
+
+        setDocumentsDirectory(documentsDirectory);
+        setTemporaryDirectory(temporaryDirectory);
         setResourceDirectory(resourceDirectory_.c_str());
 
         file.open(QIODevice::ReadOnly);
@@ -531,28 +532,59 @@ void GLCanvas::play(QDir directory){
         running_ = true;
 
         luafiles.open(QIODevice::ReadOnly);
-        QByteArray bas = luafiles.readAll();
-        luafiles.close();
-        std::vector<char> data2(bas.data(), bas.data() + bas.size());
 
-        loadFiles(data2);
+        if(exportedApp_){
+            std::vector<std::string> lines;
+
+            QTextStream in(&luafiles);
+            while(!in.atEnd()){
+                QString line = in.readLine();
+
+                if(!line.isEmpty()){
+                    lines.push_back(line.toStdString());
+                }
+            }
+
+            playLoadedFiles(lines);
+
+        }else{
+            QByteArray bas = luafiles.readAll();
+            luafiles.close();
+            std::vector<char> data2(bas.data(), bas.data() + bas.size());
+
+            loadFiles(data2);
+        }
     }
     else{
-        errorDialog_.appendString("Please relaunch project from Gideros Studio");
-        errorDialog_.show();
+        if(exportedApp_){
+            errorDialog_.appendString("An error occured, please reinstall the application");
+            errorDialog_.show();
+
+            if(errorDialog_.exec() == QDialog::Rejected){
+                exit(0);
+            }
+
+        }else{
+            errorDialog_.appendString("Please relaunch project from Gideros Studio");
+            errorDialog_.show();
+        }
     }
 }
 
 void GLCanvas::loadProperties(std::vector<char> data){
     ByteBuffer buffer(&data[0], data.size());
 
-    char chr;
-    buffer >> chr;
+    if(!exportedApp_){
+        char chr;
+        buffer >> chr;
+    }
 
-    int scaleMode, logicalWidth, logicalHeight;
+    int scaleMode, logicalWidth, logicalHeight, windowWidth, windowHeight;
     buffer >> scaleMode;
     buffer >> logicalWidth;
     buffer >> logicalHeight;
+    buffer >> windowWidth;
+    buffer >> windowHeight;
 
     application_->deinitialize();
     application_->initialize();
@@ -560,6 +592,12 @@ void GLCanvas::loadProperties(std::vector<char> data){
 //				application_->orientationChange(orientation_);
     application_->setLogicalDimensions(logicalWidth, logicalHeight);
     application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
+
+    if(exportedApp_){
+        setResolution(windowWidth, windowHeight);
+    }
+
+    setWindowSize(windowWidth, windowHeight);
 
     int scaleCount;
     buffer >> scaleCount;
@@ -575,6 +613,11 @@ void GLCanvas::loadProperties(std::vector<char> data){
     int orientation;
     buffer >> orientation;
     application_->setOrientation((Orientation)orientation);
+
+    if(exportedApp_){
+        setHardwareOrientation((Orientation)orientation);
+    }
+
     application_->getApplication()->setDeviceOrientation((Orientation)orientation);
 
     int fps;
@@ -599,21 +642,7 @@ void GLCanvas::loadProperties(std::vector<char> data){
     ginput_setMouseTouchOrder(mouseTouchOrder);
 }
 
-void GLCanvas::loadFiles(std::vector<char> data){
-    std::vector<std::string> luafiles;
-
-    ByteBuffer buffer(&data[0], data.size());
-
-    char chr;
-    buffer >> chr;
-
-    while (buffer.eob() == false)
-    {
-        std::string str;
-        buffer >> str;
-        luafiles.push_back(str);
-    }
-
+void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles){
     GStatus status;
     for (std::size_t i = 0; i < luafiles.size(); ++i)
     {
@@ -639,6 +668,24 @@ void GLCanvas::loadFiles(std::vector<char> data){
         application_->deinitialize();
         application_->initialize();
     }
+}
+
+void GLCanvas::loadFiles(std::vector<char> data){
+    std::vector<std::string> luafiles;
+
+    ByteBuffer buffer(&data[0], data.size());
+
+    char chr;
+    buffer >> chr;
+
+    while (buffer.eob() == false)
+    {
+        std::string str;
+        buffer >> str;
+        luafiles.push_back(str);
+    }
+
+    playLoadedFiles(luafiles);
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event){
@@ -672,7 +719,6 @@ void GLCanvas::keyReleaseEvent(QKeyEvent* event){
 }
 
 bool GLCanvas::event(QEvent *event){
-
     if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate || event->type() == QEvent::TouchEnd || event->type() == QEvent::TouchCancel)
     {
         QTouchEvent* touchEvent = (QTouchEvent*)event;
@@ -747,9 +793,6 @@ bool GLCanvas::event(QEvent *event){
     return QGLWidget::event(event);
 }
 
-
-
-// get the right timer
 void GLCanvas::onTimer(){
     double deltat = 1.0 / fps_;
 
@@ -772,39 +815,12 @@ void GLCanvas::onTimer(){
         timerEvent(0);
 }
 
-// func to delete recursively the dir, used in deleteFiles func
-static void deltree(const char* dir){
-    std::stack<std::string> stack;
-
-    std::string directory = dir;
-    char back = directory[directory.size() - 1];
-    if (back == '/' || back == '\\')
-        directory.resize(directory.size() - 1);
-
-    stack.push(directory);
-
-    while (!stack.empty()){
-        std::string dir = stack.top();
-        stack.pop();
-
-        std::vector<std::string> files, directories;
-        getDirectoryListing(dir.c_str(), &files, &directories);
-
-        for (std::size_t i = 0; i < files.size(); ++i)
-            remove((dir + "/" + files[i]).c_str());
-
-        for (std::size_t i = 0; i < directories.size(); ++i)
-            stack.push(dir + "/" + directories[i]);
-    }
-}
-
 void GLCanvas::deleteFiles(){
     deltree(resourceDirectory_.c_str());
 //	fileList_.clear();
 }
 
-void GLCanvas::sendFileList()
-{
+void GLCanvas::sendFileList(){
     allResourceFiles.clear();
 
     ByteBuffer buffer;
@@ -848,8 +864,7 @@ void GLCanvas::sendFileList()
     server_->sendData(buffer.data(), buffer.size());
 }
 
-void GLCanvas::sendRun()
-{
+void GLCanvas::sendRun(){
     ByteBuffer buffer;
     buffer.append((char)10);
     server_->sendData(buffer.data(), buffer.size());
@@ -973,7 +988,6 @@ void GLCanvas::calculateMD5(const char* file){
         md5_[file] = md5;
 }
 
-// print a md5 file, util function
 void GLCanvas::printMD5(){
     std::map<std::string, std::vector<unsigned char> >::iterator iter, end = md5_.end();
     for (iter = md5_.begin(); iter != end; ++iter){
@@ -991,12 +1005,11 @@ void GLCanvas::printMD5(){
     }
 }
 
-// setters
 void GLCanvas::setScale(float scale){
     scale_ = scale;
     deviceScale_ = (float)scale * (float)devicePixelRatio();
 
-    if (application_->isInitialized())
+    if(application_->isInitialized())
         application_->setScale(scale_);
 }
 
@@ -1038,7 +1051,9 @@ void GLCanvas::setResolution(int width, int height){
         application_->setResolution(width_, height_);
 }
 
-
+void GLCanvas::setExportedApp(bool exportedApp){
+    exportedApp_ = exportedApp;
+}
 
 /*
 void PlatformImplementation::openUrl(const char* url)

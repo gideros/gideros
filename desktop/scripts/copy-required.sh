@@ -1,0 +1,5 @@
+cp ../libgid/libgid.dylib "MacOSXDesktopTemplate.app/Contents/Frameworks"
+cp ../libgideros/libgideros.dylib "MacOSXDesktopTemplate.app/Contents/Frameworks"
+cp ../libgvfs/libgvfs.dylib "MacOSXDesktopTemplate.app/Contents/Frameworks"
+cp ../lua/liblua.dylib "MacOSXDesktopTemplate.app/Contents/Frameworks"
+cp ../libpystring/libpystring.dylib "MacOSXDesktopTemplate.app/Contents/Frameworks"

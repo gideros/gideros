@@ -17,6 +17,8 @@ struct ProjectProperties
 		scaleMode = 0;
 		logicalWidth = 320;
 		logicalHeight = 480;
+        windowWidth = 320;
+        windowHeight = 480;
 		imageScales.clear();
 		orientation = 0;
 		fps = 60;
@@ -43,6 +45,8 @@ struct ProjectProperties
 	int scaleMode;
 	int logicalWidth;
 	int logicalHeight;
+    int windowWidth;
+    int windowHeight;
 	std::vector<std::pair<QString, double> > imageScales;
 	int orientation;
 	int fps;

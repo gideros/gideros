@@ -12,9 +12,6 @@ class Server;
 #include "platform.h"
 #include <gfile.h>
 #include <gfile_p.h>
-//#include <QUrl>
-
-
 
 class GLCanvas : public QGLWidget{
 	Q_OBJECT
@@ -31,10 +28,9 @@ public:
     void setScale(float scale);
     void setCanvasColor(float canvasColor[3]);
     void setInfoColor(float infoColor[3]);
-
+    void setExportedApp(bool exportedApp);
 	void sendRun();
 
-    // function to play an application into player passing a directory
     void play(QDir directory);
 
     //std::set<std::string> accessedResourceFiles;
@@ -63,6 +59,7 @@ private:
     bool drawInfos_;
     float canvasColor_[3];
     float infoColor_[3];
+    bool exportedApp_;
     //	PlatformImplementation* platformImplementation_;
 
     void setupProperties();
@@ -86,6 +83,7 @@ private:
     void printMD5();
     void loadProperties(std::vector<char> data);
     void loadFiles(std::vector<char> data);
+    void playLoadedFiles(std::vector<std::string> luafiles);
 
     //static void accessFileCallback_s(FileType type, const char* filename, void* data);
     //void accessFileCallback(FileType type, const char* filename);

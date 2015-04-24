@@ -205,7 +205,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 	QSettings settings;
 	QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
-	
+    ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
+
 #ifndef NEW_CLIENT
 	client_ = new Client(qPrintable(playerip), 15000);
 #else
@@ -265,7 +266,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 	connect(ui.actionPlayer_Settings, SIGNAL(triggered()), this, SLOT(playerSettings()));
-
+    connect(ui.actionLocalhostToggle, SIGNAL(triggered(bool)), this, SLOT(actionLocalhostToggle(bool)));
 	connect(ui.actionAbout_Gideros_Studio, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
 	connect(ui.actionDeveloper_Center, SIGNAL(triggered()), this, SLOT(developerCenter()));
 	connect(ui.actionHelp_Support, SIGNAL(triggered()), this, SLOT(helpAndSupport()));
@@ -1619,6 +1620,26 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	}
 }
 
+void MainWindow::actionLocalhostToggle(bool checked){
+    QSettings settings;
+    settings.setValue("player localhost", checked);
+
+    QString playerip = QString("127.0.0.1");
+
+    if(!checked){
+        playerip = settings.value("player original ip", QString("127.0.0.1")).toString();
+    }
+
+    settings.setValue("player ip", playerip);
+
+    #ifndef NEW_CLIENT
+        delete client_;
+        client_ = new Client(qPrintable(playerip), 15000);
+    #else
+        client_->connectToHost(playerip, 15000);
+    #endif
+}
+
 void MainWindow::playerSettings()
 {
 	PlayerSettingsDialog dialog(this);
@@ -1632,6 +1653,7 @@ void MainWindow::playerSettings()
 		
 		QSettings settings;
 		QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
+        ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
 
 #ifndef NEW_CLIENT
 		delete client_;
@@ -2156,8 +2178,21 @@ void MainWindow::exportProject()
 		  templatename = "WinRT Template";
 		  templatenamews = "WinRTTemplate";
 		  break;
-		}
 
+        case ExportProjectDialog::e_WindowsDesktop:
+            templatedir = "Qt";
+            templatename = "WindowsDesktopTemplate";
+            templatenamews = "WindowsDesktopTemplate";
+            underscore = false;
+            break;
+
+        case ExportProjectDialog::e_MacOSXDesktop:
+            templatedir = "Qt";
+            templatename = "MacOSXDesktopTemplate";
+            templatenamews = "MacOSXDesktopTemplate";
+            underscore = false;
+            break;
+        }
 
 		QSettings settings;
 		QString lastExportDirectory = settings.value("lastExportDirectory", QString()).toString();
@@ -2306,6 +2341,11 @@ void MainWindow::exportProject()
 	  outputDir.mkdir("assets");
 	  outputDir.cd("assets");
         }
+        else if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop)
+        {
+            outputDir.cd(base + ".app");
+            outputDir.cd("Contents");
+        }
 	else if (deviceFamily == ExportProjectDialog::e_WinRT)
 	{
 	  outputDir.cd("giderosgame");
@@ -2317,6 +2357,13 @@ void MainWindow::exportProject()
 	  outputDir.mkdir("assets");
 	  outputDir.cd("assets");
 	}
+
+        if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop || deviceFamily == ExportProjectDialog::e_WindowsDesktop){
+            outputDir.mkdir("resource");
+            outputDir.mkdir("temporary");
+            outputDir.mkdir("documents");
+            outputDir.cd("resource");
+        }
 
 		std::deque<QPair<QString, QString> > fileQueue;
 
@@ -2361,7 +2408,6 @@ void MainWindow::exportProject()
 			{
 				QString name = e.attribute("name");
 				dir.push_back(name);
-
 
 				QString n;
 				for (std::size_t i = 0; i < dir.size(); ++i)
@@ -2513,6 +2559,11 @@ void MainWindow::exportProject()
 			}
 		}
 
+        if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop || deviceFamily == ExportProjectDialog::e_WindowsDesktop)
+        {
+            outputDir.cd("..");
+        }
+
 		// write luafiles.txt
 		{
 			QString filename = "luafiles.txt";
@@ -2561,7 +2612,9 @@ void MainWindow::exportProject()
 
 				buffer << properties.scaleMode;
 				buffer << properties.logicalWidth;
-				buffer << properties.logicalHeight;
+                buffer << properties.logicalHeight;
+                buffer << properties.windowWidth;
+                buffer << properties.windowHeight;
 
 				buffer << (int)properties.imageScales.size();
 				for (size_t i = 0; i < properties.imageScales.size(); ++i)
@@ -2580,7 +2633,7 @@ void MainWindow::exportProject()
                 buffer << (properties.touchToMouse ? 1 : 0);
                 buffer << properties.mouseTouchOrder;
 
-				file.write(buffer.data(), buffer.size());
+                file.write(buffer.data(), buffer.size());
 			}
 		}
 
