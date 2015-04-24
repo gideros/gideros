@@ -21,7 +21,7 @@
        <property name="toolTip">
         <string>Defines the target architecture. 
 
-Gideros Studio supports both iOS and Android. Choose your 
+Gideros Studio supports iOS, Android and WinRT (Windows Store and Windows Phone apps). Choose your 
 target platform to export the application source.</string>
        </property>
        <property name="text">
@@ -45,6 +45,11 @@ target platform to export the application source.</string>
        <item>
         <property name="text">
          <string>Android</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>WinRT</string>
         </property>
        </item>
       </widget>
@@ -142,6 +147,40 @@ Example: com.giderosmobile.timthetimber</string>
           <size>
            <width>20</width>
            <height>72</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab1">
+      <attribute name="title">
+       <string>WinRT</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>
+Use this to create Windows Phone and Windows Store apps ("Metro Style" apps)
+A universal solution is created containing a Windows Phone and Windows Store project.
+
+* No extra settings for WinRT.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer1">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>41</height>
           </size>
          </property>
         </spacer>

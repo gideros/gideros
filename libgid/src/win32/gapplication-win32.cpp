@@ -1,8 +1,5 @@
 #include <gapplication.h>
-#include <gapplication-winrt.h>
-
-using namespace Windows::Graphics::Display;
-using namespace Windows::ApplicationModel::Core;
+#include <gapplication-win32.h>
 
 class GGApplicationManager
 {
@@ -20,8 +17,7 @@ public:
 	
 	int getScreenDensity()
     {   
-		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
-		return dinfo->LogicalDpi;
+      return 0;
     }
 
 	void exit()
