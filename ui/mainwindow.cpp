@@ -426,7 +426,7 @@ void MainWindow::advertisement(const QString& host,unsigned short port,unsigned 
 	for (int k=0;k<players_->count();k++)
 		if (players_->itemData(k)==nitem)
 			return;
-	players_->addItem(name,nitem);
+	players_->addItem(QString("%1 (%2)").arg(name).arg(host),nitem);
 }
 
 void MainWindow::playerChanged(const QString & text)

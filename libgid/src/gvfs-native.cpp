@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <gstdio.h>
+#include <string>
 
 #ifdef WINSTORE
 #include <io.h>
@@ -33,10 +34,15 @@
 
 struct FileInfo
 {
+	int zipFile;
+    size_t startOffset;
+    size_t length;
     int encrypt;    // 0 no encryption, 1:encrypt code, 2:encrypt assets
 };
 
+static std::map<std::string, FileInfo> s_files;
 static std::map<int, FileInfo> s_fileInfos;
+static std::string s_zipFile;
 
 static char s_codeKey[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 static char s_assetsKey[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -54,12 +60,34 @@ static int s_open(const char *pathname, int flags)
         }
     }
 
-    int fd = ::open(gpath_transform(pathname), flags, 0755);
+    int fd = -1;
+
+    FileInfo fi = {-1, (size_t)-1, (size_t)-1, 0};
+
+    if ( drive != 0 || s_zipFile.empty() )
+        fd=::open(gpath_transform(pathname), flags, 0755);
+    else
+    {
+    	pathname = gpath_normalizeArchivePath(pathname);
+
+        std::map<std::string, FileInfo>::iterator iter;
+        iter = s_files.find(pathname);
+
+        if (iter == s_files.end())
+        {
+            errno = ENOENT;
+            return -1;
+        }
+
+        fd = ::open(s_zipFile.c_str(), flags, 0755);
+
+        ::lseek(fd, iter->second.startOffset, SEEK_SET);
+
+        fi = iter->second;
+    }
 
     if (fd < 0)
         return fd;
-
-    FileInfo fi = {0};
 
     if (drive == 0)
     {
@@ -113,7 +141,19 @@ static size_t readHelper(int fd, void* buf, size_t count)
         return -1;
     }
 
-    return ::read(fd, buf, count);
+    if (iter->second.startOffset == (size_t)-1 && iter->second.length == (size_t)-1)
+        return ::read(fd, buf, count);
+
+    size_t endOffset = iter->second.startOffset + iter->second.length;
+
+    size_t curr = ::lseek(fd, 0, SEEK_CUR);
+
+    if (curr < iter->second.startOffset || curr >= endOffset)
+        return 0;
+
+    size_t rem = endOffset - curr;
+
+    return ::read(fd, buf, std::min(rem, count));
 }
 
 static size_t s_write(int fd, const void* buf, size_t count)
@@ -141,7 +181,33 @@ static off_t s_lseek(int fd, off_t offset, int whence)
         return -1;
     }
 
-    return ::lseek(fd, offset, whence);
+    if (iter->second.startOffset == (size_t)-1 && iter->second.length == (size_t)-1)
+        return ::lseek(fd, offset, whence);
+
+    size_t startOffset = iter->second.startOffset;
+    size_t endOffset = startOffset + iter->second.length;
+
+    switch (whence)
+    {
+    case SEEK_SET:
+    {
+        off_t result = ::lseek(fd, startOffset + offset, SEEK_SET);
+        return result - startOffset;
+    }
+    case SEEK_CUR:
+    {
+        off_t result = ::lseek(fd, offset, SEEK_CUR);
+        return result - startOffset;
+    }
+    case SEEK_END:
+    {
+        off_t result = ::lseek(fd, endOffset + offset, SEEK_SET);
+        return result - startOffset;
+    }
+    }
+
+    errno = EINVAL;
+    return -1;
 }
 
 static size_t s_read(int fd, void* buf, size_t count)
@@ -235,4 +301,14 @@ void gvfs_setAssetsKey(const char key[16])
     memcpy(s_assetsKey, key, 16);
 }
 
+void gvfs_setZipFile(const char *archiveFile)
+{
+	s_zipFile=archiveFile;
+}
+
+void gvfs_addFile(const char *pathname, int zipFile, size_t startOffset, size_t length)
+{
+    FileInfo f = {zipFile, startOffset, length, false};
+    s_files[pathname] = f;
+}
 }

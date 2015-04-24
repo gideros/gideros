@@ -26,6 +26,13 @@ void Stage::mouseMove(int x, int y, float sx, float sy, float tx, float ty)
     dispatchToSpritesWithListeners(&event);
 }
 
+void Stage::mouseWheel(int x, int y, float sx, float sy, float tx, float ty, int wheel)
+{
+    MouseEvent event(MouseEvent::MOUSE_WHEEL, x, y, sx, sy, tx, ty);
+    event.wheel=wheel;
+    dispatchToSpritesWithListeners(&event);
+}
+
 void Stage::enterFrame(int deltaFrameCount)
 {
     void *pool = application_->createAutounrefPool();
@@ -127,6 +134,7 @@ void Stage::populateSpritesWithListeners()
         if (sprite->hasEventListener(MouseEvent::MOUSE_DOWN)     ||
             sprite->hasEventListener(MouseEvent::MOUSE_MOVE)     ||
             sprite->hasEventListener(MouseEvent::MOUSE_UP)       ||
+            sprite->hasEventListener(MouseEvent::MOUSE_WHEEL)    ||
             sprite->hasEventListener(TouchEvent::TOUCHES_BEGIN)  ||
             sprite->hasEventListener(TouchEvent::TOUCHES_MOVE)   ||
             sprite->hasEventListener(TouchEvent::TOUCHES_END)    ||

@@ -13,6 +13,8 @@ G_API void gvfs_cleanup();
 
 G_API void gvfs_setCodeKey(const char key[16]);
 G_API void gvfs_setAssetsKey(const char key[16]);
+G_API void gvfs_setZipFile(const char *archiveFile);
+G_API void gvfs_addFile(const char *pathname, int zipFile, size_t startOffset, size_t length);
 
 #ifdef __cplusplus
 }

@@ -14,7 +14,7 @@
 #include "keyboardevent.h"
 #include "completeevent.h"
 #include "luaapplication.h"
-
+#include <glog.h>
 #include <algorithm>
 
 #include <math.h>
@@ -363,6 +363,9 @@ public:
 
             lua_pushnumber(L, ry);
             lua_setfield(L, -2, "ry");
+
+            lua_pushnumber(L, v->wheel);
+            lua_setfield(L, -2, "wheel");
 		}
 		else
 		{
