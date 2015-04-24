@@ -14,7 +14,9 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\winrt.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\winrt.cpp">
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\giderosapi.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
