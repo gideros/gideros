@@ -1,0 +1,2 @@
+install_name_tool -change libgvfs.1.dylib @executable_path/../Frameworks/libgvfs.dylib "MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate"
+install_name_tool -change libpystring.1.dylib @executable_path/../Frameworks/libpystring.dylib "MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate"

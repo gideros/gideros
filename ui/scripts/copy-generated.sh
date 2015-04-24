@@ -1,0 +1,1 @@
+cp -r "Gideros Studio.app" ../release

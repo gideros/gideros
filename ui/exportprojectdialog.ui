@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>300</height>
+    <width>560</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,9 +19,9 @@
      <item>
       <widget class="QLabel" name="label_2">
        <property name="toolTip">
-        <string>Defines the target architecture. 
+        <string>Defines the target architecture.
 
-Gideros Studio supports iOS, Android and WinRT (Windows Store and Windows Phone apps). Choose your 
+Gideros Studio supports iOS, Android, Windows Desktop, Mac OS X Desktop and WinRT (Windows Store and Windows Phone apps). Choose your 
 target platform to export the application source.</string>
        </property>
        <property name="text">
@@ -49,6 +49,16 @@ target platform to export the application source.</string>
        </item>
        <item>
         <property name="text">
+         <string>Windows Desktop</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Mac OS X Desktop</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>WinRT</string>
         </property>
        </item>
@@ -72,10 +82,10 @@ target platform to export the application source.</string>
    <item>
     <widget class="QTabWidget" name="architectureTab">
      <property name="toolTip">
-      <string>Choose your Android application package name here.</string>
+      <string>Choose your platform here.</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -85,7 +95,7 @@ target platform to export the application source.</string>
        <item>
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>* No extra settings for iOS.</string>
+          <string>* No extra settings for this platform.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -117,9 +127,9 @@ target platform to export the application source.</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="toolTip">
-            <string>Defines the package name of the Android application. 
+            <string>Defines the package name of the Android application.
 
-Generally speaking, the first 2 package &quot;words&quot; are your 
+Generally speaking, the first 2 package &quot;words&quot; are your
 web address in reverse.
 
 Example: com.giderosmobile.timthetimber</string>
@@ -153,6 +163,66 @@ Example: com.giderosmobile.timthetimber</string>
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Windows Desktop</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>* No extra settings for this platform.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer1">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>41</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>Mac OS X Desktop</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>* No extra settings for this platform.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>41</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tab1">
       <attribute name="title">
        <string>WinRT</string>
@@ -162,7 +232,7 @@ Example: com.giderosmobile.timthetimber</string>
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>
-Use this to create Windows Phone and Windows Store apps ("Metro Style" apps)
+Use this to create Windows Phone and Windows Store apps (&quot;Metro Style&quot; apps)
 A universal solution is created containing a Windows Phone and Windows Store project.
 
 * No extra settings for WinRT.</string>
@@ -192,7 +262,7 @@ A universal solution is created containing a Windows Phone and Windows Store pro
    <item>
     <widget class="QCheckBox" name="assetsOnly">
      <property name="toolTip">
-      <string>Only exports Lua codes and assets, and not Java or Xcode source. 
+      <string>Only exports Lua codes and assets, and not Java or Xcode source.
 
 If you make changes to the previous exported project
 on the disk, click this option to export only the Lua codes and assets.
