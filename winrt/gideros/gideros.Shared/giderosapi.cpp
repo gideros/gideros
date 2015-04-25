@@ -109,6 +109,11 @@ IXAudio2 *g_audioengine;
 IXAudio2MasteringVoice *g_masteringvoice;
 IXAudio2SourceVoice* g_source;
 
+static void printFunc(const char *str, int len, void *data)
+{
+	OutputDebugStringA(str);
+}
+
 // ######################################################################
 // this function loads a file into an Array^
 
@@ -954,6 +959,9 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 	application_->setPlayerMode(player_);
 	if (player_)
 		application_->setPrintFunc(NetworkManager::printToServer_s, networkManager_);
+	else
+		application_->setPrintFunc(printFunc);
+
 	application_->enableExceptions();
 	application_->initialize();
 	application_->setResolution(width_, height_);
