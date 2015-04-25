@@ -591,12 +591,6 @@ void GLCanvas::loadProperties(std::vector<char> data){
     application_->setLogicalDimensions(logicalWidth, logicalHeight);
     application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
 
-    if(exportedApp_){
-        setResolution(windowWidth, windowHeight);
-    }
-
-    setWindowSize(windowWidth, windowHeight);
-
     int scaleCount;
     buffer >> scaleCount;
     std::vector<std::pair<std::string, float> > imageScales(scaleCount);
@@ -641,6 +635,12 @@ void GLCanvas::loadProperties(std::vector<char> data){
 
     buffer >> windowWidth;
     buffer >> windowHeight;
+
+    if(exportedApp_){
+        setResolution(windowWidth, windowHeight);
+    }
+
+    setWindowSize(windowWidth, windowHeight);
 }
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles){
