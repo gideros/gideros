@@ -583,8 +583,6 @@ void GLCanvas::loadProperties(std::vector<char> data){
     buffer >> scaleMode;
     buffer >> logicalWidth;
     buffer >> logicalHeight;
-    buffer >> windowWidth;
-    buffer >> windowHeight;
 
     application_->deinitialize();
     application_->initialize();
@@ -640,6 +638,9 @@ void GLCanvas::loadProperties(std::vector<char> data){
     int mouseTouchOrder;
     buffer >> mouseTouchOrder;
     ginput_setMouseTouchOrder(mouseTouchOrder);
+
+    buffer >> windowWidth;
+    buffer >> windowHeight;
 }
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles){
