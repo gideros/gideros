@@ -2177,6 +2177,7 @@ void MainWindow::exportProject()
 		  templatedir = "VisualStudio";
 		  templatename = "WinRT Template";
 		  templatenamews = "WinRTTemplate";
+		  underscore = true;
 		  break;
 
         case ExportProjectDialog::e_WindowsDesktop:
@@ -2445,12 +2446,37 @@ void MainWindow::exportProject()
 			}
 		}
 
+		int npass,ipass;
+
+		if (deviceFamily == ExportProjectDialog::e_WinRT)
+		  npass=2;
+		else
+		  npass=1;
+
 		QStringList luafiles;
 		QStringList luafiles_abs;
 		QStringList allfiles;
 		QStringList allfiles_abs;
         QStringList allluafiles;
         QStringList allluafiles_abs;
+
+	for (ipass=1;ipass<=npass;ipass++)
+	{
+
+	  luafiles.clear();
+	  luafiles_abs.clear();
+	  allfiles.clear();
+	  allfiles_abs.clear();
+	  allluafiles.clear();
+	  allluafiles_abs.clear();
+
+	  if (ipass==2){
+	    outputDir.cdUp();
+	    outputDir.cdUp();
+	    outputDir.cd("giderosgame.WindowsPhone");
+	    outputDir.cd("Assets");
+	  }
+
 
 		QProgressDialog progress("Copying files...", QString(), 0, fileQueue.size(), this);
 		progress.setWindowModality(Qt::WindowModal);
@@ -2510,7 +2536,7 @@ void MainWindow::exportProject()
 		// compile lua files (with luac)
 		// disable compile with luac for iOS because 64 bit version
 		// http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
-		if (true && deviceFamily == ExportProjectDialog::e_Android)
+		if (true && deviceFamily != ExportProjectDialog::e_iOS)
 		{
             for (int i = 0; i < allluafiles_abs.size(); ++i)
 			{
@@ -2638,9 +2664,10 @@ void MainWindow::exportProject()
 		}
 
 		progress.setValue(fileQueue.size());
+	}  // end of ipass loop
 
         QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully."));
-	}
+	}  // if dialog was accepted
 }
 
 std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downsizing)
