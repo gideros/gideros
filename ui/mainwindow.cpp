@@ -2639,8 +2639,6 @@ void MainWindow::exportProject()
 				buffer << properties.scaleMode;
 				buffer << properties.logicalWidth;
                 buffer << properties.logicalHeight;
-                buffer << properties.windowWidth;
-                buffer << properties.windowHeight;
 
 				buffer << (int)properties.imageScales.size();
 				for (size_t i = 0; i < properties.imageScales.size(); ++i)
@@ -2658,6 +2656,9 @@ void MainWindow::exportProject()
                 buffer << (properties.mouseToTouch ? 1 : 0);
                 buffer << (properties.touchToMouse ? 1 : 0);
                 buffer << properties.mouseTouchOrder;
+
+                buffer << properties.windowWidth;
+                buffer << properties.windowHeight;
 
                 file.write(buffer.data(), buffer.size());
 			}
