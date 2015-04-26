@@ -4,7 +4,7 @@ popd
 
 cd ..\build
 
-cd QScintilla-gpl-2.9\Qt4Qt5
+cd QScintilla-gpl-2.8.4\Qt4Qt5
 qmake qscintilla.pro
 mingw32-make clean
 mingw32-make release
