@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>400</height>
+    <height>447</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -215,7 +215,7 @@ portrait or landscape.</string>
              <item>
               <widget class="QLabel" name="label_3">
                <property name="text">
-                <string>px</string>
+                <string>px (Portrait w,h)</string>
                </property>
               </widget>
              </item>
