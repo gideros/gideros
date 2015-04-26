@@ -17,8 +17,8 @@ struct ProjectProperties
 		scaleMode = 0;
 		logicalWidth = 320;
 		logicalHeight = 480;
-        windowWidth = 320;
-        windowHeight = 480;
+        windowWidth = 0;
+        windowHeight = 0;
 		imageScales.clear();
 		orientation = 0;
 		fps = 60;

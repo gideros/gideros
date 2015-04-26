@@ -636,6 +636,17 @@ void GLCanvas::loadProperties(std::vector<char> data){
     buffer >> windowWidth;
     buffer >> windowHeight;
 
+    if(windowWidth == 0 || windowHeight == 0){
+        if((Orientation)orientation == ePortrait || (Orientation)orientation == ePortraitUpsideDown){
+            windowWidth = logicalWidth;
+            windowHeight = logicalHeight;
+        }
+        else{
+            windowWidth = logicalHeight;
+            windowHeight = logicalWidth;
+        }
+    }
+
     if(exportedApp_){
         setResolution(windowWidth, windowHeight);
     }

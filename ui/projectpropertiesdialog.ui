@@ -290,7 +290,7 @@ portrait or landscape.</string>
              <item>
               <widget class="QLabel" name="label_3">
                <property name="text">
-                <string>px</string>
+                <string>px (0 = auto) </string>
                </property>
               </widget>
              </item>
