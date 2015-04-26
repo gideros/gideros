@@ -99,6 +99,7 @@ QMainWindow::separator {
     </property>
     <addaction name="actionCheck_Syntax"/>
     <addaction name="actionCheck_Syntax_All"/>
+    <addaction name="actionClear_Output"/>
    </widget>
    <widget class="QMenu" name="menuPlayer">
     <property name="title">
@@ -542,6 +543,14 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionClear_Output">
+   <property name="text">
+    <string>Clear Output</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+X</string>
    </property>
   </action>
  </widget>

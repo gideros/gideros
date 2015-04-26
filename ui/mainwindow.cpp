@@ -110,6 +110,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui.actionCheck_Syntax, SIGNAL(triggered()), this, SLOT(compile()));
     connect(ui.actionCheck_Syntax_All, SIGNAL(triggered()), this, SLOT(compileAll()));
+    connect(ui.actionClear_Output, SIGNAL(triggered()), this, SLOT(clearOutput()));
 	connect(ui.actionCancel, SIGNAL(triggered()), this, SLOT(cancel()));
 
 #if 0
@@ -3210,6 +3211,10 @@ void MainWindow::makeStarted()
 void MainWindow::makeFinished()
 {
     outputWidget_->append((tr("========== Compile finished ==========") + "\n"));
+}
+
+void MainWindow::clearOutput(){
+    outputWidget_->clear();
 }
 
 

@@ -262,6 +262,7 @@ private slots:
 	void findInFiles();
 
     void actionLocalhostToggle(bool checked);
+    void clearOutput();
 
 private slots:
 	void toogleBookmark();
