@@ -40,6 +40,7 @@ class QTextEditEx : public QTextEdit
 
 private:
 	QTextCharFormat df_;
+    bool found;
 
 public:
 	QTextEditEx(QWidget* parent = 0) : QTextEdit(parent)
@@ -52,6 +53,8 @@ public:
 		QFontMetrics fm(f);
 		setTabStopWidth(fm.width("1234"));
 		df_.setFont(f);
+
+        found = false;
 
 //		setAcceptRichText(true);
 //		setTextColor(Qt::red);
@@ -66,6 +69,36 @@ public:
 	}
 
 public slots:
+    void search(const QString& searchString){
+        QTextDocument *document = this->document();
+
+        if (found){
+            document->undo();
+            found = false;
+        }
+
+        QTextCursor highlightCursor(document);
+        QTextCursor cursor(document);
+
+        cursor.beginEditBlock();
+
+        QTextCharFormat plainFormat(highlightCursor.charFormat());
+        QTextCharFormat colorFormat = plainFormat;
+        colorFormat.setForeground(Qt::red);
+
+        while (!highlightCursor.isNull() && !highlightCursor.atEnd()) {
+            highlightCursor = document->find(searchString, highlightCursor, QTextDocument::FindWholeWords);
+
+            if (!highlightCursor.isNull()) {
+                highlightCursor.movePosition(QTextCursor::WordRight, QTextCursor::KeepAnchor);
+                highlightCursor.mergeCharFormat(colorFormat);
+                found = true;
+            }
+        }
+
+        cursor.endEditBlock();
+    }
+
 	void append(const QString& text)
 	{
 		moveCursor(QTextCursor::End);
@@ -263,6 +296,7 @@ private slots:
 
     void actionLocalhostToggle(bool checked);
     void clearOutput();
+    void searchOutput( const QString &text);
 
 private slots:
 	void toogleBookmark();

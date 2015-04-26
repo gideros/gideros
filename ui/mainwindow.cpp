@@ -170,7 +170,12 @@ MainWindow::MainWindow(QWidget *parent)
 			"background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FCFCFC, stop: 1 #E2E2E2);"
 		);
 		outputContainer->layout()->addWidget(label);
+        QLineEdit *edit = new QLineEdit();
+        edit->setPlaceholderText("Search output");
+        outputContainer->layout()->addWidget(edit);
 		outputContainer->layout()->addWidget(outputWidget_);
+
+        connect(edit,SIGNAL(textEdited( const QString & )),this,SLOT(searchOutput( const QString & )));
 
 		outputWidget_->setLineWidth(0);
 		outputWidget_->setMidLineWidth(0);
@@ -3215,6 +3220,10 @@ void MainWindow::makeFinished()
 
 void MainWindow::clearOutput(){
     outputWidget_->clear();
+}
+
+void MainWindow::searchOutput( const QString &text){
+    outputWidget_->search(text);
 }
 
 
