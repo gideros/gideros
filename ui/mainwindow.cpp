@@ -2212,7 +2212,7 @@ void MainWindow::exportProject()
 		if (output.isEmpty() == true)
 			return;
 
-		settings.setValue("lastExportDirectory", output);
+        settings.setValue(templatenamews+"lastExportDirectory", output);
 
 		QDir outputDir(output);
 
