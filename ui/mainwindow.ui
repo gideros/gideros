@@ -33,7 +33,7 @@ QMainWindow::separator {
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -435,6 +435,9 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="toolTip">
     <string>Exports current project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
   <action name="actionFind_in_Files">
