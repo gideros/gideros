@@ -20,7 +20,7 @@ echo 'Installing NSIS for Windows...'
 tar zxf ../../dependencies/NSIS.tar.bz2 -C ~/.wine/drive_c
 
 echo 'Installing QScintilla for Windows...'
-tar zxvf ../../dependencies/QScintilla-gpl-2.8.4.tar.gz -C ../build/
+tar zxvf ../../dependencies/QScintilla-gpl-2.9.tar.gz -C ../build/
 wine cmd /c installqscintilla.bat
 
 echo 'Building Qt applications for Windows...'
