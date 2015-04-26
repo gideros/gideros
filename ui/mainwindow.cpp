@@ -2195,8 +2195,15 @@ void MainWindow::exportProject()
             break;
         }
 
+        QDir dir2 = QDir::currentPath();
+        dir2.cd("Templates");
+        if(!dir2.cd(templatedir) || !dir2.cd(templatename)){
+            QMessageBox::information(this, tr("Gideros"), tr("No template found."));
+            return;
+        }
+
 		QSettings settings;
-		QString lastExportDirectory = settings.value("lastExportDirectory", QString()).toString();
+        QString lastExportDirectory = settings.value(templatenamews+"lastExportDirectory", QString()).toString();
 
 		QString output = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
 			lastExportDirectory,
@@ -2287,10 +2294,10 @@ void MainWindow::exportProject()
 		// copy template
         if (true)
 		{
-			QDir dir = QDir::currentPath();
-			dir.cd("Templates");
-			dir.cd(templatedir);
-			dir.cd(templatename);
+            QDir dir = QDir::currentPath();
+            dir.cd("Templates");
+            dir.cd(templatedir);
+            dir.cd(templatename);
 
 			QList<QPair<QString, QString> > renameList;
 			renameList << qMakePair(templatename, base);
