@@ -605,11 +605,6 @@ void GLCanvas::loadProperties(std::vector<char> data){
     int orientation;
     buffer >> orientation;
     application_->setOrientation((Orientation)orientation);
-
-    if(exportedApp_){
-        setHardwareOrientation((Orientation)orientation);
-    }
-
     application_->getApplication()->setDeviceOrientation((Orientation)orientation);
 
     int fps;
@@ -637,21 +632,21 @@ void GLCanvas::loadProperties(std::vector<char> data){
     buffer >> windowHeight;
 
     if(windowWidth == 0 || windowHeight == 0){
-        if((Orientation)orientation == ePortrait || (Orientation)orientation == ePortraitUpsideDown){
-            windowWidth = logicalWidth;
-            windowHeight = logicalHeight;
-        }
-        else{
-            windowWidth = logicalHeight;
-            windowHeight = logicalWidth;
-        }
+        windowWidth = logicalWidth;
+        windowHeight = logicalHeight;
     }
 
     if(exportedApp_){
-        setResolution(windowWidth, windowHeight);
-    }
+        setHardwareOrientation((Orientation)orientation);
 
-    setWindowSize(windowWidth, windowHeight);
+        if((Orientation)orientation == eLandscapeLeft || (Orientation)orientation == eLandscapeRight){
+            int winWidth = windowWidth;
+            windowWidth = windowHeight;
+            windowHeight = winWidth;
+        }
+
+        setWindowSize(windowWidth, windowHeight);
+    }
 }
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles){
