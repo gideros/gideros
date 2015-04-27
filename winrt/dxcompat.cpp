@@ -141,8 +141,10 @@ vector<Backcol> g_renderTargetCol;
 ID3D11SamplerState *g_samplerLinear;
 ID3D11BlendState *g_pBlendState;
 
-bool dxcompat_force_lines=false;
+bool dxcompat_force_lines = false;
 bool dxcompat_zrange01 = true;
+
+int dxcompat_maxvertices = 16384;
 
 // "OpenGL" state machine
 static float g_r=1, g_g=1, g_b=1, g_a=1;
@@ -547,12 +549,13 @@ void glDrawArrays(GLenum pattern, GLint zero, GLsizei npoints)
   int i,j,k;
   float x,y,xp,yp,zp;
 
-  static VERTEX DxVertices[1024];
+//  static VERTEX DxVertices[1024];
   D3D11_MAPPED_SUBRESOURCE ms;    
+  VERTEX *DxVertices;
 
   float mat[4][4];
 
-  if (npoints > 1024) npoints = 1024;  // avoid overflow
+  if (npoints > dxcompat_maxvertices) npoints = dxcompat_maxvertices;  // avoid overflow
 
   for (i=0;i<4;i++){
     for (j=0;j<4;j++){
@@ -562,6 +565,9 @@ void glDrawArrays(GLenum pattern, GLint zero, GLsizei npoints)
       }
     }
   }
+
+  g_devcon->Map(g_pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+  DxVertices = (VERTEX *)ms.pData;
 
   for (i=0;i<npoints;i++){
     x=g_vertices[2*i];
@@ -594,8 +600,7 @@ void glDrawArrays(GLenum pattern, GLint zero, GLsizei npoints)
     }
   }
 
-  g_devcon->Map(g_pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
-  memcpy(ms.pData, DxVertices, sizeof(VERTEX)*npoints);                 // copy the data    
+//  memcpy(ms.pData, DxVertices, sizeof(VERTEX)*npoints);                 // copy the data    
   g_devcon->Unmap(g_pVBuffer, NULL);                                      // unmap the buffer
   
   UINT stride=sizeof(VERTEX);
@@ -728,7 +733,8 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indi
 	int i, j, k;
 	float x, y, xp, yp, zp;
 
-	static VERTEX DxVertices[1024];
+//	static VERTEX DxVertices[1024];
+	VERTEX *DxVertices;
 	D3D11_MAPPED_SUBRESOURCE ms;
 
 	float mat[4][4];
@@ -737,7 +743,7 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indi
 	GLushort *us_indices;
 	GLuint *ui_indices, ui_index;
 
-	if (count > 1024) count = 1024;  // prevent overflow
+	if (count > dxcompat_maxvertices) count = dxcompat_maxvertices;  // prevent overflow
 
 	if (type == GL_UNSIGNED_BYTE)
 		ub_indices = (GLubyte *)indices;
@@ -754,6 +760,9 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indi
 			}
 		}
 	}
+
+	g_devcon->Map(g_pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+	DxVertices = (VERTEX *)ms.pData;
 
 	for (i = 0; i<count; i++){
 
@@ -794,8 +803,7 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indi
 		}
 	}
 
-	g_devcon->Map(g_pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
-	memcpy(ms.pData, DxVertices, sizeof(VERTEX)*count);                 // copy the data    
+//	memcpy(ms.pData, DxVertices, sizeof(VERTEX)*count);                 // copy the data    
 	g_devcon->Unmap(g_pVBuffer, NULL);                                      // unmap the buffer
 
 	UINT stride = sizeof(VERTEX);

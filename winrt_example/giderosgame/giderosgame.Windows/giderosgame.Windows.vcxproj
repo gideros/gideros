@@ -245,7 +245,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Assets\Audio Example.gproj" />
     <None Include="Assets\billo.fnt">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -296,7 +295,6 @@
     <Media Include="Assets\1.wav" />
     <Media Include="Assets\2.wav" />
     <Media Include="Assets\3.wav" />
-    <Media Include="Assets\diving_turtle.mp3" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Plugins\bit.c">

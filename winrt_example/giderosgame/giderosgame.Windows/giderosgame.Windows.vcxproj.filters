@@ -44,9 +44,6 @@
     <None Include="Assets\soundbutton.lua">
       <Filter>Assets</Filter>
     </None>
-    <None Include="Assets\Audio Example.gproj">
-      <Filter>Assets</Filter>
-    </None>
     <None Include="Assets\main1.lua">
       <Filter>Assets</Filter>
     </None>
@@ -191,9 +188,6 @@
       <Filter>Assets</Filter>
     </Media>
     <Media Include="Assets\3.wav">
-      <Filter>Assets</Filter>
-    </Media>
-    <Media Include="Assets\diving_turtle.mp3">
       <Filter>Assets</Filter>
     </Media>
   </ItemGroup>
