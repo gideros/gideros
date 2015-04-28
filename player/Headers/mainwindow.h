@@ -69,6 +69,7 @@ class MainWindow : public QMainWindow{
         void saveSettings();
         void resizeWindow(int width, int height);
         void fullScreenWindow(bool _fullScreen);
+        void setResolution(int width, int height);
 
         static MainWindow* getInstance(){
             return instance;

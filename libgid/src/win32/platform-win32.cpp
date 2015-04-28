@@ -34,6 +34,10 @@ std::string getLanguage()
 {
 }
 
+void setResolution(int width, int height){
+
+}
+
 void setWindowSize(int width, int height)
 {
 
