@@ -610,6 +610,9 @@ void GLCanvas::loadProperties(std::vector<char> data){
     int fps;
     buffer >> fps;
     if(exportedApp_){
+        if(fps == 0){
+            fps = 30;
+        }
         setFps(fps);
     }
 

@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     ui.setupUi(this);
 
     #if defined(Q_OS_MAC)
-//        setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint & ~Qt::WindowTitleHint);
+        setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
     #else
         setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
     #endif
