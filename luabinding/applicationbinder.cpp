@@ -72,6 +72,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"setWindowSize", ApplicationBinder::setWindowSize},
         {"setFullScreen", ApplicationBinder::setFullScreen},
         {"getDeviceName", ApplicationBinder::getDeviceName},
+        {"setResolution", ApplicationBinder::setResolution},
         {NULL, NULL},
 	};
 
@@ -676,4 +677,16 @@ int ApplicationBinder::getDeviceName(lua_State *L)
     lua_pushstring(L, ::getDeviceName().c_str());
 
     return 1;
+}
+
+int ApplicationBinder::setResolution(lua_State* L){
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+    
+    int width = luaL_checkinteger(L, 2);
+    int height = luaL_checkinteger(L, 3);
+    
+    ::setResolution(width, height);
+
+    return 0;
 }

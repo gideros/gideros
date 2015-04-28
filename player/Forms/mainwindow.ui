@@ -14,12 +14,6 @@
    <string>Gideros Player</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <property name="minimumSize">
-    <size>
-     <width>1</width>
-     <height>1</height>
-    </size>
-   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
      <number>0</number>
@@ -58,7 +52,7 @@
      <x>0</x>
      <y>0</y>
      <width>320</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="palette">
@@ -102,7 +96,7 @@
     <property name="title">
      <string>File</string>
     </property>
-	<addaction name="actionRestart"/>
+    <addaction name="actionRestart"/>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_Directory"/>
     <addaction name="separator"/>
@@ -201,20 +195,20 @@
     <addaction name="actionSettings"/>
    </widget>
    <widget class="QMenu" name="menuZoom2">
-<property name="title">
-<string>Zoom</string>
-</property>
-<addaction name="actionZoom_In"/>
-<addaction name="actionZoom_Out"/>
-<addaction name="separator"/>
-<addaction name="actionQuarter"/>
-<addaction name="actionHalf"/>
-<addaction name="actionOriginal"/>
-<addaction name="actionDouble"/>
-<addaction name="actionTriple"/>
-<addaction name="separator"/>
-<addaction name="actionFit_To_Window"/>
-</widget>
+    <property name="title">
+     <string>Zoom</string>
+    </property>
+    <addaction name="actionZoom_In"/>
+    <addaction name="actionZoom_Out"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuarter"/>
+    <addaction name="actionHalf"/>
+    <addaction name="actionOriginal"/>
+    <addaction name="actionDouble"/>
+    <addaction name="actionTriple"/>
+    <addaction name="separator"/>
+    <addaction name="actionFit_To_Window"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_View"/>
    <addaction name="menuHardware"/>
@@ -371,15 +365,15 @@
    </property>
   </action>
   <action name="actionDouble">
-<property name="text">
-<string>200%</string>
-</property>
-</action>
-<action name="actionTriple">
-<property name="text">
- <string>300%</string>
-</property>
-</action>
+   <property name="text">
+    <string>200%</string>
+   </property>
+  </action>
+  <action name="actionTriple">
+   <property name="text">
+    <string>300%</string>
+   </property>
+  </action>
   <action name="action480x800">
    <property name="checkable">
     <bool>true</bool>

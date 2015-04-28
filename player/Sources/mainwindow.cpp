@@ -21,9 +21,9 @@ MainWindow* MainWindow::instance;
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     MainWindow::instance = this;
     projectName_ = QString ();
+
     setupUiActions();
     setupUiProperties();
-
     createUiGroups();
 
     loadSettings();
@@ -34,9 +34,9 @@ MainWindow::~MainWindow(){}
 void MainWindow::setupUiActions(){
     ui.setupUi(this);
 
-    connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
-    connect(ui.actionRestart, SIGNAL(triggered()), this, SLOT(actionRestart()));
-    connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(actionOpen()));
+    connect(ui.actionExit,           SIGNAL(triggered()), this, SLOT(close()));
+    connect(ui.actionRestart,        SIGNAL(triggered()), this, SLOT(actionRestart()));
+    connect(ui.actionOpen,           SIGNAL(triggered()), this, SLOT(actionOpen()));
     connect(ui.actionOpen_Directory, SIGNAL(triggered()), this, SLOT(actionOpen_Directory()));
 
     connect(ui.actionFull_Screen,   SIGNAL(triggered(bool)), this, SLOT(actionFull_Screen(bool)));
@@ -98,8 +98,7 @@ void MainWindow::setupUiActions(){
     connect(ui.glCanvas, SIGNAL(projectNameChanged(const QString&)), this, SLOT(projectNameChanged(const QString&)));
 }
 
-float MainWindow::deviceScale()
-{
+float MainWindow::deviceScale(){
     return (float)((float)scale() * (float)devicePixelRatio());
 }
 
@@ -761,6 +760,13 @@ QColor MainWindow::infoColor(){
     return infoColor_;
 }
 
+void MainWindow::setResolution(int width__, int height__){
+    setWidth(width__);
+    setHeight(height__);
+    
+    updateResolution();    
+}
+
 void MainWindow::resizeWindow(int width, int height){
     if(!hideMenu())
         height = height + ui.menuBar->height();
@@ -773,9 +779,9 @@ void MainWindow::fullScreenWindow(bool _fullScreen){
     actionFull_Screen(fullScreen());
 }
 
-void MainWindow::resizeEvent(QResizeEvent*){    
+void MainWindow::resizeEvent(QResizeEvent*){
     if(autoScale())
-        updateResolution();
+            updateResolution();
 }
 
 void MainWindow::closeEvent(QCloseEvent*){
