@@ -2064,10 +2064,7 @@ static void fileCopy(	const QString& srcName,
 	}
 	else
 	{
-        if(QFile::exists(destName))
-        {
-            QFile::remove(destName);
-        }
+        QFile::remove(destName);
 		QFile::copy(srcName, destName);
 	}
 }
