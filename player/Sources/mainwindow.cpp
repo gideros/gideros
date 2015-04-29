@@ -725,7 +725,6 @@ bool MainWindow::fullScreen(){
 }
 
 void MainWindow::setFullScreen(bool fullScreen){
-    setAutoScale(fullScreen);
     fullScreen_ = fullScreen;
     ui.actionFull_Screen->setChecked(fullScreen);
 }
@@ -776,8 +775,10 @@ void MainWindow::resizeWindow(int width, int height){
 }
 
 void MainWindow::fullScreenWindow(bool _fullScreen){
+    setAutoScale(_fullScreen);
     setFullScreen(_fullScreen);
     actionFull_Screen(fullScreen());
+    updateAutoScale();
 }
 
 void MainWindow::resizeEvent(QResizeEvent*){    
