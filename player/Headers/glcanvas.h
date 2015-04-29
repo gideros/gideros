@@ -30,6 +30,7 @@ public:
     void setInfoColor(float infoColor[3]);
     void setExportedApp(bool exportedApp);
 	void sendRun();
+    Orientation getHardwareOrientation();
 
     void play(QDir directory);
 

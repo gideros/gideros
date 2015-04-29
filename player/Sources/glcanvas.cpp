@@ -637,18 +637,8 @@ void GLCanvas::loadProperties(std::vector<char> data){
     buffer >> windowHeight;
 
     if(windowWidth == 0 || windowHeight == 0){
-        if((Orientation)orientation == ePortrait || (Orientation)orientation == ePortraitUpsideDown){
-            windowWidth = logicalWidth;
-            windowHeight = logicalHeight;
-        }
-        else{
-            windowWidth = logicalHeight;
-            windowHeight = logicalWidth;
-        }
-    }
-
-    if(exportedApp_){
-        setResolution(windowWidth, windowHeight);
+        windowWidth = logicalWidth;
+        windowHeight = logicalHeight;
     }
 
     setWindowSize(windowWidth, windowHeight);
@@ -1053,6 +1043,10 @@ void GLCanvas::setHardwareOrientation(Orientation orientation){
         application_->setHardwareOrientation(orientation_);
 //		application_->orientationChange(orientation_);
     }
+}
+
+Orientation GLCanvas::getHardwareOrientation(){
+    return orientation_;
 }
 
 void GLCanvas::setResolution(int width, int height){

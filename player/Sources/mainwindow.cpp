@@ -762,6 +762,12 @@ QColor MainWindow::infoColor(){
 }
 
 void MainWindow::resizeWindow(int width, int height){
+
+    if(orientation() == eLandscapeLeft || orientation() == eLandscapeRight){
+        int temp = width;
+        width = height;
+        height = temp;
+    }
     if(!hideMenu())
         height = height + ui.menuBar->height();
 

@@ -38,6 +38,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 MainWindow::~MainWindow(){}
 
 void MainWindow::resizeWindow(int width, int height){
+    if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){
+        int temp = width;
+        width = height;
+        height = temp;
+    }
     resize(width, height);
 }
 
