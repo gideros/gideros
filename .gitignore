@@ -244,8 +244,6 @@ tmp
 *.ini
 *.a
 *.dep
-*.dylib
-*.app
 
 # some files and folder to include
 !/release
