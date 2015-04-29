@@ -44,6 +44,7 @@ void MainWindow::resizeWindow(int width, int height){
         height = temp;
     }
     resize(width, height);
+    updateResolution();
 }
 
 void MainWindow::fullScreenWindow(bool fullScreen){

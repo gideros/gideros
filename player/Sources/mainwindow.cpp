@@ -762,7 +762,8 @@ QColor MainWindow::infoColor(){
 }
 
 void MainWindow::resizeWindow(int width, int height){
-
+    setWidth(width);
+    setHeight(height);
     if(orientation() == eLandscapeLeft || orientation() == eLandscapeRight){
         int temp = width;
         width = height;
@@ -772,6 +773,7 @@ void MainWindow::resizeWindow(int width, int height){
         height = height + ui.menuBar->height();
 
     resize(width, height);
+    updateResolution();
 }
 
 void MainWindow::fullScreenWindow(bool _fullScreen){
