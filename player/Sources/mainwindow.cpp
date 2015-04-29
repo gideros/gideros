@@ -725,6 +725,7 @@ bool MainWindow::fullScreen(){
 }
 
 void MainWindow::setFullScreen(bool fullScreen){
+    setAutoScale(fullScreen);
     fullScreen_ = fullScreen;
     ui.actionFull_Screen->setChecked(fullScreen);
 }

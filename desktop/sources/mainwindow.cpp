@@ -51,6 +51,37 @@ void MainWindow::fullScreenWindow(bool fullScreen){
         this->showFullScreen();
     else
         this->showNormal();
+    updateResolution();
+}
+
+void MainWindow::updateResolution(){
+    int width = ui.centralWidget->width();
+    int height = ui.centralWidget->height();
+    if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){
+        width = ui.centralWidget->height();
+        height = ui.centralWidget->width();
+    }
+
+    float scaleProperty = 100;
+    if(deviceScale() != 0){
+        scaleProperty = (float)scaleProperty / deviceScale();
+    }
+
+    ui.glCanvas->setScale(scaleProperty);
+
+    switch (ui.glCanvas->getHardwareOrientation()){
+        case ePortrait:
+        case ePortraitUpsideDown:
+            ui.glCanvas->setFixedSize(width / scaleProperty, height / scaleProperty);
+            break;
+
+        case eLandscapeLeft:
+        case eLandscapeRight:
+            ui.glCanvas->setFixedSize(height / scaleProperty, width / scaleProperty);
+            break;
+    }
+
+    ui.glCanvas->setResolution(width, height);
 }
 
 void MainWindow::projectNameChanged(const QString& projectName){
@@ -62,4 +93,9 @@ void MainWindow::projectNameChanged(const QString& projectName){
         setWindowTitle(Constants::DESK_WINDOW_TITLE);
     else
         setWindowTitle(projectName);
+}
+
+float MainWindow::deviceScale()
+{
+    return (float)((float)100 * (float)devicePixelRatio());
 }
