@@ -31,22 +31,15 @@ class MainWindow : public QMainWindow{
 
         void fullScreenWindow(bool _fullScreen);
         void resizeWindow(int width, int height);
-        void setResolution(int width, int height);
 
     private:
         static MainWindow* instance;
         GLCanvas *glCanvas;
-        bool fullscreen_;
-        int width_;
-        int height_;
 
         Ui::MainWindowClass ui;
 
     private slots:
         void projectNameChanged(const QString& projectName);
-
-    protected:
-        virtual void resizeEvent(QResizeEvent*);
 };
 
 #endif // MAINWINDOW_H

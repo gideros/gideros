@@ -41,10 +41,6 @@ void setFullScreen(bool fullScreen){
     MainWindow::getInstance()->fullScreenWindow(fullScreen);
 }
 
-void setResolution(int width, int height){
-    MainWindow::getInstance()->setResolution(width, height);
-}
-
 std::string getDeviceName(){
     return QHostInfo::localHostName().toStdString();
 }

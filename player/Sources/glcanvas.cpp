@@ -572,9 +572,6 @@ void GLCanvas::play(QDir directory){
 }
 
 void GLCanvas::loadProperties(std::vector<char> data){
-    application_->deinitialize();
-    application_->initialize();
-
     ByteBuffer buffer(&data[0], data.size());
 
     if(!exportedApp_){
@@ -582,39 +579,36 @@ void GLCanvas::loadProperties(std::vector<char> data){
         buffer >> chr;
     }
 
-    int scaleMode;
+    int scaleMode, logicalWidth, logicalHeight, windowWidth, windowHeight;
     buffer >> scaleMode;
-    application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
-
-    int logicalWidth, logicalHeight;
     buffer >> logicalWidth;
     buffer >> logicalHeight;
+
+    application_->deinitialize();
+    application_->initialize();
+    setupApplicationProperties();
+//				application_->orientationChange(orientation_);
     application_->setLogicalDimensions(logicalWidth, logicalHeight);
+    application_->setLogicalScaleMode((LogicalScaleMode)scaleMode);
 
     int scaleCount;
     buffer >> scaleCount;
     std::vector<std::pair<std::string, float> > imageScales(scaleCount);
-    for(int i = 0; i < scaleCount; ++i){
+    for (int i = 0; i < scaleCount; ++i)
+    {
         buffer >> imageScales[i].first;
         buffer >> imageScales[i].second;
     }
+
     application_->setImageScales(imageScales);
 
     int orientation;
     buffer >> orientation;
-
-    if(!exportedApp_){
-        application_->setOrientation(orientation_);
-    }
+    application_->setOrientation((Orientation)orientation);
+    application_->getApplication()->setDeviceOrientation((Orientation)orientation);
 
     int fps;
     buffer >> fps;
-    if(exportedApp_){
-        if(fps == 0){
-            fps = 30;
-        }
-        setFps(fps);
-    }
 
     int retinaDisplay;
     buffer >> retinaDisplay;
@@ -634,17 +628,24 @@ void GLCanvas::loadProperties(std::vector<char> data){
     buffer >> mouseTouchOrder;
     ginput_setMouseTouchOrder(mouseTouchOrder);
 
-    int resolutionWidth, resolutionHeight;
-    buffer >> resolutionWidth;
-    buffer >> resolutionHeight;
+    buffer >> windowWidth;
+    buffer >> windowHeight;
 
-    if(resolutionWidth == 0 || resolutionHeight == 0){
-        resolutionWidth = logicalWidth;
-        resolutionHeight = logicalHeight;
+    if(windowWidth == 0 || windowHeight == 0){
+        windowWidth = logicalWidth;
+        windowHeight = logicalHeight;
     }
 
     if(exportedApp_){
-        ::setResolution(resolutionWidth, resolutionHeight);
+        setHardwareOrientation((Orientation)orientation);
+
+        if((Orientation)orientation == eLandscapeLeft || (Orientation)orientation == eLandscapeRight){
+            int winWidth = windowWidth;
+            windowWidth = windowHeight;
+            windowHeight = winWidth;
+        }
+
+        setWindowSize(windowWidth, windowHeight);
     }
 }
 

@@ -50,10 +50,6 @@ std::vector<std::string> getDeviceInfo()
 	return result;
 }
 
-void setResolution(int width, int height){
-
-}
-
 void setWindowSize(int width, int height){
 
 }
