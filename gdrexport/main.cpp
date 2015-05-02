@@ -232,6 +232,7 @@ static void fileCopy(	const QString& srcName,
     }
     else
     {
+        QFile::remove(destName);
         QFile::copy(srcName, destName);
     }
 }

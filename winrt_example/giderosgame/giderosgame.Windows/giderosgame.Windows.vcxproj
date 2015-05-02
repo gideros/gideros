@@ -218,12 +218,16 @@
     <Image Include="Assets\button_down.png" />
     <Image Include="Assets\button_up.png" />
     <Image Include="Assets\ego.png" />
+    <Image Include="Assets\left-down.png" />
+    <Image Include="Assets\left-up.png" />
     <Image Include="Assets\Logo.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Assets\Logo.scale-80.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="Assets\right-down.png" />
+    <Image Include="Assets\right-up.png" />
     <Image Include="Assets\sky_world.png" />
     <Image Include="Assets\SmallLogo.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
@@ -231,9 +235,11 @@
     <Image Include="Assets\SplashScreen.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="Assets\spots.png" />
     <Image Include="Assets\StoreLogo.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="Assets\tmw_desert_spacing.png" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -248,15 +254,28 @@
     <None Include="Assets\button.lua">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Assets\desert.lua">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Assets\main.lua">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Assets\main1.lua" />
+    <None Include="Assets\main2.lua" />
+    <None Include="Assets\mainaudio.lua" />
+    <None Include="Assets\mainbutton.lua" />
+    <None Include="Assets\mainfont.lua" />
+    <None Include="Assets\maininfballs.lua" />
+    <None Include="Assets\mainr2t.lua" />
+    <None Include="Assets\mainshapes.lua" />
     <None Include="Assets\PixelShader.cso">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Assets\properties.bin">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Assets\properties.bird.bin" />
+    <None Include="Assets\properties.nebula.bin" />
     <None Include="Assets\soundbutton.lua">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -276,7 +295,6 @@
     <Media Include="Assets\1.wav" />
     <Media Include="Assets\2.wav" />
     <Media Include="Assets\3.wav" />
-    <Media Include="Assets\diving_turtle.mp3" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Plugins\bit.c">

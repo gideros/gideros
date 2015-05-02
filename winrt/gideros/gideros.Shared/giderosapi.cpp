@@ -104,10 +104,18 @@ int PTW32_CDECL pthread_join(pthread_t thread,
 }
 
 extern bool dxcompat_force_lines;
+extern int dxcompat_maxvertices;
 
 IXAudio2 *g_audioengine;
 IXAudio2MasteringVoice *g_masteringvoice;
 IXAudio2SourceVoice* g_source;
+
+static void printFunc(const char *str, int len, void *data)
+{
+	std::string s(str);
+	std::wstring wsTmp(s.begin(), s.end());
+	OutputDebugString(wsTmp.c_str());
+}
 
 // ######################################################################
 // this function loads a file into an Array^
@@ -273,7 +281,7 @@ void InitD3D(CoreWindow^ Window)
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU    
-	bd.ByteWidth = sizeof(VERTEX) * 256;             // size is the VERTEX struct * 256
+	bd.ByteWidth = sizeof(VERTEX) * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer    
 
@@ -954,6 +962,9 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 	application_->setPlayerMode(player_);
 	if (player_)
 		application_->setPrintFunc(NetworkManager::printToServer_s, networkManager_);
+	else
+		application_->setPrintFunc(printFunc);
+
 	application_->enableExceptions();
 	application_->initialize();
 	application_->setResolution(width_, height_);

@@ -133,9 +133,10 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <PropertyGroup Label="UserMacros">
-    <AppxBundle>Always</AppxBundle>
+    <AppxBundle>Auto</AppxBundle>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>arm</AppxBundlePlatforms>
+    <AppxPackageDir>C:\winrt_player\</AppxPackageDir>
   </PropertyGroup>
   <ItemGroup>
     <Image Include="Assets\1-down.png" />

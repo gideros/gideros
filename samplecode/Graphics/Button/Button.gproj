@@ -1,9 +1,9 @@
 <project>
- <properties scaleMode="0" logicalHeight="480" logicalWidth="320">
+ <properties packageName="com.yourdomain.yourapp" logicalWidth="1280" encryptAssets="0" autorotation="0" orientation="0" mouseTouchOrder="0" scaleMode="0" architecture="0" assetsOnly="1" logicalHeight="720" fps="60" mouseToTouch="1" retinaDisplay="0" iosDevice="0" encryptCode="0" touchToMouse="1">
   <imageScales/>
  </properties>
- <file file="button_down.png"/>
- <file file="button_up.png"/>
- <file file="button.lua"/>
- <file file="main.lua"/>
+ <file source="button_down.png"/>
+ <file source="button_up.png"/>
+ <file source="button.lua"/>
+ <file source="main.lua"/>
 </project>

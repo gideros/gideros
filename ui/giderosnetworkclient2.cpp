@@ -356,6 +356,9 @@ unsigned int GiderosNetworkClient2::sendProjectProperties(const ProjectPropertie
     buffer << (properties.mouseToTouch ? 1 : 0);
     buffer << (properties.touchToMouse ? 1 : 0);
     buffer << properties.mouseTouchOrder;
+    
+    buffer << properties.windowWidth;
+    buffer << properties.windowHeight;
 
 	return sendData(buffer.data(), buffer.size(), 0);
 }

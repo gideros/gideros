@@ -96,15 +96,15 @@ SOURCES += \
     $$files(../libpvrt/*.h)
 
 FORMS += \
-    forms\mainwindow.ui\
-    forms\errordialog.ui \
-    forms\settingsdialog.ui
+    forms/mainwindow.ui\
+    forms/errordialog.ui \
+    forms/settingsdialog.ui
 
 HEADERS += \
-    headers\mainwindow.h \
-    headers\errordialog.h \
-    headers\glcanvas.h \
-    headers\settingsdialog.h\
+    headers/mainwindow.h \
+    headers/errordialog.h \
+    headers/glcanvas.h \
+    headers/settingsdialog.h\
     $$files(../libsound/*.h)\
     $$files(../2dsg/*.h)\
     $$files(../luabinding/*.h)\

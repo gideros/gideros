@@ -325,6 +325,8 @@ QDomDocument LibraryTreeWidget::toXml() const
 	properties.setAttribute("scaleMode", properties_.scaleMode);
 	properties.setAttribute("logicalWidth", properties_.logicalWidth);
 	properties.setAttribute("logicalHeight", properties_.logicalHeight);
+    properties.setAttribute("windowWidth", properties_.windowWidth);
+    properties.setAttribute("windowHeight", properties_.windowHeight);
 	QDomElement imageScales = doc.createElement("imageScales");
 	for (size_t i = 0; i < properties_.imageScales.size(); ++i)
 	{
@@ -466,6 +468,10 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 			properties_.logicalWidth = properties.attribute("logicalWidth").toInt();
 		if (!properties.attribute("logicalHeight").isEmpty())
 			properties_.logicalHeight = properties.attribute("logicalHeight").toInt();
+        if (!properties.attribute("windowWidth").isEmpty())
+            properties_.windowWidth = properties.attribute("windowWidth").toInt();
+        if (!properties.attribute("windowHeight").isEmpty())
+            properties_.windowHeight = properties.attribute("windowHeight").toInt();
 		QDomElement imageScales = properties.firstChildElement("imageScales");
 		for(QDomNode n = imageScales.firstChild(); !n.isNull(); n = n.nextSibling())
 		{

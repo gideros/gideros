@@ -110,6 +110,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui.actionCheck_Syntax, SIGNAL(triggered()), this, SLOT(compile()));
     connect(ui.actionCheck_Syntax_All, SIGNAL(triggered()), this, SLOT(compileAll()));
+    connect(ui.actionClear_Output, SIGNAL(triggered()), this, SLOT(clearOutput()));
 	connect(ui.actionCancel, SIGNAL(triggered()), this, SLOT(cancel()));
 
 #if 0
@@ -169,7 +170,12 @@ MainWindow::MainWindow(QWidget *parent)
 			"background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FCFCFC, stop: 1 #E2E2E2);"
 		);
 		outputContainer->layout()->addWidget(label);
+        QLineEdit *edit = new QLineEdit();
+        edit->setPlaceholderText("Search output");
+        outputContainer->layout()->addWidget(edit);
 		outputContainer->layout()->addWidget(outputWidget_);
+
+        connect(edit,SIGNAL(textEdited( const QString & )),this,SLOT(searchOutput( const QString & )));
 
 		outputWidget_->setLineWidth(0);
 		outputWidget_->setMidLineWidth(0);
@@ -205,7 +211,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 	QSettings settings;
 	QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
-	
+    ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
+
 #ifndef NEW_CLIENT
 	client_ = new Client(qPrintable(playerip), 15000);
 #else
@@ -265,7 +272,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 	connect(ui.actionPlayer_Settings, SIGNAL(triggered()), this, SLOT(playerSettings()));
-
+    connect(ui.actionLocalhostToggle, SIGNAL(triggered(bool)), this, SLOT(actionLocalhostToggle(bool)));
 	connect(ui.actionAbout_Gideros_Studio, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
 	connect(ui.actionDeveloper_Center, SIGNAL(triggered()), this, SLOT(developerCenter()));
 	connect(ui.actionHelp_Support, SIGNAL(triggered()), this, SLOT(helpAndSupport()));
@@ -1619,6 +1626,26 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	}
 }
 
+void MainWindow::actionLocalhostToggle(bool checked){
+    QSettings settings;
+    settings.setValue("player localhost", checked);
+
+    QString playerip = QString("127.0.0.1");
+
+    if(!checked){
+        playerip = settings.value("player original ip", QString("127.0.0.1")).toString();
+    }
+
+    settings.setValue("player ip", playerip);
+
+    #ifndef NEW_CLIENT
+        delete client_;
+        client_ = new Client(qPrintable(playerip), 15000);
+    #else
+        client_->connectToHost(playerip, 15000);
+    #endif
+}
+
 void MainWindow::playerSettings()
 {
 	PlayerSettingsDialog dialog(this);
@@ -1632,6 +1659,7 @@ void MainWindow::playerSettings()
 		
 		QSettings settings;
 		QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
+        ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
 
 #ifndef NEW_CLIENT
 		delete client_;
@@ -2036,6 +2064,7 @@ static void fileCopy(	const QString& srcName,
 	}
 	else
 	{
+        QFile::remove(destName);
 		QFile::copy(srcName, destName);
 	}
 }
@@ -2155,12 +2184,33 @@ void MainWindow::exportProject()
 		  templatedir = "VisualStudio";
 		  templatename = "WinRT Template";
 		  templatenamews = "WinRTTemplate";
+		  underscore = true;
 		  break;
-		}
 
+        case ExportProjectDialog::e_WindowsDesktop:
+            templatedir = "Qt";
+            templatename = "WindowsDesktopTemplate";
+            templatenamews = "WindowsDesktopTemplate";
+            underscore = false;
+            break;
+
+        case ExportProjectDialog::e_MacOSXDesktop:
+            templatedir = "Qt";
+            templatename = "MacOSXDesktopTemplate";
+            templatenamews = "MacOSXDesktopTemplate";
+            underscore = false;
+            break;
+        }
+
+        QDir dir2 = QDir::currentPath();
+        dir2.cd("Templates");
+        if(!dir2.cd(templatedir) || !dir2.cd(templatename)){
+            QMessageBox::information(this, tr("Gideros"), tr("No template found."));
+            return;
+        }
 
 		QSettings settings;
-		QString lastExportDirectory = settings.value("lastExportDirectory", QString()).toString();
+        QString lastExportDirectory = settings.value(templatenamews+"lastExportDirectory", QString()).toString();
 
 		QString output = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
 			lastExportDirectory,
@@ -2169,7 +2219,7 @@ void MainWindow::exportProject()
 		if (output.isEmpty() == true)
 			return;
 
-		settings.setValue("lastExportDirectory", output);
+        settings.setValue(templatenamews+"lastExportDirectory", output);
 
 		QDir outputDir(output);
 
@@ -2251,10 +2301,10 @@ void MainWindow::exportProject()
 		// copy template
         if (true)
 		{
-			QDir dir = QDir::currentPath();
-			dir.cd("Templates");
-			dir.cd(templatedir);
-			dir.cd(templatename);
+            QDir dir = QDir::currentPath();
+            dir.cd("Templates");
+            dir.cd(templatedir);
+            dir.cd(templatename);
 
 			QList<QPair<QString, QString> > renameList;
 			renameList << qMakePair(templatename, base);
@@ -2306,6 +2356,11 @@ void MainWindow::exportProject()
 	  outputDir.mkdir("assets");
 	  outputDir.cd("assets");
         }
+        else if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop)
+        {
+            outputDir.cd(base + ".app");
+            outputDir.cd("Contents");
+        }
 	else if (deviceFamily == ExportProjectDialog::e_WinRT)
 	{
 	  outputDir.cd("giderosgame");
@@ -2317,6 +2372,13 @@ void MainWindow::exportProject()
 	  outputDir.mkdir("assets");
 	  outputDir.cd("assets");
 	}
+
+        if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop || deviceFamily == ExportProjectDialog::e_WindowsDesktop){
+            outputDir.mkdir("resource");
+            outputDir.mkdir("temporary");
+            outputDir.mkdir("documents");
+            outputDir.cd("resource");
+        }
 
 		std::deque<QPair<QString, QString> > fileQueue;
 
@@ -2362,7 +2424,6 @@ void MainWindow::exportProject()
 				QString name = e.attribute("name");
 				dir.push_back(name);
 
-
 				QString n;
 				for (std::size_t i = 0; i < dir.size(); ++i)
 					n += dir[i] + "/";
@@ -2399,12 +2460,37 @@ void MainWindow::exportProject()
 			}
 		}
 
+		int npass,ipass;
+
+		if (deviceFamily == ExportProjectDialog::e_WinRT)
+		  npass=2;
+		else
+		  npass=1;
+
 		QStringList luafiles;
 		QStringList luafiles_abs;
 		QStringList allfiles;
 		QStringList allfiles_abs;
         QStringList allluafiles;
         QStringList allluafiles_abs;
+
+	for (ipass=1;ipass<=npass;ipass++)
+	{
+
+	  luafiles.clear();
+	  luafiles_abs.clear();
+	  allfiles.clear();
+	  allfiles_abs.clear();
+	  allluafiles.clear();
+	  allluafiles_abs.clear();
+
+	  if (ipass==2){
+	    outputDir.cdUp();
+	    outputDir.cdUp();
+	    outputDir.cd("giderosgame.WindowsPhone");
+	    outputDir.cd("Assets");
+	  }
+
 
 		QProgressDialog progress("Copying files...", QString(), 0, fileQueue.size(), this);
 		progress.setWindowModality(Qt::WindowModal);
@@ -2464,7 +2550,7 @@ void MainWindow::exportProject()
 		// compile lua files (with luac)
 		// disable compile with luac for iOS because 64 bit version
 		// http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
-		if (true && deviceFamily == ExportProjectDialog::e_Android)
+		if (true && deviceFamily != ExportProjectDialog::e_iOS)
 		{
             for (int i = 0; i < allluafiles_abs.size(); ++i)
 			{
@@ -2512,6 +2598,11 @@ void MainWindow::exportProject()
 				QProcess::execute("Tools/lua Tools/LuaSrcDiet.lua --quiet " + file + " -o " + file);
 			}
 		}
+
+        if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop || deviceFamily == ExportProjectDialog::e_WindowsDesktop)
+        {
+            outputDir.cd("..");
+        }
 
 		// write luafiles.txt
 		{
@@ -2561,7 +2652,7 @@ void MainWindow::exportProject()
 
 				buffer << properties.scaleMode;
 				buffer << properties.logicalWidth;
-				buffer << properties.logicalHeight;
+                buffer << properties.logicalHeight;
 
 				buffer << (int)properties.imageScales.size();
 				for (size_t i = 0; i < properties.imageScales.size(); ++i)
@@ -2580,14 +2671,18 @@ void MainWindow::exportProject()
                 buffer << (properties.touchToMouse ? 1 : 0);
                 buffer << properties.mouseTouchOrder;
 
-				file.write(buffer.data(), buffer.size());
+                buffer << properties.windowWidth;
+                buffer << properties.windowHeight;
+
+                file.write(buffer.data(), buffer.size());
 			}
 		}
 
 		progress.setValue(fileQueue.size());
+	}  // end of ipass loop
 
         QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully."));
-	}
+	}  // if dialog was accepted
 }
 
 std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downsizing)
@@ -3123,4 +3218,13 @@ void MainWindow::makeFinished()
 {
     outputWidget_->append((tr("========== Compile finished ==========") + "\n"));
 }
+
+void MainWindow::clearOutput(){
+    outputWidget_->clear();
+}
+
+void MainWindow::searchOutput( const QString &text){
+    outputWidget_->search(text);
+}
+
 

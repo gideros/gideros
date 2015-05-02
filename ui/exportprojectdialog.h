@@ -17,6 +17,8 @@ public:
 	{
 	  e_iOS,
 	  e_Android,
+      e_WindowsDesktop,
+      e_MacOSXDesktop,
 	  e_WinRT
 	};
 

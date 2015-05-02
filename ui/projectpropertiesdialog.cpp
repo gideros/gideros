@@ -21,6 +21,12 @@ ProjectPropertiesDialog::ProjectPropertiesDialog(ProjectProperties* properties, 
 	ui->logicalWidth->setValidator(new QIntValidator());
 	ui->logicalHeight->setValidator(new QIntValidator());
 
+    ui->windowWidth->setText(QString::number(properties_->windowWidth));
+    ui->windowHeight->setText(QString::number(properties_->windowHeight));
+
+    ui->windowWidth->setValidator(new QIntValidator());
+    ui->windowHeight->setValidator(new QIntValidator());
+
 	for (size_t i = 0; i < properties_->imageScales.size(); ++i)
 	{
 		QTreeWidgetItem* item = new QTreeWidgetItem;
@@ -77,6 +83,9 @@ void ProjectPropertiesDialog::onAccepted()
 
 	properties_->logicalWidth = ui->logicalWidth->text().toInt();
 	properties_->logicalHeight = ui->logicalHeight->text().toInt();
+
+    properties_->windowWidth = ui->windowWidth->text().toInt();
+    properties_->windowHeight = ui->windowHeight->text().toInt();
 
 	properties_->imageScales.clear();
 

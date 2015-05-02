@@ -1,22 +1,22 @@
 rm -rf ..\release\platforms\*
 mkdir ..\release\platforms
-cp %QT_DIR%\plugins\platforms\qminimal.dll ..\release\platforms
-cp %QT_DIR%\plugins\platforms\qoffscreen.dll ..\release\platforms
-cp %QT_DIR%\plugins\platforms\qwindows.dll ..\release\platforms
+cp %QTDIR%\plugins\platforms\qminimal.dll ..\release\platforms
+cp %QTDIR%\plugins\platforms\qoffscreen.dll ..\release\platforms
+cp %QTDIR%\plugins\platforms\qwindows.dll ..\release\platforms
 
-cp %QT_DIR%\bin\icudt53.dll ..\release
-cp %QT_DIR%\bin\icuin53.dll ..\release
-cp %QT_DIR%\bin\icuuc53.dll ..\release
-cp %QT_DIR%\bin\libgcc_s_dw2-1.dll ..\release
-cp %QT_DIR%\bin\libstdc++-6.dll ..\release
-cp %QT_DIR%\bin\libwinpthread-1.dll ..\release
-cp %QT_DIR%\bin\Qt5Core.dll ..\release
-cp %QT_DIR%\bin\Qt5Gui.dll ..\release
-cp %QT_DIR%\bin\Qt5Network.dll ..\release
-cp %QT_DIR%\bin\Qt5OpenGL.dll ..\release
-cp %QT_DIR%\bin\Qt5PrintSupport.dll ..\release
-cp %QT_DIR%\bin\Qt5Widgets.dll ..\release
-cp %QT_DIR%\bin\Qt5Xml.dll ..\release
+cp %QTDIR%\bin\icudt53.dll ..\release
+cp %QTDIR%\bin\icuin53.dll ..\release
+cp %QTDIR%\bin\icuuc53.dll ..\release
+cp %QTDIR%\bin\libgcc_s_dw2-1.dll ..\release
+cp %QTDIR%\bin\libstdc++-6.dll ..\release
+cp %QTDIR%\bin\libwinpthread-1.dll ..\release
+cp %QTDIR%\bin\Qt5Core.dll ..\release
+cp %QTDIR%\bin\Qt5Gui.dll ..\release
+cp %QTDIR%\bin\Qt5Network.dll ..\release
+cp %QTDIR%\bin\Qt5OpenGL.dll ..\release
+cp %QTDIR%\bin\Qt5PrintSupport.dll ..\release
+cp %QTDIR%\bin\Qt5Widgets.dll ..\release
+cp %QTDIR%\bin\Qt5Xml.dll ..\release
 
 cp ..\libgid\release\gid.dll ..\release
 cp ..\libgideros\release\gideros.dll ..\release

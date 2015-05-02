@@ -44,6 +44,39 @@
     <None Include="Assets\soundbutton.lua">
       <Filter>Assets</Filter>
     </None>
+    <None Include="Assets\main1.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\main2.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\mainaudio.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\mainbutton.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\mainfont.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\maininfballs.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\mainr2t.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\properties.bird.bin">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\properties.nebula.bin">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\desert.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\mainshapes.lua">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\ego.png">
@@ -115,6 +148,24 @@
     <Image Include="Assets\Logo.scale-80.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Assets\left-down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\left-up.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\right-down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\right-up.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\spots.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\tmw_desert_spacing.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\luafiles.txt">
@@ -137,9 +188,6 @@
       <Filter>Assets</Filter>
     </Media>
     <Media Include="Assets\3.wav">
-      <Filter>Assets</Filter>
-    </Media>
-    <Media Include="Assets\diving_turtle.mp3">
       <Filter>Assets</Filter>
     </Media>
   </ItemGroup>
