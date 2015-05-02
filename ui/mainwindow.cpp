@@ -426,7 +426,7 @@ void MainWindow::advertisement(const QString& host,unsigned short port,unsigned 
 	for (int k=0;k<players_->count();k++)
 		if (players_->itemData(k)==nitem)
 			return;
-	players_->addItem(name,nitem);
+	players_->addItem(QString("%1 (%2)").arg(name).arg(host),nitem);
 }
 
 void MainWindow::playerChanged(const QString & text)
@@ -2137,19 +2137,25 @@ void MainWindow::exportProject()
 
 		switch (deviceFamily)
 		{
-            case ExportProjectDialog::e_iOS:
-                templatedir = "Xcode4";
-                templatename = "iOS Template";
-                templatenamews = "iOS_Template";
-				underscore = true;
-				break;
+		case ExportProjectDialog::e_iOS:
+		  templatedir = "Xcode4";
+		  templatename = "iOS Template";
+		  templatenamews = "iOS_Template";
+		  underscore = true;
+		  break;
+		  
+		case ExportProjectDialog::e_Android:
+		  templatedir = "Eclipse";
+		  templatename = "Android Template";
+		  templatenamews = "AndroidTemplate";
+		  underscore = false;
+		  break;
 
-			case ExportProjectDialog::e_Android:
-				templatedir = "Eclipse";
-				templatename = "Android Template";
-				templatenamews = "AndroidTemplate";
-				underscore = false;
-				break;
+		case ExportProjectDialog::e_WinRT:
+		  templatedir = "VisualStudio";
+		  templatename = "WinRT Template";
+		  templatenamews = "WinRTTemplate";
+		  break;
 		}
 
 
@@ -2292,16 +2298,25 @@ void MainWindow::exportProject()
 
         if (deviceFamily == ExportProjectDialog::e_iOS)
         {
-            outputDir.mkdir(base);
-            outputDir.cd(base);
+	  outputDir.mkdir(base);
+	  outputDir.cd(base);
         }
         else if (deviceFamily == ExportProjectDialog::e_Android)
-		{
-            outputDir.mkdir("assets");
-            outputDir.cd("assets");
+	{
+	  outputDir.mkdir("assets");
+	  outputDir.cd("assets");
         }
-        outputDir.mkdir("assets");
-        outputDir.cd("assets");
+	else if (deviceFamily == ExportProjectDialog::e_WinRT)
+	{
+	  outputDir.cd("giderosgame");
+	  outputDir.cd("giderosgame.Windows");
+	  outputDir.cd("Assets");
+	}
+
+	if (deviceFamily != ExportProjectDialog::e_WinRT){
+	  outputDir.mkdir("assets");
+	  outputDir.cd("assets");
+	}
 
 		std::deque<QPair<QString, QString> > fileQueue;
 

@@ -162,4 +162,35 @@ const char *gpath_transform(const char *pathName)
     return gpath_join(iter->second.path.c_str(), pathName);
 }
 
+// Transform a path to a platform independant form suitable for archive lookup
+const char *gpath_normalizeArchivePath(const char *pathname)
+{
+	pathname=gpath_transform(pathname);
+	//We reuse s_path as our dest buffer, but in most case it will be the same as input buffer, so take care
+    char *xform=s_path;
+    bool skipSep=true;
+    while (*pathname)
+    {
+    	switch (*pathname)
+    	{
+    	case '/':
+    	case '\\':
+    	case ':': //For WIN32, but will break names containing a colon, which are never almost never seen in practice
+    		if (!skipSep)
+    		{
+    			*(xform++)='/'; //output a separator
+    			skipSep=true;
+    		}
+    		break;
+    	default:
+    		*(xform++)=*pathname;
+    		skipSep=false;
+    	}
+    	pathname++;
+    }
+
+	return s_path;
+}
+
+
 }

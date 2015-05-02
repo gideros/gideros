@@ -1,5 +1,5 @@
 #include <ginput.h>
-#include <ginput-winrt.h>
+#include <ginput-win32.h>
 #include <vector>
 #include <gevent.h>
 #include <memory.h>
@@ -301,6 +301,14 @@ public:
 		}
 	}
 
+    void mouseWheel(int x, int y, int buttons,int delta)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, buttons);
+        mouseEvent->wheel=delta;
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_WHEEL_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+
 	void touchBegin(int x, int y, int id)
 	{
 		ginput_TouchEvent *touchEvent = newTouchEvent(m_pointerIds.size());
@@ -519,6 +527,7 @@ private:
         event->x = x;
         event->y = y;
         event->button = button;
+        event->wheel=0;
 
         return event;
     }
@@ -762,6 +771,12 @@ void ginputp_mouseUp(int x, int y, int button)
 {
 	if (s_manager)
 		s_manager->mouseUp(x, y, button);
+}
+
+void ginputp_mouseWheel(int x, int y, int buttons, int delta)
+{
+    if (s_manager)
+        s_manager->mouseWheel(x, y, buttons,delta);
 }
 
 void ginputp_touchBegin(int x, int y, int id){

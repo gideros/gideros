@@ -63,6 +63,7 @@ static void printToServer(const char* str, int len, void* data){
 // the constructor of canvas
 GLCanvas::GLCanvas(QWidget *parent) : QGLWidget(parent){
     setAttribute(Qt::WA_AcceptTouchEvents);
+    //setFocusPolicy(Qt::WheelFocus);
 
 /*    QGLFormat formatGL;
     formatGL.setVersion(2, 0); // Version : 2.0
@@ -652,6 +653,10 @@ void GLCanvas::mouseReleaseEvent(QMouseEvent* event){
     ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, 0);
 }
 
+void GLCanvas::wheelEvent(QWheelEvent* event){
+    ginputp_mouseWheel(event->x() * deviceScale_, event->y() * deviceScale_, event->buttons(), event->delta());
+}
+
 void GLCanvas::keyPressEvent(QKeyEvent* event){
     if (event->isAutoRepeat())
         return;
@@ -714,6 +719,10 @@ bool GLCanvas::event(QEvent *event){
     }
     else if(event->type() == QEvent::MouseButtonRelease){
         mouseReleaseEvent((QMouseEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::Wheel){
+        wheelEvent((QWheelEvent*)event);
         return true;
     }
     else if(event->type() == QEvent::KeyPress){

@@ -33,6 +33,8 @@ G_API int gpath_getDriveFlags(int id);
 G_API int gpath_getPathDrive(const char *pathName);
 
 G_API const char *gpath_transform(const char *pathName);
+G_API const char *gpath_normalizeArchivePath(const char *pathname);
+
 
 #ifdef __cplusplus
 }

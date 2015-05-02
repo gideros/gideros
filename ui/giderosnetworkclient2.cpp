@@ -141,8 +141,8 @@ void GiderosNetworkClient2::timerEvent(QTimerEvent *)
 				unsigned short port=(dgram[12]<<8)|(dgram[13]);
 				unsigned short flags=(dgram[14]<<8)|(dgram[15]);
 
-				QString name=host.toString()+':'+QString::number(port);
-				if (dgramlen>16)
+				QString name="";
+				if ((dgramlen>16)&&dgram[16])
 					name=QString((char *)(dgram+16));
 
 				emit advertisement(host.toString(),port,flags,name);
