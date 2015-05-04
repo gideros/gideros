@@ -12,6 +12,7 @@
 #include <ginput.h>
 #include <timercontainer.h>
 #include <refptr.h>
+#include "Matrices.h"
 
 
 class Font;
@@ -135,6 +136,9 @@ private:
 	float logicalTranslateX_, logicalTranslateY_;
 	float fov_;
 	float farplane_;
+	bool projectionDirty_;
+	Matrix4 projectionMatrix_,vpProjectionMatrix_;
+
 	void calculateLogicalTransformation();
 	void correctTouchPositionLogical(int* x, int* y);
 
@@ -144,6 +148,7 @@ private:
 
 	int nframe_;
 	double time_;
+	double lastFrameRenderTime_;
 
 	bool clearColorBuffer_;
 

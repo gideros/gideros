@@ -137,20 +137,26 @@ private:
 class Matrix4
 {
 public:
+    enum Type {
+    	TRANSLATE=0,
+    	M2D=1,
+    	M3D=2,
+    	FULL=3
+    };
     // constructors
     Matrix4();  // init with identity
     Matrix4(const float src[16]);
     Matrix4(float m00, float m01, float m02, float m03, // 1st column
             float m04, float m05, float m06, float m07, // 2nd column
             float m08, float m09, float m10, float m11, // 3rd column
-            float m12, float m13, float m14, float m15);// 4th column
+            float m12, float m13, float m14, float m15,Type t=FULL);// 4th column
 
     void        set() { identity(); }
     void        set(const float src[16]);
     void        set(float m00, float m01, float m02, float m03, // 1st column
                     float m04, float m05, float m06, float m07, // 2nd column
                     float m08, float m09, float m10, float m11, // 3rd column
-                    float m12, float m13, float m14, float m15);// 4th column
+                    float m12, float m13, float m14, float m15,Type t=FULL);// 4th column
     void        setRow(int index, const float row[4]);
     void        setRow(int index, const Vector4& v);
     void        setRow(int index, const Vector3& v);
@@ -160,6 +166,7 @@ public:
 
     const float* get() const;
     const float* data() const;
+    float* raw();
     const float* getTranspose();                        // return transposed matrix
     float        getDeterminant();
 
@@ -206,6 +213,7 @@ public:
 	void transformPoint(float x, float y, float* newx, float* newy) const;
 	void inverseTransformPoint(float x, float y, float* newx, float* newy) const;
 
+    enum Type type;
 protected:
 
 private:
@@ -215,7 +223,6 @@ private:
 
     float m[16];
     float tm[16];                                       // transpose m
-
 };
 
 
@@ -660,9 +667,9 @@ inline Matrix4::Matrix4(const float src[16])
 inline Matrix4::Matrix4(float m00, float m01, float m02, float m03,
                         float m04, float m05, float m06, float m07,
                         float m08, float m09, float m10, float m11,
-                        float m12, float m13, float m14, float m15)
+                        float m12, float m13, float m14, float m15,Type t)
 {
-    set(m00, m01, m02, m03,  m04, m05, m06, m07,  m08, m09, m10, m11,  m12, m13, m14, m15);
+    set(m00, m01, m02, m03,  m04, m05, m06, m07,  m08, m09, m10, m11,  m12, m13, m14, m15,t);
 }
 
 
@@ -673,6 +680,7 @@ inline void Matrix4::set(const float src[16])
     m[4] = src[4];  m[5] = src[5];  m[6] = src[6];  m[7] = src[7];
     m[8] = src[8];  m[9] = src[9];  m[10]= src[10]; m[11]= src[11];
     m[12]= src[12]; m[13]= src[13]; m[14]= src[14]; m[15]= src[15];
+    type=FULL;
 }
 
 
@@ -680,12 +688,13 @@ inline void Matrix4::set(const float src[16])
 inline void Matrix4::set(float m00, float m01, float m02, float m03,
                          float m04, float m05, float m06, float m07,
                          float m08, float m09, float m10, float m11,
-                         float m12, float m13, float m14, float m15)
+                         float m12, float m13, float m14, float m15,Type t)
 {
     m[0] = m00;  m[1] = m01;  m[2] = m02;  m[3] = m03;
     m[4] = m04;  m[5] = m05;  m[6] = m06;  m[7] = m07;
     m[8] = m08;  m[9] = m09;  m[10]= m10;  m[11]= m11;
     m[12]= m12;  m[13]= m13;  m[14]= m14;  m[15]= m15;
+    type=t;
 }
 
 
@@ -693,6 +702,7 @@ inline void Matrix4::set(float m00, float m01, float m02, float m03,
 inline void Matrix4::setRow(int index, const float row[4])
 {
     m[index] = row[0];  m[index + 4] = row[1];  m[index + 8] = row[2];  m[index + 12] = row[3];
+    type=FULL;
 }
 
 
@@ -700,6 +710,7 @@ inline void Matrix4::setRow(int index, const float row[4])
 inline void Matrix4::setRow(int index, const Vector4& v)
 {
     m[index] = v.x;  m[index + 4] = v.y;  m[index + 8] = v.z;  m[index + 12] = v.w;
+    type=FULL;
 }
 
 
@@ -707,6 +718,7 @@ inline void Matrix4::setRow(int index, const Vector4& v)
 inline void Matrix4::setRow(int index, const Vector3& v)
 {
     m[index] = v.x;  m[index + 4] = v.y;  m[index + 8] = v.z;
+    type=FULL;
 }
 
 
@@ -714,6 +726,7 @@ inline void Matrix4::setRow(int index, const Vector3& v)
 inline void Matrix4::setColumn(int index, const float col[4])
 {
     m[index*4] = col[0];  m[index*4 + 1] = col[1];  m[index*4 + 2] = col[2];  m[index*4 + 3] = col[3];
+    type=FULL;
 }
 
 
@@ -721,6 +734,7 @@ inline void Matrix4::setColumn(int index, const float col[4])
 inline void Matrix4::setColumn(int index, const Vector4& v)
 {
     m[index*4] = v.x;  m[index*4 + 1] = v.y;  m[index*4 + 2] = v.z;  m[index*4 + 3] = v.w;
+    type=FULL;
 }
 
 
@@ -728,6 +742,7 @@ inline void Matrix4::setColumn(int index, const Vector4& v)
 inline void Matrix4::setColumn(int index, const Vector3& v)
 {
     m[index*4] = v.x;  m[index*4 + 1] = v.y;  m[index*4 + 2] = v.z;
+    type=FULL;
 }
 
 
@@ -738,6 +753,11 @@ inline const float* Matrix4::get() const
 }
 
 inline const float* Matrix4::data() const
+{
+    return m;
+}
+
+inline float* Matrix4::raw()
 {
     return m;
 }
@@ -759,6 +779,7 @@ inline Matrix4& Matrix4::identity()
 {
     m[0] = m[5] = m[10] = m[15] = 1.0f;
     m[1] = m[2] = m[3] = m[4] = m[6] = m[7] = m[8] = m[9] = m[11] = m[12] = m[13] = m[14] = 0.0f;
+    type=TRANSLATE;
     return *this;
 }
 
@@ -827,10 +848,93 @@ inline Vector3 Matrix4::operator*(const Vector3& rhs) const
 
 inline Matrix4 Matrix4::operator*(const Matrix4& n) const
 {
-    return Matrix4(m[0]*n[0]  + m[4]*n[1]  + m[8]*n[2]  + m[12]*n[3],   m[1]*n[0]  + m[5]*n[1]  + m[9]*n[2]  + m[13]*n[3],   m[2]*n[0]  + m[6]*n[1]  + m[10]*n[2]  + m[14]*n[3],   m[3]*n[0]  + m[7]*n[1]  + m[11]*n[2]  + m[15]*n[3],
-                   m[0]*n[4]  + m[4]*n[5]  + m[8]*n[6]  + m[12]*n[7],   m[1]*n[4]  + m[5]*n[5]  + m[9]*n[6]  + m[13]*n[7],   m[2]*n[4]  + m[6]*n[5]  + m[10]*n[6]  + m[14]*n[7],   m[3]*n[4]  + m[7]*n[5]  + m[11]*n[6]  + m[15]*n[7],
-                   m[0]*n[8]  + m[4]*n[9]  + m[8]*n[10] + m[12]*n[11],  m[1]*n[8]  + m[5]*n[9]  + m[9]*n[10] + m[13]*n[11],  m[2]*n[8]  + m[6]*n[9]  + m[10]*n[10] + m[14]*n[11],  m[3]*n[8]  + m[7]*n[9]  + m[11]*n[10] + m[15]*n[11],
-                   m[0]*n[12] + m[4]*n[13] + m[8]*n[14] + m[12]*n[15],  m[1]*n[12] + m[5]*n[13] + m[9]*n[14] + m[13]*n[15],  m[2]*n[12] + m[6]*n[13] + m[10]*n[14] + m[14]*n[15],  m[3]*n[12] + m[7]*n[13] + m[11]*n[14] + m[15]*n[15]);
+	//TRN: m0,m5,m10,m15=1 m12,m13,m14=x
+	//M2D: m10,m15=1 m0,m1,m4,m5,m12,m13,m14=x
+	//M3D: m15=1 m0,m1,m2,m4,m5,m6,m8,m9,m10,m12,m13,m14=x
+	//FULL: no opt
+	int mode=((type)<<2)|(n.type);
+	switch (mode)
+	{
+	case 0: //TRNxTRN
+	    return Matrix4(1,0,0,0,
+	                   0,1,0,0,
+	    		       0,0,1,0,
+	    		       n[12]+m[12],n[13]+m[13],n[14]+m[14],1,TRANSLATE);
+	case 1: //TRNxM2D
+	    return Matrix4(n[0],n[1],0,0,
+	                   n[4],n[5],0,0,
+	                   0,0,1,0,
+	                   n[12] + m[12],n[13] + m[13],n[14] + m[14],1,M2D);
+	case 2: //TRNxM3D
+	    return Matrix4(n[0],n[1],n[2],0,
+	                   n[4],n[5],n[6],0,
+	                   n[8],n[9],n[10],0,
+	                   n[12] + m[12],n[13] + m[13],n[14] + m[14],1,M3D);
+	case 3: //TRNxFULL
+	    return Matrix4(n[0],n[1],n[2],n[3],
+	                   n[4],n[5],n[6],n[7],
+	                   n[8],n[9],n[10],n[8],
+	                   n[12] + m[12],n[13] + m[13],n[14] + m[14],n[15],FULL);
+	case 4: //M2DxTRN
+	    return Matrix4(m[0],m[1],0,0,
+	                   m[4],m[5],0,0,
+	                   0,0,1,0,
+	                   m[0]*n[12] + m[4]*n[13] + m[12],
+	                   m[1]*n[12] + m[5]*n[13] + m[13],
+	                   n[14] + m[14],
+	                   1,M2D);
+	case 5: //M2DxM2D
+	    return Matrix4(m[0]*n[0]+m[4]*n[1],m[1]*n[0]+m[5]*n[1],0,0,
+	                   m[0]*n[4]+m[4]*n[5],m[1]*n[4]+m[5]*n[5],0,0,
+	                   0,0,1,0,
+	                   m[0]*n[12] + m[4]*n[13] + m[12],
+	                   m[1]*n[12] + m[5]*n[13] + m[13],
+	                   n[14] + m[14],
+	                   1,M2D);
+	case 8: //M3DxTRN
+	    return Matrix4(m[0],m[1],m[2],0,
+	    			   m[4],m[5],m[6],0,
+	    			   m[8],m[9],m[10],0,
+	    			   m[0]*n[12] + m[4]*n[13] + m[8]*n[14] + m[12],
+	                   m[1]*n[12] + m[5]*n[13] + m[9]*n[14] + m[13],
+	                   m[2]*n[12] + m[6]*n[13] + m[10]*n[14] + m[14],
+	                   1,M3D);
+	case 12: //FULLxTRN
+	    return Matrix4(m[0],m[1],m[2],m[3],
+	    			   m[4],m[5],m[6],m[7],
+	    			   m[8],m[9],m[10],m[11],
+	                   m[0]*n[12] + m[4]*n[13] + m[8]*n[14] + m[12],
+	                   m[1]*n[12] + m[5]*n[13] + m[9]*n[14] + m[13],
+	                   m[2]*n[12] + m[6]*n[13] + m[10]*n[14] + m[14],
+	                   m[3]*n[12] + m[7]*n[13] + m[11]*n[14] + m[15],FULL);
+	case 6: //M2DxM3D TODO
+	case 7: //M2DxFULL TODO
+	case 9: //M3DxM2D TODO
+	case 10: //M3DxM3D TODO
+	case 11: //M3DxFULL TODO
+	case 13: //FULLxM2D TODO
+	case 14: //FULLxM3D TODO
+	default: //FULLxFULL
+    return Matrix4(m[0]*n[0]  + m[4]*n[1]  + m[8]*n[2]  + m[12]*n[3],
+    		       m[1]*n[0]  + m[5]*n[1]  + m[9]*n[2]  + m[13]*n[3],
+    		       m[2]*n[0]  + m[6]*n[1]  + m[10]*n[2]  + m[14]*n[3],
+    		       m[3]*n[0]  + m[7]*n[1]  + m[11]*n[2]  + m[15]*n[3],
+
+    		       m[0]*n[4]  + m[4]*n[5]  + m[8]*n[6]  + m[12]*n[7],
+    		       m[1]*n[4]  + m[5]*n[5]  + m[9]*n[6]  + m[13]*n[7],
+    		       m[2]*n[4]  + m[6]*n[5]  + m[10]*n[6]  + m[14]*n[7],
+    		       m[3]*n[4]  + m[7]*n[5]  + m[11]*n[6]  + m[15]*n[7],
+
+                   m[0]*n[8]  + m[4]*n[9]  + m[8]*n[10] + m[12]*n[11],
+                   m[1]*n[8]  + m[5]*n[9]  + m[9]*n[10] + m[13]*n[11],
+                   m[2]*n[8]  + m[6]*n[9]  + m[10]*n[10] + m[14]*n[11],
+                   m[3]*n[8]  + m[7]*n[9]  + m[11]*n[10] + m[15]*n[11],
+
+                   m[0]*n[12] + m[4]*n[13] + m[8]*n[14] + m[12]*n[15],
+                   m[1]*n[12] + m[5]*n[13] + m[9]*n[14] + m[13]*n[15],
+                   m[2]*n[12] + m[6]*n[13] + m[10]*n[14] + m[14]*n[15],
+                   m[3]*n[12] + m[7]*n[13] + m[11]*n[14] + m[15]*n[15],FULL);
+	}
 }
 
 

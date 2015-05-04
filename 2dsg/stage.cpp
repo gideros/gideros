@@ -33,7 +33,7 @@ void Stage::mouseWheel(int x, int y, float sx, float sy, float tx, float ty, int
     dispatchToSpritesWithListeners(&event);
 }
 
-void Stage::enterFrame(int deltaFrameCount)
+void Stage::enterFrame(int deltaFrameCount, double lastFrameRenderTime)
 {
     void *pool = application_->createAutounrefPool();
 
@@ -75,7 +75,7 @@ void Stage::enterFrame(int deltaFrameCount)
         application_->autounref(v[i]);
     }
 
-    EnterFrameEvent event(EnterFrameEvent::ENTER_FRAME, frameCount, deltaFrameCount, time, deltaTime);
+    EnterFrameEvent event(EnterFrameEvent::ENTER_FRAME, frameCount, deltaFrameCount, time, deltaTime, lastFrameRenderTime);
     for (std::size_t i = 0; i < v.size(); ++i)
         v[i]->dispatchEvent(&event);
 

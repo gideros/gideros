@@ -269,6 +269,9 @@ public:
 
 			lua_pushnumber(L, v->deltaTime());
 			lua_setfield(L, -2, "deltaTime");
+
+			lua_pushnumber(L, v->lastFrameRenderTime());
+			lua_setfield(L, -2, "lastFrameRenderTime");
 		}
 		else
 		{

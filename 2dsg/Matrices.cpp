@@ -299,6 +299,7 @@ Matrix4& Matrix4::invertAffine()
     // last row should be unchanged (0,0,0,1)
     //m[3] = m[7] = m[11] = 0.0f;
     //m[15] = 1.0f;
+    type=FULL;
 
     return * this;
 }
@@ -367,6 +368,7 @@ Matrix4& Matrix4::invertProjective()
     /*-----------------------------+-----------------------------*/
     m[2] = c1[0];  m[6] = c1[2]; /*|*/ m[10]= d1[0];  m[14]= d1[2];
     m[3] = c1[1];  m[7] = c1[3]; /*|*/ m[11]= d1[1];  m[15]= d1[3];
+    type=FULL;
 
     return *this;
 }
@@ -431,6 +433,7 @@ Matrix4& Matrix4::invertGeneral()
     m[13]=  invDeterminant * cofactor7;
     m[14]= -invDeterminant * cofactor11;
     m[15]=  invDeterminant * cofactor15;
+    type=FULL;
 
     return *this;
 }
@@ -479,6 +482,8 @@ Matrix4& Matrix4::translate(float x, float y, float z)
     m[0] += m[3] * x;   m[4] += m[7] * x;   m[8] += m[11]* x;   m[12]+= m[15]* x;
     m[1] += m[3] * y;   m[5] += m[7] * y;   m[9] += m[11]* y;   m[13]+= m[15]* y;
     m[2] += m[3] * z;   m[6] += m[7] * z;   m[10]+= m[11]* z;   m[14]+= m[15]* z;
+    if (type==TRANSLATE)
+    	type=M3D;
 
     return *this;
 }
@@ -498,6 +503,8 @@ Matrix4& Matrix4::scale(float x, float y, float z)
     m[0] *= x;   m[4] *= x;   m[8] *= x;   m[12] *= x;
     m[1] *= y;   m[5] *= y;   m[9] *= y;   m[13] *= y;
     m[2] *= z;   m[6] *= z;   m[10]*= z;   m[14] *= z;
+    if (type==TRANSLATE)
+    	type=M3D;
     return *this;
 }
 
@@ -545,6 +552,7 @@ Matrix4& Matrix4::rotate(float angle, float x, float y, float z)
     m[12]= r0 * m12+ r4 * m13+ r8 * m14;
     m[13]= r1 * m12+ r5 * m13+ r9 * m14;
     m[14]= r2 * m12+ r6 * m13+ r10* m14;
+    type=FULL;
 
     return *this;
 }
@@ -566,6 +574,7 @@ Matrix4& Matrix4::rotateX(float angle)
     m[10]= m9 * s + m10* c;
     m[13]= m13* c + m14*-s;
     m[14]= m13* s + m14* c;
+    type=FULL;
 
     return *this;
 }
@@ -587,6 +596,7 @@ Matrix4& Matrix4::rotateY(float angle)
     m[10]= m8 *-s + m10* c;
     m[12]= m12* c + m14* s;
     m[14]= m12*-s + m14* c;
+    type=FULL;
 
     return *this;
 }
@@ -608,6 +618,6 @@ Matrix4& Matrix4::rotateZ(float angle)
     m[9] = m8 * s + m9 * c;
     m[12]= m12* c + m13*-s;
     m[13]= m12* s + m13* c;
-
+    type=FULL;
     return *this;
 }

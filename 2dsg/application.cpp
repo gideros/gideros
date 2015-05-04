@@ -140,7 +140,7 @@ void Application::enterFrame()
 			break;
 	}
 
-	stage_->enterFrame(1);
+	stage_->enterFrame(1,lastFrameRenderTime_);
 }
 
 void Application::clearBuffers()
@@ -175,6 +175,7 @@ Matrix4 setFrustum(float l, float r, float b, float t, float n, float f)
     mat[11] = -1;
     mat[14] = -(2 * f * n) / (f - n);
     mat[15] = 0;
+    mat.type=Matrix4::FULL;
     return mat;
 }
 
@@ -187,6 +188,7 @@ Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f)
     mat[12] = -(r + l) / (r - l);
     mat[13] = -(t + b) / (t - b);
     mat[14] = -(f + n) / (f - n);
+    mat.type=Matrix4::M2D;
     return mat;
 }
 void Application::renderScene(int deltaFrameCount)
@@ -197,10 +199,10 @@ void Application::renderScene(int deltaFrameCount)
 		time_ = iclock();
 	}
 
+	double time = iclock();
 	nframe_++;
 	if (nframe_ == 60)
 	{
-		double time = iclock();
 		double dtime = time - time_;
 		time_ = time;
 
@@ -228,6 +230,9 @@ void Application::renderScene(int deltaFrameCount)
 		break;
 	}
 
+	if (projectionDirty_)
+	{
+		projectionDirty_=false;
 	Matrix4 projection,frustum;
 	//glMatrixMode(GL_PROJECTION);
 	//glLoadIdentity();
@@ -321,8 +326,10 @@ void Application::renderScene(int deltaFrameCount)
 		vpProjection.translate(0,width_/scale_,0);
 		break;
 	}
-	oglViewportProjection(vpProjection);
-	projection=frustum*projection;
+	projectionMatrix_=frustum*projection;
+	vpProjectionMatrix_=vpProjection;
+	}
+	oglViewportProjection(vpProjectionMatrix_);
 
     //glMatrixMode(GL_MODELVIEW);
     //glLoadIdentity();
@@ -344,7 +351,7 @@ void Application::renderScene(int deltaFrameCount)
     if (orientation == eLandscapeLeft || orientation == eLandscapeRight)
         std::swap(hw, hh);
 
-	oglSetProjection(projection);
+	oglSetProjection(projectionMatrix_);
 
     // hardware start/end x/y
     //if(lsx == 0) lsx = 1;
@@ -366,6 +373,7 @@ void Application::renderScene(int deltaFrameCount)
 #endif
 
 //	Referenced::emptyPool();
+	lastFrameRenderTime_=iclock()-time;
 }
 
 void Application::mouseDown(int x, int y)
@@ -705,6 +713,7 @@ void Application::calculateLogicalTransformation()
 		logicalTranslateX_ = (width - logicalWidth * scale) / 2;
 		logicalTranslateY_ = 0;
 	}
+	projectionDirty_=true;
 }
 
 void Application::correctTouchPositionLogical(int* x, int* y)
