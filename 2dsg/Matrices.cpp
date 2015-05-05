@@ -19,6 +19,7 @@
 #include <cmath>
 #include <algorithm>
 #include "Matrices.h"
+#include "glog.h"
 
 const float DEG2RAD = 3.141593f / 180;
 const float EPSILON = 0.00001f;
@@ -53,10 +54,8 @@ float Matrix2::getDeterminant()
 Matrix2& Matrix2::invert()
 {
     float determinant = getDeterminant();
-    if(fabs(determinant) <= EPSILON)
-    {
-        return identity();
-    }
+/*    if(fabs(determinant) ==0)
+    	determinant=EPSILON;*/
 
     float tmp = m[0];   // copy the first element
     float invDeterminant = 1.0f / determinant;
@@ -117,10 +116,8 @@ Matrix3& Matrix3::invert()
 
     // check determinant if it is 0
     determinant = m[0] * tmp[0] + m[1] * tmp[3] + m[2] * tmp[6];
-    if(fabs(determinant) <= EPSILON)
-    {
-        return identity(); // cannot inverse, make it idenety matrix
-    }
+/*    if(fabs(determinant) ==0)
+    	determinant=EPSILON;*/
 
     // divide by the determinant
     invDeterminant = 1.0f / determinant;
@@ -161,23 +158,38 @@ void Matrix4::transformPoint(float x, float y, float* newx, float* newy) const
 	Vector4 dst=*this*src;
 	*newx=dst.x;
 	*newy=dst.y;
+/*
+	glog_i("Matrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
+			m[0],m[4],m[8],m[12],
+			m[1],m[5],m[9],m[13],
+			m[2],m[6],m[10],m[14],
+			m[3],m[7],m[11],m[15]
+			);
+	glog_i("XFORMP: (%f,%f)->(%f,%f)",x,y,*newx,*newy);
+	*/
 }
 
 void Matrix4::inverseTransformPoint(float x, float y, float* newx, float* newy) const
 {
-	/*
-	printf("Matrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
-			m[0],m[4],m[8],m[12],
-			m[1],m[5],m[8],m[13],
-			m[2],m[6],m[10],m[14],
-			m[3],m[7],m[11],m[15]
-			);
-*/
 	Vector4 src=Vector4(x,y,0,1);
 	Matrix4 inv=inverse();
 	Vector4 dst=inv*src;
 	*newx=dst.x;
 	*newy=dst.y;
+/*	glog_i("Matrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
+			m[0],m[4],m[8],m[12],
+			m[1],m[5],m[9],m[13],
+			m[2],m[6],m[10],m[14],
+			m[3],m[7],m[11],m[15]
+			);
+	glog_i("IMatrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
+			inv[0],inv[4],inv[8],inv[12],
+			inv[1],inv[5],inv[9],inv[13],
+			inv[2],inv[6],inv[10],inv[14],
+			inv[3],inv[7],inv[11],inv[15]
+			);
+	glog_i("IXFORMP: (%f,%f)->(%f,%f)",x,y,*newx,*newy);
+*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
