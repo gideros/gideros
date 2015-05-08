@@ -19,6 +19,7 @@
 #include <cmath>
 #include <algorithm>
 #include "Matrices.h"
+#include "glog.h"
 
 const float DEG2RAD = 3.141593f / 180;
 const float EPSILON = 0.00001f;
@@ -53,10 +54,8 @@ float Matrix2::getDeterminant()
 Matrix2& Matrix2::invert()
 {
     float determinant = getDeterminant();
-    if(fabs(determinant) <= EPSILON)
-    {
-        return identity();
-    }
+/*    if(fabs(determinant) ==0)
+    	determinant=EPSILON;*/
 
     float tmp = m[0];   // copy the first element
     float invDeterminant = 1.0f / determinant;
@@ -117,10 +116,8 @@ Matrix3& Matrix3::invert()
 
     // check determinant if it is 0
     determinant = m[0] * tmp[0] + m[1] * tmp[3] + m[2] * tmp[6];
-    if(fabs(determinant) <= EPSILON)
-    {
-        return identity(); // cannot inverse, make it idenety matrix
-    }
+/*    if(fabs(determinant) ==0)
+    	determinant=EPSILON;*/
 
     // divide by the determinant
     invDeterminant = 1.0f / determinant;
@@ -161,23 +158,38 @@ void Matrix4::transformPoint(float x, float y, float* newx, float* newy) const
 	Vector4 dst=*this*src;
 	*newx=dst.x;
 	*newy=dst.y;
+/*
+	glog_i("Matrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
+			m[0],m[4],m[8],m[12],
+			m[1],m[5],m[9],m[13],
+			m[2],m[6],m[10],m[14],
+			m[3],m[7],m[11],m[15]
+			);
+	glog_i("XFORMP: (%f,%f)->(%f,%f)",x,y,*newx,*newy);
+	*/
 }
 
 void Matrix4::inverseTransformPoint(float x, float y, float* newx, float* newy) const
 {
-	/*
-	printf("Matrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
-			m[0],m[4],m[8],m[12],
-			m[1],m[5],m[8],m[13],
-			m[2],m[6],m[10],m[14],
-			m[3],m[7],m[11],m[15]
-			);
-*/
 	Vector4 src=Vector4(x,y,0,1);
 	Matrix4 inv=inverse();
 	Vector4 dst=inv*src;
 	*newx=dst.x;
 	*newy=dst.y;
+/*	glog_i("Matrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
+			m[0],m[4],m[8],m[12],
+			m[1],m[5],m[9],m[13],
+			m[2],m[6],m[10],m[14],
+			m[3],m[7],m[11],m[15]
+			);
+	glog_i("IMatrix:\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n",
+			inv[0],inv[4],inv[8],inv[12],
+			inv[1],inv[5],inv[9],inv[13],
+			inv[2],inv[6],inv[10],inv[14],
+			inv[3],inv[7],inv[11],inv[15]
+			);
+	glog_i("IXFORMP: (%f,%f)->(%f,%f)",x,y,*newx,*newy);
+*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -299,6 +311,7 @@ Matrix4& Matrix4::invertAffine()
     // last row should be unchanged (0,0,0,1)
     //m[3] = m[7] = m[11] = 0.0f;
     //m[15] = 1.0f;
+    type=FULL;
 
     return * this;
 }
@@ -367,6 +380,7 @@ Matrix4& Matrix4::invertProjective()
     /*-----------------------------+-----------------------------*/
     m[2] = c1[0];  m[6] = c1[2]; /*|*/ m[10]= d1[0];  m[14]= d1[2];
     m[3] = c1[1];  m[7] = c1[3]; /*|*/ m[11]= d1[1];  m[15]= d1[3];
+    type=FULL;
 
     return *this;
 }
@@ -431,6 +445,7 @@ Matrix4& Matrix4::invertGeneral()
     m[13]=  invDeterminant * cofactor7;
     m[14]= -invDeterminant * cofactor11;
     m[15]=  invDeterminant * cofactor15;
+    type=FULL;
 
     return *this;
 }
@@ -479,6 +494,8 @@ Matrix4& Matrix4::translate(float x, float y, float z)
     m[0] += m[3] * x;   m[4] += m[7] * x;   m[8] += m[11]* x;   m[12]+= m[15]* x;
     m[1] += m[3] * y;   m[5] += m[7] * y;   m[9] += m[11]* y;   m[13]+= m[15]* y;
     m[2] += m[3] * z;   m[6] += m[7] * z;   m[10]+= m[11]* z;   m[14]+= m[15]* z;
+    if (type==TRANSLATE)
+    	type=M3D;
 
     return *this;
 }
@@ -498,6 +515,8 @@ Matrix4& Matrix4::scale(float x, float y, float z)
     m[0] *= x;   m[4] *= x;   m[8] *= x;   m[12] *= x;
     m[1] *= y;   m[5] *= y;   m[9] *= y;   m[13] *= y;
     m[2] *= z;   m[6] *= z;   m[10]*= z;   m[14] *= z;
+    if (type==TRANSLATE)
+    	type=M3D;
     return *this;
 }
 
@@ -545,6 +564,7 @@ Matrix4& Matrix4::rotate(float angle, float x, float y, float z)
     m[12]= r0 * m12+ r4 * m13+ r8 * m14;
     m[13]= r1 * m12+ r5 * m13+ r9 * m14;
     m[14]= r2 * m12+ r6 * m13+ r10* m14;
+    type=FULL;
 
     return *this;
 }
@@ -566,6 +586,7 @@ Matrix4& Matrix4::rotateX(float angle)
     m[10]= m9 * s + m10* c;
     m[13]= m13* c + m14*-s;
     m[14]= m13* s + m14* c;
+    type=FULL;
 
     return *this;
 }
@@ -587,6 +608,7 @@ Matrix4& Matrix4::rotateY(float angle)
     m[10]= m8 *-s + m10* c;
     m[12]= m12* c + m14* s;
     m[14]= m12*-s + m14* c;
+    type=FULL;
 
     return *this;
 }
@@ -608,6 +630,6 @@ Matrix4& Matrix4::rotateZ(float angle)
     m[9] = m8 * s + m9 * c;
     m[12]= m12* c + m13*-s;
     m[13]= m12* s + m13* c;
-
+    type=FULL;
     return *this;
 }

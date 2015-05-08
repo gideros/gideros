@@ -10,11 +10,12 @@ public:
 
 	EnterFrameEvent(	const Type& type,
 						int frameCount, int deltaFrameCount,
-						double time, double deltaTime) : Event(type.type()),
+						double time, double deltaTime, double lastFrameRenderTime) : Event(type.type()),
 		frameCount_(frameCount),
 		deltaFrameCount_(deltaFrameCount),
 		time_(time),
-		deltaTime_(deltaTime)
+		deltaTime_(deltaTime),
+		lastFrameRenderTime_(lastFrameRenderTime)
 	{
 
 	}
@@ -39,6 +40,11 @@ public:
 		return deltaTime_;
 	}
 
+	double lastFrameRenderTime() const
+	{
+		return lastFrameRenderTime_;
+	}
+
 
 	virtual void apply(EventVisitor* v);
 
@@ -49,6 +55,7 @@ private:
 	int deltaFrameCount_;
 	double time_;
 	double deltaTime_;
+	double lastFrameRenderTime_;
 };
 
 #endif

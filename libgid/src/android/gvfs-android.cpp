@@ -36,8 +36,8 @@ static std::map<std::string, FileInfo> s_files;
 static std::map<int, FileInfo> s_fileInfos;
 static bool s_playerModeEnabled = false;
 
-static char s_codeKey[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-static char s_assetsKey[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static char s_codeKey[256] = {0};
+static char s_assetsKey[256] = {0};
 
 static int s_open(const char *pathname, int flags)
 {
@@ -243,8 +243,8 @@ static size_t s_read(int fd, void* buf, size_t count)
         size = readHelper(fd, buf, count);
 
         if (curr != (off_t)-1 && size != (size_t)-1)
-            for (size_t i = 0; i < size; ++i)
-                ((char*)buf)[i] ^= key[(curr + i) % 16];
+            for (size_t i = (curr<32)?(32-curr):0; i < size; ++i)
+                ((char*)buf)[i] ^= key[(((curr+i)*13)+(((curr+i)/256)*31))%256];
     }
     else
     {
@@ -317,14 +317,14 @@ void gvfs_addFile(const char *pathname, int zipFile, size_t startOffset, size_t 
     s_files[pathname] = f;
 }
 
-void gvfs_setCodeKey(const char key[16])
+void gvfs_setCodeKey(const char key[256])
 {
-    memcpy(s_codeKey, key, 16);
+    memcpy(s_codeKey, key, 256);
 }
 
-void gvfs_setAssetsKey(const char key[16])
+void gvfs_setAssetsKey(const char key[256])
 {
-    memcpy(s_assetsKey, key, 16);
+    memcpy(s_assetsKey, key, 256);
 }
 
 }

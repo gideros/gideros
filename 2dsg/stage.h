@@ -17,7 +17,7 @@ public:
         isSpritesWithListenersDirty_ = true;
 	}
 
-	void enterFrame(int deltaFrameCount = -1);
+	void enterFrame(int deltaFrameCount = -1, double lastFrameRenderTime=0);
 
     void mouseDown(int x, int y, float sx, float sy, float tx, float ty);
     void mouseUp(int x, int y, float sx, float sy, float tx, float ty);

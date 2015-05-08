@@ -76,35 +76,38 @@ public:
 
 	void setX(float x)
 	{
+		matrix_[12]+=(x-tx_);
 		tx_=x;
-		compose();
 	}
 
 	void setY(float y)
 	{
+		matrix_[13]+=(y-ty_);
 		ty_=y;
-		compose();
 	}
 
 	void setZ(float z)
 	{
+		matrix_[14]+=(z-tz_);
 		tz_=z;
-		compose();
 	}
 
 	void setXY(float x, float y)
 	{
+		matrix_[12]+=(x-tx_);
+		matrix_[13]+=(y-ty_);
 		tx_=x;
 		ty_=y;
-		compose();
 	}
 
 	void setXYZ(float x, float y, float z)
 	{
+		matrix_[12]+=(x-tx_);
+		matrix_[13]+=(y-ty_);
+		matrix_[14]+=(z-tz_);
 		tx_=x;
 		ty_=y;
 		tz_=z;
-		compose();
 	}
 
     void setRefX(float x)
