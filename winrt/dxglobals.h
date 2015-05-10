@@ -20,9 +20,29 @@ extern ID3D11InputLayout *g_pLayout;
 extern ID3D11VertexShader *g_pVS;
 extern ID3D11PixelShader *g_pPS;
 extern ID3D11Buffer *g_pVBuffer;
+extern ID3D11Buffer *g_pCBuffer;
+extern ID3D11Buffer *g_pTBuffer;
+extern ID3D11Buffer *g_pIBuffer;
 extern float backcol[];
-extern ID3D11Buffer *g_CB;
+extern ID3D11Buffer *g_CBP;
+extern ID3D11Buffer *g_CBV;
 extern ID3D11SamplerState *g_samplerLinear;
 extern ID3D11BlendState *g_pBlendState;
+
+struct cbp {
+	DirectX::XMFLOAT4 fColor;
+	float fTextureSel;
+	float fColorSel;
+	int r1, r2; //Padding
+	bool dirty;
+};
+
+struct cbv {
+	DirectX::XMFLOAT4X4 mvp;
+	bool dirty;
+};
+
+extern struct cbv cbvData;
+extern struct cbp cbpData;
 
 #endif

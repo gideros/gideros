@@ -1,9 +1,12 @@
-QT=/c/Qt/5.3/mingw482_32
-QPATH=$(QT)/bin:/c/Qt/Tools/mingw482_32/bin:$(PATH)
-NDKBUILD=cmd /c C:\\Applications\\android-ndk-r10d\\ndk-build.cmd
-JAVA_HOME=C:/Program\ Files/Java/jdk1.7.0_21
+QTDIR=/c/Qt/Qt5.3.2
+QT=$(QTDIR)/5.3/mingw482_32
+QPATH=$(QT)/bin:$(QTDIR)/Tools/mingw482_32/bin:$(PATH)
+NDKBUILD=cmd /c C:\\android-ndk-r10d\\ndk-build.cmd
+JAVA_HOME=C:/Program\ Files/Java/jdk1.7.0_17
 ANT_HOME=C:\\Applications\\apache-ant-1.9.4
-ANDROID_HOME=C:/Program\ Files/Android/android-sdk
+ANDROID_HOME=C:\\Users\\Nicolas\\android-sdks
+FXC=/c/Program\ Files\ \(x86\)/Windows\ Kits/8.1/bin/x86/fxc.exe
+
 JAR=$(JAVA_HOME)/bin/jar
 ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_HOME)/bin/java -classpath "$(ANT_HOME)\\lib\\ant-launcher.jar" "-Dant.home=$(ANT_HOME)" org.apache.tools.ant.launch.Launcher
 
@@ -21,8 +24,12 @@ MINGWMAKE=mingw32-make
 
 
 all:
-	PATH="$(QPATH)" make -f $(ROOT)/scripts/Makefile.gid all.q
+	PATH="$(QPATH)" $(MAKE) -f $(ROOT)/scripts/Makefile.gid all.q
 
+winrt.shaders:
+	$(FXC) //T vs_4_0_level_9_3 //E VShader //Fo winrt/VertexShader.cso winrt/texture.hlsl
+	$(FXC) //T ps_4_0_level_9_3 //E PShader //Fo winrt/PixelShader.cso winrt/texture.hlsl
+	
 #clean:	qtapp.clean android.clean
 clean: player.qmake.clean	
 
@@ -176,6 +183,7 @@ androidso.clean:
 	rm -rf $(ROOT)/android/build
 
 %.androidso:
+	mkdir -p $(ROOT)/android/$(firstword $(subst _, ,$*))/jni
 	cp -R  $(ROOT)/android/lib/jni/*.cpp $(ROOT)/android/$(firstword $(subst _, ,$*))/jni
 	cp $(ROOT)/android/lib/jni/Android-$(firstword $(subst _, ,$*)).mk $(ROOT)/android/$(firstword $(subst _, ,$*))/jni/Android.mk
 	cp $(ROOT)/android/lib/jni/Application-$(firstword $(subst _, ,$*)).mk $(ROOT)/android/$(firstword $(subst _, ,$*))/jni/Application.mk

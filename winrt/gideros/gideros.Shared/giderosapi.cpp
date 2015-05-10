@@ -264,8 +264,8 @@ void InitD3D(CoreWindow^ Window)
 
 	D3D11_INPUT_ELEMENT_DESC ied[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 2, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	g_dev->CreateInputLayout(ied, 3, VSFile->Data, VSFile->Length, &g_pLayout);
@@ -281,11 +281,20 @@ void InitD3D(CoreWindow^ Window)
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU    
-	bd.ByteWidth = sizeof(VERTEX) * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer    
-
+	bd.ByteWidth = sizeof(FLOAT)*3 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
 	g_dev->CreateBuffer(&bd, NULL, &g_pVBuffer);       // create the buffer    
+	bd.ByteWidth = sizeof(FLOAT) * 4 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
+	g_dev->CreateBuffer(&bd, NULL, &g_pCBuffer);       // create the buffer    
+	bd.ByteWidth = sizeof(FLOAT) * 2 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
+	g_dev->CreateBuffer(&bd, NULL, &g_pTBuffer);       // create the buffer    
+
+	bd.ByteWidth = sizeof(int) * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;       // use as a vertex buffer    
+	g_dev->CreateBuffer(&bd, NULL, &g_pIBuffer);       // create the buffer    
 
 	// ----------------------------------------------------------------------
 	// Create a constant buffer (NB must be multiple of 16 bytes)
@@ -297,18 +306,15 @@ void InitD3D(CoreWindow^ Window)
 	ZeroMemory(&bd2, sizeof(bd2));
 
 	bd2.Usage = D3D11_USAGE_DEFAULT;
-	bd2.ByteWidth = sizeof(const_buffer);
+	bd2.ByteWidth = sizeof(cbpData)-4; //Ugly...
 	bd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd2.CPUAccessFlags = 0;
 
-	struct const_buffer mycb;
-	mycb.use_tex = 0;
-
 	HRESULT hr;
-	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CB);
+	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CBP);
 
-	g_devcon->UpdateSubresource(g_CB, 0, nullptr, &mycb, 0, 0);
-	g_devcon->PSSetConstantBuffers(0, 1, &g_CB);
+	bd2.ByteWidth = sizeof(cbvData) -4;
+	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CBV);
 
 	// ----------------------------------------------------------------------
 	// Blend state
@@ -320,7 +326,11 @@ void InitD3D(CoreWindow^ Window)
 	blendStateDesc.AlphaToCoverageEnable = FALSE;
 	blendStateDesc.IndependentBlendEnable = FALSE;
 	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+#if 1 //PREMULTIPLIED_ALPHA
+	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+#else
 	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+#endif
 	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
@@ -369,20 +379,6 @@ void InitD3D(CoreWindow^ Window)
 	HRESULT result = g_dev->CreateRasterizerState(&rasterDesc, &m_rasterState);
 	g_devcon->RSSetState(m_rasterState);
 
-	// ----------------------------------------------------------------------
-	// Finally do some "openGL" manipulations so that vertex coords are in
-	// pixels in a 2D surface with origin at top-left 
-	// ----------------------------------------------------------------------
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	float orient = 0, logicalw = 320, logicalh = 480;
-	glRotatef(orient, 0.0, 0.0, 1.0);
-	glOrtho(0.0, logicalw, logicalh, 0.0, -1.0, 1.0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 }
 
 // ######################################################################
@@ -394,11 +390,15 @@ void CleanD3D()
 	g_pVS->Release();
 	g_pPS->Release();
 	g_pVBuffer->Release();
+	g_pCBuffer->Release();
+	g_pTBuffer->Release();
+	g_pIBuffer->Release();
 	//  g_swapchain->Release();    
 	g_backbuffer->Release();
 	//  g_dev->Release();    
 	//  g_devcon->Release();
-	g_CB->Release();
+	g_CBP->Release();
+	g_CBV->Release();
 	g_samplerLinear->Release();
 }
 

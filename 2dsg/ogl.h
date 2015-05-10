@@ -13,10 +13,10 @@ enum OGLClientState {
 void oglBindTexture(GLenum target, GLuint texture);
 void oglForceBindTexture(GLenum target, GLuint texture);
 void oglDrawArrays(GLenum mode, GLint first, GLsizei count);
-void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices);
+void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, bool modified, GLuint *cache);
 void oglEnableClientState(enum OGLClientState array);
 void oglDisableClientState(enum OGLClientState array);
-void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr);
+void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr,GLsizei count, bool modified, GLuint *cache);
 Matrix4 oglGetModelMatrix();
 void oglLoadMatrixf(const Matrix4 m);
 void oglSetProjection(const Matrix4 m);

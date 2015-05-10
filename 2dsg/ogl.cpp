@@ -169,7 +169,7 @@ void oglSetupShaders()
     colorFS=glGetUniformLocation(shaderProgram, "fColor");
     textureFS=glGetUniformLocation(shaderProgram, "fTexture");
 
-    glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
+	glog_i("VIndices: %d,%d,%d,%d\n", vertexVS, textureVS, colorVS, matrixVS);
     glog_i("FIndices: %d,%d,%d,%d\n", colorSelFS,textureSelFS,colorFS,textureFS);
 
     glUniform1i(textureFS, 0);
@@ -407,7 +407,7 @@ void oglEnableClientState(enum OGLClientState array)
 	}
 }
 
-void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr)
+void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr,GLsizei count, bool modified, GLuint *cache)
 {
 	//glog_d("OglArrayPtr: %d:%p[%f,%f,%f,%f]\n",array,ptr,((const float *)ptr)[0],((const float *)ptr)[1],((const float *)ptr)[2],((const float *)ptr)[3]);
 	switch (array)
@@ -416,21 +416,33 @@ void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *
 #ifdef GIDEROS_GL1
 			glVertexPointer(mult,type, 0,ptr);
 #else
-			glVertexAttribPointer(vertexVS, mult,type, false,0, ptr);
+			glVertexAttribPointer(vertexVS, mult,type, false,0, ptr
+#ifdef DXCOMPAT_H
+					,count,modified,cache
+#endif
+					);
 #endif
 			break;
 		case TextureArray:
 #ifdef GIDEROS_GL1
 			glTexCoordPointer(mult,type, 0,ptr);
 #else
-			glVertexAttribPointer(textureVS, mult,type, false,0, ptr);
+			glVertexAttribPointer(textureVS, mult,type, false,0, ptr
+#ifdef DXCOMPAT_H
+					,count,modified,cache
+#endif
+					);
 #endif
 			break;
         case ColorArray:
 #ifdef GIDEROS_GL1
 			glColorPointer(mult,type, 0,ptr);
 #else
-			glVertexAttribPointer(colorVS, mult,type, true,0, ptr);
+			glVertexAttribPointer(colorVS, mult,type, true,0, ptr
+#ifdef DXCOMPAT_H
+					,count,modified,cache
+#endif
+					);
 #endif
             break;
 		default:
@@ -559,10 +571,14 @@ void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
 
 
 
-void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices)
+void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, bool modified, GLuint *cache)
 {
 	oglSetupArrays();
-	glDrawElements(mode, count, type, indices);
+	glDrawElements(mode, count, type, indices
+#ifdef DXCOMPAT_H
+			,modified,cache
+#endif
+			);
 }
 
 
