@@ -535,32 +535,40 @@ int main(int argc, char *argv[])
 
     QByteArray codePrefix("312e68c04c6fd22922b5b232ea6fb3e1");
     QByteArray assetsPrefix("312e68c04c6fd22922b5b232ea6fb3e2");
-    QByteArray encryptionZero(16, '\0');
-    QByteArray codeKey(16, '\0');
-    QByteArray assetsKey(16, '\0');
-    QByteArray encryptionKey(16, '\0');
+    QByteArray codePrefixRnd("312e68c04c6fd22922b5b232ea6fb3e1");
+    QByteArray assetsPrefixRnd("312e68c04c6fd22922b5b232ea6fb3e2");
+    QByteArray encryptionZero(256, '\0');
+    QByteArray codeKey(256, '\0');
+    QByteArray assetsKey(256, '\0');
+    QByteArray randomData(32+32+256+256, '\0');
 
     {
         QSettings settings;
-        if (settings.contains("encryptionKey"))
+        if (settings.contains("randomData"))
         {
-            encryptionKey = settings.value("encryptionKey").toByteArray();
+            randomData = settings.value("randomData").toByteArray();
         }
         else
         {
             qsrand(time(NULL));
-            for (int i = 0; i < 16; ++i)
-                encryptionKey[i] = qrand() % 256;
-            settings.setValue("encryptionKey", encryptionKey);
+            for (int i = 0; i < randomData.size(); ++i)
+            	randomData[i] = qrand() % 256;
+            settings.setValue("randomData", randomData);
             settings.sync();
         }
     }
 
     if (encryptCode)
-        codeKey = encryptionKey;
+    {
+        codeKey = randomData.mid(64,256);
+        codePrefixRnd=randomData.mid(0,32);
+    }
 
     if (encryptAssets)
-        assetsKey = encryptionKey;
+    {
+        assetsKey = randomData.mid(64+256,256);
+        assetsPrefixRnd=randomData.mid(32,32);
+    }
 
 
     ProjectProperties properties;
@@ -615,8 +623,8 @@ int main(int argc, char *argv[])
 
             QList<QPair<QByteArray, QByteArray> > replaceList2;
             replaceList2 << qMakePair(QByteArray("9852564f4728e0c11e34ca3eb5fe20b2"), QByteArray("9852564f4728e0cffe34ca3eb5fe20b2"));
-            replaceList2 << qMakePair(codePrefix + encryptionZero, codePrefix + codeKey);
-            replaceList2 << qMakePair(assetsPrefix + encryptionZero, assetsPrefix + assetsKey);
+            replaceList2 << qMakePair(codePrefix + encryptionZero, codePrefixRnd + codeKey);
+            replaceList2 << qMakePair(assetsPrefix + encryptionZero, assetsPrefixRnd + assetsKey);
             replaceList << replaceList2;
 
         if (assetsOnly)
@@ -740,8 +748,9 @@ int main(int argc, char *argv[])
             QByteArray data = fis.readAll();
             fis.close();
 
-            for (int j = 0; j < data.size(); ++j)
-                data[j] = data[j] ^ encryptionKey[j % encryptionKey.size()];
+            int ks=encryptionKey.size();
+            for (int j = 32; j < data.size(); ++j)
+                data[j] = data[j] ^ encryptionKey[((j*13)+((j/ks)*31)) % ks];
 
             QFile fos(filename);
             if (!fos.open(QIODevice::WriteOnly))

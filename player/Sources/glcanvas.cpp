@@ -43,12 +43,9 @@ static void printToServer(const char* str, int len, void* data){
     unsigned int size = 1 + ((len < 0) ? strlen(str) : len) + 1;
     char* buffer = (char*)malloc(size);
 
-    int pos = 0;
-    buffer[pos] = 4;
-    pos += 1;
-    strcpy(buffer + pos, str);
-    pos += strlen(str) + 1;
-    Q_ASSERT(pos == size);
+    buffer[0] = 4;
+    memcpy(buffer + 1, str,size-2);
+    buffer[size-1]=0;
 
     g_server->sendData(buffer, size);
 
