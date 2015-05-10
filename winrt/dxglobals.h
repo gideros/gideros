@@ -16,6 +16,8 @@ extern ID3D11DeviceContext *g_devcon;           // the pointer to our Direct3D d
 #endif
 
 extern ID3D11RenderTargetView *g_backbuffer;
+extern ID3D11DepthStencilView *g_depthStencil;
+extern ID3D11Texture2D* g_depthStencilTexture;
 extern ID3D11InputLayout *g_pLayout;
 extern ID3D11VertexShader *g_pVS;
 extern ID3D11PixelShader *g_pPS;

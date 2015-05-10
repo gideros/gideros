@@ -36,6 +36,8 @@ IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interf
 #endif
 
 ID3D11RenderTargetView *g_backbuffer;
+ID3D11DepthStencilView *g_depthStencil;
+ID3D11Texture2D* g_depthStencilTexture;
 ID3D11InputLayout *g_pLayout;
 ID3D11VertexShader *g_pVS;
 ID3D11PixelShader *g_pPS;
@@ -87,24 +89,35 @@ void glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
   viewport.TopLeftY=y;
   viewport.Width=width;
   viewport.Height=height;
-  g_devcon->RSSetViewports(1,&viewport);
+  viewport.MinDepth = 0;
+  viewport.MaxDepth = 1.0;
+  g_devcon->RSSetViewports(1, &viewport);
 }
 
 void glClear(GLbitfield mask){
 
-	if (mask != GL_COLOR_BUFFER_BIT) return;   // no depth/stencil buffer yet
-
-	if (g_curr_framebuffer == 0){
-		g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
+	if (mask&GL_DEPTH_BUFFER_BIT)
+	{
+		g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_DEPTH, 1.0, 0);
 	}
-	else{
-		float col[4];
-		col[0] = g_renderTargetCol[g_curr_framebuffer].red;
-		col[1] = g_renderTargetCol[g_curr_framebuffer].green;
-		col[2] = g_renderTargetCol[g_curr_framebuffer].blue;
-		col[3] = g_renderTargetCol[g_curr_framebuffer].alpha;
+	if (mask&GL_STENCIL_BUFFER_BIT)
+	{
+		g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_STENCIL, 1.0, 0);
+	}
+	if (mask& GL_COLOR_BUFFER_BIT)
+	{
+		if (g_curr_framebuffer == 0){
+			g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
+		}
+		else{
+			float col[4];
+			col[0] = g_renderTargetCol[g_curr_framebuffer].red;
+			col[1] = g_renderTargetCol[g_curr_framebuffer].green;
+			col[2] = g_renderTargetCol[g_curr_framebuffer].blue;
+			col[3] = g_renderTargetCol[g_curr_framebuffer].alpha;
 
-		g_devcon->ClearRenderTargetView(g_renderTarget[g_curr_framebuffer], col);
+			g_devcon->ClearRenderTargetView(g_renderTarget[g_curr_framebuffer], col);
+		}
 	}
 }
 
@@ -696,7 +709,7 @@ void glBindFramebuffer(GLenum target, GLuint framebuffer)
 	}
 
 	if (framebuffer == 0){
-		g_devcon->OMSetRenderTargets(1, &g_backbuffer, NULL);  // draw on screen (actually back buffer)
+		g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);  // draw on screen (actually back buffer)
 		g_curr_framebuffer = 0;
 		return;
 	}
