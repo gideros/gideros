@@ -19,8 +19,9 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR, float2 texcoord :
 
 	position.w = 1.0f;
 
+
 	output.position = mul(mTot, position);
-    output.color = color;
+	output.color = color;
     output.texcoord = texcoord;
 
     return output;

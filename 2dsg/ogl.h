@@ -43,6 +43,9 @@ int getClientStateCount();
 void resetTexture2DStateCount();
 int getTexture2DStateCount();
 
+Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
+Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
+
 
 #endif
 

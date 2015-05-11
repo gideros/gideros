@@ -494,10 +494,6 @@ void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, cons
 	{
 	case 10: //vMatrix
 		cbvData.mvp = DirectX::XMFLOAT4X4(value);
-		cbvData.mvp._13 = -cbvData.mvp._13;
-		cbvData.mvp._23 = -cbvData.mvp._23;
-		cbvData.mvp._33 = -cbvData.mvp._33;
-		cbvData.mvp._43 = -cbvData.mvp._43;
 		cbvData.dirty = true;
 		break;
 	}
@@ -777,10 +773,14 @@ void glTexParameteri(GLenum target, GLenum pname, GLint param)
 }
 
 
-// Empty for now
 void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
 {
-
+	D3D11_RECT pRect;
+	pRect.left = x;
+	pRect.top = y;
+	pRect.right = x + width - 1;
+	pRect.bottom = y + height - 1;
+	g_devcon->RSSetScissorRects(1, &pRect);
 }
 
 void glDepthFunc(GLenum func)
