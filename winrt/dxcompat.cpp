@@ -66,6 +66,10 @@ vector<Backcol> g_renderTargetCol;
 
 ID3D11SamplerState *g_samplerLinear;
 ID3D11BlendState *g_pBlendState;
+ID3D11DepthStencilState *g_pDSOff;
+ID3D11DepthStencilState *g_pDSDepth;
+ID3D11RasterizerState *g_pRSNormal;
+ID3D11RasterizerState *g_pRSScissor;
 
 bool dxcompat_force_lines = false;
 bool dxcompat_zrange01 = true;
@@ -331,10 +335,28 @@ void glDisableClientState(GLenum type)
 
 void glEnable(GLenum type)
 {
+	switch (type)
+	{
+	case GL_DEPTH_TEST:
+		g_devcon->OMSetDepthStencilState(g_pDSDepth, 1);
+		break;
+	case GL_SCISSOR_TEST:
+		g_devcon->RSSetState(g_pRSScissor);
+		break;
+	}
 }
 
 void glDisable(GLenum type)
 {
+	switch (type)
+	{
+	case GL_DEPTH_TEST:
+		g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
+		break;
+	case GL_SCISSOR_TEST:
+		g_devcon->RSSetState(g_pRSNormal);
+		break;
+	}
 }
 
 void memdump(const char *chn, const void *bv, int sz) {
@@ -507,7 +529,7 @@ void updateShaders()
 	{
 		//floatdump("CBP", &cbpData, 6);
 		g_devcon->UpdateSubresource(g_CBP, 0, NULL, &cbpData, 0, 0);
-		g_devcon->PSSetConstantBuffers(1, 1, &g_CBP);
+		g_devcon->PSSetConstantBuffers(0, 1, &g_CBP);
 		cbpData.dirty = false;
 	}
 	if (cbvData.dirty)

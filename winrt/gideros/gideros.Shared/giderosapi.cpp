@@ -248,6 +248,7 @@ void InitD3D(CoreWindow^ Window)
 
 	//Depth / Stencil setup
 	D3D11_TEXTURE2D_DESC descDepth;
+	ZeroMemory(&descDepth, sizeof(descDepth));
 	descDepth.Width = backbuff_desc.Width;
 	descDepth.Height = backbuff_desc.Height;
 	descDepth.MipLevels = 1;
@@ -262,11 +263,12 @@ void InitD3D(CoreWindow^ Window)
 	g_dev->CreateTexture2D(&descDepth, NULL, &g_depthStencilTexture);
 
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	ZeroMemory(&dsDesc, sizeof(dsDesc));
 
 	// Depth test parameters
-	dsDesc.DepthEnable = true;
+	dsDesc.DepthEnable = false;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
 	// Stencil test parameters
 	dsDesc.StencilEnable = false;
@@ -286,17 +288,18 @@ void InitD3D(CoreWindow^ Window)
 	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	// Create depth stencil state
-	ID3D11DepthStencilState * pDSState;
-	g_dev->CreateDepthStencilState(&dsDesc, &pDSState);
+	g_dev->CreateDepthStencilState(&dsDesc, &g_pDSOff);
+	dsDesc.DepthEnable = true;
+	g_dev->CreateDepthStencilState(&dsDesc, &g_pDSDepth);
 
 	// Bind depth stencil state
-	//g_devcon->OMSetDepthStencilState(pDSState, 1);
+	g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+	ZeroMemory(&descDSV, sizeof(descDSV));
 	descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0;
-	descDSV.Flags = 0;
 
 	// Create the depth stencil view
 	g_dev->CreateDepthStencilView(g_depthStencilTexture, // Depth stencil texture
@@ -404,7 +407,7 @@ void InitD3D(CoreWindow^ Window)
 	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
 	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_DEST_ALPHA;
-	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
 	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	g_dev->CreateBlendState(&blendStateDesc, &g_pBlendState);
@@ -436,17 +439,17 @@ void InitD3D(CoreWindow^ Window)
 	rasterDesc.CullMode = D3D11_CULL_NONE;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0;
-	rasterDesc.DepthClipEnable = true;
+	rasterDesc.DepthClipEnable = false;
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.FrontCounterClockwise = true;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
-
-	ID3D11RasterizerState *m_rasterState;
-
-	HRESULT result = g_dev->CreateRasterizerState(&rasterDesc, &m_rasterState);
-	g_devcon->RSSetState(m_rasterState);
+	
+	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSNormal);
+	rasterDesc.ScissorEnable = false;
+	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissor);
+	g_devcon->RSSetState(g_pRSNormal);
 
 }
 
@@ -471,6 +474,11 @@ void CleanD3D()
 	g_CBP->Release();
 	g_CBV->Release();
 	g_samplerLinear->Release();
+	/*g_pRSNormal->Release();
+	g_pRSScissor->Release();
+	g_pDSOff->Release();
+	g_pRSNormal->Release();
+	*/
 }
 
 
@@ -1190,7 +1198,7 @@ void ApplicationManager::drawFrame()
 
 	gaudio_AdvanceStreamBuffers();
 
-	g_devcon->OMSetRenderTargets(1, &g_backbuffer, nullptr);
+	g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);
 	g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
 
 	nframe_++;

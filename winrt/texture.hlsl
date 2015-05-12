@@ -19,7 +19,6 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR, float2 texcoord :
 
 	position.w = 1.0f;
 
-
 	output.position = mul(mTot, position);
 	output.color = color;
     output.texcoord = texcoord;
@@ -27,7 +26,7 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR, float2 texcoord :
     return output;
 }
 
-cbuffer cbp : register(b1)
+cbuffer cbp : register(b0)
 {
 	float4 fColor;
 	float fTextureSel;

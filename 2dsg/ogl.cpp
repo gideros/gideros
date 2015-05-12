@@ -251,13 +251,18 @@ void oglLoadMatrixf(const Matrix4 m)
 Matrix4 setFrustum(float l, float r, float b, float t, float n, float f)
 {
     Matrix4 mat;
+#ifdef DXCOMPAT_H
+    int df=1,dn=0;
+#else
+    int df=1,dn=-1;
+#endif
     mat[0]  = 2 * n / (r - l);
     mat[5]  = 2 * n / (t - b);
     mat[8]  = (r + l) / (r - l);
     mat[9]  = (t + b) / (t - b);
-    mat[10] = -(f + n) / (f - n);
+    mat[10] = -(df*f - dn*n) / (f - n);
     mat[11] = -1;
-    mat[14] = -(2 * f * n) / (f - n);
+    mat[14] = -((df-dn) * f * n) / (f - n);
     mat[15] = 0;
     mat.type=Matrix4::FULL;
     return mat;
@@ -291,7 +296,7 @@ void oglSetProjection(const Matrix4 m)
 	 glMatrixMode(GL_PROJECTION);
 	 glLoadMatrixf(m.data());
 #endif
-	oglProjection=m;
+	 oglProjection = m;
 }
 
 void oglEnable(GLenum cap)
@@ -676,6 +681,7 @@ void oglReset()
 
     glEnable(GL_BLEND);
 	glDisable(GL_SCISSOR_TEST);
+	glDisable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
 #ifndef PREMULTIPLIED_ALPHA

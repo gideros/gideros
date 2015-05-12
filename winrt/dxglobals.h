@@ -30,6 +30,10 @@ extern ID3D11Buffer *g_CBP;
 extern ID3D11Buffer *g_CBV;
 extern ID3D11SamplerState *g_samplerLinear;
 extern ID3D11BlendState *g_pBlendState;
+extern ID3D11DepthStencilState *g_pDSOff;
+extern ID3D11DepthStencilState *g_pDSDepth;
+extern ID3D11RasterizerState *g_pRSNormal;
+extern ID3D11RasterizerState *g_pRSScissor;
 
 struct cbp {
 	DirectX::XMFLOAT4 fColor;
