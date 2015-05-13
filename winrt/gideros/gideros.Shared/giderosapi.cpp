@@ -313,7 +313,6 @@ void InitD3D(CoreWindow^ Window)
 
 
 
-
 	// ----------------------------------------------------------------------
 	// load and compile the two shaders    
 	// Write erros to VC++ output
@@ -398,16 +397,12 @@ void InitD3D(CoreWindow^ Window)
 	blendStateDesc.AlphaToCoverageEnable = FALSE;
 	blendStateDesc.IndependentBlendEnable = FALSE;
 	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
-#if 1 //PREMULTIPLIED_ALPHA
-	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-#else
-	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-#endif
+	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;  // previously D3D11_BLEND_SRC_ALPHA
 	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
 	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_DEST_ALPHA;
-	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
+	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	g_dev->CreateBlendState(&blendStateDesc, &g_pBlendState);
@@ -439,18 +434,17 @@ void InitD3D(CoreWindow^ Window)
 	rasterDesc.CullMode = D3D11_CULL_NONE;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0;
-	rasterDesc.DepthClipEnable = false;
+	rasterDesc.DepthClipEnable = true;
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
 	rasterDesc.FrontCounterClockwise = true;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
-	
+
 	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSNormal);
 	rasterDesc.ScissorEnable = false;
 	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissor);
 	g_devcon->RSSetState(g_pRSNormal);
-
 }
 
 // ######################################################################
@@ -458,27 +452,16 @@ void InitD3D(CoreWindow^ Window)
 void CleanD3D()
 {
 	// close and release all existing COM objects    
-	g_depthStencil->Release();
-	g_depthStencilTexture->Release();
 	g_pLayout->Release();
 	g_pVS->Release();
 	g_pPS->Release();
 	g_pVBuffer->Release();
-	g_pCBuffer->Release();
-	g_pTBuffer->Release();
-	g_pIBuffer->Release();
 	//  g_swapchain->Release();    
 	g_backbuffer->Release();
 	//  g_dev->Release();    
 	//  g_devcon->Release();
-	g_CBP->Release();
-	g_CBV->Release();
+	g_CB->Release();
 	g_samplerLinear->Release();
-	/*g_pRSNormal->Release();
-	g_pRSScissor->Release();
-	g_pDSOff->Release();
-	g_pRSNormal->Release();
-	*/
 }
 
 
