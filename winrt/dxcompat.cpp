@@ -468,11 +468,44 @@ void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  
 
 void glEnableVertexAttribArray(GLuint index)
 {
-
+	switch (index)
+	{
+	case 1:
+		if (cbpData.fColorSel == 0)
+		{
+			cbpData.fColorSel = 1.0;
+			cbpData.dirty = true;
+		}
+		break;
+	case 2:
+		if (cbpData.fTextureSel == 0)
+		{
+			cbpData.fTextureSel = 1.0;
+			cbpData.dirty = true;
+		}
+		break;
+	}
 }
+
 void glDisableVertexAttribArray(GLuint index)
 {
-
+	switch (index)
+	{
+	case 1:
+		if (cbpData.fColorSel != 0)
+		{
+			cbpData.fColorSel = 0.0;
+			cbpData.dirty = true;
+		}
+		break;
+	case 2:
+		if (cbpData.fTextureSel != 0)
+		{
+			cbpData.fTextureSel = 0.0;
+			cbpData.dirty = true;
+		}
+		break;
+	}
 }
 
 

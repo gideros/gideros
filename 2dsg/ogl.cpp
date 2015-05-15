@@ -781,12 +781,6 @@ void oglReset()
 	s_depthEnable=0;
 	s_depthBufferCleared=false;
 
-#ifdef GIDEROS_GL1
-	glDisable(GL_TEXTURE_2D);
-#endif
-	oglColor4f(1,1,1,1);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
 	s_VERTEX_ARRAY_enabled = false;
 	s_TEXTURE_COORD_ARRAY_enabled = false;
     s_COLOR_ARRAY_enabled = false;
@@ -801,15 +795,21 @@ void oglReset()
 #else
     current=stdProgram;
     current->activate();
+	resetBindTextureCount();
+	resetClientStateCount();
+	resetTexture2DStateCount();
 #endif
+
+#ifdef GIDEROS_GL1
+	glDisable(GL_TEXTURE_2D);
+#endif
+	oglColor4f(1,1,1,1);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
     oglProjection.identity();
     oglVPProjection.identity();
     oglModel.identity();
     oglCombined.identity();
-
-	resetBindTextureCount();
-	resetClientStateCount();
-	resetTexture2DStateCount();
 
 	//glClearColor(0.5, 0.1, 0.2, 1.f);
     //glClear(GL_COLOR_BUFFER_BIT);
