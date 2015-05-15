@@ -202,7 +202,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Assets\**\*">
+    <None Include="Assets\*">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="giderosgame.Windows_TemporaryKey.pfx" />

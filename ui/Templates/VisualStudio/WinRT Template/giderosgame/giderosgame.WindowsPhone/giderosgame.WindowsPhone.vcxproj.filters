@@ -6,7 +6,7 @@
     </Filter>
     <Filter Include="Assets">
       <UniqueIdentifier>0fc27bf9-7581-4e49-ad12-2b32fa234b20</UniqueIdentifier>
-      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png;lua;cso;mp3;wav;txt;bin;ttf</Extensions>
+      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png;lua;cso;mp3;wav;txt;bin</Extensions>
     </Filter>
     <Filter Include="Content">
       <UniqueIdentifier>1024583a-3b31-4571-a69f-2215e3b7975c</UniqueIdentifier>

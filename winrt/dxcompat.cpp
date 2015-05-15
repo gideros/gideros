@@ -4,7 +4,7 @@
 #include <d3dcompiler.h>
 #include <math.h>
 #include <vector>
-//#include "globals.h"
+#include "dxglobals.h"
 #include "dxcompat.hpp"
 //#include "util.h"
 
@@ -18,88 +18,6 @@ using namespace Microsoft::WRL;
 #endif
 
 using namespace std;
-
-class Mat4
-{
-public:
-  float M[4][4];
-
-  Mat4()
-  {
-    int i,j;
-    for (i=0;i<4;i++)
-      for (j=0;j<4;j++)
-    	M[i][j]=0;
-  }
-
-  void loadIdentity()
-  {
-    int i,j;
-    for (i=0;i<4;i++){
-      for (j=0;j<4;j++){
-	if (i==j)
-	  M[i][j]=1;
-	else
-	  M[i][j]=0;
-      }
-    }
-  }
-
-  void set(const GLfloat *m)
-  {
-	  int i, j,ind;
-
-	  ind = 0;
-	  for (j = 0; j < 4; j++){
-		  for (i = 0; i < 4; i++){
-			  M[i][j] = m[ind];
-			  ind++;
-		  }
-	  }
-  }
-
-  void mulrightby(Mat4 A)
-  {
-    float B[4][4];
-    int i,j,k;
-
-    // B=M*A
-    for (i=0;i<4;i++){
-      for (j=0;j<4;j++){
-	B[i][j]=0;
-	for (k=0;k<4;k++){
-	  B[i][j]+=M[i][k]*A.M[k][j];
-	}
-      }
-    }
-
-    // M=B
-    for (i=0;i<4;i++)
-      for (j=0;j<4;j++)
-	M[i][j]=B[i][j];
-  }
-
-  void mulleftby(Mat4 A)
-  {
-    float B[4][4];
-    int i,j,k;
-
-    // B=A*M
-    for (i=0;i<4;i++){
-      for (j=0;j<4;j++){
-	B[i][j]=0;
-	for (k=0;k<4;k++){
-	  B[i][j]+=A.M[i][k]*M[k][j];
-	}
-      }
-    }
-
-    // M=B
-    for (i=0;i<4;i++)
-      for (j=0;j<4;j++)
-	M[i][j]=B[i][j];
-  }
-};  
 
 // ######################################################################
 
@@ -118,13 +36,21 @@ IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interf
 #endif
 
 ID3D11RenderTargetView *g_backbuffer;
+ID3D11DepthStencilView *g_depthStencil;
+ID3D11Texture2D* g_depthStencilTexture;
 ID3D11InputLayout *g_pLayout;
 ID3D11VertexShader *g_pVS;
 ID3D11PixelShader *g_pPS;
 ID3D11Buffer *g_pVBuffer;                  // Vertex buffer: we put our geometry here
-ID3D11Buffer *g_CB;                        // Constant buffer: pass settings like whether to use textures or not
+ID3D11Buffer *g_pCBuffer;                  // Vertex buffer: we put our geometry here
+ID3D11Buffer *g_pTBuffer;                  // Vertex buffer: we put our geometry here
+ID3D11Buffer *g_pIBuffer;                  // Vertex buffer: we put our geometry here
+ID3D11Buffer *g_CBP, *g_CBV;                        // Constant buffer: pass settings like whether to use textures or not
 vector<ID3D11ShaderResourceView*> g_RSV;   // list of textures.
 vector<bool> g_RSVused;                    // true if texture index number has been assigned
+
+struct cbv cbvData;
+struct cbp cbpData;
 
 struct Backcol
 {
@@ -140,6 +66,10 @@ vector<Backcol> g_renderTargetCol;
 
 ID3D11SamplerState *g_samplerLinear;
 ID3D11BlendState *g_pBlendState;
+ID3D11DepthStencilState *g_pDSOff;
+ID3D11DepthStencilState *g_pDSDepth;
+ID3D11RasterizerState *g_pRSNormal;
+ID3D11RasterizerState *g_pRSScissor;
 
 bool dxcompat_force_lines = false;
 bool dxcompat_zrange01 = true;
@@ -150,15 +80,9 @@ int dxcompat_maxvertices = 16384;
 static float g_r=1, g_g=1, g_b=1, g_a=1;
 static bool g_color_array=false, g_tex_array=false;
 static bool g_modelview=true;
-static Mat4 modelmat,projectionmat;
 static GLuint g_curr_texind, g_curr_framebuffer=0;
-vector<Mat4> modelStack,projectionStack;
 
 float backcol[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-static float *g_colors;
-static float *g_vertices;
-static float *g_tex_coord;
 
 void glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
 {
@@ -169,24 +93,35 @@ void glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
   viewport.TopLeftY=y;
   viewport.Width=width;
   viewport.Height=height;
-  g_devcon->RSSetViewports(1,&viewport);
+  viewport.MinDepth = 0;
+  viewport.MaxDepth = 1.0;
+  g_devcon->RSSetViewports(1, &viewport);
 }
 
 void glClear(GLbitfield mask){
 
-	if (mask != GL_COLOR_BUFFER_BIT) return;   // no depth/stencil buffer yet
-
-	if (g_curr_framebuffer == 0){
-		g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
+	if (mask&GL_DEPTH_BUFFER_BIT)
+	{
+		g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_DEPTH, 1.0, 0);
 	}
-	else{
-		float col[4];
-		col[0] = g_renderTargetCol[g_curr_framebuffer].red;
-		col[1] = g_renderTargetCol[g_curr_framebuffer].green;
-		col[2] = g_renderTargetCol[g_curr_framebuffer].blue;
-		col[3] = g_renderTargetCol[g_curr_framebuffer].alpha;
+	if (mask&GL_STENCIL_BUFFER_BIT)
+	{
+		g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_STENCIL, 1.0, 0);
+	}
+	if (mask& GL_COLOR_BUFFER_BIT)
+	{
+		if (g_curr_framebuffer == 0){
+			g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
+		}
+		else{
+			float col[4];
+			col[0] = g_renderTargetCol[g_curr_framebuffer].red;
+			col[1] = g_renderTargetCol[g_curr_framebuffer].green;
+			col[2] = g_renderTargetCol[g_curr_framebuffer].blue;
+			col[3] = g_renderTargetCol[g_curr_framebuffer].alpha;
 
-		g_devcon->ClearRenderTargetView(g_renderTarget[g_curr_framebuffer], col);
+			g_devcon->ClearRenderTargetView(g_renderTarget[g_curr_framebuffer], col);
+		}
 	}
 }
 
@@ -204,118 +139,6 @@ void glClearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
 		g_renderTargetCol[g_curr_framebuffer].blue = blue;
 		g_renderTargetCol[g_curr_framebuffer].alpha = alpha;
 	}
-}
-
-void glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble near_val, GLdouble far_val)
-{
-  Mat4 O;
-
-  O.loadIdentity();
-  O.M[0][0] = 2.0 / (right - left);
-  O.M[1][1] = 2.0 / (top - bottom);
-
-  O.M[0][3] = -(right + left) / (right - left);
-  O.M[1][3] = -(top + bottom) / (top - bottom);
-
-  if (dxcompat_zrange01){
-    O.M[2][2] = 1.0 /(far_val - near_val);
-    O.M[2][3] = -near_val / (far_val - near_val);
-  }
-  else {
-    O.M[2][2] = 2.0 / (far_val - near_val);   // -2.0 used in OpenGL documentation but can't be right!
-    O.M[2][3] = -(far_val + near_val) / (far_val - near_val);
-  }
-
-  if (g_modelview)
-    modelmat.mulrightby(O);
-  else
-    projectionmat.mulrightby(O);
-}
-
-void glLoadIdentity()
-{
-  if (g_modelview){
-    modelmat.loadIdentity();
-  }
-  else {
-    projectionmat.loadIdentity();
-  }
-}
-
-void glMatrixMode(GLenum mode)
-{
-  if (mode==GL_MODELVIEW)  // normal drawing matrix
-    g_modelview=true;
-  else
-    g_modelview=false;     // matrix to use orthographic transform on
-}
-
-void glTranslatef(GLfloat x,GLfloat y, GLfloat z)
-{
-  Mat4 T;
-
-  T.loadIdentity();
-
-  T.M[0][3]=x;
-  T.M[1][3]=y;
-  T.M[2][3]=z;
-
-  if (g_modelview)
-    modelmat.mulrightby(T);
-  else
-    projectionmat.mulrightby(T);
-}
-
-void glRotatef(GLfloat angle,GLfloat x,GLfloat y, GLfloat z)
-{
-  Mat4 R;
-  const float pi=3.141592654;
-
-  float ca=cos(angle*pi/180);
-  float sa=sin(angle*pi/180);
-
-  R.loadIdentity();
-  
-  R.M[0][0]=ca;  R.M[0][1]=-sa;
-  R.M[1][0]=sa;  R.M[1][1]= ca;
-
-  if (g_modelview)
-    modelmat.mulrightby(R);
-  else
-    projectionmat.mulrightby(R);
-}
-
-void glScalef(GLfloat x,GLfloat y, GLfloat z)
-{
-  Mat4 S;
-
-  S.loadIdentity();
-  S.M[0][0]=x;
-  S.M[1][1]=y;
-
-  if (g_modelview)
-    modelmat.mulrightby(S);
-  else
-    projectionmat.mulrightby(S);
-}
-
-void glPushMatrix()
-{
-  if (g_modelview)
-    modelStack.push_back(modelmat);
-  else
-    projectionStack.push_back(projectionmat);
-}
-
-void glPopMatrix()
-{
-  if (g_modelview){
-    modelmat=modelStack.back();
-    modelStack.pop_back();
-  } else {
-    projectionmat=modelStack.back();
-    projectionStack.pop_back();
-  }
 }
 
 // GenTextures adds new texture RSV to list g_RSV and sets to NULL
@@ -503,110 +326,223 @@ void glColor4f(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
 //######################################################################
 void glEnableClientState(GLenum type)
 {
-  struct const_buffer mycb;
-
-  if (type==GL_COLOR_ARRAY)
-    g_color_array=true;
-  else if (type==GL_TEXTURE_COORD_ARRAY){
-    g_tex_array=true;
-    mycb.use_tex=1;
-    g_devcon->UpdateSubresource(g_CB,0,NULL,&mycb,0,0);
-    g_devcon->PSSetConstantBuffers(0,1,&g_CB);
-  }
 }
 
 //######################################################################
 void glDisableClientState(GLenum type)
 {
-
-  struct const_buffer mycb;
-
-  if (type==GL_COLOR_ARRAY)
-    g_color_array=false;
-  else if (type==GL_TEXTURE_COORD_ARRAY){
-    g_tex_array=false;
-    mycb.use_tex=0;
-    g_devcon->UpdateSubresource(g_CB,0,NULL,&mycb,0,0);
-    g_devcon->PSSetConstantBuffers(0,1,&g_CB);
-  }
 }
 
 void glEnable(GLenum type)
 {
+	switch (type)
+	{
+	case GL_DEPTH_TEST:
+		g_devcon->OMSetDepthStencilState(g_pDSDepth, 1);
+		break;
+	case GL_SCISSOR_TEST:
+		g_devcon->RSSetState(g_pRSScissor);
+		break;
+	}
 }
 
 void glDisable(GLenum type)
 {
+	switch (type)
+	{
+	case GL_DEPTH_TEST:
+		g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
+		break;
+	case GL_SCISSOR_TEST:
+		g_devcon->RSSetState(g_pRSNormal);
+		break;
+	}
+}
+
+void memdump(const char *chn, const void *bv, int sz) {
+	int csz, done = 0, i;
+	const unsigned char *b = (const unsigned char *)bv;
+	glog_i("[%s]\n", chn);
+	while (sz) {
+		csz = sz;
+		if (sz > 16)
+			csz = 16;
+		glog_i("%08lx:", done);
+		{
+			for (i = 0; i < csz; i++)
+				glog_i("%02x ", b[i]);
+			for (i = csz; i < 16; i++)
+				glog_i("   ");
+		}
+		if (0)
+			for (i = 0; i < csz; i++) {
+				int c = b[i];
+				glog_i("%c", (((c < 32) || (c > 127)) ? '.' : c));
+			}
+		glog_i("\n");
+		b += csz;
+		done += csz;
+		sz -= csz;
+	}
+}
+
+void floatdump(const char *chn, const void *bv, int sz) {
+	int csz, done = 0, i;
+	const float *b = (const float *)bv;
+	glog_i("[%s]\n", chn);
+	while (sz) {
+		csz = sz;
+		if (sz > 4)
+			csz = 4;
+		glog_i("%08lx:", done);
+		{
+			for (i = 0; i < csz; i++)
+				glog_i("%8.6f ", b[i]);
+			for (i = csz; i < 16; i++)
+				glog_i("                ");
+		}
+		if (0)
+			for (i = 0; i < csz; i++) {
+				int c = b[i];
+				glog_i("%c", (((c < 32) || (c > 127)) ? '.' : c));
+			}
+		glog_i("\n");
+		b += csz;
+		done += csz;
+		sz -= csz;
+	}
+}
+
+void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  normalized, GLsizei  stride, const GLvoid *  pointer,GLsizei count, bool modified, GLuint *cache)
+{
+	if (size > dxcompat_maxvertices) size = dxcompat_maxvertices;  // avoid overflow
+	ID3D11Buffer *vbo=NULL;
+	const char *vName = "VB";
+	switch (index)
+	{
+	case 0:
+		vbo = g_pVBuffer;
+		break;
+	case 1:
+		vbo = g_pCBuffer;
+		vName = "CB";
+		break;
+	case 2:
+		vbo = g_pTBuffer;
+		vName = "TB";
+		break;
+	default:
+		return;
+	}
+	int elmSize = 1;
+	switch (type)
+	{
+	case GL_FLOAT:
+		elmSize = sizeof(GLfloat);
+		break;
+	}
+	D3D11_MAPPED_SUBRESOURCE ms;
+	g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+	if ((index == 0) && (size == 2)) //special case expand X,Y to X,Y,0 data
+	{
+		float *vdi = (float *)pointer;
+		float *vdo = (float *)ms.pData;
+		for (int k = 0; k < count; k++)
+		{
+			*(vdo++) = *(vdi++);
+			*(vdo++) = *(vdi++);
+			*(vdo++) = 0;
+		}
+		size = 3;
+	}
+	else
+		memcpy(ms.pData, pointer, size*elmSize*count);                 // copy the data    
+	//floatdump(vName, ms.pData, 8);
+	g_devcon->Unmap(vbo, NULL);                                      // unmap the buffer
+
+	UINT tstride = size*elmSize;
+	UINT offset = 0;
+
+	g_devcon->IASetVertexBuffers(index, 1, &vbo, &tstride, &offset);
+}
+
+void glEnableVertexAttribArray(GLuint index)
+{
+
+}
+void glDisableVertexAttribArray(GLuint index)
+{
+
+}
+
+
+void glUniform1f(GLint location, GLfloat v0)
+{
+	switch (location)
+	{
+	case 22: //fColorSel
+		cbpData.fColorSel = v0;
+		cbpData.dirty = true;
+		break;
+	case 23: //fTextureSel
+		cbpData.fTextureSel = v0;
+		cbpData.dirty = true;
+		break;
+	}
+}
+
+void glUniform1i(GLint location, GLint v0)
+{
+	switch (location)
+	{
+	case 21: //fTexture
+		break;
+	}
+}
+
+void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
+{
+	switch (location)
+	{
+	case 20: //fColor
+		cbpData.fColor=DirectX::XMFLOAT4(v0,v1,v2,v3);
+		cbpData.dirty = true;
+		break;
+	}
+}
+void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value)
+{
+	switch (location)
+	{
+	case 10: //vMatrix
+		cbvData.mvp = DirectX::XMFLOAT4X4(value);
+		cbvData.dirty = true;
+		break;
+	}
 }
 
 //######################################################################
+void updateShaders()
+{
+	//Update CB{V,P} data
+	if (cbpData.dirty)
+	{
+		//floatdump("CBP", &cbpData, 6);
+		g_devcon->UpdateSubresource(g_CBP, 0, NULL, &cbpData, 0, 0);
+		g_devcon->PSSetConstantBuffers(0, 1, &g_CBP);
+		cbpData.dirty = false;
+	}
+	if (cbvData.dirty)
+	{
+		g_devcon->UpdateSubresource(g_CBV, 0, NULL, &cbvData, 0, 0);
+		g_devcon->VSSetConstantBuffers(0, 1, &g_CBV);
+		cbvData.dirty = false;
+	}
+}
+
 void glDrawArrays(GLenum pattern, GLint zero, GLsizei npoints)
 {
-
-  // temporary: loop over npoint vertices and transform manually using
-  // matrix multiplication
-
-  int i,j,k;
-  float x,y,xp,yp,zp;
-
-//  static VERTEX DxVertices[1024];
-  D3D11_MAPPED_SUBRESOURCE ms;    
-  VERTEX *DxVertices;
-
-  float mat[4][4];
-
-  if (npoints > dxcompat_maxvertices) npoints = dxcompat_maxvertices;  // avoid overflow
-
-  for (i=0;i<4;i++){
-    for (j=0;j<4;j++){
-      mat[i][j]=0;
-      for (k=0;k<4;k++){
-	mat[i][j]+=projectionmat.M[i][k]*modelmat.M[k][j];
-      }
-    }
-  }
-
-  g_devcon->Map(g_pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
-  DxVertices = (VERTEX *)ms.pData;
-
-  for (i=0;i<npoints;i++){
-    x=g_vertices[2*i];
-    y=g_vertices[2*i+1];
-
-    xp=mat[0][0]*x+mat[0][1]*y+mat[0][3];   // assuming z=0, w=1
-    yp=mat[1][0]*x+mat[1][1]*y+mat[1][3];
-    zp=mat[2][0]*x+mat[2][1]*y+mat[2][3];
-
-    DxVertices[i].X=xp;
-    DxVertices[i].Y=yp;
-    DxVertices[i].Z=zp;
-
-    if (g_color_array){
-      DxVertices[i].r=g_colors[4*i];
-      DxVertices[i].g=g_colors[4*i+1];
-      DxVertices[i].b=g_colors[4*i+2];
-      DxVertices[i].a=g_colors[4*i+3];
-    }
-    else {
-      DxVertices[i].r=g_r;
-      DxVertices[i].g=g_g;
-      DxVertices[i].b=g_b;
-      DxVertices[i].a=g_a;
-    }
-
-    if (g_tex_array){
-      DxVertices[i].u=g_tex_coord[2*i];
-      DxVertices[i].v=g_tex_coord[2*i+1];
-    }
-  }
-
-//  memcpy(ms.pData, DxVertices, sizeof(VERTEX)*npoints);                 // copy the data    
-  g_devcon->Unmap(g_pVBuffer, NULL);                                      // unmap the buffer
-  
-  UINT stride=sizeof(VERTEX);
-  UINT offset=0;
-
-  g_devcon->IASetVertexBuffers(0,1,&g_pVBuffer,&stride, &offset);
+	updateShaders();
 
   if (dxcompat_force_lines)
      pattern = GL_LINE_STRIP;
@@ -642,68 +578,7 @@ void glBlendFunc(GLenum sfactor, GLenum dfactor)
 
 }
 
-void glLoadMatrixf(const GLfloat *m)
-{
-	if (g_modelview)
-		modelmat.set(m);
-	else
-		projectionmat.set(m);
-}
 
-void glColorPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *ptr)
-{
-
-	if (size != 4){
-		glog_e("glColorPointer: size must be 4\n");
-		exit(1);
-	}
-
-	if (type == GL_FLOAT)
-		g_colors = (GLfloat*)ptr;
-	else {
-		glog_e("glColorPointer: illegal type\n");
-		exit(1);
-	}
-
-	if (stride != 0) glog_w("glColorPointer. Stride should be zero\n");
-}
-
-void glVertexPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *ptr)
-{
-
-	if (size != 2){
-		glog_e("glVertexPointer: size must be 2\n");
-		exit(1);
-	}
-
-	if (type==GL_FLOAT)
-    	g_vertices = (GLfloat*)ptr;
-	else {
-		glog_e("glVertexPointer: illegal type\n");
-		exit(1);
-	}
-
-	if (stride != 0) glog_w("glVertexPointer. Stride should be zero\n");
-}
-
-void glTexCoordPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *ptr)
-{
-
-	if (size != 2){
-		glog_e("glTexCoordPointer: size must be 2\n");
-		exit(1);
-	}
-
-	if (type==GL_FLOAT)
-	   g_tex_coord = (GLfloat*)ptr;
-	else {
-		glog_e("glTexCoordPointer: illegal type\n");
-		exit(1);
-	}
-
-	if (stride != 0) glog_w("glVertexTexCoordPointer. Stride should be zero\n");
-
-}
 
 void glGetIntegerv(GLenum pname, GLint *params)
 {
@@ -728,88 +603,32 @@ void glTexEnvi(GLenum target, GLenum pname, GLint param)
 	glog_v("glTexEnvi not supported\n");
 }
 
-void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices)
+void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices, bool modified, GLuint *cache)
 {
-	int i, j, k;
-	float x, y, xp, yp, zp;
-
-//	static VERTEX DxVertices[1024];
-	VERTEX *DxVertices;
 	D3D11_MAPPED_SUBRESOURCE ms;
 
-	float mat[4][4];
+	updateShaders();
 
-	GLubyte *ub_indices;
-	GLushort *us_indices;
-	GLuint *ui_indices, ui_index;
+	int indiceSize = 4;
+	DXGI_FORMAT iFmt = DXGI_FORMAT_R32_UINT;
+
 
 	if (count > dxcompat_maxvertices) count = dxcompat_maxvertices;  // prevent overflow
 
-	if (type == GL_UNSIGNED_BYTE)
-		ub_indices = (GLubyte *)indices;
-	else if (type==GL_UNSIGNED_SHORT)
-		us_indices = (GLushort *)indices;
-	else
-		ui_indices = (GLuint *)indices;
-
-	for (i = 0; i<4; i++){
-		for (j = 0; j<4; j++){
-			mat[i][j] = 0;
-			for (k = 0; k<4; k++){
-				mat[i][j] += projectionmat.M[i][k] * modelmat.M[k][j];
-			}
-		}
+	if (type == GL_UNSIGNED_SHORT)
+	{
+		indiceSize = 2;
+		iFmt = DXGI_FORMAT_R16_UINT;
 	}
 
-	g_devcon->Map(g_pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
-	DxVertices = (VERTEX *)ms.pData;
+	g_devcon->Map(g_pIBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+	memcpy(ms.pData, indices, indiceSize*count);                 // copy the data    
+	g_devcon->Unmap(g_pIBuffer, NULL);                                      // unmap the buffer
 
-	for (i = 0; i<count; i++){
-
-		if (type == GL_UNSIGNED_BYTE)
-			ui_index = ub_indices[i];
-		else if (type == GL_UNSIGNED_SHORT)
-			ui_index = us_indices[i];
-		else
-			ui_index = ui_indices[i];
-
-		x = g_vertices[2 * ui_index];
-		y = g_vertices[2 * ui_index + 1];
-
-		xp = mat[0][0] * x + mat[0][1] * y + mat[0][3];
-		yp = mat[1][0] * x + mat[1][1] * y + mat[1][3];
-		zp = mat[2][0] * x + mat[2][1] * y + mat[2][3];
-
-		DxVertices[i].X = xp;
-		DxVertices[i].Y = yp;
-		DxVertices[i].Z = zp;
-
-		if (g_color_array){
-			DxVertices[i].r = g_colors[4 * ui_index];
-			DxVertices[i].g = g_colors[4 * ui_index + 1];
-			DxVertices[i].b = g_colors[4 * ui_index + 2];
-			DxVertices[i].a = g_colors[4 * ui_index + 3];
-		}
-		else {
-			DxVertices[i].r = g_r;
-			DxVertices[i].g = g_g;
-			DxVertices[i].b = g_b;
-			DxVertices[i].a = g_a;
-		}
-
-		if (g_tex_array){
-			DxVertices[i].u = g_tex_coord[2 * ui_index];
-			DxVertices[i].v = g_tex_coord[2 * ui_index + 1];
-		}
-	}
-
-//	memcpy(ms.pData, DxVertices, sizeof(VERTEX)*count);                 // copy the data    
-	g_devcon->Unmap(g_pVBuffer, NULL);                                      // unmap the buffer
-
-	UINT stride = sizeof(VERTEX);
+	UINT stride = indiceSize;
 	UINT offset = 0;
 
-	g_devcon->IASetVertexBuffers(0, 1, &g_pVBuffer, &stride, &offset);
+	g_devcon->IASetIndexBuffer(g_pIBuffer, iFmt,0);
 
 	if (dxcompat_force_lines)
 		mode = GL_LINE_STRIP;
@@ -832,7 +651,7 @@ void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indi
 	}
 
 
-	g_devcon->Draw(count, 0);
+	g_devcon->DrawIndexed(count, 0, 0);
 
 }
 
@@ -908,7 +727,7 @@ void glBindFramebuffer(GLenum target, GLuint framebuffer)
 	}
 
 	if (framebuffer == 0){
-		g_devcon->OMSetRenderTargets(1, &g_backbuffer, NULL);  // draw on screen (actually back buffer)
+		g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);  // draw on screen (actually back buffer)
 		g_curr_framebuffer = 0;
 		return;
 	}
@@ -976,13 +795,59 @@ void glTexParameteri(GLenum target, GLenum pname, GLint param)
 }
 
 
-// Empty for now
 void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
+{
+	D3D11_RECT pRect;
+	pRect.left = x;
+	pRect.top = y;
+	pRect.right = x + width - 1;
+	pRect.bottom = y + height - 1;
+	g_devcon->RSSetScissorRects(1, &pRect);
+}
+
+void glDepthFunc(GLenum func)
 {
 
 }
 
-void glDepthFunc(GLenum func)
+GLuint glCreateShader(GLenum shaderType)  { return 0; }
+GLuint glCreateProgram(void) { return 0;  }
+void glCompileShader(GLuint shader) {}
+void glShaderSource(GLuint shader, GLsizei count, const GLchar **string, const GLint *length) {}
+void glGetShaderiv(GLuint shader, GLenum pname, GLint *params) {}
+void glGetProgramiv(GLuint program, GLenum pname, GLint *params) {}
+void glGetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length, GLchar *infoLog) {}
+void glGetProgramInfoLog(GLuint program, GLsizei maxLength, GLsizei *length, GLchar *infoLog) {}
+void glDeleteShader(GLuint shader) {}
+void glAttachShader(GLuint program, GLuint shader) {}
+void glLinkProgram(GLuint program) {}
+void glUseProgram(GLuint program) {}
+void glDeleteProgram(GLuint program) {}
+void glBindAttribLocation(GLuint program, GLuint index, const GLchar *name)
+{
+
+}
+
+GLint glGetAttribLocation(GLuint program, const GLchar *name)
+{
+	if (!strcmp(name, "vVertex")) return 0;
+	if (!strcmp(name, "vColor")) return 1;
+	if (!strcmp(name, "vTexCoord")) return 2;
+	return -1;
+}
+
+GLint glGetUniformLocation(GLuint program, const GLchar *name)
+{
+	if (!strcmp(name, "vMatrix")) return 10;
+	if (!strcmp(name, "fColor")) return 20;
+	if (!strcmp(name, "fTexture")) return 21;
+	if (!strcmp(name, "fColorSel")) return 22;
+	if (!strcmp(name, "fTextureSel")) return 23;
+	return -1;
+}
+
+
+void glActiveTexture(GLenum texture)
 {
 
 }

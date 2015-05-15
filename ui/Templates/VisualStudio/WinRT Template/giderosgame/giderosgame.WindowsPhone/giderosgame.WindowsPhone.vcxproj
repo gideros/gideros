@@ -146,7 +146,7 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\**\*">
+    <None Include="Assets\*">
       <DeploymentContent>true</DeploymentContent>
     </None>
   </ItemGroup>
