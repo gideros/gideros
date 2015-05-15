@@ -24,27 +24,24 @@ static bool s_depthBufferCleared=false;
 static bool oglInitialized=false;
 
 #ifndef GIDEROS_GL1
-GLuint stdProgram=0;
-GLuint stdCProgram=0;
-GLuint stdTProgram=0;
-GLuint stdCTProgram=0;
-GLuint stdVShader=0;
-GLuint stdCVShader=0;
-GLuint stdTVShader=0;
-GLuint stdCTVShader=0;
-GLuint stdFShader=0;
-GLuint stdCFShader=0;
-GLuint stdTFShader=0;
-GLuint stdCTFShader=0;
-GLuint vertexVS=0;
-GLuint textureVS=0;
-GLuint colorVS=0;
-GLuint matrixVS=0;
-GLuint colorFS=0;
-GLuint textureFS=0;
-GLuint _depthRenderBuffer=0;
 
-bool useTexture,useColor;
+class ShaderProgram
+{
+public:
+    virtual void activate()=0;
+    virtual GLint getUniform(int index)=0;
+    virtual GLint getAttribute(int index)=0;
+    virtual ~ShaderProgram() { };
+};
+
+GLint curProg=-1;
+ShaderProgram *stdProgram,*stdCProgram,*stdTProgram,*stdCTProgram;
+ShaderProgram *current=NULL;
+GLuint _depthRenderBuffer=0;
+bool matrixDirty=true;
+float constColR,constColG,constColB,constColA;
+bool colorDirty=true;
+
 
 #ifdef OPENGL_ES0
 /* Vertex shader*/
@@ -175,14 +172,9 @@ const char *stdCTFShaderCode=
 "}\n";
 #endif
 
-class ShaderProgram
-{
-    virtual void activate()=0;
-    virtual GLint getUniform(int index)=0;
-    virtual GLint getAttribute(int index)=0;
-};
 
-class oglShaderProgram
+
+class oglShaderProgram : public ShaderProgram
 {
     GLuint vertexShader;
     GLuint fragmentShader;
@@ -190,9 +182,15 @@ class oglShaderProgram
     std::vector<GLint> attributes;
     std::vector<GLint> uniforms;
     
+public:
     virtual void activate();
     virtual GLint getUniform(int index);
     virtual GLint getAttribute(int index);
+    
+    oglShaderProgram(const char *vshader1,const char *vshader2,
+                     const char *fshader1, const char *fshader2,
+                     const char **uniforms, const char **attributes);
+    virtual ~oglShaderProgram();
 };
 
 GLuint oglLoadShader(GLuint type,const char *hdr,const char *code)
@@ -224,24 +222,6 @@ GLuint oglLoadShader(GLuint type,const char *hdr,const char *code)
 	return shader;
 }
 
-void oglUseProgram(GLuint program)
-{
-    glUseProgram(program);
-    vertexVS=glGetAttribLocation(program, "vVertex");
-    textureVS=glGetAttribLocation(program, "vTexCoord");
-    colorVS=glGetAttribLocation(program, "vColor");
-    matrixVS=glGetUniformLocation(program, "vMatrix");
-    colorFS=glGetUniformLocation(program, "fColor");
-    textureFS=glGetUniformLocation(program, "fTexture");
-    
-    if (textureFS!=-1)
-        glUniform1i(textureFS, 0);
-    
-    /*glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
-    glog_i("FIndices: %d,%d\n", colorFS,textureFS);
-    */
-}
-
 GLuint oglBuildProgram(GLuint vertexShader,GLuint fragmentShader)
 {
     GLuint program = glCreateProgram();
@@ -261,25 +241,65 @@ GLuint oglBuildProgram(GLuint vertexShader,GLuint fragmentShader)
     return program;
 }
 
+void oglShaderProgram::activate()
+{
+    if (curProg!=program)
+    {
+        glUseProgram(program);
+        curProg=program;
+    }
+    current=this;
+}
+
+GLint oglShaderProgram::getUniform(int index)
+{
+    return uniforms[index];
+}
+
+GLint oglShaderProgram::getAttribute(int index)
+{
+    return attributes[index];
+}
+
+oglShaderProgram::oglShaderProgram(const char *vshader1,const char *vshader2,
+                 const char *fshader1, const char *fshader2,
+                 const char **uniforms, const char **attributes)
+{
+    vertexShader=oglLoadShader(GL_VERTEX_SHADER,vshader1,vshader2);
+    fragmentShader=oglLoadShader(GL_FRAGMENT_SHADER,fshader1,fshader2);
+    program = oglBuildProgram(vertexShader,fragmentShader);
+    while (*uniforms)
+        this->uniforms.push_back(glGetUniformLocation(program, *(uniforms++)));
+    while (*attributes)
+        this->attributes.push_back(glGetAttribLocation(program, *(attributes++)));
+}
+
+oglShaderProgram::~oglShaderProgram()
+{
+    glDeleteProgram(program);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+}
+
 void oglSetupShaders()
 {
 	glog_i("GL_VERSION:%s\n",glGetString(GL_VERSION));
 	glog_i("GLSL_VERSION:%s\n",glGetString(GL_SHADING_LANGUAGE_VERSION));
-	stdVShader=oglLoadShader(GL_VERTEX_SHADER,hdrVShaderCode,stdVShaderCode);
-    stdCVShader=oglLoadShader(GL_VERTEX_SHADER,hdrVShaderCode,stdCVShaderCode);
-    stdTVShader=oglLoadShader(GL_VERTEX_SHADER,hdrVShaderCode,stdTVShaderCode);
-    stdCTVShader=oglLoadShader(GL_VERTEX_SHADER,hdrVShaderCode,stdCTVShaderCode);
-    stdFShader=oglLoadShader(GL_FRAGMENT_SHADER,hdrFShaderCode,stdFShaderCode);
-    stdCFShader=oglLoadShader(GL_FRAGMENT_SHADER,hdrFShaderCode,stdCFShaderCode);
-    stdTFShader=oglLoadShader(GL_FRAGMENT_SHADER,hdrFShaderCode,stdTFShaderCode);
-    stdCTFShader=oglLoadShader(GL_FRAGMENT_SHADER,hdrFShaderCode,stdCTFShaderCode);
     
-    stdProgram = oglBuildProgram(stdVShader,stdFShader);
-    stdCProgram = oglBuildProgram(stdCVShader,stdCFShader);
-    stdTProgram = oglBuildProgram(stdTVShader,stdTFShader);
-    stdCTProgram = oglBuildProgram(stdCTVShader,stdCTFShader);
-
-    oglUseProgram(stdProgram);
+    const char *stdUniforms[]={"vMatrix","fColor","fTexture",NULL};
+    const char *stdAttributes[]={"vVertex","vColor","vTexCoord",NULL};
+    stdProgram = new oglShaderProgram(hdrVShaderCode,stdVShaderCode,hdrFShaderCode,stdFShaderCode,
+                                      stdUniforms,stdAttributes);
+    stdCProgram = new oglShaderProgram(hdrVShaderCode,stdCVShaderCode,hdrFShaderCode,stdCFShaderCode,
+                                      stdUniforms,stdAttributes);
+    stdTProgram = new oglShaderProgram(hdrVShaderCode,stdTVShaderCode,hdrFShaderCode,stdTFShaderCode,
+                                      stdUniforms,stdAttributes);
+    glUniform1i(stdTProgram->getUniform(2),0);
+    stdCTProgram = new oglShaderProgram(hdrVShaderCode,stdCTVShaderCode,hdrFShaderCode,stdCTFShaderCode,
+                                      stdUniforms,stdAttributes);
+    glUniform1i(stdCTProgram->getUniform(2),0);
+    
+    stdProgram->activate();
 }
 #endif
 
@@ -314,19 +334,12 @@ void oglCleanup()
 {
     oglInitialized=false;
 #ifndef GIDEROS_GL1
-	glUseProgram(0);
-    glDeleteProgram(stdProgram);
-    glDeleteProgram(stdCProgram);
-    glDeleteProgram(stdTProgram);
-    glDeleteProgram(stdCTProgram);
-    glDeleteShader(stdVShader);
-    glDeleteShader(stdCVShader);
-    glDeleteShader(stdTVShader);
-    glDeleteShader(stdCTVShader);
-    glDeleteShader(stdFShader);
-    glDeleteShader(stdCFShader);
-    glDeleteShader(stdTFShader);
-    glDeleteShader(stdCTFShader);
+	glUseProgram(-1);
+    
+    delete stdProgram;
+    delete stdCProgram;
+    delete stdTProgram;
+    delete stdCTProgram;
 #endif
 #ifdef OPENGL_ES
 	glDeleteRenderbuffers(1,&_depthRenderBuffer);
@@ -351,10 +364,42 @@ void oglLoadMatrixf(const Matrix4 m)
 	 glMatrixMode(GL_MODELVIEW);
 	 glLoadMatrixf(m.data());
 #else
-	glUniformMatrix4fv(matrixVS, 1, false, oglCombined.data());
+    matrixDirty=true;
 #endif
 }
 
+Matrix4 setFrustum(float l, float r, float b, float t, float n, float f)
+{
+    Matrix4 mat;
+#ifdef DXCOMPAT_H
+    int df=1,dn=0;
+#else
+    int df=1,dn=-1;
+#endif
+    mat[0]  = 2 * n / (r - l);
+    mat[5]  = 2 * n / (t - b);
+    mat[8]  = (r + l) / (r - l);
+    mat[9]  = (t + b) / (t - b);
+    mat[10] = -(df*f - dn*n) / (f - n);
+    mat[11] = -1;
+    mat[14] = -((df-dn) * f * n) / (f - n);
+    mat[15] = 0;
+    mat.type=Matrix4::FULL;
+    return mat;
+}
+
+Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f)
+{
+    Matrix4 mat;
+    mat[0]  = 2 / (r - l);
+    mat[5]  = 2 / (t - b);
+    mat[10] = -2 / (f - n);
+    mat[12] = -(r + l) / (r - l);
+    mat[13] = -(t + b) / (t - b);
+    mat[14] = -(f + n) / (f - n);
+    mat.type=Matrix4::M2D;
+    return mat;
+}
 Matrix4 oglGetModelMatrix()
 {
 	return oglModel;
@@ -371,7 +416,7 @@ void oglSetProjection(const Matrix4 m)
 	 glMatrixMode(GL_PROJECTION);
 	 glLoadMatrixf(m.data());
 #endif
-	oglProjection=m;
+	 oglProjection = m;
 }
 
 void oglEnable(GLenum cap)
@@ -384,8 +429,6 @@ void oglEnable(GLenum cap)
 #ifdef GIDEROS_GL1
 			glEnable(GL_TEXTURE_2D);
 #else
-            useTexture=true;
-		    //glog_d("TextureSelFS:%d\n",1);
 #endif
 			s_Texture2DEnabled = true;
 			s_Texture2DStateCount++;
@@ -421,8 +464,6 @@ void oglDisable(GLenum cap)
 #ifdef GIDEROS_GL1
 			glDisable(GL_TEXTURE_2D);
 #else
-            useTexture=false;
-		    //glog_d("TextureSelFS:%d\n",0);
 #endif
 			s_Texture2DEnabled = false;
 			s_Texture2DStateCount++;
@@ -488,7 +529,11 @@ void oglColor4f(float r,float g,float b,float a)
 #ifdef GIDEROS_GL1
 	glColor4f(r,g,b,a);
 #else
-	glUniform4f(colorFS,r,g,b,a);
+    constColR=r;
+    constColG=g;
+    constColB=b;
+    constColA=a;
+    colorDirty=true;
 #endif
 }
 
@@ -512,9 +557,12 @@ void oglEnableClientState(enum OGLClientState array)
 			assert(1);
 			break;
 	}
+    current=s_COLOR_ARRAY?stdCProgram:stdProgram;
+    if (s_TEXTURE_COORD_ARRAY)
+        current=s_COLOR_ARRAY?stdCTProgram:stdTProgram;
 }
 
-void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr)
+void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr,GLsizei count, bool modified, GLuint *cache)
 {
 	//glog_d("OglArrayPtr: %d:%p[%f,%f,%f,%f]\n",array,ptr,((const float *)ptr)[0],((const float *)ptr)[1],((const float *)ptr)[2],((const float *)ptr)[3]);
 	switch (array)
@@ -523,21 +571,33 @@ void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *
 #ifdef GIDEROS_GL1
 			glVertexPointer(mult,type, 0,ptr);
 #else
-			glVertexAttribPointer(vertexVS, mult,type, false,0, ptr);
+			glVertexAttribPointer(current->getAttribute(0), mult,type, false,0, ptr
+#ifdef DXCOMPAT_H
+					,count,modified,cache
+#endif
+					);
 #endif
 			break;
 		case TextureArray:
 #ifdef GIDEROS_GL1
 			glTexCoordPointer(mult,type, 0,ptr);
 #else
-			glVertexAttribPointer(textureVS, mult,type, false,0, ptr);
+			glVertexAttribPointer(current->getAttribute(2), mult,type, false,0, ptr
+#ifdef DXCOMPAT_H
+					,count,modified,cache
+#endif
+					);
 #endif
 			break;
         case ColorArray:
 #ifdef GIDEROS_GL1
 			glColorPointer(mult,type, 0,ptr);
 #else
-			glVertexAttribPointer(colorVS, mult,type, true,0, ptr);
+			glVertexAttribPointer(current->getAttribute(1), mult,type, true,0, ptr
+#ifdef DXCOMPAT_H
+					,count,modified,cache
+#endif
+					);
 #endif
             break;
 		default:
@@ -566,6 +626,9 @@ void oglDisableClientState(enum OGLClientState array)
 			assert(1);
 			break;
 	}
+    current=s_COLOR_ARRAY?stdCProgram:stdProgram;
+    if (s_TEXTURE_COORD_ARRAY)
+        current=s_COLOR_ARRAY?stdCTProgram:stdTProgram;
 }
 
 void oglSetupArrays()
@@ -574,6 +637,7 @@ void oglSetupArrays()
 			s_VERTEX_ARRAY,s_VERTEX_ARRAY_enabled,
 			s_TEXTURE_COORD_ARRAY,s_TEXTURE_COORD_ARRAY_enabled,
 			s_COLOR_ARRAY,s_COLOR_ARRAY_enabled	);*/
+    current->activate();
 	if (s_VERTEX_ARRAY)
 	{
 		if (s_VERTEX_ARRAY_enabled == false)
@@ -583,7 +647,7 @@ void oglSetupArrays()
 #ifdef GIDEROS_GL1
 			glEnableClientState(GL_VERTEX_ARRAY);
 #else
-		    glEnableVertexAttribArray(vertexVS);
+		    glEnableVertexAttribArray(current->getAttribute(0));
 #endif
 		}
 	}
@@ -596,7 +660,7 @@ void oglSetupArrays()
 #ifdef GIDEROS_GL1
 			glDisableClientState(GL_VERTEX_ARRAY);
 #else
-		    glDisableVertexAttribArray(vertexVS);
+		    glDisableVertexAttribArray(current->getAttribute(0));
 #endif
 		}
 	}
@@ -610,7 +674,7 @@ void oglSetupArrays()
 #ifdef GIDEROS_GL1
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 #else
-		    glEnableVertexAttribArray(textureVS);
+		    glEnableVertexAttribArray(current->getAttribute(2));
 #endif
 		}
 	}
@@ -623,7 +687,7 @@ void oglSetupArrays()
 #ifdef GIDEROS_GL1
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 #else
-		    glDisableVertexAttribArray(textureVS);
+		    glDisableVertexAttribArray(current->getAttribute(2));
 #endif
 		}
 	}
@@ -637,8 +701,7 @@ void oglSetupArrays()
 #ifdef GIDEROS_GL1
 			glEnableClientState(GL_COLOR_ARRAY);
 #else
-		    glEnableVertexAttribArray(colorVS);
-            useColor=true;
+            glEnableVertexAttribArray(current->getAttribute(1));
 #endif
         }
     }
@@ -651,16 +714,22 @@ void oglSetupArrays()
 #ifdef GIDEROS_GL1
 			glDisableClientState(GL_COLOR_ARRAY);
 #else
-		    glDisableVertexAttribArray(colorVS);
-            useColor=false;
+		    glDisableVertexAttribArray(current->getAttribute(1));
 #endif
         }
     }
     
-    GLuint program=useColor?stdCProgram:stdProgram;
-    if (useTexture)
-        program=useColor?stdCTProgram:stdTProgram;
-    oglUseProgram(program);
+    if (matrixDirty&&(current->getUniform(0)>=0))
+    {
+        glUniformMatrix4fv(current->getUniform(0), 1, false, oglCombined.data());
+        matrixDirty=false;
+    }
+    if (colorDirty&&(current->getUniform(1)>=0))
+    {
+        glUniform4f(current->getUniform(1),constColR,constColG,constColB,constColA);
+        colorDirty=false;
+    }
+
 }
 
 void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
@@ -671,10 +740,14 @@ void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
 
 
 
-void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices)
+void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, bool modified, GLuint *cache)
 {
 	oglSetupArrays();
-	glDrawElements(mode, count, type, indices);
+	glDrawElements(mode, count, type, indices
+#ifdef DXCOMPAT_H
+			,modified,cache
+#endif
+			);
 }
 
 
@@ -702,6 +775,7 @@ int getClientStateCount()
 
 void oglReset()
 {
+    if (!oglInitialized) return;
 	s_texture = 0;
 	s_Texture2DEnabled = false;
 	s_depthEnable=0;
@@ -725,11 +799,8 @@ void oglReset()
 	glDisableClientState(GL_COLOR_ARRAY);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	/* sanity set */
 #else
-    glDisableVertexAttribArray(vertexVS);
-    glDisableVertexAttribArray(textureVS);
-    glDisableVertexAttribArray(colorVS);
-    useColor=false;
-    useTexture=false;
+    current=stdProgram;
+    current->activate();
 #endif
     oglProjection.identity();
     oglVPProjection.identity();
@@ -745,6 +816,7 @@ void oglReset()
 
     glEnable(GL_BLEND);
 	glDisable(GL_SCISSOR_TEST);
+	glDisable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
 #ifndef PREMULTIPLIED_ALPHA
