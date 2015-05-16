@@ -79,7 +79,7 @@ for i=1, #map.layers do
 end
 
 stage:addChild(allLayers)
-allLayers:setScale(0.5)
+--allLayers:setScale(0.5)
 
 local dragging, startx, starty
 

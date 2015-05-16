@@ -39,6 +39,6 @@ float4 PShader(float4 position : SV_POSITION, float4 color : COLOR, float2 texco
 	float4 col = lerp(fColor, color, fColorSel);
 	float4 tex = lerp(float4(1.0, 1.0, 1.0, 1.0), myTexture.Sample(samLinear, texcoord), fTextureSel);
 	float4 frag = col * tex;
-	if (frag.a == 0.0) discard;
+//	if (frag.a == 0.0) discard;
 	return frag;
 }
