@@ -3,8 +3,7 @@
 
 #include <windows.h>
 //#include <windowsx.h>
-#include <DirectXMath.h>
-#include <DirectXPackedVector.h>
+//#include <d3d11_1.h>
 //#include <d3dcompiler.h>
 #include <math.h>
 
@@ -648,7 +647,6 @@ typedef float           GLfloat;        /* single precision float */
 typedef float           GLclampf;       /* single precision float in [0,1] */
 typedef double          GLdouble;       /* double precision float */
 typedef double          GLclampd;       /* double precision float in [0,1] */
-typedef char			GLchar;         /* char */
 
 void glViewport(GLint x, GLint y, GLsizei width, GLsizei height);
 void glClear(GLbitfield mask);
@@ -686,7 +684,7 @@ void glLoadMatrixf(const GLfloat *m);
 void glGetIntegerv(GLenum pname, GLint *params);
 const GLubyte *glGetString(GLenum name);
 void glTexEnvi(GLenum  target, GLenum pname, GLint param);
-void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices, bool modified, GLuint *cache);
+void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices);
 void glBindBuffer(GLenum target, GLuint buffer);   // openGL 1.5 or later
 void glBindFramebuffer(GLenum target, GLuint framebuffer);   // openGL 1.5 or later
 void glFramebufferTexture2D(GLenum targer, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
@@ -698,43 +696,14 @@ void glGenFramebuffers(GLsizei n, GLuint *framebuffers);
 void glScissor(GLint x, GLint y, GLsizei width, GLsizei height);
 void glDepthFunc(GLenum func);
 
-//GL2
-#define GL_TEXTURE0 0x84C0
-#define GL_TEXTURE1 0x84C1
-#define GL_TEXTURE2 0x84C2
-#define GL_TEXTURE3 0x84C3
-#define GL_FRAGMENT_SHADER 0x8B30
-#define GL_VERTEX_SHADER 0x8B31
-#define GL_DELETE_STATUS 0x8B80
-#define GL_COMPILE_STATUS 0x8B81
-#define GL_LINK_STATUS 0x8B82
-#define GL_VALIDATE_STATUS 0x8B83
-#define GL_INFO_LOG_LENGTH 0x8B84
-#define GL_SHADING_LANGUAGE_VERSION 0x8B8C
+struct VERTEX{
+  FLOAT X,Y,Z; 
+  FLOAT r,g,b,a;
+  FLOAT u,v;
+};
 
-GLuint glCreateShader(GLenum shaderType);
-GLuint glCreateProgram(void);
-void glCompileShader(GLuint shader);
-void glShaderSource(GLuint shader, GLsizei count, const GLchar **string, const GLint *length);
-void glGetShaderiv(GLuint shader, GLenum pname, GLint *params);
-void glGetProgramiv(GLuint program, GLenum pname, GLint *params);
-void glGetShaderInfoLog(GLuint shader, GLsizei maxLength, GLsizei *length, GLchar *infoLog);
-void glGetProgramInfoLog(GLuint program, GLsizei maxLength, GLsizei *length, GLchar *infoLog);
-void glDeleteShader(GLuint shader);
-void glAttachShader(GLuint program,	GLuint shader);
-void glLinkProgram(GLuint program);
-void glUseProgram(GLuint program);
-void glDeleteProgram(GLuint program);
-void glBindAttribLocation(GLuint program, GLuint index, const GLchar *name);
-GLint glGetAttribLocation(GLuint program, const GLchar *name);
-GLint glGetUniformLocation(GLuint program, const GLchar *name);
-void glUniform1f(GLint location, GLfloat v0);
-void glUniform1i(GLint location, GLint v0);
-void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3); 
-void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
-void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  normalized, GLsizei  stride, const GLvoid *  pointer, GLsizei count, bool modified, GLuint *cache);
-void glEnableVertexAttribArray(GLuint index); 
-void glDisableVertexAttribArray(GLuint index); 
-void glActiveTexture(GLenum texture);
+struct const_buffer{
+  int use_tex,b2,b3,b4;
+};
 
 #endif

@@ -261,11 +261,7 @@ void GMesh::clearTexture()
 
 void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey)
 {
-	if (mesh3d_)
-		oglEnable(GL_DEPTH_TEST);
-	if (vertices_.size() == 0) return;
-
-	if (texture_ && !textureCoordinates_.empty())
+    if (texture_ && !textureCoordinates_.empty())
     {
         oglEnable(GL_TEXTURE_2D);
         oglBindTexture(GL_TEXTURE_2D, texture_->data->id());
@@ -273,7 +269,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
     else
         oglDisable(GL_TEXTURE_2D);
 
-    oglArrayPointer(VertexArray,mesh3d_?3:2, GL_FLOAT,&vertices_[0],vertices_.size()/(mesh3d_?3:2),true,NULL);
+    oglArrayPointer(VertexArray,mesh3d_?3:2, GL_FLOAT,&vertices_[0]);
     oglEnableClientState(VertexArray);
 
     if (!colors_.empty())
@@ -306,17 +302,20 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
             }
         }
 
-        oglArrayPointer(ColorArray,4, GL_UNSIGNED_BYTE, &colors_[0],colors_.size()/4,true,NULL);
+        oglArrayPointer(ColorArray,4, GL_UNSIGNED_BYTE, &colors_[0]);
         oglEnableClientState(ColorArray);
     }
 
     if (texture_ && !textureCoordinates_.empty())
     {
-        oglArrayPointer(TextureArray,2, GL_FLOAT, &textureCoordinates_[0],textureCoordinates_.size()/2,true,NULL);
+        oglArrayPointer(TextureArray,2, GL_FLOAT, &textureCoordinates_[0]);
         oglEnableClientState(TextureArray);
     }
     
-    oglDrawElements(meshtype_, indices_.size(), GL_UNSIGNED_SHORT, &indices_[0],true, NULL);
+    if (mesh3d_)
+    	oglEnable(GL_DEPTH_TEST);
+
+    oglDrawElements(meshtype_, indices_.size(), GL_UNSIGNED_SHORT, &indices_[0]);
 
 
     oglDisableClientState(VertexArray);

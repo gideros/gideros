@@ -13,10 +13,10 @@ enum OGLClientState {
 void oglBindTexture(GLenum target, GLuint texture);
 void oglForceBindTexture(GLenum target, GLuint texture);
 void oglDrawArrays(GLenum mode, GLint first, GLsizei count);
-void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, bool modified, GLuint *cache);
+void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices);
 void oglEnableClientState(enum OGLClientState array);
 void oglDisableClientState(enum OGLClientState array);
-void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr,GLsizei count, bool modified, GLuint *cache);
+void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr);
 Matrix4 oglGetModelMatrix();
 void oglLoadMatrixf(const Matrix4 m);
 void oglSetProjection(const Matrix4 m);
@@ -42,9 +42,6 @@ int getClientStateCount();
 
 void resetTexture2DStateCount();
 int getTexture2DStateCount();
-
-Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
-Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
 
 
 #endif

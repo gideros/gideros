@@ -33,10 +33,10 @@ void GraphicsBase::draw()
 
 		oglEnableClientState(VertexArray);
 		oglEnableClientState(TextureArray);
-		oglArrayPointer(VertexArray,2,GL_FLOAT,&vertices[0],vertices.size(),true,NULL);
-		oglArrayPointer(TextureArray,2,GL_FLOAT,&texcoords[0],texcoords.size(),true,NULL);
+		oglArrayPointer(VertexArray,2,GL_FLOAT,&vertices[0]);
+		oglArrayPointer(TextureArray,2,GL_FLOAT,&texcoords[0]);
 
-		oglDrawElements(mode, indices.size(), GL_UNSIGNED_SHORT, &indices[0],true, NULL);
+		oglDrawElements(mode, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
 
 		oglDisableClientState(VertexArray);
 		oglDisableClientState(TextureArray);
@@ -46,9 +46,9 @@ void GraphicsBase::draw()
 		oglDisable(GL_TEXTURE_2D);
 
 		oglEnableClientState(VertexArray);
-		oglArrayPointer(VertexArray,2,GL_FLOAT,&vertices[0],vertices.size(),true,NULL);
+		oglArrayPointer(VertexArray,2,GL_FLOAT,&vertices[0]);
 
-		oglDrawElements(mode, indices.size(), GL_UNSIGNED_SHORT, &indices[0],true,NULL);
+		oglDrawElements(mode, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
 
 		oglDisableClientState(VertexArray);
 	}
