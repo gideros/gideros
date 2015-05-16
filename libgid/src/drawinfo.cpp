@@ -148,6 +148,7 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 	oglEnableClientState(VertexArray);
 
 	float v[8];
+	oglArrayPointer(VertexArray,2, GL_FLOAT, v);
 
 	int len = strlen(ip);
 	for (int i = 0; i < len; ++i)
@@ -196,7 +197,6 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 					v[4] = (x + xx)     * size; v[5] = (y + yy + 1) * size;
 					v[6] = (x + xx + 1) * size; v[7] = (y + yy + 1) * size;
 
-					oglArrayPointer(VertexArray,2, GL_FLOAT, v, 4, true, NULL);
 					oglDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 				}
 			}

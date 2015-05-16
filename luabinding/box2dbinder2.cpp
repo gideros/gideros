@@ -4727,14 +4727,14 @@ void b2DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b
 {
 	glPushColor();
 	glMultColor(color.r, color.g, color.b,1);
-	oglArrayPointer(VertexArray,2, GL_FLOAT, vertices, vertexCount, true, NULL);
+	oglArrayPointer(VertexArray,2, GL_FLOAT, vertices);
 	oglDrawArrays(GL_LINE_LOOP, 0, vertexCount);
 	glPopColor();
 }
 
 void b2DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
-	oglArrayPointer(VertexArray,2, GL_FLOAT, vertices, vertexCount, true, NULL);
+	oglArrayPointer(VertexArray,2, GL_FLOAT, vertices);
 
 	glPushColor();
 	glMultColor(color.r, color.g, color.b,0.5f);
@@ -4765,7 +4765,7 @@ void b2DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color
 
 	glPushColor();
 	glMultColor(color.r, color.g, color.b,1);
-	oglArrayPointer(VertexArray,2, GL_FLOAT, glVertices, vertexCount, true, NULL);
+	oglArrayPointer(VertexArray,2, GL_FLOAT, glVertices);
 
 	oglDrawArrays(GL_TRIANGLE_FAN, 0, vertexCount);
 	glPopColor();
@@ -4789,7 +4789,7 @@ void b2DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2
 
 	glPushColor();
 	glMultColor(color.r, color.g, color.b,0.5f);
-	oglArrayPointer(VertexArray,2, GL_FLOAT, glVertices, vertexCount, true, NULL);
+	oglArrayPointer(VertexArray,2, GL_FLOAT, glVertices);
 	oglDrawArrays(GL_TRIANGLE_FAN, 0, vertexCount);
 	glPopColor();
 	glPushColor();
@@ -4808,7 +4808,7 @@ void b2DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color&
 	GLfloat				glVertices[] = {
 		p1.x,p1.y,p2.x,p2.y
 	};
-	oglArrayPointer(VertexArray,2, GL_FLOAT, glVertices, 2, true, NULL);
+	oglArrayPointer(VertexArray,2, GL_FLOAT, glVertices);
 	oglDrawArrays(GL_LINES, 0, 2);
 	glPopColor();
 }

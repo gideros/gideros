@@ -53,6 +53,8 @@ void GRenderTarget::clear(unsigned int color, float a)
     gtexture_BindRenderTarget(oldFBO);
 }
 
+extern Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
+
 void GRenderTarget::draw(const Sprite *sprite)
 {
     oglReset();

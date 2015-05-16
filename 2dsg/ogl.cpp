@@ -169,7 +169,7 @@ void oglSetupShaders()
     colorFS=glGetUniformLocation(shaderProgram, "fColor");
     textureFS=glGetUniformLocation(shaderProgram, "fTexture");
 
-	glog_i("VIndices: %d,%d,%d,%d\n", vertexVS, textureVS, colorVS, matrixVS);
+    glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
     glog_i("FIndices: %d,%d,%d,%d\n", colorSelFS,textureSelFS,colorFS,textureFS);
 
     glUniform1i(textureFS, 0);
@@ -248,38 +248,6 @@ void oglLoadMatrixf(const Matrix4 m)
 #endif
 }
 
-Matrix4 setFrustum(float l, float r, float b, float t, float n, float f)
-{
-    Matrix4 mat;
-#ifdef DXCOMPAT_H
-    int df=1,dn=0;
-#else
-    int df=1,dn=-1;
-#endif
-    mat[0]  = 2 * n / (r - l);
-    mat[5]  = 2 * n / (t - b);
-    mat[8]  = (r + l) / (r - l);
-    mat[9]  = (t + b) / (t - b);
-    mat[10] = -(df*f - dn*n) / (f - n);
-    mat[11] = -1;
-    mat[14] = -((df-dn) * f * n) / (f - n);
-    mat[15] = 0;
-    mat.type=Matrix4::FULL;
-    return mat;
-}
-
-Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f)
-{
-    Matrix4 mat;
-    mat[0]  = 2 / (r - l);
-    mat[5]  = 2 / (t - b);
-    mat[10] = -2 / (f - n);
-    mat[12] = -(r + l) / (r - l);
-    mat[13] = -(t + b) / (t - b);
-    mat[14] = -(f + n) / (f - n);
-    mat.type=Matrix4::M2D;
-    return mat;
-}
 Matrix4 oglGetModelMatrix()
 {
 	return oglModel;
@@ -296,7 +264,7 @@ void oglSetProjection(const Matrix4 m)
 	 glMatrixMode(GL_PROJECTION);
 	 glLoadMatrixf(m.data());
 #endif
-	 oglProjection = m;
+	oglProjection=m;
 }
 
 void oglEnable(GLenum cap)
@@ -439,7 +407,7 @@ void oglEnableClientState(enum OGLClientState array)
 	}
 }
 
-void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr,GLsizei count, bool modified, GLuint *cache)
+void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr)
 {
 	//glog_d("OglArrayPtr: %d:%p[%f,%f,%f,%f]\n",array,ptr,((const float *)ptr)[0],((const float *)ptr)[1],((const float *)ptr)[2],((const float *)ptr)[3]);
 	switch (array)
@@ -448,33 +416,21 @@ void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *
 #ifdef GIDEROS_GL1
 			glVertexPointer(mult,type, 0,ptr);
 #else
-			glVertexAttribPointer(vertexVS, mult,type, false,0, ptr
-#ifdef DXCOMPAT_H
-					,count,modified,cache
-#endif
-					);
+			glVertexAttribPointer(vertexVS, mult,type, false,0, ptr);
 #endif
 			break;
 		case TextureArray:
 #ifdef GIDEROS_GL1
 			glTexCoordPointer(mult,type, 0,ptr);
 #else
-			glVertexAttribPointer(textureVS, mult,type, false,0, ptr
-#ifdef DXCOMPAT_H
-					,count,modified,cache
-#endif
-					);
+			glVertexAttribPointer(textureVS, mult,type, false,0, ptr);
 #endif
 			break;
         case ColorArray:
 #ifdef GIDEROS_GL1
 			glColorPointer(mult,type, 0,ptr);
 #else
-			glVertexAttribPointer(colorVS, mult,type, true,0, ptr
-#ifdef DXCOMPAT_H
-					,count,modified,cache
-#endif
-					);
+			glVertexAttribPointer(colorVS, mult,type, true,0, ptr);
 #endif
             break;
 		default:
@@ -603,14 +559,10 @@ void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
 
 
 
-void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, bool modified, GLuint *cache)
+void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices)
 {
 	oglSetupArrays();
-	glDrawElements(mode, count, type, indices
-#ifdef DXCOMPAT_H
-			,modified,cache
-#endif
-			);
+	glDrawElements(mode, count, type, indices);
 }
 
 
@@ -681,7 +633,6 @@ void oglReset()
 
     glEnable(GL_BLEND);
 	glDisable(GL_SCISSOR_TEST);
-	glDisable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
 #ifndef PREMULTIPLIED_ALPHA
