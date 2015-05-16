@@ -456,18 +456,11 @@ void CleanD3D()
 	g_pVS->Release();
 	g_pPS->Release();
 	g_pVBuffer->Release();
-	g_pCBuffer->Release();
-	g_pIBuffer->Release();
-	g_pTBuffer->Release();
-	g_depthStencilTexture->Release();
-	g_depthStencil->Release();
-
 	//  g_swapchain->Release();    
 	g_backbuffer->Release();
 	//  g_dev->Release();    
 	//  g_devcon->Release();
-	g_CBP->Release();
-	g_CBV->Release();
+	g_CB->Release();
 	g_samplerLinear->Release();
 }
 
