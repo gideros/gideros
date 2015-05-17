@@ -637,8 +637,9 @@ void GLCanvas::loadProperties(std::vector<char> data){
         windowWidth = logicalWidth;
         windowHeight = logicalHeight;
     }
-
-    setWindowSize(windowWidth, windowHeight);
+    if(exportedApp_){
+        setWindowSize(windowWidth, windowHeight);
+    }
 }
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles){
