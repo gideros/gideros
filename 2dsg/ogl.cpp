@@ -25,17 +25,7 @@ static bool oglInitialized=false;
 
 #ifndef GIDEROS_GL1
 
-class ShaderProgram
-{
-public:
-    virtual void activate()=0;
-    virtual GLint getUniform(int index)=0;
-    virtual GLint getAttribute(int index)=0;
-    virtual ~ShaderProgram() { };
-};
-
 GLint curProg=-1;
-ShaderProgram *stdProgram,*stdCProgram,*stdTProgram,*stdCTProgram;
 ShaderProgram *current=NULL;
 GLuint _depthRenderBuffer=0;
 bool matrixDirty=true;
@@ -184,13 +174,17 @@ class oglShaderProgram : public ShaderProgram
     
 public:
     virtual void activate();
-    virtual GLint getUniform(int index);
-    virtual GLint getAttribute(int index);
-    
+    virtual void deactivate();
+    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache);
+    virtual void setConstant(int index,ConstantType type,const void *ptr);
+    virtual void drawArrays(ShapeType shape, int first, unsigned int count);
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache);
+
     oglShaderProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
                      const char **uniforms, const char **attributes);
     virtual ~oglShaderProgram();
+    void useProgram();
 };
 
 GLuint oglLoadShader(GLuint type,const char *hdr,const char *code)
@@ -241,24 +235,89 @@ GLuint oglBuildProgram(GLuint vertexShader,GLuint fragmentShader)
     return program;
 }
 
+void oglShaderProgram::deactivate()
+{
+	for(std::vector<GLint>::iterator it = attributes.begin(); it != attributes.end(); ++it) {
+		glDisableVertexAttribArray(*it);
+	}
+    current=NULL;
+}
+
 void oglShaderProgram::activate()
+{
+	useProgram();
+	if (current == this) return;
+	if (current) current->deactivate();
+    current=this;
+	for(std::vector<GLint>::iterator it = attributes.begin(); it != attributes.end(); ++it) {
+		glEnableVertexAttribArray(*it);
+	}
+
+}
+
+void oglShaderProgram::useProgram()
 {
     if (curProg!=program)
     {
         glUseProgram(program);
         curProg=program;
     }
-    current=this;
 }
 
-GLint oglShaderProgram::getUniform(int index)
+void oglShaderProgram::setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache)
 {
-    return uniforms[index];
+	useProgram();
+	GLenum gltype=GL_FLOAT;
+	bool normalize=false;
+	switch (type)
+	{
+	case DINT:
+		gltype=GL_INT;
+		break;
+	case DBYTE:
+		gltype=GL_BYTE;
+		break;
+	case DUBYTE:
+		gltype=GL_UNSIGNED_BYTE;
+		normalize=true; //TODO check vs actual shader type to see if normalization is required
+		break;
+	case DSHORT:
+		gltype=GL_SHORT;
+		break;
+	case DUSHORT:
+		gltype=GL_UNSIGNED_SHORT;
+		break;
+	}
+#ifdef GIDEROS_GL1
+			glVertexPointer(mult,gltype, 0,ptr);
+#else
+			glVertexAttribPointer(attributes[index], mult,gltype, normalize,0, ptr
+#ifdef DXCOMPAT_H
+					,count,modified,(GLuint *)cache
+#endif
+					);
+#endif
+
 }
 
-GLint oglShaderProgram::getAttribute(int index)
+void oglShaderProgram::setConstant(int index,ConstantType type,const void *ptr)
 {
-    return attributes[index];
+	useProgram();
+	switch (type)
+	{
+	case CINT:
+		glUniform1i(uniforms[index],((GLint *)ptr)[0]);
+		break;
+	case CFLOAT:
+		glUniform1f(uniforms[index],((GLfloat *)ptr)[0]);
+		break;
+	case CFLOAT4:
+		glUniform4fv(uniforms[index],1,((GLfloat *)ptr));
+		break;
+	case CMATRIX:
+		glUniformMatrix4fv(uniforms[index],1,false,((GLfloat *)ptr));
+		break;
+	}
 }
 
 oglShaderProgram::oglShaderProgram(const char *vshader1,const char *vshader2,
@@ -281,6 +340,11 @@ oglShaderProgram::~oglShaderProgram()
     glDeleteShader(fragmentShader);
 }
 
+ShaderProgram *ShaderProgram::stdBasic=NULL;
+ShaderProgram *ShaderProgram::stdColor=NULL;
+ShaderProgram *ShaderProgram::stdTexture=NULL;
+ShaderProgram *ShaderProgram::stdTextureColor=NULL;
+
 void oglSetupShaders()
 {
 	glog_i("GL_VERSION:%s\n",glGetString(GL_VERSION));
@@ -288,18 +352,17 @@ void oglSetupShaders()
     
     const char *stdUniforms[]={"vMatrix","fColor","fTexture",NULL};
     const char *stdAttributes[]={"vVertex","vColor","vTexCoord",NULL};
-    stdProgram = new oglShaderProgram(hdrVShaderCode,stdVShaderCode,hdrFShaderCode,stdFShaderCode,
+    ShaderProgram::stdBasic = new oglShaderProgram(hdrVShaderCode,stdVShaderCode,hdrFShaderCode,stdFShaderCode,
                                       stdUniforms,stdAttributes);
-    stdCProgram = new oglShaderProgram(hdrVShaderCode,stdCVShaderCode,hdrFShaderCode,stdCFShaderCode,
+    ShaderProgram::stdColor = new oglShaderProgram(hdrVShaderCode,stdCVShaderCode,hdrFShaderCode,stdCFShaderCode,
                                       stdUniforms,stdAttributes);
-    stdTProgram = new oglShaderProgram(hdrVShaderCode,stdTVShaderCode,hdrFShaderCode,stdTFShaderCode,
+    ShaderProgram::stdTexture = new oglShaderProgram(hdrVShaderCode,stdTVShaderCode,hdrFShaderCode,stdTFShaderCode,
                                       stdUniforms,stdAttributes);
-    glUniform1i(stdTProgram->getUniform(2),0);
-    stdCTProgram = new oglShaderProgram(hdrVShaderCode,stdCTVShaderCode,hdrFShaderCode,stdCTFShaderCode,
+    int zero=0;
+    ShaderProgram::stdTexture->setConstant(2,ShaderProgram::CINT,&zero);
+    ShaderProgram::stdTextureColor = new oglShaderProgram(hdrVShaderCode,stdCTVShaderCode,hdrFShaderCode,stdCTFShaderCode,
                                       stdUniforms,stdAttributes);
-    glUniform1i(stdCTProgram->getUniform(2),0);
-    
-    stdProgram->activate();
+    ShaderProgram::stdTextureColor->setConstant(2,ShaderProgram::CINT,&zero);
 }
 #endif
 
@@ -336,10 +399,10 @@ void oglCleanup()
 #ifndef GIDEROS_GL1
 	glUseProgram(-1);
     
-    delete stdProgram;
-    delete stdCProgram;
-    delete stdTProgram;
-    delete stdCTProgram;
+    delete ShaderProgram::stdBasic;
+    delete ShaderProgram::stdColor;
+    delete ShaderProgram::stdTexture;
+    delete ShaderProgram::stdTextureColor;
 #endif
 #ifdef OPENGL_ES
 	glDeleteRenderbuffers(1,&_depthRenderBuffer);
@@ -537,215 +600,52 @@ void oglColor4f(float r,float g,float b,float a)
 #endif
 }
 
-void oglEnableClientState(enum OGLClientState array)
+void oglShaderProgram::drawArrays(ShapeType shape, int first, unsigned int count)
 {
-	switch (array)
-	{
-		case VertexArray:
-			assert(s_VERTEX_ARRAY == 0);
-			s_VERTEX_ARRAY++;
-			break;
-		case TextureArray:
-			assert(s_TEXTURE_COORD_ARRAY == 0);
-			s_TEXTURE_COORD_ARRAY++;
-			break;
-        case ColorArray:
-            assert(s_COLOR_ARRAY == 0);
-            s_COLOR_ARRAY++;
-            break;
-		default:
-			assert(1);
-			break;
-	}
-    current=s_COLOR_ARRAY?stdCProgram:stdProgram;
-    if (s_TEXTURE_COORD_ARRAY)
-        current=s_COLOR_ARRAY?stdCTProgram:stdTProgram;
-}
-
-void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr,GLsizei count, bool modified, GLuint *cache)
-{
-	//glog_d("OglArrayPtr: %d:%p[%f,%f,%f,%f]\n",array,ptr,((const float *)ptr)[0],((const float *)ptr)[1],((const float *)ptr)[2],((const float *)ptr)[3]);
-	switch (array)
-	{
-		case VertexArray:
-#ifdef GIDEROS_GL1
-			glVertexPointer(mult,type, 0,ptr);
-#else
-			glVertexAttribPointer(current->getAttribute(0), mult,type, false,0, ptr
-#ifdef DXCOMPAT_H
-					,count,modified,cache
-#endif
-					);
-#endif
-			break;
-		case TextureArray:
-#ifdef GIDEROS_GL1
-			glTexCoordPointer(mult,type, 0,ptr);
-#else
-			glVertexAttribPointer(current->getAttribute(2), mult,type, false,0, ptr
-#ifdef DXCOMPAT_H
-					,count,modified,cache
-#endif
-					);
-#endif
-			break;
-        case ColorArray:
-#ifdef GIDEROS_GL1
-			glColorPointer(mult,type, 0,ptr);
-#else
-			glVertexAttribPointer(current->getAttribute(1), mult,type, true,0, ptr
-#ifdef DXCOMPAT_H
-					,count,modified,cache
-#endif
-					);
-#endif
-            break;
-		default:
-			assert(1);
-			break;
-	}
-}
-
-void oglDisableClientState(enum OGLClientState array)
-{
-	switch (array)
-	{
-		case VertexArray:
-			assert(s_VERTEX_ARRAY == 1);
-			s_VERTEX_ARRAY--;
-			break;
-		case TextureArray:
-			assert(s_TEXTURE_COORD_ARRAY == 1);
-			s_TEXTURE_COORD_ARRAY--;
-			break;
-        case ColorArray:
-            assert(s_COLOR_ARRAY == 1);
-            s_COLOR_ARRAY--;
-            break;
-		default:
-			assert(1);
-			break;
-	}
-    current=s_COLOR_ARRAY?stdCProgram:stdProgram;
-    if (s_TEXTURE_COORD_ARRAY)
-        current=s_COLOR_ARRAY?stdCTProgram:stdTProgram;
-}
-
-void oglSetupArrays()
-{
-	/*glog_d("OglArrays: %d:%d,%d:%d,%d:%d\n",
-			s_VERTEX_ARRAY,s_VERTEX_ARRAY_enabled,
-			s_TEXTURE_COORD_ARRAY,s_TEXTURE_COORD_ARRAY_enabled,
-			s_COLOR_ARRAY,s_COLOR_ARRAY_enabled	);*/
-    current->activate();
-	if (s_VERTEX_ARRAY)
-	{
-		if (s_VERTEX_ARRAY_enabled == false)
-		{
-			s_VERTEX_ARRAY_enabled = true;
-			s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glEnableClientState(GL_VERTEX_ARRAY);
-#else
-		    glEnableVertexAttribArray(current->getAttribute(0));
-#endif
-		}
-	}
-	else
-	{
-		if (s_VERTEX_ARRAY_enabled == true)
-		{
-			s_VERTEX_ARRAY_enabled = false;
-			s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glDisableClientState(GL_VERTEX_ARRAY);
-#else
-		    glDisableVertexAttribArray(current->getAttribute(0));
-#endif
-		}
-	}
-
-	if (s_TEXTURE_COORD_ARRAY)
-	{
-		if (s_TEXTURE_COORD_ARRAY_enabled == false)
-		{
-			s_TEXTURE_COORD_ARRAY_enabled = true;
-			s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-#else
-		    glEnableVertexAttribArray(current->getAttribute(2));
-#endif
-		}
-	}
-	else
-	{
-		if (s_TEXTURE_COORD_ARRAY_enabled == true)
-		{
-			s_TEXTURE_COORD_ARRAY_enabled = false;
-			s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-#else
-		    glDisableVertexAttribArray(current->getAttribute(2));
-#endif
-		}
-	}
-
-    if (s_COLOR_ARRAY)
+   	setConstant(ShaderProgram::ConstantMatrix,ShaderProgram::CMATRIX,oglCombined.data());
+   	float constCol[4]={constColR,constColG,constColB,constColA};
+   	setConstant(ShaderProgram::ConstantColor,ShaderProgram::CFLOAT4,constCol);
+    activate();
+    GLenum mode=GL_POINTS;
+    switch (shape)
     {
-        if (s_COLOR_ARRAY_enabled == false)
-        {
-            s_COLOR_ARRAY_enabled = true;
-            s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glEnableClientState(GL_COLOR_ARRAY);
-#else
-            glEnableVertexAttribArray(current->getAttribute(1));
-#endif
-        }
+    case Lines: mode=GL_LINES; break;
+    case LineLoop: mode=GL_LINE_LOOP; break;
+    case Triangles: mode=GL_TRIANGLES; break;
+    case TriangleFan: mode=GL_TRIANGLE_FAN; break;
+    case TriangleStrip: mode=GL_TRIANGLE_STRIP; break;
     }
-    else
-    {
-        if (s_COLOR_ARRAY_enabled == true)
-        {
-            s_COLOR_ARRAY_enabled = false;
-            s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glDisableClientState(GL_COLOR_ARRAY);
-#else
-		    glDisableVertexAttribArray(current->getAttribute(1));
-#endif
-        }
-    }
-    
-    if (matrixDirty&&(current->getUniform(0)>=0))
-    {
-        glUniformMatrix4fv(current->getUniform(0), 1, false, oglCombined.data());
-        matrixDirty=false;
-    }
-    if (colorDirty&&(current->getUniform(1)>=0))
-    {
-        glUniform4f(current->getUniform(1),constColR,constColG,constColB,constColA);
-        colorDirty=false;
-    }
-
-}
-
-void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
-{
-	oglSetupArrays();
 	glDrawArrays(mode, first, count);
+
 }
-
-
-
-void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, bool modified, GLuint *cache)
+void oglShaderProgram::drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache)
 {
-	oglSetupArrays();
-	glDrawElements(mode, count, type, indices
+   	setConstant(ShaderProgram::ConstantMatrix,ShaderProgram::CMATRIX,oglCombined.data());
+   	float constCol[4]={constColR,constColG,constColB,constColA};
+   	setConstant(ShaderProgram::ConstantColor,ShaderProgram::CFLOAT4,constCol);
+    activate();
+
+    GLenum mode=GL_POINTS;
+    switch (shape)
+    {
+    case Lines: mode=GL_LINES; break;
+    case LineLoop: mode=GL_LINE_LOOP; break;
+    case Triangles: mode=GL_TRIANGLES; break;
+    case TriangleFan: mode=GL_TRIANGLE_FAN; break;
+    case TriangleStrip: mode=GL_TRIANGLE_STRIP; break;
+    }
+
+    GLenum dtype=GL_INT;
+    switch (type)
+    {
+    case DBYTE: dtype=GL_BYTE; break;
+    case DUBYTE: dtype=GL_UNSIGNED_BYTE; break;
+    case DSHORT: dtype=GL_SHORT; break;
+    case DUSHORT: dtype=GL_UNSIGNED_SHORT; break;
+    }
+	glDrawElements(mode, count, dtype, indices
 #ifdef DXCOMPAT_H
-			,modified,cache
+		, modified, (GLuint *)cache
 #endif
 			);
 }
@@ -793,8 +693,6 @@ void oglReset()
 	glDisableClientState(GL_COLOR_ARRAY);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	/* sanity set */
 #else
-    current=stdProgram;
-    current->activate();
 	resetBindTextureCount();
 	resetClientStateCount();
 	resetTexture2DStateCount();
@@ -805,6 +703,7 @@ void oglReset()
 #endif
 	oglColor4f(1,1,1,1);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	current=NULL;
 
     oglProjection.identity();
     oglVPProjection.identity();

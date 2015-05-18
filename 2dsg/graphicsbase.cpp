@@ -5,7 +5,7 @@
 
 void GraphicsBase::clear()
 {
-	mode = GL_TRIANGLES;
+	mode = ShaderProgram::Triangles;
 	r_ = g_ = b_ = a_ = 1;
 	isWhite_ = true;
 	data = NULL;
@@ -31,26 +31,16 @@ void GraphicsBase::draw()
 
         oglBindTexture(GL_TEXTURE_2D, data->id());
 
-		oglEnableClientState(VertexArray);
-		oglEnableClientState(TextureArray);
-		oglArrayPointer(VertexArray,2,GL_FLOAT,&vertices[0],vertices.size(),true,NULL);
-		oglArrayPointer(TextureArray,2,GL_FLOAT,&texcoords[0],texcoords.size(),true,NULL);
-
-		oglDrawElements(mode, indices.size(), GL_UNSIGNED_SHORT, &indices[0],true, NULL);
-
-		oglDisableClientState(VertexArray);
-		oglDisableClientState(TextureArray);
+        ShaderProgram::stdTexture->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),true,NULL);
+        ShaderProgram::stdTexture->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,&texcoords[0],texcoords.size(),true,NULL);
+        ShaderProgram::stdTexture->drawElements(mode,indices.size(), ShaderProgram::DUSHORT, &indices[0],true, NULL);
 	}
 	else
 	{
 		oglDisable(GL_TEXTURE_2D);
 
-		oglEnableClientState(VertexArray);
-		oglArrayPointer(VertexArray,2,GL_FLOAT,&vertices[0],vertices.size(),true,NULL);
-
-		oglDrawElements(mode, indices.size(), GL_UNSIGNED_SHORT, &indices[0],true,NULL);
-
-		oglDisableClientState(VertexArray);
+        ShaderProgram::stdBasic->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),true,NULL);
+        ShaderProgram::stdBasic->drawElements(mode,indices.size(), ShaderProgram::DUSHORT, &indices[0],true, NULL);
 	}
 
 	if (isWhite_ == false)

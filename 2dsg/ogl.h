@@ -4,19 +4,8 @@
 #include "glcommon.h"
 #include "Matrices.h"
 
-enum OGLClientState {
-	VertexArray,
-	TextureArray,
-	ColorArray
-};
-
 void oglBindTexture(GLenum target, GLuint texture);
 void oglForceBindTexture(GLenum target, GLuint texture);
-void oglDrawArrays(GLenum mode, GLint first, GLsizei count);
-void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, bool modified, GLuint *cache);
-void oglEnableClientState(enum OGLClientState array);
-void oglDisableClientState(enum OGLClientState array);
-void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr,GLsizei count, bool modified, GLuint *cache);
 Matrix4 oglGetModelMatrix();
 void oglLoadMatrixf(const Matrix4 m);
 void oglSetProjection(const Matrix4 m);
@@ -46,6 +35,46 @@ int getTexture2DStateCount();
 Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
 Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
 
+class BufferCache
+{
+};
+
+class ShaderProgram
+{
+public:
+	enum DataType {
+		DBYTE, DUBYTE, DSHORT, DUSHORT, DINT, DFLOAT
+	};
+	enum ConstantType {
+		CINT,CFLOAT,CFLOAT4,CMATRIX
+	};
+	enum ShapeType {
+		Point,
+		Lines,
+		LineLoop,
+		Triangles,
+		TriangleFan,
+		TriangleStrip
+	};
+	static ShaderProgram *stdBasic;
+	static ShaderProgram *stdColor;
+	static ShaderProgram *stdTexture;
+	static ShaderProgram *stdTextureColor;
+	enum StdData {
+		DataVertex=0, DataColor=1, DataTexture=2
+	};
+	enum StdConstant {
+		ConstantMatrix=0, ConstantColor=1
+	};
+    virtual void activate()=0;
+    virtual void deactivate()=0;
+    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache)=0;
+    virtual void setConstant(int index,ConstantType type,const void *ptr)=0;
+    virtual void drawArrays(ShapeType shape, int first, unsigned int count)=0;
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache)=0;
+    virtual ~ShaderProgram() { };
+
+};
 
 #endif
 

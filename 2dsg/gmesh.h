@@ -4,6 +4,7 @@
 #include <sprite.h>
 #include <vector>
 #include <texturebase.h>
+#include "ogl.h"
 
 class Application;
 
@@ -73,7 +74,7 @@ private:
 
     mutable float minx_, miny_, maxx_, maxy_;
     bool boundsDirty_;
-    unsigned int meshtype_;
+    ShaderProgram::ShapeType meshtype_;
     bool mesh3d_;
 };
 

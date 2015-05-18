@@ -145,8 +145,6 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 
 	oglDisable(GL_TEXTURE_2D);
 
-	oglEnableClientState(VertexArray);
-
 	float v[8];
 
 	int len = strlen(ip);
@@ -196,15 +194,14 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 					v[4] = (x + xx)     * size; v[5] = (y + yy + 1) * size;
 					v[6] = (x + xx + 1) * size; v[7] = (y + yy + 1) * size;
 
-					oglArrayPointer(VertexArray,2, GL_FLOAT, v, 4, true, NULL);
-					oglDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+					ShaderProgram::stdBasic->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2, v,4, true, NULL);
+					ShaderProgram::stdBasic->drawArrays(ShaderProgram::TriangleStrip, 0, 4);
 				}
 			}
 
 		xx = xx + width + 1;
 	}
 
-	oglDisableClientState(VertexArray);
 
 	glPopColor();
 }

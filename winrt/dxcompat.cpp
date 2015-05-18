@@ -543,6 +543,18 @@ void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
 		break;
 	}
 }
+
+void glUniform4fv(GLint location, GLsizei count, GLfloat *v)
+{
+	switch (location)
+	{
+	case 20: //fColor
+		cbpData.fColor = DirectX::XMFLOAT4(v[0], v[1], v[2], v[3]);
+		cbpData.dirty = true;
+		break;
+	}
+}
+
 void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value)
 {
 	switch (location)
