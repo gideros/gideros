@@ -146,9 +146,27 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\**\*">
+    <None Include="Assets\PixelShader.cso">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Assets\VertexShader.cso">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <Image Include="Assets\Logo.scale-100.png" />
+    <Image Include="Assets\Logo.scale-240.png" />
+    <Image Include="Assets\SmallLogo.scale-100.png" />
+    <Image Include="Assets\SmallLogo.scale-240.png" />
+    <Image Include="Assets\SplashScreen.scale-100.png" />
+    <Image Include="Assets\SplashScreen.scale-240.png" />
+    <Image Include="Assets\StoreLogo.scale-100.png" />
+    <Image Include="Assets\StoreLogo.scale-240.png" />
+    <Image Include="Assets\Square71x71Logo.scale-240.png" />
+    <Image Include="Assets\WideLogo.scale-240.png" />
+    <None Include="Assets\properties.bin">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <Text Include="Assets\luafiles.txt" />
+INSERT_ASSETS_HERE
   </ItemGroup>
   <ItemGroup>
     <Xml Include="StoreManifest.xml" />
