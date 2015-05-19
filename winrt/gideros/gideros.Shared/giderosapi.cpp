@@ -1127,7 +1127,7 @@ void ApplicationManager::drawFrame()
 	if (networkManager_)
 		networkManager_->tick();
 
-	application_->clearBuffers();
+	//	application_->clearBuffers();  (this would duplicate ClearRenderTargetView above)
 
 	if (application_->isErrorSet())
 		luaError(application_->getError());
