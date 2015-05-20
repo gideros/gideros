@@ -28,7 +28,7 @@ static void loadPlugins(){
 	QDir dir = QDir::currentPath();
 
     #if defined(Q_OS_MAC)
-        dir.cd("../../Plugins");
+        dir.cd("Plugins");
         QStringList files = dir.entryList(QStringList() << "*.dylib");
     #else
         dir.cd("Plugins");

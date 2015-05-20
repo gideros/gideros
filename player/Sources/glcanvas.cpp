@@ -498,9 +498,10 @@ void GLCanvas::play(QDir directory){
 
         if(exportedApp_){
             resourceDirectory_ = qPrintable(directory.absoluteFilePath("resource"));
-            documentsDirectory = qPrintable(directory.absoluteFilePath("documents"));
-            temporaryDirectory = qPrintable(directory.absoluteFilePath("temporary"));
-
+            directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+            directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+            documentsDirectory = qPrintable(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+            temporaryDirectory = qPrintable(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
         }else{
             dir_ = QDir::temp();
             dir_.mkdir("gideros");
@@ -637,8 +638,9 @@ void GLCanvas::loadProperties(std::vector<char> data){
         windowWidth = logicalWidth;
         windowHeight = logicalHeight;
     }
-
-    setWindowSize(windowWidth, windowHeight);
+    if(exportedApp_){
+        setWindowSize(windowWidth, windowHeight);
+    }
 }
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles){

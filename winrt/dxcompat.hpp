@@ -3,10 +3,11 @@
 
 #include <windows.h>
 //#include <windowsx.h>
-#include <DirectXMath.h>
-#include <DirectXPackedVector.h>
+//#include <d3d11_1.h>
 //#include <d3dcompiler.h>
 #include <math.h>
+#include <DirectXMath.h>
+#include <DirectXPackedVector.h>
 
 
 /************************************************************************
@@ -648,7 +649,6 @@ typedef float           GLfloat;        /* single precision float */
 typedef float           GLclampf;       /* single precision float in [0,1] */
 typedef double          GLdouble;       /* double precision float */
 typedef double          GLclampd;       /* double precision float in [0,1] */
-typedef char			GLchar;         /* char */
 
 void glViewport(GLint x, GLint y, GLsizei width, GLsizei height);
 void glClear(GLbitfield mask);
@@ -686,7 +686,6 @@ void glLoadMatrixf(const GLfloat *m);
 void glGetIntegerv(GLenum pname, GLint *params);
 const GLubyte *glGetString(GLenum name);
 void glTexEnvi(GLenum  target, GLenum pname, GLint param);
-void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices, bool modified, GLuint *cache);
 void glBindBuffer(GLenum target, GLuint buffer);   // openGL 1.5 or later
 void glBindFramebuffer(GLenum target, GLuint framebuffer);   // openGL 1.5 or later
 void glFramebufferTexture2D(GLenum targer, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
@@ -698,6 +697,19 @@ void glGenFramebuffers(GLsizei n, GLuint *framebuffers);
 void glScissor(GLint x, GLint y, GLsizei width, GLsizei height);
 void glDepthFunc(GLenum func);
 
+#ifdef GIDEROS_GL1
+void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices);
+
+struct VERTEX{
+  FLOAT X,Y,Z;
+  FLOAT r,g,b,a;
+  FLOAT u,v;
+};
+
+struct const_buffer{
+  int use_tex,b2,b3,b4;
+};
+#else
 //GL2
 #define GL_TEXTURE0 0x84C0
 #define GL_TEXTURE1 0x84C1
@@ -712,6 +724,7 @@ void glDepthFunc(GLenum func);
 #define GL_INFO_LOG_LENGTH 0x8B84
 #define GL_SHADING_LANGUAGE_VERSION 0x8B8C
 
+void glDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid * indices, bool modified, GLuint *cache);
 GLuint glCreateShader(GLenum shaderType);
 GLuint glCreateProgram(void);
 void glCompileShader(GLuint shader);
@@ -737,5 +750,6 @@ void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  
 void glEnableVertexAttribArray(GLuint index); 
 void glDisableVertexAttribArray(GLuint index); 
 void glActiveTexture(GLenum texture);
+#endif
 
 #endif

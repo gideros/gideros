@@ -2608,6 +2608,67 @@ void MainWindow::exportProject()
 			}
 		}
 
+// ----------------------------------------------------------------------
+// For WinRT, write all asset filenames into giderosgame.Windows.vcxproj
+// ----------------------------------------------------------------------
+
+		if (deviceFamily == ExportProjectDialog::e_WinRT){
+
+		  outputDir.cdUp();
+
+		  QByteArray replacement;
+		  for (int i = 0; i < allfiles.size(); i++){
+		    QString assetfile=allfiles[i];
+		    QString suffix = QFileInfo(assetfile).suffix().toLower();
+		    //		    outputWidget_->insertPlainText(assetfile);
+		    //		    outputWidget_->insertPlainText(suffix);
+
+		    QString type;
+		    if (suffix=="jpg" || suffix=="jpeg" || suffix=="png")
+		      type="Image";
+		    else if (suffix=="wav" || suffix=="mp3")
+		      type="Media";
+		    else if (suffix=="txt")
+		      type="Text";
+		    else if (suffix=="ttf")
+		      type="Font";
+		    else
+		      type="None";
+
+		    if (type=="None")
+		      replacement += "<None Include=\"Assets\\"+assetfile+"\">\r\n<DeploymentContent>true</DeploymentContent>\r\n</None>\r\n";
+		    else
+		      replacement += "<"+type+" Include=\"Assets\\"+assetfile+"\" />\r\n";
+		  }
+
+		  QString projfile;
+
+		  if (ipass==1)
+		    projfile="giderosgame.Windows.vcxproj";
+		  else
+		    projfile="giderosgame.WindowsPhone.vcxproj";
+
+		  QByteArray data;
+		  QFile in(outputDir.absoluteFilePath(projfile));
+		  in.open(QFile::ReadOnly);
+
+		  data = in.readAll();
+		  in.close();
+
+		  data.replace("INSERT_ASSETS_HERE",replacement);
+
+		  QFile out(outputDir.absoluteFilePath(projfile));
+		  out.open(QFile::WriteOnly);
+
+		  out.write(data);
+		  out.close();
+
+		  outputDir.cd("Assets");
+		}
+
+// ----------------------------------------------------------------------
+
+
         if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop || deviceFamily == ExportProjectDialog::e_WindowsDesktop)
         {
             outputDir.cd("..");

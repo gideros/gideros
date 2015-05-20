@@ -36,21 +36,27 @@ IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interf
 #endif
 
 ID3D11RenderTargetView *g_backbuffer;
-ID3D11DepthStencilView *g_depthStencil;
-ID3D11Texture2D* g_depthStencilTexture;
 ID3D11InputLayout *g_pLayout;
 ID3D11VertexShader *g_pVS;
 ID3D11PixelShader *g_pPS;
 ID3D11Buffer *g_pVBuffer;                  // Vertex buffer: we put our geometry here
+#ifdef GIDEROS_GL1
 ID3D11Buffer *g_pCBuffer;                  // Vertex buffer: we put our geometry here
 ID3D11Buffer *g_pTBuffer;                  // Vertex buffer: we put our geometry here
 ID3D11Buffer *g_pIBuffer;                  // Vertex buffer: we put our geometry here
 ID3D11Buffer *g_CBP, *g_CBV;                        // Constant buffer: pass settings like whether to use textures or not
-vector<ID3D11ShaderResourceView*> g_RSV;   // list of textures.
-vector<bool> g_RSVused;                    // true if texture index number has been assigned
+
+ID3D11DepthStencilView *g_depthStencil;
+ID3D11Texture2D* g_depthStencilTexture;
 
 struct cbv cbvData;
 struct cbp cbpData;
+#else
+ID3D11Buffer *g_CB;                        // Constant buffer: pass settings like whether to use textures or not
+#endif
+
+vector<ID3D11ShaderResourceView*> g_RSV;   // list of textures.
+vector<bool> g_RSVused;                    // true if texture index number has been assigned
 
 struct Backcol
 {
@@ -66,10 +72,13 @@ vector<Backcol> g_renderTargetCol;
 
 ID3D11SamplerState *g_samplerLinear;
 ID3D11BlendState *g_pBlendState;
+
+#ifndef GIDEROS_GL1
 ID3D11DepthStencilState *g_pDSOff;
 ID3D11DepthStencilState *g_pDSDepth;
 ID3D11RasterizerState *g_pRSNormal;
 ID3D11RasterizerState *g_pRSScissor;
+#endif
 
 bool dxcompat_force_lines = false;
 bool dxcompat_zrange01 = true;
@@ -99,7 +108,7 @@ void glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
 }
 
 void glClear(GLbitfield mask){
-
+#ifndef GIDEROS_GL1
 	if (mask&GL_DEPTH_BUFFER_BIT)
 	{
 		g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_DEPTH, 1.0, 0);
@@ -108,6 +117,7 @@ void glClear(GLbitfield mask){
 	{
 		g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_STENCIL, 1.0, 0);
 	}
+#endif
 	if (mask& GL_COLOR_BUFFER_BIT)
 	{
 		if (g_curr_framebuffer == 0){
@@ -335,6 +345,7 @@ void glDisableClientState(GLenum type)
 
 void glEnable(GLenum type)
 {
+#ifndef GIDEROS_GL1
 	switch (type)
 	{
 	case GL_DEPTH_TEST:
@@ -344,10 +355,12 @@ void glEnable(GLenum type)
 		g_devcon->RSSetState(g_pRSScissor);
 		break;
 	}
+#endif
 }
 
 void glDisable(GLenum type)
 {
+#ifndef GIDEROS_GL1
 	switch (type)
 	{
 	case GL_DEPTH_TEST:
@@ -357,6 +370,7 @@ void glDisable(GLenum type)
 		g_devcon->RSSetState(g_pRSNormal);
 		break;
 	}
+#endif
 }
 
 void memdump(const char *chn, const void *bv, int sz) {

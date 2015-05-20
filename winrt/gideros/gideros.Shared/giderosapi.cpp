@@ -208,8 +208,6 @@ void InitD3D(CoreWindow^ Window)
 
 	ID3D11Texture2D *pBackBuffer;
 	g_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-	D3D11_TEXTURE2D_DESC backbuff_desc;
-	pBackBuffer->GetDesc(&backbuff_desc);
 
 	g_dev->CreateRenderTargetView(pBackBuffer, NULL, &g_backbuffer);
 	pBackBuffer->Release();
@@ -241,77 +239,8 @@ void InitD3D(CoreWindow^ Window)
 	viewport.TopLeftY = basey;
 	viewport.Width = windoww;  // Direct3D needs actual pixels
 	viewport.Height = windowh;
-	viewport.MinDepth = 0;
-	viewport.MaxDepth = 1.0;
 
 	g_devcon->RSSetViewports(1, &viewport);
-
-	//Depth / Stencil setup
-	D3D11_TEXTURE2D_DESC descDepth;
-	ZeroMemory(&descDepth, sizeof(descDepth));
-	descDepth.Width = backbuff_desc.Width;
-	descDepth.Height = backbuff_desc.Height;
-	descDepth.MipLevels = 1;
-	descDepth.ArraySize = 1;
-	descDepth.Format =  DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
-	g_dev->CreateTexture2D(&descDepth, NULL, &g_depthStencilTexture);
-
-	D3D11_DEPTH_STENCIL_DESC dsDesc;
-	ZeroMemory(&dsDesc, sizeof(dsDesc));
-
-	// Depth test parameters
-	dsDesc.DepthEnable = false;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-
-	// Stencil test parameters
-	dsDesc.StencilEnable = false;
-	dsDesc.StencilReadMask = 0xFF;
-	dsDesc.StencilWriteMask = 0xFF;
-
-	// Stencil operations if pixel is front-facing
-	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	// Stencil operations if pixel is back-facing
-	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	// Create depth stencil state
-	g_dev->CreateDepthStencilState(&dsDesc, &g_pDSOff);
-	dsDesc.DepthEnable = true;
-	g_dev->CreateDepthStencilState(&dsDesc, &g_pDSDepth);
-
-	// Bind depth stencil state
-	g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-	ZeroMemory(&descDSV, sizeof(descDSV));
-	descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0;
-
-	// Create the depth stencil view
-	g_dev->CreateDepthStencilView(g_depthStencilTexture, // Depth stencil texture
-		&descDSV, // Depth stencil desc
-		&g_depthStencil);  // [out] Depth stencil view
-
-	// Bind the depth stencil view
-	g_devcon->OMSetRenderTargets(1,          // One rendertarget view
-		&g_backbuffer,      // Render target view, created earlier
-		g_depthStencil);     // Depth stencil view for the render target
-
-
 
 	// ----------------------------------------------------------------------
 	// load and compile the two shaders    
@@ -335,8 +264,8 @@ void InitD3D(CoreWindow^ Window)
 
 	D3D11_INPUT_ELEMENT_DESC ied[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 2, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	g_dev->CreateInputLayout(ied, 3, VSFile->Data, VSFile->Length, &g_pLayout);
@@ -352,20 +281,11 @@ void InitD3D(CoreWindow^ Window)
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU    
+	bd.ByteWidth = sizeof(VERTEX) * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer    
-	bd.ByteWidth = sizeof(FLOAT)*3 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
-	g_dev->CreateBuffer(&bd, NULL, &g_pVBuffer);       // create the buffer    
-	bd.ByteWidth = sizeof(FLOAT) * 4 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
-	g_dev->CreateBuffer(&bd, NULL, &g_pCBuffer);       // create the buffer    
-	bd.ByteWidth = sizeof(FLOAT) * 2 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
-	g_dev->CreateBuffer(&bd, NULL, &g_pTBuffer);       // create the buffer    
 
-	bd.ByteWidth = sizeof(int) * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
-	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;       // use as a vertex buffer    
-	g_dev->CreateBuffer(&bd, NULL, &g_pIBuffer);       // create the buffer    
+	g_dev->CreateBuffer(&bd, NULL, &g_pVBuffer);       // create the buffer    
 
 	// ----------------------------------------------------------------------
 	// Create a constant buffer (NB must be multiple of 16 bytes)
@@ -377,15 +297,18 @@ void InitD3D(CoreWindow^ Window)
 	ZeroMemory(&bd2, sizeof(bd2));
 
 	bd2.Usage = D3D11_USAGE_DEFAULT;
-	bd2.ByteWidth = sizeof(cbpData)-4; //Ugly...
+	bd2.ByteWidth = sizeof(const_buffer);
 	bd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd2.CPUAccessFlags = 0;
 
-	HRESULT hr;
-	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CBP);
+	struct const_buffer mycb;
+	mycb.use_tex = 0;
 
-	bd2.ByteWidth = sizeof(cbvData) -4;
-	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CBV);
+	HRESULT hr;
+	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CB);
+
+	g_devcon->UpdateSubresource(g_CB, 0, nullptr, &mycb, 0, 0);
+	g_devcon->PSSetConstantBuffers(0, 1, &g_CB);
 
 	// ----------------------------------------------------------------------
 	// Blend state
@@ -436,15 +359,30 @@ void InitD3D(CoreWindow^ Window)
 	rasterDesc.DepthBiasClamp = 0;
 	rasterDesc.DepthClipEnable = true;
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.FrontCounterClockwise = true;
+	rasterDesc.FrontCounterClockwise = false;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSNormal);
-	rasterDesc.ScissorEnable = false;
-	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissor);
-	g_devcon->RSSetState(g_pRSNormal);
+	ID3D11RasterizerState *m_rasterState;
+
+	HRESULT result = g_dev->CreateRasterizerState(&rasterDesc, &m_rasterState);
+	g_devcon->RSSetState(m_rasterState);
+
+	// ----------------------------------------------------------------------
+	// Finally do some "openGL" manipulations so that vertex coords are in
+	// pixels in a 2D surface with origin at top-left 
+	// ----------------------------------------------------------------------
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	float orient = 0, logicalw = 320, logicalh = 480;
+	glRotatef(orient, 0.0, 0.0, 1.0);
+	glOrtho(0.0, logicalw, logicalh, 0.0, -1.0, 1.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 // ######################################################################
@@ -1185,7 +1123,7 @@ void ApplicationManager::drawFrame()
 
 	gaudio_AdvanceStreamBuffers();
 
-	g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);
+	g_devcon->OMSetRenderTargets(1, &g_backbuffer, nullptr);
 	g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
 
 	nframe_++;
@@ -1193,7 +1131,7 @@ void ApplicationManager::drawFrame()
 	if (networkManager_)
 		networkManager_->tick();
 
-	application_->clearBuffers();
+	//	application_->clearBuffers();  (this would duplicate ClearRenderTargetView above)
 
 	if (application_->isErrorSet())
 		luaError(application_->getError());
