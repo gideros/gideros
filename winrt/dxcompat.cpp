@@ -40,7 +40,7 @@ ID3D11InputLayout *g_pLayout;
 ID3D11VertexShader *g_pVS;
 ID3D11PixelShader *g_pPS;
 ID3D11Buffer *g_pVBuffer;                  // Vertex buffer: we put our geometry here
-#ifdef GIDEROS_GL1
+#ifndef GIDEROS_GL1
 ID3D11Buffer *g_pCBuffer;                  // Vertex buffer: we put our geometry here
 ID3D11Buffer *g_pTBuffer;                  // Vertex buffer: we put our geometry here
 ID3D11Buffer *g_pIBuffer;                  // Vertex buffer: we put our geometry here
