@@ -582,12 +582,42 @@ void glDrawArrays(GLenum pattern, GLint zero, GLsizei npoints)
 	  g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
   else if (pattern == GL_TRIANGLE_STRIP)
 	  g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+  else if (pattern == GL_TRIANGLE_FAN)
+  {
+	  D3D11_MAPPED_SUBRESOURCE ms;
+	  g_devcon->Map(g_pIBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+	  unsigned short *i = (unsigned short *)ms.pData;
+	  int ntris = npoints - 2;
+	  for (int t = 0; t < ntris; t++)
+	  {
+		  *(i++) = 0;
+		  *(i++) = t+1;
+		  *(i++) = t+2;
+	  }
+	  g_devcon->Unmap(g_pIBuffer, NULL);                                      // unmap the buffer
+	  g_devcon->IASetIndexBuffer(g_pIBuffer, DXGI_FORMAT_R16_UINT, 0);
+	  g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	  g_devcon->DrawIndexed(ntris * 3, 0, 0);
+	  return;
+  }
   else if (pattern == GL_TRIANGLES)
 	  g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
   else if (pattern == GL_LINE_STRIP)
 	  g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
   else if (pattern == GL_LINE_LOOP)
+  {
+	  D3D11_MAPPED_SUBRESOURCE ms;
+	  g_devcon->Map(g_pIBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+	  unsigned short *i = (unsigned short *)ms.pData;
+	  for (int t = 0; t < npoints; t++)
+		  *(i++) = t;
+	  *(i++) = 0;
+	  g_devcon->Unmap(g_pIBuffer, NULL);                                      // unmap the buffer
+	  g_devcon->IASetIndexBuffer(g_pIBuffer, DXGI_FORMAT_R16_UINT, 0);
 	  g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	  g_devcon->DrawIndexed(npoints+1, 0, 0);
+	  return;
+  }
   else if (pattern==GL_LINES)
 	  g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
   else {
