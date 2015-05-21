@@ -103,6 +103,10 @@ int PTW32_CDECL pthread_join(pthread_t thread,
 	return 0;
 }
 
+
+extern struct cbv cbvData;
+extern struct cbp cbpData;
+
 extern bool dxcompat_force_lines;
 extern int dxcompat_maxvertices;
 
@@ -157,7 +161,7 @@ void InitD3D(CoreWindow^ Window)
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
-		0,//D3D11_CREATE_DEVICE_DEBUG,
+		D3D11_CREATE_DEVICE_DEBUG,
 		nullptr,
 		0,
 		D3D11_SDK_VERSION,
@@ -1206,7 +1210,10 @@ void ApplicationManager::drawFrame()
 	application_->renderScene(1);
 	drawIPs();
 
-	g_swapchain->Present(1, 0);
+	if (g_swapchain->Present(1, 0))
+	{
+		glog_i("GPU removed:%08lx", g_dev->GetDeviceRemovedReason());
+	}
 }
 
 void ApplicationManager::setOpenProject(const char* project){

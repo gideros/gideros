@@ -29,8 +29,8 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR, float2 texcoord :
 cbuffer cbp : register(b0)
 {
 	float4 fColor;
-	float fTextureSel;
-	float fColorSel;
+	int fTextureSel;
+	int fColorSel;
 	int r1, r2; //Padding
 };
 

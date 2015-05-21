@@ -636,6 +636,7 @@
 
 typedef unsigned int    GLenum;
 typedef unsigned char   GLboolean;
+typedef char			GLchar;
 typedef unsigned int    GLbitfield;
 typedef void            GLvoid;
 typedef signed char     GLbyte;         /* 1-byte signed */

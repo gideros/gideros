@@ -23,8 +23,8 @@ extern ID3D11SamplerState *g_samplerLinear;
 extern ID3D11BlendState *g_pBlendState;
 
 extern ID3D11Buffer *g_pVBuffer;
-#ifdef GIDROS_GL1
 extern float backcol[];
+#ifdef GIDEROS_GL1
 extern ID3D11Buffer *g_CB;
 #else
 extern ID3D11DepthStencilView *g_depthStencil;
@@ -51,4 +51,6 @@ struct cbv {
 	DirectX::XMFLOAT4X4 mvp;
 	bool dirty;
 };
+
+#endif
 #endif

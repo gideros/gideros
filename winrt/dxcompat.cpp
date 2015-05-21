@@ -83,7 +83,7 @@ ID3D11RasterizerState *g_pRSScissor;
 bool dxcompat_force_lines = false;
 bool dxcompat_zrange01 = true;
 
-int dxcompat_maxvertices = 16384;
+int dxcompat_maxvertices = 4096;
 
 // "OpenGL" state machine
 static float g_r=1, g_g=1, g_b=1, g_a=1;
@@ -119,7 +119,7 @@ void glClear(GLbitfield mask){
 	}
 #endif
 	if (mask& GL_COLOR_BUFFER_BIT)
-	{
+	{		
 		if (g_curr_framebuffer == 0){
 			g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
 		}
@@ -435,6 +435,8 @@ void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  
 	switch (index)
 	{
 	case 0:
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, pointer, count, true, NULL);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, pointer, count, true, NULL);
 		vbo = g_pVBuffer;
 		break;
 	case 1:
