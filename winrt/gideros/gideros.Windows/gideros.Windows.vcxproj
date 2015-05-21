@@ -115,7 +115,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\luabinding;$(ProjectDir)..\..\..\libnetwork;..\..\..\libgid\external\freetype-2.4.12\src;..\..\..\libgid\external\freetype-2.4.12\include;..\..\..\libgid\external\mpg123-1.15.3\src;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>GIDEROS_GL1;D3D_DEBUG_INFO;PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>D3D_DEBUG_INFO;PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
