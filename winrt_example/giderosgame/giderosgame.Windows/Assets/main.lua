@@ -10,9 +10,12 @@ This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.ph
 
 application:setBackgroundColor(255)
 
+application:setFps(0)
+print ("hello")
+
 -- load texture, create bitmap from it and set as background
 local background = Bitmap.new(Texture.new("sky_world.png"))
---stage:addChild(background)
+stage:addChild(background)
 
 -- these arrays contain the image file names of each frame
 local frames1 = {
