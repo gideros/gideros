@@ -26,12 +26,12 @@ VOut VShader(float4 position : POSITION, float4 color : COLOR, float2 texcoord :
 	return output;
 }
 
-cbuffer cbp : register(b0)
+cbuffer cbp : register(b1)
 {
 	float4 fColor;
-	int fTextureSel;
-	int fColorSel;
-	int r1, r2; //Padding
+	float fTextureSel;
+	float fColorSel;
+	float r1, r2; //Padding
 };
 
 float4 PShader(float4 position : SV_POSITION, float4 color : COLOR, float2 texcoord : TEXCOORD) : SV_TARGET

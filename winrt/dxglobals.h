@@ -43,13 +43,11 @@ struct cbp {
 	DirectX::XMFLOAT4 fColor;
 	float fTextureSel;
 	float fColorSel;
-	int r1, r2; //Padding
-	bool dirty;
+	float r1, r2; //Padding
 };
 
 struct cbv {
 	DirectX::XMFLOAT4X4 mvp;
-	bool dirty;
 };
 
 #endif

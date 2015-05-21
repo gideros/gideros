@@ -371,6 +371,25 @@ void InitD3D(CoreWindow^ Window)
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;       // use as a vertex buffer
 	g_dev->CreateBuffer(&bd, NULL, &g_pIBuffer);       // create the buffer
 
+	//Initialize color buffer and texcoord buffer with valid values
+	D3D11_MAPPED_SUBRESOURCE ms;
+	g_devcon->Map(g_pCBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+	for (int k = 0; k < dxcompat_maxvertices * 4; k++)
+		((float *)ms.pData)[k] = 1.0;
+	g_devcon->Unmap(g_pCBuffer, NULL);                                      // unmap the buffer
+	g_devcon->Map(g_pTBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+	for (int k = 0; k < dxcompat_maxvertices * 2; k++)
+		((float *)ms.pData)[k] = 0.0;
+	g_devcon->Unmap(g_pTBuffer, NULL);                                      // unmap the buffer
+	UINT tstride = 3*sizeof(float);
+	UINT offset = 0;
+	g_devcon->IASetVertexBuffers(0, 1, &g_pVBuffer, &tstride, &offset);
+	tstride = 4 * sizeof(float);
+	g_devcon->IASetVertexBuffers(1, 1, &g_pCBuffer, &tstride, &offset);
+	tstride = 2 * sizeof(float);
+	g_devcon->IASetVertexBuffers(2, 1, &g_pTBuffer, &tstride, &offset);
+
+
 	// ----------------------------------------------------------------------
 	// Create a constant buffer (NB must be multiple of 16 bytes)
 	// Important field is use_tex. If 1, pixel shader will use current texture
@@ -380,16 +399,18 @@ void InitD3D(CoreWindow^ Window)
 	D3D11_BUFFER_DESC bd2;
 	ZeroMemory(&bd2, sizeof(bd2));
 
-	bd2.Usage = D3D11_USAGE_DEFAULT;
-	bd2.ByteWidth = sizeof(cbpData)-4; //Ugly...
+	bd2.Usage = D3D11_USAGE_DYNAMIC;
+	bd2.ByteWidth = sizeof(cbpData);
 	bd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd2.CPUAccessFlags = 0;
+	bd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	HRESULT hr;
 	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CBP);
+	g_devcon->PSSetConstantBuffers(1, 1, &g_CBP);
 
-	bd2.ByteWidth = sizeof(cbvData) -4;
+	bd2.ByteWidth = sizeof(cbvData);
 	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CBV);
+	g_devcon->VSSetConstantBuffers(0, 1, &g_CBV);
 
 	// ----------------------------------------------------------------------
 	// Blend state

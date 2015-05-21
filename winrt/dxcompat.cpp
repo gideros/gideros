@@ -51,6 +51,8 @@ ID3D11Texture2D* g_depthStencilTexture;
 
 struct cbv cbvData;
 struct cbp cbpData;
+bool cbpDirty,cbvDirty;
+
 #else
 ID3D11Buffer *g_CB;                        // Constant buffer: pass settings like whether to use textures or not
 #endif
@@ -83,7 +85,7 @@ ID3D11RasterizerState *g_pRSScissor;
 bool dxcompat_force_lines = false;
 bool dxcompat_zrange01 = true;
 
-int dxcompat_maxvertices = 4096;
+int dxcompat_maxvertices = 16384;
 
 // "OpenGL" state machine
 static float g_r=1, g_g=1, g_b=1, g_a=1;
@@ -435,8 +437,6 @@ void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  
 	switch (index)
 	{
 	case 0:
-		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, pointer, count, true, NULL);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, pointer, count, true, NULL);
 		vbo = g_pVBuffer;
 		break;
 	case 1:
@@ -476,52 +476,19 @@ void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  
 	//floatdump(vName, ms.pData, 8);
 	g_devcon->Unmap(vbo, NULL);                                      // unmap the buffer
 
-	UINT tstride = size*elmSize;
+	/*UINT tstride = size*elmSize;
 	UINT offset = 0;
 
 	g_devcon->IASetVertexBuffers(index, 1, &vbo, &tstride, &offset);
+	*/
 }
 
 void glEnableVertexAttribArray(GLuint index)
 {
-	switch (index)
-	{
-	case 1:
-		if (cbpData.fColorSel == 0)
-		{
-			cbpData.fColorSel = 1.0;
-			cbpData.dirty = true;
-		}
-		break;
-	case 2:
-		if (cbpData.fTextureSel == 0)
-		{
-			cbpData.fTextureSel = 1.0;
-			cbpData.dirty = true;
-		}
-		break;
-	}
 }
 
 void glDisableVertexAttribArray(GLuint index)
 {
-	switch (index)
-	{
-	case 1:
-		if (cbpData.fColorSel != 0)
-		{
-			cbpData.fColorSel = 0.0;
-			cbpData.dirty = true;
-		}
-		break;
-	case 2:
-		if (cbpData.fTextureSel != 0)
-		{
-			cbpData.fTextureSel = 0.0;
-			cbpData.dirty = true;
-		}
-		break;
-	}
 }
 
 
@@ -531,11 +498,11 @@ void glUniform1f(GLint location, GLfloat v0)
 	{
 	case 22: //fColorSel
 		cbpData.fColorSel = v0;
-		cbpData.dirty = true;
+		cbpDirty = true;
 		break;
 	case 23: //fTextureSel
 		cbpData.fTextureSel = v0;
-		cbpData.dirty = true;
+		cbpDirty = true;
 		break;
 	}
 }
@@ -555,7 +522,7 @@ void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
 	{
 	case 20: //fColor
 		cbpData.fColor=DirectX::XMFLOAT4(v0,v1,v2,v3);
-		cbpData.dirty = true;
+		cbpDirty = true;
 		break;
 	}
 }
@@ -566,7 +533,7 @@ void glUniform4fv(GLint location, GLsizei count, GLfloat *v)
 	{
 	case 20: //fColor
 		cbpData.fColor = DirectX::XMFLOAT4(v[0], v[1], v[2], v[3]);
-		cbpData.dirty = true;
+		cbpDirty = true;
 		break;
 	}
 }
@@ -577,7 +544,7 @@ void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, cons
 	{
 	case 10: //vMatrix
 		cbvData.mvp = DirectX::XMFLOAT4X4(value);
-		cbvData.dirty = true;
+		cbvDirty = true;
 		break;
 	}
 }
@@ -585,19 +552,22 @@ void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, cons
 //######################################################################
 void updateShaders()
 {
+	D3D11_MAPPED_SUBRESOURCE ms;
 	//Update CB{V,P} data
-	if (cbpData.dirty)
+	if (cbpDirty)
 	{
 		//floatdump("CBP", &cbpData, 6);
-		g_devcon->UpdateSubresource(g_CBP, 0, NULL, &cbpData, 0, 0);
-		g_devcon->PSSetConstantBuffers(0, 1, &g_CBP);
-		cbpData.dirty = false;
+		g_devcon->Map(g_CBP, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+		memcpy(ms.pData, &cbpData,sizeof(cbpData));                 // copy the data    
+		g_devcon->Unmap(g_CBP, NULL);                                      // unmap the buffer
+		cbpDirty = false;
 	}
-	if (cbvData.dirty)
+	if (cbvDirty)
 	{
-		g_devcon->UpdateSubresource(g_CBV, 0, NULL, &cbvData, 0, 0);
-		g_devcon->VSSetConstantBuffers(0, 1, &g_CBV);
-		cbvData.dirty = false;
+		g_devcon->Map(g_CBV, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+		memcpy(ms.pData, &cbvData, sizeof(cbvData));                 // copy the data    
+		g_devcon->Unmap(g_CBV, NULL);                                      // unmap the buffer
+		cbvDirty = false;
 	}
 }
 
@@ -653,8 +623,11 @@ void glGetIntegerv(GLenum pname, GLint *params)
 	}
 }
 
+GLuint glProgCount = 0;
 const GLubyte *glGetString(GLenum name)
 {
+	if (name == GL_SHADING_LANGUAGE_VERSION)
+		glProgCount = 0;
 	glog_w("glGetString not supported\n");
 	return NULL;
 }
@@ -872,7 +845,7 @@ void glDepthFunc(GLenum func)
 }
 
 GLuint glCreateShader(GLenum shaderType)  { return 0; }
-GLuint glCreateProgram(void) { return 0;  }
+GLuint glCreateProgram(void) { return glProgCount++;  }
 void glCompileShader(GLuint shader) {}
 void glShaderSource(GLuint shader, GLsizei count, const GLchar **string, const GLint *length) {}
 void glGetShaderiv(GLuint shader, GLenum pname, GLint *params) {}
@@ -882,7 +855,29 @@ void glGetProgramInfoLog(GLuint program, GLsizei maxLength, GLsizei *length, GLc
 void glDeleteShader(GLuint shader) {}
 void glAttachShader(GLuint program, GLuint shader) {}
 void glLinkProgram(GLuint program) {}
-void glUseProgram(GLuint program) {}
+void glUseProgram(GLuint program)
+{
+	switch (program)
+	{
+	case 0: //BASIC
+		cbpData.fColorSel = 0.0;
+		cbpData.fTextureSel = 0.0;
+		break;
+	case 1: //COLOR
+		cbpData.fColorSel = 1.0;
+		cbpData.fTextureSel = 0.0;
+		break;
+	case 2: //TEXTURE
+		cbpData.fColorSel = 0.0;
+		cbpData.fTextureSel = 1.0;
+		break;
+	case 3: //TEXTURE-COLOR
+		cbpData.fColorSel = 1.0;
+		cbpData.fTextureSel = 1.0;
+		break;
+	}
+	cbpDirty = true;
+}
 void glDeleteProgram(GLuint program) {}
 void glBindAttribLocation(GLuint program, GLuint index, const GLchar *name)
 {
