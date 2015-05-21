@@ -44,7 +44,6 @@ extern "C"
 ref class App sealed : public IFrameworkView
 {
     bool WindowClosed;
-	ULONGLONG next_game_tick;
 
 public:
     virtual void Initialize(CoreApplicationView^ AppView)
@@ -96,25 +95,9 @@ public:
 	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str());
 
 	  gdr_drawFirstFrame();
-      
-      const int TICK_PER_SECOND = 60;
-      const int SKIP_TICKS = 1000 / TICK_PER_SECOND;
-      const int MAX_FRAMESKIP = 10;
-      
-      next_game_tick = GetTickCount64();
-      int loops;
-      
+            
       // repeat until window closes
       while(!WindowClosed){
-
-		  loops = 0;
-		  //	while (GetTickCount64() > next_game_tick && loops < MAX_FRAMESKIP) {
-		  Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
-
-		  next_game_tick += SKIP_TICKS;
-		  loops++;
-		  //	} 
-
 		  gdr_drawFrame();
       }
 
@@ -148,7 +131,6 @@ public:
 
     void Resuming(Object^ Sender, Object^ Args) 
     {
-      next_game_tick = GetTickCount64();
 	  gdr_resume();
     }
 
