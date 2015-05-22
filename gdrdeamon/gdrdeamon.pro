@@ -31,9 +31,7 @@ HEADERS += \
     ../ui/giderosnetworkclient2.h \
     qtsinglecoreapplication.h \
     qtlockedfile.h \
-    QtLockedFile \
     qtlocalpeer.h \
-    QtSingleCoreApplication \
     ../ui/projectproperties.h \
     ../ui/dependencygraph.h
 
