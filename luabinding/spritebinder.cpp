@@ -696,12 +696,7 @@ int SpriteBinder::setScale(lua_State* L)
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = lua_isnoneornil(L, 3) ? x : luaL_checknumber(L, 3);
 	if (lua_isnoneornil(L, 4)) //No Z
-	{
-		if (lua_isnoneornil(L, 3)) //No Y either, scale all axis
-			sprite->setScaleXYZ(x, x, x);
-		else
-			sprite->setScaleXY(x, y); // Only scale X and Y
-	}
+		sprite->setScaleXY(x, y); // Only scale X and Y
 	else
 	{
 		lua_Number z = luaL_checknumber(L, 4);
