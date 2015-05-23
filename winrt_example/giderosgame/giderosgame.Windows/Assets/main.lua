@@ -10,7 +10,7 @@ This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.ph
 
 application:setBackgroundColor(255)
 
-application:setFps(0)
+application:setFps(60)
 print ("hello")
 
 -- load texture, create bitmap from it and set as background

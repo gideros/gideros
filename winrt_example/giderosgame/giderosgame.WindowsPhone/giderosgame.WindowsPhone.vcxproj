@@ -197,7 +197,6 @@
     <Media Include="Assets\1.wav" />
     <Media Include="Assets\2.wav" />
     <Media Include="Assets\3.wav" />
-    <Media Include="Assets\diving_turtle.mp3" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Assets\arial.ttf" />
