@@ -1217,15 +1217,10 @@ void ApplicationManager::drawFrame()
 	if (FPS == 0) {
 		Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
-<<<<<<< HEAD
-	g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);
-	g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
-=======
 		GStatus status;
 		application_->enterFrame(&status);
 		if (status.error())
 			luaError(status.errorString());
->>>>>>> refs/remotes/upstream/master
 
 		gaudio_AdvanceStreamBuffers();
 
@@ -1237,17 +1232,12 @@ void ApplicationManager::drawFrame()
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
-		g_devcon->OMSetRenderTargets(1, &g_backbuffer, nullptr);
+		g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);
 		g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
 
 		application_->renderScene(1);
 		drawIPs();
 
-<<<<<<< HEAD
-	if (g_swapchain->Present(1, 0))
-	{
-		glog_i("GPU removed:%08lx", g_dev->GetDeviceRemovedReason());
-=======
 		g_swapchain->Present(1, 0);
 	}
 	else {
@@ -1280,14 +1270,13 @@ void ApplicationManager::drawFrame()
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
-		g_devcon->OMSetRenderTargets(1, &g_backbuffer, nullptr);
+		g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);
 		g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
 
 		application_->renderScene(1);
 		drawIPs();
 
 		g_swapchain->Present(1, 0);
->>>>>>> refs/remotes/upstream/master
 	}
 }
 

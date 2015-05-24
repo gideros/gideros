@@ -114,9 +114,6 @@
     <Media Include="Assets\3.wav">
       <Filter>Assets</Filter>
     </Media>
-    <Media Include="Assets\diving_turtle.mp3">
-      <Filter>Assets</Filter>
-    </Media>
   </ItemGroup>
   <ItemGroup>
     <Font Include="Assets\arial.ttf">
