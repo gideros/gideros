@@ -41,6 +41,8 @@ using namespace Platform;
 using namespace Windows::UI::Core;
 using namespace Windows::Graphics::Display;
 
+static ULONGLONG next_game_tick;
+
 /*
 * Mutex Functions
 */
@@ -1118,6 +1120,8 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 		loadLuaFiles();
 
 	}
+
+	next_game_tick = GetTickCount64();
 }
 
 ApplicationManager::~ApplicationManager()
@@ -1207,33 +1211,83 @@ void ApplicationManager::drawFirstFrame()
 
 void ApplicationManager::drawFrame()
 {
+	CoreWindow^ Window = CoreWindow::GetForCurrentThread();
+	int FPS = g_getFps();
 
-	gaudio_AdvanceStreamBuffers();
+	if (FPS == 0) {
+		Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
+<<<<<<< HEAD
 	g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);
 	g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
+=======
+		GStatus status;
+		application_->enterFrame(&status);
+		if (status.error())
+			luaError(status.errorString());
+>>>>>>> refs/remotes/upstream/master
 
-	nframe_++;
+		gaudio_AdvanceStreamBuffers();
 
-	if (networkManager_)
-		networkManager_->tick();
+		nframe_++;
 
-	//	application_->clearBuffers();  (this would duplicate ClearRenderTargetView above)
+		if (networkManager_)
+			networkManager_->tick();
 
-	if (application_->isErrorSet())
-		luaError(application_->getError());
+		if (application_->isErrorSet())
+			luaError(application_->getError());
 
-	GStatus status;
-	application_->enterFrame(&status);
-	if (status.error())
-		luaError(status.errorString());
+		g_devcon->OMSetRenderTargets(1, &g_backbuffer, nullptr);
+		g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
 
-	application_->renderScene(1);
-	drawIPs();
+		application_->renderScene(1);
+		drawIPs();
 
+<<<<<<< HEAD
 	if (g_swapchain->Present(1, 0))
 	{
 		glog_i("GPU removed:%08lx", g_dev->GetDeviceRemovedReason());
+=======
+		g_swapchain->Present(1, 0);
+	}
+	else {
+
+		const int MAX_FRAMESKIP = 10;
+		int SKIP_TICKS = 1000 / FPS;
+
+		int loops = 0;
+		while (GetTickCount64() > next_game_tick && loops < MAX_FRAMESKIP) {
+			Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+
+			GStatus status;
+			application_->enterFrame(&status);
+			if (status.error())
+				luaError(status.errorString());
+
+			next_game_tick += SKIP_TICKS;
+			loops++;
+		}
+
+		gaudio_AdvanceStreamBuffers();
+
+		nframe_++;
+
+		if (networkManager_)
+			networkManager_->tick();
+
+		//	application_->clearBuffers();  (this would duplicate ClearRenderTargetView above)
+
+		if (application_->isErrorSet())
+			luaError(application_->getError());
+
+		g_devcon->OMSetRenderTargets(1, &g_backbuffer, nullptr);
+		g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
+
+		application_->renderScene(1);
+		drawIPs();
+
+		g_swapchain->Present(1, 0);
+>>>>>>> refs/remotes/upstream/master
 	}
 }
 
@@ -1620,6 +1674,7 @@ void ApplicationManager::resume()
 	if (status.error())
 		luaError(status.errorString());
 
+	next_game_tick = GetTickCount64();
 }
 
 void ApplicationManager::exitRenderLoop()
