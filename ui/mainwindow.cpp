@@ -2338,8 +2338,8 @@ void MainWindow::exportProject()
 				replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), dialog.packageName().toUtf8());
 			replaceList << replaceList1;
 
-				QStringList wildcards2;
-                wildcards2 << "libgideros.so" << "libgideros.a" << "gideros.dll" << "libgideros.dylib" << "libgideros.1.dylib" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib";
+                QStringList wildcards2;
+                wildcards2 << "libgideros.so" << "libgideros.a" << "WindowsDesktopTemplate.exe" << "MacOSXDesktopTemplate" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib";
 				wildcards << wildcards2;
 
 				QList<QPair<QByteArray, QByteArray> > replaceList2;
