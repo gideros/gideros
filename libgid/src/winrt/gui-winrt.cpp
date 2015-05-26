@@ -1,11 +1,35 @@
 #include <gglobal.h>
 #include <gevent.h>
+#include <gui.h>
+
+#include "pch.h"
+
+using namespace Windows::UI::Popups;
+using namespace Windows::UI::Xaml;
+using namespace Windows::UI::Xaml::Controls;
+using namespace Windows::UI::Xaml::Navigation;
+
+
+gevent_Callback mycallback;
+void *myudata;
+
+void CommandInvokedHandler(Windows::UI::Popups::IUICommand^ command)
+{
+	g_id gid = g_NextId();
+	size_t size = sizeof(gui_AlertDialogCompleteEvent) + command->Label->Length() + 1;
+	gui_AlertDialogCompleteEvent *event = (gui_AlertDialogCompleteEvent*)malloc(size);
+	event->gid = gid;
+	event->buttonIndex = (int)command->Id;
+	event->buttonText = (char*)event + sizeof(gui_AlertDialogCompleteEvent);
+	strcpy((char*)event->buttonText, (char*)command->Label);
+
+	gevent_EnqueueEvent(gid, mycallback, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, myudata);
+}
 
 extern "C" {
 
 G_API void gui_init()
 {
-  //    s_manager = new UIManager;
 }
 
 G_API void gui_cleanup()
@@ -22,7 +46,32 @@ G_API g_id gui_createAlertDialog(const char *title,
                                  gevent_Callback callback,
                                  void *udata)
 {
-  //    return s_manager->createAlertDialog(title, message, cancelButton, button1, button2, callback, udata);
+
+	myudata = udata;
+	mycallback = callback;
+
+	MessageDialog^ msg = ref new MessageDialog("message", "title");
+
+	UICommand^ continueCommand = ref new UICommand(
+		"OK",
+		ref new UICommandInvokedHandler(&CommandInvokedHandler));
+	UICommand^ upgradeCommand = ref new UICommand(
+		"Cancel",
+		ref new UICommandInvokedHandler(&CommandInvokedHandler));
+
+	// Add the commands to the dialog
+	msg->Commands->Append(continueCommand);
+	msg->Commands->Append(upgradeCommand);
+
+	// Set the command that will be invoked by default
+	msg->DefaultCommandIndex = 0;
+
+	// Set the command to be invoked when escape is pressed
+	msg->CancelCommandIndex = 1;
+
+	// Show the message dialog
+	msg->ShowAsync();
+
 	return 0;
 }
 
