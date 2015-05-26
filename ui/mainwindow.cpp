@@ -2383,8 +2383,6 @@ void MainWindow::exportProject()
 
         if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop || deviceFamily == ExportProjectDialog::e_WindowsDesktop){
             outputDir.mkdir("resource");
-            outputDir.mkdir("temporary");
-            outputDir.mkdir("documents");
             outputDir.cd("resource");
         }
 
