@@ -39,3 +39,14 @@ stage:addChild(bird1)
 stage:addChild(bird2)
 stage:addChild(bird3)
 stage:addChild(bird4)
+
+local alertDialog = AlertDialog.new("This is my title", "And my message", "Cancel", "Yes", "No")
+
+local function onComplete(event)
+print(event.buttonIndex, event.buttonText)
+end
+
+alertDialog:addEventListener(Event.COMPLETE, onComplete)
+
+stage:addEventListener(Event.KEY_DOWN, function() alertDialog:show() end)
+
