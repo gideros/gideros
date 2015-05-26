@@ -2339,7 +2339,7 @@ void MainWindow::exportProject()
 			replaceList << replaceList1;
 
 				QStringList wildcards2;
-                wildcards2 << "libgideros.so" << "libgideros.a";
+                wildcards2 << "libgideros.so" << "libgideros.a" << "gideros.dll" << "libgideros.dylib" << "libgideros.1.dylib" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib";
 				wildcards << wildcards2;
 
 				QList<QPair<QByteArray, QByteArray> > replaceList2;
@@ -2349,7 +2349,7 @@ void MainWindow::exportProject()
                 replaceList << replaceList2;
 
             if (dialog.assetsOnly())
-                copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar", QStringList());
+                copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar" << "gideros.dll" << "libgideros.dylib" << "libgideros.1.dylib" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib", QStringList());
             else
                 copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "*", QStringList());
 		}
