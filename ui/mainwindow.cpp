@@ -2339,7 +2339,7 @@ void MainWindow::exportProject()
 			replaceList << replaceList1;
 
                 QStringList wildcards2;
-                wildcards2 << "libgideros.so" << "libgideros.a" << "WindowsDesktopTemplate.exe" << "MacOSXDesktopTemplate" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib";
+                wildcards2 << "libgideros.so" << "libgideros.a" << "gid.dll" << "libgid.1.dylib" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib";
 				wildcards << wildcards2;
 
 				QList<QPair<QByteArray, QByteArray> > replaceList2;
