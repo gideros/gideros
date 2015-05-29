@@ -57,6 +57,8 @@ void Transform::setMatrix(float m11,float m12,float m21,float m22,float tx,float
 	tx_=tx;
 	ty_=ty;
 	tz_=0;
+
+	compose();
 }
 
 void Transform::compose()
