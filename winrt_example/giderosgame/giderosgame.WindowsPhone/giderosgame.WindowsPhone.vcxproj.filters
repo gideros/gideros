@@ -191,5 +191,25 @@
     <ClCompile Include="Plugins\bit_stub.cpp">
       <Filter>Plugins</Filter>
     </ClCompile>
+    <ClCompile Include="Plugins\lfs.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lfs_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lsqlite3.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lsqlite3_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Plugins\lfs.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\sqlite3.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

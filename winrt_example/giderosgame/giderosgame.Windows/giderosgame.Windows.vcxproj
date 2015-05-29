@@ -131,7 +131,7 @@
       <AdditionalIncludeDirectories>.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
-      <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;NDEBUG;SQLITE_OS_WINRT;NO_GETCWD;NO_CHDIR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -305,6 +305,17 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="Plugins\lfs.c" />
+    <ClCompile Include="Plugins\lfs_stub.cpp" />
+    <ClCompile Include="Plugins\lsqlite3.c" />
+    <ClCompile Include="Plugins\lsqlite3_stub.cpp" />
+    <ClCompile Include="Plugins\sqlite3.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Plugins\lfs.h" />
+    <ClInclude Include="Plugins\sqlite3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
