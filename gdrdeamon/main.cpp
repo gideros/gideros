@@ -1,4 +1,4 @@
-#include <QtSingleCoreApplication>
+#include "qtsinglecoreapplication.h"
 #include "application.h"
 #include <stdio.h>
 

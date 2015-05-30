@@ -38,7 +38,7 @@ static GraphicsBase createGraphicsBase(TextureData* data, int x, int y)
 {
 	GraphicsBase graphicsBase;
 	
-	graphicsBase.mode = GL_TRIANGLE_STRIP;
+	graphicsBase.mode = ShaderProgram::TriangleStrip;
 	
 	graphicsBase.data = data;
 	

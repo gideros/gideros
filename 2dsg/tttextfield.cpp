@@ -79,7 +79,7 @@ void TTTextField::createGraphics()
 
 	graphicsBase_.data = data_;
 
-	graphicsBase_.mode = GL_TRIANGLE_STRIP;
+	graphicsBase_.mode = ShaderProgram::TriangleStrip;
 
 	graphicsBase_.vertices.resize(4);
 	graphicsBase_.vertices[0] = Point2f(dx / scalex,					dy / scaley);
