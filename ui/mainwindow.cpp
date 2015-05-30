@@ -2436,6 +2436,21 @@ void MainWindow::exportProject()
 
 				outputDir.mkdir(n);
 
+				if (deviceFamily == ExportProjectDialog::e_WinRT){
+				  outputDir.cdUp();
+				  outputDir.cdUp();
+				  outputDir.cd("giderosgame.WindowsPhone");
+				  outputDir.cd("Assets");
+
+				  outputDir.mkdir(n);
+
+				  outputDir.cdUp();
+				  outputDir.cdUp();
+				  outputDir.cd("giderosgame.Windows");
+				  outputDir.cd("Assets");
+				}
+
+
 				stack.push(QDomNode());
 			}
 
