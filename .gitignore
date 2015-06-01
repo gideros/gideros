@@ -245,6 +245,7 @@ tmp
 *.a
 *.dep
 *.cso
+*.dll
 
 # some files and folder to include
 !/release
