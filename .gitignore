@@ -244,6 +244,7 @@ tmp
 *.ini
 *.a
 *.dep
+*.cso
 
 # some files and folder to include
 !/release
