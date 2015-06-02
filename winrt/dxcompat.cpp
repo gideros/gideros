@@ -431,7 +431,8 @@ void floatdump(const char *chn, const void *bv, int sz) {
 
 void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  normalized, GLsizei  stride, const GLvoid *  pointer,GLsizei count, bool modified, GLuint *cache)
 {
-	if (size > dxcompat_maxvertices) size = dxcompat_maxvertices;  // avoid overflow
+	count = count / size;
+	if (count > dxcompat_maxvertices) count = dxcompat_maxvertices;  // avoid overflow
 	ID3D11Buffer *vbo=NULL;
 	const char *vName = "VB";
 	switch (index)
@@ -458,7 +459,7 @@ void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  
 		break;
 	}
 	D3D11_MAPPED_SUBRESOURCE ms;
-	g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+	HRESULT hr=g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
 	if ((index == 0) && (size == 2)) //special case expand X,Y to X,Y,0 data
 	{
 		float *vdi = (float *)pointer;

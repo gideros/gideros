@@ -359,19 +359,24 @@ void InitD3D(CoreWindow^ Window)
 
 	bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU    
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
-	bd.ByteWidth = sizeof(FLOAT)*3 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
+
+	HRESULT hr;
+
+	bd.ByteWidth = sizeof(FLOAT) * 3 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
-	g_dev->CreateBuffer(&bd, NULL, &g_pVBuffer);       // create the buffer
+	hr=g_dev->CreateBuffer(&bd, NULL, &g_pVBuffer);       // create the buffer
+
 	bd.ByteWidth = sizeof(FLOAT) * 4 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
-	g_dev->CreateBuffer(&bd, NULL, &g_pCBuffer);       // create the buffer
+	hr=g_dev->CreateBuffer(&bd, NULL, &g_pCBuffer);       // create the buffer
+
 	bd.ByteWidth = sizeof(FLOAT) * 2 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
-	g_dev->CreateBuffer(&bd, NULL, &g_pTBuffer);       // create the buffer
+	hr=g_dev->CreateBuffer(&bd, NULL, &g_pTBuffer);       // create the buffer
 
 	bd.ByteWidth = sizeof(int) * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;       // use as a vertex buffer
-	g_dev->CreateBuffer(&bd, NULL, &g_pIBuffer);       // create the buffer
+	hr=g_dev->CreateBuffer(&bd, NULL, &g_pIBuffer);       // create the buffer
 
 	//Initialize color buffer and texcoord buffer with valid values
 	D3D11_MAPPED_SUBRESOURCE ms;
@@ -406,7 +411,6 @@ void InitD3D(CoreWindow^ Window)
 	bd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	HRESULT hr;
 	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CBP);
 	g_devcon->PSSetConstantBuffers(1, 1, &g_CBP);
 
