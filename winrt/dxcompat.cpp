@@ -431,7 +431,6 @@ void floatdump(const char *chn, const void *bv, int sz) {
 
 void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  normalized, GLsizei  stride, const GLvoid *  pointer,GLsizei count, bool modified, GLuint *cache)
 {
-	count = count / size;
 	if (count > dxcompat_maxvertices) count = dxcompat_maxvertices;  // avoid overflow
 	ID3D11Buffer *vbo=NULL;
 	const char *vName = "VB";
