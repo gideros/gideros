@@ -201,82 +201,30 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Image Include="Assets\1-down.png" />
-    <Image Include="Assets\1-up.png" />
-    <Image Include="Assets\2-down.png" />
-    <Image Include="Assets\2-up.png" />
-    <Image Include="Assets\3-down.png" />
-    <Image Include="Assets\3-up.png" />
-    <Image Include="Assets\ball.png" />
-    <Image Include="Assets\billo.png" />
-    <Image Include="Assets\bird_black_01.png" />
-    <Image Include="Assets\bird_black_02.png" />
-    <Image Include="Assets\bird_black_03.png" />
-    <Image Include="Assets\bird_white_01.png" />
-    <Image Include="Assets\bird_white_02.png" />
-    <Image Include="Assets\bird_white_03.png" />
-    <Image Include="Assets\button_down.png" />
-    <Image Include="Assets\button_up.png" />
-    <Image Include="Assets\ego.png" />
-    <Image Include="Assets\left-down.png" />
-    <Image Include="Assets\left-up.png" />
     <Image Include="Assets\Logo.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Assets\Logo.scale-80.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="Assets\right-down.png" />
-    <Image Include="Assets\right-up.png" />
-    <Image Include="Assets\sky_world.png" />
     <Image Include="Assets\SmallLogo.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Assets\SplashScreen.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="Assets\spots.png" />
     <Image Include="Assets\StoreLogo.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="Assets\tmw_desert_spacing.png" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Assets\billo.fnt">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Assets\bird.lua">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Assets\button.lua">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Assets\desert.lua">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Assets\main.lua">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Assets\main1.lua" />
-    <None Include="Assets\main2.lua" />
-    <None Include="Assets\mainaudio.lua" />
-    <None Include="Assets\mainbutton.lua" />
-    <None Include="Assets\mainfont.lua" />
-    <None Include="Assets\maininfballs.lua" />
-    <None Include="Assets\mainr2t.lua" />
-    <None Include="Assets\mainshapes.lua" />
     <None Include="Assets\PixelShader.cso">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Assets\properties.bin">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Assets\properties.bird.bin" />
-    <None Include="Assets\properties.nebula.bin" />
-    <None Include="Assets\soundbutton.lua">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Assets\VertexShader.cso">
@@ -286,15 +234,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\luafiles.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="Assets\arial.ttf" />
-    <Font Include="Assets\billo.ttf" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="Assets\1.wav" />
-    <Media Include="Assets\2.wav" />
-    <Media Include="Assets\3.wav" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Plugins\bit.c">
