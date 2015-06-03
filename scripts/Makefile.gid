@@ -1,9 +1,16 @@
-QT=/c/Qt/5.3/mingw482_32
-QPATH=$(QT)/bin:/c/Qt/Tools/mingw482_32/bin:$(PATH)
+QTBASEDIR=/c/Applications/Qt54
 NDKBUILD=cmd /c C:\\Applications\\android-ndk-r10d\\ndk-build.cmd
 JAVA_HOME=C:/Program\ Files/Java/jdk1.7.0_21
 ANT_HOME=C:\\Applications\\apache-ant-1.9.4
 ANDROID_HOME=C:/Program\ Files/Android/android-sdk
+FXC="/c/Program Files (x86)/Windows Kits/8.1/bin/x86/fxc.exe"
+
+QTMINGW=mingw491_32
+QTVER=5.4
+QT5ICUVER=53
+QT=$(QTBASEDIR)/$(QTVER)/$(QTMINGW)
+
+QPATH=$(QT)/bin:$(QTBASEDIR)/Tools/$(QTMINGW)/bin:$(PATH)
 JAR=$(JAVA_HOME)/bin/jar
 ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_HOME)/bin/java -classpath "$(ANT_HOME)\\lib\\ant-launcher.jar" "-Dant.home=$(ANT_HOME)" org.apache.tools.ant.launch.Launcher
 
@@ -23,8 +30,10 @@ MINGWMAKE=mingw32-make
 all:
 	PATH="$(QPATH)" make -f $(ROOT)/scripts/Makefile.gid all.q
 
-#clean:	qtapp.clean android.clean
-clean: player.qmake.clean	
+clean:
+	PATH="$(QPATH)" make -f $(ROOT)/scripts/Makefile.gid clean.q
+
+clean.q:	qtapp.clean android.clean
 
 all.q: qtapp.install android.install
 
@@ -98,9 +107,9 @@ qt.install: buildqt qt5.install
 	cp $(ROOT)/gdrbridge/release/gdrbridge.exe $(RELEASE)/Tools
 	cp $(ROOT)/gdrexport/release/gdrexport.exe $(RELEASE)/Tools
 	
-QT5DLLS=icudt52 icuin52 icuuc52 libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
+QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml
-QT5DLLTOOLS=icudt52 icuin52 icuuc52 libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
+QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Network Qt5Xml
 QT5PLATFORM=qminimal qoffscreen qwindows
 
@@ -210,5 +219,16 @@ androidlibs.install: androidlibs
 	cp -R com $(CURDIR)/$(ROOT)/android/GiderosAndroidPlayer/src;\
 	fi
 	
-
+winrt.shaders:
+	$(FXC) //T vs_4_0_level_9_3 //E VShader //Fo winrt/VertexShader.cso winrt/texture.hlsl
+	$(FXC) //T ps_4_0_level_9_3 //E PShader //Fo winrt/PixelShader.cso winrt/texture.hlsl
+	cp winrt/PixelShader.cso winrt_example/giderosgame/giderosgame.Windows/Assets
+	cp winrt/VertexShader.cso winrt_example/giderosgame/giderosgame.Windows/Assets
+	cp winrt/PixelShader.cso winrt_example/giderosgame/giderosgame.WindowsPhone/Assets
+	cp winrt/VertexShader.cso winrt_example/giderosgame/giderosgame.WindowsPhone/Assets
+	cp winrt/PixelShader.cso "ui/Templates/VisualStudio/WinRT Template/giderosgame/giderosgame.Windows/Assets"
+	cp winrt/VertexShader.cso "ui/Templates/VisualStudio/WinRT Template/giderosgame/giderosgame.Windows/Assets"
+	cp winrt/PixelShader.cso "ui/Templates/VisualStudio/WinRT Template/giderosgame/giderosgame.WindowsPhone/Assets"
+	cp winrt/VertexShader.cso "ui/Templates/VisualStudio/WinRT Template/giderosgame/giderosgame.WindowsPhone/Assets"
+	
 		

@@ -52,13 +52,17 @@ void Transform::setMatrix(float m11,float m12,float m21,float m22,float tx,float
 	rotationY_=0;
 	scaleX_ = bx ? 0 : sx;
 	scaleY_ = by ? 0 : sy;
-	scaleZ_=0;
+	scaleZ_=1.0;
 
 	tx_=tx;
 	ty_=ty;
 	tz_=0;
 
-	compose();
+        refX_=0;
+	refY_=0;
+	refZ_=0;
+
+        compose();
 }
 
 void Transform::compose()

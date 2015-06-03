@@ -48,7 +48,7 @@ void Bitmap::setCoords()
 	{
 		graphicsBase_.data = bitmapdata_->texture()->data;
 
-		graphicsBase_.mode = GL_TRIANGLE_STRIP;
+		graphicsBase_.mode = ShaderProgram::TriangleStrip;
 
         float sizescalex = bitmapdata_->texture()->sizescalex;
         float sizescaley = bitmapdata_->texture()->sizescaley;
@@ -75,7 +75,7 @@ void Bitmap::setCoords()
 	{
 		graphicsBase_.data = texturebase_->data;
 
-		graphicsBase_.mode = GL_TRIANGLE_STRIP;
+		graphicsBase_.mode = ShaderProgram::TriangleStrip;
 
         float sizescalex = texturebase_->sizescalex;
         float sizescaley = texturebase_->sizescaley;

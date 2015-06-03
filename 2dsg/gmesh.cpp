@@ -14,7 +14,7 @@ GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
     boundsDirty_ = false;
     minx_ = miny_ = 1e30;
     maxx_ = maxy_ = -1e30;
-    meshtype_=GL_TRIANGLES;
+    meshtype_=ShaderProgram::Triangles;
     mesh3d_=is3d;
 }
 
@@ -261,16 +261,21 @@ void GMesh::clearTexture()
 
 void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey)
 {
-    if (texture_ && !textureCoordinates_.empty())
+	if (mesh3d_)
+		oglEnable(GL_DEPTH_TEST);
+	if (vertices_.size() == 0) return;
+
+	ShaderProgram *p=colors_.empty()?ShaderProgram::stdBasic:ShaderProgram::stdColor;
+	if (texture_ && !textureCoordinates_.empty())
     {
         oglEnable(GL_TEXTURE_2D);
         oglBindTexture(GL_TEXTURE_2D, texture_->data->id());
+    	p=colors_.empty()?ShaderProgram::stdTexture:ShaderProgram::stdTextureColor;
     }
     else
         oglDisable(GL_TEXTURE_2D);
 
-    oglArrayPointer(VertexArray,mesh3d_?3:2, GL_FLOAT,&vertices_[0]);
-    oglEnableClientState(VertexArray);
+    p->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,mesh3d_?3:2, &vertices_[0],vertices_.size()/(mesh3d_?3:2),true,NULL);
 
     if (!colors_.empty())
     {
@@ -302,32 +307,13 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
             }
         }
 
-        oglArrayPointer(ColorArray,4, GL_UNSIGNED_BYTE, &colors_[0]);
-        oglEnableClientState(ColorArray);
+        p->setData(ShaderProgram::DataColor,ShaderProgram::DUBYTE,4,&colors_[0],colors_.size()/4,true,NULL);
     }
 
     if (texture_ && !textureCoordinates_.empty())
-    {
-        oglArrayPointer(TextureArray,2, GL_FLOAT, &textureCoordinates_[0]);
-        oglEnableClientState(TextureArray);
-    }
-    
-    if (mesh3d_)
-    	oglEnable(GL_DEPTH_TEST);
+        p->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2, &textureCoordinates_[0],textureCoordinates_.size()/2,true,NULL);
 
-    oglDrawElements(meshtype_, indices_.size(), GL_UNSIGNED_SHORT, &indices_[0]);
-
-
-    oglDisableClientState(VertexArray);
-
-    if (!colors_.empty())
-    {
-        oglDisableClientState(ColorArray);
-        glMultColor(1, 1, 1, 1);
-    }
-
-    if (texture_ && !textureCoordinates_.empty())
-        oglDisableClientState(TextureArray);
+    p->drawElements(meshtype_, indices_.size(), ShaderProgram::DUSHORT, &indices_[0],true, NULL);
 }
 
 void GMesh::childrenDrawn()

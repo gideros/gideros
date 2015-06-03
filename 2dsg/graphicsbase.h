@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "point.h"
-
+#include "ogl.h"
 #include "texturemanager.h"
 
 class GraphicsBase
@@ -28,7 +28,7 @@ public:
 		isWhite_ = r == 1 && g == 1 && b == 1 && a == 1;
 	}
 
-	unsigned int mode;
+	ShaderProgram::ShapeType mode;
 	TextureData* data;
 	std::vector<unsigned short> indices;
 	std::vector<Point2f> vertices;

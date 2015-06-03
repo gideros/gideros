@@ -256,10 +256,14 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="Plugins\fpconv.c" />
     <ClCompile Include="Plugins\lfs.c" />
     <ClCompile Include="Plugins\lfs_stub.cpp" />
     <ClCompile Include="Plugins\lsqlite3.c" />
     <ClCompile Include="Plugins\lsqlite3_stub.cpp" />
+    <ClCompile Include="Plugins\lua_cjson.c" />
+    <ClCompile Include="Plugins\lua_cjson_stub.cpp" />
+    <ClCompile Include="Plugins\strbuf.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Plugins\lfs.h" />

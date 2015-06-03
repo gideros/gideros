@@ -24,27 +24,23 @@ static bool s_depthBufferCleared=false;
 static bool oglInitialized=false;
 
 #ifndef GIDEROS_GL1
-GLuint shaderProgram=0;
-GLuint xformVShader=0;
-GLuint colorFShader=0;
-GLuint vertexVS=0;
-GLuint textureVS=0;
-GLuint colorVS=0;
-GLuint matrixVS=0;
-GLuint colorFS=0;
-GLuint colorSelFS=0;
-GLuint textureSelFS=0;
-GLuint textureFS=0;
-GLuint _depthRenderBuffer=0;
 
-#ifdef OPENGL_ES
+GLint curProg=-1;
+ShaderProgram *current=NULL;
+GLuint _depthRenderBuffer=0;
+bool matrixDirty=true;
+float constColR,constColG,constColB,constColA;
+bool colorDirty=true;
+
+
+#ifdef OPENGL_ES0
 /* Vertex shader*/
 const char *xformVShaderCode=
 "attribute highp vec2 vTexCoord;\n"
 "attribute highp vec4 vVertex;\n"
 "attribute lowp vec4 vColor;\n"
 "uniform highp mat4 vMatrix;\n"
-"varying highp vec2 fTexCoord;\n"
+"varying mediump vec2 fTexCoord;\n"
 "varying lowp vec4 fInColor; "
 "\n"
 "void main() {\n"
@@ -59,66 +55,143 @@ precision mediump float;\
 uniform float fColorSel;\
 uniform float fTextureSel;\
 uniform lowp vec4 fColor;\
-uniform sampler2D fTexture;\
-varying highp vec2 fTexCoord;\
+uniform lowp sampler2D fTexture;\
+varying mediump vec2 fTexCoord;\
 varying lowp vec4 fInColor;\
 void main() {\
- lowp vec4 col=mix(fColor,fInColor,fColorSel);\
- lowp vec4 tex=mix(vec4(1,1,1,1),texture2D(fTexture, fTexCoord),fTextureSel);\
- lowp vec4 frag=tex *col;\
+ lowp vec4 frag=mix(fColor,fInColor,fColorSel);\
+ if (fTextureSel>0.0) \
+  frag=frag*texture2D(fTexture, fTexCoord);\
  if (frag.a==0.0) discard;\
  gl_FragColor = frag;\
 }";
 #else
 /* Vertex shader*/
-const char *xformVShaderCode=
+const char *hdrVShaderCode=
 #ifdef OPENGL_ES
     "#version 100\n"
     "#define GLES2\n"
 #else
     "#version 120\n"
+    "#define highp\n"
+    "#define mediump\n"
+    "#define lowp\n"
 #endif
-"attribute vec2 vTexCoord;\n"
-"attribute vec4 vColor;\n"
-"attribute vec3 vVertex;\n"
-"uniform mat4 vMatrix;\n"
-"varying vec2 fTexCoord;\n"
-"varying vec4 fInColor; "
+"attribute highp vec3 vVertex;\n";
+
+const char *stdVShaderCode=
+"uniform highp mat4 vMatrix;\n"
 "\n"
 "void main() {\n"
-"  vec4 vertex = vec4(vVertex,1.0f);\n"
+"  vec4 vertex = vec4(vVertex,1.0);\n"
+"  gl_Position = vMatrix*vertex;\n"
+"}\n";
+const char *stdCVShaderCode=
+"attribute lowp vec4 vColor;\n"
+"uniform highp mat4 vMatrix;\n"
+"varying lowp vec4 fInColor; "
+"\n"
+"void main() {\n"
+"  vec4 vertex = vec4(vVertex,1.0);\n"
+"  gl_Position = vMatrix*vertex;\n"
+"  fInColor=vColor;\n"
+"}\n";
+const char *stdTVShaderCode=
+"attribute mediump vec2 vTexCoord;\n"
+"uniform highp mat4 vMatrix;\n"
+"varying mediump vec2 fTexCoord;\n"
+"\n"
+"void main() {\n"
+"  vec4 vertex = vec4(vVertex,1.0);\n"
+"  gl_Position = vMatrix*vertex;\n"
+"  fTexCoord=vTexCoord;\n"
+"}\n";
+const char *stdCTVShaderCode=
+"attribute mediump vec2 vTexCoord;\n"
+"attribute lowp vec4 vColor;\n"
+"uniform highp mat4 vMatrix;\n"
+"varying mediump vec2 fTexCoord;\n"
+"varying lowp vec4 fInColor; "
+"\n"
+"void main() {\n"
+"  vec4 vertex = vec4(vVertex,1.0);\n"
 "  gl_Position = vMatrix*vertex;\n"
 "  fTexCoord=vTexCoord;\n"
 "  fInColor=vColor;\n"
 "}\n";
 
 /* Fragment shader*/
-const char *colorFShaderCode=
+const char *hdrFShaderCode=
 #ifdef OPENGL_ES
     "#version 100\n"
-    "#define GLES2\n"
+    "#define GLES2\n";
 #else
     "#version 120\n"
+    "#define highp\n"
+    "#define mediump\n"
+    "#define lowp\n";
 #endif
-"uniform float fColorSel;"
-"uniform float fTextureSel;\n"
-"uniform vec4 fColor;\n"
-"uniform sampler2D fTexture;\n"
-"varying vec2 fTexCoord;\n"
-"varying vec4 fInColor;\n"
+
+const char *stdFShaderCode=
+"uniform lowp vec4 fColor;\n"
 "void main() {\n"
-" vec4 col=mix(fColor,fInColor,fColorSel);\n"
-" vec4 tex=mix(vec4(1.0f,1.0f,1.0f,1.0f),texture2D(fTexture, fTexCoord),fTextureSel);\n"
-" vec4 frag=tex *col;\n"
+" gl_FragColor = fColor;\n"
+"}\n";
+const char *stdCFShaderCode=
+"varying lowp vec4 fInColor;\n"
+"void main() {\n"
+" gl_FragColor = fInColor;\n"
+"}\n";
+const char *stdTFShaderCode=
+"uniform lowp vec4 fColor;\n"
+"uniform lowp sampler2D fTexture;\n"
+"varying mediump vec2 fTexCoord;\n"
+"void main() {\n"
+" lowp vec4 frag=fColor*texture2D(fTexture, fTexCoord);\n"
+" if (frag.a==0.0) discard;\n"
+" gl_FragColor = frag;\n"
+"}\n";
+const char *stdCTFShaderCode=
+"varying lowp vec4 fInColor;\n"
+"uniform lowp sampler2D fTexture;\n"
+"varying mediump vec2 fTexCoord;\n"
+"void main() {\n"
+" lowp vec4 frag=fInColor*texture2D(fTexture, fTexCoord);\n"
 " if (frag.a==0.0) discard;\n"
 " gl_FragColor = frag;\n"
 "}\n";
 #endif
 
-GLuint oglLoadShader(GLuint type,const char *code)
+
+
+class oglShaderProgram : public ShaderProgram
+{
+    GLuint vertexShader;
+    GLuint fragmentShader;
+    GLuint program;
+    std::vector<GLint> attributes;
+    std::vector<GLint> uniforms;
+    
+public:
+    virtual void activate();
+    virtual void deactivate();
+    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache);
+    virtual void setConstant(int index,ConstantType type,const void *ptr);
+    virtual void drawArrays(ShapeType shape, int first, unsigned int count);
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache);
+
+    oglShaderProgram(const char *vshader1,const char *vshader2,
+                     const char *fshader1, const char *fshader2,
+                     const char **uniforms, const char **attributes);
+    virtual ~oglShaderProgram();
+    void useProgram();
+};
+
+GLuint oglLoadShader(GLuint type,const char *hdr,const char *code)
 {
 	GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, &code,NULL);
+    const char *lines[2]={hdr,code};
+    glShaderSource(shader, 2, lines,NULL);
 	glCompileShader(shader);
 
 	GLint isCompiled = 0;
@@ -143,45 +216,153 @@ GLuint oglLoadShader(GLuint type,const char *code)
 	return shader;
 }
 
+GLuint oglBuildProgram(GLuint vertexShader,GLuint fragmentShader)
+{
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    glBindAttribLocation(program, 0, "vVertex"); //Ensure vertex is at 0
+    glLinkProgram(program);
+    
+    GLint maxLength = 0;
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+    if (maxLength>0)
+    {
+        std::vector<GLchar> infoLog(maxLength);
+        glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
+        glog_i("GL Program log:%s\n",&infoLog[0]);
+    }
+    return program;
+}
+
+void oglShaderProgram::deactivate()
+{
+	for(std::vector<GLint>::iterator it = attributes.begin(); it != attributes.end(); ++it) {
+		glDisableVertexAttribArray(*it);
+	}
+    current=NULL;
+}
+
+void oglShaderProgram::activate()
+{
+	useProgram();
+	if (current == this) return;
+	if (current) current->deactivate();
+    current=this;
+	for(std::vector<GLint>::iterator it = attributes.begin(); it != attributes.end(); ++it) {
+		glEnableVertexAttribArray(*it);
+	}
+
+}
+
+void oglShaderProgram::useProgram()
+{
+    if (curProg!=program)
+    {
+        glUseProgram(program);
+        curProg=program;
+    }
+}
+
+void oglShaderProgram::setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache)
+{
+	useProgram();
+	GLenum gltype=GL_FLOAT;
+	bool normalize=false;
+	switch (type)
+	{
+	case DINT:
+		gltype=GL_INT;
+		break;
+	case DBYTE:
+		gltype=GL_BYTE;
+		break;
+	case DUBYTE:
+		gltype=GL_UNSIGNED_BYTE;
+		normalize=true; //TODO check vs actual shader type to see if normalization is required
+		break;
+	case DSHORT:
+		gltype=GL_SHORT;
+		break;
+	case DUSHORT:
+		gltype=GL_UNSIGNED_SHORT;
+		break;
+	}
+#ifdef GIDEROS_GL1
+			glVertexPointer(mult,gltype, 0,ptr);
+#else
+			glVertexAttribPointer(attributes[index], mult,gltype, normalize,0, ptr
+#ifdef DXCOMPAT_H
+					,count,modified,(GLuint *)cache
+#endif
+					);
+#endif
+
+}
+
+void oglShaderProgram::setConstant(int index,ConstantType type,const void *ptr)
+{
+	useProgram();
+	switch (type)
+	{
+	case CINT:
+		glUniform1i(uniforms[index],((GLint *)ptr)[0]);
+		break;
+	case CFLOAT:
+		glUniform1f(uniforms[index],((GLfloat *)ptr)[0]);
+		break;
+	case CFLOAT4:
+		glUniform4fv(uniforms[index],1,((GLfloat *)ptr));
+		break;
+	case CMATRIX:
+		glUniformMatrix4fv(uniforms[index],1,false,((GLfloat *)ptr));
+		break;
+	}
+}
+
+oglShaderProgram::oglShaderProgram(const char *vshader1,const char *vshader2,
+                 const char *fshader1, const char *fshader2,
+                 const char **uniforms, const char **attributes)
+{
+    vertexShader=oglLoadShader(GL_VERTEX_SHADER,vshader1,vshader2);
+    fragmentShader=oglLoadShader(GL_FRAGMENT_SHADER,fshader1,fshader2);
+    program = oglBuildProgram(vertexShader,fragmentShader);
+    while (*uniforms)
+        this->uniforms.push_back(glGetUniformLocation(program, *(uniforms++)));
+    while (*attributes)
+        this->attributes.push_back(glGetAttribLocation(program, *(attributes++)));
+}
+
+oglShaderProgram::~oglShaderProgram()
+{
+    glDeleteProgram(program);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+}
+
+ShaderProgram *ShaderProgram::stdBasic=NULL;
+ShaderProgram *ShaderProgram::stdColor=NULL;
+ShaderProgram *ShaderProgram::stdTexture=NULL;
+ShaderProgram *ShaderProgram::stdTextureColor=NULL;
 
 void oglSetupShaders()
 {
 	glog_i("GL_VERSION:%s\n",glGetString(GL_VERSION));
 	glog_i("GLSL_VERSION:%s\n",glGetString(GL_SHADING_LANGUAGE_VERSION));
-	xformVShader=oglLoadShader(GL_VERTEX_SHADER,xformVShaderCode);
-	colorFShader=oglLoadShader(GL_FRAGMENT_SHADER,colorFShaderCode);
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, xformVShader);
-    glAttachShader(shaderProgram, colorFShader);
-
-    glBindAttribLocation(shaderProgram, 0, "vVertex"); //Ensure vertex is at 0
-
-    glLinkProgram(shaderProgram);
-
-    glUseProgram(shaderProgram);
-
-	vertexVS=glGetAttribLocation(shaderProgram, "vVertex");
-	textureVS=glGetAttribLocation(shaderProgram, "vTexCoord");
-	colorVS=glGetAttribLocation(shaderProgram, "vColor");
-    matrixVS=glGetUniformLocation(shaderProgram, "vMatrix");
-    colorSelFS=glGetUniformLocation(shaderProgram, "fColorSel");
-    textureSelFS=glGetUniformLocation(shaderProgram, "fTextureSel");
-    colorFS=glGetUniformLocation(shaderProgram, "fColor");
-    textureFS=glGetUniformLocation(shaderProgram, "fTexture");
-
-    glog_i("VIndices: %d,%d,%d,%d\n", vertexVS,textureVS,colorVS,matrixVS);
-    glog_i("FIndices: %d,%d,%d,%d\n", colorSelFS,textureSelFS,colorFS,textureFS);
-
-    glUniform1i(textureFS, 0);
-
-	GLint maxLength = 0;
-	glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
-	if (maxLength>0)
-	{
-		std::vector<GLchar> infoLog(maxLength);
-		glGetProgramInfoLog(shaderProgram, maxLength, &maxLength, &infoLog[0]);
-		glog_i("GL Program log:%s\n",&infoLog[0]);
-	}
+    
+    const char *stdUniforms[]={"vMatrix","fColor","fTexture",NULL};
+    const char *stdAttributes[]={"vVertex","vColor","vTexCoord",NULL};
+    ShaderProgram::stdBasic = new oglShaderProgram(hdrVShaderCode,stdVShaderCode,hdrFShaderCode,stdFShaderCode,
+                                      stdUniforms,stdAttributes);
+    ShaderProgram::stdColor = new oglShaderProgram(hdrVShaderCode,stdCVShaderCode,hdrFShaderCode,stdCFShaderCode,
+                                      stdUniforms,stdAttributes);
+    ShaderProgram::stdTexture = new oglShaderProgram(hdrVShaderCode,stdTVShaderCode,hdrFShaderCode,stdTFShaderCode,
+                                      stdUniforms,stdAttributes);
+    int zero=0;
+    ShaderProgram::stdTexture->setConstant(2,ShaderProgram::CINT,&zero);
+    ShaderProgram::stdTextureColor = new oglShaderProgram(hdrVShaderCode,stdCTVShaderCode,hdrFShaderCode,stdCTFShaderCode,
+                                      stdUniforms,stdAttributes);
+    ShaderProgram::stdTextureColor->setConstant(2,ShaderProgram::CINT,&zero);
 }
 #endif
 
@@ -216,14 +397,50 @@ void oglCleanup()
 {
     oglInitialized=false;
 #ifndef GIDEROS_GL1
-	glUseProgram(0);
-	glDeleteProgram(shaderProgram);
-	glDeleteShader(xformVShader);
-	glDeleteShader(colorFShader);
+	glUseProgram(-1);
+    
+    delete ShaderProgram::stdBasic;
+    delete ShaderProgram::stdColor;
+    delete ShaderProgram::stdTexture;
+    delete ShaderProgram::stdTextureColor;
 #endif
 #ifdef OPENGL_ES
 	glDeleteRenderbuffers(1,&_depthRenderBuffer);
 #endif
+}
+
+
+Matrix4 setFrustum(float l, float r, float b, float t, float n, float f)
+{
+	Matrix4 mat;
+#ifdef DXCOMPAT_H
+	int df = 1, dn = 0;
+#else
+	int df = 1, dn = -1;
+#endif
+	mat[0] = 2 * n / (r - l);
+	mat[5] = 2 * n / (t - b);
+	mat[8] = (r + l) / (r - l);
+	mat[9] = (t + b) / (t - b);
+	mat[10] = -(df*f - dn*n) / (f - n);
+	mat[11] = -1;
+	mat[14] = -((df - dn) * f * n) / (f - n);
+	mat[15] = 0;
+	mat.type = Matrix4::FULL;
+	return mat;
+}
+
+Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f)
+{
+	Matrix4 mat;
+	mat[0] = 2 / (r - l);
+	mat[5] = 2 / (t - b);
+	mat[10] = -2 / (f - n);
+	mat[12] = -(r + l) / (r - l);
+	mat[13] = -(t + b) / (t - b);
+	mat[14] = -(f + n) / (f - n);
+	mat.type = Matrix4::M2D;
+	return mat;
 }
 
 Matrix4 oglProjection;
@@ -244,7 +461,7 @@ void oglLoadMatrixf(const Matrix4 m)
 	 glMatrixMode(GL_MODELVIEW);
 	 glLoadMatrixf(m.data());
 #else
-	glUniformMatrix4fv(matrixVS, 1, false, oglCombined.data());
+    matrixDirty=true;
 #endif
 }
 
@@ -277,8 +494,6 @@ void oglEnable(GLenum cap)
 #ifdef GIDEROS_GL1
 			glEnable(GL_TEXTURE_2D);
 #else
-		    glUniform1f(textureSelFS, 1);
-		    //glog_d("TextureSelFS:%d\n",1);
 #endif
 			s_Texture2DEnabled = true;
 			s_Texture2DStateCount++;
@@ -314,8 +529,6 @@ void oglDisable(GLenum cap)
 #ifdef GIDEROS_GL1
 			glDisable(GL_TEXTURE_2D);
 #else
-		    glUniform1f(textureSelFS, 0);
-		    //glog_d("TextureSelFS:%d\n",0);
 #endif
 			s_Texture2DEnabled = false;
 			s_Texture2DStateCount++;
@@ -381,188 +594,62 @@ void oglColor4f(float r,float g,float b,float a)
 #ifdef GIDEROS_GL1
 	glColor4f(r,g,b,a);
 #else
-	glUniform4f(colorFS,r,g,b,a);
+    constColR=r;
+    constColG=g;
+    constColB=b;
+    constColA=a;
+    colorDirty=true;
 #endif
 }
 
-void oglEnableClientState(enum OGLClientState array)
+void oglShaderProgram::drawArrays(ShapeType shape, int first, unsigned int count)
 {
-	switch (array)
-	{
-		case VertexArray:
-			assert(s_VERTEX_ARRAY == 0);
-			s_VERTEX_ARRAY++;
-			break;
-		case TextureArray:
-			assert(s_TEXTURE_COORD_ARRAY == 0);
-			s_TEXTURE_COORD_ARRAY++;
-			break;
-        case ColorArray:
-            assert(s_COLOR_ARRAY == 0);
-            s_COLOR_ARRAY++;
-            break;
-		default:
-			assert(1);
-			break;
-	}
-}
-
-void oglArrayPointer(enum OGLClientState array,int mult,GLenum type,const void *ptr)
-{
-	//glog_d("OglArrayPtr: %d:%p[%f,%f,%f,%f]\n",array,ptr,((const float *)ptr)[0],((const float *)ptr)[1],((const float *)ptr)[2],((const float *)ptr)[3]);
-	switch (array)
-	{
-		case VertexArray:
-#ifdef GIDEROS_GL1
-			glVertexPointer(mult,type, 0,ptr);
-#else
-			glVertexAttribPointer(vertexVS, mult,type, false,0, ptr);
-#endif
-			break;
-		case TextureArray:
-#ifdef GIDEROS_GL1
-			glTexCoordPointer(mult,type, 0,ptr);
-#else
-			glVertexAttribPointer(textureVS, mult,type, false,0, ptr);
-#endif
-			break;
-        case ColorArray:
-#ifdef GIDEROS_GL1
-			glColorPointer(mult,type, 0,ptr);
-#else
-			glVertexAttribPointer(colorVS, mult,type, true,0, ptr);
-#endif
-            break;
-		default:
-			assert(1);
-			break;
-	}
-}
-
-void oglDisableClientState(enum OGLClientState array)
-{
-	switch (array)
-	{
-		case VertexArray:
-			assert(s_VERTEX_ARRAY == 1);
-			s_VERTEX_ARRAY--;
-			break;
-		case TextureArray:
-			assert(s_TEXTURE_COORD_ARRAY == 1);
-			s_TEXTURE_COORD_ARRAY--;
-			break;
-        case ColorArray:
-            assert(s_COLOR_ARRAY == 1);
-            s_COLOR_ARRAY--;
-            break;
-		default:
-			assert(1);
-			break;
-	}
-}
-
-void oglSetupArrays()
-{
-	/*glog_d("OglArrays: %d:%d,%d:%d,%d:%d\n",
-			s_VERTEX_ARRAY,s_VERTEX_ARRAY_enabled,
-			s_TEXTURE_COORD_ARRAY,s_TEXTURE_COORD_ARRAY_enabled,
-			s_COLOR_ARRAY,s_COLOR_ARRAY_enabled	);*/
-	if (s_VERTEX_ARRAY)
-	{
-		if (s_VERTEX_ARRAY_enabled == false)
-		{
-			s_VERTEX_ARRAY_enabled = true;
-			s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glEnableClientState(GL_VERTEX_ARRAY);
-#else
-		    glEnableVertexAttribArray(vertexVS);
-#endif
-		}
-	}
-	else
-	{
-		if (s_VERTEX_ARRAY_enabled == true)
-		{
-			s_VERTEX_ARRAY_enabled = false;
-			s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glDisableClientState(GL_VERTEX_ARRAY);
-#else
-		    glDisableVertexAttribArray(vertexVS);
-#endif
-		}
-	}
-
-	if (s_TEXTURE_COORD_ARRAY)
-	{
-		if (s_TEXTURE_COORD_ARRAY_enabled == false)
-		{
-			s_TEXTURE_COORD_ARRAY_enabled = true;
-			s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-#else
-		    glEnableVertexAttribArray(textureVS);
-#endif
-		}
-	}
-	else
-	{
-		if (s_TEXTURE_COORD_ARRAY_enabled == true)
-		{
-			s_TEXTURE_COORD_ARRAY_enabled = false;
-			s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-#else
-		    glDisableVertexAttribArray(textureVS);
-#endif
-		}
-	}
-
-    if (s_COLOR_ARRAY)
+   	setConstant(ShaderProgram::ConstantMatrix,ShaderProgram::CMATRIX,oglCombined.data());
+   	float constCol[4]={constColR,constColG,constColB,constColA};
+   	setConstant(ShaderProgram::ConstantColor,ShaderProgram::CFLOAT4,constCol);
+    activate();
+    GLenum mode=GL_POINTS;
+    switch (shape)
     {
-        if (s_COLOR_ARRAY_enabled == false)
-        {
-            s_COLOR_ARRAY_enabled = true;
-            s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glEnableClientState(GL_COLOR_ARRAY);
-#else
-		    glEnableVertexAttribArray(colorVS);
-		    glUniform1f(colorSelFS, 1);
-#endif
-        }
+    case Lines: mode=GL_LINES; break;
+    case LineLoop: mode=GL_LINE_LOOP; break;
+    case Triangles: mode=GL_TRIANGLES; break;
+    case TriangleFan: mode=GL_TRIANGLE_FAN; break;
+    case TriangleStrip: mode=GL_TRIANGLE_STRIP; break;
     }
-    else
-    {
-        if (s_COLOR_ARRAY_enabled == true)
-        {
-            s_COLOR_ARRAY_enabled = false;
-            s_clientStateCount++;
-#ifdef GIDEROS_GL1
-			glDisableClientState(GL_COLOR_ARRAY);
-#else
-		    glDisableVertexAttribArray(colorVS);
-		    glUniform1f(colorSelFS, 0);
-#endif
-        }
-    }
-}
-
-void oglDrawArrays(GLenum mode, GLint first, GLsizei count)
-{
-	oglSetupArrays();
 	glDrawArrays(mode, first, count);
+
 }
-
-
-
-void oglDrawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices)
+void oglShaderProgram::drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache)
 {
-	oglSetupArrays();
-	glDrawElements(mode, count, type, indices);
+   	setConstant(ShaderProgram::ConstantMatrix,ShaderProgram::CMATRIX,oglCombined.data());
+   	float constCol[4]={constColR,constColG,constColB,constColA};
+   	setConstant(ShaderProgram::ConstantColor,ShaderProgram::CFLOAT4,constCol);
+    activate();
+
+    GLenum mode=GL_POINTS;
+    switch (shape)
+    {
+    case Lines: mode=GL_LINES; break;
+    case LineLoop: mode=GL_LINE_LOOP; break;
+    case Triangles: mode=GL_TRIANGLES; break;
+    case TriangleFan: mode=GL_TRIANGLE_FAN; break;
+    case TriangleStrip: mode=GL_TRIANGLE_STRIP; break;
+    }
+
+    GLenum dtype=GL_INT;
+    switch (type)
+    {
+    case DBYTE: dtype=GL_BYTE; break;
+    case DUBYTE: dtype=GL_UNSIGNED_BYTE; break;
+    case DSHORT: dtype=GL_SHORT; break;
+    case DUSHORT: dtype=GL_UNSIGNED_SHORT; break;
+    }
+	glDrawElements(mode, count, dtype, indices
+#ifdef DXCOMPAT_H
+		, modified, (GLuint *)cache
+#endif
+			);
 }
 
 
@@ -590,16 +677,11 @@ int getClientStateCount()
 
 void oglReset()
 {
+    if (!oglInitialized) return;
 	s_texture = 0;
 	s_Texture2DEnabled = false;
 	s_depthEnable=0;
 	s_depthBufferCleared=false;
-
-#ifdef GIDEROS_GL1
-	glDisable(GL_TEXTURE_2D);
-#endif
-	oglColor4f(1,1,1,1);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	s_VERTEX_ARRAY_enabled = false;
 	s_TEXTURE_COORD_ARRAY_enabled = false;
@@ -613,20 +695,22 @@ void oglReset()
 	glDisableClientState(GL_COLOR_ARRAY);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	/* sanity set */
 #else
-    glDisableVertexAttribArray(vertexVS);
-    glDisableVertexAttribArray(textureVS);
-    glDisableVertexAttribArray(colorVS);
-    glUniform1f(colorSelFS, 0);
-    glUniform1f(textureSelFS, 0);
+	resetBindTextureCount();
+	resetClientStateCount();
+	resetTexture2DStateCount();
 #endif
+
+#ifdef GIDEROS_GL1
+	glDisable(GL_TEXTURE_2D);
+#endif
+	oglColor4f(1,1,1,1);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	current=NULL;
+
     oglProjection.identity();
     oglVPProjection.identity();
     oglModel.identity();
     oglCombined.identity();
-
-	resetBindTextureCount();
-	resetClientStateCount();
-	resetTexture2DStateCount();
 
 	//glClearColor(0.5, 0.1, 0.2, 1.f);
     //glClear(GL_COLOR_BUFFER_BIT);
