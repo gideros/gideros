@@ -73,13 +73,23 @@ std::string getDeviceName(){
 	return std::string(data.begin(), data.end());
 }
 
-//using namespace Windows::Phone::Devices::Notification;
-//VibrationDevice testVibrationDevice = VibrationDevice.GetDefault();
+#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
 void vibrate()
 {
-	//testVibrationDevice.Vibrate(TimeSpan.FromSeconds(3));
 }
-
+#else
+using namespace Windows::Phone::Devices::Notification;
+using namespace Windows::Foundation;
+VibrationDevice^ vibrationDevice = VibrationDevice::GetDefault();
+void vibrate()
+{
+	if (vibrationDevice){
+		struct TimeSpan ts;
+		ts.Duration = 3 * 1000 * 10000;
+		vibrationDevice->Vibrate(ts);
+	}
+}
+#endif
 using namespace Windows::System::Display;
 
 DisplayRequest^ dispRequest;
