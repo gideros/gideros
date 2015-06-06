@@ -44,7 +44,7 @@ void setFullScreen(bool fullScreen)
 
 }
 
-void vibrate()
+void vibrate(int ms)
 {
 }
 

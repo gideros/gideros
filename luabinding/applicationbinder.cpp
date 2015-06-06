@@ -180,7 +180,11 @@ int ApplicationBinder::vibrate(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	::vibrate();
+    int ms = 100;
+    if(!lua_isnoneornil(L,2))
+        ms = lua_tonumber(L, 2);
+
+    ::vibrate(ms);
 
 	return 0;
 }

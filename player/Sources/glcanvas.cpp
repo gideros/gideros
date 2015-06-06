@@ -791,6 +791,34 @@ bool GLCanvas::event(QEvent *event){
             application_->broadcastEvent(&event, &status);
         }
     }
+    else if(event->type() == QEvent::FocusIn){
+        if(running_){
+            Event event(Event::APPLICATION_RESUME);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
+    else if(event->type() == QEvent::WindowUnblocked){
+        if(running_){
+            Event event(Event::APPLICATION_RESUME);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
+    else if(event->type() == QEvent::FocusOut){
+        if(running_){
+            Event event(Event::APPLICATION_SUSPEND);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
+    else if(event->type() == QEvent::WindowBlocked){
+        if(running_){
+            Event event(Event::APPLICATION_SUSPEND);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
     return QGLWidget::event(event);
 }
 

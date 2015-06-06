@@ -69,6 +69,8 @@ public:
         keyMap_[GINPUT_KEY_Y] = GINPUT_KEY_Y;
         keyMap_[GINPUT_KEY_Z] = GINPUT_KEY_Z;
 
+		keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
+
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
         gevent_AddCallback(posttick_s, this);
@@ -147,24 +149,20 @@ public:
         pthread_mutex_unlock(&touchPoolMutex_);
     }
 
-    void keyDown(int keyCode)
+    void keyDown(int realCode)
     {
-        keyCode = convertKeyCode(keyCode);
-        if (keyCode == 0)
-            return;
+        int keyCode = convertKeyCode(realCode);
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
 
-    void keyUp(int keyCode)
+    void keyUp(int realCode)
     {
-        keyCode = convertKeyCode(keyCode);
-        if (keyCode == 0)
-            return;
+        int keyCode = convertKeyCode(realCode);
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
@@ -537,7 +535,7 @@ private:
         mousePool2_.push_back(event);
     }
 
-    ginput_KeyEvent *newKeyEvent(int keyCode)
+    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode)
     {
         ginput_KeyEvent *event;
 
@@ -552,6 +550,7 @@ private:
         }
 
         event->keyCode = keyCode;
+		event->realCode = realCode;
 
         return event;
     }

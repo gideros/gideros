@@ -73,16 +73,44 @@ std::string getDeviceName(){
 	return std::string(data.begin(), data.end());
 }
 
-//using namespace Windows::Phone::Devices::Notification;
-//VibrationDevice testVibrationDevice = VibrationDevice.GetDefault();
-void vibrate()
+#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
+void vibrate(int ms)
 {
-	//testVibrationDevice.Vibrate(TimeSpan.FromSeconds(3));
 }
+#else
+using namespace Windows::Phone::Devices::Notification;
+using namespace Windows::Foundation;
+VibrationDevice^ vibrationDevice = VibrationDevice::GetDefault();
+void vibrate(int ms)
+{
+	if (ms > 5000)
+		ms = 5000;
+	else if (ms < 0)
+		ms = 0;
+	if (vibrationDevice){
+		struct TimeSpan ts;
+		ts.Duration = ms * 10000;
+		vibrationDevice->Vibrate(ts);
+	}
+}
+#endif
+using namespace Windows::System::Display;
+
+DisplayRequest^ dispRequest;
+bool requested = false;
 
 void setKeepAwake(bool awake)
 {
-
+	if (!dispRequest){
+		dispRequest = ref new DisplayRequest();
+	}
+	if (awake != requested){
+		requested = !requested;
+		if (awake)
+			dispRequest->RequestActive();
+		else
+			dispRequest->RequestRelease();
+	}
 }
 
 static int s_fps = 60;
@@ -103,5 +131,5 @@ void g_setFps(int fps)
 
 void g_exit()
 {
-	exit(0);
+	Windows::ApplicationModel::Core::CoreApplication::Exit();
 }
