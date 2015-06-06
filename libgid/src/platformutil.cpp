@@ -27,8 +27,40 @@ off_t fileSize(const char* file)
 }
 
 #if defined(WINSTORE)
+#include <Windows.h>
 void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::vector<std::string>* directories)
 {
+	files->clear();
+	directories->clear();
+
+	WIN32_FIND_DATAA ffd;
+	HANDLE hFind;
+
+	std::string dirstar;
+
+	int dirlen = strlen(dir);
+	if (dirlen > 0 && (dir[dirlen - 1] == '/' || dir[dirlen - 1] == '\\'))
+		dirstar = std::string(dir) + "*";
+	else
+		dirstar = std::string(dir) + "/*";
+
+	std::wstring wsTmp(dirstar.begin(), dirstar.end());
+
+	hFind = FindFirstFileEx(wsTmp.c_str(), FINDEX_INFO_LEVELS::FindExInfoBasic, &ffd, FINDEX_SEARCH_OPS::FindExSearchNameMatch, nullptr, 0);
+
+	do
+	{
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			if (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
+				continue;
+
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			directories->push_back(ffd.cFileName);
+		else
+			files->push_back(ffd.cFileName);
+	} while (FindNextFileA(hFind, &ffd) != 0);
+
+	FindClose(hFind);
 }
 #elif defined(_WIN32)
 #include <Windows.h>
