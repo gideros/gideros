@@ -1064,8 +1064,6 @@ bool LuaApplication::isInitialized() const
 
 void LuaApplication::initialize()
 {
-	oglReset();
-
     clearError();
 
 	physicsScale_ = 30;
@@ -1104,6 +1102,8 @@ void LuaApplication::initialize()
 #endif
 
 	application_->initView();
+	if (ShaderEngine::Engine)
+		ShaderEngine::Engine->reset();
 
 
     lua_setprintfunc(L, printFunc_, printData_);

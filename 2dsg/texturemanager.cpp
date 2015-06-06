@@ -7,12 +7,12 @@
 #include <sys/stat.h>
 #include <dib.h>
 #include <glog.h>
-#include "glcommon.h"
+#include "ogl.h"
 #include <application.h>
 
-unsigned int TextureData::id()
+ShaderTexture *TextureData::id()
 {
-    return gtexture_getInternalId(gid);
+    return gtexture_getInternalTexture(gid);
 }
 
 static void append(std::vector<char>& buffer, const void *data, size_t len)

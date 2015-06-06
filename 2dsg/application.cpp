@@ -13,6 +13,7 @@
 #include <gtexture.h>
 #include <memory.h>
 #include <gstdio.h>
+#include "Shaders.h"
 
 #if 0 && defined(QT_CORE_LIB)
 #include <QDebug>
@@ -146,10 +147,7 @@ void Application::enterFrame()
 void Application::clearBuffers()
 {
 	if (clearColorBuffer_ == true)
-    {
-        glClearColor(backr_, backg_, backb_, 1.f);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
+		ShaderEngine::Engine->clearColor(backr_, backg_, backb_, 1.f);
 }
 
 void Application::configureFrustum(float fov,float farplane)
@@ -184,8 +182,11 @@ void Application::renderScene(int deltaFrameCount)
 		nframe_ = 0;
 	}
 
+	if (!ShaderEngine::Engine)
+		return;
+	ShaderEngine *gfx=ShaderEngine::Engine;
     //oglTextureReset();
-    oglReset();
+    gfx->reset();
 
     gtexture_tick();
     
@@ -195,11 +196,11 @@ void Application::renderScene(int deltaFrameCount)
 	{
 	case ePortrait:
 	case ePortraitUpsideDown:
-		glViewport(0, 0, width_/scale_, height_/scale_);
+		gfx->setViewport(0, 0, width_/scale_, height_/scale_);
 		break;
 	case eLandscapeLeft:
 	case eLandscapeRight:
-		glViewport(0, 0, height_/scale_, width_/scale_);
+		gfx->setViewport(0, 0, height_/scale_, width_/scale_);
 		break;
 	}
 
@@ -268,13 +269,13 @@ void Application::renderScene(int deltaFrameCount)
 			float hh=height_*0.5/scale_;
 			float np=hh/tan(fov_* M_PI / 360.0);
 			float fp=(farplane_>0)?farplane_:hh*2;
-			frustum=setFrustum(-hw, hw, hh, -hh, np,np+fp);
+			frustum=gfx->setFrustum(-hw, hw, hh, -hh, np,np+fp);
 			projection.translate(-hw,-hh,-np-0.001);
 		}
 		else
 		{
 			float fp=(farplane_>0)?farplane_:1; //Conservative default
-			frustum=setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -fp,fp);
+			frustum=gfx->setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -fp,fp);
 		}
 		vpProjection.scale(1,-1,1);
 		vpProjection.translate(0,height_/scale_,0);
@@ -287,13 +288,13 @@ void Application::renderScene(int deltaFrameCount)
 			float hh=height_*0.5/scale_;
 			float np=hh/tan(fov_* M_PI / 360.0);
 			float fp=(farplane_>0)?farplane_:hh*2;
-			frustum=setFrustum(-hh,hh,hw,-hw,np,np+fp);
+			frustum=gfx->setFrustum(-hh,hh,hw,-hw,np,np+fp);
 			projection.translate(-hh,-hw,-np-0.001);
 		}
 		else
 		{
 			float fp=(farplane_>0)?farplane_:1; //Conservative default
-			frustum=setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -fp,fp);
+			frustum=gfx->setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -fp,fp);
 		}
 		vpProjection.scale(1,-1,1);
 		vpProjection.translate(0,width_/scale_,0);
@@ -302,16 +303,10 @@ void Application::renderScene(int deltaFrameCount)
 	projectionMatrix_=frustum*projection;
 	vpProjectionMatrix_=vpProjection;
 	}
-	oglViewportProjection(vpProjectionMatrix_);
+	gfx->setViewportProjection(vpProjectionMatrix_);
 
     //glMatrixMode(GL_MODELVIEW);
     //glLoadIdentity();
-
-#if 0 && defined(QT_CORE_LIB)
-	resetBindTextureCount();
-	resetClientStateCount();
-	resetTexture2DStateCount();
-#endif
 
     float ltx = this->getLogicalTranslateX();
     float lty = this->getLogicalTranslateY();
@@ -324,7 +319,7 @@ void Application::renderScene(int deltaFrameCount)
     if (orientation == eLandscapeLeft || orientation == eLandscapeRight)
         std::swap(hw, hh);
 
-	oglSetProjection(projectionMatrix_);
+    gfx->setProjection(projectionMatrix_);
 
     // hardware start/end x/y
     //if(lsx == 0) lsx = 1;
@@ -844,8 +839,6 @@ void Application::setBackgroundColor(float r, float g, float b)
 	backr_ = r;
 	backg_ = g;
 	backb_ = b;
-
-	glClearColor(backr_, backg_, backb_, 1.f);
 }
 
 void Application::getBackgroundColor(float* r, float* g, float* b)

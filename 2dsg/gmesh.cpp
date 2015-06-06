@@ -262,18 +262,15 @@ void GMesh::clearTexture()
 void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey)
 {
 	if (mesh3d_)
-		oglEnable(GL_DEPTH_TEST);
+		ShaderEngine::Engine->setDepthTest(true);
 	if (vertices_.size() == 0) return;
 
 	ShaderProgram *p=colors_.empty()?ShaderProgram::stdBasic:ShaderProgram::stdColor;
 	if (texture_ && !textureCoordinates_.empty())
     {
-        oglEnable(GL_TEXTURE_2D);
-        oglBindTexture(GL_TEXTURE_2D, texture_->data->id());
+        ShaderEngine::Engine->bindTexture(0,texture_->data->id());
     	p=colors_.empty()?ShaderProgram::stdTexture:ShaderProgram::stdTextureColor;
     }
-    else
-        oglDisable(GL_TEXTURE_2D);
 
     p->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,mesh3d_?3:2, &vertices_[0],vertices_.size()/(mesh3d_?3:2),true,NULL);
 
@@ -319,7 +316,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 void GMesh::childrenDrawn()
 {
     if (mesh3d_)
-    	oglDisable(GL_DEPTH_TEST);
+		ShaderEngine::Engine->setDepthTest(false);
 }
 
 void GMesh::extraBounds(float *minx, float *miny, float *maxx, float *maxy) const

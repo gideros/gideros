@@ -340,10 +340,7 @@ void TileMap::doDraw(const CurrentTransform& transform, float hsx, float hsy, fl
 			}
 		}
 
-	oglEnable(GL_TEXTURE_2D);
-
-    oglBindTexture(GL_TEXTURE_2D, texture_->data->id());
-
+	ShaderEngine::Engine->bindTexture(0,texture_->data->id());
     ShaderProgram::stdTexture->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size()/2,true,NULL);
     ShaderProgram::stdTexture->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,&texcoords[0],texcoords.size()/2,true,NULL);
     ShaderProgram::stdTexture->drawArrays(ShaderProgram::Triangles,0,tileCount * 6);

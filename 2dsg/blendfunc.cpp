@@ -5,15 +5,15 @@ struct BlendFunc
 {
 	BlendFunc() {}
 
-	BlendFunc(GLenum sfactor, GLenum dfactor) : 
+	BlendFunc(ShaderEngine::BlendFactor sfactor, ShaderEngine::BlendFactor dfactor) :
 		sfactor(sfactor),
 		dfactor(dfactor)
 	{
 
 	}
 
-	GLenum sfactor;
-	GLenum dfactor;
+	ShaderEngine::BlendFactor sfactor;
+	ShaderEngine::BlendFactor dfactor;
 };
 
 static std::stack<BlendFunc> blendFuncStack;
@@ -23,9 +23,9 @@ static std::stack<BlendFunc> blendFuncStack;
 #endif
 
 #if PREMULTIPLIED_ALPHA
-static BlendFunc currentBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+static BlendFunc currentBlendFunc(ShaderEngine::ONE, ShaderEngine::ONE_MINUS_SRC_ALPHA);
 #else
-static BlendFunc currentBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+static BlendFunc currentBlendFunc(ShaderEngine::SRC_ALPHA, ShaderEngine::ONE_MINUS_SRC_ALPHA);
 #endif
 
 void glPushBlendFunc()
@@ -38,13 +38,13 @@ void glPopBlendFunc()
 	currentBlendFunc = blendFuncStack.top();
 	blendFuncStack.pop();
 
-	glBlendFunc(currentBlendFunc.sfactor, currentBlendFunc.dfactor);
+	ShaderEngine::Engine->setBlendFunc(currentBlendFunc.sfactor, currentBlendFunc.dfactor);
 }
 
-void glSetBlendFunc(GLenum sfactor, GLenum dfactor)
+void glSetBlendFunc(ShaderEngine::BlendFactor sfactor, ShaderEngine::BlendFactor dfactor)
 {
 	currentBlendFunc.sfactor = sfactor;
 	currentBlendFunc.dfactor = dfactor;
 
-	glBlendFunc(currentBlendFunc.sfactor, currentBlendFunc.dfactor);
+	ShaderEngine::Engine->setBlendFunc(currentBlendFunc.sfactor, currentBlendFunc.dfactor);
 }

@@ -1,10 +1,7 @@
 #include "grendertarget.h"
 #include "application.h"
 #include "sprite.h"
-#include "glcommon.h"
 #include "ogl.h"
-
-int GRenderTarget::qualcommFix_ = -1;
 
 GRenderTarget::GRenderTarget(Application *application, int width, int height, Filter filter) :
     TextureBase(application)
@@ -17,69 +14,47 @@ GRenderTarget::GRenderTarget(Application *application, int width, int height, Fi
     sizescaley = 1;
     uvscalex = (float)data->width / (float)data->baseWidth;
     uvscaley = (float)data->height / (float)data->baseHeight;
-
-    if (qualcommFix_ == -1)
-    {
-        const char *extensions = (const char *)glGetString(GL_EXTENSIONS);
-        qualcommFix_ = (extensions && strstr(extensions, "GL_QCOM"));
-    }
-
-    if (qualcommFix_)
-        tempTexture_ = gtexture_TempTextureCreate(data->exwidth, data->exheight);
-    else
-        tempTexture_ = 0;
 }
 
 GRenderTarget::~GRenderTarget()
 {
-    if (tempTexture_)
-        gtexture_TempTextureDelete(tempTexture_);
 }
 
 void GRenderTarget::clear(unsigned int color, float a)
 {
-	unsigned int oldFBO=gtexture_BindRenderTarget(gtexture_RenderTargetGetFBO(data->gid));
-
-
-    oglViewport(0, 0, data->width, data->height);
+	ShaderBuffer *fbo=gtexture_BindRenderTarget(gtexture_RenderTargetGetFBO(data->gid));
+	ShaderEngine::Engine->setViewport(0, 0, data->width, data->height);
 
     float r = ((color >> 16) & 0xff) / 255.f;
     float g = ((color >> 8) & 0xff) / 255.f;
     float b = (color & 0xff) / 255.f;
+	ShaderEngine::Engine->clearColor(r * a, g * a, b * a, a);
 
-    glClearColor(r * a, g * a, b * a, a);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    gtexture_BindRenderTarget(oldFBO);
+    gtexture_BindRenderTarget(fbo);
 }
 
 void GRenderTarget::draw(const Sprite *sprite)
 {
-    oglReset();
-	unsigned int oldFBO=gtexture_BindRenderTarget(gtexture_RenderTargetGetFBO(data->gid));
+    ShaderEngine::Engine->reset();
+    ShaderBuffer *fbo=gtexture_RenderTargetGetFBO(data->gid);
+	ShaderBuffer *oldfbo=gtexture_BindRenderTarget(fbo);
 
-    if (qualcommFix_)
-    {
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gtexture_TempTextureGetName(tempTexture_), 0);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gtexture_getInternalId(data->gid), 0);
-    }
-
-    oglViewport(0, 0, data->width, data->height);
+	fbo->prepareDraw();
+	ShaderEngine::Engine->setViewport(0, 0, data->width, data->height);
 
 	// The WINSTORE glOrtho (for Direct3D) is what you would expect. The OpenGL call needs to be inverted in y-direction
     Matrix4 projection;
 
 #ifdef WINSTORE
-	projection = setOrthoFrustum(0, data->baseWidth, data->baseHeight, 0, -1, 1);
+	projection = ShaderEngine::Engine->setOrthoFrustum(0, data->baseWidth, data->baseHeight, 0, -1, 1);
 #else
-    projection = setOrthoFrustum(0, data->baseWidth, 0, data->baseHeight, -1, 1);
+    projection = ShaderEngine::Engine->setOrthoFrustum(0, data->baseWidth, 0, data->baseHeight, -1, 1);
 #endif
 
-    oglSetProjection(projection);
+	ShaderEngine::Engine->setProjection(projection.get());
 
     CurrentTransform currentTransform;
     ((Sprite*)sprite)->draw(currentTransform, 0, 0, data->width, data->height);
 
-    gtexture_BindRenderTarget(oldFBO);
+    gtexture_BindRenderTarget(oldfbo);
 }

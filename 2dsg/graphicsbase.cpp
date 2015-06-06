@@ -27,18 +27,13 @@ void GraphicsBase::draw()
 
 	if (data)
 	{
-		oglEnable(GL_TEXTURE_2D);
-
-        oglBindTexture(GL_TEXTURE_2D, data->id());
-
+        ShaderEngine::Engine->bindTexture(0,data->id());
         ShaderProgram::stdTexture->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),true,NULL);
         ShaderProgram::stdTexture->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,&texcoords[0],texcoords.size(),true,NULL);
         ShaderProgram::stdTexture->drawElements(mode,indices.size(), ShaderProgram::DUSHORT, &indices[0],true, NULL);
 	}
 	else
 	{
-		oglDisable(GL_TEXTURE_2D);
-
         ShaderProgram::stdBasic->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),true,NULL);
         ShaderProgram::stdBasic->drawElements(mode,indices.size(), ShaderProgram::DUSHORT, &indices[0],true, NULL);
 	}

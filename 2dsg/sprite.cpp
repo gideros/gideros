@@ -24,9 +24,11 @@ Sprite::Sprite(Application* application) :
 	colorTransform_ = 0;
 //	graphics_ = 0;
 
-	sfactor_ = -1;
-	dfactor_ = -1;
+	sfactor_ = (ShaderEngine::BlendFactor)-1;
+	dfactor_ = (ShaderEngine::BlendFactor)-1;
 
+	clipy_=-1;
+	clipx_=-1;
 	clipw_=-1;
 	cliph_=-1;
 }
@@ -196,7 +198,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy, float e
 			if (sprite->sfactor_ != -1)
 				glPopBlendFunc();
 			if ((sprite->cliph_>=0)&&(sprite->clipw_>=0))
-				oglPopScissor();
+				ShaderEngine::Engine->popClip();
 			continue;
 		}
 
@@ -205,7 +207,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy, float e
 			continue;
 		}
 
-        oglLoadMatrixf(sprite->worldTransform_);
+        ShaderEngine::Engine->setModel(sprite->worldTransform_);
 
 		if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1)
 		{
@@ -231,7 +233,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy, float e
 		}
 
 		if ((sprite->cliph_>=0)&&(sprite->clipw_>=0))
-			oglPushScissor(sprite->clipx_,sprite->clipy_,sprite->clipw_,sprite->cliph_);
+			ShaderEngine::Engine->pushClip(sprite->clipx_,sprite->clipy_,sprite->clipw_,sprite->cliph_);
 
         sprite->doDraw(sprite->worldTransform_, sx, sy, ex, ey);
 
@@ -957,56 +959,18 @@ void Sprite::getBounds(const Sprite* targetCoordinateSpace, float* minx, float* 
 }
 #endif
 
-GLenum blendFactor2GLenum(Sprite::BlendFactor blendFactor)
-{
-	switch (blendFactor)
-	{
-		case Sprite::ZERO:
-		   return GL_ZERO;
-		case Sprite::ONE:
-		   return GL_ONE;
-		case Sprite::SRC_COLOR:
-		   return GL_SRC_COLOR;
-		case Sprite::ONE_MINUS_SRC_COLOR:
-		   return GL_ONE_MINUS_SRC_COLOR;
-		case Sprite::DST_COLOR:
-		   return GL_DST_COLOR;
-		case Sprite::ONE_MINUS_DST_COLOR:
-		   return GL_ONE_MINUS_DST_COLOR;
-		case Sprite::SRC_ALPHA:
-		   return GL_SRC_ALPHA;
-		case Sprite::ONE_MINUS_SRC_ALPHA:
-		   return GL_ONE_MINUS_SRC_ALPHA;
-		case Sprite::DST_ALPHA:
-		   return GL_DST_ALPHA;
-		case Sprite::ONE_MINUS_DST_ALPHA:
-		   return GL_ONE_MINUS_DST_ALPHA;
-		//case Sprite::CONSTANT_COLOR:
-		//   return GL_CONSTANT_COLOR;
-		//case Sprite::ONE_MINUS_CONSTANT_COLOR:
-		//   return GL_ONE_MINUS_CONSTANT_COLOR;
-		//case Sprite::CONSTANT_ALPHA:
-		//   return GL_CONSTANT_ALPHA;
-		//case Sprite::ONE_MINUS_CONSTANT_ALPHA:
-		//   return GL_ONE_MINUS_CONSTANT_ALPHA;
-		case Sprite::SRC_ALPHA_SATURATE:
-		   return GL_SRC_ALPHA_SATURATE;
-	}
 
-	return GL_ZERO;
-}
-
-void Sprite::setBlendFunc(BlendFactor sfactor, BlendFactor dfactor)
+void Sprite::setBlendFunc(ShaderEngine::BlendFactor sfactor, ShaderEngine::BlendFactor dfactor)
 {
-	sfactor_ = blendFactor2GLenum(sfactor);
-	dfactor_ = blendFactor2GLenum(dfactor);
+	sfactor_ = sfactor;
+	dfactor_ = dfactor;
 }
 
 
 void Sprite::clearBlendFunc()
 {
-	sfactor_ = -1;
-	dfactor_ = -1;
+	sfactor_ = (ShaderEngine::BlendFactor)-1;
+	dfactor_ = (ShaderEngine::BlendFactor)-1;
 }
 
 void Sprite::setColorTransform(const ColorTransform& colorTransform)
