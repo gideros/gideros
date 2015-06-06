@@ -74,18 +74,22 @@ std::string getDeviceName(){
 }
 
 #if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
-void vibrate()
+void vibrate(int ms)
 {
 }
 #else
 using namespace Windows::Phone::Devices::Notification;
 using namespace Windows::Foundation;
 VibrationDevice^ vibrationDevice = VibrationDevice::GetDefault();
-void vibrate()
+void vibrate(int ms)
 {
+	if (ms > 5000)
+		ms = 5000;
+	else if (ms < 0)
+		ms = 0;
 	if (vibrationDevice){
 		struct TimeSpan ts;
-		ts.Duration = 3 * 1000 * 10000;
+		ts.Duration = ms * 10000;
 		vibrationDevice->Vibrate(ts);
 	}
 }

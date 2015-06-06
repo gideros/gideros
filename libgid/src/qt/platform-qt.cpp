@@ -29,7 +29,7 @@ void setKeepAwake(bool awake)
 
 }
 
-void vibrate()
+void vibrate(int ms)
 {
 }
 
