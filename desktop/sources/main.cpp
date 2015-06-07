@@ -22,6 +22,7 @@
 #include <gaudio.h>
 #include <memory.h>
 #include <glog.h>
+#include <bytebuffer.h>
 #include "constants.cpp"
 
 static void loadPlugins(){
@@ -45,17 +46,37 @@ static void loadPlugins(){
 }
 
 int main(int argc, char *argv[]){
-    QCoreApplication::setOrganizationName(Constants::ORGANIZATION_NAME);
-    QCoreApplication::setOrganizationDomain(Constants::ORGANIZATION_DOMAIN);
-    QCoreApplication::setApplicationName(Constants::DESK_APPLICATION_NAME);
+    QApplication a(argc, argv);
 
-	QApplication a(argc, argv);
-
-	QDir dir = QCoreApplication::applicationDirPath();
+    QDir dir = QCoreApplication::applicationDirPath();
 
     #if defined(Q_OS_MAC)
         dir.cdUp();
     #endif
+
+    QFile file(dir.absolutePath()+"/assets/data.bin");
+    if(file.exists()){
+        file.open(QIODevice::ReadOnly);
+        QByteArray ba = file.readAll();
+        file.close();
+        std::vector<char> data(ba.data(), ba.data() + ba.size());
+        ByteBuffer buffer(&data[0], data.size());
+        std::string ORGANIZATION_NAME;
+        std::string ORGANIZATION_DOMAIN;
+        std::string DESK_APPLICATION_NAME;
+        buffer >> ORGANIZATION_NAME;
+        buffer >> ORGANIZATION_DOMAIN;
+        buffer >> DESK_APPLICATION_NAME;
+        QCoreApplication::setOrganizationName(QString::fromStdString(ORGANIZATION_NAME));
+        QCoreApplication::setOrganizationDomain(QString::fromStdString(ORGANIZATION_DOMAIN));
+        QCoreApplication::setApplicationName(QString::fromStdString(DESK_APPLICATION_NAME));
+    }
+    else{
+        QCoreApplication::setOrganizationName(Constants::ORGANIZATION_NAME);
+        QCoreApplication::setOrganizationDomain(Constants::ORGANIZATION_DOMAIN);
+        QCoreApplication::setApplicationName(Constants::DESK_APPLICATION_NAME);
+    }
+
 
 	QDir::setCurrent(dir.absolutePath());
 
