@@ -16,6 +16,10 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 	ui->architecture->setCurrentIndex(properties_->architecture);
 	ui->assetsOnly->setChecked(properties_->assetsOnly);
 	ui->packageName->setText(properties_->packageName);
+    ui->osx_org->setText(properties->osx_org);
+    ui->osx_domain->setText(properties->osx_domain);
+    ui->win_org->setText(properties->win_org);
+    ui->win_domain->setText(properties->win_domain);
 
     if (licensed)
     {
@@ -90,6 +94,10 @@ void ExportProjectDialog::onAccepted()
 	properties_->architecture = ui->architecture->currentIndex();
 	properties_->assetsOnly = ui->assetsOnly->isChecked();
 	properties_->packageName = ui->packageName->text();
+    properties_->osx_org = ui->osx_org->text();
+    properties_->osx_domain = ui->osx_domain->text();
+    properties_->win_org = ui->win_org->text();
+    properties_->win_domain = ui->win_domain->text();
     properties_->encryptCode = ui->encryptCode->isChecked();
     properties_->encryptAssets = ui->encryptAssets->isChecked();
 }
