@@ -50,6 +50,26 @@ QString ExportProjectDialog::packageName() const
 	return ui->packageName->text();
 }
 
+QString ExportProjectDialog::osx_org() const
+{
+    return ui->osx_org->text();
+}
+
+QString ExportProjectDialog::osx_domain() const
+{
+    return ui->osx_domain->text();
+}
+
+QString ExportProjectDialog::win_org() const
+{
+    return ui->win_org->text();
+}
+
+QString ExportProjectDialog::win_domain() const
+{
+    return ui->win_domain->text();
+}
+
 bool ExportProjectDialog::assetsOnly() const
 {
 	return ui->assetsOnly->isChecked();

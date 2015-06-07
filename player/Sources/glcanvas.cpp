@@ -497,11 +497,11 @@ void GLCanvas::play(QDir directory){
         const char* temporaryDirectory;
 
         if(exportedApp_){
-            resourceDirectory_ = qPrintable(directory.absoluteFilePath("resource"));
+            resourceDirectory_ = directory.absoluteFilePath("resource");
             directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
             directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
-            documentsDirectory = qPrintable(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-            temporaryDirectory = qPrintable(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+            documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            temporaryDirectory = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
         }else{
             dir_ = QDir::temp();
             dir_.mkdir("gideros");

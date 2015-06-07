@@ -2382,6 +2382,28 @@ void MainWindow::exportProject()
 	}
 
         if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop || deviceFamily == ExportProjectDialog::e_WindowsDesktop){
+            QString org;
+            QString domain;
+            if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop){
+                org = dialog.osx_org();
+                domain = dialog.osx_domain();
+            }
+            else if(deviceFamily == ExportProjectDialog::e_WindowsDesktop){
+                org = dialog.win_org();
+                domain = dialog.win_domain();
+            }
+            QString filename = "data.bin";
+            QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+            if (file.open(QIODevice::WriteOnly))
+            {
+                ByteBuffer buffer;
+
+                buffer << org.toStdString().c_str();
+                buffer << domain.toStdString().c_str();
+                buffer << base.toStdString().c_str();
+
+                file.write(buffer.data(), buffer.size());
+            }
             outputDir.mkdir("resource");
             outputDir.cd("resource");
         }
