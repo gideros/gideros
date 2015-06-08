@@ -17,21 +17,21 @@ static MessageDialog ^mymsg;
 
 void CommandInvokedHandler(Windows::UI::Popups::IUICommand^ command)
 {
-	size_t size = sizeof(gui_AlertDialogCompleteEvent) + command->Label->Length() + 1;
-	gui_AlertDialogCompleteEvent *event = (gui_AlertDialogCompleteEvent*)malloc(size);
-	event->gid = mygid;
-	event->buttonIndex = 1;
-	event->buttonText = (char*)event + sizeof(gui_AlertDialogCompleteEvent);
+//	size_t size = sizeof(gui_AlertDialogCompleteEvent) + command->Label->Length() + 1;
+//	gui_AlertDialogCompleteEvent *event = (gui_AlertDialogCompleteEvent*)malloc(size);
+//	event->gid = mygid;
+//	event->buttonIndex = 1;
+//	event->buttonText = (char*)event + sizeof(gui_AlertDialogCompleteEvent);
 
-	Platform::String ^string = command->Label;
-	const wchar_t *wstr=string->Data();
+//	Platform::String ^string = command->Label;
+//	const wchar_t *wstr=string->Data();
 
-	char str[10];
-	wcstombs(str, wstr, 10);
+//	char str[10];
+//	wcstombs(str, wstr, 10);
 
-	strcpy((char*)event->buttonText, str);
+//	strcpy((char*)event->buttonText, str);
 
-	gevent_EnqueueEvent(mygid, mycallback, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, myudata);
+//	gevent_EnqueueEvent(mygid, mycallback, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, myudata);
 }
 
 extern "C" {
@@ -59,30 +59,33 @@ G_API g_id gui_createAlertDialog(const char *title,
 	mycallback = callback;
 	mygid = g_NextId();
 
-	mymsg = ref new MessageDialog("message", "title");
+//	mymsg = ref new MessageDialog("message", "title");
 
-	UICommand^ cancelCommand = ref new UICommand(
-		"Cancel",
-		ref new UICommandInvokedHandler(&CommandInvokedHandler));
+	MessageDialog msg("message", "title");
+	msg.ShowAsync();
 
-	UICommand^ yesCommand = ref new UICommand(
-		"Yes",
-		ref new UICommandInvokedHandler(&CommandInvokedHandler));
+//	UICommand^ cancelCommand = ref new UICommand(
+//		"Cancel",
+//		ref new UICommandInvokedHandler(&CommandInvokedHandler));
 
-	UICommand^ noCommand = ref new UICommand(
-		"No",
-		ref new UICommandInvokedHandler(&CommandInvokedHandler));
+//	UICommand^ yesCommand = ref new UICommand(
+//		"Yes",
+//		ref new UICommandInvokedHandler(&CommandInvokedHandler));
+
+//	UICommand^ noCommand = ref new UICommand(
+//		"No",
+//		ref new UICommandInvokedHandler(&CommandInvokedHandler));
 
 	// Add the commands to the dialog
-	mymsg->Commands->Append(cancelCommand);
-	mymsg->Commands->Append(yesCommand);
-	mymsg->Commands->Append(noCommand);
+//	mymsg->Commands->Append(cancelCommand);
+//	mymsg->Commands->Append(yesCommand);
+//	mymsg->Commands->Append(noCommand);
 
 	// Set the command that will be invoked by default
-	mymsg->DefaultCommandIndex = 0;
+//	mymsg->DefaultCommandIndex = 0;
 
 	// Set the command to be invoked when escape is pressed
-	mymsg->CancelCommandIndex = 1;
+//	mymsg->CancelCommandIndex = 1;
 
 	return mygid;
 }
@@ -104,7 +107,7 @@ G_API void gui_show(g_id gid)
 {
   //    s_manager->show(gid);
 	// Show the message dialog
-	mymsg->ShowAsync();
+//	mymsg->ShowAsync();
 }
 
 G_API void gui_hide(g_id gid)
