@@ -388,17 +388,17 @@ void GLCanvas::timerEvent(QTimerEvent *){
                             dir_.mkdir(projectName_);
                             dir_.cd(projectName_);
 
-                            md5filename_ = qPrintable(dir_.absoluteFilePath("md5.txt"));
+                            md5filename_ = dir_.absoluteFilePath("md5.txt").toStdString().c_str();
                             loadMD5();
 
                             dir_.mkdir("documents");
                             dir_.mkdir("temporary");
                             dir_.mkdir("resource");
 
-                            resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
+                            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
 
-                            setDocumentsDirectory(qPrintable(dir_.absoluteFilePath("documents")));
-                            setTemporaryDirectory(qPrintable(dir_.absoluteFilePath("temporary")));
+                            setDocumentsDirectory(dir_.absoluteFilePath("documents").toStdString().c_str());
+                            setTemporaryDirectory(dir_.absoluteFilePath("temporary").toStdString().c_str());
                             setResourceDirectory(resourceDirectory_.c_str());
                         }
 
@@ -497,11 +497,11 @@ void GLCanvas::play(QDir directory){
         const char* temporaryDirectory;
 
         if(exportedApp_){
-            resourceDirectory_ = directory.absoluteFilePath("resource");
+            resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
             directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
             directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
-            documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-            temporaryDirectory = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+            documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString().c_str();
+            temporaryDirectory = QStandardPaths::writableLocation(QStandardPaths::TempLocation).toStdString().c_str();
         }else{
             dir_ = QDir::temp();
             dir_.mkdir("gideros");
@@ -511,9 +511,9 @@ void GLCanvas::play(QDir directory){
             dir_.mkdir("documents");
             dir_.mkdir("temporary");
 
-            resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
-            documentsDirectory = qPrintable(dir_.absoluteFilePath("documents"));
-            temporaryDirectory = qPrintable(dir_.absoluteFilePath("temporary"));
+            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
+            documentsDirectory = dir_.absoluteFilePath("documents").toStdString().c_str();
+            temporaryDirectory = dir_.absoluteFilePath("temporary").toStdString().c_str();
         }
 
         setDocumentsDirectory(documentsDirectory);
