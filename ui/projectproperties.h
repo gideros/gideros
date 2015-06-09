@@ -37,6 +37,10 @@ struct ProjectProperties
 		assetsOnly = false;
 		iosDevice = 0;
 		packageName = "com.yourdomain.yourapp";
+        osx_org = "GiderosMobile";
+        osx_domain = "giderosmobile.com";
+        win_org = "GiderosMobile";
+        win_domain = "giderosmobile.com";
         encryptCode = false;
         encryptAssets = false;
     }
@@ -65,6 +69,10 @@ struct ProjectProperties
 	bool assetsOnly;
 	int iosDevice;
 	QString packageName;
+    QString osx_org;
+    QString osx_domain;
+    QString win_org;
+    QString win_domain;
     bool encryptCode;
     bool encryptAssets;
 };
