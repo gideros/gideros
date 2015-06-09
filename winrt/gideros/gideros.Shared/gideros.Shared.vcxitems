@@ -32,7 +32,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\fontbase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ftlibrarysingleton.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gbitmapbatch.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\glcompat.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderEngine.cpp">
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderProgram.cpp">
+      <CompileAsWinRT>true</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderTexture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\Shaders.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gmesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\graphicsbase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\grendertarget.cpp" />
@@ -355,9 +363,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\ttfontbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\urlloaderbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\zlibbinder.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\dxcompat.cpp">
-      <CompileAsWinRT>true</CompileAsWinRT>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)giderosapi.cpp">
       <CompileAsWinRT>true</CompileAsWinRT>
     </ClCompile>
@@ -378,8 +383,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\fontbase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ftlibrarysingleton.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gbitmapbatch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11Shaders.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\Shaders.h">
+      <ExcludedFromBuild>false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\giderosexception.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\glcommon.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\glcompat.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gmesh.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\graphicsbase.h" />

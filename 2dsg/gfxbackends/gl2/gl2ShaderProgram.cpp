@@ -170,7 +170,7 @@ ogl2ShaderProgram::~ogl2ShaderProgram()
 
 void ogl2ShaderProgram::drawArrays(ShapeType shape, int first, unsigned int count)
 {
-	ShaderEngine::Engine->preDraw(this);
+	((ogl2ShaderEngine *)ShaderEngine::Engine)->preDraw(this);
     activate();
     GLenum mode=GL_POINTS;
     switch (shape)
@@ -187,7 +187,7 @@ void ogl2ShaderProgram::drawArrays(ShapeType shape, int first, unsigned int coun
 }
 void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache)
 {
-	ShaderEngine::Engine->preDraw(this);
+	((ogl2ShaderEngine *)ShaderEngine::Engine)->preDraw(this);
     activate();
 
     GLenum mode=GL_POINTS;

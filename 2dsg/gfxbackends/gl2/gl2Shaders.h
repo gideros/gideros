@@ -127,7 +127,7 @@ class ogl2ShaderEngine : public ShaderEngine
 	bool s_depthBufferCleared;
 	GLenum blendFactor2GLenum(BlendFactor blendFactor);
 public:
-	ogl2ShaderEngine();
+	ogl2ShaderEngine(int sw,int sh);
 	virtual ~ogl2ShaderEngine();
 	void reset();
 	void setDepthTest(bool enable);

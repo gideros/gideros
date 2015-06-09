@@ -136,7 +136,6 @@ public:
 	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
 	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture)=0;
 	virtual ShaderBuffer *setFramebuffer(ShaderBuffer *fbo)=0;
-	virtual void preDraw(ShaderProgram *program) { };
 	virtual void setViewport(int x,int y,int width,int height)=0;
 	//Matrices
 	virtual Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);

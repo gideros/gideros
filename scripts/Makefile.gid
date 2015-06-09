@@ -1,15 +1,6 @@
-QTBASEDIR=/c/Applications/Qt54
-NDKBUILD=cmd /c C:\\Applications\\android-ndk-r10d\\ndk-build.cmd
-JAVA_HOME=C:/Program\ Files/Java/jdk1.7.0_21
-ANT_HOME=C:\\Applications\\apache-ant-1.9.4
-ANDROID_HOME=C:/Program\ Files/Android/android-sdk
-FXC="/c/Program Files (x86)/Windows Kits/8.1/bin/x86/fxc.exe"
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/Makefile.def
 
-QTMINGW=mingw491_32
-QTVER=5.4
-QT5ICUVER=53
 QT=$(QTBASEDIR)/$(QTVER)/$(QTMINGW)
-
 QPATH=$(QT)/bin:$(QTBASEDIR)/Tools/$(QTMINGW)/bin:$(PATH)
 JAR=$(JAVA_HOME)/bin/jar
 ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_HOME)/bin/java -classpath "$(ANT_HOME)\\lib\\ant-launcher.jar" "-Dant.home=$(ANT_HOME)" org.apache.tools.ant.launch.Launcher
@@ -186,6 +177,7 @@ androidso.clean:
 
 %.androidso:
 	cp -R  $(ROOT)/android/lib/jni/*.cpp $(ROOT)/android/$(firstword $(subst _, ,$*))/jni
+	cp $(ROOT)/android/lib/jni/Android-Common.mk $(ROOT)/android/$(firstword $(subst _, ,$*))/jni/
 	cp $(ROOT)/android/lib/jni/Android-$(firstword $(subst _, ,$*)).mk $(ROOT)/android/$(firstword $(subst _, ,$*))/jni/Android.mk
 	cp $(ROOT)/android/lib/jni/Application-$(firstword $(subst _, ,$*)).mk $(ROOT)/android/$(firstword $(subst _, ,$*))/jni/Application.mk
 	cd $(ROOT)/android/$(firstword $(subst _, ,$*));$(NDKBUILD)

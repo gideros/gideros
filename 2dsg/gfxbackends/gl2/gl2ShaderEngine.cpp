@@ -200,7 +200,7 @@ void ogl2SetupShaders()
     ShaderProgram::stdTextureColor->setConstant(2,ShaderProgram::CINT,&zero);
 }
 
-ogl2ShaderEngine::ogl2ShaderEngine()
+ogl2ShaderEngine::ogl2ShaderEngine(int sw,int sh)
 {
 	currentBuffer=NULL;
 	_depthRenderBuffer=0;
