@@ -40,14 +40,14 @@ stage:addChild(bird2)
 stage:addChild(bird3)
 stage:addChild(bird4)
 
-local alertDialog = AlertDialog.new("Error, nothing found", "Reinstall all software", "Cancel", "OMG!", "ARGGGH")
+local quitDialog=AlertDialog.new("Quit?", "Would you like to give up?","Yes","No")
 
 local function onComplete(event)
 print(event.buttonIndex, event.buttonText)
 end
 
-alertDialog:addEventListener(Event.COMPLETE, onComplete)
+quitDialog:addEventListener(Event.COMPLETE, onComplete)
 
-stage:addEventListener(Event.MOUSE_DOWN, function() alertDialog:show() end)
+stage:addEventListener(Event.MOUSE_DOWN, function() quitDialog:show() end)
 
 stage:addEventListener(Event.KEY_DOWN, function(event) print(event.keyCode) end)

@@ -73,12 +73,12 @@ G_API g_id gui_createAlertDialog(const char *title,
 	mygid = g_NextId();
 
 	wchar_t *wmessage, *wtitle, *wcancelButton, *wbutton1, *wbutton2;
+	wbutton1 = NULL;
+	wbutton2 = NULL;
 
 	wmessage = (wchar_t*)malloc((strlen(message) + 1)*sizeof(wchar_t));
 	wtitle = (wchar_t*)malloc((strlen(title) + 1)*sizeof(wchar_t));
 	wcancelButton = (wchar_t*)malloc((strlen(cancelButton) + 1)*sizeof(wchar_t));
-	wbutton1 = (wchar_t*)malloc((strlen(button1) + 1)*sizeof(wchar_t));
-	wbutton2 = (wchar_t*)malloc((strlen(button2) + 1)*sizeof(wchar_t));
 
 	mbstowcs(wmessage, message, strlen(message)+1);
 	mbstowcs(wtitle, title, strlen(title)+1);
@@ -91,6 +91,7 @@ G_API g_id gui_createAlertDialog(const char *title,
 	mymsg = ref new MessageDialog(Message, Title);
 
 	if (button1 != NULL) {
+		wbutton1 = (wchar_t*)malloc((strlen(button1) + 1)*sizeof(wchar_t));
 		mbstowcs(wbutton1, button1, strlen(button1)+1);
 		Button1 = ref new Platform::String(wbutton1);
 
@@ -103,6 +104,7 @@ G_API g_id gui_createAlertDialog(const char *title,
 
 #if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
 	if (button2 != NULL) {
+		wbutton2 = (wchar_t*)malloc((strlen(button2) + 1)*sizeof(wchar_t));
 		mbstowcs(wbutton2, button2, strlen(button2)+1);
 		Button2 = ref new Platform::String(wbutton2);
 
@@ -135,8 +137,8 @@ G_API g_id gui_createAlertDialog(const char *title,
 	free(wmessage);
 	free(wtitle);
 	free(wcancelButton);
-	free(wbutton1);
-	free(wbutton2);
+	if (wbutton1 != NULL) free(wbutton1);
+	if (wbutton2 != NULL) free(wbutton2);
 
 	return mygid;
 }
