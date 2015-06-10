@@ -937,10 +937,8 @@ void ApplicationManager::drawFrame()
 
 		if (application_->isErrorSet())
 			luaError(application_->getError());
-		/*
-		g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);
-		g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
-		*/
+
+		application_->clearBuffers();
 		application_->renderScene(1);
 		drawIPs();
 
@@ -971,14 +969,10 @@ void ApplicationManager::drawFrame()
 		if (networkManager_)
 			networkManager_->tick();
 
-		//	application_->clearBuffers();  (this would duplicate ClearRenderTargetView above)
-
 		if (application_->isErrorSet())
 			luaError(application_->getError());
-		/*
-		g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);
-		g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
-		*/
+
+		application_->clearBuffers();
 		application_->renderScene(1);
 		drawIPs();
 
@@ -1491,3 +1485,11 @@ extern "C" {
 	}
 
 }
+
+
+#ifdef WINSTORE
+extern "C"{
+	char *getenv(const char *string){ return NULL; }
+	int system(const char *string){ return 0; }
+}
+#endif

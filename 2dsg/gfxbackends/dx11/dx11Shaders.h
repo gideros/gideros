@@ -153,6 +153,7 @@ public:
 	void preDraw(ShaderProgram *program);
 	void setClip(int x,int y,int w,int h);
 	void setBlendFunc(BlendFactor sfactor, BlendFactor dfactor);
+	virtual Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
 };
 
 

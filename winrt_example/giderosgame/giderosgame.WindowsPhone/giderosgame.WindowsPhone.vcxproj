@@ -180,14 +180,38 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\pBasic.cso">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\pColor.cso">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+    </None>
     <None Include="Assets\PixelShader.cso">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Assets\properties.bin">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Assets\pTexture.cso">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\pTextureColor.cso">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\vBasic.cso">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\vColor.cso">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+    </None>
     <None Include="Assets\VertexShader.cso">
       <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Assets\vTexture.cso">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\vTextureColor.cso">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
     </None>
   </ItemGroup>
   <ItemGroup>

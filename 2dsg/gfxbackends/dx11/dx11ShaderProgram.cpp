@@ -19,22 +19,40 @@
 #include "platform.h"
 #include "pch.h"
 #include <gstdio.h>
+#include <io.h>
 using namespace Microsoft::WRL;
 
 
 ShaderProgram *dx11ShaderProgram::current=NULL;
 
 void *LoadShaderFile(const char *fname,long *len){
-	G_FILE *f=g_fopen(fname, "r");
-	if (!f) return NULL;
-	g_fseek(f, 0,SEEK_END);
-	long sz = g_ftell(f);
-	if (len) *len = sz;
-	void *fdata = malloc(sz);
-	g_fseek(f, 0, SEEK_SET);
-	g_fread(fdata, 1, sz, f);
-	g_fclose(f);
-	return fdata;
+	char name[256];
+	sprintf(name, "%s.cso", fname);
+	G_FILE *f=g_fopen(name, "r");
+	if (f)
+	{
+		g_fseek(f, 0, SEEK_END);
+		long sz = g_ftell(f);
+		if (len) *len = sz;
+		void *fdata = malloc(sz);
+		g_fseek(f, 0, SEEK_SET);
+		g_fread(fdata, 1, sz, f);
+		g_fclose(f);
+		return fdata;
+	}
+	sprintf(name, "Assets/%s.cso", fname);
+	int fd=open(name, 0);
+	if (fd >= 0) {
+		lseek(fd, 0, SEEK_END);
+		long sz = tell(fd);
+		if (len) *len = sz;
+		void *fdata = malloc(sz);
+		lseek(fd, 0, SEEK_SET);
+		read(fd,fdata, sz);
+		close(fd);
+		return fdata;
+	}
+	return NULL;
 }
 
 void dx11ShaderProgram::deactivate()
@@ -47,6 +65,10 @@ void dx11ShaderProgram::activate()
 	if (current == this) return;
 	if (current) current->deactivate();
     current=this;
+	g_devcon->VSSetShader(g_pVS, 0, 0);
+	g_devcon->PSSetShader(g_pPS, 0, 0);
+	g_devcon->PSSetConstantBuffers(1, 1, &g_CBP);
+	g_devcon->VSSetConstantBuffers(0, 1, &g_CBV);
 	g_devcon->IASetInputLayout(g_pLayout);
 
 }
@@ -157,19 +179,19 @@ dx11ShaderProgram::dx11ShaderProgram(const char *vshader,const char *pshader,
 	g_devcon->VSSetShader(g_pVS, 0, 0);
 	g_devcon->PSSetShader(g_pPS, 0, 0);
 
-	for (int k=0;k<16;k++)
+	for (int k=0;k<17;k++)
 	{
 		genVBO[k]=NULL;
 		genVBOcapacity[k]=0;
 	}
 
-	int cbvsData=0;
-	int cbpsData=0;
+	cbvsData=0;
+	cbpsData=0;
     while (uniforms->name)
     {
     	int usz=4,ual=4;
     	ConstantDesc cd;
-    	cd=*uniforms;
+    	cd=*(uniforms++);
     	switch (cd.type)
     	{
     	case CINT: usz=4; ual=4; break;
@@ -237,6 +259,8 @@ dx11ShaderProgram::dx11ShaderProgram(const char *vshader,const char *pshader,
     	  ied[nie].AlignedByteOffset=attributes->offset;
     	  ied[nie].InputSlotClass=D3D11_INPUT_PER_VERTEX_DATA;
     	  ied[nie].InstanceDataStepRate=0;
+		  if (ied[nie].Format!=DXGI_FORMAT_UNKNOWN)
+			nie++;
         this->attributes.push_back(*(attributes++));
     }
 	g_dev->CreateInputLayout(ied, nie, VSFile, VSLen, &g_pLayout);
@@ -265,14 +289,14 @@ void dx11ShaderProgram::updateConstants()
 		{
 			//floatdump("CBP", &cbpData, 6);
 			g_devcon->Map(g_CBP, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
-			memcpy(ms.pData, &cbpData,sizeof(cbpsData));                 // copy the data
+			memcpy(ms.pData, cbpData,cbpsData);                 // copy the data
 			g_devcon->Unmap(g_CBP, NULL);                                      // unmap the buffer
 			cbpMod = false;
 		}
 		if (cbvMod)
 		{
 			g_devcon->Map(g_CBV, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
-			memcpy(ms.pData, &cbvData, sizeof(cbvsData));                 // copy the data
+			memcpy(ms.pData, cbvData, cbvsData);                 // copy the data
 			g_devcon->Unmap(g_CBV, NULL);                                      // unmap the buffer
 			cbvMod = false;
 		}

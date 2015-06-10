@@ -53,17 +53,35 @@ void dx11SetupShaders()
 			{"fColor",dx11ShaderProgram::CFLOAT4,false,0},
 			NULL
 	};
-	const dx11ShaderProgram::DataDesc stdAttributes[]={
+	const dx11ShaderProgram::DataDesc stdBAttributes[]={
 			{"vVertex",dx11ShaderProgram::DFLOAT,3,0,0},
-			{"vColor",dx11ShaderProgram::DFLOAT,4,1,0},
-			{"vTexCoord",dx11ShaderProgram::DFLOAT,2,2,0},
+			{"vColor",dx11ShaderProgram::DFLOAT,0,1,0},
+			{"vTexCoord",dx11ShaderProgram::DFLOAT,0,2,0},
 			NULL
 	};
+	const dx11ShaderProgram::DataDesc stdCAttributes[] = {
+		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
+		{ "vColor", dx11ShaderProgram::DFLOAT, 4, 1, 0 },
+		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 0, 2, 0 },
+		NULL
+	};
+	const dx11ShaderProgram::DataDesc stdTAttributes[] = {
+		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
+		{ "vColor", dx11ShaderProgram::DFLOAT, 0, 1, 0 },
+		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
+		NULL
+	};
+	const dx11ShaderProgram::DataDesc stdTCAttributes[] = {
+		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
+		{ "vColor", dx11ShaderProgram::DFLOAT, 4, 1, 0 },
+		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
+		NULL
+	};
 
-    ShaderProgram::stdBasic = new dx11ShaderProgram("assets/vBasic.cso","assets/pBasic.cso",stdConstants,stdAttributes);
-    ShaderProgram::stdColor = new dx11ShaderProgram("assets/vColor.cso","assets/pColor.cso",stdConstants,stdAttributes);
-    ShaderProgram::stdTexture = new dx11ShaderProgram("assets/vTexture.cso","assets/pTexture.cso",stdConstants,stdAttributes);
-    ShaderProgram::stdTextureColor = new dx11ShaderProgram("assets/vTextureColor.cso","assets/pTextureColor.cso",stdConstants,stdAttributes);
+    ShaderProgram::stdBasic = new dx11ShaderProgram("vBasic","pBasic",stdConstants,stdBAttributes);
+    ShaderProgram::stdColor = new dx11ShaderProgram("vColor","pColor",stdConstants,stdCAttributes);
+    ShaderProgram::stdTexture = new dx11ShaderProgram("vTexture","pTexture",stdConstants,stdTAttributes);
+    ShaderProgram::stdTextureColor = new dx11ShaderProgram("vTextureColor","pTextureColor",stdConstants,stdTCAttributes);
 }
 
 ID3D11Texture2D* dx11ShaderEngine::pBackBuffer=NULL;
@@ -88,9 +106,6 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 
  g_dev->CreateRenderTargetView(pBackBuffer, NULL, &g_backbuffer);
  pBackBuffer->Release();
-
- g_devcon->OMSetRenderTargets(1, &g_backbuffer, NULL);  // could call this "rendertarget"
-
 
 	//Depth / Stencil setup
 	D3D11_TEXTURE2D_DESC descDepth;
@@ -186,6 +201,8 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSNormal);
 	rasterDesc.ScissorEnable = false;
 	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissor);
+
+	g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);  // could call this "rendertarget"
 }
 
 dx11ShaderEngine::~dx11ShaderEngine()
@@ -217,7 +234,9 @@ ShaderBuffer *dx11ShaderEngine::createRenderTarget(ShaderTexture *texture)
 ShaderBuffer *dx11ShaderEngine::setFramebuffer(ShaderBuffer *fbo)
 {
 	ShaderBuffer *previous=currentBuffer;
-	g_devcon->OMSetRenderTargets(1, fbo?&(((dx11ShaderBuffer *)fbo)->renderTarget):&g_backbuffer, g_depthStencil);
+	g_devcon->OMSetRenderTargets(1, 
+		fbo?&(((dx11ShaderBuffer *)fbo)->renderTarget):&g_backbuffer, 
+		fbo?NULL:g_depthStencil);
     currentBuffer=fbo;
     return previous;
 }
@@ -251,7 +270,8 @@ void dx11ShaderEngine::setProjection(const Matrix4 p)
 void dx11ShaderEngine::clearColor(float r,float g,float b,float a)
 {
 	float col[4]={r,g,b,a};
-	g_devcon->ClearRenderTargetView(((dx11ShaderBuffer *)currentBuffer)->renderTarget, col);
+	ID3D11RenderTargetView *fbo = currentBuffer ? (((dx11ShaderBuffer *)currentBuffer)->renderTarget) : g_backbuffer;
+	g_devcon->ClearRenderTargetView(fbo, col);
 }
 
 void dx11ShaderEngine::setColor(float r,float g,float b,float a)
@@ -362,5 +382,21 @@ GLenum dx11ShaderEngine::blendFactor2GLenum(BlendFactor blendFactor)
 void dx11ShaderEngine::setBlendFunc(BlendFactor sfactor, BlendFactor dfactor)
 {
 	//TODO glBlendFunc(blendFactor2GLenum(sfactor), blendFactor2GLenum(dfactor));
+}
+
+Matrix4 dx11ShaderEngine::setFrustum(float l, float r, float b, float t, float n, float f)
+{
+	Matrix4 mat;
+	int df = 1, dn = 0;
+	mat[0] = 2 * n / (r - l);
+	mat[5] = 2 * n / (t - b);
+	mat[8] = (r + l) / (r - l);
+	mat[9] = (t + b) / (t - b);
+	mat[10] = -(df*f - dn*n) / (f - n);
+	mat[11] = -1;
+	mat[14] = -((df - dn) * f * n) / (f - n);
+	mat[15] = 0;
+	mat.type = Matrix4::FULL;
+	return mat;
 }
 
