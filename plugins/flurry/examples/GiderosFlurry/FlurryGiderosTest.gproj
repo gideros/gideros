@@ -1,0 +1,6 @@
+<project>
+ <properties logicalWidth="320" mouseToTouch="1" scaleMode="0" windowWidth="0" windowHeight="0" fps="60" encryptCode="0" iosDevice="0" architecture="0" logicalHeight="480" assetsOnly="0" encryptAssets="0" touchToMouse="1" autorotation="0" mouseTouchOrder="0" orientation="0" packageName="com.yourdomain.yourapp" retinaDisplay="0">
+  <imageScales/>
+ </properties>
+ <file source="main.lua"/>
+</project>
