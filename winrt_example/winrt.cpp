@@ -97,7 +97,7 @@ public:
 
 	  std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
 	  std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
-	  bool isPlayer = false;
+	  bool isPlayer = true;
 
 	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str());
 
@@ -147,10 +147,6 @@ public:
 
     void PointerPressed(CoreWindow^ Window, PointerEventArgs^ Args)
     { 
-//		MessageDialog ^dialog=ref new MessageDialog("foo", "bar");
-//		dialog->ShowAsync();
-//		dialog.ShowAsync();
-
 	  if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch) 
 		  gdr_touchBegin(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
 	  else

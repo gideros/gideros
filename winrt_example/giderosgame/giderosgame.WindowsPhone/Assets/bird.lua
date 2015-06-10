@@ -23,6 +23,7 @@ function Bird:init(frameList)
 
 	-- set initial position
 	self:setPosition(540, math.random(160) + 40)
+	self:setBlendMode(Sprite.SCREEN)
 
 	-- set the speed of the bird
 	self.speedy = math.random(-500, 500) / 1000

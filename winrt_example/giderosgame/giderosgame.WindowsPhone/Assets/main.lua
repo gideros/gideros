@@ -40,7 +40,7 @@ stage:addChild(bird2)
 stage:addChild(bird3)
 stage:addChild(bird4)
 
-local alertDialog = AlertDialog.new("This is my title", "And my message", "Cancel", "Yes", "No")
+local alertDialog = AlertDialog.new("Error, nothing found", "Reinstall all software", "Cancel", "OMG!", "ARGGGH")
 
 local function onComplete(event)
 print(event.buttonIndex, event.buttonText)
