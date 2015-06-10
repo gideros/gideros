@@ -1,3 +1,2 @@
-button.lua
-soundbutton.lua
+bird.lua
 main.lua

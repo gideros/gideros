@@ -17,9 +17,12 @@ using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
 using namespace Platform;
 using namespace Windows::Storage;
+using namespace Windows::UI::Popups;
+
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 using namespace Windows::Phone::UI::Input;
 #endif
+
 extern "C"
 {
 #ifdef _M_IX86
@@ -144,6 +147,10 @@ public:
 
     void PointerPressed(CoreWindow^ Window, PointerEventArgs^ Args)
     { 
+//		MessageDialog ^dialog=ref new MessageDialog("foo", "bar");
+//		dialog->ShowAsync();
+//		dialog.ShowAsync();
+
 	  if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch) 
 		  gdr_touchBegin(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
 	  else

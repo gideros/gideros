@@ -143,12 +143,19 @@
     <AppxPackageDir>C:\winrt_player\</AppxPackageDir>
   </PropertyGroup>
   <ItemGroup>
+    <Image Include="Assets\bird_black_01.png" />
+    <Image Include="Assets\bird_black_02.png" />
+    <Image Include="Assets\bird_black_03.png" />
+    <Image Include="Assets\bird_white_01.png" />
+    <Image Include="Assets\bird_white_02.png" />
+    <Image Include="Assets\bird_white_03.png" />
     <Image Include="Assets\Logo.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Assets\Logo.scale-240.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="Assets\sky_world.png" />
     <Image Include="Assets\SmallLogo.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
@@ -180,6 +187,12 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\bird.lua">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Assets\main.lua">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Assets\PixelShader.cso">
       <DeploymentContent>true</DeploymentContent>
     </None>

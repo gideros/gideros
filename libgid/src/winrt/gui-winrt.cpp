@@ -15,23 +15,36 @@ static void *myudata;
 static g_id mygid;
 static MessageDialog ^mymsg;
 
+static Platform::String ^Title, ^Message, ^CancelButton, ^Button1, ^Button2;
+
 void CommandInvokedHandler(Windows::UI::Popups::IUICommand^ command)
 {
-//	size_t size = sizeof(gui_AlertDialogCompleteEvent) + command->Label->Length() + 1;
-//	gui_AlertDialogCompleteEvent *event = (gui_AlertDialogCompleteEvent*)malloc(size);
-//	event->gid = mygid;
-//	event->buttonIndex = 1;
-//	event->buttonText = (char*)event + sizeof(gui_AlertDialogCompleteEvent);
+	size_t size = sizeof(gui_AlertDialogCompleteEvent) + command->Label->Length() + 1;
+	gui_AlertDialogCompleteEvent *event = (gui_AlertDialogCompleteEvent*)malloc(size);
+	event->gid = mygid;
+	event->buttonText = (char*)event + sizeof(gui_AlertDialogCompleteEvent);
 
-//	Platform::String ^string = command->Label;
-//	const wchar_t *wstr=string->Data();
+	Platform::String ^string = command->Label;
 
-//	char str[10];
-//	wcstombs(str, wstr, 10);
+	if (string == Button1)
+		event->buttonIndex = 1;
+	else if (string == Button2)
+		event->buttonIndex = 2;
+	else
+		event->buttonIndex = 0;
 
-//	strcpy((char*)event->buttonText, str);
+	const wchar_t *wstr=string->Data();
 
-//	gevent_EnqueueEvent(mygid, mycallback, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, myudata);
+	char *str;
+	str = (char *)malloc((wcslen(wstr)+1)*sizeof(char));
+
+	wcstombs(str, wstr, wcslen(wstr)+1);
+
+	strcpy((char*)event->buttonText, str);
+
+	free(str);
+
+	gevent_EnqueueEvent(mygid, mycallback, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, myudata);
 }
 
 extern "C" {
@@ -59,33 +72,71 @@ G_API g_id gui_createAlertDialog(const char *title,
 	mycallback = callback;
 	mygid = g_NextId();
 
-//	mymsg = ref new MessageDialog("message", "title");
+	wchar_t *wmessage, *wtitle, *wcancelButton, *wbutton1, *wbutton2;
 
-	MessageDialog msg("message", "title");
-	msg.ShowAsync();
+	wmessage = (wchar_t*)malloc((strlen(message) + 1)*sizeof(wchar_t));
+	wtitle = (wchar_t*)malloc((strlen(title) + 1)*sizeof(wchar_t));
+	wcancelButton = (wchar_t*)malloc((strlen(cancelButton) + 1)*sizeof(wchar_t));
+	wbutton1 = (wchar_t*)malloc((strlen(button1) + 1)*sizeof(wchar_t));
+	wbutton2 = (wchar_t*)malloc((strlen(button2) + 1)*sizeof(wchar_t));
 
-//	UICommand^ cancelCommand = ref new UICommand(
-//		"Cancel",
-//		ref new UICommandInvokedHandler(&CommandInvokedHandler));
+	mbstowcs(wmessage, message, strlen(message)+1);
+	mbstowcs(wtitle, title, strlen(title)+1);
+	mbstowcs(wcancelButton, cancelButton, strlen(cancelButton)+1);
 
-//	UICommand^ yesCommand = ref new UICommand(
-//		"Yes",
-//		ref new UICommandInvokedHandler(&CommandInvokedHandler));
+	Title = ref new Platform::String(wtitle);
+	Message = ref new Platform::String(wmessage);
+	CancelButton = ref new Platform::String(wcancelButton);
 
-//	UICommand^ noCommand = ref new UICommand(
-//		"No",
-//		ref new UICommandInvokedHandler(&CommandInvokedHandler));
+	mymsg = ref new MessageDialog(Message, Title);
+
+	if (button1 != NULL) {
+		mbstowcs(wbutton1, button1, strlen(button1)+1);
+		Button1 = ref new Platform::String(wbutton1);
+
+		UICommand^ button1Command = ref new UICommand(
+			Button1,
+			ref new UICommandInvokedHandler(&CommandInvokedHandler));
+
+		mymsg->Commands->Append(button1Command);
+	}
+
+#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
+	if (button2 != NULL) {
+		mbstowcs(wbutton2, button2, strlen(button2)+1);
+		Button2 = ref new Platform::String(wbutton2);
+
+		UICommand^ button2Command = ref new UICommand(
+			Button2,
+			ref new UICommandInvokedHandler(&CommandInvokedHandler));
+
+		mymsg->Commands->Append(button2Command);
+	}
+#endif
+
+	UICommand^ cancelCommand = ref new UICommand(
+		CancelButton,
+		ref new UICommandInvokedHandler(&CommandInvokedHandler));
 
 	// Add the commands to the dialog
-//	mymsg->Commands->Append(cancelCommand);
-//	mymsg->Commands->Append(yesCommand);
-//	mymsg->Commands->Append(noCommand);
+	mymsg->Commands->Append(cancelCommand);
 
 	// Set the command that will be invoked by default
-//	mymsg->DefaultCommandIndex = 0;
+	mymsg->DefaultCommandIndex = 0;
 
 	// Set the command to be invoked when escape is pressed
-//	mymsg->CancelCommandIndex = 1;
+	if (button1==NULL && button2==NULL)
+		mymsg->CancelCommandIndex = 0;
+	else if (button2==NULL)
+		mymsg->CancelCommandIndex = 1;
+	else
+		mymsg->CancelCommandIndex = 2;
+
+	free(wmessage);
+	free(wtitle);
+	free(wcancelButton);
+	free(wbutton1);
+	free(wbutton2);
 
 	return mygid;
 }
@@ -105,9 +156,8 @@ G_API g_id gui_createTextInputDialog(const char *title,
 
 G_API void gui_show(g_id gid)
 {
-  //    s_manager->show(gid);
 	// Show the message dialog
-//	mymsg->ShowAsync();
+	mymsg->ShowAsync();
 }
 
 G_API void gui_hide(g_id gid)

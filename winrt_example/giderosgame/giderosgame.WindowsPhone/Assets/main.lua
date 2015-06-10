@@ -1,25 +1,53 @@
---[[ 
+--[[
 
-This is an example of sound capabilities of Gideros Studio
+A frame by frame bird animation example
+The old frame is removed by Sprite:removeChild and the new frame is added by Sprite:addChild
 
 This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.php
 (C) 2010 - 2011 Gideros Mobile 
 
 ]]
 
-local s1 = SoundButton.new("1-up.png", "1-down.png", "1.wav")
-local s2 = SoundButton.new("2-up.png", "2-down.png", "2.wav")
-local s3 = SoundButton.new("3-up.png", "3-down.png", "3.wav")
+application:setBackgroundColor(255)
 
-s1:setPosition(10, 50)
-s2:setPosition(110, 50)
-s3:setPosition(210, 50)
+application:setFps(60)
+print ("hello")
 
-stage:addChild(s1)
-stage:addChild(s2)
-stage:addChild(s3)
+-- load texture, create bitmap from it and set as background
+local background = Bitmap.new(Texture.new("sky_world.png"))
+stage:addChild(background)
 
+-- these arrays contain the image file names of each frame
+local frames1 = {
+	"bird_black_01.png",
+	"bird_black_02.png",
+	"bird_black_03.png"}
 
-local label = TextField.new(nil, "click buttons to play sounds") -- we pass first parameter as nil to use the system font
-label:setPosition(86, 170)
-stage:addChild(label)
+local frames2 = {
+	"bird_white_01.png",
+	"bird_white_02.png",
+	"bird_white_03.png"}
+
+-- create 2 white and 2 black birds
+local bird1 = Bird.new(frames1)
+local bird2 = Bird.new(frames1)
+local bird3 = Bird.new(frames2)
+local bird4 = Bird.new(frames2)
+
+-- add birds to the stage
+stage:addChild(bird1)
+stage:addChild(bird2)
+stage:addChild(bird3)
+stage:addChild(bird4)
+
+local alertDialog = AlertDialog.new("This is my title", "And my message", "Cancel", "Yes", "No")
+
+local function onComplete(event)
+print(event.buttonIndex, event.buttonText)
+end
+
+alertDialog:addEventListener(Event.COMPLETE, onComplete)
+
+stage:addEventListener(Event.MOUSE_DOWN, function() alertDialog:show() end)
+
+stage:addEventListener(Event.KEY_DOWN, function(event) print(event.keyCode) end)
