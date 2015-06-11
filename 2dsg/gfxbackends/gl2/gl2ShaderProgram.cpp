@@ -135,6 +135,7 @@ void ogl2ShaderProgram::setConstant(int index,ConstantType type,const void *ptr)
 	switch (type)
 	{
 	case CINT:
+	case CTEXTURE:
 		glUniform1i(gluniforms[index],((GLint *)ptr)[0]);
 		break;
 	case CFLOAT:
@@ -156,14 +157,19 @@ ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader1,const char *vshader2,
     vertexShader=ogl2LoadShader(GL_VERTEX_SHADER,vshader1,vshader2);
     fragmentShader=ogl2LoadShader(GL_FRAGMENT_SHADER,fshader1,fshader2);
     program = ogl2BuildProgram(vertexShader,fragmentShader);
+    glUseProgram(program);
+    GLint ntex=0;
     while (uniforms->name)
     {
-    	int usz=4,ual=4;
+    	int usz=0,ual=4;
     	ConstantDesc cd;
     	cd=*(uniforms++);
         this->gluniforms.push_back(glGetUniformLocation(program, cd.name));
     	switch (cd.type)
     	{
+    	case CTEXTURE: usz=4; ual=4;
+    		glUniform1i(gluniforms[gluniforms.size()-1],ntex++);
+    		break;
     	case CINT: usz=4; ual=4; break;
     	case CFLOAT: usz=4; ual=4; break;
     	case CFLOAT4: usz=16; ual=16;break;

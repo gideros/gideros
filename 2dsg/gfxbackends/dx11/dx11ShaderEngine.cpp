@@ -23,57 +23,45 @@ void dx11ShaderEngine::reset()
 	ShaderEngine::reset();
 	g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
 	g_devcon->RSSetState(g_pRSNormal);
+	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
+	curDstFactor = ONE_MINUS_SRC_COLOR;
+	curSrcFactor = ONE;
 	s_depthEnable=0;
 	s_depthBufferCleared=false;
 
     oglCombined.identity();
 
-	D3D11_BLEND_DESC blendStateDesc;
-	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
-
-	blendStateDesc.AlphaToCoverageEnable = FALSE;
-	blendStateDesc.IndependentBlendEnable = FALSE;
-	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
-	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;  // previously D3D11_BLEND_SRC_ALPHA
-	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
-	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_DEST_ALPHA;
-	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-	g_dev->CreateBlendState(&blendStateDesc, &g_pBlendState);
-	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
 }
 
 void dx11SetupShaders()
 {
-	const dx11ShaderProgram::ConstantDesc stdConstants[]={
-			{"vMatrix",dx11ShaderProgram::CMATRIX,true,0},
-			{"fColor",dx11ShaderProgram::CFLOAT4,false,0},
+	const ShaderProgram::ConstantDesc stdConstants[]={
+			{"vMatrix",ShaderProgram::CMATRIX,true,0},
+			{"fColor",ShaderProgram::CFLOAT4,false,0},
+			{"fTexture",ShaderProgram::CTEXTURE,false,0},
 			NULL
 	};
-	const dx11ShaderProgram::DataDesc stdBAttributes[]={
+	const ShaderProgram::DataDesc stdBAttributes[]={
 			{"vVertex",dx11ShaderProgram::DFLOAT,3,0,0},
-			{"vColor",dx11ShaderProgram::DFLOAT,0,1,0},
+			{"vColor",dx11ShaderProgram::DUBYTE,0,1,0},
 			{"vTexCoord",dx11ShaderProgram::DFLOAT,0,2,0},
 			NULL
 	};
-	const dx11ShaderProgram::DataDesc stdCAttributes[] = {
+	const ShaderProgram::DataDesc stdCAttributes[] = {
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
-		{ "vColor", dx11ShaderProgram::DFLOAT, 4, 1, 0 },
+		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
 		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 0, 2, 0 },
 		NULL
 	};
-	const dx11ShaderProgram::DataDesc stdTAttributes[] = {
+	const ShaderProgram::DataDesc stdTAttributes[] = {
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
-		{ "vColor", dx11ShaderProgram::DFLOAT, 0, 1, 0 },
+		{ "vColor", dx11ShaderProgram::DUBYTE, 0, 1, 0 },
 		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
 		NULL
 	};
 	const dx11ShaderProgram::DataDesc stdTCAttributes[] = {
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
-		{ "vColor", dx11ShaderProgram::DFLOAT, 4, 1, 0 },
+		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
 		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
 		NULL
 	};
@@ -202,7 +190,25 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	rasterDesc.ScissorEnable = false;
 	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissor);
 
+	D3D11_BLEND_DESC blendStateDesc;
+	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
+
+	blendStateDesc.AlphaToCoverageEnable = FALSE;
+	blendStateDesc.IndependentBlendEnable = FALSE;
+	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;  // previously D3D11_BLEND_SRC_ALPHA
+	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_DEST_ALPHA;
+	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	g_dev->CreateBlendState(&blendStateDesc, &g_pBlendState);
+
 	g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);  // could call this "rendertarget"
+    g_pCBlendState=NULL;
+	reset();
 }
 
 dx11ShaderEngine::~dx11ShaderEngine()
@@ -216,6 +222,15 @@ dx11ShaderEngine::~dx11ShaderEngine()
     delete ShaderProgram::stdTextureColor;
 
     g_depthStencil->Release();
+    g_pBlendState->Release();
+    g_pRSNormal->Release();
+    g_pRSScissor->Release();
+    g_pDSDepth->Release();
+    g_pDSOff->Release();
+    dx11ShaderTexture::samplerClamp->Release();
+    dx11ShaderTexture::samplerRepeat->Release();
+    if (g_pCBlendState)
+        g_pCBlendState->Release();
 #ifdef OPENGL_ES
 	glDeleteRenderbuffers(1,&_depthRenderBuffer);
 #endif
@@ -234,7 +249,12 @@ ShaderBuffer *dx11ShaderEngine::createRenderTarget(ShaderTexture *texture)
 ShaderBuffer *dx11ShaderEngine::setFramebuffer(ShaderBuffer *fbo)
 {
 	ShaderBuffer *previous=currentBuffer;
-	g_devcon->OMSetRenderTargets(1, 
+	if (fbo)
+	{
+		ID3D11ShaderResourceView *nrs = NULL;
+		g_devcon->PSSetShaderResources(0, 1, &nrs);
+	}
+	g_devcon->OMSetRenderTargets(1,
 		fbo?&(((dx11ShaderBuffer *)fbo)->renderTarget):&g_backbuffer, 
 		fbo?NULL:g_depthStencil);
     currentBuffer=fbo;
@@ -289,7 +309,7 @@ void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture)
 	dx11ShaderTexture *tex=(dx11ShaderTexture *)texture;
 	g_devcon->PSSetShaderResources(num,1,&tex->rsv);
 	if (tex->wrap==ShaderTexture::WRAP_CLAMP)
-		g_devcon->PSSetSamplers(0, 1, &dx11ShaderTexture::samplerClamp);
+		g_devcon->PSSetSamplers(0, 1, &dx11ShaderTexture::samplerRepeat/*Clamp*/);
 	else
 		g_devcon->PSSetSamplers(0, 1, &dx11ShaderTexture::samplerRepeat);
 }
@@ -339,31 +359,31 @@ void dx11ShaderEngine::setDepthTest(bool enable)
 	}
 }
 
-/*
-GLenum dx11ShaderEngine::blendFactor2GLenum(BlendFactor blendFactor)
+
+D3D11_BLEND dx11ShaderEngine::blendFactor2D3D11(BlendFactor blendFactor)
 {
 	switch (blendFactor)
 	{
 		case ZERO:
-		   return GL_ZERO;
+		   return D3D11_BLEND_ZERO;
 		case ONE:
-		   return GL_ONE;
+			return D3D11_BLEND_ONE;
 		case SRC_COLOR:
-		   return GL_SRC_COLOR;
+			return D3D11_BLEND_SRC_COLOR;
 		case ONE_MINUS_SRC_COLOR:
-		   return GL_ONE_MINUS_SRC_COLOR;
+			return D3D11_BLEND_INV_SRC_COLOR;
 		case DST_COLOR:
-		   return GL_DST_COLOR;
+			return D3D11_BLEND_DEST_COLOR;
 		case ONE_MINUS_DST_COLOR:
-		   return GL_ONE_MINUS_DST_COLOR;
+			return D3D11_BLEND_INV_DEST_COLOR;
 		case SRC_ALPHA:
-		   return GL_SRC_ALPHA;
+			return D3D11_BLEND_SRC_ALPHA;
 		case ONE_MINUS_SRC_ALPHA:
-		   return GL_ONE_MINUS_SRC_ALPHA;
+			return D3D11_BLEND_INV_SRC_ALPHA;
 		case DST_ALPHA:
-		   return GL_DST_ALPHA;
+			return D3D11_BLEND_DEST_ALPHA;
 		case ONE_MINUS_DST_ALPHA:
-		   return GL_ONE_MINUS_DST_ALPHA;
+			return D3D11_BLEND_INV_DEST_ALPHA;
 		//case CONSTANT_COLOR:
 		//   return GL_CONSTANT_COLOR;
 		//case ONE_MINUS_CONSTANT_COLOR:
@@ -373,15 +393,47 @@ GLenum dx11ShaderEngine::blendFactor2GLenum(BlendFactor blendFactor)
 		//case ONE_MINUS_CONSTANT_ALPHA:
 		//   return GL_ONE_MINUS_CONSTANT_ALPHA;
 		case SRC_ALPHA_SATURATE:
-		   return GL_SRC_ALPHA_SATURATE;
+			return D3D11_BLEND_SRC_ALPHA_SAT;
 	}
 
-	return GL_ZERO;
-}*/
+	return D3D11_BLEND_ZERO;
+}
 
 void dx11ShaderEngine::setBlendFunc(BlendFactor sfactor, BlendFactor dfactor)
 {
-	//TODO glBlendFunc(blendFactor2GLenum(sfactor), blendFactor2GLenum(dfactor));
+	if ((sfactor == curSrcFactor) && (dfactor == curDstFactor)) return;
+	curSrcFactor = sfactor;
+	curDstFactor = dfactor;
+	if ((sfactor == BlendFactor::ONE) && (dfactor == BlendFactor::ONE_MINUS_SRC_ALPHA))
+	{
+		g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
+		return;
+	}
+	if ((g_pCBlendState != NULL) && (sfactor == curCSrcFactor) && (dfactor == curCDstFactor))
+	{
+		g_devcon->OMSetBlendState(g_pCBlendState, NULL, 0xFFFFFF);
+		return;
+	}
+	curCSrcFactor = sfactor;
+	curCDstFactor = dfactor;
+	D3D11_BLEND_DESC blendStateDesc;
+	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
+
+	blendStateDesc.AlphaToCoverageEnable = FALSE;
+	blendStateDesc.IndependentBlendEnable = FALSE;
+	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendStateDesc.RenderTarget[0].SrcBlend = blendFactor2D3D11(sfactor);
+	blendStateDesc.RenderTarget[0].DestBlend = blendFactor2D3D11(dfactor);
+	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_DEST_ALPHA;
+	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	if (g_pCBlendState != NULL)
+		g_pCBlendState->Release();
+	g_dev->CreateBlendState(&blendStateDesc, &g_pCBlendState);
+	g_devcon->OMSetBlendState(g_pCBlendState, NULL, 0xFFFFFF);
 }
 
 Matrix4 dx11ShaderEngine::setFrustum(float l, float r, float b, float t, float n, float f)

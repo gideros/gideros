@@ -113,13 +113,16 @@ class dx11ShaderEngine : public ShaderEngine
 	ID3D11RasterizerState *g_pRSNormal;
 	ID3D11RasterizerState *g_pRSScissor;
 	ID3D11BlendState *g_pBlendState;
+	ID3D11BlendState *g_pCBlendState;
 	bool matrixDirty;
 	float constColR,constColG,constColB,constColA;
 	bool colorDirty;
 	Matrix4 oglCombined;
 	int s_depthEnable;
 	bool s_depthBufferCleared;
-	GLenum blendFactor2GLenum(BlendFactor blendFactor);
+	D3D11_BLEND blendFactor2D3D11(BlendFactor blendFactor);
+	BlendFactor curSrcFactor, curDstFactor;
+	BlendFactor curCSrcFactor, curCDstFactor;
 public:
 	static ID3D11Texture2D* pBackBuffer;
 	dx11ShaderEngine(int sw, int sh);

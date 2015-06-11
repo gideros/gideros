@@ -15,7 +15,7 @@ public:
 		DBYTE, DUBYTE, DSHORT, DUSHORT, DINT, DFLOAT
 	};
 	enum ConstantType {
-		CINT,CFLOAT,CFLOAT4,CMATRIX
+		CINT,CFLOAT,CFLOAT4,CMATRIX,CTEXTURE
 	};
 	enum ShapeType {
 		Point,

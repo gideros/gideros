@@ -173,7 +173,7 @@ dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,
 	cbvsData = 0;
 	cbpsData = 0;
 	while (uniforms->name) {
-		int usz = 4, ual = 4;
+		int usz = 0, ual = 4;
 		ConstantDesc cd;
 		cd = *(uniforms++);
 		switch (cd.type) {
@@ -251,6 +251,22 @@ dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,
 				break;
 			case 4:
 				ied[nie].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+				break;
+			default:
+				ied[nie].Format = DXGI_FORMAT_UNKNOWN;
+				break;
+			}
+			break;
+		case DataType::DUBYTE:
+			switch (attributes->mult) {
+			case 1:
+				ied[nie].Format = DXGI_FORMAT_R8_UNORM;
+				break;
+			case 2:
+				ied[nie].Format = DXGI_FORMAT_R8G8_UNORM;
+				break;
+			case 4:
+				ied[nie].Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 				break;
 			default:
 				ied[nie].Format = DXGI_FORMAT_UNKNOWN;

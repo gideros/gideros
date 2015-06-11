@@ -188,7 +188,7 @@ void ogl2SetupShaders()
 	const ShaderProgram::ConstantDesc stdUniforms[]={
 			{"vMatrix",ShaderProgram::CMATRIX,true,0},
 			{"fColor",ShaderProgram::CFLOAT4,false,0},
-			{"fTexture",ShaderProgram::CINT,false,0},
+			{"fTexture",ShaderProgram::CTEXTURE,false,0},
 			NULL
 	};
     const char *stdAttributes[]={"vVertex","vColor","vTexCoord",NULL};
@@ -198,11 +198,8 @@ void ogl2SetupShaders()
                                       stdUniforms,stdAttributes);
     ShaderProgram::stdTexture = new ogl2ShaderProgram(hdrVShaderCode,stdTVShaderCode,hdrFShaderCode,stdTFShaderCode,
                                       stdUniforms,stdAttributes);
-    int zero=0;
-    ShaderProgram::stdTexture->setConstant(2,ShaderProgram::CINT,&zero);
     ShaderProgram::stdTextureColor = new ogl2ShaderProgram(hdrVShaderCode,stdCTVShaderCode,hdrFShaderCode,stdCTFShaderCode,
                                       stdUniforms,stdAttributes);
-    ShaderProgram::stdTextureColor->setConstant(2,ShaderProgram::CINT,&zero);
 }
 
 ogl2ShaderEngine::ogl2ShaderEngine(int sw,int sh)
