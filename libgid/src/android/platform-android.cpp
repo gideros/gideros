@@ -115,13 +115,13 @@ std::string getLanguage()
 	return sresult;
 }
 
-void vibrate()
+void vibrate(int ms)
 {
 	JNIEnv *env = g_getJNIEnv();
 
 	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
-	jmethodID vibrateID = env->GetStaticMethodID(localRefCls, "vibrate", "()V");
-	env->CallStaticVoidMethod(localRefCls, vibrateID);
+	jmethodID vibrateID = env->GetStaticMethodID(localRefCls, "vibrate", "(I)V");
+	env->CallStaticVoidMethod(localRefCls, vibrateID, (jint)ms);
 	env->DeleteLocalRef(localRefCls);
 }
 

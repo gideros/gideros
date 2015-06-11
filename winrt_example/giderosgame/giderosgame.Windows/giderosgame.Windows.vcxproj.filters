@@ -20,66 +20,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="giderosgame.Windows_TemporaryKey.pfx" />
-    <None Include="Assets\main.lua">
-      <Filter>Assets</Filter>
-    </None>
     <None Include="Assets\PixelShader.cso">
       <Filter>Assets</Filter>
     </None>
     <None Include="Assets\VertexShader.cso">
       <Filter>Assets</Filter>
     </None>
-    <None Include="Assets\bird.lua">
-      <Filter>Assets</Filter>
-    </None>
     <None Include="Assets\properties.bin">
       <Filter>Assets</Filter>
     </None>
-    <None Include="Assets\billo.fnt">
+    <None Include="Assets\main.lua">
       <Filter>Assets</Filter>
     </None>
-    <None Include="Assets\button.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\soundbutton.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\main1.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\main2.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\mainaudio.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\mainbutton.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\mainfont.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\maininfballs.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\mainr2t.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\properties.bird.bin">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\properties.nebula.bin">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\desert.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\mainshapes.lua">
+    <None Include="Assets\bird.lua">
       <Filter>Assets</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\ego.png">
+    <Image Include="Assets\StoreLogo.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Logo.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SmallLogo.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Logo.scale-80.png">
       <Filter>Assets</Filter>
     </Image>
     <Image Include="Assets\bird_black_01.png">
@@ -103,93 +73,11 @@
     <Image Include="Assets\sky_world.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\ball.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\billo.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\button_down.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\button_up.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\1-down.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\1-up.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\2-down.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\2-up.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\3-down.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\3-up.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\StoreLogo.scale-100.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\Logo.scale-100.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\SmallLogo.scale-100.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\SplashScreen.scale-100.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\Logo.scale-80.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\left-down.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\left-up.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\right-down.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\right-up.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\spots.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\tmw_desert_spacing.png">
-      <Filter>Assets</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\luafiles.txt">
       <Filter>Assets</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="Assets\arial.ttf">
-      <Filter>Assets</Filter>
-    </Font>
-    <Font Include="Assets\billo.ttf">
-      <Filter>Assets</Filter>
-    </Font>
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="Assets\1.wav">
-      <Filter>Assets</Filter>
-    </Media>
-    <Media Include="Assets\2.wav">
-      <Filter>Assets</Filter>
-    </Media>
-    <Media Include="Assets\3.wav">
-      <Filter>Assets</Filter>
-    </Media>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Plugins\bit.c">
@@ -198,5 +86,40 @@
     <ClCompile Include="Plugins\bit_stub.cpp">
       <Filter>Plugins</Filter>
     </ClCompile>
+    <ClCompile Include="Plugins\lsqlite3.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lsqlite3_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\sqlite3.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lfs.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lfs_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\fpconv.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lua_cjson.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\strbuf.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lua_cjson_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Plugins\sqlite3.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\lfs.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

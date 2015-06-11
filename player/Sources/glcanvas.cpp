@@ -258,349 +258,327 @@ void GLCanvas::paintGL() {
 }
 
 // TODO: TimerEvent.TIMER'da bi exception olursa, o event bir daha cagirilmiyor. Bunun nedeini bulmak lazim
-void GLCanvas::timerEvent(QTimerEvent *) {
-	/*
-	 platformImplementation_->openUrls();
-	 printf(".");
-	 printf("%d\n", Referenced::instanceCount);
-	 */
+void GLCanvas::timerEvent(QTimerEvent *){
+    /*
+    platformImplementation_->openUrls();
+    printf(".");
+    printf("%d\n", Referenced::instanceCount);
+    */
 
-	if (isPlayer_) {
-		int dataTotal = 0;
+    if(isPlayer_){
+        int dataTotal = 0;
 
-		while (true) {
-			if (!projectDir_.isEmpty()) {
-				play(QDir(projectDir_));
-				projectDir_.clear();
-			}
+        while(true){
+            if(!projectDir_.isEmpty()){
+                play(QDir(projectDir_));
+                projectDir_.clear();
+            }
 
-			int dataSent0 = server_->dataSent();
-			int dataReceived0 = server_->dataReceived();
+            int dataSent0 = server_->dataSent();
+            int dataReceived0 = server_->dataReceived();
 
-			NetworkEvent event;
-			server_->tick(&event);
+            NetworkEvent event;
+            server_->tick(&event);
 
-			/*
-			 if (event.eventCode != eNone)
-			 printf("%s\n", eventCodeString(event.eventCode));
-			 */
+            /*
+            if (event.eventCode != eNone)
+                printf("%s\n", eventCodeString(event.eventCode));
+            */
 
-			int dataSent1 = server_->dataSent();
-			int dataReceived1 = server_->dataReceived();
+            int dataSent1 = server_->dataSent();
+            int dataReceived1 = server_->dataReceived();
 
-			if (event.eventCode == eDataReceived) {
-				const std::vector<char>& data = event.data;
+            if(event.eventCode == eDataReceived){
+                const std::vector<char>& data = event.data;
 
-				switch (data[0]) {
-				case 0: {
-					std::string folderName = &data[1];
-					__mkdir(g_pathForFile(folderName.c_str()));
-					break;
-				}
+                switch(data[0]){
+                    case 0:
+                    {
+                        std::string folderName = &data[1];
+                        __mkdir(g_pathForFile(folderName.c_str()));
+                        break;
+                    }
 
-				case 1: {
-					std::string fileName = &data[1];
-					FILE* fos = fopen(g_pathForFile(fileName.c_str()), "wb");
-					int pos = 1 + fileName.size() + 1;
-					if (data.size() > pos)
-						fwrite(&data[pos], data.size() - pos, 1, fos);
-					fclose(fos);
-					allResourceFiles.insert(fileName);
-					calculateMD5(fileName.c_str());
-					saveMD5();
-					break;
-				}
+                    case 1:
+                    {
+                        std::string fileName = &data[1];
+                        FILE* fos = fopen(g_pathForFile(fileName.c_str()), "wb");
+                        int pos = 1 + fileName.size() + 1;
+                        if(data.size() > pos)
+                            fwrite(&data[pos], data.size() - pos, 1, fos);
+                        fclose(fos);
+                        allResourceFiles.insert(fileName);
+                        calculateMD5(fileName.c_str());
+                        saveMD5();
+                        break;
+                    }
 
-				case 2: {
-					glog_v("play message is received\n");
+                    case 2:
+                    {
+                        glog_v("play message is received\n");
 
-					running_ = true;
+                        running_ = true;
 
-					//accessedResourceFiles.clear();
+                        //accessedResourceFiles.clear();
 
-					dir_ = QDir::temp();
-					dir_.mkdir("gideros");
-					dir_.cd("gideros");
-					dir_.mkdir(projectName_);
-					dir_.cd(projectName_);
+                        dir_ = QDir::temp();
+                        dir_.mkdir("gideros");
+                        dir_.cd("gideros");
+                        dir_.mkdir(projectName_);
+                        dir_.cd(projectName_);
 
-					QByteArray ba;
-					QDataStream datastream(&ba, QIODevice::ReadWrite);
-					datastream.writeRawData((const char*) &data[0],
-							data.size());
-					QFile file(dir_.absolutePath() + "/luafiles.txt");
-					file.open(QIODevice::WriteOnly);
-					file.write(ba);
-					file.close();
+                        QByteArray ba;
+                        QDataStream datastream(&ba,QIODevice::ReadWrite);
+                        datastream.writeRawData((const char*)&data[0], data.size());
+                        QFile file(dir_.absolutePath()+"/luafiles.txt");
+                        file.open(QIODevice::WriteOnly);
+                        file.write(ba);
+                        file.close();
 
-					loadFiles(data);
+                        loadFiles(data);
 
-					break;
-				}
+                        break;
+                    }
 
-				case 3: {
-					glog_v("stop message is received\n");
+                    case 3:
+                    {
+                        glog_v("stop message is received\n");
 
-					if (running_ == true) {
-						Event event(Event::APPLICATION_EXIT);
-						GStatus status;
-						application_->broadcastEvent(&event, &status);
+                        if (running_ == true)
+                        {
+                            Event event(Event::APPLICATION_EXIT);
+                            GStatus status;
+                            application_->broadcastEvent(&event, &status);
 
-						if (status.error()) {
-							errorDialog_.appendString(status.errorString());
-							errorDialog_.show();
-							printToServer(status.errorString(), -1, NULL);
-							printToServer("\n", -1, NULL);
-						}
-					}
+                            if (status.error())
+                            {
+                                errorDialog_.appendString(status.errorString());
+                                errorDialog_.show();
+                                printToServer(status.errorString(), -1, NULL);
+                                printToServer("\n", -1, NULL);
+                            }
+                        }
 
-					running_ = false;
+                        running_ = false;
 
-					application_->deinitialize();
-					application_->initialize();
-					setupApplicationProperties();
-					break;
-				}
+                        application_->deinitialize();
+                        application_->initialize();
+                        setupApplicationProperties();
+                        break;
+                    }
 
-					/*
-					 case 5:
-					 {
-					 // deleteFiles();
-					 break;
-					 }
-					 */
+                    /*
+                    case 5:
+                    {
+                        // deleteFiles();
+                        break;
+                    }
+                    */
 
-				case 7: {
-					sendFileList();
-					break;
-				}
+                    case 7:
+                    {
+                        sendFileList();
+                        break;
+                    }
 
-				case 8: {
-					ByteBuffer buffer(&data[0], data.size());
+                    case 8:
+                    {
+                        ByteBuffer buffer(&data[0], data.size());
 
-					char chr;
-					buffer >> chr;
+                        char chr;
+                        buffer >> chr;
 
-					std::string str;
-					buffer >> str;
+                        std::string str;
+                        buffer >> str;
 
-					projectName_ = str.c_str();
+                        projectName_ = str.c_str();
 
-					if (projectName_.isEmpty() == false) {
-						dir_ = QDir::temp();
-						dir_.mkdir("gideros");
-						dir_.cd("gideros");
-						dir_.mkdir(projectName_);
-						dir_.cd(projectName_);
+                        if(projectName_.isEmpty() == false){
+                            dir_ = QDir::temp();
+                            dir_.mkdir("gideros");
+                            dir_.cd("gideros");
+                            dir_.mkdir(projectName_);
+                            dir_.cd(projectName_);
 
-						md5filename_ = qPrintable(
-								dir_.absoluteFilePath("md5.txt"));
-						loadMD5();
+                            md5filename_ = dir_.absoluteFilePath("md5.txt").toStdString().c_str();
+                            loadMD5();
 
-						dir_.mkdir("documents");
-						dir_.mkdir("temporary");
-						dir_.mkdir("resource");
+                            dir_.mkdir("documents");
+                            dir_.mkdir("temporary");
+                            dir_.mkdir("resource");
 
-						resourceDirectory_ = qPrintable(
-								dir_.absoluteFilePath("resource"));
+                            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
 
-						setDocumentsDirectory(
-								qPrintable(dir_.absoluteFilePath("documents")));
-						setTemporaryDirectory(
-								qPrintable(dir_.absoluteFilePath("temporary")));
-						setResourceDirectory(resourceDirectory_.c_str());
-					}
+                            setDocumentsDirectory(dir_.absoluteFilePath("documents").toStdString().c_str());
+                            setTemporaryDirectory(dir_.absoluteFilePath("temporary").toStdString().c_str());
+                            setResourceDirectory(resourceDirectory_.c_str());
+                        }
 
-					emit projectNameChanged(projectName_);
-					break;
-				}
+                        emit projectNameChanged(projectName_);
+                        break;
+                    }
 
-				case 9: {
-					ByteBuffer buffer(&data[0], data.size());
+                    case 9:
+                    {
+                        ByteBuffer buffer(&data[0], data.size());
 
-					char chr;
-					buffer >> chr;
+                        char chr;
+                        buffer >> chr;
 
-					std::string fileName;
-					buffer >> fileName;
+                        std::string fileName;
+                        buffer >> fileName;
 
-					remove(g_pathForFile(fileName.c_str()));
+                        remove(g_pathForFile(fileName.c_str()));
 
-					{
-						std::set<std::string>::iterator iter =
-								allResourceFiles.find(fileName);
-						if (iter != allResourceFiles.end())	// this if statement is unnecessary, but we put it "ne olur ne olmaz"
-							allResourceFiles.erase(iter);
-					}
+                        {
+                            std::set<std::string>::iterator iter = allResourceFiles.find(fileName);
+                            if (iter != allResourceFiles.end())		// this if statement is unnecessary, but we put it "ne olur ne olmaz"
+                                allResourceFiles.erase(iter);
+                        }
 
-					{
-						std::map<std::string, std::vector<unsigned char> >::iterator iter =
-								md5_.find(fileName);
-						if (iter != md5_.end()) {
-							md5_.erase(iter);
-							saveMD5();
-						}
-					}
+                        {
+                            std::map<std::string, std::vector<unsigned char> >::iterator iter = md5_.find(fileName);
+                            if (iter != md5_.end())
+                            {
+                                md5_.erase(iter);
+                                saveMD5();
+                            }
+                        }
 
-					break;
-				}
+                        break;
+                    }
 
-				case 11: {
-					dir_ = QDir::temp();
-					dir_.mkdir("gideros");
-					dir_.cd("gideros");
-					dir_.mkdir(projectName_);
-					dir_.cd(projectName_);
+                    case 11:
+                    {
+                        dir_ = QDir::temp();
+                        dir_.mkdir("gideros");
+                        dir_.cd("gideros");
+                        dir_.mkdir(projectName_);
+                        dir_.cd(projectName_);
 
-					QByteArray ba;
-					QDataStream datastream(&ba, QIODevice::ReadWrite);
-					datastream.writeRawData((const char*) &data[0],
-							data.size());
-					QFile file(dir_.absolutePath() + "/properties.bin");
-					file.open(QIODevice::WriteOnly);
-					file.write(ba);
-					file.close();
+                        QByteArray ba;
+                        QDataStream datastream(&ba,QIODevice::ReadWrite);
+                        datastream.writeRawData((const char*)&data[0], data.size());
+                        QFile file(dir_.absolutePath()+"/properties.bin");
+                        file.open(QIODevice::WriteOnly);
+                        file.write(ba);
+                        file.close();
 
-					loadProperties(data);
+                        loadProperties(data);
 
-					break;
-				}
-				}
-			}
+                        break;
+                    }
+                }
+            }
 
-			int dataDelta = (dataSent1 - dataSent0)
-					+ (dataReceived1 - dataReceived0);
-			dataTotal += dataDelta;
+            int dataDelta = (dataSent1 - dataSent0) + (dataReceived1 - dataReceived0);
+            dataTotal += dataDelta;
 
-			if (dataDelta == 0 || dataTotal > 1024)
-				break;
-		}
-	}
-	else
-	{
-		if (!projectDir_.isEmpty()) {
-			play(QDir(projectDir_));
-			projectDir_.clear();
-		}
-		else if (!appPackage.isEmpty())
-		{
-			play(appPackage);
-			appPackage.clear();
-		}
+            if(dataDelta == 0 || dataTotal > 1024)
+                break;
+        }
+    }
 
-
-	}
-
-	update();
+    update();
 }
 
-void GLCanvas::play(QDir directory) {
-	QFile file(directory.absolutePath() + "/properties.bin");
-	QFile luafiles(directory.absolutePath() + "/luafiles.txt");
+void GLCanvas::play(QDir directory){
+    QFile file(directory.absolutePath()+"/properties.bin");
+    QFile luafiles(directory.absolutePath()+"/luafiles.txt");
 
-	if (file.exists() && luafiles.exists()) {
-		if (running_ == true) {
-			Event event(Event::APPLICATION_EXIT);
-			GStatus status;
-			application_->broadcastEvent(&event, &status);
-			running_ = false;
+    if(file.exists() && luafiles.exists()){
+        if(running_ == true){
+            Event event(Event::APPLICATION_EXIT);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+            running_ = false;
 
-			if (status.error()) {
-				errorDialog_.appendString(status.errorString());
-				errorDialog_.show();
-				printToServer(status.errorString(), -1, NULL);
-				printToServer("\n", -1, NULL);
-				return;
-			}
-		}
+            if(status.error()){
+                errorDialog_.appendString(status.errorString());
+                errorDialog_.show();
+                printToServer(status.errorString(), -1, NULL);
+                printToServer("\n", -1, NULL);
+                return;
+            }
+        }
 
-		projectName_ = directory.dirName();
-		emit projectNameChanged(projectName_);
+        projectName_ = directory.dirName();
+        emit projectNameChanged(projectName_);
 
-		const char* documentsDirectory;
-		const char* temporaryDirectory;
+        const char* documentsDirectory;
+        const char* temporaryDirectory;
 
-		if (exportedApp_) {
-			resourceDirectory_ = qPrintable(
-					directory.absoluteFilePath("resource"));
-			directory.mkpath(
-					QStandardPaths::writableLocation(
-							QStandardPaths::AppDataLocation));
-			directory.mkpath(
-					QStandardPaths::writableLocation(
-							QStandardPaths::TempLocation));
-			documentsDirectory = qPrintable(
-					QStandardPaths::writableLocation(
-							QStandardPaths::AppDataLocation));
-			temporaryDirectory = qPrintable(
-					QStandardPaths::writableLocation(
-							QStandardPaths::TempLocation));
-		} else {
-			dir_ = QDir::temp();
-			dir_.mkdir("gideros");
-			dir_.cd("gideros");
-			dir_.mkdir(projectName_);
-			dir_.cd(projectName_);
-			dir_.mkdir("documents");
-			dir_.mkdir("temporary");
+        if(exportedApp_){
+            resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
+            directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+            directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+            documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString().c_str();
+            temporaryDirectory = QStandardPaths::writableLocation(QStandardPaths::TempLocation).toStdString().c_str();
+        }else{
+            dir_ = QDir::temp();
+            dir_.mkdir("gideros");
+            dir_.cd("gideros");
+            dir_.mkdir(projectName_);
+            dir_.cd(projectName_);
+            dir_.mkdir("documents");
+            dir_.mkdir("temporary");
 
-			resourceDirectory_ = qPrintable(dir_.absoluteFilePath("resource"));
-			documentsDirectory = qPrintable(dir_.absoluteFilePath("documents"));
-			temporaryDirectory = qPrintable(dir_.absoluteFilePath("temporary"));
-		}
+            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
+            documentsDirectory = dir_.absoluteFilePath("documents").toStdString().c_str();
+            temporaryDirectory = dir_.absoluteFilePath("temporary").toStdString().c_str();
+        }
 
-		setDocumentsDirectory(documentsDirectory);
-		setTemporaryDirectory(temporaryDirectory);
-		setResourceDirectory(resourceDirectory_.c_str());
+        setDocumentsDirectory(documentsDirectory);
+        setTemporaryDirectory(temporaryDirectory);
+        setResourceDirectory(resourceDirectory_.c_str());
 
-		file.open(QIODevice::ReadOnly);
-		QByteArray ba = file.readAll();
-		file.close();
-		std::vector<char> data(ba.data(), ba.data() + ba.size());
+        file.open(QIODevice::ReadOnly);
+        QByteArray ba = file.readAll();
+        file.close();
+        std::vector<char> data(ba.data(), ba.data() + ba.size());
 
-		loadProperties(data);
+        loadProperties(data);
 
-		running_ = true;
+        running_ = true;
 
-		luafiles.open(QIODevice::ReadOnly);
+        luafiles.open(QIODevice::ReadOnly);
 
-		if (exportedApp_) {
-			std::vector<std::string> lines;
+        if(exportedApp_){
+            std::vector<std::string> lines;
 
-			QTextStream in(&luafiles);
-			while (!in.atEnd()) {
-				QString line = in.readLine();
+            QTextStream in(&luafiles);
+            while(!in.atEnd()){
+                QString line = in.readLine();
 
-				if (!line.isEmpty()) {
-					lines.push_back(line.toStdString());
-				}
-			}
+                if(!line.isEmpty()){
+                    lines.push_back(line.toStdString());
+                }
+            }
 
-			playLoadedFiles(lines);
+            playLoadedFiles(lines);
 
-		} else {
-			QByteArray bas = luafiles.readAll();
-			luafiles.close();
-			std::vector<char> data2(bas.data(), bas.data() + bas.size());
+        }else{
+            QByteArray bas = luafiles.readAll();
+            luafiles.close();
+            std::vector<char> data2(bas.data(), bas.data() + bas.size());
 
-			loadFiles(data2);
-		}
-	} else {
-		if (exportedApp_) {
-			errorDialog_.appendString(
-					"An error occured, please reinstall the application");
-			errorDialog_.show();
+            loadFiles(data2);
+        }
+    }
+    else{
+        if(exportedApp_){
+            errorDialog_.appendString("An error occured, please reinstall the application");
+            errorDialog_.show();
 
-			if (errorDialog_.exec() == QDialog::Rejected) {
-				exit(0);
-			}
+            if(errorDialog_.exec() == QDialog::Rejected){
+                exit(0);
+            }
 
-		} else {
-			errorDialog_.appendString(
-					"Please relaunch project from Gideros Studio");
-			errorDialog_.show();
-		}
-	}
+        }else{
+            errorDialog_.appendString("Please relaunch project from Gideros Studio");
+            errorDialog_.show();
+        }
+    }
 }
 
 #define BYTE_SWAP4(x) \
@@ -765,7 +743,6 @@ void GLCanvas::play(QString gapp) {
 		playLoadedFiles(lines);
 	} else
 		glog_w("GAPP: Missing luafiles.txt");
-
 }
 
 void GLCanvas::loadProperties(std::vector<char> data) {
@@ -915,72 +892,107 @@ void GLCanvas::keyReleaseEvent(QKeyEvent* event) {
 	ginputp_keyUp(event->key());
 }
 
-bool GLCanvas::event(QEvent *event) {
-	if (event->type() == QEvent::TouchBegin
-			|| event->type() == QEvent::TouchUpdate
-			|| event->type() == QEvent::TouchEnd
-			|| event->type() == QEvent::TouchCancel) {
-		QTouchEvent* touchEvent = (QTouchEvent*) event;
-		const QList<QTouchEvent::TouchPoint> &list = touchEvent->touchPoints();
-		int size = list.count();
+bool GLCanvas::event(QEvent *event){
+    if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate || event->type() == QEvent::TouchEnd || event->type() == QEvent::TouchCancel)
+    {
+        QTouchEvent* touchEvent = (QTouchEvent*)event;
+        const QList<QTouchEvent::TouchPoint> &list = touchEvent->touchPoints();
+        int size = list.count();
 
-		int xs[size];
-		int ys[size];
-		int ids[size];
+        int xs[size];
+        int ys[size];
+        int ids[size];
 
-		for (int i = 0; i < size; ++i) {
-			QTouchEvent::TouchPoint p = list[i];
-			xs[i] = p.pos().x() * deviceScale_;
-			ys[i] = p.pos().y() * deviceScale_;
-			ids[i] = i;
-		}
+        for( int i=0; i<size; ++i )
+        {
+            QTouchEvent::TouchPoint p = list[i];
+            xs[i] = p.pos().x() * deviceScale_;
+            ys[i] = p.pos().y() * deviceScale_;
+            ids[i] = i;
+        }
 
-		for (int i = 0; i < size; ++i) {
-			QTouchEvent::TouchPoint p = list[i];
-			if (event->type() == QEvent::TouchCancel) {
-				ginputp_touchesCancel(p.pos().x() * deviceScale_,
-						p.pos().y() * deviceScale_, i, size, xs, ys, ids);
-			} else if (p.state() == Qt::TouchPointPressed) {
-				ginputp_touchesBegin(p.pos().x() * deviceScale_,
-						p.pos().y() * deviceScale_, i, size, xs, ys, ids);
-			} else if (p.state() == Qt::TouchPointMoved) {
-				ginputp_touchesMove(p.pos().x() * deviceScale_,
-						p.pos().y() * deviceScale_, i, size, xs, ys, ids);
-			} else if (p.state() == Qt::TouchPointReleased) {
-				ginputp_touchesEnd(p.pos().x() * deviceScale_,
-						p.pos().y() * deviceScale_, i, size, xs, ys, ids);
-			}
-		}
-		return true;
-	} else if (event->type() == QEvent::MouseButtonPress) {
-		mousePressEvent((QMouseEvent*) event);
-		return true;
-	} else if (event->type() == QEvent::MouseMove) {
-		mouseMoveEvent((QMouseEvent*) event);
-		return true;
-	} else if (event->type() == QEvent::MouseButtonRelease) {
-		mouseReleaseEvent((QMouseEvent*) event);
-		return true;
-	} else if (event->type() == QEvent::Wheel) {
-		wheelEvent((QWheelEvent*) event);
-		return true;
-	} else if (event->type() == QEvent::KeyPress) {
-		keyPressEvent((QKeyEvent*) event);
-		return true;
-	} else if (event->type() == QEvent::KeyRelease) {
-		keyReleaseEvent((QKeyEvent*) event);
-		return true;
-	} else if (event->type() == QEvent::Timer) {
-		timerEvent((QTimerEvent *) event);
-		return true;
-	} else if (event->type() == QEvent::Resize) {
-		if (running_) {
-			Event event(Event::APPLICATION_RESIZE);
-			GStatus status;
-			application_->broadcastEvent(&event, &status);
-		}
-	}
-	return QGLWidget::event(event);
+        for( int i=0; i<size; ++i )
+        {
+            QTouchEvent::TouchPoint p = list[i];
+            if(event->type() == QEvent::TouchCancel){
+                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+            }
+            else if(p.state() == Qt::TouchPointPressed){
+                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+            }
+            else if(p.state() == Qt::TouchPointMoved){
+                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+            }
+            else if(p.state() == Qt::TouchPointReleased){
+                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+            }
+        }
+        return true;
+    }
+    else if(event->type() == QEvent::MouseButtonPress){
+        mousePressEvent((QMouseEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::MouseMove){
+        mouseMoveEvent((QMouseEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::MouseButtonRelease){
+        mouseReleaseEvent((QMouseEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::Wheel){
+        wheelEvent((QWheelEvent*)event);
+        return true;
+    }
+    else if(event->type() == QEvent::KeyPress){
+        keyPressEvent((QKeyEvent*) event);
+        return true;
+    }
+    else if(event->type() == QEvent::KeyRelease){
+        keyReleaseEvent((QKeyEvent*) event);
+        return true;
+    }
+    else if(event->type() == QEvent::Timer){
+        timerEvent((QTimerEvent *) event);
+        return true;
+    }
+    else if(event->type() == QEvent::Resize){
+        if(running_){
+            Event event(Event::APPLICATION_RESIZE);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
+    else if(event->type() == QEvent::FocusIn){
+        if(running_){
+            Event event(Event::APPLICATION_RESUME);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
+    else if(event->type() == QEvent::WindowUnblocked){
+        if(running_){
+            Event event(Event::APPLICATION_RESUME);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
+    else if(event->type() == QEvent::FocusOut){
+        if(running_){
+            Event event(Event::APPLICATION_SUSPEND);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
+    else if(event->type() == QEvent::WindowBlocked){
+        if(running_){
+            Event event(Event::APPLICATION_SUSPEND);
+            GStatus status;
+            application_->broadcastEvent(&event, &status);
+        }
+    }
+    return QGLWidget::event(event);
 }
 
 void GLCanvas::onTimer() {

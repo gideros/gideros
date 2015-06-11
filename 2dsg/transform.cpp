@@ -58,11 +58,11 @@ void Transform::setMatrix(float m11,float m12,float m21,float m22,float tx,float
 	ty_=ty;
 	tz_=0;
 
-	refX_=0;
+        refX_=0;
 	refY_=0;
 	refZ_=0;
 
-	compose();
+        compose();
 }
 
 void Transform::compose()

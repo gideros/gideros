@@ -4754,7 +4754,7 @@ void b2DebugDraw::DrawCircle(const b2Vec2& center, float32 radius, const b2Color
 	const float32 k_increment = 2.0f * b2_pi / k_segments;
 	float32 theta = 0.0f;
 
-	GLfloat				glVertices[vertexCount*2];
+	float				glVertices[vertexCount*2];
 	for (int32 i = 0; i < k_segments; ++i)
 	{
 		b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
@@ -4777,7 +4777,7 @@ void b2DebugDraw::DrawSolidCircle(const b2Vec2& center, float32 radius, const b2
 	const float32 k_increment = 2.0f * b2_pi / k_segments;
 	float32 theta = 0.0f;
 
-	GLfloat				glVertices[vertexCount*2];
+	float				glVertices[vertexCount*2];
 	for (int32 i = 0; i < k_segments; ++i)
 	{
 		b2Vec2 v = center + radius * b2Vec2(cosf(theta), sinf(theta));
@@ -4804,7 +4804,7 @@ void b2DebugDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color&
 {
 	glPushColor();
 	glMultColor(color.r, color.g, color.b,1);
-	GLfloat				glVertices[] = {
+	float				glVertices[] = {
 		p1.x,p1.y,p2.x,p2.y
 	};
 	ShaderProgram::stdBasic->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2, glVertices, 2, true, NULL);
@@ -4828,18 +4828,17 @@ void b2DebugDraw::doDraw(const CurrentTransform& , float sx, float sy, float ex,
 {
 	if (world_)
 	{
-		oglDisable(GL_TEXTURE_2D);
 
 		float physicsScale = application_->getPhysicsScale();
 
-		Matrix4 modelMat=oglGetModelMatrix();
+		Matrix4 modelMat=ShaderEngine::Engine->getModel();
 		Matrix4 scaledMat=modelMat;
 		scaledMat.scale(physicsScale,physicsScale,1);
-		oglLoadMatrixf(scaledMat);
+		ShaderEngine::Engine->setModel(scaledMat);
 
 		world_->DrawDebugData();
 
-		oglLoadMatrixf(modelMat);
+		ShaderEngine::Engine->setModel(modelMat);
 	}
 }
 

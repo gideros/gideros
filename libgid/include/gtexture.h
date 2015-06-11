@@ -3,7 +3,7 @@
 
 #include <gglobal.h>
 #include <stdlib.h>
-
+#include "Shaders.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -31,6 +31,7 @@ extern "C" {
 
 G_API void gtexture_init();
 G_API void gtexture_cleanup();
+G_API void gtexture_set_engine(ShaderEngine *e);
 
 G_API g_id gtexture_create(int width, int height,
                            int format, int type,
@@ -43,7 +44,7 @@ G_API g_id gtexture_reuse(int format, int type,
                           const void *signature, size_t siglength);
 
 G_API g_bool gtexture_delete(g_id id);
-G_API unsigned int gtexture_getInternalId(g_id id);
+G_API ShaderTexture *gtexture_getInternalTexture(g_id id);
 G_API void gtexture_setUserData(g_id id, void *udata);
 G_API void *gtexture_getUserData(g_id id);
 G_API void gtexture_tick();
@@ -55,7 +56,7 @@ G_API size_t gtexture_getMemoryUsage();
 G_API g_id gtexture_RenderTargetCreate(int width, int height,
                                        int wrap, int filter);
 
-G_API unsigned int gtexture_RenderTargetGetFBO(g_id renderTarget);
+G_API ShaderBuffer *gtexture_RenderTargetGetFBO(g_id renderTarget);
 
 
 G_API void gtexture_SaveRenderTargets();
@@ -63,12 +64,12 @@ G_API void gtexture_RestoreRenderTargets();
 
 G_API g_id gtexture_TempTextureCreate(int width, int height);
 G_API void gtexture_TempTextureDelete(g_id id);
-G_API unsigned int gtexture_TempTextureGetName(g_id id);
+G_API ShaderTexture *gtexture_TempTextureGetName(g_id id);
 G_API void gtexture_RestoreTempTextures();
 
 //void gtexture_replace(g_id oldId, int format, int width, int height, int type, void *pixels);
 
-G_API unsigned int gtexture_BindRenderTarget(unsigned int fbo);
+G_API ShaderBuffer *gtexture_BindRenderTarget(ShaderBuffer *fbo);
 
 #ifdef __cplusplus
 }

@@ -17,7 +17,9 @@ using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
 using namespace Platform;
 using namespace Windows::Storage;
-
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+using namespace Windows::Phone::UI::Input;
+#endif
 extern "C"
 {
 #ifdef _M_IX86
@@ -44,7 +46,6 @@ extern "C"
 ref class App sealed : public IFrameworkView
 {
     bool WindowClosed;
-	ULONGLONG next_game_tick;
 
 public:
     virtual void Initialize(CoreApplicationView^ AppView)
@@ -79,6 +80,8 @@ public:
 			<CoreWindow^, KeyEventArgs^>(this, &App::KeyDown);
 		Window->KeyUp += ref new TypedEventHandler
 			<CoreWindow^, KeyEventArgs^>(this, &App::KeyUp);
+#else
+		HardwareButtons::BackPressed += ref new EventHandler<BackPressedEventArgs^>(this, &App::OnBackButtonPressed);   
 #endif
     }
 
@@ -96,25 +99,9 @@ public:
 	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str());
 
 	  gdr_drawFirstFrame();
-      
-      const int TICK_PER_SECOND = 60;
-      const int SKIP_TICKS = 1000 / TICK_PER_SECOND;
-      const int MAX_FRAMESKIP = 10;
-      
-      next_game_tick = GetTickCount64();
-      int loops;
-      
+            
       // repeat until window closes
       while(!WindowClosed){
-
-		  loops = 0;
-		  //	while (GetTickCount64() > next_game_tick && loops < MAX_FRAMESKIP) {
-		  Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
-
-		  next_game_tick += SKIP_TICKS;
-		  loops++;
-		  //	} 
-
 		  gdr_drawFrame();
       }
 
@@ -148,7 +135,6 @@ public:
 
     void Resuming(Object^ Sender, Object^ Args) 
     {
-      next_game_tick = GetTickCount64();
 	  gdr_resume();
     }
 
@@ -192,13 +178,23 @@ public:
 
 	void KeyDown(CoreWindow^ Window, KeyEventArgs^ Args)
 	{
+		Args->Handled = true;
 		gdr_keyDown((int)Args->VirtualKey);
 	}
 
 	void KeyUp(CoreWindow^ Window, KeyEventArgs^ Args)
 	{
+		Args->Handled = true;
 		gdr_keyUp((int)Args->VirtualKey);
 	}
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+	void OnBackButtonPressed(Object^ sender, BackPressedEventArgs^ args)
+	{
+		gdr_keyDown(301);
+		gdr_keyUp(301);
+		args->Handled = true;
+	}
+#endif
 
 
 };

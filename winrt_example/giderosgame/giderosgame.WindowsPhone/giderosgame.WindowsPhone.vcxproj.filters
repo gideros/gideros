@@ -34,60 +34,6 @@
     <Image Include="Assets\WideLogo.scale-240.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\1-down.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\1-up.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\2-down.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\2-up.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\3-down.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\3-up.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\ball.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\billo.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\bird_black_01.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\bird_black_02.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\bird_black_03.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\bird_white_01.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\bird_white_02.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\bird_white_03.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\button_down.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\button_up.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\ego.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\sky_world.png">
-      <Filter>Assets</Filter>
-    </Image>
     <Image Include="Assets\SmallLogo.scale-100.png">
       <Filter>Assets</Filter>
     </Image>
@@ -105,77 +51,37 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <Media Include="Assets\1.wav">
-      <Filter>Assets</Filter>
-    </Media>
-    <Media Include="Assets\2.wav">
-      <Filter>Assets</Filter>
-    </Media>
-    <Media Include="Assets\3.wav">
-      <Filter>Assets</Filter>
-    </Media>
-    <Media Include="Assets\diving_turtle.mp3">
-      <Filter>Assets</Filter>
-    </Media>
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="Assets\arial.ttf">
-      <Filter>Assets</Filter>
-    </Font>
-    <Font Include="Assets\billo.ttf">
-      <Filter>Assets</Filter>
-    </Font>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\billo.fnt">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\bird.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\button.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\main.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\main1.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\main2.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\mainaudio.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\mainbutton.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\mainfont.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\maininfballs.lua">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\mainr2t.lua">
-      <Filter>Assets</Filter>
-    </None>
     <None Include="Assets\PixelShader.cso">
       <Filter>Assets</Filter>
     </None>
     <None Include="Assets\properties.bin">
       <Filter>Assets</Filter>
     </None>
-    <None Include="Assets\properties.bird.bin">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\properties.nebula.bin">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\soundbutton.lua">
-      <Filter>Assets</Filter>
-    </None>
     <None Include="Assets\VertexShader.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\pBasic.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\pColor.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\pTexture.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\pTextureColor.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\vBasic.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\vColor.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\vTexture.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\vTextureColor.cso">
       <Filter>Assets</Filter>
     </None>
   </ItemGroup>
@@ -194,5 +100,37 @@
     <ClCompile Include="Plugins\bit_stub.cpp">
       <Filter>Plugins</Filter>
     </ClCompile>
+    <ClCompile Include="Plugins\lfs.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lfs_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lsqlite3.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lsqlite3_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\fpconv.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lua_cjson.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\strbuf.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lua_cjson_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Plugins\lfs.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\sqlite3.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

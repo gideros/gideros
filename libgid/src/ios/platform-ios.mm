@@ -62,7 +62,7 @@ std::string getDeviceName(){
     return [[[UIDevice currentDevice] name] UTF8String];
 }
 
-void vibrate()
+void vibrate(int ms)
 {
 	AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 }

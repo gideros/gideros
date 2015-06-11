@@ -10,7 +10,8 @@ import com.flurry.android.FlurryAgent;
 public class GFlurry
 {
 	private static WeakReference<Activity> sActivity;
-	private static volatile boolean sIsActive = false;
+	private static volatile boolean sIsActive = true;
+    private static volatile boolean isInitiated = false;
 	private static String sApiKey = null;
 
 	public static void onCreate(Activity activity)
@@ -21,7 +22,7 @@ public class GFlurry
 
 	public static void onStart()
 	{
-		if (!sIsActive)
+		if (isInitiated && !sIsActive)
 		{
 			FlurryAgent.onStartSession(sActivity.get());
 			sIsActive = true;
@@ -30,7 +31,7 @@ public class GFlurry
 
 	public static void onStop()
 	{
-		if (sIsActive)
+		if (isInitiated && sIsActive)
 		{
 			FlurryAgent.onEndSession(sActivity.get());
 			sIsActive = false;
@@ -40,10 +41,12 @@ public class GFlurry
 	public static void startSession(String apiKey)
 	{
 		sApiKey = apiKey;
-		if (!sIsActive)
+		if (!isInitiated)
 		{
 			FlurryAgent.init(sActivity.get(), sApiKey);
-			sIsActive = true;
+            FlurryAgent.onStartSession(sActivity.get());
+			isInitiated = true;
+            sIsActive = true;
 		}
 	}
 

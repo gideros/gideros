@@ -28,6 +28,10 @@ public:
 
 	DeviceFamily deviceFamily() const;
 	QString packageName() const;
+    QString osx_org() const;
+    QString osx_domain() const;
+    QString win_org() const;
+    QString win_domain() const;
     bool assetsOnly() const;
     bool encryptCode() const;
     bool encryptAssets() const;

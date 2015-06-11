@@ -2386,8 +2386,8 @@ void MainWindow::exportProject()
 				replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), dialog.packageName().toUtf8());
 			replaceList << replaceList1;
 
-				QStringList wildcards2;
-                wildcards2 << "libgideros.so" << "libgideros.a";
+                QStringList wildcards2;
+                wildcards2 << "libgideros.so" << "libgideros.a" << "gid.dll" << "libgid.1.dylib" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib";
 				wildcards << wildcards2;
 
 				QList<QPair<QByteArray, QByteArray> > replaceList2;
@@ -2397,7 +2397,7 @@ void MainWindow::exportProject()
                 replaceList << replaceList2;
 
             if (dialog.assetsOnly())
-                copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar", QStringList());
+                copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar" << "gideros.dll" << "libgideros.dylib" << "libgideros.1.dylib" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib" << "WindowsDesktopTemplate.exe" << "MacOSXDesktopTemplate", QStringList());
             else
                 copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "*", QStringList());
 		}
@@ -2430,9 +2430,29 @@ void MainWindow::exportProject()
 	}
 
         if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop || deviceFamily == ExportProjectDialog::e_WindowsDesktop){
+            QString org;
+            QString domain;
+            if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop){
+                org = dialog.osx_org();
+                domain = dialog.osx_domain();
+            }
+            else if(deviceFamily == ExportProjectDialog::e_WindowsDesktop){
+                org = dialog.win_org();
+                domain = dialog.win_domain();
+            }
+            QString filename = "data.bin";
+            QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+            if (file.open(QIODevice::WriteOnly))
+            {
+                ByteBuffer buffer;
+
+                buffer << org.toStdString().c_str();
+                buffer << domain.toStdString().c_str();
+                buffer << base.toStdString().c_str();
+
+                file.write(buffer.data(), buffer.size());
+            }
             outputDir.mkdir("resource");
-            outputDir.mkdir("temporary");
-            outputDir.mkdir("documents");
             outputDir.cd("resource");
         }
 
@@ -2485,6 +2505,21 @@ void MainWindow::exportProject()
 					n += dir[i] + "/";
 
 				outputDir.mkdir(n);
+
+				if (deviceFamily == ExportProjectDialog::e_WinRT){
+				  outputDir.cdUp();
+				  outputDir.cdUp();
+				  outputDir.cd("giderosgame.WindowsPhone");
+				  outputDir.cd("Assets");
+
+				  outputDir.mkdir(n);
+
+				  outputDir.cdUp();
+				  outputDir.cdUp();
+				  outputDir.cd("giderosgame.Windows");
+				  outputDir.cd("Assets");
+				}
+
 
 				stack.push(QDomNode());
 			}

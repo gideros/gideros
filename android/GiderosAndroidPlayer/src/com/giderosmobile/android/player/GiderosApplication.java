@@ -856,11 +856,11 @@ public class GiderosApplication
 			activity.runOnUiThread(new Runnable() {public void run() {activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);}});
 	}
 	
-	static public void vibrate()	
+	static public void vibrate(int ms)	
 	{
 		try
 		{
-			((Vibrator)WeakActivityHolder.get().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(300);
+			((Vibrator)WeakActivityHolder.get().getSystemService(Context.VIBRATOR_SERVICE)).vibrate(ms);
 		}
 		catch (SecurityException e)
 		{

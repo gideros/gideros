@@ -355,6 +355,10 @@ QDomDocument LibraryTreeWidget::toXml() const
 	properties.setAttribute("assetsOnly", properties_.assetsOnly ? 1 : 0);
 	properties.setAttribute("iosDevice", properties_.iosDevice);
 	properties.setAttribute("packageName", properties_.packageName);
+	properties.setAttribute("osx_org", properties_.osx_org);
+	properties.setAttribute("osx_domain", properties_.osx_domain);
+    properties.setAttribute("win_org", properties_.win_org);
+	properties.setAttribute("win_domain", properties_.win_domain);
     properties.setAttribute("encryptCode", properties_.encryptCode);
     properties.setAttribute("encryptAssets", properties_.encryptAssets);
 
@@ -507,6 +511,14 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 			properties_.iosDevice = properties.attribute("iosDevice").toInt();
 		if (!properties.attribute("packageName").isEmpty())
 			properties_.packageName = properties.attribute("packageName");
+        if (!properties.attribute("osx_org").isEmpty())
+			properties_.osx_org = properties.attribute("osx_org");
+        if (!properties.attribute("osx_domain").isEmpty())
+			properties_.osx_domain = properties.attribute("osx_domain");
+        if (!properties.attribute("win_org").isEmpty())
+			properties_.win_org = properties.attribute("win_org");
+        if (!properties.attribute("win_domain").isEmpty())
+			properties_.win_domain = properties.attribute("win_domain");
         if (!properties.attribute("encryptCode").isEmpty())
             properties_.encryptCode = properties.attribute("encryptCode").toInt() != 0;
         if (!properties.attribute("encryptAssets").isEmpty())

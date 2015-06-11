@@ -15,14 +15,15 @@ static Color currentColor(1, 1, 1, 1);
 
 static inline void setColor(float r, float g, float b, float a)
 {
+	if (!ShaderEngine::Engine) return;
 #ifndef PREMULTIPLIED_ALPHA
 #error PREMULTIPLIED_ALPHA is not defined
 #endif
 
 #if PREMULTIPLIED_ALPHA
-	oglColor4f(r * a, g * a, b * a, a);
+	ShaderEngine::Engine->setColor(r * a, g * a, b * a, a);
 #else
-    oglColor4f(r, g, b, a);
+	ShaderEngine::Engine->setColor(r, g, b, a);
 #endif
 }
 

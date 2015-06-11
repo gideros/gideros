@@ -73,35 +73,35 @@ SpriteBinder::SpriteBinder(lua_State* L)
 
 	lua_newtable(L);
 
-	lua_pushinteger(L, Sprite::ZERO);
+	lua_pushinteger(L, ShaderEngine::ZERO);
 	lua_setfield(L, -2, "ZERO");
-	lua_pushinteger(L, Sprite::ONE);
+	lua_pushinteger(L, ShaderEngine::ONE);
 	lua_setfield(L, -2, "ONE");
-	lua_pushinteger(L, Sprite::SRC_COLOR);
+	lua_pushinteger(L, ShaderEngine::SRC_COLOR);
 	lua_setfield(L, -2, "SRC_COLOR");
-	lua_pushinteger(L, Sprite::ONE_MINUS_SRC_COLOR);
+	lua_pushinteger(L, ShaderEngine::ONE_MINUS_SRC_COLOR);
 	lua_setfield(L, -2, "ONE_MINUS_SRC_COLOR");
-	lua_pushinteger(L, Sprite::DST_COLOR);
+	lua_pushinteger(L, ShaderEngine::DST_COLOR);
 	lua_setfield(L, -2, "DST_COLOR");
-	lua_pushinteger(L, Sprite::ONE_MINUS_DST_COLOR);
+	lua_pushinteger(L, ShaderEngine::ONE_MINUS_DST_COLOR);
 	lua_setfield(L, -2, "ONE_MINUS_DST_COLOR");
-	lua_pushinteger(L, Sprite::SRC_ALPHA);
+	lua_pushinteger(L, ShaderEngine::SRC_ALPHA);
 	lua_setfield(L, -2, "SRC_ALPHA");
-	lua_pushinteger(L, Sprite::ONE_MINUS_SRC_ALPHA);
+	lua_pushinteger(L, ShaderEngine::ONE_MINUS_SRC_ALPHA);
 	lua_setfield(L, -2, "ONE_MINUS_SRC_ALPHA");
-	lua_pushinteger(L, Sprite::DST_ALPHA);
+	lua_pushinteger(L, ShaderEngine::DST_ALPHA);
 	lua_setfield(L, -2, "DST_ALPHA");
-	lua_pushinteger(L, Sprite::ONE_MINUS_DST_ALPHA);
+	lua_pushinteger(L, ShaderEngine::ONE_MINUS_DST_ALPHA);
 	lua_setfield(L, -2, "ONE_MINUS_DST_ALPHA");
-	//lua_pushinteger(L, Sprite::CONSTANT_COLOR);
+	//lua_pushinteger(L, ShaderEngine::CONSTANT_COLOR);
 	//lua_setfield(L, -2, "CONSTANT_COLOR");
-	//lua_pushinteger(L, Sprite::ONE_MINUS_CONSTANT_COLOR);
+	//lua_pushinteger(L, ShaderEngine::ONE_MINUS_CONSTANT_COLOR);
 	//lua_setfield(L, -2, "ONE_MINUS_CONSTANT_COLOR");
-	//lua_pushinteger(L, Sprite::CONSTANT_ALPHA);
+	//lua_pushinteger(L, ShaderEngine::CONSTANT_ALPHA);
 	//lua_setfield(L, -2, "CONSTANT_ALPHA");
-	//lua_pushinteger(L, Sprite::ONE_MINUS_CONSTANT_ALPHA);
+	//lua_pushinteger(L, ShaderEngine::ONE_MINUS_CONSTANT_ALPHA);
 	//lua_setfield(L, -2, "ONE_MINUS_CONSTANT_ALPHA");
-	lua_pushinteger(L, Sprite::SRC_ALPHA_SATURATE);
+	lua_pushinteger(L, ShaderEngine::SRC_ALPHA_SATURATE);
 	lua_setfield(L, -2, "SRC_ALPHA_SATURATE");
 
 	lua_setglobal(L, "BlendFactor");
@@ -696,12 +696,7 @@ int SpriteBinder::setScale(lua_State* L)
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = lua_isnoneornil(L, 3) ? x : luaL_checknumber(L, 3);
 	if (lua_isnoneornil(L, 4)) //No Z
-	{
-		if (lua_isnoneornil(L, 3)) //No Y either, scale all axis
-			sprite->setScaleXYZ(x, x, x);
-		else
-			sprite->setScaleXY(x, y); // Only scale X and Y
-	}
+		sprite->setScaleXY(x, y); // Only scale X and Y
 	else
 	{
 		lua_Number z = luaL_checknumber(L, 4);
@@ -1110,8 +1105,8 @@ int SpriteBinder::setBlendFunc(lua_State* L)
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	Sprite::BlendFactor src = static_cast<Sprite::BlendFactor>(luaL_checkinteger(L, 2));
-	Sprite::BlendFactor dst = static_cast<Sprite::BlendFactor>(luaL_checkinteger(L, 3));
+	ShaderEngine::BlendFactor src = static_cast<ShaderEngine::BlendFactor>(luaL_checkinteger(L, 2));
+	ShaderEngine::BlendFactor dst = static_cast<ShaderEngine::BlendFactor>(luaL_checkinteger(L, 3));
 
 	sprite->setBlendFunc(src, dst);
 

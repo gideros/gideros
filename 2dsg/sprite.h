@@ -308,28 +308,8 @@ public:
 
     void getBounds(const Sprite* targetCoordinateSpace, float* minx, float* miny, float* maxx, float* maxy) const;
 
-	enum BlendFactor
-	{
-		NONE,
-		ZERO,
-		ONE,
-		SRC_COLOR,
-		ONE_MINUS_SRC_COLOR,
-		DST_COLOR,
-		ONE_MINUS_DST_COLOR,
-		SRC_ALPHA,
-		ONE_MINUS_SRC_ALPHA,
-		DST_ALPHA,
-		ONE_MINUS_DST_ALPHA,
-		//CONSTANT_COLOR,
-		//ONE_MINUS_CONSTANT_COLOR,
-		//CONSTANT_ALPHA,
-		//ONE_MINUS_CONSTANT_ALPHA,
-		SRC_ALPHA_SATURATE,
-	};
-
 	void clearBlendFunc();
-	void setBlendFunc(BlendFactor sfactor, BlendFactor dfactor);
+	void setBlendFunc(ShaderEngine::BlendFactor sfactor, ShaderEngine::BlendFactor dfactor);
 
 	void set(const char* param, float value, GStatus* status = NULL);
 	float get(const char* param, GStatus* status = NULL);
@@ -377,7 +357,7 @@ private:
     mutable Matrix4 worldTransform_;
 //	Graphics* graphics_;
 
-	unsigned int sfactor_, dfactor_;
+	ShaderEngine::BlendFactor sfactor_, dfactor_;
 
 	typedef std::vector<Sprite*> SpriteVector;
 	SpriteVector children_;

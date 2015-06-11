@@ -46,9 +46,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gbitmapbatch.cpp">
       <Filter>2dsg</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\glcompat.cpp">
-      <Filter>2dsg</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gmesh.cpp">
       <Filter>2dsg</Filter>
     </ClCompile>
@@ -154,7 +151,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\urlrequest.cpp">
       <Filter>2dsg</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\dxcompat.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libpystring\pystring.cpp">
       <Filter>libpystring</Filter>
     </ClCompile>
@@ -963,6 +959,21 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\zlibbinder.cpp">
       <Filter>luabinding</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\Shaders.cpp">
+      <Filter>gfxbackend</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderBuffer.cpp">
+      <Filter>gfxbackend</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderEngine.cpp">
+      <Filter>gfxbackend</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderProgram.cpp">
+      <Filter>gfxbackend</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderTexture.cpp">
+      <Filter>gfxbackend</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">
@@ -1011,9 +1022,6 @@
       <Filter>2dsg</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\giderosexception.h">
-      <Filter>2dsg</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\glcommon.h">
       <Filter>2dsg</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\glcompat.h">
@@ -1554,6 +1562,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\wchar32.h">
       <Filter>libgid</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\Shaders.h">
+      <Filter>gfxbackend</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11Shaders.h">
+      <Filter>gfxbackend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\embeddedfont.inc">
@@ -1617,6 +1631,9 @@
     </Filter>
     <Filter Include="snappy">
       <UniqueIdentifier>{eeeb41ae-26bb-49f0-825d-70d39c0707c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gfxbackend">
+      <UniqueIdentifier>{05a37a36-3f32-4956-9cfb-a4ac442a93ad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

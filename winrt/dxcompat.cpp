@@ -431,7 +431,7 @@ void floatdump(const char *chn, const void *bv, int sz) {
 
 void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  normalized, GLsizei  stride, const GLvoid *  pointer,GLsizei count, bool modified, GLuint *cache)
 {
-	if (size > dxcompat_maxvertices) size = dxcompat_maxvertices;  // avoid overflow
+	if (count > dxcompat_maxvertices) count = dxcompat_maxvertices;  // avoid overflow
 	ID3D11Buffer *vbo=NULL;
 	const char *vName = "VB";
 	switch (index)
@@ -458,7 +458,7 @@ void glVertexAttribPointer(GLuint  index, GLint  size, GLenum  type, GLboolean  
 		break;
 	}
 	D3D11_MAPPED_SUBRESOURCE ms;
-	g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
+	HRESULT hr=g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
 	if ((index == 0) && (size == 2)) //special case expand X,Y to X,Y,0 data
 	{
 		float *vdi = (float *)pointer;
@@ -637,6 +637,46 @@ void glLineWidth(GLfloat width)
 void glBlendFunc(GLenum sfactor, GLenum dfactor)
 {
 
+	D3D11_BLEND src, dest;
+
+	if (sfactor == GL_ONE)
+		src = D3D11_BLEND_ONE;
+	else if (sfactor == GL_DST_COLOR)
+		src = D3D11_BLEND_DEST_COLOR;
+	else {
+		glog_e("glBlendFunc: Illegal sfactor: %d\n", sfactor);
+		exit(1);
+	}
+
+	if (dfactor == GL_ONE)
+		dest = D3D11_BLEND_ONE;
+	else if (dfactor == GL_ZERO)
+		dest = D3D11_BLEND_ZERO;
+	else if (dfactor == GL_ONE_MINUS_SRC_ALPHA)
+		dest = D3D11_BLEND_INV_SRC_ALPHA;
+	else if (dfactor == GL_ONE_MINUS_SRC_COLOR)
+		dest = D3D11_BLEND_INV_SRC_COLOR;
+	else {
+		glog_e("glBlendFunc: Illegal dfactor: %d\n", dfactor);
+		exit(1);
+	}
+	
+	D3D11_BLEND_DESC blendStateDesc;
+	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
+
+	blendStateDesc.AlphaToCoverageEnable = FALSE;
+	blendStateDesc.IndependentBlendEnable = FALSE;
+	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendStateDesc.RenderTarget[0].SrcBlend = src;
+	blendStateDesc.RenderTarget[0].DestBlend = dest;
+	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_DEST_ALPHA;
+	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	g_dev->CreateBlendState(&blendStateDesc, &g_pBlendState);
+	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
 }
 
 

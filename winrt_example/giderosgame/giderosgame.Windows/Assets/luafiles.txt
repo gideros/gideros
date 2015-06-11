@@ -1,2 +1,2 @@
-desert.lua
+bird.lua
 main.lua

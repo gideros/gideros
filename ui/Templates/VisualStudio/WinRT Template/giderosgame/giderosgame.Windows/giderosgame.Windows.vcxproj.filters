@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Common">
@@ -6,7 +6,7 @@
     </Filter>
     <Filter Include="Assets">
       <UniqueIdentifier>4c66aa92-b2c2-4b70-9365-c9bac236cfcc</UniqueIdentifier>
-      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png;lua;cso;mp3;wav;txt;bin</Extensions>
+      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png;lua;cso;mp3;wav;txt;bin;ttf</Extensions>
     </Filter>
     <Filter Include="Content">
       <UniqueIdentifier>915fca05-76ad-4f6f-952b-e8f562507971</UniqueIdentifier>
@@ -20,13 +20,37 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="giderosgame.Windows_TemporaryKey.pfx" />
-    <None Include="Assets\*">
+    <None Include="Assets\PixelShader.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\VertexShader.cso">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\properties.bin">
       <Filter>Assets</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\StoreLogo.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Logo.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SmallLogo.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Logo.scale-80.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Assets\luafiles.txt">
+      <Filter>Assets</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Plugins\bit.c">
@@ -35,5 +59,40 @@
     <ClCompile Include="Plugins\bit_stub.cpp">
       <Filter>Plugins</Filter>
     </ClCompile>
+    <ClCompile Include="Plugins\lsqlite3.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lsqlite3_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\sqlite3.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lfs.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lfs_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\fpconv.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lua_cjson.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\strbuf.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\lua_cjson_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Plugins\sqlite3.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\lfs.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
 #include <gtexture.h>
-
 #ifdef __APPLE__
 #include <TargetConditionals.h>
 #endif
@@ -12,44 +11,6 @@
 #ifdef QT_CORE_LIB
 #include <QtGlobal>
 #endif
-
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-#ifdef GIDEROS_GL1
-    #include <OpenGLES/ES1/gl.h>
-    #include <OpenGLES/ES1/glext.h>
-#else
-    #include <OpenGLES/ES2/gl.h>
-    #include <OpenGLES/ES2/glext.h>
-#endif
-    #define OPENGL_ES
-#elif __ANDROID__
-#ifdef GIDEROS_GL1
-    #include <GLES/gl.h>
-    #include <GLES/glext.h>
-#else
-    #include <GLES2/gl2.h>
-    #include <GLES2/gl2ext.h>
-#endif
-    #define OPENGL_ES
-#elif WINSTORE
-	#include "dxcompat.hpp"
-#else
-    #include <GL/glew.h>
-    #define OPENGL_DESKTOP
-#endif
-
-#ifdef OPENGL_ES
-#ifdef GIDEROS_GL1
-#define GL_FRAMEBUFFER GL_FRAMEBUFFER_OES
-#define GL_COLOR_ATTACHMENT0 GL_COLOR_ATTACHMENT0_OES
-#define GL_FRAMEBUFFER_BINDING GL_FRAMEBUFFER_BINDING_OES
-#define glGenFramebuffers glGenFramebuffersOES
-#define glDeleteFramebuffers glDeleteFramebuffersOES
-#define glBindFramebuffer glBindFramebufferOES
-#define glFramebufferTexture2D glFramebufferTexture2DOES
-#endif
-#endif
-
 
 #include <assert.h>
 #include <string.h>
@@ -65,68 +26,9 @@
 
 #include <algorithm>
 
-GLint oglBindFramebuffer(GLint fbo)
-{
-	GLint oldFBO=0;
-	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
-#ifdef OPENGL_DESKTOP
-        if (GLEW_ARB_framebuffer_object)
-#endif
-			glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-#ifdef OPENGL_DESKTOP
-		else
-			glBindFramebufferEXT(GL_FRAMEBUFFER, fbo);
-#endif
-        return oldFBO;
-}
-
-GLuint oglCreateTextureFBO(GLuint id)
-{
-    GLint oldFBO = 0;
-    GLuint fbo=0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
-#ifdef OPENGL_DESKTOP
-    if (GLEW_ARB_framebuffer_object)
-    {
-#endif
-
-        glGenFramebuffers(1, &fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
-
-#ifdef OPENGL_DESKTOP
-    }
-	else
-	{
-
-    glGenFramebuffersEXT(1, &fbo);
-    glBindFramebufferEXT(GL_FRAMEBUFFER, fbo);
-
-    glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, id, 0);
-
-    glBindFramebufferEXT(GL_FRAMEBUFFER, oldFBO);
-	}
-#endif
-    return fbo;
-}
-
-void oglDeleteFramebuffer(GLuint fbo)
-{
-#ifdef OPENGL_DESKTOP
-    if (GLEW_ARB_framebuffer_object)
-#endif
-    	glDeleteFramebuffers(1,&fbo);
-#ifdef OPENGL_DESKTOP
-	else
-		glDeleteFramebuffersEXT(1,&fbo);
-#endif
-}
-
 
 namespace g_private {
+static ShaderEngine *engine =NULL;
 
 struct CommonElement
 {
@@ -137,7 +39,7 @@ struct CommonElement
     int type;
     int wrap;
     int filter;
-    GLuint internalId;
+    ShaderTexture *_texture;
 };
 
 struct TextureElement : public CommonElement
@@ -150,7 +52,7 @@ struct TextureElement : public CommonElement
 
 struct RenderTargetElement : public CommonElement
 {
-    GLuint framebuffer;
+    ShaderBuffer *_framebuffer;
     size_t textureSize;
     std::vector<char> buffer;
     void *udata;
@@ -278,7 +180,7 @@ public:
 
                     bufferMemory_ -= element->buffer.size();
 
-                    glDeleteTextures(1, &element->internalId);
+                    delete element->_texture;
 
                     signatureMap_.erase(element->signature);
 
@@ -312,9 +214,9 @@ public:
 
                 glog_v("Deleting render target. Total memory is %g KB.", (bufferMemory_ + textureMemory_) / 1024.0);
 
-                oglDeleteFramebuffer(element->framebuffer);
+                delete element->_framebuffer;
 
-                glDeleteTextures(1, &element->internalId);
+                delete element->_texture;
 
                 delete element;
 
@@ -331,20 +233,20 @@ public:
     {
     }
 
-    GLuint getInternalId(g_id id)
+    ShaderTexture *getInternalTexture(g_id id)
     {
         {
             std::map<g_id, TextureElement*>::iterator iter = textureElements_.find(id);
 
             if (iter != textureElements_.end())
-                return iter->second->internalId;
+                return iter->second->_texture;
         }
 
         {
             std::map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(id);
 
             if (iter != renderTargetElements_.end())
-                return iter->second->internalId;
+                return iter->second->_texture;
         }
 
         return 0;
@@ -418,9 +320,6 @@ public:
         if (renderTargetElements_.empty())
             return;
 
-        GLint oldFBO = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
-
         std::map<g_id, RenderTargetElement*>::iterator iter, e = renderTargetElements_.end();
         for (iter = renderTargetElements_.begin(); iter != e; ++iter)
         {
@@ -433,13 +332,9 @@ public:
             std::vector<char>().swap(element->buffer);
             genAndUploadTexture(element, &uncompressed[0]);
 
-            glGenFramebuffers(1, &element->framebuffer);
-            glBindFramebuffer(GL_FRAMEBUFFER, element->framebuffer);
-
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, element->internalId, 0);
+            element->_framebuffer=engine->createRenderTarget(element->_texture);
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
     }
 
     g_id reuse(int format, int type,
@@ -513,7 +408,7 @@ public:
         
         glog_v("Creating render target. Total memory is %g KB.", (bufferMemory_ + textureMemory_) / 1024.0);
 
-        element->framebuffer=oglCreateTextureFBO(element->internalId);
+        element->_framebuffer=engine->createRenderTarget(element->_texture);
 
         renderTargetElements_[nextid_] = element;
 
@@ -521,14 +416,14 @@ public:
     }
 
 
-    GLuint RenderTargetGetFBO(g_id renderTarget)
+    ShaderBuffer *RenderTargetGetFBO(g_id renderTarget)
     {
         std::map<g_id, RenderTargetElement*>::iterator iter = renderTargetElements_.find(renderTarget);
 
         if (iter == renderTargetElements_.end())
             return 0;
 
-        return iter->second->framebuffer;
+        return iter->second->_framebuffer;
     }
 
     void SaveRenderTargets()
@@ -540,17 +435,13 @@ public:
         for (iter = renderTargetElements_.begin(); iter != e; ++iter)
         {
             RenderTargetElement *element = iter->second;
-            GLint oldFBO=oglBindFramebuffer(element->framebuffer);
-            glPixelStorei(GL_PACK_ALIGNMENT, 1);
             element->buffer.resize(element->width * element->height * 4);
-            glReadPixels(0, 0, element->width, element->height, GL_RGBA, GL_UNSIGNED_BYTE, &element->buffer[0]);
+            element->_framebuffer->readPixels(0, 0, element->width, element->height, ShaderTexture::FMT_RGBA, ShaderTexture::PK_UBYTE, &element->buffer[0]);
             size_t output_length = snappy_max_compressed_length(element->buffer.size());
             std::vector<char> compressed(output_length);
             snappy_compress(&element->buffer[0], element->buffer.size(), &compressed[0], &output_length);
             compressed.resize(output_length);
             element->buffer = compressed;
-            glPixelStorei(GL_PACK_ALIGNMENT, 4);
-            oglBindFramebuffer(oldFBO);
         }
 
     }
@@ -570,18 +461,10 @@ public:
             element->width = width;
             element->height = height;
 
-            GLint oldTex = 0;
-            glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTex);
 
-            glGenTextures(1, &element->name);
-            glBindTexture(GL_TEXTURE_2D, element->name);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-            glBindTexture(GL_TEXTURE_2D, oldTex);
+            element->name=engine->createTexture(ShaderTexture::FMT_RGBA,ShaderTexture::PK_UBYTE,
+            		element->width,element->height,NULL,
+            		ShaderTexture::WRAP_CLAMP,ShaderTexture::FILT_NEAREST);
 
             tempTextureElements_[nextid_] = element;
         }
@@ -605,14 +488,14 @@ public:
 
         if (--element->refcount == 0)
         {
-            glDeleteTextures(1, &element->name);
+            delete element->name;
             delete element;
         }
 
         tempTextureElements_.erase(iter);
     }
 
-    GLuint TempTextureGetName(g_id id)
+    ShaderTexture *TempTextureGetName(g_id id)
     {
         std::map<g_id, TempTextureElement*>::iterator iter = tempTextureElements_.find(id);
         if (iter == tempTextureElements_.end())
@@ -626,14 +509,11 @@ public:
         int refcount;
         int width;
         int height;
-        GLuint name;
+        ShaderTexture *name;
     };
 
     void RestoreTempTextures()
     {
-        GLint oldTex = 0;
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTex);
-
         std::set<TempTextureElement*> tempTextureElements;
         std::map<g_id, TempTextureElement*>::iterator iter2, e2 = tempTextureElements_.end();
         for (iter2 = tempTextureElements_.begin(); iter2 != e2; ++iter2)
@@ -644,16 +524,10 @@ public:
         {
             TempTextureElement *element = *iter;
 
-            glGenTextures(1, &element->name);
-            glBindTexture(GL_TEXTURE_2D, element->name);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, element->width, element->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+            element->name=engine->createTexture(ShaderTexture::FMT_RGBA,ShaderTexture::PK_UBYTE,
+            		element->width,element->height,NULL,
+            		ShaderTexture::WRAP_CLAMP,ShaderTexture::FILT_NEAREST);
         }
-
-        glBindTexture(GL_TEXTURE_2D, oldTex);
     }
 
 private:
@@ -662,74 +536,49 @@ private:
 private:
     void genAndUploadTexture(CommonElement *element, const void *pixels)
     {
-        GLenum format;
+        ShaderTexture::Format format;
         switch (element->format)
         {
         case GTEXTURE_ALPHA:
-            format = GL_ALPHA;
+            format = ShaderTexture::FMT_ALPHA;
             break;
         case GTEXTURE_RGB:
-            format = GL_RGB;
+            format = ShaderTexture::FMT_RGB;
             break;
         case GTEXTURE_RGBA:
-            format = GL_RGBA;
+            format = ShaderTexture::FMT_RGBA;
             break;
         case GTEXTURE_LUMINANCE:
-            format = GL_LUMINANCE;
+            format = ShaderTexture::FMT_Y;
             break;
         case GTEXTURE_LUMINANCE_ALPHA:
-            format = GL_LUMINANCE_ALPHA;
+            format = ShaderTexture::FMT_YA;
             break;
         }
 
-        GLenum type;
+        ShaderTexture::Packing type;
         switch (element->type)
         {
         case GTEXTURE_UNSIGNED_BYTE:
-            type = GL_UNSIGNED_BYTE;
+            type = ShaderTexture::PK_UBYTE;
             break;
         case GTEXTURE_UNSIGNED_SHORT_5_6_5:
-            type = GL_UNSIGNED_SHORT_5_6_5;
+            type = ShaderTexture::PK_USHORT_565;
             break;
         case GTEXTURE_UNSIGNED_SHORT_4_4_4_4:
-            type = GL_UNSIGNED_SHORT_4_4_4_4;
+            type = ShaderTexture::PK_USHORT_4444;
             break;
         case GTEXTURE_UNSIGNED_SHORT_5_5_5_1:
-            type = GL_UNSIGNED_SHORT_5_5_5_1;
+            type = ShaderTexture::PK_USHORT_5551;
             break;
         }
-
-        GLint oldTex = 0;
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTex);
-
-        glGenTextures(1, &element->internalId);
-        glBindTexture(GL_TEXTURE_2D, element->internalId);
-        switch (element->wrap)
-        {
-        case GTEXTURE_CLAMP:
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            break;
-        case GTEXTURE_REPEAT:
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            break;
-        }
-        switch (element->filter)
-        {
-        case GTEXTURE_NEAREST:
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            break;
-        case GTEXTURE_LINEAR:
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            break;
-        }
-
-        glTexImage2D(GL_TEXTURE_2D, 0, format, element->width, element->height, 0, format, type, pixels);
-
-        glBindTexture(GL_TEXTURE_2D, oldTex);
+        ShaderTexture::Wrap wrap=ShaderTexture::WRAP_CLAMP;
+        if (element->wrap==GTEXTURE_REPEAT)
+        	wrap=ShaderTexture::WRAP_REPEAT;
+        ShaderTexture::Filtering filtering=ShaderTexture::FILT_LINEAR;
+        if (element->filter==GTEXTURE_NEAREST)
+        	filtering=ShaderTexture::FILT_NEAREST;
+        element->_texture=engine->createTexture(format,type,element->width, element->height,pixels,wrap,filtering);
     }
 
 private:
@@ -749,6 +598,11 @@ using namespace g_private;
 static TextureManager *s_manager = NULL;
 
 extern "C" {
+
+void gtexture_set_engine(ShaderEngine *e)
+{
+	engine=e;
+}
 
 void gtexture_init()
 {
@@ -779,9 +633,9 @@ g_bool gtexture_delete(g_id id)
     return s_manager->deleteTexture(id);
 }
 
-unsigned int gtexture_getInternalId(g_id id)
+ShaderTexture *gtexture_getInternalTexture(g_id id)
 {
-    return s_manager->getInternalId(id);
+    return s_manager->getInternalTexture(id);
 }
 
 void gtexture_setUserData(g_id id, void *udata)
@@ -829,7 +683,7 @@ g_id gtexture_RenderTargetCreate(int width, int height,
     return s_manager->RenderTargetCreate(width, height, wrap, filter);
 }
 
-unsigned int gtexture_RenderTargetGetFBO(g_id renderTarget)
+ShaderBuffer *gtexture_RenderTargetGetFBO(g_id renderTarget)
 {
     return s_manager->RenderTargetGetFBO(renderTarget);
 }
@@ -854,7 +708,7 @@ void gtexture_TempTextureDelete(g_id id)
     s_manager->TempTextureDelete(id);
 }
 
-unsigned int gtexture_TempTextureGetName(g_id id)
+ShaderTexture *gtexture_TempTextureGetName(g_id id)
 {
     return s_manager->TempTextureGetName(id);
 }
@@ -864,9 +718,9 @@ void gtexture_RestoreTempTextures()
     s_manager->RestoreTempTextures();
 }
 
-unsigned int gtexture_BindRenderTarget(unsigned int fbo)
+ShaderBuffer *gtexture_BindRenderTarget(ShaderBuffer *fbo)
 {
-	return oglBindFramebuffer(fbo);
+	return engine->setFramebuffer(fbo);
 }
 
 }

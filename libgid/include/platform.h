@@ -179,7 +179,7 @@ void setWindowSize(int width, int height);
 void setFullScreen(bool fullScreen);
 std::string getDeviceName();
 
-void vibrate();
+void vibrate(int ms);
 std::string getLocale();
 std::string getLanguage();
 void setKeepAwake(bool awake);

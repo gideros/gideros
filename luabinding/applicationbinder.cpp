@@ -180,7 +180,11 @@ int ApplicationBinder::vibrate(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	::vibrate();
+    int ms = 100;
+    if(!lua_isnoneornil(L,2))
+        ms = lua_tonumber(L, 2);
+
+    ::vibrate(ms);
 
 	return 0;
 }
@@ -537,7 +541,7 @@ int ApplicationBinder::setFps(lua_State* L)
 
     int fps = luaL_checkinteger(L, 2);
 
-    if (fps != 30 && fps != 60)
+    if (fps != 30 && fps != 60 && fps !=0)
     {
         GStatus status(2008, "fps");	// Parameter %s must be one of the accepted values.
         return luaL_error(L, status.errorString());

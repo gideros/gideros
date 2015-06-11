@@ -40,7 +40,7 @@ INCLUDEPATHS = \
 -I..\2dsg \
 -I..\libgid\include
 
-CXXFLAGS = -O2 -std=c++11 $(INCLUDEPATHS)
+CXXFLAGS = -O2 -fno-keep-inline-dllexport $(INCLUDEPATHS)
 
 #-DPTW32_STATIC_LIB \
 #-DOPT_GENERIC \
@@ -59,7 +59,7 @@ links = ..\libgid\external\freetype-2.4.12\build\mingw48_32\libfreetype.a \
 -L"../libgvfs/release" -lgvfs \
 -L"../lua/release" -llua \
 -L"../libgideros/release" -lgideros \
--L"../libpystring/release" -lpystring
+-L"../libpystring/release" -lpystring libgid.dll -lopengl32
 
 objfiles = win32.o \
 accelerometerbinder.o         alertdialogbinder.o \
@@ -148,30 +148,7 @@ ttbmfont.o \
 ttfont.o                      ttfontbinder.o \
 tttextfield.o \
 urlloaderbinder.o             urlrequest.o \
-utf8.o                        zlibbinder.o \
-gapplication-win32.o \
-gaudio-win32.o \
-ggeolocation-win32.o \
-ghttp-win32.o \
-ginput-win32.o \
-gui-win32.o \
-platform-win32.o \
-drawinfo.o \
-gaudio-loader-mp3.o \
-gaudio-loader-wav.o \
-gaudio-sample-openal.o \
-gaudio-stream-openal.o \
-gaudio.o \
-gevent.o \
-gglobal.o \
-gimage-jpg.o \
-gimage-png.o \
-gimage.o \
-glog.o \
-gtexture.o \
-gtimer.o \
-gvfs-native.o \
-platformutil.o
+utf8.o                        zlibbinder.o
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<

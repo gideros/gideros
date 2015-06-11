@@ -7,6 +7,9 @@
 
 #include "logo.inc"
 
+#undef min
+#undef max
+
 static Dib logo2dib(Application* application, unsigned char* logo, size_t logoSize, int width, int height)
 {
 	uLong imageLen = width * height * 4;
