@@ -28,6 +28,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include "glog.h"
 
 #ifdef _WIN32
 #define strcasecmp stricmp
@@ -70,17 +71,20 @@ static int s_open(const char *pathname, int flags)
     else
     {
     	pathname = gpath_normalizeArchivePath(pathname);
+    	glog_d("Looking for %s in archive %s",pathname,s_zipFile.c_str());
 
         std::map<std::string, FileInfo>::iterator iter;
         iter = s_files.find(pathname);
 
         if (iter == s_files.end())
         {
+        	glog_d("%s Not found in archive",pathname);
             errno = ENOENT;
             return -1;
         }
 
         fd = ::open(s_zipFile.c_str(), flags, 0755);
+    	glog_d("%s: fd is %d",pathname,fd);
 
         ::lseek(fd, iter->second.startOffset, SEEK_SET);
 
@@ -224,7 +228,7 @@ static size_t s_read(int fd, void* buf, size_t count)
 
     size_t size;
 
-    char *key;
+    char *key=NULL;
     switch (iter->second.encrypt)
     {
     case 0:
@@ -305,6 +309,7 @@ void gvfs_setAssetsKey(const char key[256])
 void gvfs_setZipFile(const char *archiveFile)
 {
 	s_zipFile=archiveFile;
+	s_files.clear();
 }
 
 void gvfs_addFile(const char *pathname, int zipFile, size_t startOffset, size_t length)

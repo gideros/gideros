@@ -19,7 +19,8 @@ public:
 	  e_Android,
       e_WindowsDesktop,
       e_MacOSXDesktop,
-	  e_WinRT
+	  e_WinRT,
+	  e_GApp
 	};
 
     explicit ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent = 0);

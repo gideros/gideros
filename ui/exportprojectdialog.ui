@@ -62,6 +62,11 @@ target platform to export the application source.</string>
          <string>WinRT</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>GApp</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item>
@@ -85,7 +90,7 @@ target platform to export the application source.</string>
       <string>Choose your platform here.</string>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -256,6 +261,27 @@ A universal solution is created containing a Windows Phone and Windows Store pro
         </spacer>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab_5">
+      <attribute name="title">
+       <string>GApp</string>
+      </attribute>
+      <widget class="QLabel" name="label_7">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>518</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>(ALPHA) Generate a single .GApp file playable by QT-Based desktop players.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>
