@@ -20,6 +20,7 @@
 #include "pch.h"
 #include <gstdio.h>
 #include <io.h>
+#include "D3Dcompiler.h"
 using namespace Microsoft::WRL;
 
 ShaderProgram *dx11ShaderProgram::current = NULL;
@@ -122,7 +123,7 @@ void dx11ShaderProgram::setConstant(int index, ConstantType type,
 	}
 }
 
-dx11ShaderProgram::dx11ShaderProgram(void *vshader,int vshadersz,void *pshader,int pshadersz,
+dx11ShaderProgram::dx11ShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
                  const ConstantDesc *uniforms, const DataDesc *attributes)
 {
 	buildShaderProgram(vshader,vshadersz,pshader,pshadersz,uniforms,attributes);
@@ -132,15 +133,43 @@ dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	long VSLen, PSLen;
 	void *VSFile = LoadShaderFile(vshader, "cso", &VSLen);
+	if (!VSFile)
+	{
+		void *src = LoadShaderFile(vshader, "hlsl", &VSLen);
+		ID3DBlob *pCode;
+		ID3DBlob *pError;
+		D3DCompile(src, VSLen, vshader, NULL, NULL, "VShader", "vs_4_0_level_9_3", 0, 0, &pCode, &pError);
+		if (pError)
+			pError->Release();
+		VSLen = pCode->GetBufferSize();
+		VSFile = malloc(VSLen);
+		memcpy(VSFile, pCode->GetBufferPointer(), VSLen);
+		pCode->Release();
+	}
 	void *PSFile = LoadShaderFile(pshader, "cso", &PSLen);
+	if (!PSFile)
+	{
+		void *src = LoadShaderFile(pshader, "hlsl", &PSLen);
+		ID3DBlob *pCode;
+		ID3DBlob *pError;
+		D3DCompile(src, VSLen, pshader, NULL, NULL, "PShader", "ps_4_0_level_9_3", 0, 0, &pCode, &pError);
+		if (pError)
+			pError->Release();
+		PSLen = pCode->GetBufferSize();
+		PSFile = malloc(PSLen);
+		memcpy(PSFile, pCode->GetBufferPointer(), PSLen);
+		pCode->Release();
+	}
 	buildShaderProgram(VSFile,VSLen,PSFile,PSLen,uniforms,attributes);
+	free(VSFile);
+	free(PSFile);
 }
 
-void dx11ShaderProgram::buildShaderProgram(void *vshader,int vshadersz,void *pshader,int pshadersz,
+void dx11ShaderProgram::buildShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
                      const ConstantDesc *uniforms, const DataDesc *attributes)
 {
-	g_dev->CreateVertexShader(VSFile, VSLen, NULL, &g_pVS);
-	g_dev->CreatePixelShader(PSFile, PSLen, NULL, &g_pPS);
+	g_dev->CreateVertexShader(vshader,vshadersz, NULL, &g_pVS);
+	g_dev->CreatePixelShader(pshader,pshadersz, NULL, &g_pPS);
 
 	g_devcon->VSSetShader(g_pVS, 0, 0);
 	g_devcon->PSSetShader(g_pPS, 0, 0);
@@ -264,9 +293,7 @@ void dx11ShaderProgram::buildShaderProgram(void *vshader,int vshadersz,void *psh
 			nie++;
 		this->attributes.push_back(*(attributes++));
 	}
-	g_dev->CreateInputLayout(ied, nie, VSFile, VSLen, &g_pLayout);
-	free(VSFile);
-	free(PSFile);
+	g_dev->CreateInputLayout(ied, nie, vshader, vshadersz, &g_pLayout);
 }
 
 dx11ShaderProgram::~dx11ShaderProgram() {

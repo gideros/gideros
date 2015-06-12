@@ -10,6 +10,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include <unistd.h>
 
 /* Replace . with _ */
 char*

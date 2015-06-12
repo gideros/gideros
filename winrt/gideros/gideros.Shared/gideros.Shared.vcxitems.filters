@@ -974,6 +974,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderTexture.cpp">
       <Filter>gfxbackend</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\shaderbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">
@@ -1567,6 +1570,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11Shaders.h">
       <Filter>gfxbackend</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\shaderbinder.h">
+      <Filter>luabinding</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

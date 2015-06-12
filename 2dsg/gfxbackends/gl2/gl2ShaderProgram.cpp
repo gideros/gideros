@@ -11,6 +11,12 @@
 GLint ogl2ShaderProgram::curProg = -1;
 ShaderProgram *ogl2ShaderProgram::current = NULL;
 
+#ifdef OPENGL_ES
+const char *hdrShaderCode="#define GLES\n";
+#else
+const char *hdrShaderCode="";
+#endif
+
 GLuint ogl2LoadShader(GLuint type, const char *hdr, const char *code) {
 	GLuint shader = glCreateShader(type);
 	const char *lines[2] = { hdr, code };
@@ -153,7 +159,7 @@ ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader, const char *fshader,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	void *vs = LoadShaderFile(vshader, "glsl", NULL);
 	void *fs = LoadShaderFile(fshader, "glsl", NULL);
-	buildProgram((char *) vs, "", (char *) fs, "", uniforms, attributes);
+	buildProgram(hdrShaderCode,(char *) vs, hdrShaderCode, (char *) fs, uniforms, attributes);
 }
 
 ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader1, const char *vshader2,

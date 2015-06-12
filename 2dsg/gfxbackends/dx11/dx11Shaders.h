@@ -61,7 +61,7 @@ protected:
     void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache);
     ID3D11Buffer *getGenericVBO(int index,int elmSize,int mult,int count);
     void updateConstants();
-    void buildShaderProgram(void *vshader,int vshadersz,void *pshader,int pshadersz,
+    void buildShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
 public:
     virtual void activate();
@@ -72,7 +72,7 @@ public:
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache);
     dx11ShaderProgram(const char *vshader,const char *pshader,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
-    dx11ShaderProgram(void *vshader,int vshadersz,void *pshader,int pshadersz,
+    dx11ShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
     virtual ~dx11ShaderProgram();
 };

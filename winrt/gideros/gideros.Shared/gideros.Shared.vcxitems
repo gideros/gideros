@@ -348,6 +348,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\movieclipbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\registermodules.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\rendertargetbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\shaderbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\shapebinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\spritebinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\stackchecker.cpp" />
@@ -550,6 +551,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\meshbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\movieclipbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\rendertargetbinder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\shaderbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\shapebinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\spritebinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\stackchecker.h" />
