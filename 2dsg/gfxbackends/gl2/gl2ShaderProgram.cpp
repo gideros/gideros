@@ -63,7 +63,9 @@ GLuint ogl2BuildProgram(GLuint vertexShader,GLuint fragmentShader)
 void ogl2ShaderProgram::deactivate()
 {
 	for(std::vector<GLint>::iterator it = attributes.begin(); it != attributes.end(); ++it) {
-		glDisableVertexAttribArray(*it);
+        GLint att=*it;
+        if (att>=0)
+            glDisableVertexAttribArray(*it);
 	}
     current=NULL;
 }
@@ -75,7 +77,9 @@ void ogl2ShaderProgram::activate()
 	if (current) current->deactivate();
     current=this;
 	for(std::vector<GLint>::iterator it = attributes.begin(); it != attributes.end(); ++it) {
-		glEnableVertexAttribArray(*it);
+        GLint att=*it;
+        if (att>=0)
+            glEnableVertexAttribArray(*it);
 	}
 
 }
@@ -183,7 +187,7 @@ ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader1,const char *vshader2,
     }
     cbData=malloc(cbsData);
     for (int iu=0;iu<this->uniforms.size();iu++)
-    	this->uniforms[iu]._localPtr=cbData+this->uniforms[iu].offset;
+    	this->uniforms[iu]._localPtr=((char *)cbData)+this->uniforms[iu].offset;
 
     while (*attributes)
         this->attributes.push_back(glGetAttribLocation(program, *(attributes++)));
@@ -191,6 +195,11 @@ ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader1,const char *vshader2,
 
 ogl2ShaderProgram::~ogl2ShaderProgram()
 {
+    if (curProg==program)
+    {
+        glUseProgram(0);
+        curProg=0;
+    }
     glDeleteProgram(program);
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);

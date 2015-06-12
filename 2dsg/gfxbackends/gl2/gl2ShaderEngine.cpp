@@ -242,10 +242,6 @@ ogl2ShaderEngine::~ogl2ShaderEngine()
 	if (currentBuffer)
 		setFramebuffer(NULL);
 
-#ifndef GIDEROS_GL1
-	glUseProgram(-1);
-#endif
-
     delete ShaderProgram::stdBasic;
     delete ShaderProgram::stdColor;
     delete ShaderProgram::stdTexture;
