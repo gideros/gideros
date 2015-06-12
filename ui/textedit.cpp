@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include <QApplication>
 #include <QFileInfo>
+#include <Qsci/qscilexercpp.h>
 #include <Qsci/qscilexerlua.h>
 #include <Qsci/qscilexerxml.h>
 #include <Qsci/qscilexer.h>
@@ -137,6 +138,10 @@ static QsciLexer* createLexerByExtension(QString ext)
 	else if (ext == "xml")
 	{
 		lexer = new QsciLexerXML;
+	}
+	else if ((ext == "hlsl") || (ext == "glsl") )
+	{
+		lexer = new QsciLexerCPP;
 	}
 
 	if (lexer)

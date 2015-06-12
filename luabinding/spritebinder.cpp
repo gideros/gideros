@@ -64,6 +64,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"getBounds", SpriteBinder::getBounds},
 		{"setBlendFunc", SpriteBinder::setBlendFunc},
 		{"clearBlendFunc", SpriteBinder::clearBlendFunc},
+		{"setShader", SpriteBinder::setShader},
+
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
 		{NULL, NULL},
@@ -1121,6 +1123,18 @@ int SpriteBinder::clearBlendFunc(lua_State* L)
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
 	sprite->clearBlendFunc();
+
+	return 0;
+}
+
+int SpriteBinder::setShader(lua_State* L)
+{
+	StackChecker checker(L, "SpriteBinder::setShader", 0);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+	ShaderProgram* shader = static_cast<ShaderProgram*>(binder.getInstance("Shader", 2));
+	sprite->setShader(shader);
 
 	return 0;
 }

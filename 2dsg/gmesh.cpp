@@ -272,6 +272,8 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
     	p=colors_.empty()?ShaderProgram::stdTexture:ShaderProgram::stdTextureColor;
     }
 
+	if (shader_)
+		p=shader_;
     p->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,mesh3d_?3:2, &vertices_[0],vertices_.size()/(mesh3d_?3:2),true,NULL);
 
     if (!colors_.empty())

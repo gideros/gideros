@@ -1042,7 +1042,7 @@ void MainWindow::onOpenRequest(const QString& itemName, const QString& fileName)
 {
 	QString suffix = QFileInfo(fileName).suffix().toLower();
 
-	if (suffix == "txt" || suffix == "lua")
+	if (suffix == "txt" || suffix == "lua" || suffix == "glsl" || suffix=="hlsl")
 		openFile(fileName);
 	else
 		QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));

@@ -3,7 +3,7 @@
 
 void Bitmap::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
-	graphicsBase_.draw();
+	graphicsBase_.draw(shader_);
 }
 
 void Bitmap::updateBounds()

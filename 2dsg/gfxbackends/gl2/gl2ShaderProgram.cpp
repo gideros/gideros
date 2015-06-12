@@ -51,6 +51,7 @@ GLuint ogl2BuildProgram(GLuint vertexShader, GLuint fragmentShader) {
 		glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
 		glog_i("GL Program log:%s\n", &infoLog[0]);
 	}
+	glog_i("Loaded program:%d\n", program);
 	return program;
 }
 
@@ -152,7 +153,7 @@ ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader, const char *fshader,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	void *vs = LoadShaderFile(vshader, "glsl", NULL);
 	void *fs = LoadShaderFile(fshader, "glsl", NULL);
-	buildProgram((char *) vs, NULL, (char *) fs, NULL, uniforms, attributes);
+	buildProgram((char *) vs, "", (char *) fs, "", uniforms, attributes);
 }
 
 ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader1, const char *vshader2,
@@ -164,6 +165,7 @@ ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader1, const char *vshader2,
 void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 		const char *fshader1, const char *fshader2,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
+	cbsData=0;
 	vertexShader = ogl2LoadShader(GL_VERTEX_SHADER, vshader1, vshader2);
 	fragmentShader = ogl2LoadShader(GL_FRAGMENT_SHADER, fshader1, fshader2);
 	program = ogl2BuildProgram(vertexShader, fragmentShader);
@@ -220,9 +222,12 @@ ogl2ShaderProgram::~ogl2ShaderProgram() {
 		glUseProgram(0);
 		curProg = 0;
 	}
-	glDeleteProgram(program);
+	glDetachShader(program, vertexShader);
+	glDetachShader(program, fragmentShader);
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	glDeleteProgram(program);
+	glog_i("Deleted program:%d\n", program);
 	free(cbData);
 }
 

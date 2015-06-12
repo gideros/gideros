@@ -127,7 +127,7 @@ void TTTextField::extraBounds(float* minx, float* miny, float* maxx, float* maxy
 
 void TTTextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
-	graphicsBase_.draw();
+	graphicsBase_.draw(shader_);
 }
 
 void TTTextField::setText(const char* text)

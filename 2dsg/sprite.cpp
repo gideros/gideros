@@ -31,6 +31,8 @@ Sprite::Sprite(Application* application) :
 	clipx_=-1;
 	clipw_=-1;
 	cliph_=-1;
+
+	shader_=NULL;
 }
 
 Sprite::~Sprite()
