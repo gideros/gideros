@@ -5,12 +5,34 @@
  *      Author: Nicolas
  */
 #include "Shaders.h"
+#include <stdlib.h>
 #include <string.h>
+#include <gstdio.h>
+
 ShaderProgram *ShaderProgram::stdBasic=NULL;
 ShaderProgram *ShaderProgram::stdColor=NULL;
 ShaderProgram *ShaderProgram::stdTexture=NULL;
 ShaderProgram *ShaderProgram::stdTextureColor=NULL;
 ShaderEngine *ShaderEngine::Engine=NULL;
+
+void *ShaderProgram::LoadShaderFile(const char *fname, const char *ext, long *len) {
+	char name[256];
+	sprintf(name, "%s.%s", fname,ext);
+	G_FILE *f = g_fopen(name, "r");
+	if (f) {
+		g_fseek(f, 0, SEEK_END);
+		long sz = g_ftell(f);
+		if (len)
+			*len = sz;
+		void *fdata = malloc(sz+1);
+		((char *)fdata)[sz]=0; //NUL TERMINATE
+		g_fseek(f, 0, SEEK_SET);
+		g_fread(fdata, 1, sz, f);
+		g_fclose(f);
+		return fdata;
+	}
+	return NULL;
+}
 
 bool ShaderProgram::updateConstant(int index,ShaderProgram::ConstantType type,const void *ptr)
 {

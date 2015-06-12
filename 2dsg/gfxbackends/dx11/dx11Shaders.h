@@ -61,6 +61,8 @@ protected:
     void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache);
     ID3D11Buffer *getGenericVBO(int index,int elmSize,int mult,int count);
     void updateConstants();
+    void buildShaderProgram(void *vshader,int vshadersz,void *pshader,int pshadersz,
+                     const ConstantDesc *uniforms, const DataDesc *attributes);
 public:
     virtual void activate();
     virtual void deactivate();
@@ -69,6 +71,8 @@ public:
     virtual void drawArrays(ShapeType shape, int first, unsigned int count);
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache);
     dx11ShaderProgram(const char *vshader,const char *pshader,
+                     const ConstantDesc *uniforms, const DataDesc *attributes);
+    dx11ShaderProgram(void *vshader,int vshadersz,void *pshader,int pshadersz,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
     virtual ~dx11ShaderProgram();
 };
@@ -132,6 +136,7 @@ public:
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	ShaderBuffer *createRenderTarget(ShaderTexture *texture);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
+	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
 	void setViewport(int x,int y,int width,int height);
 	void setProjection(const Matrix4 p);
 	void setModel(const Matrix4 m);

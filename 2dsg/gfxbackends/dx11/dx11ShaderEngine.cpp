@@ -10,6 +10,8 @@
 #include "glog.h"
 #include "ogl.h"
 
+#include "dx11_shaders.c"
+
 #ifdef WINSTORE
 ComPtr<ID3D11Device1> g_dev;                     // the pointer to our Direct3D device interface (11.1)
 ComPtr<ID3D11DeviceContext1> g_devcon;           // the pointer to our Direct3D device context (11.1)
@@ -17,6 +19,11 @@ ComPtr<ID3D11DeviceContext1> g_devcon;           // the pointer to our Direct3D 
 ID3D11Device *g_dev;                     // the pointer to our Direct3D device interface
 ID3D11DeviceContext *g_devcon;           // the pointer to our Direct3D device context
 #endif
+
+ShaderProgram *dx11ShaderEngine::createShaderProgram(const char *vshader,const char *pshader, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)
+{
+	return new dx11ShaderProgram(vshader,pshader,uniforms,attributes);
+}
 
 void dx11ShaderEngine::reset()
 {
@@ -66,10 +73,10 @@ void dx11SetupShaders()
 		NULL
 	};
 
-    ShaderProgram::stdBasic = new dx11ShaderProgram("vBasic","pBasic",stdConstants,stdBAttributes);
-    ShaderProgram::stdColor = new dx11ShaderProgram("vColor","pColor",stdConstants,stdCAttributes);
-    ShaderProgram::stdTexture = new dx11ShaderProgram("vTexture","pTexture",stdConstants,stdTAttributes);
-    ShaderProgram::stdTextureColor = new dx11ShaderProgram("vTextureColor","pTextureColor",stdConstants,stdTCAttributes);
+    ShaderProgram::stdBasic = new dx11ShaderProgram(vBasic_cso,sizeof(vBasic_cso),pBasic_cso,sizeof(pBasic_cso),stdConstants,stdBAttributes);
+    ShaderProgram::stdColor = new dx11ShaderProgram(vColor_cso,sizeof(vColor_cso),pColor_cso,sizeof(pColor_cso),stdConstants,stdCAttributes);
+    ShaderProgram::stdTexture = new dx11ShaderProgram(vTexture_cso,sizeof(vTexture_cso),pTexture_cso,sizeof(pTexture_cso),stdConstants,stdTAttributes);
+    ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso,sizeof(vTextureColor_cso),pTextureColor_cso,sizeof(pTextureColor_cso),stdConstants,stdTCAttributes);
 }
 
 ID3D11Texture2D* dx11ShaderEngine::pBackBuffer=NULL;

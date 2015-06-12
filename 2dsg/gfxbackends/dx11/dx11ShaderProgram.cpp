@@ -24,37 +24,6 @@ using namespace Microsoft::WRL;
 
 ShaderProgram *dx11ShaderProgram::current = NULL;
 
-void *LoadShaderFile(const char *fname, long *len) {
-	char name[256];
-	sprintf(name, "%s.cso", fname);
-	G_FILE *f = g_fopen(name, "r");
-	if (f) {
-		g_fseek(f, 0, SEEK_END);
-		long sz = g_ftell(f);
-		if (len)
-			*len = sz;
-		void *fdata = malloc(sz);
-		g_fseek(f, 0, SEEK_SET);
-		g_fread(fdata, 1, sz, f);
-		g_fclose(f);
-		return fdata;
-	}
-	sprintf(name, "Assets/%s.cso", fname);
-	int fd = open(name, 0);
-	if (fd >= 0) {
-		lseek(fd, 0, SEEK_END);
-		long sz = tell(fd);
-		if (len)
-			*len = sz;
-		void *fdata = malloc(sz);
-		lseek(fd, 0, SEEK_SET);
-		read(fd, fdata, sz);
-		close(fd);
-		return fdata;
-	}
-	return NULL;
-}
-
 void dx11ShaderProgram::deactivate() {
 	current = NULL;
 }
@@ -153,12 +122,23 @@ void dx11ShaderProgram::setConstant(int index, ConstantType type,
 	}
 }
 
+dx11ShaderProgram::dx11ShaderProgram(void *vshader,int vshadersz,void *pshader,int pshadersz,
+                 const ConstantDesc *uniforms, const DataDesc *attributes)
+{
+	buildShaderProgram(vshader,vshadersz,pshader,pshadersz,uniforms,attributes);
+}
+
 dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	long VSLen, PSLen;
-	void *VSFile = LoadShaderFile(vshader, &VSLen);
-	void *PSFile = LoadShaderFile(pshader, &PSLen);
+	void *VSFile = LoadShaderFile(vshader, "cso", &VSLen);
+	void *PSFile = LoadShaderFile(pshader, "cso", &PSLen);
+	buildShaderProgram(VSFile,VSLen,PSFile,PSLen,uniforms,attributes);
+}
 
+void dx11ShaderProgram::buildShaderProgram(void *vshader,int vshadersz,void *pshader,int pshadersz,
+                     const ConstantDesc *uniforms, const DataDesc *attributes)
+{
 	g_dev->CreateVertexShader(VSFile, VSLen, NULL, &g_pVS);
 	g_dev->CreatePixelShader(PSFile, PSLen, NULL, &g_pPS);
 

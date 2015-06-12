@@ -72,6 +72,9 @@ class ogl2ShaderProgram : public ShaderProgram
     int cbsData;
     static GLint curProg;
     static ShaderProgram *current;
+    void buildProgram(const char *vshader1,const char *vshader2,
+                     const char *fshader1, const char *fshader2,
+					 const ConstantDesc *uniforms, const DataDesc *attributes);
 public:
     virtual void activate();
     virtual void deactivate();
@@ -82,7 +85,9 @@ public:
 
     ogl2ShaderProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
-					 const ConstantDesc *uniforms, const char **attributes);
+					 const ConstantDesc *uniforms, const DataDesc *attributes);
+    ogl2ShaderProgram(const char *vshader,const char *fshader,
+					 const ConstantDesc *uniforms, const DataDesc *attributes);
     virtual ~ogl2ShaderProgram();
     void useProgram();
 };
@@ -136,6 +141,7 @@ public:
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	ShaderBuffer *createRenderTarget(ShaderTexture *texture);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
+	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
 	void setViewport(int x,int y,int width,int height);
 	void setProjection(const Matrix4 p);
 	void setModel(const Matrix4 m);
