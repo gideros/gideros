@@ -41,13 +41,14 @@ stage:addChild(bird3)
 stage:addChild(bird4)
 
 local quitDialog=AlertDialog.new("Quit?", "Would you like to give up?","Yes","No")
+local badDialog=AlertDialog.new("Really?","Well gee whiz","Cancel","Replace","Delete")
 
 local function onComplete(event)
-print(event.buttonIndex, event.buttonText)
+  print(event.buttonIndex, event.buttonText)
 end
 
-quitDialog:addEventListener(Event.COMPLETE, onComplete)
+badDialog:addEventListener(Event.COMPLETE, onComplete)
 
-stage:addEventListener(Event.MOUSE_DOWN, function() quitDialog:show() end)
+stage:addEventListener(Event.MOUSE_DOWN, function() badDialog:show() end)
 
 stage:addEventListener(Event.KEY_DOWN, function(event) print(event.keyCode) end)

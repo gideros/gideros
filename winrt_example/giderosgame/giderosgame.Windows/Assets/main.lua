@@ -41,12 +41,19 @@ stage:addChild(bird3)
 stage:addChild(bird4)
 
 local alertDialog = AlertDialog.new("Error: not found", "Try reinstalling all software", "Cancel","OK", "No Way!")
+local alertDialog2 = AlertDialog.new("Error", "Should the UK be a member of the EU", "Cancel", "Yes", "NOOOOOOOOO")
 
 local function onComplete(event)
-print(event.buttonIndex, event.buttonText)
+  print(event.buttonIndex, event.buttonText)
 end
 
-alertDialog:addEventListener(Event.COMPLETE, onComplete)
+local function onComplete2(event)
+  print("Number 2:", event.buttonIndex, event.buttonText)
+end
 
-stage:addEventListener(Event.KEY_DOWN, function() alertDialog:show() end)
+
+alertDialog:addEventListener(Event.COMPLETE, onComplete)
+alertDialog2:addEventListener(Event.COMPLETE, onComplete2)
+
+stage:addEventListener(Event.KEY_DOWN, function() alertDialog2:show() end)
 

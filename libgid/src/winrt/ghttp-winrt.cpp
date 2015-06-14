@@ -20,11 +20,11 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
 {
 //    return s_manager->Get(url, header, callback, udata);
 
-	HttpClient ^client = ref new HttpClient();
-	Uri ^uri = ref new Uri("http://example.com/datalist.aspx");
+//	HttpClient ^client = ref new HttpClient();
+//	Uri ^uri = ref new Uri("http://example.com/datalist.aspx");
 
-	auto obj = client->GetAsync(uri);
-	obj->GetResults();
+//	auto obj = client->GetAsync(uri);
+//	obj->GetResults();
 
 	return 0;
 }
