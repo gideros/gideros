@@ -55,6 +55,8 @@ public:
     virtual void setConstant(int index,ConstantType type,const void *ptr)=0;
     virtual void drawArrays(ShapeType shape, int first, unsigned int count)=0;
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache)=0;
+    virtual bool isValid()=0;
+    virtual const char *compilationLog()=0;
     virtual ~ShaderProgram() { };
 protected:
     std::vector<ConstantDesc> uniforms;

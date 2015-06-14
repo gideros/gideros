@@ -49,6 +49,7 @@ class dx11ShaderProgram : public ShaderProgram
 	ID3D11Buffer *g_CBP, *g_CBV;                        // Constant buffer: pass settings like whether to use textures or not
 protected:
     std::vector<DataDesc> attributes;
+    std::string errorLog;
     static ShaderProgram *current;
     void *cbpData;
     void *cbvData;
@@ -70,6 +71,8 @@ public:
     virtual void setConstant(int index,ConstantType type,const void *ptr);
     virtual void drawArrays(ShapeType shape, int first, unsigned int count);
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache);
+    virtual bool isValid();
+    virtual const char *compilationLog();
     dx11ShaderProgram(const char *vshader,const char *pshader,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
     dx11ShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,

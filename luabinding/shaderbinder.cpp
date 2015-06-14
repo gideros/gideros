@@ -9,7 +9,8 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	Binder binder(L);
 
 	static const luaL_Reg functionList[] = {
-        {"setConstant", setConstant},
+	        {"setConstant", setConstant},
+	        {"isValid", isValid},
         {NULL, NULL},
 	};
 
@@ -99,6 +100,11 @@ int ShaderBinder::create(lua_State* L)
 	constants.push_back(clast);
 	datas.push_back(dlast);
     ShaderProgram *shader=ShaderEngine::Engine->createShaderProgram(vs,ps,&(constants[0]),&(datas[0]));
+    if (!shader->isValid())
+    {
+    	lua_pushstring(L,shader->compilationLog());
+    	lua_error(L);
+    }
     binder.pushInstance("Shader", shader);
 	return 1;
 }
@@ -119,12 +125,86 @@ int ShaderBinder::setConstant(lua_State* L)
 	Binder binder(L);
 
 	ShaderProgram* shd = static_cast<ShaderProgram*>(binder.getInstance("Shader", 1));
-/* TODO
-	lua_Number x = luaL_checknumber(L, 2);
-	lua_Number y = luaL_checknumber(L, 3);
 
-	bitmap->setAnchorPoint(x, y);
-	*/
+   // virtual void setConstant(int index,ConstantType type,const void *ptr);
+
+	int idx = luaL_checknumber(L, 2);
+	ShaderProgram::ConstantType type = (ShaderProgram::ConstantType) luaL_checkinteger(L, 3);
+	switch (type)
+	{
+	case ShaderProgram::CFLOAT:
+	{
+		float v=luaL_checknumber(L,4);
+		shd->setConstant(idx,type,&v);
+		break;
+	}
+	case ShaderProgram::CFLOAT4:
+	{
+		float vec[4];
+		if (lua_istable(L,4))
+		{
+	        lua_rawgeti(L, 4, 1);
+	        lua_rawgeti(L, 4, 2);
+	        lua_rawgeti(L, 4, 3);
+	        lua_rawgeti(L, 4, 4);
+			vec[0]=luaL_checknumber(L,-4);
+			vec[1]=luaL_checknumber(L,-3);
+			vec[2]=luaL_checknumber(L,-2);
+			vec[3]=luaL_checknumber(L,-1);
+			lua_pop(L,4);
+		}
+		else
+		{
+			vec[0]=luaL_checknumber(L,4);
+			vec[1]=luaL_checknumber(L,5);
+			vec[2]=luaL_checknumber(L,6);
+			vec[3]=luaL_checknumber(L,7);
+		}
+		shd->setConstant(idx,type,vec);
+		break;
+	}
+	case ShaderProgram::CINT:
+	{
+		int v=luaL_checkinteger(L,4);
+		shd->setConstant(idx,type,&v);
+		break;
+	}
+	case ShaderProgram::CMATRIX:
+	{
+		float m[16];
+		if (lua_istable(L,4))
+		{
+			for (int k=0;k<16;k++)
+			{
+				lua_rawgeti(L, 4, k+1);
+				m[k]=luaL_checknumber(L,-1);
+				lua_pop(L,1);
+			}
+		}
+		else
+		{
+			for (int k=0;k<16;k++)
+				m[k]=luaL_checknumber(L,4+k);
+		}
+		shd->setConstant(idx,type,m);
+		break;
+	}
+	case ShaderProgram::CTEXTURE:
+		break;
+	}
 
 	return 0;
+}
+
+int ShaderBinder::isValid(lua_State* L)
+{
+	StackChecker checker(L, "ShaderBinder::isValid", 2);
+
+	Binder binder(L);
+
+	ShaderProgram* shd = static_cast<ShaderProgram*>(binder.getInstance("Shader", 1));
+	lua_pushboolean(L,shd->isValid());
+	lua_pushstring(L,shd->compilationLog());
+
+	return 2;
 }

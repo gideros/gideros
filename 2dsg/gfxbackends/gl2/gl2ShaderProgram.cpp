@@ -17,7 +17,7 @@ const char *hdrShaderCode="#define GLES\n";
 const char *hdrShaderCode="";
 #endif
 
-GLuint ogl2LoadShader(GLuint type, const char *hdr, const char *code) {
+GLuint ogl2LoadShader(GLuint type, const char *hdr, const char *code, std::string &log) {
 	GLuint shader = glCreateShader(type);
 	const char *lines[2] = { hdr, code };
 	glShaderSource(shader, 2, lines, NULL);
@@ -33,7 +33,9 @@ GLuint ogl2LoadShader(GLuint type, const char *hdr, const char *code) {
 			//The maxLength includes the NULL character
 			std::vector<GLchar> infoLog(maxLength);
 			glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
-
+			log.append((type==GL_FRAGMENT_SHADER)?"FragmentShader:\n":"VertexShader:\n");
+			log.append(&infoLog[0]);
+			log.append("\n");
 			glog_e("Shader Compile: %s\n", &infoLog[0]);
 		}
 		glDeleteShader(shader);
@@ -43,7 +45,7 @@ GLuint ogl2LoadShader(GLuint type, const char *hdr, const char *code) {
 	return shader;
 }
 
-GLuint ogl2BuildProgram(GLuint vertexShader, GLuint fragmentShader) {
+GLuint ogl2BuildProgram(GLuint vertexShader, GLuint fragmentShader, std::string log) {
 	GLuint program = glCreateProgram();
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragmentShader);
@@ -55,10 +57,23 @@ GLuint ogl2BuildProgram(GLuint vertexShader, GLuint fragmentShader) {
 	if (maxLength > 0) {
 		std::vector<GLchar> infoLog(maxLength);
 		glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
+		log.append("Shader Program:\n");
+		log.append(&infoLog[0]);
+		log.append("\n");
 		glog_i("GL Program log:%s\n", &infoLog[0]);
 	}
 	glog_i("Loaded program:%d\n", program);
 	return program;
+}
+
+bool ogl2ShaderProgram::isValid()
+{
+	return vertexShader&&fragmentShader&&program;
+}
+
+const char *ogl2ShaderProgram::compilationLog()
+{
+	return errorLog.c_str();
 }
 
 void ogl2ShaderProgram::deactivate() {
@@ -172,9 +187,10 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 		const char *fshader1, const char *fshader2,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	cbsData=0;
-	vertexShader = ogl2LoadShader(GL_VERTEX_SHADER, vshader1, vshader2);
-	fragmentShader = ogl2LoadShader(GL_FRAGMENT_SHADER, fshader1, fshader2);
-	program = ogl2BuildProgram(vertexShader, fragmentShader);
+	errorLog="";
+	vertexShader = ogl2LoadShader(GL_VERTEX_SHADER, vshader1, vshader2,errorLog);
+	fragmentShader = ogl2LoadShader(GL_FRAGMENT_SHADER, fshader1, fshader2,errorLog);
+	program = ogl2BuildProgram(vertexShader, fragmentShader,errorLog);
 	glUseProgram(program);
 	GLint ntex = 0;
 	while (uniforms->name) {

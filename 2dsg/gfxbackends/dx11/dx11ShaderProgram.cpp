@@ -25,6 +25,14 @@ using namespace Microsoft::WRL;
 
 ShaderProgram *dx11ShaderProgram::current = NULL;
 
+bool dx11ShaderProgram::isValid() {
+	return g_pLayout != NULL;
+}
+
+const char *dx11ShaderProgram::compilationLog() {
+	return errorLog.c_str();
+}
+
 void dx11ShaderProgram::deactivate() {
 	current = NULL;
 }
@@ -123,64 +131,89 @@ void dx11ShaderProgram::setConstant(int index, ConstantType type,
 	}
 }
 
-dx11ShaderProgram::dx11ShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
-                 const ConstantDesc *uniforms, const DataDesc *attributes)
-{
-	buildShaderProgram(vshader,vshadersz,pshader,pshadersz,uniforms,attributes);
+dx11ShaderProgram::dx11ShaderProgram(const void *vshader, int vshadersz,
+		const void *pshader, int pshadersz, const ConstantDesc *uniforms,
+		const DataDesc *attributes) {
+	buildShaderProgram(vshader, vshadersz, pshader, pshadersz, uniforms,
+			attributes);
 }
 
 dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	long VSLen, PSLen;
 	void *VSFile = LoadShaderFile(vshader, "cso", &VSLen);
-	if (!VSFile)
-	{
+	if (!VSFile) {
 		void *src = LoadShaderFile(vshader, "hlsl", &VSLen);
 		ID3DBlob *pCode;
 		ID3DBlob *pError;
-		D3DCompile(src, VSLen, vshader, NULL, NULL, "VShader", "vs_4_0_level_9_3", 0, 0, &pCode, &pError);
-		if (pError)
+		D3DCompile(src, VSLen, vshader, NULL, NULL, "VShader",
+			"vs_4_0_level_9_3", D3DCOMPILE_PREFER_FLOW_CONTROL, 0, &pCode, &pError);
+		if (pError) {
+			errorLog.append("VertexShader:\n");
+			errorLog.append((char *) pError->GetBufferPointer(),
+					pError->GetBufferSize());
+			errorLog.append("\n");
 			pError->Release();
-		VSLen = pCode->GetBufferSize();
-		VSFile = malloc(VSLen);
-		memcpy(VSFile, pCode->GetBufferPointer(), VSLen);
-		pCode->Release();
+		}
+		if (pCode) {
+			VSLen = pCode->GetBufferSize();
+			VSFile = malloc(VSLen);
+			memcpy(VSFile, pCode->GetBufferPointer(), VSLen);
+			pCode->Release();
+		}
 	}
 	void *PSFile = LoadShaderFile(pshader, "cso", &PSLen);
-	if (!PSFile)
-	{
+	if (!PSFile) {
 		void *src = LoadShaderFile(pshader, "hlsl", &PSLen);
 		ID3DBlob *pCode;
 		ID3DBlob *pError;
-		D3DCompile(src, VSLen, pshader, NULL, NULL, "PShader", "ps_4_0_level_9_3", 0, 0, &pCode, &pError);
-		if (pError)
+		D3DCompile(src, PSLen, pshader, NULL, NULL, "PShader",
+			"ps_4_0_level_9_3", D3DCOMPILE_PREFER_FLOW_CONTROL, 0, &pCode, &pError);
+		if (pError) {
+			errorLog.append("PixelShader:\n");
+			errorLog.append((char *) pError->GetBufferPointer(),
+					pError->GetBufferSize());
+			errorLog.append("\n");
 			pError->Release();
-		PSLen = pCode->GetBufferSize();
-		PSFile = malloc(PSLen);
-		memcpy(PSFile, pCode->GetBufferPointer(), PSLen);
-		pCode->Release();
+		}
+		if (pCode) {
+			PSLen = pCode->GetBufferSize();
+			PSFile = malloc(PSLen);
+			memcpy(PSFile, pCode->GetBufferPointer(), PSLen);
+			pCode->Release();
+		}
 	}
-	buildShaderProgram(VSFile,VSLen,PSFile,PSLen,uniforms,attributes);
-	free(VSFile);
-	free(PSFile);
+	buildShaderProgram(VSFile, VSLen, PSFile, PSLen, uniforms, attributes);
+	if (VSFile)
+		free(VSFile);
+	if (PSFile)
+		free(PSFile);
 }
 
-void dx11ShaderProgram::buildShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
-                     const ConstantDesc *uniforms, const DataDesc *attributes)
-{
-	g_dev->CreateVertexShader(vshader,vshadersz, NULL, &g_pVS);
-	g_dev->CreatePixelShader(pshader,pshadersz, NULL, &g_pPS);
-
-	g_devcon->VSSetShader(g_pVS, 0, 0);
-	g_devcon->PSSetShader(g_pPS, 0, 0);
-
+void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
+		const void *pshader, int pshadersz, const ConstantDesc *uniforms,
+		const DataDesc *attributes) {
+	g_pVS = NULL;
+	g_pPS = NULL;
+	g_pLayout = NULL;
+	g_CBV = NULL;
+	g_CBP = NULL;
+	cbpData = NULL;
+	cbvData = NULL;
 	for (int k = 0; k < 17; k++) {
 		genVBO[k] = NULL;
 		genVBOcapacity[k] = 0;
 	}
-
 	cbvsData = 0;
 	cbpsData = 0;
+	if (!(vshader && pshader))
+		return;
+	g_dev->CreateVertexShader(vshader, vshadersz, NULL, &g_pVS);
+	g_dev->CreatePixelShader(pshader, pshadersz, NULL, &g_pPS);
+
+	g_devcon->VSSetShader(g_pVS, 0, 0);
+	g_devcon->PSSetShader(g_pPS, 0, 0);
+
 	while (uniforms->name) {
 		int usz = 0, ual = 4;
 		ConstantDesc cd;
@@ -216,6 +249,10 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader,int vshadersz,con
 		}
 		this->uniforms.push_back(cd);
 	}
+	if (cbpsData & 15)
+		cbpsData += 16 - (cbpsData & 15);
+	if (cbvsData & 15)
+		cbvsData += 16 - (cbvsData & 15);
 	cbpData = malloc(cbpsData);
 	cbvData = malloc(cbvsData);
 	cbpMod = false;
@@ -297,16 +334,23 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader,int vshadersz,con
 }
 
 dx11ShaderProgram::~dx11ShaderProgram() {
-	g_pLayout->Release();
-	g_pVS->Release();
-	g_pPS->Release();
+	if (g_pLayout)
+		g_pLayout->Release();
+	if (g_pVS)
+		g_pVS->Release();
+	if (g_pPS)
+		g_pPS->Release();
 	for (int k = 0; k < 17; k++)
 		if (genVBO[k])
 			genVBO[k]->Release();
-	free(cbpData);
-	free(cbvData);
-	g_CBP->Release();
-	g_CBV->Release();
+	if (cbpData)
+		free(cbpData);
+	if (cbvData)
+		free(cbvData);
+	if (g_CBP)
+		g_CBP->Release();
+	if (g_CBV)
+		g_CBV->Release();
 }
 
 void dx11ShaderProgram::updateConstants() {

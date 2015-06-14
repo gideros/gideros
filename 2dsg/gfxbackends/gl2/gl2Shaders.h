@@ -68,6 +68,7 @@ class ogl2ShaderProgram : public ShaderProgram
     GLuint program;
     std::vector<GLint> attributes;
     std::vector<GLint> gluniforms;
+    std::string errorLog;
     void *cbData;
     int cbsData;
     static GLint curProg;
@@ -82,6 +83,8 @@ public:
     virtual void setConstant(int index,ConstantType type,const void *ptr);
     virtual void drawArrays(ShapeType shape, int first, unsigned int count);
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache);
+    virtual bool isValid();
+    virtual const char *compilationLog();
 
     ogl2ShaderProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,

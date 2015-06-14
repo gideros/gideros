@@ -13,6 +13,7 @@ private:
 	static int destruct(lua_State* L);
 
 	static int setConstant(lua_State* L);
+	static int isValid(lua_State* L);
 };
 
 #endif
