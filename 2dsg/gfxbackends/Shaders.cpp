@@ -34,7 +34,7 @@ void *ShaderProgram::LoadShaderFile(const char *fname, const char *ext, long *le
 	return NULL;
 }
 
-bool ShaderProgram::updateConstant(int index,ShaderProgram::ConstantType type,const void *ptr)
+bool ShaderProgram::updateConstant(int index,ShaderProgram::ConstantType type, int mult,const void *ptr)
 {
 	char *b=(char *)(uniforms[index]._localPtr);
 	int sl=0;
@@ -52,6 +52,7 @@ bool ShaderProgram::updateConstant(int index,ShaderProgram::ConstantType type,co
 		break;
 	}
 	if (!sl) return false;
+	sl*=mult;
 	if (!memcmp(b,ptr,sl)) return false;
 	memcpy(b,ptr,sl);
 	return true;
@@ -70,19 +71,19 @@ void ShaderEngine::prepareDraw(ShaderProgram *program)
 {
 	int c=program->getSystemConstant(ShaderProgram::SysConst_WorldViewProjectionMatrix);
 	if (c>=0)
-		program->setConstant(c,ShaderProgram::CMATRIX,oglCombined.data());
+		program->setConstant(c,ShaderProgram::CMATRIX,1,oglCombined.data());
 	c=program->getSystemConstant(ShaderProgram::SysConst_Color);
 	if (c>=0) {
-		program->setConstant(c,ShaderProgram::CFLOAT4,constCol);
+		program->setConstant(c,ShaderProgram::CFLOAT4,1,constCol);
 	}
 	c=program->getSystemConstant(ShaderProgram::SysConst_WorldMatrix);
 	if (c>=0) {
-		program->setConstant(c,ShaderProgram::CMATRIX,oglModel.data());
+		program->setConstant(c,ShaderProgram::CMATRIX,1,oglModel.data());
 	}
 	c=program->getSystemConstant(ShaderProgram::SysConst_WorldInverseTransposeMatrix);
 	if (c>=0) {
 		Matrix4 m=oglModel.inverse().transpose();
-		program->setConstant(c,ShaderProgram::CMATRIX,m.data());
+		program->setConstant(c,ShaderProgram::CMATRIX,1,m.data());
 	}
 }
 
@@ -182,7 +183,6 @@ void ShaderEngine::setColor(float r,float g,float b,float a)
 
 void ShaderEngine::setModel(const Matrix4 m)
 {
-	ShaderEngine::setModel(m);
 	oglCombined=oglProjection*oglModel;
 }
 
@@ -196,6 +196,14 @@ void ShaderProgram::shaderInitialized()
 			sysconstmask|=(1<<sn);
 			sysconstidx[sn]=i;
 		}
+}
+
+int ShaderProgram::getConstantByName(const char *name)
+{
+	for (int i=0;i<uniforms.size();i++)
+		if (!(strcmp(uniforms[i].name,name)))
+			return i;
+	return -1;
 }
 
 int ShaderProgram::getSystemConstant(SystemConstant t)

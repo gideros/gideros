@@ -193,9 +193,9 @@ void ogl2SetupShaders()
 	glog_i("GLSL_VERSION:%s\n",glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	const ShaderProgram::ConstantDesc stdUniforms[]={
-			{"vMatrix",ShaderProgram::CMATRIX,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
-			{"fColor",ShaderProgram::CFLOAT4,ShaderProgram::SysConst_Color,false,0},
-			{"fTexture",ShaderProgram::CTEXTURE,ShaderProgram::SysConst_None,false,0},
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
+			{"fColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,false,0},
+			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
 			NULL
 	};
 	const ShaderProgram::DataDesc stdAttributes[] = {
@@ -214,9 +214,9 @@ void ogl2SetupShaders()
                                       stdUniforms,stdAttributes);
 }
 
-ShaderProgram *ogl2ShaderEngine::createShaderProgram(const char *vshader,const char *pshader, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)
+ShaderProgram *ogl2ShaderEngine::createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)
 {
-	return new ogl2ShaderProgram(vshader,pshader,uniforms,attributes);
+	return new ogl2ShaderProgram(vshader,pshader,flags,uniforms,attributes);
 }
 
 ogl2ShaderEngine::ogl2ShaderEngine(int sw,int sh)

@@ -20,7 +20,7 @@ ID3D11Device *g_dev;                     // the pointer to our Direct3D device i
 ID3D11DeviceContext *g_devcon;           // the pointer to our Direct3D device context
 #endif
 
-ShaderProgram *dx11ShaderEngine::createShaderProgram(const char *vshader,const char *pshader, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)
+ShaderProgram *dx11ShaderEngine::createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)
 {
 	return new dx11ShaderProgram(vshader,pshader,uniforms,attributes);
 }
@@ -45,9 +45,9 @@ void dx11ShaderEngine::reset()
 void dx11SetupShaders()
 {
 	const ShaderProgram::ConstantDesc stdConstants[]={
-			{"vMatrix",ShaderProgram::CMATRIX,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
-			{"fColor",ShaderProgram::CFLOAT4,ShaderProgram::SysConst_Color,false,0},
-			{"fTexture",ShaderProgram::CTEXTURE,ShaderProgram::SysConst_None,false,0},
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
+			{"fColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,false,0},
+			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
 			NULL
 	};
 	const ShaderProgram::DataDesc stdBAttributes[]={
