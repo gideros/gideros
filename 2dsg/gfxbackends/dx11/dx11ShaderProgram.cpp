@@ -331,6 +331,7 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 		this->attributes.push_back(*(attributes++));
 	}
 	g_dev->CreateInputLayout(ied, nie, vshader, vshadersz, &g_pLayout);
+	shaderInitialized();
 }
 
 dx11ShaderProgram::~dx11ShaderProgram() {

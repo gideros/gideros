@@ -151,4 +151,23 @@ void ShaderEngine::popClip()
 	}
 }
 
+void ShaderProgram::shaderInitialized()
+{
+	sysconstmask=0;
+	for (int i=0;i<uniforms.size();i++)
+		if (uniforms[i].sys)
+		{
+			int sn=uniforms[i].sys;
+			sysconstmask|=(1<<sn);
+			sysconstidx[sn]=i;
+		}
+}
+
+int ShaderProgram::getSystemConstant(SystemConstant t)
+{
+	int n=(int)t;
+	if (sysconstmask&(1<<n))
+		return sysconstidx[n];
+	return -1;
+}
 

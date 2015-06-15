@@ -22,6 +22,7 @@ MeshBinder::MeshBinder(lua_State *L)
         {"setIndexArray", setIndexArray},
         {"setColorArray", setColorArray},
         {"setTextureCoordinateArray", setTextureCoordinateArray},
+        {"setGenericArray", setGenericArray},
 
         {"resizeVertexArray", resizeVertexArray},
         {"resizeIndexArray", resizeIndexArray},
@@ -45,11 +46,30 @@ MeshBinder::MeshBinder(lua_State *L)
 
         {"setTexture", setTexture},
         {"clearTexture", clearTexture},
+        {"setTextureSlot", setTextureSlot},
+        {"setPrimitiveType", setPrimitiveType},
 
         {NULL, NULL},
     };
 
     binder.createClass("Mesh", "Sprite", create, destruct, functionList);
+
+    lua_getglobal(L, "Mesh");
+
+    lua_pushinteger(L, ShaderProgram::Point);
+    lua_setfield(L, -2, "PRIMITIVE_POINT");
+    lua_pushinteger(L, ShaderProgram::Lines);
+    lua_setfield(L, -2, "PRIMITIVE_LINES");
+    lua_pushinteger(L, ShaderProgram::LineLoop);
+    lua_setfield(L, -2, "PRIMITIVE_LINELOOP");
+    lua_pushinteger(L, ShaderProgram::Triangles);
+    lua_setfield(L, -2, "PRIMITIVE_TRIANGLES");
+    lua_pushinteger(L, ShaderProgram::TriangleFan);
+    lua_setfield(L, -2, "PRIMITIVE_TRIANGLEFAN");
+    lua_pushinteger(L, ShaderProgram::TriangleStrip);
+    lua_setfield(L, -2, "PRIMITIVE_TRIANGLESTRIP");
+
+    lua_pop(L, 1);
 }
 
 int MeshBinder::create(lua_State *L)
@@ -299,6 +319,78 @@ int MeshBinder::setTextureCoordinates(lua_State *L)
     }
 
     return 0;
+}
+
+int MeshBinder::setGenericArray(lua_State *L)
+{
+    Binder binder(L);
+    GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
+    int index=luaL_checkinteger(L,2);
+    ShaderProgram::DataType type=(ShaderProgram::DataType) luaL_checkinteger(L,3);
+    int mult=luaL_checkinteger(L,4);
+    int count=luaL_checkinteger(L,5);
+    luaL_checktype(L, 6, LUA_TTABLE);
+
+    int n = luaL_getn(L, 6);  /* get size of table */
+    if (n!=(mult*count))
+    {
+    	lua_pushstring(L,"Actual array length doesn't match size multiple and count values");
+    	lua_error(L);
+    }
+
+    void *ptr;
+	switch (type)
+	{
+	case ShaderProgram::DBYTE:
+	case ShaderProgram::DUBYTE:
+	{
+	    char *p=(char *) malloc(mult*count);
+	    ptr=p;
+	    for (int i=1; i<=n; i++) {
+	        lua_rawgeti(L, 6, i);  /* push t[i] */
+	        *(p++)=luaL_checkinteger(L,-1);
+	        lua_pop(L,1);
+	      }
+		break;
+	}
+	case ShaderProgram::DSHORT:
+	case ShaderProgram::DUSHORT:
+	{
+	    short *p=(short *) malloc(mult*count*2);
+	    ptr=p;
+	    for (int i=1; i<=n; i++) {
+	        lua_rawgeti(L, 6, i);  /* push t[i] */
+	        *(p++)=luaL_checkinteger(L,-1);
+	        lua_pop(L,1);
+	      }
+		break;
+	}
+	case ShaderProgram::DINT:
+	{
+		int *p=(int *) malloc(mult*count);
+	    ptr=p;
+	    for (int i=1; i<=n; i++) {
+	        lua_rawgeti(L, 6, i);  /* push t[i] */
+	        *(p++)=luaL_checkinteger(L,-1);
+	        lua_pop(L,1);
+	      }
+		break;
+	}
+	case ShaderProgram::DFLOAT:
+	{
+	    float *p=(float *) malloc(mult*count);
+	    ptr=p;
+	    for (int i=1; i<=n; i++) {
+	        lua_rawgeti(L, 6, i);  /* push t[i] */
+	        *(p++)=luaL_checknumber(L,-1);
+	        lua_pop(L,1);
+	      }
+		break;
+	}
+	}
+
+    mesh->setGenericArray(index,ptr,type,mult,count);
+	return 0;
 }
 
 int MeshBinder::setVertexArray(lua_State *L)
@@ -634,6 +726,29 @@ int MeshBinder::getTextureCoordinate(lua_State *L)
     lua_pushnumber(L, v);
 
     return 2;
+}
+
+int MeshBinder::setPrimitiveType(lua_State *L)
+{
+    Binder binder(L);
+    GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
+    ShaderProgram::ShapeType prim=(ShaderProgram::ShapeType) luaL_checkinteger(L,2);
+
+    mesh->setPrimitiveType(prim);
+
+    return 0;
+}
+
+int MeshBinder::setTextureSlot(lua_State *L)
+{
+    Binder binder(L);
+    GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
+    int slot=luaL_checkinteger(L,2);
+    TextureBase* textureBase = static_cast<TextureBase*>(binder.getInstance("TextureBase", 3));
+
+    mesh->setTextureSlot(slot,textureBase);
+
+    return 0;
 }
 
 int MeshBinder::setTexture(lua_State *L)

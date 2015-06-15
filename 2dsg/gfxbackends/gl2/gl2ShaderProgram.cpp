@@ -237,6 +237,7 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 				glGetAttribLocation(program, attributes->name));
 		attributes++;
 	}
+	shaderInitialized();
 }
 
 ogl2ShaderProgram::~ogl2ShaderProgram() {

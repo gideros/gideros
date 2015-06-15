@@ -42,6 +42,17 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_pushinteger(L, ShaderProgram::DFLOAT);
 	lua_setfield(L, -2, "DFLOAT");
 
+	lua_pushinteger(L, ShaderProgram::SysConst_None);
+	lua_setfield(L, -2, "SYS_NONE");
+	lua_pushinteger(L, ShaderProgram::SysConst_WorldViewProjectionMatrix);
+	lua_setfield(L, -2, "SYS_WVP");
+	lua_pushinteger(L, ShaderProgram::SysConst_Color);
+	lua_setfield(L, -2, "SYS_COLOR");
+	lua_pushinteger(L, ShaderProgram::SysConst_WorldMatrix);
+	lua_setfield(L, -2, "SYS_WORLD");
+	lua_pushinteger(L, ShaderProgram::SysConst_WorldInverseTransposeMatrix);
+	lua_setfield(L, -2, "SYS_WIT");
+
 	lua_pop(L, 1);
 
 }
@@ -62,7 +73,7 @@ int ShaderBinder::create(lua_State* L)
 
     int n = luaL_getn(L, 3);  /* get size of table */
     for (int i=1; i<=n; i++) {
-    	ShaderProgram::ConstantDesc cst={NULL,ShaderProgram::CINT,false,0,NULL};
+    	ShaderProgram::ConstantDesc cst={NULL,ShaderProgram::CINT,ShaderProgram::SysConst_None,false,0,NULL};
         lua_rawgeti(L, 3, i);  /* push t[i] */
         luaL_checktype(L,-1,LUA_TTABLE); //Check table
         lua_getfield(L,-1,"name");
@@ -71,7 +82,9 @@ int ShaderBinder::create(lua_State* L)
         cst.type=(ShaderProgram::ConstantType)luaL_checkinteger(L,-1);
         lua_getfield(L,-3,"vertex");
         cst.vertexShader=lua_toboolean(L,-1);
-        lua_pop(L,4);
+        lua_getfield(L,-4,"sys");
+        cst.sys=(ShaderProgram::SystemConstant) luaL_optinteger(L,-1,0);
+        lua_pop(L,5);
     	constants.push_back(cst);
       }
 
@@ -95,7 +108,7 @@ int ShaderBinder::create(lua_State* L)
       }
 
 
-	ShaderProgram::ConstantDesc clast={NULL,ShaderProgram::CINT,false,0,NULL};
+	ShaderProgram::ConstantDesc clast={NULL,ShaderProgram::CINT,ShaderProgram::SysConst_None,false,0,NULL};
 	ShaderProgram::DataDesc dlast={NULL,ShaderProgram::DFLOAT,0,0,0};
 	constants.push_back(clast);
 	datas.push_back(dlast);

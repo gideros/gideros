@@ -8,6 +8,8 @@
 
 class Application;
 
+#define MESH_MAX_TEXTURES 8
+#define MESH_MAX_ARRAYS   8
 class GMesh: public Sprite
 {
 public:
@@ -24,6 +26,7 @@ public:
     void setIndexArray(const unsigned short *indices, size_t size);
     void setColorArray(const unsigned int *colors, const float *alphas, size_t size);
     void setTextureCoordinateArray(const float *textureCoordinates, size_t size);
+    void setGenericArray(int index,const void *pointer, ShaderProgram::DataType type, int mult, int count);
 
     void resizeVertexArray(size_t size);
     void resizeIndexArray(size_t size);
@@ -47,6 +50,8 @@ public:
 
     void setTexture(TextureBase *texture);
     void clearTexture();
+    void setTextureSlot(int slot,TextureBase *texture);
+    void setPrimitiveType(ShaderProgram::ShapeType type);
 
 private:
     virtual void doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey);
@@ -65,10 +70,16 @@ private:
     std::vector<Color> originalColors_;
     std::vector<float> textureCoordinates_;
     std::vector<float> originalTextureCoordinates_;
+    struct _genArray
+    {
+    	void *ptr;
+    	ShaderProgram::DataType type;
+    	int mult;
+    	int count;
+    } genericArray[MESH_MAX_ARRAYS-3];
 
-    TextureBase *texture_;
-
-    float sx_, sy_;
+    TextureBase *texture_[MESH_MAX_TEXTURES];
+    float sx_[MESH_MAX_TEXTURES], sy_[MESH_MAX_TEXTURES];
 
     float r_, g_, b_, a_;
 

@@ -32,9 +32,17 @@ public:
     	unsigned char slot;
     	unsigned short offset;
     };
+    enum SystemConstant {
+    	SysConst_None=0,
+    	SysConst_WorldViewProjectionMatrix,
+    	SysConst_Color,
+    	SysConst_WorldInverseTransposeMatrix,
+    	SysConst_WorldMatrix,
+    };
     struct ConstantDesc {
     	const char *name;
     	ConstantType type;
+    	SystemConstant sys;
     	bool vertexShader;
     	unsigned short offset;
     	void *_localPtr;
@@ -46,9 +54,6 @@ public:
 	enum StdData {
 		DataVertex=0, DataColor=1, DataTexture=2
 	};
-	enum StdConstant {
-		ConstantMatrix=0, ConstantColor=1
-	};
     virtual void activate()=0;
     virtual void deactivate()=0;
     virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache)=0;
@@ -58,8 +63,12 @@ public:
     virtual bool isValid()=0;
     virtual const char *compilationLog()=0;
     virtual ~ShaderProgram() { };
+    int getSystemConstant(SystemConstant t);
 protected:
     std::vector<ConstantDesc> uniforms;
+    int sysconstmask;
+    char sysconstidx[8];
+    void shaderInitialized();
     virtual bool updateConstant(int index,ConstantType type,const void *ptr);
     static void *LoadShaderFile(const char *fname, const char *ext, long *len);
 };

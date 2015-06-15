@@ -43,9 +43,9 @@ void dx11ShaderEngine::reset()
 void dx11SetupShaders()
 {
 	const ShaderProgram::ConstantDesc stdConstants[]={
-			{"vMatrix",ShaderProgram::CMATRIX,true,0},
-			{"fColor",ShaderProgram::CFLOAT4,false,0},
-			{"fTexture",ShaderProgram::CTEXTURE,false,0},
+			{"vMatrix",ShaderProgram::CMATRIX,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
+			{"fColor",ShaderProgram::CFLOAT4,ShaderProgram::SysConst_Color,false,0},
+			{"fTexture",ShaderProgram::CTEXTURE,ShaderProgram::SysConst_None,false,0},
 			NULL
 	};
 	const ShaderProgram::DataDesc stdBAttributes[]={
@@ -323,9 +323,23 @@ void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture)
 
 void dx11ShaderEngine::preDraw(ShaderProgram *program)
 {
-   	program->setConstant(ShaderProgram::ConstantMatrix,ShaderProgram::CMATRIX,oglCombined.data());
-   	float constCol[4]={constColR,constColG,constColB,constColA};
-   	program->setConstant(ShaderProgram::ConstantColor,ShaderProgram::CFLOAT4,constCol);
+	int c=program->getSystemConstant(ShaderProgram::SysConst_WorldViewProjectionMatrix);
+	if (c>=0)
+		program->setConstant(c,ShaderProgram::CMATRIX,oglCombined.data());
+	c=program->getSystemConstant(ShaderProgram::SysConst_Color);
+	if (c>=0) {
+		float constCol[4]={constColR,constColG,constColB,constColA};
+		program->setConstant(c,ShaderProgram::CFLOAT4,constCol);
+	}
+	c=program->getSystemConstant(ShaderProgram::SysConst_WorldMatrix);
+	if (c>=0) {
+		program->setConstant(c,ShaderProgram::CMATRIX,oglModel.data());
+	}
+	c=program->getSystemConstant(ShaderProgram::SysConst_WorldInverseTransposeMatrix);
+	if (c>=0) {
+		Matrix4 m=oglModel.inverse().transpose();
+		program->setConstant(c,ShaderProgram::CMATRIX,m.data());
+	}
 }
 
 void dx11ShaderEngine::setClip(int x,int y,int w,int h)
