@@ -373,7 +373,7 @@ void dx11ShaderProgram::updateConstants() {
 }
 void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 		unsigned int count) {
-	((dx11ShaderEngine *) ShaderEngine::Engine)->preDraw(this);
+	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	updateConstants();
 
@@ -424,7 +424,7 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 }
 void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 		DataType type, const void *indices, bool modified, BufferCache *cache) {
-	((dx11ShaderEngine *) ShaderEngine::Engine)->preDraw(this);
+	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	updateConstants();
 

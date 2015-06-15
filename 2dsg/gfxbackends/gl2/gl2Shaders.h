@@ -128,10 +128,6 @@ class ogl2ShaderEngine : public ShaderEngine
 {
 	ShaderBuffer *currentBuffer;
 	GLuint _depthRenderBuffer;
-	bool matrixDirty;
-	float constColR,constColG,constColB,constColA;
-	bool colorDirty;
-	Matrix4 oglCombined;
 	GLuint s_texture;
 	int s_depthEnable;
 	bool s_depthBufferCleared;
@@ -139,6 +135,7 @@ class ogl2ShaderEngine : public ShaderEngine
 public:
 	ogl2ShaderEngine(int sw,int sh);
 	virtual ~ogl2ShaderEngine();
+	const char *getVersion();
 	void reset();
 	void setDepthTest(bool enable);
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
@@ -148,10 +145,8 @@ public:
 	void setViewport(int x,int y,int width,int height);
 	void setProjection(const Matrix4 p);
 	void setModel(const Matrix4 m);
-	void setColor(float r,float g,float b,float a);
 	void clearColor(float r,float g,float b,float a);
 	void bindTexture(int num,ShaderTexture *texture);
-	void preDraw(ShaderProgram *program);
 	void setClip(int x,int y,int w,int h);
 	void setBlendFunc(BlendFactor sfactor, BlendFactor dfactor);
 };

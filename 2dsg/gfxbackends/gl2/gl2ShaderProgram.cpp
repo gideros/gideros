@@ -168,6 +168,11 @@ void ogl2ShaderProgram::setConstant(int index, ConstantType type,
 		glUniformMatrix4fv(gluniforms[index], 1, false, ((GLfloat *) ptr));
 		break;
 	}
+	/*
+#ifdef GIDEROS_GL1
+	glColor4f(r,g,b,a);
+#endif
+*/
 }
 
 ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader, const char *fshader,
@@ -256,7 +261,7 @@ ogl2ShaderProgram::~ogl2ShaderProgram() {
 
 void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 		unsigned int count) {
-	((ogl2ShaderEngine *) ShaderEngine::Engine)->preDraw(this);
+	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	GLenum mode = GL_POINTS;
 	switch (shape) {
@@ -284,7 +289,7 @@ void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 }
 void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 		DataType type, const void *indices, bool modified, BufferCache *cache) {
-	((ogl2ShaderEngine *) ShaderEngine::Engine)->preDraw(this);
+	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 
 	GLenum mode = GL_POINTS;

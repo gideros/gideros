@@ -25,6 +25,11 @@ ShaderProgram *dx11ShaderEngine::createShaderProgram(const char *vshader,const c
 	return new dx11ShaderProgram(vshader,pshader,uniforms,attributes);
 }
 
+const char *dx11ShaderEngine::getVersion()
+{
+	return "DX11";
+}
+
 void dx11ShaderEngine::reset()
 {
 	ShaderEngine::reset();
@@ -35,9 +40,6 @@ void dx11ShaderEngine::reset()
 	curSrcFactor = ONE;
 	s_depthEnable=0;
 	s_depthBufferCleared=false;
-
-    oglCombined.identity();
-
 }
 
 void dx11SetupShaders()
@@ -84,12 +86,6 @@ ID3D11Texture2D* dx11ShaderEngine::pBackBuffer=NULL;
 dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 {
 	currentBuffer=NULL;
-	matrixDirty=true;
-	constColR=1;
-	constColG=1;
-	constColB=1;
-	constColA=1;
-	colorDirty=true;
 	dx11ShaderProgram::current=NULL;
 
 #ifndef GIDEROS_GL1
@@ -282,34 +278,12 @@ void dx11ShaderEngine::setViewport(int x,int y,int width,int height)
 	  g_devcon->RSSetViewports(1, &viewport);
 }
 
-void dx11ShaderEngine::setModel(const Matrix4 m)
-{
-	ShaderEngine::setModel(m);
-	oglCombined=oglProjection*oglModel;
-    matrixDirty=true;
-}
-
-void dx11ShaderEngine::setProjection(const Matrix4 p)
-{
-	ShaderEngine::setProjection(p);
-}
-
 void dx11ShaderEngine::clearColor(float r,float g,float b,float a)
 {
 	float col[4]={r,g,b,a};
 	ID3D11RenderTargetView *fbo = currentBuffer ? (((dx11ShaderBuffer *)currentBuffer)->renderTarget) : g_backbuffer;
 	g_devcon->ClearRenderTargetView(fbo, col);
 }
-
-void dx11ShaderEngine::setColor(float r,float g,float b,float a)
-{
-    constColR=r;
-    constColG=g;
-    constColB=b;
-    constColA=a;
-    colorDirty=true;
-}
-
 
 void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture)
 {
@@ -321,26 +295,6 @@ void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture)
 		g_devcon->PSSetSamplers(0, 1, &dx11ShaderTexture::samplerRepeat);
 }
 
-void dx11ShaderEngine::preDraw(ShaderProgram *program)
-{
-	int c=program->getSystemConstant(ShaderProgram::SysConst_WorldViewProjectionMatrix);
-	if (c>=0)
-		program->setConstant(c,ShaderProgram::CMATRIX,oglCombined.data());
-	c=program->getSystemConstant(ShaderProgram::SysConst_Color);
-	if (c>=0) {
-		float constCol[4]={constColR,constColG,constColB,constColA};
-		program->setConstant(c,ShaderProgram::CFLOAT4,constCol);
-	}
-	c=program->getSystemConstant(ShaderProgram::SysConst_WorldMatrix);
-	if (c>=0) {
-		program->setConstant(c,ShaderProgram::CMATRIX,oglModel.data());
-	}
-	c=program->getSystemConstant(ShaderProgram::SysConst_WorldInverseTransposeMatrix);
-	if (c>=0) {
-		Matrix4 m=oglModel.inverse().transpose();
-		program->setConstant(c,ShaderProgram::CMATRIX,m.data());
-	}
-}
 
 void dx11ShaderEngine::setClip(int x,int y,int w,int h)
 {

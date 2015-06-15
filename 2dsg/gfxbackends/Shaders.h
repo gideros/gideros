@@ -111,9 +111,13 @@ public:
 class ShaderEngine
 {
 protected:
+	//CONSTANTS
 	Matrix4 oglProjection;
 	Matrix4 oglVPProjection;
 	Matrix4 oglModel;
+	Matrix4 oglCombined;
+	float constCol[4];
+	//Scissor structs
 	struct Scissor
 	{
 		Scissor() {}
@@ -162,6 +166,7 @@ public:
 	static ShaderEngine *Engine;
 	virtual ~ShaderEngine() { };
 	virtual void reset();
+	virtual const char *getVersion()=0;
 	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
 	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture)=0;
 	virtual ShaderBuffer *setFramebuffer(ShaderBuffer *fbo)=0;
@@ -173,10 +178,10 @@ public:
 	virtual Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
 	virtual void setProjection(const Matrix4 p) { oglProjection=p; }
 	virtual void setViewportProjection(const Matrix4 vp) { oglVPProjection=vp; }
-	virtual void setModel(const Matrix4 m) {oglModel=m; }
+	virtual void setModel(const Matrix4 m);
 	virtual const Matrix4 getModel() { return oglModel; }
 	//Attributes
-	virtual void setColor(float r,float g,float b,float a)=0;
+	virtual void setColor(float r,float g,float b,float a);
 	virtual void clearColor(float r,float g,float b,float a)=0;
 	virtual void bindTexture(int num,ShaderTexture *texture)=0;
 	virtual void setDepthTest(bool enable)=0;
@@ -185,6 +190,8 @@ public:
 	virtual void pushClip(float x,float y,float w,float h);
 	virtual void popClip();
 	virtual void setClip(int x,int y,int w,int h)=0;
+	//Internal
+	virtual void prepareDraw(ShaderProgram *program);
 };
 
 #endif

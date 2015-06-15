@@ -140,15 +140,22 @@ const char *stdCTFShaderCode=
 #endif
 
 
+const char *ogl2ShaderEngine::getVersion()
+{
+#ifdef OPENGL_ES
+	return "GLES2";
+#else
+	return "GL2";
+#endif
+}
+
+
 void ogl2ShaderEngine::reset()
 {
 	ShaderEngine::reset();
 	s_texture = 0;
 	s_depthEnable=0;
 	s_depthBufferCleared=false;
-
-    oglCombined.identity();
-
 
 	#ifdef GIDEROS_GL1
 		glDisableClientState(GL_VERTEX_ARRAY);
@@ -216,12 +223,6 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw,int sh)
 {
 	currentBuffer=NULL;
 	_depthRenderBuffer=0;
-	matrixDirty=true;
-	constColR=1;
-	constColG=1;
-	constColB=1;
-	constColA=1;
-	colorDirty=true;
 	ogl2ShaderProgram::current=NULL;
 
 #ifndef GIDEROS_GL1
@@ -302,12 +303,9 @@ void ogl2ShaderEngine::setViewport(int x,int y,int width,int height)
 void ogl2ShaderEngine::setModel(const Matrix4 m)
 {
 	ShaderEngine::setModel(m);
-	oglCombined=oglProjection*oglModel;
 #ifdef GIDEROS_GL1
 	 glMatrixMode(GL_MODELVIEW);
 	 glLoadMatrixf(m.data());
-#else
-    matrixDirty=true;
 #endif
 }
 
@@ -326,46 +324,11 @@ void ogl2ShaderEngine::clearColor(float r,float g,float b,float a)
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void ogl2ShaderEngine::setColor(float r,float g,float b,float a)
-{
-	//printf("glColor: %f,%f,%f,%f\n",r,g,b,a);
-#ifdef GIDEROS_GL1
-	glColor4f(r,g,b,a);
-#else
-    constColR=r;
-    constColG=g;
-    constColB=b;
-    constColA=a;
-    colorDirty=true;
-#endif
-}
-
 
 void ogl2ShaderEngine::bindTexture(int num,ShaderTexture *texture)
 {
 	glActiveTexture(GL_TEXTURE0+num);
 	glBindTexture(GL_TEXTURE_2D,((ogl2ShaderTexture *)texture)->glid);
-}
-
-void ogl2ShaderEngine::preDraw(ShaderProgram *program)
-{
-	int c=program->getSystemConstant(ShaderProgram::SysConst_WorldViewProjectionMatrix);
-	if (c>=0)
-		program->setConstant(c,ShaderProgram::CMATRIX,oglCombined.data());
-	c=program->getSystemConstant(ShaderProgram::SysConst_Color);
-	if (c>=0) {
-		float constCol[4]={constColR,constColG,constColB,constColA};
-		program->setConstant(c,ShaderProgram::CFLOAT4,constCol);
-	}
-	c=program->getSystemConstant(ShaderProgram::SysConst_WorldMatrix);
-	if (c>=0) {
-		program->setConstant(c,ShaderProgram::CMATRIX,oglModel.data());
-	}
-	c=program->getSystemConstant(ShaderProgram::SysConst_WorldInverseTransposeMatrix);
-	if (c>=0) {
-		Matrix4 m=oglModel.inverse().transpose();
-		program->setConstant(c,ShaderProgram::CMATRIX,m.data());
-	}
 }
 
 void ogl2ShaderEngine::setClip(int x,int y,int w,int h)

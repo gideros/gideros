@@ -63,6 +63,27 @@ void ShaderEngine::reset()
     oglProjection.identity();
     oglVPProjection.identity();
     oglModel.identity();
+    oglCombined.identity();
+}
+
+void ShaderEngine::prepareDraw(ShaderProgram *program)
+{
+	int c=program->getSystemConstant(ShaderProgram::SysConst_WorldViewProjectionMatrix);
+	if (c>=0)
+		program->setConstant(c,ShaderProgram::CMATRIX,oglCombined.data());
+	c=program->getSystemConstant(ShaderProgram::SysConst_Color);
+	if (c>=0) {
+		program->setConstant(c,ShaderProgram::CFLOAT4,constCol);
+	}
+	c=program->getSystemConstant(ShaderProgram::SysConst_WorldMatrix);
+	if (c>=0) {
+		program->setConstant(c,ShaderProgram::CMATRIX,oglModel.data());
+	}
+	c=program->getSystemConstant(ShaderProgram::SysConst_WorldInverseTransposeMatrix);
+	if (c>=0) {
+		Matrix4 m=oglModel.inverse().transpose();
+		program->setConstant(c,ShaderProgram::CMATRIX,m.data());
+	}
 }
 
 Matrix4 ShaderEngine::setFrustum(float l, float r, float b, float t, float n, float f)
@@ -149,6 +170,20 @@ void ShaderEngine::popClip()
 		Scissor s=scissorStack.top();
 		setClip(s.x,s.y,s.w,s.h);
 	}
+}
+
+void ShaderEngine::setColor(float r,float g,float b,float a)
+{
+    constCol[0]=r;
+    constCol[1]=g;
+    constCol[2]=b;
+    constCol[3]=a;
+}
+
+void ShaderEngine::setModel(const Matrix4 m)
+{
+	ShaderEngine::setModel(m);
+	oglCombined=oglProjection*oglModel;
 }
 
 void ShaderProgram::shaderInitialized()
