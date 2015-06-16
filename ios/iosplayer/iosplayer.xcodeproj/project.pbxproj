@@ -358,6 +358,7 @@
 		EB82BDD21B29606C00281732 /* gl2ShaderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC61B29606C00281732 /* gl2ShaderTexture.cpp */; };
 		EB82BDD31B29606C00281732 /* Shaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC71B29606C00281732 /* Shaders.cpp */; };
 		EB82BDD41B29606C00281732 /* Shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = EB82BDC81B29606C00281732 /* Shaders.h */; };
+		EB82BDD61B305E2F00281732 /* shaderbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDD51B305E2F00281732 /* shaderbinder.cpp */; };
 		EBD254CA1ADD149000CC57F9 /* zlibbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */; };
 /* End PBXBuildFile section */
 
@@ -715,6 +716,7 @@
 		EB82BDC61B29606C00281732 /* gl2ShaderTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderTexture.cpp; sourceTree = "<group>"; };
 		EB82BDC71B29606C00281732 /* Shaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shaders.cpp; sourceTree = "<group>"; };
 		EB82BDC81B29606C00281732 /* Shaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shaders.h; sourceTree = "<group>"; };
+		EB82BDD51B305E2F00281732 /* shaderbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shaderbinder.cpp; path = ../../luabinding/shaderbinder.cpp; sourceTree = "<group>"; };
 		EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zlibbinder.cpp; path = ../../luabinding/zlibbinder.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1231,6 +1233,7 @@
 		5F321F2215BBCA8000542289 /* luabinding */ = {
 			isa = PBXGroup;
 			children = (
+				EB82BDD51B305E2F00281732 /* shaderbinder.cpp */,
 				EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */,
 				5F321F2415BBEB3200542289 /* accelerometerbinder.cpp */,
 				5F321F2515BBEB3200542289 /* alertdialogbinder.cpp */,
@@ -1719,6 +1722,7 @@
 				5F58D7D215D91D8000137D76 /* gglobal.cpp in Sources */,
 				5F880EA515DCF099001F889C /* urlloaderbinder.cpp in Sources */,
 				5FCA653215F8A804006011C1 /* pluginmanager.cpp in Sources */,
+				EB82BDD61B305E2F00281732 /* shaderbinder.cpp in Sources */,
 				5F9968A7160F190400CF791A /* gapplication-ios.mm in Sources */,
 				5F58B53E1619A0BA00B8E8FE /* gmesh.cpp in Sources */,
 				5ECDAB371ADAE0D100278F39 /* drawinfo.cpp in Sources */,
