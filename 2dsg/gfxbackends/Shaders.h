@@ -62,9 +62,13 @@ public:
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache)=0;
     virtual bool isValid()=0;
     virtual const char *compilationLog()=0;
+    void Retain();
+    void Release();
+    ShaderProgram();
     virtual ~ShaderProgram() { };
     int getSystemConstant(SystemConstant t);
 protected:
+    int refCount;
     std::vector<ConstantDesc> uniforms;
     int sysconstmask;
     char sysconstidx[8];

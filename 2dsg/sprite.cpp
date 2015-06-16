@@ -45,6 +45,18 @@ Sprite::~Sprite()
 
 	allSprites_.erase(this);
 	allSpritesWithListeners_.erase(this);
+
+	if (shader_)
+		shader_->Release();
+}
+
+void Sprite::setShader(ShaderProgram *shader)
+{
+	if (shader)
+		shader->Retain();
+	if (shader_)
+		shader_->Release();
+	shader_=shader;
 }
 
 void Sprite::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)

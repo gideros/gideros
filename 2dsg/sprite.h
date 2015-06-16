@@ -311,10 +311,7 @@ public:
 	void clearBlendFunc();
 	void setBlendFunc(ShaderEngine::BlendFactor sfactor, ShaderEngine::BlendFactor dfactor);
 
-	void setShader(ShaderProgram *shader)
-	{
-		shader_=shader;
-	}
+	void setShader(ShaderProgram *shader);
 
 	void set(const char* param, float value, GStatus* status = NULL);
 	float get(const char* param, GStatus* status = NULL);

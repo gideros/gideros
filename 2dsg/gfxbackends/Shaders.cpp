@@ -15,6 +15,23 @@ ShaderProgram *ShaderProgram::stdTexture=NULL;
 ShaderProgram *ShaderProgram::stdTextureColor=NULL;
 ShaderEngine *ShaderEngine::Engine=NULL;
 
+void ShaderProgram::Retain()
+{
+	refCount++;
+}
+
+void ShaderProgram::Release()
+{
+	refCount--;
+	if (refCount==0)
+		delete this;
+}
+
+ShaderProgram::ShaderProgram()
+{
+	refCount=1;
+}
+
 void *ShaderProgram::LoadShaderFile(const char *fname, const char *ext, long *len) {
 	char name[256];
 	sprintf(name, "%s.%s", fname,ext);

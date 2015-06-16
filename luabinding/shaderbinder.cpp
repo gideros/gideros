@@ -126,7 +126,7 @@ int ShaderBinder::destruct(lua_State* L)
 {
 	void* ptr = *(void**)lua_touserdata(L, 1);
 	ShaderProgram* shd = static_cast<ShaderProgram*>(ptr);
-	delete shd;
+	shd->Release();
 
 	return 0;
 }
