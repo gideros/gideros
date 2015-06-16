@@ -200,6 +200,7 @@ void ShaderEngine::setColor(float r,float g,float b,float a)
 
 void ShaderEngine::setModel(const Matrix4 m)
 {
+    oglModel=m;
 	oglCombined=oglProjection*oglModel;
 }
 
