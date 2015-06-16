@@ -938,6 +938,7 @@ void ApplicationManager::drawFrame()
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
+		ShaderEngine::Engine->setFramebuffer(NULL); //Bind frame buffer
 		application_->clearBuffers();
 		application_->renderScene(1);
 		drawIPs();

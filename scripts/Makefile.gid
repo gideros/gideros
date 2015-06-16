@@ -15,6 +15,7 @@ RELEASE=$(ROOT)/release
 #TOOLS
 QMAKE=qmake
 MINGWMAKE=mingw32-make
+CC=$(QTBASEDIR)/Tools/$(QTMINGW)/bin/gcc
 
 all: qtapp.install android.install
 
