@@ -24,8 +24,6 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := gideros
 
-LOCAL_ARM_MODE := arm
-
 LOCAL_CFLAGS := -O2
 
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES
@@ -261,6 +259,14 @@ LOCAL_SRC_FILES += \
 LOCAL_SRC_FILES += \
 	../../../libnetwork/bytebuffer.cpp \
 	../../../libnetwork/libnetwork.cpp 
+
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../2dsg/gfxbackends $(LOCAL_PATH)/../../../2dsg/gfxbackends/gl2
+LOCAL_SRC_FILES += \
+	../../../2dsg/gfxbackends/Shaders.cpp \
+	../../../2dsg/gfxbackends/gl2/gl2ShaderBuffer.cpp \
+	../../../2dsg/gfxbackends/gl2/gl2ShaderTexture.cpp \
+	../../../2dsg/gfxbackends/gl2/gl2ShaderProgram.cpp \
+	../../../2dsg/gfxbackends/gl2/gl2ShaderEngine.cpp 
 	
 # zlib (12 files)
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../libgid/external/zlib-1.2.8
@@ -417,6 +423,7 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/meshbinder.cpp \
 	../../../luabinding/audiobinder.cpp \
 	../../../luabinding/zlibbinder.cpp \
+	../../../luabinding/shaderbinder.cpp \
 	../../../luabinding/rendertargetbinder.cpp
 
 
@@ -425,3 +432,8 @@ LOCAL_LDLIBS := -lGLESv2 -ldl -llog
 LOCAL_SHARED_LIBRARIES := gvfs lua
 
 include $(BUILD_SHARED_LIBRARY)
+
+ifeq ($(TARGET_ARCH),armeabi)
+LOCAL_ARM_MODE := arm
+endif
+

@@ -55,6 +55,11 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_pushinteger(L, ShaderProgram::SysConst_WorldInverseTransposeMatrix);
 	lua_setfield(L, -2, "SYS_WIT");
 
+	lua_pushinteger(L, ShaderProgram::Flag_None);
+	lua_setfield(L, -2, "FLAG_NONE");
+	lua_pushinteger(L, ShaderProgram::Flag_NoDefaultHeader);
+	lua_setfield(L, -2, "FLAG_NO_DEFAULT_HANDLER");
+
 	lua_pop(L, 1);
 
 }
@@ -88,7 +93,7 @@ int ShaderBinder::create(lua_State* L)
         lua_getfield(L,-4,"sys");
         cst.sys=(ShaderProgram::SystemConstant) luaL_optinteger(L,-1,0);
         lua_getfield(L,-5,"mult");
-        cst.mult=luaL_checkinteger(L,-1);
+        cst.mult=luaL_optinteger(L,-1,1);
         lua_pop(L,6);
     	constants.push_back(cst);
       }
@@ -105,9 +110,9 @@ int ShaderBinder::create(lua_State* L)
         lua_getfield(L,-3,"mult");
         cst.mult=luaL_checkinteger(L,-1);
         lua_getfield(L,-4,"slot");
-        cst.slot=luaL_checkinteger(L,-1);
+        cst.slot=luaL_optinteger(L,-1,0);
         lua_getfield(L,-5,"offset");
-        cst.offset=luaL_checkinteger(L,-1);
+        cst.offset=luaL_optinteger(L,-1,0);
         lua_pop(L,6);
     	datas.push_back(cst);
       }
