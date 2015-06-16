@@ -11,11 +11,17 @@
 GLint ogl2ShaderProgram::curProg = -1;
 ShaderProgram *ogl2ShaderProgram::current = NULL;
 
+const char *hdrShaderCode=
 #ifdef OPENGL_ES
-const char *hdrShaderCode="#define GLES\n";
+    "#version 100\n"
+    "#define GLES2\n";
 #else
-const char *hdrShaderCode="";
+    "#version 120\n"
+    "#define highp\n"
+    "#define mediump\n"
+    "#define lowp\n";
 #endif
+
 
 GLuint ogl2LoadShader(GLuint type, const char *hdr, const char *code, std::string &log) {
 	GLuint shader = glCreateShader(type);
@@ -148,24 +154,24 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 
 }
 
-void ogl2ShaderProgram::setConstant(int index, ConstantType type,
+void ogl2ShaderProgram::setConstant(int index, ConstantType type, int mult,
 		const void *ptr) {
-	if (!updateConstant(index, type, ptr))
+	if (!updateConstant(index, type, mult, ptr))
 		return;
 	useProgram();
 	switch (type) {
 	case CINT:
 	case CTEXTURE:
-		glUniform1i(gluniforms[index], ((GLint *) ptr)[0]);
+		glUniform1iv(gluniforms[index], mult,((GLint *) ptr));
 		break;
 	case CFLOAT:
-		glUniform1f(gluniforms[index], ((GLfloat *) ptr)[0]);
+		glUniform1fv(gluniforms[index],mult, ((GLfloat *) ptr));
 		break;
 	case CFLOAT4:
-		glUniform4fv(gluniforms[index], 1, ((GLfloat *) ptr));
+		glUniform4fv(gluniforms[index], mult, ((GLfloat *) ptr));
 		break;
 	case CMATRIX:
-		glUniformMatrix4fv(gluniforms[index], 1, false, ((GLfloat *) ptr));
+		glUniformMatrix4fv(gluniforms[index], mult, false, ((GLfloat *) ptr));
 		break;
 	}
 	/*
@@ -175,11 +181,12 @@ void ogl2ShaderProgram::setConstant(int index, ConstantType type,
 */
 }
 
-ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader, const char *fshader,
+ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader, const char *fshader,int flags,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	void *vs = LoadShaderFile(vshader, "glsl", NULL);
 	void *fs = LoadShaderFile(fshader, "glsl", NULL);
-	buildProgram(hdrShaderCode,(char *) vs, hdrShaderCode, (char *) fs, uniforms, attributes);
+	const char *hdr=(flags&ShaderProgram::Flag_NoDefaultHeader)?"":hdrShaderCode;
+	buildProgram(hdr,(char *) vs, hdr, (char *) fs, uniforms, attributes);
 }
 
 ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader1, const char *vshader2,
@@ -229,7 +236,7 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 		if (cbsData & (ual - 1))
 			cbsData += ual - (cbsData & (ual - 1));
 		cd.offset = cbsData;
-		cbsData += usz;
+		cbsData += usz*cd.mult;
 		this->uniforms.push_back(cd);
 	}
 	cbData = malloc(cbsData);

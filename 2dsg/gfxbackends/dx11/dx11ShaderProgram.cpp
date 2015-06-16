@@ -121,9 +121,9 @@ void dx11ShaderProgram::setData(int index, DataType type, int mult,
 	setupBuffer(index, type, mult, ptr, count, modified, cache);
 }
 
-void dx11ShaderProgram::setConstant(int index, ConstantType type,
+void dx11ShaderProgram::setConstant(int index, ConstantType type, int mult,
 		const void *ptr) {
-	if (updateConstant(index, type, ptr)) {
+	if (updateConstant(index, type, mult, ptr)) {
 		if (uniforms[index].vertexShader)
 			cbvMod = true;
 		else
@@ -240,12 +240,12 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 			if (cbvsData & (ual - 1))
 				cbvsData += ual - (cbvsData & (ual - 1));
 			cd.offset = cbvsData;
-			cbvsData += usz;
+			cbvsData += usz*cd.mult;
 		} else {
 			if (cbpsData & (ual - 1))
 				cbpsData += ual - (cbpsData & (ual - 1));
 			cd.offset = cbpsData;
-			cbpsData += usz;
+			cbpsData += usz*cd.mult;
 		}
 		this->uniforms.push_back(cd);
 	}

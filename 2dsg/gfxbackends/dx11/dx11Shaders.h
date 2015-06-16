@@ -68,7 +68,7 @@ public:
     virtual void activate();
     virtual void deactivate();
     virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache);
-    virtual void setConstant(int index,ConstantType type,const void *ptr);
+    virtual void setConstant(int index,ConstantType type, int mult,const void *ptr);
     virtual void drawArrays(ShapeType shape, int first, unsigned int count);
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache);
     virtual bool isValid();
@@ -136,7 +136,7 @@ public:
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	ShaderBuffer *createRenderTarget(ShaderTexture *texture);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
-	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
+	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
 	void setViewport(int x,int y,int width,int height);
 	void clearColor(float r,float g,float b,float a);
 	void bindTexture(int num,ShaderTexture *texture);

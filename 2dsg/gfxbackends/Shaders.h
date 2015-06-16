@@ -39,9 +39,14 @@ public:
     	SysConst_WorldInverseTransposeMatrix,
     	SysConst_WorldMatrix,
     };
+    enum ShaderFlags {
+    	Flag_None=0,
+    	Flag_NoDefaultHeader=1
+    };
     struct ConstantDesc {
     	const char *name;
     	ConstantType type;
+    	int mult;
     	SystemConstant sys;
     	bool vertexShader;
     	unsigned short offset;
@@ -57,7 +62,7 @@ public:
     virtual void activate()=0;
     virtual void deactivate()=0;
     virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache)=0;
-    virtual void setConstant(int index,ConstantType type,const void *ptr)=0;
+    virtual void setConstant(int index,ConstantType type, int mult,const void *ptr)=0;
     virtual void drawArrays(ShapeType shape, int first, unsigned int count)=0;
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache)=0;
     virtual bool isValid()=0;
@@ -67,13 +72,14 @@ public:
     ShaderProgram();
     virtual ~ShaderProgram() { };
     int getSystemConstant(SystemConstant t);
+    int getConstantByName(const char *name);
 protected:
     int refCount;
     std::vector<ConstantDesc> uniforms;
     int sysconstmask;
     char sysconstidx[8];
     void shaderInitialized();
-    virtual bool updateConstant(int index,ConstantType type,const void *ptr);
+    virtual bool updateConstant(int index,ConstantType type, int mult,const void *ptr);
     static void *LoadShaderFile(const char *fname, const char *ext, long *len);
 };
 
@@ -174,7 +180,7 @@ public:
 	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
 	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture)=0;
 	virtual ShaderBuffer *setFramebuffer(ShaderBuffer *fbo)=0;
-	virtual ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,
+	virtual ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags,
 	                     const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)=0;
 	virtual void setViewport(int x,int y,int width,int height)=0;
 	//Matrices

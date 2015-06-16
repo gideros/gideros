@@ -14,6 +14,7 @@ private:
 
 	static int setConstant(lua_State* L);
 	static int isValid(lua_State* L);
+	static int getEngineVersion(lua_State* L);
 };
 
 #endif
