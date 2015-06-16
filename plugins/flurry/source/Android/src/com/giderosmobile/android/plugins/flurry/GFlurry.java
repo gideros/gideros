@@ -11,7 +11,7 @@ public class GFlurry
 {
 	private static WeakReference<Activity> sActivity;
 	private static volatile boolean sIsActive = true;
-    private static volatile boolean isInitiated = false;
+	private static volatile boolean isInitiated = false;
 	private static String sApiKey = null;
 
 	public static void onCreate(Activity activity)

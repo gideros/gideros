@@ -634,8 +634,12 @@ void glLineWidth(GLfloat width)
 
 // ================ NEW =========================
 
+GLenum old_sfactor = -1, old_dfactor = -1;
+
 void glBlendFunc(GLenum sfactor, GLenum dfactor)
 {
+
+	if (sfactor == old_sfactor && dfactor == old_dfactor) return;  // avoid unnecessary change
 
 	D3D11_BLEND src, dest;
 
@@ -677,6 +681,9 @@ void glBlendFunc(GLenum sfactor, GLenum dfactor)
 
 	g_dev->CreateBlendState(&blendStateDesc, &g_pBlendState);
 	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
+
+	old_sfactor = sfactor;
+	old_dfactor = dfactor;
 }
 
 

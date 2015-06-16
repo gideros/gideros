@@ -17,6 +17,11 @@ using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
 using namespace Platform;
 using namespace Windows::Storage;
+using namespace Windows::UI::Popups;
+
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+using namespace Windows::Phone::UI::Input;
+#endif
 
 extern "C"
 {
@@ -78,6 +83,8 @@ public:
 			<CoreWindow^, KeyEventArgs^>(this, &App::KeyDown);
 		Window->KeyUp += ref new TypedEventHandler
 			<CoreWindow^, KeyEventArgs^>(this, &App::KeyUp);
+#else
+		HardwareButtons::BackPressed += ref new EventHandler<BackPressedEventArgs^>(this, &App::OnBackButtonPressed);   
 #endif
     }
 
@@ -174,13 +181,23 @@ public:
 
 	void KeyDown(CoreWindow^ Window, KeyEventArgs^ Args)
 	{
+		Args->Handled = true;
 		gdr_keyDown((int)Args->VirtualKey);
 	}
 
 	void KeyUp(CoreWindow^ Window, KeyEventArgs^ Args)
 	{
+		Args->Handled = true;
 		gdr_keyUp((int)Args->VirtualKey);
 	}
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+	void OnBackButtonPressed(Object^ sender, BackPressedEventArgs^ args)
+	{
+		gdr_keyDown(301);
+		gdr_keyUp(301);
+		args->Handled = true;
+	}
+#endif
 
 
 };

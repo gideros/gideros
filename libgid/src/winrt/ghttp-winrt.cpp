@@ -1,5 +1,8 @@
 #include <ghttp.h>
 
+using namespace Windows::Web::Http;
+using namespace Windows::Foundation;
+
 extern "C" {
 
 void ghttp_Init()
@@ -16,6 +19,13 @@ void ghttp_Cleanup()
 g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
 {
 //    return s_manager->Get(url, header, callback, udata);
+
+//	HttpClient ^client = ref new HttpClient();
+//	Uri ^uri = ref new Uri("http://example.com/datalist.aspx");
+
+//	auto obj = client->GetAsync(uri);
+//	obj->GetResults();
+
 	return 0;
 }
 

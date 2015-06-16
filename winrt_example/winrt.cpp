@@ -17,9 +17,12 @@ using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
 using namespace Platform;
 using namespace Windows::Storage;
+using namespace Windows::UI::Popups;
+
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 using namespace Windows::Phone::UI::Input;
 #endif
+
 extern "C"
 {
 #ifdef _M_IX86

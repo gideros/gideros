@@ -60,30 +60,6 @@
     <None Include="Assets\VertexShader.cso">
       <Filter>Assets</Filter>
     </None>
-    <None Include="Assets\pBasic.cso">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\pColor.cso">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\pTexture.cso">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\pTextureColor.cso">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\vBasic.cso">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\vColor.cso">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\vTexture.cso">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\vTextureColor.cso">
-      <Filter>Assets</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\luafiles.txt">
