@@ -221,6 +221,10 @@ ShaderProgram *ogl2ShaderEngine::createShaderProgram(const char *vshader,const c
 
 ogl2ShaderEngine::ogl2ShaderEngine(int sw,int sh)
 {
+	s_texture = 0;
+	s_depthEnable=0;
+	s_depthBufferCleared=false;
+
 	currentBuffer=NULL;
 	_depthRenderBuffer=0;
 	ogl2ShaderProgram::current=NULL;

@@ -8,27 +8,22 @@
 #else
 #include "gl2Shaders.h"
 #endif
-static bool oglInitialized=false;
 
-void oglInitialize(unsigned int sw,unsigned int sh)
-{
-    if (oglInitialized) return;
+void oglInitialize(unsigned int sw, unsigned int sh) {
+	if (ShaderEngine::Engine)
+		return;
 #ifdef WINSTORE
 	ShaderEngine::Engine = new dx11ShaderEngine(sw, sh);
 #else
 	ShaderEngine::Engine = new ogl2ShaderEngine(sw, sh);
 #endif
-  oglInitialized=true;
-  gtexture_set_engine(ShaderEngine::Engine);
+	gtexture_set_engine(ShaderEngine::Engine);
 }
 
-
-void oglCleanup()
-{
-	if (oglInitialized)
-	{
-    oglInitialized=false;
-    delete ShaderEngine::Engine;
-    ShaderEngine::Engine=NULL;
+void oglCleanup() {
+	if (ShaderEngine::Engine) {
+		gtexture_set_engine(NULL);
+		delete ShaderEngine::Engine;
+		ShaderEngine::Engine = NULL;
 	}
 }
