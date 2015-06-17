@@ -1195,7 +1195,7 @@ void ApplicationManager::drawFrame()
 	CoreWindow^ Window = CoreWindow::GetForCurrentThread();
 	int FPS = g_getFps();
 
-	if (FPS == 0) {
+	if (FPS > 0) {
 		Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
 		GStatus status;
@@ -1219,12 +1219,17 @@ void ApplicationManager::drawFrame()
 		application_->renderScene(1);
 		drawIPs();
 
-		g_swapchain->Present(1, 0);
+		if (FPS==60)	
+			g_swapchain->Present(1, 0);
+		else if (FPS==30)
+			g_swapchain->Present(2, 0);
 	}
 	else {
 
+		int absFPS = abs(FPS);
+
 		const int MAX_FRAMESKIP = 10;
-		int SKIP_TICKS = 1000 / FPS;
+		int SKIP_TICKS = 1000 / absFPS;
 
 		int loops = 0;
 		while (GetTickCount64() > next_game_tick && loops < MAX_FRAMESKIP) {
@@ -1257,7 +1262,7 @@ void ApplicationManager::drawFrame()
 		application_->renderScene(1);
 		drawIPs();
 
-		g_swapchain->Present(1, 0);
+		g_swapchain->Present(0, 0);
 	}
 }
 
