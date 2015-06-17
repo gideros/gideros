@@ -41,7 +41,7 @@ stage:addChild(bird3)
 stage:addChild(bird4)
 
 local alertDialog = AlertDialog.new("Error: not found", "Try reinstalling all software", "Cancel","OK", "No Way!")
-local alertDialog2 = AlertDialog.new("Error", "Should the UK be a member of the EU", "Cancel", "Yes", "NOOOOOOOOO")
+local alertDialog2 = AlertDialog.new("Important Question", "Should the UK be a member of the EU?", "Cancel", "Yes", "NOOOOOOOOO")
 
 local function onComplete(event)
   print(event.buttonIndex, event.buttonText)
