@@ -246,6 +246,7 @@ private:
     static int b2ParticleSystem_createParticle(lua_State* L);
     static int b2ParticleSystem_destroyParticle(lua_State* L);
     static int b2ParticleSystem_createParticleGroup(lua_State* L);
+    static int b2ParticleSystem_setTexture(lua_State* L);
 #endif
 };
 

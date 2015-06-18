@@ -9,6 +9,7 @@
 #include <ogl.h>
 #include <color.h>
 #include <sprite.h>
+#include <texturebase.h>
 
 #include "keys.h"
 #include "luautil.h"
@@ -46,9 +47,11 @@ public:
     b2ParticleSystemSprite(LuaApplication* application,b2ParticleSystem* b2ps);
 	virtual ~b2ParticleSystemSprite();
 	b2ParticleSystem* GetSystem() { return ps_; }
+	void SetTexture(TextureBase *texture);
 private:
 	LuaApplication* application_;
 	b2ParticleSystem* ps_;
+	TextureBase* texturebase_;
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 };
 
@@ -58,8 +61,19 @@ b2ParticleSystemSprite::b2ParticleSystemSprite(LuaApplication* application,b2Par
 	application_=application;
 }
 
+void b2ParticleSystemSprite::SetTexture(TextureBase *texturebase)
+{
+	TextureBase *originaltexturebase = texturebase_;
+	texturebase_ = texturebase;
+	texturebase_->ref();
+	if (originaltexturebase)
+		originaltexturebase->unref();
+}
+
 b2ParticleSystemSprite::~b2ParticleSystemSprite()
 {
+	if (texturebase_ != NULL)
+		texturebase_->unref();
 	//TODO Destroy system ?
 }
 
@@ -80,10 +94,22 @@ void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float sx, float sy
 			int pc=ps_->GetParticleCount();
 			p->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT, 2,ps_->GetPositionBuffer(), pc, true, NULL);
 			p->setData(ShaderProgram::DataColor, ShaderProgram::DUBYTE, 4,ps_->GetColorBuffer(), pc, true, NULL);
+			if (texturebase_)
+			{
+				ShaderEngine::Engine->bindTexture(0,texturebase_->data->id());
+				int sc=p->getSystemConstant(ShaderProgram::SysConst_ParticleSize);
+				if (sc>=0)
+				{
+					float u = (float)texturebase_->data->width / (float)texturebase_->data->exwidth;
+					float v = (float)texturebase_->data->height / (float)texturebase_->data->exheight;
+					float textureInfo[4]={u,v,1.0/texturebase_->data->exwidth,1.0/texturebase_->data->exheight };
+					p->setConstant(sc,ShaderProgram::CFLOAT4,1,textureInfo);
+				}
+			}
 			int sc=p->getSystemConstant(ShaderProgram::SysConst_ParticleSize);
 			if (sc>=0)
 			{
-				float rad=ps_->GetRadius();
+				float rad=ps_->GetRadius()*physicsScale;
 				p->setConstant(sc,ShaderProgram::CFLOAT,1,&rad);
 			}
 			p->drawArrays(ShaderProgram::Point, 0, pc);
@@ -894,9 +920,10 @@ int Box2DBinder2::loader(lua_State *L)
     	{"createParticle",b2ParticleSystem_createParticle},
     	{"destroyParticle",b2ParticleSystem_destroyParticle},
     	{"createParticleGroup",b2ParticleSystem_createParticleGroup},
-        {NULL, NULL},
+        {"setTexture", b2ParticleSystem_setTexture},
+         {NULL, NULL},
     };
-    binder.createClass("b2ParticleSystem", NULL, NULL, NULL, b2ParticleSystem_functionList);
+    binder.createClass("b2ParticleSystem", "Sprite", NULL, NULL, b2ParticleSystem_functionList);
 #endif
 
 	lua_newtable(L);
@@ -5462,6 +5489,19 @@ int Box2DBinder2::b2ParticleSystem_destroyParticle(lua_State* L)
 
     return 0;
 }
+
+int Box2DBinder2::b2ParticleSystem_setTexture(lua_State *L)
+{
+    StackChecker checker(L, "b2ParticleSystem_setTexture", 0);
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(binder.getInstance("b2ParticleSystem", 1));
+    TextureBase *textureBase = static_cast<TextureBase*>(binder.getInstance("TextureBase", 2));
+    ps->SetTexture(textureBase);
+
+    return 0;
+}
+
 
 static void tableToParticleGroupDef(lua_State* L, int index, b2ParticleGroupDef* particleGroupDef, float physicsScale)
 {
