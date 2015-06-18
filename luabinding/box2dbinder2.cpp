@@ -40,6 +40,60 @@ private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 };
 
+class b2ParticleSystemSprite : public Sprite
+{
+public:
+    b2ParticleSystemSprite(LuaApplication* application,b2ParticleSystem* b2ps);
+	virtual ~b2ParticleSystemSprite();
+	b2ParticleSystem* GetSystem() { return ps_; }
+private:
+	LuaApplication* application_;
+	b2ParticleSystem* ps_;
+    virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
+};
+
+b2ParticleSystemSprite::b2ParticleSystemSprite(LuaApplication* application,b2ParticleSystem* b2ps) : Sprite(application->getApplication())
+{
+	ps_=b2ps;
+	application_=application;
+}
+
+b2ParticleSystemSprite::~b2ParticleSystemSprite()
+{
+	//TODO Destroy system ?
+}
+
+void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float sx, float sy, float ex, float ey)
+{
+	if (ps_)
+	{
+		float physicsScale = application_->getPhysicsScale();
+
+		Matrix4 modelMat=ShaderEngine::Engine->getModel();
+		Matrix4 scaledMat=modelMat;
+		scaledMat.scale(physicsScale,physicsScale,1);
+		ShaderEngine::Engine->setModel(scaledMat);
+
+		ShaderProgram *p=shader_;
+		if (p)
+		{
+			int pc=ps_->GetParticleCount();
+			p->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT, 2,ps_->GetPositionBuffer(), pc, true, NULL);
+			p->setData(ShaderProgram::DataColor, ShaderProgram::DUBYTE, 4,ps_->GetColorBuffer(), pc, true, NULL);
+			int sc=p->getSystemConstant(ShaderProgram::SysConst_ParticleSize);
+			if (sc>=0)
+			{
+				float rad=ps_->GetRadius();
+				p->setConstant(sc,ShaderProgram::CFLOAT,1,&rad);
+			}
+			p->drawArrays(ShaderProgram::Point, 0, pc);
+		}
+
+		ShaderEngine::Engine->setModel(modelMat);
+	}
+}
+
+
 static void getb2(lua_State* L)
 {
 	StackChecker checker(L, "getb2", 0);
@@ -515,6 +569,9 @@ int Box2DBinder2::loader(lua_State *L)
 		{"getGravity", b2World_getGravity},
 		{"setGravity", b2World_setGravity},
 		{"setDebugDraw", b2World_setDebugDraw},
+#if BIND_LIQUIDFUN
+		{"createParticleSystem", b2World_createParticleSystem},
+#endif
 		{NULL, NULL},
 	};
 	binder.createClass("b2World", "EventDispatcher", b2World_create, b2World_destruct, b2World_functionList);
@@ -832,6 +889,14 @@ int Box2DBinder2::loader(lua_State *L)
         {NULL, NULL},
     };
     binder.createClass("b2ParticleGroup", NULL, NULL, NULL, b2ParticleGroup_functionList);
+
+    const luaL_Reg b2ParticleSystem_functionList[] = {
+    	{"createParticle",b2ParticleSystem_createParticle},
+    	{"destroyParticle",b2ParticleSystem_destroyParticle},
+    	{"createParticleGroup",b2ParticleSystem_createParticleGroup},
+        {NULL, NULL},
+    };
+    binder.createClass("b2ParticleSystem", NULL, NULL, NULL, b2ParticleSystem_functionList);
 #endif
 
 	lua_newtable(L);
@@ -964,6 +1029,11 @@ int Box2DBinder2::loader(lua_State *L)
     lua_setfield(L, -2, "ParticleGroup");
     lua_pushnil(L);
     lua_setglobal(L, "b2ParticleGroup");
+
+    lua_getglobal(L, "b2ParticleSystem");
+    lua_setfield(L, -2, "ParticleSystem");
+    lua_pushnil(L);
+    lua_setglobal(L, "b2ParticleSystem");
 #endif
 
 	lua_pushinteger(L, b2_staticBody);
@@ -5250,6 +5320,71 @@ int Box2DBinder2::testOverlap(lua_State *L)
 
 #if BIND_LIQUIDFUN
 
+static void tableToParticleSystemDef(lua_State* L, int index, b2ParticleSystemDef* particleDef, float physicsScale)
+{
+    Binder binder(L);
+
+    /*lua_getfield(L, index, "flags"); TODO
+    if (!lua_isnil(L, -1))
+        particleDef->flags = luaL_checkinteger(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "position");
+    if (!lua_isnil(L, -1))
+    {
+        particleDef->position = tableToVec2(L, -1);
+        particleDef->position.x /= physicsScale;
+        particleDef->position.y /= physicsScale;
+    }
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "velocity");
+    if (!lua_isnil(L, -1))
+        particleDef->velocity = tableToVec2(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "color");
+    if (!lua_isnil(L, -1))
+    {
+        unsigned int color = luaL_checkinteger(L, -1);
+        particleDef->color.r = (color >> 16) & 0xff;
+        particleDef->color.g = (color >> 8) & 0xff;
+        particleDef->color.b = color & 0xff;
+    }
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "alpha");
+    if (!lua_isnil(L, -1))
+    {
+        int alpha = (int)(luaL_checknumber(L, -1) * 255);
+        particleDef->color.a = std::min(std::max(alpha, 0), 255);
+    }
+    lua_pop(L, 1);*/
+}
+
+int Box2DBinder2::b2World_createParticleSystem(lua_State* L)
+{
+    StackChecker checker(L, "b2World_createParticleSystem", 1);
+
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+
+    Binder binder(L);
+    b2WorldED* world = static_cast<b2WorldED*>(binder.getInstance("b2World", 1));
+
+    if (world->IsLocked())
+        return luaL_error(L, GStatus(5004).errorString());	// Error #5004: World is locked.
+
+    b2ParticleSystemDef particleSystemDef;
+    tableToParticleSystemDef(L, 2, &particleSystemDef, application->getPhysicsScale());
+
+    b2ParticleSystem* particleSystem = world->CreateParticleSystem(&particleSystemDef);
+    b2ParticleSystemSprite *ps=new b2ParticleSystemSprite(application,particleSystem);
+
+    binder.pushInstance("b2ParticleSystem", ps);
+
+    return 1;
+}
+
 static void tableToParticleDef(lua_State* L, int index, b2ParticleDef* particleDef, float physicsScale)
 {
     // TODO: index'tekinin table oldugunu test et
@@ -5294,36 +5429,36 @@ static void tableToParticleDef(lua_State* L, int index, b2ParticleDef* particleD
     lua_pop(L, 1);
 }
 
-
-
-int Box2DBinder2::b2World_createParticle(lua_State* L)
+int Box2DBinder2::b2ParticleSystem_createParticle(lua_State* L)
 {
-    StackChecker checker(L, "b2World_createParticle", 1);
+    StackChecker checker(L, "b2ParticleSystem_createParticle", 1);
 
     LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     Binder binder(L);
-    b2WorldED* world = static_cast<b2WorldED*>(binder.getInstance("b2World", 1));
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(binder.getInstance("b2ParticleSystem", 1));
 
-    if (world->IsLocked())
-        return luaL_error(L, GStatus(5004).errorString());	// Error #5004: World is locked.
 
     b2ParticleDef particleDef;
     tableToParticleDef(L, 2, &particleDef, application->getPhysicsScale());
 
-    lua_pushinteger(L, world->CreateParticle(particleDef));
+    int32 p=ps->GetSystem()->CreateParticle(particleDef);
+    if (p==0)
+    	return luaL_error(L, GStatus(5004).errorString());	// Error #5004: World is locked.
+
+    lua_pushinteger(L, p);
 
     return 1;
 }
 
-int Box2DBinder2::b2World_destroyParticle(lua_State* L)
+int Box2DBinder2::b2ParticleSystem_destroyParticle(lua_State* L)
 {
-    StackChecker checker(L, "b2World_destroyParticle", 0);
+    StackChecker checker(L, "b2ParticleSystem_destroyParticle", 0);
 
     Binder binder(L);
-    b2WorldED* world = static_cast<b2WorldED*>(binder.getInstance("b2World", 1));
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(binder.getInstance("b2ParticleSystem", 1));
 
-    world->DestroyParticle(luaL_checkinteger(L, 2));
+    ps->GetSystem()->DestroyParticle(luaL_checkinteger(L, 2));
 
     return 0;
 }
@@ -5397,29 +5532,28 @@ static void tableToParticleGroupDef(lua_State* L, int index, b2ParticleGroupDef*
     particleGroupDef->shape = toShape(binder, -1);
     lua_pop(L, 1);
 
-    lua_getfield(L, index, "destroyAutomatically");
+    lua_getfield(L, index, "lifetime");
     if (!lua_isnil(L, -1))
-        particleGroupDef->destroyAutomatically = lua_toboolean(L, -1);
+        particleGroupDef->lifetime = luaL_checknumber(L, -1);
     lua_pop(L, 1);
 }
 
 
-int Box2DBinder2::b2World_createParticleGroup(lua_State* L)
+int Box2DBinder2::b2ParticleSystem_createParticleGroup(lua_State* L)
 {
-    StackChecker checker(L, "b2World_createParticleGroup", 1);
+    StackChecker checker(L, "b2ParticleSystem_createParticleGroup", 1);
 
     LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     Binder binder(L);
-    b2WorldED* world = static_cast<b2WorldED*>(binder.getInstance("b2World", 1));
-
-    if (world->IsLocked())
-        return luaL_error(L, GStatus(5004).errorString());	// Error #5004: World is locked.
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(binder.getInstance("b2ParticleSystem", 1));
 
     b2ParticleGroupDef particleGroupDef;
     tableToParticleGroupDef(L, 2, &particleGroupDef, application->getPhysicsScale());
 
-    b2ParticleGroup* particleGroup = world->CreateParticleGroup(particleGroupDef);
+    b2ParticleGroup* particleGroup =ps->GetSystem()->CreateParticleGroup(particleGroupDef);
+    if (!particleGroup)
+    	return luaL_error(L, GStatus(5004).errorString());	// Error #5004: World is locked.
 
     binder.pushInstance("b2ParticleGroup", particleGroup);
 

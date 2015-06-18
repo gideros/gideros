@@ -38,6 +38,7 @@ public:
     	SysConst_Color,
     	SysConst_WorldInverseTransposeMatrix,
     	SysConst_WorldMatrix,
+		SysConst_ParticleSize
     };
     enum ShaderFlags {
     	Flag_None=0,
