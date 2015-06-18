@@ -59,6 +59,7 @@ b2ParticleSystemSprite::b2ParticleSystemSprite(LuaApplication* application,b2Par
 {
 	ps_=b2ps;
 	application_=application;
+	texturebase_=NULL;
 }
 
 void b2ParticleSystemSprite::SetTexture(TextureBase *texturebase)
@@ -159,6 +160,7 @@ public:
 
 	virtual ~b2WorldED()
 	{
+		b2World::SetDestructionListener(NULL);
 		delete m_destructionListener;
 		delete m_contactListener;
 		if (m_debugDraw)
