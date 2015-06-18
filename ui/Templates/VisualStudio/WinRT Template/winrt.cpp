@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stack>
 #include <string>
+#include <vector>
 
 #include "giderosapi.h"
 
@@ -42,6 +43,11 @@ extern "C"
 	void ExitProcess(int i)
 	{
 	}
+}
+
+// blank function since this is not used in exports
+void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::vector<std::string>* directories)
+{
 }
 
 // ######################################################################

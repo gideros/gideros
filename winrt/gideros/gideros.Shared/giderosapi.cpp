@@ -919,8 +919,7 @@ void ApplicationManager::drawFrame()
 {
 	CoreWindow^ Window = CoreWindow::GetForCurrentThread();
 	int FPS = g_getFps();
-	int sync=FPS?(60/FPS):0;
-	{
+	if (FPS > 0) {
 		Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
 		GStatus status;
@@ -942,7 +941,48 @@ void ApplicationManager::drawFrame()
 		application_->renderScene(1);
 		drawIPs();
 
-		g_swapchain->Present(sync, 0);
+		if (FPS==60)	
+			g_swapchain->Present(1, 0);
+		else if (FPS==30)
+			g_swapchain->Present(2, 0);
+	}
+	else {
+
+		int absFPS = abs(FPS);
+
+		const int MAX_FRAMESKIP = 10;
+		int SKIP_TICKS = 1000 / absFPS;
+
+		int loops = 0;
+		while (GetTickCount64() > next_game_tick && loops < MAX_FRAMESKIP) {
+			Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+
+			GStatus status;
+			application_->enterFrame(&status);
+			if (status.error())
+				luaError(status.errorString());
+
+			next_game_tick += SKIP_TICKS;
+			loops++;
+		}
+
+		gaudio_AdvanceStreamBuffers();
+
+		nframe_++;
+
+		if (networkManager_)
+			networkManager_->tick();
+
+		//	application_->clearBuffers();  (this would duplicate ClearRenderTargetView above)
+
+		if (application_->isErrorSet())
+			luaError(application_->getError());
+
+		application_->clearBuffers();
+		application_->renderScene(1);
+		drawIPs();
+
+		g_swapchain->Present(0, 0);
 	}
 }
 

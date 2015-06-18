@@ -541,7 +541,7 @@ int ApplicationBinder::setFps(lua_State* L)
 
     int fps = luaL_checkinteger(L, 2);
 
-    if (fps != 30 && fps != 60 && fps !=0)
+    if (fps != 30 && fps != 60 && fps != -30 && fps != -60)
     {
         GStatus status(2008, "fps");	// Parameter %s must be one of the accepted values.
         return luaL_error(L, status.errorString());
