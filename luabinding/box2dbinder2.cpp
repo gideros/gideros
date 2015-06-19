@@ -90,27 +90,30 @@ void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float sx, float sy
 		ShaderEngine::Engine->setModel(scaledMat);
 
 		ShaderProgram *p=shader_;
+		if (!p)
+			p=ShaderProgram::stdParticle;
 		if (p)
 		{
 			int pc=ps_->GetParticleCount();
 			p->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT, 2,ps_->GetPositionBuffer(), pc, true, NULL);
 			p->setData(ShaderProgram::DataColor, ShaderProgram::DUBYTE, 4,ps_->GetColorBuffer(), pc, true, NULL);
+
+			float textureInfo[4]={0,0,0,0};
 			if (texturebase_)
 			{
 				ShaderEngine::Engine->bindTexture(0,texturebase_->data->id());
-				int sc=p->getSystemConstant(ShaderProgram::SysConst_ParticleSize);
-				if (sc>=0)
-				{
-					float u = (float)texturebase_->data->width / (float)texturebase_->data->exwidth;
-					float v = (float)texturebase_->data->height / (float)texturebase_->data->exheight;
-					float textureInfo[4]={u,v,1.0/texturebase_->data->exwidth,1.0/texturebase_->data->exheight };
-					p->setConstant(sc,ShaderProgram::CFLOAT4,1,textureInfo);
-				}
+				textureInfo[0]=(float)texturebase_->data->width / (float)texturebase_->data->exwidth;
+				textureInfo[1]=(float)texturebase_->data->height / (float)texturebase_->data->exheight;
+				textureInfo[2]=1.0/texturebase_->data->exwidth;
+				textureInfo[3]=1.0/texturebase_->data->exheight;
 			}
-			int sc=p->getSystemConstant(ShaderProgram::SysConst_ParticleSize);
+			int sc=p->getSystemConstant(ShaderProgram::SysConst_TextureInfo);
+			if (sc>=0)
+				p->setConstant(sc,ShaderProgram::CFLOAT4,1,textureInfo);
+			sc=p->getSystemConstant(ShaderProgram::SysConst_ParticleSize);
 			if (sc>=0)
 			{
-				float rad=ps_->GetRadius()*physicsScale;
+				float rad=ps_->GetRadius()*physicsScale*2; //Point Size is width, e.q diameter
 				p->setConstant(sc,ShaderProgram::CFLOAT,1,&rad);
 			}
 			p->drawArrays(ShaderProgram::Point, 0, pc);
@@ -926,6 +929,47 @@ int Box2DBinder2::loader(lua_State *L)
          {NULL, NULL},
     };
     binder.createClass("b2ParticleSystem", "Sprite", NULL, NULL, b2ParticleSystem_functionList);
+    lua_getglobal(L, "b2ParticleSystem");
+
+    lua_pushinteger(L, b2_waterParticle);
+    lua_setfield(L, -2, "FLAG_WATER");
+    lua_pushinteger(L, b2_zombieParticle);
+    lua_setfield(L, -2, "FLAG_ZOMBIE");
+    lua_pushinteger(L, b2_wallParticle);
+    lua_setfield(L, -2, "FLAG_WALL");
+    lua_pushinteger(L, b2_springParticle);
+    lua_setfield(L, -2, "FLAG_SPRING");
+    lua_pushinteger(L, b2_elasticParticle);
+    lua_setfield(L, -2, "FLAG_ELASTIC");
+    lua_pushinteger(L, b2_viscousParticle);
+    lua_setfield(L, -2, "FLAG_VISCOUS");
+    lua_pushinteger(L, b2_powderParticle);
+    lua_setfield(L, -2, "FLAG_POWDER");
+    lua_pushinteger(L, b2_tensileParticle);
+    lua_setfield(L, -2, "FLAG_TENSILE");
+    lua_pushinteger(L, b2_colorMixingParticle);
+    lua_setfield(L, -2, "FLAG_COLOR_MIXING");
+    lua_pushinteger(L, b2_destructionListenerParticle);
+    lua_setfield(L, -2, "FLAG_DESTRUCTION_LISTENER");
+    lua_pushinteger(L, b2_barrierParticle);
+    lua_setfield(L, -2, "FLAG_BARRIER");
+    lua_pushinteger(L, b2_staticPressureParticle);
+    lua_setfield(L, -2, "FLAG_STATIC_PRESSURE");
+    lua_pushinteger(L, b2_reactiveParticle);
+    lua_setfield(L, -2, "FLAG_REACTIVE");
+    lua_pushinteger(L, b2_repulsiveParticle);
+    lua_setfield(L, -2, "FLAG_REPULSIVE");
+    lua_pushinteger(L, b2_fixtureContactListenerParticle);
+    lua_setfield(L, -2, "FLAG_FIXTURE_CONTACT_LISTENER");
+    lua_pushinteger(L, b2_particleContactListenerParticle);
+    lua_setfield(L, -2, "FLAG_PARTICLE_CONTACT_LISTENER");
+    lua_pushinteger(L, b2_fixtureContactFilterParticle);
+    lua_setfield(L, -2, "FLAG_FIXTURE_CONTACT_FILTER");
+    lua_pushinteger(L, b2_particleContactFilterParticle);
+    lua_setfield(L, -2, "FLAG_PARTICLE_CONTACT_FILTER");
+
+    lua_pop(L, 1);  // b2ParticleSystem
+
 #endif
 
 	lua_newtable(L);
