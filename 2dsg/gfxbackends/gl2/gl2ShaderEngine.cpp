@@ -96,6 +96,18 @@ const char *stdCTVShaderCode=
 "  fTexCoord=vTexCoord;\n"
 "  fInColor=vColor;\n"
 "}\n";
+const char *stdPVShaderCode=
+"attribute lowp vec4 vColor;\n"
+"uniform highp mat4 vMatrix;\n"
+"uniform mediump float vPSize;\n"
+"varying lowp vec4 fInColor; "
+"\n"
+"void main() {\n"
+"  vec4 vertex = vec4(vVertex,1.0);\n"
+"  gl_Position = vMatrix*vertex;\n"
+"  fInColor=vColor;\n"
+"  gl_PointSize=vPSize;\n"
+"}\n";
 
 /* Fragment shader*/
 const char *hdrFShaderCode=
@@ -136,6 +148,22 @@ const char *stdCTFShaderCode=
 " lowp vec4 frag=fInColor*texture2D(fTexture, fTexCoord);\n"
 " if (frag.a==0.0) discard;\n"
 " gl_FragColor = frag;\n"
+"}\n";
+const char *stdPFShaderCode=
+"varying lowp vec4 fInColor;\n"
+"uniform lowp sampler2D fTexture;\n"
+"uniform mediump vec4 fTexInfo;\n"
+"void main() {\n"
+" if (fTexInfo.x<=0.0)\n"
+" {\n"
+"  lowp vec4 frag;\n"
+"  mediump vec2 rad=vec2(-0.5,-0.5)+gl_PointCoord;\n"
+"  frag=fInColor;\n"
+"  frag.a=fInColor.a*(1.0-step(0.5,length(rad));\n"
+"  gl_FragColor=frag;\n"
+" }\n"
+" else\n"
+"  gl_FragColor=fInColor*texture2D(fTexture, gl_PointCoord*fTexInfo.xy);\n"
 "}\n";
 #endif
 
@@ -212,6 +240,15 @@ void ogl2SetupShaders()
                                       stdUniforms,stdAttributes);
     ShaderProgram::stdTextureColor = new ogl2ShaderProgram(hdrVShaderCode,stdCTVShaderCode,hdrFShaderCode,stdCTFShaderCode,
                                       stdUniforms,stdAttributes);
+	const ShaderProgram::ConstantDesc stdPUniforms[]={
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
+			{"vPSize",ShaderProgram::CFLOAT,1,ShaderProgram::SysConst_ParticleSize,true,0},
+			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
+			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0},
+			NULL
+	};
+    ShaderProgram::stdParticle = new ogl2ShaderProgram(hdrVShaderCode,stdPVShaderCode,hdrFShaderCode,stdPFShaderCode,
+                                      stdPUniforms,stdAttributes);
 }
 
 ShaderProgram *ogl2ShaderEngine::createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)
@@ -254,6 +291,9 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw,int sh)
 #ifdef GL_POINT_SPRITE
  glEnable(GL_POINT_SPRITE);
 #endif
+#endif
+#ifdef GL_VERTEX_PROGRAM_POINT_SIZE
+ glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 #endif
 }
 

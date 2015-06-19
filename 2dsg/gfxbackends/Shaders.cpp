@@ -13,6 +13,7 @@ ShaderProgram *ShaderProgram::stdBasic=NULL;
 ShaderProgram *ShaderProgram::stdColor=NULL;
 ShaderProgram *ShaderProgram::stdTexture=NULL;
 ShaderProgram *ShaderProgram::stdTextureColor=NULL;
+ShaderProgram *ShaderProgram::stdParticle=NULL;
 ShaderEngine *ShaderEngine::Engine=NULL;
 
 void ShaderProgram::Retain()

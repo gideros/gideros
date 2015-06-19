@@ -58,6 +58,7 @@ public:
 	static ShaderProgram *stdColor;
 	static ShaderProgram *stdTexture;
 	static ShaderProgram *stdTextureColor;
+	static ShaderProgram *stdParticle;
 	enum StdData {
 		DataVertex=0, DataColor=1, DataTexture=2
 	};
