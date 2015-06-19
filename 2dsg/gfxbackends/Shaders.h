@@ -38,6 +38,8 @@ public:
     	SysConst_Color,
     	SysConst_WorldInverseTransposeMatrix,
     	SysConst_WorldMatrix,
+		SysConst_ParticleSize,
+		SysConst_TextureInfo
     };
     enum ShaderFlags {
     	Flag_None=0,
@@ -56,6 +58,7 @@ public:
 	static ShaderProgram *stdColor;
 	static ShaderProgram *stdTexture;
 	static ShaderProgram *stdTextureColor;
+	static ShaderProgram *stdParticle;
 	enum StdData {
 		DataVertex=0, DataColor=1, DataTexture=2
 	};

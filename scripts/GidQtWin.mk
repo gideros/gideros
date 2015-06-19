@@ -84,13 +84,14 @@ QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 lib
 QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Network Qt5Xml
 QT5PLATFORM=qminimal qoffscreen qwindows
+QTDLLEXT=
 
 qt5.install:
-	for f in $(QT5DLLS); do cp $(QT)/bin/$$f.dll $(RELEASE); done
+	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE); done
 	mkdir -p $(RELEASE)/imageformats
 	cp $(QT)/plugins/imageformats/qjpeg.dll $(RELEASE)/imageformats
 	mkdir -p $(RELEASE)/platforms
-	for f in $(QT5PLATFORM); do cp $(QT)/plugins/platforms/$$f.dll $(RELEASE)/platforms; done
+	for f in $(addsuffix $(QTDLLEXT),$(QT5PLATFORM)); do cp $(QT)/plugins/platforms/$$f.dll $(RELEASE)/platforms; done
 	cp $(QT)/lib/qscintilla2.dll $(RELEASE)
 	cp $(ROOT)/libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $(RELEASE)
 	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(RELEASE)

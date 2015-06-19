@@ -79,6 +79,16 @@ void dx11SetupShaders()
     ShaderProgram::stdColor = new dx11ShaderProgram(vColor_cso,sizeof(vColor_cso),pColor_cso,sizeof(pColor_cso),stdConstants,stdCAttributes);
     ShaderProgram::stdTexture = new dx11ShaderProgram(vTexture_cso,sizeof(vTexture_cso),pTexture_cso,sizeof(pTexture_cso),stdConstants,stdTAttributes);
     ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso,sizeof(vTextureColor_cso),pTextureColor_cso,sizeof(pTextureColor_cso),stdConstants,stdTCAttributes);
+
+	const ShaderProgram::ConstantDesc stdPConstants[]={
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
+			{"vPSize",ShaderProgram::CFLOAT,1,ShaderProgram::SysConst_ParticleSize,true,0},
+			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
+			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0},
+			NULL
+	};
+    ShaderProgram::stdParticle = new dx11ShaderProgram(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),stdPConstants,stdCAttributes);
+
 }
 
 ID3D11Texture2D* dx11ShaderEngine::pBackBuffer=NULL;

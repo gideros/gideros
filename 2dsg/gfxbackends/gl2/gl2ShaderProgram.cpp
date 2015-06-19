@@ -156,9 +156,10 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 
 void ogl2ShaderProgram::setConstant(int index, ConstantType type, int mult,
 		const void *ptr) {
-	if (!updateConstant(index, type, mult, ptr))
+	if ((!updateConstant(index, type, mult, ptr))&&(!(uninit_uniforms&(1<<index))))
 		return;
 	useProgram();
+	uninit_uniforms&=~(1<<index);
 	switch (type) {
 	case CINT:
 	case CTEXTURE:
@@ -200,6 +201,7 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	cbsData=0;
 	errorLog="";
+    uninit_uniforms=-1;
 	vertexShader = ogl2LoadShader(GL_VERTEX_SHADER, vshader1, vshader2,errorLog);
 	fragmentShader = ogl2LoadShader(GL_FRAGMENT_SHADER, fshader1, fshader2,errorLog);
 	program = ogl2BuildProgram(vertexShader, fragmentShader,errorLog);
@@ -253,6 +255,8 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 }
 
 ogl2ShaderProgram::~ogl2ShaderProgram() {
+	if (current==this)
+		deactivate();
 	if (curProg == program) {
 		glUseProgram(0);
 		curProg = 0;

@@ -69,6 +69,7 @@ class ogl2ShaderProgram : public ShaderProgram
     std::vector<GLint> attributes;
     std::vector<GLint> gluniforms;
     std::string errorLog;
+    unsigned long uninit_uniforms;
     void *cbData;
     int cbsData;
     static GLint curProg;

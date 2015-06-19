@@ -90,6 +90,7 @@ Application::~Application()
         delete unrefPool_[i];
     for (std::size_t i = 0; i < unrefPoolTrash_.size(); ++i)
         delete unrefPoolTrash_[i];
+	oglCleanup(); //Only release on destroy, so that alls refs are discarded
 }
 
 Stage* Application::stage() const
@@ -122,7 +123,6 @@ void Application::releaseView()
 
 	stage_->unref();
 	stage_ = NULL;
-	oglCleanup();
 
 //	Referenced::emptyPool();
 }
