@@ -159,7 +159,7 @@ const char *stdPFShaderCode=
 "  lowp vec4 frag;\n"
 "  mediump vec2 rad=vec2(-0.5,-0.5)+gl_PointCoord;\n"
 "  frag=fInColor;\n"
-"  frag.a=fInColor.a*(1.0-step(0.5,length(rad));\n"
+"  frag.a=fInColor.a*(1.0-step(0.5,length(rad)));\n"
 "  gl_FragColor=frag;\n"
 " }\n"
 " else\n"
