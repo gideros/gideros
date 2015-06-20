@@ -99,14 +99,16 @@ const char *stdCTVShaderCode=
 const char *stdPVShaderCode=
 "attribute lowp vec4 vColor;\n"
 "uniform highp mat4 vMatrix;\n"
+"uniform highp mat4 vWorldMatrix;\n"
 "uniform mediump float vPSize;\n"
 "varying lowp vec4 fInColor; "
 "\n"
 "void main() {\n"
-"  vec4 vertex = vec4(vVertex,1.0);\n"
+"  highp vec4 vertex = vec4(vVertex,1.0);\n"
 "  gl_Position = vMatrix*vertex;\n"
 "  fInColor=vColor;\n"
-"  gl_PointSize=vPSize;\n"
+"  mediump vec4 xpsize=vWorldMatrix*vec4(vPSize,0.0,0.0,1.0);\n"
+"  gl_PointSize=length(xpsize.xyz);\n"
 "}\n";
 
 /* Fragment shader*/
@@ -159,7 +161,8 @@ const char *stdPFShaderCode=
 "  lowp vec4 frag;\n"
 "  mediump vec2 rad=vec2(-0.5,-0.5)+gl_PointCoord;\n"
 "  frag=fInColor;\n"
-"  frag.a=fInColor.a*(1.0-step(0.5,length(rad)));\n"
+"  lowp float alpha=1.0-step(0.5,length(rad));\n"
+"  frag*=alpha;\n"
 "  gl_FragColor=frag;\n"
 " }\n"
 " else\n"
@@ -242,6 +245,7 @@ void ogl2SetupShaders()
                                       stdUniforms,stdAttributes);
 	const ShaderProgram::ConstantDesc stdPUniforms[]={
 			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
+			{"vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0},
 			{"vPSize",ShaderProgram::CFLOAT,1,ShaderProgram::SysConst_ParticleSize,true,0},
 			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
 			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0},

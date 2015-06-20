@@ -110,10 +110,10 @@ void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float sx, float sy
 			int sc=p->getSystemConstant(ShaderProgram::SysConst_TextureInfo);
 			if (sc>=0)
 				p->setConstant(sc,ShaderProgram::CFLOAT4,1,textureInfo);
-			sc=p->getSystemConstant(ShaderProgram::SysConst_ParticleSize);
+			sc = p->getSystemConstant(ShaderProgram::SysConst_ParticleSize);
 			if (sc>=0)
 			{
-				float rad=ps_->GetRadius()*physicsScale*2; //Point Size is width, e.q diameter
+				float rad=ps_->GetRadius()*2; //Point Size is width, e.q diameter
 				p->setConstant(sc,ShaderProgram::CFLOAT,1,&rad);
 			}
 			p->drawArrays(ShaderProgram::Point, 0, pc);

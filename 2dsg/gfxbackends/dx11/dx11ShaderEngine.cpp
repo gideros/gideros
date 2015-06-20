@@ -9,6 +9,7 @@
 #include "gtexture.h"
 #include "glog.h"
 #include "ogl.h"
+#include "dx11ParticleShader.h"
 
 #include "dx11_shaders.c"
 
@@ -82,12 +83,12 @@ void dx11SetupShaders()
 
 	const ShaderProgram::ConstantDesc stdPConstants[]={
 			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
-			{"vPSize",ShaderProgram::CFLOAT,1,ShaderProgram::SysConst_ParticleSize,true,0},
-			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
+			{ "vPSize", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_ParticleSize, true, 0 },
+			{ "fTexture", ShaderProgram::CTEXTURE, 1, ShaderProgram::SysConst_None, false, 0 },
 			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0},
 			NULL
 	};
-    ShaderProgram::stdParticle = new dx11ShaderProgram(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),stdPConstants,stdCAttributes);
+    ShaderProgram::stdParticle = new dx11ParticleShader(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),stdPConstants,stdTCAttributes);
 
 }
 
