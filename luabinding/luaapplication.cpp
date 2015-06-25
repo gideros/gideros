@@ -416,6 +416,13 @@ static int bindAll(lua_State* L)
     lua_pushinteger(L, GINPUT_KEY_9);
     lua_setfield(L, -2, "NUM_9");
 
+	lua_pushinteger(L, GINPUT_KEY_SHIFT);
+	lua_setfield(L, -2, "SHIFT");
+	lua_pushinteger(L, GINPUT_KEY_SPACE);
+	lua_setfield(L, -2, "SPACE");
+	lua_pushinteger(L, GINPUT_KEY_BACKSPACE);
+	lua_setfield(L, -2, "BACKSPACE");
+
 	lua_setglobal(L, "KeyCode");
 
 
