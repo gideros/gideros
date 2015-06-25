@@ -445,6 +445,7 @@ Orientation Application::orientation() const
 void Application::setHardwareOrientation(Orientation orientation)
 {
 	hardwareOrientation_ = orientation;
+	projectionDirty_=true;
 }
 
 Orientation Application::hardwareOrientation() const
@@ -455,6 +456,7 @@ Orientation Application::hardwareOrientation() const
 void Application::setDeviceOrientation(Orientation orientation)
 {
     deviceOrientation_ = orientation;
+	projectionDirty_=true;
 }
 
 Orientation Application::getDeviceOrientation() const

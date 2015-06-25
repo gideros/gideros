@@ -5397,42 +5397,49 @@ static void tableToParticleSystemDef(lua_State* L, int index, b2ParticleSystemDe
 {
     Binder binder(L);
 
-    /*lua_getfield(L, index, "flags"); TODO
-    if (!lua_isnil(L, -1))
-        particleDef->flags = luaL_checkinteger(L, -1);
-    lua_pop(L, 1);
-
-    lua_getfield(L, index, "position");
-    if (!lua_isnil(L, -1))
+    const struct {
+    	const char *name;
+    	float *ptr;
+    } fValues[14]=
     {
-        particleDef->position = tableToVec2(L, -1);
-        particleDef->position.x /= physicsScale;
-        particleDef->position.y /= physicsScale;
-    }
-    lua_pop(L, 1);
+    		{"pressureStrength", &particleDef->pressureStrength},
+    		{"dampingStrength", &particleDef->dampingStrength},
+    		{"elaticStrength", &particleDef->elasticStrength},
+    		{"springStrength", &particleDef->springStrength},
+    		{"viscousStrength", &particleDef->viscousStrength},
+    		{"surfaceTensionPressureStrength", &particleDef->surfaceTensionPressureStrength},
+    		{"surfaceTensionNormalStrength", &particleDef->surfaceTensionNormalStrength},
+    		{"repulsiveStrength", &particleDef->repulsiveStrength},
+    		{"powderStrength", &particleDef->powderStrength},
+    		{"ejectionStrength", &particleDef->ejectionStrength},
+    		{"staticPressureStrength", &particleDef->staticPressureStrength},
+    		{"staticPressureRelaxation", &particleDef->staticPressureRelaxation},
+    		{"colorMixingStrength", &particleDef->colorMixingStrength},
+    		{"lifetimeGranularity", &particleDef->lifetimeGranularity},
+    };
 
-    lua_getfield(L, index, "velocity");
-    if (!lua_isnil(L, -1))
-        particleDef->velocity = tableToVec2(L, -1);
-    lua_pop(L, 1);
-
-    lua_getfield(L, index, "color");
-    if (!lua_isnil(L, -1))
+    for (int v=0;v<14;v++)
     {
-        unsigned int color = luaL_checkinteger(L, -1);
-        particleDef->color.r = (color >> 16) & 0xff;
-        particleDef->color.g = (color >> 8) & 0xff;
-        particleDef->color.b = color & 0xff;
+        lua_getfield(L, index, fValues[v].name);
+        if (!lua_isnil(L, -1))
+            *(fValues[v].ptr)=luaL_checknumber(L, -1);
+        lua_pop(L, 1);
     }
+
+    lua_getfield(L, index, "radius");
+    if (!lua_isnil(L, -1))
+        particleDef->radius=luaL_checknumber(L, -1)/physicsScale;
     lua_pop(L, 1);
 
-    lua_getfield(L, index, "alpha");
+    lua_getfield(L, index, "staticPressureIterations");
     if (!lua_isnil(L, -1))
-    {
-        int alpha = (int)(luaL_checknumber(L, -1) * 255);
-        particleDef->color.a = std::min(std::max(alpha, 0), 255);
-    }
-    lua_pop(L, 1);*/
+        particleDef->staticPressureIterations = luaL_checkinteger(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "destroyByAge");
+    if (!lua_isnil(L, -1))
+        particleDef->destroyByAge = lua_toboolean(L, -1);
+    lua_pop(L, 1);
 }
 
 int Box2DBinder2::b2World_createParticleSystem(lua_State* L)
