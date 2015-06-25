@@ -456,7 +456,7 @@ void MainWindow::actionScale(){
     QAction *action = (QAction*)sender();
 
     int scaleProperty = action->property("scale").toInt();
-    int scaleCurrent = deviceScale();
+    int scaleCurrent = scale();
 
     switch(scaleProperty){
         case(eZoomIn):
@@ -471,8 +471,8 @@ void MainWindow::actionScale(){
             break;
 
         case(eFitToWindow):
-            int width = scale() * ui.centralWidget->height() / ui.glCanvas->height();
-            int height = scale() * ui.centralWidget->width() / ui.glCanvas->width();
+            int width = scale() * ui.centralWidget->width() / ui.glCanvas->width();
+            int height = scale() * ui.centralWidget->height() / ui.glCanvas->height();
 
             scaleProperty = std::min(width, height);
             break;
@@ -565,22 +565,27 @@ void MainWindow::updateResolution(){
         }else if(hideMenu())
             setHeight(height() + ui.menuBar->height());
     }
-    float scaleProperty = 100;
-    if(deviceScale() != 0){
-        scaleProperty = (float)scaleProperty / deviceScale();
+
+    float canvasScaleFactor = 1;
+    float widgetScaleFactor = 1;
+
+    if (deviceScale() != 0) {
+        const float hundredPercentScale = 100;
+        canvasScaleFactor = hundredPercentScale / deviceScale();
+        widgetScaleFactor = hundredPercentScale / scale();
     }
 
-    ui.glCanvas->setScale(scaleProperty);
+    ui.glCanvas->setScale(canvasScaleFactor);
 
     switch (orientation()){
         case ePortrait:
         case ePortraitUpsideDown:
-            ui.glCanvas->setFixedSize(width() / scaleProperty, height() / scaleProperty);
+            ui.glCanvas->setFixedSize(width() / widgetScaleFactor, height() / widgetScaleFactor);
             break;
 
         case eLandscapeLeft:
         case eLandscapeRight:
-            ui.glCanvas->setFixedSize(height() / scaleProperty, width() / scaleProperty);
+            ui.glCanvas->setFixedSize(height() / widgetScaleFactor, width() / widgetScaleFactor);
             break;
     }
 
