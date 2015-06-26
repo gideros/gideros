@@ -2,7 +2,7 @@ rm -rf ~/.wine
 wine xyz 
 
 export QT=/usr/local/Cellar/qt5/5.4.0
-export QT_WIN=~/.wine/drive_c/Qt/Qt5.3.2
+export QT_WIN=~/.wine/drive_c/Qt/Qt5.4.2
 export IOS_SDK=8.2
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
@@ -14,7 +14,7 @@ mkdir build
 cd scripts
 
 echo 'Installing Qt for Windows...'
-tar zxf ../../dependencies/Qt5.3.2.tar.bz2 -C ~/.wine/drive_c
+tar zxf ../../dependencies/Qt5.4.2.tar.bz2 -C ~/.wine/drive_c
 
 echo 'Installing NSIS for Windows...'
 tar zxf ../../dependencies/NSIS.tar.bz2 -C ~/.wine/drive_c
