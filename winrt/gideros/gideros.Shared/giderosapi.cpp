@@ -48,8 +48,16 @@ static ULONGLONG next_game_tick;
 */
 
 #include "pthread.h"
+#include "dx11Shaders.h"
 //#define PTW32_DLLPORT
 //#define PTW32_CDECL
+
+#ifdef WINSTORE
+ComPtr<IDXGISwapChain1> g_swapchain;             // the pointer to the swap chain interface (11.1)
+ComPtr<IDXGIDevice3> dxgiDevice;
+#else
+IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interface
+#endif
 
 int PTW32_CDECL pthread_mutex_init(pthread_mutex_t * mutex,
 	const pthread_mutexattr_t * attr)
@@ -105,13 +113,6 @@ int PTW32_CDECL pthread_join(pthread_t thread,
 	return 0;
 }
 
-
-extern struct cbv cbvData;
-extern struct cbp cbpData;
-
-extern bool dxcompat_force_lines;
-extern int dxcompat_maxvertices;
-
 IXAudio2 *g_audioengine;
 IXAudio2MasteringVoice *g_masteringvoice;
 IXAudio2SourceVoice* g_source;
@@ -121,29 +122,6 @@ static void printFunc(const char *str, int len, void *data)
 	std::string s(str);
 	std::wstring wsTmp(s.begin(), s.end());
 	OutputDebugString(wsTmp.c_str());
-}
-
-// ######################################################################
-// this function loads a file into an Array^
-
-Array<byte>^ LoadShaderFile(std::string File){
-	Array<byte>^ FileData = nullptr;
-
-	// open the file    
-	std::ifstream VertexFile(File, std::ios::in | std::ios::binary | std::ios::ate);
-
-	// if open was successful
-	if (VertexFile.is_open())    {
-		// find the length of the file
-		int Length = (int)VertexFile.tellg();
-
-		// collect the file data
-		FileData = ref new Array<byte>(Length);
-		VertexFile.seekg(0, std::ios::beg);
-		VertexFile.read(reinterpret_cast<char*>(FileData->Data), Length);
-		VertexFile.close();
-	}
-	return FileData;
 }
 
 
@@ -214,17 +192,8 @@ void InitD3D(CoreWindow^ Window)
 
 	ID3D11Texture2D *pBackBuffer;
 	g_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-	D3D11_TEXTURE2D_DESC backbuff_desc;
-	pBackBuffer->GetDesc(&backbuff_desc);
 
-	g_dev->CreateRenderTargetView(pBackBuffer, NULL, &g_backbuffer);
-	pBackBuffer->Release();
-
-	g_devcon->OMSetRenderTargets(1, &g_backbuffer, NULL);  // could call this "rendertarget"
-
-	// ----------------------------------------------------------------------
-	// Setup viewport, will also be reset using glViewport commands
-	// ----------------------------------------------------------------------
+	dx11ShaderEngine::pBackBuffer = pBackBuffer;
 
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
@@ -252,251 +221,17 @@ void InitD3D(CoreWindow^ Window)
 
 	g_devcon->RSSetViewports(1, &viewport);
 
-	//Depth / Stencil setup
-	D3D11_TEXTURE2D_DESC descDepth;
-	ZeroMemory(&descDepth, sizeof(descDepth));
-	descDepth.Width = backbuff_desc.Width;
-	descDepth.Height = backbuff_desc.Height;
-	descDepth.MipLevels = 1;
-	descDepth.ArraySize = 1;
-	descDepth.Format =  DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
-	g_dev->CreateTexture2D(&descDepth, NULL, &g_depthStencilTexture);
 
-	D3D11_DEPTH_STENCIL_DESC dsDesc;
-	ZeroMemory(&dsDesc, sizeof(dsDesc));
-
-	// Depth test parameters
-	dsDesc.DepthEnable = false;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-
-	// Stencil test parameters
-	dsDesc.StencilEnable = false;
-	dsDesc.StencilReadMask = 0xFF;
-	dsDesc.StencilWriteMask = 0xFF;
-
-	// Stencil operations if pixel is front-facing
-	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	// Stencil operations if pixel is back-facing
-	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	// Create depth stencil state
-	g_dev->CreateDepthStencilState(&dsDesc, &g_pDSOff);
-	dsDesc.DepthEnable = true;
-	g_dev->CreateDepthStencilState(&dsDesc, &g_pDSDepth);
-
-	// Bind depth stencil state
-	g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-	ZeroMemory(&descDSV, sizeof(descDSV));
-	descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0;
-
-	// Create the depth stencil view
-	g_dev->CreateDepthStencilView(g_depthStencilTexture, // Depth stencil texture
-		&descDSV, // Depth stencil desc
-		&g_depthStencil);  // [out] Depth stencil view
-
-	// Bind the depth stencil view
-	g_devcon->OMSetRenderTargets(1,          // One rendertarget view
-		&g_backbuffer,      // Render target view, created earlier
-		g_depthStencil);     // Depth stencil view for the render target
-
-
-
-	// ----------------------------------------------------------------------
-	// load and compile the two shaders    
-	// Write erros to VC++ output
-	// create g_pVS, g_pPS and initialise
-	// ----------------------------------------------------------------------
-
-	Array<byte>^ VSFile = LoadShaderFile("assets\\VertexShader.cso");
-	Array<byte>^ PSFile = LoadShaderFile("assets\\PixelShader.cso");
-
-	g_dev->CreateVertexShader(VSFile->Data, VSFile->Length, NULL, &g_pVS);
-	g_dev->CreatePixelShader(PSFile->Data, PSFile->Length, NULL, &g_pPS);
-
-	g_devcon->VSSetShader(g_pVS, 0, 0);
-	g_devcon->PSSetShader(g_pPS, 0, 0);
-
-	// ----------------------------------------------------------------------
-	// create the input layout object. Set g_pLayout. There are 3 entries
-	// for position, colour and texture coord
-	// ----------------------------------------------------------------------
-
-	D3D11_INPUT_ELEMENT_DESC ied[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 2, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-
-	g_dev->CreateInputLayout(ied, 3, VSFile->Data, VSFile->Length, &g_pLayout);
-	g_devcon->IASetInputLayout(g_pLayout);
-
-	// ----------------------------------------------------------------------
-	// Create vertex buffer object g_pVBuffer. Data from this will be passed
-	// through to vertex shader, vertex by vertex. We will Map/Unmap this
-	// to tell D3D what to draw
-	// ----------------------------------------------------------------------
-
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory(&bd, sizeof(bd));
-
-	bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU    
-	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
-
-	HRESULT hr;
-
-	bd.ByteWidth = sizeof(FLOAT) * 3 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
-	hr=g_dev->CreateBuffer(&bd, NULL, &g_pVBuffer);       // create the buffer
-
-	bd.ByteWidth = sizeof(FLOAT) * 4 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
-	hr=g_dev->CreateBuffer(&bd, NULL, &g_pCBuffer);       // create the buffer
-
-	bd.ByteWidth = sizeof(FLOAT) * 2 * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer    
-	hr=g_dev->CreateBuffer(&bd, NULL, &g_pTBuffer);       // create the buffer
-
-	bd.ByteWidth = sizeof(int) * dxcompat_maxvertices;             // size is the VERTEX struct * 1024
-	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;       // use as a vertex buffer
-	hr=g_dev->CreateBuffer(&bd, NULL, &g_pIBuffer);       // create the buffer
-
-	//Initialize color buffer and texcoord buffer with valid values
-	D3D11_MAPPED_SUBRESOURCE ms;
-	g_devcon->Map(g_pCBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
-	for (int k = 0; k < dxcompat_maxvertices * 4; k++)
-		((float *)ms.pData)[k] = 1.0;
-	g_devcon->Unmap(g_pCBuffer, NULL);                                      // unmap the buffer
-	g_devcon->Map(g_pTBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer    
-	for (int k = 0; k < dxcompat_maxvertices * 2; k++)
-		((float *)ms.pData)[k] = 0.0;
-	g_devcon->Unmap(g_pTBuffer, NULL);                                      // unmap the buffer
-	UINT tstride = 3*sizeof(float);
-	UINT offset = 0;
-	g_devcon->IASetVertexBuffers(0, 1, &g_pVBuffer, &tstride, &offset);
-	tstride = 4 * sizeof(float);
-	g_devcon->IASetVertexBuffers(1, 1, &g_pCBuffer, &tstride, &offset);
-	tstride = 2 * sizeof(float);
-	g_devcon->IASetVertexBuffers(2, 1, &g_pTBuffer, &tstride, &offset);
-
-
-	// ----------------------------------------------------------------------
-	// Create a constant buffer (NB must be multiple of 16 bytes)
-	// Important field is use_tex. If 1, pixel shader will use current texture
-	// UpdateSubresource fills with data and SetConstantBuffer xfers to shader
-	// ----------------------------------------------------------------------
-
-	D3D11_BUFFER_DESC bd2;
-	ZeroMemory(&bd2, sizeof(bd2));
-
-	bd2.Usage = D3D11_USAGE_DYNAMIC;
-	bd2.ByteWidth = sizeof(cbpData);
-	bd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CBP);
-	g_devcon->PSSetConstantBuffers(1, 1, &g_CBP);
-
-	bd2.ByteWidth = sizeof(cbvData);
-	hr = g_dev->CreateBuffer(&bd2, NULL, &g_CBV);
-	g_devcon->VSSetConstantBuffers(0, 1, &g_CBV);
-
-	// ----------------------------------------------------------------------
-	// Blend state
-	// ----------------------------------------------------------------------
-
-	D3D11_BLEND_DESC blendStateDesc;
-	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
-
-	blendStateDesc.AlphaToCoverageEnable = FALSE;
-	blendStateDesc.IndependentBlendEnable = FALSE;
-	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
-	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;  // previously D3D11_BLEND_SRC_ALPHA
-	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
-	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_DEST_ALPHA;
-	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-
-	g_dev->CreateBlendState(&blendStateDesc, &g_pBlendState);
-	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
-
-	// ----------------------------------------------------------------------
-	// Create a sampler, this interpolates textures in the Pixel Shader
-	// This is just boiler plate
-	// ----------------------------------------------------------------------
-
-	D3D11_SAMPLER_DESC sampDesc;
-	ZeroMemory(&sampDesc, sizeof(sampDesc));
-	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sampDesc.MinLOD = 0;
-	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	g_dev->CreateSamplerState(&sampDesc, &g_samplerLinear);
-	g_devcon->PSSetSamplers(0, 1, &g_samplerLinear);  // only do this once
-
-	// Set rasterizer state to switch off backface culling
-
-	D3D11_RASTERIZER_DESC rasterDesc;
-
-	rasterDesc.AntialiasedLineEnable = false;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
-	rasterDesc.DepthBias = 0;
-	rasterDesc.DepthBiasClamp = 0;
-	rasterDesc.DepthClipEnable = true;
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.FrontCounterClockwise = true;
-	rasterDesc.MultisampleEnable = false;
-	rasterDesc.ScissorEnable = false;
-	rasterDesc.SlopeScaledDepthBias = 0.0f;
-
-	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSNormal);
-	rasterDesc.ScissorEnable = false;
-	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissor);
-	g_devcon->RSSetState(g_pRSNormal);
 }
 
 // ######################################################################
 // this is the function that cleans up Direct3D and COM
 void CleanD3D()
 {
-	// close and release all existing COM objects    
-	g_pLayout->Release();
-	g_pVS->Release();
-	g_pPS->Release();
-	g_pVBuffer->Release();
-	g_pCBuffer->Release();
-	g_pTBuffer->Release();
-	g_pIBuffer->Release();
+//XXX	pBackBuffer->Release();
 	//  g_swapchain->Release();    
-	g_backbuffer->Release();
 	//  g_dev->Release();    
 	//  g_devcon->Release();
-	g_CBP->Release();
-	g_CBV->Release();
-	g_samplerLinear->Release();
 }
 
 
@@ -971,19 +706,9 @@ void NetworkManager::calculateMD5(const char* file)
 
 ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath)
 {
-	dxcompat_force_lines = false;
 
 	InitD3D(Window);
 	InitXAudio2();
-
-	GLuint zero;
-	glGenTextures(1, &zero);
-	glBindTexture(GL_TEXTURE_2D, zero);
-	assert(zero == 0);
-
-	glGenFramebuffers(1, &zero);
-	glBindFramebuffer(GL_FRAMEBUFFER, zero);
-	assert(zero == 0);
 
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
@@ -1194,7 +919,6 @@ void ApplicationManager::drawFrame()
 {
 	CoreWindow^ Window = CoreWindow::GetForCurrentThread();
 	int FPS = g_getFps();
-
 	if (FPS > 0) {
 		Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
@@ -1213,9 +937,7 @@ void ApplicationManager::drawFrame()
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
-		g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);
-		g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
-
+		application_->clearBuffers();
 		application_->renderScene(1);
 		drawIPs();
 
@@ -1256,9 +978,7 @@ void ApplicationManager::drawFrame()
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
-		g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);
-		g_devcon->ClearRenderTargetView(g_backbuffer, backcol);
-
+		application_->clearBuffers();
 		application_->renderScene(1);
 		drawIPs();
 
@@ -1771,3 +1491,11 @@ extern "C" {
 	}
 
 }
+
+
+#ifdef WINSTORE
+extern "C"{
+	char *getenv(const char *string){ return NULL; }
+	int system(const char *string){ return 0; }
+}
+#endif

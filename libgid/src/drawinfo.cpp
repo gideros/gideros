@@ -143,8 +143,6 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 
     glSetColor(infoColor_[0], infoColor_[1], infoColor_[2], 1);
 
-	oglDisable(GL_TEXTURE_2D);
-
 	float v[8];
 
 	int len = strlen(ip);
@@ -229,8 +227,7 @@ void drawInfo()
 		refreshLocalIPs();
 
     // set background color of opengl canvas to black and clear the buffer to render again
-    glClearColor(1, 1, 1, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
+	ShaderEngine::Engine->clearColor(1,1,1,1);
 
     drawIP("V", 3, 2, 2);
     drawIP("I", 3, 2, 2+7+3+7+3+7+3);
@@ -263,8 +260,7 @@ void drawInfoResolution(int width, int height, int scale, int lWidth, int lHeigh
     infoColor_[2] = infoColor[2];
 
     if(!drawRunning){
-        glClearColor(canvasColor[0], canvasColor[1], canvasColor[2], 1);
-        glClear(GL_COLOR_BUFFER_BIT);
+    	ShaderEngine::Engine->clearColor(canvasColor[0], canvasColor[1], canvasColor[2], 1);
     }
 
     int y = 1;

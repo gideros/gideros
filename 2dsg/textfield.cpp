@@ -130,5 +130,5 @@ void TextField::createGraphics()
 
 void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
-	graphicsBase_.draw();
+	graphicsBase_.draw(shader_);
 }

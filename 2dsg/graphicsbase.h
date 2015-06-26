@@ -14,7 +14,7 @@ public:
 		clear();
 	}
 
-	void draw();
+	void draw(ShaderProgram *shader=NULL);
 
 	void clear();
 

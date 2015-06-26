@@ -351,6 +351,14 @@
 		5FE658BA18FBF0FB001D8EE3 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658AB18FBF0FB001D8EE3 /* zutil.c */; };
 		EB08A3521AAA06F900D8F27D /* Matrices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB08A3501AAA06F900D8F27D /* Matrices.cpp */; };
 		EB08A3531AAA06F900D8F27D /* Matrices.h in Headers */ = {isa = PBXBuildFile; fileRef = EB08A3511AAA06F900D8F27D /* Matrices.h */; };
+		EB82BDCE1B29606C00281732 /* gl2ShaderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */; };
+		EB82BDCF1B29606C00281732 /* gl2ShaderEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */; };
+		EB82BDD01B29606C00281732 /* gl2ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */; };
+		EB82BDD11B29606C00281732 /* gl2Shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = EB82BDC51B29606C00281732 /* gl2Shaders.h */; };
+		EB82BDD21B29606C00281732 /* gl2ShaderTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC61B29606C00281732 /* gl2ShaderTexture.cpp */; };
+		EB82BDD31B29606C00281732 /* Shaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC71B29606C00281732 /* Shaders.cpp */; };
+		EB82BDD41B29606C00281732 /* Shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = EB82BDC81B29606C00281732 /* Shaders.h */; };
+		EB82BDD61B305E2F00281732 /* shaderbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDD51B305E2F00281732 /* shaderbinder.cpp */; };
 		EBD254CA1ADD149000CC57F9 /* zlibbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */; };
 /* End PBXBuildFile section */
 
@@ -701,6 +709,14 @@
 		5FE658AB18FBF0FB001D8EE3 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zutil.c; path = "../../../libgid/external/zlib-1.2.8/zutil.c"; sourceTree = "<group>"; };
 		EB08A3501AAA06F900D8F27D /* Matrices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Matrices.cpp; path = ../../2dsg/Matrices.cpp; sourceTree = "<group>"; };
 		EB08A3511AAA06F900D8F27D /* Matrices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrices.h; path = ../../2dsg/Matrices.h; sourceTree = "<group>"; };
+		EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderBuffer.cpp; sourceTree = "<group>"; };
+		EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderEngine.cpp; sourceTree = "<group>"; };
+		EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderProgram.cpp; sourceTree = "<group>"; };
+		EB82BDC51B29606C00281732 /* gl2Shaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gl2Shaders.h; sourceTree = "<group>"; };
+		EB82BDC61B29606C00281732 /* gl2ShaderTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderTexture.cpp; sourceTree = "<group>"; };
+		EB82BDC71B29606C00281732 /* Shaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shaders.cpp; sourceTree = "<group>"; };
+		EB82BDC81B29606C00281732 /* Shaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shaders.h; sourceTree = "<group>"; };
+		EB82BDD51B305E2F00281732 /* shaderbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shaderbinder.cpp; path = ../../luabinding/shaderbinder.cpp; sourceTree = "<group>"; };
 		EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zlibbinder.cpp; path = ../../luabinding/zlibbinder.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1141,6 +1157,7 @@
 		5F321EAD15BBC3EF00542289 /* 2dsg */ = {
 			isa = PBXGroup;
 			children = (
+				EB82BDBA1B29606C00281732 /* gfxbackends */,
 				EB08A3501AAA06F900D8F27D /* Matrices.cpp */,
 				EB08A3511AAA06F900D8F27D /* Matrices.h */,
 				5F321EAF15BBC3FC00542289 /* application.cpp */,
@@ -1216,6 +1233,7 @@
 		5F321F2215BBCA8000542289 /* luabinding */ = {
 			isa = PBXGroup;
 			children = (
+				EB82BDD51B305E2F00281732 /* shaderbinder.cpp */,
 				EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */,
 				5F321F2415BBEB3200542289 /* accelerometerbinder.cpp */,
 				5F321F2515BBEB3200542289 /* alertdialogbinder.cpp */,
@@ -1292,6 +1310,29 @@
 			name = "zlib-1.2.8";
 			sourceTree = "<group>";
 		};
+		EB82BDBA1B29606C00281732 /* gfxbackends */ = {
+			isa = PBXGroup;
+			children = (
+				EB82BDC11B29606C00281732 /* gl2 */,
+				EB82BDC71B29606C00281732 /* Shaders.cpp */,
+				EB82BDC81B29606C00281732 /* Shaders.h */,
+			);
+			name = gfxbackends;
+			path = ../../2dsg/gfxbackends;
+			sourceTree = "<group>";
+		};
+		EB82BDC11B29606C00281732 /* gl2 */ = {
+			isa = PBXGroup;
+			children = (
+				EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */,
+				EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */,
+				EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */,
+				EB82BDC51B29606C00281732 /* gl2Shaders.h */,
+				EB82BDC61B29606C00281732 /* gl2ShaderTexture.cpp */,
+			);
+			path = gl2;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1306,6 +1347,7 @@
 				5F276F7E18F4020E00D78AE4 /* b2IntrusiveList.h in Headers */,
 				5F276F6F18F4020E00D78AE4 /* b2ChainShape.h in Headers */,
 				5F276F9A18F4020E00D78AE4 /* b2WorldCallbacks.h in Headers */,
+				EB82BDD11B29606C00281732 /* gl2Shaders.h in Headers */,
 				5F276FB018F4020E00D78AE4 /* b2FrictionJoint.h in Headers */,
 				5F276FC218F4020E00D78AE4 /* b2WeldJoint.h in Headers */,
 				5F276FAC18F4020E00D78AE4 /* b2PolygonContact.h in Headers */,
@@ -1324,6 +1366,7 @@
 				5F276F7518F4020E00D78AE4 /* b2PolygonShape.h in Headers */,
 				5F276F7C18F4020E00D78AE4 /* b2FreeList.h in Headers */,
 				5F276F8718F4020E00D78AE4 /* b2Stat.h in Headers */,
+				EB82BDD41B29606C00281732 /* Shaders.h in Headers */,
 				5F276F9518F4020E00D78AE4 /* b2Island.h in Headers */,
 				5F276F9118F4020E00D78AE4 /* b2ContactManager.h in Headers */,
 				5F276FAE18F4020E00D78AE4 /* b2DistanceJoint.h in Headers */,
@@ -1487,6 +1530,7 @@
 				5F0CD89B15BB112300479287 /* jdpostct.c in Sources */,
 				5F0CD89C15BB112300479287 /* jdsample.c in Sources */,
 				5F0CD89D15BB112300479287 /* jdtrans.c in Sources */,
+				EB82BDCE1B29606C00281732 /* gl2ShaderBuffer.cpp in Sources */,
 				5F276FC918F4020E00D78AE4 /* b2ParticleSystem.cpp in Sources */,
 				5F0CD89E15BB112300479287 /* jerror.c in Sources */,
 				5F0CD89F15BB112300479287 /* jfdctflt.c in Sources */,
@@ -1510,6 +1554,7 @@
 				5F0CD91415BB493B00479287 /* ftglyph.c in Sources */,
 				5F276FB118F4020E00D78AE4 /* b2GearJoint.cpp in Sources */,
 				5F276F6618F4020E00D78AE4 /* b2Collision.cpp in Sources */,
+				EB82BDD01B29606C00281732 /* gl2ShaderProgram.cpp in Sources */,
 				5F0CD91615BB494600479287 /* ftlcdfil.c in Sources */,
 				5F0CD91815BB495000479287 /* ftstroke.c in Sources */,
 				5FE658B318FBF0FB001D8EE3 /* gzwrite.c in Sources */,
@@ -1585,6 +1630,7 @@
 				5F276FC718F4020E00D78AE4 /* b2ParticleGroup.cpp in Sources */,
 				5F276F6418F4020E00D78AE4 /* b2CollideEdge.cpp in Sources */,
 				5ECDAB381ADAE0D100278F39 /* md5.c in Sources */,
+				EB82BDD31B29606C00281732 /* Shaders.cpp in Sources */,
 				5F321EF915BBC3FC00542289 /* stageorientationevent.cpp in Sources */,
 				5F321EFA15BBC3FC00542289 /* stopwatch.cpp in Sources */,
 				5F321EFB15BBC3FC00542289 /* textfield.cpp in Sources */,
@@ -1666,6 +1712,7 @@
 				5F321F6815BBEB3200542289 /* timerbinder.cpp in Sources */,
 				5F321F6915BBEB3200542289 /* ttfontbinder.cpp in Sources */,
 				5F276FB518F4020E00D78AE4 /* b2MotorJoint.cpp in Sources */,
+				EB82BDCF1B29606C00281732 /* gl2ShaderEngine.cpp in Sources */,
 				5F321F6C15BBEB5F00542289 /* ginput-ios.mm in Sources */,
 				5F321F7615BBF2E100542289 /* giderosapi.mm in Sources */,
 				5F276F8E18F4020E00D78AE4 /* b2Body.cpp in Sources */,
@@ -1675,6 +1722,7 @@
 				5F58D7D215D91D8000137D76 /* gglobal.cpp in Sources */,
 				5F880EA515DCF099001F889C /* urlloaderbinder.cpp in Sources */,
 				5FCA653215F8A804006011C1 /* pluginmanager.cpp in Sources */,
+				EB82BDD61B305E2F00281732 /* shaderbinder.cpp in Sources */,
 				5F9968A7160F190400CF791A /* gapplication-ios.mm in Sources */,
 				5F58B53E1619A0BA00B8E8FE /* gmesh.cpp in Sources */,
 				5ECDAB371ADAE0D100278F39 /* drawinfo.cpp in Sources */,
@@ -1696,6 +1744,7 @@
 				5F01040A1776F857002E6C6E /* rendertargetbinder.cpp in Sources */,
 				5F276FC318F4020E00D78AE4 /* b2WheelJoint.cpp in Sources */,
 				5F0B588817A0663000E3668E /* completeevent.cpp in Sources */,
+				EB82BDD21B29606C00281732 /* gl2ShaderTexture.cpp in Sources */,
 				5FB68B761833C32A00D552A7 /* luautil.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

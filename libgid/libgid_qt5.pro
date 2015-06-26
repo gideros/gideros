@@ -68,6 +68,8 @@ INCLUDEPATH += \
     ./include \
     ./include/qt \
     ./include/private \
+    ../2dsg/gfxbackends \
+    ../2dsg \
     ../libgvfs
 
 

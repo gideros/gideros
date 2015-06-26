@@ -108,6 +108,9 @@ int main(int argc, char *argv[]){
 /*	if (argc > 1)
         setZipFile(argv[1]); */
 
+    if (argc>1)
+    	GLCanvas::appPackage=argv[1];
+
 	int result = 0;
 	{
 		MainWindow w;

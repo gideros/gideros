@@ -7,6 +7,9 @@
 
 #include "logo.inc"
 
+#undef min
+#undef max
+
 static Dib logo2dib(Application* application, unsigned char* logo, size_t logoSize, int width, int height)
 {
 	uLong imageLen = width * height * 4;
@@ -124,10 +127,10 @@ void SplashScreen::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 	float a2 = alphaFunction(t - 0.25);
 	
 	graphicsBase1_.setColor(1, 1, 1, a1);
-	graphicsBase1_.draw();
+	graphicsBase1_.draw(shader_);
 
 	graphicsBase2_.setColor(1, 1, 1, a2);
-	graphicsBase2_.draw();
+	graphicsBase2_.draw(shader_);
 }
 
 bool SplashScreen::isFinished() const

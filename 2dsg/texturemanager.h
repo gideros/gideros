@@ -51,7 +51,7 @@ struct TextureParameters
 
 struct TextureData
 {
-    unsigned int id();
+    ShaderTexture *id();
     g_id gid;
     TextureParameters parameters;
     int width, height;

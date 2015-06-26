@@ -1,8 +1,6 @@
 #ifndef GLCOMPAT_H_DEFINED
 #define GLCOMPAT_H_DEFINED
 
-#include "glcommon.h"
-
 #ifdef glOrthof
 #undef glOrthof
 #endif

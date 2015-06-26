@@ -4,9 +4,14 @@
 
 GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
 {
-    texture_ = NULL;
-    sx_ = 1;
-    sy_ = 1;
+	for (int t=0;t<MESH_MAX_TEXTURES;t++)
+	{
+		texture_[t] = NULL;
+		sx_[t] = 1;
+		sy_[t] = 1;
+	}
+	for (int k=3;k<MESH_MAX_ARRAYS;k++)
+	  	genericArray[k-3].ptr=NULL;
     r_ = 1;
     g_ = 1;
     b_ = 1;
@@ -20,8 +25,13 @@ GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
 
 GMesh::~GMesh()
 {
-    if (texture_)
-        texture_->unref();
+	for (int t=0;t<MESH_MAX_TEXTURES;t++)
+		if (texture_[t])
+			texture_[t]->unref();
+
+   for (int k=3;k<MESH_MAX_ARRAYS;k++)
+    	if (genericArray[k-3].ptr)
+            free(genericArray[k-3].ptr);
 }
 
 bool GMesh::is3d()
@@ -88,8 +98,35 @@ void GMesh::setTextureCoordinate(int i, float u, float v)
     originalTextureCoordinates_[i * 2] = u;
     originalTextureCoordinates_[i * 2 + 1] = v;
 
-    textureCoordinates_[i * 2] = u * sx_;
-    textureCoordinates_[i * 2 + 1] = v * sy_;
+    textureCoordinates_[i * 2] = u * sx_[0];
+    textureCoordinates_[i * 2 + 1] = v * sy_[0];
+}
+
+void GMesh::setGenericArray(int index,const void *pointer, ShaderProgram::DataType type, int mult, int count)
+{
+	if ((index<3)||(index>=MESH_MAX_ARRAYS)) return;
+	index-=3;
+	if (genericArray[index].ptr)
+		free(genericArray[index].ptr);
+	genericArray[index].ptr=NULL;
+	if (!pointer) return;
+	int ps=4;
+	switch (type)
+	{
+	case ShaderProgram::DBYTE:
+	case ShaderProgram::DUBYTE:
+		ps=1;
+		break;
+	case ShaderProgram::DSHORT:
+	case ShaderProgram::DUSHORT:
+		ps=2;
+		break;
+	}
+	genericArray[index].ptr=malloc(ps*mult*count);
+	memcpy(genericArray[index].ptr,pointer,ps*mult*count);
+	genericArray[index].mult=mult;
+	genericArray[index].type=type;
+	genericArray[index].count=count;
 }
 
 void GMesh::setVertexArray(const float *vertices, size_t size)
@@ -121,8 +158,8 @@ void GMesh::setTextureCoordinateArray(const float *textureCoordinates, size_t si
     textureCoordinates_.resize(size);
     for (size_t i = 0; i < size; i += 2)
     {
-        textureCoordinates_[i] = originalTextureCoordinates_[i] * sx_;
-        textureCoordinates_[i + 1] = originalTextureCoordinates_[i + 1] * sy_;
+        textureCoordinates_[i] = originalTextureCoordinates_[i] * sx_[0];
+        textureCoordinates_[i + 1] = originalTextureCoordinates_[i + 1] * sy_[0];
     }
 }
 
@@ -222,36 +259,46 @@ void GMesh::clearTextureCoordinateArray()
     textureCoordinates_.clear();
 }
 
-void GMesh::setTexture(TextureBase *texture)
+void GMesh::setPrimitiveType(ShaderProgram::ShapeType type)
+{
+	meshtype_=type;
+}
+
+void GMesh::setTextureSlot(int slot,TextureBase *texture)
 {
     if (texture)
         texture->ref();
-    if (texture_)
-        texture_->unref();
-    texture_ = texture;
+    if (texture_[slot])
+        texture_[slot]->unref();
+    texture_[slot] = texture;
 
-    float psx = sx_;
-    float psy = sy_;
+    float psx = sx_[slot];
+    float psy = sy_[slot];
 
-    if (texture_)
+    if (texture_[slot])
     {
-        sx_ = texture_->uvscalex / texture_->data->exwidth;
-        sy_ = texture_->uvscaley / texture_->data->exheight;
+        sx_[slot] = texture_[slot]->uvscalex / texture_[slot]->data->exwidth;
+        sy_[slot] = texture_[slot]->uvscaley / texture_[slot]->data->exheight;
     }
     else
     {
-        sx_ = 1;
-        sy_ = 1;
+        sx_[slot] = 1;
+        sy_[slot] = 1;
     }
 
-    if (psx != sx_ || psy != sy_)
+    if ((slot==0)&& (psx != sx_[slot] || psy != sy_[slot]))
     {
         for (size_t i = 0; i < textureCoordinates_.size(); i += 2)
         {
-            textureCoordinates_[i] = originalTextureCoordinates_[i] * sx_;
-            textureCoordinates_[i + 1] = originalTextureCoordinates_[i + 1] * sy_;
+            textureCoordinates_[i] = originalTextureCoordinates_[i] * sx_[0];
+            textureCoordinates_[i + 1] = originalTextureCoordinates_[i + 1] * sy_[0];
         }
     }
+}
+
+void GMesh::setTexture(TextureBase *texture)
+{
+	setTextureSlot(0,texture);
 }
 
 void GMesh::clearTexture()
@@ -262,19 +309,21 @@ void GMesh::clearTexture()
 void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey)
 {
 	if (mesh3d_)
-		oglEnable(GL_DEPTH_TEST);
+		ShaderEngine::Engine->setDepthTest(true);
 	if (vertices_.size() == 0) return;
 
 	ShaderProgram *p=colors_.empty()?ShaderProgram::stdBasic:ShaderProgram::stdColor;
-	if (texture_ && !textureCoordinates_.empty())
+	if (texture_[0] && !textureCoordinates_.empty())
     {
-        oglEnable(GL_TEXTURE_2D);
-        oglBindTexture(GL_TEXTURE_2D, texture_->data->id());
+        ShaderEngine::Engine->bindTexture(0,texture_[0]->data->id());
     	p=colors_.empty()?ShaderProgram::stdTexture:ShaderProgram::stdTextureColor;
     }
-    else
-        oglDisable(GL_TEXTURE_2D);
+	for (int t=1;t<MESH_MAX_TEXTURES;t++)
+		if (texture_[t])
+			ShaderEngine::Engine->bindTexture(t,texture_[t]->data->id());
 
+	if (shader_)
+		p=shader_;
     p->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,mesh3d_?3:2, &vertices_[0],vertices_.size()/(mesh3d_?3:2),true,NULL);
 
     if (!colors_.empty())
@@ -313,13 +362,17 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
     if (texture_ && !textureCoordinates_.empty())
         p->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2, &textureCoordinates_[0],textureCoordinates_.size()/2,true,NULL);
 
+    for (int k=3;k<MESH_MAX_ARRAYS;k++)
+    	if (genericArray[k-3].ptr)
+            p->setData(k,genericArray[k-3].type,genericArray[k-3].mult, genericArray[k-3].ptr,genericArray[k-3].count,true,NULL);
+
     p->drawElements(meshtype_, indices_.size(), ShaderProgram::DUSHORT, &indices_[0],true, NULL);
 }
 
 void GMesh::childrenDrawn()
 {
     if (mesh3d_)
-    	oglDisable(GL_DEPTH_TEST);
+		ShaderEngine::Engine->setDepthTest(false);
 }
 
 void GMesh::extraBounds(float *minx, float *miny, float *maxx, float *maxy) const

@@ -43,6 +43,7 @@
 #include "audiobinder.h"
 #include "rendertargetbinder.h"
 #include "stageorientationevent.h"
+#include "shaderbinder.h"
 
 #include "keys.h"
 
@@ -252,6 +253,7 @@ static int bindAll(lua_State* L)
     MeshBinder meshBinder(L);
     AudioBinder audioBinder(L);
     RenderTargetBinder renderTargetBinder(L);
+    ShaderBinder shaderBinder(L);
 
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
@@ -1071,8 +1073,6 @@ bool LuaApplication::isInitialized() const
 
 void LuaApplication::initialize()
 {
-	oglReset();
-
     clearError();
 
 	physicsScale_ = 30;
@@ -1111,6 +1111,8 @@ void LuaApplication::initialize()
 #endif
 
 	application_->initView();
+	if (ShaderEngine::Engine)
+		ShaderEngine::Engine->reset();
 
 
     lua_setprintfunc(L, printFunc_, printData_);
