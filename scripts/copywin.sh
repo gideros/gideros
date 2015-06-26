@@ -25,42 +25,42 @@ git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Tools
 mkdir $BUILD_DIR/win/Tools
 tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Tools
 
-cp $QT_WIN/5.3/mingw482_32/bin/icudt52.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/icuin52.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/icuuc52.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/libgcc_s_dw2-1.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/libstdc++-6.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/libwinpthread-1.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Core.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Gui.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Network.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5OpenGL.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5PrintSupport.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Widgets.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Xml.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/icudt52.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/icuin52.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/icuuc52.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/libgcc_s_dw2-1.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/libstdc++-6.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/libwinpthread-1.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5Core.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5Gui.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5Network.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5OpenGL.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5PrintSupport.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5Widgets.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5Xml.dll $BUILD_DIR/win
 
 mkdir $BUILD_DIR/win/imageformats
-cp $QT_WIN/5.3/mingw482_32/plugins/imageformats/qjpeg.dll $BUILD_DIR/win/imageformats
+cp $QT_WIN/5.4/mingw491_32/plugins/imageformats/qjpeg.dll $BUILD_DIR/win/imageformats
 
 mkdir $BUILD_DIR/win/platforms
-cp $QT_WIN/5.3/mingw482_32/plugins/platforms/qminimal.dll $BUILD_DIR/win/platforms
-cp $QT_WIN/5.3/mingw482_32/plugins/platforms/qoffscreen.dll $BUILD_DIR/win/platforms
-cp $QT_WIN/5.3/mingw482_32/plugins/platforms/qwindows.dll $BUILD_DIR/win/platforms
+cp $QT_WIN/5.4/mingw491_32/plugins/platforms/qminimal.dll $BUILD_DIR/win/platforms
+cp $QT_WIN/5.4/mingw491_32/plugins/platforms/qoffscreen.dll $BUILD_DIR/win/platforms
+cp $QT_WIN/5.4/mingw491_32/plugins/platforms/qwindows.dll $BUILD_DIR/win/platforms
 
-cp $QT_WIN/5.3/mingw482_32/lib/qscintilla2.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/lib/qscintilla2.dll $BUILD_DIR/win
 
 cp libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $BUILD_DIR/win
 cp libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $BUILD_DIR/win
 
-cp $QT_WIN/5.3/mingw482_32/bin/icudt52.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/icuin52.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/icuuc52.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/libgcc_s_dw2-1.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/libstdc++-6.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/libwinpthread-1.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Core.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Network.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Xml.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/icudt52.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/icuin52.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/icuuc52.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/libgcc_s_dw2-1.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/libstdc++-6.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/libwinpthread-1.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/Qt5Core.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/Qt5Network.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/Qt5Xml.dll $BUILD_DIR/win/Tools
 
 mkdir $BUILD_DIR/win/Templates
 
@@ -76,6 +76,34 @@ mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/assets
 mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/gen
 mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/res/layout
 mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
+
+mkdir $BUILD_DIR/win/Templates/Qt
+mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp desktop/release/WindowsDesktopTemplate.exe $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/icudt52.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/icuin52.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/icuuc52.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/libgcc_s_dw2-1.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/libstdc++-6.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/libwinpthread-1.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Core.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Gui.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Network.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5OpenGL.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5PrintSupport.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Widgets.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Xml.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
+cp $BUILD_DIR/win/platforms/qminimal.dll $BUILD_DIR/win/platforms
+cp $BUILD_DIR/win/platforms/qoffscreen.dll $BUILD_DIR/win/platforms
+cp $BUILD_DIR/win/platforms/qwindows.dll $BUILD_DIR/win/platforms
+cp $BUILD_DIR/win/gid.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/gvfs.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/lua.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/gideros.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/pystring.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/Plugins
+
 
 git archive -o $BUILD_DIR/tmp.tar HEAD:samplecode
 mkdir $BUILD_DIR/win/Examples
@@ -182,6 +210,7 @@ mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin
 cp -r ../examples ../../../$BUILD_DIR/win/All\ Plugins/$d
 if [ -f $d.pro ]; then
 cp release/$d.dll ../../../$BUILD_DIR/win/Plugins
+cp release/$d.dll ../../../$BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/Plugins
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Windows
 cp release/$d.dll ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Windows
 fi

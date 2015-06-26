@@ -24,6 +24,11 @@ qmake player_qt5.pro
 mingw32-make.exe release
 cd ..
 
+cd desktop
+qmake desktop.pro
+mingw32-make.exe release
+cd ..
+
 cd gdrdeamon
 qmake gdrdeamon.pro
 mingw32-make.exe release
