@@ -50,6 +50,8 @@ INCLUDEPATH += \
     sources \
     forms \
     ../2dsg \
+    ../2dsg/gfxbackends \
+    ../2dsg/gfxbackends/gl2 \
     ../libsound \
     ../libnetwork \
     ../luabinding \
@@ -89,6 +91,8 @@ SOURCES += \
     ../libgid/src/qt/platform-qt.cpp \
     ../libgid/src/gtimer.cpp \
     $$files(../2dsg/*.cpp) \
+    $$files(../2dsg/gfxbackends/*.cpp) \
+    $$files(../2dsg/gfxbackends/gl2/*.cpp) \
     $$files(../libpvrt/*.cpp) \
     $$files(../external/glu/libtess/*.c) \
     "../external/minizip-1.1/source/ioapi.c" \

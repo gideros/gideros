@@ -3,7 +3,7 @@
 
 #include "binder.h"
 
-#define BIND_LIQUIDFUN 0
+#define BIND_LIQUIDFUN 1
 
 class Box2DBinder2
 {
@@ -242,9 +242,11 @@ private:
     static int testOverlap(lua_State *L);
 
 #if BIND_LIQUIDFUN
-    static int b2World_createParticle(lua_State* L);
-    static int b2World_destroyParticle(lua_State* L);
-    static int b2World_createParticleGroup(lua_State* L);
+    static int b2World_createParticleSystem(lua_State* L);
+    static int b2ParticleSystem_createParticle(lua_State* L);
+    static int b2ParticleSystem_destroyParticle(lua_State* L);
+    static int b2ParticleSystem_createParticleGroup(lua_State* L);
+    static int b2ParticleSystem_setTexture(lua_State* L);
 #endif
 };
 

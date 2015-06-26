@@ -43,6 +43,7 @@
 #include "audiobinder.h"
 #include "rendertargetbinder.h"
 #include "stageorientationevent.h"
+#include "shaderbinder.h"
 
 #include "keys.h"
 
@@ -252,6 +253,7 @@ static int bindAll(lua_State* L)
     MeshBinder meshBinder(L);
     AudioBinder audioBinder(L);
     RenderTargetBinder renderTargetBinder(L);
+    ShaderBinder shaderBinder(L);
 
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
@@ -413,6 +415,13 @@ static int bindAll(lua_State* L)
     lua_setfield(L, -2, "NUM_8");
     lua_pushinteger(L, GINPUT_KEY_9);
     lua_setfield(L, -2, "NUM_9");
+
+	lua_pushinteger(L, GINPUT_KEY_SHIFT);
+	lua_setfield(L, -2, "SHIFT");
+	lua_pushinteger(L, GINPUT_KEY_SPACE);
+	lua_setfield(L, -2, "SPACE");
+	lua_pushinteger(L, GINPUT_KEY_BACKSPACE);
+	lua_setfield(L, -2, "BACKSPACE");
 
 	lua_setglobal(L, "KeyCode");
 
@@ -1064,8 +1073,6 @@ bool LuaApplication::isInitialized() const
 
 void LuaApplication::initialize()
 {
-	oglReset();
-
     clearError();
 
 	physicsScale_ = 30;
@@ -1104,6 +1111,8 @@ void LuaApplication::initialize()
 #endif
 
 	application_->initView();
+	if (ShaderEngine::Engine)
+		ShaderEngine::Engine->reset();
 
 
     lua_setprintfunc(L, printFunc_, printData_);

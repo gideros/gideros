@@ -96,7 +96,7 @@ G_API void glog_e(const char *format, ...)
     if (s_level > GLOG_ERROR)
         return;
 
-    char buffer[1024];
+    char buffer[4096];
     va_list args;
     va_start (args, format);
     vsprintf (buffer, format, args);

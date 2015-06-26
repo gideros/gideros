@@ -33,9 +33,11 @@ public:
     Orientation getHardwareOrientation();
 
     void play(QDir directory);
+    void play(QString gapp);
 
     //std::set<std::string> accessedResourceFiles;
     std::set<std::string> allResourceFiles;
+    static QString appPackage;
 
 private slots:
 	void onTimer();

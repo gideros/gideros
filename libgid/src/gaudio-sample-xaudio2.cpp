@@ -289,7 +289,7 @@ public:
 
         channel2->pitch = pitch;
 
-		if (channel2->source != 0);
+		if (channel2->source != 0) channel2->source->SetFrequencyRatio(pitch);
 	  //            alSourcef(channel2->source, AL_PITCH, pitch);
     }
 

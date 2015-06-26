@@ -61,6 +61,11 @@ public:
         keyMap_[Qt::Key_Y] = GINPUT_KEY_Y;
         keyMap_[Qt::Key_Z] = GINPUT_KEY_Z;
 
+        keyMap_[Qt::Key_Shift] = GINPUT_KEY_SHIFT;
+        keyMap_[Qt::Key_Space] = GINPUT_KEY_SPACE;
+        keyMap_[Qt::Key_Backspace] = GINPUT_KEY_BACKSPACE;
+
+
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
         gevent_AddCallback(posttick_s, this);

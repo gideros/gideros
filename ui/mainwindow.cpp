@@ -1042,7 +1042,7 @@ void MainWindow::onOpenRequest(const QString& itemName, const QString& fileName)
 {
 	QString suffix = QFileInfo(fileName).suffix().toLower();
 
-	if (suffix == "txt" || suffix == "lua")
+	if (suffix == "txt" || suffix == "lua" || suffix == "glsl" || suffix=="hlsl")
 		openFile(fileName);
 	else
 		QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
@@ -2151,6 +2151,52 @@ static void copyFolder(	const QDir& sourceDir,
 }
 
 
+#define BYTE_SWAP4(x) \
+    (((x & 0xFF000000) >> 24) | \
+     ((x & 0x00FF0000) >> 8)  | \
+     ((x & 0x0000FF00) << 8)  | \
+     ((x & 0x000000FF) << 24))
+
+#define BYTE_SWAP2(x) \
+    (((x & 0xFF00) >> 8) | \
+     ((x & 0x00FF) << 8))
+
+quint16 _htons(quint16 x) {
+    if (QSysInfo::ByteOrder == QSysInfo::BigEndian) {
+        return x;
+    }
+    else {
+        return BYTE_SWAP2(x);
+    }
+}
+
+quint16 _ntohs(quint16 x) {
+    if (QSysInfo::ByteOrder == QSysInfo::BigEndian) {
+        return x;
+    }
+    else {
+        return BYTE_SWAP2(x);
+    }
+}
+
+quint32 _htonl(quint32 x) {
+    if (QSysInfo::ByteOrder == QSysInfo::BigEndian) {
+        return x;
+    }
+    else {
+        return BYTE_SWAP4(x);
+    }
+}
+
+quint32 _ntohl(quint32 x) {
+    if (QSysInfo::ByteOrder == QSysInfo::BigEndian) {
+        return x;
+    }
+    else {
+        return BYTE_SWAP4(x);
+    }
+}
+
 void MainWindow::exportProject()
 {
 
@@ -2200,6 +2246,8 @@ void MainWindow::exportProject()
             templatenamews = "MacOSXDesktopTemplate";
             underscore = false;
             break;
+        case ExportProjectDialog::e_GApp:
+        	underscore = false;
         }
 
         QDir dir2 = QDir::currentPath();
@@ -2264,8 +2312,8 @@ void MainWindow::exportProject()
 			}
 		}
 
-		outputDir.mkdir(base);
-		outputDir.cd(base);
+       	outputDir.mkdir(base);
+       	outputDir.cd(base);
 
 		saveAll();
 
@@ -2307,7 +2355,7 @@ void MainWindow::exportProject()
 	    }
 
 		// copy template
-        if (true)
+        if (templatedir.length()>0)
 		{
             QDir dir = QDir::currentPath();
             dir.cd("Templates");
@@ -2722,6 +2770,11 @@ void MainWindow::exportProject()
 				for (int i = 0; i < luafiles.size(); ++i)
 					out << luafiles[i] << "\n";
 			}
+			if (deviceFamily == ExportProjectDialog::e_GApp)
+			{
+				allfiles.push_back(filename);
+				allfiles_abs.push_back(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+			}
 		}
 
 		// write allfiles.txt
@@ -2781,11 +2834,66 @@ void MainWindow::exportProject()
 
                 file.write(buffer.data(), buffer.size());
 			}
+			if (deviceFamily == ExportProjectDialog::e_GApp)
+			{
+				allfiles.push_back(filename);
+				allfiles_abs.push_back(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+			}
 		}
 
 		progress.setValue(fileQueue.size());
 	}  // end of ipass loop
 
+	if (deviceFamily == ExportProjectDialog::e_GApp)
+	{
+		outputDir.cdUp();
+		outputDir.cdUp();
+
+		QFile file(QDir::cleanPath(outputDir.absoluteFilePath(base+".GApp")));
+		if (file.open(QIODevice::WriteOnly))
+		{
+
+			ByteBuffer buffer;
+			quint32 offset=0;
+			quint32 cbuf;
+			char cpbuf[4096];
+			for (int k=0;k<allfiles.size();k++)
+			{
+				buffer.append(allfiles[k].toStdString());
+				cbuf=_htonl(offset);
+				buffer.append((unsigned char *) &cbuf,4);
+				QFile src(allfiles_abs[k]);
+				src.open(QIODevice::ReadOnly);
+				int size=0;
+				while (true)
+				{
+					int rd=src.read(cpbuf,sizeof(cpbuf));
+					if (rd<=0) break;
+					size+=rd;
+					file.write(cpbuf,rd);
+					if (rd<sizeof(cpbuf))
+						break;
+				}
+				src.close();
+				cbuf=_htonl(size);
+				buffer.append((unsigned char *) &cbuf,4);
+				offset+=size;
+			}
+			buffer.append(""); //End of file list marker, i.e. empty filename
+			if (offset&7)
+				offset+=file.write(cpbuf,8-(offset&7)); // Align structure to 8 byte boundary
+			cbuf=_htonl(offset); //File list offset from beginning of package
+			buffer.append((unsigned char *) &cbuf,4);
+			cbuf=_htonl(0); //Version
+			buffer.append((unsigned char *) &cbuf,4);
+			buffer.append("GiDeRoS"); //Package marker
+            file.write(buffer.data(), buffer.size());
+		}
+		file.close();
+		outputDir.cd(base);
+		outputDir.removeRecursively();
+		outputDir.cdUp();
+	}
         QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully."));
 	}  // if dialog was accepted
 }

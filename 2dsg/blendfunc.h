@@ -1,10 +1,10 @@
 #ifndef BLENDFUNC_H
 #define BLENDFUNC_H
 
-#include "glcommon.h"
+#include "ogl.h"
 
 void glPushBlendFunc();
 void glPopBlendFunc();
-void glSetBlendFunc(GLenum sfactor, GLenum dfactor);
+void glSetBlendFunc(ShaderEngine::BlendFactor sfactor, ShaderEngine::BlendFactor dfactor);
 
 #endif

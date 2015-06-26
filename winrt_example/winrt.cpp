@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stack>
 #include <string>
+#include <vector>
 
 #include "giderosapi.h"
 
@@ -17,9 +18,12 @@ using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
 using namespace Platform;
 using namespace Windows::Storage;
+using namespace Windows::UI::Popups;
+
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 using namespace Windows::Phone::UI::Input;
 #endif
+
 extern "C"
 {
 #ifdef _M_IX86
@@ -39,6 +43,45 @@ extern "C"
 	void ExitProcess(int i)
 	{
 	}
+}
+
+// This function is only needed for the player. Should be empty for export projects as it contains
+// APIs not permitted in Windows Store apps (FindNextFileA etc)
+
+//#include <Windows.h>
+void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::vector<std::string>* directories)
+{
+	files->clear();
+	directories->clear();
+
+	WIN32_FIND_DATAA ffd;
+	HANDLE hFind;
+
+	std::string dirstar;
+
+	int dirlen = strlen(dir);
+	if (dirlen > 0 && (dir[dirlen - 1] == '/' || dir[dirlen - 1] == '\\'))
+		dirstar = std::string(dir) + "*";
+	else
+		dirstar = std::string(dir) + "/*";
+
+	std::wstring wsTmp(dirstar.begin(), dirstar.end());
+
+	hFind = FindFirstFileEx(wsTmp.c_str(), FINDEX_INFO_LEVELS::FindExInfoBasic, &ffd, FINDEX_SEARCH_OPS::FindExSearchNameMatch, nullptr, 0);
+
+	do
+	{
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			if (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
+				continue;
+
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			directories->push_back(ffd.cFileName);
+		else
+			files->push_back(ffd.cFileName);
+	} while (FindNextFileA(hFind, &ffd) != 0);
+
+	FindClose(hFind);
 }
 
 // ######################################################################
@@ -94,7 +137,7 @@ public:
 
 	  std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
 	  std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
-	  bool isPlayer = false;
+	  bool isPlayer = true;
 
 	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str());
 
