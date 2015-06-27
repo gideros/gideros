@@ -120,7 +120,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
-      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d3d11.lib; dxgi.lib; ole32.lib; windowscodecs.lib; dwrite.lib; %(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\winrt\ARM\Release\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\ARM\Release\libgvfswinrt.Windows;..\..\..\lua\luawinrt\ARM\Release\luawinrt.Windows;%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\arm; $(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>
       </ImageHasSafeExceptionHandlers>
@@ -139,7 +139,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d2d1.lib; d3d11.lib; dxgi.lib; ole32.lib; windowscodecs.lib; dwrite.lib; %(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d2d1.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\winrt\Debug\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\Debug\libgvfswinrt.Windows;..\..\..\lua\luawinrt\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
@@ -156,7 +156,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d2d1.lib; d3d11.lib; dxgi.lib; ole32.lib; windowscodecs.lib; dwrite.lib; %(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d2d1.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\winrt\Release\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\Release\libgvfswinrt.Windows;..\..\..\lua\luawinrt\Release\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
