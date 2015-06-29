@@ -37,7 +37,7 @@ void dx11ShaderEngine::reset()
 	g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
 	g_devcon->RSSetState(g_pRSNormal);
 	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
-	curDstFactor = ONE_MINUS_SRC_COLOR;
+	curDstFactor = ONE_MINUS_SRC_ALPHA;
 	curSrcFactor = ONE;
 	s_depthEnable=0;
 	s_depthBufferCleared=false;

@@ -76,7 +76,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
       <AdditionalLibraryDirectories>..\..\..\winrt\Debug\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\Debug\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\Debug\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <ClCompile>
@@ -90,7 +90,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
       <AdditionalLibraryDirectories>..\..\..\winrt\Release\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\Release\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\Release\luawinrt.WindowsPhone;$(VCInstallDir)\lib\store;$(VCInstallDir)\lib;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;D3DCompiler.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
@@ -123,7 +123,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
       <AdditionalLibraryDirectories>..\..\..\winrt\ARM\Release\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\ARM\Release\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\ARM\Release\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;sqlite3.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ImageHasSafeExceptionHandlers>
       </ImageHasSafeExceptionHandlers>

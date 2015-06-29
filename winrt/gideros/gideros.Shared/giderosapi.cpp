@@ -937,7 +937,9 @@ void ApplicationManager::drawFrame()
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
+		ShaderEngine::Engine->setFramebuffer(NULL);
 		application_->clearBuffers();
+
 		application_->renderScene(1);
 		drawIPs();
 
@@ -978,6 +980,7 @@ void ApplicationManager::drawFrame()
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
+		ShaderEngine::Engine->setFramebuffer(NULL);
 		application_->clearBuffers();
 		application_->renderScene(1);
 		drawIPs();
@@ -1184,6 +1187,8 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 
 	if (status.error())
 		luaError(status.errorString());
+
+	next_game_tick = GetTickCount64();
 }
 
 void ApplicationManager::stop()
@@ -1310,6 +1315,8 @@ void ApplicationManager::loadLuaFiles()
 
 	if (status.error())
 		luaError(status.errorString());
+
+	next_game_tick = GetTickCount64();
 }
 
 void ApplicationManager::drawIPs()
