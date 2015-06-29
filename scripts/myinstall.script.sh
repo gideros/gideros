@@ -59,6 +59,13 @@ bash copywin.sh > /dev/null
 echo 'Copying Mac files...'
 bash copymac.sh
 
+cp -R ../../external/VisualStudio ../build/win/Templates
+cp -R ../../external/GiderosWindowsPhonePlayer.zip ../build/win
+cp -R ../../external/GiderosWindowsPlayer.zip ../build/win
+cp -R ../../external/VisualStudio ../build/mac/Gideros\ Studio.app/Contents/Templates
+cp -R ../../external/GiderosWindowsPhonePlayer.zip ../build/mac
+cp -R ../../external/GiderosWindowsPlayer.zip ../build/mac
+
 echo 'Creating Windows installation package...'
 bash createwinpackage.sh > /dev/null
 

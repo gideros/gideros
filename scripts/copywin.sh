@@ -102,6 +102,8 @@ cp $BUILD_DIR/win/gvfs.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
 cp $BUILD_DIR/win/lua.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
 cp $BUILD_DIR/win/gideros.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
 cp $BUILD_DIR/win/pystring.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
 mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/Plugins
 
 
