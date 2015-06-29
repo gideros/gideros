@@ -115,6 +115,32 @@
 				/>
 </category>
 
+<category name="Shaders">
+	<example 	name="Bird Animation 2"
+				description="Wave shader applied to bird animation"
+				path="Shaders/Bird Animation 2/Bird Animation 2.gproj"
+				image="shd_waves.png"
+				/>
+
+	<example 	name="Blur"
+				description="Dynamic blur shader"
+				path="Shaders/Blur/Blur.gproj"
+				image="shd_blur.png"
+				/>
+
+	<example 	name="Normal Mapping"
+				description="Lighting and normal mapping"
+				path="Shaders/Normal Mapping/Normal Mapping.gproj"
+				image="shd_normal.png"
+				/>
+	
+	<example 	name="Bloom"
+				description="Bloom effect example"
+				path="Shaders/Bloom/Bloom.gproj"
+				image="shd_bloom.png"
+				/>
+</category>
+
 <category name="Audio">
 	<example 	name="Audio Buttons"
 				description="Playing different wav files"
@@ -217,6 +243,12 @@
 				description="Vertical stack and bullet example"
 				path="Physics/Vertical Stack/Vertical Stack.gproj"
 				image="vertical stack.png"
+				/>
+	
+	<example 	name="Particle system"
+				description="Particle system example"
+				path="Physics/Particles/Particles.gproj"
+				image="particles.png"
 				/>
 </category>
 
