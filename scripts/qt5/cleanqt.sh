@@ -1,45 +1,51 @@
 cd ..
 
 cd texturepacker
-make clean
-$QT/bin/qmake texturepacker.pro
-make clean
+make clean > /dev/null 2>&1
+$QT/bin/qmake "CONFIG+=warn_off" texturepacker.pro
+make clean > /dev/null 2>&1
 cd ..
 
 cd fontcreator
-make clean
-$QT/bin/qmake fontcreator.pro
-make clean
+make clean > /dev/null 2>&1
+$QT/bin/qmake "CONFIG+=warn_off" fontcreator.pro
+make clean > /dev/null 2>&1
 cd ..
 
 cd ui
-make clean
-$QT/bin/qmake ui.pro
-make clean
+make clean > /dev/null 2>&1
+$QT/bin/qmake "CONFIG+=warn_off" ui.pro
+make clean > /dev/null 2>&1
 cd ..
 
 cd player
-make clean
-$QT/bin/qmake player_qt5.pro
-make clean
+make clean > /dev/null 2>&1
+$QT/bin/qmake "CONFIG+=warn_off" player_qt5.pro
+make clean > /dev/null 2>&1
+cd ..
+
+cd desktop
+make clean > /dev/null 2>&1
+$QT/bin/qmake "CONFIG+=warn_off" desktop.pro
+make clean > /dev/null 2>&1
 cd ..
 
 cd gdrdeamon
-make clean
-$QT/bin/qmake gdrdeamon.pro
-make clean
+make clean > /dev/null 2>&1
+$QT/bin/qmake "CONFIG+=warn_off" gdrdeamon.pro
+make clean > /dev/null 2>&1
 cd ..
 
 cd gdrbridge
-make clean
-$QT/bin/qmake gdrbridge.pro
-make clean
+make clean > /dev/null 2>&1
+$QT/bin/qmake "CONFIG+=warn_off" gdrbridge.pro
+make clean > /dev/null 2>&1
 cd ..
 
 cd gdrexport
-make clean
-$QT/bin/qmake gdrexport.pro
-make clean
+make clean > /dev/null 2>&1
+$QT/bin/qmake "CONFIG+=warn_off" gdrexport.pro
+make clean > /dev/null 2>&1
 cd ..
 
 

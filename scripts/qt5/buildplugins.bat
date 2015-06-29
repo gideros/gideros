@@ -10,8 +10,8 @@ for /D %%s in (*) do (
 cd %%s
 cd source
 if exist %%s.pro (
-qmake %%s.pro
-mingw32-make.exe clean
+qmake "CONFIG+=warn_off" %%s.pro
+mingw32-make.exe clean /f >nul 2>&1
 mingw32-make.exe release
 mingw32-make.exe release
 )
