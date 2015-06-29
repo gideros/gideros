@@ -16,10 +16,13 @@ cp -R $BUILD_DIR/win/Examples $BUILD_DIR/mac
 cp -R $BUILD_DIR/win/Resources $BUILD_DIR/mac/Gideros\ Studio.app/Contents
 cp -R $BUILD_DIR/win/Tools $BUILD_DIR/mac/Gideros\ Studio.app/Contents
 cp -R $BUILD_DIR/win/Templates $BUILD_DIR/mac/Gideros\ Studio.app/Contents
+mkdir $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate
+cp -R desktop/MacOSXDesktopTemplate.app $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate
 
 cp gdrdeamon/gdrdeamon $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools
 cp gdrbridge/gdrbridge $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools
 cp gdrexport/gdrexport $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools
+
 
 sudo cp $QT/lib/libqscintilla2.11.dylib /usr/lib
 sudo cp libgid/libgid.1.dylib /usr/lib
@@ -32,6 +35,7 @@ $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Studio.app
 $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Player.app
 $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Texture\ Packer.app
 $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Font\ Creator.app
+$QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app
 
 sudo rm /usr/lib/libqscintilla2.11.dylib
 sudo rm /usr/lib/libgid.1.dylib
@@ -60,6 +64,7 @@ if [ -f $d.pro ]; then
 mkdir ../../../$BUILD_DIR/mac/All\ Plugins/$d/bin/Mac\ OS
 cp lib$d.dylib ../../../$BUILD_DIR/mac/All\ Plugins/$d/bin/Mac\ OS/$d.dylib
 cp lib$d.dylib ../../../$BUILD_DIR/mac/Plugins/$d.dylib
+cp lib$d.dylib ../../../$BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/PlugIns/$d.dylib
 fi
 if [ -d Android ] || [ -d jni ] ; then
 if [ -d Android ]; then
@@ -74,6 +79,8 @@ cd ..
 cd ..
 done
 cd ..
+
+#cp -R $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate $BUILD_DIR/win/Templates/Qt
 
 cd scripts
 
