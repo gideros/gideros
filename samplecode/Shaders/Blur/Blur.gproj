@@ -1,0 +1,11 @@
+<project>
+ <properties fps="60" mouseTouchOrder="0" scaleMode="0" win_org="GiderosMobile" encryptCode="0" autorotation="0" touchToMouse="1" osx_org="GiderosMobile" windowHeight="0" orientation="0" mouseToTouch="1" packageName="com.yourdomain.yourapp" logicalWidth="320" encryptAssets="0" osx_domain="giderosmobile.com" windowWidth="0" assetsOnly="0" architecture="0" retinaDisplay="0" iosDevice="0" win_domain="giderosmobile.com" logicalHeight="480">
+  <imageScales/>
+ </properties>
+ <file source="texture.jpg"/>
+ <file source="fShader.hlsl"/>
+ <file source="vShader.hlsl"/>
+ <file source="fShader.glsl"/>
+ <file source="vShader.glsl"/>
+ <file source="main.lua"/>
+</project>

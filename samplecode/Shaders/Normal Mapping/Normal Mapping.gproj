@@ -1,0 +1,10 @@
+<project>
+ <properties assetsOnly="0" mouseToTouch="1" logicalWidth="320" windowHeight="0" win_org="GiderosMobile" osx_org="GiderosMobile" retinaDisplay="0" win_domain="giderosmobile.com" architecture="0" fps="60" scaleMode="0" iosDevice="0" packageName="com.yourdomain.yourapp" touchToMouse="1" autorotation="0" orientation="1" logicalHeight="480" mouseTouchOrder="0" windowWidth="0" osx_domain="giderosmobile.com" encryptAssets="0" encryptCode="0">
+  <imageScales/>
+ </properties>
+ <file source="ps.glsl"/>
+ <file source="vs.glsl"/>
+ <file source="Slate Tiles.png"/>
+ <file source="cross.png"/>
+ <file source="main.lua"/>
+</project>
