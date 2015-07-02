@@ -200,11 +200,11 @@ void InitD3D(CoreWindow^ Window)
 
 	float scaley;
 
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-	scaley = 1.0f;   // Windows 8 PC
+	scaley = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
 
 	float basex = 0;
@@ -710,11 +710,11 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 	InitD3D(Window);
 	InitXAudio2();
 
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-	contentScaleFactor = 1.0f;   // Windows 8 PC
+	contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
 
 	width_ = width;
@@ -782,7 +782,7 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 
 	application_->enableExceptions();
 	application_->initialize();
-	application_->setResolution(width_, height_);
+	application_->setResolution(width_* contentScaleFactor, height_* contentScaleFactor);
 
 	Binder::disableTypeChecking();
 
