@@ -23,19 +23,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     setScale(100);
     ui.setupUi(this);
 
-    #if defined(Q_OS_MAC)
+    /*#if defined(Q_OS_MAC)
         setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
     #else
         setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
     #endif
 
-    move(0, 0);
+    move(0, 0);*/
 
     ui.glCanvas->setExportedApp(true);
     ui.glCanvas->projectDir_ = QDir("assets").absolutePath();
 }
 
 MainWindow::~MainWindow(){}
+
+void MainWindow::resizeEvent(QResizeEvent*){
+    updateResolution();
+}
+
+void MainWindow::closeEvent(QCloseEvent*){
+
+}
 
 void MainWindow::resizeWindow(int width, int height){
     if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){

@@ -45,6 +45,10 @@ class MainWindow : public QMainWindow{
 
     private slots:
         void projectNameChanged(const QString& projectName);
+
+    protected:
+        virtual void closeEvent(QCloseEvent*);
+        virtual void resizeEvent(QResizeEvent*);
 };
 
 #endif // MAINWINDOW_H
