@@ -491,6 +491,11 @@ void LuaApplication::callback(int type, void *event)
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
         application_->mouseMove(event2->x, event2->y, event2->button);
     }
+    else if (type == GINPUT_MOUSE_HOVER_EVENT)
+    {
+        ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
+        application_->mouseHover(event2->x, event2->y, event2->button);
+    }
     else if (type == GINPUT_MOUSE_UP_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;

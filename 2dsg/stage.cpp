@@ -29,6 +29,13 @@ void Stage::mouseMove(int x, int y, int button, float sx, float sy, float tx, fl
     dispatchToSpritesWithListeners(&event);
 }
 
+void Stage::mouseHover(int x, int y, int button, float sx, float sy, float tx, float ty)
+{
+    MouseEvent event(MouseEvent::MOUSE_HOVER, x, y, sx, sy, tx, ty);
+    event.button = button;
+    dispatchToSpritesWithListeners(&event);
+}
+
 void Stage::mouseWheel(int x, int y, float sx, float sy, float tx, float ty, int wheel)
 {
     MouseEvent event(MouseEvent::MOUSE_WHEEL, x, y, sx, sy, tx, ty);

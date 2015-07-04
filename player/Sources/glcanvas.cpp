@@ -85,6 +85,8 @@ static void deltree(const char* dir) {
 GLCanvas::GLCanvas(QWidget *parent) :
 		QGLWidget(parent) {
 	setAttribute(Qt::WA_AcceptTouchEvents);
+    lastMouseButton_ = 0;
+    setMouseTracking(true);
 	//setFocusPolicy(Qt::WheelFocus);
 
 	/*
@@ -867,20 +869,26 @@ void GLCanvas::loadFiles(std::vector<char> data) {
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event) {
+    lastMouseButton_ = event->button();
     ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
-	ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_);
+    if(lastMouseButton_ > 0)
+        ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_, lastMouseButton_);
+    else
+        ginputp_mouseHover(event->x() * deviceScale_, event->y() * deviceScale_, lastMouseButton_);
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event) {
+    if(lastMouseButton_ == event->button())
+        lastMouseButton_ = 0;
     ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
 void GLCanvas::wheelEvent(QWheelEvent* event) {
 	ginputp_mouseWheel(event->x() * deviceScale_, event->y() * deviceScale_,
-			event->buttons(), event->delta());
+            event->buttons(), event->delta());
 }
 
 void GLCanvas::keyPressEvent(QKeyEvent* event) {

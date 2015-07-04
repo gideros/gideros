@@ -87,6 +87,9 @@ EventBinder::EventBinder(lua_State* L)
 	lua_pushstring(L, MouseEvent::MOUSE_MOVE.type());
 	lua_setfield(L, -2, "MOUSE_MOVE");
 
+    lua_pushstring(L, MouseEvent::MOUSE_HOVER.type());
+    lua_setfield(L, -2, "MOUSE_HOVER");
+
 	lua_pushstring(L, MouseEvent::MOUSE_WHEEL.type());
 	lua_setfield(L, -2, "MOUSE_WHEEL");
 

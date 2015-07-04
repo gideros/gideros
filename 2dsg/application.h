@@ -49,6 +49,7 @@ public:
     void mouseDown(int x, int y, int button);
     void mouseUp(int x, int y, int button);
     void mouseMove(int x, int y, int button);
+    void mouseHover(int x, int y, int button);
 	void mouseWheel(int x, int y, int wheel);
 
     void touchesBegin(ginput_TouchEvent *event);
