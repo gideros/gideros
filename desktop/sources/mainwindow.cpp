@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <algorithm>
 #include <QPalette>
+#include <QWindowStateChangeEvent>
 #include "libnetwork.h"
 #include "applicationwrapper.h"
 #include "glcanvas.h"
@@ -129,4 +130,21 @@ float MainWindow::scale(){
 
 void MainWindow::setScale(float scale){
     scale_ = scale;
+}
+
+void MainWindow::changeEvent(QEvent* e)
+{
+    if( e->type() == QEvent::WindowStateChange )
+    {
+        QWindowStateChangeEvent* event = static_cast< QWindowStateChangeEvent* >( e );
+
+        if( event->oldState() & Qt::WindowMinimized )
+        {
+
+        }
+        else if( event->oldState() == Qt::WindowNoState && this->windowState() == Qt::WindowMaximized )
+        {
+            this->showFullScreen();
+        }
+    }
 }

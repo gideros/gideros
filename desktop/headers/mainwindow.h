@@ -51,6 +51,7 @@ class MainWindow : public QMainWindow{
     protected:
         virtual void closeEvent(QCloseEvent*);
         virtual void resizeEvent(QResizeEvent*);
+        virtual void changeEvent(QEvent*);
 };
 
 #endif // MAINWINDOW_H
