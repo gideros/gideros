@@ -114,6 +114,7 @@ public:
 			<CoreWindow^, PointerEventArgs^>(this, &App::PointerMoved);
 		Window->PointerCaptureLost += ref new TypedEventHandler
 			<CoreWindow^, PointerEventArgs^>(this, &App::PointerLost);
+
       
 #if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
 		Window->SizeChanged += ref new TypedEventHandler
@@ -123,6 +124,8 @@ public:
 			<CoreWindow^, KeyEventArgs^>(this, &App::KeyDown);
 		Window->KeyUp += ref new TypedEventHandler
 			<CoreWindow^, KeyEventArgs^>(this, &App::KeyUp);
+		Window->PointerWheelChanged += ref new TypedEventHandler
+			<CoreWindow^, PointerEventArgs^>(this, &App::WheelChanged);
 #else
 		HardwareButtons::BackPressed += ref new EventHandler<BackPressedEventArgs^>(this, &App::OnBackButtonPressed);   
 #endif
@@ -248,6 +251,11 @@ public:
 	{
 		Args->Handled = true;
 		gdr_keyUp((int)Args->VirtualKey);
+	}
+
+	void WheelChanged(CoreWindow^ Window, PointerEventArgs^ Args)
+	{
+		gdr_mouseWheel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->Properties->MouseWheelDelta);
 	}
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	void OnBackButtonPressed(Object^ sender, BackPressedEventArgs^ args)

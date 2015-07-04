@@ -1473,6 +1473,12 @@ extern "C" {
 		ginputp_mouseUp(xn, yn, button);
 	}
 
+	void gdr_mouseWheel(int x, int y, int delta){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_mouseWheel(xn, yn, 0, delta);
+	}
+
 	void gdr_touchBegin(int x, int y, int id){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
