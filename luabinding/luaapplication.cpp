@@ -423,6 +423,15 @@ static int bindAll(lua_State* L)
 	lua_pushinteger(L, GINPUT_KEY_BACKSPACE);
 	lua_setfield(L, -2, "BACKSPACE");
 
+    lua_pushinteger(L, 0);
+    lua_setfield(L, -2, "MOUSE_NONE");
+    lua_pushinteger(L, 1);
+    lua_setfield(L, -2, "MOUSE_LEFT");
+    lua_pushinteger(L, 2);
+    lua_setfield(L, -2, "MOUSE_RIGHT");
+    lua_pushinteger(L, 4);
+    lua_setfield(L, -2, "MOUSE_WHEEL");
+
 	lua_setglobal(L, "KeyCode");
 
 
