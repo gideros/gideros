@@ -35,11 +35,13 @@ class MainWindow : public QMainWindow{
         float deviceScale();
         float scale();
         void setScale(float scale);
+        void setFixedSize(bool fixedSize);
 
     private:
         static MainWindow* instance;
         GLCanvas *glCanvas;
         float scale_;
+        bool fixedSize_;
 
         Ui::MainWindowClass ui;
 

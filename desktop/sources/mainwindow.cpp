@@ -19,6 +19,7 @@
 MainWindow* MainWindow::instance;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
+    fixedSize_ = true;
     MainWindow::instance = this;
     setScale(100);
     ui.setupUi(this);
@@ -45,13 +46,23 @@ void MainWindow::closeEvent(QCloseEvent*){
 
 }
 
+void MainWindow::setFixedSize(bool fixedSize){
+    fixedSize_ = fixedSize;
+}
+
 void MainWindow::resizeWindow(int width, int height){
     if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){
         int temp = width;
         width = height;
         height = temp;
     }
-    resize(width, height);
+    if(fixedSize_){
+        //setFixedSize(width, height);
+        setMaximumSize(width, height);
+        setMinimumSize(width, height);
+    }
+    else
+        resize(width, height);
     updateResolution();
 }
 

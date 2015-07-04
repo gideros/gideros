@@ -31,6 +31,7 @@
 #include <gstdio.h>
 #include <gpath.h>
 #include <gvfs-native.h>
+#include "mainwindow.h"
 
 static int __mkdir(const char* path) {
 #ifdef _WIN32
@@ -812,11 +813,14 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 
 	if (windowWidth == 0 || windowHeight == 0) {
 		windowWidth = logicalWidth;
-		windowHeight = logicalHeight;
-	}
-	if (exportedApp_) {
-		setWindowSize(windowWidth, windowHeight);
-	}
+        windowHeight = logicalHeight;
+        if (exportedApp_) {
+            MainWindow::getInstance()->setFixedSize(false);
+        }
+    }
+    if (exportedApp_) {
+        setWindowSize(windowWidth, windowHeight);
+    }
 }
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles) {
