@@ -808,6 +808,10 @@ void MainWindow::projectNameChanged(const QString& projectName){
         setWindowTitle(projectName + " - " + Constants::PLAYER_WINDOW_TITLE);
 }
 
+void MainWindow::setFixedSize(bool fixedSize){
+
+}
+
 /*
 void MainWindow::exportAccessedFiles()
 {

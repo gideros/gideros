@@ -8,7 +8,8 @@ extern "C" {
 #endif
 
 G_API void ginputp_mouseDown(int x, int y, int button);
-G_API void ginputp_mouseMove(int x, int y);
+G_API void ginputp_mouseMove(int x, int y, int button);
+G_API void ginputp_mouseHover(int x, int y, int button);
 G_API void ginputp_mouseUp(int x, int y, int button);
 G_API void ginputp_mouseWheel(int x, int y, int button, int delta);
 G_API void ginputp_keyDown(int keyCode);
