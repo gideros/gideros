@@ -277,6 +277,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui.actionDeveloper_Center, SIGNAL(triggered()), this, SLOT(developerCenter()));
 	connect(ui.actionHelp_Support, SIGNAL(triggered()), this, SLOT(helpAndSupport()));
 	connect(ui.actionAPI_Documentation, SIGNAL(triggered()), this, SLOT(apiDocumentation()));
+    connect(ui.actionDocumentation, SIGNAL(triggered()), this, SLOT(giderosDocumentation()));
 
 	connect(mdiArea_, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(updateUI()));
 	connect(mdiArea_, SIGNAL(subWindowActivated(MyMdiSubWindow*)), this, SLOT(updateUI()));
@@ -3276,21 +3277,28 @@ void MainWindow::downsize(const QString& filename)
 
 void MainWindow::developerCenter()
 {
-	QDesktopServices::openUrl(QUrl("http://www.giderosmobile.com/DevCenter"));
+    QDesktopServices::openUrl(QUrl("http://giderosmobile.com/guide"));
 }
 
 void MainWindow::helpAndSupport()
 {
-	QDesktopServices::openUrl(QUrl("http://www.giderosmobile.com/forum"));
+    QDesktopServices::openUrl(QUrl("http://giderosmobile.com/forum"));
 }
 
 void MainWindow::apiDocumentation()
 {
+    /*
 #if defined(Q_OS_MAC)
 	QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/reference_manual.html")));
 #else
 	QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/reference_manual.html")));
-#endif
+#endif*/
+    QDesktopServices::openUrl(QUrl("http://docs.giderosmobile.com/reference/"));
+}
+
+void MainWindow::giderosDocumentation()
+{
+    QDesktopServices::openUrl(QUrl("http://docs.giderosmobile.com/"));
 }
 
 

@@ -118,6 +118,7 @@ QMainWindow::separator {
     </property>
     <addaction name="actionDeveloper_Center"/>
     <addaction name="actionHelp_Support"/>
+    <addaction name="actionDocumentation"/>
     <addaction name="actionAPI_Documentation"/>
     <addaction name="separator"/>
     <addaction name="actionAbout_Gideros_Studio"/>
@@ -551,6 +552,11 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+X</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>Documentation</string>
    </property>
   </action>
  </widget>
