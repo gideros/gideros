@@ -57,8 +57,9 @@ void MainWindow::resizeWindow(int width, int height){
         width = height;
         height = temp;
     }
+    width_ = width;
+    height_ = height;
     if(fixedSize_){
-        //setFixedSize(width, height);
         setMaximumSize(width, height);
         setMinimumSize(width, height);
     }
@@ -68,10 +69,14 @@ void MainWindow::resizeWindow(int width, int height){
 }
 
 void MainWindow::fullScreenWindow(bool fullScreen){
-    if(fullScreen)
+    if(fullScreen){
+        setMaximumSize(16777215, 16777215);
         this->showFullScreen();
-    else
+    }
+    else{
         this->showNormal();
+        setMaximumSize(width_, height_);
+    }
     updateResolution();
 }
 
@@ -144,7 +149,7 @@ void MainWindow::changeEvent(QEvent* e)
         }
         else if( event->oldState() == Qt::WindowNoState && this->windowState() == Qt::WindowMaximized )
         {
-            this->showFullScreen();
+            fullScreenWindow(true);
         }
     }
 }

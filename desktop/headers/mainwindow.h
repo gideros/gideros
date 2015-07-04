@@ -42,6 +42,8 @@ class MainWindow : public QMainWindow{
         GLCanvas *glCanvas;
         float scale_;
         bool fixedSize_;
+        int width_;
+        int height_;
 
         Ui::MainWindowClass ui;
 
