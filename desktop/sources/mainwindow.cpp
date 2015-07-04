@@ -20,7 +20,7 @@ MainWindow* MainWindow::instance;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     MainWindow::instance = this;
-
+    setScale(100);
     ui.setupUi(this);
 
     #if defined(Q_OS_MAC)
@@ -63,22 +63,25 @@ void MainWindow::updateResolution(){
         height = ui.centralWidget->width();
     }
 
-    float scaleProperty = 100;
-    if(deviceScale() != 0){
-        scaleProperty = (float)scaleProperty / deviceScale();
+    float canvasScaleFactor = 1;
+    float widgetScaleFactor = 1;
+    if (deviceScale() != 0) {
+        const float hundredPercentScale = 100;
+        canvasScaleFactor = hundredPercentScale / deviceScale();
+        widgetScaleFactor = hundredPercentScale / scale();
     }
 
-    ui.glCanvas->setScale(scaleProperty);
+    ui.glCanvas->setScale(canvasScaleFactor);
 
     switch (ui.glCanvas->getHardwareOrientation()){
         case ePortrait:
         case ePortraitUpsideDown:
-            ui.glCanvas->setFixedSize(width / scaleProperty, height / scaleProperty);
+            ui.glCanvas->setFixedSize(width / widgetScaleFactor, height / widgetScaleFactor);
             break;
 
         case eLandscapeLeft:
         case eLandscapeRight:
-            ui.glCanvas->setFixedSize(height / scaleProperty, width / scaleProperty);
+            ui.glCanvas->setFixedSize(height / widgetScaleFactor, width / widgetScaleFactor);
             break;
     }
 
@@ -99,4 +102,12 @@ void MainWindow::projectNameChanged(const QString& projectName){
 float MainWindow::deviceScale()
 {
     return (float)((float)100 * (float)devicePixelRatio());
+}
+
+float MainWindow::scale(){
+    return scale_;
+}
+
+void MainWindow::setScale(float scale){
+    scale_ = scale;
 }

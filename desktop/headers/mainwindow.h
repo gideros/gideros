@@ -33,10 +33,13 @@ class MainWindow : public QMainWindow{
         void resizeWindow(int width, int height);
         void updateResolution();
         float deviceScale();
+        float scale();
+        void setScale(float scale);
 
     private:
         static MainWindow* instance;
         GLCanvas *glCanvas;
+        float scale_;
 
         Ui::MainWindowClass ui;
 
