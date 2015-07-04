@@ -46,9 +46,9 @@ public:
 	void clearBuffers();
 	void renderScene(int deltaFrameCount = -1);
 
-	void mouseDown(int x, int y);
-	void mouseUp(int x, int y);
-	void mouseMove(int x, int y);
+    void mouseDown(int x, int y, int button);
+    void mouseUp(int x, int y, int button);
+    void mouseMove(int x, int y, int button);
 	void mouseWheel(int x, int y, int wheel);
 
     void touchesBegin(ginput_TouchEvent *event);

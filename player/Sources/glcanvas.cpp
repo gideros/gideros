@@ -867,7 +867,7 @@ void GLCanvas::loadFiles(std::vector<char> data) {
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event) {
-	ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, 0);
+    ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
@@ -875,7 +875,7 @@ void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event) {
-	ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, 0);
+    ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
 void GLCanvas::wheelEvent(QWheelEvent* event) {
