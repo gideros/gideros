@@ -96,6 +96,7 @@ GLCanvas::GLCanvas(QWidget *parent) :
 	 formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'écran
 	 this->setFormat(formatGL);
 	 */
+    isPlayer_ = true;
 
 	setupProperties();
 
