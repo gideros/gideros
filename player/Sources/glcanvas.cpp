@@ -147,7 +147,7 @@ GLCanvas::~GLCanvas() {
 }
 
 void GLCanvas::setupProperties() {
-	isPlayer_ = appPackage.isEmpty();
+    //isPlayer_ = appPackage.isEmpty();
 
 	/*
 	 QFile Props(":/Resources/properties.bin");
@@ -159,7 +159,7 @@ void GLCanvas::setupProperties() {
 	 }
 	 */
 
-	exportedApp_ = !appPackage.isEmpty();
+    //exportedApp_ = !appPackage.isEmpty();
 
 	application_ = new LuaApplication;
 
@@ -167,12 +167,12 @@ void GLCanvas::setupProperties() {
 	application_->enableExceptions();
 	application_->setPrintFunc(printToServer);
 
-	if (isPlayer_) {
+    //if (isPlayer_) {
 		server_ = new Server(15000, ::getDeviceName().c_str());
 
 		// set the global server var to use in print to server function
 		g_server = server_;
-	}
+    //}
 
 	running_ = false;
 
@@ -265,7 +265,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
     printf("%d\n", Referenced::instanceCount);
     */
 
-    if(isPlayer_){
+    //if(isPlayer_){
         int dataTotal = 0;
 
         while(true){
@@ -288,7 +288,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
             int dataSent1 = server_->dataSent();
             int dataReceived1 = server_->dataReceived();
 
-            if(event.eventCode == eDataReceived){
+            if(isPlayer_ && event.eventCode == eDataReceived){
                 const std::vector<char>& data = event.data;
 
                 switch(data[0]){
@@ -477,7 +477,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
             if(dataDelta == 0 || dataTotal > 1024)
                 break;
         }
-    }
+    //}
 
     update();
 }
@@ -1256,6 +1256,7 @@ void GLCanvas::setResolution(int width, int height) {
 
 void GLCanvas::setExportedApp(bool exportedApp) {
 	exportedApp_ = exportedApp;
+    isPlayer_ = false;
 }
 
 /*
