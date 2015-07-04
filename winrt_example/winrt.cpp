@@ -225,6 +225,9 @@ public:
 			else
 				gdr_mouseMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
 		}
+		else{
+			gdr_mouseHover(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+		}
     }
 
 	void PointerLost(CoreWindow^ Window, PointerEventArgs^ Args)

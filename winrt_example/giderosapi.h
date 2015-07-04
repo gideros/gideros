@@ -23,6 +23,7 @@ extern "C" {
 	void gdr_keyUp(int keyCode);
 	void gdr_mouseDown(int x, int y, int button);
 	void gdr_mouseMove(int x, int y);
+	void gdr_mouseHover(int x, int y);
 	void gdr_mouseUp(int x, int y, int button);
 	void gdr_mouseWheel(int x, int y, int delta);
 	void gdr_touchBegin(int x, int y, int id);

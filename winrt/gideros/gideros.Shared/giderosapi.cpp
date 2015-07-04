@@ -1392,6 +1392,7 @@ void ApplicationManager::exitRenderLoop()
 
 
 static ApplicationManager *s_manager = NULL;
+static int lastMouseButton_ = 0;
 
 extern "C" {
 
@@ -1456,6 +1457,7 @@ extern "C" {
 	}
 
 	void gdr_mouseDown(int x, int y, int button){
+		lastMouseButton_ = button;
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
 		ginputp_mouseDown(xn, yn, button);
@@ -1464,10 +1466,18 @@ extern "C" {
 	void gdr_mouseMove(int x, int y){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseMove(xn, yn);
+		ginputp_mouseMove(xn, yn, lastMouseButton_);
+	}
+
+	void gdr_mouseHover(int x, int y){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_mouseHover(xn, yn, 0);
 	}
 
 	void gdr_mouseUp(int x, int y, int button){
+		if (lastMouseButton_ == button)
+			lastMouseButton_ = 0;
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
 		ginputp_mouseUp(xn, yn, button);
