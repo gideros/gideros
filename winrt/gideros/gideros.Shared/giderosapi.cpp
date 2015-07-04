@@ -1455,10 +1455,10 @@ extern "C" {
 		ginputp_keyUp(keyCode);
 	}
 
-	void gdr_mouseDown(int x, int y){
+	void gdr_mouseDown(int x, int y, int button){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseDown(xn, yn, 0);
+		ginputp_mouseDown(xn, yn, button);
 	}
 
 	void gdr_mouseMove(int x, int y){
@@ -1467,10 +1467,10 @@ extern "C" {
 		ginputp_mouseMove(xn, yn);
 	}
 
-	void gdr_mouseUp(int x, int y){
+	void gdr_mouseUp(int x, int y, int button){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseUp(xn, yn, 0);
+		ginputp_mouseUp(xn, yn, button);
 	}
 
 	void gdr_touchBegin(int x, int y, int id){

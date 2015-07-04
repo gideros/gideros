@@ -189,16 +189,29 @@ public:
     { 
 	  if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch) 
 		  gdr_touchBegin(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+	  else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
+		  gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+	  else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
+		  gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+	  else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
+		  gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
 	  else
-		  gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+		  gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
+	  
     }
 
     void PointerReleased(CoreWindow^ Window, PointerEventArgs^ Args)
     {
 		if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
 			gdr_touchEnd(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+		else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
+			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+		else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
+			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+		else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
+			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
 		else
-			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
     }
 
     void PointerMoved(CoreWindow^ Window, PointerEventArgs^ Args)
@@ -215,8 +228,14 @@ public:
 	{
 		if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
 			gdr_touchCancel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+		else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
+			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+		else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
+			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+		else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
+			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
 		else
-			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+			gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
 	}
 
 	void KeyDown(CoreWindow^ Window, KeyEventArgs^ Args)
