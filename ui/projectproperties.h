@@ -34,6 +34,7 @@ struct ProjectProperties
 
         // export options
 		architecture = 0;
+        android_template = 0;
 		assetsOnly = false;
 		iosDevice = 0;
 		packageName = "com.yourdomain.yourapp";
@@ -66,6 +67,7 @@ struct ProjectProperties
 
     // export options
 	int architecture;
+    int android_template;
 	bool assetsOnly;
 	int iosDevice;
 	QString packageName;

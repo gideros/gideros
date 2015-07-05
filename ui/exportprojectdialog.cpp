@@ -14,6 +14,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 	connect(ui->architectureTab, SIGNAL(currentChanged(int)), ui->architecture, SLOT(setCurrentIndex(int)));
 
 	ui->architecture->setCurrentIndex(properties_->architecture);
+    ui->android_template->setCurrentIndex(properties_->android_template);
 	ui->assetsOnly->setChecked(properties_->assetsOnly);
 	ui->packageName->setText(properties_->packageName);
     ui->osx_org->setText(properties->osx_org);
@@ -97,6 +98,7 @@ bool ExportProjectDialog::encryptAssets() const
 void ExportProjectDialog::onAccepted()
 {
 	properties_->architecture = ui->architecture->currentIndex();
+    properties_->android_template = ui->android_template->currentIndex();
 	properties_->assetsOnly = ui->assetsOnly->isChecked();
 	properties_->packageName = ui->packageName->text();
     properties_->osx_org = ui->osx_org->text();
