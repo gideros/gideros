@@ -64,9 +64,13 @@ cp $BUILD_DIR/win/Qt5Xml.dll $BUILD_DIR/win/Tools
 
 mkdir $BUILD_DIR/win/Templates
 
-git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Templates/Android
-mkdir $BUILD_DIR/win/Templates/Android
-tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/Android
+git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Templates/Eclipse
+mkdir $BUILD_DIR/win/Templates/Eclipse
+tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/Eclipse
+
+git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Templates/AndroidStudio
+mkdir $BUILD_DIR/win/Templates/AndroidStudio
+tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/AndroidStudio
 
 git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Templates/Xcode4
 mkdir $BUILD_DIR/win/Templates/Xcode4
