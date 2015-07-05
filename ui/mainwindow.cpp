@@ -2390,16 +2390,28 @@ void MainWindow::exportProject()
                 QString orientation = "android:screenOrientation=\"portrait\"";
                 switch(libraryWidget_->getProjectProperties().orientation){
                     case 0:
-                        orientation = "android:screenOrientation=\"portrait\"";
+                        if(libraryWidget_->getProjectProperties().autorotation > 0)
+                            orientation = "android:screenOrientation=\"sensorPortrait\"";
+                        else
+                            orientation = "android:screenOrientation=\"portrait\"";
                         break;
                     case 1:
-                        orientation = "android:screenOrientation=\"landscape\"";
+                        if(libraryWidget_->getProjectProperties().autorotation > 0)
+                            orientation = "android:screenOrientation=\"sensorLandscape\"";
+                        else
+                            orientation = "android:screenOrientation=\"landscape\"";
                         break;
                     case 2:
-                        orientation = "android:screenOrientation=\"reversePortrait\"";
+                        if(libraryWidget_->getProjectProperties().autorotation > 0)
+                            orientation = "android:screenOrientation=\"sensorPortrait\"";
+                        else
+                            orientation = "android:screenOrientation=\"reversePortrait\"";
                         break;
                     case 3:
-                        orientation = "android:screenOrientation=\"reverseLandscape\"";
+                        if(libraryWidget_->getProjectProperties().autorotation > 0)
+                            orientation = "android:screenOrientation=\"sensorLandscape\"";
+                        else
+                            orientation = "android:screenOrientation=\"reverseLandscape\"";
                         break;
                 }
 

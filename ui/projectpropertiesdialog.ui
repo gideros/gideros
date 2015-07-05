@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>406</width>
     <height>447</height>
    </rect>
   </property>
@@ -589,7 +589,7 @@ portrait or landscape.</string>
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>iOS</string>
+       <string>Settings</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
@@ -689,17 +689,17 @@ portrait or landscape.</string>
                </item>
                <item>
                 <property name="text">
-                 <string>For iPhone</string>
+                 <string>For iPhone/Android</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>For iPad</string>
+                 <string>For iPad/Android</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>For iPhone and iPad</string>
+                 <string>For iPhone and iPad/Android</string>
                 </property>
                </item>
               </widget>
