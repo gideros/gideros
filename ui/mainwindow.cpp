@@ -2221,9 +2221,9 @@ void MainWindow::exportProject()
 		  break;
 		  
 		case ExportProjectDialog::e_Android:
-		  templatedir = "Eclipse";
-		  templatename = "Android Template";
-		  templatenamews = "AndroidTemplate";
+          templatedir = "Android";
+          templatename = "Eclipse";
+          templatenamews = "Eclipse";
 		  underscore = false;
 		  break;
 
