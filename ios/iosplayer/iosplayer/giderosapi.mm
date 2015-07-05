@@ -1360,10 +1360,7 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 	bool dontAutorotate = (properties_.autorotation == 0) || (properties_.autorotation == 1 && !phone) || (properties_.autorotation == 2 && phone);
 
     if (dontAutorotate){
-        if (application_->orientation() == eLandscapeLeft || application_->orientation() == eLandscapeRight)
-            result = UIInterfaceOrientationMaskLandscapeLeft;
-        else
-            result = UIInterfaceOrientationMaskPortrait;
+        result = UIInterfaceOrientationMaskPortrait;
     }
     else
     {
