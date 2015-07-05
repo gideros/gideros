@@ -240,12 +240,15 @@ tmp
 */qrc_*.cpp
 
 # other generated files and folders
+*.exe
 *.so
 *.ini
 *.a
 *.dep
 *.cso
 *.dll
+*.dylib
+*.app
 
 # some files and folder to include
 !/release
