@@ -72,12 +72,12 @@ git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Templates/Xcode4
 mkdir $BUILD_DIR/win/Templates/Xcode4
 tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/Xcode4
 
-mkdir $BUILD_DIR/win/Templates/Android/Eclipse/assets
-mkdir $BUILD_DIR/win/Templates/Android/Eclipse/gen
-mkdir $BUILD_DIR/win/Templates/Android/Eclipse/res/layout
-mkdir $BUILD_DIR/win/Templates/Android/Studio/app/libs
-mkdir $BUILD_DIR/win/Templates/Android/Studio/app/src/main/assets
-mkdir $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs
+mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/assets
+mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/gen
+mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/res/layout
+mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/libs
+mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/assets
+mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs
 mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
 
 mkdir $BUILD_DIR/win/Templates/Qt
@@ -153,57 +153,57 @@ mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins
 cp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins/* $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins
 
 
-cp android/GiderosAndroidPlayer/gideros.jar $BUILD_DIR/win/Templates/Android/Eclipse
-cp android/GiderosAndroidPlayer/gideros.jar $BUILD_DIR/win/Templates/Android/Studio/app/libs
-mkdir $BUILD_DIR/win/Templates/Android/Eclipse/jni
-cp android/lib/jni/Application.mk $BUILD_DIR/win/Templates/Android/Eclipse/jni
-cp -R android/build/libs $BUILD_DIR/win/Templates/Android/Eclipse
-cp -R android/build/libs/. $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/
+cp android/GiderosAndroidPlayer/gideros.jar $BUILD_DIR/win/Templates/Eclipse/Android\ Template
+cp android/GiderosAndroidPlayer/gideros.jar $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/libs
+mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/jni
+cp android/lib/jni/Application.mk $BUILD_DIR/win/Templates/Eclipse/Android\ Template/jni
+cp -R android/build/libs $BUILD_DIR/win/Templates/Eclipse/Android\ Template
+cp -R android/build/libs/. $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/
 
-cp plugins/LuaSocket/source/libs/armeabi/libluasocket.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/armeabi
-cp plugins/LuaSocket/source/libs/armeabi-v7a/libluasocket.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/armeabi-v7a
-cp plugins/LuaSocket/source/libs/x86/libluasocket.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/x86
+cp plugins/LuaSocket/source/libs/armeabi/libluasocket.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/LuaSocket/source/libs/armeabi-v7a/libluasocket.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/LuaSocket/source/libs/x86/libluasocket.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
 
-cp plugins/lfs/source/libs/armeabi/liblfs.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/armeabi
-cp plugins/lfs/source/libs/armeabi-v7a/liblfs.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/armeabi-v7a
-cp plugins/lfs/source/libs/x86/liblfs.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/x86
+cp plugins/lfs/source/libs/armeabi/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/lfs/source/libs/armeabi-v7a/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/lfs/source/libs/x86/liblfs.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
 
-cp plugins/lsqlite3/source/libs/armeabi/liblsqlite3.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/armeabi
-cp plugins/lsqlite3/source/libs/armeabi-v7a/liblsqlite3.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/armeabi-v7a
-cp plugins/lsqlite3/source/libs/x86/liblsqlite3.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/x86
+cp plugins/lsqlite3/source/libs/armeabi/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/lsqlite3/source/libs/armeabi-v7a/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/lsqlite3/source/libs/x86/liblsqlite3.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
 
-cp plugins/BitOp/source/libs/armeabi/libbitop.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/armeabi
-cp plugins/BitOp/source/libs/armeabi-v7a/libbitop.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/armeabi-v7a
-cp plugins/BitOp/source/libs/x86/libbitop.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/x86
+cp plugins/BitOp/source/libs/armeabi/libbitop.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/BitOp/source/libs/armeabi-v7a/libbitop.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/BitOp/source/libs/x86/libbitop.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
 
-cp plugins/JSON/source/libs/armeabi/libjson.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/armeabi
-cp plugins/JSON/source/libs/armeabi-v7a/libjson.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/armeabi-v7a
-cp plugins/JSON/source/libs/x86/libjson.so $BUILD_DIR/win/Templates/Android/Eclipse/libs/x86
+cp plugins/JSON/source/libs/armeabi/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
+cp plugins/JSON/source/libs/armeabi-v7a/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
+cp plugins/JSON/source/libs/x86/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
 
 
-cp plugins/LuaSocket/source/libs/armeabi/libluasocket.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/armeabi
-cp plugins/LuaSocket/source/libs/armeabi-v7a/libluasocket.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/armeabi-v7a
-cp plugins/LuaSocket/source/libs/x86/libluasocket.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/x86
+cp plugins/LuaSocket/source/libs/armeabi/libluasocket.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi
+cp plugins/LuaSocket/source/libs/armeabi-v7a/libluasocket.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi-v7a
+cp plugins/LuaSocket/source/libs/x86/libluasocket.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/x86
 
-cp plugins/lfs/source/libs/armeabi/liblfs.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/armeabi
-cp plugins/lfs/source/libs/armeabi-v7a/liblfs.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/armeabi-v7a
-cp plugins/lfs/source/libs/x86/liblfs.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/x86
+cp plugins/lfs/source/libs/armeabi/liblfs.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi
+cp plugins/lfs/source/libs/armeabi-v7a/liblfs.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi-v7a
+cp plugins/lfs/source/libs/x86/liblfs.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/x86
 
-cp plugins/lsqlite3/source/libs/armeabi/liblsqlite3.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/armeabi
-cp plugins/lsqlite3/source/libs/armeabi-v7a/liblsqlite3.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/armeabi-v7a
-cp plugins/lsqlite3/source/libs/x86/liblsqlite3.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/x86
+cp plugins/lsqlite3/source/libs/armeabi/liblsqlite3.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi
+cp plugins/lsqlite3/source/libs/armeabi-v7a/liblsqlite3.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi-v7a
+cp plugins/lsqlite3/source/libs/x86/liblsqlite3.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/x86
 
-cp plugins/BitOp/source/libs/armeabi/libbitop.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/armeabi
-cp plugins/BitOp/source/libs/armeabi-v7a/libbitop.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/armeabi-v7a
-cp plugins/BitOp/source/libs/x86/libbitop.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/x86
+cp plugins/BitOp/source/libs/armeabi/libbitop.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi
+cp plugins/BitOp/source/libs/armeabi-v7a/libbitop.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi-v7a
+cp plugins/BitOp/source/libs/x86/libbitop.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/x86
 
-cp plugins/JSON/source/libs/armeabi/libjson.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/armeabi
-cp plugins/JSON/source/libs/armeabi-v7a/libjson.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/armeabi-v7a
-cp plugins/JSON/source/libs/x86/libjson.so $BUILD_DIR/win/Templates/Android/Studio/app/src/main/jniLibs/x86
+cp plugins/JSON/source/libs/armeabi/libjson.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi
+cp plugins/JSON/source/libs/armeabi-v7a/libjson.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi-v7a
+cp plugins/JSON/source/libs/x86/libjson.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/x86
 
 
 rm -rf android/GiderosAndroidPlayer/libs
-cp -R $BUILD_DIR/win/Templates/Android/Eclipse/libs android/GiderosAndroidPlayer
+cp -R $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs android/GiderosAndroidPlayer
 
 cd android/GiderosAndroidPlayer
 ant debug
