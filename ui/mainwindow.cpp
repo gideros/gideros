@@ -2385,8 +2385,26 @@ void MainWindow::exportProject()
 			QList<QPair<QByteArray, QByteArray> > replaceList1;
 			replaceList1 << qMakePair(templatename.toUtf8(), base.toUtf8());
             replaceList1 << qMakePair(templatenamews.toLatin1(), basews.toLatin1());
-			if (deviceFamily == ExportProjectDialog::e_Android)
-				replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), dialog.packageName().toUtf8());
+            if (deviceFamily == ExportProjectDialog::e_Android){
+                replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), dialog.packageName().toUtf8());
+                QString orientation = "android:screenOrientation=\"portrait\"";
+                switch(libraryWidget_->getProjectProperties().orientation){
+                    case 0:
+                        orientation = "android:screenOrientation=\"portrait\"";
+                        break;
+                    case 1:
+                        orientation = "android:screenOrientation=\"landscape\"";
+                        break;
+                    case 2:
+                        orientation = "android:screenOrientation=\"reversePortrait\"";
+                        break;
+                    case 3:
+                        orientation = "android:screenOrientation=\"reverseLandscape\"";
+                        break;
+                }
+
+                replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
+            }
 			replaceList << replaceList1;
 
                 QStringList wildcards2;
