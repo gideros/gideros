@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ALNullabilityAnnotations.h"
+
 #import "ALInterstitialAd.h"
 #import "ALAdVideoPlaybackDelegate.h"
 #import "ALAdDisplayDelegate.h"
@@ -26,12 +28,12 @@
 /**
  *  An object conforming to the ALAdDisplayDelegate protocol, which, if set, will be notified of ad show/hide events.
  */
-@property (strong, nonatomic) id<ALAdDisplayDelegate> adDisplayDelegate;
+@property (strong, nonatomic) id<ALAdDisplayDelegate> __alnullable adDisplayDelegate;
 
 /**
  *  An object conforming to the ALAdVideoPlaybackDelegate protocol, which, if set, will be notified of video start/stop events.
  */
-@property (strong, nonatomic) id<ALAdVideoPlaybackDelegate> adVideoPlaybackDelegate;
+@property (strong, nonatomic) id<ALAdVideoPlaybackDelegate> __alnullable adVideoPlaybackDelegate;
 
 /**
  * @name Integration, Class Methods
@@ -42,7 +44,7 @@
  *
  * This wraps the [ALSdk shared] call, and will only work if you hve set your SDK key in Info.plist.
 */
-+(ALIncentivizedInterstitialAd*) shared;
++(alnonnull ALIncentivizedInterstitialAd*) shared;
 
 /**
  * Pre-load an incentivized interstitial, and notify your provided Ad Load Delegate.
@@ -54,7 +56,7 @@
  *
  * @param adLoadDelegate The delegate to notify that preloading was completed. May be nil.
  */
-+(void) preloadAndNotify: (id<ALAdLoadDelegate>) adLoadDelegate;
++(void) preloadAndNotify: (alnullable id<ALAdLoadDelegate>) adLoadDelegate;
 
 /**
  * Check if an ad is currently ready on this object. You must call preloadAndNotify in order to reach this state.
@@ -69,6 +71,13 @@
  * Show an incentivized interstitial over the current key window, using the most recently pre-loaded ad.
  *
  * You must call preloadAndNotify before calling showOver.
+ */
++(void) show;
+
+/**
+ * Show an incentivized interstitial over the current key window, using the most recently pre-loaded ad.
+ *
+ * You must call preloadAndNotify before calling showOver.
  *
  * Using the ALAdRewardDelegate, you will be able to verify with AppLovin servers the the video view is legitimate,
  * as we will confirm whether the specific ad was actually served - then we will ping your server with a url for you to update
@@ -78,7 +87,7 @@
  * @param adRewardDelegate The reward delegate to notify upon validating reward authenticity with AppLovin.
  *
  */
-+(void) showAndNotify: (id<ALAdRewardDelegate>) adRewardDelegate;
++(void) showAndNotify: (alnullable id<ALAdRewardDelegate>) adRewardDelegate;
 
 /**
  * Show an incentivized interstitial, using the most recently pre-loaded ad.
@@ -94,7 +103,7 @@
  * @param window The UIWindow over which the rewarded video should be displayed.
  *
  */
-+(void) showOver: (UIWindow*) window andNotify: (id<ALAdRewardDelegate>) adRewardDelegate;
++(void) showOver: (alnonnull UIWindow*) window andNotify: (alnullable id<ALAdRewardDelegate>) adRewardDelegate;
 
 /**
  * @name Integration, Instance Methods
@@ -107,8 +116,8 @@
  *
  * @param anSdk An SDK instance to use.
  */
--(instancetype) initWithSdk: (ALSdk*) anSdk;
--(instancetype) initIncentivizedInterstitialWithSdk: (ALSdk*) anSdk __deprecated;
+-(alnonnull instancetype) initWithSdk: (alnonnull ALSdk*) anSdk;
+-(alnonnull instancetype) initIncentivizedInterstitialWithSdk: (alnonnull ALSdk*) anSdk __deprecated_msg("Use initWithSdk instead.");
 
 /**
  * Pre-load an incentivized interstitial, and notify your provided Ad Load Delegate.
@@ -119,7 +128,7 @@
  *
  * @param adLoadDelegate The delegate to notify that preloading was completed.
  */
--(void) preloadAndNotify: (id<ALAdLoadDelegate>) adLoadDelegate;
+-(void) preloadAndNotify: (alnullable id<ALAdLoadDelegate>) adLoadDelegate;
 
 /**
  * Check if an ad is currently ready on this object. You must call preloadAndNotify in order to reach this state.
@@ -134,6 +143,13 @@
  * Show an incentivized interstitial over the current key window, using the most recently pre-loaded ad.
  *
  * You must call preloadAndNotify before calling showOver.
+ */
+-(void) show;
+
+/**
+ * Show an incentivized interstitial over the current key window, using the most recently pre-loaded ad.
+ *
+ * You must call preloadAndNotify before calling showOver.
  *
  * Using the ALAdRewardDelegate, you will be able to verify with AppLovin servers the the video view is legitimate,
  * as we will confirm whether the specific ad was actually served - then we will ping your server with a url for you to update
@@ -143,7 +159,7 @@
  * @param adRewardDelegate The reward delegate to notify upon validating reward authenticity with AppLovin.
  *
  */
--(void) showAndNotify: (id<ALAdRewardDelegate>) adRewardDelegate;
+-(void) showAndNotify: (alnullable id<ALAdRewardDelegate>) adRewardDelegate;
 
 /**
  * Show an incentivized interstitial, using the most recently pre-loaded ad.
@@ -159,7 +175,7 @@
  * @param window The UIWindow over which the rewarded video should be displayed.
  *
  */
--(void) showOver: (UIWindow*) window andNotify: (id<ALAdRewardDelegate>) adRewardDelegate;
+-(void) showOver: (alnonnull UIWindow*) window andNotify: (alnullable id<ALAdRewardDelegate>) adRewardDelegate;
 
 /**
  * Dismiss an incentivized interstitial prematurely, before video playback has completed.
@@ -181,14 +197,14 @@
  *
  * @param userIdentifier Some descriptive string identifying the user, usually a username.
  */
-+(void) setUserIdentifier: (NSString*) userIdentifier;
++(void) setUserIdentifier: (alnullable NSString*) userIdentifier;
 
 /**
  *  Get the currently set user identification string.
  *
  *  @return The last value supplied via setUserIdentifier:
  */
-+(NSString*) userIdentifier;
++(alnullable NSString*) userIdentifier;
 
-- (id) init __attribute__((unavailable("Use [ALIncentivizedInterstitialAd shared] or initWithSdk: instead.")));
+- (alnullable id) init __attribute__((unavailable("Use [ALIncentivizedInterstitialAd shared] or initWithSdk: instead.")));
 @end

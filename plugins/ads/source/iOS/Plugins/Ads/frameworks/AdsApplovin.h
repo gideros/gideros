@@ -12,8 +12,11 @@
 #import "ALAdService.h"
 #import "ALAd.h"
 #import "ALInterstitialAd.h"
+#import "ALIncentivizedInterstitialAd.h"
 #import "ALAdView.h"
 #import "ALAdLoadDelegate.h"
+#import "ALAdDisplayDelegate.h"
+#import "ALAdRewardDelegate.h"
 #import "AdsManager.h"
 
 @interface AdsApplovin : NSObject <AdsProtocol>
@@ -23,8 +26,9 @@
 @property (nonatomic, retain) AdsManager *mngr;
 @end
 
-@interface AdsApplovinListener : NSObject <ALAdLoadDelegate, ALAdDisplayDelegate>
+@interface AdsApplovinListener : NSObject <ALAdLoadDelegate, ALAdDisplayDelegate, ALAdVideoPlaybackDelegate, ALAdRewardDelegate>
 @property (nonatomic, retain) AdsState *state;
 @property (nonatomic, retain) AdsApplovin *instance;
 -(id)init:(AdsState*)state with:(AdsApplovin*)instance;
+-(void)setType:(AdsState*)state with:(AdsApplovin*)instance;
 @end

@@ -20,6 +20,17 @@
 // Indicates that an attempt to cache a resource to the filesystem failed; the device may be out of space.
 #define kALErrorCodeUnableToPrecacheResources -200
 
+// Indicates that an attempt to cache an image resource to the filesystem failed; the device may be out of space.
+#define kALErrorCodeUnableToPrecacheImageResources -201
+
+// Indicates that an attempt to cache a video resource to the filesystem failed; the device may be out of space.
+#define kALErrorCodeUnableToPrecacheVideoResources -202
+
+// Indicates that there was an error while attempting to render a native ad
+#define kALErrorCodeUnableToRenderNativeAd -700
+
+// Indicates that an unspecified network issue occurred, for instance if the user is in Airplane Mode.
+#define kALErrorCodeUnableToPreloadNativeAd -701
 
 
 // Rewarded Videos
