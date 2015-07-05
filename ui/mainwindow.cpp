@@ -2221,9 +2221,11 @@ void MainWindow::exportProject()
 		  break;
 		  
 		case ExportProjectDialog::e_Android:
-          templatedir = "Android";
-          templatename = "Eclipse";
-          templatenamews = "Eclipse";
+          templatedir = "Eclipse";
+          if(dialog.androidTemplate() == "Android Studio")
+              templatedir = "AndroidStudio";
+          templatename = "Android Template";
+          templatenamews = "AndroidTemplate";
 		  underscore = false;
 		  break;
 
@@ -2405,13 +2407,22 @@ void MainWindow::exportProject()
 
         if (deviceFamily == ExportProjectDialog::e_iOS)
         {
-	  outputDir.mkdir(base);
-	  outputDir.cd(base);
+            outputDir.mkdir(base);
+            outputDir.cd(base);
         }
         else if (deviceFamily == ExportProjectDialog::e_Android)
-	{
-	  outputDir.mkdir("assets");
-	  outputDir.cd("assets");
+        {
+            if(dialog.androidTemplate() == "Android Studio"){
+                outputDir.cd("app");
+                outputDir.cd("src");
+                outputDir.cd("main");
+                outputDir.mkdir("assets");
+                outputDir.cd("assets");
+            }
+            else{
+                outputDir.mkdir("assets");
+                outputDir.cd("assets");
+            }
         }
         else if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop)
         {

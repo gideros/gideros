@@ -140,6 +140,45 @@ web address in reverse.
 Example: com.giderosmobile.timthetimber</string>
            </property>
            <property name="text">
+            <string>Select Template:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="android_template">
+       <property name="minimumSize">
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <item>
+        <property name="text">
+         <string>Eclipse</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Android Studio</string>
+        </property>
+       </item>
+      </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="toolTip">
+            <string>Defines the package name of the Android application.
+
+Generally speaking, the first 2 package &quot;words&quot; are your
+web address in reverse.
+
+Example: com.giderosmobile.timthetimber</string>
+           </property>
+           <property name="text">
             <string>Package Name:</string>
            </property>
           </widget>

@@ -28,6 +28,7 @@ public:
 
 	DeviceFamily deviceFamily() const;
 	QString packageName() const;
+    QString androidTemplate() const;
     QString osx_org() const;
     QString osx_domain() const;
     QString win_org() const;

@@ -54,6 +54,11 @@ QString ExportProjectDialog::packageName() const
 	return ui->packageName->text();
 }
 
+QString ExportProjectDialog::androidTemplate() const
+{
+    return ui->android_template->currentText();
+}
+
 QString ExportProjectDialog::osx_org() const
 {
     return ui->osx_org->text();
