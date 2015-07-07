@@ -1,6 +1,6 @@
 rm -rf libs
 
-NDK=/home/atilim/android-ndk-r9b
+NDK=c:/NVPACK/android-ndk-r10c
 
 NDKABI=8
 NDKVER=$NDK/toolchains/arm-linux-androideabi-4.6
