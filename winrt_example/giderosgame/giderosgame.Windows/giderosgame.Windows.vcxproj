@@ -96,9 +96,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <PackageCertificateKeyFile>giderosgame.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <AppxBundle>Always</AppxBundle>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxBundlePlatforms>x86|arm</AppxBundlePlatforms>
+    <AppxBundle>Auto</AppxBundle>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <AppxPackageDir>C:\winrt_player</AppxPackageDir>
   </PropertyGroup>
   <Import Project="..\giderosgame.Shared\giderosgame.Shared.vcxitems" Label="Shared" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">

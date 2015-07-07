@@ -316,7 +316,29 @@ public:
 
         channel2->looping = looping;
 
-		if (channel2->source != 0);
+		if (channel2->source != 0){
+			channel2->source->Stop();
+			channel2->source->FlushSourceBuffers();
+			channel2->source->DestroyVoice();
+
+			Wave *pbuffer = (Wave *)channel2->sound->pbuffer;
+			const WAVEFORMATEX *wf = pbuffer->wf();
+			const XAUDIO2_BUFFER *pxa= pbuffer->xaBuffer();
+
+			XAUDIO2_BUFFER xa2 = *pxa;
+			xa2.LoopBegin = 0;
+			xa2.LoopCount = 0;
+			
+			if (looping)
+				xa2.LoopLength = XAUDIO2_LOOP_INFINITE;
+			else
+				xa2.LoopLength = 0;
+
+			g_audioengine->CreateSourceVoice(&channel2->source, wf);
+			channel2->source->SubmitSourceBuffer(&xa2);
+			channel2->source->Start();
+
+		}
 	  //            alSourcei(channel2->source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
     }
 
