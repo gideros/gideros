@@ -5,10 +5,13 @@ qtapp.install: qtlibs.install plugins.install qt.install
 qtapp.clean: qtlibs.clean plugins.clean qt.clean
 
 
-vpath %.h libgideros:libgvfs:libgid/include:lua/src:libgid/openal-soft-1.13/include
+vpath %.h libgideros:libgvfs:libgid/include:lua/src:libgid/external/openal-soft-1.13/include/AL
 vpath %.a libgideros/release:libgvfs/release:libgid/release:lua/release:libgid/external/openal-soft-1.13/build/mingw48_32
 $(SDK)/include/%: %
 	cp $^ $(SDK)/include
+
+$(SDK)/include/AL/%: %
+	cp $^ $(SDK)/include/AL
 
 $(SDK)/lib/desktop/%: %
 	cp $^ $(SDK)/lib/desktop
@@ -50,7 +53,7 @@ qtlibs.install: buildqtlibs
 
 %.plugin.install:
 	mkdir -p $(RELEASE)/Plugins
-	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp release/*.dll $(RELEASE)/Plugins	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp release/*.dll $$R/$(RELEASE)/Plugins	 
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 
