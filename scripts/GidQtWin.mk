@@ -18,7 +18,7 @@ $(SDK)/lib/desktop/%: %
 	
 
 SDK_INCS=$(addsuffix .h,gideros gplugin gproxy greferenced gexport) \
-			$(addsuffix .h,gfile gpath) \
+			$(addsuffix .h,gfile gpath gstdio) \
 			$(addsuffix .h,gglobal glog gapplication gevent) \
 			$(addsuffix .h,lua luaconf lualib lauxlib) \
 			$(addprefix AL/,$(addsuffix .h,al alc alext efx efx-creative))
