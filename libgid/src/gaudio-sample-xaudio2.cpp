@@ -327,12 +327,12 @@ public:
 
 			XAUDIO2_BUFFER xa2 = *pxa;
 			xa2.LoopBegin = 0;
-			xa2.LoopCount = 0;
+			xa2.LoopLength = 0;
 			
 			if (looping)
-				xa2.LoopLength = XAUDIO2_LOOP_INFINITE;
+				xa2.LoopCount = XAUDIO2_LOOP_INFINITE;
 			else
-				xa2.LoopLength = 0;
+				xa2.LoopCount = 0;
 
 			g_audioengine->CreateSourceVoice(&channel2->source, wf);
 			channel2->source->SubmitSourceBuffer(&xa2);

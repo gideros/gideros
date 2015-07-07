@@ -274,6 +274,9 @@
     <ClInclude Include="Plugins\lfs.h" />
     <ClInclude Include="Plugins\sqlite3.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="Assets\1.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\ImageContentTask.targets" />

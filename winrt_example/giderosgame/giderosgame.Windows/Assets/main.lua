@@ -57,3 +57,6 @@ alertDialog2:addEventListener(Event.COMPLETE, onComplete2)
 
 stage:addEventListener(Event.KEY_DOWN, function() alertDialog2:show() end)
 
+sound=Sound.new("1.wav")
+soundchannel=sound:play(0,true)
+--soundchannel:setLooping(false)

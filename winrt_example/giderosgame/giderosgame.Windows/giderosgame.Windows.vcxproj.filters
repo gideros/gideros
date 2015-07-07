@@ -122,4 +122,9 @@
       <Filter>Plugins</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="Assets\1.wav">
+      <Filter>Assets</Filter>
+    </Media>
+  </ItemGroup>
 </Project>
