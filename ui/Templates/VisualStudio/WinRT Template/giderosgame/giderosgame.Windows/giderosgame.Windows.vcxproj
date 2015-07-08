@@ -222,13 +222,7 @@ INSERT_ASSETS_HERE
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Assets\PixelShader.cso">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="Assets\properties.bin">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Assets\VertexShader.cso">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="giderosgame.Windows_TemporaryKey.pfx" />

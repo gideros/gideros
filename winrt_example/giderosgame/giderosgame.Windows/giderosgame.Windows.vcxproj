@@ -235,13 +235,7 @@
     <None Include="Assets\main.lua">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="Assets\PixelShader.cso">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="Assets\properties.bin">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Assets\VertexShader.cso">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="giderosgame.Windows_TemporaryKey.pfx" />
