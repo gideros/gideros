@@ -6,6 +6,8 @@
 
 
 #import <Foundation/Foundation.h>
+#import "ALNullabilityAnnotations.h"
+
 #import "ALAdSize.h"
 #import "ALAdType.h"
 
@@ -22,12 +24,12 @@
 /**
  *  The size of this ad.
  */
-@property (strong, nonatomic, readonly) ALAdSize* size;
+@property (strong, nonatomic, readonly) ALAdSize* __alnonnull size;
 
 /**
  *  The type of this ad.
  */
-@property (strong, nonatomic, readonly) ALAdType* type;
+@property (strong, nonatomic, readonly) ALAdType* __alnonnull type;
 
 /**
  *  Whether or not the current ad is a video advertisement.
@@ -43,10 +45,10 @@
  *  
  *  Should you need to report a broken ad to AppLovin support, please include this number's longValue.
  */
-@property (strong, nonatomic, readonly) NSNumber * adIdNumber;
+@property (strong, nonatomic, readonly) NSNumber* __alnonnull adIdNumber;
 
 // These property aliases are left for backwards compatibility only, and should no longer be used.
-@property (strong, readonly, getter=size) ALAdSize* adSize __deprecated;
-@property (strong, readonly, getter=type) ALAdType* adType __deprecated;
+@property (strong, readonly, getter=size) ALAdSize* __alnullable adSize __deprecated_msg("Use size property instead.");
+@property (strong, readonly, getter=type) ALAdType* __alnullable adType __deprecated_msg("Use type property instead.");
 
 @end

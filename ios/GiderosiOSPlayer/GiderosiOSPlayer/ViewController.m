@@ -178,7 +178,7 @@ NSMutableArray *tableData;
 
 - (NSUInteger)supportedInterfaceOrientations
 {
-    NSArray *supportedOrientations = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UISupportedInterfaceOrientations"];
+    /*NSArray *supportedOrientations = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UISupportedInterfaceOrientations"];
     NSUInteger result = gdr_supportedInterfaceOrientations();
     BOOL supported = false;
     for (NSNumber *orientation in supportedOrientations) {
@@ -190,7 +190,8 @@ NSMutableArray *tableData;
     if(supported)
         return result;
     else
-        return UIInterfaceOrientationMaskAll;
+        return UIInterfaceOrientationMaskAll;*/
+    return gdr_supportedInterfaceOrientations();
 }
 
 - (void)initTable{

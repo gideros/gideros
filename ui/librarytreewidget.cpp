@@ -352,6 +352,7 @@ QDomDocument LibraryTreeWidget::toXml() const
 
 	// export options
 	properties.setAttribute("architecture", properties_.architecture);
+    properties.setAttribute("android_template", properties_.android_template);
 	properties.setAttribute("assetsOnly", properties_.assetsOnly ? 1 : 0);
 	properties.setAttribute("iosDevice", properties_.iosDevice);
 	properties.setAttribute("packageName", properties_.packageName);
@@ -505,6 +506,8 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 		// export options
 		if (!properties.attribute("architecture").isEmpty())
 			properties_.architecture = properties.attribute("architecture").toInt();
+        if (!properties.attribute("android_template").isEmpty())
+            properties_.android_template = properties.attribute("android_template").toInt();
 		if (!properties.attribute("assetsOnly").isEmpty())
 			properties_.assetsOnly = properties.attribute("assetsOnly").toInt() != 0;
 		if (!properties.attribute("iosDevice").isEmpty())

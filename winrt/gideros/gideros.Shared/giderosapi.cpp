@@ -1392,6 +1392,7 @@ void ApplicationManager::exitRenderLoop()
 
 
 static ApplicationManager *s_manager = NULL;
+static int lastMouseButton_ = 0;
 
 extern "C" {
 
@@ -1455,22 +1456,37 @@ extern "C" {
 		ginputp_keyUp(keyCode);
 	}
 
-	void gdr_mouseDown(int x, int y){
+	void gdr_mouseDown(int x, int y, int button){
+		lastMouseButton_ = button;
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseDown(xn, yn, 0);
+		ginputp_mouseDown(xn, yn, button);
 	}
 
 	void gdr_mouseMove(int x, int y){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseMove(xn, yn);
+		ginputp_mouseMove(xn, yn, lastMouseButton_);
 	}
 
-	void gdr_mouseUp(int x, int y){
+	void gdr_mouseHover(int x, int y){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseUp(xn, yn, 0);
+		ginputp_mouseHover(xn, yn, 0);
+	}
+
+	void gdr_mouseUp(int x, int y, int button){
+		if (lastMouseButton_ == button)
+			lastMouseButton_ = 0;
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_mouseUp(xn, yn, button);
+	}
+
+	void gdr_mouseWheel(int x, int y, int delta){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_mouseWheel(xn, yn, 0, delta);
 	}
 
 	void gdr_touchBegin(int x, int y, int id){

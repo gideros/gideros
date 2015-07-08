@@ -192,6 +192,7 @@ private slots:
 	void developerCenter();
 	void helpAndSupport();
 	void apiDocumentation();
+    void giderosDocumentation();
 
 	void closeMdiTab(int);
 

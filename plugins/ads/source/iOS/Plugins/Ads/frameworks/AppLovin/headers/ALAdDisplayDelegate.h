@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import <UIKit/UIView.h>
+#import "ALNullabilityAnnotations.h"
 
 #import "ALAd.h"
 /**
@@ -24,7 +25,7 @@
  * @param ad     Ad that was just displayed. Will not return nil.
  * @param view   Ad view in which the ad was displayed. Will not return nil. 
  */
--(void) ad:(ALAd *) ad wasDisplayedIn: (UIView *)view;
+-(void) ad: (alnonnull ALAd *) ad wasDisplayedIn: (alnonnull UIView *) view;
 
 /**
  * This method is invoked when the ad is hidden from in the view. This occurs
@@ -35,7 +36,7 @@
  * @param ad     Ad that was just hidden. Will not return nil.
  * @param view   Ad view in which the ad was hidden. Will not return nil.
  */
--(void) ad:(ALAd *) ad wasHiddenIn: (UIView *)view;
+-(void) ad: (alnonnull ALAd *) ad wasHiddenIn: (alnonnull UIView *) view;
 
 /**
  * This method is invoked when the ad is clicked from in the view.
@@ -45,6 +46,6 @@
  * @param ad     Ad that was just clicked. Will not return nil.
  * @param view   Ad view in which the ad was hidden. Will not return nil.
  */
--(void) ad:(ALAd *) ad wasClickedIn: (UIView *)view;
+-(void) ad: (alnonnull ALAd *) ad wasClickedIn: (alnonnull UIView *) view;
 
 @end

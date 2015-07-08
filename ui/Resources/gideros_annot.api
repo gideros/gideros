@@ -22,42 +22,60 @@ while
 assert(v [, message]) error if v nil or false, otherwise returns v
 collectgarbage(opt [, arg]) opts: stop, restart, collect, count, step, setpause, setstepmul
 dofile(filename) executes as Lua chunk, default stdin, returns value
-error(message [, level]) terminates protected func, never returns, level 1(default-, 2=parent
-getfenv(f) gets env, f can be a function or number(stack level, default=1-, 0=global env
+error(message [, level]) terminates protected func, never returns
+getfenv([f]) gets env, f can be a function or number(stack level)
 getmetatable(object) returns metatable of given object, otherwise nil
 ipairs(t) returns an iterator function, table t and 0
 loadfile(filename) loads chunk without execution, returns chunk as function, else nil plus error
 loadstring(string [, chunkname]) loads string as chunk, returns chunk as function, else nil plus error
 next(table [, index]) returns next index,value pair, if index=nil(default-, returns first index
 pairs(t) returns the next function and table t plus a nil, iterates over all key-value pairs
-pcall(f, arg1, arg2, ...) protected mode call, catches errors, returns status code first(true=success-
-print(e1, e2, ...) prints values to stdout using tostring
+pcall(f [, arg1, arg2, ...]) protected mode call, catches errors, returns status code first
+print(e1 [, e2, ...]) prints values to stdout using tostring
 rawequal(v1, v2) non-metamethod v1==v2, returns boolean
-rawget(table, index) non-metamethod get value of table[index], index != nil
-rawset(table, index, value) non-metamethod set value of table[index], index != nil
+rawget(table, key) non-metamethod get value of table[index], index != nil
+rawset(table, key, value) non-metamethod set value of table[index], index != nil
 require(packagename) loads package, updates _LOADED, returns boolean
 setfenv(f, table) sets env, f can be a function or number(stack level, default=1-, 0=global env
 setmetatable(table, metatable) sets metatable, nil to remove metatable
-tonumber(e [, base]) convert to number, returns number, nil if non-convertible, 2&lt;=base&lt;=36
+tonumber(e [, base]) convert to number, returns number, nil if non-convertible, 2<=base<=36
 tostring(e) convert to string, returns string
 type(v) returns type of v as a string
 unpack(list) returns all elements from list
 xpcall(f, err) pcall function f with new error handler err
 _G
-_VERSION
+_VERSION - value "Lua 5.1.x"
 Accelerometer
 Accelerometer.isAvailable() Accelerometer - does the accelerometer available?
 Accelerometer.new() Accelerometer - Creates new Accelerometer instance
 getAcceleration() Accelerometer - returns the 3-axis acceleration measured by the accelerometer
 start() Accelerometer - starts accelerometer updates
 stop() Accelerometer - starts accelerometer updates
+Ads > EventDispatcher
+Ads.new(adframework) Ads - initializes new ad framework
+enableTesting() Ads - enable testing ads
+get(property) Ads - gets property value of the ad
+getHeight() Ads - gets the height of the ad
+getPosition() Ads - gets x and y position of the ad
+getWidth() Ads - gets width of the ad
+getX() Ads - gets x position of the ad
+getY() Ads - gets y position of the ad
+hideAd() Ads - hides ads
+set(property, value) Ads - sets property value of the ad
+setAlignment(horizontal, vertical) Ads - sets alignment of the ad
+setKey(...) Ads - set keys for the framework
+setPosition(x, y) Ads - sets position of the ad
+setX(x) Ads - Sets x position of the ad
+setY(y) Ads - sets y position of the ad
+showAd(...) Ads - display ad
 AlertDialog
-AlertDialog.new(title, message, cancelButton, button1, button2) AlertDialog
+AlertDialog.new(title, message, cancelButton [, button1, button2]) AlertDialog
 hide() AlertDialog
 show() AlertDialog
 Application
 application
 canOpenUrl(url) Application - Tests if it is possible to open provided url
+configureFrustum(fov [, farplane]) Application - Configure the projection for 3D perspective.
 exit() Application - terminates the application
 getApiVersion() Application - returns the API version
 getBackgroundColor() Application - returns the background color in hexadecimal format
@@ -65,6 +83,7 @@ getContentHeight() Application - returns content height
 getContentWidth() Application - returns content width
 getDeviceHeight() Application - returns the physical height of the device in pixels
 getDeviceInfo() Application - returns information about device
+getDeviceOrientation() Application - Get the device orientation
 getDeviceWidth() Application - returns the physical width of the device in pixels
 getFps() Application - returns the frame rate of the application
 getLanguage() Application - returns the user language
@@ -79,13 +98,16 @@ getOrientation() Application - returns the orientation of the application
 getScaleMode() Application - returns the automatic scale mode of the application
 getScreenDensity() Application - returns the screen density in pixels per inch
 getTextureMemoryUsage() Application - returns the texture memory usage in Kbytes
+isPlayerMode() Application - Check if app runs on player
 openUrl(url) Application - opens the given URL in the appropriate application
 setBackgroundColor(color) Application - sets the background color in hexadecimal format
 setFps(fps) Application - sets the frame rate of the application
+setFullScreen(fullscreen) Application - Full screen or window mode
 setKeepAwake(keepAwake) Application - enables/disables screen dimming and device sleeping
 setLogicalDimensions(width, height) Application - sets the logical dimensions of the application
 setOrientation(orientation) Application - sets the orientation of the application
 setScaleMode(scaleMode) Application - sets the automatic scale mode of the application
+setWindowSize(width, height) Application - Sets desktop window to a specific size
 vibrate() Application - vibrates the device
 Application.LANDSCAPE_LEFT - value "landscapeLeft"
 Application.LANDSCAPE_RIGHT - value "landscapeRight"
@@ -229,6 +251,11 @@ getReactionForce(inv_dt) b2.Joint - returns the reaction force on bodyB at the j
 getReactionTorque(inv_dt) b2.Joint - returns the reaction torque on bodyB
 getType() b2.Joint - returns a value that represents the type
 isActive() b2.Joint - is active?
+b2.Manifold
+b2.manifold
+localNormal - value "table"
+localPoint - value "table"
+points - value "table"
 b2.MouseJoint > b2.Joint
 b2.mousejoint
 getDampingRatio() b2.MouseJoint - returns the damping ratio
@@ -239,6 +266,21 @@ setDampingRatio(ratio) b2.MouseJoint - sets the damping ratio (0 = no damping, 1
 setFrequency(frequency) b2.MouseJoint - sets the response frequency in Hertz
 setMaxForce(force) b2.MouseJoint - sets the maximum force in N
 setTarget(x, y) b2.MouseJoint - updates the target point
+b2.ParticleSystem
+b2.particlesystem
+createParticle(particleDef) b2.ParticleSystem - create new particle
+createParticleGroup(particleGoupDef) b2.ParticleSystem - create group of particles
+destroyParticle(id) b2.ParticleSystem - destroy particle by id
+setTexture(texture) b2.ParticleSystem - set texture to particles
+b2.ParticleSystem.FLAG_COLOR_MIXING - value 256
+b2.ParticleSystem.FLAG_ELASTIC - value 16
+b2.ParticleSystem.FLAG_POWDER - value 64
+b2.ParticleSystem.FLAG_SPRING - value 8
+b2.ParticleSystem.FLAG_TENSILE - value 128
+b2.ParticleSystem.FLAG_VISCOUS - value 32
+b2.ParticleSystem.FLAG_WALL - value 4
+b2.ParticleSystem.FLAG_WATER - value 0
+b2.ParticleSystem.FLAG_ZOMBIE - value 2
 b2.PolygonShape > b2.Shape
 b2.PolygonShape.new() b2.PolygonShape
 set(vertices) b2.PolygonShape - sets vertices
@@ -309,14 +351,19 @@ b2.World.new(gravityx, gravityy, doSleep) b2.World
 clearForces() b2.World - call this after you are done with time steps to clear the forces
 createBody(bodyDef) b2.World - creates a rigid body given a definition
 createJoint(jointDef) b2.World - creates a joint given a definition
+createParticleSystem(particleSysDef) b2.World - create particle system
 destroyBody(body) b2.World - destroys a rigid body
 destroyJoint(joint) b2.World - destroys a joint
 getGravity() b2.World - returns the gravity vector
-queryAABB(lowerx, lowery, upperx, uppery) b2.World - query the world for all fixtures that potentially overlap the provided AABB
+queryAABB(minx, miny, maxx, maxy) b2.World - query the world for all fixtures that potentially overlap the provided AABB
 rayCast(x1, y1, x2, y2, listener [, data]) b2.World - raycast the world for all fixtures in the path of the ray
 setDebugDraw() b2.World - registers a b2.DebugDraw instance for debug drawing
 setGravity(gravityx, gravityy) b2.World - sets the gravity vector
 step(timeStep, velocityIterations, positionIterations) b2.World - takes a time step
+b2.WorldManifold
+b2.worldmanifold
+normal - value "table"
+points - value "table"
 bit
 bit.arshift(x, n) bit - Returns the bitwise arithmetic right-shift
 bit.band(x1 [, x2]) bit - Returns the bitwise and of its argument.
@@ -336,34 +383,48 @@ getAnchorPoint() Bitmap - returns the x and y coordinates of the anchor point
 setAnchorPoint(x, y) Bitmap - sets the anchor point
 setTexture(texture) Bitmap - sets the texture
 setTextureRegion(textureRegion) Bitmap - sets the texture region
+Controller > EventDispatcher
+controller
+getControllerName(id) Controller - gets the name of controller
+getPlayerCount() Controller - returns amount of connected controllers
+getPlayers() Controller - returns table with controller IDs
+isAnyAvailable() Controller - return true if any controller is connected
+virbate(ms) Controller - vibrate the controller for provided amount of miliseconds
 Core
 core
 Core.class([base]) Core - Creates and returns new Gideros class
 coroutine
 coroutine.create(f) coroutine - creates coroutine from function f, returns coroutine
-coroutine.resume(co, val1, ...) coroutine - continues execution of co, returns bool status plus any values
-coroutine.status(co) coroutine - returns co status: &quot;running&quot;, &quot;suspended&quot; or &quot;dead&quot;
+coroutine.resume(co [, val1, ...]) coroutine - continues execution of co, returns bool status plus any values
+coroutine.status(co) coroutine - returns co status: "running", "suspended" or "dead"
 coroutine.wrap(f) coroutine - creates coroutine with body f, returns function that resumes co
-coroutine.yield(val1, ...) coroutine - suspend execution of calling coroutine
+coroutine.yield([val1, ...]) coroutine - suspend execution of calling coroutine
 debug
-debug.debug() debug - enters interactive debug mode, line with only &quot;cont&quot; terminates
+debug.debug() debug - enters interactive debug mode, line with only "cont" terminates
 debug.gethook() debug - returns current hook function, hook mask, hook count
 debug.getinfo(function [, what]) debug - returns table with information about a function
 debug.getlocal(level, local) debug - returns name and value of local variable with index local at stack level
 debug.getupvalue(func, up) debug - returns name and value of upvalue with index up of function func
-debug.sethook(hook, mask [, count]) debug - sets given function as a hook, mask=&quot;[crl]&quot;
+debug.sethook(hook, mask [, count]) debug - sets given function as a hook, mask="[crl]"
 debug.setlocal(level, local, value) debug - sets local variable with index local at stack level with value
 debug.setupvalue(func, up, value) debug - sets upvalue with index up of function func with value
-debug.traceback(message) debug - returns a string with a traceback of the call stack
+debug.traceback([message, level]) debug - returns a string with a traceback of the call stack
 Event
 Event.new(type) Event - creates a new Event object
 getTarget() Event - returns the element on which the event listener was registered
 getType() Event - returns the type of Event
 stopPropagation() Event - stops the propagation of the current event in the scene tree hierarchy
 Event.ADDED_TO_STAGE - value "addedToStage"
+Event.AD_ACTION_BEGIN - value "adActionBegin"
+Event.AD_ACTION_END - value "adActionEnd"
+Event.AD_DISMISSED - value "adDismissed"
+Event.AD_ERROR - value "adError"
+Event.AD_FAILED - value "adFailed"
+Event.AD_RECEIVED - value "adReceived"
 Event.APPLICATION_BACKGROUND - value "applicationBackground"
 Event.APPLICATION_EXIT - value "applicationExit"
 Event.APPLICATION_FOREGROUND - value "applicationForeground"
+Event.APPLICATION_RESIZE - value "applicationResize"
 Event.APPLICATION_RESUME - value "applicationResume"
 Event.APPLICATION_START - value "applicationStart"
 Event.APPLICATION_SUSPEND - value "applicationSuspend"
@@ -379,17 +440,24 @@ Event.COMPLETE - value "complete"
 Event.COMPLETE - value "complete"
 Event.COMPLETE - value "complete"
 Event.CONFIRM_NOTIFICATION_COMPLETE - value "confirmNotificationComplete"
+Event.CONNECTED - value "connected"
 Event.DATA_AVAILABLE - value "dataAvailable"
 Event.DIALOG_CANCEL - value "dialogCancel"
 Event.DIALOG_COMPLETE - value "dialogComplete"
 Event.DIALOG_ERROR - value "dialogError"
+Event.DISCONNECTED - value "disconnected"
 Event.END_CONTACT - value "endContact"
 Event.ENTER_FRAME - value "enterFrame"
 Event.ERROR - value "error"
 Event.ERROR - value "error"
 Event.HEADING_UPDATE - value "headingUpdate"
 Event.KEY_DOWN - value "keyDown"
+Event.KEY_DOWN - value "keyDown"
 Event.KEY_UP - value "keyUp"
+Event.KEY_UP - value "keyUp"
+Event.LEFT_JOYSTICK - value "leftJoystick"
+Event.LEFT_TRIGGER - value "leftTrigger"
+Event.LOCAL_NOTIFICATION - value "localNotification"
 Event.LOCATION_UPDATE - value "locationUpdate"
 Event.LOGIN_CANCEL - value "loginCancel"
 Event.LOGIN_COMPLETE - value "loginComplete"
@@ -399,10 +467,14 @@ Event.MEMORY_WARNING - value "memoryWarning"
 Event.MOUSE_DOWN - value "mouseDown"
 Event.MOUSE_MOVE - value "mouseMove"
 Event.MOUSE_UP - value "mouseUp"
+Event.MOUSE_WHEEL - value "mouseWheel"
 Event.POST_SOLVE - value "postSolve"
 Event.PRE_SOLVE - value "preSolve"
 Event.PROGRESS - value "progress"
 Event.PURCHASE_STATE_CHANGE - value "purchaseStateChange"
+Event.PUSH_NOTIFICATION - value "pushNotification"
+Event.PUSH_REGISTRATION - value "pushRegistration"
+Event.PUSH_REGISTRATION_ERROR - value "pushRegistrationError"
 Event.REMOVED_FROM_STAGE - value "removedFromStage"
 Event.REQUEST_COMPLETE - value "requestComplete"
 Event.REQUEST_ERROR - value "requestError"
@@ -410,6 +482,8 @@ Event.REQUEST_PRODUCTS_COMPLETE - value "requestProductsComplete"
 Event.REQUEST_PURCHASE_COMPLETE - value "requestPurchaseComplete"
 Event.RESTORE_TRANSACTIONS_COMPLETE - value "restoreTransactionsComplete"
 Event.RESTORE_TRANSACTIONS_COMPLETE - value "restoreTransactionsComplete"
+Event.RIGHT_JOYSTICK - value "rightJoystick"
+Event.RIGHT_TRIGGER - value "rightTrigger"
 Event.TIMER - value "timer"
 Event.TIMER_COMPLETE - value "timerComplete"
 Event.TOUCHES_BEGIN - value "touchesBegin"
@@ -439,12 +513,12 @@ setAppId(appId) Facebook
 setExpirationDate(expirationDate) Facebook
 shouldExtendAccessToken() Facebook
 file
-file.close() file - closes file
-file.flush() file - saves any written data to file
-file.lines() file - returns iterator function to return lines, nil ends
-file.read(format1, ...) file - reads file according to given formats, returns read values or nil
-file.seek(whence [, offset]) file - sets file pos, whence=&quot;set&quot;|&quot;cur&quot;|&quot;end&quot;, defaults &quot;curr&quot;,0, returns file pos
-file.write(value1, ...) file - writes strings or numbers to file
+close() file - closes file
+flush() file - saves any written data to file
+lines() file - returns iterator function to return lines, nil ends
+read(format1 [, ...]) file - reads file according to given formats, returns read values or nil
+seek([whence, offset]) file - sets file pos, whence="set"|"cur"|"end", defaults "curr",0, returns file pos
+write(value1 [, ...]) file - writes strings or numbers to file
 flurry
 flurry.endTimedEvent(eventName, parameters) flurry - ends Flurry timed event
 flurry.isAvailable() flurry - returns true if Flurry is available
@@ -512,16 +586,16 @@ iad.Banner.LANDSCAPE - value "landscape"
 iad.Banner.PORTRAIT - value "portrait"
 iad.Banner.TOP - value "top"
 io
-io.close(file) io - closes file, or the default output file
+io.close([file]) io - closes file, or the default output file
 io.flush() io - flushes the default output file
-io.input(file) io - opens file in text mode, sets as default input file, or returns current default input file
-io.lines(filename) io - open file in read mode, returns iterator function to return lines, nil ends
-io.open(filename [, mode]) io - opens file in specified mode &quot;[rawb ]&quot;, returns handle or nil
-io.output(file) io - opens file in text mode, sets as default output file, or returns current default output file
-io.read(format1, ...) io - reads file according to given formats, returns read values or nil
+io.input([file]) io - opens file in text mode, sets as default input file, or returns current default input file
+io.lines([filename]) io - open file in read mode, returns iterator function to return lines, nil ends
+io.open(filename [, mode]) io - opens file in specified mode "[rawb ]", returns handle or nil
+io.output([file]) io - opens file in text mode, sets as default output file, or returns current default output file
+io.read(format1 [, ...]) io - reads file according to given formats, returns read values or nil
 io.tmpfile() io - returns a handle for a temporary file, opened in update mode
-io.type(obj) io - returns &quot;file&quot; if obj is an open file handle, &quot;close file&quot; if closed, or nil if not a file handle
-io.write(value1, ...) io - writes strings or numbers to file
+io.type(obj) io - returns "file" if obj is an open file handle, "close file" if closed, or nil if not a file handle
+io.write(value1 [, ...]) io - writes strings or numbers to file
 json
 json.decode(jsondata) json - Returns Lua table from provided json encoded string
 json.encode(data) json - Returns encoded json string from provided Lua table
@@ -592,11 +666,11 @@ math.frexp(v) math - returns mantissa [0.5,1- and exponent values of v
 math.ldexp(v1, v2) math - returns v1*2^v2
 math.log(v) math - returns natural logarithm of v
 math.log10(v) math - returns logarithm 10 of v
-math.max(v1, ...) math - returns maximum in a list of one or more values
-math.min(v1, ...) math - returns minimum in a list of one or more values
+math.max(v1 [, ...]) math - returns maximum in a list of one or more values
+math.min(v1 [, ...]) math - returns minimum in a list of one or more values
 math.pow(v1, v2) math - returns v1 raised to the power of v2
 math.rad(deg) math - returns angle in radians of degrees deg
-math.random(n [, u]) math - returns random real [0,1-, integer [1,n] or real [1,u](with n=1-
+math.random([n, u]) math - returns random real [0,1-, integer [1,n] or real [1,u](with n=1-
 math.randomseed(seed) math - sets seed for pseudo-random number generator
 math.sin(rad) math - returns sine value of angle rad
 math.sqrt(v) math - returns square root of v
@@ -620,7 +694,7 @@ setM22(m22) Matrix
 setTx(tx) Matrix - sets the value of the tx component
 setTy(ty) Matrix - sets the value of the ty component
 Mesh > Sprite
-Mesh.new() Mesh
+Mesh.new([is3d]) Mesh
 clearColorArray() Mesh
 clearIndexArray() Mesh
 clearTexture() Mesh
@@ -665,17 +739,44 @@ play() MovieClip - starts playing the movie clip
 setGotoAction(frame, destframe) MovieClip - sets a &quot;go to&quot; action to the specified frame
 setStopAction(frame) MovieClip - sets a &quot;stop&quot; action to the specified frame
 stop() MovieClip - stops playing the movie clip
+Notification
+Notification.new() Notification - creates new notification
+cancel() Notification - cancel notification
+dispatchAfter() Notification - Dispatch notification after specified time
+dispatchNow() Notification - dispatch notification now
+dispatchOn() Notification - dispatch on specified date
+getId() Notification - get id of notification
+getMessage() Notification - get message of notification
+getNumber() Notification - get notification number
+getSound() Notification - get sound of notification
+getTitle() Notification - get title of notification
+setNumber() Notification - set notification number
+setSound() Notification - set notification sound
+setTitle() Notification - set the title of notification
+Notification.DEFAULT_SOUND - value "default"
+NotificationManager > EventDispatcher
+notificationmanager
+NotificationManager.getSharedInstance() NotificationManager - get NotificationManager instance
+cancelAllNotifications() NotificationManager - cancel scheduled notification
+cancelNotification() NotificationManager - cancel specified notification
+clearLocalNotifications() NotificationManager - clear local notifications
+clearPushNotifications() NotificationManager - clear push notifications
+getLocalNotifications() NotificationManager - get local notifications
+getPushNotifications() NotificationManager - get push notification
+getScheduledNotifications() NotificationManager - get schedule notifications
+registerForPushNotifications() NotificationManager - register for push notifications
+unregisterForPushNotifications() NotificationManager - unregister from notifications
 os
 os.clock() os - returns CPU time used by program in seconds
-os.date(format [, time]) os - returns a string or table containing date and time, &quot;*t&quot; returns a table
+os.date(format [, time]) os - returns a string or table containing date and time, "*t" returns a table
 os.difftime(t2, t1) os - returns number of seconds from time t1 to time t2
 os.execute(command) os - executes command using C function system, returns status code
-os.exit(code) os - terminates host program with optional code, default is success code
+os.exit([code]) os - terminates host program with optional code, default is success code
 os.getenv(varname) os - returns value of environment variable varname. nil if not defined
 os.remove(filename) os - deletes file with given name, nil if fails
 os.rename(oldname, newname) os - renames file oldname to newname, nil if fails
 os.setlocale(locale [, category]) os - set current locale of program, returns name of new locate or nil
-os.time(table) os - returns current time(usually seconds- or time as represented by table
+os.time([table]) os - returns current time(usually seconds- or time as represented by table
 os.timer() os - returns precise time in seconds relative to some arbitrary point
 os.tmpname() os - returns a string with a filename for a temporary file(dangerous! tmpfile is better-
 package
@@ -684,6 +785,30 @@ RenderTarget > TextureBase
 RenderTarget.new(width, height, filtering) RenderTarget - Creates new RenderTarget object
 clear(color, alpha) RenderTarget - Clears rendered texture
 draw(sprite) RenderTarget - Renders provided object
+Shader
+Shader.new(vertex shader, fragment shader, flags, uniform descriptor, attribute descriptor) Shader - create new shader
+getEngineVersion() Shader - get shader version
+setConstant(uniform name, data type, mult, data) Shader - change the value of a uniform
+Shader.CFLOAT - value 1
+Shader.CFLOAT4 - value 2
+Shader.CINT - value 0
+Shader.CMATRIX - value 3
+Shader.CTEXTURE - value 4
+Shader.DBYTE - value 0
+Shader.DFLOAT - value 5
+Shader.DINT - value 4
+Shader.DSHORT - value 2
+Shader.DUBYTE - value 1
+Shader.DUSHORT - value 3
+Shader.FLAG_NONE - value 0
+Shader.FLAG_NO_DEFAULT_HEADER - value 1
+Shader.SYS_COLOR - value 2
+Shader.SYS_NONE - value 0
+Shader.SYS_PARTICLESIZE - value 6
+Shader.SYS_TEXTUREINFO - value 5
+Shader.SYS_WIT - value 3
+Shader.SYS_WORLD - value 4
+Shader.SYS_WVP - value 1
 Shape > Sprite
 Shape.new() Shape - creates a new Shape object
 beginPath(winding) Shape - resets the current path
@@ -725,6 +850,7 @@ clearBlendMode() Sprite - clears the blending mode
 contains(child) Sprite - determines whether the specified sprite is contained in the subtree of this sprite
 get(param) Sprite - gets the specified property by its name
 getAlpha() Sprite - returns the alpha transparency of this sprite
+getAnchorPosition() Sprite - Returns anchor position of Sprite
 getBounds(targetSprite) Sprite - returns the bounds as it appears in another sprite's coordinate system
 getChildAt(index) Sprite - returns the child sprite that exists at the specified index
 getChildIndex(child) Sprite - returns the index of the specified child sprite
@@ -733,14 +859,18 @@ getHeight() Sprite - returns the height
 getMatrix() Sprite - returns the transformation matrix of the sprite
 getNumChildren() Sprite - returns the number of children of this sprite
 getParent() Sprite - returns the parent sprite
-getPosition() Sprite - gets the x,y coordinates of the sprite
+getPosition() Sprite - gets the x,y and z coordinates of the sprite
 getRotation() Sprite - returns the rotation of the sprite in degrees
-getScale() Sprite - returns the horizontal and vertical scales of the sprite
+getRotationX() Sprite - returns the rotation of the sprite around x axis in degrees
+getRotationY() Sprite - returns the rotation of the sprite around y axis in degrees
+getScale() Sprite - returns the horizontal, vertical and z scales of the sprite
 getScaleX() Sprite - returns the horizontal scale of the sprite
 getScaleY() Sprite - returns the vertical scale of the sprite
+getScaleZ() Sprite - returns the scale on z axis of the sprite
 getWidth() Sprite - returns the width
 getX() Sprite - returns the x coordinate of the sprite
 getY() Sprite - returns the y coordinate of the sprite
+getZ() Sprite - returns the z coordinate of the sprite
 globalToLocal(x, y) Sprite - converts the x,y coordinates from the global to the sprite's (local) coordinates
 hitTestPoint(x, y) Sprite - checks the given coordinates is in bounds of the sprite
 isVisible() Sprite - returns the visibility of sprite
@@ -750,17 +880,26 @@ removeChildAt(index) Sprite - removes the child sprite at the specifed index
 removeFromParent() Sprite - if the sprite has a parent, removes the sprite from the child list of its parent sprite.
 set(param, value) Sprite - sets the specified property by its name
 setAlpha(alpha) Sprite - sets the alpha transparency of this sprite
+setAnchorPosition(anchorX, anchorY [, anchorZ]) Sprite - Set anchor position
 setBlendMode(blendMode) Sprite - sets the blend mode of the sprite
+setClip(x, y, width, height) Sprite - Clip Sprite contents
 setColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier) Sprite - sets the red, green, blue and alpha channel multipliers
 setMatrix(matrix) Sprite - sets the transformation matrix of the sprite
-setPosition(x, y) Sprite - sets the x,y coordinates of the sprite
+setPosition(x, y [, z]) Sprite - sets the x,y and z coordinates of the sprite
 setRotation(rotation) Sprite - sets the rotation of the sprite in degrees
-setScale(scaleX, scaleY) Sprite - sets the horizontal and vertical scales of the sprite
+setRotationX() Sprite - sets the rotation of the sprite in degrees around x axis
+setRotationY() Sprite - sets the rotation of the sprite in degrees around y axis
+setScale(scaleX, scaleY, scaleZ) Sprite - sets the horizontal, vertical and z axis scales of the sprite
 setScaleX(scaleX) Sprite - sets the horizontal scale of the sprite
 setScaleY(scaleY) Sprite - sets the vertical scale of the sprite
+setScaleZ(scale) Sprite - Set scale on z axis
+setShader(shader) Sprite - Set shader for this sprite
 setVisible(visible) Sprite - sets the visibility of sprite
 setX(x) Sprite - sets the x coordinate of the sprite
 setY(y) Sprite - sets the y coordinate of the sprite
+setZ(z) Sprite - sets the z coordinate of the sprite
+swapChildren(child1, child2) Sprite - Swap two children index places
+swapChildrenAt(index1, index2) Sprite - Swaps two child sprites.
 Sprite.ADD - value "add"
 Sprite.ALPHA - value "alpha"
 Sprite.MULTIPLY - value "multiply"
@@ -780,11 +919,11 @@ StoreKit.FAILED - value "failed"
 StoreKit.PURCHASED - value "purchased"
 StoreKit.RESTORED - value "restored"
 string
-string.byte(s [, i]) string - returns numerical code, nil if index out of range, default i=1
-string.char(i1, i2, ...) string - returns a string built from 0 or more integers
+string.byte(s [, i, j]) string - returns numerical code, nil if index out of range, default i=1
+string.char(i1 [, i2, ...]) string - returns a string built from 0 or more integers
 string.dump(function) string - returns binary representation of function, used with loadstring
 string.find(s, pattern [, init, plain]) string - matches pattern in s, returns start,end indices, else nil
-string.format(formatstring, e1, e2, ...) string - returns formatted string, printf-style
+string.format(formatstring [, e1, e2, ...]) string - returns formatted string, printf-style
 string.gmatch(s, pat) string - returns iterator function that returns next captures from pattern pat on s
 string.gsub(s, pat, repl [, n]) string - returns copy of s with pat replaced by repl, and substitutions made
 string.len(s) string - returns string length
@@ -796,9 +935,9 @@ table
 table.concat(table [, sep, i, j]) table - returns concatenated table elements i to j separated by sep
 table.getn(table) table - returns size of table, or n field, or table.setn value, or 1 less first index with nil value
  [Deprecated in Lua 5.1, use # operator]
-table.insert(table, pos [, value]) table - insert value at location pos in table, default pos=n 1
+table.insert(table [, pos, value]) table - insert value at location pos in table, default pos=n 1
 table.remove(table [, pos]) table - removes element at pos from table, default pos=n
-table.sort(table [, comp]) table - sorts in-place elements 1 to n, comp(v1,v2- true if v1&lt;v2, default &lt;
+table.sort(table [, comp]) table - sorts in-place elements 1 to n, comp(v1,v2- true if v1<v2, default <
 TextField > Sprite
 TextField.new(font, text) TextField - creates a new TextField object with the specified font and text
 getLetterSpacing() TextField - returns the letter-spacing property which is used to increase or decrease the space between characters in a text
@@ -871,8 +1010,16 @@ TTFont.new(filename, size, text, filtering) TTFont - creates a new TTFont object
 UrlLoader
 UrlLoader.new(url, method, headers, body) UrlLoader - creates a new UrlLoader object
 close() UrlLoader - terminates the current loading operation
+ignoreSslErrors() UrlLoader - Ignores SSL certificate related errors
 load(url, method, headers, body) UrlLoader - loads data from the specified URL
 UrlLoader.DELETE - value "delete"
 UrlLoader.GET - value "get"
 UrlLoader.POST - value "post"
 UrlLoader.PUT - value "put"
+zlib
+zlib.adler32([adler32, buffer]) zlib - update the adler32 value
+zlib.compress(buffer [, level, method, windowBits, memLevel, strategy]) zlib - Return compressed string
+zlib.crc32([crc32, buffer]) zlib - update the crc32 value
+zlib.decompress(buffer [, windowBits]) zlib - Return the decompressed stream
+zlib.deflate(sink [, level, method, windowBits, memLevel, strategy, dictionary]) zlib - Return a deflate stream.
+zlib.inflate(source [, windowBits, dictionary]) zlib - Return an inflate stream.

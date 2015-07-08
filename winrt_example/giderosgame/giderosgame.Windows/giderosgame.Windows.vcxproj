@@ -96,9 +96,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <PackageCertificateKeyFile>giderosgame.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <AppxBundle>Always</AppxBundle>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxBundlePlatforms>x86|arm</AppxBundlePlatforms>
+    <AppxBundle>Auto</AppxBundle>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <AppxPackageDir>C:\winrt_player</AppxPackageDir>
   </PropertyGroup>
   <Import Project="..\giderosgame.Shared\giderosgame.Shared.vcxitems" Label="Shared" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -272,6 +273,9 @@
   <ItemGroup>
     <ClInclude Include="Plugins\lfs.h" />
     <ClInclude Include="Plugins\sqlite3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Assets\1.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

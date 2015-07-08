@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ALNullabilityAnnotations.h"
 
 /**
  *  This class is used to set more specific targeting data.
@@ -23,12 +24,12 @@
 /**
  * Set carrier current device is on.
  */
-@property(strong, nonatomic) NSString * carrier;
+@property(strong, nonatomic) NSString* __alnullable carrier;
 
 /**
  * Set a two-character ISO 3166-1 country code of the device.
  */
-@property(strong, nonatomic) NSString * country;
+@property(strong, nonatomic) NSString* __alnullable country;
 
 /**
  * Set the year of birth of current user.
@@ -47,17 +48,17 @@
  * The language of the current user. Language is expressed as two-character
  * ISO 639-1 language code.
  */
-@property(strong, nonatomic) NSString * language;
+@property(strong, nonatomic) NSString* __alnullable language;
 
 /**
  * Keywords for the application.
  */
-@property(strong, nonatomic) NSArray * keywords;
+@property(strong, nonatomic) NSArray* __alnullable keywords;
 
 /**
  * Interests for the user.
  */
-@property(strong, nonatomic) NSArray * interests;
+@property(strong, nonatomic) NSArray* __alnullable interests;
 
 /**
  * Set the location of current user. The location represented as
@@ -71,7 +72,7 @@
  * @param key Key of the parameter. Must not be nil.
  * @param value Parameter value.
  */
--(void) setExtraValue: (NSString *) value forKey: (NSString *)key __deprecated;
+-(void) setExtraValue: (alnullable NSString*) value forKey: (alnullable NSString*) key __deprecated;
 
 /**
  * @name Clearing/Resetting User Data

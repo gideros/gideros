@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <algorithm>
 #include <QPalette>
+#include <QWindowStateChangeEvent>
 #include "libnetwork.h"
 #include "applicationwrapper.h"
 #include "glcanvas.h"
@@ -19,17 +20,18 @@
 MainWindow* MainWindow::instance;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
+    fixedSize_ = true;
     MainWindow::instance = this;
-
+    setScale(100);
     ui.setupUi(this);
 
-    #if defined(Q_OS_MAC)
+    /*#if defined(Q_OS_MAC)
         setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
     #else
         setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
     #endif
 
-    move(0, 0);
+    move(0, 0);*/
 
     ui.glCanvas->setExportedApp(true);
     ui.glCanvas->projectDir_ = QDir("assets").absolutePath();
@@ -37,21 +39,44 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 
 MainWindow::~MainWindow(){}
 
+void MainWindow::resizeEvent(QResizeEvent*){
+    updateResolution();
+}
+
+void MainWindow::closeEvent(QCloseEvent*){
+
+}
+
+void MainWindow::setFixedSize(bool fixedSize){
+    fixedSize_ = fixedSize;
+}
+
 void MainWindow::resizeWindow(int width, int height){
     if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){
         int temp = width;
         width = height;
         height = temp;
     }
-    resize(width, height);
+    width_ = width;
+    height_ = height;
+    if(fixedSize_){
+        setMaximumSize(width, height);
+        setMinimumSize(width, height);
+    }
+    else
+        resize(width, height);
     updateResolution();
 }
 
 void MainWindow::fullScreenWindow(bool fullScreen){
-    if(fullScreen)
+    if(fullScreen){
+        setMaximumSize(16777215, 16777215);
         this->showFullScreen();
-    else
+    }
+    else{
         this->showNormal();
+        setMaximumSize(width_, height_);
+    }
     updateResolution();
 }
 
@@ -63,22 +88,25 @@ void MainWindow::updateResolution(){
         height = ui.centralWidget->width();
     }
 
-    float scaleProperty = 100;
-    if(deviceScale() != 0){
-        scaleProperty = (float)scaleProperty / deviceScale();
+    float canvasScaleFactor = 1;
+    float widgetScaleFactor = 1;
+    if (deviceScale() != 0) {
+        const float hundredPercentScale = 100;
+        canvasScaleFactor = hundredPercentScale / deviceScale();
+        widgetScaleFactor = hundredPercentScale / scale();
     }
 
-    ui.glCanvas->setScale(scaleProperty);
+    ui.glCanvas->setScale(canvasScaleFactor);
 
     switch (ui.glCanvas->getHardwareOrientation()){
         case ePortrait:
         case ePortraitUpsideDown:
-            ui.glCanvas->setFixedSize(width / scaleProperty, height / scaleProperty);
+            ui.glCanvas->setFixedSize(width / widgetScaleFactor, height / widgetScaleFactor);
             break;
 
         case eLandscapeLeft:
         case eLandscapeRight:
-            ui.glCanvas->setFixedSize(height / scaleProperty, width / scaleProperty);
+            ui.glCanvas->setFixedSize(height / widgetScaleFactor, width / widgetScaleFactor);
             break;
     }
 
@@ -99,4 +127,29 @@ void MainWindow::projectNameChanged(const QString& projectName){
 float MainWindow::deviceScale()
 {
     return (float)((float)100 * (float)devicePixelRatio());
+}
+
+float MainWindow::scale(){
+    return scale_;
+}
+
+void MainWindow::setScale(float scale){
+    scale_ = scale;
+}
+
+void MainWindow::changeEvent(QEvent* e)
+{
+    if( e->type() == QEvent::WindowStateChange )
+    {
+        QWindowStateChangeEvent* event = static_cast< QWindowStateChangeEvent* >( e );
+
+        if( event->oldState() & Qt::WindowMinimized )
+        {
+
+        }
+        else if( event->oldState() == Qt::WindowNoState && this->windowState() == Qt::WindowMaximized )
+        {
+            fullScreenWindow(true);
+        }
+    }
 }

@@ -85,6 +85,9 @@ public:
 		m_xa.AudioBytes = dsize;
 		m_xa.PlayBegin = 0;
 		m_xa.PlayLength = 0;
+		m_xa.LoopBegin = 0;
+		m_xa.LoopLength = 0;
+		m_xa.LoopCount = 0;
 		m_xa.pContext = this;
 	}
 

@@ -12,6 +12,8 @@ rm -rf build
 mkdir build
 
 cd scripts
+echo 'Updating api annotation'
+wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O ../ui/Resources/gideros_annot.api
 
 echo 'Installing Qt for Windows...'
 tar zxf ../../dependencies/Qt5.4.2.tar.bz2 -C ~/.wine/drive_c
