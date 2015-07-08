@@ -150,11 +150,14 @@ void HTTPManager::finished(QNetworkReply *reply)
     if (map_.find(reply) == map_.end())
         return;
 
+    QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+/*
     if (reply->error() != QNetworkReply::NoError
         // a web page that returns 403/404 can still have content
         && reply->error() != QNetworkReply::ContentOperationNotPermittedError
         && reply->error() != QNetworkReply::ContentNotFoundError
-        && reply->error() != QNetworkReply::UnknownContentError)
+        && reply->error() != QNetworkReply::UnknownContentError)*/
+    if ( !statusCode.isValid() )
     {
         NetworkReply reply2 = map_[reply];
 
@@ -164,6 +167,8 @@ void HTTPManager::finished(QNetworkReply *reply)
     }
     else
     {
+        int status = statusCode.toInt();
+
         QByteArray bytes = reply->readAll();
         QList<QNetworkReply::RawHeaderPair> headers=reply->rawHeaderPairs();
         int hdrCount=headers.count();
@@ -184,11 +189,7 @@ void HTTPManager::finished(QNetworkReply *reply)
         memcpy(event->data, bytes.constData(), bytes.size());
         event->size = bytes.size();
 
-        QVariant httpStatusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-        if (httpStatusCode.isValid())
-            event->httpStatusCode = httpStatusCode.toInt();
-        else
-            event->httpStatusCode = -1;
+        event->httpStatusCode = status;
 
 		int hdrn=0;
 		char *hdrData=(char *)(event->data)+bytes.size();
