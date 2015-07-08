@@ -5,7 +5,7 @@ struct VOut
 {
 	float4 position : SV_POSITION;
 	float4 color : COLOR;
-	float psize : PSIZE;
+	float2 texcoord : TEXCOORD;
 };
 
 cbuffer cbv : register(b0)
@@ -14,7 +14,7 @@ cbuffer cbv : register(b0)
 	float vPSize;
 };
 
-VOut VShader(float4 position : vVertex, float4 color : vColor)
+VOut VShader(float4 position : vVertex, float4 color : vColor, float2 texcoord : vTexCoord)
 {
 	VOut output;
 
@@ -22,7 +22,7 @@ VOut VShader(float4 position : vVertex, float4 color : vColor)
 
 	output.position = mul(vMatrix, position);
 	output.color = color;
-	output.psize = vPSize;
+	output.texcoord = texcoord;
 
 	return output;
 }
@@ -36,8 +36,9 @@ float4 PShader(float4 position : SV_POSITION, float4 color : COLOR, float2 texco
 {
 	if (fTexInfo.x<=0.0)
 	{
-		float4 frag=color;
-		frag.a=color.a*(1.0-step(0.5,length(texcoord-float2(0.5,0.5))));
+		float4 frag = color;
+		float alpha = 1.0 - step(0.5, length(texcoord - float2(0.5, 0.5)));
+		frag *= alpha;
 		return frag;
 	}
 	else

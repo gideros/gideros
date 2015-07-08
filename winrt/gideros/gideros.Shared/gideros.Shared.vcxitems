@@ -32,6 +32,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\fontbase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ftlibrarysingleton.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gbitmapbatch.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ParticleShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ShaderEngine.cpp">
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -384,6 +385,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\fontbase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ftlibrarysingleton.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gbitmapbatch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ParticleShader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11Shaders.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\Shaders.h">
       <ExcludedFromBuild>false</ExcludedFromBuild>

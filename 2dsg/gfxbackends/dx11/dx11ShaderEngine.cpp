@@ -9,6 +9,7 @@
 #include "gtexture.h"
 #include "glog.h"
 #include "ogl.h"
+#include "dx11ParticleShader.h"
 
 #include "dx11_shaders.c"
 
@@ -36,7 +37,7 @@ void dx11ShaderEngine::reset()
 	g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
 	g_devcon->RSSetState(g_pRSNormal);
 	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
-	curDstFactor = ONE_MINUS_SRC_COLOR;
+	curDstFactor = ONE_MINUS_SRC_ALPHA;
 	curSrcFactor = ONE;
 	s_depthEnable=0;
 	s_depthBufferCleared=false;
@@ -82,12 +83,12 @@ void dx11SetupShaders()
 
 	const ShaderProgram::ConstantDesc stdPConstants[]={
 			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
-			{"vPSize",ShaderProgram::CFLOAT,1,ShaderProgram::SysConst_ParticleSize,true,0},
-			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
+			{ "vPSize", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_ParticleSize, true, 0 },
+			{ "fTexture", ShaderProgram::CTEXTURE, 1, ShaderProgram::SysConst_None, false, 0 },
 			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0},
 			NULL
 	};
-    ShaderProgram::stdParticle = new dx11ShaderProgram(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),stdPConstants,stdCAttributes);
+    ShaderProgram::stdParticle = new dx11ParticleShader(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),stdPConstants,stdTCAttributes);
 
 }
 

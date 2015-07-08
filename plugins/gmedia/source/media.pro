@@ -20,16 +20,13 @@ HEADERS += \
     libpng/pngconf.h \
     libpng/pnglibconf.h \
     libpng/pngconf.h \
-    libpng/png.h \
-    gstdio.h \
-    gpath.h
+    libpng/png.h
 
 LIBS += -L"../../../Sdk/lib/desktop" -llua -lgid -lgideros -lgvfs
 LIBS += -L"../../../libgid/external/libpng-1.6.2/build/mingw48_32" -lpng
 LIBS += -L"../../../libgid/external/jpeg-9/build/mingw48_32" -ljpeg
 
 win32 {
-QMAKE_LFLAGS = -enable-auto-import
 }
 
 macx {

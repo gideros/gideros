@@ -167,6 +167,7 @@ G_API g_id gui_createTextInputDialog(const char *title,
                                      void *udata)
 {
   //    return s_manager->createTextInputDialog(title, message, text, cancelButton, button1, button2, callback, udata);
+
 	return 0;
 }
 

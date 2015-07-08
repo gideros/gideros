@@ -71,6 +71,11 @@ public:
 
 		keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
 
+		keyMap_[GINPUT_KEY_SHIFT] = GINPUT_KEY_SHIFT;
+		keyMap_[GINPUT_KEY_SPACE] = GINPUT_KEY_SPACE;
+		keyMap_[GINPUT_KEY_BACKSPACE] = GINPUT_KEY_BACKSPACE;
+
+
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
         gevent_AddCallback(posttick_s, this);

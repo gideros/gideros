@@ -7,36 +7,36 @@
 cd ..
 
 cd libpystring
-$QT/bin/qmake libpystring.pro
-make clean
+$QT/bin/qmake "CONFIG+=warn_off" libpystring.pro
+make clean > /dev/null 2>&1
 make
 # sudo cp libpystring.1.dylib /usr/lib
 cd ..
 
 cd libgvfs
-$QT/bin/qmake libgvfs.pro
-make clean
+$QT/bin/qmake "CONFIG+=warn_off" libgvfs.pro
+make clean > /dev/null 2>&1
 make
 # sudo cp libgvfs.1.dylib /usr/lib
 cd ..
 
 cd libgid
-$QT/bin/qmake libgid_qt5.pro
-make clean
+$QT/bin/qmake "CONFIG+=warn_off" libgid_qt5.pro
+make clean > /dev/null 2>&1
 make
 # sudo cp libgid.1.dylib /usr/lib
 cd ..
 
 cd lua
-$QT/bin/qmake lua.pro
-make clean
+$QT/bin/qmake "CONFIG+=warn_off" lua.pro
+make clean > /dev/null 2>&1
 make
 # sudo cp liblua.1.dylib /usr/lib
 cd ..
 
 cd libgideros
-$QT/bin/qmake libgideros.pro
-make clean
+$QT/bin/qmake "CONFIG+=warn_off" libgideros.pro
+make clean > /dev/null 2>&1
 make
 # sudo cp libgideros.1.dylib /usr/lib
 cd ..

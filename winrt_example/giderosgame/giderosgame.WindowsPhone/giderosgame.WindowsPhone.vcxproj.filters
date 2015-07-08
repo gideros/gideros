@@ -51,20 +51,9 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\PixelShader.cso">
-      <Filter>Assets</Filter>
-    </None>
     <None Include="Assets\properties.bin">
       <Filter>Assets</Filter>
     </None>
-    <None Include="Assets\VertexShader.cso">
-      <Filter>Assets</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Assets\luafiles.txt">
-      <Filter>Assets</Filter>
-    </Text>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="StoreManifest.xml" />

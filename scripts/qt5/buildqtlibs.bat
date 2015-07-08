@@ -1,40 +1,40 @@
 pushd \
-call C:\Qt\Qt5.3.2\5.3\mingw482_32\bin\qtenv2.bat
+call C:\Qt\Qt5.4.2\5.4\mingw491_32\bin\qtenv2.bat
 popd
 
 cd ..
 
 cd libpystring
-qmake libpystring.pro
-mingw32-make.exe clean
+qmake "CONFIG+=warn_off" libpystring.pro
+mingw32-make.exe clean /f >nul 2>&1
 mingw32-make.exe release
 mingw32-make.exe release
 cd ..
 
 cd libgvfs
-qmake libgvfs.pro
-mingw32-make.exe clean
+qmake "CONFIG+=warn_off" libgvfs.pro
+mingw32-make.exe clean /f >nul 2>&1
 mingw32-make.exe release
 mingw32-make.exe release
 cd ..
 
 cd libgid
-qmake libgid_qt5.pro
-mingw32-make.exe clean
+qmake "CONFIG+=warn_off" libgid_qt5.pro
+mingw32-make.exe clean /f >nul 2>&1
 mingw32-make.exe release
 mingw32-make.exe release
 cd ..
 
 cd lua
-qmake lua.pro
-mingw32-make.exe clean
+qmake "CONFIG+=warn_off" lua.pro
+mingw32-make.exe clean /f >nul 2>&1
 mingw32-make.exe release
 mingw32-make.exe release
 cd ..
 
 cd libgideros
-qmake libgideros.pro
-mingw32-make.exe clean
+qmake "CONFIG+=warn_off" libgideros.pro
+mingw32-make.exe clean /f >nul 2>&1
 mingw32-make.exe release
 mingw32-make.exe release
 cd ..

@@ -1,41 +1,46 @@
 pushd \
-call C:\Qt\Qt5.3.2\5.3\mingw482_32\bin\qtenv2.bat
+call C:\Qt\Qt5.4.2\5.4\mingw491_32\bin\qtenv2.bat
 popd
 
 cd ..
 
 cd texturepacker
-qmake texturepacker.pro
+qmake "CONFIG+=warn_off" texturepacker.pro
 mingw32-make.exe release
 cd ..
 
 cd fontcreator
-qmake fontcreator.pro
+qmake "CONFIG+=warn_off" fontcreator.pro
 mingw32-make.exe release
 cd ..
 
 cd ui
-qmake ui.pro
+qmake "CONFIG+=warn_off" ui.pro
 mingw32-make.exe release
 cd ..
 
 cd player
-qmake player_qt5.pro
+qmake "CONFIG+=warn_off" player_qt5.pro
+mingw32-make.exe release
+cd ..
+
+cd desktop
+qmake "CONFIG+=warn_off" desktop.pro
 mingw32-make.exe release
 cd ..
 
 cd gdrdeamon
-qmake gdrdeamon.pro
+qmake "CONFIG+=warn_off" gdrdeamon.pro
 mingw32-make.exe release
 cd ..
 
 cd gdrbridge
-qmake gdrbridge.pro
+qmake "CONFIG+=warn_off" gdrbridge.pro
 mingw32-make.exe release
 cd ..
 
 cd gdrexport
-qmake gdrexport.pro
+qmake "CONFIG+=warn_off" gdrexport.pro
 mingw32-make.exe release
 cd ..
 

@@ -102,7 +102,7 @@
     <property name="title">
      <string>File</string>
     </property>
-	<addaction name="actionRestart"/>
+    <addaction name="actionRestart"/>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_Directory"/>
     <addaction name="separator"/>
@@ -172,27 +172,9 @@
     <property name="title">
      <string>View</string>
     </property>
-    <widget class="QMenu" name="menuZoom">
-     <property name="title">
-      <string>Zoom</string>
-     </property>
-     <addaction name="actionZoom_In"/>
-     <addaction name="actionZoom_Out"/>
-     <addaction name="separator"/>
-     <addaction name="actionQuarter"/>
-     <addaction name="actionHalf"/>
-     <addaction name="actionOriginal"/>
-     <addaction name="actionDouble"/>
-     <addaction name="actionTriple"/>
-     <addaction name="separator"/>
-     <addaction name="actionFit_To_Window"/>
-     <addaction name="actionFit_To_App"/>
-    </widget>
     <addaction name="actionAlways_on_Top"/>
     <addaction name="actionHide_Menu"/>
     <addaction name="actionFull_Screen"/>
-    <addaction name="separator"/>
-    <addaction name="menuZoom"/>
    </widget>
    <widget class="QMenu" name="menuConfigurations">
     <property name="title">
@@ -201,20 +183,21 @@
     <addaction name="actionSettings"/>
    </widget>
    <widget class="QMenu" name="menuZoom2">
-<property name="title">
-<string>Zoom</string>
-</property>
-<addaction name="actionZoom_In"/>
-<addaction name="actionZoom_Out"/>
-<addaction name="separator"/>
-<addaction name="actionQuarter"/>
-<addaction name="actionHalf"/>
-<addaction name="actionOriginal"/>
-<addaction name="actionDouble"/>
-<addaction name="actionTriple"/>
-<addaction name="separator"/>
-<addaction name="actionFit_To_Window"/>
-</widget>
+    <property name="title">
+     <string>Zoom</string>
+    </property>
+    <addaction name="actionZoom_In"/>
+    <addaction name="actionZoom_Out"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuarter"/>
+    <addaction name="actionHalf"/>
+    <addaction name="actionOriginal"/>
+    <addaction name="actionDouble"/>
+    <addaction name="actionTriple"/>
+    <addaction name="separator"/>
+    <addaction name="actionFit_To_Window"/>
+    <addaction name="actionFit_To_App"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_View"/>
    <addaction name="menuHardware"/>
@@ -371,15 +354,15 @@
    </property>
   </action>
   <action name="actionDouble">
-<property name="text">
-<string>200%</string>
-</property>
-</action>
-<action name="actionTriple">
-<property name="text">
- <string>300%</string>
-</property>
-</action>
+   <property name="text">
+    <string>200%</string>
+   </property>
+  </action>
+  <action name="actionTriple">
+   <property name="text">
+    <string>300%</string>
+   </property>
+  </action>
   <action name="action480x800">
    <property name="checkable">
     <bool>true</bool>
@@ -601,17 +584,6 @@
     <string>Draw Infos</string>
    </property>
   </action>
-  <action name="actionFit_To_App">
-   <property name="text">
-    <string>Fit To App</string>
-   </property>
-   <property name="toolTip">
-    <string>Fit To App</string>
-   </property>
-   <property name="shortcut">
-    <string>Alt+F</string>
-   </property>
-  </action>
   <action name="actionOpen_Directory">
    <property name="text">
     <string>Open Directory</string>
@@ -629,6 +601,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionFit_To_App">
+   <property name="text">
+    <string>Fit To App</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F</string>
    </property>
   </action>
   <addaction name="actionExit"/>

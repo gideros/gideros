@@ -54,15 +54,15 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_setfield(L, -2, "SYS_WORLD");
 	lua_pushinteger(L, ShaderProgram::SysConst_WorldInverseTransposeMatrix);
 	lua_setfield(L, -2, "SYS_WIT");
-	lua_pushinteger(L, ShaderProgram::SysConst_ParticleSize);
-	lua_setfield(L, -2, "SYS_PARTICLESIZE");
 	lua_pushinteger(L, ShaderProgram::SysConst_TextureInfo);
 	lua_setfield(L, -2, "SYS_TEXTUREINFO");
+	lua_pushinteger(L, ShaderProgram::SysConst_ParticleSize);
+	lua_setfield(L, -2, "SYS_PARTICLESIZE");
 
 	lua_pushinteger(L, ShaderProgram::Flag_None);
 	lua_setfield(L, -2, "FLAG_NONE");
 	lua_pushinteger(L, ShaderProgram::Flag_NoDefaultHeader);
-	lua_setfield(L, -2, "FLAG_NO_DEFAULT_HANDLER");
+	lua_setfield(L, -2, "FLAG_NO_DEFAULT_HEADER");
 
 	lua_pop(L, 1);
 
