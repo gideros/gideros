@@ -4,6 +4,7 @@ TARGET = gmedia
 TEMPLATE = lib
 
 INCLUDEPATH += ../../../Sdk/include
+INCLUDEPATH += ../../../libgvfs
 INCLUDEPATH += ./libpng
 INCLUDEPATH += ./jpeglib
 
