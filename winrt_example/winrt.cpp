@@ -11,9 +11,6 @@
 
 #include "giderosapi.h"
 
-#include "gplugin.h"
-IMPORT_PLUGIN(LuaSocket)
-
 using namespace Windows::ApplicationModel;
 using namespace Windows::ApplicationModel::Core;
 using namespace Windows::ApplicationModel::Activation;

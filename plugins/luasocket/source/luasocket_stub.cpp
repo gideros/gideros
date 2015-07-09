@@ -24,4 +24,4 @@ static void g_initializePlugin(lua_State *L)
 static void g_deinitializePlugin(lua_State *L)
 {
 }
-REGISTER_PLUGIN_NAMED("LuaSocket", "1.1", LuaSocket)
+REGISTER_PLUGIN("LuaSocket", "1.1")

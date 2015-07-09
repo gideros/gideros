@@ -28,7 +28,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\inet.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\io.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\luasocket.c" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\luasocket_stub.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\mime.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\options.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\select.c" />

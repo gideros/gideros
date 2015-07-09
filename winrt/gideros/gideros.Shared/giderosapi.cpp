@@ -62,17 +62,26 @@ IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interf
 int PTW32_CDECL pthread_mutex_init(pthread_mutex_t * mutex,
 	const pthread_mutexattr_t * attr)
 {
+	CRITICAL_SECTION *c = (CRITICAL_SECTION*) malloc(sizeof(CRITICAL_SECTION));
+
+	InitializeCriticalSectionEx(c,0,0);
+	*((LPCRITICAL_SECTION *)mutex) = c;
 	return 0;
 }
 
 int PTW32_CDECL pthread_mutex_destroy(pthread_mutex_t * mutex)
 {
+	free(*((LPCRITICAL_SECTION *)mutex));
+	*mutex = NULL;
 	return 0;
 }
 
 
 int PTW32_CDECL pthread_mutex_lock(pthread_mutex_t * mutex)
 {
+	if (*mutex == PTHREAD_MUTEX_INITIALIZER)
+		pthread_mutex_init(mutex, NULL);
+	EnterCriticalSection(*((LPCRITICAL_SECTION *)mutex));
 	return 0;
 }
 
@@ -86,11 +95,14 @@ int PTW32_CDECL pthread_mutex_timedlock(pthread_mutex_t * mutex,
 
 int PTW32_CDECL pthread_mutex_trylock(pthread_mutex_t * mutex)
 {
-	return 0;
+	if (*mutex == PTHREAD_MUTEX_INITIALIZER)
+		pthread_mutex_init(mutex, NULL);
+	return TryEnterCriticalSection(*((LPCRITICAL_SECTION *)mutex)) ? 0 : -1;
 }
 
 int PTW32_CDECL pthread_mutex_unlock(pthread_mutex_t * mutex)
 {
+	LeaveCriticalSection(*((LPCRITICAL_SECTION *)mutex));
 	return 0;
 }
 

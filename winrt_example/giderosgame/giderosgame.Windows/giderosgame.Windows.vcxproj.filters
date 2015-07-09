@@ -113,6 +113,9 @@
     <ClCompile Include="Plugins\lua_cjson_stub.cpp">
       <Filter>Plugins</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\plugins\luasocket\source\luasocket_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Plugins\sqlite3.h">
