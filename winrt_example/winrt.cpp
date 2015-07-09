@@ -11,6 +11,9 @@
 
 #include "giderosapi.h"
 
+#include "gplugin.h"
+IMPORT_PLUGIN(LuaSocket)
+
 using namespace Windows::ApplicationModel;
 using namespace Windows::ApplicationModel::Core;
 using namespace Windows::ApplicationModel::Activation;
@@ -140,7 +143,7 @@ public:
 
 	  std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
 	  std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
-	  bool isPlayer = false;
+	  bool isPlayer = true;
 
 	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str());
 
