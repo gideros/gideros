@@ -5,6 +5,26 @@
 #include "point.h"
 #include "ogl.h"
 #include "texturemanager.h"
+template <typename T> class VertexBuffer : public std::vector<T>
+{
+public:
+	ShaderBufferCache *bufferCache;
+	bool modified;
+	void Update()
+	{
+		modified=true;
+	}
+	VertexBuffer()
+	{
+		bufferCache=NULL;
+		modified=true;
+	}
+	~VertexBuffer()
+	{
+		if (bufferCache)
+			delete bufferCache;
+	}
+};
 
 class GraphicsBase
 {
@@ -30,9 +50,9 @@ public:
 
 	ShaderProgram::ShapeType mode;
 	TextureData* data;
-	std::vector<unsigned short> indices;
-	std::vector<Point2f> vertices;
-	std::vector<Point2f> texcoords;
+	VertexBuffer<unsigned short> indices;
+	VertexBuffer<Point2f> vertices;
+	VertexBuffer<Point2f> texcoords;
 
     void getBounds(float* pminx, float* pminy, float* pmaxx, float* pmaxy) const;
 

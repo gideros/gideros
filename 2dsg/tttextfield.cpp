@@ -86,6 +86,7 @@ void TTTextField::createGraphics()
 	graphicsBase_.vertices[1] = Point2f((data_->width + dx) / scalex,	dy / scaley);
 	graphicsBase_.vertices[2] = Point2f((data_->width + dx) / scalex,	(data_->height + dy) / scaley);
 	graphicsBase_.vertices[3] = Point2f(dx / scalex,					(data_->height + dy) / scaley);
+	graphicsBase_.vertices.Update();
 
 	float u = (float)data_->width / (float)data_->exwidth;
 	float v = (float)data_->height / (float)data_->exheight;
@@ -95,12 +96,14 @@ void TTTextField::createGraphics()
 	graphicsBase_.texcoords[1] = Point2f(u, 0);
 	graphicsBase_.texcoords[2] = Point2f(u, v);
 	graphicsBase_.texcoords[3] = Point2f(0, v);
+	graphicsBase_.texcoords.Update();
 
 	graphicsBase_.indices.resize(4);
 	graphicsBase_.indices[0] = 0;
 	graphicsBase_.indices[1] = 1;
 	graphicsBase_.indices[2] = 3;
 	graphicsBase_.indices[3] = 2;
+	graphicsBase_.indices.Update();
 
 	int r = (textColor_ >> 16) & 0xff;
 	int g = (textColor_ >> 8) & 0xff;

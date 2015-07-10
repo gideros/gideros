@@ -1001,7 +1001,7 @@ void ApplicationManager::drawFrame()
 		application_->renderScene(1);
 		drawIPs();
 
-		g_swapchain->Present(0, 0);
+		g_swapchain->Present(1, 0);
 	}
 }
 

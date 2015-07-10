@@ -74,7 +74,7 @@ ID3D11Buffer *dx11ShaderProgram::getGenericVBO(int index, int elmSize, int mult,
 
 void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		BufferCache **cache) {
+		ShaderBufferCache **cache) {
 	bool normalize = false; //TODO
 	int elmSize = 1;
 	switch (type) {
@@ -116,7 +116,7 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 
 void dx11ShaderProgram::setData(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		BufferCache **cache) {
+		ShaderBufferCache **cache) {
 	activate();
 	setupBuffer(index, type, mult, ptr, count, modified, cache);
 }
@@ -423,7 +423,7 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 	g_devcon->Draw(count, 0);
 }
 void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, BufferCache *cache) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	updateConstants();

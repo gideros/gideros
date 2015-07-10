@@ -20,12 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="giderosgame.Windows_TemporaryKey.pfx" />
-    <None Include="Assets\PixelShader.cso">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\VertexShader.cso">
-      <Filter>Assets</Filter>
-    </None>
     <None Include="Assets\properties.bin">
       <Filter>Assets</Filter>
     </None>
