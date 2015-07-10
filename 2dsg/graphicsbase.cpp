@@ -29,15 +29,15 @@ void GraphicsBase::draw(ShaderProgram *shp)
 	{
         ShaderEngine::Engine->bindTexture(0,data->id());
         if (!shp) shp=ShaderProgram::stdTexture;
-        shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),true,NULL);
-        shp->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,&texcoords[0],texcoords.size(),true,NULL);
-        shp->drawElements(mode,indices.size(), ShaderProgram::DUSHORT, &indices[0],true, NULL);
+        shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),vertices.modified,&vertices.bufferCache);
+        shp->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,&texcoords[0],texcoords.size(),texcoords.modified,&texcoords.bufferCache);
+        shp->drawElements(mode,indices.size(), ShaderProgram::DUSHORT, &indices[0],indices.modified,&indices.bufferCache);
 	}
 	else
 	{
         if (!shp) shp=ShaderProgram::stdBasic;
-        shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),true,NULL);
-        shp->drawElements(mode,indices.size(), ShaderProgram::DUSHORT, &indices[0],true, NULL);
+        shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),vertices.modified,&vertices.bufferCache);
+        shp->drawElements(mode,indices.size(), ShaderProgram::DUSHORT, &indices[0],indices.modified,&indices.bufferCache);
 	}
 
 	if (isWhite_ == false)

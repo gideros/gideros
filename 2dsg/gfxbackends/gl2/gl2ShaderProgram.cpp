@@ -117,7 +117,7 @@ void ogl2ShaderProgram::useProgram() {
 
 void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		BufferCache **cache) {
+		ShaderBufferCache **cache) {
 	useProgram();
 	GLenum gltype = GL_FLOAT;
 	bool normalize = false;
@@ -299,7 +299,7 @@ void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 
 }
 void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, BufferCache *cache) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 
