@@ -7,6 +7,7 @@
 
 class Bitmap : public Sprite
 {
+	static VertexBuffer<unsigned short> Bitmap::quad;
 public:
     Bitmap(Application *application, BitmapData* bitmapdata) : Sprite(application)
 	{

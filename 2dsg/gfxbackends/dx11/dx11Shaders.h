@@ -51,6 +51,7 @@ protected:
     std::vector<DataDesc> attributes;
     std::string errorLog;
     static ShaderProgram *current;
+	static ID3D11Buffer *curIndicesVBO;
     void *cbpData;
     void *cbvData;
     bool cbpMod;
@@ -61,7 +62,8 @@ protected:
     int genVBOcapacity[16+1];
     void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache);
     ID3D11Buffer *getGenericVBO(int index,int elmSize,int mult,int count);
-    void updateConstants();
+	ID3D11Buffer *getCachedVBO(ShaderBufferCache **cache, bool index, int elmSize, int mult, int count);
+	void updateConstants();
     void buildShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
 public:

@@ -34,7 +34,7 @@ public:
 		clear();
 	}
 
-	void draw(ShaderProgram *shader=NULL);
+	void draw(ShaderProgram *shader = NULL, VertexBuffer<unsigned short> *commonIndices=NULL);
 
 	void clear();
 

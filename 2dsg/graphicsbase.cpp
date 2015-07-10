@@ -14,9 +14,11 @@ void GraphicsBase::clear()
 	texcoords.clear();
 }
 
-void GraphicsBase::draw(ShaderProgram *shp)
+void GraphicsBase::draw(ShaderProgram *shp, VertexBuffer<unsigned short> *commonIndices)
 {
-	if (indices.empty())
+	if (!commonIndices)
+		commonIndices = &indices;
+	if (commonIndices->empty())
 		return;
 
 	if (isWhite_ == false)
@@ -31,13 +33,18 @@ void GraphicsBase::draw(ShaderProgram *shp)
         if (!shp) shp=ShaderProgram::stdTexture;
         shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),vertices.modified,&vertices.bufferCache);
         shp->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,&texcoords[0],texcoords.size(),texcoords.modified,&texcoords.bufferCache);
-        shp->drawElements(mode,indices.size(), ShaderProgram::DUSHORT, &indices[0],indices.modified,&indices.bufferCache);
+		shp->drawElements(mode, commonIndices->size(), ShaderProgram::DUSHORT, &((*commonIndices)[0]), commonIndices->modified, &commonIndices->bufferCache);
+		vertices.modified = false;
+		texcoords.modified = false;
+		commonIndices->modified = false;
 	}
 	else
 	{
         if (!shp) shp=ShaderProgram::stdBasic;
         shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),vertices.modified,&vertices.bufferCache);
-        shp->drawElements(mode,indices.size(), ShaderProgram::DUSHORT, &indices[0],indices.modified,&indices.bufferCache);
+		shp->drawElements(mode, commonIndices->size(), ShaderProgram::DUSHORT, &((*commonIndices)[0]), commonIndices->modified, &commonIndices->bufferCache);
+		vertices.modified = false;
+		commonIndices->modified = false;
 	}
 
 	if (isWhite_ == false)

@@ -1,9 +1,19 @@
 #include "bitmap.h"
 #include "ogl.h"
 
+VertexBuffer<unsigned short> Bitmap::quad;
 void Bitmap::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
-	graphicsBase_.draw(shader_);
+	if (quad.empty())
+	{
+		quad.resize(4);
+		quad[0] = 0;
+		quad[1] = 1;
+		quad[2] = 3;
+		quad[3] = 2;
+		quad.Update();
+	}
+	graphicsBase_.draw(shader_,&quad);
 }
 
 void Bitmap::updateBounds()
@@ -65,14 +75,7 @@ void Bitmap::setCoords()
 		graphicsBase_.texcoords[1] = Point2f(bitmapdata_->u1, bitmapdata_->v0);
 		graphicsBase_.texcoords[2] = Point2f(bitmapdata_->u1, bitmapdata_->v1);
 		graphicsBase_.texcoords[3] = Point2f(bitmapdata_->u0, bitmapdata_->v1);
-		graphicsBase_.texcoords.Update();
-
-		graphicsBase_.indices.resize(4);
-		graphicsBase_.indices[0] = 0;
-		graphicsBase_.indices[1] = 1;
-		graphicsBase_.indices[2] = 3;
-		graphicsBase_.indices[3] = 2;
-		graphicsBase_.indices.Update();
+		graphicsBase_.texcoords.Update();		
 	}
 	else if (texturebase_ != NULL)
 	{
@@ -99,13 +102,6 @@ void Bitmap::setCoords()
 		graphicsBase_.texcoords[2] = Point2f(u, v);
 		graphicsBase_.texcoords[3] = Point2f(0, v);
 		graphicsBase_.texcoords.Update();
-
-		graphicsBase_.indices.resize(4);
-		graphicsBase_.indices[0] = 0;
-		graphicsBase_.indices[1] = 1;
-		graphicsBase_.indices[2] = 3;
-		graphicsBase_.indices[3] = 2;
-		graphicsBase_.indices.Update();
 	}
 }
 
