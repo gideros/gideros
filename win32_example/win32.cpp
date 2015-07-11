@@ -42,6 +42,11 @@ HWND hwndcopy;
 
 #define ID_TIMER   1
 
+std::string getDeviceName()
+{
+  return "foo";
+}
+
 struct ProjectProperties
 {
   ProjectProperties()
@@ -413,9 +418,10 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
   }
   else if (iMsg==WM_CLOSE){
+    printf("WM_CLOSE Called\n");
     DisableOpenGL(hwnd, hDC, hRC);
 
-    gaudio_Cleanup();
+    //    gaudio_Cleanup();
 
     // application
     application_->deinitialize();

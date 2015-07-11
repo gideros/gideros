@@ -8,6 +8,8 @@ VPATH = \
 ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Rope;\
 ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle;\
 ..\2dsg;\
+..\2dsg\gfxbackends;\
+..\2dsg\gfxbackends\gl2;\
 ..\luabinding;\
 ..\libnetwork;\
 ..\libpvrt;\
@@ -38,6 +40,8 @@ INCLUDEPATHS = \
 -I..\libgvfs \
 -I..\libgideros \
 -I..\2dsg \
+-I..\2dsg\gfxbackends \
+-I..\2dsg\gfxbackends\gl2 \
 -I..\libgid\include
 
 objfiles = \
@@ -64,13 +68,14 @@ gvfs-native.o \
 snappy.o \
 snappy-c.o \
 snappy-sinksource.o \
-snappy-stubs-internal.o
+snappy-stubs-internal.o \
+gmtime.o
 
 CXXFLAGS = -O2 -DGIDEROS_LIBRARY -fno-keep-inline-dllexport $(INCLUDEPATHS)
 
 links = ..\libgid\external\freetype-2.4.12\build\mingw48_32\libfreetype.a \
 ..\libgid\external\jpeg-9\build\mingw48_32\libjpeg.a \
-..\libgid\external\libpng-1.6.2\build\mingw48_32\libpng.a \
+..\libgid\external\libpng-1.6.2\libpng.a \
 ..\libgid\external\mpg123-1.15.3\lib\mingw48_32\libmpg123.a \
 ..\libgid\external\openal-soft-1.13\build\mingw48_32\libOpenAL32.dll.a \
 ..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGC2.a \
