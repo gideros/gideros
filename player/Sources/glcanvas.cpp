@@ -514,10 +514,12 @@ void GLCanvas::play(QDir directory){
 
         if(exportedApp_){
             resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
-            directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-            directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
-            documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString().c_str();
-            temporaryDirectory = QStandardPaths::writableLocation(QStandardPaths::TempLocation).toStdString().c_str();
+            QString = docLocation = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+            QString = tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+            directory.mkpath(docLocation);
+            directory.mkpath(tempLocation);
+            documentsDirectory = docLocation.toStdString().c_str();
+            temporaryDirectory = tempLocation.toStdString().c_str();
         }else{
             dir_ = QDir::temp();
             dir_.mkdir("gideros");
