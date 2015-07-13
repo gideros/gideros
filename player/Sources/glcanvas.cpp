@@ -513,30 +513,32 @@ void GLCanvas::play(QDir directory){
         const char* temporaryDirectory;
 
         if(exportedApp_){
-            resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
-            QString = docLocation = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-            QString = tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-            directory.mkpath(docLocation);
-            directory.mkpath(tempLocation);
-            documentsDirectory = docLocation.toStdString().c_str();
-            temporaryDirectory = tempLocation.toStdString().c_str();
-        }else{
-            dir_ = QDir::temp();
-            dir_.mkdir("gideros");
-            dir_.cd("gideros");
-            dir_.mkdir(projectName_);
-            dir_.cd(projectName_);
-            dir_.mkdir("documents");
-            dir_.mkdir("temporary");
+                resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
+                QString docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+                QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+                directory.mkpath(docLocation);
+                directory.mkpath(tempLocation);
+                documentsDirectory = docLocation.toStdString().c_str();
+                setDocumentsDirectory(documentsDirectory);
+                temporaryDirectory = tempLocation.toStdString().c_str();
+                setTemporaryDirectory(temporaryDirectory);
+            }else{
+                dir_ = QDir::temp();
+                dir_.mkdir("gideros");
+                dir_.cd("gideros");
+                dir_.mkdir(projectName_);
+                dir_.cd(projectName_);
+                dir_.mkdir("documents");
+                dir_.mkdir("temporary");
 
-            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
-            documentsDirectory = dir_.absoluteFilePath("documents").toStdString().c_str();
-            temporaryDirectory = dir_.absoluteFilePath("temporary").toStdString().c_str();
-        }
+                resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
+                documentsDirectory = dir_.absoluteFilePath("documents").toStdString().c_str();
+                setDocumentsDirectory(documentsDirectory);
+                temporaryDirectory = dir_.absoluteFilePath("temporary").toStdString().c_str();
+                setTemporaryDirectory(temporaryDirectory);
+            }
 
-        setDocumentsDirectory(documentsDirectory);
-        setTemporaryDirectory(temporaryDirectory);
-        setResourceDirectory(resourceDirectory_.c_str());
+            setResourceDirectory(resourceDirectory_.c_str());
 
         file.open(QIODevice::ReadOnly);
         QByteArray ba = file.readAll();
