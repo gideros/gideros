@@ -44,6 +44,11 @@ int windowWidth,windowHeight;
 
 #define ID_TIMER   1
 
+static void printFunc(const char *str, int len, void *data)
+{
+  printf("%s",str);
+}
+
 std::string getDeviceName()
 {
   return "foo";
@@ -329,7 +334,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     gpath_setDefaultDrive(0);
 
     char resourcePath[MAX_PATH];
-    strcpy(resourcePath,"c:\\gideros_gideros\\gideros\\win32_example\\");
+    strcpy(resourcePath,"assets\\");
     gpath_setDrivePath(0,resourcePath);
     
     char docsPath[MAX_PATH];
@@ -370,6 +375,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     application_->enableExceptions();
     application_->initialize();
+    application_->setPrintFunc(printFunc);
     
     loadProperties();
     loadLuaFiles();
@@ -448,7 +454,6 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
   }
   else if (iMsg==WM_CLOSE){
     printf("WM_CLOSE Called\n");
-    DisableOpenGL(hwnd, hDC, hRC);
 
     //    gaudio_Cleanup();
 
@@ -484,6 +489,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     gvfs_cleanup();
     
     gpath_cleanup();
+
+    DisableOpenGL(hwnd, hDC, hRC);
     
     DestroyWindow(hwnd);
     return 0;
