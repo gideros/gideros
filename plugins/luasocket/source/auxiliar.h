@@ -31,6 +31,10 @@
 * RCS ID: $Id: auxiliar.h,v 1.9 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
 
+#ifdef WINSTORE
+#define sprintf sprintf_s
+#endif
+
 #include "lua.h"
 #include "lauxlib.h"
 

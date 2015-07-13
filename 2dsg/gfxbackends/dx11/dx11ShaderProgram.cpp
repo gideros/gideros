@@ -23,7 +23,20 @@
 #include "D3Dcompiler.h"
 using namespace Microsoft::WRL;
 
+class dx11ShaderBufferCache : public ShaderBufferCache {
+public:
+	ID3D11Buffer *VBO;
+	int VBOcapacity;
+	dx11ShaderBufferCache() { VBO = NULL; VBOcapacity = 0; }
+	virtual ~dx11ShaderBufferCache()
+	{
+		if (VBO)
+			VBO->Release();
+	}
+};
+
 ShaderProgram *dx11ShaderProgram::current = NULL;
+ID3D11Buffer *dx11ShaderProgram::curIndicesVBO=NULL;
 
 bool dx11ShaderProgram::isValid() {
 	return g_pLayout != NULL;
@@ -51,6 +64,28 @@ void dx11ShaderProgram::activate() {
 
 }
 
+ID3D11Buffer *dx11ShaderProgram::getCachedVBO(ShaderBufferCache **cache, bool index,int elmSize, int mult,
+	int count) {
+	if (!*cache)
+		*cache = new dx11ShaderBufferCache();
+	dx11ShaderBufferCache *dc = static_cast<dx11ShaderBufferCache*> (*cache);
+	if ((dc->VBO == NULL) || (dc->VBOcapacity < count)) {
+		if (dc->VBO != NULL)
+			dc->VBO->Release();
+		D3D11_BUFFER_DESC bd;
+		ZeroMemory(&bd, sizeof(bd));
+		bd.Usage = D3D11_USAGE_DYNAMIC;    // write access access by CPU and GPU
+		bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow CPU to write in buffer
+		bd.ByteWidth = elmSize * mult * count;
+		bd.BindFlags =
+			(!index)  ?
+		D3D11_BIND_VERTEX_BUFFER : D3D11_BIND_INDEX_BUFFER; // use as a vertex buffer
+		g_dev->CreateBuffer(&bd, NULL, &(dc->VBO));
+		dc->VBOcapacity = count;
+	}
+	return dc->VBO;
+}
+
 ID3D11Buffer *dx11ShaderProgram::getGenericVBO(int index, int elmSize, int mult,
 		int count) {
 	if ((genVBO[index] == NULL) || (genVBOcapacity[index] < count)) {
@@ -74,7 +109,7 @@ ID3D11Buffer *dx11ShaderProgram::getGenericVBO(int index, int elmSize, int mult,
 
 void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		BufferCache **cache) {
+		ShaderBufferCache **cache) {
 	bool normalize = false; //TODO
 	int elmSize = 1;
 	switch (type) {
@@ -90,25 +125,28 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 		break;
 	}
 	DataDesc dd = attributes[index];
-	ID3D11Buffer *vbo = getGenericVBO(index + 1, elmSize, dd.mult, count);
-	D3D11_MAPPED_SUBRESOURCE ms;
-	HRESULT hr = g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
-	if ((mult == 2) && (dd.mult == 3) && (type == DFLOAT)) //TODO should be more generic
-			{
-		float *vdi = (float *) ptr;
-		float *vdo = (float *) ms.pData;
-		for (int k = 0; k < count; k++) {
-			*(vdo++) = *(vdi++);
-			*(vdo++) = *(vdi++);
-			*(vdo++) = 0;
+	ID3D11Buffer *vbo = cache?getCachedVBO(cache,false,elmSize,dd.mult,count):getGenericVBO(index + 1, elmSize, dd.mult, count);
+	if (modified || (!cache))
+	{
+		D3D11_MAPPED_SUBRESOURCE ms;
+		HRESULT hr = g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
+		if ((mult == 2) && (dd.mult == 3) && (type == DFLOAT)) //TODO should be more generic
+		{
+			float *vdi = (float *)ptr;
+			float *vdo = (float *)ms.pData;
+			for (int k = 0; k < count; k++) {
+				*(vdo++) = *(vdi++);
+				*(vdo++) = *(vdi++);
+				*(vdo++) = 0;
+			}
+			mult = dd.mult;
 		}
-		mult = dd.mult;
-	} else
-		memcpy(ms.pData, ptr, mult * elmSize * count);          // copy the data
-	//floatdump(vName, ms.pData, 8);
-	g_devcon->Unmap(vbo, NULL);                              // unmap the buffer
-
-	UINT tstride = mult * elmSize;
+		else
+			memcpy(ms.pData, ptr, mult * elmSize * count);          // copy the data
+		//floatdump(vName, ms.pData, 8);
+		g_devcon->Unmap(vbo, NULL);                              // unmap the buffer
+	}
+	UINT tstride = dd.mult * elmSize;
 	UINT offset = 0;
 
 	g_devcon->IASetVertexBuffers(index, 1, &vbo, &tstride, &offset);
@@ -116,7 +154,7 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 
 void dx11ShaderProgram::setData(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		BufferCache **cache) {
+		ShaderBufferCache **cache) {
 	activate();
 	setupBuffer(index, type, mult, ptr, count, modified, cache);
 }
@@ -395,6 +433,7 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 		}
 		g_devcon->Unmap(vbo, NULL);                          // unmap the buffer
 		g_devcon->IASetIndexBuffer(vbo, DXGI_FORMAT_R16_UINT, 0);
+		curIndicesVBO = vbo;
 		g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		g_devcon->DrawIndexed(ntris * 3, 0, 0);
 		return;
@@ -410,6 +449,7 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 		*(i++) = first;
 		g_devcon->Unmap(vbo, NULL);                          // unmap the buffer
 		g_devcon->IASetIndexBuffer(vbo, DXGI_FORMAT_R16_UINT, 0);
+		curIndicesVBO = vbo;
 		g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 		g_devcon->DrawIndexed(count + 1, 0, 0);
 		return;
@@ -423,7 +463,7 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 	g_devcon->Draw(count, 0);
 }
 void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, BufferCache *cache) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	updateConstants();
@@ -437,15 +477,22 @@ void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 	}
 
 	D3D11_MAPPED_SUBRESOURCE ms;
-	ID3D11Buffer *vbo = getGenericVBO(0, indiceSize, 1, count);
-	g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
-	memcpy(ms.pData, indices, indiceSize * count);              // copy the data
-	g_devcon->Unmap(vbo, NULL);                              // unmap the buffer
+	ID3D11Buffer *vbo = cache ? getCachedVBO(cache, true, indiceSize, 1, count) : getGenericVBO(0,indiceSize,1,count);
+	if (modified || (!cache))
+	{
+		g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
+		memcpy(ms.pData, indices, indiceSize * count);              // copy the data
+		g_devcon->Unmap(vbo, NULL);                              // unmap the buffer
+	}
 
 	UINT stride = indiceSize;
 	UINT offset = 0;
 
-	g_devcon->IASetIndexBuffer(vbo, iFmt, 0);
+	if ((curIndicesVBO != vbo) || (!cache))
+	{
+		g_devcon->IASetIndexBuffer(vbo, iFmt, 0);
+		curIndicesVBO = vbo;
+	}
 
 	if (shape == Point)
 		g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);

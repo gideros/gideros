@@ -19,7 +19,7 @@ local function Split(str, delim, maxNb)
     end
     -- Handle the last field
     if nb ~= maxNb then
-        result[nb + 1] = string.sub(str, lastPos)
+        result[nb + 1] = string.sub(str, lastPos):match("(.-)%s*$")
     end
     return result
 end

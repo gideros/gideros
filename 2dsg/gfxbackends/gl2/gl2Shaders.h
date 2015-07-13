@@ -80,10 +80,10 @@ class ogl2ShaderProgram : public ShaderProgram
 public:
     virtual void activate();
     virtual void deactivate();
-    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache);
+    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache);
     virtual void setConstant(int index,ConstantType type, int mult,const void *ptr);
     virtual void drawArrays(ShapeType shape, int first, unsigned int count);
-    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache);
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache);
     virtual bool isValid();
     virtual const char *compilationLog();
 

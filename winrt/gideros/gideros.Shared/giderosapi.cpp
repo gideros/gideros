@@ -62,17 +62,26 @@ IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interf
 int PTW32_CDECL pthread_mutex_init(pthread_mutex_t * mutex,
 	const pthread_mutexattr_t * attr)
 {
+	CRITICAL_SECTION *c = (CRITICAL_SECTION*) malloc(sizeof(CRITICAL_SECTION));
+
+	InitializeCriticalSectionEx(c,0,0);
+	*((LPCRITICAL_SECTION *)mutex) = c;
 	return 0;
 }
 
 int PTW32_CDECL pthread_mutex_destroy(pthread_mutex_t * mutex)
 {
+	free(*((LPCRITICAL_SECTION *)mutex));
+	*mutex = NULL;
 	return 0;
 }
 
 
 int PTW32_CDECL pthread_mutex_lock(pthread_mutex_t * mutex)
 {
+	if (*mutex == PTHREAD_MUTEX_INITIALIZER)
+		pthread_mutex_init(mutex, NULL);
+	EnterCriticalSection(*((LPCRITICAL_SECTION *)mutex));
 	return 0;
 }
 
@@ -86,11 +95,14 @@ int PTW32_CDECL pthread_mutex_timedlock(pthread_mutex_t * mutex,
 
 int PTW32_CDECL pthread_mutex_trylock(pthread_mutex_t * mutex)
 {
-	return 0;
+	if (*mutex == PTHREAD_MUTEX_INITIALIZER)
+		pthread_mutex_init(mutex, NULL);
+	return TryEnterCriticalSection(*((LPCRITICAL_SECTION *)mutex)) ? 0 : -1;
 }
 
 int PTW32_CDECL pthread_mutex_unlock(pthread_mutex_t * mutex)
 {
+	LeaveCriticalSection(*((LPCRITICAL_SECTION *)mutex));
 	return 0;
 }
 
@@ -355,7 +367,7 @@ private:
 class ApplicationManager
 {
 public:
-	ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath);
+	ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath);
 	~ApplicationManager();
 
 	void getStdCoords(float xp, float yp, float &x, float &y);
@@ -396,6 +408,7 @@ private:
 	NetworkManager *networkManager_;
 	const wchar_t* resourcePath_;
 	const wchar_t* docsPath_;
+	const wchar_t* tempPath_;
 
 	float contentScaleFactor;
 
@@ -704,7 +717,7 @@ void NetworkManager::calculateMD5(const char* file)
 }
 
 
-ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath)
+ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 {
 
 	InitD3D(Window);
@@ -722,6 +735,7 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 	player_ = player;
 	resourcePath_ = resourcePath;
 	docsPath_ = docsPath;
+	tempPath_ = tempPath;
 
 	// gpath & gvfs
 	gpath_init();
@@ -801,24 +815,26 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 	if (player_ == false)
 	{
 		const wchar_t *installedLocation = resourcePath_;
-
 		char fileStem[MAX_PATH];
 		wcstombs(fileStem, installedLocation, MAX_PATH);
 		strcat(fileStem, "\\assets\\");
 		setResourceDirectory(fileStem);
 
-		gpath_setDrivePath(0, fileStem);
+		//XXX: Redundant gpath_setDrivePath(0, fileStem);
 
 		const wchar_t *docs = docsPath_;
-
 		char docsPath[MAX_PATH];
 		wcstombs(docsPath, docs, MAX_PATH);
 		strcat(docsPath, "\\");
-
 		setDocumentsDirectory(docsPath);
-		setTemporaryDirectory(docsPath);
 
-		gpath_setDrivePath(1, docsPath);
+		const wchar_t *temp = tempPath_;
+		char tempPath[MAX_PATH];
+		wcstombs(tempPath, temp, MAX_PATH);
+		strcat(tempPath, "\\");
+		setTemporaryDirectory(tempPath);
+
+		//XXX: Redundant gpath_setDrivePath(1, docsPath);
 
 		loadProperties();
 
@@ -1074,10 +1090,9 @@ void ApplicationManager::openProject(const char* project){
 	}
 }
 
-void ApplicationManager::setProjectName(const char *projectName)
+std::string getProjectDir(const wchar_t* base,const char *projectName)
 {
-	glog_v("setProjectName: %s", projectName);
-	std::wstring ws(docsPath_);
+	std::wstring ws(base);
 	std::string dir = std::string(ws.begin(), ws.end());
 
 	if (dir[dir.size() - 1] != '/')
@@ -1094,11 +1109,19 @@ void ApplicationManager::setProjectName(const char *projectName)
 	_mkdir(dir.c_str());
 
 	dir += "/";
+	return dir;
+}
+
+void ApplicationManager::setProjectName(const char *projectName)
+{
+	glog_v("setProjectName: %s", projectName);
+	std::string dir = getProjectDir(docsPath_, projectName);
+	std::string tdir = getProjectDir(tempPath_, projectName);
 
 	std::string md5filename_ = dir + "md5.txt";
 
 	std::string documents = dir + "documents";
-	std::string temporary = dir + "temporary";
+	std::string temporary = tdir + "temporary";
 	std::string resource = dir + "resource";
 
 	glog_v("documents: %s", documents.c_str());
@@ -1396,9 +1419,9 @@ static int lastMouseButton_ = 0;
 
 extern "C" {
 
-	void gdr_initialize(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath)
+	void gdr_initialize(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 	{
-		s_manager = new ApplicationManager(Window, width, height, player, resourcePath, docsPath);
+		s_manager = new ApplicationManager(Window, width, height, player, resourcePath, docsPath, tempPath);
 	}
 
 	void gdr_drawFrame()

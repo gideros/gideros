@@ -11,7 +11,11 @@ GMesh::GMesh(Application *application,bool is3d) : Sprite(application)
 		sy_[t] = 1;
 	}
 	for (int k=3;k<MESH_MAX_ARRAYS;k++)
+	{
 	  	genericArray[k-3].ptr=NULL;
+	  	genericArray[k-3].cache=NULL;
+	  	genericArray[k-3].modified=true;
+	}
     r_ = 1;
     g_ = 1;
     b_ = 1;
@@ -31,7 +35,11 @@ GMesh::~GMesh()
 
    for (int k=3;k<MESH_MAX_ARRAYS;k++)
     	if (genericArray[k-3].ptr)
+    	{
+    		if (genericArray[k-3].cache)
+    			delete genericArray[k-3].cache;
             free(genericArray[k-3].ptr);
+    	}
 }
 
 bool GMesh::is3d()
@@ -50,6 +58,7 @@ void GMesh::setVertex(int i, float x, float y,float z)
     if (mesh3d_)
         vertices_[i * order + 2] = z;
 
+    vertices_.Update();
     boundsDirty_ = true;
 }
 
@@ -59,6 +68,7 @@ void GMesh::setIndex(int i, unsigned short index)
         indices_.resize(i + 1);
 
     indices_[i] = index;
+    indices_.Update();
 
     boundsDirty_ = true;
 }
@@ -85,6 +95,7 @@ void GMesh::setColor(int i, unsigned int color, float alpha)
     colors_[i * 4 + 1] = g;
     colors_[i * 4 + 2] = b;
     colors_[i * 4 + 3] = a;
+    colors_.Update();
 }
 
 void GMesh::setTextureCoordinate(int i, float u, float v)
@@ -100,6 +111,7 @@ void GMesh::setTextureCoordinate(int i, float u, float v)
 
     textureCoordinates_[i * 2] = u * sx_[0];
     textureCoordinates_[i * 2 + 1] = v * sy_[0];
+    textureCoordinates_.Update();
 }
 
 void GMesh::setGenericArray(int index,const void *pointer, ShaderProgram::DataType type, int mult, int count)
@@ -127,11 +139,13 @@ void GMesh::setGenericArray(int index,const void *pointer, ShaderProgram::DataTy
 	genericArray[index].mult=mult;
 	genericArray[index].type=type;
 	genericArray[index].count=count;
+	genericArray[index].modified=true;
 }
 
 void GMesh::setVertexArray(const float *vertices, size_t size)
 {
     vertices_.assign(vertices, vertices + size);
+    vertices_.Update();
 
     boundsDirty_ = true;
 }
@@ -139,6 +153,7 @@ void GMesh::setVertexArray(const float *vertices, size_t size)
 void GMesh::setIndexArray(const unsigned short *indices, size_t size)
 {
     indices_.assign(indices, indices + size);
+    indices_.Update();
 
     boundsDirty_ = true;
 }
@@ -149,6 +164,7 @@ void GMesh::setColorArray(const unsigned int *colors, const float *alphas, size_
     colors_.resize(size * 4);
     for (size_t i = 0; i < size; ++i)
         setColor(i, colors[i], alphas[i]);
+    colors_.Update();
 }
 
 void GMesh::setTextureCoordinateArray(const float *textureCoordinates, size_t size)
@@ -161,11 +177,13 @@ void GMesh::setTextureCoordinateArray(const float *textureCoordinates, size_t si
         textureCoordinates_[i] = originalTextureCoordinates_[i] * sx_[0];
         textureCoordinates_[i + 1] = originalTextureCoordinates_[i + 1] * sy_[0];
     }
+    textureCoordinates_.Update();
 }
 
 void GMesh::resizeVertexArray(size_t size)
 {
     vertices_.resize(size * (mesh3d_?3:2));
+    vertices_.Update();
 
     boundsDirty_ = true;
 }
@@ -173,6 +191,7 @@ void GMesh::resizeVertexArray(size_t size)
 void GMesh::resizeIndexArray(size_t size)
 {
     indices_.resize(size);
+    indices_.Update();
 
     boundsDirty_ = true;
 }
@@ -180,17 +199,20 @@ void GMesh::resizeIndexArray(size_t size)
 void GMesh::resizeColorArray(size_t size)
 {
     colors_.resize(size);
+    colors_.Update();
 }
 
 void GMesh::resizeTextureCoordinateArray(size_t size)
 {
     originalTextureCoordinates_.resize(size * 2);
     textureCoordinates_.resize(size * 2);
+    textureCoordinates_.Update();
 }
 
 void GMesh::clearVertexArray()
 {
     vertices_.clear();
+    vertices_.Update();
 
     boundsDirty_ = true;
 }
@@ -198,6 +220,7 @@ void GMesh::clearVertexArray()
 void GMesh::clearIndexArray()
 {
     indices_.clear();
+    indices_.Update();
 
     boundsDirty_ = true;
 }
@@ -205,6 +228,7 @@ void GMesh::clearIndexArray()
 void GMesh::clearColorArray()
 {
     colors_.clear();
+    colors_.Update();
 }
 
 size_t GMesh::getVertexArraySize() const
@@ -293,6 +317,7 @@ void GMesh::setTextureSlot(int slot,TextureBase *texture)
             textureCoordinates_[i] = originalTextureCoordinates_[i] * sx_[0];
             textureCoordinates_[i + 1] = originalTextureCoordinates_[i + 1] * sy_[0];
         }
+        textureCoordinates_.Update();
     }
 }
 
@@ -324,7 +349,8 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 
 	if (shader_)
 		p=shader_;
-    p->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,mesh3d_?3:2, &vertices_[0],vertices_.size()/(mesh3d_?3:2),true,NULL);
+    p->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,mesh3d_?3:2, &vertices_[0],vertices_.size()/(mesh3d_?3:2),vertices_.modified,&vertices_.bufferCache);
+    vertices_.modified=false;
 
     if (!colors_.empty())
     {
@@ -354,19 +380,28 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
                 colors_[i * 4 + 2] = b;
                 colors_[i * 4 + 3] = a;
             }
+            colors_.Update();
         }
 
-        p->setData(ShaderProgram::DataColor,ShaderProgram::DUBYTE,4,&colors_[0],colors_.size()/4,true,NULL);
+        p->setData(ShaderProgram::DataColor,ShaderProgram::DUBYTE,4,&colors_[0],colors_.size()/4,colors_.modified,&colors_.bufferCache);
+        colors_.modified=false;
     }
 
     if (texture_ && !textureCoordinates_.empty())
-        p->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2, &textureCoordinates_[0],textureCoordinates_.size()/2,true,NULL);
+    {
+        p->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2, &textureCoordinates_[0],textureCoordinates_.size()/2,textureCoordinates_.modified,&textureCoordinates_.bufferCache);
+        textureCoordinates_.modified=false;
+    }
 
     for (int k=3;k<MESH_MAX_ARRAYS;k++)
     	if (genericArray[k-3].ptr)
-            p->setData(k,genericArray[k-3].type,genericArray[k-3].mult, genericArray[k-3].ptr,genericArray[k-3].count,true,NULL);
+    	{
+            p->setData(k,genericArray[k-3].type,genericArray[k-3].mult, genericArray[k-3].ptr,genericArray[k-3].count,genericArray[k-3].modified,&genericArray[k-3].cache);
+            genericArray[k-3].modified=false;
+    	}
 
-    p->drawElements(meshtype_, indices_.size(), ShaderProgram::DUSHORT, &indices_[0],true, NULL);
+    p->drawElements(meshtype_, indices_.size(), ShaderProgram::DUSHORT, &indices_[0],indices_.modified,&indices_.bufferCache);
+    indices_.modified=false;
 }
 
 void GMesh::childrenDrawn()
