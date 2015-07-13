@@ -40,6 +40,8 @@
 LuaApplication *application_;
 HWND hwndcopy;
 
+int windowWidth,windowHeight;
+
 #define ID_TIMER   1
 
 std::string getDeviceName()
@@ -106,6 +108,9 @@ struct ProjectProperties
   std::string packageName;
   bool encryptCode;
   bool encryptAssets;
+
+  int windowWidth;
+  int windowHeight;
 };
 
 // ######################################################################
@@ -211,7 +216,7 @@ void loadProperties()
   buffer >> properties.scaleMode;
   buffer >> properties.logicalWidth;
   buffer >> properties.logicalHeight;
-  
+
   int scaleCount;
   buffer >> scaleCount;
   properties.imageScales.resize(scaleCount);
@@ -229,23 +234,46 @@ void loadProperties()
   buffer >> properties.touchToMouse;
   buffer >> properties.mouseTouchOrder;
 
-  int width = 320;
-  int height = 480;
+  printf("logicalWidth, logicalHeight, orientation=%d %d %d\n",
+	 properties.logicalWidth, properties.logicalHeight, properties.orientation);
+
+  buffer >> properties.windowWidth;
+  buffer >> properties.windowHeight;
+
+  printf("windowWidth, windowHeight=%d %d\n",properties.windowWidth, properties.windowHeight);
+
+  if (properties.windowWidth==0 || properties.windowHeight==0){
+    if (properties.orientation==0 || properties.orientation==2){            // portrait
+      windowWidth=properties.logicalWidth;
+      windowHeight=properties.logicalHeight;
+    }
+    else {
+      windowWidth=properties.logicalHeight;
+      windowHeight=properties.logicalWidth;
+    }
+  }    
+  else {
+    windowWidth=properties.windowWidth;
+    windowHeight=properties.windowHeight;
+  }
+
+  //  int width = windowWidth;
+  //  int height = windowHeight;
 
   float contentScaleFactor = 1;
   Orientation hardwareOrientation;
   Orientation deviceOrientation;
 
   // the first arg to setResolution should be the smaller dimension
-  if (width < height){
+  if (windowWidth < windowHeight){
     hardwareOrientation = ePortrait;
     deviceOrientation = ePortrait;
-    application_->setResolution(width * contentScaleFactor, height * contentScaleFactor);
+    application_->setResolution(windowWidth * contentScaleFactor, windowHeight * contentScaleFactor);
   }
   else {
     hardwareOrientation = eLandscapeLeft;
     deviceOrientation = eLandscapeLeft;
-    application_->setResolution(height * contentScaleFactor, width * contentScaleFactor);
+    application_->setResolution(windowHeight * contentScaleFactor, windowWidth * contentScaleFactor);
   }
 
   application_->setHardwareOrientation(hardwareOrientation);
@@ -275,14 +303,6 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
   PAINTSTRUCT ps ;
 
   if (iMsg==WM_CREATE){
-
-    GetClientRect(hwnd,&clientRect);
-    GetWindowRect(hwnd,&winRect);
-
-    dxChrome=winRect.right-winRect.left-(clientRect.right-clientRect.left);
-    dyChrome=winRect.bottom-winRect.top-(clientRect.bottom-clientRect.top);
-
-    SetWindowPos(hwnd,HWND_TOP,0,0,320+dxChrome,480+dyChrome,SWP_NOMOVE);
 
     EnableOpenGL(hwnd, &hDC, &hRC);
 
@@ -353,6 +373,14 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     
     loadProperties();
     loadLuaFiles();
+
+    GetClientRect(hwnd,&clientRect);
+    GetWindowRect(hwnd,&winRect);
+
+    dxChrome=winRect.right-winRect.left-(clientRect.right-clientRect.left);
+    dyChrome=winRect.bottom-winRect.top-(clientRect.bottom-clientRect.top);
+
+    SetWindowPos(hwnd,HWND_TOP,0,0,windowWidth+dxChrome,windowHeight+dyChrome,SWP_NOMOVE);
     
     return 0;
   }
@@ -391,8 +419,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     BeginPaint (hwnd, &ps) ;
 
-    glClear(GL_COLOR_BUFFER_BIT);
-
+    //    glClear(GL_COLOR_BUFFER_BIT);
+    application_->clearBuffers();
     application_->renderScene(1);
 
     SwapBuffers(hDC);
@@ -409,7 +437,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     if (status.error());
     //      luaError(status.errorString());
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    //    glClear(GL_COLOR_BUFFER_BIT);
+    application_->clearBuffers();
 
     application_->renderScene();
 
@@ -493,12 +522,12 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   RegisterClassEx (&wndclass) ;
   
   hwnd = CreateWindow (szAppName,         // window class name
-		       "triangles",     // window caption
+		       "Gideros Win32 (no Qt)",     // window caption
 		       WS_OVERLAPPED | WS_SYSMENU,     // window style
 		       CW_USEDEFAULT,           // initial x position
 		       CW_USEDEFAULT,           // initial y position
-		       320,           // initial x size
-		       480,           // initial y size
+		       480,           // initial x size
+		       320,           // initial y size
 		       NULL,                    // parent window handle
 		       NULL,                    // window menu handle
 		       hInstance,               // program instance handle
