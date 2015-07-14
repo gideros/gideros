@@ -156,6 +156,10 @@ static void createGraphicsBase(const std::vector<std::vector<Point2f> >& polygon
 
 		result.indices.push_back(start + i);
 	}
+	result.vertices.Update();
+	result.indices.Update();
+	if (texcoords)
+		result.texcoords.Update();
 }
 
 static void lineToPolygon(float x0, float y0, float x1, float y1, float thickness, std::vector<Point2f>& polygon)

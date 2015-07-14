@@ -8,6 +8,27 @@
 #include "gl2Shaders.h"
 #include "glog.h"
 
+class gl2ShaderBufferCache : public ShaderBufferCache {
+public:
+	GLuint VBO;
+	gl2ShaderBufferCache() { VBO = 0; }
+	virtual ~gl2ShaderBufferCache()
+	{
+		if (VBO)
+			glDeleteBuffers(1,&VBO);
+	}
+};
+
+GLuint getCachedVBO(ShaderBufferCache **cache) {
+	if (!cache) return 0; //XXX: Could we check for VBO availability ?
+	if (!*cache)
+		*cache = new gl2ShaderBufferCache();
+	gl2ShaderBufferCache *dc = static_cast<gl2ShaderBufferCache*> (*cache);
+	if (dc->VBO == 0)
+		glGenBuffers(1,&dc->VBO);
+	return dc->VBO;
+}
+
 GLint ogl2ShaderProgram::curProg = -1;
 ShaderProgram *ogl2ShaderProgram::current = NULL;
 
@@ -117,13 +138,15 @@ void ogl2ShaderProgram::useProgram() {
 
 void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		BufferCache **cache) {
+		ShaderBufferCache **cache) {
 	useProgram();
 	GLenum gltype = GL_FLOAT;
 	bool normalize = false;
+	int elmSize = 1;
 	switch (type) {
 	case DINT:
 		gltype = GL_INT;
+		elmSize = 4;
 		break;
 	case DBYTE:
 		gltype = GL_BYTE;
@@ -134,17 +157,28 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 		break;
 	case DSHORT:
 		gltype = GL_SHORT;
+		elmSize = 2;
 		break;
 	case DUSHORT:
 		gltype = GL_UNSIGNED_SHORT;
+		elmSize = 2;
 		break;
 	case DFLOAT:
 		gltype = GL_FLOAT;
+		elmSize = 4;
 		break;
 	}
 #ifdef GIDEROS_GL1
 	glVertexPointer(mult,gltype, 0,ptr);
 #else
+	GLuint vbo=getCachedVBO(cache);
+	glBindBuffer(GL_ARRAY_BUFFER,vbo);
+	if (vbo)
+	{
+		if (modified)
+			glBufferData(GL_ARRAY_BUFFER,elmSize * mult * count,ptr,GL_DYNAMIC_DRAW);
+		ptr=NULL;
+	}
 	glVertexAttribPointer(attributes[index], mult, gltype, normalize, 0, ptr
 #ifdef DXCOMPAT_H
 			,count,modified,(GLuint *)cache
@@ -299,7 +333,7 @@ void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 
 }
 void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, BufferCache *cache) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 
@@ -326,9 +360,11 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 	}
 
 	GLenum dtype = GL_INT;
+	int elmSize=1;
 	switch (type) {
 	case DFLOAT:
 		dtype = GL_FLOAT;
+		elmSize=4;
 		break;
 	case DBYTE:
 		dtype = GL_BYTE;
@@ -338,13 +374,24 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 		break;
 	case DSHORT:
 		dtype = GL_SHORT;
+		elmSize=2;
 		break;
 	case DUSHORT:
 		dtype = GL_UNSIGNED_SHORT;
+		elmSize=2;
 		break;
 	case DINT:
 		dtype = GL_INT;
+		elmSize=4;
 		break;
+	}
+	GLuint vbo=getCachedVBO(cache);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo);
+	if (vbo)
+	{
+		if (modified)
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER,elmSize * count,indices,GL_DYNAMIC_DRAW);
+		indices=NULL;
 	}
 	glDrawElements(mode, count, dtype, indices
 #ifdef DXCOMPAT_H

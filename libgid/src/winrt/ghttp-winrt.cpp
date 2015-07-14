@@ -14,7 +14,6 @@ using namespace Platform;
 
 static HttpClient^ httpClient;
 static cancellation_token_source cancellationTokenSource;
-static Buffer^ readBuffer = ref new Buffer(1000);
 static bool sslErrorsIgnore = false;
 static std::map<g_id, std::vector<unsigned char> > map;
 //static std::vector<unsigned char> dataRead;
@@ -22,11 +21,12 @@ task<IBuffer^> readData(IInputStream^ stream, g_id id)
 {
 	// Do an asynchronous read. We need to use use_current() with the continuations since the tasks are completed on
 	// background threads and we need to run on the UI thread to update the UI.
+	Buffer^ readBuffer = ref new Buffer(1000);
 	return create_task(
 		stream->ReadAsync(readBuffer, readBuffer->Capacity, InputStreamOptions::Partial),
 		cancellationTokenSource.get_token()).then([=](task<IBuffer^> readTask)
 	{
-		IBuffer^ buffer = readTask.get();
+		Buffer^ buffer = (Buffer ^)(readTask.get());
 		//OutputField->Text += "Bytes read from stream: " + buffer->Length + "\n";
 		Array<unsigned char>^ arr = ref new Array<unsigned char>(buffer->Length);
 		DataReader::FromBuffer(buffer)->ReadBytes(arr);
@@ -35,7 +35,9 @@ task<IBuffer^> readData(IInputStream^ stream, g_id id)
 		map[id].insert(map[id].end(), first, end);
 
 		// Continue reading until the response is complete.  When done, return previousTask that is complete.
-		return buffer->Length ? readData(stream, id) : readTask;
+		bool more = buffer->Length;
+		delete buffer;
+		return more ? readData(stream, id) : readTask;
 	});
 }
 
@@ -109,7 +111,7 @@ void handleTask(HttpResponseMessage^ response, g_id id, gevent_Callback callback
 			ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount + map[id].size() + hdrSize);
 
 			event->data = (char*)event + sizeof(ghttp_ResponseEvent) + sizeof(ghttp_Header)*hdrCount;
-			memcpy(event->data, &map[id][0], map[id].size());
+			memcpy(event->data, map[id].data(), map[id].size());
 			event->size = map[id].size();
 
 			if (response->IsSuccessStatusCode)

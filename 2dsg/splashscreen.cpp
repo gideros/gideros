@@ -50,6 +50,7 @@ static GraphicsBase createGraphicsBase(TextureData* data, int x, int y)
 	graphicsBase.vertices[1] = Point2f(data->width + x, y);
 	graphicsBase.vertices[2] = Point2f(data->width + x, data->height + y);
 	graphicsBase.vertices[3] = Point2f(x, data->height + y);
+	graphicsBase.vertices.Update();
 	
 	float u = (float)data->width / (float)data->exwidth;
 	float v = (float)data->height / (float)data->exheight;
@@ -59,12 +60,14 @@ static GraphicsBase createGraphicsBase(TextureData* data, int x, int y)
 	graphicsBase.texcoords[1] = Point2f(u, 0);
 	graphicsBase.texcoords[2] = Point2f(u, v);
 	graphicsBase.texcoords[3] = Point2f(0, v);
+	graphicsBase.texcoords.Update();
 	
 	graphicsBase.indices.resize(4);
 	graphicsBase.indices[0] = 0;
 	graphicsBase.indices[1] = 1;
 	graphicsBase.indices[2] = 3;
 	graphicsBase.indices[3] = 2;
+	graphicsBase.indices.Update();
 	
 	return graphicsBase;
 }

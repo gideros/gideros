@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     setScale(100);
     ui.setupUi(this);
 
+    resolution_ = 0;
     /*#if defined(Q_OS_MAC)
         setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
     #else
@@ -52,6 +53,9 @@ void MainWindow::setFixedSize(bool fixedSize){
 }
 
 void MainWindow::resizeWindow(int width, int height){
+    if (resolution_ == 0){
+        resolution_ = (float)width / height;
+    }
     if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){
         int temp = width;
         width = height;
@@ -63,8 +67,8 @@ void MainWindow::resizeWindow(int width, int height){
         setMaximumSize(width, height);
         setMinimumSize(width, height);
     }
-    else
-        resize(width, height);
+    resize(width, height);
+    
     updateResolution();
 }
 
@@ -75,7 +79,11 @@ void MainWindow::fullScreenWindow(bool fullScreen){
     }
     else{
         this->showNormal();
-        setMaximumSize(width_, height_);
+        if(fixedSize_){
+            setMaximumSize(width_, height_);
+        }else{
+            setMaximumSize(16777215, 16777215);
+        }
     }
     updateResolution();
 }
@@ -88,6 +96,14 @@ void MainWindow::updateResolution(){
         height = ui.centralWidget->width();
     }
 
+    const float resolution = (float)width / height;
+
+    if (resolution > resolution_){
+       width = height * resolution_;
+    }else{
+       height = width / resolution_;
+    }
+    
     float canvasScaleFactor = 1;
     float widgetScaleFactor = 1;
     if (deviceScale() != 0) {

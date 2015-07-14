@@ -14,10 +14,10 @@ class dx11ParticleShader: public dx11ShaderProgram {
 protected:
 	float psize;
 public:
-    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache);
+    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache);
     virtual void setConstant(int index,ConstantType type, int mult,const void *ptr);
     virtual void drawArrays(ShapeType shape, int first, unsigned int count);
-    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache);
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache);
     dx11ParticleShader(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
 };

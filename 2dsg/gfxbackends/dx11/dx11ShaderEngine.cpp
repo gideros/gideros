@@ -316,8 +316,8 @@ void dx11ShaderEngine::setClip(int x,int y,int w,int h)
 		D3D11_RECT pRect;
 		pRect.left = x;
 		pRect.top = y;
-		pRect.right = x + w - 1;
-		pRect.bottom = y + h - 1;
+		pRect.right = x + w;
+		pRect.bottom = y + h;
 		g_devcon->RSSetScissorRects(1, &pRect);
 		g_devcon->RSSetState(g_pRSScissor);
 	}

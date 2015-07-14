@@ -104,13 +104,13 @@
   <Import Project="..\giderosgame.Shared\giderosgame.Shared.vcxitems" Label="Shared" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
-      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\winrt\ARM\Debug\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\ARM\Debug\libgvfswinrt.Windows;..\..\..\lua\luawinrt\ARM\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\arm; $(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
+      <AdditionalDependencies>luasocket.Windows.lib;gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\AllPlugins\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\ARM\Debug\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\ARM\Debug\libgvfswinrt.Windows;..\..\..\lua\luawinrt\ARM\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\arm; $(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Sdk\include;.\Plugins;..\..\..\Sdk\include;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
       <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;_DEBUG;SQLITE_OS_WINRT;NO_GETCWD;NO_CHDIR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -121,15 +121,15 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
-      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\winrt\ARM\Release\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\ARM\Release\libgvfswinrt.Windows;..\..\..\lua\luawinrt\ARM\Release\luawinrt.Windows;%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\arm; $(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
+      <AdditionalDependencies>luasocket.Windows.lib;gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\AllPlugins\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\ARM\Release\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\ARM\Release\libgvfswinrt.Windows;..\..\..\lua\luawinrt\ARM\Release\luawinrt.Windows;%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\arm; $(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>
       </ImageHasSafeExceptionHandlers>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Sdk\include;.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
       <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;NDEBUG;SQLITE_OS_WINRT;NO_GETCWD;NO_CHDIR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -140,13 +140,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d2d1.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\winrt\Debug\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\Debug\libgvfswinrt.Windows;..\..\..\lua\luawinrt\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>luasocket.Windows.lib;gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d2d1.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\AllPlugins\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\Debug\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\Debug\libgvfswinrt.Windows;..\..\..\lua\luawinrt\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Sdk\include;.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
       <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;_DEBUG;SQLITE_OS_WINRT;NO_GETCWD;NO_CHDIR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -157,14 +157,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d2d1.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\winrt\Release\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\Release\libgvfswinrt.Windows;..\..\..\lua\luawinrt\Release\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>luasocket.Windows.lib;gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d2d1.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\AllPlugins\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\Release\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\Release\libgvfswinrt.Windows;..\..\..\lua\luawinrt\Release\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Sdk\include;.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
       <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;NDEBUG;SQLITE_OS_WINRT;NO_GETCWD;NO_CHDIR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -175,13 +175,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>d2d1.lib; d3d11.lib; dxgi.lib; ole32.lib; windowscodecs.lib; dwrite.lib; %(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\amd64; $(VCInstallDir)\lib\amd64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>luasocket.Windows.lib;d2d1.lib; d3d11.lib; dxgi.lib; ole32.lib; windowscodecs.lib; dwrite.lib; %(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\AllPlugins\WinRT\$(Configuration)\$(Platform);%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\amd64; $(VCInstallDir)\lib\amd64</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Sdk\include;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -189,13 +189,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
-      <AdditionalDependencies>d2d1.lib; d3d11.lib; dxgi.lib; ole32.lib; windowscodecs.lib; dwrite.lib; %(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\amd64; $(VCInstallDir)\lib\amd64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>luasocket.Windows.lib;d2d1.lib; d3d11.lib; dxgi.lib; ole32.lib; windowscodecs.lib; dwrite.lib; %(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\AllPlugins\WinRT\$(Configuration)\$(Platform);%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\amd64; $(VCInstallDir)\lib\amd64</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Sdk\include;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -244,6 +244,7 @@
     <Text Include="Assets\luafiles.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\plugins\luasocket\source\luasocket_stub.cpp" />
     <ClCompile Include="Plugins\bit.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
