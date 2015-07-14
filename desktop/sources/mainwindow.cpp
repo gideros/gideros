@@ -67,8 +67,8 @@ void MainWindow::resizeWindow(int width, int height){
         setMaximumSize(width, height);
         setMinimumSize(width, height);
     }
-    else
-        resize(width, height);
+    resize(width, height);
+    
     updateResolution();
 }
 
