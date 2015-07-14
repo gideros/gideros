@@ -54,8 +54,7 @@ void MainWindow::setFixedSize(bool fixedSize){
 
 void MainWindow::resizeWindow(int width, int height){
     if (resolution_ == 0){
-        const float widthf = width;
-        resolution_ = widthf / height;
+        resolution_ = (float)width / height;
     }
     if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){
         int temp = width;
@@ -97,8 +96,7 @@ void MainWindow::updateResolution(){
         height = ui.centralWidget->width();
     }
 
-    const float widthf = width;
-    const float resolution = widthf / height;
+    const float resolution = (float)width / height;
 
     if (resolution > resolution_){
        width = height * resolution_;
