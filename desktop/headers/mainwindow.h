@@ -44,6 +44,7 @@ class MainWindow : public QMainWindow{
         bool fixedSize_;
         int width_;
         int height_;
+        float resolution_;
 
         Ui::MainWindowClass ui;
 
