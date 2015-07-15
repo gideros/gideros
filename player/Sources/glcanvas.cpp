@@ -92,10 +92,10 @@ GLCanvas::GLCanvas(QWidget *parent) :
 	/*
 	 QGLFormat formatGL;
 	 formatGL.setVersion(2, 0); // Version : 2.0
-	 formatGL.setDoubleBuffer(true); // Double Buffer : Activé
+	 formatGL.setDoubleBuffer(true); // Double Buffer : ActivÃ©
 	 formatGL.setDepthBufferSize(24);
 	 formatGL.setStencilBufferSize(8);
-	 formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'écran
+	 formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'Ã©cran
 	 this->setFormat(formatGL);
 	 */
     isPlayer_ = true;
@@ -787,9 +787,6 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 	buffer >> orientation;
 	application_->setOrientation((Orientation) orientation);
 
-	if (exportedApp_) {
-		setHardwareOrientation((Orientation) orientation);
-	}
 
 	application_->getApplication()->setDeviceOrientation(
 			(Orientation) orientation);
@@ -818,16 +815,6 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 	buffer >> windowWidth;
 	buffer >> windowHeight;
 
-	if (windowWidth == 0 || windowHeight == 0) {
-		windowWidth = logicalWidth;
-        windowHeight = logicalHeight;
-        if (exportedApp_) {
-            MainWindow::getInstance()->setFixedSize(false);
-        }
-    }
-    if (exportedApp_) {
-        setWindowSize(windowWidth, windowHeight);
-    }
 }
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles) {
