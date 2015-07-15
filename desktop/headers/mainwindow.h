@@ -36,6 +36,7 @@ class MainWindow : public QMainWindow{
         float scale();
         void setScale(float scale);
         void setFixedSize(bool fixedSize);
+        void saveSettings();
 
     private:
         static MainWindow* instance;
@@ -45,8 +46,11 @@ class MainWindow : public QMainWindow{
         int width_;
         int height_;
         float resolution_;
+        int width0_;
+        int height0_;
 
         Ui::MainWindowClass ui;
+        void loadSettings();
 
     private slots:
         void projectNameChanged(const QString& projectName);
