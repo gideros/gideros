@@ -31,6 +31,14 @@ GLuint getCachedVBO(ShaderBufferCache **cache) {
 
 GLint ogl2ShaderProgram::curProg = -1;
 ShaderProgram *ogl2ShaderProgram::current = NULL;
+std::vector<ogl2ShaderProgram *> ogl2ShaderProgram::shaders;
+
+void ogl2ShaderProgram::resetAll()
+{
+  for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); ++it)
+	  (*it)->recreate();
+}
+
 
 const char *hdrShaderCode=
 #ifdef OPENGL_ES
@@ -44,10 +52,9 @@ const char *hdrShaderCode=
 #endif
 
 
-GLuint ogl2LoadShader(GLuint type, const char *hdr, const char *code, std::string &log) {
+GLuint ogl2LoadShader(GLuint type, const char *code, std::string &log) {
 	GLuint shader = glCreateShader(type);
-	const char *lines[2] = { hdr, code };
-	glShaderSource(shader, 2, lines, NULL);
+	glShaderSource(shader, 1, &code, NULL);
 	glCompileShader(shader);
 
 	GLint isCompiled = 0;
@@ -104,8 +111,8 @@ const char *ogl2ShaderProgram::compilationLog()
 }
 
 void ogl2ShaderProgram::deactivate() {
-	for (std::vector<GLint>::iterator it = attributes.begin();
-			it != attributes.end(); ++it) {
+	for (std::vector<GLint>::iterator it = glattributes.begin();
+			it != glattributes.end(); ++it) {
 		GLint att = *it;
 		if (att >= 0)
 			glDisableVertexAttribArray(*it);
@@ -120,8 +127,8 @@ void ogl2ShaderProgram::activate() {
 	if (current)
 		current->deactivate();
 	current = this;
-	for (std::vector<GLint>::iterator it = attributes.begin();
-			it != attributes.end(); ++it) {
+	for (std::vector<GLint>::iterator it = glattributes.begin();
+			it != glattributes.end(); ++it) {
 		GLint att = *it;
 		if (att >= 0)
 			glEnableVertexAttribArray(*it);
@@ -179,7 +186,7 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 			glBufferData(GL_ARRAY_BUFFER,elmSize * mult * count,ptr,GL_DYNAMIC_DRAW);
 		ptr=NULL;
 	}
-	glVertexAttribPointer(attributes[index], mult, gltype, normalize, 0, ptr
+	glVertexAttribPointer(glattributes[index], mult, gltype, normalize, 0, ptr
 #ifdef DXCOMPAT_H
 			,count,modified,(GLuint *)cache
 #endif
@@ -222,35 +229,33 @@ ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader, const char *fshader,in
 	void *fs = LoadShaderFile(fshader, "glsl", NULL);
 	const char *hdr=(flags&ShaderProgram::Flag_NoDefaultHeader)?"":hdrShaderCode;
 	buildProgram(hdr,(char *) vs, hdr, (char *) fs, uniforms, attributes);
+	shaders.push_back(this);
 }
 
 ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader1, const char *vshader2,
 		const char *fshader1, const char *fshader2,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	buildProgram(vshader1, vshader2, fshader1, fshader2, uniforms, attributes);
+	shaders.push_back(this);
 }
 
 void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 		const char *fshader1, const char *fshader2,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	cbsData=0;
-	errorLog="";
-    uninit_uniforms=-1;
-	vertexShader = ogl2LoadShader(GL_VERTEX_SHADER, vshader1, vshader2,errorLog);
-	fragmentShader = ogl2LoadShader(GL_FRAGMENT_SHADER, fshader1, fshader2,errorLog);
-	program = ogl2BuildProgram(vertexShader, fragmentShader,errorLog);
-	glUseProgram(program);
+    vshadercode=vshader1;
+    vshadercode.append(vshader2);
+    fshadercode=fshader1;
+    fshadercode.append(fshader2);
 	GLint ntex = 0;
-	while (uniforms->name) {
+	while (!uniforms->name.empty()) {
 		int usz = 0, ual = 4;
 		ConstantDesc cd;
 		cd = *(uniforms++);
-		this->gluniforms.push_back(glGetUniformLocation(program, cd.name));
 		switch (cd.type) {
 		case CTEXTURE:
 			usz = 4;
 			ual = 4;
-			glUniform1i(gluniforms[gluniforms.size() - 1], ntex++);
 			break;
 		case CINT:
 			usz = 4;
@@ -280,15 +285,45 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 		this->uniforms[iu]._localPtr = ((char *) cbData)
 				+ this->uniforms[iu].offset;
 
-	while (attributes->name) {
-		this->attributes.push_back(
-				glGetAttribLocation(program, attributes->name));
+	while (!attributes->name.empty()) {
+		this->attributes.push_back(*attributes);
 		attributes++;
 	}
+	recreate();
 	shaderInitialized();
 }
 
+void ogl2ShaderProgram::recreate() {
+	errorLog="";
+    uninit_uniforms=-1;
+	vertexShader = ogl2LoadShader(GL_VERTEX_SHADER, vshadercode.c_str(),errorLog);
+	fragmentShader = ogl2LoadShader(GL_FRAGMENT_SHADER, fshadercode.c_str(),errorLog);
+	program = ogl2BuildProgram(vertexShader, fragmentShader,errorLog);
+	gluniforms.clear();
+	glattributes.clear();
+	glUseProgram(program);
+	GLint ntex = 0;
+	for (int k=0;k<uniforms.size();k++) {
+		ConstantDesc cd=uniforms[k];
+		this->gluniforms.push_back(glGetUniformLocation(program, cd.name.c_str()));
+		switch (cd.type) {
+		case CTEXTURE:
+			glUniform1i(gluniforms[gluniforms.size() - 1], ntex++);
+			break;
+		}
+	}
+	for (int k=0;k<attributes.size();k++) {
+		glattributes.push_back(glGetAttribLocation(program, attributes[k].name.c_str()));
+	}
+}
+
 ogl2ShaderProgram::~ogl2ShaderProgram() {
+	 for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); )
+		if (*it==this)
+			it=shaders.erase(it);
+		else
+			it++;
+
 	if (current==this)
 		deactivate();
 	if (curProg == program) {

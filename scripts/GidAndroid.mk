@@ -51,7 +51,7 @@ androidso.clean:
 androidso.install: androidso
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/jni
 	cp $(ROOT)/android/lib/jni/Application.mk $(RELEASE)/Templates/Eclipse/Android\ Template/jni
-	cp -R $(ROOT)/android/build/libs $(RELEASE)/Templates/Eclipse/Android\ Template/
+	cp -R $(ROOT)/android/lib/libs $(RELEASE)/Templates/Eclipse/Android\ Template/
 
 androidplugins.install: androidplugins $(addsuffix .androidplugin.install,$(PLUGINS_ANDROID))
 

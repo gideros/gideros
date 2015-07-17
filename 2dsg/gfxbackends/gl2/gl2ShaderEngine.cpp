@@ -181,9 +181,46 @@ const char *ogl2ShaderEngine::getVersion()
 }
 
 
-void ogl2ShaderEngine::reset()
+void ogl2ShaderEngine::reset(bool reinit)
 {
-	ShaderEngine::reset();
+	if (reinit)
+	{
+		s_texture = 0;
+		s_depthEnable=0;
+		s_depthBufferCleared=false;
+
+		currentBuffer=NULL;
+		_depthRenderBuffer=0;
+		ogl2ShaderProgram::current=NULL;
+
+
+	 int depthfmt=0;
+	#ifdef GL_DEPTH24_STENCIL8_OES
+	 depthfmt=GL_DEPTH24_STENCIL8_OES;
+	#else
+	 depthfmt=GL_DEPTH24_STENCIL8;
+	#endif
+
+	#ifdef OPENGL_ES
+	 glGenRenderbuffers(1, &_depthRenderBuffer);
+	 glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
+	 glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
+	 glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+	 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+	#endif
+	#ifdef GL_POINT_SPRITE_OES
+	 glEnable(GL_POINT_SPRITE_OES);
+	#else
+	#ifdef GL_POINT_SPRITE
+	 glEnable(GL_POINT_SPRITE);
+	#endif
+	#endif
+	#ifdef GL_VERTEX_PROGRAM_POINT_SIZE
+	 glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	#endif
+	}
+	ShaderEngine::reset(reinit);
 	s_texture = 0;
 	s_depthEnable=0;
 	s_depthBufferCleared=false;
@@ -224,16 +261,16 @@ void ogl2SetupShaders()
 	glog_i("GLSL_VERSION:%s\n",glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	const ShaderProgram::ConstantDesc stdUniforms[]={
-			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
-			{"fColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,false,0},
-			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
-			NULL
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
+			{"fColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,false,0,NULL},
+			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL},
+			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
 	};
 	const ShaderProgram::DataDesc stdAttributes[] = {
 		{ "vVertex", ShaderProgram::DFLOAT, 3, 0, 0 },
 		{ "vColor", ShaderProgram::DUBYTE, 4, 1, 0 },
 		{ "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0 },
-		NULL
+		{"",ShaderProgram::DFLOAT,0,0,0}
 	};
     ShaderProgram::stdBasic = new ogl2ShaderProgram(hdrVShaderCode,stdVShaderCode,hdrFShaderCode,stdFShaderCode,
                                       stdUniforms,stdAttributes);
@@ -244,12 +281,12 @@ void ogl2SetupShaders()
     ShaderProgram::stdTextureColor = new ogl2ShaderProgram(hdrVShaderCode,stdCTVShaderCode,hdrFShaderCode,stdCTFShaderCode,
                                       stdUniforms,stdAttributes);
 	const ShaderProgram::ConstantDesc stdPUniforms[]={
-			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
-			{"vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0},
-			{"vPSize",ShaderProgram::CFLOAT,1,ShaderProgram::SysConst_ParticleSize,true,0},
-			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
-			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0},
-			NULL
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
+			{"vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL},
+			{"vPSize",ShaderProgram::CFLOAT,1,ShaderProgram::SysConst_ParticleSize,true,0,NULL},
+			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL},
+			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL},
+			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
 	};
     ShaderProgram::stdParticle = new ogl2ShaderProgram(hdrVShaderCode,stdPVShaderCode,hdrFShaderCode,stdPFShaderCode,
                                       stdPUniforms,stdAttributes);
@@ -262,43 +299,14 @@ ShaderProgram *ogl2ShaderEngine::createShaderProgram(const char *vshader,const c
 
 ogl2ShaderEngine::ogl2ShaderEngine(int sw,int sh)
 {
-	s_texture = 0;
-	s_depthEnable=0;
-	s_depthBufferCleared=false;
-
-	currentBuffer=NULL;
-	_depthRenderBuffer=0;
-	ogl2ShaderProgram::current=NULL;
+	devWidth=sw;
+	devHeight=sh;
 
 #ifndef GIDEROS_GL1
  ogl2SetupShaders();
 #endif
 
- int depthfmt=0;
-#ifdef GL_DEPTH24_STENCIL8_OES
- depthfmt=GL_DEPTH24_STENCIL8_OES;
-#else
- depthfmt=GL_DEPTH24_STENCIL8;
-#endif
-
-#ifdef OPENGL_ES
- glGenRenderbuffers(1, &_depthRenderBuffer);
- glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
- glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, sw,sh);
- glBindRenderbuffer(GL_RENDERBUFFER, 0);
- glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
- glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
-#endif
-#ifdef GL_POINT_SPRITE_OES
- glEnable(GL_POINT_SPRITE_OES);
-#else
-#ifdef GL_POINT_SPRITE
- glEnable(GL_POINT_SPRITE);
-#endif
-#endif
-#ifdef GL_VERTEX_PROGRAM_POINT_SIZE
- glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-#endif
+ 	 reset(true);
 }
 
 ogl2ShaderEngine::~ogl2ShaderEngine()
@@ -310,6 +318,7 @@ ogl2ShaderEngine::~ogl2ShaderEngine()
     delete ShaderProgram::stdColor;
     delete ShaderProgram::stdTexture;
     delete ShaderProgram::stdTextureColor;
+    delete ShaderProgram::stdParticle;
 #ifdef OPENGL_ES
 	glDeleteRenderbuffers(1,&_depthRenderBuffer);
 #endif

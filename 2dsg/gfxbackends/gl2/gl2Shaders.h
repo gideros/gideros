@@ -66,14 +66,18 @@ class ogl2ShaderProgram : public ShaderProgram
     GLuint vertexShader;
     GLuint fragmentShader;
     GLuint program;
-    std::vector<GLint> attributes;
+    std::vector<DataDesc> attributes;
+    std::vector<GLint> glattributes;
     std::vector<GLint> gluniforms;
     std::string errorLog;
+    std::string vshadercode;
+    std::string fshadercode;
     unsigned long uninit_uniforms;
     void *cbData;
     int cbsData;
     static GLint curProg;
     static ShaderProgram *current;
+    static std::vector<ogl2ShaderProgram *> shaders;
     void buildProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
 					 const ConstantDesc *uniforms, const DataDesc *attributes);
@@ -86,6 +90,9 @@ public:
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache);
     virtual bool isValid();
     virtual const char *compilationLog();
+
+    virtual void recreate();
+    static void resetAll();
 
     ogl2ShaderProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
@@ -133,11 +140,12 @@ class ogl2ShaderEngine : public ShaderEngine
 	int s_depthEnable;
 	bool s_depthBufferCleared;
 	GLenum blendFactor2GLenum(BlendFactor blendFactor);
+	int devWidth,devHeight;
 public:
 	ogl2ShaderEngine(int sw,int sh);
 	virtual ~ogl2ShaderEngine();
 	const char *getVersion();
-	void reset();
+	void reset(bool reinit=false);
 	void setDepthTest(bool enable);
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	ShaderBuffer *createRenderTarget(ShaderTexture *texture);
