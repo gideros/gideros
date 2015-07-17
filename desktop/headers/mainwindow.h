@@ -37,6 +37,7 @@ class MainWindow : public QMainWindow{
         void setScale(float scale);
         void setFixedSize(bool fixedSize);
         void saveSettings();
+        void setLogicalScaleMode(LogicalScaleMode scaleMode);
 
     private:
         static MainWindow* instance;
@@ -48,6 +49,7 @@ class MainWindow : public QMainWindow{
         float resolution_;
         int width0_;
         int height0_;
+        int scaleModeNum_;
 
         Ui::MainWindowClass ui;
         void loadSettings();
