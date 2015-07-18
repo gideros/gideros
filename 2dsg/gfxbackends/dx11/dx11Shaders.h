@@ -132,7 +132,7 @@ public:
 	static ID3D11Texture2D* pBackBuffer;
 	dx11ShaderEngine(int sw, int sh);
 	virtual ~dx11ShaderEngine();
-	void reset();
+	void reset(bool reinit=false);
 	const char *getVersion();
 	void setDepthTest(bool enable);
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);

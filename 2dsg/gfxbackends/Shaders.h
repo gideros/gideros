@@ -4,6 +4,8 @@
 #include "Matrices.h"
 #include <stack>
 #include <vector>
+#include <string>
+
 class ShaderBufferCache
 {
 public:
@@ -28,7 +30,7 @@ public:
 		TriangleStrip
 	};
     struct DataDesc {
-    	const char *name;
+		std::string name;
     	DataType type;
     	unsigned char mult;
     	unsigned char slot;
@@ -48,7 +50,7 @@ public:
     	Flag_NoDefaultHeader=1
     };
     struct ConstantDesc {
-    	const char *name;
+    	std::string name;
     	ConstantType type;
     	int mult;
     	SystemConstant sys;
@@ -180,7 +182,7 @@ public:
 	};
 	static ShaderEngine *Engine;
 	virtual ~ShaderEngine() { };
-	virtual void reset();
+	virtual void reset(bool reinit=false);
 	virtual const char *getVersion()=0;
 	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
 	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture)=0;

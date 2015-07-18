@@ -8,6 +8,7 @@
 #include <QTextStream>
 #include <QFileDialog>
 #include <algorithm>
+#include <QDesktopWidget>
 #include <QPalette>
 #include <QWindowStateChangeEvent>
 #include "libnetwork.h"
@@ -16,6 +17,8 @@
 #include "platform.h"
 #include "settingsdialog.h"
 #include "constants.cpp"
+
+#include <bytebuffer.h>
 
 MainWindow* MainWindow::instance;
 
@@ -35,6 +38,70 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 
     ui.glCanvas->setExportedApp(true);
     ui.glCanvas->projectDir_ = QDir("assets").absolutePath();
+    
+    
+    width0_ = 320;
+    height0_ = 480;
+
+    QDir dir = QCoreApplication::applicationDirPath();
+
+    #if defined(Q_OS_MAC)
+        dir.cdUp();
+    #endif
+
+    QFile file(dir.absolutePath()+"/assets/properties.bin");
+    if(file.exists()){
+        file.open(QIODevice::ReadOnly);
+        QByteArray ba = file.readAll();
+        file.close();
+        std::vector<char> data(ba.data(), ba.data() + ba.size());
+        ByteBuffer buffer(&data[0], data.size());
+
+        int scaleMode, logicalWidth, logicalHeight, windowWidth, windowHeight;
+        buffer >> scaleMode;
+        buffer >> logicalWidth;
+        buffer >> logicalHeight;
+
+        width0_ = logicalWidth;
+        height0_ = logicalHeight;
+
+        int scaleCount;
+        buffer >> scaleCount;
+        int orientation;
+        buffer >> orientation;
+        ui.glCanvas->setHardwareOrientation((Orientation) orientation);
+
+        int fps;
+        buffer >> fps;
+
+        int retinaDisplay;
+        buffer >> retinaDisplay;
+
+        int autorotation;
+        buffer >> autorotation;
+
+        int mouseToTouch;
+        buffer >> mouseToTouch;
+        int touchToMouse;
+        buffer >> touchToMouse;
+        int mouseTouchOrder;
+        buffer >> mouseTouchOrder;
+
+
+        buffer >> windowWidth;
+        buffer >> windowHeight;
+        if (windowWidth == 0 && windowHeight == 0) {
+            setFixedSize(false);
+        }else{
+            width0_ = windowWidth;
+            height0_ = windowHeight;
+        }
+        
+    }
+
+    resolution_ = (float)width0_ / height0_;
+    
+    loadSettings();
 }
 
 MainWindow::~MainWindow(){}
@@ -44,6 +111,7 @@ void MainWindow::resizeEvent(QResizeEvent*){
 }
 
 void MainWindow::closeEvent(QCloseEvent*){
+    saveSettings();
 
 }
 
@@ -63,8 +131,8 @@ void MainWindow::resizeWindow(int width, int height){
         setMaximumSize(width, height);
         setMinimumSize(width, height);
     }
-    else
-        resize(width, height);
+    resize(width, height);
+    
     updateResolution();
 }
 
@@ -75,7 +143,11 @@ void MainWindow::fullScreenWindow(bool fullScreen){
     }
     else{
         this->showNormal();
-        setMaximumSize(width_, height_);
+        if(fixedSize_){
+            setMaximumSize(width_, height_);
+        }else{
+            setMaximumSize(16777215, 16777215);
+        }
     }
     updateResolution();
 }
@@ -88,6 +160,14 @@ void MainWindow::updateResolution(){
         height = ui.centralWidget->width();
     }
 
+    const float resolution = (float)width / height;
+
+    if (resolution > resolution_){
+       width = height * resolution_;
+    }else{
+       height = width / resolution_;
+    }
+    
     float canvasScaleFactor = 1;
     float widgetScaleFactor = 1;
     if (deviceScale() != 0) {
@@ -152,4 +232,38 @@ void MainWindow::changeEvent(QEvent* e)
             fullScreenWindow(true);
         }
     }
+}
+
+void MainWindow::loadSettings(){
+
+
+
+
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+ "/gdrPos.ini", QSettings::IniFormat);
+
+    QSize size = settings.value("size", QSize(width0_, height0_ )).toSize();
+    resizeWindow(size.width(),size.height());
+
+
+    move(settings.value("pos",    QPoint(QApplication::desktop()->availableGeometry().center() - rect().center())).toPoint());
+
+
+}
+
+void MainWindow::saveSettings(){
+
+    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+ "/gdrPos.ini", QSettings::IniFormat);
+
+    settings.setValue("pos",       pos());
+
+    int width = size().width();
+    int height = size().height();
+    if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){
+        int temp = width;
+        width = height;
+        height = temp;
+    }
+    settings.setValue("size",      QSize(width,height));
+
+
 }

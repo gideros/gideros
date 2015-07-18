@@ -92,10 +92,10 @@ GLCanvas::GLCanvas(QWidget *parent) :
 	/*
 	 QGLFormat formatGL;
 	 formatGL.setVersion(2, 0); // Version : 2.0
-	 formatGL.setDoubleBuffer(true); // Double Buffer : Activé
+	 formatGL.setDoubleBuffer(true); // Double Buffer : ActivÃ©
 	 formatGL.setDepthBufferSize(24);
 	 formatGL.setStencilBufferSize(8);
-	 formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'écran
+	 formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'Ã©cran
 	 this->setFormat(formatGL);
 	 */
     isPlayer_ = true;
@@ -514,10 +514,14 @@ void GLCanvas::play(QDir directory){
 
         if(exportedApp_){
             resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
-            directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-            directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
-            documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString().c_str();
-            temporaryDirectory = QStandardPaths::writableLocation(QStandardPaths::TempLocation).toStdString().c_str();
+            QString docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+            directory.mkpath(docLocation);
+            directory.mkpath(tempLocation);
+            documentsDirectory = docLocation.toStdString().c_str();
+            setDocumentsDirectory(documentsDirectory);
+            temporaryDirectory = tempLocation.toStdString().c_str();
+            setTemporaryDirectory(temporaryDirectory);
         }else{
             dir_ = QDir::temp();
             dir_.mkdir("gideros");
@@ -529,11 +533,11 @@ void GLCanvas::play(QDir directory){
 
             resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
             documentsDirectory = dir_.absoluteFilePath("documents").toStdString().c_str();
+            setDocumentsDirectory(documentsDirectory);
             temporaryDirectory = dir_.absoluteFilePath("temporary").toStdString().c_str();
+            setTemporaryDirectory(temporaryDirectory);
         }
 
-        setDocumentsDirectory(documentsDirectory);
-        setTemporaryDirectory(temporaryDirectory);
         setResourceDirectory(resourceDirectory_.c_str());
 
         file.open(QIODevice::ReadOnly);
@@ -783,9 +787,6 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 	buffer >> orientation;
 	application_->setOrientation((Orientation) orientation);
 
-	if (exportedApp_) {
-		setHardwareOrientation((Orientation) orientation);
-	}
 
 	application_->getApplication()->setDeviceOrientation(
 			(Orientation) orientation);
@@ -814,16 +815,6 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 	buffer >> windowWidth;
 	buffer >> windowHeight;
 
-	if (windowWidth == 0 || windowHeight == 0) {
-		windowWidth = logicalWidth;
-        windowHeight = logicalHeight;
-        if (exportedApp_) {
-            MainWindow::getInstance()->setFixedSize(false);
-        }
-    }
-    if (exportedApp_) {
-        setWindowSize(windowWidth, windowHeight);
-    }
 }
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles) {
