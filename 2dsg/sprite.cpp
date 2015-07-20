@@ -750,6 +750,18 @@ bool Sprite::hitTestPoint(float x, float y) const
 	float minx, miny, maxx, maxy;
 	objectBounds(&minx, &miny, &maxx, &maxy);
 
+	if ((clipw_>=0)&&(cliph_>=0))
+	{
+		if (minx<clipx_)
+			minx=clipx_;
+		if (miny<clipy_)
+			miny=clipy_;
+		if (maxx<(clipx_+clipw_-1))
+			maxx=clipx_+clipw_-1;
+		if (maxy<(clipy_+cliph_-1))
+			maxy=clipy_+cliph_-1;
+	}
+
 	return (tx >= minx && ty >= miny && tx <= maxx && ty <= maxy);
 }
 

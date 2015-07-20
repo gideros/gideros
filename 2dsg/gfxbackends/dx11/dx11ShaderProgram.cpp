@@ -265,6 +265,14 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 			usz = 4;
 			ual = 4;
 			break;
+		case CFLOAT2:
+			usz = 8;
+			ual = 4;
+			break;
+		case CFLOAT3:
+			usz = 12;
+			ual = 4;
+			break;
 		case CFLOAT4:
 			usz = 16;
 			ual = 16;
@@ -274,17 +282,18 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 			ual = 16;
 			break;
 		}
-		if (cd.vertexShader) {
-			if (cbvsData & (ual - 1))
-				cbvsData += ual - (cbvsData & (ual - 1));
-			cd.offset = cbvsData;
-			cbvsData += usz*cd.mult;
-		} else {
-			if (cbpsData & (ual - 1))
-				cbpsData += ual - (cbpsData & (ual - 1));
-			cd.offset = cbpsData;
-			cbpsData += usz*cd.mult;
+		if (cd.mult)
+		{
+			usz=16*cd.mult;
+			ual=16;
 		}
+		int *cbData=cd.vertexShader?&cbvsData:&cbpsData;
+		if (*cbData & (ual - 1))
+			*cbData += ual - (*cbData & (ual - 1));
+		if (usz>(16-((*cbData)&15)))
+			*cbData += 16 - ((*cbData) & 15);
+		cd.offset = *cbData;
+		*cbData += usz;
 		this->uniforms.push_back(cd);
 	}
 	if (cbpsData & 15)
