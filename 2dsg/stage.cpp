@@ -1,6 +1,7 @@
 #include "stage.h"
 #include "mouseevent.h"
 #include "touchevent.h"
+#include "pentabletevent.h"
 #include "enterframeevent.h"
 #include "platform.h"
 #include "keyboardevent.h"
@@ -125,6 +126,41 @@ void Stage::keyDown(int keyCode, int realCode)
 void Stage::keyUp(int keyCode, int realCode)
 {
     KeyboardEvent event(KeyboardEvent::KEY_UP, keyCode, realCode);
+    dispatchToSpritesWithListeners(&event);
+}
+
+
+
+void Stage::pentabletPress(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure, float sx, float sy, float tx, float ty)
+{
+    PenTabletEvent event(PenTabletEvent::PENTABLET_PRESS, x, y, sx, sy, tx, ty);
+    event.pointerType = pointerType;
+    event.pressure = pressure;
+    event.tiltx = tiltx;
+    event.tilty = tilty;
+    event.tangentialPressure = tangentialPressure;
+    dispatchToSpritesWithListeners(&event);
+}
+
+void Stage::pentabletMove(int x, int y, int pointerType, int pressure, int tiltx, int tilty,  int tangentialPressure, float sx, float sy, float tx, float ty)
+{
+    PenTabletEvent event(PenTabletEvent::PENTABLET_MOVE, x, y, sx, sy, tx, ty);
+    event.pointerType = pointerType;
+    event.pressure = pressure;
+    event.tiltx = tiltx;
+    event.tilty = tilty;
+    event.tangentialPressure = tangentialPressure;
+    dispatchToSpritesWithListeners(&event);
+}
+
+void Stage::pentabletRelease(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure, float sx, float sy, float tx, float ty)
+{
+    PenTabletEvent event(PenTabletEvent::PENTABLET_RELEASE, x, y, sx, sy, tx, ty);
+    event.pointerType = pointerType;
+    event.pressure = pressure;
+    event.tiltx = tiltx;
+    event.tilty = tilty;
+    event.tangentialPressure = tangentialPressure;
     dispatchToSpritesWithListeners(&event);
 }
 

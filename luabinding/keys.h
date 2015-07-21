@@ -5,6 +5,7 @@ extern char key_Event;
 extern char key_EnterFrameEvent;
 extern char key_MouseEvent;
 extern char key_TouchEvent;
+extern char key_PenTabletEvent;
 extern char key_TimerEvent;
 extern char key_KeyboardEvent;
 extern char key_CompleteEvent;

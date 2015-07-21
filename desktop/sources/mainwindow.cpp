@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     width0_ = 320;
     height0_ = 480;
     scaleModeNum_ = 0;
+    fullScreen_ = false;
 
     QDir dir = QCoreApplication::applicationDirPath();
 
@@ -141,6 +142,7 @@ void MainWindow::resizeWindow(int width, int height){
 }
 
 void MainWindow::fullScreenWindow(bool fullScreen){
+    fullScreen_ = fullScreen;
     if(fullScreen){
         setMaximumSize(16777215, 16777215);
         this->showFullScreen();
@@ -312,4 +314,20 @@ void MainWindow::setLogicalScaleMode(LogicalScaleMode scaleMode){
     {
         scaleModeNum_ = 3;
     }
+}
+
+QSize MainWindow::windowSize(){
+    int width,height;
+    width = size().width();
+    height = size().height();
+
+    return QSize(width,height);
+}
+
+bool MainWindow::fullScreen(){
+    return fullScreen_;
+}
+
+void MainWindow::printToOutput(const char* text){
+
 }

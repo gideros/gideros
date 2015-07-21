@@ -179,3 +179,12 @@ void g_setFps(int fps)
 }
 
 }
+
+
+void g_setProperty(const char* what, const char* arg){
+
+}
+
+const char* g_getProperty(const char* what){
+
+}

@@ -5,6 +5,7 @@
 #include "enterframeevent.h"
 #include "mouseevent.h"
 #include "touchevent.h"
+#include "pentabletevent.h"
 #include "timerevent.h"
 #include "luautil.h"
 #include "keys.h"
@@ -142,6 +143,11 @@ public:
 		type = eTouchEvent;
 	}
 
+    virtual void visit(PenTabletEvent* v)
+    {
+        type = ePenTabletEvent;
+    }
+	
 	virtual void visit(TimerEvent* v)
 	{
 		type = eTimerEvent;
@@ -188,6 +194,7 @@ public:
 		eEnterFrameEvent,
 		eMouseEvent,
 		eTouchEvent,
+        ePenTabletEvent,
 		eTimerEvent,
 		eAccelerometerEvent,
 		eStageOrientationEvent,
@@ -503,6 +510,81 @@ public:
 		lua_call(L, 1, 0);
 	}
 
+	
+    virtual void visit(PenTabletEvent* v)
+    {
+        StackChecker checker(L, "visit(PenTabletEvent* v)", 0);
+
+        Binder binder(L);
+
+        // get closure
+        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_eventClosures);
+        lua_pushlightuserdata(L, bridge_);
+        lua_rawget(L, -2);
+        lua_remove(L, -2);		// remove env["eventClosures"]
+
+        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_PenTabletEvent);
+
+        lua_getfield(L, -1, "__uniqueid");
+
+        if (lua_isnil(L, -1) || lua_tointeger(L, -1) != v->uniqueid())
+        {
+            lua_pop(L, 1);
+
+            lua_pushinteger(L, v->uniqueid());
+            lua_setfield(L, -2, "__uniqueid");
+
+            binder.setInstance(-1, v);
+
+            lua_pushstring(L, v->type());
+            lua_setfield(L, -2, "type");
+
+            float rx = (v->x - v->tx) / v->sx;
+            float ry = (v->y - v->ty) / v->sy;
+
+            lua_pushinteger(L, floor(rx));
+            lua_setfield(L, -2, "x");
+
+            lua_pushinteger(L, floor(ry));
+            lua_setfield(L, -2, "y");
+
+            lua_pushnumber(L, rx);
+            lua_setfield(L, -2, "rx");
+
+            lua_pushnumber(L, ry);
+            lua_setfield(L, -2, "ry");
+
+            switch (v->pointerType){
+                case 0: {lua_pushstring(L, "unknown"); break;}
+                case 1: {lua_pushstring(L, "pen"); break;}
+                case 2: {lua_pushstring(L, "cursor"); break;}
+                case 3: {lua_pushstring(L, "eraser"); break;}
+            }
+
+            lua_setfield(L, -2, "pointerType");
+
+            lua_pushnumber(L, (float)v->pressure / 10000);
+            lua_setfield(L, -2, "pressure");
+
+            lua_pushnumber(L, (float)v->tiltx / 10000);
+            lua_setfield(L, -2, "tiltX");
+
+            lua_pushnumber(L, (float)v->tilty / 10000);
+            lua_setfield(L, -2, "tiltY");
+
+
+            lua_pushnumber(L, (float)v->tangentialPressure / 10000);
+            lua_setfield(L, -2, "tangentialPressure");
+
+        }
+        else
+        {
+            lua_pop(L, 1);
+        }
+
+        lua_call(L, 1, 0);
+    }
+	
 	virtual void visit(TimerEvent* v)
 	{
 		StackChecker checker(L, "visit(TimerEvent* v)", 0);

@@ -95,6 +95,15 @@ typedef struct ginput_TouchEvent
     size_t allTouchesCount;
 } ginput_TouchEvent;
 
+typedef struct ginput_PenTabletEvent
+{
+    int x, y;
+    int pointerType;
+    int pressure;
+    int tiltx, tilty;
+    int tangentialPressure;
+} ginput_PenTabletEvent;
+
 typedef struct ginput_KeyEvent
 {
     int keyCode;
