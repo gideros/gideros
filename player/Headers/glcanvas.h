@@ -63,7 +63,7 @@ private:
     float canvasColor_[3];
     float infoColor_[3];
     bool exportedApp_;
-    int lastMouseButton_;
+    bool mouseButtonPressed_[5];
     //	PlatformImplementation* platformImplementation_;
 
     void setupProperties();
