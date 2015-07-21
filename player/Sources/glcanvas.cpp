@@ -864,7 +864,9 @@ void GLCanvas::loadFiles(std::vector<char> data) {
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event) {
-    mouseButtonPressed_[event->button()] = true;
+    if (event->button() <= 4){
+        mouseButtonPressed_[event->button()] = true;
+    }
     ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
@@ -885,9 +887,8 @@ void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event) {
-    if(mouseButtonPressed_[event->button()])
-    {
-        mouseButtonPressed_[event->button()] = false;
+    if (event->button() <= 4){
+        if(mouseButtonPressed_[event->button()]) mouseButtonPressed_[event->button()] = false;
     }
     ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
