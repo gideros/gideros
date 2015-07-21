@@ -1277,6 +1277,11 @@ void GLCanvas::setExportedApp(bool exportedApp) {
     isPlayer_ = false;
 }
 
+void GLCanvas::printToOutput(const char* text) {
+    printToServer(text, -1, NULL);
+    printToServer("\n", -1, NULL);
+}
+
 /*
  void PlatformImplementation::openUrl(const char* url)
  {
