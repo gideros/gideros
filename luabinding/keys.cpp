@@ -4,6 +4,7 @@ char key_Event = ' ';
 char key_EnterFrameEvent = ' ';
 char key_MouseEvent = ' ';
 char key_TouchEvent = ' ';
+char key_PenTabletEvent = ' ';
 char key_TimerEvent = ' ';
 char key_KeyboardEvent = ' ';
 char key_CompleteEvent = ' ';
@@ -17,6 +18,9 @@ char key_touchesBeganFunction = ' ';
 char key_touchesMovedFunction = ' ';
 char key_touchesEndedFunction = ' ';
 char key_touchesCancelledFunction = ' ';
+char key_pentabletPressFunction = ' ';
+char key_pentabletMoveFunction = ' ';
+char key_pentabletReleaseFunction = ' ';
 
 char key_b2 = ' ';
 char key_eventClosures = ' ';

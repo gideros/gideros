@@ -287,6 +287,12 @@ static int bindAll(lua_State* L)
 	lua_remove(L, -2);
 	luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_TouchEvent);
 
+    lua_getglobal(L, "Event");
+    lua_getfield(L, -1, "new");
+    lua_pushlightuserdata(L, NULL);
+    lua_call(L, 1, 1);
+    lua_remove(L, -2);
+    luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_PenTabletEvent);
 
 	lua_getglobal(L, "Event");
 	lua_getfield(L, -1, "new");

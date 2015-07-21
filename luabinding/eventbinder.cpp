@@ -5,6 +5,7 @@
 
 #include "mouseevent.h"
 #include "touchevent.h"
+#include "pentabletevent.h"
 #include "timerevent.h"
 #include "errorevent.h"
 #include "progressevent.h"
@@ -106,6 +107,15 @@ EventBinder::EventBinder(lua_State* L)
 	lua_pushstring(L, TouchEvent::TOUCHES_CANCEL.type());
 	lua_setfield(L, -2, "TOUCHES_CANCEL");
 
+
+    lua_pushstring(L, PenTabletEvent::PENTABLET_PRESS.type());
+    lua_setfield(L, -2, "PENTABLET_PRESS");
+
+    lua_pushstring(L, PenTabletEvent::PENTABLET_MOVE.type());
+    lua_setfield(L, -2, "PENTABLET_MOVE");
+
+    lua_pushstring(L, PenTabletEvent::PENTABLET_RELEASE.type());
+    lua_setfield(L, -2, "PENTABLET_RELEASE");
 
 
 	lua_pushstring(L, TimerEvent::TIMER.type());

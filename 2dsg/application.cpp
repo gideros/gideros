@@ -436,6 +436,29 @@ void Application::touchesCancel(ginput_TouchEvent *event)
     stage_->touchesCancel(event, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
 }
 
+void Application::pentabletPress(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure)
+{
+    correctTouchPositionHardware(&x, &y);
+    correctTouchPosition(&x, &y);
+    correctTouchPositionLogical(&x, &y);
+    stage_->pentabletPress(x, y, pointerType, pressure, tiltx, tilty,  tangentialPressure, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
+}
+
+void Application::pentabletMove(int x, int y, int pointerType, int pressure, int tiltx, int tilty,  int tangentialPressure)
+{
+    correctTouchPositionHardware(&x, &y);
+    correctTouchPosition(&x, &y);
+    correctTouchPositionLogical(&x, &y);
+    stage_->pentabletMove(x, y, pointerType, pressure, tiltx, tilty, tangentialPressure, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
+}
+
+void Application::pentabletRelease(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure)
+{
+    correctTouchPositionHardware(&x, &y);
+    correctTouchPosition(&x, &y);
+    correctTouchPositionLogical(&x, &y);
+    stage_->pentabletRelease(x, y, pointerType, pressure, tiltx, tilty, tangentialPressure, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
+}
 
 
 void Application::setOrientation(Orientation orientation)

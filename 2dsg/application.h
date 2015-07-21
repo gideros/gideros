@@ -57,6 +57,10 @@ public:
     void touchesEnd(ginput_TouchEvent *event);
     void touchesCancel(ginput_TouchEvent *event);
 
+    void pentabletPress(int x, int y, int pointerType, int pressure, int tiltx, int tilty,  int tangentialPressure);
+    void pentabletMove(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure);
+    void pentabletRelease(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure);
+
     void keyDown(int keyCode, int realCode);
     void keyUp(int keyCode, int realCode);
 

@@ -5,6 +5,7 @@ class Event;
 class EnterFrameEvent;
 class MouseEvent;
 class TouchEvent;
+class PenTabletEvent;
 class TimerEvent;
 class AccelerometerEvent;
 class StageOrientationEvent;
@@ -20,6 +21,7 @@ public:
 	virtual void visit(EnterFrameEvent* v) = 0;
 	virtual void visit(MouseEvent* v) = 0;
 	virtual void visit(TouchEvent* v) = 0;
+    virtual void visit(PenTabletEvent* v) = 0;
 	virtual void visit(TimerEvent* v) = 0;
 	virtual void visit(AccelerometerEvent* v) = 0;
 	virtual void visit(StageOrientationEvent* v) = 0;

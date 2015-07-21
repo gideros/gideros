@@ -90,6 +90,11 @@ public:
             delete keyPool2_[i];
 
 
+        for (size_t i = 0; i < pentabletPool1_.size(); ++i)
+            delete pentabletPool1_[i];
+        for (size_t i = 0; i < pentabletPool2_.size(); ++i)
+            delete pentabletPool2_[i];
+
         pthread_mutex_lock(&touchPoolMutex_);
         std::map<size_t, std::vector<ginput_TouchEvent*> >::iterator iter;
         for (iter = touchPool1_.begin(); iter != touchPool1_.end(); ++iter)
@@ -131,6 +136,9 @@ public:
             keyPool1_.push_back(keyPool2_[i]);
         keyPool2_.clear();
 
+        for (size_t i = 0; i < pentabletPool2_.size(); ++i)
+            pentabletPool1_.push_back(pentabletPool2_[i]);
+        pentabletPool2_.clear();
 
         pthread_mutex_lock(&touchPoolMutex_);
         std::map<size_t, std::vector<ginput_TouchEvent*> >::iterator iter;
@@ -445,6 +453,35 @@ public:
         }
     }
 
+	
+    void pentabletPress(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure)
+    {
+        ginput_PenTabletEvent *pentabletEvent = newPenTabletEvent(x, y, pointerType, pressure, tiltx, tilty, tangentialPressure);
+
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_PENTABLET_PRESS_EVENT, pentabletEvent, 0, this);
+        deletePenTabletEvent(pentabletEvent);
+
+    }
+
+    void pentabletMove(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure)
+    {
+        ginput_PenTabletEvent *pentabletEvent = newPenTabletEvent(x, y, pointerType, pressure, tiltx, tilty, tangentialPressure);
+
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_PENTABLET_MOVE_EVENT, pentabletEvent, 0, this);
+        deletePenTabletEvent(pentabletEvent);
+
+    }
+
+
+    void pentabletRelease(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure)
+    {
+        ginput_PenTabletEvent *pentabletEvent = newPenTabletEvent(x, y, pointerType, pressure, tiltx, tilty, tangentialPressure);
+
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_PENTABLET_RELEASE_EVENT, pentabletEvent, 0, this);
+        deletePenTabletEvent(pentabletEvent);
+
+    }
+	
     void keyDown(int realCode)
     {
         int keyCode = convertKeyCode(realCode);
@@ -571,6 +608,37 @@ private:
         pthread_mutex_unlock(&touchPoolMutex_);
     }
 
+	ginput_PenTabletEvent *newPenTabletEvent(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure)
+    {
+        ginput_PenTabletEvent *event;
+
+        if (pentabletPool1_.empty())
+        {
+            event = new ginput_PenTabletEvent;
+        }
+        else
+        {
+            event = pentabletPool1_.back();
+            pentabletPool1_.pop_back();
+        }
+
+        event->x = x;
+        event->y = y;
+        event->pointerType = pointerType;
+        event->pressure = pressure;
+        event->tiltx = tiltx;
+        event->tilty = tilty;
+        event->tangentialPressure = tangentialPressure;
+
+        return event;
+    }
+
+    void deletePenTabletEvent(ginput_PenTabletEvent *event)
+    {
+        pentabletPool2_.push_back(event);
+    }
+
+	
 private:
     std::vector<ginput_MouseEvent*> mousePool1_;
     std::vector<ginput_MouseEvent*> mousePool2_;
@@ -578,6 +646,8 @@ private:
     std::vector<ginput_KeyEvent*> keyPool2_;
     std::map<size_t, std::vector<ginput_TouchEvent*> > touchPool1_;
     std::map<size_t, std::vector<ginput_TouchEvent*> > touchPool2_;
+    std::vector<ginput_PenTabletEvent*> pentabletPool1_;
+    std::vector<ginput_PenTabletEvent*> pentabletPool2_;
 
     std::map<int, int> keyMap_;
 
@@ -734,6 +804,25 @@ void ginputp_touchesCancel(int x, int y, int id, int touches, int xs[], int ys[]
 {
     if (s_manager)
         s_manager->touchesCancel(x, y, id, touches, xs, ys, ids);
+}
+
+
+void ginputp_pentabletPress(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure)
+{
+    if (s_manager)
+        s_manager->pentabletPress(x, y, pointerType, pressure, tiltx, tilty, tangentialPressure);
+}
+
+void ginputp_pentabletMove(int x, int y, int pointerType, int pressure, int tiltx, int tilty,  int tangentialPressure)
+{
+    if (s_manager)
+        s_manager->pentabletMove(x, y, pointerType, pressure, tiltx, tilty, tangentialPressure);
+}
+
+void ginputp_pentabletRelease(int x, int y, int pointerType, int pressure, int tiltx, int tilty, int tangentialPressure)
+{
+    if (s_manager)
+        s_manager->pentabletRelease(x, y, pointerType, pressure, tiltx, tilty, tangentialPressure);
 }
 
 void ginputp_keyDown(int keyCode)

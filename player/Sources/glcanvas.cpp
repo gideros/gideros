@@ -11,6 +11,7 @@
 
 #include <QMouseEvent>
 #include <QTouchEvent>
+#include <QTabletEvent>
 #include <QList>
 #include "platform.h"
 #include "refptr.h"
@@ -910,6 +911,20 @@ void GLCanvas::keyReleaseEvent(QKeyEvent* event) {
 	ginputp_keyUp(event->key());
 }
 
+
+void GLCanvas::tabletEvent(QTabletEvent* event) {
+    if(event->type() == QEvent::TabletPress){
+        ginputp_pentabletPress(event->x() * deviceScale_, event->y() * deviceScale_,event->pointerType(), event->pressure() * 10000,event->xTilt() * 10000,event->yTilt() * 10000, event->tangentialPressure() * 10000);
+
+    }else if(event->type() == QEvent::TabletMove){
+        ginputp_pentabletMove(event->x() * deviceScale_, event->y() * deviceScale_,event->pointerType(), event->pressure() * 10000,event->xTilt() * 10000,event->yTilt() * 10000, event->tangentialPressure() * 10000);
+
+    }else if(event->type() == QEvent::TabletRelease){
+        ginputp_pentabletRelease(event->x() * deviceScale_, event->y() * deviceScale_,event->pointerType(), event->pressure() * 10000,event->xTilt() * 10000,event->yTilt() * 10000,  event->tangentialPressure() * 10000);
+    }
+    event->accept();
+}
+
 bool GLCanvas::event(QEvent *event){
     if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate || event->type() == QEvent::TouchEnd || event->type() == QEvent::TouchCancel)
     {
@@ -1009,7 +1024,14 @@ bool GLCanvas::event(QEvent *event){
             GStatus status;
             application_->broadcastEvent(&event, &status);
         }
-    }
+    }else if (event->type() == QEvent::TabletPress
+              || event->type() == QEvent::TabletMove
+              || event->type() == QEvent::TabletRelease
+
+              ) {
+        tabletEvent((QTabletEvent*) event);
+        return true;
+     }
     return QGLWidget::event(event);
 }
 

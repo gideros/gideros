@@ -79,6 +79,7 @@ private:
     void wheelEvent(QWheelEvent* event);
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
+    void tabletEvent(QTabletEvent* event);
     virtual bool event(QEvent *event);
 	void deleteFiles();
 	void sendFileList();
