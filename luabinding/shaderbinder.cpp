@@ -24,6 +24,10 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_setfield(L, -2, "CINT");
 	lua_pushinteger(L, ShaderProgram::CFLOAT);
 	lua_setfield(L, -2, "CFLOAT");
+	lua_pushinteger(L, ShaderProgram::CFLOAT2);
+	lua_setfield(L, -2, "CFLOAT2");
+	lua_pushinteger(L, ShaderProgram::CFLOAT3);
+	lua_setfield(L, -2, "CFLOAT3");
 	lua_pushinteger(L, ShaderProgram::CFLOAT4);
 	lua_setfield(L, -2, "CFLOAT4");
 	lua_pushinteger(L, ShaderProgram::CTEXTURE);
@@ -180,6 +184,8 @@ int ShaderBinder::setConstant(lua_State* L)
 	int cm=1;
 	switch (type)
 	{
+	case ShaderProgram::CFLOAT2: cm=2; break;
+	case ShaderProgram::CFLOAT3: cm=3; break;
 	case ShaderProgram::CFLOAT4: cm=4; break;
 	case ShaderProgram::CMATRIX: cm=16; break;
 	default: cm=1;
@@ -210,6 +216,8 @@ int ShaderBinder::setConstant(lua_State* L)
 		break;
 	}
 	case ShaderProgram::CFLOAT:
+	case ShaderProgram::CFLOAT2:
+	case ShaderProgram::CFLOAT3:
 	case ShaderProgram::CFLOAT4:
 	case ShaderProgram::CMATRIX:
 	{
