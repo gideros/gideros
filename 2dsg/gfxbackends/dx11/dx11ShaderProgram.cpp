@@ -252,7 +252,7 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 	g_devcon->VSSetShader(g_pVS, 0, 0);
 	g_devcon->PSSetShader(g_pPS, 0, 0);
 
-	while (uniforms->name) {
+	while (!uniforms->name.empty()) {
 		int usz = 0, ual = 4;
 		ConstantDesc cd;
 		cd = *(uniforms++);
@@ -282,18 +282,22 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 			ual = 16;
 			break;
 		}
-		if (cd.mult)
+		if (cd.mult>1)
 		{
 			usz=16*cd.mult;
 			ual=16;
 		}
-		int *cbData=cd.vertexShader?&cbvsData:&cbpsData;
-		if (*cbData & (ual - 1))
-			*cbData += ual - (*cbData & (ual - 1));
-		if (usz>(16-((*cbData)&15)))
-			*cbData += 16 - ((*cbData) & 15);
-		cd.offset = *cbData;
-		*cbData += usz;
+		if (usz)
+		{
+			int *cbData = cd.vertexShader ? &cbvsData : &cbpsData;
+			if ((*cbData) & (ual - 1))
+				(*cbData) += ual - ((*cbData) & (ual - 1));
+			int rem = (16 - ((*cbData) & 15));
+			if ((usz>rem) && (rem!=16))
+				(*cbData) += rem;
+			cd.offset = (*cbData);
+			(*cbData) += usz;
+		}
 		this->uniforms.push_back(cd);
 	}
 	if (cbpsData & 15)
@@ -327,8 +331,8 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 
 	D3D11_INPUT_ELEMENT_DESC ied[16]; //Would someone really need more than 16 vertexdata flows ?
 	int nie = 0;
-	while (attributes->name) {
-		ied[nie].SemanticName = attributes->name;
+	while (!attributes->name.empty()) {
+		ied[nie].SemanticName = attributes->name.c_str();
 		ied[nie].SemanticIndex = 0;
 		switch (attributes->type) {
 		case DataType::DFLOAT:

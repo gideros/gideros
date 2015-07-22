@@ -21,7 +21,7 @@ public:
 	int getScreenDensity()
     {   
 		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
-		return dinfo->LogicalDpi;
+		return (dinfo->RawDpiX+dinfo->RawDpiY)/2;
     }
 
 	void exit()
