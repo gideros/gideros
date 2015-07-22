@@ -381,11 +381,6 @@ void MainWindow::actionRestart(){
         dir.cd("gideros");
         dir.cd(projectName_);
         ui.glCanvas->projectDir_ = dir.absolutePath();
-		
-        MainWindow::getInstance()->setCursor(Qt::ArrowCursor);
-        MainWindow::getInstance()->setWindowFlags(Qt::Window);
-        MainWindow::updateFullScreen();
-		
     }
 }
 
@@ -815,22 +810,6 @@ void MainWindow::projectNameChanged(const QString& projectName){
 
 void MainWindow::setFixedSize(bool fixedSize){
 
-}
-
-QSize MainWindow::windowSize(){
-    int width,height;
-    width = size().width();
-    height = size().height();
-
-    if(!hideMenu())
-        height = height - ui.menuBar->height();
-
-    return QSize(width,height);
-}
-
-
-void MainWindow::printToOutput(const char* text){
-    ui.glCanvas->printToOutput(text);
 }
 
 /*

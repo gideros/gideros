@@ -38,9 +38,6 @@ class MainWindow : public QMainWindow{
         void setFixedSize(bool fixedSize);
         void saveSettings();
         void setLogicalScaleMode(LogicalScaleMode scaleMode);
-        QSize windowSize();
-        void printToOutput(const char* text);
-        bool fullScreen();
 
     private:
         static MainWindow* instance;
@@ -53,7 +50,6 @@ class MainWindow : public QMainWindow{
         int width0_;
         int height0_;
         int scaleModeNum_;
-        bool fullScreen_;
 
         Ui::MainWindowClass ui;
         void loadSettings();

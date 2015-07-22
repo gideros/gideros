@@ -45,8 +45,6 @@ private:
     static int setWindowSize(lua_State *L);
     static int setFullScreen(lua_State *L);
     static int getDeviceName(lua_State *L);
-    static int set(lua_State *L);
-    static int get(lua_State *L);
 };
 
 #endif

@@ -29,7 +29,6 @@ public:
     void setCanvasColor(float canvasColor[3]);
     void setInfoColor(float infoColor[3]);
     void setExportedApp(bool exportedApp);
-    void printToOutput(const char* text);
 	void sendRun();
     Orientation getHardwareOrientation();
 
@@ -64,7 +63,7 @@ private:
     float canvasColor_[3];
     float infoColor_[3];
     bool exportedApp_;
-    bool mouseButtonPressed_[5];
+    int lastMouseButton_;
     //	PlatformImplementation* platformImplementation_;
 
     void setupProperties();
