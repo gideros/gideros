@@ -170,7 +170,6 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	//
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
-	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -178,11 +177,18 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerRepeat);
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerRepeatFilter);
+
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerClamp);
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerClampFilter);
 
 
 	// Set rasterizer state to switch off backface culling
@@ -302,9 +308,9 @@ void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture)
 	dx11ShaderTexture *tex=(dx11ShaderTexture *)texture;
 	g_devcon->PSSetShaderResources(num,1,&tex->rsv);
 	if (tex->wrap==ShaderTexture::WRAP_CLAMP)
-		g_devcon->PSSetSamplers(0, 1, &dx11ShaderTexture::samplerRepeat/*Clamp*/);
+		g_devcon->PSSetSamplers(0, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerClamp:&dx11ShaderTexture::samplerClampFilter);
 	else
-		g_devcon->PSSetSamplers(0, 1, &dx11ShaderTexture::samplerRepeat);
+		g_devcon->PSSetSamplers(0, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerRepeat:&dx11ShaderTexture::samplerRepeatFilter);
 }
 
 

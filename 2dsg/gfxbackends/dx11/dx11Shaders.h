@@ -90,10 +90,13 @@ class dx11ShaderTexture : public ShaderTexture
 protected:
 	static ID3D11SamplerState *samplerRepeat;
 	static ID3D11SamplerState *samplerClamp;
+	static ID3D11SamplerState *samplerRepeatFilter;
+	static ID3D11SamplerState *samplerClampFilter;
 	ID3D11Texture2D *tex;
 	ID3D11ShaderResourceView *rsv;
 	int width,height;
 	Wrap wrap;
+	Filter filter;
 public:
 	dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	virtual ~dx11ShaderTexture();
