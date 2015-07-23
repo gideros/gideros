@@ -2,6 +2,8 @@
 #include <windows.h>
 
 #include "gl/glew.h"
+#include "gl/glext.h"
+#include "wglext.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -43,6 +45,9 @@ HWND hwndcopy;
 int windowWidth,windowHeight;
 
 #define ID_TIMER   1
+bool use_timer=false;
+int vsyncVal=0;
+static HDC hDC;
 
 static void printFunc(const char *str, int len, void *data)
 {
@@ -145,6 +150,37 @@ void EnableOpenGL(HWND hWnd, HDC * hDC, HGLRC * hRC)
   // create and enable the render context (RC)
   *hRC = wglCreateContext( *hDC );
   wglMakeCurrent( *hDC, *hRC );
+
+  if (not use_timer) {
+    PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
+
+    _wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC) wglGetProcAddress("wglGetExtensionsStringEXT");
+    printf("wgl extensions=%s\n",_wglGetExtensionsStringEXT());
+    
+    if (strstr(_wglGetExtensionsStringEXT(), "WGL_EXT_swap_control") == NULL)
+    {
+      printf("Extension not found WGL_EXT_swap_control\n");
+      exit(1);
+    }
+
+    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT"); 
+    
+    if (wglSwapIntervalEXT == NULL){
+      printf("Error, no wglSwapIntervalEXT\n");
+      exit(1);
+    }
+    wglSwapIntervalEXT(vsyncVal);
+
+    PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC) wglGetProcAddress("wglGetSwapIntervalEXT");
+
+    if (wglGetSwapIntervalEXT == NULL){
+      printf("Error, no wglGetSwapIntervalEXT\n");
+      exit(1);
+    }
+    printf("wglGetSwapIntervalEXT=%d\n",wglGetSwapIntervalEXT());
+
+  }
+
 }
 
 // ######################################################################
@@ -299,7 +335,7 @@ void loadProperties()
 
 LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-  static HDC hDC;
+
   static HGLRC hRC;
   static RECT clientRect,winRect;
 
@@ -503,6 +539,22 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
   return DefWindowProc(hwnd, iMsg, wParam, lParam) ;
 }
 
+void render()
+{
+  GStatus status;
+  application_->enterFrame(&status);
+  
+  if (status.error());
+  //      luaError(status.errorString());
+
+  //    glClear(GL_COLOR_BUFFER_BIT);
+  application_->clearBuffers();
+  
+  application_->renderScene();
+  
+  SwapBuffers(hDC);
+}
+
 // ######################################################################
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -527,6 +579,17 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   wndclass.hIconSm       = NULL ;
   
   RegisterClassEx (&wndclass) ;
+
+  printf("OpenGL version=%s\n",glGetString(GL_VERSION));
+  printf("szCmdLine=%s\n",szCmdLine);
+
+  sscanf(szCmdLine,"%d",&vsyncVal);
+  printf("vsyncVal=%d\n",vsyncVal);
+
+  if (vsyncVal==0)
+    use_timer=true;
+  else
+    use_timer=false;
   
   hwnd = CreateWindow (szAppName,         // window class name
 		       "Gideros Win32 (no Qt)",     // window caption
@@ -546,16 +609,30 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   // Create window
   // ----------------------------------------------------------------------
 
-  printf("OpenGL version=%s\n",glGetString(GL_VERSION));
-
-  SetTimer(hwnd, ID_TIMER, 0, NULL);
-
   ShowWindow (hwnd, iCmdShow) ;
-  UpdateWindow (hwnd) ;
+  //  UpdateWindow (hwnd) ;
 
-  while (GetMessage (&msg, NULL, 0, 0)) {
-    TranslateMessage (&msg) ;
-    DispatchMessage (&msg) ;
+  if (use_timer){
+
+    SetTimer(hwnd, ID_TIMER, 0, NULL);
+
+    while (GetMessage (&msg, NULL, 0, 0)) {
+      TranslateMessage (&msg) ;
+      DispatchMessage (&msg) ;
+    }
+  }
+  else {
+    while (TRUE) {
+      if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
+	if (msg.message == WM_QUIT)
+	  break ;
+	
+	TranslateMessage (&msg) ;
+	DispatchMessage (&msg) ;
+      }
+
+      render();
+    }
   }
 
   return msg.wParam ;
