@@ -10,6 +10,11 @@
 #include <luautil.h>
 #include <gideros.h>
 #include <algorithm>
+<<<<<<< HEAD
+=======
+#include <QString>
+#include <QStringList>
+>>>>>>> 65f4a7b46d9b173fca8382713f87f308cc2ba50a
 
 #define PORTRAIT "portrait"
 #define PORTRAIT_UPSIDE_DOWN "portraitUpsideDown"
@@ -72,6 +77,11 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"setWindowSize", ApplicationBinder::setWindowSize},
         {"setFullScreen", ApplicationBinder::setFullScreen},
         {"getDeviceName", ApplicationBinder::getDeviceName},
+<<<<<<< HEAD
+=======
+        {"set", ApplicationBinder::set},
+        {"get", ApplicationBinder::get},
+>>>>>>> 65f4a7b46d9b173fca8382713f87f308cc2ba50a
         {NULL, NULL},
 	};
 
@@ -681,3 +691,75 @@ int ApplicationBinder::getDeviceName(lua_State *L)
 
     return 1;
 }
+
+int ApplicationBinder::set(lua_State *L)
+{
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    const char* what = luaL_checkstring(L, 2);
+    int arg1 = 0;
+    int arg2 = 0;
+    int arg3 = 0;
+    QString arg4 = "";
+
+
+
+    if ( (strcmp(what, "cursor") == 0)
+      || (strcmp(what, "windowTitle") == 0)
+      || (strcmp(what, "windowModel") == 0)
+       )
+    {
+        arg4 = QString::fromUtf8(luaL_checkstring(L, 3));
+        arg2 = luaL_optnumber(L, 4, 0);
+        arg3 = luaL_optnumber(L, 5, 0);
+
+    }else
+    {
+        arg1 = luaL_optnumber(L, 3, 0);
+        arg2 = luaL_optnumber(L, 4, 0);
+        arg3 = luaL_optnumber(L, 5, 0);
+    }
+
+
+    QString arg = "";
+    arg.append(QString::number(arg1));
+    arg.append("|");
+    arg.append(QString::number(arg2));
+    arg.append("|");
+    arg.append(QString::number(arg3));
+    arg.append("|");
+    arg.append(arg4);
+
+    extern void g_setProperty(const char* what, const char* arg);
+    g_setProperty(what, arg.toStdString().c_str());
+
+
+
+    return 0;
+}
+
+int ApplicationBinder::get(lua_State *L)
+{
+
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    const char* what = luaL_checkstring(L, 2);
+
+    extern const char* g_getProperty(const char* what);
+    QString returnedProperty = g_getProperty(what);
+    QStringList arrayProperty = returnedProperty.split("|",QString::SkipEmptyParts);
+
+    for (int i = 0; i < arrayProperty.size(); ++i) {
+        if (arrayProperty.at(i).mid(0,1) == "s"){
+            // to obtain returned string, add the string with small s
+            lua_pushstring(L, arrayProperty.at(i).mid(1).toStdString().c_str());
+        }else{
+            lua_pushnumber(L, arrayProperty.at(i).toInt());
+        }
+    }
+    return arrayProperty.size();
+
+}
+

@@ -42,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     
     width0_ = 320;
     height0_ = 480;
+    scaleModeNum_ = 0;
+    fullScreen_ = false;
 
     QDir dir = QCoreApplication::applicationDirPath();
 
@@ -59,6 +61,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 
         int scaleMode, logicalWidth, logicalHeight, windowWidth, windowHeight;
         buffer >> scaleMode;
+
+        setLogicalScaleMode((LogicalScaleMode) scaleMode);
+        
         buffer >> logicalWidth;
         buffer >> logicalHeight;
 
@@ -137,6 +142,7 @@ void MainWindow::resizeWindow(int width, int height){
 }
 
 void MainWindow::fullScreenWindow(bool fullScreen){
+    fullScreen_ = fullScreen;
     if(fullScreen){
         setMaximumSize(16777215, 16777215);
         this->showFullScreen();
@@ -162,10 +168,16 @@ void MainWindow::updateResolution(){
 
     const float resolution = (float)width / height;
 
-    if (resolution > resolution_){
-       width = height * resolution_;
-    }else{
-       height = width / resolution_;
+    if (scaleModeNum_ == 1 ){
+        if (resolution > resolution_){
+           width = height * resolution_;
+        }else{
+           height = width / resolution_;
+        }
+    }else if (scaleModeNum_ == 2 ){
+        width = height * resolution_;
+    }else if (scaleModeNum_ == 3 ){
+        height = width / resolution_;
     }
     
     float canvasScaleFactor = 1;
@@ -265,5 +277,57 @@ void MainWindow::saveSettings(){
     }
     settings.setValue("size",      QSize(width,height));
 
+
+}
+
+void MainWindow::setLogicalScaleMode(LogicalScaleMode scaleMode){
+    // scaleModeNum_, 0 = no aspect ratio, 1 = aspect ratio, 2 = fit width, 3 = fit height
+    if (scaleMode == eNoScale)
+    {
+        scaleModeNum_ = 0;
+    }
+    else if (scaleMode == eCenter)
+    {
+        scaleModeNum_ = 0;
+    }
+    else if (scaleMode == ePixelPerfect)
+    {
+        scaleModeNum_ = 0;
+    }
+    else if (scaleMode == eLetterBox)
+    {
+        scaleModeNum_ = 1;
+    }
+    else if (scaleMode == eCrop)
+    {
+        scaleModeNum_ = 1;
+    }
+    else if (scaleMode == eStretch)
+    {
+        scaleModeNum_ = 0;
+    }
+    else if (scaleMode == eFitWidth)
+    {
+        scaleModeNum_ = 2;
+    }
+    else if (scaleMode == eFitHeight)
+    {
+        scaleModeNum_ = 3;
+    }
+}
+
+QSize MainWindow::windowSize(){
+    int width,height;
+    width = size().width();
+    height = size().height();
+
+    return QSize(width,height);
+}
+
+bool MainWindow::fullScreen(){
+    return fullScreen_;
+}
+
+void MainWindow::printToOutput(const char* text){
 
 }
