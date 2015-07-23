@@ -85,7 +85,10 @@ static void deltree(const char* dir) {
 GLCanvas::GLCanvas(QWidget *parent) :
 		QGLWidget(parent) {
 	setAttribute(Qt::WA_AcceptTouchEvents);
-    lastMouseButton_ = 0;
+    for( int i=1; i<=4; ++i )
+    {
+        mouseButtonPressed_[i] = false;
+    }
     setMouseTracking(true);
 	//setFocusPolicy(Qt::WheelFocus);
 
@@ -860,20 +863,33 @@ void GLCanvas::loadFiles(std::vector<char> data) {
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event) {
-    lastMouseButton_ = event->button();
+    if (event->button() <= 4){
+        mouseButtonPressed_[event->button()] = true;
+    }
     ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
-    if(lastMouseButton_ > 0)
-        ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_, lastMouseButton_);
-    else
-        ginputp_mouseHover(event->x() * deviceScale_, event->y() * deviceScale_, lastMouseButton_);
+    
+    bool mousePressed = false;
+    for( int i=1; i<=4; ++i )
+    {
+        if( mouseButtonPressed_[i])
+        {
+            ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_, i);
+            mousePressed = true;
+        }
+    }
+
+    if (mousePressed == false) {
+        ginputp_mouseHover(event->x() * deviceScale_, event->y() * deviceScale_, 0);
+    }
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event) {
-    if(lastMouseButton_ == event->button())
-        lastMouseButton_ = 0;
+    if (event->button() <= 4){
+        if(mouseButtonPressed_[event->button()]) mouseButtonPressed_[event->button()] = false;
+    }
     ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
@@ -1261,6 +1277,11 @@ void GLCanvas::setResolution(int width, int height) {
 void GLCanvas::setExportedApp(bool exportedApp) {
 	exportedApp_ = exportedApp;
     isPlayer_ = false;
+}
+
+void GLCanvas::printToOutput(const char* text) {
+    printToServer(text, -1, NULL);
+    printToServer("\n", -1, NULL);
 }
 
 /*

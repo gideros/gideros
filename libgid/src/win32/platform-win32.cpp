@@ -72,3 +72,11 @@ void g_exit()
 {
 	exit(0);
 }
+
+void g_setProperty(const char* what, const char* arg){
+
+}
+
+const char* g_getProperty(const char* what){
+	return "";
+}
