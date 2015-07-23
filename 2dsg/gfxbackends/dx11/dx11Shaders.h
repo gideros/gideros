@@ -90,10 +90,13 @@ class dx11ShaderTexture : public ShaderTexture
 protected:
 	static ID3D11SamplerState *samplerRepeat;
 	static ID3D11SamplerState *samplerClamp;
+	static ID3D11SamplerState *samplerRepeatFilter;
+	static ID3D11SamplerState *samplerClampFilter;
 	ID3D11Texture2D *tex;
 	ID3D11ShaderResourceView *rsv;
 	int width,height;
 	Wrap wrap;
+	Filtering filter;
 public:
 	dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	virtual ~dx11ShaderTexture();
@@ -132,7 +135,7 @@ public:
 	static ID3D11Texture2D* pBackBuffer;
 	dx11ShaderEngine(int sw, int sh);
 	virtual ~dx11ShaderEngine();
-	void reset();
+	void reset(bool reinit=false);
 	const char *getVersion();
 	void setDepthTest(bool enable);
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);

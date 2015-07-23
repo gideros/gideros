@@ -41,6 +41,17 @@ task<IBuffer^> readData(IInputStream^ stream, g_id id)
 	});
 }
 
+
+void handleException(Exception^ ex, g_id id, gevent_Callback callback, void* udata)
+{
+	ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
+	//std::wstring werror(ex->Message->Begin());
+	//std::string strerror(werror.begin(), werror.end());
+	//strerror.c_str();
+	gevent_EnqueueEvent(id, callback, GHTTP_ERROR_EVENT, event, 1, udata);
+	map.erase(id);
+}
+
 void handleProcess(IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation, g_id id, gevent_Callback callback, void* udata){
 	operation->Progress = ref new AsyncOperationProgressHandler<HttpResponseMessage^, HttpProgress>([=](
 		IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ asyncInfo,
@@ -72,8 +83,9 @@ void handleProcess(IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgres
 
 void handleTask(HttpResponseMessage^ response, g_id id, gevent_Callback callback, void* udata){
 	map[id] = std::vector<unsigned char>();
-	create_task(response->Content->ReadAsInputStreamAsync(), cancellationTokenSource.get_token()).then([=](IInputStream^ stream)
+	create_task(response->Content->ReadAsInputStreamAsync(), cancellationTokenSource.get_token()).then([=](task<IInputStream^> previousTask)
 	{
+		IInputStream^ stream = previousTask.get();
 		return readData(stream, id);
 	}).then([=](task<IBuffer^> previousTask)
 	{
@@ -161,22 +173,19 @@ void handleTask(HttpResponseMessage^ response, g_id id, gevent_Callback callback
 			event->headers[hdrn].value = NULL;
 
 			gevent_EnqueueEvent(id, callback, GHTTP_RESPONSE_EVENT, event, 1, udata);
+			map.erase(id);
 
 		}
 		catch (const task_canceled&)
 		{
 			ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
 			gevent_EnqueueEvent(id, callback, GHTTP_ERROR_EVENT, event, 1, udata);
+			map.erase(id);
 		}
 		catch (Exception^ ex)
 		{
-			ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
-			//std::wstring werror(ex->Message->Begin());
-			//std::string strerror(werror.begin(), werror.end());
-			//strerror.c_str();
-			gevent_EnqueueEvent(id, callback, GHTTP_ERROR_EVENT, event, 1, udata);
+			handleException(ex, id, callback, udata);
 		}
-		//map.erase(id);
 	});
 }
 
@@ -189,7 +198,21 @@ void add_headers(const ghttp_Header *header){
 			std::wstring wstrkey(strkey.begin(), strkey.end());
 			std::string strval(header->value);
 			std::wstring wstrval(strval.begin(), strval.end());
-			headers->Insert(ref new String(wstrkey.c_str()), ref new String(wstrval.c_str()));
+			if (_strnicmp(header->name, "content-", 8))
+				headers->Insert(ref new String(wstrkey.c_str()), ref new String(wstrval.c_str()));
+		}
+	}
+}
+
+void add_post_headers(const ghttp_Header *header, HttpStringContent^content){
+	if (header){
+		for (; header->name; ++header){
+			std::string strkey(header->name);
+			std::wstring wstrkey(strkey.begin(), strkey.end());
+			std::string strval(header->value);
+			std::wstring wstrval(strval.begin(), strval.end());
+			if (!_stricmp(header->name, "content-type"))
+				content->Headers->ContentType=ref new HttpMediaTypeHeaderValue(ref new String(wstrval.c_str()));
 		}
 	}
 }
@@ -218,9 +241,15 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
 
 	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->GetAsync(uri, HttpCompletionOption::ResponseHeadersRead);
 	handleProcess(operation, id, callback, udata);
-	create_task(operation, cancellationTokenSource.get_token()).then([=](HttpResponseMessage^ response)
+	create_task(operation, cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
-		handleTask(response, id, callback, udata);
+		try {
+			handleTask(response.get(), id, callback, udata);
+		}
+		catch (Exception^ ex)
+		{
+			handleException(ex, id, callback, udata);
+		}
 	});
 	return id;
 }
@@ -239,14 +268,23 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
 	}
 	g_id id = g_NextId();
 
-	add_headers(header);
 
-	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->PostAsync(uri, ref new HttpStringContent(postData));
+	HttpStringContent^ content = ref new HttpStringContent(postData);
+	add_headers(header);
+	add_post_headers(header,content);
+
+	IAsyncOperationWithProgress<HttpResponseMessage^, HttpProgress>^ operation = httpClient->PostAsync(uri, content);
 	handleProcess(operation, id, callback, udata);
 
-	create_task(operation, cancellationTokenSource.get_token()).then([=](HttpResponseMessage^ response)
+	create_task(operation, cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
-		handleTask(response, id, callback, udata);
+		try {
+			handleTask(response.get(), id, callback, udata);
+		}
+		catch (Exception^ ex)
+		{
+			handleException(ex, id, callback, udata);
+		}
 	});
 	return id;
 }
@@ -260,9 +298,15 @@ g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback c
 
 	add_headers(header);
 
-	create_task(httpClient->DeleteAsync(uri), cancellationTokenSource.get_token()).then([=](HttpResponseMessage^ response)
+	create_task(httpClient->DeleteAsync(uri), cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
-		handleTask(response, id, callback, udata);
+		try {
+			handleTask(response.get(), id, callback, udata);
+		}
+		catch (Exception^ ex)
+		{
+			handleException(ex, id, callback, udata);
+		}
 	});
 	return id;
 }
@@ -280,11 +324,19 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 	}
 	g_id id = g_NextId();
 
+	HttpStringContent^ content = ref new HttpStringContent(postData);
 	add_headers(header);
+	add_post_headers(header, content);
 
-	create_task(httpClient->PutAsync(uri, ref new HttpStringContent(postData)), cancellationTokenSource.get_token()).then([=](HttpResponseMessage^ response)
+	create_task(httpClient->PutAsync(uri, content), cancellationTokenSource.get_token()).then([=](task<HttpResponseMessage^> response)
 	{
-		handleTask(response, id, callback, udata);
+		try {
+			handleTask(response.get(), id, callback, udata);
+		}
+		catch (Exception^ ex)
+		{
+			handleException(ex, id, callback, udata);
+		}
 	});
 	return id;
 }
@@ -307,17 +359,17 @@ void ghttp_IgnoreSSLErrors()
 		filter->AllowAutoRedirect = true;
 		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::Expired);
 		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::Untrusted);
-		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::BasicConstraintsError);
+		//filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::BasicConstraintsError);
 		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::IncompleteChain);
-		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::InvalidCertificateAuthorityPolicy);
+		//filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::InvalidCertificateAuthorityPolicy);
 		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::InvalidName);
-		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::InvalidSignature);
-		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::OtherErrors);
-		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::RevocationFailure);
+		//filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::InvalidSignature);
+		//filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::OtherErrors);
+		//filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::RevocationFailure);
 		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::RevocationInformationMissing);
-		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::Revoked);
-		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::UnknownCriticalExtension);
-		filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::WrongUsage);
+		//filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::Revoked);
+		//filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::UnknownCriticalExtension);
+		//filter->IgnorableServerCertificateErrors->Append(ChainValidationResult::WrongUsage);
 		httpClient = ref new HttpClient(filter);
 	}
 }

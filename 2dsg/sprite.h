@@ -261,11 +261,11 @@ public:
 	}
 
 	// Gets the bounds of Sprite in its own coordinate system
-	void objectBounds(float* minx, float* miny, float* maxx, float* maxy) const;
+	void objectBounds(float* minx, float* miny, float* maxx, float* maxy,bool visible=false) const;
 
 	// Gets the bounds of Sprite after transformed by its Matrix.
 	// localBounds = Matrix * objectBounds
-	void localBounds(float* minx, float* miny, float* maxx, float* maxy) const;
+	void localBounds(float* minx, float* miny, float* maxx, float* maxy,bool visible=false) const;
 	
 #if 0
 	// Gets the bounds of Sprite after transformed by localToGlobal
@@ -294,7 +294,7 @@ public:
 
 	// Evaluates the sprite to see if its bounds overlaps or intersects with the point specified by the x and y parameters.
 	// The x and y parameters specify a point in the global coordinate space.
-	bool hitTestPoint(float x, float y) const;
+	bool hitTestPoint(float x, float y, bool visible=false) const;
 	
 	virtual bool isStage() const
 	{
@@ -348,7 +348,7 @@ protected:
 
 private:
     Stage *getStage() const;
-    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy) const;
+    void boundsHelper(const Matrix4& transform, float* minx, float* miny, float* maxx, float* maxy,std::stack<Matrix> parentXform,bool visible=false) const;
 
 protected:
     Application *application_;

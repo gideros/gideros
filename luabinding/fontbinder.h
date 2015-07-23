@@ -11,6 +11,7 @@ public:
 private:
 	static int create(lua_State* L);
 	static int destruct(lua_State* L);
+	static int getDefault(lua_State* L);
 };
 
 #endif

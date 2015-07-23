@@ -24,6 +24,10 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_setfield(L, -2, "CINT");
 	lua_pushinteger(L, ShaderProgram::CFLOAT);
 	lua_setfield(L, -2, "CFLOAT");
+	lua_pushinteger(L, ShaderProgram::CFLOAT2);
+	lua_setfield(L, -2, "CFLOAT2");
+	lua_pushinteger(L, ShaderProgram::CFLOAT3);
+	lua_setfield(L, -2, "CFLOAT3");
 	lua_pushinteger(L, ShaderProgram::CFLOAT4);
 	lua_setfield(L, -2, "CFLOAT4");
 	lua_pushinteger(L, ShaderProgram::CTEXTURE);
@@ -85,7 +89,7 @@ int ShaderBinder::create(lua_State* L)
 
     int n = luaL_getn(L, 4);  /* get size of table */
     for (int i=1; i<=n; i++) {
-    	ShaderProgram::ConstantDesc cst={NULL,ShaderProgram::CINT,1,ShaderProgram::SysConst_None,false,0,NULL};
+    	ShaderProgram::ConstantDesc cst={"",ShaderProgram::CINT,1,ShaderProgram::SysConst_None,false,0,NULL};
         lua_rawgeti(L, 4, i);  /* push t[i] */
         luaL_checktype(L,-1,LUA_TTABLE); //Check table
         lua_getfield(L,-1,"name");
@@ -104,7 +108,7 @@ int ShaderBinder::create(lua_State* L)
 
     n = luaL_getn(L, 5);  /* get size of table */
     for (int i=1; i<=n; i++) {
-    	ShaderProgram::DataDesc cst={NULL,ShaderProgram::DFLOAT,0,0,0};
+    	ShaderProgram::DataDesc cst={"",ShaderProgram::DFLOAT,0,0,0};
         lua_rawgeti(L, 5, i);  /* push t[i] */
         luaL_checktype(L,-1,LUA_TTABLE); //Check table
         lua_getfield(L,-1,"name");
@@ -122,8 +126,8 @@ int ShaderBinder::create(lua_State* L)
       }
 
 
-	ShaderProgram::ConstantDesc clast={NULL,ShaderProgram::CINT,1,ShaderProgram::SysConst_None,false,0,NULL};
-	ShaderProgram::DataDesc dlast={NULL,ShaderProgram::DFLOAT,0,0,0};
+	ShaderProgram::ConstantDesc clast={"",ShaderProgram::CINT,1,ShaderProgram::SysConst_None,false,0,NULL};
+	ShaderProgram::DataDesc dlast={"",ShaderProgram::DFLOAT,0,0,0};
 	constants.push_back(clast);
 	datas.push_back(dlast);
     ShaderProgram *shader=ShaderEngine::Engine->createShaderProgram(vs,ps,flags,&(constants[0]),&(datas[0]));
@@ -180,6 +184,8 @@ int ShaderBinder::setConstant(lua_State* L)
 	int cm=1;
 	switch (type)
 	{
+	case ShaderProgram::CFLOAT2: cm=2; break;
+	case ShaderProgram::CFLOAT3: cm=3; break;
 	case ShaderProgram::CFLOAT4: cm=4; break;
 	case ShaderProgram::CMATRIX: cm=16; break;
 	default: cm=1;
@@ -210,6 +216,8 @@ int ShaderBinder::setConstant(lua_State* L)
 		break;
 	}
 	case ShaderProgram::CFLOAT:
+	case ShaderProgram::CFLOAT2:
+	case ShaderProgram::CFLOAT3:
 	case ShaderProgram::CFLOAT4:
 	case ShaderProgram::CMATRIX:
 	{

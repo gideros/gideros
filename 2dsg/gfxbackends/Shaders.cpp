@@ -76,7 +76,7 @@ bool ShaderProgram::updateConstant(int index,ShaderProgram::ConstantType type, i
 	return true;
 }
 
-void ShaderEngine::reset()
+void ShaderEngine::reset(bool reinit)
 {
 	setColor(1,1,1,1);
     oglProjection.identity();
@@ -220,7 +220,7 @@ void ShaderProgram::shaderInitialized()
 int ShaderProgram::getConstantByName(const char *name)
 {
 	for (int i=0;i<uniforms.size();i++)
-		if (!(strcmp(uniforms[i].name,name)))
+		if (!(strcmp(uniforms[i].name.c_str(),name)))
 			return i;
 	return -1;
 }

@@ -932,6 +932,7 @@ Parameter::Parameter(const char* strparam, float start, float end, TweenType twe
 	start(start),
 	end(end)
 {
+	strParam=strparam;
 	tweenFunction = getTweenFunction(tweenType);
 }
 
@@ -947,6 +948,7 @@ Parameter::Parameter(const char* strparam, float start, float end, const char* t
 	start(start),
 	end(end)
 {
+	strParam=strparam;
 	tweenFunction = getTweenFunction((TweenType)StringId::instance().id(tweenType));
 }
 
@@ -1176,10 +1178,21 @@ void MovieClip::interpolateParameters()
 				float tw = parameter.tweenFunction(t);
 				float value = s * (1 - tw) + e * tw;
 
-				sprite->set(parameter.param, value);
+				setField(i,parameter, value);
 			}
 		}
 	}
+}
+
+
+void MovieClip::setField(int frmIndex,Parameter param, float value)
+{
+	frames_[frmIndex].sprite->set(param.param,value);
+}
+
+float MovieClip::getField(int frmIndex,Parameter param)
+{
+	return frames_[frmIndex].sprite->get(param.param);
 }
 
 void MovieClip::gotoAndPlay(int frame)

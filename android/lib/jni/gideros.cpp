@@ -675,6 +675,8 @@ void ApplicationManager::surfaceCreated()
 	}
 	else
 	{
+		if (ShaderEngine::Engine)
+			ShaderEngine::Engine->reset(true);
 		gtexture_reloadTextures();
 		gtexture_RestoreRenderTargets();
 		gtexture_RestoreTempTextures();

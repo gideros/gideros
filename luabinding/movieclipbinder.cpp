@@ -4,9 +4,84 @@
 #include "stringid.h"
 #include "luaapplication.h"
 #include <luautil.h>
+#include <lua.h>
 
 #define FRAME "frame"
 #define TIME "time"
+
+class MovieClipLua : public MovieClip
+{
+public:
+    MovieClipLua(Type type, LuaApplication *lapplication);
+    void destruct(lua_State *L);
+ 	void addFrame(int start, int end, Sprite* sprite,int spref,  const std::vector<Parameter>& parameters, GStatus* status = NULL);
+	std::vector<int> spriteRefs;
+private:
+	LuaApplication *lapplication_;
+protected:
+	void setField(int frmIndex,Parameter param, float value);
+	float getField(int frmIndex,Parameter param);
+};
+
+MovieClipLua::MovieClipLua(Type type, LuaApplication *lapplication) : MovieClip(type,lapplication->getApplication())
+{
+	lapplication_=lapplication;
+}
+
+void MovieClipLua::destruct(lua_State *L)
+{
+	int n=spriteRefs.size();
+	for (int k=0;k<n;k++)
+		luaL_unref(L, LUA_REGISTRYINDEX, spriteRefs[k]);
+}
+
+void MovieClipLua::addFrame(int start, int end, Sprite* sprite,int spref,  const std::vector<Parameter>& parameters, GStatus* status)
+{
+ MovieClip::addFrame(start,end,sprite,parameters,status);
+ if (!(status&&(status->error())))
+	 spriteRefs.push_back(spref);
+}
+
+void MovieClipLua::setField(int frmIndex,Parameter param, float value)
+{
+	GStatus sts;
+	frames_[frmIndex].sprite->set(param.param, value,&sts);
+	if (sts.error()&&!param.strParam.empty()) //try to forward to lua
+	{
+	    lua_State *L = lapplication_->getLuaState();
+	    lua_rawgeti(L, LUA_REGISTRYINDEX, spriteRefs[frmIndex]);
+	    lua_getfield(L,-1,"set");
+	    lua_pushvalue(L,-2);
+	    lua_pushstring(L,param.strParam.c_str());
+	    lua_pushnumber(L,value);
+	    if (lua_pcall(L,3,0,0))
+	    	lua_pop(L,1);
+    	lua_pop(L,1);
+	}
+}
+
+float MovieClipLua::getField(int frmIndex,Parameter param)
+{
+	GStatus sts;
+	float v=frames_[frmIndex].sprite->get(param.param, &sts);
+	if (sts.error()&&!param.strParam.empty()) //try to forward to lua
+	{
+	    lua_State *L = lapplication_->getLuaState();
+	    lua_rawgeti(L, LUA_REGISTRYINDEX, spriteRefs[frmIndex]);
+	    lua_getfield(L,-1,"get");
+	    lua_pushvalue(L,-2);
+	    lua_pushstring(L,param.strParam.c_str());
+	    if (lua_pcall(L,2,1,0))
+	    	lua_pop(L,1);
+	    else
+	    {
+	    	v=lua_tonumber(L,-1);
+	    	lua_pop(L,2);
+	    }
+	}
+	return v;
+}
+
 
 MovieClipBinder::MovieClipBinder(lua_State* L)
 {
@@ -110,7 +185,7 @@ int MovieClipBinder::create(lua_State* L)
     if (lua_objlen(L, index) == 0)
         luaL_error(L, GStatus(2102).errorString());     // Error #2102 Timeline array doesn't contain any elements.
 
-    MovieClip* movieclip = new MovieClip(type, application->getApplication());	// box movieclip to unref
+    MovieClipLua* movieclip = new MovieClipLua(type, application);	// box movieclip to unref
 
 	AutoUnref autounref(movieclip);
 
@@ -132,7 +207,8 @@ int MovieClipBinder::create(lua_State* L)
 
 		lua_rawgeti(L, -1, 3);
 		Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", -1));
-		lua_pop(L, 1);
+	    int spRef = luaL_ref(L, LUA_REGISTRYINDEX);
+
 
 		std::vector<Parameter> parameters;
 
@@ -183,7 +259,7 @@ int MovieClipBinder::create(lua_State* L)
 		}
 		lua_pop(L, 1);
 
-		movieclip->addFrame(start, end, sprite, parameters);
+		movieclip->addFrame(start, end, sprite, spRef, parameters);
 
 		lua_pop(L, 1);
 	}
@@ -200,7 +276,8 @@ int MovieClipBinder::create(lua_State* L)
 int MovieClipBinder::destruct(lua_State* L)
 {
 	void* ptr = *(void**)lua_touserdata(L, 1);
-	MovieClip* movieclip = static_cast<MovieClip*>(ptr);
+	MovieClipLua* movieclip = static_cast<MovieClipLua*>(ptr);
+	movieclip->destruct(L);
 	movieclip->unref();
 
 	return 0;

@@ -31,9 +31,9 @@ const char *dx11ShaderEngine::getVersion()
 	return "DX11";
 }
 
-void dx11ShaderEngine::reset()
+void dx11ShaderEngine::reset(bool reinit)
 {
-	ShaderEngine::reset();
+	ShaderEngine::reset(reinit);
 	g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
 	g_devcon->RSSetState(g_pRSNormal);
 	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
@@ -46,34 +46,34 @@ void dx11ShaderEngine::reset()
 void dx11SetupShaders()
 {
 	const ShaderProgram::ConstantDesc stdConstants[]={
-			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
-			{"fColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,false,0},
-			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
-			NULL
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
+			{"fColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,false,0,NULL},
+			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL},
+			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
 	};
 	const ShaderProgram::DataDesc stdBAttributes[]={
 			{"vVertex",dx11ShaderProgram::DFLOAT,3,0,0},
 			{"vColor",dx11ShaderProgram::DUBYTE,0,1,0},
 			{"vTexCoord",dx11ShaderProgram::DFLOAT,0,2,0},
-			NULL
+			{"",ShaderProgram::DFLOAT,0,0,0}
 	};
 	const ShaderProgram::DataDesc stdCAttributes[] = {
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
 		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
 		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 0, 2, 0 },
-		NULL
+		{"",ShaderProgram::DFLOAT,0,0,0}
 	};
 	const ShaderProgram::DataDesc stdTAttributes[] = {
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
 		{ "vColor", dx11ShaderProgram::DUBYTE, 0, 1, 0 },
 		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
-		NULL
+		{"",ShaderProgram::DFLOAT,0,0,0}
 	};
 	const dx11ShaderProgram::DataDesc stdTCAttributes[] = {
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
 		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
 		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
-		NULL
+		{"",ShaderProgram::DFLOAT,0,0,0}
 	};
 
     ShaderProgram::stdBasic = new dx11ShaderProgram(vBasic_cso,sizeof(vBasic_cso),pBasic_cso,sizeof(pBasic_cso),stdConstants,stdBAttributes);
@@ -82,11 +82,11 @@ void dx11SetupShaders()
     ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso,sizeof(vTextureColor_cso),pTextureColor_cso,sizeof(pTextureColor_cso),stdConstants,stdTCAttributes);
 
 	const ShaderProgram::ConstantDesc stdPConstants[]={
-			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
-			{ "vPSize", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_ParticleSize, true, 0 },
-			{ "fTexture", ShaderProgram::CTEXTURE, 1, ShaderProgram::SysConst_None, false, 0 },
-			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0},
-			NULL
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
+			{ "vPSize", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_ParticleSize, true, 0,NULL },
+			{ "fTexture", ShaderProgram::CTEXTURE, 1, ShaderProgram::SysConst_None, false, 0,NULL },
+			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL},
+			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
 	};
     ShaderProgram::stdParticle = new dx11ParticleShader(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),stdPConstants,stdTCAttributes);
 
@@ -170,7 +170,6 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	//
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
-	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -178,11 +177,18 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerRepeat);
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerRepeatFilter);
+
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerClamp);
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerClampFilter);
 
 
 	// Set rasterizer state to switch off backface culling
@@ -234,6 +240,7 @@ dx11ShaderEngine::~dx11ShaderEngine()
     delete ShaderProgram::stdColor;
     delete ShaderProgram::stdTexture;
     delete ShaderProgram::stdTextureColor;
+    delete ShaderProgram::stdParticle;
 
     g_depthStencil->Release();
     g_pBlendState->Release();
@@ -301,9 +308,9 @@ void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture)
 	dx11ShaderTexture *tex=(dx11ShaderTexture *)texture;
 	g_devcon->PSSetShaderResources(num,1,&tex->rsv);
 	if (tex->wrap==ShaderTexture::WRAP_CLAMP)
-		g_devcon->PSSetSamplers(0, 1, &dx11ShaderTexture::samplerRepeat/*Clamp*/);
+		g_devcon->PSSetSamplers(0, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerClamp:&dx11ShaderTexture::samplerClampFilter);
 	else
-		g_devcon->PSSetSamplers(0, 1, &dx11ShaderTexture::samplerRepeat);
+		g_devcon->PSSetSamplers(0, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerRepeat:&dx11ShaderTexture::samplerRepeatFilter);
 }
 
 
