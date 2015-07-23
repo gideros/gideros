@@ -10,11 +10,6 @@
 #include <luautil.h>
 #include <gideros.h>
 #include <algorithm>
-<<<<<<< HEAD
-=======
-#include <QString>
-#include <QStringList>
->>>>>>> 65f4a7b46d9b173fca8382713f87f308cc2ba50a
 
 #define PORTRAIT "portrait"
 #define PORTRAIT_UPSIDE_DOWN "portraitUpsideDown"
@@ -77,11 +72,8 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
         {"setWindowSize", ApplicationBinder::setWindowSize},
         {"setFullScreen", ApplicationBinder::setFullScreen},
         {"getDeviceName", ApplicationBinder::getDeviceName},
-<<<<<<< HEAD
-=======
         {"set", ApplicationBinder::set},
         {"get", ApplicationBinder::get},
->>>>>>> 65f4a7b46d9b173fca8382713f87f308cc2ba50a
         {NULL, NULL},
 	};
 
