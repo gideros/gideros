@@ -740,14 +740,15 @@ int ApplicationBinder::get(lua_State *L)
 
     const char* propertyGet = g_getProperty(what);
     std::string stringProp = propertyGet;
-    char returnedProperty[stringProp.length()+1];
-    strcpy(returnedProperty, propertyGet);
+
+	char *returnedProperty = (char*)malloc((stringProp.length() + 1)*sizeof(char));
+//	char returnedProperty[stringProp.length()+1];
+
+	strcpy(returnedProperty, propertyGet);
 
     const char* arrayProperty[10] = {""};
     unsigned int index = 0;
     arrayProperty[index] = strtok(returnedProperty,"|");
-
-
 
     while(arrayProperty[index] != NULL)
     {
@@ -764,7 +765,7 @@ int ApplicationBinder::get(lua_State *L)
 
     }
 
-
+	free(returnedProperty);
 
     return index;
 
