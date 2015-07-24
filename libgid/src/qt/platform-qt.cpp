@@ -100,16 +100,6 @@ void g_exit()
 void g_setProperty(const char* what, const char* arg){
 
 
-    // feel free to change this list
-    QStringList acceptedWhat;
-    acceptedWhat << "cursor(type)";
-    acceptedWhat << "windowPosition(x,y)";
-    acceptedWhat << "windowSize(w,h)";
-    acceptedWhat << "minimumSize(w,h)";
-    acceptedWhat << "maximumSize(w,h)";
-    acceptedWhat << "windowColor(r,g,b)";
-    acceptedWhat << "windowTitle(text)";
-    acceptedWhat << "windowModel(type)";
 
     QString argGet = QString::fromUtf8(arg);
     QStringList arrayArg = argGet.split("|",QString::KeepEmptyParts);
@@ -270,6 +260,18 @@ void g_setProperty(const char* what, const char* arg){
         }
 
     }else{
+    	
+	    // feel free to change this list
+	    QStringList acceptedWhat;
+	    acceptedWhat << "cursor(type)";
+	    acceptedWhat << "windowPosition(x,y)";
+	    acceptedWhat << "windowSize(w,h)";
+	    acceptedWhat << "minimumSize(w,h)";
+	    acceptedWhat << "maximumSize(w,h)";
+	    acceptedWhat << "windowColor(r,g,b)";
+	    acceptedWhat << "windowTitle(text)";
+	    acceptedWhat << "windowModel(type)";
+	    
         MainWindow::getInstance()->printToOutput("Accepted value for Desktop's application:set()");
         for( int i=0; i<acceptedWhat.size(); ++i ){
             MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedWhat.at(i)).toStdString().c_str() );
@@ -282,11 +284,6 @@ const char* g_getProperty(const char* what){
     QString returnedProperty = "";
 
 
-    // feel free to change this list
-    QStringList acceptedWhat;
-    acceptedWhat << "[x,y] windowPosition";
-    acceptedWhat << "[w,h] windowSize";
-    acceptedWhat << "[w,h] screenSize";
 
     if (strcmp(what, "windowPosition") == 0)
     {
@@ -306,6 +303,12 @@ const char* g_getProperty(const char* what){
         returnedProperty.append("|");
         returnedProperty.append( QString::number(QApplication::desktop()->availableGeometry().height()) );
     }else{
+	    // feel free to change this list
+	    QStringList acceptedWhat;
+	    acceptedWhat << "[x,y] windowPosition";
+	    acceptedWhat << "[w,h] windowSize";
+	    acceptedWhat << "[w,h] screenSize";
+    
         MainWindow::getInstance()->printToOutput("Accepted value for Desktop's application:get()");
         for( int i=0; i<acceptedWhat.size(); ++i ){
             MainWindow::getInstance()->printToOutput( QString("- ").append(acceptedWhat.at(i)).toStdString().c_str() );
