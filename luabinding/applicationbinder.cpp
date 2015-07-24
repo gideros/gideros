@@ -10,8 +10,7 @@
 #include <luautil.h>
 #include <gideros.h>
 #include <algorithm>
-#include <QString>
-#include <QStringList>
+#include <sstream>
 
 #define PORTRAIT "portrait"
 #define PORTRAIT_UPSIDE_DOWN "portraitUpsideDown"
@@ -757,3 +756,86 @@ int ApplicationBinder::get(lua_State *L)
 
 }
 
+int ApplicationBinder::set(lua_State *L)
+{
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    const char* what = luaL_checkstring(L, 2);
+
+
+    int arg1 = 0;
+    int arg2 = 0;
+    int arg3 = 0;
+    std::string arg4 = "";
+
+    if ( (strcmp(what, "cursor") == 0)
+      || (strcmp(what, "windowTitle") == 0)
+      || (strcmp(what, "windowModel") == 0)
+       )
+    {
+        arg4 = luaL_checkstring(L, 3);
+    }else
+    {
+        arg1 = luaL_optnumber(L, 3, 0);
+        arg2 = luaL_optnumber(L, 4, 0);
+        arg3 = luaL_optnumber(L, 5, 0);
+    }
+
+    std::stringstream arg;
+    arg << arg1;
+    arg << "|";
+    arg << arg2;
+    arg << "|";
+    arg << arg3;
+    arg << "|";
+    arg << arg4;
+
+    extern void g_setProperty(const char* what, const char* arg);
+    g_setProperty(what, arg.str().c_str());
+
+
+    return 0;
+}
+
+int ApplicationBinder::get(lua_State *L)
+{
+
+    Binder binder(L);
+    (void)binder.getInstance("Application", 1);
+
+    const char* what = luaL_checkstring(L, 2);
+
+    extern const char* g_getProperty(const char* what);
+
+    const char* propertyGet = g_getProperty(what);
+    std::string stringProp = propertyGet;
+    char returnedProperty[stringProp.length()+1];
+    strcpy(returnedProperty, propertyGet);
+
+    const char* arrayProperty[10] = {""};
+    unsigned int index = 0;
+    arrayProperty[index] = strtok(returnedProperty,"|");
+
+
+
+    while(arrayProperty[index] != NULL)
+    {
+        std::string firstChar(arrayProperty[index],arrayProperty[index]+1);
+
+        if  (strcmp(firstChar.c_str(), "s") == 0){
+            std::string resultChar(arrayProperty[index] + 1);
+             lua_pushstring(L, resultChar.c_str());
+        }else{
+            lua_pushinteger(L, atoi(arrayProperty[index]));
+        }
+        ++index;
+        arrayProperty[index] = strtok(NULL, "|");
+
+    }
+
+
+
+    return index;
+
+}
