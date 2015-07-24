@@ -757,7 +757,7 @@ int ApplicationBinder::get(lua_State *L)
             std::string resultChar(arrayProperty[index] + 1);
              lua_pushstring(L, resultChar.c_str());
         }else{
-            lua_pushinteger(L, atoi(arrayProperty[index]));
+            lua_pushnumber(L, atoi(arrayProperty[index]));
         }
         ++index;
         arrayProperty[index] = strtok(NULL, "|");
