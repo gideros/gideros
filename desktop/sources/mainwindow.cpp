@@ -99,14 +99,19 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
         buffer >> mouseTouchOrder;
 
 
+
         buffer >> windowWidth;
         buffer >> windowHeight;
         if (windowWidth == 0 && windowHeight == 0) {
+            windowWidth = logicalWidth;
+            windowHeight = logicalHeight;
             setFixedSize(false);
         }else{
             width0_ = windowWidth;
             height0_ = windowHeight;
         }
+        setWindowSize(windowWidth, windowHeight);
+
         
     }
 
