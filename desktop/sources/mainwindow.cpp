@@ -33,8 +33,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     #else
         setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
     #endif
-
-    move(0, 0);*/
+    */
+    move(0, 0);
 
     ui.glCanvas->setExportedApp(true);
     ui.glCanvas->projectDir_ = QDir("assets").absolutePath();
@@ -70,8 +70,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
         width0_ = logicalWidth;
         height0_ = logicalHeight;
 
-        int scaleCount;
-        buffer >> scaleCount;
+    	int scaleCount;
+    	buffer >> scaleCount;
+    	std::vector<std::pair<std::string, float> > imageScales(scaleCount);
+    	for (int i = 0; i < scaleCount; ++i) {
+    		buffer >> imageScales[i].first;
+    		buffer >> imageScales[i].second;
+    	}
+    	
         int orientation;
         buffer >> orientation;
         ui.glCanvas->setHardwareOrientation((Orientation) orientation);
@@ -93,20 +99,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
         buffer >> mouseTouchOrder;
 
 
+
         buffer >> windowWidth;
         buffer >> windowHeight;
         if (windowWidth == 0 && windowHeight == 0) {
+            windowWidth = logicalWidth;
+            windowHeight = logicalHeight;
             setFixedSize(false);
         }else{
             width0_ = windowWidth;
             height0_ = windowHeight;
         }
+        setWindowSize(windowWidth, windowHeight);
+
         
     }
 
     resolution_ = (float)width0_ / height0_;
     
-    loadSettings();
 }
 
 MainWindow::~MainWindow(){}
@@ -116,7 +126,6 @@ void MainWindow::resizeEvent(QResizeEvent*){
 }
 
 void MainWindow::closeEvent(QCloseEvent*){
-    saveSettings();
 
 }
 
@@ -246,39 +255,7 @@ void MainWindow::changeEvent(QEvent* e)
     }
 }
 
-void MainWindow::loadSettings(){
 
-
-
-
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+ "/gdrPos.ini", QSettings::IniFormat);
-
-    QSize size = settings.value("size", QSize(width0_, height0_ )).toSize();
-    resizeWindow(size.width(),size.height());
-
-
-    move(settings.value("pos",    QPoint(QApplication::desktop()->availableGeometry().center() - rect().center())).toPoint());
-
-
-}
-
-void MainWindow::saveSettings(){
-
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+ "/gdrPos.ini", QSettings::IniFormat);
-
-    settings.setValue("pos",       pos());
-
-    int width = size().width();
-    int height = size().height();
-    if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){
-        int temp = width;
-        width = height;
-        height = temp;
-    }
-    settings.setValue("size",      QSize(width,height));
-
-
-}
 
 void MainWindow::setLogicalScaleMode(LogicalScaleMode scaleMode){
     // scaleModeNum_, 0 = no aspect ratio, 1 = aspect ratio, 2 = fit width, 3 = fit height
