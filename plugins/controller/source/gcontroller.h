@@ -38,8 +38,9 @@ class GControllerJoystick
 {
 public:
     GControllerJoystick(GHID *ghid, unsigned int dID, bool left);
-    void handleXAxis(float value, float lastValue);
-    void handleYAxis(float value, float lastValue);
+    void handleXAxis(float value, float lastValue, int axisID);
+    void handleYAxis(float value, float lastValue, int axisID);
+    void handleUnknownAxis(float value, float lastValue, int axisID);
     void handle();
 
 private:

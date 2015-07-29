@@ -81,18 +81,20 @@ int* GHID::getPlayers(int* size)
     return &arr[0];
 }
 
-void GHID::onKeyDownEvent(int keyCode, int playerId)
+void GHID::onKeyDownEvent(int keyCode, int realCode, int playerId)
 {
     ghid_KeyEvent *event = (ghid_KeyEvent*)malloc(sizeof(ghid_KeyEvent));
     event->keyCode = keyCode;
+    event->realCode = realCode;
     event->playerId = playerId;
     gevent_EnqueueEvent(gid_, callback_s, GHID_KEY_DOWN_EVENT, event, 1, this);
 }
 
-void GHID::onKeyUpEvent(int keyCode, int playerId)
+void GHID::onKeyUpEvent(int keyCode, int realCode, int playerId)
 {
     ghid_KeyEvent *event = (ghid_KeyEvent*)malloc(sizeof(ghid_KeyEvent));
     event->keyCode = keyCode;
+    event->realCode = realCode;
     event->playerId = playerId;
     gevent_EnqueueEvent(gid_, callback_s, GHID_KEY_UP_EVENT, event, 1, this);
 }
@@ -137,6 +139,17 @@ void GHID::onLeftTrigger(double strength, int playerId)
     event->playerId = playerId;
 
     gevent_EnqueueEvent(gid_, callback_s, GHID_LEFT_TRIGGER_EVENT, event, 1, this);
+}
+
+
+void GHID::onAxisJoystick(double strength, int axisID, int playerId)
+{
+    ghid_JoystickEvent *event = (ghid_JoystickEvent*)malloc(sizeof(ghid_JoystickEvent));
+    event->strength = strength;
+    event->angle = axisID;
+    event->playerId = playerId;
+
+    gevent_EnqueueEvent(gid_, callback_s, GHID_AXIS_JOYSTICK_EVENT, event, 1, this);
 }
 
 void GHID::onConnected(struct Gamepad_device * device)
