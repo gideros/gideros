@@ -518,26 +518,12 @@ void GLCanvas::play(QDir directory){
         if(exportedApp_){
             resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
             QString docLocation;
-            QString tempLocation;
             #if defined(Q_OS_MAC)
-                QStringList docLocations = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-                QStringList tempLocations = QStandardPaths::standardLocations(QStandardPaths::TempLocation);
-                for (int i = 0; i < docLocations.size(); ++i) {
-                    if(docLocations.at(i).mid(0,4) != "/Lib"){
-                        docLocation = docLocations.at(i);
-                        break;
-                    }
-                }
-                for (int i = 0; i < tempLocations.size(); ++i) {
-                    if(tempLocations.at(i).mid(0,4) != "/Lib"){
-                        tempLocation = tempLocations.at(i);
-                        break;
-                    }
-                }
+                docLocation = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
             #else
                 docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-                tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
             #endif
+            QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
             directory.mkpath(docLocation);
             directory.mkpath(tempLocation);
             documentsDirectory = docLocation.toStdString().c_str();
