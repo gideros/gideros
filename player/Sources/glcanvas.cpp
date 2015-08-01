@@ -517,7 +517,12 @@ void GLCanvas::play(QDir directory){
 
         if(exportedApp_){
             resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
-            QString docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            QString docLocation;
+            #if defined(Q_OS_MAC)
+                docLocation = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+            #else
+                docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            #endif
             QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
             directory.mkpath(docLocation);
             directory.mkpath(tempLocation);
