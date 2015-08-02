@@ -248,9 +248,11 @@ dx11ShaderEngine::~dx11ShaderEngine()
     g_pRSScissor->Release();
     g_pDSDepth->Release();
     g_pDSOff->Release();
-    dx11ShaderTexture::samplerClamp->Release();
-    dx11ShaderTexture::samplerRepeat->Release();
-    if (g_pCBlendState)
+	dx11ShaderTexture::samplerClamp->Release();
+	dx11ShaderTexture::samplerRepeat->Release();
+	dx11ShaderTexture::samplerClampFilter->Release();
+	dx11ShaderTexture::samplerRepeatFilter->Release();
+	if (g_pCBlendState)
         g_pCBlendState->Release();
 #ifdef OPENGL_ES
 	glDeleteRenderbuffers(1,&_depthRenderBuffer);
