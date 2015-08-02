@@ -11,6 +11,18 @@
 #include <QHostInfo>
 #include "mainwindow.h"
 
+
+#if defined(Q_OS_WIN)
+    #include <windows.h>
+#elif defined(Q_OS_MAC)
+    #import <IOKit/pwr_mgt/IOPMLib.h>
+
+    CFStringRef reasonForActivity= CFSTR("keep awake");
+
+    IOPMAssertionID assertionID;
+    IOReturn success = kIOReturnError;
+#endif
+
 std::vector<std::string> getDeviceInfo()
 {
 	std::vector<std::string> result;
@@ -27,7 +39,32 @@ std::vector<std::string> getDeviceInfo()
 
 void setKeepAwake(bool awake)
 {
-
+    if (awake){
+        #if defined(Q_OS_WIN)
+            SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_CONTINUOUS);
+            
+        #elif defined(Q_OS_MAC)
+            if(success == kIOReturnSuccess) {
+            	
+            }else{
+                success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep, 
+                                                    kIOPMAssertionLevelOn, reasonForActivity, &assertionID);
+            }
+        #endif
+    }else{
+        #if defined(Q_OS_WIN)
+            SetThreadExecutionState(ES_CONTINUOUS);
+            
+        #elif defined(Q_OS_MAC)
+            if(success == kIOReturnSuccess) {
+                IOPMAssertionRelease(assertionID);
+                success = kIOReturnError;
+                
+            }else{
+            	
+            }
+        #endif
+    }
 }
 
 void vibrate(int ms)
@@ -258,11 +295,14 @@ void g_setProperty(const char* what, const char* arg){
             }
         }
 
+    }else if (strcmp(what, "cursorPosition") == 0)
+    {
+        QCursor::setPos(arg1,arg2);
+
     }else{
     	
 	    // feel free to change this list
 	    QStringList acceptedWhat;
-	    acceptedWhat << "cursor(type)";
 	    acceptedWhat << "windowPosition(x,y)";
 	    acceptedWhat << "windowSize(w,h)";
 	    acceptedWhat << "minimumSize(w,h)";
@@ -270,6 +310,8 @@ void g_setProperty(const char* what, const char* arg){
 	    acceptedWhat << "windowColor(r,g,b)";
 	    acceptedWhat << "windowTitle(text)";
 	    acceptedWhat << "windowModel(type)";
+	    acceptedWhat << "cursor(type)";
+	    acceptedWhat << "cursorPosition(x,y)";
 	    
         MainWindow::getInstance()->printToOutput("Accepted value for Desktop's application:set()");
         for( int i=0; i<acceptedWhat.size(); ++i ){
@@ -301,12 +343,19 @@ const char* g_getProperty(const char* what){
         returnedProperty.append( QString::number(QApplication::desktop()->availableGeometry().width()) );
         returnedProperty.append("|");
         returnedProperty.append( QString::number(QApplication::desktop()->availableGeometry().height()) );
+    }else if (strcmp(what, "cursorPosition") == 0)
+    {
+        returnedProperty.append( QString::number(QCursor::pos().x()) );
+        returnedProperty.append("|");
+        returnedProperty.append( QString::number(QCursor::pos().y()) );
+        
     }else{
 	    // feel free to change this list
 	    QStringList acceptedWhat;
 	    acceptedWhat << "[x,y] windowPosition";
 	    acceptedWhat << "[w,h] windowSize";
 	    acceptedWhat << "[w,h] screenSize";
+	    acceptedWhat << "[x,y] cursorPosition";
     
         MainWindow::getInstance()->printToOutput("Accepted value for Desktop's application:get()");
         for( int i=0; i<acceptedWhat.size(); ++i ){

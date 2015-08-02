@@ -25,9 +25,9 @@ public:
 
     int* getPlayers(int* size);
 
-    void onKeyDownEvent(int keyCode, int playerId);
+    void onKeyDownEvent(int keyCode, int realCode, int playerId);
 
-    void onKeyUpEvent(int keyCode, int playerId);
+    void onKeyUpEvent(int keyCode, int realCode, int playerId);
 
     void onRightJoystick(float x, float y, double angle, double strength, int playerId);
 
@@ -36,6 +36,8 @@ public:
     void onRightTrigger(double strength, int playerId);
 
     void onLeftTrigger(double strength, int playerId);
+
+    void onAxisJoystick(double strength, int axisID, int playerId);
 
     void onConnected(struct Gamepad_device * device);
 
@@ -69,6 +71,7 @@ private:
 typedef struct ghid_KeyEvent
 {
 	int keyCode;
+    int realCode;
 	int playerId;
 } ghid_KeyEvent;
 
@@ -77,7 +80,7 @@ typedef struct ghid_JoystickEvent
 	float x;
 	float y;
 	double angle;
-	double strength;
+    double strength;
 	int playerId;
 } ghid_JoystickEvent;
 
@@ -108,8 +111,9 @@ enum
 	GHID_LEFT_JOYSTICK_EVENT,
 	GHID_RIGHT_TRIGGER_EVENT,
 	GHID_LEFT_TRIGGER_EVENT,
+    GHID_AXIS_JOYSTICK_EVENT,
 	GHID_CONNECTED_EVENT,
-	GHID_DISCONNECTED_EVENT
+    GHID_DISCONNECTED_EVENT
 };
 
 static const int BUTTON_B = 97;
