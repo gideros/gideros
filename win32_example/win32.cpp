@@ -42,7 +42,9 @@
 LuaApplication *application_;
 HWND hwndcopy;
 
-int windowWidth,windowHeight;
+int g_windowWidth;    // width if window was in portrait mode
+int g_windowHeight;   // height if window was in portrait mode > windowWidth
+bool g_portrait;
 
 #define ID_TIMER   1
 bool use_timer=false;
@@ -275,6 +277,7 @@ void loadProperties()
   buffer >> properties.touchToMouse;
   buffer >> properties.mouseTouchOrder;
 
+  printf("properties components\n");
   printf("logicalWidth, logicalHeight, orientation=%d %d %d\n",
 	 properties.logicalWidth, properties.logicalHeight, properties.orientation);
 
@@ -283,39 +286,37 @@ void loadProperties()
 
   printf("windowWidth, windowHeight=%d %d\n",properties.windowWidth, properties.windowHeight);
 
+  //    if (properties.orientation==0 || properties.orientation==2){            // portrait
+
   if (properties.windowWidth==0 || properties.windowHeight==0){
-    if (properties.orientation==0 || properties.orientation==2){            // portrait
-      windowWidth=properties.logicalWidth;
-      windowHeight=properties.logicalHeight;
-    }
-    else {
-      windowWidth=properties.logicalHeight;
-      windowHeight=properties.logicalWidth;
-    }
+    g_windowWidth=properties.logicalWidth;
+    g_windowHeight=properties.logicalHeight;
   }    
   else {
-    windowWidth=properties.windowWidth;
-    windowHeight=properties.windowHeight;
+    g_windowWidth=properties.windowWidth;
+    g_windowHeight=properties.windowHeight;
   }
-
-  //  int width = windowWidth;
-  //  int height = windowHeight;
 
   float contentScaleFactor = 1;
   Orientation hardwareOrientation;
   Orientation deviceOrientation;
 
   // the first arg to setResolution should be the smaller dimension
-  if (windowWidth < windowHeight){
+  if (properties.orientation==0 || properties.orientation==2){
     hardwareOrientation = ePortrait;
     deviceOrientation = ePortrait;
-    application_->setResolution(windowWidth * contentScaleFactor, windowHeight * contentScaleFactor);
+    g_portrait=true;
   }
   else {
     hardwareOrientation = eLandscapeLeft;
     deviceOrientation = eLandscapeLeft;
-    application_->setResolution(windowHeight * contentScaleFactor, windowWidth * contentScaleFactor);
+    g_portrait=false;
   }
+
+  application_->setResolution(g_windowWidth * contentScaleFactor, 
+			      g_windowHeight * contentScaleFactor);
+  //    application_->setResolution(windowHeight * contentScaleFactor, windowWidth * contentScaleFactor);
+
 
   application_->setHardwareOrientation(hardwareOrientation);
   application_->getApplication()->setDeviceOrientation(deviceOrientation);
@@ -422,8 +423,11 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     dxChrome=winRect.right-winRect.left-(clientRect.right-clientRect.left);
     dyChrome=winRect.bottom-winRect.top-(clientRect.bottom-clientRect.top);
 
-    SetWindowPos(hwnd,HWND_TOP,0,0,windowWidth+dxChrome,windowHeight+dyChrome,SWP_NOMOVE);
-    
+    if (g_portrait)
+      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowWidth+dxChrome,g_windowHeight+dyChrome,SWP_NOMOVE);
+    else
+      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowHeight+dxChrome,g_windowWidth+dyChrome,SWP_NOMOVE);
+
     return 0;
   }
   else if (iMsg==WM_SIZE){

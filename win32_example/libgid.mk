@@ -75,21 +75,21 @@ CXXFLAGS = -O2 -DGIDEROS_LIBRARY -fno-keep-inline-dllexport $(INCLUDEPATHS)
 
 links = ..\libgid\external\freetype-2.4.12\build\mingw48_32\libfreetype.a \
 ..\libgid\external\jpeg-9\build\mingw48_32\libjpeg.a \
-..\libgid\external\libpng-1.6.2\libpng.a \
+..\libgid\external\libpng-1.6.2\build\mingw481_win32\libpng.a \
 ..\libgid\external\mpg123-1.15.3\lib\mingw48_32\libmpg123.a \
 ..\libgid\external\openal-soft-1.13\build\mingw48_32\libOpenAL32.dll.a \
 ..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGC2.a \
 ..\libgid\external\zlib-1.2.8\build\mingw48_32\libzlibx.a \
 -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 -lopengl32 \
--L"../libgvfs/release" -lgvfs
+libgvfs.dll
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<
 
 %.o : %.c
-	g++ $(CXXFLAGS) -c $<
+	gcc $(CXXFLAGS) -c $<
 
-libgid.dll: $(objfiles)
+libgid.dll: $(objfiles) libgvfs.dll
 	g++ -o libgid.dll -shared $(objfiles) $(links)
 
 # uses C++ 2011 code

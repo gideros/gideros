@@ -79,6 +79,7 @@ GController::GController(GHID *ghid, unsigned int dID, const char* pname, int bt
     ghid_ = ghid;
     deviceID = dID;
     name = pname;
+
     xDPad = new GControllerDPadAxis(ghid_, deviceID, true);
     yDPad = new GControllerDPadAxis(ghid_, deviceID, false);
     trigger = new GControllerTrigger(ghid_, deviceID, dispatchTrigger);
@@ -110,15 +111,17 @@ const char* GController::getName(){
 }
 
 void GController::handleButtonDown(unsigned int buttonID) {
-    if(buttonID-buttonOffset < buttonCount)
-        buttonID = buttons[buttonID-buttonOffset];
-    ghid_->onKeyDownEvent(buttonID, deviceID);
+    int keyCode = buttonID;
+    if(keyCode-buttonOffset < buttonCount)
+        keyCode = buttons[keyCode-buttonOffset];
+    ghid_->onKeyDownEvent(keyCode, buttonID, deviceID);
 }
 
 void GController::handleButtonUp(unsigned int buttonID) {
-    if(buttonID-buttonOffset < buttonCount)
-        buttonID = buttons[buttonID-buttonOffset];
-    ghid_->onKeyUpEvent(buttonID, deviceID);
+    int keyCode = buttonID;
+    if(keyCode-buttonOffset < buttonCount)
+        keyCode = buttons[keyCode-buttonOffset];
+    ghid_->onKeyUpEvent(keyCode, buttonID, deviceID);
 }
 
 void GController::handleAxisMove(unsigned int axisID, float value, float lastValue)
@@ -126,10 +129,13 @@ void GController::handleAxisMove(unsigned int axisID, float value, float lastVal
     if(axisID == axis[DPAD_X])
     {
         xDPad->handle(value, lastValue);
+        leftStick->handleUnknownAxis(value,lastValue, axisID);
+
     }
     else if(axisID == axis[DPAD_Y])
     {
         yDPad->handle(value, lastValue);
+        leftStick->handleUnknownAxis(value,lastValue, axisID);
     }
     else if(axisID == axis[L_TRIGGER] || axisID == axis[R_TRIGGER]){
         if(axis[L_TRIGGER] == axis[R_TRIGGER])
@@ -138,19 +144,24 @@ void GController::handleAxisMove(unsigned int axisID, float value, float lastVal
             trigger->handleLeft(value, lastValue);
         else if (axisID == axis[R_TRIGGER])
             trigger->handleRight(value, lastValue);
+        leftStick->handleUnknownAxis(value,lastValue, axisID);
     }
     else if(axisID == axis[LEFT_STICK_X]){
-        leftStick->handleXAxis(value,lastValue);
+        leftStick->handleXAxis(value,lastValue, axisID);
     }
     else if(axisID == axis[LEFT_STICK_Y]){
-        leftStick->handleYAxis(value,lastValue);
+        leftStick->handleYAxis(value,lastValue, axisID);
     }
     else if(axisID == axis[RIGHT_STICK_X]){
-        rightStick->handleXAxis(value,lastValue);
+        rightStick->handleXAxis(value,lastValue, axisID);
     }
     else if(axisID == axis[RIGHT_STICK_Y]){
-        rightStick->handleYAxis(value,lastValue);
+        rightStick->handleYAxis(value,lastValue, axisID);
+    }else{
+        leftStick->handleUnknownAxis(value,lastValue, axisID);
     }
+
+
 }
 
 GControllerDPadAxis::GControllerDPadAxis(GHID *ghid, unsigned int dID, bool x)
@@ -166,24 +177,24 @@ void GControllerDPadAxis::handle(float value, float lastValue){
         if(xAxis)
         {
             if(value == -1)
-                ghid_->onKeyDownEvent(DPAD_LEFT, deviceID);
+                ghid_->onKeyDownEvent(DPAD_LEFT, -1, deviceID);
             else if(value == 1)
-                ghid_->onKeyDownEvent(DPAD_RIGHT, deviceID);
+                ghid_->onKeyDownEvent(DPAD_RIGHT, -1, deviceID);
             else if(value == 0 && lastValue == -1)
-                ghid_->onKeyUpEvent(DPAD_LEFT, deviceID);
+                ghid_->onKeyUpEvent(DPAD_LEFT, -1, deviceID);
             else if(value == 0 && lastValue == 1)
-                ghid_->onKeyUpEvent(DPAD_RIGHT, deviceID);
+                ghid_->onKeyUpEvent(DPAD_RIGHT, -1, deviceID);
         }
         else
         {
             if(value == -1)
-                ghid_->onKeyDownEvent(DPAD_UP, deviceID);
+                ghid_->onKeyDownEvent(DPAD_UP, -1, deviceID);
             else if(value == 1)
-                ghid_->onKeyDownEvent(DPAD_DOWN, deviceID);
+                ghid_->onKeyDownEvent(DPAD_DOWN, -1, deviceID);
             else if(value == 0 && lastValue == -1)
-                ghid_->onKeyUpEvent(DPAD_UP, deviceID);
+                ghid_->onKeyUpEvent(DPAD_UP, -1, deviceID);
             else if(value == 0 && lastValue == 1)
-                ghid_->onKeyUpEvent(DPAD_DOWN, deviceID);
+                ghid_->onKeyUpEvent(DPAD_DOWN, -1, deviceID);
         }
     }
 }
@@ -206,12 +217,12 @@ void GControllerTrigger::handleBoth(float value, float lastValue){
                 if(!rightDown && value < -0.5)
                 {
                     rightDown = true;
-                    ghid_->onKeyDownEvent(BUTTON_R2, deviceID);
+                    ghid_->onKeyDownEvent(BUTTON_R2, -1, deviceID);
                 }
                 else if(rightDown && value >= -0.5)
                 {
                     rightDown = false;
-                    ghid_->onKeyUpEvent(BUTTON_R2, deviceID);
+                    ghid_->onKeyUpEvent(BUTTON_R2, -1, deviceID);
                 }
            }
         }
@@ -223,12 +234,12 @@ void GControllerTrigger::handleBoth(float value, float lastValue){
                 if(!leftDown && value > 0.5)
                 {
                     leftDown = true;
-                    ghid_->onKeyDownEvent(BUTTON_L2, deviceID);
+                    ghid_->onKeyDownEvent(BUTTON_L2, -1, deviceID);
                 }
                 else if(leftDown && value <= 0.5)
                 {
                     leftDown = false;
-                    ghid_->onKeyUpEvent(BUTTON_L2, deviceID);
+                    ghid_->onKeyUpEvent(BUTTON_L2, -1, deviceID);
                 }
             }
         }
@@ -247,12 +258,12 @@ void GControllerTrigger::handleLeft(float value, float lastValue){
                 if(!leftDown && value > 0.5)
                 {
                     leftDown = true;
-                    ghid_->onKeyDownEvent(BUTTON_L2, deviceID);
+                    ghid_->onKeyDownEvent(BUTTON_L2, -1, deviceID);
                 }
                 else if(leftDown && value <= 0.5)
                 {
                     leftDown = false;
-                    ghid_->onKeyUpEvent(BUTTON_L2, deviceID);
+                    ghid_->onKeyUpEvent(BUTTON_L2, -1, deviceID);
                 }
             }
         }
@@ -271,12 +282,12 @@ void GControllerTrigger::handleRight(float value, float lastValue){
                 if(!rightDown && value > 0.5)
                 {
                     rightDown = true;
-                    ghid_->onKeyDownEvent(BUTTON_R2, deviceID);
+                    ghid_->onKeyDownEvent(BUTTON_R2, -1, deviceID);
                 }
                 else if(rightDown && value <= 0.5)
                 {
                     rightDown = false;
-                    ghid_->onKeyUpEvent(BUTTON_R2, deviceID);
+                    ghid_->onKeyUpEvent(BUTTON_R2, -1, deviceID);
                 }
             }
         }
@@ -292,21 +303,28 @@ GControllerJoystick::GControllerJoystick(GHID *ghid, unsigned int dID, bool left
     isLeft = left;
 }
 
-void GControllerJoystick::handleXAxis(float value, float lastValue){
+void GControllerJoystick::handleXAxis(float value, float lastValue, int axisID){
     if(lastValue != value)
     {
         xAxis = value;
         handle();
+        ghid_->onAxisJoystick(value, axisID, deviceID);
     }
 }
 
-void GControllerJoystick::handleYAxis(float value, float lastValue){
+void GControllerJoystick::handleYAxis(float value, float lastValue, int axisID){
     if(lastValue != value)
     {
         yAxis = value;
         handle();
+        ghid_->onAxisJoystick(value, axisID, deviceID);
     }
 }
+
+void GControllerJoystick::handleUnknownAxis(float value, float lastValue, int axisID){
+    ghid_->onAxisJoystick(value, axisID, deviceID);
+}
+
 
 void GControllerJoystick::handle(){
     if(xAxis*xAxis + yAxis*yAxis <= DEAD_ZONE * DEAD_ZONE)
@@ -333,5 +351,7 @@ void GControllerJoystick::handle(){
         {
                 ghid_->onRightJoystick(xAxis, yAxis, angle, strength, deviceID);
         }
+
+
     }
 }

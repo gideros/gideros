@@ -52,18 +52,22 @@ CXXFLAGS = -O2 -fno-keep-inline-dllexport $(INCLUDEPATHS)
 #-DFT2_BUILD_LIBRARY \
 #-DPYSTRING_LIBRARY
 
-links = ..\libgid\external\freetype-2.4.12\build\mingw48_32\libfreetype.a \
-..\libgid\external\jpeg-9\build\mingw48_32\libjpeg.a \
-..\libgid\external\libpng-1.6.2\build\mingw48_32\libpng.a \
-..\libgid\external\mpg123-1.15.3\lib\mingw48_32\libmpg123.a \
-..\libgid\external\openal-soft-1.13\build\mingw48_32\libOpenAL32.dll.a \
-..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGC2.a \
+# ..\libgid\external\libpng-1.6.2\build\mingw48_32\libpng.a \
+#..\libgid\external\jpeg-9\build\mingw48_32\libjpeg.a \
+#..\libgid\external\mpg123-1.15.3\lib\mingw48_32\libmpg123.a \
+#..\libgid\external\openal-soft-1.13\build\mingw48_32\libOpenAL32.dll.a \
+#..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGC2.a \
+
+links = \
+..\libgid\external\freetype-2.4.12\build\mingw48_32\libfreetype.a \
 ..\libgid\external\zlib-1.2.8\build\mingw48_32\libzlibx.a \
 -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 \
--L"../libgvfs/release" -lgvfs \
--L"../lua/release" -llua \
--L"../libgideros/release" -lgideros \
--L"../libpystring/release" -lpystring libgid.dll -lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi
+libgvfs.dll \
+liblua.dll \
+libgideros.dll \
+libpystring.dll \
+libgid.dll \
+-lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi
 
 objfiles = win32.o \
 accelerometerbinder.o         alertdialogbinder.o \
@@ -167,7 +171,7 @@ ftlibrarysingleton.o
 %.o : %.c
 	gcc $(CXXFLAGS) -c $<
 
-win32.exe: $(objfiles)
+win32.exe: $(objfiles) libgvfs.dll liblua.dll libgideros.dll libpystring.dll libgid.dll
 	g++ -o win32.exe $(objfiles) $(links)
 
 # b2Timer needs to undefine _WIN32
@@ -196,8 +200,6 @@ b2Timer.o: \
 -include libtess.dep
 -include md5.dep
 -include utf8.dep
--include libgid.dep
--include libgidwin32.dep
 -include ioapi.dep
 -include unzip.dep
 
@@ -222,7 +224,5 @@ depend :
 	g++ $(INCLUDEPATHS) -MM ..\external\glu\libtess\*.c > libtess.dep
 	g++ $(INCLUDEPATHS) -MM ..\libgid\src\md5.c > md5.dep
 	g++ $(INCLUDEPATHS) -MM ..\libgid\src\utf8.c > utf8.dep
-	g++ $(INCLUDEPATHS) -MM ..\libgid\src\*.cpp > libgid.dep
-	g++ $(INCLUDEPATHS) -MM ..\libgid\src\win32\*.cpp > libgidwin32.dep
 	g++ $(INCLUDEPATHS) -MM ../external/minizip-1.1/source/ioapi.c > ioapi.dep
 	g++ $(INCLUDEPATHS) -MM ../external/minizip-1.1/source/unzip.c > unzip.dep

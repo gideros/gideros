@@ -18,7 +18,7 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
 	this->width=width;
 	this->height=height;
 	this->wrap=wrap;
-	this->filter=filter;
+	this->filter=filtering;
 
     D3D11_TEXTURE2D_DESC tdesc;
     D3D11_SUBRESOURCE_DATA tbsd;

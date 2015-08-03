@@ -141,10 +141,10 @@ protected:
 		Scissor(int x,int y,int w,int h) : x(x), y(y), w(w), h(h) {}
 		Scissor(const Scissor &p,int nx,int ny,int nw,int nh) : x(nx), y(ny), w(nw), h(nh)
 		{
-			int x2=x+w-1;
-			int y2=y+h-1;
-			int px2=p.x+p.w-1;
-			int py2=p.y+p.h-1;
+			int x2=x+w;
+			int y2=y+h;
+			int px2=p.x+p.w;
+			int py2=p.y+p.h;
 			if (p.x>x)
 				x=p.x;
 			if (p.y>y)
@@ -153,8 +153,13 @@ protected:
 				x2=px2;
 			if (py2<y2)
 				y2=py2;
-			w=x2+1-x;
-			h=y2+1-y;
+			w=x2-x;
+			h=y2-y;
+			if ((w<0)||(h<0))
+			{
+				w=0;
+				h=0;
+			}
 		}
 
 		int x,y,w,h;
