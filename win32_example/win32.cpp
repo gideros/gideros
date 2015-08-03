@@ -5,6 +5,7 @@
 #include "gl/glext.h"
 #include "wglext.h"
 
+#include <pluginmanager.h>
 #include <stdio.h>
 #include <string.h>
 #include <fstream>
@@ -50,6 +51,31 @@ bool g_portrait;
 bool use_timer=false;
 int vsyncVal=0;
 static HDC hDC;
+
+static void loadPlugins()
+{
+  static char fullname[MAX_PATH];
+  WIN32_FIND_DATA fd; 
+  HANDLE hFind = FindFirstFile("plugins\\*.dll", &fd); 
+  if(hFind != INVALID_HANDLE_VALUE) { 
+    do { 
+      // read all (real) files in current folder
+      // , delete '!' read other 2 default folder . and ..
+      if(! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
+
+	strcpy(fullname,"plugins\\");
+	strcat(fullname,fd.cFileName);
+	printf("found DLL: %s\n",fullname);
+
+	//	HMODULE hModule = LoadLibrary(fullname);
+	//        void* plugin = (void*)GetProcAddress(hModule,"g_pluginMain");
+	// if (plugin)
+	//	  PluginManager::instance().registerPlugin((void*(*)(lua_State*, int))plugin);
+      }
+    }while(FindNextFile(hFind, &fd)); 
+    FindClose(hFind); 
+  } 
+}
 
 static void printFunc(const char *str, int len, void *data)
 {
@@ -407,6 +433,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     
     // audio
     gaudio_Init();
+
+    loadPlugins();
 
     application_ = new LuaApplication;
 
