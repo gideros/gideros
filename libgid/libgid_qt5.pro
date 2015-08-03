@@ -123,11 +123,34 @@ LIBS += -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx
 LIBS += -lpthread
 }
 
+unix {
+DEFINES += OPENAL_SUBDIR_AL
+DEFINES += STRICT_LINUX
+INCLUDEPATH += "./external/openal-soft-1.13/include"
+
+LIBS += -L"../libgid/external/libpng-1.6.2/build/gcc484_64" -lpng
+#LIBS += -L"../libgid/external/openal-soft-1.13/build/gcc484_64" -lOpenAL32
+LIBS += "../libgid/external/openal-soft-1.13/build/gcc484_64/libopenal.so"
+
+LIBS += -L"../libgid/external/glew-1.10.0/lib/gcc484_64" -lGLEW
+LIBS += -L"../libgid/external/jpeg-9/build/gcc484_64" -ljpeg
+
+LIBS += -L"../libgid/external/mpg123-1.15.3/lib/gcc484_64" -lmpg123
+
+LIBS += -lpthread
+
+LIBS += -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx
+}
+
 win32 {
 LIBS += -L"../libgvfs/release" -lgvfs
 }
 
 macx {
+LIBS += -L"../libgvfs" -lgvfs
+}
+
+unix {
 LIBS += -L"../libgvfs" -lgvfs
 }
 

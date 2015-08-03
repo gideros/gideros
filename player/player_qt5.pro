@@ -43,12 +43,27 @@ macx {
     QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
 }
 
+unix {
+    TARGET = GiderosPlayer
+    DEFINES += STRICT_LINUX
+    LIBS += \
+        -L"../libgid/external/zlib-1.2.8/build/gcc484_64" -lzlibx\
+        -L"../libgid/external/glew-1.10.0/lib/gcc484_64" -lGLEW\
+#        -lwsock32\
+#        -liphlpapi\
+        ../libgid/libgid.so \
+        ../libgvfs/libgvfs.so \
+        ../lua/liblua.so \
+        ../libgideros/libgideros.so \
+        ../libpystring/libpystring.so
+}
+
 TEMPLATE = app
 
 INCLUDEPATH += \
-    headers \
-    sources \
-    forms \
+    Headers \
+    Sources \
+    Forms \
     ../2dsg \
     ../2dsg/gfxbackends \
     ../2dsg/gfxbackends/gl2 \
@@ -69,11 +84,11 @@ INCLUDEPATH += \
     ../libraries/constants \
 
 SOURCES += \
-    sources/main.cpp \
-    sources/mainwindow.cpp \
-    sources/errordialog.cpp \
-    sources/glcanvas.cpp \
-    sources/settingsdialog.cpp \
+    Sources/main.cpp \
+    Sources/mainwindow.cpp \
+    Sources/errordialog.cpp \
+    Sources/glcanvas.cpp \
+    Sources/settingsdialog.cpp \
     $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/*.cpp) \
     $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/*.cpp) \
     $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes/*.cpp) \
@@ -100,15 +115,15 @@ SOURCES += \
     $$files(../libpvrt/*.h)
 
 FORMS += \
-    forms/mainwindow.ui\
-    forms/errordialog.ui \
-    forms/settingsdialog.ui
+    Forms/mainwindow.ui\
+    Forms/errordialog.ui \
+    Forms/settingsdialog.ui
 
 HEADERS += \
-    headers/mainwindow.h \
-    headers/errordialog.h \
-    headers/glcanvas.h \
-    headers/settingsdialog.h\
+    Headers/mainwindow.h \
+    Headers/errordialog.h \
+    Headers/glcanvas.h \
+    Headers/settingsdialog.h\
     $$files(../libsound/*.h)\
     $$files(../2dsg/*.h)\
     $$files(../luabinding/*.h)\

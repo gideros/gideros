@@ -54,10 +54,8 @@ LIBS += -L"../lua" -llua
 LIBS += -L"../libpystring" -lpystring
 }
 
-
-
-
-
-
-
-
+unix {
+LIBS += ../libgid/libgid.so
+LIBS += ../lua/liblua.so
+LIBS += ../libpystring/libpystring.so
+}

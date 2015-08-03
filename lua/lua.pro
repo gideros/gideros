@@ -52,3 +52,6 @@ macx {
 LIBS += -L"../libgvfs" -lgvfs
 }
 
+unix {
+LIBS += ../libgvfs/libgvfs.so
+}

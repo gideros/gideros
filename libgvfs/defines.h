@@ -1,6 +1,10 @@
 #ifndef _DEFINES_H_
 #define _DEFINES_H_
 
+#ifdef STRICT_LINUX
+#define fpos_t off_t
+#endif
+
 #define __sbuf g__sbuf
 #define __sFILE g__sFILE
 #define FILE G_FILE
