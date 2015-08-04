@@ -57,8 +57,8 @@ links = ..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpth
 %.o : %.c
 	gcc $(CXXFLAGS) -c $<
 
-libgvfs.dll: $(objfiles) $(links)
-	g++ -o libgvfs.dll -shared $(objfiles) $(links)
+gvfs.dll: $(objfiles) $(links)
+	g++ -o gvfs.dll -shared $(objfiles) $(links)
 
 -include libgvfs.dep
 

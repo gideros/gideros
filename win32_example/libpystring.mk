@@ -15,8 +15,8 @@ links =
 %.o : %.c
 	gcc $(CXXFLAGS) -c $<
 
-libpystring.dll: $(objfiles) $(links)
-	g++ -o libpystring.dll -shared $(objfiles) $(links)
+pystring.dll: $(objfiles) $(links)
+	g++ -o pystring.dll -shared $(objfiles) $(links)
 
 -include libpystring.dep
 

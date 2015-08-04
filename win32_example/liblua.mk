@@ -8,7 +8,7 @@ objfiles = all_lua.o
 
 CXXFLAGS = -O2 -DLUA_BUILD_AS_DLL $(INCLUDEPATHS)
 
-links = libgvfs.dll
+links = gvfs.dll
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<
@@ -16,8 +16,8 @@ links = libgvfs.dll
 %.o : %.c
 	gcc $(CXXFLAGS) -c $<
 
-liblua.dll: $(objfiles) $(links)
-	g++ -o liblua.dll -shared $(objfiles) $(links)
+lua.dll: $(objfiles) $(links)
+	g++ -o lua.dll -shared $(objfiles) $(links)
 
 -include liblua.dep
 

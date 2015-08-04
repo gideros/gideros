@@ -8,10 +8,14 @@ This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.ph
 
 ]]
 
+local bit=require("bit")
+print("bitop output=",bit.tobit(0xffffffff))
+print("bitop bor=",bit.bor(1, 2, 4, 8))
+
 application:setBackgroundColor(255)
 
 application:setFps(60)
-print ("hello")
+print ("hello from Lua!")
 
 -- load texture, create bitmap from it and set as background
 local background = Bitmap.new(Texture.new("sky_world.png"))
@@ -59,7 +63,7 @@ stage:addEventListener(Event.KEY_DOWN, function() alertDialog2:show() end)
 
 sound=Sound.new("1.wav")
 soundchannel=sound:play(0,false)
---soundchannel:setLooping(false)
+soundchannel:setLooping(false)
 --soundchannel:setPosition(300)
 soundchannel:setPitch(1.5)
 

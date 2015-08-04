@@ -57,22 +57,23 @@ static void loadPlugins()
   static char fullname[MAX_PATH];
   WIN32_FIND_DATA fd; 
   HANDLE hFind = FindFirstFile("plugins\\*.dll", &fd); 
+
   if(hFind != INVALID_HANDLE_VALUE) { 
     do { 
       // read all (real) files in current folder
       // , delete '!' read other 2 default folder . and ..
-      if(! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
+      if (! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
 
 	strcpy(fullname,"plugins\\");
 	strcat(fullname,fd.cFileName);
 	printf("found DLL: %s\n",fullname);
 
-	//	HMODULE hModule = LoadLibrary(fullname);
-	//        void* plugin = (void*)GetProcAddress(hModule,"g_pluginMain");
-	// if (plugin)
-	//	  PluginManager::instance().registerPlugin((void*(*)(lua_State*, int))plugin);
+	HMODULE hModule = LoadLibrary(fullname);
+	void* plugin = (void*)GetProcAddress(hModule,"g_pluginMain");
+	if (plugin)
+	  PluginManager::instance().registerPlugin((void*(*)(lua_State*, int))plugin);
       }
-    }while(FindNextFile(hFind, &fd)); 
+    } while(FindNextFile(hFind, &fd)); 
     FindClose(hFind); 
   } 
 }

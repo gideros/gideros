@@ -32,7 +32,7 @@ event.o refptr.o eventvisitor.o pluginmanager.o luautil.o
 
 CXXFLAGS = -O2 -DGIDEROS_LIBRARY $(INCLUDEPATHS)
 
-links = libgid.dll liblua.dll libpystring.dll
+links = gid.dll lua.dll pystring.dll
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<
@@ -40,8 +40,8 @@ links = libgid.dll liblua.dll libpystring.dll
 %.o : %.c
 	gcc $(CXXFLAGS) -c $<
 
-libgideros.dll: $(objfiles) $(links)
-	g++ -o libgideros.dll -shared $(objfiles) $(links)
+gideros.dll: $(objfiles) $(links)
+	g++ -o gideros.dll -shared $(objfiles) $(links)
 
 -include libgideros.dep
 

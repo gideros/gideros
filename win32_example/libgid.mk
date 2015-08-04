@@ -81,7 +81,7 @@ links = ..\libgid\external\freetype-2.4.12\build\mingw48_32\libfreetype.a \
 ..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGC2.a \
 ..\libgid\external\zlib-1.2.8\build\mingw48_32\libzlibx.a \
 -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 -lopengl32 \
-libgvfs.dll
+gvfs.dll
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<
@@ -89,8 +89,8 @@ libgvfs.dll
 %.o : %.c
 	gcc $(CXXFLAGS) -c $<
 
-libgid.dll: $(objfiles) libgvfs.dll
-	g++ -o libgid.dll -shared $(objfiles) $(links)
+gid.dll: $(objfiles) gvfs.dll
+	g++ -o gid.dll -shared $(objfiles) $(links)
 
 # uses C++ 2011 code
 ginput-win32.o: ..\libgid\src\win32\ginput-win32.cpp \

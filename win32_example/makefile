@@ -62,11 +62,11 @@ links = \
 ..\libgid\external\freetype-2.4.12\build\mingw48_32\libfreetype.a \
 ..\libgid\external\zlib-1.2.8\build\mingw48_32\libzlibx.a \
 -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 \
-libgvfs.dll \
-liblua.dll \
-libgideros.dll \
-libpystring.dll \
-libgid.dll \
+gvfs.dll \
+lua.dll \
+gideros.dll \
+pystring.dll \
+gid.dll \
 -lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi
 
 objfiles = win32.o \
@@ -171,7 +171,7 @@ ftlibrarysingleton.o
 %.o : %.c
 	gcc $(CXXFLAGS) -c $<
 
-win32.exe: $(objfiles) libgvfs.dll liblua.dll libgideros.dll libpystring.dll libgid.dll
+win32.exe: $(objfiles) gvfs.dll lua.dll gideros.dll pystring.dll gid.dll
 	g++ -o win32.exe $(objfiles) $(links)
 
 # b2Timer needs to undefine _WIN32
