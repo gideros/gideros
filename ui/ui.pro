@@ -28,6 +28,11 @@ macx {
 TARGET = "Gideros Studio"
 }
 
+unix {
+TARGET = "GiderosStudio"
+QMAKE_CXXFLAGS += -std=gnu++11
+}
+
 TEMPLATE = app
 
 INCLUDEPATH +=	\

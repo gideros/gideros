@@ -21,6 +21,10 @@ win32 {
 TARGET = "GiderosTexturePacker"
 }
 
+unix {
+TARGET = "GiderosTexturePacker"
+}
+
 win32 {
 RC_FILE = texturepacker.rc
 }
