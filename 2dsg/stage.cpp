@@ -8,21 +8,31 @@
 
 #include <stack>
 
-void Stage::mouseDown(int x, int y, float sx, float sy, float tx, float ty)
+void Stage::mouseDown(int x, int y, int button, float sx, float sy, float tx, float ty)
 {
     MouseEvent event(MouseEvent::MOUSE_DOWN, x, y, sx, sy, tx, ty);
+    event.button = button;
     dispatchToSpritesWithListeners(&event);
 }
 
-void Stage::mouseUp(int x, int y, float sx, float sy, float tx, float ty)
+void Stage::mouseUp(int x, int y, int button, float sx, float sy, float tx, float ty)
 {
     MouseEvent event(MouseEvent::MOUSE_UP, x, y, sx, sy, tx, ty);
+    event.button = button;
     dispatchToSpritesWithListeners(&event);
 }
 
-void Stage::mouseMove(int x, int y, float sx, float sy, float tx, float ty)
+void Stage::mouseMove(int x, int y, int button, float sx, float sy, float tx, float ty)
 {
     MouseEvent event(MouseEvent::MOUSE_MOVE, x, y, sx, sy, tx, ty);
+    event.button = button;
+    dispatchToSpritesWithListeners(&event);
+}
+
+void Stage::mouseHover(int x, int y, int button, float sx, float sy, float tx, float ty)
+{
+    MouseEvent event(MouseEvent::MOUSE_HOVER, x, y, sx, sy, tx, ty);
+    event.button = button;
     dispatchToSpritesWithListeners(&event);
 }
 

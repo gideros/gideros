@@ -71,6 +71,11 @@ public:
 
 		keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
 
+		keyMap_[GINPUT_KEY_SHIFT] = GINPUT_KEY_SHIFT;
+		keyMap_[GINPUT_KEY_SPACE] = GINPUT_KEY_SPACE;
+		keyMap_[GINPUT_KEY_BACKSPACE] = GINPUT_KEY_BACKSPACE;
+
+
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
         gevent_AddCallback(posttick_s, this);
@@ -221,9 +226,9 @@ public:
 		}
 	}
 
-	void mouseMove(int x, int y)
+	void mouseMove(int x, int y, int button)
 	{
-		ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, GINPUT_NO_BUTTON);
+		ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button);
 
 		ginput_TouchEvent *touchEvent = NULL;
 		if (isMouseToTouchEnabled_)
@@ -258,6 +263,14 @@ public:
 			gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_MOVE_EVENT, mouseEvent, 0, this);
 			deleteMouseEvent(mouseEvent);
 		}
+	}
+
+	void mouseHover(int x, int y, int button)
+	{
+		ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button);
+
+		gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_HOVER_EVENT, mouseEvent, 0, this);
+		deleteMouseEvent(mouseEvent);
 	}
 
 	void mouseUp(int x, int y, int button)
@@ -760,10 +773,16 @@ void ginputp_mouseDown(int x, int y, int button)
 		s_manager->mouseDown(x, y, button);
 }
 
-void ginputp_mouseMove(int x, int y)
+void ginputp_mouseMove(int x, int y, int button)
 {
 	if (s_manager)
-		s_manager->mouseMove(x, y);
+		s_manager->mouseMove(x, y, button);
+}
+
+void ginputp_mouseHover(int x, int y, int button)
+{
+	if (s_manager)
+		s_manager->mouseHover(x, y, button);
 }
 
 void ginputp_mouseUp(int x, int y, int button)

@@ -26,7 +26,10 @@
 }
 
 -(void)setKey:(NSMutableArray*)parameters{
+    [HeyzapAds startWithPublisherID: [parameters objectAtIndex:0]];
     [HZInterstitialAd setDelegate: self];
+    [HZVideoAd setDelegate:self];
+    [HZIncentivizedAd setDelegate:self];
 }
 
 -(void)loadAd:(NSMutableArray*)parameters{
@@ -50,7 +53,7 @@
                 [self hideAd:type];
             }];
             [listener setHide:^(){
-                [HZVideoAd hide];
+  
             }];
             [self.mngr set:type forType:type withListener:listener];
             if(tag != nil)
@@ -69,7 +72,7 @@
                 [self hideAd:type];
             }];
             [listener setHide:^(){
-                [HZIncentivizedAd hide];
+ 
             }];
             [self.mngr set:type forType:type withListener:listener];
             [HZIncentivizedAd fetch];
@@ -87,7 +90,7 @@
                 [self hideAd:type];
             }];
             [listener setHide:^(){
-                [HZInterstitialAd hide];
+
             }];
             [self.mngr set:type forType:type withListener:listener];
             if(tag != nil)
@@ -150,20 +153,20 @@
 
 - (void) didReceiveAdWithTag:(NSString *)tag
 {
-    if([HZInterstitialAd isAvailableForTag:tag])
+    if([self.mngr get:@"interstitial"] != nil && [HZInterstitialAd isAvailableForTag:tag])
     {
         [self.mngr load:@"interstitial"];
         [AdsClass adReceived:[self class] forType:@"interstitial"];
         self.hasInterstitial = YES;
     }
-    if([HZVideoAd isAvailableForTag:tag])
+    if([self.mngr get:@"video"] != nil && [HZVideoAd isAvailableForTag:tag])
     {
         [self.mngr load:@"video"];
         [AdsClass adReceived:[self class] forType:@"video"];
         self.hasVideo = YES;
     }
     
-    if([HZIncentivizedAd isAvailable])
+    if([self.mngr get:@"v4vc"] != nil && [HZIncentivizedAd isAvailable])
     {
         [self.mngr load:@"v4vc"];
         [AdsClass adReceived:[self class] forType:@"v4vc"];
@@ -183,12 +186,13 @@
     [self.mngr reset:@"v4vc"];
 }
 
-- (void) didCompleteAd{
+- (void)didCompleteAdWithTag: (NSString *) tag{
     self.hasV4vc = NO;
     [AdsClass adActionEnd:[self class] forType:@"v4vc"];
+    [AdsClass adDismissed:[self class] forType:@"v4vc"];
 }
 
-- (void) didFailToCompleteAd{
+- (void)didFailToCompleteAdWithTag: (NSString *) tag{
     self.hasV4vc = NO;
 }
 

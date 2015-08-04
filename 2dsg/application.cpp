@@ -344,28 +344,36 @@ void Application::renderScene(int deltaFrameCount)
 	lastFrameRenderTime_=iclock()-time;
 }
 
-void Application::mouseDown(int x, int y)
+void Application::mouseDown(int x, int y, int button)
 {
 	correctTouchPositionHardware(&x, &y);
 	correctTouchPosition(&x, &y);
 	correctTouchPositionLogical(&x, &y);
-    stage_->mouseDown(x, y, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
+    stage_->mouseDown(x, y, button, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
 }
 
-void Application::mouseUp(int x, int y)
+void Application::mouseUp(int x, int y, int button)
 {
 	correctTouchPositionHardware(&x, &y);
 	correctTouchPosition(&x, &y);
 	correctTouchPositionLogical(&x, &y);
-    stage_->mouseUp(x, y, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
+    stage_->mouseUp(x, y, button, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
 }
 
-void Application::mouseMove(int x, int y)
+void Application::mouseMove(int x, int y, int button)
 {
 	correctTouchPositionHardware(&x, &y);
 	correctTouchPosition(&x, &y);
 	correctTouchPositionLogical(&x, &y);
-    stage_->mouseMove(x, y, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
+    stage_->mouseMove(x, y, button, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
+}
+
+void Application::mouseHover(int x, int y, int button)
+{
+    correctTouchPositionHardware(&x, &y);
+    correctTouchPosition(&x, &y);
+    correctTouchPositionLogical(&x, &y);
+    stage_->mouseHover(x, y, button, logicalScaleX_, logicalScaleY_, logicalTranslateX_, logicalTranslateY_);
 }
 
 void Application::mouseWheel(int x, int y, int wheel)
@@ -445,6 +453,7 @@ Orientation Application::orientation() const
 void Application::setHardwareOrientation(Orientation orientation)
 {
 	hardwareOrientation_ = orientation;
+	projectionDirty_=true;
 }
 
 Orientation Application::hardwareOrientation() const
@@ -455,6 +464,7 @@ Orientation Application::hardwareOrientation() const
 void Application::setDeviceOrientation(Orientation orientation)
 {
     deviceOrientation_ = orientation;
+	projectionDirty_=true;
 }
 
 Orientation Application::getDeviceOrientation() const

@@ -416,6 +416,22 @@ static int bindAll(lua_State* L)
     lua_pushinteger(L, GINPUT_KEY_9);
     lua_setfield(L, -2, "NUM_9");
 
+	lua_pushinteger(L, GINPUT_KEY_SHIFT);
+	lua_setfield(L, -2, "SHIFT");
+	lua_pushinteger(L, GINPUT_KEY_SPACE);
+	lua_setfield(L, -2, "SPACE");
+	lua_pushinteger(L, GINPUT_KEY_BACKSPACE);
+	lua_setfield(L, -2, "BACKSPACE");
+
+    lua_pushinteger(L, GINPUT_NO_BUTTON);
+    lua_setfield(L, -2, "MOUSE_NONE");
+    lua_pushinteger(L, GINPUT_LEFT_BUTTON);
+    lua_setfield(L, -2, "MOUSE_LEFT");
+    lua_pushinteger(L, GINPUT_RIGHT_BUTTON);
+    lua_setfield(L, -2, "MOUSE_RIGHT");
+    lua_pushinteger(L, GINPUT_MIDDLE_BUTTON);
+    lua_setfield(L, -2, "MOUSE_MIDDLE");
+
 	lua_setglobal(L, "KeyCode");
 
 
@@ -468,17 +484,22 @@ void LuaApplication::callback(int type, void *event)
     if (type == GINPUT_MOUSE_DOWN_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseDown(event2->x, event2->y);
+        application_->mouseDown(event2->x, event2->y, event2->button);
     }
     else if (type == GINPUT_MOUSE_MOVE_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseMove(event2->x, event2->y);
+        application_->mouseMove(event2->x, event2->y, event2->button);
+    }
+    else if (type == GINPUT_MOUSE_HOVER_EVENT)
+    {
+        ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
+        application_->mouseHover(event2->x, event2->y, event2->button);
     }
     else if (type == GINPUT_MOUSE_UP_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseUp(event2->x, event2->y);
+        application_->mouseUp(event2->x, event2->y, event2->button);
     }
     else if (type == GINPUT_MOUSE_WHEEL_EVENT)
     {

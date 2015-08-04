@@ -6,8 +6,9 @@ JAR=$(JAVA_HOME)/bin/jar
 ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_HOME)/bin/java -classpath "$(ANT_HOME)\\lib\\ant-launcher.jar" "-Dant.home=$(ANT_HOME)" org.apache.tools.ant.launch.Launcher
 
 #DEFS
-PLUGINS_WIN=bitop lsqlite3 luasocket lpeg lfs json microphone
-PLUGINS_ANDROID=bitop lsqlite3 luasocket lpeg lfs json microphone flurry Facebook googlebilling
+PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia
+PLUGINS_WIN=$(PLUGINS_ALL)
+PLUGINS_ANDROID=$(PLUGINS_ALL) flurry Facebook googlebilling
 ROOT=.
 SDK=$(ROOT)/Sdk
 RELEASE=$(ROOT)/release
@@ -15,6 +16,7 @@ RELEASE=$(ROOT)/release
 #TOOLS
 QMAKE=qmake
 MINGWMAKE=mingw32-make
+CC=$(QTBASEDIR)/Tools/$(QTMINGW)/bin/gcc
 
 all: qtapp.install android.install
 

@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "AdsProtocol.h"
-#import <vunglepub/vunglepub.h>
+#import <VungleSDK/VungleSDK.h>
 #import "AdsManager.h"
 
-@interface AdsVungle : NSObject <AdsProtocol, VGVunglePubDelegate>
+@interface AdsVungle : NSObject <AdsProtocol, VungleSDKDelegate>
 @property(nonatomic) BOOL hasVideo;
 @property(nonatomic) BOOL hasV4vc;
 @property (nonatomic, retain) AdsManager *mngr;

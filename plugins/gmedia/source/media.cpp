@@ -10,23 +10,21 @@
 #include <QFileDialog>
 #include <QPixmap>
 #include <QDateTime>
+#include <QObject>
 
-class GMEDIA
-{
-public:
-	GMEDIA()
+	GMEDIA::GMEDIA()
 	{
 		gid_ = g_NextId();
-
+		camera=NULL;
 	}
 
-	~GMEDIA()
+	GMEDIA::~GMEDIA()
 	{
 
 		gevent_RemoveEventsWithGid(gid_);
     }
 	
-	bool isCameraAvailable()
+	bool GMEDIA::isCameraAvailable()
 	{
         if (QCameraInfo::availableCameras().count() > 0)
             return true;
@@ -34,14 +32,16 @@ public:
             return false;
     }
 	
-	void takePicture()
+	void GMEDIA::takePicture()
 	{
-        QCamera* camera;
+		if (!camera)
+		{
         QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
         foreach (const QCameraInfo &cameraInfo, cameras) {
             camera = new QCamera(cameraInfo);
             break;
         }
+		}
 
         QCameraImageCapture* imageCapture = new QCameraImageCapture(camera);
 
@@ -55,13 +55,13 @@ public:
         QDateTime createdDate = QDateTime::currentDateTime();
         QString format = "jpg";
         QString fileName = getAppPath() + "/" + createdDate.toString("yyyyMMdd_HHmmss") + "_gideros." + format;
-        imageCapture->capture(fileName);
 
-        //on shutter button released
-        camera->unlock();
+        connect(imageCapture, SIGNAL(imageSaved(int, const QString &)),
+                         this,  SLOT(pictureSaved(int, const QString &)));
+        imageCapture->capture(fileName);
 	}
 
-    void takeScreenshot()
+    void GMEDIA::takeScreenshot()
     {
         QDateTime createdDate = QDateTime::currentDateTime();
         //QPixmap originalPixmap = QPixmap::grabWindow(QApplication::activeWindow()->winId());
@@ -74,7 +74,7 @@ public:
         onMediaReceived(fileName.toStdString().c_str());
     }
 	
-	void getPicture()
+	void GMEDIA::getPicture()
 	{
         QString fileName = QFileDialog::getOpenFileName(0, QObject::tr("Open File"),"",QObject::tr("Images (*.png *.jpeg *.jpg)"));
         if(fileName.isNull())
@@ -92,7 +92,7 @@ public:
         }
 	}
 	
-    void savePicture(const char* path)
+    void GMEDIA::savePicture(const char* path)
 	{
         QFileInfo info(path);
         QString format = info.suffix();
@@ -114,7 +114,7 @@ public:
         }
 	}
 
-    void playVideo(const char* path, bool force)
+    void GMEDIA::playVideo(const char* path, bool force)
     {
         QMediaPlayer* player = new QMediaPlayer;
 
@@ -129,7 +129,7 @@ public:
         player->play();
     }
 
-    QString getAppPath(){
+    QString GMEDIA::getAppPath(){
         QDir dir = QDir::temp();
         dir.mkdir("gideros");
         dir.cd("gideros");
@@ -138,7 +138,7 @@ public:
         return dir.absolutePath();
     }
 	
-    void onMediaReceived(const char* path)
+    void GMEDIA::onMediaReceived(const char* path)
 	{
 
 		gmedia_ReceivedEvent *event = (gmedia_ReceivedEvent*)gevent_CreateEventStruct1(
@@ -147,46 +147,46 @@ public:
 		gevent_EnqueueEvent(gid_, callback_s, GMEDIA_RECEIVED_EVENT, event, 1, this);
 	}
 
-    void onMediaCompleted()
+    void GMEDIA::onMediaCompleted()
     {
         gevent_EnqueueEvent(gid_, callback_s, GMEDIA_COMPLETED_EVENT, NULL, 1, this);
     }
 	
-	void onMediaCanceled()
+	void GMEDIA::onMediaCanceled()
     {
 		gevent_EnqueueEvent(gid_, callback_s, GMEDIA_CANCELED_EVENT, NULL, 1, this);
 	}
 	
-	g_id addCallback(gevent_Callback callback, void *udata)
+	g_id GMEDIA::addCallback(gevent_Callback callback, void *udata)
 	{
 		return callbackList_.addCallback(callback, udata);
 	}
-	void removeCallback(gevent_Callback callback, void *udata)
+	void GMEDIA::removeCallback(gevent_Callback callback, void *udata)
 	{
 		callbackList_.removeCallback(callback, udata);
 	}
-	void removeCallbackWithGid(g_id gid)
+	void GMEDIA::removeCallbackWithGid(g_id gid)
 	{
 		callbackList_.removeCallbackWithGid(gid);
 	}
 
-private:
-	static void callback_s(int type, void *event, void *udata)
+	void GMEDIA::callback_s(int type, void *event, void *udata)
 	{
 		((GMEDIA*)udata)->callback(type, event);
 	}
 
-	void callback(int type, void *event)
+	void GMEDIA::callback(int type, void *event)
 	{
 		callbackList_.dispatchEvent(type, event);
 	}
 
-private:
-	gevent_CallbackList callbackList_;
-
-private:
-    g_id gid_;
-};
+    void GMEDIA::pictureSaved(int id, const QString & fileName)
+    {
+        //on shutter button released
+        camera->unlock();
+        camera->stop();
+        onMediaReceived(fileName.toStdString().c_str());
+    }
 
 
 static GMEDIA *s_gmedia = NULL;

@@ -31,6 +31,7 @@
 #include <gstdio.h>
 #include <gpath.h>
 #include <gvfs-native.h>
+#include "mainwindow.h"
 
 static int __mkdir(const char* path) {
 #ifdef _WIN32
@@ -84,17 +85,20 @@ static void deltree(const char* dir) {
 GLCanvas::GLCanvas(QWidget *parent) :
 		QGLWidget(parent) {
 	setAttribute(Qt::WA_AcceptTouchEvents);
+    lastMouseButton_ = 0;
+    setMouseTracking(true);
 	//setFocusPolicy(Qt::WheelFocus);
 
 	/*
 	 QGLFormat formatGL;
 	 formatGL.setVersion(2, 0); // Version : 2.0
-	 formatGL.setDoubleBuffer(true); // Double Buffer : Activé
+	 formatGL.setDoubleBuffer(true); // Double Buffer : ActivÃ©
 	 formatGL.setDepthBufferSize(24);
 	 formatGL.setStencilBufferSize(8);
-	 formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'écran
+	 formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'Ã©cran
 	 this->setFormat(formatGL);
 	 */
+    isPlayer_ = true;
 
 	setupProperties();
 
@@ -147,7 +151,7 @@ GLCanvas::~GLCanvas() {
 }
 
 void GLCanvas::setupProperties() {
-	isPlayer_ = appPackage.isEmpty();
+    //isPlayer_ = appPackage.isEmpty();
 
 	/*
 	 QFile Props(":/Resources/properties.bin");
@@ -159,7 +163,7 @@ void GLCanvas::setupProperties() {
 	 }
 	 */
 
-	exportedApp_ = !appPackage.isEmpty();
+    //exportedApp_ = !appPackage.isEmpty();
 
 	application_ = new LuaApplication;
 
@@ -167,12 +171,12 @@ void GLCanvas::setupProperties() {
 	application_->enableExceptions();
 	application_->setPrintFunc(printToServer);
 
-	if (isPlayer_) {
+    //if (isPlayer_) {
 		server_ = new Server(15000, ::getDeviceName().c_str());
 
 		// set the global server var to use in print to server function
 		g_server = server_;
-	}
+    //}
 
 	running_ = false;
 
@@ -265,7 +269,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
     printf("%d\n", Referenced::instanceCount);
     */
 
-    if(isPlayer_){
+    //if(isPlayer_){
         int dataTotal = 0;
 
         while(true){
@@ -288,7 +292,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
             int dataSent1 = server_->dataSent();
             int dataReceived1 = server_->dataReceived();
 
-            if(event.eventCode == eDataReceived){
+            if(isPlayer_ && event.eventCode == eDataReceived){
                 const std::vector<char>& data = event.data;
 
                 switch(data[0]){
@@ -477,7 +481,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
             if(dataDelta == 0 || dataTotal > 1024)
                 break;
         }
-    }
+    //}
 
     update();
 }
@@ -510,10 +514,14 @@ void GLCanvas::play(QDir directory){
 
         if(exportedApp_){
             resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
-            directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-            directory.mkpath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
-            documentsDirectory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString().c_str();
-            temporaryDirectory = QStandardPaths::writableLocation(QStandardPaths::TempLocation).toStdString().c_str();
+            QString docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+            directory.mkpath(docLocation);
+            directory.mkpath(tempLocation);
+            documentsDirectory = docLocation.toStdString().c_str();
+            setDocumentsDirectory(documentsDirectory);
+            temporaryDirectory = tempLocation.toStdString().c_str();
+            setTemporaryDirectory(temporaryDirectory);
         }else{
             dir_ = QDir::temp();
             dir_.mkdir("gideros");
@@ -525,11 +533,11 @@ void GLCanvas::play(QDir directory){
 
             resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
             documentsDirectory = dir_.absoluteFilePath("documents").toStdString().c_str();
+            setDocumentsDirectory(documentsDirectory);
             temporaryDirectory = dir_.absoluteFilePath("temporary").toStdString().c_str();
+            setTemporaryDirectory(temporaryDirectory);
         }
 
-        setDocumentsDirectory(documentsDirectory);
-        setTemporaryDirectory(temporaryDirectory);
         setResourceDirectory(resourceDirectory_.c_str());
 
         file.open(QIODevice::ReadOnly);
@@ -779,9 +787,6 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 	buffer >> orientation;
 	application_->setOrientation((Orientation) orientation);
 
-	if (exportedApp_) {
-		setHardwareOrientation((Orientation) orientation);
-	}
 
 	application_->getApplication()->setDeviceOrientation(
 			(Orientation) orientation);
@@ -810,13 +815,6 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 	buffer >> windowWidth;
 	buffer >> windowHeight;
 
-	if (windowWidth == 0 || windowHeight == 0) {
-		windowWidth = logicalWidth;
-		windowHeight = logicalHeight;
-	}
-	if (exportedApp_) {
-		setWindowSize(windowWidth, windowHeight);
-	}
 }
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles) {
@@ -862,20 +860,26 @@ void GLCanvas::loadFiles(std::vector<char> data) {
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event) {
-	ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, 0);
+    lastMouseButton_ = event->button();
+    ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
-	ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_);
+    if(lastMouseButton_ > 0)
+        ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_, lastMouseButton_);
+    else
+        ginputp_mouseHover(event->x() * deviceScale_, event->y() * deviceScale_, lastMouseButton_);
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event) {
-	ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, 0);
+    if(lastMouseButton_ == event->button())
+        lastMouseButton_ = 0;
+    ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
 void GLCanvas::wheelEvent(QWheelEvent* event) {
 	ginputp_mouseWheel(event->x() * deviceScale_, event->y() * deviceScale_,
-			event->buttons(), event->delta());
+            event->buttons(), event->delta());
 }
 
 void GLCanvas::keyPressEvent(QKeyEvent* event) {
@@ -1256,6 +1260,7 @@ void GLCanvas::setResolution(int width, int height) {
 
 void GLCanvas::setExportedApp(bool exportedApp) {
 	exportedApp_ = exportedApp;
+    isPlayer_ = false;
 }
 
 /*

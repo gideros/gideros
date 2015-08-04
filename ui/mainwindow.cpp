@@ -277,6 +277,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui.actionDeveloper_Center, SIGNAL(triggered()), this, SLOT(developerCenter()));
 	connect(ui.actionHelp_Support, SIGNAL(triggered()), this, SLOT(helpAndSupport()));
 	connect(ui.actionAPI_Documentation, SIGNAL(triggered()), this, SLOT(apiDocumentation()));
+    connect(ui.actionDocumentation, SIGNAL(triggered()), this, SLOT(giderosDocumentation()));
 
 	connect(mdiArea_, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(updateUI()));
 	connect(mdiArea_, SIGNAL(subWindowActivated(MyMdiSubWindow*)), this, SLOT(updateUI()));
@@ -2220,9 +2221,11 @@ void MainWindow::exportProject()
 		  break;
 		  
 		case ExportProjectDialog::e_Android:
-		  templatedir = "Eclipse";
-		  templatename = "Android Template";
-		  templatenamews = "AndroidTemplate";
+          templatedir = "Eclipse";
+          if(dialog.androidTemplate() == "Android Studio")
+              templatedir = "AndroidStudio";
+          templatename = "Android Template";
+          templatenamews = "AndroidTemplate";
 		  underscore = false;
 		  break;
 
@@ -2382,8 +2385,38 @@ void MainWindow::exportProject()
 			QList<QPair<QByteArray, QByteArray> > replaceList1;
 			replaceList1 << qMakePair(templatename.toUtf8(), base.toUtf8());
             replaceList1 << qMakePair(templatenamews.toLatin1(), basews.toLatin1());
-			if (deviceFamily == ExportProjectDialog::e_Android)
-				replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), dialog.packageName().toUtf8());
+            if (deviceFamily == ExportProjectDialog::e_Android){
+                replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), dialog.packageName().toUtf8());
+                QString orientation = "android:screenOrientation=\"portrait\"";
+                switch(libraryWidget_->getProjectProperties().orientation){
+                    case 0:
+                        if(libraryWidget_->getProjectProperties().autorotation > 0)
+                            orientation = "android:screenOrientation=\"sensorPortrait\"";
+                        else
+                            orientation = "android:screenOrientation=\"portrait\"";
+                        break;
+                    case 1:
+                        if(libraryWidget_->getProjectProperties().autorotation > 0)
+                            orientation = "android:screenOrientation=\"sensorLandscape\"";
+                        else
+                            orientation = "android:screenOrientation=\"landscape\"";
+                        break;
+                    case 2:
+                        if(libraryWidget_->getProjectProperties().autorotation > 0)
+                            orientation = "android:screenOrientation=\"sensorPortrait\"";
+                        else
+                            orientation = "android:screenOrientation=\"reversePortrait\"";
+                        break;
+                    case 3:
+                        if(libraryWidget_->getProjectProperties().autorotation > 0)
+                            orientation = "android:screenOrientation=\"sensorLandscape\"";
+                        else
+                            orientation = "android:screenOrientation=\"reverseLandscape\"";
+                        break;
+                }
+
+                replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
+            }
 			replaceList << replaceList1;
 
                 QStringList wildcards2;
@@ -2404,13 +2437,22 @@ void MainWindow::exportProject()
 
         if (deviceFamily == ExportProjectDialog::e_iOS)
         {
-	  outputDir.mkdir(base);
-	  outputDir.cd(base);
+            outputDir.mkdir(base);
+            outputDir.cd(base);
         }
         else if (deviceFamily == ExportProjectDialog::e_Android)
-	{
-	  outputDir.mkdir("assets");
-	  outputDir.cd("assets");
+        {
+            if(dialog.androidTemplate() == "Android Studio"){
+                outputDir.cd("app");
+                outputDir.cd("src");
+                outputDir.cd("main");
+                outputDir.mkdir("assets");
+                outputDir.cd("assets");
+            }
+            else{
+                outputDir.mkdir("assets");
+                outputDir.cd("assets");
+            }
         }
         else if(deviceFamily == ExportProjectDialog::e_MacOSXDesktop)
         {
@@ -3276,21 +3318,28 @@ void MainWindow::downsize(const QString& filename)
 
 void MainWindow::developerCenter()
 {
-	QDesktopServices::openUrl(QUrl("http://www.giderosmobile.com/DevCenter"));
+    QDesktopServices::openUrl(QUrl("http://giderosmobile.com/guide"));
 }
 
 void MainWindow::helpAndSupport()
 {
-	QDesktopServices::openUrl(QUrl("http://www.giderosmobile.com/forum"));
+    QDesktopServices::openUrl(QUrl("http://giderosmobile.com/forum"));
 }
 
 void MainWindow::apiDocumentation()
 {
+    /*
 #if defined(Q_OS_MAC)
 	QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/reference_manual.html")));
 #else
 	QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/reference_manual.html")));
-#endif
+#endif*/
+    QDesktopServices::openUrl(QUrl("http://docs.giderosmobile.com/reference/"));
+}
+
+void MainWindow::giderosDocumentation()
+{
+    QDesktopServices::openUrl(QUrl("http://docs.giderosmobile.com/"));
 }
 
 

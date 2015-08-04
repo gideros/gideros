@@ -51,6 +51,7 @@ protected:
     std::vector<DataDesc> attributes;
     std::string errorLog;
     static ShaderProgram *current;
+	static ID3D11Buffer *curIndicesVBO;
     void *cbpData;
     void *cbvData;
     bool cbpMod;
@@ -59,18 +60,19 @@ protected:
     int cbvsData;
     ID3D11Buffer *genVBO[16+1];
     int genVBOcapacity[16+1];
-    void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache);
+    void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache);
     ID3D11Buffer *getGenericVBO(int index,int elmSize,int mult,int count);
-    void updateConstants();
+	ID3D11Buffer *getCachedVBO(ShaderBufferCache **cache, bool index, int elmSize, int mult, int count);
+	void updateConstants();
     void buildShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
 public:
     virtual void activate();
     virtual void deactivate();
-    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache);
+    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache);
     virtual void setConstant(int index,ConstantType type, int mult,const void *ptr);
     virtual void drawArrays(ShapeType shape, int first, unsigned int count);
-    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache);
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache);
     virtual bool isValid();
     virtual const char *compilationLog();
     dx11ShaderProgram(const char *vshader,const char *pshader,
@@ -130,7 +132,7 @@ public:
 	static ID3D11Texture2D* pBackBuffer;
 	dx11ShaderEngine(int sw, int sh);
 	virtual ~dx11ShaderEngine();
-	void reset();
+	void reset(bool reinit=false);
 	const char *getVersion();
 	void setDepthTest(bool enable);
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);

@@ -23,15 +23,15 @@
 /**
  *  An object conforming to the ALAdLoadDelegate protocol, which, if set, will be notified of ad load events.
  */
-@property (strong, atomic) id<ALAdLoadDelegate> adLoadDelegate;
+@property (strong, atomic) id<ALAdLoadDelegate> __alnullable adLoadDelegate;
 
 /**
  *  An object conforming to the ALAdDisplayDelegate protocol, which, if set, will be notified of ad show/hide events.
  */
-@property (strong, atomic) id<ALAdDisplayDelegate> adDisplayDelegate;
+@property (strong, atomic) id<ALAdDisplayDelegate> __alnullable adDisplayDelegate;
 
 // Primarily for internal use; banners and mrecs cannot contain videos.
-@property (strong, atomic) id<ALAdVideoPlaybackDelegate> adVideoPlaybackDelegate;
+@property (strong, atomic) id<ALAdVideoPlaybackDelegate> __alnullable adVideoPlaybackDelegate;
 
 /**
  * @name Ad View Configuration
@@ -40,7 +40,7 @@
 /**
  *  The size of ads to be loaded within this ALAdView.
  */
-@property (strong, atomic) ALAdSize * adSize;
+@property (strong, atomic) ALAdSize* __alnonnull adSize;
 
 /**
  *  Whether or not this ALAdView should automatically load and rotate banners.
@@ -48,12 +48,12 @@
  * If YES, ads will be automatically loaded and updated. If NO, you are reponsible for this behavior via [ALAdView loadNextAd]. Defaults to YES.
  */
 @property (assign, atomic, getter=isAutoloadEnabled, setter=setAutoloadEnabled:) BOOL autoload;
-@property (assign, atomic, getter=isAutoloadEnabled, setter=setAutoloadEnabled:) BOOL shouldAutoload __deprecated;
+@property (assign, atomic, getter=isAutoloadEnabled, setter=setAutoloadEnabled:) BOOL shouldAutoload __deprecated_msg("Use 'autoload' property intead.");
 
 /**
  *  The UIViewController in whose view this ALAdView is placed.
  */
-@property (strong, atomic) UIViewController * parentController;
+@property (strong, atomic) UIViewController* __alnullable parentController;
 
 /**
  * @name Loading and Rendering Ads
@@ -63,7 +63,7 @@
  * Start loading a new advertisement. This method will return immediately. An
  * advertisement will be rendered by this view asynchonously when available.
  */
--(void)loadNextAd;
+-(void) loadNextAd;
 
 /**
  * Check if the next ad is currently ready to display.
@@ -77,7 +77,7 @@
  *
  * @param ad Ad to render. Must not be nil.
  */
--(void)render:(ALAd *)ad;
+-(void) render: (alnullable ALAd *) ad;
 
 /**
  * @name Initialization
@@ -90,7 +90,7 @@
  *
  *  @return A new instance of ALAdView.
  */
--(instancetype) initWithSize: (ALAdSize*) aSize;
+-(alnonnull instancetype) initWithSize: (alnonnull ALAdSize*) aSize;
 
 /**
  *  Initialize the ad view with a given size.
@@ -100,7 +100,7 @@
  *
  *  @return A new instance of ALAdView.
  */
--(instancetype) initWithSdk: (ALSdk*) anSdk size: (ALAdSize*) aSize;
+-(alnonnull instancetype) initWithSdk: (alnonnull ALSdk*) anSdk size: (alnonnull ALAdSize*) aSize;
 
 /**
  * Initialize ad view with a given frame, ad size, and ALSdk instance.
@@ -111,7 +111,7 @@
  *
  * @return A new instance of ALAdView.
  */
-- (id)initWithFrame:(CGRect)aFrame size:(ALAdSize *)aSize sdk:(ALSdk *) anSdk;
+- (alnonnull id) initWithFrame: (CGRect) aFrame size: (alnonnull ALAdSize*) aSize sdk: (alnonnull ALSdk*) anSdk;
 
 /*
  * @name Deprecated Methods
@@ -125,7 +125,7 @@
  * @deprecated Use initWithSize: instead.
  * @warning Deprecated. Instead, use <code>[adView initWithSize: [ALAdSize sizeBanner]]</code>.
  */
--(instancetype) initBannerAd __deprecated;
+-(alnonnull instancetype) initBannerAd __deprecated_msg("Use initWithSize: [ALAdSize sizeBanner] instead.");
 
 /*
  * Initialize ad view as an <code>MREC</code>.
@@ -134,7 +134,7 @@
  *
  * @warning Deprecated. Instead, use <code>[adView initWithSize: [ALAdSize sizeMrec]]</code>.
  */
--(instancetype) initMRecAd __deprecated;
+-(alnonnull instancetype) initMRecAd __deprecated_msg("Use initWithSize: [ALAdSize sizeMrec] instead.");
 
 /*
  * Initialize ad view as a <code>BANNER</code> with a specified ALSdk instance.
@@ -145,7 +145,7 @@
  *
  * @warning Deprecated. Instead, use <code>[adView initWithSdk: sdk size: [ALAdSize sizeBanner]]</code>.
  */
--(instancetype) initBannerAdWithSdk: (ALSdk *)anSdk __deprecated;
+-(alnonnull instancetype) initBannerAdWithSdk: (alnonnull ALSdk *) anSdk __deprecated_msg("Use initWithSize: [ALAdSize sizeBanner] instead.");
 
 /*
  * Initialize ad view as an <code>MREC</code> with a specified ALSdk instance.
@@ -156,8 +156,8 @@
  *
  * @warning Deprecated. Instead, use <code>[adView initWithSdk: sdk size: [ALAdSize sizeMrec]]</code>.
  */
--(instancetype) initMRecAdWithSdk: (ALSdk *)anSdk __deprecated;
+-(alnonnull instancetype) initMRecAdWithSdk: (alnonnull ALSdk *) anSdk __deprecated_msg("Use initWithSize: [ALAdSize sizeMrec] instead.");
 
 
-- (id)init __attribute__((unavailable("Use an init method with a size instead - for example, initBannerAd.")));
+- (alnullable id)init __attribute__((unavailable("Use an init method with a size instead - for example, initBannerAd.")));
 @end

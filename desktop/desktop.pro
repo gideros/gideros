@@ -48,6 +48,8 @@ INCLUDEPATH += \
     ../libgid/external/zlib-1.2.8 \
     ../libgid/external/glew-1.10.0/include \
     ../2dsg \
+    ../2dsg/gfxbackends \
+    ../2dsg/gfxbackends/gl2 \
     ../libsound \
     ../libnetwork \
     ../luabinding \
@@ -96,7 +98,12 @@ SOURCES += \
     ../libgid/src/qt/platform-qt.cpp \
     ../libgid/src/gtimer.cpp \
     ../external/minizip-1.1/source/ioapi.c \
-    ../external/minizip-1.1/source/unzip.c
+    ../external/minizip-1.1/source/unzip.c \
+    ../2dsg/gfxbackends/gl2/gl2ShaderBuffer.cpp \
+    ../2dsg/gfxbackends/gl2/gl2ShaderEngine.cpp \
+    ../2dsg/gfxbackends/gl2/gl2ShaderProgram.cpp \
+    ../2dsg/gfxbackends/gl2/gl2ShaderTexture.cpp \
+    ../2dsg/gfxbackends/Shaders.cpp
 
 FORMS += \
     forms/mainwindow.ui \
@@ -112,7 +119,9 @@ HEADERS += \
     $$files(../libsound/*.h) \
     $$files(../2dsg/*.h) \
     $$files(../luabinding/*.h) \
-    $$files(../libnetwork/*.h)
+    $$files(../libnetwork/*.h) \
+    ../2dsg/gfxbackends/gl2/gl2Shaders.h \
+    ../2dsg/gfxbackends/Shaders.h
 
 DEFINES += \
     USE_FILE32API \

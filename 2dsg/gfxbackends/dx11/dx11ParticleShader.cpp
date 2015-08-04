@@ -9,7 +9,7 @@
 #include "dx11Shaders.h"
 #include <stdlib.h>
 
-void dx11ParticleShader::setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache)
+void dx11ParticleShader::setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache)
 {
 	if (index==ShaderProgram::DataVertex)
 	{
@@ -101,7 +101,7 @@ void dx11ParticleShader::drawArrays(ShapeType shape, int first, unsigned int cou
 	free(pdata);
 }
 
-void dx11ParticleShader::drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache)
+void dx11ParticleShader::drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache)
 {
 	//Not supported
 }

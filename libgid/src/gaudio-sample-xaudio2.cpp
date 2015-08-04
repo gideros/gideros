@@ -57,11 +57,11 @@ public:
         {
             Channel *channel = *iter2;
 
-            if (channel->source != 0)
-            {
-	      channel->source->Stop();
-	      channel->source->FlushSourceBuffers();
-            }
+			if (channel->source != 0)
+			{
+				channel->source->Stop();
+				channel->source->FlushSourceBuffers();
+			}
 
             channels_.erase(channel->gid);
 
@@ -70,10 +70,10 @@ public:
             delete channel;
         }
 
-	Wave *pbuffer=sound2->pbuffer;
-	pbuffer->Destroy();   // deallocates memory for the buffer
-	delete pbuffer;
-	//        alDeleteBuffers(1, &sound2->buffer);
+		Wave *pbuffer=sound2->pbuffer;
+		pbuffer->Destroy();   // deallocates memory for the buffer
+		delete pbuffer;
+		//        alDeleteBuffers(1, &sound2->buffer);
 
         delete sound2;
 
@@ -126,8 +126,10 @@ public:
         channels_[gid] = channel;
 
         channel->paused = paused;
-        if (!paused)
+		if (!paused)
 			source->Start();
+		else
+			source->Stop();
 
         return gid;
     }
@@ -140,14 +142,14 @@ public:
 
         Channel *channel2 = iter->second;
 
-        if (channel2->source != NULL)
-        {
-	  channel2->source->Stop();
-	  channel2->source->FlushSourceBuffers();
-	  channel2->source->DestroyVoice();
-	  //            alSourceStop(channel2->source);
-	  //            alDeleteSources(1, &channel2->source);
-        }
+		if (channel2->source != NULL)
+		{
+			channel2->source->Stop();
+			channel2->source->FlushSourceBuffers();
+			channel2->source->DestroyVoice();
+			//            alSourceStop(channel2->source);
+			//            alDeleteSources(1, &channel2->source);
+		}
 
         channel2->sound->channels.erase(channel2);
 
@@ -168,7 +170,42 @@ public:
 
         tick(channel2);
 
-		if (channel2->source != 0);
+		if (channel2->source != 0){
+
+			channel2->source->Stop();
+			channel2->source->FlushSourceBuffers();
+			channel2->source->DestroyVoice();
+			channel2->source = NULL;
+
+			Wave *pbuffer = (Wave *)channel2->sound->pbuffer;
+			const WAVEFORMATEX *wf = pbuffer->wf();
+			const XAUDIO2_BUFFER *pxa = pbuffer->xaBuffer();
+
+			XAUDIO2_BUFFER xa2 = *pxa;
+
+			int samPosition = position / 1000.0 * wf->nSamplesPerSec;
+
+			xa2.PlayBegin = samPosition;  
+			channel2->samPosition = samPosition;
+
+			if (samPosition == 0)
+				xa2.PlayLength = 0;
+			else
+				xa2.PlayLength = (xa2.AudioBytes / wf->nBlockAlign) - samPosition;
+
+			xa2.LoopBegin = 0;
+			xa2.LoopLength = 0;
+
+			if (channel2->looping)
+				xa2.LoopCount = XAUDIO2_LOOP_INFINITE;
+			else
+				xa2.LoopCount = 0;
+
+			g_audioengine->CreateSourceVoice(&channel2->source, wf);
+			channel2->source->SubmitSourceBuffer(&xa2);
+			channel2->source->Start();
+		}
+
 	  //            alSourcef(channel2->source, AL_SEC_OFFSET, position / 1000.0);
     }
 
@@ -188,8 +225,14 @@ public:
     //    ALfloat offset;
 	//        alGetSourcef(channel2->source, AL_SEC_OFFSET, &offset);
 
-		int offset = 0;  // kludge
-        return offset * 1000.0;
+		Wave *pbuffer = (Wave *)channel2->sound->pbuffer;
+		const WAVEFORMATEX *wf = pbuffer->wf();
+
+		XAUDIO2_VOICE_STATE state;
+		channel2->source->GetState(&state);
+		int offset = (channel2->samPosition + state.SamplesPlayed) / (wf->nSamplesPerSec);
+
+		return offset * 1000.0;  // milliseconds
     }
 
     void ChannelSetPaused(g_id channel, bool paused)
@@ -316,7 +359,38 @@ public:
 
         channel2->looping = looping;
 
-		if (channel2->source != 0);
+		if (channel2->source != 0){
+			XAUDIO2_VOICE_STATE state;
+			channel2->source->GetState(&state);
+
+			int samplesPlayed = state.SamplesPlayed;
+
+			channel2->source->Stop();
+			channel2->source->FlushSourceBuffers();
+			channel2->source->DestroyVoice();
+			channel2->source = NULL;
+
+			Wave *pbuffer = (Wave *)channel2->sound->pbuffer;
+			const WAVEFORMATEX *wf = pbuffer->wf();
+			const XAUDIO2_BUFFER *pxa= pbuffer->xaBuffer();
+
+			XAUDIO2_BUFFER xa2 = *pxa;
+
+			xa2.PlayBegin = channel2->samPosition;
+			xa2.PlayLength = (xa2.AudioBytes/wf->nBlockAlign)- channel2->samPosition;
+			xa2.LoopBegin = 0;
+			xa2.LoopLength = 0;
+			
+			if (looping)
+				xa2.LoopCount = XAUDIO2_LOOP_INFINITE;
+			else
+				xa2.LoopCount = 0;
+
+			g_audioengine->CreateSourceVoice(&channel2->source, wf);
+			channel2->source->SubmitSourceBuffer(&xa2);
+			channel2->source->Start();
+
+		}
 	  //            alSourcei(channel2->source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
     }
 
@@ -435,7 +509,8 @@ private:
             volume(1.f),
             pitch(1.f),
             looping(false),
-            lastPosition(0)
+            lastPosition(0),
+			samPosition(0)
         {
 
         }
@@ -449,6 +524,7 @@ private:
         bool looping;
         unsigned int lastPosition;
         gevent_CallbackList callbackList;
+		unsigned int samPosition;
     };
 
     std::map<g_id, Sound*> sounds_;

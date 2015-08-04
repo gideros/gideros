@@ -91,5 +91,6 @@ void g_setFps(int fps)
 
 void g_exit()
 {
+    MainWindow::getInstance()->saveSettings();
     QCoreApplication::quit();
 }

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "ALNullabilityAnnotations.h"
 
 /**
  *  This class represents the behavior of an ad.
@@ -22,7 +22,7 @@
 /**
  *  String representing the name of this ad type.
  */
-@property (strong, readonly) NSString* label;
+@property (copy, nonatomic, readonly) NSString* __alnonnull label;
 
 /**
  *  @name Supported Ad Type Singletons
@@ -33,7 +33,7 @@
  *
  *  @return ALAdType representing a standard advertisement.
  */
-+(ALAdType*) typeRegular;
++(alnonnull ALAdType*) typeRegular;
 
 /**
  *  Represents a rewarded video.
@@ -42,18 +42,17 @@
  *
  *  @return ALAdType representing a rewarded video.
  */
-+(ALAdType*) typeIncentivized;
++(alnonnull ALAdType*) typeIncentivized;
 
 /**
  *  Retrieve an <code>NSArray</code> of all available ad size singleton instances.
  *
  *  @return <code>[NSArray arrayWithObjects: [ALAdType typeRegular], [ALAdType typeIncentivized], nil];</code>
  */
-+(NSArray*) allTypes;
-
++(alnonnull NSArray*) allTypes;
 
 // Avoid these methods unless specifically necessary.
--(instancetype) initWithLabel: (NSString *) label;
-+(ALAdType *) adTypeFromString: (NSString*) adType;
+-(alnullable instancetype) initWithLabel: (alnonnull NSString *) label __deprecated_msg("Custom ad types are no longer supported. Use a singleton instance like [ALAdType typeRegular] instead.");
++(alnullable ALAdType *) adTypeFromString: (alnonnull NSString*) adType __deprecated_msg("Custom ad types are no longer supported. Use a singleton instance like [ALAdType typeRegular] instead.");
 
 @end

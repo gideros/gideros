@@ -1,7 +1,7 @@
 /*
  * Chartboost.h
  * Chartboost
- * 5.1.3
+ * 5.5.0
  *
  * Copyright 2011 Chartboost. All rights reserved.
  */
@@ -25,7 +25,17 @@ typedef NS_ENUM(NSUInteger, CBFramework) {
     /*! Cordova. */
     CBFrameworkCordova,
     /*! CocoonJS. */
-    CBFrameworkCocoonJS
+    CBFrameworkCocoonJS,
+    /*! Cocos2d-x. */
+    CBFrameworkCocos2dx,
+    /*! MoPub. */
+    CBFrameworkMoPub,
+    /*! Fyber. */
+    CBFrameworkFyber,
+    /*! Prime31Unreal. */
+    CBFrameworkPrime31Unreal,
+    /*! Weeby. */
+    CBFrameworkWeeby
 };
 
 /*!
@@ -55,6 +65,8 @@ typedef NS_ENUM(NSUInteger, CBLoadError) {
     CBLoadErrorUserCancellation,
     /*! No location detected. */
     CBLoadErrorNoLocationFound,
+    /*! Video Prefetching is not finished */
+    CBLoadErrorPrefetchingIncomplete,
 };
 
 /*!
@@ -72,6 +84,22 @@ typedef NS_ENUM(NSUInteger, CBClickError) {
     CBClickErrorAgeGateFailure,
     /*! Unknown internal error */
     CBClickErrorInternal,
+};
+
+/*!
+ @typedef NS_ENUM (NSUInteger, CBStatusBarBehavior)
+ 
+ @abstract
+ Used with setStatusBarBehavior:(CBStatusBarBehavior)statusBarBehavior calls to set how fullscreen ads should
+ behave with regards to the status bar.
+ */
+typedef NS_ENUM(NSUInteger, CBStatusBarBehavior) {
+    /*! Ignore status bar altogether; fullscreen ads will use the space of the status bar. */
+    CBStatusBarBehaviorIgnore,
+    /*! Respect the status bar partially; fullscreen ads will use the space of the status bar but any user interactive buttons will not. */
+    CBStatusBarBehaviorRespectButtons,
+    /*! Respect the status bar fully; fullscreen ads will not use the status bar space. */
+    CBStatusBarBehaviorRespect
 };
 
 /*!
@@ -348,6 +376,18 @@ extern CBLocation const CBLocationDefault;
 
 /*!
  @abstract
+ Set a custom version to append to the POST body of every request. This is useful for analytics and provides chartboost with important information.
+ example setFramework:Unity withVersion:4.6, setFrameworkVersion:5.2.1
+ 
+ @param frameworkVersion The version sent as a string.
+ 
+ @discussion This is an internal method used via Chartboost's Unity and Corona SDKs
+ to track their usage.
+ */
++ (void)setFrameworkVersion:(NSString*)frameworkVersion;
+    
+/*!
+ @abstract
  Set a custom framework suffix to append to the POST headers field.
  
  @param framework The suffx to send with all Chartboost API server requests.
@@ -356,6 +396,30 @@ extern CBLocation const CBLocationDefault;
  to track their usage.
  */
 + (void)setFramework:(CBFramework)framework;
+
+/*!
+ @abstract
+ Set a custom framework suffix to append to the POST headers field.
+example setFramework:Unity withVersion:4.6, setFrameworkVersion:5.2.1
+ 
+ @param framework The suffix to send with all Chartbooost API server requets.
+ @param version The platform version used for analytics. Example Unity should set Application.unityVersion
+ 
+ @discussion This is an internal method used via Chartboost's Unity and Corona SDKs
+ to track their usage.
+ */
++ (void)setFramework:(CBFramework)framework withVersion:(NSString *)version;
+
+/*!
+ @abstract
+ Set a custom mediation library to append to the POST body of every request.
+ example setMediation:@"MoPub" withVersion:@"3.8.0"
+ 
+ @param libraryVersion The version sent as a string.
+ 
+ @discussion This is an internal method used by mediation partners to track their usage.
+ */
++ (void)setMediation:(NSString *)libraryName withVersion:(NSString*)libraryVersion;
 
 /*!
  @abstract
@@ -470,6 +534,25 @@ extern CBLocation const CBLocationDefault;
  developer to manage the caching behavior of Chartboost impressions.
  */
 + (BOOL)getAutoCacheAds;
+
+/*!
+ @abstract
+ Close any visible chartboost impressions (interstitials, more apps, rewarded video, etc..) and the loading view (if visible)
+ 
+ @discussion There are some use cases when this functionality is useful.
+ */
++ (void)closeImpression;
+
+/*!
+ @abstract
+ Set to control how the fullscreen ad units should interact with the status bar. (CBStatusBarBehaviorIgnore by default).
+ 
+ @param statusBarBehavior The param to set if fullscreen video should respect the status bar.
+ 
+ @discussion See the enum value comments for descriptions on the values and their behavior.  Only use this feature if your
+ application has the status bar enabled.
+ */
++ (void)setStatusBarBehavior:(CBStatusBarBehavior)statusBarBehavior;
 
 @end
 

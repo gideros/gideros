@@ -5,6 +5,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ALNullabilityAnnotations.h"
 
 /**
  * This class contains settings for the AppLovin SDK.
@@ -31,7 +32,7 @@
  *
  * @param autoPreloadAdSizes Comma-separated list of sizes to preload. For example: "BANNER,INTER"
  */
-@property (strong, atomic) NSString * autoPreloadAdSizes;
+@property (strong, atomic) NSString* __alnonnull autoPreloadAdSizes;
 
 /**
  * Defines types of ads that should be automatically preloaded.
@@ -41,6 +42,6 @@
  *
  * @param autoPreloadAdSizes Comma-separated list of sizes to preload. For example: "REGULAR,INCENTIVIZED"
  */
-@property (strong, atomic) NSString * autoPreloadAdTypes;
+@property (strong, atomic) NSString* __alnonnull autoPreloadAdTypes;
 
 @end

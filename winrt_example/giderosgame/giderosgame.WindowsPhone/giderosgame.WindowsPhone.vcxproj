@@ -75,13 +75,13 @@
   </ImportGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalLibraryDirectories>..\..\..\winrt\Debug\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\Debug\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\Debug\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\AllPlugins\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\Debug\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\Debug\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\Debug\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;luasocket.WindowsPhone.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <ClCompile>
       <PreprocessorDefinitions>SQLITE_OS_WINRT;NO_GETCWD;NO_CHDIR;PTW32_STATIC_LIB;WINSTORE;PSAPI_VERSION=2;WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP;_UITHREADCTXT_SUPPORT=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Sdk\include;.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <SDLCheck>false</SDLCheck>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -89,13 +89,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
-      <AdditionalLibraryDirectories>..\..\..\winrt\Release\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\Release\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\Release\luawinrt.WindowsPhone;$(VCInstallDir)\lib\store;$(VCInstallDir)\lib;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\AllPlugins\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\Release\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\Release\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\Release\luawinrt.WindowsPhone;$(VCInstallDir)\lib\store;$(VCInstallDir)\lib;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;luasocket.WindowsPhone.lib;D3DCompiler.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Sdk\include;.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile>
       <SDLCheck>false</SDLCheck>
@@ -106,12 +106,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
-      <AdditionalLibraryDirectories>..\..\..\winrt\ARM\Debug\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\ARM\Debug\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\ARM\Debug\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D3DCompiler.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\AllPlugins\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\ARM\Debug\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\ARM\Debug\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\ARM\Debug\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;luasocket.WindowsPhone.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D3DCompiler.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Sdk\include;.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile>
       <SDLCheck>false</SDLCheck>
@@ -122,14 +122,14 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
-      <AdditionalLibraryDirectories>..\..\..\winrt\ARM\Release\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\ARM\Release\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\ARM\Release\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\AllPlugins\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\ARM\Release\gideros.WindowsPhone;..\..\..\libgvfs\libgvfswinrt\ARM\Release\libgvfswinrt.WindowsPhone;..\..\..\lua\luawinrt\ARM\Release\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;luasocket.WindowsPhone.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;sqlite3.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ImageHasSafeExceptionHandlers>
       </ImageHasSafeExceptionHandlers>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Sdk\include;.\Plugins;..\..\..\winrt;$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;PSAPI_VERSION=2;WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP;_UITHREADCTXT_SUPPORT=0;SQLITE_OS_WINRT;NO_GETCWD;NO_CHDIR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -188,6 +188,7 @@
     <Xml Include="StoreManifest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\plugins\luasocket\source\luasocket_stub.cpp" />
     <ClCompile Include="Plugins\bit.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>

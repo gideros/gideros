@@ -1,4 +1,4 @@
-#include "qtsinglecoreapplication.h"
+#include <QtSingleCoreApplication>
 #include "application.h"
 #include <stdio.h>
 
@@ -16,4 +16,3 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
-

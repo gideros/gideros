@@ -62,17 +62,26 @@ IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interf
 int PTW32_CDECL pthread_mutex_init(pthread_mutex_t * mutex,
 	const pthread_mutexattr_t * attr)
 {
+	CRITICAL_SECTION *c = (CRITICAL_SECTION*) malloc(sizeof(CRITICAL_SECTION));
+
+	InitializeCriticalSectionEx(c,0,0);
+	*((LPCRITICAL_SECTION *)mutex) = c;
 	return 0;
 }
 
 int PTW32_CDECL pthread_mutex_destroy(pthread_mutex_t * mutex)
 {
+	free(*((LPCRITICAL_SECTION *)mutex));
+	*mutex = NULL;
 	return 0;
 }
 
 
 int PTW32_CDECL pthread_mutex_lock(pthread_mutex_t * mutex)
 {
+	if (*mutex == PTHREAD_MUTEX_INITIALIZER)
+		pthread_mutex_init(mutex, NULL);
+	EnterCriticalSection(*((LPCRITICAL_SECTION *)mutex));
 	return 0;
 }
 
@@ -86,11 +95,14 @@ int PTW32_CDECL pthread_mutex_timedlock(pthread_mutex_t * mutex,
 
 int PTW32_CDECL pthread_mutex_trylock(pthread_mutex_t * mutex)
 {
-	return 0;
+	if (*mutex == PTHREAD_MUTEX_INITIALIZER)
+		pthread_mutex_init(mutex, NULL);
+	return TryEnterCriticalSection(*((LPCRITICAL_SECTION *)mutex)) ? 0 : -1;
 }
 
 int PTW32_CDECL pthread_mutex_unlock(pthread_mutex_t * mutex)
 {
+	LeaveCriticalSection(*((LPCRITICAL_SECTION *)mutex));
 	return 0;
 }
 
@@ -141,7 +153,7 @@ void InitD3D(CoreWindow^ Window)
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
-		D3D11_CREATE_DEVICE_DEBUG,
+		0,
 		nullptr,
 		0,
 		D3D11_SDK_VERSION,
@@ -200,11 +212,11 @@ void InitD3D(CoreWindow^ Window)
 
 	float scaley;
 
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-	scaley = 1.0f;   // Windows 8 PC
+	scaley = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
 
 	float basex = 0;
@@ -355,7 +367,7 @@ private:
 class ApplicationManager
 {
 public:
-	ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath);
+	ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath);
 	~ApplicationManager();
 
 	void getStdCoords(float xp, float yp, float &x, float &y);
@@ -396,6 +408,7 @@ private:
 	NetworkManager *networkManager_;
 	const wchar_t* resourcePath_;
 	const wchar_t* docsPath_;
+	const wchar_t* tempPath_;
 
 	float contentScaleFactor;
 
@@ -704,17 +717,17 @@ void NetworkManager::calculateMD5(const char* file)
 }
 
 
-ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath)
+ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 {
 
 	InitD3D(Window);
 	InitXAudio2();
 
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-	contentScaleFactor = 1.0f;   // Windows 8 PC
+	contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
 
 	width_ = width;
@@ -722,6 +735,7 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 	player_ = player;
 	resourcePath_ = resourcePath;
 	docsPath_ = docsPath;
+	tempPath_ = tempPath;
 
 	// gpath & gvfs
 	gpath_init();
@@ -782,7 +796,7 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 
 	application_->enableExceptions();
 	application_->initialize();
-	application_->setResolution(width_, height_);
+	application_->setResolution(width_* contentScaleFactor, height_* contentScaleFactor);
 
 	Binder::disableTypeChecking();
 
@@ -801,24 +815,26 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 	if (player_ == false)
 	{
 		const wchar_t *installedLocation = resourcePath_;
-
 		char fileStem[MAX_PATH];
 		wcstombs(fileStem, installedLocation, MAX_PATH);
 		strcat(fileStem, "\\assets\\");
 		setResourceDirectory(fileStem);
 
-		gpath_setDrivePath(0, fileStem);
+		//XXX: Redundant gpath_setDrivePath(0, fileStem);
 
 		const wchar_t *docs = docsPath_;
-
 		char docsPath[MAX_PATH];
 		wcstombs(docsPath, docs, MAX_PATH);
 		strcat(docsPath, "\\");
-
 		setDocumentsDirectory(docsPath);
-		setTemporaryDirectory(docsPath);
 
-		gpath_setDrivePath(1, docsPath);
+		const wchar_t *temp = tempPath_;
+		char tempPath[MAX_PATH];
+		wcstombs(tempPath, temp, MAX_PATH);
+		strcat(tempPath, "\\");
+		setTemporaryDirectory(tempPath);
+
+		//XXX: Redundant gpath_setDrivePath(1, docsPath);
 
 		loadProperties();
 
@@ -937,7 +953,9 @@ void ApplicationManager::drawFrame()
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
+		ShaderEngine::Engine->setFramebuffer(NULL);
 		application_->clearBuffers();
+
 		application_->renderScene(1);
 		drawIPs();
 
@@ -978,11 +996,12 @@ void ApplicationManager::drawFrame()
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
+		ShaderEngine::Engine->setFramebuffer(NULL);
 		application_->clearBuffers();
 		application_->renderScene(1);
 		drawIPs();
 
-		g_swapchain->Present(0, 0);
+		g_swapchain->Present(1, 0);
 	}
 }
 
@@ -1071,10 +1090,9 @@ void ApplicationManager::openProject(const char* project){
 	}
 }
 
-void ApplicationManager::setProjectName(const char *projectName)
+std::string getProjectDir(const wchar_t* base,const char *projectName)
 {
-	glog_v("setProjectName: %s", projectName);
-	std::wstring ws(docsPath_);
+	std::wstring ws(base);
 	std::string dir = std::string(ws.begin(), ws.end());
 
 	if (dir[dir.size() - 1] != '/')
@@ -1091,11 +1109,19 @@ void ApplicationManager::setProjectName(const char *projectName)
 	_mkdir(dir.c_str());
 
 	dir += "/";
+	return dir;
+}
+
+void ApplicationManager::setProjectName(const char *projectName)
+{
+	glog_v("setProjectName: %s", projectName);
+	std::string dir = getProjectDir(docsPath_, projectName);
+	std::string tdir = getProjectDir(tempPath_, projectName);
 
 	std::string md5filename_ = dir + "md5.txt";
 
 	std::string documents = dir + "documents";
-	std::string temporary = dir + "temporary";
+	std::string temporary = tdir + "temporary";
 	std::string resource = dir + "resource";
 
 	glog_v("documents: %s", documents.c_str());
@@ -1184,6 +1210,8 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 
 	if (status.error())
 		luaError(status.errorString());
+
+	next_game_tick = GetTickCount64();
 }
 
 void ApplicationManager::stop()
@@ -1310,6 +1338,8 @@ void ApplicationManager::loadLuaFiles()
 
 	if (status.error())
 		luaError(status.errorString());
+
+	next_game_tick = GetTickCount64();
 }
 
 void ApplicationManager::drawIPs()
@@ -1385,12 +1415,13 @@ void ApplicationManager::exitRenderLoop()
 
 
 static ApplicationManager *s_manager = NULL;
+static int lastMouseButton_ = 0;
 
 extern "C" {
 
-	void gdr_initialize(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath)
+	void gdr_initialize(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 	{
-		s_manager = new ApplicationManager(Window, width, height, player, resourcePath, docsPath);
+		s_manager = new ApplicationManager(Window, width, height, player, resourcePath, docsPath, tempPath);
 	}
 
 	void gdr_drawFrame()
@@ -1448,22 +1479,37 @@ extern "C" {
 		ginputp_keyUp(keyCode);
 	}
 
-	void gdr_mouseDown(int x, int y){
+	void gdr_mouseDown(int x, int y, int button){
+		lastMouseButton_ = button;
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseDown(xn, yn, 0);
+		ginputp_mouseDown(xn, yn, button);
 	}
 
 	void gdr_mouseMove(int x, int y){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseMove(xn, yn);
+		ginputp_mouseMove(xn, yn, lastMouseButton_);
 	}
 
-	void gdr_mouseUp(int x, int y){
+	void gdr_mouseHover(int x, int y){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseUp(xn, yn, 0);
+		ginputp_mouseHover(xn, yn, 0);
+	}
+
+	void gdr_mouseUp(int x, int y, int button){
+		if (lastMouseButton_ == button)
+			lastMouseButton_ = 0;
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_mouseUp(xn, yn, button);
+	}
+
+	void gdr_mouseWheel(int x, int y, int delta){
+		float xn, yn;
+		s_manager->getStdCoords(x, y, xn, yn);
+		ginputp_mouseWheel(xn, yn, 0, delta);
 	}
 
 	void gdr_touchBegin(int x, int y, int id){

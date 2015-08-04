@@ -11,7 +11,7 @@
 
 @implementation AdsApplovin
 -(id)init{
-    [ALSdk initializeSdk];
+    //[ALSdk initializeSdk];
     self.appKey = @"";
     self.curType = @"";
     self.view_ = nil;
@@ -34,9 +34,12 @@
     ALSdk* sdk = [ALSdk sharedWithKey: self.appKey];
     if ([type isEqualToString:@"interstitial"]) {
         AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
+        AdsApplovinListener *list = [[AdsApplovinListener alloc] init:nil with:self];
         [listener setShow:^(){
             [AdsClass adDisplayed:[self class] forType:type];
-            ALInterstitialAd* interstitial = [[ALInterstitialAd alloc] initInterstitialAdWithSdk: sdk];
+            ALInterstitialAd* interstitial = [[ALInterstitialAd alloc] initWithSdk: sdk];
+            interstitial.adDisplayDelegate = list;
+            interstitial.adVideoPlaybackDelegate = list;
             [interstitial showOver: [UIApplication sharedApplication].keyWindow andRender: (ALAd*)[self.mngr get:type]];
         }];
         [listener setDestroy:^(){
@@ -45,9 +48,28 @@
         [listener setHide:^(){
         }];
         [self.mngr set:nil forType:type withListener:listener];
-        
+        [list setType:[self.mngr getState:type] with:self];
         ALAdService* adService = sdk.adService;
-        [adService loadNextAd: [ALAdSize sizeInterstitial] andNotify: [[AdsApplovinListener alloc] init:[self.mngr getState:type] with:self]];
+        [adService loadNextAd: [ALAdSize sizeInterstitial] andNotify: list];
+    }
+    else if ([type isEqualToString:@"v4vc"]) {
+        AdsApplovinListener *list = [[AdsApplovinListener alloc] init:nil with:self];
+        AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
+        ALIncentivizedInterstitialAd* interstitial = [[ALIncentivizedInterstitialAd alloc] initWithSdk: sdk];
+        [listener setShow:^(){
+            [AdsClass adDisplayed:[self class] forType:type];
+            [interstitial showAndNotify:list];
+        }];
+        [listener setDestroy:^(){
+            [self hideAd:type];
+        }];
+        [listener setHide:^(){
+        }];
+        [self.mngr set:nil forType:type withListener:listener];
+        [list setType:[self.mngr getState:type] with:self];
+        interstitial.adDisplayDelegate = list;
+        interstitial.adVideoPlaybackDelegate = list;
+        [interstitial preloadAndNotify:list];
     }
     else
     {
@@ -142,9 +164,15 @@
     return self;
 }
 
+-(void)setType:(AdsState*)state with:(AdsApplovin*)instance{
+    self.state = state;
+    self.instance = instance;
+}
+
+
 -(void) adService:(ALAdService *)adService didLoadAd:(ALAd *)ad
 {
-    if([[self.state getType] isEqual:@"interstitial"]){
+    if([[self.state getType] isEqual:@"interstitial"] || [[self.state getType] isEqual:@"v4vc"]){
         [self.state setObject:ad];
     }
     [AdsClass adReceived:[self.instance class] forType:[self.state getType]];
@@ -177,6 +205,35 @@
 
 -(void) ad:(ALAd *)ad wasHiddenIn:(UIView *)view{
     [AdsClass adDismissed:[self.instance class] forType:[self.state getType]];
+}
+
+-(void) videoPlaybackBeganInAd: (ALAd*) ad{
+    [AdsClass adActionBegin:[self.instance class] forType:[self.state getType]];
+}
+-(void) videoPlaybackEndedInAd: (ALAd*) ad atPlaybackPercent:(NSNumber*) percentPlayed fullyWatched: (BOOL) wasFullyWatched{
+    if(![[self.state getType] isEqual:@"v4vc"]){
+        [AdsClass adActionEnd:[self.instance class] forType:[self.state getType]];
+    }
+    
+}
+-(void) rewardValidationRequestForAd: (ALAd*) ad didSucceedWithResponse: (NSDictionary*) response{
+    [AdsClass adActionEnd:[self.instance class] forType:[self.state getType]];
+}
+-(void) rewardValidationRequestForAd: (ALAd*) ad didExceedQuotaWithResponse: (NSDictionary*) response{
+    [AdsClass adFailed:[self.instance class] with:@"User over quota" forType:[self.state getType]];
+}
+-(void) rewardValidationRequestForAd: (ALAd*) ad wasRejectedWithResponse: (NSDictionary*) response{
+    [AdsClass adFailed:[self.instance class] with:@"User rejected" forType:[self.state getType]];
+
+}
+-(void) rewardValidationRequestForAd: (ALAd*) ad didFailWithError: (NSInteger) responseCode{
+    [AdsClass adFailed:[self.instance class] with:@"Request failed" forType:[self.state getType]];
+
+}
+
+-(void) userDeclinedToViewAd: (ALAd*) ad{
+    [AdsClass adFailed:[self.instance class] with:@"User declined" forType:[self.state getType]];
+
 }
 @end
 

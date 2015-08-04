@@ -25,48 +25,52 @@ git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Tools
 mkdir $BUILD_DIR/win/Tools
 tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Tools
 
-cp $QT_WIN/5.3/mingw482_32/bin/icudt52.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/icuin52.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/icuuc52.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/libgcc_s_dw2-1.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/libstdc++-6.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/libwinpthread-1.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Core.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Gui.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Network.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5OpenGL.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5PrintSupport.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Widgets.dll $BUILD_DIR/win
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Xml.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/icudt53.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/icuin53.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/icuuc53.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/libgcc_s_dw2-1.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/libstdc++-6.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/libwinpthread-1.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5Core.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5Gui.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5Network.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5OpenGL.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5PrintSupport.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5Widgets.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/bin/Qt5Xml.dll $BUILD_DIR/win
 
 mkdir $BUILD_DIR/win/imageformats
-cp $QT_WIN/5.3/mingw482_32/plugins/imageformats/qjpeg.dll $BUILD_DIR/win/imageformats
+cp $QT_WIN/5.4/mingw491_32/plugins/imageformats/qjpeg.dll $BUILD_DIR/win/imageformats
 
 mkdir $BUILD_DIR/win/platforms
-cp $QT_WIN/5.3/mingw482_32/plugins/platforms/qminimal.dll $BUILD_DIR/win/platforms
-cp $QT_WIN/5.3/mingw482_32/plugins/platforms/qoffscreen.dll $BUILD_DIR/win/platforms
-cp $QT_WIN/5.3/mingw482_32/plugins/platforms/qwindows.dll $BUILD_DIR/win/platforms
+cp $QT_WIN/5.4/mingw491_32/plugins/platforms/qminimal.dll $BUILD_DIR/win/platforms
+cp $QT_WIN/5.4/mingw491_32/plugins/platforms/qoffscreen.dll $BUILD_DIR/win/platforms
+cp $QT_WIN/5.4/mingw491_32/plugins/platforms/qwindows.dll $BUILD_DIR/win/platforms
 
-cp $QT_WIN/5.3/mingw482_32/lib/qscintilla2.dll $BUILD_DIR/win
+cp $QT_WIN/5.4/mingw491_32/lib/qscintilla2.dll $BUILD_DIR/win
 
 cp libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $BUILD_DIR/win
 cp libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $BUILD_DIR/win
 
-cp $QT_WIN/5.3/mingw482_32/bin/icudt52.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/icuin52.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/icuuc52.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/libgcc_s_dw2-1.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/libstdc++-6.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/libwinpthread-1.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Core.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Network.dll $BUILD_DIR/win/Tools
-cp $QT_WIN/5.3/mingw482_32/bin/Qt5Xml.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/icudt53.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/icuin53.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/icuuc53.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/libgcc_s_dw2-1.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/libstdc++-6.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/libwinpthread-1.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/Qt5Core.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/Qt5Network.dll $BUILD_DIR/win/Tools
+cp $BUILD_DIR/win/Qt5Xml.dll $BUILD_DIR/win/Tools
 
 mkdir $BUILD_DIR/win/Templates
 
 git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Templates/Eclipse
 mkdir $BUILD_DIR/win/Templates/Eclipse
 tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/Eclipse
+
+git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Templates/AndroidStudio
+mkdir $BUILD_DIR/win/Templates/AndroidStudio
+tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/AndroidStudio
 
 git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Templates/Xcode4
 mkdir $BUILD_DIR/win/Templates/Xcode4
@@ -75,7 +79,40 @@ tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/Xcode4
 mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/assets
 mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/gen
 mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/res/layout
+mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/libs
+mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/assets
+mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs
 mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
+
+mkdir $BUILD_DIR/win/Templates/Qt
+mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp desktop/release/WindowsDesktopTemplate.exe $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/icudt53.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/icuin53.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/icuuc53.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/libgcc_s_dw2-1.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/libstdc++-6.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/libwinpthread-1.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Core.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Gui.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Network.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5OpenGL.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5PrintSupport.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Widgets.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Xml.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
+cp $BUILD_DIR/win/platforms/qminimal.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
+cp $BUILD_DIR/win/platforms/qoffscreen.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
+cp $BUILD_DIR/win/platforms/qwindows.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
+cp $BUILD_DIR/win/gid.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/gvfs.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/lua.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/gideros.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/pystring.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/Plugins
+
 
 git archive -o $BUILD_DIR/tmp.tar HEAD:samplecode
 mkdir $BUILD_DIR/win/Examples
@@ -121,9 +158,11 @@ cp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins/* $BUILD_DIR/win/Tem
 
 
 cp android/GiderosAndroidPlayer/gideros.jar $BUILD_DIR/win/Templates/Eclipse/Android\ Template
+cp android/GiderosAndroidPlayer/gideros.jar $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/libs
 mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/jni
 cp android/lib/jni/Application.mk $BUILD_DIR/win/Templates/Eclipse/Android\ Template/jni
 cp -R android/build/libs $BUILD_DIR/win/Templates/Eclipse/Android\ Template
+cp -R android/build/libs/. $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/
 
 cp plugins/LuaSocket/source/libs/armeabi/libluasocket.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
 cp plugins/LuaSocket/source/libs/armeabi-v7a/libluasocket.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
@@ -144,6 +183,28 @@ cp plugins/BitOp/source/libs/x86/libbitop.so $BUILD_DIR/win/Templates/Eclipse/An
 cp plugins/JSON/source/libs/armeabi/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi
 cp plugins/JSON/source/libs/armeabi-v7a/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/armeabi-v7a
 cp plugins/JSON/source/libs/x86/libjson.so $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs/x86
+
+
+cp plugins/LuaSocket/source/libs/armeabi/libluasocket.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi
+cp plugins/LuaSocket/source/libs/armeabi-v7a/libluasocket.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi-v7a
+cp plugins/LuaSocket/source/libs/x86/libluasocket.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/x86
+
+cp plugins/lfs/source/libs/armeabi/liblfs.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi
+cp plugins/lfs/source/libs/armeabi-v7a/liblfs.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi-v7a
+cp plugins/lfs/source/libs/x86/liblfs.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/x86
+
+cp plugins/lsqlite3/source/libs/armeabi/liblsqlite3.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi
+cp plugins/lsqlite3/source/libs/armeabi-v7a/liblsqlite3.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi-v7a
+cp plugins/lsqlite3/source/libs/x86/liblsqlite3.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/x86
+
+cp plugins/BitOp/source/libs/armeabi/libbitop.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi
+cp plugins/BitOp/source/libs/armeabi-v7a/libbitop.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi-v7a
+cp plugins/BitOp/source/libs/x86/libbitop.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/x86
+
+cp plugins/JSON/source/libs/armeabi/libjson.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi
+cp plugins/JSON/source/libs/armeabi-v7a/libjson.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/armeabi-v7a
+cp plugins/JSON/source/libs/x86/libjson.so $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/x86
+
 
 rm -rf android/GiderosAndroidPlayer/libs
 cp -R $BUILD_DIR/win/Templates/Eclipse/Android\ Template/libs android/GiderosAndroidPlayer
@@ -182,6 +243,7 @@ mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin
 cp -r ../examples ../../../$BUILD_DIR/win/All\ Plugins/$d
 if [ -f $d.pro ]; then
 cp release/$d.dll ../../../$BUILD_DIR/win/Plugins
+cp release/$d.dll ../../../$BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/Plugins
 mkdir ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Windows
 cp release/$d.dll ../../../$BUILD_DIR/win/All\ Plugins/$d/bin/Windows
 fi

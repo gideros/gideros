@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\auxiliar.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\buffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\except.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\inet.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\io.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\luasocket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\mime.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\options.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\select.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\socket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\tcp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\timeout.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\udp.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\wsocket.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\auxiliar.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\buffer.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\except.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\inet.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\io.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\luasocket.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\mime.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\options.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\select.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\tcp.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\timeout.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\udp.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\wsocket.c" />
+  </ItemGroup>
+</Project>

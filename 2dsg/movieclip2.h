@@ -66,6 +66,7 @@ struct Parameter
 	Parameter(int param, float start, float end, const char* tweenType);
 	Parameter(const char* strparam, float start, float end, const char* tweenType);
 
+	std::string strParam;
 	int param;
 	float start, end;
 	double (*tweenFunction)(double);
@@ -96,7 +97,18 @@ public:
 	void stop();
 	void gotoAndPlay(int frame);
 	void gotoAndStop(int frame);
-	
+
+protected:
+	struct Frame
+	{
+		int start;
+		int end;
+		Sprite* sprite;
+		std::vector<Parameter> parameters;
+	};
+	std::vector<Frame> frames_;
+	virtual void setField(int frmIndex,Parameter param, float value);
+	virtual float getField(int frmIndex,Parameter param);
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
@@ -114,16 +126,6 @@ private:
 	int maxframe_;
 	bool playing_;
 	bool passoneframe_;
-
-	struct Frame
-	{
-		int start;
-		int end;
-		Sprite* sprite;
-		std::vector<Parameter> parameters;
-	};
-
-	std::vector<Frame> frames_;
 
 	std::map<int, std::vector<Frame*> > allFrames_;			// indexed with start
 	std::map<int, std::vector<Frame*> > activeFrames_;		// indexed with end

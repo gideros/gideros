@@ -5,6 +5,7 @@
 #include <vector>
 #include <texturebase.h>
 #include "ogl.h"
+#include "graphicsbase.h"
 
 class Application;
 
@@ -64,11 +65,11 @@ private:
         unsigned int color;
         float alpha;
     };
-    std::vector<float> vertices_;
-    std::vector<unsigned short> indices_;
-    std::vector<unsigned char> colors_;
+    VertexBuffer<float> vertices_;
+    VertexBuffer<unsigned short> indices_;
+    VertexBuffer<unsigned char> colors_;
     std::vector<Color> originalColors_;
-    std::vector<float> textureCoordinates_;
+    VertexBuffer<float> textureCoordinates_;
     std::vector<float> originalTextureCoordinates_;
     struct _genArray
     {
@@ -76,6 +77,8 @@ private:
     	ShaderProgram::DataType type;
     	int mult;
     	int count;
+    	ShaderBufferCache *cache;
+    	bool modified;
     } genericArray[MESH_MAX_ARRAYS-3];
 
     TextureBase *texture_[MESH_MAX_TEXTURES];

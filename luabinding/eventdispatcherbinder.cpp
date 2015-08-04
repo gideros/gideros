@@ -369,6 +369,9 @@ public:
 
             lua_pushnumber(L, v->wheel);
             lua_setfield(L, -2, "wheel");
+
+            lua_pushnumber(L, v->button);
+            lua_setfield(L, -2, "button");
 		}
 		else
 		{

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Smart Balloon, Inc.
+ * Copyright (c) 2015, Heyzap, Inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -13,7 +13,7 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'Smart Balloon, Inc.' nor the names of its contributors
+ * * Neither the name of 'Heyzap, Inc.' nor the names of its contributors
  *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
@@ -30,7 +30,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 #import <Foundation/Foundation.h>
+#import "HZShowOptions.h"
+#import "HZShowOptions.h"
+
+@class HZShowOptions;
 
 @protocol HZAdsDelegate;
 
@@ -52,10 +57,17 @@
 /**
  *  Shows an interstitial ad for a given tag, if available.
  *
- *  @param tag        An identifier for the location of the ad which you can use to disable the ad from your dashboard.
- *  @param completion A block called when the ad is shown or failed to show. result contains whether or not the fetch was successful, and if not, error contains the reason why.
+ *  @param tag An identifier for the location/context of the ad which you can use to disable the ad from your dashboard.
+ *  @param completion A block called when the ad is shown or failed to show. result contains whether 
+ *         or not the fetch was successful, and if not, error contains the reason why.
  */
 + (void) showForTag:(NSString *)tag completion:(void (^)(BOOL result, NSError *error))completion;
+
+/** Shows an interstitial ad with the given options.
+ *
+ * @param options HZShowOptions object containing properties for configuring how the ad is shown.
+ */
++ (void) showWithOptions: (HZShowOptions *) options;
 
 #pragma mark - Callbacks
 
@@ -105,14 +117,11 @@
  */
 + (BOOL) isAvailableForTag: (NSString *) tag;
 
-/** Dismisses the current ad, if visible. */
-+ (void) hide;
-
 
 #pragma mark - Private methods
 
 + (void) setCreativeID:(int)creativeID;
-
-+ (void)showAdWithOptions:(NSDictionary *)options;
++ (void)forceTestCreative:(BOOL)forceTestCreative;
++ (void)setCreativeType:(NSString *)creativeType;
 
 @end

@@ -4,8 +4,12 @@
 #include "Matrices.h"
 #include <stack>
 #include <vector>
-class BufferCache
+#include <string>
+
+class ShaderBufferCache
 {
+public:
+	virtual	~ShaderBufferCache() { }
 };
 
 class ShaderProgram
@@ -15,7 +19,7 @@ public:
 		DBYTE, DUBYTE, DSHORT, DUSHORT, DINT, DFLOAT
 	};
 	enum ConstantType {
-		CINT,CFLOAT,CFLOAT4,CMATRIX,CTEXTURE
+		CINT,CFLOAT,CFLOAT2,CFLOAT3,CFLOAT4,CMATRIX,CTEXTURE
 	};
 	enum ShapeType {
 		Point,
@@ -26,7 +30,7 @@ public:
 		TriangleStrip
 	};
     struct DataDesc {
-    	const char *name;
+		std::string name;
     	DataType type;
     	unsigned char mult;
     	unsigned char slot;
@@ -46,7 +50,7 @@ public:
     	Flag_NoDefaultHeader=1
     };
     struct ConstantDesc {
-    	const char *name;
+    	std::string name;
     	ConstantType type;
     	int mult;
     	SystemConstant sys;
@@ -64,10 +68,10 @@ public:
 	};
     virtual void activate()=0;
     virtual void deactivate()=0;
-    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, BufferCache **cache)=0;
+    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache)=0;
     virtual void setConstant(int index,ConstantType type, int mult,const void *ptr)=0;
     virtual void drawArrays(ShapeType shape, int first, unsigned int count)=0;
-    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, BufferCache *cache)=0;
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache)=0;
     virtual bool isValid()=0;
     virtual const char *compilationLog()=0;
     void Retain();
@@ -178,7 +182,7 @@ public:
 	};
 	static ShaderEngine *Engine;
 	virtual ~ShaderEngine() { };
-	virtual void reset();
+	virtual void reset(bool reinit=false);
 	virtual const char *getVersion()=0;
 	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
 	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture)=0;

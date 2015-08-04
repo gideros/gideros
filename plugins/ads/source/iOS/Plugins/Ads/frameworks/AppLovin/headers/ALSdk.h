@@ -10,8 +10,11 @@
 
 #import "ALSdkSettings.h"
 #import "ALAdService.h"
+#import "ALNativeAdService.h"
 #import "ALTargetingData.h"
+#import "ALPostbackService.h"
 
+#import "ALNullabilityAnnotations.h"
 #import "ALErrorCodes.h"
 
 /**
@@ -27,12 +30,12 @@
 /**
  * This SDK's key.
  */
-@property (strong, readonly) NSString* sdkKey;
+@property (strong, nonatomic, readonly) NSString* __alnonnull sdkKey;
 
 /**
  * This SDK's settings.
  */
-@property (strong, readonly) ALSdkSettings* settings;
+@property (strong, nonatomic, readonly) ALSdkSettings* __alnonnull settings;
 
 /**
  * Set Plugin version.
@@ -42,7 +45,7 @@
  *
  * @param version Some descriptive string which identifies the plugin.
  */
--(void) setPluginVersion: (NSString *) version;
+-(void) setPluginVersion: (alnonnull NSString *) version;
 
 /**
  * @name SDK Information
@@ -53,7 +56,7 @@
  *
  *  @return The current SDK version.
  */
-+(NSString *) version;
++(alnonnull NSString *) version;
 
 /**
  * @name SDK Services
@@ -65,7 +68,22 @@
  *
  * @return Ad service. Guaranteed not to be null.
  */
--(ALAdService *) adService;
+@property (strong, nonatomic, readonly) ALAdService* __alnonnull  adService;
+
+/**
+ * Get an instance of AppLovin Native Ad service. This service is
+ * used to fetch and display native ads from AppLovin servers.
+ *
+ * @return Native ad service. Guaranteed not to be null.
+ */
+@property (strong, nonatomic, readonly) ALNativeAdService* __alnonnull nativeAdService;
+
+/**
+ * Get an instance of the AppLovin postback service. This service is used to dispatch HTTP GET postbacks to arbitrary URLs.
+ *
+ * @return Postback service. Guaranteed not to be null.
+ */
+@property (strong, nonatomic, readonly) ALPostbackService*  __alnonnull postbackService;
 
 /**
  * @name Custom User Targeting
@@ -78,7 +96,7 @@
  *
  * @return Current targeting data. Guaranteed not to be null.
  */
--(ALTargetingData *) targetingData;
+@property (strong, nonatomic, readonly) ALTargetingData* __alnonnull targetingData;
 
 /**
  * @name SDK Initialization
@@ -112,7 +130,7 @@
  *
  * @return An instance of AppLovinSDK
  */
-+(ALSdk *) shared;
++(alnullable ALSdk *) shared;
 
 /**
  * Get an instance of AppLovin SDK using default SDK settings.
@@ -121,7 +139,7 @@
  *
  * @return An instance of AppLovinSDK
  */
-+(ALSdk *) sharedWithKey: (NSString *) sdkKey;
++(alnullable ALSdk *) sharedWithKey: (alnonnull NSString *) sdkKey;
 
 /**
  * Get an instance of AppLovin SDK.
@@ -131,8 +149,8 @@
  * 
  * @return An instance of AppLovinSDK
  */
-+(ALSdk *) sharedWithKey: (NSString *)sdkKey settings: (ALSdkSettings *)settings;
++(alnullable ALSdk *) sharedWithKey: (alnonnull NSString *) sdkKey settings: (alnonnull ALSdkSettings *) settings;
 
-- (id)init __attribute__((unavailable("Use [ALSdk shared] instead of alloc-init pattern.")));
+- (alnullable id) init __attribute__((unavailable("Use [ALSdk shared] instead of alloc-init pattern.")));
 
 @end

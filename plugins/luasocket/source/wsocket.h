@@ -10,7 +10,13 @@
 /*=========================================================================*\
 * WinSock include files
 \*=========================================================================*/
+#ifdef WINSTORE
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include <winsock2.h>
+#include <WS2tcpip.h>
+#else
 #include <winsock.h>
+#endif
 
 typedef int socklen_t;
 typedef SOCKET t_socket;

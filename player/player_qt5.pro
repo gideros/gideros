@@ -113,6 +113,8 @@ HEADERS += \
     $$files(../2dsg/*.h)\
     $$files(../luabinding/*.h)\
     $$files(../libnetwork/*.h)\
+    ../2dsg/gfxbackends/gl2/gl2Shaders.h \
+    ../2dsg/gfxbackends/Shaders.h
 
 DEFINES += USE_FILE32API
 

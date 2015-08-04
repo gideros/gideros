@@ -240,17 +240,21 @@ tmp
 */qrc_*.cpp
 
 # other generated files and folders
+*.exe
 *.so
 *.ini
 *.a
 *.dep
 *.cso
 *.dll
+*.dylib
+*.app
 
 # some files and folder to include
 !/release
 !*.nsi
 !/win32_example/makefile
+!/libgid/external/libpng-1.6.2/libpng.a
 
 # and others to exclude
 plugins/LPeg/source/makefile

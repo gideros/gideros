@@ -1,6 +1,7 @@
 package com.giderosmobile.android.plugins.ads.frameworks;
 
 import java.lang.ref.WeakReference;
+
 import android.app.Activity;
 import android.util.SparseArray;
 import android.view.KeyEvent;
@@ -30,16 +31,6 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 		v4vc = false;
 		sActivity = activity;
 		mngr = new AdsManager();
-		if(android.os.Build.MANUFACTURER.equals("Amazon"))
-		{
-			HeyzapAds.start(sActivity.get(), HeyzapAds.DISABLE_AUTOMATIC_FETCH|HeyzapAds.AMAZON);
-		}
-		else
-		{
-			HeyzapAds.start(sActivity.get(), HeyzapAds.DISABLE_AUTOMATIC_FETCH);
-		}
-		HeyzapAds.setOnStatusListener(this);
-		HeyzapAds.setOnIncentiveResultListener(this);
 	}
 	
 	//on destroy event
@@ -61,7 +52,12 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 	}
 	
 	public void setKey(final Object parameters){
-
+		SparseArray<String> param = (SparseArray<String>)parameters;
+		HeyzapAds.start(param.get(0), sActivity.get());
+		VideoAd.setOnStatusListener(this);
+		IncentivizedAd.setOnStatusListener(this);
+		IncentivizedAd.setOnIncentiveResultListener(this);
+		InterstitialAd.setOnStatusListener(this);
 	}
 	
 	//load an Ad
@@ -89,7 +85,6 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 				}	
 				@Override
 				public void onHide() {
-					VideoAd.dismiss();
 				}	
 			});
 			if(tag != null)
@@ -112,7 +107,6 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 				}	
 				@Override
 				public void onHide() {
-					IncentivizedAd.dismiss();
 				}	
 			});
 			IncentivizedAd.fetch();
@@ -136,7 +130,6 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 				}	
 				@Override
 				public void onHide() {
-					InterstitialAd.dismiss();
 				}	
 			});
 			if(tag != null)
@@ -173,19 +166,19 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 
 	@Override
 	public void onAvailable(String tag) {
-		if(InterstitialAd.isAvailable(tag))
+		if(mngr.get("interstitial") != null && InterstitialAd.isAvailable(tag))
 		{
 			mngr.load("interstitial");
 			Ads.adReceived(this, "interstitial");
 			interstitial = true;
 		}
-		if(VideoAd.isAvailable(tag))
+		if(mngr.get("video") != null && VideoAd.isAvailable(tag))
 		{
 			mngr.load("video");
 			Ads.adReceived(this, "video");
 			video = true;
 		}
-		if(IncentivizedAd.isAvailable())
+		if(mngr.get("v4vc") != null && IncentivizedAd.isAvailable())
 		{
 			mngr.load("v4vc");
 			Ads.adReceived(this, "v4vc");
@@ -253,18 +246,20 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 	}
 
 	@Override
-	public void onComplete() {
-		Ads.adActionEnd(this, "v4vc");
-	}
-
-	@Override
-	public void onIncomplete() {}
-
-	@Override
 	public void onAudioFinished() {}
 
 	@Override
 	public void onAudioStarted() {}
+
+	@Override
+	public void onComplete(String arg0) {
+		Ads.adActionEnd(this, "v4vc");
+	}
+
+	@Override
+	public void onIncomplete(String arg0) {
+
+	}
 	
 	
 	

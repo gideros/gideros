@@ -8,6 +8,8 @@ VPATH = \
 ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Rope;\
 ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle;\
 ..\2dsg;\
+..\2dsg\gfxbackends;\
+..\2dsg\gfxbackends\gl2;\
 ..\luabinding;\
 ..\libnetwork;\
 ..\libpvrt;\
@@ -38,6 +40,8 @@ INCLUDEPATHS = \
 -I..\libgvfs \
 -I..\libgideros \
 -I..\2dsg \
+-I..\2dsg\gfxbackends \
+-I..\2dsg\gfxbackends\gl2 \
 -I..\libgid\include
 
 CXXFLAGS = -O2 -fno-keep-inline-dllexport $(INCLUDEPATHS)
@@ -59,7 +63,7 @@ links = ..\libgid\external\freetype-2.4.12\build\mingw48_32\libfreetype.a \
 -L"../libgvfs/release" -lgvfs \
 -L"../lua/release" -llua \
 -L"../libgideros/release" -lgideros \
--L"../libpystring/release" -lpystring libgid.dll -lopengl32
+-L"../libpystring/release" -lpystring libgid.dll -lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi
 
 objfiles = win32.o \
 accelerometerbinder.o         alertdialogbinder.o \
@@ -148,13 +152,20 @@ ttbmfont.o \
 ttfont.o                      ttfontbinder.o \
 tttextfield.o \
 urlloaderbinder.o             urlrequest.o \
-utf8.o                        zlibbinder.o
+utf8.o                        zlibbinder.o \
+Shaders.o \
+gl2ShaderBuffer.o \
+gl2ShaderEngine.o \
+gl2ShaderProgram.o \
+gl2ShaderTexture.o \
+shaderbinder.o \
+ftlibrarysingleton.o
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<
 
 %.o : %.c
-	g++ $(CXXFLAGS) -c $<
+	gcc $(CXXFLAGS) -c $<
 
 win32.exe: $(objfiles)
 	g++ -o win32.exe $(objfiles) $(links)
@@ -176,6 +187,8 @@ b2Timer.o: \
 -include box2d7.dep
 -include box2d8.dep
 -include 2dsg.dep
+-include 2dsg1.dep
+-include 2dsg2.dep
 -include luabinding.dep
 -include tlsf.dep
 -include libnetwork.dep
@@ -200,6 +213,8 @@ depend :
 	g++ $(INCLUDEPATHS) -MM ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Rope\*.cpp > box2d7.dep
 	g++ $(INCLUDEPATHS) -MM ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Particle\*.cpp > box2d8.dep
 	g++ $(INCLUDEPATHS) -MM ..\2dsg\*.cpp > 2dsg.dep
+	g++ $(INCLUDEPATHS) -MM ..\2dsg\gfxbackends\*.cpp > 2dsg1.dep
+	g++ $(INCLUDEPATHS) -MM ..\2dsg\gfxbackends\gl2\*.cpp > 2dsg2.dep
 	g++ $(INCLUDEPATHS) -MM ..\luabinding\*.cpp  > luabinding.dep
 	g++ $(INCLUDEPATHS) -MM ..\luabinding\tlsf.c > tlsf.dep
 	g++ $(INCLUDEPATHS) -MM ..\libnetwork\*.cpp > libnetwork.dep

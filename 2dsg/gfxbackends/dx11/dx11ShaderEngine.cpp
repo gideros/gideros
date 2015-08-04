@@ -31,13 +31,13 @@ const char *dx11ShaderEngine::getVersion()
 	return "DX11";
 }
 
-void dx11ShaderEngine::reset()
+void dx11ShaderEngine::reset(bool reinit)
 {
-	ShaderEngine::reset();
+	ShaderEngine::reset(reinit);
 	g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
 	g_devcon->RSSetState(g_pRSNormal);
 	g_devcon->OMSetBlendState(g_pBlendState, NULL, 0xFFFFFF);
-	curDstFactor = ONE_MINUS_SRC_COLOR;
+	curDstFactor = ONE_MINUS_SRC_ALPHA;
 	curSrcFactor = ONE;
 	s_depthEnable=0;
 	s_depthBufferCleared=false;
@@ -46,34 +46,34 @@ void dx11ShaderEngine::reset()
 void dx11SetupShaders()
 {
 	const ShaderProgram::ConstantDesc stdConstants[]={
-			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
-			{"fColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,false,0},
-			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0},
-			NULL
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
+			{"fColor",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_Color,false,0,NULL},
+			{"fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL},
+			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
 	};
 	const ShaderProgram::DataDesc stdBAttributes[]={
 			{"vVertex",dx11ShaderProgram::DFLOAT,3,0,0},
 			{"vColor",dx11ShaderProgram::DUBYTE,0,1,0},
 			{"vTexCoord",dx11ShaderProgram::DFLOAT,0,2,0},
-			NULL
+			{"",ShaderProgram::DFLOAT,0,0,0}
 	};
 	const ShaderProgram::DataDesc stdCAttributes[] = {
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
 		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
 		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 0, 2, 0 },
-		NULL
+		{"",ShaderProgram::DFLOAT,0,0,0}
 	};
 	const ShaderProgram::DataDesc stdTAttributes[] = {
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
 		{ "vColor", dx11ShaderProgram::DUBYTE, 0, 1, 0 },
 		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
-		NULL
+		{"",ShaderProgram::DFLOAT,0,0,0}
 	};
 	const dx11ShaderProgram::DataDesc stdTCAttributes[] = {
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
 		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
 		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
-		NULL
+		{"",ShaderProgram::DFLOAT,0,0,0}
 	};
 
     ShaderProgram::stdBasic = new dx11ShaderProgram(vBasic_cso,sizeof(vBasic_cso),pBasic_cso,sizeof(pBasic_cso),stdConstants,stdBAttributes);
@@ -82,11 +82,11 @@ void dx11SetupShaders()
     ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso,sizeof(vTextureColor_cso),pTextureColor_cso,sizeof(pTextureColor_cso),stdConstants,stdTCAttributes);
 
 	const ShaderProgram::ConstantDesc stdPConstants[]={
-			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0},
-			{ "vPSize", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_ParticleSize, true, 0 },
-			{ "fTexture", ShaderProgram::CTEXTURE, 1, ShaderProgram::SysConst_None, false, 0 },
-			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0},
-			NULL
+			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
+			{ "vPSize", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_ParticleSize, true, 0,NULL },
+			{ "fTexture", ShaderProgram::CTEXTURE, 1, ShaderProgram::SysConst_None, false, 0,NULL },
+			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL},
+			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
 	};
     ShaderProgram::stdParticle = new dx11ParticleShader(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),stdPConstants,stdTCAttributes);
 
@@ -234,6 +234,7 @@ dx11ShaderEngine::~dx11ShaderEngine()
     delete ShaderProgram::stdColor;
     delete ShaderProgram::stdTexture;
     delete ShaderProgram::stdTextureColor;
+    delete ShaderProgram::stdParticle;
 
     g_depthStencil->Release();
     g_pBlendState->Release();
@@ -316,8 +317,8 @@ void dx11ShaderEngine::setClip(int x,int y,int w,int h)
 		D3D11_RECT pRect;
 		pRect.left = x;
 		pRect.top = y;
-		pRect.right = x + w - 1;
-		pRect.bottom = y + h - 1;
+		pRect.right = x + w;
+		pRect.bottom = y + h;
 		g_devcon->RSSetScissorRects(1, &pRect);
 		g_devcon->RSSetState(g_pRSScissor);
 	}

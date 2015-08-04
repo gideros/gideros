@@ -33,15 +33,32 @@ class MainWindow : public QMainWindow{
         void resizeWindow(int width, int height);
         void updateResolution();
         float deviceScale();
+        float scale();
+        void setScale(float scale);
+        void setFixedSize(bool fixedSize);
+        void saveSettings();
 
     private:
         static MainWindow* instance;
         GLCanvas *glCanvas;
+        float scale_;
+        bool fixedSize_;
+        int width_;
+        int height_;
+        float resolution_;
+        int width0_;
+        int height0_;
 
         Ui::MainWindowClass ui;
+        void loadSettings();
 
     private slots:
         void projectNameChanged(const QString& projectName);
+
+    protected:
+        virtual void closeEvent(QCloseEvent*);
+        virtual void resizeEvent(QResizeEvent*);
+        virtual void changeEvent(QEvent*);
 };
 
 #endif // MAINWINDOW_H
