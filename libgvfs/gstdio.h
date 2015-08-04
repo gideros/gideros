@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include <sys/types.h>
 
+#ifdef __EMSCRIPTEN__
+#define fpos_t off_t
+#endif
+
 /* stdio buffers */
 struct g__sbuf {
 	unsigned char *_base;

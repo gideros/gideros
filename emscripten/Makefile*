@@ -1,0 +1,18 @@
+SRCS=$(wildcard 2dsg/*.cpp) $(wildcard 2dsg/gfxbackends/*.cpp) $(wildcard 2dsg/gfxbackends/gl2/*.cpp)
+INCS=2dsg 2dsg/gfxbackends libgideros libgid/include libgvfs
+ROOT=..
+BUILD=build
+
+OBJS=$(addsuffix .em.o,$(basename $(SRCS)))
+
+EMCC=emcc
+
+all: path $(OBJS)
+
+path:
+	mkdir -p $(BUILD)
+
+%.em.o: %.cpp
+	$(EMCC) $(addprefix -I$(ROOT),$(INCS)) -c $(ROOT)/$< -o$(BUILD)/$@
+
+
