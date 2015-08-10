@@ -5,35 +5,20 @@ qtapp.install: qtlibs.install plugins.install qt.install
 qtapp.clean: qtlibs.clean plugins.clean qt.clean
 
 
-vpath %.h libgideros:libgvfs:libgid/include:lua/src:libgid/external/openal-soft-1.13/include/AL
 vpath %.a libgideros/release:libgvfs/release:libgid/release:lua/release:libgid/external/openal-soft-1.13/build/mingw48_32
-$(SDK)/include/%: %
-	cp $^ $(SDK)/include
-
-$(SDK)/include/AL/%: %
-	cp $^ $(SDK)/include/AL
 
 $(SDK)/lib/desktop/%: %
 	cp $^ $(SDK)/lib/desktop
 	
 
-SDK_INCS=$(addsuffix .h,gideros gplugin gproxy greferenced gexport) \
-			$(addsuffix .h,gfile gpath gstdio) \
-			$(addsuffix .h,gglobal glog gapplication gevent) \
-			$(addsuffix .h,lua luaconf lualib lauxlib) \
-			$(addprefix AL/,$(addsuffix .h,al alc alext efx efx-creative))
-
 SDK_LIBS_QT=libgideros.a liblua.a libgid.a libgvfs.a libOpenAL32.dll.a
 
-sdkdir.prep:
-	mkdir -p $(SDK)/include/AL
+sdk.qtlibs.dir:
 	mkdir -p $(SDK)/lib/desktop	
 
-sdkdir.headers: $(addprefix $(SDK)/include/,$(SDK_INCS))
-sdkdir.qtlibs: $(addprefix $(SDK)/lib/desktop/,$(SDK_LIBS_QT))			
-sdkdir: sdkdir.prep sdkdir.headers sdkdir.qtlibs
+sdk.qtlibs: sdk.headers sdk.qtlibs.dir $(addprefix $(SDK)/lib/desktop/,$(SDK_LIBS_QT))			
 			
-buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs) libgid.qmake5.rel $(addsuffix .qmake.rel,lua libgideros) sdkdir
+buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs) libgid.qmake5.rel $(addsuffix .qmake.rel,lua libgideros) sdk.qtlibs
 
 
 qtlibs.install: buildqtlibs

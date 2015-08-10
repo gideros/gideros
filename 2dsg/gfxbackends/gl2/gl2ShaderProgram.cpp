@@ -7,24 +7,39 @@
 
 #include "gl2Shaders.h"
 #include "glog.h"
+#include <set>
 
 class gl2ShaderBufferCache : public ShaderBufferCache {
 public:
 	GLuint VBO;
-	gl2ShaderBufferCache() { VBO = 0; }
+	gl2ShaderBufferCache() { VBO = 0; allVBO.insert(this);}
 	virtual ~gl2ShaderBufferCache()
 	{
 		if (VBO)
 			glDeleteBuffers(1,&VBO);
+		allVBO.erase(this);
 	}
+	void recreate()
+	{
+		if (VBO)
+			glDeleteBuffers(1,&VBO);
+		VBO=0;
+	}
+	bool valid()
+	{
+		return (VBO!=0);
+	}
+	static std::set<gl2ShaderBufferCache *> allVBO;
 };
+
+std::set<gl2ShaderBufferCache *> gl2ShaderBufferCache::allVBO;
 
 GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified) {
 	if (!cache) return 0; //XXX: Could we check for VBO availability ?
 	if (!*cache)
 		*cache = new gl2ShaderBufferCache();
 	gl2ShaderBufferCache *dc = static_cast<gl2ShaderBufferCache*> (*cache);
-	if (!glIsBuffer(dc->VBO))
+	if (!dc->valid())
 	{
 		glGenBuffers(1,&dc->VBO);
 		modified=true;
@@ -38,8 +53,10 @@ std::vector<ogl2ShaderProgram *> ogl2ShaderProgram::shaders;
 
 void ogl2ShaderProgram::resetAll()
 {
-  for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); ++it)
-	  (*it)->recreate();
+	  for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); ++it)
+		  (*it)->recreate();
+	  for (std::set<gl2ShaderBufferCache *>::iterator it = gl2ShaderBufferCache::allVBO.begin() ; it != gl2ShaderBufferCache::allVBO.end(); ++it)
+		  (*it)->recreate();
 }
 
 

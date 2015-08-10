@@ -17,15 +17,37 @@ RELEASE=$(ROOT)/release
 QMAKE=qmake
 MINGWMAKE=mingw32-make
 CC=$(QTBASEDIR)/Tools/$(QTMINGW)/bin/gcc
+CXX=$(QTBASEDIR)/Tools/$(QTMINGW)/bin/g++
 
 all: qtapp.install android.install
 
 clean: qtapp.clean android.clean
 
+#SDK includes
+vpath %.h libgideros:libgvfs:libgid/include:lua/src:libgid/external/openal-soft-1.13/include/AL
+$(SDK)/include/%: %
+	cp $^ $(SDK)/include
+
+$(SDK)/include/AL/%: %
+	cp $^ $(SDK)/include/AL
+
+SDK_INCS=$(addsuffix .h,gideros gplugin gproxy greferenced gexport) \
+			$(addsuffix .h,gfile gpath gstdio) \
+			$(addsuffix .h,gglobal glog gapplication gevent) \
+			$(addsuffix .h,lua luaconf lualib lauxlib) \
+			$(addprefix AL/,$(addsuffix .h,al alc alext efx efx-creative))
+
+sdk.headers.dir:
+	mkdir -p $(SDK)/include/AL
+
+sdk.headers: sdk.headers.dir $(addprefix $(SDK)/include/,$(SDK_INCS))
+
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtWin.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidAndroid.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWinRT.mk
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWin32.mk
 
 
 		
