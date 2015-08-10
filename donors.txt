@@ -1,0 +1,65 @@
+﻿The following people generously donated to a Kickstarter Campaign which made this project possible
+
+The campaign ran from 1 December 2014 to 16 January 2015 and raised over £4000 to port Gideros Studio to Windows Phone, Desktop and Raspberry Pi.
+
+See here for details of the campaign:
+
+https://www.kickstarter.com/projects/207069325/port-gideros-studio-to-windows-phone-8-and-desktop
+
+List of donors
+==============
+
+Paulo Felipe Jarschel
+ramersonw
+zoolax
+Alexander Orlov-Holmes
+Shchedukhin Pavel
+Nguyễn Khánh Duy
+Amundo Stowers
+Jonathan Ng
+Dominikus D Putranto
+Hakan Guleryuz
+Thai Thanh Phong
+vitalitymobile
+Chris Dell
+Sylvain Garden
+Đani Stojanov
+Scott Zupancic
+Yuri Bautista Romero
+Can Kultur
+Mark G WolfAddict
+A Brugsch
+Vesa Laitinen
+Aditya Kulkarni
+Alex McCullie
+Vlado Kussak
+Jon Howard
+Alexandru Nedel
+Michael Terry
+Malik Dawwas
+Pan Ip
+YoungHwan Choi
+Steve Wetherill
+Michael Hartlef
+keszegh
+Ünal Zubari
+Cihan Akinci
+bali001
+Eric Carr
+Nicolas Bouquet
+Filip Swerts
+Pete Crawford
+Dave Joubert
+Andy Bower
+Anthony Ball
+Atilim Cetin
+private_kenny
+Adrian Cummings
+Paul Shafi
+boriskey
+Hasan Alper
+Tom Armstrong
+Rajesh
+pietro
+Igor
+Ian Chia

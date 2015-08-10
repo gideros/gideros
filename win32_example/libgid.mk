@@ -115,3 +115,8 @@ snappy-stubs-internal.o: ..\libgid\external\snappy-1.1.0\snappy-stubs-internal.c
 
 -include libgid.dep
 -include libgidwin32.dep
+
+.PHONY : depend
+depend :
+	g++ $(INCLUDEPATHS) -MM ../libgid/src/*.cpp > libgid.dep
+	g++ $(INCLUDEPATHS) -MM ../libgid/src/win32/*.cpp > libgidwin32.dep
