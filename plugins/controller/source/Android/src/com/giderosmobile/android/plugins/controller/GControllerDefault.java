@@ -196,7 +196,11 @@ public class GControllerDefault implements GControllerInterface {
 				else
 				{
 					controller.handleLeftTrigger(event.getAxisValue(MotionEvent.AXIS_LTRIGGER));
-        	    	controller.handleRightTrigger(event.getAxisValue(MotionEvent.AXIS_RTRIGGER));
+        	    			controller.handleRightTrigger(event.getAxisValue(MotionEvent.AXIS_RTRIGGER));
+					controller.handleDPadUpButton(event.getAxisValue(MotionEvent.AXIS_HAT_Y));
+					controller.handleDPadDownButton(event.getAxisValue(MotionEvent.AXIS_HAT_Y));
+					controller.handleDPadLeftButton(event.getAxisValue(MotionEvent.AXIS_HAT_X));
+					controller.handleDPadRightButton(event.getAxisValue(MotionEvent.AXIS_HAT_X));
 				}
 			}
 			return true;

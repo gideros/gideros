@@ -52,6 +52,14 @@ bool use_timer=false;
 int vsyncVal=0;
 static HDC hDC;
 
+static void luaError(const char *error)
+{
+  glog_e("%s",error);
+  exit(1);
+}
+
+// ######################################################################
+
 static void loadPlugins()
 {
   static char fullname[MAX_PATH];
@@ -78,15 +86,21 @@ static void loadPlugins()
   } 
 }
 
+// ######################################################################
+
 static void printFunc(const char *str, int len, void *data)
 {
   printf("%s",str);
 }
 
+// ######################################################################
+
 std::string getDeviceName()
 {
   return "foo";
 }
+
+// ######################################################################
 
 struct ProjectProperties
 {
@@ -262,8 +276,8 @@ void loadLuaFiles()
     application_->tick(&status);
   }
 
-  if (status.error());
-    //    luaError(status.errorString());
+  if (status.error())
+    luaError(status.errorString());
 }
 
 // ######################################################################
@@ -509,8 +523,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     GStatus status;
     application_->enterFrame(&status);
 
-    if (status.error());
-    //      luaError(status.errorString());
+    if (status.error())
+      luaError(status.errorString());
 
     //    glClear(GL_COLOR_BUFFER_BIT);
     application_->clearBuffers();
@@ -577,8 +591,8 @@ void render()
   GStatus status;
   application_->enterFrame(&status);
   
-  if (status.error());
-  //      luaError(status.errorString());
+  if (status.error())
+    luaError(status.errorString());
 
   //    glClear(GL_COLOR_BUFFER_BIT);
   application_->clearBuffers();
