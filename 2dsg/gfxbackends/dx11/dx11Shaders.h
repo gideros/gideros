@@ -10,16 +10,19 @@
 
 #include <windows.h>
 //#include <windowsx.h>
+#ifdef WINSTORE
+#include <pch.h>
 #include <d3d11_1.h>
+#else
+#include <d3d11.h>
+#endif
 #include <d3dcompiler.h>
 #include <math.h>
 #include <vector>
-#include "dxglobals.h"
-#include "dxcompat.hpp"
 #include "Shaders.h"
 #include "Matrices.h"
 #include "gtexture.h"
-#include "dxcompat.hpp"
+//#include "dxcompat.hpp"
 #define OPENGL_DESKTOP
 
 #ifdef OPENGL_DESKTOP
@@ -27,6 +30,7 @@
 #endif
 
 #ifdef WINSTORE
+using namespace Microsoft::WRL;
 extern ComPtr<ID3D11Device1> g_dev;                     // the pointer to our Direct3D device interface (11.1)
 extern ComPtr<ID3D11DeviceContext1> g_devcon;           // the pointer to our Direct3D device context (11.1)
 #else

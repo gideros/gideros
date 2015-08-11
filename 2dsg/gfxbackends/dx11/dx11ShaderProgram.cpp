@@ -7,7 +7,7 @@
 
 #include "dx11Shaders.h"
 #include "glog.h"
-#include "pch.h"
+//#include "pch.h"
 #include <stdio.h>
 #include <string.h>
 #include <fstream>
@@ -17,11 +17,10 @@
 #include <stack>
 #include <string>
 #include "platform.h"
-#include "pch.h"
 #include <gstdio.h>
 #include <io.h>
 #include "D3Dcompiler.h"
-using namespace Microsoft::WRL;
+//using namespace Microsoft::WRL;
 
 class dx11ShaderBufferCache : public ShaderBufferCache {
 public:

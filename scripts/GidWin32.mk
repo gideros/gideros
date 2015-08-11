@@ -35,8 +35,10 @@ LIBS_gideros+= $(addprefix $(WIN32_BUILDDIR)/,gid.dll lua.dll pystring.dll)
 ##PLAYER
 INCLUDEPATHS_player+=libgid/include/win32
 OBJFILES_player+= $(basename $(wildcard 2dsg/gfxbackends/gl2/*.cpp))
+#OBJFILES_player+= $(basename $(wildcard 2dsg/gfxbackends/dx11/*.cpp)) $(basename $(wildcard 2dsg/gfxbackends/dx11/*.c))
 OBJFILES_player+= win32_example/win32 libgid/src/win32/platform-win32
 INCLUDEPATHS_player+=2dsg/gfxbackends/gl2
+INCLUDEPATHS_player+=2dsg/gfxbackends/dx11
 DEFINES_player=WIN32=1
 LIBS_player = $(addprefix $(WIN32_BUILDDIR)/,gvfs.dll gid.dll lua.dll pystring.dll gideros.dll) \
 	libgid/external/freetype-2.4.12/build/mingw48_32/libfreetype.a \
