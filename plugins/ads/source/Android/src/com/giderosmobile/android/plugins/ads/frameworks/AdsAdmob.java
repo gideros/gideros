@@ -247,9 +247,10 @@ class AdsAdmobListener extends AdListener{
 	}
 	
 	public void onAdClosed(){
-		Ads.adActionEnd(AdsAdmob.me, state.getType());
-		if(state.getType() == "interstitial"){
-			Ads.adDismissed(AdsAdmob.me, state.getType());
+		String type = state.getType();
+		Ads.adActionEnd(AdsAdmob.me, type);
+		if(type.equals("interstitial")){
+			Ads.adDismissed(AdsAdmob.me, type);
 		}
 	}
 	
