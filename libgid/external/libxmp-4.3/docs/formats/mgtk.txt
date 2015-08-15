@@ -1,0 +1,393 @@
+***************************************************************************
+***********							***********
+***********							***********
+***********   Description des diff‚rents formats SoundTracker	***********
+***********							***********
+***********	Format MegaTracker par Axel Follet et Simplet	***********
+***********			Version 1.1			***********
+***********							***********
+***********							***********
+***********		Par Simplet / FATAL DESIGN		***********
+***********							***********
+***************************************************************************
+
+
+Structure du Header d'un fichier MGT :
+--------------------------------------
+
+			RsReset
+
+MGT_Chunk		rs.b	3	* "MGT"
+MGT_Version		rs.b	1	* $11, $xy pour Version x.y
+MGT_Copyright		rs.b	4	* "½MCS"
+MGT_Nb_Voices		rs.w	1	* Nombre de Voies
+MGT_Nb_Musics		rs.w	1	* Nombre de Musiques
+MGT_Nb_Orders		rs.w	1	* Nombre de Positions
+MGT_Nb_Patterns		rs.w	1	* Nombre de Patterns
+MGT_Nb_Tracks		rs.w	1	* Nombre de Pistes sauv‚es (sans la 0)
+MGT_Nb_Samples		rs.w	1	* Nombre de Samples
+MGT_Attributes		rs.w	1	* Inutilis‚ pour l'instant
+MGT_Reserved		rs.l	1	* R‚serv‚ pour le futur
+
+MGT_Musics		rs.l	1	* Adresse des Musics
+MGT_Sequences		rs.l	1	* Adresse des Sequences
+MGT_Samples_Infos	rs.l	1	* Adresse des Infos Samples
+MGT_Patterns		rs.l	1	* Adresse des Patterns
+MGT_Tracks_Ptr		rs.l	1	* Adresse des Pointeurs de Piste
+MGT_Samples_Data	rs.l	1	* Adresse des Donn‚es Samples
+MGT_Samples_Length	rs.l	1	* Longueur Totale des Samples
+MGT_Tracks_Length	rs.l	1	* Longueur des Tracks D‚pack‚es
+
+* Les diff‚rentes sections peuvent ˆtre n'importe o— dans le fichier sauf
+* les pistes pack‚es et les samples qui se trouvent obligatoirement dans
+* cet ordre … la fin du fichier...
+
+Structure d'une Music :
+-----------------------
+
+			RsReset
+
+Music_Name		rs.b	32	* Nom de la Musique
+Music_Sequence		rs.l	1	* Adresse de la Sequence
+Music_Length		rs.w	1	* Longueur de la Sequence
+Music_Restart		rs.w	1	* Position de Rebouclage
+Music_Initial_Tempo	rs.b	1	* Tempo initial
+Music_Initial_Speed	rs.b	1	* Vitesse initiale
+Music_Initial_Global	rs.w	1	* Volume Global de Fade-Out initial
+Music_Initial_Master_L	rs.b	1	* Volumes Master Gauche et Droit
+Music_Initial_Master_R	rs.b	1	* de 0 … 255, Volume Normal = 32
+Music_Initial_Stereos	rs.w	Nb_Voices
+* Positions st‚r‚o pour chacune des voies (en nombre Nb_Voices)
+* 2 octets, Volumes Gauche et Droit, de 0 … 255 chacun
+* Pour un volume normal, la somme Gauche+Droit fait 255 ou 256.
+
+Structure d'infos sample et de header d'instrument MGS :
+--------------------------------------------------------
+
+			RsReset
+
+Sample_Name		rs.b	32	* 32 caractŠres
+
+Sample_Start		rs.l	1	* Adresse d‚but du Sample
+Sample_Length		rs.l	1	* Taille du sample en unit‚s
+Sample_Loop_Start	rs.l	1	* Offset d‚but Boucle en unit‚s
+Sample_Loop_Length	rs.l	1	* Taille de la Boucle en unit‚s
+Sample_Buffer_Length	rs.l	1	* Taille Minimale du Buffer en unit‚s
+Sample_End_Length	rs.l	1	* Taille de la fin du sample aprŠs le buffer
+
+Sample_Base		rs.l	1	* Fr‚quence de Replay pour le DO-4
+Sample_Volume		rs.w	1	* Volume par d‚faut de 0 … 1024
+Sample_Panoramic	rs.b	2	* Volumes Gauche et Droit de 0 … 255
+					* par d‚faut, 0 si y'en a pas
+Sample_Attributes	rs.b	1	* bits 0 et 1 : Loop Mode -->
+					*  0 = Loop Off,  1 = Forward Loop
+					*  2 = Ping-Pong Loop, 3 r‚serv‚
+
+Sample_Fine_Tune	rs.b	1	* de 0 … 15  =  0 … 7 et -8 … -1
+
+			rs.b	1	* Inutilis‚
+Sample_Drum_Note	rs.b	1	* Informations stock‚es
+Sample_Drum_Volume	rs.b	1	* par le Tracker
+Sample_Drum_Command	rs.b	1	* pour le mode
+Sample_Drum_Parameter	rs.w	1	* Drum Edit
+
+Sample_Midi_Note	rs.l	1	* Note au format MIDI
+Sample_Reserved		rs.l	1	* 4 octets R‚serv‚s
+
+Sample_Size		rs.b	0	* 80 octets
+
+Table des Sequences :
+---------------------
+
+			RsReset
+
+Sequences		rs.w	Nb_Orders
+* Num‚ros de Pattern sur un word pour chaque Position des S‚quences
+
+Structure d'un Pattern :
+------------------------
+
+			RsReset
+
+Pattern_Length		rs.w	1		* Nombre de Lignes du Pattern
+Pattern_Tracks		rs.w	Nb_Voices	* Num‚ro de chaque Piste
+						* pour chaque voie
+Table des Adresses de Piste :
+-----------------------------
+
+			RsReset
+
+Tracks_Adresses		rs.l	Nb_Tracks	* Adresses des Pistes
+
+Structure d'une Piste (Track) :
+-------------------------------
+
+			RsReset
+
+Track_Length		rs.w	1	* Nombre de Lignes de la Piste
+Track_Data		rs.w	1	* Infos Note Pack‚es
+
+Structure d'une Info Note Pack‚e :
+----------------------------------
+
+   Octet de Commande :	bit 2 … 1 pour indiquer Note
+			bit 3 … 1 pour indiquer No de Sample
+			bit 4 … 1 pour indiquer Volume
+			bit 5 … 1 pour indiquer Effet
+			bit 6 … 1 pour indiquer ParamŠtre 1
+			bit 7 … 1 pour indiquer ParamŠtre 2
+
+			bits 0 et 1 : 0 … 3
+			Donne le nombre de lignes vides avant de coder
+			la ligne indiqu‚e par les bits 2 … 7.
+
+   Suivent les octets de donn‚es suivant les bits 2 … 7
+
+Structure d'une Info Note d‚pack‚e :
+------------------------------------
+
+*** Les effets pr‚vus mais non-encore impl‚ment‚s sont pr‚c‚d‚s de ***
+
+   Octet 0 : Num‚ro de la Note … jouer
+		0 = No New Note		Ne joue pas de nouvelle note
+		1 = Note Cut 		Coupe le sample
+		Sinon :
+		12 + Num‚ro de note de 0 … 11  +  12 * Octave
+		Il y a 8 octaves : de 0 … 7, les mˆmes que dans les S3M
+		les octaves 3,4,5 sont les octaves Amiga 1,2,3
+
+   Octet 1 : Num‚ro de Sample = de 1 … 255, 0 = pas de changement
+
+   Octet 2 : Colonne de Volume identique au format XM
+		0 (--) = Pas de changement
+
+		10 … 50 (00 … 40) = Nouveau Volume ‚chelle Amiga,
+				    ensuite multipli‚ par 16.
+
+		60 … 6F (<0 … <F) = Volume Slide Down
+		70 … 7F (>0 … >F) = Volume Slide Up
+		80 … 8F (-0 … -F) = Fine Volume Slide Down
+		90 … 9F (+0 … +F) = Fine Volume Slide Up
+		A0 … AF (S0 … SF) = Set Vibrato Speed
+		B0 … BF (V0 … VF) = Vibrato
+		C0 … CF (P0 … PF) = Set Panoramic Pos
+		D0 … DF (L0 … LF) = Panning Slide Left
+		E0 … EF (R0 … RF) = Panning Slide Right
+		F0 … FF (T0 … TF) = Tone Portamento
+
+   Octet 3 : Num‚ro d'effet
+
+   Octets 4 et 5 : ParamŠtres de l'effet
+
+
+Les Effets d‚riv‚s du Protracker (2.2a) :
+-----------------------------------------
+
+   Les octets de paramŠtre sont not‚s XYZT
+   Le Volume est Lin‚aire et varie de 0 … 1024,
+   16 fois plus pr‚cis que pour les modules Amiga
+   => Volumes Amiga d‚cal‚s d'un chiffre hexad‚cimal vers la gauche.
+   Les P‚riodes pour les portamentos ou le vibrato sont les mˆmes que sur
+   Amiga, mais 256 fois plus pr‚cises
+   => Periodes Amiga d‚cal‚es de deux chiffres hexad‚cimaux vers la gauche.
+
+
+ Num‚ro		Nom			Description
+
+   0	Rien ou Arpeggio	Changement rapide entre 3 notes
+				Note normale, Note + X et Note + Y
+
+				Si $ZT diff‚rent de 0, alors l'arpŠgge
+				est effectu‚ sur 5 Notes :
+				Note Normale, + X, + Y, + Z et + T
+
+   1	Portamento Up		Augmente la Hauteur de la Note
+				en diminuant sa p‚riode de $XYZT … chaque
+				'tick' de chaque ligne
+
+   2	Portamento Down		Diminue la Hauteur de la Note
+				en augmentant sa p‚riode de $XYZT … chaque
+				'tick' de chaque ligne
+
+   3	Tone Portamento		'Liaison' entre deux Notes, Rapproche la
+				p‚riode actuelle de la p‚riode de la Note
+				d‚sir‚e en l'augmentant ou la diminuant de
+				$XYZT … chaque Ligne (vitesse)
+
+   4	Vibrato			Fait osciller la p‚riode (… chaque 'tick')
+					X est la vitesse
+					YZT est l'amplitude
+
+   5	Tone Portamento		Conserve l'effet de Tone Portamento
+	+ Volume Slide		et effectue un Volume Slide (Effet No A)
+
+   6	Vibrato			Conserve l'effet de Vibrato
+	+ Volume Slide		et effectue un Volume Slide (Effet No A)
+
+   7	Tremolo			Vibrato sur le Volume, mˆme fonctionnement
+
+   8	Set Fine Panoramic Pos	$XY Fixe la balance de la voie :
+				$00 Gauche..$80 Milieu..$ff Droite
+
+   9	Sample Offset		Augmente le point de d‚part du sample
+				de $XYZT0 octets.
+
+   A	Volume Slide		Augmente le Volume de $XY ou
+				le diminue de $ZT … chaque 'tick' de chaque
+				ligne et $XY est prioritaire
+
+   B	Position Jump		Saute … la position num‚ro $XYZT
+				de la s‚quence des patterns.
+
+   C	Volume Change		Fixe le Volume Courant … $XYZT
+
+   D	Pattern Break		Passe … la position suivante dans la
+				s‚quence et commence le pattern … la ligne
+				$XYZT, attention, ce n'est plus un codage
+				BCD (d‚cimal) mais Hexad‚cimal !!
+
+   F	Set Speed/Tempo		Speed = $XY de 1 … 255	  0 = pas de
+				Tempo = $ZT de 16 … 255	  changement
+
+
+   Les Effets Etendus EX se retrouvent de $10 … $1f
+
+   10	Set Filter		Ignor‚, pour l'instant, car il est
+				pr‚vu de rajouter des effets sur le son
+				type filtre, equalizer, pitch bending...
+
+   11	Fine Portamento Up	Idem Portamento Up, sauf que la
+				p‚riode n'est diminu‚e de $XYZT qu'une
+				seule fois par ligne (au 1er 'tick')
+
+   12	Fine Portamento Down	Idem Portamento Down, sauf que la
+				p‚riode n'est augment‚e de $XYZT qu'une
+				seule fois par ligne (au 1er 'tick')
+
+   13	Set Glissando Control	Y : 1 = On,  0 = Off
+				A utiliser avec le Tone Portamento
+				Si Off, on a un Tone Portamento normal
+				sinon le glissement entre les deux
+				p‚riodes se fait demi-ton par demi-ton
+
+   14	Set Vibrato Waveform	Y Fixe le type de courbe utilis‚e pour
+				le Vibrato :
+				0:	Sinuso‹de (par d‚faut)
+				1:	Ramp Down
+				2:	Onde Carr‚e
+			       *3:	Al‚atoire (l'un des 3 autres)
+
+				+4:	pour ne pas r‚initialiser
+				la courbe … chaque nouvelle note
+
+   15	Set Fine Tune		$Y Fixe le Fine Tune du Sample :
+				de 0 … $f  <=> de 0 … 7 et -8 … -1
+				huitiŠmes de demi-ton
+
+   16	Pattern Loop		$XYZT vaut 0 pour fixer le d‚but de la
+				boucle. Sinon, c'est le nombre de fois
+				… r‚p‚ter jusqu'… cette position.
+
+   17	Set Tremolo Waveform	Fixe le type de courbe utilis‚e pour
+				le Tremolo. Idem commande $14
+
+   18	Set Panoramic Position	$Y Fixe la balance de la voie :
+				$0 Gauche...7/8 Milieu...$f Droite
+
+   19	Note Retrig		Rejoue la note plusieurs fois entre
+	+ Volume Slide		deux lignes. $XY est le nombre de
+				'ticks' au bout desquels on rejoue
+				la note.
+	Avec un Speed de 6, si on indique 3, la note ne sera rejou‚e
+	qu'une seule fois donc 2 fois en tout (6/3).
+	Avec un Speed de 9, si on indique 2, la note sera rejou‚e
+	3 fois de plus donc 4 fois en tout (9/2=4.5)
+
+	En plus, $T permet de sp‚cifiee le type de modification de
+	volume … appliquer … chaque fois que le sample est rejou‚ :
+	0: rien				8: rien
+	1: -$10				9: +$10
+	2: -$20				A: +$20
+	3: -$40				B: +$40
+	4: -$80				C: +$80
+	5: -$100			D: +$100
+	6: 2/3 du volume pr‚c‚dent	E: 3/2 fois le volume pr‚c‚dent
+	7: 1/3 du volume pr‚c‚dent	F: 2 fois le volume pr‚c‚dent
+
+
+   1A	Fine Volume Slide Up	Augmente le volume de $XYZT au 1er
+				'tick' de la ligne seulement.
+
+   1B	Fine Volume Slide Down	Diminue le volume de $XYZT au 1er
+				'tick' de la ligne seulement.
+
+   1C	Note Cut		Coupe la note (Volume 0) au bout de
+				$XY 'ticks' dans la ligne. Cela permet
+				de faire des notes extrˆmement courtes.
+
+   1D	Note Delay		Ne joue la note qu'au bout de $XY 'ticks'
+
+   1E	Pattern Delay		Passe au pattern suivant au bout de $XY
+				lignes.
+
+***1F	Invert Loop		Vitesse en $Y
+
+Les Effets Oktalyzer Amiga :
+----------------------------
+
+   20	Arpeggio 3		Note - X, Note normale, Note + Y
+
+   21	Arpeggio 4		Note normale, Note + Y,
+				Note normale, Note - X
+
+   22	Arpeggio 5		Note + Y, Note + Y, Note normale
+
+   23	Note Slide		Augmente le Num‚ro de la Note (compt‚ en
+				demi-tons) de $XY ou le Diminue de $ZT
+				… chaque 'tick', $XY est prioritaire
+
+   24	Fine Note Slide		Mˆme chose mais seulement une fois par
+				Ligne (au premier 'tick')
+
+Les Effets S3M :
+----------------
+
+   25	Tremor			Joue la note pendant $XY 'ticks'
+				et la coupe pendant $ZT etc..
+
+Les Effets MegaTracker :
+------------------------
+
+   30	Set Master Mix Volume	Fixe le Volume Maitre de Mixage :
+				$XY pour le canal Gauche
+				$ZT pour le canal Droit
+
+   31	Set Global Volume	Fixe le Volume Global de Fade-Out …
+				$XYZT de 0 … 1024.
+
+   32	Global Volume Slide	Augmente le Volume Global de $XY ou
+				le diminue de $ZT … chaque 'tick' de chaque
+				ligne et $XY est prioritaire
+
+   33	Fine Global Vol Slide	Augmente le Volume Global de $XY ou
+				le diminue de $ZT au 1er 'tick' de la ligne
+				seulement et $XY est prioritaire
+
+   34	Set Stereo		Fixe la panoramique de la voie :
+				Volume Gauche … $XY
+				et Volume Droit … $ZT.
+
+   35	Stereo Slide		Augmente le Volume Gauche de $XY
+				et le Volume Droit de $ZT … chaque
+				'tick' de chaque ligne.
+
+   36	Fine Stereo Slide	Augmente le Volume Gauche de $XY
+				et le Volume Droit de $ZT au
+				1er 'tick' de la ligne seulement.
+
+   37	Set Base		Fixe la fr‚quence de Replay du DO-4 …
+				$XYZT Hz. Intervalle 1500 … 50066 Hz.
+
+   38	Release Sample		Joue la fin du Sample aprŠs la Boucle.
+
+***39	Inverse Sample		Joue le sample … l'envers.

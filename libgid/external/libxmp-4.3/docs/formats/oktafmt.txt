@@ -1,0 +1,245 @@
+From: Harald Zappe <zappe@gaea.sietec.de>
+Date: Wed, 6 Apr 94 19:48:56 +0200
+Subject: oktafmt.txt (? final)
+
+Thanks to all of those mentioned below for the additional infos
+and sources. It looks pretty complete now.
+
+The effects seem to be complete. All, VT, Multiplayer and the
+Amiga Oktalyzer 1.1 Player use the same values. But I didn't see
+the effect 12 anywhere (Arp 5), as mentioned by Peter Kunath.
+
+-----------------------------------------------------------------
+
+[C.3.3]     Oktalyzer
+            ---------
+
+Thanks to Frank Seide (seide@pfa.philips.de) for the first hints,
+Bryan Ford (baford@schirf.cs.utah.edu) for most of the detailed comments
+below, the effects, and the (GPL) free source code of his Multiplayer,
+the Vangelis Team, which is Juan Carlos Arevalo (jarevalo@moises.ls.fi.upm.es),
+Felix Sanz, and Luis Crespo for the Freeware sources of the Vangelis Tracker,
+Armin Sander for the (?)first Oktalyzer Player on an Amiga,
+Peter Kunath (kunath@informatik.tu-muenchen.de) for several hints,
+and Jamal Hannah (jamal@gnu.ai.mit.edu) for coordinating us all.
+
+There are two different "Oktalyzer" formats. The following description
+only refers to the IFF-like style. The other one (a memory dump model)
+seems to have no popularity.
+
+(All numbers below are given in hex unless specified as 't'ecimal.)
+
+MSB first
+
+offset |bytes| contents   | meaning
+-------+-----+------------+-------------------------------------------------
+000000 |   8 | "OKTASONG" | char Magic[8]
+       |     |            |   /* If you support different music file types
+       |     |            |      check these letters. */
+-------+-----+------------+-------------------------------------------------
+       |     |            | Channel_Modes {
+000008 |   4 | "CMOD"     |   char chunk_name[4]
+00000C |   4 | 8          |   long chunk_len
+000010 |   8 |            |   short chan_flags[4]
+       |     |            |   /* 0: normal (Amiga) sound channel         */
+       |     |            |   /* 1: 'tied' or 'splitted' channel: two
+       |     |            |         sounds are played through this channel
+       |     |            |         at the same time (mixed at run time) */
+       |     |            |   /* eg. 0 1 0 1 => 6 channel: 1: normal,
+       |     |            |      2/3: tied, 4: normal, 5/6: tied         */
+       |     |            | }
+-------+-----+------------+-------------------------------------------------
+       |     |            | Sample_directory {
+000018 |   4 | "SAMP"     |   char chunk_name[4]
+00001C |   4 | (00000480) |   long Sample_dir_len /*==chunk_len*/
+       |     |            |        /* Nr_of_samples = Sample_dir_len / 32 */
+       |     |            |
+000020 |  20t|            |   char Sample_Name[20]             \
+000034 |   4 |            |     unsigned long  Sample_Len       )
+000038 |   2 |            |     unsigned short Repeat_Start    (   up to 36x
+00003A |   2 |            |     unsigned short Repeat_Len       > (or more?)
+00003C |   1 | (00)       |     char           pad1            (
+00003D |   1 | (40)       |     unsigned char  Volume           )
+00003E |   2 | (0001)     |     short          pad2            /
+...    |     |            | /*
+       |     |            | If 'Repeat_Len' is zero, it is a simple one-shot
+       |     |            | sample: ignore 'Repeat_Start', just play the whole
+       |     |            | 'Sample_Len' bytes and stop the sound.
+       |     |            | If 'Repeat_Len' is nonzero, it is a repeating sample
+       |     |            | consisting of three parts: attack, sustain, and re-
+       |     |            | lease. (Most other tracker formats don't support re-
+       |     |            | lease.) The attack part starts at 0 and ends at
+       |     |            | Repeat_Start-1, the sustain part starts at 'Repeat_
+       |     |            | Start' and ends at Repeat_Start+Repeat_Len-1, and
+       |     |            | the release part starts at Repeat_Start+Repeat_Len
+       |     |            | and ends at Sample_Length-1.
+       |     |            | The attack part should be played once, followed by
+       |     |            | the repeat part an arbitrary number of times until
+       |     |            | another note is played or a "release" command is
+       |     |            | seen. If the "release" command is seen, then switch
+       |     |            | to the release part of the sample when the current
+       |     |            | repeat run is finished, and only play it once, fol-
+       |     |            | lowed by silence.
+       |     |            | 'Volume' is the default volume for notes played with
+       |     |            | this sample: 0 to 64 (0x40) inclusive. */
+       |     |            | }
+-------+-----+------------+-------------------------------------------------
+       |     |            | Speed {
+0004A0 |   4 | "SPEE"     |   char  chunk_name[4]
+0004A4 |   4 | 2          |   long  chunk_len
+0004A8 |   2 | (3)        |   short AmigaVBLDivisor /* InitialTempo */
+       |     |            | }
+-------+-----+------------+-------------------------------------------------
+       |     |            | Song_Length {
+0004AA |   4 | "SLEN"     |   char  chunk_name[4]
+0004B2 |   4 | 2          |   long  chunk_len
+0004B6 |   2 | (60t)      |   short value
+       |     |            |         /* it specifies the number of different
+       |     |            |            patterns this module has.
+       |     |            |            (can be used as counter for the "PBOD"
+       |     |            |            chunks) */
+       |     |            | }
+-------+-----+------------+-------------------------------------------------
+       |     |            | Num_Pattern_Positions { /* "PatternLength" */
+0004B8 |   4 | "PLEN"     |   char  chunk_name[4]
+0004BC |   4 | 2          |   long  chunk_len
+0004BE |   2 | (15t)      |   short num_positions
+       |     |            |         /* it specifies the number of entries in
+       |     |            |            the pattern table (see "PATT" below) */
+       |     |            | }
+-------+-----+------------+- - - - - - - - - - - - - - - - - - - - - - - - -
+       |     |            | Pattern_Positions {
+0004C0 |   4 | "PATT"     |   char  chunk_name[4]
+0004C4 |   4 | (128t ?)   |   long  chunk_len
+       |     |            |         /* (it seems that the length of this chunk
+       |     |            |             is always set to 128) */
+0004C8 | 128t|            |   byte  position[*]
+       |     |            |         /* zero *is* a valid value in this field.
+       |     |            |            it means that pattern number 0 should
+       |     |            |            be played. the number of valid positions
+       |     |            |            is specified by the "PLEN" chunk. */
+       |     |            | }
+=======+=====+============+=================================================
+       |     |            | Pattern1 {
+000548 |   4 | "PBOD"     |   char  chunk_name[4]            )
+00054C |   4 | (0702      |   long  chunk_len               (  up to 64
+       |     |  or 0602)  |                                  > patterns are
+00054E |   2 | (64t)      |   short num_pattern_lines       (  supported
+000550 |  ...|            |   byte  Pattern1_Line[*]         )
+       |     |            |         /* see below */
+       |     |            | }
+...    |     |            |
+=======+=====+============+=================================================
+       |     |            | Sample1 {
+0..... |   4 | "SBOD"     |   char  chunk_name[4]            ) up to 255* is
+0..... |   4 |            |   long  chunk_len               (_ possible but
+0..... |  ...|            |   byte  sample_data[*]          (  mostly limited
+...    |     |            |         /* 8 bit signed data */  ) to 36*
+       |     |            | }
+...    |     |            |
+=======+=====+============+=================================================
+Values in parentheses are examples and may vary.
+(If you choose the faster methode to check the chunk types using a 'long'-
+value, don't forget to exchange the byte order on LSB-systems.)
+
+There are 36 effects, instruments and notes. In the original Oktalyzer
+editor they are entered using the 10 digits and the 26 letters, that's
+why 36.
+____
+
+A pattern line (PBOD chunks) looks like follows:
+
+After the 16-bit num_pattern_lines are that many lines of pattern data,
+each line containing four bytes for each active channel.
+For example, in a 6-channel module, each line is 24 bytes.
+
+The four bytes of one channel are:
+
+    unsigned char newnote,
+    unsigned char instrument, /* sample */
+    unsigned char effect,
+    unsigned char data        /* effect parameter */
+
+If newnote is nonzero, start playing a different note. There are 36 pitches,
+1-36 (see pertab below).
+
+Set the current channel's volume to the sample's volume.
+'instrument' indicates which sample to use.
+
+Whether or not newnote is nonzero, process 'effect' and 'data' (see effects
+below).
+___
+
+Oktalyzer uses the following period table, which is the same as for ST/NT/PT-
+Mod-Files. (converted to C actually, but the same numbers)
+
+static short pertab[] =
+{
+/*  C    C#     D    D#      E     F    F#     G    G#      A    A#     B */
+ 0x358,0x328,0x2FA,0x2D0, 0x2A6,0x280,0x25C,0x23A, 0x21A,0x1FC,0x1E0,0x1C5,
+ 0x1AC,0x194,0x17D,0x168, 0x153,0x140,0x12E,0x11D, 0x10D, 0xFE, 0xF0, 0xE2,
+  0xD6, 0xCA, 0xBE, 0xB4,  0xAA, 0xA0, 0x97, 0x8F,  0x87, 0x7F, 0x78, 0x71
+};
+
+The extended octaves 0 and 4 which might be found in other formats are not
+used here.
+____
+
+The Oktalyzer format defines the following effects (decimal):
+
+ 1  Portamento down: decrease period of current sample by 'data',
+                     once every 50Hz clock tick.
+ 2  Portamento up:   increase period of current sample by 'data',
+                     once every 50Hz clock tick.
+
+10  Arpeggio 3: Change note every 50Hz tick between L,N,H
+11  Arpeggio 4: Change note every 50Hz tick between N,H,N,L
+12  Arpeggio 5: Change note every 50Hz tick between H,H,N
+                N = normal note being played in this channel (1-36)
+                L = normal note number minus upper four bits of 'data'.
+                H = normal note number plus  lower four bits of 'data'.
+
+13  Decrease note number by 'data' once per tick.
+17  Increase note number by 'data' once per tick.
+21  Decrease note number by 'data' once per line.
+30  Increase note number by 'data' once per line.
+
+15  Amiga low-pass filter control: 'data' indicates the new setting.
+
+25  Position jump: Instead of going to the next line after this one,
+          instead jump to the beginning of pattern number 'data'.
+
+27  Release: start playing the release phase of the currently playing
+             sample.
+
+28  Set speed (number of 50Hz ticks between advancing lines) to 'data'.
+
+31  Volume control:
+      If 'data' <= 0x40, set the volume of this channel to 'data'.
+      If 0x41 <= 'data' <= 0x50, decrease volume by 'data' - 0x40
+                                 every 50Hz clock tick (fast fade out).
+      If 0x51 <= 'data' <= 0x60, increase volume by 'data' - 0x50
+                                 every 50Hz clock tick (fast fade in).
+      If 0x61 <= 'data' <= 0x70, decrease volume by 'data' - 0x60
+                                 at the beginning of every line (slow fade out).
+      If 0x71 <= 'data' <= 0x80, increase volume by 'data' - 0x70
+                                 at the beginning of every line (slow fade in).
+
+--
+There seems to be much room for future extentions, eg. panning.
+
+... now it's complete? (HZ)
+
+-----------------------------------------------------------------
+
+Harald
+
+--
+>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<
+ zappe@gaea.sietec.de              |  |
+                                   |--+-              everything is relative
+ Harald Zappe                      |  |/              nothing is for infinity
+ work: +49-30-386-28328/29            /               quantity is not quality
+ home: +49-30-ASK-ME                 /___              
+
+

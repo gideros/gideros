@@ -1,0 +1,26 @@
+CC	= cl
+CFLAGS	= /O2 /Iinclude /Isrc /Isrc\win32 /DBUILDING_DLL /DWIN32 \
+	  /Dinline=__inline /DPATH_MAX=1024 /D_USE_MATH_DEFINES
+LD	= link
+LDFLAGS	= /DLL /RELEASE /OUT:$(DLL)
+DLL	= libxmp.dll
+
+OBJS	= @OBJS@ src\win32\ptpopen.obj
+
+TEST	= test\md5.obj test\test.obj
+
+.c.obj:
+	$(CC) /c $(CFLAGS) /Fo$*.obj $<
+
+all: $(DLL)
+
+$(DLL): $(OBJS)
+	$(LD) $(LDFLAGS) $(OBJS)
+
+clean:
+	del $(OBJS) $(DLL) *.lib *.exp
+
+check: $(TEST)
+	$(LD) /RELEASE /OUT:test\libxmp-test.exe $(TEST) libxmp.lib
+	copy libxmp.dll test
+	cd test & libxmp-test

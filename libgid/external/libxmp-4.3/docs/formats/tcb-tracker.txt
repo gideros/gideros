@@ -1,0 +1,77 @@
+TCB Tracker reverse engineering effort (based on ONE module)
+Claudio Matsuoka, 08/2007
+
+TCB Tracker is an Atari tracker written by Anders Nilsson (AN Cool) in
+1990-1991. TCB Tracker modules are generally hard to find because they
+were not highly regarded as a good module format and it was widespread
+pratice to convert TCB Tracker modules to standard Protracker modules
+(often through a poor conversion job).
+
+Lotek Style informs us in his UCM24 article (titled 'How to do "DECENT"
+conversions from TCB-Tracker mods to Protracker mods') that 'there are
+two different TCB-Tracker module formats. Older format and newer format.
+They have different headers "AN COOL." and "AN COOL!".'
+
+The following information is based on a single TCB Tracker module
+(VICTOR2.MOD) and a screenshot of the tracker showing some of the module
+parameteres.
+
+
+Offset	Size	Description			Example
+-------	------- ------------------------------- ----------------
+00000	8	magic ID			"AN COOL."
+00008	2	unknown				0x0000
+0000a	2	number of stored patterns [p]	0x0014
+0000c	2	unknown				0xc000
+0000e	128	pattern sequence
+0008e	1	song length			0x41
+0008f	1	unknown				0x00
+00090	2	unknown				0x0000
+00092	Repeat 16:
+	8	instrument names
+00112	32	unknown
+00132	Repeat p:
+	512	pattern data
++p*512	4	size of the sample data		0x00017d91
++4	Repeat 16:
+	1	volume for each instrument	0x7f
+	1	unknown (tran?)			0x00
+	1	unknown	(sped/spes?)		0x00
+	1	unknown	(sped/spes?)		0x00
++64	4	unknown				0x000000d4
++4	Repeat 16:
+	4	size of each sample		0x0000182a
+	4	offset from end of patterns	0x00001bb9
++128	4	unknown				0x00000001
++4	4	unknown				0xffffffff
++4	4	unknown				0x00000000
++4		sample data 			0x80 0x80 ...
+
+
+Pattern data
+------------
+
+Each pattern has 64 rows and 4 channels. Each channel event has
+the format
+
+	xy zw
+
+where
+	x: octave
+	y: note (C = 0, D = 1, etc)
+	z: instrument
+	w: effect
+		D = pattern break
+
+Sample data
+-----------
+
+Each sample is stored in unsigned 8-bit PCM data. Read from the offsets
+specified earlier to skip padding.
+
+
+References
+----------
+
+http://www.tscc.de/ucm24/tcb2pro.html
+

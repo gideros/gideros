@@ -1,0 +1,201 @@
+------------------------------------------------------------------------------
+		Specification of the RTM Format version 1.12
+			    by Arnaud Hasenfratz
+------------------------------------------------------------------------------
+
+The RTM format use an encapsulated structure : patterns and instruments are
+encapsulated in the module and samples are encapsulated in the instruments.
+
+
+Global structure :
+------------------
+
+struct ObjectHeader :   id="RTMM", name=module_name,
+|                       headerSize=sizeof(RTMMHeader)
+|
+|-------struct RTMMHeader
+	|
+	Position table
+	|
+	Track names (if used)
+	|
+	.
+        . (Reserved)
+	.
+Offset : sizeof(ObjectHeader)+sizeof(RTMMheader)+RTMMHeader.extraDataSize
+	|
+	struct ObjectHeader : 	id="RTND", name=pattern_name,	]
+	|			headerSize=sizeof(RTNDHeader)   ]
+	|                                                      	] for each
+	|-------struct RTNDHeader                               ] pattern
+	|	|                                               ]
+	|       Packed pattern data                             ]
+	|
+	struct ObjectHeader :	id="RTIN", name=instrument_name,]
+	|      			headerSize=sizeof(RTINHeader)   ]
+	|                                                       ]
+	|-------struct RTINHeader                               ]
+		|                                               ]
+		struct ObjectHeader : id="RTSM",     ]  	] for each
+		|		   name=sample_name, ]    	] instrument
+		|      headerSize=sizeof(RTSMHeader) ] for each ]
+		|                                    ] sample   ]
+		|-------struct RTSMHeader            ]          ]
+			|                            ]          ]
+			Delta encoded sample         ]          ]
+
+
+
+C declarations :
+----------------
+
+struct ObjectHeader
+{
+	char id[4]; 		// "RTMM", "RTND", "RTIN" or "RTSM"
+	char rc;                // 0x20
+	char name[32];          // object name
+	char eof;		// '\x1A'
+	WORD version;           // version of the format (actual : 0x112)
+	WORD headerSize;        // object header size
+};
+
+struct RTMMHeader		// Real Tracker Music Module
+{
+	char software[20];      // software used for saving the module
+	char composer[32];
+	WORD flags;		// song flags
+			// bit 0 : linear table, bit 1 : track names present
+	BYTE ntrack;        	// number of tracks
+	BYTE ninstr;		// number of instruments
+	WORD nposition;		// number of positions
+	WORD npattern;		// number of patterns
+	BYTE speed;		// initial speed
+	BYTE tempo;		// initial tempo
+	char panning[32];	// initial pannings (for S3M compatibility)
+	DWORD extraDataSize;	// length of data after the header
+	char originalName[32];	// Original name of the module
+};
+
+struct RTNDHeader		// Real Tracker Pattern
+{
+	WORD flags;		// Always 1
+	BYTE ntrack;
+	WORD nrows;
+	DWORD datasize;
+};
+
+struct EnvelopePoint
+{
+	long x;
+	long y;
+};
+
+struct Envelope
+{
+	BYTE npoint;
+	EnvelopePoint point[12];
+	BYTE sustain;
+	BYTE loopstart;
+	BYTE loopend;
+	WORD flags;// bit 0 : enable envelope, bit 1 : sustain, bit 2 : loop
+};
+
+struct RTINHeader 	// Real Tracker Instrument
+{
+	BYTE nsample;
+	WORD flags;		// bit 0 : default panning enabled, bit 1 : mute samples
+	BYTE table[120];	// sample number for each note
+	Envelope volumeEnv;
+	Envelope panningEnv;
+	char vibflg;           	// vibrato type
+	char vibsweep;         	// vibrato sweep
+	char vibdepth;         	// vibrato depth
+	char vibrate;          	// vibrato rate
+	WORD volfade;
+	BYTE midiPort;
+	BYTE midiChannel;
+	BYTE midiProgram;
+	BYTE midiEnable;
+	char midiTranspose;
+	BYTE midiBenderRange;
+	BYTE midiBaseVolume;
+	char midiUseVelocity;
+};
+
+struct RTSMHeader   		// Real Tracker Sample
+{
+	WORD flags;	// bit 1 : 16 bits, bit 2 : delta encoded (always)
+	BYTE basevolume;
+	BYTE defaultvolume;
+	DWORD length;
+	BYTE loop;	// =0:no loop, =1:forward loop, =2:bi-directional loop
+	BYTE reserved[3];
+	DWORD loopbegin;
+	DWORD loopend;
+	DWORD basefreq;
+	BYTE basenote;
+	char panning;		// Panning from -64 to 64
+};
+
+
+How to read an object header :
+------------------------------
+
+Headers must be read this way to ensure that new versions of the format are
+compatibles with old loaders.
+
+- if header_size=sizeof(header)
+	- read header into the structure
+
+- if header_size<sizeof(header)
+	- fill the structure with zeros
+	- read header_size bytes of the header into the structure
+
+- if header_size>sizeof(header)
+	- read the header into the structure
+	- skip header_size-sizeof(header) bytes in the file
+
+
+Position table :
+----------------
+
+One WORD per position.
+
+
+Track names :
+-------------
+
+16 chars per track.
+
+
+How to read patterns :
+----------------------
+
+The format use a simple packing system. To unpack, read the packed data as
+follow :
+
+begin:
+- read byte
+- if byte=0, go to next row
+  else :
+        - if bit 0 set, read the track number (first track is 0) and go to this
+		track
+	- if bit 1 set, read note (0=C-0 1=C#0 etc..., 254=key off)
+	- if bit 2 set, read instrument number
+	- if bit 3 set, read left command
+	- if bit 4 set, read left parameter
+	- if bit 5 set, read right command
+	- if bit 6 set, read right parameter
+- go to next track
+- goto begin
+
+
+How to read samples
+-------------------
+
+- current=0
+- for each sample :
+        - current=current+encoded_sample
+        - sample=current
+
+(current,sample and encoded_sample are signed, 8 or 16 bits)

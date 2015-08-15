@@ -1,0 +1,294 @@
+
+        The LIQUID DIGITIZED SAMPLE SPECIFICATIONS V1.01 (L.D.S.S)
+                          (C) Nir Oren, 1994-97
+             +----------------------------------------------+
+             | A Part Of The Liquid Tracker's Documentation |
+             +----------------------------------------------+
+
+       Format's filename extension: any extension (.LDS suggested)
+
+    * All values are decimal, unless noted "h" which means Hexadecimal
+
+Offset  0h    4 BYTES  LDSS Magic = 'L','D','S','S'
+        4h    1 WORD   LDSS Header version (Currently = 0102h)
+        6h   30 CHARS  Full name of sample *
+       24h   20 CHARS  Wave generator/ program created the sample *
+       38h   20 CHARS  Person created/ recorded the sample *
+       4Ch    1 BYTE   Sound board sample recorded with (see below)
+       4Dh    1 DWORD  length of sample (only the digitized data)
+       51h    1 DWORD  default loop start
+       55h    1 DWORD  default loop end  (0=NOT LOOPING)
+       59h    1 DWORD  default Hertz speed for C-2 (i.e. 8363 Hz, NTSC)
+       5Dh    1 BYTE   default sample volume (0-64)
+       5Eh    1 BYTE   Flags: &1 - 16bit   &2 - Stereo   &4 - Signed data
+       5Fh    1 BYTE   Default pan setup (0 LEFT -> 32 MID -> 64 RIGHT
+                                          66 Surround, 255 No default pan)
+       60h    1 BYTE   General Midi Instrument (see below)
+       61h    1 BYTE   Default sample global volume (0-64)
+       62h    1 BYTE   Chord Type (see below)
+       63h    1 WORD   size of LDSS header (usually 90h)
+       65h    1 WORD   compression algorithm (0=NONE)
+       67h    1 DWORD  32 bits CRC of the digitized data only.
+                       method: 32bit counter, initial value 0, which is
+                       the sum of all the contents (carry ignored)
+                       if the sample size is not doubleword aligned, you
+                       should encounter the missing bytes as zero.
+                       REMARK: If CRC should be ignored, the value is 0.
+       6Bh    1 BYTE   Midi channel to use (1-16 Valid values, -1=not defined)
+       6Ch    1 BYTE   Loop Type: -1 or 0=Normal, 1=Ping Pong
+       6Dh   10 BYTES  Reserved, should be 0
+       77h   25 BYTES  Filename of sample (may be: DirName+'\'+FileName)
+
+       90h  -  OR ANY OFFSET SPECIFIED IN PARAMETER [63h] -
+               ACTUAL DIGITIZED SAMPLE DATA
+
+   *   The field is basically ASCIIZ, but it does not necessarily have to
+       be null-terminated, when all characters are being used.
+
+************************************************************************
+      THE SOUND BOARD THE SAMPLE RECORDED WITH (Parameter [4Ch])
+************************************************************************
+
+  (0) SB v1.50        (1) SB v2.00      (2) SBPro       (3) SB 16
+  (4) ThunderBrd      (5) PAS           (6) PAS+        (7) PAS 16
+  (8) Windows Wave    (9) OS/2 drv.    (10) DAC        (11) GUS
+ (12) Aria           (13) Adlib Gold   (14) Windows Sound System
+ (15) Sound Galaxy   (16) SB AWE32     (17) Sound Galaxy 16
+ (18) Audio Wave Grn (19) GUS MAX      (20) Sound Galaxy Pro
+ (21) Turtle Beach   (22) AWE64        (23) AWE64 Gold
+ (24) Interwave
+
+(255) Unknown
+
+  The value 255 (unknown) should be used when:
+
+    -  There is no possibility of knowing the recording source (e.g.
+       a program converts raw sample to LDSS), or the programmer does
+       not define that field; When value 255 is being used,
+       one cannot assume anything about the sound board used.
+
+***************************************************************************
+                      The General Midi Instruments List
+***************************************************************************
+
+ Parameter [60h] - General Midi Instrument
+
+0   Acoustic Grand Piano   23  Tango Accordion         46  Orchestral Harp
+1   Bright Acoustic Piano  24  Acoustic Nylon Guitar   47  Timpani
+2   Electric Grand Piano   25  Acoustic Steel Guitar   48  String Ensemble 1
+3   Honkey-Tonk Piano      26  Electric Jazz Guitar    49  String Ensemble 2
+4   Rhodes Piano           27  Electric Clean Guitar   50  Synth Strings 1
+5   Chorused Piano         28  Electric Muted Guitar   51  Synth Strings 2
+6   Harpischord            29  Overdriven Guitar       52  Choir Aahs
+7   Clavinet               30  Distortion Guitar       53  Voice Oohs
+8   Celesta                31  Guitar Harmonics        54  Synth Voice
+9   Glokenspiel            32  Acoustic Bass           55  Orchestral Hit
+10  Music Box              33  Electric Bass Fingered  56  Trumpet
+11  Vibraphone             34  Electric Bass Picked    57  Trombone
+12  Marimba                35  Fretless Bass           58  Tuba
+13  Xylophone              36  Slap Bass 1             59  Muted Trumpet
+14  Tubular Bells          37  Slap Bass 2             60  French Horn
+15  Dulcimer               38  Synth Bass 1            61  Brass Section
+16  Hammond Organ          39  Synth Bass 2            62  Synth Brass 1
+17  Percussive Organ       40  Violin                  63  Synth Brass 2
+18  Rock Organ             41  Viola                   64  Soprano Sax
+19  Church Organ           42  Cello                   65  Alto Sax
+20  Reed Organ             43  Contrabass              66  Tenor Sax
+21  Accordion              44  Tremolo Strings         67  Baritone Sax
+22  Harmonica              45  Pizzicato Strings       68  Oboe
+
+
+69  English Horn                        92  Synth Pad 5 Bowed Glass Pad
+70  Bassoon                             93  Synth Pad 6 Metal Pad
+71  Clarinet                            94  Synth Pad 7 Halo Pad
+72  Piccolo                             95  Synth Pad 8 Sweep Pad
+73  Flute                               96  Synth SFX 1 Ice Rain
+74  Recorder                            97  Synth SFX 2 Sound Track
+75  Pan Flute                           98  Synth SFX 3 Crystal
+76  Bottle Blow                         99  Synth SFX 4 Atmosphere
+77  Shakuhachi                          100 Synth SFX 5 Brightness
+78  Whistle                             101 Synth SFX 6 Goblin
+79  Ocarina                             102 Synth SFX 7 Echo Drops
+80  Synth Lead 1 Square Wave Lead       103 Synth SFX 8 Star Theme
+81  Synth Lead 2 Sawtooth Wave Lead     104 Sitar
+82  Synth Lead 3 Caliope Lead           105 Banjo
+83  Synth Lead 4 Chiff Lead             106 Shamisen
+84  Synth Lead 5 Charang                107 Koto
+85  Synth Lead 6 Solo Synth Voice       108 Kalimba
+86  Synth Lead 7 Bright Saw Wave        109 Bagpipe
+87  Synth Lead 8 Brass and Lead         110 Fiddle
+88  Synth Pad 1 Fantasia Pad            111 Shanai
+89  Synth Pad 2 Warm Pad                112 Tinkle Bells
+90  Synth Pad 3 Poly Synth Pad          113 Agogo
+91  Synth Pad 4 Space Voice Pad         114 Steel Drums
+
+
+115 Woodblock                           D45 Low Tom
+116 Taiko Drum                          D46 Open High Hat
+117 Melodic Tom                         D47 Low-Mid Tom
+118 Synth Drum                          D48 High-Mid Tom
+119 Reverse Cymbal                      D49 Crash Cymbal 1
+120 Guitar Fret Noise                   D50 High Tom
+121 Breath Noise                        D51 Ride Cymbal 1
+122 Seashore                            D52 Chinese Cymbal
+123 Bird Tweet                          D53 Ride Bell
+124 Telephone Ring                      D54 Tambourine
+125 Helicopter                          D55 Splash Cymbal
+126 Applause                            D56 Cowbell
+127 Gunshot                             D57 Crash Cymbal 2
+D35 Acoustic Bass Drum                  D58 Vibraslap
+D36 Bass Drum 1                         D59 Ride Cymbal 2
+D37 Side Stick                          D60 High Bongo
+D38 Acoustic Snare                      D61 Low Bongo
+D39 Hand Clap                           D62 Mute High Conga
+D40 Electric Snare                      D63 Open High Conga
+D41 Low Floor Tom                       D64 Low Conga
+D42 Closed High-Hat                     D65 High Timbale
+D43 High Floor Tom                      D66 Low Timbale
+D44 Pedal High Hat                      D67 High Agogo
+
+D68 Low Agogo                           D75 Claves
+D69 Cabasa                              D76 High Wood Block
+D70 Maracas                             D77 Low Wood Block
+D71 Short Whistle                       D78 Mute Cuica
+D72 Long Whistle                        D79 Open Cuica
+D73 Short Guiro                         D80 Mute Triangle
+D74 Long Guiro                          D81 Open Triangle
+255 UNDEFINED INSTRUMENT
+
+  >>>> NOTE: The Dxx means that "xx" is a note number (where 00 is C-0,
+             01 is C#0, 12 is C-1, and so on...) which is played in the
+             drum channel (default is Chn #16 on General Midi) and not a
+             regular MIDI program, which is redundant in such case.
+
+ Parameter [62h] - Chord type:
+
+                          * Single note *
+                         อออออออออออออออออ
+  | 0|  single note (not to be used as default (read below))
+
+
+                      * Two notes of a chord *
+                      ออออออออออออออออออออออออ
+  | 1|  notes 1,2    | 2|  notes 1,3    | 3|  notes 2,3
+
+
+  |4-11| Reserved
+
+                           * Full chord *
+                           ออออออออออออออ
+  |12|  Major        |13|  Minor        |14|  Major(ver2)  |15|  Minor(ver2)
+  |16|  Major(ver3)  |17|  Minor(ver3)  |18|  Major(ver4)  |19|  Minor(ver4)
+  |20|  7            |21|  6            |22|  Maj7         |23|  Min7
+  |24|  Maj6         |25|  Min6         |26|  Dim/0        |27|  Aug/+
+  |28|  7 (3 notes)  |29|  7b5/7(-5)    |30|  7#5/7(+5)    |31|  9
+  |32|  11           |33|  13           |34|  Dim7/07      |35|  7b9/7(-9)
+  |36|  7#9/7(+9)    |37|  Maj7add9     |38|  Min7add9     |39|  9b5/9(-5)
+  |40|  9#5/9(+5)    |41|  Aug11        |42|  13b9/13(-9)  |43|  13#9/13(+9)
+
+
+          & 64 (Bit 6 ON) = Also played on next octave
+         & 128 (Bit 7 ON) = Also played on beyond next octave
+
+
+Undefined chord
+
+ |255|  UNDEFINED
+
+NOTES:   - The 'Undefined' (255) value should be used in all the cases unless
+           the user has actually defined the chord type. value 0 MAY NOT
+           BE USED AS DEFAULT! for example, if a tracker would like to force
+           the users to define all the chords, it will know that 255
+           is not-yet defined. However, players or any MultiMedia product
+           may interpret '255' as '0' for presentation purposes.
+         - If bits 6 and 7 are on, respectively, it means that the current
+           note (or chord) is played on more than the current octave,
+           it can possibly be played on two octaves or three octaves
+           simultaneously (or the first and the 3th octave only)
+   VER2  - 'ver2' means that the 1st and the 2nd notes of the chord is in
+           the octave above, rather than in the same octave.
+           Example: chord C-2 (minor) = notes  G-2  C-3  E-3
+   VER3  - 'ver3' means that the 1st note of the chord is in the octave
+           above rather than in the same octave.
+           Example: chord C-2 (minor)= notes  E-2  G-2  C-3
+   VER4  - 'ver4' means that the 1st note of the chord played is also in
+           the next octave. Example: chord C-2 = notes  C-2  E-2  G-2  C-3
+         - The slash (/) char appears on some of the chords refers to the
+           alternative name for the same chord.
+
+****************************************************************************
+
+    PROGRAMMERS/DEVELOPERS NOTE:
+
+
+  - LDSS is not as huge as it seems. it takes only additional 112 bytes
+    for independent sample, and consider the fact that each file always
+    takes 4096 bytes (or 2048) on a magnetic storage media.
+  - LDSS is also not as complicated as it seems. I aware to the fact that
+    most of the programs will not use all the fields anyway, so each field
+    has a non-used value (I don't expect all programs to calculate CRC,
+    but it should be there)
+  - Trackers programmers! remember not to throw-away the LDSS details,
+    when loading 'LDSS' samples.
+    if you are using your own format, remember to include all the LDSS
+    information. it's only 50 (Aprox) additional bytes per sample (some
+    of the LDSS values are used anyway!). suggested action is to save it
+    directly before dumping each sample, and check for LDSS when loading.
+
+
+   THE NEW FEATURES OF THE L.D.S.S FORMAT AND THEIR MEANING:
+
+  - LDSS introducing the sample crediting. Now the sample will carry
+    the name of it's creator, the program which has been used and the
+    sound card used. This can really be good for statistics, and
+    people will learn more about the sources of their samples.
+    (of course, one who wants can remove the copyright, but why ?)
+  - LDSS introduced the 'SAMPLE KIND'. Each sample can be cataloged
+    by it's kind, whether it's drum, piano or sound efx, so a tracker
+    can easily direct sample to it's directory, or a player could use
+    the information for some MultiMedia presentations (imagine yourself
+    a player shows how to play a module, and can recognized different
+    chords and instruments, i.e. when a guitar playing it shows guitar)
+  - Another IMPORTANT feature of LDSS is the extensibility header.
+    a program may add any information it wants to the header,
+    by setting a new value in offset 63h, and setting an ID stamp in
+    offset 90h. and all this while remaining the sample usable to all
+    LDSS compatible programs.
+
+    COPYRIGHT:
+
+  - The LDSS file format was developed by me (Nir Oren) in 1996.
+    however, the author donates this file format to the public domain,
+    and it may be used freely by any product, provided a proper credits
+    will be give in the program's documentation.
+    In no event should this document be modified by anyone except the
+    author itself. This document may be included in any archive with any
+    program. Additional notes about LDSS by different people may be
+    included in SEPARATE files.
+
+
+  - CONTACTS:
+
+    If you have any suggestions or comments you can contact
+    the author by
+
+ +-------------------------------= CONTACTS =-------------------------------+
+ |                                                                          |
+ |                                                                          |
+ |  Anesthesia (A) BBS   - (972)-7-9971505 - 28k - 24 Hrs                   |
+ |                         (972)-7-9954490 - 14k - 24 Hrs                   |
+ |                                                                          |
+ |                                                                _______   |
+ |                                                               \     \_\  |
+ |                                                               / \_______\|
+ |   You can cont(r)act the author by:    |      SnailMail:  ||__\       |  |
+ |                                        |                 (๘๘ ________/   |
+ | FidoNET: 97:200/215                    |   Nir Oren                      |
+ | -------------------------------------  |   P.O. box 8180                 |
+ | InterNET:                              |   Petah Tikva 49181             |
+ |         niroren@netvision.net.il       |   Israel  <reply guaranteed!>   |
+ |                                        |   (The SNAIL is (C) !!! ;-)     |
+ +--------------------------------------------------------------------------+
+
+                  *** End of LDSS specifications text ***
+

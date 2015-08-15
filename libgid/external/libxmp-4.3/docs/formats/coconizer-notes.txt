@@ -1,0 +1,213 @@
+
+Useful excerpts from the user manual
+====================================
+
+ - First of all, the song needs a title. You can type in your name (which
+   can be up to 19 characters long), and use the song's filename as title.
+   After that you can choose the song format, which can be either four or
+   eight channels.
+
+ - Well, let's begin. You can now define some instruments to use in your
+   composition (for an explanation of what an instrument actually is, see
+   the paragraph headed "Samples"). They are labelled from "a" to "z",
+   resulting in a total instrument pool of 26 samples at once (although
+   future versions of Coconizer may allow the use of more samples at once).
+   It is not possible to create a pattern without at least one instrument
+   loaded in.
+
+ - A song consists of several patterns, each of which is 64 lines deep and
+   four or eight rows wide, depending on the selected channel format.
+   Patterns are used to allow you to repeat several parts in your song, to
+   keep and/or beat the time, and to keep a good overview of the whole song.
+   The patterns hold the information about the tones and how to play them.
+
+ Let's see an example of how a tone information word (32 bits) is build up:
+
+       C#1 a F 05
+       / | |  \ \\_ Info Byte (left and right nibble)
+      /  | |   \
+     /   | |    \Command (or Effect)
+    /    | |
+   Note  | Instrument number
+         |
+    Octave number
+
+
+ - And last but not least we come to the stereo positions of the channels.
+   When a song is started, they are set in a quite logical way: it begins
+   with channel one at the furthest left stereo position, and ends with
+   channel eight at the furthest right position. In four channel mode the
+   two furthest stereo positions on the left and right are not set.
+   For finer control, there's also a command available which allows the
+   setting of all the stereo positions whilst playing.
+
+
+======================================
+=  COCONIZER'S COMMANDS AND EFFECTS  =
+======================================
+
+The following effects/commands are currently available (indeed, they could
+be expanded to a theoretical number of &FF) :
+
+ * EFFECT &00 :
+   Use arpeggio playing. That is, swap the note value 5 times whilst
+   playing, which is the default. Or more exactly: swap it <speed-1> times.
+   During these <speed-1> steps the following is performed:
+   1) Add left nibble of infobyte to the note value (and play).
+   2) Add right nibble to the original note (and play this).
+   3) Play original (base) note.
+   4) Repeat step 1, ie add left nibble, etc.
+   5) Repeat step 2, ie add right nibble, etc.
+
+ * EFFECT &01 :
+   Slide up tone, ie add infobyte*64 to the output frequency. This is
+   usually done 5 times (depending on speed) while playing a note, until a
+   certain frequency is achieved. This limit comes from the Amiga.
+
+ * EFFECT &02 :
+   Slide down tone, ie subtract infobyte*64 from frequency, <speed-1> times
+   per "play", until a certain frequency (the Amiga limit) is achieved.
+
+ * EFFECT &03 :
+   Slide up volume. Every first interrupt, the infobyte is added to the
+   current volume of the current instrument. Because of the LSB (lower sign
+   bit) format of the sample system, only even infobytes are allowed, to
+   achieve smooth sliding.
+
+ * EFFECT &04 :
+   Slide down volume. Subtract infobyte every first interrupt, for allowing
+   slow sliding.
+
+ * EFFECT &05 :
+   Fine slide pitch up. Add infobyte*16 to frequency. There is no maximum.
+   This is the preferred method of sliding the pitch.
+
+ * EFFECT &06 :
+   Fine slide pitch down. Subtract infobyte*16. The minimum is zero. This is
+   the preferred pitch sliding.
+
+ * COMMAND &07 :
+   Set the stereo position of the current channel to infobyte value. Each
+   used channel may have its own stereo position. The infobyte can indicate
+   one of the following 7 positions:
+
+          01 100% Left Channel
+          02  83% Left Channel
+          03  67% Left Channel
+          04      Centre
+          05  67% Right Channel
+          06  83% Right Channel
+          07 100% Right Channel
+
+ * COMMAND &08 :
+   Start auto volume up. That is, slide up the volume of the current
+   instrument in this channel by the infobyte every first interrupt, from
+   now on. This will be done automatically. In order to clear this automatic
+   flag, you have to use command effect &08 with a zero infobyte.
+
+ * COMMAND &09 :
+   Start auto volume down. Opposite to &08.
+   Clear this automatic flag by selecting same the command with the infobyte
+   as zero.
+
+ * COMMAND &0A :
+   Start auto sliding up. That is, slide up the pitch (frequency) every
+   interrupt automatically by the infobyte value.
+   Clear this automatic flag by selecting same command with a zero infobyte.
+
+ * COMMAND &0B :
+   Start auto sliding down. Opposite to &0A.
+   Clear this automatic flag by selecting same command with a zero infobyte.
+
+ * COMMAND &0C :
+   Set the volume of the current instrument (on current channel) to the
+   infobyte value. The volume is in the range from &00 to &FF, where 0 is
+   loudest and 255 totally quiet. Please note the LSB sample format (ie
+   use only even numbers) and that the values have a logarithmic effect.
+
+ * COMMAND &0D :
+   Pattern break. When this command is set then the whole pattern is
+   terminated, and the next one in the sequence is started. It doesn't
+   matter which channel activates it.
+
+ * COMMAND &0E :
+   Position jump. The (hex!) info byte gives the sequence number where to
+   jump to. Please use with caution. (NB: Tom, is the max seq nr checked?)
+   Useful for several tunes in the same song which all use the same (sub-)
+   set of instruments. You could have a game over tune, a title tune and so
+   on, in the same song (file). When the end of one part is reached, it
+   jumps with this command to its start sequence number. You'll then have
+   to remember the sequence number of each part's start and use the command
+   or SWI Coco_PositionJump <Number> of the player module.
+
+ * COMMAND &0F :
+   Set the play speed to value contained in the infobyte. The default speed
+   is 6. That is, if the interrupt counter achieves the selected speed, then
+   the next pattern information is interpreted (a new note row is played)
+   and the counter is reset.
+
+An additional note to the auto commands: Although these auto commands are
+executed as commands, they actually make their appropriate effects be
+started. They are included to allow you to use multiple effects at the same
+time. All four auto effects may even be active at the same time (or rather:
+after setting one, the next may be set too). Please don't "forget" an auto
+effect once set. Clear it by setting the command together with the infobyte
+as zero. Like the other effects, the auto fx are performed in the time
+between two new notes, that is <speed-1> times, and only if a tone for this
+channel is (still) active.
+
+
+===============================================
+=  TECHNICAL INFO ABOUT SAMPLES AND SAMPLING  =
+===============================================
+
+A sample file contains digitised data bytes. But what are they? Well, let's
+see what the manual says...
+ The sound DMA system of the Archimedes systematically outputs the data
+ bytes at a programmed sample rate; each (16-byte) load of DMA data from
+ memory is synchronized to the first stereo image position. Each byte must
+ be stored as an eight bit signed logarithm, ready for direct output to the
+ VIDC chip:
+ Multiple channel operations are possible with two, four or eight channels.
+ When output the channels are multiplexed into what is effectively one half,
+ one quarter or one eight of the sample period, so the signal level per
+ channel is scaled down by the same amount. Thus the signal level per
+ channel is scaled, depending on the number of channels; but the overall
+ signal level remains the same for all multi channel modes.
+
+Well, why tell us this? There are some things resulting from the VIDC 8-bit
+logarithmic LSB (lower sign bit) format: If you digitise or create a new
+sample then the resulting file is often a (signed) linear one and therefore
+not ready for direct VIDC sound output. It first has to be converted to the
+correct signed logarithm format. Several nice PD tools exist which will do
+this for you.
+
+And last but not least some technical details as to the maximum and default
+sample rate.
+ A high sample rate will give the best sound quality. If too high a rate is
+ sought then DMA request conflicts will occur, especially when high band-
+ widths are also required from the Video Controller by high resolution
+ screen modes. To avoid such contentions the output period must not be less
+ than 4 탎. Outputting a byte to one of eight channels every 4 탎 results in
+ a sample period of 32 탎, which gives a maximum sample rate of 31.25 kHz
+ with eight active channels. With one active channel even 250 kHz. Today CD
+ players usually have about 42 kHz.
+ The clock for the Sound system is derived from the system clock for the
+ video controller, which is then derived by a multiple of 24. Current ARM
+ based computers use a VIDC system clock of 24 MHz, 25.175 MHz or 36 MHz,
+ depending on the screen mode and monitor type selected. The default output
+ period is 6 탎, which is compatible with VIDC system clocks running at
+ multiples of 4 MHz from 12 MHz upwards (ie 12 MHz, 16 MHz, 20 MHz..). The
+ 6 탎 can't be matched with the VIDC system clock of 25.175 MHz (used for
+ those stupid VGA monitors on the PC - Perfect Cr*p). In this case the
+ divider used is the same as for a 24 MHz VIDC system clock) which results
+ in a slightly shorter output period, and so sounds are approximately a
+ semitone higher.
+
+Outputting a byte to one of eight every 6 탎 results in a sample period of
+48 탎, which gives a default sample rate of 20.833 kHz. Coconizer plays
+either four or eight channels, so we decided to keep the default sample
+rate, ie its sample period of 48 탎. The sound of the Archimedes is 8 bit
+logarithmic, which is vaguely equivalent to 12 bit linear. NB: The Amiga
+for example has 8 bit linear sound.
+

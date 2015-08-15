@@ -1,0 +1,235 @@
+                       *** THE D00 FORMAT EXPLAINED ***
+                       ***     BY JOACHIM FENKES    ***
+
+  This document describes the D00 music format (used by the AdLib player v4.01
+coded by JCH/Vibrants) in more detail than the docs of EdLib (the respective
+tracker, also coded by JCH) do.
+
+  This document assumes that you already own EdLib and have some experience
+with it. Also, the availability of the EdLib docs as well as of the docs for
+the player included with EdLib is assumed. You should know some basics about
+AdLib programming and data formats (byte, word etc.) as well as the EdLib
+structures (Instruments, SpFX etc.) and with hexadecimal notation.
+
+
+
+CONTENTS
+========
+
+  1. The D00 header
+  2. The Instrument data
+  3. The SpFX data
+  4. The arrangement data
+  5. The pattern data
+  6. Some more infos
+  7. Closing words
+
+
+
+1. The D00 header
+=================
+
+  A description of the D00 header can be found in the player's docs.  So I
+won't show it again here. But JCH gives very cryptic names to the other file
+structures, so I'll call them differently:
+
+  JCH's names         | My names
+
+  TPoin tables        = Arrangment data
+  SeqPointer tables   = Sequence data
+  Instrument data     = Instrument data
+  DataInfo text       = Song description
+  Special tables      = SpFX data
+
+  Also, I should mention that all the pointers to these tables are
+meant relative to the beginning of the D00 file.
+
+
+2. The Instrument data
+======================
+
+  The instrument data simply consists of all instruments used in the song.
+Since the number of instruments is stored nowhere inside the file, loaders
+should the start offset of the next structure for determining if they have
+read enough data.
+
+  The data for each instrument consists of 16 bytes, which occur in the
+same order as the corresponding bytes in the EdLib Instrument table:
+
+    xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx xx
+    +------------+ +------------+ |  |  |  |  |  |
+     Carrier data  Modulator data |  |  |  |  +--¡Unused
+                                  |  |  |  +Hard restart SR value
+                                  |  |  +Hard restart timer
+                                  |  +Fine-tune
+                                  +AM/FM + Feedback
+
+  For the exact meaning of these bytes, read the EdLib manual.
+
+  Note that in the Carrier and Modulator data the ADSR parts are not stored
+word-oriented, but byte-oriented. That means, they aren't stored as a word
+whose High byte is the AD part and whose Low byte is the SR part (although the
+display in EdLib creates that assumption). Instead they're simply stored as
+two bytes of which the first one's the AD part and the second one's the SR
+part.
+
+
+3. The SpFX data
+================
+
+  The SpFX data ist stored more or less like the Instrument data, but one
+single table entry consists of only 8 bytes arranged like this:
+
+    xxxx xx xx xx xx xxxx (note xx's are BYTES and xxxx's are WORDS!)
+    |    |  |  |  |  |
+    |    |  |  |  |  +Pointer to next SpFX entry
+    |    |  |  |  +Duration of SpFX entry in Frames
+    |    |  |  +Modulator Level add
+    |    |  +New Modulator level
+    |    +Note add value
+    +Instrument to use
+
+  Again, to really understand the meaning of these parts, you should read the
+EdLib docs.
+
+
+4. The Arrangement data
+=======================
+
+  The arrangement data determines which sequence is to be played on which
+channel at which moment and in which way, if you understand what I mean :)
+
+  It consists of two parts: The Pointer part and the Data part (I simply call
+them that way now :). The Pointer part consists of 16 word pointers and one
+endmark (all endmarks are FFFFh, by the way). Only the first nine pointers are
+used at the moment: one for each one of the nine AdLib channels. Each one of
+these nine pointers points to the part of the Data part which belongs to its
+channel.
+
+  The Data part consists, as you'd have guessed before, of nine independent
+arrangement streams. Each one of tese streams has the following format:
+
+  First comes a word telling the speed of that stream. Since this information
+is stored at the beginning of EVERY stream, I assume that every channel may
+have its own unique speed, and EdLib simply doesn't support this.  After that,
+the real arrangement data is stored.
+
+  This data is organized like this: If a word below 8000h is read, it's the
+number of a sequence to be played. In that case, the saved transpose data is
+used.
+
+  But if a word 8XYYh is read, with X and YY being any value, the
+transpose data is updated to X and YY (see the EdLib docs for information on
+the meaning of X and YY). I have found out that the first arrangement entry
+for an arrangement stream that contains at least one sequence is always such
+a command to set the internal transpose data. So no default value is required
+to be loaded into the transpose data before playing. And looping the
+arrangement stream becomes easier.
+
+  If the word FFFFh is read, the arrangement stream has arrived at its looping
+point. The word following the FFFFh is an offset into the arrangement stream
+telling at which position the stream should be restarted.
+
+  If the word FFFEh is read, the arrangement stream has reached its end.
+Unlike the Loop command (FFFFh), the stream mustn't get restarted but halted.
+Also, there is no word following the FFFEh command.
+
+
+5. The Sequence data
+====================
+
+(I guess you have been waiting for this :)
+
+  The Sequence data again consists of a pointer part and a data part.  But this
+time these two parts aren't stored in different parts of the file, the data
+part is stored directly after the pointer part. Therefore, a reference to a
+specific pattern should be seen as a reference to a word counted from the
+beginning of the Sequence data. This word (e.g. the first word for Pattern
+0000h) then points to the offset of the actual sequence data inside the file.
+I hope you got my point...
+
+  Then, each sequence is stored as follows:
+
+  Read a word. If it's high byte is below 20h, then it's a note. Note that
+RESTs and HOLDs are also counted as notes. In this case, the low byte can
+contain the following values:
+
+  00h = REST - The high byte tells the number of rests to insert minus one!
+        e.g. a REST with a high byte of 01h means "Two RESTs"
+
+  01h - 7Dh = Note - The value of this note byte tells the amount of
+              halfnotes to add to C-0 (e.g. 01h would mean C#0). In this case,
+              the high byte tells the number of HOLDs to insert after the
+              note.
+
+  7Fh = HOLD - The high byte tells the number of HOLDs minus one again!
+
+  If the high byte is 20h or above, but below 40h, it's a note again, but this
+time with Tienote switched on. The high word is used as repetition count
+again, but don't forget to substract 20h before evaluating it!!
+
+  If the high bzte is 40h or above, it's an effect. In this case, the
+complete word can simply be interpreted like any EdLib effect (set instrument,
+set volume etc.). See the EdLib docs for a list of them. The note word this
+effect refers to follows directly after the ceffect word.
+
+  If the read word is FFFFh, it indicates the end of that sequence. In that
+case, the next sequence to be played should be determined and loaded and the
+first effect/note of it should be played.
+
+
+6. Some more infos
+==================
+
+  The Song description (which is referred to as "DataInfo" by JCH) can
+contain simply any kind of data, but it's mostly used as a container for a
+descriptive text. This data is also terminated by an endmark (FFFFh), even if
+it contains no other data.
+
+
+7. Closing words
+================
+
+  Okay, this was it. Now you should know as much about the D00 format as I
+know. I hope that you understood my way of describing things and wish you best
+luck with your own tracker/player, maybe both...
+
+  I hope that someone finds this text interesting and useful for his purposes.
+I will most probably base my own tracker format (if I code a tracker some
+day :) on a mixture of D00 and TFMX (which is pretty much the same), maybe
+with some bits of XM... In my opinion JCH's sequence system is far superior to
+all of the other pattern-oriented tracker formats I know. Even XM can't
+compete with this system in terms of pattern size. I hope that someone will
+introduce a sequence-based sample tracker system some day (Hope JCH is reading
+this... ;).
+
+  Greetings go to:
+
+  -Christoph Brzozowski - Greatest Amiga warrior around
+
+  -Akintunde Omitowoju - Pushed me to make this description
+
+  -Jens Christian Huus alias JCH/Vibrants - Maker of EdLib
+
+  -Chris HÅlsbeck - Maker of SidPlay on the C64 and TFMX on the Amiga
+
+
+  If you wanna contact me, send me an E-Mail:
+
+  *** j.fenkes@public.ndh.com ***
+
+Sayonara,
+  Joachim Fenkes
+
+---snap---8<------
+
+Be reading you,
+  Joachim
+
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+-=>      Joachim Fenkes     <=-=>  Do *You* Have A  <=-
+-=> j.fenkes@public.ndh.com <=-=> Little Green Man? <=-
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+

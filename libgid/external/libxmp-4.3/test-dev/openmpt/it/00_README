@@ -1,0 +1,1116 @@
+   #[1]Edit [2]OpenMPT Wiki (en) [3]copyright [4]OpenMPT Wiki Atom feed
+
+Development: Test Cases/IT
+
+   From OpenMPT Wiki
+   Jump to: [5]navigation, [6]search
+
+   This test suite is a collection of IT modules that were created while
+   discovering playback bugs in OpenMPT. It is meant to be an easy way to
+   check for regressions when code is changed, or to verify your own
+   player’s routines if you are concerned about playback compatibility.
+   The tests are designed in a way so that it is easy to figure out if
+   your player is working correctly. In most test cases, your own player’s
+   output can be heard on the left channel, while Impulse Tracker’s output
+   is heard on the right channel. This way, it is easy to find out whether
+   everything works as intended or if there are any discrepancies without
+   having to read any long test descriptions. When it is impossible to do
+   such a cross-verification, a more detailed description of the test can
+   usually be found in the sample, instrument or comment text.
+
+   Bit-exact output is not the goal of this test suite, correct playback
+   is, so slight deviations from Impulse Tracker’s output (e.g. different
+   resampling algorithms, pop reduction, etc.) are acceptable. Some tests
+   will only sound correct on the first run. Unless stated otherwise, it
+   is not important that the test output sounds identical when looping the
+   module.
+
+   Most test cases are documented (more or less) in OpenMPT’s source code
+   with a reference to the filename of the test case. I am sorry that many
+   tests do not have proper descriptions − I have started this
+   documentation years after I have fixed some of these issues and can
+   thus not remember all the details anymore. If you are stuck with one of
+   the tests, you may have a look at specific source code revisions that
+   are provided with most tests to see what was changed in the code to
+   make it work correctly.
+
+   Last but not least, please keep in mind that some descriptions might be
+   wrong or too general. Sometimes, the description might be correct in
+   the given test case, but changing the test case might invalidate the
+   description. If you know better than me, please correct the texts, and
+   please ask me if you need more information one of the test cases. The
+   documentation is not always optimal because the test cases have been
+   written long before I have created this site.
+
+Contents
+
+     * [7]1 Autovibrato-Reset.it
+     * [8]2 Bidi-Loops.it
+     * [9]3 CarryNNA.it
+     * [10]4 cut-carry.it
+     * [11]5 emptyslot.it
+     * [12]6 env-flt-max.it
+     * [13]7 EnvLoopEscape.it
+     * [14]8 EnvLoops.it
+     * [15]9 EnvOffLength.it
+     * [16]10 EnvReset.it
+     * [17]11 extreme-filter-test-1.it
+     * [18]12 extreme-filter-test-2.it
+     * [19]13 Fade-Porta.it
+     * [20]14 filter-7F.it
+     * [21]15 FilterEnvReset.it
+     * [22]16 filter-nna.it
+     * [23]17 filter-reset.it
+     * [24]18 filter-reset-carry.it
+     * [25]19 FineVolColSlide.it
+     * [26]20 flt-env-carry.it
+     * [27]21 fltmacro.it
+     * [28]22 freqreset-noins.it
+     * [29]23 globalvol-invalid.it
+     * [30]24 GlobalVolume-Macro.it
+     * [31]25 gxsmp.it
+     * [32]26 gxsmp2.it
+     * [33]27 gxxtest.it
+     * [34]28 ins-flt-porta-reset.it
+     * [35]29 InstrumentNumberChange.it
+     * [36]30 macro-lastnote.it
+     * [37]31 MultiZxx.it
+     * [38]32 NoMap.it
+     * [39]33 NoSlide.it
+     * [40]34 NoteFade1.it
+     * [41]35 NoteFade2.it
+     * [42]36 noteoff2.it
+     * [43]37 noteoff3.it
+     * [44]38 Off-Porta.it
+     * [45]39 Off-Porta-CompatGxx.it
+     * [46]40 PatternDelay-NoteDelay.it
+     * [47]41 PatternDelays.it
+     * [48]42 PatternDelaysRetrig.it
+     * [49]43 PortaInsNum.it
+     * [50]44 PortaInsNumCompat.it
+     * [51]45 porta-offset.it
+     * [52]46 PortaReset.it
+     * [53]47 PortaSample.it
+     * [54]48 PortaSampleCompat.it
+     * [55]49 RandomPan.it
+     * [56]50 RandomWaveform.it
+     * [57]51 retrig.it
+     * [58]52 retrig-short.it
+     * [59]53 s7xinsnum.it
+     * [60]54 s77.it
+     * [61]55 SampleNumberChange.it
+     * [62]56 scx.it
+     * [63]57 SlideDelay.it
+     * [64]58 SmpInsPanSurround.it
+     * [65]59 surround-pan.it
+     * [66]60 SusAfterLoop.it
+     * [67]61 swaptest.it
+     * [68]62 swing1.it
+     * [69]63 swing2.it
+     * [70]64 swing3.it
+     * [71]65 swing4.it
+     * [72]66 swing5.it
+     * [73]67 tickdelay.it
+     * [74]68 tremolo.it
+     * [75]69 vibrato.it
+     * [76]70 vibrato-oldfx.it
+     * [77]71 VolColMemory.it
+     * [78]72 vol-env-carry.it
+     * [79]73 Volume-Macro-Letters.it
+     * [80]74 weirdloop.it
+     * [81]75 wnoteoff.it
+
+Autovibrato-Reset.it[[82]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [83]Autovibrato-Reset.it
+   Description: The autovibrato sweep is not reset when using portamento.
+
+Bidi-Loops.it[[84]edit]
+
+   Current status: OpenMPT passes this test since revision 793.
+   Download: [85]Bidi-Loops.it
+   Description: In Impulse Tracker’s software mixer, ping-pong loops are
+   shortened by one sample. This does not happen with the GUS hardware
+   driver, but I assume that the software drivers were more popular due to
+   the limitations of the GUS, so OpenMPT emulates this behaviour.
+
+CarryNNA.it[[86]edit]
+
+   Current status: OpenMPT passes this test since revision 1503.
+   Download: [87]CarryNNA.it
+   Description: This is a very interesting test case, because it actually
+   sounds different when using Impulse Tracker’s WAV writer and Sound
+   Blaster (and probably other drivers) output. The main difference is
+   that the Sound Blaster driver will only consider the envelope carry
+   flag if the New Note Action is not “Note Cut”. The WAV writer does not
+   check for the NNA and will always apply the carry flag if it’s set.
+   OpenMPT goes after the WAV writer, while XMPlay (at the time of
+   writing) uses the Sound Blaster behaviour for the volume and panning
+   envelope, but the WAV writer’s behaviour for the filter envelope
+   (because of a bug report some years ago). Obviously it is hard to
+   consider which of the two behaviours is correct, so I would just say
+   that both are. :)
+
+cut-carry.it[[88]edit]
+
+   Current status: OpenMPT passes this test since revision 1165.
+   Download: [89]cut-carry.it
+   Description: Envelopes that have the carry flag set cannot be “picked
+   up” / continued after the note has been cut.
+
+emptyslot.it[[90]edit]
+
+   Current status: OpenMPT passes this test since revision 1671.
+   Download: [91]emptyslot.it
+   Description: I think, Impulse Tracker treats instruments like an
+   additional layer of abstraction and first replaces the note and
+   instrument in the pattern by the sample and note assignments from the
+   sample map table before further evaluating the pattern. That would
+   explain why for example the empty sample map slots do nothing in this
+   module.
+
+env-flt-max.it[[92]edit]
+
+   Current status: OpenMPT passes this test since revision 1090 (?).
+   Download: [93]env-flt-max.it
+   Description: If resonance is not applied, the filter envelope’s maximum
+   value does not enable any filtering. However, it also does not disable
+   any filtering when returning from a non-maximum point. This pretty much
+   works like Zxx commands.
+
+EnvLoopEscape.it[[94]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [95]EnvLoopEscape.it
+   Description: Here, OpenMPT exits the sustain loop too early.
+
+EnvLoops.it[[96]edit]
+
+   Current status: OpenMPT passes this test since revision 1213.
+   Download: [97]EnvLoops.it
+   Description: In this test, all possible combinations of the envelope
+   sustain point and envelope loops are tested, and you can see their
+   behaviour on note-off. If the sustain point is at the loop end and the
+   sustain loop has been released, don't loop anymore. Probably the most
+   important thing for this test is that in Impulse Tracker (and
+   Fasttracker 2), envelope position is incremented before the point is
+   evaluated, not afterwards, so when no ticks have been processed yet,
+   the envelope position should be invalid.
+
+EnvOffLength.it[[98]edit]
+
+   Current status: OpenMPT passes this test since revision 4009.
+   Download: [99]EnvOffLength.it
+   Description: If an envelope sustain loop happens to end on exactly the
+   same tick as a note-off event occurs, the envelope is not yet released.
+   It will be released whenever the loop end is being hit again.
+
+EnvReset.it[[100]edit]
+
+   Current status: OpenMPT passes this test since revision 1481.
+   Download: [101]EnvReset.it
+   Description: Impulse Tracker resets envelopes under some more or less
+   weird conditions. This tests some of them.
+
+extreme-filter-test-1.it[[102]edit]
+
+   Current status: OpenMPT passes this test since revision 1090.
+   Download: [103]extreme-filter-test-1.it
+   Description: If resonant filters are rendered with integer arithmetic,
+   they may produce scratching noises in some edge cases. You should not
+   hear any scratches or other weird noises when playing this example.
+
+extreme-filter-test-2.it[[104]edit]
+
+   Current status: OpenMPT passes this test since revision 1090.
+   Download: [105]extreme-filter-test-2.it
+   Description: Same as the above test case. xmp breaks this module’s
+   output even more than older versions of OpenMPT.
+
+Fade-Porta.it[[106]edit]
+
+   Current status: OpenMPT passes this test since revision 1144.
+   Download: [107]Fade-Porta.it
+   Description: After a note has been stopped in some way (for example
+   through fade-out or note cut), tone portamento effects on the following
+   note are ignored, i.e. there is no portamento from the stopped note to
+   the new note.
+
+filter-7F.it[[108]edit]
+
+   Current status: OpenMPT passes this test since revision 1090 (?).
+   Download: [109]filter-7F.it
+   Description: A small test case that demonstrates that full cutoff
+   should not enable the filter if no resonance is applied. Resonance is
+   only ever applied if the cutoff is not full or the resonance is not
+   zero.
+
+FilterEnvReset.it[[110]edit]
+
+   Current status: OpenMPT passes this test since revision 1132.
+   Download: [111]FilterEnvReset.it
+   Description: A cutoff value of 0 should not be reset to full cutoff
+   when triggering a note just because the filter envelope is enabled.
+   This bug is probably very specific to OpenMPT, because it gets rid of
+   some unneccessary code.
+
+filter-nna.it[[112]edit]
+
+   Current status: OpenMPT passes this test since revision 1169.
+   Download: [113]filter-nna.it
+   Description: This test is just there to be sure that the
+   filter-reset.it and filter-reset-carry.it test cases do not break NNA
+   background channels.
+
+filter-reset.it[[114]edit]
+
+   Current status: OpenMPT passes this test since revision 1165.
+   Download: [115]filter-reset.it
+   Description: As mentioned already, filtering is only ever done in IT if
+   either cutoff is not full or if resonance is set. When a Z7F command is
+   found next to a note and no portamento is applied, it disables the
+   filter, however in other cases this should not happen.
+
+filter-reset-carry.it[[116]edit]
+
+   Current status: OpenMPT passes this test since revision 1165.
+   Download: [117]filter-reset-carry.it
+   Description: I think this is also just an extenion to the previous test
+   case, to make sure that it does not break anything else.
+
+FineVolColSlide.it[[118]edit]
+
+   Current status: OpenMPT passes this test since revision 2400.
+   Download: [119]FineVolColSlide.it
+   Description: Unlike fine volume slides in the effect column, fine
+   volume slides in the volume column are only ever executed on the first
+   tick — not on multiples of the first tick if there is a pattern delay.
+   Thus, the left and right channel of this example should always have the
+   same volume.
+
+flt-env-carry.it[[120]edit]
+
+   Current status: OpenMPT passes this test since revision 693 (?).
+   Download: [121]flt-env-carry.it
+   Description: Envelope carry on the filter envelope. I think this is
+   just a general test on how envelope carry is applied. It is possible
+   that Impulse Tracker’s MMX drivers will play this in a different way
+   from the WAV writer.
+
+fltmacro.it[[122]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [123]fltmacro.it
+   Description: This test uses a custom macro configuration that uses the
+   instrument volume to control the filter cutoff. A correclty implemented
+   MIDI Macro system should pass this test.
+
+freqreset-noins.it[[124]edit]
+
+   Current status: OpenMPT passes this test since revision 325.
+   Download: [125]freqreset-noins.it
+   Description: When using multisample instruments, even notes with no
+   instrument number next to them can change the sample (based on the
+   active instrument’s sample map). When switching between samples, you
+   must not forget to update the C-5 frequency of the playing sample as
+   well.
+
+globalvol-invalid.it[[126]edit]
+
+   Current status: OpenMPT passes this test since revision 290.
+   Download: [127]globalvol-invalid.it
+   Description: Out-of-range global volume commands (V81...VFF) should not
+   change the current global volume. This test module should remain
+   completely silent.
+
+GlobalVolume-Macro.it[[128]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [129]GlobalVolume-Macro.it
+   Description: Global volume, channel volume and various other parameters
+   are taken into account when interpreting the 'u' and 'v' letters in
+   MIDI macros. However, this feature seems to be quirky, and I have
+   decided not to support these quirks in OpenMPT, as I do not think that
+   anyone used this feature in Impulse Tracker very much and I would want
+   it to work in a sane way when using it to control instrument plugins in
+   OpenMPT. The quirks are:
+     * Channel and global volume seem to be applied one row after they
+       have been set. This does not seem to be the whole truth, though, as
+       looking at pattern 0, row 9, you should hear that IT applies the
+       M40 channel volume change on row 10.
+     * Instrument / sample volume also seems to be applied one row late
+       when using the 'u' macro, but not the 'v' macro (compare first and
+       second pattern, row 15 - 22 each).
+
+   There are also some problems with volume swing which might be fixed
+   later.
+
+gxsmp.it[[130]edit]
+
+   Current status: OpenMPT passes this test since revision 1671.
+   Download: [131]gxsmp.it
+   Description: Another test case with an empty sample map slot which is
+   simply ignored by Impulse Tracker.
+
+gxsmp2.it[[132]edit]
+
+   Current status: OpenMPT passes this test since revision 1671.
+   Download: [133]gxsmp2.it
+   Description: Going one step further by also changing the sample next to
+   that portamento.
+
+gxxtest.it[[134]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [135]gxxtest.it
+   Description: And another similar test.
+
+ins-flt-porta-reset.it[[136]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [137]ins-flt-porta-reset.it
+   Description: Instrument filter settings should not be applied if there
+   is a portamento effect.
+
+InstrumentNumberChange.it[[138]edit]
+
+   Current status: OpenMPT passes this test since revision 1902.
+   Download: [139]InstrumentNumberChange.it
+   Description: While Impulse Tracker cuts playing samples if it
+   encounters an invalid sample number in sample mode, the same does not
+   happen if we are in instrument mode.
+
+macro-lastnote.it[[140]edit]
+
+   Current status: OpenMPT passes this test since revision 947 (?).
+   Download: [141]macro-lastnote.it
+   Description: A test of the MIDI macro letter “n”. This letter will
+   always send the MIDI note value of the last triggered note, note cuts
+   and similar “notes” are not considered. This module should remain
+   silent as both channels should receive exactly the same cutoff values.
+
+MultiZxx.it[[142]edit]
+
+   Current status: OpenMPT passes this test since revision 947 (?).
+   Download: [143]MultiZxx.it
+   Description: A MIDI macro can contain more than one MIDI message. In
+   this case, the Z90 macro sets both the filter cutoff frequency and
+   resonance, so if only the first MIDI message is considered in this
+   macro, both patterns will sound identical. If the macro is interpreted
+   correctly, they will sound different.
+
+NoMap.it[[144]edit]
+
+   Current status: OpenMPT passes this test since revision 1671.
+   Download: [145]NoMap.it
+   Description: Yet another sample map test case. Why are there so many of
+   them? They are all fixed by the same code...
+
+NoSlide.it[[146]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [147]NoSlide.it
+   Description: Not sure what this test case is supposed to do.
+
+NoteFade1.it[[148]edit]
+
+   Current status: OpenMPT passes this test since revision 317.
+   Download: [149]NoteFade1.it
+   Description: A “note fade” note (any invalid note) should not do
+   anything in sample mode. The sample should not be stopped.
+
+NoteFade2.it[[150]edit]
+
+   Current status: OpenMPT passes this test since revision 317.
+   Download: [151]NoteFade2.it
+   Description: A “note fade” note (any invalid note) should fade out the
+   instrument using its fadeout value.
+
+noteoff2.it[[152]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [153]noteoff2.it
+   Description: The sample changes on rows 4 and 20, but not on rows 8 and
+   24.
+
+noteoff3.it[[154]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [155]noteoff3.it
+   Description: This is the same as noteoff2.it, but with old effects
+   enabled. In this case, the sample should never fade out.
+
+Off-Porta.it[[156]edit]
+
+   Current status: OpenMPT passes this test since revision 1344.
+   Download: [157]Off-Porta.it
+   Description: When "Compatible Gxx" is disabled, the key-off flag should
+   only be removed when triggering new notes, but not when continuing a
+   note using a portamento command (row 2, 4). However, you should keep in
+   mind that the portamento flag is still set even if there is an offset
+   command next to the portamento command (row 4), which would normally
+   nullify the portamento effect (see [158]porta-offset.it).
+
+Off-Porta-CompatGxx.it[[159]edit]
+
+   Current status: OpenMPT passes this test since revision 0 (temporarily
+   broken in rev. 1344).
+   Download: [160]Off-Porta-CompatGxx.it
+   Description: When "Compatible Gxx" is enabled, the key-off flag should
+   also be removed when continuing a note using a portamento command (row
+   2, 4, 6). This test case was written to discover a code regression when
+   fixing [161]Off-Porta.it).
+
+PatternDelay-NoteDelay.it[[162]edit]
+
+   Current status: OpenMPT passes this test since revision 1240.
+   Download: [163]PatternDelay-NoteDelay.it
+   Description: Delayed notes (using SDx) that are on the same row as a
+   Row Delay effect are retriggered on every repetition. Notes without a
+   note delay are not retriggered.
+
+PatternDelays.it[[164]edit]
+
+   Current status: OpenMPT passes this test since revision 1224.
+   Download: [165]PatternDelays.it
+   Description: Tick delays (S6x) are added up, but when there are
+   multiple row delays (SEx), only the first one is considered. The tricky
+   part here is that Impulse Tracker even ignores all row delays next to a
+   SE0 row delay. I suggest to do the following:
+     * Initialize a row delay variable with 0.
+     * Go through all channels. If there is a row delay on the current row
+       and row delay is 0, set row delay = parameter + 1.
+     * Calculate the complete row length: row length = (speed + tick
+       delay) * max(1, row delay)
+
+PatternDelaysRetrig.it[[166]edit]
+
+   Current status: OpenMPT passes this test since revision 1221.
+   Download: [167]PatternDelaysRetrig.it
+   Description: Rows on which a row delay (SEx) effect is placed have
+   multiple “first ticks”, i.e. you should set your “first tick flag” on
+   every tick that is a multiple of speed + tick delay. In this test
+   module, the note pitch is changed multiple times per row, depending on
+   the row and tick delay values.
+
+PortaInsNum.it[[168]edit]
+
+   Current status: OpenMPT passes this test since revision 1671.
+   Download: [169]PortaInsNum.it
+   Description: Portamento with funny sample maps. Without compatible Gxx,
+   portamento between different samples should play the new sample.
+
+PortaInsNumCompat.it[[170]edit]
+
+   Current status: OpenMPT passes this test since revision 2842.
+   Download: [171]PortaInsNumCompat.it
+   Description: Portamento with funny sample maps, in compatible Gxx mode.
+   With compatible Gxx, portamento between different samples should keep
+   playing the old sample.
+
+porta-offset.it[[172]edit]
+
+   Current status: OpenMPT passes this test since revision 0.
+   Download: [173]porta-offset.it
+   Description: Unlike Fasttracker 2, Impulse Tracker ignores the
+   portamento command if there is an portamento command next to an offset
+   command. Even ModPlug Tracker 1.16 gets this test right.
+
+PortaReset.it[[174]edit]
+
+   Current status: OpenMPT passes this test since revision 4181.
+   Download: [175]PortaReset.it
+   Description: Impulse Tracker completely resets the portamento target on
+   every new non-portamento note, i.e. a follow-up Gxx effect should not
+   slide back to the previously triggered note.
+
+PortaSample.it[[176]edit]
+
+   Current status: OpenMPT passes this test since revision 1671.
+   Download: [177]PortaSample.it
+   Description: Impulse Tracker executes the portamento when switching to
+   instrument two on the second row when compatible Gxx is disabled.
+
+PortaSampleCompat.it[[178]edit]
+
+   Current status: OpenMPT passes this test since revision 2842.
+   Download: [179]PortaSampleCompat.it
+   Description: Impulse Tracker executes the portamento and doesn't switch
+   to the new sample on the second row when compatible Gxx is enabled.
+
+RandomPan.it[[180]edit]
+
+   Current status: OpenMPT passes this test since revision 2545.
+   Download: [181]RandomPan.it
+   Description: Pan swing should not be overriden by effects such as
+   instrument panning or panning envelopes. Previously, pan swing was
+   overriden in OpenMPT if the instrument also had a panning envelope. In
+   this file, pan swing should be applied to every note.
+
+RandomWaveform.it[[182]edit]
+
+   Current status: OpenMPT passes this test since revision 3670.
+   Download: [183]RandomWaveform.it
+   Description: When selecting the random waveform for panbrello, the
+   “speed” nibble indicates for how many ticks the random value will be
+   held. This behaviour is not used for vibrato / tremolo.
+
+retrig.it[[184]edit]
+
+   Current status: OpenMPT passes this test since revision 364.
+   Download: [185]retrig.it
+   Description: A combination of the retrigger effect and instrument
+   envelopes. Not sure how this works.
+
+retrig-short.it[[186]edit]
+
+   Current status: OpenMPT passes this test since revision 1140.
+   Download: [187]retrig-short.it
+   Description: Impulse Tracker does not retrigger notes that are shorter
+   than the duration of a tick. One might argue that this is a bug in
+   Impulse Tracker, but OpenMPT emulates it anyway.
+
+s7xinsnum.it[[188]edit]
+
+   Current status: OpenMPT passes this test since revision 1062.
+   Download: [189]s7xinsnum.it
+   Description: Changing the NNA action through the S7x command only
+   affects the current note - The NNA action is reset on every note
+   change, and not on every instrument change.
+
+s77.it[[190]edit]
+
+   Current status: OpenMPT passes this test since revision 561
+   (preliminary), 1112.
+   Download: [191]s77.it
+   Description: The S77 / S79 / S7B commands pause the instrument
+   envelopes, they do not turn them off. S78 / S7A / S7C should resume the
+   envelope at exactly the position where it was paused. In this test, it
+   is again very important that the envelope position is incremented
+   before the point is evaluated, not afterwards (see EnvLoops.it).
+
+SampleNumberChange.it[[192]edit]
+
+   Current status: OpenMPT passes this test since revision 0.
+   Download: [193]SampleNumberChange.it
+   Description: Contrary to InstrumentNumberChange.it, even ModPlug
+   Tracker 1.16 passes it.
+
+scx.it[[194]edit]
+
+   Current status: OpenMPT passes this test since revision 1109.
+   Download: [195]scx.it
+   Description: The SCx command cuts notes just like a normal note cut
+   (^^^), it does not simply mute them. However, there is a difference
+   when placing a lone instrument number after a note that was cut with
+   SCx and one cut with ^^^, as it can be seen in this test case.
+
+SlideDelay.it[[196]edit]
+
+   Current status: OpenMPT passes this test since revision 3520.
+   Download: [197]SlideDelay.it
+   Description: If there's a note delay, slide and vibrato commands in the
+   volume column next to it should not start before the delay has
+   finished. So if there's a fine volume slide next to a SD5 effect should
+   start on the 6th (one-based) tick. If this was a normal volume or pitch
+   slide and the speed was 6 ticks per row, it would never execute, as the
+   first non-zero tick would be the seventh tick.
+
+SmpInsPanSurround.it[[198]edit]
+
+   Current status: OpenMPT passes this test since revision 1259.
+   Download: [199]SmpInsPanSurround.it
+   Description: Sample and instrument panning override the channel
+   surround status, i.e. surround is turned off by samples or instruments
+   with panning enabled.
+
+surround-pan.it[[200]edit]
+
+   Current status: OpenMPT passes this test since revision 1134.
+   Download: [201]surround-pan.it
+   Description: Pan swing, panbrello, panning envelopes, etc. should have
+   no effect on surround channels.
+
+SusAfterLoop.it[[202]edit]
+
+   Current status: OpenMPT passes this test since revision 1085.
+   Download: [203]SusAfterLoop.it
+   Description: When a sample sustain loop, which is placed partly or
+   completely behind a “normal” sample loop is exited (through a note-off
+   event), and the current sample playback position is past the normal
+   loop’s end, it is adjusted to current position - loop end + loop start.
+
+swaptest.it[[204]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [205]swaptest.it
+   Description: A test focussing on finding the correct sample playback
+   position when switching samples “on the fly” (using instrument numbers
+   without notes next to them). The module should remain silent when being
+   played.
+
+swing1.it[[206]edit]
+
+   Current status: OpenMPT passes this test since revision 1046 (?).
+   Download: [207]swing1.it
+   Description: Probably a very MPT-specific bug, as OpenMPT was adding
+   the volume swing to the current volume, so even after setting the
+   volume to 0, it was possible that you could hear the sample playing.
+
+swing2.it[[208]edit]
+
+   Current status: OpenMPT passes this test since revision 1046 (?).
+   Download: [209]swing2.it
+   Description: This module should remain completely silent, as the random
+   variation is multiplied with the sample volume.
+
+swing3.it[[210]edit]
+
+   Current status: OpenMPT passes this test since revision 1046 (?).
+   Download: [211]swing3.it
+   Description: Of course you are not supposed to produce the same
+   sequence of random number to fulfil this test case. I think this was
+   just a test to explore which volume variables are actually affected by
+   volume swing, and how it is applied.
+
+swing4.it[[212]edit]
+
+   Current status: OpenMPT passes this test since revision 1046 (?).
+   Download: [213]swing4.it
+   Description: Same as above.
+
+swing5.it[[214]edit]
+
+   Current status: OpenMPT passes this test since revision 1046 (?).
+   Download: [215]swing5.it
+   Description: Same as above.
+
+tickdelay.it[[216]edit]
+
+   Current status: OpenMPT passes this test since revision 1306.
+   Download: [217]tickdelay.it
+   Description: This test detects whether out-of-range note delays are
+   handled properly. If the SDx parameter is greater than the total row
+   length (including tick delay), any note and volume effects next to it
+   are supposed to ignored (interestingly, the instrument number is saved,
+   but not instantly used).
+
+tremolo.it[[218]edit]
+
+   Current status: OpenMPT passes this test since revision 345 (?).
+   Download: [219]tremolo.it
+   Description: A test for checking if tremolo tables are implemented
+   correctly.
+
+vibrato.it[[220]edit]
+
+   Current status: OpenMPT passes this test since revision 1189.
+   Download: [221]vibrato.it
+   Description: A test for checking if vibrato tables are implemented
+   correctly when old FX are disabled.
+
+vibrato-oldfx.it[[222]edit]
+
+   Current status: OpenMPT passes this test since revision 1189.
+   Download: [223]vibrato-oldfx.it
+   Description: A test for checking if vibrato tables are implemented
+   correctly when old FX are enabled. Vibrato is played backwards in this
+   mode!
+
+VolColMemory.it[[224]edit]
+
+   Current status: OpenMPT passes this test since revision 1545.
+   Download: [225]VolColMemory.it
+   Description: Volume column commands a, b, c and d (volume slide) share
+   one effect memory, but it should not be shared with Dxy in the effect
+   column. Furthermore, there is no unified effect memory across different
+   kinds of volume column effects (that's how OpenMPT used to handle it up
+   to revision 1544).
+
+vol-env-carry.it[[226]edit]
+
+   Current status: OpenMPT passes this test since revision 1781.
+   Download: [227]vol-env-carry.it
+   Description: Similar to flt-env-carry.it. This test case temporarily
+   broke in revision 1481 and was fixed in revision 1781.
+
+Volume-Macro-Letters.it[[228]edit]
+
+   Current status: OpenMPT passes this test since revision 1465.
+   Download: [229]Volume-Macro-Letters.it
+   Description: This test demonstrates how Zxx macros are parsed in
+   Impulse Tracker:
+     * Macros are evaluated only on the first tick.
+     * They appear to be parsed after note / instrument information has
+       been read from the pattern, but before any other effects (excluding
+       "Set Volume").
+     * 'u' and 'v' macros seem to emit at least a value of 1, not 0 - v00
+       corresponds to Z01.
+
+   I am not quite sure why the first row with notes on it emits a filter
+   value of 1, and I am not even completely sure why OpenMPT gets this
+   right. If interpreted correctly, the module should stay silent (minus
+   slight filter artefacts, of course - but they should be nearly
+   inaudible).
+
+weirdloop.it[[230]edit]
+
+   Current status: OpenMPT passes this test since revision 0.
+   Download: [231]weirdloop.it
+   Description: A nice broken pattern loop. The voice should say “1 4 2 1
+   4 2” and then repeat forever “3 4 2”. Theoretically, this would even
+   work in ModPlug Tracker 1.16, if it did not reset the Cxx target on
+   song loop.
+
+wnoteoff.it[[232]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [233]wnoteoff.it
+   Description: Note Off + instrument / portamento combinations.
+
+   In total, OpenMPT passes 70 out of 75 tests.
+   Retrieved from
+   "[234]http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/I
+   T&oldid=2081"
+   [235]Categories:
+     * [236]Development
+     * [237]IT Format
+
+Navigation menu
+
+Personal tools
+
+     * [238]Create account
+     * [239]Log in
+
+Namespaces
+
+     * [240]Page
+     * [241]Discussion
+
+Variants
+
+Views
+
+     * [242]Read
+     * [243]Edit
+     * [244]View history
+
+Actions
+
+Search
+
+   ____________________ Search Go
+
+Navigation
+
+     * [245]Main page
+     * [246]Download OpenMPT
+     * [247]OpenMPT Website
+     * [248]Community portal
+     * [249]Current events
+     * [250]Recent changes
+     * [251]Random page
+     * [252]Help
+
+Tools
+
+     * [253]What links here
+     * [254]Related changes
+     * [255]Special pages
+     * [256]Permanent link
+     * [257]Page information
+
+Print/export
+
+     * [258]Create a book
+     * [259]Download as PDF
+     * [260]Printable version
+
+     * This page was last modified on 1 July 2014, at 01:56.
+     * This page has been accessed 1,284 times.
+     * Content is available under [261]Creative Commons Attribution Share
+       Alike unless otherwise noted.
+
+     * [262]Privacy policy
+     * [263]About OpenMPT Wiki
+     * [264]Disclaimers
+
+     * [265]Creative Commons Attribution Share Alike
+     * [266]Powered by MediaWiki
+
+References
+
+   Visible links
+   1. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/IT&action=edit
+   2. http://wiki.openmpt.org/opensearch_desc.php
+   3. http://creativecommons.org/licenses/by-sa/3.0/
+   4. http://wiki.openmpt.org/index.php?title=Special:RecentChanges&feed=atom
+   5. http://wiki.openmpt.org/Development:_Test_Cases/IT#mw-navigation
+   6. http://wiki.openmpt.org/Development:_Test_Cases/IT#p-search
+   7. http://wiki.openmpt.org/Development:_Test_Cases/IT#Autovibrato-Reset.it
+   8. http://wiki.openmpt.org/Development:_Test_Cases/IT#Bidi-Loops.it
+   9. http://wiki.openmpt.org/Development:_Test_Cases/IT#CarryNNA.it
+  10. http://wiki.openmpt.org/Development:_Test_Cases/IT#cut-carry.it
+  11. http://wiki.openmpt.org/Development:_Test_Cases/IT#emptyslot.it
+  12. http://wiki.openmpt.org/Development:_Test_Cases/IT#env-flt-max.it
+  13. http://wiki.openmpt.org/Development:_Test_Cases/IT#EnvLoopEscape.it
+  14. http://wiki.openmpt.org/Development:_Test_Cases/IT#EnvLoops.it
+  15. http://wiki.openmpt.org/Development:_Test_Cases/IT#EnvOffLength.it
+  16. http://wiki.openmpt.org/Development:_Test_Cases/IT#EnvReset.it
+  17. http://wiki.openmpt.org/Development:_Test_Cases/IT#extreme-filter-test-1.it
+  18. http://wiki.openmpt.org/Development:_Test_Cases/IT#extreme-filter-test-2.it
+  19. http://wiki.openmpt.org/Development:_Test_Cases/IT#Fade-Porta.it
+  20. http://wiki.openmpt.org/Development:_Test_Cases/IT#filter-7F.it
+  21. http://wiki.openmpt.org/Development:_Test_Cases/IT#FilterEnvReset.it
+  22. http://wiki.openmpt.org/Development:_Test_Cases/IT#filter-nna.it
+  23. http://wiki.openmpt.org/Development:_Test_Cases/IT#filter-reset.it
+  24. http://wiki.openmpt.org/Development:_Test_Cases/IT#filter-reset-carry.it
+  25. http://wiki.openmpt.org/Development:_Test_Cases/IT#FineVolColSlide.it
+  26. http://wiki.openmpt.org/Development:_Test_Cases/IT#flt-env-carry.it
+  27. http://wiki.openmpt.org/Development:_Test_Cases/IT#fltmacro.it
+  28. http://wiki.openmpt.org/Development:_Test_Cases/IT#freqreset-noins.it
+  29. http://wiki.openmpt.org/Development:_Test_Cases/IT#globalvol-invalid.it
+  30. http://wiki.openmpt.org/Development:_Test_Cases/IT#GlobalVolume-Macro.it
+  31. http://wiki.openmpt.org/Development:_Test_Cases/IT#gxsmp.it
+  32. http://wiki.openmpt.org/Development:_Test_Cases/IT#gxsmp2.it
+  33. http://wiki.openmpt.org/Development:_Test_Cases/IT#gxxtest.it
+  34. http://wiki.openmpt.org/Development:_Test_Cases/IT#ins-flt-porta-reset.it
+  35. http://wiki.openmpt.org/Development:_Test_Cases/IT#InstrumentNumberChange.it
+  36. http://wiki.openmpt.org/Development:_Test_Cases/IT#macro-lastnote.it
+  37. http://wiki.openmpt.org/Development:_Test_Cases/IT#MultiZxx.it
+  38. http://wiki.openmpt.org/Development:_Test_Cases/IT#NoMap.it
+  39. http://wiki.openmpt.org/Development:_Test_Cases/IT#NoSlide.it
+  40. http://wiki.openmpt.org/Development:_Test_Cases/IT#NoteFade1.it
+  41. http://wiki.openmpt.org/Development:_Test_Cases/IT#NoteFade2.it
+  42. http://wiki.openmpt.org/Development:_Test_Cases/IT#noteoff2.it
+  43. http://wiki.openmpt.org/Development:_Test_Cases/IT#noteoff3.it
+  44. http://wiki.openmpt.org/Development:_Test_Cases/IT#Off-Porta.it
+  45. http://wiki.openmpt.org/Development:_Test_Cases/IT#Off-Porta-CompatGxx.it
+  46. http://wiki.openmpt.org/Development:_Test_Cases/IT#PatternDelay-NoteDelay.it
+  47. http://wiki.openmpt.org/Development:_Test_Cases/IT#PatternDelays.it
+  48. http://wiki.openmpt.org/Development:_Test_Cases/IT#PatternDelaysRetrig.it
+  49. http://wiki.openmpt.org/Development:_Test_Cases/IT#PortaInsNum.it
+  50. http://wiki.openmpt.org/Development:_Test_Cases/IT#PortaInsNumCompat.it
+  51. http://wiki.openmpt.org/Development:_Test_Cases/IT#porta-offset.it
+  52. http://wiki.openmpt.org/Development:_Test_Cases/IT#PortaReset.it
+  53. http://wiki.openmpt.org/Development:_Test_Cases/IT#PortaSample.it
+  54. http://wiki.openmpt.org/Development:_Test_Cases/IT#PortaSampleCompat.it
+  55. http://wiki.openmpt.org/Development:_Test_Cases/IT#RandomPan.it
+  56. http://wiki.openmpt.org/Development:_Test_Cases/IT#RandomWaveform.it
+  57. http://wiki.openmpt.org/Development:_Test_Cases/IT#retrig.it
+  58. http://wiki.openmpt.org/Development:_Test_Cases/IT#retrig-short.it
+  59. http://wiki.openmpt.org/Development:_Test_Cases/IT#s7xinsnum.it
+  60. http://wiki.openmpt.org/Development:_Test_Cases/IT#s77.it
+  61. http://wiki.openmpt.org/Development:_Test_Cases/IT#SampleNumberChange.it
+  62. http://wiki.openmpt.org/Development:_Test_Cases/IT#scx.it
+  63. http://wiki.openmpt.org/Development:_Test_Cases/IT#SlideDelay.it
+  64. http://wiki.openmpt.org/Development:_Test_Cases/IT#SmpInsPanSurround.it
+  65. http://wiki.openmpt.org/Development:_Test_Cases/IT#surround-pan.it
+  66. http://wiki.openmpt.org/Development:_Test_Cases/IT#SusAfterLoop.it
+  67. http://wiki.openmpt.org/Development:_Test_Cases/IT#swaptest.it
+  68. http://wiki.openmpt.org/Development:_Test_Cases/IT#swing1.it
+  69. http://wiki.openmpt.org/Development:_Test_Cases/IT#swing2.it
+  70. http://wiki.openmpt.org/Development:_Test_Cases/IT#swing3.it
+  71. http://wiki.openmpt.org/Development:_Test_Cases/IT#swing4.it
+  72. http://wiki.openmpt.org/Development:_Test_Cases/IT#swing5.it
+  73. http://wiki.openmpt.org/Development:_Test_Cases/IT#tickdelay.it
+  74. http://wiki.openmpt.org/Development:_Test_Cases/IT#tremolo.it
+  75. http://wiki.openmpt.org/Development:_Test_Cases/IT#vibrato.it
+  76. http://wiki.openmpt.org/Development:_Test_Cases/IT#vibrato-oldfx.it
+  77. http://wiki.openmpt.org/Development:_Test_Cases/IT#VolColMemory.it
+  78. http://wiki.openmpt.org/Development:_Test_Cases/IT#vol-env-carry.it
+  79. http://wiki.openmpt.org/Development:_Test_Cases/IT#Volume-Macro-Letters.it
+  80. http://wiki.openmpt.org/Development:_Test_Cases/IT#weirdloop.it
+  81. http://wiki.openmpt.org/Development:_Test_Cases/IT#wnoteoff.it
+  82. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  83. http://resources.openmpt.org/player_tests/it/Autovibrato-Reset.it
+  84. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  85. http://resources.openmpt.org/player_tests/it/Bidi-Loops.it
+  86. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  87. http://resources.openmpt.org/player_tests/it/CarryNNA.it
+  88. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  89. http://resources.openmpt.org/player_tests/it/cut-carry.it
+  90. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  91. http://resources.openmpt.org/player_tests/it/emptyslot.it
+  92. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  93. http://resources.openmpt.org/player_tests/it/env-flt-max.it
+  94. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  95. http://resources.openmpt.org/player_tests/it/EnvLoopEscape.it
+  96. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  97. http://resources.openmpt.org/player_tests/it/EnvLoops.it
+  98. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  99. http://resources.openmpt.org/player_tests/it/EnvOffLength.it
+ 100. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 101. http://resources.openmpt.org/player_tests/it/EnvReset.it
+ 102. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 103. http://resources.openmpt.org/player_tests/it/extreme-filter-test-1.it
+ 104. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 105. http://resources.openmpt.org/player_tests/it/extreme-filter-test-2.it
+ 106. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 107. http://resources.openmpt.org/player_tests/it/Fade-Porta.it
+ 108. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 109. http://resources.openmpt.org/player_tests/it/filter-7F.it
+ 110. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 111. http://resources.openmpt.org/player_tests/it/FilterEnvReset.it
+ 112. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 113. http://resources.openmpt.org/player_tests/it/filter-nna.it
+ 114. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 115. http://resources.openmpt.org/player_tests/it/filter-reset.it
+ 116. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 117. http://resources.openmpt.org/player_tests/it/filter-reset-carry.it
+ 118. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 119. http://resources.openmpt.org/player_tests/it/FineVolColSlide.it
+ 120. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 121. http://resources.openmpt.org/player_tests/it/flt-env-carry.it
+ 122. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 123. http://resources.openmpt.org/player_tests/it/fltmacro.it
+ 124. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 125. http://resources.openmpt.org/player_tests/it/freqreset-noins.it
+ 126. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 127. http://resources.openmpt.org/player_tests/it/globalvol-invalid.it
+ 128. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 129. http://resources.openmpt.org/player_tests/it/GlobalVolume-Macro.it
+ 130. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 131. http://resources.openmpt.org/player_tests/it/gxsmp.it
+ 132. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 133. http://resources.openmpt.org/player_tests/it/gxsmp2.it
+ 134. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 135. http://resources.openmpt.org/player_tests/it/gxxtest.it
+ 136. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 137. http://resources.openmpt.org/player_tests/it/ins-flt-porta-reset.it
+ 138. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 139. http://resources.openmpt.org/player_tests/it/InstrumentNumberChange.it
+ 140. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 141. http://resources.openmpt.org/player_tests/it/macro-lastnote.it
+ 142. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 143. http://resources.openmpt.org/player_tests/it/MultiZxx.it
+ 144. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 145. http://resources.openmpt.org/player_tests/it/NoMap.it
+ 146. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 147. http://resources.openmpt.org/player_tests/it/NoSlide.it
+ 148. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 149. http://resources.openmpt.org/player_tests/it/NoteFade1.it
+ 150. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 151. http://resources.openmpt.org/player_tests/it/NoteFade2.it
+ 152. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 153. http://resources.openmpt.org/player_tests/it/noteoff2.it
+ 154. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 155. http://resources.openmpt.org/player_tests/it/noteoff3.it
+ 156. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 157. http://resources.openmpt.org/player_tests/it/Off-Porta.it
+ 158. http://wiki.openmpt.org/Development:_Test_Cases/IT#porta-offset.it
+ 159. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 160. http://resources.openmpt.org/player_tests/it/Off-Porta-CompatGxx.it
+ 161. http://wiki.openmpt.org/Development:_Test_Cases/IT#Off-Porta.it
+ 162. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 163. http://resources.openmpt.org/player_tests/it/PatternDelay-NoteDelay.it
+ 164. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 165. http://resources.openmpt.org/player_tests/it/PatternDelays.it
+ 166. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 167. http://resources.openmpt.org/player_tests/it/PatternDelaysRetrig.it
+ 168. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 169. http://resources.openmpt.org/player_tests/it/PortaInsNum.it
+ 170. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 171. http://resources.openmpt.org/player_tests/it/PortaInsNumCompat.it
+ 172. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 173. http://resources.openmpt.org/player_tests/it/porta-offset.it
+ 174. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 175. http://resources.openmpt.org/player_tests/it/PortaReset.it
+ 176. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 177. http://resources.openmpt.org/player_tests/it/PortaSample.it
+ 178. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 179. http://resources.openmpt.org/player_tests/it/PortaSampleCompat.it
+ 180. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 181. http://resources.openmpt.org/player_tests/it/RandomPan.it
+ 182. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 183. http://resources.openmpt.org/player_tests/it/RandomWaveform.it
+ 184. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 185. http://resources.openmpt.org/player_tests/it/retrig.it
+ 186. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 187. http://resources.openmpt.org/player_tests/it/retrig-short.it
+ 188. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 189. http://resources.openmpt.org/player_tests/it/s7xinsnum.it
+ 190. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 191. http://resources.openmpt.org/player_tests/it/s77.it
+ 192. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 193. http://resources.openmpt.org/player_tests/it/SampleNumberChange.it
+ 194. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 195. http://resources.openmpt.org/player_tests/it/scx.it
+ 196. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 197. http://resources.openmpt.org/player_tests/it/SlideDelay.it
+ 198. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 199. http://resources.openmpt.org/player_tests/it/SmpInsPanSurround.it
+ 200. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 201. http://resources.openmpt.org/player_tests/it/surround-pan.it
+ 202. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 203. http://resources.openmpt.org/player_tests/it/SusAfterLoop.it
+ 204. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 205. http://resources.openmpt.org/player_tests/it/swaptest.it
+ 206. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 207. http://resources.openmpt.org/player_tests/it/swing1.it
+ 208. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 209. http://resources.openmpt.org/player_tests/it/swing2.it
+ 210. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 211. http://resources.openmpt.org/player_tests/it/swing3.it
+ 212. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 213. http://resources.openmpt.org/player_tests/it/swing4.it
+ 214. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 215. http://resources.openmpt.org/player_tests/it/swing5.it
+ 216. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 217. http://resources.openmpt.org/player_tests/it/tickdelay.it
+ 218. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 219. http://resources.openmpt.org/player_tests/it/tremolo.it
+ 220. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 221. http://resources.openmpt.org/player_tests/it/vibrato.it
+ 222. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 223. http://resources.openmpt.org/player_tests/it/vibrato-oldfx.it
+ 224. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 225. http://resources.openmpt.org/player_tests/it/VolColMemory.it
+ 226. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 227. http://resources.openmpt.org/player_tests/it/vol-env-carry.it
+ 228. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 229. http://resources.openmpt.org/player_tests/it/Volume-Macro-Letters.it
+ 230. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 231. http://resources.openmpt.org/player_tests/it/weirdloop.it
+ 232. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 233. http://resources.openmpt.org/player_tests/it/wnoteoff.it
+ 234. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/IT&oldid=2081
+ 235. http://wiki.openmpt.org/Special:Categories
+ 236. http://wiki.openmpt.org/Category:Development
+ 237. http://wiki.openmpt.org/Category:IT_Format
+ 238. http://wiki.openmpt.org/index.php?title=Special:UserLogin&returnto=Development%3A+Test+Cases%2FIT&type=signup
+ 239. http://wiki.openmpt.org/index.php?title=Special:UserLogin&returnto=Development%3A+Test+Cases%2FIT
+ 240. http://wiki.openmpt.org/Development:_Test_Cases/IT
+ 241. http://wiki.openmpt.org/index.php?title=Talk:Development:_Test_Cases/IT&action=edit&redlink=1
+ 242. http://wiki.openmpt.org/Development:_Test_Cases/IT
+ 243. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/IT&action=edit
+ 244. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/IT&action=history
+ 245. http://wiki.openmpt.org/Main_Page
+ 246. http://openmpt.org/download
+ 247. http://openmpt.org/
+ 248. http://wiki.openmpt.org/OpenMPT_Wiki:Community_portal
+ 249. http://wiki.openmpt.org/OpenMPT_Wiki:Current_events
+ 250. http://wiki.openmpt.org/Special:RecentChanges
+ 251. http://wiki.openmpt.org/Special:Random
+ 252. https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Contents
+ 253. http://wiki.openmpt.org/Special:WhatLinksHere/Development:_Test_Cases/IT
+ 254. http://wiki.openmpt.org/Special:RecentChangesLinked/Development:_Test_Cases/IT
+ 255. http://wiki.openmpt.org/Special:SpecialPages
+ 256. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/IT&oldid=2081
+ 257. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/IT&action=info
+ 258. http://wiki.openmpt.org/index.php?title=Special:Book&bookcmd=book_creator&referer=Development%3A+Test+Cases%2FIT
+ 259. http://wiki.openmpt.org/index.php?title=Special:Book&bookcmd=render_article&arttitle=Development%3A+Test+Cases%2FIT&oldid=2081&writer=rl
+ 260. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/IT&printable=yes
+ 261. http://creativecommons.org/licenses/by-sa/3.0/
+ 262. http://wiki.openmpt.org/OpenMPT_Wiki:Privacy_policy
+ 263. http://wiki.openmpt.org/OpenMPT_Wiki:About
+ 264. http://wiki.openmpt.org/OpenMPT_Wiki:General_disclaimer
+ 265. http://creativecommons.org/licenses/by-sa/3.0/
+ 266. http://www.mediawiki.org/
+
+   Hidden links:
+ 268. http://wiki.openmpt.org/Development:_Test_Cases/IT
+ 269. http://wiki.openmpt.org/Development:_Test_Cases/IT
+ 270. http://wiki.openmpt.org/Main_Page

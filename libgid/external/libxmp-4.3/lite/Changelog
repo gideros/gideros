@@ -1,0 +1,164 @@
+Stable versions
+---------------
+
+4.3.8 (20150404):
+	- fix pre-increment of envelope indexes
+	- fix IT note release at end of envelope sustain loop
+	- reset channel flags in case of delay effect
+	- refactor XM envelopes
+	- refactor IT envelopes
+
+4.3.7 (20150329):
+	- fix IT sample mode note cut on invalid sample
+	- fix IT sample mode note end detection
+	- fix IT envelope handling with carry and fadeout
+	- fix IT tone portamento with sample changes
+	- fix IT initial global volume setting
+	- fix IT keyoff with instrument in old effects mode
+	- fix IT filter maximum values with resonance
+	- fix IT random volume variation
+	- fix pattern initialization sanity check
+	- fix ++ pattern handling in IT loader (reported by honguito98)
+	- add IT high offset command (SAx)
+	- add IT surround command (S9x)
+	- add IT surround channel support
+	- add IT sample pan setting support
+
+4.3.6 (20150322):
+	- fix IT volume column volume slide effect memory
+	- fix IT default filter cutoff on new note
+	- fix IT filter envelope memory
+	- add sanity check for IT old instrument loading
+	- fix instrument number in channel initialization
+	- fix sample size limit (reported by Jochen Goernitz)
+	- fix loading of OpenMPT 1.17 IT modules (reported by Dane Bush)
+	- fix XM loading for MED2XM modules (reported by Lorence Lombardo)
+	- add IT random volume variation
+	- add IT random pan variation
+
+4.3.5 (20150207):
+	- add sanity check for ST3 S3M maximum sample size
+	- add sanity check for sample loop start
+	- add sanity check for speed 0
+	- add sanity check for invalid XM effects
+	- add sanity check for maximum number of channels
+	- add sanity check for number of points in IT envelope
+	- add sanity check for S3M file format information
+	- add sanity check for maximum sample size
+	- add sanity check for invalid envelope points
+	- add sanity check for basic module parameters
+	- add sanity check for instrument release after load error
+	- add sanity check for XM header size
+	- add sanity check for XM/IT/S3M parameters and sample size
+	- fix mixer index overflow with large samples
+	- fix crash on attempt to play invalid sample
+	- fix infinite loop in break+delay quirk
+	- reset module data before loading module
+	- fix loop processing error in scan (reported by Lionel Debroux)
+	- fix sample loop adjustment (by Emmanuel Julien)
+
+4.3.4 (20150111):
+	- fix XM keyoff+delay combinations
+	- fix XM fine pitch slide with pattern delay
+	- fix XM vibrato rampdown waveform
+	- fix XM volume column pan with keyoff and delay
+	- fix XM pan envelope position setting
+	- fix channel volume and instrument initialization
+	- fix end of module detection inside a loop
+	- fix overflow in linear interpolator (reported by Jochen Goernitz)
+	- fix big-endian detection in configuration (by Andreas Schwab)
+
+4.3.3 (20141231):
+	- fix XM note delay volume with no note or instrument set
+	- fix XM out-of-range note delays with pattern delays
+	- fix XM envelope loop length (reported by Per Törner)
+
+4.3.2 (20141130):
+	- fix IT invalid instrument number recovery
+	- fix IT note retrig on portamento with same sample
+	- fix XM portamento target reset on new instrument
+	- fix XM portamento with offset
+	- fix XM pan slide memory
+	- fix XM tremolo and vibrato waveforms
+	- fix MOD pattern break with pattern delay
+	- fix MOD Protracker offset bug emulation
+	- fix tremolo rate
+	- fix IT portamento after keyoff and note end
+	- fix IT fadeout reset on new note
+	- fix IT pattern row delay scan
+	- fix MOD/XM volume up+down priority (reported by Jason Gibson)
+	- fix MOD fine volume slide memory (reported by Dennis Lindroos)
+	- fix set sample offset effect (by Dennis Lindroos)
+	- add emulation of the FT2 pattern loop bug (by Eugene Toder)
+	- code cleanup
+
+4.3.1 (20141111):
+	- fix IT filter envelope range
+	- fix IT envelope carry after envelope end
+	- fix IT tone portamento in first note (reported by Jan Engelhardt)
+	- fix XM note off with volume command
+	- fix XM K00 effect handling
+	- fix XM portamento with volume column portamento
+	- fix XM keyoff with instrument
+	- fix XM note limits
+	- fix XM invalid memory access in event reader
+	- fix MOD period range enforcing (reported by Jason Gibson)
+	- fix corner case memory leak in S3M loader
+	- fix retrig of single-shot samples after the end of the sample
+	- fix crash in envelope reset with invalid instrument
+	- fix module titles and instrument names in Mac OS X
+	- fix row delay initialization on new module
+
+4.3.0 (20140927):
+	- rebranded as libxmp-lite
+	- build from the same source tree as the full libxmp
+	- fix fine volume slide memory
+	- fix IT portamento after note end in sample mode
+	- fix S3M portamento after note end
+	- add XM and IT envelope loop and sustain point quirk
+	- fix Amiga limits for notes with finetune
+	- fix XM invalid offset handling
+	- fix XM note release reset on new volume
+	- fix XM pattern loader to honor header size
+	- fix XM fine volume slide effect memory
+	- fix XM fine pitch slide effect memory
+	- fix XM finetune effect
+	- fix IT portamento if offset effect is used
+	- fix IT NNA on invalid sample mapping
+	- fix IT filter envelope index reset
+	- fix IT envelope carry on note cut events
+	- fix IT envelope reset on new instrument
+	- fix IT instrument change on portamento in compatible GXX mode
+	- fix IT unmapped sample parsing
+	- fix IT filter cutoff reset
+	- add API call to load a module from a file handle
+	- add API call to set default pan separation value
+	- refactor memory I/O calls
+	- fix segfault in mixer caused by sample position overflow
+	- fix XM, S3M, IT and MED offset effect handling
+	- fix IT fadeout and envelope reset on new virtual channel
+	- fix S3M shared effect parameter memory
+	- fix S3M default pan positions
+	- fix S3M set BPM effect with values < 32 (reported by Kyu S.)
+	- fix loop counter reset on play buffer reset
+	- fix finetune effect
+	- fix sequence number reset on player start
+	- fix stray notes in XM (reported by Andreas Argirakis)
+	- limit note number to avoid crash (reported by Bastian Pflieger)
+
+4.2.7 (20140412):
+	- fix library name in pkg-config file (by Chris Spiegel)
+	- fix XM set pan effect
+	- fix IT disabled instrument pan
+
+4.2.6 (20140407):
+	- add configure option to disable IT support
+	- minor Visual C++ port fixes
+	- add Visual C++ nmake Makefile
+	- fix double free in module loaded from memory (by Arnaud Troël)
+	- fix Win64 portability issues (reported by Ozkan Sezer)
+	- fix IT tempo slide effect
+	- generate Android NDK static libraries
+
+4.2.0 (20140302):
+	- forked from libxmp 4.2.5 and removed unnecessary features

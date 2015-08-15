@@ -1,0 +1,51 @@
+PSM Special Effects:
+====================
+
+###  Co  MOD  Description               Arguments
+===  ==  ===  ========================  =========
+              - Volume Commands ------
+  1  A1   EA  Fine Volume Slide Up      B xx xx=speed
+  2  A2   A   Volume Slide Up           B xx xx=speed
+  3  A3   EB  Fine Volume Slide Down    B xx xx=speed
+  4  A4   A   Volume Slide Down         B xx xx=speed
+
+              - Portamento Commands --
+ 10  B0   E1  Fine Porta Up             B xx xx=speed
+ 11  B1   1   Portamento Up             B xx xx=speed
+ 12  B2   E2  Fine Porta Down           B xx xx=speed
+ 13  B3   2   Portamento Down           B xx xx=speed
+ 14  B4   3   Tone Portamento           B xx xx=speed
+ 15  B5   E3  Set Glissando Control     B xx xx=0 - Off, 1 - On
+ 16  B6   5   Tone Port+Vol Slide Up    B xx xx=speed
+ 17  B7   5   Tone Port+Vol Slide Down  B xx xx=speed
+
+              - Vibrato Commands -----
+ 20  C0   4   Vibrato                   B xy x=speed, y=depth
+ 21  C1   E4  Set Vibrato Waveform      B x  x=Waveform
+ 21  C2   6   Vibrato+Vol Slide Up      B xx xx=speed
+ 22  C3   6   Vibrato+Vol Slide Down    B xx xx=speed
+
+              - Tremolo Commands -----
+ 30  D0   7   Tremolo                   B xy x=speed, y=depth
+ 31  D1   E7  Set Tremolo Control       B x  x=Waveform
+
+              - Sample Commands ------
+ 40  E0   9   Sample Offset             3B Position for offset change (0-1,048,575)
+ 41  E1   E9  Retrig Note               B xx xx=tick to retrigger sample
+ 42  E2   EC  Note Cut                  B xx xx=tick to cut note
+ 43  E3   ED  Note Delay                B xx xx=ticks to delay note
+
+              - Pos. Change Commands -
+ 50  F0   B   Position Jump             B xx xx=order position
+ 51  F1   D   Pattern Break             B xx Skip to line xx in next pattern
+ 52  F2   E6  Jump Loop                 B xx xx=number of loops  0 Set
+ 53  F3   EE  Pattern Delay             B xx xx=notes to delay pattern
+
+              - Speed Change Cmds ----
+ 60  G0   F   Set Regular Speed         B xx xx=speed
+ 61  G1   F   Set BPM                   B xx xx=BPM (32-255)
+
+              - Misc. Commands -------
+ 70  H0   0   Arpeggio                  B xy x=semitone #1, y=semitone #2
+ 71  H1   E5  Set Finetune              B xx xx=finetune
+ 72  H2       Set Balance               B xx xx=Balance (0-15)

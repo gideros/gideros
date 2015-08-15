@@ -1,0 +1,275 @@
+(Excerpt from documentation by Bernard Jungen and Gil Damoiseaux)
+
+
+   Archimedes Symphony Module/Song Format
+   --------------------------------------
+
+     Such tunes are composed of a list of positions which refer to the
+     pattern that has to be played through a given channel at that song
+     position. It's possible to play nothing instead of a pattern. 
+     The ranges are as follows:
+     --------------------------
+     Voices: 1 to 8
+     Tune length: 0 to 4096 (&1000)
+     Pattern number: 0 to 4095 (&FFF)
+    
+     A pattern is composed of 64 notes. 
+     Each note is stored as 4 bytes (A 32 bit-word), and of course all notes
+     are stored after each other. 
+
+     Position Notes data
+     -------- ----------
+        00      chan i
+        01      chan i
+        02      chan i
+       etc.
+
+
+     Module/Song file format (Filetype &10B)
+     ---------------------------------------
+
+       Field length Contents
+       ------------ --------
+
+          8 bytes   The string "BASSTRAK". Byte value= ASCII code - 64
+          1 byte    Version number (currently 0)
+          1 byte    Number of voices (1 to 8): z
+          2 bytes   Track length in positions: y (0 to &1000)
+          2 bytes   Number of defined patterns: p (0 to &1000)
+          3 bytes   Information text length: il 
+
+          For the 63 samples, we have: 
+
+       (  1 byte    Sample name length: sn
+       (            (bit 7 set if all its data is blanked: lengths, vol, ft)
+       (            (bit 6 reserved)
+       (  3 bytes   Sample length DIV 2 
+          1 byte    Track name length: x
+          x bytes   Track name
+          8 bytes   Effects allowed table. 1 bit per effect (0=no, 1=allowed)
+
+      If y>0 then
+        ( 1 byte    Packing system for sequence (0= not packed, 1= packed)
+        ( s bytes   Sequence data:
+        (           Packing=0 : For each position
+        (                           For each voice
+        (                               Pattern number (2 bytes)
+        (                       (s= 2*y*z)
+        (           Packing=1 : 13-bit LZW applied to overall sequence data
+        (                       (s multiple of 4) 
+
+      If p>0 then
+        ( For each pk-pattern chunk (all 2000 patterns but the last):
+        (       1 byte  Packing system for chunk (0= not packed, 1= packed)
+        (       b bytes Pattern data:
+        (               Packing=0 : For each pattern
+        (                             For each pattern position (0 to 63)
+        (                               Full note value (1 word)
+        (                           (b= 4*64*pk)
+        (               Packing=1 : 13-bit LZW applied to chunk data
+        (                           (b multiple of 4) 
+
+          For the 63 samples, we have: 
+
+       ( sn bytes   Sample name
+       (  3 bytes   Sample repeat offset DIV 2
+       (  3 bytes   Sample repeat length DIV 2
+       (  1 byte    Sample volume (0 to 64)
+       (  1 byte    Sample fine tune (-8 to 7)
+       (  1 byte    Packing system for sample (0= not packed, 1= packed)
+       ( If sample length>0 then
+       (   ( sy bytes Data:
+       (   (          Packing=0 : logarithmic (sy= sample length)
+       (   (          Packing=1 : 13-bit LZW applied to sample data
+       (   (                      differences (yy multiple of 4)
+
+      If il>0 then
+        ( 1 byte    Packing system for information text
+        (           (0= not packed, 1= packed)
+        ( i bytes   Information text:
+        (           Packing=0 : Text (i=il)
+        (           Packing=1 : 13-bit LZW applied to information text
+        (                       (i multiple of 4) 
+
+        0-3 bytes   Zero's to fill last file word 
+ 
+ 
+     Info for each note:
+     -------------------
+
+     bits 20-31: effect value (0-4095).
+          14-19: effect command number (0-63).
+          13-13: not used for now (should be 0).
+           6-12: sample number (0-63).
+           0- 5: note number (0-36). 
+
+     Note numbers table:
+     -------------------
+
+       C-1 to B-1 : 01 to 12
+       C-2 to B-2 : 13 to 24
+       C-3 to B-3 : 25 to 36 
+
+
+   Archimedes Symphony V1.00 Effect Commands
+   -----------------------------------------
+
+     (x-y,z) indicates z is done if value not in the range x to y.
+
+     <command number in hex> <effect value in hex> 
+
+     00 xyz Normal play or Arpeggio + Volume Slide Up.
+            x: volume increase step
+            y: first halfnote to add
+            z: second halftone to add 
+
+     01 xyy Slide Up + Volume Slide Up.
+            x: volume increase step
+            yy: pitch increase step 
+
+     02 xyy Slide Down + Volume Slide Up.
+            x: volume increase step
+            yy: pitch decrease step 
+
+     03 xyy Tone Portamento.
+            yy: pitch slide speed (0 for previous speed) 
+
+     04 xyz Vibrato.
+            y: pitch change speed (0 for previous speed)
+            z: pitch change depth (0 for previous depth) 
+
+     05 xyz Tone Portamento + Volume Slide.
+            y: volume increase step (priority)
+            z: volume decrease step 
+
+     06 xyz Vibrato + Volume Slide.
+            y: volume increase step (priority)
+            z: volume decrease step 
+
+     07 xyz Tremolo.
+            y: volume change speed (0 for previous speed)
+            z: volume change depth (0 for previous depth) 
+
+     09 xxx Set Sample Offset.
+            xxx: offset in sample DIV 128 (loop restarted if illegal)
+                 0 for previous offset 
+
+     0A xyz Volume Slide + Fine Slide Up.
+            x: value to add to pitch
+            y: volume increase step (priority)
+            z: volume decrease step 
+
+     0B xxx Position Jump.
+            xxx: song position (0 if illegal) 
+
+     0C xyy Set Volume.
+            yy: volume (0-64,rounded). Linear. 
+
+     0D xyy Pattern Break.
+            yy: break position in next pattern (0-63, 0) 
+
+     0E xxx Not used. 
+
+     0F xxx Set Speed.
+            xxx: speed (1-4095,ignored). Default is 6 
+
+     10 xxy Filter Control. (Not implemented)
+            y: filter on (0) or filter off (1) 
+
+     11 xyy Fine Slide Up + Fine Volume Slide Up.
+            x: value to add to volume
+            yy: value to add to pitch 
+
+     12 xyy Fine Slide Down + Fine Volume Slide Up.
+            x: value to add to volume
+            yy: value to subtract from pitch 
+
+     13 xxy Glissando Control.
+            y: on (1) or off (0) (use with Tone Portamento)
+            When off, the slide is smooth else from halfnote to halfnote 
+
+     14 xxy Set Vibrato Waveform.
+            y: sine (0), ramp down (1), square (2)
+               bit 2 is off if wave form has to be restarted each note 
+
+     15 xxy Set Fine Tune.
+            y: new fine tune value 
+
+     16 xxx Jump to Loop.
+            xxx: jump to loop, play xxx times
+                 if 0, the loop start is set to the current pattern position 
+
+     17 xxy Set Tremolo Waveform.
+            y: sine (0), ramp down (1), square (2)
+               bit 2 is off if wave form has to be restarted each note 
+
+     19 xxx Retrig Note.
+            xxx: retrig note each xxx vblanks 
+
+     1A xyy Fine Slide Up + Fine Volume Slide Down.
+            x: value to subtract from volume
+            yy: value to add to pitch 
+
+     1B xyy Fine Slide Down + Fine Volume Slide Down.
+            x: value to subtract from volume
+            yy: value to subtract from pitch 
+
+     1C xxx Note Cut.
+            xxx: cut note after xxx vblanks (volume is only set to 0) 
+
+     1D xxx Note Delay.
+            xxx: number of vblanks for note delay 
+
+     1E xxx Pattern Delay.
+            xxx: delay pattern xxx notes 
+
+     1F xxy Invert Loop.
+            y: speed
+               if 0, it's turned off
+               Care must be taken using it: it inverts the sign of sample
+               data inside sample loop, one byte each vblank 
+
+     20 xyz Normal play or Arpeggio + Volume Slide Down.
+            x: volume decrease step
+            y: first halfnote to add
+            z: second halftone to add 
+
+     21 xyy Slide Up + Volume Slide Down.
+            x: volume decrease step
+            yy: pitch increase step 
+
+     22 xyy Slide Down + Volume Slide Down.
+            x: volume decrease step
+            yy: pitch decrease step 
+
+     2A xyz Volume Slide + Fine Slide Down.
+            x: value to subtract from pitch
+            y: volume increase step (priority)
+            z: volume decrease step 
+
+     2B xyy Line Jump.
+            yy: Line to jump to in same pattern. (0-63, 0) 
+
+     2F xxx Set Tempo.
+            xxx: new tempo value (1-4095,ignored).
+                 Unit: 1/20th vblanks per second (defaults to 1000) 
+
+     30 xxy Set Stereo.
+            if y and 7 =0 then xx = stereo position (0-127 is 0 to 127,
+                                    129-255 is -1 to -127, 128 ignored)
+
+            if y and 7 >0 then y = stereo position (1-7,ignored).
+                               1=left 4=center 7=right 
+
+     31 xxx Song Upcall.
+            The CPU performs a linked branch to the song upcall vector.
+            The routine can corrupt all registers and must preserve SVC mode
+            on return using MOVS PC,R14
+            Registers contain the following:
+            R0= xxx
+            R4= full note address + 4
+            R5= voice number (0 to 7) 
+
+     32 xxx Unset Sample Repeat.
+            The sample contines to be played until it ends, but without loops 
+

@@ -1,0 +1,478 @@
+
+MOD REPLAYING NOTES
+Hipolito Carraro Jr. <hipolito@brhs.com.br>
+Claudio Matsuoka <cmatsuoka@gmail.com>
+
+Created: Sun May 16 13:43:42 EST 1999
+
+Aug/Sep 2007
+- added Digitrakker 3.2
+- IT tracker fingerprint
+
+Jun/Jul 2009
+- More fingerprints from Storlek
+- Notes on lamb's 275/263 XM tracker
+- Notes on MOD2XM converted modules
+
+
+1. Event fetch
+
+Here is a list of several situations where Protracker, Fast Tracker II, Scream
+Tracker 3 and Impulse Tracker behave differently due to the underlying event
+handling algorithm used by these trackers.
+
+xmp plays Protracker modules like Protracker 3.15 (marked as "standard" in
+the tables). xCHN and xxCH play in FT2 style, S3M/STM/STX/PTM play in ST3
+style.
+
+Trackers compared:
+
+PT1.1	= Protracker 1.1 (Amiga Freelancers, Dec 1990)
+PT1.3	= Protracker 1.3 (Amiga Freelancers, May 1992)
+PT2.3	= Protracker 2.3d (Mushroom Studios, Jan 1993)
+PT3.15	= Protracker 3.15 (Cryptoburners, 1992-93)
+PT3.61	= Protracker 3.61 (Design/RD10, 1996)
+PT4b2	= Protracker 4.0 beta 2 (Thomas Beyer et al, Feb 1997)
+MED	= OctaMED Professional 4.0 (Teijo Kinnunen, 1992)
+MTM	= MultiTracker 1.01b (Daniel Goldstein, 1993)
+FT2	= Fast Tracker II 2.06 (Triton (Starbreeze Studios), 1996)
+ST3	= Scream Tracker 3.21 (Future Crew, 1994)
+IO10	= Imago Orpheus 1.0 (Lutz Roeder, 1994)
+IT(s)	= Impulse Tracker 2.14, sample mode (Jeffrey Lim)
+IT(i)	= Impulse Tracker 2.14, instrument mode (Jeffrey Lim)
+DT32	= Digitrakker 3.2 (Jörn Mik (Prodatron), 1997)
+
+Protrackers downloaded from Aminet and Warlock's ADF archive and tested with
+UAE 0.8.6. Startrekker 1.2, Soundtracker 2.5 and Noisetracker 1.0/ 1.2/2.0
+don't run in this version of UAE (or at least I couldn't make them run).
+
+Behaviors:
+
+Play	= Play new note with new default volume
+Trig	= Play new note with old default volume
+Switch	= Play new note with current volume
+LastSet	= Play new note with last set volume
+NewVol	= Don't play sample, set new default volume
+OldVol	= Don't play sample, set old default volume
+SetVol	= Don't play sample, reset to last set volume
+Cut	= Stop playing sample
+Cont	= Continue playing sample
+
+Case 1: New note
+
+  Instrument ->	None	Same	Valid	Inval
+PT1.1		Play	Play	Play	Cut
+PT1.3		Play	Play	Play	Cut
+PT2.3		Switch	Play	Play	Cut	<=
+PT3.15		Switch	Play	Play	Cut	<= "Standard"
+PT3.61		Switch	Play	Play	Cut	<=
+PT4b2		Switch	Play	Play	Cut	<=
+MED		Switch	Play	Play	Cut	<=
+FT2		Switch	Play	Play	Cut	<=
+ST3		Switch	Play	Play	Switch
+IT(s)		Switch	Play	Play	?
+IT(i)		Switch	Play	Play	Cont
+DT32		Play	Play	Play	Cut
+
+
+Case 2: New instrument (no note)
+
+  Instrument ->	None	Same	Valid	Inval
+PT1.1		-	Play	Play	Cut
+PT1.3		-	NewVol 	NewVol*	Cut
+PT2.3		-	NewVol	NewVol*	Cut
+PT3.15		-	NewVol	NewVol	Cut	<= "Standard"
+PT3.61		-	NewVol	NewVol	Cut	<=
+PT4b2		-	NewVol	NewVol	Cut	<=
+MED		-	Hold	Hold	Cut%
+FT2		-	OldVol 	OldVol	OldVol
+ST3		-	NewVol	NewVol	Cont
+IT(s)		-	NewVol	NewVol	Cont
+IT(i)		-	NewVol#	Play	Cont
+DT32		-	NewVol#	NewVol#	Cut
+
+
+Case 3: Tone portamento
+
+  Instrument ->	None	Same	Valid	Inval
+PT1.1		Cont		NewVol?
+PT1.3		Cont	NewVol	NewVol*	Cut
+PT2.3		Cont	NewVol	NewVol*	Cut
+PT3.15		Cont	NewVol	NewVol	Cut	<= "Standard"
+PT3.61		Cont	NewVol	NewVol	Cut	<=
+PT4b2		Cont	NewVol	NewVol	Cut	<=
+MED		Cont	NewVol	NewVol	Cut	<=
+FT2		Cont	OldVol	OldVol	OldVol
+ST3		Cont	NewVol	NewVol	Cont
+IT(s)		Cont	Play+	Play+	Cont
+IT(i) @		Cont	Play+	Play+	Cont
+DT32		Cont	NewVol	NewVol	Cut
+
+
+  # Don't reset envelope.
+
+  % Any valid instrument with no note is set as Hold. When the instrument
+    is invalid the channel is muted until the next valid instrument.
+
+    00 C-2 30000   <= Play instrument 3
+    01  |  30000   \
+    02  |  20000    > Continue playing instrument 3
+    03  |  10000   /
+    04  |  A0000   <= Volume is set to 0 (instrument A is invalid)
+    05  |  40000   <= Continue instrument 3
+
+  * Protracker 1.3/2.3 switches to new sample in the line after the new
+    instrument event. The new instrument is not played from start (i.e. a
+    short transient sample may not be played). This behaviour is NOT
+    emulated by the current version of xmp.
+
+    00 C-2 03 A0F  <=  Play instrument 03 and slide volume down
+    01 --- 02 000  <=  Set volume of instrument 02, playing instrument 03
+    02 --- 00 000  <=  Switch to instrument 02 (weird!)
+
+    00 C-2 03 000  <=  Play instrument 03
+    01 A-3 02 308  <=  Start portamento with instrument 03
+    02 --- 00 xxx  <=  Switch to instrument 02 (weird!)
+
+  @ Tone portamento works in IT, instrument mode, only while the sample is
+    playing. After that, the tone portamento effect is ignored and the
+    new note is played.
+
+    00 C-2 01 000  <=  Start instrument 01 
+    01 --- 00 000
+    02 C#2 01 G0F  <=  Tone portamento effect works as expected
+    03 --- 00 000
+    04 --- 00 000  <=  End of instrument 01
+    05 C-2 01 G0F  <=  Play instrument 01 again (yuck!)
+
+  + Was NewVol in this document, but Mirko Buffoni reports that this should
+    be Play instead (see commit c230825c)
+
+
+2. XM and IT envelopes
+
+When sustain loop is on, IT ignores the envelope loop. When the key is
+released execution jumps from the current point inside the sustain loop
+to the start of the envelope loop. XM envelope loops act like IT sustain
+loops when the sustain point and the envelope end point are the same
+(i.e. loop is active only while key is pressed). This behaviour is
+correctly emulated by xmp.
+
+
+3. Periods and replay rates
+
+xmp plays Protracker and Fast Tracker II modules at standard PAL rate of
+7093789.2 / (428 * 2) = 8287.137 for middle C. Scream Tracker III and Impulse
+Tracker play with the NTSC rate of 7159090.5 / (428 * 2) = 8363.423. Using
+MED BPM = 125/33 of Protracker BPMs, the Desert Strike MMD1 plays better
+with NTSC replay rate. (Claudio's note: Does that mean that the correct tempo
+for MED is _not_ 125/33 of the PAL vblank rate?)
+
+
+4. Error in the Protracker 2.1 docs
+
+The effect commands description in the Protracker 2.1A docs state that
+effect E5x is used to set the loop start point and effect E6x is used
+for loop jump. The player code shows that effect E5x is used for finetune
+setting, E60 for loop set and E6x, x > 0, for loop jump.
+
+PT.Effects_2.1a.txt:
+	...
+E5- Set Loop                            E5x : set loop point
+E6- Jump to Loop                        E6x : jump to loop, play x times
+	...
+
+(Same description in Protracker V2.3A/3.01)
+
+
+PT-Play_2.1a.s:
+      1 ;**************************************************
+      2 ;*    ----- Protracker V2.1A Playroutine -----    *
+      3 ;* Peter "CRAYON" Hanning / Mushroom Studios 1992 *
+      4 ;*     Vinterstigen 12, 14440 Ronninge, Sweden    *
+      5 ;**************************************************
+      6
+	...
+    802 mt_E_Commands
+    803         MOVE.B  n_cmdlo(A6),D0
+    804         AND.B   #$F0,D0
+    805         LSR.B   #4,D0
+	...
+    815         CMP.B   #5,D0
+    816         BEQ     mt_SetFineTune
+    817         CMP.B   #6,D0
+    818         BEQ     mt_JumpLoop
+	...
+    865 mt_JumpLoop
+    866         TST.B   mt_counter
+    867         BNE     mt_Return2
+    868         MOVE.B  n_cmdlo(A6),D0
+    869         AND.B   #$0F,D0
+    870         BEQ.S   mt_SetLoop
+    871         TST.B   n_loopcount(A6)
+    872         BEQ.S   mt_jumpcnt
+    873         SUBQ.B  #1,n_loopcount(A6)
+    874         BEQ     mt_Return2
+
+
+5. Pattern loops
+
+Pattern loops are set by channel, and nesting is allowed as long as
+the loops are in different tracks. The nested loop behaviour is somewhat
+nonobvious as seen in the following examples.
+
+   00 --- 00 E60 | --- 00 E60		00 --- 00 000 | --- 00 E60
+   01 C-2 01 000 | --- 00 000		01 C-2 01 000 | --- 00 000
+   02 --- 00 E62 | --- 00 E62		02 --- 00 000 | --- 00 E62
+
+In both cases the note is played three times.
+
+   00 --- 00 E60 | --- 00 E60
+   01 C-2 01 000 | --- 00 000
+   02 --- 00 E63 | --- 00 E62
+
+In this situation the note is played twelve times. We escape the loop when
+both counters are zeroed. Here's how the internal registers look like:
+
+	Iteration => 1 2 3 4 5 6 7 8 9 A B C
+	Channel 1 => 3 2 1 0 3 2 1 0 3 2 1 0
+	Channel 2 => 2 1 0 2 1 0 2 1 0 2 1 0
+	
+
+If a loop end is used with no start point set, it jumps to the first line
+of the pattern. If a pattern break is inside a loop and there is a loop
+end in the next pattern it jumps to the row set as loop start in the
+previous pattern. It is also possible to make an infinite loop in
+Protracker and Fast Tracker II using nested loops in the same track:
+
+   00 --- 00 E60 | --- 00 000
+   01 --- 00 000 | --- 00 000
+   02 C-2 01 000 | --- 00 000
+   03 --- 00 E61 | --- 00 000
+   04 --- 00 E61 | --- 00 000	<= infinite loop
+
+S3M and IT set a new start point in the line after the end of the previous
+loop, making the infinite loop impossible.
+
+
+6. Effect 9 quirks
+
+From: Martin Willers <y0000121@rzbcosv1.rz.tu-bs.de>
+Subject: Incorrect Protrack-effect 0x09
+To: xmp-bugs@helllabs.org
+Date: Mon, 21 Dec 1998 05:28:48 +0100 (MET)
+Reply-to: M.Willers@tu-bs.de
+
+I've downloaded and installed the xmp-snapshot from Sun, Dec 20 today.
+Don't know just how good the protrack-emulation is planned to get, but
+there's a bug in the interpretation of Protracker's handling of effect 0x09
+(SetSampleOffset), that causes some MODs to play incorrectly.
+Original Protracker-source has some bug in handling effect 09, in that
+the sample offset given in the effect byte is added +twice+ to the current
+sample offset, once before playing this instrument (as is expected), and
+once again after this instrument has been played! So, if on the same channel
+the same instrument is played again without resetting the instrument's
+parameters (eg. when just a note period is specified, but not the instrument
+number again? or the other way round? :), the offset is twice as high
+as one would expect.
+This can be heard very easy eg. in the (very popular) song "No Mercy" by
+Alf/VTL, Position #2-#3 in the sequence.
+
+--
+
+Date: Tue, 22 Dec 1998 23:57:48 -0200
+From: Claudio Matsuoka <claudio@helllabs.org>
+To: M.Willers@tu-bs.de
+Subject: Re: Incorrect Protrack-effect 0x09
+
+Ok, we played a bit with some custom-crafted mod to learn more about
+effect 0x09. Here are the results:
+
+Using the "OK" sample from ST-02 
+
+00 C-2 01 906		PT23	: kay - ay - ay - okay		<= buggy
+01 --- 00 000		PT315	: kay - kay - kay - okay
+02 C-2 00 000		MED	: kay - kay - kay - okay
+03 --- 00 000		ST3	: kay - kay - kay - okay
+04 C-2 00 000		IO10	: kay - kay - kay - okay
+05 --- 00 000		MTM	: kay - okay - okay - okay
+06 C-2 01 000		FT2	: kay - okay - okay - okay
+07 --- 00 000		IT	: kay - okay - okay - okay
+			DT32	: kay - okay - okay - okay
+
+So it seems that the bug was fixed somewhere between Protracker 2.3d and
+3.15. The problem is that there's no way to know if the bug emulation is
+desirable or not when playing M.K. mods! I believe that mods _requiring_
+this bug to be emulated are quite rare, so it will be switched using a
+command line parameter or via modules.conf.
+
+
+7. XM file format anomalies
+
+The official XM file format description distributed with Fast Tracker II
+says "The XM module format description for XM files version $0104" and
+"The current format is version $0103". The format description and actual
+modules made with the tracker differ in the reserved bytes at the end of
+the instrument data (2 bytes in the description and 22 in 1.04 modules)
+and the sample header size field: the document says that it belongs to the
+sample header data, but in XM files created by Fast Tracker II it is in
+the instrument. "Braintomb" by Jazztiz/ART (jz-btomb.xm) has this field
+in the sample header data. "Braintomb" is marked as 1.04 and the tracker
+name field is empty (probably created using Digitrakker).
+
+The instrument size field is 33 for XM files created with Fast Tracker II.
+"Braintomb" has 29 in this field, because the sample header size is in
+the sample header structure. Modules converted with MED2XM or created with
+other trackers can have the size of instrument data plus the size of the
+sample header data in this field. There is a version of "<unnamed>"
+(Counterpoint 2.0, untitled.xm) with 245 in this field. In this module the
+instrument type ("always 0" according to xm.txt) is 0xda. This module was
+created using an old version of ModPlug Tracker (marked as 1.04 made with
+"FastTracker v 2.00", note that authentic FT2 modules are marked as
+"FastTracker v2.00").
+
+"ebony owl netsuke", "lightbeam", "dom" and other modules by Filip Skutela
+have tracker name "FastTracker v2.00", header size 275 (authentic Fast
+Tracker II modules have 276 in this field) and instrument size 263.
+
+Extended Module 1.02 (Vogue's "Trans atlantic" and "Dont you" remixes) and
+1.03 (Vogue's "Developer 94" and "Enhanced Intuition") contains header,
+instruments, patterns and samples in that order. 1.04 has header, patterns,
+instruments and samples. XM 1.02 uses one byte to store the number of rows
+in the pattern header, XM 1.03 and 1.04 use a 16-bit word.
+
+XM modules converted using MOD2XM 1.0 will always list instrument number
+as 31, but the file is truncated after the last valid mod sample. These
+modules are marked as "MOD2XM 1.0" with zero padding, but they can also
+identify themselves as "FastTracker v2.00   ". These two variations seem
+to be common in Windows cracktro loaders.
+
+
+8. Broken sample loops in converted MOD files
+
+To play a sample using the 8364 Paula chip in Amiga, you must set a pointer
+to the audio data in AUDxLCH (byte aligned) and the length in words in
+AUDxLEN. Soundtracker uses the sample loop start in bytes and the length in
+words, but Protracker uses both values in words. Some converters were not
+aware of this feature and used the sample loop start in 16 bit words when
+converting old Soundtracker modules to M.K., resulting in broken sample
+loops. One example of broken converted M.K. mod is "Souvenir of China".
+
+Other formats where offsets in words are hard to detect:
+
+- GMC modules created with NoiseConverter have loop size / 2 . 
+- UNIC modules from "Guardian Dragon" have loop start / 2. Modules from
+  "Guardian Dragon II" have loop start / 4.
+- NoisePacker v2 format is the same as NoisePacker v1 with loop start / 2.
+
+
+9. Startrekker FLT8 format
+
+Multichannel variations of the standard MOD (e.g. 8CHN) have channels stored
+side by side. This is NOT the case of Startrekker. Here are Bjorn Wesen's
+words about it (text written in Mar 1994):
+
+"In regards of the Amiga StarTrekker format: It says FLT8 instead of FLT4 or
+ M.K., AND, the patterns are PAIRED. I thought this was the easiest 8 track
+ format possible, since it can be loaded in a normal 4 channel tracker if
+ you should want to rip sounds or patterns. So, in a 8 track FLT8 module,
+ patterns 00 and 01 is 'really' pattern 00. Patterns 02 and 03 together is
+ 'really' pattern 01. Thats it.  Oh well, I didnt have the time to implement
+ all effect commands either, so some FLT8 modules would play back badly (I
+ think especially the portamento command uses a different 'scale' than the
+ normal portamento command, that would be hard to patch)."
+ 
+Uhm... I wonder what different scale is it.
+
+
+10. Global volume setting
+
+Effect V (global volume setting) in Scream Tracker 3.21 does not affect events
+in the same line where the effect is set. Fast Tracker 2.06 global volume
+affects the columns to the right of the column where the effect is set (weird!
+-- could someone check this please?). Impulse Tracker 2.14 and Imago Orpheus
+1.0 use global volume and slides as, well, global volume and slides (i.e.
+affects all tracks).
+
+00 B-3 21 000 | --- 00 000	ST3: plays only instrument 21	
+01 --- 00 000 | --- 00 G00	FT2: plays 21 and cuts 22 at row 03
+02 B-3 22 000 | --- 00 G40	IT: cuts 21 at row 01 and 22 at row 03
+03 --- 00 G00 | --- 00 000
+
+Reference: Necros' "Mechanism Eight", pattern 93, channels 0 to 2, row 02.
+
+
+11. Cut effect
+
+When the cut effect is used with parameter 0 (cut after 0 frames) Protracker,
+Fast Tracker, Impulse Tracker and Digitrakker don't start to play the sample.
+Scream Tracker and Imago Orpheus ignore the effect and don't cut the instrument.
+
+Subsequent note events with no instrument set are not played in Protracker.
+(must check in other trackers)
+
+To check: cut effect with parameter > speed.
+
+
+12. Imago Orpheus
+
+Error in format specs:
+
+The following differences have been found comparing Karsten Koch's IMF
+files with the format specs for the Imago Orpheus file format version 1.00
+written by Lutz Roeder:
+
+- Channel status: 0x00 = channel disabled
+- Envelope flags: 0 = off, 1 = on
+
+Other IMF notes:
+
+- Fine effects are 4 times finer than S3M extra fine effects
+- Note values 160 (?) and 255 are key off events
+- 'First effect' is the secondary effect
+- In effect Mxx (0x16) xx = 0x00 is the highest cutoff frequency
+- In effect Nxy (0x17) x = final cutoff value for slide, y = resonance
+	bit 7 = 0: Decrease cutoff frequency
+	bit 7 = 1: Increase cutoff frequency
+	bits 6-4: final cutoff frequency (0 = highest)
+- Filter settings are not reset in new events!
+
+
+12. Tracker fingerprinting
+
+Restart pos in M.K.:
+  0x7f = Protracker or clone (including ST3)
+  0x78 = ??? Possibly noisetracker
+  Restart pos = Noisetracker (or Fasttracker?)
+  Number of patterns = Soundtracker
+
+Noisetracker, Protracker and ST3 set the default volume of unused instruments
+to 0x40 and the default loop size to 0x0002. Fasttracker sets the default
+volume to 0x00 and the default loop size to 0x0000.
+
+S3M tracker codes:
+  1 = Scream Tracker 3
+  2 = Imago Orpheus
+  3 = Impulse Tracker
+  4 = Schism Tracker (0x4100 = BeRoTracker)
+  5 = OpenMPT (starting in 1.17)
+  6 = BeRoTracker
+
+IT version codes:
+  0214, format 0214, rsvd at 0x3c CHBI, -DEPRECATED- filenames = Chibi Tracker
+  0214, format 0214, rsvd at 0x3c zero, XXXXXXXX.YYY filenames = CheeseTracker
+  0216 = Impulse Tracker 2.14v3
+  0217 = Impulse Tracker 2.14v5
+  0217 and format 0200 = ModPlug Tracker 1.16
+  0888 = ModPlug Tracker 1.17
+
+
+13. Misc effects 
+
+To check: (volunteers?)
+
+- Keyoff events with instrument set
+- Vibrato depth
+- Funk repeat
+
+

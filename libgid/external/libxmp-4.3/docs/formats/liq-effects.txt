@@ -1,0 +1,64 @@
+
+  Appendix 1: Module effects (commands)
+
+  (Currently, not fully detailed. You can find more details at any
+  MOD or S3M effects documentation (like ST3.DOC, MODEDIT3.DOC etc.))
+
+ +-----+
+ | Axy | [A]rpeggio [x,y= Halftones added to 2nd and 3th notes]
+ | Bxx | set [B]PM to xx. range is 0Ah-FFh.
+ | Cxx | [C]ut pattern, start next pattern at interval xx (decimal)
+ | Dxy | portamento [D]own (Fine Porta if x=F, ExtraFine if x=E)
+ | E   |
+ | Fxy | [F]ine vibrato:   X = speed, Y = depth
+ | G   |
+ | H   |
+ | I   |
+ | Jxx | position [J]ump [xx = entry at sequence table]
+ | K   |
+ | L0x | vo[L]ume slide down by X
+ | Lx0 | vo[L]ume slide up by X
+ | LFx | [F]ine vo[L]ume slide down by X (if x=0 then normal slide UP by F)
+ | LxF | [F]ine vo[L]ume slide up by X (if x=0 then normal slide DOWN by F)
+ |     | LFF - Fine volume slide up by F
+ |     |
+ | M   | [M]iscellaneous
+ |     |
+ |     |  M3x = Glissando control; 0=Off, 1=On, 2=On+Retrigger
+ |     |  M4x = vibrato wave (0=Sine, 1=Ramp Down, 2=Square)*
+ |     |  M5x = finetune note
+ |     |  M6x = pattern loop  (if x=0 then mark. elsewhere, loop x times)
+ |     |  M7x = tremolo wave (0=Sine, 1=Ramp Down, 2=Square)*
+ |     |  MCx = note Cut (x=time to wait until note cut)
+ |     |  MDx = note Delay (x=time to wait until sample start)
+ |     |  MEx = pattern delay (x=intervals to stay still)
+ |     |
+ |     | * Note: Add 4 to waveform value if you don't want it to
+ |     |         be resetted upon every new note.
+ |     |
+ | Nxx | [N]ote portamento (also known as SLIDE TO NOTE, PORTA TO NOTE,
+ |     |                                           and TONE PORTAMENTO)
+ | Oxx | sample [O]ffset  (start sample at offset xx00h)
+ | Pxx | Channel [P]an control (Decimal) 0=Left>32=Mid>64=Right/66=Surround
+ |     |                                70=Reset ALL channels pan settings
+ | Rxy | [R]etrig note at Y
+ | Sxx | set [S]peed to xx. Range is 0-50 hex. If xx=0 ignore effect.
+ | Txy | [T]remolo:   X = speed, Y = depth
+ | Uxy | portamento [U]p  (Fine Porta if x=F, ExtraFine if x=E)
+ | Vxy | [V]ibrato:   X = speed, Y = depth
+ | W   |
+ | Xxy | Note port & volume slide (if either nibble is F, effect discarded)
+ | Yxy | Vibrato & volume slide (if either nibble is F, effect discarded)
+ +-----+
+
+ - All references are Hexadecimal, unless otherwise noted.
+ - Note that the effects VOLUME SLIDE, VIBRATO+VOLSLIDE, NOTEPORT+VOLSLIDE,
+   PORTA UP, PORTA DOWN and ARPEGGIO support the S3M's parameter 0 feature.
+   (if the parameter given is 0, the effect uses the last parameter used by
+   any previous effect in the same track. i.e., you can specify D01 and then
+   a column of D00, for easier tracking)
+ - The letter representing an effect is usually the first letter of
+   the effect, so it should not be too difficult remembering them.
+ - Full description of the effects and their purposes will be included
+   in later versions.
+

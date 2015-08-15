@@ -1,0 +1,486 @@
+                                                      +-----њњ њ њ њњ-----+
+е=====================================================|    ло  n-Factor's |==И
+У-----------------------------------------------------|    ло             |--Д
+|                                                     | оллло  п олллн  п |  |
+|   №№№ DIGITRAKKER №№№ FILE-FORMAT DESCRIPTION №№№   | л  ло ло л  ло ло |  |
+|                                                     | оллло ло оллло ло |  |
+У-----------------------------------------------------|             ло    |--Д
+д=====================================================|  t r a k kоллнe r |==О
+                                                      +-----њњ њ њ њњ-----+
+
+--------------------------- by prodatron/n-Factor ----------------------------
+revision 3.1
+
+
+This file contains information about the songmodule-format "MDL", the
+instrument-format "IST" and the old sample-format "SPL".
+If you have some problems or if you have questions about these formats, which
+are not answered in here, just contact me (eMail: pdt@uni-duisburg.de).
+
+
+
+
++============================================================================+
+|                        THE SONGMODULE-FORMAT  (MDL)                   V1.1 |
++============================================================================+
+
+Offset Lenght Description
+
+ 000    004     "DMDL"; the four letters mark the mdl-format
+ 004    001     version; the current version is 11h (=1.1)
+ 005    ???     the different data-blocks are stored at this position
+
+Some words to the format version-number:
+- if the low-nibble increases, there are extensions in the format, but old
+  loaders should be able to load the new modules (or most of them...)
+- if the high-nibble increases, there are changes in the format which make old
+  loaders unable to read the new songfiles
+
+The MDL-songmodule-format is subdivided into the following blocks:
+
+"IN"    infoblock; contains most songparameters, like speed, length etc.
+"ME"    songmessage; contains the songinformation from the composer
+"PA" c  pattern; contains the length, names and tracklists for every pattern
+"TR"    tracks; contains all the tracks for the pattern
+"II" n  instruments; contains all information for the used instruments
+"VE" n  volume-envelopes; contains the construction of all used vol-envelopes
+"PE" n  panning-envelopes; the same for the used pan-envelopes
+"FE" n1 frequency-envelopes; ...used frq-envelopes (LFO)
+"IS" c  sampleinfos; contains information for every used sample
+"SA"    samples; contains the sample-datas
+
+[[ c  = blockstructure changes from v0.0 to v1.0 ]]
+[[ n  = new in version 1.0                       ]]
+[[ n1 = new in version 1.1                       ]]
+
+The sequence of the blocks in a file is not fixed so they can be stored in any
+way. Digitrakker uses the descripted sequence.
+
+The structure for every block is the same:
+
+Offset Lenght Description
+
+ 000    002     "xx"; block-ID (example: "IN" for infoblock)
+ 002    004     blocklength; this dword contains the length of the FOLLOWING
+		datas.
+ 006 <blocklen> datas for this block...
+
+The next block will be at offset (006 + <blocklength>).
+
++----------------------------------------------------------------------------+
+|                          The Song-Infoblock  (IN)                          |
++----------------------------------------------------------------------------+
+
+Offset Lenght Description
+
+ 000    002     "IN"; infoblock-ID
+ 002    004     blocklenght
+ 006    032     songname; name of the songmodule (filled with spaces [32])
+ 038    020     composername; name of the song-composer
+ 058    002     songlength; Digitrakker supports up to 255 songpositions
+ 060    002     songrepeat
+ 062    001     mainvolume (001-255)
+ 063    001     song-speed (001-255)
+ 064    001     beats per minute (004-255)
+ 065    032     channel-information: bit 0-6 - panposition (0=left,127=right)
+				     bit 7   - 0=channel on, 1=channel off
+                [number of channels = last active channel]
+ 097  <snglen>  sequencer; contains the number of the pattern for every
+		songposition
+ ???  <chnnam>  the names for every channel (8 chars for one name).
+		<chnnam> = 8 * <number of channels>
+
++----------------------------------------------------------------------------+
+|                            The Songmessage (ME)                            |
++----------------------------------------------------------------------------+
+
+Offset Lenght Description
+
+ 000    002     "ME"; songmessage-ID
+ 002    004     blocklenght
+ 006    ???     songmessage; every line is closed with the CR-char (13). A
+		0-byte stands at the end of the whole text.
+
++----------------------------------------------------------------------------+
+|                           The Patterndatas  (PA)                           |
++----------------------------------------------------------------------------+
+
+Offset Lenght Description
+
+ 000    002     "PA"; patterndata-ID
+ 002    004     blocklenght
+ 006    001     number of pattern; values from 1 to 255 are possible
+ 007  <patlar>  the datablocks for all saved pattern
+
+The structure of one pattern-datablock:
+
+ 000	001	number of used channels (0-32)
+ 001    001     patternlength-1 (0-255 for 1-256 lines)
+ 002	016	pattern-name (filled with [32])
+ 018  <trklar>  tracksequencing-list
+		<trklar> = 2 * number of channels in this pattern
+
+The tracksequencing-lists descripe which track is used as which voice in the
+pattern. The first word in this list is the number of the track at voice 0.
+The second is track for voice 1 and so on...
+As every track is saved independend, it is possible to save some discspace by
+this methode: If the song contains equal tracks at several positions in
+the patterns, these double tracks will only saved one time.
+Track 0 is not saved and represents an empty track.
+
++----------------------------------------------------------------------------+
+|                            The Trackdatas  (TR)                            |
++----------------------------------------------------------------------------+
+
+Offset Lenght Description
+
+ 000    002     "TR"; trackdata-ID
+ 002    004     blocklenght
+ 006    002     number of tracks
+ 008    ???     track-datablocks; every trackdatablock is stored in this way:
+		Ofs.000 Len.002         length of the trackdatas
+		    002 <trackdatalen>  datas for this track
+
+Every track consists of 1-256 notepositions and every notposition contains
+6 bytes:
+
+byte 0              - note-value; 1 = C-0, 2 = C#0,..., 120 = B-9,
+		      0 = nothing (---), 255 = key off (^^^)
+byte 1              - instrument-number; 1-255; 0 = nothing
+byte 2              - volume; 1-255; 0 = no volume change
+byte 3, low nibble  - number of the first effect-command
+byte 3, high nibble - number of the second effect-command (commands "g"-"l"
+		      get the numbers 1-6)
+byte 4              - databyte for the first effect-command
+byte 5              - databyte for the second effect-command
+
+Digitrakker stores the tracks in a packed way. The structure of this VERY
+effective (!!!) packformat is the following:
+
+     bit 76543210
+byte 0 - xxxxxxyy
+
+if yy = 00 -> <xxxxxx>+1 is the number of the empty notepositions which are
+	      following.
+if yy = 01 -> the last noteposition will be repeated <xxxxxx>+1 times.
+if yy = 10 -> the noteslot from position <xxxxxx> is copied to the actual
+	      position.
+if yy = 11 -> the following datas will be put in the actual noteslot:
+		bit 2 = 1 -> note
+		bit 3 = 1 -> sample
+		bit 4 = 1 -> volume
+		bit 5 = 1 -> effectcommand numbers
+		bit 6 = 1 -> databyte for effect 1
+		bit 7 = 1 -> databyte for effect 2
+              If the bit is not setted, the byte isn't stored and you have to
+              take 0 instead.
+
+To find out the number of notepositions in a track you should decrease a
+counter (startvalue: length of the packed trackdatas) while depacking.
+Every depacked track has to be filled out with 0-values up to position 256.
+When you copy the track into a pattern just take the number of positions you
+need for the pattern (if the pattern has a length of 64 positions only take
+the first 64 positions from the track).
+
++----------------------------------------------------------------------------+
+|                           The Instruments (II)                             |
++----------------------------------------------------------------------------+
+
+Offset Lenght Description
+
+ 000    002     "II"; intrument-ID
+ 002    004     blocklenght
+ 006    001     number of saved instruments; values from 0 to 255 are possible
+ 007  <inslar>  the datablocks for all used instruments
+
+The structure of one instrument-datablock:
+
+ 000    001     instrument-number; (1-255)
+ 001	001	number of samples in instrument; (1-16)
+ 001    032     instrument-name; the name of the instrument (filled with [32])
+ 033  <is-len>  this block contains the infos for all defined samples in the
+		instrument; every info consist of 14 bytes, so
+		<is-len> = 14 * number of defined samples
+
+The structure of one instrument-sample datablock:
+
+ 000    001     sample-number; (1-255)
+ 001    001     playrange-end (0-119,0='c-0'); the last note for this sample;
+		a higher note uses one of the next samples
+ 002    001     volume (1-255)
+ 003    001     bit 0-5 -> volumeenvelope-number (0-63)
+		bit 6   -> flag, if volume is used
+		bit 7   -> flag, if volumeenvelope is used
+ 004    001     panning (0-127)
+ 005    001     bit 0-5 -> panningenvelope-number (0-63)
+		bit 6   -> flag, if panning is used
+		bit 7   -> flag, if panningenvelope is used
+ 006    002     fadeout-speed (0-65535)
+ 008    001     vibrato-speed (0-255)
+ 009    001     vibrato-depth (0-255)
+ 010    001     vibrato-sweep (0-255)
+ 011    001     vibrato-form (0-2)
+ 012    001     ** reserved ** (should be set to <0>)
+ 013    001     bit 0-5 -> frequencyenvelope-number (0-63)
+                bit 6   -> ** reserved ** (should be set to <0>)
+                bit 7   -> flag, if frequencyenvelope is used
+
++----------------------------------------------------------------------------+
+|                         The Volume-Envelopes  (VE)                         |
++----------------------------------------------------------------------------+
+
+Offset Lenght Description
+
+ 000    002     "VE"; volume-envelope-ID
+ 002    004     blocklenght
+ 006    001     number of saved vol-envelopes (0-64)
+ 007  <ve-lar>  volume-envelope datas; a datablock contains 33 bytes, so
+		<ve-lar> = 33 * number of saved vol-envelopes;
+
+The structure of one envelope-datablock:
+
+ 000    001     envelope-number; (0-63)
+ 001    030     the positions of the 15 points are stored here; the first
+		byte is the x-distance from the last point (1-255; 0 means,
+		that no more points are defined; take 1 for the first point),
+                the second byte is the y-position (0-63)
+ 031    001     bit 0-3 -> sustain-point (0-14)
+		bit 4   -> flag, if sustain is on
+		bit 5   -> flag, if loop is on
+                bit 6-7 -> ** reserved ** (should be set to <0>)
+ 032    001     bit 0-3 -> loop-start (0-14)
+		bit 4-7 -> loop-end (0-14)
+
++----------------------------------------------------------------------------+
+|                         The Panning-Envelopes (PE)                         |
++----------------------------------------------------------------------------+
+
+Offset Lenght Description
+
+ 000    002     "PE"; panning-envelope-ID
+ 002    004     blocklenght
+ 006    001     number of saved pan-envelopes (0-64)
+ 007  <pe-lar>  panning-envelope datas; a datablock contains 33 bytes, so
+		<pe-lar> = 33 * number of saved pan-envelopes
+		see at "VE" for the description of an envelope-datablock
+
++----------------------------------------------------------------------------+
+|                        The Frequency-Envelopes (FE)                        |
++----------------------------------------------------------------------------+
+
+Offset Lenght Description
+
+ 000    002     "FE"; frequency-envelope-ID
+ 002    004     blocklenght
+ 006    001     number of saved frq-envelopes (0-64)
+ 007  <fe-lar>  frequency-envelope datas; a datablock contains 33 bytes, so
+                <fe-lar> = 33 * number of saved frq-envelopes
+		see at "VE" for the description of an envelope-datablock
+
++----------------------------------------------------------------------------+
+|                         The Sample-Infoblocks (IS)                         |
++----------------------------------------------------------------------------+
+
+Offset Lenght Description
+
+ 000    002     "IS"; sampleinfo-ID
+ 002    004     blocklenght
+ 006    001     number of saved samples; values from 0 to 255 are possible
+ 007  <samlar>  sample-infoblocks; an infoblock for one sample contains 59
+                bytes, so <samlar> = 59 * number of saved samples
+
+The structure of one sample-infoblock:
+
+ 000    001     sample-number; (1-255)
+ 001    032     sample-name; the name of the sample (filled with [32])
+ 033    008     filename of the sample
+ 041    004     C-4 sample-frequency in hz
+ 045    004     sample-length
+ 049    004     sample-repeatstart
+ 053    004     sample-repeatlength; if this value is set to 0, the sample
+		will not loop
+ 057    001     ** not used ** (this was the volume in old v0.0-modules)
+ 058    001     infobyte:
+		bit 0   -> 0=8 bit sample, 1=16 bit sample
+		bit 1   -> 0=forward looping, 1=bidirectional looping
+                bit 2,3 -> packmethode (0=not packed, 1=8bit packing,
+                           2=16bit packing, 3=not defined)
+                bit 4-7 -> ** reserved ** (should be set to <0>)
+
++----------------------------------------------------------------------------+
+|                            The Sampledatas (SA)                            |
++----------------------------------------------------------------------------+
+
+Offset Lenght Description
+
+ 000    002     "SA"; sampledata-ID
+ 002    004     blocklenght
+ 006    ???     sampledatas; samples are stored in numeric sequence
+
+Unpacked samples are stored in signed form. Packmethode (1) is designed for
+8 bit samples, Packmethode (2) for 16 bit samples. Methode (3) isn't defined
+in this version.
+A packed sample begins with a dword which contains the length of the
+following datastream.
+
+
+The description of the sample-packmethode (1) [8bit packing]:...
+----------------------------------------------------------------
+
+This methode is based on the huffman-algorithm. It's an easy form, but very
+fast and effective on samples. The packed sample is a bit-datastream:
+
+    Byte 0    Byte 1    Byte 2    Byte 3
+Bit 76543210  fedcba98  nmlkjihg  ....rqpo
+
+A packed byte is stored in the following form:
+
+xxxx10..0s => byte = <xxxx> + (number of <0>-bits between s and 1) * 16 - 8 ;
+	      if s=1 then byte = byte xor 255
+
+If there are no <0>-bits between the first bit (sign) and the <1>-bit, you
+have the following form:
+
+xxx1s      => byte = <xxx> ; if s=1 then byte = byte xor 255
+
+To depack one byte, you have to use the following algorithm:
++----------------------------------------------------------------------------+
+|       read bit                                                             |
+|       sign = bit                                                           |
+|       read bit                                                             |
+|       if bit = 1                                                           |
+|               then  read [3bits]                                           |
+|                     byte = [3bits]                                         |
+|                     goto next                                              |
+|               else  byte = 8                                               |
+|loop:  read bit                                                             |
+|       if bit = 0                                                           |
+|               then  byte = byte + 16                                       |
+|                     goto loop                                              |
+|               else  read [4bits]                                           |
+|                     byte = byte + [4bits]                                  |
+|next:  if sign = 1                                                          |
+|               then byte = byte xor 255                                     |
++----------------------------------------------------------------------------+
+
+Two examples:
+
+xxxx  s
+1001101 = ( 9 + 1 * 16 - 8 ) xor 255 = 238
+
+xxx s
+01010 = 2
+
+Note that the depacked bytes are delta values. To convert them to real data
+use this algorithm:
+
+oldbyte = 0
+for sampleposition = 1 to samplelength
+	newbyte = byte [sampleposition] + oldbyte
+	byte [sampleposition] = newbyte
+	oldbyte = newbyte
+next sampleposition
+
+
+The description of the sample-packmethode (2) [16bit packing]:...
+----------------------------------------------------------------
+
+It works as methode (1) but it only crunches every 2nd byte (the high-
+bytes of 16 bit samples). So when you depack 16 bit samples, you have to
+read 8 bits from the data-stream first. They present the lowbyte of the
+sample-word. Then depack the highbyte in the descripted way (methode [1]).
+Only the highbytes are delta-values. So take the lowbytes as they are.
+Go on this way for the whole sample!
+
+
++----------------------------------------------------------------------------+
+|                    ** Differences to older formats **                      |
++----------------------------------------------------------------------------+
+
+Changes from v0.0 to v1.0:
+- block "PN" (patternnames) doesn't exist in v1.0-modules (patternnames now
+  stored in block "PA")
+  the old v0.0 structure of the "PN"-block:
+    000    002     "PN"; patternnames-ID
+    002    004     blocklenght
+    006  <patnam>  the names for every pattern (16 chars for one name).
+		   <patnam> = 16 * <number of patterns>
+- structure of block "PA" changes completely
+  the old v0.0 structure of the "PA"-block:
+    000    002     "PA"; patterndata-ID
+    002    004     blocklenght
+    006    001     number of pattern; values from 1 to 255 are possible
+    007  <patlar>  tracksequencing-list for the used patterns;
+		   <patlar> = 64 * number of patterns (32 words with the
+		   tracknumbers for every pattern)
+- new blocks in v1.0-modules: "II" (instruments), "VE" (volume-envelopes) and
+  "PE" (panning-envelopes)
+- volumebyte (byte 57) in the sample-datablocks (block "IS") isn't used;
+  the C-4 sample-frequency increases from a word (2 bytes) to a dword (4
+  bytes), so one whole sample-infoblock now has a length of 59 bytes
+
+Extension from v1.0 to v1.1:
+- new block: "FE" (frequency-envelopes)
+
+
+
+
++============================================================================+
+|                        THE INSTRUMENT-FORMAT  (IST)                   V0.1 |
++============================================================================+
+
+The IST-format has the same structure like parts the MDL-format:
+
+Offset Lenght Description
+
+ 000    004     "DIST"; the four letters mark the ist-format
+ 004    001     version; the current version is 01h (=0.1)
+ 005    ???     the different data-blocks are stored at this position
+
+The IST-instrument-format is subdivided into the following blocks:
+
+"II"    instruments; contains all information for the saved instrument
+"VE"    volume-envelopes; contains the construction of all vol-envelopes for
+        this instrument
+"PE"    panning-envelopes; the same for the pan-envelopes
+"FE"    frequency-envelopes (new in v0.1); the same for the frq-envelopes
+"IS"    sampleinfos; contains information for every used sample
+"SA"    samples; contains the sample-datas
+
+The structures for the several blocks are the same as in the mdl-format.
+The instrument-infoblock ("II") contains one instrument only.
+
+
+
+
++============================================================================+
+|                          THE SAMPLE-FORMAT  (SPL)                     V0.0 |
++============================================================================+
+
+Here comes the description for the old sample-format "SPL", which was used in
+older tracker-versions (V2.0-V2.2). This format isn't supported any longer in
+Digitrakker, that means you can read it, but you can't save samples in this
+form.
+The reason for this step was the fact, that there are too many sample-formats
+and it makes no sense to introduce a new one, because the existing IFF-format
+nearly contains all infos you need for a Digitrakker-sample.
+
+Offset Lenght Description
+
+ 000    004     "DSPL"; the four letters mark the spl-format
+ 004    001     version; the current version is 0
+ 005    032     sample-name; the name of the sample (filled with [32])
+ 037    008     filename of the sample
+ 045    002     C-4 sample-frequency in hz (00000-65535)
+ 047    004     sample-length
+ 051    004     sample-repeatstart
+ 055    004     sample-repeatlength; if this value is set to 0, the sample
+		will not loop
+ 059    001     sample-volume (1-255)
+ 060    001     infobyte:
+		bit 0   -> 0=8 bit sample, 1=16 bit sample
+		bit 1   -> 0=forward looping, 1=bidirectional looping
+		bit 2,3 -> packmethode (0=not packed, methodes 2 and 3 doesn't
+			   exist in this version)
+		bit 4-7 -> not used (should be set to 0)
+ 061    ???     sampledatas... (see above)

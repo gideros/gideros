@@ -1,0 +1,321 @@
+		     Fileformat Introducion for Protracker 3.59
+
+
+Introduction.
+=============
+
+The text below was intended to be the documentation on the  fileformat  used  in
+this release of ProTracker.
+
+Four  years  before Tom Bech from Cryptoburners has started an new scetch for an
+standart protracker format who was better to handle. Now, I'm not perfect, but I
+have  restarted this plan and release with beginning of PT3.59 an ProTracker who
+is able to load  and  save  the  standart  format  as  well  as  the  redesigned
+Protracker IFFMODL format.
+
+It was in this phase not too difficult to rewrite an player in less than 1  hour
+if  you  wont use the new features because the fact, that in the music chunk can
+the ordinary old module format, and the new pattern format is not used since  an
+8-channel Protracker is released.
+
+The advance of the new format are:
+
+- very easy identification of protracker mods
+- all relevant parameters of an soundmodule inside of the music file
+  (Timing method, Filter flags, types, IRQ's, lengths etc)
+- automatic playtime calculation with saving inside the musicfiles
+  (very easy handling for advanced modplayers, i have scanned 500 files in less
+  than 2 minutes and as result an complete musiclist witrh authors, timing ...)
+- dynamic hunk structure. i was able to advance most of the playerstructure,
+  and old replayers are working, they are using only the old features
+- for the near future it was able to improve Protracker to more than 4 channels
+  and removing the rigid patterndesign, using unlimited size and number of
+   samples, using more 16 bit formats (VOC, WAVE) ...
+  All we have to do is to use an new chunk for the fileformat an live
+  peaceful with the older files.
+- the user is able to change the save formats in setup, recognize by loading
+  automatic
+- All relevant parameters (master speed, VBI/CIA timing, master volume ...)
+  are setted automatic by loading an module in Protracker.
+
+
+
+				    -**-
+
+Protracker release 3.59 Fileformat documentation.
+=================================================
+
+This document includes the complete documentation  of  the  fileformat  used  in
+Protracker  3.59,  and instructions on how to use it. Fields marked "*Reserved*"
+are reserved for future use and are guarantied to cause hangup if messed with.
+
+General
+-------
+
+With this release of Protracker we have decided to change the  filestructure  of
+the  musicfiles  produced  with  the  program.  We  felt  the old format was too
+obsolete, messy and out of date for us to use any further. So we  invented  this
+new  format.  The  format  is  based upon Interchanged File Format (IFF) chunks,
+originally developed by Electronic Arts, but now in widely use on the Amiga. The
+format  allows  considerable  flexibility  and  does not suffer too severly from
+changes and updates, and is therefore perfect for our use.
+
+The Format
+----------
+
+We will in this section introduce and describe each chunk type  appearing  in  a
+Protracker music file. Look in the next section for the sequencial description.
+
+** Contents of Chunk "VERS":
+
+OFFSET          Length          Contents        Meaning
+--------------------------------------------------------------------------------
+ 0               4              "VERS"          Chunk identifier.
+ 4               4              ????????        Chunk length (in bytes).
+ 8               4              ????????        Version number (word). of musicfile
+12               6              "PT3.59"        Version ID string.
+--------------------------------------------------------------------------------
+
+This chunk is used by Protracker to identify the producer of the module, and  if
+necessary  perform  upgrade-conversion  if  the  file  was  made with a previous
+version of Protracker. There can be at maximum one "VERS" chunk in a  Protracker
+music  file. This chunk is not critical; it may be obmitted, but be aware of the
+possible incompatibility problems that may arise if it's left out.
+
+** Contents of Chunk "INFO":
+
+OFFSET          Length          Contents        Meaning
+--------------------------------------------------------------------------------
+ 0               4              "INFO"          Chunk identifier.
+ 4               4              ????????        Chunk length (in bytes).
+ 8              32              [..??..]        Song name (string).
+40               2              ????????        Number of instruments (word).
+42               2              ????????        Number of positions (word).
+44               2              ????????        Number of patterns (word).
+46               2              ????????        Overall volume factor (word).
+48               2              007Dh           Default speed (BPM) (word).
+50               2              ????????        Packed field. See below.
+52               2              hexvalue        Creationdate (day) of File
+54               2              hexvalue        Creationdate (month) of File
+56               2              hexvalue        Creationdate (year) of File
+58               2              hexvalue        Creationtime (hours)
+60               2              hexvalue        Creationtime (minutes)
+62               2              hexvalue        Creationtime (seconds)
+64               2              hexvalue        Playtime of mod (hours)
+66               2              hexvalue        Playtime of mod (minutes)
+68               2              hexvalue        Playtime of mod (seconds)
+70               2              hexvalue        Playtime of mod (mseconds)
+--------------------------------------------------------------------------------
+
+Protracker uses this chunk to set different internal  variables,  and  to  store
+vital  information used in replay and processing of the file. The song name is a
+maximum 32 Chars long ASCII string. It need not be  NULL-terminated.  Number  of
+instruments  indicates  the number of instruments used in the song, it may range
+from 0 to 65535. At present version number, however, there may  be  maximum  255
+instruments  in  one song. Number of positions reflects the actual length of the
+song, that is; how many patterns that will be played during  a  complete  cycle.
+This  number  may  vary  from 0 to 65535. Number of patterns, on the other side,
+reflects how many _different_ patterns that will be played during the song. This
+number is used to calculate the total length (in bytes) of the song. The Overall
+Volume factor is used to compute the final volume  of  all  channels  after  the
+individual  channel-volumes  have  been  figured  out. In this way it is easy to
+control the loudness of the music from the program/ song itself.  Default  speed
+is  the  BPM  (Beats  per  minute)  flag of the module and if not changed by the
+composer as default by #125.
+The packed field consists of these  bits  (right  to  left order):
+
+---------------- packetfield meaning    -------------
+;Bit    Meaning         0                       1                        Default
+;--------------------------------------------------------------------------------
+; 0     Timing method.  VBlank.                 CIA timing (BPM).             0
+; 1     Filter flag.    Filter off.             Filter on.                    0
+; 2     File type.      Module.                 Song (no instruments).        0
+; 3     Soft IRQ        on/off                                                0
+; 4     Length flag.    Equal pattern length.   Variable pattern length.      0
+; 5     Voices flag.    4 voices.               8 voices.                     0
+; 6     Sample res.     8 bit.                  16 bit.                       0
+; 7     Packstatus.     Packed patterns.        Raw patterns.                 1
+; 8     *Reserved*                                                            x
+; 9     *Reserved*                                                            x
+;10     *Reserved*                                                            x
+;11     *Reserved*                                                            x
+;12     *Reserved*                                                            x
+;13     *Reserved*                                                            x
+;14     *Reserved*                                                            x
+;15     *Reserved*                                                            x
+;--------------------------------------------------------------------------------
+
+There can be at most one "INFO" chunk in a Protracker musicfile. This chunk is
+vital; it _must_ be present for the replay routine to function properly.
+
+** Contents of Chunk "INST":
+
+OFFSET          Length          Contents        Meaning
+--------------------------------------------------------------------------------
+ 0               4              "INST"          Chunk identifier.
+ 4               4              ????????        Chunk length (in bytes).
+ 8              32              [..??..]        Instrument name (string).
+40               2              ????????        Length of instrument (word).
+42               2              ????????        Instrument loop start (word).
+44               2              ????????        Instrument loop length (word).
+46               2              ????????        Instrument volume (word).
+48               2              ????????        Instrument finetuning (integer).
+--------------------------------------------------------------------------------
+
+
+
+** Contents of Chunk "CMNT":
+
+OFFSET          Length          Contents        Meaning
+--------------------------------------------------------------------------------
+ 0               4              "CMNT"          Chunk identifier.
+ 4               4              ????????        Chunk length (in bytes).
+ 8               ?              [..??..]        Raw ASCII text.
+--------------------------------------------------------------------------------
+
+The "CMNT"  chunk  is  used  for  a  signature,  comments,  greetings,  date  of
+completion  or  whatever  information the composer wishes to include with his or
+hers creation. This chunks is  not  critical;  it  may  be  left  out  and  will
+typically be ignored by most applications.
+
+The sequential format
+---------------------
+
+In this section we will describe how the  various  chunks  are  expected  to  be
+located  within  the file. These rules _must_ be followed or it will wreak havoc
+when tried manipulated with inside Protracker. Here comes the header in
+table form:
+
+OFFSET          Length          Contents        Meaning
+--------------------------------------------------------------------------------
+  0              4              "FORM"          Indicate start of IFF file.
+  4              4              ????????        File length.
+  8              4              "MODL"          IFF type identifier.
+-------------------------------------------------------------------------------
+
+This header must be found in the start of the file, or it will be rejected as
+not being a Protracker musicfile. From offset 12 in the file, things may vary
+somewhat.
+
+** Contents of Chunk "PTDT":
+
+OFFSET          Length          Contents        Meaning
+--------------------------------------------------------------------------------
+ 0               4              "PTDT"          Chunk identifier.
+ 4               4              ????????        Chunk length (in bytes).
+ 8               ?              [..??..]        Protracker MOD Format.
+--------------------------------------------------------------------------------
+
+At offset 8 begins, if saved in 4-channel-mode, the old ordinary Protracker
+MOD file. Length are calculated by saving by offset 4, so you can check correct
+values. If you write an simple replayer you have to scan in the file at the
+begin of the PTDT chunk and calculate the end with chunklength due the fact
+that other chunks can follow. (multiple soundmodules, combinations of
+multichannel songs ...)
+
+
+Chunk summary
+-------------
+
+Now follows a list of the chunks that have meaning in a Protracker musicfile:
+
+Chunk     Function                                                    Critical?
+-------------------------------------------------------------------------------
+"VERS"    Contains information about the producer of the file.               No
+"INFO"    Contains vital information and standard settings.                 Yes
+"CMNT"    Comments, greetings etc. Contains information in ASCII code.       No
+"PTDT"    This chunk contains the pure old Protracker stuff. if you rewrite
+	  your software in the simplest way you scan for the begin of the
+	  PTDT chunk and you have an old Protracker file. But remember:
+	  The PTDT chunk is obselete in the near future if Protracker 4.0
+	  with more than 4 channels is available, so your software should
+	  be able to ignore this chunk.
+-------------------------------------------------------------------------------
+
+
+
+
+----------------------- Future implementation planings ----------------------
+
+
+The follow implementations are not finnished because a lack of time, but you
+should look below for see the near future:
+
+** Contents of Chunk "INST":
+
+OFFSET          Length          Contents        Meaning
+--------------------------------------------------------------------------------
+ 0               4              "INST"          Chunk identifier.
+ 4               4              ????????        Chunk length (in bytes).
+ 8              32              [..??..]        Instrument name (string).
+40               2              ????????        Length of instrument (word).
+42               2              ????????        Instrument loop start (word).
+44               2              ????????        Instrument loop length (word).
+46               2              ????????        Instrument volume (word).
+48               2              ????????        Instrument finetuning (integer).
+--------------------------------------------------------------------------------
+
+The "INST" chunk is used to store information about an  instruments  properties,
+such  as length and volume. The instrument name is a maximum 32 Chars long ASCII
+string. It need not be NULL-terminated. The Length field describes the length of
+the  instrument  (in  words)  and  thus  ranges  from  0 to 128Kb (65535 words).
+Instrument Loop Start sets the offset from which  to  start  playing  after  the
+first  replay.  This  value may vary from 0 to the instrument length. Instrument
+Loop End sets the length of the loop to play after the first replay, relative to
+the  loop  start  value.  It  may  thus  vary  from  0  to [Ins_len-Loop_start].
+Instrument volume indicates which volume to use in the replay of the sample,  if
+the  song  doesn't  say  differently.  This  value  varies  between  0  and 40h.
+Instrument finetuning sets the sample-rate correction difference and varies from
+-7 to 7 (0fff9 to 0007h).
+There may be any number of "INST" chunks in a Protracker music file, limited  to
+the number of instruments actually used in the song. This chunk is not vital; it
+may be left out if the song-only bit of the control word in the "INFO" chunk  is
+set. Otherwise, it should result in an error.
+
+** Contents of Chunk "PPOS":
+
+OFFSET          Length          Contents        Meaning
+--------------------------------------------------------------------------------
+ 0               4              "PPOS"          Chunk identifier.
+ 4               4              0ffh            Chunk length (in bytes).
+ 8             256              [..??..]        Pattern position table.
+--------------------------------------------------------------------------------
+
+This chunk contains the  table  defining  which  pattern  to  play  in  a  given
+songposition.  Each  entry  in  the  table is a byte indicating which out of 256
+possible patterns to play. There may  be  at  maximum  one  "PPOS"  chunk  in  a
+Protracker  musicfile.  This  chunk  is  vital; it _must_ be present to play the
+song.
+
+** Contents of Chunk "PTRN":
+
+OFFSET          Length          Contents        Meaning
+--------------------------------------------------------------------------------
+ 0               4              "PTRN"          Chunk identifier.
+ 4               4              ????????        Chunk length (in bytes).
+ 8              32              [..??..]        Pattern name.
+40               ?              [..??..]        Pattern data.
+--------------------------------------------------------------------------------
+
+This chunk is used in a module of variable pattern length. The chunk  must  thus
+appear as many times as there are patterns in the song. The chunk length divided
+by 8 ( >>3 ) will show the pattern length (default 64). Pattern  name  is  a  32
+byte  long ASCII string, describing the pattern, eg. "Intro part 3". It need not
+be NULL-terminated. This chunk is critical; it must be present in the  file,  or
+it  will  be  regarded  invalid.  NOTE:  This chunk is not in use in the present
+version (3.01B), and will be ignored if found.
+
+** Contents of Chunk "SMPL":
+
+OFFSET          Length          Contents        Meaning
+--------------------------------------------------------------------------------
+ 0               4              "SMPL"          Chunk identifier.
+ 4               4              ????????        Chunk length (!in bytes!).
+ 8               ?              [..??..]        Raw sample data.
+--------------------------------------------------------------------------------
+
+The "SMPL" chunk contains the raw sample data of an instrument.  This  chunk  is
+not  critical;  if  the  song-only  bit  of  the  "INFO" chunk is set, it may be
+obmitted. If, however, the file is a module, then the number of "SMPL" chunks in
+the  file must be equal to or greater than the number of instruments used in the
+song. If not, the file will be regarded incomplete.

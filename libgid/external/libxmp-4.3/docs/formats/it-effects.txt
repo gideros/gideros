@@ -1,0 +1,71 @@
+                 Summary Information - Effects, alphabetically
+
+ Volume Column Effects
+  Ax - Volume slide up
+  Bx - Volume slide down
+  Cx - Fine volume slide up
+  Dx - Fine volume slide down
+  Ex - Pitch slide down
+  Fx - Pitch slide up
+  Gx - Portament to
+  Hx - Vibrato with speed x
+
+ General Effects
+ Axx - Set speed (set number of frames per row)
+ Bxx - Jump to order
+ Cxx - Break to row xx of (next) pattern
+ Dxy - Volume slide, x=0 down; y=0 up; x=F fine down; y=F fine up
+ Exx - Pitch slide down by xx
+ EFx - Fine pitch slide down by x
+ EEx - Extra fine pitch slide down by x
+ Fxx - Pitch slide up by xx
+ FFx - Fine pitch slide down by x
+ FEx - Extra fine pitch slide down by x
+ Gxx - Portamento to note with speed xx
+ Hxy - Vibrato with speed x, depth y
+ Ixy - Tremor with ontime x, offtime y
+ Jxy - Arpeggio with halftones x and y
+ Kxy - Dual command: H00 and Dxy
+ Lxy - Dual command: G00 and Dxy
+ Mxx - Set channel volume to xx (0->40h)
+ Nxy - Channel volume slide, x=0 down; y=0 up; x=F fine down; y=F fine up
+ Oxx - Set sample offset to xx00h
+ Pxy - Panning slide, x=0 right; y=0 left; x=F fine right; y=F fine left
+ Qxy - Retrigger note every y frames with volume modifier x
+        Values for x:
+          0: (nothing)    4: -8           8: (nothing)    C: +8
+          1: -1           5: -16          9: +1           D: +16
+          2: -2           6: *2/3         A: +2           E: *3/2
+          3: -4           7: *1/2         B: +4           F: *2
+ Rxy - Tremelo with speed x, depth y
+ S3x - Set vibrato waveform
+ S4x - Set tremelo waveform
+ S5x - Set panbrello waveform
+        Waveforms for x in S3x, S4x and S5x:
+          0 = Sine                      2 = Square
+          1 = Ramp down                 3 = Random
+ S6x - Pattern delay for x frames
+ S7x - Instrument functions
+        Values for x in S7x:
+          0: Past note cut              5: Set NNA to note off
+          1: Past note off              6: Set NNA to note fade
+          2: Past note fade             7: Turn off volume envelope
+          3: Set NNA to note cut        8: Turn on volume envelope
+          4: Set NNA to continue
+ S8x - Set pan position
+ S91 - Set surround sound
+ SB0 - Set loopback point
+ SBx - Loop x times to loopback point
+ SCx - Note cut after x frames
+ SDx - Note delay for x frames
+ SEx - Pattern delay for x rows
+ SFx - Select parameterised MIDI Macro
+ T0x - Tempo slide down by x
+ T1x - Tempo slide up by x
+ Txx - Set tempo (20h->0FFh)
+ Uxy - Fine vibrato with speed x, depth y
+ Vxx - Set global volume to xx (0->80h)
+ Wxx - Global volume slide, x=0 down; y=0 up; x=F fine down; y=F fine up
+ Xxx - Set panning position (0->0FFh)
+ Yxy - Panbrello with speed x, depth y
+ Zxx - MIDI Macro - check MIDI.TXT

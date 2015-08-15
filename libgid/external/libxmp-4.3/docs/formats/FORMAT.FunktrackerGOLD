@@ -1,0 +1,793 @@
+FNK FORMAT
+----------
+
+To put Funktracker simply, it's a Zooped up 669 format. Funktracker is a
+"dual piped" format that can perform duel command effects on a single
+channel. This is a very valuable feature. I still haven't seen any
+trackers that can do this, you can create alot of new interesting
+effects..  Funktracker is designed for efficiency and speed (or at least
+it is on the DOS32 version). I designed it for the express purpose of PC
++386 Pmode demos. Modules are designed to be physically linked into the
+actual program and referenced/played within the demo without any nasty
+loading/conversion you have to do with other formats like S3M. It is
+designed to cater for a whole range of cards but namely DAC cards (ie
+SoundBlaster, PAS16 and AWE32) in mind. Now of course, i have ported it to
+Unix platform(s).  Goals have changed. Multiple channel support is now in,
+as well, 16 bit sampling, realtime digital echo effects and BPM. 
+
+Unlike most other formats, Funktracker data is organised in INTEL wording
+convention, that is, data is fetched, Least Significant first. This is
+very important to know, particularly if you want to port Funktracker to
+your particular machine. Motorola 68k machines for instance, use Most 
+Significant instruction fetching. 
+
+It's also important to note that sample data (regardless of precision) is
+stored as signed data. That is: 
+
+0x7f (crest)
+  -
+/   \
+0 -----------silence
+      \   /
+        _
+0x80 (trough)
+
+
+16 bit data is also stored in Intel byte sex form (least significant byte 
+first).
+
+For module storage, file the extension can be the old DOS32 ".fnk" 
+extension, or the new Unix ".Funk" extension. Either one is acceptable.
+
+
+The file format
+---------------
+
+Offset   Bytes   Description
+    0        4   Preamble set to "Funk"
+    4        4   This double word contains the following packed info:
+
+
+  3 3 3 3 3 3 3 3   2 2 2 2 2 2 2 2   1 1 1 1 1 1 1 1   0 0 0 0 0 0 0 0
+  \--BPM rate-/ |   \-CPU-/ \-card/   \----year---/ \-month-/ \--day--/
+                |                        |
+                /                         \
+     16 bit = 1                            year + 1980
+
+
+  - Byte 3 can be broken down as follows:
+
+  /--BPM rate-\
+  3 3 3 3 3 3 3 *
+  | \---------/
+  |     \
+  Sine   Value
+
+  If the Sine bit = 0, then BPM = 125 + value
+  If the Sine bit = 1, then BPM = 125 - value
+
+  The BPM range is from 062 BPM to 188 BPM
+
+
+  If an R1 format (funktype = Fk** or Fv**), then ignore byte 3. It's
+  unreliable. It used to store the (GUS) sample memory requirement.
+
+
+  - byte 2 contains statistical info. Possible values are:
+
+cpu:  0 = Unknown      \
+      1 = IBM ????      | set by the DOS32 version of Funktracker.
+      2 = IBM ????      |
+      3 = Intel386      | Values > 5 only valid now.
+      4 = Intel486      |
+      5 = Pentium      /
+      6 = Linux
+      7 = FreeBSD
+      8 = Not Used
+      9 = "
+      A = "
+      B = "                (NB/ if you can enlighten me on any of the
+      C = "                 unix boxes i'm likely to port too, tell me
+      D = "                 and i'll give your machine a number)
+      E = "
+      F = Other
+
+card:
+      0 = Sound Blaster 2.0
+      1 = Sound Blaster PRO
+      2 = Gravis Ultra Sound with pannable channels
+      3 = Sound Blaster Compatable
+      4 = Sound Blaster 16
+      5 = Gravis Ultra Sound with fixed pann channels
+      6 = Song Ripped/Converted from another format
+      7 = Pro Audio Spectrum (PAS) cards
+      8 = Voxware /dev/dsp 8 bit
+      9 = Voxware /dev/dsp 16 bit
+      A = Unused
+      B = "
+      C = "
+      D = "
+      E = "
+      F = Other
+
+
+    8        4   This is the file size. If you load a song that's size 
+                 differs from this number, then you know it is corrupt
+                 in some way. it would be highly recommended not to play
+                 it.
+
+   12        4   This field describes FNK characteristics:
+
+     Format: - "F2**" new R2 FunktrackerGOLD
+               "Fk**" for fixed channeling or
+               "Fv**" for variable channeling
+
+     - Under DOS32 Funktracker, between versions 1.00 and 1.04, the card
+type in the info field determined whether or not channels were pannable
+when using the GUS card. Back then, GUS was the only card that could use
+this feature, as my DAC routines couldn't. The philosophy back then was to
+make the DAC routines as fast as possible. implementing DAC panning would
+have made them twice as slow. However, later i realised i would have to
+eventually implement it. 
+
+     - With FunktrackerGOLD, it is always "F2**". This indicates the
+second revision (R2) of the format, with variable channeling mode and the
+newly implemented commands. 
+
+     - The ** is a dec number ranging from 1 to 99. For example, if the song
+is a 32 channel module, then the preamble is "Fk32". 10 Channels is "Fk10".
+
+     - If you see garbage in this field, then you know it was created with
+the < 1.05 DOS32 editor (these BETA's were never released anyway). You can 
+safely assume that this is an 8 channel, fixed channel module, if ever 
+you did come across one of these modules. 
+
+
+    13       1   If this field is set to 0ffh, then the song won't loop 
+                 back. That is, when it has finished playing the last 
+                 pattern in the order list, it will stop. If the value is 
+                 anything other than this (0 - feh), then the tracker 
+                 will loop back to order number in this field and 
+                 commence playing the patterns at that order number.
+
+    14     256   This is the order_list. pretty much the same as any 
+                 other trackers order list (aka sequence list). this 
+                 table contains a list of pattern numbers to be played
+                 in a given order.
+
+   270     128   The break list is like the 669 break list (this concept 
+                 was stolen from the 669 format). A break order is a 
+                 value that tells the tracker to stop playing a pattern 
+                 when it reaches a given line number in the pattern. When 
+                 is reaches it, it will then proceed to the next pattern 
+                 in the order list. In the table we have 128 break
+                 numbers of each of the 128 possible patterns (all 
+                 respectively ordered).
+
+
+After the header, we then have our 64 sample entries stored. each sample
+record/set is 32 bytes. you can calc each one with a simple EAX SHL 5
+(or a ">> 5" in C):
+
+x32 398     19   Sample name
+x32 402      4   Sample loop start pointer in units
+x32 406      4   Sample Length in units (NOT bytes)
+x32 407      1   Sample Volume (0 to 255)
+x32 408      1   Sample balance 00(right) to 128 to 255(left)
+x32 409      1   Port type & Sample offset shifter:
+
+   MS              LS
+    7 6 5 4 3 2 1 0
+    \...../ \...../
+     port    sample
+     type     offs factor
+
+  - Port type sets the type of frequency sliding. If this nibble is zero, 
+    then Curved (Amiga Module style) porting in performed. If this nibble 
+    equals 1, then linear (669 style) porting in performed.
+
+  - Sample offset shifter sets the indice value for command M, which
+    begins a sample at a particular offset. 
+
+
+x32 410      1   Vibrato Waveform & Tremolo waveform:
+
+   MS              LS
+    7 6 5 4 3 2 1 0
+    \...../ \...../
+     vibrato tremolo
+      WF       WF
+
+  - These attributes set the type of waveforms the tracker will use for these
+    samples. The Funktracker Vibrato generator (used by Vibrato, Fanin, 
+    Fanout and Tremolo) can generate 5 wave types: sine, Triangle, 
+    Square, Sawtooth and Random). 
+
+
+x32 411      1   Retrig number & arpeggio speed:
+
+   MS              LS
+    7 6 5 4 3 2 1 0
+    \...../ \...../
+    retrig  arpeggio
+     no      speed
+
+
+  - Retrig Number sets the sample retrig limit used by Command 0D.
+  - Arpeggio speed is of course the Arpeggio speed. The smaller the value 
+    the faster she goes.
+
+
+Next is the pattern data. Each pattern block is (64 * x * 3) bytes in 
+size- (lr x by 64 slots). Each slot has the following format: 
+
+ 00000000 11111111 22222222
+ \    /\     /\  / \      /
+  note  sample com  command value
+
+ - if note:  = 3D, then reload sample attrs
+             = 3F, then it's a null slot
+             = 3E, then sample only slot
+
+
+Basically, it's the same as the 669 format accept you have 3 additional/
+different note values: 
+
+XX, Normal slot              "00C#1---"
+---------------------------------------
+
+Sample and Note are decyphered. Sample attributed are loaded, and played 
+at the note.
+
+
+3F, then it's a null slot    "     ---"
+---------------------------------------
+
+This means null slot. only commands can be used with these slots. no
+sample or note processing is performed.... basically a "blank" slot. 
+Command systems WON'T be stopped with is slot type (unless command exists).
+
+
+3E, then sample only slot    "00***---"
+---------------------------------------
+
+If the note member is this value, then it's a "sample only" slot. Play the
+slot at the last note played (in the chan_info). Decode the sample and
+commands and activate them. Command systems WON'T be stopped with this 
+slot type (unless there's a cmd in the sample slot).
+
+
+3D, then reload sample attrs "00RLO---"
+---------------------------------------
+
+RLO's allow you to load another sample's attributes for an existing sample
+that's playing in a channel. When the tracker see's one of these, it will
+decode the sample as normal... it will load only the following sample
+attributes: volume, balance, Port type & Sample Offset Indice, Vibrato
+waveform and Tremolo Wave Form, Retrig No & Arpeggio Speed. 
+
+
+
+COMMANDS SUMMARY (R2)
+---------------------
+
+(In FunktrackerGOLD, hit SHIFT-M in the pattern editor to view the command
+helper.)
+
+ Full Commands
+
+ A  :Frequency Port Up
+ B  :Frequency Port Dn
+ C  :Frequency Porta
+ D  :Frequency Vibrato
+ E  :Freq Vibrato Fanin
+ F  :Freq Vibrato Fanout
+ G  :Volume Sld Up
+ H  :Volume Slide Down
+ I  :Volume Porta
+ J  :Volume Reverb
+ K  :Tremolo
+ L  :Arpeggio
+ M  :Sample Offset
+ N  :Volume
+
+ Command 'O'
+
+ O00:Set Vibrato wavetable to Sine
+ O01: "                       Triangle
+ O02: "                       Square
+ O03: "                       Sawtooth
+ O04: "                       Random
+ O05:Set Tremolo wavetable to Sine
+ O06: "                       Triangle
+ O07: "                       Square
+ O08: "                       Sawtooth
+ O09: "                       Random
+ O0A:Halt Note System
+ O0B:Halt Volume System
+ O0C:Halt All Systems
+ O0D:NOT USED
+ O0E:Fine channel pann Left
+ O0F:Fine channel pann right
+ O1 :Volume Cut
+ O2 :Note delay
+ O3 :Set Arpeggio Speed
+ O4 :Fine Port Up
+ O5 :Fine Port Dn
+ O6 :Fine Volume Slide Up
+ O7 :Fine Volume Slide Dn
+ O8 :Volume Crest
+ O9 :Set channel Echo Feedback Gain
+ OA :Set Master Volume
+ OB :Set channel Echo Delay
+ OC :Set channel Echo Decay
+ OD :Note Retrig
+ OE :Set Channel Balance (x16)
+ OF :Tempo
+
+
+
+COMMANDS IN DETAIL
+------------------
+
+This Section is devoted to describing the 31 or so Funktracker commands at
+your disposal. Funktracker been implemented with a new concept for playing
+effects. That is, commands have been split up into groups. These different
+groups have the ability to play independently without ceasing or
+interfering with each other. 
+
+
+Command Mechanics
+
+Protracker (and most other Formats), process commands on instance, where
+as Funktracker processes them marginally. The method of processing
+commands has been inherited from the 669 format. This method allows for
+concurrent processing of different types of commands, which is this
+format's most powerful feature. This is possible, as these commands are
+split into 3 Possible Systems- The Control System, The Note System and the
+Volume System. Each of these systems handle commands in their own way and
+have their own separate register values. When a system is executing a
+command, it won't effect the execution of any other system.
+
+The Control system acts as a front end for both the Note System and Volume
+System. It reacts to the patterns as if it was a ProTracker player
+(ie instance by instance). If It comes across a command that doesn't belong
+to it, it will pass that command over to the appropriate system. The Note
+System controls/governs a set of commands that manipulate the frequency of
+a channel.  The Volume System controls/governs a set of commands that
+manipulate the volume of a channel. The Note System cannot cease, start or
+interfere with the Volume System, nor can the Volume System interfere with
+the Note System.  Finally, a Control System command cannot cease a Note
+System or Volume System command, but can in some cases interfere with these
+systems operations (which is in most cases desirable). 
+
+
+
+The Commands "A" thru "N" (R2)
+------------------------------
+
+Now you are aware of how FunkTracker handles it commands, this section
+will describe each of them.
+
+
+
+Command A:-"Port frequency" (Note System)
+
+A 00000000
+  \ rate /
+
+The Port Up command effect will slide (increase) the frequency of a given
+channel. All types of note porting have two types of modes. It can either
+port in a straight linear fashioned, or a curved fashioned. The port mode 
+is set in the sample attributes of each sample.
+
+For those of you that are experienced, Protracker (and many other
+Trackers) implement logarithmic porting. COMPOSD1/UNIS669 (669 format) on
+the other hand implements linear porting. Funktracker has both!. 
+
+
+
+Command B:-"Port frequency down" (Note System)
+
+B 00000000
+  \ rate /
+
+This command is exactly the same as Command A - Port Up, accept that it
+slides the frequency of a channel downwards. 
+
+
+
+Command C:-"Port To Note" (Note System)
+
+C 00000000
+  \ rate /
+
+This command can only be used in "Full Slots" (if you use it in any other
+types of slots, then it will have no effect). It ports the current note
+of a given channel to the frequency of the given full slot. This can be a
+port up or a port down. It depends on the source frequency of the channel
+and the destination frequency of the note. The parameters and mode of
+these command are exactly the Same as Command A. 
+
+
+Command D:- "Vibrato" (Note System)
+
+D 00000000
+  \Sp/\Ap/
+
+This Command vibrates the frequency of a given channel. The first nibble
+of this command parameter sets the speed in which it vibrates the
+frequency. The smaller the value the faster the vibrato. The second nibble
+specifies the amplitude of the vibrato. The bigger the value the bigger
+the vibrato. It can also vibrate the frequency using other wave
+functions. Changing the wavetable involves a command the is referenced
+later in this section. You can also set the vibrato wave table form in 
+the sample attributes.
+
+
+Command E:- "Vibrato Fanin" (Note System)
+
+E 00000000
+  \Sp/\Ap/
+
+This command is an extension to the Vibrato (Command D) command, and
+should be used after this command. it's job is to slow down the vibrato
+over a period of time. It will slide the speed from the last set vibrato
+speed to the maximum possible speed for Vibrato (that being 0). The
+parameter for this command (like the last) is dual. The First nibble
+specifies the speed of the slide (the smaller the value the faster it
+fanin's), the second nibble specifies the amplitude of the vibrato (the
+bigger the value the bigger the vibrato). Note, if you don't use this
+command after a vibrato, then a start vibrato speed of Fh is assumed.
+
+
+Command F:- "Vibrato Fanout" (Note System)
+
+F 00000000
+  \Sp/\Ap/
+
+This command has exactly the same characteristics as Command E "Vibrato
+Fanin", and is intended to be used with the Command D "Vibrato" command. 
+The acception is that it slides the speed of the vibrato up, hence
+speeding it up. It will slide the speed from the last set vibrato speed to
+the minimum possible speed for Vibrato (that being F). If the last command
+isn't a vibrato, then the start speed of the vibrato is "0", which is the
+fastest vibrato speed. 
+
+
+Command G:- "Volume Slide Up" (Volume System)
+
+G 00000000
+  \Sp/\Rt/
+
+This command will slide the volume of the channel upwards. It is a dual
+parameter command. The First nibble specifies the speed of the slide (the
+smaller the faster), the second specifies the rate (the bigger the
+slower). The command will stop when the volume FFh has been reached. 
+
+
+Command H:- "Volume Slide Down"	(Volume System)
+
+H 00000000
+  \Sp/\Rt/
+
+Exactly the same as Command G, accept that is slides the volume of a
+channel downwards. The command will stop when it reaches zero. 
+
+
+Command I:- "Volume porta" (Volume System)
+
+I 00000000
+  \Sp/\Rt/
+
+This command is exactly the same as the previous two commands. It is only
+to be used in Full slots, Sample Only Slots and RLO slots (if you use it
+in "Null" slots, then it will have no effect). It will slide the volume
+from the current volume to the sample volume specified by the slot. Again,
+the parameter of this command is the same as the last two commands. 
+
+
+(NB/ the DOS32 code that controlled the use of this command has a few bugs 
+in it. Therefore DOS32 Funktracker won't process this command properly 
+with RLO and Sample only slots.)
+
+
+Command J:- "Decaying Reverb" <or fake reverb> (Volume System)
+
+J 00000000
+  \Sp/\Rt/
+
+This format simulates an echo effect. Once activated, it will slide the
+volume according to a given rate, over a period of time. The Period will
+be set according to the first nibble (speed) of the parameter. When the
+time period has expired, the volume will be set to the original volume
+minus a funny inverted Speed calculation (see the source if you are
+interested on how it does it). This minusing of the pecks, is why it is
+called a decaying reverb. The second nibble is the rate in which the
+volume slides. 
+
+
+Command K:- "Tremolo" (Volume System)
+
+K 00000000
+  \Sp/\Ap/
+
+This command has exactly the same characteristics as Command D (Vibrato),
+accept that his command applies to vibrating the volume.
+
+
+Command L:- "Arpeggio" (Note System)
+
+L 00000000
+  \N1/\N2/
+
+For those of you that are experienced with the Amiga formats, this command
+is exactly the same as the ProTracker arpeggio command (although, no code
+was ported from Protracker, so it may be a little different). This Command
+simulates a chorus effect, by switching the frequency of a channel between
+three different notes. The first note is the set note for the channel. The
+other two notes are actually specified by the parameter of this command. 
+The parameter is a dual parameter, and each nibble is dedicated to a note
+value. This value is an offset to the actual note of the channel (NB/ the
+actual note of the channel is the note set by the last full slot).
+
+Unlike Protracker Arpeggio, this arpeggio can have it's speed varied.
+However this isn't specified here. One of the sample attributes is
+dedicated to defining the arpeggio speed of the sample.
+
+
+Command M:- "Override Sample Offset" (Control System)
+
+M 00000000
+  \ offs /
+
+When a sample is played, it starts from 0 and ends at whereever. This
+command allows you to set the start offset of a sample in a "Full", "RLO"
+or "Sample Only" slot (if you use it in "Null" slots, then it will have no
+effect). The Parameter is a factor that determines the offset. This factor
+is calculated in the following formula to derive the actual offset: 
+
+Offset = Parameter * 2^SAMPLE OFFSET SHIFTER
+
+The SAMPLE OFFSET SHIFTER value is stored as a sample attribute (See sample
+Header structure).
+
+
+Command N:- "Set Volume" (Volume System)
+
+N 00000000
+  \ Vol  /
+
+This command sets the volume of a given channel. This command is
+controlled by the volume system, and therefore halts any currently running
+volume system commands. Volume value can range from 0 to FF (or 0 to 255
+in decimal). 
+
+
+The Command "O"
+
+
+Command O0:- "Misc Control" (Control System)
+
+O0 0000
+   \Cd/
+
+This is a miscellaneous control command that allows you to set the various
+modes for the systems as well as one or two other things. 
+
+O00 vibrato sine
+O01 vibrato triangle
+O02 vibrato square
+O03 vibrato sawtooth
+O04 vibrato random
+
+The above 5 boolean control settings set the mode of the Vibrato command
+and all of it's extensions (See Commands D, E and F)
+
+O05 tremolo sine
+O06 tremolo triangle
+O07 tremolo square
+O08 tremolo sawtooth
+O09 tremolo random
+
+These 5 set the mode of the Tremolo command (Command K). 
+
+O0a halt note system
+O0b halt volume system
+O0c halt note and volume system
+
+Because the Note System and Volume System handle commands in a marginal
+fashion, there would be no actual way of halting a command without playing
+a new sample. These commands will cease any currently active command that
+is running. Command "O0A" will cease only note system commands, Command
+"O0B" ceases any currently active volume system commands, and "O0C" 
+ceases all commands. 
+
+O0d NOT USED
+
+O0e Fine Channel pann left
+O0f Fine Channel pann Right
+
+(Volume System) This allows you to perform fine balance slides. Set and
+forget. It will stop sliding until the balance reaches either 0 or 255, 
+depending on which on you are using.
+
+
+
+Command O1:- "Volume Cut" (Volume System)
+
+O1 0000
+   \Sp/
+
+This command is like the Protracker Volume Cut. It sets the volume of a
+channel to zero after a given period of time. The time period will be
+determined by the parameter (the smaller the faster).
+
+
+Command O2:- "Note Delay" (Control System)
+
+O2 0000
+   \Sp/ 
+
+This command is like the Protracker Note delay. It will delay a slot note 
+by a period of time. Again, the smaller the value, the faster delay.
+
+
+Command O3:- "Set Arpeggio Speed" (Control System)
+
+O3 0000
+   \Sp/
+
+This command is an override that sets the speed of the arpeggio command
+(Command L). Each time a sample is played, the arpeggio speed from the
+sample attributes is loaded. This command is for the purpose of changing
+it "on the fly" after a sample has been played. 
+
+
+Command O4:- "Fine Port Up" (Note System)
+
+O4 0000
+   \Rt/
+
+This command is a component of Command A "Port Up". It slides the
+frequency of a channel upwards. The only difference is that is will only
+do to once per slot. In other words, it's instanced to one single slot,
+and will increase the frequency according to it's parameter value and then
+finish. Like Command A, it also has a Linear mode and Logarithmic mode.
+(NB/ Command A uses this function to perform the actual porting by
+continually calling this function).
+
+
+Command O5:- "Fine Port Down" (Note System)
+
+O5 0000
+   \Rt/
+
+This command is exactly the same as Command "04" accept that it fine ports
+the frequency of a channel downwards. 
+
+
+Command O6:- "Fine Volume Slide Up" (Volume System)
+
+O6 0000
+   \Rt/
+
+This command is a component of Command G "Volume Slide Up". It slides the
+volume level of a channel upwards. The only difference is that is will
+only do it once per slot. In other words, it's instanced to one single
+slot, and will increase the frequency according to it's parameter value
+and then finish. (NB/ Command G uses this function to perform the actual
+volume sliding by continually calling this function).
+
+
+Command O7:- "Fine Volume Slide Down" (Volume System)
+
+O7 0000
+   \Rt/
+
+This command is exactly the same as Command "06" accept that it fine
+slides the volume of a channel downwards. 
+
+
+Command O8:- "Volume Crest" (Volume System)
+
+O8 0000
+   \Sp/
+
+This command simulates the attack/decay/sustain/release volume levels of a
+typical synthesised sample. Although primitive, it is quite handy to use.
+Starting at the current volume level of a channel, it will begin to slide
+it upwards, when it has reached the maximum possible volume level (FF), it
+will wait there for a period of time and then begin to slide the volume
+back down to the original volume level for that channel. The slide up
+phase is always faster than the slide down phase, and the speed of the
+crest is determined by the parameter of this command. 
+ 
+
+Command O9:- "Set channel echo Feedback Gain" (Control System)
+
+O9 0000
+   \Gn/
+
+This will cause the DAC digital mixxing routines to mix a component of 
+the currently processing sample of a channel to be added to the echoing 
+buffer of that channel. The higher the number, the bigger the gain.
+
+Feedback will cause you samples to sound like they are being played in a 
+closed room.
+
+
+Command OA:- "Set Master Volume" (Control System)
+
+OA 0000
+   |\R x 4/
+   D
+
+Master effects all channel volumes. Its effects the overall output from
+the soundcard as to fade the music up or down, and the master volume can
+range from 0 to 255.
+
+This command value has two components. The R component (ranging from 0 to
+7 x 4) will determine how much to adjust the current Master volume, the D
+component will determine whether to add the adjustment or deduct it. 1
+means add R to the current master volume. 0 means deduct R against the
+current master volume. 
+
+
+
+Command OB:- "Set Channel Echo Delay" (Control System)
+
+OB 0000
+   \Dy/
+
+This command sets the echo delay of a channel. The trackers DAC mixxing
+routines store processing sample input in a delay buffer. Retrieved (past)
+samples will be mixxed into the output. The greater this value, the larger
+the echo delay. 
+
+
+
+Command OC:- "Set Channel Echo Decay" (Control System)
+
+OC 0000
+   \Dc/
+
+This command sets the echo decay. Retrieved sample values from the echo 
+buffer will be sized according to this value. The larger the value, the 
+more louder/intense the echo will be.
+
+
+Command OD:- "Note Retrig" (Control System)
+
+OD 0000
+   \Sp/
+
+This command is for use with percussion type samples. Over a duration of a
+slot, it will rapidly keep on replaying the sample, over and over again.
+The parameter is the speed in which it does this. The number of times it
+will replay the sample is determined by a setting of the sample
+attributes.
+
+
+Command OE:- "Set Channel Balance (x16)" (Control System)
+
+OE 0000
+   \Bl/x16
+
+This command sets the panned position of a slot. As the command parameter
+is only a nibble, and the actual balance parameter is a byte, the command
+multiplies this parameter by 16 to get the actual pan value. Therefore, a
+Parameter of "F" is actually "F0", a parameter of "7" is actually "70" and
+so on. 
+
+
+Command OF:- "Set Tempo" (Control System)
+
+This command sets the speed in which the tracker "tracks" (ie the playing
+speed). The parameter specifies the speed. The lower the number, the
+faster the track speed, the higher the number, the lower the track speed
+(NB/ The tracker has a default speed of 4). 
+
+
+
+                                 ooo0ooo

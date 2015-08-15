@@ -1,0 +1,262 @@
+   #[1]Edit [2]OpenMPT Wiki (en) [3]copyright [4]OpenMPT Wiki Atom feed
+
+Development: Test Cases/S3M
+
+   From OpenMPT Wiki
+   Jump to: [5]navigation, [6]search
+
+   This test suite is a collection of S3M modules that were created while
+   discovering playback bugs in OpenMPT. It is meant to be an easy way to
+   check for regressions when code is changed, or to verify your own
+   player’s routines if you are concerned about playback compatibility.
+   The tests are designed in a way so that it is easy to figure out if
+   your player is working correctly. In most test cases, your own player’s
+   output can be heard on the left channel, while Scream Tracker 3’s
+   output is heard on the right channel. This way, it is easy to find out
+   whether everything works as intended or if there are any discrepancies
+   without having to read any long test descriptions. When it is
+   impossible to do such a cross-verification, a more detailed description
+   of the test can usually be found in the sample, instrument or comment
+   text.
+
+   Bit-exact output is not the goal of this test suite, correct playback
+   is, so slight deviations from Scream Tracker 3’s output (e.g. different
+   resampling algorithms, pop reduction, etc.) are acceptable. Some tests
+   will only sound correct on the first run. Unless stated otherwise, it
+   is not important that the test output sounds identical when looping the
+   module.
+
+   Most test cases are documented (more or less) in OpenMPT’s source code
+   with a reference to the filename of the test case. I am sorry that many
+   tests do not have proper descriptions − I have started this
+   documentation years after I have fixed some of these issues and can
+   thus not remember all the details anymore. If you are stuck with one of
+   the tests, you may have a look at specific source code revisions that
+   are provided with most tests to see what was changed in the code to
+   make it work correctly.
+
+   Last but not least, please keep in mind that some descriptions might be
+   wrong or too general. Sometimes, the description might be correct in
+   the given test case, but changing the test case might invalidate the
+   description. If you know better than me, please correct the texts, and
+   please ask me if you need more information one of the test cases. The
+   documentation is not always optimal because the test cases have been
+   written long before I have created this site.
+
+Contents
+
+     * [7]1 AmigaLimits.s3m
+     * [8]2 FreqLimits.s3m
+     * [9]3 ParamMemory.s3m
+     * [10]4 PatternDelay.s3m
+     * [11]5 PatternDelaysRetrig.s3m
+     * [12]6 PortaSmpChange.s3m
+     * [13]7 weirdloop.s3m
+
+AmigaLimits.s3m[[14]edit]
+
+   Current status: OpenMPT passes this test since revision 1198.
+   Download: [15]AmigaLimits.s3m
+   Description: If “Force Amiga Limits” is enabled, the limits should also
+   be enfored on the stored period, not only on the computed period.
+
+FreqLimits.s3m[[16]edit]
+
+   Current status: OpenMPT passes this test since revision 1134.
+   Download: [17]FreqLimits.s3m
+   Description: Scream Tracker 3 stops playback if the period is too low
+   (the frequency is too high), but there is no maximum threshold above
+   which playback is cut.
+
+ParamMemory.s3m[[18]edit]
+
+   Current status: OpenMPT passes this test since revision 1053.
+   Download: [19]ParamMemory.s3m
+   Description: Scream Tracker 3 uses the last non-zero effect parameter
+   as a memory for most effects: Dxy, Kxy, Lxy, Exx, Fxx, Ixy, Jxy, Qxy,
+   Rxy, Sxy. Other effects may have their own memory or share it with
+   another command (such as Hxy / Uxy).
+
+PatternDelay.s3m[[20]edit]
+
+   Current status: OpenMPT passes this test since revision 1221.
+   Download: [21]PatternDelay.s3m
+   Description: When there are multiple row delays (SEx), only the first
+   one is considered. The tricky part here is that the “first one” might
+   not always be the “leftmost” one, because Scream Tracker 3 first
+   evaluates all “left” channels (whose name starts with L in the pan
+   table), and then all “right” channels (whose name starts with R in the
+   pan table). This test case does not exploit this behaviour, the first
+   row delay is always found on a left channel or there are only row
+   delays on a right channel. I do not really know if it is worth
+   emulating this idiosynchrasy. Note: Scream Tracker 3 does not have tick
+   delay (S6x) commands, but they are tested here for completeness
+   (Impulse Tracker supports them as well, so its playback behaviour is
+   used as a reference).
+
+PatternDelaysRetrig.s3m[[22]edit]
+
+   Current status: OpenMPT passes this test since revision 1221.
+   Download: [23]PatternDelaysRetrig.s3m
+   Description: Rows on which a row delay (SEx) effect is placed have
+   multiple “first ticks”, i.e. you should set your “first tick flag” on
+   every tick that is a multiple of the song speed (or speed + tick delay
+   if you support tick delays in your S3M player). In this test module,
+   the note pitch is changed multiple times per row, depending on the row
+   delay values.
+
+PortaSmpChange.s3m[[24]edit]
+
+   Current status: OpenMPT passes this test since revision 3578.
+   Download: [25]PortaSmpChange.s3m
+   Description: If the sample number next to a portamento effect differs
+   from the previous number, the old sample should be kept, but the new
+   sample's default volume should still be applied.
+
+weirdloop.s3m[[26]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [27]weirdloop.s3m
+   Description: A “broken” pattern loop. The voice should say “1” and then
+   repeat “4 2 1 2”. Interestingly, the playback differs between various
+   versions of ScreamTracker 3.
+
+   In total, OpenMPT passes 6 out of 7 tests.
+   Retrieved from
+   "[28]http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/S3
+   M&oldid=1825"
+   [29]Categories:
+     * [30]Development
+     * [31]S3M Format
+
+Navigation menu
+
+Personal tools
+
+     * [32]Create account
+     * [33]Log in
+
+Namespaces
+
+     * [34]Page
+     * [35]Discussion
+
+Variants
+
+Views
+
+     * [36]Read
+     * [37]Edit
+     * [38]View history
+
+Actions
+
+Search
+
+   ____________________ Search Go
+
+Navigation
+
+     * [39]Main page
+     * [40]Download OpenMPT
+     * [41]OpenMPT Website
+     * [42]Community portal
+     * [43]Current events
+     * [44]Recent changes
+     * [45]Random page
+     * [46]Help
+
+Tools
+
+     * [47]What links here
+     * [48]Related changes
+     * [49]Special pages
+     * [50]Permanent link
+     * [51]Page information
+
+Print/export
+
+     * [52]Create a book
+     * [53]Download as PDF
+     * [54]Printable version
+
+     * This page was last modified on 15 January 2014, at 23:28.
+     * This page has been accessed 503 times.
+     * Content is available under [55]Creative Commons Attribution Share
+       Alike unless otherwise noted.
+
+     * [56]Privacy policy
+     * [57]About OpenMPT Wiki
+     * [58]Disclaimers
+
+     * [59]Creative Commons Attribution Share Alike
+     * [60]Powered by MediaWiki
+
+References
+
+   Visible links
+   1. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/S3M&action=edit
+   2. http://wiki.openmpt.org/opensearch_desc.php
+   3. http://creativecommons.org/licenses/by-sa/3.0/
+   4. http://wiki.openmpt.org/index.php?title=Special:RecentChanges&feed=atom
+   5. http://wiki.openmpt.org/Development:_Test_Cases/S3M#mw-navigation
+   6. http://wiki.openmpt.org/Development:_Test_Cases/S3M#p-search
+   7. http://wiki.openmpt.org/Development:_Test_Cases/S3M#AmigaLimits.s3m
+   8. http://wiki.openmpt.org/Development:_Test_Cases/S3M#FreqLimits.s3m
+   9. http://wiki.openmpt.org/Development:_Test_Cases/S3M#ParamMemory.s3m
+  10. http://wiki.openmpt.org/Development:_Test_Cases/S3M#PatternDelay.s3m
+  11. http://wiki.openmpt.org/Development:_Test_Cases/S3M#PatternDelaysRetrig.s3m
+  12. http://wiki.openmpt.org/Development:_Test_Cases/S3M#PortaSmpChange.s3m
+  13. http://wiki.openmpt.org/Development:_Test_Cases/S3M#weirdloop.s3m
+  14. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  15. http://resources.openmpt.org/player_tests/s3m/AmigaLimits.s3m
+  16. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  17. http://resources.openmpt.org/player_tests/s3m/FreqLimits.s3m
+  18. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  19. http://resources.openmpt.org/player_tests/s3m/ParamMemory.s3m
+  20. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  21. http://resources.openmpt.org/player_tests/s3m/PatternDelay.s3m
+  22. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  23. http://resources.openmpt.org/player_tests/s3m/PatternDelaysRetrig.s3m
+  24. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  25. http://resources.openmpt.org/player_tests/s3m/PortaSmpChange.s3m
+  26. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  27. http://resources.openmpt.org/player_tests/s3m/weirdloop.s3m
+  28. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/S3M&oldid=1825
+  29. http://wiki.openmpt.org/Special:Categories
+  30. http://wiki.openmpt.org/Category:Development
+  31. http://wiki.openmpt.org/Category:S3M_Format
+  32. http://wiki.openmpt.org/index.php?title=Special:UserLogin&returnto=Development%3A+Test+Cases%2FS3M&type=signup
+  33. http://wiki.openmpt.org/index.php?title=Special:UserLogin&returnto=Development%3A+Test+Cases%2FS3M
+  34. http://wiki.openmpt.org/Development:_Test_Cases/S3M
+  35. http://wiki.openmpt.org/index.php?title=Talk:Development:_Test_Cases/S3M&action=edit&redlink=1
+  36. http://wiki.openmpt.org/Development:_Test_Cases/S3M
+  37. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/S3M&action=edit
+  38. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/S3M&action=history
+  39. http://wiki.openmpt.org/Main_Page
+  40. http://openmpt.org/download
+  41. http://openmpt.org/
+  42. http://wiki.openmpt.org/OpenMPT_Wiki:Community_portal
+  43. http://wiki.openmpt.org/OpenMPT_Wiki:Current_events
+  44. http://wiki.openmpt.org/Special:RecentChanges
+  45. http://wiki.openmpt.org/Special:Random
+  46. https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Contents
+  47. http://wiki.openmpt.org/Special:WhatLinksHere/Development:_Test_Cases/S3M
+  48. http://wiki.openmpt.org/Special:RecentChangesLinked/Development:_Test_Cases/S3M
+  49. http://wiki.openmpt.org/Special:SpecialPages
+  50. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/S3M&oldid=1825
+  51. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/S3M&action=info
+  52. http://wiki.openmpt.org/index.php?title=Special:Book&bookcmd=book_creator&referer=Development%3A+Test+Cases%2FS3M
+  53. http://wiki.openmpt.org/index.php?title=Special:Book&bookcmd=render_article&arttitle=Development%3A+Test+Cases%2FS3M&oldid=1825&writer=rl
+  54. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/S3M&printable=yes
+  55. http://creativecommons.org/licenses/by-sa/3.0/
+  56. http://wiki.openmpt.org/OpenMPT_Wiki:Privacy_policy
+  57. http://wiki.openmpt.org/OpenMPT_Wiki:About
+  58. http://wiki.openmpt.org/OpenMPT_Wiki:General_disclaimer
+  59. http://creativecommons.org/licenses/by-sa/3.0/
+  60. http://www.mediawiki.org/
+
+   Hidden links:
+  62. http://wiki.openmpt.org/Development:_Test_Cases/S3M
+  63. http://wiki.openmpt.org/Development:_Test_Cases/S3M
+  64. http://wiki.openmpt.org/Main_Page

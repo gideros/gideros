@@ -1,0 +1,232 @@
+Digibooster module format:
+
+ Digi Booster PRO - DBM0 file format by Tomasz Piasta
+
+DBM is Iff like format.  It means that module consists of hunks.  Each hunk
+has a 4 bytes identification and after that hunk length (LWORD - 4bytes).
+
+If  the  module  doesn't  consist  of  any  hunk, for example VENV - volume
+envelope  hunk  that  will  mean  this  module  doesn't use volume envelope
+effect.
+
+These hunks DBM module should always consits of: NAME, INFO, SONG, INST, PATT,
+SMPL
+
+----------------------------------------------------------------------------
+ Offset  Length
+----------------------------------------------------------------------------
+   0       4      |   ID "DBM0" - module identification
+   4       2      |   tracker version:
+                  |   eg. $0200 - version 2.00
+   6       2      |   reserved
+----------------------------------------------------------------------------
+   8       4      |   ID "NAME" - module name hunk identification
+  +4       4      |   hunk length
+  +8      44      |   mod name
+----------------------------------------------------------------------------
+  ???      4      |   ID "INFO" 
+  +4       4      |   hunk length
+  +8       2      |   number of instruments in module
+ +10       2      |   number of samples in module
+ +12       2      |   number of songs in module
+ +14       2      |   number of patterns in module
+ +16       2      |   number of channels
+----------------------------------------------------------------------------
+  ???      4      |   ID "SONG" - songs hunk identification
+  +4       4      |   hunk length
+ +12      44      |   song name 
+ +56       2      |   number of orders for this song
+ +58      ???     |   order list (words) NOTE: Each order list can use
+                  |                            the same numbers of patterns.
+----------------------------------------------------------------------------
+  ???      4      |   ID "INST" - instruments hunk identification
+  +4       4      |   hunk length
+  +8      30      |   instrument name
+ +38       2      |   sample number used in this instrument
+ +40       2      |   instrument volume
+ +42       4      |   instrument finetune (stored in HZ)
+ +46       4      |   instrument repeat start
+ +50       4      |   instrument repeat length
+ +54       2      |   general panning (0-256)
+ +56       2      |   flags:
+                  |                        bit 0 set - forward loop uesd
+                  |                        bit 1 set - ping pong loop uesd
+----------------------------------------------------------------------------
+  ???      4      |   ID "PATT" - patterns hunk identification
+  +4       4      |   hunk length
+  +8       2      |   number of positions (rows) in pattern
+ +10       4      |   size of packed data
+ +14      ???     |   packed pattern data
+----------------------------------------------------------------------------
+  ???      4      |   ID "SMPL" - samples hunk identification
+  +4       4      |   hunk length
+  +8       4      |   flags:
+                  |                        bit 0 set - 8 bit sample
+                  |                        bit 1 set - 16 bit sample
+                  |                        bit 2 set - 32 bit sample
+ +12       4      |   sample length
+ +16      ???     |   sample data (unsigned)
+----------------------------------------------------------------------------
+  ???      4      |   ID "VENV" - volume envelopes hunk identification
+  +4       4      |   hunk length
+  +8       2      |   how many volume envelope tables does this hunk contain
+ +10       2      |   to which instrument this volume envelope data belongs
+ +12     134      |   volume envelope data
+----------------------------------------------------------------------------
+
+
+
+                        --------------------------
+                        Volume Envelope structure:
+                        --------------------------
+
+Each volume envelope table takes 134 bytes.
+Max. number of points is 32.
+Max. number of sustain points is 2.
+Max. number of loops is 1.
+
+------------------------------------------------------------
+ Offset  Length
+------------------------------------------------------------
+ +0        1      |   type   bit 0: envelope on/off
+                  |          bit 1: 1st sustain on/off
+                  |          bit 2: envelope loop on/off
+                  |          bit 3: 2nd sustain on/off
+ +1        1      |   number of envelope points
+ +2        1      |   1st sustain point
+ +3        1      |   loop start point
+ +4        1      |   loop end point
+ +5        1      |   2nd sustain point
+ +6        1      |   reserved
+------------------------------------------------------------
+ +8        2      |   1st point time (in vblanks) 
++10        2      |   1st point volume (range: 0-64) 
++12        2      |   2nd point time (in vblanks) 
++14        2      |   2nd point volume (range: 0-64)
++16        2      |   ...
+------------------------------------------------------------
+
+
+
+                          ----------------------
+                          Packed pattern format:
+                          ----------------------
+
+If the byte is zero it means that you must skip to next position (row).
+
+If the byte is nonzero bits are interpreted as follows:
+
+    bit 0 set: Note follows (byte)
+    bit 1 set: Instrument number follows (byte)
+    bit 2 set: 1st effect type follows (byte)
+    bit 3 set: 1st effect parameter follows (byte)
+    bit 4 set: 1st effect type follows (byte)
+    bit 5 set: 1st effect parameter follows (byte)
+
+    Next byte is a channel number to which this data belongs.
+
+
+Example:
+
+    00 - skip to next pattern position
+    00 - skip to next pattern position
+    03 - byte is nonzero; the bit 0 and 1 is set; take note and instrument
+    24 - channel number to which following data belongs
+    81 - note (hex: $51 - this is a 5th octave and 1st note)
+    04 - instrument number
+
+
+[ **NOTE**  Description above is incorrect, channel number comes first ]
+
+
+
+Digiboost-effect parameters:
+
+Digi Booster has almost fifty effects. All Pro Tracker effects are
+supported (without EFx).
+
+If you want to use pannings you must set audio mode with stereo++
+in AudioModeConfig.
+
+Here you are a full list of Digi Booster Pro II effects.
+
+(*) = If the command parameter is zero, the last nonzero parameter will
+be used.
+
+0xx     Arpeggio
+1xx (*) Portamento up
+1Fx (*) Fine Portamento up
+2xx (*) Portamento down
+2Fx (*) Fine Portamento down
+3xx (*) Glissando
+4xx (*) Vibrato
+5xx (*) Tone portamento+Volume slide
+5xF (*) Tone portamento+Fine Volume slide up
+5Fx (*) Tone portamento+Fine Volume slide down
+6xx (*) Vibrato+Volume slide
+6xF (*) Vibrato+Fine Volume slide up
+6Fx (*) Vibrato+Fine Volume slide down
+8xx     Set panning
+9xx (*) Sample offset
+Axx (*) Volume slide
+AxF (*) Fine volume slide up
+AFx (*) Fine volume slide down
+Bxx     Position jump
+Cxx     Set volume
+Dxx     Pattern break
+
+E00     Low pass filter on
+E01     Low pass filter off
+E1x     Fine portamento up
+E2x     Fine portamento down
+E3x     Play from backward
+E40     Turn off sound in channel
+E5x     Turn on/off channel
+E6x     Set loop begin/loop
+E7x     Set offset
+E8x     Set panning
+E9x     Retrig note
+EAx     Fine volume slide up
+EBx     Fine volume slide down
+ECx     Note cut
+EDx     Note delay
+EEx     Pattern delay
+
+Fxx     Set tempo/BPM
+Gxx     Set global volume
+Hxx (*) Global volume slide
+K00     Key off
+Lxx     Set envelope position
+Oxx (*) Sample offset slide
+Pxx (*) Panning slide
+Sxx     Set Real BPM
+
+The  commands  listed  below  works  only if you have Echo option
+enabled in AHI preferences:
+
+V00     Turn DSP echo on in channel
+V01     Turn DSP echo off in channel
+V10     Turn DSP echo on in all channels
+V11     Turn DSP echo off in all channels
+        Default is: echo turned off in all channels.
+
+Wxx     Echo delay. It is a value between 00 and ff, and defines
+        time of delay. 01 means that sound will be delayed
+        2 ms (0.02) of second.
+        Default is: W40 - 128 miliseconds ; 0.128 sec.
+
+Xxx     Echo Feedback. It is a value between 00 and ff, and defines
+        how much of the delayed signal should be feed back to the delay
+        stage. Setting this to 0 gives a delay effect, otherwise echo.
+        Default is: X80 
+
+Yxx     Echo Mix. It tells how much of the delayed signal should be mixed
+        with the normal signal. Setting this to 0 disables delay/echo,
+        and setting it to ff outputs only the delay/echo signal.
+        Default is: Y80 
+
+Zxx     Echo Cross. It only has effect if the current playback mode is
+        stereo. It tells how the delayed signal should be panned to
+        the other channel. 0 means no cross echo, ff means full
+        cross echo.
+        Default is: ZFF - full cross echo.

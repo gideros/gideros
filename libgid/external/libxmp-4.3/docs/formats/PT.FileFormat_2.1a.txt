@@ -1,0 +1,117 @@
+
+Protracker 2.1A Song/Module Format:
+-----------------------------------
+
+Offset  Bytes  Description
+------  -----  -----------
+   0     20    Songname. Remember to put trailing null bytes at the end...
+
+Information for sample 1-31:
+
+Offset  Bytes  Description
+------  -----  -----------
+  20     22    Samplename for sample 1. Pad with null bytes.
+  42      2    Samplelength for sample 1. Stored as number of words.
+               Multiply by two to get real sample length in bytes.
+  44      1    Lower four bits are the finetune value, stored as a signed
+               four bit number. The upper four bits are not used, and
+               should be set to zero.
+               Value:  Finetune:
+                 0        0
+                 1       +1
+                 2       +2
+                 3       +3
+                 4       +4
+                 5       +5
+                 6       +6
+                 7       +7
+                 8       -8
+                 9       -7
+                 A       -6
+                 B       -5
+                 C       -4
+                 D       -3
+                 E       -2
+                 F       -1
+
+  45      1    Volume for sample 1. Range is $00-$40, or 0-64 decimal.
+  46      2    Repeat point for sample 1. Stored as number of words offset
+               from start of sample. Multiply by two to get offset in bytes.
+  48      2    Repeat Length for sample 1. Stored as number of words in
+               loop. Multiply by two to get replen in bytes.
+
+Information for the next 30 samples starts here. It's just like the info for
+sample 1.
+
+Offset  Bytes  Description
+------  -----  -----------
+  50     30    Sample 2...
+  80     30    Sample 3...
+   .
+   .
+   .
+ 890     30    Sample 30...
+ 920     30    Sample 31...
+
+Offset  Bytes  Description
+------  -----  -----------
+ 950      1    Songlength. Range is 1-128.
+ 951      1    Well... this little byte here is set to 127, so that old
+               trackers will search through all patterns when loading.
+               Noisetracker uses this byte for restart, but we don't.
+ 952    128    Song positions 0-127. Each hold a number from 0-63 that
+               tells the tracker what pattern to play at that position.
+1080      4    The four letters "M.K." - This is something Mahoney & Kaktus
+               inserted when they increased the number of samples from
+               15 to 31. If it's not there, the module/song uses 15 samples
+               or the text has been removed to make the module harder to
+               rip. Startrekker puts "FLT4" or "FLT8" there instead.
+
+Offset  Bytes  Description
+------  -----  -----------
+1084    1024   Data for pattern 00.
+   .
+   .
+   .
+xxxx  Number of patterns stored is equal to the highest patternnumber
+      in the song position table (at offset 952-1079).
+
+Each note is stored as 4 bytes, and all four notes at each position in
+the pattern are stored after each other.
+
+00 -  chan1  chan2  chan3  chan4
+01 -  chan1  chan2  chan3  chan4
+02 -  chan1  chan2  chan3  chan4
+etc.
+
+Info for each note:
+
+ _____byte 1_____   byte2_    _____byte 3_____   byte4_
+/                \ /      \  /                \ /      \
+0000          0000-00000000  0000          0000-00000000
+
+Upper four    12 bits for    Lower four    Effect command.
+bits of sam-  note period.   bits of sam-
+ple number.                  ple number.
+
+Periodtable for Tuning 0, Normal
+  C-1 to B-1 : 856,808,762,720,678,640,604,570,538,508,480,453
+  C-2 to B-2 : 428,404,381,360,339,320,302,285,269,254,240,226
+  C-3 to B-3 : 214,202,190,180,170,160,151,143,135,127,120,113
+
+To determine what note to show, scan through the table until you find
+the same period as the one stored in byte 1-2. Use the index to look
+up in a notenames table.
+
+This is the data stored in a normal song. A packed song starts with the
+four letters "PACK", and then comes the packed data.
+
+In a module, all the samples are stored right after the patterndata.
+To determine where a sample starts and stops, you use the sampleinfo
+structures in the beginning of the file (from offset 20). Take a look
+at the mt_init routine in the playroutine, and you'll see just how it
+is done.
+
+Lars "ZAP" Hamre /Amiga Freelancers
+Peter "CRAYON" Hanning /Mushroom Studios/Noxious
+

@@ -1,0 +1,543 @@
+Article: 1391 of comp.sys.ibm.pc.soundcard
+Relay-Version: VMS News - V6.0 13/10/90 VAX/VMS V5.5; site darwin.ntu.edu.au
+Path: darwin.ntu.edu.au!munnari.oz.au!spool.mu.edu!uunet!mcsun!news.funet.fi!network.jyu.fi!ap
+Newsgroups: comp.sys.ibm.pc.soundcard
+Subject: Amiga MOD format, here it is.
+Message-ID: <1992Sep4.052947.29727@jyu.fi>
+From: ap@jyu.fi (Patric Aalto)
+Date: Fri, 4 Sep 1992 05:29:47 GMT
+Organization: University of Jyvaskyla, Finland
+Lines: 530
+
+
+Hi!
+
+Here is the Amiga (ProTracker) module format document. The first part
+I got from a BBS, the second part I got from Mark Cox (author of
+ModPlay, etc).
+
+Patrick Aalto
+ap@tukki.jyu.fi
+
+------------------------- CUT HERE
+
+Hellox, folks! There has been quite a lot of questions about the .MOD
+format so here is something... Found this article from Usenet...
+Hopefully somebody needs it..
+*********************************************************************
+
+
+Protracker 1.1B Song/Module Format:
+
+Offset  Bytes  Description
+   0     20    Songname. Remember to put trailing null bytes at the end...
+
+Information for sample 1-31:
+
+Offset  Bytes  Description
+  20     22    Samplename for sample 1. Pad with null bytes.
+  42      2    Samplelength for sample 1. Stored as number of words.
+               Multiply by two to get real sample length in bytes.
+  44      1    Lower four bits are the finetune value, stored as a signed
+               four bit number. The upper four bits are not used, and
+               should be set to zero.
+               Value:  Finetune:
+                 0        0
+                 1       +1
+                 2       +2
+                 3       +3
+                 4       +4
+                 5       +5
+                 6       +6
+                 7       +7
+                 8       -8
+                 9       -7
+                 A       -6
+                 B       -5
+                 C       -4
+                 D       -3
+                 E       -2
+                 F       -1
+
+  45      1    Volume for sample 1. Range is $00-$40, or 0-64 decimal.
+  46      2    Repeat point for sample 1. Stored as number of words offset
+               from start of sample. Multiply by two to get offset in bytes.
+  48      2    Repeat Length for sample 1. Stored as number of words in
+               loop. Multiply by two to get replen in bytes.
+
+Information for the next 30 samples starts here. It's just like the info for
+sample 1.
+
+Offset  Bytes  Description
+  50     30    Sample 2...
+  80     30    Sample 3...
+   .
+   .
+   .
+ 890     30    Sample 30...
+ 920     30    Sample 31...
+
+Offset  Bytes  Description
+ 950      1    Songlength. Range is 1-128.
+ 951      1    Well... this little byte here is set to 127, so that old
+               trackers will search through all patterns when loading.
+               Noisetracker uses this byte for restart, but we don't.
+ 952    128    Song positions 0-127. Each hold a number from 0-63 that
+               tells the tracker what pattern to play at that position.
+1080      4    The four letters "M.K." - This is something Mahoney & Kaktus
+               inserted when they increased the number of samples from
+               15 to 31. If it's not there, the module/song uses 15 samples
+               or the text has been removed to make the module harder to
+               rip. Startrekker puts "FLT4" or "FLT8" there instead.
+
+Offset  Bytes  Description
+1084    1024   Data for pattern 00.
+   .
+   .
+   .
+xxxx  Number of patterns stored is equal to the highest patternnumber
+      in the song position table (at offset 952-1079).
+
+Each note is stored as 4 bytes, and all four notes at each position in
+the pattern are stored after each other.
+
+00 -  chan1  chan2  chan3  chan4
+01 -  chan1  chan2  chan3  chan4
+02 -  chan1  chan2  chan3  chan4
+etc.
+
+Info for each note:
+
+ _____byte 1_____   byte2_    _____byte 3_____   byte4_
+/                / /      /  /                / /      /
+0000          0000-00000000  0000          0000-00000000
+
+Upper four    12 bits for    Lower four    Effect command.
+bits of sam-  note period.   bits of sam-
+ple number.                  ple number.
+
+Periodtable for Tuning 0, Normal
+  C-1 to B-1 : 856,808,762,720,678,640,604,570,538,508,480,453
+  C-2 to B-2 : 428,404,381,360,339,320,302,285,269,254,240,226
+  C-3 to B-3 : 214,202,190,180,170,160,151,143,135,127,120,113
+
+To determine what note to show, scan through the table until you find
+the same period as the one stored in byte 1-2. Use the index to look
+up in a notenames table.
+
+This is the data stored in a normal song. A packed song starts with the
+four letters "PACK", but i don't know how the song is packed: You can
+get the source code for the cruncher/decruncher from us if you need it,
+but I don't understand it; I've just ripped it from another tracker...
+
+In a module, all the samples are stored right after the patterndata.
+To determine where a sample starts and stops, you use the sampleinfo
+structures in the beginning of the file (from offset 20). Take a look
+at the mt_init routine in the playroutine, and you'll see just how it
+is done.
+
+Lars "ZAP" Hamre/Amiga Freelancers
+
+--------------------------
+
+Found that document...
+
+Mark J Cox ------------------------------------------- m.j.h.cox@bradford.ac.uk
+University of Bradford ---------------------------- bc732@cleveland.freenet.edu
+Mark
+
+             EFFECT COMMANDS
+             ---------------
+ Effect commands on protracker should
+ be compatible with all other trackers.
+ 0 - None/Arpeggio     8 - * NOT USED *
+ 1 - Portamento Up     9 - SampleOffset
+ 2 - Portamento Down   A - VolumeSlide
+ 3 - TonePortamento    B - PositionJump
+ 4 - Vibrato           C - Set Volume
+ 5 - ToneP + VolSlide  D - PatternBreak
+ 6 - Vibra + VolSlide  E - Misc. Cmds
+ 7 - Tremolo           F - Set Speed
+
+
+              E - COMMANDS
+              ------------
+ The E command has been altered to
+ contain more commands than one.
+ E0- Filter On/Off     E8- * NOT USED *
+ E1- Fineslide Up      E9- Retrig Note
+ E2- Fineslide Down    EA- FineVol Up
+ E3- Glissando Control EB- FineVol Down
+ E4- Vibrato Control   EC- NoteCut
+ E5- Set Finetune      ED- NoteDelay
+ E6- Patternloop       EE- PatternDelay
+ E7- Tremolo Control   EF- Invert Loop
+
+
+  Cmd 0. Arpeggio [Range:$0-$F/$0-$F]
+  -----------------------------------
+ Usage: $0 + 1st halfnote add
+           + 2nd halfnote add
+ Arpeggio is used to simulate chords.
+ This is done by rapidly changing the
+ pitch between 3(or 2) different notes.
+ It sounds very noisy and grainy on
+ most samples, but ok on monotone ones.
+ Example: C-300047  C-major chord:
+          (C+E+G  or C+4+7 halfnotes)
+          C-300037  C-minor chord:
+          (C+D#+G or C+3+7 halfnotes)
+
+
+  Cmd 1. Portamento up [Speed:$00-$FF]
+  ------------------------------------
+ Usage: $1 + portamento speed
+ Portamento up will simply slide the
+ sample pitch up. You can NOT slide
+ higher than B-3! (Period 113)
+ Example: C-300103  1 is the command,
+            3 is the portamentospeed.
+ NOTE: The portamento will be called as
+ many times as the speed of the song.
+ This means that you'll sometimes have
+ trouble sliding accuratly. If you
+ change the speed without changing the
+ sliderates, it will sound bad...
+
+
+  Cmd 2. Portamento down [Speed:$00-FF]
+  -------------------------------------
+ Usage: $2 + portamento speed
+ Just like command 1, except that this
+ one slides the pitch down instead.
+ (Adds to the period).
+ You can NOT slide lower than C-1!
+ (Period 856)
+ Example: C-300203  2 is the command,
+            3 is the portamentospeed.
+
+
+ Cmd 3. Tone-portamento [Speed:$00-$FF]
+ --------------------------------------
+ Usage: Dest-note + $3 + slidespeed
+ This command will automatically slide
+ from the old note to the new.
+ You don't have to worry about which
+ direction to slide, you need only set
+ the slide speed. To keep on sliding,
+ just select the command $3 + 00.
+ Example: A-200000  First play a note.
+          C-300305  C-3 is the note to
+               slide to, 3 the command,
+               and 5 the speed.
+
+
+ Cmd 4. Vibrato [Rate:$0-$F,Dpth:$0-$F]
+ --------------------------------------
+ Usage: $4 + vibratorate + vibratodepth
+ Example: C-300481  4 is the command,
+       8 is the speed of the vibrato,
+   and 1 is the depth of the vibrato.
+ To keep on vibrating, just select
+ the command $4 + 00. To change the
+ vibrato, you can alter the rate,
+ depth or both. Use command E4- to
+ change the vibrato-waveform.
+
+
+ Cmd 5. ToneP + Volsl [Spd:$0-$F/$0-$F]
+ --------------------------------------
+ Usage: $5 + upspeed + downspeed
+ This command will continue the current
+ toneportamento and slide the volume
+ at the same time. Stolen from NT2.0.
+ Example: C-300503  3 is the speed to
+                turn the volume down.
+          C-300540  4 is the speed to
+                         slide it up.
+
+
+ Cmd 6. Vibra + Volsl [Spd:$0-$F/$0-$F]
+ --------------------------------------
+ Usage: $6 + upspeed + downspeed
+ This command will continue the current
+ vibrato and slide the volume at the
+ same time. Stolen from NT2.0.
+ Example: C-300605  5 is the speed to
+                turn the volume down.
+          C-300640  4 is the speed to
+                         slide it up.
+
+
+ Cmd 7. Tremolo [Rate:$0-$F,Dpth:$0-$F]
+ --------------------------------------
+ Usage: $7 + tremolorate + tremolodepth
+ Tremolo vibrates the volume.
+ Example: C-300794  7 is the command,
+       9 is the speed of the tremolo,
+   and 4 is the depth of the tremolo.
+ To keep on tremoling, just select
+ the command $7 + 00. To change the
+ tremolo, you can alter the rate,
+ depth or both. Use command E7- to
+ change the tremolo-waveform.
+
+
+ Cmd 9. Set SampleOffset [Offs:$00-$FF]
+ --------------------------------------
+ Usage: $9 + Sampleoffset
+ This command will play from a chosen
+ position in the sample, and not from
+ the beginning. The two numbers equal
+ the two first numbers in the length
+ of the sample. Handy for speech-
+ samples.
+ Example: C-300923  Play sample from
+                    offset $2300.
+
+
+ Cmd A. Volumeslide [Speed:$0-$F/$0-$F]
+ --------------------------------------
+ Usage: $A + upspeed + downspeed
+ Example: C-300A05  5 is the speed to
+                turn the volume down.
+          C-300A40  4 is the speed to
+                         slide it up.
+ NOTE: The slide will be called as
+ many times as the speed of the song.
+ The slower the song, the more the
+ volume will be changed on each note.
+
+
+   Cmd B. Position-jump [Pos:$00-$7F]
+   ----------------------------------
+ Usage: $B + position to continue at
+ Example: C-300B01  B is the command,
+                 1 is the position to
+                 restart the song at.
+ This command will also perform a
+ pattern-break (see 2 pages below).
+ You can use this command instead of
+ restart as on noisetracker, but you 
+ must enter the position in hex!
+
+
+   Cmd C. Set volume [Volume:$00-$40]
+   ----------------------------------
+ Usage: $C + new volume
+ Well, this old familiar command will
+ set the current volume to your own
+ selected. The highest volume is $40.
+ All volumes are represented in hex.
+ (Programmers do it in hex, you know!)
+ Example: C-300C10  C is the command,
+       10 is the volume (16 decimal).
+
+
+      Cmd D. Pattern-break
+      [Pattern-pos:00-63, decimal]
+      ----------------------------
+ Usage: $D + pattern-position
+ This command just jumps to the next
+ song-position, and continues play
+ from the patternposition you specify.
+ Example: C-300D00  Jump to the next
+     song-position and continue play
+            from patternposition 00.
+      Or: C-300D32  Jump to the next
+     song-position and continue play
+    from patternposition 32 instead.
+
+
+    Cmd E0. Set filter [Range:$0-$1]
+    --------------------------------
+ Usage: $E0 + filter-status
+ This command jerks around with the
+ sound-filter on some A500 + A2000.
+ All other Amiga-users should keep out
+ of playing around with it.
+ Example: C-300E01  disconnects filter
+                 (turns power LED off)
+          C-300E00  connects filter
+                  (turns power LED on)
+
+
+   Cmd E1. Fineslide up [Range:$0-$F]
+   ----------------------------------
+ Usage: $E1 + value
+ This command works just like the
+ normal portamento up, except that
+ it only slides up once. It does not
+ continue sliding during the length of
+ the note.
+ Example: C-300E11  Slide up 1 at the
+               beginning of the note.
+ (Great for creating chorus effects)
+
+
+  Cmd E2. Fineslide down [Range:$0-$F]
+  ------------------------------------
+ Usage: $E2 + value
+ This command works just like the
+ normal portamento down, except that
+ it only slides down once. It does not
+ continue sliding during the length of
+ the note.
+ Example: C-300E26  Slide up 6 at the
+               beginning of the note.
+
+
+  Cmd E3. Glissando Ctrl [Range:$0-$1]
+  ------------------------------------
+ Usage: $E3 + Glissando-Status
+ Glissando must be used with the tone-
+ portamento command. When glissando is
+ activated, toneportamento will slide
+ a halfnote at a time, instead of a
+ straight slide.
+ Example: C-300E31  Turn Glissando on.
+          C-300E30  Turn Glissando off.
+
+
+      Cmd E4. Set vibrato waveform
+      [Range:$0-$3]
+      ----------------------------
+ Usage: $E4 + vibrato-waveform
+ Example: C-300E40  Set sine(default)
+               E44  Don't retrig WF
+          C-300E41  Set Ramp Down
+               E45  Don't retrig WF
+          C-300E42  Set Squarewave
+               E46  Don't retrig WF
+          C-300E43  Set Random
+               E47  Don't retrig WF
+
+
+   Cmd E5. Set finetune [Range:$0-$F]
+   ----------------------------------
+ Usage: $E5 + finetune-value
+ Example: C-300E51  Set finetune to 1.
+ Use these tables to figure out the
+ finetune-value.
+ Finetune: +7 +6 +5 +4 +3 +2 +1  0
+    Value:  7  6  5  4  3  2  1  0
+ Finetune: -1 -2 -3 -4 -5 -6 -7 -8
+    Value:  F  E  D  C  B  A  9  8
+
+
+   Cmd E6. PatternLoop [Loops:$0-$F]
+   ----------------------------------
+ Usage: $E6 + number of loops
+ This command will loop a part of a
+ pattern.
+ Example: C-300E60  Set loopstart.
+          C-300E63  Jump to loop 3
+           times before playing on.
+
+
+      Cmd E7. Set tremolo waveform
+      [Range:$0-$3]
+      ----------------------------
+ Usage: $E7 + tremolo-waveform
+ Example: C-300E70  Set sine(default)
+               E74  Don't retrig WF
+          C-300E71  Set Ramp Down
+               E75  Don't retrig WF
+          C-300E72  Set Squarewave
+               E76  Don't retrig WF
+          C-300E73  Set Random
+               E77  Don't retrig WF
+
+
+    Cmd E9. Retrig note [Value:$0-$F]
+    ---------------------------------
+ Usage: $E9 + Tick to Retrig note at.
+ This command will retrig the same note
+ before playing the next. Where to
+ retrig depends on the speed of the
+ song. If you retrig with 1 in speed 6
+ that note will be trigged 6 times in
+ one note slot. Retrig on hi-hats!
+ Example: C-300F06  Set speed to 6.
+          C-300E93  Retrig at tick 3
+                    out of 6.
+
+
+   Cmd EA. FineVolsl up [Range:$0-$F]
+   ----------------------------------
+ Usage: $EA + value
+ This command works just like the
+ normal volumeslide up, except that
+ it only slides up once. It does not
+ continue sliding during the length of
+ the note.
+ Example: C-300EA3  Slide volume up 1
+        at the beginning of the note.
+
+
+  Cmd EB. FineVolsl down [Range:$0-$F]
+  ------------------------------------
+ Usage: $EB + value
+ This command works just like the
+ normal volumeslide down, except that
+ it only slides down once. It does not
+ continue sliding during the length of
+ the note.
+ Example: C-300EB6  Slide volume down
+       6 at the beginning of the note.
+
+
+     Cmd EC. Cut note [Value:$0-$F]
+     ------------------------------
+ Usage: $EC + Tick to Cut note at.
+ This command will cut the note
+ at the selected tick, creating
+ extremely short notes.
+ Example: C-300F06  Set speed to 6.
+          C-300EC3  Cut at tick 3 out
+                    of 6.
+ Note that the note is not really cut,
+ the volume is just turned down.
+
+
+     Cmd ED. NoteDelay [Value:$0-$F]
+     -------------------------------
+ Usage: $ED + ticks to delay note.
+ This command will delay the note
+ to the selected tick.
+ Example: C-300F06  Set speed to 6.
+          C-300ED3  Play note at tick
+                    3 out of 6.
+
+
+   Cmd EE. PatternDelay [Notes:$0-$F]
+   ----------------------------------
+ Usage: $EE + notes to delay pattern.
+ This command will delay the pattern
+ the selected numbers of notes.
+ Example: C-300EE8  Delay pattern 8
+           notes before playing on.
+ All other effects are still active
+ when the pattern is being delayed.
+
+
+    Cmd EF. Invert Loop [Speed:$0-$F]
+    ---------------------------------
+ Usage: $EF + Invertspeed
+ This command will need a short loop
+ ($10,20,40,80 etc. bytes) to work.
+ It will invert the loop byte by byte.
+ Sounds better than funkrepeat...
+ Example: C-300EF8 Set invspeed to 8.
+ To turn off the inverting, set 
+ invspeed to 0, or press ctrl + Z.
+
+
+    Cmd F. Set speed [Speed:$00-$FF]
+    --------------------------------
+ Usage: $F + speed
+ This command will set the speed of the
+ song.  
+
+
+

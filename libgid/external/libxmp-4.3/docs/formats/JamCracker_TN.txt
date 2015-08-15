@@ -1,0 +1,57 @@
+JamCracker module format:
+
+
+Offset       | Length & Type          | Description
+-------------+------------------------+----------------------------------------
+           0 | (4) char[4]            | Module marker 'BeEp'
+           4 | (2) UWORD              | Number of instruments (NOI)
+           6 | (NOI*sizeof            |
+             | (struct InstInfo)      | Instrument info
++------------+------------------------+
+| struct InstInfo
+| {
+|   char   it_name[31];       // Name of instrument
+|   UBYTE  it_flags;          // Bit 0, 1 = Loop, 0 = No loop; Bit 1: 0 = Sample, 1 = AM
+|   ULONG  it_size;           // Size of sample or AM data in bytes
+|   UBYTE *it_address;        // Have to manual initialize this. Address to
+|                             // the sample or AM data
+| };
++------------+------------------------+----------------------------------------
+ 6+NOI*40    | (2) UWORD              | Number of patterns (NOP)
+ 8+NOI*40    | (NOP*sizeof            |
+             | (struct PattInfo)      | Pattern info
++------------+------------------------+
+| struct PattInfo
+| {
+|   UWORD            pt_size;    // Size of pattern in bytes
+|   struct NoteInfo *pt_address; // Have to manual initialize this. Address to
+|                                // the pattern data
+| };
++------------+------------------------+----------------------------------------
+  8+NOI*40   |                        |
+   +NOP*6    | (2) UWORD              | Song length (SL)
+ 10+NOI*40   |                        |
+   +NOP*6    | (2*SL)                 | Song table (Pattern numbers)
+ 10+NOI*40   |                        |
+   +NOP*6    |                        |
+   +SL*2     | (NOP*sizeof            | Patterns. Start to set pt_address from
+             | (struct NoteInfo)*4    | this position and add pt_size *
+             |                        | sizeof(struct NoteInfo)*4 NOP times
++------------+------------------------+
+| struct NoteInfo
+| {
+|   UBYTE nt_period;
+|   BYTE  nt_instr;
+|   UBYTE nt_speed;
+|   UBYTE nt_arpeggio;
+|   UBYTE nt_vibrato;
+|   UBYTE nt_phase;
+|   UBYTE nt_volume;
+|   UBYTE nt_porta;
+| };
++------------+------------------------+----------------------------------------
+      x      | Rest of file           | Samples or instrument data. Start to
+             |                        | set it_address from this position and
+             |                        | add it_size NOI times
+
+Thomas Neumann / The APlayer-Team (tneumann@polycode.dk)

@@ -1,0 +1,295 @@
+The file format of AMOS music banks.
+
+by Stuart Caie <kyzer@4u.net>
+
+First draft, 25 March 2003.
+
+As I haven't yet written a complete converter/player based on the
+information here, there may be minor technical inaccuracies.
+
+This information is based on the AMOS-format music player in the AMOS 1.3
+music extension, and the GMC to AMOS, Sonix to AMOS and SoundTracker to
+AMOS converter programs provided with AMOS 1.3. François Lionet originally
+intended to release an AMOS music tracker (like SoundTracker) which would
+support all the SoundTracker commands, but by AMOS 1.34 he had given up
+trying to to compete with SoundTracker and NoiseTracker, and simply
+included a real tracker replay in the AMOS music extension (based on the
+Startrekker 1.2 replayer), in addition to the standard AMOS music player.
+
+The format is divided into the following sections:
+- Standard AMOS bank header
+- main header
+- instruments data
+- songs data
+- patterns data
+
+All multi-byte integers are big-endian.
+
+Because the player uses offsets in the main header to find out where the
+instruments data, songs data and patterns data are, they might not be
+consecutive or even in the order given.
+
+
+The standard AMOS bank header may be truncated, depending on whether it's
+a file on disk, it's ripped from an AMOS compiled program, or it's badly
+ripped. The largest format, a normal file on disk, is as follows:
+- 0x00: 4 bytes: "AmBk" ID
+- 0x04: 2 bytes: bank number (1-15 -- should be 3 for AMOS music)
+- 0x06: 2 bytes: 0 for CHIP mem bank, 1 for FAST mem bank
+- 0x08: 4 bytes: bits27-0=bank length, bit31=try fastmem, bit30=try chipmem
+- 0x0C: 8 bytes: bank name (which will be "Music   " in this case)
+- 0x14: x bytes: [the above-counted bank length, minus 8]
+
+Other noted standard AMOS bank header variants include:
+- starting from 0x08 of the disk format (i.e. beginning with bank length)
+- starting from 0x0C of the disk format (i.e. beginning with "Music   ")
+
+MAIN HEADER
+- 0x00: 4 bytes: offset to instruments data
+- 0x04: 4 bytes: offset to songs data
+- 0x08: 4 bytes: offset to patterns data
+- 0x0C: 4 bytes: always 0
+- 0x10: SIZEOF
+- All offsets are from the start of this header, not the start of the
+  AMOS standard header. Use these offsets! The instruments, songs and
+  patterns data may be in any order.
+
+INSTRUMENTS DATA
+- 0x00: 2 bytes: number of instruments
+- 0x02: 0x20 * number of instruments: instrument data
+- after the instrument data, raw sample data. The SoundTracker to AMOS
+  converter also inserts 4 bytes of zeros for the non repeating samples.
+
+INSTRUMENT DATA
+- 0x00: 4 bytes: offset (from start of instruments data section) of
+                 the sample data for this instrument.
+- 0x04: 4 bytes: offset (from start of instruments data section) of the
+                 repeating section of this instrument's sample data.
+                 If the sample doesn't repeat, this will point to either
+                 4 or 2 bytes of zeros.
+- 0x08: 2 bytes: In a repeating sample, this is the offset of the repeating
+                 part (in 4-byte longwords, from the start of the sample
+                 data for that sample). In a non-repeating sample, it is
+                 the length of the sample (in 2-byte words).
+- 0x0A: 2 bytes: length (in 2-byte words) of repeating section of sample data.
+                 If the sample doesn't repeat, this will either be 2 or 1.
+- 0x0C: 2 bytes: default volume of sample, from 0x00 (min) to 0x40 (max).
+                 As this is copied raw from mods, it may also accidentally
+                 include a Protracker finetune value in the MSB. The AMOS
+                 player does not acknowledge the finetune value.
+- 0x0E: 2 bytes: sample length (in 2-byte words) - WARNING, this may often
+                 be set incorrectly in AMOS songs (to a value like 2 or 4).
+- 0x10: 16 bytes: sample name (ASCII text, padded with spaces or nulls)
+- 0x20: SIZEOF
+
+- to find the true length of a sample, it is necessary to take all sample
+  offsets and sort them into order. Each sample's length is that of its
+  offset subtracted from the offset of the next sample. For the final sample,
+  its offset should be subtracted from the overall length of the instruments
+  data block (which will be the offset of the instruments block subtracted
+  from the offset of the section following it, or the overall length of the
+  file if no other section follows it).
+
+SONGS DATA
+- 0x00: 2 bytes: number of songs.
+- 0x02: number of songs * 4 bytes: offsets (from start of songs data) to
+                                   song data, one for each song.
+
+SONG DATA
+- 0x00: 2 bytes: offset (from song data) to channel 0 playlist
+- 0x02: 2 bytes: offset (from song data) to channel 1 playlist
+- 0x04: 2 bytes: offset (from song data) to channel 2 playlist
+- 0x06: 2 bytes: offset (from song data) to channel 3 playlist
+- 0x08: 2 bytes: default tempo, 1-100, default is 17. not used by player!
+- 0x0A: 2 bytes: seems to be unused
+- 0x0C: 16 bytes: name of song (ASCII text, padded with spaces or nulls)
+- 0x1C: 4 playlists, at the offsets given. USE THE OFFSETS, sometimes
+        they're not consecutive or in order.
+
+PLAYLISTS
+- A playlist is a sequence of 2-byte words, giving the list of patterns to
+  play in order for that channel. The patterns start from 0 and go up to
+  however many patterns there are. The list is terminated with 0xFFFE. Each
+  channel has its own set of patterns, so pattern 0 on channel 0 is not the
+  same as pattern 0 on channel 1.
+
+PATTERNS DATA
+- 0x00: 2 bytes: number of patterns
+- 0x02: 8 bytes * number of patterns: channel pattern offsets.
+- each pattern is defined 4 times, once per channel.
+
+CHANNEL PATTERN OFFSETS
+- 0x00: 2 bytes: offset (from patterns data) to this pattern for channel 0
+- 0x02: 2 bytes: offset (from patterns data) to this pattern for channel 1
+- 0x04: 2 bytes: offset (from patterns data) to this pattern for channel 2
+- 0x06: 2 bytes: offset (from patterns data) to this pattern for channel 3
+- 0x08: SIZEOF
+
+PATTERN
+- A pattern is a series of 2-byte word commands and notes. Commands appear
+  first, and are executed immediately. When a note appears, processing for
+  the pattern has finished for that vertical blank, and processing will
+  re-commence after that note once the delay counter (see the delay command)
+  has elapsed. Unlike SoundTracker, there can be any number of commands per
+  note, although generally it's not useful, as repeating the same command
+  again and again would simply overwrite its value.
+
+- A command has bit 15 set ($8000-$FFFF).
+  Notes do not have bit 15 set ($0000-$7FFF).
+
+- In a note, all that matters is bits 12 to 0 ($000-$FFF). This, like
+  Soundtracker, is an Amiga note period (audXper). When a note is triggered,
+  the current note volume is set to the default volume for the instrument
+  being played. A note cannot be played before the first "set instrument"
+  command, as notes do not implicitly have an instrument associated with them.
+
+- Each command has a parameter, although many commands don't need and
+  therefore ignore their parameter. The command value is the bits 14 to 8
+  of each word, the parameter value is bits 7 to 0.
+
+- All "effect" commands which have a lasting effect, between notes are
+  assumed to continue running forever until they are changed to another
+  effect, or stopped with the "stop effect" command. A channel can only
+  run one effect. So if AMOS did a "shift down" command, a "delay" of 14
+  and then a "stop effect", the equivalent in SoundTracker would be to
+  repeat the portamento down command 14 times, once in each position,
+  and positions after that would simply have the empty arpeggio command (000).
+
+- There is no implicit delay of one position between commands or notes, as
+  there is in SoundTracker. Instead, a "delay" (0x10) command must be executed.
+
+- Other than the "set tempo" and "low pass filter on/off" commands, the
+  effect of every command is limited to the channel it runs on.
+
+- After clearing the top bit, the commands are as follows:
+
+  - 0x00: end of pattern: Advance to the next pattern in the playlist.
+          Also stops any currently running effects like the "stop effect"
+          command. Unlike SoundTracker, each channel is independant and
+          could potentially change patterns at a different time for each
+          channel. Fortunately, most AMOS tunes are converted from tracker
+          music and GMC music, so therefore don't do that.
+
+  - 0x01: old slide up: not supported by player. identical to slide up?
+
+  - 0x02: old slide down: not supported by player. identical to slide down?
+
+  - 0x03: set volume: Sets the volume of the note currently playing
+          to the value given by the parameter, range 0 to 63 (64, the valid
+          maximum Amiga volume, is surprisingly not supported by the player,
+          and will be rounded down to 63). This is equivalent to the
+          SoundTracker "C" command.
+
+  - 0x04: stop effect: Stops an currently running effect. No parameter.
+
+  - 0x05: repeat: If the parameter is 0, this is the "repeat mark". If
+          The parameter is non-zero, the position in the pattern should
+          jump back to the repeat mark for the number of times given by
+          the parameter. This is equivalent to the Protracker "E50" and
+          "E6x". As far as I know, it is not present in SoundTracker.
+          The Soundtracker to AMOS converter does not use it.
+
+  - 0x06: low-pass filter on: Equivalent to the SoundTracker "E01" command.
+
+  - 0x07: low-pass filter off: Equivalent to the SoundTracker "E00" command.
+
+  - 0x08: set tempo: sets the tempo of replay. The parameter is between 1
+          and 100. AMOS has a different tempo system from SoundTracker.
+          SoundTracker's speed is a number between 1 and 255, and that is
+          the number of vertical blanks between advancing one position in
+          the pattern. AMOS instead has a counter that has the tempo value
+          added to it once per vertical blank. When the counter is greater
+          or equal to 100 (or 120 for NTSC), AMOS advances the position and
+          reduces the counter by 100 (or 120 for NTSC).
+          
+          This gives an average SoundTracker speed of (100/tempo) at 50Hz
+          or (120/tempo) at 60Hz, which gives a (tempo/2) Hz change in
+          position, regardless of frame rate. This is quite nice, but as
+          timing is still in 50 or 60Hz multiples, it's possible that
+          instruments may sound fractionally out of time -- for example,
+          tempo=17 gives 8 positions advance every 6 vertical blanks, and
+          then the 9th position advances after 5 vertical blanks.
+
+          To convert from SoundTracker speeds to AMOS tempos, the converter
+          uses the formula: amos_tempo = 100 / soundtracker_speed
+          That's not an accurate conversion, and conversion back is even
+          more fun. For simple conversion, I recommend the following roughly
+          accurate speeds:
+            AMOS tempo:    SoundTracker speed:
+              1              100 (F64) *
+              2              50  (F32) *
+              3              33  (F21) *
+              4              25  (F16)
+              5              20  (F14)
+              6              17  (F11)
+              7              14  (F0E)
+              8              12  (F0C)
+              9              11  (F0B)
+              10             10  (F0A)
+              11             9   (F09)
+              12             8   (F08)
+              13-15          7   (F07)
+              16-18          6   (F06)
+              19-22          5   (F05)
+              23-28          4   (F04)
+              29-40          3   (F03)
+              41-66          2   (F02)
+              67-100         1   (F01)
+
+          * the first three speeds are not possible with Protracker, as it
+            uses Fxx commands with a parameter of 32 or more as the CIA BPM
+            timer rather than the vertical blank timer.
+
+  - 0x09: set instrument: Sets the instrument that the next note command
+          will use. Parameter is from 0 (first instrument) to the last
+          instrument.
+
+  - 0x0A: arpeggio: Causes the current instrument to be played as an
+          arpeggio chord. The parameter is broken into the upper 4 bits
+          and lower 4 bits. The arpeggio chord played will be current note,
+          current note with pitch raised by [upper 4 bits] halftones,
+          current note with pitch raised by [lower 4 bits] halftones. This
+          is an effect and will continue until a new effect, or change
+          of pattern. Equivalent to SoundTracker "0" command.
+          
+  - 0x0B: tone portamento: Causes the currently playing note to slide towards
+          the pitch of the next playing note. This is an effect and will
+          continue until a new effect, or change of pattern. Equivalent
+          to the SoundTracker "3" command.
+
+  - 0x0C: vibrato: Causes the currently playing note to alter in pitch
+          according to a sine wave. The upper 4 bits of the parameter
+          give the speed of the vibrato and the lower 4 bits give the
+          depth. This is an effect and will continue until a new effect, or
+          change of pattern. Equivalent to the SoundTracker "4" command.
+
+  - 0x0D: volume slide: Raises or lowers the volume of the currently playing
+          note. The parameter is divided into the upper 4 bits and lower
+          4 bits. The upper 4 bits give a number between 0 and 15. If the
+          number is between 1 and 15, the volume will be raised by that
+          amount every vertical blank. If the upper 4 bits give the value 0,
+          then the lower 4 bits are considered. If they are between 1 and 15,
+          the volume will be lowered by that amount each vertical blank.
+          Equivalent to Soundtracker "A" command.
+
+  - 0x0E: portamento up: Raises the pitch of the currently playing note by
+          decreasing the note period by the amount given by the parameter
+          every vertical blank, to the lowest period of 113. This is an effect
+          and will continue until a new effect, or change of pattern.
+          Equivalent to SoundTracker "1" command.
+
+  - 0x0F: portamento down: Lowers the pitch of the currently playing note by
+          increasing the note period by the amount given by the parameter
+          every vertical blank, to the highest period of 856. This is an
+          effect and will continue until a new effect, or change of pattern.
+          Equivalent to SoundTracker "2" command.
+
+  - 0x10: delay: States that after the current list of commands and final
+          note has been played, the channel will wait for the number of
+          positions given as the parameter before executing any more
+          commands and notes. Each note should have this.
+
+  - 0x11: position jump: changes the position in the song to that which
+          is given as the parameter (position 0 = start of song), then
+          performs the same as an end of pattern command. Equivalent to
+          SoundTracker "B" command.

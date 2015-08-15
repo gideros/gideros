@@ -1,0 +1,87 @@
+# Binaries
+*.o
+*.lo
+*.so
+*.a
+*.obj
+*.exe
+*.dll
+*.pyc
+*.gco
+*.gcno
+*.gcda
+*.cov
+a.out
+lib/
+test-dev/libxmp-covertest
+test-dev/libxmp-test
+
+# VC++ files
+*.suo
+*.ncb
+
+# Module formats
+*.mod
+*.MOD
+*.xm
+*.XM
+*.s3m
+*.it
+*.IT
+*.itz
+*.med
+*.mod.nt
+*.amf
+*.umx
+*.gtk
+mod.*
+AS.*
+*.NT
+*.xz
+
+# Other media
+*.wav
+*.mp3
+
+# Compressed formats
+*.zip
+*.lha
+*.lzx
+*.tar.gz
+*.rar
+*.bz2
+
+# Configuration
+config.log
+config.status
+configure
+autom4te.cache
+
+# Generated files
+depend
+players/xmp/Makefile
+libxmp.pc
+Makefile
+test/all_tests.c
+test/.test
+test/libxmp-covertest
+test/libxmp-tests
+test/test8.raw
+test/write_test
+coverage/
+docs/libxmp.3
+docs/libxmp.html
+docs/libxmp.man.rst
+docs/libxmp.pdf
+.test
+
+# Other stuff and leftovers
+xmp.out
+.svn
+*.orig
+*.rej
+tags
+*~
+commit-*
+*.swp
+*.patch

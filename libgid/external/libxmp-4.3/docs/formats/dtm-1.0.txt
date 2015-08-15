@@ -1,0 +1,345 @@
+.1 DigiTrekker Module Format (*.DTM) rev1.0                             page 1
+-------------------------------------------------------------------------------
+
+This documentation describes the DigiTrekker Module Format. This format was
+first introduces with DigiTrekker 3.0, anyway 3.0 was the first version ever
+published.
+
+All number below are given in decimal format. Hexadecimal numbers are given
+the prefix '0x'.
+
+Symbols given in brackets [] are used to refer to the value of this field for
+later use.
+
+Module characteristics:
+-----------------------
+o no limit on channels
+o up to 255 instruments
+o up to 255 patterns
+o up to 255 sequence positions
+o patterns split up into tracks
+o any number of rows per track
+o 8/16 bit samples
+
+
+The DigiTrekker Modules (DTM's) are organized in the IFF chunk format. The
+chunk length and all other integer and long values are stored in Intel
+byte order with the LSB first and the MSB last.
+
+A chunk is built like this:
+4 byte ID, eg. "SONG"
+4 byte length, eg. 0x05680100
+
+The whole file is a sequence of such chunks. The main advantage of this tech-
+nique is that the module format can be easyly enhanced without the need of re-
+organization. Therefore only a new chunk would be added. If you encounter any
+chunk ID you don't know, don't care and forget the chunk.
+
+The song itself uses cascaded chunks, which means that some chunks are built
+up by chunks again.
+
+
+Terminology
+------------------
+Module:   the file which contains a song
+Song:     everything necessary to play your composition
+Sequence: the sequence (=order) tells you when to play which pattern
+Pattern:  a table with 1 entry for each channel which maps a track to it
+Track:    (64) rows of notes which are played one after the other
+Channel:  the voice on which the sound is calculated and played
+Row:      the notes of the tracks which are played at the same time
+Frame:    the time a row is played is divided into frames
+
+
+Overview
+==========================
+
++SONG==========================================================================+
+| NAME+ INFO+  INIT------+  PSEQ+ PATT+  INST--------+  TRAK---+  SAMP--------+|
+|!    !!    ! !sped+vpan+! !    !!    ! !samp+text+  ! !trak+  ! !samp+text+  !|
+|!    !!    ! !!   !!   !! !    !!    ! !!   !!   !..! !!   !..! !!   !!   !..!|
+|!    !!    ! !+--- +--- ! !    !!    ! !+--- +---   ! !+---   ! !+--- +---   !|
+|+---- +----  +----------  +---- +----  +------------  +-------  +------------ |
++==============================================================================+
+..1 DigiTrekker Module Format (*.DTM) rev1.0                            page 2
+-------------------------------------------------------------------------------
+
+The SONG chunk (0)
+============================================================
+This is the main chunk. The whole song is placed into it, so if you try to load
+a module without a SONG chunk, it's no DTM.
+
+The SONG chunk contains no actual data, it only contains many sub-chunks which
+contain the actual data.
+
+
+The NAME chunk (1)
+============================================================
+Here you can read the modules name. If this chunk is missing, the module doesn't
+have a name.
+
+
+The INFO chunk (1)
+============================================================
+This chunk contains some important data necessary for further processing. This
+chunk must be included in every song.
+
+Offset  # Bytes Description
+------  ------- -----------
+0       2       number of channels      [NOC]
+2       2       sequence length         [LEN]
+4       2       number of patterns      [NOP]
+6       2       number of tracks        [NOT]
+8       2       number of instruments   [NOI]
+
+
+The INIT chunk (1)
+============================================================
+Startup information for the song is placed here. This chunk consists of some
+other chunks again.
+
+
+  The sped chunk (2)
+  ------------------------------
+  The sped (speed) chunk contains the initial speed of the song when it is
+  started.
+
+    Offset  # Bytes Description
+    ------  ------- -----------
+    0       2       speed, given in frames per row (see effect 0x0F)
+    2       2       tempo, given in beats/minute   (see effect 0x10)
+
+
+  The vpan chunk (2)
+  ------------------------------
+  Here is the initial volume panning for each channel stored. Therefore this
+  chunk should contain two bytes for each channel.
+  See effect 0x11 for changing the panning during playback.
+
+    Offset  # Bytes Description
+    ------  ------- -----------
+    0       1       left volume (0-64)
+    1       1       right volume (0-64)
+..1 DigiTrekker Module Format (*.DTM) rev1.0                            page 3
+-------------------------------------------------------------------------------
+
+The PSEQ chunk (1)
+============================================================
+The pattern sequence is stored in this chunk. The length of this chunk should
+be the same as the LEN value of the INFO chunk.
+The sequence is a table of 1 byte entries which are the numbers of the
+patterns to be played.
+
+
+The PATT chunk (1)
+============================================================
+Unlike all conventional trackers, DT splits the well-known patters into many
+peaces. Those peaces are the tracks, which are then MAPPED together to build
+a pattern. The big advantage with comes with that is that there's no more need
+of copying frequently used tracks, like rythm tracks.
+
+Therefore, here are all patterns stored, wich gives a total number of entries
+of NOP*NOC. Each entry is a integer (2 bytes) and identifies a track number.
+
+
+The INST chunk (1)
+============================================================
+This chunk contains the information about the instruments used in this module.
+Note that an instrument is not the same as a sample. An instrument is anything
+which may appear in the instument list and may be a sample, text, ...
+
+Also this version of DT only supports samples and text instruments, there will
+probably be some wave-table and FM instruments too in future releases.
+
+Again, this chunk consists of many sub-chunks, which give the information for
+each single instrument.
+
+  The text chunk (2)
+  ------------------------------
+  Text instruments can't be played, they only appear as a text line in the
+  instrument list. This text is the only data stored in a text chunk.
+
+    Offset  # Bytes Description
+    ------  ------- -----------
+    0       ?       instrument name
+
+
+  The samp chunk (2)
+  ------------------------------
+  This chunk is used for samples. It contains some information about how to
+  process the sample.
+
+    Offset  # Bytes Description
+    ------  ------- -----------
+    0       32      instrument name
+    32      4       length of sample
+    36      4       loop start \
+    40      4       loop end   / =0: no loop
+    44      2       C-4 sample rate
+    46      1       default volume (0-64)
+    47      1       bits per sample (8/16)
+    48      13      file name of sample
+    61      3       reserved
+..1 DigiTrekker Module Format (*.DTM) rev1.0                            page 4
+-------------------------------------------------------------------------------
+
+The TRAK chunk (1)
+============================================================
+Just like the INST chunk, the TRAK chunk consists of many trak chunks which
+hold the notes of the track.
+
+Today there are 6 bytes of data for each note which define the pitch, the
+instrument, the volume, an effect and its parameter. But as the DTM format
+is designed for eternity, the tracks are stored in a way which keeps the
+number of bytes per note open.
+
+  The trak chunk (2)
+  ------------------------------
+  Here are the notes of a track stored. They are split up into their means, so
+  that at first there are all pitches, followed by all instruments, volumes and
+  so on. If there is need for a 2nd effect/parameter in the future of for any-
+  thing other, this way of storing data keeps all doors open.
+
+    Offset  # Bytes Description
+    ------  ------- -----------
+    0       2       number of rows [NOR]
+    2       NOR     pitch
+    2+NOR   NOR     instrument
+    2+2*NOR NOR     volume
+    2+3*NOR NOR     effect
+    2+4*NOR NOR     higher byte of parameter
+    2+5*NOR NOR     lower byte of parameter
+
+  Pitch, instrument, volume and effect values start with 1. 0 means that there's
+  no value given. So a volume of 1 is actually a volume of 0, an effect of 5 is
+  effect 4 in reality and so on.
+
+  The pitch ranges from 1 to 96 for the notes C-0 to H-7. Note that C-0 is the
+  real music notation and NOT the notation of MOD files. The .MOD C-1 note is a
+  C-4 in DTM. A value of 0x80 for a note is a note-off command.
+
+  The instrument is just like it is. Legal values are from 1 to NOI.
+
+  The volume value ranges from 1 to 65 for the volume 0-64.
+
+  Effects 0x01-0x10 are the same as effects 0x00-0x0F in MOD modules.
+   0x00: no effect                     0x01: slide pitch x/128th seminotes up
+   0x02: slide pitch down              0x03: slide to note
+   0x04: vibrato speed xx, depth yy    0x05: continue slide-to, slide volume
+   0x06: cont. vibrato, slide volume   0x07: tremolo speed xx, depth yy
+   0x08: unused                        0x09: set sample offset to x*16
+   0x0A: slide volume                  0x0B: jump to sequence position x
+   0x0C: unused (set volume)           0x0D: break pattern and resume at row x
+   0x0E: extended FX                   0x0F: set speed&tempo (=frames per row)
+   0x10: set tempo                     0x11: set stereo panning (0-64)
+   0x12: slide stereo panning          0x13: add x to sample offset
+   0x14: store value (used for sync)   0x15: retrigger note
+   0x16: tremor xx frames on, yy off
+..3. DigiTrekker Module Format (*.DTM) rev1.0                           page 5
+-------------------------------------------------------------------------------
+
+  The parameter depends on the effect.
+
+   0x01, 0x02, 0x03, 0x04:
+     The pitch is given in 1/128th seminote. Therefore the old traditional
+     logarighmic values have to be recalculated into DT's linear parameters,
+     which are a much more convenient and accurate. As an standard you can use
+     a multiplicator of 8 to convert old MOD values.
+     This is not an accurate way of delogarithming values, but it's an average.
+
+   0x03, 0x05:
+     If a pitch is given together with these effects, it's used as a further
+     parameter. The effect acts like effect 0x01 or 0x02, but won't change the
+     pitch byond the given note. Is no note given, the fade continues.
+
+   0x04, 0x07:
+     The higher byte gives the periode of the vibrato/tremor in 64/x frames.
+     With a value of 1 it takes 64 frames to complete the periode.
+     The lower byte defines the amplitude of the pitch/volume change.
+
+   0x05, 0x06, 0x0A:
+     Either the high or low parameter has to be 0 or FF. Is the high parameter
+     none of both, then add it to the current volume after each frame.
+     Is the low parameter different to 0 and FF, then subtract the value from
+     the volume after each frame.
+     Is the high/low parameter FF, then the low/high parameter is subtracted/
+     added from/to the volume at the beginning of the note (=fine slide)
+
+   0x0E:
+     The high parameter gives the sub-effect number and the low parameter is
+     its effect:
+     Fn 0x0: unused (set Amiga filter)
+     Fn 0x1: fine slide up (use effect 0x01 with parameter FFxx instead)
+     Fn 0x2: fine slide down (use effect 0x02 with parameter xxFF instead)
+     Fn 0x3: set glissando on/off. If ON effect 0x03 only plays full seminotes.
+     Fn 0x4: set vibrato waveform:  0=sine, 1=saw, 2=square, 3=random
+     Fn 0x5: set finetune to x-8 seminotes, this effects the C-4 samplerate.
+     Fn 0x6: loop pattern, 0: set loop start, <>0: loop x times back
+     Fn 0x7: set tremolo waveform:  0=sine, 1=saw, 2=square, 3=random
+     Fn 0x8: unused
+     Fn 0x9: retrigger sample (use effect 0x15 with parameter x000 instead)
+     Fn 0xA: fine volume slide up (use effect 0x0A with param 0xFF instead)
+     Fn 0xB: fine volume slide down (use effect 0x0A with param FF0x instead)
+     Fn 0xC: cut sample (set volume to 0) after x frames
+     Fn 0xD: delay note: start note after x frames
+     Fn 0xE: delay pattern: wait the time for x rows after current row
+
+   0x0F:
+     The high parameter sets the frames per row, the low parameter defines how
+     many frames per second should be played, which is identical to a value of
+     x*125/50 for effect 0x10
+
+   0x11: The high and low parameter define the pan volume for left/right
+
+   0x12: The high/low parameter is a signed byte which is added to the pan vol.
+
+   0x14: This effect is used for synchronizing music and grafic in demos
+
+   0x15:
+     The parameter is interpretet like this: dfxy (delay,function,x,y)
+     The delay tells after how many frames the retrigger should take place, the
+     function tells what should happen with the volume. Depending on that value
+     the x and y values change their meaning:
+     Fn 0: don't change volume
+     Fn 1: subtract xy from volume
+     Fn 2: add xy to volume
+     Fn 3: multiply volume by x and divide it by y
+..1 DigiTrekker Module Format (*.DTM) rev1.0                            page 6
+-------------------------------------------------------------------------------
+
+The SAMP chunk (1)
+============================================================
+As the INST chunk before, the SAMP chunk contains sub-chunks for the single
+instruments. The type of sub-chunk depends on the type of instrument. If you
+encounter an unknown chunk, skip the instrument as well as the chunk.
+
+The number of sub-chunks should be the same as the NOI field in the INFO chunk
+tells.
+
+  The samp chunk (2)
+  ------------------------------
+  Sample values are stored as either 8 bit or 16 bit signed mono PCM values.
+  The length of the chunk should be the same as the length field in the inst-
+  chunk for the sample.
+
+
+  The text chunk (2)
+  ------------------------------
+  If someone has to tell a whole story, he can put it in here. This chunk is of
+  no interest for playback, but could be used for placing some lyrics in the
+  song.
+
+
+
+That's all...
+
+
+If you want to contact the author, write to
+
+  Snail Mail:       E-mail:                          MuseNet:
+  ----------------  --------------                   -------------------------
+  Horst Beham Jr.,  d5c01@unix1.htl-leonding.ac.at   White_Bunny@
+  Kappernstr. 30    ! only valid until July '95 !     chezmoto.ai.mit.edu 4201
+  4614 Marchtrenk   ! new address after that    !     oceana.sdsc.edu 4201
+  Austria
+

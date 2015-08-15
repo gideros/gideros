@@ -1,0 +1,211 @@
+VERSION_MAJOR	= 4
+VERSION_MINOR	= 3
+VERSION_RELEASE	= 9
+
+VERSION		= $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE)
+
+# This dylib will support anything linked against COMPAT_VERSION through VERSION
+COMPAT_VERSION	= $(VERSION_MAJOR)
+
+CC		= @CC@
+CFLAGS		= -c @CFLAGS@ @DEFS@ -D_REENTRANT
+LD		= @CC@
+LDFLAGS		= @LDFLAGS@
+LIBS		= @LIBS@
+RANLIB		= @RANLIB@
+INSTALL		= @INSTALL@
+DESTDIR		=
+prefix		= @prefix@
+exec_prefix	= @prefix@
+datarootdir	= @datarootdir@
+BINDIR		= @bindir@
+LIBDIR		= @libdir@
+MANDIR		= @mandir@/man3
+INCLUDEDIR	= @includedir@
+LD_VERSCRIPT	= @LD_VERSCRIPT@
+SHELL		= /bin/sh
+
+DIST		= libxmp-$(VERSION)
+DFILES		= README INSTALL install-sh configure configure.ac config.sub \
+		  config.guess Makefile.in libxmp.pc.in libxmp.map Makefile.vc
+DDIRS		= docs include src loaders prowiz depackers win32 test
+V		= 0
+LIB		= libxmp.a
+SOLIB		= libxmp.so
+SHLIB		= $(SOLIB).$(VERSION)
+SONAME		= $(SOLIB).$(VERSION_MAJOR)
+DLL		= libxmp.dll
+DYLIB		= libxmp.$(VERSION_MAJOR).dylib
+GCLIB		= libxmp-gc.a
+
+all: @STATIC@ @SHARED@
+
+include docs/Makefile
+include include/Makefile
+include src/Makefile
+include src/loaders/Makefile
+include src/loaders/prowizard/Makefile
+include src/depackers/Makefile
+include src/win32/Makefile
+include test/Makefile
+
+LOBJS = $(OBJS:.o=.lo)
+
+GCOBJS = $(OBJS:.o=.gco)
+
+CFLAGS += -Iinclude -Isrc
+
+.SUFFIXES: .c .o .lo .a .so .dll .in .gco .gcda .gcno
+
+.c.o:
+	@CMD='$(CC) $(CPPFLAGS) $(CFLAGS) -o $*.o $<'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo CC $*.o ; fi; \
+	eval $$CMD
+
+.c.lo:
+	@CMD='$(CC) $(CPPFLAGS) $(CFLAGS) -fPIC -o $*.lo $<'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo CC $*.lo ; fi; \
+	eval $$CMD
+
+.c.gco:
+	@CMD='$(CC) $(CPPFLAGS) $(CFLAGS) -O0 -fno-inline -fprofile-arcs -ftest-coverage -o $*.gco $<'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo CC $*.gco ; fi; \
+	eval $$CMD
+
+static: lib/$(LIB)
+
+shared: lib/$(SHLIB)
+
+coverage: lib/$(GCLIB)
+
+dll: lib/$(DLL)
+
+dylib: lib/$(DYLIB)
+
+lib/$(LIB): $(OBJS)
+	@mkdir -p lib
+	@CMD='$(AR) r $@ $(OBJS)'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo AR $@ ; fi; \
+	eval $$CMD
+	$(RANLIB) $@
+
+lib/$(SHLIB): $(LOBJS)
+	@mkdir -p lib
+	@CMD='$(LD) $(LDFLAGS) -shared -Wl,-soname,$(SONAME) $(LD_VERSCRIPT) -o $@ $(LOBJS) $(LIBS)'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo LD $@ ; fi; \
+	eval $$CMD
+	ln -sf $(SHLIB) lib/$(SONAME)
+	ln -sf $(SONAME) lib/$(SOLIB)
+
+lib/$(DLL): $(OBJS)
+	@mkdir -p lib
+	@CMD='$(LD) $(LDFLAGS) -shared -Wl,--output-def,lib/libxmp.def,--out-implib,lib/libxmp_dll.a -o $@ $(OBJS) $(LIBS)'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo LD $@ ; fi; \
+	eval $$CMD
+
+# From http://stackoverflow.com/questions/15905310:
+# The version number checks that dyld performs are limited to ensuring that
+# the compatibility version of the library being loaded is higher than the
+# compatibility version of the library that was used at build time.
+
+lib/$(DYLIB): $(LOBJS)
+	@mkdir -p lib
+	@CMD='$(LD) $(LDFLAGS) -dynamiclib -Wl,-headerpad_max_install_names,-undefined,dynamic_lookup,-compatibility_version,$(COMPAT_VERSION),-current_version,$(VERSION),-install_name,$(prefix)/lib/$(DYLIB) -o $@ $(LOBJS) $(LIBS)'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo LD $@ ; fi; \
+	eval $$CMD
+	ln -sf $(DYLIB) lib/libxmp.dylib
+
+lib/$(GCLIB): $(GCOBJS)
+	@mkdir -p lib
+	@CMD='$(AR) r $@ $(GCOBJS)'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo AR $@ ; fi; \
+	eval $$CMD
+	$(RANLIB) $@
+
+clean:
+	@rm -f $(OBJS) $(LOBJS) lib/lib*
+	@rm -f $(GCOBJS) $(OBJS:.o=.gcno) $(OBJS:.o=.gcda)
+
+install: all
+	@mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(INCLUDEDIR)
+	@if [ -f lib/$(LIB) ]; then \
+		echo "Installing $(LIB)..."; \
+		$(INSTALL) -m644 lib/$(LIB) $(DESTDIR)$(LIBDIR); \
+	fi
+	@if [ -f lib/$(DYLIB) ]; then \
+		echo "Installing $(DYLIB)..."; \
+		$(INSTALL) -m755 lib/$(DYLIB) $(DESTDIR)$(LIBDIR); \
+		ln -sf $(DYLIB) $(DESTDIR)$(LIBDIR)/libxmp.dylib; \
+	fi
+	@if [ -f lib/$(SHLIB) ]; then \
+		echo "Installing $(SHLIB)..."; \
+		$(INSTALL) -m644 lib/$(SHLIB) $(DESTDIR)$(LIBDIR); \
+		ln -sf $(SHLIB) $(DESTDIR)$(LIBDIR)/$(SONAME); \
+		ln -sf $(SONAME) $(DESTDIR)$(LIBDIR)/$(SOLIB); \
+	fi
+	@echo "Installing xmp.h..."
+	@$(INSTALL) -m644 include/xmp.h $(DESTDIR)$(INCLUDEDIR)
+	@echo "Installing libxmp.pc..."
+	@mkdir -p $(DESTDIR)$(LIBDIR)/pkgconfig
+	@$(INSTALL) -m644 libxmp.pc $(DESTDIR)$(LIBDIR)/pkgconfig/
+
+depend:
+	@echo Building dependencies...
+	@echo > $@
+	@for i in $(OBJS) $(T_OBJS); do \
+	    c="$${i%.o}.c"; l="$${i%.o}.lo"; \
+	    $(CC) $(CFLAGS) -MM $$c | \
+		sed "s!^.*\.o:!$$i $$l:!" >> $@ ; \
+	done
+	    
+dist: version-prepare all-docs dist-prepare vc-prepare dist-jni dist-subdirs
+
+dist-jni:
+	mkdir $(DIST)/jni
+	cp jni/Android.mk jni/Application.mk $(DIST)/jni
+
+dist-prepare:
+	./config.status
+	rm -Rf $(DIST) $(DIST).tar.gz
+	mkdir -p $(DIST)
+	cp -RPp $(DFILES) $(DIST)/
+
+vc-prepare:
+	@echo Generate Makefile.vc
+	@sed -e 's!@OBJS@!$(subst /,\\,$(OBJS:.o=.obj))!' Makefile.vc.in > Makefile.vc
+
+dist-subdirs: $(addprefix dist-,$(DDIRS))
+	chmod -R u+w $(DIST)/*
+	tar cvf - $(DIST) | gzip -9c > $(DIST).tar.gz
+	rm -Rf $(DIST)
+	ls -l $(DIST).tar.gz
+
+distcheck:
+	rm -Rf $(DIST)
+	tar xf $(DIST).tar.gz
+	(cd $(DIST); ./configure --enable-static --prefix=`pwd`/test-install; make; make check; make install; find test-install)
+
+
+devcheck:
+	$(MAKE) -C test-dev
+
+covercheck: coverage
+	$(MAKE) -C test-dev covercheck
+
+coverclean:
+	rm -f $(OBJS:.o=.gco) $(OBJS:.o=.gcno) $(OBJS:.o=.gcda)
+	$(MAKE) -C test-dev coverclean
+
+$(OBJS): Makefile
+
+$(LOBJS): Makefile
+
+version-prepare:
+	sed -i -e '/^Version: /s/:.*/: $(VERSION)/g' libxmp.pc.in
+	sed -i -e '/^Version: /s/:.*/: $(VERSION)/g' lite/libxmp-lite.pc.in
+	vercode=`printf "0x%02x%02x%02x" $(VERSION_MAJOR) $(VERSION_MINOR) $(VERSION_RELEASE)`; \
+	sed -i -e "s/\(^#define XMP_VERSION\).*/\1 \"$(VERSION)\"/;s/\(^#define XMP_VERCODE\).*/\1 $$vercode/;s/\(^#define XMP_VER_MAJOR\).*/\1 $(VERSION_MAJOR)/;s/\(^#define XMP_VER_MINOR\).*/\1 $(VERSION_MINOR)/;s/\(^#define XMP_VER_RELEASE\).*/\1 $(VERSION_RELEASE)/" include/xmp.h
+	./config.status
+
+sinclude depend
+

@@ -1,0 +1,56 @@
+
+The flag XMP_FLAGS_FIXLOOP halves sample loop start values. You may
+need to use it with modules where autodetection is either impossible
+or unreliable.
+
+Case 1: Bad conversion from Soundtracker to M.K.
+
+In Soundtracker and derivatives using 15 instrument modules the loop
+start is given in bytes instead of 16 bit words [1]. Many modules
+have been converted from 15 instrument to 31 instrument format assuming
+that the loop start was in 16 bit words instead of bytes, resulting in
+broken loops [2]. In this case, use XMP_FLAGS_FIXLOOP to play the module
+correctly.
+
+An example of damaged module is "mod.souvenir of china"
+
+
+Case 2: NoisePacker v1 modules
+
+According to Asle [3], the only difference between NoisePacker 1.0
+and 2.0 is the loop start value. This situation is very hard to
+detect, and XMP_FLAGS_FIXLOOP is needed to play NoisePacker 2.0 modules
+correctly.
+
+
+Case 3: Laxity/UNIC modules
+
+UNIC modules can have loop start specified in 16 bit words or in 32 bit
+words [4]. Use XMP_FLAGS_FIXLOOP to set this value to 16 bit words.
+
+
+
+References:
+
+[1] Michael Schwendt (Sat, 24 Oct 1998 22:41:21 +0000)
+    "(...) all Soundtracker derivatives, including Ultimate Soundtracker,
+    Soundtracker v1.0 to v4.0 and V to IX, Master Soundtracker 1.0,
+    D.O.C-Soundtracker v2.0 to v2.3, use repeat_start in bytes (!).
+    Hence MOD players should default to repeat_start in bytes. The first
+    Soundtrackers to use repeat_start in words were Soundtracker v2.4
+    (Spreadpoint), Noisetracker, and Protracker."
+
+[2] "Ultimate Soundtracker module format description", v0.1, by Michael
+    Schwendt, lines 28--31: "Years later people without knowledge of the
+    incompatibility between the original Soundtracker module format and
+    successors like Soundtracker 2.4 or Protracker damaged modules by
+    converting them to Protracker format."
+
+[3] "Amiga MOD packers described", version 4.1 (13/06/98), written by
+    Sylvain Chipaux (Asle/ReDoX).
+
+[4] "Amiga MOD packers described", version 4.1 (13/06/98), written by
+    Sylvain Chipaux (Asle/ReDoX). "About this loop start /4 or /2, I
+    cannot tell for sure because I've encountered both cases: 'Guardian
+    dragon' (/2) and 'Guardian dragon II' (/4).
+

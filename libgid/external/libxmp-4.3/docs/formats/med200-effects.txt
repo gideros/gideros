@@ -1,0 +1,153 @@
+*****************************************
+********* C O M M A N D S ***************
+*****************************************
+
+You can use the numbers next to each note to produce effects or control
+playing. The format of one note is:
+	C-2 4C23
+	    ^|||
+sample number|||
+   command---^||
+	      data byte (more information about the command)
+
+If the command and the data byte are zeros, nothing special will happen.
+Here's the list of all commands recognized by MED. Many of the commands
+are similar to SoundTracker.
+
+---------------------------- Arpeggio (0) ------------------------------
+You can use arpeggio to simulate chords or to produce interesting effects.
+The arpeggio is done by changing the pitch of the note rapidly (6 times
+in a note). In one chord there can be three different notes. The first
+if of course the lowest note in the example D-2. The next is four half
+steps from the lowest note (F#2) and the third is 7 half steps (A-2).
+So, this is the normal major chord.
+
+	D-2 4047
+
+This command doesn't work with MIDI-instruments.
+
+--------------------------- Slide up (1) ------------------------------
+With this command, you can create smooth slides. The command raises the
+frequency of the note by decreasing the period, which is used by the
+Amiga audio hardware. The period will be decreased 6 * databyte steps.
+If you have chosen the sliding 5 in Playing-module, the period will be
+decreased 5 * databyte. For example: C-3 2103 decreases the period
+3 * 6 = 18 steps. Here's a table of periods of the notes:
+		Octave
+Note	  1	  2	  3
+C	856	428	214
+C#	808	404	202
+D	762	381	190
+D#	720	360	180
+E	678	339	170
+F	640	320	160
+F#	604	302	151
+G	570	285	143
+G#	538	269	135
+A	508	254	127
+A#	480	240	120
+H	453	226	113
+
+How to do smooth slides?
+Maybe you want to create a smooth slide from A-2 to F-3.
+A-2's period is 254, F-3's 160. So, you'll have to decrease the period
+254 - 160 = 94 steps. Because the command will decrease the period
+6 * databyte, the databyte has to be 94 / 6 = 15.666666... = appx. 16.
+If you wanted to do the slide in one note (fast), the databyte should
+be 10, because 16 = hex 10.
+			Or slower:
+	A-2 2110	A-2 2108	A-2 2104
+			--- 0108	--- 0104
+					--- 0104
+					--- 0104
+
+With MIDI-instruments:
+When the note before this command is played through MIDI, the meaning
+of the command will change a bit. It turns the pitch bender up
+48 * databyte. The pitch bender will stay in the new position. You can
+reset the pitch bender with databyte 0, e.g. --- 0100.
+
+--------------------------- Slide down (2) ----------------------------
+This is exactly like Slide up except this slides down.
+Works with MIDI.
+
+--------------------------- Vibrato (3) -------------------------------
+This is a quite simple implementation of vibrato: the period of the note
+is changed two times in a note. The databyte is the vibrato depth.
+Doesn't work with MIDI.
+
+--------------------------- Volume (C) --------------------------------
+With this command you can 1) control the volume of played note or
+2) change the volume of already played note. The databyte is BCD-number
+(00 - 64).
+
+Example 1, control the volume of played note
+
+	C-3 5C30	F#4 KC64
+
+Example 2, change the volume of already played note
+
+	C-3 5000	F#4 K000
+	--- 0C30	--- 0C64
+
+Only example 1 works with MIDI-instruments.
+
+---------------------------- Crescendo, Decrescendo (D) -----------------
+Command D can increase or decrease the volume of the note.
+
+   crescendo--v		decrescendo----v
+	C-2 1D50		C-2 1D03
+
+The first number of the databyte is the amount of crescendo (divided by 6).
+If this is zero, the second number is used for decrescendo (diminuendo).
+
+Example:	crescendo	decrescendo
+		E-1 2000	E-1 2000
+		--- 0D20	--- 0D02
+		--- 0D20	--- 0D02
+
+This command doesn't work with MIDI-instruments.
+
+---------------------------- Filter (E) ---------------------------------
+This command can be used to switch the low-pass filter on/off.
+If the databyte is zero, filter off. If the databyte is one, filter on.
+	off		on
+	--- 0E00	--- 0E01
+
+---------------------------- Tempo etc. (F) -----------------------------
+This command can change the speed of playing. The speed is changed if
+the databyte is 01 - F0 (hex). Tempos 01 - 0A are SoundTracker-compatible.
+	Example:	--- 0F06 normal SoundTracker tempo
+			--- 0FF0 the highest possible tempo (240 = hex F0)
+			--- 0F24 tempo 36 ($24 = 36)
+
+If the databyte is zero, the playing will continue from the next block in
+the sequence list, or the beginning of this block if you are playing the
+block.
+
+		--- 0F00
+
+Other features:
+Especially with rhythm instruments (hihat, bassdrum...) it's sometimes
+useful to have a bit faster patterns. This can be done by Expanding the
+block (Transpose-module) and doubling the tempo. These commands can also
+offer some help:
+
+	C-3 4FF1	play this note twice during one note
+
+	D-2 DFF2	play this note in the second half of this note
+
+	E-4 JFF3	play this note three times during the note
+
+Useful can also be the command FFF, which will turn off the previous note.
+It's possible to do this also with C00-command, but FFF works with MIDI-
+instruments too. So I recommend using it.
+
+	D-2 G000
+	--- 0FFF	note off
+
+The last command is FFE, which is needed quite rarely. It stops the playing
+of the song. So, you can create a song which is played only once.
+
+	--- 0FFE	the end.
+

@@ -1,0 +1,104 @@
+Amiga "StarTrekker" MOD format, by Bjorn Wessen  (aka "Star Tracker" in english)
+
+"FLT4" sig version = same as "M.K." Amiga NoiseTracker files.
+"FLT8" sig ver = same as "M!K!" Amiga ProTracker files but with 8 channels.
+
+------------
+From "GUSTRACK.DOC" of gustr103.zip (IBM GusTrack v1.03by EJ Botterman jr):
+
+File Formats:
+     GusTrack will read 4 track ProTracker files and also Star Tracker files.
+     ( ID's M.K. and FLT4 )
+     And it will read 8 Track Mod files made with Tritons Fast Tracker the
+     Star Tracker or the Octalyzer.
+     ( ID's 8CHN, FLT8 and OCTA)
+     ( Does anyone know if the FLT8 format really excists ?)
+
+[EJ's Fido Address:   2:285/306.4 (Multi-Byte BBS)]
+
+------------
+
+Version of StarTrekker as of 1991:
+	StarTrekker v1.2
+
+------------
+From Stefan Danes <sdanes@marvels.hacktic.nl>:
+
+>StarTrekker 4 & 8 channel
+Synth Format: No info, only that it uses 'EXO4' and 'EXO8' as ID strings
+
+Mod Format:
+4 Channels. FileFormat is identical to the original 4 Channel, 31 Samples 
+mod format by Mahony & Kaktus, but uses 'FLT4' as ID string instead of 'M.K.'
+
+8 Channel 'FLT8': Like in 'FLT4' but: Divide all patterns in the orderlist
+by 2, and each pattern has an additional 400h bytes:
+            
+Normal 4 channel Pattern 400h bytes:
+
+Ch1,Ch2,Ch3,Ch4  [Row 00h]
+... 		 [Row ...]
+Ch1,Ch2,Ch3,Ch4  [Row 3Fh]
+
+Additional 400h bytes for 'FLT8':
+
+Ch5,Ch6,Ch7,Ch8  [Row 00h]
+... 		 [Row ...]
+Ch5,Ch6,Ch7,Ch8  [Row 3Fh]
+
+------------
+From Bjoern Wesen <f92bw@efd.lth.se>:
+
+(Text below written in Nov, 1993)
+Hi. You asked for the formats for >6 channel modules. since i wrote 
+StarTrekker, I can describe its 8 channel format. its very simple. just take
+two 4 channel patterns together! So pattern 0 and 1 is one 8 channel pattern.
+...
+At the same place in the module as the M.K., there is a FLT8 instead if
+its a 8 channel startrekker module. Startrekker itself is kinda outdated,
+so I would advise you to skip supporting it. 
+...
+First, since the amiga is not an 8 channel computer, I would 
+not recommend ANY 8 channel format. At least on a 68000, the realtime
+mixing does not sound very good, and there's little time for doing effects.
+So, in answer to your question of ProTracker compatibility, I'd say nope. 
+You see, StarTrekker came just after NoiseTracker (me being a good friend
+to Mahoney and Kaktus) that is BEFORE protracker. 
+ 
+As for the mixing... Basically I use a buffer, which is so long and plays
+at the right speed to make the buffer sound for 1/50 second. So while
+the buffer plays I calculate the next buffer. That way the processor dont
+have to be timed. If you have a speedier processor you could calculate with
+quadruple or more accuracy, say you conneyct a 16bit D/A on the pararllell
+port or something, then you could play 8 16bit channels on 44khz.
+ 
+However all this boils down to composing only. For games and demos, where
+the music is REALLY used, you cant afford having the processor calculate
+the music half the time.
+ 
+For the mixing of the buffer, I have a separate buffer for each of the 4
+native channels. So I mix two channels into one, by simply sliding 
+through the two samples, picking the right samples for the speed the 
+sample should be played in, adding them, scaling the result and putting
+into the buffer. You COULD interpolate also to get even better result but
+then you need again a speedier processor.
+
+(Text below written in March, 1994)
+In regards of the Amiga StarTrekker format:
+
+Since I wrote StarTrekker (once upon a time...) I think I may know the format.
+The format you are looking for is FLT8, and the ONLY two differences are:
+It says FLT8 instead of FLT4 or M.K., AND, the patterns are PAIRED. I thought
+this was the easiest 8 track format possible, since it can be loaded in a
+normal 4 channel tracker if you should want to rip sounds or patterns. So,
+in a 8 track FLT8 module, patterns 00 and 01 is "really" pattern 00. Patterns
+02 and 03 together is "really" pattern 01. Thats it. Oh well, I didnt have the
+time to implement all effect commands either, so some FLT8 modules would play
+back badly (I think especially the portamento command uses a different "scale"
+than the normal portamento command, that would be hard to patch).
+
+See ya...
+
+/Bjorn Wesen (Exolon of FairLight)
+
+-----------------------------------------------------------------------------

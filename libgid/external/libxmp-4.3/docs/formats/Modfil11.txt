@@ -1,0 +1,1881 @@
+// For more info -> erlandvo@hotmail.com
+
+
+//  Hello Thunder,
+//
+//  ByteRaver / TNT / NO_ID aka Erland Van Olmen (erlandvo@hotmail.com)
+//  typing here. Your MODFIL10.TXT file was a *GREAT* help for me (my
+//  .MOD loader is now better than the one of FT2, CP 2.0 or Inertia
+//  Player! ;) still, while I was programming, I made some corrections and
+//  completed the text here and there. You might as well find it usefull,
+//  even if the original file was released quite some time ago...
+//  Anyway, each time you see "//", it's an annotation from me.
+//  BTW, I wrote a MOD player for the GUS as well as for the SoundBlaster
+//  PRO II (Interpolation & volume amplify are provided for better sound
+//  quality); the source code has been released through Hornet.
+//  (www.hornet.org, file tnt-mp??.zip, first file was tnt-mp10.zip) A DOC
+//  describing the principles of digital mixing is included.
+//  Source code of the player is Pascal, only the mixer is written in 386+
+//  Real mode assembler.
+//
+//      Bye, sorry for my awful English, hope to hear from you.
+//
+//                              ByteRaver.
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+
+
+           Public file MODFIL10.TXT - Version 1.0 - by Thunder
+
+
+Introduction
+_______________________________
+
+What this file attempts  to do is describe  the MOD format in  detail and
+elaborate on the 'effects' that are possible.  This is the  first version
+of this file, so if there are mistakes (and I expect at  least a couple),
+please let me  know.   This information was  compiled from  a variety  of
+sources, many  of them  anonymous, so  I will  thank them  all, and  they
+hopefully know who they are.  I would like to keep this  file up to date.
+It will be posted as 'MODFILxx.TXT' or 'MODFILxx.ZIP', where 'xx'  is the
+version number (MODFIL10.TXT being the first release).
+
+I assume that you  have some prior knowledge  of some 'technical'  terms,
+including: sample, channel (or voice), frequency, logarithmic  vs. linear
+volume, byte,  word,  long integer,  and  hexadecimal  format.   It  also
+assumes  that  you  know  something  about  the  machine  that   you  are
+programming on.   If you do  not know  these things,  this file will  NOT
+teach you them.  Refer to other sources before going further.
+
+I am a  PC programmer, so  I cannot  elaborate on particular  procedures,
+routines, methodologies,  or  tricks  that  can  be  performed  on  other
+architechtures.  I have written routines for the Gravis UltraSound,
+which is probably the easiest sound card (on the PC anyway) to  write MOD
+routines for.
+
+I disclaim everything  in this file.   This information  is for your  use
+personally, but I  don't care  if you  give it  to everyone  else on  the
+planet.   I would  like the  file  to stay  intact, and  if  you use  the
+information a 'hello' to me in your program's credits would be nice.   If
+the information is wrong or gives you problems or damages  your equipment
+or person, tough luck.   I am  not responsible for  anything you DO  with
+this information.
+
+If you have additions, corrections, clarification or questions about this
+information or this file, you can send them to me through the internet to
+'kurt.kennett@gravis.com' or 'kurtt@sfu.ca'.
+
+Here is an overview of what is in this file:
+
+1 General
+2 File Format
+  2.1 Song Name
+  2.2 Sample Information
+  2.3 Number of patterns in song
+  2.4 Song end jump position
+  2.5 Pattern table
+  2.6 File format tag
+  2.7 Patterns
+  2.8 Sample data
+
+_______________________________________________________________________
+                                                                      1
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+3 Playing the files
+  3.1 Timing
+  3.2 Periods
+  3.3 Fine-Tuning
+  3.4 Effects
+  3.5 Other information
+4 Period and Volume tables
+
+
+
+1.0 General
+___________________________________________
+
+Files with the  extension '.MOD'  are sequenced  music files.   The  file
+format has it's  roots in  the Commodore  Amiga computer  (ugh!).   These
+files use different  digital 'samples' played  at various frequencies  to
+create three  octaves  of  'notes'  for  that sample.    In  addition  to
+different 'notes', there  are a large  number of  'effects' which can  be
+done to produce variations on the different notes.
+
+There are many variations on the MOD format.  Since the format originated
+on the Commodore Amiga computer, the files were geared towards  a machine
+with  4 voices.  These days, with a GUS (Gravis UltraSound),  you have 32
+independent voices.  If you are  programming for a sound board  or device
+that has only 1 or 2 digital voices, you will have to  mix together the 4
+to 8 output channels into those voices.  I will not go  into this process
+here, since I do not  have experience with it  (you don't need to  mix on
+the GUS).  If someone would like to mail me a TEXT explaination of how to
+do the mixing, I  will include it in  this file.  I  DO NOT WANT CODE  --
+learn how to write english.
+
+The earliest versions of the MOD format used a maximum of  15 instruments
+and had 4  channels.   Through some  modifications in  format, a  'newer'
+standard emerged, with a maximum of 31 instruments and up to  8 channels.
+You can tell what format of file you are working with by a four-character
+tag field.  The programs that are  used to play these files on  the Amiga
+are called 'Noisetracker', 'Soundtracker', and 'Protracker'.
+
+// There is also a (well-known) program called 'StarTrekker'. See section
+// 2.6 (format tag fields) for more info.
+
+
+
+2.0 File Format
+_______________________________
+
+What follows is a description of  a file broken down in  a field-by-field
+format.  This is  just a general description.   Please see the  following
+subsections for a detailed description of what each field is and  what it
+means.
+
+'Big-End Word' refers to the word format on the Amiga.  A  2-byte integer
+value  is  a  word.    On   the  Amiga,  this  value  has   the  internal
+representation HHLL, where HH means the high-order byte and LL  means the
+low-order byte.  The Intel chips (inside PCs) use a LLHH format for their
+words.  This means that if you are writing routines for the  PC, you have
+to flip the high and low order bytes to retrieve meaningful values.
+
+_______________________________________________________________________
+                                                                      2
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+Just to piss  off all  the C  programmers, I'm  going to  start the  file
+offset at 1 instead of 0.
+
+// ?! Something against C programmers ;-) ? (I'm both, but above all C...)
+
+             +-----------------(in bytes)
+             |
+             v
+ Offset   Length   Format    Description
+======== ======== ========= =============
+      1       20   Chars     Title of the song.  If the title is not a
+                             full 20 chars in length, it will be null-
+                             terminated.
+
+     21       22   Chars     Sample 1 name.  If the name is not a full
+                             22 chars in length, it will be null
+                             terminated.
+
+     43        2   Big-End   Sample 1 length in 2-byte words.  Multiply
+                   Word      this value by 2 to get the length of the
+                             sample in bytes.
+
+     45        1   SNibble   Sample 1 finetune.
+
+     46        1   Byte      Sample 1 linear volume.
+
+     47        2   Big-End   Sample 1 repeat offset in 2-byte words.
+                   Word      Multiply this value by 2 to get the position
+                             in bytes.
+
+     49        2   Big-End   Sample 1 repeat length in 2-byte words.
+                   Word      Multiply this value by 2 to get the length
+                             in bytes.
+
+     51       30             Sample 2 information.  Same format.
+     81       30             Sample 3 information   Same format.
+
+     .        There will either be 15 or 31 sample information blocks.
+     .        See the format tag field below for a description of how
+     .        to find out how many instruments there are.  We'll go on
+     .        the assumption that there are 31 instruments in the file.
+
+    921       30             Sample 31 information.
+
+    951        1   Byte      Number of patterns in SONG as played.
+
+    952        1   Byte      Song end jump position.
+
+    953      128   Bytes     Pattern Table.  These list up to 128
+                             pattern numbers and the order they should
+                             be played in.
+
+   1081        4   Chars     File format tag.
+
+   1085 ... Pattern and Sample data.  Please see pattern section and
+            sample section for more information.
+
+
+// The old NST format contains only 15 samples (instead of 31). Further it
+// doesn't contain a file format tag (id). So Pattern data offset is at
+// 20+15*30+1+1+128.
+
+// If the file looks like plain garbage, e.g. you can't find any valid
+// sample-size value, sample-name string (should be alfanumeric), ID
+// field, ... the file may be compressed with PowerPacker 2.0
+// To check this, look for the FIRST 4 bytes of the file. If this "string"
+// reads "PP20" the .MOD file is compressed with PowerPacker...
+// Use pp20unp.exe to decompress the file (it's included with the source
+// of my MOD Player, which you can get at:
+//          www.Hornet.org/music/programs/players/tnt-mpXX.zip
+// (XX = version nr, 1st version = 10)
+
+
+
+_______________________________________________________________________
+                                                                      3
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+2.1 Song Name
+_______________________________
+
+This data is pretty  self-representative.  This is  a C 'string' that  is
+null-terminated (i.e. ASCII character 0 is put at the end of the  text is
+the text does not  fill up the  entire field).   Some module writers  use
+this field and the  instrument name fields to  write 'hello' messages  to
+their friends or dedications instead of giving names to the song  or it's
+samples.  I in no way discourage this.
+
+// As sample names are usually used for messages, the song title field
+// effectively holds the song title (in 99.9% of the cases ;-))
+
+2.2 Sample Information
+_______________________________
+
+Based on the format tag field, there can be 15 or 31  sampled instruments
+for the song.  These days it is  rare to run into an 'older'  format song
+with only 15  instruments.  Please  see the 'File  format tag' field  for
+more information on  how to  determine how many  samples there  are in  a
+file.
+
+The first field in a sample  information block is the sample's name.   As
+was mentioned above, these names are  frequently used by the  composer to
+say hello to his or her friends.  Again, I in no way discourage this.  If
+the sample name begins with a '#' character (ASCII $23 (35)) then this is
+assumed not to be an instrument name, and is probably a message.
+
+The second field is the sample  length in words.  Once again,  since this
+is a 680x0 word, the bytes have the order HHLL, and you have to swap them
+to use the word on PCs.  The first 2 bytes of the sample  are used by the
+Amiga players for repeat information, and  therefore are NOT part  of the
+playable data.  Therefore, if this field is evaluated to a length of less
+than 3 bytes, there is NO sample.
+
+The third field is the sample's  initial finetune value.  The  lower four
+bits represent a signed  nibble (-8..7). Each  finetune step changes  the
+note 1/8th  of  a  semitone.   This  is  implemented by  switching  to  a
+different table of period-values  for each finetune  value.  See  section
+3.2 for a discussion of fine-tuning.
+
+The fourth  field is  the sample's  playback volume.    These are  LINEAR
+values that range from 0 to 64, with 64 being maximum volume.  If you are
+implementing a  MOD  player,  remember  to  check  if  you  need  to  use
+logarithmic volumes.  'Decibel' is a logrithmical unit,  which represents
+how we feel  sound intensity.   The volume  and decibel  value table  for
+conversions is on the next page.
+
+
+
+
+
+
+
+
+
+_______________________________________________________________________
+                                                                      4
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+            Volume  Decibel Value     Volume  Decibel Value
+         -------------------------  ------------------------
+              64         0.0            32        -6.0
+              63        -0.1            31        -6.3
+              62        -0.3            30        -6.6
+              61        -0.4            29        -6.9
+              60        -0.6            28        -7.2
+              59        -0.7            27        -7.5
+              58        -0.9            26        -7.8
+              57        -1.0            25        -8.2
+              56        -1.2            24        -8.5
+              55        -1.3            23        -8.9
+              54        -1.5            22        -9.3
+              53        -1.6            21        -9.7
+              52        -1.8            20       -10.1
+              51        -2.0            19       -10.5
+              50        -2.1            18       -11.0
+              49        -2.3            17       -11.5
+              48        -2.5            16       -12.0
+              47        -2.7            15       -12.6
+              46        -2.9            14       -13.2
+              45        -3.1            13       -13.8
+              44        -3.3            12       -14.5
+              43        -3.5            11       -15.3
+              42        -3.7            10       -16.1
+              41        -3.9             9       -17.0
+              40        -4.1             8       -18.1
+              39        -4.3             7       -19.2
+              38        -4.5             6       -20.6
+              37        -4.8             5       -22.1
+              36        -5.0             4       -24.1
+              35        -5.2             3       -26.6
+              34        -5.5             2       -30.1
+              33        -5.8             1       -36.1
+                                         0    Minus infinity
+
+The reason  for  the  table starting  at  0  dB as  the  convention  from
+taperecorders of  having 0  dB as  the optimal  recording condition,  and
+displaying anything worse as a negative  number.  Please see  section 4.0
+for a complete linear volume format for Gravis' UltraSound.
+
+The fifth field  in the  sample information  block is  the sample  repeat
+start offset.  Once this sample has been played completely from beginning
+to end, if the  repeat length (next field)  is greater than two  bytes it
+will loop back to this position in the sample and continue playing.  Once
+it has played for  the repeat length,  it continues to  loop back to  the
+repeat start offset.  This means the sample continues playing until it is
+told to stop.
+
+The last, or sixth field in the sample information is the  repeat length.
+A sample is only looped if this value  is greater than 2 bytes.   See the
+preceeding paragraph for more information on looping.
+
+
+_______________________________________________________________________
+                                                                      5
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+2.3 Number of patterns in song
+_______________________________
+
+This byte represents the number of patterns which are played in the entire
+SONG.  This is NOT the number of patterns in the FILE.  The file may
+contain (theoretically) up to 256 patterns, whereas the song is just a
+selection of those patterns.  If I have 30 patterns in my file, and I just
+want to play patterns 6, 12, 3, 7, and 8 in that order, this byte will have
+the value 5.
+
+
+2.4 Song end jump position
+_______________________________
+
+Historically, this byte has been used  for many purposes.   Most commonly
+in the newer  format it  has been  used to  signify if  a song  is to  be
+repeated indefinitely.   Some game programs  have background music  which
+never ends.   If  this byte  is  less than  127,  then it  specifies  the
+position in the pattern table to  jump to when the last pattern  has been
+played.  If this byte is greater than or equal to 127, the song ends.
+
+
+
+2.5 Pattern table
+_______________________________
+
+This 128 byte block lists the  order that patterns in the file  should be
+played in.  Only the number of bytes specified by the number  of patterns
+in the song (see section 2.3) can be considered valid.  If the song is to
+play patterns 6, 0, 12, 11, 21, and 10 in that order, then the table will
+have those 6 values as the first 6 bytes:
+
+                             Pattern Table
+  Position --->  0   1   2   3   4   5   6 ---------> 127
+               |---|---|---|---|---|---|---|---...---|---|
+               |006|000|012|011|021|010|    ?????????    |
+               |---|---|---|---|---|---|---|---...---|---|
+
+One of the  effects which  is possible (see  section 3.4)  is a  position
+jump.  The argument  to this effect is  where to jump  to in the  PATTERN
+TABLE.  This does NOT specify which PATTERN to jump to.
+
+In a particular pattern  there are 64 lines.   These lines are  played in
+order from  0 to  63.   When the  end of  a pattern  is reached,  playing
+continues with the next pattern in the pattern table, unless  the current
+pattern is the last one.  If  the current pattern IS the last  one, check
+the song end jump position (see section 2.4) to see if the  song loops to
+a certain position  in the  pattern table.   Another one  of the  effects
+which is possible (see section 3.4)  is a pattern break.  If  this effect
+is encountered, playing immediately jumps to  the first line of  the next
+pattern.
+
+// The effect $D will always skip to the next pattern, but NOT always to
+// the first line of the next pattern (in the table). See the description
+// of the effect for more information.
+
+
+
+_______________________________________________________________________
+                                                                      6
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+2.6 File format tag
+_______________________________
+
+This is the most  controversial field in the  file.  This field  has been
+the most 'ravaged', with  many people using it  in non-standard ways  for
+their own purposes.   There are a  few standard tags  which you can  find
+here which tell you  DEFINITELY what file format  the file is, but  there
+are many more  non-standard tags.   This makes the  job of deciding  what
+format a MOD is a  difficult one.  I  will attempt to describe  the known
+formats below.  If you know of one I miss, please let me know.
+
+     'M.K.', 'FLT4',
+     'M!K!', '4CHN' : 4 channels, 31 instruments
+
+     '6CHN'         : 6 channels, 31 instruments
+
+     '8CHN', 'OCTA' : 8 channels, 31 instruments
+
+// Another annotion about these tag fields: here you got some other fields.
+// If you don't want to support them in your player, you should at least de-
+// tect them. All these MODs have of course 31 instruments.
+// 'FLT4', 'FLT8': Startrekker 4/8 channel file. ('FLT6' doesn't exists)
+// 'CD81'        : Falcon 8 channel MODs
+// '2CHN'        : FastTracker 2 Channel MODs
+// 'yyCH' where yy can be 10, 12, .. 30, 32: FastTracker yy Channel MODs
+// 'yyCH' where yy can be 11, 13, 15: TakeTracker 11, 13, 15 channel MODs
+// 'TDZx' where x can be 1, 2 or 3: TakeTracker 1, 2, 3 channel MODs
+// 'xCHN' where x can be 5, 7 or 9: TakeTracker 5, 7, 9 channel MODs
+//
+// Thanks must go to Inertia for most of these extra tag fields.
+//
+// All these formats, except for the FLT8 format, are *EXACTLY* the same as
+// the standard M.K. 4 channel format; the only difference is the size of
+// one pattern. The size of one pattern is calculated w/ the following
+// "formula":
+//                         (Nr_Of_Channels shl 8)
+//
+// (  Nr_Of_Channels shl 8  <====> Nr_Of_Channels*4*64
+//                                                ^ ^^
+//                                                | ||
+//                      Note length: 4 bytes -----+ ||
+//                      Lines/patttern: 64 ---------++
+// )
+// The tag '4CHN' doesn't exists.
+//
+// Some extra information about the "FLT8" -type MOD's:
+//
+// These MOD's have 8 channels, still the format isn't the same as the
+// other 8 channel formats ("OCTA", "CD81", "8CHN"): instead of storing
+// ONE 8-track pattern, it stores TWO 4-track patterns per logical pattern.
+// i.e. The first 4 channels of the first logical pattern are stored in
+// the first physical 4-channel pattern (size 1kb) whereas channel 5 until
+// channel 8 of the first logical pattern are stored as the SECOND physical
+// 4-channel pattern. Got it? ;-).
+// If you convert all the 4 channel patterns to 8 channel patterns, do not
+// forget to divide each pattern nr by 2 in the pattern sequence table!
+
+
+Other information  that is  found in  this  field can  be assumed  to  be
+somebody's attempt at protection, or some other information that was used
+in the  'older'  file  format.   If  you  can't find  any  of  the  above
+information, it is best to assume that it's a 4 channel file.  As for how
+many instruments there are, check the bytes at location 471 in  the file.
+If there is text  there (ASCII $20-$7E (32-126)),  then you can  probably
+assume it's a 31-instrument file.  Otherwise, it's an older 15 instrument
+file.
+
+// The method described above works lovely!
+
+2.7 Patterns
+_______________________________
+
+There can be any number of patterns  in the file.  They are  stored after
+the file header and before the sample data.  There are USUALLY  less than
+64, but the maximum is not limited - if the file tag  is 'M!K!' there are
+definitely more than 64 patterns.
+
+// The nr of patterns is limited to 128 (from 0 to 127).
+
+The patterns are stored sequentially (i.e.  the first pattern is  #0, the
+second pattern is  #1, etc.).   An individual  pattern is  made up of  64
+'lines', stored sequentially (i.e.  line 0 to line  63).  Each 'line'  is
+comprised of a note for each channel.  Each 'note' is made up of 4 bytes,
+so depending on the number of channels in the file, there are  16, 24, or
+32 bytes per line.
+
+// there are nr_channels*4 bytes per line. That is: minimum 4, max. 128
+
+For a four-channel file there are (4 bytes * 4 channels * 64 lines) =1024
+bytes of information per pattern.  To find out the number of  patterns in
+a particular file, calculate the  length of 'header' information  and add
+to it  the  lengths of  all  samples that  are  mentioned in  the  sample
+information blocks.  Subtract this number from the file's total  size and
+divide by the number just computed  (1024) to get the number  of patterns
+in the file.
+
+// The method described above is not the best method to find out how many
+// patterns are stored in the MOD; it will fail if the MOD contains garbage
+// at the end of the file. A much better method is to scan through the
+// pattern sequence table to find the highest value. Be sure to scan ALL
+// the values (128 of them) and to increment the highest pattern nr once,
+// because the patterns are numbered from zero...
+// e.g. if the highest pattern nr you could find in the table is 16, there
+// are 16+1=17 patterns.
+
+
+_______________________________________________________________________
+                                                                      7
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+As mentioned above, each note is stored as 4 bytes.  The information held
+by these bytes has format shown  below.  How you display the  contents of
+the 4 bytes in  a player is up  to you.  There  is NO standard way  to do
+this.
+
+               Byte  1   Byte  2   Byte  3   Byte 4
+              --------- --------- --------- ---------
+              7654-3210 7654-3210 7654-3210 7654-3210
+              wwww XXXX xxxxxxxxx yyyy ZZZZ zzzzzzzzz
+
+                  wwwwyyyy ( 8 bits) : sample number
+              XXXXxxxxxxxx (12 bits) : sample 'period'
+              ZZZZzzzzzzzz (12 bits) : effect and argument
+
+The sample number refers to a sample specified in the  sample information
+block.   Please see  sections 2.2  and 2.8  for more  information on  the
+samples.
+
+The sample 'period' corresponds  to a delay value  on an Amiga  computer.
+Note that on  an Intel  processor, you  have to  order these  12 bits  as
+'XXXX0000xxxxxxxx' to read the value as a word.  Please see  sections 3.2
+
+// NO! You should use XXXXxxxxxxxx instead of XXXX0000xxxxxxxx
+// (I came on it whilst programming my own player.)
+
+and 3.3 for more information on how to use these values.
+
+The effect is an  effect number and an  argument for the effect.   Please
+see section 3.4  for a  discussion of the  effects and  how to  implement
+them.
+
+
+
+2.8 Sample data
+_______________________________
+
+The sample data  follows all of  the patterns.   After you have  finished
+reading the pattern data, there will be just enough data left in the file
+for all of the instruments  specified in the sample  information section.
+The samples are  stored sequentially  from sample 1  to sample  31.   The
+sample's data is in 8-bit two's  compliment format, so if it needs  to be
+in another  format for  your sound  device to  play it,  don't forget  to
+convert (UltraSound  users:  you don't  need  to  convert the  data  when
+downloading).
+
+As was mentioned in section 2.2, the first 2 bytes of the sample are used
+by the Amiga MOD  players for repeat information,  and therefore are  NOT
+part of the  playable data.   PC users do  not have  to do anything  with
+these two bytes.
+
+// Hum, I got wrong results when I skipped these two bytes. When I treated
+// them as sample data, everything went fine... Dunno why.
+// So I suggest you don't care about it.
+// (especially chiptunes sounded really wrong)
+
+
+
+
+
+_______________________________________________________________________
+                                                                      8
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+3.0 Playing the files
+_______________________________
+
+Section 3 deals  with playing  MOD files.   Specifically,  it deals  with
+playing them  on  PC  hardware -  hopefully  a  Gravis UltraSound.    The
+Ultrasound is  ideal for  this and  many other  types of  sound and  song
+processing, and is exceptionally easy to program.  Gravis makes available
+an SDK (Software Development Kit) which has both C, C++, and (by  the end
+of November)  Borland Pascal  versions.   If you  are  programming a  MOD
+player for other hardware, you may still be able to use  this information
+for reference.
+
+
+
+3.1 Timing
+_______________________________
+
+If lines are played  sequentially, then how long  should the player  wait
+between successive lines?  On the Amiga, the amount of time a note spends
+on a channel before the next note is started is calculated by  using some
+complex formulas based on  the PAL color carrier  frequency.  I will  not
+try to bore you with the  details of these calculations here, and  if you
+wan't them, email me.
+
+A song can be played at  a speed ranging from  1 to 127, where  the speed
+specifies how many  'ticks' before playing  the next sample.   A tick  is
+supposed to happen every .02 seconds, which gives 50 ticks per second.
+
+At the start of  a line all samples  specified on that line  are started,
+samples playing  are  modified, speed  is  changed,  etc.   Some  effects
+require that changes be made to a sample playing on a channel  during the
+course of a line.  For  example, the retrigger effect re-starts  a sample
+at a certain tick within a line.  If  the song is playing at speed  6 and
+the effect specifies a retrigger on the 4th tick:
+
+               Time Tick
+               0.00  1 - start all samples and effects
+               0.02  2
+               0.04  3
+               0.06  4 - retrigger sample here
+               0.08  5
+               0.10  6
+               ------------
+               0.00  1 - start next line
+                   .
+                   .
+
+Unless a speed is specified on  the first line of the first  pattern, the
+song should start playing at speed 6.  Please see section 3.4, effect $F,
+for more information on changes in speed.
+
+
+
+
+
+_______________________________________________________________________
+                                                                      9
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+3.2 Periods
+_______________________________
+
+MOD  players  use  a  technique  called  frequency  shifting  to  produce
+different 'notes' of the same sample.  If  I play a sample at 10  KHz, it
+will sound one octave higher if I double the frequency to 20 KHz, and one
+octave lower if I halve the frequency to 5 KHz.  Since there are 12 notes
+per octave on a  keyboard (these are  called half-steps), each  frequency
+corresponds to one twelfth root of two (~1.05946) times the  frequency of
+it's predecessor (to  the left).   Therefore, if  the C-1 frequency  (the
+note of C in octave 1) is 4144 Hz then:
+
+Note: C-1  C#1  D-1  ... C-2  ...
+Freq: 4144 4390 4651 ... 8288 ...
+
+The Amiga playing routines were  written to run off  different interrupts
+for different Amiga computers, based on whether the machine was a  PAL or
+NTSC machine.    The  'period' values  are  measures  which are  used  in
+calculating how much data  to send to  each of the  4 Amiga channels  per
+second (thereby specifying the frequency or pitch of the output).
+
+For PC programmers, you  don't have to worry  about this that much.   The
+thing to remember is  that a 'magic number'  divided by twice the  period
+value will give the rate (frequency) to play the sample at.  Here are the
+magic numbers and the corresponding formulae.  I don't know  which number
+is better to use - It doesn't make a huge difference.
+
+               PAL Value                NTSC Value
+              ===========              ============
+
+                7093789.2                       7159090.5
+SampleRate = --------------     SampleRate = --------------
+               Period * 2                      Period * 2
+
+// On a GUS, you need to divide the above calculated frequency by a cer-
+// tain "frequency divisor". The value of this divisor depends on the
+// number of channels you allocated on the GUS. Here you have the official
+// divisors:
+
+// freq_divisors[19] = (
+//   44.100,    frequency divisor using 14 active voices (or less)
+//   41.160,    frequency divisor using 15 active voices
+//   38.587,    frequency divisor using 16 active voices
+//   36.317,    frequency divisor using 17 active voices
+//   34.300,    frequency divisor using 18 active voices
+//   32.494,    frequency divisor using 19 active voices
+//   30.870,    frequency divisor using 20 active voices
+//   29.400,    frequency divisor using 21 active voices
+//   28.063,    frequency divisor using 22 active voices
+//   26.843,    frequency divisor using 23 active voices
+//   25.725,    frequency divisor using 24 active voices
+//   24.696,    frequency divisor using 25 active voices
+//   23.746,    frequency divisor using 26 active voices
+//   22.866,    frequency divisor using 27 active voices
+//   22.050,    frequency divisor using 28 active voices
+//   21.289,    frequency divisor using 29 active voices
+//   20.580,    frequency divisor using 30 active voices
+//   19.916,    frequency divisor using 31 active voices
+//   19.293     frequency divisor using 32 active voices
+// );
+//
+// If you multiply these values by 1000 (e.g. 44100 instead of 44.100),
+// you get the mixing rate of the GUS. As you see, the quality drops badly
+// using 32 active voices...
+//
+// (BTW: Don't try to allocate less than 14 voices.)
+// Thus the frequency you should pass to the GUS is calculated as follows:
+//
+// gus_freq = (7093789.2 / (2 * period)) / freq_divisors[nr_of_voices-14];
+
+To determine what frequency  to play a sample  at, look up the  specified
+period value in a  table based on the  finetune setting (see section  3.3
+for more  information on  fine-tuning).   If the  period is  0, then  the
+previous period used on that channel is used.
+
+As an example, let's look at the period table for finetune 0.   The notes
+that are possible in each octave are:
+
+          C    C#   D    D#   E    F    F#   G    G#   A    A#   B
+Octave 1: 856, 808, 762, 720, 678, 640, 604, 570, 538, 508, 480, 453
+Octave 2: 428, 404, 381, 360, 339, 320, 302, 285, 269, 254, 240, 226
+Octave 3: 214, 202, 190, 180, 170, 160, 151, 143, 135, 127, 120, 113
+
+Octave 0:1712,1616,1525,1440,1357,1281,1209,1141,1077,1017, 961, 907
+Octave 4: 107, 101,  95,  90,  85,  80,  76,  71,  67,  64,  60,  57
+
+If I was requested to play a  sample at period 302, I would  scan through
+the period table until I hit that value.  At that point,  I know that the
+note is called  'F#2', F-sharp  in octave 2.   I  calculate the  playback
+frequency by doing the calculations on the next page.
+
+_______________________________________________________________________
+                                                                      10
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+      PAL Value                     NTSC Value
+      ===========                   ============
+
+       7093789.2                     7159090.5
+      ----------- = 11745 Hz        ----------- = 11853 Hz
+        302 * 2                       302 * 2
+
+There are normally  only three octaves  (1 to 3)  used in playing  songs.
+Octaves 0 and 4 are NOT standard.  Some songs may use  the values though,
+and it's nice if your player can handle them.  Full period tables for all
+finetunes are listed in section 4.
+
+If you wish to sample sounds  to include in MOD files, remember  that the
+data must be stored in 8-bit 2's complement format.  There is NO standard
+sample rate when creating the samples.   Most often the samples  are done
+on the rate corresponding to period C-3 (around 16.5 KHz),  and sometimes
+drums are sampled at A-3 (around 28 KHz).
+
+If sample number  is specified on  a channel (sample  #0), then the  last
+
+// (SampleNr is not zero)
+
+sample used on that channel will  be remembered if new notes  come along.
+Only one sample may play on a channel at a time, so  playing a new sample
+will cancel an old one - even if  there is no actual sample data  for the
+new sample (a 'silent' sample).   However, if you are constructing  a MOD
+file of your own and you  use a "silent" sample  it is polite to  set its
+default volume to 0.
+
+If you have some memory (around 2k or  so) to spare, you could make  up a
+table of words indexed  by period value.   The value of  the word at  the
+index of a period is the  corresponding frequency that the  sample should
+be played at.   This saves you from  having to calculate the  frequencies
+over and over again.  If you still don't get what I'm talking about here:
+
+I have a array of words, one for each period from the  lowest (around 50)
+
+// Normal   Maximum Period = 907
+// Normal   Minimum Period = 108
+// Extended Maximum Period = 1814
+// Extended Minimum Period = 54
+//
+// Extended: when using octaves 0 & 4
+// See the V-E-R-Y end of this file for a complete list of Period values,
+// EXTENDED octaves included.
+//
+// If you want VERY extended octaves, you'll have to use different
+// formulas.
+
+to the highest (around 1712).  I precalculate the contents of  this table
+so that at index 302 (the period for note F#2), there is the value 11853,
+the frequency to use to get the note F#2.  Therefore, when my player runs
+accross this value and  needs to know what  frequency to play the  sample
+at, I simply look up the  value in the table directly -  no calculations.
+If you still don't get what I'm talking about, you're screwed.
+
+
+3.3 Fine-Tuning
+_______________________________
+
+Fine-tuning is a minor adjustment on  how an instrument sounds.   This is
+implemented by small changes  in the period values.   The finetune  value
+for a  sample specifies  the adjustment  on the  period  values for  that
+instrument.  A fine-tune can also be specified for a  specific instrument
+by an effect, at  which point the value  in the effect will  override the
+one in the sample information block.
+
+
+
+
+_______________________________________________________________________
+                                                                      11
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+The value in  the sample information  block is a  signed nibble (4  bits,
+signed 2's complement).  Therefore, the values that can be found have the
+following corresponding finetunes:
+
+Value:    0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+Finetune: 0  +1  +2  +3  +4  +5  +6  +7  -8  -7  -6  -5  -4  -3  -2  -1
+
+Section 4.0 specifies period values for all finetunes for octaves 1 to 3.
+You could use these values in creating your array of frequency words (see
+the end of section 3.2).
+
+
+
+3.4 Effects
+_______________________________
+
+As was  mentioned  in section  2.7,  the 4  bytes  for  a note  have  the
+following format:
+
+               Byte  1   Byte  2   Byte  3   Byte 4
+              --------- --------- --------- ---------
+              7654-3210 7654-3210 7654-3210 7654-3210
+              wwww XXXX xxxxxxxxx yyyy ZZZZ zzzzzzzzz
+
+                  wwwwyyyy ( 8 bits) : sample number
+              XXXXxxxxxxxx (12 bits) : sample 'period'
+              ZZZZzzzzzzzz (12 bits) : effect and argument
+
+Again, how you display this information in a player is up to you.  I have
+seen a  zillion different  formats.   I have  described  what the  sample
+number and period refer to.  Here,  we will look at the effects  that are
+possible.
+
+At this point  in time, the  Amiga Protracker  MOD player (version  2.3A/
+3.01)   has 28  effects.   Some of  these effects  are  redundant or  not
+possible on some PC  sound cards.   I will describe  the effects and  how
+they are implemented on the Amiga.  PC programmers will have to adapt the
+effects they wish to implement on  their own.  All numbers are  stated in
+hexadecimal.
+
+For the  discussion of  the effects,  we  will look  at the  'effect  and
+argument' part of the 4 bytes in the following way:
+
+               Bit number:         $CBA987654321
+               Mentioned above as:  ZZZZzzzzzzzz
+               We will use:         ZZZZxxxxyyyy
+
+There are two types of effects,  standard and extended.  All  effects use
+the ZZZZ portion to declare the effect number.  Standard effects  use the
+xxxx and yyyy portions as one or two arguments, either as an  8-bit value
+when taken together in the form  xxxxyyyy or as 2 nibbles xxxx  and yyyy.
+Extended effects  have the  ZZZZ effect  number $E.   They  use the  xxxx
+portion to  declare the  extended effect  number and  the  only the  yyyy
+portion as an argument.
+
+_______________________________________________________________________
+                                                                      12
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+Here are the possible standard effects:
+-----------------------------------------------------------------------
+#   Effect name                          Uses Arguments as
+-----------------------------------------------------------------------
+0   Arpeggio                             xxxx  yyyy
+1   Slide Up                             xxxxyyyy
+2   Slide Down                           xxxxyyyy
+3   Tone Portamento                      xxxxyyyy
+4   Vibrato                              xxxx  yyyy
+5   Tone Portamento + Volume Slide       xxxx  yyyy
+6   Vibrato + Volume Slide               xxxx  yyyy
+7   Tremolo                              xxxx  yyyy
+8   Set Panning Position                 xxxxyyyy
+9   Set SampleOffset                     xxxxyyyy
+A   VolumeSlide                          xxxx  yyyy
+B   Position Jump                        xxxxyyyy
+C   Set Volume                           xxxxyyyy
+D   Pattern Break                        xxxxyyyy
+E   *Extended Effects                    see below
+F   Set Speed                            xxxxyyyy
+
+// The "SET SPEED" command is also used to set extended speed: BPM.
+
+And here are the possible extended effects:
+                   ---------------------------------
+                    #   Effect name
+                   ---------------------------------
+                    E0  Set Filter
+                    E1  FineSlide Up
+                    E2  FineSlide Down
+                    E3  Glissando Control
+                    E4  Set Vibrato Waveform
+                    E5  Set FineTune
+                    E6  Set/Jump to Loop
+                    E7  Set Tremolo Waveform
+                    E8  NOT USED
+                    E9  Retrig Note
+                    EA  Fine VolumeSlide Up
+                    EB  Fine VolumeSlide Down
+                    EC  NoteCut
+                    ED  NoteDelay
+                    EE  PatternDelay
+                    EF  Invert Loop
+
+
+A description of each  effect and how it  is implemented is given  on the
+following pages.  Once again, all values are given in  hexadecimal unless
+otherwise stated.
+
+
+
+
+
+
+
+
+_______________________________________________________________________
+                                                                      13
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+-----------------------------------------------------------------------
+0: Arpeggio
+-----------------------------------------------------------------------
+If a note as an effect number of 0, it is only an arpeggio if there is at
+least one non-zero argument.  When there is at least one  valid argument,
+this effect means to  play the note specified,  then the note+xxxx  half-
+steps, then the  note+yyyy half-steps,  and then return  to the  original
+note.  These changes are evenly spaced  within the time for a line  to be
+played at the current speed.
+
+This effect is usually  used to simulate chords  (where a major chord  is
+the note+4 half  steps and the  note+7 half-steps).   This does not  work
+very well on  most samples.   This can also  be used  to produce a  heavy
+vibrato.  Here is an example of this effect:
+
+Note C-3, xxxx=4, yyyy=7
+
+this will attempt to produce a C-major chord.  At the beginning of a line
+the C-3 note is played, then at 1/3 of the way through  the line the note
+is retriggered at E-3, 2/3 of  the way through it is retriggered  at G-3,
+and at the beginning of the  next line (if there  are no new notes  to be
+played on the channel), it is retriggered at C-3 again.
+
+This presents a minor problem for timing, since you have to keep track of
+the arpeggio during the course of playing  a line.  What you could  do is
+use a  timer differently,  or set  up  another timer  that  independently
+tracks the timing of the arpeggio.
+
+// There is a little error in the above information. So here's how you
+// should implement Arpeggio on the PC:
+// - at tick nr 0 (the tick the effect is encountered whilst updating the
+//   note info ( = whilst playing another line)): set a counter to 0, and
+//   keep the values xxxx & yyyy handy.
+//   => play the actual note.
+// - at tick nr 1 (the first tick that occurs after updating a line:
+//   STILL PLAY THE ACTUAL NOTE - AND THEN update ( increment) the counter.
+// - the following ticks:
+//
+//        if (counter mod 3) = 0 then play actual note
+//        if (counter mod 3) = 1 then play actual note + xxxx
+//        if (counter mod 3) = 2 then play actual note + yyyy
+//        increment counter
+//        end of effect.
+//
+// GOT IT?
+// As far as I know, PC-players don't care about the "timing problem"
+// mentioned above.
+
+
+
+-----------------------------------------------------------------------
+1: Slide up (Portamento Up)
+-----------------------------------------------------------------------
+This effect will  slide up  the frequency  (decrease the  period) of  the
+sample being played on the channel by xxxxyyyy notes for every  tick that
+occurs during the line.   You usually cannot  slide past note B-3  unless
+you have implemented octave 4 (NON-STANDARD!).  The number of  ticks that
+occur per line is set with effect  $F, the set speed command.   Since the
+slide rate depends on  the speed, be careful  if you set are  composing a
+MOD when you change the speed.  An example of this effect is:
+
+Note C-3, xxxxyyyy = 2, playing at speed 3.
+
+At the beginning of the line the sample is started at period C-3.  At the
+first tick, the period is decremented by 2 (the frequency  is increased).
+At the  second tick,  the period  is  again decremented  by  2.   At  the
+beginning of the next line, if there is  not a new note to be  played the
+period is again decremented by 2.
+
+
+
+
+
+
+
+
+_______________________________________________________________________
+                                                                      14
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+-----------------------------------------------------------------------
+2: Slide down (Portamento Down)
+-----------------------------------------------------------------------
+This effect will slide  down the frequency (increase  the period) of  the
+sample being played on the channel by xxxxyyyy tones for every  tick that
+occurs during the line.  You  usually cannot slide below note  C-1 unless
+you have implemented octave 0 (NON-STANDARD!).  The number of  ticks that
+occur per line is set with effect  $F, the set speed command.   Since the
+slide rate depends on  the speed, be careful  if you set are  composing a
+MOD when you change the speed.  An example of this effect is:
+
+Note C-3, xxxxyyyy = 2, playing at speed 3.
+
+At the beginning of the line the sample is started at period C-3.  At the
+first tick, the period is incremented by 2 (the frequency  is decreased).
+At the  second tick,  the period  is  again incremented  by  2.   At  the
+beginning of the next line, if there is  not a new note to be  played the
+period is again incremented by 2.
+
+
+-----------------------------------------------------------------------
+3: Slide to note
+-----------------------------------------------------------------------
+This effect will slide  a note being played  on a channel to  a specified
+note.  The parameter xxxxyyyy will states the speed at which a slide will
+occur.  For each tick that  occurs during the line, the  period currently
+being played is altered by the number of notes specified.  The  number of
+ticks that occur per line is  set with effect $F, the set  speed command.
+Since the slide  rate depends on  the speed,  be careful  if you set  are
+composing a MOD when you change the speed.  An example of this effect is:
+
+Slide to note C-2, xxxxyyyy = 2, playing at speed 3.
+
+At the beginning  of the  line the current  frequency for  the sample  is
+altered to  be 2  notes closer  to  C-2.   At the  first  tick, the  same
+alteration occurs, changing the period to form a note even closer to C-2.
+The same occurs for  each tick after that.   This effect continues  until
+another effect is started or the specified frequency is reached.
+
+If a slide rate is not  specified (xxxxyyyy is zero) then the  last slide
+rate used on the channel is used again.
+
+
+-----------------------------------------------------------------------
+4: Vibrato
+-----------------------------------------------------------------------
+Vibrato means to "oscillate the sample pitch using a  particular waveform
+with amplitude yyyy notes, such that (xxxx * speed)/64  full oscillations
+occur in the line".  The waveform to use in vibrating is set using effect
+E4 (see  below). By  placing vibrato  effects on  consecutive lines,  the
+vibrato effect can be sustained for  any length of time.  If  either xxxx
+or yyyy are 0,  then values from  the most recent  prior vibrato will  be
+used.
+
+
+_______________________________________________________________________
+                                                                      15
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+An example is: Note C-3, with xxxx=8 and yyyy=1 when speed=6.   This will
+play tones  around  C-3,  vibrating through  D-3  and  B-2 to  C-3  again
+(amplitude - yyyy - is 1), with (8*6)/64 = 3/4 of a  full oscillation per
+line.  Please see effect E4 for the waveform to use for vibrating.
+
+
+-----------------------------------------------------------------------
+5: Continue effect 3:'Slide to note', but also do Volume slide
+-----------------------------------------------------------------------
+This effect will change the volume  of a channel while a  tone portamento
+(effect 3) is taking place.  The values xxxx or yyyy specify the speed of
+the volume change.   If xxxx is nonzero  the volume is increased,  and if
+yyyy is nonzero the volume is decreased.  It is illegal for both xxxx and
+yyyy to be non-zero.  You cannot slide past 64 or below 0.
+
+As an example, take  the xxxx to  be set to  3.  This  means that at  the
+beginning of the line, the current volume of the channel is  increased by
+3.  The volume  is increased again for  every tick on  this line and  the
+lines following (until there  is a new effect).   Once again, the  volume
+cannot slide up past 64.
+
+
+-----------------------------------------------------------------------
+6: Continue effect 4:'Vibrato', but also do Volume slide
+-----------------------------------------------------------------------
+This effect will change the volume  of a channel while a  vibrato (effect
+4) is taking place.   The values xxxx  or yyyy specify  the speed of  the
+volume change.  If xxxx is  nonzero the volume is increased, and  if yyyy
+is nonzero the volume is decreased.  It is illegal for both xxxx and yyyy
+to be non-zero.  You cannot slide past 64 or below 0.
+
+As an example, take  the yyyy to  be set to  2.  This  means that at  the
+beginning of the line, the current volume of the channel is  decreased by
+2.  The volume  is decreased again for  every tick on  this line and  the
+lines following (until there  is a new effect).   Once again, the  volume
+cannot slide down below 0.
+
+
+-----------------------------------------------------------------------
+7: Tremolo
+-----------------------------------------------------------------------
+Temolo means to "oscillate the sample volume using a  particular waveform
+with   amplitude   yyyy*(speed-1),   such   that   (xxxx*speed)/64   full
+oscillations occur in the line".  The waveform to use to oscillate is set
+using the  effect  E7  (see  below).    By  placing  tremolo  effects  on
+consecutive lines, the tremolo effect can be sustained for any  length of
+time.  If either  xxxx or yyyy are  0, then values  from the most  recent
+prior tremolo will be used.
+
+The usage of this effect is similar to that of effect 4:Vibrato.
+
+
+-----------------------------------------------------------------------
+8: This effect is not used.
+
+// Command 8: Set FINE Panning.
+// Even if the AMIGA PROTracker does not support it, this effect is used
+// by modern MOD's and supported by nearly all modern PC MOD player rou-
+// tines. Here it is:
+//
+// xxxxyyyy = panning position. (0=Most left, 255=most right.)
+
+
+-----------------------------------------------------------------------
+_______________________________________________________________________
+                                                                      16
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+-----------------------------------------------------------------------
+9: Set sample offset
+-----------------------------------------------------------------------
+This effect allows you to start a sample from a specified position rather
+than the normal beginning position.   Multiply the value xxxxyyyy  by 512
+
+// !! N O !!   Don't multiply by 512. You should multiply by 256 ($100).
+
+to get  the position  in bytes  from the  beginning of  the sample  where
+playback should start.   If no sample is  specified with the effect,  but
+one is  currently  playing on  the  channel,  then the  sample  currently
+playing is retriggered to offset specified.
+
+An example is instrument 2 being  played at note C-3,  with xxxxyyyy=$23.
+This would make playback of the sample start at offset $23*$200  = $4600.
+
+// $23*$100 = $2300 ...
+
+This effect gives a rough range to play the sample from.
+
+// WARNING!!! if the effect argument is 0, the effect should be IGNORED!
+
+// !! Note that if the effect is out of range (e.g. if it tries to jump
+// beyond the end of the sample) NO NOTE WILL BE PLAYED! Some players
+// even stop playback!
+
+
+-----------------------------------------------------------------------
+A: Volume slide
+-----------------------------------------------------------------------
+This effect  will change  the volume  of all  samples being  played on  a
+channel.  The values xxxx or yyyy specify the speed of the volume change.
+If xxxx is nonzero  the volume is increased,  and if yyyy is  nonzero the
+volume is decreased.   It is illegal for  both xxxx and  yyyy to be  non-
+zero.  You cannot slide past 64 or below 0.
+
+As an example, take  the yyyy to  be set to  3.  This  means that at  the
+beginning of the line, the current volume of the channel is  decreased by
+3.  The volume is decreased  by 3 again for  every tick on this  line and
+the lines  following (until  there is  a new  effect).   Once again,  the
+volume cannot slide down below 0.
+
+// When performing a vol. slide, you have to start decreasing the volume
+// at the tick that follows the line that was just played.
+// Same remark for the portamento effects ($1, $2, $3 and $5)
+
+-----------------------------------------------------------------------
+B: Position Jump
+-----------------------------------------------------------------------
+This effect xxxxyyyy parameter specifies a position in the  pattern table
+that playback should jump  to after this line.   Legal values are  in the
+range of the number of patters that  are supposed to be in the  song (see
+section 2.3).  Values outside this range should be ignored.
+
+// NO! Legal values are supposed to be less or equal than the length of
+// the pattern sequence (the length of the song in patterns). If the value
+// is higher than 127, it's corrupt. If it's higher than the songlength,
+// you may or may not restart the MOD.
+
+
+-----------------------------------------------------------------------
+C: Set volume
+-----------------------------------------------------------------------
+Effect C will set the volume on a channel to the setting specified by the
+xxxxyyyy value.  Legal volumes are in the  range of 0 to 64.   An attempt
+to set the volume to a higher value than 64 will just set it to 64.
+
+I don't think we really need an example for this effect.
+
+
+
+
+
+
+
+_______________________________________________________________________
+                                                                      17
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+-----------------------------------------------------------------------
+D: Pattern Break
+-----------------------------------------------------------------------
+This effect is equivalent to a  position jump to the next pattern  in the
+pattern table, with the arguments xxxx*10+yyyy specifying the line within
+that pattern to start playing at.  Note that this is NOT xxxx*16+yyyy.
+
+// WARNING! This is !NASTY!  You _DO_ need to recalculate the value!!
+
+For example, the effect with  arguments xxxx=0, yyyy=0 would  simply jump
+to the first line in the next pattern in the pattern table  after playing
+the current line.   With arguments  xxxx=1 and yyyy=6  would jump to  the
+16th line of  the next  pattern in the  pattern table  after playing  the
+current line.
+
+
+-----------------------------------------------------------------------
+E0: Set filter on/off
+-----------------------------------------------------------------------
+This sets a hardware sound filter to ON (if yyyy is 0) or OFF (if xxxx is
+nonzero).  If your sound device  has built-in filters, you  should ignore
+this effect command.  This effect is primarily used on Amiga 500 and 2000
+computers to dick around with the hardware filter.
+
+
+-----------------------------------------------------------------------
+E1: Fineslide up
+-----------------------------------------------------------------------
+This effect functions just  like effect 1, except  that the frequency  of
+the sample is only modified once.   At the beginning of a  line, whatever
+frequency is being  played on  a channel  is incremented  by yyyy  notes.
+This effect does NOT continue on  the lines following.  You  cannot slide
+the frequency above the  note B-3 (unless you  implement octave 4 :  NON-
+STANDARD!).
+
+An example here would be effect  E, xxxx=1 (the extended  effect number),
+yyyy=3.  This  would slide the  current frequency up  three notes at  the
+beginning of the line.
+
+
+-----------------------------------------------------------------------
+E2: Fineslide down
+-----------------------------------------------------------------------
+This effect functions just  like effect 2, except  that the frequency  of
+the sample is only modified once.   At the beginning of a  line, whatever
+frequency is being  played on  a channel  is decremented  by yyyy  notes.
+This effect does NOT continue on  the lines following.  You  cannot slide
+the frequency below the  note C-1 (unless you  implement octave 0 :  NON-
+STANDARD!).
+
+An example here would be effect  E, xxxx=1 (the extended  effect number),
+yyyy=2.  This  would slide the  current frequency down  two notes at  the
+beginning of the line.
+
+
+
+
+_______________________________________________________________________
+                                                                      18
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+-----------------------------------------------------------------------
+E3: Set glissando on/off
+-----------------------------------------------------------------------
+The argument yyyy to this  effect specifies whether the  glissando effect
+is ON (yyyy  is 1) or  OFF (yyyy is  0).   If glissando  is on, then  the
+'Slide to note' will  slide a half note  at a time.   Otherwise, it  will
+perform the default smooth slide.
+
+
+-----------------------------------------------------------------------
+E4: Set vibrato waveform
+-----------------------------------------------------------------------
+This effect means to set the waveform appearance for succeeding 'vibrato'
+effects.  There  are currently  four possible appearances  for the  wave,
+each with a possible  'retrigger'.  Two cycles  are shown below for  each
+type of waveform:
+                                             yyyy
+    Waveform   Name                Retriggered  No Retrigger
+    ---------- ------------------- -----------  ------------
+    /\  /\     Sine (default)           0            4
+      \/  \/
+
+    |\ |\      Ramp down                1            5
+      \| \|
+
+    ,-, ,-,    Square                   2            6
+      '-' '-'
+
+    ?????????  Random                   3            7
+
+A "retriggered" waveform will  be reset to  the start of  a cycle at  the
+beginning of each new note.   If a wave is selected  "without retrigger",
+the  previous  waveform  will  be  continued.    Waveforms   are  usually
+retriggered.
+
+
+-----------------------------------------------------------------------
+E5: Set finetune value
+-----------------------------------------------------------------------
+This effect command sets the finetune value for the current instrument to
+the signed nibble value  yyyy.  This value  overrides the value found  in
+the sample information block at the  beginning of the MOD file.   The new
+finetune remains until changed by another E5 effect.
+
+           Value:  7  6  5  4  3  2  1  0  F  E  D  C  B  A  9  8
+ Finetune to set: +7 +6 +5 +4 +3 +2 +1  0 -1 -2 -3 -4 -5 -6 -7 -8
+
+This effect  is implemented  by storing  period values  for all  possible
+finetunes, and simply switching to a different table of periods when this
+effect is encountered.  See section 3.3 for more information.   Section 4
+lists the period tables for finetunes for octaves 1 to 3.
+
+
+
+
+_______________________________________________________________________
+                                                                      19
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+-----------------------------------------------------------------------
+E6: Loop pattern
+-----------------------------------------------------------------------
+This effect  allows a  section of  a pattern  to be  'looped', or  played
+through, a certain number of times in succession.  If the effect argument
+yyyy is zero, the effect specifies the loop's start point.  Otherwise, it
+specifies the number of times to play this line and the  preceeding lines
+from the start point.   If no  start point was  specified in the  current
+pattern being played, the  loop start defaults to  the first line in  the
+pattern.  Therefore, you cannot loop through multiple patterns.
+
+An example:
+
+On line 3,  the effect E6  is encountered, with  yyyy=0.  This  specifies
+that line 3 is the beginning of a loop in this pattern.
+Down on line 52, the effect  E6 is encountered again, with yyyy=2.   This
+means to jump back and play the lines from line 3 to  line 52 again twice
+more before continuing with the rest of the pattern.
+
+
+-----------------------------------------------------------------------
+E7: Set tremolo waveform
+-----------------------------------------------------------------------
+Line command  E4,  this  sets  the  waveform  appearance  for  succeeding
+'tremolo'  (volume)  effects.     There   are  currently  four   possible
+appearances for the wave, each with  a possible 'retrigger'.   Two cycles
+are shown below for each type of waveform:
+                                             yyyy
+    Waveform   Name                Retriggered  No Retrigger
+    ---------- ------------------- -----------  ------------
+    /\  /\     Sine (default)           0            4
+      \/  \/
+
+    |\ |\      Ramp down                1            5
+      \| \|
+
+    ,-, ,-,    Square                   2            6
+      '-' '-'
+
+    ?????????  Random                   3            7
+
+A "retriggered" waveform will  be reset to  the start of  a cycle at  the
+beginning of each new note.   If a wave is selected  "without retrigger",
+the  previous  waveform  will  be  continued.    Waveforms   are  usually
+retriggered.
+
+
+-----------------------------------------------------------------------
+E8: This effect is not used.
+-----------------------------------------------------------------------
+
+// Command $E8: Set (Rough) Panning. (also called MTM panning)
+// yyyy = panning value. $0 = most left, $F = most right.
+// (use this one on a GUS (MAX))
+//
+// Same remarks as above (command $8).
+// It was introduced by ZZPlay or something like that.
+// FastTracker 2.06 (released februari '96) doesn't support this command.
+// (Use command $8 instead)
+
+
+_______________________________________________________________________
+                                                                      20
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+-----------------------------------------------------------------------
+E9: Retrigger sample
+-----------------------------------------------------------------------
+Effect E9 allows  you to re-trigger  a specified  sample at a  particular
+note after yyyy  ticks during the  line.   For example,  say note C-3  is
+specified, with yyyy=2 when  the speed is currently  6.  This would  mean
+that at the beginning  of the line the  specified sample is started,  and
+after two ticks it is restarted.   This continues until the  beginning of
+the next line.  This effect is used mostly with samples of hi-hats.
+
+
+-----------------------------------------------------------------------
+EA: Fine volume slide up
+-----------------------------------------------------------------------
+This effect increments  the volume of  a particular  channel once at  the
+beginning of the line  by yyyy points.   There is no continuation  of the
+slide on successive  lines or for  other notes.   You cannot slide  above
+volume 64.
+
+
+-----------------------------------------------------------------------
+EB: Fine volume slide down
+-----------------------------------------------------------------------
+This effect is  just like  effect EA,  except the  volume is  decremented
+rather than incremented by the value  yyyy.  There is no  continuation of
+the slide on successive lines or for other notes.  You cannot slide below
+volume 0.
+
+
+-----------------------------------------------------------------------
+EC: Cut sample
+-----------------------------------------------------------------------
+This effect sets the  volume of the  sample which is  playing to 0  after
+yyyy ticks in the current line.  This has the effect of stopping a sample
+abruptly.  An example here  is to play the  note C-2, with effect  EC and
+argument yyyy=3, when the speed is 6.  The sample is started  at note C-2
+at the beginning of the line, and after the third tick of 6 in that line,
+the volume on the  channel is set to  0 (cutting it off).   Note that  if
+yyyy is 0, nothing will be heard.
+
+
+-----------------------------------------------------------------------
+ED: Delay sample
+-----------------------------------------------------------------------
+This effect delays the start of  a sample until tick yyyy in  the current
+line.  For example,  if note C-2 is  played, with effect ED  and argument
+yyyy=3 when the speed is 6.   The note C-2  will be triggered at  the 3rd
+tick after the start of the line.  The purpose of this effect is to delay
+the start of a sample for a VERY short amount of time.
+
+
+
+
+
+
+_______________________________________________________________________
+                                                                      21
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+-----------------------------------------------------------------------
+EE: Delay pattern
+-----------------------------------------------------------------------
+This effect  forces a  small delay  in a  pattern  in between  successive
+lines.  All notes and effects  continue during this delay.   The argument
+yyyy specified the number of  line-equivalent time slices to  wait before
+resuming playback.  For example, if  effect EE is encountered  with speed
+being 6 and argument yyyy=4, then the next line will be delayed  24 ticks
+before it is executed.
+
+
+-----------------------------------------------------------------------
+EF: Invert loop
+-----------------------------------------------------------------------
+This effect is used on the Amiga to play samples backward at  a specified
+speed.  It is not really  feasible to implement on  other architechtures,
+and it is not used that often.
+
+// He're some (useless?) spec's anyway:
+//
+//    Cmd EF. Invert Loop [Speed:$0-$F]
+//    ---------------------------------
+// Usage: $EF + Invertspeed
+// This command will need a short loop
+// ($10,20,40,80 etc. bytes) to work.
+// It will invert the loop byte by byte.
+// Sounds better than funkrepeat...
+// Example: C-300EF8 Set invspeed to 8.
+// To turn off the inverting, set
+// invspeed to 0, or press ctrl + Z.
+//
+// (I've stolen this from another doc, obviously written by an AMIGA-dude.)
+
+-----------------------------------------------------------------------
+F: Set speed
+-----------------------------------------------------------------------
+This effect changes the  speed of playback so  that xxxxyyyy ticks  occur
+during every line, starting on the NEXT line.  The initial  speed (before
+any 'set speed' effects are encountered) should be set to 6.   A value of
+xxxxyyyy=0 should technically cause playback  to stop, but this  value is
+commonly ignored as garbage.
+
+// FT2, THE reference on PC, does NOT ignore the effect F00 as garbage,
+// but effectively stops playback. Note that this is a Tracker and not a
+// player.
+
+Valid values for speed setting in this manner are 1 to 31.  If a value is
+read that is above 31,  it means to set  a modified speed based  on beats
+per minute, where 4 lines are  1 beat.  This means  that if I try  to set
+the speed to 42, I am  specifying 42 beats per minute, or  42*4=168 lines
+per minute.    You then  have  to  figure out  how  long  to spend  on  a
+particular line.
+
+// Here is a useful "formula" which gives you the nr of ticks that should
+// occur in one second:
+//                     Nr_Of_Ticks_per_second = bpm*0.4
+//
+// You can cause the timer to call IRQ 8 exact that nr of times a second
+// w/ the following neat procedure:
+//
+// Procedure TimerSpeedup(Speed: Word);
+// Begin
+//   Port[$43] := $36;
+//   Port[$40] := Lo(Speed);
+//   Port[$40] := Hi(Speed);
+// end;
+//
+// Yeah, TP code....
+// to get 50 ticks/second, do the following:
+// TimerSpeedUp(1193182 / (125*0.4));  {125*0.4=50; 125=default BPM value.}
+//
+// Another thing: If you dunno what IRQ's are, stop reading this DOC RIGHT
+// NOW. You are wasting you're time.
+
+
+If multiple set speed  effects are performed on  a single line, then  the
+effects on the higher-numbered channels have precedence over  the effects
+on the lower-numbered channels.
+
+// Be careful, a "SET SPEED" command does NOT override a "SET BPM" command,
+// even if these effects use the same effect nr ($F).
+// (A "SET BPM" command also doesn't override a "SET SPEED" command).
+
+This effect has the largest  number of implementations and  is particular
+to the number of effects that a particular file player supports.
+
+// That is, some MOD's have to be played as if BPM changes were ordinary
+// Speed changes (BLANK TIMING). There is no way to detect such type of MOD's
+// other than the date of the file as far as I know...
+// Example of such a module: "Klisje paa Klisje" (Email me if you want it)
+// These modules are extremely rare...
+// Anyway, I guess you don't need such a MOD to implement a vBlank timing
+// option ;-).
+
+
+3.5 Other information
+_______________________________
+
+If you're  sound  device  is able  to  provide  stereo output  (like  the
+UltraSound), then you  need to  know what  the balance  for each  channel
+should be.  Channels 1 and 4 are left, and 2 and 3 are right.
+
+// The other channels (if they are any) have the same "balance":
+// Channels 5 and 8 are left, and 6 and 7 are right, And so on...
+// Anyway, whilst programming (composing) a MOD, just set the balance of
+// each channel with the $8?? command. (On a PC of courz)
+
+If you are programming  for the UltraSound, it  is best not to  shove the
+balances all the way over to the left or to the right.  Try  a value of 2
+
+//  ^--------- Especially when using headphones.
+
+for channels 1 and  4 and a value  of 13 for  channels 2 and  3.  If  you
+don't like it - change it.
+
+
+_______________________________________________________________________
+                                                                      22
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+4.0 Period and Volume tables
+_______________________________
+
+Here are the period tables for the different fine-tune values:
+
+// see the end of the file for a completer list (5 ocataves instead of 3)
+
+856,808,762,720,678,640,604,570,538,508,480,453 : C-1 to B-1 Finetune 0
+428,404,381,360,339,320,302,285,269,254,240,226 : C-2 to B-2 Finetune 0
+214,202,190,180,170,160,151,143,135,127,120,113 : C-3 to B-3 Finetune 0
+
+850,802,757,715,674,637,601,567,535,505,477,450 : C-1 to B-1 Finetune +1
+425,401,379,357,337,318,300,284,268,253,239,225 : C-2 to B-2 Finetune +1
+213,201,189,179,169,159,150,142,134,126,119,113 : C-3 to B-3 Finetune +1
+
+844,796,752,709,670,632,597,563,532,502,474,447 : C-1 to B-1 Finetune +2
+422,398,376,355,335,316,298,282,266,251,237,224 : C-2 to B-2 Finetune +2
+211,199,188,177,167,158,149,141,133,125,118,112 : C-3 to B-3 Finetune +2
+
+838,791,746,704,665,628,592,559,528,498,470,444 : C-1 to B-1 Finetune +3
+419,395,373,352,332,314,296,280,264,249,235,222 : C-2 to B-2 Finetune +3
+209,198,187,176,166,157,148,140,132,125,118,111 : C-3 to B-3 Finetune +3
+
+832,785,741,699,660,623,588,555,524,495,467,441 : C-1 to B-1 Finetune +4
+416,392,370,350,330,312,294,278,262,247,233,220 : C-2 to B-2 Finetune +4
+208,196,185,175,165,156,147,139,131,124,117,110 : C-3 to B-3 Finetune +4
+
+826,779,736,694,655,619,584,551,520,491,463,437 : C-1 to B-1 Finetune +5
+413,390,368,347,328,309,292,276,260,245,232,219 : C-2 to B-2 Finetune +5
+206,195,184,174,164,155,146,138,130,123,116,109 : C-3 to B-3 Finetune +5
+
+820,774,730,689,651,614,580,547,516,487,460,434 : C-1 to B-1 Finetune +6
+410,387,365,345,325,307,290,274,258,244,230,217 : C-2 to B-2 Finetune +6
+205,193,183,172,163,154,145,137,129,122,115,109 : C-3 to B-3 Finetune +6
+
+814,768,725,684,646,610,575,543,513,484,457,431 : C-1 to B-1 Finetune +7
+407,384,363,342,323,305,288,272,256,242,228,216 : C-2 to B-2 Finetune +7
+204,192,181,171,161,152,144,136,128,121,114,108 : C-3 to B-3 Finetune +7
+
+907,856,808,762,720,678,640,604,570,538,504,480 : C-1 to B-1 Finetune -8
+453,428,404,381,360,339,320,302,285,269,254,240 : C-2 to B-2 Finetune -8
+226,214,202,190,180,170,160,151,143,135,127,120 : C-3 to B-3 Finetune -8
+
+900,850,802,757,715,675,636,601,567,535,505,477 : C-1 to B-1 Finetune -7
+450,425,401,379,357,337,318,300,284,268,253,238 : C-2 to B-2 Finetune -7
+225,212,200,189,179,169,159,150,142,134,126,119 : C-3 to B-3 Finetune -7
+
+894,844,796,752,709,670,632,597,563,532,502,474 : C-1 to B-1 Finetune -6
+447,422,398,376,355,335,316,298,282,266,251,237 : C-2 to B-2 Finetune -6
+223,211,199,188,177,167,158,149,141,133,125,118 : C-3 to B-3 Finetune -6
+
+887,838,791,746,704,665,628,592,559,528,498,470 : C-1 to B-1 Finetune -5
+444,419,395,373,352,332,314,296,280,264,249,235 : C-2 to B-2 Finetune -5
+222,209,198,187,176,166,157,148,140,132,125,118 : C-3 to B-3 Finetune -5
+
+...continues on next page...
+
+_______________________________________________________________________
+                                                                      23
+
+
+
+MODFIL10.TXT                                      THUNDER (kurtt@sfu.ca)
+________________________________________________________________________
+
+881,832,785,741,699,660,623,588,555,524,494,467 : C-1 to B-1 Finetune -4
+441,416,392,370,350,330,312,294,278,262,247,233 : C-2 to B-2 Finetune -4
+220,208,196,185,175,165,156,147,139,131,123,117 : C-3 to B-3 Finetune -4
+
+875,826,779,736,694,655,619,584,551,520,491,463 : C-1 to B-1 Finetune -3
+437,413,390,368,347,338,309,292,276,260,245,232 : C-2 to B-2 Finetune -3
+219,206,195,184,174,164,155,146,138,130,123,116 : C-3 to B-3 Finetune -3
+
+868,820,774,730,689,651,614,580,547,516,487,460 : C-1 to B-1 Finetune -2
+434,410,387,365,345,325,307,290,274,258,244,230 : C-2 to B-2 Finetune -2
+217,205,193,183,172,163,154,145,137,129,122,115 : C-3 to B-3 Finetune -2
+
+862,814,768,725,684,646,610,575,543,513,484,457 : C-1 to B-1 Finetune -1
+431,407,384,363,342,323,305,288,272,256,242,228 : C-2 to B-2 Finetune -1
+216,203,192,181,171,161,152,144,136,128,121,114 : C-3 to B-3 Finetune -1
+
+
+The Amiga uses linear volumes from  0 to 64.  The volume  table specified
+below lists the logarithmic volume to  use on the UltraSound for  each of
+the 65 settings in order to get a linear spread.  If you need volumes for
+another sound device, you will have to find them elsewhere.
+
+   0 |    0
+   1 | 1750      17 | 2332(*)   33 | 3469      49 | 3528
+   2 | 2503      18 | 3240      34 | 3473      50 | 3532
+   3 | 2701      19 | 3248      35 | 3478      51 | 3534
+   4 | 2741      20 | 3256      36 | 3481      52 | 3538
+   5 | 2781      21 | 3263      37 | 3484      53 | 3543
+   6 | 2944      22 | 3271      38 | 3489      54 | 3545
+   7 | 2964      23 | 3279      39 | 3492      55 | 3549
+   8 | 2981      24 | 3287      40 | 3495      56 | 3552
+   9 | 3000      25 | 3294      41 | 3499      57 | 3556
+  10 | 3017      26 | 3303      42 | 3502      58 | 3558
+  11 | 3034      27 | 3310      43 | 3506      59 | 3563
+  12 | 3052      28 | 3317      44 | 3509      60 | 3565
+  13 | 3070      29 | 3325      45 | 3513      61 | 3570
+  14 | 3207      30 | 3458      46 | 3517      62 | 3573
+  15 | 3215      31 | 3462      47 | 3520      63 | 3577
+  16 | 3224      32 | 3466      48 | 3524      64 | 3580
+
+// (*) this value should be 3232 I think. ;-)
+// Note that w/ a GUS you can't use these values immediately: you have to
+// multiply them by max. 18.2; 16 seems to be the "ideal" maximum value.
+// (when multiplying by 18.2 the GUS will overload very fast: you'll start
+// Hearing crackle).
+
+Happy coding!
+    -Thunder
+
+// One final remark: a big reward to THUNDER for writing the marvelleous DOC
+// in   E N G L I S H  (understandable prose). Thank You VERY MUCH!
+
+
+_______________________________________________________________________
+                                                                      24
+
+
+// Here you have a more complete list of the period values; extended octaves
+// are included. Sorry THUNDER, I was far too lazy to put "//" 's before the
+// whole damn' table...
+
+  PeriodTable: array[0..15, 0..59] of Word = (
+    (1712, 1616, 1524, 1440, 1356, 1280, 1208, 1140, 1076, 1016, 960 , 906,
+     856 , 808 , 762 , 720 , 678 , 640 , 604 , 570 , 538 , 508 , 480 , 453,
+     428 , 404 , 381 , 360 , 339 , 320 , 302 , 285 , 269 , 254 , 240 , 226,
+     214 , 202 , 190 , 180 , 170 , 160 , 151 , 143 , 135 , 127 , 120 , 113,
+     107 , 101 , 95  , 90  , 85  , 80  , 75  , 71  , 67  , 63  , 60  , 56 ),
+    (1700, 1604, 1514, 1430, 1348, 1274, 1202, 1134, 1070, 1010, 954 , 900,
+     850 , 802 , 757 , 715 , 674 , 637 , 601 , 567 , 535 , 505 , 477 , 450,
+     425 , 401 , 379 , 357 , 337 , 318 , 300 , 284 , 268 , 253 , 239 , 225,
+     213 , 201 , 189 , 179 , 169 , 159 , 150 , 142 , 134 , 126 , 119 , 113,
+     106 , 100 , 94  , 89  , 84  , 79  , 75  , 71  , 67  , 63  , 59  , 56 ),
+    (1688, 1592, 1504, 1418, 1340, 1264, 1194, 1126, 1064, 1004, 948 , 894,
+     844 , 796 , 752 , 709 , 670 , 632 , 597 , 563 , 532 , 502 , 474 , 447,
+     422 , 398 , 376 , 355 , 335 , 316 , 298 , 282 , 266 , 251 , 237 , 224,
+     211 , 199 , 188 , 177 , 167 , 158 , 149 , 141 , 133 , 125 , 118 , 112,
+     105 , 99  , 94  , 88  , 83  , 79  , 74  , 70  , 66  , 62  , 59  , 56 ),
+    (1676, 1582, 1492, 1408, 1330, 1256, 1184, 1118, 1056, 996 , 940 , 888,
+     838 , 791 , 746 , 704 , 665 , 628 , 592 , 559 , 528 , 498 , 470 , 444,
+     419 , 395 , 373 , 352 , 332 , 314 , 296 , 280 , 264 , 249 , 235 , 222,
+     209 , 198 , 187 , 176 , 166 , 157 , 148 , 140 , 132 , 125 , 118 , 111,
+     104 , 99  , 93  , 88  , 83  , 78  , 74  , 70  , 66  , 62  , 59  , 55 ),
+    (1664, 1570, 1482, 1398, 1320, 1246, 1176, 1110, 1048, 990 , 934 , 882,
+     832 , 785 , 741 , 699 , 660 , 623 , 588 , 555 , 524 , 495 , 467 , 441,
+     416 , 392 , 370 , 350 , 330 , 312 , 294 , 278 , 262 , 247 , 233 , 220,
+     208 , 196 , 185 , 175 , 165 , 156 , 147 , 139 , 131 , 124 , 117 , 110,
+     104 , 98  , 92  , 87  , 82  , 78  , 73  , 69  , 65  , 62  , 58  , 55 ),
+    (1652, 1558, 1472, 1388, 1310, 1238, 1168, 1102, 1040, 982 , 926 , 874,
+     826 , 779 , 736 , 694 , 655 , 619 , 584 , 551 , 520 , 491 , 463 , 437,
+     413 , 390 , 368 , 347 , 328 , 309 , 292 , 276 , 260 , 245 , 232 , 219,
+     206 , 195 , 184 , 174 , 164 , 155 , 146 , 138 , 130 , 123 , 116 , 109,
+     103 , 97  , 92  , 87  , 82  , 77  , 73  , 69  , 65  , 61  , 58  , 54 ),
+    (1640, 1548, 1460, 1378, 1302, 1228, 1160, 1094, 1032, 974 , 920 , 868,
+     820 , 774 , 730 , 689 , 651 , 614 , 580 , 547 , 516 , 487 , 460 , 434,
+     410 , 387 , 365 , 345 , 325 , 307 , 290 , 274 , 258 , 244 , 230 , 217,
+     205 , 193 , 183 , 172 , 163 , 154 , 145 , 137 , 129 , 122 , 115 , 109,
+     102 , 96  , 91  , 86  , 81  , 77  , 72  , 68  , 64  , 61  , 57  , 54 ),
+    (1628, 1536, 1450, 1368, 1292, 1220, 1150, 1086, 1026, 968 , 914 , 862,
+     814 , 768 , 725 , 684 , 646 , 610 , 575 , 543 , 513 , 484 , 457 , 431,
+     407 , 384 , 363 , 342 , 323 , 305 , 288 , 272 , 256 , 242 , 228 , 216,
+     204 , 192 , 181 , 171 , 161 , 152 , 144 , 136 , 128 , 121 , 114 , 108,
+     102 , 96  , 90  , 85  , 80  , 76  , 72  , 68  , 64  , 60  , 57  , 54 ),
+    (1814, 1712, 1616, 1524, 1440, 1356, 1280, 1208, 1140, 1076, 1016, 960,
+     907 , 856 , 808 , 762 , 720 , 678 , 640 , 604 , 570 , 538 , 508 , 480,
+     453 , 428 , 404 , 381 , 360 , 339 , 320 , 302 , 285 , 269 , 254 , 240,
+     226 , 214 , 202 , 190 , 180 , 170 , 160 , 151 , 143 , 135 , 127 , 120,
+     113 , 107 , 101 , 95  , 90  , 85  , 80  , 75  , 71  , 67  , 63  , 60 ),
+    (1800, 1700, 1604, 1514, 1430, 1350, 1272, 1202, 1134, 1070, 1010, 954,
+     900 , 850 , 802 , 757 , 715 , 675 , 636 , 601 , 567 , 535 , 505 , 477,
+     450 , 425 , 401 , 379 , 357 , 337 , 318 , 300 , 284 , 268 , 253 , 238,
+     225 , 212 , 200 , 189 , 179 , 169 , 159 , 150 , 142 , 134 , 126 , 119,
+     112 , 106 , 100 , 94  , 89  , 84  , 79  , 75  , 71  , 67  , 63  , 59 ),
+    (1788, 1688, 1592, 1504, 1418, 1340, 1264, 1194, 1126, 1064, 1004, 948,
+     894 , 844 , 796 , 752 , 709 , 670 , 632 , 597 , 563 , 532 , 502 , 474,
+     447 , 422 , 398 , 376 , 355 , 335 , 316 , 298 , 282 , 266 , 251 , 237,
+     223 , 211 , 199 , 188 , 177 , 167 , 158 , 149 , 141 , 133 , 125 , 118,
+     111 , 105 , 99  , 94  , 88  , 83  , 79  , 74  , 70  , 66  , 62  , 59 ),
+    (1774, 1676, 1582, 1492, 1408, 1330, 1256, 1184, 1118, 1056, 996 , 940,
+     887 , 838 , 791 , 746 , 704 , 665 , 628 , 592 , 559 , 528 , 498 , 470,
+     444 , 419 , 395 , 373 , 352 , 332 , 314 , 296 , 280 , 264 , 249 , 235,
+     222 , 209 , 198 , 187 , 176 , 166 , 157 , 148 , 140 , 132 , 125 , 118,
+     111 , 104 , 99  , 93  , 88  , 83  , 78  , 74  , 70  , 66  , 62  , 59 ),
+    (1762, 1664, 1570, 1482, 1398, 1320, 1246, 1176, 1110, 1048, 988 , 934,
+     881 , 832 , 785 , 741 , 699 , 660 , 623 , 588 , 555 , 524 , 494 , 467,
+     441 , 416 , 392 , 370 , 350 , 330 , 312 , 294 , 278 , 262 , 247 , 233,
+     220 , 208 , 196 , 185 , 175 , 165 , 156 , 147 , 139 , 131 , 123 , 117,
+     110 , 104 , 98  , 92  , 87  , 82  , 78  , 73  , 69  , 65  , 61  , 58 ),
+    (1750, 1652, 1558, 1472, 1388, 1310, 1238, 1168, 1102, 1040, 982 , 926,
+     875 , 826 , 779 , 736 , 694 , 655 , 619 , 584 , 551 , 520 , 491 , 463,
+     437 , 413 , 390 , 368 , 347 , 328 , 309 , 292 , 276 , 260 , 245 , 232,
+     219 , 206 , 195 , 184 , 174 , 164 , 155 , 146 , 138 , 130 , 123 , 116,
+     109 , 103 , 97  , 92  , 87  , 82  , 77  , 73  , 69  , 65  , 61  , 58 ),
+    (1736, 1640, 1548, 1460, 1378, 1302, 1228, 1160, 1094, 1032, 974 , 920,
+     868 , 820 , 774 , 730 , 689 , 651 , 614 , 580 , 547 , 516 , 487 , 460,
+     434 , 410 , 387 , 365 , 345 , 325 , 307 , 290 , 274 , 258 , 244 , 230,
+     217 , 205 , 193 , 183 , 172 , 163 , 154 , 145 , 137 , 129 , 122 , 115,
+     108 , 102 , 96  , 91  , 86  , 81  , 77  , 72  , 68  , 64  , 61  , 57 ),
+    (1724, 1628, 1536, 1450, 1368, 1292, 1220, 1150, 1086, 1026, 968 , 914,
+     862 , 814 , 768 , 725 , 684 , 646 , 610 , 575 , 543 , 513 , 484 , 457,
+     431 , 407 , 384 , 363 , 342 , 323 , 305 , 288 , 272 , 256 , 242 , 228,
+     216 , 203 , 192 , 181 , 171 , 161 , 152 , 144 , 136 , 128 , 121 , 114,
+     108 , 101 , 96  , 90  , 85  , 80  , 76  , 72  , 68  , 64  , 60  , 57 ));
+
+
+
+
+
+
+
+
+

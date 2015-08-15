@@ -1,0 +1,267 @@
+2.5 Effects
+
+The name and the syntax of the effects are the same that those used by
+FastTracker 2. Some Scream Tracker 3 effects have also been implemented for
+compatibility reason. These are designated by a lower case letter.
+
+ * 0 Arpeggio                           * E8 Set panning
+ * 1 Portamento up                      * E9 Retrig
+ * 2 Portamento down                    * EA Fine volume slide up
+ * 3 Portamento to note                 * EB Fine volume slide down
+ * 4 Vibrato                            * EC Note cut
+ * 5 Portamento to note + Volume slide  * ED Note delay
+ * 6 Vibrato + Volume slide             * EE Pattern delay
+ * 7 Tremolo                            * F Set speed/tempo
+ * 8 Set panning                        * G Set global volume
+ * 9 Sample offset                      * H Global volume slide
+ * A Volume slide                       * K Key off
+ * B Position jump                      * L Set volume envelope position
+ * C Set volume                         * P Panning slide
+ * D Pattern break                      * R Retrig + Volume slide
+ * E1 Fine portamento up                * T Tremor
+ * E2 Fine portamento down              * X Extra fine portamento
+ * E3 Set glissando control             * a Set speed (ST3)
+ * E4 Set vibrato control               * d Volume slide (ST3)
+ * E5 Set finetune                      * e Portamento down (ST3)
+ * E6 Pattern loop                      * f Portamento up (ST3)
+ * E7 Set tremolo control               * k Vibrato + Volume slide (ST3)
+
+Description :
+
+* 0xy Arpeggio
+
+     Cycle quickly between these three notes : the actual note, this note
+     +x semitones and this note +y semitones.
+
+* 1xx Portamento up
+
+     Increase the frequency at each tick at the xx speed.
+
+* 2xx Portamento down
+
+     Increase the frequency at each tick at the xx speed.
+
+* 3xx Portamento to note
+
+     Progressively move the pitch to reach the associated note.
+
+* 4xy Vibrato
+
+     Vibrate the pitch at speed x and depth y
+
+* 5xx Portamento to note + Volume slide
+
+     Combination of 3xx and Axy : Progressively move the pitch to reach the
+     associated note and increase or decrease the volume with the same
+     parameter that the last Axy command.
+
+* 6xx Vibrato + Volume slide
+
+     Combination of 4xx and Axy : Vibrate the pitch at speed x and depth y
+     and increase or decrease the volume with the same parameter that the
+     last Axy command.
+
+* 7xx Tremolo
+
+     Vibrate the volume at speed x and depth y
+
+* 8xx Set panning
+
+     Set the panning position. 0h is left position and 80h the right
+     position. A4h activate the surround mode..
+
+* 9xx Sample offset
+
+     Begin the sample from offset xx*256
+
+* A0x Volume slide down
+
+     Slide down the volume at speed x
+
+* Ax0 Volume slide up
+
+     Slide up the volume at speed x
+
+* Bxx Position jump
+
+     Jump to the song position xx
+
+* Cxx Set volume
+
+     Set the current volume to xx.
+
+* Dxx Pattern break
+
+     Jump to the next pattern and start at row xx. Warning : the xx
+     parameter must be in decimal.
+
+* E1x Fine portamento up
+
+     Increase the pitch once
+
+* E2x Fine portamento down
+
+     Decrease the pitch once
+
+* E3x Set glissando control
+
+     Ifx=1, all Porta to note effects will be rounded to the nearest
+     semitone
+
+* E4x Set vibrato control
+
+     Change the vibrato wave form :
+     x=0 Sine
+     x=1 Ramp down
+     x=2 square
+
+* E5x Set finetune
+
+     Use the x finetune value
+
+* E6x Pattern loop
+
+     Ifx=0, mark the beginning of the loop, otherwise repeat the loop x
+     times.
+
+* E7x Set tremolo control
+
+     Change the tremolo wave form :
+     x=0 Sine
+     x=1 Ramp
+     x=2 Down
+
+* E8x Set panning
+
+     Set the panning position. 0 is the left position, F is the right
+     position.
+
+* E9x Retrig
+
+     Restart the instrument every x ticks.
+
+* EAx Fine volume slide up
+
+     Increase the volume one time.
+
+* EBx Fine volume slide down
+
+     Decrease the volume one time.
+
+* ECx Note cut
+
+     Stop the instrument at the specified tick.
+
+* EDx Note delay
+
+     Delay the note for x ticks.
+
+* EEx Pattern delay
+
+     Stop the play for a delay of x rows.
+
+* Fxx Set speed/tempo
+
+     Ifx<20h set the number of ticks per rows, otherwise set the ticks
+     frequency.
+
+* Gxx Set global volume
+
+     Set the global volume to xx.
+
+* Hxx Global volume slide
+
+     Works like the Axx command but change the global volume.
+
+* K00 Key off
+
+     End of note. It is better to use the Key Off sign.
+
+* Lxx Set volume envelope position
+
+     Set the volume envelope position to xx.
+
+* Pxx Panning slide
+
+     Works like the Volume slide command but move the panning position.
+     Warning : the xx parameter is the number of semi positions per tick.
+
+* Rxy Retrig + Volume slide
+
+     Restart the instrument every x ticks and change the volume each time
+     according to the y parameter :
+
+      * y=0: 0 (no variation)
+      * y=1: -1                * y=9: +1
+      * y=2: -2                * y=A: +2
+      * y=3: -4                * y=B: +4
+      * y=4: -8                * y=C: +8
+      * y=5: -16               * y=D: +16
+      * y=6: 2/3*volume        * y=E: 3/2*volume
+      * y=7: 1/2*volume        * y=F: 2*volume
+
+* Txy Tremor
+
+     Set the volume to zero for y ticks then set it back to the initial
+     volume for x ticks.
+
+* X1x Extra fine portamento up
+
+     Works like the portamento up command but the speed is divided by 4
+
+* X2x Extra fine portamento down
+
+     Works like the portamento down command but the speed is divided by 4
+
+* axx Set speed (ST3)
+
+     Set the number of ticks per rows.
+
+* d0x Volume slide down (ST3)
+
+     Slide down the volume at speed x
+
+* dx0 Volume slide up (ST3)
+
+     Slide up the volume at speed x
+
+* dFx Fine volume slide down (ST3)
+
+     Decrease the volume one time.
+
+* dxF Fine volume slide up (ST3)
+
+     Increase the volume one time.
+
+* exx Portamento down (ST3)
+
+     Decrease the frequency at each tick at speed xx.
+
+* eFx Fine portamento down (ST3)
+
+     Decrease the frequency at each tick at speed xx.
+
+* eEx Extra fine portamento down (ST3)
+
+     Works like the fine portamento down command but the speed is divided
+     by 4
+
+* fxx Portamento up (ST3)
+
+     Increase the frequency at each tick at speed xx.
+
+* fFx Fine portamento up (ST3)
+
+     Increase the frequency at each tick at speed xx.
+
+* fEx Extra fine portamento up (ST3)
+
+     Works like the fine portamento up command but the speed is divided by
+     4
+
+* kxy Vibrato + Volume slide (ST3)
+
+     Combination of 4xx and dxy : Vibrate the pitch at speed x and depth y
+     and increase or decrease the volume with the same parameter that the
+     last Axy command.
+

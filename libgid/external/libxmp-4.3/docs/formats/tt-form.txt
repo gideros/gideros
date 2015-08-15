@@ -1,0 +1,27 @@
+==============================================================================
+TAKE TRACKER File Format
+Written 5/2/94  by Jamal Hannah <jamal@gnu.ai.mit.edu>
+Fixed   12/2/97 by Matti 'ccr/TNSP' Hamalainen
+==============================================================================
+
+The "TakeTracker" format is otherwise equal to old 4-channel 31-instrument
+MOD format, but it can have more channels. Additionally, the Fast Tracker
+uses these formats too.
+
+New format is distinguished from old via checking the normal
+format identificator tag, which was in original ST/PT "M!K!" or "M.K.".
+TakeTracker format adds these tags:
+
+"6CHN" .. 6 channels
+"8CHN" .. 8 channels
+"16CH" .. 16 channels
+"32CH" .. 32 channels
+
+And Fast Tracker II can also use these tags, channel numbers
+follow respectfully: "10CH", "12CH", "14CH", ... , "32CH".
+So every value between 10 and 32, with step of 2 can be used.
+
+The pattern sizes are simply extended for the various numbers of supported
+channels.  Each pattern partition has the standard 64-row patterns.
+
+[EOF]

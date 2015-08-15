@@ -1,0 +1,434 @@
+(start)
+THE TFMX PROFESSIONAL 2.0 SONG FILE FORMAT
+------------------------------------------
+by Jonathan H. Pickard <marxmarv@antigates.com>
+
+0. Legal Notice
+---------------
+
+  This file is (C) 1993-1998 Jonathan H. Pickard <marxmarv@antigates.com>.
+  All rights reserved.  This file may be redistributed only in its
+  entirety (from "(start)" to "(end)") without modifications.  All other
+  redistribution is prohibited!
+
+Whoever stripped my credit off this file is a punk.  Someone finally sent
+this file to me after five years and I find it's got someone else's name on
+it, along with MY GREETS.  You suck.
+
+0.1. Additional Notice
+----------------------
+The information that appears here also appeared in the TFMX editor's manual;
+much of this information was reconstructed long before I knew or saw it.
+What you see here is _not_ officially sanctioned documentation.
+
+This file was written years ago.  It may not be accurate and may be missing
+documentation on many of the subtleties of the format.  I'm releasing it
+simply because I have it and because people want _some_ info on the format.
+All sloppy writing, poor grammar, etc. is my fault.  Caveat emptor!
+
+0.2. Contact
+------------
+No inquiries regarding TFMX technical issues will be answered since
+you now have more than I did when I started and I have no time,
+but if you've got info to add to this document, send it along and
+I might (given time) fold it back in.  Credit will be given.
+
+A static page exists for all my TFMX work:
+  http://www.antigates.com/~marxmarv/tfmx.html
+The most recent version of the file (if there are any further changes made)
+is available there.
+
+
+1. Header
+---------
+
+The first thing in a TFMX mod is the magic number.  "TFMX-SONG ".  (Note
+the trailing space!)  After that there is a word which seems to have no
+real meaning, and you can just leave it 0.  The next bit is a long which
+also has no meaning to the player and can be 0 as well.  (In earlier
+versions there was a PAL/NTSC flag hidden in here.)
+
+Following this is 240 bytes which is a 40x6 text area.
+
+After this 256 bytes of information there is a table of 96 words.  The
+first 32 of these are song start positions.  The next 32 are song end
+positions.  The last 32 are tempo numbers.  If the tempo number is greater
+than 15, it is used as a beats-per-minute figure, with a beat taking 24
+jiffies.  If not, then it is used as a divide-by value into a frequency of
+50Hz.  (0=50Hz, 1=25Hz, 2=16.7 Hz...)
+
+Packed modules:
+At offset $1D0 there is a table of three longs which are offsets into the
+file.  They point to (in this order) the trackstep, the pattern data
+pointers, and the macro data pointers.  Customarily the pattern data
+pointers and the macro data pointers are at the end of the file.
+
+Unpacked modules:
+The three longwords at $1D0 are null.  Fixed offsets of $600,$200,$400
+apply.
+
+
+2. The Trackstep
+----------------
+
+The trackstep contains all the sequencing information as far as
+which patterns get started when.  It is an array of 8 word records,
+one for each track.  The high byte of each word contains the pattern
+number, which will be transposed by the two's-complement value in
+the least significant byte; or $80 if the last position is to be
+held (transpose is set to the least sig.  byte as above); or $FF
+if the channel is to stop running; or $FE to stop the voice indicated
+in the least significant byte of the command.
+
+When the first word of a line is $EFFE, no track data is loaded.  At that
+point, the entire line is used as a command.  The word after $EFFE is used
+to select a command, and any remaining words are used as parameters to the
+command.
+
+EFFE0000	Stop the player.
+
+EFFE0001	Play a section starting at position and ending here times
+		times.  If times is 0000 then section will repeat forever.
+		line+4=position, line+6=times
+
+EFFE0002	Set the tempo.
+		line+4=divisor, line+6=CIA bpm (-1 if no change)
+
+EFFE0003,	Start a master volume slide.
+EFFE0004	line+4=divisor, line+6=target
+
+
+3. Pattern Data
+---------------
+
+The longword at $1D4 is an offset to the pattern pointers (if it
+is null, $400 is used).  The pattern pointers are a series of
+longword offsets into the MDAT file.  At each of these offsets begins
+a pattern.  There is a maximum of 128 patterns per song file.
+
+Each pattern typically controls one hardware channel, but multiple
+channels controlled by one pattern (chords) and one channel controlled
+by multiple patterns (drum fills) are both useful.
+
+Patterns are a series of longwords.  Each longword may be a note or a
+command.  The upper two bits indicate what kind of note or command it is,
+and the function of the least significant byte of the command:
+  00: type=note, lsb=detune
+  01: type=note, lsb=detune
+  10: type=note, lsb=wait
+  11: type=portamento or command, lsb=rate
+
+All notes are based at $1E=middle C (8363Hz)..
+
+Following is a list of the $F0 commands.
+
+(In all listings below, v stands for the voice number 0-F, and all x'es are
+don't-cares.)
+
+F0 xx xx xx	<End> end pattern
+Ends this pattern and causes the trackstep to advance.
+
+F1 aa bb bb	<Loop> repeat block
+Executes the block of commands starting at bbbb and ending just before
+this command aa times.  If aa is 00, block repeats indefinitely.
+
+F2 aa bb bb	<Jump> pattern jump
+Jumps into pattern aa, at point bbbb.
+
+F3 aa xx xx	<Wait> rest
+Waits aa+1 jiffies.
+
+F4 xx xx xx	<STOP> disable track
+Stops the playing of this track.  Unrecoverable until a new pattern pointer
+is loaded.  Will not execute any upcoming <End>.
+
+F5 xx xv xx	<Kup^> start release
+Sets a flag in the appropriate voice.  If the macro program is waiting
+for a release, this will cause it to continue.  Otherwise, it has no effect
+at all.
+
+F6 aa xv bb	<Vibr> vibrato
+See macro command <Vibr>.
+
+F7 aa bv cc	<Enve> envelope
+Every b+1, slide channel v's volume aa towards cc.
+
+F8 aa bb bb	<GsPt> gosub pattern
+Save current pattern PC, then proceed exactly as in F2.
+
+F9 xx xx xx	<RoPt> return
+Restore the saved pattern PC and continue execution.
+
+FA aa xx bb	<Fade> fade master volume
+Every aa, slide the master volume by 1 towards bb.
+
+FB bb xa cc	<PPat> play pattern
+Jump track a to bb with transpose of cc and continue.  If the track that
+this command is on is lower in number than the track being jumped, then
+the command will take effect at the next entry into the playrout; in any
+other case, it will be effective immediately.
+
+FC aa xv bb	<Port> portamento
+Every aa, multiplies channel v's current period by (256+bb)/256.
+
+FD aa bb bb	<Lock> lock
+Locks channel aa&3 against other notes for bbbb ticks.
+
+FE xx xx xx	<StCu> stop custompattern
+See F4.  (What's special about this is unknown.)
+
+FF xx xx xx	<NOP!>
+Do nothing.  Pattern pointer is advanced to the next command.
+
+
+A note is of the form aa bb cv dd.  aa is the note number, from 00 to EF.
+bb is the macro to use to play the note.  c is the relative volume
+($F relative = $2D absolute.  See command 0D in the macros.)  ee+1
+is the time to wait until the next command is executed.
+
+Only the lowest 6 bits are significant in note selection.
+
+If aa is less than $80, TFMX will immediately fetch another command, and
+ee will be used as a finetune value (+/- 50%).  Also, if aa is greater than
+$BF, TFMX will portamento from the last note to the one in this command as
+per the FC command.
+
+
+4. Macro Data
+-------------
+
+The macro data is much like the pattern data, i.e. it is a series of
+longwords pointed to by a table of offsets.  However, owing that it has
+a different purpose and different requirements, a few things are slightly
+different.  Following is a list of the voice commands.
+
+(All commands with * can stop the execution of the voice program for one or
+more jiffies.)
+
+
+00 aa xx xx	<DMAoff+Reset> stop efx and dma *
+Stops all effects and kills voice.  If aa is nonzero, voice is stopped
+immediately and the next command is executed.  If aa is zero, the voice
+is stopped at the end of the playroutine and the voice sequencer stops
+for a jiffy.
+
+01 xx xx xx	<DMAon> start voice
+Turns on the DMA channel.
+
+02 aa aa aa	<SetBegin> set beginning of sample
+Adds aaaaaa to the beginning of the sample file and loads it into the
+Paula.
+
+03 xx aa aa	<SetLen> set length
+Loads aaaa into the Paula's length register (one count in aaaa=two bytes)
+
+04 xx aa aa	<Wait> wait *
+Waits aaaa jiffies.
+
+05 aa bb bb	<Loop> repeat section
+Plays the section from bbbb to here aa times, then continues.
+
+06 aa bb bb	<Cont> jump
+Jump into macro aa, starting at point bbbb.
+
+07 xx xx xx	<STOP> end macro *
+Stops this channel's macro processing until a new note is invoked.
+
+08 aa bb bb	<AddNote> set freq by this note *
+Loads the current note, transposed by aa and by the track transpose if
+necessary, into the period register.  bbbb is a finetune value (0000=100%,
+0080=150%, FF80=50%).  This command ends this channel's macro processing
+for this jiffy.
+
+09 aa bb bb	<SetNote> set freq direct *
+Loads note aa, transposed if necessary, into the period register.  bbbb is
+a finetune value.  This command ends this channel's macro processing for
+this jiffy.
+
+0A xx xx xx	<Reset> clear all effects
+Stops all frequency/pointer vibrato, portamento, and volume slide effects.
+
+0B aa bb bb	<Portamento> portamento
+Every aa, multiply the period by (256+bb)/256.  If the portamento is not
+currently running, load the period value in from the current period.
+
+0C aa xx bb	<Vibrato> vibrato
+Every jiffy slide by bb.  The vibrato waveform starts on the rising zero-
+crossing of a triangle wave.  2*aa is the period of this waveform.
+
+0D xx xx aa	<AddVolume> add volume
+Adds aa to the coarse volume (set in the note play command) * 3 and loads
+it into the volume register.
+
+0E aa xx xx	<SetVolume> set volume
+Moves aa into the volume register.
+
+0F aa bb cc	<Envelope> envelope
+Every bb, slide the volume aa towards cc.
+
+10 aa bb bb	<Loop key up> repeat x times or until key up
+Acts just like command 05, but breaks out of the loop if the key-up flag
+is set.
+
+11 aa bb bb	<AddBegin> beginning pointer vibrato
+Each jiffy, for aa jiffies, adds bbbb to the sample pointer.  After aa
+jiffies, the direction is reversed and the cycle begins again, and again,
+and again, unless aa is 00, in which case bbbb is added to the sample
+pointer once, at the time of this command, and no other action is taken.
+
+12 xx aa aa	<AddLen> relative loop lgth
+Adds aaaa to the looplength and stores it in the register.
+
+13 aa xx xx	<DMAoff> *
+Stops DMA without stopping effects.  See 00 above for more.
+
+14 xx xx aa	<Wait key up> wait x cycles or until key up *
+Wait aa cycles or until key up is received.  If aa is 0, then
+the wait is indefinite.
+
+15 aa bb bb	<Go submacro>
+Saves macro PC and jumps to a location.  See 06 above.
+
+16 xx xx xx	<Return to old macro>
+Recalls macro PC and continues execution.
+
+17 xx aa aa	<Set period> Absolute period *
+Loads aaaa into the period register.  This command ends sound processing
+for this jiffy.
+
+18 aa aa aa	<Sampleloop> set sample loop
+Adds aaaaaa to the sample start and subtracts aaaaaa from the sample length.
+
+19 xx xx xx	<Set one shot sample>
+Loads the null sample into the appropriate registers.
+
+1A xx aa aa	<Wait on DMA> *
+Plays the sample aaaa times, then continues with the next instruction.
+
+1B		Random play
+?
+
+1C aa bb bb	<Splitkey>
+Jumps to the indicated step in this macro if the current note is less than aa.
+
+1D aa bb bb	<Splitvol>
+Jumps to the indicated step in this macro if the volume is less than aa.
+(Use after AddVolume to perform velocity checks.)
+
+1E aa FE bb	<AddVol+Note> *
+Does an AddVolume with bb as parameter then does an AddNote with aa as
+transpose.  May wait as in AddNote.
+
+1F aa bb bb	<SetPrevNote> *
+Loads the last note, transposed by aa and by the track transpose if
+necessary, into the period register.  bbbb is a finetune value (0000=100%,
+0080=150%, FF80=50%).  This command ends sound processing for this jiffy.
+
+20 aa bb bb	<Signal>
+Loads bbbb into signal register (aa&3).
+
+21 aa xb cc	<Play macro>
+Starts macro aa on channel b with a detune of cc.
+
+22 through 29 are used in later TFMX players.  They perform real-time
+sample manipulation.  These are most notably used in GemX.  Due to
+lack of research these are undocumented here.
+
+Here are the command descriptions from a player, though I believe I picked
+these names at random one drunken night:
+
+MacrSIDSampleMsg        dc.b    'SID setbeg  xxxxxx   sample-startadress',0
+MacrSIDLengthMsg        dc.b    'SID setlen  xx/xxxx  buflen/sourcelen  ',0
+MacrSID2OfsMsg          dc.b    'SID op3 ofs xxxxxx   offset            ',0
+MacrSID2VibMsg          dc.b    'SID op3 frq xx/xxxx  speed/amplitude   ',0
+MacrSID1OfsMsg          dc.b    'SID op2 ofs xxxxxx   offset            ',0
+MacrSID1VibMsg          dc.b    'SID op2 frq xx/xxxx  speed/amplitude   ',0
+MacrSIDFilterMsg        dc.b    'SID op1     xx/xx/xx speed/amplitude/TC',0
+MacrSIDStopMsg          dc.b    'SID stop    xx....   flag (1=clear all)',0
+
+
+5. The Stock TFMX Player
+------------------------
+
+tfmx_base
+	bra	tfmx_initplyr
+	bra	tfmx_player
+	bra	tfmx_initplyr
+	bra	tfmx_startsong
+
+	bra	tfmx_donote
+	bra	tfmx_initmodl
+	bra	tfmx_initplyr
+	bra	tfmx_installplyr
+
+	bra	tfmx_stopnote
+	bra	tfmx_startsong
+	bra	tfmx_makefade
+	bra	tfmx_cuedataadr
+
+	bra	tfmx_initplyr
+	bra	tfmx_initplyr
+	bra	tfmx_initplyr
+	bra	tfmx_initplyr
+
+	bra	tfmx_holdsong
+	bra	tfmx_initplyr
+	bra	tfmx_initplyr
+	bra	tfmx_initplyr
+
+	bra	tfmx_initplyr
+	bra	tfmx_setupframerate
+	bra	tfmx_initplyr
+	bra	tfmx_initplyr
+
+	bra	tfmx_initplyr
+
+TFMX includes a limited cueing facility in which the player can set bytes
+up for use by an external program.  Calling tfmx_base+$2C will give you the
+base address of the cueing area.  Following is a list of all bytes used by
+the player in this area:
+
+$offset	size	function
+00	w	nonzero = master volume fade is in progress
+15	b	A line has been fetched.  Master program must set to 0 when
+		any processing has been finished.  (This is most useful and
+		is in fact used by the editor.)
+1E	w	Cue word 0.
+20	w	Cue word 1.
+22	w	Cue word 2.
+24	w	Cue word 3.
+
+
+6. Credit Where Credit Is Due
+-----------------------------
+
+TFMX is a product of Chris H"ulsbeck and Peter Thierolf, and I believe
+copyright is owned by Markt&Technik of Germany.
+
+Thanks go out to Chris H"ulsbeck for creating a song format that isn't based
+on a drum machine.
+
+Thanks to STratoHACKster for letting me use his Amiga and ReSource to hack
+TFMX.
+
+
+A. TABLES
+---------
+From the TFMX editor, the note table.  $1E is middle C:
+
+ 00   F#0    0C   F#1    18   F#2    24   F#3    30   F#3!   3C   !F#!
+ 01   G-0    0D   G-1    19   G-2    25   G-3    31   G-3!   3D   !G-!
+ 02   G#0    0E   G#1    1A   G#2    26   G#3    32   G#3!   3E   !G#!
+ 03   A-0    0F   A-1    1B   A-2    27   A-3    33   A-3!   3F   !A-!
+ 04   A#0    10   A#1    1C   A#2    28   A#3    34   A#3!
+ 05   H-0    11   H-1    1D   H-2    29   H-3    35   H-3!
+ 06   C-1    12   C-2    1E   C-3    2A   C-4    36   C-4!
+ 07   C#1    13   C#2    1F   C#3    2B   C#4    37   C#4!
+ 08   D-1    14   D-2    20   D-3    2C   D-4    38   D-4!
+ 09   D#1    15   D#2    21   D#3    2D   D#4    39   D#4!
+ 0A   E-1    16   E-2    22   E-3    2E   E-4    3A   E-4!
+ 0B   F-1    17   F-2    23   F-3    2F   F-4    3B   F-4!
+
+(shouts to Pepto for the table)
+
+(end)

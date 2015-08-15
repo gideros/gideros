@@ -1,0 +1,120 @@
+***************************************************************************
+***********							***********
+***********							***********
+***********  Descrition des diff‚rents formats SoundTracker	***********
+***********							***********
+***********		 Format Composer 669 8 voies		***********
+***********							***********
+***********							***********
+***********		  Par Simplet / FATAL DESIGN		***********
+***********							***********
+***************************************************************************
+
+Structure d'infos sample :
+--------------------------
+
+				RsReset
+
+Sample_Name		rs.b		13
+Sample_Length		rs.b		4	* Attention
+Sample_Repeat_Start	rs.b		4	* … ce format
+Sample_Repeat_End	rs.b		4	* Intel de Merde !!
+
+Sample_Size		rs.b		1	* 25 octets
+
+
+Structure d'un fichier :
+------------------------
+
+			    Offset  	 Longueur		Valeur
+
+Song_Chunk		  0		  2	$6669 au format Intel = "if"
+Song_Message		  2		108	Texte du message
+Song_Nb_Samples	110			  1	Nombre de Samples
+Song_Nb_Patterns	111		  1	Nombre de Patterns
+Song_Restart		112		  1	Position de Rebouclage
+Song_Sequence		113		128	S‚quence des Patterns
+Song_Speeds		241		128	Liste des Speeds
+Song_Breaks		369		128	Liste des breaks
+
+Song_Sample_Infos	497		Nb_Samples * Sample_Size
+
+Song_Patterns		497+Nb_S*25	Nb_Patterns * Pattern_Size
+
+Song_Samples		497+Nb_Samples*25		Samples Non Sign‚s
+				+Nb_Patterns*Pattern_Size
+
+
+	La Taille d'un pattern est : Pattern_Size = 3 * 8 * 64 = $600
+
+	Le tempo de Base est de 32 Hz = Tempo CIA 80.
+	La Fr‚quence de Base des Samples est 8740 Hz.
+
+
+Structure d'un morceau :
+------------------------
+
+	Le Morceau (Song) est compose de x positions auxquelles on associe un
+num‚ro de pattern au travers de la s‚quence des patterns (Song_Sequence)
+
+	Dans la s‚quence, chaque num‚ro de pattern est cod‚ sur un octet.
+
+	Chaque pattern est constitu‚ de 64 lignes de 8 voies, chaque colonne
+est cod‚e sur 3 octets de la manniŠre suivante :
+
+	Octet 0 :	nnnnnnss		Octet 1 :	ssssvvvv		Octet 2 :	ccccpppp
+
+
+	nnnnnn = 12 * Octave + Note
+	ssssss = Num‚ro de Sample		de 0 … 63,  0 inclus !
+	vvvv   = Volume				de 0 … 15
+	cccc   = Commande
+	pppp   = ParamŠtre de la Commande
+
+	Si Octet 0 = $fe il n'y a pas de note
+				  mais seulement changement de volume
+
+	Si Octet 0 = $ff il n'y a pas de note ni changement de volume
+
+	Si Octet 2 = $ff il n'y a pas de commande
+
+
+Les Commandes du Composer
+-------------------------
+
+	Les commandes sont not‚es A,B,...,F mais sont cod‚es 0 … 5.
+	Le quartet de paramŠtre est not‚ X
+
+  Num‚ro	  Nom				Description
+
+	0	Portamento Up		Augmente la Hauteur de la Note
+					en diminuant sa p‚riode de $X … chaque
+					'tick' de chaque ligne
+
+	1	Portamento Down		Diminue la Hauteur de la Note
+					en augmentant sa p‚riode de $X … chaque
+					'tick' de chaque ligne
+
+	2	Tone Portamento		'Liaison' entre deux Notes, Rapproche la
+					p‚riode actuelle de la p‚riode de la Note
+					d‚sir‚e en l'augmentant ou la	diminuant de
+					$X … chaque Ligne (vitesse)
+
+	3	Frequency Adjust	EspŠce de Fine Tune bizarre.
+					Permet de l‚gŠrement modifier la fr‚quence du
+					sample et ainsi rendre le son plus harmonique
+					dans le cas d'accords.
+					ConcrŠtement : augmente la p‚riode de 1. 
+
+	4	Vibrato			Fait osciller la p‚riode (… chaque 'tick')
+					Par comparaison … la commande Protracker :
+						X est la vitesse
+						L'amplitude est 1.
+
+	5	Set Speed		Fixe la vitesse (Speed)
+
+
+Les positions st‚r‚o s'enchainent comme ceci :
+----------------------------------------------
+
+	Left - Right - Left - Right - Left - Right - Left - Right 

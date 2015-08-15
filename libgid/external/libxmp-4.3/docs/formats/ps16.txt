@@ -1,0 +1,357 @@
+Below lists the format of the Protracker Studio 16 (PS16) header.  This can
+change if it doesn't allow for enough flexibility for the time being.
+
++==============================================================================+
+| PS16 Header Format:                                                          |
++==============================================================================+
+Description         Length  Data Type  Information
+------------------  ------  ---------  -----------------------------------------
+Sig                      5  Character  This contains the string "PS16þ" which
+                                         acts as both an identifier to
+                                         determine the file, but also serves
+                                         as part of the text string which
+                                         can be done by TYPEing the file to
+                                         the screen.
+SongName                75  Character  This contains the 75-character name of
+                                         the music file.  This may contain
+                                         the MODule name if converted from a
+                                         MOD, or it may contain information
+                                         on number of channels or whatever.
+                                         The final byte, 75, MUST have a ^Z
+                                         in it.
+TypeOfFile               1       Byte  This field holds what type of music
+                                         file the file is.  If this field
+                                         contains a 0, then it is a module
+                                         with self-contained instruments.
+                                         If it is a 1, then it is a song
+                                         with the header and patterns, but
+                                         not the samples.
+CommentOfs               4    Longint  The Comment Offset field points to
+                                         the offset of the file where
+                                         comments begin.  The comments
+                                         contain all text and information
+                                         pertinent to the music.  The
+                                         sample names are also stored here.
+                                         See below for parsing information.
+                                         This field DOESN'T need to be
+                                         used.  Just store a zero here if
+                                         there are no comments.
+Version                  1       Byte  This is the version identifier for
+                                         the PS16 file.  All versions of
+                                         PS16 formats will have the header
+                                         structure as described thus far.
+                                         The format from here on can change,
+                                         although it isn't likely.  The
+                                         format described below is a Version
+                                         0 format.
+
+------------------------------------------------------------ Version 0 Header
+NumPatterns              1       Byte  Contains the number of patterns
+                                         (max 256) in the file.
+totalPatternSize         4    Longint  For quick reads off the disk, the
+                                         TOTAL pattern length is stored here.
+                                         The maximum total size of patterns
+                                         for any given music file is
+                                         3075 bytes per pattern * 256 patterns.
+                                         With the current player, this is
+                                         simply not possible.
+SongLen                  1       Byte  This contains the number of sequences
+                                         in the PS16 file.
+Sequences              128       Byte  These are the sequences for the entire
+                                         PS16 music.
+Samples                 31*PS16Sample  These are the 31 individual sample
+                                         structures, described below.
+
+
++==============================================================================+
+| PS16 Sample Header Format, Version 0:                                        |
++==============================================================================+
+Description         Length  Data Type  Information
+------------------  ------  ---------  -----------------------------------------
+BitStruc                 1  Bit Field  These are bits that may be set for each
+                                         sample.  The default for a MOD file
+                                         is:  Bit 0 - Digital, Bit 1 - 0,
+                                              Bit 2 - 8-bit.
+           7 6 5 4 3 2 1 0
+                     | | +- 0 - Digital, 1 - Synthesized
+                     | +--- (if bit 0=1) 0 - FM, 1 - Waveform
+                     +----- 0 - 8-bit, 1 - 16-bit.
+
+Volume                   1       Byte  Default volume for the sample.  Range
+                                         is 0 to 64 decimal.  Please, ALWAYS
+                                         make it default to this range.
+FineTune                 1       Byte  This field must contain one of the
+                                         following values:
+                                            0 - Tuning 0
+                                            1 - Tuning 1
+                                            2 - Tuning 2
+                                            3 - Tuning 3
+                                            4 - Tuning 4
+                                            5 - Tuning 5
+                                            6 - Tuning 6
+                                            7 - Tuning 7
+                                            8 - Tuning -8
+                                            9 - Tuning -7
+                                           10 - Tuning -6
+                                           11 - Tuning -5
+                                           12 - Tuning -4
+                                           13 - Tuning -3
+                                           14 - Tuning -2
+                                           15 - Tuning -1
+Length                   4    Longint  This contains the length of the
+                                         sample.  Currently, my player
+                                         doesn't support greater than 64k
+                                         samples, and I really don't see
+                                         the need.  It's here in case it's
+                                         needed.
+Repeat                   4    Longint  This contains the repeat start for
+                                         the sample.  Again, this can be
+                                         >64k
+RepeatLength             4    Longint  This contains the repeat length for
+                                         the sample.  If the sample Length
+                                         is greater than the sample Repeat
+                                         plus the sample RepLen, then the
+                                         sample can be clipped to Repeat+
+                                         RepLen.  If you didn't get that,
+                                         don't worry about it.
+C-2 Freq                 2       Word  The default playback frequency of
+                                         a sample's C on octave 2.  This
+                                         can be used to fine tune a sample,
+                                         but it defaults to 8448.
+
+
++==============================================================================+
+| PS16 Pattern Format, Version 0:                                              |
++==============================================================================+
+Immediately following the version 0 header structure are the patterns.  The
+reason that the offset of the patterns in the file is not contained in the
+header is because it was felt that the patterns would probably not be
+relocated.
+
+When converting from the MODule format, this format will always be a minimum
+of 253 bytes smaller than the patterns in a MODule.  A MODule's pattern is
+always 1,024 bytes.  This is obvious since a MODule note and effect occupies
+four bytes, and there are four channels per row.  With 64 rows in a file,
+this equation becomes:  4 bytes * 4 channels * 64 rows = 1,024 bytes.
+
+A PS16 note occupies three bytes.  A "note" in PS16 consists of the actual
+note, an instrument, and a special effect and its data.
+
+A PS16 note will use the following table to convert from Amiga periods to
+its own notes, and they will be stored as such:
+ +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+ |    1|    2|    3|    4|    5|    6|    7|    8|    9|   10|   11|   12|
+ | 1712| 1616| 1524| 1440| 1356| 1280| 1208| 1140| 1076| 1016|  960|  906|
+ |  C-0|  C#0|  D-0|  D#0|  E-0|  F-0|  F#0|  G-0|  G#0|  A-0|  A#0|  B-0|
+ +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+ |   13|   14|   15|   16|   17|   18|   19|   20|   21|   22|   23|   24|
+ |  856|  808|  762|  720|  678|  640|  604|  570|  538|  508|  480|  453|
+ |  C-1|  C#1|  D-1|  D#1|  E-1|  F-1|  F#1|  G-1|  G#1|  A-1|  A#1|  B-1|
+ +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+ |   25|   26|   27|   28|   29|   30|   31|   32|   33|   34|   35|   36|
+ |  428|  404|  381|  360|  339|  320|  302|  285|  269|  254|  240|  226|
+ |  C-2|  C#2|  D-2|  D#2|  E-2|  F-2|  F#2|  G-2|  G#2|  A-2|  A#2|  B-2|
+ +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+ |   37|   38|   39|   40|   41|   42|   43|   44|   45|   46|   47|   48|
+ |  214|  202|  190|  180|  170|  160|  151|  143|  135|  127|  120|  113|
+ |  C-3|  C#3|  D-3|  D#3|  E-3|  F-3|  F#3|  G-3|  G#3|  A-3|  A#3|  B-3|
+ +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+ |   49|   50|   51|   52|   53|   54|   55|   56|   57|   58|   59|   60|
+ |  107|  101|   95|   90|   85|   80|   75|   71|   67|   63|   60|   56|
+ |  C-4|  C#4|  D-4|  D#4|  E-4|  F-4|  F#4|  G-4|  G#4|  A-4|  A#4|  B-4|
+ +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+A zero is stored in the event a period was not found or approximated or when
+there is not an actual period being played.  The note field requires 6 bits.
+
+Version 0 only handles 31 instruments.  Thus, the instrument field requires
+5 bits.
+
+The special effect field can range from 0 to F in hexadecimal and requires
+4 bits.
+
+The special effects data field is a whole byte and can have 8 bits.
+
+Thus, with this information, we are able to construct the following bitfields:
+          Byte  1                  Byte  2                  Byte  3
+      7 6 5 4 3 2 1 0          7 6 5 4 3 2 1 0          7 6 5 4 3 2 1 0
+      | | +---------+          +--+--+ +-----+          +-------------+
+      | |     Note                |     Effect            Effect Data
+      | + Bit 5 of instrument     +-- Bits 1-4 of the instrument
+      |
+      +-- Follow previous line bit.
+
+Reconstruction algorithms are as follows:
+
+    Get the +---Get Byte 1
+    Note    +---AND it with binary 00111111b
+
+            +---Get Byte 1 again.
+            |   AND it with binary 01000000b
+            |   Shift it right twice.
+    Get the |   Store as result #1.
+    Instr.  |   Get Byte 2.
+            |   AND it with binary 11110000b
+            |   Shift it right four times.
+            +---OR it with Result #1.
+
+    Get the +---Get Byte 2 again.
+    Effect. +---AND it with binary 00001111b
+
+    Efx Data----Get Byte 3.
+
+Bit 7 requires a bit of additional explanation.  As aforementioned, patterns
+can be a MINIMUM of 253 bytes smaller than their MOD counterparts.  This is
+due to three special compression methods.
+
+One)  Instead of ordering the patterns as Track 1, Track 2, Track 3, Track 4,
+        then Track 1, Track 2 again and so on until the end, the Tracks are
+        grouped together as all of Track 1 and all of Track 2 and so on.
+
+Two)  If a note appears on row 0 and another note appears on row 5 with
+Three)  nothing in between, why not get rid of the blank rows?  For instance,
+        a situation such as this may appear as:
+
+           Module Track             MOD Data            PS16 Data
+           00  C-1 01 F06          0358 1F06             8D 1F 06
+           01  --- 00 000          0000 0000
+           02  --- 00 000          0000 0000
+           03  --- 00 000          0000 0000
+           04  --- 00 000          0000 0000
+           05  E-3 03 C40          00AA 3C40          05 29 3C 40
+           06  E-3 01 A01          00AA 1A01             A9 1A 01
+           07  --- 00 000          0000 0000
+                   .                   .
+                   .                   .
+                   .                   .
+           63  --- 00 000          0000 0000                   FF
+                                ------------       --------------
+                                  1024 bytes             11 bytes
+
+      Two and three are combined for two reasons.  As can be seen, MODs
+        store extra information for blank pattern lines.  This was
+        remedied in PS16 by two methods.  If the jump between one line
+        and another was greater than one, then the new line number was
+        written out (see row 5 of the PS16 Data, first byte).  However,
+        if the two lines were right by each other (5 & 6), then the
+        pattern row was not written out.
+
+      Here's why.  As you recall from the above diagrams of PS16 notes,
+        it can be seen that Bit 7 is named "Follow Previous Line."  This
+        means that if the new PS16 line follows the previous line, there
+        is no need to store a row number in front.  All that needs be
+        done is have this bit set.
+
+      Let's break down the PS16 data from above:
+
+        Row 0: 8D 1F 06    -- Bit 7 is set here.  The first line of a pattern
+                              is always assumed to follow Byte 255 (which is
+                              what the line counter is initialized).  A byte
+                              of 255 plus 1 = 0.  Otherwise, the 0Dh in 8Dh
+                              specifies note 0Dh, which is C-1.  The 1F 06
+                              specifies instrument 1, special effect F (speed)
+                              06.
+        Row 5: 05 29 3C 40 -- Since there was a large skip here, and row 5
+                              does not immediately follow row 0, the 5 was
+                              stored in first here.  How does the interpreter
+                              know the difference between a row number and
+                              a note?  A note ALWAYS follows a row number
+                              and if a row number is not present, then bit 7
+                              MUST be set in the note.  Bit 7 is NEVER set
+                              in a row except for the ONE exception below.
+        Row 6: A9 1A 01    -- Immediately follows Row 5, so bit 7 is set.
+        Final
+         Byte: FF          -- This is a -1 which means terminate track.
+
+A -1 always terminates the current track.  Bear in mind that ALL 16 tracks
+are stored per pattern, so if converting from a MOD, tracks 5-16 are
+automatically set to -1.
+
+The discussion thus far has been centered around the general pattern format.
+Two other factors are introduced into the PS16 pattern.  The format of a
+pattern is this:
+
+        Byte    Name            Description
+       ------  --------------- ----------------------------------------
+         0-1   Size     (Word) Size is the total size of the ENTIRE
+                                pattern, INCLUDING bytes 0 through 2.
+                                This number is paragraph aligned.  This
+                                means that if a pattern is 253 bytes
+                                long, its actual size is 256.  If the
+                                size is 256, no change takes place.
+           2   NumLines (Byte) This is the number of pattern lines in
+                                the pattern.  If a pattern only uses
+                                30 lines and the pattern must terminate
+                                to the next pattern at this point,
+                                store a 30 here.  Otherwise, ALWAYS store
+                                a 64 so the entire pattern will play.
+        3-??   Track           This is Track 1, terminated with a -1.
+                                The other tracks follow immediately after
+                                this.
+
+
+See routine MOD_LoadSavePatterns in MODLOAD.ASM.
+
++==============================================================================+
+| PS16 Sample Format, Version 0:                                               |
++==============================================================================+
+Only the digital sample format has been defined thus far.  In order to appeal
+to archivers more, the sample storage format has changed.  Instead of being
+stored as raw data as in all trackers I am aware of, the format was changed
+to use "deltas."  The algorithm for converting a sample to deltas is:
+
+                Get the number of sample bytes to process.
+                  Call this SamplesLeft.
+
+                Set Delta counter to 0.
+
+                DO
+                  Get a byte from the buffer.
+                  Store the byte in Temp.
+                  Subtract the Delta counter from the byte.
+                  Store it in the buffer.
+                  Move the Temp byte into the Delta Counter
+                  Decrement SamplesLeft.
+                WHILE(SamplesLeft <> 0)
+
+See routine MOD_ConvertSample in MODLOAD.ASM.
+
+The technique for conversion back to the raw data is:
+
+                Get the number of sample bytes to process.
+                  Call this SamplesLeft.
+
+                Set Delta counter to 0.
+
+                DO
+                  Get a byte from the buffer.
+                  Add onto the byte the Delta Counter.
+                  Store the byte in Delta Counter.
+                  Store the byte in Temp.
+                  Decrement SamplesLeft.
+                WHILE(SamplesLeft <> 0)
+
++==============================================================================+
+| PS16 Comment Format, Version 0:                                              |
++==============================================================================+
+This format resembles an ILBM format.  Only two things are currently defined
+in this format.
+
+        Signature     Description
+        ---------     -------------------------------------------------
+          INST        Immediately following this four character
+                        identifier is a byte indicating the length of
+                        each instrument name.  After that is a byte
+                        describing how many samples names are stored in
+                        this text.  Example for the MOD format:
+
+                I N S T [Chr 22] [Chr 2, normally 31]
+                [Instrument name #1 padded to 22 chars]
+                [Instrument name #2 padded to 22 chars]
+
+See MOD_ConvertComments in MODLOAD.ASM.
+
+          TEXT        Immediately following this four character
+                        identifier is a WORD describing the length
+                        of the upcoming text.
+
+

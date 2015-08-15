@@ -1,0 +1,284 @@
+Document converted to plain ASCII for inclusion in Wotsit's Format
+
+-----------------------------------------------------
+DELUSION DIGITAL MUSIC FILEFORMAT  V0.16B1 (25/12/93)
+-----------------------------------------------------
+
+Sorry dudes, some stuff is still in German, but who carez ;-)
+Will be converted to English soon.... Ask us for probz
+
+
+EXTENSION IS  ".DMF"
+
+Header [DDMF]:
+--------------
+             ID                   "DDMF"                   4   BYTES
+             VERSION              current is 04            1   BYTE
+             TRACKER NAME         ex. "XTRACKER" ;-)       8   BYTES
+             SONG NAME            ex. "my first DMF"       30  BYTES
+             COMPOSER NAME        ex. "COSMIC"             20  BYTES
+             DATE                 ex. "27 12 93"           3   BYTES
+                                  Day,Month,Year
+
+
+InfoHeader [INFO]:
+------------------
+             ID                   "INFO"                   4   BYTES
+             INFO_SIZE            Jump Bytes to next Block 1   LONGINT
+
+
+Composer Message [CMSG]:
+------------------------
+             ID                   "CMSG"                    4  BYTES
+             MSG_SIZE             Jump Bytes to next Block  1  LONGINT
+             Filler                                         1  BYTE
+             Message              array of char             N  BYTES
+
+
+Sequencer [SEQU]:
+-----------------
+             ID                   "SEQU"
+             SEQU_SIZE            Jump Bytes to next Block 1   LONGINT
+             SEQU LOOP START                               1   WORD
+             SEQU LOOP END                                 1   WORD
+             SEQUENCER            (SEQU_SIZE/2 WORDS)-1 !!!
+
+
+Pattern [PATT]:
+---------------
+
+             ID                   "PATT"                   4   BYTES
+             PATT_SIZE            Jump Bytes to next Block 1   LONGINT
+             MAX PATTERN          1-1024                   1   WORD
+             MAX TRACKS           Tracks required to play  1   BYTE
+                                  this piece of Music =<16
+
+For 1 to MAX PATTERN:
+
+               TRACK ENTRYS         Tracks (max.32)          1   BYTE
+               BEAT                 HI|LOW                   1   BYTE
+                                     |  |
+                    Ticks per Beat --+  +-- Beats per Measure
+
+               MAX TICK             Ticks the Pattern is     1   WORD
+                                    long. (max. 512)
+               JMP_SIZE             Bytes to Jump to next    1   LONGINT
+                                    Pattern
+
+
+Track Datastream: <Global Track> ((<Info byte> <X Data bytes>) * MAX Tracks)
+                  <Global Track> ((<Info byte> <X Data bytes>) * MAX Tracks)
+                      ...
+
+GLOBAL TRACK
+-------------
+
+                EFFECT               the global effect        1   BYTE
+                DATA                 the data for gl. eff.    1   BYTE
+                                     only stored if EFFECT>0
+
+ Getrennte allgemeine Spur fÅr:
+
+  Speed, Delays, Beat/Tick Change, Flags, General Volume
+
+
+INFO BYTE
+----------
+
+XXXXXXXX  = Info Byte
+||||||||
+|||||||x not used
+||||||1 Effekt VOLUME / 0 not stored
+|||||1 Effekt NOTE / 0 not stored
+||||1 Effekt INSTRUMENT / 0 not stored
+|||1 Volume stored / 0 not stored
+||1 Note stored / 0 not stored
+|1 Instrument stored / 0 not stored
+1 Counter to next Info Byte / 0 not stored, next Info Byte in 1 Tick
+
+Wenn ein Bit im Info gesetzt ist ein Daten Byte fÅr den Eintrag
+gespeichert bei Effekten sind 2 Daten Byte (Effekt Nr. und Effekt Daten)
+gespeichert.
+
+Counter ist ein ZÑhler in Ticks bis zum nÑchsten Info Byte wenn Counter Bit
+in Info = 0 dann ist fÅr den nÑchsten Tick wieder ein Info Byte
+vorhanden.
+
+Effekt Gruppen:
+
+INSTRUMENT: Jump Position, Loop Controll, Reverse, Scratch, Filter
+
+NOTE: Portamento, Tremolo, Vibrato, Arpeggio
+
+VOLUME: Set, Slide, Tremolo, Vibrato, Arpeggio, Stereo
+
+Es kînnten also maximal 3 Effekte gleichzeitig ausgelîst werden jeder in
+einem anderen Bereich. Maximale Grîsse eines Track Eintrags sind 11 Byte
+(Info=0FEh).
+
+
+Def.: Note
+
+       0       = Keine énderung
+       1-108   = Note in Halbtonschritten,  C0=1 bis H8=108
+                 Dies entspricht einer Midi Note mit 1 addiert
+       109-128 = nicht defined
+       129-236 = Set Note Buffer
+                 Die Note wird in den Note Buffer gespeichert und nicht
+                 gespielt, eine spielende Note wird dabei nicht verÑndert.
+                 Das MSBit wird gelîscht die Noten entsprechen dann den
+                 Noten 1-108.
+
+                 Der Note Buffer wird als 2 Parameter fÅr Note Effekte
+                 verwendet z.B. fÅr Tone Portamentos wo die Effekt Daten
+                 schon fÅr den Steigungsgrad vergeben sind.
+                 Note Buffer kînnte man auch dazu verwenden um Noten aus
+                 zuklammern, also um auszuprobieren wie sich das StÅck
+                 ohne diese Note anhîrt ;-)
+
+       237-254 = nicht definiert
+       255     = Note Off
+
+Def.: Volume
+
+       0 = keine énderung
+       1 - 255 = Volume (255=Max Volume, linear Scale)
+
+  For 1 to MAX TICKS:
+
+    Global Effect Nr.                1 BYTE
+    (Effect Data)                    1  "
+
+
+    For 1 to MAX TRACKS
+
+      PatternEntry:
+      -------------
+      Info Byte                      1 BYTE
+      (Counter Byte)                 1  "
+      (Instrument Byte)              1  "
+      (Note Byte)                    1  "
+      (Volume Byte)                  1  "
+      (INSTRUMENT Effekt Word)       2  "
+      (NOTE Effekt Word)             2  "
+      (VOLUME Effekt Word)           2  "
+
+    END MAX TRACKS
+  END MAX TICKS
+END MAX PATTERN
+
+
+Instrument [INST]:
+-------------------
+
+Ist dieser Block nicht vorhanden zeigen die Instrument Nr. im Pattern
+direkt auf die Samples im [SMPI] Block.
+
+             ID                   "INST"                   4   BYTES
+             INSTR_SIZE            Jump Bytes to next Block 1   LONGINT
+             MAX INSTR             max. 255                 1   BYTE
+
+             NAME                 the Instrumentname       30  BYTES
+
+             INSTR TYPE                                     1  BYTE
+                   xxxxxxXX   = Instrument Type
+                   xxxxxx00   = Sample aus [SMPI] Block
+                   xxxxxx01   = Midi Device, Midi Keyboard
+                   xxxxxx10   = FM Instrument ;-)))))))
+                   xxxxxx11   = Not Defined
+                   xxxxxXxx   = 1 = valid Attack Envelop, 0 = not valid
+                   xxxxXxxx   = 1 = Sustain ON, 1 = Sustain OFF
+                   XXXXxxxx   = not used
+
+             RANGE ENTRYS         Anzahl der Range Definition Entrys
+                                                            1  BYTE
+For 1 to RANGE ENTRYS
+             RANGE DEFINITION
+             SMPI NR              Nr. des Samples im [SMPI] Block
+                                  das fÅr diesen Bereich gespielt
+                                  wird                      1  BYTE
+             RANGE_Length         Halbtonschritte der dieser Eintrag
+                                  gilt                      1  BYTE
+END RANGE DEFINTION
+
+             ENVELOP              6 Point Envelop noch nicht geanu
+                                  definiert ;-)
+
+
+
+SampleInfo [SMPI]:
+------------------
+             ID                   "SMPI"                   4   BYTES
+             SMPI_SIZE            Jump Bytes to next Block 1   LONGINT
+             MAX SAMPLES          max. 250                 1   BYTE
+
+For 1 to MAX SAMPLES:
+
+             NAME_LENGTH          length of NameBlock      1   BYTE
+             NAME                 the samplename           NAME_LENGTH BYTES
+             LENGTH               length of Sample         1   LONGINT
+             LOOP_START           start of the loop        1   LONGINT
+             LOOP_END             end of the loop          1   LONGINT
+             FREQUENCY            frequency for C-3        1   WORD
+             VOLUME               Instrument Volume        1   BYTE
+                                  0 = don't change current Volume
+                                  1 - 255 = Volume (255=Max Volume, linear Scale)
+             TYPE                 sample type              1   BYTE
+                              xxxxxxx0   = not looped
+                              xxxxxxx1   = looped
+                              xxxxxx0x   = 8BIT
+                              xxxxxx1x   = 16BIT    (not yet supported)
+                              xxxxXXxx   = Packe Type
+                              xxxx00xx   = Unpacked signed
+                              xxxx01xx   = Pack Type 0
+                              xxxx10xx   = Pack Type 1
+                              xxxx11xx   = Pack Type 2
+                              xXXXxxxx   = not defined.
+                              0xxxxxxx   = --> stored in dmf
+                              1xxxxxxx   = --> stored in bib.
+
+             FILLER               not defined ;-)         1   WORD
+                                  should be zero
+
+             CRC32_ID             checksum do identify    1   DWORD
+                                  equal Samples in bib.
+
+END MAX SAMPLES
+
+
+SampleData [SAMPD]:
+-------------------
+             ID                   "SMPD"                   4   BYTES
+             SMPD_SIZE            Jump Bytes to next Block 1   LONGINT
+
+             SAMPLELENTGH         Jump Bytes to next Entry 1   LONGINT
+             SAMPLE DATA          Data of Sample         SAMPLELENGTH Bytes
+
+Stream:    <DataLength> <Sample Data> <DataLength> <Sample Data>
+
+
+[Ende]:      ID                   "ENDE"
+-------
+
+END DDMF
+
+-----------------------------------------------------------------------------
+
+Das DMF Format ist somit folgende Blîcke unterteilt:
+
+[DDMF] Format Kennzeichnung. The almighty DELUSION DIGITAL MUSIC FORMAT ;-)
+
+[INFO] Info wird nur wenn nîtig gespeichert. Defintion fehlt...
+
+[SEQU] Sequencer, solange wie der Block
+
+[PATT] Pattern Data, es ist fÅr jeden Pattern eine beliebige Track Zahl
+       mîglich sonst werden bei 16 Spuren z.b. in einem Pattern nur 4 benÅtzt
+       werden zuviel Overhead gespeichert.
+
+[SMPI] Info der Samples.
+
+[SMPD] Daten der Samples. Sollte nach dem SMPI Block gespeichert sein.
+
+[ENDE] Letzter Block im File ;-)
+ 

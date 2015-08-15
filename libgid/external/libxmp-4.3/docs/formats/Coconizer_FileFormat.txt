@@ -1,0 +1,114 @@
+==================================================
+=  The old format of a Coconizer Song/Trackfile  =
+==================================================
+
+ Adr     Information
+ ---     -----------
+ ?00  :  Number of used Voices (must be either 4 or 8)
+         Bit 7 set => File is a Trackfile (with Samples), not only a Song
+         Bit 6 set => Already prepared Addresses (for internal purposes)
+
+ ?01  :  Name of Author or Title (max 19 chars plus LF)
+  20
+
+ ?21  :  Number of used Instruments
+ ?22  :  Number of used Sequences
+ ?23  :  Number of used Patterns
+
+ !24  :  Offset to Start of Sequence Table
+ !28  :  Offset to Start of Patterns
+
+ !32  :  !00  Offset to first Sample
+  ..     !04  Length in Bytes
+         !08  Volume (Range is loud=&00 to quiet=&FF)
+         !12  Repeat At Offset in Bytes; 0=No repeated Sample
+         !16  Repeat Length in Bytes
+         $20  Name of Sample (max 10 chars plus LF)
+         ?31  free
+         ___
+         +32
+
+ !64  :  !00  Next Sample (when available)
+          ..
+         (In general: Track+32*Sample [Sam>0] gives the info chunk adr)
+
+
+Sequence  :  Contains all the Pattern Numbers of the Song.
+
+Patterns  :  Contain 64 Tone Information Words each for the Channels,
+               ie 64*4*4 = 1024 Bytes in 4 Voice Format,
+               or 64*8*4 = 2048 Bytes in 8 Voice Format.
+
+Samples   :  All digitised Sample Data.
+
+
+NB: The file described above is stored equivalent in memory, but after
+    calling SystemOn the addresses are altered and made absolute.
+
+
+
+===============================
+=  Tone Information Longword  =
+===============================
+
+ Byte   Meaning
+ ----   -------
+   3    Tone Number (Range 1 to 8*12) . Each Octave has 12 halftones.
+        Beginning with number 01 = C -3, then 02 = C# -3, and so on.
+   2    Sample Number, 0 means none (or use last one).
+   1    Commando/Effect Byte (Coco currently uses right Nibble only).
+   0    InfoByte. Contains Values for the Command/Effect.
+
+
+
+=================================
+=  Format of the Location file  =
+=================================
+
+Byte     : Nº of Disc (0-255)            Entry#0 : 1=Harddisc, 0=Discs
+Byte     : Nº of InstDir (&00-&FF)             |   0
+String   : Name of sample                      |   Path of samples
+Longword : Length of sample                    |   Total number of samples
+
+Byte
+Byte
+String
+Longword
+
+ ..
+
+
+==================================
+=  Coconizer Effects & Commands  =
+==================================
+
+&00 = Arpeggio
+ 01 = Slide Pitch up   (until Amis Max), Frequency+InfoByte*64
+ 02 = Slide Pitch down (until Amis Min), Frequency-InfoByte*64
+ 03 = Fine Volume up, ie louder
+ 04 = Fine Volume down
+ 05 = Slide Pitch up   (no limit), Frequency+InfoByte*16
+ 06 = Slide Pitch down (0 limit),  Frequency-InfoByte*16
+
+ 07 = Set Stereo Position
+ 08 = Start auto Fine Volume up
+ 09 = Start auto Fine Volume down
+ 0A = Start auto Pitch up
+ 0B = Start auto Pitch down
+ 0C = Set Volume
+ 0D = Pattern Break
+ 0E = Position Jump
+ 0F = Set Speed
+
+ 10 = Unused
+ 11 = Fine Slide Pitch up   (until Amis Max, f+i*64)
+ 12 = Fine Slide Pitch down (until Amis Max, f-i*64)
+ 13 = Volume up
+ 14 = Volume down
+15-FF Unused
+
+Please note the that difference between normal sliding and fine sliding is
+that the latter happens every <speed>/50 Hz, whereas normal sliding happens
+every beat (ie 1/50 Hz), that means more often and hence faster.
+
+ -oo-

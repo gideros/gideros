@@ -1,0 +1,142 @@
+
+                 --------*> FM SYNTHESIZER <*--------
+
+Welcome to the FM Synthesizer!
+
+First of all I would like to send some great thanks to my friend GLUEMASTER
+for exploring this topic. He got inspired of the Yamaha DX FM synth and
+decided to write his own on the amiga. He did, and now I have made one too!
+And included it into the StarTrekker 1.2!!
+
+It works like this:
+
+After you have pressed RESET, 
+you have four sinus-waves under your control. You can't change the waveform,
+but you can change the envelope and base-frequency for each sinus-wave. Then
+you can choose for each to listen to it, modulate the next's frequency or
+both... The program then calculates a sample of your selected length, and
+you are free to use this sample to whatever you want (including playing
+it!). You can also choose just to save the parameters (120 bytes) to disk.
+You have some examples in the FMSOUNDS drawer on this disk. Load,
+press calc, play, and learn...
+
+Some hints:
+
+Try to only listen to ONE sinuswave (number 4 f.x), then put a small
+envelope on sinuswave 3 and press F.MOD on wave 4. Now wave 4's frequency
+will be modulated according to the output of wave 3. Then you alter the
+envelope and frequency of wave 3 till it sounds great, then press F.MOD on
+wave 3 and make a envelope on wave 2, adjust and continue with wave 1. NOW,
+if you press F.MOD on wave 1 also, it will be modulated by wave 4, and the
+modulation will be fed back to the beginning, causing some kind of noise
+suitable for drums etc..
+
+
+The FM-Synth controls:
+
+In the middle of the screen there's a rectangle containing the selected
+wave's (the 1-4 buttons) envelope. It always display the envelope from the
+start till the release ends, even if the total time is just a fraction of
+the whole sample. Above the envelope is a black line. This line shows how
+much time the envelope shows, with respect to the total sample time.
+
+Buttons 1-4 let you select which wave to edit.
+
+The TOT number is the total time for the envelope (discussed above), if you
+want the envelope to be the same lenght as the sample, the black line above
+the envelope should be as long as the rectangle. HOWEVER if the total time
+is longer, the line's still only as long as the rectangle, so to be sure
+decrease the TOT until the line begins to shorten, the increase to the
+rectangles end..
+
+The LENGTH number is the number of bytes the output sample should have.
+
+The FREE button clears the FM parameters but the sample's still intact.
+
+The RESET button loads the current FM parameters with the default sound.
+
+The LOAD and SAVE let you load and save the parameters as a disk file
+of the length 120 bytes.
+
+The CALC button calculates a sample according to the current parameter
+settings. The small dot appearing up in the right hand corner of the calc
+button signals that you have changed the parameters since you CALCed last.
+
+The FMOD button tells wether the current wave should be frequency modulated
+by the preceding wave.
+
+The LISTEN button tells if the output sample should contain this wave's
+output or not. To get a sound at all, at least ONE wave should have this
+button highlighted.
+
+Now for the real parameters... From up to down:
+
+FQ       This waves base frequency. $1 is very low, $4 is average and $20 is
+         quite high.
+
+L0       Start amplitude for the envelope
+A1L      Attack level
+A1S      The speed that the amplitude changes to the attack level, $1 is slow
+         and $40 is fast.
+A2L      Secondary attack level, for those who likes envelopes...
+A2S      Secondary attack speed.
+
+DS       The speed that the amplitude decays down to the:
+SL       Sustain level. There is remains for the time set by the
+ST       Sustain time.
+
+RS       Release speed. The speed that the amplitude falls from ST to 0.
+
+Any change of either of the envelope parameters will cause a redraw of the
+envelope curve. It's very easy to see what does what with the graphic
+representation.
+
+DO NOT set any speed to 0, unless you want the amplitude to remain at the
+last value.
+
+To roll values faster, press the right mouse button also.
+
+When you press SAVE MODULE a requester pops up asking whether to save the
+by FM synthesis calculated samples. Normally you press NO to save diskspace,
+the FM sounds are automatically recalculated when you reload the module.
+However, to use the module in the replayroutines, you have to press YES
+because the replaysource doesn't contain a FM generator. (Guess why...)
+
+I realize that the FM-Synth can be quite hard to understand, there has been
+a lot of talking about FM-sounds and calculation here and there, but load
+the examples in the FMSOUNDS directory and try to change some parameters,
+important, DON'T FORGET THAT YOU HAVE TO PRESS CALC before you can play with
+your sound...
+
+
+		------------> AM SYNTHESIZER <------------
+
+Welcome to the AM synthesizer. Unlike the FM synth this doesn't create a
+sample. It has it's own internal 32 byte long samples, and changes the 
+volume and period of the sound 50 times a second. So, it operates similar
+to all the other synthetic sound programs out there like Sidmon, Future
+Composer etc. Here you therefore doesn't have to press a CALC button all the
+time, just change a parameter and play the keyboard.
+
+CONTROLS:
+
+  In the box you have the envelope shape. You can edit the envelope in
+exactly the same way as in the FM synth, so please look above for that.
+
+Below the box there's four waveform gadgets to select the waveform. There's
+a sinus, a sawtooth, a pulse and a noise waveform.
+
+To the left, you can edit the vibrato amplitude and speed as well as the 
+pitch fall.
+
+The FQ value is the octave. 0 is the highest and 5 is the lowest.
+
+Again, the best way to learn is to load the examples in the AMSOUNDS drawer.
+
+
+The FREE button clears the AM parameters.
+
+The RESET button loads the parameters with the default settings.
+
+The LOAD and SAVE buttons speak for themselves, don't they?
+

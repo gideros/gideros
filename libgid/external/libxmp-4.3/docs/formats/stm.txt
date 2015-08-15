@@ -1,0 +1,51 @@
+Song/Module file structure:
+        Offset: Info:
+        0       Song/File name, max 20 chars, ASCIIZ, except if 20 chars long
+        20      Tracker name, max 8 chars, NO NUL
+        28      0x1A
+        29      File type: 1=song, 2=module
+        30      Version major (eg. 2)
+        31      Version minor (eg. 2)
+        32      byte; tempo
+        33      byte; num of patterns saved
+        34      byte; global volume
+        36      reserved, 13 bytes
+
+        48      Instruments (31 kpl) (see below) Instrument structure:
+                Offset  Info
+                0       Inst. Filename, 12 bytes max, ASCIIZ
+                12      0x00
+                13      byte; instrument disk
+                14      word; reserved (used as internal segment while playing)
+                16      word; length in bytes
+                18      word; loop start
+                20      word; loop end
+                22      byte; volume
+                23      byte; reserved
+                24      word; speed for mid-C (in Hz)
+                26      reserved, 4 bytes
+                30      word; internal segment address/(in modules:)length in paragraphs
+
+        XXXX    Music pattern orders (64 bytes/orders)
+
+        XXXX    Patterns (number in header, each pattern 1KB)
+                Patterns consist of 64 rows, each 4 channels. Each channel
+                is 4 bytes in length, and the channels are stored from left
+                to right, row by row.
+                Special [BYTE0] contents:
+                         251=last 3 bytes NOT in file, all bytes 0
+                         252=last 3 bytes NOT in file, note: -0-
+                         253=last 3 bytes NOT in file, note: ...
+                         254=(in memory), -0-
+                         255=(in memory), ...
+                otherwise:
+                        note=[BYTE0] and 15 (C=0,C#=1,D=2...)
+                        octave=[BYTE0] / 16
+                        instrument=[BYTE1]/8
+                        volume=([BYTE1] and 7)+[BYTE2]/2
+                        command=[BYTE2] and 15
+                        command info=[BYTE3]
+
+        [XXXX]  In modules: Samples, padded to 16 byte limits. Sample lengths in
+                paragraphs (and as saved) are storen in instruments internal
+                segment address.

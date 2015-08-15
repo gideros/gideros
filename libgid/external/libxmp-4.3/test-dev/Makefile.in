@@ -1,0 +1,405 @@
+CC		= @CC@
+CFLAGS		= -c @CFLAGS@ @DEFS@ -I../include -I../src
+LD		= @CC@
+LDFLAGS		= @LDFLAGS@
+LIBS		= @LIBS@
+V		= 0
+
+GCLIB		= libxmp-gc.a
+
+.c.o:
+	@CMD='$(CC) $(CFLAGS) -o $*.o $<'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo CC $*.o ; fi; \
+	eval $$CMD
+
+#
+# Tests
+#
+
+REPLAYERS	= mod ft2 st3 it
+
+QUIRKS		= 
+
+SMPLOADERS	= 8bit 16bit delta signal endian skip
+
+DEPACKERS	= pp sqsh s404 mmcmp zip zip_filtered zip_store arcfs \
+		  gzip compress arc_method2 arc_method8 \
+		  spark j2b lzx bzip2 xz lha_l0_lzhuff1 lha_l0_lzhuff5 \
+		  lha_l1_lzhuff5 lha_l1_lzhuff6 lha_l1_lzhuff7 lha_l2_lzhuff7 \
+		  lha_l0_filtered lha_l1_filtered lha_l2_filtered \
+		  vorbis vorbis_8bit \
+		  it_sample_8bit it_sample_16bit
+
+PROWIZARD	= zen fuchs starpack
+
+EFFECTS		= 0_arpeggio 1_slide_up 2_slide_down \
+		  4_vibrato a_volslide \
+		  8_setpan \
+		  c_volset \
+		  e9_retrig ed_delay ef_invert_loop \
+		  f_set_speed \
+		  volslide track_volslide \
+		  okt_arpeggio per_slide per_toneporta \
+		  panbrello globalvol gvol_slide s3m_bpm it_bpm fine_vibrato \
+		  it_panslide it_vcol_g \
+		  pastnote_cut pastnote_off pastnote_fade \
+		  set_nna_cut set_nna_cont set_nna_off set_nna_fade \
+		  note_slide note_slide_retrig \
+		  persistent_slide persistent_vslide persistent_vibrato
+
+API		= get_format_list create_context free_context \
+		  test_module load_module load_module_from_memory \
+		  load_module_from_file \
+		  start_player play_buffer \
+		  set_position prev_position \
+		  set_player stop_module restart_module seek_time \
+		  channel_mute channel_vol inject_event scan_module
+
+API_SMIX	= smix_play_instrument smix_load_sample smix_play_sample \
+		  smix_channel_pan
+
+STORLEK		= 01_arpeggio_pitch_slide \
+		  02_arpeggio_no_value \
+		  03_compatible_gxx_off \
+		  04_compatible_gxx_on \
+		  05_gxx_fine_slides_memory \
+		  06_volume_column_and_fine_slides \
+		  07_note_cut_with_sample \
+		  08_out_of_range_delays \
+		  09_sample_change_no_note \
+		  10_pattern_loop \
+		  11_infinite_pattern_loop \
+		  12_tremor \
+		  13_tremor_with_old_effects \
+		  14_pingpong_loop_and_sample_number \
+		  15_retrigger \
+		  16_global_volume \
+		  17_pattern_row_delay \
+		  18_sample_number_new_note \
+		  19_random_waveform \
+		  20_pan_swing_and_set_pan \
+		  21_pitch_slide_limits \
+		  22_zero_cut_and_delay \
+		  23_portamento_with_no_note \
+		  24_short_envelope_loops \
+		  25_portamento_and_pitch_slide
+
+OPENMPT_XM	= 3xxins \
+		  3xx_no_old_samp \
+		  delay1 \
+		  delay2 \
+		  delay3 \
+		  delaycombination \
+		  delaycut \
+		  e90 \
+		  envloops \
+		  envoff \
+		  envretrig \
+		  finetune \
+		  finevol_linkmem \
+		  key_off \
+		  keyoff2 \
+		  keyoff_instr \
+		  notelimit \
+		  notelimit2 \
+		  noteoff \
+		  noteoff2 \
+		  noteofffade \
+		  noteoffvolume \
+		  offdelay \
+		  offsetrange \
+		  panmemory \
+		  panmemory2 \
+		  panoff \
+		  panslidemem \
+		  pathead \
+		  patterndelays \
+		  patterndelaysretrig \
+		  patloop_break \
+		  patloop_weird \
+		  pickup \
+		  porta_linkmem \
+		  porta_offset \
+		  porta_pickup \
+		  setenvpos \
+		  toneportamentomemory \
+		  tremolowaveforms \
+		  vibratowaveforms
+
+OPENMPT_IT	= carrynna \
+		  cut_carry \
+		  emptyslot \
+		  envloopescape \
+		  envloops \
+		  envofflength \
+		  envreset \
+		  extreme_filter_test_1 \
+		  fade_porta \
+		  filter_7f \
+		  filterenvreset \
+		  filter_nna \
+		  filter_reset \
+		  filter_reset_carry \
+		  finevolcolslide \
+		  flt_env_carry \
+		  freqreset_noins \
+		  globalvol_invalid \
+		  gxsmp \
+		  gxsmp2 \
+		  gxxtest \
+		  ins_flt_porta_reset \
+		  instrumentnumberchange \
+		  linearslides \
+		  nomap \
+		  noteoff2 \
+		  noteoff3 \
+		  off_porta \
+		  off_porta_compatgxx \
+		  porta_offset \
+		  portainsnum \
+		  portainsnumcompat \
+		  portareset \
+		  portasample \
+		  portasamplecompat \
+		  randompan \
+		  retrig \
+		  retrig_short \
+		  s77 \
+		  s7xinsnum \
+		  samplenumberchange \
+		  scx \
+		  smpinspansurround \
+		  swaptest \
+		  swing1 \
+		  swing2 \
+		  swing3 \
+		  vol_env_carry \
+		  volcolmemory
+
+OPENMPT_S3M	= freqlimits \
+		  parammemory \
+		  portasmpchange
+
+OPENMPT_MOD	= amigalimitsfinetune \
+		  delaybreak \
+		  patternjump \
+		  portasmpchange \
+		  ptoffset
+
+MIXER		= interpolation_default \
+		  mono_8bit_nearest mono_16bit_nearest \
+		  stereo_8bit_nearest stereo_16bit_nearest \
+		  mono_8bit_linear mono_16bit_linear \
+		  stereo_8bit_linear stereo_16bit_linear \
+		  mono_8bit_linear_filter mono_16bit_linear_filter \
+		  stereo_8bit_linear_filter stereo_16bit_linear_filter \
+		  mono_8bit_spline mono_16bit_spline \
+		  stereo_8bit_spline stereo_16bit_spline \
+		  mono_8bit_spline_filter mono_16bit_spline_filter \
+		  stereo_8bit_spline_filter stereo_16bit_spline_filter \
+		  downmix_8bit downmix_16bit
+
+READ		= file_32bit_little_endian file_32bit_big_endian \
+		  file_24bit_little_endian file_24bit_big_endian \
+		  file_16bit_little_endian file_16bit_big_endian \
+		  file_8bit \
+		  mem_32bit_little_endian mem_32bit_big_endian \
+		  mem_16bit_little_endian mem_16bit_big_endian \
+		  mem_hio mem_hio_nosize
+
+WRITE		= file_32bit_little_endian file_32bit_big_endian \
+		  file_16bit_little_endian file_16bit_big_endian \
+		  file_8bit file_move_data
+
+PLAYER		= read_event scan period_amiga period_mod_range pan \
+		  med_hold med_synth med_synth_2 hmn_extras \
+		  note_off_ft2 note_off_it \
+		  virtual_channel nna_cut nna_cont nna_off nna_fade dct_note \
+		  s3m_sample_porta \
+		  it_keyoff it_note_after_cut it_sample_porta \
+		  it_portamento_after_keyoff it_portamento_after_keyoff_cg \
+		  it_portamento_after_cut_fade it_portamento_after_cut_fade_cg \
+		  it_portamento_envelope_reset it_portamento_envelope_reset_cg \
+		  xm_portamento_envelope_reset \
+		  ft2_note_noins_after_keyoff \
+		  ft2_note_noins_after_invalid_ins \
+		  invalid_period invalid_mod_length invalid_mod_channels
+
+LOADER		= ust ac1d unic unic2 nst flt flt8 wow mtm it it_oldins \
+		  xm102 j2b okt 669 s3m stm stx sfx masi imf ptm far asylum \
+		  dsmi stim rad pt36 psm rtm ice dbm mdl0 mdl mgt liq liq_no \
+		  emod chiptracker gdm dtm abk mfp np1 np2 np3 nru p60 crb \
+		  6chn mod_adpcm4 mod_noterange mod_noterange2 xm_adpcm \
+		  med3 med4 mmd0 mmd3 mmd_iff3oct m15 m15_short_rip
+
+PROBLEMATIC	= length_data_jack \
+		  length_condom_corruption \
+		  length_klisje_paa_klisje \
+		  length_killvictor \
+		  length_roadblast \
+		  length_ode2ptk
+
+SYNTH		= adlib #spectrum
+
+CASE1_TESTS	= $(addprefix new_note_no_ins_,$(REPLAYERS)) \
+		  $(addprefix new_note_same_ins_,$(REPLAYERS)) \
+		  $(addprefix new_note_valid_ins_,$(REPLAYERS)) \
+		  $(addprefix new_note_invalid_ins_,$(REPLAYERS))
+
+CASE2_TESTS	= $(addprefix no_note_same_ins_,$(REPLAYERS)) \
+		  $(addprefix no_note_valid_ins_,$(REPLAYERS)) \
+		  $(addprefix no_note_invalid_ins_,$(REPLAYERS))
+
+CASE3_TESTS	= $(addprefix porta_no_ins_,$(REPLAYERS)) \
+		  $(addprefix porta_same_ins_,$(REPLAYERS)) \
+		  $(addprefix porta_valid_ins_,$(REPLAYERS)) \
+		  $(addprefix porta_invalid_ins_,$(REPLAYERS))
+
+QUIRK_TESTS	= $(addprefix quirk_,$(QUIRKS)) \
+		  $(addprefix no_quirk_,$(QUIRKS))
+
+SMPLOAD_TESTS	= $(addprefix sample_load_,$(SMPLOADERS))
+
+DEPACK_TESTS	= $(addprefix depack_,$(DEPACKERS))
+
+PROWIZARD_TESTS	= $(addprefix prowizard_,$(PROWIZARD))
+
+EFFECT_TESTS	= $(addprefix effect_,$(EFFECTS))
+
+SEQUENCER_TESTS	= prev_order_start prev_order_skip prev_order_start_seq \
+		  next_order_skip
+
+STORLEK_TESTS	= $(addprefix storlek_,$(STORLEK))
+
+OPENMPT_XM_TESTS= $(addprefix openmpt_xm_,$(OPENMPT_XM))
+
+OPENMPT_IT_TESTS= $(addprefix openmpt_it_,$(OPENMPT_IT))
+
+OPENMPT_S3M_TESTS= $(addprefix openmpt_s3m_,$(OPENMPT_S3M))
+
+OPENMPT_MOD_TESTS= $(addprefix openmpt_mod_,$(OPENMPT_MOD))
+
+MIXER_TESTS	= $(addprefix mixer_,$(MIXER))
+
+READ_TESTS	= $(addprefix read_,$(READ))
+
+WRITE_TESTS	= $(addprefix write_,$(WRITE))
+
+PLAYER_TESTS	= $(addprefix player_,$(PLAYER))
+
+LOADER_TESTS	= $(addprefix loader_,$(LOADER))
+
+SYNTH_TESTS	= $(addprefix synth_,$(SYNTH))
+
+API_TESTS	= $(addprefix api_,$(API)) $(addprefix api_,$(API_SMIX))
+
+PROBLEM_TESTS	= $(addprefix module_,$(PROBLEMATIC))
+
+TESTS		= $(READ_TESTS) \
+		  $(WRITE_TESTS) \
+		  $(SMPLOAD_TESTS) \
+		  $(DEPACK_TESTS) \
+		  $(PROWIZARD_TESTS) \
+		  string_adjustment \
+		  $(LOADER_TESTS) \
+		  $(API_TESTS) \
+		  $(QUIRK_TESTS) \
+		  $(CASE1_TESTS) \
+		  $(CASE2_TESTS) \
+		  $(CASE3_TESTS) \
+		  $(NNA_TESTS) \
+		  $(EFFECT_TESTS) \
+		  $(SEQUENCER_TESTS) \
+		  $(STORLEK_TESTS) \
+		  $(OPENMPT_XM_TESTS) \
+		  $(OPENMPT_IT_TESTS) \
+		  $(OPENMPT_S3M_TESTS) \
+		  $(OPENMPT_MOD_TESTS) \
+		  $(PLAYER_TESTS) \
+		  $(MIXER_TESTS) \
+		  $(SYNTH_TESTS) \
+		  $(PROBLEM_TESTS)
+
+TEST_NAMES	= $(addprefix test_,$(TESTS))
+
+TEST_OBJS	= util.o md5.o main.o simple_module.o compare_mixer_data.o \
+		  $(TEST_NAMES:=.o)
+
+TEST_DFILES	= Makefile $(TEST_OBJS:.o=.c) test.h md5.h data
+
+TEST_PATH	= .
+SRC_PATH	= ../src
+
+TEST_INTERNAL	= hio.o load_helpers.o loaders/itsex.o dataio.o scan.o \
+		  loaders/sample.o loaders/common.o period.o synth_null.o \
+		  fnmatch.o memio.o
+
+T_OBJS 		= $(addprefix $(TEST_PATH)/,$(TEST_OBJS)) \
+		  $(addprefix $(SRC_PATH)/,$(TEST_INTERNAL))
+
+GCT_OBJS 	= $(addprefix $(TEST_PATH)/,$(TEST_OBJS))
+
+default-test: check
+
+dist-test:
+	mkdir -p $(DIST)/$(TEST_PATH)
+	cp -RPp $(addprefix $(TEST_PATH)/,$(TEST_DFILES)) $(DIST)/$(TEST_PATH)
+
+clean:
+	rm -f *.o core *~ $(TEST_OBJS)
+
+#
+# Utilities
+#
+
+utilities: gen_mixer_data
+
+gen_mixer_data: gen_mixer_data.o
+	@CMD='$(LD) -o $@ gen_mixer_data.o -L../lib -lxmp'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo LD $@ ; fi; \
+	eval $$CMD
+	
+#
+# Run standard tests
+#
+
+check: $(TEST_PATH)/all_tests.c $(TEST_PATH)/libxmp-tests
+	cd $(TEST_PATH); LD_LIBRARY_PATH=../lib DYLD_LIBRARY_PATH=../lib LIBRARY_PATH=../lib:$$LIBRARY_PATH PATH=$$PATH:../lib ./libxmp-tests
+
+$(TEST_PATH)/libxmp-tests: $(T_OBJS)
+	@CMD='$(LD) -o $@ $(T_OBJS) $(LIBS) -L../lib -lxmp'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo LD $@ ; fi; \
+	eval $$CMD
+
+#
+# Run coverage test
+#
+
+covercheck: coverclean $(TEST_PATH)/all_tests.c $(TEST_PATH)/libxmp-covertest
+	cd $(TEST_PATH); LD_LIBRARY_PATH=../lib DYLD_LIBRARY_PATH=../lib LIBRARY_PATH=../lib:$$LIBRARY_PATH ./libxmp-covertest ||:
+	lcov -c -b .. -d .. -k src -k ../include --rc lcov_branch_coverage=1 -o libxmp.cov
+	rm -Rf coverage
+	genhtml -o coverage --rc lcov_branch_coverage=1 libxmp.cov
+
+coverclean:
+	@rm -f $(GCOBJS) ../lib/$(GCLIB)
+
+$(TEST_PATH)/libxmp-covertest: $(GCT_OBJS) ../lib/$(GCLIB)
+	@CMD='$(LD) -o $@ $(LDFLAGS) $(GCT_OBJS) ../lib/$(GCLIB) -lgcov $(LIBS)'; \
+	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo LD $@ ; fi; \
+	eval $$CMD
+
+../lib/$(GCLIB):
+	make -C .. coverage
+
+$(TEST_PATH)/main.o: $(TEST_PATH)/main.c $(TEST_PATH)/all_tests.c $(TEST_PATH)/test.h $(TEST_PATH)/all_tests.c
+
+$(TEST_PATH)/test.h $(TEST_PATH)/main.c: $(TEST_PATH)/all_tests.c
+
+$(TEST_PATH)/all_tests.c: $(TEST_PATH)/Makefile
+	@echo > $@; \
+	for i in $(TEST_NAMES); do \
+		echo "declare_test($$i);" >> $@; \
+	done
+
+$(addprefix $(SRC_PATH)/,$(TEST_INTERNAL)): $(SRC_PATH)/player.h

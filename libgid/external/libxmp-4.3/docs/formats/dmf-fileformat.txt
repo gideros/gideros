@@ -1,0 +1,349 @@
+From http://www.xtracker32.org/fileformat.shtml
+
+-----
+
+This is the documentation of the DMF file format versions 6 and up, as used by
+the original DOS xtracker and xtracker32.
+
+- Versions up to 7 where only used in beta version of xtracker. Still there are
+quite a few songs available that use these versions. - The xtracker final
+version used file format version 8 - xtracker32 extensions are marked as file
+format version 10.
+
+DDMF (D-lusion digital music format) is a IFF-like chunk-orientated format
+which should be really easy to use. The following chunks exist:
+
+  * [DDMF] Format identifier
+  * [INFO] reserved
+  * [CMSG] Song message
+  * [SEQU] Sequencer, order to play patterns in
+  * [PATT] Patterndata
+  * [INST] Instrument data, reserved
+  * [SMPI] Sample-Information
+  * [SMPD] Sample-Data. Must be saved after [SMPI] chunk
+  * [SMPJ] Sample Jump Positions. Must be saved after [SMPI] chunk (v10+)
+  * [ENDE] EOF marker
+
++-----------------------------------------------------------------------------+
+| DDMF chunk - Format identifier                                              |
+|-----------------------------------------------------------------------------|
+| Offset   | Description                                          | Type      |
+|----------+------------------------------------------------------+-----------|
+| 00h      | Chunk ID ('DDMF')                                    | 4 Chars   |
+|----------+------------------------------------------------------+-----------|
+| 04h      | File version                                         | 1 Byte    |
+|----------+------------------------------------------------------+-----------|
+| 05h      | Tracker software name                                | 8 Chars   |
+|----------+------------------------------------------------------+-----------|
+| 0dh      | Song name - fill unused chars with 0                 | 30 Chars  |
+|----------+------------------------------------------------------+-----------|
+| 2bh      | Composer name - fill unused chars with 0             | 20 Chars  |
+|----------+------------------------------------------------------+-----------|
+| 3fh      | Creation date - one byte for day, month, year+1900   | 3 Bytes   |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+| CMSG chunk - Song message                                                   |
+|-----------------------------------------------------------------------------|
+| Offset | Description                                              | Type    |
+|--------+----------------------------------------------------------+---------|
+| 00h    | Chunk ID ('CMSG')                                        | 4 Chars |
+|--------+----------------------------------------------------------+---------|
+|        | Blocklength - Offset to start of next block. This does   |         |
+| 04h    | NOT include the Chunk ID or the blocklength field itself | 1 dword |
+|        | (so blocklength is the length of the current chunk - 8)  |         |
+|--------+----------------------------------------------------------+---------|
+| 08h    | Filler - reservered (0)                                  | 1 byte  |
+|--------+----------------------------------------------------------+---------|
+| 09h    | Message - ASCII-Text with fixed length of 40 chars per   | x chars |
+|        | line. Length of Message is blocklength-1 bytes           |         |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+| SEQU chunk - sequencer data                                                 |
+|-----------------------------------------------------------------------------|
+| Offset | Description                                              | Type    |
+|--------+----------------------------------------------------------+---------|
+| 00h    | Chunk ID ('SEQU')                                        | 4 Chars |
+|--------+----------------------------------------------------------+---------|
+| 04h    | Blocklength - (see above)                                | 1 dword |
+|--------+----------------------------------------------------------+---------|
+| 08h    | Sequencer loop start                                     | 1 word  |
+|--------+----------------------------------------------------------+---------|
+| 0ah    | Sequencer loop end                                       | 1 word  |
+|--------+----------------------------------------------------------+---------|
+|        | Sequencer data - every word represents one entry in the  |         |
+| 0ch    | sequencer. Length is blocklength-4 ((blocklength-4)/2    | x words |
+|        | sequencer entries)                                       |         |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+| PATT chunk - pattern data                                                   |
+|-----------------------------------------------------------------------------|
+| Offset          | Description                             | Type            |
+|-----------------+-----------------------------------------+-----------------|
+| 00h             | Chunk ID ('PATT')                       | 4 Chars         |
+|-----------------+-----------------------------------------+-----------------|
+| 04h             | Blocklength - (see above)               | 1 dword         |
+|-----------------+-----------------------------------------+-----------------|
+| 08h             | Pattern entries (1-1024) - number of    | 1 word          |
+|                 | patterns in this song                   |                 |
+|-----------------+-----------------------------------------+-----------------|
+| 0ah             | Max tracks (1-32) - highest number of   | 1 byte          |
+|                 | tracks used in all patterns             |                 |
+|-----------------+-----------------------------------------+-----------------|
+| 0bh             | Patterns - the following structure is   |                 |
+|                 | repeated 'pattern entries' times        |                 |
+|-----------------------------------------------------------------------------|
+| +-------------------------------------------------------------------------+ |
+| | Pattoffs.      | Description                             | Type         | |
+| |----------------+-----------------------------------------+--------------| |
+| | 00h            | Track entries (1-32) - number of tracks | 1 Byte       | |
+| |                | in this pattern                         |              | |
+| |----------------+-----------------------------------------+--------------| |
+| |                | Beat - the lower nibble of this byte is |              | |
+| |                | reserved. The upper nibble holds the    |              | |
+| | 01h            | number of rows per beat. A value of 64  | 1 Byte       | |
+| |                | in this field would result in every 4th |              | |
+| |                | row beeing highlighted (64 shr 4 = 4)   |              | |
+| |----------------+-----------------------------------------+--------------| |
+| | 02h            | Row entries - number of rows in this    | 1 Word       | |
+| |                | pattern                                 |              | |
+| |----------------+-----------------------------------------+--------------| |
+| |                | Patternlength - Length of the following |              | |
+| | 04h            | pattern data in bytes = offset to begin | 1 DWord      | |
+| |                | of next pattern                         |              | |
+| |----------------+-----------------------------------------+--------------| |
+| |                | Patterndata - Compressed stream of      |              | |
+| |                | pattern data. Sorry, now it's getting a |              | |
+| |                | bit more complex ;)                     |              | |
+| | 08h            | The following structure is repeated     | x Bytes      | |
+| |                | 'Row entries' times: (Attention: If the |              | |
+| |                | last rows of the pattern are completely |              | |
+| |                | empty, then they won't be saved)        |              | |
+| |-------------------------------------------------------------------------| |
+| | +---------------------------------------------------------------------+ | |
+| | | [GLOBAL TRACK] ([TRACK] * [TRACK ENTRIES])                          | | |
+| | |---------------------------------------------------------------------| | |
+| | | GLOBAL TRACK:                                                       | | |
+| | |                                                                     | | |
+| | | INFO - 1 Byte                                                       | | |
+| | | (COUNTER) - 1 Byte                                                  | | |
+| | | (DATA) - 1 Byte                                                     | | |
+| | |                                                                     | | |
+| | | INFO = zyxxxxxx                                                     | | |
+| | |                                                                     | | |
+| | | xxxxxx (lowest 6 bits) = Global track effect                        | | |
+| | | y = reserved                                                        | | |
+| | | z = counter saved (pack indicator)                                  | | |
+| | |                                                                     | | |
+| | | In case the pack indicator is set, then the next byte in the stream | | |
+| | | will be COUNTER.                                                    | | |
+| | | COUNTER is a (guess what ;) counter that is count down for every    | | |
+| | | note row. There is no global track information saved until counter  | | |
+| | | is 0 again. At the begin of a pattern, COUNTER always starts with   | | |
+| | | 0.                                                                  | | |
+| | | If the pack indicator isn't set then no COUNTER is saved, instead   | | |
+| | | you have to assume COUNTER beeing 0 which means that the next row   | | |
+| | | will have a global track again.                                     | | |
+| | | If the global track effect is > 0, then a DATA byte containing the  | | |
+| | | effect data is saved in the stream. Else there is no DATA byte.     | | |
+| | |---------------------------------------------------------------------| | |
+| | | TRACK:                                                              | | |
+| | |                                                                     | | |
+| | | INFO - 1 Byte                                                       | | |
+| | | (COUNTER) - 1 Byte                                                  | | |
+| | | (INSTRUMENT) - 1 Byte                                               | | |
+| | | (NOTE) - 1 Byte                                                     | | |
+| | | (VOLUME) - 1 Byte                                                   | | |
+| | | (INSTRUMENT EFFECT) - 2 Bytes                                       | | |
+| | | (NOTE EFFECT) - 2 Bytes                                             | | |
+| | | (VOLUME EFFECT) - 2 Bytes                                           | | |
+| | |                                                                     | | |
+| | | INFO = 76543210                                                     | | |
+| | | bit 0: reserved                                                     | | |
+| | | bit 1: 1=volume effect saved                                        | | |
+| | | bit 2: 1=note effect saved                                          | | |
+| | | bit 3: 1=instrumend effect saved                                    | | |
+| | | bit 4: 1=volume saved                                               | | |
+| | | bit 5: 1=note saved                                                 | | |
+| | | bit 6: 1=instrument saved                                           | | |
+| | | bit 7: 1=counter saved (pack indicator)                             | | |
+| | |                                                                     | | |
+| | | The following values are only saved if the corresponding bits in    | | |
+| | | INFO are set.                                                       | | |
+| | |                                                                     | | |
+| | | COUNTER                                                             | | |
+| | | See above - COUNTER is counted down for each row until it is zero.  | | |
+| | | There is no data saved in this track until counter reaches zero. If | | |
+| | | the pack indicator isn't set, then there is no counter saved which  | | |
+| | | means that the next row will have track data again.                 | | |
+| | |                                                                     | | |
+| | | INSTRUMENT                                                          | | |
+| | | Instrument/Sample to play                                           | | |
+| | |                                                                     | | |
+| | | NOTE                                                                | | |
+| | | 0 = No change                                                       | | |
+| | | 1-108 = Note in halfnote-steps, C0=1 up to H8=108.                  | | |
+| | | 109-128 = undefined                                                 | | |
+| | | 129-236 = This note is saved into the notebuffer, the current       | | |
+| | | playing note won't be changed. The Notebuffer is used as a second   | | |
+| | | parameter for effects like "portamento to note", where the effect   | | |
+| | | parameter byte is already in use.                                   | | |
+| | | 237-254 = undefined                                                 | | |
+| | | 255 = Note Off, sets the notes frequency to 0 hz                    | | |
+| | |                                                                     | | |
+| | | VOLUME                                                              | | |
+| | | 0 = undefined 1-255 = new volume, linear scaling                    | | |
+| | |                                                                     | | |
+| | | INSTRUMENT EFFECT                                                   | | |
+| | | 1. Byte: Instrument effect nr.                                      | | |
+| | | 2. Byte: Instrument effect data                                     | | |
+| | |                                                                     | | |
+| | | NOTE EFFECT                                                         | | |
+| | | 1. Byte: Note effect nr.                                            | | |
+| | | 2. Byte: Note effect data                                           | | |
+| | |                                                                     | | |
+| | | VOLUME EFFECT                                                       | | |
+| | | 1. Byte: Volume effect nr.                                          | | |
+| | | 2. Byte: Volume effekt data                                         | | |
+| | |---------------------------------------------------------------------| | |
+| | +---------------------------------------------------------------------+ | |
+| +-------------------------------------------------------------------------+ |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+| SMPI chunk - Sample-Information                                             |
+|-----------------------------------------------------------------------------|
+| Offset          | Description                            | Type             |
+|-----------------+----------------------------------------+------------------|
+| 00h             | Chunk ID ('SMPI')                      | 4 Chars          |
+|-----------------+----------------------------------------+------------------|
+| 04h             | Blocklength - (see above)              | 1 dword          |
+|-----------------+----------------------------------------+------------------|
+| 08h             | Sample entries - number of samples     | 1 Byte           |
+|                 | saved in the song                      |                  |
+|-----------------+----------------------------------------+------------------|
+| 09h             | Samples - the following structure is   | Bytes            |
+|                 | repeated 'Sample entries' times        |                  |
+|-----------------------------------------------------------------------------|
+| +-------------------------------------------------------------------------+ |
+| | Sampleoff. | Description                                      | Type    | |
+| |------------+--------------------------------------------------+---------| |
+| | 00h        | Samplename length (0-30) - number chars of       | 1 Byte  | |
+| |            | samplename                                       |         | |
+| |------------+--------------------------------------------------+---------| |
+| | 01h        | Samplename - the name of the sample              | x Chars | |
+| |------------+--------------------------------------------------+---------| |
+| |            | Sample length - length of sample in bytes.       |         | |
+| | x + 01h    | Attention: This is the final length of the       | 1 Dword | |
+| |            | depacked sample (unlike the sample length in the |         | |
+| |            | SMPD chunk, which stores the packed length)      |         | |
+| |------------+--------------------------------------------------+---------| |
+| | x + 05h    | Sample loop start - position of sample loop      | 1 Dword | |
+| |            | start in bytes                                   |         | |
+| |------------+--------------------------------------------------+---------| |
+| | x + 09h    | Sample loop end - position of sample loop end in | 1 Dword | |
+| |            | bytes                                            |         | |
+| |------------+--------------------------------------------------+---------| |
+| | x + 0dh    | c3 frequency - frequency in hz of the sample at  | 1 Word  | |
+| |            | the note c-3. Valid range is 1000-45000 Hz       |         | |
+| |------------+--------------------------------------------------+---------| |
+| | x + 0fh    | Volume - Sample volume, 0 = not set, 1-255 =     | 1 Byte  | |
+| |            | volume in linear scale                           |         | |
+| |------------+--------------------------------------------------+---------| |
+| |            | Sample Type - Different flags that define the    |         | |
+| |            | sample                                           |         | |
+| |            | xxxxxxx0 = no loop                               |         | |
+| |            | xxxxxxx1 = sample is played looping. The sample  |         | |
+| |            | plays from its beginning on until it reaches     |         | |
+| |            | 'Sample loop end' and then repeats the range     |         | |
+| |            | from 'Sample loop start' to 'Sample loop end'    |         | |
+| |            | xxxxxx0x = 8BIT Sample                           |         | |
+| | x + 10h    | xxxxxx1x = 16BIT Sample                          | 1 Byte  | |
+| |            | xxxxXXxx = Compression type xxxx00xx =           |         | |
+| |            | Uncompressed signed PCM xxxx01xx = Compression   |         | |
+| |            | type 0 - modified huffmann xxxx10xx =            |         | |
+| |            | Compression type 1 - mp3 xxxx11xx = Compression  |         | |
+| |            | type 2 - currently undefined xxx0xxxx = mono     |         | |
+| |            | sample xxx1xxxx = stereo sample xXXxxxxx =       |         | |
+| |            | reserved 0xxxxxxx = sampledata is saved in SMPD  |         | |
+| |            | chunk 1xxxxxxx = sampledata is saved in external |         | |
+| |            | libary                                           |         | |
+| |------------+--------------------------------------------------+---------| |
+| |            | Library Name - library name in which the sample  |         | |
+| | x + 11h    | is stored. Fill with 0 if unused. ATTENTION:     | 8 Bytes | |
+| |            | This field only exists in version 8 and above.   |         | |
+| |            | (With xtracker32 it's unused for now)            |         | |
+| |------------+--------------------------------------------------+---------| |
+| | x + 19h    | Filler - reserved                                | 1 Byte  | |
+| |------------+--------------------------------------------------+---------| |
+| | x + 1bh    | CRC32 - crc32 over sampledata                    | 1 DWord | |
+| +-------------------------------------------------------------------------+ |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+| SMPD chunk - Sample-Data                                                    |
+|-----------------------------------------------------------------------------|
+| Offset          | Description                            | Type             |
+|-----------------+----------------------------------------+------------------|
+| 00h             | Chunk ID ('SMPD')                      | 4 Chars          |
+|-----------------+----------------------------------------+------------------|
+| 04h             | Blocklength - (see above)              | 1 dword          |
+|-----------------+----------------------------------------+------------------|
+|                 | Sample data - the following structure  |                  |
+| 08h             | is repeated 'Sample entries' (from     | Bytes            |
+|                 | SMPI) times                            |                  |
+|-----------------------------------------------------------------------------|
+| +-------------------------------------------------------------------------+ |
+| | Sampleoff. | Description                                      | Type    | |
+| |------------+--------------------------------------------------+---------| |
+| |            | Sample data length - length of sample data       |         | |
+| |            | stream in bytes. This is the real length of the  |         | |
+| | 00h        | possibly compressed data. For the real final     | 1 Dword | |
+| |            | length, see SMPI chunk. If this sample is empty  |         | |
+| |            | or saved in a library file, then this field is   |         | |
+| |            | set to 0                                         |         | |
+| |-------------------------------------------------------------------------| |
+| |-------------------------------------------------------------------------| |
+| | 04h        | Sample data stream                               | x Bytes | |
+| +-------------------------------------------------------------------------+ |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+| SMPJ chunk - Sample Jump points                                             |
+| (This chunk exists from dmf version 10 and up)                              |
+|-----------------------------------------------------------------------------|
+| Offset          | Description                             | Type            |
+|-----------------+-----------------------------------------+-----------------|
+| 00h             | Chunk ID ('SMPJ')                       | 4 Chars         |
+|-----------------+-----------------------------------------+-----------------|
+| 04h             | Blocklength - (see above)               | 1 dword         |
+|-----------------+-----------------------------------------+-----------------|
+|                 | Sample jump points - the following      |                 |
+| 08h             | structure is repeated 'Sample entries'  | Bytes           |
+|                 | (from SMPI) times                       |                 |
+|-----------------------------------------------------------------------------|
+| +-------------------------------------------------------------------------+ |
+| | Offset | Description                                       | Type       | |
+| |--------+---------------------------------------------------+------------| |
+| | 00h    | Count of jump points following. 0=No jump points  | 1 Byte     | |
+| |        | for this sample                                   |            | |
+| |-------------------------------------------------------------------------| |
+| |-------------------------------------------------------------------------| |
+| |        | Jump points. This is the sample-offset in bytes   |            | |
+| |        | (not samples!) to jump to if the JMP command is   |            | |
+| | 01h    | issued in a track. These are 32 bit signed        | x Integers | |
+| |        | integers. A value of -1 means that a jump-point   |            | |
+| |        | is undefined. In this case the JMP command should |            | |
+| |        | be ignored.                                       |            | |
+| +-------------------------------------------------------------------------+ |
++-----------------------------------------------------------------------------+
+
++-----------------------------------------------------------------------------+
+| ENDE chunk - end of DDMF                                                    |
+|-----------------------------------------------------------------------------|
+| Offset              | Description                    | Type                 |
+|---------------------+--------------------------------+----------------------|
+| 00h                 | Chunk ID ('ENDE')              | 4 Chars              |
++-----------------------------------------------------------------------------+
