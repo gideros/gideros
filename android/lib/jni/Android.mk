@@ -44,6 +44,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../libpystring \
 	$(LOCAL_PATH)/../../openal-soft-1.13/include \
 	$(LOCAL_PATH)/../../openal-soft-1.13/OpenAL32/Include \
+	$(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/include \
 	$(LOCAL_PATH)/../../../libgid/external/jpeg-9
 
 LOCAL_SRC_FILES += gideros.cpp
@@ -60,6 +61,7 @@ LOCAL_SRC_FILES += \
 	../../../libgid/src/gglobal.cpp \
 	../../../libgid/src/gaudio.cpp \
 	../../../libgid/src/gaudio-loader-wav.cpp \
+	../../../libgid/src/gaudio-loader-xmp.cpp \
 	../../../libgid/src/gaudio-sample-openal.cpp \
 	../../../libgid/src/gaudio-stream-openal.cpp \
     ../../../libgid/src/android/ginput-android.cpp \
@@ -426,6 +428,23 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/shaderbinder.cpp \
 	../../../luabinding/rendertargetbinder.cpp
 
+#XMP
+LOCAL_CFLAGS+=-D_REENTRANT -DLIBXMP_CORE_PLAYER
+XMP_SRC=virtual period player read_event dataio lfo envelope \
+		scan control filter effects mixer mix_all load_helpers load \
+		hio smix memio
+XMP_HDR=common effects envelope format lfo list mixer period player \
+		virtual precomp_lut hio memio mdataio tempfile 
+XMP_LOADERS=xm_load s3m_load it_load \
+			common itsex sample
+XMP_LOADERS_HDR=it loader mod s3m xm
+LOCAL_SRC_FILES += $(addprefix ../../../libgid/external/libxmp-4.3/src/,$(addsuffix .c,$(XMP_SRC)))
+LOCAL_SRC_FILES += $(addprefix ../../../libgid/external/libxmp-4.3/src/loaders/,$(addsuffix .c,$(XMP_LOADERS)))
+LOCAL_SRC_FILES += \
+	../../../libgid/external/libxmp-4.3/lite/src/format.c \
+	../../../libgid/external/libxmp-4.3/lite/src/loaders/mod_load.c
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src \
+					$(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src/loaders
 
 LOCAL_LDLIBS := -lGLESv2 -ldl -llog
 

@@ -39,6 +39,7 @@ SOURCES += \
     src/gaudio-sample-openal.cpp \
     src/gaudio-stream-openal.cpp \
     src/gaudio-loader-wav.cpp \
+    src/gaudio-loader-xmp.cpp \
     src/gaudio-loader-mp3.cpp
 #HEADERS += src/ggaudiomanager.h
 
@@ -85,6 +86,40 @@ HEADERS += \
     ./external/snappy-1.1.0/snappy-sinksource.h
 INCLUDEPATH += ./external/snappy-1.1.0
 
+
+#LibXMP
+defineReplace(expand) {
+    variable = $$1
+    prefix=$$2
+    suffix=$$3
+    names = $$eval($$variable)
+    expanded =
+
+    for(name, names) {
+        expanded+= $${prefix}$${name}$${suffix}
+    }
+    return ($$expanded)
+}
+
+DEFINES+=_REENTRANT LIBXMP_CORE_PLAYER
+XMP_SRC=virtual period player read_event dataio lfo envelope \
+		scan control filter effects mixer mix_all load_helpers load \
+		hio smix memio
+XMP_HDR=common effects envelope format lfo list mixer period player \
+		virtual precomp_lut hio memio mdataio tempfile 
+XMP_LOADERS=xm_load s3m_load it_load \
+			common itsex sample
+XMP_LOADERS_HDR=it loader mod s3m xm
+SOURCES += $$expand(XMP_SRC,./external/libxmp-4.3/src/,.c)
+SOURCES += $$expand(XMP_LOADERS,./external/libxmp-4.3/src/loaders/,.c)
+SOURCES += \
+	./external/libxmp-4.3/lite/src/format.c \
+	./external/libxmp-4.3/lite/src/loaders/mod_load.c
+HEADERS += $$expand(XMP_HDR,./external/libxmp-4.3/src/,.h)
+HEADERS += $$expand(XMP_LOADERS_HDR,./external/libxmp-4.3/src/loaders/,.h)
+INCLUDEPATH += "./external/libxmp-4.3/include"
+INCLUDEPATH += "./external/libxmp-4.3/src"
+INCLUDEPATH += "./external/libxmp-4.3/src/loaders"
 
 INCLUDEPATH += "./external/libpng-1.6.2"
 INCLUDEPATH += "./external/jpeg-9"

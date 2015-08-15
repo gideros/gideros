@@ -332,12 +332,23 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 void ogl2ShaderProgram::recreate() {
 	errorLog="";
     uninit_uniforms=-1;
-    if (!glIsProgram(program))
+    if (glIsProgram(program))
     {
+    	if (current==this)
+    		deactivate();
+    	if (curProg == program) {
+    		glUseProgram(0);
+    		curProg = 0;
+    	}
+    	glDetachShader(program, vertexShader);
+    	glDetachShader(program, fragmentShader);
+    	glDeleteShader(vertexShader);
+    	glDeleteShader(fragmentShader);
+    	glDeleteProgram(program);
+    }
 	vertexShader = ogl2LoadShader(GL_VERTEX_SHADER, vshadercode.c_str(),errorLog);
 	fragmentShader = ogl2LoadShader(GL_FRAGMENT_SHADER, fshadercode.c_str(),errorLog);
 	program = ogl2BuildProgram(vertexShader, fragmentShader,errorLog);
-    }
 	gluniforms.clear();
 	glattributes.clear();
 	glUseProgram(program);

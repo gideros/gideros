@@ -47,6 +47,13 @@ G_API size_t gaudio_Mp3Read(g_id id, size_t size, void *data);
 G_API int gaudio_Mp3Seek(g_id id, long int offset, int whence);
 G_API long int gaudio_Mp3Tell(g_id id);
 
+// XMP API
+G_API g_id gaudio_XmpOpen(const char *fileName, int *numChannels, int *sampleRate, int *bitsPerSample, int *numSamples, gaudio_Error *error);
+G_API void gaudio_XmpClose(g_id id);
+G_API size_t gaudio_XmpRead(g_id id, size_t size, void *data);
+G_API int gaudio_XmpSeek(g_id id, long int offset, int whence);
+G_API long int gaudio_XmpTell(g_id id);
+
 // sound & channel
 G_API g_id gaudio_SoundCreateFromFile(const char *fileName, g_bool stream, gaudio_Error *error);
 G_API void gaudio_SoundDelete(g_id sound);
