@@ -46,6 +46,7 @@ static const int period_amiga[] = {
 };
 
 #ifdef _MSC_VER
+#define M_LN2	0.69314718055994530942
 static inline double round(double val)
 {    
 	return floor(val + 0.5);

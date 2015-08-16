@@ -980,6 +980,90 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gfxbackends\dx11\dx11ParticleShader.cpp">
       <Filter>gfxbackend</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-loader-xmp.cpp">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\control.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\dataio.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\effects.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\envelope.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\filter.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\hio.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\lfo.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\load.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\load_helpers.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\memio.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\mix_all.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\mixer.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\period.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\player.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\read_event.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\scan.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\smix.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\tempfile.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\virtual.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\lite\src\format.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\lite\src\loaders\mod_load.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\loaders\common.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\loaders\it_load.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\loaders\itsex.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\loaders\s3m_load.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\loaders\sample.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\libxmp-4.3\src\loaders\xm_load.c">
+      <Filter>xmp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">
@@ -1646,6 +1730,9 @@
     </Filter>
     <Filter Include="gfxbackend">
       <UniqueIdentifier>{05a37a36-3f32-4956-9cfb-a4ac442a93ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="xmp">
+      <UniqueIdentifier>{d6d05481-1e6a-46b1-9f4a-4053d54960d0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

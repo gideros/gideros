@@ -114,9 +114,10 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\luabinding;$(ProjectDir)..\..\..\libnetwork;..\..\..\libgid\external\freetype-2.4.12\src;..\..\..\libgid\external\freetype-2.4.12\include;..\..\..\libgid\external\mpg123-1.15.3\src;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>D3D_DEBUG_INFO;PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\luabinding;$(ProjectDir)..\..\..\libnetwork;..\..\..\libgid\external\freetype-2.4.12\src;..\..\..\libgid\external\freetype-2.4.12\include;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;%(AdditionalIncludeDirectories);..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>D3D_DEBUG_INFO;PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,10 +130,11 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;..\..\..\luabinding;..\..\..\libnetwork;..\..\..\libgid\external\freetype-2.4.12\src;..\..\..\libgid\external\freetype-2.4.12\include;..\..\..\libgid\external\mpg123-1.15.3\src;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;..\..\..\luabinding;..\..\..\libnetwork;..\..\..\libgid\external\freetype-2.4.12\src;..\..\..\libgid\external\freetype-2.4.12\include;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,8 +147,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\luabinding;..\..\..\libnetwork;..\..\..\libgid\external\freetype-2.4.12\src;..\..\..\libgid\external\freetype-2.4.12\include;..\..\..\libgid\external\mpg123-1.15.3\src;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>D3D_DEBUG_INFO;PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\luabinding;..\..\..\libnetwork;..\..\..\libgid\external\freetype-2.4.12\src;..\..\..\libgid\external\freetype-2.4.12\include;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>D3D_DEBUG_INFO;PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -159,8 +162,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;..\..\..\libnetwork;..\..\..\luabinding;..\..\..\libgid\external\freetype-2.4.12\src;..\..\..\libgid\external\freetype-2.4.12\include;..\..\..\libgid\external\mpg123-1.15.3\src;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PTW32_STATIC_LIB;WIN32;OPT_GENERIC;REAL_IS_FLOAT;FT2_BUILD_LIBRARY;PYSTRING_LIBRARY;WINSTORE;_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;..\..\..\libnetwork;..\..\..\luabinding;..\..\..\libgid\external\freetype-2.4.12\src;..\..\..\libgid\external\freetype-2.4.12\include;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -173,6 +177,9 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -185,6 +192,9 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_REENTRANT;LIBXMP_CORE_PLAYER</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\libgid\external\libxmp-4.3\include</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

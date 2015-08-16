@@ -62,7 +62,7 @@ public:
         }
         else
         {
-            if (gaudio_BackgroundMusicIsAvailable())
+            if ((dot2=="mp3") && gaudio_BackgroundMusicIsAvailable())
             {
                 gid = gaudio_BackgroundMusicCreateFromFile(fileName, error);
                 setBackgroundMusicInterface();
