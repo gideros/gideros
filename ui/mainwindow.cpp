@@ -2683,7 +2683,7 @@ void MainWindow::exportProject()
 		// compile lua files (with luac)
 		// disable compile with luac for iOS because 64 bit version
 		// http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
-		if (true && deviceFamily != ExportProjectDialog::e_iOS)
+        if (deviceFamily != ExportProjectDialog::e_iOS && deviceFamily != ExportProjectDialog::e_MacOSXDesktop)
 		{
             for (int i = 0; i < allluafiles_abs.size(); ++i)
 			{
