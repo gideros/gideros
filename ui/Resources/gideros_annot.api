@@ -465,6 +465,7 @@ Event.LOGIN_ERROR - value "loginError"
 Event.LOGOUT_COMPLETE - value "logoutComplete"
 Event.MEMORY_WARNING - value "memoryWarning"
 Event.MOUSE_DOWN - value "mouseDown"
+Event.MOUSE_HOVER - value "mouseHover"
 Event.MOUSE_MOVE - value "mouseMove"
 Event.MOUSE_UP - value "mouseUp"
 Event.MOUSE_WHEEL - value "mouseWheel"
@@ -525,6 +526,7 @@ flurry.isAvailable() flurry - returns true if Flurry is available
 flurry.logEvent(eventName, parameters, timed) flurry - logs Flurry event
 flurry.startSession(apiKey) flurry - starts the Flurry session with your API key
 Font > FontBase
+Font.getDefault() Font - Get default font
 Font.new(txtfile, imagefile, filtering) Font - creates a new Font object
 FontBase
 fontbase
@@ -620,6 +622,10 @@ KeyCode.L1 - value 307
 KeyCode.LEFT - value 37
 KeyCode.M - value 77
 KeyCode.MENU - value 303
+KeyCode.MOUSE_LEFT - value 1
+KeyCode.MOUSE_MIDDLE - value 4
+KeyCode.MOUSE_NONE - value 0
+KeyCode.MOUSE_RIGHT - value 2
 KeyCode.N - value 78
 KeyCode.NUM_0 - value 48
 KeyCode.NUM_1 - value 49
@@ -872,7 +878,7 @@ getX() Sprite - returns the x coordinate of the sprite
 getY() Sprite - returns the y coordinate of the sprite
 getZ() Sprite - returns the z coordinate of the sprite
 globalToLocal(x, y) Sprite - converts the x,y coordinates from the global to the sprite's (local) coordinates
-hitTestPoint(x, y) Sprite - checks the given coordinates is in bounds of the sprite
+hitTestPoint(x, y [, shapeFlag]) Sprite - checks the given coordinates is in bounds of the sprite
 isVisible() Sprite - returns the visibility of sprite
 localToGlobal(x, y) Sprite - converts the x,y coordinates from the sprite's (local) coordinates to the global coordinates
 removeChild(child) Sprite - removes the child sprite
