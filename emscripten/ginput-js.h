@@ -1,5 +1,5 @@
-#ifndef _GINPUTJS_H_
-#define _GINPUTJS_H_
+#ifndef _GINPUT_WINRT_H_
+#define _GINPUT_WINRT_H_
 
 #include <gglobal.h>
 
@@ -7,16 +7,20 @@
 extern "C" {
 #endif
 
-G_API void ginputp_touchBegin(int size, int *id, int *x, int *y, int actionIndex);
-G_API void ginputp_touchesMove(int size, int *id, int *x, int *y);
-G_API void ginputp_touchEnd(int size, int *id, int *x, int *y, int actionIndex);
-G_API void ginputp_touchesCancel(int size, int *id, int *x, int *y);
-G_API g_bool ginputp_keyDown(int keyCode, int repeatCount);
-G_API g_bool ginputp_keyUp(int keyCode, int repeatCount);
+G_API void ginputp_mouseDown(int x, int y, int button);
+G_API void ginputp_mouseMove(int x, int y, int button);
+G_API void ginputp_mouseHover(int x, int y, int button);
+G_API void ginputp_mouseUp(int x, int y, int button);
+G_API void ginputp_mouseWheel(int x, int y, int button, int delta);
+G_API void ginputp_keyDown(int keyCode);
+G_API void ginputp_keyUp(int keyCode);
+G_API void ginputp_touchBegin(int x, int y, int id);
+G_API void ginputp_touchMove(int x, int y, int id);
+G_API void ginputp_touchEnd(int x, int y, int id);
+G_API void ginputp_touchCancel(int x, int y, int id);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-

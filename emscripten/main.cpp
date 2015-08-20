@@ -8,6 +8,7 @@
 #include "emscripten.h"
 #include "html5.h"
 #include <glog.h>
+#include <ginput-js.h>
 
 static ApplicationManager *s_applicationManager = NULL;
 
@@ -100,8 +101,35 @@ EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userD
 
 EM_BOOL wheel_callback(int eventType, const EmscriptenWheelEvent *e, void *userData)
 {
- printf("Wheel:%d Mode:%d\n",e->deltaY,e->deltaMode);
- //ginputp_mouseWheel();
+ double w=e->deltaY;
+ if (e->deltaMode==1)
+  w=w*40;
+ if (e->deltaMode==2)
+  w=w*120;
+ int x=e->mouse.canvasX;
+ int y=e->mouse.canvasY;
+ int b=e->mouse.buttons;
+ b=(b&1)|((b&2)<<1)|(b&4>>1); //Convert buttons to gideros mask
+  ginputp_mouseWheel(x,y,b,w);
+  return 0;
+}
+
+EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userData)
+{
+    for (int k=0;k<e->numTouches;k++) {
+     if (!e->touches[k].isChanged) continue;
+	 int x=e->touches[k].canvasX;
+	 int y=e->touches[k].canvasY;
+	 int i=e->touches[k].identifier;
+	 if (eventType == EMSCRIPTEN_EVENT_TOUCHSTART)
+		 ginputp_touchBegin(x,y,i);
+	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHEND)
+		 ginputp_touchEnd(x,y,i);
+	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHMOVE)
+		 ginputp_touchMove(x,y,i);
+	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHCANCEL)
+		 ginputp_touchCancel(x,y,i);
+  }
   return 0;
 }
 
@@ -115,12 +143,14 @@ int main() {
     s_applicationManager->surfaceCreated();
 
     EMSCRIPTEN_RESULT ret;
-    //ret = emscripten_set_click_callback(0, 0, 1, mouse_callback);
     ret = emscripten_set_mousedown_callback(0, 0, 1, mouse_callback);
     ret = emscripten_set_mouseup_callback(0, 0, 1, mouse_callback);
-    //ret = emscripten_set_dblclick_callback(0, 0, 1, mouse_callback);
     ret = emscripten_set_mousemove_callback(0, 0, 1, mouse_callback);
     ret = emscripten_set_wheel_callback(0, 0, 1, wheel_callback);
+    ret = emscripten_set_touchstart_callback(0, 0, 1, touch_callback);
+    ret = emscripten_set_touchend_callback(0, 0, 1, touch_callback);
+    ret = emscripten_set_touchmove_callback(0, 0, 1, touch_callback);
+    ret = emscripten_set_touchcancel_callback(0, 0, 1, touch_callback);
 
     s_applicationManager->surfaceChanged(defWidth,defHeight,0);
     emscripten_set_main_loop(looptick, 0, 1);

@@ -803,7 +803,7 @@ void ginputp_touchBegin(int x, int y, int id){
 		pointer.x = x;
 		pointer.y = y;
 		pointer.id = id;
-		m_pointerIds.emplace(id, pointer);
+		m_pointerIds[id]= pointer;
 		s_manager->touchBegin(x, y, id);
 	}
 }
