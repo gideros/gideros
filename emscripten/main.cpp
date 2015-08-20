@@ -58,9 +58,11 @@ int initGL(int width, int height)
 #endif
  return 0;
 }
-                                                                                                    
+
+extern "C" void GGStreamOpenALTick();                                                                                                    
 void looptick()
 {
+ GGStreamOpenALTick();
     s_applicationManager->drawFrame();
 #ifndef EGL
     glfwSwapBuffers();
@@ -74,11 +76,13 @@ extern "C" void g_setFps(int fps)
 }
 
 int main() {
-    initGL(240,320);    
-    glog_setLevel(0);
+   int defWidth=320;
+   int defHeight=480;
+    initGL(defWidth,defHeight);    
+//    glog_setLevel(0);
     s_applicationManager=new ApplicationManager(false,"main.gapp");
     s_applicationManager->surfaceCreated();
-    s_applicationManager->surfaceChanged(240,320,0);
+    s_applicationManager->surfaceChanged(defWidth,defHeight,0);
     emscripten_set_main_loop(looptick, 0, 1);
 }
 

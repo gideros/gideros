@@ -10,8 +10,11 @@
 #endif
 #if __BYTE_ORDER == __BIG_ENDIAN
 #define BIGENDIAN
+#endif
 #endif /* __LITTLE_ENDIAN__ */
 #endif /* __BIG_ENDIAN__ */
+
+#include <stdint.h>
 
 #define PACKED __attribute__((packed))
 #define WEAK __attribute__((weak))

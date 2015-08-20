@@ -132,7 +132,7 @@ ApplicationManager::ApplicationManager(bool player,const char *appname) {
 	gtexture_setCachingEnabled(1);
 
 	// audio
-	//gaudio_Init();
+	gaudio_Init();
 
 	// application
 	application_ = new LuaApplication;
@@ -475,10 +475,10 @@ void ApplicationManager::play(const char *gapp) {
 	if (pksz < 16)
 		return; //Invalid file size
 	struct {
-		uint32 flistOffset;
-		uint32 version;
+		uint32_t flistOffset;
+		uint32_t version;
 		char signature[8];
-	} tlr PACKED;
+	} PACKED tlr;
 	fseek(fd,pksz - 16,SEEK_SET);
 	fread(&tlr,1,16,fd);
 	tlr.version = BIGENDIAN4(tlr.version);
@@ -494,12 +494,12 @@ void ApplicationManager::play(const char *gapp) {
 			int plen = strlen(buffer + offset);
 			if (!plen)
 				break; //End of list
-			uint32 foffset=PBULONG(buffer + offset + plen + 1);
-			uint32 fsize=PBULONG(buffer + offset + plen + 1+sizeof(uint32));
+			uint32_t foffset=PBULONG(buffer + offset + plen + 1);
+			uint32_t fsize=PBULONG(buffer + offset + plen + 1+sizeof(uint32_t));
 			const char *norm = gpath_normalizeArchivePath(buffer + offset);
 			gvfs_addFile(norm, 0, foffset, fsize);
 			glog_d("GAPP-FILE: %s,%d,%d", norm, foffset, fsize);
-			offset += (plen + 1 + 2 * sizeof(uint32));
+			offset += (plen + 1 + 2 * sizeof(uint32_t));
 		}
 		free(buffer);
 	} else
@@ -563,8 +563,6 @@ void ApplicationManager::openProject(const char* project) {
 
 void ApplicationManager::playFiles(const char* pfile,const char *lfile) {
 
-		//setting project name
-		setProjectName(project);
 
 	//setting properties
 	const char* propfilename = g_pathForFile(pfile);
