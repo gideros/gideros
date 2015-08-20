@@ -76,7 +76,7 @@ extern "C" void g_setFps(int fps)
 int main() {
     initGL(240,320);    
     glog_setLevel(0);
-    s_applicationManager=new ApplicationManager(false);
+    s_applicationManager=new ApplicationManager(false,"main.gapp");
     s_applicationManager->surfaceCreated();
     s_applicationManager->surfaceChanged(240,320,0);
     emscripten_set_main_loop(looptick, 0, 1);

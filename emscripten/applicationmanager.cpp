@@ -83,8 +83,9 @@ static const char *assetsKey_ = "312e68c04c6fd22922b5b232ea6fb3e2"
 		"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 		"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
-ApplicationManager::ApplicationManager(bool player) {
+ApplicationManager::ApplicationManager(bool player,const char *appname) {
 	player_ = player;
+	appName=appname;
 
 	// gpath & gvfs
 	gpath_init();
@@ -292,11 +293,13 @@ void ApplicationManager::drawFrame() {
 
 	if (player_ == false) {
 		if (applicationStarted_ == false) {
-			loadProperties();
-
-			// Gideros has became open source and free, because this, there's no more splash art			
-
-			loadLuaFiles();
+			if (!appName.empty())
+				play(appName.c_str());
+			else
+			{
+				loadProperties();
+				loadLuaFiles();
+			}
 			skipFirstEnterFrame_ = true;
 
 			/*
@@ -462,16 +465,112 @@ void ApplicationManager::setOpenProject(const char* project) {
 	networkManager_->openProject_ = project;
 }
 
+
+#include "netendian.h"
+void ApplicationManager::play(const char *gapp) {
+	FILE *fd=fopen(gapp,"rb");
+	if (!fd) return; //No file/not openable
+	fseek(fd,0,SEEK_END);
+	long pksz=ftell(fd);
+	if (pksz < 16)
+		return; //Invalid file size
+	struct {
+		uint32 flistOffset;
+		uint32 version;
+		char signature[8];
+	} tlr PACKED;
+	fseek(fd,pksz - 16,SEEK_SET);
+	fread(&tlr,1,16,fd);
+	tlr.version = BIGENDIAN4(tlr.version);
+	tlr.flistOffset = BIGENDIAN4(tlr.flistOffset);
+	if ((!strncmp(tlr.signature, "GiDeRoS", 7)) && (tlr.version == 0)) {
+		glog_v("GAPP-ARCH: %s", gapp);
+		gvfs_setZipFile(gapp);
+		char *buffer = (char *) malloc(pksz - tlr.flistOffset);
+		fseek(fd,tlr.flistOffset,SEEK_SET);
+		fread(buffer, 1,pksz - tlr.flistOffset,fd);
+		int offset = 0;
+		while (offset < (pksz - tlr.flistOffset)) {
+			int plen = strlen(buffer + offset);
+			if (!plen)
+				break; //End of list
+			uint32 foffset=PBULONG(buffer + offset + plen + 1);
+			uint32 fsize=PBULONG(buffer + offset + plen + 1+sizeof(uint32));
+			const char *norm = gpath_normalizeArchivePath(buffer + offset);
+			gvfs_addFile(norm, 0, foffset, fsize);
+			glog_d("GAPP-FILE: %s,%d,%d", norm, foffset, fsize);
+			offset += (plen + 1 + 2 * sizeof(uint32));
+		}
+		free(buffer);
+	} else
+		glog_w("GAPP: Invalid signature/version");
+	fclose(fd);
+
+	if (running_ == true) {
+		Event event(Event::APPLICATION_EXIT);
+		GStatus status;
+		application_->broadcastEvent(&event, &status);
+		running_ = false;
+	}
+
+	std::string gappfile=gapp;
+	std::string projectName=gappfile.substr(0,gappfile.find_last_of('.')-1);
+
+
+	const char* documentsDirectory;
+	const char* temporaryDirectory;
+
+	std::string dir = "";
+
+	if (dir[dir.size() - 1] != '/')
+		dir += "/";
+
+	dir += "_";
+
+	mkdir(dir.c_str(), 0755);
+
+	dir += "/";
+
+	dir += projectName;
+
+	mkdir(dir.c_str(), 0755);
+
+	dir += "/";
+
+	std::string documents = dir + "documents";
+	std::string temporary = dir + "temporary";
+
+	glog_v("documents: %s", documents.c_str());
+	glog_v("temporary: %s", temporary.c_str());
+
+	mkdir(documents.c_str(), 0755);
+	mkdir(temporary.c_str(), 0755);
+
+	setDocumentsDirectory(documents.c_str());
+	setTemporaryDirectory(temporary.c_str());
+	setResourceDirectory("");
+
+	loadProperties();
+	loadLuaFiles();
+}
+
 void ApplicationManager::openProject(const char* project) {
 
 	//setting project name
 	setProjectName(project);
+	playFiles("../properties.bin","../luafiles.txt");
+}
+
+void ApplicationManager::playFiles(const char* pfile,const char *lfile) {
+
+		//setting project name
+		setProjectName(project);
 
 	//setting properties
-	const char* propfilename = g_pathForFile("../properties.bin");
+	const char* propfilename = g_pathForFile(pfile);
 	FILE* fis_prop = fopen(propfilename, "rb");
 
-	const char* luafilename = g_pathForFile("../luafiles.txt");
+	const char* luafilename = g_pathForFile(lfile);
 	FILE* fis_lua = fopen(luafilename, "rb");
 
 	if (fis_prop != NULL && fis_lua != NULL) {
@@ -516,7 +615,7 @@ void ApplicationManager::openProject(const char* project) {
 		//loading lua files
 		std::vector<std::string> luafiles;
 
-		const char* luafilename = g_pathForFile("../luafiles.txt");
+		const char* luafilename = g_pathForFile(lfile);
 		FILE* fis_lua = fopen(luafilename, "rb");
 
 		fseek(fis_lua, 0, SEEK_END);

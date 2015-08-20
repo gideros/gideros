@@ -68,8 +68,7 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -O2
 ASSETS=../winrt_example/giderosgame/giderosgame.Windows/Assets
 
 all: path $(OBJS)
-	emcc --preload-file $(ASSETS)@/
-	emcc $(OBJS) -s FULL_ES2=1 -s DISABLE_EXCEPTION_CATCHING=0 -O2 -o gideros.html --preload-file $(ASSETS)@/
+	emcc $(OBJS) -s FULL_ES2=1 -s DISABLE_EXCEPTION_CATCHING=0 -O2 -o gideros.html --pre-js gidjs.js --preload-file $(ASSETS)@/
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))

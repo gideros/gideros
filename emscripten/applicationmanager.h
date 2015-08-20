@@ -91,7 +91,7 @@ private:
 
 class ApplicationManager {
 public:
-	ApplicationManager(bool player);
+	ApplicationManager(bool player,const char *appname);
 	~ApplicationManager();
 
 	void luaError(const char *msg);
@@ -107,6 +107,8 @@ public:
 
 	void openProject(const char* project);
 	void setOpenProject(const char* project);
+	void playFiles(const char* pfile,const char *lfile);
+	void play(const char *gapp);
 	void play(const std::vector<std::string>& luafiles);
 	void stop();
 	void setProjectName(const char *projectName);
@@ -137,6 +139,7 @@ private:
 
 private:
 	bool player_;
+	std::string appName;
 	LuaApplication *application_;
 	NetworkManager *networkManager_;
 
