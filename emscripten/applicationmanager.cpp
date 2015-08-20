@@ -339,6 +339,7 @@ void ApplicationManager::drawFrame() {
 		application_->enterFrame(&status);
 		if (status.error())
 			luaError(status.errorString());
+          gaudio_AdvanceStreamBuffers();		  
 	}
 
 	application_->clearBuffers();

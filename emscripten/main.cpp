@@ -62,7 +62,6 @@ int initGL(int width, int height)
 extern "C" void GGStreamOpenALTick();                                                                                                    
 void looptick()
 {
- GGStreamOpenALTick();
     s_applicationManager->drawFrame();
 #ifndef EGL
     glfwSwapBuffers();

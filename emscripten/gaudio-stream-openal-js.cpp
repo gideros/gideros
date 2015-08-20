@@ -45,16 +45,13 @@ namespace {
 class GGStreamOpenALManager : public GGStreamInterface
 {
 public:
-    static GGStreamOpenALManager *Instance;
     GGStreamOpenALManager()
     {
         running_ = true;
-        Instance=this;
     }
 
     ~GGStreamOpenALManager()
     {
-        Instance=NULL;
         {
             running_ = false;
         }
@@ -141,11 +138,14 @@ public:
         if(alGetError() != AL_NO_ERROR)
             return 0;
 
-        g_id file = sound2->loader.open(sound2->fileName.c_str(), NULL, NULL, NULL, NULL, NULL);
-
+        gaudio_Error aerr;
+        g_id file = sound2->loader.open(sound2->fileName.c_str(), NULL, NULL, NULL, NULL, &aerr);
         if (file == 0)
+        {
+            printf("Cannot open audio file:%d\n",aerr);
             return 0;
-
+        }
+            
         g_id gid = g_NextId();
 
         Channel *channel = new Channel(gid, file, sound2, source);
@@ -444,7 +444,7 @@ public:
     }
 
 public:
-    void tickAll()
+    void AdvanceStreamBuffers()
     {
             std::map<g_id, Channel*>::iterator iter, e = channels_.end();
 
@@ -652,12 +652,6 @@ GGStreamInterface *GGStreamOpenALManagerCreate()
 void GGStreamOpenALManagerDelete(GGStreamInterface *manager)
 {
     delete manager;
-}
-
-void GGStreamOpenALTick()
-{
-    if (GGStreamOpenALManager::Instance)
-        GGStreamOpenALManager::Instance->tickAll();
 }
 
 }

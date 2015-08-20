@@ -85,10 +85,10 @@ void GGSoundManager::interfacesCleanup()
 
 void GGAudioManager::AdvanceStreamBuffers()
 {
-
+    soundManager_->AdvanceStreamBuffers();
 }
 
 void GGSoundManager::AdvanceStreamBuffers()
 {
-
+    streamInterface_->AdvanceStreamBuffers();
 }
