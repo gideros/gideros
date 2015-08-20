@@ -13,7 +13,7 @@ SRCS+=$(addprefix $(LIQUIDFUN)/Rope/,$(notdir $(basename $(wildcard ../$(LIQUIDF
 SRCS+=$(addprefix $(LIQUIDFUN)/Particle/,$(notdir $(basename $(wildcard ../$(LIQUIDFUN)/Particle/*.cpp))))
 
 SRCS+=$(addprefix luabinding/,$(notdir $(basename $(wildcard ../luabinding/*.cpp)))) luabinding/tlsf
-#SRCS+=$(addprefix libnetwork/,$(notdir $(basename $(wildcard ../libnetwork/*.cpp))))
+SRCS+=$(addprefix libnetwork/,$(notdir $(basename $(wildcard ../libnetwork/*.cpp))))
 SRCS+=$(addprefix libpvrt/,$(notdir $(basename $(wildcard ../libpvrt/*.cpp))))
 SRCS+=$(addprefix libgid/src/,md5 platformutil utf8 drawinfo gtimer \
 	gimage gimage-png gimage-jpg gtexture gevent glog gglobal gaudio \
@@ -40,7 +40,7 @@ PNGFILES=png pngerror pngget pngmem pngpread pngread pngrio pngrtran pngrutil pn
 SRCS+=$(addprefix libgid/external/libpng-1.6.2/,$(PNGFILES))
 JPEGFILES=jaricom jdapimin jdapistd jdarith jdatadst jdatasrc jdcoefct jdcolor jddctmgr jdhuff jdinput \
 	jdmainct jdmarker jdmaster jdmerge jdpostct jdsample jdtrans jerror jfdctflt jfdctfst jfdctint \
-	jidctflt jidctfst jidctint jquant1 jquant2 jutils jmemmgr jmemnobs
+	jidctflt jidctfst jidctint jquant1 jquant2 jutils jmemmgr jmemnobs jcomapi
 SRCS+=$(addprefix libgid/external/jpeg-9/,$(JPEGFILES))
 SRCS+=$(addprefix libgid/external/snappy-1.1.0/,snappy snappy-c snappy-sinksource snappy-stubs-internal)
 
@@ -64,10 +64,12 @@ BUILD=Build
 
 OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS))
-CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON
+CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -O2
+ASSETS=../winrt_example/giderosgame/giderosgame.Windows/Assets
 
 all: path $(OBJS)
-	emcc $(OBJS) -s FULL_ES2=1 -o gideros.html
+	emcc --preload-file $(ASSETS)@/
+	emcc $(OBJS) -s FULL_ES2=1 -s DISABLE_EXCEPTION_CATCHING=0 -O2 -o gideros.html --preload-file $(ASSETS)@/
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))

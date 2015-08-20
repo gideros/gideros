@@ -2,7 +2,7 @@
 //#include <android/log.h>
 #include <sys/stat.h>
 
-//#include <libnetwork.h>
+#include <libnetwork.h>
 #include <application.h>
 #include <luaapplication.h>
 #include <gfile.h>
@@ -107,7 +107,7 @@ ApplicationManager::ApplicationManager(bool player)
     gpath_setDefaultDrive(0);
 	
 	gvfs_init();
-//	gvfs_setPlayerModeEnabled(player ? 1 : 0);
+	//gvfs_setPlayerModeEnabled(player ? 1 : 0);
 	gvfs_setCodeKey(codeKey_ + 32);
 	gvfs_setAssetsKey(assetsKey_ + 32);
 
@@ -140,8 +140,8 @@ ApplicationManager::ApplicationManager(bool player)
 		// application
 	application_ = new LuaApplication;
 	application_->setPlayerMode(player_);
-//	if (player_)
-//		application_->setPrintFunc(NetworkManager::printToServer_s, networkManager_);
+	if (player_)
+		application_->setPrintFunc(NetworkManager::printToServer_s, networkManager_);
 	application_->enableExceptions();
 
 	Binder::disableTypeChecking();
@@ -164,7 +164,7 @@ ApplicationManager::ApplicationManager(bool player)
 ApplicationManager::~ApplicationManager()
 {
 	// network
-	//if (networkManager_)		delete networkManager_;
+	if (networkManager_)		delete networkManager_;
 
 	// application
 	application_->deinitialize();
@@ -289,8 +289,8 @@ void ApplicationManager::updateHardwareOrientation()
 
 void ApplicationManager::drawFrame()
 {
-//	if (networkManager_)
-//		networkManager_->tick();
+	if (networkManager_)
+		networkManager_->tick();
 
 	// if we're in app mode, skip the first 10 frames as black screen
 	// because a pattern like surfaceChanged(a,b), drawFrame, drawFrame, drawFrame, ..., surfaceChanged(b,a) is possible
@@ -487,7 +487,7 @@ void ApplicationManager::setFileSystem(const char *fileSystem)
 }
 
 void ApplicationManager::setOpenProject(const char* project){
-//	networkManager_->openProject_ = project;
+	networkManager_->openProject_ = project;
 }
 
 void ApplicationManager::openProject(const char* project){
@@ -681,8 +681,8 @@ void ApplicationManager::setProjectName(const char *projectName)
 
 	std::string resourceDirectory_ = resource;
 
-//	networkManager_->setResourceDirectory(resourceDirectory_.c_str());
-//	networkManager_->setMd5FileName(md5filename_.c_str());
+	networkManager_->setResourceDirectory(resourceDirectory_.c_str());
+	networkManager_->setMd5FileName(md5filename_.c_str());
 }
 
 

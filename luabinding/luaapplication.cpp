@@ -700,7 +700,7 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
     return p;
 }
 
-#if 0
+#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
 static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
     (void)ud;

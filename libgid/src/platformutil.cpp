@@ -329,6 +329,15 @@ std::vector<std::string> getLocalIPs()
 	return jnb_getLocalIPs();
 }
 
+#elif EMSCRIPTEN
+
+std::vector<std::string> getLocalIPs()
+{
+ std::vector<std::string> none;
+ return none;
+}
+
+
 #else
 
 #include <stdio.h>

@@ -38,6 +38,10 @@
 #elif WINSTORE
 #include "dxcompat.hpp"
 #define OPENGL_DESKTOP
+#elif EMSCRIPTEN
+#define	OPENGL_ES
+    #include <GLES2/gl2.h>
+    #include <GLES2/gl2ext.h>
 #else
 #include <GL/glew.h>
 #define OPENGL_DESKTOP

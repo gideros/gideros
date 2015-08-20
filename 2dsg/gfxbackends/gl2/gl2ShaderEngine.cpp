@@ -201,6 +201,7 @@ void ogl2ShaderEngine::reset(bool reinit)
 	 depthfmt=GL_DEPTH24_STENCIL8;
 	#endif
 
+	#ifndef EMSCRIPTEN
 	#ifdef OPENGL_ES
 	 glGenRenderbuffers(1, &_depthRenderBuffer);
 	 glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
@@ -209,6 +210,8 @@ void ogl2ShaderEngine::reset(bool reinit)
 	 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 	 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 	#endif
+	#endif
+	
 	#ifdef GL_POINT_SPRITE_OES
 	 glEnable(GL_POINT_SPRITE_OES);
 	#else

@@ -1,5 +1,9 @@
 #include <vector>
 #include <luaapplication.h>
+#include <map>
+#include <libnetwork.h>
+#include <string>
+#include <stdlib.h>
 
 struct ProjectProperties
 {
@@ -29,6 +33,69 @@ struct ProjectProperties
                                                                                                                                     int touchToMouse;
                                                                                                                                         int mouseTouchOrder;
                                                                                                                                         };
+
+class ApplicationManager;                                                                                                                                        
+class NetworkManager
+{
+public:
+    NetworkManager(ApplicationManager *application);
+        ~NetworkManager();
+            void tick();
+                std::string openProject_;
+                    
+                        void setResourceDirectory(const char* resourceDirectory)
+                            {
+                                    resourceDirectory_ = resourceDirectory;
+                                        }
+                                            
+                                                void setMd5FileName(const char *md5FileName)
+                                                    {
+                                                            md5filename_ = md5FileName;
+                                                                    loadMD5();
+                                                                        }
+                                                                        
+                                                                            static void printToServer_s(const char *str, int len, void *data)
+                                                                                {
+                                                                                        static_cast<NetworkManager*>(data)->printToServer(str, len);
+                                                                                            }
+                                                                                            
+                                                                                                void printToServer(const char *str, int len)
+                                                                                                    {
+                                                                                                            unsigned int size = 1 + ((len < 0) ? strlen(str) : len) + 1;
+                                                                                                                    char* buffer = (char*)malloc(size);
+                                                                                                                    
+                                                                                                                            buffer[0] = 4;
+                                                                                                                                    memcpy(buffer + 1, str,size-2);
+                                                                                                                                            buffer[size-1]=0;
+                                                                                                                                            
+                                                                                                                                                    server_->sendData(buffer, size);
+                                                                                                                                                    
+                                                                                                                                                            free(buffer);
+                                                                                                                                                                }	
+                                                                                                                                                                
+                                                                                                                                                                private:
+                                                                                                                                                                    void createFolder(const std::vector<char> &data);
+                                                                                                                                                                        void createFile(const std::vector<char> &data);
+                                                                                                                                                                            void play(const std::vector<char> &data);
+                                                                                                                                                                                void stop();
+                                                                                                                                                                                    void sendFileList();
+                                                                                                                                                                                        void setProjectName(const std::vector<char> &data);
+                                                                                                                                                                                            void deleteFile(const std::vector<char> &data);
+                                                                                                                                                                                                void setProperties(const std::vector<char> &data);
+                                                                                                                                                                                                    
+                                                                                                                                                                                                    private:
+                                                                                                                                                                                                        std::string md5filename_;
+                                                                                                                                                                                                            std::map<std::string, std::vector<unsigned char> > md5_;
+                                                                                                                                                                                                                void loadMD5();
+                                                                                                                                                                                                                    void saveMD5();
+                                                                                                                                                                                                                        void calculateMD5(const char *file);	
+                                                                                                                                                                                                                        
+                                                                                                                                                                                                                        private:
+                                                                                                                                                                                                                            ApplicationManager *application_;
+                                                                                                                                                                                                                                Server *server_;
+                                                                                                                                                                                                                                    std::string resourceDirectory_;
+                                                                                                                                                                                                                                    };
+
 class ApplicationManager
 {
 public:
@@ -78,6 +145,7 @@ public:
                                                                             private:
                                                                               bool player_;
                                                                                 LuaApplication *application_;
+                                                                                NetworkManager *networkManager_;
                                                                                     
                                                                                       bool init_;
                                                                                         

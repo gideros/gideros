@@ -1,5 +1,5 @@
 #ifndef _GINPUTJS_H_
-#define _GINPUT_JS_H_
+#define _GINPUTJS_H_
 
 #include <gglobal.h>
 
