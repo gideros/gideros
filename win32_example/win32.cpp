@@ -40,17 +40,26 @@
 #include "ghttp.h"
 #include "orientation.h"
 
-LuaApplication *application_;
-HWND hwndcopy;
-
-int g_windowWidth;    // width if window was in portrait mode
-int g_windowHeight;   // height if window was in portrait mode > windowWidth
-bool g_portrait;
+extern "C" {
+  void g_setFps(int);
+  int g_getFps();
+}
 
 #define ID_TIMER   1
-bool use_timer=false;
-int vsyncVal=0;
+
+char commandLine[256];
+int dxChrome,dyChrome;
+HWND hwndcopy;
+
+static LuaApplication *application_;
+static int g_windowWidth;    // width if window was in portrait mode
+static int g_windowHeight;   // height if window was in portrait mode > windowWidth
+static bool g_portrait, drawok;
+static bool use_timer=false;
+static int vsyncVal=0;
 static HDC hDC;
+
+// ######################################################################
 
 static void luaError(const char *error)
 {
@@ -97,7 +106,16 @@ static void printFunc(const char *str, int len, void *data)
 
 std::string getDeviceName()
 {
-  return "foo";
+
+  static char buf[MAX_COMPUTERNAME_LENGTH + 1];
+  DWORD dwCompNameLen = MAX_COMPUTERNAME_LENGTH;
+  std::string name;
+
+  if (GetComputerName(buf, &dwCompNameLen) != 0) {
+    name=buf;
+  }
+
+  return name;
 }
 
 // ######################################################################
@@ -168,7 +186,7 @@ struct ProjectProperties
 
 // ######################################################################
 
-void EnableOpenGL(HWND hWnd, HDC * hDC, HGLRC * hRC)
+void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
 {
   PIXELFORMATDESCRIPTOR pfd;
   int format,i;
@@ -319,15 +337,14 @@ void loadProperties()
   buffer >> properties.mouseTouchOrder;
 
   printf("properties components\n");
-  printf("logicalWidth, logicalHeight, orientation=%d %d %d\n",
-	 properties.logicalWidth, properties.logicalHeight, properties.orientation);
+  printf("logicalWidth, logicalHeight, orientation, scaleMode=%d %d %d %d\n",
+	 properties.logicalWidth, properties.logicalHeight, 
+	 properties.orientation, properties.scaleMode);
 
   buffer >> properties.windowWidth;
   buffer >> properties.windowHeight;
 
   printf("windowWidth, windowHeight=%d %d\n",properties.windowWidth, properties.windowHeight);
-
-  //    if (properties.orientation==0 || properties.orientation==2){            // portrait
 
   if (properties.windowWidth==0 || properties.windowHeight==0){
     g_windowWidth=properties.logicalWidth;
@@ -342,7 +359,6 @@ void loadProperties()
   Orientation hardwareOrientation;
   Orientation deviceOrientation;
 
-  // the first arg to setResolution should be the smaller dimension
   if (properties.orientation==0 || properties.orientation==2){
     hardwareOrientation = ePortrait;
     deviceOrientation = ePortrait;
@@ -356,8 +372,6 @@ void loadProperties()
 
   application_->setResolution(g_windowWidth * contentScaleFactor, 
 			      g_windowHeight * contentScaleFactor);
-  //    application_->setResolution(windowHeight * contentScaleFactor, windowWidth * contentScaleFactor);
-
 
   application_->setHardwareOrientation(hardwareOrientation);
   application_->getApplication()->setDeviceOrientation(deviceOrientation);
@@ -366,7 +380,7 @@ void loadProperties()
   application_->setLogicalScaleMode((LogicalScaleMode)properties.scaleMode);
   application_->setImageScales(properties.imageScales);
   
-  //  g_setFps(properties.fps);
+  g_setFps(properties.fps);
 
   ginput_setMouseToTouchEnabled(properties.mouseToTouch);
   ginput_setTouchToMouseEnabled(properties.touchToMouse);
@@ -380,8 +394,6 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
   static HGLRC hRC;
   static RECT clientRect,winRect;
-
-  static int dxChrome,dyChrome;
 
   PAINTSTRUCT ps ;
 
@@ -474,6 +486,33 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
   }
   else if (iMsg==WM_SIZE){
+
+    int width=LOWORD(lParam);
+    int height=HIWORD(lParam);
+
+    Orientation hardwareOrientation;
+    Orientation deviceOrientation;
+
+    if (width<height){
+      g_windowWidth=width;
+      g_windowHeight=height;
+      hardwareOrientation = ePortrait;
+      deviceOrientation = ePortrait;
+    }
+    else {
+      g_windowWidth=height;
+      g_windowHeight=width;
+      hardwareOrientation = eLandscapeLeft;
+      deviceOrientation = eLandscapeLeft;
+    }
+
+    float contentScaleFactor = 1;
+    application_->setResolution(g_windowWidth  * contentScaleFactor, 
+				g_windowHeight * contentScaleFactor);
+
+    application_->setHardwareOrientation(hardwareOrientation);
+    application_->getApplication()->setDeviceOrientation(deviceOrientation);
+    
     return 0;
   }
   // allows large windows bigger than screen
@@ -538,8 +577,18 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
   else if (iMsg==WM_CLOSE){
     printf("WM_CLOSE Called\n");
 
-    //    gaudio_Cleanup();
-
+    if (use_timer)
+      KillTimer(hwnd, ID_TIMER);
+    else {
+      PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT"); 
+    
+      if (wglSwapIntervalEXT == NULL){
+	printf("Error, no wglSwapIntervalEXT\n");
+	exit(1);
+      }
+      wglSwapIntervalEXT(0);
+    }
+    
     // application
     application_->deinitialize();
     delete application_;
@@ -574,17 +623,23 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     gpath_cleanup();
 
     DisableOpenGL(hwnd, hDC, hRC);
-    
+
+    drawok=false;
+
     DestroyWindow(hwnd);
     return 0;
   }
   else if (iMsg==WM_DESTROY){
+    printf("WM_DESTROY Called\n");
     PostQuitMessage (0) ;
+
     return 0 ;
   }
 
   return DefWindowProc(hwnd, iMsg, wParam, lParam) ;
 }
+
+// ######################################################################
 
 void render()
 {
@@ -607,10 +662,12 @@ void render()
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int iCmdShow)
 {
-  static char szAppName[] = "triangles" ;
+  static char szAppName[] = "giderosGame" ;
   HWND        hwnd ;
   MSG         msg ;
   WNDCLASSEX  wndclass ;
+
+  strncpy(commandLine,szCmdLine,sizeof(commandLine));
 
   wndclass.cbSize        = sizeof (wndclass) ;
   wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
@@ -640,11 +697,11 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   
   hwnd = CreateWindow (szAppName,         // window class name
 		       "Gideros Win32 (no Qt)",     // window caption
-		       WS_OVERLAPPED | WS_SYSMENU,     // window style
-		       CW_USEDEFAULT,           // initial x position
-		       CW_USEDEFAULT,           // initial y position
-		       480,           // initial x size
-		       320,           // initial y size
+		       WS_OVERLAPPEDWINDOW,     // window style
+		       0,           // initial x position
+		       0,           // initial y position
+		       100,           // initial x size
+		       100,           // initial y size
 		       NULL,                    // parent window handle
 		       NULL,                    // window menu handle
 		       hInstance,               // program instance handle
@@ -669,19 +726,25 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
   }
   else {
+
+    drawok=true;
+
     while (TRUE) {
       if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
-	if (msg.message == WM_QUIT)
+	if (msg.message == WM_QUIT){
+	  printf("WM_QUIT message received\n");
 	  break ;
-	
+	}
+
 	TranslateMessage (&msg) ;
 	DispatchMessage (&msg) ;
       }
 
-      render();
+      if (drawok) render();
     }
   }
 
+  printf("program ends\n");
   return msg.wParam ;
 }
 

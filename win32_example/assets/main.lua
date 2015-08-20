@@ -44,8 +44,8 @@ stage:addChild(bird2)
 stage:addChild(bird3)
 stage:addChild(bird4)
 
-local alertDialog = AlertDialog.new("Error: not found", "Try reinstalling all software", "Cancel","OK", "No Way!")
-local alertDialog2 = AlertDialog.new("Important Question", "Should the UK be a member of the EU?", "Cancel", "Yes", "NOOOOOOOOO")
+--local alertDialog = AlertDialog.new("Error: not found", "Try reinstalling all software", "Cancel","OK", "No Way!")
+--local alertDialog2 = AlertDialog.new("Important Question", "Should the UK be a member of the EU?", "Cancel", "Yes", "NOOOOOOOOO")
 
 local function onComplete(event)
   print(event.buttonIndex, event.buttonText)
@@ -56,10 +56,16 @@ local function onComplete2(event)
 end
 
 
-alertDialog:addEventListener(Event.COMPLETE, onComplete)
-alertDialog2:addEventListener(Event.COMPLETE, onComplete2)
+--alertDialog:addEventListener(Event.COMPLETE, onComplete)
+--alertDialog2:addEventListener(Event.COMPLETE, onComplete2)
 
-stage:addEventListener(Event.KEY_DOWN, function() alertDialog2:show() end)
+stage:addEventListener(Event.KEY_DOWN, function(event) 
+ 				         if event.keyCode==KeyCode.F then 
+				           application:setFullScreen(true) 
+				         else 
+				           application:setFullScreen(false)
+					 end
+				       end)
 
 sound=Sound.new("1.wav")
 soundchannel=sound:play(0,false)
