@@ -65,6 +65,10 @@ public:
         keyMap_[Qt::Key_Space] = GINPUT_KEY_SPACE;
         keyMap_[Qt::Key_Backspace] = GINPUT_KEY_BACKSPACE;
 
+        keyMap_[Qt::Key_Control] = GINPUT_KEY_CTRL;
+        keyMap_[Qt::Key_Alt] = GINPUT_KEY_ALT;
+        keyMap_[Qt::Key_Escape] = GINPUT_KEY_ESC;
+        keyMap_[Qt::Key_Tab] = GINPUT_KEY_TAB;
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
 

@@ -422,6 +422,14 @@ static int bindAll(lua_State* L)
 	lua_setfield(L, -2, "SPACE");
 	lua_pushinteger(L, GINPUT_KEY_BACKSPACE);
 	lua_setfield(L, -2, "BACKSPACE");
+	lua_pushinteger(L, GINPUT_KEY_CTRL);
+	lua_setfield(L, -2, "CTRL");
+	lua_pushinteger(L, GINPUT_KEY_ALT);
+	lua_setfield(L, -2, "ALT");
+	lua_pushinteger(L, GINPUT_KEY_ESC);
+	lua_setfield(L, -2, "ESC");
+	lua_pushinteger(L, GINPUT_KEY_TAB);
+	lua_setfield(L, -2, "TAB");
 
     lua_pushinteger(L, GINPUT_NO_BUTTON);
     lua_setfield(L, -2, "MOUSE_NONE");

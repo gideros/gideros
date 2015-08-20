@@ -14,6 +14,9 @@ print("bitop bor=",bit.bor(1, 2, 4, 8))
 
 application:setBackgroundColor(255)
 
+cl=application:get("commandLine")
+print("command line=",cl)
+
 application:setFps(60)
 print ("hello from Lua!")
 

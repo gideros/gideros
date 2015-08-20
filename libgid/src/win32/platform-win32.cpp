@@ -113,6 +113,6 @@ void g_setProperty(const char* what, const char* arg)
 
 const char* g_getProperty(const char* what)
 {
-  if (strcmp(what,"commandLine"))
+  if (strcmp(what,"commandLine")==0)
     return commandLine;
 }

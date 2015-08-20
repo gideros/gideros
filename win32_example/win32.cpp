@@ -667,7 +667,18 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   MSG         msg ;
   WNDCLASSEX  wndclass ;
 
-  strncpy(commandLine,szCmdLine,sizeof(commandLine));
+  strncpy(commandLine,szCmdLine,255);
+
+  printf("szCmdLine=%s\n",szCmdLine);
+  printf("commandLine=%s\n",commandLine);
+
+  sscanf(szCmdLine,"%d",&vsyncVal);
+  printf("vsyncVal=%d\n",vsyncVal);
+
+  if (vsyncVal==0)
+    use_timer=true;
+  else
+    use_timer=false;
 
   wndclass.cbSize        = sizeof (wndclass) ;
   wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
@@ -684,17 +695,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   
   RegisterClassEx (&wndclass) ;
 
-  printf("OpenGL version=%s\n",glGetString(GL_VERSION));
-  printf("szCmdLine=%s\n",szCmdLine);
-
-  sscanf(szCmdLine,"%d",&vsyncVal);
-  printf("vsyncVal=%d\n",vsyncVal);
-
-  if (vsyncVal==0)
-    use_timer=true;
-  else
-    use_timer=false;
-  
   hwnd = CreateWindow (szAppName,         // window class name
 		       "Gideros Win32 (no Qt)",     // window caption
 		       WS_OVERLAPPEDWINDOW,     // window style

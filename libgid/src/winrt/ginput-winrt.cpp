@@ -75,6 +75,10 @@ public:
 		keyMap_[GINPUT_KEY_SPACE] = GINPUT_KEY_SPACE;
 		keyMap_[GINPUT_KEY_BACKSPACE] = GINPUT_KEY_BACKSPACE;
 
+		keyMap_[GINPUT_KEY_CTRL] = GINPUT_KEY_CTRL;
+		keyMap_[GINPUT_KEY_ALT] = GINPUT_KEY_ALT;
+		keyMap_[GINPUT_KEY_ESC] = GINPUT_KEY_ESC;
+		keyMap_[GINPUT_KEY_TAB] = GINPUT_KEY_TAB;
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
