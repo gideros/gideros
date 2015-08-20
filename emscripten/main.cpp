@@ -80,6 +80,5 @@ int main() {
     s_applicationManager->surfaceCreated();
     s_applicationManager->surfaceChanged(240,320,0);
     emscripten_set_main_loop(looptick, 0, 1);
-        
 }
 
