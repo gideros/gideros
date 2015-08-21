@@ -76,6 +76,15 @@ extern "C" void g_setFps(int fps)
 {
 }
 
+EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *e, void *userData)
+{
+ int defWidth=e->windowInnerWidth;
+ int defHeight=e->windowInnerHeight;
+printf("Resize:%d,%d\n",e->windowInnerWidth,e->windowInnerHeight);
+//  initGL(defWidth,defHeight);   
+glfwSetWindowSize(defWidth,defHeight); 
+    s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
+}
 
 
 EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userData)
@@ -135,14 +144,18 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 
 
 int main() {
-   int defWidth=320;
-   int defHeight=480;
+  int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
+   int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
+   int fullScreen;
+//   emscripten_get_canvas_size(&defWidth,&defHeight,&fullScreen);
+   printf("Canvas:%d,%d %d\n",defWidth,defHeight,fullScreen);
     initGL(defWidth,defHeight);    
 //    glog_setLevel(0);
     s_applicationManager=new ApplicationManager(false,"main.gapp");
     s_applicationManager->surfaceCreated();
 
     EMSCRIPTEN_RESULT ret;
+    ret = emscripten_set_resize_callback(0, 0, 1, resize_callback);
     ret = emscripten_set_mousedown_callback(0, 0, 1, mouse_callback);
     ret = emscripten_set_mouseup_callback(0, 0, 1, mouse_callback);
     ret = emscripten_set_mousemove_callback(0, 0, 1, mouse_callback);
@@ -151,8 +164,9 @@ int main() {
     ret = emscripten_set_touchend_callback(0, 0, 1, touch_callback);
     ret = emscripten_set_touchmove_callback(0, 0, 1, touch_callback);
     ret = emscripten_set_touchcancel_callback(0, 0, 1, touch_callback);
+   printf("Canvas:%d,%d %d\n",defWidth,defHeight,fullScreen);
 
-    s_applicationManager->surfaceChanged(defWidth,defHeight,0);
+    s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
     emscripten_set_main_loop(looptick, 0, 1);
 }
 

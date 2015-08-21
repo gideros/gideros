@@ -47,7 +47,7 @@ MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 ind
 	libmpg123 ntom optimize parse readers stringbuf synth synth_8bit synth_real synth_s32 tabinit
 SRCS+=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES))
 SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
-	ginput-js gaudio-js gaudio-stream-openal-js main)   
+	ginput-js gaudio-js gaudio-stream-openal-js platform-js main)   
 
 
 INCS=2dsg libgideros libgid/include libgvfs libpystring
@@ -67,7 +67,7 @@ INCS+=emscripten
 EMCC=emcc
 BUILD=Build
 
-#OPTS=-O2
+OPTS=-O2
 
 OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS))

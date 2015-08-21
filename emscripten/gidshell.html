@@ -5,27 +5,33 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Gideros</title>
     <style>
-      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      .fullscreen { padding-right: 0; margin-left: 0; margin-right: 0;
+      padding-left:0; padding-top:0; padding-bottom:0; margin-top:0;
+      margin-bottom:0; position: absolute; width:100%; height: 100%;
+      border: 0px none;
+      }
       textarea.emscripten { font-family: monospace; width: 80%; }
       div.emscripten { text-align: center; }
-      div.emscripten_border { border: 1px solid black; }
-      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
-      canvas.emscripten { border: 0px none; }
-
+      div.emscripten_border { border: 0px solid black; }
+      .flex {
+       display:flex;
+       justify-content:center;
+       align-items:center;
+      }
+      
       .spinner {
-        height: 50px;
-        width: 50px;
-        margin: 0px auto;
+        height: 30px;
+        width: 30px;
         -webkit-animation: rotation .8s linear infinite;
         -moz-animation: rotation .8s linear infinite;
         -o-animation: rotation .8s linear infinite;
         animation: rotation 0.8s linear infinite;
-        border-left: 10px solid rgb(0,150,240);
-        border-right: 10px solid rgb(0,150,240);
-        border-bottom: 10px solid rgb(0,150,240);
-        border-top: 10px solid rgb(100,0,200);
+        border-left: 7px solid rgb(184,63,59);
+        border-right: 7px solid rgb(144,202,68);
+        border-bottom: 7px solid rgb(252,155,0);
+        border-top: 7px solid rgb(96,159,189);
         border-radius: 100%;
-        background-color: rgb(200,100,250);
+        background-color: rgb(72,72,72);
       }
       @-webkit-keyframes rotation {
         from {-webkit-transform: rotate(0deg);}
@@ -46,25 +52,28 @@
 
     </style>
   </head>
-  <body>
-    
-    <figure style="overflow:visible;" id="spinner"><div class="spinner"></div><center style="margin-top:0.5em"><strong>emscripten</strong></center></figure>
-    <div class="emscripten" id="status">Downloading...</div>
+  <body class="fullscreen">
+    <div id="infopane" class="fullscreen flex">
+    <figure style="overflow:visible;" id="spinner">
+    <img src="gideros.png" />   
+    <div class="flex"><div class="spinner"></div>
+    <div id="status" style="margin-left: 10px;">Downloading...</div></div>
     <div class="emscripten">
       <progress value="0" max="100" id="progress" hidden=1></progress>  
     </div>
-    <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-    </div>
+    </figure>
+  </div>
+  <!-- Put canvas on top of everything so that it catches events -->
+  <canvas class="fullscreen" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     
-    <div class="emscripten">
+    
+<!--    <div class="emscripten">
       <input type="checkbox" id="resize">Resize canvas
       <input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer
       &nbsp;&nbsp;&nbsp;
-      <input type="button" value="Fullscreen" onclick="Module.requestFullScreen(document.getElementById('pointerLock').checked, 
-                                                                                document.getElementById('resize').checked)">
+      <input type="button" value="Fullscreen" onclick="Module.requestFullScreen(document.getElementById('pointerLock').checked,                                                                                 document.getElementById('resize').checked)">
     </div>
-    
+-->    
 <!--    <hr/>
     <textarea class="emscripten" id="output" rows="8"></textarea>
     <hr>-->
@@ -72,6 +81,7 @@
       var statusElement = document.getElementById('status');
       var progressElement = document.getElementById('progress');
       var spinnerElement = document.getElementById('spinner');
+      var infopaneElement = document.getElementById('infopane');
 
       var Module = {
         preRun: [],
@@ -123,11 +133,15 @@
             progressElement.max = parseInt(m[4])*100;
             progressElement.hidden = false;
             spinnerElement.hidden = false;
+            infopaneElement.display="flex";
           } else {
             progressElement.value = null;
             progressElement.max = null;
             progressElement.hidden = true;
-            if (!text) spinnerElement.hidden = true;
+            if (!text) {
+            	spinnerElement.hidden = true;
+            	infopaneElement.display="none";
+            }
           }
           statusElement.innerHTML = text;
         },
