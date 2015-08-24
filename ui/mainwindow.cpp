@@ -2236,6 +2236,13 @@ void MainWindow::exportProject()
 		  underscore = true;
 		  break;
 
+		case ExportProjectDialog::e_Win32:
+		  templatedir = "win32";
+		  templatename = "WindowsDesktopTemplate";
+		  templatenamews = "WindowsDesktopTemplate";
+		  underscore = true;
+		  break;
+
         case ExportProjectDialog::e_WindowsDesktop:
             templatedir = "Qt";
             templatename = "WindowsDesktopTemplate";
@@ -2464,6 +2471,11 @@ void MainWindow::exportProject()
 	  outputDir.cd("giderosgame");
 	  outputDir.cd("giderosgame.Windows");
 	  outputDir.cd("Assets");
+	}
+	else if (deviceFamily == ExportProjectDialog::e_Win32)
+	{
+	  outputDir.mkdir("assets");
+	  outputDir.cd("assets");
 	}
 
 	if (deviceFamily != ExportProjectDialog::e_WinRT){

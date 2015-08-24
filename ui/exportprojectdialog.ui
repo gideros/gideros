@@ -67,6 +67,11 @@ target platform to export the application source.</string>
          <string>GApp</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Win32</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item>
@@ -374,6 +379,45 @@ A universal solution is created containing a Windows Phone and Windows Store pro
        </property>
       </widget>
      </widget>
+     <widget class="QWidget" name="tab1">
+      <attribute name="title">
+       <string>Win32</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>
+Alpha version. Not for production apps.
+
+This is the same as Windows Desktop export except it produces a lightweight export without Qt libraries.
+The package is smaller and may run smoother. Normally the Win32 export uses Windows timer messages to process ENTER_FRAME
+events but if you launch from the command line using "win32 1" (60 fps) or "win32 2" (30 fps) it will use VSYNC instead. 
+VSYNC might be smoother but is graphics card dependent.
+
+* No extra settings for Win32.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer1">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>41</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+
     </widget>
    </item>
    <item>

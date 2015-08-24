@@ -20,7 +20,8 @@ public:
       e_WindowsDesktop,
       e_MacOSXDesktop,
 	  e_WinRT,
-	  e_GApp
+	  e_GApp,
+	  e_Win32
 	};
 
     explicit ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent = 0);
