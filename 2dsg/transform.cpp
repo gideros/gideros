@@ -62,7 +62,15 @@ void Transform::setMatrix(float m11,float m12,float m21,float m22,float tx,float
 	refY_=0;
 	refZ_=0;
 
-        compose();
+	float *mm=matrix_.raw();
+    mm[15] = 1.0f;
+    mm[2] = mm[3] = mm[6] = mm[7] = mm[8] = mm[9] = mm[11] = 0.0f;
+    mm[0]=m11; mm[1]=m12; mm[4]=m21; mm[5]=m22; mm[10]=1.0f;
+    mm[12]=tx; mm[13]=ty; mm[14]=0.0f; mm[15]=1.0f;
+    matrix_.type=Matrix4::M2D;
+
+
+    //compose();
 }
 
 void Transform::compose()
