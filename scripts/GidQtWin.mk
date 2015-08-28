@@ -72,7 +72,7 @@ QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 lib
 QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Network Qt5Xml
 QT5PLATFORM=qminimal qoffscreen qwindows
-QTDLLEXT=
+QTDLLEXT?=
 
 qt5.install:
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE); done

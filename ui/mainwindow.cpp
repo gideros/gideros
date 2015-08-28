@@ -104,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.actionStart->setEnabled(false);
 	connect(ui.actionStart, SIGNAL(triggered()), this, SLOT(start()));
 
-	ui.actionStartAll->setIcon(IconLibrary::instance().icon(0, "startall"));
+	ui.actionStartAll->setIcon(IconLibrary::instance().icon(0, "start all"));
 	ui.actionStartAll->setEnabled(true);
 	connect(ui.actionStartAll, SIGNAL(triggered()), this, SLOT(startAllPlayers()));
 
@@ -1875,6 +1875,8 @@ void MainWindow::connected()
 
 void MainWindow::disconnected()
 {
+	if (!allPlayersPlayList.empty())
+		return;
 	fileQueue_.clear();
 	isTransferring_ = false;
 
