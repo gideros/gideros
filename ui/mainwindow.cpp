@@ -104,6 +104,10 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.actionStart->setEnabled(false);
 	connect(ui.actionStart, SIGNAL(triggered()), this, SLOT(start()));
 
+	ui.actionStartAll->setIcon(IconLibrary::instance().icon(0, "startall"));
+	ui.actionStartAll->setEnabled(true);
+	connect(ui.actionStartAll, SIGNAL(triggered()), this, SLOT(startAllPlayers()));
+
 	ui.actionStop->setIcon(IconLibrary::instance().icon(0, "stop"));
 	ui.actionStop->setEnabled(false);
 	connect(ui.actionStop, SIGNAL(triggered()), this, SLOT(stop()));
@@ -451,16 +455,14 @@ void MainWindow::playerChanged(const QString & text)
 
 void MainWindow::start()
 {
-	if (client_->isConnected() == false)
-		return;
+	if (prepareStartOnPlayer())
+		startOnPlayer();
+}
 
+bool MainWindow::prepareStartOnPlayer()
+{
 	if (projectFileName_.isEmpty() == true)
-		return;
-
-	if (isTransferring_ == true)
-		return;
-
-	isTransferring_ = true;
+		return false;
 
 	saveAll();
 
@@ -483,11 +485,56 @@ void MainWindow::start()
 
 	if (!updateMD5().empty())
 		saveMD5();
+	return true;
+}
+
+void MainWindow::startOnPlayer()
+{
+	if (client_->isConnected() == false)
+		return;
+
+	if (isTransferring_ == true)
+		return;
+
+	isTransferring_ = true;
 
 	client_->sendStop();
 	client_->sendProjectName(QFileInfo(projectFileName_).baseName());
 	client_->sendGetFileList();
+}
 
+void MainWindow::startAllPlayers()
+{
+	if (!prepareStartOnPlayer())
+		return;
+	int pc=players_->count();
+	int pi=players_->currentIndex();
+	allPlayersPlayList.push_back(players_->currentData().toString());
+	for (int k=0;k<pc;k++)
+		if (k!=pi)
+			allPlayersPlayList.push_back(players_->itemData(k).toString());
+	startNextPlayer();
+}
+
+void MainWindow::startNextPlayer()
+{
+	if (allPlayersPlayList.empty())
+		return;
+
+	QString hostData=allPlayersPlayList.back();
+	QStringList parts=hostData.split(':');
+	if (parts.count()==1)
+		client_->connectToHost(parts[0],15000);
+	else
+		client_->connectToHost(parts[0],parts[1].toInt());
+}
+
+void MainWindow::playStarted()
+{
+	if (allPlayersPlayList.empty())
+		return;
+	allPlayersPlayList.pop_back();
+	startNextPlayer();
 }
 
 #if 0
@@ -784,7 +831,9 @@ unsigned int MainWindow::sendPlayMessage(const QStringList& luafiles)
 	char play = 2;
 	client_->sendData(&play, sizeof(char));
 #else
-	return client_->sendPlay(luafiles);
+	unsigned int code=client_->sendPlay(luafiles);
+	playStarted();
+	return code;
 #endif
 }
 
@@ -1819,6 +1868,9 @@ void MainWindow::connected()
 	ui.actionStart->setEnabled(true);
 	ui.actionStop->setEnabled(true);
 	printf("other side connected\n");
+
+	if (!allPlayersPlayList.empty())
+		startOnPlayer();
 }
 
 void MainWindow::disconnected()

@@ -164,6 +164,7 @@ private slots:
 	void onTimer();
 	void start();
 	void stop();
+	void startAllPlayers();
 	void newProject();
 	void closeProject();
 	void saveProject();
@@ -213,6 +214,11 @@ private:
 	TextEdit* findTextEdit(const QString& fileName) const;
 
 private:
+	std::vector<QString> allPlayersPlayList;
+	bool prepareStartOnPlayer();
+	void startOnPlayer();
+	void startNextPlayer();
+	void playStarted();
 	unsigned int sendPlayMessage(const QStringList& luafiles);
 	unsigned int sendStopMessage();
 

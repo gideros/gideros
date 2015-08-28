@@ -99,6 +99,10 @@ plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
 	cd $(ROOT)/$*; $(QMAKE) $*.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) release
 
+%.qmake.dbg:
+	cd $(ROOT)/$*; $(QMAKE) $*.pro
+	cd $(ROOT)/$*; $(MINGWMAKE) debug
+
 %.qmake5.rel:
 	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) release
