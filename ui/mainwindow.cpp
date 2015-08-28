@@ -2526,11 +2526,6 @@ void MainWindow::exportProject()
 	  outputDir.cd("giderosgame.Windows");
 	  outputDir.cd("Assets");
 	}
-	else if (deviceFamily == ExportProjectDialog::e_Win32)
-	{
-	  outputDir.mkdir("assets");
-	  outputDir.cd("assets");
-	}
 
 	if (deviceFamily != ExportProjectDialog::e_WinRT){
 	  outputDir.mkdir("assets");
