@@ -54,6 +54,8 @@ typedef int socklen_t;
 #define EINVAL2 WSAEINVAL
 
 #else
+
+
 // unix
 
 #include <sys/types.h>
@@ -77,7 +79,10 @@ static int closesocket(SOCKET s)
 #define EINPROGRESS2 EINPROGRESS
 #define EISCONN2 EISCONN
 #define EINVAL2 EINVAL
+#endif
 
+#if __APPLE__
+#include "TargetConditionals.h"
 #endif
 
 #ifdef WIN32
@@ -449,14 +454,23 @@ void NetworkBase::sendAck(unsigned int id)
 	sendQueue_.push_back(queueElement);
 }
 
+SOCKET makeBroadcastSocket()
+{
+    SOCKET sock= socket(PF_INET, SOCK_DGRAM,0);
+    int bcast=1;
+    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (char *) (&bcast),  sizeof(bcast));
+#ifdef TARGET_OS_IPHONE
+    int set = 1;
+    setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
+#endif
+}
+
 Server::Server(unsigned short port,const char *name)
 {
 	port_ = port;
 	serverSock_ = INVALID_SOCKET;
-    broadcastSock_ = socket(PF_INET, SOCK_DGRAM,0);
     lastBcastTime_=0;
-    int bcast=1;
-    setsockopt(broadcastSock_, SOL_SOCKET, SO_BROADCAST, (char *) (&bcast),  sizeof(bcast));
+    broadcastSock_=makeBroadcastSocket();
     if (name)
     	strncpy(deviceName_,name,32);
     else
@@ -475,7 +489,7 @@ void Server::tick(NetworkEvent* event)
 	// try to initialize	
 	if (serverSock_ == INVALID_SOCKET && clientSock_ == INVALID_SOCKET)
 	{
-		serverSock_ = socket(PF_INET, SOCK_STREAM, 0);
+        serverSock_ = socket(PF_INET, SOCK_STREAM, 0);
 		if (serverSock_ == INVALID_SOCKET)
 		{
 			cleanup();
@@ -546,8 +560,13 @@ void Server::tick(NetworkEvent* event)
                     ai_addr.sin_family = AF_INET;
                     ai_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
                     ai_addr.sin_port = htons(port_); //Should we hardcode to 15000 ?
-
-                    sendto(broadcastSock_,(char *) &advPacket,sizeof(advPacket),0,(sockaddr *)&ai_addr,sizeof(ai_addr));
+                    
+                    if (sendto(broadcastSock_,(char *) &advPacket,sizeof(advPacket),0,(sockaddr *)&ai_addr,sizeof(ai_addr))<=0)
+                    {
+                      //Recreate broadcast socket
+                        close(broadcastSock_);
+                        broadcastSock_=makeBroadcastSocket();
+                    }
                 }
 				return;
 			}
