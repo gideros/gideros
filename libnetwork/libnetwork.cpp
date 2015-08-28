@@ -564,7 +564,7 @@ void Server::tick(NetworkEvent* event)
                     if (sendto(broadcastSock_,(char *) &advPacket,sizeof(advPacket),0,(sockaddr *)&ai_addr,sizeof(ai_addr))<=0)
                     {
                       //Recreate broadcast socket
-                        close(broadcastSock_);
+                        closesocket(broadcastSock_);
                         broadcastSock_=makeBroadcastSocket();
                     }
                 }

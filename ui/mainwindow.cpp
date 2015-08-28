@@ -434,7 +434,7 @@ void MainWindow::hideStartPage()
 
 void MainWindow::advertisement(const QString& host,unsigned short port,unsigned short flags,const QString& name)
 {
-	QString nitem=QString("%1:%2:%3").arg(host).arg(port).arg(flags);
+	QString nitem=QString("%1|%2|%3").arg(host).arg(port).arg(flags);
 	for (int k=0;k<players_->count();k++)
 		if (players_->itemData(k)==nitem)
 			return;
@@ -446,7 +446,7 @@ void MainWindow::playerChanged(const QString & text)
 	QString hostData=text;
 	if (players_->currentData().isValid())
 		hostData=players_->currentData().toString();
-	QStringList parts=hostData.split(':');
+	QStringList parts=hostData.split('|');
 	if (parts.count()==1)
 		client_->connectToHost(parts[0],15000);
 	else
@@ -522,7 +522,7 @@ void MainWindow::startNextPlayer()
 		return;
 
 	QString hostData=allPlayersPlayList.back();
-	QStringList parts=hostData.split(':');
+	QStringList parts=hostData.split('|');
 	if (parts.count()==1)
 		client_->connectToHost(parts[0],15000);
 	else
