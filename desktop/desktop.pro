@@ -35,6 +35,7 @@ macx {
         -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW
 
     QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
+    CONFIG += c++11
 }
 
 LIBS += -lpthread

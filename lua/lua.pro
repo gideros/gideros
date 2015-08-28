@@ -51,7 +51,10 @@ LIBS += -L"../libgvfs/release" -lgvfs
 macx {
 LIBS += -L"../libgvfs" -lgvfs
 }
+else {
 
 unix {
 LIBS += ../libgvfs/libgvfs.so
+}
+
 }

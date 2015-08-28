@@ -41,7 +41,8 @@ macx {
         -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW\
 
     QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
-}
+    CONFIG += c++11
+} else {
 
 unix {
     TARGET = GiderosPlayer
@@ -58,6 +59,8 @@ unix {
         ../libpystring/libpystring.so
     LIBS += "../libgid/external/openal-soft-1.13/build/gcc484_64/libopenal.so"
     QMAKE_CXXFLAGS += -std=gnu++11
+}
+
 }
 
 TEMPLATE = app

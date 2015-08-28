@@ -12,6 +12,7 @@
 #include <QProcess>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QDataStream>
 
 static bool sendData(const QByteArray &out, QByteArray *in)
 {
