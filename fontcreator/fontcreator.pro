@@ -20,7 +20,7 @@ macx {
 TARGET = "Gideros Font Creator"
 }
 
-unix {
+unix:!macx {
 TARGET = "GiderosFontCreator"
 }
 

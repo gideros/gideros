@@ -28,7 +28,7 @@ macx {
 TARGET = "Gideros Studio"
 }
 
-unix {
+unix:!macx {
 TARGET = "GiderosStudio"
 QMAKE_CXXFLAGS += -std=gnu++11
 }

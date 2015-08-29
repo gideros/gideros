@@ -5,7 +5,7 @@ TEMPLATE = lib
 
 DEFINES += GIDEROS_LIBRARY
 
-unix {
+unix:!macx {
   DEFINES += STRICT_LINUX
 }
 

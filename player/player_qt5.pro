@@ -44,7 +44,7 @@ macx {
     CONFIG += c++11
 } else {
 
-unix {
+unix:!macx {
     TARGET = GiderosPlayer
     DEFINES += STRICT_LINUX
     LIBS += \

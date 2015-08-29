@@ -158,7 +158,7 @@ LIBS += -L"../libgid/external/zlib-1.2.8/build/clang_64" -lzlibx
 LIBS += -lpthread
 }
 
-unix {
+unix:!macx {
 DEFINES += OPENAL_SUBDIR_AL
 DEFINES += STRICT_LINUX
 INCLUDEPATH += "./external/openal-soft-1.13/include"
@@ -185,7 +185,7 @@ macx {
 LIBS += -L"../libgvfs" -lgvfs
 }
 
-unix {
+unix:!macx {
 LIBS += -L"../libgvfs" -lgvfs
 }
 

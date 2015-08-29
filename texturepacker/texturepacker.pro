@@ -21,7 +21,7 @@ win32 {
 TARGET = "GiderosTexturePacker"
 }
 
-unix {
+unix:!macx {
 TARGET = "GiderosTexturePacker"
 }
 

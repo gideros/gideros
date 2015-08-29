@@ -53,7 +53,7 @@ LIBS += -L"../libgid" -lgid
 LIBS += -L"../lua" -llua
 LIBS += -L"../libpystring" -lpystring
 } else {
-unix {
+unix:!macx {
 LIBS += ../libgid/libgid.so
 LIBS += ../lua/liblua.so
 LIBS += ../libpystring/libpystring.so
