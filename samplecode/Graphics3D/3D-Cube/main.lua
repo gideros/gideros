@@ -34,7 +34,7 @@ cube:addChild(face(0x00FF00,180,0))
 cube:addChild(face(0x00FFFF,0,90))
 cube:addChild(face(0x0000FF,0,-90))
 
-cube:setScale(100)
+cube:setScale(100,100,100)
 cube:setPosition(150,150,-250)
 
 base=Sprite.new()

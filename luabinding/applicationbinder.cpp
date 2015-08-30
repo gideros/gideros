@@ -647,7 +647,10 @@ int ApplicationBinder::configureFrustum(lua_State* L)
     lua_Number farplane=0;
     if (!lua_isnoneornil(L, 3))
     	farplane = luaL_checknumber(L, 3);
-    application->getApplication()->configureFrustum(fov,farplane);
+    lua_Number nearplane=0;
+    if (!lua_isnoneornil(L, 4))
+    	nearplane = luaL_checknumber(L, 4);
+    application->getApplication()->configureFrustum(fov,farplane,nearplane);
 
     return 0;
 }

@@ -82,6 +82,7 @@ Application::Application() :
 	scale_ = 1;
 	fov_=0;
 	farplane_=0;
+	nearplane_=0;
 }
 
 Application::~Application()
@@ -150,7 +151,7 @@ void Application::clearBuffers()
 		ShaderEngine::Engine->clearColor(backr_, backg_, backb_, 1.f);
 }
 
-void Application::configureFrustum(float fov,float farplane)
+void Application::configureFrustum(float fov,float farplane,float nearplane)
 {
 	if (fov>179) //Do not allow 180°, this would cause infinite width
 		fov=179;
@@ -158,7 +159,10 @@ void Application::configureFrustum(float fov,float farplane)
 		fov=0;
 	if (farplane<=0)
 		farplane=0;
+	if (nearplane<=0)
+		nearplane=0;
 	farplane_=farplane;
+	nearplane_=nearplane;
 	fov_=fov;
 }
 
@@ -269,7 +273,8 @@ void Application::renderScene(int deltaFrameCount)
 			float hh=height_*0.5/scale_;
 			float np=hh/tan(fov_* M_PI / 360.0);
 			float fp=(farplane_>0)?farplane_:hh*2;
-			frustum=gfx->setFrustum(-hw, hw, hh, -hh, np,np+fp);
+			float cnp=(nearplane_>0)?nearplane_:0.01;
+			frustum=gfx->setFrustum(-hw*cnp, hw*cnp, hh*cnp, -hh*cnp, np*cnp,np+fp);
 			projection.translate(-hw,-hh,-np-0.001);
 		}
 		else
@@ -288,7 +293,8 @@ void Application::renderScene(int deltaFrameCount)
 			float hh=height_*0.5/scale_;
 			float np=hh/tan(fov_* M_PI / 360.0);
 			float fp=(farplane_>0)?farplane_:hh*2;
-			frustum=gfx->setFrustum(-hh,hh,hw,-hw,np,np+fp);
+			float cnp=(nearplane_>0)?nearplane_:0.01;
+			frustum=gfx->setFrustum(-hh*cnp,hh*cnp,hw*cnp,-hw*cnp,np*cnp,np+fp);
 			projection.translate(-hh,-hw,-np-0.001);
 		}
 		else
