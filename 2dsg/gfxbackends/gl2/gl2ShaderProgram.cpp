@@ -47,7 +47,7 @@ GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified) {
 	return dc->VBO;
 }
 
-GLint ogl2ShaderProgram::curProg = -1;
+GLint ogl2ShaderProgram::curProg =0;
 ShaderProgram *ogl2ShaderProgram::current = NULL;
 std::vector<ogl2ShaderProgram *> ogl2ShaderProgram::shaders;
 
