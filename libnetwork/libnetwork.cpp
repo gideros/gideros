@@ -454,6 +454,7 @@ void NetworkBase::sendAck(unsigned int id)
 	sendQueue_.push_back(queueElement);
 }
 
+
 SOCKET makeBroadcastSocket()
 {
     SOCKET sock= socket(PF_INET, SOCK_DGRAM,0);
@@ -463,6 +464,7 @@ SOCKET makeBroadcastSocket()
     int set = 1;
     setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
 #endif
+	return sock;
 }
 
 Server::Server(unsigned short port,const char *name)
