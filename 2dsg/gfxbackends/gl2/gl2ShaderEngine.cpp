@@ -198,6 +198,7 @@ void ogl2ShaderEngine::reset(bool reinit) {
 
 		currentBuffer = NULL;
 		ogl2ShaderProgram::current = NULL;
+		ogl2ShaderProgram::curProg=0;
 
 		int depthfmt = 0;
 #ifdef GL_DEPTH24_STENCIL8_OES
