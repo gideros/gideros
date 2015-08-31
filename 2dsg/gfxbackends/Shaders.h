@@ -195,6 +195,7 @@ public:
 	virtual ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags,
 	                     const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)=0;
 	virtual void setViewport(int x,int y,int width,int height)=0;
+	virtual void resizeFramebuffer(int width,int height)=0;
 	//Matrices
 	virtual Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
 	virtual Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);

@@ -169,6 +169,27 @@ const char *ogl2ShaderEngine::getVersion() {
 #endif
 }
 
+void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
+{
+	devWidth = width;
+	devHeight = height;
+	int depthfmt = 0;
+#ifdef GL_DEPTH24_STENCIL8_OES
+	depthfmt=GL_DEPTH24_STENCIL8_OES;
+#else
+	depthfmt = GL_DEPTH24_STENCIL8;
+#endif
+
+#ifdef OPENGL_ES
+	glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+#endif
+}
+
+
 void ogl2ShaderEngine::reset(bool reinit) {
 	if (reinit) {
 		s_texture = 0;

@@ -152,6 +152,7 @@ public:
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
 	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
 	void setViewport(int x,int y,int width,int height);
+	void resizeFramebuffer(int width,int height);
 	void setProjection(const Matrix4 p);
 	void setModel(const Matrix4 m);
 	void clearColor(float r,float g,float b,float a);

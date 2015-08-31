@@ -16,9 +16,11 @@
 #ifdef WINSTORE
 ComPtr<ID3D11Device1> g_dev;                     // the pointer to our Direct3D device interface (11.1)
 ComPtr<ID3D11DeviceContext1> g_devcon;           // the pointer to our Direct3D device context (11.1)
+ComPtr<IDXGISwapChain1> g_swapchain;             // the pointer to the swap chain interface (11.1)
 #else
 ID3D11Device *g_dev;                     // the pointer to our Direct3D device interface
 ID3D11DeviceContext *g_devcon;           // the pointer to our Direct3D device context
+IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interface
 #endif
 
 ShaderProgram *dx11ShaderEngine::createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)
@@ -229,6 +231,77 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);  // could call this "rendertarget"
     g_pCBlendState=NULL;
 	reset();
+}
+
+void dx11ShaderEngine::resizeFramebuffer(int width,int height)
+{
+    if (g_swapchain)
+    {
+        g_devcon->OMSetRenderTargets(0, 0, 0);
+
+        // Release all outstanding references to the swap chain's buffers.
+        g_backbuffer->Release();
+
+        HRESULT hr;
+        // Preserve the existing buffer count and format.
+        // Automatically choose the width and height to match the client rect for HWNDs.
+        hr = g_swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+
+        // Perform error handling here!
+
+        D3D11_TEXTURE2D_DESC backbuff_desc;
+        pBackBuffer->GetDesc(&backbuff_desc);
+
+        // Get buffer and create a render-target-view.
+        ID3D11Texture2D* pBuffer;
+        hr = g_swapchain->GetBuffer(0, __uuidof( ID3D11Texture2D),  (void**) &pBackBuffer );
+        // Perform error handling here!
+
+        g_dev->CreateRenderTargetView(pBackBuffer, NULL, &g_backbuffer);
+        pBackBuffer->Release();
+
+        g_depthStencil->Release();
+        g_depthStencilTexture->Release();
+
+    	//Depth / Stencil setup
+    	D3D11_TEXTURE2D_DESC descDepth;
+    	ZeroMemory(&descDepth, sizeof(descDepth));
+    	descDepth.Width = backbuff_desc.Width;
+    	descDepth.Height = backbuff_desc.Height;
+    	descDepth.MipLevels = 1;
+    	descDepth.ArraySize = 1;
+    	descDepth.Format =  DXGI_FORMAT_D24_UNORM_S8_UINT;
+    	descDepth.SampleDesc.Count = 1;
+    	descDepth.SampleDesc.Quality = 0;
+    	descDepth.Usage = D3D11_USAGE_DEFAULT;
+    	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    	descDepth.CPUAccessFlags = 0;
+    	descDepth.MiscFlags = 0;
+    	g_dev->CreateTexture2D(&descDepth, NULL, &g_depthStencilTexture);
+
+    	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+    	ZeroMemory(&descDSV, sizeof(descDSV));
+    	descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+    	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    	descDSV.Texture2D.MipSlice = 0;
+
+    	// Create the depth stencil view
+    	g_dev->CreateDepthStencilView(g_depthStencilTexture, // Depth stencil texture
+    		&descDSV, // Depth stencil desc
+    		&g_depthStencil);  // [out] Depth stencil view
+
+        g_devcon->OMSetRenderTargets(1, &g_backbuffer, &g_depthStencil );
+
+        // Set up the viewport.
+        D3D11_VIEWPORT vp;
+        vp.Width = width;
+        vp.Height = height;
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+        vp.TopLeftX = 0;
+        vp.TopLeftY = 0;
+        g_devcon->RSSetViewports( 1, &vp );
+    }
 }
 
 dx11ShaderEngine::~dx11ShaderEngine()
