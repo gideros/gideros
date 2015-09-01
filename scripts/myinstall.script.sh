@@ -1,8 +1,9 @@
 rm -rf ~/.wine
 wine xyz > /dev/null 2>&1
 
-export QT=/usr/local/Cellar/qt5/5.4.0
-export QT_WIN=~/.wine/drive_c/Qt/Qt5.4.2
+export QT=/usr/local/Cellar/qt5/5.5.0
+export QT_WIN=~/.wine/drive_c/Qt/Qt5.5.0/5.5/mingw492_32
+export QT_DLL=54
 export IOS_SDK=8.2
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
@@ -16,7 +17,7 @@ echo 'Updating api annotation'
 wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O ../ui/Resources/gideros_annot.api
 
 echo 'Installing Qt for Windows...'
-tar zxf ../../dependencies/Qt5.4.2.tar.bz2 -C ~/.wine/drive_c
+tar zxf ../../dependencies/Qt.tar.bz2 -C ~/.wine/drive_c
 
 echo 'Installing NSIS for Windows...'
 tar zxf ../../dependencies/NSIS.tar.bz2 -C ~/.wine/drive_c
