@@ -1,7 +1,7 @@
 rm -rf ~/.wine
 wine xyz > /dev/null 2>&1
 
-export QT=/usr/local/Cellar/qt5/5.5.0
+export QT=/Users/ar2rsawseen/Qt/5.5/clang_64
 export QT_WIN=~/.wine/drive_c/Qt/Qt5.5.0/5.5/mingw492_32
 export QT_DLL=54
 export IOS_SDK=8.2
@@ -33,6 +33,7 @@ bash installqscintilla.sh > /dev/null
 
 echo 'Building Qt applications for Windows...'
 rm -rf ../Sdk
+rm -rf ../gdrdeamon/qtsinglecoreapplication.o
 wine cmd /c qt5\\buildqtlibs.bat > /dev/null
 wine cmd /c qt5\\buildplugins.bat > /dev/null
 wine cmd /c qt5\\cleanqt.bat > /dev/null
