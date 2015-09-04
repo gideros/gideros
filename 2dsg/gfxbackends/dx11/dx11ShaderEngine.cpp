@@ -290,7 +290,7 @@ void dx11ShaderEngine::resizeFramebuffer(int width,int height)
     		&descDSV, // Depth stencil desc
     		&g_depthStencil);  // [out] Depth stencil view
 
-        g_devcon->OMSetRenderTargets(1, &g_backbuffer, &g_depthStencil );
+        g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil );
 
         // Set up the viewport.
         D3D11_VIEWPORT vp;
