@@ -108,7 +108,7 @@ ID3D11Buffer *dx11ShaderProgram::getGenericVBO(int index, int elmSize, int mult,
 
 void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		ShaderBufferCache **cache) {
+		ShaderBufferCache **cache,int stride,int offset) {
 	bool normalize = false; //TODO
 	int elmSize = 1;
 	switch (type) {
@@ -146,7 +146,8 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 		g_devcon->Unmap(vbo, NULL);                              // unmap the buffer
 	}
 	UINT tstride = dd.mult * elmSize;
-	UINT offset = 0;
+	if (stride)
+		tstride=stride;
 
 	g_devcon->IASetVertexBuffers(index, 1, &vbo, &tstride, &offset);
 }
@@ -475,7 +476,7 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 	g_devcon->Draw(count, 0);
 }
 void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, ShaderBufferCache **cache) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	updateConstants();
@@ -522,5 +523,5 @@ void dx11ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 		exit(1);
 	}
 
-	g_devcon->DrawIndexed(count, 0, 0);
+	g_devcon->DrawIndexed(dcount?dcount:count, first, 0);
 }

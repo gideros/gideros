@@ -73,10 +73,10 @@ protected:
 public:
     virtual void activate();
     virtual void deactivate();
-    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache);
+    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache,int stride=0,int offset=0);
     virtual void setConstant(int index,ConstantType type, int mult,const void *ptr);
     virtual void drawArrays(ShapeType shape, int first, unsigned int count);
-    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache);
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first=0,unsigned int dcount=0);
     virtual bool isValid();
     virtual const char *compilationLog();
     dx11ShaderProgram(const char *vshader,const char *pshader,
@@ -141,7 +141,6 @@ public:
 	virtual ~dx11ShaderEngine();
 	void reset(bool reinit=false);
 	const char *getVersion();
-	void setDepthTest(bool enable);
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	ShaderBuffer *createRenderTarget(ShaderTexture *texture);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
@@ -153,6 +152,7 @@ public:
 	void setClip(int x,int y,int w,int h);
 	void setBlendFunc(BlendFactor sfactor, BlendFactor dfactor);
 	virtual Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
+	void setDepthStencil(DepthStencil state);
 };
 
 

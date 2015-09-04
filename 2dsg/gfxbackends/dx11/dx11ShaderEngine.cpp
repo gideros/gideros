@@ -405,11 +405,12 @@ void dx11ShaderEngine::setClip(int x,int y,int w,int h)
 	}
 }
 
-void dx11ShaderEngine::setDepthTest(bool enable)
+void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 {
-	if (enable)
+	dsCurrent=state;
+	if (state.dTest)
 	{
-		if (!(s_depthEnable++))
+		if (!s_depthEnable)
 		{
 			if (!s_depthBufferCleared)
 			{
@@ -418,13 +419,18 @@ void dx11ShaderEngine::setDepthTest(bool enable)
     			s_depthBufferCleared=true;
 			}
 			g_devcon->OMSetDepthStencilState(g_pDSDepth, 1);
+			s_depthEnable=true;
 		}
 	}
 	else
 	{
-		if (!(--s_depthEnable))
+		if (s_depthEnable)
+		{
 			g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
+			s_depthEnable=false;
+		}
 	}
+	//TODO Stencil stuff
 }
 
 
