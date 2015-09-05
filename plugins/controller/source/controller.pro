@@ -8,14 +8,14 @@ INCLUDEPATH += ../../../Sdk/include
 SOURCES += \
     controllerbinder.cpp \
     controller.cpp \
-    Gamepad_private.c \
+    gamepad/Gamepad_private.c \
     gcontroller.cpp
 
 HEADERS += \
     controller.h \
     hidapi.h \
-    Gamepad.h \
-    Gamepad_private.h \
+    gamepad/Gamepad.h \
+    gamepad/Gamepad_private.h \
     gcontroller.h
 
 LIBS += -L"../../../Sdk/lib/desktop" -llua -lgid -lgideros
@@ -23,12 +23,13 @@ LIBS += -L"../../../Sdk/lib/desktop" -llua -lgid -lgideros
 DEFINES += GID_LIBRARY
 
 win32 {
-SOURCES += Gamepad_windows.c
+#SOURCES += gamepad/Gamepad_windows_dinput.c
+SOURCES += gamepad/Gamepad_windows_mm.c
 LIBS += -lwinmm
 }
 
 macx {
-SOURCES += Gamepad_macosx.c
+SOURCES += gamepad/Gamepad_macosx.c
 LIBS += -framework CoreFoundation
 LIBS += -framework IOKit
 QMAKE_POST_LINK += install_name_tool -change liblua.1.dylib "@executable_path/../Frameworks/liblua.1.dylib" $(TARGET);
