@@ -36,9 +36,6 @@ $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Player.app
 $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Texture\ Packer.app
 $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Font\ Creator.app
 $QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app
-$QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools/gdrdeamon
-$QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools/drbridge
-$QT/bin/macdeployqt $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools/gdrexport
 
 sudo rm /usr/lib/libqscintilla2.11.dylib
 sudo rm /usr/lib/libgid.1.dylib
