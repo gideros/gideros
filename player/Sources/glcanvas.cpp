@@ -125,11 +125,13 @@ GLCanvas::~GLCanvas() {
 		application_->broadcastEvent(&event, &status);
 
 		if (status.error()) {
-			errorDialog_.appendString(status.errorString());
-			errorDialog_.show();
             if (isPlayer_) {
                 printToServer(status.errorString(), -1, NULL);
                 printToServer("\n", -1, NULL);
+            }
+            else{
+                errorDialog_.appendString(status.errorString());
+                errorDialog_.show();
             }
 		}
 	}
@@ -230,11 +232,13 @@ void GLCanvas::paintGL() {
 	if (status.error()) {
 		running_ = false;
 
-		errorDialog_.appendString(status.errorString());
-		errorDialog_.show();
         if (isPlayer_) {
             printToServer(status.errorString(), -1, NULL);
             printToServer("\n", -1, NULL);
+        }
+        else{
+            errorDialog_.appendString(status.errorString());
+            errorDialog_.show();
         }
 
 		application_->deinitialize();
@@ -366,8 +370,8 @@ void GLCanvas::timerEvent(QTimerEvent *){
 
                             if (status.error())
                             {
-                                errorDialog_.appendString(status.errorString());
-                                errorDialog_.show();
+                                //errorDialog_.appendString(status.errorString());
+                                //errorDialog_.show();
                                 printToServer(status.errorString(), -1, NULL);
                                 printToServer("\n", -1, NULL);
                             }
@@ -508,11 +512,13 @@ void GLCanvas::play(QDir directory){
             running_ = false;
 
             if(status.error()){
-                errorDialog_.appendString(status.errorString());
-                errorDialog_.show();
                 if (isPlayer_) {
                     printToServer(status.errorString(), -1, NULL);
                     printToServer("\n", -1, NULL);
+                }
+                else{
+                    errorDialog_.appendString(status.errorString());
+                    errorDialog_.show();
                 }
                 return;
             }
@@ -700,11 +706,13 @@ void GLCanvas::play(QString gapp) {
 		running_ = false;
 
 		if (status.error()) {
-			errorDialog_.appendString(status.errorString());
-			errorDialog_.show();
             if (isPlayer_) {
                 printToServer(status.errorString(), -1, NULL);
                 printToServer("\n", -1, NULL);
+            }
+            else{
+                errorDialog_.appendString(status.errorString());
+                errorDialog_.show();
             }
 			return;
 		}
@@ -852,11 +860,13 @@ void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles) {
 	if (status.error()) {
 		running_ = false;
 
-		errorDialog_.appendString(status.errorString());
-		errorDialog_.show();
         if (isPlayer_) {
             printToServer(status.errorString(), -1, NULL);
             printToServer("\n", -1, NULL);
+        }
+        else{
+            errorDialog_.appendString(status.errorString());
+            errorDialog_.show();
         }
 		application_->deinitialize();
 		application_->initialize();
