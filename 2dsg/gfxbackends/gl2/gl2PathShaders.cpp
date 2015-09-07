@@ -10,7 +10,7 @@
 static const char *hdrShaderCode =
 #ifdef OPENGL_ES
 		"#version 100\n"
-		"#define GLES2\n"
+		"#define GLES2\n";
 #else
 		"#version 120\n"
 				"#define highp\n"

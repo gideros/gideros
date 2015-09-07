@@ -997,7 +997,7 @@ static void path_commands(unsigned int path, int num_commands,
 	struct path *p;
 	int tmp;
 
-	glog_d("Build path: NC:%d NV:%d", num_commands, num_coords);
+	//glog_d("Build path: NC:%d NV:%d", num_commands, num_coords);
 	num_coords2 = 0;
 	int expanded_cmds = 0;
 	for (i = 0; i < num_commands; ++i) {
@@ -2348,30 +2348,33 @@ void Path2D::setLineThickness(float thickness) {
 
 void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 		float ey) {
+    struct path *p = get_path(path);
+    if (!p)
+        return; //No PATH
 	if (filla_ > 0) {
 		ShaderEngine::DepthStencil stencil =
 				ShaderEngine::Engine->pushDepthStencil();
 		glPushColor();
 		glMultColor(fillr_, fillg_, fillb_, filla_);
 		stencil.sFunc = ShaderEngine::STENCIL_NEVER;
-		fill_path(path, PATHFILLMODE_INVERT, stencil);
-		stencil.sFunc = ShaderEngine::STENCIL_EQUAL;
+		fill_path(path, PATHFILLMODE_COUNT_UP, stencil);
+		stencil.sFunc = ShaderEngine::STENCIL_NOTEQUAL;
 		stencil.sFail=ShaderEngine::STENCIL_KEEP;
-		stencil.sRef=1;
+		stencil.sRef=0;
+        stencil.sMask=0xFF;
 		ShaderEngine::Engine->setDepthStencil(stencil);
-		struct path *p = get_path(path);
 		VertexBuffer<float> *vb = p->fill_bounds_vbo;
 		VertexBuffer<unsigned short> *ib = quadIndices;
-		 for (int k=0;k<vb->size();k++)
+	/*	 for (int k=0;k<vb->size();k++)
 		 glog_d("Fill path: VB[%d]=%f",k,(*vb)[k]);
 		 for (int k=0;k<ib->size();k++)
-		 glog_d("Fill path: IB[%d]=%d",k,(*ib)[k]);
+		 glog_d("Fill path: IB[%d]=%d",k,(*ib)[k]);*/
 		ShaderProgram::stdBasic->setData(ShaderProgram::DataVertex,
 				ShaderProgram::DFLOAT, 2, &((*vb)[0]), vb->size() / 2,
 				vb->modified, &vb->bufferCache);
-		/*ShaderProgram::stdBasic->drawElements(ShaderProgram::TriangleStrip, ib->size(),
+		ShaderProgram::stdBasic->drawElements(ShaderProgram::TriangleStrip, ib->size(),
 				ShaderProgram::DUSHORT, &((*ib)[0]), ib->modified,
-				&ib->bufferCache);*/
+				&ib->bufferCache);
 		vb->modified = false;
 		ib->modified = false;
 
