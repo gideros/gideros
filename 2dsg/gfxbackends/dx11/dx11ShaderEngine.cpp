@@ -99,13 +99,13 @@ void dx11SetupShaders()
 		{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
 
 	const ShaderProgram::DataDesc pathAttributesFillC[] = {
-		{ "data0",ShaderProgram::DFLOAT, 4, 0, 0 },
+		{ "vVertex",ShaderProgram::DFLOAT, 4, 0, 0 },
 		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
 
 	const ShaderProgram::DataDesc pathAttributesStrokeC[] = {
-		{ "data0",ShaderProgram::DFLOAT, 4, 0, 0 },
-		{ "data1", ShaderProgram::DFLOAT, 4, 1, 0 },
-		{ "data2", ShaderProgram::DFLOAT, 4, 2, 0 },
+		{ "dataA",ShaderProgram::DFLOAT, 4, 0, 0 },
+		{ "dataB", ShaderProgram::DFLOAT, 4, 1, 0 },
+		{ "dataC", ShaderProgram::DFLOAT, 4, 2, 0 },
 		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
 
 	ShaderProgram::pathShaderFillC = new dx11ShaderProgram(vPathFillC_cso, sizeof(vPathFillC_cso), pPathFillC_cso, sizeof(pPathFillC_cso), pathUniforms, pathAttributesFillC);

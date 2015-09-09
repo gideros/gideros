@@ -64,7 +64,7 @@ protected:
     int cbvsData;
     ID3D11Buffer *genVBO[16+1];
     int genVBOcapacity[16+1];
-    void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache);
+    void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache, int stride, int offset);
     ID3D11Buffer *getGenericVBO(int index,int elmSize,int mult,int count);
 	ID3D11Buffer *getCachedVBO(ShaderBufferCache **cache, bool index, int elmSize, int mult, int count);
 	void updateConstants();

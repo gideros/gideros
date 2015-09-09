@@ -149,14 +149,15 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 	if (stride)
 		tstride=stride;
 
-	g_devcon->IASetVertexBuffers(index, 1, &vbo, &tstride, &offset);
+	UINT voff = offset;
+	g_devcon->IASetVertexBuffers(index, 1, &vbo, &tstride, &voff);
 }
 
 void dx11ShaderProgram::setData(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		ShaderBufferCache **cache) {
+		ShaderBufferCache **cache, int stride, int offset) {
 	activate();
-	setupBuffer(index, type, mult, ptr, count, modified, cache);
+	setupBuffer(index, type, mult, ptr, count, modified, cache,stride,offset);
 }
 
 void dx11ShaderProgram::setConstant(int index, ConstantType type, int mult,
