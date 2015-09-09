@@ -1,7 +1,7 @@
-#include "svg-path.h"
 #include "kvec.h"
 #include <ctype.h>
 #include <setjmp.h>
+#include "prpath.h"
 
 struct ParseData
 {
@@ -171,7 +171,7 @@ static void parse(struct ParseData *d, kvec_uchar_t *commands, kvec_float_t *coo
     }
 }
 
-struct PrSvgPath *prParseSvgPath(size_t length, const char *pathString)
+struct PrPath *prParseSvgPath(size_t length, const char *pathString)
 {
     struct ParseData d;
     
@@ -188,7 +188,7 @@ struct PrSvgPath *prParseSvgPath(size_t length, const char *pathString)
     else
         return NULL;
 
-    struct PrSvgPath *svgPath = (struct PrSvgPath*)malloc(sizeof(struct PrSvgPath));
+    struct PrPath *svgPath = (struct PrPath*)malloc(sizeof(struct PrPath));
 
     if (kv_empty(commands))
     {
@@ -216,14 +216,3 @@ struct PrSvgPath *prParseSvgPath(size_t length, const char *pathString)
 
     return svgPath;
 }
-
-void prFreeSvgPath(struct PrSvgPath *svgPath)
-{
-    if (svgPath == NULL)
-        return;
-
-    free(svgPath->coords);
-    free(svgPath->commands);
-    free(svgPath);
-}
-

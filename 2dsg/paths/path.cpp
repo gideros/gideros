@@ -16,7 +16,7 @@
 #include <glog.h>
 #include "kvec.h"
 #include "khash.h"
-#include "svg-path.h"
+#include "prpath.h"
 #include "color.h"
 
 #define PATHFILLMODE_COUNT_UP   	0
@@ -2414,5 +2414,15 @@ void Path2D::setTexture(TextureBase *texturebase) {
 void Path2D::setPath(int num_commands, const unsigned char *commands,
 		int num_coords, const float *coords) {
 	path_commands(path, num_commands, commands, num_coords, coords);
+}
+
+extern "C" void prFreePath(struct PrPath *svgPath)
+{
+    if (svgPath == NULL)
+        return;
+
+    free(svgPath->coords);
+    free(svgPath->commands);
+    free(svgPath);
 }
 

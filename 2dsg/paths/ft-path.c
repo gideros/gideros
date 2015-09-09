@@ -1,4 +1,4 @@
-#include "ft-path.h"
+#include "prpath.h"
 #include "kvec.h"
 
 #define FT_THROW(error) 1
@@ -326,7 +326,7 @@ static int close(void *user)
     return 0;
 }
 
-struct path *path_from_glyph(FT_Outline *outline)
+struct PrPath *prParseFtGlyph(FT_Outline *outline)
 {
     struct decompose_data data;
     kv_init(data.commands);
@@ -336,23 +336,13 @@ struct path *path_from_glyph(FT_Outline *outline)
     if (FT_Outline_Decompose_Ex(outline, &funcs, &data))
         return NULL;
 
-    struct path *p = malloc(sizeof(struct path));
+    struct PrPath *p = malloc(sizeof(struct PrPath));
 
-    p->num_commands = kv_size(data.commands);
+    p->numCommands = kv_size(data.commands);
     p->commands = kv_data(data.commands);
-    p->num_coords = kv_size(data.coords);
+    p->numCoords = kv_size(data.coords);
     p->coords = kv_data(data.coords);
 
     return p;
-}
-
-void free_path(struct path *p)
-{
-    if (p == NULL)
-        return;
-
-    free(p->coords);
-    free(p->commands);
-    free(p);
 }
 

@@ -126,6 +126,7 @@ class dx11ShaderEngine : public ShaderEngine
 	ID3D11Texture2D* g_depthStencilTexture;
 	ID3D11DepthStencilState *g_pDSOff;
 	ID3D11DepthStencilState *g_pDSDepth;
+	ID3D11DepthStencilState *g_pCDSState;
 	ID3D11RasterizerState *g_pRSNormal;
 	ID3D11RasterizerState *g_pRSScissor;
 	ID3D11BlendState *g_pBlendState;
