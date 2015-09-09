@@ -1,8 +1,9 @@
 rm -rf ~/.wine
 wine xyz > /dev/null 2>&1
 
-export QT=/usr/local/Cellar/qt5/5.4.0
-export QT_WIN=~/.wine/drive_c/Qt/Qt5.4.2
+export QT=/Users/ar2rsawseen/Qt/5.5/clang_64
+export QT_WIN=~/.wine/drive_c/Qt/Qt5.5.0/5.5/mingw492_32
+export QT_DLL=54
 export IOS_SDK=8.2
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
@@ -16,7 +17,7 @@ echo 'Updating api annotation'
 wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O ../ui/Resources/gideros_annot.api
 
 echo 'Installing Qt for Windows...'
-tar zxf ../../dependencies/Qt5.4.2.tar.bz2 -C ~/.wine/drive_c
+tar zxf ../../dependencies/Qt.tar.bz2 -C ~/.wine/drive_c
 
 echo 'Installing NSIS for Windows...'
 tar zxf ../../dependencies/NSIS.tar.bz2 -C ~/.wine/drive_c
@@ -32,6 +33,7 @@ bash installqscintilla.sh > /dev/null
 
 echo 'Building Qt applications for Windows...'
 rm -rf ../Sdk
+rm -rf ../gdrdeamon/qtsinglecoreapplication.o
 wine cmd /c qt5\\buildqtlibs.bat > /dev/null
 wine cmd /c qt5\\buildplugins.bat > /dev/null
 wine cmd /c qt5\\cleanqt.bat > /dev/null
@@ -62,9 +64,11 @@ echo 'Copying Mac files...'
 bash copymac.sh
 
 cp -R ../../external/VisualStudio ../build/win/Templates
+cp -R ../../external/win32 ../build/win/Templates
 cp -R ../../external/GiderosWindowsPhonePlayer.zip ../build/win
 cp -R ../../external/GiderosWindowsPlayer.zip ../build/win
 cp -R ../../external/VisualStudio ../build/mac/Gideros\ Studio.app/Contents/Templates
+cp -R ../../external/win32 ../build/mac/Gideros\ Studio.app/Contents/Templates
 cp -R ../../external/GiderosWindowsPhonePlayer.zip ../build/mac
 cp -R ../../external/GiderosWindowsPlayer.zip ../build/mac
 

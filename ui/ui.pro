@@ -18,6 +18,7 @@ RC_FILE = ui.rc
 
 macx {
 ICON = "gideros.icns"
+QT += macextras
 }
 
 win32 {

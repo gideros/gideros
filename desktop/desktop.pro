@@ -5,7 +5,7 @@ win32{
 
     TARGET = WindowsDesktopTemplate
 
-    LIBS += \
+    LIBS += -lopengl32 \
         -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx \
         -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 \
         -L"../libgid/release" -lgid \
@@ -35,7 +35,6 @@ macx {
         -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW
 
     QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
-    CONFIG += c++11
 }
 
 LIBS += -lpthread

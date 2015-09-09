@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <Gamepad.h>
+#include <gamepad/Gamepad.h>
 #include "gcontroller.h"
 
 extern "C" {

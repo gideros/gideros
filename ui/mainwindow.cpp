@@ -131,6 +131,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 	{
 		outputDock_ = new QDockWidget(tr("Output"), this);
+        outputDock->setAllowedAreas(Qt::BottomDockWidgetArea);
+        outputDock->setFeatures(DockWidgetFloatable);
+        outputDock->setFloating(true);
 		outputDock_->setObjectName("output");
 		outputWidget_ = new QTextEditEx(outputDock_);
 		connect(outputWidget_, SIGNAL(mouseDoubleClick(QMouseEvent*)), this, SLOT(outputMouseDoubleClick(QMouseEvent*)));
@@ -155,7 +158,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	libraryWidget_ = new LibraryWidget;
 
-	outputWidget_ = new QTextEditEx;
+    outputWidget_ = new QTextEditEx;
 	outputWidget_->setReadOnly(true);
 	connect(outputWidget_, SIGNAL(mouseDoubleClick(QMouseEvent*)), this, SLOT(outputMouseDoubleClick(QMouseEvent*)));
 
@@ -167,13 +170,6 @@ MainWindow::MainWindow(QWidget *parent)
 		outputContainer->layout()->setMargin(0);
 		outputContainer->layout()->setSpacing(0);
 
-		QLabel* label = new QLabel("Output");
-		label->setMargin(2);
-		label->setStyleSheet(
-			"border: 1px solid #AAAAAA;"
-			"background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FCFCFC, stop: 1 #E2E2E2);"
-		);
-		outputContainer->layout()->addWidget(label);
         QLineEdit *edit = new QLineEdit();
         edit->setPlaceholderText("Search output");
         outputContainer->layout()->addWidget(edit);
@@ -186,6 +182,12 @@ MainWindow::MainWindow(QWidget *parent)
 		outputWidget_->setFrameShape(QFrame::NoFrame);
 		outputWidget_->setFrameShadow(QFrame::Plain);
 	}
+
+    outputDock_ = new QDockWidget(tr("Output"), this);
+    outputDock_->setAllowedAreas(Qt::BottomDockWidgetArea);
+    outputDock_->setObjectName("output");
+    outputDock_->setFeatures(QDockWidget::DockWidgetFloatable);
+    outputDock_->setWidget(outputContainer);
 
 	previewWidget_ = new PreviewWidget;
 
@@ -200,7 +202,7 @@ MainWindow::MainWindow(QWidget *parent)
 	splitter2_->addWidget(mdiArea_);
 
 	splitter1_->addWidget(splitter2_);
-	splitter1_->addWidget(outputContainer);
+    splitter1_->addWidget(outputDock_);
 
 	splitter3_->setSizes(QList<int>() << 200 << 200);
 

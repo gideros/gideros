@@ -53,10 +53,7 @@ static ULONGLONG next_game_tick;
 //#define PTW32_CDECL
 
 #ifdef WINSTORE
-ComPtr<IDXGISwapChain1> g_swapchain;             // the pointer to the swap chain interface (11.1)
 ComPtr<IDXGIDevice3> dxgiDevice;
-#else
-IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interface
 #endif
 
 int PTW32_CDECL pthread_mutex_init(pthread_mutex_t * mutex,
@@ -1420,6 +1417,9 @@ void ApplicationManager::exitRenderLoop()
 
 void ApplicationManager::resize(int width, int height)
 {
+
+	if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
+
 	width_ = width;
 	height_ = height;
 
