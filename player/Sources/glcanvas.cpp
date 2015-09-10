@@ -940,6 +940,33 @@ void GLCanvas::keyReleaseEvent(QKeyEvent* event) {
 	ginputp_keyUp(event->key());
 }
 
+void GLCanvas::tabletEvent(QTabletEvent* event) {
+
+    int xs[1];
+    int ys[1];
+    int ids[1];
+    int pressures[1];
+    int touchTypes[1];
+
+    xs[0] = event->x() * deviceScale_;
+    ys[0] = event->y() * deviceScale_;
+    ids[0] = 0;
+    pressures[0] = event->pressure() * 10000;
+    touchTypes[0] = 3;
+
+
+    if(event->type() == QEvent::TabletPress){
+        ginputp_touchesBegin(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes);
+
+    }else if(event->type() == QEvent::TabletMove){
+        ginputp_touchesMove(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes);
+
+    }else if(event->type() == QEvent::TabletRelease){
+        ginputp_touchesEnd(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes);
+    }
+    event->accept();
+}
+
 bool GLCanvas::event(QEvent *event){
     if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate || event->type() == QEvent::TouchEnd || event->type() == QEvent::TouchCancel)
     {
@@ -950,6 +977,8 @@ bool GLCanvas::event(QEvent *event){
         int xs[size];
         int ys[size];
         int ids[size];
+        int pressures[size];
+        int touchTypes[size];
 
         for( int i=0; i<size; ++i )
         {
@@ -957,22 +986,24 @@ bool GLCanvas::event(QEvent *event){
             xs[i] = p.pos().x() * deviceScale_;
             ys[i] = p.pos().y() * deviceScale_;
             ids[i] = i;
+            pressures[i] = p.pressure() * 10000;
+            touchTypes[i] = p.flags();
         }
 
         for( int i=0; i<size; ++i )
         {
             QTouchEvent::TouchPoint p = list[i];
             if(event->type() == QEvent::TouchCancel){
-                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
             else if(p.state() == Qt::TouchPointPressed){
-                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
             else if(p.state() == Qt::TouchPointMoved){
-                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
             else if(p.state() == Qt::TouchPointReleased){
-                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
         }
         return true;
