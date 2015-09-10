@@ -91,6 +91,7 @@ typedef struct ginput_Touch
     int x;
     int y;
     int id;
+    int pressure, touchType;
 } ginput_Touch;
 
 typedef struct ginput_TouchEvent
