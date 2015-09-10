@@ -31,7 +31,7 @@ TARGET = "Gideros Studio"
 
 unix:!macx {
 TARGET = "GiderosStudio"
-QMAKE_CXXFLAGS += -std=gnu++11
+QMAKE_CXXFLAGS += -std=gnu++0x
 }
 
 TEMPLATE = app
