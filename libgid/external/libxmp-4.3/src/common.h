@@ -11,7 +11,7 @@
 
 #if defined(__GNUC__) || defined(__clang__)
 #if !defined(WIN32) && !defined(ANDROID) && !defined(__APPLE__) && !defined(__AMIGA__) && !defined(B_BEOS_VERSION) && !defined(__ATHEOS__) && !defined(EMSCRIPTEN) && !defined(__MINT__) 
-#define USE_VERSIONED_SYMBOLS
+//#define USE_VERSIONED_SYMBOLS
 #endif
 #endif
 
