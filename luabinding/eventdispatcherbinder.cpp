@@ -418,6 +418,20 @@ public:
 
         lua_pushnumber(L, ry);
         lua_setfield(L, -2, "ry");
+		
+		
+        lua_pushnumber(L, touch->pressure * 0.0001);
+        lua_setfield(L, -2, "pressure");
+
+        switch (touch->touchType){
+            case 0: {lua_pushstring(L, "finger"); break;}
+            case 1: {lua_pushstring(L, "pen"); break;}
+            case 2: {lua_pushstring(L, "mouse"); break;}
+            case 3: {lua_pushstring(L, "penTablet"); break;}
+        }
+        lua_setfield(L, -2, "type");
+		
+		
     }
 
 	virtual void visit(TouchEvent* v)

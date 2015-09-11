@@ -378,12 +378,16 @@ public:
 		
 		touchEvent->touch.x = x[actionIndex];
 		touchEvent->touch.y = y[actionIndex];
+        touchEvent->touch.pressure = 0;
+        touchEvent->touch.touchType = 0;
 		touchEvent->touch.id = id[actionIndex];
 		
 		for (int i = 0; i < size; ++i)
 		{
 			touchEvent->allTouches[i].x = x[i];
 			touchEvent->allTouches[i].y = y[i];
+            touchEvent->allTouches[i].pressure = 0;
+            touchEvent->allTouches[i].touchType = 0;
 			touchEvent->allTouches[i].id = id[i];
 		}
 		
@@ -422,12 +426,16 @@ public:
 			
 			touchEvent->touch.x = x[i];
 			touchEvent->touch.y = y[i];
+            touchEvent->touch.pressure = 0;
+            touchEvent->touch.touchType = 0;
 			touchEvent->touch.id = id[i];
 			
 			for (int j = 0; j < size; ++j)
 			{
 				touchEvent->allTouches[j].x = x[j];
 				touchEvent->allTouches[j].y = y[j];
+                touchEvent->touch.pressure = 0;
+                touchEvent->touch.touchType = 0;
 				touchEvent->allTouches[j].id = id[j];
 			}
 			
@@ -464,12 +472,16 @@ public:
 
 		touchEvent->touch.x = x[actionIndex];
 		touchEvent->touch.y = y[actionIndex];
+        touchEvent->touch.pressure = 0;
+        touchEvent->touch.touchType = 0;
 		touchEvent->touch.id = id[actionIndex];
 		
 		for (int i = 0; i < size; ++i)
 		{
 			touchEvent->allTouches[i].x = x[i];
 			touchEvent->allTouches[i].y = y[i];
+            touchEvent->touch.pressure = 0;
+            touchEvent->touch.touchType = 0;
 			touchEvent->allTouches[i].id = id[i];
 		}
 
@@ -507,12 +519,16 @@ public:
 			
 			touchEvent->touch.x = x[i];
 			touchEvent->touch.y = y[i];
+            touchEvent->touch.pressure = 0;
+            touchEvent->touch.touchType = 0;
 			touchEvent->touch.id = id[i];
 			
 			for (int j = 0; j < size; ++j)
 			{
 				touchEvent->allTouches[j].x = x[j];
 				touchEvent->allTouches[j].y = y[j];
+                touchEvent->touch.pressure = 0;
+                touchEvent->touch.touchType = 0;
 				touchEvent->allTouches[j].id = id[j];
 			}
 			
