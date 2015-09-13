@@ -26,54 +26,15 @@ public:
         isTouchToMouseEnabled_ = 0;
         mouseTouchOrder_= 0;
 
-        keyMap_[GINPUT_KEY_LEFT] = GINPUT_KEY_LEFT;
-        keyMap_[GINPUT_KEY_RIGHT] = GINPUT_KEY_RIGHT;
-        keyMap_[GINPUT_KEY_UP] = GINPUT_KEY_UP;
-        keyMap_[GINPUT_KEY_DOWN] = GINPUT_KEY_DOWN;
+        keyMap_["ArrowLeft"] = GINPUT_KEY_LEFT;
+        keyMap_["ArrowRight"] = GINPUT_KEY_RIGHT;
+        keyMap_["ArrowUp"] = GINPUT_KEY_UP;
+        keyMap_["ArrowDown"] = GINPUT_KEY_DOWN;
 
-        keyMap_[GINPUT_KEY_0] = GINPUT_KEY_0;
-        keyMap_[GINPUT_KEY_1] = GINPUT_KEY_1;
-        keyMap_[GINPUT_KEY_2] = GINPUT_KEY_2;
-        keyMap_[GINPUT_KEY_3] = GINPUT_KEY_3;
-        keyMap_[GINPUT_KEY_4] = GINPUT_KEY_4;
-        keyMap_[GINPUT_KEY_5] = GINPUT_KEY_5;
-        keyMap_[GINPUT_KEY_6] = GINPUT_KEY_6;
-        keyMap_[GINPUT_KEY_7] = GINPUT_KEY_7;
-        keyMap_[GINPUT_KEY_8] = GINPUT_KEY_8;
-        keyMap_[GINPUT_KEY_9] = GINPUT_KEY_9;
+		//keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
 
-        keyMap_[GINPUT_KEY_A] = GINPUT_KEY_A;
-        keyMap_[GINPUT_KEY_B] = GINPUT_KEY_B;
-        keyMap_[GINPUT_KEY_C] = GINPUT_KEY_C;
-        keyMap_[GINPUT_KEY_D] = GINPUT_KEY_D;
-        keyMap_[GINPUT_KEY_E] = GINPUT_KEY_E;
-        keyMap_[GINPUT_KEY_F] = GINPUT_KEY_F;
-        keyMap_[GINPUT_KEY_G] = GINPUT_KEY_G;
-        keyMap_[GINPUT_KEY_H] = GINPUT_KEY_H;
-        keyMap_[GINPUT_KEY_I] = GINPUT_KEY_I;
-        keyMap_[GINPUT_KEY_J] = GINPUT_KEY_J;
-        keyMap_[GINPUT_KEY_K] = GINPUT_KEY_K;
-        keyMap_[GINPUT_KEY_L] = GINPUT_KEY_L;
-        keyMap_[GINPUT_KEY_M] = GINPUT_KEY_M;
-        keyMap_[GINPUT_KEY_N] = GINPUT_KEY_N;
-        keyMap_[GINPUT_KEY_O] = GINPUT_KEY_O;
-        keyMap_[GINPUT_KEY_P] = GINPUT_KEY_P;
-        keyMap_[GINPUT_KEY_Q] = GINPUT_KEY_Q;
-        keyMap_[GINPUT_KEY_R] = GINPUT_KEY_R;
-        keyMap_[GINPUT_KEY_S] = GINPUT_KEY_S;
-        keyMap_[GINPUT_KEY_T] = GINPUT_KEY_T;
-        keyMap_[GINPUT_KEY_U] = GINPUT_KEY_U;
-        keyMap_[GINPUT_KEY_V] = GINPUT_KEY_V;
-        keyMap_[GINPUT_KEY_W] = GINPUT_KEY_W;
-        keyMap_[GINPUT_KEY_X] = GINPUT_KEY_X;
-        keyMap_[GINPUT_KEY_Y] = GINPUT_KEY_Y;
-        keyMap_[GINPUT_KEY_Z] = GINPUT_KEY_Z;
-
-		keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
-
-		keyMap_[GINPUT_KEY_SHIFT] = GINPUT_KEY_SHIFT;
-		keyMap_[GINPUT_KEY_SPACE] = GINPUT_KEY_SPACE;
-		keyMap_[GINPUT_KEY_BACKSPACE] = GINPUT_KEY_BACKSPACE;
+		keyMap_["Shift"] = GINPUT_KEY_SHIFT;
+		keyMap_["Backspace"] = GINPUT_KEY_BACKSPACE;
 
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
@@ -154,20 +115,20 @@ public:
         pthread_mutex_unlock(&touchPoolMutex_);
     }
 
-    void keyDown(int realCode)
+    void keyDown(const char *kval,const char *kcode)
     {
-        int keyCode = convertKeyCode(realCode);
+        int keyCode = convertKeyCode(kval);
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode, 0); //TODO SCAN CODE
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
 
-    void keyUp(int realCode)
+    void keyUp(const char *kval,const char *kcode)
     {
-        int keyCode = convertKeyCode(realCode);
+        int keyCode = convertKeyCode(kval);
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode, 0); //TODO SCAN CODE
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
@@ -573,12 +534,12 @@ private:
         keyPool2_.push_back(event);
     }
 
-    int convertKeyCode(int keyCode)
+    int convertKeyCode(const char *kval)
     {
-        std::map<int, int>::const_iterator iter = keyMap_.find(keyCode);
+        std::map<std::string, int>::const_iterator iter = keyMap_.find(kval);
 
         if (iter == keyMap_.end())
-            return 0;
+            return toupper(*kval); //Default to first char of keyVal
 
         return iter->second;
     }
@@ -725,16 +686,16 @@ void ginput_getGyroscopeRotationRate(double *x, double *y, double *z)
         *z = 0;
 }
 
-void ginputp_keyDown(int keyCode)
+void ginputp_keyDown(const char *keyVal,const char *keyCode)
 {
     if (s_manager)
-        s_manager->keyDown(keyCode);
+        s_manager->keyDown(keyVal,keyCode);
 }
 
-void ginputp_keyUp(int keyCode)
+void ginputp_keyUp(const char *keyVal,const char *keyCode)
 {
     if (s_manager)
-        s_manager->keyUp(keyCode);
+        s_manager->keyUp(keyVal,keyCode);
 }
 
 void ginput_setMouseToTouchEnabled(int enabled)

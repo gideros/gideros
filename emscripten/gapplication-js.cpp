@@ -17,12 +17,7 @@ public:
     
 	int getScreenDensity()
 	{
-/*		JNIEnv *env = g_getJNIEnv();
-		jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
-		jmethodID getScreenDensityID = env->GetStaticMethodID(localRefCls, "getScreenDensity", "()I");
-		jint result = env->CallStaticIntMethod(localRefCls, getScreenDensityID);
-		env->DeleteLocalRef(localRefCls);*/
-		return 0;
+		return 96; //Default for now, maybe use window.devicePixelRatio ?
 	}
 
     g_id addCallback(gevent_Callback callback, void *udata)

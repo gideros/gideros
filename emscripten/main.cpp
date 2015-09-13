@@ -72,10 +72,6 @@ void looptick()
 #endif
 }
 
-extern "C" void g_setFps(int fps)
-{
-}
-
 EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *e, void *userData)
 {
  int defWidth=e->windowInnerWidth;
