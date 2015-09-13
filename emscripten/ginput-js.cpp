@@ -5,7 +5,9 @@
 #include <memory.h>
 #include <string.h>
 #include <pthread.h>
+#include <string>
 #include <map>
+#include <ctype.h>
 
 struct Pointer{
 	int x;
@@ -536,7 +538,8 @@ private:
 
     int convertKeyCode(const char *kval)
     {
-        std::map<std::string, int>::const_iterator iter = keyMap_.find(kval);
+        std::string kv=kval;
+        std::map<std::string, int>::const_iterator iter = keyMap_.find(kv);
 
         if (iter == keyMap_.end())
             return toupper(*kval); //Default to first char of keyVal
@@ -583,7 +586,7 @@ private:
     std::map<size_t, std::vector<ginput_TouchEvent*> > touchPool1_;
     std::map<size_t, std::vector<ginput_TouchEvent*> > touchPool2_;
 
-    std::map<int, int> keyMap_;
+    std::map<std::string, int> keyMap_;
 
     pthread_mutex_t touchPoolMutex_;
 
