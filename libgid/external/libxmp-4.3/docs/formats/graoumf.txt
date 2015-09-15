@@ -1,0 +1,429 @@
+*******************************************************************************
+*                                                                             *
+*           Official GRAOUMF TRACKER module file format .GT2 v1 - v4          *
+*                            and old GT modules .GTK                          *
+*                                                                             *
+*                           By L. de Soras - 11/11/96                         *
+*                                                                             *
+*******************************************************************************
+
+
+
+===============================================================================
+           Format of GT2 modules
+===============================================================================
+
+    This format is composed of various chunks. They must follow them (but not
+necessarily in order), in this way you can read them easily. Put in your module
+just the chunks you need. Intel coders, be careful : all words and double words
+are in Motorola format, LSByte stored AFTER MSByte.
+    You may NOT expect that the first pattern chunk is 12 bytes after the
+pattern set chunk, for example. Although it usually is, this may change in
+future releases. In addition, it's possible that a chunk even doesn't exist in
+the file. Therefore, you MUST check the chunk ID before accessing the chunk.
+Finally, when writing GT2's you set undefined/reserved fields to zeros.
+    Note : chunk length can be odd.
+
+
+
+General info chunk
+~~~~~~~~~~~~~~~~~~
+
+    This is always the first chunk.
+
++--------+-------+------------------------------------------------------------+
+|      0 |     3 | 'GT2' File magic                                           |
+|      3 |     1 | Version of the format (not in ascii!) :                    |
+|        |       |     $01 : G.T. v0.7                                        |
+|        |       |     $02 : G.T. v0.726                                      |
+|        |       |     $03 : G.T. v0.731                                      |
+|      4 |     4 | Chunk size. It's the total length of the chunk, included   |
+|        |       | id and this dword.                                         |
++--------+-------+------------------------------------------------------------+
+|      8 |    32 | Name of the module.                                        |
++--------+-------+------------------------------------------------------------+
+|     40 |   160 | Small comments, name of the author                         |
++--------+-------+------------------------------------------------------------+
+|    200 |     4 | Date                                                       |
+|        |       |     Day   : 1 byte                                         |
+|        |       |     Month : 1 byte                                         |
+|        |       |     Year  : 1 word                                         |
++--------+-------+------------------------------------------------------------+
+|    204 |    24 | Name of the tracker of creation                            |
++--------+-------+------------------------------------------------------------+
+|    228 |     2 | Initial speed (Beat length * 6)                            |
+|    230 |     2 | Initial tempo (BPM)                                        |
++--------+-------+------------------------------------------------------------+
+|    232 |     2 | Initial master volume (000..FFF)                           |
+|        |       | Shouldn't excess $600. You can calculate it:               |
+|        |       |     MasterVol = $3000 / (NbrTrack + 3)                     |
++--------+-------+------------------------------------------------------------+
+|    234 |     2 | Number of voices (just for this panning section)           |
+|    236 |   n*2 | Panning for each voice (000..800..FFF)                     |
++--------+-------+------------------------------------------------------------+
+
+
+
+Track volume chunk (v4)
+~~~~~~~~~~~~~~~~~~~~~~~
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'TVOL'                                                     |
+|      4 |     4 | Chunk size                                                 |
++--------+-------+------------------------------------------------------------+
+|      8 |     2 | Number of track volumes defined in this section            |
+|     10 |   n*2 | Volume for each track (0000..1000..FFFF)                   |
++--------+-------+------------------------------------------------------------+
+
+
+
+Extra-comment chunk (v2)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'XCOM'                                                     |
+|      4 |     4 | Chunk size                                                 |
++--------+-------+------------------------------------------------------------+
+|      8 |     4 | Extra-comment length                                       |
+|     12 |   ECL | Extra-comment                                              |
++--------+-------+------------------------------------------------------------+
+
+
+
+Tracker configuration chunk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    This chunk is specific to the Graoumf Tracker.
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'TCN1'                                                     |
+|      4 |     4 | Chunk size                                                 |
++--------+-------+------------------------------------------------------------+
+|      8 |     2 | Version number                                             |
++--------+-------+------------------------------------------------------------+
+| Version 0 :                                                                 |
+|     10 |     2 | Song position                                              |
+|     12 |     2 | line position                                              |
+|     14 |     2 | Preset number                                              |
+|     16 |     2 | Pattern display type                                       |
+|        |       |     0 : Note and instrument                                |
+|        |       |     1 : Note, instrument and effect                        |
+|        |       |     2 : Note, instrument, effect and volume                |
+|     18 |     2 | Curseur position #1 (column number, on screen)             |
+|     20 |     2 | Curseur position #2                                        |
+|        |       |     0   : Note                                             |
+|        |       |     1-2 : Instrument                                       |
+|        |       |     3-6 : Effect                                           |
+|        |       |     7-8 : Volume column                                    |
+|     22 |     2 | Flags :                                                    |
+|        |       |     Bit 0-1 : Play mode                                    |
+|        |       |         00 = stop                                          |
+|        |       |         01 = play song                                     |
+|        |       |         10 = play pattern                                  |
+|        |       |     Bit 2   : Edit                                         |
+|     24 |     2 | Lower octave on keyboard (0-6)                             |
+|     26 |     2 | Line step                                                  |
+|     28 |     2 | Instrument number                                          |
+|     30 |     2 | Sample number                                              |
++--------+-------+------------------------------------------------------------+
+|     32 |  32*2 | Number of tracks displayed for each preset                 |
+|     96 | 32*16 | Name of each preset (16 char strings)                      |
+|    608 |32*32*2| 32 track numbers for 32 presets                            |
++--------+-------+------------------------------------------------------------+
+|   2654 |     4 | Bits 0-31 : 0 = muted track, 1 = track ok                  |
++--------+-------+------------------------------------------------------------+
+
+
+
+Song chunk
+~~~~~~~~~~
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'SONG'                                                     |
+|      4 |     4 | Chunk size                                                 |
++--------+-------+------------------------------------------------------------+
+|      8 |     2 | Song length                                                |
+|     10 |     2 | Song repeat point                                          |
++--------+-------+------------------------------------------------------------+
+|     12 |    SL | Song data : pattern numbers, in words                      |
++--------+-------+------------------------------------------------------------+
+
+
+
+Pattern set chunk
+~~~~~~~~~~~~~~~~~
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'PATS'                                                     |
+|      4 |     4 | Chunk size                                                 |
++--------+-------+------------------------------------------------------------+
+|      8 |     2 | Number of tracks for all the song.                         |
+|        |       | Perhaps in a future version, patterns will have different  |
+|        |       | numbers of tracks, and this value will be the max.         |
++--------+-------+------------------------------------------------------------+
+|     10 |     2 | Number of patterns saved                                   |
++--------+-------+------------------------------------------------------------+
+
+
+
+Pattern chunk
+~~~~~~~~~~~~~
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'PATD'                                                     |
+|      4 |     4 | Chunk size                                                 |
++--------+-------+------------------------------------------------------------+
+|      8 |     2 | Pattern number                                             |
+|     10 |    16 | Pattern name                                               |
++--------+-------+------------------------------------------------------------+
+|     26 |     2 | Codage version : 0                                         |
++--------+-------+------------------------------------------------------------+
+| Version 0 (full pattern) :                                                  |
+|     28 |     2 | Number of lines                                            |
+|     30 |     2 | Number of tracks saved. This word is used only out of a    |
+|        |       | module (single chunk) for the moment. Set the same value   |
+|        |       | in all patterns                                            |
+|     32 | 5*L*T | Pattern, raw data, 5 bytes/note : NN II EEEE VV            |
+|        |       |     NN   : Note (24-127), 48 is middle C-2. 0 for no note  |
+|        |       |     II   : Instrument (1-255). 0 for no instrument         |
+|        |       |     EEEE : Effect, see doc for more details. 0 for no FX   |
+|        |       |     VV   : Volume (1-255). 0 for no volume                 |
++--------+-------+------------------------------------------------------------+
+
+
+
+Instrument set chunk
+~~~~~~~~~~~~~~~~~~~~
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'ORCH'                                                     |
+|      4 |     4 | Chunk size                                                 |
++--------+-------+------------------------------------------------------------+
+|      8 |     2 | Number of instruments saved                                |
++--------+-------+------------------------------------------------------------+
+
+
+
+Instrument chunk
+~~~~~~~~~~~~~~~~
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'INST'                                                     |
+|      4 |     4 | Chunk size (316)                                           |
++--------+-------+------------------------------------------------------------+
+|      8 |     2 | Instrument number (1-255)                                  |
+|     10 |    28 | Instrument name                                            |
++--------+-------+------------------------------------------------------------+
+|     38 |     2 | Instrument type (0 = sample)                               |
++--------+-------+------------------------------------------------------------+
+|     40 |     2 | Volume (0-255)                                             |
++--------+-------+------------------------------------------------------------+
+|     42 |     2 | Autopanning (000..800..FFF)                                |
+|        |       | -1 : no autopannig                                         |
++--------+-------+------------------------------------------------------------+
+|     44 |     2 | Volume envelope number (0 = no env)                        |
+|     46 |     2 | Tone envelope number (0 = no env)                          |
+|     48 |     2 | Pan envelope number (0 = no env)                           |
++--------+-------+------------------------------------------------------------+
+|     50 |    10 | Reserved, must be set to 0                                 |
++--------+-------+------------------------------------------------------------+
+| For n=0 to 127 :                                                            |
+| 60+n*2 |     1 | Sample number for MIDI note n                              |
+| 61+n*2 |     1 | Transposition for note n, signed byte                      |
++--------+-------+------------------------------------------------------------+
+
+
+
+Sample chunk
+~~~~~~~~~~~~
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'SAMP'                                                     |
+|      4 |     4 | Chunk size                                                 |
++--------+-------+------------------------------------------------------------+
+|      8 |     2 | Sample number (1-255)                                      |
+|     10 |    28 | Sample name                                                |
++--------+-------+------------------------------------------------------------+
+|     38 |     2 | Bit 0 : 0 = mono, 1 = stereo                               |
+|        |       | Bit 1 : 0 = normal loop, 1 = ping-pong loop (v3)           |
++--------+-------+------------------------------------------------------------+
+|     40 |     2 | Autopanning (000..800..FFF)                                |
++--------+-------+------------------------------------------------------------+
+|     42 |     2 | Number of bits (8 or 16)                                   |
+|     44 |     2 | Sample frequency in Hz (2000-65000)                        |
++--------+-------+------------------------------------------------------------+
+|     46 |     4 | Length (in bytes), even                                    |
+|     50 |     4 | Repeat start (in bytes), even                              |
+|     54 |     4 | Repeat length (in bytes), even                             |
++--------+-------+------------------------------------------------------------+
+|     58 |     2 | Volume (0-255)                                             |
++--------+-------+------------------------------------------------------------+
+|     60 |     2 | Finetune (-8..+7 -> -1..+7/8 halftone)                     |
++--------+-------+------------------------------------------------------------+
+|     62 |     2 | Codage version : 0                                         |
++--------+-------+------------------------------------------------------------+
+| Version 0 (raw data) :                                                      |
+|     64 |     L | Sample data, signed bytes or words                         |
++--------+-------+------------------------------------------------------------+
+
+
+
+Envelope chunk
+~~~~~~~~~~~~~~
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'VENV' (volume),                                           |
+|        |       | 'TENV' (tone) or                                           |
+|        |       | 'PENV' (panning)                                           |
+|      4 |     4 | Chunk size                                                 |
++--------+-------+------------------------------------------------------------+
+|      8 |     2 | Envelope number                                            |
+|     10 |    20 | Envelope name                                              |
++--------+-------+------------------------------------------------------------+
+|     30 |     2 | 'Key Off' offset (from data start)                         |
++--------+-------+------------------------------------------------------------+
+|     32 | CS-32 | Envelope data                                              |
++--------+-------+------------------------------------------------------------+
+
+    Vol/Tone/Pan envelope codes:
+        00        : End
+        01 + word : Jump
+        02 + word : Wait
+        03 + byte : Set Counter
+        04        : Loop
+        05        : Key Off
+
+    Volume envelope codes :
+        80 + word : Set Volume (16384 = 100%, max = 32767)
+        81 + word : Set Volume step
+        82 + word : Set Volume speed
+        83        : Tremolo On
+        84        : Tremolo Off
+        85 + byte : Set Tremolo Width
+        86 + byte : Set Tremolo Speed
+        87        : Tremor On
+        88        : Tremor On
+        89        : Set Tremor Time 1
+        8A        : Set Tremor Time 2
+
+    Tone envelope codes :
+        A0 + word : Set Tone (4096 = normal period)
+        A1 + word : Set Tone step
+        A2 + word : Set Tone speed
+        A3        : Vibrato On
+        A4        : Vibrato Off
+        A5 + byte : Set Vibrato Width
+        A6 + byte : Set Vibrato Speed
+
+    Panning envelope codes :
+        C0 + word : Set Panning (2048 = normal position)
+        C1 + word : Set Pan step
+        C2 + word : Set Pan speed
+
+    Volume = Volume * (EnvVol+Tremolo)/16384 * TremorFlag
+    Period = Period * (Tone+Vibrato)/4096
+    Panning = Panning + (PanEnv-2048)*(2048-abs(Panning-2048))/2048
+
+
+
+End chunk (v3)
+~~~~~~~~~~~~~~
+
+    This chunk should end the module and must always exist.
+
++--------+-------+------------------------------------------------------------+
+|      0 |     4 | 'ENDC'                                                     |
+|      4 |     4 | Chunk size                                                 |
++--------+-------+------------------------------------------------------------+
+|      8 |     4 | Total module size                                          |
++--------+-------+------------------------------------------------------------+
+
+
+
+
+
+===============================================================================
+	Format of old GTK modules
+===============================================================================
+
+Structure des infos samples :
+¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹
+
+		rsreset
+name_s:		rs.b	28	; Nom du sample
+		rs.w	7	; Libre (enfin, r‚serv‚ pour des am‚liorations futures)
+				; Doit ˆtre mis … 0 !
+autobal_s:	rs.w	1	; Balance automatique, -1 = rien
+nbits_s:	rs.w	1	; 1 = 8 bits, 2 = 16 bits
+fech_s:		rs.w	1	; Fr‚quence d'‚chantillonnage du sample (8363 Hz par d‚faut)
+length_s:	rs.l	1	; Longueur du sample, paire
+repeat_s:	rs.l	1	; Point de bouclage, pair
+replen_s:	rs.l	1	; Longueur de boucle, paire
+vol_s:		rs.w	1	; Volume ($0 … $100)
+ftune_s:	rs.w	1	; Finetune (-8 … +7)
+size_s:		rs	1	; Total : 64 octets
+
+***    Toutes les valeurs sont au format Motorola et non Intel :     ***
+***    l'octet de poids fort en premier, et l'octet de poids faible  ***
+***    faible en dernier (sens de la lecture).                       ***
+
+    A titre indicatif, les versions de format 1 et 2 ne diffŠrent que par cette
+structure :
+        - 1 : Taille totale 48 octets, le nom fait 32 caractŠres et il n'y a ni
+              balance, ni nombre de bits, ni fr‚quence d'‚chantillonnage.
+        - 2 : Toujours 48 octets, le nom passe … 28 caractŠres, pas de balance.
+
+
+
+Structure du module :
+¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹¹
+
+Nom	Offset		Taille		Fonction
+gtk_id:	    0		  3		Identificateur "GTK"
+form_num:   3		  1		Num‚ro de format : le num‚ro 3
+name:	    4		 32		Nom ASCII (pas de z‚ro)
+comment:   36		160		Commentaire ASCII (pas de z‚ro)
+n_spl:	  196		  2		Nombre d'instruments (0 … 255)
+n_lines:  198		  2		Nombre de lignes/pattern (1 … 256)
+n_trk:	  200		  2		Nombre de voies/pattern (1 … 32 ?? ou + ??)
+songlen:  202		  2		Longueur de la song (1 … 256)
+songrep:  204		  2		Point de bouclage dans la song (0 … songlen-1)
+infos_s:  206		n_spl*size_s	Descriptif des instruments (… partir du num‚ro 1)
+...
+song:	  n_spl*size_s	256*2		La song (1 mot = 1 pattern), de la position 0 jusqu'… 255
+	+ 206
+...
+patterns:  n_spl*size_s	(npatmax+1)*n_l*n_t*?	Les patterns, de 0 … npatmax.
+	+ 718				? peut ˆtre 4 (v3) ou 5 (v4)
+...
+samples:  n_spl*size_s			Les samples, 8 ou 16 bits sign‚s
+	+ (npatmax+1)*n_l*n_t*?
+	+ 718
+
+    le num‚ro du dernier pattern sauv‚ est le plus grand pattern de la song, de
+0 … songlen-1.
+    Chaque pattern est subdivis‚ en lignes, et chaque ligne en colonnes. On
+obtient ainsi chaque note, cod‚e sur 4 (ou 5) octets :
+
+	NN II EE EE (VV)
+
+    - NN indique le num‚ro de la note, de 24 (C-0) … 83 (B-4). 0 = pas de note,
+    - II indique le num‚ro de l'instrument. 0 = pas d'instrument,
+    - EEEE repr‚sente l'effet et son paramŠtre. Pour plus de pr‚cision dessus,
+      se reporter … la documentation du tracker.
+    - VV, pour la version 4, indique le volume de la piste (1-255). 0 = pas de
+      changement de volume.
+
+
+
+    Attention, ce format est un format de pr‚version! Je ne garantis pas que la
+version finale sera telle qelle est d‚crite ici, alors avant de charger un
+module de ce type, contr“lez bien le num‚ro.
+    Vous pouvez obtenir la derniŠre version de Graoumf Tracker (pour Atari
+Falcon 030) auprŠs de son auteur :
+
+                        Laurent de Soras
+                        92 avenue Albert 1er
+                        92500 Rueil-Malmaison
+                        FRANCE
+ 

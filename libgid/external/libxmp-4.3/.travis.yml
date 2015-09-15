@@ -1,0 +1,19 @@
+language: c
+
+compiler:
+  - gcc
+  - clang
+  - '"clang -fsanitize=address"'
+  - '"clang -fsanitize=memory"'
+
+os:
+  - linux
+  - osx
+
+matrix:
+  include:
+    - os: linux
+      compiler: i586-mingw32msvc-gcc
+      script: autoconf && ./configure --host=i586-mingw32msvc && make
+
+script: autoconf && ./configure && make && make check && (cd test-dev; autoconf && ./configure && make) && make -f Makefile.lite

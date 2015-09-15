@@ -1,0 +1,154 @@
+offset 0x00, 20 (0x14) bytes: name of track
+
+0000: 64616E63 6520726F 626F7473 20627920    dance robots by 
+0010: 642E7200                               d.r.
+
+offset 0x14, 31 x 4-byte sample info:
+ - 2 bytes, sample length in words (or 0 for "no sample")
+ - 2 bytes, sample repeat offset in words (or 0 for no repeat)
+   - PT's "repeat length" would simply be sample length - repeat offset
+   - PT's volume would always be 0x40 (64), as this is set whenever the
+     note is triggered
+
+0014:          22900000 113F0000 22B30000        "....?.."³..
+0020: 113C0000 22930000 11420000 229B0000    .<.."....B.."...
+0030: 115B0000 452C0000 45450000 450A0000    .[..E,..EE..E...
+0040: 45070000 228D0000 117B0000 22730000    E..."....{.."s..
+0050: 111C02C1 22AB0000 00000000 00000000    ...Á"«..........
+0060: 00000000 00000000 00000000 00000000    ................
+0070: 00000000 00000000 00000000 00000000    ................
+0080: 00000000 00000000 00000000 00000000    ................
+
+offset 0x90: 2 bytes, global sampling rate (audXper)
+0090: 0194                                   ..
+
+offset 0x92: identifier, "GnPl"
+0092:     476E 506C                            GnPl
+
+offset 0x96, left track notedata. first, two bytes on how long the
+track is (in bytes), then pairs of (command, parameter) bytes.
+
+All sound for the left track is played identically on audio channel 0 and 1.
+
+command 0 = end of track
+command 1 = set volume (parm = as protracker "C" command)
+command 2 = shift volume (parm = as protracker "A" command)
+command 3 = set speed (parm = as per CIA-timed protracker "F" command)
+command 4 = advance positions (parm = how many PT posns before next note/cmd)
+command 5 = set note (parm = sample number)
+
+A small example: (assuming that the global sampling rate is C-3)
+(5,2),(4,5),(2,1),(4,1),(2,$20),(4,3),(1,10),(4,2),(5,4),(4,1)
+
+becomes
+
+C-3 02 000 <- the 5,2 command
+--- 00 000 | - the 4,5 command
+--- 00 000 |
+--- 00 000 |
+--- 00 000 v
+--- 00 A01 <- the 2,1 command
+--- 00 A20 <- the 2,$20 command (the 4,1 only advances one posn)
+--- 00 000 | the 4,3 command
+--- 00 000 v
+--- 00 C0A <- the 1,10 command
+--- 00 000 <- the 4,2 command
+C-3 04 000 <- the 5,4 command 
+
+as you can see, the 4 command is needed to advance, so if it's not there
+then things will happen on top of one another, either overwriting (C
+command and new note, sometimes F), adding up (in the case of the A
+command) , or (in the case of the F command, which can set both the normal
+and the CIA timer) actually doing two things in the space that PT needs two
+fore without advancing. I recommend that you use the fact that tracks here
+are two PT channels and not just one, so you have two effect slots, but
+what if you need to do an F command at the same time as an A or C? Ah,
+well, you have to handle difficult situations that yourself... as there
+only seems to be a single module packed with this method, I wouldn't work
+too hard on it.
+
+0096:              01AE 03060377 05010410          .®...w....
+00A0: 05010408 05020408 05030410 05030408    ................
+00B0: 05040408 050D0410 050D0408 050E0408    ................
+00C0: 050F0410 050F0408 05100408 05050410    ................
+00D0: 05050408 05060408 05070410 05070408    ................
+00E0: 05080408 05050410 05050408 05060408    ................
+00F0: 05070410 05070408 05080408 05090420    ............... 
+0100: 050A0420 05090420 050A0420 05050410    ... ... ... ....
+0110: 05050408 05060408 05070410 05070408    ................
+0120: 05080408 05050410 05050408 05060408    ................
+0130: 05070410 05070408 05080408 05090138    ...............8
+0140: 0420050A 01380420 05090138 0420050A    . ...8. ...8. ..
+0150: 01380420 05110410 05110410 05110410    .8. ............
+0160: 05110410 05110410 05110410 05110410    ................
+0170: 05110410 050B0420 050C0420 050B0420    ....... ... ... 
+0180: 050C0420 03060377 05010410 05010408    ... ...w........
+0190: 05020408 05030410 05030408 05040408    ................
+01A0: 050D0410 050D0408 050E0408 050F0410    ................
+01B0: 050F0408 05100408 05090138 0420050A    ...........8. ..
+01C0: 01380420 05090138 0420050A 01380420    .8. ...8. ...8. 
+01D0: 050B0138 0420050C 01380420 050B0138    ...8. ...8. ...8
+01E0: 0420050C 01380420 05090138 0420050A    . ...8. ...8. ..
+01F0: 01380420 05090138 04100201 04020201    .8. ...8........
+0200: 04020201 04020201 04020201 04020201    ................
+0210: 04020201 04020201 0402050A 01140404    ................
+0220: 02010402 02010402 02010402 01060402    ................
+0230: 01040402 01020402 01010402 0100040E    ................
+0240: 04400000                               .@..
+
+same again for right track (length in bytes, then track data)
+
+All sound for the right track is played identically on audio channel 2 and 3.
+
+0244:          01700440 04400440 04400440        .p.@.@.@.@.@
+0250: 04400440 04400505 01380410 05050138    .@.@.@...8.....8
+0260: 04080506 01380408 05070138 04100507    .....8.....8....
+0270: 01380408 05080138 04080505 01380410    .8.....8.....8..
+0280: 05050138 04080506 01380408 05070138    ...8.....8.....8
+0290: 04100507 01380408 05080138 04080440    .....8.....8...@
+02A0: 04400440 04400440 04400505 01380410    .@.@.@.@.@...8..
+02B0: 05050138 04080506 01380408 05070138    ...8.....8.....8
+02C0: 04100507 01380408 05080138 04080505    .....8.....8....
+02D0: 01380410 05050138 04080506 01380408    .8.....8.....8..
+02E0: 05070138 04100507 01380408 05080138    ...8.....8.....8
+02F0: 04080505 01380410 05050138 04080506    .....8.....8....
+0300: 01380408 05070138 04100507 01380408    .8.....8.....8..
+0310: 05080138 04080505 01380410 05050138    ...8.....8.....8
+0320: 04080506 01380408 05070138 04100507    .....8.....8....
+0330: 01380408 05080138 04080505 01380410    .8.....8.....8..
+0340: 05050138 04080506 01380408 05070138    ...8.....8.....8
+0350: 04100507 01380408 05080138 04080505    .....8.....8....
+0360: 01380410 05050134 04020201 04020201    .8.....4........
+0370: 04020201 04020506 01240402 02010402    .........$......
+0380: 02010402 02010402 05070114 04040201    ................
+0390: 04020201 04020201 04020106 04020104    ................
+03A0: 04020102 04020507 01010402 0100040E    ................
+03B0: 04400000                               .@..
+
+now follows sample data, which is packed nybbles (2:1 compression).
+The first two bytes give the length of the sample data for that
+sample.
+
+Output format: Amiga standard, 2s complement signed bytes
+
+Input format: First, the initial byte. Then, a stream of bytes which are
+actually signed nybbles which expand to a byte each. These nybbles are
+simply added to the previous output sample to get the next sample.
+
+	Example decoder in C
+
+	BYTE *in, *out, *out_end, samp;   /* set up in, out, out_end */
+	*out++ = *in++;                   /* initial output byte     */
+	while (out < out_end) {
+	  samp = (*in >> 4) & 0xF;        /* get upper nybble       */
+          if (samp & 0x8) samp -= 0x10    /* sign-extend nybble     */
+	  *out++ = out[-1] + samp;        /* output sample          */
+	  samp =  *in & 0xF;              /* get lower nybble       */
+          if (samp & 0x8) samp -= 0x10;   /* sign-extend nybble     */
+	  *out++ = out[-1] + samp;        /* output sample          */
+	  in++;                           /* advance input pointer  */
+	}
+
+03B4:          2292000F E0002310 DDDF1122        "...à.#.Ýß."
+03C0: 21111020 00FDABD3 4332FDEF FFF00113    !.. .ý«ÓC2ýïÿð..
+[...]

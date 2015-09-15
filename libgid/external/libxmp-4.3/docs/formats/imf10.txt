@@ -1,0 +1,276 @@
+                           
+
+                IMAGO Orpheus Module Format (IMF) Version 1.00
+   
+                           File format specification
+
+                             
+                     Copyright (C) 1993-1994 Lutz Roeder,
+                              All rights reserved.
+                           
+
+                                Module header
+                                -------------
+           
+           0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+         +---------------------------------------------------------------+
+    0000 | Songname (ASCIIZ-String, max. 31 chars)                       |
+         +---------------------------------------------------------------+
+    0010 | ... Songname ...                                              |
+         +---------------------------------------------------------------+
+    0020 |  [O]  |  [P]  |  [I]  |  [F]  | x | x | x | x | x | x | x | x |
+         +---------------------------------------------------------------+
+    0030 |[T]|[B]|[V]|[A]| x | x | x | x | x | x | x | x |'I'|'M'|'1'|'0'|
+         +---------------------------------------------------------------+
+
+         [O] = Number of orders saved
+         [P] = Number of patterns saved
+         [I] = Number of instruments saved
+         [F] = Module flags
+               Bit 0: 0 = Amiga frequency table
+                      1 = Linear frequency table
+         [T] = Default tempo (1..255)
+         [B] = Default beats per minute (BPM) (32..255)
+         [V] = Default mastervolume (0..64)
+         [A] = Amplification factor (4..127)
+
+
+                               Channel settings
+                               ----------------
+
+         After the module header following 32 blocks. Every block contains 
+         the name, pan position and status settings for one of the 
+         32 channels. 
+         
+           0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+         +---------------------------------------------------------------+
+    xxxx | Channelname (ASCIIZ-String, max. 11 chars)    |[C]|[R]|[P]|[S]|
+         +---------------------------------------------------------------+
+         
+         [S] = Channel status: 
+               0x00 = Channel enabled
+               0x01 = Mute (processed but not played)
+               0x02 = Channel disabled (not processed)
+               
+         [P] = Pan positions: 
+               0x00 = Left ... 0x80 = Middle ... 0xFF = Right
+         [C] = Default chorus
+         [R] = Default reverb
+
+                                  Order list
+                                  ----------
+
+         Next at offset 0x0240 starting the order list. The complete
+         256 byte list will be saved but only the length from the order 
+         list field in the header will be used. Every byte presents a 
+         single order position. The value 0xFF is used as marker ('--')
+         which will be skipped while playing.
+         
+                        
+                                Pattern format
+                                --------------
+         
+         After the order (at offset 0x0340) starting the pattern data ...
+
+           0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+         +---------------------------------------------------------------+
+    xxxx | Size  | Rows  | Pattern data ...                              |
+         +---------------------------------------------------------------+
+
+         The size field contains the size of the patterns and the 
+         row field the number of rows (64 by default). The pattern itself 
+         is packed using a S3M like algorithm:
+
+         byte_ Status = Pattern[Index++];
+         if (Status == 0x00)
+           NextRow();
+         else
+         {
+           byte_ Note,Instrument;
+           byte_ FirstEffectCommand,FirstEffectData;
+           byte_ SecondEffectCommand,SecondEffectData; 
+           byte_ Channel = Status & 0x1F;
+           if ((Status & 0x20) != 0)
+           {
+             Note = Pattern[Index++];
+             Instrument = Pattern[Index++];
+           }
+           if ((Status & 0x40) != 0)
+           {
+             FirstEffectCommand = Pattern[Index++];
+             FirstEffectData = Pattern[Index++];
+           }
+           if ((Status & 0x80) != 0)
+           {
+             SecondEffectCommand = Pattern[Index++];
+             SecondEffectData = Pattern[Index++];
+           }
+
+
+                               Effect commands
+                               ---------------
+
+         Most Protracker, Scream Tracker and Fasttracker commands
+         should be implemented right ...
+         
+                 0x01 1xx Set Tempo
+                 0x02 2xx Set BPM
+                 0x03 3xx Tone Portamento                  (*)
+                 0x04 4xy Tone Portamento + Volume Slide   (*)
+                 0x05 5xy Vibrato                          (*)
+                 0x06 6xy Vibrato + Volume Slide           (*)
+                 0x07 7xy Fine Vibrato                     (*)
+                 0x08 8xy Tremolo                          (*)
+                 0x09 9xy Arpeggio                         (*)
+                 0x0A Axx Set Pan Position                
+                 0x0B Bxy Pan Slide                        (*)
+                 0x0C Cxx Set Volume
+                 0x0D Dxy Volume Slide                     (*)
+                 0x0E Exy Fine Volume Slide                (*)
+                 0x0F Fxx Set Finetune
+                 0x10 Gxy Note Slide Up                    (*)
+                 0x11 Hxy Note Slide Down                  (*)
+                 0x12 Ixx Slide Up                         (*)
+                 0x13 Jxx Slide Down                       (*)
+                 0x14 Kxx Fine Slide Up                    (*)
+                 0x15 Lxx Fine Slide Down                  (*)
+                 0x16 Mxx Set Filter Cutoff
+                 0x17 Nxy Filter Slide + Resonance
+                 0x18 Oxx Set Sample Offset                (*)
+                 0x19 Pxx Set Fine Sample Offset
+                 0x1A Qxx Key Off
+                 0x1B Rxy Retrig                           (*)
+                 0x1C Sxy Tremor                           (*)
+                 0x1D Txx Position Jump
+                 0x1E Uxx Pattern Break
+                 0x1F Vxx Set Mastervolume
+                 0x20 Wxy Mastervolume Slide               (*)
+                 0x21 Xxx Extended Effect
+                      X1x Set Filter
+                      X3x Glissando
+                      X5x Vibrato Waveform
+                      X8x Tremolo Waveform
+                      XAx Pattern Loop
+                      XBx Pattern Delay
+                      XCx Note Cut
+                      XDx Note Delay
+                      XEx Ignore Envelope
+                      XFx Invert Loop
+                 0x22 Yxx Chorus
+                 0x23 Zxx Reverb
+                     
+         (*) = If the effect data is zero, the last nonzero data
+               should be used.
+
+
+                              Instrument header
+                              -----------------
+
+           0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+         +---------------------------------------------------------------+
+    0000 | Instrumentname (ASCIIZ-String, max. 31 chars)                 |
+         +---------------------------------------------------------------+
+    0010 | ...Instrumentname...                                          |
+         +---------------------------------------------------------------+
+    0020 | Multisample settings                                          |
+         +---------------------------------------------------------------+
+    0030 | ...multisample settings...                                    |
+         +---------------------------------------------------------------+
+    0040 | ...multisample settings...                                    |
+         +---------------------------------------------------------------+
+    0050 | ...multisample settings...                                    |
+         +---------------------------------------------------------------+
+    0060 | ...multisample settings...                                    |
+         +---------------------------------------------------------------+
+    0070 | ...multisample settings...                                    |
+         +---------------------------------------------------------------+
+    0080 | ...multisample settings...                                    |
+         +---------------------------------------------------------------+
+    0090 | ...multisample settings...    | x | x | x | x | x | x | x | x |
+         +---------------------------------------------------------------+
+    00A0 | Volume envelope settings                                      |
+         +---------------------------------------------------------------+
+    00B0 | ...volume envelope...                                         |
+         +---------------------------------------------------------------+
+    00C0 | ...volume envelope...                                         |
+         +---------------------------------------------------------------+
+    00D0 | ...volume envelope...                                         |
+         +---------------------------------------------------------------+
+    00E0 | Pan envelope settings                                         |
+         +---------------------------------------------------------------+
+    00F0 | ...pan envelope...                                            |
+         +---------------------------------------------------------------+
+    0100 | ...pan envelope...                                            |
+         +---------------------------------------------------------------+
+    0110 | ...pan envelope...                                            |
+         +---------------------------------------------------------------+
+    0120 | Pitch envelope settings                                       |
+         +---------------------------------------------------------------+
+    0130 | ...pitch envelope...                                          |
+         +---------------------------------------------------------------+
+    0140 | ...pitch envelope...                                          |
+         +---------------------------------------------------------------+
+    0150 | ...pitch envelope...                                          |
+         +---------------------------------------------------------------+
+    0160 |[1]|[2]|[3]|[4]|[5]| x | x | x |[1]|[2]|[3]|[4]|[5]| x | x | x |
+         +---------------------------------------------------------------+
+    0170 |[1]|[2]|[3]|[4]|[5]| x | x | x |  [F]  |  [S]  |'I'|'I'|'1'|'0'|
+         +---------------------------------------------------------------+
+
+         [1] = Number of envelope points
+         [2] = Envelope sustain point
+         [3] = Envelope loop start point
+         [4] = Envelope loop end point
+         [5] = Envelope flags
+               Bit 0: 0 = Envelope on
+                      1 = Envelope off
+               Bit 1: 0 = Sustain on
+                      1 = Sustain off
+               Bit 2: 0 = Envelope loop on
+                      1 = Envelope loop off
+                 
+         Vibrato / Tremolo - type, sweep, depth, rate
+
+         [F] = Fadeout rate (0...0FFFH)
+         [S] = Number of samples in instrument
+
+                  Fadeout   Envelope   Global   Volume
+         Volume = ------- * -------- * ------ * ------ * Scale
+                   32768       64        64       64
+
+         Pan ( >=0 and <=255 ) = envelope-pan + (sample/channel pan)
+
+         Linear frequency table:
+
+         Period = 7680-(Note*64)
+         Frequency = Samplerate * 2^((4608-Period-(Finetune/2)
+                                        -((Envelope-128)/2))/768)
+                                
+
+                                Sample header
+                                -------------
+
+           0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+         +---------------------------------------------------------------+
+    0000 | Sample filename (12345678.ABC)                    | x | x | x |
+         +---------------------------------------------------------------+
+    0010 | Length        | Loop start    | Loop end      | Samplerate    |
+         +---------------------------------------------------------------+
+    0020 |[V]|[P]| x | x | x | x | x | x | x | x | x | x | x | x | x | x |
+         +---------------------------------------------------------------+
+    0030 |[F]| x | x | x | x | x |  EMS  | DRAM Position |'I'|'S'|'1'|'0'|
+         +---------------------------------------------------------------+
+
+         [V] = Default volume (0..64)
+         [P] = Default pan (00h = Left / 80h = Middle / FFh = Right)
+         [F] = Sample flags
+               Bit 0: 0 = Loop off
+                      1 = Loop on
+               Bit 1: 0 = Normal loop
+                      1 = Bidirectional loop
+               Bit 2: 0 = 8 Bit sample
+                      1 = 16 Bit sample
+               Bit 3: 0 = Use channel pan position
+                      1 = Use sample pan position
+
+         EMS and DRAM Position are reserved fields for internal usage.

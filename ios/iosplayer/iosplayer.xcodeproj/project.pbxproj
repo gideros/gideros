@@ -360,6 +360,54 @@
 		EB82BDD41B29606C00281732 /* Shaders.h in Headers */ = {isa = PBXBuildFile; fileRef = EB82BDC81B29606C00281732 /* Shaders.h */; };
 		EB82BDD61B305E2F00281732 /* shaderbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDD51B305E2F00281732 /* shaderbinder.cpp */; };
 		EBD254CA1ADD149000CC57F9 /* zlibbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */; };
+		EBD8CA441B903A50002F9D6C /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C95E1B903A4F002F9D6C /* common.h */; };
+		EBD8CA451B903A50002F9D6C /* control.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C95F1B903A4F002F9D6C /* control.c */; };
+		EBD8CA461B903A50002F9D6C /* dataio.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C9601B903A4F002F9D6C /* dataio.c */; };
+		EBD8CA6D1B903A50002F9D6C /* effects.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C9891B903A4F002F9D6C /* effects.c */; };
+		EBD8CA6E1B903A50002F9D6C /* effects.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C98A1B903A4F002F9D6C /* effects.h */; };
+		EBD8CA6F1B903A50002F9D6C /* envelope.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C98B1B903A4F002F9D6C /* envelope.c */; };
+		EBD8CA701B903A50002F9D6C /* envelope.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C98C1B903A4F002F9D6C /* envelope.h */; };
+		EBD8CA731B903A50002F9D6C /* filter.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C98F1B903A4F002F9D6C /* filter.c */; };
+		EBD8CA791B903A50002F9D6C /* format.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C9951B903A4F002F9D6C /* format.h */; };
+		EBD8CA7A1B903A50002F9D6C /* hio.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C9961B903A4F002F9D6C /* hio.c */; };
+		EBD8CA7B1B903A50002F9D6C /* hio.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C9971B903A4F002F9D6C /* hio.h */; };
+		EBD8CA7E1B903A50002F9D6C /* lfo.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C99A1B903A4F002F9D6C /* lfo.c */; };
+		EBD8CA7F1B903A50002F9D6C /* lfo.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C99B1B903A4F002F9D6C /* lfo.h */; };
+		EBD8CA801B903A50002F9D6C /* list.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C99C1B903A4F002F9D6C /* list.h */; };
+		EBD8CA811B903A50002F9D6C /* load_helpers.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C99D1B903A4F002F9D6C /* load_helpers.c */; };
+		EBD8CA821B903A50002F9D6C /* load.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C99E1B903A4F002F9D6C /* load.c */; };
+		EBD8CA8E1B903A50002F9D6C /* common.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C9AB1B903A4F002F9D6C /* common.c */; };
+		EBD8CAA61B903A50002F9D6C /* it.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C9C31B903A4F002F9D6C /* it.h */; };
+		EBD8CAA71B903A50002F9D6C /* it_load.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C9C41B903A4F002F9D6C /* it_load.c */; };
+		EBD8CAA81B903A50002F9D6C /* itsex.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8C9C51B903A4F002F9D6C /* itsex.c */; };
+		EBD8CAAA1B903A50002F9D6C /* loader.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C9C71B903A4F002F9D6C /* loader.h */; };
+		EBD8CAB61B903A50002F9D6C /* mod.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8C9D31B903A4F002F9D6C /* mod.h */; };
+		EBD8CAF81B903A50002F9D6C /* s3m.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CA161B903A50002F9D6C /* s3m.h */; };
+		EBD8CAF91B903A50002F9D6C /* s3m_load.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA171B903A50002F9D6C /* s3m_load.c */; };
+		EBD8CAFA1B903A50002F9D6C /* sample.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA181B903A50002F9D6C /* sample.c */; };
+		EBD8CB081B903A50002F9D6C /* xm.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CA261B903A50002F9D6C /* xm.h */; };
+		EBD8CB091B903A50002F9D6C /* xm_load.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA271B903A50002F9D6C /* xm_load.c */; };
+		EBD8CB101B903A50002F9D6C /* memio.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA2E1B903A50002F9D6C /* memio.c */; };
+		EBD8CB111B903A50002F9D6C /* memio.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CA2F1B903A50002F9D6C /* memio.h */; };
+		EBD8CB121B903A50002F9D6C /* mix_all.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA301B903A50002F9D6C /* mix_all.c */; };
+		EBD8CB131B903A50002F9D6C /* mixer.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA311B903A50002F9D6C /* mixer.c */; };
+		EBD8CB141B903A50002F9D6C /* mixer.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CA321B903A50002F9D6C /* mixer.h */; };
+		EBD8CB161B903A50002F9D6C /* period.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA341B903A50002F9D6C /* period.c */; };
+		EBD8CB171B903A50002F9D6C /* period.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CA351B903A50002F9D6C /* period.h */; };
+		EBD8CB181B903A50002F9D6C /* player.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA361B903A50002F9D6C /* player.c */; };
+		EBD8CB191B903A50002F9D6C /* player.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CA371B903A50002F9D6C /* player.h */; };
+		EBD8CB1B1B903A50002F9D6C /* read_event.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA391B903A50002F9D6C /* read_event.c */; };
+		EBD8CB1C1B903A50002F9D6C /* scan.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA3A1B903A50002F9D6C /* scan.c */; };
+		EBD8CB1D1B903A50002F9D6C /* smix.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA3B1B903A50002F9D6C /* smix.c */; };
+		EBD8CB231B903A50002F9D6C /* virtual.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CA411B903A50002F9D6C /* virtual.c */; };
+		EBD8CB241B903A50002F9D6C /* virtual.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CA421B903A50002F9D6C /* virtual.h */; };
+		EBD8CB261B903C3C002F9D6C /* mod_load.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CB251B903C3C002F9D6C /* mod_load.c */; };
+		EBD8CB281B903C69002F9D6C /* format.c in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CB271B903C69002F9D6C /* format.c */; };
+		EBD8CB2C1B903E70002F9D6C /* mdataio.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CB291B903E70002F9D6C /* mdataio.h */; };
+		EBD8CB2D1B903E70002F9D6C /* precomp_lut.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CB2A1B903E70002F9D6C /* precomp_lut.h */; };
+		EBD8CB2E1B903E70002F9D6C /* tempfile.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CB2B1B903E70002F9D6C /* tempfile.h */; };
+		EBD8CB301B904104002F9D6C /* xmp.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CB2F1B904104002F9D6C /* xmp.h */; };
+		EBD8CB321B904216002F9D6C /* gaudio-loader-xmp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CB311B904216002F9D6C /* gaudio-loader-xmp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -718,6 +766,54 @@
 		EB82BDC81B29606C00281732 /* Shaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shaders.h; sourceTree = "<group>"; };
 		EB82BDD51B305E2F00281732 /* shaderbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shaderbinder.cpp; path = ../../luabinding/shaderbinder.cpp; sourceTree = "<group>"; };
 		EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zlibbinder.cpp; path = ../../luabinding/zlibbinder.cpp; sourceTree = "<group>"; };
+		EBD8C95E1B903A4F002F9D6C /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = "../../../libgid/external/libxmp-4.3/src/common.h"; sourceTree = "<group>"; };
+		EBD8C95F1B903A4F002F9D6C /* control.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = control.c; path = "../../../libgid/external/libxmp-4.3/src/control.c"; sourceTree = "<group>"; };
+		EBD8C9601B903A4F002F9D6C /* dataio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dataio.c; path = "../../../libgid/external/libxmp-4.3/src/dataio.c"; sourceTree = "<group>"; };
+		EBD8C9891B903A4F002F9D6C /* effects.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = effects.c; path = "../../../libgid/external/libxmp-4.3/src/effects.c"; sourceTree = "<group>"; };
+		EBD8C98A1B903A4F002F9D6C /* effects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = effects.h; path = "../../../libgid/external/libxmp-4.3/src/effects.h"; sourceTree = "<group>"; };
+		EBD8C98B1B903A4F002F9D6C /* envelope.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = envelope.c; path = "../../../libgid/external/libxmp-4.3/src/envelope.c"; sourceTree = "<group>"; };
+		EBD8C98C1B903A4F002F9D6C /* envelope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = envelope.h; path = "../../../libgid/external/libxmp-4.3/src/envelope.h"; sourceTree = "<group>"; };
+		EBD8C98F1B903A4F002F9D6C /* filter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = filter.c; path = "../../../libgid/external/libxmp-4.3/src/filter.c"; sourceTree = "<group>"; };
+		EBD8C9951B903A4F002F9D6C /* format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = format.h; path = "../../../libgid/external/libxmp-4.3/src/format.h"; sourceTree = "<group>"; };
+		EBD8C9961B903A4F002F9D6C /* hio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hio.c; path = "../../../libgid/external/libxmp-4.3/src/hio.c"; sourceTree = "<group>"; };
+		EBD8C9971B903A4F002F9D6C /* hio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hio.h; path = "../../../libgid/external/libxmp-4.3/src/hio.h"; sourceTree = "<group>"; };
+		EBD8C99A1B903A4F002F9D6C /* lfo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lfo.c; path = "../../../libgid/external/libxmp-4.3/src/lfo.c"; sourceTree = "<group>"; };
+		EBD8C99B1B903A4F002F9D6C /* lfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lfo.h; path = "../../../libgid/external/libxmp-4.3/src/lfo.h"; sourceTree = "<group>"; };
+		EBD8C99C1B903A4F002F9D6C /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = list.h; path = "../../../libgid/external/libxmp-4.3/src/list.h"; sourceTree = "<group>"; };
+		EBD8C99D1B903A4F002F9D6C /* load_helpers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = load_helpers.c; path = "../../../libgid/external/libxmp-4.3/src/load_helpers.c"; sourceTree = "<group>"; };
+		EBD8C99E1B903A4F002F9D6C /* load.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = load.c; path = "../../../libgid/external/libxmp-4.3/src/load.c"; sourceTree = "<group>"; };
+		EBD8C9AB1B903A4F002F9D6C /* common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = common.c; sourceTree = "<group>"; };
+		EBD8C9C31B903A4F002F9D6C /* it.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = it.h; sourceTree = "<group>"; };
+		EBD8C9C41B903A4F002F9D6C /* it_load.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = it_load.c; sourceTree = "<group>"; };
+		EBD8C9C51B903A4F002F9D6C /* itsex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = itsex.c; sourceTree = "<group>"; };
+		EBD8C9C71B903A4F002F9D6C /* loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = loader.h; sourceTree = "<group>"; };
+		EBD8C9D31B903A4F002F9D6C /* mod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mod.h; sourceTree = "<group>"; };
+		EBD8CA161B903A50002F9D6C /* s3m.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = s3m.h; sourceTree = "<group>"; };
+		EBD8CA171B903A50002F9D6C /* s3m_load.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = s3m_load.c; sourceTree = "<group>"; };
+		EBD8CA181B903A50002F9D6C /* sample.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sample.c; sourceTree = "<group>"; };
+		EBD8CA261B903A50002F9D6C /* xm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xm.h; sourceTree = "<group>"; };
+		EBD8CA271B903A50002F9D6C /* xm_load.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xm_load.c; sourceTree = "<group>"; };
+		EBD8CA2E1B903A50002F9D6C /* memio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memio.c; path = "../../../libgid/external/libxmp-4.3/src/memio.c"; sourceTree = "<group>"; };
+		EBD8CA2F1B903A50002F9D6C /* memio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memio.h; path = "../../../libgid/external/libxmp-4.3/src/memio.h"; sourceTree = "<group>"; };
+		EBD8CA301B903A50002F9D6C /* mix_all.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mix_all.c; path = "../../../libgid/external/libxmp-4.3/src/mix_all.c"; sourceTree = "<group>"; };
+		EBD8CA311B903A50002F9D6C /* mixer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mixer.c; path = "../../../libgid/external/libxmp-4.3/src/mixer.c"; sourceTree = "<group>"; };
+		EBD8CA321B903A50002F9D6C /* mixer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mixer.h; path = "../../../libgid/external/libxmp-4.3/src/mixer.h"; sourceTree = "<group>"; };
+		EBD8CA341B903A50002F9D6C /* period.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = period.c; path = "../../../libgid/external/libxmp-4.3/src/period.c"; sourceTree = "<group>"; };
+		EBD8CA351B903A50002F9D6C /* period.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = period.h; path = "../../../libgid/external/libxmp-4.3/src/period.h"; sourceTree = "<group>"; };
+		EBD8CA361B903A50002F9D6C /* player.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = player.c; path = "../../../libgid/external/libxmp-4.3/src/player.c"; sourceTree = "<group>"; };
+		EBD8CA371B903A50002F9D6C /* player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = player.h; path = "../../../libgid/external/libxmp-4.3/src/player.h"; sourceTree = "<group>"; };
+		EBD8CA391B903A50002F9D6C /* read_event.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = read_event.c; path = "../../../libgid/external/libxmp-4.3/src/read_event.c"; sourceTree = "<group>"; };
+		EBD8CA3A1B903A50002F9D6C /* scan.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = scan.c; path = "../../../libgid/external/libxmp-4.3/src/scan.c"; sourceTree = "<group>"; };
+		EBD8CA3B1B903A50002F9D6C /* smix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = smix.c; path = "../../../libgid/external/libxmp-4.3/src/smix.c"; sourceTree = "<group>"; };
+		EBD8CA411B903A50002F9D6C /* virtual.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = virtual.c; path = "../../../libgid/external/libxmp-4.3/src/virtual.c"; sourceTree = "<group>"; };
+		EBD8CA421B903A50002F9D6C /* virtual.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = virtual.h; path = "../../../libgid/external/libxmp-4.3/src/virtual.h"; sourceTree = "<group>"; };
+		EBD8CB251B903C3C002F9D6C /* mod_load.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mod_load.c; path = ../../lite/src/loaders/mod_load.c; sourceTree = "<group>"; };
+		EBD8CB271B903C69002F9D6C /* format.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = format.c; path = "../../../libgid/external/libxmp-4.3/lite/src/format.c"; sourceTree = "<group>"; };
+		EBD8CB291B903E70002F9D6C /* mdataio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mdataio.h; path = "../../../libgid/external/libxmp-4.3/src/mdataio.h"; sourceTree = "<group>"; };
+		EBD8CB2A1B903E70002F9D6C /* precomp_lut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = precomp_lut.h; path = "../../../libgid/external/libxmp-4.3/src/precomp_lut.h"; sourceTree = "<group>"; };
+		EBD8CB2B1B903E70002F9D6C /* tempfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tempfile.h; path = "../../../libgid/external/libxmp-4.3/src/tempfile.h"; sourceTree = "<group>"; };
+		EBD8CB2F1B904104002F9D6C /* xmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmp.h; path = "../../../libgid/external/libxmp-4.3/include/xmp.h"; sourceTree = "<group>"; };
+		EBD8CB311B904216002F9D6C /* gaudio-loader-xmp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gaudio-loader-xmp.cpp"; path = "../../../libgid/src/gaudio-loader-xmp.cpp"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -796,6 +892,7 @@
 		5F0CD7BB15BB01F500479287 /* external */ = {
 			isa = PBXGroup;
 			children = (
+				EBD8C95C1B9039DB002F9D6C /* libxmp-4.3 */,
 				5F0CD90D15BB48F600479287 /* freetype-2.4.12 */,
 				5F0CD84B15BB107900479287 /* jpeg-9 */,
 				5F0CD82915BB0B1500479287 /* libpng-1.6.2 */,
@@ -819,6 +916,7 @@
 		5F0CD7C515BB021500479287 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				EBD8CB311B904216002F9D6C /* gaudio-loader-xmp.cpp */,
 				5ECDAB331ADAE0D100278F39 /* drawinfo.cpp */,
 				5ECDAB341ADAE0D100278F39 /* md5.c */,
 				5ECDAB351ADAE0D100278F39 /* platformutil.cpp */,
@@ -1333,6 +1431,69 @@
 			path = gl2;
 			sourceTree = "<group>";
 		};
+		EBD8C95C1B9039DB002F9D6C /* libxmp-4.3 */ = {
+			isa = PBXGroup;
+			children = (
+				EBD8CB2F1B904104002F9D6C /* xmp.h */,
+				EBD8CB291B903E70002F9D6C /* mdataio.h */,
+				EBD8CB2A1B903E70002F9D6C /* precomp_lut.h */,
+				EBD8CB2B1B903E70002F9D6C /* tempfile.h */,
+				EBD8CB271B903C69002F9D6C /* format.c */,
+				EBD8C95E1B903A4F002F9D6C /* common.h */,
+				EBD8C95F1B903A4F002F9D6C /* control.c */,
+				EBD8C9601B903A4F002F9D6C /* dataio.c */,
+				EBD8C9891B903A4F002F9D6C /* effects.c */,
+				EBD8C98A1B903A4F002F9D6C /* effects.h */,
+				EBD8C98B1B903A4F002F9D6C /* envelope.c */,
+				EBD8C98C1B903A4F002F9D6C /* envelope.h */,
+				EBD8C98F1B903A4F002F9D6C /* filter.c */,
+				EBD8C9951B903A4F002F9D6C /* format.h */,
+				EBD8C9961B903A4F002F9D6C /* hio.c */,
+				EBD8C9971B903A4F002F9D6C /* hio.h */,
+				EBD8C99A1B903A4F002F9D6C /* lfo.c */,
+				EBD8C99B1B903A4F002F9D6C /* lfo.h */,
+				EBD8C99C1B903A4F002F9D6C /* list.h */,
+				EBD8C99D1B903A4F002F9D6C /* load_helpers.c */,
+				EBD8C99E1B903A4F002F9D6C /* load.c */,
+				EBD8C99F1B903A4F002F9D6C /* loaders */,
+				EBD8CA2E1B903A50002F9D6C /* memio.c */,
+				EBD8CA2F1B903A50002F9D6C /* memio.h */,
+				EBD8CA301B903A50002F9D6C /* mix_all.c */,
+				EBD8CA311B903A50002F9D6C /* mixer.c */,
+				EBD8CA321B903A50002F9D6C /* mixer.h */,
+				EBD8CA341B903A50002F9D6C /* period.c */,
+				EBD8CA351B903A50002F9D6C /* period.h */,
+				EBD8CA361B903A50002F9D6C /* player.c */,
+				EBD8CA371B903A50002F9D6C /* player.h */,
+				EBD8CA391B903A50002F9D6C /* read_event.c */,
+				EBD8CA3A1B903A50002F9D6C /* scan.c */,
+				EBD8CA3B1B903A50002F9D6C /* smix.c */,
+				EBD8CA411B903A50002F9D6C /* virtual.c */,
+				EBD8CA421B903A50002F9D6C /* virtual.h */,
+			);
+			name = "libxmp-4.3";
+			sourceTree = "<group>";
+		};
+		EBD8C99F1B903A4F002F9D6C /* loaders */ = {
+			isa = PBXGroup;
+			children = (
+				EBD8CB251B903C3C002F9D6C /* mod_load.c */,
+				EBD8C9AB1B903A4F002F9D6C /* common.c */,
+				EBD8C9C31B903A4F002F9D6C /* it.h */,
+				EBD8C9C41B903A4F002F9D6C /* it_load.c */,
+				EBD8C9C51B903A4F002F9D6C /* itsex.c */,
+				EBD8C9C71B903A4F002F9D6C /* loader.h */,
+				EBD8C9D31B903A4F002F9D6C /* mod.h */,
+				EBD8CA161B903A50002F9D6C /* s3m.h */,
+				EBD8CA171B903A50002F9D6C /* s3m_load.c */,
+				EBD8CA181B903A50002F9D6C /* sample.c */,
+				EBD8CA261B903A50002F9D6C /* xm.h */,
+				EBD8CA271B903A50002F9D6C /* xm_load.c */,
+			);
+			name = loaders;
+			path = "../../../libgid/external/libxmp-4.3/src/loaders";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1343,15 +1504,22 @@
 				5F276FC818F4020E00D78AE4 /* b2ParticleGroup.h in Headers */,
 				5F276F9318F4020E00D78AE4 /* b2Fixture.h in Headers */,
 				5F276FA018F4020E00D78AE4 /* b2CircleContact.h in Headers */,
+				EBD8CB081B903A50002F9D6C /* xm.h in Headers */,
+				EBD8CB141B903A50002F9D6C /* mixer.h in Headers */,
 				5F276F9818F4020E00D78AE4 /* b2World.h in Headers */,
 				5F276F7E18F4020E00D78AE4 /* b2IntrusiveList.h in Headers */,
 				5F276F6F18F4020E00D78AE4 /* b2ChainShape.h in Headers */,
+				EBD8CB191B903A50002F9D6C /* player.h in Headers */,
 				5F276F9A18F4020E00D78AE4 /* b2WorldCallbacks.h in Headers */,
+				EBD8CAF81B903A50002F9D6C /* s3m.h in Headers */,
 				EB82BDD11B29606C00281732 /* gl2Shaders.h in Headers */,
+				EBD8CAB61B903A50002F9D6C /* mod.h in Headers */,
+				EBD8CB111B903A50002F9D6C /* memio.h in Headers */,
 				5F276FB018F4020E00D78AE4 /* b2FrictionJoint.h in Headers */,
 				5F276FC218F4020E00D78AE4 /* b2WeldJoint.h in Headers */,
 				5F276FAC18F4020E00D78AE4 /* b2PolygonContact.h in Headers */,
 				5F276FCB18F4020E00D78AE4 /* b2StackQueue.h in Headers */,
+				EBD8CB2E1B903E70002F9D6C /* tempfile.h in Headers */,
 				5F276FA618F4020E00D78AE4 /* b2EdgeAndCircleContact.h in Headers */,
 				5F276FB818F4020E00D78AE4 /* b2MouseJoint.h in Headers */,
 				5F276FCD18F4020E00D78AE4 /* b2VoronoiDiagram.h in Headers */,
@@ -1359,21 +1527,32 @@
 				5F276F6018F4020E00D78AE4 /* Box2D.h in Headers */,
 				5F276FBA18F4020E00D78AE4 /* b2PrismaticJoint.h in Headers */,
 				5F276F9C18F4020E00D78AE4 /* b2ChainAndCircleContact.h in Headers */,
+				EBD8CA801B903A50002F9D6C /* list.h in Headers */,
+				EBD8CA441B903A50002F9D6C /* common.h in Headers */,
 				5F276F7118F4020E00D78AE4 /* b2CircleShape.h in Headers */,
 				5F276F8918F4020E00D78AE4 /* b2Timer.h in Headers */,
 				5F276FCF18F4020E00D78AE4 /* b2Rope.h in Headers */,
+				EBD8CA7B1B903A50002F9D6C /* hio.h in Headers */,
+				EBD8CA701B903A50002F9D6C /* envelope.h in Headers */,
+				EBD8CA7F1B903A50002F9D6C /* lfo.h in Headers */,
 				5F276FBC18F4020E00D78AE4 /* b2PulleyJoint.h in Headers */,
 				5F276F7518F4020E00D78AE4 /* b2PolygonShape.h in Headers */,
 				5F276F7C18F4020E00D78AE4 /* b2FreeList.h in Headers */,
 				5F276F8718F4020E00D78AE4 /* b2Stat.h in Headers */,
+				EBD8CB241B903A50002F9D6C /* virtual.h in Headers */,
 				EB82BDD41B29606C00281732 /* Shaders.h in Headers */,
+				EBD8CB171B903A50002F9D6C /* period.h in Headers */,
 				5F276F9518F4020E00D78AE4 /* b2Island.h in Headers */,
 				5F276F9118F4020E00D78AE4 /* b2ContactManager.h in Headers */,
 				5F276FAE18F4020E00D78AE4 /* b2DistanceJoint.h in Headers */,
+				EBD8CA791B903A50002F9D6C /* format.h in Headers */,
 				5F276F8F18F4020E00D78AE4 /* b2Body.h in Headers */,
+				EBD8CB301B904104002F9D6C /* xmp.h in Headers */,
+				EBD8CB2D1B903E70002F9D6C /* precomp_lut.h in Headers */,
 				5F276F8B18F4020E00D78AE4 /* b2TrackedBlock.h in Headers */,
 				5F276FA218F4020E00D78AE4 /* b2Contact.h in Headers */,
 				5F276FC418F4020E00D78AE4 /* b2WheelJoint.h in Headers */,
+				EBD8CAA61B903A50002F9D6C /* it.h in Headers */,
 				5F276FCA18F4020E00D78AE4 /* b2ParticleSystem.h in Headers */,
 				5F276F6918F4020E00D78AE4 /* b2Distance.h in Headers */,
 				5F276FC018F4020E00D78AE4 /* b2RopeJoint.h in Headers */,
@@ -1398,9 +1577,12 @@
 				5F276F7318F4020E00D78AE4 /* b2EdgeShape.h in Headers */,
 				5F276FC618F4020E00D78AE4 /* b2Particle.h in Headers */,
 				5F276F6B18F4020E00D78AE4 /* b2DynamicTree.h in Headers */,
+				EBD8CA6E1B903A50002F9D6C /* effects.h in Headers */,
+				EBD8CAAA1B903A50002F9D6C /* loader.h in Headers */,
 				5F276F8518F4020E00D78AE4 /* b2StackAllocator.h in Headers */,
 				5F276F8318F4020E00D78AE4 /* b2SlabAllocator.h in Headers */,
 				5F276FB418F4020E00D78AE4 /* b2Joint.h in Headers */,
+				EBD8CB2C1B903E70002F9D6C /* mdataio.h in Headers */,
 				5F276F7A18F4020E00D78AE4 /* b2Draw.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1473,6 +1655,8 @@
 				5F0CD83915BB0B3D00479287 /* png.c in Sources */,
 				5F0CD83A15BB0B3D00479287 /* pngerror.c in Sources */,
 				5F0CD83B15BB0B3D00479287 /* pngget.c in Sources */,
+				EBD8CA731B903A50002F9D6C /* filter.c in Sources */,
+				EBD8CB1B1B903A50002F9D6C /* read_event.c in Sources */,
 				5F0CD83C15BB0B3D00479287 /* pngmem.c in Sources */,
 				5F276F9018F4020E00D78AE4 /* b2ContactManager.cpp in Sources */,
 				5F276F7F18F4020E00D78AE4 /* b2Math.cpp in Sources */,
@@ -1510,6 +1694,7 @@
 				5F0CD88A15BB112300479287 /* jcprepct.c in Sources */,
 				5F0CD88B15BB112300479287 /* jcsample.c in Sources */,
 				5F0CD88C15BB112300479287 /* jctrans.c in Sources */,
+				EBD8CB231B903A50002F9D6C /* virtual.c in Sources */,
 				5F0CD88D15BB112300479287 /* jdapimin.c in Sources */,
 				5F0CD88E15BB112300479287 /* jdapistd.c in Sources */,
 				5F0CD88F15BB112300479287 /* jdarith.c in Sources */,
@@ -1518,6 +1703,7 @@
 				5F0CD89215BB112300479287 /* jdcoefct.c in Sources */,
 				5F276FBF18F4020E00D78AE4 /* b2RopeJoint.cpp in Sources */,
 				5F0CD89315BB112300479287 /* jdcolor.c in Sources */,
+				EBD8CA461B903A50002F9D6C /* dataio.c in Sources */,
 				5F276F7018F4020E00D78AE4 /* b2CircleShape.cpp in Sources */,
 				5F0CD89415BB112300479287 /* jddctmgr.c in Sources */,
 				5F0CD89515BB112300479287 /* jdhuff.c in Sources */,
@@ -1532,6 +1718,7 @@
 				5F0CD89D15BB112300479287 /* jdtrans.c in Sources */,
 				EB82BDCE1B29606C00281732 /* gl2ShaderBuffer.cpp in Sources */,
 				5F276FC918F4020E00D78AE4 /* b2ParticleSystem.cpp in Sources */,
+				EBD8CAF91B903A50002F9D6C /* s3m_load.c in Sources */,
 				5F0CD89E15BB112300479287 /* jerror.c in Sources */,
 				5F0CD89F15BB112300479287 /* jfdctflt.c in Sources */,
 				5F0CD8A015BB112300479287 /* jfdctfst.c in Sources */,
@@ -1565,6 +1752,7 @@
 				5F0CD92015BB498100479287 /* ftinit.c in Sources */,
 				5F0CD92215BB498A00479287 /* ftgasp.c in Sources */,
 				5F0CD92415BB499400479287 /* raster.c in Sources */,
+				EBD8CB1D1B903A50002F9D6C /* smix.c in Sources */,
 				5F0CD92615BB499C00479287 /* sfnt.c in Sources */,
 				5F0CD92815BB49A500479287 /* smooth.c in Sources */,
 				5F0CD92A15BB49B100479287 /* autofit.c in Sources */,
@@ -1580,6 +1768,7 @@
 				5F276F6A18F4020E00D78AE4 /* b2DynamicTree.cpp in Sources */,
 				5F321E0615BB516F00542289 /* eventvisitor.cpp in Sources */,
 				5F321E0715BB516F00542289 /* gplugin-ios.mm in Sources */,
+				EBD8CA8E1B903A50002F9D6C /* common.c in Sources */,
 				5F321E0815BB516F00542289 /* refptr.cpp in Sources */,
 				5F321E0915BB516F00542289 /* stringid.cpp in Sources */,
 				5FE658B718FBF0FB001D8EE3 /* inftrees.c in Sources */,
@@ -1623,13 +1812,16 @@
 				5F321EF615BBC3FC00542289 /* splashscreen.cpp in Sources */,
 				5F276FCE18F4020E00D78AE4 /* b2Rope.cpp in Sources */,
 				5F276F6818F4020E00D78AE4 /* b2Distance.cpp in Sources */,
+				EBD8CA6F1B903A50002F9D6C /* envelope.c in Sources */,
 				5F321EF715BBC3FC00542289 /* sprite.cpp in Sources */,
 				5F276F9218F4020E00D78AE4 /* b2Fixture.cpp in Sources */,
 				EB08A3521AAA06F900D8F27D /* Matrices.cpp in Sources */,
+				EBD8CA451B903A50002F9D6C /* control.c in Sources */,
 				5F321EF815BBC3FC00542289 /* stage.cpp in Sources */,
 				5F276FC718F4020E00D78AE4 /* b2ParticleGroup.cpp in Sources */,
 				5F276F6418F4020E00D78AE4 /* b2CollideEdge.cpp in Sources */,
 				5ECDAB381ADAE0D100278F39 /* md5.c in Sources */,
+				EBD8CB321B904216002F9D6C /* gaudio-loader-xmp.cpp in Sources */,
 				EB82BDD31B29606C00281732 /* Shaders.cpp in Sources */,
 				5F321EF915BBC3FC00542289 /* stageorientationevent.cpp in Sources */,
 				5F321EFA15BBC3FC00542289 /* stopwatch.cpp in Sources */,
@@ -1651,6 +1843,8 @@
 				5F321F0815BBC3FC00542289 /* transform.cpp in Sources */,
 				5F321F0915BBC3FC00542289 /* ttfont.cpp in Sources */,
 				5F321F0A15BBC3FC00542289 /* tttextfield.cpp in Sources */,
+				EBD8CAFA1B903A50002F9D6C /* sample.c in Sources */,
+				EBD8CB121B903A50002F9D6C /* mix_all.c in Sources */,
 				5F321F0C15BBC3FC00542289 /* urlrequest.cpp in Sources */,
 				5F321F1815BBC47500542289 /* dict.c in Sources */,
 				5F321F1915BBC47500542289 /* geom.c in Sources */,
@@ -1658,15 +1852,18 @@
 				5F321F1A15BBC47500542289 /* memalloc.c in Sources */,
 				5F321F1B15BBC47500542289 /* mesh.c in Sources */,
 				5FE658B418FBF0FB001D8EE3 /* infback.c in Sources */,
+				EBD8CB261B903C3C002F9D6C /* mod_load.c in Sources */,
 				5F321F1C15BBC47500542289 /* normal.c in Sources */,
 				5F276F9B18F4020E00D78AE4 /* b2ChainAndCircleContact.cpp in Sources */,
 				5F321F1D15BBC47500542289 /* priorityq.c in Sources */,
 				5F321F1E15BBC47500542289 /* render.c in Sources */,
 				5F321F1F15BBC47500542289 /* sweep.c in Sources */,
 				EBD254CA1ADD149000CC57F9 /* zlibbinder.cpp in Sources */,
+				EBD8CB101B903A50002F9D6C /* memio.c in Sources */,
 				5F276F6318F4020E00D78AE4 /* b2CollideCircle.cpp in Sources */,
 				5F276F7918F4020E00D78AE4 /* b2Draw.cpp in Sources */,
 				5F321F2015BBC47500542289 /* tess.c in Sources */,
+				EBD8CA6D1B903A50002F9D6C /* effects.c in Sources */,
 				5F321F2115BBC47500542289 /* tessmono.c in Sources */,
 				5F321F4715BBEB3200542289 /* tlsf.c in Sources */,
 				5F321F4815BBEB3200542289 /* accelerometerbinder.cpp in Sources */,
@@ -1678,9 +1875,12 @@
 				5F321F4B15BBEB3200542289 /* binder.cpp in Sources */,
 				5F321F4C15BBEB3200542289 /* bitmapbinder.cpp in Sources */,
 				5ECDAB3A1ADAE0D100278F39 /* utf8.c in Sources */,
+				EBD8CAA71B903A50002F9D6C /* it_load.c in Sources */,
 				5F321F4D15BBEB3200542289 /* bitmapdatabinder.cpp in Sources */,
+				EBD8CB1C1B903A50002F9D6C /* scan.c in Sources */,
 				5F276F9F18F4020E00D78AE4 /* b2CircleContact.cpp in Sources */,
 				5F321F4E15BBEB3200542289 /* box2dbinder2.cpp in Sources */,
+				EBD8CA811B903A50002F9D6C /* load_helpers.c in Sources */,
 				5F276F8818F4020E00D78AE4 /* b2Timer.cpp in Sources */,
 				5F276F9918F4020E00D78AE4 /* b2WorldCallbacks.cpp in Sources */,
 				5F321F4F15BBEB3200542289 /* dibbinder.cpp in Sources */,
@@ -1688,19 +1888,23 @@
 				5F321F5115BBEB3200542289 /* eventdispatcherbinder.cpp in Sources */,
 				5F321F5215BBEB3200542289 /* fontbasebinder.cpp in Sources */,
 				5FE658B218FBF0FB001D8EE3 /* gzread.c in Sources */,
+				EBD8CA821B903A50002F9D6C /* load.c in Sources */,
 				5F321F5315BBEB3200542289 /* fontbinder.cpp in Sources */,
 				5F321F5415BBEB3200542289 /* geolocationbinder.cpp in Sources */,
 				5F321F5515BBEB3200542289 /* gyroscopebinder.cpp in Sources */,
 				5FE658BA18FBF0FB001D8EE3 /* zutil.c in Sources */,
 				5F321F5615BBEB3200542289 /* keys.cpp in Sources */,
 				5ECDAB391ADAE0D100278F39 /* platformutil.cpp in Sources */,
+				EBD8CB281B903C69002F9D6C /* format.c in Sources */,
 				5F321F5715BBEB3200542289 /* luaapplication.cpp in Sources */,
 				5F321F5915BBEB3200542289 /* matrixbinder.cpp in Sources */,
 				5F321F5A15BBEB3200542289 /* movieclipbinder.cpp in Sources */,
 				5F321F5B15BBEB3200542289 /* registermodules.cpp in Sources */,
 				5F321F5C15BBEB3200542289 /* shapebinder.cpp in Sources */,
+				EBD8CB091B903A50002F9D6C /* xm_load.c in Sources */,
 				5F321F5F15BBEB3200542289 /* spritebinder.cpp in Sources */,
 				5F276FB318F4020E00D78AE4 /* b2Joint.cpp in Sources */,
+				EBD8CB161B903A50002F9D6C /* period.c in Sources */,
 				5F321F6015BBEB3200542289 /* stackchecker.cpp in Sources */,
 				5F321F6115BBEB3200542289 /* stagebinder.cpp in Sources */,
 				5F321F6215BBEB3200542289 /* textfieldbinder.cpp in Sources */,
@@ -1720,10 +1924,14 @@
 				5FAC8AC615D59C56003E5781 /* ggeolocation-ios.mm in Sources */,
 				5FE658B018FBF0FB001D8EE3 /* gzclose.c in Sources */,
 				5F58D7D215D91D8000137D76 /* gglobal.cpp in Sources */,
+				EBD8CA7A1B903A50002F9D6C /* hio.c in Sources */,
 				5F880EA515DCF099001F889C /* urlloaderbinder.cpp in Sources */,
+				EBD8CB181B903A50002F9D6C /* player.c in Sources */,
 				5FCA653215F8A804006011C1 /* pluginmanager.cpp in Sources */,
+				EBD8CAA81B903A50002F9D6C /* itsex.c in Sources */,
 				EB82BDD61B305E2F00281732 /* shaderbinder.cpp in Sources */,
 				5F9968A7160F190400CF791A /* gapplication-ios.mm in Sources */,
+				EBD8CB131B903A50002F9D6C /* mixer.c in Sources */,
 				5F58B53E1619A0BA00B8E8FE /* gmesh.cpp in Sources */,
 				5ECDAB371ADAE0D100278F39 /* drawinfo.cpp in Sources */,
 				5F58B5411619A0E400B8E8FE /* meshbinder.cpp in Sources */,
@@ -1746,6 +1954,7 @@
 				5F0B588817A0663000E3668E /* completeevent.cpp in Sources */,
 				EB82BDD21B29606C00281732 /* gl2ShaderTexture.cpp in Sources */,
 				5FB68B761833C32A00D552A7 /* luautil.cpp in Sources */,
+				EBD8CA7E1B903A50002F9D6C /* lfo.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1862,6 +2071,38 @@
 				DSTROOT = /tmp/iosplayer.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iosplayer/iosplayer-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					FT2_BUILD_LIBRARY,
+					DARWIN_NO_CARBON,
+					OPENAL_SUBDIR_OPENAL,
+					_REENTRANT,
+					LIBXMP_CORE_PLAYER,
+				);
+				HEADER_SEARCH_PATHS = (
+					../../luabinding,
+					../../libnetwork,
+					../../external/glu/,
+					../../libgvfs,
+					../../libsound,
+					../../2dsg,
+					../../libgideros,
+					../../libpystring,
+					../../lua/src,
+					"../../libgid/external/jpeg-9",
+					../../libgid/include,
+					../../libgid/include/private,
+					"../../libgid/external/snappy-1.1.0",
+					"../../libgid/external/libpng-1.6.2",
+					"../../libgid/external/freetype-2.4.12/include",
+					"../../libgid/external/freetype-2.4.12/src",
+					"../../external/liquidfun-1.0.0/liquidfun/Box2D",
+					../../libgid/include/ios,
+					"../../libgid/external/zlib-1.2.8",
+					"../../libgid/external/libxmp-4.3/src",
+					"../../libgid/external/libxmp-4.3/lite/src",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1874,6 +2115,36 @@
 				DSTROOT = /tmp/iosplayer.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iosplayer/iosplayer-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					FT2_BUILD_LIBRARY,
+					DARWIN_NO_CARBON,
+					OPENAL_SUBDIR_OPENAL,
+					LIBXMP_CORE_PLAYER,
+					_REENTRANT,
+				);
+				HEADER_SEARCH_PATHS = (
+					../../luabinding,
+					../../libnetwork,
+					../../external/glu/,
+					../../libgvfs,
+					../../libsound,
+					../../2dsg,
+					../../libgideros,
+					../../libpystring,
+					../../lua/src,
+					"../../libgid/external/jpeg-9",
+					../../libgid/include,
+					../../libgid/include/private,
+					"../../libgid/external/snappy-1.1.0",
+					"../../libgid/external/libpng-1.6.2",
+					"../../libgid/external/freetype-2.4.12/include",
+					"../../libgid/external/freetype-2.4.12/src",
+					"../../external/liquidfun-1.0.0/liquidfun/Box2D",
+					../../libgid/include/ios,
+					"../../libgid/external/zlib-1.2.8",
+					"../../libgid/external/libxmp-4.3/src",
+					"../../libgid/external/libxmp-4.3/lite/src",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

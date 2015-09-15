@@ -1,0 +1,123 @@
+HSC File Format Spec, by Simon Peter (dn.tlp@gmx.net)
+-----------------------------------------------------
+
+Although the format is most commonly known through the HSC-Tracker by
+Electronic Rats, it was originally developed by Hannes Seifert of NEO
+Software for use in their commercial game productions in the time of
+1991 - 1994. ECR just ripped his player and coded an editor around it.
+
+There never was a comprehensive file format spec for HSC because it is
+a proprietary format and most third party replayers played none of the
+new effects included after the release of the HSC-Tracker. I don't know
+if my spec is in any way complete, but i know about the new effects at
+least. If someone got any additions or suggestions, he can contact me
+through email.
+
+Detecting HSC Files
+-------------------
+
+There is no real way of checking if a file is really a HSC file because
+there is no ID in the files. There is only a way to check if the file is
+NOT a HSC file and this is either when the filename extension is not
+".HSC" or when the filesize exceeds 59187 bytes.
+
+File Structure
+--------------
+
+Offset:		Size (bytes)	Desc.:
+0		128*12=1536	128 instruments (12 bytes each)
+1536		51		orderlist
+1587		rest of file	patterns
+
+There can't be more than 50 patterns in a HSC file, so just allocate an
+array big enough and load the rest of the file.
+
+Instrument Structure
+--------------------
+
+Byte:		Equals OPL2 register(+channel):
+1		0x23
+2		0x20
+3		0x43
+4		0x40
+5		0x63
+6		0x60
+7		0x83
+8		0x80
+9		0xc0
+10		0xe3
+11		0xe0
+12		finetune (signed; add to frequency)
+
+Orderlist & Pattern Structure
+-----------------------------
+
+The orderlist uses 1 byte per pattern to reference the patterns. It
+works as any other tracker-orderlist: You look up the pattern to be
+played in the appropriate orderlist position, this gives you the number
+of the pattern. When the pattern is played, you advance in the orderlist
+and look up the next pattern. There's just one special thing with this
+orderlist: If bit 7 of the byte is set and the value is < 0xb1, then
+don't play a pattern, but jump to the orderlist position in the low 6
+bits. A value of 0xff signals the end of the orderlist.
+
+The patterns are 64*9*2 arrays (64 rows by 9 channels and 2 bytes each
+channelrow). The 2 bytes each channel store the note (first byte) and
+the effect (second byte). The note is just a value to be added to C-0
+minus 1. If the value is 0, the row is empty (but there still may be
+effects in it!). So, to get the final frequency inside your player, do
+the following (C code):
+
+octave = (note-1) / 12;
+frequency = note_table[(note-1) % 12] + instrument_finetune +
+	eventually_effect_slide;
+
+Command & Effect Tables
+-----------------------
+
+Here's the code-table for the effect byte:
+
+Value:	Effect:
+01	Jump to next Pattern
+05	Percussion Mode on
+06	Percussion Mode off
+1x	Slide Frequency up (amount x)
+2x	Slide Frequency down (amount x)
+5x	Set Percussion Instrument (1 << x written to OPL2 register 0xbd)
+6x	Set Feedback (amount x)
+Ax	Set Carrier Volume (amount x)
+Bx	Set Modulator Volume (amount x)
+Cx	Set Instrument Volume - Carrier and Modulator (amount x)
+Fx	Set Speed (amount x)
+
+There are some effects that are used differently in various files.
+Here's the most common method:
+
+Value:	Effect:
+03	Fade main Volume in (row 0: volume off, row 32: full volume)
+
+Some files also do it this way:
+
+Value:	Effect:
+02	Slide main Volume up
+03	Slide main Volume down
+04	Set main Volume to off
+
+There are also some specials inside the note byte:
+If bit 7 is set, it's not a note, but an instrument to be set (low 6 bits).
+If the value is 0x7f, turn the key off.
+
+Misc Tables & Info
+------------------
+
+the note/frequency table is made up like this:
+const unsigned short note_table[12] =
+   {363,385,408,432,458,485,514,544,577,611,647,686};
+
+Any HSC module is played back at a fixed timer rate of 18.2Hz (the
+standard rate, so no timer reprogram is needed). The speed value is
+an amount to wait inside the replay routine until the next row is to
+be played. HSC tunes default to speed 2 and the channels have to be
+initialized with the instruments 1-9 at tune start.
+
+

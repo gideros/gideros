@@ -1,0 +1,205 @@
+J2B format
+By Dr. Eggman
+
+J2B i a compressed tracker with "Deflate" algorithm based on popular
+library ZLIB. This algorithm consists of LZ77 and Huffman coding and
+was "Deflate" was created by Jean-Loup Gailly. All of jj2 data are
+compressed in "Deflate".
+
+
+Now annoying part of decoded j2b format specification
+(I opened it in hex editor and compared with original tracker).
+Data structure of header is the easiest part :p
+
+It consists of:
+
+Signature "RIFF" (Reserved Intercharge File Format) (4 bytes)
+File size (without first 8 bytes) (4 bytes)
+Next signature of tracker initial values "AM  INIT" (8 bytes)
+Some value I don't know what the hell is... (4 bytes)
+Title of the song (ends with 0x00 character) (64 bytes)
+Some next value I don't know... (1 byte)
+Number of channels (1 byte)
+Initial speed of song (1 byte)
+Initial tempo of song (1 byte)
+Some unknown 5 bytes...
+Channels panning values (attention here: size in bytes is "Number of channels")
+
+...and this is the data structure of dj2b header in c++:
+
+typedef struct
+{
+        unsigned char signature[4];
+        unsigned long filesize;
+        unsigned char aminitsig[8];
+        unsigned long something;
+        unsigned char title[64];
+        unsigned char something1;
+        unsigned char channelnum;
+        unsigned char speed;
+        unsigned char tempo;
+        unsigned char something2[5];
+        unsigned char channelpan[64]; // init tab with maximal channels number
+} J2TRK;
+
+Next thing in Epic's RIFF format is order of patterns (it is after channelpan values):
+
+Signature "ORDR" (4 bytes)
+Length of order (1 byte)
+Some 3 unknown bytes...
+Position where the order ends (it's like real length only of order data) (1 byte)
+Pattern indexes (attention here: size in bytes is "Position where the order ends")
+
+You must have get minimal and maximal value from order to get 
+the lowest and the highest index of pattern! 
+This will help you in extracting patterns data 
+(number of patterns equals to difference between min and max value: num=max-min).
+
+...structure:
+
+typedef struct
+{
+        unsigned char signature[4];
+        unsigned char length;
+        unsigned char something[3];
+        unsigned char end;
+        unsigned char pattindex[256]; // init tab with maximal pattern index
+} J2ORDR;
+
+Uhhh.... This is a part I had nasty problems here...
+I think all of lengths are written in file like unvalidated... 
+for example: in the file length of pattern is 1346 so you must read 1345 bytes... 
+but if you have i.e. 235 bytes you read 235 bytes...
+Second part of problems was encoded data in notes and effects (rowdata),
+but I decoded it and I'm gonna show it :)
+
+But now you must know the beginning:
+
+Signature "PATT" (4 bytes)
+Length of data without 8 bytes (4 bytes)
+Index of pattern (1 byte)
+Real length of data only (validate it!) (4 bytes)
+Number of rows in pattern (1 byte)
+Data (size is validated "Real length of data only")
+
+...struct of pattern:
+    
+typedef struct
+{
+        unsigned char signature[4];
+        unsigned long lengthwo8;
+        unsigned char index;
+        unsigned long length;
+        unsigned char rows;
+        char data[65536]; /* init tab with maximal possible value  
+        (I don't suppose that the pattern could be 4294967295 bytes long...) */
+} J2PATT;
+
+I'm tired... So now encoded data of rows. 
+There are commands which tells us what channel we have to read and if we must leave all empty rows.
+There are all decoded commands:
+
+XY commands:
+00 - go to next row, execute XY command
+2x - on channel x+1 read the following data: <vol/2> (1 byte)
+4x - on channel x+1 read the following data: <samplenum><note> (2 bytes)
+6x - on channel x+1 read the following data: <samplenum><note><vol/2> (3 bytes)
+8x - on channel x+1 read the following data: <eff_parameter><effect> (2 bytes)
+Ax - on channel x+1 read the following data: <eff_parameter><effect><vol/2> (3 bytes)
+Cx - on channel x+1 read the following data: <eff_parameter><effect><samplenum><note> (4 bytes)
+Ex - on channel x+1 read the following data: <eff_parameter><effect><samplenum><note><vol/2> (5 bytes)
+
+3x – on channel x+17 read the following data: vol/2 (1 byte)
+5x – on channel x+17 read the following data: samplenum,note (2 bytes)
+7x – on channel x+17 read the following data: samplenum,note,vol/2 (3 bytes)
+9x – on channel x+17 read the following data: eff_parameter,effect (2 bytes)
+Bx – on channel x+17 read the following data: eff_parameter,effect,vol/2 (3 bytes)
+Dx – on channel x+17 read the following data: eff_parameter,effect,samplenum,note (4 bytes)
+Fx – on channel x+17 read the following data: eff_parameter,effect,samplenum,note,vol/2 (5 bytes)
+
+Note numbers and conversion:
+
+31 - C-4
+32 - C#4
+33 - D-4
+34 - D#4
+35 - E-4
+36 - F-4
+37 - F#4
+38 - G-4
+39 - G#4
+3a - A-4
+3b - A#4
+3c - B-4
+3d - C-5
+3e - C#5
+3f - D-5
+40 - D#5
+41 - E-5
+42 - F-5
+43 - F#5
+44 - G-5
+45 - G#5
+46 - A-5
+47 - A#5
+48 - B-5
+49 - C-6
+4a - C#6
+4b - D-6
+4c - D#6
+4d - E-6
+4e - F-6
+4f - F#6
+50 - G-6
+51 - G#6
+52 - A-6
+53 - A#6
+54 - B-6
+
+Effects (not all of them, as I'll have more time I'll list more effects here):
+0x01 - Portamento up
+0x02 - Portamento down
+0×03 – Tone portamento
+0×04 – Vibrato
+0×05 – Volslide+Toneporta
+0×06 – Volslide+Vibrato
+0×07 – Tremolo
+0x08 - Panning
+0×09 – Set offset
+0x0A - Volume slide
+0×0B – Position jump
+0×0D – Pattern break
+0×0E – Multieffect (like Sxx in IT format)
+0x0F - Speed
+0×14 – Tempo
+
+Next data of dj2b is instrument and then sample.
+By now I decoded sample structure (instrument structure too but I don't know what data is there):
+
+Instrument struct:
+
+Signature "RIFF" (4 bytes)
+AIInstSize without 8 bytes (4 bytes)
+Signature "AI  INST" (8 bytes)
+AIInstSize without 16 bytes (4 bytes)
+0x01420000 (4 bytes)
+Instrument data I don't know it (317 bytes)
+
+Sample struct:
+
+Signature "RIFF" (4 bytes)
+Length of struct without 8 bytes (4 bytes)
+Signature "AS  SAMP" (8 bytes)
+Length of struct without 16 bytes (4 bytes)
+4 unknown bytes...
+SampleName ends on 0x00 (32 bytes)
+0x00 (1 byte)
+Panning/2 (1 byte)
+6 unknown bytes...
+SampleWaveSize (4 bytes)
+LoopStart (4 bytes)
+LoopEnd (4 bytes)
+SampleFreq (4 bytes)
+0x00000000 (4 bytes)
+4 unknown bytes...
+SampleWaveData (Attenion here: size is "SampleWaveSize")

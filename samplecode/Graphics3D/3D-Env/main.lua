@@ -48,7 +48,7 @@ for f=1,6,1 do
 end
 
 -- Enlarge the cube and center it on the screen
-e:setScale(10)
+e:setScale(10,10,10)
 e:setPosition(160,240,0)
 stage:addChild(e)
 

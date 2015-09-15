@@ -1,0 +1,200 @@
+
+AMF format description by Miodrag Vallat <miodrag@mikmod.darkorb.net>
+
+--8<-----------
+
+DSMI's Advanced Module Format description
+=========================================
+
+BACKGROUND
+
+  The AMF format is the internal format used by DSMI, the Dos Sound and Music
+Interface, which was the engine of DMP. As DMP was able to play more and more
+module formats, the format evolved to support more features. There were 5
+official formats, numbered from 10 (AMF 1.0) to 14 (AMF 1.4). However,
+the first (non-public) formats, numbered from 1 to 9, are still recognized
+by DSMI. This document only describes the public formats.
+
+AMF MODULE LAYOUT
+
+  The AMF modules contain the following parts, in this order :
+- modules header
+- order table
+- sample table
+- track table
+- packed tracks
+- samples
+
+Note: all offset and size values are in hex. 16- and 32-bit quantities are in
+little-endian encoding. B means byte (8bit), W means word (16 bits), D means
+doubleword (32 bits).
+
+MODULE HEADER
+
+offset size description
+   0     3B signature "AMF"
+   3      B format version. 0A for 1.0, 0B for 1.1, etc, to 0E for 1.4
+   4    20B song title (ASCIIZ)
+  24      B number of samples
+  25      B number of orders
+  26      W number of tracks (number of channels*original number of patterns)
+  28      B number of channels. AMF 1.2 and less is limited to 16 channels,
+            whereas AMF 1.3 and more are limited to 32 channels.
+[AMF 1.0 only]
+  29    10B channel remap table
+[AMF 1.1 and more only]
+  29    xxB panning table (size 10B for 1.1 and 1.2, 20B for 1.3 and 1.4)
+[AMF 1.3 and more only]
+  49      B initial tempo
+  4A      B initial speed
+
+The channel remap table was used to reorder the order table (see below), but
+since it was useless it was removed in AMF 1.1.
+
+The panning table contains the channel initial pan position. It consists of
+signed bytes ranging from -63 (0xC1, for left) to +63 (0x3F, for right), 0
+being center. The special value +100 (0x64) means surround panning.
+
+ORDER TABLE
+
+The order table associates track number to orders and channels.
+It contains <number of orders> occurences of the following structure :
+[AMF 1.4 only]
+   0      W pattern size in rows
+[all AMF versions]
+ 0/2    xxW for each channel, a word containing the associated track number.
+            In AMF 1.0, this array must be reordered as told in the channel
+            remap table.
+
+Patterns in AMF 1.3 and below are 64 rows long.
+
+SAMPLE TABLE
+
+The sample table contains <number of samples> occurences of the following
+structure :
+
+   0      B sample type : 0 for non-existant sample, 1 for PCM sample.
+   1    20B sample name (ASCCIZ)
+  21     DB sample filename (ASCIIZ)
+  2E      D sample index in the file / sample address in memory
+  32      D sample length in bytes
+  36      W c4 speed, rounded to the nearest multiple of 8
+  38      B sample volume in range 0-0x40
+[AMF 1.0 only]
+  39      W sample loop start in bytes
+[AMF 1.1 and more only]
+  39      D sample loop start in bytes
+  3D      D sample loop end
+
+Samples loop if loopstart!=0 ; loopend==length in AMF 1.0, which caused
+problems when some modules were converted.
+
+TRACK TABLE
+
+The track table contains <number of tracks> words associating logical track
+numbers to the in-file packed track numbers.
+
+PACKED TRACKS
+
+The greatest number found in the track table is the number of packed tracks
+in the file. Each packed track is written as a sequence of 3 bytes record
+(triplets).
+
+The first triplet is a 24-bit number containing the size of the pattern in
+triplets.
+
+The other triplets describe track events as follow :
+   0      B row of the event
+   1      B type of event
+   2      B event parameter
+If the type of event is < 0x7F, it is a note value (0 for C1) and the last byte
+is the note volume.
+If the type of event is 0x7F, the whole pattern row is a copy of the previous
+row.
+If the type of event is ==0x80, it is an instrument change and the last byte is
+the sample number.
+If the type of event is > 0x80, it is an effect and the last byte is the effect
+parameter.
+
+The last triplet of the pattern should be 0xFF-0xFF-0xFF, but due to bugs in
+M2AMF it is not always the case.
+
+EFFECTS
+
+Effect parameter are the same as the equivalent S3M or Protracker effect, unless
+otherwise specified.
+0x81: Set speed. (S3M Axx)
+0x82: Volume slide. Parameter >0 => S3M Dx0, <0 => S3M D0x
+0x83: Set channel volume. Parameter is volume, range 0-0x40.
+0x84: Portamento. Parameter >0 => S3M Exx, <0 => S3M Fxx.
+0x85: Described as 'porta abs'. Behaviour unknown (never found)
+0x86: Porta to note. (S3M Gxx)
+0x87: Tremor. (S3M Ixx)
+0x88: Arpeggio. (Protracker 0xx)
+0x89: Vibrato. (Protracker 4xx)
+0x8A: Porta + volume slide. Parameter >0 => S3M Lx0, <0 => S3M L0x
+0x8B: Vibrato + volume slide. Parameter >0 => S3M Kx0, <0 => S3M K0x
+0x8C: Pattern break. (Protracker Dxx)
+0x8D: Pattern jump. (Protracker Bxx but parameter in hex, not in BCD)
+0x8E: Described as 'sync'. Behaviour unknown (never found)
+0x8F: Retrig. (S3M Q0x)
+0x90: Set sample offset (Protracker 9xx)
+0x91: Fine volume. Parameter >0 => S3M DxF, <0 => S3M DFx
+0x92: Fine portamento. Parameter >0 => S3M EFx, <0 => S3M FFx
+0x93: Delay note. (Protracker EDx)
+0x94: Note cut.
+0x95: Set bpm. (S3M Txx)
+0x96: Extra fine portamento. Parameter >0 => S3M EEx, <0 => S3M FEx.
+      Note that AMF fine portamento is 4 times finer than S3M fine portamento.
+0x97: Pan. Parameter as in the module header pan table.
+
+SAMPLE DATA
+
+The module samples are stored as 8 bit unsigned values, in the order found in
+the sample list (the <sample index> field).
+
+ACKNOWLEDGMENTS
+
+- The DSMI include files, normally not distributed, but found in the evaluation
+  version of the OS/2 port of DSMI, helped me to figure out the effect numbers ;
+- A partial disassembly of the AMF2S3M converter by Jonas (which does not
+  convert my favorite AMF modules corectly) helped me understand the triplet
+  packing scheme (although it does not understand the xx-7F-FF triplets).
+- A 3 minute examination of an old DMP.EXE showed me the differences between
+  AMF 1.2 and 1.3, since I don't have any m2amf.exe which generates AMF 1.2
+  files.
+
+--8<-----------
+
+Notes by Andre Timmermans, Sat Aug 13 2011 at 1:51 PM:
+
+The AMF documentation written by Miograd Vallat seems inacurate in several
+points:
+ 
+1) Module header, the doc tells that in version 1.0 only sample loop start
+   is present (2 bytes) but the files I have tells both start and end are
+   present (2* 4 bytes). Maybe it should be read as version < 1.0.
+
+2) Order table: the track numbers in this table are not explained, but as
+   you noticed  you have to perform -1 to obtain the index in the track table.
+   For value 0, found in some files, I think it means an empty track.
+
+3) Pattern effects triples:
+   - The doc tells 0x7F is copy of last row info. Rarely used, but I found
+     2 files with it and it is always located in the middle of 3 triples for
+     the same row, an 0x80 setting the instrument, the 0x7f, then a 0x83
+     (alladin - alladd.pc.amf) or 0x90 (eye.amf). I have found the original
+     for eye.amf, ftp://ftp.modland.com/pub/modules/Protracker/Yolk/coop-
+     Legend/eyegabo0om%20final.mod and looking at it the contains for that
+     line an instrument and a set offset command but no note. So I guess 0x7f
+     is just a marker for such cases.
+   - Not explained for 0x84, pitch slide, value 0x00 corresponds to S3M E00
+     and 0x80 stands for S3M F00 (I checked with M2AMF).
+   - M2AMF maps both tremolo and tremor to 0x87. Since tremor is only found
+     in certains format, maybe it would be better to consider it is a tremolo.
+   - Extra fine porta 0x96 seems to be 4 times finer than S3M ones.
+   - I found a file with the 0x8E command ftp://ftp.amigascne.org/mirrors/
+     ftp.modland.com/pub/modules/Digital%20Sound%20And%20Music%20Interface/
+     Toal%20Nkor/far%20over%20the%20seas.amf but without the original I could
+     not guess the meaning of the mysterious command.
+

@@ -1,0 +1,377 @@
+           Protracker Studio Module Format Specification v1.00
+
+As mentioned in the last document, another format would be provided if the
+Protracker Studio 16 format weren't flexible enough.  Well, here it is.
+Sorry if I have inconvenienced anyone, but this format allows me to port
+in most any kind of music file.  I've currently ported the following formats
+to the PSM format:  MODs, WOWs, Oktalizer, Scream Tracker 2.x, Scream Tracker
+3.x, and Composer 669.
+
+Below lists the format of the Protracker Studio Module (PSM) header.
+
++-----------------------------------------------------------------------------+
+| PSM Header Format:                                                          |
++-----------------------------------------------------------------------------+
+|Length        |Description
++---------+----+---------------------------------------------------------------
+|4 Bytes  |   0+- Sig -
+|         |    |  The signature for the file.  This should ALWAYS be set to
+|         |    |    PSMþ to act as the signature but also part of the string
+|         |    |    when TYPEing the PSM file to the screen.
+|60 Bytes |   4+- Song Name -
+|         |    |  This contains the 59-character name of the music file.  it
+|         |    |    may contain the name of the MOD if converted from a MOD, or
+|         |    |    it may contain information on number of channels, etc.
+|         |    |    The final byte, 60, MUST have a ^Z in it.
+|1 Byte   |  64+- Song Type -
+|         |    |  7 6 5 4 3 2 1 0
+|         |    |  | | | | | | | +- 0 - Module (w/samp.), 1 - Song (w/o samples)
+|         |    |  | | | | | | +--- 0 - 3 octave Protracker, 1 - 5 octave
+|         |    |  | | | | | +----- Reserved
+|         |    |  | | | | +------- Reserved
+|         |    |  | | | +--------- Reserved
+|         |    |  | | +----------- Reserved
+|         |    |  | +------------- Reserved
+|         |    |  +--------------- Reserved
+|1 Byte   |  65+- Song Version -
+|         |    |  For this version of the PSM format, this will ALWAYS contain
+|         |    |    a $10, thus the version is 1.00.
+|1 Byte   |  66+- Pattern Version -
+|         |    |  This field can contain a 0 or a 1.  The 0 means the patterns
+|         |    |    stored in the module are in the 32 channel file format.  A
+|         |    |    version 1 signifies the patterns as being stored as a 255
+|         |    |    channel format.
+|1 Byte   |  67+- Default Speed -
+|         |    |  This is the default "click" speed for the music file.  Thus,
+|         |    |    for every countdown to zero from this value, the next
+|         |    |    pattern line will be processed.
+|1 Byte   |  68+- Default BPM -
+|         |    |  This is the default Amiga BPM value.  It is calculated as
+|         |    |    described below.  The only reason that the Amiga BPM format
+|         |    |    is still followed is that it allows more control over the
+|         |    |    final hz value.  Range: 32 to 255.
+|1 Byte   |  69+- Master Volume -
+|         |    |  The Master Volume value for the module.  This can range from
+|         |    |    0 (0%) to 255 (100%).
+|1 Word   |  70+- Song Length -
+|         |    |  This value contains the number of orders to play for this
+|         |    |    song.
+|         |    |  Contrary to the size of this value, the song length can only
+|         |    |    range from 1 to 255.  This value was made a Word to
+|         |    |    simplify coding, but it can also be used for expandability
+|         |    |    in the future.
+|1 Word   |  72+- Number of Orders -
+|         |    |  This is the number of orders that is stored at the Orders
+|         |    |    Offset.  Orders are the same thing as sequences, and they
+|         |    |    represent the order of the patterns to play.  This value
+|         |    |    is currently limited to the range of 1 to 255.
+|1 Word   |  74+- Number of Patterns -
+|         |    |  This field describes the number of patterns in this module.
+|         |    |    There can currently only be 1 to 255 patterns.
+|1 Word   |  76+- Number of Samples -
+|         |    |  This field describes the number of samples and sample
+|         |    |    structures stored in this module.  This is limited from
+|         |    |    1 to 255.
+|1 Word   |  78+- Number of Channels to Play -
+|         |    |  This field describes the maximum number of channels in this
+|         |    |    module to PLAY.  This is currently limited to a range of 1
+|         |    |    to 32.  This differs from the Number of Channels to Process
+|         |    |    field.  The Number of Channels to Process (NCP) describes
+|         |    |    the MAXIMUM number of channels to process.  As an example,
+|         |    |    when converting 669 files, I set the NCP to 9 because I
+|         |    |    put some track information on Channel 8, but the Number
+|         |    |    of Channels to Play was set to 8, and the channel numbers
+|         |    |    to play were from 0 to 7.
+|1 Word   |  80+- Number of Channels to Process -
+|         |    |  See Above.
+|1 Long   |  82+- Offset of the Orders -
+|         |    |  Offset FROM the start of the header of the orders.
+|1 Long   |  86+- Offset of the Initial Pan Positions -
+|         |    |  Offset FROM the start of the header of the pan positions.
+|1 Long   |  90+- Offset of the Patterns -
+|         |    |  Offset FROM the start of the header of the patterns.
+|1 Long   |  94+- Offset of the Sample Headers -
+|         |    |  Offset FROM the start of the header of the sample headers.
+|1 Long   |  98+- Offset of the Comments -
+|         |    |  Offset FROM the start of the header of the comments.
+|1 Long   | 102+- Total Pattern Size -
+|         |    |  This is the total size of the patterns to be loaded from the
+|         |    |    PatternsOfs location.  The reason it is stored here is
+|         |    |    because there is no easy way to determine the size of all
+|         |    |    of the patterns.
+|10 Longs | 106+- Fillers -
+|         |    |  These are fillers that can be used for future expansion.
+|         |    |    These are FILE OFFSETS of additional structures.
++---------+----+--------------+------------------------------------------------
+          | 146 Bytes long    |
+          +-------------------+
+Apologies for the last format.  This format header will NEVER change.  I
+figure the 10 Filler offsets should give sufficient expansion room.
+
+
++------------------------------------------------------------------------------+
+| PSM BPM:                                                                     |
++------------------------------------------------------------------------------+
+Beats Per Minute can be centered around the following equations:
+
+        Convert_Hz_To_BPM:  Hz*2/5   or   Hz/2.5
+        Convert_BPM_To_Hz:  BPM*5/2  or   BPM*2.5
+
+Why use BPM instead of Hz?  Let's do some calculations.  BPM can only range
+from 32 to 255 in the format that we are dealing with.  This gives us a
+Hz range from 12.8hz to 102hz.  There are a lot of fractional parts in the
+hertz rates described by BPM.  However, if we only use a hertz value, we can
+only reasonably store a 13hz instead of a 12.8hz.
+
+Thus, here are some typical hz/BPM rates:
+
+                MOD:    125 BPM, 50 hz
+                669:     80 BPM, 32 hz
+
+
++------------------------------------------------------------------------------+
+| PSM Orders Format:                                                           |
++------------------------------------------------------------------------------+
+The Header variable Offset to Orders points to this section.
+
+Although yet undetermined precisely, the Orders in PSM have an interactive
+nature about them.  Through the use of a mini-"programming" language, all
+sorts of effects and special cases with the orders can be made.  By doing
+this, the creator could turn off certain tracks at a certain time while
+looping a specified set of orders.  Or, a section of orders could loop
+until a flag was set by the programmer of a game... many possibilities
+exist.
+
+Orders are stored in the order that they will play in.  As an example:
+
+01 04 05 31
+
+The Number of Orders field in the header will contain a 4 to signify 4
+orders, in this instance.
+
+Immediately following these orders is a word containing the size of the
+additional Orders "language."  For the time being, this will only contain
+a zero.
+
+
++------------------------------------------------------------------------------+
+| PSM Version 0 Pattern Format (32 Channel Version)                            |
++------------------------------------------------------------------------------+
+The Header variable Offset of Patterns points here.
+
+PSM tracks contain all information pertinent to the note, instrument, volume,
+special effects, and the special effect data.  A single PSM's track size
+can range from 2 bytes or larger (typically, 6 bytes is the largest).
+
+All tracks belonging to a single row are stored one after another.  The
+row will be terminated with a zero.  This means that if channels 1, 4,
+and 7 are modified on the current row, they will be stored as such:
+
+                Channel 1...Channel 4...Channel 7...0
+
+The description of the format of a single PSM track is as follows.  The
+command byte is first:
+
+  Command Byte:         Where:     a - Is there a note or instrument change?
+        abcddddd                   b - Is there a volume change?
+                                   c - Is there a special effect change?
+                               ddddd - The channel number for this info
+                                       ranging from 0 to 31.
+
+If the command byte is zero then the end of the current row is encountered.
+
+The process for parsing the command information is like so:
+
+        1) Load the command byte.
+        2) Is it a zero?  If so, we're at the end of the row.
+        3) Channel = Command and 31.
+        4) Set up channel pointers.
+        5) If Command and 80h > 0 then Grab Note Information.
+        6) If Command and 40h > 0 then Grab Volume Information.
+        7) If Command and 20h > 0 then Grab Special Effect Information.
+
+Grab Note Information:
+----------------------
+        1) Load in the next byte.  This byte is the note.
+           +---------+---------+---------+---------+---------+
+           | C-0   0 | C-1  12 | C-2  24 | C-3  36 | C-4  48 |
+           | C#0   1 | C#1  13 | C#2  25 | C#3  37 | C#4  49 |
+           | D-0   2 | D-1  14 | D-2  26 | D-3  38 | D-4  50 |
+           | D#0   3 | D#1  15 | D#2  27 | D#3  39 | D#4  51 |
+           | E-0   4 | E-1  16 | E-2  28 | E-3  40 | E-4  52 |
+           | F-0   5 | F-1  17 | F-2  29 | F-3  41 | F-4  53 |
+           | F#0   6 | F#1  18 | F#2  30 | F#3  42 | F#4  54 |
+           | G-0   7 | G-1  19 | G-2  31 | G-3  43 | G-4  55 |
+           | G#0   8 | G#1  20 | G#2  32 | G#3  44 | G#4  56 |
+           | A-0   9 | A-1  21 | A-2  33 | A-3  45 | A-4  57 |
+           | A#0  10 | A#1  22 | A#2  34 | A#3  46 | A#4  58 |
+           | B-0  11 | B-1  23 | B-2  35 | B-3  47 | B-4  59 |
+           +---------+---------+---------+---------+---------+
+        2) Load in the next byte.  This is the instrument number.
+
+
+Grab Volume Information:
+------------------------
+        1) Load in the next byte.  This byte is the volume, range 0 to 64.
+
+Grab Special Effects Information:
+---------------------------------
+        1) Load in the next byte.  This byte is the special effect, range 0 to
+           255.
+        2) The next byte(s) are dependant on which special effect command
+           is being used.  Load in the appropriate number of bytes, based
+           on what the effect needs.
+
+        Refer to the file EFX.DOC.
+
+
+The pattern data follows this header located at the beginning of each pattern:
+
+        Byte    Name            Description
+       ------  --------------- ----------------------------------------
+         0-1   Size     (Word) Size is the total size of the ENTIRE
+                                pattern, INCLUDING bytes 0 through 3.
+                                This number is paragraph aligned.  This
+                                means that if a pattern is 253 bytes
+                                long, its actual size is 257.
+           2   NumLines (Byte) This is the number of pattern lines in
+                                the pattern.  If a pattern only uses
+                                30 lines and the pattern must terminate
+                                to the next pattern at this point,
+                                store a 30 here.  Otherwise, ALWAYS store
+                                a 64 so the entire pattern will play.
+           3   NumChans (Byte) This is the number of channels that this
+                                pattern uses.
+        4-??   Track           This is Track 1, terminated with a -1.
+                                The other tracks follow immediately after
+                                this.
+
+
++------------------------------------------------------------------------------+
+| PSM Sample Header Format:                                                    |
++------------------------------------------------------------------------------+
+The Header variable Offset of Sample Headers points here.
+
+All of the headers follow each other for Number of Samples Headers.
+
+|Length        |Description
++---------+----+-------------------------------------------------------------
+|13 Bytes |   0+- Sample Filename -
+|         |    |  This is the filename for the sample.  Byte 13 contains a 0.
+|24 Bytes |  13+- Sample Description -
+|         |    |  This is the description of the sample.
+|1 Long   |  37+- File Offset -
+|         |    |  This is the offset of the raw sample data from the start of
+|         |    |    the header.
+|1 Long   |  41+- Memory Location -
+|         |    |  This is the physical offset in RAM/DRAM of the sample.
+|1 Word   |  45+- Sample Number -
+|         |    |  The physical number of the sample is stored here.  Range:
+|         |    |    1 - 255.
+|1 Byte   |  47+- Sample Type -
+|         |    |  This byte contains the bits that may be set describing the
+|         |    |    sample.
+|         |    |
+|         |    |   7 6 5 4 3 2 1 0
+|         |    |   | | | | | | | +- 0 - Digital, 1 - Synthesized
+|         |    |   | | | | | | +--- Reserved
+|         |    |   | | | | | +----- 0 - 8-bit, 1 - 16-bit
+|         |    |   | | | | +------- 0 - Signed, 1 - Unsigned
+|         |    |   | | | +--------- 0 - Deltas, 1 - Raw
+|         |    |   | | +----------- 0 - Loop normally, 1 - Bidirectional
+|         |    |   | +------------- 1 - Gravis patch (unsupported)
+|         |    |   +--------------- 0 - No loop, 1 - Loop sample
+|         |    |
+|1 Long   |  48+- Sample Length -
+|         |    |  This contains the length of the sample.  Range:
+|         |    |    0 to 1,048,575.
+|1 Long   |  52+- Sample Repeat Start -
+|         |    |  This contains the start of the repeat for the sample.  Range:
+|         |    |    0 to Sample Length.
+|1 Long   |  56+- Sample Repeat End -
+|         |    |  This contains the end of the repeat for the sample.  Range:
+|         |    |    Sample Repeat Start to Sample Length.  If this value is
+|         |    |    less than the Sample Repeat Start, then the sample will
+|         |    |    loop backwards.  If there is to be NO LOOP, set this to
+|         |    |    -1.
+|1 Byte   |  60+- Fine Tune -
+|         |    |  This contains the Fine Tune for the sample.  Range: 0-15.
+|         |    |    0 - Tuning 0                8 - Tuning -8
+|         |    |    1 - Tuning 1                9 - Tuning -7
+|         |    |    2 - Tuning 2                10 - Tuning -6
+|         |    |    3 - Tuning 3                11 - Tuning -5
+|         |    |    4 - Tuning 4                12 - Tuning -4
+|         |    |    5 - Tuning 5                13 - Tuning -3
+|         |    |    6 - Tuning 6                14 - Tuning -2
+|         |    |    7 - Tuning 7                15 - Tuning -1
+|1 Byte   |  61+- Volume -
+|         |    |  The default volume of the sample.  Range: 0 to 64.
+|1 Word   |  62+- C Octave 2 Frequency -
+|         |    |  This is the frequency for the sample at a C of Octave 2.
+|         |    |  Typical values are 8,000 hz to 8,448 hz.
++---------+----+-----------+--------------------------------------------------
+          |  64 bytes long |
+          +----------------+
+
+
++------------------------------------------------------------------------------+
+| PSM Sample Format:                                                           |
++------------------------------------------------------------------------------+
+Only the digital sample format has been defined thus far.  In order to appeal
+to archivers more, the sample storage format has changed.  Instead of being
+stored as raw data as in all trackers I am aware of, the format was changed
+to use "deltas."  The algorithm for converting a sample to deltas is:
+
+                Get the number of sample bytes to process.
+                  Call this SamplesLeft.
+
+                Set Delta counter to 0.
+
+                DO
+                  Get a byte from the buffer.
+                  Store the byte in Temp.
+                  Subtract the Delta counter from the byte.
+                  Store it in the buffer.
+                  Move the Temp byte into the Delta Counter
+                  Decrement SamplesLeft.
+                WHILE(SamplesLeft <> 0)
+
+The technique for conversion back to the raw data is:
+
+                Get the number of sample bytes to process.
+                  Call this SamplesLeft.
+
+                Set Delta counter to 0.
+
+                DO
+                  Get a byte from the buffer.
+                  Add onto the byte the Delta Counter.
+                  Store the byte in Delta Counter.
+                  Store the byte in Temp.
+                  Decrement SamplesLeft.
+                WHILE(SamplesLeft <> 0)
+
+Advantages of using deltas:
+
+Take this raw sample data that I copied directly out of a sample:
+
+RAW:    64  66  67  68  69  70  71  73  75  77  76
+DELTAS: 64   2   1   1   1   1   1   2   2   2  -1
+
+These particular deltas will compress MUCH better in any archiver.
+
+
++------------------------------------------------------------------------------+
+| PSM Comment Format, Version 0:                                               |
++------------------------------------------------------------------------------+
+This format resembles an ILBM format.  Only one thing is currently defined
+in this format.
+
+        Signature     Description
+        ---------     -------------------------------------------------
+          TEXT        Immediately following this four character
+                        identifier is a WORD describing the length
+                        of the upcoming text.
+
+
+ 

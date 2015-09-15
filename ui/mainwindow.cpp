@@ -104,6 +104,10 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.actionStart->setEnabled(false);
 	connect(ui.actionStart, SIGNAL(triggered()), this, SLOT(start()));
 
+	ui.actionStartAll->setIcon(IconLibrary::instance().icon(0, "start all"));
+	ui.actionStartAll->setEnabled(true);
+	connect(ui.actionStartAll, SIGNAL(triggered()), this, SLOT(startAllPlayers()));
+
 	ui.actionStop->setIcon(IconLibrary::instance().icon(0, "stop"));
 	ui.actionStop->setEnabled(false);
 	connect(ui.actionStop, SIGNAL(triggered()), this, SLOT(stop()));
@@ -127,6 +131,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 	{
 		outputDock_ = new QDockWidget(tr("Output"), this);
+        outputDock->setAllowedAreas(Qt::BottomDockWidgetArea);
+        outputDock->setFeatures(DockWidgetFloatable);
+        outputDock->setFloating(true);
 		outputDock_->setObjectName("output");
 		outputWidget_ = new QTextEditEx(outputDock_);
 		connect(outputWidget_, SIGNAL(mouseDoubleClick(QMouseEvent*)), this, SLOT(outputMouseDoubleClick(QMouseEvent*)));
@@ -151,7 +158,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	libraryWidget_ = new LibraryWidget;
 
-	outputWidget_ = new QTextEditEx;
+    outputWidget_ = new QTextEditEx;
 	outputWidget_->setReadOnly(true);
 	connect(outputWidget_, SIGNAL(mouseDoubleClick(QMouseEvent*)), this, SLOT(outputMouseDoubleClick(QMouseEvent*)));
 
@@ -163,13 +170,6 @@ MainWindow::MainWindow(QWidget *parent)
 		outputContainer->layout()->setMargin(0);
 		outputContainer->layout()->setSpacing(0);
 
-		QLabel* label = new QLabel("Output");
-		label->setMargin(2);
-		label->setStyleSheet(
-			"border: 1px solid #AAAAAA;"
-			"background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FCFCFC, stop: 1 #E2E2E2);"
-		);
-		outputContainer->layout()->addWidget(label);
         QLineEdit *edit = new QLineEdit();
         edit->setPlaceholderText("Search output");
         outputContainer->layout()->addWidget(edit);
@@ -182,6 +182,12 @@ MainWindow::MainWindow(QWidget *parent)
 		outputWidget_->setFrameShape(QFrame::NoFrame);
 		outputWidget_->setFrameShadow(QFrame::Plain);
 	}
+
+    outputDock_ = new QDockWidget(tr("Output"), this);
+    outputDock_->setAllowedAreas(Qt::BottomDockWidgetArea);
+    outputDock_->setObjectName("output");
+    outputDock_->setFeatures(QDockWidget::DockWidgetFloatable);
+    outputDock_->setWidget(outputContainer);
 
 	previewWidget_ = new PreviewWidget;
 
@@ -196,7 +202,7 @@ MainWindow::MainWindow(QWidget *parent)
 	splitter2_->addWidget(mdiArea_);
 
 	splitter1_->addWidget(splitter2_);
-	splitter1_->addWidget(outputContainer);
+    splitter1_->addWidget(outputDock_);
 
 	splitter3_->setSizes(QList<int>() << 200 << 200);
 
@@ -430,7 +436,7 @@ void MainWindow::hideStartPage()
 
 void MainWindow::advertisement(const QString& host,unsigned short port,unsigned short flags,const QString& name)
 {
-	QString nitem=QString("%1:%2:%3").arg(host).arg(port).arg(flags);
+	QString nitem=QString("%1|%2|%3").arg(host).arg(port).arg(flags);
 	for (int k=0;k<players_->count();k++)
 		if (players_->itemData(k)==nitem)
 			return;
@@ -442,7 +448,7 @@ void MainWindow::playerChanged(const QString & text)
 	QString hostData=text;
 	if (players_->currentData().isValid())
 		hostData=players_->currentData().toString();
-	QStringList parts=hostData.split(':');
+	QStringList parts=hostData.split('|');
 	if (parts.count()==1)
 		client_->connectToHost(parts[0],15000);
 	else
@@ -451,16 +457,14 @@ void MainWindow::playerChanged(const QString & text)
 
 void MainWindow::start()
 {
-	if (client_->isConnected() == false)
-		return;
+	if (prepareStartOnPlayer())
+		startOnPlayer();
+}
 
+bool MainWindow::prepareStartOnPlayer()
+{
 	if (projectFileName_.isEmpty() == true)
-		return;
-
-	if (isTransferring_ == true)
-		return;
-
-	isTransferring_ = true;
+		return false;
 
 	saveAll();
 
@@ -483,11 +487,56 @@ void MainWindow::start()
 
 	if (!updateMD5().empty())
 		saveMD5();
+	return true;
+}
+
+void MainWindow::startOnPlayer()
+{
+	if (client_->isConnected() == false)
+		return;
+
+	if (isTransferring_ == true)
+		return;
+
+	isTransferring_ = true;
 
 	client_->sendStop();
 	client_->sendProjectName(QFileInfo(projectFileName_).baseName());
 	client_->sendGetFileList();
+}
 
+void MainWindow::startAllPlayers()
+{
+	if (!prepareStartOnPlayer())
+		return;
+	int pc=players_->count();
+	int pi=players_->currentIndex();
+	allPlayersPlayList.push_back(players_->currentData().toString());
+	for (int k=0;k<pc;k++)
+		if (k!=pi)
+			allPlayersPlayList.push_back(players_->itemData(k).toString());
+	startNextPlayer();
+}
+
+void MainWindow::startNextPlayer()
+{
+	if (allPlayersPlayList.empty())
+		return;
+
+	QString hostData=allPlayersPlayList.back();
+	QStringList parts=hostData.split('|');
+	if (parts.count()==1)
+		client_->connectToHost(parts[0],15000);
+	else
+		client_->connectToHost(parts[0],parts[1].toInt());
+}
+
+void MainWindow::playStarted()
+{
+	if (allPlayersPlayList.empty())
+		return;
+	allPlayersPlayList.pop_back();
+	startNextPlayer();
 }
 
 #if 0
@@ -784,7 +833,9 @@ unsigned int MainWindow::sendPlayMessage(const QStringList& luafiles)
 	char play = 2;
 	client_->sendData(&play, sizeof(char));
 #else
-	return client_->sendPlay(luafiles);
+	unsigned int code=client_->sendPlay(luafiles);
+	playStarted();
+	return code;
 #endif
 }
 
@@ -1819,10 +1870,15 @@ void MainWindow::connected()
 	ui.actionStart->setEnabled(true);
 	ui.actionStop->setEnabled(true);
 	printf("other side connected\n");
+
+	if (!allPlayersPlayList.empty())
+		startOnPlayer();
 }
 
 void MainWindow::disconnected()
 {
+	if (!allPlayersPlayList.empty())
+		return;
 	fileQueue_.clear();
 	isTransferring_ = false;
 
@@ -2233,6 +2289,13 @@ void MainWindow::exportProject()
 		  templatedir = "VisualStudio";
 		  templatename = "WinRT Template";
 		  templatenamews = "WinRTTemplate";
+		  underscore = true;
+		  break;
+
+		case ExportProjectDialog::e_Win32:
+		  templatedir = "win32";
+		  templatename = "WindowsDesktopTemplate";
+		  templatenamews = "WindowsDesktopTemplate";
 		  underscore = true;
 		  break;
 
@@ -2683,7 +2746,7 @@ void MainWindow::exportProject()
 		// compile lua files (with luac)
 		// disable compile with luac for iOS because 64 bit version
 		// http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
-		if (true && deviceFamily != ExportProjectDialog::e_iOS)
+        if (deviceFamily != ExportProjectDialog::e_iOS && deviceFamily != ExportProjectDialog::e_MacOSXDesktop)
 		{
             for (int i = 0; i < allluafiles_abs.size(); ++i)
 			{

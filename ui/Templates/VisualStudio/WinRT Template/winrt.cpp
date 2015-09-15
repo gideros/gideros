@@ -156,6 +156,7 @@ public:
 
     void OnSizeChanged(CoreWindow ^sender, WindowSizeChangedEventArgs ^args)
     {
+		gdr_resize(args->Size.Width, args->Size.Height);
     }
 
     void PointerPressed(CoreWindow^ Window, PointerEventArgs^ Args)

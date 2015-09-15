@@ -33,8 +33,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     #else
         setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
     #endif
-
-    move(0, 0);*/
+    */
+    move(0, 0);
 
     ui.glCanvas->setExportedApp(true);
     ui.glCanvas->projectDir_ = QDir("assets").absolutePath();
@@ -42,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     
     width0_ = 320;
     height0_ = 480;
+    scaleModeNum_ = 0;
+    fullScreen_ = false;
 
     QDir dir = QCoreApplication::applicationDirPath();
 
@@ -59,14 +61,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 
         int scaleMode, logicalWidth, logicalHeight, windowWidth, windowHeight;
         buffer >> scaleMode;
+
+        setLogicalScaleMode((LogicalScaleMode) scaleMode);
+        
         buffer >> logicalWidth;
         buffer >> logicalHeight;
 
         width0_ = logicalWidth;
         height0_ = logicalHeight;
 
-        int scaleCount;
-        buffer >> scaleCount;
+    	int scaleCount;
+    	buffer >> scaleCount;
+    	std::vector<std::pair<std::string, float> > imageScales(scaleCount);
+    	for (int i = 0; i < scaleCount; ++i) {
+    		buffer >> imageScales[i].first;
+    		buffer >> imageScales[i].second;
+    	}
+    	
         int orientation;
         buffer >> orientation;
         ui.glCanvas->setHardwareOrientation((Orientation) orientation);
@@ -88,20 +99,24 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
         buffer >> mouseTouchOrder;
 
 
+
         buffer >> windowWidth;
         buffer >> windowHeight;
         if (windowWidth == 0 && windowHeight == 0) {
+            windowWidth = logicalWidth;
+            windowHeight = logicalHeight;
             setFixedSize(false);
         }else{
             width0_ = windowWidth;
             height0_ = windowHeight;
         }
+        setWindowSize(windowWidth, windowHeight);
+
         
     }
 
     resolution_ = (float)width0_ / height0_;
     
-    loadSettings();
 }
 
 MainWindow::~MainWindow(){}
@@ -111,7 +126,6 @@ void MainWindow::resizeEvent(QResizeEvent*){
 }
 
 void MainWindow::closeEvent(QCloseEvent*){
-    saveSettings();
 
 }
 
@@ -137,6 +151,7 @@ void MainWindow::resizeWindow(int width, int height){
 }
 
 void MainWindow::fullScreenWindow(bool fullScreen){
+    fullScreen_ = fullScreen;
     if(fullScreen){
         setMaximumSize(16777215, 16777215);
         this->showFullScreen();
@@ -162,10 +177,16 @@ void MainWindow::updateResolution(){
 
     const float resolution = (float)width / height;
 
-    if (resolution > resolution_){
-       width = height * resolution_;
-    }else{
-       height = width / resolution_;
+    if (scaleModeNum_ == 1 ){
+        if (resolution > resolution_){
+           width = height * resolution_;
+        }else{
+           height = width / resolution_;
+        }
+    }else if (scaleModeNum_ == 2 ){
+        width = height * resolution_;
+    }else if (scaleModeNum_ == 3 ){
+        height = width / resolution_;
     }
     
     float canvasScaleFactor = 1;
@@ -234,36 +255,56 @@ void MainWindow::changeEvent(QEvent* e)
     }
 }
 
-void MainWindow::loadSettings(){
 
 
-
-
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+ "/gdrPos.ini", QSettings::IniFormat);
-
-    QSize size = settings.value("size", QSize(width0_, height0_ )).toSize();
-    resizeWindow(size.width(),size.height());
-
-
-    move(settings.value("pos",    QPoint(QApplication::desktop()->availableGeometry().center() - rect().center())).toPoint());
-
-
+void MainWindow::setLogicalScaleMode(LogicalScaleMode scaleMode){
+    // scaleModeNum_, 0 = no aspect ratio, 1 = aspect ratio, 2 = fit width, 3 = fit height
+    if (scaleMode == eNoScale)
+    {
+        scaleModeNum_ = 0;
+    }
+    else if (scaleMode == eCenter)
+    {
+        scaleModeNum_ = 0;
+    }
+    else if (scaleMode == ePixelPerfect)
+    {
+        scaleModeNum_ = 0;
+    }
+    else if (scaleMode == eLetterBox)
+    {
+        scaleModeNum_ = 1;
+    }
+    else if (scaleMode == eCrop)
+    {
+        scaleModeNum_ = 1;
+    }
+    else if (scaleMode == eStretch)
+    {
+        scaleModeNum_ = 0;
+    }
+    else if (scaleMode == eFitWidth)
+    {
+        scaleModeNum_ = 2;
+    }
+    else if (scaleMode == eFitHeight)
+    {
+        scaleModeNum_ = 3;
+    }
 }
 
-void MainWindow::saveSettings(){
+QSize MainWindow::windowSize(){
+    int width,height;
+    width = size().width();
+    height = size().height();
 
-    QSettings settings(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+ "/gdrPos.ini", QSettings::IniFormat);
+    return QSize(width,height);
+}
 
-    settings.setValue("pos",       pos());
+bool MainWindow::fullScreen(){
+    return fullScreen_;
+}
 
-    int width = size().width();
-    int height = size().height();
-    if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){
-        int temp = width;
-        width = height;
-        height = temp;
-    }
-    settings.setValue("size",      QSize(width,height));
-
+void MainWindow::printToOutput(const char* text){
 
 }

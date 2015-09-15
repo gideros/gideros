@@ -981,7 +981,7 @@ int SpriteBinder::hitTestPoint(lua_State* L)
 	if (lua_gettop(L) >= 4)
 		shapeFlag = lua_toboolean(L, 4);
 
-	lua_pushboolean(L, sprite->hitTestPoint(x, y));
+	lua_pushboolean(L, sprite->hitTestPoint(x, y, shapeFlag));
 	
 	return 1;
 }

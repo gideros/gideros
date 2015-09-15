@@ -1,0 +1,239 @@
+AHX-module format (formerly THX module format).
+Format description by Stuart Caie aka Kyzer/CSG (kyzer@4u.net)
+Version : 15 march 2000
+
+
+Authorized publishing by Dexter/Abyss (Dexter.Abyss@iName.com), but with no warranty
+of correctness, by request of lclevy@club-internet.fr.
+
+Please contact Dexter/Abyss and Kyzer if any code based on this file is written .
+Dexter and Bartman player code source might become public soon.
+
+
+The name THX, THX Sound System and the THX logo are the property of
+Lucasfilm, and were stolen by Abyss for their player. Due to legalities,
+the player has been renamed AHX, and all references to the Abyss music
+system must be termed "AHX".
+
+That said, all current and previous AHX modules begin with the letters "T",
+"H" and "X". 
+
+This document describes the AHX0 and AHX1 format, no later version of AHX
+is guaranteed to follow this format. This information may be made invalid
+or outdated at any time without warning.
+
+
+All multiple-byte data elements are stored in big-endian (Motorola) format.
+For example, a 32-bit long is composed like this:
+
+address + 0 = bits 31-24
+address + 1 = bits 23-16
+address + 2 = bits 15-8
+address + 3 = bits 7-0
+
+
+Overview of AHX format:
+
+[Header: 14 bytes]
+[Subsong list: SS*2 bytes]
+[Position list: LEN*8 bytes]
+[Tracks: (TRK+1)*TRL*3 bytes]
+[Samples: SMP entries, each one individually sized]
+[Names: SMP+1 entries, each one individually sized]
+
+
+[-header format-------------------------------------------------------------]
+LONG (bytes 0-3): This is the ID header. It is either "THX"<<8 aka AHX0
+                  for songs saved with AHX v1.00 to 1.27, or it is
+                  ("THX"<<8)+1 aka AHX1 for songs saved with
+                  AHX 2.0 or better. These are all the versions currently
+                  known/available. Versions previous to 1.00 save in the
+                  same format as 1.00, except the 0.xx versions of the
+                  replayer can't do some things. Never use 0.xx replayers,
+                  they are obsolete, 1.00 is the minimum standard.
+
+WORD (bytes 4,5): This is the amount of bytes to skip (from offset 0) to
+                  reach the songtitle and samplenames. As it is only a
+                  word-size, the value is wrong for AHX modules over 65536
+                  bytes. Also, it is not needed by the player, so it could
+                  be hacked to an invalid value. Ignore this value when
+                  reading but remember to calculate it properly when saving.
+                  The calculation is (real_songtitle_offset) & $FFFF.
+
+NYBBLE (byte 6):  Take the top 4 bits of byte six (bits 7-4).
+                  Bit 7 indicates if track 0 is saved. If it is 1, track 0
+                  is included. If it is 0, track 0 was empty, and is
+                  therefore not saved with the module, to save space.
+
+                  Now, the remaining 3 bits (bits 6-4) make a number
+                  (calculation: (byte 6)>>4 & %111), this number is always
+                  0 if it is an AHX0 mod, but in AHX1 this number is 0-3
+                  and is the CIA speed of the module. Let us name this value
+                  "SPD". If SPD=0, the mod plays at 50Hz. SPD=1, 100Hz.
+                  SPD=2, 150Hz. SPD=3, 200Hz (think of it as single/double/
+                  triple/quadruple timing).
+
+WORD (bytes 6,7): After ANDing with $FFF to ignore the top nybble, this word
+                  value is the variable "LEN", which is the length of the
+                  position list. Valid values for LEN range from 1 to 999.
+
+WORD (bytes 8,9): This is the variable "RES", the automatic restart point
+                  for the song after it ends. Valid values for RES range
+                  from 0 to (LEN-1).
+
+BYTE 10: This is "TRL", the track length (how many entries are in one track)
+         Valid values for TRL range from 1 to 64.
+
+BYTE 11: This is "TRK", the number of actual tracks saved in the mod. Valid
+         values for TRK range from 0 to 255.
+
+BYTE 12: This is "SMP", the number of actual samples saved in the mod. Valid
+         values for SMP range from 0 to 63.
+
+BYTE 13: This is "SS", the number of subsongs. Valid values for SS range
+         from 0 to 255.
+[---------------------------------------------------------------------------]
+
+
+[-Subsong list format-------------------------------------------------------]
+There are SS entries in the subsong list. (0 entries is also valid)
+
+Each word-sized entry (2 bytes long) should be between 0 and LEN-1.
+[---------------------------------------------------------------------------]
+
+
+[-Position list format------------------------------------------------------]
+There are LEN entries in the position list.
+
+Each entry (8 bytes long) is composed of 4 sets, one for each audiochannel.
+
+Each set (2 bytes long), the first byte is they track to play (must be
+between 0 and TRK), the second byte is the transpose value (signed). Any
+value is valid in the transpose byte (ie from -$80 to $7F).
+
+Note, that WHEN TRACK 0 ISN'T SAVED, you must look at the track you have to
+access. If it is track 0, you must access your OWN copy of a blank track
+(192 bytes of cleared memory), not in the module. If it is track 1 to
+TRK-1, subtract 1 and access that track instead, so track 8 in the playlist
+means access as if it were track 7. Access of track TRK is invalid.
+[---------------------------------------------------------------------------]
+
+
+[-Track format--------------------------------------------------------------]
+There are TRK tracks, bunched together. (0 tracks is also valid)
+
+Each track has TRL entries.
+
+Each entry is 24 bits (3 bytes) long, and consists of
+bits 23-18 (6 bits): The note. This ranges from 0 (no note) to 60 (B-5)
+bits 17-12 (6 bits): The sample. This ranges from 0 to 63.
+bits 11-8  (4 bits): The command. See list below
+bits 7-0   (8 bits): The command's data. See list below
+
+FOR AHX1
+
+Commands $6 and $7 are invalid and do not exist.
+Commands $1,$2,$3,$5,$8,$A and $F may have data of any value.
+
+Cmd  Valid Range
+$0   $0 to $9 -- see $B below
+$4   $1 to $3F, $41-$7F
+$9   $0 to $3F
+$C   $0-$40, $50-$90, $A0-$E0
+$E   $C0-$CF, $D1-$DF
+$B   Interpret first nybble as tens digit, second nybble as units digit,
+     if $0 command was issued with $1-$9 as data then use that as a
+     hundreds digit. Once this command is parsed, reset the hundred's digit.
+     Resultant decimal must be from 0 to LEN-1
+$D   Interpret first nybble as tens digit, second nybble as units digit.
+     Resultant decimal must be from 0 to TRL-1
+
+FOR AHX0
+
+As above, except:
+Command $4 is not valid at all.
+Valid range for $D command is $0 alone.
+[---------------------------------------------------------------------------]
+
+
+[-Sample format-------------------------------------------------------------]
+There are SMP samples, grouped together (0 samples is also valid)
+
+byte  0: Master volume for sample (0 to 64 valid)
+byte  1: bits 7-3: bottom 5 bits (4-0) of the filter modulation speed.
+                   Must be 0 in AHX0
+byte  1: bits 2-0: The wavelength of the sample. ranges from 0 to 5.
+                   0=$04, 1=$08, 2=$10, 3=$20, 4=$40, 5=$80
+byte  2: attack length. valid range from 1 to 255
+byte  3: attack volume. valid range from 0 to 64
+byte  4: decay length. valid range from 1 to 255
+byte  5: decay volume. valid range from 0 to 64
+byte  6: sustain length. valid range from 1 to 255
+byte  7: release length. valid range from 1 to 255
+byte  8: release volume. valid range from 0 to 64
+byte  9: Unused in AHX0 or AHX1. Should only be 0
+byte 10: Unused in AHX0 or AHX1. Should only be 0
+byte 11: Unused in AHX0 or AHX1. Should only be 0
+byte 12: bit  7  : bit 5 of the filter modulation speed.
+                   Must be 0 in AHX0
+         bits 6-0: filter modulation lower limit. valid range from 1 to 63.
+                   Must be 0 in AHX0
+byte 13: vibrato delay. valid range from 0 to 255
+byte 14 TOP NYBBLE:    hardcut (bits 6-4) from 0 to 7 and if bit 7, top bit
+                       is set then release cut is selected.
+                       Must be 0 in AHX0
+byte 14 BOTTOM NYBBLE: vibrato depth. valid range from 0 to 15
+byte 15: vibrato speed. valid range from 0 to 63
+byte 16: square modulation lower limit. valid ranges:
+         wavelength $04 : from 32 to 63
+         wavelength $08 : from 16 to 63
+         wavelength $10 : from  8 to 63
+         wavelength $20 : from  4 to 63
+         wavelength $40 : from  2 to 63
+         wavelength $80 : from  1 to 63
+byte 17: square modulation upper limit. valid range from 1 to 63, but really
+         should be more than the lower limit!
+byte 18: square modulation speed. valid range from 0 to 255
+byte 19: bit  7:   bit 6 of the filter modulation speed. Must be 0 in AHX0
+         bits 6-0: filter modulation upper limit. valid range from 1 to 63
+                   and should be equal or higher than the lower limit.
+                   Must be 0 in AHX0
+byte 20: playlist default speed (1-255)
+byte 21: playlist length ("PLEN") which ranges from 0 to 255. If length is
+         0 then this sample is 'empty' and should be skipped, it's values do
+         not count.
+
+Now follows the playlist: PLEN entries, grouped together (0 is also valid)
+Each entry is 4 bytes (32 bits) long.
+
+bits 31-29 (3 bits) = FX2 command (0-7)
+bits 28-26 (3 bits) = FX1 command (0-7)
+bits 25-23 (3 bits) = the waveform. 0=hold previous, 1=triangle,
+                      2=sawtooth, 3=square, 4=noise, 5,6,7=invalid
+bit  22    (1 bit)  = fix note? 1=note fixed, 0=note varies
+bits 21-16 (6 bits) = the note data from 0 (no note) to 60 (B-5)
+bits 15-8  (8 bits) = the data for FX1
+bits 7-0   (8 bits) = the data for FX2
+
+The playlist FX commands are:
+0 - null or set filter (data $00-$3F valid, only $00 valid in AHX0)
+1 - slide up (data $00-$FF valid)
+2 - slide down (data $00-$FF valid)
+3 - init square (data $00-$3F valid)
+4 - toggle mod (data $00, $01, $0F, $10, $11, $1F, $F0, $F1, $FF valid. Only
+    $00 valid in AHX0)
+5 - position jump (data 0 to PLEN-1 valid)
+6 - aka 'C' - set volume (data $0-$40, $50-$90, $A0-$E0 valid)
+7 - aka 'F' - set speed (data $00-$FF valid)
+[---------------------------------------------------------------------------]
+
+
+[-Names format--------------------------------------------------------------]
+The names section is last, and is a group of SMP+1 null-terminated strings
+grouped together. The first string is the songtitle and should also be a
+valid filename (consists only of byte values 0,[32-126],[128-255]). The
+rest are sample names, and may be simply null strings (ie only one byte long,
+the null terminator.)
+[---------------------------------------------------------------------------]
+
+Love, Kyzer

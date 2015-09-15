@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include "local.h"
+#include <fcntl.h>
 
 #ifdef WINSTORE
 /* Specifiy one of these flags to define the access mode. */

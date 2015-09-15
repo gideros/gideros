@@ -20,6 +20,10 @@ macx {
 TARGET = "Gideros Font Creator"
 }
 
+unix:!macx {
+TARGET = "GiderosFontCreator"
+}
+
 win32 {
 RC_FILE = fontcreator.rc
 }

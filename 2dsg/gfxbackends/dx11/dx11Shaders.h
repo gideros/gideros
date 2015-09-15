@@ -10,16 +10,19 @@
 
 #include <windows.h>
 //#include <windowsx.h>
+#ifdef WINSTORE
+#include <pch.h>
 #include <d3d11_1.h>
+#else
+#include <d3d11.h>
+#endif
 #include <d3dcompiler.h>
 #include <math.h>
 #include <vector>
-#include "dxglobals.h"
-#include "dxcompat.hpp"
 #include "Shaders.h"
 #include "Matrices.h"
 #include "gtexture.h"
-#include "dxcompat.hpp"
+//#include "dxcompat.hpp"
 #define OPENGL_DESKTOP
 
 #ifdef OPENGL_DESKTOP
@@ -27,6 +30,7 @@
 #endif
 
 #ifdef WINSTORE
+using namespace Microsoft::WRL;
 extern ComPtr<ID3D11Device1> g_dev;                     // the pointer to our Direct3D device interface (11.1)
 extern ComPtr<ID3D11DeviceContext1> g_devcon;           // the pointer to our Direct3D device context (11.1)
 #else
@@ -90,10 +94,13 @@ class dx11ShaderTexture : public ShaderTexture
 protected:
 	static ID3D11SamplerState *samplerRepeat;
 	static ID3D11SamplerState *samplerClamp;
+	static ID3D11SamplerState *samplerRepeatFilter;
+	static ID3D11SamplerState *samplerClampFilter;
 	ID3D11Texture2D *tex;
 	ID3D11ShaderResourceView *rsv;
 	int width,height;
 	Wrap wrap;
+	Filtering filter;
 public:
 	dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	virtual ~dx11ShaderTexture();
@@ -140,6 +147,7 @@ public:
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
 	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
 	void setViewport(int x,int y,int width,int height);
+	void resizeFramebuffer(int width,int height);
 	void clearColor(float r,float g,float b,float a);
 	void bindTexture(int num,ShaderTexture *texture);
 	void setClip(int x,int y,int w,int h);

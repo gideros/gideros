@@ -1,0 +1,93 @@
+Document converted to plain ASCII for inclusion in Wotsit's Format
+
+The following is a summary of the MultiTracker Module (MTM) fromat.  It is
+intended for programmers who wish to support the format in any manner.  Note
+that all effects are defined as the current Protracker effects standard. A
+short summary of this standard is provided in the documentation file for the
+Multitracker Module Editor.
+
+--------+------+---------------------------------------------------------------
+Position|Length|Description
+--------+------+---------------------------------------------------------------
+0       |3     |"MTM" file marker
+3       |BYTE  |version number - upper nybble is major version #, lower is
+	|      |                 minor version number
+4       |20    |ASCIIZ songname
+24      |WORD  |number of tracks saved
+26      |BYTE  |last pattern number saved
+27      |BYTE  |last order number to play (songlength-1)
+28      |WORD  |length of extra comment field
+30      |BYTE  |number of samples saved (NOS)
+31      |BYTE  |attribute byte (currently defined as 0)
+32      |BYTE  |beats per track
+33      |BYTE  |number of tracks to be played back
+34      |32    |voice pan positions
+--------+------+---------------------------------------------------------------
+66      |NOS*37|Instrument data:
+--------+------+---------------------------------------------------------------
+	|22    |sample name
+	|DWORD |sample length in bytes
+	|DWORD |offset of beginning of sample loop in bytes
+	|DWORD |offset of end of sample loop in bytes
+	|BYTE  |finetune value
+	|BYTE  |standard volume of sample
+	|BYTE  |attribute byte: bit meaning
+	|      |                0   0=8 bit sample 1=16 bit sample
+	|      |                1-7 undefined (set to zero)
+--------+------+---------------------------------------------------------------
+66+     |128   |Pattern order data
+(NOS*37)|      |
+--------+------+---------------------------------------------------------------
+194+    |trks* |Track data:
+(NOS*37)|192   |Each track is saved independently and takes exactly 192 bytes.
+	|      |The tracks are arranged as 64 consecutive 3-byte notes.  These
+	|      |notes have the following format:
+	|      |
+	|      |
+	|      |  BYTE 0   BYTE 1   BYTE 2
+	|      | ppppppii iiiieeee aaaaaaaa
+	|      |
+	|      | p = pitch value (0=no pitch stated)
+	|      | i = instrument number (0=no instrument number)
+	|      | e = effect number
+	|      | a = effect argument
+	|      |
+--------+------+---------------------------------------------------------------
+194+    |      |Track sequencing data
+NOS*37+ |      +--------------------------+
+trks*192|(last pattern saved + 1)*32 WORDS|
+--------+------+--------------------------+
+	|      |The track sequencing data is really just a listing of which
+	|      |track is used as which voice in each saved pattern.  This is
+	|      |necessary since one track may be a part of many different
+	|      |patterns. (not orders)  Doing this saves much of the memory
+	|      |wasted in a normal MOD by repetition of certain tracks over
+	|      |and over again throughout the file.
+	|      |
+	|      |Note that track zero is never saved, but always considered as
+	|      |an empty track.  Therefore, track numbering for the saved
+	|      |tracks really starts at one.
+	|      |
+	|      |The data is organized in sets of 32 voices.  First comes a
+	|      |WORD representing which track is in pattern 0, voice 0.  The
+	|      |next WORD is pattern 0, voice 1, etc.  This is repeated for
+	|      |each pattern saved, giving a total track sequencing size of
+	|      |32 WORDS per pattern saved.
+	|      |
+	|      |If your code uses MOD-style memory organization, you can still
+	|      |play MTM's.  You merely jump to the track sequencing data, and
+	|      |then load each pattern separately by jumping back and forth
+	|      |between the track sequences and the actual track data.
+--------+------+---------------------------------------------------------------
+194+    |Header|Extra comment field
+NOS*37+ |says. |(Length specified in the header)
+trks*192+------+--------------------+
++(last pattern saved + 1)*32*2      |
+--------+------+--------------------+------------------------------------------
+194+    |sample|Raw sample data
+NOS*37+ |length|(unsigned)
+trks*192+------+--------------------+
++(last pattern saved + 1)*32*2+     |
+length of extra comment field       |
+------------------------------------+
+

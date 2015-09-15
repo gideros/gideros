@@ -7,7 +7,7 @@
 
 #include "dx11Shaders.h"
 #include "glog.h"
-#include "pch.h"
+//#include "pch.h"
 #include <stdio.h>
 #include <string.h>
 #include <fstream>
@@ -17,11 +17,10 @@
 #include <stack>
 #include <string>
 #include "platform.h"
-#include "pch.h"
 #include <gstdio.h>
 #include <io.h>
 #include "D3Dcompiler.h"
-using namespace Microsoft::WRL;
+//using namespace Microsoft::WRL;
 
 class dx11ShaderBufferCache : public ShaderBufferCache {
 public:
@@ -252,7 +251,7 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 	g_devcon->VSSetShader(g_pVS, 0, 0);
 	g_devcon->PSSetShader(g_pPS, 0, 0);
 
-	while (uniforms->name) {
+	while (!uniforms->name.empty()) {
 		int usz = 0, ual = 4;
 		ConstantDesc cd;
 		cd = *(uniforms++);
@@ -265,6 +264,14 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 			usz = 4;
 			ual = 4;
 			break;
+		case CFLOAT2:
+			usz = 8;
+			ual = 4;
+			break;
+		case CFLOAT3:
+			usz = 12;
+			ual = 4;
+			break;
 		case CFLOAT4:
 			usz = 16;
 			ual = 16;
@@ -274,16 +281,21 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 			ual = 16;
 			break;
 		}
-		if (cd.vertexShader) {
-			if (cbvsData & (ual - 1))
-				cbvsData += ual - (cbvsData & (ual - 1));
-			cd.offset = cbvsData;
-			cbvsData += usz*cd.mult;
-		} else {
-			if (cbpsData & (ual - 1))
-				cbpsData += ual - (cbpsData & (ual - 1));
-			cd.offset = cbpsData;
-			cbpsData += usz*cd.mult;
+		if (cd.mult>1)
+		{
+			usz=16*cd.mult;
+			ual=16;
+		}
+		if (usz)
+		{
+			int *cbData = cd.vertexShader ? &cbvsData : &cbpsData;
+			if ((*cbData) & (ual - 1))
+				(*cbData) += ual - ((*cbData) & (ual - 1));
+			int rem = (16 - ((*cbData) & 15));
+			if ((usz>rem) && (rem!=16))
+				(*cbData) += rem;
+			cd.offset = (*cbData);
+			(*cbData) += usz;
 		}
 		this->uniforms.push_back(cd);
 	}
@@ -318,8 +330,8 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 
 	D3D11_INPUT_ELEMENT_DESC ied[16]; //Would someone really need more than 16 vertexdata flows ?
 	int nie = 0;
-	while (attributes->name) {
-		ied[nie].SemanticName = attributes->name;
+	while (!attributes->name.empty()) {
+		ied[nie].SemanticName = attributes->name.c_str();
 		ied[nie].SemanticIndex = 0;
 		switch (attributes->type) {
 		case DataType::DFLOAT:

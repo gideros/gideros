@@ -141,7 +141,7 @@ public:
 	  std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
 	  std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
 	  std::wstring tempPath = ApplicationData::Current->TemporaryFolder->Path->Data();
-	  bool isPlayer = true;
+	  bool isPlayer = false;
 
 	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
 
@@ -187,6 +187,7 @@ public:
 
     void OnSizeChanged(CoreWindow ^sender, WindowSizeChangedEventArgs ^args)
     {
+		gdr_resize(args->Size.Width, args->Size.Height);
     }
 
     void PointerPressed(CoreWindow^ Window, PointerEventArgs^ Args)
@@ -269,7 +270,6 @@ public:
 		args->Handled = true;
 	}
 #endif
-
 
 };
 

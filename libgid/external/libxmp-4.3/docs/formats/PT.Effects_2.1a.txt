@@ -1,0 +1,39 @@
+Protracker V2.1A Effect Commands
+----------------------------------------------------------------------------
+0 - Normal play or Arpeggio             0xy : x-first halfnote add, y-second
+1 - Slide Up                            1xx : upspeed
+2 - Slide Down                          2xx : downspeed
+3 - Tone Portamento                     3xx : up/down speed
+4 - Vibrato                             4xy : x-speed,   y-depth
+5 - Tone Portamento + Volume Slide      5xy : x-upspeed, y-downspeed
+6 - Vibrato + Volume Slide              6xy : x-upspeed, y-downspeed
+7 - Tremolo                             7xy : x-speed,   y-depth
+8 - NOT USED
+9 - Set SampleOffset                    9xx : offset (23 -> 2300)
+A - VolumeSlide                         Axy : x-upspeed, y-downspeed
+B - Position Jump                       Bxx : songposition
+C - Set Volume                          Cxx : volume, 00-40
+D - Pattern Break                       Dxx : break position in next patt
+E - E-Commands                          Exy : see below...
+F - Set Speed                           Fxx : speed (00-1F) / tempo (20-FF)
+----------------------------------------------------------------------------
+E0- Set Filter                          E0x : 0-filter on, 1-filter off
+E1- FineSlide Up                        E1x : value
+E2- FineSlide Down                      E2x : value
+E3- Glissando Control                   E3x : 0-off, 1-on (use with tonep.)
+E4- Set Vibrato Waveform                E4x : 0-sine, 1-ramp down, 2-square
+E5- Set Loop                            E5x : set loop point
+E6- Jump to Loop                        E6x : jump to loop, play x times
+E7- Set Tremolo Waveform                E7x : 0-sine, 1-ramp down. 2-square
+E8- NOT USED
+E9- Retrig Note                         E9x : retrig from note + x vblanks
+EA- Fine VolumeSlide Up                 EAx : add x to volume
+EB- Fine VolumeSlide Down               EBx : subtract x from volume
+EC- NoteCut                             ECx : cut from note + x vblanks
+ED- NoteDelay                           EDx : delay note x vblanks
+EE- PatternDelay                        EEx : delay pattern x notes
+EF- Invert Loop                         EFx : speed
+----------------------------------------------------------------------------
+
+Peter "CRAYON" Hanning /Mushroom Studios/Noxious
+

@@ -1,0 +1,14 @@
+               Pattern Command Bytes
+                (info bytes are in hex)
+A - Set tempo to [INFO]. 60 normal.
+B - Break pattern and jmp to order [INFO]
+C - Break pattern
+D - Slide volume; Hi-nibble=up, Lo-nibble=down
+E - Slide down at speed [INFO]
+F - Slide up at speed [INFO]
+G - Slide to the note specified at speed [INFO]
+H - Vibrato; Hi-nibble, speed (bigger is faster)
+             Lo-nibble, size (bigger is bigger)
+I - Tremor; Hi-nibble, ontime
+            Lo-nibble, offtime
+J - Arpeggio; inoperative at the moment

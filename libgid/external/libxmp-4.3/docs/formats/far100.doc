@@ -1,0 +1,467 @@
+
+     ,-------------------------------------------------------------·
+     |                                          ,          ·
+     +---  ,----·  ·----·  ,----·  ·----·  ,----|  ,----·  |  ,----·
+     |     ,--- |  |       ,--- |  |    |  |    |  |    |  |  | ---'
+     |     |    |  |       |    |  |    |  |    |  |    |  |  |    |
+     '     `----'  '       `----'  '    `  `----`  `----'  `  `----'
+     ###############################################################
+                                               ------====== COMPOSER
+              ,                      .
+              |         -.-     ·    |      ,--·        -.-
+           ,--| . ,--· . | ,--· |    | ·--· |-  . ·--· . | ·  ,
+           `--' | `--| | ` `--` `    ` '  ` `   | '  ` | ` `--+
+                     '                                        '  93!
+     ###############################################################
+
+
+
+                       Format Specifications!!
+                          by Daniel Potter
+
+
+-----------------------------------------------------------------------------
+
+Well, as you probably know, this is a pretty exciting program already. However,
+it would be nothing to a lot of people who would use it in their games, demos,
+etc, if I did not include the format specs. Besides that, I intend that this
+format, which although is CERTAINLY not the most efficient (basically a dump
+of the internals of the composer's editing mem), they will perhaps serve as
+a standard 16 channel format, with ease of use on the level of a MOD. Remember
+that this format is for EDITING purposes (storing EVERYTHING you're working on)
+so it may include information not completely neccessary. You can even see into
+the last moments of creation of the song through some of these variables :)
+You may process this info as you see fit, such as the scrolltext, which is not
+even supported in the current version of the composer. You could simply display
+it on the screen, or you could be creative, and have a scroller at the top of
+the screen while it's playing (that's the idea, for things like musicdisks).
+
+
+             Farandole .FAR file (16 channel tracker) format
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Header
+
+Note that with the way the file magic(s) are set up, you can see the name of
+the song by TYPEing it from DOS. For example, if the song name was
+"StarLit MoonRise" then you would see when you typed it out:
+
+FARþStarLit MoonRise
+
+In case you're teeming over with all the anxiety of all the wasted information
+in the header, just think back to the last time you saw a tracker that saved
+every info about what you were doing last. Think of it as a project file in
+Borland C.
+
+len      desc
+-----------------------------------------------------------------------------
+ 4       "FARþ" (file magic)
+ 40      Song name
+ 3       13,10,26 (bytes) (end of file chars)
+ 2       Remaining length of header in bytes
+ 1       Version number, major/minor upper/lower nybbles (0x10)
+ 16      Channel ON/OFF map
+ 1       Current editing octave
+ 1       Current editing voice
+ 1       Current editing row
+ 1       Current editing pattern
+ 1       Current editing order
+ 1       Current editing sample
+ 1       Current editing volume
+ 1       Current top of screen display (top row visible)
+ 1       Current editing area of the screen (0=sample,1=pattern,2=order)
+ 1       Current tempo (default tempo)
+ 16      Panning map, from 0-F for each channel
+ 1       MarkTop (block)
+ 1       MarkBot (block)
+ 1       Grid granularity (default 4)
+ 1       Edit Mode
+ 2       Song text length
+ (above) Song text of length STLen (field above)
+ 256     Order bytes
+ 1       Number of patterns stored in the file
+ 1       Length of order used
+ 1       LoopTo location
+ 2*256   Length in bytes of each pattern - Determine number of rows stored
+         for this pattern with this formula:
+
+         Rows=((PatSize-2)/(16*4))
+
+         The -2 will be explained below.
+
+ If the file is of a newer format than this one, then there might be extra
+ stuff down here. The original header here will NEVER have anything new
+ inserted before this space, to maintain a somewhat compatible file. The
+ original header, described about will always be 869 bytes long+SongText
+ len. So you should seek up HdLen-(869+STLen) bytes after reading the header
+ in case there is more.
+
+
+Patterns
+
+len      desc
+----------------------------------------------------------------------------
+ 1       Break location in the pattern (length in rows)
+ 1       Tempo for this pattern. ** THIS VALUE IS *NOT* USED ANYMORE!!! ** DO
+           NOT SUPPORT IT!!
+ Rows*16*4  Pattern data-
+
+
+   len      desc
+   --------------------------------------------
+    1       Note value - (Octave*12+Note)+1 or 0 for no note
+    1       Instrument/sample value
+    1       Volume - reversed byte. MSN is stored as LSN, LSN as MSN. This is
+            for compatibility purposes. Basically, the lower nybble is the
+            major volume adjust, upper nybble for minor adjust.
+    1       Effect, upper nybble is effect, lower nybble is parameter
+
+Current no provisions are made in this format to remove unused channels from
+the file.
+
+
+
+Sample Map
+
+This is an array of 0-7 (8 bytes) which is a set of 64 flags. Each flag
+corresponds to a sample, and these flags are packed into bytes. If the bit
+is set, the sample record IS stored in the file. Otherwise, it is not (and
+therefore should NOT be read). You can check to see if its present like this:
+
+if (SMap[SampleNumber/8] & (1<<(SampleNumber%8))) ReadSample(SampleNumber);
+
+Now that I think about it, I wonder why I didn't just store all the samples
+that are used up to the last used one? Who knows.. I was tired that night :)
+
+
+
+Samples/records
+
+All samples are stored just like they are in FSM format on disk. Each one is
+header-data-header-data, etc. Here is the header format:
+
+len     desc
+---------------------------------------------------------------------------
+ 32     Name of sample
+ 4      Length of sample (currently only support up to 64k samples)
+ 1      Finetune (also not supported right now)
+ 1      Volume ... yet another unsupported feature
+ 4      Repeat Start
+ 4      Repeat End - If the sample is looping, this should be set to the repeat
+        end value. Otherwise, it should be set to the length of the sample.
+ 1      Sample Type byte
+
+   1<<0   8/16 bit (8=0 16=1)
+
+ 1      Looping mode byte
+
+   1<<3   On=looped, Off=not looped
+
+ (len)  Sample data in SIGNED format
+
+
+
+
+Info on playing-
+
+Here are how you generate the various FX:
+
+FEKT           Hex#     How!
+----------------------------------------------------------------------------
+Tempo          0xf?     Notes per second is 32/Tempo.
+Pitch Adjust   0x1?     Add ?*4 values to the value you're sending to the
+                        GUS. This is based on 16 channels. If you're using
+                        more or less, then you will have to calculate the
+                        pitch through this proportion:
+
+                          x     ?
+                          -- = ---
+                          16   chn
+
+                        which simplifies to
+
+                        chn*x=16*?
+                        or
+                          16*?
+                        x=----
+                          chn
+
+                        where ? is the amount, chn is the # of channels and
+                        x is the amount you add to the pitch value. Note that
+                        this effect and the one below are CUMULATIVE.
+
+Pitch Adjust   0x2?     Do the same as above, except subtract from the val
+Fine Tempo up  0xe?     Add this number to the current interrupt calls per
+                        second. Sorry, I could not figure out any other way
+                        to do it. My tempos are based on a system of 128/Tempo
+                        for finer control of other things, so this value would
+                        be added to that number instead of 32/x. So again,
+                        solve the proportion.
+Fine Tempo dn  0xd?     Same as above, but subtract from tempo
+Fine Tempo cnl 0xe? or  Cancel fine tempo; revert ints/sec to normal value
+               0xd?     for current tempo
+Port to Note   0x3?     Slide from current pitch to the pitch specified on
+                        the line where the command is issued. The parameter
+                        tells in how many rows the pitch should have gotten
+                        to the destination. You can use this equation to
+                        figure a standard increment:
+
+                              P
+                          ----------
+                          intSpeed*?
+
+                        Where P is the pitch, intSpeed is the interrupt speed,
+                        and ? is the effect parameter. Of course an integer
+                        is not enough precision to store the increment most
+                        of the time.
+Retrigger      0x4?     Repeat the current note ? times in this bar. If a
+                        drum is issued as the note, and the parameter is 0x42
+                        then the drum should be played 2 times that bar, in
+                        evenly spaced intervals.
+Set VibDepth   0x5?     Set vibrato depth. Actually, in Farandole this value
+                        is used to generate a new sin table; perhaps not the
+                        most efficient way to do it, but what the hell.
+                        The table is generated using this equation:
+
+                        f(x)=sin(2*pi*f*t)*a
+
+                        ..where a is the value for the effect and f=1.
+Vibrato note   0x6?     Vibrato this note. Although it goes away if you stop
+                        using it, this effect when used repedeatly actually
+                        just tells FAR to continue the previous vibrato, which
+                        may span several notes depending on how large it is.
+Vibrato Sust   0x9?     Is the same as above, but it doesn't stop until you
+                        reach a 0x90 command
+VolSld Up      0x7?     Pushes the volume up one notch (0-F)
+VolSld Dn      0x8?     Same as above, but it goes down
+Port To Vol    0xA?     This uses the same method as the Port-To-Note command,
+                        but it acts on volume
+Note Offset    0xC?     Pretend that you're doing an F-Retrigger command (0x4F).
+                        What you do is blank out all the notes in the retrig
+                        except the one specified here.
+
+* Info specific to above commands in Farandole: The way I handle it is like
+this: My interrupt is based around 128 times a second, so I generate a table
+where the x domain is 0..127. You then use the ? value from the 0x6 command
+to skip through the table, where the table increment is ?*6. You should keep
+looping through the table until the vibrato commands go away. See FARTRAK.CPP
+for more details.
+
+
+For more info, please see the sample code, FARTRAK.CPP (again, like FARLOAD.CPP
+this is code straight from the composer. So if there is descrepency, the code
+is correct, not this doc.)
+
+
+
+                   Farandole .FSM Sample/instrument format
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Header
+
+This format is almost identical to the one described above for samples in .FAR
+files. Note also that this format is set up like .FAR, where you can type
+out the file to see the long name for it.
+
+len      desc
+----------------------------------------------------------------------------
+ 4       "FSMþ" - File magic
+ 32      Sample name
+ 3       (10,13,26)
+ 4      Length of sample (currently only support up to 64k samples)
+ 1      Finetune (also not supported right now)
+ 1      Volume ... yet another unsupported feature
+ 4      Repeat Start
+ 4      Repeat End - If the sample is looping, this should be set to the repeat
+        end value. Otherwise, it should be set to the length of the sample.
+ 1      Sample Type byte
+
+   1<<0   8/16 bit (8=0 16=1)
+
+ 1      Looping mode byte
+
+   1<<3   On=looped, Off=not looped
+
+ (len)  Sample data in SIGNED format
+
+
+
+                  Farandole .USM Sample/instrument format
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ (len)  Sample data in UNSIGNED format
+
+
+
+                       Farandole .FPT Pattern format
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+len        desc
+---------------------------------------------------------------------------
+ 4         "FPTþ" File magic
+ 32        Pattern Name
+ 3         (10,13,26)
+ 2         PatStore array length (PatSize)(Total remaining length of file)
+ 1         Break Location
+ 1         Unused
+ PatSize-2 Pattern in raw format (just like in .FAR file)
+
+
+
+                 Farandole .F2R Linear module (2.0) format
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                             (file imported)
+------------------------------------------------------------------------------
+F2R (Farandole Form2.0) linear-layout digital music specifications.
+By Daniel Potter/Digital Infinity.
+
+This is the internal format we use for writing demos. Currently there are
+these versions of the F2R playing code:
+
+A) A full C++ version that is rather slow, but plays all effects correctly.
+B) A full ASM version that is fast, although in real mode, and plays almost
+   no effects
+C) A full ASM version in protected mode that has been extremely optimized and
+   plays almost no effects (working on it).
+
+These will all be available when I see that they are fit for the public eye..
+
+You will see in a moment why I call it a linear-layout format. Everything can
+be read easily in one pass without mixing up too many variables. (Ex: sample
+data is stored with sample headers..)
+
+
+Header A
+--------
+
+len           description
+---           -----------
+ 3            'F2R' - file magic
+ 3            Composer magic. Only existing one right now is 'FAR' (farandole)
+ 40           Song name in ASCIIZ
+ 2            Songtext length (in bytes)
+ STLen        Songtext (length in previous field)
+ 1            Song version. Current version is 0x20 (2.0)
+ 1            Number of channels. Probly not more than 16, but up 256.
+ 1            Default tempo, in ticks per second.
+ NChan        Default panning for each channel (length in NOC field above)
+ 1            Number of samples saved in file.
+
+
+Sample Structures
+-----------------
+
+len           description
+---           -----------
+32            Sample name in ASCIIZ
+4             Sample length (PC dword)
+1             FineTune. Not currently supported.
+1             Volume. Also has no purpose currently.
+4             Repeat START (PC dword)
+4             Repeat END (PC dword) (note that this is NOT repeat LENGTH)
+1             Sample type. bit 0=1->16 bit data
+Len           Sample data in signed format (length=SLen field above)
+
+This structure repeats for the number of samples stored in the file.
+
+
+Header B
+--------
+
+len           description
+---           -----------
+ 3            SectionID - 'JDC' - (see below comment)
+ 1            Order length
+ 1            Number of patterns stored in file
+ 1            Loop To value (order index)
+ 128          Order table. Blank entries padded with 0xFF
+
+
+Pattern Structure
+-----------------
+
+
+len           description
+---           -----------
+ 3            SectionID - 'JDC'
+ 2            Number of events stored in this pattern
+ 4            Length of pattern in bytes (starting with next byte)
+
+What remains is an event for each thing that is to happen on any channel. This
+eliminates the need for saving blank data, and thus this is currently the
+most efficient digital format out. Here's the format of each event:
+
+len           description
+---           -----------
+ 1            Event type. Each bit denotes a bit of information included:
+
+      bit     description
+      ---     -----------
+       0      New note pitch
+       1      New instrument value
+       2      Start a new note
+       3      New volume
+       4      Effect (normal effect)
+       5      Extended effect
+
+ 1            Channel
+
+Each of the follow is included only if the appropriate bit is set:
+
+ 1            ET0-(Octave*12)+Note
+ 1            ET1-Sample number
+ 1            ET3-Volume (0-FF)
+ 2            ET4-effect #+effect data 1
+ 1            ET5-effect data 2
+
+ 1            Eventtick - number of ticks to wait before processing next event
+
+The above structure repeats for NumEvents (in pattern header) and the entire
+pattern structure continues until all patterns are saved.
+
+Effects are standard Farandole Composer effects. Here is a list in case you
+do not know them:
+
+0- No effect
+1- Slide pitch up
+2- Slide pitch down
+3- Slide to pitch *
+4- Retrigger
+5- Set vibrato amplitude
+6- Vibrato current note with given wavelength
+7- Volume slide up
+8- Volume slide down
+9- Sustained vibrato
+A- Slide to volume *
+B- Set panning
+C- Note offset
+D- Fine tempo down
+E- Fine tempo up
+F- Set tempo
+
+*-extended effect (ET5)
+
+For more info on how these work and how they are implemented, please see the
+Farandole documentation, FORMATS.DOC.
+
+In the case of the extended effects, the second parameter is what is being
+slid to. ie pitch slide, parameter two is the pitch to slide to, and vol
+slide, is the volume to slide to.
+
+Note about SectionID: I had a tremendous trouble debugging originally because
+since all the data in the file practically looked like garbage, there was no
+way to tell what was going on. What this does is provide the program a way to
+gauge if the file is valid. If you ever read a section ID and it is not 'JDC'
+verbatim you should stop reading the file and declare it invalid.
+
+This format was provided as a service to the general demo/music/game community.
+It may be used for any purpose, however if you use my format I would like to
+at least be greeted or credited or something.. whatever you feel is appropriate.
+
+
+                                                           Good luck!
+                                                           Daniel Potter/DI
+                                                           Apr 13, 1994
+----------------------------------------------------------------------------
+
+                 

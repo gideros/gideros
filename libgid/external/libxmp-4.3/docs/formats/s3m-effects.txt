@@ -1,0 +1,324 @@
+2.4 Effects
+
+          An effect is applied to a note to change how it or the whole pattern
+        is played. If you are using a tracker for the first time, I suggest you
+        just skip this chapter and come back when you have learned the basics.
+        But for those with previous experience, Scream Tracker 3 supports
+        nearly all Protracker effects and a few effects of its own. If you want
+        to see how these commands can be used in a song, check the example song
+        64MANIA.S3M, it contains most of these effects. It is no masterpiece of
+        melody, it is made just to acquaint a beginner with the different
+        effects and how they can change the sound of a song completely.
+          Here is a list of all the effects and what they do (a shortened list
+        can be found in the ST3 internal quickhelp system by pressing F10 in
+        the pattern editor):
+
+        Axx Set speed to xx (the default is 06)
+
+                  This command is used for setting the song's speed. The
+                speed varies from 1 (fastest) to FF (slowest). With most
+                standard trackers, however, the slowest possible speed is
+                1F, since speed and tempo are in the same command.
+
+        Bxx Jump to order xx (hexadecimal)
+
+                  This command jumps to the order number specified in the
+                infobyte (remember to give the order number is hexadecimal
+                format). The row this command is on is still played, but the
+                next row played will be the first row of the pattern at order
+                xx.
+
+        Cxx Break pattern to row xx (decimal)
+
+                  This command breaks the pattern after playing the row it's
+                on. It will skip to the next pattern in order and automatically
+                jump to row xx. (Decimal)
+
+        D0y     Volume slide down by y
+
+                  This will slide the volume down with the value of y. The
+                amount of the slide will be (speed-1) * y. Thus a command
+                of D04 at speed 8 will drop the volume by 28.
+
+        Dx0     Volume slide up by x
+
+                  This will slide the volume up with the value of x. The amount
+                of the slide is the same as with the volume slide down command,
+                speed times x. The volume can't be higher than 64, though.
+
+        DFy     Fine volume down by y
+
+                  Fine volume differs from volume slide in that it doesn't
+                slide the volume smoothly, but instead changes the volume in
+                the beginning of the row. It has lost some usefulness in ST3,
+                because there is a separate volume column, but it still has
+                its uses. Fine volume is also independent of the speed, it
+                always changes the volume by the infobyte y. If y is 0, the
+                command will be treated as a volume slide up with a value of
+                f (15). If a DFF command is specified, the volume will be
+                slid up.
+
+        DxF     Fine volume up by x
+
+                  Same as fine volume down, but raises the volume instead of
+                lowering it. Volumes going over 64 are changed into 64.
+
+        Exx     Slide down by xx
+
+                  This command will slide the pitch of the note down as
+                specified by xx. The range is 00..DF, since values above that
+                are cosidered fine slides.
+
+        EFx     Fine slide down by x
+
+                  Fine slide, like fine volume, is unlike normal slide in
+                that it slides to the desired pitch in the beginning of the
+                row, not smoothly. It is also independent of the speed, it
+                always slides the same amount, as dictated by x.
+
+        EEx     Extra fine slide down by x
+
+                  Acts list a fine slide, but is four times more accurate.
+
+        Fxx     Slide up by xx
+
+                  This command will slide the pitch of the note up as
+                specified by xx. The range is 00..DF, since values above that
+                are cosidered fine slides.
+
+        FFx     Fine slide up by x
+
+                  Fine slide, like fine volume, is unlike normal slide in
+                that it slides to the desired pitch in the beginning of the
+                row, not smoothly. It is also independent of the speed, it
+                always slides the same amount, as dictated by x.
+
+        FEx     Extra fine slide up by x
+
+                  Acts list a fine slide, but is four times more accurate.
+
+        Gxx     Tone portamento with speed xx
+
+                  This command will start changing the current pitch to match
+                the note given with this command. Subsequent G-commands will
+                continue sliding the pitch until the note is reached at which
+                time the portamento will be stopped.
+
+        Hxy     Vibrato with speed x and depth y
+
+                  Vibrato vibrates the note by changing the pitch with speed
+                x and depth y.
+
+        Ixy     Tremor with ontime x and offtime y
+
+                  Tremor turns the note on for x frames and off for y frames.
+                It is not a ProTracker command, so all tremor commands will
+                be discarded when the song is saved as a .MOD file.
+
+        Jxy     Arpeggio with halfnote additions of x and y
+
+                  Arpeggio changes the playing frequency between the note,
+                the note + x halfnotes and the note + y halfnotes 50 times
+                per second. It is best to use it with clear or tight-looped
+                (chip) instruments. Old users of the Commodore 64 remember
+                this effect which was used to make chords. A C minor chord,
+                for example, would be made with J37, which would play C, D#
+                and G.
+
+        Kxy     Dual command: H00 and Dxy
+
+                  This is the old vibrato + volumeslide from the Protracker
+                command set. It continues the vibrato begun before the
+                command and adds a volumeslide. You cannot, however, use
+                fine volume sliding. An example of usage:
+
+                        C-5 04 28 H82   Start the vibrato
+                        ... .. .. K02   Continue vibrato while lowering volume
+                        ... .. .. H83   Deepen the vibrato
+                        ... .. .. K01   Slide the volume down with the new
+                                        vibrato depth value
+
+                        At speed 6, the volume would end up being 13.
+
+        Lxy     Dual command: G00 and Dxy
+
+                  This is the old toneport + volumeslide from the Protracker
+                command set. You must first use a G command and then put the
+                L command. It will continue the toneport and slide the volume
+                like a normal volumeslide with value xy. You cannot, however,
+                use fine volume sliding.
+
+        Oxy     Set sample offset
+
+                  This command starts playing the sample at offset 256 times
+                xy. A command of O10 would start playing the sample at
+                position 256 * 16 = 4096. If the sample offset is used in
+                a looped sample and the offset given exceeds the loop end
+                value, the loop is taken into consideration and the offset
+                will be calculated as if the sample had looped. In the
+                example song pattern 3, the sample offset command is used
+                to create a hihat-type sound by playing only the end part
+                of the snare sample.
+
+        Qxy     Retrig (+volumeslide) note
+
+                  The retrig command triggers the sample many times in one
+                row. The y value tells how many frames there are between the
+                retrigs. There are as many frames in one as the speed is. At
+                speed 6 a retrig of Q03 would trigger the note two times. The
+                x value tells if there should be a volumeslide between the
+                retrigs. If the volumeslide part is 0, the command acts
+                like the old Amiga retrig. The amount the volume will change is shown in the
+                following table:
+
+                        0: 0    (No volumeslide)
+                        1: -1
+                        2: -2
+                        3: -4
+                        4: -8
+                        5: -16
+                        6: 2/3 times the original volume
+                        7: 1/2 times the original volume
+                        8: ?
+                        9: +1
+                        A: +2
+                        B: +4
+                        C: +8
+                        D: +16
+                        E: 3/2 times the original volume
+                        F: 2 times the original volume
+
+                Example of use:
+
+                        (speed 8)
+                        C-5 04 64 Q72   -Four retrigs, their volumes being
+                                         64, 32, 16 and 8
+                        (speed 6)
+                        C-5 04 12 QC2   -Three retrigs with volumes 12, 20
+                                         and 28
+
+        Rxy     Tremolo with speed x and depth y
+
+                  Tremolo acts like vibrato, but changing the volume of the
+                note instead of the pitch. If the volume is at 64, all volumes
+                going over 64 will be clipped at 64, so you should use lower
+                volumes.
+
+        Uxy     Fine Vibrato with speed x and depth y
+
+                  Vibrates the note by changing the pitch with speed
+                x and depth y just like normal vibrato, but is four times
+                more accurate. If a note is played very high, a normal
+                vibrato might sound too strong, so a fine vibrato can
+                be used.
+
+
+        S0x     Set filter
+
+                  An Amiga hardware function, not implemented in Scream
+                Tracker.
+
+        S1x     Set glissando control
+
+                  Makes toneportamentos slide a halfnote at a time on the
+                channel the S11 command is given. S10 makes the portamentos
+                act normally again.
+
+        S2x     Set finetune (=C4Spd)
+
+                  The set finetune command is used only to retain Protracker
+                compatibility. Because Scream Tracker has a more accurate way
+                of setting the desired instrument frequency, using this
+                command is pretty pointless. However, if you want to dabble
+                around with it, these are the C4Spd values the command uses:
+
+                        0       - 7895 Hz
+                        1       - 7941 Hz
+                        2       - 7985 Hz
+                        3       - 8046 Hz
+                        4       - 8107 Hz
+                        5       - 8169 Hz
+                        6       - 8232 Hz
+                        7       - 8280 Hz
+                        8       - 8363 Hz (No finetune)
+                        9       - 8413 Hz
+                        A       - 8463 Hz
+                        B       - 8529 Hz
+                        C       - 8581 Hz
+                        D       - 8651 Hz
+                        E       - 8723 Hz
+                        F       - 8757 Hz
+
+        S3x     Set vibrato waveform to x
+
+                  Sets the waveform of the vibrato command. The different
+                options are 0 - the normal sine waveform, 1 - ramp down,
+                2 - square waveform, and 3 - random.
+
+        S4x     Set tremolo waveform to x
+
+                  Acts like the set vibrato waveform command, but affecting
+                the waveform used for the tremolo command.
+
+        S8x     Set channel pan position
+
+                  This command has been implemented in ST 3.2. It sets the
+                channel pan position with 0 being left and F being right.
+                  *** Note that this command only works on a GUS!!! ***
+
+        SAx     Stereo control
+
+                  This is an old command no longer implemented in Scream
+                Tracker. The only .S3M file released that would support it
+                is the soundtrack from Panic by Future Crew. The new S8
+                command is more efficient, too.
+
+        SBx     Pattern loop.
+
+                  Pattern loop is used for looping inside the pattern. First,
+                you must use an SB0 command to set the loop point where the
+                loop is to begin. Then you must use SBx to return to the loop
+                point x times. In the example song in pattern 5, you can see
+                how this command can be used to save pattern space. Also, you
+                should not try looping back to a loop point in another
+                pattern! If you don't enter an SB0 command, the loop defaults
+                to the beginning of the pattern.
+
+        SCx     Notecut in x frames
+
+                  The note played will be cut in x number of frames. At speed
+                8, for example, an SC4 command would cut the note at exactly
+                halfway through the row.
+
+        SDx     Notedelay for x frames
+
+                  This delays the playing of the note until x frames into the
+                row. Until the new note comes out, the previous one is played.
+
+        SEx     Patterndelay for x notes
+
+                  This repeats the current row x times without triggering the
+                notes again but applying the effects.
+
+        SFx     Funkrepeat with speed x
+
+                  Not implemented in Scream Tracker 3.
+
+        Txx     Tempo = xx (hex)
+
+                  Changes the tempo (BPM's) to xx. The valid values are 20
+                to FF. The default is 7D hex, which is 125 decimal.
+
+        Uxx     Fine vibrato
+
+                  Similar to the Vibrato (Hxx) command in that it vibrates the
+                note, but it is four times more accurate.
+
+        Vxx     Set global volume
+
+                  Changes the global volume at which the whole song is played.
+                Accepted values are 0 to 40.
+
+          The Protracker effects left out, thus, are Set filter and Funkrepeat.
+        Most songs play fine without them, though.
+

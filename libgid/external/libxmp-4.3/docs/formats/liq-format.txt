@@ -1,0 +1,161 @@
+
+
+         +-------------------------------------------------------------+
+         |          Liquid Tracker module (LIQ) file format            |
+         +-------------------------------------------------------------+
+
+     (C) Nir Oren, 1995-98. May be freely used by any programmer.
+
+    +---------+
+    | Header  |
+    +---------+
+
+   Offset  Length   Description
+   ------------------------------------------
+     00h     14     'Liquid Module:' (Magic ID)
+     0Eh     30     ASCIIZ module name
+     2Ch     20     Artist Name
+     40h      1     1Ah
+     41h     20     Tracker Name
+     55h      2     Format Version - currently 0102h   (Read note*)
+     57h      2     Initial speed
+     59h      2     Initial BPM
+     5Bh      2     Lowest note (Amiga Period*4)
+     5Dh      2     Uppest note (Amiga Period*4)
+     5Fh      2     Number of tracks
+     61h      4     Module flags (1=cut upon limit  2=ST3 compatibility mode)
+                                  The loader should mask out the unused bits
+     65h      2     Number of Patterns in file
+     67h      2     Number of Instruments in file
+     69h      2     Number of Sequence Table entries in file
+     6Bh      2     Module header size (USUALLY 6Dh+(Number of Tracks)*6+
+                                        Number of Sequence Table entries+8+
+                                        (Number of Pools)*20)
+     6Dh  NumTracks       Initial Channel Panning setup
+     ...  NumTracks       Initial Channel Volume setup
+     ...  NumSequence     Sequence Table Data
+
+
+  *  A note about the Format Version - a loader should try loading even
+     if the LSB of the Format Version is different from what it knows
+     (used when wanting to add more info to the header but leaving the
+     format compatible) only if the MSB byte is different, the loader
+     is not able to handle it.
+
+   == FROM FORMAT VERSION 0101h: ==
+
+   Offset  Length   Description
+   ------------------------------------------
+     ...  4               'POOL' signature for echo pool data
+     ...  NumTracks x 4   1 WORD Mix Destination Setup  1 WORD Echo Amount
+     ...  4               Number of Echo Pools
+     ...  NumPools x 20   Echo Pools Data
+
+   == FROM FORMAT VERSION 0102h: ==
+
+   Offset  Length   Description
+   ------------------------------------------
+     ...  2               Amplification (0-1000d)
+
+
+  +--------------------+
+  |  Echo Pools Data   |
+  +--------------------+
+      - Each Echo Pool data consists of 20 bytes in the following mannar:
+
+        1 DWORD  - DELAY value (in miliseconds)
+        1 DWORD  - Decay value for left channel (0-64)
+        1 DWORD  - Decay value for right channel (0-64)
+        1 DWORD  - Flags (&1 - Stereo flip)
+        1 DWORD  - Reserved
+  
+
+
+  +--------------------+
+  |  Patterns data     |
+  +--------------------+
+
+      - For empty patterns, a 4-byte value of '!!!!' will be found here
+
+        else:
+
+      ?       4     Magic "L","P",00h,00h  (ID, for recovery purposes)
+   +04h      30     ASCIIZ Pattern name
+   +22h       2     Number of Intervals per Track (usually 64)
+   +24h       4     Size of packed Pattern
+   +28h       4     Reserved
+   +2Ch       ?     Packed Pattern data
+
+   Packed pattern data is stored full Track after full Track from the left to
+   the right (all Intervals in Track and then going Track right). You should
+   expect 0C0h on any pattern end, and then your Unpacked Patterndata Pointer
+   should be equal to the value in offset [24h]; if it's not, you should exit
+   with an error.
+
+
+      Each row in track consists of 5 bytes:
+
+      1-Note (0-107 representing 9 octaves)  -1 = No note   -2 = Note Off
+      2-Instrument (0-99)    -1 = No instrument
+      3-Volume (0-64)        -1 = No volume change
+      4-Effect ('A' to 'Z')  -1 = No effect
+      5-Parameter (0-255)
+
+      Unless:
+      -------
+      if NOTE = 0C0h then STOP PATTERN DECODING, go to next
+      if NOTE = 0A0h then STOP TRACK DECODING, go to next
+      if NOTE = 0E0h then SKIP xx EMPTY NOTES (xx-1 specifies in next byte)
+      if NOTE = 080h then SKIP ONE EMPTY NOTE
+      if NOTE = 0E1h then SKIP xx EMPTY TRACKS (xx-1 specifies in next byte)
+
+      if (NOTE > C0h) and (NOTE < E0h) then
+
+                         if NOTE & 1 then NOTE follows
+                         if NOTE & 2 then INSTRUMENT follows
+                         if NOTE & 4 then VOLUME follows
+                         if NOTE & 8 then EFFECT follows
+                         if NOTE & 16 then PARAMETER follows
+
+      if (NOTE > A0h) and (NOTE < 0C0h) then
+       same as before, except there is a byte following specifies
+       how many Intervals(-1) this packing method will last.
+
+      if (NOTE > 80h) and (NOTE < 0A0h)
+       same as before ( NOTE & 31 indicates packing method, and
+       byte after there's Intervals count(-1) indicator), but there's just
+       one note specified after, which is duplicated on all the Intervals.
+
+   +-----------------+
+   | Instrment data  |
+   +-----------------+
+
+      - Just a series of LDSS files (Read in LDSS.DOC)
+
+      - For empty instruments, a 4-byte value of '????' will be found.
+
+
+      Currently, the Liquid Tracker only supports DIGITIZED INSTRUMENTS,
+      The samples format used here is the LDSS (Liquid Digital Sample
+      Specification) so you will simply found here a series of LDSS files,
+      in the sum specifies in "Number of instruments" in the header.
+      NOTE that any file offset indicated in the LDSS header is relative
+      to it's header start position, of course.
+
+
+ +-------------------------------= CONTACTS =-------------------------------+
+ |                                                                _______   |
+ |                                                               \     \_\  |
+ |                                                               / \_______\|
+ |   You can cont(r)act the author by:    |      SnailMail:  ||__\   __/ |  |
+ |                                        |                 (oo_________/   |
+ |                                        |                                 |
+ | -------------------------------------  |         <NOT AVAILABLE>         |
+ | InterNET: niroren@iname.com            |                                 |
+ |                                        |                                 |
+ |                                        |                                 |
+ +--------------------------------------------------------------------------+
+
+
+                               ---- EOF ----
+

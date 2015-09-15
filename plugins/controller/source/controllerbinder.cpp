@@ -34,6 +34,7 @@ static const char* RIGHT_JOYSTICK = "rightJoystick";
 static const char* LEFT_JOYSTICK = "leftJoystick";
 static const char* RIGHT_TRIGGER = "rightTrigger";
 static const char* LEFT_TRIGGER = "leftTrigger";
+static const char* AXIS_JOYSTICK = "axisJoystick";
 static const char* KEY_DOWN = "keyDown";
 static const char* KEY_UP = "keyUp";
 static const char* CONNECTED = "connected";
@@ -131,6 +132,9 @@ private:
 			case GHID_LEFT_TRIGGER_EVENT:
                 lua_pushstring(L, LEFT_TRIGGER);
                 break;
+            case GHID_AXIS_JOYSTICK_EVENT:
+                lua_pushstring(L, AXIS_JOYSTICK);
+                break;
 			case GHID_CONNECTED_EVENT:
                 lua_pushstring(L, CONNECTED);
                 break;
@@ -147,7 +151,10 @@ private:
             
 			lua_pushnumber(L, event2->keyCode);
 			lua_setfield(L, -2, "keyCode");
-			
+
+            lua_pushnumber(L, event2->realCode);
+            lua_setfield(L, -2, "realCode");
+
 			lua_pushnumber(L, event2->playerId);
 			lua_setfield(L, -2, "playerId");
         }
@@ -180,12 +187,25 @@ private:
 			lua_pushnumber(L, event2->playerId);
 			lua_setfield(L, -2, "playerId");
         }
+        else if (type == GHID_AXIS_JOYSTICK_EVENT)
+        {
+            ghid_JoystickEvent *event2 = (ghid_JoystickEvent*)event;
+
+            lua_pushnumber(L, event2->playerId);
+            lua_setfield(L, -2, "playerId");
+
+            lua_pushnumber(L, event2->strength);
+            lua_setfield(L, -2, "strength");
+
+            lua_pushnumber(L, event2->angle);
+            lua_setfield(L, -2, "axis");
+        }
 		else if (type == GHID_CONNECTED_EVENT || type == GHID_DISCONNECTED_EVENT)
         {
             ghid_DeviceEvent *event2 = (ghid_DeviceEvent*)event;
 			
 			lua_pushnumber(L, event2->playerId);
-			lua_setfield(L, -2, "playerId");
+            lua_setfield(L, -2, "playerId");
         }
 
 		lua_call(L, 2, 0);
@@ -293,6 +313,8 @@ static int loader(lua_State *L)
 	lua_setfield(L, -2, "RIGHT_TRIGGER");
 	lua_pushstring(L, LEFT_TRIGGER);
 	lua_setfield(L, -2, "LEFT_TRIGGER");
+    lua_pushstring(L, AXIS_JOYSTICK);
+    lua_setfield(L, -2, "AXIS_JOYSTICK");
 	lua_pushstring(L, CONNECTED);
 	lua_setfield(L, -2, "CONNECTED");
 	lua_pushstring(L, DISCONNECTED);

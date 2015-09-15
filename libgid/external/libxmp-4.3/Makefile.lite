@@ -1,0 +1,40 @@
+
+DIST		= libxmp-lite-stagedir
+DFILES		= lite/README INSTALL install-sh configure configure.ac \
+		  config.sub config.guess Makefile.in lite/libxmp-lite.pc.in \
+		  libxmp.map lite/Makefile.vc.in
+DDIRS		= src loaders test
+
+all: dist
+
+include lite/src/Makefile
+include lite/src/loaders/Makefile
+include test/Makefile
+
+dist: dist-prepare vc-prepare dist-subdirs dist-dist
+	mv $(DIST)/libxmp-lite-*.tar.gz .
+	ls -l libxmp-lite-*.tar.gz
+
+dist-prepare:
+	rm -Rf $(DIST)
+	mkdir -p $(DIST)
+	cp -RPp $(DFILES) $(DIST)/
+
+vc-prepare:
+	@echo Generate Makefile.vc
+	@sed -e 's!@OBJS@!$(subst /,\\,$(OBJS:.o=.obj))!' $(DIST)/Makefile.vc.in > $(DIST)/Makefile.vc
+
+dist-subdirs: dist-makefile $(addprefix dist-,$(DDIRS))
+	(cd lite; tar cf - .) | (cd $(DIST); tar xf -)
+	mkdir -p $(DIST)/include/libxmp-lite
+	cp include/xmp.h $(DIST)/include/libxmp-lite/
+	mkdir -p $(DIST)/jni
+	cp jni/Application.mk $(DIST)/jni/Application.mk
+
+dist-makefile:
+	head -3 Makefile.in > lite/Makefile.in
+	cat lite/Makefile.in.in >> lite/Makefile.in
+
+dist-dist:
+	(cd  $(DIST); autoconf; ./configure)
+	$(MAKE) -C $(DIST) dist distcheck || false

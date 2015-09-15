@@ -1,0 +1,583 @@
+                          APPENDIX A: Player commands
+
+
+1) Both the command type and the command level are in HEXADECIMAL. (Please
+   read through @{" Appendix F  " link "AppF" 0} before continuing, just to make sure...)
+
+2) These abbreviations are used:
+
+   Level 1 = 1st command level digit     Level 2 = 2nd command level digit
+
+
+A.1 Normal commands
+
+Command 00: ARPEGGIO
+
+This command changes the pitch of the note quickly (once every tick,
+It's usually used to create special effects. If you've ever
+listened to Commodore 64 music, you must have heard arpeggios!
+
+The pitch is changed between three different pitches (1 to 3) during each
+note. Level 1 contains the number of halfsteps between pitch 1 and pitch 2,
+level 2 the number of halfsteps between pitch 1 and pitch 3.
+
+For example, to create a C major arpeggio:
+
+   Pitch 1:  C-2
+   Pitch 2:  E-2 = 4 halfsteps higher than pitch 1
+   Pitch 3:  G-2 = 7 halfsteps higher than pitch 1
+
+This produces:  C-2 10047
+                --- 00047
+                --- 00047 and so on... Note that the command level with a
+                          blank note (---) continues the arpeggio.
+
+As with most commands, experimentation often produces the best results. This
+effect can sound pretty bad with some instruments but pretty good with
+others. Use command level 37 for a minor arpeggio, 57 for a sustained 4th.
+
+
+Commands 01 and 02: SLIDE PITCH UP and DOWN
+
+These two commands slide the pitch of the current track up or down. They
+actually work by changing the period of the note the amount of the command
+level every tick. Sounds a bit technical? Dead right! It's best to leave the
+donkey work to the automatic slide creator.
+
+
+Command 03: PORTAMENTO
+
+Again a slide command, and again it's best to use Pitch Slide Type 1 (Edit
+menu). The difference between this and commands 01 and 02 is that the latter
+replay the note they slide to: command 03 doesn't replay the note. The
+command level is the slide speed. Here's an example:
+
+   C-2 50000  <= Note C is played
+   E-2 50305  <= This note isn't played! Instead, the slide target note is
+   --- 00300     set to E-2 with a slide speed of 5
+   --- 00300  <= Level 00 uses the previous speed (5 here)
+
+This example would slide from C-2 to E-2, but the slide stops dead when E-2
+is reached (with commands 01 and 02 you can slide beyond the note).
+
+
+Command 04: VIBRATO
+
+Rapidly slides the pitch up and down (causing a 'wobble'). Level 1 is the
+vibrato's speed, level 2 the depth (the length of the pitch slide).
+
+   E-3 4043B  <= Low speed, high depth
+   --- 004A1  <= High speed, low depth
+   --- 00400  <= Level 00 uses the previous speed and/or depth (A1 here)
+
+
+Command 05: SLIDE PITCH AND FADE  (Protracker-compatible)
+
+This command combines commands 0300 and 0Dxx. The slide continues at the
+last speed entered with command 03, and the command level is the fade speed.
+
+   C-1 10000
+   D-3 10303  <= Slide pitch at speed 3
+   --- 00300  <= Continue sliding
+   --- 00502  <= Continue sliding + fade at speed 2 (see command 0D later)
+
+
+Command 06: VIBRATO AND FADE  (Protracker-compatible)
+
+Combines commands 0400 and 0Dxx. Again, the vibrato continues at the
+previous speed and depth, and the command level is the fade speed.
+
+
+Command 07: TREMOLO  (Protracker-compatible)
+
+This command is a kind of volume vibrato. Level 1 is the tremolo speed (the
+higher the value, the greater the speed), and level 2 is the depth. The
+depth must be quite high before you notice the effect (try A - F).
+
+
+Command 08: HOLD AND DECAY
+
+Sets the hold and decay values for the note (press Help and click Windows
+then Instrument Parameters). Level 1 is decay, level 2 is hold.
+
+
+Command 09: TPL SLIDER
+
+This command sets the TPL slider (the number of ticks per line,
+The command level must be $01 - $20 ($ means hexadecimal).
+
+
+Command 0A: VOLUME SLIDE  (equivalent to 0D: for Tracker compatibility only)
+
+Please use command 0D instead of this.
+
+
+Command 0B: PLAYING SEQUENCE POSITION JUMP
+
+This command allows you to create songs that have an introduction, which is
+only played once, and a main part, which is repeated over and over again.
+OctaMED jumps to the entry in the playing sequence given by the command
+level. You must, however, remember that level 00 is the first entry, and 01
+the second, so e.g. 03 will be the fourth.
+
+   --- 00B06  <= Jump to playing sequence entry 007
+
+Note that when more than one playing sequence is defined (i.e. sections),
+the specified entry in the CURRENT playing sequence is jumped to. At
+present, no command exists to jump to an entry in the section list.
+
+
+Command 0C: SET VOLUME
+
+Without doubt the most commonly-used player command. It overrides the
+default volume of the instrument  For example,
+A-3 40C32 is played with volume 32.
+
+There are 65 volume levels (0 - 64): 0 = silent, 64 = maximum. You may enter
+the level in either decimal or hex, depending on the state of the cycle
+gadget in the Song Options window.
+
+It's also possible to change the volume of an already played note:
+
+   A-3 40000
+   --- 00000
+   --- 00C10  <= Change note A-3's volume to 10
+
+In addition, with this command you may actually set the default instrument
+volume. The value MUST be in HEX!, and is between 80 and C0: 80 = level $0,
+C0 = level $40 (hex). In other words, add 80 to the normal volume in hex.
+
+
+Command 0D: VOLUME SLIDE
+
+You can increase or decrease volume smoothly with this command. Level 1
+increases the volume, level 2 decreases. If both level digits have a value
+greater than zero, level 2 is ignored.
+
+   C-2 30C32  <= Sets volume to 32
+   --- 00D01  <= Decreases volume slightly
+   --- 00D01  <= Decreases volume a little more
+   --- 00D20  <= Increases volume back up to 32
+
+For techies only: In this command the volume is changed every tick
+So if the TPL tempo slider were 6, a decrease volume value of 1 would
+lower the volume by 6. Using 0C commands, the above example would look like
+this (except it doesn't sound as smooth):
+
+   C-2 30C32  (volumes are decimal in this example)
+   --- 00C26  <= Subtract 6
+   --- 00C20  <= Subtract 6
+   --- 00C32  <= Add 12
+
+
+Command 0E: SYNTH JUMP
+
+Only applies to synthetic or hybrid instruments. It is used to trigger a
+jump in the waveform sequence. The command level is the line number you
+wish to jump to.
+
+   C-4 40000  <= Starts playing the synthetic or hybrid sound
+   --- 00000
+   --- 00E05  <= Jumps to waveform line number 5
+
+
+Command 0F: PRIMARY TEMPO / MISCELLANEOUS
+
+Command 0F has many different actions depending on the command level.
+
+* Level 00: causes an immediate jump to the next entry in the playing
+  sequence (or to the beginning of the block if you are using Play Block).
+  It's actually better to make the block shorter, as it takes less memory,
+  so this function mainly exists for Tracker compatibility.
+
+* Levels 01 - F0: changes the Tempo slider. Levels 01 - 0A
+  really exist for Tracker compatibility, but you should use command 09
+  instead as it's directly compatible (but make sure Tempo = 33).
+
+Commands 0FF1 - 0FFF are reserved for special functions, most of which are
+currently in use:
+
+0FF1 makes a single note play twice. Useful for creating fast rhythms. It's
+     identical to command 1F03. When the TPL slider is 6:
+
+        C-3 20FF1 is the same as C-3 20000
+                                 C-3 20000 with double tempo (i.e. 3)
+
+0FF2 delays the start of a note by half a line (as long as TPL is 6). It's
+     identical to command 1F30.
+
+0FF3 works like 0FF1 except the note is played three times! It's identical
+     to command 1F02.
+
+0FF4 delays the note one-third of a line.
+
+0FF5 delays the note two-thirds of a line. Commands 0FF4 and 0FF5 can be
+     used, for example, to create triplets:
+
+        C-2 10000  Here, the three notes will be evenly spaced throughout
+        D-2 10FF4  the four lines (they'll have a length of one-and-a-third
+        E-2 10FF5  lines each)
+        --- 00000
+
+     0FF4+5 only work accurately when TPL is divisable by 3 (3, 6, 9 etc.).
+
+0FF8 turns the low-pass filter off.
+
+0FF9 turns the low-pass filter on. Commands 0FF8 and 0FF9 work like the
+     Audio Filter Active check box in the Song Options window.
+
+0FFD (not MIDI) causes the pitch of the previous note to be set to the new
+     note, but it's not replayed.
+
+        C-1 20000  <= Play note
+        --- 00000
+        D#2 20FFD  <= Don't replay the note, just set the pitch to D#2
+
+     This is especially useful in playing long samples or samples with a
+     loop set (such as strings and choirs), as the undesirable "click" that
+     you can sometimes hear when playing a new note is eliminated.
+
+0FFE stops the song playing. (When used in 5 - 8-channel mode, the song's
+     notes are also stopped). Can be entered by shift-clicking STOP.
+
+0FFF stops the note on the current track. Is almost like 0C00 with Amiga
+     samples, but while 0C00 sets the note's volume to zero, 0FFF turns the
+     note off completely (there is a subtle difference :-).
+
+
+Commands 11 and 12: SLIDE PITCH UP and DOWN ONCE  (Protracker cmds E1 / E2)
+
+Whereas commands 01 and 02 change the pitch on every tick, these commands
+only change the pitch on the first tick of each line (greater accuracy).
+
+
+Command 14: PROTRACKER-STYLE VIBRATO
+
+As command 04, except command 14's depth levels produce exactly half the
+depth as command 04. Protracker pioneered this more accurate command.
+
+
+Command 15: SET FINETUNE
+
+Overrides the instrument's default finetune value
+
+Since these are hex numbers, negative numbers must be entered as follows:
+
+       -1 => FF        -3 => FD        -5 => FB        -7 => F9
+       -2 => FE        -4 => FC        -6 => FA        -8 => F8
+
+   C#3 21503  <= Finetune +3
+   D-2 315F8  <= Finetune -8
+
+
+Command 16: REPEAT LINES (LOOP)  (Equivalent to Protracker command E6)
+
+This interesting command enables you to set up a repeated section (loop)
+within a block.
+
+   004 C-3 11600  <= Command level = 00: mark loop beginning
+   005 D#2 10000
+   006 --- 11603  <= Command level = 03: repeat this section three times
+
+When the loop has finished, the block continues. You can't nest loops!
+
+
+Command 18: CUT NOTE  (Equivalent to Protracker command E8)
+
+Almost like hold (command 08), except it sets the volume to zero instead of
+actually switching the note off. (Much the same as the difference between
+commands 0C00 and 0FFF). The command level must be less than TPL for the
+command to function.
+
+
+Command 19: SAMPLE START OFFSET  (Protracker command 9)
+
+When playing a sample, this command sets the starting byte in steps of 256
+bytes (= $100 in hex). Useful for speech samples.
+
+   C-2 11904  <= Play the sample starting at byte $400 = 1024
+
+
+Commands 1A and 1B: SLIDE VOLUME UP / DOWN ONCE  (Protracker EA / EB)
+
+Whereas command 0D changes the volume on every tick, these commands only
+change the volume on the first tick of each line (for greater accuracy).
+
+
+Command 1D: JUMP TO NEXT PLAYING SEQUENCE ENTRY  (Protracker command D)
+
+"But doesn't command 0F00 jump to the next entry?" Quite right. But with
+this command you can specify the line number of the first line to be
+played. The line number is (as usual) given in hex.
+
+   --- 01D0A  <= Jump to next playseq entry, and start at line 010 (skip
+                 000 - 009)
+
+
+Command 1E: REPLAY LINE  (Protracker command EE)
+
+Replays the commands (not the notes) in the current line the specified
+number of times.
+
+   C-2 11B01 --- 01E3F  <= If instrument 01 had a default volume of 64,
+                           these two tracks would fade note C-2 away
+
+
+Command 1F: NOTE DELAY AND RETRIGGER  (Protracker commands EC and ED)
+
+Gives you accurate control over note playing. You can delay the note any
+number of ticks, and initiate fast retrigger. Level 1 = note delay value,
+level 2 = retrigger value.
+
+  C-2 11F20  <= Delay 2 ticks  ||  C-2 11F02  <= Retrig every second tick
+                               ||
+   => tick  0  ---             ||   => tick  0  C-2
+            1  ---             ||            1  ---
+            2  C-2             ||            2  C-2
+            3  ---  etc.       ||            3  ---
+                               ||            4  C-2  etc.
+
+Command 0FF1 is equivalent to 1F03, 0FF2 to 1F30, and 0FF3 to 1F02.
+
+
+A.2 MIDI Commands
+
+Normal commands 0B, 0F, 16, 1D, 1E, and 1F all work identically with MIDI to
+Amiga instruments. Commands 15, 18, 19, 1A, and 1B have no effect with MIDI.
+
+Commands 05 and 00: CONTROLLER NUMBER and CONTROLLER VALUE
+
+These two commands allow you to change any MIDI controller (command
+$Bx nn vv, where nn = controller number, vv = value).
+
+Firstly, set the controller number you wish to change with command 05.
+Then, select the value with command 00. Subsequent uses of command 00 will
+affect the controller previously set with command 05. Remember that each
+MIDI channel has its own controller number.
+
+If you need to use a controller value of $00, you can't use 00 as a command
+level because command 0000 means do nothing. Instead, use level 80.
+Acceptable controller numbers are $00 - $7F, and values $01 - $80.
+
+Assuming instrument 03 is set to MIDI channel 1:
+
+   C-2 30000
+   --- 00507  <= Controller $07 = volume (according to the MIDI standard)
+   D-2 3007F  <= Sets max. volume ($7F). Command $B0 07 7F is sent (this is
+   --- 00000     easier to do with command 17)
+   F-3 30001  <= Low volume ($01)
+   --- 0055C  <= Sets controller $5C (tremolo depth)...
+   G-4 30080  <= ...to 0 (note: level $80 = value $00)
+
+For a much simpler way of changing MIDI controllers.
+
+Commands 01 and 02: PITCHBENDER UP / DOWN
+
+These commands "turn" the pitchbender 8 x command level steps up or down on
+every tick. Sounds a bit technical? Indeed, but unfortunately automatic
+slide making cannot be used. Because the ranges of pitchbenders differ with
+various MIDI instruments, you must find the right value by experimenting.
+
+The pitchbender isn't automatically reset when a new note is played. To
+reset it, issue the command again with a level of 00.
+
+   C-2 101FF  <= Turns the pitchbender up very quickly...
+   --- 00100  <= ...then resets it
+
+Commands 03 and 13: SET PITCHBENDER
+
+With these commands you may set the pitchbender to an exact value, instead
+of sliding as with commands 01 and 02. The command level is the pitchbender
+value, expressed as a signed hexadecimal digit (aaaarrrgh!!! Better read
+@{" Appendix D  " link "AppD" 0} again?!?)
+
+ $00 = center position,   $80 ($-7F) = smallest value,  $7F = largest value
+
+The two commands are identical, except that command 13 can be used when
+there's a note next to the command: command 03 cannot.
+
+   C-2 31380  <= Sets pitchbender to maximum value: use cmd 13 beside notes
+   --- 0037F  <= Sets pitchbender to minimum value
+   --- 00300  <= Resets pitchbender
+
+Command 04: MODULATION WHEEL
+
+Affects the current MIDI channel's modulation wheel. (Modulation is usually
+vibrato). The command level can be $00 - $7F: $00 = no modulation, $7F =
+maximum. All notes played using the current MIDI channel will be affected.
+
+Command 08: SET HOLD ONLY
+
+Just to underline that decay can't be used with MIDI instruments. (This is
+because with MIDI, the volume of an already played note can't be altered).
+However, the whole command level can be used to set hold. So hold values
+above 15 are possible (right up to 255).
+
+Command 0A: POLYPHONIC AFTERTOUCH
+
+Changes the polyphonic aftertouch of the most recent note. (Aftertouch is
+squeezing a key down harder than when it was initially pressed). With this
+command, each note has an individual amount of pressure (compare with
+command 0D). The level should be $00 - $7F.
+
+Command 0C: SET VOLUME
+
+Again, just to underline that the volume of a note can't be changed after
+it has been played (as it can with Amiga samples). The normal Amiga sample
+volume range of 0 - 64 is converted to the MIDI range of 0 - 127.
+
+Command 0D: CHANNEL AFTERTOUCH
+
+Sends a channel aftertouch message to the most recently used channel. As
+with command 04, all notes using the most recent channel are given the same
+pressure (compare with command 0A). The level should be $00 - $7F.
+
+Command 0E: PAN CONTROL
+
+Controls the stereo location of the note. As usual, use levels $00 - $7F.
+
+         left        mid        right
+          |           |           |
+Level:   00          3F          7F
+
+Command 0F: MISCELLANEOUS
+  
+0FF7 suspends play until all MIDI messages have been sent. This is mainly
+for use at the start of songs, when you may need to send initialization
+messages to your MIDI device.
+
+0FFA sends the MIDI hold pedal on command. 0FFB sends the MIDI hold pedal
+off command.
+
+Command 10: SEND MIDI MESSAGE
+
+Sends a MIDI message, created using the MIDI message editor. The command
+level is the message number. Note that with this command the first message
+is number 0, so you need to subtract one to convert the message number from
+the message editor for use with this command.
+
+   C-2 11003  <= Sends the fourth message, then plays note C-2 (messages are
+                 always sent before notes)
+
+MIDI timing pulses are sent immediately even if a message is being sent.
+
+Command 17: CHANGE VOLUME CONTROLLER
+
+Changes the volume controller value for the most recently used channel.
+
+   --- 00507  <= is the same as =>  --- 0173A
+   --- 0003A
+
+Command 1C: CHANGE MIDI PRESET
+
+Changes the current instrument's MIDI preset number. As with all commands
+which modify song settings, you should be very careful when using this
+command in multi-modules.
+
+Commands 31 to 3F: SET MIDI CONTROLLER
+
+See part 13.1 for more details.
+
+
+A.3 Mix mode commands
+
+These commands can only be used in Mix mode. See part 10 for more details.
+
+Command 20: REVERSE SAMPLE / RELATIVE SAMPLE OFFSET
+
+With command level $00, the sample is reversed. With other levels, it
+changes the sample offset, just like command 19, except the command level is
+the new offset relative to the current sample position being played. For this
+reason, it should be used after a note. (See part 10.7.2.)
+
+Commands 21 and 22: SLIDE PITCH UP / DOWN (FIXED RATE)
+
+These commands work exactly like 01 and 02, except that each command level
+value produces the same slide speed, regardless of the pitch of the note.
+With 01 and 02, lower pitches mean slower slide speeds if equivalent command
+levels are used.
+
+Command 2E: SET TRACK PANNING
+
+Allows track panning to be changed during play. The track on which the
+player command appears is the track affected. The command level is in signed
+hex: $F0 to $10 = -16 to 16 decimal.
+
+Command 2F: SET ECHO DEPTH / STEREO SEPARATION
+
+Use command levels $E1 to $E6 to set echo depth. $E1 is 50.0%, $E2 is 25.0%
+and so on down to $E6 (1.44%).
+
+The signed command level $DC to $D4 sets stereo separation. The following
+command levels give the respective stereo separation:
+
+  Command level     | DC | DD | DE | DF | D0 | D1 | D2 | D3 | D4
+ -------------------+----+----+----+----+----+----+----+----+----
+  Stereo separation | -4 | -3 | -2 | -1 |  0 |  1 |  2 |  3 |  4
+
+
+                           @{" Contents    " link "Main" 0}
+                           @{" Appendix B  " link "AppB" 0}
+                           @{" Appendix C  " link "AppC" 0}
+                           @{" Appendix D  " link "AppD" 0}
+                           @{" Appendix E  " link "AppE" 0}
+                           @{" Appendix F  " link "AppF" 0}
+
+@endnode
+
+@node AppB
+
+
+APPENDIX B: Player commands - Quick reference
+
+  Type(s) |            Name             | Command level (1/2 = level 1/2)
+ ---------+-----------------------------+---------------------------------
+    00    |          Arpeggio           | 1: 1st pitch, lvl 2: 2nd pitch
+  01 / 02 |    Slide pitch up / down    |       Pitch slide speed
+    03    |         Portamento          |       Pitch slide speed
+    04    |           Vibrato           |       1: speed, 2: depth
+    05    |    Slide pitch and fade     |           Fade speed
+    06    |      Vibrato and fade       |           Fade speed
+    07    |           Tremolo           |       1: speed, 2: depth
+    08    |       Hold and decay        |       1: decay, 2: hold
+    09    |         TPL slider          |          Tempo value
+    0A    |        Volume slide         |       Volume slide speed
+    0B    |    Playseq position jump    |     Position to jump to - 1
+    0C    |         Set volume          |     (Default) volume level
+    0D    |        Volume slide         |       Volume slide speed
+    0E    |         Synth jump          |   Waveform seq. line number
+    0F    |   Tempo slider / Miscell.   |     Various
+  11 / 12 | Slide pitch up / down once  |       Pitch slide speed
+    14    |  Protracker-style vibrato   |       1: speed, 2: depth
+    15    |        Set finetune         |  Finetune value (signed hex)
+    16    |            Loop             |  Number of times (00 = start)
+    18    |          Cut note           |        Number of ticks
+    19    |     Sample start offset     |      Starting byte ÷ 256
+  1A / 1B | Slide volume up / down once |       Volume slide speed
+    1D    | Jump to next playseq entry  |      Starting line number
+    1E    |         Replay line         |        Number of times
+    1F    |  Note delay and retrigger   |      1: delay, 2: retrig.
+ ---------+-----------------------------+--------------------------------
+                         M I D I  C O M M A N D S
+ ---------+-----------------------------+--------------------------------
+  05 / 00 |  Controller number / value  |   Controller number / value
+  01 / 02 |    Pitchbender up / down    |        Pitchbend speed
+  03 / 13 |       Set pitchbender       |  Pitchbend value (signed hex)
+    04    |      Modulation wheel       |  Modulation level ($00 - $7F)
+    08    |        Set hold only        |   Lvl 1: unused, lvl 2: hold
+    0A    |    Polyphonic aftertouch    |  Aftertouch level ($00 - $7F)
+    0D    |     Channel aftertouch      |   Pressure level ($00 - $7F)
+    0E    |         Pan control         |     Pan value ($00 - $7F)
+    10    |      Send MIDI message      |       Message number - 1
+    17    |  Change volume controller   |           New value
+    1C    |     Change MIDI preset      |       New preset number
+ ---------+-----------------------------+--------------------------------
+                      M I X  M O D E  C O M M A N D S
+ ---------+-----------------------------+--------------------------------
+    20    |       Reverse sample        |        Level must be 00
+    20    |    Relative sample offset   |  Positive or negative offset
+  21 / 22 | Slide pitch up/down (fixed) |       Pitch slide speed
+    2E    |     Set track panning       |  Signed: $F0 = -16, $10 = 16
+    2F    |       Set echo depth        |    $E1 = 50.0%, $E6 = 1.44%
+    2F    |    Set stereo separation    |  Signed: $DC = -4,  $D4 = 4
+

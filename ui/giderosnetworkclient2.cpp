@@ -166,7 +166,7 @@ void GiderosNetworkClient2::connectToHost(const QString& hostName, quint16 port)
 	case eDisconnected:
 		break;
 	case eConnected:
-		client_->abort();
+		client_->disconnectFromHost();
 		break;
 	case eTrying:
 		client_->abort();

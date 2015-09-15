@@ -997,6 +997,7 @@ void MovieClip::addFrame(int start, int end, Sprite* sprite, const std::vector<P
 	frame.start = start;
 	frame.end = end;
 	frame.parameters = parameters;
+	frame.internalIndex=frames_.size();
 
 #if 0
 	frame.sprite = new Sprite;
@@ -1178,7 +1179,7 @@ void MovieClip::interpolateParameters()
 				float tw = parameter.tweenFunction(t);
 				float value = s * (1 - tw) + e * tw;
 
-				setField(i,parameter, value);
+				setField(frames[i]->internalIndex,parameter, value);
 			}
 		}
 	}

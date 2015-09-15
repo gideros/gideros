@@ -4,6 +4,9 @@
 #ifdef __EMSCRIPTEN__
 #define fpos_t off_t
 #endif
+#ifdef STRICT_LINUX
+#define fpos_t off_t
+#endif
 
 #define __sbuf g__sbuf
 #define __sFILE g__sFILE

@@ -91,7 +91,7 @@ private:
 
 class ApplicationManager {
 public:
-	ApplicationManager(bool player,const char *appname);
+	ApplicationManager(bool player,const char *appname,const char *urlpath);
 	~ApplicationManager();
 
 	void luaError(const char *msg);
@@ -140,6 +140,7 @@ private:
 private:
 	bool player_;
 	std::string appName;
+	std::string appPath;
 	LuaApplication *application_;
 	NetworkManager *networkManager_;
 

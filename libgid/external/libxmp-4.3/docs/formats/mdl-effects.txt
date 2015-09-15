@@ -1,0 +1,214 @@
+(B) Effect Commands
+    ---------------
+
+Command-Overview (DT-LIKE commands):
+
+- - No Effect
+
+1 - Note Slide Up    G - Volume Slide Up
+1F- Fine Note Up     GF- Fine Vol Up
+1E- Extra Fine Up    GE- Extra Fine Up
+2 - Note Slide Down  H - Volume Slide Down
+2F- Fine Note Down   HF- Fine Vol Down
+2E- Extra Fine Down  HE- Extra Fine Down
+3 - Note Portamento  I - Multi Retrig Note
+4 - Vibrato          J - Tremolo
+5 - Arpeggio         K - Tremor
+6 - ** not used      L - ** not used
+
+7 - Set BPM-Speed (Beats per Minute)
+8 - Set Panning
+9 - Set Envelope
+A - ** not used
+B - Position Jump
+C - Set Global-Volume
+D - Pattern Break
+E - Special-Commands (see below...)
+F - Set Speed
+
+E0- ** not used       E8- Set Samplestatus
+E1- Pan slide left    E9- Retrig Note
+E2- Pan slide right   EA- Mainvol slide up
+E3- ** not used       EB- Mainvol slide dw
+E4- Vibrato Wavefrom  EC- Cut Note
+E5- Set Finetune      ED- Delay Note
+E6- Pattern-Loop      EE- Delay Pattern
+E7- Tremolo Waveform  EF- Set Sampleoffset
+
+
+Command-Description:
+
+* 1xx - Note Slide Up
+This command slides the  pitch of the note
+up.xx is the slide-speed (01-DF,00 -> take
+value from the last slide-command).
+
+* 1Fx - Fine Note Slide Up
+Slides the pitch up at a slower speed(only
+one time per row).
+
+* 1Ex - Extra Fine Note Slide Up
+Like  the 1Fx-command, but this is 8 times
+more accurate.
+
+* 2xx / 2Fx / 2Ex - Note Slide Down
+These commands slide the pitch down.
+
+* 3xx - Tone Portamento
+This command will automatically slide from
+the old note to the new  (up or down). The
+new  note  must  stand  in  front  of this
+command. xx is the speed.xx=00 means using
+the last speed.
+
+* 4xy - Vibrato
+This will  give you a frequency-vibrato. x
+is the speed of the vibrato, y is the size
+(depth). x/y=0 means using the speed/depth
+of the last command.
+
+* 5xy - Arpeggio
+This  command will  produce  a one-channel
+chord. x is the second halfnote(add to the
+main-note), y is the third.
+
+
+* Gxx / GFx / GEx - Volume Slide Up
+Acts like a 1xx-Command, but it slides the
+volume up  instead.  GEx  is  4 times more
+accurate like GFx (look at the 1x command-
+description).
+
+* Hxx / HFx / HEx - Volume Slide Down
+Slides the volume down.
+
+* Ixy - Multi Retrig Note
+This  will restart the note after y ticks.
+x determines the volume-change after every
+retrigger:
+Value  Volume    Value  Volume
+  0    no change   8    no change
+  1    -4          9    +4
+  2    -8          A    +8
+  3    -16         B    +16
+  4    -32         C    +32
+  5    -64         D    +64
+  6    *2/3        E    *3/2
+  7    *1/2        F    *2
+
+* Jxy - Tremolo
+The tremolo is similar to the note-vibrato
+(4xy),  the different  is, that it changes
+the volume. x is the speed,y is the depth.
+
+* Kxy - Tremor
+The Tremor-Command turns the volume on for
+x ticks and off for y ticks.
+
+
+* 7xx - Set Speed in BPM(Beats per Minute)
+Sets  the song  speed in BPM to xx (0-FF).
+xx<3 will stop the sound.
+
+* 8xx - Set Panning (stereo-position)
+Sets the stereo-position for this channel.
+Values  from  00 (left) - 7F  (right)  are
+possible.
+
+* 9xx - Set Envelope
+Sets/changes the volume-, panning- or fre-
+quency-envelope for the actual instrument.
+x can be...
+00-3F -> volume-envelope
+40-7F -> panning-envelope
+80-BF -> frequency-envelope
+This command makes it possible to play the
+same  instrument with different envelopes.
+ATTENTION:  Only envelopes, which are used
+in  instruments,  will  be saved! So place
+the envelopes,  which you are selecting by
+this command, also in an instrument!
+
+* Bxx - Position Jump
+This command  will perform a pattern-break
+and let the tracker continue at position x
+in the songlist (in HEX!).
+
+* Cxx - Set Global Volume
+Sets the global volume(volume at which the
+whole song is played)to the new value (01-
+FF).
+
+* Dxx - Pattern Break
+Sure simple,this will end your pattern and
+go  on  with the  next at note-position xx
+(this time xx in DEZ, don't forget it!)
+
+* Fxx - Set Speed
+Sets the song speed to xx (0-FF).
+
+
+* E1x - Panning slide left
+Moves  the pan-position of this channel to
+the left.
+
+* E2x - Panning slide right
+Moves  the pan-position of this channel to
+the right.
+
+* E4x - Set Vibrato Waveform
+Select  the  waveform  for the vibrato (4)
+with this command:  x=0 - sinus (default),
+x=1 - ramp down, x=2 - square.
+
+* E5x - Set Finetune
+Sets the finetune for the current note:
+0=0,  1=+1, 2=+2,  3=+3, 4=+4, 5=+5, 6=+6,
+7=+7, 8=-8, 9=-7,  A=-6, B=-5, C=-4, D=-3,
+E=-2, F=-1.
+
+* E6x - Set Loop Point/Jump to Loop Point
+This command repeats parts in a pattern as
+often as you want. E60(x=0) sets the begin
+of the loop, E6x(x=1-F) sets the end. x is
+the number of repeats.Example: E60 ... E65
+means,  that the part between the two com-
+mands will be played 6 times(1+5 repeats).
+
+* E7x - Set Tremolo Waveform
+Select  the  waveform  for the tremolo (7)
+with this  command: x=0 - sinus (default),
+x=1 - ramp down, x=2 - square.
+
+* E8x - Set Sample Status
+x=0 no loop, x=1 loop, unidirectional, x=3
+loop, bidirectional
+
+* E9x - Retrig Note
+This will restart the note after x ticks.
+
+* EAx - Mainvolume Slide Up
+Slides the  mainvolume up. x is the slide-
+speed.
+
+* EBx - Mainvolume Slide Down
+Slides the mainvolume down.
+
+* ECx - Note Cut
+This will stop the note after x ticks.
+
+* EDx - Note Delay
+Delais the note and starts it (again)after
+x ticks.
+
+* EEx - Pattern Delay
+This  delais  the  next  note-position  in
+pattern for x notes. That means that there
+is  break which is as long as x note-posi-
+tions.
+
+* EFx -xx - Set Sample Offset
+This  is a  double-command.  It starts the
+sample at adress xxx*256.
+Example: C-5 01 -- EF1 -23 ->starts sample
+01 at address 12300 (in hex).

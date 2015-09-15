@@ -191,6 +191,31 @@ static int os_timer(lua_State* L)
 	return 1;
 }
 
+static int instance_of(lua_State* L){
+    if(g_isInstanceOf(L, luaL_checkstring(L, 2), 1))
+        lua_pushboolean(L, 1);
+    else
+        lua_pushboolean(L, 0);
+    return 1;
+}
+
+static int get_class(lua_State* L){
+    lua_getfield(L, 1, "__classname");
+    if (!lua_isstring(L, -1)){
+        lua_pop(L, 1);
+        lua_pushstring(L, "Object");
+    }
+    return 1;
+}
+
+static int get_base(lua_State* L){
+    lua_getfield(L, 1, "__basename");
+    if (!lua_isstring(L, -1)){
+        lua_pop(L, 1);
+        lua_pushstring(L, "Object");
+    }
+    return 1;
+}
 
 void registerModules(lua_State* L);
 
@@ -220,7 +245,15 @@ static int bindAll(lua_State* L)
 		luaL_rawsetptr(L, LUA_REGISTRYINDEX, &key_timers);
 	}
 
+    static const luaL_Reg functionList[] = {
+        {"isInstanceOf", instance_of},
+        {"getClass", get_class},
+        {"getBaseClass", get_base},
+        {NULL, NULL},
+    };
+
     luaL_newmetatable(L, "Object");
+    luaL_register(L, NULL, functionList);
     lua_setglobal(L, "Object");
 	
 	EventBinder eventBinder(L);
@@ -422,6 +455,14 @@ static int bindAll(lua_State* L)
 	lua_setfield(L, -2, "SPACE");
 	lua_pushinteger(L, GINPUT_KEY_BACKSPACE);
 	lua_setfield(L, -2, "BACKSPACE");
+	lua_pushinteger(L, GINPUT_KEY_CTRL);
+	lua_setfield(L, -2, "CTRL");
+	lua_pushinteger(L, GINPUT_KEY_ALT);
+	lua_setfield(L, -2, "ALT");
+	lua_pushinteger(L, GINPUT_KEY_ESC);
+	lua_setfield(L, -2, "ESC");
+	lua_pushinteger(L, GINPUT_KEY_TAB);
+	lua_setfield(L, -2, "TAB");
 
     lua_pushinteger(L, GINPUT_NO_BUTTON);
     lua_setfield(L, -2, "MOUSE_NONE");

@@ -80,7 +80,7 @@ cd ..
 done
 cd ..
 
-#cp -R $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate $BUILD_DIR/win/Templates/Qt
+cp -R $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate $BUILD_DIR/win/Templates/Qt
 
 cd scripts
 

@@ -1,0 +1,66 @@
+Title        : Amiga MOD packers described v4.1
+Type         : docs/misc
+Author       : Sylvain "asle" Chipaux
+Uploader     : asle@mygale.org (asle / Lit / RdX / Ans)
+Short desc   : Description of various MOD packed formats
+Upload date  : 13 Jun 1998
+Long desc    :
+
+list of the 49 described formats :
+
+- AC1D packer             (Slammer/Anarchy 1992)
+- Channel Player v1,2,3   (Alan/Impact 1994)
+- Digital Illusion Packer (TSL 1991)
+- Eureka packer           (Eureka/Concept 1990-1991)
+- FC-M packer             (?!?)
+- Fuzzac packer           (Fuzzac/Silents 1990)
+- Game Music Creator      (Andreas Tadic 1989)
+- Heatseeker mc1.0        (Heatseeker/Cryptoburners 1991)
+- Hornet packer           (Hornet/Alcatraz 19??)
+- Kefrens Sound Machine   (Razmo/Kefrens 1989)
+- Kris tracker            (Kris/Anarchy 19??)
+- Module Protector        (Matrix/LSD 1992)
+- NoisePacker v1,2,3      (Twins/Phenomena 1990-1991)
+- NoiseRunner             (Chaos/Sanity 19??)
+- NoiseTracker Pak        (United Force 1990)
+- PhaPacker               (Azatoth/Phenomena)
+- Polka Packer            (???/Polka Brothers 1994)
+- Power Music (Optimod)   (Joakim Ogren 19??)
+- Promizer 0.1            (MC68000/TECH)
+- Promizer 1.0c           (MC68000/TECH)
+- Promizer 1.8a           (MC68000/TECH)
+- Promizer 2.0            (MC68000/Masque)
+- Promizer 4.0            (MC68000/Masque 1994)
+- ProPacker 1.0           (?!?)
+- ProPacker 2.1           (C. Estrup/SB 1991)
+- ProPacker 3.0           (C. Estrup/SB 1994)
+- ProRunner 1.0           (Cosmos/Sanity 1992)
+- ProRunner 2.0           (Cosmos/Sanity 1992)
+- SKYT packer             (Mr. Bluesky/Drifters 19??)
+- StarTrekker pack        (Mr. Spiv/Cave 1991)
+* STIM (Slamtilt)         (?!?)
+- The Player 4.0A / 4.0B  (Guru/Sahara Surfers 1992)
+- The Player 4.1A         (Guru/Sahara Surfers 1992)
+- The Player 5.0A         (Guru/Sahara Surfers 1993)
+- The Player 6.0A         (Guru/Sahara Surfers 1994)
+- The Player 6.1A         (Guru/Sahara Surfers 1995)
+- Tracker Packer 1        (Crazy Crack/MEXX 1991)
+- Tracker Packer 2        (Crazy Crack/MEXX 1993)
+- Tracker Packer 3        (Crazy Crack/MEXX 1994)
+- UNIC Tracker 1          (Laxity/Kefrens 1991-1993)
+- UNIC Tracker 2          (Laxity/Kefrens 1991-1993)
+- Wanton Packer           (Wanton/Bloodsuckers 19??)
+- XANN Packer             (Xann/TSL 1992)
+- Zen Packer              (Dweezil/Stellar 1992)
+
+Note: all the lines starting with '*' are the new formats
+     added to this version.
+
+ I wrote a depacker for each format. Just ask me if you're,
+in any way, interrested by the C source code. Also, I've
+re-written ProWizard on PeeCee ... ask me for more infos.
+
+ Send me packers/trackers/descriptions (even the
+"not-PTK-compatibles" ones !).
+
+Sylvain "asle" Chipaux

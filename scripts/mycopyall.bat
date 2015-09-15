@@ -25,7 +25,7 @@ xcopy /S /I ..\ui\Tools ..\..\release\Tools
 :: hg archive -I ..\ui\Tools ..\..\temp
 :: mv ..\..\temp\ui\Tools ..\..\release
 
-call mycopyqt5.bat
+call mycopyqt55.bat
 
 mkdir ..\..\release\Templates
 
@@ -270,9 +270,9 @@ copy "..\plugins\Google Billing\source\Android\libs\x86\libggooglebilling.so" ".
 
 
 mkdir ..\..\release\Plugins
-copy ..\plugins\LuaSQLite3\source\release\lsqlite3.dll ..\..\release\Plugins
+copy ..\plugins\lsqlite3\source\release\lsqlite3.dll ..\..\release\Plugins
 copy ..\plugins\LuaSocket\source\release\luasocket.dll ..\..\release\Plugins
-copy ..\plugins\LuaFileSystem\source\release\lfs.dll ..\..\release\Plugins
+copy ..\plugins\lfs\source\release\lfs.dll ..\..\release\Plugins
 copy ..\plugins\Microphone\source\Desktop\release\microphone.dll ..\..\release\Plugins
 copy ..\plugins\BitOp\source\release\bitop.dll ..\..\release\Plugins
 copy ..\plugins\JSON\source\release\json.dll ..\..\release\Plugins

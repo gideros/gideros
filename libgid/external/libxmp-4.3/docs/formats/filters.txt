@@ -1,0 +1,143 @@
+
+                      Impulse Tracker and Resonant Filters
+
+Wanna know how to get resonant filters working in IT? Read on.
+
+Implementation
+--------------
+So far, resonant filters have only been coded into the MMX drivers - so any
+soundcard which has an MMX driver for IT will support resonant filters. Of
+course, this means that your computer has to have MMX before you can run them.
+To hear resonant filtering, you'll first need to select "Filtered" mixing on
+Shift-F5.
+
+Do NOT write to me about non MMX resonant filtering.
+
+Resonant filters CANNOT be included with hardware GUS / Interwave drivers. The
+reason is because these chips do not support resonant filtering in their mixing
+algorithms.
+
+The AWE 32 driver has *approximate* support to IT's software resonant
+filtering. Songs written using resonant filters on the AWE32 will not sound
+exactly the same with other drivers.
+
+The diskwriter has all resonant filtering code, of course. (No MMX required)
+
+Note that the only external player to have resonant filtering implemented is
+MikIT. If you use any other player to play your songs that use resonant
+filtering (including earlier versions of IT), they will not be played
+correctly.
+
+First note
+----------
+If you do use filtering in your songs, you probably should embed your MIDI
+Output configuration into the .IT file. This makes the file slightly bigger,
+but it ensures that your song will be played correctly on any filter-capable
+driver on any computer. This is selected by turning the "Embed MIDI Data"
+on the MIDI screen (Shift-F1) to "on".
+
+Simple filters
+--------------
+For most users, this is all that you will need to know.
+
+The default configuration for IT (copy ITMIDI.CFG to your IT directory) will
+recognise Z00->Z7F as set filter cutoff frequency and Z80->Z8F as set filter
+resonance.
+ Z00 is the lowest filter cutoff, Z7F is the highest filter cutoff
+ Z80 is the least resonance, Z8F is the highest resonance
+
+If you wish to reconfigure the resonant filters or perhaps create some extra
+shortcuts, then read below!
+
+How the drivers recognise filters
+---------------------------------
+The drivers know what to filter by intercepting MIDI messages. This does NOT
+mean that filters will require any sort of MIDI equipment, just that the
+mechanism to instruct the driver to filter a particular note within IT itself
+is made via the MIDI interface.
+
+The instructions that the drivers understand so far are:
+  F0 F0 00 <value> - Set filter cutoff frequency to <value>
+  F0 F0 01 <value> - Set Q factor (resonance) of filter to <value>
+
+In each of these cases, <value> is between 00 and 7Fh. Values above 7Fh are
+ignored. Note that if filter cutoff is set to 7F and Q is set to 0, then no
+filters are applied.
+
+How to tell the drivers these Instructions
+------------------------------------------
+OK.. so how can we tell the drivers these instructions?
+
+For a full explanation, check MIDI.TXT - a short explanation is provided here.
+
+First of all, go to the MIDI Output configuration screen in IT. Do this by
+pressing Shift-F1, then clicking on the "MIDI Output Configuration" button.
+
+You will see several MIDI configurations, then SF0->SFF then Z80-ZFF (that
+bottom window is scrollable).
+
+Using Z80 to ZFF
+----------------
+Z80->ZFF are the easiest to explain.. so I'll explain them first.
+
+If you type in "F0 F0 01 3F" next to Z80 (make sure that you have the letters
+in upper case), then whenever you use Z80 in a pattern, "F0 F0 01 3F" will be
+sent to the driver. If you refer back to what instructions the driver
+understands, you'll see that this means "Set filter resonance to 3F".
+
+A few more examples:
+ Z81 = F0 F0 00 40 - set filter cutoff frequency to 40h
+ Z82 = F0 F0 01 20 - set filter resonance to 20h
+ Z83 = F0 F0 00 10 - set filter cutoff frequency to 10h
+
+Using SF0->SFF
+--------------
+SF0->SFF are slightly more difficult to explain.. but hopefully a few examples
+will make their usage clear.
+
+When you use Z00 to Z7F in a pattern, they do not directly translate in the
+same way as the Z80->ZFF do. Instead, they set a variable internally called
+'z' that gets substituted into one of the SFx commands.
+
+Example 1 - If you set SF0 = F0 F0 00 z (on the MIDI Output configuration)
+
+Then using Z01 will cause "F0 F0 00 01" to be sent.
+ Z01 = F0 F0 00 01 - Set filter cutoff frequency to 1, as above.
+ Z10 = F0 F0 00 10 - Set filter cutoff frequency to 10h
+ Z30 = F0 F0 00 30 - Set filter cutoff frequency to 30h
+ Z50 = F0 F0 00 50 - Set filter cutoff frequency to 50h
+
+Example 2 - If you define:
+ SF0 = F0 F0 00 z
+ SF1 = F0 F0 01 z
+
+Then:
+ SF0               - Set Zxx to use SF0
+ Z30 = F0 F0 00 30 - Set filter cutoff frequency to 30h
+ Z50 = F0 F0 00 50 - Set filter cutoff frequency to 50h
+ SF1               - Set Zxx to use SF1
+ Z20 = F0 F0 01 20 - Set filter resonance to 20h
+ Z3F = F0 F0 01 3F - Set filter resonance to 3Fh
+ Z50 = F0 F0 01 50 - Set filter resonance to 50h
+ SF0               - Set Zxx to use SF0
+ Z30 = F0 F0 00 30 - Set filter cutoff frequency to 30h
+ Z10 = F0 F0 00 10 - Set filter cutoff frequency to 10h
+ SF1               - Set Zxx to use SF1
+ Z20 = F0 F0 00 20 - Set filter resonance to 20h
+ Z30 = F0 F0 00 30 - Set filter resonance to 30h
+
+Note that the default startup configuration for each channel is SF0, so the
+first SF0 in example 2 is unnecessary.
+
+Resetting the Filters
+---------------------
+Since the filters are driver related (and IT.EXE really doesn't know about
+their existance), they are not reset automatically when you stop/play a song.
+If a MIDI Reset (FFh), MIDI Start (FAh) or MIDI Stop (FCh) message is
+received, then the driver will reset all of it's internal tables. The default
+configuration will send both MIDI Reset and MIDI Stop commands.
+
+Final Notes
+-----------
+Umm.. Enjoy :)
+                                                              - Jeffrey Lim

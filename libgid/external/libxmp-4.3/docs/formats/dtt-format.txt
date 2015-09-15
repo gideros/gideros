@@ -1,0 +1,178 @@
+                           Appendix F - File formats
+
+   This section has been added just for technical purposes.
+
+  Desktop Tracker files &CB6
+
+         +-----------------------------------------------------------+
+         | Offset | Description                                      |
+         |--------+--------------------------------------------------|
+         | 00..03 | Header "DskT* (&546B7344)                        |
+         |--------+--------------------------------------------------|
+         | 04..43 | Name (64 bytes)                                  |
+         |--------+--------------------------------------------------|
+         | 44..83 | Author (64 bytes)                                |
+         |--------+--------------------------------------------------|
+         | 84..87 | Flags (1 word)                                   |
+         |--------+--------------------------------------------------|
+         | 88..8B | Number of voices (1 word)                        |
+         |--------+--------------------------------------------------|
+         | 8C..8F | Music length (1 word)                            |
+         |--------+--------------------------------------------------|
+         | 90..97 | Initial stereo (8 bytes, Acorn voices)           |
+         |--------+--------------------------------------------------|
+         | 98..9B | Initial speed (1 word)                           |
+         |--------+--------------------------------------------------|
+         | 9C..9F | Restart (1 word)                                 |
+         |--------+--------------------------------------------------|
+         | A0..A3 | Number of patterns (1 word)                      |
+         |--------+--------------------------------------------------|
+         | A4..A7 | Number of samples (1 word)                       |
+         |--------+--------------------------------------------------|
+         | A8...  | Positions (ARRAY, 1 byte per music length)       |
+         |--------+--------------------------------------------------|
+         |        | ALIGN                                            |
+         |--------+--------------------------------------------------|
+         | mm...  | Pattern offsets (ARRAY, 1 word per pattern)      |
+         |--------+--------------------------------------------------|
+         | nn...  | Pattern lengths (ARRAY, 1 byte per pattern)      |
+         |--------+--------------------------------------------------|
+         |        | ALIGN                                            |
+         |--------+--------------------------------------------------|
+         | jj...  | Samples information (ARRAY, 16 words per sample) |
+         |--------+--------------------------------------------------|
+         | pp...  | Patterns                                         |
+         |--------+--------------------------------------------------|
+         | ss...  | Samples                                          |
+         +-----------------------------------------------------------+
+
+   The sample information blocks are stored like the Desktop Tracker samples
+   (see later), except the header is missing; all the data is shifted up 1
+   word, and there is a pointer to the sample data at the end of block. If
+   the tune is compressed, then the header will be "EskT*. If any pointer in
+   a compressed file is negative, then it points (invertedly) to the
+   compressed block, with the first word being the decompressed size, the
+   second word the compressed size, and the data following the compressed
+   data.
+
+  Desktop Tracker samples &CB5
+
+                          +-------------------------+
+                          | Offset | Description    |
+                          |--------+----------------|
+                          | 00..03 | Header "DskS*  |
+                          |--------+----------------|
+                          | 04     | Note           |
+                          |--------+----------------|
+                          | 05     | Volume         |
+                          |--------+----------------|
+                          | 06..07 | Not used (0)   |
+                          |--------+----------------|
+                          | 08..0B | Period         |
+                          |--------+----------------|
+                          | 0C..0F | Sustain start  |
+                          |--------+----------------|
+                          | 10..13 | Sustain length |
+                          |--------+----------------|
+                          | 14..17 | Repeat start   |
+                          |--------+----------------|
+                          | 18..1B | Repeat length  |
+                          |--------+----------------|
+                          | 1C..1F | Sample length  |
+                          |--------+----------------|
+                          | 20..3F | Sample name    |
+                          |--------+----------------|
+                          | 40...  | Sample data    |
+                          +-------------------------+
+
+   If the sample is compressed, then the header will be "EskS*, and the
+   sample data will be:
+
+                         +----------------------------+
+                         | 40..43 | Decompressed size |
+                         |--------+-------------------|
+                         | 44..47 | Compressed size   |
+                         |--------+-------------------|
+                         | 48...  | Compressed data   |
+                         +----------------------------+
+
+   Pattern format
+
+                     +-----------------------------------+
+                     | Offset | Description              |
+                     |--------+--------------------------|
+                     | 00..   | Voice 1 word, event 00   |
+                     |--------+--------------------------|
+                     | ..     | Voice 2 word             |
+                     |--------+--------------------------|
+                     | ....   | Voice n word             |
+                     |--------+--------------------------|
+                     | ..     | Voice 1 word, event 01   |
+                     |--------+--------------------------|
+                     | ....   | Voice n word             |
+                     |--------+--------------------------|
+                     | ....   | Voice 1 word, event lg * |
+                     |--------+--------------------------|
+                     | ....   | Voice n word             |
+                     +-----------------------------------+
+
+   * lg=pattern length
+
+   The word can be either 1 32-bit word, or two, if the number of effects is
+   four.
+
+   1 Effect:
+
+                           +------------------------+
+                           | Bits   | Description   |
+                           |--------+---------------|
+                           | 00..05 | Sample number |
+                           |--------+---------------|
+                           | 06..0B | Note number   |
+                           |--------+---------------|
+                           | 0C..10 | Effect number |
+                           |--------+---------------|
+                           | 11..17 | Zero          |
+                           |--------+---------------|
+                           | 18..1F | Data byte     |
+                           +------------------------+
+
+   4 Effects:
+
+                      +---------------------------------+
+                      | Bits   | Description            |
+                      |--------+------------------------|
+                      | 00..05 | Sample number          |
+                      |--------+------------------------|
+                      | 06..0B | Note number            |
+                      |--------+------------------------|
+                      | 0C..10 | Effect 1 number        |
+                      |--------+------------------------|
+                      | 11..15 | Effect 2 number        |
+                      |--------+------------------------|
+                      | 16..1A | Effect 3 number        |
+                      |--------+------------------------|
+                      | 1B..1F | Effect 4 number        |
+                      |--------+------------------------|
+                      | 00..07 | Data byte for effect 1 |
+                      |--------+------------------------|
+                      | 08..0F | Data byte for effect 2 |
+                      |--------+------------------------|
+                      | 10..17 | Data byte for effect 3 |
+                      |--------+------------------------|
+                      | 18..1F | Data byte for effect 4 |
+                      +---------------------------------+
+
+   The recommended method of detecting between 1 and 4 effects is summarised
+   in the following ARM code:
+
+ ; R0 is word
+ TST R0,#&1F<<17
+ BEQ is_1_effect
+ BNE is_4_effects
+
+   Note: There was a problem with the original Desktop Tracker release. A
+   different header was used with the samples on the samples discs. Their
+   headers are "DSmp*, and their volumes is twice as big as they should have
+   been. If you load one of these, both Desktop Tracker, and !DTTSounds will
+   automatically divide by two. They will save under the new format,

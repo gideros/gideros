@@ -1,0 +1,165 @@
+
+Soundtracker 2.6 / Ice Tracker file format
+
+Soundtracker 2.6 written by MnemoTroN/Spreadpoint, 05-Nov-1990
+IceTracker by Icepic, v1.1 10-Jan-1993
+
+Format description by Claudio Matsuoka, 24-Jan-2000. Updated 11-Oct-2014
+with speed command information by Saga Musix.
+
+
+Soundtracker 2.6 module format, also used by Ice Tracker, is closely related
+to the standard (Protracker) module format and has each 64-row track stored
+independently. The format is, of course, big-endian.
+
+From the Ice Tracker documentation:
+
+   This [sub-patterns] idea was initialy implemented by
+   MnemoTroN/Spreadpoint in his SoundTracker v2.6 (...).
+   Basically now a pattern instead of being made up of 4
+   joined tracks (ie: Channels 1,2,3 and 4 were previously
+   classed as one pattern) are now individual sub-patterns
+   in themselves, that is that now it is possible to
+   independantly call up a single sub-pattern to repeat on
+   a certain track (ie: the main beat, for example) without
+   constantly copying it into every 4-track pattern as was
+   previously required. Play around with it and you'll get
+   the idea.
+
+There's also a difference in command F (set speed): when both nibbles of
+an Fxx command are set, SoundTracker 2.6 applies both values alternatingly,
+first the high nibble, then the low nibble on the next row, then the high
+nibble again... If only the high nibble is set, it should act like if only
+the low nibble is set (i.e. F30 is the same as F03).
+
+
+Format description:
+
+Offset Size     Description
+------ -------- ----------------------------------------------------
+0000      20	Title
+
+0020   31*30	Instruments
+		0000  22  Instrument name
+                0022   2  Sample length in 16-bit words
+                0024   1  Unused (finetune not available in ST2.6)
+                0025   1  Volume (0 - 63)
+                0026   2  Sample loop start in 16-bit words
+                0028   2  Sample loop size in 16-bit words
+
+0950       1    Size of the pattern list
+
+0951       1    Number of stored tracks
+
+0952   128*4    Track indices for each pattern
+                0000   1  Channel 1
+                0001   1  Channel 2
+                0002   1  Channel 3
+                0003   1  Channel 4
+
+1464       4    Magic ID
+                'MNT\0' for Soundtracker 2.6
+                'IT10' for  IceTracker 1.0/1.1
+
+1468       ?    Track data (stored like Protracker)
+
+????       ?    Sample data (stored like Protracker)
+------ -------- ----------------------------------------------------
+
+
+Event format:
+
+   ,---- Instrument ----.
+  /\                    /\
+ /  \                  /  \
+ 0000 0000  0000 0000  0000 0000  0000 0000
+      \             /       \  /  \       /
+       \           /         \/    \     /
+        Note Period        effect   effect
+                                   parameter
+
+
+Note periods:
+
+C-3 to B-3 : 214, 202, 190, 180, 170, 160, 151, 143, 135, 127, 120, 113
+C-2 to B-2 : 428, 404, 381, 360, 339, 320, 302, 285, 269, 254, 240, 226
+C-1 to B-1 : 856, 808, 762, 720, 678, 640, 604, 570, 538, 508, 480, 453
+
+
+Effects (ST26):
+
+ 0 : arpeggio
+ 1 : portamento up
+ 2 : portamento down
+ 3 : tone portamento
+ 4 : vibrato
+ a : slide volume
+ b : position jump    
+ c : set volume
+ d : break pattern
+ e : set filter
+ f : set speed         
+
+
+Examples:
+
+ Header:
+
+    0 [0000] 54 69 6e 79 5f 54 75 6e  65 73 00 00 00 00 00 00  Tiny_Tunes......
+   16 [0010] 00 00 00 00 42 79 20 4a  6f 67 65 69 72 20 4c 69  ....By Jogeir Li
+   32 [0020] 6c 6a 65 64 61 68 6c 00  00 00 0b c7 00 29 00 00  ljedahl......)..
+   48 [0030] 00 01 28 63 29 20 31 39  39 32 20 4e 6f 69 73 65  ..(c) 1992 Noise
+   64 [0040] 6c 65 73 73 00 00 00 00  0b c5 00 29 00 00 00 01  less.......)....
+   80 [0050] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+   96 [0060] 00 00 00 00 00 00 0b e8  00 29 00 00 00 01 4d 4f  .........)....MO
+  112 [0070] 44 2e 45 6e 64 6c 65 73  73 00 00 00 00 00 00 00  D.Endless.......
+  128 [0080] 00 00 00 00 0b dc 00 29  00 00 00 01 65 78 74 65  .......)....exte
+
+ Patterns:
+
+  944 [03b0] 00 00 00 00 00 01 54 b0  01 02 03 04 05 06 07 08  ......T.........
+  960 [03c0] 01 02 03 04 05 06 07 08  09 0a 0b 0c 0d 0e 0f 10  ................
+  976 [03d0] 09 0a 0b 0c 0d 0e 11 12  13 14 15 16 13 17 15 16  ................
+  992 [03e0] 13 14 15 16 13 17 15 16  18 17 22 23 1b 1c 1d 1e  .........."#....
+ 1008 [03f0] 18 17 19 1a 1b 1f 20 21  24 14 25 26 18 27 28 29  ...... !$.%&.'()
+ 1024 [0400] 24 14 25 26 18 27 28 29  2a 2b 2c 2d 2e 2f 30 31  $.%&.'()*+,-./01
+ 1040 [0410] 2a 32 33 34 2e 2f 35 36  37 38 39 3a 37 38 3b 3c  *234./56789:78;<
+ 1056 [0420] 09 0a 0b 0c 0d 0e 0f 10  09 0a 0b 0c 0d 0e 11 12  ................
+ 1072 [0430] 3d 3e 3f 40 41 42 43 44  45 46 47 48 49 4a 4b 4c  =>?@ABCDEFGHIJKL
+ 1088 [0440] 01 02 03 04 05 06 07 08  01 02 03 04 05 06 07 08  ................
+
+ Soundtracker signature:
+
+ 1456 [05b0] 00 00 00 00 00 00 00 00  4d 54 4e 00 00 00 00 00  ........MTN.....
+ 1472 [05c0] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+ 1488 [05d0] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+ 1504 [05e0] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+ 1520 [05f0] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+ 1536 [0600] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+ 1552 [0610] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+
+ Ice Tracker module:
+
+    0 [0000] 6f 72 64 65 72 20 6f 66  20 64 65 61 74 68 20 69  order of death i
+   16 [0010] 69 00 00 00 31 2d 46 72  65 65 42 72 65 61 6b 00  i...1-FreeBreak.
+   32 [0020] 00 00 00 00 00 00 00 00  00 00 1e 7b 00 40 04 30  ...........{.@.0
+   48 [0030] 09 bc 31 2d 46 72 65 65  44 72 75 6d 00 00 00 00  ..1-FreeDrum....
+   64 [0040] 00 00 00 00 00 00 00 00  06 ad 00 40 00 00 00 01  ...........@....
+   80 [0050] 31 2d 46 72 65 65 44 72  75 6d 2b 00 00 00 00 00  1-FreeDrum+.....
+   96 [0060] 00 00 00 00 00 00 06 ad  00 40 00 00 00 01 31 2d  .........@....1-
+  112 [0070] 46 72 65 65 53 6e 61 72  65 00 00 00 00 00 00 00  FreeSnare.......
+  128 [0080] 00 00 00 00 03 f5 00 40  00 00 00 01 32 2d 46 72  .......@....2-Fr
+
+ Ice Tracker signature:
+
+ 1456 [05b0] 00 00 00 00 00 00 00 00  49 54 31 30 00 00 00 00  ........IT10....
+ 1472 [05c0] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+ 1488 [05d0] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+ 1504 [05e0] 11 7d c0 00 11 7d c0 00  00 00 00 00 11 ac c0 00  .}...}..........
+ 1520 [05f0] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+ 1536 [0600] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+ 1552 [0610] 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+
+
+--eof--
+

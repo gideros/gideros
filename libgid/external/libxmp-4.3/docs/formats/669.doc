@@ -1,0 +1,51 @@
+.669 file format:
+
+offset         |length&type    |description
+---------------+---------------+----------------------------------------------
+0              |1 word         |marker, value=0x6669
+2              |108 bytes      |song message
+0x6e           |1 byte         |NOS = number of samples saved (0-64)
+0x6f           |1 byte         |NOP = number of patterns saved (0-128)
+0x70           |1 byte         |loop order number
+0x71           |0x80 bytes     |order list
+0xf1           |0x80 bytes     |tempo list for patterns
+0x171          |0x80 bytes     |break location list for patterns
+0x1f1          |NOS*size struct|sample data
+               | samp          |
++--------------+---------------+
+|struct samp {
+|  13 bytes ASCIIZ filename of instrument
+|  1 dword length of instrument
+|  1 dword offset of beginning of loop
+|  1 dword offset of end of loop
+|} smp[NOS]
++--------------+---------------+----------------------------------------------
+0x1f1+         |NOP*0x600      |patterns
+(NOS*0x19)     |               |
++--------------+---------------+
+|this is repeated 8 times for every row and the array of 8 of these is
+| repeated 64 times for each pattern.
+|
+| bits:
+|   BYTE[0]:             BYTE[1]:            BYTE[2]:
+|  aaaaaaaa             bbbbbbbb            cccccccc
+|  +----:+-----------------:+--+            +--:+--+
+|  |     |                  |               |   |
+|  |     |                  4 bit volume    |   command value
+|  |     |                                  |
+|  |     aabbbb = 6 bit instrument number   command:
+|  |                                         0 = a
+|  note value = (12*oct)+note                1 = b
+|                                            2 = c
+|  special values for byte 0:                3 = d
+|    0xfe = no note, only volume change      4 = e
+|    0xff = no note or volume change         5 = f
+|
+|                                           special value for byte 2:
+|                                             0xff = no command
+|
++--------------+---------------+----------------------------------------------
+0x1f1+         |rest of file   |samples
+(NOS*0x19)+    |               |
+(NOP*0x600)    |               |
+

@@ -18,6 +18,7 @@ RC_FILE = ui.rc
 
 macx {
 ICON = "gideros.icns"
+QT += macextras
 }
 
 win32 {
@@ -26,6 +27,11 @@ TARGET = "GiderosStudio"
 
 macx {
 TARGET = "Gideros Studio"
+}
+
+unix:!macx {
+TARGET = "GiderosStudio"
+QMAKE_CXXFLAGS += -std=gnu++0x
 }
 
 TEMPLATE = app
@@ -135,6 +141,7 @@ macx {
 	LIBS += -framework IOKit
     INCLUDEPATH += $$[QT_INSTALL_HEADERS]
     LIBS += -L$$[QT_INSTALL_LIBS]
+	CONFIG += c++11
 }
 
 LIBS += -lqscintilla2

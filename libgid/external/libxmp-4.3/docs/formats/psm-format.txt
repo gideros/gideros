@@ -1,0 +1,123 @@
+
+PSM FILE FORMAT DESCRIPTION
+
+Analyzed by Claudio Matsuoka, 20050217
+
+This document describes the PSM modules played by MASI, the Music And
+Sound Interface written by Joshua Jensen. It was used in games developed
+in early 90s by Epic Megagames, such as Epic Pinball, Jazz Jackrabbit
+and Extreme Pinball, and also in Sinaria: Lost in Space. Silverball uses
+a different PSM format which is not covered in this document.
+
+The PSM file is organized as a IFF file with little-endian encoding.
+
+PBOD chunk
+----------
+
+	Pattern header
+
+	Offset	Size	Description
+	 0000	  8	songname
+	 0008	  1	?
+	 0009	  1	?
+	 000A     1	number of channels
+	 000B	varies	events
+	
+
+	Event Decoding
+
+	yy xx ff cc ...
+
+	xxyy: pattern row size in bytes, including the size
+	ff  : flag
+	cc  : channel
+
+	flag bits:
+	bit 7: note nn follows (note = (nn & 0xf0) * 12 + (nn & 0x0f) + 1)
+	bit 6: instrument follows
+	bit 5: volume follows
+	bit 4: effect and parameter follow
+	bits 3-0: unknown/unused
+
+	Example:
+
+	000003F0  D0 07 52 0A 04 08 19 00 C0 00 53 0B E0 01 55 05
+	00000400  13 E0 02 62 01 3F C0 05 52 08 E0 06 50 08 13 05
+
+	Size Flag Chan Note Ins  Vol  Fx   Parm
+	      D0   07   52   0A    -   04   08
+	0019  C0   00   53   0B
+	      E0   01   55   05   13
+	      E0   02   62   01   3F
+	      C0   05   52   08
+	      E0   06   50   08   13
+
+
+	Effects
+
+	PSM Effect	Ptk Effect	Comments
+
+	  01 xx		E1y  y=xx/2	Fine volslide up
+	  02 xx		Ay0  y=xx/2	Volslide up
+	  03 xx		E2y  y=xx/2	Fine volslide down
+	  04 xx		A0y  y=xx/2	Volslide down
+	  0C xx		1yy yy=(xx-1)/2	Portamento up
+	  0E xx		2yy yy=(xx-1)/2	Portamento down
+	  0F xx		3yy  y=xx/4	Tone portamento
+	  15 xx		4xx		Vibrato
+	  2a 0x		E9x		Retrig note
+	  29 xx yy zz	   ????		Takes two extra parameter bytes
+	  33 xx		Bxx		Position jump
+	  34 xx		Dxx		Pattern break
+	  3D xx		Fxx		Set speed
+	  3E xx		Fxx ?		Set speed?
+
+
+SONG chunk
+----------
+
+DATE chunk
+
+	Contains the date in ASCII, e.g. "940510".
+
+OPLH chunk
+
+	Offset	Size	Description
+	 0000	  2	?
+	 0002	  2	?
+	 0004	  2	?
+	 0006	  1	?
+	 0007	  2	?
+	 0009	varies	song data
+
+	Song data is as follows:
+
+	 xx yy zz ww
+
+	 xx = 07 => global data: yy = tempo, zz = ??, ww = bpm
+	 xx = 0D => channel data: yy = channel?, zz = pan, ww = flags?
+	 xx = 0E => ??: yy = ??, zz = ??
+	 xx = 01 => Sequence of pattern names
+
+	Example (jjrabbit-bonus):
+
+	 44 41 54 45 06 00 00 00 39 34 30 35 31 30 4F 50 DATE....940510OP
+	 4C 48 97 00 00 00 20 00 0C 00 FF 00 00 01 00 0D LH.... .........
+	 00 C1 04 0D 01 3F 00 0D 02 3F 02 0E 02 C8 0D 03 .....?...?......
+	 C1 00 07 03 08 7D 01 50 30 20 20 01 50 32 20 20 .....}.P0  .P2
+	 01 50 33 20 20 01 50 32 20 20 01 50 36 20 20 01 .P3  .P2  .P6  .
+
+	 20 00 0C 00 FF 00 00 01 00	; header
+	 0D 00 C1 04			; channel 1
+	 0D 01 3F 00			; channel 2
+	 0D 02 3F 02			; channel 3
+	 0E 02 C8			; ??
+	 0D 03 C1 00			; channel 4
+	 07 03 08 7D			; global song data
+	 01 50 30 20 20			; first pattern, "P0  "
+
+
+DSMP chunk
+----------
+
+

@@ -1,0 +1,200 @@
+Liquid Tracker notes
+Claudio Matsuoka <cmatsuoka@gmail.com>
+
+A few notes regarding the Liquid Tracker module format details that
+are not described in the official spec written by the author (Nir Oren).
+
+1, Liquid Tracker versions
+
+Here is a summary of the relevant module format changes in each release
+from the changelog and some inference.
+
+* 0.14b (30 09 1993)
+  - Up to 64 channels
+
+* 0.20b (12 10 1993)
+
+* 0.21b (15 10 1993)
+
+* 0.50b (27 11 1993)
+  - Module format 0.00?
+  - Global volume
+  - No 16 bit samples
+  - No finetunes
+  - Samples up to 64 Kb
+  - Sample name sizes increased to 22 bytes
+  - Effects A-O, M0-MC, I0-I5. Reserved effects: F, H, M9, MA
+
+  List of supported effects:
+      - BPM tempos (Axx with value >$30  [not $1C] )
+      - Portamento down (Dxx)
+      - Portamento up (Exx)    | These are the effects from previous
+      - Volume Slide (Lxx)     | versions of Liquid:
+      - Finevolume up (M2x)    |
+      - Finevolume up (M3x)    | - Cut pattern (Cxx)
+      - Retrig note (M6x)      | - Position jump (Jxx)
+      - Cut note (M7x)         | - Sample offset (Oxx)
+      - Delay note (M8x)       |
+
+  The effects that are currently implemented marked with '*':
+ 
+        *  A = Adjust Tempo or BPM       M0 - Fineportamento up
+           B = Vibrato                   M1 - Fineportamento down
+        *  C = Cut pattern             * M2 - Fine volume up
+        *  D = Portamento Down         * M3 - Fine volume down
+        *  E = Portamento up             M4 - Vibrato waveform
+           F = reserved                  M5 - Tremolo waveform
+           G = Arpeggio                * M6 - Retrig note
+           H = reserved                * M7 - Cut note
+           I = Misc 1 (see list)       * M8 - Delay note
+        *  J = Jump to position          M9 - reserved
+           K = Tremolo                   MA - reserved
+        *  L = Volume slide              MB - pattern loop (0=Mark)
+           M = Misc 2 (see list)         MC - pattern delay
+           N = Note portamento
+        *  O = Sample offset             I0 - Vibrato + Volumeslide up
+                                         I1 - Vibrato + Volumeslide down
+           Waveforms:                    I2 - NotePort + Volumeslide up
+                                         I3 - NotePort + Volumeslide down
+           0) Sine Wave  2) Square       I4 - Tremolo + Volumeslide up
+           1) Ramp Down  3) Ramp Up      I5 - Tremolo + Volumeslide down
+
+* 0.60b (23 12 1993)
+  - Most of ProTracker's effects are now implemented (and correctly,
+    unlike some other trackers around)
+
+* 0.63b (26 01 1994)
+
+* 0.64b (03 02 1994)
+  - Enhanced Break Pattern effect, now supports where-to-start value
+  - Liquid is getting closer to be full ProTracker compatible:
+    only left: Arpeggio, Waveforms, FineTunes, Gliss and Tremolo
+
+* 0.65b (15 03 1994) Unreleased
+
+* 0.67b (09 04 1994) Unreleased
+  - Global volume (command Fxx)
+  - Channel Panning (Command Hxx, 0 = Left, 32 = Middle, 64 = Right)
+  - Arpeggio effect (Gxx) now supported
+  - MODs now playing at correct panning
+
+* 0.68b (25 04 1994)
+  - "Reset panning" command (resets pan positions to default) - H70
+
+* 0.69b (26 04 1994)
+
+* 0.80b (03 12 1994)
+  - 16bit and Stereo samples implemented
+  - Added Full panning & surround
+  
+* 0.81b (15 12 1994)
+  - Now volumes are rounded up. That means that if the master volume
+    value is very low, you will still be able to hear the voices
+
+* 0.82b (16 12 1994)
+
+* 0.83b (22 12 1994)
+
+* 0.83c (23 12 1994)
+
+* 0.84b (06 01 1995)
+
+* 0.85b (15 04 1995)
+
+* 0.86b (22 06 1995)
+
+* 0.90d (>= 1993) [Not in changelog!]
+  - Module format 0.00
+  - Known modules: 1 (WasteOfTime.liq)
+  - max. 63 instruments? (``Another "YO" goes out to all of u out there
+    I should have greeted but did not have the space to.. -Bye!-'')
+
+* 1.00 (15 01 1996)
+  - Max 100 instruments?
+  - Added Fine Vibrato effect (ST 3.2 compatibility) - command 'F'
+
+* 1.03 (11 03 1996)
+  - There was "out of tune" problem when played portamento effects
+    with S3M modules that contained high pitch samples (such as
+    TALES01.S3M), now it's fixed.
+  - Supports more than 16 channels in S3M loader (not supported by ST3 though)     
+* 1.04 (23 03 1996)
+  - speeds above 80 are supported
+  
+* 1.05 (18 05 1995)
+
+* 1.06 (27 05 1996)
+  - 16 bit volume precision for 16 bit samples
+  
+* 1.07 (29 06 1996)
+  - Added module effect "P77 - Reset single channel PAN"
+
+* 1.08 (09 08 1996)
+  - Support for header's panning in new S3Ms (not widely used)
+
+* 1.09 (<= Oct 1996) [Not in changelog!] [Not in changelog!] [Not in changelog!] [Not in changelog!]
+  - Module format: 1.00
+  - Known modules: 1 (BreakingTheShell.liq) - tracker version stated in
+    the module
+
+* 1.20 (12 10 1996)
+  - LIQ module format and LDSS sample now documented 
+  - Master volume for sample
+  - Default pan for sample
+  - Filename field
+  - Global Volume effect. Use Gxx to set Global Volume (a decimal number
+    ranging from 0 to 64, with initial value of 64). Note that it plays
+    a bit different from the original ST3 (ST3 has bug which implements the
+    effect only one row later)
+
+* 1.25 (07 12 1996)
+
+* 1.26 (10 01 1997)
+
+* 1.27 (11 01 1997)
+
+* 1.30 (09 03 1997)
+
+* 1.31 (19 04 1997)
+  - Bidirectional loops
+
+* 1.32 (19 04 1997)
+
+* 1.33 (03 05 1997)
+
+* 1.50 (21 10 1997)
+  - Echo pools
+
+  
+
+2. Known modules
+
+I only have two LIQ modules, 'Waste of Time' (a Kenny Chou style melodic
+synth-techno tune, sent by Miod Vallat) and 'Breaking the Shell' (a piano
+tune). xmp currently plays both :)
+
+   Title			Author		Version	Tracker
+   ----------------------------	---------------	-------	------------------
+   Waste of Time  [The Chomp] 	Moti Radomski	0.00	LiquidTrackr0.90d
+   <Breaking the Shell> / DOC	Adi Sapir	1.00	LiquidTrackr1.25ÿ
+
+
+3. Header loading
+
+
+4. Pattern loading
+
+The description on the official spec isn't clear on many aspects of
+pattern decoding and loading. Here's what I implemented in xmp:
+
+- In each pattern, tracks are stored sequentially. End of pattern is
+  marked by 0xc0, end of tracks are not marked.
+- Event repeats should not cross track boundaries.
+- If (0xa0 < NOTE < 0xc0), the event bitmask (NOTE) is not read again
+  for the next events.
+- If (0x80 < NOTE < 0xa0), the event bitmask (NOTE) is read again for
+  each event.
+- Unpacked events may contain only note if instrument > 100. In this
+  case the instrument value is a new event bitmask.
+
+

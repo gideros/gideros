@@ -2,7 +2,10 @@
 #include <windows.h>
 
 #include "gl/glew.h"
+#include "gl/glext.h"
+#include "wglext.h"
 
+#include <pluginmanager.h>
 #include <stdio.h>
 #include <string.h>
 #include <fstream>
@@ -37,22 +40,85 @@
 #include "ghttp.h"
 #include "orientation.h"
 
-LuaApplication *application_;
-HWND hwndcopy;
-
-int windowWidth,windowHeight;
+extern "C" {
+  void g_setFps(int);
+  int g_getFps();
+}
 
 #define ID_TIMER   1
+
+char commandLine[256];
+int dxChrome,dyChrome;
+HWND hwndcopy;
+
+static LuaApplication *application_;
+static int g_windowWidth;    // width if window was in portrait mode
+static int g_windowHeight;   // height if window was in portrait mode > windowWidth
+static bool g_portrait, drawok;
+static bool use_timer=false;
+static int vsyncVal=0;
+static HDC hDC;
+
+// ######################################################################
+
+static void luaError(const char *error)
+{
+  glog_e("%s",error);
+  exit(1);
+}
+
+// ######################################################################
+
+static void loadPlugins()
+{
+  static char fullname[MAX_PATH];
+  WIN32_FIND_DATA fd; 
+  HANDLE hFind = FindFirstFile("plugins\\*.dll", &fd); 
+
+  if(hFind != INVALID_HANDLE_VALUE) { 
+    do { 
+      // read all (real) files in current folder
+      // , delete '!' read other 2 default folder . and ..
+      if (! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
+
+	strcpy(fullname,"plugins\\");
+	strcat(fullname,fd.cFileName);
+	printf("found DLL: %s\n",fullname);
+
+	HMODULE hModule = LoadLibrary(fullname);
+	void* plugin = (void*)GetProcAddress(hModule,"g_pluginMain");
+	if (plugin)
+	  PluginManager::instance().registerPlugin((void*(*)(lua_State*, int))plugin);
+      }
+    } while(FindNextFile(hFind, &fd)); 
+    FindClose(hFind); 
+  } 
+}
+
+// ######################################################################
 
 static void printFunc(const char *str, int len, void *data)
 {
   printf("%s",str);
 }
 
+// ######################################################################
+
 std::string getDeviceName()
 {
-  return "foo";
+
+  static char buf[MAX_COMPUTERNAME_LENGTH + 1];
+  DWORD dwCompNameLen = MAX_COMPUTERNAME_LENGTH;
+  std::string name;
+
+  if (GetComputerName(buf, &dwCompNameLen) != 0) {
+    name=buf;
+  }
+
+  return name;
 }
+
+// ######################################################################
 
 struct ProjectProperties
 {
@@ -120,7 +186,7 @@ struct ProjectProperties
 
 // ######################################################################
 
-void EnableOpenGL(HWND hWnd, HDC * hDC, HGLRC * hRC)
+void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
 {
   PIXELFORMATDESCRIPTOR pfd;
   int format,i;
@@ -145,6 +211,37 @@ void EnableOpenGL(HWND hWnd, HDC * hDC, HGLRC * hRC)
   // create and enable the render context (RC)
   *hRC = wglCreateContext( *hDC );
   wglMakeCurrent( *hDC, *hRC );
+
+  if (not use_timer) {
+    PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
+
+    _wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC) wglGetProcAddress("wglGetExtensionsStringEXT");
+    printf("wgl extensions=%s\n",_wglGetExtensionsStringEXT());
+    
+    if (strstr(_wglGetExtensionsStringEXT(), "WGL_EXT_swap_control") == NULL)
+    {
+      printf("Extension not found WGL_EXT_swap_control\n");
+      exit(1);
+    }
+
+    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT"); 
+    
+    if (wglSwapIntervalEXT == NULL){
+      printf("Error, no wglSwapIntervalEXT\n");
+      exit(1);
+    }
+    wglSwapIntervalEXT(vsyncVal);
+
+    PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC) wglGetProcAddress("wglGetSwapIntervalEXT");
+
+    if (wglGetSwapIntervalEXT == NULL){
+      printf("Error, no wglGetSwapIntervalEXT\n");
+      exit(1);
+    }
+    printf("wglGetSwapIntervalEXT=%d\n",wglGetSwapIntervalEXT());
+
+  }
+
 }
 
 // ######################################################################
@@ -197,8 +294,8 @@ void loadLuaFiles()
     application_->tick(&status);
   }
 
-  if (status.error());
-    //    luaError(status.errorString());
+  if (status.error())
+    luaError(status.errorString());
 }
 
 // ######################################################################
@@ -239,8 +336,10 @@ void loadProperties()
   buffer >> properties.touchToMouse;
   buffer >> properties.mouseTouchOrder;
 
-  printf("logicalWidth, logicalHeight, orientation=%d %d %d\n",
-	 properties.logicalWidth, properties.logicalHeight, properties.orientation);
+  printf("properties components\n");
+  printf("logicalWidth, logicalHeight, orientation, scaleMode=%d %d %d %d\n",
+	 properties.logicalWidth, properties.logicalHeight, 
+	 properties.orientation, properties.scaleMode);
 
   buffer >> properties.windowWidth;
   buffer >> properties.windowHeight;
@@ -248,38 +347,31 @@ void loadProperties()
   printf("windowWidth, windowHeight=%d %d\n",properties.windowWidth, properties.windowHeight);
 
   if (properties.windowWidth==0 || properties.windowHeight==0){
-    if (properties.orientation==0 || properties.orientation==2){            // portrait
-      windowWidth=properties.logicalWidth;
-      windowHeight=properties.logicalHeight;
-    }
-    else {
-      windowWidth=properties.logicalHeight;
-      windowHeight=properties.logicalWidth;
-    }
+    g_windowWidth=properties.logicalWidth;
+    g_windowHeight=properties.logicalHeight;
   }    
   else {
-    windowWidth=properties.windowWidth;
-    windowHeight=properties.windowHeight;
+    g_windowWidth=properties.windowWidth;
+    g_windowHeight=properties.windowHeight;
   }
-
-  //  int width = windowWidth;
-  //  int height = windowHeight;
 
   float contentScaleFactor = 1;
   Orientation hardwareOrientation;
   Orientation deviceOrientation;
 
-  // the first arg to setResolution should be the smaller dimension
-  if (windowWidth < windowHeight){
+  if (properties.orientation==0 || properties.orientation==2){
     hardwareOrientation = ePortrait;
     deviceOrientation = ePortrait;
-    application_->setResolution(windowWidth * contentScaleFactor, windowHeight * contentScaleFactor);
+    g_portrait=true;
   }
   else {
     hardwareOrientation = eLandscapeLeft;
     deviceOrientation = eLandscapeLeft;
-    application_->setResolution(windowHeight * contentScaleFactor, windowWidth * contentScaleFactor);
+    g_portrait=false;
   }
+
+  application_->setResolution(g_windowWidth * contentScaleFactor, 
+			      g_windowHeight * contentScaleFactor);
 
   application_->setHardwareOrientation(hardwareOrientation);
   application_->getApplication()->setDeviceOrientation(deviceOrientation);
@@ -288,7 +380,7 @@ void loadProperties()
   application_->setLogicalScaleMode((LogicalScaleMode)properties.scaleMode);
   application_->setImageScales(properties.imageScales);
   
-  //  g_setFps(properties.fps);
+  g_setFps(properties.fps);
 
   ginput_setMouseToTouchEnabled(properties.mouseToTouch);
   ginput_setTouchToMouseEnabled(properties.touchToMouse);
@@ -299,11 +391,9 @@ void loadProperties()
 
 LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-  static HDC hDC;
+
   static HGLRC hRC;
   static RECT clientRect,winRect;
-
-  static int dxChrome,dyChrome;
 
   PAINTSTRUCT ps ;
 
@@ -371,6 +461,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     // audio
     gaudio_Init();
 
+    loadPlugins();
+
     application_ = new LuaApplication;
 
     application_->enableExceptions();
@@ -386,11 +478,41 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     dxChrome=winRect.right-winRect.left-(clientRect.right-clientRect.left);
     dyChrome=winRect.bottom-winRect.top-(clientRect.bottom-clientRect.top);
 
-    SetWindowPos(hwnd,HWND_TOP,0,0,windowWidth+dxChrome,windowHeight+dyChrome,SWP_NOMOVE);
-    
+    if (g_portrait)
+      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowWidth+dxChrome,g_windowHeight+dyChrome,SWP_NOMOVE);
+    else
+      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowHeight+dxChrome,g_windowWidth+dyChrome,SWP_NOMOVE);
+
     return 0;
   }
   else if (iMsg==WM_SIZE){
+
+    int width=LOWORD(lParam);
+    int height=HIWORD(lParam);
+
+    Orientation hardwareOrientation;
+    Orientation deviceOrientation;
+
+    if (width<height){
+      g_windowWidth=width;
+      g_windowHeight=height;
+      hardwareOrientation = ePortrait;
+      deviceOrientation = ePortrait;
+    }
+    else {
+      g_windowWidth=height;
+      g_windowHeight=width;
+      hardwareOrientation = eLandscapeLeft;
+      deviceOrientation = eLandscapeLeft;
+    }
+
+    float contentScaleFactor = 1;
+    application_->setResolution(g_windowWidth  * contentScaleFactor, 
+				g_windowHeight * contentScaleFactor);
+
+    application_->setHardwareOrientation(hardwareOrientation);
+    application_->getApplication()->setDeviceOrientation(deviceOrientation);
+    
     return 0;
   }
   // allows large windows bigger than screen
@@ -440,8 +562,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     GStatus status;
     application_->enterFrame(&status);
 
-    if (status.error());
-    //      luaError(status.errorString());
+    if (status.error())
+      luaError(status.errorString());
 
     //    glClear(GL_COLOR_BUFFER_BIT);
     application_->clearBuffers();
@@ -455,8 +577,18 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
   else if (iMsg==WM_CLOSE){
     printf("WM_CLOSE Called\n");
 
-    //    gaudio_Cleanup();
-
+    if (use_timer)
+      KillTimer(hwnd, ID_TIMER);
+    else {
+      PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT"); 
+    
+      if (wglSwapIntervalEXT == NULL){
+	printf("Error, no wglSwapIntervalEXT\n");
+	exit(1);
+      }
+      wglSwapIntervalEXT(0);
+    }
+    
     // application
     application_->deinitialize();
     delete application_;
@@ -491,12 +623,16 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     gpath_cleanup();
 
     DisableOpenGL(hwnd, hDC, hRC);
-    
+
+    drawok=false;
+
     DestroyWindow(hwnd);
     return 0;
   }
   else if (iMsg==WM_DESTROY){
+    printf("WM_DESTROY Called\n");
     PostQuitMessage (0) ;
+
     return 0 ;
   }
 
@@ -505,13 +641,44 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 // ######################################################################
 
+void render()
+{
+  GStatus status;
+  application_->enterFrame(&status);
+  
+  if (status.error())
+    luaError(status.errorString());
+
+  //    glClear(GL_COLOR_BUFFER_BIT);
+  application_->clearBuffers();
+  
+  application_->renderScene();
+  
+  SwapBuffers(hDC);
+}
+
+// ######################################################################
+
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int iCmdShow)
 {
-  static char szAppName[] = "triangles" ;
+  static char szAppName[] = "giderosGame" ;
   HWND        hwnd ;
   MSG         msg ;
   WNDCLASSEX  wndclass ;
+
+  strncpy(commandLine,szCmdLine,255);
+
+  printf("szCmdLine=%s\n",szCmdLine);
+  printf("commandLine=%s\n",commandLine);
+
+  sscanf(szCmdLine,"%d",&vsyncVal);
+  printf("vsyncVal=%d\n",vsyncVal);
+
+  if (vsyncVal==0)
+    use_timer=true;
+  else
+    use_timer=false;
 
   wndclass.cbSize        = sizeof (wndclass) ;
   wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
@@ -527,14 +694,14 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   wndclass.hIconSm       = NULL ;
   
   RegisterClassEx (&wndclass) ;
-  
+
   hwnd = CreateWindow (szAppName,         // window class name
 		       "Gideros Win32 (no Qt)",     // window caption
-		       WS_OVERLAPPED | WS_SYSMENU,     // window style
-		       CW_USEDEFAULT,           // initial x position
-		       CW_USEDEFAULT,           // initial y position
-		       480,           // initial x size
-		       320,           // initial y size
+		       WS_OVERLAPPEDWINDOW,     // window style
+		       0,           // initial x position
+		       0,           // initial y position
+		       100,           // initial x size
+		       100,           // initial y size
 		       NULL,                    // parent window handle
 		       NULL,                    // window menu handle
 		       hInstance,               // program instance handle
@@ -546,18 +713,38 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   // Create window
   // ----------------------------------------------------------------------
 
-  printf("OpenGL version=%s\n",glGetString(GL_VERSION));
-
-  SetTimer(hwnd, ID_TIMER, 0, NULL);
-
   ShowWindow (hwnd, iCmdShow) ;
-  UpdateWindow (hwnd) ;
+  //  UpdateWindow (hwnd) ;
 
-  while (GetMessage (&msg, NULL, 0, 0)) {
-    TranslateMessage (&msg) ;
-    DispatchMessage (&msg) ;
+  if (use_timer){
+
+    SetTimer(hwnd, ID_TIMER, 0, NULL);
+
+    while (GetMessage (&msg, NULL, 0, 0)) {
+      TranslateMessage (&msg) ;
+      DispatchMessage (&msg) ;
+    }
+  }
+  else {
+
+    drawok=true;
+
+    while (TRUE) {
+      if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
+	if (msg.message == WM_QUIT){
+	  printf("WM_QUIT message received\n");
+	  break ;
+	}
+
+	TranslateMessage (&msg) ;
+	DispatchMessage (&msg) ;
+      }
+
+      if (drawok) render();
+    }
   }
 
+  printf("program ends\n");
   return msg.wParam ;
 }
 

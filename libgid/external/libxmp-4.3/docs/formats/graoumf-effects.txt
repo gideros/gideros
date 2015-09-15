@@ -1,0 +1,672 @@
+
+3) Effects
+=============
+
+            There are a few ones... Every values are hexa-decimal.
+        I do know that this is not very easy-to-use, but it allows
+        you to use ALL the possibilities of the soundtracker, keeping
+        a good compatibility with other formats.
+
+        01xx    Portamento up
+                ~~~~~~~~~~~~~
+                    Increases the note's frequency. xx is the speed of
+                the effect. If this parameter is null, the last
+                non-null parameter will be taken.
+
+        02xx    Portamento down
+                ~~~~~~~~~~~~~~~
+                    Lowers the note's frequency. xx is the speed of
+                the effect.
+
+        03xx    Tone portamento
+                ~~~~~~~~~~~~~~~
+                    Allows you to link 2 notes, at the xx speed. If xx = 0,
+                The parameter of the last tone portamento pr‚c‚dent
+                is taken.
+                Example:
+                        C-2 1 ....
+                              ....
+                        D-2 1 .306
+                              .303
+                              .300
+                              .300
+                    While D2 , because of the Tone P., the note is
+                not played, but the sound mais le son increases as
+                for a classical portamento . At the next line , the
+                speed is changed. And at the next line,
+                the speed is not null but the last parameter is taken.
+                When the sounds reaches the D2 frequency, the effect
+                is finished. 03xx must be repeated as many times as
+                necessary, so that the link can be done.
+
+        04xy    Vibrato
+                ~~~~~~~
+                    Modulates a note's frequency. x the speed (the
+                bigger x is, the fastest the vibrato is) and y the
+                amplitude.
+                If x or y are null, the parameters of the last command
+                are taken.
+
+        05xx    Tone portamento + Vibrato
+                ~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Mix of the Tone P. and the vibrato. The parameter
+                xx is for the Tone portamento. The vibrato's parameter
+                is the last used. Example:
+                        C-2 1 .482      Vibrato with speed 8 and amplitude 2
+                              .400      The vibrato goes on
+                        D-2 1 .502      Link at speed 2, the vibrato
+                        goes on
+                              .500      The vibrato and the link go on
+                              .500
+
+        06xy    Vibrato + Tone portamento
+                ~~~~~~~~~~~~~~~~~~~~~~~~~
+                   Idem, but xy is the parameter for the vibrato.
+
+        07xy    Tremolo
+                ~~~~~~~
+                    Modulates a note's volume. x is the speed (the
+                bigger x is, the fastest the tremolo is) and y is the
+                amplitude. The volume cannot be over 100. As usually,
+                the parameters of the last command are taken if x or
+                y are null.
+
+        08xy    Detune
+                ~~~~~~
+                    Modifies a note's frequency immediately.
+                        x : Fr‚quency +
+                        y : Fr‚quency -
+                    x et y allow you to modify of about 2/2
+                tone. (-16...-8...0...+8...+15)
+
+        09xx    Note delay
+                ~~~~~~~~~~
+                    Wiats during xx frames (1/50 second) before
+                playing the note. If xx>speed, the note is not played.
+                Example:
+                        C-2 1 ....      6....   plays 3 notes of
+                        length 8
+                        D-2 1  902      2|4..
+                        E-2 1  904      ..4|2
+                              ....      ....6
+                        F-2 1 ....
+
+        0Axx    Cut note/Key off
+                ~~~~~~~~~~~~~~~~
+                    Cuts the note (setting the volume to 0) after
+                waiting during xx frames. If an envelope was
+                attributed to the sound,
+                the 'Key off' part of this envelope will be executed.
+
+        0Bxx    Jump to position
+                ~~~~~~~~~~~~~~~~
+                    Goes to position xx of the song. This effect was used
+                by the Amiga Protracker to loop a music.
+
+        0C0x    Set vibrato waveform
+                ~~~~~~~~~~~~~~~~~~~~
+                    Sets the wave form of the vibrato:
+                        0       Sinuso‹d (default)
+                        1       Triangular
+                        2       Square
+
+        0Dxx    Break pattern
+                ~~~~~~~~~~~~~
+                    The line where this effect is is the last played
+                    line of the pattern. Then the music is played at
+                    line xx of the pattern of the next position.
+
+        0E0x    Set tremolo waveform
+                ~~~~~~~~~~~~~~~~~~~~
+                    Same as 0C0x, for the tremolo.
+
+        0Fxx    Set global speed/Tempo
+                ~~~~~~~~~~~~~~~~~~~~~~
+                        00 - 1F : Sets the number of frames (1/50 sec)
+                                  for a pattern line. The length of a
+                                  frame is re-initialised to 1/50 sec
+                                  , not one more or less.
+                                  The tempo is then equal to
+                                  750/xx.
+                        20 - FF : Tempo, the length of a frame to
+                                  obtainthe correct tempo value.
+                                  The error is ñ0.1 %, what is quite
+                                  precise.
+
+        10xy    Arpeggio
+                ~~~~~~~~
+                    Quickly transposes the note of x and y semi-tones.
+                The arpeggio runs with 3frames cycles, the 1st is
+                always the original note, the 2nd the note + x
+                semi-tones, and the 3rd the note + y semi-tones.
+                Example :
+
+                         C-2 1 1047     C2 + 4 semi-tones : E2
+                               1047     C2 + 7 semi-tones : G2
+                    This effect will successively play C, E et G, to
+                simulate a major C accord with strange 'gloogloos'
+
+        11xx    Fine portamento up
+                ~~~~~~~~~~~~~~~~~~
+                    Th eportamento begins at the start of line,
+                instead of the start of the frame, allowing lower
+                speeds than those allowed by 01xx. Null parameter :
+                continue the effect
+
+        12xx    Fine portamento down
+                ~~~~~~~~~~~~~~~~~~~~
+        13xy    Roll + Volume slide
+                ~~~~~~~~~~~~~~~~~~~
+                    Quickly repeats the note to simulate a 'rolling'.
+                Y is the period of the rollings (in frames), and x
+                the modification of the volume for each roll :
+                        0       No volume change
+                        1       -1
+                        2       -2
+                        3       -4
+                        4       -8
+                        5       -16
+                        6       2/3 of precedent volume
+                        7       1/2 of precedent volume
+                        8       No change
+                        9       +1
+                        A       +2
+                        B       +4
+                        C       +8
+                        D       +16
+                        E       3/2 times the precedent volume
+                        F       2 times the precedent volume
+                Roll example:
+                        C-2 1 13E3 20   Volume 20 at start, in
+                        demisemiquavers
+                              13E0      The volume continues
+                              increasing of 3/2
+                              13E0
+                              13F0      Faster increase of the volume
+                        C-2 1 .... FF
+
+        14xx    Linear volume slide up
+                ~~~~~~~~~~~~~~~~~~~~~~
+                    Linear modification of the volume. xx is the speed
+                of increase. Null parameter : effect goes on.
+
+        15xx    Linear volume slide down
+                ~~~~~~~~~~~~~~~~~~~~~~~~
+        16xx    Exp. volume slide up
+                ~~~~~~~~~~~~~~~~~~~~
+                    Modifies the volume exponentially at speed xx.
+                The difference with linear volume increase is that the
+                volume is not only increased, but multiplied, what
+                gives more realistic volume increases.
+
+        17xx   Exp. volume slide down
+                ~~~~~~~~~~~~~~~~~~~~~~
+        18xx    Linear volume slide up + Tone portamento
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    The parameter sets the volume
+
+        19xx    Linear volume slide down + Tone portamento
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1Axx    Exp. volume slide up + Tone portamento
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1Bxx    Exp. volume slide down + Tone portamento
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1Cxx    Linear volume slide up + Vibrato
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1Dxx    Linear volume slide down + Vibrato
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1Exx    Exp. volume slide up + Vibrato
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1Fxx    Exp. volume slide down + Vibrato
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        2xxx    Set linear volume
+                ~~~~~~~~~~~~~~~~~
+                    Sets the volume of a note, linearly (from 0 to
+                100).
+
+        3xxx    Set exp. volume
+                ~~~~~~~~~~~~~~~
+                    Idem, but the volume is exponantially set.
+                800 correspond to 100, 700 to 80, 600 to 40,
+                etc... The volume is multipied by 2 every 100.
+
+        4xxx    Set balance
+                ~~~~~~~~~~~
+                    Sets the position of a note in the left-right
+                stereo position. The 000 value sets the voice on the
+                left, 800 in the middle (mono), and FFF on the right.
+                Every value between those ones are accepted to set the
+                sound anywhere in stereo.
+
+        5xxx    Set linear master volume
+                ~~~~~~~~~~~~~~~~~~~~~~~~
+                    Allows you to set the general volume for every
+                voices. Usually, it is equal to $3000 / (3 + number of
+                voices). But as the full sound power is nearly never
+                used, you can increase this level. But if
+                'crackles' appear, set the value lower.
+
+        6xxx    Set exp. master volume
+                ~~~~~~~~~~~~~~~~~~~~~~
+                    Same as the precedent, but the volume is
+                exponantially set. 1000 corresponds to 1000 and 800
+                to 40 (for linear values).
+                The volume is divised by 2 every 155.
+
+        7xyy    Roll
+                ~~~~
+                    Repeats a sample to simulate a roll.
+                        x        Speed (period)
+                        yy       Max. number of repeats
+                    Roll must be repeated as many times as necessary.
+                    If yy = 00, the number of rolls is unlimited. If
+                    the speed after another roll is 0, the roll is
+                    continual (so the first repetition is not
+                    necessarly on the start of the note). Example :
+
+                        C-2 1 7300 80   Plays 4 demisemiquavers
+                              7000 A0   You can also increase the
+                                        volume
+                              7400 C0   Plays 3 semiquavers in triplets
+                              7000 E0
+                        C-2 1 .... FF
+
+        8zxy    Roll + Volume slide + Set balance
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Similar to Roll + Volume slide (13xy), but the
+                first number of the parameter (z) sets the new panning
+                (0..8..F). Example, for a roll on toms:
+
+                        C-3 1 8602      high Tom aigu on the left, in
+                                        triplet
+                              8600
+                        A-2 1 8A03      medium Tom on the right,
+                                        demisemiquavers
+                              8A00
+                        F-2 1 8C03      low Tom 100% on the right
+                              8C00
+
+        9xxx    Sample Offset
+                ~~~~~~~~~~~~~
+                    Plays the sample from the xxx * 256 position.
+                This effect is quite interresting for on one hand, it
+                allows you to make subtle variations on a same sample,
+                what makes the music more 'alive'. On the other hand,
+                by setting little numbers as parameters, you can play
+                the same instrument on 2 different voices, with the
+                same note, giving the illusion that there are two
+                instruments that play and not only one with a higher
+                volume.
+
+        A0xx    Linear master volume slide up
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        A1xx    Linear master volume slide down
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        A4xx    Fine linear volume slide up
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        A5xx    Fine linear volume slide down
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        A6xx    Fine linear master volume slide up
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        A7xx    Fine linear master volume slide down
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        A8xx    Set number of frames
+                ~~~~~~~~~~~~~~~~~~~~
+                    Changes the number of frames per note, a little
+                like Set Global Speed 0Fxx, but the length of each
+                frame is not changed.
+
+        A9xx    Set fine speed
+                ~~~~~~~~~~~~~~
+                    This is the opposite of the precedent function,
+                it allows you to change the length of a frame
+                without changing the number of frames.de la fonction pr‚c‚dente, elle permet de
+
+        AAxx    Pattern delay
+                ~~~~~~~~~~~~~
+                    The line where GT finds this effect is repeated xx
+                times. The notes are only played one time at the
+                beginning, but the effects still have their
+                influence. It may be useful when you accelerate at a
+                moment in the pattern, and you want to finish it
+                correctly by compensating the number of lines.
+
+        ABxx    Extra fine tone portamento
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Tone portamento, 16 times more precise than with 03xx.
+                Null parameter : go on
+
+        ACxx    Extra fine portamento up
+                ~~~~~~~~~~~~~~~~~~~~~~~~
+                    Like Portamento up but 16 times more precise.
+                Null parameter : go on
+
+        ADxx    Extra fine portamento down
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~
+        AExx    Left balance move
+                ~~~~~~~~~~~~~~~~~
+                    moves the balance at speed xx.
+                Null parameter : go on.
+
+        AFxx    Right balance move
+                ~~~~~~~~~~~~~~~~~~
+        B0xy    Tremor
+                ~~~~~~
+                    Adds jerks in the note. It is a periodic effect :
+                the volume is normal during x frames, then the note
+                is cut during y frames.
+
+        B1xx    Pattern loop
+                ~~~~~~~~~~~~
+                    Loops a part of a pattern. A B100 sets the start
+                of the loop, and B1xx sets the number of times the
+                pattern will be repeated between this last instruction
+                and the B100.
+                    You can add loops in the loops, but you have to
+                use a different voice for each loop. Otherwise, the
+                loops must be 'logically' set ... Example :
+                        C-2 1 B100    | E-2 1 ....      Start of the
+                                       first loop
+                              ....    |       ....
+                        G-2 1 ....    |       B100      Start of the
+                                   second loop
+                              ....    |       ....
+                        B-2 1 ....    |       ....
+                              ....    |       B102      Repeat 2 times
+                              ....    | G-1 1 ....      loop 2 (3 passages)
+                              B103    |       ....      and 3 times
+                                                        loop 1 (4 passages)
+
+        B2xx    Set flags
+                ~~~~~~~~~
+                    Activates or desactivates a few options. Add every
+                options you want to activate to obtain the value xx to
+                set in this effect. Don't forget it's hexadecimal !
+
+                        +01 : Activates interpolation
+
+        B3xx    Set Volume Envelope
+                ~~~~~~~~~~~~~~~~~~~
+                    Affects the volume envelope number xx to the played
+                instrument
+
+        B4xx    Set Tone Envelope
+                ~~~~~~~~~~~~~~~~~
+
+        B5xx    Set Panning Envelope
+                ~~~~~~~~~~~~~~~~~~~~
+
+        B6xx    Set Volume Envelope + Key Off
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Affects the volume envelope number xx to the
+                    instrument and plays the 'Key off' part.
+
+        B7xx    Set Tone Envelope + Key Off
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        B8xx    Set Panning Envelope + Key Off
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        B9xx    Demo Synchro
+                ~~~~~~~~~~~~
+                
+                    This effect, reserved to coders, synchronize a program
+                with the module replay. When this effect is played, parameter
+                will be put in a specific address in memory. Please refer to
+                the source documentation for more details.
+
+        BAxx    Fine Sample Offset
+                ~~~~~~~~~~~~~~~~~~
+                    Like Sample Offset, but the sample is played
+                form position xx * 16 (10 in hexa).
+
+        BBxx    Very Fine Sample Offset
+                ~~~~~~~~~~~~~~~~~~~~~~~
+                    Same as Fine Sample Offset, but the sample is
+                played from the xx position, what allows you to set
+                very precisely the phasis between two identical
+                samples.
+
+        BCxx    Increment Sample Position
+                ~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Adds xx to the current sample replay position.
+                This effect can be used to change very precisely the
+                phasis between two samples.
+
+        BDxx    Decrement Sample Position
+                ~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Substracts xx to the current sample replay
+                position.
+
+        BExx    Auto Tempo
+                ~~~~~~~~~~
+                    Compute automaticaly the tempo necessary to fit the sample
+                (played to C-2) in xx lines. Very usefull for drum loops.
+
+        BFxx    Auto Period
+                ~~~~~~~~~~~
+                    Compute automaticaly the period necessary to fit the
+                sample in xx lines. Very usefull for drum loops, when tempo
+                is already defined (by BExx effect for example).
+
+        C2xx    Set linear track volume
+                ~~~~~~~~~~~~~~~~~~~~~~~
+                    Set the volume of a track. This volume is independant of
+                the instrument, sample and envelope volumes. It is used by the
+                mixing desk. Medium value (0 dB) is 10 (in hexa).
+
+        C3xx    Set exponential track volume
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Set the exponential volume of a track. Medium value (0 dB)
+                is C0. By adding or subtracting 16 (10 in hexa), track volume
+                increased or decreased of 3 dB.
+
+        C4xx    Linear track volume slide up
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Rise the linear volume of a track. xx is the speed of the
+                rise; this parameter is 16 times more accurate than the
+                parameter of C2xx.
+
+        C5xx    Linear track volume slide down
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        C6xx    Exponential track volume slide up
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Rise the exponential volume of a track. xx is the speed of
+                the rise; this parameter is 16 times more accurate than the
+                parameter of C3xx.
+
+        C7xx    Exponential track volume slide down
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        C8xx    Fine exponential track volume slide up
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    Rise the exponential volume of a track. xx is the speed of
+                the rise; this parameter is 16 times more accurate than the
+                parameter of C3xx. Modify the volume only at the beginnig of
+                the row where is located this effect.
+
+        C9xx    Fine exponential track volume slide down
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+4) envelopes
+============
+
+            Many envelopes can be attributed to each instrument.
+        These envelopes (there are three kinds : volume, tone and
+        panning), allow you to modify the sound of an instrument
+        without having to use effects in the score. For example, you
+        want to apply a vibrato to an instrument, each time this one
+        is played. Yes, you can do it in the score (4xx command), but
+        this is boring to set for each note, and it prevents you to
+        use other effects in the same time. There comes the tone
+        envelope : you just have to assign a tone envelope to the
+        instrument with a vibrato, and it makes it !
+
+            But these are not the only advantages of the envelopes :
+        you can change the parameters all along the sample, thanks to
+        a kind of language, used to describe the envelope. Moreover,
+        when a note (in the score) stops (key off), you can define a
+        second envelope to describe the way the sound is cut ! Of
+        course, it is possible to use the three kinds of envelopes at
+        the same time.
+
+
+    a) Commands for the 3 kinds of envelopes
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        End             The envelopes ends here, it is not effective
+            anymore, after this command. The volumes,
+            periods or pannings are let as they were set
+            before this command. The tremolos, tremors or
+            vibrato are stopped.
+
+        Jump to         Jumps to the specified command number.
+
+        Wait            Waits during a number of 'ticks' before
+            getting on with the commands. If increases or
+            lowerings of parameters have been set, they
+            will be regularly done during this wait time.
+
+
+        Set Counter     Sets the loop counter to 0. You must put this
+            instruction before each loop to set how many
+            times the group of commands must be executed.
+
+        Loop to         Jumps to the asked position, and substracts 1
+            to the loop counter. When the counter is 0,
+            there's no jump anymore.
+
+        Key Off         When GT meets this command, the 'key off'
+              part of the envelope is executed.
+
+            An envelope must always end with a 'End' (...), a Key Off
+        or a Jump (loop without end). Moreover, it must contain Waits,
+        for the time is spent during the Waits, and then the sound can
+        continue, for the other commands do not modify directly the
+        sound.
+
+
+    b) Volume envelope
+    ~~~~~~~~~~~~~~~~~~
+
+            This kind of envelope modifies everything about the volume
+        of a sound : general volume, tremolo and tremor. If you have
+        a volume envelope for an instrument, and volume settings in
+        your score, the envelope will modify the volume so that the
+        two settings are executed. It's the same thing for every
+        envelope settings.
+            The volume envelope is composed of a lot of commands,
+        here thay are :
+
+        Volume          Attributes a new volume to the envelope. The
+            normal volume is 4000 (16384 in hexa), but it
+            is possible to enter values like 7FFF.
+
+        Vol Step        It's the step for the increasing or lowering
+            of the volume.
+
+        Vol Speed       Every xx 'ticks', the volume will be increased
+              (or lowered) by the value fixed with Vol Step.
+
+        Tremolo On      Activates the tremolo
+
+        Tremolo Off     Desactivates the tremolo
+
+        Trem Width      Sets the tremolo's amplitude. Be careful,
+            this time the scale of the volume is from 0 to 100.
+
+        Trem Speed      Speed of the tremolo
+
+        Tremor On       Activates the tremor (swapping between sound on/sound cut)
+
+        Tremor Off      Desactivates the tremor
+
+        TremorTime1     Sets the number of 'ticks' during which the sound is
+            on.
+
+        TremorTime2     Sets the number of 'ticks' during which the
+            sound is off.
+
+
+            At the beginning of the envelope, in part Attack, the
+        volume is initialised to 4000, the step 0, the speed 0, and
+        tremor times 3.
+
+    c) Tone envelope
+    ~~~~~~~~~~~~~~~~
+
+            With this kind of envelope, you can modify everything
+            about the frequency of the note.
+
+        Set Tone        Sets the period of the note. The scale is
+            1000. With 2000, the note is lowered of 1
+            octave, with 800 it is increased of 1 octave.
+
+
+        Tone Step       Sets the step of the period variation
+
+        Tone Speed      Sets the speed of variation
+
+        Vibrato On      Activates the vibrato
+
+        Vibrato Off     Desactivates the vibrato
+
+        Vib Width       Amplitude of the vibrato
+
+        Vib Speed       Speed of vibrato
+
+    d) Panning envelope
+    ~~~~~~~~~~~~~~~~~~~
+
+            Modification of the stereo position of the instrument.
+
+        Panning         Sets the panning: 000..800..FFF
+
+        Pan Step        Sets the panning variation step
+
+        Pan Speed       Sets the speed of variation
+
+    e) Example envelope
+    ~~~~~~~~~~~~~~~~~~~
+
+            The envelope language is simple, powerful, but not very
+        easy to understand for beginners. So, this is an example, for
+        a tone envelope :
+
+                0   Vibrato On
+                            The vibrato set 'on'
+                1   Vib Width 06
+                            Depth of the vibrato: 6
+                2   Vib Speed 18
+                            Speed of the vibrato: 18 (fast)
+                3   Wait 50
+                            Until now, commands 0,1 and 2 were
+                        executed in the same time, in the same frame.
+                        Now, the tracker stops during 50 frames (about
+                        1 sec), and will execute the vibrato.
+
+                4   Vibrato Off
+                            Then you stop the vibrato.
+                5   Tone Step 10
+                6   Tone speed 3
+                            Then we set the tone step to 10, and its
+                        speed to 3. Please note that nothing has
+                        happened to the sound yet. these three
+                        commands were executed verrrrrry quickly.
+
+                7   Wait 32767
+                            Now, during 32767 frames (the maximum in
+                        fact), the tone, set to 1000 (hexa) by
+                        default, will increase of 10 every 3 frames.
+
+                8   Jump to 7
+                            Back to the precedent Wait, we have a
+                        loop without end. If we only had ended by End
+                        instead of Wait + Loop, the sound would not
+                        have changed since the end of the vibrato and
+                        the last commands wouldn't have had any
+                        effect.
+

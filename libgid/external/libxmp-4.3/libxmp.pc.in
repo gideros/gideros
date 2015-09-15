@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libxmp
+Description: Xmp module player library
+Version: 4.3.9
+
+Requires:
+Libs: -L${libdir} -lxmp
+Cflags: -I${includedir}
+Libs.private: -lm

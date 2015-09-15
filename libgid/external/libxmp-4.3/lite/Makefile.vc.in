@@ -1,0 +1,26 @@
+CC	= cl
+CFLAGS	= /O2 /Iinclude\libxmp-lite /Isrc /DBUILDING_DLL /DWIN32 \
+          /Dinline=__inline /D_USE_MATH_DEFINES /DLIBXMP_CORE_PLAYER
+LD	= link
+LDFLAGS	= /DLL /RELEASE /OUT:$(DLL)
+DLL	= libxmp-lite.dll
+
+OBJS	= @OBJS@
+
+TEST	= test\md5.obj test\test.obj
+
+.c.obj:
+	$(CC) /c $(CFLAGS) /Fo$*.obj $<
+
+all: $(DLL)
+
+$(DLL): $(OBJS)
+	$(LD) $(LDFLAGS) $(OBJS)
+
+clean:
+	del $(OBJS) $(DLL) *.lib *.exp
+
+check: $(TEST)
+	$(LD) /RELEASE /OUT:test\libxmp-lite-test.exe $(TEST) libxmp-lite.lib
+	copy libxmp-lite.dll test
+	cd test & libxmp-lite-test

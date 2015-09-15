@@ -1,0 +1,160 @@
+(Excerpt from documentation by Bernard Jungen and Gil Damoiseaux)
+
+
+   Archimedes Tracker V1.0+++ File Formats
+   ---------------------------------------
+    
+     Module format
+     -------------
+
+     This is the format of a Tracker module file (Filetype &CB6).
+
+       Field length Contents
+       ------------ --------
+          4 bytes   The string "MUSX"
+          4 bytes   Chunk length (i.e. total size -8)
+          4 bytes   The string "TINF"
+          4 bytes   Value 4
+          4 bytes   Date of version in BCD format: YYYYMMDD (bytes 1 to 4)
+          4 bytes   The string "MVOX"
+          4 bytes   Value 4
+          4 bytes   Number of voices (1-8)
+          4 bytes   The string "STER"
+          4 bytes   Value 8
+          8 bytes   Default stereo positions for 8 channels. See the command.
+          4 bytes   The string "MNAM"
+          4 bytes   Tune name length (32)
+         32 bytes   Tune name padded with zero's
+          4 bytes   the string "ANAM"
+          4 bytes   Author name length (32)
+         32 bytes   Author name padded with zero's
+          4 bytes   the string "MLEN"
+          4 bytes   Value 4
+          4 bytes   Tune length (1-128)
+          4 bytes   the string "PNUM"
+          4 bytes   Value 4
+          4 bytes   Number of defined patterns (1-64)
+          4 bytes   the string "PLEN"
+          4 bytes   Value 64
+         64 bytes   Length of each pattern (0-64)
+          4 bytes   the string "SEQU"
+          4 bytes   Value 128
+        128 bytes   pattern number to be played at each position (0-63) 
+
+       This is followed by a pattern chunk for each defined pattern.
+       After that, there is a sample chunk for each of the 36 samples. 
+       Note that such a file can contain more than one module (MUSX chunk)
+       but practically it's very rare and not easy to handle... 
+       Such a format for a music module is a bit silly since nearly all
+       chunks have a constant length.
+
+
+     Pattern chunk format
+     --------------------
+
+     This is the component of a Tracker pattern file (Filetype &FF1).
+    
+       Field length Contents
+       ------------ --------
+          4 bytes   The string "PATT"
+          4 bytes   Chunk length (i.e. number of voices * 256 - the manual
+                    says it's always 2048, that's false! ): xx
+         xx bytes   Notes 
+
+         Each note is stored as 4 bytes, and all x notes at each position in
+         the pattern are stored after each other.
+    
+         Position         Notes data
+         -------- ---------------------------
+            00    chan 1  chan 2  ...  chan x
+            01    chan 1  chan 2  ...  chan x
+            02    chan 1  chan 2  ...  chan x
+
+           etc. 
+
+         Info for each note:
+         -------------------     
+
+         bits 24-31: note number (0-36).
+              16-23: sample number (0-36).
+               8-15: effect command number.
+               0- 7: effect value (0-255).
+    
+         Note numbers table:
+         -------------------
+           C-1 to B-1 : 01 to 12
+           C-2 to B-2 : 13 to 24
+           C-3 to B-3 : 25 to 36 
+
+
+     Sample chunk format
+     -------------------
+
+     This is the component of a Tracker sample file (Filetype &CB5).
+
+       Field length Contents
+       ------------ --------
+          4 bytes   The string "SAMP"
+          4 bytes   Chunk length (i.e. total size -8)
+          4 bytes   The string "SNAM"
+          4 bytes   Sample name length (20)
+         20 bytes   Sample name padded with zero's
+          4 bytes   The string "SVOL"
+          4 bytes   Value 4
+          4 bytes   Sample volume (0-255). Logarithmic
+          4 bytes   The string "SLEN"
+          4 bytes   Value 4
+          4 bytes   Sample length (multiple of 4 otherwise Tracker crashes!)
+          4 bytes   The string "ROFS"
+          4 bytes   Value 4
+          4 bytes   Repeat offset
+          4 bytes   The string "RLEN"
+          4 bytes   Value 4
+          4 bytes   Repeat length
+          4 bytes   The string "SDAT"
+          4 bytes   Sample length (multiple of 4): xx
+         xx bytes   Sample data in logarithmic format 
+
+       Note: the manual states that not all sub-chunks may be present. But
+             until now they've always been there. 
+
+
+   Archimedes Tracker V1.0+++ Effect Commands
+   ------------------------------------------                   
+
+     (x-y,z) indicates z is done if value not in the range x to y.
+     <command character> <command number in hex> <effect value in hex> 
+
+     0 00 xy Normal play or Arpeggio.
+             x: first halfnote to add
+             y: second halftone to subtract 
+
+     1 01 xx Slide Up.
+             xx: pitch increase step (4 bits?) 
+
+     2 02 xx Slide Down.
+             xx: pitch decrease step (4 bits?)
+
+     B 0B xx Break Pattern. 
+
+     E 0E xy Set Stereo.
+             y: stereo position (1-7,ignored). 1=left 4=center 7=right
+
+     G 10 xx Volume Slide Up.
+             xx: speed (4 bits?) 
+
+     H 11 xx Volume Slide Down.
+             xx: speed (4 bits?) 
+
+     J 13 xx Position Jump.
+             xx: song position (0-127,masked) 
+
+     L 15 xy Line Jump. (not in manual)
+             Jump to line 10*x+y in same pattern. (10*x+y>63 ignored) 
+
+     S 1C xy Set Speed.
+             y: speed (1-15,ignored) 
+
+     V 1F xx Set Volume.
+             xx: volume (0-255). Logarithmic. 
+

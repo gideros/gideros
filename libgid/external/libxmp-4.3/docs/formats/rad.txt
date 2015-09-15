@@ -1,0 +1,194 @@
+
+ ######################         ################      #####################  
+  ############      #####    #############    #####    #############     #####
+  ######################    ########################   #############      #####
+  ############      #####   #############      #####   #############      #####
+ ##############    ####### ###############    ####### #########################
+ ##############    ####### ###############    ####### ########################
+ ##############    ####### ###############    ####### #####################  
+
+ ,---------- -- - -:| Reality ADlib Tracker - Version 1.1a |:- - -- ----------.
+ |                                                                            |
+ |                      (c)1995 by Shayde, Rogue, & Void.                     |
+ |                            -REALITY PRODUCTIONS-                           |
+ :                                                                            |
+                                                                              :
+                                                                              :
+       RAD has the following features:                                        |
+                                                                              |
+ .                 * Up to 31 separate instruments                            |
+ .                 * Up to 32 separate patterns                               |
+ :                 * Up to 128 patterns in the order                          |
+ |                 * 9 channels                                               |
+ |                 * Compact tune file size.                                  |
+ |                  (A fraction of the size of OTHER trackers!)               |
+ |                 * Easy to use                                              |
+ |                                                                            |
+ +=====-===-==-=------ - -. .                                     . . - -- ---+
+                                                                              |
+   To add/alter special effects, cursor over to the special effects           :
+   column and use one of the following numbers/letters:                       .
+                                                                              .
+       0       - No effect
+
+       1       - Slide note down (pitch bend).  Parameter gives speed of
+                 slide.
+
+ .     2       - Slide note up (pitch bend).  Parameter gives speed of slide.
+ .
+ .     3       - Slide to note.  This slides the LAST note played till it
+ :               reaches the note given with this effect.  The parameter
+ |               gives the speed of the slide.  Use parameter "00" in
+ |               subsequent lines to continue the slide.
+ :
+ |     5       - Combined slide to note & Volume slide.  This command has
+ |               the same functionality as effect 3 with parameter "00" but
+ .               in this case, the parameter details a volume slide.
+ |               1-49 fades the volume of the instrument down.
+ |               51-99 fades the volume of the instrument up.
+ |
+ |     A       - Volume slide.  1-49 fades the volume of the instrument down
+ |               at the given speed.  51-99 fades the volume of the
+ |               instrument up at the given speed.
+ |
+ |     C       - Set volume.  Sets the absolute volume of the instrument.
+ |               Values range from 0 (silent) to 64 (loudest).
+ |
+ |     D       - Break.  When RAD encounters this command it skips the rest
+ |               of the pattern and moves to the next pattern as specified
+ |               in the Order List.  The parameter, if given, specifies a
+ |               line in the next pattern to start from.
+ |               eg.  Effect "D12" would break to line 12 of the next pattern
+ |                    in the Order List.
+ |               This command is handy for "cutting short" a pattern if
+ |               you don't want to use all 64 lines.  Just place a D00 on the
+ |               last line you used and the rest will be ignored.
+ |
+ |     F       - Set speed.  By default RAD starts up with a speed of 6 but
+ |               you can use this command to slow down and speed up the
+ |               playback rate of your tune.  To understand the speed value,
+ |               know that RAD uses a 50Hz timer which is delayed by the
+ |               speed value between each line of the pattern.                .
+ |               What this means is that, say, if you set the speed to 50,
+ :               (using "F50"), then each line will play at the rate of one   .
+ .               per second.  Special effects, however, are modified          .
+ .               50 times a second.                                           .
+ |                                                                            |
+ +-=-==-===-=--- --- -- -- - - . .                             . . - -- --- -=+
+ .                                                                            |
+ .                                                                            |
+                            TECHNICAL SPECIFICATIONS                          :
+                         = ========================== =                       .
+
+     RAD V1.0+ file format is as follows: (values in hex)
+
+   |========================================================================|
+   | HEADER                                                                 |
+   |------------------------------------------------------------------------|
+   | Offset  00..0F:"RAD by REALiTY!!" - Use this to recognize a RAD tune.  |
+   |                                     Just detecting the initial "RAD"   |
+   |                                     should be sufficient though! ;-)   |
+   |                                                                        |
+   | Offset      10:BCD                - Version of RAD file (not RAD ver.) |
+   |                                     Currently 10h for v1.0.            |
+   |                                                                        |
+   | Offset      11:Bit 7              - Set if a description follows.      |
+   |                Bit 6              - Set if it's a "slow-timer" tune.   |
+   |                Bits 4..0          - The initial speed of the tune.     |
+   |                                                                        |
+   |========================================================================|
+   | DESCRIPTION                                                            |
+   |------------------------------------------------------------------------|
+   | The description follows the header if Bit 7 of Offset 11h is set.  The |
+   | description is a null-terminated string.  To save some space in the    |
+   | tune file, the characters mean:                                        |
+   |                                                                        |
+   | Char 00      - End of description (null-terminator)                    |
+   | Char 01      - Move to start of next line (Carriage return)            |
+   | Char 02..1F  - Output this many spaces                                 |
+   | Char 20..FF  - Output this character                                   |
+   |                                                                        |
+   |========================================================================|
+   | INSTRUMENTS                                                            |
+   |------------------------------------------------------------------------|
+   | Next come the instruments:                                             |
+   |                                                                        |
+   | Offset      00:No. of Adlib instrument that follows (or 0 for no more) |
+   | Offset  01..0B:The instrument definition in HSC .INS format:           |
+   |                                                                        |
+   |          ,======+===================+=======================.          |
+   |          |      |                   | Adlib Register        |          |
+   |          | Byte | Carrier/Modulator | (Relative to Chan. 0) |          |
+   |          +======+===================+=======================+          |
+   |          |  00  |  Carrier          |   23h                 |          |
+   |          |  01  |  Modulator        |   20h                 |          |
+   |          |  02  |  Carrier          |   43h - Instr. Volume |          |
+   |          |  03  |  Modulator        |   40h                 |          |
+   |          |  04  |  Carrier          |   63h                 |          |
+   |          |  05  |  Modulator        |   60h                 |          |
+   |          |  06  |  Carrier          |   83h                 |          |
+   |          |  07  |  Modulator        |   80h                 |          |
+   |          |  08  |  Both             |   C0h                 |          |
+   |          |  09  |  Carrier          |   E3h                 |          |
+   |          |  0A  |  Modulator        |   E0h                 |          |
+   |          `=================================================='          |
+   |                                                                        |
+   |========================================================================|
+   | ORDER LIST                                                             |
+   |------------------------------------------------------------------------|
+   | The Order List follows the instruments:                                |
+   |                                                                        |
+   | Offset      00:Length of Order List (up to 128)                        |
+   |                                                                        |
+   | Offset  01..nn:List of orders, one byte for each line:                 |
+   |                                                                        |
+   |                00..1F:The pattern to play.                             |
+   |                80..FF:The line to jump to minus 80h (Jump Marker)      |
+   |                                                                        |
+   |========================================================================|
+   | PATTERN OFFSET TABLE                                                   |
+   |------------------------------------------------------------------------|
+   |  For all 32 patterns there is a word in this table which gives the     |
+   |  offset from the start of the file of the pattern data.                |
+   |  If a pattern is empty then the offset is zero.                        |
+   |                                                                        |
+   |========================================================================|
+   | PATTERNS                                                               |
+   |------------------------------------------------------------------------|
+   | Offset      00:Line number whose notes follow.  Bit 7 set means that   |
+   |                this is the last line.  Note, lines that have no notes  |
+   |                or effects on do not appear.                            |
+   |                                                                        |
+   | Offset  01....:List of notes for that line:                            |
+   |                                                                        |
+   |              Offset     00:Channel no. note appears in (0 to 8).       |
+   |                            Bit 7 set means this is the last note for   |
+   |                            this line.                                  |
+   |              Offset 01..02:The note/effect for this channel.           |
+   |                            If the effect nibble is non-zero then       |
+   |                            Offset 03 contains the parameter, otherwise |
+   |                            the next channel starts at Offset 03.       |
+   |                                                                        |
+   |========================================================================|
+   | NOTES                                                                  |
+   |------------------------------------------------------------------------|
+   | Notes occupy three bytes (two if the effect nibble is zero):           |
+   |                                                                        |
+   |           Byte 00:Bit    7:  Bit 4 of the instrument number.           |
+   |                   Bit 6..4:  Octave of note.                           |
+   |                   Bit 3..0:  Note (1-12) in this order:                |
+   |                              C#, D, D#, E, F, F#, G, G#, A, A#, B, C   |
+   |                              A zero denotes no note and 15 denotes a   |
+   |                              KEY-OFF.                                  |
+   |                                                                        |
+   |           Byte 01:Bit 7..4:  Bits 3 to 0 of the instrument number.     |
+   |                   Bit 3..0:  The effect nibble (the effect column      |
+   |                              in RAD is the hex equivalent of this      |
+   |                              nibble).                                  |
+   |                                                                        |
+   |           Byte 02:The parameter to the effect (if any).                |
+   |                   Because parameters only go from 0 to 99, bit 7 is    |
+   |                   not used, but may be used in a later version of RAD. |
+   |                                                                        |
+   |________________________________________________________________________|
+

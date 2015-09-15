@@ -1,0 +1,167 @@
+IFF EMOD FILE FORMAT:
+
+The standard "EMOD" fileformat is using the standard IFF (not SMUS!)
+format. It was necessary to create a new fileformat, to be able to
+include all the new features (compared to the NT-fileformat), like:
+
+     * 255x128 kb samples.
+
+     * 256x256 rows named patterns.
+
+     * 255 positions.
+
+     * Better internal format for pattern data - 4 bits left per note 
+	  for future expansion.
+
+
+The patterndata is put in the file row by row, 4 bytes for each 
+note, and 16 bytes for each row:
+
+SampleNr NoteNr   Empty Effect 
+                        cmd.
+-------- -------- ----  -------------
+00000000 00000000 0000  0000-00000000        <--- Bits
+-------- -------- ---------- --------  
+Byte 0   Byte 1   Byte 2     Byte 3    
+
+The notenumber is a number from 0 to 35 which corresponds to a note
+(C 1 to B 3). To get the period you'll have to use a list. The
+following are  the IFF chunks of the "EMOD" fileformat. If you want
+to add something new to the module like a long comment or a text,
+please make a new chunk. A properly made program should just ignore
+the unknown chunks.
+
+
+Type      Size Description
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+char	     4    "FORM"
+long	     4    Size of file from offset 8
+
+*********** Infochunk ************
+
+char      4    "EMOD"				;Extended Module
+char      4    "EMIC"				;Extended Module Info Chunk
+long      4    Size of chunk
+word      2    Version of IFF EMIC-chunk
+char      20   Name of song
+char      20   Composer
+byte      1    Tempo
+byte      1    Number of samples
+  byte    1    Sample nr
+  byte    1    Volume
+  word    2    Samplelength in words
+  char    20   Name of sample
+  byte    1    Controlbyte bit 0=loop on/off
+  byte    1    First 4 bits finetune 
+  word    2    Repeat in words		;Length to loop repeatpoint
+  word    2    Replen in words		;Length of loop
+  long    4    Offset to the sample from the very beginning of the 
+               file
+
+byte      1    Pad
+byte      1    Nr of patterns
+  byte    1    Pattern nr
+  byte    1    Length of pattern in rows - 1
+  char    20   Name of pattern
+  long    4    Offset to the pattern from the beginning of the file
+
+byte      1    Pad
+byte      1    Nr of positions
+  byte    1    Patternnumber
+
+byte      0 or 1 Extra byte to wordalign if necessary.
+
+
+******** Pattern data chunk **********
+
+char      4	"PATT"                   ;Patterndata
+long      4	Size of chunk
+byte	16   row 1
+byte 16   row 2
+byte 16   row 3...
+
+
+******** Sample data chunk *********
+
+char	4    "8SMP"              ;8 - bit SaMPle
+long	4    Size of chunk
+byte	?    Sampledata
+
+
+EFFECT COMMANDS:
+
+0yz Arpeggio
+1yz Pitch Slide, Up
+2yz Pitch Slide, Down
+3yz Tone Portamento
+4yz Vibrato
+5yz Volume Slide + Sust. Tone Port.
+6yz Volume Slide + Sustained Vibrato
+7yz Tremolo
+9yz Set Sample Offset
+Ayz Volume Slide
+Byz Position Jump
+Cyz Set Volume
+Dyz Pattern Break
+Eyz see below.
+Fyz Set Speed / Tempo
+
+EXTENDED COMMANDS:
+
+E0z Set Filter
+E1z Fine Pitch Slide, Up
+E2z Fine Pitch Slide, Down
+E3z Set Glissando
+E4z Set Vibrato Waveform
+E5z Set Finetune Value
+E6z Pattern Loop
+E7z Set Tremolo Waveform
+E9z Retrig Note
+EAz Fine Volume Slide, Up
+EBz Fine Volume Slide, Down
+ECz Note Cut
+EDz Note Delay
+EFz Pattern Delay
+
+
+EFFECTS THAT DIFFER FROM THE NT-FORMAT:
+
+Some effects differ slightly from the nt-format. These are effect
+9yz, 4yz (new for 2.03), and effect Byz. These differences are
+autimagically converted when a module is loaded/saved in NT-format.
+
+
+Command 4yz: VIBRATO:
+
+Makes a vibrato effect on the sample played. The command must be
+reactivated on each row. Y is the speed of the vibrato and Z is the
+depth. If an argument is "0" then the previous value used will be
+used.
+
+| C 101445 |        +-------------------------------------+
+|    00406 |     <--| Makes the vibrato deeper and deeper |
+|    00407 |        +-------------------------------------+
+|    00408 |
+|    00409 |
+
+
+Command 9yz: SET SAMPLE OFFSET:
+
+Used only when a note is played, to skip a bit into the sample. The
+argument YZ is multiplied with hex 200 and that many bytes of the
+sample are skipped.
+
+| C 101923 |     <--| Skips hex 23 * 200 = 4600 bytes
+
+NOTE: This differs from the NT-format, where the offset was hex YZ*100.
+
+
+Command Byz: POSITION JUMP:
+
+Skips the rest of the current pattern (It's a good idea to pull the
+length down to save some bytes of memory...) and jumps to position
+hex YZ.
+
+NOTE: This differs from the NT-format, where the argument to this
+effect was given as a decimal number.
+

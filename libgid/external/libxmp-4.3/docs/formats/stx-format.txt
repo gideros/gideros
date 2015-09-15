@@ -1,0 +1,82 @@
+xmp/docs/format/stx_format
+analysed by Claudio Matsuoka <claudio@helllabs.org>
+
+Format: STX
+Version: 1.0, 1.1
+Author: Sami Tammilehto, 1991
+Origin: STMIK 0.2 (PC DOS)
+
+The Scream Tracker Music Interface Kit was published by Future Crew along
+with the Mental Surgery demo sources (stmik020.zip), and a bugfix release
+of the converter took place shortly thereafter (stmikfix.zip). The STX
+format is a transition format between the Scream Tracker 2 (STM) and Scream
+Tracker 3 (S3M) formats, and comes in two flavours: the original STM2STX 1.0
+format and the "fixed" STM2STX 1.1 format.
+
+The description below is based on reverse engineering of the Future Brain
+STX module from Mental Surgery, and other STM files converted with the
+supplied utility. Byte order is little-endian.
+
+                                STX Module header
+          0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+        ,---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---.
+  0000: | Song name, max 20 chars                                       |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+  0010: |               |'!'|'S'|'c'|'r'|'e'|'a'|'m'|'!'|PatSize|  ???  |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+  0020: |PatPtr |InsPtr |ChnPtr?|  ???  |  ???  |g.v|i.s|  ???  |  ???  |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+  0030: |PatNum |InsNum |OrdNum |  ???  |  ???  |  ???  |'S'|'C'|'R'|'M'|
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+  xxx1: |Parapointers to patterns; length=PatNum*2                      |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+  xxx2: |Parapointers to instruments; length=InsNum*2                   |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+  xxx3: |??? Channel settings for 32 channels?                          |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+  xxx4: |                                                               |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+  xxx5: |Orders; length=OrdNum*5                                        |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+
+        xxx1=PatPtr*16
+        xxx2=InsPtr*16
+        xxx3=ChnPtr*16
+        xxx4=ChnPtr*16+16
+        xxx5=ChnPtr*16+32
+
+        Parapointers to file offset Y is (Y-Offset of file header)/16.          
+        You could think of parapointers as segments relative to the             
+        start of the STX file.
+
+	PatSize = Size of the first pattern (in bytes)
+        PatNum  = Number of patterns in file
+        InsNum  = Number of instruments in file
+        OrdNum  = Number of orders in file
+	g.v     = global volume (see next section)
+        i.s     = initial speed (command A)
+
+Instrument and pattern format is the same as S3M except that:
+
+- There's no 'SCRS' mark in the end of the instrument header
+- Adlib instruments are probably not supported
+- STX 1.1 doesn't have the length of pattern before the packed pattern
+  data. To test for STX 1.1, compare this value with the PatSize field
+  in the module header.
+- STX uses STM effect codes
+- Slides are performed in all frames
+
+
+Effects (same as STM):
+
+A - Set tempo (60 == ptk 06)
+B - Break pattern and jump to order
+C - Break pattern
+D - Slide volume; Hi-nibble=up, Lo-nibble=down
+E - Pitch slide down
+F - Pitch slide up
+G - Tone portamento
+H - Vibrato
+I - Tremor; Hi-nibble = ontime, Lo-nibble = offtime
+J - Arpeggio
+

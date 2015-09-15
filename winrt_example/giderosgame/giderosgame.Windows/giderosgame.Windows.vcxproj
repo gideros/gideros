@@ -202,6 +202,12 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Image Include="Assets\1-down.png" />
+    <Image Include="Assets\1-up.png" />
+    <Image Include="Assets\2-down.png" />
+    <Image Include="Assets\2-up.png" />
+    <Image Include="Assets\3-down.png" />
+    <Image Include="Assets\3-up.png" />
     <Image Include="Assets\bird_black_01.png" />
     <Image Include="Assets\bird_black_02.png" />
     <Image Include="Assets\bird_black_03.png" />
@@ -232,10 +238,16 @@
     <None Include="Assets\bird.lua">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Assets\button.lua">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Assets\main.lua">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Assets\properties.bin">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Assets\soundbutton.lua">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="giderosgame.Windows_TemporaryKey.pfx" />
@@ -271,6 +283,8 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="Assets\1.wav" />
+    <Media Include="Assets\2.wav" />
+    <Media Include="Assets\3.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

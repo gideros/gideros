@@ -1,0 +1,392 @@
+GDM (General Digital Music) version 1.0
+File Format Specification - Revision 2
+---------------------------------------------------------------------------
+
+See the section near the end entitled "License Information" for terms
+of distribution and modification.
+
+= Document Status =========================================================
+
+This document is in its second revision.  It is accurate to the best of the
+knowledge of the author(s), but may still contain innacuracies or
+omissions.  If you have corrections, additions, or general comments, please
+see the section at the end entitled "Contact Information" for information
+on how to contact the author(s).
+
+= Notes ===================================================================
+
+Byte ordering is little-endian, unless otherwise indicated.
+
+== Module Header ==========================================================
+ 
+                                 byte offset
+        0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+0000: |'G'|'D'|'M'|xFE| Song title ....................................
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      .................................................................
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+0020: ............... | Song musician .................................
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      .................................................................
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+0040: ............... |x0D|x0A|x1A|'G'|'M'|'F'|'S'|Version|Tracker|TVer
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+0050: ... | Panning map ...............................................
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      .................................................................
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+0070: ... |GV |Tpo|BPM|OrigFmt| Order Offset  |Ord|Pattern Offset |Pat|
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+0080: |SampHdr Offset |SampData Offset|Sam|Mesage Offset  | Message Off
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+0090: ... |Message Length |Scrolly Offset |ScrLen |TextGrph Offset|TGLn
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+00A0: ....|
+      +---+
+
+	Song title - 32-char song title, null- terminated and filled
+	Song musician - 32 chars, null- terminated and filled
+	Version - LSB is major format version, MSB is minor format version
+	Tracker - identification number for the tracker that generated
+	          the file
+	              00 - 2gdm
+	TVer    - Tracker version; LSB is major version, MSB is minor
+	          version
+	Panning map - each byte indicates panning/usage information for
+	              a channel:
+	          0 -> 15: full left -> full right (8 = center)
+	               16: surround sound
+	              255: channel unused
+	GV      - Global volume (0 to 64)
+	Tpo     - Tempo (speed; i.e. frames per row) (1 to 255)
+	BPM     - Beats (1 beat = 24 frames) per minute (32 to 255)
+	OrigFmt - Original module format (unreliable for 2gdm < 1.15):
+		  1: MOD
+	          2: MTM
+	          3: S3M
+	          4: 669
+	          5: FAR
+	          6: ULT
+	          7: STM
+	          8: MED
+	Order Offset - offset of order table in file
+	Ord - length of order table 
+	Pattern Offset - offset of pattern data in file
+	Pat - number of patterns
+	SampHdr Offset - offset of sample header array in file
+	SampData Offset - offset of sample data in file
+	Sam - number of samples
+	Message Off - offset of song message in file
+	Message Length - length of song message in bytes
+	Scrolly Offset - offset of scrolly script (huh?) in file
+	ScrLen - length of scrolly script in bytes
+	TextGrph Offset - offset of text graphic (huh?) in file
+	TGLn - length of text graphic in bytes
+
+== Sample Header ==========================================================
+ 
+                                 byte offset
+        0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+0000: | Sample Name....................................................
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+      ............................................................... |
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+0020: | Sample Filename ............................. |EMS|Length .....
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+0030: ....|Loop Begin.....|Loop End.......|Flg|C4Rate |DV |DP |
+      +---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+
+	Sample Name - null- terminated and filled sample name
+	Sample Filename - null-filled sample filename (8.3 convention)
+	EMS - ems handle (ignore; should be 0)
+	Length - sample length (in bytes?)
+	Loop Begin - offset in sample of loop start (in samples?)
+	Loop End - offset in sample of loop end (in samples?)
+	Flg - flags:
+		bit: 0 - enable loop
+		     1 - 16 bit sample
+		     2 - use default volume
+		     3 - use default panning
+		     4 - sample is LZW compressed
+		     5 - stereo sample (left-right order)
+		   6-7 - reserved (should be 0)	
+	C4Rate - playback rate in Hz (samples/sec) for C4 (typical is 8363)
+	DV - default volume (0-64, 255 = no default volume)
+	DP - default panning
+	   0 -> 15: full left -> full right (8 = center)
+	        16: surround sound
+	       255: no default panning
+
+== Packed Pattern Format ==================================================
+
+                                 byte offset
+        0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
+      +---+---+-- --- -- -  -   -    -
+0000: |Length | Data....................
+      +---+---+-- --- -- -  -   -    -
+
+	Length - the length of the pattern, including the two bytes
+	         for the pattern length
+	Data   - the packed pattern data
+
+Pattern data is stored in rows, each row terminated by a zero byte.  Every 
+pattern cell has a maximum of four effects in as many "effect channels".
+
+	Each pattern cell in a row is encoded as follows:
+
+   <channel>[<note><sample>][<effect><effect data>[<effect><effect data>[...]]]
+
+	channel - bits 0-4: channel (0-31)
+	                 5: note and sample follows
+	                 6: effect(s) follow
+	                 7: reserved (should be 0)
+
+	   note - bits 0-6: note
+	                 7: no retrig
+
+	 sample - sample (0-255)
+
+	 effect - bits 0-4: effect number
+	                 5: another effect follows
+	               6-7: effect channel (0-3)
+
+	effect data - data for preceding effect
+
+== Effects ================================================================
+
+Note on parameters:
+    xx - indicates effect data byte as a whole
+     x - indicates the high-order nybble of the effect data byte
+     y - indicates the low-order nybble of the effect data byte
+
+Effect	Description/Parameters
+-------------------------------------------------------------------------
+0x00	No Effect
+0x01	Portamento up - aka glissando or slide up
+	  xx - rate in periods/frame
+0x02	Portamento down - aka glissando or slide down
+	  xx - rate in periods/frame
+0x03	Portamento to note aka glissando or slide to note
+	  xx - rate in periods/frame
+0x04	Vibrato - modulate note period
+	  x - speed
+	  y - depth
+0x05	Continue portamento to note with volume slide
+	  x - speed if up, 0 otherwise
+	  y - speed if down, 0 otherwise
+0x06	Continue vibrato with volume slide
+	  x - speed
+	  y - depth
+0x07	Tremolo - modulate note volume
+	  x - speed
+	  y - depth
+0x08	Tremor - "strobe" note volume
+	  x - note volume normal for x frames
+	  y - note volume 0 for y frames
+0x09	Sample Offset
+	  xx - start playing sample at offset xx << 8 (samples)
+0x0A	Volume Slide
+	  x - speed if up, 0 otherwise
+	  y - speed if down, 0 otherwise
+0x0B	Jump to Order
+	  xx - order
+0x0C	Set Volume
+	  xx - new note volume (0 - 64)
+0x0D	Pattern break - end current pattern early and jump into the next
+	                pattern in the order table
+	  xx - row in next pattern to jump to
+0x0E	Protracker Extended Effects
+	  x - effect:
+		0	Low-pass Filter - originally to mitigate aliasing
+			due to resampling, now no effect
+			  y - 0 = off, 1 = on
+		1	Fine Portamento Up - increment note period by
+			                     specified amount
+			  y - amount (periods)
+		2	Fine Portamento Down - decrement note period by
+			                       specified amount
+			  y - amount (periods)
+		3	Glissando Control
+			  y - 0 = portamentos in period increments,
+			      1 = portamentos in semitone increments (rates
+			          still in periods)
+		4	Set Vibrato Waveform
+			  y - 0 = sine,
+			      1 = ramp down,
+			      2 = square,
+			      3 = random waveform
+		5	Set C4 Tuning (i.e. finetune)
+			  y - rate in Hz:
+				0 = 8363 Hz
+				1 = 8424 Hz
+				2 = 8485 Hz
+				3 = 8547 Hz
+				4 = 8608 Hz
+				5 = 8671 Hz
+				6 = 8734 Hz
+				7 = 8797 Hz
+				8 = 7894 Hz
+				9 = 7951 Hz
+				A = 8009 Hz
+				B = 8067 Hz
+				C = 8125 Hz
+				D = 8184 Hz
+				E = 8244 Hz
+				F = 8303 Hz
+		6	Loop - control intra-pattern loops
+			  y - 0 = start loop, else loop y times and end
+			          loop
+		7	Set Tremolo Waveform
+			  y - 0 = sine,
+			      1 = ramp down,
+			      2 = square,
+			      3 = random waveform
+		8	Extra Fine Portamento Up
+			  y - amount (quarter periods)
+		9	Extra Fine Portamento Down
+			  y - amount (quarter periods)
+		A	Fine Volume Slide Up
+			  y - volume increment
+		B	Fine Volume Slide Down
+			  y - volume increment
+		C	Cut Current Note
+			  y - cut at frame y of current row
+		D	Delay Note Trigger
+			  y - trigger at frame y of current row
+		E	Extend Current Row
+			  y - extend row by y frames
+		F	Invert Sample Loop (?)
+			  y - speed (?)
+0x0F	Set Tempo
+	  xx - 0 = stop/end song, 1-255 = set tempo (speed)
+0x10	Arpeggio - alternate between three notes, one every two frames
+	  x - second note (primary note + x semitones)
+	  y - third note (primary note + y semitones)
+0x11	Set Internal Flag
+	  x - flag number
+	  y - new value
+0x12	Retrigger Note + Volume Slide
+	  x - volume slide by (2 * (signed)x) per frame
+	  y - retrig at frame y of current row
+0x13	Set Global Volume
+	  xx - volume (0-64)
+0x14	Fine Vibrato
+	  x - speed
+	  y - depth (1/4 of normal vibrato depth)
+0x1E	Special
+	  x - sub-effect
+		0 - general (sample control)
+		  y - one of:
+			0 - Surround Off
+			1 - Surround On
+			2 - Select Unidrectional Sample Loop
+			3 - Select Bidirectional (ping-pong) Sample Loop
+			4 - Play sample forward
+			5 - Play sample backward
+			6 - Monaural Sample
+			7 - Stereo Sample
+			8 - Stop Sample on End
+			9 - Loop Sample on End
+		8 - set pan position
+			y - pan position
+		D - adjust frequency
+			y - increment in Hz	
+0x1F	Set BPM
+	  xx - new BPM (32-255)
+
+== License Information ====================================================
+
+This document is Copyright 1999 by MenTaLguY, and can be copied,
+modified and subsequently redistributed under the terms of the OpenContent
+Public License as indicated below:  
+
+   OpenContent License (OPL)
+   Version 1.0, July 14, 1998.
+   This document outlines the principles underlying the OpenContent (OC)
+   movement and may be redistributed provided it remains unaltered. For
+   legal purposes, this document is the license under which OpenContent
+   is made available for use.
+   The original version of this document may be found at
+   http://www.opencontent.org/opl.shtml
+
+   LICENSE
+   Terms and Conditions for Copying, Distributing, and Modifying
+   Items other than copying, distributing, and modifying the Content with
+   which this license was distributed (such as using, etc.) are outside
+   the scope of this license.
+
+   1. You may copy and distribute exact replicas of the OpenContent (OC)
+   as you receive it, in any medium, provided that you conspicuously and
+   appropriately publish on each copy an appropriate copyright notice and
+   disclaimer of warranty; keep intact all the notices that refer to this
+   License and to the absence of any warranty; and give any other
+   recipients of the OC a copy of this License along with the OC. You may
+   at your option charge a fee for the media and/or handling involved in
+   creating a unique copy of the OC for use offline, you may at your
+   option offer instructional support for the OC in exchange for a fee,
+   or you may at your option offer warranty in exchange for a fee. You
+   may not charge a fee for the OC itself. You may not charge a fee for
+   the sole service of providing access to and/or use of the OC via a
+   network (e.g. the Internet), whether it be via the world wide web,
+   FTP, or any other method.
+
+   2. You may modify your copy or copies of the OpenContent or any
+   portion of it, thus forming works based on the Content, and distribute
+   such modifications or work under the terms of Section 1 above,
+   provided that you also meet all of these conditions:
+
+     a) You must cause the modified content to carry prominent notices
+     stating that you changed it, the exact nature and content of the
+     changes, and the date of any change.
+
+     b) You must cause any work that you distribute or publish, that in
+     whole or in part contains or is derived from the OC or any part
+     thereof, to be licensed as a whole at no charge to all third parties
+     under the terms of this License, unless otherwise permitted under
+     applicable Fair Use law.
+
+   These requirements apply to the modified work as a whole. If
+   identifiable sections of that work are not derived from the OC, and
+   can be reasonably considered independent and separate works in
+   themselves, then this License, and its terms, do not apply to those
+   sections when you distribute them as separate works. But when you
+   distribute the same sections as part of a whole which is a work based
+   on the OC, the distribution of the whole must be on the terms of this
+   License, whose permissions for other licensees extend to the entire
+   whole, and thus to each and every part regardless of who wrote it.
+   Exceptions are made to this requirement to release modified works free
+   of charge under this license only in compliance with Fair Use law
+   where applicable.
+
+   3. You are not required to accept this License, since you have not
+   signed it. However, nothing else grants you permission to copy,
+   distribute or modify the OC. These actions are prohibited by law if
+   you do not accept this License. Therefore, by distributing or
+   translating the OC, or by deriving works herefrom, you indicate your
+   acceptance of this License to do so, and all its terms and conditions
+   for copying, distributing or translating the OC.
+   NO WARRANTY
+
+   4. BECAUSE THE OPENCONTENT (OC) IS LICENSED FREE OF CHARGE, THERE IS
+   NO WARRANTY FOR THE OC, TO THE EXTENT PERMITTED BY APPLICABLE LAW.
+   EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR
+   OTHER PARTIES PROVIDE THE OC "AS IS" WITHOUT WARRANTY OF ANY KIND,
+   EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE. THE ENTIRE RISK OF USE OF THE OC IS WITH YOU. SHOULD THE OC
+   PROVE FAULTY, INACCURATE, OR OTHERWISE UNACCEPTABLE YOU ASSUME THE
+   COST OF ALL NECESSARY REPAIR OR CORRECTION.
+
+   5. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN
+   WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MIRROR
+   AND/OR REDISTRIBUTE THE OC AS PERMITTED ABOVE, BE LIABLE TO YOU FOR
+   DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL
+   DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE OC, EVEN IF
+   SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+   DAMAGES.
+
+== Contact Information ====================================================
+
+MenTaLguY can be reached at mental@rydia.net

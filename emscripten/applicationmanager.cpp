@@ -11,6 +11,7 @@
 #include <vector>
 #include <bytebuffer.h>
 #include <ghttp.h>
+#include <limits.h>
 
 #include <platform.h>
 
@@ -83,9 +84,29 @@ static const char *assetsKey_ = "312e68c04c6fd22922b5b232ea6fb3e2"
 		"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 		"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
-ApplicationManager::ApplicationManager(bool player,const char *appname) {
+
+static void _mkdir(const char *dir) {
+        char tmp[PATH_MAX];
+                char *p = NULL;
+                        size_t len;
+                        
+                                snprintf(tmp, sizeof(tmp),"%s",dir);
+                                        len = strlen(tmp);
+                                                if(tmp[len - 1] == '/')
+                                                                tmp[len - 1] = 0;
+                                                                        for(p = tmp + 1; *p; p++)
+                                                                                        if(*p == '/') {
+                                                                                                                *p = 0;
+                                                                                                                                        mkdir(tmp, S_IRWXU);
+                                                                                                                                                                *p = '/';
+                                                                                                                                                                                }
+                                                                                                                                                                                        mkdir(tmp, S_IRWXU);
+                                                                                                                                                                                        }
+                                                                                                                                                                                        
+ApplicationManager::ApplicationManager(bool player,const char *appname,const char *urlpath) {
 	player_ = player;
 	appName=appname;
+	appPath=urlpath;
 
 	// gpath & gvfs
 	gpath_init();
@@ -499,7 +520,7 @@ void ApplicationManager::play(const char *gapp) {
 			uint32_t fsize=PBULONG(buffer + offset + plen + 1+sizeof(uint32_t));
 			const char *norm = gpath_normalizeArchivePath(buffer + offset);
 			gvfs_addFile(norm, 0, foffset, fsize);
-			glog_d("GAPP-FILE: %s,%d,%d", norm, foffset, fsize);
+			//glog_d("GAPP-FILE: %s,%d,%d", norm, foffset, fsize);
 			offset += (plen + 1 + 2 * sizeof(uint32_t));
 		}
 		free(buffer);
@@ -521,25 +542,12 @@ void ApplicationManager::play(const char *gapp) {
 	const char* documentsDirectory;
 	const char* temporaryDirectory;
 
-	std::string dir = "";
+	std::string dir = "/";
 
-	if (dir[dir.size() - 1] != '/')
-		dir += "/";
-
-	dir += "_";
-
-	mkdir(dir.c_str(), 0755);
-
-	dir += "/";
-
-	dir += projectName;
-
-	mkdir(dir.c_str(), 0755);
-
-	dir += "/";
-
-	std::string documents = dir + "documents";
+	std::string documents = dir + "documents"+appPath;
 	std::string temporary = dir + "temporary";
+	_mkdir(documents.c_str());
+	_mkdir(temporary.c_str());
 
 	glog_v("documents: %s", documents.c_str());
 	glog_v("temporary: %s", temporary.c_str());

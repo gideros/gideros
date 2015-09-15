@@ -1,0 +1,133 @@
+;----------------------------------------------------------------------------
+; DisorderTracker2 file  FORMAT STARTS HERE
+;----------------------------------------------------------------------------
+
+well here it comes... I am converting this from the source
+code now, as I type, so I hope it is right! 
+
+this is (c) statix 1995... and I accept no responsibility for errors in here,
+if there is a problem contact me --> statix@sv.span.com...
+
+here is a list of fields in a .PLM file, I assume you know some coding??
+
+name            length (bytes)  description
+=======================================================================
+ID		4		marker, always "PLM" then character 26
+headersize	1		number of bytes in header, including ID etc
+version		1		version code of file format, 10h, I think
+songname	48		ASCIIZ string
+channels	1		number of channels
+flags		1		flags byte, ignore this!
+maxvol		1		maximum volume for vol slides, normally 40h
+amplify		1		soundblaster amplify, 40h=no amplify
+initbpm		1		starting bpm of song, normally 125
+initspeed	1		starting speed of song, normally 6
+initpan		32		starting pan positions, always 32, 0=left,
+				15=right
+numsamps	1		number of samples in file
+numpats		1		number of patterns in file
+numorders	2		number of orders in file
+padding		1		ignore...
+
+; now seek "headersize" bytes from the beginning of the file, (normally no
+; change) now:
+
+orderlist	4*numorders	a list of orders, format coming
+later...
+patternlist	4*numpats	a list of file offsets of the patterns
+(dwords)
+samplelist	4*numsamps	a list of file offsets of the samples
+(dwords)
+
+; now read in the patterns, which are uncompressed.
+; for each pattern, seek to the place in the file in the patternlist, and the
+; format is below. (NOTE: if the patternlist has a position of 0, skip to next 
+; pattern)
+
+patternsize  	4 (dword)	number of bytes this pattern takes in
+file
+len		byte		# rows
+wid		byte		# channels
+col		byte		colour
+name		25 bytes	name,asciiz string
+
+;now the notes in the pattern, stored a row at a time, with "wid" channels
+;in each row. the note format is:
+
+pitch		byte		hi nybble is octave, lo nybble is note (C=0,
+				C#=1, D=2 etc). 0=blank
+sample		byte		sample number. 0=blank
+vol		byte		volume. 0ffh=blank. NOTE! big volumes >64 
+				are allowed!
+cmd		byte		command number
+nfo		byte		command info
+
+
+; now read in the samples, which are uncompressed.
+; for each sample, seek to the place in the file in the samplelist, and the
+; format is below. (NOTE: if the samplelist has a position of 0, skip to next 
+; sample)
+
+;in fact each sample is stored in the .PLM file as a complete .PLS sample file.
+;The .PLS format is as follows:
+
+id		4 bytes		always "PLS" then character 26
+headersize	1 byte		size of header in bytes, including ID etc
+version		1 byte
+fullname	32 byte		   ; NOT asciiz
+filename	12 byte		   ; ditto
+pan		byte		   ; default pan, 0..f, >f=none
+vol		byte		   ; default vol 0..40h
+flags		byte		   ; 1 = 16 bit , 0=8 bit
+c4spd		word		   ; c4spd (as for S3M)
+gusloc		dword		   ; posn in gusram (not used in file)
+loopst		dword		   ; loopstart
+loopen		dword		   ; loopend
+len		dword		   ; data size IN BYTES
+data		lots of bytes	   ; unsigned data
+
+; default pan changes the pan on that channel when the sample is CHANGED
+; to that sample, experiment in dt2 to see what I mean...
+
+; note that default volume does NOT work like MOD or S3M default volume.
+; default volume actually multiplies the volume field for that sample, so
+; a default volume of 40h plays the sample as written in the file. a 
+; default volume of 20h always plays the sample half as loud as written in
+; the file . This is a better system, I think... (more logical?!?)
+
+; finally I will explain the format of the orderlist. Each one is 4 bytes,
+; and is: 
+
+x		word		; starting position of pattern
+y		byte		; channel number of first channel of pattern
+pattern		byte		; number of pattern
+
+; I think that will make sense, If you see how dt2 works... note that is
+; is very important to remember that patterns can overlap. In this case,
+; the pattern with the higher x takes priority. If they have the same x,
+; then it is the one with the higher pattern number. You can see this in
+; dt2 by dragging patterns around on the over view screen.
+
+; of course, this system with x and y for each pattern is what makes dt2
+; unique, and also so hard to play with a standard player!!!
+
+hope that helps, and I have not made any errors... any questions, just
+email.
+
+
+;---------------------------------------------------------------------------
+; END OF DT2 FORMAT
+;---------------------------------------------------------------------------
+
+ps If you want to spread that format, go ahead but please only spread with
+*ALL* of it, starting from the line that says "format starts here..."
+
+thankyou...
+
+---------------------------------------------------------------------------
+
+With formats like PLM, with the identifier at the start of the file,
+it's very easy to rip them, just extract everthing after the marker..
+
+
+

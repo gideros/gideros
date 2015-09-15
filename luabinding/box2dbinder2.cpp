@@ -4975,8 +4975,12 @@ void b2DebugDraw::doDraw(const CurrentTransform& , float sx, float sy, float ex,
 		float physicsScale = application_->getPhysicsScale();
 
 		Matrix4 modelMat=ShaderEngine::Engine->getModel();
-		Matrix4 scaledMat=modelMat;
-		scaledMat.scale(physicsScale,physicsScale,1);
+		float mc[16];
+		memcpy(mc,modelMat.get(),16*sizeof(float));
+		mc[0]*=physicsScale;
+		mc[5]*=physicsScale;
+		Matrix4 scaledMat;
+		scaledMat.set(mc);
 		ShaderEngine::Engine->setModel(scaledMat);
 
 		world_->DrawDebugData();

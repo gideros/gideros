@@ -29,6 +29,12 @@
     <None Include="Assets\bird.lua">
       <Filter>Assets</Filter>
     </None>
+    <None Include="Assets\button.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\soundbutton.lua">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\StoreLogo.scale-100.png">
@@ -65,6 +71,24 @@
       <Filter>Assets</Filter>
     </Image>
     <Image Include="Assets\sky_world.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\1-down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\1-up.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\2-down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\2-up.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\3-down.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\3-up.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>
@@ -121,6 +145,12 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="Assets\1.wav">
+      <Filter>Assets</Filter>
+    </Media>
+    <Media Include="Assets\2.wav">
+      <Filter>Assets</Filter>
+    </Media>
+    <Media Include="Assets\3.wav">
       <Filter>Assets</Filter>
     </Media>
   </ItemGroup>

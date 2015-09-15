@@ -1,0 +1,120 @@
+                    SUPPORTED MODULE FORMATS
+
+
+Common suffix	Tracker/packer		Recognized variants
+
+Soundtracker and variants:
+
+MOD		Sound/Noise/Protracker	M.K., M!K!, M&K!, N.T., CD81
+MOD, M15	Soundtracker		2.2, UST
+MOD/NT		Startrekker/ADSC	FLT4/8/M, EXO4/8
+MOD		Digital Tracker		FA04, FA06, FA08
+MOD		Fast/Taketracker	xCHN, xxCH
+MOD		His Master's Noise	-
+FLX		Flextrax		M.K., xCHN (no dsp effects)
+WOW		Mod's Grave		M.K.
+
+Amiga packed formats:
+
+-		AC1D Packer		-
+-		FC-M Packer		1.0
+-		Fuchs Tracker		-
+-		Heatseeker		mc1.0
+-		Hornet Packer		HRT!
+-		Images Music System	?
+-		Kefrens Sound Machine	-
+-		Module Protector	-
+-		NoisePacker		1.0, 2.0, 3.0
+-		NoiseRunner		-
+-		Pha Packer		-
+-		Power Music		-
+-		ProPacker		2.1
+-		ProRunner		1.0, 2.0
+-		Promizer		0.1, 1.0c, 1.8a, 2.0, 4.0
+-		SKYT Packer		-
+-		StarTrekker Packer	-
+-		The Player		4.x, 5.0a, 6.0a, 6.1a
+-		Titanics Player		-
+-		Tracker Packer		3
+MOD		Unic Tracker		1.0, 2.0
+-		Wanton Packer		-
+-		XANN Packer		-
+-		Zen Packer		-
+
+Other Amiga tracker formats:
+
+DBM		DigiBooster Pro		DBM0
+DIGI		DIGI Booster		1.4, 1.5, 1.6, 1.7
+EMOD		Quadra Composer		0001
+MOD		ChipTracker		KRIS
+MOD 		Protracker 3.59		PTDT
+MED		MED 1.12/2.10/3.00	MED2, MED3, MED4
+MED		MED 3.00/OctaMED	MMD0, MMD1, MMD2, MMD3
+MOD, MTN	ST 2.6, Ice Tracker	MTN, IT10
+OKT		Oktalyzer		-
+SFX		SoundFX			1.3, 2.0?
+
+Atari tracker formats:
+
+MOD		Octalyser		CD61, CD81
+DTM		Digital Tracker		1.9
+MGT		Megatracker		-
+
+Acorn tracker formats:
+
+-		Archimedes Tracker	V1.0+++
+-		Digital Symphony	0
+
+PC tracker formats:
+
+669		Composer 669/UNIS 669   if, JN
+FAR		Farandole Composer	1.0
+FNK		Funktracker		R0, R1, R2
+IMF		Imago Orpheus		1.0
+IT		Impulse Tracker		1.00, 2.00, 2.14, 2.15
+LIQ		Liquid Tracker		0.0, 1.0
+MDL		Digitrakker		0.0, 1.0, 1.1
+MTM		Multitracker		1.0
+PTM		Poly Tracker		2.03
+RTM		Real Tracker		1.00
+S3M		Scream Tracker 3	3.00, 3.01+
+STM		Scream Tracker 2	!Scream!, BMOD2STM
+ULT		Ultra Tracker		V0001, V0002, V0003, V0004
+XM		Fast Tracker II		1.02, 1.03, 1.04
+
+PC packed formats:
+
+AMF		DSMI (DMP)		0.9, 1.0, 1.1, 1.2, 1.3, 1.4
+GDM		Generic Digital Music	1.0
+STX		ST Music Interface Kit	1.0, 1.1
+
+Game formats:
+
+ABK		AMOS Sound Bank		-
+AMF		Asylum Music Format	1.0
+-		Digital Illusions	-
+-		Game Music Creator	-
+PSM		Epic Megagames MASI	epic, sinaria
+J2B		Galaxy Music System 5.0	-
+-		Galaxy Music System 4.0	-
+MFP/SMP		Magnetic Fields Packer  -
+-		Novotrade Packer	-
+PSM		Protracker Studio	0.01, 1.00
+STIM		Slamtilt		-
+UMX		Epic Games Unreal/UT	IT, S3M, MOD, XM
+
+YM3812 (Adlib) formats:
+
+AMD		Amusic Adlib Tracker	-
+RAD		Reality Adlib Tracker	-
+HSC		NEO soft/HSC-Tracker	1.5
+S3M		Scream Tracker 3	3.00, 3.01+
+
+
+Formats marked with (*) are experimental and are known to have
+replay errors and unimplemented effects.
+
+Format descriptions of packed modules sent by Sylvain "Asle" Chipaux.
+PTM specs and info by Kilian Hekhuis. AMF specs by Miod Vallat.
+Soundtracker format details by Michael Schwendt and Sylvain Chipaux.
+

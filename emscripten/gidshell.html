@@ -78,6 +78,7 @@
     <textarea class="emscripten" id="output" rows="8"></textarea>
     <hr>-->
     <script type='text/javascript'>
+      var GAPP_URL="gideros.GApp";
       var statusElement = document.getElementById('status');
       var progressElement = document.getElementById('progress');
       var spinnerElement = document.getElementById('spinner');
@@ -148,10 +149,10 @@
         totalDependencies: 0,
         monitorRunDependencies: function(left) {
           this.totalDependencies = Math.max(this.totalDependencies, left);
-          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+          //Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         }
       };
-      Module.setStatus('Downloading...');
+      Module.setStatus('Preparing...');
       window.onerror = function() {
         Module.setStatus('Exception thrown, see JavaScript console');
         spinnerElement.style.display = 'none';

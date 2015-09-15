@@ -274,6 +274,20 @@ double gtimer_clock()
     static double begin = nanoTime();
     return nanoTime() - begin;
 }
+#elif defined(STRICT_LINUX)
+#include <time.h>
+static double nanoTime()
+{
+    struct timespec t;
+    if(clock_gettime(CLOCK_MONOTONIC, &t))
+        return 0;
+    return t.tv_sec + t.tv_nsec * 1e-9;
+}
+double gtimer_clock()
+{
+    static double begin = nanoTime();
+    return nanoTime() - begin;
+}
 #endif
 
 }

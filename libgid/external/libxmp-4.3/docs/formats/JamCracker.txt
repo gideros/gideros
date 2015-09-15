@@ -1,0 +1,87 @@
+#Format : JamCracker/PRO
+#Created by : M. Gemmel (1990-1991)
+#
+# This description is based on "jamplay.asm" written by
+#M. Gemmel and Xag / Betrayal. Though, I cant say I can
+#read 68k source code easily :(. Although, this was
+#started on 97 ... I could grab on JamCrackerPro 1.0A
+#since then !. It's far more easier now :).
+# According to the doc, JamCracker and JCPro have the
+#very same saving format ... until a new release by Xag,
+#which never got finished/released, I guess.
+#
+# 08 mar 1999, Sylvain "Asle" Chipaux
+# (asle@multimania.com)
+####################################################################
+
+
+
+0        [4]    "BeEp" ... ID of a JamCracker file
+4        [2]    Number of sample (NOS).
+
+
+{now starts the description of each sample)
+{Each description is 40 bytes long)
+{the following is repeated 'Number of sample' times).
+{
+{ 6        [31]   Sample name
+{ 37       [1]    flag byte
+{ 38       [4]    sample size
+{ 42       [4]    sample address
+{
+
+
+40*NOS   [2]  Number of pattern saved (NOPS).
++6
+
+
+{pattern list consists of the number of rows and the address
+{
+{ 40*NOS+8  [2]   number of rows (0->3Fh
+{ 40*NOS+10 [4]   address
+{
+
+
+(40*NOS)+8  [2]   size of pattern list (SOPL)
++(6*NOPS)
+
+(40*NOS)+8  [SOPL*2]   pattern list. each value is two bytes.
++(6*NOPS)
++2
+
+
+
+NOW, THE PATTERN DATA. Stored as PTK :
+
+
+line 00  voice0|voice1|voice2|voice3
+line 01  voice0|voice1|voice2|voice3
+...
+
+ each note (voice) is (8 bytes long) and here's the description
+extracted from the doc :
+
+{The format of a step is:	XX YYY IISAAVVPVVVPPP
+{
+{where:    IISAAVVPVVVPPP are the note-data numbers
+{
+{          XX  is the step number
+{          YYY is the note itself, or a blank step if there is no note
+{          II  is the number of the instrument used to play this note
+{          S   is the pattern play speed
+{          AA  is the arpeggio info
+{          VV  is the vibrato info
+{          P   is the phase-shift speed
+{          VVV is the volume info
+{          PPP is the pitch slide/portamento info
+
+ and here, follows it's interpretation when saved :
+
+ period     1    (note. 0 is no note)
+ instrument 1    (sample. 0 is no sample)
+ speed      1    }
+ arpeggio   1    }
+ vibrato    1    } effects
+ phase      1    }
+ volume     1    }
+ porta      1    }

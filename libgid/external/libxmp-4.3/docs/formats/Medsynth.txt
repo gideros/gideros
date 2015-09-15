@@ -1,0 +1,531 @@
+
+THE PROGRAMMING LANGUAGE
+========================
+
+Note: please read this section carefully before experimenting, because you
+      can lock up your machine with the synthsound programming language (as
+      with any other language)
+
+The  programming language is used for controlling the volume/pitch/vibrato/
+waveforms/arpeggio/etc...    of  the  synthsound.   It  consist  of  simple
+keywords, of which some have an argument.
+
+The  programming  is done using two lists of commands/numbers.  These lists
+are  displayed  through  a  small  window below the right waveform display.
+First  there  are  line  numbers in decimal and hex (two leftmost columns).
+The  middle column contains the volume sequence, while the rightmost is the
+waveform/pitch sequence.
+
+       volume ctrl seq
+          |
+line      |    waveform ctrl seq
+  |       |    |
+  00 00   40   00
+  01 01  END  END
+
+These  lists  are  both  max.   127 ($7F) entries long.  The list is always
+terminated  with  "END"  instruction (it's automatically there so you don't
+have  to do that).  You can scroll the list with cursor up/down -keys.  The
+cursor  can be moved horizontally using the cursor left/right -keys.  There
+are  six  possible  cursor  locations  (3  for  both lists).  When entering
+commands,  the  cursor  should  be  on  the leftmost position of that list.
+Values  are entered by pointing the cursor over the value to be changed and
+entering a new value.  Commands and numbers are entered with keyboard.  You
+can   insert   entries  to  the  list  with  the  Return-key  (or  clicking
+Ins-gadget),  and  delete using Del (or clicking Del-gadget).  JMP commands
+are renumbered when entries are inserted or deleted.
+
+ALL NUMBERS IN THE SEQUENCE LISTS ARE HEXADECIMAL.
+Just remember this, and you have no problems (fingers crossed :^)
+Also, the editing (Esc) must be on before the lists can be changed.
+
+First, let's examine some example sequences:
+
+This is a volume sequence:
+	
+	00  40 <= set initial volume to 64 (hex $40, did you already forget?)
+	01 CHD <= command, that means "Set volume change down speed"
+	02  03 <= argument (speed = 3)
+	03 END
+
+Here's another:
+
+	00  00 <= initial volume = 0
+	01 CHU <= Command: Set volume change up
+	02  07 <= speed = 7
+	03 WAI <= Command: Wait
+	04  10 <= wait 10 pulses
+	05 CHU <= Set volume change up
+	06  00 <= speed = 0 -> stop changing volume
+	07 WAI <= Wait
+	08  70 <= 70 pulses
+	09 CHD <= Cmd: Set volume change down
+	0A  01 <= speed = 1 (slow)
+	0B END
+
+Third:
+
+	00  40 <= vol = $40
+        01  30 <= vol = $30 (without command, the values are volume changes)
+	02  20 <= vol = $20
+	03 END
+
+And fourth, finally:
+
+	00  40    <= vol = $40
+	01 CHD <+ <= change down speed..
+	02  01  | <= ..= 1
+	03 WAI  | <= Wait..
+	04  20  | <= ..20
+	05 CHU  | <= change up
+	06  01  | <= ..1
+	07 WAI  | <= Wait..
+	08  20  | <= ..20 again
+	09 JMP  | <= Jump (= goto)
+	0A  01 -+ <= to line number 01
+	0B END
+
+Now some wform/pitch sequences. Wform/pitch sequence is the "mastersequence"
+while the volume sequence is a kind of "slave sequence".
+
+First: (the simplest case)
+	00  00 <= set waveform #00
+	01 END
+
+A bit more complex:
+	00 VBS <= set vibrato speed
+	01  40 <= speed = $40
+	02 VBD <= set vibrato depth
+	03  02 <= depth = 2
+	04  00 <= waveform #00
+	05 END
+
+And very complex:
+	00 ARP <= start arpeggio sequence
+	01  00 \
+	02  03  arpeggio values 0, 3, 7 (minor chord)
+	03  07 /
+	04 ARE <= end arpeggio sequence
+	05 VBD <= vibrato depth
+	06  06 <= 6
+	07 VBS <= vibrato speed
+	08  40 <= $40
+	09  00 <= set waveform #0
+	0A  01 <= set waveforms 01 - 0A (one timing pulse/waveform)
+	0B  02    | |
+	0C  03   \   /
+	0D  04    \_/
+	0E  05
+	0F  06
+	10  07
+	11  08
+	12  09
+	13  0A and back to #01...
+	14  08
+	15  07
+	16  06
+	17  05
+	18  04
+	19  03
+	1A  02
+	1B  01
+	1C JMP <= jump
+	1D  09 <= to position 09 (restart waveform changing)
+	1E END
+
+-----------------------------------------------------------------------------
+You can learn a lot by examining the example synthsounds and by
+experimenting.
+
+Now, some reference...
+
+About timing
+¯¯¯¯¯¯¯¯¯¯¯¯
+For  both  sequence  lists, most of the commands are fetched, executed, and
+the next command is immediately fetched.  There are also some commands that
+wait  for  the  next  timing  pulse, this is important because the computer
+would  otherwise  send all its time executing the sequence lists (and would
+hang  up).   You  should  take  care that all loops contain a command, that
+waits  for  the  next timing pulse.  These commands are WAI (Wait), vol chg
+(plain  number  in  the  volume  list)  and  set  waveform (plain number in
+pitch/wform list).
+
+For example, the following loops will hang up your computer:
+
+	00 JMP		00  CHU <-+ command CHU doesn't wait
+	01  00		01   02   |
+        ...		02  JMP   |
+			03   00 --+
+
+While the following would not:
+
+	00  20		00  WAI
+	01 JMP		01   02
+	02  00		02  JMP
+			03   00
+
+Execution speed
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+The synthsound handling routine is called once every interrupt.  This means
+that  the  handling  is  usually  done  6  times/note  (can be changed with
+secondary  tempo, see main docs).  Both lists have an execution speed, that
+is  the  speed  of the operation.  When the speed is 1, the next command is
+fetched/pitch  changed  etc.   on  every interrupt.  If the speed was 2, it
+would  happen  every second interrupt (runs two times slower).  The initial
+execution  speed  can be set with the two speed gadgets.  During executing,
+the speed can be changed with command SPD.
+
+
+VOLUME SEQUENCE LIST COMMANDS
+=============================
+
+1.	Set volume
+	Command: ---
+	Keyboard: --- (key needed to enter the command)
+
+	This is the default command (no command identifier). It sets the
+	absolute volume of the synthsound. It should be 00 - 40. Note that
+	the relative track volumes are not used in synthsounds (mostly
+	because of performance reasons).
+
+	Example:
+	00  30 ;volume = $30
+	01  10 ;volume = $10
+	...
+
+2.	End sequence
+	Command: END
+	Keyboard: ---
+
+	This command terminates the volume sequence list. It's always there
+	and automatically inserted. You can't insert commands past this one.
+
+3.	Set volume change down speed
+	Command: CHD
+	Keyboard: D
+
+	This command sets the speed, in which volume is decreased each timing
+	pulse. The volume starts changing automatically after this command.
+	To stop automatic volume sliding, issue this command with speed 00.
+
+	Example:
+	00  CHD
+	01   05 ;speed = 5
+	...
+	10  CHD
+	11   00 ;speed = 0 -> stop sliding
+
+4.	Set volume change up speed
+	Command: CHU
+	Keyboard: U
+
+	This command is like CHD, except it sets the volume change up.
+
+5.	Wait
+	Command: WAI
+	Keyboard: W
+
+	This command waits for specified amount of timing pulses (pause).
+
+	Example:
+	03  WAI
+	04   10 ;wait for 16 ($10) pulses to occur
+
+6.	Jump
+	Command: JMP
+	Keyboard: J
+
+	Causes an immediate jump to another position of the volume list.
+
+	Example:
+	05  JMP
+	06   0A ;jump forward to line 0A
+
+7.	Jump waveform sequence
+	Command: JWS
+	Keyboard: Shift-J
+
+	This command causes a jump in the waveform sequence. This can be used
+	for example, to trigger a pitch change at the end of the vol seq
+	list. Note that this DOESN'T cause a jump TO waveform sequence.
+
+	Example:
+	04  JWS
+	05   0F	;Cause jump in waveform sequence list
+
+
+8.	Halt
+	Command: HLT
+	Keyboard: H
+
+	This has the same effect with command END (halt execution), but it
+	can be inserted in the middle of the sequence list.
+
+	Example:
+	03  HLT
+	04   04 ;some other code (can be accessed with JMP instruction, for
+	...	 example)
+
+9.	Set speed
+	Command: SPD
+	Keyboard: S
+
+	Sets the execution speed.
+
+	Example:
+	0A  SPD
+	0B   01 ;speed = 1 (fastest)
+	...
+
+(The following commands require OctaMED V2.00 / MED V3.20 or later.)
+
+10.	One-shot envelope
+	Command: EN1
+	Keyboard: E
+
+	This command allows you to draw the shape of the envelope with the
+	mouse. When the end of the envelope is reached, nothing occurs.
+	02   40
+	03  EN1
+	04   05
+	Waveform 05 is used as an envelope. Note that the envelope execution
+	starts on next interrupt, so the volume is initialized to $40.
+	The envelope waveform must always be 128 bytes long!!
+
+11.	Looping envelope
+	Command: EN2
+	Keyboard: Shift-E
+
+	This works like command EN1, except that when the end is reached,
+	execution will start again from the beginning.
+
+
+WAVEFORM/PITCH SEQUENCE LIST COMMANDS
+=====================================
+
+1.	Set waveform
+	Command: ---
+	Keyboard: ---
+
+	This command is used to indicate the waveform number (starting from
+	00). After this instruction, the execution stops until next timing
+	pulse occurs. Don't use waveform numbers that are higher than the
+	actual number of the last wform.
+
+	Example:
+	00  00 ;wform 00
+	01  01 ;wform 01
+	...
+
+2.	End sequence
+	Command: END
+	Keyboard: ---
+
+	This command terminates the wform/pitch sequence list. It's always
+	there and automatically inserted. You can't insert commands past this
+	one.
+
+3.	Set pitch change down speed
+	Command: CHD
+	Keyboard: D
+
+	This command sets the sliding speed for sliding pitch down. The
+	sliding automatically starts after this command and stops, when
+	speed is set to zero.
+
+	Example:
+	00 CHD
+	01  03 ;set speed to 3
+	...
+
+4.	Set pitch change up speed
+	Command: CHU
+	Keyboard: U
+
+	Just like previous, but slides pitch up.
+
+5.	Wait
+	Command: WAI
+	Keyboard: W
+
+	This command waits for specified amount of timing pulses (pause).
+
+	Example:
+	03  WAI
+	04   02 ;wait for 2 pulses to occur
+
+6.	Jump
+	Command: JMP
+	Keyboard: J
+
+	Causes an immediate jump to another position of the wform/pitch list.
+
+	Example:
+	05  JMP
+	06   0A ;jump forward to line 0A
+
+7.	Jump volume sequence
+	Command: JVS
+	Keyboard: Shift-J
+
+	This command causes a jump to happen in the volume sequence. Can be
+	used e.g. for triggering volume changes after some wform event.
+
+	Example:
+	09  JVS
+	0A   00 ;start volume sequence from the beginning
+
+8.	Halt
+	Command: HLT
+	Keyboard: H
+
+	This has the same effect with command END (halt execution), but it
+	can be inserted in the middle of the sequence list.
+
+	Example:
+	03  HLT
+	04   04 ;some other code (can be accessed with JMP instruction, for
+	...	 example)
+
+9.	Set speed
+	Command: SPD
+	Keyboard: S
+
+	Sets the execution speed.
+
+	Example:
+	0A  SPD
+	0B   01 ;speed = 1 (fastest)
+	...
+
+10.	Begin arpeggio definition
+	Command: ARP
+	Keyboard: A
+
+	This command starts the arpeggio sequence. The following values are
+	the arpeggio offsets from the base note. The arpeggio sequence
+	is terminated with ARE-command. The arpeggio starts automatically
+	after the sequence is defined.
+
+	Example:
+	03  ARP ;start arpeggio
+	04   00 ;offset values
+	05   04
+	06   07
+	07   0A
+	08  ARE ;end arpeggio definition
+
+11.	End arpeggio definition
+	Command: ARE
+	Keyboard: E
+
+	Ends an arpeggio definition. See above.
+
+12.	Set vibrato depth
+	Command: VBD
+	Keyboard: V
+
+	This command is used to set the vibrato depth (00 - 7F).
+
+	Example:
+	02  VBD
+	03   04 ;set depth to 4
+
+13.	Set vibrato speed
+	Command: VBS
+	Keyboard: Shift-V
+
+	This command sets the vibrato speed (00 - 7F). Both speed and depth
+	must be nonzero for vibrato to occur.
+
+	Example:
+	02  VBD
+	03   04 ;depth = 4
+	04  VBS
+	05   30 ;speed = 30
+
+14.	Reset pitch
+	Command: RES
+	Keyboard: R
+
+	This command resets the pitch of the note to its initial pitch.
+
+(The following command requires OctaMED V2.00 / MED V3.20 or later.)
+
+15.	Set vibrato waveform
+	Command: VWF
+	Keyboard: Shift-W
+
+	Sets the vibrato waveform. The argument is the number of wform.
+	The waveform should always be 32 bytes long!! Note that it's
+	actually played reversed (use the Rev gadget to reverse it).
+	By default, sine wave is used.
+
+	Example:
+	00  VBD
+	01   06
+	02  VBS
+	03   40
+	04  VWF
+	05   04 ;use wform number 04 as vibrato waveform
+
+=============================================================================
+
+Synthsound handling commands in the songs:
+
+Command  E  in the songs controls the MIDI pan, if used with MIDI, but with
+synthsounds, it is used to trigger a jump in the wform/pitch sequence list.
+
+For  example,  if  you  wanted  to  decrease the pitch of the sound after a
+certain point, your wform/pitch sequence could look like this:
+
+	00  VBS
+	01   40
+	02  VBD
+	03   06
+	04   00	;play wform 00
+	05  HLT
+	06  CHD	;pitch changing entry point
+	07   02
+	08  END
+
+Now you could compose a track like this:
+
+	C-2 3000  ;this is the previous synthsound
+	--- 0000
+	--- 0000
+	--- 0E06  ;cause a jump to position 06 (pitch starts to slide down)
+	--- 0000
+	...
+
+With command JVS, you could make the command affect volume sequence too.
+
+Hold/Decay:
+===========
+Hold/Decay  work well with synthsounds too.  The decay value in synthsounds
+is,  however,  a  jump address in the volume sequence list.  When the decay
+should  start,  the  execution will jump to this entry in the vol seq list.
+This means that you can handle the decay on any way you want.  You can also
+make it affect the pitch/wforms using the command JWS.
+
+Example volume sequence list:
+
+	00  40	;volume
+	01 HLT  ;end
+	02 CHD	;decay handling (entry point) -> cause decay
+	03  03
+	04 END
+
+The decay value for this synthsound should be 2. When you save/load
+synthsounds, the decay values are saved/loaded with the instrument.
+
+=============================================================================
+
+HYBRID SOUNDS
+¯¯¯¯¯¯¯¯¯¯¯¯¯
+Hybrid  sounds are much like synthsounds, except that there are no waveform
+pieces.   Instead, there's a normal sample.  All commands of the synthsound
+handling programming language can be used with hybrid sounds.  There's only
+one thing you should know:  Don't use "Set waveform".  Because there's only
+a single waveform, there's no need for that (and it wouldn't work anyway).
+

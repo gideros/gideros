@@ -121,7 +121,7 @@ public:
     void deleteAutounrefPool(void *);
     void autounref(GReferenced *referenced);
 
-    void configureFrustum(float fov,float farplane);
+    void configureFrustum(float fov,float farplane,float nearplane);
 
 private:
 	TextureManager textureManager_;
@@ -137,6 +137,7 @@ private:
 	float logicalTranslateX_, logicalTranslateY_;
 	float fov_;
 	float farplane_;
+	float nearplane_;
 	bool projectionDirty_;
 	Matrix4 projectionMatrix_,vpProjectionMatrix_;
 

@@ -75,6 +75,10 @@ public:
 		keyMap_[GINPUT_KEY_SPACE] = GINPUT_KEY_SPACE;
 		keyMap_[GINPUT_KEY_BACKSPACE] = GINPUT_KEY_BACKSPACE;
 
+		keyMap_[GINPUT_KEY_CTRL] = GINPUT_KEY_CTRL;
+		keyMap_[GINPUT_KEY_ALT] = GINPUT_KEY_ALT;
+		keyMap_[GINPUT_KEY_ESC] = GINPUT_KEY_ESC;
+		keyMap_[GINPUT_KEY_TAB] = GINPUT_KEY_TAB;
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
@@ -198,9 +202,13 @@ public:
 			touchEvent->touch.x = x;
 			touchEvent->touch.y = y;
 			touchEvent->touch.id = 0;
+			touchEvent->touch.pressure = 0;
+			touchEvent->touch.touchType = 2;
 			touchEvent->allTouches[0].x = x;
 			touchEvent->allTouches[0].y = y;
 			touchEvent->allTouches[0].id = 0;
+			touchEvent->allTouches[0].pressure = 0;
+			touchEvent->allTouches[0].touchType = 2;
 		}
 
 		if (mouseTouchOrder_ == 0)
@@ -237,9 +245,13 @@ public:
 			touchEvent->touch.x = x;
 			touchEvent->touch.y = y;
 			touchEvent->touch.id = 0;
+			touchEvent->touch.pressure = 0;
+			touchEvent->touch.touchType = 2;
 			touchEvent->allTouches[0].x = x;
 			touchEvent->allTouches[0].y = y;
 			touchEvent->allTouches[0].id = 0;
+			touchEvent->allTouches[0].pressure = 0;
+			touchEvent->allTouches[0].touchType = 2;
 		}
 
 		if (mouseTouchOrder_ == 0)
@@ -284,9 +296,13 @@ public:
 			touchEvent->touch.x = x;
 			touchEvent->touch.y = y;
 			touchEvent->touch.id = 0;
+			touchEvent->touch.pressure = 0;
+			touchEvent->touch.touchType = 2;
 			touchEvent->allTouches[0].x = x;
 			touchEvent->allTouches[0].y = y;
 			touchEvent->allTouches[0].id = 0;
+			touchEvent->allTouches[0].pressure = 0;
+			touchEvent->allTouches[0].touchType = 2;
 		}
 
 		if (mouseTouchOrder_ == 0)
@@ -327,12 +343,16 @@ public:
 		touchEvent->touch.x = x;
 		touchEvent->touch.y = y;
 		touchEvent->touch.id = addTouch(id);
+		touchEvent->touch.pressure = 0;
+		touchEvent->touch.touchType = 0;
 
 		int i = 0;
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
 			touchEvent->allTouches[i].id = addTouch(it->second.id);
+			touchEvent->allTouches[i].pressure = 0;
+			touchEvent->allTouches[i].touchType = 0;
 			i++;
 		}
 
@@ -369,12 +389,16 @@ public:
 		touchEvent->touch.x = x;
 		touchEvent->touch.y = y;
 		touchEvent->touch.id = addTouch(id);
+		touchEvent->touch.pressure = 0;
+		touchEvent->touch.touchType = 0;
 
 		int i = 0;
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
 			touchEvent->allTouches[i].id = addTouch(it->second.id);
+			touchEvent->allTouches[i].pressure = 0;
+			touchEvent->allTouches[i].touchType = 0;
 			i++;
 		}
 
@@ -411,12 +435,16 @@ public:
 		touchEvent->touch.x = x;
 		touchEvent->touch.y = y;
 		touchEvent->touch.id = addTouch(id);
+		touchEvent->touch.pressure = 0;
+		touchEvent->touch.touchType = 0;
 
 		int i = 0;
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
 			touchEvent->allTouches[i].id = addTouch(it->second.id);
+			touchEvent->allTouches[i].pressure = 0;
+			touchEvent->allTouches[i].touchType = 0;
 			i++;
 		}
 
@@ -454,12 +482,16 @@ public:
 		touchEvent->touch.x = x;
 		touchEvent->touch.y = y;
 		touchEvent->touch.id = addTouch(id);
+		touchEvent->touch.pressure = 0;
+		touchEvent->touch.touchType = 0;
 
 		int i = 0;
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
 			touchEvent->allTouches[i].id = addTouch(it->second.id);
+			touchEvent->allTouches[i].pressure = 0;
+			touchEvent->allTouches[i].touchType = 0;
 			i++;
 		}
 

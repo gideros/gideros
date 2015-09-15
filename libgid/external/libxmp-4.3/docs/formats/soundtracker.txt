@@ -1,0 +1,67 @@
+Evolution of features, particularily music commands/effects in early
+Soundtrackers
+Written and tested by Deadman/Sid Lovin' Criminals during 19-24.3.2010
+
+... IN THE HUMBLE BEGINNINGS ...
+
+Ultimate Soundtracker 1.2 by Karsten Obarski 1987
+  1 = arpeggio
+  2 = portamento down/up
+
+Soundtracker II by Exterminator/The Jungle Command
+  * new layout/colors
+  0 = arpeggio
+  1 = portamento up
+  2 = portamento down
+  c = volume
+  d = volume slide up/down
+  e = volume auto-slide up/down (*)
+
+Soundtracker III by Unknown/D.O.C
+  * no new effects; just equalizer-bars
+
+Soundtracker III by Il Scuro/Defjam
+Soundtracker IV by Unknown/D.O.C. and/or Alpha Flight
+  f = tempo
+
+Soundtracker V by Unknown/D.O.C.
+  * nothing new?
+
+Soundtracker VI by Unknown/D.O.C.
+  * voice-control in editor (didn't even work?)
+
+Ultimate Soundtracker 1.8 by Karsten Obarski 4/1988
+  * on-disk preset-list
+  * change bpm
+  * equalizer bars in track-view
+
+Ultimate Soundtracker 2.0 by Karsten Obarski 10/1988
+  * absolutely nothing new!?
+
+Soundtracker IX by Unknown/D.O.C. many ideas from UST 1.8
+  * UST: on-disk preset-list, st-xx: samplenames (empty ones have "st-01:")
+  * UST: change bpm (0-220), this is the $1D7 byte
+  * UST: equalizer bars in track-view
+  * ability to save module, too
+  d = nothing!
+  e = filter on/off (bit #0 only)
+
+Master Soundtracker 1.0 by Tip/Prophets
+  * sample lengths can be up to $8000 bytes
+  d = volume slide, just as in Soundtracker II-IV
+
+Master Soundtracker 3.0 by Tip/Prophets
+  * new you can load/save module, song, preset or even just a sample!
+  b = pattern break
+
+Soundtracker 2.0 by Unknown/D.O.C
+  * new layout - this is the first tracker looking like Protracker!
+  * first "pattern play" ever!
+  * editing keys and load/save features are not as good as MST 3.0
+  b = song position
+  d = pattern break
+Soundtracker 2.1 by Unknown/D.O.C
+  * nothing??
+Soundtracker 2.2 by Unknown/D.O.C
+  * nothing new.. scrolltext boasts a 31-instrument version inside DOC...
+

@@ -11,6 +11,9 @@
 #ifdef __EMSCRIPTEN__
 #define fpos_t off_t
 #endif
+#ifdef STRICT_LINUX
+#define fpos_t off_t
+#endif
 
 /* stdio buffers */
 struct g__sbuf {

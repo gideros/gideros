@@ -1,0 +1,1029 @@
+   #[1]Edit [2]OpenMPT Wiki (en) [3]copyright [4]OpenMPT Wiki Atom feed
+
+Development: Test Cases/XM
+
+   From OpenMPT Wiki
+   Jump to: [5]navigation, [6]search
+
+   This test suite is a collection of XM modules that were created while
+   discovering playback bugs in OpenMPT. It is meant to be an easy way to
+   check for regressions when code is changed, or to verify your own
+   player’s routines if you are concerned about playback compatibility.
+   The tests are designed in a way so that it is easy to figure out if
+   your player is working correctly. In most test cases, your own player’s
+   output can be heard on the left channel, while Fasttracker 2’s output
+   is heard on the right channel. This way, it is easy to find out whether
+   everything works as intended or if there are any discrepancies without
+   having to read any long test descriptions. When it is impossible to do
+   such a cross-verification, a more detailed description of the test can
+   usually be found in the sample, instrument or comment text.
+
+   Bit-exact output is not the goal of this test suite, correct playback
+   is, so slight deviations from Fasttracker 2’s output (e.g. different
+   resampling algorithms, pop reduction, etc.) are acceptable. Some tests
+   will only sound correct on the first run. Unless stated otherwise, it
+   is not important that the test output sounds identical when looping the
+   module.
+
+   Most test cases are documented (more or less) in OpenMPT’s source code
+   with a reference to the filename of the test case. I am sorry that many
+   tests do not have proper descriptions − I have started this
+   documentation years after I have fixed some of these issues and can
+   thus not remember all the details anymore. If you are stuck with one of
+   the tests, you may have a look at specific source code revisions that
+   are provided with most tests to see what was changed in the code to
+   make it work correctly.
+
+   Last but not least, please keep in mind that some descriptions might be
+   wrong or too general. Sometimes, the description might be correct in
+   the given test case, but changing the test case might invalidate the
+   description. If you know better than me, please correct the texts, and
+   please ask me if you need more information one of the test cases. The
+   documentation is not always optimal because the test cases have been
+   written long before I have created this site.
+
+   Another thing to keep in mind is that Fasttracker 2 does not reset
+   various channel memory variables when restarting a module or loading a
+   new one. Thus, when comparing against the output of Fasttracker 2, you
+   should only ever consider the first play of the first module loaded
+   into Fasttracker 2. Quit and restart Fasttracker 2 between tests.
+
+Contents
+
+     * [7]1 3xxins.xm
+     * [8]2 3xx-no-old-samp.xm
+     * [9]3 Arpeggio.xm
+     * [10]4 ArpeggioClamp.xm
+     * [11]5 delay1.xm
+     * [12]6 delay2.xm
+     * [13]7 delay3.xm
+     * [14]8 DelayCombination.xm
+     * [15]9 delaycut.xm
+     * [16]10 E90.xm
+     * [17]11 EnvLoops.xm
+     * [18]12 EnvOff.xm
+     * [19]13 envretrig.xm
+     * [20]14 finetune.xm
+     * [21]15 Finetune-Precision.xm
+     * [22]16 FineVol-LinkMem.xm
+     * [23]17 FreqWraparound.xm
+     * [24]18 FT2PanLaw.xm
+     * [25]19 GlobalVolume.xm
+     * [26]20 key_off.xm
+     * [27]21 keyoff+instr.xm
+     * [28]22 KeyOff2.xm
+     * [29]23 lowest.xm
+     * [30]24 NoteLimit.xm
+     * [31]25 NoteLimit2.xm
+     * [32]26 NoteOff.xm
+     * [33]27 NoteOff2.xm
+     * [34]28 NoteOffFade.xm
+     * [35]29 NoteOffVolume.xm
+     * [36]30 OffDelay.xm
+     * [37]31 OffsetRange.xm
+     * [38]32 PanMemory.xm
+     * [39]33 PanMemory2.xm
+     * [40]34 PanOff.xm
+     * [41]35 PanSlideMem.xm
+     * [42]36 PanSlideZero.xm
+     * [43]37 pathead.xm
+     * [44]38 PatLoop-Break.xm
+     * [45]39 PatLoop-Infinite.xm
+     * [46]40 PatLoop-Jumps.xm
+     * [47]41 PatLoop-Nested.xm
+     * [48]42 PatLoop-Overflow.xm
+     * [49]43 PatLoop-Various.xm
+     * [50]44 PatLoop-Weird.xm
+     * [51]45 PatternDelays.xm
+     * [52]46 PatternDelaysRetrig.xm
+     * [53]47 Pickup.xm
+     * [54]48 PortaDelay.xm
+     * [55]49 porta-delay.xm
+     * [56]50 Porta-LinkMem.xm
+     * [57]51 porta-offset.xm
+     * [58]52 Porta-Pickup.xm
+     * [59]53 retrig.xm
+     * [60]54 RetrigTick0.xm
+     * [61]55 SampleChange.xm
+     * [62]56 SetEnvPos.xm
+     * [63]57 TonePortamentoMemory.xm
+     * [64]58 TremoloWaveforms.xm
+     * [65]59 Tremor.xm
+     * [66]60 TremorInstr.xm
+     * [67]61 TremorRecover.xm
+     * [68]62 VibratoCombinations.xm
+     * [69]63 VibratoWaveforms.xm
+     * [70]64 VolColDelay.xm
+
+3xxins.xm[[71]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [72]3xxins.xm
+   Description: If a tone portamento effect is encountered, the instrument
+   number next to it is always interpreted as the instrument number of the
+   currently playing instrument. This test shows how the instrument
+   envelope is reset when such an event is encountered.
+
+3xx-no-old-samp.xm[[73]edit]
+
+   Current status: OpenMPT passes this test since revision 362.
+   Download: [74]3xx-no-old-samp.xm
+   Description: Two tests in one: An offset effect that points beyond the
+   sample end should stop playback on this channel. The note must not be
+   picked up by further portamento effects.
+
+Arpeggio.xm[[75]edit]
+
+   Current status: OpenMPT passes this test since revision 2546.
+   Download: [76]Arpeggio.xm
+   Description: Arpeggio behavior is very weird with more than 16 ticks
+   per row. This comes from the fact that Fasttracker 2 uses a LUT for
+   computing the arpeggio note (instead of doing something like tick%3 or
+   similar). The LUT only has 16 entries, so when there are more than 16
+   ticks, it reads beyond array boundaries. The vibrato table happens to
+   be stored right after arpeggio table. The tables look like this in
+   memory:
+
+   ArpTab: 0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0
+   VibTab: 0,24,49,74,97,120,141,161,180,197,...
+
+   All values except for the first in the vibrato table are greater than
+   1, so they trigger the third arpeggio note. Keep in mind that
+   Fasttracker 2 counts downwards, so the table has to be read from back
+   to front, i.e. at 16 ticks per row, the 16th entry in the LUT is the
+   first to be read. This is also the reason why Arpeggio is played
+   “backwards” in Fasttracker 2.
+
+ArpeggioClamp.xm[[77]edit]
+
+   Current status: OpenMPT passes this test since revision 318 (?).
+   Download: [78]ArpeggioClamp.xm
+   Description: Arpeggio parameters are clamped differently than the base
+   note. Not sure how this worked, it has been ages since I fixed this.
+
+delay1.xm[[79]edit]
+
+   Current status: OpenMPT passes this test since revision 450 (?).
+   Download: [80]delay1.xm
+   Description: A fun test for rogue note delays that outputs a nice drum
+   beat if played correctly. Combinations of note delays with and without
+   instrument number are tested. The following tests are more “testable”.
+
+delay2.xm[[81]edit]
+
+   Current status: OpenMPT passes this test since revision 450 (?).
+   Download: [82]delay2.xm
+   Description: Rogue note delay test. It seems that internally,
+   Fasttracker 2 always acts like the last played note is next to a note
+   delay (EDx with x > 0) if there is no note. Doing exactly this is
+   probably the easiest way to pass this test. This also explains
+   Fasttracker 2’s behaviour if there is an instrument number next to such
+   a rogue note delay, which is shown in this test. Both channels should
+   play exactly the same combination of snare and bass sounds.
+
+delay3.xm[[83]edit]
+
+   Current status: OpenMPT passes this test since revision 1095 (?).
+   Download: [84]delay3.xm
+   Description: Just when you thought that you have got it right, you step
+   into the next pitfall. Here you can see that the rogue note delay
+   behaviour is only found with EDx effects with x > 0. An ED0 effect
+   should just be ignored and not retrigger any notes.
+
+DelayCombination.xm[[85]edit]
+
+   Current status: OpenMPT passes this test since revision 1331.
+   Download: [86]DelayCombination.xm
+   Description: Naturally, Fasttracker 2 ignores notes next to an
+   out-of-range note delay. However, to check whether the delay is out of
+   range, it is simply compared against the current song speed, not taking
+   any pattern delays into account. No notes should be triggered in this
+   test case, even though the second row is technically longer than six
+   ticks.
+
+delaycut.xm[[87]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [88]delaycut.xm
+   Description: Even more idiosyncrasies with the EDx command, this time
+   in combination with note offs.
+
+E90.xm[[89]edit]
+
+   Current status: OpenMPT passes this test since revision 3541.
+   Download: [90]E90.xm
+   Description: The E90 effect does not use any effect memory. Instead, it
+   retriggers the note on the first tick.
+
+EnvLoops.xm[[91]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [92]EnvLoops.xm
+   Description: In this test, all possible combinations of the envelope
+   sustain point and envelope loops are tested, and you can see their
+   behaviour on note-off. If the sustain point is at the loop end and the
+   sustain loop has been released, don't loop anymore. Probably the most
+   important thing for this test is that in Fasttracker 2 (and Impulse
+   Tracker), envelope position is incremented before the point is
+   evaluated, not afterwards, so when no ticks have been processed yet,
+   the envelope position should be invalid. This test was passed from
+   revision 1213 to 1512, however in favour of fixing [93]EnvOff.xm, the
+   old code was restored, so now the last test case in this module no
+   longer works correctly.
+
+EnvOff.xm[[94]edit]
+
+   Current status: OpenMPT passes this test since revision 1513.
+   Download: [95]EnvOff.xm
+   Description: Fixing [96]EnvLoops.xm made OpenMPT cut off envelopes one
+   tick to early in some cases, so modules sounded kind of "dry".
+
+envretrig.xm[[97]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [98]envretrig.xm
+   Description: Note delays retrigger envelopes.
+
+finetune.xm[[99]edit]
+
+   Current status: OpenMPT passes this test since revision 1283.
+   Download: [100]finetune.xm
+   Description: A test for the E5x finetune command. Behaviour is very
+   different from the MOD format - first off, E50 is the lowest finetuning
+   and E5F is the highest. E5x is only applied if there is a real note
+   next to the command (this simplifies a few things).
+
+Finetune-Precision.xm[[101]edit]
+
+   Current status: OpenMPT passes this test since revision 3668.
+   Download: [102]Finetune-Precision.xm
+   Description: The lower three bits of the sample finetune should be
+   ignored to achieve the same precision as Fasttracker 2.
+
+FineVol-LinkMem.xm[[103]edit]
+
+   Current status: OpenMPT passes this test since revision 1354.
+   Download: [104]FineVol-LinkMem.xm
+   Description: EAx and EBx memory should not be shared. If effect memory
+   is applied correctly, the module should stay silent.
+
+FreqWraparound.xm[[105]edit]
+
+   Current status: OpenMPT passes this test since revision 2139, 3770.
+   Download: [106]FreqWraparound.xm
+   Description: Here is a really mind-boggling test case.
+     * Fasttracker 2 limits the period when sliding up (the period limits
+       appears to be 1...31999 - fine periods, not Amiga periods).
+     * It does not limit the period when sliding down. It slides to
+       infinity, or more precisely, happily wraps around at 65536 (it is a
+       16-Bit value).
+     * Periods are apparently upside-down in Fasttracker 2 (so they follow
+       the same direction as frequency). This leads to some funny
+       wraparound behaviour once the frequency goes so low that the shift
+       operator in Fasttracker′s period to frequency LUT conversion
+       becomes negative.
+
+FT2PanLaw.xm[[107]edit]
+
+   Current status: OpenMPT passes this test since revision 3638.
+   Download: [108]FT2PanLaw.xm
+   Description: Contrary to most other trackers, Fasttracker 2 uses the
+   square root pan law (not to be confused with the sin/cos equal power
+   pan law). This is how it works:
+     * Create a LUT with 257 entries: round(65536 * sqrt(n / 256)) for n =
+       0...256
+     * Compute channel panning, range is 0...255
+     * Left channel volume is volume * LUT[256 - pan]
+     * Right channel volume is volume * LUT[pan]
+
+   Note that there is no such thing as “100% right panning”, as the LUT
+   will never return 0 for the left channel.
+
+   In this context, it is also worth noting that volume-column panning is
+   simply multiplied by 16, i.e. PF is equivalent to 8F0, not 8FF.
+
+   Samples 2 and 3 contain the output of FT2 (left and right channel
+   respectively), so you can use these to compare your code against.
+
+GlobalVolume.xm[[109]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [110]GlobalVolume.xm
+   Description: Since global volume appears to be applied during pattern
+   parsing time, global volume changes are not applied to channels that
+   are left of the global volume command until the second tick of the row.
+   Effectively this means that every note on a row could have a different
+   global volume. Since global volume is applied on the complete mix
+   buffer rather than individual notes, this behaviour cannot be fixed in
+   OpenMPT for now.
+
+key_off.xm[[111]edit]
+
+   Current status: OpenMPT passes this test since revision 300.
+   Download: [112]key_off.xm
+   Description: Key off at tick 0 (K00) is very dodgy command. If there is
+   a note next to it, the note is ignored. If there is a volume column
+   command or instrument next to it and the current instrument has no
+   volume envelope, the note is faded out instead of being cut.
+
+keyoff+instr.xm[[113]edit]
+
+   Current status: OpenMPT passes this test since revision 1095.
+   Download: [114]keyoff+instr.xm
+   Description: Apparently, any note number in a pattern causes
+   instruments to recall their original sample settings (volume, panning,
+   ...) - no matter if there's a Note Off next to it or whatever. In the
+   first pattern, the panning of the both channels should always be
+   opposed.
+
+KeyOff2.xm[[115]edit]
+
+   Current status: OpenMPT passes this test since revision 1163.
+   Download: [116]KeyOff2.xm
+   Description: More K00 fun! You should ignore any note or instrument
+   data next to a K00 effect. Probably the best thing to do is to wipe
+   them from your internal channel memory in such a situation.
+
+lowest.xm[[117]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [118]lowest.xm
+   Description: Fasttracker 2 does weird things if the calculated note
+   (pattern note + sample transpose) is lower than the lowest possible
+   note. Note the high DC offset on the first two rows of Fasttracker 2’s
+   output, it seems like it is playing the first sample “very” slowly.
+
+NoteLimit.xm[[119]edit]
+
+   Current status: OpenMPT passes this test since revision 1163.
+   Download: [120]NoteLimit.xm
+   Description: I think one of the first things Fasttracker 2 does when
+   parsing a pattern cell is calculating the “real” note (i.e. pattern
+   note + sample transpose), and if this “real” note falls out of its note
+   range, it is ignored completely (wiped from its internal channel
+   memory). The instrument number next it, however, is not affected and
+   remains in the memory.
+
+NoteLimit2.xm[[121]edit]
+
+   Current status: OpenMPT passes this test since revision 1225.
+   Download: [122]NoteLimit2.xm
+   Description: This test is an addendum to the previous test
+   (note-limit.xm) because I forgot that you first have to check if there
+   is an instrument change happening before calculating the “real” note. I
+   always took the previous transpose value when doing this check, so when
+   switching from one instrument (with a high transpose value) to another
+   one, it was possible that valid notes would get rejected.
+
+NoteOff.xm[[123]edit]
+
+   Current status: OpenMPT passes this test since revision 673-836.
+   Download: [124]NoteOff.xm
+   Description: I think the essence of this test was that a note-off note
+   does not stop the sample, it just mutes it...
+
+NoteOff2.xm[[125]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [126]NoteOff2.xm
+   Description: Various combinations of note-off notes and other things.
+   One of my earliest tests...
+
+NoteOffFade.xm[[127]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [128]NoteOffFade.xm
+   Description: This module should remain completely silent.
+
+NoteOffVolume.xm[[129]edit]
+
+   Current status: OpenMPT passes this test since revision 1995.
+   Download: [130]NoteOffVolume.xm
+   Description: If an instrument has no volume envelope, a note-off
+   command should cut the sample completely - unless there is a volume
+   command next it. This applies to both volume commands (volume and
+   effect column).
+
+OffDelay.xm[[131]edit]
+
+   Current status: OpenMPT passes this test since revision 1095.
+   Download: [132]OffDelay.xm
+   Description: Note Delays combined with anything else are a lot of fun!
+   Note Off combined with a Note Delay will cause envelopes to retrigger!
+   And that is actually all it does if there is an envelope. No fade out,
+   no nothing.
+
+OffsetRange.xm[[133]edit]
+
+   Current status: OpenMPT passes this test since revision 362.
+   Download: [134]OffsetRange.xm
+   Description: Test to verify the exact behaviour for out-of-range offset
+   commands. Only the first sample should be played, because it is the
+   only sample that is longer than 256 samples.
+
+PanMemory.xm[[135]edit]
+
+   Current status: OpenMPT passes this test since revision 1994.
+   Download: [136]PanMemory.xm
+   Description: All notes in this test should be panned hard right.
+
+PanMemory2.xm[[137]edit]
+
+   Current status: OpenMPT passes this test since revision 1994.
+   Download: [138]PanMemory2.xm
+   Description: A more thorough check than PanMemory.xm. Both channels
+   should be panned identically and the module should thus stay silent.
+
+PanOff.xm[[139]edit]
+
+   Current status: OpenMPT passes this test since revision 2252.
+   Download: [140]PanOff.xm
+   Description: Another chapter of weird FT2 bugs: Note-Off + Note Delay +
+   Volume Column Panning = Panning effect is ignored.
+
+PanSlideMem.xm[[141]edit]
+
+   Current status: OpenMPT passes this test since revision 1431.
+   Download: [142]PanSlideMem.xm
+   Description: As the panning slide commands in the volume column don't
+   have memory, they should also not interfere with the effect memory of
+   the Pxy command.
+
+PanSlideZero.xm[[143]edit]
+
+   Current status: OpenMPT passes this test since revision 1313.
+   Download: [144]PanSlideZero.xm
+   Description: The panning slide commands in the volume column are not
+   supposed to have an effect memory. So it is all natural that the pan
+   slide right command with parameter 0 does nothing. However, the pan
+   slide left command resets the panning to 0 (hard left) on all ticks but
+   the first when using 0 as parameter. The first tick of this test should
+   be panned centre, the following ticks of the first row should be panned
+   hard left, the complete second row should be panned centre. The first
+   tick of the third row should be panned centre, the following ticks
+   should be panned to 5 (of 64) because the volume column is evaluated
+   first (so the panning is first set to 0 on every tick, then 5 is
+   added), and on the last row the first tick should be centre and then 5
+   should be added on every following tick.
+
+pathead.xm[[145]edit]
+
+   Current status: OpenMPT passes this test since revision ???.
+   Download: [146]pathead.xm
+   Description: Header size fields in XM files should be respected in all
+   cases, even if they are too small or too big. In this case, the pattern
+   header is not the usual 9 bytes, and the pattern header size indicates
+   this. You have to skip as many bytes as this field says before starting
+   to read the pattern.
+
+PatLoop-Break.xm[[147]edit]
+
+   Current status: OpenMPT passes this test since revision 1186.
+   Download: [148]PatLoop-Break.xm
+   Description: This is a nice test for E6x + Dxx behaviour. First make
+   sure that E6x is played correctly by your player. A position jump
+   should not clear the pattern loop memory (just like in Impulse
+   Tracker).
+
+PatLoop-Infinite.xm[[149]edit]
+
+   Current status: OpenMPT passes this test since revision 0.
+   Download: [150]PatLoop-Infinite.xm
+   Description: A simple test for infinite pattern loop behaviour. Even
+   ModPlug Tracker 1.16 passes this.
+
+PatLoop-Jumps.xm[[151]edit]
+
+   Current status: OpenMPT passes this test since revision 1186.
+   Download: [152]PatLoop-Jumps.xm
+   Description: This is similar to PatLoop-Break.xm.
+
+PatLoop-Nested.xm[[153]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [154]PatLoop-Nested.xm
+   Description: I am not sure if OpenMPT plays this correctly, because FT2
+   seems to play this differently every time. However, the core pattern
+   loop logic in OpenMPT should be correct.
+
+PatLoop-Overflow.xm[[155]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [156]PatLoop-Overflow.xm
+   Description: This test fails because OpenMPT will ignore the invalid
+   E60 restart position. After having played pattern 0, it should continue
+   on pattern 1, row 3, but such a row does not exist so it simply
+   continues on the first row and a computer voice says “fail”.
+   Fasttracker 2 jumps to this non-existent row and then returns to the
+   first pattern, saying “success”.
+
+PatLoop-Various.xm[[157]edit]
+
+   Current status: OpenMPT passes this test since revision 1186.
+   Download: [158]PatLoop-Various.xm
+   Description: This is similar to PatLoop-Break.xm. You should hear a bit
+   of quiet noise and then finally a computer voice saying "Success". If
+   it says "Fail", something is wrong with pattern loop and pattern break
+   behaviour.
+
+PatLoop-Weird.xm[[159]edit]
+
+   Current status: OpenMPT passes this test since revision 1186.
+   Download: [160]PatLoop-Weird.xm
+   Description: This is similar to PatLoop-Break.xm. The voice should say
+   "1 4 2" and then repeat "3 4 2" forever.
+
+PatternDelays.xm[[161]edit]
+
+   Current status: OpenMPT passes this test since revision 0.
+   Download: [162]PatternDelays.xm
+   Description: If there are multiple pattern delays (EEx), only the one
+   on the rightmost channel is considered (even if the EEx parameter is
+   0). Even ModPlug Tracker 1.16 passes this. The second pattern is not
+   very important, it only tests the command X ModPlug Tracker extension,
+   which adds fine pattern delays (like in the IT format) to XM files.
+
+PatternDelaysRetrig.xm[[163]edit]
+
+   Current status: OpenMPT passes this test since revision 0.
+   Download: [164]PatternDelaysRetrig.xm
+   Description: Only the very first tick of a row should be considered as
+   the “first tick”, even if the row is repeated multiple times using the
+   pattern delay (EEx) command (i.e. multiples of the song speed should
+   not be considered as the first tick). This is shown in this test by
+   using the extra-fine portamento commands, which are only executed on
+   the first tick.
+
+Pickup.xm[[165]edit]
+
+   Current status: OpenMPT passes this test since revision 1513.
+   Download: [166]Pickup.xm
+   Description: This seems to be related to [167]EnvOff.xm. Sound output
+   should never go completely silent between the notes.
+
+PortaDelay.xm[[168]edit]
+
+   Current status: OpenMPT passes this test since revision 3665 + 3667.
+   Download: [169]PortaDelay.xm
+   Description: I wish I didn't know about this test case, because it's
+   absolutely mind-boggling.
+     * If there is a portamento next to a note delay, it is executed (as
+       per [170]VolColDelay.xm: not on the first tick and not on the
+       delayed it), but its parameter is not updated (old parameter is
+       used).
+     * As the portamento is not applied on the delayed tick, the note next
+       to the delay effect is set, but the portamento target stays the
+       same as before.
+
+porta-delay.xm[[171]edit]
+
+   Current status: OpenMPT passes this test since revision 1098.
+   Download: [172]porta-delay.xm
+   Description: [DEL: If there is a portamento command next to a note
+   delay, the portamento command is ignored completely. :DEL] See
+   [173]PortaDelay.xm.
+
+Porta-LinkMem.xm[[174]edit]
+
+   Current status: OpenMPT passes this test since revision 1354.
+   Download: [175]Porta-LinkMem.xm
+   Description: E1x, E2x, X1x and X2x memory should not be shared. Both
+   channels should sound identical if effect memory is applied correctly.
+
+porta-offset.xm[[176]edit]
+
+   Current status: OpenMPT passes this test since revision 1102.
+   Download: [177]porta-offset.xm
+   Description: If there is a portamento command next to an offset
+   command, the offset command is ignored completely. In particular, the
+   offset parameter is not memorized.
+
+Porta-Pickup.xm[[178]edit]
+
+   Current status: OpenMPT passes this test since revision 1187.
+   Download: [179]Porta-Pickup.xm
+   Description: An instrument number should not reset the current
+   portamento target. The portamento target is valid until a new target is
+   specified by combining a note and a portamento effect.
+
+retrig.xm[[180]edit]
+
+   Current status: OpenMPT passes this test since revision 1923.
+   Download: [181]retrig.xm
+   Description: Fasttracker 2’s retrigger commands are especially dodgy.
+   For example, the first tick is skipped if a volume command is next to
+   the retrigger command, and the retrigger count is reset to 1 if there
+   is an instrument or note next to the command. Not sure when the speed 6
+   patterns were fixed, but the speed 4 issue was resolved in revision
+   1923.
+
+RetrigTick0.xm[[182]edit]
+
+   Current status: OpenMPT passes this test since revision 1929.
+   Download: [183]RetrigTick0.xm
+   Description: Another dedicated test for tick 0 retrig checks: All
+   combinations of instrument, note, note-off, etc...
+
+SampleChange.xm[[184]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [185]SampleChange.xm
+   Description: Fasttracker 2 seems to switch the sample on row 13, but
+   the instrument settings (including the fade-out settings of the
+   previous instrument) are kept.
+
+SetEnvPos.xm[[186]edit]
+
+   Current status: OpenMPT passes this test since revision 3585.
+   Download: [187]SetEnvPos.xm
+   Description: When using the Lxx effect, Fasttracker 2 only sets the
+   panning envelope position if the volume envelope’s sustain flag is set.
+
+TonePortamentoMemory.xm[[188]edit]
+
+   Current status: OpenMPT passes this test since revision 1312.
+   Download: [189]TonePortamentoMemory.xm
+   Description: Tone portamento is actually the only volume column command
+   with an effect memory (as it is shared with the other effect column).
+   Another nice bug demonstrated in this module is the combination of both
+   portamento commands (Mx and 3xx) in the same cell: The 3xx parameter is
+   ignored completely, and the Mx parameter is doubled, i.e. M2 3FF is the
+   same as M4 000.
+
+TremoloWaveforms.xm[[190]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [191]TremoloWaveforms.xm
+   Description: OpenMPT does not process the ramp down waveform like
+   Fasttracker 2.
+
+Tremor.xm[[192]edit]
+
+   Current status: OpenMPT passes this test since revision 1316.
+   Download: [193]Tremor.xm
+   Description: The tremor counter is not updated on the first tick, and
+   the counter is only ever reset after a phase switch (from on to off or
+   vice versa), so the best technique to implement tremor is to count down
+   to zero and memorize the curren phase (on / off), and when you reach
+   zero, switch to the other phase by reading the current tremor
+   parameter. Keep in mind that T00 recalls the tremor effect memory, but
+   the phase length is always incremented by one, i.e. T12 means “on for
+   two ticks, off for three”.
+
+TremorInstr.xm[[194]edit]
+
+   Current status: OpenMPT passes this test since revision 1996.
+   Download: [195]TremorInstr.xm
+   Description: Instrument numbers reset tremor count.
+
+TremorRecover.xm[[196]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [197]TremorRecover.xm
+   Description: Even if a tremor effect muted the sample on a previous
+   row, volume commands should be able to override this effect. Instrument
+   numbers should reset the tremor effect as well. Currently, OpenMPT only
+   supports the latter.
+
+VibratoCombinations.xm[[198]edit]
+
+   Current status: OpenMPT currently fails this test.
+   Download: [199]VibratoCombinations.xm
+   Description: Volume column vibrato should not reset the note frequency,
+   while effect column vibrato does it (like any other tracker).
+
+VibratoWaveforms.xm[[200]edit]
+
+   Current status: OpenMPT passes this test since revision 1214.
+   Download: [201]VibratoWaveforms.xm
+   Description: Fasttracker 2 tries to be inconsistent where possible, so
+   you have to duplicate a lot of code or add conditions to behave exactly
+   like Fasttracker. Yeah! Okay, seriously: Generally the vibrato and
+   tremolo tables are identical to those that ProTracker uses, but the
+   vibrato’s “ramp down” table is upside down. You will have to negate its
+   sign for it to work as intended.
+
+VolColDelay.xm[[202]edit]
+
+   Current status: OpenMPT passes this test since revision 3664 + 3666.
+   Download: [203]VolColDelay.xm
+   Description: If there's a note delay, slide commands in the volume
+   column are not executed on the first tick and, if there's an instrument
+   number next to it, also not on the delayed tick. This effectively
+   breaks fine volume slides.
+
+   In total, OpenMPT passes 54 out of 64 tests.
+   Retrieved from
+   "[204]http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/X
+   M&oldid=2089"
+   [205]Categories:
+     * [206]Development
+     * [207]XM Format
+
+Navigation menu
+
+Personal tools
+
+     * [208]Create account
+     * [209]Log in
+
+Namespaces
+
+     * [210]Page
+     * [211]Discussion
+
+Variants
+
+Views
+
+     * [212]Read
+     * [213]Edit
+     * [214]View history
+
+Actions
+
+Search
+
+   ____________________ Search Go
+
+Navigation
+
+     * [215]Main page
+     * [216]Download OpenMPT
+     * [217]OpenMPT Website
+     * [218]Community portal
+     * [219]Current events
+     * [220]Recent changes
+     * [221]Random page
+     * [222]Help
+
+Tools
+
+     * [223]What links here
+     * [224]Related changes
+     * [225]Special pages
+     * [226]Permanent link
+     * [227]Page information
+
+Print/export
+
+     * [228]Create a book
+     * [229]Download as PDF
+     * [230]Printable version
+
+     * This page was last modified on 20 July 2014, at 00:37.
+     * This page has been accessed 2,135 times.
+     * Content is available under [231]Creative Commons Attribution Share
+       Alike unless otherwise noted.
+
+     * [232]Privacy policy
+     * [233]About OpenMPT Wiki
+     * [234]Disclaimers
+
+     * [235]Creative Commons Attribution Share Alike
+     * [236]Powered by MediaWiki
+
+References
+
+   Visible links
+   1. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/XM&action=edit
+   2. http://wiki.openmpt.org/opensearch_desc.php
+   3. http://creativecommons.org/licenses/by-sa/3.0/
+   4. http://wiki.openmpt.org/index.php?title=Special:RecentChanges&feed=atom
+   5. http://wiki.openmpt.org/Development:_Test_Cases/XM#mw-navigation
+   6. http://wiki.openmpt.org/Development:_Test_Cases/XM#p-search
+   7. http://wiki.openmpt.org/Development:_Test_Cases/XM#3xxins.xm
+   8. http://wiki.openmpt.org/Development:_Test_Cases/XM#3xx-no-old-samp.xm
+   9. http://wiki.openmpt.org/Development:_Test_Cases/XM#Arpeggio.xm
+  10. http://wiki.openmpt.org/Development:_Test_Cases/XM#ArpeggioClamp.xm
+  11. http://wiki.openmpt.org/Development:_Test_Cases/XM#delay1.xm
+  12. http://wiki.openmpt.org/Development:_Test_Cases/XM#delay2.xm
+  13. http://wiki.openmpt.org/Development:_Test_Cases/XM#delay3.xm
+  14. http://wiki.openmpt.org/Development:_Test_Cases/XM#DelayCombination.xm
+  15. http://wiki.openmpt.org/Development:_Test_Cases/XM#delaycut.xm
+  16. http://wiki.openmpt.org/Development:_Test_Cases/XM#E90.xm
+  17. http://wiki.openmpt.org/Development:_Test_Cases/XM#EnvLoops.xm
+  18. http://wiki.openmpt.org/Development:_Test_Cases/XM#EnvOff.xm
+  19. http://wiki.openmpt.org/Development:_Test_Cases/XM#envretrig.xm
+  20. http://wiki.openmpt.org/Development:_Test_Cases/XM#finetune.xm
+  21. http://wiki.openmpt.org/Development:_Test_Cases/XM#Finetune-Precision.xm
+  22. http://wiki.openmpt.org/Development:_Test_Cases/XM#FineVol-LinkMem.xm
+  23. http://wiki.openmpt.org/Development:_Test_Cases/XM#FreqWraparound.xm
+  24. http://wiki.openmpt.org/Development:_Test_Cases/XM#FT2PanLaw.xm
+  25. http://wiki.openmpt.org/Development:_Test_Cases/XM#GlobalVolume.xm
+  26. http://wiki.openmpt.org/Development:_Test_Cases/XM#key_off.xm
+  27. http://wiki.openmpt.org/Development:_Test_Cases/XM#keyoff.2Binstr.xm
+  28. http://wiki.openmpt.org/Development:_Test_Cases/XM#KeyOff2.xm
+  29. http://wiki.openmpt.org/Development:_Test_Cases/XM#lowest.xm
+  30. http://wiki.openmpt.org/Development:_Test_Cases/XM#NoteLimit.xm
+  31. http://wiki.openmpt.org/Development:_Test_Cases/XM#NoteLimit2.xm
+  32. http://wiki.openmpt.org/Development:_Test_Cases/XM#NoteOff.xm
+  33. http://wiki.openmpt.org/Development:_Test_Cases/XM#NoteOff2.xm
+  34. http://wiki.openmpt.org/Development:_Test_Cases/XM#NoteOffFade.xm
+  35. http://wiki.openmpt.org/Development:_Test_Cases/XM#NoteOffVolume.xm
+  36. http://wiki.openmpt.org/Development:_Test_Cases/XM#OffDelay.xm
+  37. http://wiki.openmpt.org/Development:_Test_Cases/XM#OffsetRange.xm
+  38. http://wiki.openmpt.org/Development:_Test_Cases/XM#PanMemory.xm
+  39. http://wiki.openmpt.org/Development:_Test_Cases/XM#PanMemory2.xm
+  40. http://wiki.openmpt.org/Development:_Test_Cases/XM#PanOff.xm
+  41. http://wiki.openmpt.org/Development:_Test_Cases/XM#PanSlideMem.xm
+  42. http://wiki.openmpt.org/Development:_Test_Cases/XM#PanSlideZero.xm
+  43. http://wiki.openmpt.org/Development:_Test_Cases/XM#pathead.xm
+  44. http://wiki.openmpt.org/Development:_Test_Cases/XM#PatLoop-Break.xm
+  45. http://wiki.openmpt.org/Development:_Test_Cases/XM#PatLoop-Infinite.xm
+  46. http://wiki.openmpt.org/Development:_Test_Cases/XM#PatLoop-Jumps.xm
+  47. http://wiki.openmpt.org/Development:_Test_Cases/XM#PatLoop-Nested.xm
+  48. http://wiki.openmpt.org/Development:_Test_Cases/XM#PatLoop-Overflow.xm
+  49. http://wiki.openmpt.org/Development:_Test_Cases/XM#PatLoop-Various.xm
+  50. http://wiki.openmpt.org/Development:_Test_Cases/XM#PatLoop-Weird.xm
+  51. http://wiki.openmpt.org/Development:_Test_Cases/XM#PatternDelays.xm
+  52. http://wiki.openmpt.org/Development:_Test_Cases/XM#PatternDelaysRetrig.xm
+  53. http://wiki.openmpt.org/Development:_Test_Cases/XM#Pickup.xm
+  54. http://wiki.openmpt.org/Development:_Test_Cases/XM#PortaDelay.xm
+  55. http://wiki.openmpt.org/Development:_Test_Cases/XM#porta-delay.xm
+  56. http://wiki.openmpt.org/Development:_Test_Cases/XM#Porta-LinkMem.xm
+  57. http://wiki.openmpt.org/Development:_Test_Cases/XM#porta-offset.xm
+  58. http://wiki.openmpt.org/Development:_Test_Cases/XM#Porta-Pickup.xm
+  59. http://wiki.openmpt.org/Development:_Test_Cases/XM#retrig.xm
+  60. http://wiki.openmpt.org/Development:_Test_Cases/XM#RetrigTick0.xm
+  61. http://wiki.openmpt.org/Development:_Test_Cases/XM#SampleChange.xm
+  62. http://wiki.openmpt.org/Development:_Test_Cases/XM#SetEnvPos.xm
+  63. http://wiki.openmpt.org/Development:_Test_Cases/XM#TonePortamentoMemory.xm
+  64. http://wiki.openmpt.org/Development:_Test_Cases/XM#TremoloWaveforms.xm
+  65. http://wiki.openmpt.org/Development:_Test_Cases/XM#Tremor.xm
+  66. http://wiki.openmpt.org/Development:_Test_Cases/XM#TremorInstr.xm
+  67. http://wiki.openmpt.org/Development:_Test_Cases/XM#TremorRecover.xm
+  68. http://wiki.openmpt.org/Development:_Test_Cases/XM#VibratoCombinations.xm
+  69. http://wiki.openmpt.org/Development:_Test_Cases/XM#VibratoWaveforms.xm
+  70. http://wiki.openmpt.org/Development:_Test_Cases/XM#VolColDelay.xm
+  71. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  72. http://resources.openmpt.org/player_tests/xm/3xxins.xm
+  73. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  74. http://resources.openmpt.org/player_tests/xm/3xx-no-old-samp.xm
+  75. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  76. http://resources.openmpt.org/player_tests/xm/Arpeggio.xm
+  77. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  78. http://resources.openmpt.org/player_tests/xm/ArpeggioClamp.xm
+  79. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  80. http://resources.openmpt.org/player_tests/xm/delay1.xm
+  81. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  82. http://resources.openmpt.org/player_tests/xm/delay2.xm
+  83. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  84. http://resources.openmpt.org/player_tests/xm/delay3.xm
+  85. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  86. http://resources.openmpt.org/player_tests/xm/DelayCombination.xm
+  87. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  88. http://resources.openmpt.org/player_tests/xm/delaycut.xm
+  89. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  90. http://resources.openmpt.org/player_tests/xm/E90.xm
+  91. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  92. http://resources.openmpt.org/player_tests/xm/EnvLoops.xm
+  93. http://wiki.openmpt.org/Development:_Test_Cases/XM#EnvOff.xm
+  94. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  95. http://resources.openmpt.org/player_tests/xm/EnvOff.xm
+  96. http://wiki.openmpt.org/Development:_Test_Cases/XM#EnvLoops.xm
+  97. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+  98. http://resources.openmpt.org/player_tests/xm/envretrig.xm
+  99. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 100. http://resources.openmpt.org/player_tests/xm/finetune.xm
+ 101. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 102. http://resources.openmpt.org/player_tests/xm/Finetune-Precision.xm
+ 103. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 104. http://resources.openmpt.org/player_tests/xm/FineVol-LinkMem.xm
+ 105. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 106. http://resources.openmpt.org/player_tests/xm/FreqWraparound.xm
+ 107. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 108. http://resources.openmpt.org/player_tests/xm/FT2PanLaw.xm
+ 109. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 110. http://resources.openmpt.org/player_tests/xm/GlobalVolume.xm
+ 111. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 112. http://resources.openmpt.org/player_tests/xm/key_off.xm
+ 113. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 114. http://resources.openmpt.org/player_tests/xm/keyoff+instr.xm
+ 115. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 116. http://resources.openmpt.org/player_tests/xm/KeyOff2.xm
+ 117. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 118. http://resources.openmpt.org/player_tests/xm/lowest.xm
+ 119. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 120. http://resources.openmpt.org/player_tests/xm/NoteLimit.xm
+ 121. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 122. http://resources.openmpt.org/player_tests/xm/NoteLimit2.xm
+ 123. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 124. http://resources.openmpt.org/player_tests/xm/NoteOff.xm
+ 125. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 126. http://resources.openmpt.org/player_tests/xm/NoteOff2.xm
+ 127. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 128. http://resources.openmpt.org/player_tests/xm/NoteOffFade.xm
+ 129. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 130. http://resources.openmpt.org/player_tests/xm/NoteOffVolume.xm
+ 131. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 132. http://resources.openmpt.org/player_tests/xm/OffDelay.xm
+ 133. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 134. http://resources.openmpt.org/player_tests/xm/OffsetRange.xm
+ 135. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 136. http://resources.openmpt.org/player_tests/xm/PanMemory.xm
+ 137. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 138. http://resources.openmpt.org/player_tests/xm/PanMemory2.xm
+ 139. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 140. http://resources.openmpt.org/player_tests/xm/PanOff.xm
+ 141. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 142. http://resources.openmpt.org/player_tests/xm/PanSlideMem.xm
+ 143. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 144. http://resources.openmpt.org/player_tests/xm/PanSlideZero.xm
+ 145. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 146. http://resources.openmpt.org/player_tests/xm/pathead.xm
+ 147. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 148. http://resources.openmpt.org/player_tests/xm/PatLoop-Break.xm
+ 149. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 150. http://resources.openmpt.org/player_tests/xm/PatLoop-Infinite.xm
+ 151. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 152. http://resources.openmpt.org/player_tests/xm/PatLoop-Jumps.xm
+ 153. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 154. http://resources.openmpt.org/player_tests/xm/PatLoop-Nested.xm
+ 155. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 156. http://resources.openmpt.org/player_tests/xm/PatLoop-Overflow.xm
+ 157. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 158. http://resources.openmpt.org/player_tests/xm/PatLoop-Various.xm
+ 159. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 160. http://resources.openmpt.org/player_tests/xm/PatLoop-Weird.xm
+ 161. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 162. http://resources.openmpt.org/player_tests/xm/PatternDelays.xm
+ 163. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 164. http://resources.openmpt.org/player_tests/xm/PatternDelaysRetrig.xm
+ 165. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 166. http://resources.openmpt.org/player_tests/xm/Pickup.xm
+ 167. http://wiki.openmpt.org/Development:_Test_Cases/XM#EnvOff.xm
+ 168. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 169. http://resources.openmpt.org/player_tests/xm/PortaDelay.xm
+ 170. http://wiki.openmpt.org/Development:_Test_Cases/XM#VolColDelay.xm
+ 171. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 172. http://resources.openmpt.org/player_tests/xm/porta-delay.xm
+ 173. http://wiki.openmpt.org/Development:_Test_Cases/XM#PortaDelay.xm
+ 174. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 175. http://resources.openmpt.org/player_tests/xm/Porta-LinkMem.xm
+ 176. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 177. http://resources.openmpt.org/player_tests/xm/porta-offset.xm
+ 178. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 179. http://resources.openmpt.org/player_tests/xm/Porta-Pickup.xm
+ 180. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 181. http://resources.openmpt.org/player_tests/xm/retrig.xm
+ 182. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 183. http://resources.openmpt.org/player_tests/xm/RetrigTick0.xm
+ 184. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 185. http://resources.openmpt.org/player_tests/xm/SampleChange.xm
+ 186. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 187. http://resources.openmpt.org/player_tests/xm/SetEnvPos.xm
+ 188. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 189. http://resources.openmpt.org/player_tests/xm/TonePortamentoMemory.xm
+ 190. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 191. http://resources.openmpt.org/player_tests/xm/TremoloWaveforms.xm
+ 192. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 193. http://resources.openmpt.org/player_tests/xm/Tremor.xm
+ 194. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 195. http://resources.openmpt.org/player_tests/xm/TremorInstr.xm
+ 196. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 197. http://resources.openmpt.org/player_tests/xm/TremorRecover.xm
+ 198. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 199. http://resources.openmpt.org/player_tests/xm/VibratoCombinations.xm
+ 200. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 201. http://resources.openmpt.org/player_tests/xm/VibratoWaveforms.xm
+ 202. http://wiki.openmpt.org/index.php?title=Template:Testcase&action=edit&section=T-1
+ 203. http://resources.openmpt.org/player_tests/xm/VolColDelay.xm
+ 204. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/XM&oldid=2089
+ 205. http://wiki.openmpt.org/Special:Categories
+ 206. http://wiki.openmpt.org/Category:Development
+ 207. http://wiki.openmpt.org/Category:XM_Format
+ 208. http://wiki.openmpt.org/index.php?title=Special:UserLogin&returnto=Development%3A+Test+Cases%2FXM&type=signup
+ 209. http://wiki.openmpt.org/index.php?title=Special:UserLogin&returnto=Development%3A+Test+Cases%2FXM
+ 210. http://wiki.openmpt.org/Development:_Test_Cases/XM
+ 211. http://wiki.openmpt.org/index.php?title=Talk:Development:_Test_Cases/XM&action=edit&redlink=1
+ 212. http://wiki.openmpt.org/Development:_Test_Cases/XM
+ 213. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/XM&action=edit
+ 214. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/XM&action=history
+ 215. http://wiki.openmpt.org/Main_Page
+ 216. http://openmpt.org/download
+ 217. http://openmpt.org/
+ 218. http://wiki.openmpt.org/OpenMPT_Wiki:Community_portal
+ 219. http://wiki.openmpt.org/OpenMPT_Wiki:Current_events
+ 220. http://wiki.openmpt.org/Special:RecentChanges
+ 221. http://wiki.openmpt.org/Special:Random
+ 222. https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Contents
+ 223. http://wiki.openmpt.org/Special:WhatLinksHere/Development:_Test_Cases/XM
+ 224. http://wiki.openmpt.org/Special:RecentChangesLinked/Development:_Test_Cases/XM
+ 225. http://wiki.openmpt.org/Special:SpecialPages
+ 226. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/XM&oldid=2089
+ 227. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/XM&action=info
+ 228. http://wiki.openmpt.org/index.php?title=Special:Book&bookcmd=book_creator&referer=Development%3A+Test+Cases%2FXM
+ 229. http://wiki.openmpt.org/index.php?title=Special:Book&bookcmd=render_article&arttitle=Development%3A+Test+Cases%2FXM&oldid=2089&writer=rl
+ 230. http://wiki.openmpt.org/index.php?title=Development:_Test_Cases/XM&printable=yes
+ 231. http://creativecommons.org/licenses/by-sa/3.0/
+ 232. http://wiki.openmpt.org/OpenMPT_Wiki:Privacy_policy
+ 233. http://wiki.openmpt.org/OpenMPT_Wiki:About
+ 234. http://wiki.openmpt.org/OpenMPT_Wiki:General_disclaimer
+ 235. http://creativecommons.org/licenses/by-sa/3.0/
+ 236. http://www.mediawiki.org/
+
+   Hidden links:
+ 238. http://wiki.openmpt.org/Development:_Test_Cases/XM
+ 239. http://wiki.openmpt.org/Development:_Test_Cases/XM
+ 240. http://wiki.openmpt.org/Main_Page

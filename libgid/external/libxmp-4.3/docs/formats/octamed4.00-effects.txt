@@ -1,0 +1,438 @@
+OCTAMED-PRO COMMANDS AND EFFECTS:
+
+OctaMED-Pro commands provide the details and effects necessary for more subtle and sophisticated music.  In general, commands accomplish this by affecting the way notes play.
+Some commands can be used to control sampled sounds and MIDI devices and others work only with sampled sound.  The effect of the command can be quite different depending on the type of sound it is controlling.
+
+A command is an extension to the basic note description and it is often, but not always, on the same line as the note it affects.  Insert commands into the song from the BLOCK EDITOR using the same techniques for entering notes.  Entering the commands may
+
+Below is an example of a single note from a song.  The first two characters, C and #, are the note name, C sharp. The first two digits, 2 and 1, mean that the C# will be played at octave 2 by instrument 01.  If you have worked with any earlier versions th
+
+             Instrument numbers
+              | |
+Note name     | | Command Numbers
+        |     | | | |
+        C # 2 1 A 1 4 3 7
+            |         | |
+        Octave       Command arguments
+
+This section concerns the remaining four digits, 1, 4, 3, and 7.  The first two digits in this example, the 1 and 4, are the command number.  It instructs OctaMED-Pro to alter the normal way of playing the sound.  The next two digits,3 & 7, are the argume
+
+                                  102
+SONG AND SAMPLED INSTRUMENT COMMANDS:
+
+ARPEGGIO 00
+Changes the pitch six times between three different pitches during the duration of the note.  It can create a chord sound  or other special effect. Arpeggio works better with some instruments than others.
+
+The first pitch is the original note.
+The second pitch is the original note raised by the number of half steps indicated by the left part of the argument.
+The third pitch is the original note raised by the number of half steps indicated by the right part of the argument.
+
+For example, suppose you want to make a C Major chord arpeggio.  A C Major chord uses three notes of the scale, C, E, and G.
+
+The root pitch is C.
+The second is E   (C, C#, D, D#, E, 4 half steps from C.)
+The third is G    (C, C#, D, D#, E, F, F#, G, 7 half steps from C.)
+
+The argument then is 47.  Enter the four into the left side of the argument, and seven into the right.  You can extend the effect by entering the argument on subsequent lines, as shown below.
+
+C-2  10047
+---  00047
+---  00047
+
+The left and right parts of the argument for a minor chord are 3 and 7.
+
+SLIDE UP 01
+This slides the pitch of the current track up.  It decreases the period of the note by the amount of the argument on each timing pulse.  OctaMED-Pro can create slides automatically, but you may want to use this function for special effects.  Experiment wi
+
+C-2  10000
+---  00000
+---  0010F slide up a small amount
+
+                                  103
+SLIDE DOWN 02
+The same as SLIDE UP, but it slides down.
+
+PORTAMENTO 03
+Makes precise sliding easy.
+
+C-2  10000  <---Play a note C
+---  00000
+E-2  10305  <---This note is not played. It sets the slide target
+---  00300      to E and the slide speed to 5.
+---  00300  <---When speed is zero, it uses the previous speed.
+---  00306  <---The speed can be changed, of course.
+
+This example would slide from C to E, and stop immediately when E is reached. The remaining 3's have no effect.
+
+Usually slides are easiest done with the automatic slide generator.
+
+VIBRATO 04
+The left half of the argument is the vibrato speed, the right half is the depth.  If the numbers are zeros, the previous speed and depth are used.
+
+C-2  10000
+---  00000
+---  00433 slow, not much depth
+---  00437 medium depth
+---  0043F full depth
+---  00482 fast, not very deep
+
+SLIDE + FADE 05
+ProTracker compatible.
+This command is the combination of commands 0300 and 0Dxx. The argument is the fade speed. The slide will continue during this command.
+
+C-1  10000
+D-3  10303 slide at speed of 3
+---  00300 continue slide
+---  00502 continue slide + fade speed 2
+---  00502
+
+                                  104                                 
+VIBRATO + FADE 06
+ProTracker compatible.
+Combines commands 0400 and 0Dxx.  The argument is the fade speed.  The vibrato will continue during this command.
+
+C-1  104A3 vibrato
+---  00400 cont. vibrato
+---  00603 cont. vibrato + fade speed 3
+---  00603
+
+TREMOLO 07
+ProTracker compatible.
+This command is a kind of "volume vibrato".  The left number is the speed of the tremolo, and the right one is the depth. The depth must be quite high before the effect is audible.
+
+D-2  107DF  tremolo
+---  00700  continue
+---  00700
+
+HOLD and DECAY 08
+This command must be on the same line as the note.  The left half of the argument determines the decay and the right half the hold.
+
+C-2  10824  decay = 2, hold = 4
+-|-  10000
+-|-  10000
+---  00000
+
+SECONDARY TEMPO 09
+This sets the secondary tempo (the number of timing pulses per note). The argument must be from 01 to 20.
+
+--- 00903   double tempo
+--- 00000
+
+POSITION JUMP 0B
+The song plays up to this command and then jumps to another position in the play sequence.  The song then loops from the point jumped to, to the end of the song forever.  The purpose is to allow for introductions that play only once.
+                                  105
+The jump is to the play sequence number in the argument.  If the argument is 00, then the play sequence jumps to the first entry.
+
+--- 00B02   start playing from play sequence number 3
+
+SET VOLUME 0C
+Overrides the default volume of an instrument.
+
+A-3 40C20  played at volume 20
+
+Volume levels are 0-64.  The argument can be 00-64 (decimal) or 00 to 40 (hex).  The DEC and HEX gadgets on the PLAY PANEL control the interpretation of the volume values.
+
+You can change the volume of notes already played:
+
+A-3 40000
+--- 00000
+--- 00C10  volume to 10
+
+VOLUME SLIDE 0D
+Smoothly slides the volume up or down.  The left half of the argument increases the volume.  The right decreases it.
+
+C-3 30D01  0 = crescendo, 1 = decrescendo
+
+If the crescendo value is zero the player will perform a decrescendo.  If the crescendo is not zero, only a crescendo is performed regardless of the decrecendo value.
+
+C-2 30C40
+--- 00D01   a little quieter
+--- 00D01   even more quiet
+--- 00D20   and crescendo back to original
+
+You could use Command C, but it is not as smooth.
+
+SYNTH JUMP 0E
+When used with synthetic or hybrid instruments,it triggers a jump in the Waveform Sequence List.The argument is the jump destination (line no).
+
+                                  106
+C-4 40000   this should be a synthetic or hybrid instrument
+--- 00000
+--- 00E05   cause a jump to line # 5
+
+MISCELLANEOUS 0F
+The effect depends upon the value of the argument.
+
+If the argument is zero (00), this command causes an immediate jump to the next block on the Playing Sequence List.  If there is only one block, it will jump to the beginning of the current block.  Usually, this is better done by making the block shorter 
+
+C-2 10F00 this is the last note that will play in this block
+
+When the argument is from 01 to F0, it changes the Primary Tempo.  Tempos between 01 and 0A, are compatible with SoundTrackers.  You should, however, use the Command 09 for more accurate compatibility (set the Primary Tempo to 33 in that case).
+
+C-2 60FF0  highest tempo
+--- 00000
+--- 00F0B  slowest
+
+Data bytes from FF1 to FFF produce effects documented below:
+
+FF1 plays the note twice.  It can create fast rhythms.  For example:
+
+C-3 20FF1   is the same as   C-3 20000
+                             C-3 20000
+
+FF2 plays the note only once, but it is not started immediately.  For example:
+
+C-3 20FF2   is the same as   --- 00000
+                             C-3 20000
+
+(both of the above commands assume a Secondary Tempo of 6)
+
+FF3 plays the note three times (very fast).
+
+                                  107
+
+FF8 turns the low-pass filter off.
+
+FF9 turns the low-pass filter on.
+
+FFD works only with sampled sounds.  It changes the pitch of the channel, but does not play the new note.
+
+C-1 20000   play note
+--- 00000
+C-2 20FFD  do not play note, just set the pitch to C-2
+
+This command is practically the same as 3FF.
+
+FFE stops playing the song.  If you want a song to play only once, put this at the end of the song.  This can be easily entered by clicking the STOP button on the PLAY PANEL while holding the Shift key.
+
+FFF Stops the note on the current track.  It is nearly identical to C00 for sampled sounds, but also works with MIDI.  It is useful in the Split Channel Mode.
+
+SLIDE PITCH UP (only once) 11
+Equivalent to ProTracker command E1x.
+Lets you control the pitch with great accuracy.  This command changes only this occurrence of the note.
+
+C-2 11105  slightly above the C-2
+
+You can play a note at any period value you wish.  For example, C-2 is 428.  To play it at period 431, just enter:
+
+C-2 11103.
+
+SLIDE DOWN (only once) 12
+Equivalent to ProTracker command E2x.
+
+VIBRATO 14
+ProTracker compatible.  This is similar to command 04 except the depth is halved, to give greater accuracy.
+
+                                  108                                 
+SET FINETUNE 15
+Set a finetune value for a note, overrides the default fine tune value of the instrument.
+
+C#3 21503 finetune +3
+D-2 315F8 finetune -8
+
+Since these are hex numbers, negative numbers must be expressed as:
+
+-1 = FF     -5 = FB
+-2 = FE     -6 = FA
+-3 = FD     -7 = F9
+-4 = FC     -8 = F8
+
+Only values F8 (-8) to FF (-1) and 00 to 07 should be used.
+
+LOOP 16
+Creates a loop within a block.  1600 marks the beginning of the loop.  The next occurrence of the 16 command designates the number of loops.
+Same as ProTracker E6x
+
+004 C-3 11600   argument = 00  mark loop begin
+005 D#2 10000
+006 --- 11603   argument = 03  loop three times
+
+This example would loop lines 004-006 three times before going on.  You cannot nest loops.
+
+STOP NOTE 18
+Cuts the note by zeroing the volume at the pulse specified in the argument value.  This is the same as ProTracker command ECx
+This is done by setting the volume to zero (unlike command 08, which actually turns off the note by turning off DMA).  This also works with MIDI.
+
+C-2 11801 very short
+D-2 11802 slightly longer
+E-2 11804 even longer
+
+
+
+                                  109
+SET SAMPLE START OFFSET 19
+Same as ProTracker command 9.
+When playing a sample, this command sets the starting offset (at steps of $100 = 256 bytes).  Useful for speech samples.
+
+C-2 11904 play the sample starting at offset $400 = 1024
+
+SLIDE VOLUME UP ONCE 1A
+Only once ProTracker command EAx.
+Lets volume slide slowly once per line.
+
+D-2 11A01   a looped string, perhaps, default volume 0
+--- 01A01
+
+VOLUME DOWN  Only once ProTracker command EBx.
+
+JUMP TO NEXT BLOCK 1D
+Jumps to the nest line in the PLAY SEQUENCE LIST at the specified line. ProTracker command D
+This command is like F00, except that you can specify the line number of the first line to be played.  The line number must be specified in HEX.
+
+--- 01D03  next block, start on line 3
+
+PLAY LINE x TIMES 1E
+Plays only commands, notes not replayed. ProTracker pattern delay.
+
+C-2 10000--- 00000
+--- 00101--- 01E06  delay this line six times
+
+COMBINED NOTE DELAY-RETRIGGER 1F
+1Fxy (x=delay, y=retrigger.
+Gives accurate control of notes. You can delay the note any number of timing pulses, and initiate fast retrigger.  The left argument number is the note delay value, the right one is the retrigger value.
+
+C-2 11F20   delay 2 timing pulses
+pulse   0   ---
+        1   ---
+        2   C-2
+        3   ---
+                                  110
+C-2 11F02   retrigger every second pulse
+pulse   0   C-2
+        1   ---
+        2   C-2
+        3   ---
+        4   C-2
+
+C-2 11F22    delay 2 pulses AND retrigger every second pulse
+pulse   0   ---
+        1   ---
+        2   C-2
+        3   ---
+        4   C-2
+
+he command 0FF1 is equivalent to 1F03, and 0FF2 to 1F30.
+
+
+MIDI COMMANDS:
+
+CONTROLLER VALUE 00
+See Command 05 for a description of use.
+
+PITCH BENDER UP 01
+Turns up the pitch bender 8 times the argument steps on each timing pulse. Because the ranges of pitch benders differ with various MIDI devices, you must find the values through experimentation.  Also, when a new note is played, the pitch bender is not au
+
+C-2 101FF   turn the pitch bender up very fast
+--- 00000
+--- 00100  reset the pitch bender
+
+PITCH BENDER DOWN 02
+The same as previous command, but it slides down.
+
+SET PITCH BENDER 03
+Sets the pitch bender to an absolute value, instead of sliding as Commands 01 and 02 do.  The argument is the pitch bender value, expressed as a signed hexadecimal digit (a nightmare for non-programmers).
+                                  111
+80 (-7F) = smallest value
+      00 = center position
+      7F = largest value
+
+C-2 30000
+--- 0037F  pitch bender to max. value
+--- 00300  reset
+
+MODULATION WHEEL 04
+Affects the modulation wheel on the current channel.  The argument can be from 00 to 7F.
+
+00 = no modulation
+7F = maximum.  Values 80 to FF are not used.
+
+CONTROLLER NUMBER 05
+This is used with Command 0 to change any controller (MIDI command B x cc vv, where cc = controller number, vv = value).
+
+Set the controller number you want to change with Command 5.  Then, select the value with Command 0.  Subsequent uses of Command 0 will affect the controller previously set with Command 5.  Each channel has its own controller number.  If you want to set t
+
+Assume instrument 03 is set to MIDI channel 1:
+
+C-2 30000
+--- 00507  controller 07, volume (MIDI standard)
+D-2 3007F  value is 7F, command B0 07 7F is sent
+--- 00000
+F-3 30001  low volume (01)
+--- 0055C  select controller 5C (tremolo depth)
+G-4 30080  set to 0 (note: 80 = 00 )
+
+HOLD 08    This command must be on the same line as the note. The right half of the argument determines the hold value.  This will works equally well with sampled sounds, except decay is ignored.
+
+                                  112                                 
+
+                                 
+
+SEND MIDI A MESSAGE 10
+Sends a MIDI message. The argument is the message number.  The first message has number 0, so you must subtract one to convert the message number from the message editor for use with this command.
+
+--- 01000 send the first message
+
+The MIDI message data has priority over the MIDI note data.  MIDI timing pulses are sent immediately even if a message dump is going on.
+
+POLYPHONIC AFTERTOUCH 0A
+Changes the polyphonic AfterTouch for the most recent note.  The value should be 00 to 7F.
+
+C-3 40000
+--- 00A30  AfterTouch 30
+--- 00000
+--- 00A00  AfterTouch 00
+
+NOTE VELOCITY 0C
+Overrides the default velocity (volume) of an instrument. This command must appear on the same line with a note.
+
+A-3 40C20  played at volume 20
+
+This command accepts an argument similar to Command 0C for sampled sounds (see above). The volume range of 0-64 is converted to the velocity range of 0-127.
+
+
+
+
+
+
+
+
+
+
+                                  113
+
+
+
+CHANNEL PRESSURE 0D
+
+Sends a channel pressure (channel AfterTouch) message using the most recently used channel.  The argument should be 00 to 7F.
+
+D#5 J0000
+--- 00D40  channel AfterTouch 40
+--- 00D00  to 00
+
+PAN CONTROL 0E
+Controls the stereo location of the sound.  The argument can be from 00 to 7F.
+
++-----+------+--------+
+|left |  mid |  right |
++-----+------+--------+
+|  00 |   3F |   7F   |
++-----+------+--------+
+
+MISCELLANEOUS 0F
+This command also has some effects for MIDI use only, in addition to those defined in the section "Song and sampled instrument commands" above.
+
+FFA sends a "hold pedal on" -command.
+FFB sends a "hold pedal off" -command.
+
+CHANGE MIDI PRESET 1C
+Changes the MIDI preset number of the current instrument.  Use with caution in multi-modules.
+                                  
+
+
+
+
+
+
+
+                                  114

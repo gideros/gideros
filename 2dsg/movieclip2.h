@@ -103,6 +103,7 @@ protected:
 	{
 		int start;
 		int end;
+		int internalIndex;
 		Sprite* sprite;
 		std::vector<Parameter> parameters;
 	};

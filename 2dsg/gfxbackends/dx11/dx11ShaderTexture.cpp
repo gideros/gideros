@@ -10,12 +10,15 @@
 
 ID3D11SamplerState *dx11ShaderTexture::samplerRepeat=NULL;
 ID3D11SamplerState *dx11ShaderTexture::samplerClamp=NULL;
+ID3D11SamplerState *dx11ShaderTexture::samplerRepeatFilter=NULL;
+ID3D11SamplerState *dx11ShaderTexture::samplerClampFilter=NULL;
 
 dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)
 {
 	this->width=width;
 	this->height=height;
 	this->wrap=wrap;
+	this->filter=filtering;
 
     D3D11_TEXTURE2D_DESC tdesc;
     D3D11_SUBRESOURCE_DATA tbsd;

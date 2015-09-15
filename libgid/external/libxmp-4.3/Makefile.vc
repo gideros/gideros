@@ -1,0 +1,26 @@
+CC	= cl
+CFLAGS	= /O2 /Iinclude /Isrc /Isrc\win32 /DBUILDING_DLL /DWIN32 \
+	  /Dinline=__inline /DPATH_MAX=1024 /D_USE_MATH_DEFINES
+LD	= link
+LDFLAGS	= /DLL /RELEASE /OUT:$(DLL)
+DLL	= libxmp.dll
+
+OBJS	= src\virtual.obj src\format.obj src\period.obj src\player.obj src\read_event.obj src\dataio.obj src\mkstemp.obj src\fnmatch.obj src\md5.obj src\lfo.obj src\envelope.obj src\scan.obj src\control.obj src\med_extras.obj src\filter.obj src\fmopl.obj src\effects.obj src\mixer.obj src\synth_null.obj src\mix_all.obj src\adlib.obj src\load_helpers.obj src\load.obj src\hio.obj src\hmn_extras.obj src\extras.obj src\smix.obj src\memio.obj src\tempfile.obj src\loaders\common.obj src\loaders\iff.obj src\loaders\itsex.obj src\loaders\asif.obj src\loaders\voltable.obj src\loaders\sample.obj src\loaders\xm_load.obj src\loaders\mod_load.obj src\loaders\s3m_load.obj src\loaders\stm_load.obj src\loaders\669_load.obj src\loaders\far_load.obj src\loaders\mtm_load.obj src\loaders\ptm_load.obj src\loaders\okt_load.obj src\loaders\amd_load.obj src\loaders\rad_load.obj src\loaders\ult_load.obj src\loaders\mdl_load.obj src\loaders\it_load.obj src\loaders\stx_load.obj src\loaders\pt3_load.obj src\loaders\sfx_load.obj src\loaders\flt_load.obj src\loaders\st_load.obj src\loaders\emod_load.obj src\loaders\imf_load.obj src\loaders\digi_load.obj src\loaders\fnk_load.obj src\loaders\ice_load.obj src\loaders\hsc_load.obj src\loaders\liq_load.obj src\loaders\ims_load.obj src\loaders\masi_load.obj src\loaders\amf_load.obj src\loaders\psm_load.obj src\loaders\stim_load.obj src\loaders\mmd_common.obj src\loaders\mmd1_load.obj src\loaders\mmd3_load.obj src\loaders\rtm_load.obj src\loaders\dt_load.obj src\loaders\no_load.obj src\loaders\arch_load.obj src\loaders\sym_load.obj src\loaders\med2_load.obj src\loaders\med3_load.obj src\loaders\med4_load.obj src\loaders\dbm_load.obj src\loaders\umx_load.obj src\loaders\gdm_load.obj src\loaders\pw_load.obj src\loaders\gal5_load.obj src\loaders\gal4_load.obj src\loaders\mfp_load.obj src\loaders\asylum_load.obj src\loaders\hmn_load.obj src\loaders\mgt_load.obj src\loaders\chip_load.obj src\loaders\abk_load.obj src\loaders\prowizard\prowiz.obj src\loaders\prowizard\ptktable.obj src\loaders\prowizard\tuning.obj src\loaders\prowizard\ac1d.obj src\loaders\prowizard\di.obj src\loaders\prowizard\eureka.obj src\loaders\prowizard\fc-m.obj src\loaders\prowizard\fuchs.obj src\loaders\prowizard\fuzzac.obj src\loaders\prowizard\gmc.obj src\loaders\prowizard\heatseek.obj src\loaders\prowizard\ksm.obj src\loaders\prowizard\mp.obj src\loaders\prowizard\np1.obj src\loaders\prowizard\np2.obj src\loaders\prowizard\np3.obj src\loaders\prowizard\p61a.obj src\loaders\prowizard\pm10c.obj src\loaders\prowizard\pm18a.obj src\loaders\prowizard\pha.obj src\loaders\prowizard\prun1.obj src\loaders\prowizard\prun2.obj src\loaders\prowizard\tdd.obj src\loaders\prowizard\unic.obj src\loaders\prowizard\unic2.obj src\loaders\prowizard\wn.obj src\loaders\prowizard\zen.obj src\loaders\prowizard\tp3.obj src\loaders\prowizard\p40.obj src\loaders\prowizard\xann.obj src\loaders\prowizard\theplayer.obj src\loaders\prowizard\pp21.obj src\loaders\prowizard\starpack.obj src\loaders\prowizard\titanics.obj src\loaders\prowizard\skyt.obj src\loaders\prowizard\novotrade.obj src\loaders\prowizard\hrt.obj src\loaders\prowizard\noiserun.obj src\depackers\ppdepack.obj src\depackers\unsqsh.obj src\depackers\mmcmp.obj src\depackers\readrle.obj src\depackers\readlzw.obj src\depackers\unarc.obj src\depackers\arcfs.obj src\depackers\xfd.obj src\depackers\inflate.obj src\depackers\muse.obj src\depackers\unlzx.obj src\depackers\s404_dec.obj src\depackers\unzip.obj src\depackers\gunzip.obj src\depackers\uncompress.obj src\depackers\unxz.obj src\depackers\bunzip2.obj src\depackers\unlha.obj src\depackers\xz_dec_lzma2.obj src\depackers\xz_dec_stream.obj src\depackers\oxm.obj src\depackers\vorbis.obj src\depackers\crc32.obj src\win32\ptpopen.obj
+
+TEST	= test\md5.obj test\test.obj
+
+.c.obj:
+	$(CC) /c $(CFLAGS) /Fo$*.obj $<
+
+all: $(DLL)
+
+$(DLL): $(OBJS)
+	$(LD) $(LDFLAGS) $(OBJS)
+
+clean:
+	del $(OBJS) $(DLL) *.lib *.exp
+
+check: $(TEST)
+	$(LD) /RELEASE /OUT:test\libxmp-test.exe $(TEST) libxmp.lib
+	copy libxmp.dll test
+	cd test & libxmp-test

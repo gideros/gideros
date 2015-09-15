@@ -1,0 +1,672 @@
+PTMFORM v1.17, 26 October 1996
+
+1) Introduction
+~~~~~~~~~~~~~~~
+
+Poly Tracker is a Scream Tracker 3 like tracker written by Lone Ranger of AcmE
+and thoroughly tested by ViC / AcmE and The REW / Nostalgia. The original
+intent was to release the tracker as a shareware product, but after the release
+of Fast Tracker 2, Lone Ranger decided the tracker would need a major face-lift
+before a 'commercial' release. ViC and The REW compose all of their music in
+Poly Tracker, and because they are rather succesful in doing so (they are the
+two best musicians in the Netherlands) more and more people ask for the format
+of the PTM (Poly Tracker Module) files Poly Tracker produces.
+
+As is normal with coders, Lone Ranger did not have the PTM file format (like
+Otto Chrons of DMP still does not have a description of the AMF format), but
+because the Nostalgia products use PTM files I got some source code and header
+descriptions and stuff from Lone Ranger so I could draw up a simple format
+description. This description did not really suffice for a scene release
+(although a number of people already have this document), so here I am typing a
+less concise description allowing other scene members to support the PTM format
+in their players.
+
+This is a description of version 2.03 of the PTM format. Early formats are no
+longer used or supported by the current version of Poly Tracker (it still says
+"version 1.0=E1", but I think there have been about a dozen different versions,
+including some customized test versions), and therefor I stick to version 2.03
+here.
+
+When writing Poly Tracker, Lone Ranger needed a simple, straight forward module
+format. Since Poly Tracker was to become a better Scream Tracker (both ViC and
+The REW liked the Scream Tracker 3 interface but the program itself did not
+meet their requirements) Lone Ranger took a quick look at the S3M format and
+decided to adept it to the needs of Poly Tracker. This means that the PTM
+format has many similiarities with the S3M format, leaving out some typical ST3
+fields and putting in some extra Poly Tracker specific stuff. This may cause
+the format to look a little awkard, but remember that it was never the
+intention to release a Poly Tracker using this specification - it was merely a
+convenient beta-version format.
+
+This document is divided into several parts. First, I give a concise
+description of the PTM lay-out, followed by a more thorough and detailed
+explanation. The next section covers the effects used by Poly Tracker, followed
+by the last chapter, written for those who already include S3M support into
+their player, comparing the two formats.
+
+Well, that's enough introduction chat, I hope you find this a useful document.
+Any questions regarding this format can be sent to me by e-mail. Momentarely my
+address is jal@hacom.nl. You can also check the Nostalgia home page:
+http://pitel_lnx.ibk.fnt.hvu.nl/~therew/Nostalgia.html, where any updates
+of this document can also be found.
+
+Version 1.1 of this document covers one additional subject: the volume table
+used in Poly Tracker. It is covered in section 6.
+
+JAL / Nostalgia, 27 May / 12 September 1995
+
+
+2) Concise description of the PTM format / PTM format reference
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a concise description of the PTM format. Four columns are used: offset,
+name, type and description. (rel.)offset is the (relative) offset of the field,
+name is the field's name, type the field's type and description a short
+description (a more detailed description can be found in the next section). The
+field type descriptions used are:
+
+  a = ascii character (8 bits)
+  b = byte (8 bits)
+  w = word (16 bits)
+  l = long (32 bits)
+
+A number after the type indicates an array of that size (in elements). 'l4'
+would mean an array of 4 longs. All 'reserved' fields are currently not in use,
+neither internally nor externally.
+
+I: header
+
+offset      name         type description
+
+  0         SongName     a28  name of song, asciiz string
+ 28         EofMark      a    eof mark, #26
+ 29         FileVersion  w    version of file, currently 0203h
+ 31         Reserved1    b    reserved, set to 0
+ 32         nOrders      w    number of orders (0..256)
+ 34         nInstr       w    number of instruments (1..255)
+ 36         nPatterns    w    number of patterns (1..128)
+ 38         nChannels    w    number of channels (voices) used (1..32)
+ 40         FileFlags    w    set to 0
+ 42         Reserved2    w    reserved, set to 0
+ 44         SongID       a4/l song identification, 'PTMF' or 464d5450h
+ 48         Reserved3    b16  reserved, set to 0
+ 64         ChSet        b32  channel panning settings, 0..15, 0 = left,
+                              7 = middle, 15 = right
+ 96         Orders       b256 order list, valid entries 0..nOrders-1
+352         PatSeg       w128 pattern segments (segment = 16 bytes)
+608         (size)
+
+II: instruments
+
+The instrument data directly follows the header. It is an array of 0..nInstr-1
+of the following structure:
+
+rel.offset  name         type description
+
+  0         SampleType   b    sample type (bit array)
+  1         DOSName      a12  name of external sample file
+ 13         Volume       b    default volume
+ 14         C4Spd        w    C4 speed
+ 16         SampleSeg    w    sample segment (*)
+ 18         FileOfs      l    offset of sample data
+ 22         Length       l    sample size (in bytes)
+ 26         LoopBeg      l    start of loop
+ 30         LoopEnd      l    end of loop
+ 34         GUSBegin     l    GUS begin address (*)
+ 38         GUSLStart    l    GUS loop start address (*)
+ 42         GUSLEnd      l    GUS loop end address (*)
+ 46         GUSLoop      b    GUS loop flags (*)
+ 47         Reserved     b    reserved, set to 0
+ 48         SampleName   a28  name of sample, asciiz
+ 76         SampleID     a4/l sample identification, 'PTMS' or 534d5450h
+ 80         (size)
+
+SampleType bit flags:
+
+  bits 0 and 1: 0 = no sample (instrument info only)
+                1 = normal sample (FileOfs / Length fields are valid)
+                2 = OPL2 / OPL3 instrument (not used)
+                3 = MIDI instrument (not used)
+  bit 2: sample loop (0 = no loop, 1 = loop)
+  bit 3: loop type (0 = unidirectional, 1 = bidirectional)
+  bit 4: sample resolution (0 = 8 bits, 1 = 16 bits)
+  bit 5: tonable sample (0 = tonable, 1 = non-tonable)
+
+(*) these are used internally only, and set to 0 in the file
+
+III: patterns
+
+The patterns are stored after the instrument information. Each pattern starts
+at a 16-byte aligned position. The size of each pattern is calculated by
+subtracting the next offset from the current. The next offset for the last
+pattern is the offset of the first sample (retrieved from the first intrument's
+FileOfs field). This is a little akward and was due for improvement, but Lone
+Ranger never came around to doing it.
+
+Data byte reference:
+
+0 - next row
+else: venc.cccc
+  ccccc - channel (0..31)
+  n - read note (1 byte, 254 (note off), 0 (no note), 1..120 (c-0..b-9)) and
+      sample number (1 byte, 0 (no sample), 1..255)
+  e - read effect (1 byte, 0..22 (0..N)) and parameter(s) (1 byte (2 nibbles))
+  v - read volume (1 byte, 0..64)
+
+IV: samples
+
+The sample data follows the pattern data. Each sample starts at the offset as
+described in the FileOfs field of the instrument structure and has a length as
+described in the Length field.
+
+
+3) Detailed description of the PTM format
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+I: header
+
+The first 28 bytes are an asciiz string containing the name of the song,
+followed by a end-of-file mark, thus making the file typable. Next comes the
+file version (currently 2.03). All older versions are not compatible with the
+current format and players / trackers should not attempt to load them. After a
+reserved byte follow the number of entries in the order list (0..256), the
+number of instruments (1..255), the number of patterns (1..128), and the number
+of channels (voices) used (1..32).
+
+To detect whether the file is a Poly Tracker module, check the longint at
+offset 44. The 4 characters here should contain the value 'PTMF'. ChSet
+contains the panning settings for the channels (0..15, 0 = left, 7 = middle, 15
+= right), Orders is the order list containing the pattern numbers to play.
+
+PatSeg needs some further explanation. Poly Tracker loads a PTM file at offset
+0 of the file's memory segment. All patterns are also paragraph aligned (i.e.
+at 16 byte (segment) bounderies), both in the memory as in the file (making it
+possible to load the header and the patterns in one read). The PatSeg array
+contains the absolute file offsets divided by 16. Thus, the first pattern has
+file offset PatSeg[0] * 16, the second PatSet[1] * 16 and so on. When
+PolyTracker loads the file, the PatSeg array is adjusted to contain the
+absolute segment numbers, by adding the file's segment to all PatSeg array
+elements. (Poly Tracker has some more tricks for internal pattern storage as it
+is capable of using EMS, but that's of no concern for this document.)
+
+II: instruments
+
+The instrument structure starts with a byte denoting the sample type. It is a
+bitarray, individual bits are used to store information. The first two bits
+either contain 0 (unused) or 1 (used). Other values are currently not in use.
+If a sample is unused the FileOfs and Length fields should be ignored (there is
+no sample data for this instrument in the file). Bit 2 indicates whether or not
+the sample should loop. 0 means no loop, 1 means looping is enabled. Bit 3 is
+only valid if bit 2 is set to 1. If bit 3 is set to 1, the sample loop should
+be played bi-directional, otherwise it is uni-directional. Bit 4 defines the
+sample resolution. If set to 1, the sample is a 16 bit sample, 8 bit otherwise.
+Bit 5 is the last bit defined. If set, the instrument is "non-tonable", i.e. an
+effect or a percussion instrument. This bit should be ignored during play-back.
+
+Following the sample type is the DOS file name of the original sample (since
+Poly Tracker cannot sample or create samples, all samples are loaded from
+disk). It has the usual format: filename, dot, extension. If the name contains
+less than 12 characters it should be zero-extended.
+
+Volume is the sample's default volume, and has a value from 0 up to 64. Note
+that, as with most trackers, this is not a relative, but an absolute value.
+Thus, it should be regarded as a first 'volume set' command. The C4Spd is the
+frequency of the sample when a C-4 is played. In older MOD formats this is also
+called C2 speed.
+
+SampleSeg is the internal memory segment of the sample data and currently not
+used by Poly Tracker. FileOfs is the absolute offset of the sample data in the
+PTM file, Length the size of the sample in bytes. LoopBeg and LoopEnd are the
+looping values (used only when SampleType bit 2 is set). When bit 4 of the
+sample type field is set (the sample is 16 bit), LoopBeg and LoopEnd should
+have an even value.
+
+Since Poly Tracker loads the instruments directly into memory, there are some
+fields used only internally. The four GUS fields are used for internal
+management of the GUS heap and other GUS related variables, and should be set
+to 0 when on disk.
+
+SampleName is an asciiz string containing the sample/instrument name (or some
+comment if the first two bits of sample type are set to 0). SampleID is the
+sample identification, containing the four characters 'PTMS'.
+
+III: patterns
+
+Patterns are stored row by row, each row containing none, one, or multiple
+voices. The patterns contain compressed information, as opposed to the
+one-position-one-byte approach of most trackers. In essence, patterns area
+byte stream. The compression scheme is similar to the ST3 approach. Patterns
+always contain 64 rows. The decoding scheme is as follows:
+
+repeat
+  read byte
+  if (byte = 0) then
+    next row
+  else
+    channel = bits 0..4
+    if (bit 5 is set) then
+      read note (1 byte)
+      read sample number (1 byte)
+    endif
+
+    if (bit 6 is set) then
+      read effect (1 byte)
+      read effect parameter (1 byte)
+    endif
+
+    if (bit 7 is set) then
+      read volume (1 byte)
+    endif
+  endif
+until 64 rows read
+
+If the data byte is 0 it means that the current row contains no (more)
+information. If not, bit 5 is checked to see whether a note and sample
+information are stored. If so, they are read. Next, bit 6 is checked to see
+whether an effect and its parameter are stored. If so, they are read. Finally,
+bit 7 is checked. If bit 7 is set, this means that a volume byte is stored, and
+it is read. The patterns has been completely read when all 64 rows have been
+read (the current file format does not allow for any other number of rows).
+
+The channel number is a number from 0 to 31 (or nChannels - 1 if less than 32
+channels are used). Note values are 254 (note off), 0 (no note, not used in
+compressed patterns) or between 1 and 120: 1 = C-0, 120 = B-9. Sample number is
+0 (no sample) or a value between 1 and 255 (or nInstr if less than 255
+instruments). The effect byte can have a value between 0 and 23. 0 through 9
+are effects 0 through 9, 10 through 23 are effects A through N (see next
+chapter for a description of the effects used). The last value, volume, can
+have a value between 0 and 64.
+
+IV: samples
+
+The samples are stored in a signed delta format, allowing a high compression
+rate with 8 bit samples. 16 bit samples are also stored this way, although they
+do not have the 8 bit compression advantage.
+
+The following piece of C code shows how to convert the signed delta format to
+straight format:
+
+  n = 0;
+  for (i = 0; i < size; i++)
+  {
+    n = (data[i] += n);
+    data[i] ^= 0x80;      /* only when converting to unsigned */
+  }
+
+In Pascal:
+
+  N := 0;
+  for I := 0 to Size-1 do begin
+    Inc (Data^[I], N);
+    N := Data^[I];
+    Data^[I] := Data^[I] xor $80;   {only when converting to unsigned}
+  end;
+
+In assembly (es:di points to start of sample buffer):
+
+      mov ah, 0
+      mov cx, Size
+@@1:  mov al, es:[di]
+      add al, ah
+      mov ah, al
+      xor al, 80h         ; only when converting to unsigned
+      stosb
+      loop @@1
+
+The current version does not allow for compressed samples, but when ZIPped or
+ARJed 8 bit delta samples compress considerably better than normally stored
+samples.
+
+
+4) Poly Tracker Effects
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Poly Tracer uses 24 effects, numbered 0 through 9 and A through N. Since I am
+no musician I do not know the precise meaning of the commands, but I trust most
+people *do* know, so I excluded a description of the commands.
+
+cmd#    meaning
+
+0xy     arpeggio
+1xx     slide down
+1fx     fine slide down
+1ex     extra fine slide down
+2xx     slide up
+2fx     fine slide up
+2ex     extra fine slide up
+3xx     tone portamento
+4xy     vibrato (x = speed, y = depth)
+5xy     tone portamento + volume slide
+6xy     vibrato + volume slide
+7xy     tremolo (x = speed, y = depth)
+8xx     - (not used)
+9xx     set sample offset (to xx00h)
+ax0     volume slide up
+a0x     volume slide down
+axf     fine volume slide up
+afx     fine volume slide down
+bxx     set song position
+cxx     set volume (for MTM/MOD compatibility only)
+dxx     set break position
+e0x     - (not used)
+e1x     fine slide down (for MTM/MOD compatibility only, use 1fx)
+e2x     fine slide up (for MTM/MOD compatibility only, use 2fx)
+e3x     - (not used)
+e4x     set vibrato wave form (see table 4.1)
+e5x     set sample fine tune value (see table 4.3)
+e60     set loop start
+e6x     loop to start
+e7x     set tremolo wave form (see table 4.1)
+e8x     set pan position (0 = left, 7 = middle, 15 = right)
+e9x     retrigger note (for MTM/MOD compatibility only, use h0x or h8x)
+eax     fine volume slide up (for MTM/MOD compatibility only, use axf)
+ebx     fine volume slide down (for MTM/MOD compatibility only, use afx)
+ecx     note cut (x = count)
+edx     note delay (x = count)
+eex     pattern delay (x = number of rows)
+efx     - (not used)
+dxx     break to next pattern (xx = position in next pattern)
+fxx     set speed (xx <= 20h) or tempo (xx > 20h)
+gxx     set global volume
+hxy     retrigger note + volume changes (x = volume (see table 4.2), y = count)
+ixy     fine vibrato (x = speed, y = depth)
+jxy     note slide down (x = speed, y = note count)
+kxy     note slide up (x = speed, y = note count)
+lxy     note slide down + note retrigger (x = speed, y = note count)
+mxy     note slide up + note retrigger (x = speed, y = note count)
+nxx     reverse sample + offset (start with offset 256 * xx bytes) (note: this
+        command is not supported correctly by the current version of the
+        player)
+
+table 4.1 - vibrato and tremolo wave forms
+  0: sine wave
+  1: ramp down
+  2: square wave
+  3: random
+
+table 4.2 - retrigger note volume changes
+  0: no changes
+  1: volume - 1
+  2: volume - 2
+  3: volume - 4
+  4: volume - 8
+  5: volume - 16
+  6: volume * 2/3
+  7: volume * 1/2
+  8: no changes
+  9: volume + 1
+  a: volume + 2
+  b: volume + 4
+  c: volume + 8
+  d: volume + 16
+  e: volume * 3/2
+  f: volume * 2
+
+table 4.3 - fine tune values to C4 speed values
+  0: 7895 Hz
+  1: 7941 Hz
+  2: 7985 Hz
+  3: 8046 Hz
+  4: 8107 Hz
+  5: 8169 Hz
+  6: 8232 Hz
+  7: 8280 Hz
+  8: 8363 Hz (no fine tune)
+  9: 8413 Hz
+  a: 8463 Hz
+  b: 8529 Hz
+  c: 8581 Hz
+  d: 8651 Hz
+  e: 8723 Hz
+  f: 8757 Hz =20
+
+
+5) Comparison of S3M and PTM Formats
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The S3M format was chosen as a start for the PTM format because of the
+similarities between Poly Tracker and Scream Tracker. The current version of
+the PTM format (2.03) was never ment to be released, but as time caught up with
+the planned improvements, and more and more people asked for the PTM format,
+Lone Ranger decided to release it anyway. This section is a brief coverage of
+the differences between the two formats, intended as a quick guide for
+programmers who already have a S3M loader and want to write a PTM loader as
+well. The information is very concise, as it is taken directly from some info I
+wrote when writing a PTM to S3M converter.
+
+I: header
+
+PTM:                         S3M:
+  0 SongName      a28           0 SongName      a28
+ 28 EofMark       a            28 EofMark       a
+ 29 FileVersion   w            29 FileType      b
+ 31 Reserved1     b            30 Reserved1     w
+ 32 nOrders       w            32 nOrders       w
+ 34 nInstr        w            34 nInstr        w
+ 36 nPatterns     w            36 nPatterns     w
+ 38 nChannels     w            38 Flags         w
+ 40 FileFlags     w            40 TrackVer      w
+ 42 Reserved2     w            42 FileVer       w
+ 44 SongID        a4/l         44 FileID        a4/l
+ 48 Reserved3     b16          48 GlobalVol     b
+                               49 InitSpeed     b
+                               50 InitTempo     b
+                               51 MasterVol     b
+                               52 Reserved2     b10
+                               62 SpecialPtr    w
+ 64 ChSet         b32          64 ChanSet       b32
+ 96 Orders        b256         96 Orders        b(nOrders)
+352 PatSeg        w128        xxx InsPtr        w(nInstr)
+608 (size)                    xxx PatternPtr    w(nPatterns)
+
+II: instruments
+
+PTM:                         S3M:
+  0 SampleType    b             0 SampleType    b
+  1 DOSName       a12           1 DosName       a12
+ 13 Volume        b            13 MemSeg        b3/w
+ 14 C4Spd         w            16 Length        l
+ 16 SampleSeg     w            20 LoopBegin     l
+ 18 FileOfs       l            24 LoopEnd       l
+ 22 Length        l            28 Volume        b
+ 26 LoopBeg       l            29 Reserved1     b
+ 30 LoopEnd       l            30 Packing       b
+ 34 GUSBegin      l            31 Flags         b
+ 38 GUSLStart     l            32 C2Spd         l
+ 42 GUSLEnd       l            36 Reserved2     l
+ 46 GUSLoop       b            40 Internal1     w
+ 47 Reserved      b            42 Internal2     w
+                               44 Internal3     l
+ 48 SampleName    a28          48 SampleName    a28
+ 76 SampleID      a4/l         76 SampleID      a4/l
+ 80 (size)                     80 (size)
+
+PTM sample type:
+
+  bit 0, 1 (0 = no sample, 1 = sample, 2 = adlib, 3 = midi)
+      2 (0 = no loop, 1 = loop)
+      3 (0 = uni, 1 = bi)
+      4 (0 = 8, 1 = 16)
+
+S3M sample type:
+
+  0 = sample not used
+  1 = sample
+  2 = adlib melody
+  3+ = adlib drum
+
+S3M sample flags:
+
+  bit 0 = loop on
+      1 = stereo          (not supported!)
+      2 = 16-bit sample   (not supported!)
+
+Storage format:
+
+PTM stores samples in a signed delta format (start = 0), S3M in unsigned raw.
+
+III: patterns
+
+Both packed scheme: 0 = end of row, always 64 rows, else low nibble = channel,
+high-nibble = flags
+
+bit: 567
+PTM: nev
+S3M: nve
+
+n: after this byte follows note and instrument (1+1 bytes)
+e: after this byte follows effect and parameter (1+1 bytes)
+v: after this byte follows volume (1 byte)
+
+If the bit is set the bytes follow, in order of bits.
+
+IV: notes
+
+PTM: 0 = empty, 1 = C-0, 2 = C#0, 3 = D-0, etc.  (12 steps within octave)
+S3M: hi = octave, lo = note, 255 = empty         (12+4 steps within octave)
+
+both: 254 = ^^^ = key off
+
+V: commands
+
+Note: PTM commands start with 0 up to 9, a = 10 etc., S3M commands start
+      with a = 0, b = 1 etc.
+
+command        PTM          S3M
+
+arpeggio      0           j
+slide down    1           e
+fine sd       1f          ef
+extra fsd     1e          ee
+slide up      2           f
+fine su       2f          ff
+extra fsu     2e          fe
+tone porta    3           g
+vibrato       4           h
+tp+vol sl     5           l
+vib+vol sl    6           k
+tremolo       7           r
+samp ofs      9           o
+vol sl up     a.0         d.0
+vol sl down   a0.         d0.
+fine vsd      af.         df.
+fine vsu      a.f         d.f
+songpos       b           b
+volume        c           -
+breakpos      d           c
+speed         f (<20h)    a
+tempo         f (>=20h)   t
+global vol    g           v
+retrig        h           q
+fine vib      i           u
+note sl down  j           -
+note sl up    k           -
+note sld+retr l           -
+note slu+retr m           -
+rev smp + ofs n           -
+
+fine sd       e1 (= 1f)   ef
+fine su       e2 (= 2f)   ff
+vib wave      e4          s3
+fine tune     e5          s2
+loop          e6          sb
+trem wave     e7          s4
+set pan pos   e8          s8
+retrig        e9 (= h8)   q8
+fine vsu      ea (= a.f)  d.f
+fine vsd      eb (= af.)  df.
+note cut      ec          sc
+note delay    ed          sd
+patt delay    ee          se
+
+
+6) Poly Tracker Volume Table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After the first release of this document a number of players started supporting
+the PTM format in their new releases. When writing the original document, I
+forgot to include one thing: description of the volume table used by Poly
+Tracker. Since the volume table Poly Tracker uses is different from most
+players, the many volume slides used by The REW in his PTMs do not sound right.
+Only Mr. Logic's / Weird Magic PlayMate player currently supports the right
+volume table for PTM play-back, but for example Cubic Player and Digi Trakker
+(by Proton / N-Factor), still play most PTMs erroneous.
+
+vol value
+
+ 0  20000
+ 1  40496
+ 2  43858
+ 3  45883
+ 4  47337
+ 5  48472
+ 6  49403
+ 7  50192
+ 8  50878
+ 9  51483
+10  52025
+11  52516
+12  52965
+13  53378
+14  53760
+15  54116
+16  54450
+17  54763
+18  55059
+19  55338
+20  55604
+21  55856
+22  56097
+23  56327
+24  56548
+25  56759
+26  56962
+27  57158
+28  57346
+29  57528
+30  57704
+31  57873
+32  58038
+33  58198
+34  58352
+35  58503
+36  58649
+37  58791
+38  58929
+39  59064
+40  59195
+41  59323
+42  59448
+43  59570
+44  59690
+45  59806
+46  59920
+47  60032
+48  60141
+49  60248
+50  60353
+51  60456
+52  60556
+53  60655
+54  60752
+55  60848
+56  60941
+57  61033
+58  61123
+59  61212
+60  61299
+61  61385
+62  61469
+63  61553
+64  61634
+
+
+7) Closing Words
+~~~~~~~~~~~~~~~~
+
+Well, that's over 650 lines of information, I don't think any format has ever
+been covered so thoroughly. I hope I didn't forget any crucial information, if
+you need anymore info just write me (see introduction for my e-mail address).
+
+
+JAL / Nostalgia, 28 May / 13 September 1995

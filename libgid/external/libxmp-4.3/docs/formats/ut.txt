@@ -1,0 +1,195 @@
+
+UltraTracker 1.5
+----------------
+<From the IBM "ultra150.zip" archive by Marc Schallehn, text file by
+Muchael J. Sutter and update comments added by Marc Schallehn. -JH>
+
+               Mysterious's ULTRA TRACKER File Format
+                  by FreeJack of The Elven Nation
+   (some additional infos on the new format (V1.4/5) by MAS -> * marked)
+
+I've done my best to document the file format of Ultra Tracker (UT).
+If you find any errors please contact me.
+The file format has stayed consistent through the first four public releases.
+At the time of this writting, Ultra Tracker is up to version 1.3
+(* With version V1.4/5 there are some changes done in the format. *)
+
+Thanks go to :
+SoJa of YLYSY for help translating stuff.
+
+Marc Andr‚ Schallehn
+Thanks for putting out this GREAT program.
+Also thanks for the info on 16bit samples.
+
+With all this crap out of the way lets get to the format.
+
+
+Sample Structure :
+______________________________________________________________________________
+Samplename : 32 bytes (Sample name)
+DosName    : 12 bytes (when you load a sample into UT,
+                      it records the file name here)
+LoopStart  : dbl word (loop start point)
+LoopEnd    : dbl word (loop end point)
+SizeStart  : dbl word (see below)
+SizeEnd    : dbl word (see below)
+volume     : byte (UT uses a logarithmic volume setting, ranging from 0-255)
+             (* V1.4: uses linear Volume ranging from 0-255 *)
+Bidi Loop  : byte (see below)
+FineTune   : word (Fine tune setting, uses full word value)
+______________________________________________________________________________
+
+8 Bit Samples  :
+
+SizeStart  :
+The SizeStart is the starting offset of the sample. 
+This seems to tell UT how to load the sample into the Gus's onboard memory. 
+All the files I have worked with start with a value of 32 for the first sample, 
+and the previous SizeEnd value for all sample after that. (See Example below)
+If the previous sample was 16bit, then SizeStart = (Last SizeEnd * 2)
+SizeEnd : 
+Like the SizeStart, SizeEnd seems to tell UT where to load the sample into the 
+Gus's onboard memory. SizeEnd equal SizeStart + the length of the sample.
+
+Example :
+If a UT file had 3 samples, 1st 12000 bytes, 2nd 5600  bytes, 3rd 8000 byte. 
+The SizeStart and SizeEnd would look like this:
+
+Sample        SizeStart         SizeEnd
+1st            32                12032
+2nd            12032             17632
+3rd            17632             25632
+
+***Note***
+Samples may NOT cross 256k boundaries. If a sample is too large to fit into the
+remaining space, its Sizestart will equal the start of the next 256k boundary.
+UT does keep track of the free space at the top of the 256k boundaries, and
+will load a sample in there if it will fit.
+Example : EndSize = 252144
+If the next sample was 12000 bytes, its SizeStart would be 262144, not 252144.
+Note that this leaves 10000 bytes unused. If any of the following sample could
+fit between 252144 and 262144, its Sizestart would be 252144.
+Say that 2 samples after the 12000 byte sample we had a sample that was only
+5000 bytes long. Its SizeStart would be 252144 and its SizeEnd would be 257144.
+This also applies to 16 Bit Samples.
+
+16 Bit Samples :
+16 bit samples are handled a little different then 8 bit samples.
+The SizeStart variable is calculated by dividing offset (last SizeEnd)
+by 2. The SizeEnd variable equals SizeStart + (SampleLength / 2).
+If the first sample is 16bit, then SizeStart = 16.
+Example :
+          sample1 = 8bit, 1000 bytes
+          sample2 = 16bit, 5000 bytes
+
+          sample1 SizeStart = 32
+                  SizeEnd   = 1032 (32 + 1000)
+
+          sample2 SizeStart = 516 (offset (1032) / 2)
+                  SizeEnd   = 3016 (516 + (5000/2))
+
+***Note***
+If a 16bit sample is loaded into banks 2,3, or 4
+the SizeStart variable will be
+(offset / 2) + 262144 (bank 2)
+(offset / 2) + 524288 (bank 3)
+(offset / 2) + 786432 (bank 4)
+The SizeEnd variable will be
+SizeStart + (SampleLength / 2) + 262144 (bank 2)
+SizeStart + (SampleLength / 2) + 524288 (bank 3)
+SizeStart + (SampleLength / 2) + 786432 (bank 4)
+
+BiDi Loop : (Bidirectional Loop)
+UT takes advantage of the Gus's ability to loop a sample in several different
+ways. By setting the Bidi Loop, the sample can be played forward or backwards,
+looped or not looped. The Bidi variable also tracks the sample
+resolution (8 or 16 bit).
+
+The following table shows the possible values of the Bidi Loop.
+Bidi = 0  : No looping, forward playback,  8bit sample
+Bidi = 4  : No Looping, forward playback, 16bit sample
+Bidi = 8  : Loop Sample, forward playback, 8bit sample
+Bidi = 12 : Loop Sample, forward playback, 16bit sample
+Bidi = 24 : Loop Sample, reverse playback 8bit sample
+Bidi = 28 : Loop Sample, reverse playback, 16bit sample
+______________________________________________________________________________
+Event Structure:
+______________________________________________________________________________
+Note                : byte (See note table below)
+SampleNumber        : byte (Sample Number)
+Effect1             : nib (Effect1)
+Effect2             : nib (Effect2)
+EffectVar           : word (Effect variables)
+
+The High order byte of EffectVar is the Effect variable for Effect1.
+The Low order byte of EffectVar is the Effect variable for Effect2.
+***(Note)***
+UT uses a form of compression on repetitive events. Say we read in the first
+byte, if it = $FC then this signifies a repeat block. The next byte is the
+repeat count. followed by the event structure to repeat.
+If the first byte read does NOT = $FC then this is the note of the event.
+So repeat blocks will be 7 bytes long : RepFlag      : byte ($FC)
+                                        RepCount     : byte
+                                        note         : byte
+                                        samplenumber : byte
+                                        effect1      : nib
+                                        effect2      : nib
+                                        effectVar    : word
+
+Repeat blocks do NOT bridge patterns. 
+______________________________________________________________________________
+Note Table:
+______________________________________________________________________________
+note value of 0 = pause
+C-0 to B-0    1 to 12
+C-1 to B-1    13 to 24
+C-2 to B-2    26 to 36
+C-3 to B-3    39 to 48
+C-4 to B-4    52 to 60
+______________________________________________________________________________
+Offset     Bytes            Type                   Description
+______________________________________________________________________________
+0             15           byte           ID block : should contain
+                                                     'MAS_UTrack_V001'
+                                          
+                                          (* V1.4: 'MAS_UTrack_V002')
+
+                                          (* V1.5: 'MAS_UTrack_V003')
+
+15            32           AsciiZ         Song Title
+47            1            reserved       This byte is reserved and
+                                          always contain 0;
+
+                                          (* V1.4: jump-value: reserved * 32; 
+                                           space between is used for song
+                                           text;
+                                           [reserved * 32] = RES ! )
+
+48+RES        1            byte           Number of Samples (NOS)
+49+RES        NOS * 64     SampleStruct   Sample Struct (see Sample Structure)
+
+Patt_Seq = 48 + (NOS * 64) + RES
+                       
+Patt_Seq          256        byte            Pattern Sequence
+Patt_Seq+256      1          byte            Number Of Channels (NOC) Base 0
+Patt_Seq+257      1          byte            Number Of patterns (NOP) Base 0
+
+                                             (* V1.5: PAN-Position Table
+                                              Length: NOC * 1byte
+                                              [0 left] - [0F right] )
+
+NOC+Patt_Seq+258      varies     EventStruct     Pattern Data (See Event
+Structure)
+
+______________________________________________________________________________
+The remainder of the file is the raw sample data. (signed)
+______________________________________________________________________________
+
+That should about cover it. If you have any questions, feel free to e-mail
+me at freejack@shell.portal.com
+
+I can also be contacted on The UltraSound Connection   (813) 787-8644 
+The UltraSound Connection is a BBS dedicated to the Gravis Ultrasound Card.
+
+Also I'm the author of Ripper and Gvoc. If anyone has any questions or
+problems, please contact me.

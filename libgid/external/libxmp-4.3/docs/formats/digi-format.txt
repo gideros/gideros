@@ -1,0 +1,112 @@
+xmp/docs/format/digi_format
+analysed by Claudio Matsuoka <claudio@helllabs.org>
+Sun Feb 21 18:20:32 EST 1999
+
+Format: DIGI
+Version: 1.6
+Author: Tomasz and Waldemar Piasta
+Tracker: DIGI Booster (Amiga)
+
+DIGIBooster is an 8 channel tracker written in Poland by Tap & Walt/INV.
+The format description below is based on the DIGI Booster v1.6 replayer
+written by Tomasz Piasta in June, 1996 and tested with several modules
+available at Aminet. Byte order is big endian. Thanks to Louise Heimann
+for the help with decoding.
+
+Note: this description is unchecked and not complete -- information about
+unpacked patterns and PackEnable bytes in header are missing.
+
+DIGI module header:
+
+Offset	Size	Description
+------- ------- --------------------------------------------
+     0      20  Format ID: "DIGI Booster module\0"
+    20       4  Version string: "V1.6"
+    24	     1	Version: 0x16
+    25       1  Number of channels (up to 8)
+    26       ?  PackEnable
+    46	     1	Number of patterns - 1
+    47	     1	Number of orders - 1
+    48	   128	Orders
+   176	  31*4	Sample length (for 31 samples)
+   300	  31*4	Sample loop start (for 31 samples)
+   424	  31*4	Sample loop length (for 31 samples)
+   548	  31*1	Sample volumes (for 31 samples)
+   579	  31*1	Sample finetunes (for 31 samples)
+   610	    32	Song name
+   642	 31*30	Sample names (for 31 samples)
+  1572	     ?	Song data
+
+
+DIGI packed patterns:
+
+Offset	Size	Description
+------- ------- --------------------------------------------
+     0	     2	Size of the pattern data (PS)
+     2	    64	Bit masks for events in this pattern (see below)
+    66	 PS-64  Pattern data
+
+There are 64 bit masks for each pattern. If a bit in the bit maks is set
+it means that an event in that channel should be read. Events are encoded
+as in Protracker:
+
+        period value
+       /           \
+      |             |
+ 0000 0000  0000 0000  0000 0000  0000 0000
+ |  |                  |  | |  |  |       |
+  \  \                /  /   \/    \     /
+   `----Sample number---'  effect   effect
+                                   parameter
+
+Protracker periods:
+
+C-1 to B-1 : 856,808,762,720,678,640,604,570,538,508,480,453
+C-2 to B-2 : 428,404,381,360,339,320,302,285,269,254,240,226
+C-3 to B-3 : 214,202,190,180,170,160,151,143,135,127,120,113
+
+
+DIGI effects:
+
+    0xx  Arpeggio
+    1xx  Portamento up
+    2xx  Portamento down
+    3xx  Tone portamento
+    4xy  Vibrato
+    5xx  Tone portamento + volume slide
+    6xx  Vibrato + volume slide
+    7xx  Tremolo (not implemented in 1.6)
+    8xx  Robot ("metallic" effect on sample) - 800 uses previous value
+    9xx  Sample offset
+    Axy  Volume slide
+    Bxx  Pattern jump
+    Cxx  Set volume
+    Dxx  Pattern break
+    Exx  Extended effect (see below)
+    Fxx  Set speed
+
+    Extended effects:
+
+    E00  Filter off
+    E01  Filter on
+    E1x  Fine slide up
+    E2x  Fine slide down
+    E3x  Play sample backwards
+	 x=0 "plays sample from backward" (sic)
+	 x=1 "plays sample from backward, next from front loops" (sic)
+    E40  Stop playing sample (apparently this effect exists for performance
+	 reasons)
+    E6x  Pattern loop
+    E8x  0xffff*x sample offset
+    E9x  Retrace (?)
+    EAx  Fine volume up
+    EBx  Fine volume down
+    ECx  Cut sample
+    EDx  Sample delay
+    EEx  Pattern delay
+
+
+DIGI samples:
+
+Stored like Protracker. Sample size is not limited to 64 Kb.
+

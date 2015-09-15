@@ -29,14 +29,24 @@ public:
         mouseTouchOrder_= 0;
 
         keyMap_["ArrowLeft"] = GINPUT_KEY_LEFT;
+        keyMap_["Left"] = GINPUT_KEY_LEFT;
+        keyMap_["\x25"] = GINPUT_KEY_LEFT;
         keyMap_["ArrowRight"] = GINPUT_KEY_RIGHT;
+        keyMap_["Right"] = GINPUT_KEY_RIGHT;
+        keyMap_["\x27"] = GINPUT_KEY_RIGHT;
         keyMap_["ArrowUp"] = GINPUT_KEY_UP;
+        keyMap_["Up"] = GINPUT_KEY_UP;
+        keyMap_["\x26"] = GINPUT_KEY_UP;
         keyMap_["ArrowDown"] = GINPUT_KEY_DOWN;
+        keyMap_["Down"] = GINPUT_KEY_DOWN;
+        keyMap_["\x28"] = GINPUT_KEY_DOWN;
 
 		//keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
 
 		keyMap_["Shift"] = GINPUT_KEY_SHIFT;
+		keyMap_["\x10"] = GINPUT_KEY_SHIFT;
 		keyMap_["Backspace"] = GINPUT_KEY_BACKSPACE;
+		keyMap_["\x08"] = GINPUT_KEY_BACKSPACE;
 
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
@@ -161,9 +171,13 @@ public:
 			touchEvent->touch.x = x;
 			touchEvent->touch.y = y;
 			touchEvent->touch.id = 0;
+			touchEvent->touch.pressure = 0;
+			touchEvent->touch.touchType = 2;
 			touchEvent->allTouches[0].x = x;
 			touchEvent->allTouches[0].y = y;
 			touchEvent->allTouches[0].id = 0;
+			touchEvent->allTouches[0].pressure = 0;
+			touchEvent->allTouches[0].touchType = 2;
 		}
 
 		if (mouseTouchOrder_ == 0)
@@ -200,9 +214,13 @@ public:
 			touchEvent->touch.x = x;
 			touchEvent->touch.y = y;
 			touchEvent->touch.id = 0;
+			touchEvent->touch.pressure = 0;
+			touchEvent->touch.touchType = 2;
 			touchEvent->allTouches[0].x = x;
 			touchEvent->allTouches[0].y = y;
 			touchEvent->allTouches[0].id = 0;
+			touchEvent->allTouches[0].pressure = 0;
+			touchEvent->allTouches[0].touchType = 2;
 		}
 
 		if (mouseTouchOrder_ == 0)
@@ -247,9 +265,13 @@ public:
 			touchEvent->touch.x = x;
 			touchEvent->touch.y = y;
 			touchEvent->touch.id = 0;
+			touchEvent->touch.pressure = 0;
+			touchEvent->touch.touchType = 2;
 			touchEvent->allTouches[0].x = x;
 			touchEvent->allTouches[0].y = y;
 			touchEvent->allTouches[0].id = 0;
+			touchEvent->allTouches[0].pressure = 0;
+			touchEvent->allTouches[0].touchType = 2;
 		}
 
 		if (mouseTouchOrder_ == 0)
@@ -295,6 +317,8 @@ public:
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
+			touchEvent->allTouches[i].pressure = 0;
+			touchEvent->allTouches[i].touchType = 0;
 			touchEvent->allTouches[i].id = addTouch(it->second.id);
 			i++;
 		}
@@ -337,6 +361,8 @@ public:
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
+			touchEvent->allTouches[i].pressure = 0;
+			touchEvent->allTouches[i].touchType = 0;
 			touchEvent->allTouches[i].id = addTouch(it->second.id);
 			i++;
 		}
@@ -379,6 +405,8 @@ public:
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
+			touchEvent->allTouches[i].pressure = 0;
+			touchEvent->allTouches[i].touchType = 0;
 			touchEvent->allTouches[i].id = addTouch(it->second.id);
 			i++;
 		}
@@ -422,6 +450,8 @@ public:
 		for (auto it = m_pointerIds.begin(); it != m_pointerIds.end(); ++it){
 			touchEvent->allTouches[i].x = it->second.x;
 			touchEvent->allTouches[i].y = it->second.y;
+			touchEvent->allTouches[i].pressure = 0;
+			touchEvent->allTouches[i].touchType = 0;
 			touchEvent->allTouches[i].id = addTouch(it->second.id);
 			i++;
 		}
@@ -567,6 +597,8 @@ private:
         pthread_mutex_unlock(&touchPoolMutex_);
 
         event->allTouchesCount = allTouchesCount;
+        event->touch.pressure=0;
+        event->touch.touchType=0;
 
         return event;
     }

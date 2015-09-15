@@ -1,0 +1,112 @@
+
+Magnetic Fields Packer file format
+
+Format created by Shaun Southern
+Format description by Claudio Matsuoka <cmatsuoka@gmail.com>, 02-Jan-2010
+
+The Magnetic Fields Packer format is a packed four channel module format
+used in games such as Crystal Dragon, Kid Chaos and Tower of Souls. Each
+module comes in two separate files, the first containing instrument and
+pattern sequencing information, and the second containing all the samples.
+
+File prefix is mfp. Samples file prefix is smp. Many mfp files can share
+the same sample files, in Kid Chaos file names are like mfp.level_1-1 and
+mfp.level_1-2 for the song file and smp.level_1.set for the samples file.
+
+For more information: http://www.exotica.org.uk/wiki/Magnetic_Fields_Packer
+
+
+Offset    Size      Comment
+------    ------    ---------------------------------------------
+  0000      8*31    31 instruments definition, 8 bytes per
+                    instrument as follows:
+
+                        LL FV SS ZZ
+                        |  || |  |
+                        |  || |  +---- loop size in words
+                        |  || +------- loop start in words
+                        |  |+--------- volume
+                        |  +---------- finetune
+                        +------------- sample length in words
+
+  00f8         1    Song length in patterns
+  00f9         1    Restart or "Noisetracker byte" (0x7f)
+  00fa       128    Pattern order
+  017a         2    Size of the pattern definition table
+  017c         2    ??? Maybe song length (same as above)
+  017e     pat*4    Pattern table with pointers to track data
+                    (4 words per pattern, offset 0 is at the end of 
+                    the pattern table)
++pat*4    varies    Compressed track data  
+
+
+Compressed track data works with triple indirection track tables. Each
+track starts at the offset given in the pattern table, with the first
+track starting at offset 0. Each track table has four one-byte entries
+containing a pointer to the next level or to note data, relative to the
+level 1 track table.
+
+Example:
+
+Raw data: 04 08 0C 08 10 14 18 1C 1C 1C 1C 1C 20 1C 1C 1C
+          12 14 16 16 16 16 16 16 16 14 14 14 14 14 14 14
+          18 14 14 14 01 53 2C 00 00 00 00 00 00 00 0A 10
+          01 94 2C 28
+
+    Level 1            Level 2            Level 3              Notes
+
+  (offset 00)        (offset 04)        (offset 10)         (offset 24)
+    +----+             +----+             +----+    x2     +------------+
+    | 04 | ----------> | 10 | ----------> | 12 | --------> | E 2 02 C00 |
+    +----+             +----+             +----+           +------------+
+    | 08 | -------+    | 14 | -------+    | 14 | ------+
+    +----+        |    +----+        |    +----+       |    (offset 28)
+    | 0C | ---+   |    | 18 |        |    | 16 | ---+  |   +------------+
+    +----+    |   |    +----+        |    +----+    |  +-> | --- -- --- |
+    | 08 |    |   |    | 1C |        |    | 16 | ---+      +------------+
+    +----+    .   |    +----+        |    +----+    |
+              .   |                  |              |       (offset 2C)
+              .   |  (offset 08)     |  (offset 14) |      +------------+
+                  |    +----+        |    +----+    +----> | --- -- A10 |
+                  +--> | 1C |        +--> | 16 | ---+      +------------+
+                       +----+             +----+    |
+                       | 1C |             | 16 | ---+       (offset 30)
+                       +----+             +----+    |      +------------+
+                       | 1C |             | 16 | ---+      | C#2 02 C28 |
+                       +----+             +----+    |      +------------+
+                       | 1C |             | 16 | ---+
+                       +----+             +----+
+
+Example 2: (empty track)
+
+Raw data: 04 04 04 04 08 08 08 08 06 06 06 06 00 00 00 00
+
+    Level 1            Level 2            Level 3              Notes
+
+  (offset 00)        (offset 04)        (offset 08)         (offset 0C)
+    +----+             +----+             +----+    x2     +------------+
+    | 04 | -----+----> | 08 | -----+----> | 06 | -----+--> | --- -- --- |
+    +----+      |      +----+      |      +----+      |    +------------+
+    | 04 | -----+      | 08 | -----+      | 06 | -----+ 
+    +----+      |      +----+      |      +----+      |
+    | 04 | -----+      | 08 | -----+      | 06 | -----+
+    +----+      |      +----+      |      +----+      |
+    | 04 | -----+      | 08 | -----+      | 06 | -----+
+    +----+             +----+             +----+
+
+
+Pseudo-code to depack patterns:
+
+for (pattern = 0; pattern < num_patterns; pattern++) {
+  for (voice = 0; voice < 4; voice++) {
+    read buffer at pattern_address + pattern_table[pattern][voice];
+    for (row = k = 0; k < 4; k++) {    /* iterate first indirection table */
+      for (x = 0; x < 4; x++) {        /* iterate second indirection table */
+        for (y = 0; y < 4; y++) {      /* iterate third indirection table */
+          note_event = buffer[buffer[buffer[buffer[k] + x] + y] * 2];
+        }
+      }
+    }
+  }
+}
+

@@ -85,7 +85,10 @@ static void deltree(const char* dir) {
 GLCanvas::GLCanvas(QWidget *parent) :
 		QGLWidget(parent) {
 	setAttribute(Qt::WA_AcceptTouchEvents);
-    lastMouseButton_ = 0;
+    for( int i=1; i<=4; ++i )
+    {
+        mouseButtonPressed_[i] = false;
+    }
     setMouseTracking(true);
 	//setFocusPolicy(Qt::WheelFocus);
 
@@ -122,10 +125,14 @@ GLCanvas::~GLCanvas() {
 		application_->broadcastEvent(&event, &status);
 
 		if (status.error()) {
-			errorDialog_.appendString(status.errorString());
-			errorDialog_.show();
-			printToServer(status.errorString(), -1, NULL);
-			printToServer("\n", -1, NULL);
+            if (isPlayer_) {
+                printToServer(status.errorString(), -1, NULL);
+                printToServer("\n", -1, NULL);
+            }
+            else{
+                errorDialog_.appendString(status.errorString());
+                errorDialog_.show();
+            }
 		}
 	}
 
@@ -169,14 +176,13 @@ void GLCanvas::setupProperties() {
 
 	application_->setPlayerMode(isPlayer_);
 	application_->enableExceptions();
-	application_->setPrintFunc(printToServer);
-
-    //if (isPlayer_) {
+    if (isPlayer_) {
+        application_->setPrintFunc(printToServer);
 		server_ = new Server(15000, ::getDeviceName().c_str());
 
 		// set the global server var to use in print to server function
 		g_server = server_;
-    //}
+    }
 
 	running_ = false;
 
@@ -226,10 +232,14 @@ void GLCanvas::paintGL() {
 	if (status.error()) {
 		running_ = false;
 
-		errorDialog_.appendString(status.errorString());
-		errorDialog_.show();
-		printToServer(status.errorString(), -1, NULL);
-		printToServer("\n", -1, NULL);
+        if (isPlayer_) {
+            printToServer(status.errorString(), -1, NULL);
+            printToServer("\n", -1, NULL);
+        }
+        else{
+            errorDialog_.appendString(status.errorString());
+            errorDialog_.show();
+        }
 
 		application_->deinitialize();
 		application_->initialize();
@@ -268,8 +278,12 @@ void GLCanvas::timerEvent(QTimerEvent *){
     printf(".");
     printf("%d\n", Referenced::instanceCount);
     */
+    if(!projectDir_.isEmpty()){
+        play(QDir(projectDir_));
+        projectDir_.clear();
+    }
 
-    //if(isPlayer_){
+    if(isPlayer_){
         int dataTotal = 0;
 
         while(true){
@@ -356,8 +370,8 @@ void GLCanvas::timerEvent(QTimerEvent *){
 
                             if (status.error())
                             {
-                                errorDialog_.appendString(status.errorString());
-                                errorDialog_.show();
+                                //errorDialog_.appendString(status.errorString());
+                                //errorDialog_.show();
                                 printToServer(status.errorString(), -1, NULL);
                                 printToServer("\n", -1, NULL);
                             }
@@ -481,7 +495,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
             if(dataDelta == 0 || dataTotal > 1024)
                 break;
         }
-    //}
+    }
 
     update();
 }
@@ -498,10 +512,14 @@ void GLCanvas::play(QDir directory){
             running_ = false;
 
             if(status.error()){
-                errorDialog_.appendString(status.errorString());
-                errorDialog_.show();
-                printToServer(status.errorString(), -1, NULL);
-                printToServer("\n", -1, NULL);
+                if (isPlayer_) {
+                    printToServer(status.errorString(), -1, NULL);
+                    printToServer("\n", -1, NULL);
+                }
+                else{
+                    errorDialog_.appendString(status.errorString());
+                    errorDialog_.show();
+                }
                 return;
             }
         }
@@ -514,7 +532,12 @@ void GLCanvas::play(QDir directory){
 
         if(exportedApp_){
             resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
-            QString docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            QString docLocation;
+            #if defined(Q_OS_MAC)
+                docLocation = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+            #else
+                docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            #endif
             QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
             directory.mkpath(docLocation);
             directory.mkpath(tempLocation);
@@ -683,10 +706,14 @@ void GLCanvas::play(QString gapp) {
 		running_ = false;
 
 		if (status.error()) {
-			errorDialog_.appendString(status.errorString());
-			errorDialog_.show();
-			printToServer(status.errorString(), -1, NULL);
-			printToServer("\n", -1, NULL);
+            if (isPlayer_) {
+                printToServer(status.errorString(), -1, NULL);
+                printToServer("\n", -1, NULL);
+            }
+            else{
+                errorDialog_.appendString(status.errorString());
+                errorDialog_.show();
+            }
 			return;
 		}
 	}
@@ -833,10 +860,14 @@ void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles) {
 	if (status.error()) {
 		running_ = false;
 
-		errorDialog_.appendString(status.errorString());
-		errorDialog_.show();
-		printToServer(status.errorString(), -1, NULL);
-		printToServer("\n", -1, NULL);
+        if (isPlayer_) {
+            printToServer(status.errorString(), -1, NULL);
+            printToServer("\n", -1, NULL);
+        }
+        else{
+            errorDialog_.appendString(status.errorString());
+            errorDialog_.show();
+        }
 		application_->deinitialize();
 		application_->initialize();
 	}
@@ -860,20 +891,33 @@ void GLCanvas::loadFiles(std::vector<char> data) {
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event) {
-    lastMouseButton_ = event->button();
+    if (event->button() <= 4){
+        mouseButtonPressed_[event->button()] = true;
+    }
     ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
-    if(lastMouseButton_ > 0)
-        ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_, lastMouseButton_);
-    else
-        ginputp_mouseHover(event->x() * deviceScale_, event->y() * deviceScale_, lastMouseButton_);
+    
+    bool mousePressed = false;
+    for( int i=1; i<=4; ++i )
+    {
+        if( mouseButtonPressed_[i])
+        {
+            ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_, i);
+            mousePressed = true;
+        }
+    }
+
+    if (mousePressed == false) {
+        ginputp_mouseHover(event->x() * deviceScale_, event->y() * deviceScale_, 0);
+    }
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event) {
-    if(lastMouseButton_ == event->button())
-        lastMouseButton_ = 0;
+    if (event->button() <= 4){
+        if(mouseButtonPressed_[event->button()]) mouseButtonPressed_[event->button()] = false;
+    }
     ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
 }
 
@@ -896,6 +940,33 @@ void GLCanvas::keyReleaseEvent(QKeyEvent* event) {
 	ginputp_keyUp(event->key());
 }
 
+void GLCanvas::tabletEvent(QTabletEvent* event) {
+
+    int xs[1];
+    int ys[1];
+    int ids[1];
+    int pressures[1];
+    int touchTypes[1];
+
+    xs[0] = event->x() * deviceScale_;
+    ys[0] = event->y() * deviceScale_;
+    ids[0] = 0;
+    pressures[0] = event->pressure() * 10000;
+    touchTypes[0] = 3;
+
+
+    if(event->type() == QEvent::TabletPress){
+        ginputp_touchesBegin(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes);
+
+    }else if(event->type() == QEvent::TabletMove){
+        ginputp_touchesMove(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes);
+
+    }else if(event->type() == QEvent::TabletRelease){
+        ginputp_touchesEnd(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes);
+    }
+    event->accept();
+}
+
 bool GLCanvas::event(QEvent *event){
     if (event->type() == QEvent::TouchBegin || event->type() == QEvent::TouchUpdate || event->type() == QEvent::TouchEnd || event->type() == QEvent::TouchCancel)
     {
@@ -906,6 +977,8 @@ bool GLCanvas::event(QEvent *event){
         int xs[size];
         int ys[size];
         int ids[size];
+        int pressures[size];
+        int touchTypes[size];
 
         for( int i=0; i<size; ++i )
         {
@@ -913,22 +986,24 @@ bool GLCanvas::event(QEvent *event){
             xs[i] = p.pos().x() * deviceScale_;
             ys[i] = p.pos().y() * deviceScale_;
             ids[i] = i;
+            pressures[i] = p.pressure() * 10000;
+            touchTypes[i] = p.flags();
         }
 
         for( int i=0; i<size; ++i )
         {
             QTouchEvent::TouchPoint p = list[i];
             if(event->type() == QEvent::TouchCancel){
-                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
             else if(p.state() == Qt::TouchPointPressed){
-                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
             else if(p.state() == Qt::TouchPointMoved){
-                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
             else if(p.state() == Qt::TouchPointReleased){
-                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, i, size, xs, ys, ids);
+                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
         }
         return true;
@@ -1261,6 +1336,13 @@ void GLCanvas::setResolution(int width, int height) {
 void GLCanvas::setExportedApp(bool exportedApp) {
 	exportedApp_ = exportedApp;
     isPlayer_ = false;
+}
+
+void GLCanvas::printToOutput(const char* text) {
+    if (isPlayer_) {
+        printToServer(text, -1, NULL);
+        printToServer("\n", -1, NULL);
+    }
 }
 
 /*

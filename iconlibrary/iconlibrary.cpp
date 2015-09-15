@@ -6,6 +6,7 @@ IconLibrary::IconLibrary()
 	image_.load("Resources/images.png");
 
 	iconMap_["start"] = icon(15, 21);
+	iconMap_["start all"] = icon(11, 3);
 	iconMap_["stop"] = icon(7, 25);
 	iconMap_["gamepad"] = icon(13, 8);
 	iconMap_["picture"] = icon(0, 21);

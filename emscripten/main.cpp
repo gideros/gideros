@@ -83,6 +83,22 @@ glfwSetWindowSize(defWidth,defHeight);
 }
 
 
+EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *userData)
+{
+ const char *key=e->key;
+ char kcode[2]={e->keyCode,0};
+ if ((!key)||(!(*key)))
+  key=kcode;
+ if (!(*key))
+  kcode[0]=e->which;
+ if (eventType == EMSCRIPTEN_EVENT_KEYDOWN)
+	 ginputp_keyDown(key,e->code);
+ else if (eventType == EMSCRIPTEN_EVENT_KEYUP)
+  ginputp_keyUp(key,e->code);
+
+  return 0;
+}
+
 EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userData)
 {
 	 int x=e->canvasX;
@@ -144,8 +160,16 @@ int main() {
 char *url=(char *) EM_ASM_INT_V({
  return allocate(intArrayFromString(location.href), 'i8', ALLOC_STACK);
 });
- if (strncmp(url,"http://hieroglyphe.net/",23))
+ bool allowed=false;
+ allowed|=!strncmp(url,"http://hieroglyphe.net/",23);
+ allowed|=!strncmp(url,"http://apps.giderosmobile.com/",30); 
+ if (!allowed)
   return -1;
+  url=strstr(url,"://")+2;
+  char *lurl=strchr(url,'?');
+  if (lurl) *lurl=0;
+  lurl=url+strlen(url)-1;
+  if ((*lurl)=='/') *lurl=0;
 
   int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
    int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
@@ -153,7 +177,7 @@ char *url=(char *) EM_ASM_INT_V({
 //   emscripten_get_canvas_size(&defWidth,&defHeight,&fullScreen);
     initGL(defWidth,defHeight);    
 //    glog_setLevel(0);
-    s_applicationManager=new ApplicationManager(false,"main.gapp");
+    s_applicationManager=new ApplicationManager(false,"main.gapp",url);
     s_applicationManager->surfaceCreated();
 
     EMSCRIPTEN_RESULT ret;
@@ -166,9 +190,22 @@ char *url=(char *) EM_ASM_INT_V({
     ret = emscripten_set_touchend_callback(0, 0, 1, touch_callback);
     ret = emscripten_set_touchmove_callback(0, 0, 1, touch_callback);
     ret = emscripten_set_touchcancel_callback(0, 0, 1, touch_callback);
+    ret = emscripten_set_keydown_callback(0, 0, 1, key_callback);
+    ret = emscripten_set_keyup_callback(0, 0, 1, key_callback);
    printf("Canvas:%d,%d %d URL:%s\n",defWidth,defHeight,fullScreen,url);
 
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
     emscripten_set_main_loop(looptick, 0, 1);
 }
 
+void flushDrive(int drive)
+{
+ if (drive==1)
+ {
+  printf("Sync FS\n");
+  EM_ASM({
+   FS.syncfs(function (err) {
+           });
+  });
+ }
+}

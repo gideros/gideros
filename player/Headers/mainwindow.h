@@ -70,6 +70,8 @@ class MainWindow : public QMainWindow{
         void resizeWindow(int width, int height);
         void fullScreenWindow(bool _fullScreen);
         void setFixedSize(bool fixedSize);
+        QSize windowSize();
+        void printToOutput(const char* text);
 
         static MainWindow* getInstance(){
             return instance;

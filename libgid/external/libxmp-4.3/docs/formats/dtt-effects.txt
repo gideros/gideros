@@ -1,0 +1,359 @@
+                          Appendix B - List of effects
+
+   Here is a more complete list of effects, and their data fields that are
+   useable inside Desktop Tracker. Those marked as Not used should not be
+   used, as they will be allocated at a further date.
+
+  Effect 00: Arpeggio
+
+   The data byte is two nibbles, &UV. Every 50th of a second (or depending on
+   the arpeggio speed), the note changes pitch. U is the number of semitones
+   the note must decrease on in the second arpeggio segment, V is the number
+   of semitones the note must decrease on in the third arpeggio segment.
+
+   For example:
+
+                             Event  Note    Effect  
+                             11     C 2 0D  00 37   
+
+   This plays C2 for a 50th of a second, then A1 for another 50th of a
+   second, and finally F1 for a 50th of a second, before repeating back to
+   C2. It is, in effect, a F major chord.
+
+  Effect 01: Portamento up
+
+   Until the next event, the pitch is shifted up by the data value every 50th
+   of a second. If the data is "00*, then this means keep the portamento the
+   same value as the last event.
+
+   For example:
+
+               Event  Note    Effect                              
+               20     C 2 1A  01 01 Pitch bend up by 1            
+               21     --- --  01 00 Keep the same value (i.e. 1)  
+               22     --- --  01 02 Now change to 2               
+               23     --- --  01 00 And again, with the value 2.  
+
+  Effect 02: Portamento down
+
+   This is the same as Portamento up, except that the pitch is shifted down
+   in tone.
+
+  Effect 03: Tone portamento
+
+   The pitch of the note is increased, or decreased, in order to reach the
+   pitch of the destination note. This destination note is the actual note
+   stored in the music, the sample field is ignored, and the data is the same
+   as for the Portamento effects (01 and 02). If the data field is zero, then
+   this means continue the last tone portamento.
+
+   For example:
+
+              Event  Note    Effect                                 
+              13     F 3 04  00 00 No effect                        
+              14     G 3 --  03 10 Pitch bend, until it reaches G3  
+
+  Effect 04: Vibrato
+
+   This is performs low frequency oscillation on the sound. Like the arpeggio
+   instruction, the data is split into two nibbles, &SA. S is the speed of
+   the vibrato, with &F being the fastest, and &0 being frozen, and A is the
+   amplitude, with &F as the highest amplitude, and &0 means no vibrato. If
+   the data field is zero, then this means continue the last vibrato effect
+
+   For example:
+
+       Event  Note    Effect                                              
+       3A     F#1 13  04 4A This is a reasonably slow, but large vibrato  
+
+  Effect 05: Delayed note on another track
+
+   This effect allows you to use one track to play a note on another track,
+   after a certain time delay, measured in 50ths of a second. The data field
+   is split into two nibbles again, &TD. T is the track number (from &0 to
+   &F) of the note, and D is the time delay in 50ths of a second (from &0 to
+   &F).
+
+   For example:
+
+ Event  Note    Effect                                                          
+ 05     D#2 01  05 24 This plays a note on track 2, after 4/50ths of a second.  
+
+  Effect 06: Play end part of a sample
+
+   This is a fairly useful command that allows release parts of samples to be
+   played, rather than just looping them. The whole data is 21 bits in
+   length, which is the offset from the beginning of the sample to the byte
+   at which to start playing from. If this is the last effect of a group of
+   four, or it is the only effect in a 1-effect event, then the data byte is
+   the offset*256.
+
+   If it is not, then all the 21 bits are obtained from the data byte, the
+   next effect number, and the next effect's data byte. The bottom 8 bits
+   come from the next effect's data byte; the next 8 bits from the effect's
+   data byte, and the top 5 bits from the next event's number.
+
+   For example:
+
+   Event  Note    Effect(s)                                                    
+   1D     C 3 00  06 10 Play from the &10*256 th byte &1000, (or 4096)th byte  
+   20     C 3 01  06 22 Play from the &012233 th byte                          
+                  01 33 on sample 0.                                           
+
+  Effect 07: Tremolo
+
+   This effect performs a low frequency oscillation on the volume of a note.
+   It is similar to Vibrato, except the volume changes instead. A zero data
+   field means continue the last tremolo.
+
+  Effect 08: Phasor effect #2
+
+   The current position in a sample is added by the contents of the data
+   field.
+
+   For example:
+
+        Event  Note    Effect                                            
+        E5     --- --  08 10 The sample position is incremented by &10.  
+
+  Effect 09: Phasor effect #1
+
+   This is exactly the same as Phasor effect #2, except the position is
+   incremented by the data field *256.
+
+  Effect 0A: Volume slide
+
+   Every 50th of a second, the volume is increased by the data field, which
+   is a signed value. If the data field is zero, then it means continue the
+   last volume slide.
+
+   For example:
+
+ Event  Note    Effect                                                           
+ 81     D 1 30  0A 01 The volume is incremented by 1 for every 50th of a second  
+ B7     E 1     0A FE The volume is decremented by 2 every 50th of a second.     
+
+  Effect 0B: Position jump
+
+   The next position to play is given by the data byte.
+
+   For example:
+
+            Event  Note    Effect                                    
+            66     A#1 15  0B 22 Set the next position to &22 (34).  
+
+  Effect 0C: Set volume
+
+   The current volume is set from the data byte. Depending on the options,
+   the data can be &00 to &40 for Amiga volume, or &00 to &7F for Acorn
+   volume.
+
+   For example:
+
+ Event  Note    Effect                                                           
+ 5F     B 2 1F  0C 20 Set to half volume, if Amiga, or about 1/8th Archimedes    
+                volume.                                                          
+
+  Effect 0D: Set stereo position
+
+   The stereo position is set to the data field, which can have the values 01
+   to 07, with 01 full left, 04 centre, and 07 full right.
+
+   For example:
+
+              Event  Note  Effect                                  
+              FE     D#2   0D 05 Set stereo position to 66% right  
+
+  Effect 0E: Stereo slide
+
+   This is another nibble, of &SD. &S is the time delay between change (in
+   50ths of a second), and &D is the stereo difference, which is a signed
+   value. It is inverted if the stereo position reaches 1 or 7.
+
+   For example:
+
+ Event  Note  Effect                                                             
+ D0     G#3   0E 61 Every 6/50ths of a second, the sound moves right, until it   
+              reaches 7, where it will go backwards.                             
+
+  Effect 0F: Set speed
+
+   The speed of the music is set to the data byte, in 50ths of a second.
+
+   For example:
+
+         Event  Note    Effect                                          
+         76     C 1 33  0F 05 The speed is set to 5/50ths of a second.  
+
+  Effect 10: Set arpeggio speed
+
+   By default, the speed is 1, which means that the arpeggio changes every
+   50th of a second. This effect allows this to be changed, to whatever speed
+   you want it.
+
+  Effect 11: Fine portamento
+
+   This is similar to portamento up and down, except that instead of the
+   pitch being incremented every 50th of a second, it is added to once. It is
+   a signed byte value
+
+   For example:
+
+                 Event  Note    Effect                          
+                 4A     G#1 20  11 FE Tone is decremented by 2  
+
+  Effect 12: Clear repeat
+
+   This allows the repeat part of a sample to be ignored after a certain
+   amount of time, in 50ths of a second.
+
+   For example:
+
+  Event  Note    Effect                                                        
+  A9     D 1 18  12 07 In 7/50ths of a second, the repeat section is ignored.  
+
+  Effect 13: NOT USED
+
+   Reserved for future expansion.
+
+  Effect 14: Set vibrato waveform
+
+   This allows the waveform to be chosen, from a list of 4. The data byte is
+   from &00 to &03.
+
+  Effect 15: NOT USED
+
+   Reserved for future expansion.
+
+  Effect 16: Loop
+
+   If the data field is zero, then this is the start of the loop. If it is
+   non-zero, then it means loop (n+1) times from the event which had the last
+   "16 00* effect, to this one.
+
+   For example:
+
+          Event  Note    Effect                                        
+          07     C 2 02  00 00                                         
+          08     D 2 02  16 00 Start loop                              
+          09     E 2 02  00 00                                         
+          ..     ...     ..                                            
+          20     F 1 02  16 02 Play the events 08 to 20, three times.  
+
+  Effect 17: Set tremolo waveform
+
+   This is exactly the same as set vibrato waveform, except the tremolo
+   waveform is set instead.
+
+  Effect 18: Set fine tempo
+
+   By default, Desktop Tracker works in units of 1/50th of a second. Using
+   this effect, it can be set to other values, to allow a more musically
+   accurate speed (which is measured in beats per minute). "18 32* sets it to
+   1/50th of a second (&32 is 50 in decimal). Here is a table of speed and
+   fine tempo values needed for different musical speeds:
+
+ +---------------------------------------------------------------------------+
+ | Tempo | Value | Speed | Actual  | %error                                  |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 60    | 8     | 1     | 8.000   | 0.000                                   |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 72    | 10    | 1     | 9.600   | 4.167                                   |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 90    | 12    | 1     | 12.000  | 0.000                                   |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 120   | 16    | 1     | 16.000  | 0.000                                   |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 144   | 19    | 1     | 19.200  | 1.053 - See later for a more accurate   |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 160   | 21    | 1     | 21.333  | 1.588 set of values                     |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 180   | 24    | 1     | 24.000  | 0.000                                   |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 192   | 26    | 1     | 25.600  | 1.563                                   |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 224   | 30    | 1     | 29.866  | 0.446 - See later                       |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 240   | 32    | 1     | 32.000  | 0.000                                   |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 125   | 50    | 6     | 50.000  | 0.000 - This is the default value       |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 144   | 96    | 5     | 96.000  | 0.000 - Changing the speed for accuracy |
+ |-------+-------+-------+---------+-----------------------------------------|
+ | 224   | 224   | 15    | 224.000 | 0.000 - Use crochet = 4 events          |
+ +---------------------------------------------------------------------------+
+
+   Don't worry about the % error, as this is only for reference. These values
+   are based on using 8 events per crochet, except the last one, which uses
+   4.
+
+  Effect 19: Retrigger sample
+
+   This continually replays a sample from the beginning every "n* 50ths of a
+   second. "n* is the data byte.
+
+   For example:
+
+    Event  Note    Effect                                                    
+    21     G 2 13  19 02 Every 2/50ths of a second, the sample is replayed.  
+
+  Effect 1A: Fine volume slide
+
+   This is a cross between volume slide and fine portamento. The data byte is
+   added to the current volume once only.
+
+  Effect 1B: Hold
+
+   The sample is looped, using its sustain offset and length, until the
+   counter is 0. The counter is set to the data byte, if the data byte is not
+   zero, otherwise, it means continue with the last counter. The difference
+   between sustain and repeat is that sustain loops a part of a sample for a
+   certain amount of time, and then continues, whereas repeat just loops the
+   sample continuously.
+
+   For example:
+
+   Event  Note    Effect                                                       
+   03     A#3 11  1B 20 Plays the sustained part &20 times before continuing.  
+
+  Effect 1C: Note cut
+
+   The note is turned off after a certain amount of time.
+
+  Effect 1D: Note delay
+
+   The note is not played immediately; it is played after a certain amount of
+   time on the current track.
+
+   For example:
+
+       Event  Note    Effect                                               
+       BD     D#2 22  1D 02 The note is played after 2/50ths of a second.  
+
+  Effect 1E: Pattern delay
+
+   The next pattern will be played after data byte *speed *1/50ths of a
+   second after the end of the current pattern.
+
+   For example (speed =6):
+
+ Event  Note  Effect                                                             
+ C6     F#1   1E 08 The next pattern is played 6*8=48/50ths of a second after    
+              the current one ends.                                              
+
+  Effect 1F: Call linked code
+
+   This allows code to be called when Desktop Tracker reaches this effect.
+   The format is: &AD, where A is the "address*, and D is the "data*. A set
+   of 16 memory locations are provided, and a SWI call can access these. For
+   example, the effect 1F47 would result in the "address* 4 being holding the
+   value 7. Also, during this effect, a linked set of codes are called, so
+   that they can control whatever they want. The main use of this is to
+   provide operation for a light box, so that light patterns can be placed in
+   the tune. The first 4 locations are "dedicated* to this, each bit
+   controlling 1 light. However, you should not have to worry about this, as
+   it is unlikely that everyone will have a light box.
+
+   If you want to link code, then a SWI call is provided for you. Please
+   refer to the SWI call list, in the file called "SWIs* in the "Extras*
+   directory, or at the end of this manual.

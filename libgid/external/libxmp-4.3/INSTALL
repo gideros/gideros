@@ -1,0 +1,36 @@
+Requirements
+------------
+
+- This package needs to be built using GNU make
+  (https://www.gnu.org/software/make/). On BSD or SysV systems, you may
+  need to use "gmake" instead of "make".
+
+
+Building the library
+--------------------
+
+In most systems just execute:
+
+  $ ./configure
+  $ make
+
+We'll build the shared library by default. Use ./configure --enable-static
+to build the static library. To check if the library was correctly built,
+run:
+
+  $ make check
+
+Use ./configure --help to see more options.
+
+
+Installation
+------------
+
+To install the library and development components, just run:
+
+# make install
+
+as the superuser. This will install the shared and static libraries,
+header file and pkg-config file into directories under /usr/local or a
+different location selected with the --prefix option in configure.
+

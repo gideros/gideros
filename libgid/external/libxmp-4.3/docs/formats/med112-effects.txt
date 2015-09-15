@@ -1,0 +1,147 @@
+
+Effects:
+
+  MED can create several different effects: slides up and down, changing the
+volume, vibrato, arpeggio and changing the tempo.
+
+  As you have probably noticed, there are four numbers after the note name.
+You can modify them in edit mode.
+  The first number is the number of the sample. It can be in range 0-U.
+If it's 0, the note will be played with the same sample as the previous note.
+  The second number is the number of the effect. It can be from 0 to F.
+      Number			Effect
+	0	If the last two numbers are 0, no effect, otherwise arpeggio.
+	1	Slide up
+	2	Slide down
+	3	Vibrato
+       4-B	Reserved for future expansion
+	C	Change volume
+       D,E	Crescendo,diminuendo
+	F	Set tempo
+
+  The last two numbers contain more information about the effect,
+e.g. a new tempo.
+
+Arpeggio (0)
+  It's possible to create chords with one audio channel. It is done by
+changing the pitch of the note very fast (6 times/note). MED can use
+the pitches of three notes at a time.
+  If both of the righthand-side numbers are 0, there'll be no effect.
+If not, the effect will be determined as follows:
+
+E.g. The arpeggio of the major chord is 47 (or 74), because the second
+     note of the chord is 4 half steps from the first note and the third
+     note is 7 half steps above the first note.
+
+  G-2 E-2 C-2 G-2 E-2 C-2 (MED will play the arpeggio from up to down)
+  \_____________________/
+	1 note
+
+ C-2 C#2 D-2 D#2 E-2 F-2 F#2 G-2 G#2 A-2 A#2 H-2
+  0   1   2   3   4   5   6   7   8   9   A   B
+  \_______________|___________/
+		  |
+	   Major chord
+
+Slide up (1)
+  Slides the note up 6 * (two numbers on the right side) periods.
+(or 5 * (2 numbers on the right side) if set in tempo-requester).
+Period is a pitch of the note used directly by Amiga audio hardware.
+
+Here's a table of periods for notes if samples are digitized with the
+same frequency as the samples included. MED uses these values.
+
+		Octave
+Note	  1	  2	  3
+C	856	428	214
+C#	808	404	202
+D	762	381	190
+D#	720	360	180
+E	678	339	170
+F	640	320	160
+F#	604	302	151
+G	570	285	143
+G#	538	269	135
+A	508	254	127
+A#	480	240	120
+H	453	226	113
+
+How to use this table?
+
+For example: You want a nice slide from C-2 to G-2.
+	     C-2's period is 428 and G-2's 285.
+	     So we must slide it 143 steps up.
+	     Let's divide it by six: 143/6=23.833333... rounded to 24.
+	     If we wanted to do this slide in one note, it would be
+		C-2 x118 because 24 is (hex)18.
+	     Because the note was slided actually 24*6=144 steps,
+	     the final note is a little untuned, but not many people
+	     can notice it.
+	     If you liked to make the slide a bit slower, you could do
+	     it for example:
+			C-2 110C		C-2 1106
+			--- 010C	or	--- 0106
+						--- 0106
+						--- 0106
+
+Slide down (2)
+  Just like slide up except this one slides it down.
+
+Vibrato (3)
+  Vibrato changes the period of the note between two frequencies. The first
+is the normal period of the note and the other is the normal period plus
+the last two numbers: the bigger the number, the bigger the vibrato.
+
+E.g.	C-2 1305 would change the period between 428 and 428-5=423.
+
+Volume (C)
+  This one sets the volume of the note. The volume can be a number between
+0 and 63. This is not a hex number. In fact it's a BCD-number, but you
+don't have to worry about it.
+
+Example:	C-2 1C35 plays the note with volume 35
+
+		D-3 1000
+		--- 0C00 suddenly the note disappears
+
+		E#1 1C10 <- begin quietly
+		--- 0C63 <- to full volume
+
+Slide volume (cresc., dim.) (D)
+  This effect does the crescendo/diminuendo, with formula Dxy
+
+If x > 0 crescendo 6 * x units.
+else diminuendo 6 * y units.
+
+Examples:	C-3 1000
+		--- 0D02 <- diminuendo 6*2 = 12 units
+
+		D#2 2000
+		--- 0D10 <- crescendo 6*1 = 6 units
+
+		E-1 5000
+		--- 0D45 <- crescendo 24 units, number five is not used
+
+Effect E works like D. It is provided for SoundTracker compatibility.
+
+Set tempo (F)
+  This command sets the tempo. It can also cause moving to the next block.
+This command is NOT SoundTracker-compatible. The two righthand-side numbers
+are the new tempo. This is a hex number. If they are 0, the song pointer will
+move to the next block of the sequence.
+
+Examples:	C-3 8F20 <- New tempo 32 (hex 20 = dec 32)
+
+		F-2 1F00 <- Move to the next block. This makes it possible to
+			    create 3/4-songs or upbeat.
+
+Here's a table for SoundTracker to MED-conversion:
+	SoundTracker	MED
+	    F07		F1B
+	    F06		F20
+	    F05		F2F
+	    F04		F35
+	    F03		F40
+	    F02		F6A
+	    F01		FD4
+

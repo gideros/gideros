@@ -63,6 +63,11 @@ enum
 	GINPUT_KEY_SPACE = 32,
 	GINPUT_KEY_BACKSPACE = 8,
 
+	GINPUT_KEY_CTRL = 17,
+	GINPUT_KEY_ALT = 18,
+	GINPUT_KEY_ESC = 27,
+	GINPUT_KEY_TAB = 9,
+
     GINPUT_KEY_LAST,
 };
 
@@ -86,6 +91,7 @@ typedef struct ginput_Touch
     int x;
     int y;
     int id;
+    int pressure, touchType;
 } ginput_Touch;
 
 typedef struct ginput_TouchEvent

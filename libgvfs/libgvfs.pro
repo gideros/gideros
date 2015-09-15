@@ -5,6 +5,10 @@ TEMPLATE = lib
 
 DEFINES += GIDEROS_LIBRARY
 
+unix:!macx {
+  DEFINES += STRICT_LINUX
+}
+
 INCLUDEPATH += . ./private
 
 HEADERS += gexport.h

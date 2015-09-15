@@ -1,0 +1,40 @@
+==============================================
+=  New Format of a Coconizer Song/Trackfile  =
+=           This is not used, yet            =
+==============================================
+
+ Adr     Information
+ ---     -----------
+ !00  :  String "Coco"
+ ?04  :  Version of Format (this Release has 1)
+ ?05  :  Reserved (must be 0)
+ ?06  :  Reserved (must be 0)
+ ?07  :  Status Byte, Bit 0 = Trackfile (1) or Songfile (0)
+                      Bit 7 = Offsets already absoluted (1)
+ !08  :  Offset to Title String (which is terminated with LF)
+ !12  :  Offset to Author's Text (which is terminated with LF)
+ !16  :  Offset to Pattern Names (each of them is terminated LF)
+
+ ?20  :  Number of Voices (currently 4 or 8)
+
+ ?21  :  Number of used Instruments
+ ?22  :  Number of used Sequences
+ ?23  :  Number of used Patterns
+
+ !24  :  Offset to Start of Sequence Table
+ !28  :  Offset to Start of Patterns
+
+ !32  :  !00  Offset to first Sample
+  ..     !04  Length in Bytes
+         !08  Volume (Range is loud=&00 to quiet=&FF)
+         !12  Repeat At Offset in Bytes; 0=No repeated Sample
+         !16  Repeat Length in Bytes
+         $20  Name of Sample (max 10 chars plus LF)
+         ?31  Fine Tune of Sample (-8 to +7 ie &00 to &0F)
+         ___
+         +32
+
+ !64  :  !00  Next Sample (when available)
+          ..
+
+ THE REST KEEPS THE SAME 

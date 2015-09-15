@@ -1,0 +1,60 @@
+------- Hld/Dec (Hold/Decay)
+(again a thing, that is difficult to explain...)
+With  Hold,  you  can set the exact duration of the note (in timing pulses).
+The  note  is  then turned off (if decay is 0) or decay is started.  In this
+example,  I  assume  that  the  secondary tempo is 6 (one line is one timing
+pulse)
+
+1. no hold
+
+0 PLAY+fx C-2 1000 <= play note
+1 fx
+2 fx
+3 fx
+4 fx
+5 fx
+0 PLAY+fx D-3 1000 <= stop previous and play new
+1 fx
+...
+
+2. with hold set to '2'
+
+0 PLAY+fx C-2 1000 <= play note
+1 fx
+2 STOP+fx          <= stop it
+3 fx
+4 fx    (silence here)
+5 fx
+0 PLAY+fx D-3 1000 <= play new note
+
+In  example  1,  (without  hold)  you can set the note duration only roughly
+(accuracy  of 6 timing pulses).  In example 2, the note duration is only two
+timing pulses (because hold = 2).
+
+So,  this  allows  a  powerful definition of note length, but it can't be
+used with long notes, because the note stops immediately??  Wrong!!
+
+Look at this:
+
+000 C-2 1000               / line# pulse# action
+001 -|- 1000              /   003    0    continue note...
+002 -|- 1000             /    003    1    continue note...
+003 -|- 1000 => ZOOMED =>     003    2    STOP NOTE
+004 --- 0000             \    003    3    (silence)
+005 D-3 1000              \   003    4    (silence)
+...
+
+So,  the keep holding -symbol (-|-) allows you to make the note longer.  The
+keep  holding  -symbol  can  be entered by clearing the note and setting the
+instrument number only, or easier:  by pressing Return.
+
+If  the  decay  is  0, the note is turned off immediately after the stopping
+point.   You  can  set  the  decay  to  happen as well (1 = slowest).  Decay
+doesn't work with MIDI-instruments.
+
+If  you're  using synthsounds or hybrid sounds, see Synthsounds.doc, because
+the decay is handled quite differently with them.
+
+The  hold/decay  is  a quite useful feature, so I recommend you learn to use
+it!!  (Thanks to ZAP for suggesting me this feature!!)
+

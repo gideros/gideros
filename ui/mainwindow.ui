@@ -33,7 +33,7 @@ QMainWindow::separator {
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>26</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -108,6 +108,7 @@ QMainWindow::separator {
     <addaction name="actionStart_Player"/>
     <addaction name="actionStart"/>
     <addaction name="actionStop"/>
+    <addaction name="actionStartAll"/>
     <addaction name="separator"/>
     <addaction name="actionPlayer_Settings"/>
     <addaction name="actionLocalhostToggle"/>
@@ -157,6 +158,7 @@ QMainWindow::separator {
    <addaction name="actionStart_Player"/>
    <addaction name="actionStart"/>
    <addaction name="actionStop"/>
+   <addaction name="actionStartAll"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionNew_Project">
@@ -557,6 +559,17 @@ Gideros Player, Play button is enabled.</string>
   <action name="actionDocumentation">
    <property name="text">
     <string>Documentation</string>
+   </property>
+  </action>
+  <action name="actionStartAll">
+   <property name="text">
+    <string>Start All</string>
+   </property>
+   <property name="toolTip">
+    <string>Start to all players</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+P</string>
    </property>
   </action>
  </widget>

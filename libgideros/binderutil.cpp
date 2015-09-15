@@ -86,6 +86,11 @@ void g_createClass(lua_State* L,
         lua_setfield(L, -2, "new");
     }
 
+    lua_pushstring(L, classname);
+    lua_setfield(L, -2, "__classname");
+    lua_pushstring(L, basename);
+    lua_setfield(L, -2, "__basename");
+
 	// set metatable as global variable
 	std::vector<std::string> result;
 	pystring::split(classname, result, ".");

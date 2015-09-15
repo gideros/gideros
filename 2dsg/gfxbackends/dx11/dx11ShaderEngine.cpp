@@ -16,9 +16,11 @@
 #ifdef WINSTORE
 ComPtr<ID3D11Device1> g_dev;                     // the pointer to our Direct3D device interface (11.1)
 ComPtr<ID3D11DeviceContext1> g_devcon;           // the pointer to our Direct3D device context (11.1)
+ComPtr<IDXGISwapChain1> g_swapchain;             // the pointer to the swap chain interface (11.1)
 #else
 ID3D11Device *g_dev;                     // the pointer to our Direct3D device interface
 ID3D11DeviceContext *g_devcon;           // the pointer to our Direct3D device context
+IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interface
 #endif
 
 ShaderProgram *dx11ShaderEngine::createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)
@@ -170,7 +172,6 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	//
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
-	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -178,11 +179,18 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	sampDesc.MinLOD = 0;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerRepeat);
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerRepeatFilter);
+
 	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerClamp);
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	g_dev->CreateSamplerState(&sampDesc, &dx11ShaderTexture::samplerClampFilter);
 
 
 	// Set rasterizer state to switch off backface culling
@@ -225,6 +233,77 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	reset();
 }
 
+void dx11ShaderEngine::resizeFramebuffer(int width,int height)
+{
+    if (g_swapchain)
+    {
+        g_devcon->OMSetRenderTargets(0, 0, 0);
+
+        // Release all outstanding references to the swap chain's buffers.
+        g_backbuffer->Release();
+
+        HRESULT hr;
+        // Preserve the existing buffer count and format.
+        // Automatically choose the width and height to match the client rect for HWNDs.
+        hr = g_swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+
+        // Perform error handling here!
+
+        D3D11_TEXTURE2D_DESC backbuff_desc;
+        pBackBuffer->GetDesc(&backbuff_desc);
+
+        // Get buffer and create a render-target-view.
+        ID3D11Texture2D* pBuffer;
+        hr = g_swapchain->GetBuffer(0, __uuidof( ID3D11Texture2D),  (void**) &pBackBuffer );
+        // Perform error handling here!
+
+        g_dev->CreateRenderTargetView(pBackBuffer, NULL, &g_backbuffer);
+        pBackBuffer->Release();
+
+        g_depthStencil->Release();
+        g_depthStencilTexture->Release();
+
+    	//Depth / Stencil setup
+    	D3D11_TEXTURE2D_DESC descDepth;
+    	ZeroMemory(&descDepth, sizeof(descDepth));
+    	descDepth.Width = backbuff_desc.Width;
+    	descDepth.Height = backbuff_desc.Height;
+    	descDepth.MipLevels = 1;
+    	descDepth.ArraySize = 1;
+    	descDepth.Format =  DXGI_FORMAT_D24_UNORM_S8_UINT;
+    	descDepth.SampleDesc.Count = 1;
+    	descDepth.SampleDesc.Quality = 0;
+    	descDepth.Usage = D3D11_USAGE_DEFAULT;
+    	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    	descDepth.CPUAccessFlags = 0;
+    	descDepth.MiscFlags = 0;
+    	g_dev->CreateTexture2D(&descDepth, NULL, &g_depthStencilTexture);
+
+    	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+    	ZeroMemory(&descDSV, sizeof(descDSV));
+    	descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;// DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+    	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    	descDSV.Texture2D.MipSlice = 0;
+
+    	// Create the depth stencil view
+    	g_dev->CreateDepthStencilView(g_depthStencilTexture, // Depth stencil texture
+    		&descDSV, // Depth stencil desc
+    		&g_depthStencil);  // [out] Depth stencil view
+
+        g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil );
+
+        // Set up the viewport.
+        D3D11_VIEWPORT vp;
+        vp.Width = width;
+        vp.Height = height;
+        vp.MinDepth = 0.0f;
+        vp.MaxDepth = 1.0f;
+        vp.TopLeftX = 0;
+        vp.TopLeftY = 0;
+        g_devcon->RSSetViewports( 1, &vp );
+    }
+}
+
 dx11ShaderEngine::~dx11ShaderEngine()
 {
 	if (currentBuffer)
@@ -242,9 +321,11 @@ dx11ShaderEngine::~dx11ShaderEngine()
     g_pRSScissor->Release();
     g_pDSDepth->Release();
     g_pDSOff->Release();
-    dx11ShaderTexture::samplerClamp->Release();
-    dx11ShaderTexture::samplerRepeat->Release();
-    if (g_pCBlendState)
+	dx11ShaderTexture::samplerClamp->Release();
+	dx11ShaderTexture::samplerRepeat->Release();
+	dx11ShaderTexture::samplerClampFilter->Release();
+	dx11ShaderTexture::samplerRepeatFilter->Release();
+	if (g_pCBlendState)
         g_pCBlendState->Release();
 #ifdef OPENGL_ES
 	glDeleteRenderbuffers(1,&_depthRenderBuffer);
@@ -302,9 +383,9 @@ void dx11ShaderEngine::bindTexture(int num,ShaderTexture *texture)
 	dx11ShaderTexture *tex=(dx11ShaderTexture *)texture;
 	g_devcon->PSSetShaderResources(num,1,&tex->rsv);
 	if (tex->wrap==ShaderTexture::WRAP_CLAMP)
-		g_devcon->PSSetSamplers(0, 1, &dx11ShaderTexture::samplerRepeat/*Clamp*/);
+		g_devcon->PSSetSamplers(0, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerClamp:&dx11ShaderTexture::samplerClampFilter);
 	else
-		g_devcon->PSSetSamplers(0, 1, &dx11ShaderTexture::samplerRepeat);
+		g_devcon->PSSetSamplers(0, 1, (tex->filter==ShaderTexture::FILT_NEAREST)?&dx11ShaderTexture::samplerRepeat:&dx11ShaderTexture::samplerRepeatFilter);
 }
 
 

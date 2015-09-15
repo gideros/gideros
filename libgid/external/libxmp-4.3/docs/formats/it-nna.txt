@@ -1,0 +1,145 @@
+Excerpt from the Impulse Tracker 2.14v5 User's Manual
+
+---
+
+         The powerful feature of this tracker, though, is not the
+         envelopes by themselves - it's the New Note Actions! What these
+         options do is allow you to select what should happen to an
+         instrument when another note is played in the same column. If NNA
+         "Cut" is selected, then the previous note will immediately be
+         stopped (like in all other trackers). If NNA "Continue" is
+         selected, then the note will continue playing! This is especially
+         useful for Drum Parts, where there may be a long-ish snare sample
+         - you can go on ahead and put a bass drum in the very next row
+         after it - the snare drum will still complete playing! NNA "Note
+         Off" issues a note off command to a note when a new note is played
+         in the channel. This is particularly useful in combination with
+         volume envelopes and volume envelope sustain loops. NNA "Note
+         Fade" causes the current note to fade out with the fadeout value
+         when a new note is played.
+
+        WARNING!!
+         New Note Actions are EXTREMELY powerful, but they CAN cause
+         problems if you are not careful. Selecting NNA Fade with a fade
+         value of 0, or note continue with a looped sample (no volume
+         envelope) or anything which can cause a quick build up of
+         allocated channels can easily hang a slow computer (or even a
+         quick one, for that matter!) I tried to put checks against this,
+         but they always triggered too late - "past the point of no return"
+         where the CPU becomes so bogged down with processing the
+         information, that it can't do or try to do anything else. (The
+         tracker has *MANY* calculations to do - the most time consuming
+         are the mixing routines, which require the processor to process as
+         many bytes as the mixing speed per second for EACH note ie. a
+         mixing speed of 44kHz means that for each note playing, 44000
+         calculations have to be made EVERY second... so with 64 channels
+         'active' at the maximum mixing rate for a SB16, almost 3 MILLION
+         calculations have to be done EVERY second to produce the sound (in
+         mono)!!! (My 486 can cope with this, but my 386 just dies!)
+
+        Duplicate Check Type (DCT) / Duplicate Check Action (DCA)
+           DCT = Off/Note/Sample/Instrument, DCA = Cut/Off/Fade
+
+         When the duplicate check type is enabled, then repetitions of the same
+         instrument&note/sample (or just repititions of the same instrument)
+         pair in a particular channel will cause the previous occurence of
+         the instrument&note/sample pair to be cut or faded (depending on
+         the DCA)
+
+          Example: If the DCT is set to note, and DCA is set to Cut, then the
+                    asterixed notes will cut out the tilda notes
+        +---------------+-------------------+-------------------------------+
+        |  C-4 01 ~     |     C-4 02 ~      |   C-4 03 }                    |
+        |  D-4 01       |     C-4 02 *   ~  |   D-4 03 } Nothing get's cut. |
+        |  C-4 01 *     |     C-4 02     *  |   C-4 02 }                    |
+        +---------------+-------------------+-------------------------------+
+
+        This option was included to help limit the number of active channels,
+        and is especially useful for drum tracks.
+
+        Another nifty application of Duplicity checks is the following
+        example: You can have a separate sample for each string of a guitar
+        and setup and instrument to accomodate this. Setting the NNA to
+        continue, the DCT to sample and the DCA to fade (with a relatively
+        quick fadeout) means that whenever you play a new note, the previous
+        note will continue to play on. BUT! If a previous note of the same
+        instrument has the same sample as the new note being played, then
+        it will be faded out - this closely relates to what you hear when
+        someone plays a guitar - when they play the same string, they have
+        to put their fingers down on the string, which causes the last note
+        *on that string* to fade out.
+
+        I sincerely hope that these options do not cause the death of brilliant
+        4 channel music - that would be a great shame! There is truly an art in
+        making a decent sound in as few channels as possible! (If you're new to
+        this sorta thing, then it'll grow upon you...)
+
+        For interest's sake...
+         Channels are turned off internally under any of the following
+         conditions:
+          1) The end of a sample is reached (quite obvious)
+          2) When the end of a volume envelope is reached, and the final
+             envelope volume is 0
+          3) When the fadeout value for a channel causes it to become silent.
+          4) When a duplicate note is played when DNT is set to Note and DCA is
+             set to cut for the instrument.
+          5) When a notecut is issued (obvious)
+          6) When a channel is moved to the background (using NNAs)
+             AND the volume is 0.
+
+         Out of all the functions provided for the Samples and Instruments,
+         perhaps the only one that requires explanation is the "Update
+         Pattern Data" function. This function was written for people who
+         have already written music in MOD/S3M/MTM formats, and want to
+         combine their percussion parts into a single instrument. The way
+         to do this is to set up the instrument->note/sample table, and
+         then use the "Update Pattern Data" function. What this does is
+         search through all the patterns for all occurrences of the
+         note/sample pairs that appear in the instrument->note/sample
+         table, and replace it with the appropriate note/INSTRUMENT pair.
+         Sounds quite complicated... sorry :)
+
+                Example:
+                  If you originally have the following setup
+
+                Sample 1 = Bass Drum
+                Sample 2 = Snare Drum
+                Sample 3 = Closed Hihat
+                Sample 4 = Open Hihat
+
+                  And the following column within any pattern:
+
+                        C-5 01 .. ...
+                        C-5 03 .. ...
+                        C-5 03 .. ...
+                        C-5 03 .. ...
+                        C-5 02 .. ...
+                        C-5 04 .. ...
+                        C-5 01 .. ...
+                        C-5 04 .. ...
+                        C-5 01 .. ...
+
+                  You can combine these four samples into one instrument by
+                  creating the instrument->note/sample table with the
+                  following entries: (say for instrument 10)
+
+                        C-5|C-5 01
+                        C#5|C-5 ..        <--- just an empty slot...
+                        D-5|C-5 02
+                        D#5|C-5 ..
+                        E-5|C-5 03
+                        F-5|C-5 04
+
+                  And using the update pattern data command will produce the
+                  following
+
+                        C-5 10 .. ...
+                        E-5 10 .. ...
+                        E-5 10 .. ...
+                        E-5 10 .. ...
+                        D-5 10 .. ...
+                        F-5 10 .. ...
+                        C-5 10 .. ...
+                        F-5 10 .. ...
+                        C-5 10 .. ...
+

@@ -60,9 +60,9 @@ public:
             gid = gaudio_SoundCreateFromFile(fileName, g_false, error);
             setSoundInterface();
         }
-        else if (dot2 == "mp3")
+        else
         {
-            if (gaudio_BackgroundMusicIsAvailable())
+            if ((dot2=="mp3") && gaudio_BackgroundMusicIsAvailable())
             {
                 gid = gaudio_BackgroundMusicCreateFromFile(fileName, error);
                 setBackgroundMusicInterface();
@@ -73,7 +73,7 @@ public:
                 setSoundInterface();
             }
         }
-        else
+       /* else
         {
             gid = 0;
 
@@ -83,7 +83,7 @@ public:
 
             if (error)
                 *error = fis ? GAUDIO_UNSUPPORTED_FORMAT : GAUDIO_CANNOT_OPEN_FILE;
-        }
+        }*/
 
         if (!sig_.empty())
         {

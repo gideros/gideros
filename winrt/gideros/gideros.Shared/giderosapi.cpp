@@ -53,10 +53,7 @@ static ULONGLONG next_game_tick;
 //#define PTW32_CDECL
 
 #ifdef WINSTORE
-ComPtr<IDXGISwapChain1> g_swapchain;             // the pointer to the swap chain interface (11.1)
 ComPtr<IDXGIDevice3> dxgiDevice;
-#else
-IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interface
 #endif
 
 int PTW32_CDECL pthread_mutex_init(pthread_mutex_t * mutex,
@@ -394,7 +391,7 @@ public:
 	void exitRenderLoop();
 	void foreground();
 	void background();
-	
+	void resize(int width, int height);
 
 private:
 	void loadProperties();
@@ -804,8 +801,14 @@ ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height
 	hardwareOrientation_ = ePortrait;
 	deviceOrientation_ = ePortrait;
 #else
-	hardwareOrientation_ = eLandscapeLeft;
-	deviceOrientation_ = eLandscapeLeft;
+	if (width_>height_){
+		hardwareOrientation_ = eLandscapeLeft;
+		deviceOrientation_ = eLandscapeLeft;
+    }
+	else {
+		hardwareOrientation_ = ePortrait;
+		deviceOrientation_ = ePortrait;
+	}
 #endif
 
 	running_ = false;
@@ -1412,7 +1415,27 @@ void ApplicationManager::exitRenderLoop()
 		luaError(status.errorString());
 }
 
+void ApplicationManager::resize(int width, int height)
+{
 
+	if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
+
+	width_ = width;
+	height_ = height;
+
+	if (width < height){
+		hardwareOrientation_ = ePortrait;
+		deviceOrientation_ = ePortrait;
+		application_->setResolution(width*contentScaleFactor, height*contentScaleFactor);
+	}
+	else {
+		hardwareOrientation_ = eLandscapeLeft;
+		deviceOrientation_ = eLandscapeLeft;
+		application_->setResolution(height*contentScaleFactor, width*contentScaleFactor);
+	}
+	application_->setHardwareOrientation(hardwareOrientation_);
+	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
+}
 
 static ApplicationManager *s_manager = NULL;
 static int lastMouseButton_ = 0;
@@ -1534,6 +1557,11 @@ extern "C" {
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
 		ginputp_touchCancel(xn, yn, id);
+	}
+
+	void gdr_resize(int width, int height)
+	{
+		s_manager->resize(width, height);
 	}
 
 }
