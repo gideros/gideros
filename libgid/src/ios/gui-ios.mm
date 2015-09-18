@@ -45,9 +45,9 @@ private:
 };
 
 
-@interface GGAlertDialog : NSObject<UIAlertViewDelegate>
+@interface GGAlertDialog : UIViewController
 {
-	UIAlertView *alertView_;
+	UIAlertController *alertView_;
 	gevent_Callback callback_;
 	void *udata_;
 	g_id gid_;
@@ -69,17 +69,33 @@ private:
 {
     if (self = [super init])
     {
-		alertView_ = [[UIAlertView alloc] initWithTitle:title
-												message:message
-											   delegate:self
-									  cancelButtonTitle:cancelButton
-									  otherButtonTitles:nil];
-		
-		if (button1)
-			[alertView_ addButtonWithTitle:button1];
+		alertView_ = [UIAlertController alertControllerWithTitle:title
+                               message:message
+                               preferredStyle:UIAlertControllerStyleAlert];
 
-		if (button2)
-			[alertView_ addButtonWithTitle:button2];
+		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:cancelButton style:UIAlertActionStyleDefault   
+			handler:^(UIAlertAction * action) {
+				[self buttonPressed:cancelButton withIndex:0];
+			}];
+
+		[alertView_ addAction:defaultAction];
+
+
+		if (button1) {
+			UIAlertAction* button1Action = [UIAlertAction actionWithTitle:button1 style:UIAlertActionStyleDefault
+                        handler:^(UIAlertAction * action) {
+				[self buttonPressed:button1 withIndex:1];
+                        }];
+			[alertView_ addAction:button1Action];
+		}
+
+		if (button2) {
+			UIAlertAction* button2Action = [UIAlertAction actionWithTitle:button1 style:UIAlertActionStyleDefault
+                        handler:^(UIAlertAction * action) {
+				[self buttonPressed:button2 withIndex:2];
+                        }];
+                        [alertView_ addAction:button2Action];
+		}
 
 		callback_ = callback;
 		udata_ = udata;
@@ -90,46 +106,41 @@ private:
 
 - (void)dealloc
 {
-    alertView_.delegate = nil;
-	[alertView_ dismissWithClickedButtonIndex:-1 animated:NO];
-	[alertView_ release];
+	[alertView_ dismissViewControllerAnimated:NO completion:nil];
 	[super dealloc];
 }
 
 - (void)show
-{
-	[alertView_ show];
+{	
+	[[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertView_ animated:YES completion:nil];
 }
 
 - (void)hide
 {
-	[alertView_ dismissWithClickedButtonIndex:-1 animated:YES];
+	[alertView_ dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (BOOL)isVisible
 {
-	return [alertView_ isVisible];
+	return [alertView_ isViewLoaded];
 }
 
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-	if (buttonIndex >= 0)
-	{
-        const char *buttonText = [[alertView_ buttonTitleAtIndex:buttonIndex] UTF8String];
+- (void)buttonPressed:(NSString *)text withIndex:(NSInteger)buttonIndex {
+	const char *buttonText = [text UTF8String];
         size_t size = sizeof(gui_AlertDialogCompleteEvent) + strlen(buttonText) + 1;
         gui_AlertDialogCompleteEvent *event = (gui_AlertDialogCompleteEvent*)malloc(size);
         event->gid = gid_;
-        event->buttonIndex = buttonIndex;
+        event->buttonIndex = (int)buttonIndex;
         event->buttonText = (char*)event + sizeof(gui_AlertDialogCompleteEvent);
         strcpy((char*)event->buttonText, buttonText);
-        
+
         gevent_EnqueueEvent(gid_, callback_, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, udata_);
-	}
 }
 
 @end
 
 
+#ifndef TARGET_OS_TV
 
 @interface GGAlertView : UIAlertView
 {
@@ -237,11 +248,16 @@ private:
 
 @end
 
-@interface GGTextInputDialog : NSObject<UIAlertViewDelegate>
+#endif
+
+
+@interface GGTextInputDialog : UIViewController
 {
+#ifndef TARGET_OS_TV
 	GGAlertView *alertView4_;   // for <  iOS 5
-	UIAlertView *alertView5_;	// for >= iOS 5
-    UIAlertView *alertView_;
+#endif
+	UIAlertController *alertView5_;	// for >= iOS 5
+    UIAlertController *alertView_;
     UITextField *textField_;
 	gevent_Callback callback_;
 	void *udata_;
@@ -270,34 +286,64 @@ private:
 
 		if (!ios5)
 		{
+#ifndef TARGET_OS_TV
 			alertView4_ = [[GGAlertView alloc] initWithTitle:title
 													message:message
 												   delegate:self
 										  cancelButtonTitle:cancelButton];
+
+			if (button1) {
+				[alertView4_ addButtonWithTitle:button1];
+			}
+
+			if (button2) {
+                                [alertView4_ addButtonWithTitle:button2];
+                        }
             
-            alertView_ = alertView4_;
+            alertView_ = (UIAlertController *)alertView4_;
             textField_ = alertView4_.textFieldEx;
+#endif
 		}
 		else
 		{
-			alertView5_ =[[UIAlertView alloc] initWithTitle:title
-													message:message
-												   delegate:self
-										  cancelButtonTitle:cancelButton
-										  otherButtonTitles:nil];
-			alertView5_.alertViewStyle = UIAlertViewStylePlainTextInput;
+	                alertView5_ = [UIAlertController alertControllerWithTitle:title
+                               message:message
+                               preferredStyle:UIAlertControllerStyleAlert];
+
+	                UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:cancelButton style:UIAlertActionStyleDefault
+       	        	         handler:^(UIAlertAction * action) {
+                        	        [self buttonPressed:cancelButton withIndex:0];
+        	                }];
+
+	                [alertView5_ addAction:defaultAction];
+
+			[alertView5_ addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+			    textField_ = textField;
+			}];
+
+
+	                if (button1) {
+        	                UIAlertAction* button1Action = [UIAlertAction actionWithTitle:button1 style:UIAlertActionStyleDefault
+                	        handler:^(UIAlertAction * action) {
+                        	        [self buttonPressed:button1 withIndex:1];
+	                        }];
+        	                [alertView5_ addAction:button1Action];
+                	}
+
+			if (button2) {
+                                UIAlertAction* button2Action = [UIAlertAction actionWithTitle:button2 style:UIAlertActionStyleDefault
+                                handler:^(UIAlertAction * action) {
+                                        [self buttonPressed:button2 withIndex:2];
+                                }];
+                                [alertView5_ addAction:button2Action];
+                        }
+
             
-            alertView_ = alertView5_;
-            textField_ = [alertView5_ textFieldAtIndex:0];
+	            alertView_ = alertView5_;
 		}
         
-        textField_.text = text;
+	        textField_.text = text;
 
-		if (button1)
-			[alertView_ addButtonWithTitle:button1];
-		
-		if (button2)
-			[alertView_ addButtonWithTitle:button2];
 		
 		callback_ = callback;
 		udata_ = udata;
@@ -308,25 +354,35 @@ private:
 
 - (void)dealloc
 {
-    alertView_.delegate = nil;
-    [alertView_ dismissWithClickedButtonIndex:-1 animated:NO];
-    [alertView_ release];
+#ifndef TARGET_OS_TV
+    if (alertView4_ == alertView_) {
+	UIAlertView * tmpAlertView = (UIAlertView*)alertView_;
+    tmpAlertView.delegate = nil;
+    [tmpAlertView dismissWithClickedButtonIndex:-1 animated:NO];
+    [tmpAlertView release];
+    } else {
+#else
+   [self hide];
+#endif
+#ifndef TARGET_OS_TV
+   }
+#endif
 	[super dealloc];
 }
 
 - (void)show
 {
-	[alertView_ show];
+        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertView_ animated:YES completion:nil];
 }
 
 - (void)hide
 {
-	[alertView_ dismissWithClickedButtonIndex:-1 animated:YES];
+        [alertView_ dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (BOOL)isVisible
 {
-	return [alertView_ isVisible];
+        return [alertView_ isViewLoaded];
 }
 
 - (void)setText:(NSString *)text
@@ -392,24 +448,30 @@ private:
     return textField_.secureTextEntry;
 }
 
+- (void)buttonPressed:(NSString *)mtext withIndex:(NSInteger)buttonIndex {
+	const char *text = [[self getText] UTF8String];
+        const char *buttonText = [mtext UTF8String];
+        size_t size = sizeof(gui_TextInputDialogCompleteEvent) + strlen(text) + 1 + strlen(buttonText) + 1;
+        gui_TextInputDialogCompleteEvent *event = (gui_TextInputDialogCompleteEvent*)malloc(size);
+                event->gid = gid_;
+                event->text = (char*)event + sizeof(gui_TextInputDialogCompleteEvent);
+                event->buttonIndex = buttonIndex;
+                event->buttonText = (char*)event + sizeof(gui_TextInputDialogCompleteEvent) + strlen(text) + 1;
+        strcpy((char*)event->text, text);
+        strcpy((char*)event->buttonText, buttonText);
+
+                gevent_EnqueueEvent(gid_, callback_, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, event, 1, udata_);
+}
+
+#ifndef TARGET_OS_TV
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
 	if (buttonIndex >= 0)
 	{
-        const char *text = [[self getText] UTF8String];
-        const char *buttonText = [[alertView_ buttonTitleAtIndex:buttonIndex] UTF8String];
-        size_t size = sizeof(gui_TextInputDialogCompleteEvent) + strlen(text) + 1 + strlen(buttonText) + 1;
-        gui_TextInputDialogCompleteEvent *event = (gui_TextInputDialogCompleteEvent*)malloc(size);
-		event->gid = gid_;
-		event->text = (char*)event + sizeof(gui_TextInputDialogCompleteEvent);
-		event->buttonIndex = buttonIndex;
-		event->buttonText = (char*)event + sizeof(gui_TextInputDialogCompleteEvent) + strlen(text) + 1;
-        strcpy((char*)event->text, text);
-        strcpy((char*)event->buttonText, buttonText);
-        
-		gevent_EnqueueEvent(gid_, callback_, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, event, 1, udata_);
+	[self buttonPressed:[alertView_ buttonTitleAtIndex:buttonIndex] withIndex:buttonIndex];
 	}
 }
+#endif
 
 @end
 
