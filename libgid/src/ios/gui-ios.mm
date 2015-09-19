@@ -47,7 +47,7 @@ private:
 
 @interface GGAlertDialog : UIViewController
 {
-	UIAlertController *alertView_;
+	id alertView_;
 	gevent_Callback callback_;
 	void *udata_;
 	g_id gid_;
@@ -69,6 +69,7 @@ private:
 {
     if (self = [super init])
     {
+	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 		alertView_ = [UIAlertController alertControllerWithTitle:title
                                message:message
                                preferredStyle:UIAlertControllerStyleAlert];
@@ -90,7 +91,7 @@ private:
 		}
 
 		if (button2) {
-			UIAlertAction* button2Action = [UIAlertAction actionWithTitle:button1 style:UIAlertActionStyleDefault
+			UIAlertAction* button2Action = [UIAlertAction actionWithTitle:button2 style:UIAlertActionStyleDefault
                         handler:^(UIAlertAction * action) {
 				[self buttonPressed:button2 withIndex:2];
                         }];
@@ -100,32 +101,83 @@ private:
 		callback_ = callback;
 		udata_ = udata;
 		gid_ = gid;
+	}
+#ifndef TARGET_OS_TV
+	else
+	{
+                alertView_ = [[UIAlertView alloc] initWithTitle:title
+                                                                                                message:message
+                                                                                           delegate:self
+                                                                          cancelButtonTitle:cancelButton
+                                                                          otherButtonTitles:nil];
+
+                if (button1)
+                        [alertView_ addButtonWithTitle:button1];
+
+                if (button2)
+                        [alertView_ addButtonWithTitle:button2];
+
+                callback_ = callback;
+                udata_ = udata;
+                gid_ = gid;	
+	}
+#endif
     }
     return self;
 }
 
 - (void)dealloc
 {
-	[alertView_ dismissViewControllerAnimated:NO completion:nil];
+#ifndef TARGET_OS_TV
+		((UIAlertView *)alertView_).delegate = nil;
+	        [alertView_ dismissWithClickedButtonIndex:-1 animated:NO];
+        	[alertView_ release];
+#endif
 	[super dealloc];
 }
 
 - (void)show
 {	
-	[[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertView_ animated:YES completion:nil];
+	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
+		[[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertView_ animated:YES completion:nil];
+	}
+#ifndef TARGET_OS_TV
+	else
+	{
+		[alertView_ show];
+	}
+#endif
 }
 
 - (void)hide
 {
-	[alertView_ dismissViewControllerAnimated:YES completion:nil];
+	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
+		if ([alertView_ isViewLoaded]) [alertView_ dismissViewControllerAnimated:YES completion:nil];
+	}
+#ifndef TARGET_OS_TV
+	else
+	{	
+		[alertView_ dismissWithClickedButtonIndex:-1 animated:YES];
+	}
+#endif
 }
 
 - (BOOL)isVisible
 {
-	return [alertView_ isViewLoaded];
+	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
+		return [alertView_ isViewLoaded];
+	}
+#ifndef TARGET_OS_TV
+	else
+	{
+		return [alertView_ isVisible];
+	}
+#endif
+	return NO;
 }
 
-- (void)buttonPressed:(NSString *)text withIndex:(NSInteger)buttonIndex {
+- (void)buttonPressed:(NSString *)text withIndex:(NSInteger)buttonIndex 
+{
 	const char *buttonText = [text UTF8String];
         size_t size = sizeof(gui_AlertDialogCompleteEvent) + strlen(buttonText) + 1;
         gui_AlertDialogCompleteEvent *event = (gui_AlertDialogCompleteEvent*)malloc(size);
@@ -136,6 +188,16 @@ private:
 
         gevent_EnqueueEvent(gid_, callback_, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, udata_);
 }
+
+#ifndef TARGET_OS_TV
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+        if (buttonIndex >= 0)
+        {
+        [self buttonPressed:[alertView_ buttonTitleAtIndex:buttonIndex] withIndex:buttonIndex];
+        }
+}
+#endif
 
 @end
 
@@ -256,8 +318,8 @@ private:
 #ifndef TARGET_OS_TV
 	GGAlertView *alertView4_;   // for <  iOS 5
 #endif
-	UIAlertController *alertView5_;	// for >= iOS 5
-    UIAlertController *alertView_;
+	id alertView5_;	// for >= iOS 5
+    id alertView_;
     UITextField *textField_;
 	gevent_Callback callback_;
 	void *udata_;
@@ -300,11 +362,17 @@ private:
                                 [alertView4_ addButtonWithTitle:button2];
                         }
             
-            alertView_ = (UIAlertController *)alertView4_;
-            textField_ = alertView4_.textFieldEx;
+	            alertView_ = (UIAlertController *)alertView4_;
+        	    textField_ = alertView4_.textFieldEx;
+
+                    if (button1)
+                        [alertView_ addButtonWithTitle:button1];
+
+                    if (button2)
+                        [alertView_ addButtonWithTitle:button2];
 #endif
 		}
-		else
+		else if ([[UIDevice currentDevice].systemVersion floatValue] >= 8)
 		{
 	                alertView5_ = [UIAlertController alertControllerWithTitle:title
                                message:message
@@ -341,6 +409,26 @@ private:
             
 	            alertView_ = alertView5_;
 		}
+#ifndef TARGET_OS_TV
+		else
+		{
+                    alertView5_ =[[UIAlertView alloc] initWithTitle:title
+                                                      message:message
+                                                      delegate:self
+                                                      cancelButtonTitle:cancelButton
+                                                      otherButtonTitles:nil];
+                    ((UIAlertView *)alertView5_).alertViewStyle = UIAlertViewStylePlainTextInput;
+
+        	    alertView_ = alertView5_;
+	            textField_ = [alertView5_ textFieldAtIndex:0];
+
+                    if (button1)
+                        [alertView_ addButtonWithTitle:button1];
+
+                    if (button2)
+                        [alertView_ addButtonWithTitle:button2];
+		}
+#endif
         
 	        textField_.text = text;
 
@@ -355,34 +443,51 @@ private:
 - (void)dealloc
 {
 #ifndef TARGET_OS_TV
-    if (alertView4_ == alertView_) {
 	UIAlertView * tmpAlertView = (UIAlertView*)alertView_;
-    tmpAlertView.delegate = nil;
-    [tmpAlertView dismissWithClickedButtonIndex:-1 animated:NO];
-    [tmpAlertView release];
-    } else {
-#else
-   [self hide];
-#endif
-#ifndef TARGET_OS_TV
-   }
+	tmpAlertView.delegate = nil;
+	[tmpAlertView dismissWithClickedButtonIndex:-1 animated:NO];
+	[tmpAlertView release];
 #endif
 	[super dealloc];
 }
 
 - (void)show
 {
+#ifndef TARGET_OS_TV
+    if ([[UIDevice currentDevice].systemVersion floatValue] < 8) {
+	[((UIAlertView *)alertView_) show];
+    } else {
+#endif
         [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertView_ animated:YES completion:nil];
+#ifndef TARGET_OS_TV
+    }
+#endif
 }
 
 - (void)hide
 {
-        [alertView_ dismissViewControllerAnimated:YES completion:nil];
+#ifndef TARGET_OS_TV
+    if ([[UIDevice currentDevice].systemVersion floatValue] < 8) {
+	[alertView_ dismissWithClickedButtonIndex:-1 animated:YES];
+    } else {
+#endif
+        if ([alertView_ isViewLoaded]) [alertView_ dismissViewControllerAnimated:YES completion:nil];
+#ifndef TARGET_OS_TV
+    }
+#endif
 }
 
 - (BOOL)isVisible
 {
+#ifndef TARGET_OS_TV
+    if ([[UIDevice currentDevice].systemVersion floatValue] < 8) {
+	return [alertView_ isVisible];
+    } else {
+#endif
         return [alertView_ isViewLoaded];
+#ifndef TARGET_OS_TV
+    }
+#endif
 }
 
 - (void)setText:(NSString *)text
@@ -455,7 +560,7 @@ private:
         gui_TextInputDialogCompleteEvent *event = (gui_TextInputDialogCompleteEvent*)malloc(size);
                 event->gid = gid_;
                 event->text = (char*)event + sizeof(gui_TextInputDialogCompleteEvent);
-                event->buttonIndex = buttonIndex;
+                event->buttonIndex = (int)buttonIndex;
                 event->buttonText = (char*)event + sizeof(gui_TextInputDialogCompleteEvent) + strlen(text) + 1;
         strcpy((char*)event->text, text);
         strcpy((char*)event->buttonText, buttonText);

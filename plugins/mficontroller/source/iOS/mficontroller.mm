@@ -116,7 +116,12 @@ struct GGameControllerEvent
 
 - (void)activateExtendedController:(GCController *)controller onGGameController:(GGameController *)gameController {
     int a = (int)[self.controllers indexOfObject:controller];
+#ifdef __IPHONE_9_0
     [controller setPlayerIndex:(GCControllerPlayerIndex)a];
+#else
+    [controller setPlayerIndex:(NSInteger)a];
+#endif
+
     
     NSLog(@"activateExtendedController GC index %i",a);
     
@@ -161,7 +166,11 @@ struct GGameControllerEvent
 
 - (void)activateStandardController:(GCController *)controller onGGameController:(GGameController *)gameController {
     int a = (int)[self.controllers indexOfObject:controller];
+#ifdef __IPHONE_9_0
     [controller setPlayerIndex:(GCControllerPlayerIndex)a];
+#else
+    [controller setPlayerIndex:(NSInteger)a];
+#endif
     
     NSLog(@"activateStandardController GC index %i",a);
     
@@ -205,18 +214,19 @@ struct GGameControllerEvent
 }
 
 - (NSString *)getTypeOfController:(GCController *)controller {
-    /*
-     #ifdef __IPHONE_9_0
-     if (controller.microGamepad) {
-     return @"MICRO_GAMEPAD";
+
+#ifdef TARGET_OS_TV
+     if ([controller respondsToSelector:@selector(microGamepad)] && controller.microGamepad) {
+	return @"MICRO_GAMEPAD";
      }
-     #endif
-     */
-    
+#endif
+
+#ifdef __IPHONE_8_0 
     if ([controller respondsToSelector:@selector(motion)] && controller.motion) {
         return @"MOTION_CONTROLLER";
     }
-    
+#endif
+
     if ([controller respondsToSelector:@selector(extendedGamepad)] && controller.extendedGamepad) {
         return @"EXTENDED_GAMEPAD";
     }
