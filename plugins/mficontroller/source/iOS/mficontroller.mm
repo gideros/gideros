@@ -121,7 +121,7 @@ struct GGameControllerEvent
 #else
     [controller setPlayerIndex:(NSInteger)a];
 #endif
-
+    
     
     NSLog(@"activateExtendedController GC index %i",a);
     
@@ -213,20 +213,54 @@ struct GGameControllerEvent
     
 }
 
-- (NSString *)getTypeOfController:(GCController *)controller {
-
 #ifdef TARGET_OS_TV
-     if ([controller respondsToSelector:@selector(microGamepad)] && controller.microGamepad) {
-	return @"MICRO_GAMEPAD";
-     }
+- (void)activateMicroController:(GCController *)controller onGGameController:(GGameController *)gameController {
+    int a = (int)[self.controllers indexOfObject:controller];
+    [controller setPlayerIndex:(GCControllerPlayerIndex)a];
+    
+    NSLog(@"activateMicroGamepadController GC index %i",a);
+    
+    [controller.microGamepad.buttonA setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
+        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_A, pressed)] autorelease];
+    }];
+    [controller.microGamepad.buttonX setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
+        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_X, pressed)] autorelease];
+    }];
+    
+    [controller.microGamepad.dpad.up setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
+        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_UP, pressed)] autorelease];
+    }];
+    [controller.microGamepad.dpad.down setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
+        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_DOWN, pressed)] autorelease];
+    }];
+    [controller.microGamepad.dpad.left setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
+        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_LEFT, pressed)] autorelease];
+    }];
+    [controller.microGamepad.dpad.right setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
+        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, DPAD_RIGHT, pressed)] autorelease];
+    }];
+    
+    [controller setControllerPausedHandler:^(GCController *controller) {
+        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, PAUSE_EVENT, nil, a, 0, FALSE)] autorelease];
+    }];
+    
+}
 #endif
 
-#ifdef __IPHONE_8_0 
+- (NSString *)getTypeOfController:(GCController *)controller {
+    
+#ifdef TARGET_OS_TV
+    if ([controller respondsToSelector:@selector(microGamepad)] && controller.microGamepad) {
+        return @"MICRO_GAMEPAD";
+    }
+#endif
+    
+#ifdef __IPHONE_8_0
     if ([controller respondsToSelector:@selector(motion)] && controller.motion) {
         return @"MOTION_CONTROLLER";
     }
 #endif
-
+    
     if ([controller respondsToSelector:@selector(extendedGamepad)] && controller.extendedGamepad) {
         return @"EXTENDED_GAMEPAD";
     }
@@ -258,7 +292,14 @@ public:
             //}
             if ([[helper getControllerAtIndex:[helper amountControllers]-1] extendedGamepad]) {
                 [helper activateExtendedController:[helper getControllerAtIndex:[helper amountControllers]-1] onGGameController:this];
-            } else {
+            }
+#ifdef TARGET_OS_TV
+            else if ([[helper getControllerAtIndex:[helper amountControllers] -1] microGamepad]) {
+                [helper activateMicroController:[helper getControllerAtIndex:[helper amountControllers]-1] onGGameController:this];
+            }
+#endif
+            else
+            {
                 [helper activateStandardController:[helper getControllerAtIndex:[helper amountControllers]-1] onGGameController:this];
             }
             
@@ -293,7 +334,14 @@ public:
             
             if ([[helper getControllerAtIndex:a] extendedGamepad]) {
                 [helper activateExtendedController:[helper getControllerAtIndex:a] onGGameController:this];
-            } else {
+            }
+#ifdef TARGET_OS_TV
+            else if ([[helper getControllerAtIndex:a] microGamepad]) {
+                [helper activateMicroController:[helper getControllerAtIndex:a] onGGameController:this];
+            }
+#endif
+            else
+            {
                 [helper activateStandardController:[helper getControllerAtIndex:a] onGGameController:this];
             }
             
@@ -483,8 +531,6 @@ static int loader(lua_State *L)
     lua_pushnumber(L, BUTTON_B);
     lua_setfield(L, -2, "BUTTON_B");
     lua_pushnumber(L, BUTTON_X);
-    lua_setfield(L, -2, "BUTTON_X");
-    lua_pushnumber(L, BUTTON_Y);
     lua_setfield(L, -2, "BUTTON_Y");
     lua_pushnumber(L, BUTTON_RIGHT_SHOULDER);
     lua_setfield(L, -2, "BUTTON_RIGHT_SHOULDER");
