@@ -483,6 +483,8 @@ static int loader(lua_State *L)
     lua_pushnumber(L, BUTTON_B);
     lua_setfield(L, -2, "BUTTON_B");
     lua_pushnumber(L, BUTTON_X);
+    lua_setfield(L, -2, "BUTTON_X");
+    lua_pushnumber(L, BUTTON_Y);
     lua_setfield(L, -2, "BUTTON_Y");
     lua_pushnumber(L, BUTTON_RIGHT_SHOULDER);
     lua_setfield(L, -2, "BUTTON_RIGHT_SHOULDER");
