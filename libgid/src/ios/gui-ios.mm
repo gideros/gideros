@@ -73,6 +73,7 @@ private:
 		alertView_ = [UIAlertController alertControllerWithTitle:title
                                message:message
                                preferredStyle:UIAlertControllerStyleAlert];
+		[alertView_ retain];
 
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:cancelButton style:UIAlertActionStyleDefault   
 			handler:^(UIAlertAction * action) {
@@ -131,8 +132,8 @@ private:
 #ifndef TARGET_OS_TV
 		((UIAlertView *)alertView_).delegate = nil;
 	        [alertView_ dismissWithClickedButtonIndex:-1 animated:NO];
-        	[alertView_ release];
 #endif
+        	[alertView_ release];
 	[super dealloc];
 }
 
@@ -377,6 +378,7 @@ private:
 	                alertView5_ = [UIAlertController alertControllerWithTitle:title
                                message:message
                                preferredStyle:UIAlertControllerStyleAlert];
+			[alertView5_ retain];
 
 	                UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:cancelButton style:UIAlertActionStyleDefault
        	        	         handler:^(UIAlertAction * action) {
@@ -446,8 +448,8 @@ private:
 	UIAlertView * tmpAlertView = (UIAlertView*)alertView_;
 	tmpAlertView.delegate = nil;
 	[tmpAlertView dismissWithClickedButtonIndex:-1 animated:NO];
-	[tmpAlertView release];
 #endif
+	[alertView_ release];
 	[super dealloc];
 }
 
