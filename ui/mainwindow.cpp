@@ -57,6 +57,40 @@ MainWindow::MainWindow(QWidget *parent)
 
 	mdiArea_ = new MdiArea(this);
 
+    // Load the theme at startup
+    QSettings settings;
+
+    QString themePath = QDir::currentPath()+"/Resources/Themes/";
+    QDir dir(themePath);
+
+
+    if (!dir.exists())
+    {
+
+        dir.mkdir(themePath);
+        QFile defaultUITheme(":/Resources Embedded/defaultTheme.qss");
+        defaultUITheme.copy(themePath+"defaultTheme.qss");
+
+        QFile defaultEditorTheme(":/Resources Embedded/defaultTheme.ini");
+        defaultEditorTheme.copy(themePath+"defaultTheme.ini");
+    }
+    else
+    {
+        QString themeFile = settings.value("uiTheme").toString();
+        QFile file(themeFile);
+        QString theme;
+        if (file.open(QIODevice::ReadOnly|QIODevice::Text))
+        {
+            QTextStream in(&file);
+            while (!in.atEnd())
+            {
+            theme = in.readAll();
+            }
+
+            qApp->setStyleSheet(theme);
+        }
+    }
+
 /*	mdiArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mdiArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	mdiArea_->setViewMode(QMdiArea::TabbedView);
@@ -215,7 +249,7 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.mainToolBar->insertWidget(ui.actionStart_Player,players_);
 	connect(players_,SIGNAL(currentIndexChanged(const QString &)),this,SLOT(playerChanged(const QString &)));
 
-	QSettings settings;
+    //QSettings settings;
 	QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
     ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
 
@@ -1897,7 +1931,17 @@ void MainWindow::dataReceived(const QByteArray& d)
 	if (data[0] == 4)
 	{
 		std::string str = &data[1];
-		outputWidget_->append(QString::fromUtf8(str.c_str()));
+        //outputWidget_->append(QString::fromUtf8(str.c_str()));
+        QString strU = QString::fromUtf8(str.c_str());
+        if (strU.startsWith("<") && strU.endsWith(">"))
+        {
+            outputWidget_->insertHtml(strU);
+            outputWidget_->moveCursor(QTextCursor::End);
+        }
+        else
+        {
+            outputWidget_->append(strU);
+        }
 	}
 	if (data[0] == 6 && isTransferring_ == true)
 	{
@@ -3552,4 +3596,75 @@ void MainWindow::searchOutput( const QString &text){
     outputWidget_->search(text);
 }
 
+void MainWindow::on_actionUI_Theme_triggered()
+{
+    QSettings settings;
 
+    QString themePath = QDir::currentPath()+"/Resources/Themes/";
+    QDir dir(themePath);
+
+    QString themeFile = QFileDialog::getOpenFileName(this, tr("Open UI Theme"),
+        themePath, tr("UI Theme files (*.qss)"));
+
+    QFile file(themeFile);
+    QString theme;
+
+    if (file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        QTextStream in(&file);
+        while (!in.atEnd())
+        {
+        theme = in.readAll();
+        }
+
+        settings.setValue("uiTheme", themeFile);
+        qApp->setStyleSheet(theme);
+    }
+}
+
+void MainWindow::on_actionEditor_Theme_triggered()
+{
+    QString themePath = QDir::currentPath()+"/Resources/Themes/";
+    QDir dir(themePath);
+
+
+    QString theme = QFileDialog::getOpenFileName(this, tr("Open Editor Theme"),
+                                                themePath, tr("Editor Theme files (*.ini)"));
+
+    QSettings settings;
+    settings.setValue("editorTheme", theme);
+}
+
+
+void MainWindow::on_actionUI_and_Editor_Theme_triggered()
+{
+    QSettings settings;
+
+    QString themePath = QDir::currentPath()+"/Resources/Themes/";
+    QDir dir(themePath);
+
+    QString themeFile = QFileDialog::getOpenFileName(this, tr("Open UI and Editor Theme"),
+        themePath, tr("UI Theme files (*.qss)"));
+
+    QFile file(themeFile);
+    QString theme;
+
+    if (file.open(QIODevice::ReadOnly|QIODevice::Text))
+    {
+        QTextStream in(&file);
+        while (!in.atEnd())
+        {
+        theme = in.readAll();
+        }
+
+        settings.setValue("uiTheme", themeFile);
+        qApp->setStyleSheet(theme);
+    }
+
+    if (themeFile != "")
+    {
+        themeFile.chop(3);
+        themeFile.append("ini");
+        settings.setValue("editorTheme", themeFile);
+    }
+}

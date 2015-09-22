@@ -33,7 +33,7 @@ QMainWindow::separator {
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>31</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -124,11 +124,20 @@ QMainWindow::separator {
     <addaction name="separator"/>
     <addaction name="actionAbout_Gideros_Studio"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionUI_Theme"/>
+    <addaction name="actionEditor_Theme"/>
+    <addaction name="actionUI_and_Editor_Theme"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_Edit"/>
    <addaction name="menuCompile"/>
    <addaction name="menuPlayer"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
@@ -570,6 +579,21 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+P</string>
+   </property>
+  </action>
+  <action name="actionUI_Theme">
+   <property name="text">
+    <string>Load UI Theme</string>
+   </property>
+  </action>
+  <action name="actionEditor_Theme">
+   <property name="text">
+    <string>Load Editor Theme</string>
+   </property>
+  </action>
+  <action name="actionUI_and_Editor_Theme">
+   <property name="text">
+    <string>Load UI and Editor Theme</string>
    </property>
   </action>
  </widget>
