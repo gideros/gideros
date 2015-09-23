@@ -1,3 +1,4 @@
+#ifndef TARGET_OS_TV
 #include <ggeolocation.h>
 #import <CoreLocation/CoreLocation.h>
 #include <set>
@@ -293,3 +294,4 @@ void ggeolocation_removeCallbackWithGid(g_id gid)
 
 	
 }
+#endif

@@ -1,3 +1,4 @@
+#ifndef TARGET_OS_TV
 #include "geolocationbinder.h"
 #include <eventdispatcher.h>
 #include <ggeolocation.h>
@@ -356,3 +357,4 @@ int GeolocationBinder::stopUpdatingHeading(lua_State* L)
 
     return 0;
 }
+#endif
