@@ -27,7 +27,7 @@ public class GiderosAndroidPlayerActivity extends Activity implements OnTouchLis
 		System.loadLibrary("lfs");
 		System.loadLibrary("lsqlite3");
 		System.loadLibrary("json");
-		System.loadLibrary("bitop");
+		System.loadLibrary("bitop");		
 	}
 
 	static private String[] externalClasses = {

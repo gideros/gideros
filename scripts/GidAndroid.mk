@@ -6,11 +6,12 @@ android: androidlibs androidso androidplugins
 	rm -rf $(ROOT)/android/GiderosAndroidPlayer/src/com/android
 	rm -rf $(ROOT)/android/GiderosAndroidPlayer/src/com/giderosmobile/android/plugins
 	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) debug
+	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/BuildConfig.class
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/GiderosAndroidPlayerActivity.class
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/GiderosGLSurfaceView.class
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/GiderosRenderer.class
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/R.class
-	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/R$*.class
+	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/R*.class
 	cd $(ROOT)/android/GiderosAndroidPlayer/bin/classes; $(JAR) cvf gideros.jar com
 	mv $(ROOT)/android/GiderosAndroidPlayer/bin/classes/gideros.jar $(ROOT)/android/GiderosAndroidPlayer/
 
@@ -20,6 +21,8 @@ android.install: android androidlibs.install androidso.install androidplugins.in
 	cp -R $(RELEASE)/Templates/Eclipse/Android\ Template/libs $(ROOT)/android/GiderosAndroidPlayer
 	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) debug;
 	mv $(ROOT)/android/GiderosAndroidPlayer/bin/GiderosAndroidPlayer-debug.apk $(RELEASE)/GiderosAndroidPlayer.apk
+	#cp -R $(ROOT)/android/GiderosAndroidPlayer/assets $(RELEASE)/Templates/Eclipse/Android\ Template
+	#cp $(ROOT)/android/GiderosAndroidPlayer/AndroidManifest.xml $(RELEASE)/Templates/Eclipse/Android\ Template
 
 androidlibs: libgvfs.androidlib lua.androidlib
 
@@ -61,8 +64,8 @@ androidlibs.install: androidlibs
 	cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;	\
 	cp -R libs $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/; \
 	if [ -d "com" ]; then \
-	cp -R com $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/src;\
 	cp -R com $(CURDIR)/$(ROOT)/android/GiderosAndroidPlayer/src;\
 	fi
+	#cp -R com $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/src;\
 
 		
