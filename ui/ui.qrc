@@ -6,5 +6,7 @@
         <file>Resources Embedded/landscape_right.png</file>
         <file>Resources Embedded/portrait.png</file>
         <file>Resources Embedded/portrait_upside_down.png</file>
+        <file>Resources Embedded/defaultTheme.ini</file>
+        <file>Resources Embedded/defaultTheme.qss</file>
     </qresource>
 </RCC>

@@ -1,3 +1,4 @@
+#ifndef TARGET_OS_TV
 #include <ginput.h>
 #include <ginput-ios.h>
 #include <UIKit/UIKit.h>
@@ -749,3 +750,4 @@ void ginput_removeCallbackWithGid(g_id gid)
 }
 
 }
+#endif

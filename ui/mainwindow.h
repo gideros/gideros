@@ -365,6 +365,9 @@ private slots:
     void stderrToOutput();
     void makeStarted();
     void makeFinished();
+    void on_actionUI_Theme_triggered();
+    void on_actionEditor_Theme_triggered();
+    void on_actionUI_and_Editor_Theme_triggered();
 };
 
 #endif // MAINWINDOW_H
