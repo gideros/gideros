@@ -92,6 +92,24 @@ void dx11SetupShaders()
 	};
     ShaderProgram::stdParticle = new dx11ParticleShader(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),stdPConstants,stdTCAttributes);
 
+	const ShaderProgram::ConstantDesc pathUniforms[] = {
+		{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
+		{ "fColor", ShaderProgram::CFLOAT4, 1,	ShaderProgram::SysConst_Color, false, 0, NULL },
+		{ "fTexture", ShaderProgram::CTEXTURE, 1, ShaderProgram::SysConst_None, false, 0, NULL },
+		{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
+
+	const ShaderProgram::DataDesc pathAttributesFillC[] = {
+		{ "vVertex",ShaderProgram::DFLOAT, 4, 0, 0 },
+		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
+
+	const ShaderProgram::DataDesc pathAttributesStrokeC[] = {
+		{ "dataA",ShaderProgram::DFLOAT, 4, 0, 0 },
+		{ "dataB", ShaderProgram::DFLOAT, 4, 1, 0 },
+		{ "dataC", ShaderProgram::DFLOAT, 4, 2, 0 },
+		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
+
+	ShaderProgram::pathShaderFillC = new dx11ShaderProgram(vPathFillC_cso, sizeof(vPathFillC_cso), pPathFillC_cso, sizeof(pPathFillC_cso), pathUniforms, pathAttributesFillC);
+	ShaderProgram::pathShaderStrokeC = new dx11ShaderProgram(vPathStrokeC_cso, sizeof(vPathStrokeC_cso), pPathStrokeC_cso, sizeof(pPathStrokeC_cso), pathUniforms, pathAttributesStrokeC);
 }
 
 ID3D11Texture2D* dx11ShaderEngine::pBackBuffer=NULL;
@@ -101,9 +119,7 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	currentBuffer=NULL;
 	dx11ShaderProgram::current=NULL;
 
-#ifndef GIDEROS_GL1
- dx11SetupShaders();
-#endif
+	dx11SetupShaders();
 
  D3D11_TEXTURE2D_DESC backbuff_desc;
  pBackBuffer->GetDesc(&backbuff_desc);
@@ -142,13 +158,13 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 
 	// Stencil operations if pixel is front-facing
 	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
 	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	// Stencil operations if pixel is back-facing
 	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
 	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
@@ -230,6 +246,7 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 
 	g_devcon->OMSetRenderTargets(1, &g_backbuffer, g_depthStencil);  // could call this "rendertarget"
     g_pCBlendState=NULL;
+	g_pCDSState = NULL;
 	reset();
 }
 
@@ -314,6 +331,8 @@ dx11ShaderEngine::~dx11ShaderEngine()
     delete ShaderProgram::stdTexture;
     delete ShaderProgram::stdTextureColor;
     delete ShaderProgram::stdParticle;
+	delete ShaderProgram::pathShaderFillC;
+	delete ShaderProgram::pathShaderStrokeC;
 
     g_depthStencil->Release();
     g_pBlendState->Release();
@@ -327,9 +346,8 @@ dx11ShaderEngine::~dx11ShaderEngine()
 	dx11ShaderTexture::samplerRepeatFilter->Release();
 	if (g_pCBlendState)
         g_pCBlendState->Release();
-#ifdef OPENGL_ES
-	glDeleteRenderbuffers(1,&_depthRenderBuffer);
-#endif
+	if (g_pCDSState)
+		g_pCDSState->Release();
 }
 
 ShaderTexture *dx11ShaderEngine::createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)
@@ -405,26 +423,101 @@ void dx11ShaderEngine::setClip(int x,int y,int w,int h)
 	}
 }
 
-void dx11ShaderEngine::setDepthTest(bool enable)
+static D3D11_STENCIL_OP stencilopToDX11(ShaderEngine::StencilOp sf)
 {
-	if (enable)
+	switch (sf)
 	{
-		if (!(s_depthEnable++))
+	case ShaderEngine::STENCIL_KEEP: return D3D11_STENCIL_OP_KEEP;
+	case ShaderEngine::STENCIL_ZERO: return D3D11_STENCIL_OP_ZERO;
+	case ShaderEngine::STENCIL_REPLACE: return D3D11_STENCIL_OP_REPLACE;
+	case ShaderEngine::STENCIL_INCR: return D3D11_STENCIL_OP_INCR_SAT;
+	case ShaderEngine::STENCIL_INCR_WRAP: return D3D11_STENCIL_OP_INCR;
+	case ShaderEngine::STENCIL_DECR: return D3D11_STENCIL_OP_DECR_SAT;
+	case ShaderEngine::STENCIL_DECR_WRAP: return D3D11_STENCIL_OP_DECR;
+	case ShaderEngine::STENCIL_INVERT: return D3D11_STENCIL_OP_INVERT;
+	}
+	return D3D11_STENCIL_OP_KEEP;
+}
+
+void dx11ShaderEngine::setDepthStencil(DepthStencil state)
+{
+	ID3D11DepthStencilState *cs = g_pDSOff;
+	if (state.dTest)
+	{
+		if (!s_depthEnable)
 		{
 			if (!s_depthBufferCleared)
 			{
     			g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_DEPTH, 1.0, 0);
-    			//g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_STENCIL, 1.0, 0);
     			s_depthBufferCleared=true;
 			}
-			g_devcon->OMSetDepthStencilState(g_pDSDepth, 1);
+			cs = g_pDSDepth;
+			s_depthEnable=true;
 		}
 	}
 	else
 	{
-		if (!(--s_depthEnable))
-			g_devcon->OMSetDepthStencilState(g_pDSOff, 1);
+		if (s_depthEnable)
+		{
+			s_depthEnable=false;
+		}
 	}
+
+
+	if (state.sClear)
+	{
+		g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_STENCIL, 0, 0);
+		state.sClear = false;
+	}
+
+	if (!((state.sFail == STENCIL_KEEP) && (state.dFail == STENCIL_KEEP) && (state.dPass == STENCIL_KEEP) &&
+		(state.sFunc == STENCIL_DISABLE) && (state.sMask = 0xFF) && (state.sRef == 0)))
+	{
+		D3D11_COMPARISON_FUNC sf = D3D11_COMPARISON_ALWAYS;
+		switch (state.sFunc)
+		{
+		case STENCIL_NEVER: sf = D3D11_COMPARISON_NEVER; break;
+		case STENCIL_LESS: sf = D3D11_COMPARISON_LESS; break;
+		case STENCIL_LEQUAL: sf = D3D11_COMPARISON_LESS_EQUAL; break;
+		case STENCIL_GREATER: sf = D3D11_COMPARISON_GREATER; break;
+		case STENCIL_GEQUAL: sf = D3D11_COMPARISON_GREATER_EQUAL; break;
+		case STENCIL_EQUAL: sf = D3D11_COMPARISON_EQUAL; break;
+		case STENCIL_NOTEQUAL: sf = D3D11_COMPARISON_NOT_EQUAL; break;
+		}
+
+		D3D11_DEPTH_STENCIL_DESC dsDesc;
+		ZeroMemory(&dsDesc, sizeof(dsDesc));
+		// Depth test parameters
+		dsDesc.DepthEnable = state.dTest;
+		dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+		// Stencil test parameters
+		dsDesc.StencilEnable = (state.sFunc != STENCIL_DISABLE);
+		dsDesc.StencilReadMask = state.sMask;
+		dsDesc.StencilWriteMask = state.sMask;
+
+		// Stencil operations if pixel is front-facing
+		dsDesc.FrontFace.StencilFailOp = stencilopToDX11(state.sFail);
+		dsDesc.FrontFace.StencilDepthFailOp = stencilopToDX11(state.dFail);
+		dsDesc.FrontFace.StencilPassOp = stencilopToDX11(state.dPass);
+		dsDesc.FrontFace.StencilFunc = sf;
+
+		// Stencil operations if pixel is back-facing
+		dsDesc.BackFace.StencilFailOp = stencilopToDX11(state.sFail);
+		dsDesc.BackFace.StencilDepthFailOp = stencilopToDX11(state.dFail);
+		dsDesc.BackFace.StencilPassOp = stencilopToDX11(state.dPass);
+		dsDesc.BackFace.StencilFunc = sf;
+
+		// Create depth stencil state
+		if (g_pCDSState)
+			g_pCDSState->Release();
+		g_dev->CreateDepthStencilState(&dsDesc, &g_pCDSState);
+		cs = g_pCDSState;
+	}
+
+	g_devcon->OMSetDepthStencilState(cs, state.sRef);
+	dsCurrent = state;
 }
 
 

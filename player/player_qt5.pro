@@ -41,7 +41,7 @@ macx {
         -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW\
 
     QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
-} else {
+}
 
 unix:!macx {
     TARGET = GiderosPlayer
@@ -60,7 +60,6 @@ unix:!macx {
     QMAKE_CXXFLAGS += -std=gnu++11
 }
 
-}
 
 TEMPLATE = app
 
@@ -71,6 +70,7 @@ INCLUDEPATH += \
     ../2dsg \
     ../2dsg/gfxbackends \
     ../2dsg/gfxbackends/gl2 \
+    ../2dsg/paths \
     ../libsound \
     ../libnetwork \
     ../luabinding \
@@ -112,6 +112,7 @@ SOURCES += \
     $$files(../2dsg/*.cpp) \
     $$files(../2dsg/gfxbackends/*.cpp) \
     $$files(../2dsg/gfxbackends/gl2/*.cpp) \
+    $$files(../2dsg/paths/*.cpp) ../2dsg/paths/ft-path.c ../2dsg/paths/svg-path.c \
     $$files(../libpvrt/*.cpp) \
     $$files(../external/glu/libtess/*.c) \
     "../external/minizip-1.1/source/ioapi.c" \
