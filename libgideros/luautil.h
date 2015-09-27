@@ -1,4 +1,4 @@
-#ifndef LUAUTILH
+#ifndef LUAUTIL_H
 #define LUAUTIL_H
 
 #ifdef __cplusplus

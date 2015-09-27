@@ -1,6 +1,7 @@
 SRCS=$(addprefix 2dsg/,$(notdir $(basename $(wildcard ../2dsg/*.cpp))))
 SRCS+=$(addprefix 2dsg/gfxbackends/,$(notdir $(basename $(wildcard ../2dsg/gfxbackends/*.cpp))))
 SRCS+=$(addprefix 2dsg/gfxbackends/gl2/,$(notdir $(basename $(wildcard ../2dsg/gfxbackends/gl2/*.cpp))))
+SRCS+=$(addprefix 2dsg/paths/,$(notdir $(basename $(wildcard ../2dsg/paths/*.cpp))))
 
 LIQUIDFUN=external/liquidfun-1.0.0/liquidfun/Box2D/Box2D
 SRCS+=$(addprefix $(LIQUIDFUN)/Common/,$(notdir $(basename $(wildcard ../$(LIQUIDFUN)/Common/*.cpp))))
@@ -51,7 +52,7 @@ SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
 
 
 INCS=2dsg libgideros libgid/include libgvfs libpystring
-INCS+=2dsg/gfxbackends 2dsg/gfxbackends/gl2
+INCS+=2dsg/gfxbackends 2dsg/gfxbackends/gl2 2dsg/paths
 INCS+=luabinding libnetwork
 INCS+=$(addprefix libgid/external/freetype-2.4.12/,include src)
 INCS+=$(LIQUIDFUN)/.. external/glu

@@ -1,8 +1,8 @@
 #ifndef PR_H_INCLUDED
 #define PR_H_INCLUDED
 
-#include "Sprite.h"
-#include "TextureBase.h"
+#include "sprite.h"
+#include "texturebase.h"
 
 class Path2D : public Sprite
 {
