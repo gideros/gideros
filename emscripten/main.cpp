@@ -163,8 +163,13 @@ char *url=(char *) EM_ASM_INT_V({
  bool allowed=false;
  allowed|=!strncmp(url,"http://hieroglyphe.net/",23);
  allowed|=!strncmp(url,"http://apps.giderosmobile.com/",30); 
+ allowed|=!strncmp(url,"http://www.totebogames.com/",27); 
+ allowed|=!strncmp(url,"http://www.miniclip.com/",24); 
  if (!allowed)
+ {
+  printf("Sorry: location %s not allowed\n",url);
   return -1;
+ }
   url=strstr(url,"://")+2;
   char *lurl=strchr(url,'?');
   if (lurl) *lurl=0;

@@ -68,6 +68,7 @@ EMCC=emcc
 BUILD=Build
 
 OPTS=-O2
+#OPTS+=-g4
 
 OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS))
@@ -81,6 +82,9 @@ all: path $(OBJS)
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))
+
+clean:
+	rm -rf $(BUILD)
 
 $(BUILD)/%.em.o: ../%.cpp
 	$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@

@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <ctype.h>
+#include <glog.h>
 
 struct Pointer{
 	int x;
@@ -43,10 +44,12 @@ public:
 
 		//keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
 
-		keyMap_["Shift"] = GINPUT_KEY_SHIFT;
-		keyMap_["\x10"] = GINPUT_KEY_SHIFT;
-		keyMap_["Backspace"] = GINPUT_KEY_BACKSPACE;
-		keyMap_["\x08"] = GINPUT_KEY_BACKSPACE;
+	keyMap_["Shift"] = GINPUT_KEY_SHIFT;
+	keyMap_["\x10"] = GINPUT_KEY_SHIFT;
+	keyMap_["Backspace"] = GINPUT_KEY_BACKSPACE;
+	keyMap_["\x08"] = GINPUT_KEY_BACKSPACE;
+	keyMap_["Space"] = GINPUT_KEY_SPACE;
+	keyMap_["Control"] = GINPUT_KEY_CTRL;
 
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
@@ -572,7 +575,11 @@ private:
         std::map<std::string, int>::const_iterator iter = keyMap_.find(kv);
 
         if (iter == keyMap_.end())
+        {
+            if (strlen(kval)>1)
+                glog_i("Key code '%s' not handled!",kval);
             return toupper(*kval); //Default to first char of keyVal
+        }
 
         return iter->second;
     }
