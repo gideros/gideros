@@ -50,44 +50,6 @@
 		5FE658BE18FE68EA001D8EE3 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FE658BD18FE68EA001D8EE3 /* libz.dylib */; };
 		5FFCA70915DD337700741085 /* lfs_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FFCA70715DD337700741085 /* lfs_stub.cpp */; };
 		5FFCA70A15DD337700741085 /* lfs.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FFCA70815DD337700741085 /* lfs.c */; };
-		B2011F921BAD9A24008812D4 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2011F911BAD9A24008812D4 /* GameController.framework */; };
-		B25B27FE1BAC0F3D0034D6C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B27FD1BAC0F3D0034D6C7 /* main.m */; };
-		B25B28011BAC0F3D0034D6C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B28001BAC0F3D0034D6C7 /* AppDelegate.m */; };
-		B25B28041BAC0F3D0034D6C7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B28031BAC0F3D0034D6C7 /* ViewController.m */; };
-		B25B28091BAC0F3D0034D6C7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B25B28081BAC0F3D0034D6C7 /* Assets.xcassets */; };
-		B2E3EEB41BAC104D005599BD /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EEB31BAC104D005599BD /* EAGLView.m */; };
-		B2E3EFB51BAC10CC005599BD /* bit.c in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EF931BAC10CC005599BD /* bit.c */; };
-		B2E3EFB61BAC10CC005599BD /* bit_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EF941BAC10CC005599BD /* bit_stub.cpp */; };
-		B2E3EFB71BAC10CC005599BD /* fpconv.c in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EF951BAC10CC005599BD /* fpconv.c */; };
-		B2E3EFBA1BAC10CC005599BD /* lfs.c in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFA51BAC10CC005599BD /* lfs.c */; };
-		B2E3EFBB1BAC10CC005599BD /* lfs_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFA71BAC10CC005599BD /* lfs_stub.cpp */; };
-		B2E3EFBD1BAC10CC005599BD /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFA91BAC10CC005599BD /* libluasocket.a */; };
-		B2E3EFBE1BAC10CC005599BD /* lsqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFAA1BAC10CC005599BD /* lsqlite3.c */; };
-		B2E3EFBF1BAC10CC005599BD /* lsqlite3_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFAB1BAC10CC005599BD /* lsqlite3_stub.cpp */; };
-		B2E3EFC01BAC10CC005599BD /* lua_cjson.c in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFAD1BAC10CC005599BD /* lua_cjson.c */; };
-		B2E3EFC11BAC10CC005599BD /* lua_cjson_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFAE1BAC10CC005599BD /* lua_cjson_stub.cpp */; };
-		B2E3EFC21BAC10CC005599BD /* luasocket_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFB11BAC10CC005599BD /* luasocket_stub.cpp */; };
-		B2E3EFC31BAC10CC005599BD /* storekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFB21BAC10CC005599BD /* storekit.mm */; };
-		B2E3EFC41BAC10CC005599BD /* strbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFB31BAC10CC005599BD /* strbuf.c */; };
-		B2E3EFC61BAC1147005599BD /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFC51BAC1147005599BD /* GameController.framework */; };
-		B2E3EFC81BAC1154005599BD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFC71BAC1154005599BD /* AudioToolbox.framework */; };
-		B2E3EFCA1BAC1158005599BD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFC91BAC1158005599BD /* AVFoundation.framework */; };
-		B2E3EFCC1BAC115E005599BD /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFCB1BAC115E005599BD /* CoreAudio.framework */; };
-		B2E3EFCE1BAC1164005599BD /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFCD1BAC1164005599BD /* OpenAL.framework */; };
-		B2E3EFD01BAC1169005599BD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFCF1BAC1169005599BD /* QuartzCore.framework */; };
-		B2E3EFD21BAC116F005599BD /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFD11BAC116F005599BD /* StoreKit.framework */; };
-		B2E3EFD41BAC1176005599BD /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFD31BAC1176005599BD /* CoreLocation.framework */; };
-		B2E3EFD61BAC117B005599BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFD51BAC117B005599BD /* UIKit.framework */; };
-		B2E3EFD81BAC1181005599BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFD71BAC1181005599BD /* Foundation.framework */; };
-		B2E3EFDA1BAC1187005599BD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFD91BAC1187005599BD /* CoreGraphics.framework */; };
-		B2E3EFDC1BAC118B005599BD /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDB1BAC118B005599BD /* OpenGLES.framework */; };
-		B2E3EFE11BAC119E005599BD /* libgvfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDE1BAC119E005599BD /* libgvfs.a */; };
-		B2E3EFE21BAC119E005599BD /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDF1BAC119E005599BD /* liblua.a */; };
-		B2E3EFE31BAC1249005599BD /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
-		B2E3EFE71BAC1AE5005599BD /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */; };
-		B2E3F02C1BAC2919005599BD /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDD1BAC119E005599BD /* libgideros.a */; };
-		B2E3F02E1BAC3D24005599BD /* mficontroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3F02D1BAC3D24005599BD /* mficontroller.mm */; };
-                B2E3F0321BAC3E7B005599BD /* mficontroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3F0311BAC3E7B005599BD /* mficontroller.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -119,7 +81,7 @@
 		5F58D84315D9263F00137D76 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		5F58D84415D9263F00137D76 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		5F58D84515D9263F00137D76 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		5F58D85215D9268900137D76 /* assets */ = {isa = PBXFileReference; lastKnownFileType = text; path = assets; sourceTree = "<group>"; };
+		5F58D85215D9268900137D76 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 		5F9FF0A71838143600AEA72F /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgvfs.a; path = "iOS Template/libgvfs.a"; sourceTree = "<group>"; };
 		5F9FF0A91838143E00AEA72F /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = "iOS Template/liblua.a"; sourceTree = "<group>"; };
 		5FC825FA17E890B300751626 /* bit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bit.c; path = Plugins/bit.c; sourceTree = "<group>"; };
@@ -140,67 +102,6 @@
 		5FE658BD18FE68EA001D8EE3 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5FFCA70715DD337700741085 /* lfs_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lfs_stub.cpp; path = Plugins/lfs_stub.cpp; sourceTree = "<group>"; };
 		5FFCA70815DD337700741085 /* lfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lfs.c; path = Plugins/lfs.c; sourceTree = "<group>"; };
-		B2011F911BAD9A24008812D4 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
-		B25B27FA1BAC0F3D0034D6C7 /* iOS Template.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Template.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B25B27FD1BAC0F3D0034D6C7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		B25B27FF1BAC0F3D0034D6C7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		B25B28001BAC0F3D0034D6C7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		B25B28021BAC0F3D0034D6C7 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		B25B28031BAC0F3D0034D6C7 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		B25B28081BAC0F3D0034D6C7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		B25B280A1BAC0F3D0034D6C7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B2E3EEB21BAC104D005599BD /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
-		B2E3EEB31BAC104D005599BD /* EAGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAGLView.m; sourceTree = "<group>"; };
-		B2E3EF931BAC10CC005599BD /* bit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bit.c; sourceTree = "<group>"; };
-		B2E3EF941BAC10CC005599BD /* bit_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bit_stub.cpp; sourceTree = "<group>"; };
-		B2E3EF951BAC10CC005599BD /* fpconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fpconv.c; sourceTree = "<group>"; };
-		B2E3EF961BAC10CC005599BD /* fpconv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpconv.h; sourceTree = "<group>"; };
-		B2E3EF981BAC10CC005599BD /* gapplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gapplication.h; sourceTree = "<group>"; };
-		B2E3EF991BAC10CC005599BD /* gevent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gevent.h; sourceTree = "<group>"; };
-		B2E3EF9A1BAC10CC005599BD /* gexport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gexport.h; sourceTree = "<group>"; };
-		B2E3EF9B1BAC10CC005599BD /* gfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gfile.h; sourceTree = "<group>"; };
-		B2E3EF9C1BAC10CC005599BD /* gglobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gglobal.h; sourceTree = "<group>"; };
-		B2E3EF9D1BAC10CC005599BD /* gideros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gideros.h; sourceTree = "<group>"; };
-		B2E3EF9E1BAC10CC005599BD /* glog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glog.h; sourceTree = "<group>"; };
-		B2E3EF9F1BAC10CC005599BD /* gpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gpath.h; sourceTree = "<group>"; };
-		B2E3EFA01BAC10CC005599BD /* gplugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gplugin.h; sourceTree = "<group>"; };
-		B2E3EFA11BAC10CC005599BD /* gproxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gproxy.h; sourceTree = "<group>"; };
-		B2E3EFA21BAC10CC005599BD /* greferenced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = greferenced.h; sourceTree = "<group>"; };
-		B2E3EFA41BAC10CC005599BD /* lauxlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lauxlib.h; sourceTree = "<group>"; };
-		B2E3EFA51BAC10CC005599BD /* lfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lfs.c; sourceTree = "<group>"; };
-		B2E3EFA61BAC10CC005599BD /* lfs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lfs.h; sourceTree = "<group>"; };
-		B2E3EFA71BAC10CC005599BD /* lfs_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lfs_stub.cpp; sourceTree = "<group>"; };
-		B2E3EFA91BAC10CC005599BD /* libluasocket.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libluasocket.a; sourceTree = "<group>"; };
-		B2E3EFAA1BAC10CC005599BD /* lsqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lsqlite3.c; sourceTree = "<group>"; };
-		B2E3EFAB1BAC10CC005599BD /* lsqlite3_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lsqlite3_stub.cpp; sourceTree = "<group>"; };
-		B2E3EFAC1BAC10CC005599BD /* lua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lua.h; sourceTree = "<group>"; };
-		B2E3EFAD1BAC10CC005599BD /* lua_cjson.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lua_cjson.c; sourceTree = "<group>"; };
-		B2E3EFAE1BAC10CC005599BD /* lua_cjson_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lua_cjson_stub.cpp; sourceTree = "<group>"; };
-		B2E3EFAF1BAC10CC005599BD /* luaconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = luaconf.h; sourceTree = "<group>"; };
-		B2E3EFB01BAC10CC005599BD /* lualib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lualib.h; sourceTree = "<group>"; };
-		B2E3EFB11BAC10CC005599BD /* luasocket_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luasocket_stub.cpp; sourceTree = "<group>"; };
-		B2E3EFB21BAC10CC005599BD /* storekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = storekit.mm; sourceTree = "<group>"; };
-		B2E3EFB31BAC10CC005599BD /* strbuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strbuf.c; sourceTree = "<group>"; };
-		B2E3EFB41BAC10CC005599BD /* strbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = strbuf.h; sourceTree = "<group>"; };
-		B2E3EFC51BAC1147005599BD /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/GameController.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFC71BAC1154005599BD /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFC91BAC1158005599BD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFCB1BAC115E005599BD /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/CoreAudio.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFCD1BAC1164005599BD /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/OpenAL.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFCF1BAC1169005599BD /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFD11BAC116F005599BD /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFD31BAC1176005599BD /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFD51BAC117B005599BD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFD71BAC1181005599BD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFD91BAC1187005599BD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFDB1BAC118B005599BD /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/OpenGLES.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFDD1BAC119E005599BD /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgideros.a; path = "AppleTV/libgideros.a"; sourceTree = "<group>"; };
-		B2E3EFDE1BAC119E005599BD /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgvfs.a; path = "AppleTV/libgvfs.a"; sourceTree = "<group>"; };
-		B2E3EFDF1BAC119E005599BD /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = "AppleTV/liblua.a"; sourceTree = "<group>"; };
-		B2E3EFE41BAC1A5C005599BD /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
-		B2E3F02D1BAC3D24005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = mficontroller.mm; sourceTree = "<group>"; };
-                B2E3F0311BAC3E7B005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = mficontroller.mm; path = Plugins/mficontroller.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,7 +109,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2011F921BAD9A24008812D4 /* GameController.framework in Frameworks */,
 				5FE658BE18FE68EA001D8EE3 /* libz.dylib in Frameworks */,
 				5F58D84615D9263F00137D76 /* AudioToolbox.framework in Frameworks */,
 				5F58D84715D9263F00137D76 /* AVFoundation.framework in Frameworks */,
@@ -232,37 +132,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B25B27F71BAC0F3D0034D6C7 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B2E3F02C1BAC2919005599BD /* libgideros.a in Frameworks */,
-				B2E3EFE71BAC1AE5005599BD /* libsqlite3.tbd in Frameworks */,
-				B2E3EFE11BAC119E005599BD /* libgvfs.a in Frameworks */,
-				B2E3EFE21BAC119E005599BD /* liblua.a in Frameworks */,
-				B2E3EFDC1BAC118B005599BD /* OpenGLES.framework in Frameworks */,
-				B2E3EFDA1BAC1187005599BD /* CoreGraphics.framework in Frameworks */,
-				B2E3EFD81BAC1181005599BD /* Foundation.framework in Frameworks */,
-				B2E3EFD61BAC117B005599BD /* UIKit.framework in Frameworks */,
-				B2E3EFD41BAC1176005599BD /* CoreLocation.framework in Frameworks */,
-				B2E3EFD21BAC116F005599BD /* StoreKit.framework in Frameworks */,
-				B2E3EFD01BAC1169005599BD /* QuartzCore.framework in Frameworks */,
-				B2E3EFCE1BAC1164005599BD /* OpenAL.framework in Frameworks */,
-				B2E3EFCC1BAC115E005599BD /* CoreAudio.framework in Frameworks */,
-				B2E3EFCA1BAC1158005599BD /* AVFoundation.framework in Frameworks */,
-				B2E3EFC81BAC1154005599BD /* AudioToolbox.framework in Frameworks */,
-				B2E3EFC61BAC1147005599BD /* GameController.framework in Frameworks */,
-				B2E3EFBD1BAC10CC005599BD /* libluasocket.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		5F58D82915D925B400137D76 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				B2E3F0311BAC3E7B005599BD /* mficontroller.mm */,
 				5FC825FA17E890B300751626 /* bit.c */,
 				5FC825FD17E890E600751626 /* bit_stub.cpp */,
 				5FC825FF17E8922300751626 /* fpconv.c */,
@@ -286,7 +161,6 @@
 			isa = PBXGroup;
 			children = (
 				5FD896F515CED77F00D34824 /* iOS Template */,
-				B25B27FB1BAC0F3D0034D6C7 /* AppleTV */,
 				5FD896EA15CED77F00D34824 /* Frameworks */,
 				5FD896E815CED77F00D34824 /* Products */,
 			);
@@ -296,7 +170,6 @@
 			isa = PBXGroup;
 			children = (
 				5FD896E715CED77F00D34824 /* iOS Template.app */,
-				B25B27FA1BAC0F3D0034D6C7 /* iOS Template.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -304,24 +177,6 @@
 		5FD896EA15CED77F00D34824 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B2011F911BAD9A24008812D4 /* GameController.framework */,
-				B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */,
-				B2E3EFE41BAC1A5C005599BD /* libsqlite3.tbd */,
-				B2E3EFDD1BAC119E005599BD /* libgideros.a */,
-				B2E3EFDE1BAC119E005599BD /* libgvfs.a */,
-				B2E3EFDF1BAC119E005599BD /* liblua.a */,
-				B2E3EFDB1BAC118B005599BD /* OpenGLES.framework */,
-				B2E3EFD91BAC1187005599BD /* CoreGraphics.framework */,
-				B2E3EFD71BAC1181005599BD /* Foundation.framework */,
-				B2E3EFD51BAC117B005599BD /* UIKit.framework */,
-				B2E3EFD31BAC1176005599BD /* CoreLocation.framework */,
-				B2E3EFD11BAC116F005599BD /* StoreKit.framework */,
-				B2E3EFCF1BAC1169005599BD /* QuartzCore.framework */,
-				B2E3EFCD1BAC1164005599BD /* OpenAL.framework */,
-				B2E3EFCB1BAC115E005599BD /* CoreAudio.framework */,
-				B2E3EFC91BAC1158005599BD /* AVFoundation.framework */,
-				B2E3EFC71BAC1154005599BD /* AudioToolbox.framework */,
-				B2E3EFC51BAC1147005599BD /* GameController.framework */,
 				5F9FF0A71838143600AEA72F /* libgvfs.a */,
 				5F9FF0A91838143E00AEA72F /* liblua.a */,
 				5F58D83815D925EA00137D76 /* libgideros.a */,
@@ -375,70 +230,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		B25B27FB1BAC0F3D0034D6C7 /* AppleTV */ = {
-			isa = PBXGroup;
-			children = (
-				B2E3EEB21BAC104D005599BD /* EAGLView.h */,
-				B2E3EEB31BAC104D005599BD /* EAGLView.m */,
-				B25B27FF1BAC0F3D0034D6C7 /* AppDelegate.h */,
-				B25B28001BAC0F3D0034D6C7 /* AppDelegate.m */,
-				B25B28021BAC0F3D0034D6C7 /* ViewController.h */,
-				B25B28031BAC0F3D0034D6C7 /* ViewController.m */,
-				B2E3EF921BAC10CC005599BD /* Plugins */,
-				B25B28081BAC0F3D0034D6C7 /* Assets.xcassets */,
-				B25B280A1BAC0F3D0034D6C7 /* Info.plist */,
-				B25B27FC1BAC0F3D0034D6C7 /* Supporting Files */,
-			);
-			path = "AppleTV";
-			sourceTree = "<group>";
-		};
-		B25B27FC1BAC0F3D0034D6C7 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				B25B27FD1BAC0F3D0034D6C7 /* main.m */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		B2E3EF921BAC10CC005599BD /* Plugins */ = {
-			isa = PBXGroup;
-			children = (
-				B2E3F02D1BAC3D24005599BD /* mficontroller.mm */,
-				B2E3EF931BAC10CC005599BD /* bit.c */,
-				B2E3EF941BAC10CC005599BD /* bit_stub.cpp */,
-				B2E3EF951BAC10CC005599BD /* fpconv.c */,
-				B2E3EF961BAC10CC005599BD /* fpconv.h */,
-				B2E3EF981BAC10CC005599BD /* gapplication.h */,
-				B2E3EF991BAC10CC005599BD /* gevent.h */,
-				B2E3EF9A1BAC10CC005599BD /* gexport.h */,
-				B2E3EF9B1BAC10CC005599BD /* gfile.h */,
-				B2E3EF9C1BAC10CC005599BD /* gglobal.h */,
-				B2E3EF9D1BAC10CC005599BD /* gideros.h */,
-				B2E3EF9E1BAC10CC005599BD /* glog.h */,
-				B2E3EF9F1BAC10CC005599BD /* gpath.h */,
-				B2E3EFA01BAC10CC005599BD /* gplugin.h */,
-				B2E3EFA11BAC10CC005599BD /* gproxy.h */,
-				B2E3EFA21BAC10CC005599BD /* greferenced.h */,
-				B2E3EFA41BAC10CC005599BD /* lauxlib.h */,
-				B2E3EFA51BAC10CC005599BD /* lfs.c */,
-				B2E3EFA61BAC10CC005599BD /* lfs.h */,
-				B2E3EFA71BAC10CC005599BD /* lfs_stub.cpp */,
-				B2E3EFA91BAC10CC005599BD /* libluasocket.a */,
-				B2E3EFAA1BAC10CC005599BD /* lsqlite3.c */,
-				B2E3EFAB1BAC10CC005599BD /* lsqlite3_stub.cpp */,
-				B2E3EFAC1BAC10CC005599BD /* lua.h */,
-				B2E3EFAD1BAC10CC005599BD /* lua_cjson.c */,
-				B2E3EFAE1BAC10CC005599BD /* lua_cjson_stub.cpp */,
-				B2E3EFAF1BAC10CC005599BD /* luaconf.h */,
-				B2E3EFB01BAC10CC005599BD /* lualib.h */,
-				B2E3EFB11BAC10CC005599BD /* luasocket_stub.cpp */,
-				B2E3EFB21BAC10CC005599BD /* storekit.mm */,
-				B2E3EFB31BAC10CC005599BD /* strbuf.c */,
-				B2E3EFB41BAC10CC005599BD /* strbuf.h */,
-			);
-			path = Plugins;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -454,26 +245,9 @@
 			);
 			dependencies = (
 			);
-			name = "iOS Template iOS";
+			name = "iOS Template";
 			productName = "iOS Template";
 			productReference = 5FD896E715CED77F00D34824 /* iOS Template.app */;
-			productType = "com.apple.product-type.application";
-		};
-		B25B27F91BAC0F3D0034D6C7 /* AppleTV */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B25B281A1BAC0F3D0034D6C7 /* Build configuration list for PBXNativeTarget "AppleTV" */;
-			buildPhases = (
-				B25B27F61BAC0F3D0034D6C7 /* Sources */,
-				B25B27F71BAC0F3D0034D6C7 /* Frameworks */,
-				B25B27F81BAC0F3D0034D6C7 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "iOS Template AppleTV";
-			productName = "iOS Template";
-			productReference = B25B27FA1BAC0F3D0034D6C7 /* iOS Template.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -484,11 +258,6 @@
 			attributes = {
 				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = "Gideros Mobile";
-				TargetAttributes = {
-					B25B27F91BAC0F3D0034D6C7 = {
-						CreatedOnToolsVersion = 7.1;
-					};
-				};
 			};
 			buildConfigurationList = 5FD896E115CED77F00D34824 /* Build configuration list for PBXProject "iOS Template" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -496,7 +265,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 			);
 			mainGroup = 5FD896DC15CED77F00D34824;
 			productRefGroup = 5FD896E815CED77F00D34824 /* Products */;
@@ -504,7 +272,6 @@
 			projectRoot = "";
 			targets = (
 				5FD896E615CED77F00D34824 /* iOS Template */,
-				B25B27F91BAC0F3D0034D6C7 /* AppleTV */,
 			);
 		};
 /* End PBXProject section */
@@ -522,15 +289,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B25B27F81BAC0F3D0034D6C7 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B2E3EFE31BAC1249005599BD /* assets in Resources */,
-				B25B28091BAC0F3D0034D6C7 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -543,7 +301,6 @@
 				5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */,
 				5F4153FC15CEF227007B5365 /* ViewController.m in Sources */,
 				5F58D83115D925D100137D76 /* gamekit.mm in Sources */,
-				B2E3F0321BAC3E7B005599BD /* mficontroller.mm in Sources */,
 				5F58D83215D925D100137D76 /* iad.mm in Sources */,
 				5F58D83415D925D100137D76 /* lsqlite3_stub.cpp in Sources */,
 				5F58D83515D925D100137D76 /* lsqlite3.c in Sources */,
@@ -557,30 +314,6 @@
 				5FC8260217E8922F00751626 /* strbuf.c in Sources */,
 				5FC8260417E8923A00751626 /* lua_cjson.c in Sources */,
 				5FC8260617E8924100751626 /* lua_cjson_stub.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B25B27F61BAC0F3D0034D6C7 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B25B28041BAC0F3D0034D6C7 /* ViewController.m in Sources */,
-				B2E3EFB61BAC10CC005599BD /* bit_stub.cpp in Sources */,
-				B2E3F02E1BAC3D24005599BD /* mficontroller.mm in Sources */,
-				B2E3EFBB1BAC10CC005599BD /* lfs_stub.cpp in Sources */,
-				B2E3EFC11BAC10CC005599BD /* lua_cjson_stub.cpp in Sources */,
-				B2E3EFBF1BAC10CC005599BD /* lsqlite3_stub.cpp in Sources */,
-				B2E3EEB41BAC104D005599BD /* EAGLView.m in Sources */,
-				B2E3EFBE1BAC10CC005599BD /* lsqlite3.c in Sources */,
-				B2E3EFC01BAC10CC005599BD /* lua_cjson.c in Sources */,
-				B25B28011BAC0F3D0034D6C7 /* AppDelegate.m in Sources */,
-				B2E3EFBA1BAC10CC005599BD /* lfs.c in Sources */,
-				B2E3EFC21BAC10CC005599BD /* luasocket_stub.cpp in Sources */,
-				B2E3EFC31BAC10CC005599BD /* storekit.mm in Sources */,
-				B25B27FE1BAC0F3D0034D6C7 /* main.m in Sources */,
-				B2E3EFB51BAC10CC005599BD /* bit.c in Sources */,
-				B2E3EFB71BAC10CC005599BD /* fpconv.c in Sources */,
-				B2E3EFC41BAC10CC005599BD /* strbuf.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -602,7 +335,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ENABLE_BITCODE = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -626,7 +358,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -637,7 +369,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ENABLE_BITCODE = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -654,7 +385,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -698,84 +429,6 @@
 			};
 			name = Release;
 		};
-		B25B28161BAC0F3D0034D6C7 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_ENABLE_OBJC_ARC = NO;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				HEADER_SEARCH_PATHS = "\"AppleTV/Plugins\"";
-				INFOPLIST_FILE = "AppleTV/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/AppleTV/Plugins\"",
-					"\"$(SRCROOT)/AppleTV\"",
-					"$(PROJECT_DIR)/AppleTV",
-				);
-				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = appletvos;
-				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
-			};
-			name = Debug;
-		};
-		B25B28171BAC0F3D0034D6C7 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_ENABLE_OBJC_ARC = NO;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				HEADER_SEARCH_PATHS = "\"AppleTV/Plugins\"";
-				INFOPLIST_FILE = "AppleTV/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/AppleTV/Plugins\"",
-					"\"$(SRCROOT)/AppleTV\"",
-					"$(PROJECT_DIR)/AppleTV",
-					Template,
-				);
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.yourcompany.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = appletvos;
-				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -793,15 +446,6 @@
 			buildConfigurations = (
 				5FD8971115CED77F00D34824 /* Debug */,
 				5FD8971215CED77F00D34824 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B25B281A1BAC0F3D0034D6C7 /* Build configuration list for PBXNativeTarget "AppleTV" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B25B28161BAC0F3D0034D6C7 /* Debug */,
-				B25B28171BAC0F3D0034D6C7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

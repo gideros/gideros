@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>384</width>
-    <height>126</height>
+    <height>149</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -67,6 +67,13 @@
           <widget class="QCheckBox" name="matchCase">
            <property name="text">
             <string>Match &amp;case</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="regexp">
+           <property name="text">
+            <string>Regular expression</string>
            </property>
           </widget>
          </item>
