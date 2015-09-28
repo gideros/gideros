@@ -1,0 +1,190 @@
+QWidget {
+	font: normal 200% Tahoma, Arial, Sans-serif;
+}
+
+QMainWindow, QDialog {
+	background: url(Resources/Themes/Mumble-Com_res/background-3.jpg) no-repeat center top #005089;
+}
+
+QGroupBox, QListWidget, QTreeView, QTextBrowser, QTextEdit {
+	background: url(Resources/Themes/Mumble-Com_res/white-10.png);
+	border-top: 1px solid #8dbbdf;
+	border-left: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #8dbbdf, stop: 1 transparent);
+	border-bottom: 0px;
+	border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #8dbbdf, stop: 1 transparent);
+	alternate-background-color: transparent;
+	margin-top: 2ex;
+	border-radius: 0px;
+	color: #082232;
+}
+
+QListWidget::item, QTreeView::item, QTableView::item {
+	border-radius: 0px;
+}
+
+QListWidget::item:hover, QTreeView::item:hover, QTableView::item:hover {
+	background: url(Resources/Themes/Mumble-Com_res/white-20.png);
+}
+
+QListWidget::item:selected, QTreeView::item:selected, QTableView::item:selected {
+	background: url(Resources/Themes/Mumble-Com_res/white-40.png);
+}
+
+QGroupBox::title {
+	subcontrol-origin: margin;
+	subcontrol-position: top left; /* position at the top center */
+	left: 10px;
+	padding: 0 1px;
+}
+
+QPushButton {
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 #2470aa, stop: 1 #8dbbdf);
+	border: 1px solid #2470aa;
+	border-radius: 3px;
+	padding: 3px 5px;
+	color: #082232;
+}
+
+QCheckBox, QLabel {
+	color: #082232;
+}
+
+QToolBar {
+	border: 0px;
+	background: #333;
+}
+
+QToolBar::separator {
+	background: #092435;
+	width: 0px;
+}
+
+QToolBar::handle {
+	image: url(Resources/Themes/Mumble-Com_res/toolbar-handle.png);
+	width: 10px;
+}
+
+#qtIconToolbar {
+	background: #020f17 url(Resources/Themes/Mumble-Com_res/logo.png) no-repeat center right;	
+}
+
+QMenuBar {
+	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #062f48, stop:1 #020f17);
+}
+
+QMenuBar::item {
+	spacing: 3px; 
+	padding: 1px 6px;
+	background: transparent;
+	color: #fff;
+}
+
+QMenu::item:disabled {
+	color: #777;
+}
+
+QMenuBar::item:selected, QMenuBar::item:hover { 
+	background: #144562;
+}
+
+QMenu {
+	background: #144562;
+	border-top: 0px;
+	border-left: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 transparent, stop: 1 #8dbbdf);
+	border-bottom: 1px solid #8dbbdf;
+	border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 transparent, stop: 1 #8dbbdf);
+}
+
+QMenu::item {
+	color: #fff;
+}
+
+QMenu::item:selected {
+	background: #205474;
+}
+
+QTabWidget::pane { 
+	border-radius: 0px;
+	background: url(Resources/Themes/Mumble-Com_res/white-20.png);
+	margin: 0px 10px 10px 7px;
+	border-bottom: 1px solid #8dbbdf;
+	border-left: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 transparent, stop: 1 #8dbbdf);
+	border-bottom: 1px solid #8dbbdf;
+	border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 transparent, stop: 1 #8dbbdf);
+}
+
+QTabWidget::tab-bar {
+	left: 6px;
+}
+
+QTabWidget QPushButton {
+	margin: 0 1px;
+}
+
+QTabBar::tab {
+	color: #fff;
+	margin-left: 2px;
+	background: url(Resources/Themes/Mumble-Com_res/white-20.png);
+	border: 0px;
+	min-width: 8ex;
+	padding: 2px 4px;
+}
+
+QTabBar::tab:!selected {
+	margin-top: 5px;
+}
+
+QCheckBox:disabled {
+	color: #19394d;
+}
+
+QCheckBox::indicator:checked {
+	image: url(Resources/Themes/Mumble-Com_res/check.png);
+}
+
+QCheckBox::indicator {
+	width: 6px;
+	height: 6px;
+	padding: 2px;
+	border: 2px solid #89b0cf;
+	background: url(Resources/Themes/Mumble-Com_res/white-20.png);
+	border-radius: 3px;
+}
+
+QHeaderView::section {
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #aceaf5, stop:1 #86cdd9);
+	color: #111;
+	border-top: 1px solid #1e6e7c;
+	border-bottom: 1px solid #1e6e7c;
+	border-right: 1px solid #1e6e7c;
+	padding: 2px 0 2px 5px;
+	color: #134750;
+}
+
+QHeaderView::section:first {
+	border-left: 1px solid #1e6e7c;
+}
+
+#qteLog,#qteChat,#qtvUsers {
+	margin: 2px;
+}
+
+#qteLog { 
+	min-width: 260px; 
+}
+
+#qteChat {
+	background: #fff;
+}
+
+#qcbExpert {
+	color: #fff;
+}
+
+a { 
+	color: #fff;
+}
+
+.log-time {
+	color: #082232;
+}

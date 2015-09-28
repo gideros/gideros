@@ -66,13 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (!dir.exists())
     {
-
         dir.mkdir(themePath);
-        QFile defaultUITheme(":/Resources Embedded/defaultTheme.qss");
-        defaultUITheme.copy(themePath+"defaultTheme.qss");
-
-        QFile defaultEditorTheme(":/Resources Embedded/defaultTheme.ini");
-        defaultEditorTheme.copy(themePath+"defaultTheme.ini");
     }
     else
     {
@@ -1059,6 +1053,21 @@ void MainWindow::openProject(const QString& fileName)
 	restoreOpenFiles();
 }
 
+void MainWindow::reloadProject()
+{
+    TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+
+    if (textEdit)
+    {
+        int line, index;
+        textEdit->sciScintilla()->getCursorPosition(&line, &index);
+        QString rp = projectFileName_;
+        closeProject();
+        openProject(rp);
+        textEdit->sciScintilla()->setCursorPosition(line, index);
+    }
+}
+
 QString MainWindow::projectName() const
 {
 	return QDir(projectFileName_).dirName();
@@ -1780,10 +1789,12 @@ void MainWindow::findFirst()
 		findWhat_ = findDialog_->findWhat();
 		matchCase_ = findDialog_->matchCase();
 		wholeWord_ = findDialog_->wholeWord();
+        regexp_ = findDialog_->regexp();
+        wrapSearch_ = findDialog_->wrap();
 		bool forward = findDialog_->forward();
 
 		if (findWhat_.isEmpty() == false)
-			if (textEdit->findFirst(findWhat_, false, matchCase_, wholeWord_, false, forward) == false)
+            if (textEdit->findFirst(findWhat_, regexp_, matchCase_, wholeWord_, wrapSearch_, forward) == false)
 				QMessageBox::information(findDialog_, tr("Gideros"), tr("The specified text could not be found."));
 	}
 }
@@ -1795,7 +1806,7 @@ void MainWindow::findNext()
 	if (textEdit)
 	{
 		if (findWhat_.isEmpty() == false)
-			if (textEdit->findFirst(findWhat_, false, matchCase_, wholeWord_, false, true) == false)
+            if (textEdit->findFirst(findWhat_, regexp_, matchCase_, wholeWord_, wrapSearch_, true) == false)
 				QMessageBox::information(findDialog_, tr("Gideros"), tr("The specified text could not be found."));
 	}
 }
@@ -1807,7 +1818,7 @@ void MainWindow::findPrevious()
 	if (textEdit)
 	{
 		if (findWhat_.isEmpty() == false)
-			if (textEdit->findFirst(findWhat_, false, matchCase_, wholeWord_, false, false) == false)
+            if (textEdit->findFirst(findWhat_, regexp_, matchCase_, wholeWord_, wrapSearch_, false) == false)
 				QMessageBox::information(findDialog_, tr("Gideros"), tr("The specified text could not be found."));
 	}
 }
@@ -1877,7 +1888,7 @@ void MainWindow::goToLine()
 	if (textEdit)
 	{
 		int line, index;
-		textEdit->sciScintilla()->getCursorPosition(&line, &index);
+        textEdit->sciScintilla()->getCursorPosition(&line, &index);
 
 		int lines = textEdit->sciScintilla()->lines();
 
@@ -3124,9 +3135,10 @@ void MainWindow::replace_findNext()
 		findWhat_ = replaceDialog_->findWhat();
 		matchCase_ = replaceDialog_->matchCase();
 		wholeWord_ = replaceDialog_->wholeWord();
+        regexp_ = replaceDialog_->regexp();
 
 		if (findWhat_.isEmpty() == false)
-			if (textEdit->findFirst(findWhat_, false, matchCase_, wholeWord_, false, true) == false)
+            if (textEdit->findFirst(findWhat_, regexp_, matchCase_, wholeWord_, false, true) == false)
 				QMessageBox::information(replaceDialog_, tr("Gideros"), tr("The specified text could not be found."));
 	}
 }
@@ -3140,9 +3152,10 @@ void MainWindow::replace_replace()
 		findWhat_ = replaceDialog_->findWhat();
 		matchCase_ = replaceDialog_->matchCase();
 		wholeWord_ = replaceDialog_->wholeWord();
+        regexp_ = replaceDialog_->regexp();
 
 		if (findWhat_.isEmpty() == false)
-			if (textEdit->replace(findWhat_, replaceDialog_->replaceWith(), false, matchCase_, wholeWord_, false) == false)
+            if (textEdit->replace(findWhat_, replaceDialog_->replaceWith(), regexp_, matchCase_, wholeWord_, false) == false)
 				QMessageBox::information(replaceDialog_, tr("Gideros"), tr("The specified text could not be found."));
 	}
 }
@@ -3157,10 +3170,11 @@ void MainWindow::replace_replaceAll()
 		findWhat_ = replaceDialog_->findWhat();
 		matchCase_ = replaceDialog_->matchCase();
 		wholeWord_ = replaceDialog_->wholeWord();
+        regexp_ = replaceDialog_->regexp();
 
 		if (findWhat_.isEmpty() == false)
 		{
-			int all = textEdit->replaceAll(findWhat_, replaceDialog_->replaceWith(), false, matchCase_, wholeWord_, false);
+            int all = textEdit->replaceAll(findWhat_, replaceDialog_->replaceWith(), regexp_, matchCase_, wholeWord_, false);
 			QMessageBox::information(replaceDialog_, tr("Gideros"), tr("%1 occurrences were replaced.").arg(all));
 		}
 	}
@@ -3174,6 +3188,7 @@ void MainWindow::findInFiles()
 		QString findWhat = findInFilesDialog_->findWhat();
 		bool matchCase = findInFilesDialog_->matchCase();
 		bool wholeWord = findInFilesDialog_->wholeWord();
+        bool regexp = findInFilesDialog_->regexp();
 
 		QDir path(QFileInfo(projectFileName_).path());
 
@@ -3214,7 +3229,7 @@ void MainWindow::findInFiles()
 				sci.setText(in.readAll());
 
 				int line = -1, index = -1;
-				while (sci.findFirst(findWhat, false, matchCase, wholeWord, false, true, line, index))
+                while (sci.findFirst(findWhat, regexp, matchCase, wholeWord, false, true, line, index))
 				{
 					int lineFrom, indexFrom, lineTo, indexTo;
 					sci.getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
@@ -3612,11 +3627,7 @@ void MainWindow::on_actionUI_Theme_triggered()
     if (file.open(QIODevice::ReadOnly|QIODevice::Text))
     {
         QTextStream in(&file);
-        while (!in.atEnd())
-        {
-        theme = in.readAll();
-        }
-
+        while (!in.atEnd()) theme = in.readAll();
         settings.setValue("uiTheme", themeFile);
         qApp->setStyleSheet(theme);
     }
@@ -3627,12 +3638,14 @@ void MainWindow::on_actionEditor_Theme_triggered()
     QString themePath = QDir::currentPath()+"/Resources/Themes/";
     QDir dir(themePath);
 
-
     QString theme = QFileDialog::getOpenFileName(this, tr("Open Editor Theme"),
                                                 themePath, tr("Editor Theme files (*.ini)"));
+    if (theme == "") return;
 
     QSettings settings;
     settings.setValue("editorTheme", theme);
+
+    reloadProject();
 }
 
 
@@ -3646,25 +3659,55 @@ void MainWindow::on_actionUI_and_Editor_Theme_triggered()
     QString themeFile = QFileDialog::getOpenFileName(this, tr("Open UI and Editor Theme"),
         themePath, tr("UI Theme files (*.qss)"));
 
+    if (themeFile == "") return;
+
     QFile file(themeFile);
     QString theme;
 
     if (file.open(QIODevice::ReadOnly|QIODevice::Text))
     {
         QTextStream in(&file);
-        while (!in.atEnd())
-        {
-        theme = in.readAll();
-        }
-
+        while (!in.atEnd()) theme = in.readAll();
         settings.setValue("uiTheme", themeFile);
         qApp->setStyleSheet(theme);
     }
 
-    if (themeFile != "")
+    themeFile.chop(3);
+    themeFile.append("ini");
+    QFile eFile(themeFile);
+    if (eFile.exists())
     {
-        themeFile.chop(3);
-        themeFile.append("ini");
         settings.setValue("editorTheme", themeFile);
+        reloadProject();
+    }
+}
+
+void MainWindow::on_actionReset_UI_and_Editor_Theme_triggered()
+{
+    QSettings settings;
+    settings.setValue("editorTheme", "");
+    settings.setValue("uiTheme", "");
+    qApp->setStyleSheet("");
+
+    reloadProject();
+}
+
+void MainWindow::on_actionFold_Unfold_All_triggered()
+{
+    TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+
+    if (textEdit)
+    {
+        textEdit->sciScintilla()->foldAll(true);
+    }
+}
+
+void MainWindow::on_actionFold_Unfold_Top_triggered()
+{
+    TextEdit* textEdit = qobject_cast<TextEdit*>(mdiArea_->activeSubWindow());
+
+    if (textEdit)
+    {
+        textEdit->sciScintilla()->foldAll(false);
     }
 }

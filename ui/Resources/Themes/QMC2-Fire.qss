@@ -1,0 +1,354 @@
+/*
+    qmc2-fire: v0.8, 11-JAN-2011, rene.reucher@batcom-it.net
+
+    Qt style sheet compatible with QMC2 0.2.b10+
+
+    http://qmc2.arcadehits.net/wordpress/style-sheets/
+
+    Changes:
+    
+    v0.8 - updated to 0.2.b19
+    v0.7 - updated to 0.2.b17
+    v0.6 - updated to 0.2.b15
+    v0.5 - solid black logo background (about dialog)
+    v0.4 - updated to 0.2.b12
+    v0.3 - updated to 0.2.b11
+    v0.2 - fine grained progress bar chunks
+    v0.1 - initial version
+*/
+
+QWidget {
+  color: black;
+}
+
+QDialog,
+QSplitter,
+QScrollArea,
+QScrollArea *,
+MainWindow,
+Options,
+Preview,
+Flyer,
+Cabinet,
+Title,
+Marquee,
+Controller,
+PCB {
+    background-color: rgba(254, 211, 59, 64);
+    background-image: url(Resources/Themes/QMC2-Fire_res/main-bg.png);
+    background-position: top left;
+    background-origin: content;
+}
+
+QTabWidget {
+    background-color: rgba(254, 211, 59, 64);
+    color: black;
+    border: 1px solid rgba(254, 211, 59, 255);
+    padding: 2px;
+    border-radius: 3px;
+}
+
+QLabel#labelTitle {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(152, 54, 29, 255), stop:0.5 rgba(254, 211, 59, 128), stop:1 rgba(152, 54, 29, 255));
+    color: black;
+}
+
+QLabel#labelProjectInfo {
+    border-image: url(Resources/Themes/QMC2-Fire_res/about-bg.png) repeat;
+    color: white;
+    width: 300;
+    height: 300;
+}
+
+QLabel#labelLogoPixmap {
+    background: black;
+}
+
+QTabBar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(152, 54, 29, 64), stop:1 rgba(254, 211, 59, 64));
+}
+
+QLabel#labelGamelistStatus {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(152, 54, 29, 64), stop:0.5 rgba(254, 211, 59, 128), stop:1 rgba(152, 54, 29, 64));
+}
+
+QLabel#labelGameStatus {
+    background: none;
+}
+
+QLabel#labelLoadingGamelist,
+QLabel#labelLoadingHierarchy,
+QLabel#labelCreatingCategoryView,
+QLabel#labelCreatingVersionView,
+QListWidget#listWidgetFavorites,
+QListWidget#listWidgetPlayed,
+QListWidget#listWidgetSearch,
+QTreeWidget#treeWidgetCategoryView,
+QTreeWidget#treeWidgetVersionView,
+QTreeWidget#treeWidgetGamelist,
+QTreeWidget#treeWidgetHierarchy {
+    border-image: url(Resources/Themes/QMC2-Fire_res/popeye-outline.png) repeat;
+}
+
+QComboBox,
+QTreeView,
+QListView {
+    selection-color: black; 
+    selection-background-color: rgba(152, 54, 29, 128);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgba(152, 54, 29, 128), stop: 1 rgba(254, 211, 59, 128));
+    border: 1px solid gray;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+QTextBrowser,
+QPlainTextEdit,
+QSpinBox,
+QDoubleSpinBox {
+    selection-color: white; 
+    selection-background-color: rgba(0, 0, 0, 128);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgba(152, 54, 29, 128), stop: 1 rgba(254, 211, 59, 128));
+    border: 1px solid gray;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+QLineEdit {
+    selection-color: white; 
+    selection-background-color: rgba(0, 0, 0, 128);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(152, 54, 29), stop: 1 rgb(254, 211, 59));
+    border: 1px solid gray;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+QPushButton,
+QToolButton {
+    selection-color: black; 
+    selection-background-color: white;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgba(152, 54, 29, 255), stop: 1 rgba(254, 211, 59, 255));
+    border: 1px solid gray;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+QPushButton:hover,
+QToolButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgba(254, 211, 59, 255), stop: 1 rgba(152, 54, 29, 255));
+}
+
+QPushButton:pressed,
+QToolButton:pressed,
+QPushButton:on,
+QToolButton:on {
+    background: rgba(64, 64, 64, 192);
+}
+
+QMenu {
+    selection-color: black; 
+    selection-background-color: rgb(132, 34, 9);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(152, 54, 29), stop: 1 rgb(254, 211, 59));
+    border: 1px solid rgb(132, 34, 9);
+    padding: 2px;
+    border-radius: 3px;
+}
+
+QCheckBox,
+QLabel,
+QRadioButton {
+    background: transparent;
+}
+
+QCheckBox::indicator {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgba(254, 211, 59, 255), stop:1 rgba(152, 54, 29, 255));
+    width: 14px;
+    height: 14px;
+    border: 1px solid gray;
+    padding: 1px;
+    border-radius: 3px;
+}
+
+QCheckBox::indicator:checked {
+    image: url(Resources/Themes/QMC2-Fire_res/ok.png);
+}
+
+QRadioButton::indicator {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgba(254, 211, 59, 255), stop:1 rgba(152, 54, 29, 255));
+    width: 7px;
+    height: 7px;
+    border: 1px solid gray;
+    padding: 1px;
+    border-radius: 5px;
+}
+
+QRadioButton::indicator:checked {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgba(152, 54, 29, 255), stop:1 rgba(0, 0, 0, 255));
+    width: 7px;
+    height: 7px;
+    border: 1px solid gray;
+    padding: 1px;
+    border-radius: 5px;
+}
+
+
+QListView::item:hover,
+QTreeView::item:hover,
+QScrollBar,
+QWebView,
+QProgressBar {
+    background-color: rgba(152, 54, 29, 64);
+    padding: 2px;
+}
+
+QMenu::item:selected {
+    background-color: rgba(152, 54, 29, 128);
+    color: black;
+}
+
+QHeaderView {
+    background: rgb(152, 54, 29);
+    color: black;
+}
+
+QToolBar,
+QMenuBar {
+    background: rgba(254, 211, 59, 64);
+    color: black;
+    selection-color: black; 
+    selection-background-color: white;
+}
+
+QMenuBar::item {
+    spacing: 4px;
+    padding: 2px 4px;
+    background: rgba(254, 211, 59, 128);
+    border: 1px solid rgb(152, 54, 29);
+    border-radius: 3px;
+}
+
+QMenuBar::item:selected {
+    background: rgba(152, 54, 29, 128);
+}
+
+QMenuBar::item:pressed {
+    background: rgba(152, 54, 29, 255);
+}
+
+QGroupBox {
+    background: rgba(254, 211, 59, 64);
+}
+
+QRadioButton:hover,
+QCheckBox:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgba(254, 211, 59, 128), stop:1 rgba(152, 54, 29, 128));
+    color: black;
+}
+
+QToolTip {
+    background: rgba(152, 54, 29, 128);
+    color: lightgrey;
+    border: 1px solid rgb(254, 211, 59);
+    border-radius: 3px;
+}
+
+QSplitter::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgba(152, 54, 29, 128), stop:1 rgba(20, 20, 20, 255));
+    border: 1px solid rgb(50, 50, 50);
+    width: 2px;
+    height: 2px;
+    border-radius: 1px;
+}
+
+QSplitter::handle:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(152, 54, 29, 128), stop:1 rgba(20, 20, 20, 255));
+}
+
+QProgressBar:horizontal {
+    border: 1px solid rgb(50, 50, 50);
+    border-radius: 3px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(152, 54, 29), stop:1 rgb(254, 211, 59));
+    padding: 0px;
+    text-align: center;
+}
+
+QProgressBar:vertical {
+    border: 1px solid rgb(50, 50, 50);
+    border-radius: 3px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(152, 54, 29), stop:1 rgb(254, 211, 59));
+    padding: 0px;
+    text-align: center;
+}
+
+QProgressBar::chunk:horizontal {
+    background-color: rgb(254, 211, 59);
+    width: 1px;
+}
+
+QProgressBar::chunk:vertical {
+    background-color: rgb(254, 211, 59);
+    height: 1px;
+}
+
+QProgressBar:disabled {
+    color: grey;
+}
+
+QHeaderView::down-arrow {
+    image: url(Resources/Themes/QMC2-Fire_res/down-arrow.png);
+}
+
+QHeaderView::up-arrow {
+    image: url(Resources/Themes/QMC2-Fire_res/up-arrow.png);
+}
+
+QTreeView {
+    alternate-background-color: rgba(152, 54, 29, 128);
+    paint-alternating-row-colors-for-empty-area: true;
+    show-decoration-selected: 0;
+}
+
+QTreeView::branch:has-siblings:!adjoins-item {
+    border-image: url(Resources/Themes/QMC2-Fire_res/vline.png) 0;
+}
+
+QTreeView::branch:has-siblings:adjoins-item {
+    border-image: url(Resources/Themes/QMC2-Fire_res/branch-more.png) 0;
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: url(Resources/Themes/QMC2-Fire_res/branch-end.png) 0;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(Resources/Themes/QMC2-Fire_res/branch-closed.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+    border-image: none;
+    image: url(Resources/Themes/QMC2-Fire_res/branch-open.png);
+}
+
+QSlider::groove:horizontal {
+    border: 0px solid rgb(152, 54, 29);
+    height: 8px;
+    background: qlineargradient(x1:1, y1:0, x2:0, y2:0, stop:0 rgba(152, 54, 29, 255), stop:1 rgba(254, 211, 59, 255));
+    border: 1px solid rgb(254, 211, 59);
+    border-radius: 3px;
+    margin: 2px 0;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(152, 54, 29), stop:1 rgb(254, 211, 59));
+    border: 1px solid rgb(254, 211, 59);
+    width: 20px;
+    margin: -2px 0;
+    border-radius: 3px;
+}
+
+QMessageBox {
+    messagebox-text-interaction-flags: 5 /* text can be selected and copied to clipboard */
+}
+

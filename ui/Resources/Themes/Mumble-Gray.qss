@@ -1,0 +1,1033 @@
+/* 
+
+Name:		Gray Mumble skin
+Version:	0.10
+Mumble version: 1.4.x
+Author:		_KaszpiR_ kaszpir@gmail.com
+Date:		2014.01.19, 22:15  (yyyy.mm.dd)
+Contact:	#hlds.pl @ irc.QuakeNet.org
+
+Comments:
+
+Total rewrite of my old skin.
+
+Todo:
+- fix tooltip when looking channel description
+- any option to enhance channel view tree?
+- bottom area in wizard dialog box is white
+
+Known issues:
+- URL links in Dialog boxes are blue
+*/
+
+/***************************************************************************
+	Misc elements
+***************************************************************************/
+
+* { /* all elements */
+	selection-background-color: #212121;
+    /* window: #2b2b2b; */ /* this property does not exist in mumble shins */
+    /*
+    background: #212121;
+    background: #2b2b2b;
+    */
+    color: #aaa;
+}
+
+QWidget { /* anything that is a widget */
+	background-color: #212121;
+}
+
+QWidget#qteRichText { /* rich text editor with icons on top like bold, italic etc*/
+	background: #ccc; /* avoid eye burn */
+	color: #000;
+}
+
+QAbstractScrollArea {
+	/* any scroll area, also lists */
+	alternate-background-color: #333;
+    color: #aaa;
+    background: #212121;
+	border: 0px;
+} 
+
+QAbstractItemView {
+	alternate-background-color: #333;
+    color: #aaa;
+    background: #212121;
+	border: 0px;
+}
+
+QSizeGrip { /* window resize icon */
+	margin-top: 0.2em;
+	margin-left: 0.2em;
+	border-bottom: 1px solid #000;
+	border-right: 1px solid #000;
+	width: 16px;
+	height: 16px;
+}
+
+/***************************************************************************
+	Tabs
+***************************************************************************/
+
+QTabWidget::pane { 
+	border: 1px solid #2b2b2b;
+	border-radius: 4px;
+}
+
+QTabWidget::tab-bar {
+	left: 5px; 
+}
+
+ /* Style the tab using the tab sub-control. Note that
+     it reads QTabBar _not_ QTabWidget */
+QTabBar::tab {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #212121); 
+	border: 1px solid #222;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	min-width: 8ex;
+	padding: 0.5em 1em;
+}
+
+QTabBar::tab:selected {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #313131); 	
+	color: #fff;
+}
+
+QTabBar::tab:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #4b4b4b, stop: 1 #313131); 	
+	color: #fff;
+}
+
+QTabBar::tab:!selected {
+}
+
+QTabBar::tab:bottom {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #212121); 
+	border: 1px solid #222;
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	min-width: 8ex;
+	padding: 0.5em 1em;
+}
+
+QTabBar::tab:selected:bottom {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #313131); 	
+	color: #fff;
+}
+
+QTabBar::tab:hover:bottom {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #4b4b4b, stop: 1 #313131); 	
+	color: #fff;
+}
+
+QTabBar::tab:selected:bottom {
+}
+
+QTabBar::tab:!selected:bottom {
+}
+
+
+QLineEdit {	/* input like filenames */
+	background: #2b2b2b;
+	border: 0px;
+} 
+
+QDateEdit {
+} 
+
+QDateTimeEdit {
+} 
+
+QTextEdit {
+} 
+
+QTimeEdit {
+
+} 
+
+QSpinBox {
+	height: 2em;
+}
+
+QDoubleSpinBox {
+	height: 2em;
+}	
+
+/***************************************************************************
+	ComboBox, drop down menus
+***************************************************************************/
+
+QComboBox {
+	height: 1.5em;
+	border-radius: 4px;
+	min-width: 6em;
+	background: #888;
+	color: #000;
+}
+
+QComboBox:!editable {
+}
+
+QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+}
+
+QComboBox:on { /* shift the text when the popup opens */
+	padding-top: 3px;
+	padding-left: 4px;
+}
+
+QComboBox::drop-down {
+	subcontrol-origin: padding;
+	subcontrol-position: top right;
+	width: 1.5em;
+
+	border-left-width: 1px;
+	border-left-color: #222;
+	border-left-style: solid; 
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b6b6b, stop: 1 #3b3b3b); 
+	/* also defines arrow bg */
+}
+
+QComboBox::down-arrow {
+	image: url(Resources/Themes/Mumble-Gray_res/arrow-down.png);
+}
+
+QComboBox::down-arrow:on {
+}
+
+
+/***************************************************************************
+	Buttons
+***************************************************************************/
+
+QPushButton {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #212121); 
+	border-radius: 4px;
+	border: 1px solid #111111;
+	margin: 0.2em;
+	padding: 0.5em;
+	padding-left: 2em;
+	padding-right: 2em;
+	min-height: 1em;
+}
+
+QPushButton::!pressed {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #212121); 
+}
+
+QPushButton::pressed {
+}
+
+QPushButton::!pressed::hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b6b6b, stop: 1 #3b3b3b); 
+}
+
+QPushButton::default {
+}
+
+QPushButton::default::hover {
+}
+
+QPushButton::flat {
+}
+
+QPushButton::checked {
+	color: #fff;
+}
+
+QPushButton::disabled { /* disabled buttons */
+	color: #444;
+	background: #212121;
+}
+
+QPushButton#qpb_add {
+}
+
+QPushButton#qpb_remove {
+	min-width: 4em;
+}
+
+
+/***************************************************************************
+	Main app window
+***************************************************************************/
+
+QMainWindow {
+}
+
+QMainWindow#MainWindow {
+}
+
+QMainWindow::separator:horizontal
+{
+    background: #2b2b2b;
+    max-width: 2px;
+	width: 2px;
+	border-top: 1px solid #2b2b2b;
+	border-bottom: 1px solid #2b2b2b;
+}
+
+QMainWindow::separator:vertical
+{
+    background: #2b2b2b;
+    max-height: 2px;
+	height: 2px;
+	border-left: 1px solid #2b2b2b;
+	border-right: 1px solid #2b2b2b;
+}
+
+QMainWindow::separator:hover
+{
+    background: #686868;
+}
+
+/***************************************************************************
+	simple text in dialog box
+***************************************************************************/
+
+QLabel {
+}
+
+QFrame {
+}
+
+QGroupBox {
+	border: 1px solid #2b2b2b;
+	border-radius: 4px;
+	padding: 0.5em;
+	padding-top: 2em;
+}
+
+QGroupBox::title {
+	border: 1px solid #2b2b2b;
+	border-radius: 2px;
+	padding: 0.5em 1em;
+	background: #2b2b2b;
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #212121); 
+
+}
+
+QToolTip {
+	border: 1px solid #6b6b6b; /* gray border, onlyy size can be changed*/
+	border-radius: 4px; 
+	padding: 0.5em;
+	color: #aaa;
+	background: #444;
+}
+
+QWhatsThis {
+	border: 1px solid #6b6b6b; /* gray border, onlyy size can be changed*/
+	border-radius: 4px; 
+	padding: 0.5em;
+	color: #aaa;
+	background: #444;
+}
+
+QHeaderView{
+	show-decoration-selected: 1; /* make the selection span the entire width of the view */
+	color: #000;
+	padding: 0px;
+	margin: 0px;
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #212121); 
+
+}
+
+QHeaderView::item {
+	color: #000;
+	border: 0px solid #6c6c6c;
+}
+
+QHeaderView::section {
+	/* table/list view headers */
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #212121); 
+	color: #bbb;
+	border: 2px solid #2b2b2b; /* fix for windows */
+	padding: 0.2em;
+}
+
+QHeaderView::down-arrow {
+	color: #888;
+}
+
+QHeaderView::up-arrow {
+	color: #888;
+}
+
+
+QListView {
+	border: 0px;
+
+}
+
+QListView::item {
+}
+
+
+QListView::item:alternate {
+}
+
+QListView::item:selected {
+}
+
+QListView::item:selected:!active {
+}
+
+QListView::item:selected:active {
+}
+
+QListView::item:hover {
+	background-color: #333; /* in lists, shows alternate color, instead of white */
+}
+
+/*****************************************************
+	Lists 
+*****************************************************/
+
+
+QListWidget {
+	show-decoration-selected: 1; /* make the selection span the entire width of the view */
+	background-color: #202020; /* in lists, shows alternate color, instead of white */
+	border: 1px solid #2b2b2b;
+
+}
+
+QListWidget::item {
+	padding: 1em;
+}
+
+QListWidget::item:alternate {
+	padding: 1em;
+}
+
+QListWidget::item:selected {
+	background-color: #616161; /* in lists, shows alternate color, instead of white */
+	border: 1px solid #2b2b2b;
+	padding: 0em;
+}
+
+QListWidget::item:selected:!active {
+	background-color: #616161; /* in lists, shows alternate color, instead of white */
+	border: 1px solid #2b2b2b;
+	padding: 0em;
+}
+
+QListWidget::item:selected:active {
+	background-color: #616161; /* in lists, shows alternate color, instead of white */
+	border: 1px solid #2b2b2b;
+	padding: 0em;
+}
+
+QListWidget::item:hover {
+	show-decoration-selected: 1; /* make the selection span the entire width of the view */
+	background-color: #414141; /* in lists, shows alternate color, instead of white */
+	border: 1px solid #2b2b2b;
+	padding: 0em; /* avoid padding too far to the right on hover due to inherit */
+}
+
+/*****************************************************
+	List in the confifiguration, on the left 
+*****************************************************/
+
+QListWidget#qlwIcons {
+}
+
+QListWidget#qlwBans:item {
+	padding-top:0.2em;
+	padding-bottom:0.2em;
+}
+
+/*****************************************************
+	Tables 
+*****************************************************/
+
+QTableView {
+	show-decoration-selected: 0; /* make the selection span the entire width of the view */
+}
+
+QTableView::item {
+	background: #212121;
+}
+QTableView::item:alternate {
+	background: #2b2b2b;
+}
+
+QTableView::item:selected {
+}
+
+QTableView::item:selected:!active {
+}
+
+QTableView::item:selected:active {
+}
+
+QTableView::item:hover {
+}
+
+
+QDialog {
+	background: #212121;
+	border: 1px solid #000;
+	padding: 0.2em;
+}
+
+/****************************************
+	User list in channel tree view
+******************************************/
+
+/* notice, this also influences checkboxes in tree views */
+
+QTreeView::item {
+}
+
+QTreeView::item:!hover {
+}
+
+QTreeView::item:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b6b6b, stop: 1 #212121); 
+	color: #fff;
+}
+
+QTreeView::item:selected {
+	color: #888;
+}
+
+QTreeView::item:selected:active {
+	color: #fff;
+	background: #888;
+}
+
+QTreeView::item:selected:!active {
+	color: #fff;
+	background: #888;
+}
+
+
+/*
+QTreeView#qtvUsers {
+	border: 1px solid #000;
+	padding: 0.2em;
+	show-decoration-selected: 1;
+}
+
+QTreeView#qtvUsers::item {
+}
+
+QTreeView#qtvUsers::item:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b6b6b, stop: 1 #212121); 
+	color: #ff0;
+	border-top: 1px solid #333;
+	border-bottom: 1px solid #222;
+	border-left: 1px solid #222;
+	border-right: 1px solid #222;
+}
+
+QTreeView#qtvUsers::item:!hover {
+}
+
+
+QTreeView#qtvUsers::item:selected {
+	color: #000;
+}
+
+QTreeView#qtvUsers::item:selected:active {
+	color: #000;
+}
+
+QTreeView#qtvUsers::item:selected:!active {
+	color: #000;
+}
+*/
+QTreeView#qtvUsers::branch:has-siblings:!adjoins-item {
+/*	border-image: url(Resources/Themes/Mumble-Gray_res/branch-vline.png) 0;
+*/
+}
+
+QTreeView#qtvUsers::branch:has-siblings:adjoins-item {
+/*	border-image: url(Resources/Themes/Mumble-Gray_res/branch-more.png) 0;
+*/
+}
+
+QTreeView#qtvUsers::branch:!has-children:!has-siblings:adjoins-item {
+/*	border-image: url(Resources/Themes/Mumble-Gray_res/branch-end.png) 0; 
+*/	
+}
+
+QTreeView#qtvUsers::branch:has-children:!has-siblings:closed {
+	image: url(Resources/Themes/Mumble-Gray_res/branch-closed.png);
+}
+
+QTreeView#qtvUsers::branch:closed:has-children:has-siblings {
+	image: url(Resources/Themes/Mumble-Gray_res/branch-closed.png);
+}
+
+QTreeView#qtvUsers::branch:open:has-children:!has-siblings{
+	image: url(Resources/Themes/Mumble-Gray_res/branch-open.png);
+}
+
+QTreeView#qtvUsers::branch:open:has-children:has-siblings {
+	image: url(Resources/Themes/Mumble-Gray_res/branch-open.png);
+}
+
+QTreeView#qtvUsers::branch:has-siblings:!adjoins-item {
+	background: none;
+}
+
+QTreeView#qtvUsers::branch:has-siblings:adjoins-item {
+	background: none;
+}
+
+QTreeView#qtvUsers::branch:!has-children:!has-siblings:adjoins-item {
+	background: none;
+}
+
+QTreeView#qtvUsers::branch:has-children:!has-siblings:closed {
+	background: none;
+}
+
+QTreeView#qtvUsers::branch:closed:has-children:has-siblings {
+	background: none;
+}
+
+QTreeView#qtvUsers::branch:open:has-children:!has-siblings {
+	background: none;
+}
+
+QTreeView#qtvUsers::branch:open:has-children:has-siblings {
+	background: none;
+}
+
+/****************************************
+	 Tree widget, for example plugin list (not channels and users)
+ ******************************************/
+
+QTreeWidget::item {
+
+}
+
+/****************************************
+	 Main menu 
+ ******************************************/
+
+QMenuBar {
+	font-weight: bold;
+	border: 1px solid #000;
+	border-bottom: 1px solid #222;
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #212121); 
+
+}
+
+QMenuBar::item {
+	padding: 4px 8px;
+	border: 1px solid transparent;
+	spacing: 1em; /* spacing between menu bar items */
+	border-radius: 4px;
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #212121); 
+}
+
+QMenuBar::item:selected {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b6b6b, stop: 1 #313131); 	
+	color: #fff;
+	border: 1px solid #444;
+}
+
+QMenuBar::item:pressed {
+}
+
+/*****************************************************
+	Toolbar with icons like connect, record etc
+*******************************************************/
+
+QToolBar {
+	border-radius: 0px; /* if omitted produces weird white border */
+	border: 0px solid #222;
+}
+
+QToolBar:vertical {
+	border-radius: 0px; /* if omitted produces weird white border */
+	border: 0px;
+}
+
+QToolBar::handle {
+	border: 1px solid #000;
+}
+
+QToolBar::separator:vertical {
+	border: 1px solid transparent;
+}
+
+QToolBar::separator:horizontal {
+	border-left: 1px solid #000;
+}
+
+QToolButton {
+	border-radius: 4px;
+	border: 1px solid transparent;
+	padding: 0em 0.5em;
+}
+
+QToolButton::hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #3b3b3b, stop: 1 #212121); 
+}
+
+QToolButton:top:bottom:horizontal {
+}
+
+QToolButton:left:right:vertical{
+}
+
+QToolButton::hover:top:bottom:horizontal {
+}
+
+QToolButton::hover:left:right:vertical {
+}
+
+/*************************************************************
+	Dropdown menu from top menu or to perform action on user
+**************************************************************/
+
+QMenu {
+	border: 1px solid #6b6b6b; /* gray border, onlyy size can be changed*/
+	padding: 0px;
+	margin: 0px; /* some spacing around the menu */
+	border-radius: 4px; 
+}
+
+QMenu::item {
+	padding: 0.2em 1.5em;
+	border: 1px solid transparent;
+	border-radius: 2px;
+}
+
+QMenu::item::default {
+	color: #fff;
+}
+
+QMenu::item:selected {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b6b6b, stop: 1 #212121); 
+	color: #fff;
+}
+
+QMenu::item:pressed {
+}
+
+QMenu::item:disabled {
+	color: #000;
+}
+
+QMenu::item:disabled:selected {
+	color: #000;
+}
+
+QMenu::separator {
+	height: 1px;
+	border-top: 1px solid #444;
+}
+
+QMenu::indicator {
+	width: 13px;
+	height: 13px;
+	padding-left: 2px;
+}
+
+
+/******************
+	Scroll Bars
+*******************/
+
+QScrollBar {
+	width: 1em;
+	margin: 0 0;
+	border-radius: 4px;
+	background: #181818; 
+
+}
+
+QScrollBar:vertical {
+	width: 1em;
+	margin: 0 0;
+	border-radius: 4px;
+}
+
+QScrollBar::handle:vertical {
+	min-height: 1em;
+	border-radius: 4px;
+	border: 1px solid #000;
+	background: #414141; 
+}
+
+QScrollBar::handle:vertical:hover {
+	background: #6b6b6b; 
+}
+
+QScrollBar::add-line:vertical {
+	border: 1px solid #000;
+	height: 0.5em;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+	border: 1px solid #000;
+	height: 0.5em;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::add-line:vertical:hover {
+	border: 1px solid #000;
+}
+
+QScrollBar::sub-line:vertical:hover {
+	border: 1px solid #000;
+}
+
+QScrollBar::add-line:vertical {
+	subcontrol-position: bottom;
+}
+
+QScrollBar::sub-line:vertical {
+	subcontrol-position: top;
+}
+
+QScrollBar:horizontal {
+	height: 1em;
+	margin: 0 0;
+	border-radius: 4px;
+}
+
+QScrollBar::handle:horizontal {
+	min-width: 1em;
+	border-radius: 4px;
+	border: 1px solid #000;
+	background: #414141; 
+}
+
+QScrollBar::handle:horizontal:hover {
+	background: #6b6b6b; 
+}
+
+QScrollBar::add-line:horizontal {
+	border: 1px solid #000;
+	width: 0.5em;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+	border: 1px solid #000;
+	width: 0.5em;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::add-line:horizontal:hover {
+	border: 1px solid #000;
+}
+
+QScrollBar::sub-line:horizontal:hover {
+	border: 1px solid #000;
+}
+
+QScrollBar::add-line:horizontal {
+	subcontrol-position: right;
+}
+
+QScrollBar::sub-line:horizontal {
+	subcontrol-position: left;
+}
+
+/***************************************************************************
+	Sliders, for example for audio volume
+***************************************************************************/
+
+Qslider {
+	background:transparent;
+}
+
+QSlider::groove:horizontal {
+	border-bottom: 1px dotted #888;
+	height: 0;
+	margin: 2px 0;
+}
+
+QSlider::groove:vertical {
+	border-right: 1px dotted #888;
+	width: 0;
+	margin: 0 2px;
+}
+
+QSlider::groove:disabled {
+	border-color: #888;
+}
+
+QSlider::handle:horizontal {
+	width: 12px;
+	margin: -5px 0;
+}
+
+QSlider::handle:vertical {
+	height: 12px;
+	margin: 0 -5px;
+}
+
+QSlider::handle {
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #6b6b6b, stop: 1 #313131);
+	border: 1px solid #212121;
+	border-radius: 3px;
+}
+
+QSlider::handle:hover {
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #6b6b6b, stop: 1 #313131);
+	border: 1px solid #212121;
+}
+
+QSlider::handle:pressed {
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #6b6b6b, stop: 1 #313131);
+	border: 1px solid #212121;
+}
+
+QSlider::handle:disabled {
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #6b6b6b, stop: 1 #313131);
+	border: 1px solid #212121;
+	color: #f00;
+}
+
+/****************************************
+	 Wizard dialog boxes 
+ ****************************************/
+
+QWizard  {
+	background: #6b6b6b; 
+}
+
+QWizardPage  {
+	background: #6b6b6b; 
+}
+
+/****************************************
+	 Event log 
+ ****************************************/
+
+QTextBrowser#qteLog {
+	background-color: #212121;
+	border: 1px solid #000;
+	padding: 0.2em 0.2em 0.2em 0.2em;
+}
+
+a {
+	color: #ee7700; 
+	text-decoration:none; 
+}
+
+/***************************************************************************
+	Log lines
+***************************************************************************/
+
+/* most of those does not work, they are part of my custom mumble build */
+
+.log-time {
+    color: #666;
+}
+
+.log-server {
+    color: #fff;
+}
+
+.log-channel {
+	/* hmmm */
+    color: #aae;
+}
+
+.log-target {
+    color: #ee7700;
+}
+
+.log-source {
+    color: #ee7700;
+}
+
+.log-privilege {
+    color: #aee;
+}
+
+.log-criticalerror {
+    color: #f00;
+}
+
+.log-permissiondenied {
+    color: #f00;
+}
+
+.log-selfmute {
+    color: #bbf;
+}
+
+.log-serverconnected {
+    color: #bfb;
+}
+
+.log-serverdisconnected {
+    color: #fbb;
+}
+
+.log-channeljoin {
+    color: #8f8;
+}
+
+.log-channelleave {
+    color: #aaa;
+}
+
+.log-youmutedother {
+    color: #a88;
+}
+
+.log-youmuted {
+    color: #a88;
+}
+
+.log-youkicked {
+    color: #a88;
+}
+
+.log-recording {
+    color: #fff;
+}
+
+.log-warning {
+    color: #ff8;
+}
+
+.log-information {
+    color: #aaa;
+}
+
+.log-userjoin {
+    color: #088a08;
+}
+
+.log-userleave {
+    color: #df0101;
+}
+
+.log-userkicked {
+    color: #f00;
+}
+
+.log-otherselfmute {
+    color: #88a;
+}
+
+.log-othermutedother {
+    color: #88a;
+}
+
+.log-debuginfo {
+}
+
+.log-textmessage {
+}
+

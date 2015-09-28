@@ -33,6 +33,16 @@ bool FindDialog::forward() const
 	return ui.down->isChecked();
 }
 
+bool FindDialog::wrap() const
+{
+    return ui.wrap->isChecked();
+}
+
+bool FindDialog::regexp() const
+{
+    return ui.regexp->isChecked();
+}
+
 void FindDialog::focusToFindWhat()
 {
 	ui.findWhat->setFocus(Qt::OtherFocusReason);
