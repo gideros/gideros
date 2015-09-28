@@ -134,6 +134,10 @@ void g_exit()
 	Windows::ApplicationModel::Core::CoreApplication::Exit();
 }
 
+bool g_checkStringProperty(bool isSet, const char* what){
+    return false;
+}
+
 void g_setProperty(const char* what, const char* arg){
 
 }
