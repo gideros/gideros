@@ -106,6 +106,10 @@ void g_exit()
   exit(0);
 }
 
+bool g_checkStringProperty(bool isSet, const char* what){
+    return false;
+}
+
 void g_setProperty(const char* what, const char* arg)
 {
 
