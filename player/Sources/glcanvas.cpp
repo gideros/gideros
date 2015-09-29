@@ -1,4 +1,7 @@
+#ifndef RASPBERRY_PI
 #include <GL/glew.h>
+#endif
+
 #include "glcanvas.h"
 #include "luaapplication.h"
 #include "libnetwork.h"
@@ -212,7 +215,9 @@ void GLCanvas::setupApplicationProperties() {
 }
 
 void GLCanvas::initializeGL() {
+#ifndef RASPBERRY_PI
 	glewInit();
+#endif
 
 	application_->initialize();
 	setupApplicationProperties();
@@ -250,9 +255,9 @@ void GLCanvas::paintGL() {
 
 	// if not running or if drawInfos enabled, and is not an exported app
 	if ((!running_ || drawInfos_) && !exportedApp_) {
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glScalef(1.f / scale_, 1.f / scale_, 1);
+//		glMatrixMode(GL_MODELVIEW);
+//		glLoadIdentity();
+//		glScalef(1.f / scale_, 1.f / scale_, 1);
 
 		int lWidth = application_->getLogicalWidth();
 		int lHeight = application_->getLogicalHeight();
@@ -536,7 +541,7 @@ void GLCanvas::play(QDir directory){
             #if defined(Q_OS_MAC)
                 docLocation = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
             #else
-                docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+                docLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
             #endif
             QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
             directory.mkpath(docLocation);
