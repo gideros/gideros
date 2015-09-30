@@ -16,9 +16,11 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 	ui->architecture->setCurrentIndex(properties_->architecture);
     ui->android_template->setCurrentIndex(properties_->android_template);
 	ui->assetsOnly->setChecked(properties_->assetsOnly);
+    ui->ios_bundle->setText(properties_->ios_bundle);
 	ui->packageName->setText(properties_->packageName);
     ui->osx_org->setText(properties->osx_org);
     ui->osx_domain->setText(properties->osx_domain);
+    ui->osx_bundle->setText(properties_->osx_bundle);
     ui->win_org->setText(properties->win_org);
     ui->win_domain->setText(properties->win_domain);
 
@@ -50,9 +52,14 @@ ExportProjectDialog::DeviceFamily ExportProjectDialog::deviceFamily() const
     return (DeviceFamily)ui->architecture->currentIndex();
 }
 
+QString ExportProjectDialog::ios_bundle() const
+{
+    return ui->ios_bundle->text();
+}
+
 QString ExportProjectDialog::packageName() const
 {
-	return ui->packageName->text();
+    return ui->packageName->text();
 }
 
 QString ExportProjectDialog::androidTemplate() const
@@ -68,6 +75,11 @@ QString ExportProjectDialog::osx_org() const
 QString ExportProjectDialog::osx_domain() const
 {
     return ui->osx_domain->text();
+}
+
+QString ExportProjectDialog::osx_bundle() const
+{
+    return ui->osx_bundle->text();
 }
 
 QString ExportProjectDialog::win_org() const
@@ -100,9 +112,11 @@ void ExportProjectDialog::onAccepted()
 	properties_->architecture = ui->architecture->currentIndex();
     properties_->android_template = ui->android_template->currentIndex();
 	properties_->assetsOnly = ui->assetsOnly->isChecked();
+    properties_->ios_bundle = ui->ios_bundle->text();
 	properties_->packageName = ui->packageName->text();
     properties_->osx_org = ui->osx_org->text();
     properties_->osx_domain = ui->osx_domain->text();
+    properties_->osx_bundle = ui->osx_bundle->text();
     properties_->win_org = ui->win_org->text();
     properties_->win_domain = ui->win_domain->text();
     properties_->encryptCode = ui->encryptCode->isChecked();

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>560</width>
-    <height>320</height>
+    <height>331</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -95,7 +95,7 @@ target platform to export the application source.</string>
       <string>Choose your platform here.</string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -103,14 +103,22 @@ target platform to export the application source.</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>* No extra settings for this platform.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Bundle prefix:   </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="ios_bundle">
+           <property name="text">
+            <string>com.yourcompany.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -151,23 +159,23 @@ Example: com.giderosmobile.timthetimber</string>
          </item>
          <item>
           <widget class="QComboBox" name="android_template">
-       <property name="minimumSize">
-        <size>
-         <width>90</width>
-         <height>0</height>
-        </size>
-       </property>
-       <item>
-        <property name="text">
-         <string>Eclipse</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Android Studio</string>
-        </property>
-       </item>
-      </widget>
+           <property name="minimumSize">
+            <size>
+             <width>90</width>
+             <height>0</height>
+            </size>
+           </property>
+           <item>
+            <property name="text">
+             <string>Eclipse</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Android Studio</string>
+            </property>
+           </item>
+          </widget>
          </item>
         </layout>
        </item>
@@ -278,7 +286,7 @@ Example: com.giderosmobile.timthetimber</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Organization:</string>
+            <string>Organization:    </string>
            </property>
           </widget>
          </item>
@@ -296,7 +304,7 @@ Example: com.giderosmobile.timthetimber</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Domain:       </string>
+            <string>Domain:           </string>
            </property>
           </widget>
          </item>
@@ -304,6 +312,24 @@ Example: com.giderosmobile.timthetimber</string>
           <widget class="QLineEdit" name="osx_domain">
            <property name="text">
             <string>giderosmobile.com</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Bundle prefix:   </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="osx_bundle">
+           <property name="text">
+            <string>com.yourcompany.</string>
            </property>
           </widget>
          </item>
@@ -392,7 +418,7 @@ Alpha version. Not for production apps.
 
 This is the same as Windows Desktop export except it produces a lightweight export without Qt libraries.
 
-The package is smaller and may run smoother. Normally the Win32 export uses Windows timer messages to process ENTER_FRAME events but if you launch from the command line using "win32 1" (60 fps) or "win32 2" (30 fps) it will use VSYNC instead. VSYNC might be smoother but is graphics card dependent.
+The package is smaller and may run smoother. Normally the Win32 export uses Windows timer messages to process ENTER_FRAME events but if you launch from the command line using &quot;win32 1&quot; (60 fps) or &quot;win32 2&quot; (30 fps) it will use VSYNC instead. VSYNC might be smoother but is graphics card dependent.
 
 * No extra settings for Win32.</string>
          </property>
@@ -416,7 +442,6 @@ The package is smaller and may run smoother. Normally the Win32 export uses Wind
        </item>
       </layout>
      </widget>
-
     </widget>
    </item>
    <item>

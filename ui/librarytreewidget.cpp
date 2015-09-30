@@ -355,9 +355,11 @@ QDomDocument LibraryTreeWidget::toXml() const
     properties.setAttribute("android_template", properties_.android_template);
 	properties.setAttribute("assetsOnly", properties_.assetsOnly ? 1 : 0);
 	properties.setAttribute("iosDevice", properties_.iosDevice);
+    properties.setAttribute("ios_bundle", properties_.ios_bundle);
 	properties.setAttribute("packageName", properties_.packageName);
 	properties.setAttribute("osx_org", properties_.osx_org);
 	properties.setAttribute("osx_domain", properties_.osx_domain);
+    properties.setAttribute("osx_bundle", properties_.osx_bundle);
     properties.setAttribute("win_org", properties_.win_org);
 	properties.setAttribute("win_domain", properties_.win_domain);
     properties.setAttribute("encryptCode", properties_.encryptCode);
@@ -512,12 +514,16 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 			properties_.assetsOnly = properties.attribute("assetsOnly").toInt() != 0;
 		if (!properties.attribute("iosDevice").isEmpty())
 			properties_.iosDevice = properties.attribute("iosDevice").toInt();
+        if (!properties.attribute("ios_bundle").isEmpty())
+            properties_.ios_bundle = properties.attribute("ios_bundle");
 		if (!properties.attribute("packageName").isEmpty())
 			properties_.packageName = properties.attribute("packageName");
         if (!properties.attribute("osx_org").isEmpty())
 			properties_.osx_org = properties.attribute("osx_org");
         if (!properties.attribute("osx_domain").isEmpty())
 			properties_.osx_domain = properties.attribute("osx_domain");
+        if (!properties.attribute("osx_bundle").isEmpty())
+            properties_.osx_bundle = properties.attribute("osx_bundle");
         if (!properties.attribute("win_org").isEmpty())
 			properties_.win_org = properties.attribute("win_org");
         if (!properties.attribute("win_domain").isEmpty())
