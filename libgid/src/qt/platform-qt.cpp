@@ -471,7 +471,11 @@ const char* g_getProperty(const char* what,const char* arg){
             }else if (argString == "temporary"){
                 pathGet = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
             }else if (argString == "data"){
+#ifdef RASPBERRY_PI
+                pathGet = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+#else
                 pathGet = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+#endif
             }else if (argString == "music"){
                 pathGet = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
             }else if (argString == "movies"){

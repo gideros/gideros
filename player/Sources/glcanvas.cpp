@@ -540,8 +540,10 @@ void GLCanvas::play(QDir directory){
             QString docLocation;
             #if defined(Q_OS_MAC)
                 docLocation = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-            #else
+            #elif defined(RASPBERRY_PI)
                 docLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+            #else
+                docLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
             #endif
             QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
             directory.mkpath(docLocation);
