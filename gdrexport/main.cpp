@@ -180,9 +180,14 @@ static bool readProjectFile(const QString& fileName,
 
 enum DeviceFamily
 {
-    e_None = -1,
-    e_iOS,
-    e_Android,
+  e_None,
+  e_iOS,
+  e_Android,
+  e_WindowsDesktop,
+  e_MacOSXDesktop,
+  e_WinRT,
+  e_GApp,
+  e_Win32
 };
 
 static void fileCopy(	const QString& srcName,
@@ -268,7 +273,6 @@ static bool shouldCopy(const QString &fileName, const QStringList &include, cons
     return result;
 }
 
-
 static void copyFolder(	const QDir& sourceDir,
                         const QDir& destDir,
                         const QList<QPair<QString, QString> >& renameList,
@@ -319,9 +323,75 @@ static void copyFolder(	const QDir& sourceDir,
 }
 
 
+
+#define BYTE_SWAP4(x) \
+    (((x & 0xFF000000) >> 24) | \
+     ((x & 0x00FF0000) >> 8)  | \
+     ((x & 0x0000FF00) << 8)  | \
+     ((x & 0x000000FF) << 24))
+
+#define BYTE_SWAP2(x) \
+    (((x & 0xFF00) >> 8) | \
+     ((x & 0x00FF) << 8))
+
+quint16 _htons(quint16 x) {
+    if (QSysInfo::ByteOrder == QSysInfo::BigEndian) {
+        return x;
+    }
+    else {
+        return BYTE_SWAP2(x);
+    }
+}
+
+quint16 _ntohs(quint16 x) {
+    if (QSysInfo::ByteOrder == QSysInfo::BigEndian) {
+        return x;
+    }
+    else {
+        return BYTE_SWAP2(x);
+    }
+}
+
+quint32 _htonl(quint32 x) {
+    if (QSysInfo::ByteOrder == QSysInfo::BigEndian) {
+        return x;
+    }
+    else {
+        return BYTE_SWAP4(x);
+    }
+}
+
+quint32 _ntohl(quint32 x) {
+    if (QSysInfo::ByteOrder == QSysInfo::BigEndian) {
+        return x;
+    }
+    else {
+        return BYTE_SWAP4(x);
+    }
+}
+
 void usage()
 {
-    fprintf(stderr, "Usage: gdrexport -platform <platform_name> -package <package_name> -encrypt -encrypt-code -encrypt-assets -assets-only <project_file> <output_dir>\n");
+    fprintf(stderr, "Usage: gdrexport -options <project_file> <output_dir>\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Options general: \n");
+    fprintf(stderr, "    -platform <platform_name>  #platform to export (ios, android, windows, macosx, winrt, win32, gapp)\n");
+    fprintf(stderr, "    -encrypt                   #encrypts code and assets\n");
+    fprintf(stderr, "    -encrypt-code              #encrypts code\n");
+    fprintf(stderr, "    -encrypt-assets            #encrypts assets\n");
+    fprintf(stderr, "    -assets-only               #exports only assets\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Options android: \n");
+    fprintf(stderr, "    -package <package_name>    #apk package name\n");
+    fprintf(stderr, "    -template <template>       #template to use (eclipse, androidstudio)\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Options windows: \n");
+    fprintf(stderr, "    -organization <name>       #organization name\n");
+    fprintf(stderr, "    -domain <domain_name>      #domain name\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Options macosx: \n");
+    fprintf(stderr, "    -organization <name>       #organization name\n");
+    fprintf(stderr, "    -domain <domain_name>      #domain name\n");
 }
 
 int main(int argc, char *argv[])
@@ -335,6 +405,8 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     QStringList arguments = a.arguments();
+
+    QHash<QString, QString> args;
 
     DeviceFamily deviceFamily = e_None;
     QString packageName;
@@ -363,6 +435,26 @@ int main(int argc, char *argv[])
             else if (platform.toLower() == "android")
             {
                 deviceFamily = e_Android;
+            }
+            else if (platform.toLower() == "windows")
+            {
+                deviceFamily = e_WindowsDesktop;
+            }
+            else if (platform.toLower() == "macosx")
+            {
+                deviceFamily = e_MacOSXDesktop;
+            }
+            else if (platform.toLower() == "winrt")
+            {
+                deviceFamily = e_WinRT;
+            }
+            else if (platform.toLower() == "win32")
+            {
+                deviceFamily = e_Win32;
+            }
+            else if (platform.toLower() == "gapp")
+            {
+                deviceFamily = e_GApp;
             }
             else
             {
@@ -406,9 +498,14 @@ int main(int argc, char *argv[])
         }
         else if (arguments[i].startsWith("-"))
         {
-            fprintf(stderr, "Unknown argument: %s\n\n", qPrintable(arguments[i]));
-            usage();
-            return 1;
+            if (i + 1 >= arguments.size())
+            {
+                fprintf(stderr, "Missing value fo argument: %s\n\n", arguments[i].toStdString().c_str());
+                usage();
+                return 1;
+            }
+            args.insert(arguments[i].remove(0,1), arguments[i + 1]);
+            i += 2;
         }
         else
         {
@@ -452,18 +549,13 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (deviceFamily == e_Android && packageName.isEmpty())
-    {
-        fprintf(stderr, "Missing argument: package_name\n\n");
-        usage();
-        return 1;
-    }
+    QDir outputDir(output);
 
     projectFileName = QDir::current().absoluteFilePath(projectFileName);
 
-    QDir dir = QCoreApplication::applicationDirPath();
-    dir.cdUp();
-    QDir::setCurrent(dir.absolutePath());
+    QDir cdir = QCoreApplication::applicationDirPath();
+    cdir.cdUp();
+    QDir::setCurrent(cdir.absolutePath());
 
     QString templatedir;
     QString templatename;
@@ -472,27 +564,55 @@ int main(int argc, char *argv[])
 
     switch (deviceFamily)
     {
-        case e_iOS:
-            templatedir = "Xcode4";
-            templatename = "iOS Template";
-            templatenamews = "iOS_Template";
-            underscore = true;
-            break;
+    case e_iOS:
+      templatedir = "Xcode4";
+      templatename = "iOS Template";
+      templatenamews = "iOS_Template";
+      underscore = true;
+      break;
 
-        case e_Android:
-            templatedir = "Eclipse";
-            templatename = "Android Template";
-            templatenamews = "AndroidTemplate";
-            underscore = false;
-            break;
+    case e_Android:
+      templatedir = "Eclipse";
+      if(args.contains("template") && args["template"] == "androidstudio")
+          templatedir = "AndroidStudio";
+      templatename = "Android Template";
+      templatenamews = "AndroidTemplate";
+      underscore = false;
+      break;
+
+    case e_WinRT:
+      templatedir = "VisualStudio";
+      templatename = "WinRT Template";
+      templatenamews = "WinRTTemplate";
+      underscore = true;
+      break;
+
+    case e_Win32:
+      templatedir = "win32";
+      templatename = "WindowsDesktopTemplate";
+      templatenamews = "WindowsDesktopTemplate";
+      underscore = true;
+      break;
+
+    case e_WindowsDesktop:
+        templatedir = "Qt";
+        templatename = "WindowsDesktopTemplate";
+        templatenamews = "WindowsDesktopTemplate";
+        underscore = false;
+        break;
+
+    case e_MacOSXDesktop:
+        templatedir = "Qt";
+        templatename = "MacOSXDesktopTemplate";
+        templatenamews = "MacOSXDesktopTemplate";
+        underscore = false;
+        break;
+    case e_GApp:
+        underscore = false;
     }
 
-    QDir outputDir(output);
-
     const QString &projectFileName_ = projectFileName;
-
     QString base = QFileInfo(projectFileName_).baseName();
-
 
     QString basews;
     if (underscore)
@@ -552,7 +672,7 @@ int main(int argc, char *argv[])
         {
             qsrand(time(NULL));
             for (int i = 0; i < randomData.size(); ++i)
-            	randomData[i] = qrand() % 256;
+                randomData[i] = qrand() % 256;
             settings.setValue("randomData", randomData);
             settings.sync();
         }
@@ -570,7 +690,6 @@ int main(int argc, char *argv[])
         assetsPrefixRnd=randomData.mid(32,32);
     }
 
-
     ProjectProperties properties;
     std::vector<std::pair<QString, QString> > fileQueue;
     std::vector<QString> folderList;
@@ -582,7 +701,7 @@ int main(int argc, char *argv[])
     }
 
     // copy template
-    if (true)
+    if (templatedir.length()>0)
     {
         QDir dir = QDir::currentPath();
         dir.cd("Templates");
@@ -610,15 +729,41 @@ int main(int argc, char *argv[])
         replaceList1 << qMakePair(templatename.toUtf8(), base.toUtf8());
         replaceList1 << qMakePair(templatenamews.toLatin1(), basews.toLatin1());
         if (deviceFamily == e_Android){
-            replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), packageName.toUtf8());
-            if(properties.orientation == eLandscapeLeft || properties.orientation == eLandscapeRight){
-                replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), QString("android:screenOrientation=\"landscape\"").toUtf8());
+            replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), args["package"].toUtf8());
+            QString orientation = "android:screenOrientation=\"portrait\"";
+            switch(properties.orientation){
+                case 0:
+                    if(properties.autorotation > 0)
+                        orientation = "android:screenOrientation=\"sensorPortrait\"";
+                    else
+                        orientation = "android:screenOrientation=\"portrait\"";
+                    break;
+                case 1:
+                    if(properties.autorotation > 0)
+                        orientation = "android:screenOrientation=\"sensorLandscape\"";
+                    else
+                        orientation = "android:screenOrientation=\"landscape\"";
+                    break;
+                case 2:
+                    if(properties.autorotation > 0)
+                        orientation = "android:screenOrientation=\"sensorPortrait\"";
+                    else
+                        orientation = "android:screenOrientation=\"reversePortrait\"";
+                    break;
+                case 3:
+                    if(properties.autorotation > 0)
+                        orientation = "android:screenOrientation=\"sensorLandscape\"";
+                    else
+                        orientation = "android:screenOrientation=\"reverseLandscape\"";
+                    break;
             }
+
+            replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
         }
         replaceList << replaceList1;
 
             QStringList wildcards2;
-            wildcards2 << "libgideros.so" << "libgideros.a";
+            wildcards2 << "libgideros.so" << "libgideros.a" << "gid.dll" << "libgid.1.dylib" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib";
             wildcards << wildcards2;
 
             QList<QPair<QByteArray, QByteArray> > replaceList2;
@@ -628,7 +773,7 @@ int main(int argc, char *argv[])
             replaceList << replaceList2;
 
         if (assetsOnly)
-            copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar", QStringList());
+            copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "libgideros.so" << "libgideros.a" << "gideros.jar" << "gideros.dll" << "libgideros.dylib" << "libgideros.1.dylib" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib" << "WindowsDesktopTemplate.exe" << "MacOSXDesktopTemplate", QStringList());
         else
             copyFolder(dir, outputDir, renameList, wildcards, replaceList, QStringList() << "*", QStringList());
     }
@@ -640,193 +785,421 @@ int main(int argc, char *argv[])
     }
     else if (deviceFamily == e_Android)
     {
-        outputDir.mkdir("assets");
-        outputDir.cd("assets");
+        if(args["template"] == "androidstudio"){
+            outputDir.cd("app");
+            outputDir.cd("src");
+            outputDir.cd("main");
+            outputDir.mkdir("assets");
+            outputDir.cd("assets");
+        }
+        else{
+            outputDir.mkdir("assets");
+            outputDir.cd("assets");
+        }
     }
-    outputDir.mkdir("assets");
-    outputDir.cd("assets");
-
-
-    for (std::size_t i = 0; i < folderList.size(); ++i)
-        outputDir.mkdir(folderList[i]);
-
-    std::vector<std::pair<QString, bool> > topologicalSort = dependencyGraph.topologicalSort();
-    for (std::size_t i = 0; i < topologicalSort.size(); ++i)
+    else if(deviceFamily == e_MacOSXDesktop)
     {
-        int index = -1;
-        for (std::size_t j = 0; j < fileQueue.size(); ++j)
-        {
-            if (fileQueue[j].second == topologicalSort[i].first)
+        outputDir.cd(base + ".app");
+        outputDir.cd("Contents");
+    }
+    else if (deviceFamily == e_WinRT)
+    {
+      outputDir.cd("giderosgame");
+      outputDir.cd("giderosgame.Windows");
+      outputDir.cd("Assets");
+    }
+
+    if (deviceFamily != e_WinRT){
+      outputDir.mkdir("assets");
+      outputDir.cd("assets");
+    }
+
+        if(deviceFamily == e_MacOSXDesktop || deviceFamily == e_WindowsDesktop){
+            QString org;
+            QString domain;
+            if(deviceFamily == e_MacOSXDesktop){
+                org = args["organization"];
+                domain = args["domain"];
+            }
+            else if(deviceFamily == e_WindowsDesktop){
+                org = args["organization"];
+                domain = args["domain"];
+            }
+            QString filename = "data.bin";
+            QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+            if (file.open(QIODevice::WriteOnly))
             {
-                index = j;
-                break;
+                ByteBuffer buffer;
+
+                buffer << org.toStdString().c_str();
+                buffer << domain.toStdString().c_str();
+                buffer << base.toStdString().c_str();
+
+                file.write(buffer.data(), buffer.size());
+            }
+            outputDir.mkdir("resource");
+            outputDir.cd("resource");
+        }
+
+
+        for (std::size_t i = 0; i < folderList.size(); ++i)
+                outputDir.mkdir(folderList[i]);
+
+            std::vector<std::pair<QString, bool> > topologicalSort = dependencyGraph.topologicalSort();
+        for (std::size_t i = 0; i < topologicalSort.size(); ++i)
+        {
+            int index = -1;
+            for (std::size_t j = 0; j < fileQueue.size(); ++j)
+            {
+                if (fileQueue[j].second == topologicalSort[i].first)
+                {
+                    index = j;
+                    break;
+                }
+            }
+
+            if (index != -1)
+            {
+                std::pair<QString, QString> item = fileQueue[index];
+                fileQueue.erase(fileQueue.begin() + index);
+                fileQueue.push_back(item);
             }
         }
 
-        if (index != -1)
-        {
-            std::pair<QString, QString> item = fileQueue[index];
-            fileQueue.erase(fileQueue.begin() + index);
-            fileQueue.push_back(item);
-        }
-    }
+        int npass,ipass;
 
-    QStringList luafiles;
-    QStringList luafiles_abs;
-    QStringList allfiles;
-    QStringList allfiles_abs;
-    QStringList allluafiles;
-    QStringList allluafiles_abs;
+        if (deviceFamily == e_WinRT)
+          npass=2;
+        else
+          npass=1;
 
-    QSet<QString> jetset;
-    jetset << "mp3" << "png" << "jpg" << "jpeg" << "wav";
+        QStringList luafiles;
+        QStringList luafiles_abs;
+        QStringList allfiles;
+        QStringList allfiles_abs;
+        QStringList allluafiles;
+        QStringList allluafiles_abs;
 
-    QDir path(QFileInfo(projectFileName_).path());
-
-    for (std::size_t i = 0; i < fileQueue.size(); ++i)
+    for (ipass=1;ipass<=npass;ipass++)
     {
-        const QString& s1 = fileQueue[i].first;
-        const QString& s2 = fileQueue[i].second;
 
-        QString src = QDir::cleanPath(path.absoluteFilePath(s2));
-        QString dst = QDir::cleanPath(outputDir.absoluteFilePath(s1));
+      luafiles.clear();
+      luafiles_abs.clear();
+      allfiles.clear();
+      allfiles_abs.clear();
+      allluafiles.clear();
+      allluafiles_abs.clear();
 
-        if (deviceFamily == e_Android)
+      if (ipass==2){
+        outputDir.cdUp();
+        outputDir.cdUp();
+        outputDir.cd("giderosgame.WindowsPhone");
+        outputDir.cd("Assets");
+      }
+
+        QSet<QString> jetset;
+        jetset << "mp3" << "png" << "jpg" << "jpeg" << "wav";
+
+        QDir path(QFileInfo(projectFileName_).path());
+
+        for (std::size_t i = 0; i < fileQueue.size(); ++i)
         {
-            QString suffix = QFileInfo(dst).suffix().toLower();
-            if (!jetset.contains(suffix))
-                dst += ".jet";
-        }
+            const QString& s1 = fileQueue[i].first;
+            const QString& s2 = fileQueue[i].second;
 
-        allfiles.push_back(s1);
-        allfiles_abs.push_back(dst);
+            QString src = QDir::cleanPath(path.absoluteFilePath(s2));
+            QString dst = QDir::cleanPath(outputDir.absoluteFilePath(s1));
 
-        if (QFileInfo(src).suffix().toLower() == "lua")
-        {
-            allluafiles.push_back(s1);
-            allluafiles_abs.push_back(dst);
-
-            if (std::find(topologicalSort.begin(), topologicalSort.end(), std::make_pair(s2, true)) == topologicalSort.end())
+            if (deviceFamily == e_Android)
             {
-                luafiles.push_back(s1);
-                luafiles_abs.push_back(dst);
-            }
-        }
-
-        QFile::remove(dst);
-        QFile::copy(src, dst);
-    }
-
-	// compile lua files (with luac)
-	// disable compile with luac for iOS because 64 bit version
-	// http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
-	if (true && deviceFamily == e_Android)
-    {
-        for (int i = 0; i < allluafiles_abs.size(); ++i)
-        {
-            QString file = "\"" + allluafiles_abs[i] + "\"";
-            QProcess::execute("Tools/luac -o " + file + " " + file);
-        }
-    }
-
-    // encrypt lua, png, jpg, jpeg and wav files
-    if (true)
-    {
-        for (int i = 0; i < allfiles_abs.size(); ++i)
-        {
-            QString ext = QFileInfo(allfiles[i]).suffix().toLower();
-            if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg" && ext != "wav")
-                continue;
-
-            QByteArray encryptionKey = (ext == "lua") ? codeKey : assetsKey;
-
-            QString filename = allfiles_abs[i];
-
-            QFile fis(filename);
-            if (!fis.open(QIODevice::ReadOnly))
-                continue;
-            QByteArray data = fis.readAll();
-            fis.close();
-
-            int ks=encryptionKey.size();
-            for (int j = 32; j < data.size(); ++j)
-                data[j] = data[j] ^ encryptionKey[((j*13)+((j/ks)*31)) % ks];
-
-            QFile fos(filename);
-            if (!fos.open(QIODevice::WriteOnly))
-                continue;
-            fos.write(data);
-            fos.close();
-        }
-    }
-
-    // write luafiles.txt
-    {
-        QString filename = "luafiles.txt";
-        if (deviceFamily == e_Android)
-            filename += ".jet";
-        QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-            QTextStream out(&file);
-
-            for (int i = 0; i < luafiles.size(); ++i)
-                out << luafiles[i] << "\n";
-        }
-    }
-
-    // write allfiles.txt
-    if (deviceFamily == e_Android)
-    {
-        QFile file(QDir::cleanPath(outputDir.absoluteFilePath("allfiles.txt")));
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-            QTextStream out(&file);
-
-            for (int i = 0; i < allfiles.size(); ++i)
-            {
-                QString file = allfiles[i];
-                QString suffix = QFileInfo(file).suffix().toLower();
+                QString suffix = QFileInfo(dst).suffix().toLower();
                 if (!jetset.contains(suffix))
-                    file += "*";
-                out << file << "\n";
+                    dst += ".jet";
+            }
+
+            allfiles.push_back(s1);
+            allfiles_abs.push_back(dst);
+
+            if (QFileInfo(src).suffix().toLower() == "lua")
+            {
+                allluafiles.push_back(s1);
+                allluafiles_abs.push_back(dst);
+
+                if (std::find(topologicalSort.begin(), topologicalSort.end(), std::make_pair(s2, true)) == topologicalSort.end())
+                {
+                    luafiles.push_back(s1);
+                    luafiles_abs.push_back(dst);
+                }
+            }
+
+            QFile::remove(dst);
+            QFile::copy(src, dst);
+        }
+
+    #if 0
+        // compile lua files
+        if (false)
+        {
+            compileThread_ = new CompileThread(luafiles_abs, false, "", QString(), this);
+            compileThread_->start();
+            compileThread_->wait();
+            delete compileThread_;
+        }
+    #endif
+
+        // compile lua files (with luac)
+        // disable compile with luac for iOS because 64 bit version
+        // http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
+        if (deviceFamily != e_iOS && deviceFamily != e_MacOSXDesktop)
+        {
+            for (int i = 0; i < allluafiles_abs.size(); ++i)
+            {
+                QString file = "\"" + allluafiles_abs[i] + "\"";
+                QProcess::execute("Tools/luac -o " + file + " " + file);
             }
         }
-    }
 
-    // write properties.bin
-    {
-        QString filename = "properties.bin";
+        // encrypt lua, png, jpg, jpeg and wav files
+        if (true)
+        {
+            for (int i = 0; i < allfiles_abs.size(); ++i)
+            {
+                QString ext = QFileInfo(allfiles[i]).suffix().toLower();
+                if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg" && ext != "wav")
+                    continue;
+
+                QByteArray encryptionKey = (ext == "lua") ? codeKey : assetsKey;
+
+                QString filename = allfiles_abs[i];
+
+                QFile fis(filename);
+                if (!fis.open(QIODevice::ReadOnly))
+                    continue;
+                QByteArray data = fis.readAll();
+                fis.close();
+
+                int ks=encryptionKey.size();
+                for (int j = 32; j < data.size(); ++j)
+                    data[j] = data[j] ^ encryptionKey[((j*13)+((j/ks)*31)) % ks];
+
+                QFile fos(filename);
+                if (!fos.open(QIODevice::WriteOnly))
+                    continue;
+                fos.write(data);
+                fos.close();
+            }
+        }
+
+        // compress lua files
+        if (false)
+        {
+            for (int i = 0; i < luafiles_abs.size(); ++i)
+            {
+                QString file = "\"" + luafiles_abs[i] + "\"";
+                QProcess::execute("Tools/lua Tools/LuaSrcDiet.lua --quiet " + file + " -o " + file);
+            }
+        }
+
+    // ----------------------------------------------------------------------
+    // For WinRT, write all asset filenames into giderosgame.Windows.vcxproj
+    // ----------------------------------------------------------------------
+
+        if (deviceFamily == e_WinRT){
+
+          outputDir.cdUp();
+
+          QByteArray replacement;
+          for (int i = 0; i < allfiles.size(); i++){
+            QString assetfile=allfiles[i];
+            QString suffix = QFileInfo(assetfile).suffix().toLower();
+            //		    outputWidget_->insertPlainText(assetfile);
+            //		    outputWidget_->insertPlainText(suffix);
+
+            QString type;
+            if (suffix=="jpg" || suffix=="jpeg" || suffix=="png")
+              type="Image";
+            else if (suffix=="wav" || suffix=="mp3")
+              type="Media";
+            else if (suffix=="txt")
+              type="Text";
+            else if (suffix=="ttf")
+              type="Font";
+            else
+              type="None";
+
+            if (type=="None")
+              replacement += "<None Include=\"Assets\\"+assetfile+"\">\r\n<DeploymentContent>true</DeploymentContent>\r\n</None>\r\n";
+            else
+              replacement += "<"+type+" Include=\"Assets\\"+assetfile+"\" />\r\n";
+          }
+
+          QString projfile;
+
+          if (ipass==1)
+            projfile="giderosgame.Windows.vcxproj";
+          else
+            projfile="giderosgame.WindowsPhone.vcxproj";
+
+          QByteArray data;
+          QFile in(outputDir.absoluteFilePath(projfile));
+          in.open(QFile::ReadOnly);
+
+          data = in.readAll();
+          in.close();
+
+          data.replace("INSERT_ASSETS_HERE",replacement);
+
+          QFile out(outputDir.absoluteFilePath(projfile));
+          out.open(QFile::WriteOnly);
+
+          out.write(data);
+          out.close();
+
+          outputDir.cd("Assets");
+        }
+
+    // ----------------------------------------------------------------------
+
+
+        if(deviceFamily == e_MacOSXDesktop || deviceFamily == e_WindowsDesktop)
+        {
+            outputDir.cd("..");
+        }
+
+        // write luafiles.txt
+        {
+            QString filename = "luafiles.txt";
+            if (deviceFamily == e_Android)
+                filename += ".jet";
+            QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                QTextStream out(&file);
+
+                for (int i = 0; i < luafiles.size(); ++i)
+                    out << luafiles[i] << "\n";
+            }
+            if (deviceFamily == e_GApp)
+            {
+                allfiles.push_back(filename);
+                allfiles_abs.push_back(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+            }
+        }
+
+        // write allfiles.txt
         if (deviceFamily == e_Android)
-            filename += ".jet";
-        QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+        {
+            QFile file(QDir::cleanPath(outputDir.absoluteFilePath("allfiles.txt")));
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                QTextStream out(&file);
+
+                for (int i = 0; i < allfiles.size(); ++i)
+                {
+                    QString file = allfiles[i];
+                    QString suffix = QFileInfo(file).suffix().toLower();
+                    if (!jetset.contains(suffix))
+                        file += "*";
+                    out << file << "\n";
+                }
+            }
+        }
+
+        // write properties.bin
+        {
+            QString filename = "properties.bin";
+            if (deviceFamily == e_Android)
+                filename += ".jet";
+            QFile file(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+            if (file.open(QIODevice::WriteOnly))
+            {
+
+                ByteBuffer buffer;
+
+                buffer << properties.scaleMode;
+                buffer << properties.logicalWidth;
+                buffer << properties.logicalHeight;
+
+                buffer << (int)properties.imageScales.size();
+                for (size_t i = 0; i < properties.imageScales.size(); ++i)
+                {
+                    buffer << properties.imageScales[i].first.toUtf8().constData();
+                    buffer << (float)properties.imageScales[i].second;
+                }
+
+                buffer << properties.orientation;
+                buffer << properties.fps;
+
+                buffer << properties.retinaDisplay;
+                buffer << properties.autorotation;
+
+                buffer << (properties.mouseToTouch ? 1 : 0);
+                buffer << (properties.touchToMouse ? 1 : 0);
+                buffer << properties.mouseTouchOrder;
+
+                buffer << properties.windowWidth;
+                buffer << properties.windowHeight;
+
+                file.write(buffer.data(), buffer.size());
+            }
+            if (deviceFamily == e_GApp)
+            {
+                allfiles.push_back(filename);
+                allfiles_abs.push_back(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
+            }
+        }
+
+    }  // end of ipass loop
+
+    if (deviceFamily == e_GApp)
+    {
+        outputDir.cdUp();
+        outputDir.cdUp();
+
+        QFile file(QDir::cleanPath(outputDir.absoluteFilePath(base+".GApp")));
         if (file.open(QIODevice::WriteOnly))
         {
+
             ByteBuffer buffer;
-
-            buffer << properties.scaleMode;
-            buffer << properties.logicalWidth;
-            buffer << properties.logicalHeight;
-
-            buffer << (int)properties.imageScales.size();
-            for (size_t i = 0; i < properties.imageScales.size(); ++i)
+            quint32 offset=0;
+            quint32 cbuf;
+            char cpbuf[4096];
+            for (int k=0;k<allfiles.size();k++)
             {
-                buffer << properties.imageScales[i].first.toUtf8().constData();
-                buffer << (float)properties.imageScales[i].second;
+                buffer.append(allfiles[k].toStdString());
+                cbuf=_htonl(offset);
+                buffer.append((unsigned char *) &cbuf,4);
+                QFile src(allfiles_abs[k]);
+                src.open(QIODevice::ReadOnly);
+                int size=0;
+                while (true)
+                {
+                    int rd=src.read(cpbuf,sizeof(cpbuf));
+                    if (rd<=0) break;
+                    size+=rd;
+                    file.write(cpbuf,rd);
+                    if (rd<sizeof(cpbuf))
+                        break;
+                }
+                src.close();
+                cbuf=_htonl(size);
+                buffer.append((unsigned char *) &cbuf,4);
+                offset+=size;
             }
-
-            buffer << properties.orientation;
-            buffer << properties.fps;
-
-            buffer << properties.retinaDisplay;
-            buffer << properties.autorotation;
-
-            buffer << (properties.mouseToTouch ? 1 : 0);
-            buffer << (properties.touchToMouse ? 1 : 0);
-            buffer << properties.mouseTouchOrder;
-
+            buffer.append(""); //End of file list marker, i.e. empty filename
+            if (offset&7)
+                offset+=file.write(cpbuf,8-(offset&7)); // Align structure to 8 byte boundary
+            cbuf=_htonl(offset); //File list offset from beginning of package
+            buffer.append((unsigned char *) &cbuf,4);
+            cbuf=_htonl(0); //Version
+            buffer.append((unsigned char *) &cbuf,4);
+            buffer.append("GiDeRoS"); //Package marker
             file.write(buffer.data(), buffer.size());
         }
+        file.close();
+        outputDir.cd(base);
+        outputDir.removeRecursively();
+        outputDir.cdUp();
     }
 
     return 0;
