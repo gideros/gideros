@@ -2327,6 +2327,7 @@ void MainWindow::exportProject()
         {
         case ExportProjectDialog::e_iOS:
             arguments << "-platform" << "ios";
+            arguments << "-bundle" << dialog.ios_bundle();
             templatedir = "Xcode4";
             templatename = "iOS Template";
             templatenamews = "iOS_Template";
@@ -2377,6 +2378,7 @@ void MainWindow::exportProject()
             arguments << "-platform" << "macosx";
             arguments << "-organization" << dialog.osx_org();
             arguments << "-domain" << dialog.osx_domain();
+            arguments << "-bundle" << dialog.osx_bundle();
             break;
         case ExportProjectDialog::e_GApp:
             arguments << "-platform" << "gapp";

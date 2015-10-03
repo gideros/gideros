@@ -28,10 +28,12 @@ public:
     ~ExportProjectDialog();
 
 	DeviceFamily deviceFamily() const;
+    QString ios_bundle() const;
 	QString packageName() const;
     QString androidTemplate() const;
     QString osx_org() const;
     QString osx_domain() const;
+    QString osx_bundle() const;
     QString win_org() const;
     QString win_domain() const;
     bool assetsOnly() const;
