@@ -1259,12 +1259,12 @@ int main(int argc, char *argv[])
         QStringList frameworks = outputDir.entryList(QStringList() << "*.framework");
         for(int i = 0; i < frameworks.size(); ++i){
             QString filename = outputDir.absoluteFilePath(frameworks[i]);
-            QProcess::execute("codesign -f -s \'3rd Party Mac Developer Application: "+args["organization"]+"\' "+filename);
+            QProcess::execute("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
         }
         QStringList dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            QProcess::execute("codesign -f -s \'3rd Party Mac Developer Application: "+args["organization"]+"\' "+filename);
+            QProcess::execute("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
         }
 
         outputDir.cdUp();
@@ -1272,14 +1272,14 @@ int main(int argc, char *argv[])
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            QProcess::execute("codesign -f -s \'3rd Party Mac Developer Application: "+args["organization"]+"\' "+filename);
+            QProcess::execute("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
         }
 
         outputDir.cd("bearer");
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            QProcess::execute("codesign -f -s \'3rd Party Mac Developer Application: "+args["organization"]+"\' "+filename);
+            QProcess::execute("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
         }
 
         outputDir.cdUp();
@@ -1287,7 +1287,7 @@ int main(int argc, char *argv[])
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            QProcess::execute("codesign -f -s \'3rd Party Mac Developer Application: "+args["organization"]+"\' "+filename);
+            QProcess::execute("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
         }
 
         outputDir.cdUp();
@@ -1295,7 +1295,7 @@ int main(int argc, char *argv[])
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            QProcess::execute("codesign -f -s \'3rd Party Mac Developer Application: "+args["organization"]+"\' "+filename);
+            QProcess::execute("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
         }
 
         outputDir.cdUp();
@@ -1303,16 +1303,16 @@ int main(int argc, char *argv[])
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            QProcess::execute("codesign -f -s \'3rd Party Mac Developer Application: "+args["organization"]+"\' "+filename);
+            QProcess::execute("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
         }
 
         outputDir.cdUp();
         outputDir.cdUp();
         outputDir.cdUp();
         outputDir.cdUp();
-        QProcess::execute("codesign -f -s \'3rd Party Mac Developer Installer: "+args["organization"]+"\' "+outputDir.absoluteFilePath(base + ".app"));
+        QProcess::execute("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+outputDir.absoluteFilePath(base + ".app")+"\"");
 
-        QProcess::execute("productbuild --component "+outputDir.absoluteFilePath(base + ".app")+" /Applications --sign \'3rd Party Mac Developer Application: "+args["organization"]+"\' "+base+".pkg");
+        QProcess::execute("productbuild --component \""+outputDir.absoluteFilePath(base + ".app")+"\" /Applications --sign \"3rd Party Mac Developer Installer: "+args["organization"]+"\" \""+outputDir.absoluteFilePath(base + ".pkg")+"\"");
     }
 #endif
     return 0;
