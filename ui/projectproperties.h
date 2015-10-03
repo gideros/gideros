@@ -38,6 +38,7 @@ struct ProjectProperties
 		assetsOnly = false;
 		iosDevice = 0;
         version = "1.0";
+        version_code = 1;
         ios_bundle = "com.yourdomain.";
 		packageName = "com.yourdomain.yourapp";
         osx_org = "GiderosMobile";
@@ -73,6 +74,7 @@ struct ProjectProperties
     int android_template;
 	bool assetsOnly;
 	int iosDevice;
+    int version_code;
     QString version;
     QString ios_bundle;
 	QString packageName;

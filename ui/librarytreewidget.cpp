@@ -340,6 +340,8 @@ QDomDocument LibraryTreeWidget::toXml() const
 	properties.appendChild(imageScales);
 	properties.setAttribute("orientation", properties_.orientation);
 	properties.setAttribute("fps", properties_.fps);
+    properties.setAttribute("version", properties_.version);
+    properties.setAttribute("version_code", properties_.version_code);
 
 	// iOS options
     properties.setAttribute("retinaDisplay", properties_.retinaDisplay);
@@ -496,6 +498,10 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
             properties_.retinaDisplay = properties.attribute("retinaDisplay").toInt();
 		if (!properties.attribute("autorotation").isEmpty())
 			properties_.autorotation = properties.attribute("autorotation").toInt();
+        if (!properties.attribute("version").isEmpty())
+            properties_.version = properties.attribute("version");
+        if (!properties.attribute("version_code").isEmpty())
+            properties_.version_code = properties.attribute("version_code").toInt();
 
         // input options
         if (!properties.attribute("mouseToTouch").isEmpty())
