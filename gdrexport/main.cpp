@@ -1310,7 +1310,7 @@ int main(int argc, char *argv[])
         outputDir.cdUp();
         outputDir.cdUp();
         outputDir.cdUp();
-        QProcess::execute("codesign -f -s \'3rd Party Mac Developer Application: "+args["organization"]+"\' "+outputDir.absoluteFilePath(base + ".app"));
+        QProcess::execute("codesign -f -s \'3rd Party Mac Developer Installer: "+args["organization"]+"\' "+outputDir.absoluteFilePath(base + ".app"));
 
         QProcess::execute("productbuild --component "+outputDir.absoluteFilePath(base + ".app")+" /Applications --sign \'3rd Party Mac Developer Application: "+args["organization"]+"\' "+base+".pkg");
     }
