@@ -38,6 +38,9 @@ cp $QT_WIN/bin/Qt5OpenGL.dll $BUILD_DIR/win
 cp $QT_WIN/bin/Qt5PrintSupport.dll $BUILD_DIR/win
 cp $QT_WIN/bin/Qt5Widgets.dll $BUILD_DIR/win
 cp $QT_WIN/bin/Qt5Xml.dll $BUILD_DIR/win
+cp $QT_WIN/bin/Qt5Multimedia.dll $BUILD_DIR/win
+cp $QT_WIN/bin/Qt5MultimediaQuick_p.dll $BUILD_DIR/win
+cp $QT_WIN/bin/Qt5MultimediaWidgets.dll $BUILD_DIR/win
 
 mkdir $BUILD_DIR/win/imageformats
 cp $QT_WIN/plugins/imageformats/qjpeg.dll $BUILD_DIR/win/imageformats

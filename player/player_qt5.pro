@@ -1,4 +1,4 @@
-QT += core gui opengl network
+QT += core gui opengl network multimedia
 
 INCLUDEPATH += \
     "../libgid/external/zlib-1.2.8"\

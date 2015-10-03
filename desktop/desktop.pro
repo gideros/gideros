@@ -1,4 +1,4 @@
-QT += core gui opengl network
+QT += core gui opengl network multimedia
 
 win32{
     RC_FILE = other_files/desktop.rc
