@@ -36,6 +36,8 @@ public:
     QString osx_bundle() const;
     QString win_org() const;
     QString win_domain() const;
+    QString winrt_org() const;
+    QString winrt_package() const;
     bool assetsOnly() const;
     bool encryptCode() const;
     bool encryptAssets() const;

@@ -2353,6 +2353,8 @@ void MainWindow::exportProject()
             templatename = "WinRT Template";
             templatenamews = "WinRTTemplate";
             arguments << "-platform" << "winrt";
+            arguments << "-organization" << dialog.winrt_org();
+            arguments << "-package" << dialog.winrt_package();
             break;
 
         case ExportProjectDialog::e_Win32:

@@ -361,13 +361,48 @@ Example: com.giderosmobile.timthetimber</string>
           <string>
 Use this to create Windows Phone and Windows Store apps (&quot;Metro Style&quot; apps)
 A universal solution is created containing a Windows Phone and Windows Store project.
-
-* No extra settings for WinRT.</string>
+</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
          </property>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Package Name:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="winrt_package">
+           <property name="text">
+            <string>com.yourdomain.yourapp</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Organization:   </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="winrt_org">
+           <property name="text">
+            <string>GiderosMobile</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <spacer name="verticalSpacer1">

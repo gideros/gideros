@@ -23,6 +23,8 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->osx_bundle->setText(properties_->osx_bundle);
     ui->win_org->setText(properties->win_org);
     ui->win_domain->setText(properties->win_domain);
+    ui->winrt_org->setText(properties->winrt_org);
+    ui->winrt_package->setText(properties->winrt_package);
 
     if (licensed)
     {
@@ -92,6 +94,16 @@ QString ExportProjectDialog::win_domain() const
     return ui->win_domain->text();
 }
 
+QString ExportProjectDialog::winrt_org() const
+{
+    return ui->winrt_org->text();
+}
+
+QString ExportProjectDialog::winrt_package() const
+{
+    return ui->winrt_package->text();
+}
+
 bool ExportProjectDialog::assetsOnly() const
 {
 	return ui->assetsOnly->isChecked();
@@ -119,6 +131,8 @@ void ExportProjectDialog::onAccepted()
     properties_->osx_bundle = ui->osx_bundle->text();
     properties_->win_org = ui->win_org->text();
     properties_->win_domain = ui->win_domain->text();
+    properties_->winrt_org = ui->winrt_org->text();
+    properties_->winrt_package = ui->winrt_package->text();
     properties_->encryptCode = ui->encryptCode->isChecked();
     properties_->encryptAssets = ui->encryptAssets->isChecked();
 }

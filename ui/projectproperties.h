@@ -46,6 +46,8 @@ struct ProjectProperties
         osx_bundle = "com.yourdomain.";
         win_org = "GiderosMobile";
         win_domain = "giderosmobile.com";
+        winrt_org = "GiderosMobile";
+        winrt_package = "com.yourdomain.yourapp";
         encryptCode = false;
         encryptAssets = false;
     }
@@ -83,6 +85,8 @@ struct ProjectProperties
     QString osx_bundle;
     QString win_org;
     QString win_domain;
+    QString winrt_org;
+    QString winrt_package;
     bool encryptCode;
     bool encryptAssets;
 };

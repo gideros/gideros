@@ -73,6 +73,10 @@ static bool readProjectFile(const QString& fileName,
             properties_.retinaDisplay = properties.attribute("retinaDisplay").toInt();
         if (!properties.attribute("autorotation").isEmpty())
             properties_.autorotation = properties.attribute("autorotation").toInt();
+        if (!properties.attribute("version").isEmpty())
+            properties_.version = properties.attribute("version");
+        if (!properties.attribute("version_code").isEmpty())
+            properties_.version_code = properties.attribute("version_code").toInt();
 
         // input options
         if (!properties.attribute("mouseToTouch").isEmpty())
@@ -381,6 +385,9 @@ void usage()
     fprintf(stderr, "    -encrypt-assets            #encrypts assets\n");
     fprintf(stderr, "    -assets-only               #exports only assets\n");
     fprintf(stderr, "\n");
+    fprintf(stderr, "Options ios: \n");
+    fprintf(stderr, "    -bundle <bundle_id>        #bundle id\n");
+    fprintf(stderr, "\n");
     fprintf(stderr, "Options android: \n");
     fprintf(stderr, "    -package <package_name>    #apk package name\n");
     fprintf(stderr, "    -template <template>       #template to use (eclipse, androidstudio)\n");
@@ -392,6 +399,11 @@ void usage()
     fprintf(stderr, "Options macosx: \n");
     fprintf(stderr, "    -organization <name>       #organization name\n");
     fprintf(stderr, "    -domain <domain_name>      #domain name\n");
+    fprintf(stderr, "    -bundle <bundle_id>        #bundle id\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Options winrt: \n");
+    fprintf(stderr, "    -organization <name>       #organization name\n");
+    fprintf(stderr, "    -package <package_name>    #package name\n");
 }
 
 int main(int argc, char *argv[])
@@ -409,7 +421,6 @@ int main(int argc, char *argv[])
     QHash<QString, QString> args;
 
     DeviceFamily deviceFamily = e_None;
-    QString packageName;
     QString projectFileName;
     QString output;
     bool encryptCode = false;
@@ -484,17 +495,6 @@ int main(int argc, char *argv[])
         {
             assetsOnly = true;
             i++;
-        }
-        else if (arguments[i] == "-package")
-        {
-            if (i + 1 >= arguments.size())
-            {
-                fprintf(stderr, "Missing argument: package_name\n\n");
-                usage();
-                return 1;
-            }
-            packageName = arguments[i + 1];
-            i += 2;
         }
         else if (arguments[i].startsWith("-"))
         {
@@ -722,6 +722,7 @@ int main(int argc, char *argv[])
             "*.pbxproj" <<
             "*.java" <<
             "*.xml" <<
+            "*.appxmanifest" <<
             "*.project";
         wildcards << wildcards1;
 
@@ -730,6 +731,8 @@ int main(int argc, char *argv[])
         replaceList1 << qMakePair(templatenamews.toLatin1(), basews.toLatin1());
         if (deviceFamily == e_Android){
             replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), args["package"].toUtf8());
+            replaceList1 << qMakePair(QString("android:versionCode=\"1\"").toUtf8(), ("android:versionCode=\""+QString::number(properties.version_code)+"\"").toUtf8());
+            replaceList1 << qMakePair(QString("android:versionName=\"1.0\"").toUtf8(), ("android:versionName=\""+properties.version+"\"").toUtf8());
             QString orientation = "android:screenOrientation=\"portrait\"";
             switch(properties.orientation){
                 case 0:
@@ -771,6 +774,7 @@ int main(int argc, char *argv[])
                 args["bundle"].append(".");
             }
             replaceList1 << qMakePair(QString("com.yourcompany.").toUtf8(), args["bundle"].toUtf8());
+            replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>CFBundleShortVersionString</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+properties.version+"</string>\n	<key>NOTE</key>").toUtf8());
         }
         else if(deviceFamily == e_iOS){
             if(args["bundle"].endsWith(base)){
@@ -783,6 +787,14 @@ int main(int argc, char *argv[])
                 args["bundle"].append(".");
             }
             replaceList1 << qMakePair(QString("com.yourcompany.").toUtf8(), args["bundle"].toUtf8());
+            replaceList1 << qMakePair(QString("<string>1.0</string>").toUtf8(), ("<string>"+properties.version+"</string>").toUtf8());
+        }
+        else if(deviceFamily == e_WinRT){
+            replaceList1 << qMakePair(QString("Gideros Player").toUtf8(), base.toUtf8());
+            replaceList1 << qMakePair(QString("giderosgame").toUtf8(), basews.toUtf8());
+            replaceList1 << qMakePair(QString("com.giderosmobile.windowsphone").toUtf8(), args["package"].toUtf8());
+            replaceList1 << qMakePair(QString("com.giderosmobile.windows").toUtf8(), args["package"].toUtf8());
+            replaceList1 << qMakePair(QString("Gideros Mobile").toUtf8(), args["organization"].toUtf8());
         }
         replaceList << replaceList1;
 
