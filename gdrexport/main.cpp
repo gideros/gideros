@@ -842,10 +842,24 @@ int main(int argc, char *argv[])
         }
 
 
-        for (std::size_t i = 0; i < folderList.size(); ++i)
-                outputDir.mkdir(folderList[i]);
+        for (std::size_t i = 0; i < folderList.size(); ++i){
+            outputDir.mkdir(folderList[i]);
+            if (deviceFamily == e_WinRT){
+                  outputDir.cdUp();
+                  outputDir.cdUp();
+                  outputDir.cd("giderosgame.WindowsPhone");
+                  outputDir.cd("Assets");
 
-            std::vector<std::pair<QString, bool> > topologicalSort = dependencyGraph.topologicalSort();
+                  outputDir.mkdir(folderList[i]);
+
+                  outputDir.cdUp();
+                  outputDir.cdUp();
+                  outputDir.cd("giderosgame.Windows");
+                  outputDir.cd("Assets");
+            }
+        }
+
+        std::vector<std::pair<QString, bool> > topologicalSort = dependencyGraph.topologicalSort();
         for (std::size_t i = 0; i < topologicalSort.size(); ++i)
         {
             int index = -1;
