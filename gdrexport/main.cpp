@@ -760,6 +760,30 @@ int main(int argc, char *argv[])
 
             replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
         }
+        else if(deviceFamily == e_MacOSXDesktop){
+            if(args["bundle"].endsWith(base)){
+                args["bundle"] = args["bundle"].left(args["bundle"].size()-base.size());
+            }
+            else if(args["bundle"].endsWith(basews)){
+                args["bundle"] = args["bundle"].left(args["bundle"].size()-basews.size());
+            }
+            if(!args["bundle"].endsWith(".")){
+                args["bundle"].append(".");
+            }
+            replaceList1 << qMakePair(QString("com.yourcompany.").toUtf8(), args["bundle"].toUtf8());
+        }
+        else if(deviceFamily == e_iOS){
+            if(args["bundle"].endsWith(base)){
+                args["bundle"] = args["bundle"].left(args["bundle"].size()-base.size());
+            }
+            else if(args["bundle"].endsWith(basews)){
+                args["bundle"] = args["bundle"].left(args["bundle"].size()-basews.size());
+            }
+            if(!args["bundle"].endsWith(".")){
+                args["bundle"].append(".");
+            }
+            replaceList1 << qMakePair(QString("com.yourcompany.").toUtf8(), args["bundle"].toUtf8());
+        }
         replaceList << replaceList1;
 
             QStringList wildcards2;
