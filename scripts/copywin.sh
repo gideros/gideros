@@ -103,6 +103,9 @@ cp $BUILD_DIR/win/Qt5OpenGL.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTempla
 cp $BUILD_DIR/win/Qt5PrintSupport.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
 cp $BUILD_DIR/win/Qt5Widgets.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
 cp $BUILD_DIR/win/Qt5Xml.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Multimedia.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5MultimediaQuick_p.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5MultimediaWidgets.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
 mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
 cp $BUILD_DIR/win/platforms/qminimal.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
 cp $BUILD_DIR/win/platforms/qoffscreen.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
