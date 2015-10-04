@@ -1259,7 +1259,7 @@ int main(int argc, char *argv[])
         QStringList frameworks = outputDir.entryList(QStringList() << "*.framework");
         for(int i = 0; i < frameworks.size(); ++i){
             QString filename = outputDir.absoluteFilePath(frameworks[i]);
-            QProcess::execute("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+            QProcess::execute("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"/Versions/Current\"");
         }
         QStringList dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
