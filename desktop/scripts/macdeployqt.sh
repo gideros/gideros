@@ -1,1 +1,1 @@
-macdeployqt "MacOSXDesktopTemplate.app"
+macdeployqt "MacOSXTemplate.app"

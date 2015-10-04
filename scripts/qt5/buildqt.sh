@@ -23,7 +23,7 @@ cd ..
 cd desktop
 $QT/bin/qmake "CONFIG+=warn_off" desktop.pro
 make
-rm MacOSXDesktopTemplate.app/Contents/PkgInfo
+rm MacOSXTemplate.app/Contents/PkgInfo
 cd ..
 
 cd gdrdeamon
