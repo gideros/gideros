@@ -2428,7 +2428,13 @@ void MainWindow::exportProject()
 
         saveAll();
 
+        QString base = QFileInfo(projectFileName_).baseName();
         QProcess *exportProcess = new QProcess();
+        QDir out = QDir(output);
+        out.mkdir(base);
+        out.cd(base);
+        exportProcess->setStandardOutputFile(out.absoluteFilePath("export.log"));
+        exportProcess->setStandardErrorFile(out.absoluteFilePath("error.log"));
         exportProcess->start(program, arguments);
         exportProcess->waitForFinished();
 
