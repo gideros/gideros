@@ -95,7 +95,7 @@ target platform to export the application source.</string>
       <string>Choose your platform here.</string>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -107,14 +107,14 @@ target platform to export the application source.</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Bundle prefix:   </string>
+            <string>Bundle ID:   </string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLineEdit" name="ios_bundle">
            <property name="text">
-            <string>com.yourcompany.</string>
+            <string>com.yourdomain.yourapp</string>
            </property>
           </widget>
          </item>
@@ -329,7 +329,7 @@ Example: com.giderosmobile.timthetimber</string>
          <item>
           <widget class="QLineEdit" name="osx_bundle">
            <property name="text">
-            <string>com.yourcompany.App</string>
+            <string>com.yourdomain.yourapp</string>
            </property>
           </widget>
          </item>

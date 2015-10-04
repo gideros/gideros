@@ -788,20 +788,13 @@ int main(int argc, char *argv[])
             replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
         }
         else if(deviceFamily == e_MacOSXDesktop){
-            replaceList1 << qMakePair(QString("com.yourcompany.MacOSXTemplate").toUtf8(), args["bundle"].toUtf8());
+            if(args.contains("bundle"))
+                replaceList1 << qMakePair(QString("com.yourcompany.MacOSXTemplate").toUtf8(), args["bundle"].toUtf8());
             replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>CFBundleShortVersionString</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+properties.version+"</string>\n	<key>NOTE</key>").toUtf8());
         }
         else if(deviceFamily == e_iOS){
-            if(args["bundle"].endsWith(base)){
-                args["bundle"] = args["bundle"].left(args["bundle"].size()-base.size());
-            }
-            else if(args["bundle"].endsWith(basews)){
-                args["bundle"] = args["bundle"].left(args["bundle"].size()-basews.size());
-            }
-            if(!args["bundle"].endsWith(".")){
-                args["bundle"].append(".");
-            }
-            replaceList1 << qMakePair(QString("com.yourcompany.").toUtf8(), args["bundle"].toUtf8());
+            if(args.contains("bundle"))
+                replaceList1 << qMakePair(QString("com.yourcompany.${PRODUCT_NAME:rfc1034identifier}").toUtf8(), args["bundle"].toUtf8());
             replaceList1 << qMakePair(QString("<string>1.0</string>").toUtf8(), ("<string>"+properties.version+"</string>").toUtf8());
         }
         else if(deviceFamily == e_WinRT){
