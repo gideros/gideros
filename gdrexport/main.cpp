@@ -733,8 +733,8 @@ int main(int argc, char *argv[])
         dir.cd(templatename);
 
         QList<QPair<QString, QString> > renameList;
-        renameList << qMakePair(templatename, base);
         renameList << qMakePair(templatenamews, basews);
+        renameList << qMakePair(templatename, base);
 
         QList<QStringList> wildcards;
         QList<QList<QPair<QByteArray, QByteArray> > > replaceList;
