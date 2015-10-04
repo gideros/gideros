@@ -113,6 +113,8 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.actionSave_All->setIcon(IconLibrary::instance().icon(0, "save all"));
 	connect(ui.actionSave_All, SIGNAL(triggered()), this, SLOT(saveAll()));
 
+    ui.actionExport_Project->setIcon(IconLibrary::instance().icon(0, "export"));
+
 	ui.actionUndo->setIcon(IconLibrary::instance().icon(0, "undo"));
 	ui.actionRedo->setIcon(IconLibrary::instance().icon(0, "redo"));
 

@@ -154,6 +154,7 @@ QMainWindow::separator {
    </attribute>
    <addaction name="actionSave"/>
    <addaction name="actionSave_All"/>
+   <addaction name="actionExport_Project"/>
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
