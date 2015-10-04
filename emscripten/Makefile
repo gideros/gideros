@@ -68,7 +68,7 @@ INCS+=emscripten
 EMCC=emcc
 BUILD=Build
 
-OPTS=-O2
+OPTS=-O2 -g
 #OPTS+=-g4
 
 OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SRCS)))
@@ -79,7 +79,7 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 ASSETS=../winrt_example/giderosgame/giderosgame.Windows/Assets
 
 all: path $(OBJS)
-	emcc $(OBJS) -s FULL_ES2=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o gideros.html --pre-js gidjs.js --shell-file gidshell.html
+	emcc $(OBJS) -s MAIN_MODULE=1 -s FULL_ES2=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o gideros.html --pre-js gidjs.js --shell-file gidshell.html
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))

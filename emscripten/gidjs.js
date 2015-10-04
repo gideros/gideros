@@ -13,3 +13,14 @@ Module.preRun.push(function() {
 	    Module['removeRunDependency']('syncfs');
 	});
 })
+Module.registerPlugins=function()
+{
+	Module.dynamicLibraries.forEach(function (p) {
+	    var pname=p.split(".")[0];
+	    var pentry="g_pluginMain_"+pname;
+//	    var pp=getCFunc(pentry);
+	    Module.ccall('main_registerPlugin','number', ['string'], [pentry]);
+	    //g_registerPlugin(g_pluginMain_##symbol);
+	    console.log(pname);
+	});
+}

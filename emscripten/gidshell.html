@@ -87,6 +87,7 @@
       var Module = {
         preRun: [],
         postRun: [],
+        dynamicLibraries: [ 'luasocket.js', 'json.js', 'bit.js' ],
         print: (function() {
           var element = document.getElementById('output');
           if (element) element.value = ''; // clear browser cache

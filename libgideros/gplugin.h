@@ -156,6 +156,9 @@ int g_registerPlugin(void*(*main)(lua_State*, int));
 #elif WINSTORE
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_STATIC(name, version)
 #define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_STATICNAMED(name, version, symbol)
+#elif __EMSCRIPTEN__
+#define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_STATIC(name, version)
+#define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_STATICNAMED(name, version, symbol)
 #else
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_DYNAMIC(name, version)
 #define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_STATIC(name, version)

@@ -9,7 +9,8 @@
 #include "html5.h"
 #include <glog.h>
 #include <ginput-js.h>
-
+#include <gplugin.h>
+#include <dlfcn.h>
 static ApplicationManager *s_applicationManager = NULL;
 
 #ifdef EGL
@@ -175,6 +176,10 @@ char *url=(char *) EM_ASM_INT_V({
   if (lurl) *lurl=0;
   lurl=url+strlen(url)-1;
   if ((*lurl)=='/') *lurl=0;
+  
+  //PLUGINS Init
+  EM_ASM(Module.registerPlugins());
+  //g_registerPlugin(g_pluginMain_##symbol);
 
   int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
    int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
@@ -201,6 +206,23 @@ char *url=(char *) EM_ASM_INT_V({
 
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
     emscripten_set_main_loop(looptick, 0, 1);
+}
+
+extern "C" int main_registerPlugin(const char *pname);
+int main_registerPlugin(const char *pname)
+{
+ void *hndl = dlopen (NULL, RTLD_LAZY);
+ if (!hndl) { fprintf(stderr, "dlopen failed: %s\n", dlerror()); 
+           exit (EXIT_FAILURE); 
+ };
+ void *(*func)(lua_State *,
+       int)=(void *(*)(lua_State *,
+             int))dlsym(hndl,pname);
+ if (func)
+  g_registerPlugin(func);
+ else
+  fprintf(stderr,"Symbol %s not found\n",pname);
+ //dlclose(hndl);
 }
 
 void flushDrive(int drive)
