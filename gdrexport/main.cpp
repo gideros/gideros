@@ -733,8 +733,8 @@ int main(int argc, char *argv[])
         dir.cd(templatename);
 
         QList<QPair<QString, QString> > renameList;
-        renameList << qMakePair(templatenamews, basews);
         renameList << qMakePair(templatename, base);
+        renameList << qMakePair(templatenamews, basews);
 
         QList<QStringList> wildcards;
         QList<QList<QPair<QByteArray, QByteArray> > > replaceList;
@@ -788,16 +788,7 @@ int main(int argc, char *argv[])
             replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
         }
         else if(deviceFamily == e_MacOSXDesktop){
-            if(args["bundle"].endsWith(base)){
-                args["bundle"] = args["bundle"].left(args["bundle"].size()-base.size());
-            }
-            else if(args["bundle"].endsWith(basews)){
-                args["bundle"] = args["bundle"].left(args["bundle"].size()-basews.size());
-            }
-            if(!args["bundle"].endsWith(".")){
-                args["bundle"].append(".");
-            }
-            replaceList1 << qMakePair(QString("com.yourcompany.").toUtf8(), args["bundle"].toUtf8());
+            replaceList1 << qMakePair(QString("com.yourcompany.MacOSXTemplate").toUtf8(), args["bundle"].toUtf8());
             replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>CFBundleShortVersionString</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+properties.version+"</string>\n	<key>NOTE</key>").toUtf8());
         }
         else if(deviceFamily == e_iOS){

@@ -95,7 +95,7 @@ target platform to export the application source.</string>
       <string>Choose your platform here.</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -286,7 +286,7 @@ Example: com.giderosmobile.timthetimber</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Organization:    </string>
+            <string>Organization:</string>
            </property>
           </widget>
          </item>
@@ -304,7 +304,7 @@ Example: com.giderosmobile.timthetimber</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Domain:           </string>
+            <string>Domain:       </string>
            </property>
           </widget>
          </item>
@@ -322,14 +322,14 @@ Example: com.giderosmobile.timthetimber</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Bundle prefix:   </string>
+            <string>Bundle ID:    </string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLineEdit" name="osx_bundle">
            <property name="text">
-            <string>com.yourcompany.</string>
+            <string>com.yourcompany.App</string>
            </property>
           </widget>
          </item>
