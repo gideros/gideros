@@ -1316,6 +1316,22 @@ int main(int argc, char *argv[])
         }
 
         outputDir.cdUp();
+        outputDir.cd("audio");
+        dylibs = outputDir.entryList(QStringList() << "*.dylib");
+        for(int i = 0; i < dylibs.size(); ++i){
+            QString filename = outputDir.absoluteFilePath(dylibs[i]);
+            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+        }
+
+        outputDir.cdUp();
+        outputDir.cd("mediaservice");
+        dylibs = outputDir.entryList(QStringList() << "*.dylib");
+        for(int i = 0; i < dylibs.size(); ++i){
+            QString filename = outputDir.absoluteFilePath(dylibs[i]);
+            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+        }
+
+        outputDir.cdUp();
         outputDir.cdUp();
         outputDir.cdUp();
         outputDir.cdUp();
