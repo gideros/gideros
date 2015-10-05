@@ -628,7 +628,7 @@ int main(int argc, char *argv[])
     case e_MacOSXDesktop:
         templatedir = "Qt";
         templatename = "MacOSXDesktopTemplate";
-        templatenamews = "MacOSXTemplate";
+        templatenamews = "MacOSXDesktopTemplate";
         underscore = false;
         break;
     case e_GApp:
@@ -789,7 +789,7 @@ int main(int argc, char *argv[])
         }
         else if(deviceFamily == e_MacOSXDesktop){
             if(args.contains("bundle"))
-                replaceList1 << qMakePair(QString("com.yourcompany."+basews).toUtf8(), args["bundle"].toUtf8());
+                replaceList1 << qMakePair(QString("com.yourcompany."+base).toUtf8(), args["bundle"].toUtf8());
             replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>CFBundleShortVersionString</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+properties.version+"</string>\n	<key>NOTE</key>").toUtf8());
         }
         else if(deviceFamily == e_iOS){
@@ -1319,9 +1319,9 @@ int main(int argc, char *argv[])
         outputDir.cdUp();
         outputDir.cdUp();
         outputDir.cdUp();
-        processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+outputDir.absoluteFilePath(basews + ".app")+"\"");
+        processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+outputDir.absoluteFilePath(base + ".app")+"\"");
 
-        processOutput("productbuild --component \""+outputDir.absoluteFilePath(basews + ".app")+"\" /Applications --sign \"3rd Party Mac Developer Installer: "+args["organization"]+"\" \""+outputDir.absoluteFilePath(basews + ".pkg")+"\"");
+        processOutput("productbuild --component \""+outputDir.absoluteFilePath(base + ".app")+"\" /Applications --sign \"3rd Party Mac Developer Installer: "+args["organization"]+"\" \""+outputDir.absoluteFilePath(base + ".pkg")+"\"");
     }
 #endif
     return 0;
