@@ -3,7 +3,7 @@ QT += core gui opengl network multimedia
 win32{
     RC_FILE = other_files/desktop.rc
 
-    TARGET = WindowsDesktopTemplate
+    TARGET = WindowsTemplate
 
     LIBS += -lopengl32 \
         -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx \
