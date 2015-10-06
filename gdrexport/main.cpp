@@ -1335,7 +1335,7 @@ int main(int argc, char *argv[])
         outputDir.cdUp();
         outputDir.cdUp();
         outputDir.cdUp();
-        processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+outputDir.absoluteFilePath(base + ".app")+"\"");
+        processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" --entitlements Entitlements.plist \""+outputDir.absoluteFilePath(base + ".app")+"\"");
 
         processOutput("productbuild --component \""+outputDir.absoluteFilePath(base + ".app")+"\" /Applications --sign \"3rd Party Mac Developer Installer: "+args["organization"]+"\" \""+outputDir.absoluteFilePath(base + ".pkg")+"\"");
     }
