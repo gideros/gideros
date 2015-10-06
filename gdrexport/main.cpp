@@ -790,7 +790,7 @@ int main(int argc, char *argv[])
         else if(deviceFamily == e_MacOSXDesktop){
             if(args.contains("bundle"))
                 replaceList1 << qMakePair(QString("com.yourcompany."+base).toUtf8(), args["bundle"].toUtf8());
-            replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>CFBundleShortVersionString</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+properties.version+"</string>\n	<key>NOTE</key>").toUtf8());
+            replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>public.app-category.games</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+properties.version+"</string>\n	<key>NOTE</key>").toUtf8());
         }
         else if(deviceFamily == e_iOS){
             if(args.contains("bundle"))
