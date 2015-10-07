@@ -50,6 +50,8 @@ echo 'Building iOS libraries...'
 bash cleanioslibs.sh > /dev/null
 bash buildioslibs.sh > /dev/null
 bash buildiosplugins.sh > /dev/null
+bash buildatvlibs.sh
+bash buildatvplugins.sh
 
 echo 'Building Android libraries...'
 bash makejar.sh > /dev/null
