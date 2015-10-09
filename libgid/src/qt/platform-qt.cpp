@@ -377,20 +377,7 @@ void g_setProperty(const char* what, const char* arg){
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-const char* g_getProperty(const char* what,const char* arg){
+const char* g_getProperty(const char* what, const char* arg){
     QString returnedProperty = "";
 
     QString argGet = QString::fromUtf8(arg);
