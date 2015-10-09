@@ -521,6 +521,9 @@ int ApplicationBinder::setLogicalDimensions(lua_State* L)
 extern "C" {
 int g_getFps();
 void g_setFps(int fps);
+const char* g_getProperty(const char* what, const char* arg);
+bool g_checkStringProperty(bool isSet,const char* what);
+void g_setProperty(const char* what, const char* arg);
 }
 
 int ApplicationBinder::getFps(lua_State* L)
@@ -696,11 +699,6 @@ int ApplicationBinder::set(lua_State *L)
 
     const char* what = luaL_checkstring(L, 2);
 
-
-
-
-    extern bool* g_checkStringProperty(bool isSet,const char* what);
-
     std::stringstream arg;
     if ( g_checkStringProperty(true,what)){
         std::string arg4 = luaL_checkstring(L, 3);
@@ -716,7 +714,6 @@ int ApplicationBinder::set(lua_State *L)
         arg << arg3;
     }
 
-    extern void g_setProperty(const char* what, const char* arg);
     g_setProperty(what, arg.str().c_str());
 
 
@@ -730,9 +727,6 @@ int ApplicationBinder::get(lua_State *L)
     (void)binder.getInstance("Application", 1);
 
     const char* what = luaL_checkstring(L, 2);
-
-
-    extern bool* g_checkStringProperty(bool isSet,const char* what);
 
     std::stringstream arg;
     if ( g_checkStringProperty(false,what)){
@@ -748,9 +742,6 @@ int ApplicationBinder::get(lua_State *L)
         arg << "|";
         arg << arg3;
     }
-
-
-    extern const char* g_getProperty(const char* what, const char* arg);
 
     const char* propertyGet = g_getProperty(what,arg.str().c_str());
     std::string stringProp = propertyGet;
