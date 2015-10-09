@@ -28,4 +28,6 @@ lipo build/Release-appletvsimulator/libiosplayer.a build/Release-appletvos/libio
 mv libgideros.a ../../ui/Templates/Xcode4/iOS\ Template/AppleTV
 cd ../..
 
+cp ios/iosplayer/iosplayer/giderosapi.h ui/Templates/Xcode4/iOS\ Template/AppleTV
+
 cd scripts

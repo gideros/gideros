@@ -86,6 +86,7 @@ mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/libs
 mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/assets
 mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs
 mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
+mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV/assets
 
 mkdir $BUILD_DIR/win/Templates/Qt
 mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
@@ -134,6 +135,8 @@ cp gdrexport/release/gdrexport.exe $BUILD_DIR/win/Tools
 
 cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/giderosapi.h  $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template
 cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/*.a           $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template
+cp ui/Templates/Xcode4/iOS\ Template/AppleTV/giderosapi.h  $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV
+cp ui/Templates/Xcode4/iOS\ Template/AppleTV/*.a           $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV
 cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/giderosapi.h  $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer
 cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/*.a           $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer
 
@@ -161,6 +164,8 @@ cp plugins/JSON/source/lua_cjson_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/Gidero
 
 mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins
 cp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins/* $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins
+mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV/Plugins
+cp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins/* $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV/Plugins
 
 
 cp android/GiderosAndroidPlayer/gideros.jar $BUILD_DIR/win/Templates/Eclipse/Android\ Template
