@@ -145,6 +145,7 @@ cp Sdk/include/*.h $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 
 cp plugins/gamekit/source/iOS/gamekit.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/storekit/source/iOS/storekit.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/mficontroller/source/iOS/mficontroller.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/iad/source/iOS/iad.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/lsqlite3/source/lsqlite3.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/lsqlite3/source/lsqlite3_stub.cpp  $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
