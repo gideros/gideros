@@ -747,6 +747,7 @@ int main(int argc, char *argv[])
             "*.java" <<
             "*.xml" <<
             "*.appxmanifest" <<
+            "*.gradle" <<
             "*.project";
         wildcards << wildcards1;
 
