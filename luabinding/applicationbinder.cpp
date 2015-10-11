@@ -521,9 +521,6 @@ int ApplicationBinder::setLogicalDimensions(lua_State* L)
 extern "C" {
 int g_getFps();
 void g_setFps(int fps);
-const char* g_getProperty(const char* what, const char* arg);
-bool g_checkStringProperty(bool isSet,const char* what);
-void g_setProperty(const char* what, const char* arg);
 }
 
 int ApplicationBinder::getFps(lua_State* L)
