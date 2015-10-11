@@ -622,8 +622,11 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	
 	gpath_setAbsolutePathFlags(GPATH_RW | GPATH_REAL);
 	
+#ifdef TARGET_OS_TV
+    gpath_setDefaultDrive(2);
+#else
     gpath_setDefaultDrive(0);
-	
+#endif
 	gvfs_init();
 
 	// event
@@ -707,11 +710,20 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 		
 		NSString* resourceDirectory = [[NSBundle mainBundle] resourcePath];
 		printf("%s\n", [resourceDirectory UTF8String]);
+        
+        NSArray *paths2 = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *cachesDirectory = [paths2 objectAtIndex:0];
+        printf("%s\n", [cachesDirectory UTF8String]);
 		
-		setDocumentsDirectory([documentsDirectory UTF8String]);
+#ifdef TARGET_OS_TV
+		setDocumentsDirectory([cachesDirectory UTF8String]);
+		setTemporaryDirectory([cachesDirectory UTF8String]);
+		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));	
+#else
+        setDocumentsDirectory([documentsDirectory UTF8String]);
 		setTemporaryDirectory([temporaryDirectory UTF8String]);
-		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));		
-
+		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));
+#endif
 		loadProperties();
 
 		// Gideros has became open source and free, because this, there's no more splash art
