@@ -622,11 +622,8 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	
 	gpath_setAbsolutePathFlags(GPATH_RW | GPATH_REAL);
 	
-#ifdef TARGET_OS_TV
-    gpath_setDefaultDrive(2);
-#else
     gpath_setDefaultDrive(0);
-#endif
+
 	gvfs_init();
 
 	// event
