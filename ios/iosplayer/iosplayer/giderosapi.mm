@@ -681,7 +681,14 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
     deviceOrientation_ = ePortrait;
 
 #ifdef TARGET_OS_TV
-  	deviceOrientation_ = eLandscapeRight;
+  	if (width_>height_){
+		hardwareOrientation_ = eLandscapeLeft;
+		deviceOrientation_ = eLandscapeLeft;
+    }
+	else {
+		hardwareOrientation_ = ePortrait;
+		deviceOrientation_ = ePortrait;
+	}
 #endif
 
 	running_ = false;
@@ -714,7 +721,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 		
 #ifdef TARGET_OS_TV
 		setDocumentsDirectory([cachesDirectory UTF8String]);
-		setTemporaryDirectory([cachesDirectory UTF8String]);
+		setTemporaryDirectory([temporaryDirectory UTF8String]);
 		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));	
 #else
         setDocumentsDirectory([documentsDirectory UTF8String]);
@@ -1216,8 +1223,13 @@ void ApplicationManager::drawIPs()
 void ApplicationManager::setProjectName(const char *projectName)
 {
 	glog_v("setProjectName: %s", projectName);
-	
-	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSArray* paths;
+#ifdef TARGET_OS_TV
+    paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+#else
+    paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+#endif
+    
 	std::string dir = [[paths objectAtIndex:0] UTF8String];
 
         NSArray *paths2 = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
