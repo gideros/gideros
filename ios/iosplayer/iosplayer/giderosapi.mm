@@ -1231,10 +1231,7 @@ void ApplicationManager::setProjectName(const char *projectName)
 #endif
     
 	std::string dir = [[paths objectAtIndex:0] UTF8String];
-
-        NSArray *paths2 = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-	std::string dir2 = [[paths2 objectAtIndex:0] UTF8String];
-
+	
 	if (dir[dir.size() - 1] != '/')
 		dir += "/";
 	
@@ -1251,16 +1248,10 @@ void ApplicationManager::setProjectName(const char *projectName)
 	dir += "/";
 	
 	std::string md5filename_ = dir + "md5.txt";
-
-#ifdef TARGET_OS_TV	
+	
 	std::string documents = dir + "documents";
 	std::string temporary = dir + "temporary";
 	std::string resource = dir + "resource";
-#else
-	std::string documents = dir2 + "documents";
-        std::string temporary = dir2 + "temporary";
-        std::string resource = dir2 + "resource";
-#endif
 	
 	glog_v("documents: %s", documents.c_str());
 	glog_v("temporary: %s", temporary.c_str());
@@ -1269,7 +1260,7 @@ void ApplicationManager::setProjectName(const char *projectName)
 	mkdir(documents.c_str(), 0755);
 	mkdir(temporary.c_str(), 0755);
 	mkdir(resource.c_str(), 0755);
-
+	
 	setDocumentsDirectory(documents.c_str());
 	setTemporaryDirectory(temporary.c_str());
 	setResourceDirectory(resource.c_str());
