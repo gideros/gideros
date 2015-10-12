@@ -681,7 +681,14 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
     deviceOrientation_ = ePortrait;
 
 #ifdef TARGET_OS_TV
-  	deviceOrientation_ = eLandscapeRight;
+  	if (width_>height_){
+		hardwareOrientation_ = eLandscapeLeft;
+		deviceOrientation_ = eLandscapeLeft;
+    }
+	else {
+		hardwareOrientation_ = ePortrait;
+		deviceOrientation_ = ePortrait;
+	}
 #endif
 
 	running_ = false;
