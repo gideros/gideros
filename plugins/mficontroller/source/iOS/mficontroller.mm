@@ -217,6 +217,7 @@ struct GGameControllerEvent
 - (void)activateMicroController:(GCController *)controller onGGameController:(GGameController *)gameController {
     int a = (int)[self.controllers indexOfObject:controller];
     [controller setPlayerIndex:(GCControllerPlayerIndex)a];
+    [controller.microGamepad setAllowsRotation:YES];
     
     NSLog(@"activateMicroGamepadController GC index %i",a);
     
@@ -531,7 +532,7 @@ static int loader(lua_State *L)
     lua_pushnumber(L, BUTTON_B);
     lua_setfield(L, -2, "BUTTON_B");
     lua_pushnumber(L, BUTTON_X);
-    lua_setfield(L, -2, "BUTTON_Y");
+    lua_setfield(L, -2, "BUTTON_X");
     lua_pushnumber(L, BUTTON_RIGHT_SHOULDER);
     lua_setfield(L, -2, "BUTTON_RIGHT_SHOULDER");
     lua_pushnumber(L, BUTTON_LEFT_SHOULDER);
