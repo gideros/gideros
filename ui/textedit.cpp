@@ -12,6 +12,7 @@
 #include <Qsci/qsciapis.h>
 #include <Qsci/qscicommand.h>
 #include <Qsci/qscicommandset.h>
+#include <QSettings>
 
 static void keysForMac(QsciScintilla* qscintilla)
 {
@@ -118,6 +119,9 @@ static QsciLexer* createLexerByExtension(QString ext)
 
 	QsciLexer* lexer = 0;
 
+    QSettings settings;
+    QString themePath = settings.value("editorTheme").toString();
+
 	if (ext == "lua")
 	{
 		QsciLexerLua* lexerlua = new QsciLexerLua;
@@ -129,23 +133,34 @@ static QsciLexer* createLexerByExtension(QString ext)
 		api->prepare();
 		lexer->setAPIs(api);
 
-		lexerlua->setFoldCompact(false); // this function does not exists in QsciLexer
+        if (themePath != "")
+        {
+        QSettings editorTheme(themePath, QSettings::IniFormat);
+        lexer->readSettings(editorTheme);
+        }
+        else
+        {
+            lexer->setColor(Qt::blue, QsciLexerLua::Keyword);
+            lexer->setColor(QColor(0xff, 0x80, 0x00), QsciLexerLua::Number);
+        }
+    }
+    else if (ext == "xml")
+    {
+        lexer = new QsciLexerXML;
+    }
+    else if ((ext == "hlsl") || (ext == "glsl") )
+    {
+        lexer = new QsciLexerCPP;
 
-		lexerlua->setColor(Qt::blue, QsciLexerLua::Keyword);
-		lexerlua->setColor(QColor(0xff, 0x80, 0x00), QsciLexerLua::Number);
-		// to be filled
-	}
-	else if (ext == "xml")
-	{
-		lexer = new QsciLexerXML;
-	}
-	else if ((ext == "hlsl") || (ext == "glsl") )
-	{
-		lexer = new QsciLexerCPP;
-	}
+        if (themePath != "")
+        {
+        QSettings editorTheme(themePath, QSettings::IniFormat);
+        lexer->readSettings(editorTheme);
+        }
+    }
 
-	if (lexer)
-	{
+    if (lexer && themePath == "")
+	{ 
 #ifdef Q_OS_MAC
 		lexer->setFont(QFont("Monaco", 12));
 #else
@@ -172,10 +187,19 @@ TextEdit::TextEdit(QWidget* parent)
 	isUntitled_ = true;
 
 // settings
+QSettings settings;
+QString theme = settings.value("editorTheme").toString();
+
+QSettings lls(theme, QSettings::IniFormat);
+
 #ifdef Q_OS_MAC
-	sciScintilla_->setFont(QFont("Monaco", 12));
+    sciScintilla_->setFont(QFont(
+        lls.value("FontFamily", "Monaco").toString(),
+        lls.value("FontSize", 12).toInt()));
 #else
-	sciScintilla_->setFont(QFont("Courier New", 10));
+    sciScintilla_->setFont(QFont(
+        lls.value("FontFamily", "Courier New").toString(),
+        lls.value("FontSize", 10).toInt()));
 #endif
 
 	sciScintilla_->setFolding(QsciScintilla::BoxedTreeFoldStyle, 3);
@@ -192,27 +216,60 @@ TextEdit::TextEdit(QWidget* parent)
 	sciScintilla_->setUtf8(true);
 
 	sciScintilla_->setCaretLineVisible(true);
-	sciScintilla_->setCaretLineBackgroundColor(QColor(232, 232, 255));
 
-	sciScintilla_->setMatchedBraceBackgroundColor(QColor(232, 232, 255));
-	sciScintilla_->setUnmatchedBraceBackgroundColor(QColor(232, 232, 255));
+    sciScintilla_->setCaretForegroundColor (
+        lls.value("CaretForegroundColor", 0).toInt());
+
+    sciScintilla_->setCaretLineBackgroundColor(
+        lls.value("CaretLineBackgroundColor", 15658734).toInt());
+
+    sciScintilla_->setMatchedBraceForegroundColor(
+        lls.value("MatchedBraceForegroundColor", 0).toInt());
+    sciScintilla_->setMatchedBraceBackgroundColor(
+        lls.value("MatchedBraceBackgroundColor", 15658734).toInt());
+
+    sciScintilla_->setUnmatchedBraceForegroundColor(
+        lls.value("UnmatchedBraceForegroundColor", 0).toInt());
+    sciScintilla_->setUnmatchedBraceBackgroundColor(
+        lls.value("UnmatchedBraceBackgroundColor", 10085887).toInt());
+
+    sciScintilla_->setMarginSensitivity(2, true);
 
 	connect(sciScintilla_, SIGNAL(modificationChanged(bool)), this, SLOT(onModificationChanged(bool)));
 	connect(sciScintilla_, SIGNAL(copyAvailable(bool)), this, SIGNAL(copyAvailable(bool)));
-	connect(sciScintilla_, SIGNAL(textChanged()), this, SIGNAL(textChanged()));
+    connect(sciScintilla_, SIGNAL(textChanged()), this, SIGNAL(textChanged()));
+    connect(sciScintilla_, SIGNAL(marginClicked(int, int, Qt::KeyboardModifiers)),
+            this, SLOT(setBookmark(int, int, Qt::KeyboardModifiers)));
 
 	sciScintilla_->setMarginMarkerMask(1, 0);		// we dont want any markers at line number margin
 
 	sciScintilla_->setMarginWidth(2, 14);			// margin 2 is bookmark margin
 	sciScintilla_->markerDefine(QsciScintilla::RightTriangle, 1);
 	sciScintilla_->setMarginMarkerMask(2, 1 << 1);
-	sciScintilla_->setMarkerForegroundColor(QColor(255, 150, 30), 1);
-	sciScintilla_->setMarkerBackgroundColor(QColor(255, 200, 80), 1);
+
+    sciScintilla_->setMarkerForegroundColor(
+                lls.value("MarkerForegroundColor", 2566178).toInt(), 1);
+    sciScintilla_->setMarkerBackgroundColor(
+                lls.value("MarkerBackgroundColor", 5348047).toInt(), 1);
 
 	sciScintilla_->setEolMode(QsciScintilla::EolUnix);
 
 	sciScintilla_->setAutoCompletionThreshold(2);
 	sciScintilla_->setAutoCompletionSource(QsciScintilla::AcsAll);
+
+    sciScintilla_->setFoldMarginColors(
+                lls.value("FoldMarginFirstColor", 16777215).toInt(),
+                lls.value("FoldMarginSecondColor", 10066329).toInt()
+    );
+
+    sciScintilla_->setIndentationGuidesForegroundColor(lls.value("IndentationGuidesForegroundColor", 0).toInt());
+    sciScintilla_->setIndentationGuidesBackgroundColor(lls.value("IndentationGuidesBackgroundColor", 8421504).toInt());
+
+    sciScintilla_->setIndicatorForegroundColor(lls.value("IndicatorForegroundColor", 0).toInt());
+    sciScintilla_->setIndicatorOutlineColor(lls.value("IndicatorOutlineColor", 8421504).toInt());
+
+    sciScintilla_->setMarginsForegroundColor(lls.value("MarginsForegroundColor", 2566178).toInt());
+    sciScintilla_->setMarginsBackgroundColor(lls.value("MarginsBackgroundColor", 15658734).toInt());
 }
 
 TextEdit::~TextEdit()
@@ -456,12 +513,22 @@ int TextEdit::replaceAll(const QString &expr, const QString &replaceStr, bool re
 	return replaced;
 }
 
+void TextEdit::setBookmark(int margin, int line, Qt::KeyboardModifiers state)
+{
+    if (sciScintilla_->markersAtLine(line) & (1 << 1))
+        sciScintilla_->markerDelete(line, 1);
+    else
+    {
+        sciScintilla_->markerAdd(line, 1);
+    }
+}
+
 void TextEdit::toogleBookmark()
 {
 	int line, index;
 	sciScintilla_->getCursorPosition(&line, &index);
 
-	if (sciScintilla_->markersAtLine(line) & (1 << 1))
+    if (sciScintilla_->markersAtLine(line) & (1 << 1))
 		sciScintilla_->markerDelete(line, 1);
 	else
 		sciScintilla_->markerAdd(line, 1);
@@ -527,7 +594,7 @@ bool TextEdit::maybeSave()
 		msgBox.setDefaultButton(QMessageBox::Yes);
 		int ret = msgBox.exec();		
 		switch (ret)
-		{
+        {
 			case QMessageBox::Yes:
 				save();
 				return true;

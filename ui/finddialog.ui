@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>364</width>
-    <height>106</height>
+    <width>358</width>
+    <height>144</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,6 +48,20 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QCheckBox" name="regexp">
+           <property name="text">
+            <string>Regular expression</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="wrap">
+           <property name="text">
+            <string>Wrap search</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -81,19 +95,6 @@
           </item>
          </layout>
         </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </item>

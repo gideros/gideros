@@ -45,6 +45,7 @@ protected:
 
 public slots:
 	// bookmarks
+    void setBookmark(int margin, int line, Qt::KeyboardModifiers state);
 	void toogleBookmark();
 	void nextBookmark();
 	void previousBookmark();
@@ -56,7 +57,8 @@ public slots:
 
 signals:
 	void copyAvailable(bool yes);
-	void textChanged();
+    void textChanged();
+    void marginClicked(int, int, Qt::KeyboardModifiers);
 
 private slots:
 	void onModificationChanged(bool m);

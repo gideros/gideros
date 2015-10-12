@@ -3,7 +3,7 @@ QT -= core gui
 TARGET = microphone
 TEMPLATE = lib
 
-INCLUDEPATH += ../../../../Sdk/include
+INCLUDEPATH += ../../../Sdk/include
 
 SOURCES += \
     gmicrophone-openal.cpp \
@@ -14,13 +14,13 @@ HEADERS += \
     gmicrophone.h \
     gsoundencoder.h
 
-LIBS += -L"../../../../Sdk/lib/desktop" -llua -lgid -lgideros -lgvfs
+LIBS += -L"../../../Sdk/lib/desktop" -llua -lgid -lgideros -lgvfs
 
 LIBS += -lpthread
 
 win32 {
 DEFINES += OPENAL_SUBDIR_AL
-LIBS += -L"../../../../Sdk/lib/desktop" -lOpenAL32
+LIBS += -L"../../../Sdk/lib/desktop" -lOpenAL32
 }
 
 macx {

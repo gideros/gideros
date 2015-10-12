@@ -1,0 +1,239 @@
+/*
+    qmc2-sandy: v0.8, 11-JAN-2010, rene.reucher@batcom-it.net
+
+    Qt style sheet compatible with QMC2 0.2.b10+
+
+    http://qmc2.arcadehits.net/wordpress/style-sheets/
+
+    Changes:
+    
+    v0.8 - updated to 0.2.b19
+    v0.7 - updated to 0.2.b17
+    v0.6 - updated to 0.2.b15
+    v0.5 - updated to 0.2.b12
+    v0.4 - updated to 0.2.b11
+    v0.3 - corrected button resize issues
+    v0.2 - added PCB class and button on/pressed states
+    v0.1 - initial version
+*/
+
+QDialog,
+QMainWindow,
+QTabWidget,
+QTabBar,
+QMenuBar,
+QWebView,
+QTreeWidget,
+QSplitter,
+QScrollArea,
+QScrollArea *,
+Preview,
+Flyer,
+Cabinet,
+Title,
+Marquee,
+Controller,
+PCB {
+    background-color: rgb(229, 223, 197);
+}
+
+QLabel#labelLoadingGamelist,
+QLabel#labelLoadingHierarchy,
+QLabel#labelCreatingCategoryView,
+QLabel#labelCreatingVersionView,
+QTreeView,
+QListView,
+QLineEdit,
+QTextBrowser,
+QPlainTextEdit,
+QSpinBox,
+QDoubleSpinBox,
+QComboBox,
+QMenu {
+    selection-color: black; 
+    selection-background-color: rgb(159, 153, 127);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(229, 223, 197), stop:1 white);
+    min-width: 14px;
+    min-height: 14px;
+    border: 1px solid gray;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+QPushButton,
+QToolButton {
+    selection-color: black; 
+    selection-background-color: rgb(159, 153, 127);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(229, 223, 197), stop:1 white);
+    border: 1px solid gray;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+QPushButton:hover,
+QToolButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 white, stop:1 rgb(229, 223, 197));
+}
+
+QPushButton:pressed,
+QToolButton:pressed,
+QPushButton:on,
+QToolButton:on {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 black, stop: 1 rgb(229, 223, 197));
+}
+
+QToolButton[flat=true], QToolButton[flat=true]:hover {
+    border: 0px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 white, stop:1 rgb(229, 223, 197));
+}
+
+QCheckBox::indicator {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(229, 223, 197), stop:1 white);
+    width: 14px;
+    height: 14px;
+    border: 1px solid gray;
+    padding: 1px;
+    border-radius: 3px;
+}
+
+QCheckBox::indicator:checked {
+    image: url(Resources/Themes/QMC2-Sandy_res/ok.png);
+}
+
+QRadioButton::indicator {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(229, 223, 197), stop:1 white);
+    width: 7px;
+    height: 7px;
+    border: 1px solid gray;
+    padding: 1px;
+    border-radius: 5px;
+}
+
+QRadioButton::indicator:checked {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(229, 223, 197), stop:1 black);
+    width: 7px;
+    height: 7px;
+    border: 1px solid gray;
+    padding: 1px;
+    border-radius: 5px;
+}
+
+QListView::item:hover,
+QTreeView::item:hover,
+QRadioButton:hover,
+QCheckBox:hover,
+QToolTip,
+QMenu::item:selected,
+QHeaderView,
+QScrollBar,
+QProgressBar {
+    background-color: rgb(199, 193, 167);
+}
+
+QToolTip {
+    opacity: 128; /* with an active composition manager, this should look semi-transparent */
+}
+
+QSplitter::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(159, 153, 127), stop:1 rgb(229, 223, 197));
+    border: 1px solid #5c5c5c;
+    width: 2px;
+    height: 2px;
+    border-radius: 1px;
+}
+
+QSplitter::handle:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(159, 153, 127), stop:1 rgb(229, 223, 197));
+    border: 1px solid #5c5c5c;
+    width: 2px;
+    height: 2px;
+    border-radius: 1px;
+}
+
+QProgressBar:horizontal {
+    border: 1px solid gray;
+    border-radius: 3px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 white, stop:1 rgb(229, 223, 197));
+    padding: 0px;
+    text-align: center;
+}
+
+QProgressBar::chunk:horizontal {
+    background-color: rgb(159, 153, 127);
+    width: 1px;
+}
+
+QProgressBar:vertical {
+    border: 1px solid gray;
+    border-radius: 3px;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 white, stop:1 rgb(229, 223, 197));
+    padding: 0px;
+    text-align: center;
+}
+
+QProgressBar::chunk:vertical {
+    background-color: rgb(159, 153, 127);
+    height: 1px;
+}
+
+QProgressBar:disabled {
+    color: white;
+}
+
+QHeaderView::down-arrow {
+    image: url(Resources/Themes/QMC2-Sandy_res/down-arrow.png);
+}
+
+QHeaderView::up-arrow {
+    image: url(Resources/Themes/QMC2-Sandy_res/up-arrow.png);
+}
+
+QTreeView {
+    alternate-background-color: rgb(229, 223, 197);
+    paint-alternating-row-colors-for-empty-area: true;
+    show-decoration-selected: 0;
+}
+
+QTreeView::branch:has-siblings:!adjoins-item {
+    border-image: url(Resources/Themes/QMC2-Sandy_res/vline.png) 0;
+}
+
+QTreeView::branch:has-siblings:adjoins-item {
+    border-image: url(Resources/Themes/QMC2-Sandy_res/branch-more.png) 0;
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: url(Resources/Themes/QMC2-Sandy_res/branch-end.png) 0;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(Resources/Themes/QMC2-Sandy_res/branch-closed.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+    border-image: none;
+    image: url(Resources/Themes/QMC2-Sandy_res/branch-open.png);
+}
+
+QSlider::groove:horizontal {
+    border: 1px solid #999999;
+    height: 8px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 white, stop:1 rgb(229, 223, 197));
+    margin: 2px 0;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 rgb(159, 153, 127), stop:1 rgb(229, 223, 197));
+    border: 1px solid #5c5c5c;
+    width: 20px;
+    margin: -2px 0;
+    border-radius: 3px;
+}
+
+QMessageBox {
+    messagebox-text-interaction-flags: 1 /* text can be selected and copied to clipboard */
+}
+

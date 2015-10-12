@@ -696,35 +696,21 @@ int ApplicationBinder::set(lua_State *L)
 
     const char* what = luaL_checkstring(L, 2);
 
-
-    int arg1 = 0;
-    int arg2 = 0;
-    int arg3 = 0;
-    std::string arg4 = "";
-
-    if ( (strcmp(what, "cursor") == 0)
-      || (strcmp(what, "windowTitle") == 0)
-      || (strcmp(what, "windowModel") == 0)
-       )
-    {
-        arg4 = luaL_checkstring(L, 3);
-    }else
-    {
-        arg1 = luaL_optnumber(L, 3, 0);
-        arg2 = luaL_optnumber(L, 4, 0);
-        arg3 = luaL_optnumber(L, 5, 0);
+    std::stringstream arg;
+    if ( g_checkStringProperty(true,what)){
+        std::string arg4 = luaL_checkstring(L, 3);
+        arg << arg4;
+    }else{
+        int arg1 = luaL_optnumber(L, 3, 0);
+        int arg2 = luaL_optnumber(L, 4, 0);
+        int arg3 = luaL_optnumber(L, 5, 0);
+        arg << arg1;
+        arg << "|";
+        arg << arg2;
+        arg << "|";
+        arg << arg3;
     }
 
-    std::stringstream arg;
-    arg << arg1;
-    arg << "|";
-    arg << arg2;
-    arg << "|";
-    arg << arg3;
-    arg << "|";
-    arg << arg4;
-
-    extern void g_setProperty(const char* what, const char* arg);
     g_setProperty(what, arg.str().c_str());
 
 
@@ -739,37 +725,51 @@ int ApplicationBinder::get(lua_State *L)
 
     const char* what = luaL_checkstring(L, 2);
 
-    extern const char* g_getProperty(const char* what);
-
-    const char* propertyGet = g_getProperty(what);
-    std::string stringProp = propertyGet;
-
-	char *returnedProperty = (char*)malloc((stringProp.length() + 1)*sizeof(char));
-//	char returnedProperty[stringProp.length()+1];
-
-	strcpy(returnedProperty, propertyGet);
-
-    const char* arrayProperty[10] = {""};
-    unsigned int index = 0;
-    arrayProperty[index] = strtok(returnedProperty,"|");
-
-    while(arrayProperty[index] != NULL)
-    {
-        std::string firstChar(arrayProperty[index],arrayProperty[index]+1);
-
-        if  (strcmp(firstChar.c_str(), "s") == 0){
-            std::string resultChar(arrayProperty[index] + 1);
-             lua_pushstring(L, resultChar.c_str());
-        }else{
-            lua_pushnumber(L, atoi(arrayProperty[index]));
-        }
-        ++index;
-        arrayProperty[index] = strtok(NULL, "|");
-
+    std::stringstream arg;
+    if ( g_checkStringProperty(false,what)){
+        std::string arg4 = luaL_checkstring(L, 3);
+        arg << arg4;
+    }else{
+        int arg1 = luaL_optnumber(L, 3, 0);
+        int arg2 = luaL_optnumber(L, 4, 0);
+        int arg3 = luaL_optnumber(L, 5, 0);
+        arg << arg1;
+        arg << "|";
+        arg << arg2;
+        arg << "|";
+        arg << arg3;
     }
 
-	free(returnedProperty);
+    const char* propertyGet = g_getProperty(what,arg.str().c_str());
+    std::string stringProp = propertyGet;
+
+    char *returnedProperty = (char*)malloc((stringProp.length() + 1)*sizeof(char));
+
+    strcpy(returnedProperty, propertyGet);
+    std::string firstChar(returnedProperty,returnedProperty+1);
+
+    unsigned int index = 0;
+
+    if  (strcmp(firstChar.c_str(), "s") == 0){
+        std::string resultChar(returnedProperty + 1);
+        lua_pushstring(L, resultChar.c_str());
+        index = 1;
+    }else{
+
+        const char* arrayProperty[10] = {""};
+        arrayProperty[index] = strtok(returnedProperty,"|");
+
+        while(arrayProperty[index] != NULL)
+        {
+            lua_pushnumber(L, atoi(arrayProperty[index]));
+            ++index;
+            arrayProperty[index] = strtok(NULL, "|");
+
+        }
+    }
+    free(returnedProperty);
 
     return index;
+
 
 }
