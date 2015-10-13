@@ -681,14 +681,8 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
     deviceOrientation_ = ePortrait;
 
 #ifdef TARGET_OS_TV
-  	if (width_>height_){
-		hardwareOrientation_ = eLandscapeLeft;
-		deviceOrientation_ = eLandscapeLeft;
-    }
-	else {
-		hardwareOrientation_ = ePortrait;
-		deviceOrientation_ = ePortrait;
-	}
+	hardwareOrientation_ = eLandscapeLeft;
+	deviceOrientation_ = eLandscapeLeft;
 #endif
 
 	running_ = false;
@@ -1438,19 +1432,6 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 void ApplicationManager::willRotateToInterfaceOrientationHelperTV(Orientation deviceOrientation_)
 {
     application_->getApplication()->setDeviceOrientation(deviceOrientation_);
-
-
-
-    Orientation orientation = application_->orientation();
-
-    bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
-    bool b2 = deviceOrientation_ == ePortrait || deviceOrientation_ == ePortraitUpsideDown;
-
-    if (b1 != b2)
-        hardwareOrientation_ = deviceOrientation_;
-    else
-        hardwareOrientation_ = orientation;
-
     application_->setHardwareOrientation(hardwareOrientation_);
 
 }
