@@ -1,0 +1,426 @@
+diff --git a/src/lauxlib.h b/src/lauxlib.h
+index fed1491..80c2828 100644
+--- a/src/lauxlib.h
++++ b/src/lauxlib.h
+@@ -10,7 +10,7 @@
+ 
+ 
+ #include <stddef.h>
+-#include <stdio.h>
++#include "stdio2.h"
+ 
+ #include "lua.h"
+ 
+diff --git a/src/lib_aux.c b/src/lib_aux.c
+index 4a1b70d..6c0fca2 100644
+--- a/src/lib_aux.c
++++ b/src/lib_aux.c
+@@ -8,7 +8,7 @@
+ 
+ #include <errno.h>
+ #include <stdarg.h>
+-#include <stdio.h>
++#include "stdio2.h"
+ 
+ #define lib_aux_c
+ #define LUA_LIB
+diff --git a/src/lib_base.c b/src/lib_base.c
+index 887fea7..0c52e6e 100644
+--- a/src/lib_base.c
++++ b/src/lib_base.c
+@@ -6,7 +6,7 @@
+ ** Copyright (C) 1994-2011 Lua.org, PUC-Rio. See Copyright Notice in lua.h
+ */
+ 
+-#include <stdio.h>
++#include "stdio2.h"
+ 
+ #define lib_base_c
+ #define LUA_LIB
+@@ -512,10 +512,10 @@ LJLIB_CF(print)
+       L->top--;
+     }
+     if (i)
+-      putchar('\t');
+-    fwrite(str, 1, size, stdout);
++      lua_getprintfunc(L)("\t", -1, lua_getprintfuncdata(L));
++    lua_getprintfunc(L)(str, size, lua_getprintfuncdata(L));
+   }
+-  putchar('\n');
++  lua_getprintfunc(L)("\n", -1, lua_getprintfuncdata(L));
+   return 0;
+ }
+ 
+diff --git a/src/lib_io.c b/src/lib_io.c
+index 2aa8347..47473da 100644
+--- a/src/lib_io.c
++++ b/src/lib_io.c
+@@ -7,7 +7,7 @@
+ */
+ 
+ #include <errno.h>
+-#include <stdio.h>
++#include "stdio2.h"
+ 
+ #define lib_io_c
+ #define LUA_LIB
+@@ -97,9 +97,9 @@ static int io_file_close(lua_State *L, IOFileUD *iof)
+     ok = (fclose(iof->fp) == 0);
+   } else if ((iof->type & IOFILE_TYPE_MASK) == IOFILE_TYPE_PIPE) {
+     int stat = -1;
+-#if LJ_TARGET_POSIX
++#if 0 && LJ_TARGET_POSIX
+     stat = pclose(iof->fp);
+-#elif LJ_TARGET_WINDOWS && !LJ_TARGET_XBOXONE
++#elif 0 && LJ_TARGET_WINDOWS && !LJ_TARGET_XBOXONE
+     stat = _pclose(iof->fp);
+ #else
+     lua_assert(0);
+@@ -327,22 +327,22 @@ LJLIB_CF(io_method_seek)
+     else if (!tvisnil(o))
+       lj_err_argt(L, 3, LUA_TNUMBER);
+   }
+-#if LJ_TARGET_POSIX
++#if 0 && LJ_TARGET_POSIX
+   res = fseeko(fp, ofs, opt);
+-#elif _MSC_VER >= 1400
++#elif 0 && _MSC_VER >= 1400
+   res = _fseeki64(fp, ofs, opt);
+-#elif defined(__MINGW32__)
++#elif 0 && defined(__MINGW32__)
+   res = fseeko64(fp, ofs, opt);
+ #else
+   res = fseek(fp, (long)ofs, opt);
+ #endif
+   if (res)
+     return luaL_fileresult(L, 0, NULL);
+-#if LJ_TARGET_POSIX
++#if 0 && LJ_TARGET_POSIX
+   ofs = ftello(fp);
+-#elif _MSC_VER >= 1400
++#elif 0 && _MSC_VER >= 1400
+   ofs = _ftelli64(fp);
+-#elif defined(__MINGW32__)
++#elif 0 && defined(__MINGW32__)
+   ofs = ftello64(fp);
+ #else
+   ofs = (int64_t)ftell(fp);
+@@ -408,7 +408,7 @@ LJLIB_CF(io_open)
+ 
+ LJLIB_CF(io_popen)
+ {
+-#if LJ_TARGET_POSIX || (LJ_TARGET_WINDOWS && !LJ_TARGET_XBOXONE)
++#if 0 && LJ_TARGET_POSIX || (LJ_TARGET_WINDOWS && !LJ_TARGET_XBOXONE)
+   const char *fname = strdata(lj_lib_checkstr(L, 1));
+   GCstr *s = lj_lib_optstr(L, 2);
+   const char *mode = s ? strdata(s) : "r";
+diff --git a/src/lib_os.c b/src/lib_os.c
+index 7b5873a..979d1e0 100644
+--- a/src/lib_os.c
++++ b/src/lib_os.c
+@@ -23,12 +23,14 @@
+ #include "lj_str.h"
+ #include "lj_lib.h"
+ 
++#include "stdio2.h"
++
+ #if LJ_TARGET_POSIX
+ #include <unistd.h>
+-#else
+-#include <stdio.h>
+ #endif
+ 
++#include <gpath.h>
++
+ #if !LJ_TARGET_PSVITA
+ #include <locale.h>
+ #endif
+@@ -64,16 +66,20 @@ LJLIB_CF(os_execute)
+ LJLIB_CF(os_remove)
+ {
+   const char *filename = luaL_checkstring(L, 1);
+-  return luaL_fileresult(L, remove(filename) == 0, filename);
++  return luaL_fileresult(L, remove(gpath_transform(filename)) == 0, filename);
+ }
+ 
+ LJLIB_CF(os_rename)
+ {
++  char fromname2[1024], toname2[1024];
+   const char *fromname = luaL_checkstring(L, 1);
+   const char *toname = luaL_checkstring(L, 2);
+-  return luaL_fileresult(L, rename(fromname, toname) == 0, fromname);
++  strcpy(fromname2, gpath_transform(fromname));
++  strcpy(toname2, gpath_transform(toname));
++  return luaL_fileresult(L, rename(fromname2, toname2) == 0, fromname);
+ }
+ 
++
+ LJLIB_CF(os_tmpname)
+ {
+ #if LJ_TARGET_PS3 || LJ_TARGET_PS4 || LJ_TARGET_PSVITA
+diff --git a/src/lj_asm.c b/src/lj_asm.c
+index 9db950a..ef3e97f 100644
+--- a/src/lj_asm.c
++++ b/src/lj_asm.c
+@@ -31,7 +31,7 @@
+ #include "lj_target.h"
+ 
+ #ifdef LUA_USE_ASSERT
+-#include <stdio.h>
++#include "stdio2.h"
+ #endif
+ 
+ /* -- Assembler state and common macros ----------------------------------- */
+@@ -191,7 +191,7 @@ IRFLDEF(FLOFS)
+ 
+ #ifdef LUAJIT_DEBUG_RA
+ 
+-#include <stdio.h>
++#include "stdio2.h"
+ #include <stdarg.h>
+ 
+ #define RIDNAME(name)	#name,
+diff --git a/src/lj_clib.c b/src/lj_clib.c
+index 1e927eb..ba9326b 100644
+--- a/src/lj_clib.c
++++ b/src/lj_clib.c
+@@ -23,7 +23,7 @@
+ #if LJ_TARGET_DLOPEN
+ 
+ #include <dlfcn.h>
+-#include <stdio.h>
++#include "stdio2.h"
+ 
+ #if defined(RTLD_DEFAULT)
+ #define CLIB_DEFHANDLE	RTLD_DEFAULT
+diff --git a/src/lj_ir.c b/src/lj_ir.c
+index 9682e05..d8c5c64 100644
+--- a/src/lj_ir.c
++++ b/src/lj_ir.c
+@@ -7,7 +7,7 @@
+ #define LUA_CORE
+ 
+ /* For pointers to libc/libm functions. */
+-#include <stdio.h>
++#include "stdio2.h"
+ #include <math.h>
+ 
+ #include "lj_obj.h"
+diff --git a/src/lj_load.c b/src/lj_load.c
+index 95a6ab0..99a2f28 100644
+--- a/src/lj_load.c
++++ b/src/lj_load.c
+@@ -4,7 +4,7 @@
+ */
+ 
+ #include <errno.h>
+-#include <stdio.h>
++#include "stdio2.h"
+ 
+ #define lj_load_c
+ #define LUA_CORE
+diff --git a/src/lj_obj.h b/src/lj_obj.h
+index 74ed59b..291e308 100644
+--- a/src/lj_obj.h
++++ b/src/lj_obj.h
+@@ -621,6 +621,9 @@ typedef struct global_State {
+   MRef jit_base;	/* Current JIT code L->base or NULL. */
+   MRef ctype_state;	/* Pointer to C type state. */
+   GCRef gcroot[GCROOT_MAX];  /* GC roots. */
++
++  lua_PrintFunc printfunc;
++  void* printfuncdata;
+ } global_State;
+ 
+ #define mainthread(g)	(&gcref(g->mainthref)->th)
+diff --git a/src/lj_state.c b/src/lj_state.c
+index 84b4d11..4b3d216 100644
+--- a/src/lj_state.c
++++ b/src/lj_state.c
+@@ -9,6 +9,8 @@
+ #define lj_state_c
+ #define LUA_CORE
+ 
++#include "stdio2.h"
++
+ #include "lj_obj.h"
+ #include "lj_gc.h"
+ #include "lj_err.h"
+@@ -180,6 +182,11 @@ static void close_state(lua_State *L)
+     g->allocf(g->allocd, G2GG(g), sizeof(GG_State), 0);
+ }
+ 
++static void default_printfunc(const char* str, int len, void* data)
++{
++  fputs(str, stdout);
++}
++
+ #if LJ_64 && !(defined(LUAJIT_USE_VALGRIND) && defined(LUAJIT_USE_SYSMALLOC))
+ lua_State *lj_state_newstate(lua_Alloc f, void *ud)
+ #else
+@@ -217,6 +224,8 @@ LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud)
+   g->gc.total = sizeof(GG_State);
+   g->gc.pause = LUAI_GCPAUSE;
+   g->gc.stepmul = LUAI_GCMUL;
++  g->printfunc = default_printfunc;
++  g->printfuncdata = NULL;  
+   lj_dispatch_init((GG_State *)L);
+   L->status = LUA_ERRERR+1;  /* Avoid touching the stack upon memory error. */
+   if (lj_vm_cpcall(L, NULL, NULL, cpluaopen) != 0) {
+@@ -298,3 +307,23 @@ void LJ_FASTCALL lj_state_free(global_State *g, lua_State *L)
+   lj_mem_freet(g, L);
+ }
+ 
++LUA_API lua_PrintFunc lua_getprintfunc(lua_State* L)
++{
++  return G(L)->printfunc;
++}
++
++LUA_API void* lua_getprintfuncdata(lua_State* L)
++{
++  return G(L)->printfuncdata;
++}
++
++LUA_API void lua_setprintfunc(lua_State* L, lua_PrintFunc printfunc, void* data)
++{
++  G(L)->printfunc = printfunc;
++  G(L)->printfuncdata = data;
++}
++
++LUA_API int lua_isjit()
++{
++  return 1;
++}
+\ No newline at end of file
+diff --git a/src/lj_strfmt.c b/src/lj_strfmt.c
+index d54e796..40c67a5 100644
+--- a/src/lj_strfmt.c
++++ b/src/lj_strfmt.c
+@@ -3,7 +3,7 @@
+ ** Copyright (C) 2005-2015 Mike Pall. See Copyright Notice in luajit.h
+ */
+ 
+-#include <stdio.h>
++#include "stdio2.h"
+ 
+ #define lj_strfmt_c
+ #define LUA_CORE
+diff --git a/src/lj_trace.c b/src/lj_trace.c
+index 42f4321..f54d890 100644
+--- a/src/lj_trace.c
++++ b/src/lj_trace.c
+@@ -90,7 +90,7 @@ static TraceNo trace_findfree(jit_State *J)
+ **   perf report -s symbol
+ **   rm perf.data /tmp/perf-*.map
+ */
+-#include <stdio.h>
++#include "stdio2.h"
+ #include <unistd.h>
+ 
+ static void perftools_addtrace(GCtrace *T)
+diff --git a/src/lj_vmevent.c b/src/lj_vmevent.c
+index 87ebcfb..e93751b 100644
+--- a/src/lj_vmevent.c
++++ b/src/lj_vmevent.c
+@@ -3,7 +3,7 @@
+ ** Copyright (C) 2005-2015 Mike Pall. See Copyright Notice in luajit.h
+ */
+ 
+-#include <stdio.h>
++#include "stdio2.h"
+ 
+ #define lj_vmevent_c
+ #define LUA_CORE
+diff --git a/src/lua.h b/src/lua.h
+index c83fd3b..7da7a77 100644
+--- a/src/lua.h
++++ b/src/lua.h
+@@ -363,6 +363,13 @@ struct lua_Debug {
+   int i_ci;  /* active function */
+ };
+ 
++typedef void (*lua_PrintFunc) (const char* str, int len, void* data);
++LUA_API lua_PrintFunc lua_getprintfunc(lua_State* L);
++LUA_API void* lua_getprintfuncdata(lua_State* L);
++LUA_API void lua_setprintfunc(lua_State* L, lua_PrintFunc printfunc, void* data);
++
++LUA_API int lua_isjit();
++
+ /* }====================================================================== */
+ 
+ 
+diff --git a/src/luaconf.h b/src/luaconf.h
+index 79f5148..f5c8338 100644
+--- a/src/luaconf.h
++++ b/src/luaconf.h
+@@ -106,7 +106,7 @@
+ 
+ /* Note: changing the following defines breaks the Lua 5.1 ABI. */
+ #define LUA_INTEGER	ptrdiff_t
+-#define LUA_IDSIZE	60	/* Size of lua_Debug.short_src. */
++#define LUA_IDSIZE	256	/* Size of lua_Debug.short_src. */
+ /*
+ ** Size of lauxlib and io.* on-stack buffers. Weird workaround to avoid using
+ ** unreasonable amounts of stack space, but still retain ABI compatibility.
+diff --git a/src/luajit.c b/src/luajit.c
+index 0ebc730..075e66e 100644
+--- a/src/luajit.c
++++ b/src/luajit.c
+@@ -6,7 +6,7 @@
+ ** Copyright (C) 1994-2008 Lua.org, PUC-Rio. See Copyright Notice in lua.h
+ */
+ 
+-#include <stdio.h>
++#include "stdio2.h"
+ #include <stdlib.h>
+ #include <string.h>
+ 
+diff --git a/src/stdio2.h b/src/stdio2.h
+new file mode 100644
+index 0000000..b267bf7
+--- /dev/null
++++ b/src/stdio2.h
+@@ -0,0 +1,42 @@
++#ifndef _STDIO2_H_
++#define _STDIO2_H_
++
++#include <gstdio.h>
++
++#undef stdin
++#undef stdout
++#undef stderr
++#undef getc
++#undef putc
++#undef ferror
++#undef clearerr
++#undef feof
++
++#define FILE G_FILE
++#define feof g_feof
++#define fread g_fread
++#define stdin g_stdin
++#define stdout g_stdout
++#define stderr g_stderr
++#define fputs g_fputs
++#define fopen g_fopen
++#define getc g_getc
++#define putc g_putc
++#define fgetc g_fgetc
++#define fputc g_fputc
++#define freopen g_freopen
++#define ungetc g_ungetc
++#define ferror g_ferror
++#define fclose g_fclose
++#define fprintf g_fprintf
++#define fgets g_fgets
++#define tmpfile g_tmpfile
++#define fscanf g_fscanf
++#define clearerr g_clearerr
++#define fwrite g_fwrite
++#define fseek g_fseek
++#define ftell g_ftell
++#define setvbuf g_setvbuf
++#define fflush g_fflush
++
++#endif
+\ No newline at end of file

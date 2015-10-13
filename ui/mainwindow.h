@@ -170,6 +170,7 @@ private slots:
 	void saveProject();
 	void openProject();
 	void openProject(const QString& fileName);
+    void reloadProject();
 //	void onModified();
 	void startPlayer();
 	void fileAssociations();
@@ -283,6 +284,8 @@ private:
 	QString findWhat_;
 	bool wholeWord_;
 	bool matchCase_;
+    bool wrapSearch_;
+    bool regexp_;
 
 private:
 	QList<QStringList> fileAssociations_;
@@ -365,6 +368,12 @@ private slots:
     void stderrToOutput();
     void makeStarted();
     void makeFinished();
+    void on_actionUI_Theme_triggered();
+    void on_actionEditor_Theme_triggered();
+    void on_actionUI_and_Editor_Theme_triggered();
+    void on_actionReset_UI_and_Editor_Theme_triggered();
+    void on_actionFold_Unfold_All_triggered();
+    void on_actionFold_Unfold_Top_triggered();
 };
 
 #endif // MAINWINDOW_H

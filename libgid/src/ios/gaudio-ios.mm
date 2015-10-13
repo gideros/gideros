@@ -15,7 +15,11 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
+#ifndef TARGET_OS_TV
 @interface GGAVAudioSessionDelegate : NSObject<AVAudioSessionDelegate>
+#else
+@interface GGAVAudioSessionDelegate : NSObject<NSObject>
+#endif
 {
     GGAudioManager *audioManager_;
 }
@@ -35,8 +39,10 @@
 
 - (void)endInterruptionWithFlags:(NSUInteger)flags
 {
+#ifndef TARGET_OS_TV
     if (flags & AVAudioSessionInterruptionFlags_ShouldResume)
         audioManager_->endInterruption();
+#endif
 }
 
 - (void)endInterruption
@@ -77,7 +83,9 @@ void GGAudioManager::systemInit()
     
     systemData_->delegate = [[GGAVAudioSessionDelegate alloc] init];
     systemData_->delegate.audioManager = this;
+#ifndef TARGET_OS_TV
     [[AVAudioSession sharedInstance] setDelegate:systemData_->delegate];
+#endif
     [[NSNotificationCenter defaultCenter]
      addObserver:systemData_->delegate
      selector:@selector(applicationDidBecomeActive:)
@@ -96,8 +104,9 @@ void GGAudioManager::systemCleanup()
     alcMakeContextCurrent(NULL);
     alcDestroyContext(systemData_->context);
     alcCloseDevice(systemData_->device);
-
+#ifndef TARGET_OS_TV
     [[AVAudioSession sharedInstance] setDelegate:nil];
+#endif
     [[NSNotificationCenter defaultCenter] removeObserver:systemData_->delegate];
     [systemData_->delegate release];
 

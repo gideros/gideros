@@ -1,3 +1,4 @@
+#ifndef TARGET_OS_TV
 #include <ginput.h>
 #include <ginput-ios.h>
 #include <UIKit/UIKit.h>
@@ -289,6 +290,8 @@ public:
             CGPoint location = [touch locationInView:view];
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
+            touchEvent->touch.pressure = 0;
+            touchEvent->touch.touchType = 0;
             touchEvent->touch.id = addTouch(touch);
             
             int i = 0;
@@ -297,6 +300,8 @@ public:
                 CGPoint location = [touch2 locationInView:view];
                 touchEvent->allTouches[i].x = location.x * contentScaleFactor;
                 touchEvent->allTouches[i].y = location.y * contentScaleFactor;
+                touchEvent->allTouches[i].pressure = 0;
+                touchEvent->allTouches[i].touchType = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
             }
@@ -340,6 +345,8 @@ public:
             CGPoint location = [touch locationInView:view];
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
+            touchEvent->touch.pressure = 0;
+            touchEvent->touch.touchType = 0;
             touchEvent->touch.id = addTouch(touch);
             
             int i = 0;
@@ -348,6 +355,8 @@ public:
                 CGPoint location = [touch2 locationInView:view];
                 touchEvent->allTouches[i].x = location.x * contentScaleFactor;
                 touchEvent->allTouches[i].y = location.y * contentScaleFactor;
+                touchEvent->allTouches[i].pressure = 0;
+                touchEvent->allTouches[i].touchType = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
             }
@@ -391,6 +400,8 @@ public:
             CGPoint location = [touch locationInView:view];
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
+            touchEvent->touch.pressure = 0;
+            touchEvent->touch.touchType = 0;
             touchEvent->touch.id = addTouch(touch);
             
             int i = 0;
@@ -399,6 +410,8 @@ public:
                 CGPoint location = [touch2 locationInView:view];
                 touchEvent->allTouches[i].x = location.x * contentScaleFactor;
                 touchEvent->allTouches[i].y = location.y * contentScaleFactor;
+                touchEvent->allTouches[i].pressure = 0;
+                touchEvent->allTouches[i].touchType = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
             }
@@ -446,6 +459,8 @@ public:
             CGPoint location = [touch locationInView:view];
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
+            touchEvent->touch.pressure = 0;
+            touchEvent->touch.touchType = 0;
             touchEvent->touch.id = addTouch(touch);
             
             int i = 0;
@@ -454,6 +469,8 @@ public:
                 CGPoint location = [touch2 locationInView:view];
                 touchEvent->allTouches[i].x = location.x * contentScaleFactor;
                 touchEvent->allTouches[i].y = location.y * contentScaleFactor;
+                touchEvent->allTouches[i].pressure = 0;
+                touchEvent->allTouches[i].touchType = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
             }
@@ -733,3 +750,4 @@ void ginput_removeCallbackWithGid(g_id gid)
 }
 
 }
+#endif

@@ -16,6 +16,7 @@ public:
 	QString replaceWith() const;
 	bool wholeWord() const;
 	bool matchCase() const;
+    bool regexp() const;
 	bool forward() const;
 
 	void focusToFindWhat();

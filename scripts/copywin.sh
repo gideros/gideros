@@ -38,6 +38,9 @@ cp $QT_WIN/bin/Qt5OpenGL.dll $BUILD_DIR/win
 cp $QT_WIN/bin/Qt5PrintSupport.dll $BUILD_DIR/win
 cp $QT_WIN/bin/Qt5Widgets.dll $BUILD_DIR/win
 cp $QT_WIN/bin/Qt5Xml.dll $BUILD_DIR/win
+cp $QT_WIN/bin/Qt5Multimedia.dll $BUILD_DIR/win
+cp $QT_WIN/bin/Qt5MultimediaQuick_p.dll $BUILD_DIR/win
+cp $QT_WIN/bin/Qt5MultimediaWidgets.dll $BUILD_DIR/win
 
 mkdir $BUILD_DIR/win/imageformats
 cp $QT_WIN/plugins/imageformats/qjpeg.dll $BUILD_DIR/win/imageformats
@@ -83,6 +86,7 @@ mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/libs
 mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/assets
 mkdir $BUILD_DIR/win/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs
 mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
+mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV/assets
 
 mkdir $BUILD_DIR/win/Templates/Qt
 mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
@@ -100,6 +104,9 @@ cp $BUILD_DIR/win/Qt5OpenGL.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTempla
 cp $BUILD_DIR/win/Qt5PrintSupport.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
 cp $BUILD_DIR/win/Qt5Widgets.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
 cp $BUILD_DIR/win/Qt5Xml.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5Multimedia.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5MultimediaQuick_p.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
+cp $BUILD_DIR/win/Qt5MultimediaWidgets.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate
 mkdir $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
 cp $BUILD_DIR/win/platforms/qminimal.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
 cp $BUILD_DIR/win/platforms/qoffscreen.dll $BUILD_DIR/win/Templates/Qt/WindowsDesktopTemplate/platforms
@@ -128,6 +135,8 @@ cp gdrexport/release/gdrexport.exe $BUILD_DIR/win/Tools
 
 cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/giderosapi.h  $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template
 cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/*.a           $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template
+cp ui/Templates/Xcode4/iOS\ Template/AppleTV/giderosapi.h  $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV
+cp ui/Templates/Xcode4/iOS\ Template/AppleTV/*.a           $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV
 cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/giderosapi.h  $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer
 cp ui/Templates/Xcode4/iOS\ Template/iOS\ Template/*.a           $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer
 
@@ -136,6 +145,7 @@ cp Sdk/include/*.h $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 
 cp plugins/gamekit/source/iOS/gamekit.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/storekit/source/iOS/storekit.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
+cp plugins/mficontroller/source/iOS/mficontroller.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/iad/source/iOS/iad.mm $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/lsqlite3/source/lsqlite3.c $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
 cp plugins/lsqlite3/source/lsqlite3_stub.cpp  $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins
@@ -155,6 +165,8 @@ cp plugins/JSON/source/lua_cjson_stub.cpp $BUILD_DIR/win/GiderosiOSPlayer/Gidero
 
 mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins
 cp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins/* $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins
+mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV/Plugins
+cp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins/* $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV/Plugins
 
 
 cp android/GiderosAndroidPlayer/gideros.jar $BUILD_DIR/win/Templates/Eclipse/Android\ Template

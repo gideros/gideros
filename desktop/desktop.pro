@@ -1,4 +1,4 @@
-QT += core gui opengl network
+QT += core gui opengl network multimedia
 
 win32{
     RC_FILE = other_files/desktop.rc
@@ -35,6 +35,10 @@ macx {
         -L"../libgid/external/glew-1.10.0/lib/clang_64" -lGLEW
 
     QMAKE_LFLAGS += -pagezero_size 10000 -image_base 100000000
+    QMAKE_CFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
+    QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CXXFLAGS_RELEASE_WITH_DEBUGINFO
+    QMAKE_OBJECTIVE_CFLAGS_RELEASE =  $$QMAKE_OBJECTIVE_CFLAGS_RELEASE_WITH_DEBUGINFO
+    QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
 }
 
 LIBS += -lpthread

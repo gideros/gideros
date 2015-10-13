@@ -34,9 +34,13 @@
 
 #include <gui.h>
 #include <ginput.h>
+#ifndef TARGET_OS_TV
 #include <ginput-ios.h>
+#endif
 #include <gevent.h>
+#ifndef TARGET_OS_TV
 #include <ggeolocation.h>
+#endif
 
 #include "giderosapi.h"
 
@@ -251,12 +255,15 @@ public:
 	void exitRenderLoopHelper();
 	
 	void didReceiveMemoryWarning();
-	
+#ifndef TARGET_OS_TV	
 	BOOL shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation);	
 	void willRotateToInterfaceOrientationHelper(UIInterfaceOrientation toInterfaceOrientation);
 	void willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation);
 	void didRotateFromInterfaceOrientation(UIInterfaceOrientation fromInterfaceOrientation);
     NSUInteger supportedInterfaceOrientations();
+#else
+        void willRotateToInterfaceOrientationHelperTV(Orientation toInterfaceOrientation);
+#endif
     
     void handleOpenUrl(NSURL *url);
     
@@ -616,7 +623,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	gpath_setAbsolutePathFlags(GPATH_RW | GPATH_REAL);
 	
     gpath_setDefaultDrive(0);
-	
+
 	gvfs_init();
 
 	// event
@@ -626,10 +633,14 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
     gapplication_init();
 	
 	// input
+#ifndef TARGET_OS_TV
     ginput_init();
+#endif
 	
 	// geolocation
+	#ifndef TARGET_OS_TV
 	ggeolocation_init();
+	#endif
 
 	// http
 	ghttp_Init();
@@ -657,13 +668,28 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	application_->enableExceptions();
 	application_->initialize();
 	application_->setResolution(width_, height_);
+#ifndef TARGET_OS_TV
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+#else
+    willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
+#endif
 
 	Binder::disableTypeChecking();
 	
 	hardwareOrientation_ = ePortrait;
     
     deviceOrientation_ = ePortrait;
+
+#ifdef TARGET_OS_TV
+  	if (width_>height_){
+		hardwareOrientation_ = eLandscapeLeft;
+		deviceOrientation_ = eLandscapeLeft;
+    }
+	else {
+		hardwareOrientation_ = ePortrait;
+		deviceOrientation_ = ePortrait;
+	}
+#endif
 
 	running_ = false;
 
@@ -688,11 +714,20 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 		
 		NSString* resourceDirectory = [[NSBundle mainBundle] resourcePath];
 		printf("%s\n", [resourceDirectory UTF8String]);
+        
+        NSArray *paths2 = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *cachesDirectory = [paths2 objectAtIndex:0];
+        printf("%s\n", [cachesDirectory UTF8String]);
 		
-		setDocumentsDirectory([documentsDirectory UTF8String]);
+#ifdef TARGET_OS_TV
+		setDocumentsDirectory([cachesDirectory UTF8String]);
 		setTemporaryDirectory([temporaryDirectory UTF8String]);
-		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));		
-
+		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));	
+#else
+        setDocumentsDirectory([documentsDirectory UTF8String]);
+		setTemporaryDirectory([temporaryDirectory UTF8String]);
+		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));
+#endif
 		loadProperties();
 
 		// Gideros has became open source and free, because this, there's no more splash art
@@ -739,10 +774,14 @@ ApplicationManager::~ApplicationManager()
 	ghttp_Cleanup();
 	
 	// geolocation
+	#ifndef TARGET_OS_TV
 	ggeolocation_cleanup();
+	#endif
 	
 	// input
+#ifndef TARGET_OS_TV
     ginput_cleanup();
+#endif
 	
     // application
     gapplication_cleanup();
@@ -761,7 +800,11 @@ ApplicationManager::~ApplicationManager()
 
 void ApplicationManager::drawFirstFrame()
 {
+#ifndef TARGET_OS_TV
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+#else
+    willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
+#endif
 
 	[view_ setFramebuffer];
 	application_->clearBuffers();
@@ -1033,13 +1076,18 @@ void ApplicationManager::loadProperties()
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
+#ifndef TARGET_OS_TV
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+#else
+    willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
+#endif
 
 	g_setFps(properties_.fps);
-
+#ifndef TARGET_OS_TV
 	ginput_setMouseToTouchEnabled(properties_.mouseToTouch);
 	ginput_setTouchToMouseEnabled(properties_.touchToMouse);
 	ginput_setMouseTouchOrder(properties_.mouseTouchOrder);
+#endif
 }
 
 void ApplicationManager::loadLuaFiles()
@@ -1110,14 +1158,18 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
+#ifndef TARGET_OS_TV
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
+#else
+    willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
+#endif
 
 	g_setFps(properties_.fps);
-	
+#ifndef TARGET_OS_TV	
 	ginput_setMouseToTouchEnabled(properties_.mouseToTouch);
 	ginput_setTouchToMouseEnabled(properties_.touchToMouse);
 	ginput_setMouseTouchOrder(properties_.mouseTouchOrder);
-	
+#endif
 
     GStatus status;
     for (std::size_t i = 0; i < luafiles.size(); ++i)
@@ -1171,8 +1223,13 @@ void ApplicationManager::drawIPs()
 void ApplicationManager::setProjectName(const char *projectName)
 {
 	glog_v("setProjectName: %s", projectName);
-	
-	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSArray* paths;
+#ifdef TARGET_OS_TV
+    paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+#else
+    paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+#endif
+    
 	std::string dir = [[paths objectAtIndex:0] UTF8String];
 	
 	if (dir[dir.size() - 1] != '/')
@@ -1296,6 +1353,7 @@ void ApplicationManager::exitRenderLoopHelper()
 #endif
 }
 
+#ifndef TARGET_OS_TV
 void ApplicationManager::touchesBegan(NSSet *touches, NSSet *allTouches)
 {
     ginputp_touchesBegan(touches, allTouches, (UIView*)view_);
@@ -1315,6 +1373,7 @@ void ApplicationManager::touchesCancelled(NSSet *touches, NSSet *allTouches)
 {
     ginputp_touchesCancelled(touches, allTouches, (UIView*)view_);
 }
+#endif
 
 void ApplicationManager::didReceiveMemoryWarning()
 {
@@ -1332,6 +1391,7 @@ void ApplicationManager::didReceiveMemoryWarning()
 #endif
 }
 
+#ifndef TARGET_OS_TV
 BOOL ApplicationManager::shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation)
 {
 	BOOL result;
@@ -1372,7 +1432,29 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 
     return result;
 }
+#endif
 
+#ifdef TARGET_OS_TV
+void ApplicationManager::willRotateToInterfaceOrientationHelperTV(Orientation deviceOrientation_)
+{
+    application_->getApplication()->setDeviceOrientation(deviceOrientation_);
+
+
+
+    Orientation orientation = application_->orientation();
+
+    bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
+    bool b2 = deviceOrientation_ == ePortrait || deviceOrientation_ == ePortraitUpsideDown;
+
+    if (b1 != b2)
+        hardwareOrientation_ = deviceOrientation_;
+    else
+        hardwareOrientation_ = orientation;
+
+    application_->setHardwareOrientation(hardwareOrientation_);
+
+}
+#else
 void ApplicationManager::willRotateToInterfaceOrientationHelper(UIInterfaceOrientation toInterfaceOrientation)
 {
     switch (toInterfaceOrientation)
@@ -1427,6 +1509,7 @@ void ApplicationManager::didRotateFromInterfaceOrientation(UIInterfaceOrientatio
     [autorotationMutex_ unlock];
 #endif
 }
+#endif
 
 void ApplicationManager::handleOpenUrl(NSURL *url)
 {
@@ -1515,7 +1598,7 @@ void gdr_resume()
 {
 	s_manager->resume();
 }
-
+#ifndef TARGET_OS_TV
 BOOL gdr_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation)
 {
 	return s_manager->shouldAutorotateToInterfaceOrientation(interfaceOrientation);
@@ -1535,12 +1618,13 @@ NSUInteger gdr_supportedInterfaceOrientations()
 {
     return s_manager->supportedInterfaceOrientations();
 }
-
+#endif
 void gdr_didReceiveMemoryWarning()
 {
 	s_manager->didReceiveMemoryWarning();
 }
 
+#ifndef TARGET_OS_TV
 void gdr_touchesBegan(NSSet *touches, NSSet *allTouches)
 {
 	s_manager->touchesBegan(touches, allTouches);
@@ -1560,6 +1644,7 @@ void gdr_touchesCancelled(NSSet *touches, NSSet *allTouches)
 {
 	s_manager->touchesCancelled(touches, allTouches);
 }
+#endif
 
 void gdr_handleOpenUrl(NSURL *url)
 {

@@ -1,0 +1,121 @@
+/*
+
+ * Macmur Theme for Mumble
+ * Version 1.2
+ * For updates check samfielding.net/macmur
+
+*/
+
+* {
+  selection-background-color: #a6cafe;
+  selection-color: white;
+  color: #2C2F33;
+  font-family: "Helvetica Neue", Times, serif;
+}
+
+QTreeView {
+  background-color: #F0F1F5;
+  color: #4D4D4D;
+  selection-background-color: #2770F6;
+  selection-color: #ffffff;
+  border: 0px;
+  font-family: "Helvetica Neue", Times, serif;
+  opacity: 0.4;
+}
+
+QToolTip {
+	background: #EAEAEA;
+	color: #111111;
+}
+
+
+QMainWindow#MainWindow {
+	background: #F0F4F9;
+}
+
+QMenuBar {
+	background: #F0F4F9;
+}
+
+
+QTextBrowser {
+  background-color: #ffffff;
+  border: 0px solid;
+  color: #4D4D4D;
+  padding: 0px;
+  font-family: "Helvetica Neue", Helvetica, serif;
+}
+
+a {
+  color: #0D6EFF;
+  text-decoration: none;
+}
+
+#qdwChat QTextEdit {
+  color: #000000;
+  font-size: 12px;
+  background-color: #ffffff;
+  font-style: bold;
+  font-family: "Helvetica Neue", Times, serif;
+}
+QToolBar::separator {
+  background: #868686;
+  height: 1px;
+  margin-left: -0px;
+  margin-right: -0px;
+  width: 1px;
+  padding: -100px;
+}
+
+QToolBar {
+  display: none;
+  }
+
+
+QToolButton {
+  padding-right: 10px;
+  height: 13px;
+  width: 13px;	
+  margin: 0px;
+  border: 0px; 
+}
+
+QToolButton:pressed {
+  padding-right: 10px;
+  height: 13px;
+  width: 13px;	
+  margin: 0px;
+  border: 0px; 
+}
+
+QToolButton:on {
+  padding-right: 10px;
+  height: 13px;
+  width: 13px;	
+  margin: 0px;
+  border: 0px; 
+}
+
+.log-time {
+  color: #828C9F;
+}
+
+.log-channel {
+  color: #2C2F33;
+  font-weight:bold;
+}
+
+.log-server {
+  color: #2C2F33;
+  font-weight:bold;
+}
+
+.log-source {
+  color: #2C2F33;
+  font-weight:bold;
+}
+
+.log-target {
+  color: #2C2F33;
+  font-weight:bold;
+}

@@ -36,6 +36,11 @@ bool ReplaceDialog::matchCase() const
 	return ui.matchCase->isChecked();
 }
 
+bool ReplaceDialog::regexp() const
+{
+    return ui.regexp->isChecked();
+}
+
 void ReplaceDialog::focusToFindWhat()
 {
 	ui.findWhat->setFocus(Qt::OtherFocusReason);

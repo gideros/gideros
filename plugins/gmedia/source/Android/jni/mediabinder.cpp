@@ -20,20 +20,19 @@ static lua_State *L = NULL;
 
 static bool file_exists(const char *filename)
 {
-  return ( access( filename, F_OK ) != -1 );
+	bool exists = false;
+	G_FILE * pFile;
+	pFile = g_fopen(filename,"r");
+	if (pFile!=NULL)
+	{
+		exists = true;
+		g_fclose(pFile);
+	}
+	return exists;
 }
-
+ 
 static std::string copyFile(std::string path){
     //check extenstion if should be copied
-    const char *ext = strrchr(path.c_str(), '.');
-    if (ext)
-        ext++;
-    if (!strcasecmp(ext, "jpeg") ||
-        !strcasecmp(ext, "jpg") ||
-        !strcasecmp(ext, "png") ||
-        !strcasecmp(ext, "wav") ||
-        !strcasecmp(ext, "lua"))
-    {
         //get file name
         const char *filename = strrchr(path.c_str(), '/');
         if(filename == NULL){
@@ -52,14 +51,14 @@ static std::string copyFile(std::string path){
         else
             filename++;
         std::string copyPath = std::string("|D|") + std::string(filename);
-
+ 
         //check maybe file exists already exists
         if(!file_exists(g_pathForFile(copyPath.c_str())))
         {
-
+ 
             G_FILE *filer = g_fopen(path.c_str(), "rb");
             G_FILE *filew = g_fopen(copyPath.c_str(),"wb");
-
+ 
             char buffer[100];
             int numr,numw;
             while(g_feof(filer)==0){
@@ -79,8 +78,6 @@ static std::string copyFile(std::string path){
             g_fclose(filew);
         }
         return copyPath;
-    }
-    return path;
 }
 
 static int lua_print(lua_State* L, const char* str)

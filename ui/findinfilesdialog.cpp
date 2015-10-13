@@ -33,6 +33,10 @@ bool FindInFilesDialog::matchCase() const
 	return ui.matchCase->isChecked();
 }
 
+bool FindInFilesDialog::regexp() const
+{
+    return ui.regexp->isChecked();
+}
 
 void FindInFilesDialog::focusToFindWhat()
 {
