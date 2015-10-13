@@ -35,6 +35,14 @@ void dx11ShaderBuffer::prepareDraw()
 {
 }
 
+void dx11ShaderBuffer::unbound()
+{
+}
+
+void dx11ShaderBuffer::needDepthStencil()
+{
+}
+
 void dx11ShaderBuffer::readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data)
 {
 	//TODO

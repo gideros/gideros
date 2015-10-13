@@ -1703,7 +1703,15 @@ static void create_stroke_geometry(struct path *path) {
 			pepy = npepy;
 		}
 
-		size_t ncorners = (kv_size(corners) - (closed ? 0 : 7)) / 5;
+		size_t ncorners = kv_size(corners);
+		if (!closed)
+		{
+			if (ncorners>7)
+				ncorners-=7;
+			else
+				ncorners=0;
+		}
+		ncorners/=5;
 
 		for (j = 0; j < ncorners; j++) {
 			int j0 = j;

@@ -116,6 +116,8 @@ public:
 	virtual ~dx11ShaderBuffer();
 	void readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data);
 	void prepareDraw();
+	void unbound();
+	void needDepthStencil();
 };
 
 class dx11ShaderEngine : public ShaderEngine
