@@ -63,15 +63,17 @@ public:
 	static ShaderProgram *stdTexture;
 	static ShaderProgram *stdTextureColor;
 	static ShaderProgram *stdParticle;
+	static ShaderProgram *pathShaderFillC;
+	static ShaderProgram *pathShaderStrokeC;
 	enum StdData {
 		DataVertex=0, DataColor=1, DataTexture=2
 	};
     virtual void activate()=0;
     virtual void deactivate()=0;
-    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache)=0;
+    virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache,int stride=0,int offset=0)=0;
     virtual void setConstant(int index,ConstantType type, int mult,const void *ptr)=0;
     virtual void drawArrays(ShapeType shape, int first, unsigned int count)=0;
-    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache)=0;
+    virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first=0,unsigned int dcount=0)=0;
     virtual bool isValid()=0;
     virtual const char *compilationLog()=0;
     void Retain();
@@ -123,10 +125,44 @@ public:
 	virtual ~ShaderBuffer() { };
 	virtual void prepareDraw()=0;
 	virtual void readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data)=0;
+	virtual void unbound()=0;
+	virtual void needDepthStencil()=0;
 };
 
 class ShaderEngine
 {
+public:
+	enum StencilOp {
+		STENCIL_KEEP,
+		STENCIL_ZERO,
+		STENCIL_REPLACE,
+		STENCIL_INCR,
+		STENCIL_INCR_WRAP,
+		STENCIL_DECR,
+		STENCIL_DECR_WRAP,
+		STENCIL_INVERT
+	};
+	enum StencilFunc {
+		STENCIL_DISABLE,
+		STENCIL_NEVER,
+		STENCIL_LESS,
+		STENCIL_LEQUAL,
+		STENCIL_GREATER,
+		STENCIL_GEQUAL,
+		STENCIL_EQUAL,
+		STENCIL_NOTEQUAL,
+		STENCIL_ALWAYS
+	};
+	struct DepthStencil {
+		bool dTest;
+		StencilFunc sFunc;
+		int sRef;
+		unsigned int sMask;
+		StencilOp sFail;
+		StencilOp dFail;
+		StencilOp dPass;
+		bool sClear;
+	};
 protected:
 	//CONSTANTS
 	Matrix4 oglProjection;
@@ -165,6 +201,8 @@ protected:
 		int x,y,w,h;
 	};
 	std::stack<Scissor> scissorStack;
+	std::stack<DepthStencil> dsStack;
+	DepthStencil dsCurrent;
 public:
 	enum BlendFactor
 	{
@@ -207,7 +245,9 @@ public:
 	virtual void setColor(float r,float g,float b,float a);
 	virtual void clearColor(float r,float g,float b,float a)=0;
 	virtual void bindTexture(int num,ShaderTexture *texture)=0;
-	virtual void setDepthTest(bool enable)=0;
+	virtual ShaderEngine::DepthStencil pushDepthStencil();
+	virtual void popDepthStencil();
+	virtual void setDepthStencil(DepthStencil state)=0;
 	virtual void setBlendFunc(BlendFactor sfactor, BlendFactor dfactor)=0;
 	//Clipping
 	virtual void pushClip(float x,float y,float w,float h);

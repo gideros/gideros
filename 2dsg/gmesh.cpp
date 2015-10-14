@@ -334,7 +334,11 @@ void GMesh::clearTexture()
 void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey)
 {
 	if (mesh3d_)
-		ShaderEngine::Engine->setDepthTest(true);
+	{
+		 ShaderEngine::DepthStencil stencil=ShaderEngine::Engine->pushDepthStencil();
+		 stencil.dTest=true;
+		 ShaderEngine::Engine->setDepthStencil(stencil);
+	}
 	if (vertices_.size() == 0) return;
 
 	ShaderProgram *p=colors_.empty()?ShaderProgram::stdBasic:ShaderProgram::stdColor;
@@ -407,7 +411,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 void GMesh::childrenDrawn()
 {
     if (mesh3d_)
-		ShaderEngine::Engine->setDepthTest(false);
+   	 ShaderEngine::Engine->popDepthStencil();
 }
 
 void GMesh::extraBounds(float *minx, float *miny, float *maxx, float *maxy) const

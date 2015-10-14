@@ -1,10 +1,14 @@
 package com.giderosmobile.android.player;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.BufferedOutputStream;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -14,6 +18,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 
+import dalvik.system.DexClassLoader;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -29,6 +34,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.View;
@@ -142,6 +148,84 @@ public class GiderosApplication
 			if (allfiles_ != null)
 				GiderosApplication.nativeSetFileSystem(allfiles_);
 		}	
+		
+		loadLpkPlugins();
+	}
+	
+	public void loadLpkPlugins()
+	{
+		Activity activity=WeakActivityHolder.get();
+		AssetManager assetManager = activity.getAssets();
+		try {
+			String[] dexs = assetManager.list("dex");
+			String libraryPath = activity.getApplicationContext().getApplicationInfo().nativeLibraryDir;
+			Log.v("LPK","Looking for LPK plugins");
+			for (String dexn:dexs)
+			{
+				String dex=dexn.substring(0, dexn.indexOf("."));
+				Log.v("LPK","Found "+dexn+" ("+dex+")");
+				File dexInternalStoragePath = new File(activity.getDir("dex", Context.MODE_PRIVATE),dex+".dex");
+				if (!dexInternalStoragePath.exists())
+				{
+					//Copy dex to private area
+			    BufferedInputStream bis = null;
+				OutputStream dexWriter = null;
+
+				  final int BUF_SIZE = 8 * 1024;
+				  try {
+				      bis = new BufferedInputStream(assetManager.open("dex/"+dex+".dex"));
+				      dexWriter = new BufferedOutputStream(new FileOutputStream(dexInternalStoragePath));
+				      byte[] buf = new byte[BUF_SIZE];
+				      int len;
+				      while((len = bis.read(buf, 0, BUF_SIZE)) > 0) {
+				          dexWriter.write(buf, 0, len);
+				      }
+				      dexWriter.close();
+				      bis.close();				      
+				  } catch (Exception ge)
+				  {
+						ge.printStackTrace();
+					  dexInternalStoragePath.delete();
+				  }
+				}
+				if (dexInternalStoragePath.exists())
+				{
+					//Load plugin from dex
+					  // Internal storage where the DexClassLoader writes the optimized dex file to
+					  final File optimizedDexOutputPath = activity.getDir("optdex", Context.MODE_PRIVATE);
+
+					  DexClassLoader cl = new DexClassLoader(dexInternalStoragePath.getAbsolutePath(),
+					                                         optimizedDexOutputPath.getAbsolutePath(),
+					                                         libraryPath,
+					                                         activity.getClassLoader());
+					  try {
+						Class<?> k=cl.loadClass("com.giderosmobile.android.plugins."+dex+".Loader");
+						try {
+							k.newInstance();
+							Log.v("LPK","Loaded "+dex+" :"+k.getName());
+							try {
+								Method mtd = k.getMethod("onLoad", Activity.class);
+								mtd.invoke(null, activity);
+								Log.v("LPK","Initialized "+dex+" :"+k.getName());
+							} catch (NoSuchMethodException le) {
+							} catch (Exception le) {
+								le.printStackTrace();
+							}
+						} catch (InstantiationException e) {
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							e.printStackTrace();
+						}
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Error e) {
+			e.printStackTrace();
+		}
 	}
 
 	private String allfiles_ = null;

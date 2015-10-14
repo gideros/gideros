@@ -27,7 +27,7 @@ public class GiderosAndroidPlayerActivity extends Activity implements OnTouchLis
 		System.loadLibrary("lfs");
 		System.loadLibrary("lsqlite3");
 		System.loadLibrary("json");
-		System.loadLibrary("bitop");
+		System.loadLibrary("bitop");		
 	}
 
 	static private String[] externalClasses = {
@@ -217,6 +217,7 @@ class GiderosGLSurfaceView extends GLSurfaceView
 	{
 		super(context);
 		setEGLContextClientVersion(2);
+		setEGLConfigChooser(8,8,8,0,16,8);
 		mRenderer = new GiderosRenderer();
 		setRenderer(mRenderer);
 		if (android.os.Build.VERSION.SDK_INT >= 11)

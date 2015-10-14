@@ -14,6 +14,8 @@ ShaderProgram *ShaderProgram::stdColor=NULL;
 ShaderProgram *ShaderProgram::stdTexture=NULL;
 ShaderProgram *ShaderProgram::stdTextureColor=NULL;
 ShaderProgram *ShaderProgram::stdParticle=NULL;
+ShaderProgram *ShaderProgram::pathShaderFillC=NULL;
+ShaderProgram *ShaderProgram::pathShaderStrokeC=NULL;
 ShaderEngine *ShaderEngine::Engine=NULL;
 
 void ShaderProgram::Retain()
@@ -83,6 +85,33 @@ void ShaderEngine::reset(bool reinit)
     oglVPProjection.identity();
     oglModel.identity();
     oglCombined.identity();
+    dsCurrent.dTest=false;
+    dsCurrent.sRef=0;
+    dsCurrent.sMask=0xFF;
+    dsCurrent.sClear=false;
+    dsCurrent.sFail=STENCIL_KEEP;
+    dsCurrent.dFail=STENCIL_KEEP;
+    dsCurrent.dPass=STENCIL_KEEP;
+    dsCurrent.sFunc=STENCIL_DISABLE;
+    while (!dsStack.empty())
+    	dsStack.pop();
+    setDepthStencil(dsCurrent);
+}
+
+ShaderEngine::DepthStencil ShaderEngine::pushDepthStencil()
+{
+	dsStack.push(dsCurrent);
+	return dsCurrent;
+}
+
+void ShaderEngine::popDepthStencil()
+{
+	if (!dsStack.empty())
+	{
+		dsCurrent=dsStack.top();
+		dsStack.pop();
+	    setDepthStencil(dsCurrent);
+	}
 }
 
 void ShaderEngine::prepareDraw(ShaderProgram *program)

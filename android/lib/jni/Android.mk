@@ -30,6 +30,7 @@ LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES
 
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../2dsg \
+	$(LOCAL_PATH)/../../../2dsg/paths \
 	$(LOCAL_PATH)/../../../libnetwork \
 	$(LOCAL_PATH)/../../../external/glu \
 	$(LOCAL_PATH)/../../../libpvrt \
@@ -240,6 +241,9 @@ LOCAL_SRC_FILES += \
 	../../../2dsg/grendertarget.cpp \
 	../../../2dsg/completeevent.cpp \
 	../../../2dsg/Matrices.cpp \
+    ../../../2dsg/paths/path.cpp \
+    ../../../2dsg/paths/ft-path.c \
+    ../../../2dsg/paths/svg-path.c \
 	../../../libgideros/luautil.cpp
 	
 # LOCAL_SRC_FILES += ../../../2dsg/clipper.cpp
@@ -268,6 +272,7 @@ LOCAL_SRC_FILES += \
 	../../../2dsg/gfxbackends/gl2/gl2ShaderBuffer.cpp \
 	../../../2dsg/gfxbackends/gl2/gl2ShaderTexture.cpp \
 	../../../2dsg/gfxbackends/gl2/gl2ShaderProgram.cpp \
+	../../../2dsg/gfxbackends/gl2/gl2PathShaders.cpp \
 	../../../2dsg/gfxbackends/gl2/gl2ShaderEngine.cpp 
 	
 # zlib (12 files)
@@ -426,6 +431,7 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/audiobinder.cpp \
 	../../../luabinding/zlibbinder.cpp \
 	../../../luabinding/shaderbinder.cpp \
+	../../../luabinding/path2dbinder.cpp \
 	../../../luabinding/rendertargetbinder.cpp
 
 #XMP
