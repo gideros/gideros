@@ -132,7 +132,7 @@ void g_setFps(int fps)
 
 void g_exit()
 {
-	
+    exit(0);
 }
 
 bool g_checkStringProperty(bool isSet, const char* what){
