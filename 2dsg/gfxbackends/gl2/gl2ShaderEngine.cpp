@@ -181,10 +181,10 @@ void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
 #endif
 
 #ifdef OPENGL_ES
-	glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 #endif
 }
@@ -230,6 +230,9 @@ void ogl2ShaderEngine::reset(bool reinit) {
 #endif
 		ogl2ShaderProgram::resetAll();
 	}
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+
 	ShaderEngine::reset(reinit);
 	s_texture = 0;
 	s_depthEnable = 0;
