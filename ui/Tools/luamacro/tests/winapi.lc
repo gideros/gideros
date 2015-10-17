@@ -1,0 +1,210 @@
+#define WINDOWS_LEAN_AND_MEAN
+#include <windows.h>
+#include <string.h>
+
+#define eq(s1,s2) (strcmp(s1,s2)==0)
+
+#define WBUFF 2048
+#define MAX_SHOW 100
+
+module "winapi" {
+
+class window {
+  HWND hwnd;
+
+  constructor (HWND h) {
+    this->hwnd = h;
+  }
+
+  static lua_State *sL;
+
+  static BOOL enum_callback(HWND hwnd,LPARAM data) {
+    int ref = (int)data;
+    lua_rawgeti(sL,LUA_REGISTRYINDEX,ref);
+    push_new_window(sL,hwnd);
+    lua_call(sL,1,0);
+    return TRUE;
+  }
+
+  def handle() {
+    lua_pushinteger(L,(int)this->hwnd);
+    return 1;
+  }
+
+  static char buff[WBUFF];
+
+  def get_text() {
+    GetWindowText(this->hwnd,buff,sizeof(buff));
+    lua_pushstring(L,buff);
+    return 1;
+  }
+
+  def show(Int flags = SW_SHOW) {
+    ShowWindow(this->hwnd,flags);
+    return 0;
+  }
+
+  def get_position() {
+    RECT rect;
+    GetWindowRect(this->hwnd,&rect);
+    lua_pushinteger(L,rect.left);
+    lua_pushinteger(L,rect.top);
+    return 2;
+  }
+
+  def get_bounds() {
+    RECT rect;
+    GetWindowRect(this->hwnd,&rect);
+    lua_pushinteger(L,rect.right - rect.left);
+    lua_pushinteger(L,rect.bottom - rect.top);
+    return 2;
+  }
+
+  def is_visible() {
+    lua_pushboolean(L,IsWindowVisible(this->hwnd));
+    return 1;
+  }
+
+  def destroy () {
+    DestroyWindow(this->hwnd);
+    return 0;
+  }
+
+  def resize(Int x0, Int y0, Int w, Int h) {
+    MoveWindow(this->hwnd,x0,y0,w,h,TRUE);
+    return 0;
+  }
+
+  def send_message(Int msg, Int wparam, Int lparam) {
+    SendMessage(this->hwnd,msg,wparam,lparam);
+  }
+
+  def enum_children(Value callback) {
+    int ref;
+    sL = L;
+    lua_pushvalue(L,callback);
+    ref  = luaL_ref(L,LUA_REGISTRYINDEX);
+    EnumChildWindows(this->hwnd,&enum_callback,ref);
+    luaL_unref(L,LUA_REGISTRYINDEX,ref);
+    return 0;
+  }
+
+  def get_parent() {
+    push_new_window(L,GetParent(this->hwnd));
+    return 1;
+  }
+
+  def get_module_filename() {
+    int sz = GetWindowModuleFileName(this->hwnd,buff,sizeof(buff));
+    buff[sz] = '\0';
+    lua_pushstring(L,buff);
+    return 1;
+  }
+
+  def __tostring() {
+    GetWindowText(this->hwnd,buff,sizeof(buff));
+    if (strlen(buff) > MAX_SHOW) {
+      strcpy(buff+MAX_SHOW,"...");
+    }
+    lua_pushstring(L,buff);
+    return 1;
+  }
+
+  def __eq(window other) {
+    lua_pushboolean(L,this->hwnd == other->hwnd);
+    return 1;
+  }
+
+}
+
+def find_window(Str cname, Str wname) {
+  HWND hwnd;
+  if (eq(cname,"")) {
+    cname = NULL;
+  }
+  hwnd = FindWindow(cname,wname);
+  push_new_window(L,hwnd);
+  return 1;
+}
+
+def active_window() {
+  push_new_window(L, GetActiveWindow());
+  return 1;
+}
+
+def desktop_window() {
+  push_new_window(L, GetDesktopWindow());
+  return 1;
+}
+
+def enum_windows(Value callback) {
+  int ref;
+  sL = L;
+  lua_pushvalue(L,callback);
+  ref  = luaL_ref(L,LUA_REGISTRYINDEX);
+  EnumWindows(&enum_callback,ref);
+  luaL_unref(L,LUA_REGISTRYINDEX,ref);
+  return 0;
+}
+
+def tile_windows(window parent, Boolean horiz, Value kids, Value bounds) {
+  RECT rt;
+  HWND *kids_arr;
+  int i,n_kids;
+  LPRECT lpRect = NULL;
+  if (! lua_isnoneornil(L,bounds)) {
+    lua_pushvalue(L,bounds);
+    Int_get(rt.left,"left");
+    Int_get(rt.top,"top");
+    Int_get(rt.right,"right");
+    Int_get(rt.bottom,"bottom");
+    lua_pop(L,1);
+  }
+  n_kids = lua_objlen(L,kids);
+  kids_arr = (HWND *)malloc(sizeof(HWND)*n_kids);
+  for (i = 0; i < n_kids; ++i) {
+    window *w;
+    lua_rawgeti(L,kids,i+1);
+    w = window_arg(L,-1);
+    kids_arr[i] = w->hwnd;
+  }
+  TileWindows(parent->hwnd,horiz ? MDITILE_HORIZONTAL : MDITILE_VERTICAL, lpRect, n_kids, kids_arr);
+  free(kids_arr);
+  return 0;
+}
+
+def shell_exec(StrNil verb, Str file, StrNil parms, StrNil dir, Int show=SW_SHOWNORMAL) {
+  int res = (int)ShellExecute(NULL,verb,file,parms,dir,show);
+  if (res > 32) {
+    lua_pushboolean(L,1);
+    return 1;
+  } else {
+    const char *msg;
+    switch(res) {
+      #define check_err(NAME) case NAME: msg = #NAME; break;
+      check_err(ERROR_FILE_NOT_FOUND);
+      check_err(ERROR_PATH_NOT_FOUND);
+      check_err(ERROR_BAD_FORMAT);
+      check_err(SE_ERR_ACCESSDENIED);
+      check_err(SE_ERR_ASSOCINCOMPLETE);
+      check_err(SE_ERR_DLLNOTFOUND);
+      check_err(SE_ERR_NOASSOC);
+      check_err(SE_ERR_OOM);
+      check_err(SE_ERR_SHARE);
+      default: msg = "unknown error, probably DDE";
+      #undef check_err
+    }
+    lua_pushnil(L);
+    lua_pushstring(L,msg);
+    return 2;
+  }
+}
+
+constants {
+  SW_HIDE,
+  SW_MAXIMIZE,
+  SW_MINIMIZE,
+  SW_SHOWNORMAL
+}
+
+}
