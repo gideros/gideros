@@ -43,7 +43,7 @@ void setKeepAwake(bool awake)
 {
     if (awake){
         #if defined(Q_OS_WIN)
-            SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_CONTINUOUS);
+            SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
             
         #elif defined(Q_OS_MAC)
             if(success == kIOReturnSuccess) {
