@@ -28,6 +28,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    NSArray *path1 = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cachesDirectory = [path1 objectAtIndex:0];
+        
+    [self copyUserDefaultsToCache];
+    
     CGRect bounds = [[UIScreen mainScreen] bounds];
     
     self.window = [[[UIWindow alloc] initWithFrame:bounds] autorelease];
@@ -40,7 +45,7 @@
     
     int height = bounds.size.width;
     int width = bounds.size.height;
-
+    
     
     NSString *path = [[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"assets"] stringByAppendingPathComponent:@"properties.bin"];
     
@@ -112,16 +117,69 @@
     gdr_exitGameLoop();
     [self.viewController stopAnimation];
     gdr_deinitialize();
+    
+    [self copyCacheToUserDefaults];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     gdr_background();
+    [self copyCacheToUserDefaults];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     gdr_foreground();
+}
+
+- (void) clearUserDefaults {
+    NSDictionary * myDefaults = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+    NSArray *keyArr = [myDefaults allKeys];
+    for (NSString *key in keyArr)
+    {
+        NSArray *fileArray = [key componentsSeparatedByString:@"|"];
+        if (fileArray && [[fileArray objectAtIndex:0] isEqualToString:@"FILE"]) {
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
+        }
+    }
+}
+
+- (void) copyCacheToUserDefaults {
+    [self clearUserDefaults];
+    NSArray *path = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cachesDirectory = [path objectAtIndex:0];
+    NSArray* dirs = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:cachesDirectory
+                                                                        error:NULL];
+    
+    [dirs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        NSString *filename = [NSString stringWithFormat:@"FILE|%@", (NSString *)obj];
+        NSLog(@"Writing file %@ to NSUserDefaults", (NSString *)obj);
+        [[NSUserDefaults standardUserDefaults] setObject:[NSData dataWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", cachesDirectory, (NSString *)obj]] forKey:filename];
+    }];
+    
+    NSLog(@"Syncing NSUserDefaults");
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+}
+
+- (void) copyUserDefaultsToCache {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cachesDirectory = [paths objectAtIndex:0];
+    NSDictionary * myDefaults = [[NSUserDefaults standardUserDefaults] dictionaryRepresentation];
+    NSArray *keyArr = [myDefaults allKeys];
+    for (NSString *key in keyArr)
+    {
+        NSArray *fileArray = [key componentsSeparatedByString:@"|"];
+        NSLog(@"Read key %@", key);
+        
+        if (fileArray && [[fileArray objectAtIndex:0] isEqualToString:@"FILE"]) {
+            NSString * fileName = [fileArray objectAtIndex:1];
+            NSLog(@"Getting file %@ from NSUserDefaults", fileName);
+            NSData * thisData = [myDefaults objectForKey:key];
+            [thisData writeToFile:[NSString stringWithFormat:@"%@/%@", cachesDirectory, fileName] atomically:NO];
+            
+        }
+    }
 }
 
 - (void)dealloc

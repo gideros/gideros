@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5E68179A1BC6FFB20002D406 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E6817991BC6FFB20002D406 /* Images.xcassets */; };
 		5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F515CEF227007B5365 /* AppDelegate.m */; };
 		5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F715CEF227007B5365 /* EAGLView.m */; };
 		5F4153FC15CEF227007B5365 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4153F915CEF227007B5365 /* ViewController.m */; };
@@ -54,7 +55,6 @@
 		B25B27FE1BAC0F3D0034D6C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B27FD1BAC0F3D0034D6C7 /* main.m */; };
 		B25B28011BAC0F3D0034D6C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B28001BAC0F3D0034D6C7 /* AppDelegate.m */; };
 		B25B28041BAC0F3D0034D6C7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B28031BAC0F3D0034D6C7 /* ViewController.m */; };
-		B25B28091BAC0F3D0034D6C7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B25B28081BAC0F3D0034D6C7 /* Assets.xcassets */; };
 		B2E3EEB41BAC104D005599BD /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EEB31BAC104D005599BD /* EAGLView.m */; };
 		B2E3EFB51BAC10CC005599BD /* bit.c in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EF931BAC10CC005599BD /* bit.c */; };
 		B2E3EFB61BAC10CC005599BD /* bit_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EF941BAC10CC005599BD /* bit_stub.cpp */; };
@@ -87,10 +87,11 @@
 		B2E3EFE71BAC1AE5005599BD /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */; };
 		B2E3F02C1BAC2919005599BD /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDD1BAC119E005599BD /* libgideros.a */; };
 		B2E3F02E1BAC3D24005599BD /* mficontroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3F02D1BAC3D24005599BD /* mficontroller.mm */; };
-                B2E3F0321BAC3E7B005599BD /* mficontroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3F0311BAC3E7B005599BD /* mficontroller.mm */; };
+		B2E3F0321BAC3E7B005599BD /* mficontroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3F0311BAC3E7B005599BD /* mficontroller.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5E6817991BC6FFB20002D406 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "iOS Template iOS/Images.xcassets"; sourceTree = "<group>"; };
 		5F4153F415CEF227007B5365 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5F4153F515CEF227007B5365 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5F4153F615CEF227007B5365 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
@@ -128,7 +129,7 @@
 		5FC8260117E8922F00751626 /* strbuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = strbuf.c; path = Plugins/strbuf.c; sourceTree = "<group>"; };
 		5FC8260317E8923A00751626 /* lua_cjson.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lua_cjson.c; path = Plugins/lua_cjson.c; sourceTree = "<group>"; };
 		5FC8260517E8924100751626 /* lua_cjson_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lua_cjson_stub.cpp; path = Plugins/lua_cjson_stub.cpp; sourceTree = "<group>"; };
-		5FD896E715CED77F00D34824 /* iOS Template.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Template.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5FD896E715CED77F00D34824 /* iOS Template iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Template iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FD896EB15CED77F00D34824 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		5FD896ED15CED77F00D34824 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		5FD896EF15CED77F00D34824 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -141,13 +142,12 @@
 		5FFCA70715DD337700741085 /* lfs_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lfs_stub.cpp; path = Plugins/lfs_stub.cpp; sourceTree = "<group>"; };
 		5FFCA70815DD337700741085 /* lfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lfs.c; path = Plugins/lfs.c; sourceTree = "<group>"; };
 		B2011F911BAD9A24008812D4 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
-		B25B27FA1BAC0F3D0034D6C7 /* iOS Template.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Template.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B25B27FA1BAC0F3D0034D6C7 /* iOS Template AppleTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Template AppleTV.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B25B27FD1BAC0F3D0034D6C7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B25B27FF1BAC0F3D0034D6C7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B25B28001BAC0F3D0034D6C7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		B25B28021BAC0F3D0034D6C7 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		B25B28031BAC0F3D0034D6C7 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		B25B28081BAC0F3D0034D6C7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B25B280A1BAC0F3D0034D6C7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B2E3EEB21BAC104D005599BD /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
 		B2E3EEB31BAC104D005599BD /* EAGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAGLView.m; sourceTree = "<group>"; };
@@ -194,13 +194,13 @@
 		B2E3EFD71BAC1181005599BD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		B2E3EFD91BAC1187005599BD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
 		B2E3EFDB1BAC118B005599BD /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/OpenGLES.framework; sourceTree = DEVELOPER_DIR; };
-		B2E3EFDD1BAC119E005599BD /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgideros.a; path = "AppleTV/libgideros.a"; sourceTree = "<group>"; };
-		B2E3EFDE1BAC119E005599BD /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgvfs.a; path = "AppleTV/libgvfs.a"; sourceTree = "<group>"; };
-		B2E3EFDF1BAC119E005599BD /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = "AppleTV/liblua.a"; sourceTree = "<group>"; };
+		B2E3EFDD1BAC119E005599BD /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgideros.a; path = AppleTV/libgideros.a; sourceTree = "<group>"; };
+		B2E3EFDE1BAC119E005599BD /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgvfs.a; path = AppleTV/libgvfs.a; sourceTree = "<group>"; };
+		B2E3EFDF1BAC119E005599BD /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = AppleTV/liblua.a; sourceTree = "<group>"; };
 		B2E3EFE41BAC1A5C005599BD /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
 		B2E3F02D1BAC3D24005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = mficontroller.mm; sourceTree = "<group>"; };
-                B2E3F0311BAC3E7B005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = mficontroller.mm; path = Plugins/mficontroller.mm; sourceTree = "<group>"; };
+		B2E3F0311BAC3E7B005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = mficontroller.mm; path = Plugins/mficontroller.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -285,6 +285,7 @@
 		5FD896DC15CED77F00D34824 = {
 			isa = PBXGroup;
 			children = (
+				5E6817991BC6FFB20002D406 /* Images.xcassets */,
 				5FD896F515CED77F00D34824 /* iOS Template */,
 				B25B27FB1BAC0F3D0034D6C7 /* AppleTV */,
 				5FD896EA15CED77F00D34824 /* Frameworks */,
@@ -295,8 +296,8 @@
 		5FD896E815CED77F00D34824 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5FD896E715CED77F00D34824 /* iOS Template.app */,
-				B25B27FA1BAC0F3D0034D6C7 /* iOS Template.app */,
+				5FD896E715CED77F00D34824 /* iOS Template iOS.app */,
+				B25B27FA1BAC0F3D0034D6C7 /* iOS Template AppleTV.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -385,11 +386,10 @@
 				B25B28021BAC0F3D0034D6C7 /* ViewController.h */,
 				B25B28031BAC0F3D0034D6C7 /* ViewController.m */,
 				B2E3EF921BAC10CC005599BD /* Plugins */,
-				B25B28081BAC0F3D0034D6C7 /* Assets.xcassets */,
 				B25B280A1BAC0F3D0034D6C7 /* Info.plist */,
 				B25B27FC1BAC0F3D0034D6C7 /* Supporting Files */,
 			);
-			path = "AppleTV";
+			path = AppleTV;
 			sourceTree = "<group>";
 		};
 		B25B27FC1BAC0F3D0034D6C7 /* Supporting Files */ = {
@@ -442,9 +442,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5FD896E615CED77F00D34824 /* iOS Template */ = {
+		5FD896E615CED77F00D34824 /* iOS Template iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5FD8971015CED77F00D34824 /* Build configuration list for PBXNativeTarget "iOS Template" */;
+			buildConfigurationList = 5FD8971015CED77F00D34824 /* Build configuration list for PBXNativeTarget "iOS Template iOS" */;
 			buildPhases = (
 				5FD896E315CED77F00D34824 /* Sources */,
 				5FD896E415CED77F00D34824 /* Frameworks */,
@@ -456,12 +456,12 @@
 			);
 			name = "iOS Template iOS";
 			productName = "iOS Template";
-			productReference = 5FD896E715CED77F00D34824 /* iOS Template.app */;
+			productReference = 5FD896E715CED77F00D34824 /* iOS Template iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B25B27F91BAC0F3D0034D6C7 /* AppleTV */ = {
+		B25B27F91BAC0F3D0034D6C7 /* iOS Template AppleTV */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B25B281A1BAC0F3D0034D6C7 /* Build configuration list for PBXNativeTarget "AppleTV" */;
+			buildConfigurationList = B25B281A1BAC0F3D0034D6C7 /* Build configuration list for PBXNativeTarget "iOS Template AppleTV" */;
 			buildPhases = (
 				B25B27F61BAC0F3D0034D6C7 /* Sources */,
 				B25B27F71BAC0F3D0034D6C7 /* Frameworks */,
@@ -473,7 +473,7 @@
 			);
 			name = "iOS Template AppleTV";
 			productName = "iOS Template";
-			productReference = B25B27FA1BAC0F3D0034D6C7 /* iOS Template.app */;
+			productReference = B25B27FA1BAC0F3D0034D6C7 /* iOS Template AppleTV.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -503,8 +503,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5FD896E615CED77F00D34824 /* iOS Template */,
-				B25B27F91BAC0F3D0034D6C7 /* AppleTV */,
+				5FD896E615CED77F00D34824 /* iOS Template iOS */,
+				B25B27F91BAC0F3D0034D6C7 /* iOS Template AppleTV */,
 			);
 		};
 /* End PBXProject section */
@@ -517,6 +517,7 @@
 				5FD896FA15CED77F00D34824 /* InfoPlist.strings in Resources */,
 				5F58D85315D9268900137D76 /* assets in Resources */,
 				5F4EA0A617816A9D0043BBCD /* Default-568h@2x.png in Resources */,
+				5E68179A1BC6FFB20002D406 /* Images.xcassets in Resources */,
 				5F4EA0A717816A9D0043BBCD /* Default.png in Resources */,
 				5F4EA0A817816A9D0043BBCD /* Default@2x.png in Resources */,
 			);
@@ -527,7 +528,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B2E3EFE31BAC1249005599BD /* assets in Resources */,
-				B25B28091BAC0F3D0034D6C7 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -602,7 +602,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ENABLE_BITCODE = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -615,6 +614,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -637,7 +637,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ENABLE_BITCODE = NO;
 				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -650,6 +649,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
@@ -665,6 +665,8 @@
 		5FD8971115CED77F00D34824 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Template/iOS Template-Prefix.pch";
@@ -683,6 +685,8 @@
 		5FD8971215CED77F00D34824 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Template/iOS Template-Prefix.pch";
@@ -702,13 +706,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = TVLaunchImage;
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -718,7 +723,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = "\"AppleTV/Plugins\"";
-				INFOPLIST_FILE = "AppleTV/Info.plist";
+				INFOPLIST_FILE = AppleTV/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_SEARCH_PATHS = (
@@ -740,7 +745,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = TVLaunchImage;
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -748,6 +753,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -757,7 +763,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = "\"AppleTV/Plugins\"";
-				INFOPLIST_FILE = "AppleTV/Info.plist";
+				INFOPLIST_FILE = AppleTV/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_SEARCH_PATHS = (
@@ -788,7 +794,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5FD8971015CED77F00D34824 /* Build configuration list for PBXNativeTarget "iOS Template" */ = {
+		5FD8971015CED77F00D34824 /* Build configuration list for PBXNativeTarget "iOS Template iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5FD8971115CED77F00D34824 /* Debug */,
@@ -797,7 +803,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B25B281A1BAC0F3D0034D6C7 /* Build configuration list for PBXNativeTarget "AppleTV" */ = {
+		B25B281A1BAC0F3D0034D6C7 /* Build configuration list for PBXNativeTarget "iOS Template AppleTV" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B25B28161BAC0F3D0034D6C7 /* Debug */,

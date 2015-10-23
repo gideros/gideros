@@ -42,6 +42,10 @@
 #define	OPENGL_ES
     #include <GLES2/gl2.h>
     #include <GLES2/gl2ext.h>
+#elif RASPBERRY_PI
+    #include <GLES2/gl2.h>
+    #include <GLES2/gl2ext.h>
+#define OPENGL_ES
 #else
 #include <GL/glew.h>
 #define OPENGL_DESKTOP
@@ -127,13 +131,17 @@ class ogl2ShaderBuffer : public ShaderBuffer
 	g_id tempTexture_;
 	GLuint textureId_;
 protected:
+	GLuint _depthRenderBuffer;
 	GLuint glid;
+	int width,height;
 	static GLint bindBuffer(GLint n);
 public:
 	ogl2ShaderBuffer(ShaderTexture *texture);
 	virtual ~ogl2ShaderBuffer();
 	void readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data);
 	void prepareDraw();
+	void unbound();
+	void needDepthStencil();
 };
 
 class ogl2ShaderEngine : public ShaderEngine

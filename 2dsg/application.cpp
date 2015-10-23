@@ -482,6 +482,9 @@ void Application::setResolution(int width, int height)
 {
 	width_ = width;
 	height_ = height;
+    
+    if (ShaderEngine::Engine)
+        ShaderEngine::Engine->resizeFramebuffer(width_,height_);
 
 	calculateLogicalTransformation();
 }

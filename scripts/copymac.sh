@@ -18,6 +18,7 @@ cp -R $BUILD_DIR/win/Tools $BUILD_DIR/mac/Gideros\ Studio.app/Contents
 cp -R $BUILD_DIR/win/Templates $BUILD_DIR/mac/Gideros\ Studio.app/Contents
 mkdir $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate
 cp -R desktop/MacOSXDesktopTemplate.app $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate
+cp -R desktop/Entitlements.plist $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate
 
 cp gdrdeamon/gdrdeamon $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools
 cp gdrbridge/gdrbridge $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools

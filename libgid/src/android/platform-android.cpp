@@ -180,10 +180,13 @@ void g_setFps(int fps)
 
 }
 
+bool g_checkStringProperty(bool isSet, const char* what){
+    return false;
+}
 void g_setProperty(const char* what, const char* arg){
 
 }
 
-const char* g_getProperty(const char* what){
+const char* g_getProperty(const char* what, const char* arg){
 	return "";
 }

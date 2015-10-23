@@ -37,11 +37,17 @@ struct ProjectProperties
         android_template = 0;
 		assetsOnly = false;
 		iosDevice = 0;
+        version = "1.0";
+        version_code = 1;
+        ios_bundle = "com.yourdomain.";
 		packageName = "com.yourdomain.yourapp";
         osx_org = "GiderosMobile";
         osx_domain = "giderosmobile.com";
+        osx_bundle = "com.yourdomain.";
         win_org = "GiderosMobile";
         win_domain = "giderosmobile.com";
+        winrt_org = "GiderosMobile";
+        winrt_package = "com.yourdomain.yourapp";
         encryptCode = false;
         encryptAssets = false;
     }
@@ -70,11 +76,17 @@ struct ProjectProperties
     int android_template;
 	bool assetsOnly;
 	int iosDevice;
+    int version_code;
+    QString version;
+    QString ios_bundle;
 	QString packageName;
     QString osx_org;
     QString osx_domain;
+    QString osx_bundle;
     QString win_org;
     QString win_domain;
+    QString winrt_org;
+    QString winrt_package;
     bool encryptCode;
     bool encryptAssets;
 };

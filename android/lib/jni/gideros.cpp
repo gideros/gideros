@@ -180,10 +180,10 @@ public:
 	void setProjectProperties(const ProjectProperties &properties);
 	bool isRunning();
 	
-	void touchesBegin(int size, int *id, int *x, int *y, int actionIndex);
-	void touchesMove(int size, int *id, int *x, int *y);
-	void touchesEnd(int size, int *id, int *x, int *y, int actionIndex);
-	void touchesCancel(int size, int *id, int *x, int *y);
+	void touchesBegin(int size, int *id, int *x, int *y, float *pressure, int actionIndex);
+	void touchesMove(int size, int *id, int *x, int *y, float *pressure);
+	void touchesEnd(int size, int *id, int *x, int *y, float *pressure, int actionIndex);
+	void touchesCancel(int size, int *id, int *x, int *y, float *pressure);
 	
 	bool keyDown(int keyCode, int repeatCount);
 	bool keyUp(int keyCode, int repeatCount);
@@ -1145,24 +1145,24 @@ void ApplicationManager::setProjectProperties(const ProjectProperties &propertie
 	properties_ = properties;
 }
 
-void ApplicationManager::touchesBegin(int size, int *id, int *x, int *y, int actionIndex)
+void ApplicationManager::touchesBegin(int size, int *id, int *x, int *y, float *pressure, int actionIndex)
 {
-	ginputp_touchBegin(size, id, x, y, actionIndex);
+	ginputp_touchBegin(size, id, x, y, pressure, actionIndex);
 }
 
-void ApplicationManager::touchesMove(int size, int *id, int *x, int *y)
+void ApplicationManager::touchesMove(int size, int *id, int *x, int *y, float *pressure)
 {
-	ginputp_touchesMove(size, id, x, y);
+	ginputp_touchesMove(size, id, x, y, pressure);
 }
 
-void ApplicationManager::touchesEnd(int size, int *id, int *x, int *y, int actionIndex)
+void ApplicationManager::touchesEnd(int size, int *id, int *x, int *y, float *pressure, int actionIndex)
 {
-	ginputp_touchEnd(size, id, x, y, actionIndex);
+	ginputp_touchEnd(size, id, x, y, pressure, actionIndex);
 }
 
-void ApplicationManager::touchesCancel(int size, int *id, int *x, int *y)
+void ApplicationManager::touchesCancel(int size, int *id, int *x, int *y, float *pressure)
 {
-	ginputp_touchesCancel(size, id, x, y);
+	ginputp_touchesCancel(size, id, x, y, pressure);
 }
 
 bool ApplicationManager::keyDown(int keyCode, int repeatCount)
@@ -1308,56 +1308,64 @@ void Java_com_giderosmobile_android_player_GiderosApplication_nativeOpenProject(
 	s_applicationManager->setOpenProject(project.c_str());
 }
 
-void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesBegin(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy, jint actionIndex)
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesBegin(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy, jfloatArray jpressure, jint actionIndex)
 {
 	jint* id = (jint*)env->GetPrimitiveArrayCritical(jid, 0);
 	jint* x = (jint*)env->GetPrimitiveArrayCritical(jx, 0);
 	jint* y = (jint*)env->GetPrimitiveArrayCritical(jy, 0);
+	jfloat* pressure = (jfloat*)env->GetPrimitiveArrayCritical(jpressure, 0);
 
-	s_applicationManager->touchesBegin(size, id, x, y, actionIndex);
+	s_applicationManager->touchesBegin(size, id, x, y, pressure, actionIndex);
 
 	env->ReleasePrimitiveArrayCritical(jid, id, 0);
 	env->ReleasePrimitiveArrayCritical(jx, x, 0);
 	env->ReleasePrimitiveArrayCritical(jy, y, 0);
+	env->ReleasePrimitiveArrayCritical(jpressure, pressure, 0);
 }
 
-void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesMove(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy)
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesMove(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy, jfloatArray jpressure)
 {
 	jint* id = (jint*)env->GetPrimitiveArrayCritical(jid, 0);
 	jint* x = (jint*)env->GetPrimitiveArrayCritical(jx, 0);
 	jint* y = (jint*)env->GetPrimitiveArrayCritical(jy, 0);
+	jfloat* pressure = (jfloat*)env->GetPrimitiveArrayCritical(jpressure, 0);
 
-	s_applicationManager->touchesMove(size, id, x, y);
+	s_applicationManager->touchesMove(size, id, x, y, pressure);
 
 	env->ReleasePrimitiveArrayCritical(jid, id, 0);
 	env->ReleasePrimitiveArrayCritical(jx, x, 0);
 	env->ReleasePrimitiveArrayCritical(jy, y, 0);
+	env->ReleasePrimitiveArrayCritical(jpressure, pressure, 0);
 }
 
-void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesEnd(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy, jint actionIndex)
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesEnd(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy, jfloatArray jpressure, jint actionIndex)
 {
 	jint* id = (jint*)env->GetPrimitiveArrayCritical(jid, 0);
 	jint* x = (jint*)env->GetPrimitiveArrayCritical(jx, 0);
 	jint* y = (jint*)env->GetPrimitiveArrayCritical(jy, 0);
+	jfloat* pressure = (jfloat*)env->GetPrimitiveArrayCritical(jpressure, 0);
 
-	s_applicationManager->touchesEnd(size, id, x, y, actionIndex);
+	s_applicationManager->touchesEnd(size, id, x, y, pressure, actionIndex);
 
 	env->ReleasePrimitiveArrayCritical(jid, id, 0);
 	env->ReleasePrimitiveArrayCritical(jx, x, 0);
 	env->ReleasePrimitiveArrayCritical(jy, y, 0);
+	env->ReleasePrimitiveArrayCritical(jpressure, pressure, 0);
 }
 
-void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesCancel(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy)
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeTouchesCancel(JNIEnv* env, jobject thiz, jint size, jintArray jid, jintArray jx, jintArray jy, jfloatArray jpressure)
 {
 	jint* id = (jint*)env->GetPrimitiveArrayCritical(jid, 0);
 	jint* x = (jint*)env->GetPrimitiveArrayCritical(jx, 0);
 	jint* y = (jint*)env->GetPrimitiveArrayCritical(jy, 0);
+	jfloat* pressure = (jfloat*)env->GetPrimitiveArrayCritical(jpressure, 0);
 
-	s_applicationManager->touchesCancel(size, id, x, y);
+	s_applicationManager->touchesCancel(size, id, x, y, pressure);
 
 	env->ReleasePrimitiveArrayCritical(jid, id, 0);
 	env->ReleasePrimitiveArrayCritical(jx, x, 0);
 	env->ReleasePrimitiveArrayCritical(jy, y, 0);
+	env->ReleasePrimitiveArrayCritical(jpressure, pressure, 0);
 }
 
 jboolean Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyDown(JNIEnv* env, jclass cls, jint keyCode, jint repeatCount)

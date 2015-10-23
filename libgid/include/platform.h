@@ -185,4 +185,8 @@ std::string getLanguage();
 void setKeepAwake(bool awake);
 std::vector<std::string> getDeviceInfo();
 
+bool g_checkStringProperty(bool isSet, const char* what);
+const char* g_getProperty(const char* what, const char* arg);
+void g_setProperty(const char* what, const char* arg);
+
 #endif

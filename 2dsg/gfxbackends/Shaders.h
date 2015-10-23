@@ -125,6 +125,8 @@ public:
 	virtual ~ShaderBuffer() { };
 	virtual void prepareDraw()=0;
 	virtual void readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data)=0;
+	virtual void unbound()=0;
+	virtual void needDepthStencil()=0;
 };
 
 class ShaderEngine

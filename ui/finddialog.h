@@ -15,6 +15,8 @@ public:
 	QString findWhat() const;
 	bool wholeWord() const;
 	bool matchCase() const;
+    bool regexp() const;
+    bool wrap() const;
 	bool forward() const;
 
 	void focusToFindWhat();

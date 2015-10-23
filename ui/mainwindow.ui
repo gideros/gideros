@@ -92,6 +92,8 @@ QMainWindow::separator {
     <addaction name="actionFind_in_Files"/>
     <addaction name="separator"/>
     <addaction name="actionGo_To_Line"/>
+    <addaction name="actionFold_Unfold_All"/>
+    <addaction name="actionFold_Unfold_Top"/>
    </widget>
    <widget class="QMenu" name="menuCompile">
     <property name="title">
@@ -131,6 +133,7 @@ QMainWindow::separator {
     <addaction name="actionUI_Theme"/>
     <addaction name="actionEditor_Theme"/>
     <addaction name="actionUI_and_Editor_Theme"/>
+    <addaction name="actionReset_UI_and_Editor_Theme"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_Edit"/>
@@ -151,6 +154,7 @@ QMainWindow::separator {
    </attribute>
    <addaction name="actionSave"/>
    <addaction name="actionSave_All"/>
+   <addaction name="actionExport_Project"/>
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
@@ -578,7 +582,7 @@ Gideros Player, Play button is enabled.</string>
     <string>Start to all players</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+P</string>
+    <string>Ctrl+Alt+P</string>
    </property>
   </action>
   <action name="actionUI_Theme">
@@ -594,6 +598,27 @@ Gideros Player, Play button is enabled.</string>
   <action name="actionUI_and_Editor_Theme">
    <property name="text">
     <string>Load UI and Editor Theme</string>
+   </property>
+  </action>
+  <action name="actionReset_UI_and_Editor_Theme">
+   <property name="text">
+    <string>Reset UI and Editor Theme</string>
+   </property>
+  </action>
+  <action name="actionFold_Unfold_All">
+   <property name="text">
+    <string>Fold/Unfold All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+L</string>
+   </property>
+  </action>
+  <action name="actionFold_Unfold_Top">
+   <property name="text">
+    <string>Fold/Unfold Top</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+T</string>
    </property>
   </action>
  </widget>

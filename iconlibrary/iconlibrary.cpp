@@ -39,6 +39,8 @@ IconLibrary::IconLibrary()
 
 	iconMap_["project"] = icon(2, 17);
 
+    iconMap_["export"] = icon(6, 5);
+
 	danish_["advanced"] = QIcon("Resources/danish/advanced.png");
 	danish_["iPhone"] = QIcon("Resources/danish/iPhone.png");
 	danish_["start"] = QIcon("Resources/danish/play.png");

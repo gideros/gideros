@@ -55,6 +55,9 @@ ProjectPropertiesDialog::ProjectPropertiesDialog(ProjectProperties* properties, 
     ui->touchToMouse->setChecked(properties_->touchToMouse);
     ui->mouseTouchOrder->setCurrentIndex(properties_->mouseTouchOrder);
 
+    ui->version->setText(properties_->version);
+    ui->version_code->setText(QString::number(properties_->version_code));
+
     connect(ui->add, SIGNAL(clicked()), this, SLOT(add()));
 	connect(ui->remove, SIGNAL(clicked()), this, SLOT(remove()));
 
@@ -115,6 +118,9 @@ void ProjectPropertiesDialog::onAccepted()
     properties_->mouseToTouch = ui->mouseToTouch->isChecked();
     properties_->touchToMouse = ui->touchToMouse->isChecked();
     properties_->mouseTouchOrder = ui->mouseTouchOrder->currentIndex();
+
+    properties_->version = ui->version->text();
+    properties_->version_code = ui->version_code->text().toInt();
 }
 
 void ProjectPropertiesDialog::add()

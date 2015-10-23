@@ -111,11 +111,16 @@ class dx11ShaderBuffer : public ShaderBuffer
 	friend class dx11ShaderEngine;
 protected:
 	ID3D11RenderTargetView *renderTarget;
+	ID3D11DepthStencilView *depthStencil;
+	ID3D11Texture2D* depthStencilTexture;
+	int width, height;
 public:
 	dx11ShaderBuffer(ShaderTexture *texture);
 	virtual ~dx11ShaderBuffer();
 	void readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data);
 	void prepareDraw();
+	void unbound();
+	void needDepthStencil();
 };
 
 class dx11ShaderEngine : public ShaderEngine

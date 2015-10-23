@@ -623,7 +623,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	gpath_setAbsolutePathFlags(GPATH_RW | GPATH_REAL);
 	
     gpath_setDefaultDrive(0);
-	
+
 	gvfs_init();
 
 	// event
@@ -681,7 +681,8 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
     deviceOrientation_ = ePortrait;
 
 #ifdef TARGET_OS_TV
-  	deviceOrientation_ = eLandscapeRight;
+	hardwareOrientation_ = eLandscapeLeft;
+	deviceOrientation_ = eLandscapeLeft;
 #endif
 
 	running_ = false;
@@ -707,11 +708,20 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 		
 		NSString* resourceDirectory = [[NSBundle mainBundle] resourcePath];
 		printf("%s\n", [resourceDirectory UTF8String]);
+        
+        NSArray *paths2 = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+        NSString *cachesDirectory = [paths2 objectAtIndex:0];
+        printf("%s\n", [cachesDirectory UTF8String]);
 		
-		setDocumentsDirectory([documentsDirectory UTF8String]);
+#ifdef TARGET_OS_TV
+		setDocumentsDirectory([cachesDirectory UTF8String]);
 		setTemporaryDirectory([temporaryDirectory UTF8String]);
-		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));		
-
+		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));	
+#else
+        setDocumentsDirectory([documentsDirectory UTF8String]);
+		setTemporaryDirectory([temporaryDirectory UTF8String]);
+		setResourceDirectory(pathForFileEx([resourceDirectory UTF8String], "assets"));
+#endif
 		loadProperties();
 
 		// Gideros has became open source and free, because this, there's no more splash art
@@ -1207,8 +1217,13 @@ void ApplicationManager::drawIPs()
 void ApplicationManager::setProjectName(const char *projectName)
 {
 	glog_v("setProjectName: %s", projectName);
-	
-	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSArray* paths;
+#ifdef TARGET_OS_TV
+    paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+#else
+    paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+#endif
+    
 	std::string dir = [[paths objectAtIndex:0] UTF8String];
 	
 	if (dir[dir.size() - 1] != '/')
@@ -1417,19 +1432,6 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 void ApplicationManager::willRotateToInterfaceOrientationHelperTV(Orientation deviceOrientation_)
 {
     application_->getApplication()->setDeviceOrientation(deviceOrientation_);
-
-
-
-    Orientation orientation = application_->orientation();
-
-    bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
-    bool b2 = deviceOrientation_ == ePortrait || deviceOrientation_ == ePortraitUpsideDown;
-
-    if (b1 != b2)
-        hardwareOrientation_ = deviceOrientation_;
-    else
-        hardwareOrientation_ = orientation;
-
     application_->setHardwareOrientation(hardwareOrientation_);
 
 }

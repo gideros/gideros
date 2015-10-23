@@ -8,9 +8,10 @@ INCLUDEPATH += \
 
 TARGET = GiderosPlayer
 DEFINES += STRICT_LINUX
+DEFINES += RASPBERRY_PI
 LIBS += \
         -L"../libgid/external/zlib-1.2.8/build/gcc463_pi" -lzlibx\
-        -L"../libgid/external/glew-1.10.0/lib/gcc463_pi" -lGLEW\
+#       -L"../libgid/external/glew-1.10.0/lib/gcc463_pi" -lGLEW\
 #        -lwsock32\
 #        -liphlpapi\
         ../libgid/libgid.so \
@@ -18,8 +19,8 @@ LIBS += \
         ../lua/liblua.so \
         ../libgideros/libgideros.so \
         ../libpystring/libpystring.so
-LIBS += "../libgid/external/openal-soft-1.13/build/gcc484_64/libopenal.so"
-#QMAKE_CXXFLAGS += -std=gnu++0x
+LIBS += "../libgid/external/openal-soft-1.13/build/gcc463_pi/libopenal.so"
+QMAKE_CXXFLAGS += -std=gnu++0x
 
 TEMPLATE = app
 

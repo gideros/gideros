@@ -59,6 +59,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	int[] id = new int[256];
 	int[] x = new int[256];
 	int[] y = new int[256];
+    float[] pressure = new float[256];
 
 	@Override
 	public void onStart()
@@ -170,6 +171,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 			id[i] = event.getPointerId(i);
 			x[i] = (int) event.getX(i);
 			y[i] = (int) event.getY(i);
+            pressure[i] = (float) event.getPressure(i);
 		}
 
 		int actionMasked = event.getActionMasked();
@@ -178,16 +180,16 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 				
 		if (actionMasked == MotionEvent.ACTION_DOWN || actionMasked == MotionEvent.ACTION_POINTER_DOWN)
 		{
-			app.onTouchesBegin(size, id, x, y, actionIndex);
+			app.onTouchesBegin(size, id, x, y, pressure, actionIndex);
 		} else if (actionMasked == MotionEvent.ACTION_MOVE)
 		{
-			app.onTouchesMove(size, id, x, y);
+			app.onTouchesMove(size, id, x, y, pressure);
 		} else if (actionMasked == MotionEvent.ACTION_UP || actionMasked == MotionEvent.ACTION_POINTER_UP)
 		{
-			app.onTouchesEnd(size, id, x, y, actionIndex);
+			app.onTouchesEnd(size, id, x, y, pressure, actionIndex);
 		} else if (actionMasked == MotionEvent.ACTION_CANCEL)
 		{
-			app.onTouchesCancel(size, id, x, y);
+			app.onTouchesCancel(size, id, x, y, pressure);
 		}
 
 		return true;
@@ -221,6 +223,7 @@ class GiderosGLSurfaceView extends GLSurfaceView
 	{
 		super(context);
 		setEGLContextClientVersion(2);
+		setEGLConfigChooser(8,8,8,0,16,8);
 		mRenderer = new GiderosRenderer();
 		setRenderer(mRenderer);
 		if (android.os.Build.VERSION.SDK_INT >= 11)

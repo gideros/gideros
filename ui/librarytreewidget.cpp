@@ -340,6 +340,8 @@ QDomDocument LibraryTreeWidget::toXml() const
 	properties.appendChild(imageScales);
 	properties.setAttribute("orientation", properties_.orientation);
 	properties.setAttribute("fps", properties_.fps);
+    properties.setAttribute("version", properties_.version);
+    properties.setAttribute("version_code", properties_.version_code);
 
 	// iOS options
     properties.setAttribute("retinaDisplay", properties_.retinaDisplay);
@@ -355,11 +357,15 @@ QDomDocument LibraryTreeWidget::toXml() const
     properties.setAttribute("android_template", properties_.android_template);
 	properties.setAttribute("assetsOnly", properties_.assetsOnly ? 1 : 0);
 	properties.setAttribute("iosDevice", properties_.iosDevice);
+    properties.setAttribute("ios_bundle", properties_.ios_bundle);
 	properties.setAttribute("packageName", properties_.packageName);
 	properties.setAttribute("osx_org", properties_.osx_org);
 	properties.setAttribute("osx_domain", properties_.osx_domain);
+    properties.setAttribute("osx_bundle", properties_.osx_bundle);
     properties.setAttribute("win_org", properties_.win_org);
 	properties.setAttribute("win_domain", properties_.win_domain);
+    properties.setAttribute("winrt_org", properties_.winrt_org);
+    properties.setAttribute("winrt_package", properties_.winrt_package);
     properties.setAttribute("encryptCode", properties_.encryptCode);
     properties.setAttribute("encryptAssets", properties_.encryptAssets);
 
@@ -494,6 +500,10 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
             properties_.retinaDisplay = properties.attribute("retinaDisplay").toInt();
 		if (!properties.attribute("autorotation").isEmpty())
 			properties_.autorotation = properties.attribute("autorotation").toInt();
+        if (!properties.attribute("version").isEmpty())
+            properties_.version = properties.attribute("version");
+        if (!properties.attribute("version_code").isEmpty())
+            properties_.version_code = properties.attribute("version_code").toInt();
 
         // input options
         if (!properties.attribute("mouseToTouch").isEmpty())
@@ -512,16 +522,24 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 			properties_.assetsOnly = properties.attribute("assetsOnly").toInt() != 0;
 		if (!properties.attribute("iosDevice").isEmpty())
 			properties_.iosDevice = properties.attribute("iosDevice").toInt();
+        if (!properties.attribute("ios_bundle").isEmpty())
+            properties_.ios_bundle = properties.attribute("ios_bundle");
 		if (!properties.attribute("packageName").isEmpty())
 			properties_.packageName = properties.attribute("packageName");
         if (!properties.attribute("osx_org").isEmpty())
 			properties_.osx_org = properties.attribute("osx_org");
         if (!properties.attribute("osx_domain").isEmpty())
 			properties_.osx_domain = properties.attribute("osx_domain");
+        if (!properties.attribute("osx_bundle").isEmpty())
+            properties_.osx_bundle = properties.attribute("osx_bundle");
         if (!properties.attribute("win_org").isEmpty())
 			properties_.win_org = properties.attribute("win_org");
         if (!properties.attribute("win_domain").isEmpty())
 			properties_.win_domain = properties.attribute("win_domain");
+        if (!properties.attribute("winrt_org").isEmpty())
+            properties_.winrt_org = properties.attribute("winrt_org");
+        if (!properties.attribute("winrt_package").isEmpty())
+            properties_.winrt_package = properties.attribute("winrt_package");
         if (!properties.attribute("encryptCode").isEmpty())
             properties_.encryptCode = properties.attribute("encryptCode").toInt() != 0;
         if (!properties.attribute("encryptAssets").isEmpty())

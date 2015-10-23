@@ -181,10 +181,10 @@ void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
 #endif
 
 #ifdef OPENGL_ES
-	glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 #endif
 }
@@ -230,6 +230,9 @@ void ogl2ShaderEngine::reset(bool reinit) {
 #endif
 		ogl2ShaderProgram::resetAll();
 	}
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+
 	ShaderEngine::reset(reinit);
 	s_texture = 0;
 	s_depthEnable = 0;
@@ -375,6 +378,8 @@ ShaderBuffer *ogl2ShaderEngine::setFramebuffer(ShaderBuffer *fbo) {
 		glBindFramebufferEXT(GL_FRAMEBUFFER,
 				fbo ? ((ogl2ShaderBuffer *) fbo)->glid : 0);
 #endif
+	if (previous)
+		previous->unbound();
 	currentBuffer = fbo;
 	return previous;
 
@@ -418,6 +423,7 @@ static GLint stencilopToGl(ShaderEngine::StencilOp sf)
 
 void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 {
+	bool enDepthStencil=false;
 	if (state.dTest) {
 		if (!s_depthEnable) {
 			if (!s_depthBufferCleared) {
@@ -429,6 +435,7 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 			}
 			s_depthEnable=true;
 			glEnable(GL_DEPTH_TEST);
+			enDepthStencil=true;
 		}
 	} else {
 		if (s_depthEnable)
@@ -441,6 +448,7 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 	{
 		glClear(GL_STENCIL_BUFFER_BIT);
 		state.sClear=false;
+		enDepthStencil=true;
 	}
 	glStencilOp(stencilopToGl(state.sFail),stencilopToGl(state.dFail),stencilopToGl(state.dPass));
 	if (state.sFunc==STENCIL_DISABLE)
@@ -462,6 +470,8 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 		glStencilFunc(sf,state.sRef,state.sMask);
 	}
 	dsCurrent=state;
+	if (enDepthStencil&&currentBuffer)
+		currentBuffer->needDepthStencil();
 }
 
 
