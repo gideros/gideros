@@ -134,6 +134,8 @@ QMainWindow::separator {
     <addaction name="actionEditor_Theme"/>
     <addaction name="actionUI_and_Editor_Theme"/>
     <addaction name="actionReset_UI_and_Editor_Theme"/>
+    <addaction name="separator"/>
+    <addaction name="actionMacro_Support"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_Edit"/>
@@ -619,6 +621,14 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+T</string>
+   </property>
+  </action>
+  <action name="actionMacro_Support">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Macro Support</string>
    </property>
   </action>
  </widget>
