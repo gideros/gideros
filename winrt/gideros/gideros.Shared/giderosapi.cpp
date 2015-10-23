@@ -36,6 +36,7 @@
 #include <gapplication-winrt.h>
 #include "dxcompat.hpp"
 #include "dxglobals.h"
+#include <windows.ui.xaml.media.dxinterop.h>
 
 using namespace Platform;
 using namespace Windows::UI::Core;
@@ -136,7 +137,7 @@ static void printFunc(const char *str, int len, void *data)
 
 //######################################################################
 // this function initializes and prepares Direct3D for use
-void InitD3D(CoreWindow^ Window)
+void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel ^swapChainPanel, int width, int height)
 {
 
 	// ----------------------------------------------------------------------
@@ -176,8 +177,8 @@ void InitD3D(CoreWindow^ Window)
 	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC1));
 
 	// fill the swap chain description struct    
-	scd.Width = 0;
-	scd.Height = 0;
+	scd.Width = width;
+	scd.Height = height;
 	scd.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	scd.Stereo = false;
 	scd.SampleDesc.Count = 1;                               	// DISABLE ANTI-ALIASING
@@ -188,12 +189,29 @@ void InitD3D(CoreWindow^ Window)
 	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;                // WP8 (Windows 8: DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL)
 	scd.Flags = 0;
 
-	dxgiFactory->CreateSwapChainForCoreWindow(
-		g_dev.Get(),
-		reinterpret_cast<IUnknown*>(Window),
-		&scd,
-		nullptr,
-		&g_swapchain);
+	if (useXaml){
+		dxgiFactory->CreateSwapChainForComposition(
+			g_dev.Get(),
+			&scd,
+			nullptr,
+			&g_swapchain
+			);
+
+		Microsoft::WRL::ComPtr<ISwapChainPanelNative> swapChainNative;
+		IInspectable* panelInspectable = (IInspectable*) reinterpret_cast<IInspectable*>(swapChainPanel);
+		panelInspectable->QueryInterface(__uuidof(ISwapChainPanelNative), (void **)&swapChainNative);
+
+		swapChainNative->SetSwapChain(g_swapchain.Get());  // ties the panel to our DirectX swapchain
+	}
+	else {
+
+		dxgiFactory->CreateSwapChainForCoreWindow(
+			g_dev.Get(),
+			reinterpret_cast<IUnknown*>(Window),
+			&scd,
+			nullptr,
+			&g_swapchain);
+	}
 
 	// ----------------------------------------------------------------------
 	// Setup back buffer, get g_backbuffer
@@ -209,17 +227,22 @@ void InitD3D(CoreWindow^ Window)
 
 	float scaley;
 
-	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+	if (useXaml){
+		scaley = 1;
+	}
+	else {
+		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-	scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
+		scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-	scaley = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
+		scaley = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
+    }
 
 	float basex = 0;
 	float basey = 0;
-	float windoww = Window->Bounds.Width*scaley;  // default values means stretch to fit full screen
-	float windowh = Window->Bounds.Height*scaley;  // Lua can change later. Note that screenw/h are in scaled coords
+	float windoww = width*scaley;  // default values means stretch to fit full screen
+	float windowh = height*scaley;  // Lua can change later. Note that screenw/h are in scaled coords
 
 	viewport.TopLeftX = basex;
 	viewport.TopLeftY = basey;
@@ -229,8 +252,6 @@ void InitD3D(CoreWindow^ Window)
 	viewport.MaxDepth = 1.0;
 
 	g_devcon->RSSetViewports(1, &viewport);
-
-
 }
 
 // ######################################################################
@@ -364,7 +385,8 @@ private:
 class ApplicationManager
 {
 public:
-	ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath);
+	ApplicationManager(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel ^swapChainPanel, 
+		int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath);
 	~ApplicationManager();
 
 	void getStdCoords(float xp, float yp, float &x, float &y);
@@ -373,7 +395,7 @@ public:
 
 	void luaError(const char *msg);
 
-	void drawFrame();
+	void drawFrame(bool useXaml);
 
 	void openProject(const char* project);
 	void setOpenProject(const char* project);
@@ -714,18 +736,22 @@ void NetworkManager::calculateMD5(const char* file)
 }
 
 
-ApplicationManager::ApplicationManager(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
+ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel ^swapChainPanel, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 {
 
-	InitD3D(Window);
+	InitD3D(useXaml, Window, swapChainPanel, width, height);
 	InitXAudio2();
 
-	DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+	if (useXaml)
+		contentScaleFactor = 1;
+	else {
+		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-	contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
+		contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-	contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
+		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
+	}
 
 	width_ = width;
 	height_ = height;
@@ -934,12 +960,14 @@ void ApplicationManager::drawFirstFrame()
 	drawIPs();
 }
 
-void ApplicationManager::drawFrame()
+void ApplicationManager::drawFrame(bool useXaml)
 {
-	CoreWindow^ Window = CoreWindow::GetForCurrentThread();
+	CoreWindow^ Window; 
+	if (!useXaml) Window = CoreWindow::GetForCurrentThread();
+
 	int FPS = g_getFps();
 	if (FPS > 0) {
-		Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+		if (!useXaml) Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
 		GStatus status;
 		application_->enterFrame(&status);
@@ -976,7 +1004,7 @@ void ApplicationManager::drawFrame()
 
 		int loops = 0;
 		while (GetTickCount64() > next_game_tick && loops < MAX_FRAMESKIP) {
-			Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+			if (!useXaml) Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
 			GStatus status;
 			application_->enterFrame(&status);
@@ -1442,14 +1470,14 @@ static int lastMouseButton_ = 0;
 
 extern "C" {
 
-	void gdr_initialize(CoreWindow^ Window, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
+	void gdr_initialize(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel^ swapChainPanel, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 	{
-		s_manager = new ApplicationManager(Window, width, height, player, resourcePath, docsPath, tempPath);
+		s_manager = new ApplicationManager(useXaml, Window, swapChainPanel, width, height, player, resourcePath, docsPath, tempPath);
 	}
 
-	void gdr_drawFrame()
+	void gdr_drawFrame(bool useXaml)
 	{
-		s_manager->drawFrame();
+		s_manager->drawFrame(useXaml);
 	}
 
 	void gdr_exitGameLoop()
