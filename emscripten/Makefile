@@ -32,10 +32,11 @@ SRCS+=$(addprefix libgvfs/,$(notdir $(basename $(wildcard ../libgvfs/*.cpp))))
 SRCS+=lua/etc/all_lua
 SRCS+=libpystring/pystring
 
-SRCS+=$(addprefix libgid/external/freetype-2.4.12/src/,base/ftbbox base/ftbitmap base/ftglyph base/ftlcdfil \
-		base/ftstroke base/ftxf86 base/ftbase base/ftsystem base/ftinit base/ftgasp \
-		raster/raster sfnt/sfnt smooth/smooth autofit/autofit truetype/truetype \
-		cff/cff psnames/psnames pshinter/pshinter)
+#SRCS+=$(addprefix libgid/external/freetype-2.6.1/src/,base/ftbbox base/ftbitmap base/ftglyph base/ftlcdfil \
+#		base/ftstroke base/ftxf86 base/ftbase base/ftsystem base/ftinit base/ftgasp \
+#		raster/raster sfnt/sfnt smooth/smooth autofit/autofit truetype/truetype \
+#		cff/cff psnames/psnames pshinter/pshinter)
+
 SRCS+=$(addprefix libgid/external/zlib-1.2.8/,$(notdir $(basename $(wildcard ../libgid/external/zlib-1.2.8/*.c))))
 PNGFILES=png pngerror pngget pngmem pngpread pngread pngrio pngrtran pngrutil pngset pngtrans
 SRCS+=$(addprefix libgid/external/libpng-1.6.2/,$(PNGFILES))
@@ -48,13 +49,13 @@ MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 ind
 	libmpg123 ntom optimize parse readers stringbuf synth synth_8bit synth_real synth_s32 tabinit
 SRCS+=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES))
 SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
-	ginput-js gaudio-js gaudio-stream-openal-js platform-js main)   
+	ginput-js gaudio-js gaudio-stream-openal-js platform-js ghttp-js main)   
 
 
 INCS=2dsg libgideros libgid/include libgvfs libpystring
 INCS+=2dsg/gfxbackends 2dsg/gfxbackends/gl2 2dsg/paths
 INCS+=luabinding libnetwork
-INCS+=$(addprefix libgid/external/freetype-2.4.12/,include src)
+INCS+=$(addprefix libgid/external/freetype-2.6.1/,include src)
 INCS+=$(LIQUIDFUN)/.. external/glu
 INCS+=libgid/external/zlib-1.2.8 libgid/external/libpng-1.6.2 \
 	$(addprefix libgid/external/openal-soft-1.13/,include/AL OpenAL32/Include) \
@@ -65,11 +66,18 @@ INCS+=lua/src
 INCS+=libgvfs/private
 INCS+=emscripten
 
+LIBS+=prebuilt/libfreetype.so
+
 EMCC=emcc
 BUILD=Build
 
-OPTS=-O2 -g
+OPTS+=-O2 --bind
 #OPTS+=-g4
+
+EOPTS=MAIN_MODULE=1 FULL_ES2=1 
+#EOPTS=ASSERTIONS=2
+EOPTS+=DISABLE_EXCEPTION_CATCHING=0
+EOPTS+=ALLOW_MEMORY_GROWTH=1
 
 OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS))
@@ -79,7 +87,7 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 ASSETS=../winrt_example/giderosgame/giderosgame.Windows/Assets
 
 all: path $(OBJS)
-	emcc $(OBJS) -s MAIN_MODULE=1 -s FULL_ES2=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o gideros.html --pre-js gidjs.js --shell-file gidshell.html
+	emcc $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) -o gideros.html --pre-js gidjs.js --shell-file gidshell.html
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))

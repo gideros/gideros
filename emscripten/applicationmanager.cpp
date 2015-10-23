@@ -62,6 +62,19 @@ void drawInfo();
 void refreshLocalIPs();
 void g_exit();
 
+static void printJS(const char *str, int len, void *data) {
+ if (len>=0)
+ {
+  char *m=(char *)malloc(len+1);
+  memcpy(m,str,len);
+  m[len]=0;
+  printf(m);
+  free(m);
+ }
+ else
+  printf(str);
+}
+
 static volatile const char* licenseKey_ = "9852564f4728e0c11e34ca3eb5fe20b2";
 //-----------------------------------------01234567890123456------------------
 
@@ -161,6 +174,9 @@ ApplicationManager::ApplicationManager(bool player,const char *appname,const cha
 	if (player_)
 		application_->setPrintFunc(NetworkManager::printToServer_s,
 				networkManager_);
+        else
+		application_->setPrintFunc(printJS,NULL);
+        
 	application_->enableExceptions();
 
 	Binder::disableTypeChecking();

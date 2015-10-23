@@ -87,7 +87,7 @@ glfwSetWindowSize(defWidth,defHeight);
 EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *userData)
 {
  const char *key=e->key;
- char kcode[2]={e->keyCode,0};
+ char kcode[2]={(char)(e->keyCode),0};
  if ((!key)||(!(*key)))
   key=kcode;
  if (!(*key))
@@ -132,7 +132,7 @@ EM_BOOL wheel_callback(int eventType, const EmscriptenWheelEvent *e, void *userD
  int y=e->mouse.canvasY;
  int b=e->mouse.buttons;
  b=(b&1)|((b&2)<<1)|(b&4>>1); //Convert buttons to gideros mask
-  ginputp_mouseWheel(x,y,b,w);
+  ginputp_mouseWheel(x,y,b,-w);
   return 0;
 }
 
@@ -156,13 +156,17 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 }
 
 
+extern "C" int main_registerPlugin(const char *pname);
+
 int main() {
 
 char *url=(char *) EM_ASM_INT_V({
  return allocate(intArrayFromString(location.href), 'i8', ALLOC_STACK);
 });
- bool allowed=false;
+/*
+ bool allowed=true;
  allowed|=!strncmp(url,"http://hieroglyphe.net/",23);
+ allowed|=!strncmp(url,"http://www.geopisteur.com/",26);
  allowed|=!strncmp(url,"http://apps.giderosmobile.com/",30); 
  allowed|=!strncmp(url,"http://www.totebogames.com/",27); 
  allowed|=!strncmp(url,"http://www.miniclip.com/",24); 
@@ -170,7 +174,7 @@ char *url=(char *) EM_ASM_INT_V({
  {
   printf("Sorry: location %s not allowed\n",url);
   return -1;
- }
+ }*/
   url=strstr(url,"://")+2;
   char *lurl=strchr(url,'?');
   if (lurl) *lurl=0;
@@ -206,11 +210,13 @@ char *url=(char *) EM_ASM_INT_V({
 
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
     emscripten_set_main_loop(looptick, 0, 1);
+    main_registerPlugin(NULL);
 }
 
-extern "C" int main_registerPlugin(const char *pname);
 int main_registerPlugin(const char *pname)
 {
+ if (!pname)
+  return 0;
  void *hndl = dlopen (NULL, RTLD_LAZY);
  if (!hndl) { fprintf(stderr, "dlopen failed: %s\n", dlerror()); 
            exit (EXIT_FAILURE); 
@@ -218,11 +224,13 @@ int main_registerPlugin(const char *pname)
  void *(*func)(lua_State *,
        int)=(void *(*)(lua_State *,
              int))dlsym(hndl,pname);
+ int ret=0;
  if (func)
-  g_registerPlugin(func);
+  ret=g_registerPlugin(func);
  else
   fprintf(stderr,"Symbol %s not found\n",pname);
  //dlclose(hndl);
+  return ret;
 }
 
 void flushDrive(int drive)
