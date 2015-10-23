@@ -10,7 +10,7 @@ extern "C" {
 	void gdr_initialize(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel^ swapChainPanel, 
 		int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath);
 	void gdr_drawFirstFrame();
-	void gdr_drawFrame();
+	void gdr_drawFrame(bool useXaml);
 	void gdr_exitGameLoop();
 	void gdr_deinitialize();
 	void gdr_suspend();
