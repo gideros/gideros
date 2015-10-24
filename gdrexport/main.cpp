@@ -191,7 +191,8 @@ enum DeviceFamily
   e_MacOSXDesktop,
   e_WinRT,
   e_GApp,
-  e_Win32
+  e_Win32,
+  e_Html5
 };
 
 static void fileCopy(	const QString& srcName,
@@ -491,6 +492,10 @@ int main(int argc, char *argv[])
             {
                 deviceFamily = e_GApp;
             }
+            else if (platform.toLower() == "html5")
+            {
+                deviceFamily = e_Html5;
+            }
             else
             {
                 fprintf(stderr, "Unknown argument for platform_name: %s\n\n", qPrintable(platform));
@@ -585,6 +590,7 @@ int main(int argc, char *argv[])
     QString templatename;
     QString templatenamews;
     bool underscore;
+    bool needGApp=false;
 
     switch (deviceFamily)
     {
@@ -633,6 +639,15 @@ int main(int argc, char *argv[])
         break;
     case e_GApp:
         underscore = false;
+        needGApp = true;
+        break;
+    case e_Html5:
+    	templatedir = "Html5";
+        templatename = "Html5";
+        templatenamews = "Html5";
+        underscore = false;
+        needGApp = true;
+        break;
     }
 
     const QString &projectFileName_ = projectFileName;
@@ -748,6 +763,7 @@ int main(int argc, char *argv[])
             "*.xml" <<
             "*.appxmanifest" <<
             "*.gradle" <<
+            "*.html" <<
             "*.project";
         wildcards << wildcards1;
 
@@ -805,10 +821,16 @@ int main(int argc, char *argv[])
             replaceList1 << qMakePair(QString("com.giderosmobile.windows").toUtf8(), args["package"].toUtf8());
             replaceList1 << qMakePair(QString("Gideros Mobile").toUtf8(), args["organization"].toUtf8());
         }
+        else if(deviceFamily == e_Html5){
+            replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+base+"</title>").toUtf8());
+            replaceList1 << qMakePair(QString("gideros.GApp").toUtf8(), (basews+".GApp").toUtf8());
+        }
         replaceList << replaceList1;
 
             QStringList wildcards2;
-            wildcards2 << "libgideros.so" << "libgideros.a" << "gid.dll" << "libgid.1.dylib" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib";
+            wildcards2 << "libgideros.so" << "libgideros.a" << "gid.dll"
+            		   << "libgid.1.dylib" << "gideros.WindowsPhone.lib"
+            		   << "gideros.Windows.lib" << "gideros.html.mem";
             wildcards << wildcards2;
 
             QList<QPair<QByteArray, QByteArray> > replaceList2;
@@ -1138,7 +1160,7 @@ int main(int argc, char *argv[])
                 for (int i = 0; i < luafiles.size(); ++i)
                     out << luafiles[i] << "\n";
             }
-            if (deviceFamily == e_GApp)
+            if (needGApp)
             {
                 allfiles.push_back(filename);
                 allfiles_abs.push_back(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
@@ -1201,7 +1223,7 @@ int main(int argc, char *argv[])
 
                 file.write(buffer.data(), buffer.size());
             }
-            if (deviceFamily == e_GApp)
+            if (needGApp)
             {
                 allfiles.push_back(filename);
                 allfiles_abs.push_back(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
@@ -1210,10 +1232,11 @@ int main(int argc, char *argv[])
 
     }  // end of ipass loop
 
-    if (deviceFamily == e_GApp)
+    if (needGApp)
     {
         outputDir.cdUp();
-        outputDir.cdUp();
+        if (deviceFamily == e_GApp)
+        	outputDir.cdUp();
 
         QFile file(QDir::cleanPath(outputDir.absoluteFilePath(base+".GApp")));
         if (file.open(QIODevice::WriteOnly))
@@ -1256,7 +1279,10 @@ int main(int argc, char *argv[])
             file.write(buffer.data(), buffer.size());
         }
         file.close();
-        outputDir.cd(base);
+        if (deviceFamily == e_GApp)
+        	outputDir.cd(base);
+        else
+        	outputDir.cd("assets");
         outputDir.removeRecursively();
         outputDir.cdUp();
     }

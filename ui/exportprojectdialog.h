@@ -21,7 +21,8 @@ public:
       e_MacOSXDesktop,
 	  e_WinRT,
 	  e_GApp,
-	  e_Win32
+	  e_Win32,
+	  e_Html5
 	};
 
     explicit ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent = 0);

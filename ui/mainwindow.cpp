@@ -2401,6 +2401,12 @@ void MainWindow::exportProject()
         case ExportProjectDialog::e_GApp:
             arguments << "-platform" << "gapp";
             break;
+        case ExportProjectDialog::e_Html5:
+            templatedir = "Html5";
+            templatename = "Html5";
+            templatenamews = "Html5";
+            arguments << "-platform" << "html5";
+            break;
         }
 
 
