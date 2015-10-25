@@ -408,7 +408,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     luaProcess_ = new QProcess(this);
 #if defined(Q_OS_MAC)
-    env.insert("LUA_CPATH", toolsDir.path() + "/?.so";
+    env.insert("LUA_CPATH", toolsDir.path() + "/?.so");
 #endif
     luaProcess_->setProcessEnvironment(env);
 }
