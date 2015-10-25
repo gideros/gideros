@@ -72,25 +72,43 @@ EMCC=emcc
 BUILD=Build
 
 OPTS+=-O2 --bind
-#OPTS+=-g4
 
 EOPTS=MAIN_MODULE=1 FULL_ES2=1 
-#EOPTS=ASSERTIONS=2
 EOPTS+=DISABLE_EXCEPTION_CATCHING=0
 EOPTS+=ALLOW_MEMORY_GROWTH=1
+
+ifneq ($(DEBUG),)
+OPTS+=-g4
+EOPTS+=ASSERTIONS=2
+endif
 
 OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS))
 CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
 	$(OPTS)
-ASSETS=../winrt_example/giderosgame/giderosgame.Windows/Assets
+TEMPLATE=$(BUILD)/Html5/Html5
 
-all: path $(OBJS)
-	emcc $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) -o gideros.html --pre-js gidjs.js --shell-file gidshell.html
+
+PLUGINS=bitop luasocket json
+
+template: main plugins
+	cd $(BUILD); rm -f Html5.zip; zip -r Html5.zip Html5/; 
+
+plugins:
+	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; make; cp Build/*.js* $$R/$(TEMPLATE)/; cd -; done
+	
+libs:
+
+$(TEMPLATE)/gideros.js: libs $(OBJS)
+	emcc $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) -o $(TEMPLATE)/gideros.html --pre-js gidjs.js --shell-file gidshell.html
+
+main: path libs $(TEMPLATE)/gideros.js
+	cp gideros.png $(TEMPLATE)
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))
+	mkdir -p $(TEMPLATE)
 
 clean:
 	rm -rf $(BUILD)

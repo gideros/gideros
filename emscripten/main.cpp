@@ -158,23 +158,40 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 
 extern "C" int main_registerPlugin(const char *pname);
 
+extern const char *codeKey_;
 int main() {
 
 char *url=(char *) EM_ASM_INT_V({
  return allocate(intArrayFromString(location.href), 'i8', ALLOC_STACK);
 });
-/*
- bool allowed=true;
+
+ const char *hostname=codeKey_+32;
+ bool allowed=(strlen(hostname)==0);
+ if (!allowed)
+ {
+  char *s1=strstr(url,"://");
+  if (!s1) 
+   s1=url;
+  else 
+   s1=s1+3;
+  char *s2=strchr(s1,'/');
+  if (s2) *s2=0;
+  //printf("Hostname %s, required %s\n",s1,hostname);
+  allowed|=!strncmp(s1,hostname,strlen(hostname));
+  if (s2) *s2='/';
+ }
+ /*
  allowed|=!strncmp(url,"http://hieroglyphe.net/",23);
  allowed|=!strncmp(url,"http://www.geopisteur.com/",26);
  allowed|=!strncmp(url,"http://apps.giderosmobile.com/",30); 
  allowed|=!strncmp(url,"http://www.totebogames.com/",27); 
  allowed|=!strncmp(url,"http://www.miniclip.com/",24); 
+ */
  if (!allowed)
  {
   printf("Sorry: location %s not allowed\n",url);
   return -1;
- }*/
+ }
   url=strstr(url,"://")+2;
   char *lurl=strchr(url,'?');
   if (lurl) *lurl=0;
@@ -183,7 +200,6 @@ char *url=(char *) EM_ASM_INT_V({
   
   //PLUGINS Init
   EM_ASM(Module.registerPlugins());
-  //g_registerPlugin(g_pluginMain_##symbol);
 
   int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
    int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
@@ -229,7 +245,7 @@ int main_registerPlugin(const char *pname)
   ret=g_registerPlugin(func);
  else
   fprintf(stderr,"Symbol %s not found\n",pname);
- //dlclose(hndl);
+ //dlclose(hndl); //XXX check this
   return ret;
 }
 
