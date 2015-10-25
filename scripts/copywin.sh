@@ -285,5 +285,7 @@ cd ..
 done
 cd ..
 
+cp $BUILD_DIR/win/Plugins/lpeg.dll $BUILD_DIR/win/Tools
+
 cd scripts
 
