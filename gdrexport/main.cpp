@@ -404,7 +404,7 @@ void usage()
     fprintf(stderr, "Usage: gdrexport -options <project_file> <output_dir>\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Options general: \n");
-    fprintf(stderr, "    -platform <platform_name>  #platform to export (ios, android, windows, macosx, winrt, win32, gapp)\n");
+    fprintf(stderr, "    -platform <platform_name>  #platform to export (ios, android, windows, macosx, winrt, win32, gapp, html5)\n");
     fprintf(stderr, "    -encrypt                   #encrypts code and assets\n");
     fprintf(stderr, "    -encrypt-code              #encrypts code\n");
     fprintf(stderr, "    -encrypt-assets            #encrypts assets\n");
@@ -429,6 +429,9 @@ void usage()
     fprintf(stderr, "Options winrt: \n");
     fprintf(stderr, "    -organization <name>       #organization name\n");
     fprintf(stderr, "    -package <package_name>    #package name\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Options html5: \n");
+    fprintf(stderr, "    -hostname <name>           #host name the app will be run from\n");
 }
 
 int main(int argc, char *argv[])
@@ -589,7 +592,7 @@ int main(int argc, char *argv[])
     QString templatedir;
     QString templatename;
     QString templatenamews;
-    bool underscore;
+    bool underscore=false;
     bool needGApp=false;
 
     switch (deviceFamily)
@@ -717,6 +720,12 @@ int main(int argc, char *argv[])
         }
     }
 
+    if ((deviceFamily==e_Html5)&&(!args["hostname"].isEmpty()))
+    {
+    	encryptAssets=true;
+    	encryptCode=true;
+    }
+
     if (encryptCode)
     {
         codeKey = randomData.mid(64,256);
@@ -727,6 +736,30 @@ int main(int argc, char *argv[])
     {
         assetsKey = randomData.mid(64+256,256);
         assetsPrefixRnd=randomData.mid(32,32);
+    }
+
+    if (deviceFamily==e_Html5)
+    {
+    	encryptAssets=true;
+    	encryptCode=true;
+    	if (!(args["hostname"].isEmpty()))
+    	{
+    		QByteArray mkey=args["hostname"].toUtf8();
+        	int msize=mkey.size();
+        	if (msize>255)
+        	{
+        		msize=255; //Unlikely to happen
+        		mkey.truncate(255);
+        	}
+        	mkey.append((char)0);
+        	msize++;
+    		codeKey.replace(0,msize,mkey);
+    	}
+    	else
+    	{
+    	    QByteArray zero(1, '\0');
+    		codeKey.replace(0,1,zero);
+    	}
     }
 
     ProjectProperties properties;
@@ -823,7 +856,7 @@ int main(int argc, char *argv[])
         }
         else if(deviceFamily == e_Html5){
             replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+base+"</title>").toUtf8());
-            replaceList1 << qMakePair(QString("gideros.GApp").toUtf8(), (basews+".GApp").toUtf8());
+            replaceList1 << qMakePair(QString("gideros.GApp").toUtf8(), (base+".GApp").toUtf8());
         }
         replaceList << replaceList1;
 

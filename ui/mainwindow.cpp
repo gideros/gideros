@@ -2406,6 +2406,8 @@ void MainWindow::exportProject()
             templatename = "Html5";
             templatenamews = "Html5";
             arguments << "-platform" << "html5";
+            if (!dialog.html5_host().isEmpty())
+                arguments << "-hostname" << dialog.html5_host();
             break;
         }
 

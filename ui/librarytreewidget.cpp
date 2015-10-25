@@ -366,6 +366,7 @@ QDomDocument LibraryTreeWidget::toXml() const
 	properties.setAttribute("win_domain", properties_.win_domain);
     properties.setAttribute("winrt_org", properties_.winrt_org);
     properties.setAttribute("winrt_package", properties_.winrt_package);
+    properties.setAttribute("html5_host", properties_.html5_host);
     properties.setAttribute("encryptCode", properties_.encryptCode);
     properties.setAttribute("encryptAssets", properties_.encryptAssets);
 
@@ -540,6 +541,8 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
             properties_.winrt_org = properties.attribute("winrt_org");
         if (!properties.attribute("winrt_package").isEmpty())
             properties_.winrt_package = properties.attribute("winrt_package");
+        if (!properties.attribute("html5_host").isEmpty())
+            properties_.html5_host = properties.attribute("html5_host");
         if (!properties.attribute("encryptCode").isEmpty())
             properties_.encryptCode = properties.attribute("encryptCode").toInt() != 0;
         if (!properties.attribute("encryptAssets").isEmpty())

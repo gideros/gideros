@@ -499,12 +499,26 @@ The package is smaller and may run smoother. Normally the Win32 export uses Wind
        <item>
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Export for the web. Generates a set of html and javascript files suitable for a WebGL compatible browser.</string>
+          <string>Export for the web. Generates a set of html and javascript files suitable for a WebGL compatible browser. You can restrict your app to be launched from a specific hostname by entering it below (i.e. www.example.com). Leave the field empty to allow it to be run from any host. When this field is not empty, encryption is automatically turned on.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
          </property>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Host name:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="html5_host"/>
+         </item>
+        </layout>
        </item>
        <item>
         <spacer name="verticalSpacer_3">

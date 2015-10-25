@@ -39,6 +39,7 @@ public:
     QString win_domain() const;
     QString winrt_org() const;
     QString winrt_package() const;
+    QString html5_host() const;
     bool assetsOnly() const;
     bool encryptCode() const;
     bool encryptAssets() const;

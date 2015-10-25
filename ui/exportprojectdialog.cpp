@@ -25,6 +25,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->win_domain->setText(properties->win_domain);
     ui->winrt_org->setText(properties->winrt_org);
     ui->winrt_package->setText(properties->winrt_package);
+    ui->html5_host->setText(properties->html5_host);
 
     if (licensed)
     {
@@ -104,6 +105,11 @@ QString ExportProjectDialog::winrt_package() const
     return ui->winrt_package->text();
 }
 
+QString ExportProjectDialog::html5_host() const
+{
+    return ui->html5_host->text();
+}
+
 bool ExportProjectDialog::assetsOnly() const
 {
 	return ui->assetsOnly->isChecked();
@@ -135,4 +141,5 @@ void ExportProjectDialog::onAccepted()
     properties_->winrt_package = ui->winrt_package->text();
     properties_->encryptCode = ui->encryptCode->isChecked();
     properties_->encryptAssets = ui->encryptAssets->isChecked();
+    properties_->html5_host = ui->html5_host->text();
 }
