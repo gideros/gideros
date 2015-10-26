@@ -282,7 +282,12 @@ public:
         float contentScaleFactor = 1;
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
-        
+            
+        bool has3Dtouch = false;
+        #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+        if([[view traitCollection] forceTouchCapability] == UIForceTouchCapabilityAvailable)
+            has3Dtouch = true;
+        #endif
         for (UITouch *touch in touches)
         {
             ginput_TouchEvent *touchEvent = newTouchEvent(allTouches.count);
@@ -291,6 +296,12 @@ public:
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
             touchEvent->touch.pressure = 0;
+            
+            #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+            if(has3Dtouch)
+                touchEvent->touch.pressure = touch.force/touch.maximumPossibleForce;
+            #endif
+
             touchEvent->touch.touchType = 0;
             touchEvent->touch.id = addTouch(touch);
             
@@ -301,6 +312,11 @@ public:
                 touchEvent->allTouches[i].x = location.x * contentScaleFactor;
                 touchEvent->allTouches[i].y = location.y * contentScaleFactor;
                 touchEvent->allTouches[i].pressure = 0;
+                #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+                if(has3Dtouch)
+                    touchEvent->allTouches[i].pressure = touch2.force/touch2.maximumPossibleForce;
+                #endif
+
                 touchEvent->allTouches[i].touchType = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
@@ -338,6 +354,13 @@ public:
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
         
+        bool has3Dtouch = false;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+        if([[view traitCollection] forceTouchCapability] == UIForceTouchCapabilityAvailable)
+            has3Dtouch = true;
+#endif
+
+        
         for (UITouch *touch in touches)
         {
             ginput_TouchEvent *touchEvent = newTouchEvent(allTouches.count);
@@ -346,6 +369,10 @@ public:
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
             touchEvent->touch.pressure = 0;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+            if(has3Dtouch)
+                touchEvent->touch.pressure = touch.force/touch.maximumPossibleForce;
+#endif
             touchEvent->touch.touchType = 0;
             touchEvent->touch.id = addTouch(touch);
             
@@ -356,6 +383,10 @@ public:
                 touchEvent->allTouches[i].x = location.x * contentScaleFactor;
                 touchEvent->allTouches[i].y = location.y * contentScaleFactor;
                 touchEvent->allTouches[i].pressure = 0;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+                if(has3Dtouch)
+                    touchEvent->allTouches[i].pressure = touch2.force/touch2.maximumPossibleForce;
+#endif
                 touchEvent->allTouches[i].touchType = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
@@ -393,6 +424,13 @@ public:
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
         
+        bool has3Dtouch = false;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+        if([[view traitCollection] forceTouchCapability] == UIForceTouchCapabilityAvailable)
+            has3Dtouch = true;
+#endif
+
+        
         for (UITouch *touch in touches)
         {
             ginput_TouchEvent *touchEvent = newTouchEvent(allTouches.count);
@@ -401,6 +439,10 @@ public:
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
             touchEvent->touch.pressure = 0;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+            if(has3Dtouch)
+                touchEvent->touch.pressure = touch.force/touch.maximumPossibleForce;
+#endif
             touchEvent->touch.touchType = 0;
             touchEvent->touch.id = addTouch(touch);
             
@@ -411,6 +453,10 @@ public:
                 touchEvent->allTouches[i].x = location.x * contentScaleFactor;
                 touchEvent->allTouches[i].y = location.y * contentScaleFactor;
                 touchEvent->allTouches[i].pressure = 0;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+                if(has3Dtouch)
+                    touchEvent->allTouches[i].pressure = touch2.force/touch2.maximumPossibleForce;
+#endif
                 touchEvent->allTouches[i].touchType = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
@@ -452,6 +498,13 @@ public:
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
         
+        bool has3Dtouch = false;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+        if([[view traitCollection] forceTouchCapability] == UIForceTouchCapabilityAvailable)
+            has3Dtouch = true;
+#endif
+
+        
         for (UITouch *touch in touches)
         {
             ginput_TouchEvent *touchEvent = newTouchEvent(allTouches.count);
@@ -460,6 +513,10 @@ public:
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
             touchEvent->touch.pressure = 0;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+            if(has3Dtouch)
+                touchEvent->touch.pressure = touch.force/touch.maximumPossibleForce;
+#endif
             touchEvent->touch.touchType = 0;
             touchEvent->touch.id = addTouch(touch);
             
@@ -470,6 +527,10 @@ public:
                 touchEvent->allTouches[i].x = location.x * contentScaleFactor;
                 touchEvent->allTouches[i].y = location.y * contentScaleFactor;
                 touchEvent->allTouches[i].pressure = 0;
+#if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
+                if(has3Dtouch)
+                    touchEvent->allTouches[i].pressure = touch2.force/touch2.maximumPossibleForce;
+#endif
                 touchEvent->allTouches[i].touchType = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;

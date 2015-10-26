@@ -21,7 +21,8 @@ public:
       e_MacOSXDesktop,
 	  e_WinRT,
 	  e_GApp,
-	  e_Win32
+	  e_Win32,
+	  e_Html5
 	};
 
     explicit ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent = 0);
@@ -38,6 +39,7 @@ public:
     QString win_domain() const;
     QString winrt_org() const;
     QString winrt_package() const;
+    QString html5_host() const;
     bool assetsOnly() const;
     bool encryptCode() const;
     bool encryptAssets() const;

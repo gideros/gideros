@@ -48,6 +48,7 @@ struct ProjectProperties
         win_domain = "giderosmobile.com";
         winrt_org = "GiderosMobile";
         winrt_package = "com.yourdomain.yourapp";
+        html5_host = "";
         encryptCode = false;
         encryptAssets = false;
     }
@@ -87,6 +88,7 @@ struct ProjectProperties
     QString win_domain;
     QString winrt_org;
     QString winrt_package;
+    QString html5_host;
     bool encryptCode;
     bool encryptAssets;
 };

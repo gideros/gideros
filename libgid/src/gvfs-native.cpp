@@ -36,10 +36,11 @@
 
 struct FileInfo
 {
-	int zipFile;
+    int zipFile;
     size_t startOffset;
     size_t length;
     int encrypt;    // 0 no encryption, 1:encrypt code, 2:encrypt assets
+    int drive;
 };
 
 static std::map<std::string, FileInfo> s_files;
@@ -64,14 +65,17 @@ static int s_open(const char *pathname, int flags)
 
     int fd = -1;
 
-    FileInfo fi = {-1, (size_t)-1, (size_t)-1, 0};
+    FileInfo fi = {-1, (size_t)-1, (size_t)-1, 0, drive};
 
     if ( drive != 0 || s_zipFile.empty() )
+    {
         fd=::open(gpath_transform(pathname), flags, 0755);
+        glog_d("Opened %s(%s) at fd %d on drive %d\n",pathname,gpath_transform(pathname),fd,drive);
+    }
     else
     {
     	pathname = gpath_normalizeArchivePath(pathname);
-    	glog_d("Looking for %s in archive %s",pathname,s_zipFile.c_str());
+    	//glog_d("Looking for %s in archive %s",pathname,s_zipFile.c_str());
 
         std::map<std::string, FileInfo>::iterator iter;
         iter = s_files.find(pathname);
@@ -84,7 +88,7 @@ static int s_open(const char *pathname, int flags)
         }
 
         fd = ::open(s_zipFile.c_str(), flags, 0755);
-    	glog_d("%s: fd is %d",pathname,fd);
+    	//glog_d("%s: fd is %d",pathname,fd);
 
         ::lseek(fd, iter->second.startOffset, SEEK_SET);
 
@@ -120,6 +124,7 @@ static int s_open(const char *pathname, int flags)
     return fd;
 }
 
+extern void flushDrive(int drive);
 static int s_close(int fd)
 {
     std::map<int, FileInfo>::iterator iter;
@@ -131,8 +136,13 @@ static int s_close(int fd)
         return -1;
     }
 
+    int drive=iter->second.drive;
     s_fileInfos.erase(fd);
-    return close(fd);
+    int cret=close(fd);
+#ifdef EMSCRIPTEN
+    flushDrive(drive);
+#endif
+    return cret;
 }
 
 static size_t readHelper(int fd, void* buf, size_t count)
@@ -339,7 +349,7 @@ void gvfs_setZipFile(const char *archiveFile)
 
 void gvfs_addFile(const char *pathname, int zipFile, size_t startOffset, size_t length)
 {
-    FileInfo f = {zipFile, startOffset, length, false};
+    FileInfo f = {zipFile, startOffset, length, false,0};
     s_files[pathname] = f;
 }
 }

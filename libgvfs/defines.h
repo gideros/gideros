@@ -1,6 +1,9 @@
 #ifndef _DEFINES_H_
 #define _DEFINES_H_
 
+#ifdef __EMSCRIPTEN__
+#define fpos_t off_t
+#endif
 #ifdef STRICT_LINUX
 #define fpos_t off_t
 #endif

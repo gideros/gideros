@@ -133,7 +133,7 @@ public slots:
 		}
 		QString s3 = str.mid(curr);
 		append(s3, df_);
-	} 
+    }
 
 signals:
 	void mouseDoubleClick(QMouseEvent* e);
@@ -197,6 +197,8 @@ private slots:
     void giderosDocumentation();
 
 	void closeMdiTab(int);
+
+    QByteArray expandMacro(const QString& localFileName);
 
 private slots:
 	void onOpenRequest(const QString& itemName, const QString& fileName);
@@ -305,6 +307,7 @@ private slots:
 	void findInFiles();
 
     void actionLocalhostToggle(bool checked);
+    void actionMacro_Support(bool checked);
     void clearOutput();
     void searchOutput( const QString &text);
 
@@ -330,6 +333,7 @@ private slots:
 	void dataReceived(const QByteArray& data);
 	void ackReceived(unsigned int id);
     void advertisement(const QString&,unsigned short,unsigned short,const QString&);
+
 #endif
 
 private slots:
@@ -363,6 +367,7 @@ private:
 
 private:
     QProcess *makeProcess_;
+    QProcess *luaProcess_;
 private slots:
     void stdoutToOutput();
     void stderrToOutput();

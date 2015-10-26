@@ -642,32 +642,29 @@ public class GiderosApplication
 		}
 	}
 
-	public void onTouchesBegin(int size, int[] id, int[] x, int[] y, int actionIndex)
+	public void onTouchesBegin(int size, int[] id, int[] x, int[] y, float[] pressure, int actionIndex)
 	{
 		if(!isRunning()){
 			if(projectList != null && projectList.getVisibility() == View.GONE){
 				projectList.setVisibility(View.VISIBLE);
 			}
 		}
-		GiderosApplication.nativeTouchesBegin(size, id, x, y, actionIndex);
+		GiderosApplication.nativeTouchesBegin(size, id, x, y, pressure, actionIndex);
 	}
 
-	public void onTouchesMove(int size, int[] id, int[] x,
-			int[] y)
+	public void onTouchesMove(int size, int[] id, int[] x, int[] y, float[] pressure)
 	{	
-		GiderosApplication.nativeTouchesMove(size, id, x, y);
+		GiderosApplication.nativeTouchesMove(size, id, x, y, pressure);
 	}
 
-	public void onTouchesEnd(int size, int[] id, int[] x,
-			int[] y, int actionIndex)
+	public void onTouchesEnd(int size, int[] id, int[] x, int[] y, float[] pressure, int actionIndex)
 	{
-		GiderosApplication.nativeTouchesEnd(size, id, x, y, actionIndex);
+		GiderosApplication.nativeTouchesEnd(size, id, x, y, pressure, actionIndex);
 	}
 
-	public void onTouchesCancel(int size, int[] id, int[] x,
-			int[] y)
+	public void onTouchesCancel(int size, int[] id, int[] x, int[] y, float[] pressure)
 	{
-		GiderosApplication.nativeTouchesCancel(size, id, x, y);
+		GiderosApplication.nativeTouchesCancel(size, id, x, y, pressure);
 	}	
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event)
@@ -1111,10 +1108,10 @@ public class GiderosApplication
 	static private native void nativeSurfaceCreated();
 	static private native void nativeSurfaceChanged(int w, int h, int rotation);
 	static private native void nativeDrawFrame();
-	static private native void nativeTouchesBegin(int size, int[] id, int[] x, int[] y, int actionIndex);
-	static private native void nativeTouchesMove(int size, int[] id, int[] x, int[] y);
-	static private native void nativeTouchesEnd(int size, int[] id, int[] x, int[] y, int actionIndex);
-	static private native void nativeTouchesCancel(int size, int[] id, int[] x, int[] y);
+	static private native void nativeTouchesBegin(int size, int[] id, int[] x, int[] y, float[] pressure, int actionIndex);
+	static private native void nativeTouchesMove(int size, int[] id, int[] x, int[] y, float[] pressure);
+	static private native void nativeTouchesEnd(int size, int[] id, int[] x, int[] y, float[] pressure, int actionIndex);
+	static private native void nativeTouchesCancel(int size, int[] id, int[] x, int[] y, float[] pressure);
 	static private native void nativeStop();
 	static private native void nativeStart();
 }

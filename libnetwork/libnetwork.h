@@ -4,6 +4,7 @@
 #include <deque>
 #include <string>
 #include <vector>
+#include <time.h>
 
 #ifdef WINSTORE
 

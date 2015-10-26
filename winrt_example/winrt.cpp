@@ -157,13 +157,14 @@ public:
 
 	  bool isPlayer = (file == nullptr);
 
-	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
+	  // false means "don't use XAML"
+	  gdr_initialize(false, Window, nullptr, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
 
 	  gdr_drawFirstFrame();
             
       // repeat until window closes
       while(!WindowClosed){
-		  gdr_drawFrame();
+		  gdr_drawFrame(false);
       }
 
 	  gdr_exitGameLoop();
