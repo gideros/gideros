@@ -14,12 +14,8 @@ cp -R fontcreator/Gideros\ Font\ Creator.app $BUILD_DIR/mac
 cp -R $BUILD_DIR/win/Documentation $BUILD_DIR/mac
 cp -R $BUILD_DIR/win/Examples $BUILD_DIR/mac
 cp -R $BUILD_DIR/win/Resources $BUILD_DIR/mac/Gideros\ Studio.app/Contents
+cp -R $BUILD_DIR/win/Tools $BUILD_DIR/mac/Gideros\ Studio.app/Contents
 cp -R $BUILD_DIR/win/Templates $BUILD_DIR/mac/Gideros\ Studio.app/Contents
-
-git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Tools
-mkdir $BUILD_DIR/mac/Gideros\ Studio.app/Contents
-tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/mac/Gideros\ Studio.app/Contents
-
 mkdir $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate
 cp -R desktop/MacOSXDesktopTemplate.app $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate
 cp -R desktop/Entitlements.plist $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate
@@ -86,7 +82,6 @@ done
 cd ..
 
 cp -R $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate $BUILD_DIR/win/Templates/Qt
-cp $BUILD_DIR/mac/Plugins/lpeg.dylib $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools
 
 cd scripts
 
