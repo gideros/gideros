@@ -159,6 +159,7 @@ public:
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);
 	ShaderProgram *createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes);
 	void setViewport(int x,int y,int width,int height);
+	void adjustViewportProjection(Matrix4 &vp, float width, float height);
 	void resizeFramebuffer(int width,int height);
 	void setProjection(const Matrix4 p);
 	void setModel(const Matrix4 m);

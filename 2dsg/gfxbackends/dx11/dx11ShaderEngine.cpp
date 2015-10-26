@@ -92,24 +92,39 @@ void dx11SetupShaders()
 	};
     ShaderProgram::stdParticle = new dx11ParticleShader(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),stdPConstants,stdTCAttributes);
 
-	const ShaderProgram::ConstantDesc pathUniforms[] = {
+	const ShaderProgram::ConstantDesc pathUniformsFC[] = {
 		{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
 		{ "fColor", ShaderProgram::CFLOAT4, 1,	ShaderProgram::SysConst_Color, false, 0, NULL },
-		{ "fTexture", ShaderProgram::CTEXTURE, 1, ShaderProgram::SysConst_None, false, 0, NULL },
 		{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
-
-	const ShaderProgram::DataDesc pathAttributesFillC[] = {
+	const ShaderProgram::DataDesc pathAttributesFC[] = {
 		{ "vVertex",ShaderProgram::DFLOAT, 4, 0, 0 },
 		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
 
-	const ShaderProgram::DataDesc pathAttributesStrokeC[] = {
+	const ShaderProgram::ConstantDesc pathUniformsSC[] = {
+		{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
+		{ "width", ShaderProgram::CFLOAT, 1,	ShaderProgram::SysConst_None, true, 0, NULL },
+		{ "fColor", ShaderProgram::CFLOAT4, 1,	ShaderProgram::SysConst_Color, false, 0, NULL },
+		{ "feather", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_None, false, 0, NULL },
+		{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
+	const ShaderProgram::DataDesc pathAttributesSC[] = {
 		{ "dataA",ShaderProgram::DFLOAT, 4, 0, 0 },
 		{ "dataB", ShaderProgram::DFLOAT, 4, 1, 0 },
 		{ "dataC", ShaderProgram::DFLOAT, 4, 2, 0 },
 		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
 
-	ShaderProgram::pathShaderFillC = new dx11ShaderProgram(vPathFillC_cso, sizeof(vPathFillC_cso), pPathFillC_cso, sizeof(pPathFillC_cso), pathUniforms, pathAttributesFillC);
-	ShaderProgram::pathShaderStrokeC = new dx11ShaderProgram(vPathStrokeC_cso, sizeof(vPathStrokeC_cso), pPathStrokeC_cso, sizeof(pPathStrokeC_cso), pathUniforms, pathAttributesStrokeC);
+	const ShaderProgram::ConstantDesc pathUniformsSL[] = {
+		{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
+		{ "width", ShaderProgram::CFLOAT, 1,	ShaderProgram::SysConst_None, true, 0, NULL },
+		{ "fColor", ShaderProgram::CFLOAT4, 1,	ShaderProgram::SysConst_Color, false, 0, NULL },
+		{ "feather", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_None, false, 0, NULL },
+		{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
+	const ShaderProgram::DataDesc pathAttributesSL[] = {
+		{ "vVertex",ShaderProgram::DFLOAT, 4, 0, 0 },
+		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
+
+	ShaderProgram::pathShaderFillC = new dx11ShaderProgram(vPathFillC_cso, sizeof(vPathFillC_cso), pPathFillC_cso, sizeof(pPathFillC_cso), pathUniformsFC, pathAttributesFC);
+	ShaderProgram::pathShaderStrokeC = new dx11ShaderProgram(vPathStrokeC_cso, sizeof(vPathStrokeC_cso), pPathStrokeC_cso, sizeof(pPathStrokeC_cso), pathUniformsSC, pathAttributesSC);
+	ShaderProgram::pathShaderStrokeLC = new dx11ShaderProgram(vPathStrokeLC_cso, sizeof(vPathStrokeLC_cso), pPathStrokeLC_cso, sizeof(pPathStrokeLC_cso), pathUniformsSL, pathAttributesSL);
 }
 
 ID3D11Texture2D* dx11ShaderEngine::pBackBuffer=NULL;
@@ -225,7 +240,7 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
 	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSNormal);
-	rasterDesc.ScissorEnable = false;
+	rasterDesc.ScissorEnable = true;
 	g_dev->CreateRasterizerState(&rasterDesc, &g_pRSScissor);
 
 	D3D11_BLEND_DESC blendStateDesc;

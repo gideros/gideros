@@ -10,6 +10,7 @@ struct VOut
 cbuffer cbv : register(b0)
 {
 	float4x4 mvp;
+	float width;
 };
 
 VOut VShader(float4 position : vVertex)
@@ -17,11 +18,9 @@ VOut VShader(float4 position : vVertex)
 	VOut output;
 
 	output.uv = position.zw;
-
-	position.w = 1.0f;
-	position.z = 0.0f;
-
-	output.position = mul(mvp, position);
+	
+	float4 dpos = float4(output.uv*width+position.xy,0, 1.0);
+	output.position = mul(mvp, dpos);
 
 	return output;
 }
@@ -30,24 +29,16 @@ VOut VShader(float4 position : vVertex)
 cbuffer cbp : register(b1)
 {
 	float4 fColor;
+	float feather;
 };
 
 float4 PShader(float4 position : SV_POSITION, float2 uv: TEXCOORD) : SV_TARGET
 {
-	// Gradients  
-	float2 px = ddx(uv);
-	float2 py = ddy(uv);
-	// Chain rule  
-	float fx = (2 * uv.x)*px.x - px.y;
-	float fy = (2 * uv.x)*py.x - py.y;
-	// Signed distance  
-	float sd = (uv.x*uv.x - uv.y) / sqrt(fx*fx + fy*fy);
-	// Linear alpha  
-	float alpha = 0.5 - sd;
-	alpha = min(alpha, 1.0f);
+	float l = length(uv);
 	float4 frag = fColor;
-	 if (alpha <= 0)  // Outside  
+	float alpha = 1.0f - smoothstep(0.5f - feather/2, 0.5f + feather/2, l);
+	if (alpha <= 0.0)
 		discard;
-	frag*= alpha;
+	frag *= alpha;
 	return frag;
 }

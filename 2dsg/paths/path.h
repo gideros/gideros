@@ -25,7 +25,7 @@ public:
 	void setPath(int num_commands, const unsigned char *commands, int num_coords, const float *coords);
 	void setFillColor(unsigned int color, float alpha);
 	void setLineColor(unsigned int color, float alpha);
-	void setLineThickness(float thickness);
+	void setLineThickness(float thickness, float feather);
 };
 
 

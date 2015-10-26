@@ -65,6 +65,7 @@ public:
 	static ShaderProgram *stdParticle;
 	static ShaderProgram *pathShaderFillC;
 	static ShaderProgram *pathShaderStrokeC;
+	static ShaderProgram *pathShaderStrokeLC;
 	enum StdData {
 		DataVertex=0, DataColor=1, DataTexture=2
 	};
@@ -239,6 +240,7 @@ public:
 	virtual Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
 	virtual void setProjection(const Matrix4 p) { oglProjection=p; }
 	virtual void setViewportProjection(const Matrix4 vp) { oglVPProjection=vp; }
+	virtual void adjustViewportProjection(Matrix4 &vp, float width, float height) {};
 	virtual void setModel(const Matrix4 m);
 	virtual const Matrix4 getModel() { return oglModel; }
 	//Attributes

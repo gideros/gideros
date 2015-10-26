@@ -367,6 +367,7 @@ struct path {
 	reduced_path_vec reduced_paths;
 
 	float stroke_width;
+	float stroke_feather;
 	int join_style;
 	int initial_end_cap;
 	int terminal_end_cap;
@@ -1035,6 +1036,7 @@ static void path_commands(unsigned int path, int num_commands,
 		kh_value(paths, iter) = p;
 
 		p->stroke_width = 1;
+		p->stroke_feather = 0.5;
 		p->join_style = PATHJOIN_BEVEL; //PATHJOIN_MITER_REVERT;
 		p->initial_end_cap = PATHEND_FLAT;
 		p->terminal_end_cap = PATHEND_FLAT;
@@ -1117,9 +1119,7 @@ static void add_stroke_line(struct path *p, double x0, double y0, double x1,
 		double y1) {
 	struct geometry *g = &p->stroke_geoms[0];
 
-	double width = p->stroke_width;
-
-	int index = kv_size(g->vertices) / 2;
+	int index = kv_size(g->vertices) / 4;
 
 	double dx = x1 - x0;
 	double dy = y1 - y0;
@@ -1130,17 +1130,22 @@ static void add_stroke_line(struct path *p, double x0, double y0, double x1,
 	dx /= len;
 	dy /= len;
 
-	kv_push_back(g->vertices, x0 + (dy * width * 0.5));
-	kv_push_back(g->vertices, y0 - (dx * width * 0.5));
-
-	kv_push_back(g->vertices, x1 + (dy * width * 0.5));
-	kv_push_back(g->vertices, y1 - (dx * width * 0.5));
-
-	kv_push_back(g->vertices, x1 - (dy * width * 0.5));
-	kv_push_back(g->vertices, y1 + (dx * width * 0.5));
-
-	kv_push_back(g->vertices, x0 - (dy * width * 0.5));
-	kv_push_back(g->vertices, y0 + (dx * width * 0.5));
+	kv_push_back(g->vertices, x0);
+	kv_push_back(g->vertices, y0);
+	kv_push_back(g->vertices, -dy);
+	kv_push_back(g->vertices, dx);
+	kv_push_back(g->vertices, x0);
+	kv_push_back(g->vertices, y0);
+	kv_push_back(g->vertices, dy);
+	kv_push_back(g->vertices, -dx);
+	kv_push_back(g->vertices, x1);
+	kv_push_back(g->vertices, y1);
+	kv_push_back(g->vertices, dy);
+	kv_push_back(g->vertices, -dx);
+	kv_push_back(g->vertices, x1);
+	kv_push_back(g->vertices, y1);
+	kv_push_back(g->vertices, -dy);
+	kv_push_back(g->vertices, dx);
 
 	kv_push_back(g->indices, index);
 	kv_push_back(g->indices, index + 1);
@@ -1282,6 +1287,8 @@ static void get_quadratic_bounds_oriented(double x0, double y0, double x1,
 static void calculatepq(double Ax, double Ay, double Bx, double By, double Cx,
 		double Cy, double px, double py, double *p, double *q) {
 	double a = -2 * dot(Ax, Ay, Ax, Ay);
+	if (a==0)
+		a=0.00000001;
 	double b = -3 * dot(Ax, Ay, Bx, By);
 	double c = 2 * dot(px, py, Ax, Ay) - 2 * dot(Cx, Cy, Ax, Ay)
 			- dot(Bx, By, Bx, By);
@@ -1371,6 +1378,93 @@ static void quad_segment(const double qin[6], double t0, double t1,
 	qout[5] = (u1 * u1) * y0 + (u1 * t1 + u1 * t1) * y1 + (t1 * t1) * y2;
 }
 
+#if 0
+static void add_stroke_quad(struct path *p, float x0,
+	float y0, float x1, float y1, float x2, float y2) {
+	float v0x, v0y, v1x, v1y, v2x,v2y;
+
+	v0x = x1 - x0;
+	v0y = y1 - y0;
+	v1x = x2 - x0;
+	v1y = y2 - y0;
+	v2x = x1- x2;
+	v2y = y1-y2;
+	float l01 = sqrt(v0x*v0x + v0y*v0y);
+	float l12 = sqrt(v2x*v2x + v2y*v2y);
+	float l02 = sqrt(v1x*v1x + v1y*v1y);
+	float vl = sqrt(v0x*v1x + v0y*v1y);
+	float ix = v1x*vl / l02 +x0;
+	float iy = v1y*vl/l02 + y0;
+	float cx = (x0 + x1 + x2) / 3;
+	float cy = (y0 + y1 + y2) / 3;
+	float h = sqrt((ix - x1)*(ix - x1) + (iy - y1)*(iy - y1));
+
+	float el = l01;
+	if (el < l12)
+		el = l12;
+
+	float ex0 = ((x0 - x2) / l02)*el / h;
+	float ey0 = ((y0 - y2) / l02)*el / h;
+	float ex2 = ((x2 - x0) / l02)*el / h;
+	float ey2 = ((y2 - y0) / l02)*el / h;
+	float a0, b0, a1, b1;
+	if (v0x == 0)
+		v0x += 0.000001;
+	if (v2x == 0)
+		v2x += 0.000001;
+	a0 = v0y / v0x;
+	b0 = ey0+y0 - (ex0+x0)*a0;
+	a1 = v2y / v2x;
+	b1 = ey2+y2 - (ex2+x2)*a1;
+	float epx = (b1 - b0) / (a0 - a1);
+	float epy = a0*epx + b0;
+	float ex1 = epx - x1;
+	float ey1 = epy - y1;
+	//float cu = 0.5;
+	//float cv = 0.333f;
+	float sc = vl/h;
+	if (sc > 10)
+		sc = 10;
+
+
+	struct geometry *g = &p->stroke_geoms[1];
+
+		int index = kv_size(g->vertices) / 8;
+
+		kv_push_back(g->vertices, x0);
+		kv_push_back(g->vertices, y0);
+		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, cx);
+		kv_push_back(g->vertices, cy);
+		kv_push_back(g->vertices, sc);
+		kv_push_back(g->vertices, 0);
+
+		kv_push_back(g->vertices, x2);
+		kv_push_back(g->vertices, y2);
+		kv_push_back(g->vertices, 1);
+		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, cx);
+		kv_push_back(g->vertices, cy);
+		kv_push_back(g->vertices, sc);
+		kv_push_back(g->vertices, 0);
+
+		kv_push_back(g->vertices, x1);
+		kv_push_back(g->vertices, y1);
+		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, 1);
+		kv_push_back(g->vertices, cx);
+		kv_push_back(g->vertices, cy);
+		kv_push_back(g->vertices, sc);
+		kv_push_back(g->vertices, 0);
+
+		kv_push_back(g->indices, index);
+		kv_push_back(g->indices, index + 1);
+		kv_push_back(g->indices, index + 2);
+}
+
+#else
+
 static void add_stroke_quad(struct path *path, double x0, double y0, double x1,
 		double y1, double x2, double y2) {
 	int i;
@@ -1388,6 +1482,7 @@ static void add_stroke_quad(struct path *path, double x0, double y0, double x1,
 
 	double a = -2 * dot(Ax, Ay, Ax, Ay);
 	double b = -3 * dot(Ax, Ay, Bx, By);
+	if (a==0) a=0.0000001;
 
 	double px[4], py[4];
 
@@ -1431,6 +1526,8 @@ static void add_stroke_quad(struct path *path, double x0, double y0, double x1,
 	kv_push_back(g->indices, index + 2);
 	kv_push_back(g->indices, index + 3);
 }
+
+#endif
 
 static void add_stroke_quad_dashed(struct path *path, double x0, double y0,
 		double x1, double y1, double x2, double y2, double *dash_offset) {
@@ -1499,27 +1596,37 @@ static void add_join_bevel(struct path *path, float x0, float y0, float x1,
 
 	struct geometry *g = &path->stroke_geoms[0];
 
-	float width = path->stroke_width;
+	int index = kv_size(g->vertices) / 4;
 
-	int index = kv_size(g->vertices) / 2;
-
-	float w0 = width / (2 * len0);
-	float w1 = width / (2 * len1);
+	float w0 = 1.0 / len0;
+	float w1 = 1.0 / len1;
 
 	if (v0x * v1y - v0y * v1x < 0) {
-		kv_push_back(g->vertices, x1 + v1y * w1);
-		kv_push_back(g->vertices, y1 + -v1x * w1);
 		kv_push_back(g->vertices, x1);
 		kv_push_back(g->vertices, y1);
-		kv_push_back(g->vertices, x1 + -v0y * w0);
-		kv_push_back(g->vertices, y1 + v0x * w0);
+		kv_push_back(g->vertices, v1y * w1);
+		kv_push_back(g->vertices, -v1x * w1);
+		kv_push_back(g->vertices, x1);
+		kv_push_back(g->vertices, y1);
+		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, x1);
+		kv_push_back(g->vertices, y1);
+		kv_push_back(g->vertices, -v0y * w0);
+		kv_push_back(g->vertices, v0x * w0);
 	} else {
-		kv_push_back(g->vertices, x1 + v0y * w0);
-		kv_push_back(g->vertices, y1 + -v0x * w0);
 		kv_push_back(g->vertices, x1);
 		kv_push_back(g->vertices, y1);
-		kv_push_back(g->vertices, x1 + -v1y * w1);
-		kv_push_back(g->vertices, y1 + v1x * w1);
+		kv_push_back(g->vertices,  v0y * w0);
+		kv_push_back(g->vertices, -v0x * w0);
+		kv_push_back(g->vertices, x1);
+		kv_push_back(g->vertices, y1);
+		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, x1);
+		kv_push_back(g->vertices, y1);
+		kv_push_back(g->vertices, -v1y * w1);
+		kv_push_back(g->vertices,  v1x * w1);
 	}
 
 	kv_push_back(g->indices, index);
@@ -1745,9 +1852,9 @@ static void create_stroke_geometry(struct path *path) {
 	path->stroke_bounds[3] = -1e30f;
 
 	update_bounds(path->stroke_bounds, kv_size(path->stroke_geoms[0].vertices),
-			kv_data(path->stroke_geoms[0].vertices), 2);
+			kv_data(path->stroke_geoms[0].vertices), 4);
 	update_bounds(path->stroke_bounds, kv_size(path->stroke_geoms[1].vertices),
-			kv_data(path->stroke_geoms[1].vertices), 12);
+			kv_data(path->stroke_geoms[1].vertices), 8/*12*/);
 
 	for (i = 0; i < 2; ++i) {
 
@@ -2191,10 +2298,12 @@ static void stroke_path(unsigned int path) {
 	if (p->stroke_geoms[0].count > 0) {
 		VertexBuffer<float> *vb = p->stroke_geoms[0].vertex_buffer;
 		VertexBuffer<unsigned short> *ib = p->stroke_geoms[0].index_buffer;
-		ShaderProgram::stdBasic->setData(ShaderProgram::DataVertex,
-				ShaderProgram::DFLOAT, 2, &((*vb)[0]), vb->size() / 2,
+		ShaderProgram::pathShaderStrokeLC->setConstant(1, ShaderProgram::CFLOAT, 1, &p->stroke_width);
+		ShaderProgram::pathShaderStrokeLC->setConstant(3, ShaderProgram::CFLOAT, 1, &p->stroke_feather);
+		ShaderProgram::pathShaderStrokeLC->setData(ShaderProgram::DataVertex,
+				ShaderProgram::DFLOAT, 4, &((*vb)[0]), vb->size() / 4,
 				vb->modified, &vb->bufferCache);
-		ShaderProgram::stdBasic->drawElements(ShaderProgram::Triangles,
+		ShaderProgram::pathShaderStrokeLC->drawElements(ShaderProgram::Triangles,
 				p->stroke_geoms[0].count, ShaderProgram::DUSHORT, &((*ib)[0]),
 				ib->modified, &ib->bufferCache);
 		vb->modified = false;
@@ -2204,20 +2313,51 @@ static void stroke_path(unsigned int path) {
 	if (p->stroke_geoms[1].count > 0) {
 		VertexBuffer<float> *vb = p->stroke_geoms[1].vertex_buffer;
 		VertexBuffer<unsigned short> *ib = p->stroke_geoms[1].index_buffer;
+		
+#if 0
+		float w0x, w0y,w1x,w1y;
+		ShaderEngine::Engine->getModel().transformPoint(p->stroke_width, 0, &w1x, &w1y);
+		ShaderEngine::Engine->getModel().transformPoint(0, 0, &w0x, &w0y);
+		float wx = w1x - w0x;
+		float wy = w1y - w0y;
+
+		float width = sqrt(wx*wx + wy*wy);
+		float lwidth = p->stroke_width;
+		
+		ShaderProgram::pathShaderStrokeC->setConstant(1, ShaderProgram::CFLOAT, 1, &lwidth);
+		ShaderProgram::pathShaderStrokeC->setConstant(4, ShaderProgram::CFLOAT, 1, &width);
+		ShaderProgram::pathShaderStrokeC->setConstant(3, ShaderProgram::CFLOAT, 1, &p->stroke_feather);
+		ShaderProgram::pathShaderStrokeC->setData(ShaderProgram::DataVertex,
+			ShaderProgram::DFLOAT, 4, &((*vb)[0]), vb->size() / 4,
+			vb->modified, &vb->bufferCache,32,0);
+		vb->modified = false;
+		ShaderProgram::pathShaderStrokeC->setData(1,
+			ShaderProgram::DFLOAT, 4, &((*vb)[0]), vb->size() / 4,
+			vb->modified, &vb->bufferCache,32,16);
+		ShaderProgram::pathShaderStrokeC->drawElements(ShaderProgram::Triangles,
+			p->stroke_geoms[1].count, ShaderProgram::DUSHORT, &((*ib)[0]),
+			ib->modified, &ib->bufferCache);
+		ib->modified = false;
+
+
+#else
+		ShaderProgram::pathShaderStrokeC->setConstant(1, ShaderProgram::CFLOAT, 1, &p->stroke_width);
+		ShaderProgram::pathShaderStrokeC->setConstant(3, ShaderProgram::CFLOAT, 1, &p->stroke_feather);
 		ShaderProgram::pathShaderStrokeC->setData(0, ShaderProgram::DFLOAT, 4,
-				&((*vb)[0]), vb->size() / 12, vb->modified, &vb->bufferCache,
+				&((*vb)[0]), vb->size() / 4, vb->modified, &vb->bufferCache,
 				48, 0);
 		vb->modified = false;
 		ShaderProgram::pathShaderStrokeC->setData(1, ShaderProgram::DFLOAT, 4,
-				&((*vb)[0]), vb->size() / 12, vb->modified, &vb->bufferCache,
+				&((*vb)[0]), vb->size() / 4, vb->modified, &vb->bufferCache,
 				48, 16);
 		ShaderProgram::pathShaderStrokeC->setData(2, ShaderProgram::DFLOAT, 4,
-				&((*vb)[0]), vb->size() / 12, vb->modified, &vb->bufferCache,
+				&((*vb)[0]), vb->size() / 4, vb->modified, &vb->bufferCache,
 				48, 32);
 		ShaderProgram::pathShaderStrokeC->drawElements(ShaderProgram::Triangles,
 				p->stroke_geoms[1].count, ShaderProgram::DUSHORT, &((*ib)[0]),
 				ib->modified, &ib->bufferCache);
 		ib->modified = false;
+#endif
 	}
 
 }
@@ -2348,10 +2488,14 @@ void Path2D::setLineColor(unsigned int color, float alpha) {
 	linea_ = alpha;
 }
 
-void Path2D::setLineThickness(float thickness) {
+void Path2D::setLineThickness(float thickness, float feather) {
 	struct path *p = get_path(path);
-	p->stroke_width = thickness;
-	p->is_stroke_dirty = true;
+	if (p)
+	{
+		p->stroke_width = thickness;
+		if ((feather >= 0) && (feather <= 1.0))
+			p->stroke_feather = feather;
+	}
 }
 
 void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,

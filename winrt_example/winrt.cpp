@@ -141,7 +141,21 @@ public:
 	  std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
 	  std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
 	  std::wstring tempPath = ApplicationData::Current->TemporaryFolder->Path->Data();
-	  bool isPlayer = false;
+
+	  StorageFile^ file = nullptr;
+	  try {
+		  String^ fileName = ref new String(L"Assets\\main.lua");
+		  IAsyncOperation<StorageFile^> ^gfa = Windows::ApplicationModel::Package::Current->InstalledLocation->GetFileAsync(fileName);
+		  while (gfa->Status == AsyncStatus::Started)
+			  CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+		  file=gfa->GetResults();
+	  }
+	  catch (Exception^ e)
+	  {
+		  file = nullptr;
+	  }
+
+	  bool isPlayer = (file == nullptr);
 
 	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
 

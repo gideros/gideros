@@ -405,6 +405,11 @@ void ogl2ShaderEngine::setProjection(const Matrix4 p) {
 #endif
 }
 
+void ogl2ShaderEngine::adjustViewportProjection(Matrix4 &vp, float width, float height) {
+	vp.scale(1, -1, 1);
+	vp.translate(0, height, 0);
+}
+
 static GLint stencilopToGl(ShaderEngine::StencilOp sf)
 {
 	switch (sf)

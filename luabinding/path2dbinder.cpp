@@ -110,8 +110,9 @@ int Path2DBinder::setLineThickness(lua_State* L)
 	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D"));
 
 	double thickness = luaL_checknumber(L, 2);
+	double feather = luaL_optnumber(L, 3, -1);
 
-	shape->setLineThickness(thickness);
+	shape->setLineThickness(thickness,feather);
 
 	return 0;
 }

@@ -203,7 +203,7 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 	if (vbo)
 	{
 		if (modified)
-			glBufferData(GL_ARRAY_BUFFER,(stride?stride:(elmSize * mult)) * count,ptr,GL_DYNAMIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER,elmSize * mult * count,ptr,GL_DYNAMIC_DRAW);
 		ptr=NULL;
 	}
 	glVertexAttribPointer(glattributes[index], mult, gltype, normalize, stride, ((char *)ptr)+offset);
