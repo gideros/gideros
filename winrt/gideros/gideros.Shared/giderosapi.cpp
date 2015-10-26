@@ -177,8 +177,8 @@ void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::Swap
 	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC1));
 
 	// fill the swap chain description struct    
-	scd.Width = width;
-	scd.Height = height;
+	scd.Width = useXaml?width:0;
+	scd.Height = useXaml?height:0;
 	scd.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	scd.Stereo = false;
 	scd.SampleDesc.Count = 1;                               	// DISABLE ANTI-ALIASING
