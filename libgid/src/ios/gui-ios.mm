@@ -4,6 +4,9 @@
 #include <deque>
 
 #include <stdexcept>
+#if TARGET_OS_TV==0
+#undef TARGET_OS_TV
+#endif
 
 class UIManager
 {

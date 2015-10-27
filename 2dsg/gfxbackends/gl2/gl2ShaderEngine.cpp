@@ -171,6 +171,16 @@ const char *ogl2ShaderEngine::getVersion() {
 
 void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
 {
+    /*
+    int fw=width,fh=height,crb=0;
+    //XXX width and height may not match the framebuffer (reversed), get them from the current fb
+    glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME,&crb);
+    if (crb) {
+        glBindRenderbuffer(GL_RENDERBUFFER, crb);
+        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &fw);
+        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &fh);
+    }
+    glog_i("FrameBuffer:(%d) %d,%d Real(%d,%d)",crb,width,height,fw,fh);*/
 	devWidth = width;
 	devHeight = height;
 	int depthfmt = 0;
@@ -230,8 +240,8 @@ void ogl2ShaderEngine::reset(bool reinit) {
 #endif
 		ogl2ShaderProgram::resetAll();
 	}
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+   /* glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);*/
 
 	ShaderEngine::reset(reinit);
 	s_texture = 0;
@@ -326,6 +336,16 @@ ShaderProgram *ogl2ShaderEngine::createShaderProgram(const char *vshader,
 }
 
 ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
+    
+    /*int fw=sw,fh=sh,crb=0;
+    //XXX width and height may not match the framebuffer (reversed), get them from the current fb
+    glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME,&crb);
+    if (crb) {
+        glBindRenderbuffer(GL_RENDERBUFFER, crb);
+        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &fw);
+        glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &fh);
+    }*/
+
 	devWidth = sw;
 	devHeight = sh;
 	_depthRenderBuffer = 0;

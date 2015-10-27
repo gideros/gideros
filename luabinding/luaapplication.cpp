@@ -67,6 +67,11 @@
 
 #include "tlsf.h"
 
+#if TARGET_OS_TV==0
+#undef TARGET_OS_TV
+#endif
+
+
 const char* LuaApplication::fileNameFunc_s(const char* filename, void* data)
 {
 	LuaApplication* that = static_cast<LuaApplication*>(data);

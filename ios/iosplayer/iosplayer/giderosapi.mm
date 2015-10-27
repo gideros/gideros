@@ -1,4 +1,7 @@
 #import <UIKit/UIKit.h>
+#if TARGET_OS_TV==0
+#undef TARGET_OS_TV
+#endif
 
 #include <sys/stat.h>
 
@@ -269,6 +272,7 @@ public:
     
     void foreground();
     void background();
+    void surfaceChanged(int width,int height);
 
 private:
 	void loadProperties();
@@ -1533,6 +1537,13 @@ void ApplicationManager::background()
 #endif
 }
 
+void ApplicationManager::surfaceChanged(int width,int height)
+{
+    width_ = width;
+    height_ = height;
+    application_->setResolution(width,height);
+}
+
 static ApplicationManager *s_manager = NULL;
 
 extern "C" {
@@ -1540,6 +1551,12 @@ extern "C" {
 void gdr_initialize(UIView* view, int width, int height, bool player)
 {
 	s_manager = new ApplicationManager(view, width, height, player);
+}
+    
+void gdr_surfaceChanged(int width,int height)
+{
+    if (s_manager)
+         s_manager->surfaceChanged(width,height);
 }
 
 void gdr_drawFrame()
