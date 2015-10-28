@@ -434,8 +434,8 @@ public:
 			{
 				touchEvent->allTouches[j].x = x[j];
 				touchEvent->allTouches[j].y = y[j];
-                touchEvent->touch.pressure = pressure[j];
-                touchEvent->touch.touchType = 0;
+	            touchEvent->allTouches[j].pressure = pressure[j];
+	            touchEvent->allTouches[j].touchType = 0;
 				touchEvent->allTouches[j].id = id[j];
 			}
 			
@@ -480,8 +480,8 @@ public:
 		{
 			touchEvent->allTouches[i].x = x[i];
 			touchEvent->allTouches[i].y = y[i];
-            touchEvent->touch.pressure = pressure[i];
-            touchEvent->touch.touchType = 0;
+            touchEvent->allTouches[i].pressure = pressure[i];
+            touchEvent->allTouches[i].touchType = 0;
 			touchEvent->allTouches[i].id = id[i];
 		}
 
@@ -527,8 +527,8 @@ public:
 			{
 				touchEvent->allTouches[j].x = x[j];
 				touchEvent->allTouches[j].y = y[j];
-                touchEvent->touch.pressure = pressure[j];
-                touchEvent->touch.touchType = 0;
+	            touchEvent->allTouches[j].pressure = pressure[j];
+	            touchEvent->allTouches[j].touchType = 0;
 				touchEvent->allTouches[j].id = id[j];
 			}
 			
