@@ -1,0 +1,40 @@
+// preprocess using luam -C -llc class1.lc > class1.c
+module "class1" {
+
+class A {
+  int handle;
+
+  constructor (Int i) {
+    this->handle = i;
+  }
+
+  def geth () {
+    lua_pushinteger(L, this->handle);
+    return 1;
+  }
+
+  def __eq(A other) {
+    lua_pushboolean(L, this->handle == other->handle);
+    return 1;
+  }
+}
+
+def A (Int i) {
+  push_new_A(L,i);
+  return 1;
+}
+
+constants {
+    Int MAGIC = 42
+}
+
+}
+
+lua_tests {
+ require 'class1'
+ M = class1.MAGIC
+ o = class1.A(M)
+ assert(o:geth() == M)
+ a = class1.A(M)
+ assert(a == o);
+}

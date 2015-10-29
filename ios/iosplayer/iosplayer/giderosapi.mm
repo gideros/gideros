@@ -1,4 +1,7 @@
 #import <UIKit/UIKit.h>
+#if TARGET_OS_TV==0
+#undef TARGET_OS_TV
+#endif
 
 #include <sys/stat.h>
 
@@ -269,6 +272,7 @@ public:
     
     void foreground();
     void background();
+    void surfaceChanged(int width,int height);
 
 private:
 	void loadProperties();
@@ -681,14 +685,8 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
     deviceOrientation_ = ePortrait;
 
 #ifdef TARGET_OS_TV
-  	if (width_>height_){
-		hardwareOrientation_ = eLandscapeLeft;
-		deviceOrientation_ = eLandscapeLeft;
-    }
-	else {
-		hardwareOrientation_ = ePortrait;
-		deviceOrientation_ = ePortrait;
-	}
+	hardwareOrientation_ = eLandscapeLeft;
+	deviceOrientation_ = eLandscapeLeft;
 #endif
 
 	running_ = false;
@@ -1438,19 +1436,6 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 void ApplicationManager::willRotateToInterfaceOrientationHelperTV(Orientation deviceOrientation_)
 {
     application_->getApplication()->setDeviceOrientation(deviceOrientation_);
-
-
-
-    Orientation orientation = application_->orientation();
-
-    bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
-    bool b2 = deviceOrientation_ == ePortrait || deviceOrientation_ == ePortraitUpsideDown;
-
-    if (b1 != b2)
-        hardwareOrientation_ = deviceOrientation_;
-    else
-        hardwareOrientation_ = orientation;
-
     application_->setHardwareOrientation(hardwareOrientation_);
 
 }
@@ -1552,6 +1537,13 @@ void ApplicationManager::background()
 #endif
 }
 
+void ApplicationManager::surfaceChanged(int width,int height)
+{
+    width_ = width;
+    height_ = height;
+    application_->setResolution(width,height);
+}
+
 static ApplicationManager *s_manager = NULL;
 
 extern "C" {
@@ -1559,6 +1551,12 @@ extern "C" {
 void gdr_initialize(UIView* view, int width, int height, bool player)
 {
 	s_manager = new ApplicationManager(view, width, height, player);
+}
+    
+void gdr_surfaceChanged(int width,int height)
+{
+    if (s_manager)
+         s_manager->surfaceChanged(width,height);
 }
 
 void gdr_drawFrame()

@@ -26,7 +26,7 @@ public:
 
 	qint64 bytesToWrite() const;
 
-	unsigned int sendFile(const QString& remoteName, const QString& localFileName);
+    unsigned int sendFile(const QString& remoteName, const QString& localFileName, const bool& macroProcessing);
 	unsigned int sendCreateFolder(const QString& folderName);
 	unsigned int sendPlay(const QStringList& luafiles);
 	unsigned int sendProjectName(const QString& projectName);
@@ -45,6 +45,7 @@ signals:
 	void dataReceived(const QByteArray& data);
 	void ackReceived(unsigned int id);
     void advertisement(const QString&,unsigned short,unsigned short,const QString&);
+    QByteArray getExpandedMacro(const QString&);
 
 public slots:
 

@@ -44,6 +44,7 @@
 #include "rendertargetbinder.h"
 #include "stageorientationevent.h"
 #include "shaderbinder.h"
+#include "path2dbinder.h"
 
 #include "keys.h"
 
@@ -65,6 +66,11 @@
 #include <gapplication.h>
 
 #include "tlsf.h"
+
+#if TARGET_OS_TV==0
+#undef TARGET_OS_TV
+#endif
+
 
 const char* LuaApplication::fileNameFunc_s(const char* filename, void* data)
 {
@@ -291,6 +297,7 @@ static int bindAll(lua_State* L)
     AudioBinder audioBinder(L);
     RenderTargetBinder renderTargetBinder(L);
     ShaderBinder shaderBinder(L);
+    Path2DBinder path2DBinder(L);
 
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
@@ -747,7 +754,7 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
     return p;
 }
 
-#if 0
+#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
 static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
     (void)ud;

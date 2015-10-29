@@ -171,6 +171,11 @@ const char *gpath_normalizeArchivePath(const char *pathname)
     bool skipSep=true;
     while (*pathname)
     {
+        if (!strncmp("./",pathname,2))
+        {
+         pathname+=2;
+         continue;
+        }
     	switch (*pathname)
     	{
     	case '/':
@@ -188,6 +193,7 @@ const char *gpath_normalizeArchivePath(const char *pathname)
     	}
     	pathname++;
     }
+    *xform=0;
 
 	return s_path;
 }

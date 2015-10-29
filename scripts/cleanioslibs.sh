@@ -22,7 +22,7 @@ cd ios/iosplayer
 rm -rf build/Release-iphoneos
 rm -rf build/Release-iphonesimulator
 rm -rf build/iosplayer.build
-cd ..
+cd ../..
 
 cd plugins
 cd LuaSocket

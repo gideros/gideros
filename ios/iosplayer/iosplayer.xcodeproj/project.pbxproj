@@ -408,6 +408,14 @@
 		EBD8CB2E1B903E70002F9D6C /* tempfile.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CB2B1B903E70002F9D6C /* tempfile.h */; };
 		EBD8CB301B904104002F9D6C /* xmp.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD8CB2F1B904104002F9D6C /* xmp.h */; };
 		EBD8CB321B904216002F9D6C /* gaudio-loader-xmp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD8CB311B904216002F9D6C /* gaudio-loader-xmp.cpp */; };
+		EBD9AC721B99EEF2006C8316 /* ft-path.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD9AC661B99EEF2006C8316 /* ft-path.h */; };
+		EBD9AC731B99EEF2006C8316 /* khash.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD9AC671B99EEF2006C8316 /* khash.h */; };
+		EBD9AC741B99EEF2006C8316 /* kvec.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD9AC681B99EEF2006C8316 /* kvec.h */; };
+		EBD9AC751B99EEF2006C8316 /* path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD9AC6A1B99EEF2006C8316 /* path.cpp */; };
+		EBD9AC761B99EEF2006C8316 /* path.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD9AC6B1B99EEF2006C8316 /* path.h */; };
+		EBD9AC7B1B99EEF2006C8316 /* svg-path.h in Headers */ = {isa = PBXBuildFile; fileRef = EBD9AC701B99EEF2006C8316 /* svg-path.h */; };
+		EBD9AC7D1B99EF35006C8316 /* gl2PathShaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD9AC7C1B99EF35006C8316 /* gl2PathShaders.cpp */; };
+		EBD9AC7F1B99EF5A006C8316 /* path2dbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -814,6 +822,14 @@
 		EBD8CB2B1B903E70002F9D6C /* tempfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tempfile.h; path = "../../../libgid/external/libxmp-4.3/src/tempfile.h"; sourceTree = "<group>"; };
 		EBD8CB2F1B904104002F9D6C /* xmp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmp.h; path = "../../../libgid/external/libxmp-4.3/include/xmp.h"; sourceTree = "<group>"; };
 		EBD8CB311B904216002F9D6C /* gaudio-loader-xmp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "gaudio-loader-xmp.cpp"; path = "../../../libgid/src/gaudio-loader-xmp.cpp"; sourceTree = "<group>"; };
+		EBD9AC661B99EEF2006C8316 /* ft-path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ft-path.h"; sourceTree = "<group>"; };
+		EBD9AC671B99EEF2006C8316 /* khash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = khash.h; sourceTree = "<group>"; };
+		EBD9AC681B99EEF2006C8316 /* kvec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kvec.h; sourceTree = "<group>"; };
+		EBD9AC6A1B99EEF2006C8316 /* path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = path.cpp; sourceTree = "<group>"; };
+		EBD9AC6B1B99EEF2006C8316 /* path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = path.h; sourceTree = "<group>"; };
+		EBD9AC701B99EEF2006C8316 /* svg-path.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "svg-path.h"; sourceTree = "<group>"; };
+		EBD9AC7C1B99EF35006C8316 /* gl2PathShaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2PathShaders.cpp; sourceTree = "<group>"; };
+		EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = path2dbinder.cpp; path = ../../luabinding/path2dbinder.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1255,6 +1271,7 @@
 		5F321EAD15BBC3EF00542289 /* 2dsg */ = {
 			isa = PBXGroup;
 			children = (
+				EBD9AC641B99EEF2006C8316 /* paths */,
 				EB82BDBA1B29606C00281732 /* gfxbackends */,
 				EB08A3501AAA06F900D8F27D /* Matrices.cpp */,
 				EB08A3511AAA06F900D8F27D /* Matrices.h */,
@@ -1331,6 +1348,7 @@
 		5F321F2215BBCA8000542289 /* luabinding */ = {
 			isa = PBXGroup;
 			children = (
+				EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */,
 				EB82BDD51B305E2F00281732 /* shaderbinder.cpp */,
 				EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */,
 				5F321F2415BBEB3200542289 /* accelerometerbinder.cpp */,
@@ -1422,6 +1440,7 @@
 		EB82BDC11B29606C00281732 /* gl2 */ = {
 			isa = PBXGroup;
 			children = (
+				EBD9AC7C1B99EF35006C8316 /* gl2PathShaders.cpp */,
 				EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */,
 				EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */,
 				EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */,
@@ -1494,6 +1513,20 @@
 			path = "../../../libgid/external/libxmp-4.3/src/loaders";
 			sourceTree = "<group>";
 		};
+		EBD9AC641B99EEF2006C8316 /* paths */ = {
+			isa = PBXGroup;
+			children = (
+				EBD9AC661B99EEF2006C8316 /* ft-path.h */,
+				EBD9AC671B99EEF2006C8316 /* khash.h */,
+				EBD9AC681B99EEF2006C8316 /* kvec.h */,
+				EBD9AC6A1B99EEF2006C8316 /* path.cpp */,
+				EBD9AC6B1B99EEF2006C8316 /* path.h */,
+				EBD9AC701B99EEF2006C8316 /* svg-path.h */,
+			);
+			name = paths;
+			path = ../../2dsg/paths;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1554,22 +1587,27 @@
 				5F276FC418F4020E00D78AE4 /* b2WheelJoint.h in Headers */,
 				EBD8CAA61B903A50002F9D6C /* it.h in Headers */,
 				5F276FCA18F4020E00D78AE4 /* b2ParticleSystem.h in Headers */,
+				EBD9AC741B99EEF2006C8316 /* kvec.h in Headers */,
 				5F276F6918F4020E00D78AE4 /* b2Distance.h in Headers */,
 				5F276FC018F4020E00D78AE4 /* b2RopeJoint.h in Headers */,
 				5F276F8218F4020E00D78AE4 /* b2Settings.h in Headers */,
 				5F276FB618F4020E00D78AE4 /* b2MotorJoint.h in Headers */,
 				5F276FAA18F4020E00D78AE4 /* b2PolygonAndCircleContact.h in Headers */,
 				5F276F8018F4020E00D78AE4 /* b2Math.h in Headers */,
+				EBD9AC721B99EEF2006C8316 /* ft-path.h in Headers */,
 				5F276FA818F4020E00D78AE4 /* b2EdgeAndPolygonContact.h in Headers */,
 				5F276F7618F4020E00D78AE4 /* b2Shape.h in Headers */,
 				5F276F6218F4020E00D78AE4 /* b2BroadPhase.h in Headers */,
 				5F321F7315BBF2E100542289 /* giderosapi.h in Headers */,
+				EBD9AC7B1B99EEF2006C8316 /* svg-path.h in Headers */,
 				5F276F6D18F4020E00D78AE4 /* b2TimeOfImpact.h in Headers */,
 				EB08A3531AAA06F900D8F27D /* Matrices.h in Headers */,
 				5F0104071776F719002E6C6E /* grendertarget.h in Headers */,
+				EBD9AC761B99EEF2006C8316 /* path.h in Headers */,
 				5F276F7D18F4020E00D78AE4 /* b2GrowableStack.h in Headers */,
 				5F276FB218F4020E00D78AE4 /* b2GearJoint.h in Headers */,
 				5F276F7818F4020E00D78AE4 /* b2BlockAllocator.h in Headers */,
+				EBD9AC731B99EEF2006C8316 /* khash.h in Headers */,
 				5F276F9E18F4020E00D78AE4 /* b2ChainAndPolygonContact.h in Headers */,
 				5F276FBE18F4020E00D78AE4 /* b2RevoluteJoint.h in Headers */,
 				5F276F9618F4020E00D78AE4 /* b2TimeStep.h in Headers */,
@@ -1822,6 +1860,7 @@
 				5F276F6418F4020E00D78AE4 /* b2CollideEdge.cpp in Sources */,
 				5ECDAB381ADAE0D100278F39 /* md5.c in Sources */,
 				EBD8CB321B904216002F9D6C /* gaudio-loader-xmp.cpp in Sources */,
+				EBD9AC7F1B99EF5A006C8316 /* path2dbinder.cpp in Sources */,
 				EB82BDD31B29606C00281732 /* Shaders.cpp in Sources */,
 				5F321EF915BBC3FC00542289 /* stageorientationevent.cpp in Sources */,
 				5F321EFA15BBC3FC00542289 /* stopwatch.cpp in Sources */,
@@ -1845,6 +1884,7 @@
 				5F321F0A15BBC3FC00542289 /* tttextfield.cpp in Sources */,
 				EBD8CAFA1B903A50002F9D6C /* sample.c in Sources */,
 				EBD8CB121B903A50002F9D6C /* mix_all.c in Sources */,
+				EBD9AC7D1B99EF35006C8316 /* gl2PathShaders.cpp in Sources */,
 				5F321F0C15BBC3FC00542289 /* urlrequest.cpp in Sources */,
 				5F321F1815BBC47500542289 /* dict.c in Sources */,
 				5F321F1915BBC47500542289 /* geom.c in Sources */,
@@ -1865,6 +1905,7 @@
 				5F321F2015BBC47500542289 /* tess.c in Sources */,
 				EBD8CA6D1B903A50002F9D6C /* effects.c in Sources */,
 				5F321F2115BBC47500542289 /* tessmono.c in Sources */,
+				EBD9AC751B99EEF2006C8316 /* path.cpp in Sources */,
 				5F321F4715BBEB3200542289 /* tlsf.c in Sources */,
 				5F321F4815BBEB3200542289 /* accelerometerbinder.cpp in Sources */,
 				5F321F4915BBEB3200542289 /* alertdialogbinder.cpp in Sources */,

@@ -1,3 +1,7 @@
+#if TARGET_OS_TV==0
+#undef TARGET_OS_TV
+#endif
+
 #include <gaudio.h>
 #include "../ggaudiomanager.h"
 

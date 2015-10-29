@@ -20,4 +20,4 @@ static void g_initializePlugin(lua_State *L)
 static void g_deinitializePlugin(lua_State *L)
 {
 }
-REGISTER_PLUGIN("BitOp", "1.0")
+REGISTER_PLUGIN_NAMED("BitOp", "1.0",bit)

@@ -165,7 +165,7 @@ void ogl2ShaderProgram::useProgram() {
 
 void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
-		ShaderBufferCache **cache) {
+		ShaderBufferCache **cache,int stride,int offset) {
 	useProgram();
 	GLenum gltype = GL_FLOAT;
 	bool normalize = false;
@@ -196,7 +196,7 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 		break;
 	}
 #ifdef GIDEROS_GL1
-	glVertexPointer(mult,gltype, 0,ptr);
+	glVertexPointer(mult,gltype, stride, ((char *)ptr)+offset);
 #else
 	GLuint vbo=getCachedVBO(cache,modified);
 	glBindBuffer(GL_ARRAY_BUFFER,vbo);
@@ -206,11 +206,7 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 			glBufferData(GL_ARRAY_BUFFER,elmSize * mult * count,ptr,GL_DYNAMIC_DRAW);
 		ptr=NULL;
 	}
-	glVertexAttribPointer(glattributes[index], mult, gltype, normalize, 0, ptr
-#ifdef DXCOMPAT_H
-			,count,modified,(GLuint *)cache
-#endif
-			);
+	glVertexAttribPointer(glattributes[index], mult, gltype, normalize, stride, ((char *)ptr)+offset);
 #endif
 
 }
@@ -418,7 +414,7 @@ void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 
 }
 void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
-		DataType type, const void *indices, bool modified, ShaderBufferCache **cache) {
+		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount) {
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 
@@ -478,9 +474,5 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER,elmSize * count,indices,GL_DYNAMIC_DRAW);
 		indices=NULL;
 	}
-	glDrawElements(mode, count, dtype, indices
-#ifdef DXCOMPAT_H
-			, modified, (GLuint *)cache
-#endif
-			);
+	glDrawElements(mode, dcount?dcount:count, dtype, ((char *)indices)+elmSize*first);
 }

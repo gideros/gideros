@@ -238,7 +238,7 @@ void Application::timer()
                 }
 
                 QString fileName = QDir::cleanPath(path.absoluteFilePath(s2));
-                if (client_->sendFile(s1, fileName) == 0)
+                if (client_->sendFile(s1, fileName, false) == 0) //XXX Nico: What should be the last arg ???
                 {
                     //outputWidget_->append(s1 + " cannot be opened.\n");
                 }

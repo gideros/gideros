@@ -27,6 +27,9 @@ GLint ogl2ShaderBuffer::bindBuffer(GLint fbo)
 
 ogl2ShaderBuffer::ogl2ShaderBuffer(ShaderTexture *texture)
 {
+	_depthRenderBuffer=0;
+	width=((ogl2ShaderTexture *)texture)->width;
+	height=((ogl2ShaderTexture *)texture)->height;
 
     if (qualcommFix_ == -1)
     {
@@ -93,6 +96,66 @@ void ogl2ShaderBuffer::prepareDraw()
         glClear(GL_COLOR_BUFFER_BIT);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId_, 0);
     }
+}
+
+void ogl2ShaderBuffer::needDepthStencil()
+{
+	int depthfmt = 0;
+#ifdef GL_DEPTH24_STENCIL8_OES
+	depthfmt=GL_DEPTH24_STENCIL8_OES;
+#else
+	depthfmt = GL_DEPTH24_STENCIL8;
+#endif
+#ifdef OPENGL_DESKTOP
+     if (GLEW_ARB_framebuffer_object)
+     {
+#endif
+	if (!glIsRenderbuffer(_depthRenderBuffer))
+	{
+		glGenRenderbuffers(1, &_depthRenderBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
+		glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, width,height);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+	}
+#ifdef OPENGL_DESKTOP
+     }
+	else {
+		if (!glIsRenderbufferEXT(_depthRenderBuffer))
+		{
+			glGenRenderbuffersEXT(1, &_depthRenderBuffer);
+			glBindRenderbufferEXT(GL_RENDERBUFFER, _depthRenderBuffer);
+			glRenderbufferStorageEXT(GL_RENDERBUFFER, depthfmt, width,height);
+			glBindRenderbufferEXT(GL_RENDERBUFFER, 0);
+			glFramebufferRenderbufferEXT(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+			glFramebufferRenderbufferEXT(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+		}
+	}
+#endif
+
+}
+
+void ogl2ShaderBuffer::unbound()
+{
+#ifdef OPENGL_DESKTOP
+     if (GLEW_ARB_framebuffer_object)
+     {
+#endif
+	if (!glIsRenderbuffer(_depthRenderBuffer))
+	{
+		glDeleteRenderbuffers(1, &_depthRenderBuffer);
+	}
+#ifdef OPENGL_DESKTOP
+     }
+	else {
+		if (!glIsRenderbufferEXT(_depthRenderBuffer))
+		{
+			glDeleteRenderbuffersEXT(1, &_depthRenderBuffer);
+		}
+	}
+#endif
+	_depthRenderBuffer=0;
 }
 
 void ogl2ShaderBuffer::readPixels(int x,int y,int width,int height,ShaderTexture::Format format,ShaderTexture::Packing packing,void *data)

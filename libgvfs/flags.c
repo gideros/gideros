@@ -34,6 +34,7 @@
 #include <sys/types.h>
 #ifndef WINSTORE
 #include <sys/file.h>
+#include <fcntl.h>
 #endif
 #include <stdio.h>
 #include <errno.h>

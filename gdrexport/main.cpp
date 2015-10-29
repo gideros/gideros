@@ -191,7 +191,8 @@ enum DeviceFamily
   e_MacOSXDesktop,
   e_WinRT,
   e_GApp,
-  e_Win32
+  e_Win32,
+  e_Html5
 };
 
 static void fileCopy(	const QString& srcName,
@@ -403,7 +404,7 @@ void usage()
     fprintf(stderr, "Usage: gdrexport -options <project_file> <output_dir>\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Options general: \n");
-    fprintf(stderr, "    -platform <platform_name>  #platform to export (ios, android, windows, macosx, winrt, win32, gapp)\n");
+    fprintf(stderr, "    -platform <platform_name>  #platform to export (ios, android, windows, macosx, winrt, win32, gapp, html5)\n");
     fprintf(stderr, "    -encrypt                   #encrypts code and assets\n");
     fprintf(stderr, "    -encrypt-code              #encrypts code\n");
     fprintf(stderr, "    -encrypt-assets            #encrypts assets\n");
@@ -428,6 +429,9 @@ void usage()
     fprintf(stderr, "Options winrt: \n");
     fprintf(stderr, "    -organization <name>       #organization name\n");
     fprintf(stderr, "    -package <package_name>    #package name\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Options html5: \n");
+    fprintf(stderr, "    -hostname <name>           #host name the app will be run from\n");
 }
 
 int main(int argc, char *argv[])
@@ -490,6 +494,10 @@ int main(int argc, char *argv[])
             else if (platform.toLower() == "gapp")
             {
                 deviceFamily = e_GApp;
+            }
+            else if (platform.toLower() == "html5")
+            {
+                deviceFamily = e_Html5;
             }
             else
             {
@@ -584,7 +592,8 @@ int main(int argc, char *argv[])
     QString templatedir;
     QString templatename;
     QString templatenamews;
-    bool underscore;
+    bool underscore=false;
+    bool needGApp=false;
 
     switch (deviceFamily)
     {
@@ -633,6 +642,15 @@ int main(int argc, char *argv[])
         break;
     case e_GApp:
         underscore = false;
+        needGApp = true;
+        break;
+    case e_Html5:
+    	templatedir = "Html5";
+        templatename = "Html5";
+        templatenamews = "Html5";
+        underscore = false;
+        needGApp = true;
+        break;
     }
 
     const QString &projectFileName_ = projectFileName;
@@ -702,6 +720,12 @@ int main(int argc, char *argv[])
         }
     }
 
+    if ((deviceFamily==e_Html5)&&(!args["hostname"].isEmpty()))
+    {
+    	encryptAssets=true;
+    	encryptCode=true;
+    }
+
     if (encryptCode)
     {
         codeKey = randomData.mid(64,256);
@@ -712,6 +736,30 @@ int main(int argc, char *argv[])
     {
         assetsKey = randomData.mid(64+256,256);
         assetsPrefixRnd=randomData.mid(32,32);
+    }
+
+    if (deviceFamily==e_Html5)
+    {
+    	encryptAssets=true;
+    	encryptCode=true;
+    	if (!(args["hostname"].isEmpty()))
+    	{
+    		QByteArray mkey=args["hostname"].toUtf8();
+        	int msize=mkey.size();
+        	if (msize>255)
+        	{
+        		msize=255; //Unlikely to happen
+        		mkey.truncate(255);
+        	}
+        	mkey.append((char)0);
+        	msize++;
+    		codeKey.replace(0,msize,mkey);
+    	}
+    	else
+    	{
+    	    QByteArray zero(1, '\0');
+    		codeKey.replace(0,1,zero);
+    	}
     }
 
     ProjectProperties properties;
@@ -748,6 +796,7 @@ int main(int argc, char *argv[])
             "*.xml" <<
             "*.appxmanifest" <<
             "*.gradle" <<
+            "*.html" <<
             "*.project";
         wildcards << wildcards1;
 
@@ -805,10 +854,16 @@ int main(int argc, char *argv[])
             replaceList1 << qMakePair(QString("com.giderosmobile.windows").toUtf8(), args["package"].toUtf8());
             replaceList1 << qMakePair(QString("Gideros Mobile").toUtf8(), args["organization"].toUtf8());
         }
+        else if(deviceFamily == e_Html5){
+            replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+base+"</title>").toUtf8());
+            replaceList1 << qMakePair(QString("gideros.GApp").toUtf8(), (base+".GApp").toUtf8());
+        }
         replaceList << replaceList1;
 
             QStringList wildcards2;
-            wildcards2 << "libgideros.so" << "libgideros.a" << "gid.dll" << "libgid.1.dylib" << "gideros.WindowsPhone.lib" << "gideros.Windows.lib";
+            wildcards2 << "libgideros.so" << "libgideros.a" << "gid.dll"
+            		   << "libgid.1.dylib" << "gideros.WindowsPhone.lib"
+            		   << "gideros.Windows.lib" << "gideros.html.mem";
             wildcards << wildcards2;
 
             QList<QPair<QByteArray, QByteArray> > replaceList2;
@@ -1138,7 +1193,7 @@ int main(int argc, char *argv[])
                 for (int i = 0; i < luafiles.size(); ++i)
                     out << luafiles[i] << "\n";
             }
-            if (deviceFamily == e_GApp)
+            if (needGApp)
             {
                 allfiles.push_back(filename);
                 allfiles_abs.push_back(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
@@ -1201,7 +1256,7 @@ int main(int argc, char *argv[])
 
                 file.write(buffer.data(), buffer.size());
             }
-            if (deviceFamily == e_GApp)
+            if (needGApp)
             {
                 allfiles.push_back(filename);
                 allfiles_abs.push_back(QDir::cleanPath(outputDir.absoluteFilePath(filename)));
@@ -1210,10 +1265,11 @@ int main(int argc, char *argv[])
 
     }  // end of ipass loop
 
-    if (deviceFamily == e_GApp)
+    if (needGApp)
     {
         outputDir.cdUp();
-        outputDir.cdUp();
+        if (deviceFamily == e_GApp)
+        	outputDir.cdUp();
 
         QFile file(QDir::cleanPath(outputDir.absoluteFilePath(base+".GApp")));
         if (file.open(QIODevice::WriteOnly))
@@ -1256,7 +1312,10 @@ int main(int argc, char *argv[])
             file.write(buffer.data(), buffer.size());
         }
         file.close();
-        outputDir.cd(base);
+        if (deviceFamily == e_GApp)
+        	outputDir.cd(base);
+        else
+        	outputDir.cd("assets");
         outputDir.removeRecursively();
         outputDir.cdUp();
     }

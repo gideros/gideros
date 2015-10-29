@@ -282,8 +282,7 @@ void Application::renderScene(int deltaFrameCount)
 			float fp=(farplane_>0)?farplane_:1; //Conservative default
 			frustum=gfx->setOrthoFrustum(0, width_/scale_, height_/scale_, 0, -fp,fp);
 		}
-		vpProjection.scale(1,-1,1);
-		vpProjection.translate(0,height_/scale_,0);
+		gfx->adjustViewportProjection(vpProjection, width_ / scale_, height_ / scale_);
 		break;
 	case eLandscapeLeft:
 	case eLandscapeRight:
@@ -302,8 +301,7 @@ void Application::renderScene(int deltaFrameCount)
 			float fp=(farplane_>0)?farplane_:1; //Conservative default
 			frustum=gfx->setOrthoFrustum(0, height_/scale_, width_/scale_, 0, -fp,fp);
 		}
-		vpProjection.scale(1,-1,1);
-		vpProjection.translate(0,width_/scale_,0);
+		gfx->adjustViewportProjection(vpProjection, height_ / scale_, width_ / scale_);
 		break;
 	}
 	projectionMatrix_=frustum*projection;
@@ -482,6 +480,9 @@ void Application::setResolution(int width, int height)
 {
 	width_ = width;
 	height_ = height;
+    
+    if (ShaderEngine::Engine)
+        ShaderEngine::Engine->resizeFramebuffer(width_,height_);
 
 	calculateLogicalTransformation();
 }

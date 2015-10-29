@@ -54,6 +54,7 @@ INCLUDEPATH += \
     ../2dsg \
     ../2dsg/gfxbackends \
     ../2dsg/gfxbackends/gl2 \
+    ../2dsg/paths \
     ../libsound \
     ../libnetwork \
     ../luabinding \
@@ -92,6 +93,9 @@ SOURCES += \
     $$files(../luabinding/*.cpp)	../luabinding/tlsf.c \
     $$files(../libnetwork/*.cpp) \
     $$files(../2dsg/*.cpp) \
+    $$files(../2dsg/gfxbackends/*.cpp) \
+    $$files(../2dsg/gfxbackends/gl2/*.cpp) \
+    $$files(../2dsg/paths/*.cpp) ../2dsg/paths/ft-path.c ../2dsg/paths/svg-path.c \
     $$files(../libpvrt/*.cpp) \
     $$files(../libpvrt/*.h) \
     $$files(../external/glu/libtess/*.c) \
@@ -102,12 +106,7 @@ SOURCES += \
     ../libgid/src/qt/platform-qt.cpp \
     ../libgid/src/gtimer.cpp \
     ../external/minizip-1.1/source/ioapi.c \
-    ../external/minizip-1.1/source/unzip.c \
-    ../2dsg/gfxbackends/gl2/gl2ShaderBuffer.cpp \
-    ../2dsg/gfxbackends/gl2/gl2ShaderEngine.cpp \
-    ../2dsg/gfxbackends/gl2/gl2ShaderProgram.cpp \
-    ../2dsg/gfxbackends/gl2/gl2ShaderTexture.cpp \
-    ../2dsg/gfxbackends/Shaders.cpp
+    ../external/minizip-1.1/source/unzip.c
 
 FORMS += \
     forms/mainwindow.ui \
