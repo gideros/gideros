@@ -26,8 +26,8 @@ clean:
 	rm -rf $(BUILD)
 
 $(BUILD)/%.em.o: ../%.cpp
-	$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $(BUILD)/$@
+	$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
 
 $(BUILD)/%.em.o: ../%.c
-	$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $(BUILD)/$@
+	$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
 

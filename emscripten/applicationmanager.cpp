@@ -153,13 +153,13 @@ ApplicationManager::ApplicationManager(bool player,const char *appname,const cha
 	ginput_init();
 
 	// geolocation
-	//ggeolocation_init();
+	ggeolocation_init();
 
 	// http
-	//ghttp_Init();
+	ghttp_Init();
 
 	// ui
-	//gui_init();
+	gui_init();
 
 	// texture
 	gtexture_init();
@@ -236,17 +236,6 @@ ApplicationManager::~ApplicationManager() {
 
 void ApplicationManager::luaError(const char *error) {
 	glog_e("%s", error);
-
-	{
-		/*		JNIEnv *env = g_getJNIEnv();
-		 jstring jerrormsg = env->NewStringUTF(error);
-		 jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
-		 jmethodID throwError = env->GetStaticMethodID(localRefCls, "throwLuaException", "(Ljava/lang/String;)V");
-		 env->CallStaticVoidMethod(localRefCls, throwError, jerrormsg);
-		 env->DeleteLocalRef(jerrormsg);
-		 env->DeleteLocalRef(localRefCls);
-		 //g_exit(); */
-	}
 }
 
 void ApplicationManager::surfaceCreated() {
