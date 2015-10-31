@@ -15,6 +15,8 @@ public:
 	std::string Text;
 	std::string ButtonC, Button1, Button2;
 	bool input;
+	bool IsVisible;
+	bool IsSecure;
 	void *udata;
 	gevent_Callback callback;
 };
@@ -72,11 +74,13 @@ G_API g_id gui_createAlertDialog(const char *title,
 	d.Title=title;
 	d.Message=message;
 	d.ButtonC=cancelButton;
-	d.Button1=button1;
-	d.Button2=button2;
+	d.Button1=button1?button1:"";
+	d.Button2=button2?button2:"";
 	d.callback=callback;
 	d.udata=udata;
 	d.input=false;
+	d.IsVisible=false;
+	d.IsSecure=false;
 
 	g_id gid = g_NextId();
 	map_[gid] = d;
@@ -97,12 +101,14 @@ G_API g_id gui_createTextInputDialog(const char *title,
 	d.Title=title;
 	d.Message=message;
 	d.ButtonC=cancelButton;
-	d.Button1=button1;
-	d.Button2=button2;
+	d.Button1=button1?button1:"";
+	d.Button2=button2?button2:"";
 	d.callback=callback;
 	d.udata=udata;
-	d.Text=text;
+	d.Text=text?text:"";
 	d.input=true;
+	d.IsVisible=false;
+	d.IsSecure=false;
 
 	g_id gid = g_NextId();
 	map_[gid] = d;
@@ -118,10 +124,13 @@ G_API void gui_show(g_id gid)
 		throw std::runtime_error("invalid gid");
 
 	UiDialog *d=&(iter->second);
+	if (d->IsVisible)
+		return;
+	d->IsVisible=true;
 	
 	if (!(d->input))
 	{
-		if (d->Button1.empty())
+/*		if (d->Button1.empty())
 		{
 			EM_ASM_({
 				alert(Pointer_stringify($0));
@@ -134,10 +143,30 @@ G_API void gui_show(g_id gid)
 				return confirm(Pointer_stringify($0));
 				},d->Message.c_str());
 			gui_eventAlert(gid,res?1:0,res?"OK":"Cancel");
-		}
+		}*/
+		EM_ASM_({
+			var cb=$7;
+			Module.gui_displayDialog($0,
+			Pointer_stringify($1),
+			Pointer_stringify($2),
+			null,
+			Pointer_stringify($3),
+			$4?Pointer_stringify($4):null,
+			$5?Pointer_stringify($5):null,
+			$6,function(gid,bi,bt,t)
+			{
+			 var btj=allocate(intArrayFromString(bt), 'i8', ALLOC_STACK);
+      			 Runtime.dynCall('viii', cb, [gid,bi,btj]);			      
+			});
+		},gid,d->Title.c_str(),d->Message.c_str(),
+		d->ButtonC.c_str(),
+		d->Button1.c_str(),
+		d->Button2.empty()?0:d->Button2.c_str(),
+		false,gui_eventAlert);
 	}
 	else
 	{
+	/*
 		const char *res=(const char *) EM_ASM_INT({
 			var t=prompt(Pointer_stringify($0),Pointer_stringify($1));
 			if (t==null) return 0;
@@ -145,13 +174,46 @@ G_API void gui_show(g_id gid)
 			},d->Message.c_str(),d->Text.c_str());
 		if (res)
 			d->Text=res;
-		gui_eventInput(gid,res?1:0,res?"OK":"Cancel",d->Text.c_str());		
+		gui_eventInput(gid,res?1:0,res?"OK":"Cancel",d->Text.c_str());		*/
+		EM_ASM_({
+			var cb=$7;
+			Module.gui_displayDialog($0,
+			Pointer_stringify($1),
+			Pointer_stringify($2),
+			$8?Pointer_stringify($8):null,
+			Pointer_stringify($3),
+			$4?Pointer_stringify($4):null,
+			$5?Pointer_stringify($5):null,
+			$6,function(gid,bi,bt,t)
+			{
+			 var btj=allocate(intArrayFromString(bt), 'i8', ALLOC_STACK);
+			 var tj=allocate(intArrayFromString(t), 'i8', ALLOC_STACK);
+      			 Runtime.dynCall('viiii', cb, [gid,bi,btj,tj]);			      
+			});
+		},gid,d->Title.c_str(),d->Message.c_str(),
+		d->ButtonC.c_str(),
+		d->Button1.empty()?0:d->Button1.c_str(),
+		d->Button2.empty()?0:d->Button2.c_str(),
+		d->IsSecure,gui_eventInput,
+		d->Text.empty()?0:d->Text.c_str());
+
 	}
 }
 
 G_API void gui_hide(g_id gid)
 {
- //   s_manager->hide(gid);
+	std::map<g_id, UiDialog>::iterator iter = map_.find(gid);
+
+	if (iter == map_.end())
+		throw std::runtime_error("invalid gid");
+	if (iter->second.IsVisible)
+	{
+	 //Hide
+		EM_ASM_({
+			Module.gui_hideDialog($0);
+		},gid);
+	}
+	iter->second.IsVisible=false;
 }
 
 G_API void gui_delete(g_id gid)
@@ -161,15 +223,18 @@ G_API void gui_delete(g_id gid)
 	if (iter == map_.end())
 		throw std::runtime_error("invalid gid");
 
+	gui_hide(gid);
 	gevent_RemoveEventsWithGid(gid);
 	
 	map_.erase(iter);
-
 }
 
 G_API int gui_isVisible(g_id gid)
 {
-	return 0;
+	std::map<g_id, UiDialog>::iterator iter = map_.find(gid);
+	if (iter == map_.end())
+		throw std::runtime_error("invalid gid");
+	return iter->second.IsVisible;
 }
 
 G_API void gui_setText(g_id gid, const char* text)
@@ -201,13 +266,18 @@ G_API int gui_getInputType(g_id gid)
 
 G_API void gui_setSecureInput(g_id gid, int secureInput)
 {
-  //    s_manager->setSecureInput(gid, secureInput);
+	std::map<g_id, UiDialog>::iterator iter = map_.find(gid);
+	if (iter == map_.end())
+		throw std::runtime_error("invalid gid");
+	iter->second.IsSecure=secureInput;
 }
 
 G_API int gui_isSecureInput(g_id gid)
 {
-  //    return s_manager->isSecureInput(gid);
-	return 0;
+	std::map<g_id, UiDialog>::iterator iter = map_.find(gid);
+	if (iter == map_.end())
+		throw std::runtime_error("invalid gid");
+	return iter->second.IsSecure?1:0;
 }
 
 }

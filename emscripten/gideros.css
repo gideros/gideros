@@ -1,0 +1,61 @@
+.fullscreen { padding-right: 0; margin-left: 0; margin-right: 0;
+padding-left:0; padding-top:0; padding-bottom:0; margin-top:0;
+margin-bottom:0; position: absolute; width:100%; height: 100%;
+border: 0px none;
+}
+textarea.emscripten { font-family: Arial; width: 80%; }
+div.emscripten { text-align: center; }
+div.emscripten_border { border: 0px solid black; }
+.flex {
+ display:flex;
+ justify-content:center;
+ align-items:center;
+}
+
+.spinner {
+  height: 30px;
+  width: 30px;
+  -webkit-animation: rotation .8s linear infinite;
+  -moz-animation: rotation .8s linear infinite;
+  -o-animation: rotation .8s linear infinite;
+  animation: rotation 0.8s linear infinite;
+  border-left: 7px solid rgb(184,63,59);
+  border-right: 7px solid rgb(144,202,68);
+  border-bottom: 7px solid rgb(252,155,0);
+  border-top: 7px solid rgb(96,159,189);
+  border-radius: 100%;
+  background-color: rgb(72,72,72);
+}
+@-webkit-keyframes rotation {
+  from {-webkit-transform: rotate(0deg);}
+  to {-webkit-transform: rotate(360deg);}
+}
+@-moz-keyframes rotation {
+  from {-moz-transform: rotate(0deg);}
+  to {-moz-transform: rotate(360deg);}
+}
+@-o-keyframes rotation {
+  from {-o-transform: rotate(0deg);}
+  to {-o-transform: rotate(360deg);}
+}
+@keyframes rotation {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(360deg);}
+}
+
+/*
+DIALOGS
+*/
+.gid_dialog_container{}
+.gid_dialog_overlay{background-color: #000; opacity: 0.5; width:100%; height:100%; top: 0px; left: 0px;
+position:absolute; z-index: 999;}
+.gid_dialog_wrapper{position: absolute; left: 50%; top:15%; z-index: 1000;}
+.gid_dialog{overflow: auto; background-color: #fff; border: 1px solid black; border-radius:5px; padding: 20px 30px; position: relative; left: -50%;}
+.gid_dialog_title{text-align: center; font-family: Tahoma; font-size: 1.5em;}
+.gid_dialog_message{text-align: left; font-family: Tahoma;}
+.gid_dialog_input{width: 100%; margin-bottom: 20px;}
+.gid_dialog_buttons{}
+.gid_dialog_button{display: inline-block; padding: 5px; margin: 5px; font-family: Tahoma;}
+.gid_dialog_btn_cancel{}
+.gid_dialog_btn_1{}
+.gid_dialog_btn_2{}

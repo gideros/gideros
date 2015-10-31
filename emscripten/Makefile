@@ -106,10 +106,11 @@ plugins.clean:
 libs:
 
 $(TEMPLATE)/gideros.js: libs $(OBJS)
-	emcc $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) -o $(TEMPLATE)/gideros.html --pre-js gidjs.js --shell-file gidshell.html
+	emcc $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) -o $(TEMPLATE)/gideros.html --pre-js gidjs.js --pre-js gui.js --shell-file gidshell.html
 
 main: path libs $(TEMPLATE)/gideros.js
 	cp gideros.png $(TEMPLATE)
+	cp gideros.css $(TEMPLATE)
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))
