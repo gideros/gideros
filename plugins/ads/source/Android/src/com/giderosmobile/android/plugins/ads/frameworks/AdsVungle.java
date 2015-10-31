@@ -6,53 +6,108 @@ import android.util.SparseArray;
 import android.view.KeyEvent;
 
 import com.giderosmobile.android.plugins.ads.*;
-import com.vungle.sdk.VunglePub;
+
+import com.vungle.publisher.AdConfig;
+import com.vungle.publisher.EventListener;
+import com.vungle.publisher.VunglePub;
 
 
-public class AdsVungle implements AdsInterface, VunglePub.EventListener{
-	
+public class AdsVungle implements AdsInterface {
+
 	private WeakReference<Activity> sActivity;
 	private AdsManager mngr;
-	private boolean hasVideo;
-	private boolean hasV4VC;
-	private static AdsVungle me;
-	
+	private static AdsVungle me;// get the VunglePub instance
+	final com.vungle.publisher.VunglePub vunglePub = com.vungle.publisher.VunglePub.getInstance();
+
 	public void onCreate(WeakReference<Activity> activity)
 	{
-		hasVideo = false;
-		hasV4VC = false;
 		me = this;
 		sActivity = activity;
 		mngr = new AdsManager();
 	}
-	
+
+	private final EventListener vungleListener = new EventListener() {
+		@Override
+		public void onVideoView(boolean isCompletedView, int watchedMillis, int videoDurationMillis) {
+			// Called each time a video completes.  isCompletedView is true if >= 80% of the video was watched.
+			if (isCompletedView) {
+				Ads.adActionEnd(this, "");
+			} else {
+				Ads.adDismissed(this, "");
+			}
+		}
+
+		@Override
+		public void onAdStart() {
+			// Called before playing an ad.
+			Ads.adDisplayed(this, "");
+		}
+
+		@Override
+		public void onAdUnavailable(String reason) {
+			// Called when VunglePub.playAd() was called but no ad is available to show to the user.
+			Ads.adError(this, reason);
+		}
+
+		@Override
+		public void onAdEnd(boolean wasCallToActionClicked) {
+			// Called when the user leaves the ad and control is returned to your application.
+			if (wasCallToActionClicked) {
+				Ads.adActionEnd(this, "video");
+			}
+		}
+
+		@Override
+		public void onAdPlayableChanged(boolean isAdPlayable) {
+			// Called when ad playability changes.
+			if (isAdPlayable) {
+				Ads.adReceived(this, String.valueOf(isAdPlayable));
+			}
+		}
+	};
+
 	//on destroy event
 	public void onDestroy(){}
-	
+
 	public void onStart(){}
 
 	public void onStop(){}
-	
+
 	public void onPause()
 	{
-		 VunglePub.onPause();
+		vunglePub.onPause();
 	}
 
 	public void onResume()
 	{
-		 VunglePub.onResume();
+		vunglePub.onResume();
 	}
-	
+
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-			return false;
+		return false;
 	}
-	
+
 	public void setKey(final Object parameters){
 		SparseArray<String> param = (SparseArray<String>)parameters;
-		VunglePub.init(sActivity.get(), param.get(0));
-		VunglePub.setEventListener(this);
+		vunglePub.init(sActivity.get(), param.get(0));
+		vunglePub.setEventListeners(vungleListener);
 	}
-	
+
+	private void playAdIncentivized() {
+		// create a new AdConfig object
+		final AdConfig overrideConfig = new AdConfig();
+
+		// set incentivized option on
+		overrideConfig.setIncentivized(true);
+		overrideConfig.setIncentivizedCancelDialogTitle("Careful!");
+		overrideConfig.setIncentivizedCancelDialogBodyText("If the video isn't completed you won't get your reward! Are you sure you want to close early?");
+		overrideConfig.setIncentivizedCancelDialogCloseButtonText("Close");
+		overrideConfig.setIncentivizedCancelDialogKeepWatchingButtonText("Keep Watching");
+
+		// the overrideConfig object will only affect this ad play.
+		vunglePub.playAd(overrideConfig);
+	}
+
 	//load an Ad
 	public void loadAd(final Object parameters)
 	{
@@ -60,28 +115,17 @@ public class AdsVungle implements AdsInterface, VunglePub.EventListener{
 		final String type = param.get(0);
 		if(type.equals("video"))
 		{
-			if(VunglePub.isVideoAvailable())
-			{
-				mngr.set(VunglePub.class, type, new AdsStateChangeListener(){
-
-					@Override
-					public void onShow() {
-						Ads.adDisplayed(me, type);
-						hasVideo = true;
-						VunglePub.displayAdvert();
-					}
-
-					@Override
-					public void onDestroy() {}	
-					@Override
-					public void onHide() {}	
-				});
-				mngr.load(type);
-			}
-			else
-			{
-				Ads.adFailed(this, type, "No video available");
-			}
+			mngr.set(VunglePub.class, type, new AdsStateChangeListener(){
+				@Override
+				public void onShow() {
+					vunglePub.playAd();
+				}
+				@Override
+				public void onDestroy() {}
+				@Override
+				public void onHide() {}
+			});
+			mngr.load(type);
 		}
 		else if(type.equals("v4vc"))
 		{
@@ -89,20 +133,13 @@ public class AdsVungle implements AdsInterface, VunglePub.EventListener{
 
 				@Override
 				public void onShow() {
-					Ads.adDisplayed(me, type);
-					hasV4VC = true;
-					String username = "Player";
-					if(param.size() >= 2)
-						username = param.get(1);
-					final boolean wasAdPlayed = VunglePub.displayIncentivizedAdvert(username, true);
-					if(!wasAdPlayed)
-						Ads.adFailed(AdsVungle.me, type, "No V4VC");
+					playAdIncentivized();
 				}
 
 				@Override
-				public void onDestroy() {}	
+				public void onDestroy() {}
 				@Override
-				public void onHide() {}	
+				public void onHide() {}
 			});
 			mngr.load(type);
 		}
@@ -111,7 +148,7 @@ public class AdsVungle implements AdsInterface, VunglePub.EventListener{
 			Ads.adError(this, "Unknown type: " + type);
 		}
 	}
-	
+
 	public void showAd(final Object parameters)
 	{
 		SparseArray<String> param = (SparseArray<String>)parameters;
@@ -122,55 +159,23 @@ public class AdsVungle implements AdsInterface, VunglePub.EventListener{
 		}
 		mngr.show(type);
 	}
-	
+
 	//remove ad
 	public void hideAd(String type)
 	{
 		mngr.hide(type);
 	}
-	
+
 	public int getWidth(){
 		return 0;
 	}
-	
+
 	public int getHeight(){
 		return 0;
 	}
 
 	@Override
 	public void enableTesting() {
-		
+
 	}
-
-	@Override
-	public void onVungleAdEnd() {
-		if(hasVideo)
-			Ads.adDismissed(this, "video");
-		hasVideo = false;
-		if(hasV4VC)
-			Ads.adDismissed(this, "v4vc");
-		hasV4VC = false;
-	}
-
-	@Override
-	public void onVungleAdStart() {
-		if(hasVideo)
-			Ads.adReceived(this, "video");
-		if(hasV4VC)
-			Ads.adReceived(this, "v4vc");
-	}
-
-	@Override
-	public void onVungleView(double watchedSeconds, double totalAdSeconds) {
-        final double watchedPercent = watchedSeconds / totalAdSeconds;
-        if (watchedPercent >= 0.8) {
-            if(hasVideo)
-            	Ads.adActionEnd(this, "video");
-    		hasVideo = false;
-    		if(hasV4VC)
-    			Ads.adActionEnd(this, "v4vc");
-    		hasV4VC = false;
-        }
-    }
-
 }

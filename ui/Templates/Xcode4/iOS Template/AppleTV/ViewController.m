@@ -234,4 +234,11 @@ NSMutableArray *tableData;
     gdr_openProject([tableData objectAtIndex:indexPath.row]);
 }
 
+-(void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event
+{
+    //Ignore presses to avoid exiting the app when pressing Menu button, you should handle the PAUSE_EVENT of the MFIController
+    NSLog(@"pressesBegan ignore");
+    return;
+}
+
 @end
