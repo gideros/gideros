@@ -3,6 +3,7 @@ WINRT_SHADERS_PATH=2dsg/gfxbackends/dx11
 WINRT_SHADERS_FILE=dx11_shaders.c
 BIN2C=$(ROOT)/scripts/bin2c
 
+
 winrt.shaders: $(BIN2C)
 	rm -f $(WINRT_SHADERS_PATH)/$(WINRT_SHADERS_FILE)
 	for s in $(WINRT_SHADERS); do $(FXC) //T vs_4_0_level_9_3 //E VShader //Fo $(WINRT_SHADERS_PATH)/v$$s.cso $(WINRT_SHADERS_PATH)/$$s.hlsl; done
@@ -14,3 +15,8 @@ winrt.shaders: $(BIN2C)
 	#cp winrt/*.cso "ui/Templates/VisualStudio/WinRT Template/giderosgame/giderosgame.Windows/Assets"
 	#cp winrt/*.cso "ui/Templates/VisualStudio/WinRT Template/giderosgame/giderosgame.WindowsPhone/Assets"
 	
+winrt.core: winrt.shaders
+	$(MSBUILD) winrt/gideros.sln //p:Configuration=Release //p:Platform=ARM 
+	$(MSBUILD) winrt/gideros.sln //p:Configuration=Release //p:Platform=Win32
+	 
+		
