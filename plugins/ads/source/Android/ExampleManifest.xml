@@ -85,5 +85,10 @@
 		<meta-data android:name="applovin.sdk.key" android:value="foTTHR80e36XxXglVHsIhmTAJfaBwTPZKu7cJGdyJkUFG9-mRr37abIvFt49QUkmMsNg6_dQi6gzFekhTnq3M6"  />
 		<activity android:name="com.applovin.adview.AppLovinInterstitialActivity" />
 		<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" />
+
+        <!-- required Activity to show Vungle video ads -->
+        <activity android:name="com.vungle.publisher.FullScreenAdActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
 	</application>
 </manifest>

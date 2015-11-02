@@ -15,4 +15,7 @@
 @property(nonatomic) BOOL hasVideo;
 @property(nonatomic) BOOL hasV4vc;
 @property (nonatomic, retain) AdsManager *mngr;
+
+-(IBAction)showAd;
+-(IBAction)showIncentivizedAd;
 @end
