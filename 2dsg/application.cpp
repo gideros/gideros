@@ -480,6 +480,7 @@ void Application::resolution(int* width, int* height) {
 }
 
 void Application::correctTouchPosition(int* x, int* y) {
+	if (hardwareOrientation_==eFixed) return;
 	switch (orientation_) {
 	case ePortrait:
 		break;

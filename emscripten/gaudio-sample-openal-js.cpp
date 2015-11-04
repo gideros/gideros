@@ -1,19 +1,4 @@
-/*
-notes:
-1. OpenAL is a thread-safe library.
-2. It's hard to delete queued buffers without deleting the source first.
-3. The streaming code is based on {mpg123 sources}/src/output/openal.c
-4. Be careful about double locks
-*/
-
 #include <gaudio.h>
-
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN 1
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
 
 #include "ggaudiomanager.h"
 
@@ -29,33 +14,20 @@ notes:
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <map>
 #include <set>
-#include <deque>
 
-
-#include <stdlib.h>
-
-#define NUM_BUFFERS 4
-#define BUFFER_SIZE (4096 * 4)
-
-namespace {
-
-class GGStreamOpenALManager : public GGStreamInterface
+class GGSampleOpenALManager : public GGSampleInterface
 {
 public:
-    GGStreamOpenALManager()
+    GGSampleOpenALManager()
     {
-        running_ = true;
     }
 
-    ~GGStreamOpenALManager()
+    ~GGSampleOpenALManager()
     {
-        {
-            running_ = false;
-        }
-
         while (!sounds_.empty())
         {
             Sound *sound = sounds_.begin()->second;
@@ -63,26 +35,82 @@ public:
         }
     }
 
-    g_id SoundCreateFromFile(const char *fileName, const GGAudioLoader& loader, gaudio_Error *error)
+    g_id SoundCreateFromBuffer(const void *data, int numChannels, int sampleRate, int bitsPerSample, int numSamples)
     {
+        ALuint buffer;
+        alGenBuffers(1, &buffer);
 
-        int numChannels, sampleRate, bitsPerSample, numSamples;
-        g_id file = loader.open(fileName, &numChannels, &sampleRate, &bitsPerSample, &numSamples, error);
-
-        if (file == 0)
-            return 0;
-
-        loader.close(file);
+        ALenum format = 0;
+        if (bitsPerSample == 8)
+        {
+            if (numChannels == 1)
+                format = AL_FORMAT_MONO8;
+            else if (numChannels == 2)
+                format = AL_FORMAT_STEREO8;
+        }
+        else if (bitsPerSample == 16)
+        {
+            if (numChannels == 1)
+                format = AL_FORMAT_MONO16;
+            else if (numChannels == 2)
+                format = AL_FORMAT_STEREO16;
+        }
+        
+        int sampSize=bitsPerSample*numChannels/8;
+        int sampMult=1;
+        if (sampleRate<22050)
+          sampMult++;
+        if (sampleRate<11025)
+          sampMult+=2;
+          
+        if (sampMult>1)
+        {
+          //Expand buffer to match sampleRate
+          int8_t *bb=(int8_t *)malloc(sampMult*sampSize*numSamples);
+          if (sampSize==1)
+          {
+           int8_t *b=(int8_t *)bb;
+           for (int k=0;k<numSamples;k++)
+           {
+            int8_t smp=((int8_t *)data)[k];
+            for (int j=0;j<sampMult;j++)
+             *(b++)=smp;
+           }
+          }
+          else if (sampSize==2)
+          {
+           int16_t *b=(int16_t *)bb;
+           for (int k=0;k<numSamples;k++)
+           {
+            int16_t smp=((int16_t *)data)[k];
+            for (int j=0;j<sampMult;j++)
+             *(b++)=smp;
+           }
+          }
+          else if (sampSize==4)
+          {
+           int32_t *b=(int32_t *)bb;
+           for (int k=0;k<numSamples;k++)
+           {
+            int32_t smp=((int32_t *)data)[k];
+            for (int j=0;j<sampMult;j++)
+             *(b++)=smp;
+           }
+          }
+            alBufferData(buffer, format, bb, numSamples * sampSize * sampMult, sampleRate*sampMult);
+            free(bb);
+        }
+        else                                                
+            alBufferData(buffer, format, data, numSamples * numChannels * (bitsPerSample / 8), sampleRate);
 
         g_id gid = g_NextId();
-        sounds_[gid] = new Sound(gid, fileName, loader, numChannels, sampleRate, bitsPerSample, numSamples);
+        sounds_[gid] = new Sound(gid, buffer, (numSamples * 1000LL) / sampleRate);
 
         return gid;
     }
 
     void SoundDelete(g_id sound)
     {
-
         std::map<g_id, Sound*>::iterator iter = sounds_.find(sound);
         if (iter == sounds_.end())
             return;
@@ -95,9 +123,10 @@ public:
             Channel *channel = *iter2;
 
             if (channel->source != 0)
-                deleteSourceAndBuffers(channel);
-
-            channel->sound->loader.close(channel->file);
+            {
+                alSourceStop(channel->source);
+                alDeleteSources(1, &channel->source);
+            }
 
             channels_.erase(channel->gid);
 
@@ -106,6 +135,8 @@ public:
             delete channel;
         }
 
+        alDeleteBuffers(1, &sound2->buffer);
+
         delete sound2;
 
         sounds_.erase(iter);
@@ -113,7 +144,6 @@ public:
 
     unsigned int SoundGetLength(g_id sound)
     {
-
         std::map<g_id, Sound*>::iterator iter = sounds_.find(sound);
         if (iter == sounds_.end())
             return 0;
@@ -125,9 +155,11 @@ public:
 
     g_id SoundPlay(g_id sound, bool paused)
     {
-
         std::map<g_id, Sound*>::iterator iter = sounds_.find(sound);
         if (iter == sounds_.end())
+            return 0;
+
+        if (channels_.size() >= 31)
             return 0;
 
         Sound *sound2 = iter->second;
@@ -138,23 +170,15 @@ public:
         if(alGetError() != AL_NO_ERROR)
             return 0;
 
-        gaudio_Error aerr;
-        g_id file = sound2->loader.open(sound2->fileName.c_str(), NULL, NULL, NULL, NULL, &aerr);
-        if (file == 0)
-        {
-            printf("Cannot open audio file:%d\n",aerr);
-            return 0;
-        }
-            
+        alSourcei(source, AL_BUFFER, sound2->buffer);
+
         g_id gid = g_NextId();
 
-        Channel *channel = new Channel(gid, file, sound2, source);
+        Channel *channel = new Channel(gid, sound2, source);
 
         sound2->channels.insert(channel);
 
         channels_[gid] = channel;
-
-        enqueueBuffer(channel);
 
         channel->paused = paused;
         if (!paused)
@@ -165,7 +189,6 @@ public:
 
     void ChannelStop(g_id channel)
     {
-
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
             return;
@@ -173,9 +196,10 @@ public:
         Channel *channel2 = iter->second;
 
         if (channel2->source != 0)
-            deleteSourceAndBuffers(channel2);
-
-        channel2->sound->loader.close(channel2->file);
+        {
+            alSourceStop(channel2->source);
+            alDeleteSources(1, &channel2->source);
+        }
 
         channel2->sound->channels.erase(channel2);
 
@@ -188,7 +212,6 @@ public:
 
     void ChannelSetPosition(g_id channel, unsigned int position)
     {
-
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
             return;
@@ -197,26 +220,12 @@ public:
 
         tick(channel2);
 
-        if (channel2->source == 0)
-            return;
-
-        deleteSourceAndBuffers(channel2);
-
-        alGenSources(1, &channel2->source);
-
-        channel2->nodata = false;
-
-        channel2->sound->loader.seek(channel2->file, ((long long)position * channel2->sound->sampleRate) / 1000, SEEK_SET);
-
-        enqueueBuffer(channel2);
-
-        if (!channel2->paused)
-            alSourcePlay(channel2->source);
+        if (channel2->source != 0)
+            alSourcef(channel2->source, AL_SEC_OFFSET, position / 1000.0);
     }
 
     unsigned int ChannelGetPosition(g_id channel)
     {
-
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
             return 0;
@@ -231,12 +240,11 @@ public:
         ALfloat offset;
         alGetSourcef(channel2->source, AL_SEC_OFFSET, &offset);
 
-        return channel2->buffers[0].second + (unsigned int)(offset * 1000.0);
+        return offset * 1000.0;
     }
 
     void ChannelSetPaused(g_id channel, bool paused)
     {
-
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
             return;
@@ -272,7 +280,6 @@ public:
 
     bool ChannelIsPlaying(g_id channel)
     {
-
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
             return false;
@@ -292,7 +299,6 @@ public:
 
     void ChannelSetVolume(g_id channel, float volume)
     {
-
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
             return;
@@ -318,7 +324,6 @@ public:
 
     void ChannelSetPitch(g_id channel, float pitch)
     {
-
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
             return;
@@ -344,7 +349,6 @@ public:
 
     void ChannelSetLooping(g_id channel, bool looping)
     {
-
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
             return;
@@ -355,8 +359,8 @@ public:
 
         channel2->looping = looping;
 
-        if (channel2->source != 0 && looping)
-            channel2->nodata = false;
+        if (channel2->source != 0)
+            alSourcei(channel2->source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
     }
 
     bool ChannelIsLooping(g_id channel)
@@ -405,7 +409,6 @@ public:
 
     g_bool ChannelIsValid(g_id channel)
     {
-
         std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
         if (iter == channels_.end())
             return g_false;
@@ -417,12 +420,17 @@ public:
 
     void preTick()
     {
+        std::map<g_id, Channel*>::iterator iter, e = channels_.end();
 
+        for (iter = channels_.begin(); iter != e; ++iter)
+        {
+            Channel *channel = iter->second;
+            tick(channel);
+        }
     }
 
     void postTick()
     {
-
         std::map<g_id, Channel*>::iterator iter = channels_.begin(), end = channels_.end();
         while (iter != end)
         {
@@ -430,8 +438,6 @@ public:
 
             if (channel2->source == 0)
             {
-                channel2->sound->loader.close(channel2->file);
-
                 channel2->sound->channels.erase(channel2);
                 delete channel2;
                 channels_.erase(iter++);
@@ -443,94 +449,48 @@ public:
         }
     }
 
-public:
-    void AdvanceStreamBuffers()
-    {
-            std::map<g_id, Channel*>::iterator iter, e = channels_.end();
-
-            for (iter = channels_.begin(); iter != e; ++iter)
-            {
-                Channel *channel = iter->second;
-                tick(channel);
-            }
-    }
-
 private:
-    volatile bool running_;
-
     struct Channel;
 
     struct Sound
     {
-        Sound(g_id gid, const char *fileName, const GGAudioLoader& loader, int numChannels, int sampleRate, int bitsPerSample, int numSamples) :
+        Sound(g_id gid, ALuint buffer, unsigned int length) :
             gid(gid),
-            fileName(fileName),
-            loader(loader),
-            numChannels(numChannels),
-            sampleRate(sampleRate),
-            bitsPerSample(bitsPerSample),
-            numSamples(numSamples)
+            buffer(buffer),
+            length(length)
         {
-            format = 0;
-            if (bitsPerSample == 8)
-            {
-                if (numChannels == 1)
-                    format = AL_FORMAT_MONO8;
-                else if (numChannels == 2)
-                    format = AL_FORMAT_STEREO8;
-            }
-            else if (bitsPerSample == 16)
-            {
-                if (numChannels == 1)
-                    format = AL_FORMAT_MONO16;
-                else if (numChannels == 2)
-                    format = AL_FORMAT_STEREO16;
-            }
 
-            length = (numSamples * 1000LL) / sampleRate;
         }
 
         g_id gid;
-        std::string fileName;
-        GGAudioLoader loader;
-        int numChannels;
-        int sampleRate;
-        int bitsPerSample;
-        int numSamples;
-        ALenum format;
+        ALuint buffer;
         unsigned int length;
         std::set<Channel*> channels;
     };
 
     struct Channel
     {
-        Channel(g_id gid, g_id file, Sound *sound, ALuint source) :
+        Channel(g_id gid, Sound *sound, ALuint source) :
             gid(gid),
-            file(file),
             sound(sound),
             source(source),
             paused(true),
             volume(1.f),
             pitch(1.f),
             looping(false),
-            nodata(false),
             lastPosition(0)
         {
+
         }
 
         g_id gid;
-        g_id file;
         Sound *sound;
         ALuint source;
         bool paused;
         float volume;
         float pitch;
         bool looping;
-        bool nodata;
         unsigned int lastPosition;
-
-        std::deque<std::pair<ALuint, unsigned int> > buffers;
-
         gevent_CallbackList callbackList;
     };
 
@@ -543,137 +503,21 @@ private:
         if (channel->source == 0)
             return;
 
-        if (channel->nodata)
+        ALint state;
+        alGetSourcei(channel->source, AL_SOURCE_STATE, &state);
+
+        if (state == AL_STOPPED)
         {
-            ALint state;
-            alGetSourcei(channel->source, AL_SOURCE_STATE, &state);
+            alDeleteSources(1, &channel->source);
+            channel->source = 0;
 
-            if (state == AL_STOPPED)
-            {
-                deleteSourceAndBuffers(channel);
+            channel->lastPosition = channel->sound->length;
 
-                channel->lastPosition = channel->sound->length;
+            gaudio_ChannelCompleteEvent *event = (gaudio_ChannelCompleteEvent*)malloc(sizeof(gaudio_ChannelCompleteEvent));
+            event->channel = channel->gid;
 
-                gaudio_ChannelCompleteEvent *event = (gaudio_ChannelCompleteEvent*)malloc(sizeof(gaudio_ChannelCompleteEvent));
-                event->channel = channel->gid;
-
-                gevent_EnqueueEvent(channel->gid, callback_s, GAUDIO_CHANNEL_COMPLETE_EVENT, event, 1, channel);
-            }
+            gevent_EnqueueEvent(channel->gid, callback_s, GAUDIO_CHANNEL_COMPLETE_EVENT, event, 1, channel);
         }
-        else
-        {
-            enqueueBuffer(channel);
-        }
-    }
-
-    void enqueueBuffer(Channel *channel)
-    {
-        char data[BUFFER_SIZE];
-
-        ALint queued;
-        alGetSourcei(channel->source, AL_BUFFERS_QUEUED, &queued);
-
-        ALuint buffer;
-
-        if (queued < NUM_BUFFERS)
-        {
-            alGenBuffers(1, &buffer);
-        }
-        else
-        {
-            ALint processed;
-            alGetSourcei(channel->source, AL_BUFFERS_PROCESSED, &processed);
-
-            if (processed == 0)
-            {
-                return;
-            }
-
-            alSourceUnqueueBuffers(channel->source, 1, &buffer);
-            channel->buffers.pop_front();
-        }
-
-        int sampSize=channel->sound->bitsPerSample*channel->sound->numChannels/8;
-        int sampMult=1;
-        if (channel->sound->sampleRate<22050)
-            sampMult++;
-        if (channel->sound->sampleRate<11025)
-            sampMult+=2;
-
-        unsigned int pos = (channel->sound->loader.tell(channel->file) * 1000LL) / channel->sound->sampleRate;
-        size_t size = channel->sound->loader.read(channel->file, BUFFER_SIZE/sampMult, data);
-
-        if (size == 0 && channel->looping)
-        {
-            channel->sound->loader.seek(channel->file, 0, SEEK_SET);
-            pos = 0;
-            size = channel->sound->loader.read(channel->file, BUFFER_SIZE/sampMult, data);
-        }
-
-        if (size != 0)
-        {
-            printf("SampRate:%d SampMult:%d SampSize:%d\n",channel->sound->sampleRate,sampMult,sampSize);
-            if (sampMult>1)
-            {
-             //Expand buffer to match sampleRate             
-             int nsmp=size/sampSize;
-                if (sampSize==1)
-                {
-                 int8_t *b=(int8_t *)(data+size*sampMult);
-                 for (int k=nsmp-1;k>=0;k--)
-                 {
-                     int8_t smp=((int8_t *)data)[k];
-                     for (int j=0;j<sampMult;j++)
-                         *(--b)=smp;
-                 }
-                }
-                else if (sampSize==2)
-                {
-                 int16_t *b=(int16_t *)(data+size*sampMult);
-                 for (int k=size-1;k>=0;k--)
-                 {
-                     int16_t smp=((int16_t *)data)[k];
-                     for (int j=0;j<sampMult;j++)
-                         *(--b)=smp;
-                 }
-                }
-                else if (sampSize==4)
-                {
-                 int32_t *b=(int32_t *)(data+size*sampMult);
-                 for (int k=size-1;k>=0;k--)
-                 {
-                     int32_t smp=((int32_t *)data)[k];
-                     for (int j=0;j<sampMult;j++)
-                         *(--b)=smp;
-                 }                
-                }
-            }
-            alBufferData(buffer, channel->sound->format, data, size*sampMult, channel->sound->sampleRate*sampMult);
-            alSourceQueueBuffers(channel->source, 1, &buffer);
-            channel->buffers.push_back(std::make_pair(buffer, pos));
-            if (!channel->paused)
-            {
-                ALint state;
-                alGetSourcei(channel->source, AL_SOURCE_STATE, &state);
-                if (state == AL_STOPPED)
-                    alSourcePlay(channel->source);
-            }
-        }
-        else
-        {
-            alDeleteBuffers(1, &buffer);
-            channel->nodata = true;
-        }
-    }
-
-    void deleteSourceAndBuffers(Channel *channel)
-    {
-        alSourceStop(channel->source);
-        alDeleteSources(1, &channel->source);
-        channel->source = 0;
-        for (size_t i = 0; i < channel->buffers.size(); ++i)
-            alDeleteBuffers(1, &channel->buffers[i].first);
-        channel->buffers.clear();
     }
 
     static void callback_s(int type, void *event, void *udata)
@@ -682,19 +526,19 @@ private:
     }
 };
 
-}
-
 extern "C"
 {
 
-GGStreamInterface *GGStreamOpenALManagerCreate()
+GGSampleInterface *GGSampleOpenALManagerCreate()
 {
-    return new GGStreamOpenALManager();
+    return new GGSampleOpenALManager();
 }
 
-void GGStreamOpenALManagerDelete(GGStreamInterface *manager)
+void GGSampleOpenALManagerDelete(GGSampleInterface *manager)
 {
     delete manager;
 }
 
 }
+
+

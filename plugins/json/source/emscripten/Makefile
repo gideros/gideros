@@ -7,7 +7,7 @@ BUILD=Build
 
 OPTS=-O2
 ifneq ($(DEBUG),)
-OPTS+=-g4 -s ASSERTIONS=1
+OPTS+=-g4 -s ASSERTIONS=2
 endif
 
 OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SRCS)))

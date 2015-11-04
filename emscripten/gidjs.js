@@ -1,4 +1,4 @@
-Module.TOTAL_MEMORY=64*1024*1024
+Module.TOTAL_MEMORY=128*1024*1024
 Module.preRun.push(function() {
 	Module.setStatus("Loading application...");
 	FS.createPreloadedFile("/", "main.gapp", GAPP_URL, true,false);
