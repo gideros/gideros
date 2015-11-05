@@ -18,7 +18,7 @@ void setKeepAwake(bool awake)
 void vibrate(int ms)
 {
 	EM_ASM_({
-		window.navigator.vibrate(ms);
+		window.navigator.vibrate($0);
 	},ms);
 }
 
@@ -56,6 +56,19 @@ bool canOpenUrl(const char *url)
     return true;
 }
 
+bool g_checkStringProperty(bool isSet, const char* what)
+{
+ return false;
+}
+
+const char* g_getProperty(const char* what, const char* arg)
+{
+ return NULL;
+}
+
+void g_setProperty(const char* what, const char* arg)
+{
+}
 
 static int s_fps = 60;
 
@@ -71,6 +84,7 @@ void g_setFps(int fps)
     s_fps = fps;
 }
 
+
 }
 
 
@@ -78,4 +92,3 @@ void g_exit()
 {
     exit(0);
 }
-

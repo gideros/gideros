@@ -32,7 +32,8 @@ void MovieClipLua::destruct(lua_State *L)
 {
 	int n=spriteRefs.size();
 	for (int k=0;k<n;k++)
-		luaL_unref(L, LUA_REGISTRYINDEX, spriteRefs[k]);
+		if (spriteRefs[k])
+			luaL_unref(L, LUA_REGISTRYINDEX, spriteRefs[k]);
 }
 
 void MovieClipLua::addFrame(int start, int end, Sprite* sprite,int spref,  const std::vector<Parameter>& parameters, GStatus* status)
@@ -46,7 +47,7 @@ void MovieClipLua::setField(int frmIndex,Parameter param, float value)
 {
 	GStatus sts;
 	frames_[frmIndex].sprite->set(param.param, value,&sts);
-	if (sts.error()&&!param.strParam.empty()) //try to forward to lua
+	if (spriteRefs[frmIndex]&&sts.error()&&!param.strParam.empty()) //try to forward to lua
 	{
 	    lua_State *L = lapplication_->getLuaState();
 	    lua_rawgeti(L, LUA_REGISTRYINDEX, spriteRefs[frmIndex]);
@@ -64,7 +65,7 @@ float MovieClipLua::getField(int frmIndex,Parameter param)
 {
 	GStatus sts;
 	float v=frames_[frmIndex].sprite->get(param.param, &sts);
-	if (sts.error()&&!param.strParam.empty()) //try to forward to lua
+	if (spriteRefs[frmIndex]&&sts.error()&&!param.strParam.empty()) //try to forward to lua
 	{
 	    lua_State *L = lapplication_->getLuaState();
 	    lua_rawgeti(L, LUA_REGISTRYINDEX, spriteRefs[frmIndex]);
@@ -207,12 +208,11 @@ int MovieClipBinder::create(lua_State* L)
 
 		lua_rawgeti(L, -1, 3);
 		Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", -1));
-	    int spRef = luaL_ref(L, LUA_REGISTRYINDEX);
-
 
 		std::vector<Parameter> parameters;
+		bool needRef=false;
 
-		lua_rawgeti(L, -1, 4);
+		lua_rawgeti(L, -2, 4);
 		if (lua_istable(L, -1))
 		{
 			int t = abs_index(L, -1);
@@ -228,6 +228,12 @@ int MovieClipBinder::create(lua_State* L)
 #endif
 				
 				const char* param = luaL_checkstring(L, -2);
+				// Check if this param must be handled in lua
+				GStatus sts;
+				sprite->get(StringId::instance().id(param), &sts);
+				if (sts.error())
+					needRef=true;
+
 				TweenType tweenType = eEaseLinear;
 				
 				lua_Number start, end;
@@ -259,6 +265,11 @@ int MovieClipBinder::create(lua_State* L)
 		}
 		lua_pop(L, 1);
 
+		int spRef=0;
+		if (needRef)
+			spRef = luaL_ref(L, LUA_REGISTRYINDEX);
+		else
+			lua_pop(L, 1);
 		movieclip->addFrame(start, end, sprite, spRef, parameters);
 
 		lua_pop(L, 1);

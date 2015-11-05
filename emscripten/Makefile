@@ -49,7 +49,8 @@ MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 ind
 	libmpg123 ntom optimize parse readers stringbuf synth synth_8bit synth_real synth_s32 tabinit
 SRCS+=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES))
 SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
-	ginput-js gaudio-js gaudio-stream-openal-js platform-js ghttp-js main)   
+	ginput-js gaudio-js gaudio-stream-openal-js platform-js ghttp-js \
+	gui-js ggeolocation-js main)   
 
 
 INCS=2dsg libgideros libgid/include libgvfs libpystring
@@ -73,7 +74,8 @@ BUILD=Build
 
 OPTS+=-O2 --bind
 
-EOPTS=MAIN_MODULE=1 FULL_ES2=1 
+EOPTS+=MAIN_MODULE=1 
+EOPTS+=FULL_ES2=1 
 EOPTS+=DISABLE_EXCEPTION_CATCHING=0
 EOPTS+=ALLOW_MEMORY_GROWTH=1
 
@@ -96,15 +98,19 @@ template: main plugins
 	cd $(BUILD); rm -f Html5.zip; zip -r Html5.zip Html5/; 
 
 plugins:
-	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; make; cp Build/*.js* $$R/$(TEMPLATE)/; cd -; done
+	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE); cp Build/*.js* $$R/$(TEMPLATE)/; cd -; done
+
+plugins.clean:
+	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE) clean; cd -; done
 	
 libs:
 
 $(TEMPLATE)/gideros.js: libs $(OBJS)
-	emcc $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) -o $(TEMPLATE)/gideros.html --pre-js gidjs.js --shell-file gidshell.html
+	emcc $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) -o $(TEMPLATE)/gideros.html --pre-js gidjs.js --pre-js gui.js --shell-file gidshell.html
 
 main: path libs $(TEMPLATE)/gideros.js
 	cp gideros.png $(TEMPLATE)
+	cp gideros.css $(TEMPLATE)
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))
