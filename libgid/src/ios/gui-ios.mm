@@ -47,6 +47,30 @@ private:
     std::map<g_id, id> map_;
 };
 
+#ifdef TARGET_OS_TV
+/* We override presses to handle Cancel button when MENU button is pressed on Apple TV */
+@interface UIAlertController (pressesOverride)
+@end
+
+@implementation UIAlertController (pressesOverride)
+-(void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event
+{
+    if (presses.anyObject.type == UIPressTypeMenu) {
+        [self dismissViewControllerAnimated:YES completion:^{
+            [[NSNotificationCenter defaultCenter]
+             postNotificationName:@"UIAlertControllerPressMenuButton"
+             object:self];
+        }];
+        return;
+    }
+    
+    [super pressesBegan:presses withEvent:event];
+
+    return;
+}
+
+@end
+#endif
 
 @interface GGAlertDialog : UIViewController
 {
@@ -61,6 +85,13 @@ private:
 
 @implementation GGAlertDialog
 
+- (void) forceCancel {
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:@"UIAlertControllerPressMenuButton"
+                                                  object:nil];
+        [self buttonPressed:@"" withIndex:0];
+}
+
 - (id)initWithTitle:(NSString *)title
 			message:(NSString *)message
 	   cancelButton:(NSString *)cancelButton 
@@ -72,6 +103,10 @@ private:
 {
     if (self = [super init])
     {
+	[[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(forceCancel)
+                                               name:@"UIAlertControllerPressMenuButton"
+                                             object:nil];
 	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 		alertView_ = [UIAlertController alertControllerWithTitle:title
                                message:message
@@ -135,8 +170,11 @@ private:
 #ifndef TARGET_OS_TV
 		((UIAlertView *)alertView_).delegate = nil;
 	        [alertView_ dismissWithClickedButtonIndex:-1 animated:NO];
+#else
+	if ([alertView_ isViewLoaded]) [alertView_ dismissViewControllerAnimated:YES completion:nil];
 #endif
         	[alertView_ release];
+
 	[super dealloc];
 }
 
@@ -335,6 +373,13 @@ private:
 
 @implementation GGTextInputDialog
 
+- (void) forceCancel {
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:@"UIAlertControllerPressMenuButton"
+                                                  object:nil];
+	[self buttonPressed:@"" withIndex:0];
+}
+
 - (id)initWithTitle:(NSString *)title
 			message:(NSString *)message
 			   text:(NSString *)text
@@ -347,6 +392,10 @@ private:
 {
     if (self = [super init])
     {
+		[[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(forceCancel)
+                                               name:@"UIAlertControllerPressMenuButton"
+                                             object:nil];
 		NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
 		BOOL ios5 = ([currSysVer compare:@"5.0" options:NSNumericSearch] != NSOrderedAscending);
 

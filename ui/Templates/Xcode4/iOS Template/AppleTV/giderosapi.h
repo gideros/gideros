@@ -1,11 +1,16 @@
 #ifndef GIDEROSAPI_H
 #define GIDEROSAPI_H
 
+#if TARGET_OS_TV==0
+#undef TARGET_OS_TV
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 void gdr_initialize(UIView* view, int width, int height, bool player);
+void gdr_surfaceChanged(int width,int height);
 void gdr_drawFirstFrame();
 void gdr_drawFrame();
 void gdr_exitGameLoop();
