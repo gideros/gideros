@@ -9,9 +9,10 @@ xcopy /S /E /I ..\ui\Templates\VisualStudio ..\..\release\Templates\VisualStudio
 copy ..\winrt\Release\gideros.Windows\gideros.Windows.lib "..\..\release\Templates\VisualStudio\WinRT Template"
 copy ..\winrt\Release\luawinrt.Windows\luawinrt.Windows.lib "..\..\release\Templates\VisualStudio\WinRT Template"
 copy ..\winrt\Release\libgvfswinrt.Windows\libgvfswinrt.Windows.lib "..\..\release\Templates\VisualStudio\WinRT Template"
+copy ..\Release\AllPlugins\WinRT\Release\Win32\luasocket.Windows.lib "..\..\release\Templates\VisualStudio\WinRT Template"
 
 :: ARM release version for WinPhone
 copy ..\winrt\ARM\Release\gideros.WindowsPhone\gideros.WindowsPhone.lib "..\..\release\Templates\VisualStudio\WinRT Template"
 copy ..\winrt\ARM\Release\luawinrt.WindowsPhone\luawinrt.WindowsPhone.lib "..\..\release\Templates\VisualStudio\WinRT Template"
 copy ..\winrt\ARM\Release\libgvfswinrt.WindowsPhone\libgvfswinrt.WindowsPhone.lib "..\..\release\Templates\VisualStudio\WinRT Template"
-
+copy ..\Release\AllPlugins\WinRT\Release\ARM\luasocket.WindowsPhone.lib "..\..\release\Templates\VisualStudio\WinRT Template"

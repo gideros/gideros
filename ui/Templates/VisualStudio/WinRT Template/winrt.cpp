@@ -112,7 +112,7 @@ public:
 	  std::wstring tempPath = ApplicationData::Current->TemporaryFolder->Path->Data();
 	  bool isPlayer = false;
 
-	  gdr_initialize(Window, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
+	  gdr_initialize(false, Window, nullptr, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
 
 	  gdr_drawFirstFrame();
             
