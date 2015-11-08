@@ -1127,8 +1127,8 @@ static void add_stroke_line(struct path *p, double x0, double y0, double x1,
 	if (len == 0)
 		return;
 
-	dx /= len;
-	dy /= len;
+	dx = dx*p->stroke_width/len;
+	dy = dy*p->stroke_width/len;
 
 	kv_push_back(g->vertices, x0);
 	kv_push_back(g->vertices, y0);
@@ -1515,7 +1515,7 @@ static void add_stroke_quad(struct path *path, double x0, double y0, double x1,
 		kv_push_back(g->vertices, Cx);
 		kv_push_back(g->vertices, Cy);
 		kv_push_back(g->vertices, -b / (3 * a));
-		kv_push_back(g->vertices, path->stroke_width * path->stroke_width / 4);
+		kv_push_back(g->vertices, path->stroke_width);
 	}
 
 	kv_push_back(g->indices, index);
@@ -2283,7 +2283,7 @@ static struct path *get_path(unsigned int path) {
 	return kh_val(paths, iter);
 }
 
-static void stroke_path(unsigned int path) {
+static void stroke_path(unsigned int path,const Matrix4 *xform) {
 	khiter_t iter = kh_get(path, paths, path);
 	if (iter == kh_end(paths))
 		return;
@@ -2298,7 +2298,7 @@ static void stroke_path(unsigned int path) {
 	if (p->stroke_geoms[0].count > 0) {
 		VertexBuffer<float> *vb = p->stroke_geoms[0].vertex_buffer;
 		VertexBuffer<unsigned short> *ib = p->stroke_geoms[0].index_buffer;
-		ShaderProgram::pathShaderStrokeLC->setConstant(1, ShaderProgram::CFLOAT, 1, &p->stroke_width);
+		ShaderProgram::pathShaderStrokeLC->setConstant(1, ShaderProgram::CMATRIX, 1, xform->data());
 		ShaderProgram::pathShaderStrokeLC->setConstant(3, ShaderProgram::CFLOAT, 1, &p->stroke_feather);
 		ShaderProgram::pathShaderStrokeLC->setData(ShaderProgram::DataVertex,
 				ShaderProgram::DFLOAT, 4, &((*vb)[0]), vb->size() / 4,
@@ -2341,7 +2341,7 @@ static void stroke_path(unsigned int path) {
 
 
 #else
-		ShaderProgram::pathShaderStrokeC->setConstant(1, ShaderProgram::CFLOAT, 1, &p->stroke_width);
+		ShaderProgram::pathShaderStrokeC->setConstant(1, ShaderProgram::CMATRIX, 1, xform->data());
 		ShaderProgram::pathShaderStrokeC->setConstant(3, ShaderProgram::CFLOAT, 1, &p->stroke_feather);
 		ShaderProgram::pathShaderStrokeC->setData(0, ShaderProgram::DFLOAT, 4,
 				&((*vb)[0]), vb->size() / 4, vb->modified, &vb->bufferCache,
@@ -2363,7 +2363,7 @@ static void stroke_path(unsigned int path) {
 }
 
 static void fill_path(unsigned int path, int fill_mode,
-		ShaderEngine::DepthStencil stencil) {
+		ShaderEngine::DepthStencil stencil, const Matrix4 *xform) {
 	struct path *p = NULL;
 
 	khiter_t iter = kh_get(path, paths, path);
@@ -2399,6 +2399,8 @@ static void fill_path(unsigned int path, int fill_mode,
 		create_fill_geometry(p);
 		p->is_fill_dirty = 0;
 	}
+
+	ShaderProgram::pathShaderFillC->setConstant(1, ShaderProgram::CMATRIX, 1, xform->data());
 
 	VertexBuffer<vector4f> *vb = p->fill_vertex_buffer;
 	VertexBuffer<unsigned short> *ib = p->fill_index_buffer;
@@ -2500,6 +2502,7 @@ void Path2D::setLineThickness(float thickness, float feather) {
 
 void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 		float ey) {
+	Matrix4 identity;
     struct path *p = get_path(path);
     if (!p)
         return; //No PATH
@@ -2509,7 +2512,7 @@ void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 		glPushColor();
 		glMultColor(fillr_, fillg_, fillb_, filla_);
 		stencil.sFunc = ShaderEngine::STENCIL_NEVER;
-		fill_path(path, PATHFILLMODE_COUNT_UP, stencil);
+		fill_path(path, PATHFILLMODE_COUNT_UP, stencil,&identity);
 		stencil.sFunc = ShaderEngine::STENCIL_NOTEQUAL;
 		stencil.sFail=ShaderEngine::STENCIL_KEEP;
 		stencil.sRef=0;
@@ -2536,7 +2539,7 @@ void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 	if (linea_ > 0) {
 		glPushColor();
 		glMultColor(liner_, lineg_, lineb_, linea_);
-		stroke_path(path);
+		stroke_path(path,&identity);
 		glPopColor();
 	}
 }
@@ -2566,6 +2569,11 @@ void Path2D::setTexture(TextureBase *texturebase) {
 void Path2D::setPath(int num_commands, const unsigned char *commands,
 		int num_coords, const float *coords) {
 	path_commands(path, num_commands, commands, num_coords, coords);
+}
+
+void Path2D::setPath(const PrPath *ppath)
+{
+	path_commands(path, ppath->numCommands,ppath->commands,ppath->numCoords,ppath->coords);
 }
 
 extern "C" void prFreePath(struct PrPath *svgPath)

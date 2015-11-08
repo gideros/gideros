@@ -151,13 +151,36 @@ static void parse(struct ParseData *d, kvec_uchar_t *commands, kvec_float_t *coo
             parseHelper(d, commands, coords, 2, 0);
             break;
         case 'L':
+        case 'l':
             parseHelper(d, commands, coords, 2, 1);
             break;
         case 'Q':
+        case 'q':
             parseHelper(d, commands, coords, 4, 1);
             break;
         case 'C':
+        case 'c':
             parseHelper(d, commands, coords, 6, 1);
+            break;
+        case 'H':
+        case 'h':
+            parseHelper(d, commands, coords, 1, 1);
+            break;
+        case 'V':
+        case 'v':
+            parseHelper(d, commands, coords, 1, 1);
+            break;
+        case 'A':
+        case 'a':
+            parseHelper(d, commands, coords, 7, 1);
+            break;
+        case 'T':
+        case 't':
+            parseHelper(d, commands, coords, 2, 1);
+            break;
+        case 'S':
+        case 's':
+            parseHelper(d, commands, coords, 4, 1);
             break;
         case 'Z':
         case 'z':
@@ -171,7 +194,7 @@ static void parse(struct ParseData *d, kvec_uchar_t *commands, kvec_float_t *coo
     }
 }
 
-struct PrPath *prParseSvgPath(size_t length, const char *pathString)
+struct PrPath *prParseSvgPath(const char *pathString)
 {
     struct ParseData d;
     

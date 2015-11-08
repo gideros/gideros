@@ -10,6 +10,7 @@ struct VOut
 cbuffer cbv : register(b0)
 {
 	float4x4 mvp;
+	float4x4 xform;
 };
 
 VOut VShader(float4 position : vVertex)
@@ -21,7 +22,7 @@ VOut VShader(float4 position : vVertex)
 	position.w = 1.0f;
 	position.z = 0.0f;
 
-	output.position = mul(mvp, position);
+	output.position = mul(mvp, mul(xform,position));
 
 	return output;
 }
