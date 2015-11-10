@@ -9,6 +9,14 @@ typedef int g_bool;
 #define g_false (0)
 #define g_true (1)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 G_API g_id g_NextId();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _GGLOBAL_H_
