@@ -118,7 +118,7 @@ public:
             
       // repeat until window closes
       while(!WindowClosed){
-		  gdr_drawFrame();
+		  gdr_drawFrame(false);
       }
 
 	  gdr_exitGameLoop();
