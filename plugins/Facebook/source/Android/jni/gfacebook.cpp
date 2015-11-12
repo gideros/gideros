@@ -130,7 +130,7 @@ public:
             {
 				jstring jKey = env->NewStringUTF(params->key);
 				jstring jVal = env->NewStringUTF(params->value);
-				env->CallObjectMethod(jbundleobj, env->GetMethodID(clsBundle_, "putString", "(Ljava/lang/String;Ljava/lang/String;)V"), jKey, jVal);
+				env->CallVoidMethod(jbundleobj, env->GetMethodID(clsBundle_, "putString", "(Ljava/lang/String;Ljava/lang/String;)V"), jKey, jVal);
 				env->DeleteLocalRef(jKey);
 				env->DeleteLocalRef(jVal);
 				++params;
@@ -160,7 +160,7 @@ public:
             {
 				jstring jKey = env->NewStringUTF(params->key);
 				jstring jVal = env->NewStringUTF(params->value);
-				env->CallObjectMethod(jbundleobj, env->GetMethodID(clsBundle_, "putString", "(Ljava/lang/String;Ljava/lang/String;)V"), jKey, jVal);
+				env->CallVoidMethod(jbundleobj, env->GetMethodID(clsBundle_, "putString", "(Ljava/lang/String;Ljava/lang/String;)V"), jKey, jVal);
 				env->DeleteLocalRef(jKey);
 				env->DeleteLocalRef(jVal);
 				++params;
