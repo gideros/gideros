@@ -4,7 +4,7 @@ wine xyz > /dev/null 2>&1
 export QT=/Users/ar2rsawseen/Qt/5.5/clang_64
 export QT_WIN=~/.wine/drive_c/Qt/Qt5.5.0/5.5/mingw492_32
 export QT_DLL=54
-export IOS_SDK=8.2
+export IOS_SDK=9.1
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
 export GVERSION=2015.02
