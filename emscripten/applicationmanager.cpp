@@ -265,7 +265,9 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation) {
 	height_=height;
 	updateHardwareOrientation();
 	application_->setResolution(width_, height_);
-
+	if (ShaderEngine::Engine)
+	 ShaderEngine::Engine->reset(true);
+ 
 /*	switch (rotation) {
 	case 0:
 		deviceOrientation_ = ePortrait;

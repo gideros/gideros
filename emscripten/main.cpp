@@ -30,6 +30,13 @@ int initGL(int width, int height)
     printf("glfwOpenWindow() failed\n");
     return GL_FALSE;
  }
+ 
+/* float ratio=1.0;//emscripten_get_device_pixel_ratio();
+ EM_ASM_({
+   var canvas = Module['canvas'];
+   canvas.width=$0;
+   canvas.height=$1;
+   },width*ratio,height*ratio);    */ 
 #else
  EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
  EGLint major = 0, minor = 0;

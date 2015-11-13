@@ -315,11 +315,13 @@ void Application::renderScene(int deltaFrameCount) {
 	float lsy = this->getLogicalScaleY();
 	int hw = this->getHardwareWidth();
 	int hh = this->getHardwareHeight();
-	Orientation orientation = this->orientation();
+	
+	if (hardwareOrientation_!=eFixed) {
+		Orientation orientation = this->orientation();
 
-	if (orientation == eLandscapeLeft || orientation == eLandscapeRight)
-		std::swap(hw, hh);
-
+		if (orientation == eLandscapeLeft || orientation == eLandscapeRight)
+			std::swap(hw, hh);
+	}
 	gfx->setProjection(projectionMatrix_);
 
 	// hardware start/end x/y
@@ -538,7 +540,12 @@ void Application::calculateLogicalTransformation() {
 
 
 	if (hardwareOrientation_==eFixed)
-		scaleMode_=eLetterBox;
+	{
+		//scaleMode_=eLetterBox;
+		if (orientation_ == eLandscapeLeft || orientation_ == eLandscapeRight) {
+			std::swap(logicalWidth, logicalHeight);
+		}
+	}
 	else
 	{
 		if (orientation_ == eLandscapeLeft || orientation_ == eLandscapeRight) {
