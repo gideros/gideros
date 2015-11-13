@@ -14,6 +14,7 @@ Path2DBinder::Path2DBinder(lua_State* L)
 		{"setLineColor", setLineColor},
 		{"setFillColor", setFillColor},
 		{"setPath", setPath},
+		{"setSvgPath", setSvgPath},
 		{"setTexture", setTexture},
 		{"setLineThickness", setLineThickness },
 		{NULL, NULL},
@@ -145,6 +146,23 @@ int Path2DBinder::setPath(lua_State* L)
     }
 
     shape->setPath(strlen(commands),(const unsigned char *)commands,coords.size(),&(coords[0]));
+
+	return 0;
+}
+
+int Path2DBinder::setSvgPath(lua_State* L)
+{
+	Binder binder(L);
+	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
+
+	const char* spath = luaL_checkstring(L, 2);
+
+	PrPath *pr=prParseSvgPath(spath);
+	if (pr)
+	{
+		shape->setPath(pr);
+		prFreePath(pr);
+	}
 
 	return 0;
 }

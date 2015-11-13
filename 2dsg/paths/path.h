@@ -3,6 +3,7 @@
 
 #include "sprite.h"
 #include "texturebase.h"
+#include "prpath.h"
 
 class Path2D : public Sprite
 {
@@ -23,6 +24,7 @@ public:
 	virtual ~Path2D();
     void setTexture(TextureBase *texturebase);
 	void setPath(int num_commands, const unsigned char *commands, int num_coords, const float *coords);
+	void setPath(const PrPath *path);
 	void setFillColor(unsigned int color, float alpha);
 	void setLineColor(unsigned int color, float alpha);
 	void setLineThickness(float thickness, float feather);
