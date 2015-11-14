@@ -234,7 +234,7 @@ struct GGameControllerEvent
     
 }
 
-#ifdef TARGET_OS_TV
+#if TARGET_OS_TV==1
 - (void)activateMicroController:(GCController *)controller onGGameController:(GGameController *)gameController {
     int a = (int)[self.controllers indexOfObject:controller];
     [controller setPlayerIndex:(GCControllerPlayerIndex)a];
@@ -277,7 +277,7 @@ struct GGameControllerEvent
 
 - (NSString *)getTypeOfController:(GCController *)controller {
     
-#ifdef TARGET_OS_TV
+#if TARGET_OS_TV==1
     if ([controller respondsToSelector:@selector(microGamepad)] && controller.microGamepad) {
         return @"MICRO_GAMEPAD";
     }
@@ -377,7 +377,7 @@ public:
             if ([[helper getControllerAtIndex:a] extendedGamepad]) {
                 [helper activateExtendedController:[helper getControllerAtIndex:a] onGGameController:this];
             }
-#ifdef TARGET_OS_TV
+#if TARGET_OS_TV==1
             else if ([[helper getControllerAtIndex:a] microGamepad]) {
                 [helper activateMicroController:[helper getControllerAtIndex:a] onGGameController:this];
             }
