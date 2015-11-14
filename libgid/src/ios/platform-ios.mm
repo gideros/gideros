@@ -30,7 +30,7 @@ std::vector<std::string> getDeviceInfo()
 	std::vector<std::string> result;
 
 	UIDevice* device = [UIDevice currentDevice];
-		
+
 	result.push_back("iOS");
 	result.push_back([[device systemVersion] UTF8String]);
 	result.push_back([[device model] UTF8String]);
@@ -42,6 +42,11 @@ std::vector<std::string> getDeviceInfo()
 		case UIUserInterfaceIdiomPad:
 			result.push_back("iPad");
 			break;
+#ifdef TARGET_OS_TV
+		case UIUserInterfaceIdiomTV:
+			result.push_back("AppleTV");
+			break;
+#endif
 		default:
 			result.push_back("");
 	}	

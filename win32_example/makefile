@@ -69,6 +69,18 @@ pystring.dll \
 gid.dll \
 -lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi
 
+linksnoconsole = \
+..\libgid\external\freetype-2.4.12\build\mingw48_32\libfreetype.a \
+..\libgid\external\zlib-1.2.8\build\mingw48_32\libzlibx.a \
+-L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 \
+gvfs.dll \
+lua.dll \
+gideros.dll \
+pystring.dll \
+gid.dll \
+-lopengl32 -mwindows -lws2_32 -liphlpapi
+
+
 objfiles = win32.o \
 accelerometerbinder.o         alertdialogbinder.o \
 application.o                 applicationbinder.o \
@@ -171,8 +183,15 @@ ftlibrarysingleton.o
 %.o : %.c
 	gcc $(CXXFLAGS) -c $<
 
+.PHONY : all
+all: win32.exe win32noconsole.exe
+
 win32.exe: $(objfiles) gvfs.dll lua.dll gideros.dll pystring.dll gid.dll
 	g++ -o win32.exe $(objfiles) $(links)
+
+win32noconsole.exe: $(objfiles) gvfs.dll lua.dll gideros.dll pystring.dll gid.dll
+	g++ -o win32noconsole.exe $(objfiles) $(linksnoconsole)
+
 
 # b2Timer needs to undefine _WIN32
 b2Timer.o: \

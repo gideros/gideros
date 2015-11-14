@@ -60,23 +60,31 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.10.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.10.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
+    <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.11.1\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.11.1\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
+    <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.9.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.9.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.10.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.10.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
+    <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.11.1\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.11.1\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
+    <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.9.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.9.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.10.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.10.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
+    <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.11.1\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.11.1\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
+    <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.9.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.9.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.10.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.10.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
+    <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.11.1\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.8.11.1\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
+    <Import Project="$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.9.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props" Condition="exists('$(ExtensionSDKDirectoryRoot)\WindowsPhoneApp\v$(TargetPlatformVersion)\ExtensionSDKs\SQLite.WP81\3.9.2\DesignTime\CommonConfiguration\Neutral\SQLite.WP81.props')" />
   </ImportGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
       <AdditionalLibraryDirectories>..\..;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>luasocket.WindowsPhone.lib;gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <ClCompile>
@@ -90,7 +98,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
       <AdditionalLibraryDirectories>..\..;$(VCInstallDir)\lib\store;$(VCInstallDir)\lib;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>luasocket.WindowsPhone.lib;gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
@@ -107,7 +115,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
       <AdditionalLibraryDirectories>..\..;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>luasocket.WindowsPhone.lib;gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
     <ClCompile>
@@ -123,7 +131,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
       <AdditionalLibraryDirectories>..\..;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;sqlite3.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>luasocket.WindowsPhone.lib;gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;sqlite3.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ImageHasSafeExceptionHandlers>
       </ImageHasSafeExceptionHandlers>
@@ -214,7 +222,7 @@ INSERT_ASSETS_HERE
     <ClInclude Include="Plugins\sqlite3.h" />
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="SQLite.WP81, Version=3.8.10.2" />
+    <SDKReference Include="SQLite.WP81, Version=3.9.2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
