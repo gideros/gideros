@@ -22,7 +22,7 @@ cd ios/iosplayer
 rm -rf build/Release-appletvos
 rm -rf build/Release-appletvsimulator
 rm -rf build/iosplayer.build
-cd ..
+cd ../..
 
 cd plugins
 cd LuaSocket
@@ -30,6 +30,7 @@ cd source
 rm -rf build/Release-appletvos
 rm -rf build/Release-appletvsimulator
 rm -rf build/luasocket.build
+rm -rf libluasocket.a
 cd ../../..
 
 cd scripts
