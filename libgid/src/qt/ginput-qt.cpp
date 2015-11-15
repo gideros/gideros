@@ -293,7 +293,7 @@ public:
         deleteMouseEvent(mouseEvent);
     }
 
-    void touchesBegin(int x, int y, int id, int pressure, int touchType, int touches, int xs[], int ys[], int ids[], int pressures[], int touchTypes[])
+    void touchesBegin(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
     {
         ginput_TouchEvent *touchEvent = newTouchEvent(touches);
         touchEvent->touch.x = x;
@@ -339,7 +339,7 @@ public:
         }
     }
 
-    void touchesMove(int x, int y, int id, int pressure, int touchType, int touches, int xs[], int ys[], int ids[], int pressures[], int touchTypes[])
+    void touchesMove(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
     {
         ginput_MouseEvent *mouseEvent = NULL;
 
@@ -385,7 +385,7 @@ public:
         }
     }
     
-    void touchesEnd(int x, int y, int id, int pressure, int touchType, int touches, int xs[], int ys[], int ids[], int pressures[], int touchTypes[])
+    void touchesEnd(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
     {
         ginput_MouseEvent *mouseEvent = NULL;
 
@@ -431,7 +431,7 @@ public:
         }
     }
 
-    void touchesCancel(int x, int y, int id, int pressure, int touchType, int touches, int xs[], int ys[], int ids[], int pressures[], int touchTypes[])
+    void touchesCancel(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
     {
         ginput_MouseEvent *mouseEvent = NULL;
 
@@ -744,25 +744,25 @@ void ginputp_mouseWheel(int x, int y, int buttons, int delta)
         s_manager->mouseWheel(x, y, buttons,delta);
 }
 
-void ginputp_touchesBegin(int x, int y, int id, int pressure, int touchType, int touches, int xs[], int ys[], int ids[], int pressures[], int touchTypes[])
+void ginputp_touchesBegin(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
 {
     if (s_manager)
         s_manager->touchesBegin(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes);
 }
 
-void ginputp_touchesMove(int x, int y, int id, int pressure, int touchType, int touches, int xs[], int ys[], int ids[], int pressures[], int touchTypes[])
+void ginputp_touchesMove(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
 {
     if (s_manager)
         s_manager->touchesMove(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes);
 }
 
-void ginputp_touchesEnd(int x, int y, int id, int pressure, int touchType, int touches, int xs[], int ys[], int ids[], int pressures[], int touchTypes[])
+void ginputp_touchesEnd(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
 {
     if (s_manager)
         s_manager->touchesEnd(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes);
 }
 
-void ginputp_touchesCancel(int x, int y, int id, int pressure, int touchType, int touches, int xs[], int ys[], int ids[], int pressures[], int touchTypes[])
+void ginputp_touchesCancel(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
 {
     if (s_manager)
         s_manager->touchesCancel(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes);
