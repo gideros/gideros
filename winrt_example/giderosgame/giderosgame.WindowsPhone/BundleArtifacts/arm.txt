@@ -1,3 +1,2 @@
-MainPackage=C:\gideros_gideros\gideros\winrt_example\ARM\Release\giderosgame.WindowsPhone\giderosgame.WindowsPhone_2015.9.0.0_Bundle\giderosgame.WindowsPhone_2015.9.0.0_ARM.appx
-SymbolPackage=C:\winrt_player\giderosgame.WindowsPhone_2015.9.0.0_Test\giderosgame.WindowsPhone_2015.9.0.0_ARM.appxsym
-ResourcePack=C:\gideros_gideros\gideros\winrt_example\ARM\Release\giderosgame.WindowsPhone\giderosgame.WindowsPhone_2015.9.0.0_Bundle\giderosgame.WindowsPhone_2015.9.0.0_scale-100.appx
+MainPackage=C:\gideros_gideros\gideros\winrt_example\ARM\Release\giderosgame.WindowsPhone\giderosgame.WindowsPhone_2015.10.0.0_Bundle\giderosgame.WindowsPhone_2015.10.0.0_ARM.appx
+SymbolPackage=C:\winrt_player\giderosgame.WindowsPhone_2015.10.0.0_Test\giderosgame.WindowsPhone_2015.10.0.0_ARM.appxsym

@@ -257,10 +257,18 @@ void DirectXPage::AppBarButton_Click(Object^ sender, RoutedEventArgs^ e)
 	// then fill in event handlers (like this one).
 }
 
-void DirectXPage::OnPointerPressed(Object ^sender, PointerEventArgs^ e)
+void DirectXPage::OnPointerPressed(Object ^sender, PointerEventArgs^ Args)
 {
-	// When the pointer is pressed begin tracking the pointer movement.
-//	m_main->StartTracking();
+	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+		gdr_touchBegin(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
+	else
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
 }
 
 void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ e)

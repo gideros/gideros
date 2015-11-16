@@ -45,7 +45,7 @@ unpack(list) returns all elements from list
 xpcall(f, err) pcall function f with new error handler err
 _G
 _VERSION - value "Lua 5.1.x"
-Accelerometer
+Accelerometer > Object
 Accelerometer.isAvailable() Accelerometer - does the accelerometer available?
 Accelerometer.new() Accelerometer - Creates new Accelerometer instance
 getAcceleration() Accelerometer - returns the 3-axis acceleration measured by the accelerometer
@@ -68,11 +68,11 @@ setPosition(x, y) Ads - sets position of the ad
 setX(x) Ads - Sets x position of the ad
 setY(y) Ads - sets y position of the ad
 showAd(...) Ads - display ad
-AlertDialog
+AlertDialog > Object
 AlertDialog.new(title, message, cancelButton [, button1, button2]) AlertDialog
 hide() AlertDialog
 show() AlertDialog
-Application
+Application > Object
 application
 canOpenUrl(url) Application - Tests if it is possible to open provided url
 configureFrustum(fov [, farplane]) Application - Configure the projection for 3D perspective.
@@ -390,7 +390,7 @@ getPlayerCount() Controller - returns amount of connected controllers
 getPlayers() Controller - returns table with controller IDs
 isAnyAvailable() Controller - return true if any controller is connected
 virbate(ms) Controller - vibrate the controller for provided amount of miliseconds
-Core
+Core > Object
 core
 Core.class([base]) Core - Creates and returns new Gideros class
 coroutine
@@ -409,7 +409,7 @@ debug.sethook(hook, mask [, count]) debug - sets given function as a hook, mask=
 debug.setlocal(level, local, value) debug - sets local variable with index local at stack level with value
 debug.setupvalue(func, up, value) debug - sets upvalue with index up of function func with value
 debug.traceback([message, level]) debug - returns a string with a traceback of the call stack
-Event
+Event > Object
 Event.new(type) Event - creates a new Event object
 getTarget() Event - returns the element on which the event listener was registered
 getType() Event - returns the type of Event
@@ -492,7 +492,7 @@ Event.TOUCHES_CANCEL - value "touchesCancel"
 Event.TOUCHES_END - value "touchesEnd"
 Event.TOUCHES_MOVE - value "touchesMove"
 Event.TRANSACTION - value "transaction"
-EventDispatcher
+EventDispatcher > Object
 EventDispatcher.new() EventDispatcher - creates a new EventDispatcher object
 addEventListener(type, listener [, data]) EventDispatcher - registers a listener function
 dispatchEvent(event) EventDispatcher - dispatches an event
@@ -528,13 +528,13 @@ flurry.startSession(apiKey) flurry - starts the Flurry session with your API key
 Font > FontBase
 Font.getDefault() Font - Get default font
 Font.new(txtfile, imagefile, filtering) Font - creates a new Font object
-FontBase
+FontBase > Object
 fontbase
 getAdvanceX(text, letterSpacing, size) FontBase
 getAscender() FontBase - returns the ascender of the font
 getBounds(text) FontBase - returns the tight bounding rectangle of the characters in the string specified by text
 getLineHeight() FontBase - returns the distance from one base line to the next
-Geolocation > EventDispatcher
+Geolocation > Object
 Geolocation.getAccuracy() Geolocation - returns the previously set desired accuracy
 Geolocation.getThreshold() Geolocation - returns the previously set minimum distance threshold
 Geolocation.isAvailable() Geolocation - does this device have the capability to determine current location?
@@ -569,7 +569,7 @@ GoogleBilling.REFUNDED - value "refunded"
 GoogleBilling.SERVICE_UNAVAILABLE - value "serviceUnavailable"
 GoogleBilling.SUBS - value "subs"
 GoogleBilling.USER_CANCELED - value "userCanceled"
-Gyroscope
+Gyroscope > Object
 Gyroscope.isAvailable() Gyroscope - does the gyroscope available?
 Gyroscope.new() Gyroscope - Creates new Gyroscope instance
 getRotationRate() Gyroscope - returns the rotation rate in radians per second
@@ -601,7 +601,7 @@ io.write(value1 [, ...]) io - writes strings or numbers to file
 json
 json.decode(jsondata) json - Returns Lua table from provided json encoded string
 json.encode(data) json - Returns encoded json string from provided Lua table
-KeyCode
+KeyCode > Object
 keycode
 KeyCode.A - value 65
 KeyCode.B - value 66
@@ -683,7 +683,7 @@ math.sqrt(v) math - returns square root of v
 math.tan(rad) math - returns tangent value of angle rad
 huge - value "1.#INF"
 pi - value "3.1415926535898"
-Matrix
+Matrix > Object
 Matrix.new(m11, m12, m21, m22, tx, ty) Matrix - creates a new Matrix object
 getElements() Matrix - returns the elements of this matrix instance
 getM11() Matrix - returns the value of the m11 component
@@ -772,6 +772,11 @@ getPushNotifications() NotificationManager - get push notification
 getScheduledNotifications() NotificationManager - get schedule notifications
 registerForPushNotifications() NotificationManager - register for push notifications
 unregisterForPushNotifications() NotificationManager - unregister from notifications
+Object > Object
+object
+getBaseClass() Object - returns base class
+getClass() Object - returns class name
+isInstanceOf(classname) Object - checks if instance belongs to class
 os
 os.clock() os - returns CPU time used by program in seconds
 os.date(format [, time]) os - returns a string or table containing date and time, "*t" returns a table
@@ -791,7 +796,7 @@ RenderTarget > TextureBase
 RenderTarget.new(width, height, filtering) RenderTarget - Creates new RenderTarget object
 clear(color, alpha) RenderTarget - Clears rendered texture
 draw(sprite) RenderTarget - Renders provided object
-Shader
+Shader > Object
 Shader.new(vertex shader, fragment shader, flags, uniform descriptor, attribute descriptor) Shader - create new shader
 getEngineVersion() Shader - get shader version
 setConstant(uniform name, data type, mult, data) Shader - change the value of a uniform
@@ -830,11 +835,11 @@ Shape.NONE - value "none"
 Shape.NON_ZERO - value "nonZero"
 Shape.SOLID - value "solid"
 Shape.TEXTURE - value "texture"
-Sound
+Sound > Object
 Sound.new(filename) Sound - creates a new Sound object
 getLength() Sound
 play(startTime, looping, paused) Sound - creates a new SoundChannel object to play the sound
-SoundChannel
+SoundChannel > Object
 soundchannel
 getPitch() SoundChannel - returns the current pitch of the sound channel
 getPosition() SoundChannel - returns the position of the current playback
@@ -952,7 +957,7 @@ getTextColor() TextField - returns the color of the text in a text field in hexa
 setLetterSpacing(spacing) TextField - sets the letter-spacing property which is used to increase or decrease the space between characters in a text
 setText(text) TextField - sets the text to be displayed
 setTextColor(color) TextField - sets the color of the text in a text field in hexadecimal format
-TextInputDialog
+TextInputDialog > AlertDialog
 TextInputDialog.new(title, message, text, cancelButton, button1, button2) TextInputDialog
 getInputType() TextInputDialog
 getText() TextInputDialog
@@ -967,7 +972,7 @@ TextInputDialog.TEXT - value "text"
 TextInputDialog.URL - value "url"
 Texture > TextureBase
 Texture.new(filename, filtering, options) Texture - creates a new Texture object
-TextureBase
+TextureBase > Object
 texturebase
 getHeight() TextureBase - returns the height of the texture in pixels
 getWidth() TextureBase - returns the width of the texture in pixels
@@ -982,7 +987,7 @@ TexturePack > TextureBase
 TexturePack.new(textures, padding, filtering, options) TexturePack - creates a new TexturePack object
 TexturePack.new(txtfile, imagefile, filtering, options) TexturePack
 getTextureRegion(texturename) TexturePack - returns the texture region of texture pack
-TextureRegion
+TextureRegion > Object
 TextureRegion.new(texture) TextureRegion - creates a new TextureRegion object
 TextureRegion.new(texture, x, y, width, height) TextureRegion
 getRegion() TextureRegion - returns the coordinates of the region
@@ -996,7 +1001,7 @@ shift(dx, dy) TileMap - shifts the tile map
 TileMap.FLIP_DIAGONAL - value 1
 TileMap.FLIP_HORIZONTAL - value 4
 TileMap.FLIP_VERTICAL - value 2
-Timer
+Timer > Object
 Timer.delayedCall(delay, func [, data]) Timer - delayed call a function after a set amount of time
 Timer.new(delay, repeatCount) Timer - creates a new Timer object
 Timer.pauseAll() Timer - pause all timers
@@ -1013,7 +1018,7 @@ start() Timer - starts the timer
 stop() Timer - stops the timer
 TTFont > FontBase
 TTFont.new(filename, size, text, filtering) TTFont - creates a new TTFont object
-UrlLoader
+UrlLoader > Object
 UrlLoader.new(url, method, headers, body) UrlLoader - creates a new UrlLoader object
 close() UrlLoader - terminates the current loading operation
 ignoreSslErrors() UrlLoader - Ignores SSL certificate related errors

@@ -13,12 +13,15 @@
 
 #include <GameController/GameController.h>
 
+static NSString * const kGameToggleMenuNotification = @"GameToggleMenuNotification";
+
 static const char KEY_OBJECTS = ' ';
 
 static const char* BUTTON_EVENT = "button";
 static const char* CONNECTED_GC_EVENT = "connectedGameController";
 static const char* DISCONNECTED_GC_EVENT = "disConnectedGameController";
 static const char* PAUSE_EVENT = "pause";
+static const char* MENU_EVENT = "menu";
 static const char* ANALOG_EVENT = "analog";
 
 static const int BUTTON_A = 1;
@@ -84,6 +87,7 @@ struct GGameControllerEvent
 @property (nonatomic, strong) NSArray *controllers;
 @property (nonatomic, strong) id connectObserver;
 @property (nonatomic, strong) id disconnectObserver;
+@property (nonatomic, strong) id pauseToggleObserver;
 
 @end
 
@@ -99,6 +103,11 @@ struct GGameControllerEvent
     }
     
     return NO;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self.pauseToggleObserver];
+    [super dealloc];
 }
 
 - (NSInteger)amountControllers {
@@ -123,6 +132,12 @@ struct GGameControllerEvent
 #endif
     
     
+    __weak typeof(self) weakself = self;
+    self.pauseToggleObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kGameToggleMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        NSLog(@"toggleMenu");
+        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, MENU_EVENT, nil, a, 0, YES)] autorelease];
+    }];
+
     NSLog(@"activateExtendedController GC index %i",a);
     
     [[controller extendedGamepad].buttonA setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
@@ -174,6 +189,12 @@ struct GGameControllerEvent
     
     NSLog(@"activateStandardController GC index %i",a);
     
+    __weak typeof(self) weakself = self;
+    self.pauseToggleObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kGameToggleMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        NSLog(@"toggleMenu");
+        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, MENU_EVENT, nil, a, 0, YES)] autorelease];
+    }];
+
     [controller.gamepad.buttonA setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
         [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_A, pressed)] autorelease];
     }];
@@ -213,7 +234,7 @@ struct GGameControllerEvent
     
 }
 
-#ifdef TARGET_OS_TV
+#if TARGET_OS_TV==1
 - (void)activateMicroController:(GCController *)controller onGGameController:(GGameController *)gameController {
     int a = (int)[self.controllers indexOfObject:controller];
     [controller setPlayerIndex:(GCControllerPlayerIndex)a];
@@ -221,6 +242,12 @@ struct GGameControllerEvent
     
     NSLog(@"activateMicroGamepadController GC index %i",a);
     
+    __weak typeof(self) weakself = self;
+    self.pauseToggleObserver = [[NSNotificationCenter defaultCenter] addObserverForName:kGameToggleMenuNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
+        NSLog(@"toggleMenu");
+        [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, MENU_EVENT, nil, a, 0, YES)] autorelease];
+    }];
+
     [controller.microGamepad.buttonA setValueChangedHandler:^(GCControllerButtonInput *button, float value, BOOL pressed) {
         [[[GGameControllerEventPerformer alloc] init:GGameControllerEvent(gameController, BUTTON_EVENT, nil, a, BUTTON_A, pressed)] autorelease];
     }];
@@ -250,7 +277,7 @@ struct GGameControllerEvent
 
 - (NSString *)getTypeOfController:(GCController *)controller {
     
-#ifdef TARGET_OS_TV
+#if TARGET_OS_TV==1
     if ([controller respondsToSelector:@selector(microGamepad)] && controller.microGamepad) {
         return @"MICRO_GAMEPAD";
     }
@@ -273,6 +300,20 @@ struct GGameControllerEvent
     
     
     return @"UNKNOWN";
+}
+
+- (void) captureMenuButton {
+    UIViewController * mainVC = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    if ([mainVC respondsToSelector:@selector(captureMenuButton)]) {
+        [mainVC captureMenuButton];
+    }
+}
+
+- (void) releaseMenuButton {
+    UIViewController * mainVC = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    if ([mainVC respondsToSelector:@selector(releaseMenuButton)]) {
+        [mainVC releaseMenuButton];
+    }
 }
 
 @end
@@ -336,7 +377,7 @@ public:
             if ([[helper getControllerAtIndex:a] extendedGamepad]) {
                 [helper activateExtendedController:[helper getControllerAtIndex:a] onGGameController:this];
             }
-#ifdef TARGET_OS_TV
+#if TARGET_OS_TV==1
             else if ([[helper getControllerAtIndex:a] microGamepad]) {
                 [helper activateMicroController:[helper getControllerAtIndex:a] onGGameController:this];
             }
@@ -365,6 +406,17 @@ public:
     {
         return [[helper getTypeOfController:[helper getControllerAtIndex:controllerIndex]] UTF8String];
     }
+    
+    void captureMenuButton()
+    {
+        [helper captureMenuButton];
+    }
+    
+    void releaseMenuButton()
+    {
+        [helper releaseMenuButton];
+    }
+    
     
     void dispatchEvent(char const *type, NSError *error, NSInteger controllerIndex, NSInteger buttonIndex, BOOL isPressed)
     {
@@ -502,6 +554,20 @@ static int getControllerType(lua_State *L)
     return 1;
 }
 
+static int captureMenuButton(lua_State *L)
+{
+    GGameController* gamecontroller = getInstance(L, 1);
+    gamecontroller->captureMenuButton();
+    return 1;
+}
+
+static int releaseMenuButton(lua_State *L)
+{
+    GGameController* gamecontroller = getInstance(L, 1);
+    gamecontroller->releaseMenuButton();
+    return 1;
+}
+
 static int loader(lua_State *L)
 {
     //This is a list of functions that can be called from Lua
@@ -510,6 +576,8 @@ static int loader(lua_State *L)
         {"activate", activate},
         {"getAmountControllers", getAmountControllers},
         {"getControllerType", getControllerType},
+        {"captureMenuButton", captureMenuButton},
+        {"releaseMenuButton", releaseMenuButton},
         {NULL, NULL},
     };
     
@@ -524,6 +592,8 @@ static int loader(lua_State *L)
     lua_setfield(L, -2, "DISCONNECTED_GC_EVENT");
     lua_pushstring(L, PAUSE_EVENT);
     lua_setfield(L, -2, "PAUSE_EVENT");
+    lua_pushstring(L, MENU_EVENT);
+    lua_setfield(L, -2, "MENU_EVENT");
     lua_pop(L, 1);
     
     lua_newtable(L);
@@ -587,4 +657,5 @@ static void g_initializePlugin(lua_State* L)
 static void g_deinitializePlugin(lua_State *L)
 {   }
 REGISTER_PLUGIN("MFIControllerPlugin", "1.0")
+
 

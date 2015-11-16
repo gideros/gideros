@@ -51,11 +51,6 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\properties.bin">
-      <Filter>Assets</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Xml Include="StoreManifest.xml" />
   </ItemGroup>
   <ItemGroup>

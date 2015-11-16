@@ -420,7 +420,7 @@ public:
         lua_setfield(L, -2, "ry");
 		
 		
-        lua_pushnumber(L, touch->pressure * 0.0001);
+        lua_pushnumber(L, touch->pressure);
         lua_setfield(L, -2, "pressure");
 
         switch (touch->touchType){
