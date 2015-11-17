@@ -1583,9 +1583,9 @@ static void add_join_miter_truncate(struct path *path, float x0, float y0,
 
 static void add_join_bevel(struct path *path, float x0, float y0, float x1,
 		float y1, float x2, float y2) {
-	float v0x = x0 - x1;
+	float v0x = x0 - x1; //P1->P0
 	float v0y = y0 - y1;
-	float v1x = x2 - x1;
+	float v1x = x2 - x1; //P1->P2
 	float v1y = y2 - y1;
 
 	float len0 = sqrtf(v0x * v0x + v0y * v0y);
@@ -1598,40 +1598,56 @@ static void add_join_bevel(struct path *path, float x0, float y0, float x1,
 
 	int index = kv_size(g->vertices) / 4;
 
-	float w0 = 1.0 / len0;
-	float w1 = 1.0 / len1;
+	float angle = acosf((v0x*v1x+v0y*v1y)/(len0*len1));
+	float a2=(M_PI-angle)/2;
+	float ext=sin(a2)*path->stroke_width;
+	if (angle<(M_PI/2)) ext/=2; //??? Why is this necessary ???
+	float nw=cos(a2)*path->stroke_width;
+	float vx=(v0x/len0+v1x/len1)/2;
+	float vy=(v0y/len0+v1y/len1)/2;
+	float dx=vy*ext;
+	float dy=-vx*ext;
+	float ow=path->stroke_width;
+	path->stroke_width=nw;
+	add_stroke_line(path,x1-dx,y1-dy,x1+dx,y1+dy);
+	path->stroke_width=ow;
 
-	if (v0x * v1y - v0y * v1x < 0) {
-		kv_push_back(g->vertices, x1);
-		kv_push_back(g->vertices, y1);
-		kv_push_back(g->vertices, v1y * w1);
-		kv_push_back(g->vertices, -v1x * w1);
-		kv_push_back(g->vertices, x1);
-		kv_push_back(g->vertices, y1);
-		kv_push_back(g->vertices, 0);
-		kv_push_back(g->vertices, 0);
+/*
+	float w0 = nw / len0;
+	float w1 = nw / len1;
+
+	if (v0x * v1y - v0y * v1x < 0) { //>180°
 		kv_push_back(g->vertices, x1);
 		kv_push_back(g->vertices, y1);
 		kv_push_back(g->vertices, -v0y * w0);
 		kv_push_back(g->vertices, v0x * w0);
-	} else {
-		kv_push_back(g->vertices, x1);
-		kv_push_back(g->vertices, y1);
-		kv_push_back(g->vertices,  v0y * w0);
-		kv_push_back(g->vertices, -v0x * w0);
 		kv_push_back(g->vertices, x1);
 		kv_push_back(g->vertices, y1);
 		kv_push_back(g->vertices, 0);
 		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, x1);
+		kv_push_back(g->vertices, y1);
+		kv_push_back(g->vertices, v1y * w1);
+		kv_push_back(g->vertices, -v1x * w1);
+	} else { //<180°
 		kv_push_back(g->vertices, x1);
 		kv_push_back(g->vertices, y1);
 		kv_push_back(g->vertices, -v1y * w1);
-		kv_push_back(g->vertices,  v1x * w1);
+		kv_push_back(g->vertices, v1x * w1);
+		kv_push_back(g->vertices, x1);
+		kv_push_back(g->vertices, y1);
+		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, 0);
+		kv_push_back(g->vertices, x1);
+		kv_push_back(g->vertices, y1);
+		kv_push_back(g->vertices, v0y * w0);
+		kv_push_back(g->vertices, -v0x * w0);
 	}
 
 	kv_push_back(g->indices, index);
 	kv_push_back(g->indices, index + 1);
 	kv_push_back(g->indices, index + 2);
+*/
 }
 
 static void add_join_round(struct path *path, float x0, float y0, float x1,
@@ -1854,7 +1870,7 @@ static void create_stroke_geometry(struct path *path) {
 	update_bounds(path->stroke_bounds, kv_size(path->stroke_geoms[0].vertices),
 			kv_data(path->stroke_geoms[0].vertices), 4);
 	update_bounds(path->stroke_bounds, kv_size(path->stroke_geoms[1].vertices),
-			kv_data(path->stroke_geoms[1].vertices), 8/*12*/);
+			kv_data(path->stroke_geoms[1].vertices), 12);
 
 	for (i = 0; i < 2; ++i) {
 
