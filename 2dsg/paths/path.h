@@ -19,12 +19,14 @@ private:
     float minx_, miny_, maxx_, maxy_;
     float filla_,fillr_,fillg_,fillb_;
     float linea_,liner_,lineg_,lineb_;
+    bool convex_;
 public:
 	Path2D(Application* application);
 	virtual ~Path2D();
     void setTexture(TextureBase *texturebase);
 	void setPath(int num_commands, const unsigned char *commands, int num_coords, const float *coords);
 	void setPath(const PrPath *path);
+	void setConvex(bool convex);
 	void setFillColor(unsigned int color, float alpha);
 	void setLineColor(unsigned int color, float alpha);
 	void setLineThickness(float thickness, float feather);

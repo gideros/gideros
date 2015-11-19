@@ -17,6 +17,7 @@ Path2DBinder::Path2DBinder(lua_State* L)
 		{"setSvgPath", setSvgPath},
 		{"setTexture", setTexture},
 		{"setLineThickness", setLineThickness },
+		{"setConvex", setConvex },
 		{NULL, NULL},
 	};
 
@@ -61,6 +62,17 @@ int Path2DBinder::destruct(lua_State* L)
 	void* ptr = *(void**)lua_touserdata(L, 1);
 	Path2D* shape = static_cast<Path2D*>(ptr);
 	shape->unref();
+
+	return 0;
+}
+
+int Path2DBinder::setConvex(lua_State* L)
+{
+	Binder binder(L);
+	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
+
+	bool convex = lua_toboolean(L, 2);
+	shape->setConvex(convex);
 
 	return 0;
 }
