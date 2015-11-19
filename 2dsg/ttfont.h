@@ -33,7 +33,10 @@ public:
     {
         return smoothing_;
     }
-
+    void *getFace() const
+    {
+    	return face_;
+    }
 private:
     void constructor(const char *filename, float size, bool smoothing);
     int kerning(FT_UInt left, FT_UInt right) const;

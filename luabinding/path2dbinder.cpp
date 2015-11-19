@@ -4,7 +4,7 @@
 #include "stackchecker.h"
 #include "luaapplication.h"
 #include <luautil.h>
-
+#include <ttfont.h>
 
 Path2DBinder::Path2DBinder(lua_State* L)
 {
@@ -15,6 +15,7 @@ Path2DBinder::Path2DBinder(lua_State* L)
 		{"setFillColor", setFillColor},
 		{"setPath", setPath},
 		{"setSvgPath", setSvgPath},
+		{"setFontPath", setFontPath},
 		{"setTexture", setTexture},
 		{"setLineThickness", setLineThickness },
 		{"setConvex", setConvex },
@@ -177,4 +178,36 @@ int Path2DBinder::setSvgPath(lua_State* L)
 	}
 
 	return 0;
+}
+
+int Path2DBinder::setFontPath(lua_State* L)
+{
+	Binder binder(L);
+	FontBase* font = NULL;
+	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
+	font = static_cast<FontBase*>(binder.getInstance("FontBase", 2));
+	if (font->getType()!=FontBase::eTTFont)
+	{
+		lua_pushstring(L,"TTFont required");
+		lua_error(L);
+	}
+	int ch= luaL_checkinteger(L,3);
+    TTFont *tf=static_cast<TTFont*>(font);
+    FT_Face face=(FT_Face)tf->getFace();
+
+    FT_UInt glyphIndex = FT_Get_Char_Index(face, ch);
+    if ((glyphIndex != 0)&&(!FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT)))
+    {
+        if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
+        {
+        	PrPath *pr=prParseFtGlyph(&(face->glyph->outline));
+        	if (pr)
+        	{
+        		shape->setPath(pr);
+        		prFreePath(pr);
+        	}
+        }
+    }
+
+    return 0;
 }
