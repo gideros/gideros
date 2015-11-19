@@ -11,6 +11,7 @@
 
 #include <utf8.h>
 #include <algorithm>
+#include "path.h"
 
 static unsigned long read(	FT_Stream stream,
 							unsigned long offset,
@@ -288,6 +289,33 @@ void TTFont::getBounds(const char *text, float letterSpacing, float *pminx, floa
         *pmaxx = maxx / scalex;
     if (pmaxy)
         *pmaxy = maxy / scaley;
+}
+
+int TTFont::getCharPath(wchar32_t ch,float letterSpacing,float &advanceX, float &advanceY)
+{
+    FT_UInt glyphIndex = FT_Get_Char_Index(face_, ch);
+    if (glyphIndex == 0)
+        return 0;
+
+    if (FT_Load_Glyph(face_, glyphIndex, FT_LOAD_DEFAULT))
+        return 0;
+
+    advanceX = (1.0/64)*face_->glyph->advance.x+letterSpacing;
+    advanceY = (1.0/64)*face_->glyph->advance.y;
+
+    if (face_->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
+    {
+    	if (pathCache_[ch])
+    		return pathCache_[ch];
+    	PrPath *pr=prParseFtGlyph(&(face_->glyph->outline));
+    	if (pr)
+    	{
+    		pathCache_[ch]=Path2D::buildPath(pr);
+    		prFreePath(pr);
+        	return pathCache_[ch];
+    	}
+    }
+    return 0;
 }
 
 float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) const

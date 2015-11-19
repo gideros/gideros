@@ -2464,6 +2464,19 @@ static void fill_path(unsigned int path, int fill_mode,
 	stencil.sClear = false;
 }
 
+int Path2D::buildPath(PrPath *ppath)
+{
+	int path = gen_paths(1);
+	path_commands(path, ppath->numCommands, ppath->commands, ppath->numCoords,
+			ppath->coords);
+	return path;
+}
+
+void Path2D::removePath(int path)
+{
+	delete_paths(path, 1);
+}
+
 bool Path2D::initialized = false;
 VertexBuffer<unsigned short> *Path2D::quadIndices = NULL;
 

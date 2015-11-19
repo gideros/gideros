@@ -8,6 +8,8 @@
 #include <dib.h>
 #include <wchar32.h>
 #include <gstatus.h>
+#include <prpath.h>
+#include <map>
 
 class TTFont : public FontBase
 {
@@ -23,6 +25,7 @@ public:
     void getBounds(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy) const;
 
     Dib renderFont(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy) const;
+    int getCharPath(wchar32_t ch,float letterSpacing,float &advanceX,float &advanceY);
 
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy) const;
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1) const;
@@ -47,6 +50,7 @@ private:
 	int height_;
 	FT_StreamRec stream_;
     bool smoothing_;
+    std::map<wchar32_t,int> pathCache_;
 };
 
 #endif

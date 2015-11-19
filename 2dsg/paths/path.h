@@ -30,6 +30,8 @@ public:
 	void setFillColor(unsigned int color, float alpha);
 	void setLineColor(unsigned int color, float alpha);
 	void setLineThickness(float thickness, float feather);
+	static int buildPath(PrPath *);
+	static void removePath(int);
 };
 
 
