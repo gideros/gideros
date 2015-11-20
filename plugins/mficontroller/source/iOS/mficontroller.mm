@@ -335,7 +335,7 @@ public:
             if ([[helper getControllerAtIndex:[helper amountControllers]-1] extendedGamepad]) {
                 [helper activateExtendedController:[helper getControllerAtIndex:[helper amountControllers]-1] onGGameController:this];
             }
-#ifdef TARGET_OS_TV
+#if TARGET_OS_TV == 1
             else if ([[helper getControllerAtIndex:[helper amountControllers] -1] microGamepad]) {
                 [helper activateMicroController:[helper getControllerAtIndex:[helper amountControllers]-1] onGGameController:this];
             }

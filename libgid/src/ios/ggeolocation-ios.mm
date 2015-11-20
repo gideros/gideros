@@ -1,8 +1,4 @@
-#if TARGET_OS_TV==0
-#undef TARGET_OS_TV
-#endif
-
-#ifndef TARGET_OS_TV
+#if TARGET_OS_TV == 0
 #include <ggeolocation.h>
 #import <CoreLocation/CoreLocation.h>
 #include <set>

@@ -42,7 +42,7 @@ std::vector<std::string> getDeviceInfo()
 		case UIUserInterfaceIdiomPad:
 			result.push_back("iPad");
 			break;
-#ifdef TARGET_OS_TV
+#if TARGET_OS_TV == 1
 		case UIUserInterfaceIdiomTV:
 			result.push_back("AppleTV");
 			break;

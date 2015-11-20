@@ -1,7 +1,3 @@
-#if TARGET_OS_TV==0
-#undef TARGET_OS_TV
-#endif
-
 #include "../ggaudiomanager.h"
 
 #import <AVFoundation/AVFoundation.h>
@@ -397,7 +393,7 @@ public:
         if (channel2->interrupted == true)
         {
             if (channel2->player != nil)
-#ifndef TARGET_OS_TV
+#if TARGET_OS_TV == 0
                 if (flags & AVAudioSessionInterruptionFlags_ShouldResume)
                     [channel2->player play];
 #endif
