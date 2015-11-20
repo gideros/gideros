@@ -134,7 +134,7 @@ public:
 	int get_number(int id){
 		JNIEnv *env = g_getJNIEnv();
 		
-		int val = (int)env->CallStaticObjectMethod(cls_, env->GetStaticMethodID(cls_, "getNumber", "(I)I"), (jint)id);
+		int val = (int)env->CallStaticIntMethod(cls_, env->GetStaticMethodID(cls_, "getNumber", "(I)I"), (jint)id);
 		return val;
 	}
 	
@@ -302,7 +302,7 @@ public:
 	void register_push(const char *project){
 		JNIEnv *env = g_getJNIEnv();
 		jstring jproject = env->NewStringUTF(project);
-		env->CallStaticObjectMethod(cls_, env->GetStaticMethodID(cls_, "registerForPushNotifications", "(Ljava/lang/String;)V"), jproject);
+		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "registerForPushNotifications", "(Ljava/lang/String;)V"), jproject);
 		env->DeleteLocalRef(jproject);
 	}
 	

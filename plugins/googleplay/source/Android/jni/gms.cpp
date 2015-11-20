@@ -223,7 +223,7 @@ public:
 	{
 		JNIEnv *env = g_getJNIEnv();
 		jstring jId = env->NewStringUTF(id);
-		env->CallStaticObjectMethod(cls_, env->GetStaticMethodID(cls_, "getCurrentPlayerScore", "(Ljava/lang/String;II)V"), jId, (jint)span, (jint)collection);
+		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "getCurrentPlayerScore", "(Ljava/lang/String;II)V"), jId, (jint)span, (jint)collection);
 		env->DeleteLocalRef(jId);
 	}
 	
