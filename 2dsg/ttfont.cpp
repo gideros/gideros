@@ -93,6 +93,9 @@ TTFont::~TTFont()
 {
 	if (face_)
 		FT_Done_Face(face_);
+	for(std::map<wchar32_t,GlyphData>::iterator it = glyphCache_.begin(); it != glyphCache_.end(); it++) {
+		free(it->second.bitmap);
+	}
 }
 
 void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy) const
@@ -171,7 +174,7 @@ void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx, i
 		*pmaxy = maxy;
 }
 
-Dib TTFont::renderFont(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy) const
+Dib TTFont::renderFont(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy)
 {
     float scalex = application_->getLogicalScaleX();
 
@@ -190,64 +193,77 @@ Dib TTFont::renderFont(const wchar32_t *text, float letterSpacing, int *pminx, i
     FT_UInt prev = 0;
     for (int i = 0; i < size; ++i)
 	{
-        FT_UInt glyphIndex = FT_Get_Char_Index(face_, text[i]);
-        if (glyphIndex == 0)
-            continue;
-
-        if (FT_Load_Glyph(face_, glyphIndex, FT_LOAD_DEFAULT))
-			continue;
-
-        int top, left, width, height;
-        if (face_->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
+        GlyphData g=glyphCache_[text[i]];
+        if (g.bitmap==NULL)
         {
-            FT_BBox bbox;
-            FT_Outline_Get_CBox(&face_->glyph->outline, &bbox);
+        	FT_UInt glyphIndex = FT_Get_Char_Index(face_, text[i]);
+        	if (glyphIndex == 0)
+        		continue;
 
-            bbox.xMin &= ~63;
-            bbox.yMin &= ~63;
-            bbox.xMax  = (bbox.xMax + 63) & ~63;
-            bbox.yMax  = (bbox.yMax + 63) & ~63;
+        	if (FT_Load_Glyph(face_, glyphIndex, FT_LOAD_DEFAULT))
+        		continue;
 
-            width  = (bbox.xMax - bbox.xMin) >> 6;
-            height = (bbox.yMax - bbox.yMin) >> 6;
-            top = bbox.yMax >> 6;
-            left = bbox.xMin >> 6;
+        	int top, left, width, height;
+        	if (face_->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
+        	{
+        		FT_BBox bbox;
+        		FT_Outline_Get_CBox(&face_->glyph->outline, &bbox);
+
+        		bbox.xMin &= ~63;
+        		bbox.yMin &= ~63;
+        		bbox.xMax  = (bbox.xMax + 63) & ~63;
+        		bbox.yMax  = (bbox.yMax + 63) & ~63;
+
+        		width  = (bbox.xMax - bbox.xMin) >> 6;
+        		height = (bbox.yMax - bbox.yMin) >> 6;
+        		top = bbox.yMax >> 6;
+        		left = bbox.xMin >> 6;
+        	}
+        	else if (face_->glyph->format == FT_GLYPH_FORMAT_BITMAP)
+        	{
+        		width = face_->glyph->bitmap.width;
+        		height = face_->glyph->bitmap.rows;
+        		top = face_->glyph->bitmap_top;
+        		left = face_->glyph->bitmap_left;
+        	}
+        	else
+        		continue;
+
+        	if (FT_Render_Glyph(face_->glyph, FT_RENDER_MODE_NORMAL))
+        		continue;
+
+        	FT_Bitmap &bitmap = face_->glyph->bitmap;
+            width = std::min(width, (int)bitmap.width);
+            height = std::min(height, (int)bitmap.rows);
+
+        	g.pitch=bitmap.pitch;
+        	g.height=height;
+        	g.width=width;
+        	g.top=top;
+        	g.left=left;
+        	g.glyph=glyphIndex;
+        	g.advX=face_->glyph->advance.x>>6;
+        	g.bitmap=(unsigned char *) malloc(g.rows*g.pitch);
+        	memcpy(g.bitmap,bitmap.buffer,g.rows*g.pitch);
+        	glyphCache_[text[i]]=g;
         }
-        else if (face_->glyph->format == FT_GLYPH_FORMAT_BITMAP)
-        {
-            width = face_->glyph->bitmap.width;
-            height = face_->glyph->bitmap.rows;
-            top = face_->glyph->bitmap_top;
-            left = face_->glyph->bitmap_left;
-        }
-        else
-            continue;
 
-        if (FT_Render_Glyph(face_->glyph, FT_RENDER_MODE_NORMAL))
-			continue;
 
-        FT_Bitmap &bitmap = face_->glyph->bitmap;
+        x += kerning(prev, g.glyph) >> 6;
+        prev = g.glyph;
 
-        width = std::min(width, (int)bitmap.width);
-        height = std::min(height, (int)bitmap.rows);
+        int xo = x + g.left - minx;
+        int yo = y - g.top - miny;
+        int index = 0;
 
-        x += kerning(prev, glyphIndex) >> 6;
-        prev = glyphIndex;
+		for (int y = 0; y < g.height; ++y)
+		{
+			for (int x = 0; x < g.width; ++x)
+				dib.satAlpha(xo + x, yo + y, g.bitmap[index++]);
+			index=index+g.pitch-g.width;
+		}
 
-        int xo = x + left;
-        int yo = y - top;
-
-		for (int y = 0; y < height; ++y)
-			for (int x = 0; x < width; ++x)
-			{
-				int index = x + y * bitmap.pitch;
-				int c = bitmap.buffer[index];
-
-				unsigned char a = dib.getAlpha(xo + x - minx, yo + y - miny);
-				dib.setAlpha(xo + x - minx, yo + y - miny, std::min(255, c + a));
-			}
-
-        x += face_->glyph->advance.x >> 6;
+        x += g.advX;
 
         x += (int)(letterSpacing * scalex);
     }
@@ -289,33 +305,6 @@ void TTFont::getBounds(const char *text, float letterSpacing, float *pminx, floa
         *pmaxx = maxx / scalex;
     if (pmaxy)
         *pmaxy = maxy / scaley;
-}
-
-int TTFont::getCharPath(wchar32_t ch,float letterSpacing,float &advanceX, float &advanceY)
-{
-    FT_UInt glyphIndex = FT_Get_Char_Index(face_, ch);
-    if (glyphIndex == 0)
-        return 0;
-
-    if (FT_Load_Glyph(face_, glyphIndex, FT_LOAD_DEFAULT))
-        return 0;
-
-    advanceX = (1.0/64)*face_->glyph->advance.x+letterSpacing;
-    advanceY = (1.0/64)*face_->glyph->advance.y;
-
-    if (face_->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
-    {
-    	if (pathCache_[ch])
-    		return pathCache_[ch];
-    	PrPath *pr=prParseFtGlyph(&(face_->glyph->outline));
-    	if (pr)
-    	{
-    		pathCache_[ch]=Path2D::buildPath(pr);
-    		prFreePath(pr);
-        	return pathCache_[ch];
-    	}
-    }
-    return 0;
 }
 
 float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) const

@@ -24,8 +24,7 @@ public:
 
     void getBounds(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy) const;
 
-    Dib renderFont(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy) const;
-    int getCharPath(wchar32_t ch,float letterSpacing,float &advanceX,float &advanceY);
+    Dib renderFont(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy);
 
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy) const;
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1) const;
@@ -50,7 +49,19 @@ private:
 	int height_;
 	FT_StreamRec stream_;
     bool smoothing_;
-    std::map<wchar32_t,int> pathCache_;
+    struct GlyphData
+    {
+    	FT_UInt 		glyph;
+    	int				advX;
+    	int 			top;
+    	int 			left;
+    	unsigned int	height;
+    	unsigned int    width;
+    	unsigned char *	bitmap;
+    	unsigned int    rows;
+    	int             pitch;
+    };
+    std::map<wchar32_t,GlyphData> glyphCache_;
 };
 
 #endif

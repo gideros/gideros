@@ -1036,7 +1036,7 @@ static void path_commands(unsigned int path, int num_commands,
 		kh_value(paths, iter) = p;
 
 		p->stroke_width = 1;
-		p->stroke_feather = 0.5;
+		p->stroke_feather = 0.25;
 		p->join_style = PATHJOIN_BEVEL; //PATHJOIN_MITER_REVERT;
 		p->initial_end_cap = PATHEND_FLAT;
 		p->terminal_end_cap = PATHEND_FLAT;
@@ -2437,7 +2437,6 @@ static void fill_path(unsigned int path, int fill_mode,
 	 for (int k=0;k<ib->size();k++)
 	 glog_d("Fill path: IB[%d]=%d",k,(*ib)[k]);
 	 */
-	stencil.sClear = true;
 	if (p->fill_counts[0] > 0) {
 		stencil.sFail = front;
 		if (fill_mode!=PATHFILLMODE_DIRECT)
@@ -2541,35 +2540,27 @@ void Path2D::setConvex(bool convex) {
 	convex_ = convex;
 }
 
-void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
-		float ey) {
-	Matrix4 identity;
+void Path2D::impressPath(int path,Matrix4 xform,ShaderEngine::DepthStencil stencil) {
 	struct path *p = get_path(path);
 	if (!p)
 		return; //No PATH
-	if (filla_ > 0) {
-		glPushColor();
-		glMultColor(fillr_, fillg_, fillb_, filla_);
 
-		if (convex_) {
-			ShaderEngine::DepthStencil stencil;
-			fill_path(path, PATHFILLMODE_DIRECT, stencil, &identity);
-		} else {
-			ShaderEngine::DepthStencil stencil =
-					ShaderEngine::Engine->pushDepthStencil();
-			stencil.sFunc = ShaderEngine::STENCIL_NEVER;
-			fill_path(path, PATHFILLMODE_COUNT_UP, stencil, &identity);
+	stencil.sFunc = ShaderEngine::STENCIL_NEVER;
+	fill_path(path, PATHFILLMODE_COUNT_UP, stencil, &xform);
+}
+
+void Path2D::colorFillBounds(VertexBuffer<float> *vb,float *fill,ShaderEngine::DepthStencil stencil)
+{
+	glPushColor();
+	glMultColor(fill[0], fill[1], fill[2], fill[3]);
+
 			stencil.sFunc = ShaderEngine::STENCIL_NOTEQUAL;
 			stencil.sFail = ShaderEngine::STENCIL_KEEP;
 			stencil.sRef = 0;
 			stencil.sMask = 0xFF;
 			ShaderEngine::Engine->setDepthStencil(stencil);
-			VertexBuffer<float> *vb = p->fill_bounds_vbo;
+
 			VertexBuffer<unsigned short> *ib = quadIndices;
-			/*	 for (int k=0;k<vb->size();k++)
-			 glog_d("Fill path: VB[%d]=%f",k,(*vb)[k]);
-			 for (int k=0;k<ib->size();k++)
-			 glog_d("Fill path: IB[%d]=%d",k,(*ib)[k]);*/
 			ShaderProgram::stdBasic->setData(ShaderProgram::DataVertex,
 					ShaderProgram::DFLOAT, 2, &((*vb)[0]), vb->size() / 2,
 					vb->modified, &vb->bufferCache);
@@ -2578,17 +2569,63 @@ void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 					ib->modified, &ib->bufferCache);
 			vb->modified = false;
 			ib->modified = false;
-			ShaderEngine::Engine->popDepthStencil();
-		}
 
 		glPopColor();
+}
+
+void Path2D::fillPath(int path,Matrix4 xform,float fill[4],bool convex) {
+	struct path *p = get_path(path);
+	if (!p)
+		return; //No PATH
+	if (fill[3] > 0) {
+		if (p->is_fill_dirty) {
+				//glog_d("Fill path: Generating");
+				create_fill_geometry(p);
+				p->is_fill_dirty = 0;
+		}
+
+		if (convex||(p->fill_counts[0]==0)||(p->fill_counts[1]==0)) {
+			ShaderEngine::DepthStencil stencil;
+			fill_path(path, PATHFILLMODE_DIRECT, stencil, &xform);
+		} else {
+			ShaderEngine::DepthStencil stencil =
+					ShaderEngine::Engine->pushDepthStencil();
+			ShaderEngine::Engine->pushClip(p->fill_bounds[0],p->fill_bounds[1],
+					p->fill_bounds[2]-p->fill_bounds[0]+1,
+					p->fill_bounds[3]-p->fill_bounds[1]+1);
+			stencil.sClear = true;
+			impressPath(path,xform,stencil);
+			stencil.sClear = false;
+			ShaderEngine::Engine->popClip();
+			colorFillBounds(p->fill_bounds_vbo,fill,stencil);
+			ShaderEngine::Engine->popDepthStencil();
+		}
 	}
-	if (linea_ > 0) {
+}
+
+void Path2D::strokePath(int path,Matrix4 xform,float line[4]) {
+	struct path *p = get_path(path);
+	if (!p)
+		return; //No PATH
+	if (line[3] > 0) {
 		glPushColor();
-		glMultColor(liner_, lineg_, lineb_, linea_);
-		stroke_path(path, &identity);
+		glMultColor(line[0], line[1], line[2], line[3]);
+		stroke_path(path, &xform);
 		glPopColor();
 	}
+}
+
+void Path2D::drawPath(int path,Matrix4 xform,float fill[4],float line[4],bool convex) {
+	fillPath(path,xform,fill,convex);
+	strokePath(path,xform,line);
+}
+
+
+void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
+		float ey) {
+	float fill[4]={fillr_,fillg_,fillb_,filla_};
+	float line[4]={liner_,lineg_,lineb_,linea_};
+	drawPath(path,Matrix4(),fill,line,convex_);
 }
 
 void Path2D::extraBounds(float* minx, float* miny, float* maxx,
