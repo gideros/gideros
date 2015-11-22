@@ -362,6 +362,7 @@ QDomDocument LibraryTreeWidget::toXml() const
 	properties.setAttribute("osx_org", properties_.osx_org);
 	properties.setAttribute("osx_domain", properties_.osx_domain);
     properties.setAttribute("osx_bundle", properties_.osx_bundle);
+    properties.setAttribute("osx_category", properties_.osx_category);
     properties.setAttribute("win_org", properties_.win_org);
 	properties.setAttribute("win_domain", properties_.win_domain);
     properties.setAttribute("winrt_org", properties_.winrt_org);
@@ -533,6 +534,8 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 			properties_.osx_domain = properties.attribute("osx_domain");
         if (!properties.attribute("osx_bundle").isEmpty())
             properties_.osx_bundle = properties.attribute("osx_bundle");
+        if (!properties.attribute("osx_category").isEmpty())
+            properties_.osx_category = properties.attribute("osx_category").toInt();
         if (!properties.attribute("win_org").isEmpty())
 			properties_.win_org = properties.attribute("win_org");
         if (!properties.attribute("win_domain").isEmpty())

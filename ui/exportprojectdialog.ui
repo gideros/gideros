@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>560</width>
+    <width>561</width>
     <height>391</height>
    </rect>
   </property>
@@ -291,7 +291,7 @@ Example: com.giderosmobile.timthetimber</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Organization:</string>
+            <string>Organization: </string>
            </property>
           </widget>
          </item>
@@ -309,7 +309,7 @@ Example: com.giderosmobile.timthetimber</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Domain:       </string>
+            <string>Domain:        </string>
            </property>
           </widget>
          </item>
@@ -327,7 +327,7 @@ Example: com.giderosmobile.timthetimber</string>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Bundle ID:    </string>
+            <string>Bundle ID:      </string>
            </property>
           </widget>
          </item>
@@ -335,6 +335,33 @@ Example: com.giderosmobile.timthetimber</string>
           <widget class="QLineEdit" name="osx_bundle">
            <property name="text">
             <string>com.yourdomain.yourapp</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_32">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>App Category:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="osx_category">
+           <property name="minimumSize">
+            <size>
+             <width>420</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::TabFocus</enum>
+           </property>
+           <property name="currentIndex">
+            <number>-1</number>
            </property>
           </widget>
          </item>
