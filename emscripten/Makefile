@@ -18,7 +18,7 @@ SRCS+=$(addprefix libnetwork/,$(notdir $(basename $(wildcard ../libnetwork/*.cpp
 SRCS+=$(addprefix libpvrt/,$(notdir $(basename $(wildcard ../libpvrt/*.cpp))))
 SRCS+=$(addprefix libgid/src/,md5 platformutil utf8 drawinfo gtimer \
 	gimage gimage-png gimage-jpg gtexture gevent glog gglobal gaudio \
-	gaudio-loader-wav gaudio-loader-mp3 gaudio-sample-openal \
+	gaudio-loader-wav gaudio-loader-mp3 \
 	gvfs-native)
 SRCS+=$(addprefix libgideros/,event eventdispatcher eventvisitor refptr stringid luautil pluginmanager binderutil)
 SRCS+=$(addprefix external/glu/libtess/,$(notdir $(basename $(wildcard ../external/glu/libtess/*.c))))
@@ -49,7 +49,7 @@ MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 ind
 	libmpg123 ntom optimize parse readers stringbuf synth synth_8bit synth_real synth_s32 tabinit
 SRCS+=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES))
 SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
-	ginput-js gaudio-js gaudio-stream-openal-js platform-js ghttp-js \
+	ginput-js gaudio-js gaudio-stream-openal-js gaudio-sample-openal-js platform-js ghttp-js \
 	gui-js ggeolocation-js main)   
 
 

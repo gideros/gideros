@@ -7,6 +7,7 @@ enum Orientation
 	eLandscapeLeft,				// The device is in landscape mode, with the device held upright and the home button on the right side.
 	ePortraitUpsideDown,		// The device is in portrait mode but upside down, with the device held upright and the home button at the top.
 	eLandscapeRight,			// The device is in landscape mode, with the device held upright and the home button on the left side.
+	eFixed,						// The device cannot rotate
 };
 
 enum LogicalScaleMode
