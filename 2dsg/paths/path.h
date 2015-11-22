@@ -3,6 +3,7 @@
 
 #include "sprite.h"
 #include "texturebase.h"
+#include "prpath.h"
 
 class Path2D : public Sprite
 {
@@ -18,14 +19,24 @@ private:
     float minx_, miny_, maxx_, maxy_;
     float filla_,fillr_,fillg_,fillb_;
     float linea_,liner_,lineg_,lineb_;
+    bool convex_;
 public:
 	Path2D(Application* application);
 	virtual ~Path2D();
     void setTexture(TextureBase *texturebase);
 	void setPath(int num_commands, const unsigned char *commands, int num_coords, const float *coords);
+	void setPath(const PrPath *path);
+	void setConvex(bool convex);
 	void setFillColor(unsigned int color, float alpha);
 	void setLineColor(unsigned int color, float alpha);
 	void setLineThickness(float thickness, float feather);
+	static int buildPath(PrPath *);
+	static void removePath(int);
+	static void drawPath(int path,Matrix4 xform,float fill[4],float line[4],bool convex);
+	static void strokePath(int path,Matrix4 xform,float line[4]);
+	static void fillPath(int path,Matrix4 xform,float fill[4],bool convex);
+	static void impressPath(int path,Matrix4 xform,ShaderEngine::DepthStencil stencil);
+	static void colorFillBounds(VertexBuffer<float> *vb,float *fill,ShaderEngine::DepthStencil stencil);
 };
 
 

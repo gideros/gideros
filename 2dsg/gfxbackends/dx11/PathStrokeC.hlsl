@@ -12,17 +12,17 @@ struct VOut
 cbuffer cbv : register(b0)
 {
 	float4x4 mvp;
-	float width;
+	float4x4 xform;
 };
 
 VOut VShader(float4 d0 : dataA, float4 d1: dataB, float4 d2: dataC)
 {
 	VOut output;
 
-	output.position = mul(mvp, float4(d0.xy,0.0f,1.0f));
+	output.position = mul(mvp, mul(xform, float4(d0.xy,0.0f,1.0f)));
 	output.d0 = d0; 
 	output.d1 = d1;
-	output.d2 = float4(d2.xyz, width);
+	output.d2 = d2;
 
 	return output;
 }

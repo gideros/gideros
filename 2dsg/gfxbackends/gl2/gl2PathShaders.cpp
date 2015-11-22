@@ -18,8 +18,9 @@ static const char *hdrShaderCode =
 				"#define lowp\n";
 #endif
 
-static const char *vs_code1 =
+static const char *vs_codeFC =
 "uniform highp mat4 mvp;                                                      \n"
+"uniform highp mat4 xform;                                                    \n"
 "                                                                       \n"
 "attribute highp vec4 data0;                                                  \n"
 "                                                                       \n"
@@ -27,11 +28,11 @@ static const char *vs_code1 =
 "                                                                       \n"
 "void main(void)                                                        \n"
 "{                                                                      \n"
-"  gl_Position = mvp * vec4(data0.xy, 0, 1);   \n"
+"  gl_Position = mvp * xform * vec4(data0.xy, 0, 1);   \n"
 "  uv = data0.zw;                                                          \n"
 "}                                                                      \n";
 
-static const char *fs_code1 =
+static const char *fs_codeFC =
 "uniform lowp vec4 fColor;\n"
 "varying mediump vec2 uv;                           \n"
 "                                           \n"
@@ -60,9 +61,9 @@ static const char *fs_code1 =
 #endif
 "}                                          \n";
 
-static const char *vs_code2 =
+static const char *vs_codeSC =
 "uniform highp mat4 mvp;                                                   \n"
-"uniform mediump float width;                                                      \n"
+"uniform highp mat4 xform;                                                    \n"
 "                                                                       \n"
 "attribute highp vec4 data0;                                                  \n"
 "attribute highp vec4 data1;                                                  \n"
@@ -75,7 +76,7 @@ static const char *vs_code2 =
 "                                                                       \n"
 "void main()                                                            \n"
 "{                                                                      \n"
-"  gl_Position = mvp * vec4(data0.xy, 0, 1);   \n"
+"  gl_Position = mvp * xform * vec4(data0.xy, 0, 1);   \n"
 "  pos = data0.xy;                                                  \n"
 "  p = data0.z;                                                         \n"
 "  q = data0.w;                                                         \n"
@@ -83,10 +84,10 @@ static const char *vs_code2 =
 "  b = data1.zw;                                                        \n"
 "  c = data2.xy;                                                        \n"
 "  offset = data2.z;                                                    \n"
-"  strokeWidth = width;                                               \n"
+"  strokeWidth = data2.w;                                               \n"
 "}                                                                      \n";
 
-static const char *fs_code2 =
+static const char *fs_codeSC =
 "uniform lowp vec4 fColor;\n"
 "uniform mediump float feather;                                                      \n"
 "varying highp vec2 pos;                                                            \n"
@@ -147,7 +148,7 @@ static const char *fs_code2 =
 
 static const char *vs_codeSL =
 "uniform highp mat4 mvp;                                                      \n"
-"uniform mediump float width;                                                      \n"
+"uniform highp mat4 xform;                                                    \n"
 "                                                                       \n"
 "attribute highp vec4 data0;                                                  \n"
 "                                                                       \n"
@@ -155,8 +156,9 @@ static const char *vs_codeSL =
 "                                                                       \n"
 "void main(void)                                                        \n"
 "{                                                                      \n"
-"  gl_Position = mvp*vec4(data0.zw*width+data0.xy, 0, 1);   \n"
-"  uv = data0.zw;                                                          \n"
+"  highp vec4 pos = mvp*xform*vec4(data0.xy+data0.zw, 0, 1);   \n"
+"  gl_Position=pos;\n"
+"  uv = normalize(data0.zw);                                                          \n"
 "}                                                                      \n";
 
 static const char *fs_codeSL =
@@ -179,13 +181,21 @@ void pathShadersInit()
 {
 	const ShaderProgram::ConstantDesc pathUniforms[] = {
 			{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
+			{ "xform",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_None, true, 0, NULL },
 			{ "fColor", ShaderProgram::CFLOAT4, 1,	ShaderProgram::SysConst_Color, false, 0, NULL },
 			{ "fTexture", ShaderProgram::CTEXTURE, 1, ShaderProgram::SysConst_None, false, 0, NULL },
 			{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
 
 	const ShaderProgram::ConstantDesc pathUniformsStrokeSL[] = {
 			{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
-			{ "width", ShaderProgram::CFLOAT, 1,	ShaderProgram::SysConst_None, true, 0, NULL },
+			{ "xform",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_None, true, 0, NULL },
+			{ "fColor", ShaderProgram::CFLOAT4, 1,	ShaderProgram::SysConst_Color, false, 0, NULL },
+			{ "feather", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_None, false, 0, NULL },
+			{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
+
+	const ShaderProgram::ConstantDesc pathUniformsStrokeSC[] = {
+			{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
+			{ "xform",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_None, true, 0, NULL },
 			{ "fColor", ShaderProgram::CFLOAT4, 1,	ShaderProgram::SysConst_Color, false, 0, NULL },
 			{ "feather", ShaderProgram::CFLOAT, 1, ShaderProgram::SysConst_None, false, 0, NULL },
 			{ "", ShaderProgram::CFLOAT, 0, ShaderProgram::SysConst_None,false, 0, NULL } };
@@ -205,10 +215,10 @@ void pathShadersInit()
 			{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
 
 	ShaderProgram::pathShaderFillC = new ogl2ShaderProgram(hdrShaderCode,
-			vs_code1, hdrShaderCode, fs_code1, pathUniforms,
+			vs_codeFC, hdrShaderCode, fs_codeFC, pathUniforms,
 			pathAttributesFillC);
 	ShaderProgram::pathShaderStrokeC = new ogl2ShaderProgram(hdrShaderCode,
-			vs_code2, hdrShaderCode, fs_code2, pathUniformsStrokeSL,
+			vs_codeSC, hdrShaderCode, fs_codeSC, pathUniformsStrokeSL,
 			pathAttributesStrokeC);
 	ShaderProgram::pathShaderStrokeLC = new ogl2ShaderProgram(hdrShaderCode,
 			vs_codeSL, hdrShaderCode, fs_codeSL, pathUniformsStrokeSL,

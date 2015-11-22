@@ -274,7 +274,7 @@ static int moveto(const FT_Vector *to, void *user)
 
     kv_push_back(data->commands, 'M');
     kv_push_back(data->coords, to->x / 64.f);
-    kv_push_back(data->coords, to->y / 64.f);
+    kv_push_back(data->coords, -to->y / 64.f);
 
     return 0;
 }
@@ -284,7 +284,7 @@ static int lineto(const FT_Vector *to, void *user)
 
     kv_push_back(data->commands, 'L');
     kv_push_back(data->coords, to->x / 64.f);
-    kv_push_back(data->coords, to->y / 64.f);
+    kv_push_back(data->coords, -to->y / 64.f);
 
     return 0;
 }
@@ -295,9 +295,9 @@ static int conicto(const FT_Vector *control, const FT_Vector *to, void *user)
 
     kv_push_back(data->commands, 'Q');
     kv_push_back(data->coords, control->x / 64.f);
-    kv_push_back(data->coords, control->y / 64.f);
+    kv_push_back(data->coords, -control->y / 64.f);
     kv_push_back(data->coords, to->x / 64.f);
-    kv_push_back(data->coords, to->y / 64.f);
+    kv_push_back(data->coords, -to->y / 64.f);
 
     return 0;
 }
@@ -308,11 +308,11 @@ static int cubicto(const FT_Vector *control1, const FT_Vector *control2, const F
 
     kv_push_back(data->commands, 'C');
     kv_push_back(data->coords, control1->x / 64.f);
-    kv_push_back(data->coords, control1->y / 64.f);
+    kv_push_back(data->coords, -control1->y / 64.f);
     kv_push_back(data->coords, control2->x / 64.f);
-    kv_push_back(data->coords, control2->y / 64.f);
+    kv_push_back(data->coords, -control2->y / 64.f);
     kv_push_back(data->coords, to->x / 64.f);
-    kv_push_back(data->coords, to->y / 64.f);
+    kv_push_back(data->coords, -to->y / 64.f);
 
     return 0;
 }
