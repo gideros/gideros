@@ -71,6 +71,7 @@
         interstitial.adVideoPlaybackDelegate = list;
         [interstitial preloadAndNotify:list];
     }
+#if TARGET_OS_TV==0
     else
     {
             if([self.mngr get:type] == nil)
@@ -133,6 +134,7 @@
             [AdsClass adError:[self class] with:[NSString stringWithFormat:@"Unknown type: %@", type]];
         }
     }
+#endif
 }
 
 -(void)showAd:(NSMutableArray*)parameters{
