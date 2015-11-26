@@ -26,6 +26,9 @@
 </ul>
 <li>Add these lines in the start of the <code>application didFinishLaunchingWithOptions</code> method in the AppDelegate.mm file:</li>
 <ul>
+    <li><pre>if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]){
+        [application registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeBadge|UIUserNotificationTypeSound categories:nil]];
+    }</pre></li>
 	<li><pre>self.launchLocalNotification =
     [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];</pre></li>
 	<li><pre>self.launchRemoteNotification =
