@@ -7,9 +7,6 @@
 
 #include "DirectXPage.g.h"
 
-#include "Common\DeviceResources.h"
-#include "trianglexamlMain.h"
-
 namespace trianglexaml
 {
 	/// <summary>
@@ -50,10 +47,10 @@ namespace trianglexaml
 		void OnPointerMoved(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 		void OnPointerReleased(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 
-		// Resources used to render the DirectX content in the XAML page background.
-		std::shared_ptr<DX::DeviceResources> m_deviceResources;
-		std::unique_ptr<trianglexamlMain> m_main; 
 		bool m_windowVisible;
+
+		Windows::Foundation::IAsyncAction^ m_renderLoopWorker;
+
 	};
 }
 
