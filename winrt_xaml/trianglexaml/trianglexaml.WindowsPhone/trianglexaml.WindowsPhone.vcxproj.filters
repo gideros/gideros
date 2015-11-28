@@ -42,11 +42,48 @@
     <Image Include="Assets\WideLogo.scale-240.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Assets\bird_black_01.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_black_02.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_black_03.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_white_01.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_white_02.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bird_white_03.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\sky_world.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="DirectXPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\properties.bin">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\bird.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\main.lua">
+      <Filter>Assets</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\luafiles.txt">
+      <Filter>Assets</Filter>
+    </Text>
   </ItemGroup>
 </Project>

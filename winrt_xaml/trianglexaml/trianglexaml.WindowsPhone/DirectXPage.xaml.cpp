@@ -5,6 +5,7 @@
 
 #include "pch.h"
 #include "DirectXPage.xaml.h"
+#include "giderosapi.h"
 
 using namespace trianglexaml;
 
@@ -23,6 +24,77 @@ using namespace Windows::UI::Xaml::Input;
 using namespace Windows::UI::Xaml::Media;
 using namespace Windows::UI::Xaml::Navigation;
 using namespace concurrency;
+using namespace Windows::ApplicationModel;
+using namespace Windows::ApplicationModel::Core;
+using namespace Windows::ApplicationModel::Activation;
+using namespace Platform;
+using namespace Windows::Storage;
+using namespace Windows::UI::Popups;
+
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+using namespace Windows::Phone::UI::Input;
+#endif
+
+extern "C"
+{
+#ifdef _M_IX86
+	uint32_t htonl(uint32_t val)
+	{
+		const uint32_t x = 0x12345678;
+
+		if (*(uint8_t*)&x == 0x12)    // big-endian machine
+			return val;
+
+		// little-endian machine
+		val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
+		return (val << 16) | (val >> 16);
+	}
+#endif
+
+	void ExitProcess(int i)
+	{
+	}
+}
+
+// This function is only needed for the player. Should be empty for export projects as it contains
+// APIs not permitted in Windows Store apps (FindNextFileA etc)
+
+//#include <Windows.h>
+void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::vector<std::string>* directories)
+{
+	files->clear();
+	directories->clear();
+
+	WIN32_FIND_DATAA ffd;
+	HANDLE hFind;
+
+	std::string dirstar;
+
+	int dirlen = strlen(dir);
+	if (dirlen > 0 && (dir[dirlen - 1] == '/' || dir[dirlen - 1] == '\\'))
+		dirstar = std::string(dir) + "*";
+	else
+		dirstar = std::string(dir) + "/*";
+
+	std::wstring wsTmp(dirstar.begin(), dirstar.end());
+
+	hFind = FindFirstFileEx(wsTmp.c_str(), FINDEX_INFO_LEVELS::FindExInfoBasic, &ffd, FINDEX_SEARCH_OPS::FindExSearchNameMatch, nullptr, 0);
+
+	do
+	{
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			if (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
+				continue;
+
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			directories->push_back(ffd.cFileName);
+		else
+			files->push_back(ffd.cFileName);
+	} while (FindNextFileA(hFind, &ffd) != 0);
+
+	FindClose(hFind);
+}
+
 
 DirectXPage::DirectXPage():
 	m_windowVisible(true),
@@ -53,10 +125,10 @@ DirectXPage::DirectXPage():
 	swapChainPanel->SizeChanged +=
 		ref new SizeChangedEventHandler(this, &DirectXPage::OnSwapChainPanelSizeChanged);
 
-	// At this point we have access to the device. 
-	// We can create the device-dependent resources.
-	m_deviceResources = std::make_shared<DX::DeviceResources>();
-	m_deviceResources->SetSwapChainPanel(swapChainPanel);
+	// Disable all pointer visual feedback for better performance when touching.
+//	auto pointerVisualizationSettings = PointerVisualizationSettings::GetForCurrentView();
+//	pointerVisualizationSettings->IsContactFeedbackEnabled = false; 
+//	pointerVisualizationSettings->IsBarrelButtonFeedbackEnabled = false;
 
 	// Register our SwapChainPanel to get independent input pointer events
 	auto workItemHandler = ref new WorkItemHandler([this] (IAsyncAction ^)
@@ -80,36 +152,46 @@ DirectXPage::DirectXPage():
 	// Run task on a dedicated high priority background thread.
 	m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
 
-	m_main = std::unique_ptr<trianglexamlMain>(new trianglexamlMain(m_deviceResources));
-	m_main->StartRenderLoop();
+	std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
+	std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
+	std::wstring tempPath = ApplicationData::Current->TemporaryFolder->Path->Data();
+	bool isPlayer = false;
+
+	gdr_initialize(true, nullptr, swapChainPanel, 480, 800, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
+	gdr_drawFirstFrame();
+
+	auto workItemHandler2 = ref new WorkItemHandler([this](IAsyncAction ^ action)
+	{
+		// Calculate the updated frame and render once per vertical blanking interval.
+		while (action->Status == AsyncStatus::Started)
+		{
+//			Game.Update();
+//			Game.Render();
+			gdr_drawFrame(true);
+		}
+	});
+
+	// Run task on a dedicated high priority background thread.
+
+	m_renderLoopWorker = ThreadPool::RunAsync(workItemHandler2, WorkItemPriority::High, WorkItemOptions::TimeSliced);
 }
 
 DirectXPage::~DirectXPage()
 {
 	// Stop rendering and processing events on destruction.
-	m_main->StopRenderLoop();
 	m_coreInput->Dispatcher->StopProcessEvents();
+	gdr_exitGameLoop();
+	gdr_deinitialize();
 }
 
 // Saves the current state of the app for suspend and terminate events.
 void DirectXPage::SaveInternalState(IPropertySet^ state)
 {
-	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->Trim();
-
-	// Stop rendering when the app is suspended.
-	m_main->StopRenderLoop();
-
-	// Put code to save app state here.
 }
 
 // Loads the current state of the app for resume events.
 void DirectXPage::LoadInternalState(IPropertySet^ state)
 {
-	// Put code to load app state here.
-
-	// Start rendering when the app is resumed.
-	m_main->StartRenderLoop();
 }
 
 // Window event handlers.
@@ -119,11 +201,11 @@ void DirectXPage::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEvent
 	m_windowVisible = args->Visible;
 	if (m_windowVisible)
 	{
-		m_main->StartRenderLoop();
+//		m_main->StartRenderLoop();
 	}
 	else
 	{
-		m_main->StopRenderLoop();
+//		m_main->StopRenderLoop();
 	}
 }
 
@@ -131,64 +213,48 @@ void DirectXPage::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEvent
 
 void DirectXPage::OnDpiChanged(DisplayInformation^ sender, Object^ args)
 {
-	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->SetDpi(sender->LogicalDpi);
-	m_main->CreateWindowSizeDependentResources();
 }
 
 void DirectXPage::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
 {
-	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->SetCurrentOrientation(sender->CurrentOrientation);
-	m_main->CreateWindowSizeDependentResources();
 }
 
 
 void DirectXPage::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
 {
-	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->ValidateDevice();
 }
 
-void DirectXPage::OnPointerPressed(Object^ sender, PointerEventArgs^ e)
+// Called when the app bar button is clicked.
+void DirectXPage::AppBarButton_Click(Object^ sender, RoutedEventArgs^ e)
 {
-	// When the pointer is pressed begin tracking the pointer movement.
-	m_main->StartTracking();
+}
+
+void DirectXPage::OnPointerPressed(Object ^sender, PointerEventArgs^ Args)
+{
+	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+		gdr_touchBegin(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
+	else
+		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
 }
 
 void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ e)
 {
-	// Update the pointer tracking code.
-	if (m_main->IsTracking())
-	{
-		m_main->TrackingUpdate(e->CurrentPoint->Position.X);
-	}
 }
 
 void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ e)
 {
-	// Stop tracking pointer movement when the pointer is released.
-	m_main->StopTracking();
 }
 
 void DirectXPage::OnCompositionScaleChanged(SwapChainPanel^ sender, Object^ args)
 {
-	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->SetCompositionScale(sender->CompositionScaleX, sender->CompositionScaleY);
-	m_main->CreateWindowSizeDependentResources();
 }
 
 void DirectXPage::OnSwapChainPanelSizeChanged(Object^ sender, SizeChangedEventArgs^ e)
 {
-	critical_section::scoped_lock lock(m_main->GetCriticalSection());
-	m_deviceResources->SetLogicalSize(e->NewSize);
-	m_main->CreateWindowSizeDependentResources();
 }
-
-// Uncomment this if using the app bar in your phone application.
-// Called when the app bar button is clicked.
-//void DirectXPage::AppBarButton_Click(Object^ sender, RoutedEventArgs^ e)
-//{
-//	// Use the app bar if it is appropriate for your app. Design the app bar, 
-//	// then fill in event handlers (like this one).
-//}

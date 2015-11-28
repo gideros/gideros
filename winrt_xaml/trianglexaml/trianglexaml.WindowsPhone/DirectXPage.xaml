@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
   <SwapChainPanel x:Name="swapChainPanel">
-    <TextBlock Text="Hello from XAML!"
+    <TextBlock Text="XAML on win phone!"
                HorizontalAlignment="Right"
                VerticalAlignment="Top"
                FontSize="30" />
