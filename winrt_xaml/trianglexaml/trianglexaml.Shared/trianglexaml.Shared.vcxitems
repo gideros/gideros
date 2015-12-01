@@ -14,6 +14,22 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)gapplication.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gevent.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gexport.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gfile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gglobal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gideros.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)giderosapi.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)glog.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gpath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gplugin.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gproxy.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)greferenced.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lauxlib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lua.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)luaconf.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lualib.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
