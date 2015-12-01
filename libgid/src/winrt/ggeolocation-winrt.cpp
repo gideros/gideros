@@ -31,6 +31,8 @@ extern "C" {
 void ggeolocation_init()
 {
 	gps = ref new Geolocator();
+	gps->MovementThreshold = 0;
+	gps->ReportInterval = 1;
 	gid_ = g_NextId();
 }
 
