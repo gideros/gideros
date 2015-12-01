@@ -6,6 +6,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <map>
+using namespace Windows::Devices::Sensors;
 
 struct Pointer{
 	int x;
@@ -693,12 +694,16 @@ private:
 using namespace ginput;
 
 static InputManager *s_manager = NULL;
+static Accelerometer^ s_accel = nullptr;
+static Gyrometer^ s_gyro = nullptr;
 
 extern "C" {
 
 void ginput_init()
 {
     s_manager = new InputManager;
+	s_accel = Accelerometer::GetDefault();
+	s_gyro = Gyrometer::GetDefault();
 }
 
 void ginput_cleanup()
@@ -709,12 +714,11 @@ void ginput_cleanup()
 
 int ginput_isAccelerometerAvailable()
 {
-    return 0;
+    return (s_accel!=nullptr)?1:0;
 }
 
 void ginput_startAccelerometer()
 {
-
 }
 
 void ginput_stopAccelerometer()
@@ -724,17 +728,27 @@ void ginput_stopAccelerometer()
 
 void ginput_getAcceleration(double *x, double *y, double *z)
 {
-    if (x)
-        *x = 0;
-    if (y)
-        *y = 0;
-    if (z)
-        *z = 0;
+	if (x)
+		*x = 0;
+	if (y)
+		*y = 0;
+	if (z)
+		*z = 0;
+	if (s_accel != nullptr)
+	{
+		AccelerometerReading^ ar = s_accel->GetCurrentReading();
+		if (ar != nullptr)
+		{
+			if (x) *x = ar->AccelerationX;
+			if (y) *y = -ar->AccelerationY;
+			if (z) *z = ar->AccelerationZ;
+		}
+	}
 }
 
 int ginput_isGyroscopeAvailable()
 {
-    return 0;
+	return (s_gyro != nullptr) ? 1 : 0;
 }
 
 void ginput_startGyroscope()
@@ -755,6 +769,16 @@ void ginput_getGyroscopeRotationRate(double *x, double *y, double *z)
         *y = 0;
     if (z)
         *z = 0;
+	if (s_gyro != nullptr)
+	{
+		GyrometerReading^ ar = s_gyro->GetCurrentReading();
+		if (ar != nullptr)
+		{
+			if (x) *x = ar->AngularVelocityX;
+			if (y) *y = ar->AngularVelocityY;
+			if (z) *z = ar->AngularVelocityZ;
+		}
+	}
 }
 
 void ginputp_keyDown(int keyCode)

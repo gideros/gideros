@@ -87,6 +87,12 @@
 				path="Graphics/Tiled Map Editor/Sewers/Sewers.gproj"
 				image="sewers.png"
 				/>
+	
+	<example 	name="Curves"
+				description="Demonstrate drawing complex shapes with Path2D"
+				path="Graphics/Curves/Curves.gproj"
+				image="curves.png"
+				/>
 </category>
 
 <category name="Graphics 3D">
