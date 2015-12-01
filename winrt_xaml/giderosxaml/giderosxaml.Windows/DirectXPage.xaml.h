@@ -7,7 +7,7 @@
 
 #include "DirectXPage.g.h"
 
-namespace trianglexaml
+namespace giderosxaml
 {
 	/// <summary>
 	/// A page that hosts a DirectX SwapChainPanel.

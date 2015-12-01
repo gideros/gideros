@@ -7,7 +7,7 @@
 #include "DirectXPage.xaml.h"
 #include "giderosapi.h"
 
-using namespace trianglexaml;
+using namespace giderosxaml;
 
 using namespace Platform;
 using namespace Windows::Foundation;
@@ -126,9 +126,9 @@ DirectXPage::DirectXPage():
 		ref new SizeChangedEventHandler(this, &DirectXPage::OnSwapChainPanelSizeChanged);
 
 	// Disable all pointer visual feedback for better performance when touching.
-	auto pointerVisualizationSettings = PointerVisualizationSettings::GetForCurrentView();
-	pointerVisualizationSettings->IsContactFeedbackEnabled = false; 
-	pointerVisualizationSettings->IsBarrelButtonFeedbackEnabled = false;
+//	auto pointerVisualizationSettings = PointerVisualizationSettings::GetForCurrentView();
+//	pointerVisualizationSettings->IsContactFeedbackEnabled = false; 
+//	pointerVisualizationSettings->IsBarrelButtonFeedbackEnabled = false;
 
 	// Register our SwapChainPanel to get independent input pointer events
 	auto workItemHandler = ref new WorkItemHandler([this] (IAsyncAction ^)
@@ -157,7 +157,7 @@ DirectXPage::DirectXPage():
 	std::wstring tempPath = ApplicationData::Current->TemporaryFolder->Path->Data();
 	bool isPlayer = false;
 
-	gdr_initialize(true, nullptr, swapChainPanel, 1366, 768, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
+	gdr_initialize(true, nullptr, swapChainPanel, 480, 800, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
 	gdr_drawFirstFrame();
 
 	auto workItemHandler2 = ref new WorkItemHandler([this](IAsyncAction ^ action)

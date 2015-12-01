@@ -39,7 +39,7 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="trianglexaml.Windows_TemporaryKey.pfx" />
+    <None Include="giderosxaml.Windows_TemporaryKey.pfx" />
     <None Include="Assets\bird.lua">
       <Filter>Assets</Filter>
     </None>

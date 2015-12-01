@@ -6,7 +6,7 @@
 #include "pch.h"
 #include "DirectXPage.xaml.h"
 
-using namespace trianglexaml;
+using namespace giderosxaml;
 
 using namespace Platform;
 using namespace Windows::ApplicationModel;

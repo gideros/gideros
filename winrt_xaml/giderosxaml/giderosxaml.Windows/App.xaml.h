@@ -8,7 +8,7 @@
 #include "App.g.h"
 #include "DirectXPage.xaml.h"
 
-namespace trianglexaml
+namespace giderosxaml
 {
 		/// <summary>
 	/// Provides application-specific behavior to supplement the default Application class.

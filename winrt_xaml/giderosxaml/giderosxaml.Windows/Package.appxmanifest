@@ -6,7 +6,7 @@
             Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>trianglexaml.Windows</DisplayName>
+    <DisplayName>giderosxaml.Windows</DisplayName>
     <PublisherDisplayName>John</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -23,12 +23,12 @@
   <Applications>
     <Application Id="App"
         Executable="$targetnametoken$.exe"
-        EntryPoint="trianglexaml_Windows.App">
+        EntryPoint="giderosxaml_Windows.App">
         <VisualElements
-            DisplayName="trianglexaml.Windows"
+            DisplayName="giderosxaml.Windows"
             Logo="Assets\Logo.png"
             SmallLogo="Assets\SmallLogo.png"
-            Description="trianglexaml.Windows"
+            Description="giderosxaml.Windows"
             ForegroundText="light"
             BackgroundColor="#464646">
             <DefaultTile ShowName="allLogos" />

@@ -5,7 +5,7 @@
 using namespace Microsoft::Advertising::Mobile::UI;
 using namespace Windows::UI::Xaml;
 using namespace Windows::UI::Core;
-using namespace trianglexaml;
+using namespace giderosxaml;
 
 AdsPubcenter::AdsPubcenter()
 {

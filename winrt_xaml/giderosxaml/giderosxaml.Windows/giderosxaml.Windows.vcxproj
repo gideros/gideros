@@ -28,7 +28,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1f1102c1-daf7-47a5-8adf-d2ec2ca795d0}</ProjectGuid>
-    <RootNamespace>trianglexaml</RootNamespace>
+    <RootNamespace>giderosxaml</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -94,10 +94,10 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <Import Project="..\trianglexaml.Shared\trianglexaml.Shared.vcxitems" Label="Shared" />
+  <Import Project="..\giderosxaml.Shared\giderosxaml.Shared.vcxitems" Label="Shared" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>trianglexaml.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>giderosxaml.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
@@ -225,7 +225,7 @@
     <None Include="Assets\properties.bin">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="trianglexaml.Windows_TemporaryKey.pfx" />
+    <None Include="giderosxaml.Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
