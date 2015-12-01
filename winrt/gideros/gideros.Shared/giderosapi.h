@@ -32,7 +32,7 @@ extern "C" {
 	void gdr_touchEnd(int x, int y, int id);
 	void gdr_touchCancel(int x, int y, int id);
 	void gdr_resize(int width, int height);
-
+	Windows::UI::Xaml::Controls::SwapChainPanel^ gdr_getRootView();
 #ifdef __cplusplus
 }
 #endif
