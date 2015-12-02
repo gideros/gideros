@@ -742,7 +742,8 @@ void NetworkManager::calculateMD5(const char* file)
 
 ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel ^swapChainPanel, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 {
-	xamlRoot_ = Platform::WeakReference(swapChainPanel);
+	if (swapChainPanel!=nullptr)
+		xamlRoot_ = Platform::WeakReference(swapChainPanel);
 
 	InitD3D(useXaml, Window, swapChainPanel, width, height);
 	InitXAudio2();
