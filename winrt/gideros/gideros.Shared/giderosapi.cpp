@@ -415,6 +415,8 @@ public:
 	void background();
 	void resize(int width, int height);
 
+	Windows::UI::Xaml::Controls::SwapChainPanel^ getRoot();
+
 private:
 	void loadProperties();
 	void loadLuaFiles();
@@ -444,6 +446,8 @@ private:
 	bool luaFilesLoaded_;
 
 	int nframe_;
+
+	Platform::WeakReference xamlRoot_;
 };
 
 
@@ -738,6 +742,7 @@ void NetworkManager::calculateMD5(const char* file)
 
 ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel ^swapChainPanel, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 {
+	xamlRoot_ = Platform::WeakReference(swapChainPanel);
 
 	InitD3D(useXaml, Window, swapChainPanel, width, height);
 	InitXAudio2();
@@ -919,6 +924,10 @@ ApplicationManager::~ApplicationManager()
 
 	gpath_cleanup();
 
+}
+
+Windows::UI::Xaml::Controls::SwapChainPanel^ ApplicationManager::getRoot(){
+	return xamlRoot_.Resolve<Windows::UI::Xaml::Controls::SwapChainPanel>();
 }
 
 void ApplicationManager::getStdCoords(float xp, float yp, float &x, float &y)
@@ -1473,6 +1482,10 @@ extern "C" {
 	void gdr_initialize(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel^ swapChainPanel, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 	{
 		s_manager = new ApplicationManager(useXaml, Window, swapChainPanel, width, height, player, resourcePath, docsPath, tempPath);
+	}
+
+	Windows::UI::Xaml::Controls::SwapChainPanel^ gdr_getRootView(){
+		return s_manager->getRoot();
 	}
 
 	void gdr_drawFrame(bool useXaml)

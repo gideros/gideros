@@ -3,7 +3,10 @@
 #include <glog.h>
 #include <string>
 #include <gapplication.h>
+#include <emscripten.h>
 #include <emscripten/val.h>
+
+using namespace emscripten;
 
 class GGFacebook
 {
@@ -31,7 +34,7 @@ public:
 	     while (*permissions)
 	     {
 	      perms.set(n++,val(*permissions));
-	      permisssions++;
+	      permissions++;
 	     }
 	    gfb.call<void>("Login",val(appId),perms);
     }
