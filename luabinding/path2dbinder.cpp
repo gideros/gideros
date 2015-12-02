@@ -136,7 +136,7 @@ int Path2DBinder::setPath(lua_State* L)
 	Binder binder(L);
 	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
 
-	const char* commands = luaL_checkstring(L, 2);
+	const char* commands = luaL_optstring(L, 2,"ML*");
 
 	std::vector<float> coords;
     if (lua_type(L, 3) == LUA_TTABLE)
