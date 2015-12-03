@@ -9,10 +9,20 @@ window.fbAsyncInit = function() {
     GiderosFB.evtLogin=true;
 };
 
+if (XMLHttpRequest.prototype.sendAsBinary === undefined ) {
+ XMLHttpRequest.prototype.sendAsBinary = function(string) {
+  var bytes = Array.prototype.map.call(string, function(c) {
+   return c.charCodeAt(0) & 0xff;
+  });
+  this.send(new Uint8Array(bytes).buffer);
+ };
+}
+
 GiderosFB={};
 GiderosFB.evtLogin=false;
 GiderosFB.NeedInit=true;
 
+GiderosFB.ClickChain=window.onclick;
 window.onclick=function()
 {
  if (GiderosFB.evtLogin)
@@ -28,6 +38,8 @@ window.onclick=function()
     }, {scope: GiderosFB.loginScope}); 
     GiderosFB.evtLogin=false;
  }
+ if (GiderosFB.ClickChain)
+  GiderosFB.ClickChain();
 }
 
 GiderosFB.Init=function(){};
@@ -74,11 +86,48 @@ GiderosFB.GetExpirationDate=function()
  return GiderosFB.expiresIn;
 };
 
+GiderosFB.postMultipart=function(path,params,cb)
+{
+// this is the multipart/form-data boundary we'll use
+ var boundary = '----ThisIsTheBoundary1234567890';
+        
+// let's encode our image file, which is contained in the var
+ var formData = "";
+ for (var p in params)
+ {
+  var v=params[p];
+  formData+= '--' + boundary + '\r\n'
+  if (v.name)
+  {
+   var mimeType="image/png";
+   if ((v.type=="jpeg")||(v.type=="jpg"))
+    mimeType="image/jpeg";
+   formData += 'Content-Disposition: form-data; name="'+v.name+'"; filename="'+v.name+'.'+v.type+'"\r\n';
+   formData += 'Content-Type: ' + mimeType + '\r\n\r\n';
+   formData += v.data+'\r\n';
+  }
+  else
+  {
+   formData += 'Content-Type: text/plain; charset=UTF-8\r\n';
+   formData += 'Content-Disposition: form-data; name="'+p+'"\r\n\r\n';
+   formData += unescape(encodeURIComponent(v)) + '\r\n';
+  }
+ }
+ formData += '--' + boundary + '--\r\n';
+ var xhr = new XMLHttpRequest();
+ xhr.open( 'POST', 'https://graph.facebook.com/'+path+'?access_token=' + GiderosFB.accessToken, true );
+ xhr.onload = xhr.onerror = function() {
+    cb( xhr.responseText );
+ };
+
+ xhr.setRequestHeader( "Content-Type", "multipart/form-data; boundary=" + boundary );
+ xhr.sendAsBinary( formData );
+};
+
 GiderosFB.Request=function(path,method,params)
 {
- FB.api(path,method,params,function(response)
+ var cb=function(response)
  {
-  console.log(response);
   if (!response) {
           Module.ccall('gfacebook_onRequestError',null,['string','string'],
           [ path,"No response from service" ]);  
@@ -93,7 +142,11 @@ GiderosFB.Request=function(path,method,params)
           Module.ccall('gfacebook_onRequestComplete',null,['string','string'],
           [ path, JSON.stringify(response) ]);  
   }  
- });
+ }; 
+ if ((method=="post")&&params.source) 
+  GiderosFB.postMultipart(path,params,cb);
+ else
+  FB.api(path,method,params,cb);
 };
 
 GiderosFB.Dialog=function(action,params)
@@ -101,7 +154,6 @@ GiderosFB.Dialog=function(action,params)
  params.method=action;
  FB.ui(params,function(response)
  {
-  console.log(response);
   if (!response) {
           Module.ccall('gfacebook_onDialogError',null,['string','string'],
           [ action,"No response from service" ]);  

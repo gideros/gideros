@@ -646,6 +646,7 @@ static void g_initializePlugin(lua_State *L)
 {
     ::L = L;
     
+     _embind_register_std_string(TypeID<std::string>::get(), "std::string");
      _embind_register_emval(TypeID<val>::get(), "emscripten::val");
     
     lua_getglobal(L, "package");
