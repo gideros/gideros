@@ -740,7 +740,7 @@ void ginput_getAcceleration(double *x, double *y, double *z)
 		if (ar != nullptr)
 		{
 			if (x) *x = ar->AccelerationX;
-			if (y) *y = -ar->AccelerationY;
+			if (y) *y = ar->AccelerationY;
 			if (z) *z = ar->AccelerationZ;
 		}
 	}
