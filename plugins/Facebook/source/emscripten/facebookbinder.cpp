@@ -662,5 +662,5 @@ static void g_deinitializePlugin(lua_State *L)
     ::L = NULL;
 }
 
-REGISTER_PLUGIN("Facebook", "1.0")
+REGISTER_PLUGIN_NAMED("Facebook", "1.0",Facebook)
 

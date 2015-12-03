@@ -25,7 +25,7 @@ public:
 		gevent_RemoveEventsWithGid(gid_);
     }
 	
-	void login(const char *appId, const char * const *permissions)
+    void login(const char *appId, const char * const *permissions)
     {
 	    val gfb = val::global("GiderosFB");
 	    val perms=val::array();
@@ -57,7 +57,7 @@ public:
     
     time_t getExpirationDate(){
 	    val gfb = val::global("GiderosFB");
-        return gfb.call<time_t>("GetExpirationDate");
+        return gfb.call<int>("GetExpirationDate");
     }
     
     void dialog(const char *action, const gfacebook_Parameter *params)
@@ -70,7 +70,7 @@ public:
 	      p.set(val(params->key),val(params->value));
 	      params++;
 	     }
-	    gfb.call<void>("Dialog",val(action),params);
+	    gfb.call<void>("Dialog",val(action),p);
     }
 
     void request(const char *graphPath, const gfacebook_Parameter *params, int httpMethod)
@@ -83,7 +83,7 @@ public:
 	      p.set(val(params->key),val(params->value));
 	      params++;
 	     }
-	    gfb.call<void>("Request",val(graphPath),httpMethod,params);
+	    gfb.call<void>("Request",val(graphPath),httpMethod,p);
     }
 	
     void onLoginComplete()
