@@ -53,6 +53,7 @@
 #include <gapplication.h>
 #include <gapplication-js.h>
 #include <applicationmanager.h>
+#include <emscripten.h>
 
 extern "C" {
 int g_getFps();
@@ -130,8 +131,9 @@ ApplicationManager::ApplicationManager(bool player,const char *appname,const cha
 	gpath_addDrivePrefix(2, "|T|");
 	gpath_addDrivePrefix(2, "|t|");
 
+	bool hasDocuments=EM_ASM_INT_V({ return FS.documentsOk; });
 	gpath_setDriveFlags(0, GPATH_RO);
-	gpath_setDriveFlags(1, GPATH_RW | GPATH_REAL);
+	gpath_setDriveFlags(1, (hasDocuments?GPATH_RW:GPATH_RO) | GPATH_REAL);
 	gpath_setDriveFlags(2, GPATH_RW | GPATH_REAL);
 
 	gpath_setAbsolutePathFlags(GPATH_RW | GPATH_REAL);

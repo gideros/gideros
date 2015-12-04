@@ -1,5 +1,4 @@
-#include <ads.h>
-#include <jni.h>
+#include "ads.h"
 #include <stdlib.h>
 #include <glog.h>
 #include <emscripten.h>

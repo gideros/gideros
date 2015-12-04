@@ -4,12 +4,17 @@ Module.preRun.push(function() {
 	FS.createPreloadedFile("/", "main.gapp", GAPP_URL, true,false);
 	  // Initial syncfs to get existing saved files.
 	Module['addRunDependency']('syncfs');
-	FS.mkdir('/documents');
+     
+	FS.mkdir('/documents');	
 	FS.mount(IDBFS, {}, '/documents');
+	FS.documentsOk=true;
 	FS.syncfs(true, function(err) {
 	    if (err) {
-	        throw err;
-	    }
+	        FS.unmount('/documents');
+	        FS.rmdir('/documents');
+	        console.warn("IndexedDB not available, persistant storage disabled");
+	        FS.documentsOk=false;
+	    }	    
 	    Module['removeRunDependency']('syncfs');
 	});
 })
