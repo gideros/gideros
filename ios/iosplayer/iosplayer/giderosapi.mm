@@ -1539,9 +1539,10 @@ void ApplicationManager::background()
 
 void ApplicationManager::surfaceChanged(int width,int height)
 {
-    width_ = width;
+    /*width_ = width;
     height_ = height;
-    application_->setResolution(width,height);
+    application_->setResolution(width,height);*/
+    if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
 }
 
 static ApplicationManager *s_manager = NULL;
