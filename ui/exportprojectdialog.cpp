@@ -6,9 +6,55 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     QDialog(parent),
     ui(new Ui::ExportProjectDialog)
 {
+    osxCat["Business"] = "public.app-category.business";
+    osxCat["Developer Tools"] = "public.app-category.developer-tools";
+    osxCat["Education"] = "public.app-category.education";
+    osxCat["Entertainment"] = "public.app-category.entertainment";
+    osxCat["Finance"] = "public.app-category.finance";
+    osxCat["Games"] = "public.app-category.games";
+    osxCat["Graphics & Design"] = "public.app-category.graphics-design";
+    osxCat["Healthcare & Fitness"] = "public.app-category.healthcare-fitness";
+    osxCat["Lifestyle"] = "public.app-category.lifestyle";
+    osxCat["Medical"] = "public.app-category.medical";
+    osxCat["Music"] = "public.app-category.music";
+    osxCat["News"] = "public.app-category.news";
+    osxCat["Photography"] = "public.app-category.photography";
+    osxCat["Productivity"] = "public.app-category.productivity";
+    osxCat["Reference"] = "public.app-category.reference";
+    osxCat["Social Networking"] = "public.app-category.social-networking";
+    osxCat["Sports"] = "public.app-category.sports";
+    osxCat["Travel"] = "public.app-category.travel";
+    osxCat["Utilities"] = "public.app-category.utilities";
+    osxCat["Video"] = "public.app-category.video";
+    osxCat["Weather"] = "public.app-category.weather";
+    osxCat["Action Games"] = "public.app-category.action-games";
+    osxCat["Adventure Games"] = "public.app-category.adventure-games";
+    osxCat["Arcade Games"] = "public.app-category.arcade-games";
+    osxCat["Board Games"] = "public.app-category.board-games";
+    osxCat["Card Games"] = "public.app-category.card-games";
+    osxCat["Casino Games"] = "public.app-category.casino-games";
+    osxCat["Dice Games"] = "public.app-category.dice-games";
+    osxCat["Educational Games"] = "public.app-category.educational-games";
+    osxCat["Family Games"] = "public.app-category.family-games";
+    osxCat["Kids Games"] = "public.app-category.kids-games";
+    osxCat["Music Games"] = "public.app-category.music-games";
+    osxCat["Puzzle Games"] = "public.app-category.puzzle-games";
+    osxCat["Racing Games"] = "public.app-category.racing-games";
+    osxCat["Role Playing Games"] = "public.app-category.role-playing-games";
+    osxCat["Simulation Games"] = "public.app-category.simulation-games";
+    osxCat["Sports Games"] = "public.app-category.sports-games";
+    osxCat["Strategy Games"] = "public.app-category.strategy-games";
+    osxCat["Trivia Games"] = "public.app-category.trivia-games";
+    osxCat["Word Games"] = "public.app-category.word-games";
+
 	properties_ = properties;
 
 	ui->setupUi(this);
+
+    QMap<QString, QString>::iterator i;
+    for (i = osxCat.begin(); i != osxCat.end(); ++i){
+        ui->osx_category->addItem(i.key(), i.value());
+    }
 
 	connect(ui->architecture, SIGNAL(currentIndexChanged(int)), ui->architectureTab, SLOT(setCurrentIndex(int)));
 	connect(ui->architectureTab, SIGNAL(currentChanged(int)), ui->architecture, SLOT(setCurrentIndex(int)));
@@ -21,6 +67,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->osx_org->setText(properties->osx_org);
     ui->osx_domain->setText(properties->osx_domain);
     ui->osx_bundle->setText(properties_->osx_bundle);
+    ui->osx_category->setCurrentIndex(properties_->osx_category);
     ui->win_org->setText(properties->win_org);
     ui->win_domain->setText(properties->win_domain);
     ui->winrt_org->setText(properties->winrt_org);
@@ -85,6 +132,11 @@ QString ExportProjectDialog::osx_bundle() const
     return ui->osx_bundle->text();
 }
 
+QString ExportProjectDialog::osx_category() const
+{
+    return osxCat[ui->osx_category->currentText()];
+}
+
 QString ExportProjectDialog::win_org() const
 {
     return ui->win_org->text();
@@ -135,6 +187,7 @@ void ExportProjectDialog::onAccepted()
     properties_->osx_org = ui->osx_org->text();
     properties_->osx_domain = ui->osx_domain->text();
     properties_->osx_bundle = ui->osx_bundle->text();
+    properties_->osx_category = ui->osx_category->currentIndex();
     properties_->win_org = ui->win_org->text();
     properties_->win_domain = ui->win_domain->text();
     properties_->winrt_org = ui->winrt_org->text();

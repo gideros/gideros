@@ -612,7 +612,7 @@ private:
 
         if (size != 0)
         {
-            printf("SampRate:%d SampMult:%d SampSize:%d\n",channel->sound->sampleRate,sampMult,sampSize);
+            //printf("SampRate:%d SampMult:%d SampSize:%d\n",channel->sound->sampleRate,sampMult,sampSize);
             if (sampMult>1)
             {
              //Expand buffer to match sampleRate             

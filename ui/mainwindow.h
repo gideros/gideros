@@ -84,7 +84,9 @@ public slots:
 
         QTextCharFormat plainFormat(highlightCursor.charFormat());
         QTextCharFormat colorFormat = plainFormat;
-        colorFormat.setForeground(Qt::red);
+        colorFormat.setFontWeight(75);
+        colorFormat.setForeground(Qt::white);
+        colorFormat.setBackground(Qt::red);
 
         while (!highlightCursor.isNull() && !highlightCursor.atEnd()) {
             highlightCursor = document->find(searchString, highlightCursor, QTextDocument::FindWholeWords);

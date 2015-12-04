@@ -2,6 +2,7 @@
 #define DIB_H
 
 #include <vector>
+#include <algorithm>
 #include "refptr.h"
 
 class Application;
@@ -107,6 +108,12 @@ public:
 	{
 		int index = (x + y * width_) * 4;
 		data_[index + 3] = a;
+	}
+
+	void satAlpha(int x, int y, unsigned char a)
+	{
+		int index = (x + y * width_) * 4;
+		data_[index + 3] = (std::min)(255, data_[index + 3] + a);
 	}
 
 	void intelligentFill();

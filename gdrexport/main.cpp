@@ -425,6 +425,7 @@ void usage()
     fprintf(stderr, "    -organization <name>       #organization name\n");
     fprintf(stderr, "    -domain <domain_name>      #domain name\n");
     fprintf(stderr, "    -bundle <bundle_id>        #bundle id\n");
+    fprintf(stderr, "    -category <app category>   #category of your app\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Options winrt: \n");
     fprintf(stderr, "    -organization <name>       #organization name\n");
@@ -838,9 +839,12 @@ int main(int argc, char *argv[])
             replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
         }
         else if(deviceFamily == e_MacOSXDesktop){
+            QString category = "public.app-category.games";
+            if(args.contains("category"))
+                category = args["category"];
             if(args.contains("bundle"))
                 replaceList1 << qMakePair(QString("com.yourcompany."+base).toUtf8(), args["bundle"].toUtf8());
-            replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>public.app-category.games</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+properties.version+"</string>\n	<key>NOTE</key>").toUtf8());
+            replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleName</key>\n	<string>"+base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
         }
         else if(deviceFamily == e_iOS){
             if(args.contains("bundle"))

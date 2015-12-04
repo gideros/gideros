@@ -2322,7 +2322,6 @@ quint32 _ntohl(quint32 x) {
 
 void MainWindow::exportProject()
 {
-
     ExportProjectDialog dialog(&libraryWidget_->getProjectProperties(), true, this);
 	if (dialog.exec() == QDialog::Accepted)
 	{
@@ -2397,6 +2396,7 @@ void MainWindow::exportProject()
             arguments << "-organization" << dialog.osx_org();
             arguments << "-domain" << dialog.osx_domain();
             arguments << "-bundle" << dialog.osx_bundle();
+            arguments << "-category" << dialog.osx_category();
             break;
         case ExportProjectDialog::e_GApp:
             arguments << "-platform" << "gapp";

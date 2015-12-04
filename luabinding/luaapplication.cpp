@@ -67,10 +67,6 @@
 
 #include "tlsf.h"
 
-#if TARGET_OS_TV==0
-#undef TARGET_OS_TV
-#endif
-
 
 const char* LuaApplication::fileNameFunc_s(const char* filename, void* data)
 {
@@ -277,7 +273,7 @@ static int bindAll(lua_State* L)
 	FontBinder fontBinder(L);
 	TTFontBinder ttfontBinder(L);
 	TextFieldBinder textFieldBinder(L);
-#ifndef TARGET_OS_TV
+#if TARGET_OS_TV == 0
     AccelerometerBinder accelerometerBinder(L);
 #endif
 	Box2DBinder2 box2DBinder2(L);
@@ -287,7 +283,7 @@ static int bindAll(lua_State* L)
 	ShapeBinder shapeBinder(L);
 	MovieClipBinder movieClipBinder(L);
     UrlLoaderBinder urlLoaderBinder(L);
-#ifndef TARGET_OS_TV
+#if TARGET_OS_TV == 0
 	GeolocationBinder geolocationBinder(L);
 	GyroscopeBinder gyroscopeBinder(L);
 #endif
@@ -522,7 +518,7 @@ LuaApplication::LuaApplication(void)
 	height_ = 480;
 	scale_ = 1;
 
-#ifndef TARGET_OS_TV
+#if TARGET_OS_TV == 0
     ginput_addCallback(callback_s, this);
 #endif
     gapplication_addCallback(callback_s, this);
@@ -852,7 +848,7 @@ void LuaApplication::loadFile(const char* filename, GStatus *status)
 LuaApplication::~LuaApplication(void)
 {
 //	Referenced::emptyPool();
-#ifndef TARGET_OS_TV
+#if TARGET_OS_TV == 0
     ginput_removeCallback(callback_s, this);
 #endif
     gapplication_removeCallback(callback_s, this);

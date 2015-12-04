@@ -952,13 +952,13 @@ void GLCanvas::tabletEvent(QTabletEvent* event) {
     int xs[1];
     int ys[1];
     int ids[1];
-    int pressures[1];
+    float pressures[1];
     int touchTypes[1];
 
     xs[0] = event->x() * deviceScale_;
     ys[0] = event->y() * deviceScale_;
     ids[0] = 0;
-    pressures[0] = event->pressure() * 10000;
+    pressures[0] = event->pressure();
     touchTypes[0] = 3;
 
 
@@ -984,7 +984,7 @@ bool GLCanvas::event(QEvent *event){
         int xs[size];
         int ys[size];
         int ids[size];
-        int pressures[size];
+        float pressures[size];
         int touchTypes[size];
 
         for( int i=0; i<size; ++i )
@@ -993,7 +993,7 @@ bool GLCanvas::event(QEvent *event){
             xs[i] = p.pos().x() * deviceScale_;
             ys[i] = p.pos().y() * deviceScale_;
             ids[i] = i;
-            pressures[i] = p.pressure() * 10000;
+            pressures[i] = p.pressure();
             touchTypes[i] = p.flags();
         }
 
@@ -1001,16 +1001,16 @@ bool GLCanvas::event(QEvent *event){
         {
             QTouchEvent::TouchPoint p = list[i];
             if(event->type() == QEvent::TouchCancel){
-                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
+                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
             else if(p.state() == Qt::TouchPointPressed){
-                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
+                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
             else if(p.state() == Qt::TouchPointMoved){
-                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
+                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
             else if(p.state() == Qt::TouchPointReleased){
-                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure() * 10000, p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
+                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
             }
         }
         return true;

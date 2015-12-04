@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)giderosapi.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gapplication.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gevent.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gexport.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gfile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gglobal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gideros.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)glog.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gpath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gplugin.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gproxy.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)greferenced.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lauxlib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lua.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)luaconf.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lualib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{9fd4af0a-93d0-4455-84eb-dcc2c7c76e36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content">
+      <UniqueIdentifier>{05a5ea86-aff3-4703-8f48-101805758c03}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

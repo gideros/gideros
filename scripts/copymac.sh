@@ -20,6 +20,10 @@ mkdir $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemp
 cp -R desktop/MacOSXDesktopTemplate.app $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate
 cp -R desktop/Entitlements.plist $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate
 
+install_name_tool -add_rpath @executable_path/../Frameworks gdrdeamon/gdrdeamon
+install_name_tool -add_rpath @executable_path/../Frameworks gdrbridge/gdrbridge
+install_name_tool -add_rpath @executable_path/../Frameworks gdrexport/gdrexport
+
 cp gdrdeamon/gdrdeamon $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools
 cp gdrbridge/gdrbridge $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools
 cp gdrexport/gdrexport $BUILD_DIR/mac/Gideros\ Studio.app/Contents/Tools

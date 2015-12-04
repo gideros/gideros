@@ -2,6 +2,7 @@
 #define EXPORTPROJECTDIALOG_H
 
 #include <QDialog>
+#include <QMap>
 class ProjectProperties;
 
 namespace Ui {
@@ -35,6 +36,7 @@ public:
     QString osx_org() const;
     QString osx_domain() const;
     QString osx_bundle() const;
+    QString osx_category() const;
     QString win_org() const;
     QString win_domain() const;
     QString winrt_org() const;
@@ -50,6 +52,7 @@ private slots:
 private:
     Ui::ExportProjectDialog *ui;
 	ProjectProperties* properties_;
+    QMap<QString, QString> osxCat;
 };
 
 #endif // EXPORTPROJECTDIALOG_H

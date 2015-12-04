@@ -1,10 +1,6 @@
 #ifndef GIDEROSAPI_H
 #define GIDEROSAPI_H
 
-#if TARGET_OS_TV==0
-#undef TARGET_OS_TV
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -17,7 +13,7 @@ void gdr_exitGameLoop();
 void gdr_deinitialize();
 void gdr_suspend();
 void gdr_resume();
-#ifndef TARGET_OS_TV
+#if TARGET_OS_TV == 0
 BOOL gdr_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation);
 void gdr_willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation);
 void gdr_didRotateFromInterfaceOrientation(UIInterfaceOrientation fromInterfaceOrientation);
@@ -29,7 +25,7 @@ void gdr_foreground();
 void gdr_background();
 void gdr_openProject(NSString* project);
 BOOL gdr_isRunning();
-#ifndef TARGET_OS_TV
+#if TARGET_OS_TV == 0
 void gdr_touchesBegan(NSSet* touches, NSSet* allTouches);
 void gdr_touchesMoved(NSSet* touches, NSSet* allTouches);
 void gdr_touchesEnded(NSSet* touches, NSSet* allTouches);
