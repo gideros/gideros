@@ -55,8 +55,6 @@
 	<string>Do you accept to share your position?</string>
     	<key>NSLocationWhenInUseUsageDescription</key>
     	<string>Do you accept to share your position?</string>
-	<key>UIApplicationExitsOnSuspend</key>
-	<true/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array/>
 	<key>UIStatusBarHidden</key>
