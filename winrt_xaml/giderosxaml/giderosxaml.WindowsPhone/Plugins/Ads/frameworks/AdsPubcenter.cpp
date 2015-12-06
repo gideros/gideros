@@ -1,13 +1,34 @@
 #include "pch.h"
 #include "DirectXPage.xaml.h"
 #include "giderosapi.h"
+#include "../ads.h"
 #include "AdsPubcenter.h"
 using namespace Microsoft::Advertising::Mobile::UI;
 using namespace Windows::UI::Xaml;
 using namespace Windows::UI::Core;
-using namespace giderosxaml;
+
+std::string curSize = "250x250";
+
+ref class AdsPubcenterListener{
+public:
+	void onAdRefresh(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ args){
+		gads_adReceived("pubcenter", curSize.c_str());
+	}
+
+	void onAdError(Platform::Object^ sender, Microsoft::Advertising::Mobile::Common::AdErrorEventArgs^ args){
+		Platform::String^ errRT = args->Error.ToString();;
+		std::wstring errW(errRT->Begin());
+		std::string errStr(errW.begin(), errW.end());
+		gads_adFailed("pubcenter", errStr.c_str(), curSize.c_str());
+	}
+
+	void onAdClick(Platform::Object^ sender, Windows::UI::Xaml::DependencyPropertyChangedEventArgs^ args){
+		gads_adActionBegin("pubcenter", curSize.c_str());
+	}
+};
 
 AdControl^ ad;
+AdsPubcenterListener^ listener;
 
 Platform::String^ StringFromAscIIChars(const char* chars)
 {
@@ -88,6 +109,12 @@ void AdsPubcenter::loadAd(gads_Parameter *params){
 		ad->Margin = Windows::UI::Xaml::Thickness(0, 0, 0, 0);
 		ad->HorizontalAlignment = Windows::UI::Xaml::HorizontalAlignment::Left;
 		ad->VerticalAlignment = Windows::UI::Xaml::VerticalAlignment::Top;
+
+		listener = ref new AdsPubcenterListener;
+		ad->AdRefreshed += ref new Windows::Foundation::EventHandler<Windows::UI::Xaml::RoutedEventArgs^>(listener, &AdsPubcenterListener::onAdRefresh);
+		ad->ErrorOccurred += ref new Windows::Foundation::EventHandler<Microsoft::Advertising::Mobile::Common::AdErrorEventArgs ^>(listener, &AdsPubcenterListener::onAdError);
+		ad->IsEnabledChanged += ref new Windows::UI::Xaml::DependencyPropertyChangedEventHandler(listener, &AdsPubcenterListener::onAdClick);
+		//ad->PublisherMessageEvent += ref new Windows::Foundation::EventHandler<Microsoft::Advertising::Mobile::Common::PublisherMessageEventArgs ^>(listener, &AdsPubcenterListener::onAdAction);
 	}
 }
 
@@ -99,6 +126,7 @@ void AdsPubcenter::showAd(gads_Parameter *params){
 			ref new DispatchedHandler([&]()
 		{
 			gdr_getRootView()->Children->Append(ad);
+			gads_adDisplayed("pubcenter", curSize.c_str());
 		}));
 	}
 }
@@ -118,6 +146,7 @@ void AdsPubcenter::hideAd(const char* type){
 				cur++;
 			}
 			gdr_getRootView()->Children->RemoveAt(cur);
+			gads_adDismissed("pubcenter", curSize.c_str());
 		}));
 	}
 }
