@@ -3,6 +3,12 @@
 #define GIDEROS_LIBRARY
 #include <gglobal.h>
 #include <gevent.h>
+#include <map>
+#include <string>
+#include "AdsAbstract.h"
+
+template<typename T> AdsAbstract* createInstance() { return new T; }
+typedef std::map<std::string, AdsAbstract*(*)()> AdsType;
 
 enum
 {

@@ -122,6 +122,7 @@
       <DependentUpon>DirectXPage.xaml</DependentUpon>
     </ClInclude>
     <ClInclude Include="Plugins\Ads\ads.h" />
+    <ClInclude Include="Plugins\Ads\AdsAbstract.h" />
     <ClInclude Include="Plugins\Ads\frameworks\AdsPubcenter.h" />
   </ItemGroup>
   <ItemGroup>

@@ -46,6 +46,9 @@
     <ClInclude Include="Plugins\Ads\frameworks\AdsPubcenter.h">
       <Filter>Plugins</Filter>
     </ClInclude>
+    <ClInclude Include="Plugins\Ads\AdsAbstract.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Logo.scale-240.png">
