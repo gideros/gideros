@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <map>
 using namespace Windows::Devices::Sensors;
+using namespace Platform;
 
 struct Pointer{
 	int x;
@@ -702,8 +703,19 @@ extern "C" {
 void ginput_init()
 {
     s_manager = new InputManager;
-	s_accel = Accelerometer::GetDefault();
-	s_gyro = Gyrometer::GetDefault();
+	try {
+		s_accel = Accelerometer::GetDefault();
+	}
+	catch (Exception^ e)
+	{
+	}
+
+	try {
+		s_gyro = Gyrometer::GetDefault();
+	}
+	catch (Exception^ e)
+	{
+	}
 }
 
 void ginput_cleanup()
