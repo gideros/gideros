@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gstdio.h>
+#include <algorithm>
 
 ShaderProgram *ShaderProgram::stdBasic=NULL;
 ShaderProgram *ShaderProgram::stdColor=NULL;
