@@ -12,6 +12,7 @@ class Server;
 #include "platform.h"
 #include <gfile.h>
 #include <gfile_p.h>
+#include <gstatus.h>
 
 class GLCanvas : public QGLWidget{
 	Q_OBJECT
@@ -72,6 +73,7 @@ private:
 	virtual void initializeGL();
 
 	virtual void paintGL();
+	bool checkLuaError(GStatus status);
     void timerEvent(QTimerEvent *);
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
