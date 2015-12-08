@@ -331,42 +331,60 @@ int main(int argc, char *argv[])
     
     gpath_setDrivePath(1,"docs/");
 
+    printf("pi call gvfs_init\n");
     gvfs_init();
 	
     // event
+    printf("pi call gevent_Init\n");
     gevent_Init();
 
     // application
+    printf("pi call gapplication_init\n");
     gapplication_init();
     
     // input
+    printf("pi call ginput_init\n");
     ginput_init();
     
     // geolocation
+    printf("pi call ggeolocation_init\n");
     ggeolocation_init();
     
     // http
+    printf("pi call ghttp_init\n");
     ghttp_Init();
     
     // ui
+    printf("pi call gui_init\n");
     gui_init();
     
     // texture
+    printf("pi call gtexture_init\n");
     gtexture_init();
     
     // audio
+    printf("pi call gaudio_Init\n");
     gaudio_Init();
 
     // loadPlugins();
 
     application_ = new LuaApplication;
+    printf("created application_\n");
 
     application_->enableExceptions();
+
     application_->initialize();
+    printf("initialized application_\n");
+
     application_->setPrintFunc(printFunc);
+    printf("setPrintFunc_\n");
     
     loadProperties();
+    printf("loaded properties\n");
+
     loadLuaFiles();
+
+    printf("loaded lua files\n");
 
     struct timeval t1, t2;
     struct timezone tz;
@@ -378,6 +396,8 @@ int main(int argc, char *argv[])
 
     while(1)
     {
+        printf("tick");
+
         gettimeofday(&t2, &tz);
         deltatime = (float)(t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) * 1e-6);
         t1 = t2;

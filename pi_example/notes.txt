@@ -1,0 +1,12 @@
+Program received signal SIGSEGV, Segmentation fault.
+Cannot access memory at address 0x0
+0xb6d7685c in ?? () from /usr/lib/arm-linux-gnueabihf/libstdc++.so.6
+(gdb) bt
+#0  0xb6d7685c in ?? () from /usr/lib/arm-linux-gnueabihf/libstdc++.so.6
+#1  0x0006fb94 in std::pair<std::_Rb_tree_iterator<EventDispatcher*>, bool> std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_insert_unique<EventDispatcher*>(EventDispatcher*&&) ()
+#2  0x00092e74 in Sprite::Sprite(Application*) ()
+#3  0x000212c8 in Application::initView() ()
+#4  0x00078dc8 in LuaApplication::initialize() ()
+#5  0x0001d4a0 in main ()
+(gdb) quit
+A debugging session is active.
