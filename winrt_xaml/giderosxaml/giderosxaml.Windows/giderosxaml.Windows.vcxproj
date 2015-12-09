@@ -129,8 +129,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
-      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d3dcompiler.lib; d3d11.lib; dxgi.lib; ole32.lib; windowscodecs.lib; dwrite.lib; %(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\winrt\Debug\gideros.Windows;..\..\..\libgvfs\libgvfswinrt\Debug\libgvfswinrt.Windows;..\..\..\lua\luawinrt\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d3dcompiler.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\winrt\Debug\gideros.Windows;..\..\..\winrt\Debug\libgvfswinrt.Windows;..\..\..\winrt\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
