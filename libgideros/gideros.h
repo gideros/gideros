@@ -13,6 +13,6 @@
 #include "gapplication.h"
 #include "gevent.h"
 
-#define GIDEROS_VERSION "2015.10"
+#define GIDEROS_VERSION "2015.12"
 
 #endif
