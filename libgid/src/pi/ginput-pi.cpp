@@ -1,13 +1,11 @@
 #include <ginput.h>
-#include <ginput-winrt.h>
+#include <ginput-pi.h>
 #include <vector>
 #include <gevent.h>
 #include <memory.h>
 #include <string.h>
 #include <pthread.h>
 #include <map>
-using namespace Windows::Devices::Sensors;
-using namespace Platform;
 
 struct Pointer{
 	int x;
@@ -71,16 +69,14 @@ public:
         keyMap_[GINPUT_KEY_Y] = GINPUT_KEY_Y;
         keyMap_[GINPUT_KEY_Z] = GINPUT_KEY_Z;
 
-		keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
+	keyMap_[GINPUT_KEY_SHIFT] = GINPUT_KEY_SHIFT;
+	keyMap_[GINPUT_KEY_SPACE] = GINPUT_KEY_SPACE;
+	keyMap_[GINPUT_KEY_BACKSPACE] = GINPUT_KEY_BACKSPACE;
 
-		keyMap_[GINPUT_KEY_SHIFT] = GINPUT_KEY_SHIFT;
-		keyMap_[GINPUT_KEY_SPACE] = GINPUT_KEY_SPACE;
-		keyMap_[GINPUT_KEY_BACKSPACE] = GINPUT_KEY_BACKSPACE;
-
-		keyMap_[GINPUT_KEY_CTRL] = GINPUT_KEY_CTRL;
-		keyMap_[GINPUT_KEY_ALT] = GINPUT_KEY_ALT;
-		keyMap_[GINPUT_KEY_ESC] = GINPUT_KEY_ESC;
-		keyMap_[GINPUT_KEY_TAB] = GINPUT_KEY_TAB;
+	keyMap_[GINPUT_KEY_CTRL] = GINPUT_KEY_CTRL;
+	keyMap_[GINPUT_KEY_ALT] = GINPUT_KEY_ALT;
+	keyMap_[GINPUT_KEY_ESC] = GINPUT_KEY_ESC;
+	keyMap_[GINPUT_KEY_TAB] = GINPUT_KEY_TAB;
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
@@ -160,20 +156,24 @@ public:
         pthread_mutex_unlock(&touchPoolMutex_);
     }
 
-    void keyDown(int realCode)
+    void keyDown(int keyCode)
     {
-        int keyCode = convertKeyCode(realCode);
+        keyCode = convertKeyCode(keyCode);
+        if (keyCode == 0)
+            return;
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
 
-    void keyUp(int realCode)
+    void keyUp(int keyCode)
     {
-        int keyCode = convertKeyCode(realCode);
+        keyCode = convertKeyCode(keyCode);
+        if (keyCode == 0)
+            return;
 
-        ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
+        ginput_KeyEvent *event = newKeyEvent(keyCode);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
@@ -209,8 +209,8 @@ public:
 			touchEvent->allTouches[0].x = x;
 			touchEvent->allTouches[0].y = y;
 			touchEvent->allTouches[0].id = 0;
-			touchEvent->allTouches[0].pressure = 0;
-			touchEvent->allTouches[0].touchType = 2;
+			 touchEvent->allTouches[0].pressure = 0;
+			 touchEvent->allTouches[0].touchType = 2;
 		}
 
 		if (mouseTouchOrder_ == 0)
@@ -236,9 +236,9 @@ public:
 		}
 	}
 
-	void mouseMove(int x, int y, int button)
+	void mouseMove(int x, int y)
 	{
-		ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button);
+		ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, GINPUT_NO_BUTTON);
 
 		ginput_TouchEvent *touchEvent = NULL;
 		if (isMouseToTouchEnabled_)
@@ -277,14 +277,6 @@ public:
 			gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_MOVE_EVENT, mouseEvent, 0, this);
 			deleteMouseEvent(mouseEvent);
 		}
-	}
-
-	void mouseHover(int x, int y, int button)
-	{
-		ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button);
-
-		gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_HOVER_EVENT, mouseEvent, 0, this);
-		deleteMouseEvent(mouseEvent);
 	}
 
 	void mouseUp(int x, int y, int button)
@@ -582,7 +574,7 @@ private:
         mousePool2_.push_back(event);
     }
 
-    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode)
+    ginput_KeyEvent *newKeyEvent(int keyCode)
     {
         ginput_KeyEvent *event;
 
@@ -597,7 +589,6 @@ private:
         }
 
         event->keyCode = keyCode;
-		event->realCode = realCode;
 
         return event;
     }
@@ -695,27 +686,12 @@ private:
 using namespace ginput;
 
 static InputManager *s_manager = NULL;
-static Accelerometer^ s_accel = nullptr;
-static Gyrometer^ s_gyro = nullptr;
 
 extern "C" {
 
 void ginput_init()
 {
     s_manager = new InputManager;
-	try {
-		s_accel = Accelerometer::GetDefault();
-	}
-	catch (Exception^ e)
-	{
-	}
-
-	try {
-		s_gyro = Gyrometer::GetDefault();
-	}
-	catch (Exception^ e)
-	{
-	}
 }
 
 void ginput_cleanup()
@@ -726,11 +702,12 @@ void ginput_cleanup()
 
 int ginput_isAccelerometerAvailable()
 {
-    return (s_accel!=nullptr)?1:0;
+    return 0;
 }
 
 void ginput_startAccelerometer()
 {
+
 }
 
 void ginput_stopAccelerometer()
@@ -740,27 +717,17 @@ void ginput_stopAccelerometer()
 
 void ginput_getAcceleration(double *x, double *y, double *z)
 {
-	if (x)
-		*x = 0;
-	if (y)
-		*y = 0;
-	if (z)
-		*z = 0;
-	if (s_accel != nullptr)
-	{
-		AccelerometerReading^ ar = s_accel->GetCurrentReading();
-		if (ar != nullptr)
-		{
-			if (x) *x = ar->AccelerationX;
-			if (y) *y = ar->AccelerationY;
-			if (z) *z = ar->AccelerationZ;
-		}
-	}
+    if (x)
+        *x = 0;
+    if (y)
+        *y = 0;
+    if (z)
+        *z = 0;
 }
 
 int ginput_isGyroscopeAvailable()
 {
-	return (s_gyro != nullptr) ? 1 : 0;
+    return 0;
 }
 
 void ginput_startGyroscope()
@@ -781,16 +748,6 @@ void ginput_getGyroscopeRotationRate(double *x, double *y, double *z)
         *y = 0;
     if (z)
         *z = 0;
-	if (s_gyro != nullptr)
-	{
-		GyrometerReading^ ar = s_gyro->GetCurrentReading();
-		if (ar != nullptr)
-		{
-			if (x) *x = ar->AngularVelocityX;
-			if (y) *y = ar->AngularVelocityY;
-			if (z) *z = ar->AngularVelocityZ;
-		}
-	}
 }
 
 void ginputp_keyDown(int keyCode)
@@ -841,16 +798,10 @@ void ginputp_mouseDown(int x, int y, int button)
 		s_manager->mouseDown(x, y, button);
 }
 
-void ginputp_mouseMove(int x, int y, int button)
+void ginputp_mouseMove(int x, int y)
 {
 	if (s_manager)
-		s_manager->mouseMove(x, y, button);
-}
-
-void ginputp_mouseHover(int x, int y, int button)
-{
-	if (s_manager)
-		s_manager->mouseHover(x, y, button);
+		s_manager->mouseMove(x, y);
 }
 
 void ginputp_mouseUp(int x, int y, int button)

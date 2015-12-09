@@ -243,8 +243,8 @@ Dib TTFont::renderFont(const wchar32_t *text, float letterSpacing, int *pminx, i
         	g.left=left;
         	g.glyph=glyphIndex;
         	g.advX=face_->glyph->advance.x>>6;
-        	g.bitmap=(unsigned char *) malloc(g.rows*g.pitch);
-        	memcpy(g.bitmap,bitmap.buffer,g.rows*g.pitch);
+        	g.bitmap=(unsigned char *) malloc(g.height*g.pitch);
+        	memcpy(g.bitmap,bitmap.buffer,g.height*g.pitch);
         	glyphCache_[text[i]]=g;
         }
 

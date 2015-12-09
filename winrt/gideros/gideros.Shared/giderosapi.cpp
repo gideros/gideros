@@ -227,17 +227,17 @@ void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::Swap
 
 	float scaley;
 
-	if (useXaml){
-		scaley = 1;
-	}
-	else {
+//	if (useXaml){
+//		scaley = 1;
+//	}
+//	else {
 		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
 		scaley = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
-    }
+//    }
 
 	float basex = 0;
 	float basey = 0;
@@ -748,16 +748,16 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 	InitD3D(useXaml, Window, swapChainPanel, width, height);
 	InitXAudio2();
 
-	if (useXaml)
-		contentScaleFactor = 1;
-	else {
+//	if (useXaml)
+//		contentScaleFactor = 1;
+//	else {
 		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
 		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
-	}
+//	}
 
 	width_ = width;
 	height_ = height;
