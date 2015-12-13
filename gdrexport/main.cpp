@@ -195,6 +195,43 @@ enum DeviceFamily
   e_Html5
 };
 
+static bool bitwiseMatchReplace(unsigned char *b,int bo,const unsigned char *m,int ms,const unsigned char *r)
+{
+	 if (!bo) //Simple case, no bit offset
+	 {
+		 if (memcmp(b,m,ms))
+				 return false;
+		 memcpy(b,r,ms);
+		 return false;
+	 }
+	 for (int k=0;k<ms;k++)
+	 {
+		 unsigned char *b1=(b[k]|(b[k+1]<<8))>>bo;
+		 if (b1!=m[k]) return false;
+	 }
+	 for (int k=0;k<ms;k++)
+	 {
+		 b[k]&=(0xFF<<bo);
+		 b[k]|=r[k]<<bo;
+		 b[k+1]&=(0xFF>>(8-bo));
+		 b[k+1]|=(r[k]>>(8-bo));
+	 }
+	 return true;
+}
+
+static void bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r,int rs)
+{
+ int bmo=(bs-ms)*8;
+ unsigned char *ub=(unsigned char *)b;
+ const unsigned char *um=(const unsigned char *)m;
+ const unsigned char *ur=(const unsigned char *)r;
+ for (int k=0;k<bmo;k++)
+ {
+	 if (bitwiseMatchReplace(ub+(k>>3),k&7,um,ms,ur))
+		 k+=(ms*8)-1;
+ }
+}
+
 static void fileCopy(	const QString& srcName,
                         const QString& destName,
                         const QList<QStringList>& wildcards,
@@ -232,7 +269,12 @@ static void fileCopy(	const QString& srcName,
         in.close();;
 
         for (int i = 0; i < replaceList[match].size(); ++i)
-            data.replace(replaceList[match][i].first, replaceList[match][i].second);
+        	if (replaceList[match][i].first.size()==replaceList[match][i].second.size()) //Perform bitwise replacement if sizes are equal
+        		bitwiseReplace(data.data(),data.size(),
+        			replaceList[match][i].first.constData(),replaceList[match][i].first.size(),
+        			replaceList[match][i].second.constData(),replaceList[match][i].second.size());
+        	else
+        		data.replace(replaceList[match][i].first, replaceList[match][i].second);
 
         QFile out(destName);
         if (!out.open(QFile::WriteOnly))
