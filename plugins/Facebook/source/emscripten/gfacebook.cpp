@@ -1,9 +1,79 @@
 #include "gfacebook.h"
 #include <stdlib.h>
 #include <glog.h>
+#include <gstdio.h>
 #include <string>
 #include <gapplication.h>
+#include <emscripten.h>
 #include <emscripten/val.h>
+
+using namespace emscripten;
+
+/*
+static const char * const Base64keyStr =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+static char *Base64Encode(const void *data, int size) {
+ int bsz = ((size + 2) / 3) * 4;
+ char *b = (char *) umalloc(bsz + 1, "Base64");
+ if (!b)
+  return NULL;
+ b[Base64EncodeToBuffer(data, size, b, bsz)] = 0;
+ return b;
+}
+
+static int Base64EncodeToBuffer(const void *data, int size, char *buffer, int maxsize) {
+ int i = 0, osz = 0;
+ char enc[4];
+ unsigned char *bd=(unsigned char *)data;
+ while (i < size) {
+  unsigned int m = bd[i++];
+  enc[0] = Base64keyStr[((m >> 2) & 0x3f)];
+  if (i < size) {
+   m = ((m & 0x03) << 8) | (bd[i++] & 0xFF);
+   enc[1] = Base64keyStr[(m >> 4) & 0x3f];
+   if (i < size) {
+    m = ((m & 0x0F) << 8) | (bd[i++] & 0xFF);
+    enc[2] = Base64keyStr[(m >> 6) & 0x3f];
+    enc[3] = Base64keyStr[m & 0x3f];
+   } else {
+    enc[2] = Base64keyStr[(m << 2) & 0x3f];
+    enc[3] = '=';
+   }
+  } else {
+   enc[1] = Base64keyStr[(m << 4) & 0x3f];
+   enc[2] = '=';
+   enc[3] = '=';
+  }
+  int cn = maxsize;
+  if (cn > 4)
+   cn = 4;
+  memcpy(buffer, enc, cn);
+  buffer += cn;
+  maxsize -= cn;
+  osz += cn;
+ }
+ return osz;
+}*/                                            
+
+
+static std::string FileToString(const char * file)
+{
+ G_FILE *f=g_fopen(file,"rb");
+// glog_i("Open file:%s -> %p",file,f);
+ if (!f)
+  return std::string("");
+ g_fseek(f,0,SEEK_END);
+ long l=g_ftell(f);
+ g_fseek(f,0,SEEK_SET);
+ char *s=(char *) malloc(l);
+ l=g_fread(s,1,l,f);
+ g_fclose(f);
+// glog_i("File size:%d",l);
+ std::string ss(s,l);
+ free(s);
+ return ss;
+}
 
 class GGFacebook
 {
@@ -22,7 +92,7 @@ public:
 		gevent_RemoveEventsWithGid(gid_);
     }
 	
-	void login(const char *appId, const char * const *permissions)
+    void login(const char *appId, const char * const *permissions)
     {
 	    val gfb = val::global("GiderosFB");
 	    val perms=val::array();
@@ -31,7 +101,7 @@ public:
 	     while (*permissions)
 	     {
 	      perms.set(n++,val(*permissions));
-	      permisssions++;
+	      permissions++;
 	     }
 	    gfb.call<void>("Login",val(appId),perms);
     }
@@ -54,7 +124,7 @@ public:
     
     time_t getExpirationDate(){
 	    val gfb = val::global("GiderosFB");
-        return gfb.call<time_t>("GetExpirationDate");
+        return gfb.call<int>("GetExpirationDate");
     }
     
     void dialog(const char *action, const gfacebook_Parameter *params)
@@ -67,20 +137,37 @@ public:
 	      p.set(val(params->key),val(params->value));
 	      params++;
 	     }
-	    gfb.call<void>("Dialog",val(action),params);
+	    gfb.call<void>("Dialog",val(action),p);
     }
 
     void request(const char *graphPath, const gfacebook_Parameter *params, int httpMethod)
     {
 	    val gfb = val::global("GiderosFB");
 	    val p=val::object();
+	    const char *mtd="get";
+	    switch (httpMethod)
+	    {
+	     case 1: mtd="post"; break;
+	     case 2: mtd="delete"; break;
+	    }
+	    
 	    if (params)
 	     while (*params->key)
 	     {
-	      p.set(val(params->key),val(params->value));
+	      if (!strcmp(params->key,"path"))
+	      {
+	       val a=val::object();
+	       const char *ext=strchr(params->value,'.');
+	       a.set(val("name"),val("source"));
+	       a.set(val("type"),val(ext));
+	       a.set(val("data"),FileToString(params->value));
+	       p.set(val("source"),a);
+              }
+	      else
+	       p.set(val(params->key),val(params->value));
 	      params++;
 	     }
-	    gfb.call<void>("Request",val(graphPath),httpMethod,params);
+	    gfb.call<void>("Request",val(graphPath),val(mtd),p);
     }
 	
     void onLoginComplete()

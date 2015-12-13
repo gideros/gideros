@@ -5,7 +5,7 @@ INCS=../../../Sdk/include
 EMCC=emcc
 BUILD=Build
 
-OPTS=-O2
+OPTS=-O2 
 ifneq ($(DEBUG),)
 OPTS+=-g4 -s ASSERTIONS=1
 endif
@@ -14,10 +14,10 @@ OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SRCS)))
 CINCS=$(addprefix -I../,$(INCS))
 CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
-	$(OPTS)
+	$(OPTS) --bind
 
 all: path $(OBJS)
-	emcc $(OBJS) -s SIDE_MODULE=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) -o $(BUILD)/$(TARGET).js
+	emcc $(OBJS) -s SIDE_MODULE=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) --pre-js gfacebook.js -o $(BUILD)/$(TARGET).js
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))

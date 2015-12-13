@@ -33,6 +33,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSLocationUsageDescription</key>
+	<string>Do you accept to share your position?</string>
+    	<key>NSLocationWhenInUseUsageDescription</key>
+    	<string>Do you accept to share your position?</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array/>
 	<key>UIStatusBarHidden</key>

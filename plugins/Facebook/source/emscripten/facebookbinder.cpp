@@ -4,6 +4,13 @@
 #include <string>
 #include <vector>
 
+#include <typeinfo> 
+#include <emscripten/bind.h>
+#include <emscripten/emscripten.h>
+using namespace emscripten;
+using namespace emscripten::internal;
+    
+
 
 // some Lua helper functions
 #ifndef abs_index
@@ -639,6 +646,9 @@ static void g_initializePlugin(lua_State *L)
 {
     ::L = L;
     
+     _embind_register_std_string(TypeID<std::string>::get(), "std::string");
+     _embind_register_emval(TypeID<val>::get(), "emscripten::val");
+    
     lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	
@@ -653,5 +663,5 @@ static void g_deinitializePlugin(lua_State *L)
     ::L = NULL;
 }
 
-REGISTER_PLUGIN("Facebook", "1.0")
+REGISTER_PLUGIN_NAMED("Facebook", "1.0",Facebook)
 

@@ -351,6 +351,9 @@
 		5FE658BA18FBF0FB001D8EE3 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658AB18FBF0FB001D8EE3 /* zutil.c */; };
 		EB08A3521AAA06F900D8F27D /* Matrices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB08A3501AAA06F900D8F27D /* Matrices.cpp */; };
 		EB08A3531AAA06F900D8F27D /* Matrices.h in Headers */ = {isa = PBXBuildFile; fileRef = EB08A3511AAA06F900D8F27D /* Matrices.h */; };
+		EB35B49A1C1190C200227849 /* ft-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4971C1190C200227849 /* ft-path.c */; };
+		EB35B49B1C1190C200227849 /* prpath.h in Headers */ = {isa = PBXBuildFile; fileRef = EB35B4981C1190C200227849 /* prpath.h */; };
+		EB35B49C1C1190C200227849 /* svg-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4991C1190C200227849 /* svg-path.c */; };
 		EB82BDCE1B29606C00281732 /* gl2ShaderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */; };
 		EB82BDCF1B29606C00281732 /* gl2ShaderEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */; };
 		EB82BDD01B29606C00281732 /* gl2ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */; };
@@ -765,6 +768,9 @@
 		5FE658AB18FBF0FB001D8EE3 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zutil.c; path = "../../../libgid/external/zlib-1.2.8/zutil.c"; sourceTree = "<group>"; };
 		EB08A3501AAA06F900D8F27D /* Matrices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Matrices.cpp; path = ../../2dsg/Matrices.cpp; sourceTree = "<group>"; };
 		EB08A3511AAA06F900D8F27D /* Matrices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrices.h; path = ../../2dsg/Matrices.h; sourceTree = "<group>"; };
+		EB35B4971C1190C200227849 /* ft-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "ft-path.c"; sourceTree = "<group>"; };
+		EB35B4981C1190C200227849 /* prpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prpath.h; sourceTree = "<group>"; };
+		EB35B4991C1190C200227849 /* svg-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "svg-path.c"; sourceTree = "<group>"; };
 		EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderBuffer.cpp; sourceTree = "<group>"; };
 		EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderEngine.cpp; sourceTree = "<group>"; };
 		EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderProgram.cpp; sourceTree = "<group>"; };
@@ -1516,6 +1522,9 @@
 		EBD9AC641B99EEF2006C8316 /* paths */ = {
 			isa = PBXGroup;
 			children = (
+				EB35B4971C1190C200227849 /* ft-path.c */,
+				EB35B4981C1190C200227849 /* prpath.h */,
+				EB35B4991C1190C200227849 /* svg-path.c */,
 				EBD9AC661B99EEF2006C8316 /* ft-path.h */,
 				EBD9AC671B99EEF2006C8316 /* khash.h */,
 				EBD9AC681B99EEF2006C8316 /* kvec.h */,
@@ -1593,6 +1602,7 @@
 				5F276F8218F4020E00D78AE4 /* b2Settings.h in Headers */,
 				5F276FB618F4020E00D78AE4 /* b2MotorJoint.h in Headers */,
 				5F276FAA18F4020E00D78AE4 /* b2PolygonAndCircleContact.h in Headers */,
+				EB35B49B1C1190C200227849 /* prpath.h in Headers */,
 				5F276F8018F4020E00D78AE4 /* b2Math.h in Headers */,
 				EBD9AC721B99EEF2006C8316 /* ft-path.h in Headers */,
 				5F276FA818F4020E00D78AE4 /* b2EdgeAndPolygonContact.h in Headers */,
@@ -1951,6 +1961,7 @@
 				5F321F6215BBEB3200542289 /* textfieldbinder.cpp in Sources */,
 				5F321F6315BBEB3200542289 /* textinputdialogbinder.cpp in Sources */,
 				5F321F6415BBEB3200542289 /* texturebasebinder.cpp in Sources */,
+				EB35B49A1C1190C200227849 /* ft-path.c in Sources */,
 				5F321F6515BBEB3200542289 /* texturebinder.cpp in Sources */,
 				5F321F6615BBEB3200542289 /* texturepackbinder.cpp in Sources */,
 				5F321F6715BBEB3200542289 /* tilemapbinder.cpp in Sources */,
@@ -1986,6 +1997,7 @@
 				5F450BF41665146B001D8D4B /* gaudio-background-avaudioplayer.mm in Sources */,
 				5FE385BB16B09353007A91E1 /* ftlibrarysingleton.cpp in Sources */,
 				5FE385BC16B09353007A91E1 /* ttbmfont.cpp in Sources */,
+				EB35B49C1C1190C200227849 /* svg-path.c in Sources */,
 				5F3C82371762064700E5E187 /* pystring.cpp in Sources */,
 				5F3C823C1762100100E5E187 /* ghttp-ios.mm in Sources */,
 				5F0104061776F719002E6C6E /* grendertarget.cpp in Sources */,

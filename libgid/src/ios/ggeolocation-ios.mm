@@ -20,8 +20,13 @@ public:
 	GGGeolocationManager()
 	{
 		delegate_ = [[GGGeolocationDelegate alloc] init];
-		locationManager_ = [[CLLocationManager alloc] init];
-		locationManager_.delegate = delegate_;
+        authStatus_ = [CLLocationManager authorizationStatus];
+        locationManager_=nil;
+        if ((authStatus_!=kCLAuthorizationStatusDenied)&&(authStatus_!=kCLAuthorizationStatusRestricted))
+        {
+            locationManager_ = [[CLLocationManager alloc] init];
+            locationManager_.delegate = delegate_;
+        }
 		delegate_.manager = this;
 		accuracy_ = 0;
 		locationStartCount_ = 0;
@@ -32,8 +37,11 @@ public:
 
 	~GGGeolocationManager()
 	{
-		locationManager_.delegate = nil;
-		[locationManager_ release];
+        if (locationManager_!=nil)
+        {
+            locationManager_.delegate = nil;
+            [locationManager_ release];
+        }
 		[delegate_ release];
 		
 		gevent_RemoveEventsWithGid(gid_);
@@ -41,6 +49,10 @@ public:
 	
 	bool isAvailable()
 	{
+        if (locationManager_==nil)
+            return NO;
+        if (([locationManager_ respondsToSelector:@selector(requestWhenInUseAuthorization)])&&(authStatus_==kCLAuthorizationStatusNotDetermined))
+            [locationManager_ requestWhenInUseAuthorization];
 		BOOL locationServicesEnabledInstancePropertyAvailable = [locationManager_ respondsToSelector:@selector(locationServicesEnabled)]; // iOS 3.x
 		BOOL locationServicesEnabledClassPropertyAvailable = [CLLocationManager respondsToSelector:@selector(locationServicesEnabled)]; // iOS 4.x
 		
@@ -57,6 +69,8 @@ public:
 	
 	bool isHeadingAvailable()
 	{
+        if (locationManager_==nil)
+            return NO;
 		BOOL headingInstancePropertyAvailable = [locationManager_ respondsToSelector:@selector(headingAvailable)]; // iOS 3.x
 		BOOL headingClassPropertyAvailable = [CLLocationManager respondsToSelector:@selector(headingAvailable)]; // iOS 4.x
 		
@@ -73,6 +87,8 @@ public:
 	
 	void setAccuracy(double desiredAccuracy_num)
 	{
+        if (locationManager_==nil)
+            return;
 		accuracy_ = desiredAccuracy_num;
 		
 		CLLocationAccuracy desiredAccuracy = kCLLocationAccuracyBest;
@@ -97,6 +113,8 @@ public:
 	
 	void setThreshold(double threshold)
 	{
+        if (locationManager_==nil)
+            return;
 		locationManager_.distanceFilter = threshold;
 	}
 	
@@ -107,6 +125,8 @@ public:
 	
 	void startUpdatingLocation()
 	{
+        if (locationManager_==nil)
+            return;
 		locationStartCount_++;
 		if (locationStartCount_ == 1)
 			[locationManager_ startUpdatingLocation];
@@ -114,6 +134,8 @@ public:
 	
 	void stopUpdatingLocation()
 	{
+        if (locationManager_==nil)
+            return;
 		if (locationStartCount_ > 0)
 		{
 			locationStartCount_--;
@@ -124,6 +146,8 @@ public:
 	
 	void startUpdatingHeading()
 	{
+        if (locationManager_==nil)
+            return;
 		headingStartCount_++;
 		if (headingStartCount_ == 1)
 			[locationManager_ startUpdatingHeading];		
@@ -131,6 +155,8 @@ public:
 	
 	void stopUpdatingHeading()
 	{
+        if (locationManager_==nil)
+            return;
 		if (headingStartCount_ > 0)
 		{
 			headingStartCount_--;
@@ -141,6 +167,7 @@ public:
 	
 private:
 	CLLocationManager *locationManager_;
+    CLAuthorizationStatus authStatus_;
 	GGGeolocationDelegate *delegate_;
 	double accuracy_;
 	int locationStartCount_;
