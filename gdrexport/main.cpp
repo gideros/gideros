@@ -206,7 +206,7 @@ static bool bitwiseMatchReplace(unsigned char *b,int bo,const unsigned char *m,i
 	 }
 	 for (int k=0;k<ms;k++)
 	 {
-		 unsigned char *b1=(b[k]|(b[k+1]<<8))>>bo;
+		 unsigned char b1=(b[k]|(b[k+1]<<8))>>bo;
 		 if (b1!=m[k]) return false;
 	 }
 	 for (int k=0;k<ms;k++)
