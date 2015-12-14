@@ -211,9 +211,9 @@ static bool bitwiseMatchReplace(unsigned char *b,int bo,const unsigned char *m,i
 	 }
 	 for (int k=0;k<ms;k++)
 	 {
-		 b[k]&=(0xFF<<bo);
+		 b[k]&=(0xFF>>(8-bo));
 		 b[k]|=r[k]<<bo;
-		 b[k+1]&=(0xFF>>(8-bo));
+		 b[k+1]&=(0xFF<<bo);
 		 b[k+1]|=(r[k]>>(8-bo));
 	 }
 	 return true;
