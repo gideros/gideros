@@ -241,9 +241,6 @@ depend :
 	g++ $(INCLUDEPATHS) -MM ../libgid/src/utf8.c > utf8.dep
 	g++ $(INCLUDEPATHS) -MM ../external/minizip-1.1/source/ioapi.c > ioapi.dep
 	g++ $(INCLUDEPATHS) -MM ../external/minizip-1.1/source/unzip.c > unzip.dep
-
-.PHONY : dependft
-dependft :
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/base/*.c > ft1.dep
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/raster/raster.c > ft2.dep
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/sfnt/sfnt.c > ft3.dep
@@ -253,8 +250,5 @@ dependft :
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/cff/cff.c > ft7.dep
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/psnames/psnames.c > ft8.dep
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/pshinter/pshinter.c > ft9.dep
-
-.PHONY : dependpaths
-dependpaths :
 	g++ $(INCLUDEPATHS) -MM ../2dsg/paths/*.cpp > paths.dep
 	g++ $(INCLUDEPATHS) -MM ../2dsg/paths/*.c > paths2.dep
