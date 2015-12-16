@@ -18,10 +18,11 @@ VPATH = \
 ../libgid/src/pi:\
 ../external/minizip-1.1/source
 
+# -I../libgid/external/glew-1.10.0/include
+
 INCLUDEPATHS = \
 -I../luabinding \
 -I../libnetwork \
--I../libgid/external/glew-1.10.0/include \
 -I../libgid/external/freetype-2.4.12/src \
 -I../libgid/external/freetype-2.4.12/include \
 -I../libgid/external/mpg123-1.15.3/src \
@@ -69,7 +70,7 @@ snappy-c.o \
 snappy-sinksource.o \
 snappy-stubs-internal.o
 
-CXXFLAGS = -O2 -DGIDEROS_LIBRARY -DSTRICT_LINUX $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -DGIDEROS_LIBRARY -DSTRICT_LINUX $(INCLUDEPATHS)
 
 links = \
 ../libgid/external/jpeg-9/build/gcc463_pi/libjpeg.a \
@@ -77,7 +78,9 @@ links = \
 ../libgid/external/mpg123-1.15.3/lib/gcc463_pi/libmpg123.a \
 ../libgid/external/openal-soft-1.13/build/gcc463_pi/libopenal.so \
 ../libgid/external/zlib-1.2.8/build/gcc463_pi/libzlibx.a \
-../libgid/external/glew-1.10.0/lib/gcc463_pi/libGLEW.a -lpthread
+-lpthread
+
+# ../libgid/external/glew-1.10.0/lib/gcc463_pi/libGLEW.a 
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<
@@ -91,9 +94,7 @@ gid.so: $(objfiles) $(links)
 ginput-pi.o: ../libgid/src/pi/ginput-pi.cpp \
  ../libgid/include/ginput.h ../libgid/include/gglobal.h \
  ../libgvfs/gexport.h ../libgid/include/gevent.h \
- ../libgid/include/pi/ginput-pi.h \
- ../libgid/external/pthreads-w32-2-9-1-release/Pre-built.2/include/pthread.h \
- ../libgid/external/pthreads-w32-2-9-1-release/Pre-built.2/include/sched.h
+ ../libgid/include/pi/ginput-pi.h
 	g++ -std=c++11 $(CXXFLAGS) -c $<
 
 snappy.o: ../libgid/external/snappy-1.1.0/snappy.cpp
@@ -115,3 +116,7 @@ snappy-stubs-internal.o: ../libgid/external/snappy-1.1.0/snappy-stubs-internal.c
 depend :
 	g++ $(INCLUDEPATHS) -MM ../libgid/src/*.cpp > libgid.dep
 	g++ $(INCLUDEPATHS) -MM ../libgid/src/pi/*.cpp > libgidpi.dep
+
+.PHONY : clean
+clean :
+	rm $(objfiles)

@@ -4,7 +4,7 @@ INCLUDEPATHS = -I../libpystring
 
 objfiles = pystring.o
 
-CXXFLAGS = -O2 -DPYSTRING_LIBRARY $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -DPYSTRING_LIBRARY $(INCLUDEPATHS)
 
 links =
 

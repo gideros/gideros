@@ -4,7 +4,6 @@ VPATH = \
 INCLUDEPATHS = \
 -I../libgvfs \
 -I../libgvfs/private \
-#-I../libgid/external/pthreads-w32-2-9-1-release/Pre-built.2/include
 
 objfiles = \
     wsetup.o \
@@ -47,10 +46,9 @@ objfiles = \
     gfile.o \
     gpath.o
 
-CXXFLAGS = -O2 -DGIDEROS_LIBRARY -DSTRICT_LINUX $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -DGIDEROS_LIBRARY -DSTRICT_LINUX $(INCLUDEPATHS)
 
 links = -lpthread
-#links = ..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGC2.a
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<
@@ -66,3 +64,7 @@ gvfs.so: $(objfiles) $(links)
 .PHONY : depend
 depend:
 	g++ $(INCLUDEPATHS) -MM ../libgvfs/*.cpp ../libgvfs/*.c > libgvfs.dep
+
+.PHONY : clean
+clean:
+	rm $(objfiles)

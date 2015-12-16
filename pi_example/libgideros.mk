@@ -29,7 +29,7 @@ INCLUDEPATHS = \
 objfiles = binderutil.o stringid.o eventdispatcher.o \
 event.o refptr.o eventvisitor.o pluginmanager.o luautil.o
 
-CXXFLAGS = -O2 -DGIDEROS_LIBRARY $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -DGIDEROS_LIBRARY $(INCLUDEPATHS)
 
 links =
 
@@ -47,3 +47,7 @@ gideros.so: $(objfiles)
 .PHONY : depend
 depend:
 	g++ $(INCLUDEPATHS) -MM ../libgideros/*.cpp > libgideros.dep
+
+.PHONY : clean
+clean:
+	rm $(objfiles)

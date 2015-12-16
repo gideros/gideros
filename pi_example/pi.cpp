@@ -372,6 +372,7 @@ int main(int argc, char *argv[])
     printf("created application_\n");
 
     application_->enableExceptions();
+    printf("enabled exceptions\n");
 
     application_->initialize();
     printf("initialized application_\n");

@@ -55,10 +55,11 @@ INCLUDEPATHS = \
 -I../2dsg/gfxbackends/gl2 \
 -I../2dsg/paths \
 -I../libgid/include \
--I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux
+-I/opt/vc/include \
+-I/opt/vc/include/interface/vmcs_host/linux \
+-I/opt/vc/include/interface/vcos/pthreads
 
-
-CXXFLAGS = -O2 -DSTRICT_LINUX -DRASPBERRY_PI -DRPI_NO_X -DFT2_BUILD_LIBRARY -std=gnu++0x $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -DSTRICT_LINUX -DRASPBERRY_PI -DRPI_NO_X -DFT2_BUILD_LIBRARY -std=gnu++0x $(INCLUDEPATHS)
 
 #-DPTW32_STATIC_LIB /
 #-DOPT_GENERIC /
@@ -252,3 +253,7 @@ depend :
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/pshinter/pshinter.c > ft9.dep
 	g++ $(INCLUDEPATHS) -MM ../2dsg/paths/*.cpp > paths.dep
 	g++ $(INCLUDEPATHS) -MM ../2dsg/paths/*.c > paths2.dep
+
+.PHONY : clean
+clean :
+	rm $(objfiles)

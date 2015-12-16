@@ -6,7 +6,7 @@ INCLUDEPATHS = \
 
 objfiles = all_lua.o
 
-CXXFLAGS = -O2 $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT $(INCLUDEPATHS)
 
 links =
 
