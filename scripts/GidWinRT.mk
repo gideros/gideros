@@ -14,9 +14,40 @@ winrt.shaders: $(BIN2C)
 	#cp winrt/*.cso winrt_example/giderosgame/giderosgame.WindowsPhone/Assets
 	#cp winrt/*.cso "ui/Templates/VisualStudio/WinRT Template/giderosgame/giderosgame.Windows/Assets"
 	#cp winrt/*.cso "ui/Templates/VisualStudio/WinRT Template/giderosgame/giderosgame.WindowsPhone/Assets"
+
+winrt.lua:
+	$(MSBUILD) lua/luawinrt/luawinrt/luawinrt.WindowsPhone/luawinrt.WindowsPhone.vcxproj //p:Configuration=Release //p:Platform=ARM 
+	$(MSBUILD) lua/luawinrt/luawinrt/luawinrt.Windows/luawinrt.Windows.vcxproj //p:Configuration=Release //p:Platform=Win32 
+
+winrt.gvfs:
+	$(MSBUILD) libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.WindowsPhone/libgvfswinrt.WindowsPhone.vcxproj //p:Configuration=Release //p:Platform=ARM 
+	$(MSBUILD) libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/libgvfswinrt.Windows.vcxproj //p:Configuration=Release //p:Platform=Win32 
+
+winrt.libs: winrt.lua winrt.gvfs
+
+winrt.plugins:
+	$(MSBUILD) plugins/luasocket/source/winrt/luasocket/luasocket/luasocket.WindowsPhone/luasocket.WindowsPhone.vcxproj //p:Configuration=Release //p:Platform=ARM 
+	$(MSBUILD) plugins/luasocket/source/winrt/luasocket/luasocket/luasocket.Windows/luasocket.Windows.vcxproj //p:Configuration=Release //p:Platform=Win32 
 	
-winrt.core: winrt.shaders
-	$(MSBUILD) winrt/gideros.sln //p:Configuration=Release //p:Platform=ARM 
-	$(MSBUILD) winrt/gideros.sln //p:Configuration=Release //p:Platform=Win32
+winrt.core: winrt.libs winrt.shaders
+	$(MSBUILD) winrt/gideros/gideros.WindowsPhone/gideros.WindowsPhone.vcxproj //p:Configuration=Release //p:Platform=ARM 
+	$(MSBUILD) winrt/gideros/gideros.Windows/gideros.Windows.vcxproj //p:Configuration=Release //p:Platform=Win32 
 	 
-		
+winrt.template: winrt.core winrt.plugins 
+	rm -rf $(RELEASE)/Templates/VisualStudio
+	mkdir -p $(RELEASE)/Templates
+	cp -r ui/Templates/VisualStudio $(RELEASE)/Templates
+	#X86 Release version for Windows
+	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	cp lua/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	cp $(RELEASE)/AllPlugins/WinRT/Release/Win32/*.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	#ARM release version for WinPhone
+	cp winrt/gideros/gideros.WindowsPhone/ARM/Release/gideros.WindowsPhone/gideros.WindowsPhone.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	cp lua/luawinrt/luawinrt/luawinrt.WindowsPhone/ARM/Release/luawinrt.WindowsPhone/luawinrt.WindowsPhone.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.WindowsPhone/ARM/Release/libgvfswinrt.WindowsPhone/libgvfswinrt.WindowsPhone.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	cp $(RELEASE)/AllPlugins/WinRT/Release/ARM/*.WindowsPhone.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+
+winrt.tgz: winrt.template
+	tar -czf $@ "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+			
