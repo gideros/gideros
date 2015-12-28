@@ -46,7 +46,8 @@ objfiles = \
     gfile.o \
     gpath.o
 
-CXXFLAGS = -Og -g -D_REENTRANT -DGIDEROS_LIBRARY -DSTRICT_LINUX $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -DGIDEROS_LIBRARY -DSTRICT_LINUX -std=gnu++0x -fPIC $(INCLUDEPATHS)
+  CFLAGS = -Og -g -D_REENTRANT -DGIDEROS_LIBRARY -DSTRICT_LINUX -fPIC $(INCLUDEPATHS)
 
 links = -lpthread
 
@@ -54,7 +55,7 @@ links = -lpthread
 	g++ $(CXXFLAGS) -c $<
 
 %.o : %.c
-	gcc $(CXXFLAGS) -c $<
+	gcc $(CFLAGS) -c $<
 
 gvfs.so: $(objfiles) $(links)
 	g++ -o gvfs.so -shared $(objfiles) $(links)

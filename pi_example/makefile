@@ -59,7 +59,8 @@ INCLUDEPATHS = \
 -I/opt/vc/include/interface/vmcs_host/linux \
 -I/opt/vc/include/interface/vcos/pthreads
 
-CXXFLAGS = -Og -g -D_REENTRANT -DSTRICT_LINUX -DRASPBERRY_PI -DRPI_NO_X -DFT2_BUILD_LIBRARY -std=gnu++0x $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -DSTRICT_LINUX -DRASPBERRY_PI -DRPI_NO_X -DFT2_BUILD_LIBRARY -std=gnu++0x -fPIE $(INCLUDEPATHS)
+  CFLAGS = -Og -g -D_REENTRANT -DSTRICT_LINUX -DRASPBERRY_PI -DRPI_NO_X -DFT2_BUILD_LIBRARY -fPIE $(INCLUDEPATHS)
 
 #-DPTW32_STATIC_LIB /
 #-DOPT_GENERIC /
@@ -67,7 +68,7 @@ CXXFLAGS = -Og -g -D_REENTRANT -DSTRICT_LINUX -DRASPBERRY_PI -DRPI_NO_X -DFT2_BU
 #-DFT2_BUILD_LIBRARY /
 #-DPYSTRING_LIBRARY
 
-links = \
+LINKS = \
 ../libgid/external/zlib-1.2.8/build/gcc463_pi/libzlibx.a \
 gvfs.so \
 lua.so \
@@ -77,7 +78,7 @@ gid.so \
 -lpthread \
 -lGLESv2 -lEGL -lm -lbcm_host -L/opt/vc/lib
 
-objfiles = pi.o \
+OBJFILES = pi.o \
 accelerometerbinder.o         alertdialogbinder.o \
 application.o                 applicationbinder.o \
 asyncloader.o                 audiobinder.o \
@@ -181,10 +182,10 @@ path2dbinder.o path.o ft-path.o svg-path.o
 	g++ $(CXXFLAGS) -c $<
 
 %.o : %.c
-	gcc $(CXXFLAGS) -c $<
+	gcc $(CFLAGS) -c $<
 
-pi: $(objfiles) gvfs.so lua.so gideros.so pystring.so gid.so
-	g++ -o pi $(objfiles) $(links)
+pi: $(OBJFILES) gvfs.so lua.so gideros.so pystring.so gid.so
+	g++ -o pi $(OBJFILES) $(LINKS)
 
 -include pi.dep
 -include box2d1.dep
@@ -256,4 +257,4 @@ depend :
 
 .PHONY : clean
 clean :
-	rm $(objfiles)
+	rm $(OBJFILES) pi

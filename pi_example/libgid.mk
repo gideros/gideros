@@ -70,7 +70,8 @@ snappy-c.o \
 snappy-sinksource.o \
 snappy-stubs-internal.o
 
-CXXFLAGS = -Og -g -D_REENTRANT -DGIDEROS_LIBRARY -DSTRICT_LINUX $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -DGIDEROS_LIBRARY -DSTRICT_LINUX -std=gnu++0x -fPIC $(INCLUDEPATHS)
+  CFLAGS = -Og -g -D_REENTRANT -DGIDEROS_LIBRARY -DSTRICT_LINUX -fPIC $(INCLUDEPATHS)
 
 links = \
 ../libgid/external/jpeg-9/build/gcc463_pi/libjpeg.a \
@@ -78,7 +79,7 @@ links = \
 ../libgid/external/mpg123-1.15.3/lib/gcc463_pi/libmpg123.a \
 ../libgid/external/openal-soft-1.13/build/gcc463_pi/libopenal.so \
 ../libgid/external/zlib-1.2.8/build/gcc463_pi/libzlibx.a \
--lpthread
+-lpthread gvfs.so
 
 # ../libgid/external/glew-1.10.0/lib/gcc463_pi/libGLEW.a 
 
@@ -86,16 +87,16 @@ links = \
 	g++ $(CXXFLAGS) -c $<
 
 %.o : %.c
-	gcc $(CXXFLAGS) -c $<
+	gcc $(CFLAGS) -c $<
 
-gid.so: $(objfiles) $(links)
+gid.so: $(objfiles) gvfs.so
 	g++ -o gid.so -shared $(objfiles) $(links)
 
-ginput-pi.o: ../libgid/src/pi/ginput-pi.cpp \
- ../libgid/include/ginput.h ../libgid/include/gglobal.h \
- ../libgvfs/gexport.h ../libgid/include/gevent.h \
- ../libgid/include/pi/ginput-pi.h
-	g++ -std=c++11 $(CXXFLAGS) -c $<
+#ginput-pi.o: ../libgid/src/pi/ginput-pi.cpp \
+# ../libgid/include/ginput.h ../libgid/include/gglobal.h \
+# ../libgvfs/gexport.h ../libgid/include/gevent.h \
+# ../libgid/include/pi/ginput-pi.h
+#	g++ -std=c++11 $(CXXFLAGS) -c $<
 
 snappy.o: ../libgid/external/snappy-1.1.0/snappy.cpp
 	g++ $(CXXFLAGS) -c $<
