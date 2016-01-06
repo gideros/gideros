@@ -8,17 +8,10 @@ This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.ph
 
 ]]
 
-local bit=require("bit")
-print("bitop output=",bit.tobit(0xffffffff))
-print("bitop bor=",bit.bor(1, 2, 4, 8))
-
 application:setBackgroundColor(255)
 
-cl=application:get("commandLine")
-print("command line=",cl)
-
 application:setFps(60)
-print ("hello from Lua!")
+print ("hello")
 
 -- load texture, create bitmap from it and set as background
 local background = Bitmap.new(Texture.new("sky_world.png"))
@@ -46,35 +39,6 @@ stage:addChild(bird1)
 stage:addChild(bird2)
 stage:addChild(bird3)
 stage:addChild(bird4)
-
---local alertDialog = AlertDialog.new("Error: not found", "Try reinstalling all software", "Cancel","OK", "No Way!")
---local alertDialog2 = AlertDialog.new("Important Question", "Should the UK be a member of the EU?", "Cancel", "Yes", "NOOOOOOOOO")
-
-local function onComplete(event)
-  print(event.buttonIndex, event.buttonText)
-end
-
-local function onComplete2(event)
-  print("Number 2:", event.buttonIndex, event.buttonText)
-end
-
-
---alertDialog:addEventListener(Event.COMPLETE, onComplete)
---alertDialog2:addEventListener(Event.COMPLETE, onComplete2)
-
-stage:addEventListener(Event.KEY_DOWN, function(event) 
- 				         if event.keyCode==KeyCode.F then 
-				           application:setFullScreen(true) 
-				         else 
-				           application:setFullScreen(false)
-					 end
-				       end)
-
-sound=Sound.new("1.wav")
-soundchannel=sound:play(0,false)
-soundchannel:setLooping(false)
---soundchannel:setPosition(300)
-soundchannel:setPitch(1.5)
 
 function onMouseDown(event)
   print (event.x, event.y)

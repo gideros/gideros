@@ -305,7 +305,7 @@ int main(int argc, char *argv[])
    esInitContext ( &esContext );
    esContext.userData = &userData;
 
-   esCreateWindow ( &esContext, "Hello Triangle", 320, 240, ES_WINDOW_RGB );
+   esCreateWindow ( &esContext, "Hello Triangle", 960, 640, ES_WINDOW_RGB );
 
 //   if ( !Init ( &esContext ) )
 //      return 0;
@@ -397,7 +397,6 @@ int main(int argc, char *argv[])
 
     while(1)
     {
-        printf("tick");
 
         gettimeofday(&t2, &tz);
         deltatime = (float)(t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) * 1e-6);

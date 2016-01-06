@@ -4,7 +4,8 @@ INCLUDEPATHS = -I../libpystring
 
 objfiles = pystring.o
 
-CXXFLAGS = -Og -g -D_REENTRANT -DPYSTRING_LIBRARY $(INCLUDEPATHS)
+  CFLAGS = -Og -g -D_REENTRANT -DPYSTRING_LIBRARY -fPIC $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -DPYSTRING_LIBRARY -std=gnu++0x -fPIC $(INCLUDEPATHS)
 
 links =
 
@@ -12,7 +13,7 @@ links =
 	g++ $(CXXFLAGS) -c $<
 
 %.o : %.c
-	gcc $(CXXFLAGS) -c $<
+	gcc $(CFLAGS) -c $<
 
 pystring.so: $(objfiles) $(links)
 	g++ -o pystring.so -shared $(objfiles) $(links)
