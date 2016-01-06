@@ -8,9 +8,13 @@
 #include <stack>
 #include <string>
 #include <vector>
+#include <ppltasks.h>
 
 #include "giderosapi.h"
 
+using namespace concurrency;
+using namespace Windows::Foundation;
+using namespace Windows::Foundation::Collections;
 using namespace Windows::ApplicationModel;
 using namespace Windows::ApplicationModel::Core;
 using namespace Windows::ApplicationModel::Activation;
@@ -54,6 +58,7 @@ void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::
 	files->clear();
 	directories->clear();
 
+#if 0
 	WIN32_FIND_DATAA ffd;
 	HANDLE hFind;
 
@@ -82,6 +87,47 @@ void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::
 	} while (FindNextFileA(hFind, &ffd) != 0);
 
 	FindClose(hFind);
+#else
+	std::string dirstar;
+	int dirlen = strlen(dir);
+	if (dirlen > 0 && (dir[dirlen - 1] == '/' || dir[dirlen - 1] == '\\'))
+		dirstar = std::string(dir,dirlen-1);
+	else
+		dirstar = std::string(dir) ;
+	std::wstring wsTmp(dirstar.begin(), dirstar.end());
+	for (auto it = wsTmp.begin(); it != wsTmp.end(); it++)
+		if ((*it) == '/')
+			*it = '\\';
+
+		String^ dirName = ref new String(wsTmp.c_str());
+		StorageFolder ^fld=nullptr;
+		task<int> work=create_task(StorageFolder::GetFolderFromPathAsync(dirName)).then([&](StorageFolder^ folder)
+		{
+			fld = folder;
+			return fld->GetFilesAsync();
+		}).then([&](task<IVectorView<StorageFile^>^> task) {
+			for (auto it = task.get()->First(); it->HasCurrent; it->MoveNext())
+			{
+				StorageFile^ file = it->Current;
+				std::wstring ws = file->Name->Data();
+				std::string fn(ws.begin(), ws.end());
+				files->push_back(fn);
+			}
+			return fld->GetFoldersAsync();
+		}).then([&](task<IVectorView<StorageFolder^>^> task) {
+			for (auto it = task.get()->First(); it->HasCurrent; it->MoveNext())
+			{
+				StorageFolder^ file = it->Current;
+				std::wstring ws = file->Name->Data();
+				std::string fn(ws.begin(), ws.end());
+				directories->push_back(fn);
+			}
+			return 0;
+		});
+		while (!work.is_done())
+			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+
+#endif
 }
 
 // ######################################################################
