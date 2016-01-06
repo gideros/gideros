@@ -4,7 +4,7 @@ WINRT_SHADERS_FILE=dx11_shaders.c
 BIN2C=$(ROOT)/scripts/bin2c
 
 
-winrt.shaders: $(BIN2C)
+$(WINRT_SHADERS_PATH)/$(WINRT_SHADERS_FILE): $(BIN2C) $(addsuffix .hlsl,$(addprefix $(WINRT_SHADERS_PATH)/,$(WINRT_SHADERS)))
 	rm -f $(WINRT_SHADERS_PATH)/$(WINRT_SHADERS_FILE)
 	for s in $(WINRT_SHADERS); do $(FXC) //T vs_4_0_level_9_3 //E VShader //Fo $(WINRT_SHADERS_PATH)/v$$s.cso $(WINRT_SHADERS_PATH)/$$s.hlsl; done
 	for s in $(WINRT_SHADERS); do $(FXC) //T ps_4_0_level_9_3 //E PShader //Fo $(WINRT_SHADERS_PATH)/p$$s.cso $(WINRT_SHADERS_PATH)/$$s.hlsl; done
@@ -14,6 +14,8 @@ winrt.shaders: $(BIN2C)
 	#cp winrt/*.cso winrt_example/giderosgame/giderosgame.WindowsPhone/Assets
 	#cp winrt/*.cso "ui/Templates/VisualStudio/WinRT Template/giderosgame/giderosgame.Windows/Assets"
 	#cp winrt/*.cso "ui/Templates/VisualStudio/WinRT Template/giderosgame/giderosgame.WindowsPhone/Assets"
+
+winrt.shaders: $(WINRT_SHADERS_PATH)/$(WINRT_SHADERS_FILE)
 
 winrt.lua:
 	$(MSBUILD) lua/luawinrt/luawinrt/luawinrt.WindowsPhone/luawinrt.WindowsPhone.vcxproj //p:Configuration=Release //p:Platform=ARM 
@@ -48,6 +50,25 @@ winrt.template: winrt.core winrt.plugins
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.WindowsPhone/ARM/Release/libgvfswinrt.WindowsPhone/libgvfswinrt.WindowsPhone.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	cp $(RELEASE)/AllPlugins/WinRT/Release/ARM/*.WindowsPhone.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 
-winrt.tgz: winrt.template
-	tar -czf $@ "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+winrt.player: winrt.template
+	@echo "VERSION" $(GIDEROS_VERSION)
+	rm -rf /c/winrt_player
+	cp winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak
+	sed -e 's/2015\.10/$(GIDEROS_VERSION)/'	winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak >winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest
+	$(MSBUILD) winrt_example/giderosgame/giderosgame.WindowsPhone/giderosgame.WindowsPhone.vcxproj //t:Publish //p:Configuration=Release //p:Platform=ARM //p:AppxBundle=Always
+	cp winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest
+	rm winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak
+	cp winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak
+	sed -e 's/2015\.10/$(GIDEROS_VERSION)/'	winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak >winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest
+	$(MSBUILD) winrt_example/giderosgame/giderosgame.Windows/giderosgame.Windows.vcxproj //t:Publish //p:Configuration=Release //p:Platform=Win32 //p:AppxBundle=Always
+	cp winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest
+	rm winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak
+	mkdir -p $(RELEASE)/Players
+	rm -rf $(RELEASE)/Players/WinRT
+	mv /c/winrt_player $(RELEASE)/Players/WinRT
+	
+
+winrt.zip: winrt.player
+	rm -f $@
+	P=$(PWD); cd $(RELEASE); zip -r $$P/$@ "Templates/VisualStudio/WinRT Template" Players/WinRT
 			
