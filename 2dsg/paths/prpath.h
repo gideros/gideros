@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 struct PrPath *prParseFtGlyph(FT_Outline *outline);
-struct PrPath *prParseSvgPath(size_t length, const char *pathString);
+struct PrPath *prParseSvgPath(const char *pathString);
 void prFreePath(struct PrPath *svgPath);
 
 #ifdef __cplusplus

@@ -230,10 +230,9 @@ void GLCanvas::initializeGL() {
  TODO: bu hata olayini iyi dusunmek lazim. bi timer event'inde hata olursa, o timer tekrar cagirilmiyordu. sebebi bu yuzden olsa gerek.
  TODO: belki de lua'yi exception'li derlemek lazim. koda baktigimda oyle birseyi destekliyordu
  */
-void GLCanvas::paintGL() {
-	GStatus status;
-	application_->enterFrame(&status);
 
+bool GLCanvas::checkLuaError(GStatus status)
+{
 	if (status.error()) {
 		running_ = false;
 
@@ -248,7 +247,16 @@ void GLCanvas::paintGL() {
 
 		application_->deinitialize();
 		application_->initialize();
+		return true;
 	}
+	return false;
+}
+
+void GLCanvas::paintGL() {
+	GStatus status;
+	application_->enterFrame(&status);
+
+	checkLuaError(status);
 
 	application_->clearBuffers();
 	application_->renderScene();
@@ -1048,6 +1056,7 @@ bool GLCanvas::event(QEvent *event){
             Event event(Event::APPLICATION_RESIZE);
             GStatus status;
             application_->broadcastEvent(&event, &status);
+            checkLuaError(status);
         }
     }
     else if(event->type() == QEvent::FocusIn){
@@ -1055,6 +1064,7 @@ bool GLCanvas::event(QEvent *event){
             Event event(Event::APPLICATION_RESUME);
             GStatus status;
             application_->broadcastEvent(&event, &status);
+            checkLuaError(status);
         }
     }
     else if(event->type() == QEvent::WindowUnblocked){
@@ -1062,6 +1072,7 @@ bool GLCanvas::event(QEvent *event){
             Event event(Event::APPLICATION_RESUME);
             GStatus status;
             application_->broadcastEvent(&event, &status);
+            checkLuaError(status);
         }
     }
     else if(event->type() == QEvent::FocusOut){
@@ -1069,6 +1080,7 @@ bool GLCanvas::event(QEvent *event){
             Event event(Event::APPLICATION_SUSPEND);
             GStatus status;
             application_->broadcastEvent(&event, &status);
+            checkLuaError(status);
         }
     }
     else if(event->type() == QEvent::WindowBlocked){
@@ -1076,6 +1088,7 @@ bool GLCanvas::event(QEvent *event){
             Event event(Event::APPLICATION_SUSPEND);
             GStatus status;
             application_->broadcastEvent(&event, &status);
+            checkLuaError(status);
         }
     }
     return QGLWidget::event(event);

@@ -53,6 +53,7 @@
 #include <gapplication.h>
 #include <gapplication-js.h>
 #include <applicationmanager.h>
+#include <emscripten.h>
 
 extern "C" {
 int g_getFps();
@@ -130,8 +131,9 @@ ApplicationManager::ApplicationManager(bool player,const char *appname,const cha
 	gpath_addDrivePrefix(2, "|T|");
 	gpath_addDrivePrefix(2, "|t|");
 
+	bool hasDocuments=EM_ASM_INT_V({ return FS.documentsOk; });
 	gpath_setDriveFlags(0, GPATH_RO);
-	gpath_setDriveFlags(1, GPATH_RW | GPATH_REAL);
+	gpath_setDriveFlags(1, (hasDocuments?GPATH_RW:GPATH_RO) | GPATH_REAL);
 	gpath_setDriveFlags(2, GPATH_RW | GPATH_REAL);
 
 	gpath_setAbsolutePathFlags(GPATH_RW | GPATH_REAL);
@@ -253,17 +255,22 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation) {
 	if (player_ == true)
 		refreshLocalIPs();
 
-	if (width > height) {
+/*	if (width > height) {
 		width_ = height;
 		height_ = width;
 	} else {
 		width_ = width;
 		height_ = height;
-	}
+	}*/
 
+	width_=width;
+	height_=height;
+	updateHardwareOrientation();
 	application_->setResolution(width_, height_);
-
-	switch (rotation) {
+	if (ShaderEngine::Engine)
+	 ShaderEngine::Engine->reset(true);
+ 
+/*	switch (rotation) {
 	case 0:
 		deviceOrientation_ = ePortrait;
 		break;
@@ -282,12 +289,11 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation) {
 	}
 
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
-
-	updateHardwareOrientation();
+*/
 }
 
 void ApplicationManager::updateHardwareOrientation() {
-	Orientation orientation = application_->orientation();
+/*	Orientation orientation = application_->orientation();
 
 	bool b1 = orientation == ePortrait || orientation == ePortraitUpsideDown;
 	bool b2 = deviceOrientation_ == ePortrait
@@ -297,7 +303,8 @@ void ApplicationManager::updateHardwareOrientation() {
 		hardwareOrientation_ = deviceOrientation_;
 	else
 		hardwareOrientation_ = orientation;
-
+*/
+        hardwareOrientation_ = eFixed;
 	application_->setHardwareOrientation(hardwareOrientation_);
 }
 

@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{f9d2c644-9c0b-41e9-b66f-8f48fd1e7bb7}</ItemsProjectGuid>
+    <ItemsRootNamespace>giderosxaml</ItemsRootNamespace>
+    <ItemsProjectName>giderosxaml.Shared</ItemsProjectName>
+    <SharedGUID>9fd4af0a-93d0-4455-84eb-dcc2c7c76e36</SharedGUID>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)gapplication.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gevent.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gexport.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gfile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gglobal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gideros.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)giderosapi.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)glog.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gpath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gplugin.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gproxy.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)greferenced.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lauxlib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lua.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)luaconf.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lualib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+</Project>

@@ -227,17 +227,17 @@ void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::Swap
 
 	float scaley;
 
-	if (useXaml){
-		scaley = 1;
-	}
-	else {
+//	if (useXaml){
+//		scaley = 1;
+//	}
+//	else {
 		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
 		scaley = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
-    }
+//    }
 
 	float basex = 0;
 	float basey = 0;
@@ -415,6 +415,8 @@ public:
 	void background();
 	void resize(int width, int height);
 
+	Windows::UI::Xaml::Controls::SwapChainPanel^ getRoot();
+
 private:
 	void loadProperties();
 	void loadLuaFiles();
@@ -444,6 +446,8 @@ private:
 	bool luaFilesLoaded_;
 
 	int nframe_;
+
+	Platform::WeakReference xamlRoot_;
 };
 
 
@@ -738,20 +742,22 @@ void NetworkManager::calculateMD5(const char* file)
 
 ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel ^swapChainPanel, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 {
+	if (swapChainPanel!=nullptr)
+		xamlRoot_ = Platform::WeakReference(swapChainPanel);
 
 	InitD3D(useXaml, Window, swapChainPanel, width, height);
 	InitXAudio2();
 
-	if (useXaml)
-		contentScaleFactor = 1;
-	else {
+//	if (useXaml)
+//		contentScaleFactor = 1;
+//	else {
 		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
 		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
-	}
+//	}
 
 	width_ = width;
 	height_ = height;
@@ -919,6 +925,10 @@ ApplicationManager::~ApplicationManager()
 
 	gpath_cleanup();
 
+}
+
+Windows::UI::Xaml::Controls::SwapChainPanel^ ApplicationManager::getRoot(){
+	return xamlRoot_.Resolve<Windows::UI::Xaml::Controls::SwapChainPanel>();
 }
 
 void ApplicationManager::getStdCoords(float xp, float yp, float &x, float &y)
@@ -1473,6 +1483,10 @@ extern "C" {
 	void gdr_initialize(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::SwapChainPanel^ swapChainPanel, int width, int height, bool player, const wchar_t* resourcePath, const wchar_t* docsPath, const wchar_t* tempPath)
 	{
 		s_manager = new ApplicationManager(useXaml, Window, swapChainPanel, width, height, player, resourcePath, docsPath, tempPath);
+	}
+
+	Windows::UI::Xaml::Controls::SwapChainPanel^ gdr_getRootView(){
+		return s_manager->getRoot();
 	}
 
 	void gdr_drawFrame(bool useXaml)

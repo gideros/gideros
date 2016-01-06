@@ -15,8 +15,11 @@ private:
 	static int setLineColor(lua_State* L);
 	static int setFillColor(lua_State* L);
 	static int setPath(lua_State* L);
+	static int setSvgPath(lua_State* L);
+	static int setFontPath(lua_State* L);
 	static int setTexture(lua_State* L);
 	static int setLineThickness(lua_State* L);
+	static int setConvex(lua_State* L);
 };
 
 #endif

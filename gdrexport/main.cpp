@@ -195,6 +195,43 @@ enum DeviceFamily
   e_Html5
 };
 
+static bool bitwiseMatchReplace(unsigned char *b,int bo,const unsigned char *m,int ms,const unsigned char *r)
+{
+	 if (!bo) //Simple case, no bit offset
+	 {
+		 if (memcmp(b,m,ms))
+				 return false;
+		 memcpy(b,r,ms);
+		 return false;
+	 }
+	 for (int k=0;k<ms;k++)
+	 {
+		 unsigned char b1=(b[k]|(b[k+1]<<8))>>bo;
+		 if (b1!=m[k]) return false;
+	 }
+	 for (int k=0;k<ms;k++)
+	 {
+		 b[k]&=(0xFF>>(8-bo));
+		 b[k]|=r[k]<<bo;
+		 b[k+1]&=(0xFF<<bo);
+		 b[k+1]|=(r[k]>>(8-bo));
+	 }
+	 return true;
+}
+
+static void bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r,int rs)
+{
+ int bmo=(bs-ms)*8;
+ unsigned char *ub=(unsigned char *)b;
+ const unsigned char *um=(const unsigned char *)m;
+ const unsigned char *ur=(const unsigned char *)r;
+ for (int k=0;k<bmo;k++)
+ {
+	 if (bitwiseMatchReplace(ub+(k>>3),k&7,um,ms,ur))
+		 k+=(ms*8)-1;
+ }
+}
+
 static void fileCopy(	const QString& srcName,
                         const QString& destName,
                         const QList<QStringList>& wildcards,
@@ -232,7 +269,12 @@ static void fileCopy(	const QString& srcName,
         in.close();;
 
         for (int i = 0; i < replaceList[match].size(); ++i)
-            data.replace(replaceList[match][i].first, replaceList[match][i].second);
+        	if (replaceList[match][i].first.size()==replaceList[match][i].second.size()) //Perform bitwise replacement if sizes are equal
+        		bitwiseReplace(data.data(),data.size(),
+        			replaceList[match][i].first.constData(),replaceList[match][i].first.size(),
+        			replaceList[match][i].second.constData(),replaceList[match][i].second.size());
+        	else
+        		data.replace(replaceList[match][i].first, replaceList[match][i].second);
 
         QFile out(destName);
         if (!out.open(QFile::WriteOnly))
@@ -425,6 +467,7 @@ void usage()
     fprintf(stderr, "    -organization <name>       #organization name\n");
     fprintf(stderr, "    -domain <domain_name>      #domain name\n");
     fprintf(stderr, "    -bundle <bundle_id>        #bundle id\n");
+    fprintf(stderr, "    -category <app category>   #category of your app\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Options winrt: \n");
     fprintf(stderr, "    -organization <name>       #organization name\n");
@@ -838,9 +881,12 @@ int main(int argc, char *argv[])
             replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
         }
         else if(deviceFamily == e_MacOSXDesktop){
+            QString category = "public.app-category.games";
+            if(args.contains("category"))
+                category = args["category"];
             if(args.contains("bundle"))
                 replaceList1 << qMakePair(QString("com.yourcompany."+base).toUtf8(), args["bundle"].toUtf8());
-            replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>public.app-category.games</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+properties.version+"</string>\n	<key>NOTE</key>").toUtf8());
+            replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+properties.version+"</string>\n	<key>CFBundleName</key>\n	<string>"+base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
         }
         else if(deviceFamily == e_iOS){
             if(args.contains("bundle"))
@@ -1324,16 +1370,22 @@ int main(int argc, char *argv[])
     if(deviceFamily == e_MacOSXDesktop){
         outputDir.cdUp();
         outputDir.cd("Frameworks");
+        QString script = "";
         QProcess postProcess;
+        QString cmd;
         QStringList frameworks = outputDir.entryList(QStringList() << "*.framework");
         for(int i = 0; i < frameworks.size(); ++i){
             QString filename = outputDir.absoluteFilePath(frameworks[i]);
-            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"/Versions/Current\"");
+            cmd = "codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"/Versions/Current\"";
+            script += cmd+"\n";
+            processOutput(cmd);
         }
         QStringList dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+            cmd = "codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"";
+            script += cmd+"\n";
+            processOutput(cmd);
         }
 
         outputDir.cdUp();
@@ -1341,14 +1393,18 @@ int main(int argc, char *argv[])
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+            cmd = "codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"";
+            script += cmd+"\n";
+            processOutput(cmd);
         }
 
         outputDir.cd("bearer");
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+            cmd = "codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"";
+            script += cmd+"\n";
+            processOutput(cmd);
         }
 
         outputDir.cdUp();
@@ -1356,7 +1412,9 @@ int main(int argc, char *argv[])
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+            cmd = "codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"";
+            script += cmd+"\n";
+            processOutput(cmd);
         }
 
         outputDir.cdUp();
@@ -1364,7 +1422,9 @@ int main(int argc, char *argv[])
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+            cmd = "codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"";
+            script += cmd+"\n";
+            processOutput(cmd);
         }
 
         outputDir.cdUp();
@@ -1372,7 +1432,9 @@ int main(int argc, char *argv[])
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+            cmd = "codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"";
+            script += cmd+"\n";
+            processOutput(cmd);
         }
 
         outputDir.cdUp();
@@ -1380,7 +1442,9 @@ int main(int argc, char *argv[])
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+            cmd = "codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"";
+            script += cmd+"\n";
+            processOutput(cmd);
         }
 
         outputDir.cdUp();
@@ -1388,16 +1452,27 @@ int main(int argc, char *argv[])
         dylibs = outputDir.entryList(QStringList() << "*.dylib");
         for(int i = 0; i < dylibs.size(); ++i){
             QString filename = outputDir.absoluteFilePath(dylibs[i]);
-            processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"");
+            cmd = "codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" \""+filename+"\"";
+            script += cmd+"\n";
+            processOutput(cmd);
         }
 
         outputDir.cdUp();
         outputDir.cdUp();
         outputDir.cdUp();
         outputDir.cdUp();
-        processOutput("codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" --entitlements \"/"+outputDir.absolutePath()+"/Entitlements.plist\" \""+outputDir.absoluteFilePath(base + ".app")+"\"");
+        cmd = "codesign -f -s \"3rd Party Mac Developer Application: "+args["organization"]+"\" --entitlements \"/"+outputDir.absolutePath()+"/Entitlements.plist\" \""+outputDir.absoluteFilePath(base + ".app")+"\"";
+        script += cmd+"\n";
+        processOutput(cmd);
 
-        processOutput("productbuild --component \""+outputDir.absoluteFilePath(base + ".app")+"\" /Applications --sign \"3rd Party Mac Developer Installer: "+args["organization"]+"\" \""+outputDir.absoluteFilePath(base + ".pkg")+"\"");
+        cmd = "productbuild --component \""+outputDir.absoluteFilePath(base + ".app")+"\" /Applications --sign \"3rd Party Mac Developer Installer: "+args["organization"]+"\" \""+outputDir.absoluteFilePath(base + ".pkg")+"\"";
+        script += cmd+"\n";
+        processOutput(cmd);
+
+        QFile file(outputDir.absoluteFilePath("package.sh"));
+        file.open(QIODevice::WriteOnly);
+        file.write(script.toStdString().c_str(), qstrlen(script.toStdString().c_str()));
+        file.close();
     }
 #endif
     return 0;

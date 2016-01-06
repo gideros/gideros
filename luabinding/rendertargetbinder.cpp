@@ -48,8 +48,12 @@ int RenderTargetBinder::clear(lua_State *L)
     GRenderTarget *renderTarget = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 1));
     unsigned int color = luaL_checkinteger(L, 2);
     float alpha = luaL_optnumber(L, 3, 1.0);
+    int x=luaL_optinteger(L,4,0);
+    int y=luaL_optinteger(L,5,0);
+    int w=luaL_optinteger(L,6,-1);
+    int h=luaL_optinteger(L,7,-1);
 
-    renderTarget->clear(color, alpha);
+    renderTarget->clear(color, alpha, x, y, w, h);
 
     return 0;
 }

@@ -4,7 +4,7 @@
 #include "stackchecker.h"
 #include "luaapplication.h"
 #include <luautil.h>
-
+#include <ttfont.h>
 
 Path2DBinder::Path2DBinder(lua_State* L)
 {
@@ -14,8 +14,11 @@ Path2DBinder::Path2DBinder(lua_State* L)
 		{"setLineColor", setLineColor},
 		{"setFillColor", setFillColor},
 		{"setPath", setPath},
+		{"setSvgPath", setSvgPath},
+		{"setFontPath", setFontPath},
 		{"setTexture", setTexture},
 		{"setLineThickness", setLineThickness },
+		{"setConvex", setConvex },
 		{NULL, NULL},
 	};
 
@@ -60,6 +63,17 @@ int Path2DBinder::destruct(lua_State* L)
 	void* ptr = *(void**)lua_touserdata(L, 1);
 	Path2D* shape = static_cast<Path2D*>(ptr);
 	shape->unref();
+
+	return 0;
+}
+
+int Path2DBinder::setConvex(lua_State* L)
+{
+	Binder binder(L);
+	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
+
+	bool convex = lua_toboolean(L, 2);
+	shape->setConvex(convex);
 
 	return 0;
 }
@@ -122,7 +136,7 @@ int Path2DBinder::setPath(lua_State* L)
 	Binder binder(L);
 	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
 
-	const char* commands = luaL_checkstring(L, 2);
+	const char* commands = luaL_optstring(L, 2,"ML*");
 
 	std::vector<float> coords;
     if (lua_type(L, 3) == LUA_TTABLE)
@@ -147,4 +161,53 @@ int Path2DBinder::setPath(lua_State* L)
     shape->setPath(strlen(commands),(const unsigned char *)commands,coords.size(),&(coords[0]));
 
 	return 0;
+}
+
+int Path2DBinder::setSvgPath(lua_State* L)
+{
+	Binder binder(L);
+	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
+
+	const char* spath = luaL_checkstring(L, 2);
+
+	PrPath *pr=prParseSvgPath(spath);
+	if (pr)
+	{
+		shape->setPath(pr);
+		prFreePath(pr);
+	}
+
+	return 0;
+}
+
+int Path2DBinder::setFontPath(lua_State* L)
+{
+	Binder binder(L);
+	FontBase* font = NULL;
+	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
+	font = static_cast<FontBase*>(binder.getInstance("FontBase", 2));
+	if (font->getType()!=FontBase::eTTFont)
+	{
+		lua_pushstring(L,"TTFont required");
+		lua_error(L);
+	}
+	int ch= luaL_checkinteger(L,3);
+    TTFont *tf=static_cast<TTFont*>(font);
+    FT_Face face=(FT_Face)tf->getFace();
+
+    FT_UInt glyphIndex = FT_Get_Char_Index(face, ch);
+    if ((glyphIndex != 0)&&(!FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT)))
+    {
+        if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
+        {
+        	PrPath *pr=prParseFtGlyph(&(face->glyph->outline));
+        	if (pr)
+        	{
+        		shape->setPath(pr);
+        		prFreePath(pr);
+        	}
+        }
+    }
+
+    return 0;
 }

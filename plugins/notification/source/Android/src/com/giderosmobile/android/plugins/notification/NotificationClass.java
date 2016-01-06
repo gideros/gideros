@@ -125,12 +125,12 @@ public class NotificationClass extends BroadcastReceiver
 			if(bundle != null){	
 				if(bundle.getBoolean("push_notification"))
 				{
-					int id = bundle.getInt("id");
-					String title = bundle.getString("title");
-					String text = bundle.getString("message");
-					int number = bundle.getInt("number");
-					String sound = bundle.getString("sound");
-					String custom = bundle.getString("custom");
+					int id = bundle.getInt("id",0);
+					String title = bundle.getString("title", "");
+					String text = bundle.getString("message", "");
+					int number = bundle.getInt("number", 0);
+					String sound = bundle.getString("sound", "");
+					String custom = bundle.getString("custom", "");
 					if(canDispatch){
 						onPushNotification(id, title, text, number, sound, custom, true);
 					}
@@ -142,12 +142,12 @@ public class NotificationClass extends BroadcastReceiver
 				else
 				{
 					
-					int id = bundle.getInt("id");
-					String title = bundle.getString("title");
-					String text = bundle.getString("message");
-					int number = bundle.getInt("number");
-					String sound = bundle.getString("sound");
-					String custom = bundle.getString("custom");
+					int id = bundle.getInt("id",0);
+					String title = bundle.getString("title", "");
+					String text = bundle.getString("message", "");
+					int number = bundle.getInt("number",0);
+					String sound = bundle.getString("sound", "");
+					String custom = bundle.getString("custom", "");
 					if(canDispatch){
 						onLocalNotification(id, title, text, number, sound, custom, true);
 					}

@@ -10,6 +10,7 @@ VPATH = \
 ..\2dsg;\
 ..\2dsg\gfxbackends;\
 ..\2dsg\gfxbackends\gl2;\
+..\2dsg\paths;\
 ..\luabinding;\
 ..\libnetwork;\
 ..\libpvrt;\
@@ -42,6 +43,7 @@ INCLUDEPATHS = \
 -I..\2dsg \
 -I..\2dsg\gfxbackends \
 -I..\2dsg\gfxbackends\gl2 \
+-I..\2dsg\paths \
 -I..\libgid\include
 
 CXXFLAGS = -O2 -fno-keep-inline-dllexport $(INCLUDEPATHS)
@@ -174,8 +176,9 @@ gl2ShaderBuffer.o \
 gl2ShaderEngine.o \
 gl2ShaderProgram.o \
 gl2ShaderTexture.o \
-shaderbinder.o \
-ftlibrarysingleton.o
+shaderbinder.o gl2PathShaders.o \
+ftlibrarysingleton.o \
+path2dbinder.o path.o ft-path.o svg-path.o
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<
@@ -245,3 +248,5 @@ depend :
 	g++ $(INCLUDEPATHS) -MM ..\libgid\src\utf8.c > utf8.dep
 	g++ $(INCLUDEPATHS) -MM ../external/minizip-1.1/source/ioapi.c > ioapi.dep
 	g++ $(INCLUDEPATHS) -MM ../external/minizip-1.1/source/unzip.c > unzip.dep
+	g++ $(INCLUDEPATHS) -MM ../2dsg/paths/*.cpp > paths.dep
+	g++ $(INCLUDEPATHS) -MM ../2dsg/paths/*.c > paths2.dep

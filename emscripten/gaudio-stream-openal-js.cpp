@@ -593,19 +593,62 @@ private:
             channel->buffers.pop_front();
         }
 
+        int sampSize=channel->sound->bitsPerSample*channel->sound->numChannels/8;
+        int sampMult=1;
+        if (channel->sound->sampleRate<22050)
+            sampMult++;
+        if (channel->sound->sampleRate<11025)
+            sampMult+=2;
+
         unsigned int pos = (channel->sound->loader.tell(channel->file) * 1000LL) / channel->sound->sampleRate;
-        size_t size = channel->sound->loader.read(channel->file, BUFFER_SIZE, data);
+        size_t size = channel->sound->loader.read(channel->file, BUFFER_SIZE/sampMult, data);
 
         if (size == 0 && channel->looping)
         {
             channel->sound->loader.seek(channel->file, 0, SEEK_SET);
             pos = 0;
-            size = channel->sound->loader.read(channel->file, BUFFER_SIZE, data);
+            size = channel->sound->loader.read(channel->file, BUFFER_SIZE/sampMult, data);
         }
 
         if (size != 0)
         {
-            alBufferData(buffer, channel->sound->format, data, size, channel->sound->sampleRate);
+            //printf("SampRate:%d SampMult:%d SampSize:%d\n",channel->sound->sampleRate,sampMult,sampSize);
+            if (sampMult>1)
+            {
+             //Expand buffer to match sampleRate             
+             int nsmp=size/sampSize;
+                if (sampSize==1)
+                {
+                 int8_t *b=(int8_t *)(data+size*sampMult);
+                 for (int k=nsmp-1;k>=0;k--)
+                 {
+                     int8_t smp=((int8_t *)data)[k];
+                     for (int j=0;j<sampMult;j++)
+                         *(--b)=smp;
+                 }
+                }
+                else if (sampSize==2)
+                {
+                 int16_t *b=(int16_t *)(data+size*sampMult);
+                 for (int k=size-1;k>=0;k--)
+                 {
+                     int16_t smp=((int16_t *)data)[k];
+                     for (int j=0;j<sampMult;j++)
+                         *(--b)=smp;
+                 }
+                }
+                else if (sampSize==4)
+                {
+                 int32_t *b=(int32_t *)(data+size*sampMult);
+                 for (int k=size-1;k>=0;k--)
+                 {
+                     int32_t smp=((int32_t *)data)[k];
+                     for (int j=0;j<sampMult;j++)
+                         *(--b)=smp;
+                 }                
+                }
+            }
+            alBufferData(buffer, channel->sound->format, data, size*sampMult, channel->sound->sampleRate*sampMult);
             alSourceQueueBuffers(channel->source, 1, &buffer);
             channel->buffers.push_back(std::make_pair(buffer, pos));
             if (!channel->paused)
