@@ -9,9 +9,9 @@ WINRT_PROJECT=$(1)/$(2)/$(2).$(3)/$(2).$(3).vcxproj
 #$(call WINRT_MANIFEST basepath name target)
 WINRT_MANIFEST=$(1)/$(2)/$(2).$(3)/$(2).$(3).Package.appxmanifest
 #$(call WINRT_BUILD_WIN basepath name)
-WINRT_BUILD_WIN=$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=Release //p:Platform=ARM 
+WINRT_BUILD_WIN=$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=Release //p:Platform=Win32
 #$(call WINRT_BUILD_WP basepath name)
-WINRT_BUILD_WP=$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),WindowsPhone) //p:Configuration=Release //p:Platform=Win32 
+WINRT_BUILD_WP=$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),WindowsPhone) //p:Configuration=Release //p:Platform=ARM 
 
 
 
@@ -40,7 +40,21 @@ winrt.plugins:
 	
 winrt.core: winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)
+	#X86 Release version for Windows
+	mkdir -p winrt/Release/gideros.Windows
+	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib winrt/Release/gideros.Windows
+	mkdir -p winrt/Release/luawinrt.Windows
+	cp lua/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib winrt/Release/luawinrt.Windows
+	mkdir -p winrt/Release/libgvfswinrt.Windows
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib winrt/Release/libgvfswinrt.Windows
 	$(call WINRT_BUILD_WP,winrt,gideros)
+	#ARM release version for WinPhone
+	mkdir -p winrt/ARM/Release/gideros.WindowsPhone
+	cp winrt/gideros/gideros.WindowsPhone/ARM/Release/gideros.WindowsPhone/gideros.WindowsPhone.lib winrt/ARM/Release/gideros.WindowsPhone
+	mkdir -p winrt/ARM/Release/luawinrt.WindowsPhone
+	cp lua/luawinrt/luawinrt/luawinrt.WindowsPhone/ARM/Release/luawinrt.WindowsPhone/luawinrt.WindowsPhone.lib winrt/ARM/Release/luawinrt.WindowsPhone
+	mkdir -p winrt/ARM/Release/libgvfswinrt.WindowsPhone
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.WindowsPhone/ARM/Release/libgvfswinrt.WindowsPhone/libgvfswinrt.WindowsPhone.lib winrt/ARM/Release/libgvfswinrt.Windows
 	 
 winrt.template: winrt.core winrt.plugins 
 	rm -rf $(RELEASE)/Templates/VisualStudio
