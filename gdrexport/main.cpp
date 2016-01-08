@@ -1058,7 +1058,7 @@ int main(int argc, char *argv[])
       }
 
         QSet<QString> jetset;
-        jetset << "mp3" << "png" << "jpg" << "jpeg" << "wav";
+        jetset << "mp3" << "mp4" << "png" << "jpg" << "jpeg" << "wav";
 
         QDir path(QFileInfo(projectFileName_).path());
 
