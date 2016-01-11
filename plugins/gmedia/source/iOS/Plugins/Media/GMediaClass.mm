@@ -250,8 +250,8 @@
     if(self.Alayer != nil)
     {
         [self.Alayer removeFromSuperlayer];
-        [self.Alayer release];
         self.Alayer = nil;
+        [self.Alayer release];
     }
     if(self.player != nil){
         [self.player pause];
