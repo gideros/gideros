@@ -197,6 +197,8 @@ public:
 			<CoreWindow^, KeyEventArgs^>(this, &App::KeyUp);
 		Window->PointerWheelChanged += ref new TypedEventHandler
 			<CoreWindow^, PointerEventArgs^>(this, &App::WheelChanged);
+		Window->CharacterReceived += ref new TypedEventHandler
+				<CoreWindow^, CharacterReceivedEventArgs^>(this, &App::KeyChar);
 #else
 		HardwareButtons::BackPressed += ref new EventHandler<BackPressedEventArgs^>(this, &App::OnBackButtonPressed);   
 #endif
@@ -318,6 +320,17 @@ public:
 	{
 		Args->Handled = true;
 		gdr_keyUp((int)Args->VirtualKey);
+	}
+
+	void KeyChar(CoreWindow^ Window, CharacterReceivedEventArgs^ Args)
+	{
+		Args->Handled = true;
+		char buf[16];
+		memset(buf,0,16);
+		wchar_t wc=Args->KeyCode;
+		WideCharToMultiByte(CP_UTF8,0,&wc,1,
+				buf,15,	NULL,NULL);
+		gdr_keyChar(buf);
 	}
 
 	void WheelChanged(CoreWindow^ Window, PointerEventArgs^ Args)

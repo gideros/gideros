@@ -1535,6 +1535,11 @@ extern "C" {
 		ginputp_keyUp(keyCode);
 	}
 
+	void gdr_keyChar(const char *keyChar)
+	{
+		ginputp_keyChar(keyChar);
+	}
+
 	void gdr_mouseDown(int x, int y, int button){
 		lastMouseButton_ = button;
 		float xn, yn;

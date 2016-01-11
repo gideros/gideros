@@ -566,6 +566,11 @@ void LuaApplication::callback(int type, void *event)
         ginput_KeyEvent *event2 = (ginput_KeyEvent*)event;
         application_->keyUp(event2->keyCode, event2->realCode);
     }
+    else if (type == GINPUT_KEY_CHAR_EVENT)
+    {
+        ginput_KeyEvent *event2 = (ginput_KeyEvent*)event;
+        application_->keyChar(event2->charCode);
+    }
     else if (type == GINPUT_TOUCH_BEGIN_EVENT)
     {
         ginput_TouchEvent *event2 = (ginput_TouchEvent*)event;

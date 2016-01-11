@@ -118,13 +118,19 @@ void Stage::touchesCancel(ginput_TouchEvent *event, float sx, float sy, float tx
 
 void Stage::keyDown(int keyCode, int realCode)
 {
-    KeyboardEvent event(KeyboardEvent::KEY_DOWN, keyCode, realCode);
+    KeyboardEvent event(KeyboardEvent::KEY_DOWN, keyCode, realCode,"");
     dispatchToSpritesWithListeners(&event);
 }
 
 void Stage::keyUp(int keyCode, int realCode)
 {
-    KeyboardEvent event(KeyboardEvent::KEY_UP, keyCode, realCode);
+    KeyboardEvent event(KeyboardEvent::KEY_UP, keyCode, realCode,"");
+    dispatchToSpritesWithListeners(&event);
+}
+
+void Stage::keyChar(const char *code)
+{
+    KeyboardEvent event(KeyboardEvent::KEY_CHAR, 0, 0, code);
     dispatchToSpritesWithListeners(&event);
 }
 
@@ -150,6 +156,7 @@ void Stage::populateSpritesWithListeners()
             sprite->hasEventListener(TouchEvent::TOUCHES_END)    ||
             sprite->hasEventListener(TouchEvent::TOUCHES_CANCEL) ||
             sprite->hasEventListener(KeyboardEvent::KEY_DOWN)    ||
+            sprite->hasEventListener(KeyboardEvent::KEY_CHAR)    ||
             sprite->hasEventListener(KeyboardEvent::KEY_UP))
         {
             spritesWithListeners_.push_back(sprite);

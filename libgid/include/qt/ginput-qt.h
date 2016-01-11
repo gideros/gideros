@@ -18,6 +18,8 @@ G_API void ginputp_touchesEnd(int x, int y, int id, float pressure, int touchTyp
 G_API void ginputp_touchesCancel(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[]);
 G_API void ginputp_keyDown(int keyCode);
 G_API void ginputp_keyUp(int keyCode);
+G_API void ginputp_keyChar(const char *keyChar);
+
 
 #ifdef __cplusplus
 }

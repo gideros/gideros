@@ -942,10 +942,10 @@ void GLCanvas::wheelEvent(QWheelEvent* event) {
 }
 
 void GLCanvas::keyPressEvent(QKeyEvent* event) {
-	if (event->isAutoRepeat())
-		return;
-
-	ginputp_keyDown(event->key());
+	if (!event->isAutoRepeat())
+		ginputp_keyDown(event->key());
+	if (!event->text().isEmpty()) //Don't bother propagating empty key strokes
+		ginputp_keyChar(event->text().toUtf8().constData());
 }
 
 void GLCanvas::keyReleaseEvent(QKeyEvent* event) {

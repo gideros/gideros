@@ -60,6 +60,9 @@ winrt.template: winrt.core winrt.plugins
 	rm -rf $(RELEASE)/Templates/VisualStudio
 	mkdir -p $(RELEASE)/Templates
 	cp -r ui/Templates/VisualStudio $(RELEASE)/Templates
+	#Common
+	cp winrt_example/winrt.cpp "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	cp winrt/gideros/giderosapi.h "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	#X86 Release version for Windows
 	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	cp lua/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
@@ -73,6 +76,7 @@ winrt.template: winrt.core winrt.plugins
 
 winrt.player: winrt.template
 	@echo "VERSION" $(GIDEROS_VERSION)
+	cp winrt/gideros/giderosapi.h winrt_example/
 	rm -rf /c/winrt_player
 	cp winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak
 	sed -e 's/2015\.10/$(GIDEROS_VERSION)/'	winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak >winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest
