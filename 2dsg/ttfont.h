@@ -58,7 +58,6 @@ private:
     	unsigned int	height;
     	unsigned int    width;
     	unsigned char *	bitmap;
-    	unsigned int    rows;
     	int             pitch;
     };
     std::map<wchar32_t,GlyphData> glyphCache_;

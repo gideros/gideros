@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <map>
 using namespace Windows::Devices::Sensors;
+using namespace Platform;
 
 struct Pointer{
 	int x;
@@ -174,6 +175,17 @@ public:
 
         ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
+        deleteKeyEvent(event);
+    }
+
+    void keyChar(const char *keychar)
+    {
+        ginput_KeyEvent *event = newKeyEvent(0,0);
+     	if (strlen(keychar)<(sizeof(event->charCode)))
+     	{
+     		strcpy(event->charCode,keychar);
+             gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_CHAR_EVENT, event, 0, this);
+     	}
         deleteKeyEvent(event);
     }
 
@@ -702,8 +714,19 @@ extern "C" {
 void ginput_init()
 {
     s_manager = new InputManager;
-	s_accel = Accelerometer::GetDefault();
-	s_gyro = Gyrometer::GetDefault();
+	try {
+		s_accel = Accelerometer::GetDefault();
+	}
+	catch (Exception^ e)
+	{
+	}
+
+	try {
+		s_gyro = Gyrometer::GetDefault();
+	}
+	catch (Exception^ e)
+	{
+	}
 }
 
 void ginput_cleanup()
@@ -791,6 +814,12 @@ void ginputp_keyUp(int keyCode)
 {
     if (s_manager)
         s_manager->keyUp(keyCode);
+}
+
+void ginputp_keyChar(const char *keyChar)
+{
+    if (s_manager)
+        s_manager->keyChar(keyChar);
 }
 
 void ginput_setMouseToTouchEnabled(int enabled)

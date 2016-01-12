@@ -679,6 +679,9 @@ public:
 
             lua_pushinteger(L, v->realCode);
             lua_setfield(L, -2, "realCode");
+
+            lua_pushstring(L, v->charCode.c_str());
+            lua_setfield(L, -2, "text");
 		}
 		else
 		{

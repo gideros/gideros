@@ -32,6 +32,7 @@ public:
 
     void keyDown(int keyCode, int realCode);
     void keyUp(int keyCode, int realCode);
+    void keyChar(const char *code);
 
     Application* application() const
     {

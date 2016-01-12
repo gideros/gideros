@@ -213,31 +213,22 @@ void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::Swap
 			&g_swapchain);
 	}
 
-	// ----------------------------------------------------------------------
-	// Setup back buffer, get g_backbuffer
-	// ----------------------------------------------------------------------
-
-	ID3D11Texture2D *pBackBuffer;
-	g_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-
-	dx11ShaderEngine::pBackBuffer = pBackBuffer;
-
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
 	float scaley;
 
-	if (useXaml){
-		scaley = 1;
-	}
-	else {
+//	if (useXaml){
+//		scaley = 1;
+//	}
+//	else {
 		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
 		scaley = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
-    }
+//    }
 
 	float basex = 0;
 	float basey = 0;
@@ -748,16 +739,16 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 	InitD3D(useXaml, Window, swapChainPanel, width, height);
 	InitXAudio2();
 
-	if (useXaml)
-		contentScaleFactor = 1;
-	else {
+//	if (useXaml)
+//		contentScaleFactor = 1;
+//	else {
 		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
 		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
 #endif
-	}
+//	}
 
 	width_ = width;
 	height_ = height;
@@ -1456,7 +1447,7 @@ void ApplicationManager::exitRenderLoop()
 void ApplicationManager::resize(int width, int height)
 {
 
-	if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
+	//if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
 
 	width_ = width;
 	height_ = height;
@@ -1542,6 +1533,11 @@ extern "C" {
 	void gdr_keyUp(int keyCode)
 	{
 		ginputp_keyUp(keyCode);
+	}
+
+	void gdr_keyChar(const char *keyChar)
+	{
+		ginputp_keyChar(keyChar);
 	}
 
 	void gdr_mouseDown(int x, int y, int button){

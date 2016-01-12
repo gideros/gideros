@@ -395,6 +395,10 @@ void Application::keyUp(int keyCode, int realCode) {
 	stage_->keyUp(keyCode, realCode);
 }
 
+void Application::keyChar(const char *code) {
+	stage_->keyChar(code);
+}
+
 void Application::correctTouchPositions(ginput_TouchEvent *event) {
 	int &x = event->touch.x;
 	int &y = event->touch.y;

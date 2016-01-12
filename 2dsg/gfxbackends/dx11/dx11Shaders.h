@@ -142,7 +142,6 @@ class dx11ShaderEngine : public ShaderEngine
 	BlendFactor curSrcFactor, curDstFactor;
 	BlendFactor curCSrcFactor, curCDstFactor;
 public:
-	static ID3D11Texture2D* pBackBuffer;
 	dx11ShaderEngine(int sw, int sh);
 	virtual ~dx11ShaderEngine();
 	void reset(bool reinit=false);

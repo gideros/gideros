@@ -127,6 +127,9 @@ EventBinder::EventBinder(lua_State* L)
 	lua_pushstring(L, KeyboardEvent::KEY_DOWN.type());
 	lua_setfield(L, -2, "KEY_DOWN");
 
+	lua_pushstring(L, KeyboardEvent::KEY_CHAR.type());
+	lua_setfield(L, -2, "KEY_CHAR");
+
 	lua_pop(L, 1);
 }
 

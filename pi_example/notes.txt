@@ -1,0 +1,204 @@
+Program received signal SIGSEGV, Segmentation fault.
+Cannot access memory at address 0x0
+0xb6d7685c in ?? () from /usr/lib/arm-linux-gnueabihf/libstdc++.so.6
+(gdb) bt
+#0  0xb6d7685c in ?? () from /usr/lib/arm-linux-gnueabihf/libstdc++.so.6
+#1  0x0006fb94 in std::pair<std::_Rb_tree_iterator<EventDispatcher*>, bool> std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_insert_unique<EventDispatcher*>(EventDispatcher*&&) ()
+#2  0x00092e74 in Sprite::Sprite(Application*) ()
+#3  0x000212c8 in Application::initView() ()
+#4  0x00078dc8 in LuaApplication::initialize() ()
+#5  0x0001d4a0 in main ()
+(gdb) quit
+A debugging session is active.
+
+Recompiled with -g option:
+GL Program log:
+
+Loaded program:45
+Loaded shader:46
+
+Loaded shader:47
+
+GL Program log:
+
+Loaded program:48
+Cannot access memory at address 0x0
+
+Program received signal SIGSEGV, Segmentation fault.
+Cannot access memory at address 0x0
+0xb6d6085c in ?? () from /usr/lib/arm-linux-gnueabihf/libstdc++.so.6
+(gdb) bt
+#0  0xb6d6085c in ?? () from /usr/lib/arm-linux-gnueabihf/libstdc++.so.6
+#1  0x0001b934 in operator-- (this=<synthetic pointer>)
+    at /usr/include/c++/4.9/bits/stl_tree.h:218
+#2  std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_get_insert_unique_pos (
+    this=this@entry=0x15818c <EventDispatcher::allEventDispatchers_>, 
+    __k=@0xbefff29c: 0x173b68) at /usr/include/c++/4.9/bits/stl_tree.h:1454
+#3  0x0001ba08 in std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_insert_unique<EventDispatcher*>(EventDispatcher*&&) (
+    this=0x15818c <EventDispatcher::allEventDispatchers_>, 
+    __v=__v@entry=<unknown type in /home/pi/gideros/gideros/pi_example/pi, CU 0x22f7e, DIE 0x32d48>) at /usr/include/c++/4.9/bits/stl_tree.h:1498
+#4  0x0009c320 in insert (
+    __x=<unknown type in /home/pi/gideros/gideros/pi_example/pi, CU 0x4caf5a, DIE 0x506179>, this=<optimized out>) at /usr/include/c++/4.9/bits/stl_set.h:511
+#5  EventDispatcher (this=0x173b68) at ../libgideros/eventdispatcher.h:78
+#6  Sprite::Sprite (this=0x173b68, application=0x16de88)
+    at ../2dsg/sprite.cpp:16
+#7  0x0001c8c0 in Stage (application=0x16de88, this=0x173b68)
+    at ../2dsg/stage.h:14
+#8  Application::initView (this=0x16de88) at ../2dsg/application.cpp:102
+---Type <return> to continue, or q <return> to quit---
+#9  0x0007c114 in LuaApplication::initialize (this=0x164580)
+    at ../luabinding/luaapplication.cpp:1179
+#10 0x0001a848 in main (argc=<optimized out>, argv=<optimized out>)
+    at pi.cpp:377
+(gdb) quit
+
+Breakpoint 1, Application::initView (this=0x16de88)
+    at ../2dsg/application.cpp:102
+102		stage_ = new Stage(this);
+(gdb) step
+Stage (application=0x16de88, this=0x173b68) at ../2dsg/stage.h:14
+14	    Stage(Application* application) : Sprite(application)
+(gdb) print application
+$1 = (Application *) 0x16de88
+(gdb) step
+Sprite::Sprite (this=0x173b68, application=0x16de88) at ../2dsg/sprite.cpp:16
+16			application_(application), parent_(NULL), isVisible_(true) {
+(gdb) print application
+$2 = (Application *) 0x16de88
+(gdb) step
+EventDispatcher (this=0x173b68) at ../libgideros/eventdispatcher.h:77
+77		{
+(gdb) step
+map (this=0x173b8c) at ../libgideros/eventdispatcher.h:77
+77		{
+(gdb) step
+_Rb_tree (this=0x173b8c) at ../libgideros/eventdispatcher.h:77
+77		{
+(gdb) step
+_Rb_tree_impl (this=0x173b8c) at /usr/include/c++/4.9/bits/stl_tree.h:463
+463		    _M_node_count(0)
+(gdb) step
+464		  { _M_initialize(); }
+(gdb) step
+_M_initialize (this=0x173b8c) at /usr/include/c++/4.9/bits/stl_tree.h:484
+484		    this->_M_header._M_left = &this->_M_header;
+(gdb) step
+485		    this->_M_header._M_right = &this->_M_header;
+(gdb) step
+EventDispatcher (this=0x173b68) at ../libgideros/eventdispatcher.h:77
+77		{
+(gdb) step
+set (this=0x173ba4) at ../libgideros/eventdispatcher.h:77
+77		{
+(gdb) step
+_Rb_tree (this=0x173ba4) at ../libgideros/eventdispatcher.h:77
+77		{
+(gdb) step
+_Rb_tree_impl (this=0x173ba4) at /usr/include/c++/4.9/bits/stl_tree.h:463
+463		    _M_node_count(0)
+(gdb) step
+464		  { _M_initialize(); }
+(gdb) 
+_M_initialize (this=0x173ba4) at /usr/include/c++/4.9/bits/stl_tree.h:484
+484		    this->_M_header._M_left = &this->_M_header;
+(gdb) 
+485		    this->_M_header._M_right = &this->_M_header;
+(gdb) 
+EventDispatcher (this=0x173b68) at ../libgideros/eventdispatcher.h:77
+77		{
+(gdb) 
+set (this=0x173bbc) at ../libgideros/eventdispatcher.h:77
+77		{
+(gdb) 
+_Rb_tree (this=0x173bbc) at ../libgideros/eventdispatcher.h:77
+77		{
+(gdb) 
+_Rb_tree_impl (this=0x173bbc) at /usr/include/c++/4.9/bits/stl_tree.h:463
+463		    _M_node_count(0)
+(gdb) 
+464		  { _M_initialize(); }
+(gdb) 
+_M_initialize (this=0x173bbc) at /usr/include/c++/4.9/bits/stl_tree.h:484
+484		    this->_M_header._M_left = &this->_M_header;
+(gdb) 
+485		    this->_M_header._M_right = &this->_M_header;
+(gdb) 
+EventDispatcher (this=0x173b68) at ../libgideros/eventdispatcher.h:78
+78			allEventDispatchers_.insert(this);
+(gdb) 
+insert (
+    __x=<unknown type in /home/pi/gideros/gideros/pi_example/pi, CU 0x4caf5a, DIE 0x506179>, this=<optimized out>) at /usr/include/c++/4.9/bits/stl_set.h:511
+511		  _M_t._M_insert_unique(std::move(__x));
+(gdb) 
+std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_insert_unique<EventDispatcher*>(EventDispatcher*&&) (
+    this=0x15818c <EventDispatcher::allEventDispatchers_>, 
+    __v=__v@entry=<unknown type in /home/pi/gideros/gideros/pi_example/pi, CU 0x22f7e, DIE 0x32d48>) at /usr/include/c++/4.9/bits/stl_tree.h:1498
+1498		= _M_get_insert_unique_pos(_KeyOfValue()(__v));
+(gdb) 
+std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_get_insert_unique_pos (
+    this=this@entry=0x15818c <EventDispatcher::allEventDispatchers_>, 
+    __k=@0xbefff29c: 0x173b68) at /usr/include/c++/4.9/bits/stl_tree.h:1439
+1439	      _Link_type __x = _M_begin();
+(gdb) 
+_M_begin (this=0x15818c <EventDispatcher::allEventDispatchers_>)
+    at /usr/include/c++/4.9/bits/stl_tree.h:518
+518	      { return static_cast<_Link_type>(this->_M_impl._M_header._M_parent); }
+(gdb) 
+std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_get_insert_unique_pos (
+    this=this@entry=0x15818c <EventDispatcher::allEventDispatchers_>, 
+    __k=@0xbefff29c: 0x173b68) at /usr/include/c++/4.9/bits/stl_tree.h:1440
+1440	      _Link_type __y = _M_end();
+(gdb) 
+_M_end (this=0x15818c <EventDispatcher::allEventDispatchers_>)
+    at /usr/include/c++/4.9/bits/stl_tree.h:529
+529	      { return reinterpret_cast<_Link_type>(&this->_M_impl._M_header); }
+(gdb) 
+std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_get_insert_unique_pos (
+    this=this@entry=0x15818c <EventDispatcher::allEventDispatchers_>, 
+    __k=@0xbefff29c: 0x173b68) at /usr/include/c++/4.9/bits/stl_tree.h:1441
+1441	      bool __comp = true;
+(gdb) 
+1442	      while (__x != 0)
+(gdb) 
+1448	      iterator __j = iterator(__y);
+(gdb) 
+_Rb_tree_iterator (__x=0x158190 <EventDispatcher::allEventDispatchers_+4>, 
+    this=<synthetic pointer>) at /usr/include/c++/4.9/bits/stl_tree.h:190
+190	      : _M_node(__x) { }
+(gdb) 
+std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_get_insert_unique_pos (
+    this=this@entry=0x15818c <EventDispatcher::allEventDispatchers_>, 
+    __k=@0xbefff29c: 0x173b68) at /usr/include/c++/4.9/bits/stl_tree.h:1449
+1449	      if (__comp)
+(gdb) 
+1451		  if (__j == begin())
+(gdb) 
+begin (this=0x15818c <EventDispatcher::allEventDispatchers_>)
+    at /usr/include/c++/4.9/bits/stl_tree.h:729
+729				(this->_M_impl._M_header._M_left));
+(gdb) 
+std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_get_insert_unique_pos (
+    this=this@entry=0x15818c <EventDispatcher::allEventDispatchers_>, 
+    __k=@0xbefff29c: 0x173b68) at /usr/include/c++/4.9/bits/stl_tree.h:1451
+1451		  if (__j == begin())
+(gdb) 
+1452		    return _Res(__x, __y);
+(gdb) 
+pair<std::_Rb_tree_node<EventDispatcher*>*&, std::_Rb_tree_node<EventDispatcher*>*&, void> (__y=<synthetic pointer>, __x=<synthetic pointer>, this=0xbefff278)
+    at /usr/include/c++/4.9/bits/stl_pair.h:145
+145		: first(std::forward<_U1>(__x)), second(std::forward<_U2>(__y)) { }
+(gdb) 
+std::_Rb_tree<EventDispatcher*, EventDispatcher*, std::_Identity<EventDispatcher*>, std::less<EventDispatcher*>, std::allocator<EventDispatcher*> >::_M_get_insert_unique_pos (
+    this=this@entry=0x15818c <EventDispatcher::allEventDispatchers_>, 
+    __k=@0xbefff29c: 0x173b68) at /usr/include/c++/4.9/bits/stl_tree.h:1454
+1454		    --__j;
+(gdb) 
+operator-- (this=<synthetic pointer>)
+    at /usr/include/c++/4.9/bits/stl_tree.h:218
+218		_M_node = _Rb_tree_decrement(_M_node);
+(gdb) 
+Cannot access memory at address 0x0
+
+Program received signal SIGSEGV, Segmentation fault.
+Cannot access memory at address 0x0
+0xb6d6085c in ?? () from /usr/lib/arm-linux-gnueabihf/libstdc++.so.6
