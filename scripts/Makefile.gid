@@ -12,6 +12,7 @@ PLUGINS_ANDROID=$(PLUGINS_ALL) flurry Facebook googlebilling
 ROOT=.
 SDK=$(ROOT)/Sdk
 RELEASE=$(ROOT)/release
+GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | sed 's/^[^"]*"\([^"]*\)"/\1/')
 
 #TOOLS
 QMAKE=qmake

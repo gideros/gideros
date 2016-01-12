@@ -58,6 +58,9 @@ void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::
 ref class App sealed : public IFrameworkView
 {
     bool WindowClosed;
+	std::wstring resourcePath;
+	std::wstring docsPath;
+	std::wstring tempPath;
 
 public:
     virtual void Initialize(CoreApplicationView^ AppView)
@@ -73,6 +76,12 @@ public:
 
     virtual void SetWindow(CoreWindow^ Window)
     {
+  	  resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
+  	  docsPath = ApplicationData::Current->LocalFolder->Path->Data();
+  	  tempPath = ApplicationData::Current->TemporaryFolder->Path->Data();
+  	  bool isPlayer = false;
+
+  	  gdr_initialize(false, Window, nullptr, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
 		Window->Closed += ref new TypedEventHandler
 			<CoreWindow^, CoreWindowEventArgs^>(this, &App::Closed);
 		Window->PointerPressed += ref new TypedEventHandler
@@ -104,16 +113,6 @@ public:
 
     virtual void Run()
     {
-
-	  CoreWindow^ Window = CoreWindow::GetForCurrentThread();
-
-	  std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
-	  std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
-	  std::wstring tempPath = ApplicationData::Current->TemporaryFolder->Path->Data();
-	  bool isPlayer = false;
-
-	  gdr_initialize(false, Window, nullptr, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
-
 	  gdr_drawFirstFrame();
             
       // repeat until window closes
@@ -122,11 +121,12 @@ public:
       }
 
 	  gdr_exitGameLoop();
-
-	  gdr_deinitialize();
     }
     
-    virtual void Uninitialize() {}
+    virtual void Uninitialize()
+    {
+  	  gdr_deinitialize();
+    }
             
     void OnActivated(CoreApplicationView^ CoreAppView, IActivatedEventArgs^ Args)
     {

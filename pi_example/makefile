@@ -55,10 +55,12 @@ INCLUDEPATHS = \
 -I../2dsg/gfxbackends/gl2 \
 -I../2dsg/paths \
 -I../libgid/include \
--I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux
+-I/opt/vc/include \
+-I/opt/vc/include/interface/vmcs_host/linux \
+-I/opt/vc/include/interface/vcos/pthreads
 
-
-CXXFLAGS = -O2 -DSTRICT_LINUX -DRASPBERRY_PI -DRPI_NO_X -DFT2_BUILD_LIBRARY -std=gnu++0x $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -DSTRICT_LINUX -DRASPBERRY_PI -DRPI_NO_X -DFT2_BUILD_LIBRARY -std=gnu++0x -fPIE $(INCLUDEPATHS)
+  CFLAGS = -Og -g -D_REENTRANT -DSTRICT_LINUX -DRASPBERRY_PI -DRPI_NO_X -DFT2_BUILD_LIBRARY -fPIE $(INCLUDEPATHS)
 
 #-DPTW32_STATIC_LIB /
 #-DOPT_GENERIC /
@@ -66,7 +68,7 @@ CXXFLAGS = -O2 -DSTRICT_LINUX -DRASPBERRY_PI -DRPI_NO_X -DFT2_BUILD_LIBRARY -std
 #-DFT2_BUILD_LIBRARY /
 #-DPYSTRING_LIBRARY
 
-links = \
+LINKS = \
 ../libgid/external/zlib-1.2.8/build/gcc463_pi/libzlibx.a \
 gvfs.so \
 lua.so \
@@ -76,7 +78,7 @@ gid.so \
 -lpthread \
 -lGLESv2 -lEGL -lm -lbcm_host -L/opt/vc/lib
 
-objfiles = pi.o \
+OBJFILES = pi.o \
 accelerometerbinder.o         alertdialogbinder.o \
 application.o                 applicationbinder.o \
 asyncloader.o                 audiobinder.o \
@@ -180,10 +182,10 @@ path2dbinder.o path.o ft-path.o svg-path.o
 	g++ $(CXXFLAGS) -c $<
 
 %.o : %.c
-	gcc $(CXXFLAGS) -c $<
+	gcc $(CFLAGS) -c $<
 
-pi: $(objfiles) gvfs.so lua.so gideros.so pystring.so gid.so
-	g++ -o pi $(objfiles) $(links)
+pi: $(OBJFILES) gvfs.so lua.so gideros.so pystring.so gid.so
+	g++ -o pi $(OBJFILES) $(LINKS)
 
 -include pi.dep
 -include box2d1.dep
@@ -241,9 +243,6 @@ depend :
 	g++ $(INCLUDEPATHS) -MM ../libgid/src/utf8.c > utf8.dep
 	g++ $(INCLUDEPATHS) -MM ../external/minizip-1.1/source/ioapi.c > ioapi.dep
 	g++ $(INCLUDEPATHS) -MM ../external/minizip-1.1/source/unzip.c > unzip.dep
-
-.PHONY : dependft
-dependft :
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/base/*.c > ft1.dep
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/raster/raster.c > ft2.dep
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/sfnt/sfnt.c > ft3.dep
@@ -253,8 +252,9 @@ dependft :
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/cff/cff.c > ft7.dep
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/psnames/psnames.c > ft8.dep
 	g++ $(INCLUDEPATHS) -MM -DFT2_BUILD_LIBRARY ../libgid/external/freetype-2.4.12/src/pshinter/pshinter.c > ft9.dep
-
-.PHONY : dependpaths
-dependpaths :
 	g++ $(INCLUDEPATHS) -MM ../2dsg/paths/*.cpp > paths.dep
 	g++ $(INCLUDEPATHS) -MM ../2dsg/paths/*.c > paths2.dep
+
+.PHONY : clean
+clean :
+	rm $(OBJFILES) pi

@@ -6,15 +6,16 @@ INCLUDEPATHS = \
 
 objfiles = all_lua.o
 
-CXXFLAGS = -O2 $(INCLUDEPATHS)
+CXXFLAGS = -Og -g -D_REENTRANT -fPIC -std=gnu++0x $(INCLUDEPATHS)
+  CFLAGS = -Og -g -D_REENTRANT -fPIC $(INCLUDEPATHS)
 
-links =
+links = gvfs.so
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<
 
 %.o : %.c
-	gcc $(CXXFLAGS) -c $<
+	gcc $(CFLAGS) -c $<
 
 lua.so: $(objfiles) $(links)
 	g++ -o lua.so -shared $(objfiles) $(links)
@@ -23,4 +24,4 @@ lua.so: $(objfiles) $(links)
 
 .PHONY : depend
 depend:
-	g++ $(INCLUDEPATHS) -MM ../lua/etc/*.cpp > liblua.dep
+	g++ $(INCLUDEPATHS) -MM ../lua/etc/*.c > liblua.dep

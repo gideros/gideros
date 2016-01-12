@@ -144,9 +144,17 @@ macx {
 	CONFIG += c++11
 }
 
-LIBS += -lqscintilla2
+win32 {
+   LIBS += -lqscintilla2
+}
+
+macx {
+   LIBS += -lqscintilla2
+}
+
+unix:!macx {
+   LIBS += -lqt5scintilla2
+}
 
 RESOURCES += \
     ui.qrc
-
-

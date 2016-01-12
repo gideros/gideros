@@ -213,15 +213,6 @@ void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::Swap
 			&g_swapchain);
 	}
 
-	// ----------------------------------------------------------------------
-	// Setup back buffer, get g_backbuffer
-	// ----------------------------------------------------------------------
-
-	ID3D11Texture2D *pBackBuffer;
-	g_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-
-	dx11ShaderEngine::pBackBuffer = pBackBuffer;
-
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
@@ -1456,7 +1447,7 @@ void ApplicationManager::exitRenderLoop()
 void ApplicationManager::resize(int width, int height)
 {
 
-	if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
+	//if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
 
 	width_ = width;
 	height_ = height;

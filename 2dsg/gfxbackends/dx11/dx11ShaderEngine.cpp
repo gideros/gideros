@@ -128,8 +128,6 @@ void dx11SetupShaders()
 	ShaderProgram::pathShaderStrokeLC = new dx11ShaderProgram(vPathStrokeLC_cso, sizeof(vPathStrokeLC_cso), pPathStrokeLC_cso, sizeof(pPathStrokeLC_cso), pathUniformsSL, pathAttributesSL);
 }
 
-ID3D11Texture2D* dx11ShaderEngine::pBackBuffer=NULL;
-
 dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 {
 	currentBuffer=NULL;
@@ -137,11 +135,14 @@ dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)
 
 	dx11SetupShaders();
 
- D3D11_TEXTURE2D_DESC backbuff_desc;
- pBackBuffer->GetDesc(&backbuff_desc);
+	ID3D11Texture2D* pBackBuffer;
+	HRESULT hr = g_swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
+	
+	D3D11_TEXTURE2D_DESC backbuff_desc;
+	pBackBuffer->GetDesc(&backbuff_desc);
 
- g_dev->CreateRenderTargetView(pBackBuffer, NULL, &g_backbuffer);
- pBackBuffer->Release();
+	g_dev->CreateRenderTargetView(pBackBuffer, NULL, &g_backbuffer);
+	pBackBuffer->Release();
 
 	//Depth / Stencil setup
 	D3D11_TEXTURE2D_DESC descDepth;
@@ -282,13 +283,13 @@ void dx11ShaderEngine::resizeFramebuffer(int width,int height)
 
         // Perform error handling here!
 
-        D3D11_TEXTURE2D_DESC backbuff_desc;
-        pBackBuffer->GetDesc(&backbuff_desc);
-
         // Get buffer and create a render-target-view.
-        ID3D11Texture2D* pBuffer;
+        ID3D11Texture2D* pBackBuffer;
         hr = g_swapchain->GetBuffer(0, __uuidof( ID3D11Texture2D),  (void**) &pBackBuffer );
         // Perform error handling here!
+
+		D3D11_TEXTURE2D_DESC backbuff_desc;
+		pBackBuffer->GetDesc(&backbuff_desc);
 
         g_dev->CreateRenderTargetView(pBackBuffer, NULL, &g_backbuffer);
         pBackBuffer->Release();
@@ -364,6 +365,7 @@ dx11ShaderEngine::~dx11ShaderEngine()
         g_pCBlendState->Release();
 	if (g_pCDSState)
 		g_pCDSState->Release();
+	g_backbuffer->Release();
 }
 
 ShaderTexture *dx11ShaderEngine::createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)
