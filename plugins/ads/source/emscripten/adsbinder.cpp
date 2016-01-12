@@ -122,6 +122,7 @@ static const char *AD_ACTION_END = "adActionEnd";
 static const char *AD_DISMISSED = "adDismissed";
 static const char *AD_DISPLAYED = "adDisplayed";
 static const char *AD_ERROR = "adError";
+static const char *AD_INITIALIZED = "adInitialized";
 
 static char keyWeak = ' ';
 
@@ -264,6 +265,9 @@ private:
 				
 				switch (type)
 				{
+					case GADS_AD_INITIALIZED_EVENT:
+						lua_pushstring(L, AD_INITIALIZED);
+						break;
 					case GADS_AD_RECEIVED_EVENT:
 						lua_pushstring(L, AD_RECEIVED);
 						break;
@@ -581,6 +585,8 @@ static int loader(lua_State *L)
 	lua_setfield(L, -2, "AD_DISMISSED");
     lua_pushstring(L, AD_DISPLAYED);
 	lua_setfield(L, -2, "AD_DISPLAYED");
+	lua_pushstring(L, AD_INITIALIZED);
+	lua_setfield(L, -2, "AD_INITIALIZED");
 	lua_pushstring(L, AD_ERROR);
 	lua_setfield(L, -2, "AD_ERROR");
 	lua_pop(L, 1);

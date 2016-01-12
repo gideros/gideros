@@ -4,15 +4,18 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link href="gideros.css" rel="stylesheet">
+    <link href="pace.css" rel="stylesheet">
     <title>Gideros</title>
   </head>
   <body class="fullscreen">
     <div id="infopane" class="fullscreen flex">
     <figure style="overflow:visible;" id="spinner">
     <img src="gideros.png" />   
-    <div class="flex"><div class="spinner"></div>
-    <div id="status" style="margin-left: 10px;">Downloading...</div></div>
-    <div class="emscripten">
+    <div class="flex">
+     <div class="spinner"></div>
+     <div id="status" style="margin-left: 10px;">Downloading...</div>
+    </div>
+    <div id="progress_box" class="emscripten">
       <progress value="0" max="100" id="progress" hidden=1></progress>  
     </div>
     </figure>
@@ -31,6 +34,7 @@
 <!--    <hr/>
     <textarea class="emscripten" id="output" rows="8"></textarea>
     <hr>-->
+    <script data-pace-options='{ "elements": false, "target": "#progress_box" }' src='pace.min.js'></script>
     <script type='text/javascript'>
       var GAPP_URL="gideros.GApp";
       var statusElement = document.getElementById('status');
@@ -97,6 +101,7 @@
             if (!text) {
             	spinnerElement.hidden = true;
             	infopaneElement.display="none";
+            	Pace.stop();
             }
           }
           statusElement.innerHTML = text;

@@ -30,8 +30,9 @@ GiderosAds.Initialize=function(ad) {
           js.onload = callback;
 	      fjs.parentNode.insertBefore(js, fjs);
 	 }(document, 'script', 'Ads'+capitalizeFirstLetter(ad), function(){
-         if(!GiderosAds.frameworks[ad])
+         if(!GiderosAds.frameworks[ad])        
             GiderosAds.frameworks[ad] = new window['Ads'+capitalizeFirstLetter(ad)]();
+         Module.ccall('gads_onAdInitialized',null,['string'],[ ad ]);	
      }));
 };
 
@@ -63,7 +64,7 @@ GiderosAds.ShowAd=function(ad,params) {
 };
 GiderosAds.HideAd=function(ad,type) {
     if(GiderosAds.frameworks[ad])
-        GiderosAds.frameworks[ad].hideAd(params);
+        GiderosAds.frameworks[ad].hideAd(type);
 };
 GiderosAds.SetAlignment=function(ad,hor,ver) {
     if(GiderosAds.frameworks[ad])

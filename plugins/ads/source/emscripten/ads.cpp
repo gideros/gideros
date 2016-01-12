@@ -199,6 +199,16 @@ public:
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_ERROR_EVENT, event, 1, this);
 	}
 	
+	void onAdInitialized(const char *ad)
+	{
+		gads_SimpleEvent *event = (gads_SimpleEvent*)gevent_CreateEventStruct2(
+            sizeof(gads_SimpleEvent),
+            offsetof(gads_SimpleEvent, ad), ad,
+            offsetof(gads_SimpleEvent, type), "");
+			
+		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_INITIALIZED_EVENT, event, 1, this);
+	}
+	
 	g_id addCallback(gevent_Callback callback, void *udata)
 	{
 		return callbackList_.addCallback(callback, udata);
@@ -408,6 +418,12 @@ void gads_onAdDisplayed(const char *ad, const char *type)
 {
 	if(s_ads)
 		 s_ads->onAdDisplayed(ad,type);
+}
+
+void gads_onAdInitialized(const char *ad)
+{
+	if(s_ads)
+		 s_ads->onAdInitialized(ad);
 }
 
 void gads_onAdError(const char *ad, const char *error)

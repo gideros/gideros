@@ -12,6 +12,10 @@ div.emscripten_border { border: 0px solid black; }
  align-items:center;
 }
 
+#progress_box {
+ margin: 5px;
+}
+
 .spinner {
   height: 30px;
   width: 30px;

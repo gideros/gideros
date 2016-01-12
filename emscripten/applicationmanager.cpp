@@ -171,6 +171,7 @@ ApplicationManager::ApplicationManager(bool player,const char *appname,const cha
 	gaudio_Init();
 
 	// application
+	networkManager_=NULL;
 	application_ = new LuaApplication;
 	application_->setPlayerMode(player_);
 	if (player_)
