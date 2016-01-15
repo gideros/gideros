@@ -23,7 +23,7 @@ public:
 
     QString projectDir_;
 	void setHardwareOrientation(Orientation orientation);
-	void setResolution(int width, int height);
+	void setResolution(int width, int height, bool event);
 	void setFps(int fps);
     void setDrawInfos(bool drawInfos);
     void setScale(float scale);

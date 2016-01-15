@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 
     ui.glCanvas->setExportedApp(true);
     ui.glCanvas->projectDir_ = QDir("assets").absolutePath();
-    
+
     
     width0_ = 320;
     height0_ = 480;
@@ -122,7 +122,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 MainWindow::~MainWindow(){}
 
 void MainWindow::resizeEvent(QResizeEvent*){
-    updateResolution();
+    updateResolution(true);
 }
 
 void MainWindow::closeEvent(QCloseEvent*){
@@ -147,7 +147,7 @@ void MainWindow::resizeWindow(int width, int height){
     }
     resize(width, height);
     
-    updateResolution();
+    updateResolution(false);
 }
 
 void MainWindow::fullScreenWindow(bool fullScreen){
@@ -164,10 +164,10 @@ void MainWindow::fullScreenWindow(bool fullScreen){
             setMaximumSize(16777215, 16777215);
         }
     }
-    updateResolution();
+    updateResolution(true);
 }
 
-void MainWindow::updateResolution(){
+void MainWindow::updateResolution(bool event){
     int width = ui.centralWidget->width();
     int height = ui.centralWidget->height();
     if(ui.glCanvas->getHardwareOrientation() == eLandscapeLeft || ui.glCanvas->getHardwareOrientation() == eLandscapeRight){
@@ -211,7 +211,7 @@ void MainWindow::updateResolution(){
             break;
     }
 
-    ui.glCanvas->setResolution(width, height);
+    ui.glCanvas->setResolution(width, height, event);
 }
 
 void MainWindow::projectNameChanged(const QString& projectName){

@@ -195,7 +195,7 @@ void GLCanvas::setupProperties() {
 		deviceScale_ = devicePixelRatio();
 
 		setHardwareOrientation(ePortrait);
-		setResolution(320, 480);
+		setResolution(320, 480, false);
 		setFps(60);
 		setScale(1);
 		setDrawInfos(false);
@@ -1051,14 +1051,6 @@ bool GLCanvas::event(QEvent *event){
         timerEvent((QTimerEvent *) event);
         return true;
     }
-    else if(event->type() == QEvent::Resize){
-        if(running_){
-            Event event(Event::APPLICATION_RESIZE);
-            GStatus status;
-            application_->broadcastEvent(&event, &status);
-            checkLuaError(status);
-        }
-    }
     else if(event->type() == QEvent::FocusIn){
         if(running_){
             Event event(Event::APPLICATION_RESUME);
@@ -1345,12 +1337,19 @@ Orientation GLCanvas::getHardwareOrientation() {
 	return orientation_;
 }
 
-void GLCanvas::setResolution(int width, int height) {
+void GLCanvas::setResolution(int width, int height,bool event) {
 	width_ = width;
 	height_ = height;
 
 	if (application_->isInitialized())
 		application_->setResolution(width_, height_);
+
+    if(event&&running_){
+        Event event(Event::APPLICATION_RESIZE);
+        GStatus status;
+        application_->broadcastEvent(&event, &status);
+        checkLuaError(status);
+    }
 }
 
 void GLCanvas::setExportedApp(bool exportedApp) {

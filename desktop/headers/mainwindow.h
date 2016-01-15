@@ -31,7 +31,7 @@ class MainWindow : public QMainWindow{
 
         void fullScreenWindow(bool _fullScreen);
         void resizeWindow(int width, int height);
-        void updateResolution();
+        void updateResolution(bool event);
         float deviceScale();
         float scale();
         void setScale(float scale);

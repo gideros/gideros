@@ -277,7 +277,7 @@ void MainWindow::loadSettings(){
     updateAlwaysOnTop();
     updateAutoScale();
     updateOrientation();
-    updateResolution();
+    updateResolution(true);
 }
 
 void MainWindow::checkLoadedSettings(){
@@ -438,7 +438,7 @@ void MainWindow::actionResolution(){
     setWidth( action->property("width").toInt());
     setHeight(action->property("height").toInt());
 
-    updateResolution();
+    updateResolution(true);
 }
 
 void MainWindow::actionFps(){
@@ -485,7 +485,7 @@ void MainWindow::actionScale(){
 
     setScale(scaleProperty);
 
-    updateResolution();
+    updateResolution(true);
 }
 
 void MainWindow::actionFitWindow(){
@@ -545,7 +545,7 @@ void MainWindow::updateHideMenu(){
     else
         ui.menuBar->show();
 
-    updateResolution();
+    updateResolution(true);
 }
 
 void MainWindow::updateFullScreen(){
@@ -555,7 +555,7 @@ void MainWindow::updateFullScreen(){
         this->showNormal();
 }
 
-void MainWindow::updateResolution(){
+void MainWindow::updateResolution(bool event){
     if(autoScale()){
         setWidth(ui.centralWidget->width());
         setHeight(ui.centralWidget->height());
@@ -594,7 +594,7 @@ void MainWindow::updateResolution(){
             break;
     }
 
-    ui.glCanvas->setResolution(width(), height());
+    ui.glCanvas->setResolution(width(), height(),event);
 }
 
 void MainWindow::updateAutoScale(){
@@ -613,7 +613,7 @@ void MainWindow::updateAutoScale(){
 
     resolutionGroup_->setEnabled(!autoScale());
 
-    updateResolution();
+    updateResolution(true);
 }
 
 void MainWindow::updateAlwaysOnTop(){
@@ -635,7 +635,7 @@ void MainWindow::updateFps(){
 void MainWindow::updateOrientation(){
     ui.glCanvas->setHardwareOrientation(orientation());
 
-    updateResolution();
+    updateResolution(true);
 }
 
 void MainWindow::updateDrawInfos(){
@@ -783,7 +783,7 @@ void MainWindow::resizeWindow(int width, int height){
         height = height + ui.menuBar->height();
 
     resize(width, height);
-    updateResolution();
+    updateResolution(false);
 }
 
 void MainWindow::fullScreenWindow(bool _fullScreen){
@@ -795,7 +795,7 @@ void MainWindow::fullScreenWindow(bool _fullScreen){
 
 void MainWindow::resizeEvent(QResizeEvent*){    
     if(autoScale())
-        updateResolution();
+        updateResolution(true);
 }
 
 void MainWindow::closeEvent(QCloseEvent*){

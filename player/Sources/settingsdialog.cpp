@@ -118,7 +118,7 @@ void SettingsDialog::updateMainStatus(){
     mainWindow_->updateFps();
 
     mainWindow_->updateOrientation();
-    mainWindow_->updateResolution();
+    mainWindow_->updateResolution(true);
     mainWindow_->updateBackgroundColor();
     mainWindow_->updateCanvasColor();
     mainWindow_->updateInfoColor();

@@ -113,7 +113,11 @@ win32.install: win32.libs.install win32.app
 	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(QT)/bin/$$f.dll $(WIN32_RELEASE); done
 	mkdir -p $(RELEASE)/Templates/Win32
 	cp -r $(WIN32_RELEASE)/* $(RELEASE)/Templates/Win32 
-	
+	strip $(addprefix $(RELEASE)/Templates/Win32/,GiderosPlayer.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll)
+
+win32.clean:
+	#DUMMY
+		
 win32.plugins: $(addsuffix .win32.plugin,$(PLUGINS_WIN32))
 
 win32.plugins.clean: $(addsuffix .win32.plugin.clean,$(PLUGINS_WIN32))

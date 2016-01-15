@@ -54,7 +54,7 @@ class MainWindow : public QMainWindow{
         void setCanvasColor(QColor canvasColor);
         void setInfoColor(QColor infoColor);
 
-        void updateResolution();
+        void updateResolution(bool event);
         void updateAutoScale();
         void updateAlwaysOnTop();
         void updateFps();

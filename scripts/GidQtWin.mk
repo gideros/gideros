@@ -42,11 +42,11 @@ qtlibs.install: buildqtlibs
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 
-buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel $(addsuffix .qmake.rel,gdrdeamon gdrbridge gdrexport)
+buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel $(addsuffix .qmake.rel,gdrdeamon gdrbridge gdrexport desktop)
 
-qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport)
+qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
-qt.install: buildqt qt5.install
+qt.install: buildqt qt5.install qt.player
 	cp $(ROOT)/ui/release/GiderosStudio.exe $(RELEASE)
 	cp $(ROOT)/player/release/GiderosPlayer.exe $(RELEASE)
 	cp $(ROOT)/texturepacker/release/GiderosTexturePacker.exe $(RELEASE)
@@ -54,6 +54,7 @@ qt.install: buildqt qt5.install
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
 	cp -R $(ROOT)/ui/Tools $(RELEASE)
 	mkdir -p $(RELEASE)/Templates
+	#Other templates	
 	cp -R $(ROOT)/ui/Templates/Eclipse $(RELEASE)/Templates
 	cp -R $(ROOT)/ui/Templates/Xcode4 $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/assets
@@ -68,11 +69,24 @@ qt.install: buildqt qt5.install
 	cp $(ROOT)/gdrexport/release/gdrexport.exe $(RELEASE)/Tools
 	
 QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
-		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml
+		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml \
+		Qt5Multimedia Qt5MultimediaQuick_p QT5MultimediaWidgets
 QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Network Qt5Xml
 QT5PLATFORM=qminimal qoffscreen qwindows
 QTDLLEXT?=
+
+qt.player:
+	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
+	cp $(ROOT)/desktop/release/WindowsDesktopTemplate.exe $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
+	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate; done
+	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/imageformats
+	cp $(QT)/plugins/imageformats/qjpeg.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/imageformats
+	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/platforms
+	for f in $(addsuffix $(QTDLLEXT),$(QT5PLATFORM)); do cp $(QT)/plugins/platforms/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/platforms; done
+	cp $(ROOT)/libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
+	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
+	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins
 
 qt5.install:
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE); done

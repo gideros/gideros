@@ -20,9 +20,9 @@ MINGWMAKE=mingw32-make
 CC=$(QTBASEDIR)/Tools/$(QTMINGW)/bin/gcc
 CXX=$(QTBASEDIR)/Tools/$(QTMINGW)/bin/g++
 
-all: qtapp.install android.install
+all: qtapp.install android.install win32.install winrt.install
 
-clean: qtapp.clean android.clean
+clean: qtapp.clean android.clean win32.clean winrt.clean
 
 #SDK includes
 vpath %.h libgideros:libgvfs:libgid/include:lua/src:libgid/external/openal-soft-1.13/include/AL
