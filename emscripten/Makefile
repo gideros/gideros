@@ -111,6 +111,7 @@ $(TEMPLATE)/gideros.js: libs $(OBJS)
 main: path libs $(TEMPLATE)/gideros.js
 	cp gideros.png $(TEMPLATE)
 	cp gideros.css $(TEMPLATE)
+	cp pace.* $(TEMPLATE)
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))
