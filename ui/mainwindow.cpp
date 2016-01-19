@@ -22,6 +22,7 @@
 #include <QSettings>
 #include <QProcess>
 #include <QMdiArea>
+#include <QDateTime>
 #include "fileassociationsdialog.h"
 #include "textedit.h"
 #include <QTextBlock>
@@ -47,7 +48,6 @@
 #include <QSplitter>
 #include <QImage>
 #include "mdiarea.h"
-#include <QDateTime>
 #include <QToolBar>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -476,10 +476,19 @@ void MainWindow::hideStartPage()
 void MainWindow::advertisement(const QString& host,unsigned short port,unsigned short flags,const QString& name)
 {
 	QString nitem=QString("%1|%2|%3").arg(host).arg(port).arg(flags);
+	time_t ctime=time(NULL);
+	QString nfull=QString("%1|%2|%3|%4").arg(host).arg(port).arg(flags).arg(ctime);
 	for (int k=0;k<players_->count();k++)
-		if (players_->itemData(k)==nitem)
+	{
+		QStringList parts=players_->itemData(k).toString().split('|');
+		if (QString("%1|%2|%3").arg(parts[0]).arg(parts[1]).arg(parts[2])==nitem)
+		{
+			players_->setItemData(k,nfull);
 			return;
-	players_->addItem(QString("%1 (%2)").arg(name).arg(host),nitem);
+		}
+ 	}
+
+	players_->addItem(QString("%1 (%2:%3)").arg(name).arg(host).arg(port),nfull);
 }
 
 void MainWindow::playerChanged(const QString & text)
@@ -750,6 +759,17 @@ void MainWindow::onTimer()
 
 void MainWindow::timerEvent(QTimerEvent*)
 {
+	time_t ctime=time(NULL);
+
+	for (int k=0;k<players_->count();)
+	{
+		QStringList parts=players_->itemData(k).toString().split('|');
+		int itime=parts[3].toInt();
+		if ((itime>ctime)||(itime<(ctime-15)))
+			players_->removeItem(k);
+		else
+			k++;
+	}
 #ifndef NEW_CLIENT
 //	static int i = 0;
 //	printf("tick: %d\n", i++);

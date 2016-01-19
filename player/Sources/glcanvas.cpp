@@ -181,7 +181,7 @@ void GLCanvas::setupProperties() {
 	application_->enableExceptions();
     if (isPlayer_) {
         application_->setPrintFunc(printToServer);
-		server_ = new Server(15000, ::getDeviceName().c_str());
+		server_ = new Server(0, ::getDeviceName().c_str()); //Default port
 
 		// set the global server var to use in print to server function
 		g_server = server_;

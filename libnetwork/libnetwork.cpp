@@ -7,6 +7,8 @@
 #include <time.h>
 #include <stdint.h>
 
+#define ADVERTISE_PERIOD	5	//Advertise every 5 seconds
+
 /*
 BSD behavior
  
@@ -67,7 +69,7 @@ typedef int socklen_t;
 #include <fcntl.h>
 #include <unistd.h>
 
-#define BACKLOG 5
+#define BACKLOG 1 //One connection allowed
 #define INVALID_SOCKET (-1)
 static int closesocket(SOCKET s)
 {
@@ -484,6 +486,42 @@ Server::~Server()
 	cleanup();
 }
 
+void Server::advertise()
+{
+    time_t ctime=time(NULL);
+    if ((broadcastSock_ != INVALID_SOCKET)&&
+    		((lastBcastTime_<=(ctime-ADVERTISE_PERIOD))||
+    				(lastBcastTime_>ctime)))
+    {
+        lastBcastTime_=ctime;
+        struct adv_ {
+            uint8_t signature[8]; // 'Gideros0'
+            uint32_t ip; //INADDR_ANY for same as UDP peer
+            uint16_t port;
+            uint16_t flags;
+            char devName[32];
+        } advPacket;
+        memcpy(advPacket.signature,"Gideros0",8);
+        advPacket.ip=htonl(INADDR_ANY);
+        advPacket.port=htons(port_);
+        advPacket.flags=0; // May be used to differentiate player platform/type
+        memcpy(advPacket.devName,deviceName_,32);
+
+        sockaddr_in ai_addr;
+        memset(&ai_addr, 0, sizeof(ai_addr));
+        ai_addr.sin_family = AF_INET;
+        ai_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
+        ai_addr.sin_port = htons(GIDEROS_DEFAULT_PORT);
+
+        if (sendto(broadcastSock_,(char *) &advPacket,sizeof(advPacket),0,(sockaddr *)&ai_addr,sizeof(ai_addr))<=0)
+        {
+          //Recreate broadcast socket
+            closesocket(broadcastSock_);
+            broadcastSock_=makeBroadcastSocket();
+        }
+    }
+}
+
 void Server::tick(NetworkEvent* event)
 {
 	event->eventCode = eNone;
@@ -499,24 +537,56 @@ void Server::tick(NetworkEvent* event)
 			return;
 		}
 
-		int yes = 1;
-		if (setsockopt(serverSock_, SOL_SOCKET, SO_REUSEADDR, (const char*)&yes, sizeof(int)) == -1)
+/*		if (port_)
 		{
-			cleanup();
-			event->eventCode = eSetReuseAddrError;
-			return;
-		}
+			int yes = 1;
+			if (setsockopt(serverSock_, SOL_SOCKET, SO_REUSEADDR, (const char*)&yes, sizeof(int)) == -1)
+			{
+				cleanup();
+				event->eventCode = eSetReuseAddrError;
+				return;
+			}
+		}*/
 
 		sockaddr_in ai_addr;
 		memset(&ai_addr, 0, sizeof(ai_addr));
 		ai_addr.sin_family = AF_INET;
 		ai_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-		ai_addr.sin_port = htons(port_);
+		ai_addr.sin_port = htons(port_?port_:GIDEROS_DEFAULT_PORT);
 		if (bind(serverSock_, (sockaddr *)&ai_addr, sizeof(ai_addr)) == -1)
 		{
-			cleanup();
-			event->eventCode = eBindError;
-			return;
+			if (port_)
+			{
+				cleanup();
+				event->eventCode = eBindError;
+				return;
+			}
+			else
+			{
+				//No specific port requested, so try again letting the system choose a port
+				memset(&ai_addr, 0, sizeof(ai_addr));
+				ai_addr.sin_family = AF_INET;
+				ai_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+				ai_addr.sin_port = 0;
+				if (bind(serverSock_, (sockaddr *)&ai_addr, sizeof(ai_addr)) == -1)
+				{
+					cleanup();
+					event->eventCode = eBindError;
+				}
+				//Retrieve the choosen port
+				int ai_len=sizeof(ai_addr);
+				if (getsockname(serverSock_, (sockaddr *)&ai_addr, &ai_len) == -1)
+				{
+					cleanup();
+					event->eventCode = eBindError;
+				}
+				port_=ntohs(ai_addr.sin_port);
+			}
+		}
+		else
+		{
+			if (port_==0)
+				port_=GIDEROS_DEFAULT_PORT;
 		}
 
 		if (listen(serverSock_, BACKLOG) == -1)
@@ -539,37 +609,8 @@ void Server::tick(NetworkEvent* event)
 		{
 			if (getError() == EWOULDBLOCK2)
 			{
-				// no connections are present to be accepted, everything is ok,send UDP advertiseent and return
-                time_t ctime=time(NULL);
-                if ((broadcastSock_ != INVALID_SOCKET)&&(lastBcastTime_!=ctime))
-                {
-                    lastBcastTime_=ctime;
-                    struct adv_ {
-                        uint8_t signature[8]; // 'Gideros0'
-                        uint32_t ip; //INADDR_ANY for same as UDP peer
-                        uint16_t port;
-                        uint16_t flags;
-                        char devName[32];
-                    } advPacket;
-                    memcpy(advPacket.signature,"Gideros0",8);
-                    advPacket.ip=htonl(INADDR_ANY);
-                    advPacket.port=htons(port_);
-                    advPacket.flags=0; // May be used to differentiate player platform/type
-                    memcpy(advPacket.devName,deviceName_,32);
-                    
-                    sockaddr_in ai_addr;
-                    memset(&ai_addr, 0, sizeof(ai_addr));
-                    ai_addr.sin_family = AF_INET;
-                    ai_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-                    ai_addr.sin_port = htons(port_); //Should we hardcode to 15000 ?
-                    
-                    if (sendto(broadcastSock_,(char *) &advPacket,sizeof(advPacket),0,(sockaddr *)&ai_addr,sizeof(ai_addr))<=0)
-                    {
-                      //Recreate broadcast socket
-                        closesocket(broadcastSock_);
-                        broadcastSock_=makeBroadcastSocket();
-                    }
-                }
+				// no connections are present to be accepted, everything is ok, return
+				advertise();
 				return;
 			}
 			else
@@ -583,11 +624,12 @@ void Server::tick(NetworkEvent* event)
 
 		setNonBlocking(clientSock_, true);
 
+#if 0 //No let the socket open to prevent reuse of the port
 		// we close the listening serverSock_ in order to prevent more incoming connections on the same port
 		setNonBlocking(serverSock_, false);
 		closesocket(serverSock_);
 		serverSock_ = INVALID_SOCKET;
-
+#endif
 		event->eventCode = eOtherSideConnected;
 		return;
 	}
@@ -595,6 +637,7 @@ void Server::tick(NetworkEvent* event)
 	// send and recv
 	if (clientSock_ != INVALID_SOCKET)
 	{
+		advertise(); //Advertise even when connected, to let studios know we are alive
 		tickRecv(event);
 		if (eFirstError < event->eventCode && event->eventCode < eLastError)
 		{

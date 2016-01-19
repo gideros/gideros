@@ -42,6 +42,7 @@ Application::Application(QObject *parent) :
     connect(client_, SIGNAL(disconnected()), this, SLOT(disconnected()));
     connect(client_, SIGNAL(dataReceived(const QByteArray&)), this, SLOT(dataReceived(const QByteArray&)));
     connect(client_, SIGNAL(ackReceived(unsigned int)), this, SLOT(ackReceived(unsigned int)));
+    connect(client_, SIGNAL(advertisement(const QString&,unsigned short,unsigned short,const QString&)), this, SLOT(advertisement(const QString&,unsigned short,unsigned short,const QString&)));
 
 #if USE_LOCAL_SOCKETS
     server_ = new QLocalServer(this);
@@ -204,7 +205,7 @@ void Application::ackReceived(unsigned int id)
 
 void Application::timer()
 {
-    if (!client_->isConnected() && time_.elapsed() > 5000)
+    if (!client_->isConnected() && time_.elapsed() > 30000)
         QCoreApplication:exit(0);
 
     QDir path(QFileInfo(projectFileName_).path());
@@ -258,6 +259,23 @@ void Application::ignoreConnection()
     QTcpSocket *socket = server2_->nextPendingConnection();
     connect(socket, SIGNAL(disconnected()), socket, SLOT(deleteLater()));
     socket->disconnectFromHost();
+}
+
+void Application::advertisement(const QString& host,unsigned short port,unsigned short flags,const QString& name)
+{
+	QString nitem=QString("%1|%2|%3").arg(host).arg(port).arg(flags);
+	time_t ctime=time(NULL);
+	QString nfull=QString("%1|%2|%3|%4|%5").arg(host).arg(port).arg(flags).arg(ctime).arg(name);
+	for (std::vector<QString>::iterator it=allPlayersList.begin();it!=allPlayersList.end();it++)
+	{
+		QStringList parts=(*it).split('|');
+		if (QString("%1|%2|%3").arg(parts[0]).arg(parts[1]).arg(parts[2])==nitem)
+		{
+			*it=nfull;
+			return;
+		}
+	}
+	allPlayersList.push_back(nfull);
 }
 
 void Application::newConnection()
@@ -319,6 +337,22 @@ void Application::newConnection()
         for (int i = 0; i < log_.size(); ++i)
             outstream << log_[i];
         log_.clear();
+    }
+    else if (command == "discover")
+    {
+    	time_t ctime=time(NULL);
+    	for (std::vector<QString>::iterator it=allPlayersList.begin();it!=allPlayersList.end();)
+    	{
+    		QStringList parts=(*it).split('|');
+    		int itime=parts[3].toInt();
+    		if ((itime>ctime)||(itime<(ctime-15)))
+    		{
+    			it=allPlayersList.erase(it);
+    			continue;
+    		}
+    		outstream << (*it) << QString("\n");
+			it++;
+    	}
     }
     else if (command == "stopdeamon")
     {

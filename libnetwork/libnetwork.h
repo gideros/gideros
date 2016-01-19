@@ -6,6 +6,8 @@
 #include <vector>
 #include <time.h>
 
+#define GIDEROS_DEFAULT_PORT	15000
+
 #ifdef WINSTORE
 
 #ifndef UNICODE
@@ -131,6 +133,7 @@ private:
     char deviceName_[32];
 
 	void cleanup(void);
+	void advertise();
 };
 
 class Client : public NetworkBase

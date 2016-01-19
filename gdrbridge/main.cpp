@@ -47,6 +47,7 @@ static void usage()
     fprintf(stderr, "gdrbridge stop\n");
     fprintf(stderr, "gdrbridge isconnected\n");
     fprintf(stderr, "gdrbridge getlog\n");
+    fprintf(stderr, "gdrbridge discover\n");
     fprintf(stderr, "gdrbridge stopdeamon\n");
 }
 
@@ -157,6 +158,10 @@ int main(int argc, char *argv[])
     else if (arguments[1] == "getlog")
     {
         outstream << QString("getlog");
+    }
+    else if (arguments[1] == "discover")
+    {
+        outstream << QString("discover");
     }
     else if (arguments[1] == "stopdeamon")
     {

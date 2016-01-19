@@ -13,6 +13,7 @@
 #include <dependencygraph.h>
 #include <QStringList>
 #include <QTime>
+#include <vector>
 
 class QTimer;
 class GiderosNetworkClient;
@@ -41,6 +42,7 @@ private slots:
     void disconnected();
     void dataReceived(const QByteArray& data);
     void ackReceived(unsigned int id);
+    void advertisement(const QString&,unsigned short,unsigned short,const QString&);
 
 private slots:
     void timer();
@@ -53,6 +55,14 @@ private:
     void loadMD5();
     void saveMD5();
     std::vector<std::pair<QString, QString> > updateMD5();
+
+private:
+	std::vector<QString> allPlayersList;
+	std::vector<QString> allPlayersPlayList;
+/*	bool prepareStartOnPlayer();
+	void startOnPlayer();
+	void startNextPlayer();
+	void playStarted();*/
 
 private:
     QTimer *timer_;
