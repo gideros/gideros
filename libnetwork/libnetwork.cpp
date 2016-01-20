@@ -574,7 +574,7 @@ void Server::tick(NetworkEvent* event)
 					event->eventCode = eBindError;
 				}
 				//Retrieve the choosen port
-				int ai_len=sizeof(ai_addr);
+				socklen_t ai_len=sizeof(ai_addr);
 				if (getsockname(serverSock_, (sockaddr *)&ai_addr, &ai_len) == -1)
 				{
 					cleanup();
