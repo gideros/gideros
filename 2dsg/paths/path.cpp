@@ -2571,6 +2571,7 @@ void Path2D::fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture
 	if (texture)
 	{
 		if (!shp) shp=ShaderProgram::stdTexture;
+        ShaderEngine::Engine->bindTexture(0,texture->id());
         shp->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,texcoords,4,true,NULL);
 	}
 	else
@@ -2686,7 +2687,7 @@ void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 		float ey) {
 	float fill[4]={fillr_,fillg_,fillb_,filla_};
 	float line[4]={liner_,lineg_,lineb_,linea_};
-	drawPath(path,Matrix4(),fill,line,texturebase_->data,convex_,shader_);
+	drawPath(path,Matrix4(),fill,line,texturebase_?(texturebase_->data):NULL,convex_,shader_);
 }
 
 void Path2D::extraBounds(float* minx, float* miny, float* maxx,
