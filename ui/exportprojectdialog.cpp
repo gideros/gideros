@@ -1,6 +1,7 @@
 #include "exportprojectdialog.h"
 #include "ui_exportprojectdialog.h"
 #include "projectproperties.h"
+#include "pluginschooser.h"
 
 ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent) :
     QDialog(parent),
@@ -58,6 +59,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 
 	connect(ui->architecture, SIGNAL(currentIndexChanged(int)), ui->architectureTab, SLOT(setCurrentIndex(int)));
 	connect(ui->architectureTab, SIGNAL(currentChanged(int)), ui->architecture, SLOT(setCurrentIndex(int)));
+	connect(ui->plugins_choose, SIGNAL(clicked()), this, SLOT(onSelectPlugins()));
 
 	ui->architecture->setCurrentIndex(properties_->architecture);
     ui->android_template->setCurrentIndex(properties_->android_template);
@@ -73,6 +75,10 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->winrt_org->setText(properties->winrt_org);
     ui->winrt_package->setText(properties->winrt_package);
     ui->html5_host->setText(properties->html5_host);
+    ui->html5_mem->setText(QString::number(properties->html5_mem));
+    ui->app_icon->setText(properties->app_icon);
+    ui->app_icon_noexport->setChecked(properties->app_icon_noexport);
+    plugins=properties->plugins;
 
     if (licensed)
     {
@@ -195,4 +201,17 @@ void ExportProjectDialog::onAccepted()
     properties_->encryptCode = ui->encryptCode->isChecked();
     properties_->encryptAssets = ui->encryptAssets->isChecked();
     properties_->html5_host = ui->html5_host->text();
+    properties_->html5_mem = ui->html5_mem->text().toInt();
+    properties_->app_icon = ui->app_icon->text();
+    properties_->app_icon_noexport = ui->app_icon_noexport->isChecked();
+    properties_->plugins=plugins;
+}
+
+void ExportProjectDialog::onSelectPlugins()
+{
+    PluginsChooser dialog(plugins, this);
+	if (dialog.exec() == QDialog::Accepted)
+	{
+		plugins=dialog.selection();
+	}
 }

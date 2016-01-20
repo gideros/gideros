@@ -320,57 +320,7 @@ QDomDocument LibraryTreeWidget::toXml() const
 	QDomElement root = doc.createElement("project");
 
 	QDomElement properties = doc.createElement("properties");
-
-	// graphics options
-	properties.setAttribute("scaleMode", properties_.scaleMode);
-	properties.setAttribute("logicalWidth", properties_.logicalWidth);
-	properties.setAttribute("logicalHeight", properties_.logicalHeight);
-    properties.setAttribute("windowWidth", properties_.windowWidth);
-    properties.setAttribute("windowHeight", properties_.windowHeight);
-	QDomElement imageScales = doc.createElement("imageScales");
-	for (size_t i = 0; i < properties_.imageScales.size(); ++i)
-	{
-		QDomElement scale = doc.createElement("scale");
-
-		scale.setAttribute("suffix", properties_.imageScales[i].first);
-		scale.setAttribute("scale", properties_.imageScales[i].second);
-
-		imageScales.appendChild(scale);
-	}
-	properties.appendChild(imageScales);
-	properties.setAttribute("orientation", properties_.orientation);
-	properties.setAttribute("fps", properties_.fps);
-    properties.setAttribute("version", properties_.version);
-    properties.setAttribute("version_code", properties_.version_code);
-
-	// iOS options
-    properties.setAttribute("retinaDisplay", properties_.retinaDisplay);
-	properties.setAttribute("autorotation", properties_.autorotation);
-
-    // input options
-    properties.setAttribute("mouseToTouch", properties_.mouseToTouch ? 1 : 0);
-    properties.setAttribute("touchToMouse", properties_.touchToMouse ? 1 : 0);
-    properties.setAttribute("mouseTouchOrder", properties_.mouseTouchOrder);
-
-	// export options
-	properties.setAttribute("architecture", properties_.architecture);
-    properties.setAttribute("android_template", properties_.android_template);
-	properties.setAttribute("assetsOnly", properties_.assetsOnly ? 1 : 0);
-	properties.setAttribute("iosDevice", properties_.iosDevice);
-    properties.setAttribute("ios_bundle", properties_.ios_bundle);
-	properties.setAttribute("packageName", properties_.packageName);
-	properties.setAttribute("osx_org", properties_.osx_org);
-	properties.setAttribute("osx_domain", properties_.osx_domain);
-    properties.setAttribute("osx_bundle", properties_.osx_bundle);
-    properties.setAttribute("osx_category", properties_.osx_category);
-    properties.setAttribute("win_org", properties_.win_org);
-	properties.setAttribute("win_domain", properties_.win_domain);
-    properties.setAttribute("winrt_org", properties_.winrt_org);
-    properties.setAttribute("winrt_package", properties_.winrt_package);
-    properties.setAttribute("html5_host", properties_.html5_host);
-    properties.setAttribute("encryptCode", properties_.encryptCode);
-    properties.setAttribute("encryptAssets", properties_.encryptAssets);
-
+	properties_.toXml(doc,properties);
 
 	root.appendChild(properties);
 
@@ -473,83 +423,7 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 		properties_.clear();
 
 		QDomElement properties = root.firstChildElement("properties");
-
-		// graphics options
-		if (!properties.attribute("scaleMode").isEmpty())
-			properties_.scaleMode = properties.attribute("scaleMode").toInt();
-		if (!properties.attribute("logicalWidth").isEmpty())
-			properties_.logicalWidth = properties.attribute("logicalWidth").toInt();
-		if (!properties.attribute("logicalHeight").isEmpty())
-			properties_.logicalHeight = properties.attribute("logicalHeight").toInt();
-        if (!properties.attribute("windowWidth").isEmpty())
-            properties_.windowWidth = properties.attribute("windowWidth").toInt();
-        if (!properties.attribute("windowHeight").isEmpty())
-            properties_.windowHeight = properties.attribute("windowHeight").toInt();
-		QDomElement imageScales = properties.firstChildElement("imageScales");
-		for(QDomNode n = imageScales.firstChild(); !n.isNull(); n = n.nextSibling())
-		{
-			QDomElement scale = n.toElement();
-			if(!scale.isNull())
-				properties_.imageScales.push_back(std::make_pair(scale.attribute("suffix"), scale.attribute("scale").toDouble()));
-		}
-		if (!properties.attribute("orientation").isEmpty())
-			properties_.orientation = properties.attribute("orientation").toInt();
-		if (!properties.attribute("fps").isEmpty())
-			properties_.fps = properties.attribute("fps").toInt();
-
-		// iOS options
-		if (!properties.attribute("retinaDisplay").isEmpty())
-            properties_.retinaDisplay = properties.attribute("retinaDisplay").toInt();
-		if (!properties.attribute("autorotation").isEmpty())
-			properties_.autorotation = properties.attribute("autorotation").toInt();
-        if (!properties.attribute("version").isEmpty())
-            properties_.version = properties.attribute("version");
-        if (!properties.attribute("version_code").isEmpty())
-            properties_.version_code = properties.attribute("version_code").toInt();
-
-        // input options
-        if (!properties.attribute("mouseToTouch").isEmpty())
-            properties_.mouseToTouch = properties.attribute("mouseToTouch").toInt() != 0;
-        if (!properties.attribute("touchToMouse").isEmpty())
-            properties_.touchToMouse = properties.attribute("touchToMouse").toInt() != 0;
-        if (!properties.attribute("mouseTouchOrder").isEmpty())
-            properties_.mouseTouchOrder = properties.attribute("mouseTouchOrder").toInt();
-
-		// export options
-		if (!properties.attribute("architecture").isEmpty())
-			properties_.architecture = properties.attribute("architecture").toInt();
-        if (!properties.attribute("android_template").isEmpty())
-            properties_.android_template = properties.attribute("android_template").toInt();
-		if (!properties.attribute("assetsOnly").isEmpty())
-			properties_.assetsOnly = properties.attribute("assetsOnly").toInt() != 0;
-		if (!properties.attribute("iosDevice").isEmpty())
-			properties_.iosDevice = properties.attribute("iosDevice").toInt();
-        if (!properties.attribute("ios_bundle").isEmpty())
-            properties_.ios_bundle = properties.attribute("ios_bundle");
-		if (!properties.attribute("packageName").isEmpty())
-			properties_.packageName = properties.attribute("packageName");
-        if (!properties.attribute("osx_org").isEmpty())
-			properties_.osx_org = properties.attribute("osx_org");
-        if (!properties.attribute("osx_domain").isEmpty())
-			properties_.osx_domain = properties.attribute("osx_domain");
-        if (!properties.attribute("osx_bundle").isEmpty())
-            properties_.osx_bundle = properties.attribute("osx_bundle");
-        if (!properties.attribute("osx_category").isEmpty())
-            properties_.osx_category = properties.attribute("osx_category").toInt();
-        if (!properties.attribute("win_org").isEmpty())
-			properties_.win_org = properties.attribute("win_org");
-        if (!properties.attribute("win_domain").isEmpty())
-			properties_.win_domain = properties.attribute("win_domain");
-        if (!properties.attribute("winrt_org").isEmpty())
-            properties_.winrt_org = properties.attribute("winrt_org");
-        if (!properties.attribute("winrt_package").isEmpty())
-            properties_.winrt_package = properties.attribute("winrt_package");
-        if (!properties.attribute("html5_host").isEmpty())
-            properties_.html5_host = properties.attribute("html5_host");
-        if (!properties.attribute("encryptCode").isEmpty())
-            properties_.encryptCode = properties.attribute("encryptCode").toInt() != 0;
-        if (!properties.attribute("encryptAssets").isEmpty())
-            properties_.encryptAssets = properties.attribute("encryptAssets").toInt() != 0;
+		properties_.loadXml(properties);
     }
 
 	QTreeWidgetItem* rootitem = createProjectItem(QFileInfo(projectFileName).completeBaseName());

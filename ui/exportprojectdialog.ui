@@ -180,6 +180,11 @@ Example: com.giderosmobile.timthetimber</string>
              <string>Android Studio</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>APK</string>
+            </property>
+           </item>
           </widget>
          </item>
         </layout>
@@ -548,6 +553,20 @@ The package is smaller and may run smoother. Normally the Win32 export uses Wind
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Maximum memory usage (in MB), adjust according to your app needs:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="html5_mem"/>
+         </item>
+        </layout>
+       </item>
+       <item>
         <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -565,21 +584,55 @@ The package is smaller and may run smoother. Normally the Win32 export uses Wind
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="assetsOnly">
-     <property name="toolTip">
-      <string>Only exports Lua codes and assets, and not Java or Xcode source.
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Application icon:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="app_icon"/>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="app_icon_noexport">
+       <property name="text">
+        <string>Not used by lua code</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QCheckBox" name="assetsOnly">
+       <property name="toolTip">
+        <string>Only exports Lua codes and assets, and not Java or Xcode source.
 
 If you make changes to the previous exported project
 on the disk, click this option to export only the Lua codes and assets.
 </string>
-     </property>
-     <property name="text">
-      <string>Export assets only</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+       </property>
+       <property name="text">
+        <string>Export assets only</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QCheckBox" name="encryptCode">
        <property name="text">
@@ -591,6 +644,13 @@ on the disk, click this option to export only the Lua codes and assets.
       <widget class="QCheckBox" name="encryptAssets">
        <property name="text">
         <string>Encrypt asset files</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="plugins_choose">
+       <property name="text">
+        <string>Select plugins...</string>
        </property>
       </widget>
      </item>

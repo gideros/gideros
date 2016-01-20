@@ -58,6 +58,7 @@ SOURCES += \
     newprojectdialog.cpp\
     fileassociationsdialog.cpp\
     fileassociationeditdialog.cpp\
+    pluginschooser.cpp \
     textedit.cpp\
     playersettingsdialog.cpp\
     gotolinedialog.cpp\
@@ -111,6 +112,7 @@ HEADERS  += \
     exampleprojectswidget.h \
     mdiarea.h \
     mdisubwindow.h \
+    pluginschooser.h \
     dependencygraph.h
 
 FORMS    += mainwindow.ui \
@@ -130,6 +132,7 @@ FORMS    += mainwindow.ui \
     exportprojectdialog.ui \
     aboutdialog.ui \
     projectpropertiesdialog.ui \
+    pluginschooser.ui \
     startpagewidget2.ui
 
 win32 {

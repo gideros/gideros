@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <QString>
+#include <QSet>
+#include <QDomDocument>
 
 struct ProjectProperties
 {
@@ -10,6 +12,9 @@ struct ProjectProperties
 	{
 		clear();
 	}
+
+	void loadXml(QDomElement xml);
+	void toXml(QDomDocument doc,QDomElement xml) const;
 
 	void clear()
 	{
@@ -50,8 +55,12 @@ struct ProjectProperties
         winrt_org = "GiderosMobile";
         winrt_package = "com.yourdomain.yourapp";
         html5_host = "";
+        html5_mem = 128;
         encryptCode = false;
         encryptAssets = false;
+        app_icon="";
+        app_icon_noexport=false;
+        plugins.clear();
     }
 
 	// graphics options
@@ -91,6 +100,10 @@ struct ProjectProperties
     QString winrt_org;
     QString winrt_package;
     QString html5_host;
+    int html5_mem;
+    QString app_icon;
+    bool app_icon_noexport;
+    QSet<QString> plugins;
     bool encryptCode;
     bool encryptAssets;
 };

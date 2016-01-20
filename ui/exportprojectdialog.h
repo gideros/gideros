@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QSet>
 class ProjectProperties;
 
 namespace Ui {
@@ -48,10 +49,12 @@ public:
 
 private slots:
 	void onAccepted();
+	void onSelectPlugins();
 
 private:
     Ui::ExportProjectDialog *ui;
 	ProjectProperties* properties_;
+	QSet<QString> plugins;
     QMap<QString, QString> osxCat;
 };
 
