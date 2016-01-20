@@ -32,11 +32,12 @@ public:
 	void setLineThickness(float thickness, float feather);
 	static int buildPath(PrPath *);
 	static void removePath(int);
-	static void drawPath(int path,Matrix4 xform,float fill[4],float line[4],bool convex);
+	static void drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,ShaderProgram *shp);
 	static void strokePath(int path,Matrix4 xform,float line[4]);
-	static void fillPath(int path,Matrix4 xform,float fill[4],bool convex);
+	static void fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,bool convex,ShaderProgram *shp);
 	static void impressPath(int path,Matrix4 xform,ShaderEngine::DepthStencil stencil);
-	static void colorFillBounds(VertexBuffer<float> *vb,float *fill,ShaderEngine::DepthStencil stencil);
+	static void fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture,ShaderEngine::DepthStencil stencil,ShaderProgram *shp);
+	static void getPathBounds(int path,bool fill,bool stroke,float *minx,float *miny,float *maxx,float *maxy);
 };
 
 
