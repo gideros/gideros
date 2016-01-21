@@ -4,10 +4,21 @@
 #include <vector>
 #include <QString>
 #include <QSet>
+#include <QMap>
 #include <QDomDocument>
 
 struct ProjectProperties
 {
+	struct Plugin
+	{
+		QString name;
+		QMap<QString,QString> properties;
+	};
+	struct Export
+	{
+		QString name;
+		QMap<QString,QString> properties;
+	};
 	ProjectProperties()
 	{
 		clear();
@@ -61,6 +72,7 @@ struct ProjectProperties
         app_icon="";
         app_icon_noexport=false;
         plugins.clear();
+        exports.clear();
     }
 
 	// graphics options
@@ -103,9 +115,15 @@ struct ProjectProperties
     int html5_mem;
     QString app_icon;
     bool app_icon_noexport;
-    QSet<QString> plugins;
+    QSet<Plugin> plugins;
+    QSet<Export> exports;
     bool encryptCode;
     bool encryptAssets;
 };
+
+inline bool operator==(const ProjectProperties::Plugin &p1, const ProjectProperties::Plugin &p2) { return (p1.name==p2.name)&&(p1.properties==p2.properties); };
+inline uint qHash(const ProjectProperties::Plugin &p) { return qHash(p.name); };
+inline bool operator==(const ProjectProperties::Export &p1, const ProjectProperties::Export &p2) { return (p1.name==p2.name)&&(p1.properties==p2.properties); };
+inline uint qHash(const ProjectProperties::Export &p) { return qHash(p.name); };
 
 #endif

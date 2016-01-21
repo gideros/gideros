@@ -20,7 +20,8 @@ android.install: android androidlibs.install androidso.install androidplugins.in
 	rm -rf $(ROOT)/android/GiderosAndroidPlayer/libs
 	cp -R $(RELEASE)/Templates/Eclipse/Android\ Template/libs $(ROOT)/android/GiderosAndroidPlayer
 	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) debug;
-	mv $(ROOT)/android/GiderosAndroidPlayer/bin/GiderosAndroidPlayer-debug.apk $(RELEASE)/GiderosAndroidPlayer.apk
+	mkdir -p $(RELEASE)/Players
+	mv $(ROOT)/android/GiderosAndroidPlayer/bin/GiderosAndroidPlayer-debug.apk $(RELEASE)/Players/GiderosAndroidPlayer.apk
 	#cp -R $(ROOT)/android/GiderosAndroidPlayer/assets $(RELEASE)/Templates/Eclipse/Android\ Template
 	#cp $(ROOT)/android/GiderosAndroidPlayer/AndroidManifest.xml $(RELEASE)/Templates/Eclipse/Android\ Template
 

@@ -58,13 +58,41 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 
     //Plugins
 	QDomElement plugins = doc.createElement("plugins");
-	for (QSet<QString>::const_iterator it=this->plugins.begin();it!=this->plugins.end(); it++)
+	for (QSet<Plugin>::const_iterator it=this->plugins.begin();it!=this->plugins.end(); it++)
 	{
 		QDomElement plugin = doc.createElement("plugin");
-		plugin.setAttribute("name", *it);
+		Plugin p=*it;
+		plugin.setAttribute("name", p.name);
+		QMap<QString, QString>::const_iterator i = p.properties.cbegin();
+		while (i != p.properties.cend()) {
+			QDomElement attr = doc.createElement("property");
+			attr.setAttribute("name",i.key());
+			attr.setAttribute("value",i.value());
+			plugin.appendChild(attr);
+		    ++i;
+		}
 		plugins.appendChild(plugin);
 	}
 	properties.appendChild(plugins);
+
+	//Exports
+	QDomElement exports = doc.createElement("exports");
+	for (QSet<Export>::const_iterator it=this->exports.begin();it!=this->exports.end(); it++)
+	{
+		QDomElement plugin = doc.createElement("export");
+		Export p=*it;
+		plugin.setAttribute("name", p.name);
+		QMap<QString, QString>::const_iterator i = p.properties.cbegin();
+		while (i != p.properties.cend()) {
+			QDomElement attr = doc.createElement("property");
+			attr.setAttribute("name",i.key());
+			attr.setAttribute("value",i.value());
+			plugin.appendChild(attr);
+		    ++i;
+		}
+		exports.appendChild(plugin);
+	}
+	properties.appendChild(exports);
 }
 
 void ProjectProperties::loadXml(QDomElement properties)
@@ -158,7 +186,37 @@ void ProjectProperties::loadXml(QDomElement properties)
 		for(QDomNode n = plugins.firstChild(); !n.isNull(); n = n.nextSibling())
 		{
 			QDomElement plugin = n.toElement();
-			if(!plugin.isNull())
-				this->plugins.insert(plugin.attribute("name"));
+			if ((!plugin.isNull())&&(plugin.tagName()=="plugin"))
+			{
+				Plugin p;
+				p.name=plugin.attribute("name");
+				for(QDomNode n = plugin.firstChild(); !n.isNull(); n = n.nextSibling())
+				{
+					QDomElement attr = n.toElement();
+					if ((!attr.isNull())&&(attr.tagName()=="property"))
+						p.properties.insert(attr.attribute("name"),attr.attribute("value"));
+				}
+				this->plugins.insert(p);
+			}
+		}
+
+        //Exports
+        this->exports.clear();
+		QDomElement exports = properties.firstChildElement("exports");
+		for(QDomNode n = exports.firstChild(); !n.isNull(); n = n.nextSibling())
+		{
+			QDomElement plugin = n.toElement();
+			if ((!plugin.isNull())&&(plugin.tagName()=="export"))
+			{
+				Export p;
+				p.name=plugin.attribute("name");
+				for(QDomNode n = plugin.firstChild(); !n.isNull(); n = n.nextSibling())
+				{
+					QDomElement attr = n.toElement();
+					if ((!attr.isNull())&&(attr.tagName()=="property"))
+						p.properties.insert(attr.attribute("name"),attr.attribute("value"));
+				}
+				this->exports.insert(p);
+			}
 		}
 }

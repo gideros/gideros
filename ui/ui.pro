@@ -76,6 +76,7 @@ SOURCES += \
     recentprojectswidget.cpp \
     exampleprojectswidget.cpp \
     projectproperties.cpp \
+    propertyeditingtable.cpp \
     mdiarea.cpp \
     mdisubwindow.cpp \
     dependencygraph.cpp
@@ -107,6 +108,7 @@ HEADERS  += \
     aboutdialog.h \
     projectpropertiesdialog.h \
     projectproperties.h \
+    propertyeditingtable.h \
     startpagewidget2.h \
     recentprojectswidget.h \
     exampleprojectswidget.h \

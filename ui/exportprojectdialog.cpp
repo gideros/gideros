@@ -2,6 +2,10 @@
 #include "ui_exportprojectdialog.h"
 #include "projectproperties.h"
 #include "pluginschooser.h"
+#include "propertyeditingtable.h"
+
+#include <QDir>
+#include <QFile>
 
 ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent) :
     QDialog(parent),
@@ -47,6 +51,9 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     osxCat["Strategy Games"] = "public.app-category.strategy-games";
     osxCat["Trivia Games"] = "public.app-category.trivia-games";
     osxCat["Word Games"] = "public.app-category.word-games";
+
+    exportTypes << "iOS" << "Android" << "Windows" << "MacOSX"
+    		<< "WinRT" << "GApp" << "Win32" << "Html5";
 
 	properties_ = properties;
 
@@ -95,6 +102,42 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
         ui->encryptAssets->setChecked(false);
     }
 
+    //XML based templates
+    xmlTabStart=ui->architectureTab->count();
+    QDir sourceDir("Templates");
+   	QStringList filters;
+    filters << "*.gexport";
+    sourceDir.setNameFilters(filters);
+    QStringList files = sourceDir.entryList(QDir::Files | QDir::Hidden);
+    for(int i = 0; i < files.count(); i++)
+    {
+	       QDomDocument doc("export");
+	       QFile file(sourceDir.absoluteFilePath(files[i]));
+           if (!file.open(QIODevice::ReadOnly))
+                continue;
+            if (!doc.setContent(&file))
+            {
+                file.close();
+                continue;
+            }
+            file.close();
+
+            QDomElement exporter = doc.documentElement();
+            QString exname=exporter.attribute("name");
+            exportTypes << exname;
+            QMap<QString,QString> props;
+        	for (QSet<ProjectProperties::Export>::const_iterator it=properties_->exports.begin();it!=properties_->exports.end(); it++)
+        		if ((*it).name==exname)
+        			props=(*it).properties;
+
+        	PropertyEditingTable *table=new PropertyEditingTable();
+            ui->architectureTab->addTab(table,exname);
+            ui->architecture->addItem(exname);
+            table->fill(exporter,props);
+
+	}
+
+
 	connect(this, SIGNAL(accepted()), this, SLOT(onAccepted()));
 }
 
@@ -103,9 +146,9 @@ ExportProjectDialog::~ExportProjectDialog()
     delete ui;
 }
 
-ExportProjectDialog::DeviceFamily ExportProjectDialog::deviceFamily() const
+QString ExportProjectDialog::exportType() const
 {
-    return (DeviceFamily)ui->architecture->currentIndex();
+    return exportTypes[ui->architecture->currentIndex()];
 }
 
 QString ExportProjectDialog::ios_bundle() const
@@ -205,6 +248,21 @@ void ExportProjectDialog::onAccepted()
     properties_->app_icon = ui->app_icon->text();
     properties_->app_icon_noexport = ui->app_icon_noexport->isChecked();
     properties_->plugins=plugins;
+
+    for (int tab=xmlTabStart;tab<ui->architectureTab->count();tab++)
+    {
+    	QString exname=ui->architectureTab->tabText(tab);
+    	PropertyEditingTable *table=(PropertyEditingTable *)ui->architectureTab->widget(tab);
+     	for (QSet<ProjectProperties::Export>::iterator it=properties_->exports.begin();it!=properties_->exports.end();)
+        		if ((*it).name==exname)
+        			it=properties_->exports.erase(it);
+        		else
+        			it++;
+     	ProjectProperties::Export exp;
+     	exp.name=exname;
+     	exp.properties=table->extract();
+     	properties_->exports.insert(exp);
+    }
 }
 
 void ExportProjectDialog::onSelectPlugins()

@@ -2345,7 +2345,7 @@ void MainWindow::exportProject()
     ExportProjectDialog dialog(&libraryWidget_->getProjectProperties(), true, this);
 	if (dialog.exec() == QDialog::Accepted)
 	{
-		ExportProjectDialog::DeviceFamily deviceFamily = dialog.deviceFamily();
+		QString exportType = dialog.exportType();
 
         QString program = "Tools/gdrexport";
         QStringList arguments;
@@ -2354,21 +2354,14 @@ void MainWindow::exportProject()
         QString templatenamews;
 
 
-        switch (deviceFamily)
+        if (exportType=="iOS")
         {
-        case ExportProjectDialog::e_iOS:
             arguments << "-platform" << "ios";
             arguments << "-bundle" << dialog.ios_bundle();
             templatedir = "Xcode4";
             templatename = "iOS Template";
             templatenamews = "iOS_Template";
-
-            break;
-
-        case ExportProjectDialog::e_Android:
-
-
-
+        } else if (exportType=="Android") {
             templatename = "Android Template";
             templatenamews = "AndroidTemplate";
             arguments << "-platform" << "android";
@@ -2381,34 +2374,26 @@ void MainWindow::exportProject()
                 arguments << "-template" << "eclipse";
                 templatedir = "Eclipse";
             }
-            break;
-
-        case ExportProjectDialog::e_WinRT:
+        } else if (exportType=="WinRT") {
             templatedir = "VisualStudio";
             templatename = "WinRT Template";
             templatenamews = "WinRTTemplate";
             arguments << "-platform" << "winrt";
             arguments << "-organization" << dialog.winrt_org();
             arguments << "-package" << dialog.winrt_package();
-            break;
-
-        case ExportProjectDialog::e_Win32:
+        } else if (exportType=="Win32") {
             templatedir = "win32";
             templatename = "WindowsDesktopTemplate";
             templatenamews = "WindowsDesktopTemplate";
             arguments << "-platform" << "win32";
-            break;
-
-        case ExportProjectDialog::e_WindowsDesktop:
+        } else if (exportType=="Windows") {
             templatedir = "Qt";
             templatename = "WindowsDesktopTemplate";
             templatenamews = "WindowsDesktopTemplate";
             arguments << "-platform" << "windows";
             arguments << "-organization" << dialog.win_org();
             arguments << "-domain" << dialog.win_domain();
-            break;
-
-        case ExportProjectDialog::e_MacOSXDesktop:
+        } else if (exportType=="MacOSX") {
             templatedir = "Qt";
             templatename = "MacOSXDesktopTemplate";
             templatenamews = "MacOSXDesktopTemplate";
@@ -2417,18 +2402,19 @@ void MainWindow::exportProject()
             arguments << "-domain" << dialog.osx_domain();
             arguments << "-bundle" << dialog.osx_bundle();
             arguments << "-category" << dialog.osx_category();
-            break;
-        case ExportProjectDialog::e_GApp:
+        } else if (exportType=="GApp") {
             arguments << "-platform" << "gapp";
-            break;
-        case ExportProjectDialog::e_Html5:
+        } else if (exportType=="Html5") {
             templatedir = "Html5";
             templatename = "Html5";
             templatenamews = "Html5";
             arguments << "-platform" << "html5";
             if (!dialog.html5_host().isEmpty())
                 arguments << "-hostname" << dialog.html5_host();
-            break;
+        }
+        else
+        {
+            arguments << "-platform" << exportType;
         }
 
 

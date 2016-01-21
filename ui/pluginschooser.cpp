@@ -10,11 +10,15 @@
 
 #define ALL_PLUGINS_PATH "All Plugins"
 
-PluginsChooser::PluginsChooser(QSet<QString> selection, QWidget *parent) :
+PluginsChooser::PluginsChooser(QSet<ProjectProperties::Plugin> selection, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PluginsChooserDialog)
 {
 	sel=selection;
+
+	QSet<QString> enabledPlugins;
+	for (QSet<ProjectProperties::Plugin>::iterator it=sel.begin();it!=sel.end();it++)
+		enabledPlugins.insert((*it).name);
 
 	ui->setupUi(this);
 
@@ -60,14 +64,26 @@ PluginsChooser::PluginsChooser(QSet<QString> selection, QWidget *parent) :
             QCheckBox *cb=new QCheckBox("");
 	      ui->plugins->setCellWidget(rows,0,cb);
 	      QString name=plugin.attribute("name");
-	      cb->setChecked(selection.contains(name));
-	      ui->plugins->setItem(rows,1,new QTableWidgetItem(name));
-	      ui->plugins->setItem(rows,2,new QTableWidgetItem(plugin.attribute("description")));
-	      ui->plugins->setItem(rows,3,new QTableWidgetItem(targetList.join(',')));
+	      cb->setChecked(enabledPlugins.contains(name));
+
+	      QTableWidgetItem *item;
+
+	      item=new QTableWidgetItem(name);
+	      item->setFlags(Qt::ItemIsEnabled);
+	      ui->plugins->setItem(rows,1,item);
+
+	      item=new QTableWidgetItem(plugin.attribute("description"));
+	      item->setFlags(Qt::ItemIsEnabled);
+	      ui->plugins->setItem(rows,2,item);
+
+	      item=new QTableWidgetItem(targetList.join(','));
+	      item->setFlags(Qt::ItemIsEnabled);
+	      ui->plugins->setItem(rows,3,item);
 
 	      rows++;
 	}
     ui->plugins->setRowCount(rows);
+    ui->plugins->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 
 
 	connect(this, SIGNAL(accepted()), this, SLOT(onAccepted()));
@@ -78,7 +94,7 @@ PluginsChooser::~PluginsChooser()
     delete ui;
 }
 
-QSet<QString> PluginsChooser::selection() const
+QSet<ProjectProperties::Plugin> PluginsChooser::selection() const
 {
     return sel;
 }
@@ -89,6 +105,10 @@ void PluginsChooser::onAccepted()
 	for(int i = 0; i < ui->plugins->rowCount(); i++)
 	{
 	 if (((QCheckBox *)ui->plugins->cellWidget(i,0))->isChecked())
-			 sel.insert(ui->plugins->item(i,1)->text());
+	 {
+		 ProjectProperties::Plugin p;
+		 p.name=ui->plugins->item(i,1)->text();
+		 sel.insert(p);
+	 }
 	}
 }

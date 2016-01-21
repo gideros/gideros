@@ -1,0 +1,8 @@
+<export name="APK" 
+	description="Export as an Android APK file">
+	<property name="packageName" type="string" title="Package name" description="" default="com.yourdomain.yourapp" />
+	<property name="javaPath" type="dir" title="Java Directory" description="Directory of your java installation" default="" />
+	<rules>
+		
+	</rules>
+</export>

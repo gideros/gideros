@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QMap>
 #include <QSet>
-class ProjectProperties;
+#include "projectproperties.h"
 
 namespace Ui {
     class ExportProjectDialog;
@@ -15,22 +15,10 @@ class ExportProjectDialog : public QDialog
     Q_OBJECT
 
 public:
-	enum DeviceFamily
-	{
-	  e_iOS,
-	  e_Android,
-      e_WindowsDesktop,
-      e_MacOSXDesktop,
-	  e_WinRT,
-	  e_GApp,
-	  e_Win32,
-	  e_Html5
-	};
-
     explicit ExportProjectDialog(ProjectProperties* properties, bool licensed, QWidget *parent = 0);
     ~ExportProjectDialog();
 
-	DeviceFamily deviceFamily() const;
+	QString exportType() const;
     QString ios_bundle() const;
 	QString packageName() const;
     QString androidTemplate() const;
@@ -54,7 +42,9 @@ private slots:
 private:
     Ui::ExportProjectDialog *ui;
 	ProjectProperties* properties_;
-	QSet<QString> plugins;
+	QSet<ProjectProperties::Plugin> plugins;
+	int xmlTabStart;
+	QStringList exportTypes;
     QMap<QString, QString> osxCat;
 };
 
