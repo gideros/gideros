@@ -15,7 +15,8 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp GAppFormat.cpp Utilities.cpp WinRTExport.cpp MacOSXExport.cpp ExportCommon.cpp
+HEADERS += GAppFormat.h Utilities.h WinRTExport.h MacOSXExport.h ExportCommon.h
 
 INCLUDEPATH += ../ui ../libnetwork ../2dsg
 
