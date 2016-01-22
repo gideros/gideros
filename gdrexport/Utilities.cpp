@@ -223,9 +223,11 @@ void Utilities::copyFolder(	const QDir& sourceDir,
     }
 }
 
-void Utilities::processOutput(QString command){
+int Utilities::processOutput(QString command, QString dir){
     QProcess process;
-    process.execute(command);
+    if (!dir.isEmpty())
+    	process.setWorkingDirectory(dir);
+    process.start(command);
     process.waitForFinished();
     bool commandOut = false;
     QString output = process.readAllStandardError();
@@ -245,4 +247,5 @@ void Utilities::processOutput(QString command){
         fprintf(stderr, error.toStdString().c_str());
         fprintf(stderr, "\n");
     }
+    return (process.exitStatus()==QProcess::NormalExit)?process.exitCode():-1;
 }

@@ -12,8 +12,7 @@
 class ExportCommon {
 public:
 	static void copyTemplate(QString templatePath,ExportContext *ctx);
-	static void exportAssets(ExportContext *ctx);
-	static void exportAllAssetsFiles(ExportContext *ctx);
+	static void exportAssets(ExportContext *ctx, bool compileLua);
 	static void exportPropertiesBin(ExportContext *ctx);
 	static void exportLuafilesTxt(ExportContext *ctx);
 	static void exportAllfilesTxt(ExportContext *ctx);

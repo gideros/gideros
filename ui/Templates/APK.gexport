@@ -3,6 +3,19 @@
 	<property name="packageName" type="string" title="Package name" description="" default="com.yourdomain.yourapp" />
 	<property name="javaPath" type="dir" title="Java Directory" description="Directory of your java installation" default="" />
 	<rules>
-		
+		<mkdir>_tmp_</mkdir>
+		<cd>_tmp_</cd>
+		<exec>"[[[exprop.javaPath]]]/bin/jar[[[sys.exeExtension]]]" xf "[[[sys.giderosDir]]]/Players/GiderosAndroidPlayer.apk"</exec>
+		<cd>..</cd>
+		<template name="AndroidTemplate" path="_tmp_">
+		</template>
+		<rmdir>_tmp_</rmdir>
+		<mkdir>assets</mkdir>
+		<cd>assets</cd>
+		<exportAssets/>
+		<exportAllfilesTxt/>
+		<exportLuafilesTxt/>
+		<exportPropertiesBin/>
+		<cd>..</cd>		
 	</rules>
 </export>

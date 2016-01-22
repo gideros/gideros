@@ -24,7 +24,7 @@ void ExportCommon::copyTemplate(QString templatePath,ExportContext *ctx)
     	Utilities::copyFolder(dir, ctx->outputDir, ctx->renameList, ctx->wildcards, ctx->replaceList, QStringList() << "*", QStringList());
 }
 
-void ExportCommon::exportAssets(ExportContext *ctx)
+void ExportCommon::exportAssets(ExportContext *ctx,bool compileLua)
 {
     QStringList allluafiles;
     QStringList allluafiles_abs;
@@ -80,7 +80,7 @@ void ExportCommon::exportAssets(ExportContext *ctx)
     // compile lua files (with luac)
     // disable compile with luac for iOS because 64 bit version
     // http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
-    if (ctx->deviceFamily != e_iOS && ctx->deviceFamily != e_MacOSXDesktop)
+    if (compileLua)
     {
         for (int i = 0; i < allluafiles_abs.size(); ++i)
         {
@@ -208,24 +208,4 @@ void ExportCommon::exportPropertiesBin(ExportContext *ctx)
     }
    	ctx->allfiles.push_back(filename);
    	ctx->allfiles_abs.push_back(QDir::cleanPath(ctx->outputDir.absoluteFilePath(filename)));
-}
-
-void ExportCommon::exportAllAssetsFiles(ExportContext *ctx)
-{
-    if (ctx->deviceFamily == e_Android) //Configure Jet files
-    	ctx->jetset << "mp3" << "mp4" << "png" << "jpg" << "jpeg" << "wav";
-
-	exportAssets(ctx);
-    if(ctx->deviceFamily == e_MacOSXDesktop || ctx->deviceFamily == e_WindowsDesktop)
-        ctx->outputDir.cd("..");
-
-    // write allfiles.txt
-    if (ctx->deviceFamily == e_Android)
-        exportAllfilesTxt(ctx);
-
-    // write luafiles.txt
-    exportLuafilesTxt(ctx);
-
-    // write properties.bin
-    exportPropertiesBin(ctx);
 }

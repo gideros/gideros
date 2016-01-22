@@ -30,7 +30,7 @@ public:
 		                        const QList<QList<QPair<QByteArray, QByteArray> > >& replaceList,
 		                        const QStringList &include,
 		                        const QStringList &exclude);
-	static void processOutput(QString command);
+	static int processOutput(QString command, QString dir=QString());
 };
 
 #endif /* GDREXPORT_UTILITIES_H_ */
