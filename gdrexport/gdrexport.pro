@@ -6,7 +6,7 @@
 
 QT       += core network xml
 
-QT       -= gui
+#QT       -= gui
 
 TARGET = gdrexport
 CONFIG   += console

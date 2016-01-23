@@ -10,9 +10,12 @@
 	<property name="keyStorePass" type="string" title="Key store password" default="" />
 	<property name="keyAliasPass" type="string" title="Key alias password" default="" />
 	<rules>
+		<mkdir>tmp</mkdir>
+		<cd>tmp</cd>
 		<template name="Android Template" path="[[[sys.giderosDir]]]/Templates/Eclipse/Android Template">
 			<replacelist wildcards="*.xml;*.java;*.project">
 				<replace orig="AndroidTemplate" by="[[[project.namews]]]"/>
+				<replace orig="Android Template" by="[[[project.name]]]"/>
 				<replace orig="com.giderosmobile.androidtemplate" by="[[[exprop.packageName]]]"/>
         		<replace orig="android:versionCode=&quot;1&quot;" by="android:versionCode=&quot;[[[project.version_code]]]&quot;"/>
         		<replace orig="android:versionName=&quot;1.0&quot;" by="android:versionName=&quot;[[[project.version]]]&quot;"/>
@@ -23,17 +26,16 @@
         	</replacelist>		
 		</template>
 		<template name="APK" path="[[[sys.giderosDir]]]/Templates/APK">
-			<replacelist wildcards="*.properties">
+			<replacelist wildcards="local.properties">
 				<replace orig="key.store=" by="key.store=[[[exprop.keyStore]]]"/>
 				<replace orig="key.alias=" by="key.alias=[[[exprop.keyAlias]]]"/>
 				<replace orig="key.store.password=" by="key.store.password=[[[exprop.keyStorePass]]]"/>
 				<replace orig="key.alias.password=" by="key.alias.password=[[[exprop.keyAliasPass]]]"/>
         	</replacelist>		
-			<replacelist wildcards="project.properties">
-				<replace orig="target=android-19" by="target=android-[[[exprop.androidTarget]]]"/>
+			<replacelist wildcards="build.xml">
+				<replace orig="GiderosAndroidPlayer" by="[[[project.namews]]]"/>
         	</replacelist>		
 		</template>
-		<cp src="[[[sys.giderosDir]]]/Templates/APK/build.xml" dst="build.xml" />
 		<mkdir>assets</mkdir>
 		<cd>assets</cd>
 		<exportAssets/>
@@ -45,10 +47,20 @@
 		<rmdir>src/com/giderosmobile/android/plugins</rmdir>
 		<rm>libs/gideros.jar</rm>
 		<mv src="gideros.jar" dst="libs/gideros.jar"/>		
+		<appIcon width="36" height="36" dest="res/drawable-ldpi/icon.png"/>
+		<appIcon width="48" height="48" dest="res/drawable-mdpi/icon.png"/>
+		<appIcon width="72" height="72" dest="res/drawable-hdpi/icon.png"/>
+		<appIcon width="96" height="96" dest="res/drawable-xhdpi/icon.png"/>
+		<appIcon width="144" height="144" dest="res/drawable-xxhdpi/icon.png"/>
+		<appIcon width="192" height="192" dest="res/drawable-xxxhdpi/icon.png"/>
 		<exec>
 			<env key="JAVA_HOME" value="[[[exprop.javaPath]]]"/>
 			<env key="ANDROID_HOME" value="[[[exprop.androidPath]]]"/>
 			"[[[exprop.javaPath]]]/bin/java" -classpath "[[[exprop.antPath]]]/lib/ant-launcher.jar" "-Dant.home=[[[exprop.antPath]]]" org.apache.tools.ant.launch.Launcher release
 		</exec>
+		<cp src="bin/[[[project.namews]]]-release-unsigned.apk" dst="../[[[project.namews]]]-unsigned.apk"/>
+		<cp src="bin/[[[project.namews]]]-release.apk" dst="../[[[project.namews]]].apk"/>
+		<cd>..</cd>
+		<rmdir>tmp</rmdir>
 	</rules>
 </export>

@@ -117,6 +117,8 @@ bool ExportXml::ProcessRule(QDomElement rule)
 	{ ExportCommon::exportLuafilesTxt(ctx); return true; }
 	else if (ruleName=="exportPropertiesBin")
 	{ ExportCommon::exportPropertiesBin(ctx); return true; }
+	else if (ruleName=="appIcon")
+		return RuleAppIcon(rule.attribute("width").toInt(),rule.attribute("height").toInt(),ReplaceAttributes(rule.attribute("dest")).trimmed());
 	else
 	  fprintf(stderr, "Rule %s unknown\n",ruleName.toStdString().c_str());
 	return false;
@@ -220,4 +222,10 @@ bool ExportXml::RuleTemplate(QString name,QString path,QDomElement rule)
     fprintf(stderr, "Template: %s [%s]\n",name.toStdString().c_str(),path.toStdString().c_str());
 	ExportCommon::copyTemplate(QDir::current().relativeFilePath(ctx->outputDir.absoluteFilePath(path)),ctx);
 	return true;
+}
+
+bool ExportXml::RuleAppIcon(int width,int height,QString dst)
+{
+ fprintf(stderr, "AppIcon: %dx%d %s\n",width,height,dst.toStdString().c_str());
+ return ExportCommon::appIcon(ctx,width,height,dst);
 }

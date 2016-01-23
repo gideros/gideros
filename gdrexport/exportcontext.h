@@ -11,6 +11,7 @@
 #include <QSet>
 #include <QString>
 #include <QTextStream>
+#include <QImage>
 #include <projectproperties.h>
 #include <dependencygraph.h>
 
@@ -58,6 +59,8 @@ struct ExportContext
     QStringList assetfiles_abs;
     QStringList luafiles;
     QStringList luafiles_abs;
+    //Icons
+    QImage *appicon;
 };
 
 

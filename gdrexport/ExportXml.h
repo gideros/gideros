@@ -24,6 +24,7 @@ class ExportXml {
 	bool RuleCp(QString src,QString dst);
 	bool RuleMv(QString src,QString dst);
 	bool RuleTemplate(QString name,QString path,QDomElement rule);
+	bool RuleAppIcon(int width,int height,QString dst);
 	ExportContext *ctx;
 public:
 	ExportXml(QString xmlFile);

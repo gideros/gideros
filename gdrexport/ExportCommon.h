@@ -16,6 +16,7 @@ public:
 	static void exportPropertiesBin(ExportContext *ctx);
 	static void exportLuafilesTxt(ExportContext *ctx);
 	static void exportAllfilesTxt(ExportContext *ctx);
+	static bool appIcon(ExportContext *ctx,int width,int height,QString output);
 };
 
 #endif /* GDREXPORT_EXPORTCOMMON_H_ */

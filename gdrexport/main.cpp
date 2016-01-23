@@ -187,6 +187,7 @@ int main(int argc, char *argv[])
 
     ExportContext ctx;
     ctx.deviceFamily=e_None;
+    ctx.appicon=NULL;
     QString projectFileName;
     QString output;
     bool encryptCode = false;
