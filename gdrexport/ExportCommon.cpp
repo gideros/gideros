@@ -44,7 +44,7 @@ void ExportCommon::exportAssets(ExportContext *ctx,bool compileLua)
         QString dst = QDir::cleanPath(ctx->outputDir.absoluteFilePath(s1));
 
         QString suffix = QFileInfo(dst).suffix().toLower();
-        if (!ctx->jetset.contains(suffix))
+        if ((!ctx->jetset.isEmpty())&&(!ctx->jetset.contains(suffix)))
             dst += ".jet";
 
         ctx->allfiles.push_back(s1);

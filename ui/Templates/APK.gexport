@@ -1,21 +1,54 @@
 <export name="APK" 
 	description="Export as an Android APK file">
 	<property name="packageName" type="string" title="Package name" description="" default="com.yourdomain.yourapp" />
+	<property name="androidPath" type="dir" title="Android SDK Directory" description="Directory of your Android SDK" default="" />
 	<property name="javaPath" type="dir" title="Java Directory" description="Directory of your java installation" default="" />
+	<property name="antPath" type="dir" title="Ant Directory" description="Directory of your ant installation" default="" />
+	<property name="androidTarget" type="string" title="Android Target Version" description="The android SDK version you wish to compile with" default="19" />
+	<property name="keyStore" type="file" title="Key store" description="Path to keystore for signing" default="" />
+	<property name="keyAlias" type="string" title="Key alias" description="Alias of the key to use" default="" />
+	<property name="keyStorePass" type="string" title="Key store password" default="" />
+	<property name="keyAliasPass" type="string" title="Key alias password" default="" />
 	<rules>
-		<mkdir>_tmp_</mkdir>
-		<cd>_tmp_</cd>
-		<exec>"[[[exprop.javaPath]]]/bin/jar[[[sys.exeExtension]]]" xf "[[[sys.giderosDir]]]/Players/GiderosAndroidPlayer.apk"</exec>
-		<cd>..</cd>
-		<template name="AndroidTemplate" path="_tmp_">
+		<template name="Android Template" path="[[[sys.giderosDir]]]/Templates/Eclipse/Android Template">
+			<replacelist wildcards="*.xml;*.java;*.project">
+				<replace orig="AndroidTemplate" by="[[[project.namews]]]"/>
+				<replace orig="com.giderosmobile.androidtemplate" by="[[[exprop.packageName]]]"/>
+        		<replace orig="android:versionCode=&quot;1&quot;" by="android:versionCode=&quot;[[[project.version_code]]]&quot;"/>
+        		<replace orig="android:versionName=&quot;1.0&quot;" by="android:versionName=&quot;[[[project.version]]]&quot;"/>
+        		<!--<replace orig="android:screenOrientation=&quot;portrait&quot;").toUtf8(), orientation.toUtf8()); -->
+        	</replacelist>		
+			<replacelist wildcards="project.properties">
+				<replace orig="target=android-19" by="target=android-[[[exprop.androidTarget]]]"/>
+        	</replacelist>		
 		</template>
-		<rmdir>_tmp_</rmdir>
+		<template name="APK" path="[[[sys.giderosDir]]]/Templates/APK">
+			<replacelist wildcards="*.properties">
+				<replace orig="key.store=" by="key.store=[[[exprop.keyStore]]]"/>
+				<replace orig="key.alias=" by="key.alias=[[[exprop.keyAlias]]]"/>
+				<replace orig="key.store.password=" by="key.store.password=[[[exprop.keyStorePass]]]"/>
+				<replace orig="key.alias.password=" by="key.alias.password=[[[exprop.keyAliasPass]]]"/>
+        	</replacelist>		
+			<replacelist wildcards="project.properties">
+				<replace orig="target=android-19" by="target=android-[[[exprop.androidTarget]]]"/>
+        	</replacelist>		
+		</template>
+		<cp src="[[[sys.giderosDir]]]/Templates/APK/build.xml" dst="build.xml" />
 		<mkdir>assets</mkdir>
 		<cd>assets</cd>
 		<exportAssets/>
 		<exportAllfilesTxt/>
 		<exportLuafilesTxt/>
 		<exportPropertiesBin/>
-		<cd>..</cd>		
+		<cd>..</cd>
+		<rmdir>src/com/android</rmdir>
+		<rmdir>src/com/giderosmobile/android/plugins</rmdir>
+		<rm>libs/gideros.jar</rm>
+		<mv src="gideros.jar" dst="libs/gideros.jar"/>		
+		<exec>
+			<env key="JAVA_HOME" value="[[[exprop.javaPath]]]"/>
+			<env key="ANDROID_HOME" value="[[[exprop.androidPath]]]"/>
+			"[[[exprop.javaPath]]]/bin/java" -classpath "[[[exprop.antPath]]]/lib/ant-launcher.jar" "-Dant.home=[[[exprop.antPath]]]" org.apache.tools.ant.launch.Launcher release
+		</exec>
 	</rules>
 </export>

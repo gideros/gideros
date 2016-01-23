@@ -58,7 +58,7 @@ for (int k = 0; k < exprops.count(); k++) {
 		setItem(k, 1, item);
 	}
 
-	if (propType == "dir") {
+	if ((propType == "dir")||(propType == "file")) {
 		QPushButton *bt = new QPushButton("Browse");
 		mapper->setMapping(bt, k);
 		connect(bt, SIGNAL(clicked()), mapper, SLOT(map()));

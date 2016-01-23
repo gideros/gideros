@@ -23,6 +23,7 @@ ExportXml::ExportXml(QString xmlFile) {
 
 void ExportXml::Process(ExportContext *ctx) {
 	this->ctx=ctx;
+	ctx->basews=Utilities::RemoveSpaces(ctx->base,false);
 	QString exname = exporter.attribute("name");
  //Fill properties: System
 #ifdef Q_OS_WIN32
@@ -38,6 +39,12 @@ void ExportXml::Process(ExportContext *ctx) {
     		   	for (QMap<QString,QString>::const_iterator mit=(*it).properties.begin();mit!=(*it).properties.end(); mit++)
     		   		props[QString("exprop.").append(mit.key())]=mit.value();
     		}
+//Fill properties: Project
+   	props["project.name"]=ctx->base;
+   	props["project.namews"]=ctx->basews;
+   	props["project.package"]=ctx->properties.packageName;
+   	props["project.version"]=ctx->properties.version;
+   	props["project.version_code"]=QString::number(ctx->properties.version_code);
 //Run rules
    	QDomElement rules=exporter.firstChildElement("rules");
    	if (rules.hasChildNodes() )
@@ -86,9 +93,14 @@ QMap<QString, QString> ExportXml::availableTargets() {
 bool ExportXml::ProcessRule(QDomElement rule)
 {
 	QString ruleName=rule.tagName();
-	fprintf(stderr, "Rule: %s\n",ruleName.toStdString().c_str());
 	if (ruleName=="exec")
-		return RuleExec(ReplaceAttributes(rule.text()).trimmed());
+		return RuleExec(ReplaceAttributes(rule.text()).trimmed(),rule);
+	else if (ruleName=="cp")
+		return RuleCp(ReplaceAttributes(rule.attribute("src")),ReplaceAttributes(rule.attribute("dst")));
+	else if (ruleName=="mv")
+		return RuleMv(ReplaceAttributes(rule.attribute("src")),ReplaceAttributes(rule.attribute("dst")));
+	else if (ruleName=="rm")
+		return RuleRm(ReplaceAttributes(rule.text()).trimmed());
 	else if (ruleName=="cd")
 		return RuleCd(ReplaceAttributes(rule.text()).trimmed());
 	else if (ruleName=="mkdir")
@@ -96,7 +108,7 @@ bool ExportXml::ProcessRule(QDomElement rule)
 	else if (ruleName=="rmdir")
 		return RuleRmdir(ReplaceAttributes(rule.text()).trimmed());
 	else if (ruleName=="template")
-		return RuleTemplate(rule.attribute("name"),ReplaceAttributes(rule.attribute("path")).trimmed());
+		return RuleTemplate(rule.attribute("name"),ReplaceAttributes(rule.attribute("path")).trimmed(),rule);
 	else if (ruleName=="exportAssets")
 	{ ExportCommon::exportAssets(ctx,rule.attribute("compile").toInt()!=0); return true; }
 	else if (ruleName=="exportAllfilesTxt")
@@ -125,40 +137,87 @@ QString ExportXml::ReplaceAttributes(QString text)
 	return text;
 }
 
-bool ExportXml::RuleExec(QString cmd)
+bool ExportXml::RuleExec(QString cmd, QDomElement rule)
 {
+	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+	for(QDomNode n = rule.firstChild(); !n.isNull(); n = n.nextSibling())
+	{
+		QDomElement rl = n.toElement();
+		if ((!rl.isNull())&&(rl.tagName()=="env"))
+			env.insert(rl.attribute("key"),ReplaceAttributes(rl.attribute("value")));
+	}
     fprintf(stderr, "Exec: %s into %s\n",cmd.toStdString().c_str(),ctx->outputDir.path().toStdString().c_str());
-	int err=Utilities::processOutput(cmd,ctx->outputDir.path());
+	int err=Utilities::processOutput(cmd,ctx->outputDir.path(),env);
+    fprintf(stderr, "Exec returned: %d\n",err);
 	return (err==0);
 }
 
 bool ExportXml::RuleMkdir(QString cmd)
 {
+    fprintf(stderr, "MkDir: %s\n",cmd.toStdString().c_str());
 	 return ctx->outputDir.mkpath(cmd);
-
 }
 
 bool ExportXml::RuleRmdir(QString cmd)
 {
-	if (!ctx->outputDir.cd(cmd))
+    fprintf(stderr, "RmDir: %s\n",cmd.toStdString().c_str());
+    QDir remdir=ctx->outputDir;
+	if (!remdir.cd(cmd))
 		return false;
-    if (!ctx->outputDir.removeRecursively())
-    	return false;
-    if (!ctx->outputDir.cdUp())
+    if (!remdir.removeRecursively())
     	return false;
     return true;
 }
 
 bool ExportXml::RuleCd(QString cmd)
 {
+ fprintf(stderr, "Cd: %s\n",cmd.toStdString().c_str());
  return ctx->outputDir.cd(cmd);
 }
 
-bool ExportXml::RuleTemplate(QString name,QString path)
+bool ExportXml::RuleRm(QString cmd)
 {
+ fprintf(stderr, "Rm: %s\n",cmd.toStdString().c_str());
+ ctx->outputDir.remove(cmd);
+ return !ctx->outputDir.exists(cmd);
+}
+
+bool ExportXml::RuleCp(QString src,QString dst)
+{
+    fprintf(stderr, "Cp: %s -> %s\n",src.toStdString().c_str(),dst.toStdString().c_str());
+    ctx->outputDir.remove(dst);
+	return QFile::copy(ctx->outputDir.absoluteFilePath(src),ctx->outputDir.absoluteFilePath(dst));
+}
+
+bool ExportXml::RuleMv(QString src,QString dst)
+{
+    fprintf(stderr, "Mv: %s -> %s\n",src.toStdString().c_str(),dst.toStdString().c_str());
+	 return ctx->outputDir.rename(src,dst);
+}
+
+bool ExportXml::RuleTemplate(QString name,QString path,QDomElement rule)
+{
+	for(QDomNode n = rule.firstChild(); !n.isNull(); n = n.nextSibling())
+	{
+		QDomElement rl = n.toElement();
+		if ((!rl.isNull())&&(rl.tagName()=="replacelist"))
+		{
+		    QStringList wildcards1=rl.attribute("wildcards").split(";", QString::SkipEmptyParts);
+		    QList<QPair<QByteArray, QByteArray> > replaceList1;
+			for(QDomNode n1 = rl.firstChild(); !n1.isNull(); n1 = n1.nextSibling())
+			{
+				QDomElement rp = n1.toElement();
+				if ((!rp.isNull())&&(rp.tagName()=="replace"))
+			        replaceList1 << qMakePair(ReplaceAttributes(rp.attribute("orig")).toUtf8(), ReplaceAttributes(rp.attribute("by")).toUtf8());
+			}
+		    ctx->wildcards << wildcards1;
+	        ctx->replaceList << replaceList1;
+		}
+	}
+
 	ctx->templatename = name;
 	ctx->templatenamews = Utilities::RemoveSpaces(name,false); //TODO underscores or not ?
-	ctx->basews=Utilities::RemoveSpaces(ctx->base,false);
+    fprintf(stderr, "Template: %s [%s]\n",name.toStdString().c_str(),path.toStdString().c_str());
 	ExportCommon::copyTemplate(QDir::current().relativeFilePath(ctx->outputDir.absoluteFilePath(path)),ctx);
 	return true;
 }

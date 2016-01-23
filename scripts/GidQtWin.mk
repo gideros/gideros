@@ -56,6 +56,7 @@ qt.install: buildqt qt5.install qt.player
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
+	cp -R $(ROOT)/ui/Templates/APK $(RELEASE)/Templates
 	cp -R $(ROOT)/ui/Templates/Eclipse $(RELEASE)/Templates
 	cp -R $(ROOT)/ui/Templates/Xcode4 $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/assets

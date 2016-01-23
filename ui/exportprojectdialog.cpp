@@ -68,7 +68,6 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 	connect(ui->architectureTab, SIGNAL(currentChanged(int)), ui->architecture, SLOT(setCurrentIndex(int)));
 	connect(ui->plugins_choose, SIGNAL(clicked()), this, SLOT(onSelectPlugins()));
 
-	ui->architecture->setCurrentIndex(properties_->architecture);
     ui->android_template->setCurrentIndex(properties_->android_template);
 	ui->assetsOnly->setChecked(properties_->assetsOnly);
     ui->ios_bundle->setText(properties_->ios_bundle);
@@ -137,6 +136,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 
 	}
 
+	ui->architecture->setCurrentIndex(properties_->architecture);
 
 	connect(this, SIGNAL(accepted()), this, SLOT(onAccepted()));
 }

@@ -223,10 +223,11 @@ void Utilities::copyFolder(	const QDir& sourceDir,
     }
 }
 
-int Utilities::processOutput(QString command, QString dir){
+int Utilities::processOutput(QString command, QString dir, QProcessEnvironment env){
     QProcess process;
     if (!dir.isEmpty())
     	process.setWorkingDirectory(dir);
+    process.setProcessEnvironment(env);
     process.start(command);
     process.waitForFinished();
     bool commandOut = false;

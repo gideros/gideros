@@ -16,11 +16,14 @@ class ExportXml {
 	QMap<QString,QString> props;
 	bool ProcessRule(QDomElement rule);
 	QString ReplaceAttributes(QString text);
-	bool RuleExec(QString cmd);
+	bool RuleExec(QString cmd,QDomElement rule);
 	bool RuleMkdir(QString cmd);
 	bool RuleRmdir(QString cmd);
+	bool RuleRm(QString cmd);
 	bool RuleCd(QString cmd);
-	bool RuleTemplate(QString name,QString path);
+	bool RuleCp(QString src,QString dst);
+	bool RuleMv(QString src,QString dst);
+	bool RuleTemplate(QString name,QString path,QDomElement rule);
 	ExportContext *ctx;
 public:
 	ExportXml(QString xmlFile);

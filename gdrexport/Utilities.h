@@ -12,6 +12,7 @@
 #include <QList>
 #include <QStringList>
 #include <QDir>
+#include <QProcess>
 
 class Utilities {
 public:
@@ -30,7 +31,7 @@ public:
 		                        const QList<QList<QPair<QByteArray, QByteArray> > >& replaceList,
 		                        const QStringList &include,
 		                        const QStringList &exclude);
-	static int processOutput(QString command, QString dir=QString());
+	static int processOutput(QString command, QString dir=QString(),QProcessEnvironment env=QProcessEnvironment::systemEnvironment());
 };
 
 #endif /* GDREXPORT_UTILITIES_H_ */
