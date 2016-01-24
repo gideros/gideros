@@ -8,6 +8,7 @@
 #include "ExportCommon.h"
 #include "Utilities.h"
 #include <bytebuffer.h>
+#include "ExportXml.h""
 #include <QProcess>
 #include <QImage>
 
@@ -239,4 +240,17 @@ void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
 	ctx->allfiles.push_back(filename);
 	ctx->allfiles_abs.push_back(
 			QDir::cleanPath(ctx->outputDir.absoluteFilePath(filename)));
+}
+
+bool ExportCommon::applyPlugins(ExportContext *ctx)
+{
+	QMap<QString,QString> allplugins=ExportXml::availablePlugins();
+	for (QSet<ProjectProperties::Plugin>::const_iterator it=ctx->properties.plugins.begin();it!=ctx->properties.plugins.end(); it++)
+	{
+		QString xml=allplugins[(*it).name];
+		if (!xml.isEmpty())
+			if (!ExportXml::exportXml(xml,true,ctx))
+				return false;
+	}
+	return true;
 }

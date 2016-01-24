@@ -456,7 +456,7 @@ int main(int argc, char *argv[])
      ctx.replaceList << replaceList2;
 
      if (ctx.deviceFamily==e_Xml)
-    	 ExportXml::exportXml(xmlExports[ctx.platform],&ctx);
+    	 ExportXml::exportXml(xmlExports[ctx.platform],false,&ctx);
      else
     	 ExportBuiltin::doExport(&ctx);
 

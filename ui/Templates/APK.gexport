@@ -12,6 +12,24 @@
 	<rules>
 		<mkdir>tmp</mkdir>
 		<cd>tmp</cd>
+		<if condition="[[[project.autorotation]]]">
+			<set key="local.orientation" value="sensorPortrait"/>
+			<if condition="[[[band:[[[project.orientation]]]:1]]]">
+				<set key="local.orientation" value="sensorLandscape"/>
+			</if>
+		</if>
+		<if condition="[[[not:[[[project.autorotation]]]]]]">
+			<set key="local.orientation" value="portrait"/>
+			<if condition="[[[eq:[[[project.orientation]]]:1]]]">
+				<set key="local.orientation" value="landscape"/>
+			</if>
+			<if condition="[[[eq:[[[project.orientation]]]:2]]]">
+				<set key="local.orientation" value="reversePortrait"/>
+			</if>
+			<if condition="[[[eq:[[[project.orientation]]]:3]]]">
+				<set key="local.orientation" value="reverseLandscape"/>
+			</if>
+		</if>		
 		<template name="Android Template" path="[[[sys.giderosDir]]]/Templates/Eclipse/Android Template">
 			<replacelist wildcards="*.xml;*.java;*.project">
 				<replace orig="AndroidTemplate" by="[[[project.namews]]]"/>
@@ -19,7 +37,7 @@
 				<replace orig="com.giderosmobile.androidtemplate" by="[[[exprop.packageName]]]"/>
         		<replace orig="android:versionCode=&quot;1&quot;" by="android:versionCode=&quot;[[[project.version_code]]]&quot;"/>
         		<replace orig="android:versionName=&quot;1.0&quot;" by="android:versionName=&quot;[[[project.version]]]&quot;"/>
-        		<!--<replace orig="android:screenOrientation=&quot;portrait&quot;").toUtf8(), orientation.toUtf8()); -->
+        		<replace orig="android:screenOrientation=&quot;portrait&quot;" by="android:screenOrientation=&quot;[[[local.orientation]]]&quot;"/>
         	</replacelist>		
 			<replacelist wildcards="project.properties">
 				<replace orig="target=android-19" by="target=android-[[[exprop.androidTarget]]]"/>
