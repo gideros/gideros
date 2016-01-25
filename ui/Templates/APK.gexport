@@ -34,33 +34,33 @@
 			<replacelist wildcards="*.xml;*.java;*.project">
 				<replace orig="AndroidTemplate" by="[[[project.namews]]]"/>
 				<replace orig="Android Template" by="[[[project.name]]]"/>
-				<replace orig="com.giderosmobile.androidtemplate" by="[[[exprop.packageName]]]"/>
+				<replace orig="com.giderosmobile.androidtemplate" by="[[[export.packageName]]]"/>
         		<replace orig="android:versionCode=&quot;1&quot;" by="android:versionCode=&quot;[[[project.version_code]]]&quot;"/>
         		<replace orig="android:versionName=&quot;1.0&quot;" by="android:versionName=&quot;[[[project.version]]]&quot;"/>
         		<replace orig="android:screenOrientation=&quot;portrait&quot;" by="android:screenOrientation=&quot;[[[local.orientation]]]&quot;"/>
         	</replacelist>		
 			<replacelist wildcards="project.properties">
-				<replace orig="target=android-19" by="target=android-[[[exprop.androidTarget]]]"/>
+				<replace orig="target=android-19" by="target=android-[[[export.androidTarget]]]"/>
         	</replacelist>		
 		</template>
 		<template name="APK" path="[[[sys.giderosDir]]]/Templates/APK">
 			<replacelist wildcards="local.properties">
-				<replace orig="key.store=" by="key.store=[[[exprop.keyStore]]]"/>
-				<replace orig="key.alias=" by="key.alias=[[[exprop.keyAlias]]]"/>
-				<replace orig="key.store.password=" by="key.store.password=[[[exprop.keyStorePass]]]"/>
-				<replace orig="key.alias.password=" by="key.alias.password=[[[exprop.keyAliasPass]]]"/>
+				<replace orig="key.store=" by="key.store=[[[export.keyStore]]]"/>
+				<replace orig="key.alias=" by="key.alias=[[[export.keyAlias]]]"/>
+				<replace orig="key.store.password=" by="key.store.password=[[[export.keyStorePass]]]"/>
+				<replace orig="key.alias.password=" by="key.alias.password=[[[export.keyAliasPass]]]"/>
         	</replacelist>		
 			<replacelist wildcards="build.xml">
 				<replace orig="GiderosAndroidPlayer" by="[[[project.namews]]]"/>
         	</replacelist>		
 		</template>
-		<mkdir>assets</mkdir>
-		<cd>assets</cd>
-		<exportAssets/>
+		<mkdir>assets/assets</mkdir>
+		<cd>assets/assets</cd>
+		<exportAssets jet="mp3;mp4;png;jpg;jpeg;wav" compile="1" />
 		<exportAllfilesTxt/>
 		<exportLuafilesTxt/>
 		<exportPropertiesBin/>
-		<cd>..</cd>
+		<cd>../..</cd>
 		<rmdir>src/com/android</rmdir>
 		<rmdir>src/com/giderosmobile/android/plugins</rmdir>
 		<rm>libs/gideros.jar</rm>
@@ -71,10 +71,11 @@
 		<appIcon width="96" height="96" dest="res/drawable-xhdpi/icon.png"/>
 		<appIcon width="144" height="144" dest="res/drawable-xxhdpi/icon.png"/>
 		<appIcon width="192" height="192" dest="res/drawable-xxxhdpi/icon.png"/>
+		<applyPlugins/>
 		<exec>
-			<env key="JAVA_HOME" value="[[[exprop.javaPath]]]"/>
-			<env key="ANDROID_HOME" value="[[[exprop.androidPath]]]"/>
-			"[[[exprop.javaPath]]]/bin/java" -classpath "[[[exprop.antPath]]]/lib/ant-launcher.jar" "-Dant.home=[[[exprop.antPath]]]" org.apache.tools.ant.launch.Launcher release
+			<env key="JAVA_HOME" value="[[[export.javaPath]]]"/>
+			<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
+			"[[[export.javaPath]]]/bin/java" -classpath "[[[export.antPath]]]/lib/ant-launcher.jar" "-Dant.home=[[[export.antPath]]]" org.apache.tools.ant.launch.Launcher release
 		</exec>
 		<cp src="bin/[[[project.namews]]]-release-unsigned.apk" dst="../[[[project.namews]]]-unsigned.apk"/>
 		<cp src="bin/[[[project.namews]]]-release.apk" dst="../[[[project.namews]]].apk"/>

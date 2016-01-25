@@ -120,7 +120,7 @@ void Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r
         if (!in.open(QFile::ReadOnly))
             return;
         QByteArray data = in.readAll();
-        in.close();;
+        in.close();
 
         for (int i = 0; i < replaceList[match].size(); ++i)
         	if (replaceList[match][i].first.size()==replaceList[match][i].second.size()) //Perform bitwise replacement if sizes are equal
@@ -136,7 +136,7 @@ void Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r
         out.write(data);
         out.close();
     }
-    else
+    else if (QFileInfo(srcName)!=QFileInfo(destName))
     {
         QFile::remove(destName);
         QFile::copy(srcName, destName);

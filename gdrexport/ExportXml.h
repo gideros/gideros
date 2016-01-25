@@ -13,6 +13,7 @@
 
 class ExportXml {
 	bool isPlugin;
+	QString xmlFile;
 	QDomElement exporter;
 	QMap<QString,QString> props;
 	bool ProcessRules(QDomElement rules);

@@ -13,6 +13,7 @@
 
 ExportXml::ExportXml(QString xmlFile, bool isPlugin) {
 	this->isPlugin = isPlugin;
+	this->xmlFile=xmlFile;
 	QDomDocument doc(isPlugin ? "plugin" : "export");
 	QFile file(xmlFile);
 	if (file.open(QIODevice::ReadOnly)) {
@@ -35,7 +36,9 @@ bool ExportXml::Process(ExportContext *ctx) {
 #endif
 	props["sys.giderosDir"] = QDir::currentPath();
 	QDomElement rules;
+	QDir xmlDir=QFileInfo(xmlFile).dir();
 	if (isPlugin) {
+		props["sys.pluginDir"] = xmlDir.path();
 		//Fill properties: Plugin
 		for (QSet<ProjectProperties::Plugin>::const_iterator it =
 				ctx->properties.plugins.begin();
@@ -55,6 +58,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 		}
 	} else {
 //Fill properties: Export
+		props["sys.exportDir"] = xmlDir.path();
 		rules = exporter.firstChildElement("rules");
 		for (QSet<ProjectProperties::Export>::const_iterator it =
 				ctx->properties.exports.begin();
@@ -188,6 +192,9 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 		return RuleTemplate(rule.attribute("name"),
 				ReplaceAttributes(rule.attribute("path")).trimmed(), rule);
 	else if (ruleName == "exportAssets") {
+		QStringList jets=rule.attribute("jet").split(";",QString::SkipEmptyParts);
+		for (int i=0;i<jets.count();i++)
+			ctx->jetset << jets[i];
 		ExportCommon::exportAssets(ctx, rule.attribute("compile").toInt() != 0);
 		return true;
 	} else if (ruleName == "exportAllfilesTxt") {
@@ -303,6 +310,8 @@ bool ExportXml::RuleMkdir(QString cmd) {
 bool ExportXml::RuleRmdir(QString cmd) {
 	fprintf(stderr, "RmDir: %s\n", cmd.toStdString().c_str());
 	QDir remdir = ctx->outputDir;
+	if (!remdir.exists(cmd))
+		return true;
 	if (!remdir.cd(cmd))
 		return false;
 	if (!remdir.removeRecursively())
