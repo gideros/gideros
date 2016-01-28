@@ -81,6 +81,7 @@ QTDLLEXT?=
 qt.player:
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
 	cp $(ROOT)/desktop/release/WindowsDesktopTemplate.exe $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
+	for f in gid gvfs lua gideros pystring; do cp $(RELEASE)/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate; done
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate; done
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/imageformats
 	cp $(QT)/plugins/imageformats/qjpeg.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/imageformats
