@@ -792,9 +792,19 @@ os.timer() os - returns precise time in seconds relative to some arbitrary point
 os.tmpname() os - returns a string with a filename for a temporary file(dangerous! tmpfile is better-
 package
 package.loadlib(libname, funcname) package
+Path2D > Sprite
+Path2D.new() Path2D - Creates Path2D object
+setConvex(convex) Path2D - Flag the shape as convex.
+setFillColor(color [, alpha]) Path2D - Sets fill color
+setFontPath(font, character) Path2D - Sets the path from the outline of a TTFont character
+setLineColor(color [, alpha]) Path2D - Sets line color
+setLineThickness(thickness [, feather]) Path2D - Set the thickness of the outline
+setPath(commands, coordinates [, coordinates]) Path2D - set path to draw
+setSvgPath(svg_params) Path2D - set path with svg properties
+setTexture(texture) Path2D - sets texture for fill (Not implemented yet)
 RenderTarget > TextureBase
 RenderTarget.new(width, height, filtering) RenderTarget - Creates new RenderTarget object
-clear(color, alpha) RenderTarget - Clears rendered texture
+clear(color, alpha [, x, y, width, height]) RenderTarget - Clears rendered texture
 draw(sprite) RenderTarget - Renders provided object
 Shader > Object
 Shader.new(vertex shader, fragment shader, flags, uniform descriptor, attribute descriptor) Shader - create new shader
@@ -919,6 +929,7 @@ Sprite.SCREEN - value "screen"
 sqlite3
 Stage > Sprite
 stage
+setClearColorBuffer(state) Stage - Enable/disable draw call for background color
 StoreKit
 storekit
 canMakePayments() StoreKit - returns whether the user is allowed to make payments
