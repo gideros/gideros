@@ -343,7 +343,7 @@ public:
     {
         ginput_MouseEvent *mouseEvent = NULL;
 
-        ginput_TouchEvent *touchEvent = touchEvent = newTouchEvent(touches);
+        ginput_TouchEvent *touchEvent = newTouchEvent(touches);
         touchEvent->touch.x = x;
         touchEvent->touch.y = y;
         touchEvent->touch.id = id;
@@ -389,7 +389,7 @@ public:
     {
         ginput_MouseEvent *mouseEvent = NULL;
 
-        ginput_TouchEvent *touchEvent = touchEvent = newTouchEvent(touches);
+        ginput_TouchEvent *touchEvent = newTouchEvent(touches);
         touchEvent->touch.x = x;
         touchEvent->touch.y = y;
         touchEvent->touch.id = id;
@@ -435,7 +435,7 @@ public:
     {
         ginput_MouseEvent *mouseEvent = NULL;
 
-        ginput_TouchEvent *touchEvent = touchEvent = newTouchEvent(touches);
+        ginput_TouchEvent *touchEvent = newTouchEvent(touches);
         touchEvent->touch.x = x;
         touchEvent->touch.y = y;
         touchEvent->touch.id = id;

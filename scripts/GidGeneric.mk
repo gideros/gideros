@@ -88,5 +88,5 @@ OBJFILES_player+= $(addprefix 2dsg/paths/,path ft-path svg-path)
 OBJFILES_player+= $(basename $(wildcard $(addprefix external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/, \
 					$(addsuffix /*.cpp,Common Collision Collision/Shapes Dynamics Dynamics/Contacts Dynamics/Joints Rope Particle))))
 OBJFILES_player+= $(basename $(wildcard external/glu/libtess/*.c))
-OBJFILES_player+= $(addprefix libgid/src/,md5 platformutil utf8 drawinfo gtimer)
+OBJFILES_player+= $(addprefix libgid/src/,aes md5 platformutil utf8 drawinfo gtimer)
 OBJFILES_player+= $(addprefix external/minizip-1.1/source/,ioapi unzip)

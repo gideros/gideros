@@ -107,6 +107,7 @@ SOURCES += \
     $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/*.cpp) \
     $$files(../luabinding/*.cpp)	../luabinding/tlsf.c \
     $$files(../libnetwork/*.cpp) \
+    ../libgid/src/aes.c \
     ../libgid/src/md5.c \
     ../libgid/src/platformutil.cpp \
     ../libgid/src/utf8.c \

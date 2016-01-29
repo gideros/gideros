@@ -415,6 +415,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\trees.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\uncompr.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\zutil.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\aes.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\drawinfo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-loader-mp3.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\gaudio-loader-wav.cpp" />
@@ -470,6 +471,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\bitmapdatabinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\box2dbinder2.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\cryptobinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\dibbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\eventbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\eventdispatcherbinder.cpp" />
@@ -657,6 +659,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\pluginmanager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\refptr.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgideros\stringid.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\aes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\gtimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\md5.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\platform.h" />

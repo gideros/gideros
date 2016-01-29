@@ -132,7 +132,7 @@ keyboardevent.o               keys.o \
 libnetwork.o                  luaapplication.o \
 Matrices.o                    matrix.o \
 matrixbinder.o                MaxRectsBinPack.o \
-md5.o                         memalloc.o \
+aes.o	md5.o                         memalloc.o \
 mesh.o                        meshbinder.o \
 mouseevent.o                  movieclip2.o \
 movieclipbinder.o             normal.o \
@@ -165,7 +165,7 @@ ttbmfont.o \
 ttfont.o                      ttfontbinder.o \
 tttextfield.o \
 urlloaderbinder.o             urlrequest.o \
-utf8.o                        zlibbinder.o \
+utf8.o                        zlibbinder.o cryptobinder.o \
 Shaders.o \
 gl2ShaderBuffer.o \
 gl2ShaderEngine.o \
@@ -205,6 +205,7 @@ pi: $(OBJFILES) gvfs.so lua.so gideros.so pystring.so gid.so
 -include libpvrt.dep
 -include libtess.dep
 -include md5.dep
+-include aes.dep
 -include utf8.dep
 -include ioapi.dep
 -include unzip.dep
@@ -240,6 +241,7 @@ depend :
 	g++ $(INCLUDEPATHS) -MM ../libpvrt/*.cpp > libpvrt.dep
 	g++ $(INCLUDEPATHS) -MM ../external/glu/libtess/*.c > libtess.dep
 	g++ $(INCLUDEPATHS) -MM ../libgid/src/md5.c > md5.dep
+	g++ $(INCLUDEPATHS) -MM ../libgid/src/aes.c > aes.dep
 	g++ $(INCLUDEPATHS) -MM ../libgid/src/utf8.c > utf8.dep
 	g++ $(INCLUDEPATHS) -MM ../external/minizip-1.1/source/ioapi.c > ioapi.dep
 	g++ $(INCLUDEPATHS) -MM ../external/minizip-1.1/source/unzip.c > unzip.dep

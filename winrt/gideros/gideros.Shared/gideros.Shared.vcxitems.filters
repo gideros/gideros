@@ -1076,6 +1076,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\paths\svg-path.c">
       <Filter>path</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\src\aes.c">
+      <Filter>libgid</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\cryptobinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">
@@ -1690,6 +1696,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\paths\prpath.h">
       <Filter>path</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\aes.h">
+      <Filter>libgid</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

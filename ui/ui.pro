@@ -84,6 +84,7 @@ SOURCES += \
 SOURCES += $$files(../libpvrt/*.cpp)
 
 SOURCES += "../libgid/src/platformutil.cpp"\
+			"../libgid/src/aes.c" \
 			"../libgid/src/md5.c"
 
 HEADERS  += \

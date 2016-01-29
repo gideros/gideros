@@ -250,6 +250,7 @@ LOCAL_SRC_FILES += \
 
 	
 LOCAL_SRC_FILES += \
+	../../../libgid/src/aes.c \
 	../../../libgid/src/md5.c \
 	../../../libgid/src/utf8.c \
 	../../../libgid/src/platformutil.cpp \
@@ -430,6 +431,7 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/meshbinder.cpp \
 	../../../luabinding/audiobinder.cpp \
 	../../../luabinding/zlibbinder.cpp \
+	../../../luabinding/cryptobinder.cpp \
 	../../../luabinding/shaderbinder.cpp \
 	../../../luabinding/path2dbinder.cpp \
 	../../../luabinding/rendertargetbinder.cpp

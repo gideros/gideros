@@ -16,7 +16,7 @@ SRCS+=$(addprefix $(LIQUIDFUN)/Particle/,$(notdir $(basename $(wildcard ../$(LIQ
 SRCS+=$(addprefix luabinding/,$(notdir $(basename $(wildcard ../luabinding/*.cpp)))) luabinding/tlsf
 SRCS+=$(addprefix libnetwork/,$(notdir $(basename $(wildcard ../libnetwork/*.cpp))))
 SRCS+=$(addprefix libpvrt/,$(notdir $(basename $(wildcard ../libpvrt/*.cpp))))
-SRCS+=$(addprefix libgid/src/,md5 platformutil utf8 drawinfo gtimer \
+SRCS+=$(addprefix libgid/src/,aes md5 platformutil utf8 drawinfo gtimer \
 	gimage gimage-png gimage-jpg gtexture gevent glog gglobal gaudio \
 	gaudio-loader-wav gaudio-loader-mp3 \
 	gvfs-native)

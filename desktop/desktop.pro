@@ -100,6 +100,7 @@ SOURCES += \
     $$files(../libpvrt/*.h) \
     $$files(../external/glu/libtess/*.c) \
     ../libgid/src/md5.c \
+    ../libgid/src/aes.c \
     ../libgid/src/platformutil.cpp \
     ../libgid/src/utf8.c \
     ../libgid/src/drawinfo.cpp \
