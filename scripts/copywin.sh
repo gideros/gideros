@@ -82,6 +82,7 @@ tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/Xcode4
 git archive -o $BUILD_DIR/tmp.tar HEAD:ui/Templates/APK
 mkdir $BUILD_DIR/win/Templates/APK
 tar xf $BUILD_DIR/tmp.tar -C $BUILD_DIR/win/Templates/APK
+cp $BUILD_DIR/../ui/Templates/APK.gexport $BUILD_DIR/win/Templates
 
 mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/assets
 mkdir $BUILD_DIR/win/Templates/Eclipse/Android\ Template/gen
