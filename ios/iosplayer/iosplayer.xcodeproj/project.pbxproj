@@ -351,6 +351,8 @@
 		5FE658BA18FBF0FB001D8EE3 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FE658AB18FBF0FB001D8EE3 /* zutil.c */; };
 		EB08A3521AAA06F900D8F27D /* Matrices.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB08A3501AAA06F900D8F27D /* Matrices.cpp */; };
 		EB08A3531AAA06F900D8F27D /* Matrices.h in Headers */ = {isa = PBXBuildFile; fileRef = EB08A3511AAA06F900D8F27D /* Matrices.h */; };
+		EB140D891C5BB810000180C7 /* aes.c in Sources */ = {isa = PBXBuildFile; fileRef = EB140D881C5BB810000180C7 /* aes.c */; };
+		EB140D8B1C5BB83A000180C7 /* cryptobinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */; };
 		EB35B49A1C1190C200227849 /* ft-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4971C1190C200227849 /* ft-path.c */; };
 		EB35B49B1C1190C200227849 /* prpath.h in Headers */ = {isa = PBXBuildFile; fileRef = EB35B4981C1190C200227849 /* prpath.h */; };
 		EB35B49C1C1190C200227849 /* svg-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4991C1190C200227849 /* svg-path.c */; };
@@ -768,6 +770,8 @@
 		5FE658AB18FBF0FB001D8EE3 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zutil.c; path = "../../../libgid/external/zlib-1.2.8/zutil.c"; sourceTree = "<group>"; };
 		EB08A3501AAA06F900D8F27D /* Matrices.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Matrices.cpp; path = ../../2dsg/Matrices.cpp; sourceTree = "<group>"; };
 		EB08A3511AAA06F900D8F27D /* Matrices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrices.h; path = ../../2dsg/Matrices.h; sourceTree = "<group>"; };
+		EB140D881C5BB810000180C7 /* aes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aes.c; path = ../../../libgid/src/aes.c; sourceTree = "<group>"; };
+		EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cryptobinder.cpp; path = ../../luabinding/cryptobinder.cpp; sourceTree = "<group>"; };
 		EB35B4971C1190C200227849 /* ft-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "ft-path.c"; sourceTree = "<group>"; };
 		EB35B4981C1190C200227849 /* prpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prpath.h; sourceTree = "<group>"; };
 		EB35B4991C1190C200227849 /* svg-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "svg-path.c"; sourceTree = "<group>"; };
@@ -938,6 +942,7 @@
 		5F0CD7C515BB021500479287 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				EB140D881C5BB810000180C7 /* aes.c */,
 				EBD8CB311B904216002F9D6C /* gaudio-loader-xmp.cpp */,
 				5ECDAB331ADAE0D100278F39 /* drawinfo.cpp */,
 				5ECDAB341ADAE0D100278F39 /* md5.c */,
@@ -1354,6 +1359,7 @@
 		5F321F2215BBCA8000542289 /* luabinding */ = {
 			isa = PBXGroup;
 			children = (
+				EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */,
 				EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */,
 				EB82BDD51B305E2F00281732 /* shaderbinder.cpp */,
 				EBD254C91ADD149000CC57F9 /* zlibbinder.cpp */,
@@ -1708,6 +1714,7 @@
 				5F0CD83C15BB0B3D00479287 /* pngmem.c in Sources */,
 				5F276F9018F4020E00D78AE4 /* b2ContactManager.cpp in Sources */,
 				5F276F7F18F4020E00D78AE4 /* b2Math.cpp in Sources */,
+				EB140D8B1C5BB83A000180C7 /* cryptobinder.cpp in Sources */,
 				5F0CD83D15BB0B3D00479287 /* pngpread.c in Sources */,
 				5F276FBB18F4020E00D78AE4 /* b2PulleyJoint.cpp in Sources */,
 				5F0CD83E15BB0B3D00479287 /* pngread.c in Sources */,
@@ -1942,6 +1949,7 @@
 				EBD8CA821B903A50002F9D6C /* load.c in Sources */,
 				5F321F5315BBEB3200542289 /* fontbinder.cpp in Sources */,
 				5F321F5415BBEB3200542289 /* geolocationbinder.cpp in Sources */,
+				EB140D891C5BB810000180C7 /* aes.c in Sources */,
 				5F321F5515BBEB3200542289 /* gyroscopebinder.cpp in Sources */,
 				5FE658BA18FBF0FB001D8EE3 /* zutil.c in Sources */,
 				5F321F5615BBEB3200542289 /* keys.cpp in Sources */,
