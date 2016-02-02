@@ -291,6 +291,9 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation) {
 
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 */
+        Event event(Event::APPLICATION_RESIZE);
+        GStatus status;
+        application_->broadcastEvent(&event, &status);                        
 }
 
 void ApplicationManager::updateHardwareOrientation() {

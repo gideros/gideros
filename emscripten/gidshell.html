@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link href="gideros.css" rel="stylesheet">
     <link href="pace.css" rel="stylesheet">
+    <link href="favicon.png" rel="icon">
     <title>Gideros</title>
   </head>
   <body class="fullscreen">
@@ -37,6 +38,7 @@
     <script data-pace-options='{ "elements": false, "target": "#progress_box" }' src='pace.min.js'></script>
     <script type='text/javascript'>
       var GAPP_URL="gideros.GApp";
+      var GIDEROS_MEMORY_MB=128;
       var statusElement = document.getElementById('status');
       var progressElement = document.getElementById('progress');
       var spinnerElement = document.getElementById('spinner');
@@ -45,7 +47,9 @@
       var Module = {
         preRun: [],
         postRun: [],
+        TOTAL_MEMORY: GIDEROS_MEMORY_MB*1024*1024,
         dynamicLibraries: [ 'luasocket.js', 'json.js', 'bit.js' ],
+        JSPlugins: [ ],
         print: (function() {
           var element = document.getElementById('output');
           if (element) element.value = ''; // clear browser cache

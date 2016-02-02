@@ -147,7 +147,18 @@ public:
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
         deleteKeyEvent(event);
     }
-
+    
+    void keyChar(const char *keychar)
+    {
+        ginput_KeyEvent *event = newKeyEvent(0,0);
+        if (strlen(keychar)<(sizeof(event->charCode)))
+        {
+            strcpy(event->charCode,keychar);
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_CHAR_EVENT, event, 0, this);
+        }
+        deleteKeyEvent(event);
+    }
+                                                                               
     void setMouseToTouchEnabled(int enabled)
     {
         isMouseToTouchEnabled_ = enabled;
@@ -739,6 +750,12 @@ void ginputp_keyUp(const char *keyVal,const char *keyCode)
     if (s_manager)
         s_manager->keyUp(keyVal,keyCode);
 }
+
+void ginputp_keyChar(const char *keyChar)
+{
+    if (s_manager)
+        s_manager->keyChar(keyChar);
+}            
 
 void ginput_setMouseToTouchEnabled(int enabled)
 {

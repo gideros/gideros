@@ -17,7 +17,7 @@ public:
     
 	int getScreenDensity()
 	{
-		return 96; //Default for now, maybe use window.devicePixelRatio ?
+		return -1; //Default for now, maybe use window.devicePixelRatio ?
 	}
 
     g_id addCallback(gevent_Callback callback, void *udata)

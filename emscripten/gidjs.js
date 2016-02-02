@@ -1,5 +1,24 @@
-Module.TOTAL_MEMORY=128*1024*1024
 Module.preRun.push(function() {
+ __ATPRERUN__.push(function() {
+  Module.JSPlugins.forEach(function (p) {
+   var xhr = new XMLHttpRequest;
+   var tag = document.createElement("script");
+   xhr.open("GET", p, true);
+   xhr.onload = function (e) {
+   if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        tag.text = xhr.response;
+        document.head.appendChild(tag);
+      } else {
+        console.error(xhr.response);
+      }
+      Module['removeRunDependency'](p);
+    }
+   };
+   Module['addRunDependency'](p);
+   xhr.send();
+ }); });
+
 	Module.setStatus("Loading application...");
 	FS.createPreloadedFile("/", "main.gapp", GAPP_URL, true,false);
 	  // Initial syncfs to get existing saved files.
@@ -35,7 +54,6 @@ Module.ghttpjs_urlload=function(url, request, rhdr, param, arg, free, onload, on
     var _request = request;
     var _param = param;
             
-    console.log(url+" OL:"+onload+" OE:"+onerror+" OP:"+onprogress);
     var http = new XMLHttpRequest();
     http.open(_request, _url, true);
     http.responseType = 'arraybuffer';
@@ -50,11 +68,11 @@ Module.ghttpjs_urlload=function(url, request, rhdr, param, arg, free, onload, on
     // LOAD
     http.onload = function http_onload(e) {
     // if (http.status == 200 || _url.substr(0,4).toLowerCase() != "http") {
+      //console.log("rhdr:"+http.getAllResponseHeaders());
       var hdrs=allocate(intArrayFromString(http.getAllResponseHeaders()), 'i8', ALLOC_STACK);
       var byteArray = new Uint8Array(http.response);
       var buffer = _malloc(byteArray.length);
       HEAPU8.set(byteArray, buffer);
-      console.log(url+" LOADED");
       if (onload) Runtime.dynCall('viiiiii', onload, [handle, arg, buffer, byteArray.length, http.status,hdrs]);
       if (free) _free(buffer);
    /*  } else {
@@ -67,7 +85,6 @@ Module.ghttpjs_urlload=function(url, request, rhdr, param, arg, free, onload, on
     // ERROR
     http.onerror = function http_onerror(e) {
      if (onerror) {
-      console.log(url+" ERROR");
       Runtime.dynCall('viiii', onerror, [handle, arg, http.status, http.statusText]);
      }
      delete Browser.wgetRequests[handle];
@@ -75,7 +92,6 @@ Module.ghttpjs_urlload=function(url, request, rhdr, param, arg, free, onload, on
                                                                                                                                                      
     // PROGRESS
     http.onprogress = function http_onprogress(e) {
-      console.log(url+" PROGRESS");
      if (onprogress) Runtime.dynCall('viiii', onprogress, [handle, arg, e.loaded, e.lengthComputable || e.lengthComputable === undefined ? e.total : 0]);
     };
                                                                                                                                                                         

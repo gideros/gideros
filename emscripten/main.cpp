@@ -94,6 +94,14 @@ EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *e, void *userDat
 }
 
 
+// returns the number of utf8 code points in the buffer at s
+size_t utf8len(const char *s)
+{
+    size_t len = 0;
+    for (; *s; ++s) if ((*s & 0xC0) != 0x80) ++len;
+    return len;
+}
+
 EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *userData)
 {
  const char *key=e->key;
@@ -102,12 +110,30 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
   key=kcode;
  if (!(*key))
   kcode[0]=e->which;
+ int skey=0;
+ if ((!strcmp(key,"Tab"))||(*key=='\t')) skey=1;
+ if ((!strcmp(key,"Backspace"))||(*key=='\b')) skey=2;
+ if ((!strcmp(key,"Enter"))||(*key=='\n')) skey=4;
+ if ((!strcmp(key,"Escape"))||(*key=='\e')) skey=8;
  if (eventType == EMSCRIPTEN_EVENT_KEYDOWN)
-	 ginputp_keyDown(key,e->code);
+ {
+  ginputp_keyDown(key,e->code);
+  if (skey==1) ginputp_keyChar("\t");
+  if (skey==2) ginputp_keyChar("\b");
+  if (skey==4) ginputp_keyChar("\n");
+  if (skey==8) ginputp_keyChar("\e");
+ }
  else if (eventType == EMSCRIPTEN_EVENT_KEYUP)
+ {
   ginputp_keyUp(key,e->code);
+ }
+ else if (eventType == EMSCRIPTEN_EVENT_KEYPRESS)
+ {
+  if ((utf8len(key)==1)&&(!skey))
+   ginputp_keyChar(key);
+ }
 
-  return 0;
+ return 0;
 }
 
 EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userData)
@@ -169,11 +195,16 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 extern "C" int main_registerPlugin(const char *pname);
 
 extern const char *codeKey_;
+const char *currentUrl=NULL;
 int main() {
 
 char *url=(char *) EM_ASM_INT_V({
  return allocate(intArrayFromString(location.href), 'i8', ALLOC_STACK);
 });
+ char *surl=(char *)malloc(strlen(url)+2);
+ *surl='s';
+ strcpy(surl+1,url);
+ currentUrl=surl;
 
  const char *hostname=codeKey_+32;
  bool allowed=(strlen(hostname)==0);
@@ -233,6 +264,7 @@ char *url=(char *) EM_ASM_INT_V({
     ret = emscripten_set_touchcancel_callback(0, 0, capture, touch_callback);
     ret = emscripten_set_keydown_callback(0, 0, true, key_callback);
     ret = emscripten_set_keyup_callback(0, 0, true, key_callback);
+    ret = emscripten_set_keypress_callback(0, 0, true, key_callback);
    printf("Canvas:%d,%d %d URL:%s\n",defWidth,defHeight,fullScreen,url);
 
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
