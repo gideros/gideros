@@ -21,7 +21,7 @@ function capitalizeFirstLetter(string) {
 }
 
 GiderosAds.Initialize=function(ad) {
-	 (function(d, s, id, callback){
+/*	 (function(d, s, id, callback){
 	      var js, fjs = d.getElementsByTagName(s)[0];
 	      if (d.getElementById(id)) {return;}
 	      js = d.createElement(s); js.id = id;
@@ -30,20 +30,22 @@ GiderosAds.Initialize=function(ad) {
           js.onload = callback;
 	      fjs.parentNode.insertBefore(js, fjs);
 	 }(document, 'script', 'Ads'+capitalizeFirstLetter(ad), function(){
-         if(!GiderosAds.frameworks[ad])        
+    if(!GiderosAds.frameworks[ad])        
             GiderosAds.frameworks[ad] = new window['Ads'+capitalizeFirstLetter(ad)]();
          Module.ccall('gads_onAdInitialized',null,['string'],[ ad ]);	
-     }));
+     })); */
+     Module.ccall('gads_onAdInitialized',null,['string'],[ ad ]);	     
 };
 
 GiderosAds.Destroy=function(ad) 
 { 
-    delete GiderosAds.frameworks[ad];
+/*    delete GiderosAds.frameworks[ad];
 	 (function(d, s, id){
 	      var e=d.getElementById(id);
 	      if (e)
 	    	  e.parentNode.removeNode(e);
 	 }(document, 'script', 'Ads'+capitalizeFirstLetter(ad)));
+	 */
 };
 
 GiderosAds.EnableTesting=function(ad) { 

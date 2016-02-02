@@ -70,7 +70,7 @@ static int s_open(const char *pathname, int flags)
     if ( drive != 0 || s_zipFile.empty() )
     {
         fd=::open(gpath_transform(pathname), flags, 0755);
-        glog_d("Opened %s(%s) at fd %d on drive %d\n",pathname,gpath_transform(pathname),fd,drive);
+        //glog_d("Opened %s(%s) at fd %d on drive %d\n",pathname,gpath_transform(pathname),fd,drive);
     }
     else
     {

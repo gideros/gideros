@@ -98,5 +98,9 @@ function AdsAdsense(){
     this.setHeight=function(ad) {
         return parseInt(this.view.style.height);
     };
-    
+
+    GiderosAds.frameworks[ad]=this;    
 }
+
+GiderosAds.frameworks["adsense"]=new AdsAdsense();    
+

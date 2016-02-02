@@ -161,7 +161,13 @@ int ApplicationBinder::getDeviceWidth(lua_State* L)
 
 	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
-	lua_pushnumber(L, application->getHardwareWidth());
+	Orientation orientation = application->orientation();
+
+	if ((orientation == eLandscapeLeft || orientation == eLandscapeRight) &&
+	    (application->hardwareOrientation()==eFixed))
+		lua_pushnumber(L, application->getHardwareHeight());
+	else
+		lua_pushnumber(L, application->getHardwareWidth());
 
 	return 1;
 }
@@ -173,7 +179,13 @@ int ApplicationBinder::getDeviceHeight(lua_State* L)
 
 	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
-	lua_pushnumber(L, application->getHardwareHeight());
+	Orientation orientation = application->orientation();
+
+	if ((orientation == eLandscapeLeft || orientation == eLandscapeRight) &&
+	    (application->hardwareOrientation()==eFixed))
+		lua_pushnumber(L, application->getHardwareWidth());
+	else
+		lua_pushnumber(L, application->getHardwareHeight());
 
 	return 1;
 }

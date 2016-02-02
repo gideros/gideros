@@ -133,6 +133,10 @@ public:
 
 	void setOrientation(Orientation orientation);
 	Orientation orientation() const;
+	Orientation hardwareOrientation() const
+	{
+	     return orientation_;
+	}
 
 	void addTicker(Ticker* ticker);
 	void removeTicker(Ticker* ticker);

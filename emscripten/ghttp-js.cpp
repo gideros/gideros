@@ -25,7 +25,7 @@ extern "C" {
 
 void ghttp_onload(int xh,int arg,const char *buf,int size, int status, char *hdrs)
 {
-	printf("OnLoad:%d,%d,%p,%d\n",xh,arg,buf,size);
+	//printf("OnLoad:%d,%d,%p,%d,%s\n",xh,arg,buf,size,hdrs);
 	std::map<g_id, GHttpContext>::iterator it=map_.find(arg);
 	if (it!=map_.end())
 	{
@@ -91,7 +91,7 @@ void ghttp_onload(int xh,int arg,const char *buf,int size, int status, char *hdr
 
 void ghttp_onprogress(int xh,int arg,int pg,int tot)
 {
-	printf("OnProgress:%d,%d,%d,%d\n",xh,arg,pg,tot);
+	//printf("OnProgress:%d,%d,%d,%d\n",xh,arg,pg,tot);
 	std::map<g_id, GHttpContext>::iterator it=map_.find(arg);
 	if (it!=map_.end())
 	{
@@ -106,7 +106,7 @@ void ghttp_onprogress(int xh,int arg,int pg,int tot)
 
 void ghttp_onerror(int xh,int arg,int sts,const char *text)
 {
-	printf("OnError:%d,%d,%d,%s\n",xh,arg,sts,text);
+	//printf("OnError:%d,%d,%d,%s\n",xh,arg,sts,text);
 	std::map<g_id, GHttpContext>::iterator it=map_.find(arg);
 	if (it!=map_.end())
 	{
@@ -145,7 +145,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
       header++;
      }
     ctx.xhrId=module.call<int>("ghttpjs_urlload",val(url),val("GET"),hdrs,val(""),val(ctx.id),val(true), (int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress);
-    printf("GET:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
+    //printf("GET:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
 
     return ctx.id;
 }
@@ -167,9 +167,11 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
       hdrs.set(header->name,val(header->value));
       header++;
      }
-    std::string vdata((const char *)data,size);
-    ctx.xhrId=module.call<int>("ghttpjs_urlload",val(url),val("POST"),hdrs,vdata,val(ctx.id),val(true), (int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress);
-    printf("POST:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
+    //std::string vdata((const char *)data,size);
+    ctx.xhrId=module.call<int>("ghttpjs_urlload",val(url),val("POST"),hdrs,
+     emscripten::memory_view<uint8_t>(size,(const uint8_t *)data),
+     val(ctx.id),val(true), (int)ghttp_onload, (int)ghttp_onerror, (int)ghttp_onprogress);
+    //printf("POST:%ld/%d %s\n",ctx.id,ctx.xhrId,url);
 
     return ctx.id;
 }

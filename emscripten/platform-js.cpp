@@ -61,8 +61,11 @@ bool g_checkStringProperty(bool isSet, const char* what)
  return false;
 }
 
+extern const char *currentUrl;
 const char* g_getProperty(const char* what, const char* arg)
 {
+ if (!strcmp(what,"currentUrl"))
+  return currentUrl;
  return NULL;
 }
 
