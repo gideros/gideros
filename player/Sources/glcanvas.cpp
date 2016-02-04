@@ -906,6 +906,10 @@ void GLCanvas::loadFiles(std::vector<char> data) {
 }
 
 void GLCanvas::mousePressEvent(QMouseEvent* event) {
+    if (event->source() == Qt::MouseEventSynthesizedBySystem) {
+	  event->accept();
+	  return;
+	}
     if (event->button() <= 4){
         mouseButtonPressed_[event->button()] = true;
     }
@@ -913,7 +917,10 @@ void GLCanvas::mousePressEvent(QMouseEvent* event) {
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
-    
+   if (event->source() == Qt::MouseEventSynthesizedBySystem) {
+	  event->accept();
+	  return;
+	}
     bool mousePressed = false;
     for( int i=1; i<=4; ++i )
     {
@@ -930,6 +937,10 @@ void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void GLCanvas::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->source() == Qt::MouseEventSynthesizedBySystem) {
+	  event->accept();
+	  return;
+	}
     if (event->button() <= 4){
         if(mouseButtonPressed_[event->button()]) mouseButtonPressed_[event->button()] = false;
     }

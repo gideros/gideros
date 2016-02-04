@@ -78,6 +78,10 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		const QString& s1 = ctx->fileQueue[i].first;
 		const QString& s2 = ctx->fileQueue[i].second;
 
+		if (ctx->properties.app_icon_noexport)
+			if (s1==ctx->properties.app_icon)
+				continue;
+
 		QString src = QDir::cleanPath(path.absoluteFilePath(s2));
 		QString dst = QDir::cleanPath(ctx->outputDir.absoluteFilePath(s1));
 

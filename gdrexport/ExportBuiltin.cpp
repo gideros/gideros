@@ -112,6 +112,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     else if(ctx->deviceFamily == e_Html5){
         replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->base+"</title>").toUtf8());
         replaceList1 << qMakePair(QString("gideros.GApp").toUtf8(), (ctx->base+".GApp").toUtf8());
+        replaceList1 << qMakePair(QString("GIDEROS_MEMORY_MB=128").toUtf8(),QString("GIDEROS_MEMORY_MB=%1").arg(ctx->properties.html5_mem).toUtf8());
     }
     ctx->replaceList << replaceList1;
 }
@@ -273,6 +274,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
    ExportBuiltin::prepareAssetFolder(ctx);
    ExportBuiltin::exportAllAssetsFiles(ctx);
+
    if (ctx->deviceFamily == e_WinRT)
    {
    	WinRTExport::updateWinRTProject(QString("giderosgame.Windows.vcxproj"),ctx);
@@ -296,6 +298,12 @@ void ExportBuiltin::doExport(ExportContext *ctx)
        	ctx->outputDir.cd("assets");
        ctx->outputDir.removeRecursively();
        ctx->outputDir.cdUp();
+   }
+
+   if (ctx->deviceFamily == e_Html5)
+   {
+	   ExportCommon::appIcon(ctx,615,215,QString("gideros.png"));
+	   ExportCommon::appIcon(ctx,64,64,QString("favicon.png"));
    }
 
 #ifdef Q_OS_MACX
