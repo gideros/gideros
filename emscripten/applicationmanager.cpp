@@ -312,6 +312,7 @@ void ApplicationManager::updateHardwareOrientation() {
 	application_->setHardwareOrientation(hardwareOrientation_);
 }
 
+static bool canvasShown=false;
 void ApplicationManager::drawFrame() {
 	if (networkManager_)
 		networkManager_->tick();
@@ -382,6 +383,12 @@ void ApplicationManager::drawFrame() {
 	application_->clearBuffers();
 	application_->renderScene(1);
 	drawIPs();
+	
+	if (!canvasShown)
+	{
+	 canvasShown=true;
+	 EM_ASM(Module.setStatus("Running"));
+	}
 }
 
 void ApplicationManager::loadProperties() {
