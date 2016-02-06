@@ -113,18 +113,20 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
  int skey=0;
  if ((!strcmp(key,"Tab"))||(*key=='\t')) skey=1;
  if ((!strcmp(key,"Backspace"))||(*key=='\b')) skey=2;
- if ((!strcmp(key,"Enter"))||(*key=='\n')) skey=4;
+ if ((!strcmp(key,"Enter"))||(*key=='\r')) skey=4;
  if ((!strcmp(key,"Escape"))||(*key=='\e')) skey=8;
  if (eventType == EMSCRIPTEN_EVENT_KEYDOWN)
  {
   ginputp_keyDown(key,e->code);
+  //printf("DownCode:%s %d\n",key,skey);
   if (skey==1) ginputp_keyChar("\t");
   if (skey==2) ginputp_keyChar("\b");
-  if (skey==4) ginputp_keyChar("\n");
+  if (skey==4) ginputp_keyChar("\r");
   if (skey==8) ginputp_keyChar("\e");
  }
  else if (eventType == EMSCRIPTEN_EVENT_KEYUP)
  {
+  //printf("UpCode:%s %d\n",key,skey);
   ginputp_keyUp(key,e->code);
  }
  else if (eventType == EMSCRIPTEN_EVENT_KEYPRESS)
@@ -197,7 +199,8 @@ extern "C" int main_registerPlugin(const char *pname);
 extern const char *codeKey_;
 const char *currentUrl=NULL;
 int main() {
-
+  EM_ASM(Module.setStatus("Initializing"));
+          
 char *url=(char *) EM_ASM_INT_V({
  return allocate(intArrayFromString(location.href), 'i8', ALLOC_STACK);
 });

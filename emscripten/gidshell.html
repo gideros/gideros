@@ -22,7 +22,8 @@
     </figure>
   </div>
   <!-- Put canvas on top of everything so that it catches events -->
-  <canvas class="fullscreen" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+  <canvas class="fullscreen" id="canvas" oncontextmenu="event.preventDefault()"
+  hidden=1></canvas>
     
     
 <!--    <div class="emscripten">
@@ -48,8 +49,9 @@
         preRun: [],
         postRun: [],
         TOTAL_MEMORY: GIDEROS_MEMORY_MB*1024*1024,
-        dynamicLibraries: [ 'luasocket.js', 'json.js', 'bit.js' ],
-        JSPlugins: [ ],
+        dynamicLibraries: [ 'luasocket.js', 'json.js', 'bit.js'
+        /*GIDEROS_DYNLIB_PLUGIN*/ ],
+        JSPlugins: [ /*GIDEROS_JS_PLUGIN*/ ],
         print: (function() {
           var element = document.getElementById('output');
           if (element) element.value = ''; // clear browser cache
@@ -98,13 +100,15 @@
             progressElement.hidden = false;
             spinnerElement.hidden = false;
             infopaneElement.display="flex";
+            canvas.hidden=true;
           } else {
             progressElement.value = null;
             progressElement.max = null;
             progressElement.hidden = true;
-            if (!text) {
+            if (text=="Running") {
             	spinnerElement.hidden = true;
             	infopaneElement.display="none";
+            	canvas.hidden = false;
             	Pace.stop();
             }
           }
