@@ -2647,7 +2647,7 @@ void Path2D::getPathBounds(int path,bool fill,bool stroke,float *iminx,float *im
 	float maxx=0;
 	float maxy=0;
 	struct path *p = get_path(path);
-	if ((stroke||!fill)&&p)
+	if ((stroke||fill)&&p)
 	{
 		minx = 1e30f;
 		miny = 1e30f;
