@@ -66,7 +66,7 @@ struct ProjectProperties
         winrt_org = "GiderosMobile";
         winrt_package = "com.yourdomain.yourapp";
         html5_host = "";
-        html5_mem = 128;
+        html5_mem = 256;
         encryptCode = false;
         encryptAssets = false;
         app_icon="";

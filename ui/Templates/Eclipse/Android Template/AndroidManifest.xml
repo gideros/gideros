@@ -24,5 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-	</application>
+    	<!-- TAG:APPLICATION-EXTRA -->
+    </application>
 </manifest>

@@ -123,10 +123,12 @@ public class GiderosApplication
 	{
 		for ( String className : sExternalClasses )
 		{
-			Class < ? > theClass = findClass ( className );
-			if ( theClass != null ) {
-				
-				sAvailableClasses.add ( theClass );
+			if (className != null)
+			{
+				Class < ? > theClass = findClass ( className );
+				if ( theClass != null ) {				
+					sAvailableClasses.add ( theClass );
+				}
 			}
 		}
 		

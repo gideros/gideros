@@ -67,6 +67,10 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
 void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	QStringList allluafiles;
 	QStringList allluafiles_abs;
+
+    for (std::size_t i = 0; i < ctx->folderList.size(); ++i)
+    	ctx->outputDir.mkdir(ctx->folderList[i]);
+
 	ctx->allfiles.clear();
 	ctx->allfiles_abs.clear();
 	ctx->luafiles.clear();

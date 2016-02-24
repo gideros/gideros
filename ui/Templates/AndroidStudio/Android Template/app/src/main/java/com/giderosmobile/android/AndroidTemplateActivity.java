@@ -32,9 +32,14 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		System.loadLibrary("lsqlite3");
 		System.loadLibrary("json");
 		System.loadLibrary("bitop");
+		//Line below is a marker for plugin insertion scripts. Do not remove or change
+		//GIDEROS-STATIC-INIT//
 	}
 
 	static private String[] externalClasses = {
+		//Line below is a marker for plugin insertion scripts. Do not remove or change
+		//GIDEROS-EXTERNAL-CLASS//
+			null
 	};
 	
 	private GLSurfaceView mGLView;
