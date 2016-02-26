@@ -111,7 +111,10 @@ int Path2DBinder::setTexture(lua_State *L)
 
     Path2D *bitmap = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
     TextureBase *textureBase = static_cast<TextureBase*>(binder.getInstance("TextureBase", 2));
-    bitmap->setTexture(textureBase);
+	Matrix2D* matrix = NULL;
+	if (!lua_isnone(L, 3))
+		matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 3));
+    bitmap->setTexture(textureBase, matrix);
 
     return 0;
 }

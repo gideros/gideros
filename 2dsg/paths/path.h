@@ -16,6 +16,7 @@ private:
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
 
 	TextureBase* texturebase_;
+	Matrix2D textureMatrix_;
     float minx_, miny_, maxx_, maxy_;
     float filla_,fillr_,fillg_,fillb_;
     float linea_,liner_,lineg_,lineb_;
@@ -23,7 +24,7 @@ private:
 public:
 	Path2D(Application* application);
 	virtual ~Path2D();
-    void setTexture(TextureBase *texturebase);
+    void setTexture(TextureBase *texturebase, const Matrix2D* matrix = NULL);
 	void setPath(int num_commands, const unsigned char *commands, int num_coords, const float *coords);
 	void setPath(const PrPath *path);
 	void setConvex(bool convex);
@@ -32,11 +33,11 @@ public:
 	void setLineThickness(float thickness, float feather);
 	static int buildPath(PrPath *);
 	static void removePath(int);
-	static void drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,ShaderProgram *shp);
+	static void drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix2D *textureMatrix=NULL);
 	static void strokePath(int path,Matrix4 xform,float line[4]);
-	static void fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,bool convex,ShaderProgram *shp);
+	static void fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix2D *textureMatrix=NULL);
 	static void impressPath(int path,Matrix4 xform,ShaderEngine::DepthStencil stencil);
-	static void fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture,ShaderEngine::DepthStencil stencil,ShaderProgram *shp);
+	static void fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture,ShaderEngine::DepthStencil stencil,ShaderProgram *shp,const Matrix2D *textureMatrix=NULL);
 	static void getPathBounds(int path,bool fill,bool stroke,float *minx,float *miny,float *maxx,float *maxy);
 };
 

@@ -2555,7 +2555,7 @@ void Path2D::impressPath(int path,Matrix4 xform,ShaderEngine::DepthStencil stenc
 	fill_path(path, PATHFILLMODE_COUNT_UP, stencil, &xform);
 }
 
-void Path2D::fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture,ShaderEngine::DepthStencil stencil,ShaderProgram *shp)
+void Path2D::fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture,ShaderEngine::DepthStencil stencil,ShaderProgram *shp,const Matrix2D *textureMatrix)
 {
 	glPushColor();
 	glMultColor(fill[0], fill[1], fill[2], fill[3]);
@@ -2570,6 +2570,9 @@ void Path2D::fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture
 	float texcoords[8]=	{ 0,0,1,0,1,1,0,1 };
 	if (texture)
 	{
+		if (textureMatrix)
+			for (int k=0;k<8;k+=2)
+				textureMatrix->transformPoint(texcoords[k], texcoords[k+1], texcoords+k,texcoords+k+1);
 		if (!shp) shp=ShaderProgram::stdTexture;
         ShaderEngine::Engine->bindTexture(0,texture->id());
         shp->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,texcoords,4,true,NULL);
@@ -2590,7 +2593,7 @@ void Path2D::fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture
 	glPopColor();
 }
 
-void Path2D::fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,bool convex,ShaderProgram *shp) {
+void Path2D::fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix2D *textureMatrix) {
 	struct path *p = get_path(path);
 	if (!p)
 		return; //No PATH
@@ -2617,7 +2620,7 @@ void Path2D::fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,
 			impressPath(path,xform,stencil);
 			stencil.sClear = false;
 			ShaderEngine::Engine->popClip();
-			fillBounds(p->fill_bounds_vbo,fill,texture,stencil,shp);
+			fillBounds(p->fill_bounds_vbo,fill,texture,stencil,shp,textureMatrix);
 			ShaderEngine::Engine->popDepthStencil();
 		}
 	}
@@ -2635,8 +2638,8 @@ void Path2D::strokePath(int path,Matrix4 xform,float line[4]) {
 	}
 }
 
-void Path2D::drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,ShaderProgram *shp) {
-	fillPath(path,xform,fill,texture,convex,shp);
+void Path2D::drawPath(int path,Matrix4 xform,float fill[4],float line[4],TextureData *texture,bool convex,ShaderProgram *shp,const Matrix2D *textureMatrix) {
+	fillPath(path,xform,fill,texture,convex,shp,textureMatrix);
 	strokePath(path,xform,line);
 }
 
@@ -2690,7 +2693,7 @@ void Path2D::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 		float ey) {
 	float fill[4]={fillr_,fillg_,fillb_,filla_};
 	float line[4]={liner_,lineg_,lineb_,linea_};
-	drawPath(path,Matrix4(),fill,line,texturebase_?(texturebase_->data):NULL,convex_,shader_);
+	drawPath(path,Matrix4(),fill,line,texturebase_?(texturebase_->data):NULL,convex_,shader_,&textureMatrix_);
 }
 
 void Path2D::extraBounds(float* minx, float* miny, float* maxx,
@@ -2705,7 +2708,7 @@ void Path2D::extraBounds(float* minx, float* miny, float* maxx,
 		*maxy = maxy_;
 }
 
-void Path2D::setTexture(TextureBase *texturebase) {
+void Path2D::setTexture(TextureBase *texturebase, const Matrix2D* matrix) {
 	TextureBase *originaltexturebase = texturebase_;
 
 	texturebase_ = texturebase;
@@ -2713,6 +2716,10 @@ void Path2D::setTexture(TextureBase *texturebase) {
 
 	if (originaltexturebase)
 		originaltexturebase->unref();
+
+	if (matrix)
+		textureMatrix_ = matrix->inverse();
+
 }
 
 void Path2D::setPath(int num_commands, const unsigned char *commands,
