@@ -1,5 +1,7 @@
 ## Gideros Cross-Platform Mobile Development Environment
 
+[![GitHub release](https://img.shields.io/github/release/gideros/gideros.svg)]() [![Github Releases](https://img.shields.io/github/downloads/gideros/gideros/latest/total.svg)]() [![Github All Releases](https://img.shields.io/github/downloads/gideros/gideros/total.svg)]() [![Twitter Follow](https://img.shields.io/twitter/follow/GiderosMobile.svg?style=social)]() [![GitHub stars](https://img.shields.io/github/stars/gideros/gideros.svg?style=social&label=Star)]()
+
 ![Gideros](http://giderosmobile.com/cms.design/images/slider/apps.jpg)
 
 Gideros is a cross-platform mobile development environment for creating amazing games. In a couple of hours, you’ll find yourself building and running your next great game. Developers trust Gideros in building 1000s of games across AppStore, Google Play, Amazon Store, Ouya and more.
