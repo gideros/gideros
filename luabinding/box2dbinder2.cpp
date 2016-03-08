@@ -44,20 +44,23 @@ private:
 class b2ParticleSystemSprite : public Sprite
 {
 public:
-    b2ParticleSystemSprite(LuaApplication* application,b2ParticleSystem* b2ps);
+    b2ParticleSystemSprite(LuaApplication* application,b2ParticleSystem* b2ps,b2WorldED *world);
 	virtual ~b2ParticleSystemSprite();
 	b2ParticleSystem* GetSystem() { return ps_; }
+	b2WorldED* GetWorld() { return world_; }
 	void SetTexture(TextureBase *texture);
 private:
 	LuaApplication* application_;
 	b2ParticleSystem* ps_;
+	b2WorldED *world_;
 	TextureBase* texturebase_;
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 };
 
-b2ParticleSystemSprite::b2ParticleSystemSprite(LuaApplication* application,b2ParticleSystem* b2ps) : Sprite(application->getApplication())
+b2ParticleSystemSprite::b2ParticleSystemSprite(LuaApplication* application,b2ParticleSystem* b2ps,b2WorldED *world) : Sprite(application->getApplication())
 {
 	ps_=b2ps;
+	world_=world;
 	application_=application;
 	texturebase_=NULL;
 }
@@ -5408,7 +5411,7 @@ static void tableToParticleSystemDef(lua_State* L, int index, b2ParticleSystemDe
     {
     		{"pressureStrength", &particleDef->pressureStrength},
     		{"dampingStrength", &particleDef->dampingStrength},
-    		{"elaticStrength", &particleDef->elasticStrength},
+    		{"elasticStrength", &particleDef->elasticStrength},
     		{"springStrength", &particleDef->springStrength},
     		{"viscousStrength", &particleDef->viscousStrength},
     		{"surfaceTensionPressureStrength", &particleDef->surfaceTensionPressureStrength},
@@ -5462,7 +5465,7 @@ int Box2DBinder2::b2World_createParticleSystem(lua_State* L)
     tableToParticleSystemDef(L, 2, &particleSystemDef, application->getPhysicsScale());
 
     b2ParticleSystem* particleSystem = world->CreateParticleSystem(&particleSystemDef);
-    b2ParticleSystemSprite *ps=new b2ParticleSystemSprite(application,particleSystem);
+    b2ParticleSystemSprite *ps=new b2ParticleSystemSprite(application,particleSystem,world);
 
     binder.pushInstance("b2ParticleSystem", ps);
 
@@ -5511,6 +5514,16 @@ static void tableToParticleDef(lua_State* L, int index, b2ParticleDef* particleD
         particleDef->color.a = std::min(std::max(alpha, 0), 255);
     }
     lua_pop(L, 1);
+
+    lua_getfield(L, index, "lifetime");
+    if (!lua_isnil(L, -1))
+        particleDef->lifetime = luaL_checknumber(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "group");
+    if (!lua_isnil(L, -1))
+    	particleDef->group = static_cast<b2ParticleGroup*>(binder.getInstance("b2ParticleGroup", -1));
+    lua_pop(L, 1);
 }
 
 int Box2DBinder2::b2ParticleSystem_createParticle(lua_State* L)
@@ -5526,10 +5539,10 @@ int Box2DBinder2::b2ParticleSystem_createParticle(lua_State* L)
     b2ParticleDef particleDef;
     tableToParticleDef(L, 2, &particleDef, application->getPhysicsScale());
 
-    int32 p=ps->GetSystem()->CreateParticle(particleDef);
-    if (p==0)
+    if (ps->GetWorld()->IsLocked())
     	return luaL_error(L, GStatus(5004).errorString());	// Error #5004: World is locked.
 
+    int32 p=ps->GetSystem()->CreateParticle(particleDef);
     lua_pushinteger(L, p);
 
     return 1;
