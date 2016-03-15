@@ -91,6 +91,7 @@ EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *e, void *userDat
   initGL(defWidth,defHeight);   
 //glfwSetWindowSize(defWidth,defHeight); 
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
+ return false;
 }
 
 
@@ -135,7 +136,7 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
    ginputp_keyChar(key);
  }
 
- return 0;
+ return true;
 }
 
 EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userData)
@@ -156,7 +157,7 @@ EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userD
 			 ginputp_mouseHover(x,y,b);
 	}
 
-  return 0;
+  return true;
 }
 
 EM_BOOL wheel_callback(int eventType, const EmscriptenWheelEvent *e, void *userData)
@@ -171,7 +172,7 @@ EM_BOOL wheel_callback(int eventType, const EmscriptenWheelEvent *e, void *userD
  int b=e->mouse.buttons;
  b=(b&1)|((b&2)<<1)|(b&4>>1); //Convert buttons to gideros mask
   ginputp_mouseWheel(x,y,b,-w);
-  return 0;
+  return true;
 }
 
 EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userData)
@@ -190,7 +191,7 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHCANCEL)
 		 ginputp_touchCancel(x,y,i);
   }
-  return 0;
+  return true;
 }
 
 
