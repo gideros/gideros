@@ -1082,6 +1082,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\cryptobinder.cpp">
       <Filter>luabinding</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\viewportbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\viewport.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">
@@ -1699,6 +1705,12 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\libgid\include\aes.h">
       <Filter>libgid</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\viewportbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\viewport.h">
+      <Filter>2dsg</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

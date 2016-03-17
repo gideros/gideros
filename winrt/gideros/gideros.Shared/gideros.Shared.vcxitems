@@ -81,6 +81,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ttfont.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\tttextfield.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\urlrequest.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\viewport.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\dict.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\geom.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\memalloc.c" />
@@ -504,6 +505,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\tlsf.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\ttfontbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\urlloaderbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\viewportbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\zlibbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)giderosapi.cpp">
       <CompileAsWinRT>true</CompileAsWinRT>
@@ -576,6 +578,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ttfont.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\tttextfield.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\urlrequest.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\viewport.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\dict-list.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\dict.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\external\glu\libtess\geom.h" />
@@ -716,6 +719,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\tlsfbits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\ttfontbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\urlloaderbinder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\viewportbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\dxcompat.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\dxglobals.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\pch.h" />

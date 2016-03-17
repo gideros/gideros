@@ -178,6 +178,7 @@ gl2ShaderProgram.o \
 gl2ShaderTexture.o \
 shaderbinder.o gl2PathShaders.o \
 ftlibrarysingleton.o \
+viewport.o viewportbinder.o \
 path2dbinder.o path.o ft-path.o svg-path.o
 
 %.o : %.cpp

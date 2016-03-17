@@ -45,6 +45,7 @@
 #include "stageorientationevent.h"
 #include "shaderbinder.h"
 #include "path2dbinder.h"
+#include "viewportbinder.h"
 
 #include "keys.h"
 
@@ -294,6 +295,7 @@ static int bindAll(lua_State* L)
     RenderTargetBinder renderTargetBinder(L);
     ShaderBinder shaderBinder(L);
     Path2DBinder path2DBinder(L);
+    ViewportBinder viewportBinder(L);
 
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)

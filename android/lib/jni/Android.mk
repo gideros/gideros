@@ -244,6 +244,7 @@ LOCAL_SRC_FILES += \
     ../../../2dsg/paths/path.cpp \
     ../../../2dsg/paths/ft-path.c \
     ../../../2dsg/paths/svg-path.c \
+    ../../../2dsg/viewport.cpp \
 	../../../libgideros/luautil.cpp
 	
 # LOCAL_SRC_FILES += ../../../2dsg/clipper.cpp
@@ -434,6 +435,7 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/cryptobinder.cpp \
 	../../../luabinding/shaderbinder.cpp \
 	../../../luabinding/path2dbinder.cpp \
+	../../../luabinding/viewportbinder.cpp \
 	../../../luabinding/rendertargetbinder.cpp
 
 #XMP
