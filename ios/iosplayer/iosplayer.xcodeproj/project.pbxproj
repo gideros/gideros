@@ -356,6 +356,8 @@
 		EB35B49A1C1190C200227849 /* ft-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4971C1190C200227849 /* ft-path.c */; };
 		EB35B49B1C1190C200227849 /* prpath.h in Headers */ = {isa = PBXBuildFile; fileRef = EB35B4981C1190C200227849 /* prpath.h */; };
 		EB35B49C1C1190C200227849 /* svg-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4991C1190C200227849 /* svg-path.c */; };
+		EB7A5EA51C9BE7D70068EFCA /* viewportbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */; };
+		EB7A5EA71C9BE8080068EFCA /* viewport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB7A5EA61C9BE8080068EFCA /* viewport.cpp */; };
 		EB82BDCE1B29606C00281732 /* gl2ShaderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */; };
 		EB82BDCF1B29606C00281732 /* gl2ShaderEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */; };
 		EB82BDD01B29606C00281732 /* gl2ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */; };
@@ -775,6 +777,8 @@
 		EB35B4971C1190C200227849 /* ft-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "ft-path.c"; sourceTree = "<group>"; };
 		EB35B4981C1190C200227849 /* prpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prpath.h; sourceTree = "<group>"; };
 		EB35B4991C1190C200227849 /* svg-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "svg-path.c"; sourceTree = "<group>"; };
+		EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = viewportbinder.cpp; path = ../../luabinding/viewportbinder.cpp; sourceTree = "<group>"; };
+		EB7A5EA61C9BE8080068EFCA /* viewport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = viewport.cpp; path = ../../2dsg/viewport.cpp; sourceTree = "<group>"; };
 		EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderBuffer.cpp; sourceTree = "<group>"; };
 		EB82BDC31B29606C00281732 /* gl2ShaderEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderEngine.cpp; sourceTree = "<group>"; };
 		EB82BDC41B29606C00281732 /* gl2ShaderProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderProgram.cpp; sourceTree = "<group>"; };
@@ -1286,6 +1290,7 @@
 				EB82BDBA1B29606C00281732 /* gfxbackends */,
 				EB08A3501AAA06F900D8F27D /* Matrices.cpp */,
 				EB08A3511AAA06F900D8F27D /* Matrices.h */,
+				EB7A5EA61C9BE8080068EFCA /* viewport.cpp */,
 				5F321EAF15BBC3FC00542289 /* application.cpp */,
 				5F321EB015BBC3FC00542289 /* bitmap.cpp */,
 				5F321EB115BBC3FC00542289 /* bitmapdata.cpp */,
@@ -1359,6 +1364,7 @@
 		5F321F2215BBCA8000542289 /* luabinding */ = {
 			isa = PBXGroup;
 			children = (
+				EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */,
 				EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */,
 				EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */,
 				EB82BDD51B305E2F00281732 /* shaderbinder.cpp */,
@@ -1821,6 +1827,7 @@
 				5F321E0415BB516F00542289 /* event.cpp in Sources */,
 				5F321E0515BB516F00542289 /* eventdispatcher.cpp in Sources */,
 				5F276F6A18F4020E00D78AE4 /* b2DynamicTree.cpp in Sources */,
+				EB7A5EA71C9BE8080068EFCA /* viewport.cpp in Sources */,
 				5F321E0615BB516F00542289 /* eventvisitor.cpp in Sources */,
 				5F321E0715BB516F00542289 /* gplugin-ios.mm in Sources */,
 				EBD8CA8E1B903A50002F9D6C /* common.c in Sources */,
@@ -1977,6 +1984,7 @@
 				5F321F6915BBEB3200542289 /* ttfontbinder.cpp in Sources */,
 				5F276FB518F4020E00D78AE4 /* b2MotorJoint.cpp in Sources */,
 				EB82BDCF1B29606C00281732 /* gl2ShaderEngine.cpp in Sources */,
+				EB7A5EA51C9BE7D70068EFCA /* viewportbinder.cpp in Sources */,
 				5F321F6C15BBEB5F00542289 /* ginput-ios.mm in Sources */,
 				5F321F7615BBF2E100542289 /* giderosapi.mm in Sources */,
 				5F276F8E18F4020E00D78AE4 /* b2Body.cpp in Sources */,
