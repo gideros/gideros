@@ -1,3 +1,7 @@
+rem rm -rf => rmdir /S /Q
+rem cp -R => xcopy /S /I
+rem replaced hg commands with xcopy
+
 rmdir /S /Q ..\..\release
 mkdir ..\..\release
 
@@ -125,17 +129,17 @@ copy ..\plugins\JSON\source\libs\x86\libjson.so "..\..\release\Templates\Eclipse
 :: hg archive -I "..\plugins\Google Billing\source\Android\com" ..\..\temp
 xcopy /S /I "..\plugins\Google Billing\source\Android\com" "..\..\release\Templates\Eclipse\Android Template\src"
 
-REM SEEMS TO BE COPYING IN THE WRONG DIRECTION!
+REM SEEMS TO BE COPYING IN THE WRONG DIRECTION! (commented out)
 :: xcopy /S /I "..\plugins\Google Billing\source\Android\com" ..\android\GiderosAndroidPlayer\src
 
 :: rmdir /S /Q ..\android\GiderosAndroidPlayer\libs
 :: xcopy /S /I "..\..\release\Templates\Eclipse\Android Template\libs" ..\android\GiderosAndroidPlayer
 
-REM CREATE APK FOR ANDROID PLAYER (commented out)
-:: cd ..\android\GiderosAndroidPlayer
-:: call ant debug
-:: move bin\GiderosAndroidPlayer-debug.apk ..\..\..\release\GiderosAndroidPlayer.apk
-:: cd ..\..\scripts
+REM CREATE APK FOR ANDROID PLAYER
+cd ..\android\GiderosAndroidPlayer
+call ant debug
+move bin\GiderosAndroidPlayer-debug.apk ..\..\..\release\GiderosAndroidPlayer.apk
+cd ..\..\scripts
 
 REM ZIP UP IOS PLAYER DIRECTORY (AND REMOVE DIR) (commented out)
 :: cd ..\..\release

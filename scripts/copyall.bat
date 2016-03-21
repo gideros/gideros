@@ -113,6 +113,7 @@ cp ..\plugins\JSON\source\libs\armeabi\libjson.so "..\..\release\Templates\Eclip
 cp ..\plugins\JSON\source\libs\armeabi-v7a\libjson.so "..\..\release\Templates\Eclipse\Android Template\libs\armeabi-v7a"
 cp ..\plugins\JSON\source\libs\x86\libjson.so "..\..\release\Templates\Eclipse\Android Template\libs\x86"
 
+REM SEEMS TO BE COPYING IN THE WRONG DIRECTION (FROM RELEASE FOLDER BACK TO GIDEROS/ANDROID FOLDER)
 rm -rf ..\..\temp
 rem mkdir ..\..\temp
 rem svn export "..\plugins\Google Billing\source\Android\com" ..\..\temp\com
@@ -123,12 +124,13 @@ cp -R "..\..\temp\plugins\Google Billing\source\Android\com" ..\android\GiderosA
 rm -rf ..\android\GiderosAndroidPlayer\libs
 cp -R "..\..\release\Templates\Eclipse\Android Template\libs" ..\android\GiderosAndroidPlayer
 
+REM CREATE APK FOR ANDROID PLAYER
 cd ..\android\GiderosAndroidPlayer
 call ant debug
 mv bin\GiderosAndroidPlayer-debug.apk ..\..\..\release\GiderosAndroidPlayer.apk
 cd ..\..\scripts
 
-
+REM ZIP UP IOS PLAYER DIRECTORY (AND REMOVE DIR)
 cd ..\..\release
 zip -r GiderosiOSPlayer.zip GiderosiOSPlayer
 rm -rf GiderosiOSPlayer
