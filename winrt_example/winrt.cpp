@@ -172,6 +172,8 @@ public:
 
 		bool isPlayer = (file == nullptr);
 
+		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+
 		// false means "don't use XAML"
 		gdr_initialize(false, Window, nullptr, Window->Bounds.Width, Window->Bounds.Height, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
 

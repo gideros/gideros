@@ -226,14 +226,14 @@ void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::Swap
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-		scaley = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
+		scaley = ((int)dinfo->ResolutionScale)*0.01f*dinfo->LogicalDpi/ 96.0f;   // Windows 8 PC
 #endif
 //    }
 
 	float basex = 0;
 	float basey = 0;
-	float windoww = width*scaley;  // default values means stretch to fit full screen
-	float windowh = height*scaley;  // Lua can change later. Note that screenw/h are in scaled coords
+	float windoww = width*scaley;
+	float windowh = height*scaley;
 
 	viewport.TopLeftX = basex;
 	viewport.TopLeftY = basey;
@@ -746,7 +746,7 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01;   // Windows 8 PC
+		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01f*dinfo->LogicalDpi/96.0f;   // Windows 8 PC
 #endif
 //	}
 
