@@ -6,3 +6,5 @@ call makejar.bat
 call buildandroidlibs.bat
 call buildandroidso.bat
 call buildandroidplugins.bat
+call buildwinrt.bat
+call buildwin32.bat

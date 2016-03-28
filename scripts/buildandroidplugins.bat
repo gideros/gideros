@@ -1,54 +1,64 @@
 cd ..
 cd plugins
 
-cd BitOp\source
-rm -rf libs obj
-call c:\android-ndk-r9d\ndk-build
+cd bitop\source
+rmdir /S /Q libs
+rmdir /S /Q obj
+call c:\android-ndk\android-ndk-r11b\ndk-build
 cd ..\..
 
-cd LuaSocket\source
-rm -rf libs obj
-call c:\android-ndk-r9d\ndk-build
+cd luasocket\source
+rmdir /S /Q libs
+rmdir /S /Q obj
+call c:\android-ndk\android-ndk-r11b\ndk-build
 cd ..\..
 
-cd LPeg\source
-rm -rf libs obj
-call c:\android-ndk-r9d\ndk-build
+cd lpeg\source
+rmdir /S /Q libs
+rmdir /S /Q obj
+call c:\android-ndk\android-ndk-r11b\ndk-build
 cd ..\..
 
-cd LuaFileSystem\source
-rm -rf libs obj
-call c:\android-ndk-r9d\ndk-build
+cd lfs\source
+rmdir /S /Q libs
+rmdir /S /Q obj
+call c:\android-ndk\android-ndk-r11b\ndk-build
 cd ..\..
 
-cd "Google Billing\source\Android"
-rm -rf libs obj
-call c:\android-ndk-r9d\ndk-build
+cd "googlebilling\source\Android"
+rmdir /S /Q libs
+rmdir /S /Q obj
+call c:\android-ndk\android-ndk-r11b\ndk-build
 cd ..\..\..
 
-cd LuaSQLite3\source
-rm -rf libs obj
-call c:\android-ndk-r9d\ndk-build
+cd luasqlite3\source
+rmdir /S /Q libs
+rmdir /S /Q obj
+call c:\android-ndk\android-ndk-r11b\ndk-build
 cd ..\..
 
-cd Microphone\source\Android
-rm -rf libs obj
-call c:\android-ndk-r9d\ndk-build
+cd microphone\source\Android
+rmdir /S /Q libs
+rmdir /S /Q obj
+call c:\android-ndk\android-ndk-r11b\ndk-build
 cd ..\..\..
 
-cd Flurry\source\Android
-rm -rf libs obj
-call c:\android-ndk-r9d\ndk-build
+cd flurry\source\Android
+rmdir /S /Q libs
+rmdir /S /Q obj
+call c:\android-ndk\android-ndk-r11b\ndk-build
 cd ..\..\..
 
-cd Facebook\source\Android
-rm -rf libs obj
-call c:\android-ndk-r9d\ndk-build
+cd facebook\source\Android
+rmdir /S /Q libs
+rmdir /S /Q obj
+call c:\android-ndk\android-ndk-r11b\ndk-build
 cd ..\..\..
 
-cd JSON\source
-rm -rf libs obj
-call c:\android-ndk-r9d\ndk-build
+cd json\source
+rmdir /S /Q libs
+rmdir /S /Q obj
+call c:\android-ndk\android-ndk-r11b\ndk-build
 cd ..\..
 
 cd ..

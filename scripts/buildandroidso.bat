@@ -1,16 +1,16 @@
 cd ..
 cd android
-rm -rf build
+rmdir /S /Q build
 mkdir build
 mkdir build\jni
-cp -R lib\jni\* build\jni
+xcopy /S /I lib\jni\* build\jni
 cd build
 
-call c:\android-ndk-r9d\ndk-build
+call c:\android-ndk\android-ndk-r11b\ndk-build
 
-rm -rf ..\..\Sdk\lib\android
+rmdir /S /Q ..\..\Sdk\lib\android
 mkdir ..\..\Sdk\lib\android
-cp -R libs\* ..\..\Sdk\lib\android 
+xcopy /S /I libs\* ..\..\Sdk\lib\android 
 
 cd ..
 cd ..
