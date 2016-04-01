@@ -179,7 +179,8 @@ gl2ShaderTexture.o \
 shaderbinder.o gl2PathShaders.o \
 ftlibrarysingleton.o \
 viewport.o viewportbinder.o \
-path2dbinder.o path.o ft-path.o svg-path.o
+path2dbinder.o path.o ft-path.o svg-path.o \
+win32_res.o
 
 %.o : %.cpp
 	g++ $(CXXFLAGS) -c $<
@@ -196,6 +197,8 @@ win32.exe: $(objfiles) gvfs.dll lua.dll gideros.dll pystring.dll gid.dll
 win32noconsole.exe: $(objfiles) gvfs.dll lua.dll gideros.dll pystring.dll gid.dll
 	g++ -o win32noconsole.exe $(objfiles) $(linksnoconsole)
 
+win32_res.o: ..\libgid\src\win32\win32_res.rc
+	windres $< win32_res.o
 
 # b2Timer needs to undefine _WIN32
 b2Timer.o: \

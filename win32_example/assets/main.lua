@@ -47,8 +47,11 @@ stage:addChild(bird2)
 stage:addChild(bird3)
 stage:addChild(bird4)
 
---local alertDialog = AlertDialog.new("Error: not found", "Try reinstalling all software", "Cancel","OK", "No Way!")
---local alertDialog2 = AlertDialog.new("Important Question", "Should the UK be a member of the EU?", "Cancel", "Yes", "NOOOOOOOOO")
+local alertDialog = AlertDialog.new("Error: not found", "Try reinstalling all software", "Cancel","OK", "No Way!")
+local alertDialog2 = AlertDialog.new("Important Question", "Should the UK be a member of the EU?", "NOOOOO")
+
+local textInputDialog = TextInputDialog.new("Text Input","Enter your reg number","text","Cancel","YES","NO")
+local textInputDialog2 = TextInputDialog.new("Text Input2","Enter your phonr number","number","Cancel","Submit")
 
 local function onComplete(event)
   print(event.buttonIndex, event.buttonText)
@@ -58,9 +61,21 @@ local function onComplete2(event)
   print("Number 2:", event.buttonIndex, event.buttonText)
 end
 
+local function TonComplete(event)
+  print("TextInputDialog",event.buttonIndex, event.buttonText, event.text)
+  application:openUrl(event.text)
+end
 
---alertDialog:addEventListener(Event.COMPLETE, onComplete)
---alertDialog2:addEventListener(Event.COMPLETE, onComplete2)
+local function TonComplete2(event)
+  print("TextInputDialog 2:", event.buttonIndex, event.buttonText, event.text)
+end
+
+
+alertDialog:addEventListener(Event.COMPLETE, onComplete)
+alertDialog2:addEventListener(Event.COMPLETE, onComplete2)
+
+textInputDialog:addEventListener(Event.COMPLETE,TonComplete)
+textInputDialog2:addEventListener(Event.COMPLETE,TonComplete2)
 
 stage:addEventListener(Event.KEY_DOWN, function(event) 
  				         if event.keyCode==KeyCode.F then 
@@ -77,7 +92,19 @@ soundchannel:setLooping(false)
 soundchannel:setPitch(1.5)
 
 function onMouseDown(event)
-  print (event.x, event.y)
+  if event.x>240 then
+    if event.y>160 then
+       textInputDialog:show()
+    else
+       textInputDialog2:show()
+    end
+  else
+    if event.y>160 then
+       alertDialog:show()
+    else
+       alertDialog2:show()
+    end
+  end
 end
 
 stage:addEventListener(Event.MOUSE_DOWN, onMouseDown)

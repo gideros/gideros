@@ -43,13 +43,15 @@
 extern "C" {
   void g_setFps(int);
   int g_getFps();
+  void setWin32Stuff(HINSTANCE hInst, HWND hwnd);
 }
 
 #define ID_TIMER   1
 
+HWND hwndcopy;
+
 char commandLine[256];
 int dxChrome,dyChrome;
-HWND hwndcopy;
 
 static LuaApplication *application_;
 static int g_windowWidth;    // width if window was in portrait mode
@@ -707,7 +709,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		       hInstance,               // program instance handle
 		       NULL) ;		             // creation parameters
 
-  hwndcopy=hwnd;
+  setWin32Stuff(hInstance,hwnd);
+  hwndcopy=hwnd;                  // for platform-win32
 
   // ----------------------------------------------------------------------
   // Create window

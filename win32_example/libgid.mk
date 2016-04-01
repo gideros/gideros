@@ -92,6 +92,9 @@ gvfs.dll
 gid.dll: $(objfiles) gvfs.dll
 	g++ -o gid.dll -shared $(objfiles) $(links)
 
+win32_res.o: ..\libgid\src\win32\win32_res.rc
+	windres $< win32_res.o
+
 # uses C++ 2011 code
 ginput-win32.o: ..\libgid\src\win32\ginput-win32.cpp \
  ..\libgid\include/ginput.h ..\libgid\include/gglobal.h \
