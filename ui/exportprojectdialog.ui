@@ -37,6 +37,9 @@ target platform to export the application source.</string>
          <height>0</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Choose your platform here.</string>
+       </property>
        <item>
         <property name="text">
          <string>iOS</string>
@@ -96,11 +99,8 @@ target platform to export the application source.</string>
    </item>
    <item>
     <widget class="QTabWidget" name="architectureTab">
-     <property name="toolTip">
-      <string>Choose your platform here.</string>
-     </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -178,11 +178,6 @@ Example: com.giderosmobile.timthetimber</string>
            <item>
             <property name="text">
              <string>Android Studio</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>APK</string>
             </property>
            </item>
           </widget>

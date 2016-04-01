@@ -52,9 +52,13 @@ for (int k = 0; k < exprops.count(); k++) {
 	if (propType == "boolean") {
 		QCheckBox *cb = new QCheckBox("");
 		cb->setChecked(val.toInt() != 0);
+		if (!propDesc.isEmpty())
+			cb->setToolTip(propDesc);
 		setCellWidget(k, 1, cb);
 	} else {
 		item = new QTableWidgetItem(val);
+		if (!propDesc.isEmpty())
+			item->setToolTip(propDesc);
 		setItem(k, 1, item);
 	}
 
@@ -93,7 +97,7 @@ void PropertyEditingTable::onBrowse(int row) {
  QString type=props.at(row).type;
  if (type=="dir")
  {
-	 QString dir = QFileDialog::getExistingDirectory(this,"","",
+	 QString dir = QFileDialog::getExistingDirectory(this,"",item(row,1)->text(),
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
 	 if (!dir.isEmpty())
@@ -101,7 +105,7 @@ void PropertyEditingTable::onBrowse(int row) {
  }
  else if (type=="file")
  {
-	 QString file = QFileDialog::getOpenFileName(this,"","","");
+	 QString file = QFileDialog::getOpenFileName(this,"",item(row,1)->text(),"");
 	 if (!file.isEmpty())
 		 item(row,1)->setText(file);
  }
