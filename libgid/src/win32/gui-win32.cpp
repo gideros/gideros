@@ -76,6 +76,7 @@ BOOL CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lP
       EndDialog(hwnd,LOWORD(wParam));
       gevent_EnqueueEvent(mygid, map_[mygid].callback, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, 
 			  event, 1, map_[mygid].udata);
+      return TRUE;
     }
     else if (LOWORD(wParam)==TID_BUTTON2){
       GetDlgItemText(hwnd,TID_EDIT,buffer,1024);
@@ -98,6 +99,7 @@ BOOL CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lP
       EndDialog(hwnd,LOWORD(wParam));
       gevent_EnqueueEvent(mygid, map_[mygid].callback, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, 
 			  event, 1, map_[mygid].udata);
+      return TRUE;
     }
     else if (LOWORD(wParam)==TID_BUTTON3){
       GetDlgItemText(hwnd,TID_EDIT,buffer,1024);
@@ -120,6 +122,7 @@ BOOL CALLBACK TextInputDialogProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lP
       EndDialog(hwnd,LOWORD(wParam));
       gevent_EnqueueEvent(mygid, map_[mygid].callback, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, 
 			  event, 1, map_[mygid].udata);
+      return TRUE;
     }
     return FALSE;
   }

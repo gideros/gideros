@@ -490,11 +490,13 @@ A universal solution is created containing a Windows Phone and Windows Store pro
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>
-Alpha version. Not for production apps.
+Beta version. Should be feature complete but use with caution!
 
-This is the same as Windows Desktop export except it produces a lightweight export without Qt libraries.
+This is the same as Windows Desktop export except it produces a lightweight export without Qt libraries. The package is smaller and may run smoother. 
 
-The package is smaller and may run smoother. Normally the Win32 export uses Windows timer messages to process ENTER_FRAME events but if you launch from the command line using &quot;win32 1&quot; (60 fps) or &quot;win32 2&quot; (30 fps) it will use VSYNC instead. VSYNC might be smoother but is graphics card dependent.
+The exported program will attempt to use VSYNC to time the drawing of frames (30 or 60 fps, whichever you have selected)
+If VSYNC (which is graphics card dependent) is not detected on the PC, it will fall back to Windows timer events. 
+To overide this behaviour, and ALWAYS uses timer events, launch with "win32 timer"
 
 * No extra settings for Win32.</string>
          </property>

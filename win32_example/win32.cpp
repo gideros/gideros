@@ -52,6 +52,8 @@ HWND hwndcopy;
 
 char commandLine[256];
 int dxChrome,dyChrome;
+PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
+PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT;
 
 static LuaApplication *application_;
 static int g_windowWidth;    // width if window was in portrait mode
@@ -214,7 +216,7 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
   *hRC = wglCreateContext( *hDC );
   wglMakeCurrent( *hDC, *hRC );
 
-  if (not use_timer) {
+  if (! use_timer) {
     PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
 
     _wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC) wglGetProcAddress("wglGetExtensionsStringEXT");
@@ -223,24 +225,23 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
     if (strstr(_wglGetExtensionsStringEXT(), "WGL_EXT_swap_control") == NULL)
     {
       printf("Extension not found WGL_EXT_swap_control\n");
-      exit(1);
     }
 
-    PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT"); 
+    wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT"); 
     
     if (wglSwapIntervalEXT == NULL){
-      printf("Error, no wglSwapIntervalEXT\n");
-      exit(1);
+      printf("No wglSwapIntervalEXT, reverting to timer events\n");
+      use_timer=true;
+      return;
     }
-    wglSwapIntervalEXT(vsyncVal);
+    //    wglSwapIntervalEXT(vsyncVal);
 
-    PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC) wglGetProcAddress("wglGetSwapIntervalEXT");
+    wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC) wglGetProcAddress("wglGetSwapIntervalEXT");
 
     if (wglGetSwapIntervalEXT == NULL){
-      printf("Error, no wglGetSwapIntervalEXT\n");
-      exit(1);
+      printf("No wglGetSwapIntervalEXT\n");
     }
-    printf("wglGetSwapIntervalEXT=%d\n",wglGetSwapIntervalEXT());
+    //    printf("wglGetSwapIntervalEXT=%d\n",wglGetSwapIntervalEXT());
 
   }
 
@@ -668,19 +669,18 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   HWND        hwnd ;
   MSG         msg ;
   WNDCLASSEX  wndclass ;
-
-  strncpy(commandLine,szCmdLine,255);
+  int ret;
 
   printf("szCmdLine=%s\n",szCmdLine);
-  printf("commandLine=%s\n",commandLine);
 
-  sscanf(szCmdLine,"%d",&vsyncVal);
-  printf("vsyncVal=%d\n",vsyncVal);
-
-  if (vsyncVal==0)
+  if (strcmp(szCmdLine,"timer")==0){
+    printf("Using timer as requested\n");
     use_timer=true;
-  else
+  }
+  else {
+    printf("Will use VSYNC if available\n");
     use_timer=false;
+  }
 
   wndclass.cbSize        = sizeof (wndclass) ;
   wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
@@ -719,20 +719,49 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   ShowWindow (hwnd, iCmdShow) ;
   //  UpdateWindow (hwnd) ;
 
+  int fps;
   if (use_timer){
 
-    SetTimer(hwnd, ID_TIMER, 0, NULL);
+    fps=-1;
 
     while (GetMessage (&msg, NULL, 0, 0)) {
+
+      if (g_getFps() != fps){
+	fps=g_getFps();
+	if (fps==30)
+	  SetTimer(hwnd, ID_TIMER, 30, NULL);
+	else if (fps==60)
+	  SetTimer(hwnd, ID_TIMER, 10, NULL);   // 10 is the minimum, actually more like 16 ms.
+	else {
+	  printf("Illegal FPS (timer): %d\n",fps);
+	  exit(1);
+	}
+      }
+
       TranslateMessage (&msg) ;
       DispatchMessage (&msg) ;
     }
   }
   else {
 
+    fps=-1;
+
     drawok=true;
 
     while (TRUE) {
+
+      if (g_getFps() != fps){
+	fps=g_getFps();
+	if (fps==30)
+	  wglSwapIntervalEXT(2);
+	else if (fps==60)
+	  wglSwapIntervalEXT(1);
+	else {
+	  printf("Illegal FPS (VSYNC): %d\n",fps);
+	  exit(1);
+	}
+      }
+
       if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
 	if (msg.message == WM_QUIT){
 	  printf("WM_QUIT message received\n");
