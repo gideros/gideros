@@ -1,6 +1,6 @@
 call buildqtlibs.bat
 call buildplugins.bat
-call cleanqt.bat
+REM call cleanqt.bat
 call buildqt.bat
 call makejar.bat
 call buildandroidlibs.bat

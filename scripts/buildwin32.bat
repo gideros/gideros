@@ -1,4 +1,4 @@
 cd ..\win32_example
-call depends.bat
+REM call depends.bat
 call compile.bat
 cd ..\scripts

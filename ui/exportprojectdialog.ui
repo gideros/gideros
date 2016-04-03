@@ -494,9 +494,9 @@ Beta version. Should be feature complete but use with caution!
 
 This is the same as Windows Desktop export except it produces a lightweight export without Qt libraries. The package is smaller and may run smoother. 
 
-The exported program will attempt to use VSYNC to time the drawing of frames (30 or 60 fps, whichever you have selected)
-If VSYNC (which is graphics card dependent) is not detected on the PC, it will fall back to Windows timer events. 
-To overide this behaviour, and ALWAYS uses timer events, launch with "win32 timer"
+The exported program will attempt to use VSYNC to time the drawing of frames (30 or 60 fps, whichever you have selected). If VSYNC (which is graphics card dependent) is not detected on the PC, it will fall back to Windows timer events. To overide this behaviour, and ALWAYS uses timer events, launch with "win32 timer"
+
+win32.exe and win32console.exe in export are identical except the latter runs without a console window popping up.
 
 * No extra settings for Win32.</string>
          </property>

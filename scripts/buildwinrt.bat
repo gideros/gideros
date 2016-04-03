@@ -18,6 +18,6 @@ cd ..\winrt_example\giderosgame\giderosgame.Windows
 msbuild giderosgame.Windows.vcxproj /t:publish /p:Configuration=Release /p:Platform=Win32 /clp:Verbosity=minimal /p:AppxBundle=Always
 
 cd ..\giderosgame.WindowsPhone
-msbuild giderosgame.WindowsPhone.vxcproj /t:publish /p:Configuration=Release /p:Platform=ARM /clp:Verbosity=minimal /p:AppxBundle=Always
+msbuild giderosgame.WindowsPhone.vcxproj /t:publish /p:Configuration=Release /p:Platform=ARM /clp:Verbosity=minimal /p:AppxBundle=Always
 
 cd ..\..\..\scripts
