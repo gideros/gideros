@@ -51,6 +51,7 @@ bash cleanioslibs.sh > /dev/null
 bash buildioslibs.sh > /dev/null
 bash buildiosplugins.sh > /dev/null
 bash cleanioslibs.sh > /dev/null
+sleep 200
 bash cleanatvlibs.sh > /dev/null
 bash buildatvlibs.sh > /dev/null
 bash buildatvplugins.sh > /dev/null
