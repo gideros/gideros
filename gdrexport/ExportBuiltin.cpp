@@ -308,7 +308,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
 #ifdef Q_OS_MACX
    if(ctx->deviceFamily == e_MacOSXDesktop){
-   	MacOSXExport::CodeSignMacOSX(&ctx);
+   	MacOSXExport::CodeSignMacOSX(ctx);
    }
 #endif
 
