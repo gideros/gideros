@@ -399,6 +399,11 @@ coroutine.resume(co [, val1, ...]) coroutine - continues execution of co, return
 coroutine.status(co) coroutine - returns co status: "running", "suspended" or "dead"
 coroutine.wrap(f) coroutine - creates coroutine with body f, returns function that resumes co
 coroutine.yield([val1, ...]) coroutine - suspend execution of calling coroutine
+Cryptography
+cryptography
+Cryptography.aesDecrypt(ciphertext, key [, iv, paddingType]) Cryptography - Decrypt an AES 128 string
+Cryptography.aesEncrypt(plaintext, key [, iv, paddingType]) Cryptography - Encrypt a string with AES
+Cryptography.md5(input) Cryptography - Compute the MD5 hash of the input string
 debug
 debug.debug() debug - enters interactive debug mode, line with only "cont" terminates
 debug.gethook() debug - returns current hook function, hook mask, hook count
