@@ -69,10 +69,12 @@ bash copymac.sh
 
 cp -R ../../external/VisualStudio ../build/win/Templates
 cp -R ../../external/win32 ../build/win/Templates
+cp -R ../../external/Html5 ../build/win/Templates
 cp -R ../../external/GiderosWindowsPhonePlayer.zip ../build/win
 cp -R ../../external/GiderosWindowsPlayer.zip ../build/win
 cp -R ../../external/VisualStudio ../build/mac/Gideros\ Studio.app/Contents/Templates
 cp -R ../../external/win32 ../build/mac/Gideros\ Studio.app/Contents/Templates
+cp -R ../../external/Html5 ../build/mac/Gideros\ Studio.app/Contents/Templates
 cp -R ../../external/GiderosWindowsPhonePlayer.zip ../build/mac
 cp -R ../../external/GiderosWindowsPlayer.zip ../build/mac
 
