@@ -680,7 +680,21 @@ inline void Matrix4::set(const float src[16])
     m[4] = src[4];  m[5] = src[5];  m[6] = src[6];  m[7] = src[7];
     m[8] = src[8];  m[9] = src[9];  m[10]= src[10]; m[11]= src[11];
     m[12]= src[12]; m[13]= src[13]; m[14]= src[14]; m[15]= src[15];
+	//TRN: m0,m5,m10,m15=1 m12,m13,m14=x
+	//M2D: m10,m15=1 m0,m1,m4,m5,m12,m13,m14=x
+	//M3D: m15=1 m0,m1,m2,m4,m5,m6,m8,m9,m10,m12,m13,m14=x
+	//FULL: no opt
     type=FULL;
+    if ((m[15]==1)&&(m[3]==0)&&(m[7]==0)&&(m[11]==0))
+    {
+    	type=M3D;
+    	if ((m[10]==1)&&(m[2]==0)&&(m[6]==0)&&(m[8]==0)&&(m[9]==0))
+    	{
+    		type=M2D;
+        	if ((m[0]==1)&&(m[5]==1)&&(m[1]==0)&&(m[4]==0))
+        		type=TRANSLATE;
+    	}
+    }
 }
 
 

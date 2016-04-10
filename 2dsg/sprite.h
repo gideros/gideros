@@ -250,9 +250,9 @@ public:
         localTransform_.setMatrix(m11, m12, m21, m22, tx, ty);
 	}
 
-	void setMatrix(const Matrix2D& matrix)
+	void setMatrix(const Transform *matrix)
 	{
-        localTransform_.setMatrix(matrix.m11(),matrix.m12(),matrix.m21(),matrix.m22(),matrix.tx(),matrix.ty());
+        localTransform_=*matrix;
 	}
 
 	const Matrix4& matrix() const

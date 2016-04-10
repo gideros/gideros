@@ -49,15 +49,11 @@ int ViewportBinder::setTransform(lua_State* L)
 	Binder binder(L);
 	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport", 1));
 	const Matrix4 *matrix = NULL;
-	Transform t;
 	if (!lua_isnone(L, 2))
 	{
-		Matrix2D *matrix2 = static_cast<Matrix2D*>(binder.getInstance("Matrix", 2));
+		Transform *matrix2 = static_cast<Transform*>(binder.getInstance("Matrix", 2));
 		if (matrix2)
-		{
-			t.setMatrix(matrix2->m11(),matrix2->m12(),matrix2->m21(),matrix2->m22(),matrix2->tx(),matrix2->ty());
-			matrix=&t.matrix();
-		}
+			matrix=&matrix2->matrix();
 	}
 	shape->setTransform(matrix);
 
