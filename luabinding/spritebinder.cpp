@@ -1018,17 +1018,10 @@ int SpriteBinder::getMatrix(lua_State* L)
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
-	lua_getglobal(L, "Matrix");
-	lua_getfield(L, -1, "new");
-	lua_remove(L, -2);
-	const float *mdata=sprite->matrix().data();
-    lua_pushnumber(L, mdata[0]);
-    lua_pushnumber(L, mdata[4]);
-    lua_pushnumber(L, mdata[1]);
-    lua_pushnumber(L, mdata[5]);
-	lua_pushnumber(L, mdata[12]);
-	lua_pushnumber(L, mdata[13]);
-	lua_call(L, 6, 1);
+	Transform *t=new Transform();
+	*t=sprite->transform();
+
+    binder.pushInstance("Matrix", t);
 	
 	return 1;
 }
@@ -1039,9 +1032,9 @@ int SpriteBinder::setMatrix(lua_State* L)
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	Matrix2D* matrix = static_cast<Matrix2D*>(binder.getInstance("Matrix", 2));
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 2));
 
-	sprite->setMatrix(*matrix);
+	sprite->setMatrix(matrix);
 
 	return 0;
 }

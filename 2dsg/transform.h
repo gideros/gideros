@@ -208,6 +208,7 @@ public:
 		return matrix_;
 	}
 	void setMatrix(float m11,float m12,float m21,float m22,float tx,float ty);
+	void setMatrix(const float *m);
 private:
 	Matrix4 matrix_;
 

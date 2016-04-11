@@ -133,7 +133,7 @@ private:
 	}   
 };
 
-static void createGraphicsBase(const std::vector<std::vector<Point2f> >& polygons, GraphicsBase& result, bool evenodd, bool texcoords = false, float stx = 0, float sty = 0, const Matrix2D* matrix = NULL)
+static void createGraphicsBase(const std::vector<std::vector<Point2f> >& polygons, GraphicsBase& result, bool evenodd, bool texcoords = false, float stx = 0, float sty = 0, const Matrix4* matrix = NULL)
 {
 	Tesselator tes;
 	tes.tesselate(polygons, evenodd);
@@ -252,7 +252,7 @@ static void createSolidPolygon(	float r, float g, float b, float a,
 	createGraphicsBase(contours, result, evenodd);
 	result.setColor(r, g, b, a);
 }
-static void createTexturePolygon(	TextureBase* texture, const Matrix2D& matrix,
+static void createTexturePolygon(	TextureBase* texture, const Matrix4& matrix,
 									const std::vector<std::vector<Point2f> > & contours,
 									bool evenodd,
 									GraphicsBase& result)
@@ -290,7 +290,7 @@ void Shape::setSolidFillStyle(unsigned int color, float alpha)
 	filla_ = alpha;
 }
 
-void Shape::setTextureFillStyle(TextureBase* texture, const Matrix2D* matrix)
+void Shape::setTextureFillStyle(TextureBase* texture, const Matrix4* matrix)
 {
 	fillType_ = eTexture;
 

@@ -29,6 +29,25 @@ static void rotation(float angle, float result[2][2])
  result[1][1] = std::cos(angle);
 }
 
+void Transform::setMatrix(const float *m)
+{
+	matrix_.set(m);
+	rotationZ_=0;
+	rotationX_=0;
+	rotationY_=0;
+	scaleX_=1.0;
+	scaleY_=1.0;
+	scaleZ_=1.0;
+
+	tx_=m[12];
+	ty_=m[13];
+	tz_=m[14];
+
+    refX_=0;
+	refY_=0;
+	refZ_=0;
+}
+
 void Transform::setMatrix(float m11,float m12,float m21,float m22,float tx,float ty)
 {
    float m[2][2] = {{m11, m12}, {m21, m22}};
