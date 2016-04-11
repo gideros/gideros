@@ -215,6 +215,16 @@ public:
 		void *udata;	
 	};
 	
+	// This callback intercept HTTP finish events, calls real handler, then remove this request from the map
+	static void callback_s(int type, void *event, void *udata)
+	{
+		g_id id=(g_id)udata;
+		CallbackElement &element = map_[id];
+		if (element.callback)
+			element.callback(type,event,element.udata);
+		map_.erase(id);
+	}
+
 	void ghttp_responseCallback(JNIEnv *env, jlong id, jbyteArray jdata, jint size, jint statusCode, jint hdrCount, jint hdrSize)
 	{
 		if (map_.find(id) == map_.end())
@@ -244,11 +254,9 @@ public:
 		event->headers[hdrn].name=NULL;
 		event->headers[hdrn].value=NULL;
 
-		gevent_EnqueueEvent(id, element.callback, GHTTP_RESPONSE_EVENT, event, 1, element.udata);
+		gevent_EnqueueEvent(id, callback_s, GHTTP_RESPONSE_EVENT, event, 1, (void *)id);
 
 		env->ReleasePrimitiveArrayCritical(jdata, data, 0);
-			
-		map_.erase(id);
 	}
 	
 	void ghttp_errorCallback(JNIEnv *env, jlong id)
@@ -260,9 +268,7 @@ public:
 
         ghttp_ErrorEvent *event = (ghttp_ErrorEvent*)malloc(sizeof(ghttp_ErrorEvent));
 
-        gevent_EnqueueEvent(id, element.callback, GHTTP_ERROR_EVENT, event, 1, element.udata);
-
-		map_.erase(id);
+        gevent_EnqueueEvent(id, callback_s, GHTTP_ERROR_EVENT, event, 1, (void *)id);
 	}
 	
 	void ghttp_progressCallback(JNIEnv *env, jlong id, jint bytesLoaded, jint bytesTotal)
