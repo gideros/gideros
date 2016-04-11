@@ -2619,8 +2619,8 @@ void Path2D::fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,
 			stencil.sClear = true;
 			impressPath(path,xform,stencil);
 			stencil.sClear = false;
-			ShaderEngine::Engine->popClip();
 			fillBounds(p->fill_bounds_vbo,fill,texture,stencil,shp,textureMatrix);
+			ShaderEngine::Engine->popClip();
 			ShaderEngine::Engine->popDepthStencil();
 		}
 	}
