@@ -212,6 +212,8 @@ public:
 
 	void transformPoint(float x, float y, float* newx, float* newy) const;
 	void inverseTransformPoint(float x, float y, float* newx, float* newy) const;
+	void transformPoint(float x, float y, float z, float* newx, float* newy, float* newz) const;
+	void inverseTransformPoint(float x, float y, float z, float* newx, float* newy, float* newz) const;
 
     enum Type type;
 protected:

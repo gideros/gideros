@@ -801,40 +801,44 @@ int SpriteBinder::removeFromParent(lua_State* L)
 
 int SpriteBinder::localToGlobal(lua_State* L)
 {
-	StackChecker checker(L, "localToGlobal", 2);
+	StackChecker checker(L, "localToGlobal", 3);
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
 	double x = luaL_checknumber(L, 2);
 	double y = luaL_checknumber(L, 3);
+	double z = luaL_optnumber(L, 4, 0.0);
 
-	float tx, ty;
-	sprite->localToGlobal(x, y, &tx, &ty);
+	float tx, ty, tz;
+	sprite->localToGlobal(x, y, z, &tx, &ty, &tz);
 
 	lua_pushnumber(L, tx);
 	lua_pushnumber(L, ty);
+	lua_pushnumber(L, tz);
 
-	return 2;
+	return 3;
 }
 
 int SpriteBinder::globalToLocal(lua_State* L)
 {
-	StackChecker checker(L, "globalToLocal", 2);
+	StackChecker checker(L, "globalToLocal", 3);
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
 	double x = luaL_checknumber(L, 2);
 	double y = luaL_checknumber(L, 3);
+	double z = luaL_optnumber(L, 4, 0.0);
 
-	float tx, ty;
-	sprite->globalToLocal(x, y, &tx, &ty);
+	float tx, ty, tz;
+	sprite->globalToLocal(x, y, z, &tx, &ty, &tz);
 
 	lua_pushnumber(L, tx);
 	lua_pushnumber(L, ty);
+	lua_pushnumber(L, tz);
 
-	return 2;
+	return 3;
 }
 
 int SpriteBinder::isVisible(lua_State* L)

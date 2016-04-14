@@ -40,6 +40,8 @@ public:
 	
 	void localToGlobal(float x, float y, float* tx, float* ty) const;
 	void globalToLocal(float x, float y, float* tx, float* ty) const;
+	void localToGlobal(float x, float y, float z, float* tx, float* ty, float* tz) const;
+	void globalToLocal(float x, float y, float z, float* tx, float* ty, float* tz) const;
 
 	void setAlpha(float alpha);
 	float alpha() const;

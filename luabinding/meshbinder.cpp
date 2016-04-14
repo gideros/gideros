@@ -367,7 +367,7 @@ int MeshBinder::setGenericArray(lua_State *L)
 	}
 	case ShaderProgram::DINT:
 	{
-		int *p=(int *) malloc(mult*count);
+		int *p=(int *) malloc(mult*count*4);
 	    ptr=p;
 	    for (int i=1; i<=n; i++) {
 	        lua_rawgeti(L, 6, i);  /* push t[i] */
@@ -378,7 +378,7 @@ int MeshBinder::setGenericArray(lua_State *L)
 	}
 	case ShaderProgram::DFLOAT:
 	{
-	    float *p=(float *) malloc(mult*count);
+	    float *p=(float *) malloc(mult*count*4);
 	    ptr=p;
 	    for (int i=1; i<=n; i++) {
 	        lua_rawgeti(L, 6, i);  /* push t[i] */

@@ -192,6 +192,25 @@ void Matrix4::inverseTransformPoint(float x, float y, float* newx, float* newy) 
 */
 }
 
+void Matrix4::transformPoint(float x, float y, float z, float* newx, float* newy, float* newz) const
+{
+	Vector4 src=Vector4(x,y,z,1);
+	Vector4 dst=*this*src;
+	*newx=dst.x;
+	*newy=dst.y;
+	*newz=dst.z;
+}
+
+void Matrix4::inverseTransformPoint(float x, float y, float z,float* newx, float* newy, float* newz) const
+{
+	Vector4 src=Vector4(x,y,z,1);
+	Matrix4 inv=inverse();
+	Vector4 dst=inv*src;
+	*newx=dst.x;
+	*newy=dst.y;
+	*newz=dst.z;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // inverse 4x4 matrix
 ///////////////////////////////////////////////////////////////////////////////
