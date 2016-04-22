@@ -10,6 +10,8 @@ RenderTargetBinder::RenderTargetBinder(lua_State *L)
     static const luaL_Reg functionList[] = {
         {"clear", clear},
         {"draw", draw},
+		{"getPixel", getPixel},
+		{"getPixels", getPixels},
         {NULL, NULL},
     };
 
@@ -68,4 +70,40 @@ int RenderTargetBinder::draw(lua_State *L)
     renderTarget->draw(sprite);
 
     return 0;
+}
+
+int RenderTargetBinder::getPixels(lua_State *L)
+{
+    Binder binder(L);
+
+    GRenderTarget *renderTarget = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 1));
+    unsigned int x = luaL_checkinteger(L, 2);
+    unsigned int y = luaL_checkinteger(L, 3);
+    unsigned int w = luaL_checkinteger(L, 4);
+    unsigned int h = luaL_checkinteger(L, 5);
+
+    void *buffer=malloc(w*h*4);
+    renderTarget->getPixels(x,y,w,h,buffer);
+    lua_pushlstring(L,(char *)buffer,w*h*4);
+    free(buffer);
+
+    return 1;
+}
+
+int RenderTargetBinder::getPixel(lua_State *L)
+{
+    Binder binder(L);
+
+    GRenderTarget *renderTarget = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 1));
+    unsigned int x = luaL_checkinteger(L, 2);
+    unsigned int y = luaL_checkinteger(L, 3);
+
+    unsigned char pixel[4];
+
+    renderTarget->getPixels(x,y,1,1,pixel);
+
+    lua_pushnumber(L,(pixel[0]<<16)|(pixel[1]<<8)|(pixel[2]<<0));
+    lua_pushnumber(L,((float)pixel[3])/255.0);
+
+    return 2;
 }

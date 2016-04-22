@@ -77,3 +77,9 @@ void GRenderTarget::draw(const Sprite *sprite)
 
     gtexture_BindRenderTarget(oldfbo);
 }
+
+void GRenderTarget::getPixels(int x,int y,int w,int h,void *buffer)
+{
+    ShaderBuffer *fbo=gtexture_RenderTargetGetFBO(data->gid);
+    fbo->readPixels(x,y,w,h, ShaderTexture::FMT_RGBA, ShaderTexture::PK_UBYTE, buffer);
+}
