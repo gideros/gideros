@@ -39,6 +39,7 @@ static jobjectArray toJava(JNIEnv *env, const ghttp_Header *headers)
 class HTTPManager
 {
 public:
+	static HTTPManager* s_manager;
 	HTTPManager()
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -216,13 +217,19 @@ public:
 	};
 	
 	// This callback intercept HTTP finish events, calls real handler, then remove this request from the map
-	static void callback_s(int type, void *event, void *udata)
+	void callback(int type, void *event, void *udata)
 	{
 		g_id id=(g_id)udata;
 		CallbackElement &element = map_[id];
 		if (element.callback)
 			element.callback(type,event,element.udata);
 		map_.erase(id);
+	}
+
+	static void callback_s(int type, void *event, void *udata)
+	{
+		if (s_manager)
+			s_manager->callback(type,event,udata);
 	}
 
 	void ghttp_responseCallback(JNIEnv *env, jlong id, jbyteArray jdata, jint size, jint statusCode, jint hdrCount, jint hdrSize)
@@ -323,53 +330,53 @@ void Java_com_giderosmobile_android_player_HTTPManager_nativeghttpProgressCallba
 
 }
 
-static HTTPManager* s_manager = NULL;
+HTTPManager* HTTPManager::s_manager = NULL;
 
 extern "C" {
 void ghttp_IgnoreSSLErrors()
 {
-	s_manager->IgnoreSslErrors();
+	HTTPManager::s_manager->IgnoreSslErrors();
 }
 
 void ghttp_Init()
 {
-	s_manager = new HTTPManager();
+	HTTPManager::s_manager = new HTTPManager();
 }
 
 void ghttp_Cleanup()
 {
-	delete s_manager;
-	s_manager = NULL;
+	delete HTTPManager::s_manager;
+	HTTPManager::s_manager = NULL;
 }
 
 g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
 {
-	return s_manager->Get(url, header, callback, udata);
+	return HTTPManager::s_manager->Get(url, header, callback, udata);
 }
 
 g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
 {
-	return s_manager->Post(url, header, data, size, callback, udata);
+	return HTTPManager::s_manager->Post(url, header, data, size, callback, udata);
 }
 
 g_id ghttp_Delete(const char* url, const ghttp_Header *header, gevent_Callback callback, void* udata)
 {
-	return s_manager->Delete(url, header, callback, udata);
+	return HTTPManager::s_manager->Delete(url, header, callback, udata);
 }
 
 g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, size_t size, gevent_Callback callback, void* udata)
 {
-	return s_manager->Put(url, header, data, size, callback, udata);
+	return HTTPManager::s_manager->Put(url, header, data, size, callback, udata);
 }
 
 void ghttp_Close(g_id id)
 {
-	s_manager->Close(id);
+	HTTPManager::s_manager->Close(id);
 }
 
 void ghttp_CloseAll()
 {
-	s_manager->CloseAll();
+	HTTPManager::s_manager->CloseAll();
 }
 
 }
