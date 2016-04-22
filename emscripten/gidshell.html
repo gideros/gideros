@@ -38,8 +38,24 @@
     <hr>-->
     <script data-pace-options='{ "elements": false, "target": "#progress_box" }' src='pace.min.js'></script>
     <script type='text/javascript'>
+	function getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+        	name = name.replace(/[\[\]]/g, "\\$&");
+            	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)",
+            	"i"),
+                results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g," "));
+         }      
       var GAPP_URL="gideros.GApp";
+      var uarg=getParameterByName("GIDEROS_GAPP");
+      if ((uarg!=null) && (uarg!=""))
+        GAPP_URL=uarg;
       var GIDEROS_MEMORY_MB=128;
+      uarg=getParameterByName("GIDEROS_MEMORY");
+      if ((uarg!=null) && (uarg!=""))
+      	GIDEROS_MEMORY_MB=Number(uarg);
       var statusElement = document.getElementById('status');
       var progressElement = document.getElementById('progress');
       var spinnerElement = document.getElementById('spinner');

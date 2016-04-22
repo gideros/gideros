@@ -16,6 +16,7 @@ static ApplicationManager *s_applicationManager = NULL;
 #ifdef EGL
 EGLDisplay display;
 #endif
+float pixelRatio=1.0;
 
 int initGL(int width, int height)
 {
@@ -25,6 +26,7 @@ int initGL(int width, int height)
   printf("glfwInit() failed\n");
   return GL_FALSE;
  }
+ 
                       
  if (glfwOpenWindow(width, height, 8, 8, 8, 0, 16, 8, GLFW_WINDOW) != GL_TRUE) {
     printf("glfwOpenWindow() failed\n");
@@ -87,6 +89,13 @@ EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *e, void *userDat
  int defWidth=e->windowInnerWidth;
  int defHeight=e->windowInnerHeight;	
  printf("Resize:%d,%d\n",e->windowInnerWidth,e->windowInnerHeight);
+ float ratio=emscripten_get_device_pixel_ratio();
+ defWidth*=ratio;
+ defHeight*=ratio;
+ pixelRatio=ratio;
+ printf("CanvasSize: %d,%d (%f)\n",defWidth,defHeight,ratio);
+ 
+ //emscripten_set_canvas_size(width*ratio,height*ratio);
  glfwCloseWindow();
   initGL(defWidth,defHeight);   
 //glfwSetWindowSize(defWidth,defHeight); 
@@ -141,8 +150,8 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
 
 EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userData)
 {
-	 int x=e->canvasX;
-	 int y=e->canvasY;
+	 int x=e->canvasX*pixelRatio;
+	 int y=e->canvasY*pixelRatio;
 	 int b=e->buttons;
 	 b=(b&1)|((b&2)<<1)|(b&4>>1); //Convert buttons to gideros mask
 	 if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
@@ -167,8 +176,8 @@ EM_BOOL wheel_callback(int eventType, const EmscriptenWheelEvent *e, void *userD
   w=w*40;
  if (e->deltaMode==2)
   w=w*120;
- int x=e->mouse.canvasX;
- int y=e->mouse.canvasY;
+ int x=e->mouse.canvasX*pixelRatio;
+ int y=e->mouse.canvasY*pixelRatio;
  int b=e->mouse.buttons;
  b=(b&1)|((b&2)<<1)|(b&4>>1); //Convert buttons to gideros mask
   ginputp_mouseWheel(x,y,b,-w);
@@ -179,13 +188,16 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 {
     for (int k=0;k<e->numTouches;k++) {
      if (!e->touches[k].isChanged) continue;
-	 int x=e->touches[k].canvasX;
-	 int y=e->touches[k].canvasY;
+	 int x=e->touches[k].canvasX*pixelRatio;
+	 int y=e->touches[k].canvasY*pixelRatio;
 	 int i=e->touches[k].identifier;
 	 if (eventType == EMSCRIPTEN_EVENT_TOUCHSTART)
 		 ginputp_touchBegin(x,y,i);
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHEND)
+	 {
+	         EM_ASM( Module.checkALMuted(); );	         
 		 ginputp_touchEnd(x,y,i);
+         }
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHMOVE)
 		 ginputp_touchMove(x,y,i);
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHCANCEL)
@@ -249,6 +261,11 @@ char *url=(char *) EM_ASM_INT_V({
   int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
    int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
    int fullScreen;
+ float ratio=emscripten_get_device_pixel_ratio();
+ defWidth*=ratio;
+ defHeight*=ratio;
+ pixelRatio=ratio;
+ printf("CanvasSize: %d,%d (%f)\n",defWidth,defHeight,ratio);
 //   emscripten_get_canvas_size(&defWidth,&defHeight,&fullScreen);
     initGL(defWidth,defHeight);    
 //    glog_setLevel(0);
@@ -269,7 +286,7 @@ char *url=(char *) EM_ASM_INT_V({
     ret = emscripten_set_keydown_callback(0, 0, true, key_callback);
     ret = emscripten_set_keyup_callback(0, 0, true, key_callback);
     ret = emscripten_set_keypress_callback(0, 0, true, key_callback);
-   printf("Canvas:%d,%d %d URL:%s\n",defWidth,defHeight,fullScreen,url);
+   printf("URL:%s\n",url);
 
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
     emscripten_set_main_loop(looptick, 0, 1);
