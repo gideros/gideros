@@ -172,6 +172,7 @@ mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins
 cp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins/* $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/iOS\ Template/Plugins
 mkdir $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV/Plugins
 cp $BUILD_DIR/win/GiderosiOSPlayer/GiderosiOSPlayer/Plugins/* $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV/Plugins
+cp ui/Templates/Xcode4/iOS\ Template/AppleTV/Plugins/libluasocket.a $BUILD_DIR/win/Templates/Xcode4/iOS\ Template/AppleTV/Plugins
 
 
 cp android/GiderosAndroidPlayer/gideros.jar $BUILD_DIR/win/Templates/Eclipse/Android\ Template
