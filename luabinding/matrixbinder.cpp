@@ -309,7 +309,7 @@ int MatrixBinder::getX(lua_State* L)
 	StackChecker checker(L, "getX", 1);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	lua_pushnumber(L, sprite->x());
 
@@ -321,7 +321,7 @@ int MatrixBinder::getY(lua_State* L)
 	StackChecker checker(L, "getY", 1);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	lua_pushnumber(L, sprite->y());
 
@@ -333,7 +333,7 @@ int MatrixBinder::getZ(lua_State* L)
 	StackChecker checker(L, "getZ", 1);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	lua_pushnumber(L, sprite->z());
 
@@ -345,7 +345,7 @@ int MatrixBinder::getRotationZ(lua_State* L)
 	StackChecker checker(L, "getRotation", 1);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	lua_pushnumber(L, sprite->rotationZ());
 
@@ -357,7 +357,7 @@ int MatrixBinder::getRotationX(lua_State* L)
 	StackChecker checker(L, "getRotationX", 1);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	lua_pushnumber(L, sprite->rotationX());
 
@@ -369,7 +369,7 @@ int MatrixBinder::getRotationY(lua_State* L)
 	StackChecker checker(L, "getRotationY", 1);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	lua_pushnumber(L, sprite->rotationY());
 
@@ -381,7 +381,7 @@ int MatrixBinder::getScaleX(lua_State* L)
 	StackChecker checker(L, "getScaleX", 1);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	lua_pushnumber(L, sprite->scaleX());
 
@@ -393,7 +393,7 @@ int MatrixBinder::getScaleY(lua_State* L)
 	StackChecker checker(L, "getScaleY", 1);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	lua_pushnumber(L, sprite->scaleY());
 
@@ -405,7 +405,7 @@ int MatrixBinder::getScaleZ(lua_State* L)
 	StackChecker checker(L, "getScaleZ", 1);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	lua_pushnumber(L, sprite->scaleZ());
 
@@ -417,7 +417,7 @@ int MatrixBinder::setX(lua_State* L)
 	StackChecker checker(L, "setX");
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	double x = luaL_checknumber(L, 2);
 	sprite->setX(x);
@@ -430,7 +430,7 @@ int MatrixBinder::setY(lua_State* L)
 	StackChecker checker(L, "setY");
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	double y = luaL_checknumber(L, 2);
 	sprite->setY(y);
@@ -443,7 +443,7 @@ int MatrixBinder::setZ(lua_State* L)
 	StackChecker checker(L, "setZ");
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	double z = luaL_checknumber(L, 2);
 	sprite->setZ(z);
@@ -456,7 +456,7 @@ int MatrixBinder::setRotationZ(lua_State* L)
 	StackChecker checker(L, "setRotationZ");
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	double rotation = luaL_checknumber(L, 2);
 	sprite->setRotationZ(rotation);
@@ -469,7 +469,7 @@ int MatrixBinder::setRotationX(lua_State* L)
 	StackChecker checker(L, "setRotationX");
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	double rotation = luaL_checknumber(L, 2);
 	sprite->setRotationX(rotation);
@@ -482,7 +482,7 @@ int MatrixBinder::setRotationY(lua_State* L)
 	StackChecker checker(L, "setRotationY");
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	double rotation = luaL_checknumber(L, 2);
 	sprite->setRotationY(rotation);
@@ -495,7 +495,7 @@ int MatrixBinder::setScaleX(lua_State* L)
 	StackChecker checker(L, "setScaleX");
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	double scaleX = luaL_checknumber(L, 2);
 	sprite->setScaleX(scaleX);
@@ -508,7 +508,7 @@ int MatrixBinder::setScaleY(lua_State* L)
 	StackChecker checker(L, "setScaleY");
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	double scaleY = luaL_checknumber(L, 2);
 	sprite->setScaleY(scaleY);
@@ -521,7 +521,7 @@ int MatrixBinder::setScaleZ(lua_State* L)
 	StackChecker checker(L, "setScaleZ");
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform"));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix"));
 
 	double scaleZ = luaL_checknumber(L, 2);
 	sprite->setScaleZ(scaleZ);
@@ -534,7 +534,7 @@ int MatrixBinder::setPosition(lua_State* L)
 	StackChecker checker(L, "MatrixBinder::setPosition", 0);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform", 1));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = luaL_checknumber(L, 3);
@@ -554,7 +554,7 @@ int MatrixBinder::getPosition(lua_State* L)
 	StackChecker checker(L, "MatrixBinder::getPosition", 3);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform", 1));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
 	lua_pushnumber(L, sprite->x());
 	lua_pushnumber(L, sprite->y());
@@ -568,7 +568,7 @@ int MatrixBinder::setAnchorPosition(lua_State* L)
     StackChecker checker(L, "MatrixBinder::setAnchorPosition", 0);
 
     Binder binder(L);
-    Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform", 1));
+    Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
     lua_Number x = luaL_checknumber(L, 2);
     lua_Number y = luaL_checknumber(L, 3);
@@ -588,7 +588,7 @@ int MatrixBinder::getAnchorPosition(lua_State* L)
     StackChecker checker(L, "MatrixBinder::getAnchorPosition", 3);
 
     Binder binder(L);
-    Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform", 1));
+    Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
     lua_pushnumber(L, sprite->refX());
     lua_pushnumber(L, sprite->refY());
@@ -604,7 +604,7 @@ int MatrixBinder::setScale(lua_State* L)
 	StackChecker checker(L, "MatrixBinder::setScale", 0);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform", 1));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
 	lua_Number x = luaL_checknumber(L, 2);
 	lua_Number y = lua_isnoneornil(L, 3) ? x : luaL_checknumber(L, 3);
@@ -624,7 +624,7 @@ int MatrixBinder::getScale(lua_State* L)
 	StackChecker checker(L, "MatrixBinder::getScale", 3);
 
 	Binder binder(L);
-	Transform* sprite = static_cast<Transform*>(binder.getInstance("Transform", 1));
+	Transform* sprite = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
 	lua_pushnumber(L, sprite->scaleX());
 	lua_pushnumber(L, sprite->scaleY());
