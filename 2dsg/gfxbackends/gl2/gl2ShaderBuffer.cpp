@@ -101,10 +101,14 @@ void ogl2ShaderBuffer::prepareDraw()
 void ogl2ShaderBuffer::needDepthStencil()
 {
 	int depthfmt = 0;
+#ifdef __EMSCRIPTEN__
+        depthfmt=0x84F9;//GL_DEPTH_STENCIL;
+#else
 #ifdef GL_DEPTH24_STENCIL8_OES
 	depthfmt=GL_DEPTH24_STENCIL8_OES;
 #else
 	depthfmt = GL_DEPTH24_STENCIL8;
+#endif
 #endif
 #ifdef OPENGL_DESKTOP
      if (GLEW_ARB_framebuffer_object)
@@ -116,8 +120,15 @@ void ogl2ShaderBuffer::needDepthStencil()
 		glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
 		glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, width,height);
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+#ifdef __EMSCRIPTEN__
+#ifndef GL_DEPTH_STENCIL_ATTACHMENT
+#define GL_DEPTH_STENCIL_ATTACHMENT	0x821A
+#endif
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+#else
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+#endif
 	}
 #ifdef OPENGL_DESKTOP
      }

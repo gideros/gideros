@@ -218,6 +218,7 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 			glBufferData(GL_ARRAY_BUFFER,elmSize * mult * count,ptr,GL_DYNAMIC_DRAW);
 		ptr=NULL;
 	}
+	if ((index<glattributes.size())&&(glattributes[index]>=0))
 	glVertexAttribPointer(glattributes[index], mult, gltype, normalize, stride, ((char *)ptr)+offset);
 #endif
 
