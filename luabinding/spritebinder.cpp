@@ -65,6 +65,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"setBlendFunc", SpriteBinder::setBlendFunc},
 		{"clearBlendFunc", SpriteBinder::clearBlendFunc},
 		{"setShader", SpriteBinder::setShader},
+		{"setShaderConstant", SpriteBinder::setShaderConstant},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
