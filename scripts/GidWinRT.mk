@@ -54,7 +54,7 @@ winrt.core: winrt.libs winrt.shaders
 	mkdir -p winrt/ARM/Release/luawinrt.WindowsPhone
 	cp lua/luawinrt/luawinrt/luawinrt.WindowsPhone/ARM/Release/luawinrt.WindowsPhone/luawinrt.WindowsPhone.lib winrt/ARM/Release/luawinrt.WindowsPhone
 	mkdir -p winrt/ARM/Release/libgvfswinrt.WindowsPhone
-	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.WindowsPhone/ARM/Release/libgvfswinrt.WindowsPhone/libgvfswinrt.WindowsPhone.lib winrt/ARM/Release/libgvfswinrt.Windows
+	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.WindowsPhone/ARM/Release/libgvfswinrt.WindowsPhone/libgvfswinrt.WindowsPhone.lib winrt/ARM/Release/libgvfswinrt.WindowsPhone
 	 
 winrt.template: winrt.core winrt.plugins 
 	rm -rf $(RELEASE)/Templates/VisualStudio

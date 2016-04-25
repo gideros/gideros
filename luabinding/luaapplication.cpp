@@ -46,6 +46,7 @@
 #include "shaderbinder.h"
 #include "path2dbinder.h"
 #include "viewportbinder.h"
+#include "pixelbinder.h"
 
 #include "keys.h"
 
@@ -296,6 +297,7 @@ static int bindAll(lua_State* L)
     ShaderBinder shaderBinder(L);
     Path2DBinder path2DBinder(L);
     ViewportBinder viewportBinder(L);
+    PixelBinder pixelbinder(L);
 
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
