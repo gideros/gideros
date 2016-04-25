@@ -25,6 +25,14 @@ public:
 		isWhite_ = r == 1 && g == 1 && b == 1 && a == 1;
 	}
 
+	void getColor(float &r,float &g, float &b, float &a)
+	{
+		r=r_;
+		g=g_;
+		b=b_;
+		a=a_;
+	}
+
 
 	virtual ~Pixel()
 	{
@@ -39,6 +47,7 @@ public:
 		setDimensions(width_,height);
 	}
 	void setDimensions(float width,float height);
+
 
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);

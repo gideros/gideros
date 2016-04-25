@@ -16,6 +16,7 @@ private:
 	static int setHeight(lua_State* L);
     static int setDimensions(lua_State *L);
     static int setColor(lua_State *L);
+    static int getColor(lua_State *L);
 };
 
 #endif

@@ -9,6 +9,9 @@
 #include "graphicsbase.h"
 #include "matrix.h"
 #include <list>
+#include <vector>
+#include <string>
+#include <map>
 
 typedef Matrix4 CurrentTransform;
 typedef Matrix4 Matrix;
@@ -313,7 +316,18 @@ public:
 	void clearBlendFunc();
 	void setBlendFunc(ShaderEngine::BlendFactor sfactor, ShaderEngine::BlendFactor dfactor);
 
+	struct ShaderParam
+	{
+		std::string name;
+		ShaderProgram::ConstantType type;
+		int mult;
+		std::vector<float> data;
+	};
 	void setShader(ShaderProgram *shader);
+	void setShaderConstant(ShaderParam p)
+	{
+		shaderParams_[p.name]=p;
+	}
 
 	void set(const char* param, float value, GStatus* status = NULL);
 	float get(const char* param, GStatus* status = NULL);
@@ -381,6 +395,7 @@ protected:
 
 protected:
 	ShaderProgram *shader_;
+	std::map<std::string,ShaderParam> shaderParams_;
 //	typedef std::list<GraphicsBase, Gideros::STLAllocator<GraphicsBase, StdAllocator> > GraphicsBaseList;
 //	GraphicsBaseList graphicsBases_;
 

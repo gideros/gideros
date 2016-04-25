@@ -84,6 +84,7 @@ private:
 	static int clearBlendFunc(lua_State* L);
 
 	static int setShader(lua_State* L);
+	static int setShaderConstant(lua_State* L);
 };
 
 #endif

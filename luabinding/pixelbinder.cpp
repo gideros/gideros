@@ -13,6 +13,7 @@ PixelBinder::PixelBinder(lua_State* L)
 		{"setHeight", setHeight},
         {"setDimensions", setDimensions},
         {"setColor", setColor},
+        {"getColor", getColor},
         {NULL, NULL},
 	};
 
@@ -110,3 +111,18 @@ int PixelBinder::setColor(lua_State* L)
 	return 0;
 }
 
+int PixelBinder::getColor(lua_State* L)
+{
+	Binder binder(L);
+
+	Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
+
+	float r,g,b,a;
+	bitmap->getColor(r,g,b,a);
+
+	unsigned int color = ((((int)(r*255))&0xFF)<<16)|((((int)(g*255))&0xFF)<<8)|((((int)(b*255))&0xFF)<<0);
+	lua_pushnumber(L,color);
+	lua_pushnumber(L,a);
+
+	return 2;
+}

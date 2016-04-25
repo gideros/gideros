@@ -1136,6 +1136,87 @@ int SpriteBinder::setShader(lua_State* L)
 	return 0;
 }
 
+int SpriteBinder::setShaderConstant(lua_State* L)
+{
+	StackChecker checker(L, "SpriteBinder::setShaderConstant", 0);
+
+	Binder binder(L);
+
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+
+   // virtual void setConstant(int index,ConstantType type,const void *ptr);
+
+	Sprite::ShaderParam sp;
+
+
+	sp.name=luaL_checkstring(L,2);
+	sp.type = (ShaderProgram::ConstantType) luaL_checkinteger(L, 3);
+	sp.mult = luaL_checknumber(L, 4);
+	int cm=1;
+	switch (sp.type)
+	{
+	case ShaderProgram::CFLOAT2: cm=2; break;
+	case ShaderProgram::CFLOAT3: cm=3; break;
+	case ShaderProgram::CFLOAT4: cm=4; break;
+	case ShaderProgram::CMATRIX: cm=16; break;
+	default: cm=1;
+	}
+
+	cm*=sp.mult;
+	switch (sp.type)
+	{
+	case ShaderProgram::CINT:
+	{
+		sp.data.resize((sizeof(int)*cm+sizeof(int)-1)/sizeof(float));
+		int *m=(int *)(&(sp.data[0]));
+		if (lua_istable(L,5))
+		{
+			for (int k=0;k<cm;k++)
+			{
+				lua_rawgeti(L, 5, k+1);
+				m[k]=luaL_checkinteger(L,-1);
+				lua_pop(L,1);
+			}
+		}
+		else
+		{
+			for (int k=0;k<cm;k++)
+				m[k]=luaL_checkinteger(L,5+k);
+		}
+		break;
+	}
+	case ShaderProgram::CFLOAT:
+	case ShaderProgram::CFLOAT2:
+	case ShaderProgram::CFLOAT3:
+	case ShaderProgram::CFLOAT4:
+	case ShaderProgram::CMATRIX:
+	{
+		sp.data.resize(cm);
+		float *m=&(sp.data[0]);
+		if (lua_istable(L,5))
+		{
+			for (int k=0;k<cm;k++)
+			{
+				lua_rawgeti(L, 5, k+1);
+				m[k]=luaL_checknumber(L,-1);
+				lua_pop(L,1);
+			}
+		}
+		else
+		{
+			for (int k=0;k<cm;k++)
+				m[k]=luaL_checknumber(L,5+k);
+		}
+		break;
+	}
+	case ShaderProgram::CTEXTURE:
+		break;
+	}
+
+	sprite->setShaderConstant(sp);
+	return 0;
+}
+
 int SpriteBinder::set(lua_State* L)
 {
 	StackChecker checker(L, "SpriteBinder::set", 0);
