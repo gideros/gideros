@@ -228,12 +228,12 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			ShaderEngine::Engine->pushClip(sprite->clipx_, sprite->clipy_,
 					sprite->clipw_, sprite->cliph_);
 
-		if (shader_)
-		for(std::map<std::string,ShaderParam>::iterator it = shaderParams_.begin(); it != shaderParams_.end(); ++it) {
+		if (sprite->shader_)
+		for(std::map<std::string,ShaderParam>::iterator it = sprite->shaderParams_.begin(); it != sprite->shaderParams_.end(); ++it) {
 				ShaderParam *p=&(it->second);
-				int idx=shader_->getConstantByName(p->name.c_str());
+				int idx=sprite->shader_->getConstantByName(p->name.c_str());
 				if (idx>=0)
-					shader_->setConstant(idx,p->type,p->mult,&(p->data[0]));
+					sprite->shader_->setConstant(idx,p->type,p->mult,&(p->data[0]));
 		}
 		sprite->doDraw(sprite->worldTransform_, sx, sy, ex, ey);
 
