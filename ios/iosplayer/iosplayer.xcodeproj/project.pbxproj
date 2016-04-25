@@ -353,6 +353,8 @@
 		EB08A3531AAA06F900D8F27D /* Matrices.h in Headers */ = {isa = PBXBuildFile; fileRef = EB08A3511AAA06F900D8F27D /* Matrices.h */; };
 		EB140D891C5BB810000180C7 /* aes.c in Sources */ = {isa = PBXBuildFile; fileRef = EB140D881C5BB810000180C7 /* aes.c */; };
 		EB140D8B1C5BB83A000180C7 /* cryptobinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */; };
+		EB27A5FA1CCDFC7E003A5580 /* pixel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5F91CCDFC7E003A5580 /* pixel.cpp */; };
+		EB27A5FC1CCDFC9B003A5580 /* pixelbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */; };
 		EB35B49A1C1190C200227849 /* ft-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4971C1190C200227849 /* ft-path.c */; };
 		EB35B49B1C1190C200227849 /* prpath.h in Headers */ = {isa = PBXBuildFile; fileRef = EB35B4981C1190C200227849 /* prpath.h */; };
 		EB35B49C1C1190C200227849 /* svg-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4991C1190C200227849 /* svg-path.c */; };
@@ -774,6 +776,8 @@
 		EB08A3511AAA06F900D8F27D /* Matrices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Matrices.h; path = ../../2dsg/Matrices.h; sourceTree = "<group>"; };
 		EB140D881C5BB810000180C7 /* aes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aes.c; path = ../../../libgid/src/aes.c; sourceTree = "<group>"; };
 		EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cryptobinder.cpp; path = ../../luabinding/cryptobinder.cpp; sourceTree = "<group>"; };
+		EB27A5F91CCDFC7E003A5580 /* pixel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pixel.cpp; path = ../../2dsg/pixel.cpp; sourceTree = "<group>"; };
+		EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pixelbinder.cpp; path = ../../luabinding/pixelbinder.cpp; sourceTree = "<group>"; };
 		EB35B4971C1190C200227849 /* ft-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "ft-path.c"; sourceTree = "<group>"; };
 		EB35B4981C1190C200227849 /* prpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prpath.h; sourceTree = "<group>"; };
 		EB35B4991C1190C200227849 /* svg-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "svg-path.c"; sourceTree = "<group>"; };
@@ -1290,6 +1294,7 @@
 				EB82BDBA1B29606C00281732 /* gfxbackends */,
 				EB08A3501AAA06F900D8F27D /* Matrices.cpp */,
 				EB08A3511AAA06F900D8F27D /* Matrices.h */,
+				EB27A5F91CCDFC7E003A5580 /* pixel.cpp */,
 				EB7A5EA61C9BE8080068EFCA /* viewport.cpp */,
 				5F321EAF15BBC3FC00542289 /* application.cpp */,
 				5F321EB015BBC3FC00542289 /* bitmap.cpp */,
@@ -1364,6 +1369,7 @@
 		5F321F2215BBCA8000542289 /* luabinding */ = {
 			isa = PBXGroup;
 			children = (
+				EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */,
 				EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */,
 				EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */,
 				EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */,
@@ -1848,6 +1854,7 @@
 				5F321EE315BBC3FC00542289 /* colortransform.cpp in Sources */,
 				5F321EE415BBC3FC00542289 /* dib.cpp in Sources */,
 				5F321EE515BBC3FC00542289 /* enterframeevent.cpp in Sources */,
+				EB27A5FC1CCDFC9B003A5580 /* pixelbinder.cpp in Sources */,
 				5F321EE615BBC3FC00542289 /* errorevent.cpp in Sources */,
 				5F276F6518F4020E00D78AE4 /* b2CollidePolygon.cpp in Sources */,
 				5F321EE715BBC3FC00542289 /* font.cpp in Sources */,
@@ -1913,6 +1920,7 @@
 				5F321F1815BBC47500542289 /* dict.c in Sources */,
 				5F321F1915BBC47500542289 /* geom.c in Sources */,
 				5F276FB718F4020E00D78AE4 /* b2MouseJoint.cpp in Sources */,
+				EB27A5FA1CCDFC7E003A5580 /* pixel.cpp in Sources */,
 				5F321F1A15BBC47500542289 /* memalloc.c in Sources */,
 				5F321F1B15BBC47500542289 /* mesh.c in Sources */,
 				5FE658B418FBF0FB001D8EE3 /* infback.c in Sources */,
