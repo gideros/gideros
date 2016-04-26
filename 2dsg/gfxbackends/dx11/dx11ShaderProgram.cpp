@@ -125,6 +125,7 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 	}
 	DataDesc dd = attributes[index];
 	ID3D11Buffer *vbo = cache?getCachedVBO(cache,false,elmSize,dd.mult,count):getGenericVBO(index + 1, elmSize, dd.mult, count);
+	if (!vbo) return;
 	if (modified || (!cache))
 	{
 		D3D11_MAPPED_SUBRESOURCE ms;
