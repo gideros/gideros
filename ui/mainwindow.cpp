@@ -2465,7 +2465,7 @@ void MainWindow::exportProject()
         out.cd(base);
         exportProcess->setStandardErrorFile(out.absoluteFilePath("error.log"));
         exportProcess->start(program, arguments);
-        exportProcess->waitForFinished();
+        exportProcess->waitForFinished(-1);
 
         QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully."));
 	}  // if dialog was accepted
