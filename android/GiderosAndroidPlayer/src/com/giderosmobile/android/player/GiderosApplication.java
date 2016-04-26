@@ -589,7 +589,7 @@ public class GiderosApplication
 	{
 		synchronized (lock)
 		{
-			GiderosApplication.nativeSurfaceChanged(w, h, getRotation());
+			GiderosApplication.nativeSurfaceChanged(w, h, getRotation(w,h));
 		}	
 	}
 
@@ -1059,14 +1059,13 @@ public class GiderosApplication
 		return sb.toString();
 	}	
 	
-	public static int getRotation()
+	public static int getRotation(int w,int h)
 	{
 		Activity activity = WeakActivityHolder.get();
 
-		int orientation = activity.getResources().getConfiguration().orientation;
 		int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
 		
-		if (orientation == Configuration.ORIENTATION_PORTRAIT)
+		if (w<=h)
 		{
 			if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_270)
 				return 0;
