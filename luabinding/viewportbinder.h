@@ -14,6 +14,7 @@ private:
 
 	static int setContent(lua_State* L);
 	static int setTransform(lua_State* L);
+	static int setProjection(lua_State* L);
 };
 
 #endif

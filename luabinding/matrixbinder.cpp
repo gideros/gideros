@@ -1,6 +1,7 @@
 #include "matrixbinder.h"
 #include "stackchecker.h"
 #include <transform.h>
+#include "Shaders.h"
 
 MatrixBinder::MatrixBinder(lua_State* L)
 {
@@ -27,6 +28,9 @@ MatrixBinder::MatrixBinder(lua_State* L)
 		{"getElements", getElements},
 		{"setMatrix", setMatrix},
 		{"getMatrix", getMatrix},
+		{"orthographicProjection", orthographicProjection},
+		{"perspectiveProjection", perspectiveProjection},
+
 
 		{"getX", getX},
 		{"getY", getY},
@@ -300,6 +304,38 @@ int MatrixBinder::setMatrix(lua_State* L)
 		m[k] = luaL_optnumber(L, 2+k, ((k%5)==0)?1:0);
 
     matrix->setMatrix(m);
+
+	return 0;
+}
+
+int MatrixBinder::orthographicProjection(lua_State* L)
+{
+	Binder binder(L);
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+
+	lua_Number l=luaL_checknumber(L,2);
+	lua_Number r=luaL_checknumber(L,3);
+	lua_Number b=luaL_checknumber(L,4);
+	lua_Number t=luaL_checknumber(L,5);
+	lua_Number n=luaL_checknumber(L,6);
+	lua_Number f=luaL_checknumber(L,7);
+	matrix->setMatrix(ShaderEngine::Engine->setOrthoFrustum(l,r,b,t,n,f).data());
+
+	return 0;
+}
+
+int MatrixBinder::perspectiveProjection(lua_State* L)
+{
+	Binder binder(L);
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+
+	lua_Number l=luaL_checknumber(L,2);
+	lua_Number r=luaL_checknumber(L,3);
+	lua_Number b=luaL_checknumber(L,4);
+	lua_Number t=luaL_checknumber(L,5);
+	lua_Number n=luaL_checknumber(L,6);
+	lua_Number f=luaL_checknumber(L,7);
+	matrix->setMatrix(ShaderEngine::Engine->setFrustum(l,r,b,t,n,f).data());
 
 	return 0;
 }

@@ -168,6 +168,7 @@ protected:
 	//CONSTANTS
 	Matrix4 oglProjection;
 	Matrix4 oglVPProjection;
+	Matrix4 oglVPProjectionUncorrected;
 	Matrix4 oglModel;
 	Matrix4 oglCombined;
 	float constCol[4];
@@ -239,10 +240,12 @@ public:
 	virtual Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
 	virtual Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
 	virtual void setProjection(const Matrix4 p) { oglProjection=p; }
-	virtual void setViewportProjection(const Matrix4 vp) { oglVPProjection=vp; }
+	virtual void setViewportProjection(const Matrix4 vp, float width, float height);
 	virtual void adjustViewportProjection(Matrix4 &vp, float width, float height) {};
 	virtual void setModel(const Matrix4 m);
 	virtual const Matrix4 getModel() { return oglModel; }
+	virtual const Matrix4 getProjection() { return oglProjection; }
+	virtual const Matrix4 getViewportProjection() { return oglVPProjectionUncorrected; }
 	//Attributes
 	virtual void setColor(float r,float g,float b,float a);
 	virtual void clearColor(float r,float g,float b,float a)=0;

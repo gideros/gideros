@@ -12,6 +12,7 @@ public:
 	virtual ~Viewport();
 	void setContent(Sprite *s);
 	void setTransform(const Matrix4* matrix = NULL);
+	void setProjection(const Matrix4* matrix = NULL);
 
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
@@ -19,6 +20,8 @@ private:
 private:
     Sprite * content_;
 	Matrix4 matrix_;
+	Matrix4 projection_;
+	bool hasProjection_;
 };
 
 #endif

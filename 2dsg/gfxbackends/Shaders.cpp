@@ -100,6 +100,15 @@ void ShaderEngine::reset(bool reinit)
     setDepthStencil(dsCurrent);
 }
 
+void ShaderEngine::setViewportProjection(const Matrix4 vp, float width, float height)
+{
+	if (vp==oglVPProjectionUncorrected)
+		return;
+	oglVPProjectionUncorrected=vp;
+	oglVPProjection=vp;
+	adjustViewportProjection(oglVPProjection,width,height);
+}
+
 ShaderEngine::DepthStencil ShaderEngine::pushDepthStencil()
 {
 	dsStack.push(dsCurrent);
@@ -139,11 +148,7 @@ void ShaderEngine::prepareDraw(ShaderProgram *program)
 Matrix4 ShaderEngine::setFrustum(float l, float r, float b, float t, float n, float f)
 {
 	Matrix4 mat;
-#ifdef DXCOMPAT_H
-	int df = 1, dn = 0;
-#else
 	int df = 1, dn = -1;
-#endif
 	mat[0] = 2 * n / (r - l);
 	mat[5] = 2 * n / (t - b);
 	mat[8] = (r + l) / (r - l);

@@ -13,6 +13,7 @@ ViewportBinder::ViewportBinder(lua_State* L)
 	static const luaL_Reg functionList[] = {
 		{"setContent", setContent},
 		{"setTransform", setTransform},
+		{"setProjection", setProjection},
 		{NULL, NULL},
 	};
 
@@ -56,6 +57,24 @@ int ViewportBinder::setTransform(lua_State* L)
 			matrix=&matrix2->matrix();
 	}
 	shape->setTransform(matrix);
+
+	return 0;
+}
+
+int ViewportBinder::setProjection(lua_State* L)
+{
+	StackChecker checker(L, "ViewportBinder::setProjection", 0);
+
+	Binder binder(L);
+	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport", 1));
+	const Matrix4 *matrix = NULL;
+	if (!lua_isnone(L, 2))
+	{
+		Transform *matrix2 = static_cast<Transform*>(binder.getInstance("Matrix", 2));
+		if (matrix2)
+			matrix=&matrix2->matrix();
+	}
+	shape->setProjection(matrix);
 
 	return 0;
 }

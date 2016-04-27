@@ -80,6 +80,11 @@ public:
 		scale_ = scale;
 	}
 
+    float getScale()
+	{
+		return scale_?scale_:1;;
+	}
+
 	void setLogicalDimensions(int width, int height);
 
     void setLogicalScaleMode(LogicalScaleMode mode);

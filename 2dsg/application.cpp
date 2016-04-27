@@ -278,8 +278,6 @@ void Application::renderScene(int deltaFrameCount) {
 				frustum = gfx->setOrthoFrustum(0, width_ / scale_,
 						height_ / scale_, 0, -fp, fp);
 			}
-			gfx->adjustViewportProjection(vpProjection, width_ / scale_,
-					height_ / scale_);
 			break;
 		case eLandscapeLeft:
 		case eLandscapeRight:
@@ -297,14 +295,15 @@ void Application::renderScene(int deltaFrameCount) {
 				frustum = gfx->setOrthoFrustum(0, height_ / scale_,
 						width_ / scale_, 0, -fp, fp);
 			}
-			gfx->adjustViewportProjection(vpProjection, height_ / scale_,
-					width_ / scale_);
 			break;
 		}
 		projectionMatrix_ = frustum * projection;
 		vpProjectionMatrix_ = vpProjection;
 	}
-	gfx->setViewportProjection(vpProjectionMatrix_);
+	if ((hardwareOrientation_==eLandscapeRight)||(hardwareOrientation_==eLandscapeLeft))
+		gfx->setViewportProjection(vpProjectionMatrix_,height_ / scale_,width_ / scale_);
+	else
+		gfx->setViewportProjection(vpProjectionMatrix_,width_ / scale_,	height_ / scale_);
 
 	//glMatrixMode(GL_MODELVIEW);
 	//glLoadIdentity();
