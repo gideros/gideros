@@ -50,15 +50,14 @@ void Viewport::doDraw(const CurrentTransform&t, float sx, float sy, float ex, fl
 	{
 		if (hasProjection_)
 		{
+			ShaderEngine::DepthStencil dp=ShaderEngine::Engine->pushDepthStencil();
+			dp.dClear=true;
+			ShaderEngine::Engine->setDepthStencil(dp);
 			Matrix4 oldProj=ShaderEngine::Engine->getProjection();
-			Matrix4 projection = ShaderEngine::Engine->getViewportProjection();
-			int hw=application_->getHardwareWidth();
-			int hh=application_->getHardwareHeight();
-			float hs=application_->getScale();
-			ShaderEngine::Engine->setViewport(0, 0, hw/hs, hh/hs);
-			ShaderEngine::Engine->setProjection(projection_*projection);
+			ShaderEngine::Engine->setProjection((oldProj*t)*projection_);
 			((Sprite*)content_)->draw(matrix_, sx,sy,ex,ey);
 			ShaderEngine::Engine->setProjection(oldProj);
+			ShaderEngine::Engine->popDepthStencil();
 		}
 		else
 			((Sprite*)content_)->draw(t*matrix_, sx,sy,ex,ey);

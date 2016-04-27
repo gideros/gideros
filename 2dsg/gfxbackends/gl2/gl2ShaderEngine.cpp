@@ -448,16 +448,22 @@ static GLint stencilopToGl(ShaderEngine::StencilOp sf)
 
 void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 {
+	if (state.dClear)
+	{
+		state.dClear=false;
+		s_depthBufferCleared=false;
+	}
 	if (state.dTest) {
 		if (!s_depthEnable) {
 			if (currentBuffer)
 				currentBuffer->needDepthStencil();
-			if (!s_depthBufferCleared) {
+			if ((!s_depthBufferCleared)||(state.dClear)) {
 	#ifdef OPENGL_ES
 				glClearDepthf(1);
 	#endif
 				glClear(GL_DEPTH_BUFFER_BIT);
 				s_depthBufferCleared = true;
+    			state.dClear=false;
 			}
 			s_depthEnable=true;
 			glEnable(GL_DEPTH_TEST);

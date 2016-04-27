@@ -156,6 +156,7 @@ public:
 	};
 	struct DepthStencil {
 		bool dTest;
+		bool dClear;
 		StencilFunc sFunc;
 		int sRef;
 		unsigned int sMask;

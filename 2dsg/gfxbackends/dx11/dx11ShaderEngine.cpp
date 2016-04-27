@@ -462,16 +462,22 @@ static D3D11_STENCIL_OP stencilopToDX11(ShaderEngine::StencilOp sf)
 void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 {
 	ID3D11DepthStencilState *cs = g_pDSOff;
+	if (state.dClear)
+	{
+		state.dClear=false;
+		s_depthBufferCleared=false;
+	}
 	if (state.dTest)
 	{
 		if (!s_depthEnable)
 		{
 			if (currentBuffer)
 				currentBuffer->needDepthStencil();
-			if (!s_depthBufferCleared)
+			if ((!s_depthBufferCleared)||(state.dClear))
 			{
     			g_devcon->ClearDepthStencilView(g_depthStencil, D3D11_CLEAR_DEPTH, 1.0, 0);
     			s_depthBufferCleared=true;
+    			state.dClear=false;
 			}
 			cs = g_pDSDepth;
 			s_depthEnable=true;
