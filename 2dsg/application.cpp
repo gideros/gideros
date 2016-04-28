@@ -267,12 +267,13 @@ void Application::renderScene(int deltaFrameCount) {
 			if (fov_ > 0) {
 				float hw = width_ * 0.5 / scale_;
 				float hh = height_ * 0.5 / scale_;
-				float np = hh / tan(fov_ * M_PI / 360.0);
-				float fp = (farplane_ > 0) ? farplane_ : hh * 2;
-				float cnp = (nearplane_ > 0) ? nearplane_ : 0.01;
-				frustum = gfx->setFrustum(-hw * cnp, hw * cnp, hh * cnp,
-						-hh * cnp, np * cnp, np + fp);
-				projection.translate(-hw, -hh, -np - 0.001);
+				float fp = (farplane_ > 0) ? farplane_ : logicalHeight_ * 100;
+				float np = (nearplane_ > 0) ? nearplane_ : 1;
+				float fd=hh / tan(fov_ * M_PI / 360.0);
+				float nps = np/fd;
+				frustum = gfx->setFrustum(-hw * nps, hw * nps, hh * nps,
+						-hh * nps, np, fp);
+				projection.translate(-hw, -hh, -fd-0.001);
 			} else {
 				float fp = (farplane_ > 0) ? farplane_ : 1; //Conservative default
 				frustum = gfx->setOrthoFrustum(0, width_ / scale_,
@@ -284,12 +285,13 @@ void Application::renderScene(int deltaFrameCount) {
 			if (fov_ > 0) {
 				float hw = width_ * 0.5 / scale_;
 				float hh = height_ * 0.5 / scale_;
-				float np = hh / tan(fov_ * M_PI / 360.0);
-				float fp = (farplane_ > 0) ? farplane_ : hh * 2;
-				float cnp = (nearplane_ > 0) ? nearplane_ : 0.01;
-				frustum = gfx->setFrustum(-hh * cnp, hh * cnp, hw * cnp,
-						-hw * cnp, np * cnp, np + fp);
-				projection.translate(-hh, -hw, -np - 0.001);
+				float fp = (farplane_ > 0) ? farplane_ : logicalHeight_ * 100;
+				float np = (nearplane_ > 0) ? nearplane_ : 1;
+				float fd=hh / tan(fov_ * M_PI / 360.0);
+				float nps = np/fd;
+				frustum = gfx->setFrustum(-hh * nps, hh * nps, hw * nps,
+						-hw * nps, np, fp);
+				projection.translate(-hh, -hw, -fd-0.001);
 			} else {
 				float fp = (farplane_ > 0) ? farplane_ : 1; //Conservative default
 				frustum = gfx->setOrthoFrustum(0, height_ / scale_,
