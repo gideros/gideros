@@ -85,6 +85,7 @@ void ShaderEngine::reset(bool reinit)
 	setColor(1,1,1,1);
     oglProjection.identity();
     oglVPProjection.identity();
+    oglVPProjectionUncorrected.identity();
     oglModel.identity();
     oglCombined.identity();
     dsCurrent.dTest=false;
