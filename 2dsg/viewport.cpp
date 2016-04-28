@@ -54,7 +54,9 @@ void Viewport::doDraw(const CurrentTransform&t, float sx, float sy, float ex, fl
 			dp.dClear=true;
 			ShaderEngine::Engine->setDepthStencil(dp);
 			Matrix4 oldProj=ShaderEngine::Engine->getProjection();
-			ShaderEngine::Engine->setProjection((oldProj*t)*projection_);
+			Matrix4 np=(oldProj*t)*projection_;
+			np.scale(1,1,-1); //Defeat ortho projection
+			ShaderEngine::Engine->setProjection(np);
 			((Sprite*)content_)->draw(matrix_, sx,sy,ex,ey);
 			ShaderEngine::Engine->setProjection(oldProj);
 			ShaderEngine::Engine->popDepthStencil();

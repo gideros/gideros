@@ -200,9 +200,9 @@ void Application::renderScene(int deltaFrameCount) {
 
 		//glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 
-		projection.scale(logicalScaleX_, logicalScaleY_, logicalScaleY_);
+		projection.scale(logicalScaleX_, logicalScaleY_, fov_?logicalScaleY_:1.0);
 		projection.translate(logicalTranslateX_, logicalTranslateY_, 0);
-		projection.scale(1.f / scale_, 1.f / scale_, 1.f/scale_);
+		projection.scale(1.f / scale_, 1.f / scale_, fov_?1.f/scale_:1.f);
 
 		if (hardwareOrientation_ == eFixed) {
 		} else {

@@ -329,14 +329,26 @@ int MatrixBinder::perspectiveProjection(lua_State* L)
 	Binder binder(L);
 	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
 
-	lua_Number l=luaL_checknumber(L,2);
-	lua_Number r=luaL_checknumber(L,3);
-	lua_Number b=luaL_checknumber(L,4);
-	lua_Number t=luaL_checknumber(L,5);
-	lua_Number n=luaL_checknumber(L,6);
-	lua_Number f=luaL_checknumber(L,7);
-	matrix->setMatrix(ShaderEngine::Engine->setFrustum(l,r,b,t,n,f).data());
-
+	if (lua_gettop(L)==7) //Full version (left/right,bottom/top,near/far)
+	{
+		lua_Number l=luaL_checknumber(L,2);
+		lua_Number r=luaL_checknumber(L,3);
+		lua_Number b=luaL_checknumber(L,4);
+		lua_Number t=luaL_checknumber(L,5);
+		lua_Number n=luaL_checknumber(L,6);
+		lua_Number f=luaL_checknumber(L,7);
+		matrix->setMatrix(ShaderEngine::Engine->setFrustum(l,r,b,t,n,f).data());
+	}
+	else //Simplified version (fov,aspect ratio,near/far)
+	{
+		lua_Number fov=luaL_checknumber(L,2);
+		lua_Number ar=luaL_checknumber(L,3);
+		lua_Number n=luaL_checknumber(L,4);
+		lua_Number f=luaL_checknumber(L,5);
+		float hw=tan(fov * M_PI / 360.0)*n;
+		float hh=hw/ar;
+		matrix->setMatrix(ShaderEngine::Engine->setFrustum(-hw,hw,-hh,hh,n,f).data());
+	}
 	return 0;
 }
 
