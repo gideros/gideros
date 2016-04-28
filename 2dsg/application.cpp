@@ -200,9 +200,9 @@ void Application::renderScene(int deltaFrameCount) {
 
 		//glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 
-		projection.scale(logicalScaleX_, logicalScaleY_, 1);
+		projection.scale(logicalScaleX_, logicalScaleY_, logicalScaleY_);
 		projection.translate(logicalTranslateX_, logicalTranslateY_, 0);
-		projection.scale(1.f / scale_, 1.f / scale_, 1.f);
+		projection.scale(1.f / scale_, 1.f / scale_, 1.f/scale_);
 
 		if (hardwareOrientation_ == eFixed) {
 		} else {
@@ -267,7 +267,7 @@ void Application::renderScene(int deltaFrameCount) {
 			if (fov_ > 0) {
 				float hw = width_ * 0.5 / scale_;
 				float hh = height_ * 0.5 / scale_;
-				float fp = (farplane_ > 0) ? farplane_ : logicalHeight_ * 100;
+				float fp = (farplane_ > 0) ? farplane_ : height_ * 100;
 				float np = (nearplane_ > 0) ? nearplane_ : 1;
 				float fd=hh / tan(fov_ * M_PI / 360.0);
 				float nps = np/fd;
@@ -285,7 +285,7 @@ void Application::renderScene(int deltaFrameCount) {
 			if (fov_ > 0) {
 				float hw = width_ * 0.5 / scale_;
 				float hh = height_ * 0.5 / scale_;
-				float fp = (farplane_ > 0) ? farplane_ : logicalHeight_ * 100;
+				float fp = (farplane_ > 0) ? farplane_ : height_ * 100;
 				float np = (nearplane_ > 0) ? nearplane_ : 1;
 				float fd=hh / tan(fov_ * M_PI / 360.0);
 				float nps = np/fd;
