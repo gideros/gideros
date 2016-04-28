@@ -34,6 +34,10 @@ private:
 	static int getMatrix(lua_State* L);
 	static int orthographicProjection(lua_State* L);
 	static int perspectiveProjection(lua_State* L);
+	static int scale(lua_State* L);
+	static int translate(lua_State* L);
+	static int rotate(lua_State* L);
+	static int multiply(lua_State* L);
 
 	static int getX(lua_State* L);
 	static int getY(lua_State* L);

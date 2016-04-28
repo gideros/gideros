@@ -30,7 +30,10 @@ MatrixBinder::MatrixBinder(lua_State* L)
 		{"getMatrix", getMatrix},
 		{"orthographicProjection", orthographicProjection},
 		{"perspectiveProjection", perspectiveProjection},
-
+		{"scale",scale},
+		{"rotate",rotate},
+		{"translate",translate},
+		{"multiply",multiply},
 
 		{"getX", getX},
 		{"getY", getY},
@@ -349,6 +352,61 @@ int MatrixBinder::perspectiveProjection(lua_State* L)
 		float hh=hw/ar;
 		matrix->setMatrix(ShaderEngine::Engine->setFrustum(-hw,hw,-hh,hh,n,f).data());
 	}
+	return 0;
+}
+
+int MatrixBinder::scale(lua_State* L)
+{
+	Binder binder(L);
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+
+	lua_Number x=luaL_checknumber(L,2);
+	lua_Number y=luaL_optnumber(L,3,x);
+	lua_Number z=luaL_optnumber(L,4,x);
+	Matrix4 m=matrix->matrix();
+	m.scale(x,y,z);
+	matrix->setMatrix(m.data());
+	return 0;
+}
+
+int MatrixBinder::translate(lua_State* L)
+{
+	Binder binder(L);
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+
+	lua_Number x=luaL_checknumber(L,2);
+	lua_Number y=luaL_optnumber(L,3,0);
+	lua_Number z=luaL_optnumber(L,4,0);
+	Matrix4 m=matrix->matrix();
+	m.translate(x,y,z);
+	matrix->setMatrix(m.data());
+	return 0;
+}
+
+int MatrixBinder::rotate(lua_State* L)
+{
+	Binder binder(L);
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+
+	lua_Number a=luaL_checknumber(L,2);
+	lua_Number x=luaL_checknumber(L,3);
+	lua_Number y=luaL_checknumber(L,4);
+	lua_Number z=luaL_checknumber(L,5);
+	Matrix4 m=matrix->matrix();
+	m.rotate(a,x,y,z);
+	matrix->setMatrix(m.data());
+	return 0;
+}
+
+int MatrixBinder::multiply(lua_State* L)
+{
+	Binder binder(L);
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+	Transform* matrix2 = static_cast<Transform*>(binder.getInstance("Matrix", 2));
+
+	Matrix4 m=matrix->matrix();
+	m=m*matrix2->matrix();
+	matrix->setMatrix(m.data());
 	return 0;
 }
 
