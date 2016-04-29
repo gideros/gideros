@@ -103,8 +103,8 @@ void ShaderEngine::reset(bool reinit)
 
 void ShaderEngine::setViewportProjection(const Matrix4 vp, float width, float height)
 {
-	if (vp==oglVPProjectionUncorrected)
-		return;
+	/*if (vp==oglVPProjectionUncorrected)
+		return;*/
 	oglVPProjectionUncorrected=vp;
 	oglVPProjection=vp;
 	adjustViewportProjection(oglVPProjection,width,height);
