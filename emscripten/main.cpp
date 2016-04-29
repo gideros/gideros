@@ -153,11 +153,19 @@ EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userD
 	 int x=e->canvasX*pixelRatio;
 	 int y=e->canvasY*pixelRatio;
 	 int b=e->buttons;
+	 int bs=0;
+	 if (e->button==0)
+	  bs=1;
+         else if (e->button==1)
+          bs=4;
+         else if (e->button==2)
+          bs=2;
+          
 	 b=(b&1)|((b&2)<<1)|((b&4)>>1); //Convert buttons to gideros mask
 	 if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
-		 ginputp_mouseDown(x,y,b);
+		 ginputp_mouseDown(x,y,bs);
 	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
-		 ginputp_mouseUp(x,y,b);
+		 ginputp_mouseUp(x,y,bs);
 	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE)
 	 {
 		 if (b)
