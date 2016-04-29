@@ -1131,7 +1131,9 @@ int SpriteBinder::setShader(lua_State* L)
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	ShaderProgram* shader = static_cast<ShaderProgram*>(binder.getInstance("Shader", 2));
+	ShaderProgram* shader = NULL;
+	if (!lua_isnoneornil(L,2))
+		shader=static_cast<ShaderProgram*>(binder.getInstance("Shader", 2));
 	sprite->setShader(shader);
 
 	return 0;
