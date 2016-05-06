@@ -44,17 +44,17 @@ void StartPageWidget2::closeEvent(QCloseEvent * event)
 void StartPageWidget2::gettingStarted()
 {
 #if defined(Q_OS_MAC)
-	QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/getting_started.html")));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/index.html")));
 #else
-	QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/getting_started.html")));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/index.html")));
 #endif
 }
 
 void StartPageWidget2::referenceManual()
 {
 #if defined(Q_OS_MAC)
-	QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/reference_manual.html")));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/reference.html")));
 #else
-	QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/reference_manual.html")));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/reference.html")));
 #endif
 }
