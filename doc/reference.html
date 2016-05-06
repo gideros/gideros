@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Reference Manual</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="reference/design/assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="reference/design/assets/greference-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="reference/design/assets/greference-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="reference/design/assets/greference-72.png">
+		<link rel="apple-touch-icon-precomposed" href="reference/design/assets/greference-57.png">
+
+		<!-- Le styles -->
+		<link href="reference/design/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="reference/design/css/font-awesome.min.css">
+		<link rel="stylesheet" href="reference/design/css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="reference/design/css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar" data-offset="20">
+<div class="tabbable">
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+		<ul class="nav nav-tabs">
+												<li class="active"><a href="reference/gideros.html">Main API</a></li>
+																<li><a href="reference/physics.html">Physics API</a></li>
+																<li><a href="reference/lua.html">Lua API</a></li>
+																<li><a href="reference/plugin.html">Plugins</a></li>
+																<li><a href="reference/labs.html">Labs</a></li>
+																<li><a href="reference/new.html">What's new?</a></li>
+									</ul>
+  <div class="container-fluid">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row-fluid">
+      <div class="span4 bs-docs-sidebar">
+		<div id='contents' class='span4' data-spy="affix" data-offset-top="110">
+		<h1>Table of Contents</h1>
+        <ul class="nav nav-list bs-docs-sidenav">
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Accelerometer.html#Accelerometer" id='Accelerometer' class='closed item'><i class="icon-chevron-right"></i> <strong>Accelerometer</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Accelerometer/isAvailable.html#Accelerometer.isAvailable" id='Accelerometer.isAvailable'>Accelerometer.isAvailable</a></li>		
+										<li><a href="reference/gideros/Accelerometer/new.html#Accelerometer.new" id='Accelerometer.new'>Accelerometer.new</a></li>		
+										<li><a href="reference/gideros/Accelerometer/getAcceleration.html#Accelerometer:getAcceleration" id='Accelerometer:getAcceleration'>Accelerometer:getAcceleration</a></li>		
+										<li><a href="reference/gideros/Accelerometer/start.html#Accelerometer:start" id='Accelerometer:start'>Accelerometer:start</a></li>		
+										<li><a href="reference/gideros/Accelerometer/stop.html#Accelerometer:stop" id='Accelerometer:stop'>Accelerometer:stop</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/AlertDialog.html#AlertDialog" id='AlertDialog' class='closed item'><i class="icon-chevron-right"></i> <strong>AlertDialog</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/AlertDialog/new.html#AlertDialog.new" id='AlertDialog.new'>AlertDialog.new</a></li>		
+										<li><a href="reference/gideros/AlertDialog/hide.html#AlertDialog:hide" id='AlertDialog:hide'>AlertDialog:hide</a></li>		
+										<li><a href="reference/gideros/AlertDialog/show.html#AlertDialog:show" id='AlertDialog:show'>AlertDialog:show</a></li>		
+																							<li><a href="reference/gideros/AlertDialog/Event.COMPLETE.html#Event.COMPLETE" id='Event.COMPLETE'>Event.COMPLETE</a></li>		
+																	</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Application.html#Application" id='Application' class='closed item'><i class="icon-chevron-right"></i> <strong>Application</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Application/canOpenUrl.html#Application:canOpenUrl" id='Application:canOpenUrl'>Application:canOpenUrl</a></li>		
+										<li><a href="reference/gideros/Application/Application%253AconfigureFrustum.html#Application:configureFrustum" id='Application:configureFrustum'>Application:configureFrustum</a></li>		
+										<li><a href="reference/gideros/Application/exit.html#Application:exit" id='Application:exit'>Application:exit</a></li>		
+										<li><a href="reference/gideros/Application/getApiVersion.html#Application:getApiVersion" id='Application:getApiVersion'>Application:getApiVersion</a></li>		
+										<li><a href="reference/gideros/Application/getBackgroundColor.html#Application:getBackgroundColor" id='Application:getBackgroundColor'>Application:getBackgroundColor</a></li>		
+										<li><a href="reference/gideros/Application/getContentHeight.html#Application:getContentHeight" id='Application:getContentHeight'>Application:getContentHeight</a></li>		
+										<li><a href="reference/gideros/Application/getContentWidth.html#Application:getContentWidth" id='Application:getContentWidth'>Application:getContentWidth</a></li>		
+										<li><a href="reference/gideros/Application/getDeviceHeight.html#Application:getDeviceHeight" id='Application:getDeviceHeight'>Application:getDeviceHeight</a></li>		
+										<li><a href="reference/gideros/Application/getDeviceInfo.html#Application:getDeviceInfo" id='Application:getDeviceInfo'>Application:getDeviceInfo</a></li>		
+										<li><a href="reference/gideros/Application/getDeviceOrientation.html#Application:getDeviceOrientation" id='Application:getDeviceOrientation'>Application:getDeviceOrientation</a></li>		
+										<li><a href="reference/gideros/Application/getDeviceWidth.html#Application:getDeviceWidth" id='Application:getDeviceWidth'>Application:getDeviceWidth</a></li>		
+										<li><a href="reference/gideros/Application/getFps.html#Application:getFps" id='Application:getFps'>Application:getFps</a></li>		
+										<li><a href="reference/gideros/Application/getLanguage.html#Application:getLanguage" id='Application:getLanguage'>Application:getLanguage</a></li>		
+										<li><a href="reference/gideros/Application/getLocale.html#Application:getLocale" id='Application:getLocale'>Application:getLocale</a></li>		
+										<li><a href="reference/gideros/Application/getLogicalHeight.html#Application:getLogicalHeight" id='Application:getLogicalHeight'>Application:getLogicalHeight</a></li>		
+										<li><a href="reference/gideros/Application/getLogicalScaleX.html#Application:getLogicalScaleX" id='Application:getLogicalScaleX'>Application:getLogicalScaleX</a></li>		
+										<li><a href="reference/gideros/Application/getLogicalScaleY.html#Application:getLogicalScaleY" id='Application:getLogicalScaleY'>Application:getLogicalScaleY</a></li>		
+										<li><a href="reference/gideros/Application/getLogicalTranslateX.html#Application:getLogicalTranslateX" id='Application:getLogicalTranslateX'>Application:getLogicalTranslateX</a></li>		
+										<li><a href="reference/gideros/Application/getLogicalTranslateY.html#Application:getLogicalTranslateY" id='Application:getLogicalTranslateY'>Application:getLogicalTranslateY</a></li>		
+										<li><a href="reference/gideros/Application/getLogicalWidth.html#Application:getLogicalWidth" id='Application:getLogicalWidth'>Application:getLogicalWidth</a></li>		
+										<li><a href="reference/gideros/Application/getOrientation.html#Application:getOrientation" id='Application:getOrientation'>Application:getOrientation</a></li>		
+										<li><a href="reference/gideros/Application/getScaleMode.html#Application:getScaleMode" id='Application:getScaleMode'>Application:getScaleMode</a></li>		
+										<li><a href="reference/gideros/Application/getScreenDensity.html#Application:getScreenDensity" id='Application:getScreenDensity'>Application:getScreenDensity</a></li>		
+										<li><a href="reference/gideros/Application/getTextureMemoryUsage.html#Application:getTextureMemoryUsage" id='Application:getTextureMemoryUsage'>Application:getTextureMemoryUsage</a></li>		
+										<li><a href="reference/gideros/Application/isPlayerMode.html#Application:isPlayerMode" id='Application:isPlayerMode'>Application:isPlayerMode</a></li>		
+										<li><a href="reference/gideros/Application/openUrl.html#Application:openUrl" id='Application:openUrl'>Application:openUrl</a></li>		
+										<li><a href="reference/gideros/Application/setBackgroundColor.html#Application:setBackgroundColor" id='Application:setBackgroundColor'>Application:setBackgroundColor</a></li>		
+										<li><a href="reference/gideros/Application/setFps.html#Application:setFps" id='Application:setFps'>Application:setFps</a></li>		
+										<li><a href="reference/gideros/Application/setFullScreen.html#Application:setFullScreen" id='Application:setFullScreen'>Application:setFullScreen</a></li>		
+										<li><a href="reference/gideros/Application/setKeepAwake.html#Application:setKeepAwake" id='Application:setKeepAwake'>Application:setKeepAwake</a></li>		
+										<li><a href="reference/gideros/Application/setLogicalDimensions.html#Application:setLogicalDimensions" id='Application:setLogicalDimensions'>Application:setLogicalDimensions</a></li>		
+										<li><a href="reference/gideros/Application/setOrientation.html#Application:setOrientation" id='Application:setOrientation'>Application:setOrientation</a></li>		
+										<li><a href="reference/gideros/Application/setScaleMode.html#Application:setScaleMode" id='Application:setScaleMode'>Application:setScaleMode</a></li>		
+										<li><a href="reference/gideros/Application/setWindowSize.html#Application:setWindowSize" id='Application:setWindowSize'>Application:setWindowSize</a></li>		
+										<li><a href="reference/gideros/Application/vibrate.html#Application:vibrate" id='Application:vibrate'>Application:vibrate</a></li>		
+																											<li><a href="reference/gideros/Application/LANDSCAPE_LEFT.html#Application.LANDSCAPE_LEFT" id='Application.LANDSCAPE_LEFT'>Application.LANDSCAPE_LEFT</a></li>		
+										<li><a href="reference/gideros/Application/LANDSCAPE_RIGHT.html#Application.LANDSCAPE_RIGHT" id='Application.LANDSCAPE_RIGHT'>Application.LANDSCAPE_RIGHT</a></li>		
+										<li><a href="reference/gideros/Application/PORTRAIT.html#Application.PORTRAIT" id='Application.PORTRAIT'>Application.PORTRAIT</a></li>		
+										<li><a href="reference/gideros/Application/PORTRAIT_UPSIDE_DOWN.html#Application.PORTRAIT_UPSIDE_DOWN" id='Application.PORTRAIT_UPSIDE_DOWN'>Application.PORTRAIT_UPSIDE_DOWN</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Bitmap.html#Bitmap" id='Bitmap' class='closed item'><i class="icon-chevron-right"></i> <strong>Bitmap</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Bitmap/new.html#Bitmap.new" id='Bitmap.new'>Bitmap.new</a></li>		
+										<li><a href="reference/gideros/Bitmap/getAnchorPoint.html#Bitmap:getAnchorPoint" id='Bitmap:getAnchorPoint'>Bitmap:getAnchorPoint</a></li>		
+										<li><a href="reference/gideros/Bitmap/setAnchorPoint.html#Bitmap:setAnchorPoint" id='Bitmap:setAnchorPoint'>Bitmap:setAnchorPoint</a></li>		
+										<li><a href="reference/gideros/Bitmap/setTexture.html#Bitmap:setTexture" id='Bitmap:setTexture'>Bitmap:setTexture</a></li>		
+										<li><a href="reference/gideros/Bitmap/setTextureRegion.html#Bitmap:setTextureRegion" id='Bitmap:setTextureRegion'>Bitmap:setTextureRegion</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Core.html#Core" id='Core' class='closed item'><i class="icon-chevron-right"></i> <strong>Core</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Core/class.html#Core.class" id='Core.class'>Core.class</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Cryptography.html#Cryptography" id='Cryptography' class='closed item'><i class="icon-chevron-right"></i> <strong>Cryptography</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Cryptography/aesDecrypt.html#Cryptography.aesDecrypt" id='Cryptography.aesDecrypt'>Cryptography.aesDecrypt</a></li>		
+										<li><a href="reference/gideros/Cryptography/aesEncrypt.html#Cryptography.aesEncrypt" id='Cryptography.aesEncrypt'>Cryptography.aesEncrypt</a></li>		
+										<li><a href="reference/gideros/Cryptography/md5.html#Cryptography.md5" id='Cryptography.md5'>Cryptography.md5</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Event.html#Event" id='Event' class='closed item'><i class="icon-chevron-right"></i> <strong>Event</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Event/new.html#Event.new" id='Event.new'>Event.new</a></li>		
+										<li><a href="reference/gideros/Event/getTarget.html#Event:getTarget" id='Event:getTarget'>Event:getTarget</a></li>		
+										<li><a href="reference/gideros/Event/getType.html#Event:getType" id='Event:getType'>Event:getType</a></li>		
+										<li><a href="reference/gideros/Event/stopPropagation.html#Event:stopPropagation" id='Event:stopPropagation'>Event:stopPropagation</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/EventDispatcher.html#EventDispatcher" id='EventDispatcher' class='closed item'><i class="icon-chevron-right"></i> <strong>EventDispatcher</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/EventDispatcher/new.html#EventDispatcher.new" id='EventDispatcher.new'>EventDispatcher.new</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/addEventListener.html#EventDispatcher:addEventListener" id='EventDispatcher:addEventListener'>EventDispatcher:addEventListener</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/dispatchEvent.html#EventDispatcher:dispatchEvent" id='EventDispatcher:dispatchEvent'>EventDispatcher:dispatchEvent</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/hasEventListener.html#EventDispatcher:hasEventListener" id='EventDispatcher:hasEventListener'>EventDispatcher:hasEventListener</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/removeEventListener.html#EventDispatcher:removeEventListener" id='EventDispatcher:removeEventListener'>EventDispatcher:removeEventListener</a></li>		
+																							<li><a href="reference/gideros/EventDispatcher/Event.APPLICATION_BACKGROUND.html#Event.APPLICATION_BACKGROUND" id='Event.APPLICATION_BACKGROUND'>Event.APPLICATION_BACKGROUND</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/Event.APPLICATION_EXIT.html#Event.APPLICATION_EXIT" id='Event.APPLICATION_EXIT'>Event.APPLICATION_EXIT</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/Event.APPLICATION_FOREGROUND.html#Event.APPLICATION_FOREGROUND" id='Event.APPLICATION_FOREGROUND'>Event.APPLICATION_FOREGROUND</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/Event.APPLICATION_RESIZE.html#Event.APPLICATION_RESIZE" id='Event.APPLICATION_RESIZE'>Event.APPLICATION_RESIZE</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/Event.APPLICATION_RESUME.html#Event.APPLICATION_RESUME" id='Event.APPLICATION_RESUME'>Event.APPLICATION_RESUME</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/Event.APPLICATION_START.html#Event.APPLICATION_START" id='Event.APPLICATION_START'>Event.APPLICATION_START</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/Event.APPLICATION_SUSPEND.html#Event.APPLICATION_SUSPEND" id='Event.APPLICATION_SUSPEND'>Event.APPLICATION_SUSPEND</a></li>		
+										<li><a href="reference/gideros/EventDispatcher/Event.MEMORY_WARNING.html#Event.MEMORY_WARNING" id='Event.MEMORY_WARNING'>Event.MEMORY_WARNING</a></li>		
+																	</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Font.html#Font" id='Font' class='closed item'><i class="icon-chevron-right"></i> <strong>Font</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Font/getDefault.html#Font.getDefault" id='Font.getDefault'>Font.getDefault</a></li>		
+										<li><a href="reference/gideros/Font/new.html#Font.new" id='Font.new'>Font.new</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/FontBase.html#FontBase" id='FontBase' class='closed item'><i class="icon-chevron-right"></i> <strong>FontBase</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/FontBase/getAdvanceX.html#FontBase:getAdvanceX" id='FontBase:getAdvanceX'>FontBase:getAdvanceX</a></li>		
+										<li><a href="reference/gideros/FontBase/getAscender.html#FontBase:getAscender" id='FontBase:getAscender'>FontBase:getAscender</a></li>		
+										<li><a href="reference/gideros/FontBase/getBounds.html#FontBase:getBounds" id='FontBase:getBounds'>FontBase:getBounds</a></li>		
+										<li><a href="reference/gideros/FontBase/getLineHeight.html#FontBase:getLineHeight" id='FontBase:getLineHeight'>FontBase:getLineHeight</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Geolocation.html#Geolocation" id='Geolocation' class='closed item'><i class="icon-chevron-right"></i> <strong>Geolocation</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Geolocation/getAccuracy.html#Geolocation.getAccuracy" id='Geolocation.getAccuracy'>Geolocation.getAccuracy</a></li>		
+										<li><a href="reference/gideros/Geolocation/getThreshold.html#Geolocation.getThreshold" id='Geolocation.getThreshold'>Geolocation.getThreshold</a></li>		
+										<li><a href="reference/gideros/Geolocation/isAvailable.html#Geolocation.isAvailable" id='Geolocation.isAvailable'>Geolocation.isAvailable</a></li>		
+										<li><a href="reference/gideros/Geolocation/isHeadingAvailable.html#Geolocation.isHeadingAvailable" id='Geolocation.isHeadingAvailable'>Geolocation.isHeadingAvailable</a></li>		
+										<li><a href="reference/gideros/Geolocation/new.html#Geolocation.new" id='Geolocation.new'>Geolocation.new</a></li>		
+										<li><a href="reference/gideros/Geolocation/setAccuracy.html#Geolocation.setAccuracy" id='Geolocation.setAccuracy'>Geolocation.setAccuracy</a></li>		
+										<li><a href="reference/gideros/Geolocation/setThreshold.html#Geolocation.setThreshold" id='Geolocation.setThreshold'>Geolocation.setThreshold</a></li>		
+										<li><a href="reference/gideros/Geolocation/start.html#Geolocation:start" id='Geolocation:start'>Geolocation:start</a></li>		
+										<li><a href="reference/gideros/Geolocation/startUpdatingHeading.html#Geolocation:startUpdatingHeading" id='Geolocation:startUpdatingHeading'>Geolocation:startUpdatingHeading</a></li>		
+										<li><a href="reference/gideros/Geolocation/startUpdatingLocation.html#Geolocation:startUpdatingLocation" id='Geolocation:startUpdatingLocation'>Geolocation:startUpdatingLocation</a></li>		
+										<li><a href="reference/gideros/Geolocation/stop.html#Geolocation:stop" id='Geolocation:stop'>Geolocation:stop</a></li>		
+										<li><a href="reference/gideros/Geolocation/stopUpdatingHeading.html#Geolocation:stopUpdatingHeading" id='Geolocation:stopUpdatingHeading'>Geolocation:stopUpdatingHeading</a></li>		
+										<li><a href="reference/gideros/Geolocation/stopUpdatingLocation.html#Geolocation:stopUpdatingLocation" id='Geolocation:stopUpdatingLocation'>Geolocation:stopUpdatingLocation</a></li>		
+																							<li><a href="reference/gideros/Geolocation/Event.ERROR.html#Event.ERROR" id='Event.ERROR'>Event.ERROR</a></li>		
+										<li><a href="reference/gideros/Geolocation/Event.HEADING_UPDATE.html#Event.HEADING_UPDATE" id='Event.HEADING_UPDATE'>Event.HEADING_UPDATE</a></li>		
+										<li><a href="reference/gideros/Geolocation/Event.LOCATION_UPDATE.html#Event.LOCATION_UPDATE" id='Event.LOCATION_UPDATE'>Event.LOCATION_UPDATE</a></li>		
+																	</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Gyroscope.html#Gyroscope" id='Gyroscope' class='closed item'><i class="icon-chevron-right"></i> <strong>Gyroscope</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Gyroscope/isAvailable.html#Gyroscope.isAvailable" id='Gyroscope.isAvailable'>Gyroscope.isAvailable</a></li>		
+										<li><a href="reference/gideros/Gyroscope/new.html#Gyroscope.new" id='Gyroscope.new'>Gyroscope.new</a></li>		
+										<li><a href="reference/gideros/Gyroscope/getRotationRate.html#Gyroscope:getRotationRate" id='Gyroscope:getRotationRate'>Gyroscope:getRotationRate</a></li>		
+										<li><a href="reference/gideros/Gyroscope/start.html#Gyroscope:start" id='Gyroscope:start'>Gyroscope:start</a></li>		
+										<li><a href="reference/gideros/Gyroscope/stop.html#Gyroscope:stop" id='Gyroscope:stop'>Gyroscope:stop</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/KeyCode.html#KeyCode" id='KeyCode' class='closed item'><i class="icon-chevron-right"></i> <strong>KeyCode</strong></a>
+							<ul class="dropdown-menu">
+																						<li><a href="reference/gideros/KeyCode/A.html#KeyCode.A" id='KeyCode.A'>KeyCode.A</a></li>		
+										<li><a href="reference/gideros/KeyCode/B.html#KeyCode.B" id='KeyCode.B'>KeyCode.B</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.BACK.html#KeyCode.BACK" id='KeyCode.BACK'>KeyCode.BACK</a></li>		
+										<li><a href="reference/gideros/KeyCode/C.html#KeyCode.C" id='KeyCode.C'>KeyCode.C</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.CENTER.html#KeyCode.CENTER" id='KeyCode.CENTER'>KeyCode.CENTER</a></li>		
+										<li><a href="reference/gideros/KeyCode/D.html#KeyCode.D" id='KeyCode.D'>KeyCode.D</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.DOWN.html#KeyCode.DOWN" id='KeyCode.DOWN'>KeyCode.DOWN</a></li>		
+										<li><a href="reference/gideros/KeyCode/E.html#KeyCode.E" id='KeyCode.E'>KeyCode.E</a></li>		
+										<li><a href="reference/gideros/KeyCode/F.html#KeyCode.F" id='KeyCode.F'>KeyCode.F</a></li>		
+										<li><a href="reference/gideros/KeyCode/G.html#KeyCode.G" id='KeyCode.G'>KeyCode.G</a></li>		
+										<li><a href="reference/gideros/KeyCode/H.html#KeyCode.H" id='KeyCode.H'>KeyCode.H</a></li>		
+										<li><a href="reference/gideros/KeyCode/I.html#KeyCode.I" id='KeyCode.I'>KeyCode.I</a></li>		
+										<li><a href="reference/gideros/KeyCode/J.html#KeyCode.J" id='KeyCode.J'>KeyCode.J</a></li>		
+										<li><a href="reference/gideros/KeyCode/K.html#KeyCode.K" id='KeyCode.K'>KeyCode.K</a></li>		
+										<li><a href="reference/gideros/KeyCode/L.html#KeyCode.L" id='KeyCode.L'>KeyCode.L</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.L1.html#KeyCode.L1" id='KeyCode.L1'>KeyCode.L1</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.LEFT.html#KeyCode.LEFT" id='KeyCode.LEFT'>KeyCode.LEFT</a></li>		
+										<li><a href="reference/gideros/KeyCode/M.html#KeyCode.M" id='KeyCode.M'>KeyCode.M</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.MENU.html#KeyCode.MENU" id='KeyCode.MENU'>KeyCode.MENU</a></li>		
+										<li><a href="reference/gideros/KeyCode/MOUSE_LEFT.html#KeyCode.MOUSE_LEFT" id='KeyCode.MOUSE_LEFT'>KeyCode.MOUSE_LEFT</a></li>		
+										<li><a href="reference/gideros/KeyCode/MOUSE_MIDDLE.html#KeyCode.MOUSE_MIDDLE" id='KeyCode.MOUSE_MIDDLE'>KeyCode.MOUSE_MIDDLE</a></li>		
+										<li><a href="reference/gideros/KeyCode/MOUSE_NONE.html#KeyCode.MOUSE_NONE" id='KeyCode.MOUSE_NONE'>KeyCode.MOUSE_NONE</a></li>		
+										<li><a href="reference/gideros/KeyCode/MOUSE_RIGHT.html#KeyCode.MOUSE_RIGHT" id='KeyCode.MOUSE_RIGHT'>KeyCode.MOUSE_RIGHT</a></li>		
+										<li><a href="reference/gideros/KeyCode/N.html#KeyCode.N" id='KeyCode.N'>KeyCode.N</a></li>		
+										<li><a href="reference/gideros/KeyCode/NUM_0.html#KeyCode.NUM_0" id='KeyCode.NUM_0'>KeyCode.NUM_0</a></li>		
+										<li><a href="reference/gideros/KeyCode/NUM_1.html#KeyCode.NUM_1" id='KeyCode.NUM_1'>KeyCode.NUM_1</a></li>		
+										<li><a href="reference/gideros/KeyCode/NUM_2.html#KeyCode.NUM_2" id='KeyCode.NUM_2'>KeyCode.NUM_2</a></li>		
+										<li><a href="reference/gideros/KeyCode/NUM_3.html#KeyCode.NUM_3" id='KeyCode.NUM_3'>KeyCode.NUM_3</a></li>		
+										<li><a href="reference/gideros/KeyCode/NUM_4.html#KeyCode.NUM_4" id='KeyCode.NUM_4'>KeyCode.NUM_4</a></li>		
+										<li><a href="reference/gideros/KeyCode/NUM_5.html#KeyCode.NUM_5" id='KeyCode.NUM_5'>KeyCode.NUM_5</a></li>		
+										<li><a href="reference/gideros/KeyCode/NUM_6.html#KeyCode.NUM_6" id='KeyCode.NUM_6'>KeyCode.NUM_6</a></li>		
+										<li><a href="reference/gideros/KeyCode/NUM_7.html#KeyCode.NUM_7" id='KeyCode.NUM_7'>KeyCode.NUM_7</a></li>		
+										<li><a href="reference/gideros/KeyCode/NUM_8.html#KeyCode.NUM_8" id='KeyCode.NUM_8'>KeyCode.NUM_8</a></li>		
+										<li><a href="reference/gideros/KeyCode/NUM_9.html#KeyCode.NUM_9" id='KeyCode.NUM_9'>KeyCode.NUM_9</a></li>		
+										<li><a href="reference/gideros/KeyCode/O.html#KeyCode.O" id='KeyCode.O'>KeyCode.O</a></li>		
+										<li><a href="reference/gideros/KeyCode/P.html#KeyCode.P" id='KeyCode.P'>KeyCode.P</a></li>		
+										<li><a href="reference/gideros/KeyCode/Q.html#KeyCode.Q" id='KeyCode.Q'>KeyCode.Q</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.R1.html#KeyCode.R1" id='KeyCode.R1'>KeyCode.R1</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.RIGHT.html#KeyCode.RIGHT" id='KeyCode.RIGHT'>KeyCode.RIGHT</a></li>		
+										<li><a href="reference/gideros/KeyCode/S.html#KeyCode.S" id='KeyCode.S'>KeyCode.S</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.SEARCH.html#KeyCode.SEARCH" id='KeyCode.SEARCH'>KeyCode.SEARCH</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.SELECT.html#KeyCode.SELECT" id='KeyCode.SELECT'>KeyCode.SELECT</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.START.html#KeyCode.START" id='KeyCode.START'>KeyCode.START</a></li>		
+										<li><a href="reference/gideros/KeyCode/T.html#KeyCode.T" id='KeyCode.T'>KeyCode.T</a></li>		
+										<li><a href="reference/gideros/KeyCode/U.html#KeyCode.U" id='KeyCode.U'>KeyCode.U</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.UP.html#KeyCode.UP" id='KeyCode.UP'>KeyCode.UP</a></li>		
+										<li><a href="reference/gideros/KeyCode/V.html#KeyCode.V" id='KeyCode.V'>KeyCode.V</a></li>		
+										<li><a href="reference/gideros/KeyCode/W.html#KeyCode.W" id='KeyCode.W'>KeyCode.W</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.X.html#KeyCode.X" id='KeyCode.X'>KeyCode.X</a></li>		
+										<li><a href="reference/gideros/KeyCode/KeyCode.Y.html#KeyCode.Y" id='KeyCode.Y'>KeyCode.Y</a></li>		
+										<li><a href="reference/gideros/KeyCode/Z.html#KeyCode.Z" id='KeyCode.Z'>KeyCode.Z</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Matrix.html#Matrix" id='Matrix' class='closed item'><i class="icon-chevron-right"></i> <strong>Matrix</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Matrix/new.html#Matrix.new" id='Matrix.new'>Matrix.new</a></li>		
+										<li><a href="reference/gideros/Matrix/getElements.html#Matrix:getElements" id='Matrix:getElements'>Matrix:getElements</a></li>		
+										<li><a href="reference/gideros/Matrix/getM11.html#Matrix:getM11" id='Matrix:getM11'>Matrix:getM11</a></li>		
+										<li><a href="reference/gideros/Matrix/getM12.html#Matrix:getM12" id='Matrix:getM12'>Matrix:getM12</a></li>		
+										<li><a href="reference/gideros/Matrix/getM21.html#Matrix:getM21" id='Matrix:getM21'>Matrix:getM21</a></li>		
+										<li><a href="reference/gideros/Matrix/getM22.html#Matrix:getM22" id='Matrix:getM22'>Matrix:getM22</a></li>		
+										<li><a href="reference/gideros/Matrix/getTx.html#Matrix:getTx" id='Matrix:getTx'>Matrix:getTx</a></li>		
+										<li><a href="reference/gideros/Matrix/getTy.html#Matrix:getTy" id='Matrix:getTy'>Matrix:getTy</a></li>		
+										<li><a href="reference/gideros/Matrix/setElements.html#Matrix:setElements" id='Matrix:setElements'>Matrix:setElements</a></li>		
+										<li><a href="reference/gideros/Matrix/setM11.html#Matrix:setM11" id='Matrix:setM11'>Matrix:setM11</a></li>		
+										<li><a href="reference/gideros/Matrix/setM12.html#Matrix:setM12" id='Matrix:setM12'>Matrix:setM12</a></li>		
+										<li><a href="reference/gideros/Matrix/setM21.html#Matrix:setM21" id='Matrix:setM21'>Matrix:setM21</a></li>		
+										<li><a href="reference/gideros/Matrix/setM22.html#Matrix:setM22" id='Matrix:setM22'>Matrix:setM22</a></li>		
+										<li><a href="reference/gideros/Matrix/setTx.html#Matrix:setTx" id='Matrix:setTx'>Matrix:setTx</a></li>		
+										<li><a href="reference/gideros/Matrix/setTy.html#Matrix:setTy" id='Matrix:setTy'>Matrix:setTy</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Mesh.html#Mesh" id='Mesh' class='closed item'><i class="icon-chevron-right"></i> <strong>Mesh</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Mesh/new.html#Mesh.new" id='Mesh.new'>Mesh.new</a></li>		
+										<li><a href="reference/gideros/Mesh/clearColorArray.html#Mesh:clearColorArray" id='Mesh:clearColorArray'>Mesh:clearColorArray</a></li>		
+										<li><a href="reference/gideros/Mesh/clearIndexArray.html#Mesh:clearIndexArray" id='Mesh:clearIndexArray'>Mesh:clearIndexArray</a></li>		
+										<li><a href="reference/gideros/Mesh/clearTexture.html#Mesh:clearTexture" id='Mesh:clearTexture'>Mesh:clearTexture</a></li>		
+										<li><a href="reference/gideros/Mesh/clearTextureCoordinateArray.html#Mesh:clearTextureCoordinateArray" id='Mesh:clearTextureCoordinateArray'>Mesh:clearTextureCoordinateArray</a></li>		
+										<li><a href="reference/gideros/Mesh/clearVertexArray.html#Mesh:clearVertexArray" id='Mesh:clearVertexArray'>Mesh:clearVertexArray</a></li>		
+										<li><a href="reference/gideros/Mesh/getColor.html#Mesh:getColor" id='Mesh:getColor'>Mesh:getColor</a></li>		
+										<li><a href="reference/gideros/Mesh/getColorArraySize.html#Mesh:getColorArraySize" id='Mesh:getColorArraySize'>Mesh:getColorArraySize</a></li>		
+										<li><a href="reference/gideros/Mesh/getIndex.html#Mesh:getIndex" id='Mesh:getIndex'>Mesh:getIndex</a></li>		
+										<li><a href="reference/gideros/Mesh/getIndexArraySize.html#Mesh:getIndexArraySize" id='Mesh:getIndexArraySize'>Mesh:getIndexArraySize</a></li>		
+										<li><a href="reference/gideros/Mesh/getTextureCoordinate.html#Mesh:getTextureCoordinate" id='Mesh:getTextureCoordinate'>Mesh:getTextureCoordinate</a></li>		
+										<li><a href="reference/gideros/Mesh/getTextureCoordinateArraySize.html#Mesh:getTextureCoordinateArraySize" id='Mesh:getTextureCoordinateArraySize'>Mesh:getTextureCoordinateArraySize</a></li>		
+										<li><a href="reference/gideros/Mesh/getVertex.html#Mesh:getVertex" id='Mesh:getVertex'>Mesh:getVertex</a></li>		
+										<li><a href="reference/gideros/Mesh/getVertexArraySize.html#Mesh:getVertexArraySize" id='Mesh:getVertexArraySize'>Mesh:getVertexArraySize</a></li>		
+										<li><a href="reference/gideros/Mesh/resizeColorArray.html#Mesh:resizeColorArray" id='Mesh:resizeColorArray'>Mesh:resizeColorArray</a></li>		
+										<li><a href="reference/gideros/Mesh/resizeIndexArray.html#Mesh:resizeIndexArray" id='Mesh:resizeIndexArray'>Mesh:resizeIndexArray</a></li>		
+										<li><a href="reference/gideros/Mesh/resizeTextureCoordinateArray.html#Mesh:resizeTextureCoordinateArray" id='Mesh:resizeTextureCoordinateArray'>Mesh:resizeTextureCoordinateArray</a></li>		
+										<li><a href="reference/gideros/Mesh/resizeVertexArray.html#Mesh:resizeVertexArray" id='Mesh:resizeVertexArray'>Mesh:resizeVertexArray</a></li>		
+										<li><a href="reference/gideros/Mesh/setColor.html#Mesh:setColor" id='Mesh:setColor'>Mesh:setColor</a></li>		
+										<li><a href="reference/gideros/Mesh/setColorArray.html#Mesh:setColorArray" id='Mesh:setColorArray'>Mesh:setColorArray</a></li>		
+										<li><a href="reference/gideros/Mesh/setColors.html#Mesh:setColors" id='Mesh:setColors'>Mesh:setColors</a></li>		
+										<li><a href="reference/gideros/Mesh/setIndex.html#Mesh:setIndex" id='Mesh:setIndex'>Mesh:setIndex</a></li>		
+										<li><a href="reference/gideros/Mesh/setIndexArray.html#Mesh:setIndexArray" id='Mesh:setIndexArray'>Mesh:setIndexArray</a></li>		
+										<li><a href="reference/gideros/Mesh/setIndices.html#Mesh:setIndices" id='Mesh:setIndices'>Mesh:setIndices</a></li>		
+										<li><a href="reference/gideros/Mesh/setTexture.html#Mesh:setTexture" id='Mesh:setTexture'>Mesh:setTexture</a></li>		
+										<li><a href="reference/gideros/Mesh/setTextureCoordinate.html#Mesh:setTextureCoordinate" id='Mesh:setTextureCoordinate'>Mesh:setTextureCoordinate</a></li>		
+										<li><a href="reference/gideros/Mesh/setTextureCoordinateArray.html#Mesh:setTextureCoordinateArray" id='Mesh:setTextureCoordinateArray'>Mesh:setTextureCoordinateArray</a></li>		
+										<li><a href="reference/gideros/Mesh/setTextureCoordinates.html#Mesh:setTextureCoordinates" id='Mesh:setTextureCoordinates'>Mesh:setTextureCoordinates</a></li>		
+										<li><a href="reference/gideros/Mesh/setVertex.html#Mesh:setVertex" id='Mesh:setVertex'>Mesh:setVertex</a></li>		
+										<li><a href="reference/gideros/Mesh/setVertexArray.html#Mesh:setVertexArray" id='Mesh:setVertexArray'>Mesh:setVertexArray</a></li>		
+										<li><a href="reference/gideros/Mesh/setVertices.html#Mesh:setVertices" id='Mesh:setVertices'>Mesh:setVertices</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/MovieClip.html#MovieClip" id='MovieClip' class='closed item'><i class="icon-chevron-right"></i> <strong>MovieClip</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/MovieClip/new.html#MovieClip.new" id='MovieClip.new'>MovieClip.new</a></li>		
+										<li><a href="reference/gideros/MovieClip/clearAction.html#MovieClip:clearAction" id='MovieClip:clearAction'>MovieClip:clearAction</a></li>		
+										<li><a href="reference/gideros/MovieClip/gotoAndPlay.html#MovieClip:gotoAndPlay" id='MovieClip:gotoAndPlay'>MovieClip:gotoAndPlay</a></li>		
+										<li><a href="reference/gideros/MovieClip/gotoAndStop.html#MovieClip:gotoAndStop" id='MovieClip:gotoAndStop'>MovieClip:gotoAndStop</a></li>		
+										<li><a href="reference/gideros/MovieClip/play.html#MovieClip:play" id='MovieClip:play'>MovieClip:play</a></li>		
+										<li><a href="reference/gideros/MovieClip/setGotoAction.html#MovieClip:setGotoAction" id='MovieClip:setGotoAction'>MovieClip:setGotoAction</a></li>		
+										<li><a href="reference/gideros/MovieClip/setStopAction.html#MovieClip:setStopAction" id='MovieClip:setStopAction'>MovieClip:setStopAction</a></li>		
+										<li><a href="reference/gideros/MovieClip/stop.html#MovieClip:stop" id='MovieClip:stop'>MovieClip:stop</a></li>		
+																							<li><a href="reference/gideros/MovieClip/Event.COMPLETE.html#Event.COMPLETE" id='Event.COMPLETE'>Event.COMPLETE</a></li>		
+																	</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Object.html#Object" id='Object' class='closed item'><i class="icon-chevron-right"></i> <strong>Object</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Object/getBaseClass.html#Object:getBaseClass" id='Object:getBaseClass'>Object:getBaseClass</a></li>		
+										<li><a href="reference/gideros/Object/getClass.html#Object:getClass" id='Object:getClass'>Object:getClass</a></li>		
+										<li><a href="reference/gideros/Object/isInstanceOf.html#Object:isInstanceOf" id='Object:isInstanceOf'>Object:isInstanceOf</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Path2D.html#Path2D" id='Path2D' class='closed item'><i class="icon-chevron-right"></i> <strong>Path2D</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Path2D/new.html#Path2D.new" id='Path2D.new'>Path2D.new</a></li>		
+										<li><a href="reference/gideros/Path2D/setConvex.html#Path2D:setConvex" id='Path2D:setConvex'>Path2D:setConvex</a></li>		
+										<li><a href="reference/gideros/Path2D/setFillColor.html#Path2D:setFillColor" id='Path2D:setFillColor'>Path2D:setFillColor</a></li>		
+										<li><a href="reference/gideros/Path2D/setFontPath.html#Path2D:setFontPath" id='Path2D:setFontPath'>Path2D:setFontPath</a></li>		
+										<li><a href="reference/gideros/Path2D/setLineColor.html#Path2D:setLineColor" id='Path2D:setLineColor'>Path2D:setLineColor</a></li>		
+										<li><a href="reference/gideros/Path2D/setLineThickness.html#Path2D:setLineThickness" id='Path2D:setLineThickness'>Path2D:setLineThickness</a></li>		
+										<li><a href="reference/gideros/Path2D/setPath.html#Path2D:setPath" id='Path2D:setPath'>Path2D:setPath</a></li>		
+										<li><a href="reference/gideros/Path2D/setSvgPath.html#Path2D:setSvgPath" id='Path2D:setSvgPath'>Path2D:setSvgPath</a></li>		
+										<li><a href="reference/gideros/Path2D/setTexture.html#Path2D:setTexture" id='Path2D:setTexture'>Path2D:setTexture</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/RenderTarget.html#RenderTarget" id='RenderTarget' class='closed item'><i class="icon-chevron-right"></i> <strong>RenderTarget</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/RenderTarget/new.html#RenderTarget.new" id='RenderTarget.new'>RenderTarget.new</a></li>		
+										<li><a href="reference/gideros/RenderTarget/clear.html#RenderTarget:clear" id='RenderTarget:clear'>RenderTarget:clear</a></li>		
+										<li><a href="reference/gideros/RenderTarget/draw.html#RenderTarget:draw" id='RenderTarget:draw'>RenderTarget:draw</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Shader.html#Shader" id='Shader' class='closed item'><i class="icon-chevron-right"></i> <strong>Shader</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Shader/new.html#Shader.new" id='Shader.new'>Shader.new</a></li>		
+										<li><a href="reference/gideros/Shader/getEngineVersion.html#Shader:getEngineVersion" id='Shader:getEngineVersion'>Shader:getEngineVersion</a></li>		
+										<li><a href="reference/gideros/Shader/setConstant.html#Shader:setConstant" id='Shader:setConstant'>Shader:setConstant</a></li>		
+																											<li><a href="reference/gideros/Shader/CFLOAT.html#Shader.CFLOAT" id='Shader.CFLOAT'>Shader.CFLOAT</a></li>		
+										<li><a href="reference/gideros/Shader/CFLOAT4.html#Shader.CFLOAT4" id='Shader.CFLOAT4'>Shader.CFLOAT4</a></li>		
+										<li><a href="reference/gideros/Shader/CINT.html#Shader.CINT" id='Shader.CINT'>Shader.CINT</a></li>		
+										<li><a href="reference/gideros/Shader/CMATRIX.html#Shader.CMATRIX" id='Shader.CMATRIX'>Shader.CMATRIX</a></li>		
+										<li><a href="reference/gideros/Shader/CTEXTURE.html#Shader.CTEXTURE" id='Shader.CTEXTURE'>Shader.CTEXTURE</a></li>		
+										<li><a href="reference/gideros/Shader/DBYTE.html#Shader.DBYTE" id='Shader.DBYTE'>Shader.DBYTE</a></li>		
+										<li><a href="reference/gideros/Shader/DFLOAT.html#Shader.DFLOAT" id='Shader.DFLOAT'>Shader.DFLOAT</a></li>		
+										<li><a href="reference/gideros/Shader/DINT.html#Shader.DINT" id='Shader.DINT'>Shader.DINT</a></li>		
+										<li><a href="reference/gideros/Shader/DSHORT.html#Shader.DSHORT" id='Shader.DSHORT'>Shader.DSHORT</a></li>		
+										<li><a href="reference/gideros/Shader/DUBYTE.html#Shader.DUBYTE" id='Shader.DUBYTE'>Shader.DUBYTE</a></li>		
+										<li><a href="reference/gideros/Shader/DUSHORT.html#Shader.DUSHORT" id='Shader.DUSHORT'>Shader.DUSHORT</a></li>		
+										<li><a href="reference/gideros/Shader/FLAG_NONE.html#Shader.FLAG_NONE" id='Shader.FLAG_NONE'>Shader.FLAG_NONE</a></li>		
+										<li><a href="reference/gideros/Shader/FLAG_NO_DEFAULT_HEADER.html#Shader.FLAG_NO_DEFAULT_HEADER" id='Shader.FLAG_NO_DEFAULT_HEADER'>Shader.FLAG_NO_DEFAULT_HEADER</a></li>		
+										<li><a href="reference/gideros/Shader/SYS_COLOR.html#Shader.SYS_COLOR" id='Shader.SYS_COLOR'>Shader.SYS_COLOR</a></li>		
+										<li><a href="reference/gideros/Shader/SYS_NONE.html#Shader.SYS_NONE" id='Shader.SYS_NONE'>Shader.SYS_NONE</a></li>		
+										<li><a href="reference/gideros/Shader/SYS_PARTICLESIZE.html#Shader.SYS_PARTICLESIZE" id='Shader.SYS_PARTICLESIZE'>Shader.SYS_PARTICLESIZE</a></li>		
+										<li><a href="reference/gideros/Shader/SYS_TEXTUREINFO.html#Shader.SYS_TEXTUREINFO" id='Shader.SYS_TEXTUREINFO'>Shader.SYS_TEXTUREINFO</a></li>		
+										<li><a href="reference/gideros/Shader/SYS_WIT.html#Shader.SYS_WIT" id='Shader.SYS_WIT'>Shader.SYS_WIT</a></li>		
+										<li><a href="reference/gideros/Shader/SYS_WORLD.html#Shader.SYS_WORLD" id='Shader.SYS_WORLD'>Shader.SYS_WORLD</a></li>		
+										<li><a href="reference/gideros/Shader/SYS_WVP.html#Shader.SYS_WVP" id='Shader.SYS_WVP'>Shader.SYS_WVP</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Shape.html#Shape" id='Shape' class='closed item'><i class="icon-chevron-right"></i> <strong>Shape</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Shape/new.html#Shape.new" id='Shape.new'>Shape.new</a></li>		
+										<li><a href="reference/gideros/Shape/beginPath.html#Shape:beginPath" id='Shape:beginPath'>Shape:beginPath</a></li>		
+										<li><a href="reference/gideros/Shape/clear.html#Shape:clear" id='Shape:clear'>Shape:clear</a></li>		
+										<li><a href="reference/gideros/Shape/closePath.html#Shape:closePath" id='Shape:closePath'>Shape:closePath</a></li>		
+										<li><a href="reference/gideros/Shape/endPath.html#Shape:endPath" id='Shape:endPath'>Shape:endPath</a></li>		
+										<li><a href="reference/gideros/Shape/lineTo.html#Shape:lineTo" id='Shape:lineTo'>Shape:lineTo</a></li>		
+										<li><a href="reference/gideros/Shape/moveTo.html#Shape:moveTo" id='Shape:moveTo'>Shape:moveTo</a></li>		
+										<li><a href="reference/gideros/Shape/setFillStyle.html#Shape:setFillStyle" id='Shape:setFillStyle'>Shape:setFillStyle</a></li>		
+										<li><a href="reference/gideros/Shape/setLineStyle.html#Shape:setLineStyle" id='Shape:setLineStyle'>Shape:setLineStyle</a></li>		
+																											<li><a href="reference/gideros/Shape/Shape.EVEN_ODD.html#Shape.EVEN_ODD" id='Shape.EVEN_ODD'>Shape.EVEN_ODD</a></li>		
+										<li><a href="reference/gideros/Shape/Shape.NONE.html#Shape.NONE" id='Shape.NONE'>Shape.NONE</a></li>		
+										<li><a href="reference/gideros/Shape/Shape.NON_ZERO.html#Shape.NON_ZERO" id='Shape.NON_ZERO'>Shape.NON_ZERO</a></li>		
+										<li><a href="reference/gideros/Shape/Shape.SOLID.html#Shape.SOLID" id='Shape.SOLID'>Shape.SOLID</a></li>		
+										<li><a href="reference/gideros/Shape/Shape.TEXTURE.html#Shape.TEXTURE" id='Shape.TEXTURE'>Shape.TEXTURE</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Sound.html#Sound" id='Sound' class='closed item'><i class="icon-chevron-right"></i> <strong>Sound</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Sound/new.html#Sound.new" id='Sound.new'>Sound.new</a></li>		
+										<li><a href="reference/gideros/Sound/getLength.html#Sound:getLength" id='Sound:getLength'>Sound:getLength</a></li>		
+										<li><a href="reference/gideros/Sound/play.html#Sound:play" id='Sound:play'>Sound:play</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/SoundChannel.html#SoundChannel" id='SoundChannel' class='closed item'><i class="icon-chevron-right"></i> <strong>SoundChannel</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/SoundChannel/getPitch.html#SoundChannel:getPitch" id='SoundChannel:getPitch'>SoundChannel:getPitch</a></li>		
+										<li><a href="reference/gideros/SoundChannel/getPosition.html#SoundChannel:getPosition" id='SoundChannel:getPosition'>SoundChannel:getPosition</a></li>		
+										<li><a href="reference/gideros/SoundChannel/getVolume.html#SoundChannel:getVolume" id='SoundChannel:getVolume'>SoundChannel:getVolume</a></li>		
+										<li><a href="reference/gideros/SoundChannel/isLooping.html#SoundChannel:isLooping" id='SoundChannel:isLooping'>SoundChannel:isLooping</a></li>		
+										<li><a href="reference/gideros/SoundChannel/isPaused.html#SoundChannel:isPaused" id='SoundChannel:isPaused'>SoundChannel:isPaused</a></li>		
+										<li><a href="reference/gideros/SoundChannel/isPlaying.html#SoundChannel:isPlaying" id='SoundChannel:isPlaying'>SoundChannel:isPlaying</a></li>		
+										<li><a href="reference/gideros/SoundChannel/setLooping.html#SoundChannel:setLooping" id='SoundChannel:setLooping'>SoundChannel:setLooping</a></li>		
+										<li><a href="reference/gideros/SoundChannel/setPaused.html#SoundChannel:setPaused" id='SoundChannel:setPaused'>SoundChannel:setPaused</a></li>		
+										<li><a href="reference/gideros/SoundChannel/setPitch.html#SoundChannel:setPitch" id='SoundChannel:setPitch'>SoundChannel:setPitch</a></li>		
+										<li><a href="reference/gideros/SoundChannel/setPosition.html#SoundChannel:setPosition" id='SoundChannel:setPosition'>SoundChannel:setPosition</a></li>		
+										<li><a href="reference/gideros/SoundChannel/setVolume.html#SoundChannel:setVolume" id='SoundChannel:setVolume'>SoundChannel:setVolume</a></li>		
+										<li><a href="reference/gideros/SoundChannel/stop.html#SoundChannel:stop" id='SoundChannel:stop'>SoundChannel:stop</a></li>		
+																							<li><a href="reference/gideros/SoundChannel/Event.COMPLETE.html#Event.COMPLETE" id='Event.COMPLETE'>Event.COMPLETE</a></li>		
+																	</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Sprite.html#Sprite" id='Sprite' class='closed item'><i class="icon-chevron-right"></i> <strong>Sprite</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Sprite/new.html#Sprite.new" id='Sprite.new'>Sprite.new</a></li>		
+										<li><a href="reference/gideros/Sprite/addChild.html#Sprite:addChild" id='Sprite:addChild'>Sprite:addChild</a></li>		
+										<li><a href="reference/gideros/Sprite/addChildAt.html#Sprite:addChildAt" id='Sprite:addChildAt'>Sprite:addChildAt</a></li>		
+										<li><a href="reference/gideros/Sprite/clearBlendMode.html#Sprite:clearBlendMode" id='Sprite:clearBlendMode'>Sprite:clearBlendMode</a></li>		
+										<li><a href="reference/gideros/Sprite/contains.html#Sprite:contains" id='Sprite:contains'>Sprite:contains</a></li>		
+										<li><a href="reference/gideros/Sprite/get.html#Sprite:get" id='Sprite:get'>Sprite:get</a></li>		
+										<li><a href="reference/gideros/Sprite/getAlpha.html#Sprite:getAlpha" id='Sprite:getAlpha'>Sprite:getAlpha</a></li>		
+										<li><a href="reference/gideros/Sprite/getAnchorPosition.html#Sprite:getAnchorPosition" id='Sprite:getAnchorPosition'>Sprite:getAnchorPosition</a></li>		
+										<li><a href="reference/gideros/Sprite/getBounds.html#Sprite:getBounds" id='Sprite:getBounds'>Sprite:getBounds</a></li>		
+										<li><a href="reference/gideros/Sprite/getChildAt.html#Sprite:getChildAt" id='Sprite:getChildAt'>Sprite:getChildAt</a></li>		
+										<li><a href="reference/gideros/Sprite/getChildIndex.html#Sprite:getChildIndex" id='Sprite:getChildIndex'>Sprite:getChildIndex</a></li>		
+										<li><a href="reference/gideros/Sprite/getColorTransform.html#Sprite:getColorTransform" id='Sprite:getColorTransform'>Sprite:getColorTransform</a></li>		
+										<li><a href="reference/gideros/Sprite/getHeight.html#Sprite:getHeight" id='Sprite:getHeight'>Sprite:getHeight</a></li>		
+										<li><a href="reference/gideros/Sprite/getMatrix.html#Sprite:getMatrix" id='Sprite:getMatrix'>Sprite:getMatrix</a></li>		
+										<li><a href="reference/gideros/Sprite/getNumChildren.html#Sprite:getNumChildren" id='Sprite:getNumChildren'>Sprite:getNumChildren</a></li>		
+										<li><a href="reference/gideros/Sprite/getParent.html#Sprite:getParent" id='Sprite:getParent'>Sprite:getParent</a></li>		
+										<li><a href="reference/gideros/Sprite/getPosition.html#Sprite:getPosition" id='Sprite:getPosition'>Sprite:getPosition</a></li>		
+										<li><a href="reference/gideros/Sprite/getRotation.html#Sprite:getRotation" id='Sprite:getRotation'>Sprite:getRotation</a></li>		
+										<li><a href="reference/gideros/Sprite/getRotationX.html#Sprite:getRotationX" id='Sprite:getRotationX'>Sprite:getRotationX</a></li>		
+										<li><a href="reference/gideros/Sprite/getRotationY.html#Sprite:getRotationY" id='Sprite:getRotationY'>Sprite:getRotationY</a></li>		
+										<li><a href="reference/gideros/Sprite/getScale.html#Sprite:getScale" id='Sprite:getScale'>Sprite:getScale</a></li>		
+										<li><a href="reference/gideros/Sprite/getScaleX.html#Sprite:getScaleX" id='Sprite:getScaleX'>Sprite:getScaleX</a></li>		
+										<li><a href="reference/gideros/Sprite/getScaleY.html#Sprite:getScaleY" id='Sprite:getScaleY'>Sprite:getScaleY</a></li>		
+										<li><a href="reference/gideros/Sprite/getScaleZ.html#Sprite:getScaleZ" id='Sprite:getScaleZ'>Sprite:getScaleZ</a></li>		
+										<li><a href="reference/gideros/Sprite/getWidth.html#Sprite:getWidth" id='Sprite:getWidth'>Sprite:getWidth</a></li>		
+										<li><a href="reference/gideros/Sprite/getX.html#Sprite:getX" id='Sprite:getX'>Sprite:getX</a></li>		
+										<li><a href="reference/gideros/Sprite/getY.html#Sprite:getY" id='Sprite:getY'>Sprite:getY</a></li>		
+										<li><a href="reference/gideros/Sprite/getZ.html#Sprite:getZ" id='Sprite:getZ'>Sprite:getZ</a></li>		
+										<li><a href="reference/gideros/Sprite/globalToLocal.html#Sprite:globalToLocal" id='Sprite:globalToLocal'>Sprite:globalToLocal</a></li>		
+										<li><a href="reference/gideros/Sprite/hitTestPoint.html#Sprite:hitTestPoint" id='Sprite:hitTestPoint'>Sprite:hitTestPoint</a></li>		
+										<li><a href="reference/gideros/Sprite/isVisible.html#Sprite:isVisible" id='Sprite:isVisible'>Sprite:isVisible</a></li>		
+										<li><a href="reference/gideros/Sprite/localToGlobal.html#Sprite:localToGlobal" id='Sprite:localToGlobal'>Sprite:localToGlobal</a></li>		
+										<li><a href="reference/gideros/Sprite/removeChild.html#Sprite:removeChild" id='Sprite:removeChild'>Sprite:removeChild</a></li>		
+										<li><a href="reference/gideros/Sprite/removeChildAt.html#Sprite:removeChildAt" id='Sprite:removeChildAt'>Sprite:removeChildAt</a></li>		
+										<li><a href="reference/gideros/Sprite/removeFromParent.html#Sprite:removeFromParent" id='Sprite:removeFromParent'>Sprite:removeFromParent</a></li>		
+										<li><a href="reference/gideros/Sprite/set.html#Sprite:set" id='Sprite:set'>Sprite:set</a></li>		
+										<li><a href="reference/gideros/Sprite/setAlpha.html#Sprite:setAlpha" id='Sprite:setAlpha'>Sprite:setAlpha</a></li>		
+										<li><a href="reference/gideros/Sprite/setAnchorPosition.html#Sprite:setAnchorPosition" id='Sprite:setAnchorPosition'>Sprite:setAnchorPosition</a></li>		
+										<li><a href="reference/gideros/Sprite/setBlendMode.html#Sprite:setBlendMode" id='Sprite:setBlendMode'>Sprite:setBlendMode</a></li>		
+										<li><a href="reference/gideros/Sprite/setClip.html#Sprite:setClip" id='Sprite:setClip'>Sprite:setClip</a></li>		
+										<li><a href="reference/gideros/Sprite/setColorTransform.html#Sprite:setColorTransform" id='Sprite:setColorTransform'>Sprite:setColorTransform</a></li>		
+										<li><a href="reference/gideros/Sprite/setMatrix.html#Sprite:setMatrix" id='Sprite:setMatrix'>Sprite:setMatrix</a></li>		
+										<li><a href="reference/gideros/Sprite/setPosition.html#Sprite:setPosition" id='Sprite:setPosition'>Sprite:setPosition</a></li>		
+										<li><a href="reference/gideros/Sprite/setRotation.html#Sprite:setRotation" id='Sprite:setRotation'>Sprite:setRotation</a></li>		
+										<li><a href="reference/gideros/Sprite/setRotationX.html#Sprite:setRotationX" id='Sprite:setRotationX'>Sprite:setRotationX</a></li>		
+										<li><a href="reference/gideros/Sprite/setRotationY.html#Sprite:setRotationY" id='Sprite:setRotationY'>Sprite:setRotationY</a></li>		
+										<li><a href="reference/gideros/Sprite/setScale.html#Sprite:setScale" id='Sprite:setScale'>Sprite:setScale</a></li>		
+										<li><a href="reference/gideros/Sprite/setScaleX.html#Sprite:setScaleX" id='Sprite:setScaleX'>Sprite:setScaleX</a></li>		
+										<li><a href="reference/gideros/Sprite/setScaleY.html#Sprite:setScaleY" id='Sprite:setScaleY'>Sprite:setScaleY</a></li>		
+										<li><a href="reference/gideros/Sprite/setScaleZ.html#Sprite:setScaleZ" id='Sprite:setScaleZ'>Sprite:setScaleZ</a></li>		
+										<li><a href="reference/gideros/Sprite/setShader.html#Sprite:setShader" id='Sprite:setShader'>Sprite:setShader</a></li>		
+										<li><a href="reference/gideros/Sprite/setVisible.html#Sprite:setVisible" id='Sprite:setVisible'>Sprite:setVisible</a></li>		
+										<li><a href="reference/gideros/Sprite/setX.html#Sprite:setX" id='Sprite:setX'>Sprite:setX</a></li>		
+										<li><a href="reference/gideros/Sprite/setY.html#Sprite:setY" id='Sprite:setY'>Sprite:setY</a></li>		
+										<li><a href="reference/gideros/Sprite/setZ.html#Sprite:setZ" id='Sprite:setZ'>Sprite:setZ</a></li>		
+										<li><a href="reference/gideros/Sprite/swapChildren.html#Sprite:swapChildren" id='Sprite:swapChildren'>Sprite:swapChildren</a></li>		
+										<li><a href="reference/gideros/Sprite/swapChildrenAt.html#Sprite:swapChildrenAt" id='Sprite:swapChildrenAt'>Sprite:swapChildrenAt</a></li>		
+																							<li><a href="reference/gideros/Sprite/Event.ADDED_TO_STAGE.html#Event.ADDED_TO_STAGE" id='Event.ADDED_TO_STAGE'>Event.ADDED_TO_STAGE</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.ENTER_FRAME.html#Event.ENTER_FRAME" id='Event.ENTER_FRAME'>Event.ENTER_FRAME</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.KEY_DOWN.html#Event.KEY_DOWN" id='Event.KEY_DOWN'>Event.KEY_DOWN</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.KEY_UP.html#Event.KEY_UP" id='Event.KEY_UP'>Event.KEY_UP</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.MOUSE_DOWN.html#Event.MOUSE_DOWN" id='Event.MOUSE_DOWN'>Event.MOUSE_DOWN</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.MOUSE_HOVER.html#Event.MOUSE_HOVER" id='Event.MOUSE_HOVER'>Event.MOUSE_HOVER</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.MOUSE_MOVE.html#Event.MOUSE_MOVE" id='Event.MOUSE_MOVE'>Event.MOUSE_MOVE</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.MOUSE_UP.html#Event.MOUSE_UP" id='Event.MOUSE_UP'>Event.MOUSE_UP</a></li>		
+										<li><a href="reference/gideros/Sprite/MOUSE_WHEEL.html#Event.MOUSE_WHEEL" id='Event.MOUSE_WHEEL'>Event.MOUSE_WHEEL</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.REMOVED_FROM_STAGE.html#Event.REMOVED_FROM_STAGE" id='Event.REMOVED_FROM_STAGE'>Event.REMOVED_FROM_STAGE</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.TOUCHES_BEGIN.html#Event.TOUCHES_BEGIN" id='Event.TOUCHES_BEGIN'>Event.TOUCHES_BEGIN</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.TOUCHES_CANCEL.html#Event.TOUCHES_CANCEL" id='Event.TOUCHES_CANCEL'>Event.TOUCHES_CANCEL</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.TOUCHES_END.html#Event.TOUCHES_END" id='Event.TOUCHES_END'>Event.TOUCHES_END</a></li>		
+										<li><a href="reference/gideros/Sprite/Event.TOUCHES_MOVE.html#Event.TOUCHES_MOVE" id='Event.TOUCHES_MOVE'>Event.TOUCHES_MOVE</a></li>		
+																							<li><a href="reference/gideros/Sprite/Sprite.ADD.html#Sprite.ADD" id='Sprite.ADD'>Sprite.ADD</a></li>		
+										<li><a href="reference/gideros/Sprite/Sprite.ALPHA.html#Sprite.ALPHA" id='Sprite.ALPHA'>Sprite.ALPHA</a></li>		
+										<li><a href="reference/gideros/Sprite/Sprite.MULTIPLY.html#Sprite.MULTIPLY" id='Sprite.MULTIPLY'>Sprite.MULTIPLY</a></li>		
+										<li><a href="reference/gideros/Sprite/Sprite.NO_ALPHA.html#Sprite.NO_ALPHA" id='Sprite.NO_ALPHA'>Sprite.NO_ALPHA</a></li>		
+										<li><a href="reference/gideros/Sprite/Sprite.SCREEN.html#Sprite.SCREEN" id='Sprite.SCREEN'>Sprite.SCREEN</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Stage.html#Stage" id='Stage' class='closed item'><i class="icon-chevron-right"></i> <strong>Stage</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Stage/setClearColorBuffer.html#Stage:setClearColorBuffer" id='Stage:setClearColorBuffer'>Stage:setClearColorBuffer</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/TextField.html#TextField" id='TextField' class='closed item'><i class="icon-chevron-right"></i> <strong>TextField</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/TextField/new.html#TextField.new" id='TextField.new'>TextField.new</a></li>		
+										<li><a href="reference/gideros/TextField/getLetterSpacing.html#TextField:getLetterSpacing" id='TextField:getLetterSpacing'>TextField:getLetterSpacing</a></li>		
+										<li><a href="reference/gideros/TextField/getText.html#TextField:getText" id='TextField:getText'>TextField:getText</a></li>		
+										<li><a href="reference/gideros/TextField/getTextColor.html#TextField:getTextColor" id='TextField:getTextColor'>TextField:getTextColor</a></li>		
+										<li><a href="reference/gideros/TextField/setLetterSpacing.html#TextField:setLetterSpacing" id='TextField:setLetterSpacing'>TextField:setLetterSpacing</a></li>		
+										<li><a href="reference/gideros/TextField/setText.html#TextField:setText" id='TextField:setText'>TextField:setText</a></li>		
+										<li><a href="reference/gideros/TextField/setTextColor.html#TextField:setTextColor" id='TextField:setTextColor'>TextField:setTextColor</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/TextInputDialog.html#TextInputDialog" id='TextInputDialog' class='closed item'><i class="icon-chevron-right"></i> <strong>TextInputDialog</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/TextInputDialog/new.html#TextInputDialog.new" id='TextInputDialog.new'>TextInputDialog.new</a></li>		
+										<li><a href="reference/gideros/TextInputDialog/getInputType.html#TextInputDialog:getInputType" id='TextInputDialog:getInputType'>TextInputDialog:getInputType</a></li>		
+										<li><a href="reference/gideros/TextInputDialog/getText.html#TextInputDialog:getText" id='TextInputDialog:getText'>TextInputDialog:getText</a></li>		
+										<li><a href="reference/gideros/TextInputDialog/isSecureInput.html#TextInputDialog:isSecureInput" id='TextInputDialog:isSecureInput'>TextInputDialog:isSecureInput</a></li>		
+										<li><a href="reference/gideros/TextInputDialog/setInputType.html#TextInputDialog:setInputType" id='TextInputDialog:setInputType'>TextInputDialog:setInputType</a></li>		
+										<li><a href="reference/gideros/TextInputDialog/setSecureInput.html#TextInputDialog:setSecureInput" id='TextInputDialog:setSecureInput'>TextInputDialog:setSecureInput</a></li>		
+										<li><a href="reference/gideros/TextInputDialog/setText.html#TextInputDialog:setText" id='TextInputDialog:setText'>TextInputDialog:setText</a></li>		
+																							<li><a href="reference/gideros/TextInputDialog/Event.COMPLETE.html#Event.COMPLETE" id='Event.COMPLETE'>Event.COMPLETE</a></li>		
+																							<li><a href="reference/gideros/TextInputDialog/TextInputDialog.EMAIL.html#TextInputDialog.EMAIL" id='TextInputDialog.EMAIL'>TextInputDialog.EMAIL</a></li>		
+										<li><a href="reference/gideros/TextInputDialog/TextInputDialog.NUMBER.html#TextInputDialog.NUMBER" id='TextInputDialog.NUMBER'>TextInputDialog.NUMBER</a></li>		
+										<li><a href="reference/gideros/TextInputDialog/TextInputDialog.PHONE.html#TextInputDialog.PHONE" id='TextInputDialog.PHONE'>TextInputDialog.PHONE</a></li>		
+										<li><a href="reference/gideros/TextInputDialog/TextInputDialog.TEXT.html#TextInputDialog.TEXT" id='TextInputDialog.TEXT'>TextInputDialog.TEXT</a></li>		
+										<li><a href="reference/gideros/TextInputDialog/TextInputDialog.URL.html#TextInputDialog.URL" id='TextInputDialog.URL'>TextInputDialog.URL</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Texture.html#Texture" id='Texture' class='closed item'><i class="icon-chevron-right"></i> <strong>Texture</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Texture/new.html#Texture.new" id='Texture.new'>Texture.new</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/TextureBase.html#TextureBase" id='TextureBase' class='closed item'><i class="icon-chevron-right"></i> <strong>TextureBase</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/TextureBase/getHeight.html#TextureBase:getHeight" id='TextureBase:getHeight'>TextureBase:getHeight</a></li>		
+										<li><a href="reference/gideros/TextureBase/getWidth.html#TextureBase:getWidth" id='TextureBase:getWidth'>TextureBase:getWidth</a></li>		
+																											<li><a href="reference/gideros/TextureBase/TextureBase.CLAMP.html#TextureBase.CLAMP" id='TextureBase.CLAMP'>TextureBase.CLAMP</a></li>		
+										<li><a href="reference/gideros/TextureBase/TextureBase.REPEAT.html#TextureBase.REPEAT" id='TextureBase.REPEAT'>TextureBase.REPEAT</a></li>		
+										<li><a href="reference/gideros/TextureBase/RGB565.html#TextureBase.RGB565" id='TextureBase.RGB565'>TextureBase.RGB565</a></li>		
+										<li><a href="reference/gideros/TextureBase/RGB888.html#TextureBase.RGB888" id='TextureBase.RGB888'>TextureBase.RGB888</a></li>		
+										<li><a href="reference/gideros/TextureBase/RGBA4444.html#TextureBase.RGBA4444" id='TextureBase.RGBA4444'>TextureBase.RGBA4444</a></li>		
+										<li><a href="reference/gideros/TextureBase/RGBA5551.html#TextureBase.RGBA5551" id='TextureBase.RGBA5551'>TextureBase.RGBA5551</a></li>		
+										<li><a href="reference/gideros/TextureBase/RGBA8888.html#TextureBase.RGBA8888" id='TextureBase.RGBA8888'>TextureBase.RGBA8888</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/TexturePack.html#TexturePack" id='TexturePack' class='closed item'><i class="icon-chevron-right"></i> <strong>TexturePack</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/TexturePack/new.html#TexturePack.new" id='TexturePack.new'>TexturePack.new</a></li>		
+										<li><a href="reference/gideros/TexturePack/new2.html#TexturePack.new" id='TexturePack.new'>TexturePack.new</a></li>		
+										<li><a href="reference/gideros/TexturePack/getTextureRegion.html#TexturePack:getTextureRegion" id='TexturePack:getTextureRegion'>TexturePack:getTextureRegion</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/TextureRegion.html#TextureRegion" id='TextureRegion' class='closed item'><i class="icon-chevron-right"></i> <strong>TextureRegion</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/TextureRegion/new.html#TextureRegion.new" id='TextureRegion.new'>TextureRegion.new</a></li>		
+										<li><a href="reference/gideros/TextureRegion/new2.html#TextureRegion.new" id='TextureRegion.new'>TextureRegion.new</a></li>		
+										<li><a href="reference/gideros/TextureRegion/getRegion.html#TextureRegion:getRegion" id='TextureRegion:getRegion'>TextureRegion:getRegion</a></li>		
+										<li><a href="reference/gideros/TextureRegion/setRegion.html#TextureRegion:setRegion" id='TextureRegion:setRegion'>TextureRegion:setRegion</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/TileMap.html#TileMap" id='TileMap' class='closed item'><i class="icon-chevron-right"></i> <strong>TileMap</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/TileMap/new.html#TileMap.new" id='TileMap.new'>TileMap.new</a></li>		
+										<li><a href="reference/gideros/TileMap/clearTile.html#TileMap:clearTile" id='TileMap:clearTile'>TileMap:clearTile</a></li>		
+										<li><a href="reference/gideros/TileMap/getTile.html#TileMap:getTile" id='TileMap:getTile'>TileMap:getTile</a></li>		
+										<li><a href="reference/gideros/TileMap/setTile.html#TileMap:setTile" id='TileMap:setTile'>TileMap:setTile</a></li>		
+										<li><a href="reference/gideros/TileMap/shift.html#TileMap:shift" id='TileMap:shift'>TileMap:shift</a></li>		
+																											<li><a href="reference/gideros/TileMap/TileMap.FLIP_DIAGONAL.html#TileMap.FLIP_DIAGONAL" id='TileMap.FLIP_DIAGONAL'>TileMap.FLIP_DIAGONAL</a></li>		
+										<li><a href="reference/gideros/TileMap/TileMap.FLIP_HORIZONTAL.html#TileMap.FLIP_HORIZONTAL" id='TileMap.FLIP_HORIZONTAL'>TileMap.FLIP_HORIZONTAL</a></li>		
+										<li><a href="reference/gideros/TileMap/TileMap.FLIP_VERTICAL.html#TileMap.FLIP_VERTICAL" id='TileMap.FLIP_VERTICAL'>TileMap.FLIP_VERTICAL</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Timer.html#Timer" id='Timer' class='closed item'><i class="icon-chevron-right"></i> <strong>Timer</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Timer/delayedCall.html#Timer.delayedCall" id='Timer.delayedCall'>Timer.delayedCall</a></li>		
+										<li><a href="reference/gideros/Timer/new.html#Timer.new" id='Timer.new'>Timer.new</a></li>		
+										<li><a href="reference/gideros/Timer/pauseAll.html#Timer.pauseAll" id='Timer.pauseAll'>Timer.pauseAll</a></li>		
+										<li><a href="reference/gideros/Timer/resumeAll.html#Timer.resumeAll" id='Timer.resumeAll'>Timer.resumeAll</a></li>		
+										<li><a href="reference/gideros/Timer/stopAll.html#Timer.stopAll" id='Timer.stopAll'>Timer.stopAll</a></li>		
+										<li><a href="reference/gideros/Timer/getCurrentCount.html#Timer:getCurrentCount" id='Timer:getCurrentCount'>Timer:getCurrentCount</a></li>		
+										<li><a href="reference/gideros/Timer/getDelay.html#Timer:getDelay" id='Timer:getDelay'>Timer:getDelay</a></li>		
+										<li><a href="reference/gideros/Timer/getRepeatCount.html#Timer:getRepeatCount" id='Timer:getRepeatCount'>Timer:getRepeatCount</a></li>		
+										<li><a href="reference/gideros/Timer/isRunning.html#Timer:isRunning" id='Timer:isRunning'>Timer:isRunning</a></li>		
+										<li><a href="reference/gideros/Timer/reset.html#Timer:reset" id='Timer:reset'>Timer:reset</a></li>		
+										<li><a href="reference/gideros/Timer/setDelay.html#Timer:setDelay" id='Timer:setDelay'>Timer:setDelay</a></li>		
+										<li><a href="reference/gideros/Timer/setRepeatCount.html#Timer:setRepeatCount" id='Timer:setRepeatCount'>Timer:setRepeatCount</a></li>		
+										<li><a href="reference/gideros/Timer/start.html#Timer:start" id='Timer:start'>Timer:start</a></li>		
+										<li><a href="reference/gideros/Timer/stop.html#Timer:stop" id='Timer:stop'>Timer:stop</a></li>		
+																							<li><a href="reference/gideros/Timer/Event.TIMER.html#Event.TIMER" id='Event.TIMER'>Event.TIMER</a></li>		
+										<li><a href="reference/gideros/Timer/Event.TIMER_COMPLETE.html#Event.TIMER_COMPLETE" id='Event.TIMER_COMPLETE'>Event.TIMER_COMPLETE</a></li>		
+																	</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/TTFont.html#TTFont" id='TTFont' class='closed item'><i class="icon-chevron-right"></i> <strong>TTFont</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/TTFont/new.html#TTFont.new" id='TTFont.new'>TTFont.new</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/UrlLoader.html#UrlLoader" id='UrlLoader' class='closed item'><i class="icon-chevron-right"></i> <strong>UrlLoader</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/UrlLoader/new.html#UrlLoader.new" id='UrlLoader.new'>UrlLoader.new</a></li>		
+										<li><a href="reference/gideros/UrlLoader/close.html#UrlLoader:close" id='UrlLoader:close'>UrlLoader:close</a></li>		
+										<li><a href="reference/gideros/UrlLoader/ignoreSslErrors.html#UrlLoader:ignoreSslErrors" id='UrlLoader:ignoreSslErrors'>UrlLoader:ignoreSslErrors</a></li>		
+										<li><a href="reference/gideros/UrlLoader/load.html#UrlLoader:load" id='UrlLoader:load'>UrlLoader:load</a></li>		
+																							<li><a href="reference/gideros/UrlLoader/Event.COMPLETE.html#Event.COMPLETE" id='Event.COMPLETE'>Event.COMPLETE</a></li>		
+										<li><a href="reference/gideros/UrlLoader/Event.ERROR.html#Event.ERROR" id='Event.ERROR'>Event.ERROR</a></li>		
+										<li><a href="reference/gideros/UrlLoader/Event.PROGRESS.html#Event.PROGRESS" id='Event.PROGRESS'>Event.PROGRESS</a></li>		
+																							<li><a href="reference/gideros/UrlLoader/UrlLoader.DELETE.html#UrlLoader.DELETE" id='UrlLoader.DELETE'>UrlLoader.DELETE</a></li>		
+										<li><a href="reference/gideros/UrlLoader/UrlLoader.GET.html#UrlLoader.GET" id='UrlLoader.GET'>UrlLoader.GET</a></li>		
+										<li><a href="reference/gideros/UrlLoader/UrlLoader.POST.html#UrlLoader.POST" id='UrlLoader.POST'>UrlLoader.POST</a></li>		
+										<li><a href="reference/gideros/UrlLoader/UrlLoader.PUT.html#UrlLoader.PUT" id='UrlLoader.PUT'>UrlLoader.PUT</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="reference/gideros/Viewport.html#Viewport" id='Viewport' class='closed item'><i class="icon-chevron-right"></i> <strong>Viewport</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="reference/gideros/Viewport/setContent.html#Viewport:setContent" id='Viewport:setContent'>Viewport:setContent</a></li>		
+										<li><a href="reference/gideros/Viewport/setTransform.html#Viewport:setTransform" id='Viewport:setTransform'>Viewport:setTransform</a></li>		
+																					</ul>
+			</li>
+			        </ul>
+		</div>
+      </div>
+      <div class="span8" style='min-height:1000px; padding-left: 20px;'>
+				<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Accelerometer.html">Accelerometer</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Accelerometer/isAvailable.html">Accelerometer.isAvailable</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Accelerometer/new.html">Accelerometer.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Accelerometer/getAcceleration.html">Accelerometer:getAcceleration</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Accelerometer/start.html">Accelerometer:start</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Accelerometer/stop.html">Accelerometer:stop</a></td>
+		</tr>
+								</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/AlertDialog.html">AlertDialog</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/AlertDialog/new.html">AlertDialog.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/AlertDialog/hide.html">AlertDialog:hide</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/AlertDialog/show.html">AlertDialog:show</a></td>
+		</tr>
+								<tr>
+			<td><a href="reference/gideros/AlertDialog/Event.COMPLETE.html">Event.COMPLETE</a></td>
+		</tr>
+				</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Application.html">Application</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/canOpenUrl.html">Application:canOpenUrl</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/Application%253AconfigureFrustum.html">Application:configureFrustum</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/exit.html">Application:exit</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getApiVersion.html">Application:getApiVersion</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getBackgroundColor.html">Application:getBackgroundColor</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getContentHeight.html">Application:getContentHeight</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getContentWidth.html">Application:getContentWidth</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getDeviceHeight.html">Application:getDeviceHeight</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getDeviceInfo.html">Application:getDeviceInfo</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getDeviceOrientation.html">Application:getDeviceOrientation</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getDeviceWidth.html">Application:getDeviceWidth</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getFps.html">Application:getFps</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getLanguage.html">Application:getLanguage</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getLocale.html">Application:getLocale</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getLogicalHeight.html">Application:getLogicalHeight</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getLogicalScaleX.html">Application:getLogicalScaleX</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getLogicalScaleY.html">Application:getLogicalScaleY</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getLogicalTranslateX.html">Application:getLogicalTranslateX</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getLogicalTranslateY.html">Application:getLogicalTranslateY</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getLogicalWidth.html">Application:getLogicalWidth</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getOrientation.html">Application:getOrientation</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getScaleMode.html">Application:getScaleMode</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getScreenDensity.html">Application:getScreenDensity</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/getTextureMemoryUsage.html">Application:getTextureMemoryUsage</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/isPlayerMode.html">Application:isPlayerMode</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/openUrl.html">Application:openUrl</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/setBackgroundColor.html">Application:setBackgroundColor</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/setFps.html">Application:setFps</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/setFullScreen.html">Application:setFullScreen</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/setKeepAwake.html">Application:setKeepAwake</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/setLogicalDimensions.html">Application:setLogicalDimensions</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/setOrientation.html">Application:setOrientation</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/setScaleMode.html">Application:setScaleMode</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/setWindowSize.html">Application:setWindowSize</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/vibrate.html">Application:vibrate</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/Application/LANDSCAPE_LEFT.html">Application.LANDSCAPE_LEFT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/LANDSCAPE_RIGHT.html">Application.LANDSCAPE_RIGHT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/PORTRAIT.html">Application.PORTRAIT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Application/PORTRAIT_UPSIDE_DOWN.html">Application.PORTRAIT_UPSIDE_DOWN</a></td>
+		</tr>
+						</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Bitmap.html">Bitmap</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Bitmap/new.html">Bitmap.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Bitmap/getAnchorPoint.html">Bitmap:getAnchorPoint</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Bitmap/setAnchorPoint.html">Bitmap:setAnchorPoint</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Bitmap/setTexture.html">Bitmap:setTexture</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Bitmap/setTextureRegion.html">Bitmap:setTextureRegion</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Core.html">Core</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Core/class.html">Core.class</a></td>
+		</tr>
+								</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Cryptography.html">Cryptography</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Cryptography/aesDecrypt.html">Cryptography.aesDecrypt</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Cryptography/aesEncrypt.html">Cryptography.aesEncrypt</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Cryptography/md5.html">Cryptography.md5</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Event.html">Event</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Event/new.html">Event.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Event/getTarget.html">Event:getTarget</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Event/getType.html">Event:getType</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Event/stopPropagation.html">Event:stopPropagation</a></td>
+		</tr>
+								</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/EventDispatcher.html">EventDispatcher</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/new.html">EventDispatcher.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/addEventListener.html">EventDispatcher:addEventListener</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/dispatchEvent.html">EventDispatcher:dispatchEvent</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/hasEventListener.html">EventDispatcher:hasEventListener</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/removeEventListener.html">EventDispatcher:removeEventListener</a></td>
+		</tr>
+								<tr>
+			<td><a href="reference/gideros/EventDispatcher/Event.APPLICATION_BACKGROUND.html">Event.APPLICATION_BACKGROUND</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/Event.APPLICATION_EXIT.html">Event.APPLICATION_EXIT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/Event.APPLICATION_FOREGROUND.html">Event.APPLICATION_FOREGROUND</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/Event.APPLICATION_RESIZE.html">Event.APPLICATION_RESIZE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/Event.APPLICATION_RESUME.html">Event.APPLICATION_RESUME</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/Event.APPLICATION_START.html">Event.APPLICATION_START</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/Event.APPLICATION_SUSPEND.html">Event.APPLICATION_SUSPEND</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/EventDispatcher/Event.MEMORY_WARNING.html">Event.MEMORY_WARNING</a></td>
+		</tr>
+				</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Font.html">Font</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Font/getDefault.html">Font.getDefault</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Font/new.html">Font.new</a></td>
+		</tr>
+								</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/FontBase.html">FontBase</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/FontBase/getAdvanceX.html">FontBase:getAdvanceX</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/FontBase/getAscender.html">FontBase:getAscender</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/FontBase/getBounds.html">FontBase:getBounds</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/FontBase/getLineHeight.html">FontBase:getLineHeight</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Geolocation.html">Geolocation</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/getAccuracy.html">Geolocation.getAccuracy</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/getThreshold.html">Geolocation.getThreshold</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/isAvailable.html">Geolocation.isAvailable</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/isHeadingAvailable.html">Geolocation.isHeadingAvailable</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/new.html">Geolocation.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/setAccuracy.html">Geolocation.setAccuracy</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/setThreshold.html">Geolocation.setThreshold</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/start.html">Geolocation:start</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/startUpdatingHeading.html">Geolocation:startUpdatingHeading</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/startUpdatingLocation.html">Geolocation:startUpdatingLocation</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/stop.html">Geolocation:stop</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/stopUpdatingHeading.html">Geolocation:stopUpdatingHeading</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/stopUpdatingLocation.html">Geolocation:stopUpdatingLocation</a></td>
+		</tr>
+								<tr>
+			<td><a href="reference/gideros/Geolocation/Event.ERROR.html">Event.ERROR</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/Event.HEADING_UPDATE.html">Event.HEADING_UPDATE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Geolocation/Event.LOCATION_UPDATE.html">Event.LOCATION_UPDATE</a></td>
+		</tr>
+				</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Gyroscope.html">Gyroscope</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Gyroscope/isAvailable.html">Gyroscope.isAvailable</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Gyroscope/new.html">Gyroscope.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Gyroscope/getRotationRate.html">Gyroscope:getRotationRate</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Gyroscope/start.html">Gyroscope:start</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Gyroscope/stop.html">Gyroscope:stop</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/KeyCode.html">KeyCode</a></th>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/KeyCode/A.html">KeyCode.A</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/B.html">KeyCode.B</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.BACK.html">KeyCode.BACK</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/C.html">KeyCode.C</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.CENTER.html">KeyCode.CENTER</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/D.html">KeyCode.D</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.DOWN.html">KeyCode.DOWN</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/E.html">KeyCode.E</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/F.html">KeyCode.F</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/G.html">KeyCode.G</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/H.html">KeyCode.H</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/I.html">KeyCode.I</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/J.html">KeyCode.J</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/K.html">KeyCode.K</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/L.html">KeyCode.L</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.L1.html">KeyCode.L1</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.LEFT.html">KeyCode.LEFT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/M.html">KeyCode.M</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.MENU.html">KeyCode.MENU</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/MOUSE_LEFT.html">KeyCode.MOUSE_LEFT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/MOUSE_MIDDLE.html">KeyCode.MOUSE_MIDDLE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/MOUSE_NONE.html">KeyCode.MOUSE_NONE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/MOUSE_RIGHT.html">KeyCode.MOUSE_RIGHT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/N.html">KeyCode.N</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/NUM_0.html">KeyCode.NUM_0</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/NUM_1.html">KeyCode.NUM_1</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/NUM_2.html">KeyCode.NUM_2</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/NUM_3.html">KeyCode.NUM_3</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/NUM_4.html">KeyCode.NUM_4</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/NUM_5.html">KeyCode.NUM_5</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/NUM_6.html">KeyCode.NUM_6</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/NUM_7.html">KeyCode.NUM_7</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/NUM_8.html">KeyCode.NUM_8</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/NUM_9.html">KeyCode.NUM_9</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/O.html">KeyCode.O</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/P.html">KeyCode.P</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/Q.html">KeyCode.Q</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.R1.html">KeyCode.R1</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.RIGHT.html">KeyCode.RIGHT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/S.html">KeyCode.S</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.SEARCH.html">KeyCode.SEARCH</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.SELECT.html">KeyCode.SELECT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.START.html">KeyCode.START</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/T.html">KeyCode.T</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/U.html">KeyCode.U</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.UP.html">KeyCode.UP</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/V.html">KeyCode.V</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/W.html">KeyCode.W</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.X.html">KeyCode.X</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/KeyCode.Y.html">KeyCode.Y</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/KeyCode/Z.html">KeyCode.Z</a></td>
+		</tr>
+						</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Matrix.html">Matrix</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/new.html">Matrix.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/getElements.html">Matrix:getElements</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/getM11.html">Matrix:getM11</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/getM12.html">Matrix:getM12</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/getM21.html">Matrix:getM21</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/getM22.html">Matrix:getM22</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/getTx.html">Matrix:getTx</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/getTy.html">Matrix:getTy</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/setElements.html">Matrix:setElements</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/setM11.html">Matrix:setM11</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/setM12.html">Matrix:setM12</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/setM21.html">Matrix:setM21</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/setM22.html">Matrix:setM22</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/setTx.html">Matrix:setTx</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Matrix/setTy.html">Matrix:setTy</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Mesh.html">Mesh</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/new.html">Mesh.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/clearColorArray.html">Mesh:clearColorArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/clearIndexArray.html">Mesh:clearIndexArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/clearTexture.html">Mesh:clearTexture</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/clearTextureCoordinateArray.html">Mesh:clearTextureCoordinateArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/clearVertexArray.html">Mesh:clearVertexArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/getColor.html">Mesh:getColor</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/getColorArraySize.html">Mesh:getColorArraySize</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/getIndex.html">Mesh:getIndex</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/getIndexArraySize.html">Mesh:getIndexArraySize</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/getTextureCoordinate.html">Mesh:getTextureCoordinate</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/getTextureCoordinateArraySize.html">Mesh:getTextureCoordinateArraySize</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/getVertex.html">Mesh:getVertex</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/getVertexArraySize.html">Mesh:getVertexArraySize</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/resizeColorArray.html">Mesh:resizeColorArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/resizeIndexArray.html">Mesh:resizeIndexArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/resizeTextureCoordinateArray.html">Mesh:resizeTextureCoordinateArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/resizeVertexArray.html">Mesh:resizeVertexArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setColor.html">Mesh:setColor</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setColorArray.html">Mesh:setColorArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setColors.html">Mesh:setColors</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setIndex.html">Mesh:setIndex</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setIndexArray.html">Mesh:setIndexArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setIndices.html">Mesh:setIndices</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setTexture.html">Mesh:setTexture</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setTextureCoordinate.html">Mesh:setTextureCoordinate</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setTextureCoordinateArray.html">Mesh:setTextureCoordinateArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setTextureCoordinates.html">Mesh:setTextureCoordinates</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setVertex.html">Mesh:setVertex</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setVertexArray.html">Mesh:setVertexArray</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Mesh/setVertices.html">Mesh:setVertices</a></td>
+		</tr>
+								</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/MovieClip.html">MovieClip</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/MovieClip/new.html">MovieClip.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/MovieClip/clearAction.html">MovieClip:clearAction</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/MovieClip/gotoAndPlay.html">MovieClip:gotoAndPlay</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/MovieClip/gotoAndStop.html">MovieClip:gotoAndStop</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/MovieClip/play.html">MovieClip:play</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/MovieClip/setGotoAction.html">MovieClip:setGotoAction</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/MovieClip/setStopAction.html">MovieClip:setStopAction</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/MovieClip/stop.html">MovieClip:stop</a></td>
+		</tr>
+								<tr>
+			<td><a href="reference/gideros/MovieClip/Event.COMPLETE.html">Event.COMPLETE</a></td>
+		</tr>
+				</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Object.html">Object</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Object/getBaseClass.html">Object:getBaseClass</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Object/getClass.html">Object:getClass</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Object/isInstanceOf.html">Object:isInstanceOf</a></td>
+		</tr>
+								</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Path2D.html">Path2D</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Path2D/new.html">Path2D.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Path2D/setConvex.html">Path2D:setConvex</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Path2D/setFillColor.html">Path2D:setFillColor</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Path2D/setFontPath.html">Path2D:setFontPath</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Path2D/setLineColor.html">Path2D:setLineColor</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Path2D/setLineThickness.html">Path2D:setLineThickness</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Path2D/setPath.html">Path2D:setPath</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Path2D/setSvgPath.html">Path2D:setSvgPath</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Path2D/setTexture.html">Path2D:setTexture</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/RenderTarget.html">RenderTarget</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/RenderTarget/new.html">RenderTarget.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/RenderTarget/clear.html">RenderTarget:clear</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/RenderTarget/draw.html">RenderTarget:draw</a></td>
+		</tr>
+								</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Shader.html">Shader</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/new.html">Shader.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/getEngineVersion.html">Shader:getEngineVersion</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/setConstant.html">Shader:setConstant</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/Shader/CFLOAT.html">Shader.CFLOAT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/CFLOAT4.html">Shader.CFLOAT4</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/CINT.html">Shader.CINT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/CMATRIX.html">Shader.CMATRIX</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/CTEXTURE.html">Shader.CTEXTURE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/DBYTE.html">Shader.DBYTE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/DFLOAT.html">Shader.DFLOAT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/DINT.html">Shader.DINT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/DSHORT.html">Shader.DSHORT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/DUBYTE.html">Shader.DUBYTE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/DUSHORT.html">Shader.DUSHORT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/FLAG_NONE.html">Shader.FLAG_NONE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/FLAG_NO_DEFAULT_HEADER.html">Shader.FLAG_NO_DEFAULT_HEADER</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/SYS_COLOR.html">Shader.SYS_COLOR</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/SYS_NONE.html">Shader.SYS_NONE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/SYS_PARTICLESIZE.html">Shader.SYS_PARTICLESIZE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/SYS_TEXTUREINFO.html">Shader.SYS_TEXTUREINFO</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/SYS_WIT.html">Shader.SYS_WIT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/SYS_WORLD.html">Shader.SYS_WORLD</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shader/SYS_WVP.html">Shader.SYS_WVP</a></td>
+		</tr>
+						</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Shape.html">Shape</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/new.html">Shape.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/beginPath.html">Shape:beginPath</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/clear.html">Shape:clear</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/closePath.html">Shape:closePath</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/endPath.html">Shape:endPath</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/lineTo.html">Shape:lineTo</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/moveTo.html">Shape:moveTo</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/setFillStyle.html">Shape:setFillStyle</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/setLineStyle.html">Shape:setLineStyle</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/Shape/Shape.EVEN_ODD.html">Shape.EVEN_ODD</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/Shape.NONE.html">Shape.NONE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/Shape.NON_ZERO.html">Shape.NON_ZERO</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/Shape.SOLID.html">Shape.SOLID</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Shape/Shape.TEXTURE.html">Shape.TEXTURE</a></td>
+		</tr>
+						</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Sound.html">Sound</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sound/new.html">Sound.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sound/getLength.html">Sound:getLength</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sound/play.html">Sound:play</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/SoundChannel.html">SoundChannel</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/getPitch.html">SoundChannel:getPitch</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/getPosition.html">SoundChannel:getPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/getVolume.html">SoundChannel:getVolume</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/isLooping.html">SoundChannel:isLooping</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/isPaused.html">SoundChannel:isPaused</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/isPlaying.html">SoundChannel:isPlaying</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/setLooping.html">SoundChannel:setLooping</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/setPaused.html">SoundChannel:setPaused</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/setPitch.html">SoundChannel:setPitch</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/setPosition.html">SoundChannel:setPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/setVolume.html">SoundChannel:setVolume</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/SoundChannel/stop.html">SoundChannel:stop</a></td>
+		</tr>
+								<tr>
+			<td><a href="reference/gideros/SoundChannel/Event.COMPLETE.html">Event.COMPLETE</a></td>
+		</tr>
+				</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Sprite.html">Sprite</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/new.html">Sprite.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/addChild.html">Sprite:addChild</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/addChildAt.html">Sprite:addChildAt</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/clearBlendMode.html">Sprite:clearBlendMode</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/contains.html">Sprite:contains</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/get.html">Sprite:get</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getAlpha.html">Sprite:getAlpha</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getAnchorPosition.html">Sprite:getAnchorPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getBounds.html">Sprite:getBounds</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getChildAt.html">Sprite:getChildAt</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getChildIndex.html">Sprite:getChildIndex</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getColorTransform.html">Sprite:getColorTransform</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getHeight.html">Sprite:getHeight</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getMatrix.html">Sprite:getMatrix</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getNumChildren.html">Sprite:getNumChildren</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getParent.html">Sprite:getParent</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getPosition.html">Sprite:getPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getRotation.html">Sprite:getRotation</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getRotationX.html">Sprite:getRotationX</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getRotationY.html">Sprite:getRotationY</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getScale.html">Sprite:getScale</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getScaleX.html">Sprite:getScaleX</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getScaleY.html">Sprite:getScaleY</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getScaleZ.html">Sprite:getScaleZ</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getWidth.html">Sprite:getWidth</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getX.html">Sprite:getX</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getY.html">Sprite:getY</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/getZ.html">Sprite:getZ</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/globalToLocal.html">Sprite:globalToLocal</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/hitTestPoint.html">Sprite:hitTestPoint</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/isVisible.html">Sprite:isVisible</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/localToGlobal.html">Sprite:localToGlobal</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/removeChild.html">Sprite:removeChild</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/removeChildAt.html">Sprite:removeChildAt</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/removeFromParent.html">Sprite:removeFromParent</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/set.html">Sprite:set</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setAlpha.html">Sprite:setAlpha</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setAnchorPosition.html">Sprite:setAnchorPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setBlendMode.html">Sprite:setBlendMode</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setClip.html">Sprite:setClip</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setColorTransform.html">Sprite:setColorTransform</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setMatrix.html">Sprite:setMatrix</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setPosition.html">Sprite:setPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setRotation.html">Sprite:setRotation</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setRotationX.html">Sprite:setRotationX</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setRotationY.html">Sprite:setRotationY</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setScale.html">Sprite:setScale</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setScaleX.html">Sprite:setScaleX</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setScaleY.html">Sprite:setScaleY</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setScaleZ.html">Sprite:setScaleZ</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setShader.html">Sprite:setShader</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setVisible.html">Sprite:setVisible</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setX.html">Sprite:setX</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setY.html">Sprite:setY</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/setZ.html">Sprite:setZ</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/swapChildren.html">Sprite:swapChildren</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/swapChildrenAt.html">Sprite:swapChildrenAt</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/Sprite/Sprite.ADD.html">Sprite.ADD</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Sprite.ALPHA.html">Sprite.ALPHA</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Sprite.MULTIPLY.html">Sprite.MULTIPLY</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Sprite.NO_ALPHA.html">Sprite.NO_ALPHA</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Sprite.SCREEN.html">Sprite.SCREEN</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/Sprite/Event.ADDED_TO_STAGE.html">Event.ADDED_TO_STAGE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.ENTER_FRAME.html">Event.ENTER_FRAME</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.KEY_DOWN.html">Event.KEY_DOWN</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.KEY_UP.html">Event.KEY_UP</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.MOUSE_DOWN.html">Event.MOUSE_DOWN</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.MOUSE_HOVER.html">Event.MOUSE_HOVER</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.MOUSE_MOVE.html">Event.MOUSE_MOVE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.MOUSE_UP.html">Event.MOUSE_UP</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/MOUSE_WHEEL.html">Event.MOUSE_WHEEL</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.REMOVED_FROM_STAGE.html">Event.REMOVED_FROM_STAGE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.TOUCHES_BEGIN.html">Event.TOUCHES_BEGIN</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.TOUCHES_CANCEL.html">Event.TOUCHES_CANCEL</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.TOUCHES_END.html">Event.TOUCHES_END</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Sprite/Event.TOUCHES_MOVE.html">Event.TOUCHES_MOVE</a></td>
+		</tr>
+				</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Stage.html">Stage</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Stage/setClearColorBuffer.html">Stage:setClearColorBuffer</a></td>
+		</tr>
+								</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/TextField.html">TextField</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextField/new.html">TextField.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextField/getLetterSpacing.html">TextField:getLetterSpacing</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextField/getText.html">TextField:getText</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextField/getTextColor.html">TextField:getTextColor</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextField/setLetterSpacing.html">TextField:setLetterSpacing</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextField/setText.html">TextField:setText</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextField/setTextColor.html">TextField:setTextColor</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/TextInputDialog.html">TextInputDialog</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/new.html">TextInputDialog.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/getInputType.html">TextInputDialog:getInputType</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/getText.html">TextInputDialog:getText</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/isSecureInput.html">TextInputDialog:isSecureInput</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/setInputType.html">TextInputDialog:setInputType</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/setSecureInput.html">TextInputDialog:setSecureInput</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/setText.html">TextInputDialog:setText</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/TextInputDialog/TextInputDialog.EMAIL.html">TextInputDialog.EMAIL</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/TextInputDialog.NUMBER.html">TextInputDialog.NUMBER</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/TextInputDialog.PHONE.html">TextInputDialog.PHONE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/TextInputDialog.TEXT.html">TextInputDialog.TEXT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextInputDialog/TextInputDialog.URL.html">TextInputDialog.URL</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/TextInputDialog/Event.COMPLETE.html">Event.COMPLETE</a></td>
+		</tr>
+				</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Texture.html">Texture</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Texture/new.html">Texture.new</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/TextureBase.html">TextureBase</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureBase/getHeight.html">TextureBase:getHeight</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureBase/getWidth.html">TextureBase:getWidth</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/TextureBase/TextureBase.CLAMP.html">TextureBase.CLAMP</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureBase/TextureBase.REPEAT.html">TextureBase.REPEAT</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureBase/RGB565.html">TextureBase.RGB565</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureBase/RGB888.html">TextureBase.RGB888</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureBase/RGBA4444.html">TextureBase.RGBA4444</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureBase/RGBA5551.html">TextureBase.RGBA5551</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureBase/RGBA8888.html">TextureBase.RGBA8888</a></td>
+		</tr>
+						</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/TexturePack.html">TexturePack</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TexturePack/new.html">TexturePack.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TexturePack/new2.html">TexturePack.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TexturePack/getTextureRegion.html">TexturePack:getTextureRegion</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/TextureRegion.html">TextureRegion</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureRegion/new.html">TextureRegion.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureRegion/new2.html">TextureRegion.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureRegion/getRegion.html">TextureRegion:getRegion</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TextureRegion/setRegion.html">TextureRegion:setRegion</a></td>
+		</tr>
+								</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/TileMap.html">TileMap</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TileMap/new.html">TileMap.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TileMap/clearTile.html">TileMap:clearTile</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TileMap/getTile.html">TileMap:getTile</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TileMap/setTile.html">TileMap:setTile</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TileMap/shift.html">TileMap:shift</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/TileMap/TileMap.FLIP_DIAGONAL.html">TileMap.FLIP_DIAGONAL</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TileMap/TileMap.FLIP_HORIZONTAL.html">TileMap.FLIP_HORIZONTAL</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TileMap/TileMap.FLIP_VERTICAL.html">TileMap.FLIP_VERTICAL</a></td>
+		</tr>
+						</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Timer.html">Timer</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/delayedCall.html">Timer.delayedCall</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/new.html">Timer.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/pauseAll.html">Timer.pauseAll</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/resumeAll.html">Timer.resumeAll</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/stopAll.html">Timer.stopAll</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/getCurrentCount.html">Timer:getCurrentCount</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/getDelay.html">Timer:getDelay</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/getRepeatCount.html">Timer:getRepeatCount</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/isRunning.html">Timer:isRunning</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/reset.html">Timer:reset</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/setDelay.html">Timer:setDelay</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/setRepeatCount.html">Timer:setRepeatCount</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/start.html">Timer:start</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/stop.html">Timer:stop</a></td>
+		</tr>
+								<tr>
+			<td><a href="reference/gideros/Timer/Event.TIMER.html">Event.TIMER</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Timer/Event.TIMER_COMPLETE.html">Event.TIMER_COMPLETE</a></td>
+		</tr>
+				</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/TTFont.html">TTFont</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/TTFont/new.html">TTFont.new</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/UrlLoader.html">UrlLoader</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/UrlLoader/new.html">UrlLoader.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/UrlLoader/close.html">UrlLoader:close</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/UrlLoader/ignoreSslErrors.html">UrlLoader:ignoreSslErrors</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/UrlLoader/load.html">UrlLoader:load</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/UrlLoader/UrlLoader.DELETE.html">UrlLoader.DELETE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/UrlLoader/UrlLoader.GET.html">UrlLoader.GET</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/UrlLoader/UrlLoader.POST.html">UrlLoader.POST</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/UrlLoader/UrlLoader.PUT.html">UrlLoader.PUT</a></td>
+		</tr>
+						<tr>
+			<td><a href="reference/gideros/UrlLoader/Event.COMPLETE.html">Event.COMPLETE</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/UrlLoader/Event.ERROR.html">Event.ERROR</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/UrlLoader/Event.PROGRESS.html">Event.PROGRESS</a></td>
+		</tr>
+				</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th><a href="reference/gideros/Viewport.html">Viewport</a></th>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Viewport/setContent.html">Viewport:setContent</a></td>
+		</tr>
+				<tr>
+			<td><a href="reference/gideros/Viewport/setTransform.html">Viewport:setTransform</a></td>
+		</tr>
+								</table>
+	</div>
+	</div>
+
+			</div>
+	</div>
+
+  </div>
+
+
+</div>
+    <!-- Footer
+    ================================================== -->
+		<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="reference.html#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="reference/js/jquery-1.8.3.min.js.html"><\/script>')</script>
+		<script src="reference/design/js/bootstrap.js"></script>
+		<script type="text/javascript" src="reference/design/js/prettify.js"></script>
+		<script type="text/javascript" src="reference/design/js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.item").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+			});
+		</script>
+  </body>
+</html>

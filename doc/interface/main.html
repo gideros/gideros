@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Reference Manual</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="../reference/design/assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../reference/design/assets/greference-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="../reference/design/assets/greference-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="../reference/design/assets/greference-72.png">
+		<link rel="apple-touch-icon-precomposed" href="../reference/design/assets/greference-57.png">
+
+		<!-- Le styles -->
+		<link href="design/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="design/css/font-awesome.min.css">
+		<link rel="stylesheet" href="design/css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="design/css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body>
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+		<div class="tabbable tabs-below">
+		<ul class="nav nav-tabs">
+												<li class="active"><a href="main.html">Main page</a></li>
+																<li><a href="ads.html">Ads Interface</a></li>
+																<li><a href="iab.html">In-app Billing</a></li>
+																<li><a href="controller.html">Controller</a></li>
+									</ul>
+		</div>
+  <div class="container-fluid">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row-fluid">
+      <div class="span12" style='min-height:1000px; padding-left: 20px;'>
+				<h1>Common interfaces</h1>
+<p>The concept of common interfaces is to create an easy to use API interfaces for different frameworks with same type of functionality. So Gideros users, using same API across platforms could easily switch between specific frameworks they are using.</p>
+<p>It also provides the benefit of not recreating same plugin api over and over again, but rather wraping each separate framework under the same API interface</p>
+<p>Here is an example on how Common Interface can benefit you:</p>
+<ul>
+<li>You develop your app and want to integrate in app billing in it for Google Play store</li>
+<li>You get In-App Billing (IAB) interface and integrate it in your app</li>
+<li>Later on you decide to support also Amazon appstore</li>
+<li>and since IAB provides same interface for both of them, you can do it by changing couple of lines (providing settings for Amazon Appstore) and reuse the same whole code</li>
+<li>And if you want to support some unknown 3rd parity in-app purchase library, thats is not supported yet</li>
+<li>All you have to do is to wrap its functionality under native (Java or Objective C) class interface
+	<ul>
+		<li>No C++ to JNI</li>
+		<li>No Lua bindings</li>
+		<li>Simply wraping in single class</li>
+	</ul>
+</li>
+<li>And same goes for other common interfaces</li>
+</ul>
+
+<h3>Common interfaces are only available to premium members, so <a href="http://giderosmobile.com/pricing" target='_blank' class="btn btn-large" style='margin-top:20px; margin-bottom:20px;'>Upgrade to Get access to Common Interfaces <i class="icon-circle-arrow-right"></i></a></h3>
+			</div>
+	</div>
+
+  </div>
+    <!-- Footer
+    ================================================== -->
+		<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="main.html#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/jquery-1.8.3.min.js.html"><\/script>')</script>
+		<script src="design/js/bootstrap.js"></script>
+		<script type="text/javascript" src="design/js/prettify.js"></script>
+		<script type="text/javascript" src="design/js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.item").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+			});
+		</script>
+  </body>
+</html>

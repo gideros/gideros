@@ -6,11 +6,11 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
-		<link rel="shortcut icon" href="/assets/favicon.ico">
-		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/gdocs-144.png">
-		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/assets/gdocs-114.png">
-		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/assets/gdocs-72.png">
-		<link rel="apple-touch-icon-precomposed" href="/assets/gdocs-57.png">
+		<link rel="shortcut icon" href="assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/gdocs-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/gdocs-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/gdocs-72.png">
+		<link rel="apple-touch-icon-precomposed" href="assets/gdocs-57.png">
 
 		<!-- Le styles -->
 		<link href="css/bootstrap.min.css" rel="stylesheet">
@@ -45,14 +45,14 @@
 		<div id='contents' data-spy="affix" data-offset-top="150">
 		<h1>Table of Contents</h1>
         <ul class="nav nav-list bs-docs-sidenav">
-          <li><a href="./getting_started.html"><i class="icon-chevron-right"></i> <strong>1. Getting started</strong></a></li>
-          <li><a href="./deployment.html"><i class="icon-chevron-right"></i> <strong>2. Deployment to device</strong></a></li>
-          <li><a href="./reference_manual.html" target='_blank'><i class="icon-chevron-right"></i> <strong>3. Reference manual</strong></a></li>
-          <li><a href="./classes_in_gideros.html"><i class="icon-chevron-right"></i> <strong>4. Classes in Gideros</strong></a></li>
-          <li><a href="./events.htm"><i class="icon-chevron-right"></i> <strong>5. Event system</strong></a></li>
-          <li><a href="./file_system.html"><i class="icon-chevron-right"></i> <strong>6. File system</strong></a></li>
-          <li><a href="./automatic_image_resolution.html"><i class="icon-chevron-right"></i> <strong>7. Automatic image resolution</strong></a></li>
-          <li><a href="./automatic_screen_scaling.html"><i class="icon-chevron-right"></i> <strong>8. Automatic screen scaling</strong></a></li>
+          <li><a href="index.html"><i class="icon-chevron-right"></i> <strong>1. Getting started</strong></a></li>
+          <li><a href="deployment.html"><i class="icon-chevron-right"></i> <strong>2. Deployment to device</strong></a></li>
+          <li><a href="reference.html" target='_blank'><i class="icon-chevron-right"></i> <strong>3. Reference manual</strong></a></li>
+          <li><a href="classes_in_gideros.html"><i class="icon-chevron-right"></i> <strong>4. Classes in Gideros</strong></a></li>
+          <li><a href="events.htm"><i class="icon-chevron-right"></i> <strong>5. Event system</strong></a></li>
+          <li><a href="file_system.html"><i class="icon-chevron-right"></i> <strong>6. File system</strong></a></li>
+          <li><a href="automatic_image_resolution.html"><i class="icon-chevron-right"></i> <strong>7. Automatic image resolution</strong></a></li>
+          <li><a href="automatic_screen_scaling.html"><i class="icon-chevron-right"></i> <strong>8. Automatic screen scaling</strong></a></li>
         </ul>
 		</div>
       </div>
@@ -60,62 +60,262 @@
 	
 		<h1>Deployment</h1>
 <ul class="nav nav-tabs">
-  <li class="active"><a href="#intro" data-toggle="tab">Introduction</a></li>
-  <li><a href="#player" data-toggle="tab">Gideros Device Player</a></li>
-  <li><a href="#devices" data-toggle="tab">Deploy to devices</a></li>
-  <li><a href="#plugins" data-toggle="tab">Device player with plugins</a></li>
+  <li class="active"><a href="deployment.html#intro" data-toggle="tab">Introduction</a></li>
+  <li><a href="deployment.html#player" data-toggle="tab">Gideros Device Player</a></li>
+  <li><a href="deployment.html#devices" data-toggle="tab">Deploy to devices</a></li>
+  <li><a href="deployment.html#plugins" data-toggle="tab">Device player with plugins</a></li>
+  <li><a href="deployment.html#vendor_sdks" data-toggle="tab">Installing OS-specific SDKs</a></li>
 </ul>
 <div class="tab-content">
 <section class="tab-pane active" id="intro">
-<p>This document will discuss the build and deployment processes of Gideros Player
-and your application to devices. </p>
-<p>For IOS devices, you must be an approved Apple Developer for iOS and install the
-iOS SDK (requires Intel-based Mac running Snow Leopard).</p>
-<p>For Android devices you'll need Android SDK and Eclipse or other Android project compatible IDE.</p>
+<p> So far, we have seen how to write a simple app in Lua and get in running on your PC or Mac within the desktop player. The next step is to get the app running
+on a <i>real mobile device</i>. There are two ways to do this in Gideros. The first is to install a <strong>"Gideros Player"</strong> for the device (iPhone/iPad, Android device or Windows
+Phone). This is a special app which you side load onto the device. You can then control this app from Gideros Studio running on your PC or Mac
+(the device and your PC/Mac must be on the same LAN). When you press "Start" in Gideros Studio,
+your Gideros project runs directly on the device. You can then make changes to your code and see them take effect instantly on a real device.
+This instant on-device testing over WiFi is unique to Gideros and allows rapid code development and testing. Generally
+installing the Gideros Player is easy as we provide you with the binary and you just "side load" onto your device, see <a href="deployment.html#player" data-toggle="tab">Gideros Device Player</a>.</p>
 
-<p>Gideros Player for devices allows you to see and test your application on device
+<p> The other way to run your app on a real device is to export it as a <strong>stand-alone app</strong>. This app can then be transfered to other people who do not need Gideros installed
+to run it. Ultimately the app can be uploaded to the app stores (iTunes, Google Play, windows (Phone) Store etc) to make money. The process of exporting the app in this
+way is more complicated as the app needs to be packaged, deployed and code-signed via various SDKs which are specific to each operating system.
+This document describes
+which third party SDKs you need to install in order to package, sign and deploy your app and upload it to the various app stores, see
+<a href="deployment.html#devices" data-toggle="tab">Deploy to devices</a> and <a href="deployment.html#vendor_sdks" data-toggle="tab">Installing OS-specific SDKs</a>. In brief, you will need
+the following software to create stand-alone apps:</p>
+
+<ol>
+<li>For IOS devices, you must be an approved Apple Developer for iOS and install the
+latest version of Xcode, currently Xcode 7. To run Xcode requires an Intel-based Mac running at least OS X 10.10 Yosemite.</li>
+
+<li>For Android devices you'll need Android SDK + Eclipse, or Android Studio. Gideros can also export Android packages directly though you will still
+need to install the Android SDK and related components (see <a href="deployment.html#vendor_sdks" data-toggle="tab">Installing OS-specific SDKs</a>). You can prepare Android
+apps using any PC or Mac.</li>
+
+<li>For UWP (including Windows Phone and Windows Store) devices you'll need at least Visual Studio 2013 for Windows (which includes the Windows/phone 8.1 SDK).
+We recommend you install the latest Visual Studio 2015.
+Gideros UWP export will also run correctly on Windows 10 and Windows Phone 10 devices.You will need a PC running Windows 8.1 or Windows 10 to compile UWP apps.</li>
+</ol>
+
+<p> There are no special requirements for exporting a desktop app (Windows Desktop or Mac OS X desktop). Gideros simply writes a directory containing the executable,
+libraries and your assets. You can simply double click on the executable to launch the app. To send it to others, it is sufficient to just zip this directory up and email
+it. You can also create a dedicated installer using programs like <a href="http://nsis.sourceforge.net/Main_Page">NSIS</a> so that the app will automatically 
+install on your end user's computer and be accessible from the Start Menu.</p>
+
+<p>When you run Gideros Player on a mobile device, it allows you to see and test your application on a device
 <strong>instantly</strong>. After you deploy and open Gideros Player on your device,
 you see the IP of your device. Enter this IP from &ldquo;Player→Player Settings&rdquo; menu:</p>
 
 <p><img src="images/player_settings.png" alt="Player Settings" /></p>
 
 <p>When you press start button, your codes and asset files are transferred to
-your iOS device via WiFi and your application starts.</p>
+your mobile device via WiFi and your application starts.</p>
 </section>
+
 <section class="tab-pane" id="player">
 <h2>Deploy Gideros Player to Devices</h2>
+
 <p><strong>For IOS</strong></p>
 <p>There is a universal project <code>GiderosiOSPlayer.zip</code>, which
-comes with the installation. You need to extract this zip file and
-open, build, deploy this project from Xcode.</p>
+comes with the Gideros installation. You need to extract this zip file and
+open, build, deploy this project from Xcode. The process of installing the iOS Gideros Player is the same as installing a stand-alone iOS app as exported
+by Gideros, see <a href="deployment.html#devices" data-toggle="tab">Deploy to devices</a> for detailed instructions on how to do this</p>
+
 <p><strong>For Android</strong></p>
-<p>There is a ready to use application for Android development <code>GiderosAndroidPlayer.apk</code> which comes with the installation. You can install it directly on your usin USB data transfer cable, or memory card on your phone, or uploading it to a server (as dropbox) and accessing it from there.</p>
+<p>There is a ready to use application for Android development <code>GiderosAndroidPlayer.apk</code> which comes with the installation. You can install it directly on your device using USB data transfer cable, or memory card on your phone, or uploading it to a server (as dropbox) and accessing it from there.</p>
+
+<p><strong>For Windows Phone</strong></p>
+<p>To install the Windows Phone player on a Windows Phone you must first unlock you Windows Phone. Run the program "Windows Phone Developer Registration (8.1)". It comes with Visual Studio (Windows Phone SDK 8.1 folder) and looks like this</p>
+<p><img src="images/wpdevreg.jpg" alt="Windows Phone Developer Registration (8.1)" /></p>
+<p>Connect your Windows Phone using a USB cable. After a moment the program should recognise the Windows Phone attached. Now click "Register" and it should announce your phone is unlocked. You will need to type in the username and password you provided when registering Visual Studio.</p>
+<p>Once the phone is unlocked you can sideload any app onto it including the Gideros Player. To do this, unpack the file: GiderosWindowsPhonePlayer.zip. Now open "Windows Phone Application Deployment" as shown
+</p>
+<p><img src="images/wpappdep.jpg" alt="Windows Phone Application Deployment" /></p>
+<p>Select Browse and chose the file: <code>giderosgame.WindowsPhone_yy.mm.dd.0_arm.appxbundle</code></p>
+<p>Click "Deploy". After a moment the program will indicate the Windows Phone player app was successfully deployed. Open it on your Windows Phone. You can now run Gideros apps directly on this player from within Gideros Studio.
+</p>
+
+<p><strong>Windows Store (Metro style) Gideros Player on Windows 8.1/10</strong></p>
+<p>Due to Microsoft limitations, you can't run Windows Store app player on the same device as your Gideros Studio are. Gideros Studio just won't connect, 
+due to sandboxing nature of Windows Store apps. You need to run Windows app player on a Windows 8.1 or Windows 10 device and then
+control it using Gideros Studio running on another computer. The other computer can be any PC or Mac.</p>
+
+<p> For Windows 8.1:</p>
+<p>To sideload the Windows player app on Windows 8.1, unzip the file
+giderosgame.Windows_yy.mm.dd.0_Test.zip
+(you'll find this in the root directory of the Gideros installation). Then, go to the Start Screen and locate the "powershell" icon (Windows System group). 
+Right click on the powershell icon and select "Run as Administrator". Now, in the powershell type
+<p><code>Show-WindowsDeveloperLicenseRegistration</code></p>
+After agreeing to some terms, you will now be prompted to sign in with your Microsoft developer account. 
+Once you've done this "cd" to the directory you unzipped the Windows player to and type
+<p><code>Add-AppxPackage .\giderosgame.Windows_yy.mm.dd.0_x86.appxbundle</code></p>
+<p>The Gideros Windows player should now be installed and is available from the Start Screen. 
+You can now run Gideros apps directly on this player from within Gideros Studio (running on a different computer)</p>
+
+<p>For Windows 10:</p>
+<ol>
+<li>Go to 'Settings', select 'Update & Security'.  Click 'For Developers'.  Select 'Developer Mode'.</li>
+<li>Unzip giderosgame.Windows_yy.mm.dd.0_Test.zip to a suitable directory</li>
+<li>Navigate to this directory. Right click the 'AddDevPackage', select 'Run with PowerShell'. Follow the prompts.</li>
+</ol>
 </section>
 
 <section class="tab-pane" id="devices">
-<h2>Deploy Your Application to iOS Devices</h2>
+<h2>Deploy Your Application to Devices</h2>
 
-<p><strong>To deploy your application to iPhone/iPad you need to:</strong></p>
+<p>This section describes how to create a stand alone package, deploy and test it on a physical device, and upload to an appropriate app store such as Google Play, the iOS
+App Store or the Windows (Phone) Store. For desktop exports (Windows and Mac) Gideros does not prepare a package
+as such but rather a directory containing executables and resources. To distribute to another person you can simply zip the directory up and send to them. 
+A more sophisticated approach is to prepare an installer which you can do using free, third party applications such as 
+<a href="http://nsis.sourceforge.net/Main_Page">NSIS</a>.</p>
+
+<p> 
+For the mobile platforms, you will need to set up appropriate vendor-supplied SDKs to complete the compilation process and create
+a final signed package. For iOS and Windows UWP (for Windows Phone/Store apps) this essentially involves installing the latest Xcode and Visual Studio respectively. 
+Setting up an Android environment
+is more complicated and consists of several stages (reflecting the open source nature of Android). 
+The process of installing these OS-specific SDKs on your computer is described fully in <a href="deployment.html#vendor_sdks" data-toggle="tab">Installing OS-specific SDKs</a>. 
+In this section we will assume these SDKs are set up already.
+</p>
+
+<p>The first step is to export your project from Gideros using &ldquo;File→Export Project&rdquo; menu:</p>
+
+<p><img src="images/export_project.png" alt="Export Project" /></p>
+
+<h2> Create an iOS package (IPA)</h2>
 
 <ol>
 <li>Export your application as Xcode project</li>
 <li>Build and deploy Xcode project to actual device</li>
 </ol>
 
-<p>For the second step, you need Intel-based Mac running Snow Leopard and
-Apple Developer License.</p>
+<p>For the second step, you need Intel-based Mac running at least OS X 10.10 Yosemite and
+an Apple Developer License.</p>
 
-<p><strong>To deploy your application to Android you need to:</strong></p>
+<h2> Create an Android package (APK) </h2>
 
+Gideros supports 3 ways of exporting your Android project:
 <ol>
-<li>Export your application as Android project</li>
-<li>Import exported project into Eclipse</li>
-<li>Run project from Eclipse</li>
+<li>Export as an Eclipse project. Import into Eclipse and export a signed APK (deprecated)</li>
+<li>Export as an Android Studio Project. Import into Android Studio and export a signed APK</li>
+<li>Create a signed APK directly from Gideros Studio (needs Android SDKs to be installed, does not support plugins)</li>
 </ol>
 
-<p>First step is done through &ldquo;File→Export Project&rdquo; menu:</p>
+<p>For each of these methods, you will need to install addition software as described in <a href="deployment.html#vendor_sdks" data-toggle="tab">Installing OS-specific SDKs</a>.
+We now describe each method in turn. You only need to choose one!</p>
 
-<p><img src="images/export_project.png" alt="Export Project" /></p>
+<h3> Create a signed APK using Eclipse</h3>
+
+Select the Android tab in the export dialog as shown:
+<p><img src="images/exportandroid.png" alt="Export Project" /></p>
+
+<p>From the pull-down list select "Eclipse". Enter your package name in the form com.yourcompany.yourapp. Now click OK and select a directory for the Eclipse
+project to be exported to</p>
+
+<p> Open Eclipse and chose File -> Import. Then select Android -> Existing Android Code into Workspace as shown </p>
+<p><img src="images/eclipseimport.png" alt="Import into Eclipse" /></p>
+
+<p> Select the Android project which was exported by Gideros as shown and click Finish (you should select the folder which contains ".project"</p>
+<p><img src="images/eclipseimport2.png" alt="Import into Eclipse" /></p>
+
+<p> Right click on the project root in Eclipse. Choose "Android Tools" then "Export Signed Android Package..."
+
+In the next screen shown, select your keystore to sign the app. All apps submitted to Google Play must be signed in this way. If you have not created a keystore you can
+do so from this screen. Keep your keystore very safe and do not forget the passwords associated with it! Now enter the keystore password and click Next. In the next
+screen enter the alias and password of the key you want to use (for most cases it's simplest to maintain a single key). You can now create a signed APK at your
+chosen location.
+
+<p><img src="images/keystoreselect.png" alt="Select keystore" /></p>
+
+<p> To install the APK on your device, there are several options. You can host the APK on a website eg dropbox and just double click it from the device. 
+If you don't want to use the internet, you can connect your computer to the device using USB cable and drag the APK onto the device. Then go to Google Play and install a
+free app called "Apk Installer". Launch the app and navigate to your APK to install it. (On the device go to Settings and check the "Unknown Sources" box to allow
+installation of apps from unknown sources.)</p>
+
+
+
+<h3> Create a signed APK using Android Studio</h3>
+
+<p>In Gideros Studio, select, File > Export and choose the Android tab as shown. From the pulldown menu, choose, "Android Studio". Enter your app ID in the form
+com.companyname.appname.</p>
+
+<p><img src="images/exportandroidstudio.png" alt="Export for Android Studio" /></p>
+
+<p> Launch Android Studio and choose "Open an existing Android Studio project". Navigate to the directory Gideros exported (that contains build.gradle)
+and open the project in Android Studio </p>
+
+<p><img src="images/androidstudiowelcome.png" alt="Android Studio Welcome" /></p>
+
+<p> You may need to alter the Android SDK version to correspond to the SDK installed on your computer. To do this, open the "app" folder in the project and double
+click the "build.gradle" file within this folder. Adjust the entries compileSdkVersion and buildToolsVersion to correspond to what is installed on your system.
+To see what you have installed, launch "Android SDK Manager" from the Start Menu. Having made the changes choose Tools > Android > Sync Project with Gradle Files.</p>
+
+<a href="images/androidstudiosdkversion.png"><img src="images/androidstudiosdkversion.png" alt="Adjust SDK version"/></a>
+
+<p> Now select Build > Generated signed SDK... as shown</p>
+
+<p><img src="images/androidstudiosignedapk.png" alt="Generate Signed APK" /></p>
+
+<p> If you have a keystore already, click "Choose existing" and select your keystore and enter the password. Select the key you want to use and enter its alias and password.
+If you don't have a keystore click "Create new" and follow prompts to create a new keystore. Now click "Next" to export the APK to your chosen location.</p>
+
+<p> To install the APK on your device, there are several options. You can host the APK on a website eg dropbox and just double click it from the device. 
+If you don't want to use the internet, you can connect your computer to the device using USB cable and drag the APK onto the device. Then go to Google Play and install a
+free app called "Apk Installer". Launch the app and navigate to your APK to install it. (On the device go to Settings and check the "Unknown Sources" box to allow
+installation of apps from unknown sources.)</p>
+
+
+<h3> Create a signed APK directly using Gideros Studio</h3>
+
+Choose File -> Export and choose the APK tab as shown
+<p><img src="images/apkexport.png" alt="Select keystore" /></p>
+
+<p>Enter the package name in the form com.companyname.appname. Enter the location of the Android SDK, Java JDK and Ant. You should have installed all these following
+the instructions in <a href="deployment.html#vendor_sdks" data-toggle="tab">Installing OS-specific SDKs</a>. The ant directory shown is a bit weird because in my case it was
+installed as part of Eclipse. Typically you will download Ant (a simple ZIP file) and extract it to any directory. Simply enter the directory you extracted it to here.</p>
+
+<p> All apps uploaded to Google Play must be signed with a keystore. To prepare the keystore use <a href="https://support.globalsign.com/customer/en/portal/articles/2121490-java-keytool---create-keystore">
+keytool</a> which comes with your Java Development Kit. (on my computer it is located at C:\Program Files\Java\jdk1.8.0_74\bin) 
+Now enter the location of your keystore in the dialog box and enter its password below. You will also
+need to enter the alias and password of the key you want to use.</p>
+
+<p>Having entered all these details, click OK to create both a signed and unsigned APK at a selected location. If anything goes wrong a file error.log will be
+exported. An error may occur if you have failed to indicate the location of one of the tools needed.</p>
+
+<p> To install the APK on your device, there are several options. You can host the APK on a website eg dropbox and just double click it from the device. 
+If you don't want to use the internet, you can connect your computer to the device using USB cable and drag the APK onto the device. Then go to Google Play and install a
+free app called "Apk Installer". Launch the app and navigate to your APK to install it. (On the device go to Settings and check the "Unknown Sources" box to allow
+installation of apps from unknown sources.)</p>
+
+
+<h2> Create a Windows Phone/Store package (APPX)</h2>
+<p><img src="images/winrtexport.png" alt="WinRT export" /></p>
+
+
+<ol>
+<li>Export your application as WinRT project (enter the app id as com.companyname.appname and organisation)</li>
+<li>Run Visual Studio and select FILE > Open Project. Select giderosgame.sln in the export directory you chose</li>
+<li>To run your project as Windows Store app:
+<ol>
+    <li>Select Release and Win32 settings</li>
+    <li>Near Start button in dropdown select giderosgame.Windows</li>
+    <li>The Start button should now say "Local Machine"</li>
+    <li>Press Start and the game will compile and run as a Windows Store app</li>
+</ol></li>
+<li>To run your project as Windows Phone app:
+<ol>
+    <li>Connect your device through USB (you need to unlock device first, see <a href="deployment.html#player" data-toggle="tab">Gideros Device Player</a>)</li>
+    <li>Select Release and ARM settings</li>
+    <li>Near Start button in dropdown select giderosgame.WindowsPhone</li>
+    <li>The Start button should now say "Device"</li>
+    <li>Press Start and the game will compile and run as a Windows Phone app</li>
+</ol></li>
+</ol>
+
+<p><img src="images/wpvs.jpg" alt="Visual Studio 2013" /></p>
+
+<p>To submit your app to the Windows Store or Windows Phone Store, select one of the projects in the Solution explorer and select STORE > Create App Packages. You can either upload the app immediately to Microsoft or create a stand alone APPX file to distribute to colleagues.  There is no need to enter an ID of your colleague's device: as long as his/her phone is unlocked s/he can install and test your APPX package immediately. Note that the process of submitting apps to the Windows or Windows Phone app store is the same, using the STORE menu in Visual Studio.
+</p>
 	
 </section>	
 <section class="tab-pane" id="plugins">
@@ -134,10 +334,174 @@ Apple Developer License.</p>
 <li>Export your Gideros project as IOS project</li>
 <li>Add plugin as described in your specific plugin installation instruction</li>
 <li>In your exported project, open AppDelegate.m file</li>
-<li>Change gdr_initialize(..., false) to gdr_initialize(..., true)</li>
+<li>Change <code>gdr_initialize(..., false)</code> to <code>gdr_initialize(..., true)</code></li>
 <li>You now have Gideros IOS player which behaves exactly the same as normal player, but has the functionalities of applied plugin</li>
 </ol>
+<p><strong>To deploy custom player with plugins to Windows/WindowsPhone</strong></p>
+<ol>
+<li>Export your Gideros project as WinRT project</li>
+<li>Add plugin as described in your specific plugin installation instruction</li>
+<li>In your exported project's open winrt.cpp file</li>
+<li>Change <code>bool isPlayer = false;</code> to <code>bool isPlayer = true;</code></li>
+<li>You now have Gideros WinRT player (for Windows and Windows Phone) which behaves exactly the same as normal player, but has the functionalities of applied plugin</li>
+</ol>
 </section>
+
+<section class="tab-pane" id="vendor_sdks">
+<h2>Installing OS-specific SDKs</h2>
+
+<h2> iOS </h2>
+Install the latest version of Xcode, currently Xcode 7. You will need a Mac running OSX 10.10 Yosemite or later.
+
+<h2>Android</h2>
+Gideros currently supports three methods of creating a signed Android package suitable for upload to Android Stores like Google Play:
+<ol>
+<li> Export from Gideros Studio as an Eclipse project. Import into Eclipse and export a signed APK.(Deprecated: Google now recommends Android Studio) </li>
+<li> Export from Gideros Studio as an Android Studio project. Import into Android Studio and export a signed APK.</li>
+<li> Export a signed APK directly from Gideros Studio. You will still need to install Android components on your computer and tell Gideros where these
+are located. This is described below</li>
+</ol>
+
+The direct APK method is quickest but currently does not support plugins. The other two methods allow more flexibility including the ability to add plugins and
+change the Android Manifest. If you are new to Android we recommend the use of Android Studio as it is officially supported by Google. We now show how to install each of
+these environments in turn.
+
+<h3> Eclipse Setup </h3>
+
+<strong> Step 1: Install the Java Development Kit</strong>
+
+<p>Download the <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">latest JDK</a> from Oracle as shown. You will need Java SE (Standard Edition).
+In the screenshot we are downloading Java SE 8u73 which means Java 1.8 update 73, but simply choose the latest version available. Then double click 
+on the installer package to install the Java JDK</p>
+
+<a href="images/java_download.png"><img src="images/java_download.png" alt="Download JDK"/></a>
+
+<p><strong> Step 2: Intall Android SDK </strong></p>
+
+<p> Download the latest <a href="http://developer.android.com/sdk/index.html#Other">Android SDK</a> as shown. You will need the "SDK Tool Only" install within 
+"Other Download Options". Chose the appropriate download for your operating system and double click on the install package to install the Android SDK. Note that
+when you install the SDK it will automatically detect the Java Development Kit as shown in the next image.
+<a href="images/androidsdk.png"><img src="images/androidsdk.png" alt="Download Android SDK"/></a>
+<img src="images/javafound.png" alt="Java Detected"/>
+
+<p> Two programs will now be installed on your computer under the Start Menu group "Android Developer Tools". The SDK manager allows installation of further Android
+components and we will use it next. The AVD manager allows installation of various "Android Virtual Devices" essentially Android emulators which you can use to
+test your apps. We do not recommend the use of these are they are typically very slow. It is better to test on (several) real Android devices </p>
+
+Now launch the "SDK manager" and you will see a window like the one below:
+<a href="images/androidsdkmanager.png"><img src="images/androidsdkmanager.png" alt="Android SDK manager"/></a>
+
+<p>You should select only the latest version of Android (in my case Android 6.0 (API 23)) but do not choose a "preview" version like Android N. 
+You can safely unselect "Documentation for Android SDK" and 
+"Sources for Android SDK". You also need to select the latest version of "Android SDK platform tools" and "Android SDK build tools" as shown. Finally, within the
+"Extras" section select "Android Support Library" and "Google USB Driver" (not in the screenshot)</p>
+
+<p> Now click "Install x items" and follow the prompts to complete the Android SDK installation</p>
+
+<p><strong> Step 3: Install Eclipse IDE </strong></p>
+
+Download the <a href="https://eclipse.org/downloads/">Eclipse installer"</a>. Run it and select "Eclipse IDE for Java Developers". Follow prompts to complete the installation
+<a href="images/eclipse_download.png"><img src="images/eclipse_download.png" alt="Download Eclipse"/></a>
+
+<p><strong> Step 4: Install Android Plugin for Eclipse </strong></p>
+
+<ol>
+<li>Start Eclipse, then select Help..Install New Software.</li>
+<li>Click Add, in the top-right corner.</li>
+<li>In the Add Repository dialog that appears, enter "ADT Plugin" for the Name and the following URL for the Location: https://dl-ssl.google.com/android/eclipse/</li>
+<li>Click OK.</li>
+<li>In the Available Software dialog, select the checkbox next to Developer Tools and click Next.</li>
+<li>In the next window, you'll see a list of the tools to be downloaded. Click Next.</li>
+<li>Read and accept the license agreements, then click Finish. If you get a security warning saying that the authenticity or validity of the software can't be established, click OK</li>
+<li>When the installation completes, restart Eclipse.</li>
+</ol>
+
+
+
+
+<h3> Android Studio Setup </h3>
+
+<strong> Step 1: Install the Java Development Kit</strong>
+
+<p>Download the <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">latest JDK</a> from Oracle as shown. You will need Java SE (Standard Edition).
+In the screenshot we are downloading Java SE 8u73 which means Java 1.8 update 73, but simply choose the latest version available. Then double click 
+on the installer package to install the Java JDK</p>
+
+<a href="images/java_download.png"><img src="images/java_download.png" alt="Download JDK"/></a>
+
+<Strong> Step 2: Install Android Studio </strong>
+
+<p> <a href="http://developer.android.com/sdk/index.html">Download Android Studio</a> as shown in the screenshot.</p>
+<img src="images/androidstudio.png" alt="Android Studio"/>
+
+<p> Double click on the Android Studio installer to begin the installation as shown in the figure. If you have no Android components installed check the "Android SDK" box.
+If you already have a version of Android SDK installed, unselect "Android SDK". We don't recommend installing "Android Virtual Device" as these Android emulators
+are slow and do not always represent a real device behaviour. But there is no harm installing them. (the "performance" box relates to the Android Virtual Devices also)</p>
+
+<img src="images/choosecomponents.png" alt="Choose components"/>
+
+<p>If you did not ask to install Android SDK, the next screen will ask you to select the location of an existing SDK on your compute. 
+Choose "Use an existing SDK" and select the location as shown. Android Studio will now install</p>
+
+<img src="images/androidsdksettings.png" alt="Android SDK settings"/>
+
+
+
+<h3> Direct APK Export Setup</h3>
+<strong> Step 1: Install the Java Development Kit</strong>
+
+<p>Download the <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">latest JDK</a> from Oracle as shown. You will need Java SE (Standard Edition).
+In the screenshot we are downloading Java SE 8u73 which means Java 1.8 update 73, but simply choose the latest version available. Then double click 
+on the installer package to install the Java JDK</p>
+
+<a href="images/java_download.png"><img src="images/java_download.png" alt="Download JDK"/></a>
+
+<p><strong> Step 2: Install Android SDK </strong></p>
+
+<p> Download the latest <a href="http://developer.android.com/sdk/index.html#Other">Android SDK</a> as shown. You will need the "SDK Tool Only" install within 
+"Other Download Options". Chose the appropriate download for your operating system and double click on the install package to install the Android SDK. Note that
+when you install the SDK it will automatically detect the Java Development Kit as shown in the next image.
+<a href="images/androidsdk.png"><img src="images/androidsdk.png" alt="Download Android SDK"/></a>
+<img src="images/javafound.png" alt="Java Detected"/>
+
+<p> Two programs will now be installed on your computer under the Start Menu group "Android Developer Tools". The SDK manager allows installation of further Android
+components and we will use it next. The AVD manager allows installation of various "Android Virtual Devices" essentially Android emulators which you can use to
+test your apps. We do not recommend the use of these are they are typically very slow. It is better to test on (several) real Android devices </p>
+
+Now launch the "SDK manager" and you will see a window like the one below:
+<a href="images/androidsdkmanager.png"><img src="images/androidsdkmanager.png" alt="Android SDK manager"/></a>
+
+<p>You should select only the latest version of Android (in my case Android 6.0 (API 23)) but do not choose a "preview" version like Android N. 
+You can safely unselect "Documentation for Android SDK" and 
+"Sources for Android SDK". You also need to select the latest version of "Android SDK platform tools" and "Android SDK build tools" as shown. Finally, within the
+"Extras" section select "Android Support Library" and "Google USB Driver" (not in the screenshot)</p>
+
+<p> Now click "Install x items" and follow the prompts to complete the Android SDK installation</p>
+
+<p><strong> Step 3: Install Apache Ant </strong></p>
+Download the binary version of <a href="http://ant.apache.org/bindownload.cgi">Apache Ant</a>. Unzip the file to a suitable location. Remember this location as you
+will need it when exporting an Android app from Gideros.
+<img src="images/apacheant.png" alt="Apache Ant"/>
+
+<h2> UWP for Windows Store/Phone apps </h2>
+
+Install the latest version of Visual Studio (current VS 2015) and ensure you have added components for Windows Store/Phone development.
+
+<h3>Add an extension to Visual Studio</h3>
+<p>Gideros supports SQLite and to make this work on Windows Phone, it is necessary to add an extension to Visual Studio. 
+Even if you don't use SQLite, you will need to add this extension or Windows Phone projects exported by Gideros will not compile. 
+It's easy to do as explained next. Of course, you only need to add this extension once.</p>
+
+<p>Open Visual Studio and go to TOOLS > Extensions and Updates. 
+Select the "Online" tab on the left and type SQLite in the search bar at the top right. 
+Select SQLite for Windows Phone 8.1/10 (as shown in the next screenshot) and select install. 
+You will need to restart VS for the extension to take effect.</p>
+<a href="images/vsextension.png"><img src="images/vsextension.png" alt="Android SDK manager"/></a>
+
+
+
+</section>
+
 </div>
 	</div>
 	</div>
@@ -153,7 +517,7 @@ Apple Developer License.</p>
 				<div class="container">
 					<div class="row">
 						<div class="span12">
-							<p class="pull-right"><a href="#">Back to top</a></p>
+							<p class="pull-right"><a href="deployment.html#">Back to top</a></p>
 							<p>&copy; GiderosMobile.com</p>
 						</div>
 					</div>
@@ -167,7 +531,7 @@ Apple Developer License.</p>
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
    <!-- last but not least the javascript -->
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 		<script>window.jQuery || document.write('<script src="js/jquery-1.8.3.min.js"><\/script>')</script>
 		<script src="js/bootstrap.js"></script>
 		<script type="text/javascript" src="js/fittext.js"></script>
