@@ -339,6 +339,8 @@ void loadProperties()
   buffer >> properties.touchToMouse;
   buffer >> properties.mouseTouchOrder;
 
+  //  properties.scaleMode=3; (letterbox) for testing
+
   printf("properties components\n");
   printf("logicalWidth, logicalHeight, orientation, scaleMode=%d %d %d %d\n",
 	 properties.logicalWidth, properties.logicalHeight, 
@@ -521,31 +523,22 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     int width=LOWORD(lParam);
     int height=HIWORD(lParam);
 
-    printf("WM_SIZE: %d x %d\n",width,height);
+    //    printf("WM_SIZE: %d x %d\n",width,height);
 
-    Orientation hardwareOrientation;
-    Orientation deviceOrientation;
     int windowWidth, windowHeight;
 
-    if (width<height){
+    if (application_->orientation()==ePortrait || application_->orientation()==ePortraitUpsideDown){              // previously width < height
       windowWidth=width;
       windowHeight=height;
-      hardwareOrientation = ePortrait;
-      deviceOrientation = ePortrait;
     }
     else {
       windowWidth=height;
       windowHeight=width;
-      hardwareOrientation = eLandscapeLeft;
-      deviceOrientation = eLandscapeLeft;
     }
 
     float contentScaleFactor = 1;
     application_->setResolution(windowWidth  * contentScaleFactor, 
 				windowHeight * contentScaleFactor);
-
-    application_->setHardwareOrientation(hardwareOrientation);
-    application_->getApplication()->setDeviceOrientation(deviceOrientation);
     
     return 0;
   }

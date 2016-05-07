@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "luaapplication.h"
+#include <application.h>
 
 extern HWND hwndcopy;
 extern char commandLine[];
@@ -61,7 +62,9 @@ void setWindowSize(int width, int height)
 {
   printf("setWindowSize: %d x %d. hwndcopy=%p\n",width,height,hwndcopy);
 
-  if (application_->orientation()==ePortrait || application_->orientation()==ePortraitUpsideDown){
+  Orientation app_orient=application_->orientation();
+
+  if (app_orient==ePortrait || app_orient==ePortraitUpsideDown){
     RECT rect;
     rect.left=0;
     rect.top=0;
@@ -85,6 +88,9 @@ void setWindowSize(int width, int height)
     SetWindowPos(hwndcopy,HWND_TOP,0,0,rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE);
     printf("SetWindowPos: %d %d\n",rect.right-rect.left, rect.bottom-rect.top);
   }
+
+  application_->setHardwareOrientation(app_orient);
+  application_->getApplication()->setDeviceOrientation(app_orient);
 }
 
 void setFullScreen(bool fullScreen)
