@@ -21,6 +21,8 @@ static int crypto_aes_encrypt(lua_State *L) //String=encrypt(String,String,Strin
     const unsigned char *iv = (const unsigned char *) luaL_optstring(L, 3,NULL);
     bool mode=lua_toboolean(L,4);
     int out_size=(avail_in+15)&(~15);
+    if (mode&&iv&&((avail_in&15)==0)) //PKCS7: room for extra 16 bytes
+    	out_size+=16;
     unsigned char *out=(unsigned char *) malloc(out_size);
     aes_encrypt(in,out,avail_in,key,iv,mode?1:0);
     lua_pushlstring(L, (const char *)out,out_size);
@@ -38,6 +40,26 @@ static int crypto_aes_decrypt(lua_State *L) //String=encrypt(String,String,Strin
     avail_in&=(~15);
     unsigned char *out=(unsigned char *) malloc(avail_in);
     aes_decrypt(in,out,avail_in,key,iv,mode?1:0);
+
+    if (mode&&iv&&avail_in) //PKCS7: remove padding
+    {
+       unsigned char paddingval=out[avail_in-1];
+       if ((paddingval==0)&&(paddingval>0x10)) //Wrong padding byte
+       {
+   	    free(out);
+		lua_pushstring(L,"Invalid PKCS#7 padding value");
+		lua_error(L);
+       }
+       for (int p=avail_in-paddingval;p<avail_in;p++)
+    	   if (out[p]!=paddingval)
+    	   {
+    	   	    free(out);
+    			lua_pushstring(L,"Invalid PKCS#7 padding");
+    			lua_error(L);
+    	   }
+       avail_in-=paddingval;
+     }
+
     lua_pushlstring(L, (const char *)out,avail_in);
     free(out);
     return 1;

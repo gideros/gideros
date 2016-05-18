@@ -527,7 +527,7 @@ void AES128_CBC_encrypt_buffer(uint8_t* output,const uint8_t* input, uint32_t le
     output += KEYLEN;
   }
 
-  if(remainders)
+  if(remainders||padtype)
   {
     memcpy(output, input,remainders);
     uint8_t paddingval=0;
