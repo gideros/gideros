@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Reference Manual</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="../reference/design/assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../reference/design/assets/greference-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="../reference/design/assets/greference-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="../reference/design/assets/greference-72.png">
+		<link rel="apple-touch-icon-precomposed" href="../reference/design/assets/greference-57.png">
+
+		<!-- Le styles -->
+		<link href="design/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="design/css/font-awesome.min.css">
+		<link rel="stylesheet" href="design/css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="design/css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body>
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+		<div class="tabbable tabs-below">
+		<ul class="nav nav-tabs">
+												<li><a href="main.html">Main page</a></li>
+																<li class="active"><a href="ads.html">Ads Interface</a></li>
+																<li><a href="iab.html">In-app Billing</a></li>
+																<li><a href="controller.html">Controller</a></li>
+									</ul>
+		</div>
+  <div class="container-fluid">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row-fluid">
+      <div class="span12" style='min-height:1000px; padding-left: 20px;'>
+				<style>
+pre{
+	word-wrap:break-word;
+}
+</style>
+<div style='padding: 0 20px;'>
+				<h1>Ads Interface</h1></br>
+			</div>
+<ul class="nav nav-tabs">
+						<li class="active"><a href="ads.html#description" data-toggle="tab">Description</a></li>
+								<li><a href="ads.html#api" data-toggle="tab">API Reference</a></li>
+								<li><a href="ads.html#method" data-toggle="tab">Methods</a></li>
+								<li><a href="ads.html#event" data-toggle="tab">Events</a></li>
+								<li><a href="ads.html#install_android" data-toggle="tab">Installation Android</a></li>
+								<li><a href="ads.html#install_ios" data-toggle="tab">Installation IOS</a></li>
+								<li><a href="ads.html#example_code" data-toggle="tab">Code Example</a></li>
+			</ul>
+<div class="tab-content">
+						<div class="tab-pane active" id="description">
+								<p>The idea is to provide common Ads interface for most of available ad frameworks, so that user's would not have to create a plugin for each of them separately, but rather it would be possible to wrap ad framework in single Java or Objective-C class (depending on the platform) and add it to the project, without even recompiling existing Ads Interface plugin.</p>
+
+ <p>Additionally it would be able to support multiple ad frameworks simultaneously so users could switch and fall back between ad frameworks on runtime.</p>
+
+<p><strong>What Ads Interface provides:</strong></p>
+ <ul>
+ <li>Using same interface not only across platforms, but also across ad frameworks</li>
+ <li>Providing ability to use multiple ad frameworks simultaneously</li>
+ <li>Easily create fall backs to other frameworks if one framework failed</li>
+<li>Displaying and hiding banners</li>
+<li>Preloading ads without showing them</li>
+<li>Get dimensions and position banners as any other Gideros element</li>
+<li>Tween banners using GTween</li>
+<li>Place home ads (Bitmap objects) under banners, to display them if there is no ad or Internet connection</li>
+<li>Enable test ads with one simple call (depends on ad framework)</li>
+ </ul>
+					</div>
+						<div class="tab-pane" id="api">
+								<h2>Methods</h2>
+<ul class='space'>
+<li>Ads.new(adframework) -- initialize specified ad framework</li>
+<li>Ads:setKey(value1, value2, ..., valueN) -- provide all the keys/appids/etc needed for the framework, which you will get in same order on Native part in Map object</li>
+<li>Ads:loadAd(adType, value1, ..., valueN) --provide ad types and any other needed information, to preload an ad without showing it</li>
+<li>Ads:showAd(adType, value1, ..., valueN) --provide ad types and any other needed information, to determine which type of ad to show on Native part</li>
+<li>Ads:hideAd(adType) --hide ad with adType provided in showAd</li>
+<li>Ads:enableTesting() --enables test ads if framework supports it</li>
+<li>Ads:setAlignment(horizontal, vertical) --set add alignment if possible</li>
+<li>Ads:setPosition(x, y) --set position (banners only)</li>
+<li>Ads:setX(x) --set x position (banners only)</li>
+<li>Ads:setY(y) --set y position (banners only)</li>
+<li>Ads:getX(x) --get x position (banners only)</li>
+<li>Ads;getY(y) --get y position (banners only)</li>
+<li>Ads:getPosition() --get x and y position (banners only)</li>
+<li>Ads:getWidth() --get width of ad (banners only)</li>
+<li>Ads:getHeight() --get height of ad (banners only)</li>
+<li>Ads:get(property) --generic getter for x and y properties(banners only)</li>
+<li>Ads:set(property, value) --generic setter for x and y properties(banners only)</li>
+</ul>
+<h2>Events</h2>
+<ul class='space'>
+<li>Event.AD_RECEIVED --ad is displayed
+<ul>
+<li>e.type -- adType</li>
+</ul></li>
+<li>Event.AD_FAILED --ad could not be displayed
+<ul>
+<li>e.error - error message</li>
+<li>e.type -- adType</li>
+</ul></li>
+<li>Event.AD_ACTION_BEGIN --some action on ad begun<ul>
+<li>e.type -- adType</li>
+</ul></li>
+<li>Event.AD_ACTION_END --some action on ad completed<ul>
+<li>e.type -- adType</li>
+</ul></li>
+<li>Event.AD_DISMISSED --ad is dismissed/removed<ul>
+<li>e.type -- adType</li>
+</ul></li>
+<li>Event.AD_DISPLAYED --ad is displayed on the screen<ul>
+<li>e.type -- adType</li>
+</ul></li>
+<li>Event.AD_ERROR --there was internal developer error
+<ul>
+<li>e.error - error message</li>
+<li>e.type -- adType</li>
+</ul></li>
+</ul>
+					</div>
+						<div class="tab-pane" id="method">
+														<table class="table table-bordered table-hover table-condensed">
+									<tr>
+						<td>&nbsp;</td>
+													<th>new</th>
+													<th>setKey</th>
+													<th>showAd/loadAd</th>
+													<th>hideAd</th>
+													<th>enableTesting</th>
+													<th>positions</th>
+											</tr>
+														<tr class='success'>
+						<th>AdColony</th>
+													<td><pre><code>adcolony = Ads.new(&quot;adcolony&quot;)</code></pre></td>
+													<td><pre><code>adcolony:setKey(appID, videoZoneID, optionalZoneID)</code></pre></td>
+													<td><pre><code>--load/display video
+adcolony:showAd(&quot;video&quot;)
+adcolony:showAd(&quot;video&quot;, videoZoneID)
+--display video for currency
+adcolony:showAd(&quot;v4vc&quot;[, videoZoneID])
+--offer video for currency
+adcolony:showAd(&quot;v4vc&quot;[, videoZoneID, true])</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Admob</th>
+													<td><pre><code>admob = Ads.new(&quot;admob&quot;)</code></pre></td>
+													<td><pre><code>admob:setKey(appID)</code></pre></td>
+													<td><pre><code>--smart banner
+admob:showAd(&quot;auto&quot;, unitID)
+admob:showAd(&quot;banner&quot;, unitID)
+admob:showAd(&quot;iab_banner&quot;, unitID)
+admob:showAd(&quot;iab_leaderboard&quot;, unitID)
+admob:showAd(&quot;iab_mrect&quot;, unitID)
+admob:showAd(&quot;iab_skyscaper&quot;, unitID)
+admob:showAd(&quot;smart_banner&quot;, unitID)
+admob:showAd(&quot;interstitial&quot;, unitID)</code></pre></td>
+													<td><pre><code>--hides only banners
+admob:hideAd(adType)</code></pre></td>
+													<td><pre><code>enables test ads</code></pre></td>
+													<td><pre><code>banners only</code></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Amazon</th>
+													<td><pre><code>amazon = Ads.new(&quot;amazon&quot;)</code></pre></td>
+													<td><pre><code>amazon:setKey(appID)</code></pre></td>
+													<td><pre><code>--determines size based on screen resolution
+amazon:showAd(&quot;auto&quot;)
+-- or
+amazon:showAd(&quot;300x50&quot;)
+amazon:showAd(&quot;320x50&quot;)
+amazon:showAd(&quot;300x250&quot;)
+amazon:showAd(&quot;600x90&quot;)--android only
+amazon:showAd(&quot;728x90&quot;)
+amazon:showAd(&quot;1024x50&quot;)
+
+--interstitial
+amazon:showAd(&quot;interstitial&quot;)</code></pre></td>
+													<td><pre><code>amazon:hideAd(adType)</code></pre></td>
+													<td><pre><code>enables test ads</code></pre></td>
+													<td><pre><code>works for banners</code></pre></td>
+											</tr>
+									<tr class='error'>
+						<th>AppLovin</th>
+													<td><pre><code>applovin = Ads.new(&quot;applovin&quot;)</code></pre></td>
+													<td><pre><code>applovin:setKey(appID)</code></pre></td>
+													<td><pre><code>applovin:showAd(&quot;auto&quot;)
+applovin:showAd(&quot;banner&quot;)
+applovin:showAd(&quot;leader&quot;)--android only
+applovin:showAd(&quot;mrec&quot;)--android only
+applovin:showAd(&quot;interstitial&quot;)</code></pre></td>
+													<td><pre><code>--hides only banners
+applovin:hideAd(adType)</code></pre></td>
+													<td><pre><code>testing is enabled form website</code></pre></td>
+													<td><pre><code>banners only</code></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Chartboost</th>
+													<td><pre><code>chartboost = Ads.new(&quot;chartboost&quot;)</code></pre></td>
+													<td><pre><code>chartboost:setKey(appID, appSignature)</code></pre></td>
+													<td><pre><code>--interstitial
+chartboost:showAd(&quot;interstitial&quot;)
+chartboost:showAd(&quot;moreapps&quot;)
+chartboost:showAd(&quot;v4vc&quot;)
+chartboost:showAd(&quot;feed&quot;) --ios only</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>HeyZap</th>
+													<td><pre><code>heyzap = Ads.new(&quot;heyzap&quot;)</code></pre></td>
+													<td><pre><code>-- required for iOS
+-- does nothing on Android
+heyzap:setKey(appID)</code></pre></td>
+													<td><pre><code>--interstitial
+heyzap:showAd(&quot;interstitial&quot;)
+heyzap:showAd(&quot;video&quot;)
+heyzap:showAd(&quot;v4vc&quot;)</code></pre></td>
+													<td><pre><code>does nothin</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>iAds</th>
+													<td><pre><code>iad = Ads.new(&quot;iad&quot;)</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>--interstitial
+iad:showAd(&quot;interstitial&quot;)
+--auto sized banner
+iad:showAd(&quot;banner&quot;)</code></pre></td>
+													<td><pre><code>--hides only banners
+iad:hideAd(adType)</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>works for banners</code></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>InMobi</th>
+													<td><pre><code>inmobi = Ads.new(&quot;inmobi&quot;)</code></pre></td>
+													<td><pre><code>inmobi:setKey(appID)</code></pre></td>
+													<td><pre><code>--auto sized banner
+inmobi:showAd(&quot;auto&quot;)
+--or
+inmobi:showAd(&quot;300x250&quot;)
+inmobi:showAd(&quot;728x90&quot;)
+inmobi:showAd(&quot;468x60&quot;)
+inmobi:showAd(&quot;120x600&quot;)
+inmobi:showAd(&quot;320x50&quot;)</code></pre></td>
+													<td><pre><code>--hides only banners
+inmobi:hideAd(adType)</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>works for banner</code></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Millenial</th>
+													<td><pre><code>mm = Ads.new(&quot;millenial&quot;)</code></pre></td>
+													<td><pre><code>mm:setKey(appID) --default ID to use</code></pre></td>
+													<td><pre><code>--optionally can provide APID as second parameter
+mm:showAd(&quot;auto&quot;)
+mm:showAd(&quot;banner&quot;)
+mm:showAd(&quot;med_banner&quot;)
+mm:showAd(&quot;iab_leaderboard&quot;)
+mm:showAd(&quot;rectangle&quot;)
+mm:showAd(&quot;interstitial&quot;)</code></pre></td>
+													<td><pre><code>mm:hideAd(adType)</code></pre></td>
+													<td><pre><code>does not do anything</code></pre></td>
+													<td><pre><code>banners only</code></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>MoPub</th>
+													<td><pre><code>mopub = Ads.new(&quot;mopub&quot;)</code></pre></td>
+													<td><pre><code>--set default ad unit 
+--(optional if you 
+--provide it for each ad separately)
+mopub:setKey(adunit)</code></pre></td>
+													<td><pre><code>--if ad unit is not provided
+--will use default ad unit
+--set by setKey method
+mopub:showAd(&quot;banner&quot;)
+mopub:showAd(&quot;interstitial&quot;)
+
+
+--or you can provide different ad unit
+--for each ad
+mopub:showAd(&quot;banner&quot;, adunit)
+mopub:showAd(&quot;interstitial&quot;, adunit)</code></pre></td>
+													<td><pre><code>--hides only banner
+mopub:hideAd(adType)</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>banners sizes are reported only after ad is received</code></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Revmob</th>
+													<td><pre><code>revmob = Ads.new(&quot;revmob&quot;)</code></pre></td>
+													<td><pre><code>revmob:setKey(appId)</code></pre></td>
+													<td><pre><code>--auto sized banner
+revmob:showAd(&quot;auto&quot;)
+--or
+revmob:showAd(&quot;interstitial&quot;)
+revmob:showAd(&quot;link&quot;)
+revmob:showAd(&quot;popup&quot;)</code></pre></td>
+													<td><pre><code>--hides banner ads
+revmob:hideAd(adType)</code></pre></td>
+													<td><pre><code>enables test ads</code></pre></td>
+													<td><pre><code>banners may report height as 0</code></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Samsung AdHub</th>
+													<td><pre><code>samsung = Ads.new(&quot;samsung&quot;)</code></pre></td>
+													<td><pre><code>--set default inventoryID 
+--(optional if you 
+--provide it for each ad separately)
+samsung:setKey(inventoryID)</code></pre></td>
+													<td><pre><code>--auto sized banner
+samsung:showAd(&quot;auto&quot;)
+--or
+samsung:showAd(&quot;small_banner&quot;)
+samsung:showAd(&quot;rectangle_banner&quot;)
+samsung:showAd(&quot;medium_banner&quot;)
+samsung:showAd(&quot;large_banner&quot;)
+--or interstitial
+samsung:showAd(&quot;interstitial&quot;)
+--or video ad
+samsung:showAd(&quot;video&quot;)
+
+--you can also specify 
+--another inventory ID 
+--as second parameter
+samsung:showAd(&quot;small_banner&quot;, inventoryID)
+samsung:showAd(&quot;interstitial&quot;, inventoryID)
+--etc</code></pre></td>
+													<td><pre><code>--hides only banners
+samsung:hideAd(adType)</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>positions only banners</code></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>TapForTap</th>
+													<td><pre><code>tapfortap = Ads.new(&quot;tapfortap&quot;)</code></pre></td>
+													<td><pre><code>tapfortap:setKey(APIKEY)</code></pre></td>
+													<td><pre><code>tapfortap:showAd(&quot;banner&quot;)
+tapfortap:showAd(&quot;interstitial&quot;)
+tapfortap:showAd(&quot;moreapps&quot;)</code></pre></td>
+													<td><pre><code>--hides banner
+tapfortap:hideAd(adType)</code></pre></td>
+													<td><pre><code>--enables test ads
+tapfortap:enableTesting()</code></pre></td>
+													<td><pre><code>only for banners</code></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>TapJoy</th>
+													<td><pre><code>taphoy = Ads.new(&quot;tapjoy&quot;)</code></pre></td>
+													<td><pre><code>tapjoy:setKey(appId, secretKey)</code></pre></td>
+													<td><pre><code>--auto sized banner
+tapjoy:showAd(&quot;auto&quot;)
+--or
+tapjoy:showAd(&quot;320x50&quot;)
+tapjoy:showAd(&quot;640x100&quot;)
+tapjoy:showAd(&quot;768x90&quot;)
+--or interstitial
+tapjoy:showAd(&quot;interstitial&quot;)
+--or offers
+tapjoy:showAd(&quot;offers&quot;)</code></pre></td>
+													<td><pre><code>--hides banner ads
+tapjoy:hideAd(adType)</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>banners only</code></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Vungle</th>
+													<td><pre><code>vungle = Ads.new(&quot;vungle&quot;)</code></pre></td>
+													<td><pre><code>vungle:setKey(&quot;yourAppID&quot;)</code></pre></td>
+													<td><pre><code>--display video ad
+vungle:showAd(&quot;video&quot;)
+--display video for currency
+vungle:showAd(&quot;v4vc&quot;[, &quot;username&quot;])</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+													<td><pre><code>does nothing</code></pre></td>
+											</tr>
+							</table>
+			<div>
+				<p><strong>Legend:</strong></p>
+				<table class='table table-bordered table-condensed' style='width: 100px;'>
+				<tr class='error'>
+					<td>Alpha</td>
+				</tr>
+				<tr class='warning'>
+					<td>Beta</td>
+				</tr>
+				<tr class='success'>
+					<td>Stable</td>
+				</tr>
+				</table>
+			</div>
+								</div>
+						<div class="tab-pane" id="event">
+														<table class="table table-bordered table-hover table-condensed">
+									<tr>
+						<td>&nbsp;</td>
+													<th>AD_RECEIVED</th>
+													<th>AD_FAILED</th>
+													<th>AD_ACTION_BEGIN</th>
+													<th>AD_ACTION_END</th>
+													<th>AD_DISMISSED</th>
+													<th>AD_DISPLAYED</th>
+											</tr>
+														<tr class='success'>
+						<th>AdColony</th>
+													<td><pre>When video started</pre></td>
+													<td><pre>Failed to receive video or no available ad</pre></td>
+													<td>&nbsp;</td>
+													<td><pre>successfully watched video for currency</pre></td>
+													<td><pre>Video finished</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Admob</th>
+													<td><pre>When ad received</pre></td>
+													<td><pre>Failed to receive ad</pre></td>
+													<td>&nbsp;</td>
+													<td>&nbsp;</td>
+													<td><pre>When ad removed/destroyed</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Amazon</th>
+													<td><pre>When ad loaded</pre></td>
+													<td><pre>When failed to load the ad</pre></td>
+													<td><pre>When ad expands/opens</pre></td>
+													<td><pre>When ad collapses</pre></td>
+													<td><pre>When ad removed from screen</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='error'>
+						<th>AppLovin</th>
+													<td><pre>When ad received</pre></td>
+													<td><pre>Failed to receive ad</pre></td>
+													<td>&nbsp;</td>
+													<td>&nbsp;</td>
+													<td><pre>When ad removed/destroyed</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Chartboost</th>
+													<td><pre>When ad displayed</pre></td>
+													<td><pre>When failed to load ad</pre></td>
+													<td><pre>When clicked ad</pre></td>
+													<td><pre>When closed ad or v4vc should reward user</pre></td>
+													<td><pre>When ad removed from screen</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>HeyZap</th>
+													<td><pre>When ad is displayed</pre></td>
+													<td><pre>When failed to load ad</pre></td>
+													<td><pre>When ad clicked</pre></td>
+													<td><pre>When user successfully watched video for virtually currency</pre></td>
+													<td><pre>When ad gets removed</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>iAds</th>
+													<td><pre>When ad is displayed</pre></td>
+													<td><pre>When failed to load</pre></td>
+													<td><pre>When clicked on ad</pre></td>
+													<td><pre>when returned from the ad after cliking it</pre></td>
+													<td><pre>When ad dismissed</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>InMobi</th>
+													<td><pre>When ad showed</pre></td>
+													<td><pre>When failed to load</pre></td>
+													<td>&nbsp;</td>
+													<td>&nbsp;</td>
+													<td><pre>When ad dismissed</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Millenial</th>
+													<td><pre>When ad received</pre></td>
+													<td><pre>Failed to receive ad</pre></td>
+													<td>&nbsp;</td>
+													<td>&nbsp;</td>
+													<td><pre>When ad removed/destroyed</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>MoPub</th>
+													<td><pre>ad is received</pre></td>
+													<td><pre>failed to receive ad</pre></td>
+													<td><pre>on ad expand</pre></td>
+													<td><pre>on ad collapse</pre></td>
+													<td><pre>ad removed from screen</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Revmob</th>
+													<td><pre>When ad received</pre></td>
+													<td><pre>When ad failed</pre></td>
+													<td><pre>On user click</pre></td>
+													<td>&nbsp;</td>
+													<td><pre>when ad dismissed</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Samsung AdHub</th>
+													<td><pre>when ad is displayed</pre></td>
+													<td><pre>when could not retrieve ad</pre></td>
+													<td>&nbsp;</td>
+													<td>&nbsp;</td>
+													<td><pre>when ad is closed or removed</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>TapForTap</th>
+													<td><pre>When ad is received</pre></td>
+													<td><pre>Failed to receive ad</pre></td>
+													<td><pre>When clicked on ad</pre></td>
+													<td>&nbsp;</td>
+													<td><pre>When ad removed from screen</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>TapJoy</th>
+													<td><pre>When ad received</pre></td>
+													<td><pre>When ad failed</pre></td>
+													<td>&nbsp;</td>
+													<td>&nbsp;</td>
+													<td>&nbsp;</td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Vungle</th>
+													<td><pre>When video started</pre></td>
+													<td><pre>Failed to receive video or no available ad</pre></td>
+													<td>&nbsp;</td>
+													<td><pre>watched at least 80% 
+of video ad
+or video for currency
+</pre></td>
+													<td><pre>Video finished</pre></td>
+													<td><pre>Ad displayed on the screen</pre></td>
+											</tr>
+							</table>
+			<div>
+				<p><strong>Legend:</strong></p>
+				<table class='table table-bordered table-condensed' style='width: 100px;'>
+				<tr class='error'>
+					<td>Alpha</td>
+				</tr>
+				<tr class='warning'>
+					<td>Beta</td>
+				</tr>
+				<tr class='success'>
+					<td>Stable</td>
+				</tr>
+				</table>
+			</div>
+								</div>
+						<div class="tab-pane" id="install_android">
+											<p>Choose the frameworks you will use and delete all the unneeded based on file dependency table for each framework below</p>
+<p>Copy libs folder into your exported project</p>
+<p>Copy src folder into your exported project</p>
+<p>Add <code>System.loadLibrary("ads");</code> to your main activity</p>
+<p>Add <code>"com.giderosmobile.android.plugins.ads.Ads"</code> as external class in your main activity</p>
+<p>Modify AndroidManifest application tag based on the frameworks you want to use using table below</p>
+<p>Modify AndroidManifest permissions based on the frameworks you want to use using table below</p>
+									<table class="table table-bordered table-hover table-condensed">
+									<tr>
+						<td>&nbsp;</td>
+													<th>Application</th>
+													<th>Permission</th>
+													<th>Files</th>
+											</tr>
+														<tr class='success'>
+						<th>AdColony</th>
+													<td><pre>&lt;activity android:name=&quot;com.jirbo.adcolony.AdColonyOverlay&quot; android:configChanges=&quot;keyboardHidden|orientation|screenSize&quot; android:theme=&quot;@android:style/Theme.Translucent.NoTitleBar.Fullscreen&quot; /&gt;
+		&lt;activity android:name=&quot;com.jirbo.adcolony.AdColonyFullscreen&quot; android:configChanges=&quot;keyboardHidden|orientation|screenSize&quot; android:theme=&quot;@android:style/Theme.Black.NoTitleBar.Fullscreen&quot; /&gt;
+		&lt;activity android:name=&quot;com.jirbo.adcolony.AdColonyBrowser&quot; android:configChanges=&quot;keyboardHidden|orientation|screenSize&quot; android:theme=&quot;@android:style/Theme.Black.NoTitleBar.Fullscreen&quot; /&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;</pre></td>
+													<td><pre><ul><li>/libs/adcolony.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsAdcolony.java</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Admob</th>
+													<td><pre>&lt;!-- google play --&gt;
+&lt;meta-data android:name=&quot;com.google.android.gms.version&quot; android:value=&quot;@integer/google_play_services_version&quot; /&gt;
+&lt;activity android:name=&quot;com.google.android.gms.ads.AdActivity&quot; android:configChanges=&quot;keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize&quot; /&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot;/&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot;/&gt;</pre></td>
+													<td><pre><ul><li>/src/com/giderosmobile/android/plugins/ads/fraeworks/AdsAdmob.java (GooglePlay version)</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Amazon</th>
+													<td><pre>&lt;activity android:name=&quot;com.amazon.device.ads.AdActivity&quot; android:configChanges=&quot;keyboardHidden|orientation|screenSize&quot;/&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_WIFI_STATE&quot; /&gt;</pre></td>
+													<td><pre><ul><li>/libs/amazon-ads-version.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsAmazon.java</li></ul></pre></td>
+											</tr>
+									<tr class='error'>
+						<th>AppLovin</th>
+													<td><pre>&lt;!--Requies Google Play Services lib --&gt;
+&lt;meta-data android:name=&quot;applovin.sdk.key&quot;
+       android:value=&quot;your-key&quot;  /&gt;
+&lt;activity android:name=&quot;com.applovin.adview.AppLovinInterstitialActivity&quot; /&gt;
+&lt;activity android:name=&quot;com.applovin.adview.AppLovinConfirmationActivity&quot; /&gt;</pre></td>
+													<td><pre>&lt;!-- These permissions are mandatory to run AppLovin SDK --&gt;
+&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot;/&gt;
+&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;
+
+&lt;!-- These permissions are strongly recommended and will result in higher performance --&gt;
+
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.READ_PHONE_STATE&quot;/&gt;</pre></td>
+													<td><pre><ul><li>/libs/applovin-sdk-version.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsApplovin.java</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Chartboost</th>
+													<td><pre>&lt;activity android:name=&quot;com.chartboost.sdk.CBImpressionActivity&quot; android:configChanges=&quot;keyboardHidden|orientation|screenSize&quot; android:theme=&quot;@android:style/Theme.Translucent.NoTitleBar&quot; android:excludeFromRecents=&quot;true&quot; /&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_WIFI_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;</pre></td>
+													<td><pre><ul><li>/libs/chartboost.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsChartboost.java</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>HeyZap</th>
+													<td><pre>&lt;activity android:name=&quot;com.heyzap.sdk.ads.HeyzapInterstitialActivity&quot; android:configChanges=&quot;keyboardHidden|orientation|screenSize|smallestScreenSize&quot; /&gt;
+&lt;activity android:name=&quot;com.heyzap.sdk.ads.HeyzapVideoActivity&quot; android:configChanges=&quot;keyboardHidden|orientation|screenSize|smallestScreenSize&quot; /&gt;
+&lt;receiver android:name=&quot;com.heyzap.sdk.ads.PackageAddedReceiver&quot;&gt;
+    	&lt;intent-filter&gt;
+        	&lt;data android:scheme=&quot;package&quot;/&gt;
+        	&lt;action android:name=&quot;android.intent.action.PACKAGE_ADDED&quot;/&gt;
+    	&lt;/intent-filter&gt;
+&lt;/receiver&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot;/&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot;/&gt;</pre></td>
+													<td><pre><ul><li>/libs/heyzap-ads-sdk.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsHeyzap.java</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>InMobi</th>
+													<td><pre> &lt;activity android:name=&quot;com.inmobi.androidsdk.IMBrowserActivity&quot; android:configChanges=&quot;keyboardHidden|orientation|keyboard|smallestScreenSize|screenSize&quot; android:hardwareAccelerated=&quot;true&quot; /&gt;
+&lt;receiver
+            android:name=&quot;com.inmobi.commons.analytics.androidsdk.IMAdTrackerReceiver&quot;
+            android:enabled=&quot;true&quot;
+            android:exported=&quot;true&quot; &gt;
+    &lt;intent-filter&gt;
+        &lt;action android:name=&quot;com.android.vending.INSTALL_REFERRER&quot; /&gt;
+    &lt;/intent-filter&gt;
+&lt;/receiver&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;</pre></td>
+													<td><pre><ul><li>/libs/InMobiAdNetwork-version.jar</li><li>/libs/InMobiCommons-version.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsInmobi.java</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Millenial</th>
+													<td><pre>&lt;activity android:name=&quot;com.millennialmedia.android.MMActivity&quot; android:theme=&quot;@android:style/Theme.Translucent.NoTitleBar&quot; android:configChanges=&quot;keyboardHidden|orientation|keyboard&quot; &gt;&lt;/activity&gt;</pre></td>
+													<td><pre>&lt;uses-feature android:name=&quot;android.hardware.microphone&quot; android:required=&quot;false&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.RECORD_AUDIO&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;  
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;</pre></td>
+													<td><pre><ul><li>/libs/MMSDK.jar</li><li>/libs/nmdp_speech_kit.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsMillenial.java</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>MoPub</th>
+													<td><pre>&lt;activity android:name=&quot;com.mopub.mobileads.MoPubActivity&quot; android:configChanges=&quot;keyboardHidden|orientation&quot;/&gt;
+&lt;activity android:name=&quot;com.mopub.mobileads.MraidActivity&quot; android:configChanges=&quot;keyboardHidden|orientation&quot;/&gt;
+&lt;activity android:name=&quot;com.mopub.mobileads.MraidBrowser&quot; android:configChanges=&quot;keyboardHidden|orientation&quot;/&gt;
+&lt;activity android:name=&quot;com.mopub.mobileads.MraidVideoPlayerActivity&quot; android:configChanges=&quot;keyboardHidden|orientation&quot;/&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_COARSE_LOCATION&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot;/&gt;</pre></td>
+													<td><pre><ul><li>/libs/mopub-sdk.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsMopub.java</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Revmob</th>
+													<td><pre>&lt;activity android:name=&quot;com.revmob.ads.fullscreen.FullscreenActivity&quot; android:theme=&quot;@android:style/Theme.Translucent&quot; android:configChanges=&quot;keyboardHidden|orientation&quot;/&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot;/&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_WIFI_STATE&quot;/&gt;
+&lt;uses-permission android:name=&quot;android.permission.READ_PHONE_STATE&quot;/&gt;</pre></td>
+													<td><pre><ul><li>/libs/revmob-version.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsRevmob.java</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Samsung AdHub</th>
+													<td><pre>&lt;activity android:name=&quot;com.sec.android.ad.AdActivity&quot; android:configChanges=&quot;keyboardHidden|orientation|screenSize&quot; /&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot;/&gt;
+&lt;uses-permission android:name=&quot;android.permission.READ_EXTERNAL_STORAGE&quot;/&gt;
+&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot;/&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.WRITE_SETTINGS&quot;/&gt;</pre></td>
+													<td><pre><ul><li>/libs/SamsungAdHub_AndroidSDK_version_global.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsSamsung.java</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>TapForTap</th>
+													<td><pre>&lt;activity android:name=&quot;com.tapfortap.FullScreenAdActivity&quot; android:theme=&quot;@android:style/Theme.Translucent.NoTitleBar.Fullscreen&quot;/&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.READ_PHONE_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_WIFI_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;</pre></td>
+													<td><pre><ul><li>/libs/TapForTap.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsTapfortap.java</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>TapJoy</th>
+													<td><pre>&lt;activity android:name=&quot;com.tapjoy.TJCOffersWebView&quot; android:configChanges=&quot;orientation|keyboardHidden|screenSize&quot; /&gt;
+&lt;activity android:name=&quot;com.tapjoy.TapjoyFullScreenAdWebView&quot; android:configChanges=&quot;orientation|keyboardHidden|screenSize&quot; /&gt;
+&lt;activity android:name=&quot;com.tapjoy.TapjoyDailyRewardAdWebView&quot; android:configChanges=&quot;orientation|keyboardHidden|screenSize&quot; /&gt;
+&lt;activity android:name=&quot;com.tapjoy.TapjoyVideoView&quot; android:configChanges=&quot;orientation|keyboardHidden|screenSize&quot; /&gt;
+&lt;activity android:name=&quot;com.tapjoy.TJAdUnitView&quot; android:configChanges=&quot;orientation|keyboardHidden|screenSize&quot; android:theme=&quot;@android:style/Theme.Translucent.NoTitleBar.Fullscreen&quot; android:hardwareAccelerated=&quot;true&quot; /&gt;
+&lt;activity android:name=&quot;com.tapjoy.mraid.view.ActionHandler&quot; android:configChanges=&quot;orientation|keyboardHidden|screenSize&quot; /&gt;
+&lt;activity android:name=&quot;com.tapjoy.mraid.view.Browser&quot; android:configChanges=&quot;orientation|keyboardHidden|screenSize&quot; /&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.READ_PHONE_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_WIFI_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_FINE_LOCATION&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_COARSE_LOCATION&quot; /&gt;</pre></td>
+													<td><pre><ul><li>/libs/tapjoyconnectlibrary.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsTapjoy.java</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Vungle</th>
+													<td><pre>&lt;activity android:name=&quot;com.vungle.sdk.VungleAdvert&quot; android:configChanges=&quot;keyboardHidden|orientation|screenSize&quot; android:theme=&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot;/&gt;
+&lt;service android:name=&quot;com.vungle.sdk.VungleIntentService&quot;/&gt;</pre></td>
+													<td><pre>&lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.WRITE_EXTERNAL_STORAGE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_WIFI_STATE&quot; /&gt;
+&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;</pre></td>
+													<td><pre><ul><li>/libs/vungle-publisher-version.jar</li><li>/src/com/giderosmobile/android/plugins/ads/frameworks/AdsVungle.java</li></ul></pre></td>
+											</tr>
+							</table>
+			<div>
+				<p><strong>Legend:</strong></p>
+				<table class='table table-bordered table-condensed' style='width: 100px;'>
+				<tr class='error'>
+					<td>Alpha</td>
+				</tr>
+				<tr class='warning'>
+					<td>Beta</td>
+				</tr>
+				<tr class='success'>
+					<td>Stable</td>
+				</tr>
+				</table>
+			</div>
+								</div>
+						<div class="tab-pane" id="install_ios">
+											<p>Choose the frameworks you will use and delete all the unneeded based on file dependency table for each framework below</p>
+<p>Copy contents of Plugins directory into your exported project's Plugins directory</p>
+<p>Add copied files to your Xcode project (Check create groups for added folders)</p>
+<p>Add IOS frameworks that is required by your selected Ad provider from table below</p>
+<ol>
+<li>In the project navigator, select your project</li>
+<li>Select your target</li>
+<li>Select the 'Build Phases' tab</li>
+<li>Open 'Link Binaries With Libraries' expander</li>
+<li>Click the '+' button</li>
+<li>Select framework</li>
+<li>Click Add</li>
+</ol>
+<p><strong>Note: SystemConfiguration.framework is required by default</strong></p>
+<p>Add Other Linker flags that is required by your selected Ad provider from table below</p>
+									<table class="table table-bordered table-hover table-condensed">
+									<tr>
+						<td>&nbsp;</td>
+													<th>Frameworks</th>
+													<th>Linker</th>
+													<th>Files</th>
+											</tr>
+														<tr class='success'>
+						<th>AdColony</th>
+													<td><pre><ul><li>libz.1.2.5.dylib</li><li>AdColony.framework</li><li>AdSupport.framework (Set to Optional)</li><li>AudioToolbox.framework</li><li>AVFoundation.framework</li><li>CoreGraphics.framework</li><li>CoreMedia.framework</li><li>CoreTelephony.framework</li><li>EventKit.framework</li><li>EventKitUI.framework</li><li>MediaPlayer.framework</li><li>MessageUI.framework</li><li>QuartzCore.framework</li><li>Social.framework (Set to Optional)</li><li>StoreKit.framework (Set to Optional)</li><li>SystemConfiguration.framework</li></ul></pre></td>
+													<td><pre><ul><li>-ObjC</li><li>-fobjc-arc</li></ul></pre></td>
+													<td><pre><ul><li>/Plugins/Ads/AdColony.framework folder</li><li>/Plugins/Ads/AdsAdcolony.h</li><li>/Plugins/Ads/AdsAdcolony.m</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Admob</th>
+													<td><pre><ul><li>AdSupport</li><li>AudioToolbox</li><li>AVFoundation</li><li>CoreGraphics</li><li>CoreTelephony</li><li>EventKit</li><li>EventKitUI</li><li>MessageUI</li><li>StoreKit</li><li>SystemConfiguration</li></ul></pre></td>
+													<td><pre><ul><li>-ObjC</li></ul></pre></td>
+													<td><pre><ul><li>/Plugins/Ads/Admob folder</li><li>/Plugins/Ads/AdsAdmob.h</li><li>/Plugins/Ads/AdsAdmob.m</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Amazon</th>
+													<td><pre><ul><li>AdSupport</li><li>CoreLocation</li><li>SystemConfiguration</li><li>CoreTelephony</li><li>MediaPlayer</li></ul></pre></td>
+													<td>&nbsp;</td>
+													<td><pre><ul><li>/Plugins/Ads/AmazonAd.framework</li><li>/Plugins/Ads/AdsAmazon.h</li><li>/Plugins/Ads/AdsAmazon.m</li></ul></pre></td>
+											</tr>
+									<tr class='error'>
+						<th>AppLovin</th>
+													<td><pre><ul><li>AdSupport</li><li>CoreTelephony</li><li>CoreGraphics</li><li>MediaPlayer</li><li>SystemConfiguration</li><li>UIKit</li></ul></pre></td>
+													<td><pre><ul><li>-ObjC</li></ul></pre></td>
+													<td><pre><ul><li>/Plugins/Ads/Applovin folder</li><li>/Plugins/Ads/AdsApplovin.h</li><li>/Plugins/Ads/AdsApplovin.m</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Chartboost</th>
+													<td><pre><ul><li>QuartzCore</li><li>SystemConfiguration</li><li>CoreGraphics</li><li>AdSupport</li><li>StoreKit</li><li>CoreMedia</li><li>AVFoundation</li><li>CoreData</li></ul></pre></td>
+													<td>&nbsp;</td>
+													<td><pre><ul><li>/Plugins/Ads/Chartboost.framework</li><li>/Plugins/Ads/AdsChartboost.h</li><li>/Plugins/Ads/AdsChartboost.m</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>HeyZap</th>
+													<td><pre><ul><li>StoreKit</li><li>QuartzCore</li><li>CoreGraphics</li><li>AdSupport</li></ul></pre></td>
+													<td><pre><ul><li>-ObjC</li></ul></pre></td>
+													<td><pre><ul><li>/Plugins/Ads/HeyzapAds.framework</li><li>/Plugins/Ads/AdsHeyzap.h</li><li>/Plugins/Ads/AdsHeyzap.m</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>iAds</th>
+													<td><pre><ul><li>iAd</li></ul></pre></td>
+													<td>&nbsp;</td>
+													<td><pre><ul><li>/Plugins/Ads/AdsIad.h</li><li>/Plugins/Ads/AdsIad.m</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>InMobi</th>
+													<td><pre><ul><li>AdSupport.framework</li><li>AudioToolbox.framework</li><li>AVFoundation.framework</li><li>CoreTelephony.framework</li><li>MessageUI.framework</li><li>MediaPlayer.framework</li><li>Security.framework</li><li>SystemConfiguration.framework</li><li>StoreKit.framework</li><li>libsqlite3.0.dylib</li><li>libz.dylib</li></ul></pre></td>
+													<td><pre><ul><li>-ObjC</li></ul></pre></td>
+													<td><pre><ul><li>/Plugins/Ads/InMobi folder</li><li>/Plugins/Ads/AdsInmobi.h</li><li>/Plugins/Ads/AdsInmobi.m</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>MoPub</th>
+													<td><pre><ul><li>AdSupport.framework (*)</li><li>AudioToolbox.framework</li><li>AVFoundation.framework</li><li>CoreGraphics.framework</li><li>CoreLocation.framework</li><li>CoreTelephony.framework</li><li>iAd.framework</li><li>MediaPlayer.framework</li><li>MessageUI.framework</li><li>MobileCoreServices.framework</li><li>EventKit.framework</li><li>EventKitUI.framework</li><li>PassKit.framework (*)</li><li>QuartzCore.framework</li><li>Social.framework (*)</li><li>StoreKit.framework (*)</li><li>SystemConfiguration.framework</li><li>Twitter.framework (*)</li></ul></pre></td>
+													<td><pre><ul><li>-ObjC</li></ul></pre></td>
+													<td><pre><ul><li>/Plugins/Ads/MoPubSDK folder</li><li>/Plugins/Ads/AdsMopub.h</li><li>/Plugins/Ads/AdsMopub.m</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Revmob</th>
+													<td><pre><ul><li>SystemConfiguration.framework</li><li>StoreKit.framework</li><li>AdSupport.framework</li></ul></pre></td>
+													<td>&nbsp;</td>
+													<td><pre><ul><li>/Plugins/Ads/Revmob.framework folder</li><li>/Plugins/Ads/AdsRevmob.h</li><li>/Plugins/Ads/AdsRevmob.m</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>Samsung AdHub</th>
+													<td><pre><ul><li>AVFoundation.framework</li><li>CoreMedia.framework</li><li>AudioToolBox.framework</li><li>SystemConfiguration.framework</li><li>QuartzCore.framework.</li><li>MobileCoreServices.framework</li><li>MessageUI.framework</li><li>Foundation.framework</li><li>EventKit.framework</li><li>EventKitUI.framework</li><li>CoreMotion.framework</li><li>CoreLocation.framework</li><li>CoreFoundation.framework</li><li>CFNetwork.framework</li><li>MapKit.framework</li><li>MediaPlayer.framework</li><li>CoreTelephony.framework</li><li>UIKit.framework</li><li>CoreGraphics.framework</li><li>AdSupport.framework</li><li>libz.dylib</li><li>libsqlite3.0.dylib</li></ul></pre></td>
+													<td><pre><ul><li>-all_load</li><li>&ndash;ObjC</li></ul></pre></td>
+													<td><pre><ul><li>/Plugins/Ads/SamsungadHub folder</li><li>/Plugins/Ads/AdsSamsung.h</li><li>/Plugins/Ads/AdsSamsung.m</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>TapForTap</th>
+													<td><pre><ul><li>SystemConfiguration.framework</li><li>AdSupport.framework</li></ul></pre></td>
+													<td>&nbsp;</td>
+													<td><pre><ul><li>/Plugins/Ads/TapForTap/libTapForTap.a</li><li>/Plugins/Ads/TapForTap/TFTAppWall.h</li><li>/Plugins/Ads/TapForTap/TFTBanner.h</li><li>/Plugins/Ads/TapForTap/TFTInterstitial.h</li><li>/Plugins/Ads/TapForTap/TFTTapForTap.h</li><li>/Plugins/Ads/AdsTapfortap.h</li><li>/Plugins/Ads/AdsTapfortap.m</li><li></li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>TapJoy</th>
+													<td><pre><ul><li>AdSupport (Optional)</li><li>CFNetwork</li><li>CoreGraphics</li><li>CoreLocation</li><li>CoreMotion</li><li>CoreTelephony (Optional) </li><li>EvenKitUI</li><li>EventKit</li><li>Foundation</li><li>libsqlite3.0</li><li>libxml2</li><li>libz</li><li>MapKit</li><li>MediaPlayer</li><li>MessageUI</li><li>MobileCoreServices</li><li>QuartzCore</li><li>Social (Optional)</li><li>StoreKit</li><li>SystemConfiguration</li><li>Twitter</li><li>UIKit</li></ul></pre></td>
+													<td>&nbsp;</td>
+													<td><pre><ul><li>/Plugins/Ads/Tapjoy.embeddedframework</li><li>/Plugins/Ads/AdsTapjoy.h</li><li>/Plugins/Ads/AdsTapjoy.m</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Vungle</th>
+													<td><pre><ul><li>AVFoundation.framework</li><li>CFNetwork.framework</li><li>CoreGraphics.framework</li><li>AudioToolbox.framework</li><li>CoreMedia.framework</li><li>Foundation.framework</li><li>libz.dylib</li><li>MediaPlayer.framework</li><li>QuartzCore.framework</li><li>SystemConfiguration.framework</li><li>UIKit.framework</li><li>AdSupport.framework </li><li>StoreKit.framework </li><li>CoreLocation.framework</li></ul></pre></td>
+													<td><pre><ul><li>-ObjC</li></ul></pre></td>
+													<td><pre><ul><li>/Plugins/Ads/vunglepub.embeddedframework folder</li><li>/Plugins/Ads/AdsVungle.h</li><li>/Plugins/Ads/AdsVungle.m</li></ul></pre></td>
+											</tr>
+							</table>
+			<div>
+				<p><strong>Legend:</strong></p>
+				<table class='table table-bordered table-condensed' style='width: 100px;'>
+				<tr class='error'>
+					<td>Alpha</td>
+				</tr>
+				<tr class='warning'>
+					<td>Beta</td>
+				</tr>
+				<tr class='success'>
+					<td>Stable</td>
+				</tr>
+				</table>
+			</div>
+								</div>
+						<div class="tab-pane" id="example_code">
+								<pre><code>
+--require plugin
+require "ads"
+
+--initialize amazon
+amazon = Ads.new("amazon")
+amazon:setKey("amazon-key")
+
+--initialize admob
+admob = Ads.new("admob")
+admob:setKey("admob-key")
+
+--if amazon fails
+--show admob
+amazon:addEventListener(Event.AD_FAILED, function(e)
+	print("amazon AD_FAILED", e.error)
+	admob:showAd("auto")
+end)
+
+--if admob fails
+--show amazon
+admob:addEventListener(Event.AD_FAILED, function(e)
+	print("admob AD_FAILED", e.error)
+	amazon:showAd("auto")
+end)
+
+--start displaying amazon ads
+amazon:showAd("auto");
+
+</code></pre>
+					</div>
+	</div>
+			</div>
+	</div>
+
+  </div>
+    <!-- Footer
+    ================================================== -->
+		<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="ads.html#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/jquery-1.8.3.min.js.html"><\/script>')</script>
+		<script src="design/js/bootstrap.js"></script>
+		<script type="text/javascript" src="design/js/prettify.js"></script>
+		<script type="text/javascript" src="design/js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.item").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+			});
+		</script>
+  </body>
+</html>

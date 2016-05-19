@@ -68,8 +68,7 @@ gvfs-native.o \
 snappy.o \
 snappy-c.o \
 snappy-sinksource.o \
-snappy-stubs-internal.o \
-gmtime.o
+snappy-stubs-internal.o
 
 CXXFLAGS = -O2 -DGIDEROS_LIBRARY -fno-keep-inline-dllexport $(INCLUDEPATHS)
 
