@@ -8,20 +8,12 @@ This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.ph
 
 ]]
 
-local bit=require("bit")
-print("bitop output=",bit.tobit(0xffffffff))
-print("bitop bor=",bit.bor(1, 2, 4, 8))
-
-application:setBackgroundColor(255)
-
-cl=application:get("commandLine")
-print("command line=",cl)
-
-application:setFps(60)
-print ("hello from Lua!")
-
 -- load texture, create bitmap from it and set as background
-local background = Bitmap.new(Texture.new("sky_world.png"))
+local bgTexture=Texture.new("sky_world.png")
+local bgTextureP=Texture.new("field.png")
+
+local background = Bitmap.new(bgTexture)
+
 stage:addChild(background)
 
 -- these arrays contain the image file names of each frame
@@ -47,64 +39,29 @@ stage:addChild(bird2)
 stage:addChild(bird3)
 stage:addChild(bird4)
 
-local alertDialog = AlertDialog.new("Error: not found", "Try reinstalling all software", "Cancel","OK", "No Way!")
-local alertDialog2 = AlertDialog.new("Important Question", "Should the UK be a member of the EU?", "NOOOOO")
-
-local textInputDialog = TextInputDialog.new("Text Input","Enter your reg number","text","Cancel","YES","NO")
-local textInputDialog2 = TextInputDialog.new("Text Input2","Enter your phonr number","number","Cancel","Submit")
-
-local function onComplete(event)
-  print(event.buttonIndex, event.buttonText)
-end
-
-local function onComplete2(event)
-  print("Number 2:", event.buttonIndex, event.buttonText)
-end
-
-local function TonComplete(event)
-  print("TextInputDialog",event.buttonIndex, event.buttonText, event.text)
-  application:openUrl(event.text)
-end
-
-local function TonComplete2(event)
-  print("TextInputDialog 2:", event.buttonIndex, event.buttonText, event.text)
-end
-
-
-alertDialog:addEventListener(Event.COMPLETE, onComplete)
-alertDialog2:addEventListener(Event.COMPLETE, onComplete2)
-
-textInputDialog:addEventListener(Event.COMPLETE,TonComplete)
-textInputDialog2:addEventListener(Event.COMPLETE,TonComplete2)
-
-stage:addEventListener(Event.KEY_DOWN, function(event) 
- 				         if event.keyCode==KeyCode.F then 
-				           application:setFullScreen(true) 
-				         else 
-				           application:setFullScreen(false)
-					 end
-				       end)
-
-sound=Sound.new("1.wav")
-soundchannel=sound:play(0,false)
-soundchannel:setLooping(false)
---soundchannel:setPosition(300)
-soundchannel:setPitch(1.5)
-
-function onMouseDown(event)
-  if event.x>240 then
-    if event.y>160 then
-       textInputDialog:show()
-    else
-       textInputDialog2:show()
-    end
-  else
-    if event.y>160 then
-       alertDialog:show()
-    else
-       alertDialog2:show()
-    end
+function onKeyDown(event)
+  print (event.keyCode)
+  if event.keyCode==KeyCode.F then
+    application:setFullScreen(true)
+  elseif event.keyCode==KeyCode.W then
+    application:setFullScreen(false)
+  elseif event.keyCode==KeyCode.A then
+    application:setWindowSize(400,700)
+  elseif event.keyCode==KeyCode.P then
+    application:setOrientation(Application.PORTRAIT)
+    application:setWindowSize(300,600)
+    background:setTexture(bgTextureP)
+  elseif event.keyCode==KeyCode.L then
+    application:setOrientation(Application.LANDSCAPE_LEFT)
+    application:setWindowSize(300,600)
+    background:setTexture(bgTexture)
   end
 end
 
+function onMouseDown(event)
+print (event.x, event.y)
+end
+
+stage:addEventListener(Event.KEY_DOWN, onKeyDown)
 stage:addEventListener(Event.MOUSE_DOWN, onMouseDown)
+--application:setWindowSize(320,480)

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Reference Manual</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="../reference/design/assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../reference/design/assets/greference-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="../reference/design/assets/greference-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="../reference/design/assets/greference-72.png">
+		<link rel="apple-touch-icon-precomposed" href="../reference/design/assets/greference-57.png">
+
+		<!-- Le styles -->
+		<link href="design/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="design/css/font-awesome.min.css">
+		<link rel="stylesheet" href="design/css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="design/css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body>
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+		<div class="tabbable tabs-below">
+		<ul class="nav nav-tabs">
+												<li><a href="main.html">Main page</a></li>
+																<li><a href="ads.html">Ads Interface</a></li>
+																<li><a href="iab.html">In-app Billing</a></li>
+																<li class="active"><a href="controller.html">Controller</a></li>
+									</ul>
+		</div>
+  <div class="container-fluid">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row-fluid">
+      <div class="span12" style='min-height:1000px; padding-left: 20px;'>
+				<style>
+pre{
+	word-wrap:break-word;
+}
+</style>
+<div style='padding: 0 20px;'>
+						<h1>Controller</h1></br>
+	</div>
+<ul class="nav nav-tabs">
+						<li class="active"><a href="controller.html#description" data-toggle="tab">Description</a></li>
+								<li><a href="controller.html#api" data-toggle="tab">API Reference</a></li>
+								<li><a href="controller.html#buttons" data-toggle="tab">Buttons</a></li>
+								<li><a href="controller.html#OS_support" data-toggle="tab">OS Support</a></li>
+								<li><a href="controller.html#install_android" data-toggle="tab">Installation Android</a></li>
+								<li><a href="controller.html#install_ios" data-toggle="tab">Installation IOS</a></li>
+								<li><a href="controller.html#install_pc" data-toggle="tab">Installation Windows</a></li>
+								<li><a href="controller.html#install_mac" data-toggle="tab">Installation MacOS</a></li>
+								<li><a href="controller.html#example_code" data-toggle="tab">Code Example</a></li>
+			</ul>
+<div class="tab-content">
+						<div class="tab-pane active" id="description">
+								<p>Controller interface allows you to use most popular controllers on all supported operating systems under the same interface.</p>
+<p>Internally Controller Interface also matches all buttons and controller behavior under the same scheme so you won't have to worry about that anymore.</p>
+<p><strong>What Controller Interface provides:</strong></p>
+<ul>
+<li>Using same interface across all supported Operating systems</li>
+<li>Using same interface across all supported controllers</li>
+<li>Support for multiple controller types on same market/device (As playing with Xbox or Moga controller on OUYA)</li>
+<li>Easier additions of support for future controllers </li>
+<li>Providing controller layer, which would easily allow you to combine gameplay with or without controllers in the same app</li>
+<li>Controller layer would easily allow you to port your touch based interface (as menu buttons) to controller selectable buttons</li>
+</ul>
+<p><strong>Gameplay guidelines/suggestions</strong></p>
+<p>Buttton A is always Yes/Accept, button B is always no/cancel/back</p>
+<p>Don't use both Left joystick and dpad for different functionalities in your game, because for some controllers without joysticks, dpad matches both dpads digital button events and analog joystick events</p>
+<p>Use BUTTON_MENU to pause your game and present menu in pause screen</p>
+					</div>
+						<div class="tab-pane" id="api">
+								<h2>Methods</h2>
+<ul>
+<li>controller:isAnyAvailable() - return bool, true if any controller is connected</li>
+<li>controller:getPlayerCount() - get amount of connected players/controllers</li>
+<li>controller:getControllerName(playerId) - get type of controller</li>
+<li>controller:getPlayers() - return table with player Ids</li>
+<li>controller:virbate(ms) - vibrate controller (if supported) for ms milliseconds</li>
+</ul>
+<h2>Events</h2>
+<ul>
+<li>Event.RIGHT_JOYSTICK
+<ul>
+<li>e.x - x vector</li>
+<li>e.y - y vector</li>
+<li>e.angle - angle of joystick</li>
+<li>e.strength - distance vector from center</li>
+<li>e.x - x vector</li>
+<li>e.playerId - id of player/controller</li>
+</ul>
+</li>
+<li>Event.LEFT_JOYSTICK
+<ul>
+<li>e.x - x vector</li>
+<li>e.y - y vector</li>
+<li>e.angle - angle of joystick</li>
+<li>e.strength - distance vector from center</li>
+<li>e.x - x vector</li>
+<li>e.playerId - id of player/controller</li>
+</ul>
+</li>
+<li>Event.KEY_DOWN
+<ul>
+<li>e.keyCode - which button was pressed</li>
+<li>e.playerId - id of player/controller</li>
+</ul>
+</li>
+<li>Event.KEY_UP
+<ul>
+<li>e.keyCode - which button was released</li>
+<li>e.playerId - id of player/controller</li>
+</ul>
+</li>
+<li>Event.RIGHT_TRIGGER
+<ul>
+<li>e.strength - strength of press (from 0 to 1)</li>
+<li>e.playerId - id of player/controller</li>
+</ul>
+</li>
+<li>Event.LEFT_TRIGGER
+<ul>
+<li>e.strength - strength of press (from 0 to 1)</li>
+<li>e.playerId - id of player/controller</li>
+</ul>
+</li>
+<li>Event.CONNECTED
+<ul>
+<li>e.playerId - id of player/controller</li>
+</ul>
+</li>
+<li>Event.DISCONNECTED
+<ul>
+<li>e.playerId - id of player/controller</li>
+</ul>
+</li>
+</ul>
+<h2>Constants</h2>
+<ul>
+<li>KeyCode.BUTTON_A</li>
+<li>KeyCode.BUTTON_B</li>
+<li>KeyCode.BUTTON_X</li>
+<li>KeyCode.BUTTON_Y</li>
+<li>KeyCode.DPAD_DOWN</li>
+<li>KeyCode.DPAD_UP</li>
+<li>KeyCode.DPAD_LEFT</li>
+<li>KeyCode.DPAD_RIGHT</li>
+<li>KeyCode.BUTTON_MENU</li>
+<li>KeyCode.BUTTON_BACK</li>
+<li>KeyCode.BUTTON_L1</li>
+<li>KeyCode.BUTTON_R1</li>
+<li>KeyCode.BUTTON_L2</li>
+<li>KeyCode.BUTTON_R2</li>
+<li>KeyCode.BUTTON_L3</li>
+<li>KeyCode.BUTTON_R3</li>
+</ul>
+					</div>
+						<div class="tab-pane" id="buttons">
+														<table class="table table-bordered table-hover table-condensed">
+									<tr>
+						<td>&nbsp;</td>
+													<th>BUTTON_A</th>
+													<th>BUTTON_B</th>
+													<th>BUTTON_X</th>
+													<th>BUTTON_Y</th>
+													<th>BUTTON_MENU</th>
+													<th>BUTTON_BACK</th>
+													<th>BUTTON_L1</th>
+													<th>BUTTON_R1</th>
+													<th>BUTTON_L2</th>
+													<th>BUTTON_R2</th>
+													<th>BUTTON_L3</th>
+													<th>BUTTON_R3</th>
+													<th>DPAD_LEFT</th>
+													<th>DPAD_RIGHT</th>
+													<th>DPAD_UP</th>
+													<th>DPAD_DOWN</th>
+											</tr>
+														<tr class='warning'>
+						<th>Gametel</th>
+													<td><pre>IOS: Button L1
+Android: Button A</pre></td>
+													<td><pre>IOS: Button R1
+Android: Button B</pre></td>
+													<td><pre>IOS: Select
+Android: Button X</pre></td>
+													<td><pre>IOS: Start
+Android: Button Y</pre></td>
+													<td><pre>IOS: Button B
+Android: Start</pre></td>
+													<td><pre>IOS: Button A
+Android: Select</pre></td>
+													<td><pre>IOS: Button Y
+Android: Button L1</pre></td>
+													<td><pre>IOS: Button X
+Android: Button R1</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Direction Pad Left</pre></td>
+													<td><pre>Direction Pad Right</pre></td>
+													<td><pre>Direction Pad Up</pre></td>
+													<td><pre>Direction Pad Down</pre></td>
+											</tr>
+									<tr class='error'>
+						<th>Green Throttle</th>
+													<td><pre>Button A</pre></td>
+													<td><pre>Button B</pre></td>
+													<td><pre>Button X</pre></td>
+													<td><pre>Button Y</pre></td>
+													<td><pre>Start
+System Button</pre></td>
+													<td><pre>Back button</pre></td>
+													<td><pre>Button L1</pre></td>
+													<td><pre>Button R1</pre></td>
+													<td><pre>Trigger L2</pre></td>
+													<td><pre>Trigger R2</pre></td>
+													<td><pre>Left Joystick</pre></td>
+													<td><pre>Right Joystick</pre></td>
+													<td><pre>Direction Pad Left</pre></td>
+													<td><pre>Direction Pad Right</pre></td>
+													<td><pre>Direction Pad Up</pre></td>
+													<td><pre>Direction Pad Down</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>ICade</th>
+													<td><pre>Button A</pre></td>
+													<td><pre>Button B</pre></td>
+													<td><pre>Button X</pre></td>
+													<td><pre>Button Y</pre></td>
+													<td><pre>Right Trigger</pre></td>
+													<td><pre>Left Trigger</pre></td>
+													<td><pre>Button L1</pre></td>
+													<td><pre>Button R1</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Direction Pad Left</pre></td>
+													<td><pre>Direction Pad Right</pre></td>
+													<td><pre>Direction Pad Up</pre></td>
+													<td><pre>Direction Pad Down</pre></td>
+											</tr>
+									<tr class='error'>
+						<th>IOS7 MFI</th>
+													<td><pre>Button A</pre></td>
+													<td><pre>Button B</pre></td>
+													<td><pre>Button X</pre></td>
+													<td><pre>Button Y</pre></td>
+													<td><pre>Pause</pre></td>
+													<td>&nbsp;</td>
+													<td><pre>Button L1</pre></td>
+													<td><pre>Button R1</pre></td>
+													<td><pre>Button L2</pre></td>
+													<td><pre>Button R1</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Direction Pad Left</pre></td>
+													<td><pre>Direction Pad Right</pre></td>
+													<td><pre>Direction Pad Up</pre></td>
+													<td><pre>Direction Pad Down</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Moga</th>
+													<td><pre>Button A</pre></td>
+													<td><pre>Button B</pre></td>
+													<td><pre>Button X</pre></td>
+													<td><pre>Button Y</pre></td>
+													<td><pre>Start</pre></td>
+													<td><pre>Select</pre></td>
+													<td><pre>Button L1</pre></td>
+													<td><pre>Button R1</pre></td>
+													<td><pre>Trigger L2</pre></td>
+													<td><pre>Trigger R2</pre></td>
+													<td><pre>Left Joystick</pre></td>
+													<td><pre>Right Joystick</pre></td>
+													<td><pre>Direction Pad Left</pre></td>
+													<td><pre>Direction Pad Right</pre></td>
+													<td><pre>Direction Pad Up</pre></td>
+													<td><pre>Direction Pad Down</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>OUYA</th>
+													<td><pre>Button O</pre></td>
+													<td><pre>Button A</pre></td>
+													<td><pre>Button U</pre></td>
+													<td><pre>Button Y</pre></td>
+													<td><pre>System Button</pre></td>
+													<td><pre>no button</pre></td>
+													<td><pre>Button L1</pre></td>
+													<td><pre>Button R1</pre></td>
+													<td><pre>Trigger L2</pre></td>
+													<td><pre>Trigger R2</pre></td>
+													<td><pre>Left Joystick</pre></td>
+													<td><pre>Right Joystick</pre></td>
+													<td><pre>Direction Pad Left</pre></td>
+													<td><pre>Direction Pad Right</pre></td>
+													<td><pre>Direction Pad Up</pre></td>
+													<td><pre>Direction Pad Down</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>PS3 DS</th>
+													<td><pre>Cross Button</pre></td>
+													<td><pre>Circle Button</pre></td>
+													<td><pre>Square Button</pre></td>
+													<td><pre>Triangle Button</pre></td>
+													<td><pre>System Button, Start Button</pre></td>
+													<td><pre>Select Button</pre></td>
+													<td><pre>Button L1</pre></td>
+													<td><pre>Button R1</pre></td>
+													<td><pre>Left Trigger</pre></td>
+													<td><pre>Right Trigger</pre></td>
+													<td><pre>Left Stick</pre></td>
+													<td><pre>Right Stick</pre></td>
+													<td><pre>Direction Pad Left</pre></td>
+													<td><pre>Direction Pad Right</pre></td>
+													<td><pre>Direction Pad Up</pre></td>
+													<td><pre>Direction Pad Down</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Xbox</th>
+													<td><pre>Button A</pre></td>
+													<td><pre>Button B</pre></td>
+													<td><pre>Button X</pre></td>
+													<td><pre>Button Y</pre></td>
+													<td><pre>Start
+System Button </pre></td>
+													<td><pre>Select</pre></td>
+													<td><pre>Button L1</pre></td>
+													<td><pre>Button R1</pre></td>
+													<td><pre>Trigger L2</pre></td>
+													<td><pre>Trigger R2</pre></td>
+													<td><pre>Left Joystick</pre></td>
+													<td><pre>Right Joystick</pre></td>
+													<td><pre>Direction Pad Left</pre></td>
+													<td><pre>Direction Pad Right</pre></td>
+													<td><pre>Direction Pad Up</pre></td>
+													<td><pre>Direction Pad Down</pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>XPeria Play</th>
+													<td><pre>Cross Button</pre></td>
+													<td><pre>Circle Button</pre></td>
+													<td><pre>Square Button</pre></td>
+													<td><pre>Triangle Button</pre></td>
+													<td><pre>Menu Button, Start Button</pre></td>
+													<td><pre>Select Button, Back Button</pre></td>
+													<td><pre>Button L</pre></td>
+													<td><pre>Button R</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Does not exist</pre></td>
+													<td><pre>Direction Pad Left</pre></td>
+													<td><pre>Direction Pad Right</pre></td>
+													<td><pre>Direction Pad Up</pre></td>
+													<td><pre>Direction Pad Down</pre></td>
+											</tr>
+							</table>
+			<div>
+				<p><strong>Legend:</strong></p>
+				<table class='table table-bordered table-condensed' style='width: 100px;'>
+				<tr class='error'>
+					<td>Alpha</td>
+				</tr>
+				<tr class='warning'>
+					<td>Beta</td>
+				</tr>
+				<tr class='success'>
+					<td>Stable</td>
+				</tr>
+				</table>
+			</div>
+								</div>
+						<div class="tab-pane" id="OS_support">
+														<table class="table table-bordered table-hover table-condensed">
+									<tr>
+						<td>&nbsp;</td>
+													<th>windows</th>
+													<th>MacOS</th>
+													<th>Android</th>
+													<th>IOS</th>
+											</tr>
+														<tr class='warning'>
+						<th>Gametel</th>
+													<td><pre>No support</pre></td>
+													<td><pre>No support</pre></td>
+													<td><pre>Android 3.1+</pre></td>
+													<td><pre>IOS 5+</pre></td>
+											</tr>
+									<tr class='error'>
+						<th>Green Throttle</th>
+													<td><pre>Only USB mode</pre></td>
+													<td><pre>Only USB mode</pre></td>
+													<td><pre>Android 4.0+</pre></td>
+													<td><pre>No support</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>ICade</th>
+													<td><pre>No support</pre></td>
+													<td><pre>No support</pre></td>
+													<td><pre>No support</pre></td>
+													<td><pre>IOS 5+</pre></td>
+											</tr>
+									<tr class='error'>
+						<th>IOS7 MFI</th>
+													<td><pre>No support</pre></td>
+													<td><pre>No support</pre></td>
+													<td><pre>No support</pre></td>
+													<td><pre>IOS 7</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Moga</th>
+													<td><pre>No driver</pre></td>
+													<td><pre>No driver</pre></td>
+													<td><pre>Mode A Android 2.3 (with Moga SDK)
+Mode B Android 3.1.x</pre></td>
+													<td><pre>No support</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>OUYA</th>
+													<td><pre>Full support</pre></td>
+													<td><pre>Unusable (OUYA driver problems)</pre></td>
+													<td><pre>Android 3.1.x</pre></td>
+													<td><pre>No support</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>PS3 DS</th>
+													<td><pre>As Xbox 360 Controller through MotionJoy DS3 tool</pre></td>
+													<td><pre>Full support</pre></td>
+													<td><pre>Full support</pre></td>
+													<td><pre>No support</pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Xbox</th>
+													<td><pre>No event for System Button</pre></td>
+													<td><pre>Full support</pre></td>
+													<td><pre>Android 3.1.x</pre></td>
+													<td><pre>No support</pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>XPeria Play</th>
+													<td><pre>No support</pre></td>
+													<td><pre>No support</pre></td>
+													<td><pre>Android 3.1.x</pre></td>
+													<td><pre>No support</pre></td>
+											</tr>
+							</table>
+			<div>
+				<p><strong>Legend:</strong></p>
+				<table class='table table-bordered table-condensed' style='width: 100px;'>
+				<tr class='error'>
+					<td>Alpha</td>
+				</tr>
+				<tr class='warning'>
+					<td>Beta</td>
+				</tr>
+				<tr class='success'>
+					<td>Stable</td>
+				</tr>
+				</table>
+			</div>
+								</div>
+						<div class="tab-pane" id="install_android">
+											<p>Copy libs folder into your exported project</p>
+<p>Copy src folder into your exported project</p>
+<p>Add <code>System.loadLibrary("controller");</code> to your main activity</p>
+<p>Add <code>"com.giderosmobile.android.plugins.controller.GControllerManager"</code> as external class in your main activity</p>
+<p>Add <code>import com.giderosmobile.android.plugins.controller.GControllerDefault;</code> to the import section of your main activity</p>
+<p>Modify onKeyDown event in your main activity like this:
+<pre><code>@Override
+public boolean onKeyDown(int keyCode, KeyEvent event)
+{
+	if(GControllerDefault.onKeyDown(keyCode, event))
+		return true;
+	GiderosApplication app = GiderosApplication.getInstance();
+	if (app != null && app.onKeyDown(keyCode, event) == true)
+		return true;
+		
+	return super.onKeyDown(keyCode, event);
+}</code></pre></p>
+<p>Modify onKeyUp event in your main activity like this:
+<pre><code>@Override
+public boolean onKeyUp(int keyCode, KeyEvent event)
+{
+	if(GControllerDefault.onKeyUp(keyCode, event))
+		return true;
+	GiderosApplication app = GiderosApplication.getInstance();
+	if (app != null && app.onKeyUp(keyCode, event) == true)
+		return true;
+		
+	return super.onKeyUp(keyCode, event);
+}</code></pre></p>
+<p>Add onGenericMotionEvent event in your main activity like this:
+<pre><code>public boolean onGenericMotionEvent(MotionEvent event) {
+	if(GControllerDefault.onGenericMotionEvent(event))
+		return true;
+	return super.onGenericMotionEvent(event);
+}</code></pre></p>
+									<table class="table table-bordered table-hover table-condensed">
+									<tr>
+						<td>&nbsp;</td>
+													<th>Files</th>
+											</tr>
+														<tr class='warning'>
+						<th>Gametel</th>
+													<td><pre><ul><li>no specific files</li></ul></pre></td>
+											</tr>
+									<tr class='error'>
+						<th>Green Throttle</th>
+													<td><pre><ul><li>src\com\giderosmobile\android\plugins\controller\GControllerGreenThrottle.java</li><li>libs\JavaInputUnifierVersion.jar</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Moga</th>
+													<td><pre><ul><li>(Files required only for Mode A support)</li><li>src\com\giderosmobile\android\plugins\controller\GControllerMoga.java</li><li>libs\com.bda.controller.jar</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>OUYA</th>
+													<td><pre><ul><li>no specific files</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>PS3 DS</th>
+													<td><pre><ul><li>no specific files</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>Xbox</th>
+													<td><pre><ul><li>no specific files</li></ul></pre></td>
+											</tr>
+									<tr class='warning'>
+						<th>XPeria Play</th>
+													<td><pre><ul><li>no specific files</li></ul></pre></td>
+											</tr>
+							</table>
+			<div>
+				<p><strong>Legend:</strong></p>
+				<table class='table table-bordered table-condensed' style='width: 100px;'>
+				<tr class='error'>
+					<td>Alpha</td>
+				</tr>
+				<tr class='warning'>
+					<td>Beta</td>
+				</tr>
+				<tr class='success'>
+					<td>Stable</td>
+				</tr>
+				</table>
+			</div>
+								</div>
+						<div class="tab-pane" id="install_ios">
+											<p>Copy files you will use into your project</p>
+<p>Add the files to xCode</p>
+<p>Add IOS7 Game Controller framework as optional</p>
+									<table class="table table-bordered table-hover table-condensed">
+									<tr>
+						<td>&nbsp;</td>
+													<th>Files</th>
+											</tr>
+														<tr class='warning'>
+						<th>Gametel</th>
+													<td><pre><ul><li>Controller/GControllerIcade.h</li><li>Controller/GControllerIcade.m</li><li>Controller/iCadeReaderView.h</li><li>Controller/iCadeReaderView.m</li><li>Controller/iCadeState.h</li></ul></pre></td>
+											</tr>
+									<tr class='success'>
+						<th>ICade</th>
+													<td><pre><ul><li>Controller/GControllerIcade.h</li><li>Controller/GControllerIcade.m</li><li>Controller/iCadeReaderView.h</li><li>Controller/iCadeReaderView.m</li><li>Controller/iCadeState.h</li></ul></pre></td>
+											</tr>
+									<tr class='error'>
+						<th>IOS7 MFI</th>
+													<td><pre><ul><li>Controller/GControllerDefault.h</li><li>Controller/GControllerDefault.m</li></ul></pre></td>
+											</tr>
+							</table>
+			<div>
+				<p><strong>Legend:</strong></p>
+				<table class='table table-bordered table-condensed' style='width: 100px;'>
+				<tr class='error'>
+					<td>Alpha</td>
+				</tr>
+				<tr class='warning'>
+					<td>Beta</td>
+				</tr>
+				<tr class='success'>
+					<td>Stable</td>
+				</tr>
+				</table>
+			</div>
+								</div>
+						<div class="tab-pane" id="install_pc">
+											<p>Copy controller.dll into Plugins folder inside your Gideros installation directory</p>
+											</div>
+						<div class="tab-pane" id="install_mac">
+											<p>Copy libcontroller.dylib into Plugins folder inside your Gideros installation directory</p>
+											</div>
+						<div class="tab-pane" id="example_code">
+								<pre><code>require "controller"
+
+controller:addEventListener(Event.KEY_DOWN, function(e)
+	print("Button Down ", e.playerId, e.keyCode, findKeyCode(e.keyCode))
+end)
+
+controller:addEventListener(Event.KEY_UP, function(e)
+	print("Button Up ", e.playerId, e.keyCode, findKeyCode(e.keyCode))
+end)
+
+controller:addEventListener(Event.RIGHT_JOYSTICK, function(e)
+	print("Player: ", e.playerId)
+	print("RIGHT_JOYSTICK:", "x:"..e.x, "y:"..e.y, "angle:"..e.angle, "strength:"..e.strength)
+end)
+
+controller:addEventListener(Event.LEFT_JOYSTICK, function(e)
+	print("Player: ", e.playerId)
+	print("LEFT_JOYSTICK:", "x:"..e.x, "y:"..e.y, "angle:"..e.angle, "strength:"..e.strength)
+end)
+
+controller:addEventListener(Event.RIGHT_TRIGGER, function(e)
+	print("Player: ", e.playerId)
+	print("RIGHT_TRIGGER:", "strength:"..e.strength)
+end)
+
+controller:addEventListener(Event.LEFT_TRIGGER, function(e)
+	print("Player: ", e.playerId)
+	print("LEFT_TRIGGER:", "strength:"..e.strength)
+end)
+
+controller:addEventListener(Event.CONNECTED, function(e)
+	print("Player: ", e.playerId, "connected")
+	print("Are there any controllers?", controller:isAnyAvailable())
+	print("Controller count", controller:getPlayerCount())
+	print("Name of controller "..e.playerId, controller:getControllerName(e.playerId))
+	print("players", #controller:getPlayers())
+end)
+
+controller:addEventListener(Event.DISCONNECTED, function(e)
+	print("Player: ", e.playerId, "disconnected")
+end)</code></pre>
+					</div>
+	</div>
+			</div>
+	</div>
+
+  </div>
+    <!-- Footer
+    ================================================== -->
+		<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="controller.html#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/jquery-1.8.3.min.js.html"><\/script>')</script>
+		<script src="design/js/bootstrap.js"></script>
+		<script type="text/javascript" src="design/js/prettify.js"></script>
+		<script type="text/javascript" src="design/js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.item").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+			});
+		</script>
+  </body>
+</html>

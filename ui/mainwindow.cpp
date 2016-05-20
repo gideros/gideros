@@ -2863,18 +2863,21 @@ void MainWindow::helpAndSupport()
 
 void MainWindow::apiDocumentation()
 {
-    /*
+
 #if defined(Q_OS_MAC)
-	QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/reference_manual.html")));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/reference.html")));
 #else
-	QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/reference_manual.html")));
-#endif*/
-    QDesktopServices::openUrl(QUrl("http://docs.giderosmobile.com/reference/"));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/reference.html")));
+#endif
 }
 
 void MainWindow::giderosDocumentation()
 {
-    QDesktopServices::openUrl(QUrl("http://docs.giderosmobile.com/"));
+#if defined(Q_OS_MAC)
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("../../Documentation/index.html")));
+#else
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath("Documentation/index.html")));
+#endif
 }
 
 

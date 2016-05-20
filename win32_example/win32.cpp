@@ -51,12 +51,12 @@ extern "C" {
 HWND hwndcopy;
 
 char commandLine[256];
-int dxChrome,dyChrome;
+// int dxChrome,dyChrome;
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT;
+LuaApplication *application_;
 
-static LuaApplication *application_;
-static int g_windowWidth;    // width if window was in portrait mode
+static int g_windowWidth;    // width if window was in portrait mode [used only to communicate between loadProperties and WM_CREATE]
 static int g_windowHeight;   // height if window was in portrait mode > windowWidth
 static bool g_portrait, drawok;
 static bool use_timer=false;
@@ -339,6 +339,8 @@ void loadProperties()
   buffer >> properties.touchToMouse;
   buffer >> properties.mouseTouchOrder;
 
+  //  properties.scaleMode=3; (letterbox) for testing
+
   printf("properties components\n");
   printf("logicalWidth, logicalHeight, orientation, scaleMode=%d %d %d %d\n",
 	 properties.logicalWidth, properties.logicalHeight, 
@@ -409,6 +411,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
       exit(1);
     }
 
+    hwndcopy=hwnd;                  // for platform-win32
+
     // gpath & gvfs
     gpath_init();
     gpath_addDrivePrefix(0, "|R|");
@@ -473,18 +477,44 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     application_->setPrintFunc(printFunc);
     
     loadProperties();
+
+    //    GetClientRect(hwnd,&clientRect);
+    //    GetWindowRect(hwnd,&winRect);
+
+    //    dxChrome=winRect.right-winRect.left-(clientRect.right-clientRect.left);
+    //    dyChrome=winRect.bottom-winRect.top-(clientRect.bottom-clientRect.top);
+
+    if (g_portrait){
+      RECT rect;
+      rect.top=0;
+      rect.left=0;
+      rect.right=g_windowWidth;
+      rect.bottom=g_windowHeight;
+
+      printf("WM_CREATE: portrait input rect = %d %d\n",rect.right,rect.bottom);
+      AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
+      printf("adjusted rect = %d %d %d %d\n",rect.left,rect.top,rect.right,rect.bottom);
+
+      //      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowWidth+dxChrome+13,g_windowHeight+dyChrome+13,SWP_NOMOVE);
+      SetWindowPos(hwnd,HWND_TOP,0,0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE);
+    }
+    else {
+      RECT rect;
+      rect.left=0;
+      rect.top=0;
+      rect.right=g_windowHeight;
+      rect.bottom=g_windowWidth;
+
+      printf("WM_CREATE landscape input rect = %d %d\n",rect.right,rect.bottom);
+      AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
+      printf("adjusted rect = %d %d %d %d\n",rect.left,rect.top,rect.right,rect.bottom);
+
+//      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowHeight+dxChrome+14,g_windowWidth+dyChrome+14,SWP_NOMOVE);
+      SetWindowPos(hwnd,HWND_TOP,0,0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE);
+    }
+
     loadLuaFiles();
-
-    GetClientRect(hwnd,&clientRect);
-    GetWindowRect(hwnd,&winRect);
-
-    dxChrome=winRect.right-winRect.left-(clientRect.right-clientRect.left);
-    dyChrome=winRect.bottom-winRect.top-(clientRect.bottom-clientRect.top);
-
-    if (g_portrait)
-      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowWidth+dxChrome,g_windowHeight+dyChrome,SWP_NOMOVE);
-    else
-      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowHeight+dxChrome,g_windowWidth+dyChrome,SWP_NOMOVE);
+    printf("Loaded Lua files\n");
 
     return 0;
   }
@@ -493,28 +523,22 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     int width=LOWORD(lParam);
     int height=HIWORD(lParam);
 
-    Orientation hardwareOrientation;
-    Orientation deviceOrientation;
+    //    printf("WM_SIZE: %d x %d\n",width,height);
 
-    if (width<height){
-      g_windowWidth=width;
-      g_windowHeight=height;
-      hardwareOrientation = ePortrait;
-      deviceOrientation = ePortrait;
+    int windowWidth, windowHeight;
+
+    if (application_->orientation()==ePortrait || application_->orientation()==ePortraitUpsideDown){              // previously width < height
+      windowWidth=width;
+      windowHeight=height;
     }
     else {
-      g_windowWidth=height;
-      g_windowHeight=width;
-      hardwareOrientation = eLandscapeLeft;
-      deviceOrientation = eLandscapeLeft;
+      windowWidth=height;
+      windowHeight=width;
     }
 
     float contentScaleFactor = 1;
-    application_->setResolution(g_windowWidth  * contentScaleFactor, 
-				g_windowHeight * contentScaleFactor);
-
-    application_->setHardwareOrientation(hardwareOrientation);
-    application_->getApplication()->setDeviceOrientation(deviceOrientation);
+    application_->setResolution(windowWidth  * contentScaleFactor, 
+				windowHeight * contentScaleFactor);
     
     return 0;
   }
@@ -710,7 +734,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		       NULL) ;		             // creation parameters
 
   setWin32Stuff(hInstance,hwnd);
-  hwndcopy=hwnd;                  // for platform-win32
 
   // ----------------------------------------------------------------------
   // Create window

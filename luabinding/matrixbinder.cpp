@@ -1,3 +1,4 @@
+#include <string.h>
 #include "matrixbinder.h"
 #include "stackchecker.h"
 #include <transform.h>

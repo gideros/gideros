@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Documentation</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/gdocs-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/gdocs-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/gdocs-72.png">
+		<link rel="apple-touch-icon-precomposed" href="assets/gdocs-57.png">
+
+		<!-- Le styles -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+		<link rel="stylesheet" href="css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar" data-offset="20">
+
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+		 <div class="span4 bs-docs-sidebar">
+		<div id='contents' data-spy="affix" data-offset-top="150">
+		<h1>Table of Contents</h1>
+        <ul class="nav nav-list bs-docs-sidenav">
+          <li><a href="index.html"><i class="icon-chevron-right"></i> <strong>1. Getting started</strong></a></li>
+          <li><a href="deployment.html"><i class="icon-chevron-right"></i> <strong>2. Deployment to device</strong></a></li>
+          <li><a href="reference.html" target='_blank'><i class="icon-chevron-right"></i> <strong>3. Reference manual</strong></a></li>
+          <li><a href="classes_in_gideros.html"><i class="icon-chevron-right"></i> <strong>4. Classes in Gideros</strong></a></li>
+          <li><a href="events.htm"><i class="icon-chevron-right"></i> <strong>5. Event system</strong></a></li>
+          <li><a href="file_system.html"><i class="icon-chevron-right"></i> <strong>6. File system</strong></a></li>
+          <li><a href="automatic_image_resolution.html"><i class="icon-chevron-right"></i> <strong>7. Automatic image resolution</strong></a></li>
+          <li><a href="automatic_screen_scaling.html"><i class="icon-chevron-right"></i> <strong>8. Automatic screen scaling</strong></a></li>
+        </ul>
+		</div>
+      </div>
+      <div class="span8">
+
+		<h1>Getting Started</h1>
+		
+<ul class="nav nav-tabs">
+  <li class="active"><a href="index.html#create" data-toggle="tab">Creating a New Project</a></li>
+  <li><a href="index.html#first" data-toggle="tab">Your First Code</a></li>
+  <li><a href="index.html#player" data-toggle="tab">Gideros Player</a></li>
+  <li><a href="index.html#assets" data-toggle="tab">Adding Assets</a></li>
+  <li><a href="index.html#device" data-toggle="tab">Device Player</a></li>
+</ul>
+<div class="tab-content">
+<section class="tab-pane active" id="create">
+
+<h2>Video Tutorial</h2>
+
+<iframe width="768" height="480" src="https://www.youtube.com/embed/IRLxBijIX50" frameborder="0" allowfullscreen></iframe>
+
+<h2>Creating a New Project</h2>
+
+<p>First open Gideros Studio. Then create a new project from &ldquo;File→New Project&rdquo; menu.
+Name your project &ldquo;HelloBall&rdquo;:</p>
+
+<p><img src="images/helloball_new_project.png" alt="New Project" /></p>
+
+<p>Here is our development environment where you create/manage assets and run
+your code:</p>
+
+<p><img src="images/helloball_gideros_studio_1.png" alt="Gideros Studio fig1" /></p>
+</section>
+
+<section class="tab-pane" id="first">
+<h2>Your First Code</h2>
+
+<p>Right click the project name at Library and select &ldquo;Add New File&hellip;&rdquo; to add
+your first Lua code:</p>
+
+<p><img src="images/helloball_add_new_file.png" alt="Add New File" /></p>
+
+<p>Name your file &ldquo;main.lua&rdquo; and click OK.</p>
+
+<p><img src="images/helloball_add_new_file_2.png" alt="Add New File 2" /></p>
+
+<p>Now double-click main.lua and write</p>
+
+<pre><code>print("Hello Ball")
+</code></pre>
+
+<p><img src="images/helloball_gideros_studio_2.png" alt="Gideros Studio fig2" /></p>
+
+</section>
+
+<section class="tab-pane" id="player">
+<h2>Running in Gideros Player</h2>
+
+<p>At the first part of this tutorial, we just want to run our code
+in &ldquo;Gideos Player&rdquo; and print &ldquo;Hello Ball&rdquo; to the console.</p>
+
+<p>Now select &ldquo;Player→Start Local Player&rdquo; to start Gideros Player.</p>
+
+<p><img src="images/helloball_gideros_player_1.png" alt="Gideros Player fig1" /></p>
+
+<p>After &ldquo;Gideros Player&rdquo; opens, the start and stop icons become enabled.</p>
+
+<p><img src="images/helloball_start_stop.png" alt="Start Stop" /></p>
+
+<p>This means &ldquo;Gideros Studio&rdquo; connects to &ldquo;Gideros Player&rdquo; and ready to upload
+your code and assets and then run the project. Press start button (or select &ldquo;Player→Start&rdquo; from main menu) to run the project:</p>
+
+<p><img src="images/helloball_gideros_studio_3.png" alt="Gideros Studio fig3" /></p>
+
+<p>Now you see the output of your project at the &ldquo;Output&rdquo; panel.</p>
+</section>
+
+<section class="tab-pane" id="assets">
+<h2>Adding Assets</h2>
+
+<p>Now let&rsquo;s add some images to our asset library. Download <a href="assets/field.png">field.png</a>
+and <a href="assets/ball.png">ball.png</a> and copy these images
+to your project directory. Then, right click the project name at Library and
+select &ldquo;Add Existing Files&hellip;&rdquo; to add your image files to the project.</p>
+
+<p><img src="images/helloball_add_existing_files.png" alt="Add Existing Files" /></p>
+
+<h2>More Code</h2>
+
+<p>And then write the code below:</p>
+
+<pre><code>local background = Bitmap.new(Texture.new("field.png"))
+stage:addChild(background)
+
+local ball = Bitmap.new(Texture.new("ball.png"))
+
+ball.xdirection = 1
+ball.ydirection = 1
+ball.xspeed = 2.5
+ball.yspeed = 4.3
+
+stage:addChild(ball)
+
+function onEnterFrame(event)
+    local x = ball:getX()
+    local y = ball:getY()
+
+    x = x + (ball.xspeed * ball.xdirection)
+    y = y + (ball.yspeed * ball.ydirection)
+
+    if x &lt; 0 then
+        ball.xdirection = 1
+    end
+
+    if x &gt; 320 - ball:getWidth() then
+        ball.xdirection = -1
+    end
+
+    if y &lt; 0 then
+        ball.ydirection = 1
+    end
+
+    if y &gt; 480 - ball:getHeight() then
+        ball.ydirection = -1
+    end
+
+    ball:setX(x)
+    ball:setY(y)
+end
+
+stage:addEventListener(Event.ENTER_FRAME, onEnterFrame)
+</code></pre>
+
+<p><img src="images/helloball_gideros_studio_4.png" alt="Gideros Studio fig4" /></p>
+
+<p>After pressing start, you&rsquo;ll have a nice ball moving around and bouncing from
+the edges:</p>
+
+<p><img src="images/helloball_gideros_player_2.png" alt="Gideros Player fig2" /></p>
+
+</section>
+
+<section class="tab-pane" id="device">
+<h2>Running on Device Player</h2>
+
+<p><strong>IOS device</strong></p>
+<p>To run project on IOS device you need to build and install the GiderosiOSPlayer XCode project (GiderosiOSPlayer.zip) comes with the installation. You need to be an approved Apple Developer for iOS and need to install the XCode with iOS SDK.</p>
+<p><strong>Android device</strong></p>
+<p>To run project on Android device you need to install the GiderosAndroidPlayer.apk (comes with the installation) on your device.</p>
+<p><strong>Windows Phone device</strong></p>
+<p>To install the Windows Phone player on a Windows Phone you must first unlock you Windows Phone. Run the program "Windows Phone Developer Registration (8.1)". It comes with Visual Studio (Windows Phone SDK 8.1 folder), connect your Windows Phone using a USB cable and click Register. After that you can unzip WindowsPhone player and deploy it using Windows Phone Application Deployment and selecting giderosgame.WindowsPhone_yy.mm.dd.0_arm.appxbundle.</p>
+<p><strong>Windows RT (Metro style) device</strong></p>
+<p>Due to Microsoft limitations, you can't run Windows Store app player on the same device as your Gideros Studio are. Gideros Studio just won't connect, due to sandboxing nature of Windows Store apps. You need to run Windows app player on another device (like another tablet or computer)</p>
+
+<p><strong>Run project</strong></p>
+<p>After installing GiderosPlayer to your device, open the player and enter the IP of your device (which will be shown in Gideros Player)
+from the menu &ldquo;Player→Player Settings&rdquo;.</p>
+
+<p><img src="images/helloball_player_settings.png" alt="Player Settings" /></p>
+
+<p>When the Start and Stop buttons appear enabled, press Start to run your code on device.</p>
+	
+
+</section>	
+
+</div>
+	</div>
+	</div>
+
+  </div>
+
+
+
+    <!-- Footer
+    ================================================== -->
+	<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="index.html#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/jquery-1.8.3.min.js"><\/script>')</script>
+		<script src="js/bootstrap.js"></script>
+		<script type="text/javascript" src="js/fittext.js"></script>
+		<script type="text/javascript" src="js/prettify.js"></script>
+		<script type="text/javascript" src="js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.closed").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+				$("section h1").fitText(3, { minFontSize: '14px', maxFontSize: '28px' });
+				$("#contents h1").fitText(1, { minFontSize: '20px', maxFontSize: '28px' });
+				$("#contents li > a").fitText(0.1, { minFontSize: '12px', maxFontSize: '14px' });
+			});
+		</script>
+
+  </body>
+</html>

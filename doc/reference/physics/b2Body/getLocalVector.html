@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Reference Manual</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="../../design/assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../../design/assets/greference-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="../../design/assets/greference-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="../../design/assets/greference-72.png">
+		<link rel="apple-touch-icon-precomposed" href="../../design/assets/greference-57.png">
+
+		<!-- Le styles -->
+		<link href="../../design/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="../../design/css/font-awesome.min.css">
+		<link rel="stylesheet" href="../../design/css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="../../design/css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar" data-offset="20">
+<div class="tabbable">
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+		<ul class="nav nav-tabs">
+												<li><a href="../../gideros.html">Main API</a></li>
+																<li class="active"><a href="../../physics.html">Physics API</a></li>
+																<li><a href="../../lua.html">Lua API</a></li>
+																<li><a href="../../plugin.html">Plugins</a></li>
+																<li><a href="../../labs.html">Labs</a></li>
+																<li><a href="../../new.html">What's new?</a></li>
+									</ul>
+  <div class="container-fluid">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row-fluid">
+      <div class="span4 bs-docs-sidebar">
+		<div id='contents' class='span4' data-spy="affix" data-offset-top="110">
+		<h1>Table of Contents</h1>
+        <ul class="nav nav-list bs-docs-sidenav">
+										<li class='uplist dropdown closedlist'><a href="../b2.html#b2" id='b2' class='closed item'><i class="icon-chevron-right"></i> <strong>b2</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2/createDistanceJointDef.html#b2.createDistanceJointDef" id='b2.createDistanceJointDef'>b2.createDistanceJointDef</a></li>		
+										<li><a href="../b2/createFrictionJointDef.html#b2.createFrictionJointDef" id='b2.createFrictionJointDef'>b2.createFrictionJointDef</a></li>		
+										<li><a href="../b2/createGearJointDef.html#b2.createGearJointDef" id='b2.createGearJointDef'>b2.createGearJointDef</a></li>		
+										<li><a href="../b2/createMouseJointDef.html#b2.createMouseJointDef" id='b2.createMouseJointDef'>b2.createMouseJointDef</a></li>		
+										<li><a href="../b2/createPrismaticJointDef.html#b2.createPrismaticJointDef" id='b2.createPrismaticJointDef'>b2.createPrismaticJointDef</a></li>		
+										<li><a href="../b2/createPulleyJointDef.html#b2.createPulleyJointDef" id='b2.createPulleyJointDef'>b2.createPulleyJointDef</a></li>		
+										<li><a href="../b2/createRevoluteJointDef.html#b2.createRevoluteJointDef" id='b2.createRevoluteJointDef'>b2.createRevoluteJointDef</a></li>		
+										<li><a href="../b2/createRopeJointDef.html#b2.createRopeJointDef" id='b2.createRopeJointDef'>b2.createRopeJointDef</a></li>		
+										<li><a href="../b2/createWeldJointDef.html#b2.createWeldJointDef" id='b2.createWeldJointDef'>b2.createWeldJointDef</a></li>		
+										<li><a href="../b2/createWheelJointDef.html#b2.createWheelJointDef" id='b2.createWheelJointDef'>b2.createWheelJointDef</a></li>		
+										<li><a href="../b2/getScale.html#b2.getScale" id='b2.getScale'>b2.getScale</a></li>		
+										<li><a href="../b2/setScale.html#b2.setScale" id='b2.setScale'>b2.setScale</a></li>		
+																											<li><a href="../b2/b2.DISTANCE_JOINT.html#b2.DISTANCE_JOINT" id='b2.DISTANCE_JOINT'>b2.DISTANCE_JOINT</a></li>		
+										<li><a href="../b2/b2.DYNAMIC_BODY.html#b2.DYNAMIC_BODY" id='b2.DYNAMIC_BODY'>b2.DYNAMIC_BODY</a></li>		
+										<li><a href="../b2/b2.FRICTION_JOINT.html#b2.FRICTION_JOINT" id='b2.FRICTION_JOINT'>b2.FRICTION_JOINT</a></li>		
+										<li><a href="../b2/b2.GEAR_JOINT.html#b2.GEAR_JOINT" id='b2.GEAR_JOINT'>b2.GEAR_JOINT</a></li>		
+										<li><a href="../b2/b2.KINEMATIC_BODY.html#b2.KINEMATIC_BODY" id='b2.KINEMATIC_BODY'>b2.KINEMATIC_BODY</a></li>		
+										<li><a href="../b2/b2.MOUSE_JOINT.html#b2.MOUSE_JOINT" id='b2.MOUSE_JOINT'>b2.MOUSE_JOINT</a></li>		
+										<li><a href="../b2/b2.PRISMATIC_JOINT.html#b2.PRISMATIC_JOINT" id='b2.PRISMATIC_JOINT'>b2.PRISMATIC_JOINT</a></li>		
+										<li><a href="../b2/b2.PULLEY_JOINT.html#b2.PULLEY_JOINT" id='b2.PULLEY_JOINT'>b2.PULLEY_JOINT</a></li>		
+										<li><a href="../b2/b2.REVOLUTE_JOINT.html#b2.REVOLUTE_JOINT" id='b2.REVOLUTE_JOINT'>b2.REVOLUTE_JOINT</a></li>		
+										<li><a href="../b2/b2.ROPE_JOINT.html#b2.ROPE_JOINT" id='b2.ROPE_JOINT'>b2.ROPE_JOINT</a></li>		
+										<li><a href="../b2/b2.STATIC_BODY.html#b2.STATIC_BODY" id='b2.STATIC_BODY'>b2.STATIC_BODY</a></li>		
+										<li><a href="../b2/b2.WELD_JOINT.html#b2.WELD_JOINT" id='b2.WELD_JOINT'>b2.WELD_JOINT</a></li>		
+										<li><a href="../b2/b2.WHEEL_JOINT.html#b2.WHEEL_JOINT" id='b2.WHEEL_JOINT'>b2.WHEEL_JOINT</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown'><a href="../b2Body.html#b2.Body" id='b2.Body' class='opened item'><i class="icon-chevron-right"></i> <strong>b2.Body</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="applyAngularImpulse.html#b2.Body:applyAngularImpulse" id='b2.Body:applyAngularImpulse'>b2.Body:applyAngularImpulse</a></li>		
+										<li><a href="applyForce.html#b2.Body:applyForce" id='b2.Body:applyForce'>b2.Body:applyForce</a></li>		
+										<li><a href="applyLinearImpulse.html#b2.Body:applyLinearImpulse" id='b2.Body:applyLinearImpulse'>b2.Body:applyLinearImpulse</a></li>		
+										<li><a href="applyTorque.html#b2.Body:applyTorque" id='b2.Body:applyTorque'>b2.Body:applyTorque</a></li>		
+										<li><a href="createFixture.html#b2.Body:createFixture" id='b2.Body:createFixture'>b2.Body:createFixture</a></li>		
+										<li><a href="destroyFixture.html#b2.Body:destroyFixture" id='b2.Body:destroyFixture'>b2.Body:destroyFixture</a></li>		
+										<li><a href="getAngle.html#b2.Body:getAngle" id='b2.Body:getAngle'>b2.Body:getAngle</a></li>		
+										<li><a href="getAngularDamping.html#b2.Body:getAngularDamping" id='b2.Body:getAngularDamping'>b2.Body:getAngularDamping</a></li>		
+										<li><a href="getAngularVelocity.html#b2.Body:getAngularVelocity" id='b2.Body:getAngularVelocity'>b2.Body:getAngularVelocity</a></li>		
+										<li><a href="getGravityScale.html#b2.Body:getGravityScale" id='b2.Body:getGravityScale'>b2.Body:getGravityScale</a></li>		
+										<li><a href="getInertia.html#b2.Body:getInertia" id='b2.Body:getInertia'>b2.Body:getInertia</a></li>		
+										<li><a href="getLinearDamping.html#b2.Body:getLinearDamping" id='b2.Body:getLinearDamping'>b2.Body:getLinearDamping</a></li>		
+										<li><a href="getLinearVelocity.html#b2.Body:getLinearVelocity" id='b2.Body:getLinearVelocity'>b2.Body:getLinearVelocity</a></li>		
+										<li><a href="getLocalCenter.html#b2.Body:getLocalCenter" id='b2.Body:getLocalCenter'>b2.Body:getLocalCenter</a></li>		
+										<li><a href="getLocalPoint.html#b2.Body:getLocalPoint" id='b2.Body:getLocalPoint'>b2.Body:getLocalPoint</a></li>		
+										<li><a href="getLocalVector.html#b2.Body:getLocalVector" id='b2.Body:getLocalVector'>b2.Body:getLocalVector</a></li>		
+										<li><a href="getMass.html#b2.Body:getMass" id='b2.Body:getMass'>b2.Body:getMass</a></li>		
+										<li><a href="getPosition.html#b2.Body:getPosition" id='b2.Body:getPosition'>b2.Body:getPosition</a></li>		
+										<li><a href="getWorldCenter.html#b2.Body:getWorldCenter" id='b2.Body:getWorldCenter'>b2.Body:getWorldCenter</a></li>		
+										<li><a href="getWorldPoint.html#b2.Body:getWorldPoint" id='b2.Body:getWorldPoint'>b2.Body:getWorldPoint</a></li>		
+										<li><a href="getWorldVector.html#b2.Body:getWorldVector" id='b2.Body:getWorldVector'>b2.Body:getWorldVector</a></li>		
+										<li><a href="isActive.html#b2.Body:isActive" id='b2.Body:isActive'>b2.Body:isActive</a></li>		
+										<li><a href="isAwake.html#b2.Body:isAwake" id='b2.Body:isAwake'>b2.Body:isAwake</a></li>		
+										<li><a href="isBullet.html#b2.Body:isBullet" id='b2.Body:isBullet'>b2.Body:isBullet</a></li>		
+										<li><a href="isFixedRotation.html#b2.Body:isFixedRotation" id='b2.Body:isFixedRotation'>b2.Body:isFixedRotation</a></li>		
+										<li><a href="isSleepingAllowed.html#b2.Body:isSleepingAllowed" id='b2.Body:isSleepingAllowed'>b2.Body:isSleepingAllowed</a></li>		
+										<li><a href="setActive.html#b2.Body:setActive" id='b2.Body:setActive'>b2.Body:setActive</a></li>		
+										<li><a href="setAngle.html#b2.Body:setAngle" id='b2.Body:setAngle'>b2.Body:setAngle</a></li>		
+										<li><a href="setAngularDamping.html#b2.Body:setAngularDamping" id='b2.Body:setAngularDamping'>b2.Body:setAngularDamping</a></li>		
+										<li><a href="setAngularVelocity.html#b2.Body:setAngularVelocity" id='b2.Body:setAngularVelocity'>b2.Body:setAngularVelocity</a></li>		
+										<li><a href="setAwake.html#b2.Body:setAwake" id='b2.Body:setAwake'>b2.Body:setAwake</a></li>		
+										<li><a href="setBullet.html#b2.Body:setBullet" id='b2.Body:setBullet'>b2.Body:setBullet</a></li>		
+										<li><a href="setFixedRotation.html#b2.Body:setFixedRotation" id='b2.Body:setFixedRotation'>b2.Body:setFixedRotation</a></li>		
+										<li><a href="setGravityScale.html#b2.Body:setGravityScale" id='b2.Body:setGravityScale'>b2.Body:setGravityScale</a></li>		
+										<li><a href="setLinearDamping.html#b2.Body:setLinearDamping" id='b2.Body:setLinearDamping'>b2.Body:setLinearDamping</a></li>		
+										<li><a href="setLinearVelocity.html#b2.Body:setLinearVelocity" id='b2.Body:setLinearVelocity'>b2.Body:setLinearVelocity</a></li>		
+										<li><a href="setPosition.html#b2.Body:setPosition" id='b2.Body:setPosition'>b2.Body:setPosition</a></li>		
+										<li><a href="setSleepingAllowed.html#b2.Body:setSleepingAllowed" id='b2.Body:setSleepingAllowed'>b2.Body:setSleepingAllowed</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2ChainShape.html#b2.ChainShape" id='b2.ChainShape' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.ChainShape</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2ChainShape/new.html#b2.ChainShape.new" id='b2.ChainShape.new'>b2.ChainShape.new</a></li>		
+										<li><a href="../b2ChainShape/createChain.html#b2.ChainShape:createChain" id='b2.ChainShape:createChain'>b2.ChainShape:createChain</a></li>		
+										<li><a href="../b2ChainShape/createLoop.html#b2.ChainShape:createLoop" id='b2.ChainShape:createLoop'>b2.ChainShape:createLoop</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2CircleShape.html#b2.CircleShape" id='b2.CircleShape' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.CircleShape</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2CircleShape/new.html#b2.CircleShape.new" id='b2.CircleShape.new'>b2.CircleShape.new</a></li>		
+										<li><a href="../b2CircleShape/set.html#b2.CircleShape:set" id='b2.CircleShape:set'>b2.CircleShape:set</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2Contact.html#b2.Contact" id='b2.Contact' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.Contact</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2Contact/getChildIndexA.html#b2.Contact:getChildIndexA" id='b2.Contact:getChildIndexA'>b2.Contact:getChildIndexA</a></li>		
+										<li><a href="../b2Contact/getChildIndexB.html#b2.Contact:getChildIndexB" id='b2.Contact:getChildIndexB'>b2.Contact:getChildIndexB</a></li>		
+										<li><a href="../b2Contact/getFixtureA.html#b2.Contact:getFixtureA" id='b2.Contact:getFixtureA'>b2.Contact:getFixtureA</a></li>		
+										<li><a href="../b2Contact/getFixtureB.html#b2.Contact:getFixtureB" id='b2.Contact:getFixtureB'>b2.Contact:getFixtureB</a></li>		
+										<li><a href="../b2Contact/getFriction.html#b2.Contact:getFriction" id='b2.Contact:getFriction'>b2.Contact:getFriction</a></li>		
+										<li><a href="../b2Contact/getManifold.html#b2.Contact:getManifold" id='b2.Contact:getManifold'>b2.Contact:getManifold</a></li>		
+										<li><a href="../b2Contact/getRestitution.html#b2.Contact:getRestitution" id='b2.Contact:getRestitution'>b2.Contact:getRestitution</a></li>		
+										<li><a href="../b2Contact/getWorldManifold.html#b2.Contact:getWorldManifold" id='b2.Contact:getWorldManifold'>b2.Contact:getWorldManifold</a></li>		
+										<li><a href="../b2Contact/isTouching.html#b2.Contact:isTouching" id='b2.Contact:isTouching'>b2.Contact:isTouching</a></li>		
+										<li><a href="../b2Contact/resetFriction.html#b2.Contact:resetFriction" id='b2.Contact:resetFriction'>b2.Contact:resetFriction</a></li>		
+										<li><a href="../b2Contact/resetRestitution.html#b2.Contact:resetRestitution" id='b2.Contact:resetRestitution'>b2.Contact:resetRestitution</a></li>		
+										<li><a href="../b2Contact/setEnabled.html#b2.Contact:setEnabled" id='b2.Contact:setEnabled'>b2.Contact:setEnabled</a></li>		
+										<li><a href="../b2Contact/setFriction.html#b2.Contact:setFriction" id='b2.Contact:setFriction'>b2.Contact:setFriction</a></li>		
+										<li><a href="../b2Contact/setRestitution.html#b2.Contact:setRestitution" id='b2.Contact:setRestitution'>b2.Contact:setRestitution</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2DebugDraw.html#b2.DebugDraw" id='b2.DebugDraw' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.DebugDraw</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2DebugDraw/new.html#b2.DebugDraw.new" id='b2.DebugDraw.new'>b2.DebugDraw.new</a></li>		
+										<li><a href="../b2DebugDraw/appendFlags.html#b2.DebugDraw:appendFlags" id='b2.DebugDraw:appendFlags'>b2.DebugDraw:appendFlags</a></li>		
+										<li><a href="../b2DebugDraw/clearFlags.html#b2.DebugDraw:clearFlags" id='b2.DebugDraw:clearFlags'>b2.DebugDraw:clearFlags</a></li>		
+										<li><a href="../b2DebugDraw/getFlags.html#b2.DebugDraw:getFlags" id='b2.DebugDraw:getFlags'>b2.DebugDraw:getFlags</a></li>		
+										<li><a href="../b2DebugDraw/setFlags.html#b2.DebugDraw:setFlags" id='b2.DebugDraw:setFlags'>b2.DebugDraw:setFlags</a></li>		
+																											<li><a href="../b2DebugDraw/b2.DebugDraw.AABB_BIT.html#b2.DebugDraw.AABB_BIT" id='b2.DebugDraw.AABB_BIT'>b2.DebugDraw.AABB_BIT</a></li>		
+										<li><a href="../b2DebugDraw/b2.DebugDraw.CENTER_OF_MASS_BIT.html#b2.DebugDraw.CENTER_OF_MASS_BIT" id='b2.DebugDraw.CENTER_OF_MASS_BIT'>b2.DebugDraw.CENTER_OF_MASS_BIT</a></li>		
+										<li><a href="../b2DebugDraw/b2.DebugDraw.JOINT_BIT.html#b2.DebugDraw.JOINT_BIT" id='b2.DebugDraw.JOINT_BIT'>b2.DebugDraw.JOINT_BIT</a></li>		
+										<li><a href="../b2DebugDraw/b2.DebugDraw.PAIR_BIT.html#b2.DebugDraw.PAIR_BIT" id='b2.DebugDraw.PAIR_BIT'>b2.DebugDraw.PAIR_BIT</a></li>		
+										<li><a href="../b2DebugDraw/b2.DebugDraw.SHAPE_BIT.html#b2.DebugDraw.SHAPE_BIT" id='b2.DebugDraw.SHAPE_BIT'>b2.DebugDraw.SHAPE_BIT</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2DistanceJoint.html#b2.DistanceJoint" id='b2.DistanceJoint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.DistanceJoint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2DistanceJoint/getDampingRatio.html#b2.DistanceJoint:getDampingRatio" id='b2.DistanceJoint:getDampingRatio'>b2.DistanceJoint:getDampingRatio</a></li>		
+										<li><a href="../b2DistanceJoint/getFrequency.html#b2.DistanceJoint:getFrequency" id='b2.DistanceJoint:getFrequency'>b2.DistanceJoint:getFrequency</a></li>		
+										<li><a href="../b2DistanceJoint/getLength.html#b2.DistanceJoint:getLength" id='b2.DistanceJoint:getLength'>b2.DistanceJoint:getLength</a></li>		
+										<li><a href="../b2DistanceJoint/setDampingRatio.html#b2.DistanceJoint:setDampingRatio" id='b2.DistanceJoint:setDampingRatio'>b2.DistanceJoint:setDampingRatio</a></li>		
+										<li><a href="../b2DistanceJoint/setFrequency.html#b2.DistanceJoint:setFrequency" id='b2.DistanceJoint:setFrequency'>b2.DistanceJoint:setFrequency</a></li>		
+										<li><a href="../b2DistanceJoint/setLength.html#b2.DistanceJoint:setLength" id='b2.DistanceJoint:setLength'>b2.DistanceJoint:setLength</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2EdgeShape.html#b2.EdgeShape" id='b2.EdgeShape' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.EdgeShape</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2EdgeShape/new.html#b2.EdgeShape.new" id='b2.EdgeShape.new'>b2.EdgeShape.new</a></li>		
+										<li><a href="../b2EdgeShape/set.html#b2.EdgeShape:set" id='b2.EdgeShape:set'>b2.EdgeShape:set</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2Fixture.html#b2.Fixture" id='b2.Fixture' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.Fixture</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2Fixture/getBody.html#b2.Fixture:getBody" id='b2.Fixture:getBody'>b2.Fixture:getBody</a></li>		
+										<li><a href="../b2Fixture/getFilterData.html#b2.Fixture:getFilterData" id='b2.Fixture:getFilterData'>b2.Fixture:getFilterData</a></li>		
+										<li><a href="../b2Fixture/isSensor.html#b2.Fixture:isSensor" id='b2.Fixture:isSensor'>b2.Fixture:isSensor</a></li>		
+										<li><a href="../b2Fixture/setFilterData.html#b2.Fixture:setFilterData" id='b2.Fixture:setFilterData'>b2.Fixture:setFilterData</a></li>		
+										<li><a href="../b2Fixture/setSensor.html#b2.Fixture:setSensor" id='b2.Fixture:setSensor'>b2.Fixture:setSensor</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2FrictionJoint.html#b2.FrictionJoint" id='b2.FrictionJoint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.FrictionJoint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2FrictionJoint/getMaxForce.html#b2.FrictionJoint:getMaxForce" id='b2.FrictionJoint:getMaxForce'>b2.FrictionJoint:getMaxForce</a></li>		
+										<li><a href="../b2FrictionJoint/getMaxTorque.html#b2.FrictionJoint:getMaxTorque" id='b2.FrictionJoint:getMaxTorque'>b2.FrictionJoint:getMaxTorque</a></li>		
+										<li><a href="../b2FrictionJoint/setMaxForce.html#b2.FrictionJoint:setMaxForce" id='b2.FrictionJoint:setMaxForce'>b2.FrictionJoint:setMaxForce</a></li>		
+										<li><a href="../b2FrictionJoint/setMaxTorque.html#b2.FrictionJoint:setMaxTorque" id='b2.FrictionJoint:setMaxTorque'>b2.FrictionJoint:setMaxTorque</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2GearJoint.html#b2.GearJoint" id='b2.GearJoint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.GearJoint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2GearJoint/getRatio.html#b2.GearJoint:getRatio" id='b2.GearJoint:getRatio'>b2.GearJoint:getRatio</a></li>		
+										<li><a href="../b2GearJoint/setRatio.html#b2.GearJoint:setRatio" id='b2.GearJoint:setRatio'>b2.GearJoint:setRatio</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2Joint.html#b2.Joint" id='b2.Joint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.Joint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2Joint/getAnchorA.html#b2.Joint:getAnchorA" id='b2.Joint:getAnchorA'>b2.Joint:getAnchorA</a></li>		
+										<li><a href="../b2Joint/getAnchorB.html#b2.Joint:getAnchorB" id='b2.Joint:getAnchorB'>b2.Joint:getAnchorB</a></li>		
+										<li><a href="../b2Joint/getBodyA.html#b2.Joint:getBodyA" id='b2.Joint:getBodyA'>b2.Joint:getBodyA</a></li>		
+										<li><a href="../b2Joint/getBodyB.html#b2.Joint:getBodyB" id='b2.Joint:getBodyB'>b2.Joint:getBodyB</a></li>		
+										<li><a href="../b2Joint/getReactionForce.html#b2.Joint:getReactionForce" id='b2.Joint:getReactionForce'>b2.Joint:getReactionForce</a></li>		
+										<li><a href="../b2Joint/getReactionTorque.html#b2.Joint:getReactionTorque" id='b2.Joint:getReactionTorque'>b2.Joint:getReactionTorque</a></li>		
+										<li><a href="../b2Joint/getType.html#b2.Joint:getType" id='b2.Joint:getType'>b2.Joint:getType</a></li>		
+										<li><a href="../b2Joint/isActive.html#b2.Joint:isActive" id='b2.Joint:isActive'>b2.Joint:isActive</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2Manifold.html#b2.Manifold" id='b2.Manifold' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.Manifold</strong></a>
+							<ul class="dropdown-menu">
+																						<li><a href="../b2Manifold/localNormal.html#localNormal" id='localNormal'>localNormal</a></li>		
+										<li><a href="../b2Manifold/localPoint.html#localPoint" id='localPoint'>localPoint</a></li>		
+										<li><a href="../b2Manifold/points.html#points" id='points'>points</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2MouseJoint.html#b2.MouseJoint" id='b2.MouseJoint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.MouseJoint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2MouseJoint/getDampingRatio.html#b2.MouseJoint:getDampingRatio" id='b2.MouseJoint:getDampingRatio'>b2.MouseJoint:getDampingRatio</a></li>		
+										<li><a href="../b2MouseJoint/getFrequency.html#b2.MouseJoint:getFrequency" id='b2.MouseJoint:getFrequency'>b2.MouseJoint:getFrequency</a></li>		
+										<li><a href="../b2MouseJoint/getMaxForce.html#b2.MouseJoint:getMaxForce" id='b2.MouseJoint:getMaxForce'>b2.MouseJoint:getMaxForce</a></li>		
+										<li><a href="../b2MouseJoint/getTarget.html#b2.MouseJoint:getTarget" id='b2.MouseJoint:getTarget'>b2.MouseJoint:getTarget</a></li>		
+										<li><a href="../b2MouseJoint/setDampingRatio.html#b2.MouseJoint:setDampingRatio" id='b2.MouseJoint:setDampingRatio'>b2.MouseJoint:setDampingRatio</a></li>		
+										<li><a href="../b2MouseJoint/setFrequency.html#b2.MouseJoint:setFrequency" id='b2.MouseJoint:setFrequency'>b2.MouseJoint:setFrequency</a></li>		
+										<li><a href="../b2MouseJoint/setMaxForce.html#b2.MouseJoint:setMaxForce" id='b2.MouseJoint:setMaxForce'>b2.MouseJoint:setMaxForce</a></li>		
+										<li><a href="../b2MouseJoint/setTarget.html#b2.MouseJoint:setTarget" id='b2.MouseJoint:setTarget'>b2.MouseJoint:setTarget</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2.ParticleSystem.html#b2.ParticleSystem" id='b2.ParticleSystem' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.ParticleSystem</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2.ParticleSystem/createParticle.html#b2.ParticleSystem:createParticle" id='b2.ParticleSystem:createParticle'>b2.ParticleSystem:createParticle</a></li>		
+										<li><a href="../b2.ParticleSystem/createParticleGroup.html#b2.ParticleSystem:createParticleGroup" id='b2.ParticleSystem:createParticleGroup'>b2.ParticleSystem:createParticleGroup</a></li>		
+										<li><a href="../b2.ParticleSystem/destroyParticle.html#b2.ParticleSystem:destroyParticle" id='b2.ParticleSystem:destroyParticle'>b2.ParticleSystem:destroyParticle</a></li>		
+										<li><a href="../b2.ParticleSystem/setTexture.html#b2.ParticleSystem:setTexture" id='b2.ParticleSystem:setTexture'>b2.ParticleSystem:setTexture</a></li>		
+																											<li><a href="../b2.ParticleSystem/FLAG_COLOR_MIXING.html#b2.ParticleSystem.FLAG_COLOR_MIXING" id='b2.ParticleSystem.FLAG_COLOR_MIXING'>b2.ParticleSystem.FLAG_COLOR_MIXING</a></li>		
+										<li><a href="../b2.ParticleSystem/FLAG_ELASTIC.html#b2.ParticleSystem.FLAG_ELASTIC" id='b2.ParticleSystem.FLAG_ELASTIC'>b2.ParticleSystem.FLAG_ELASTIC</a></li>		
+										<li><a href="../b2.ParticleSystem/FLAG_POWDER.html#b2.ParticleSystem.FLAG_POWDER" id='b2.ParticleSystem.FLAG_POWDER'>b2.ParticleSystem.FLAG_POWDER</a></li>		
+										<li><a href="../b2.ParticleSystem/FLAG_SPRING.html#b2.ParticleSystem.FLAG_SPRING" id='b2.ParticleSystem.FLAG_SPRING'>b2.ParticleSystem.FLAG_SPRING</a></li>		
+										<li><a href="../b2.ParticleSystem/FLAG_TENSILE.html#b2.ParticleSystem.FLAG_TENSILE" id='b2.ParticleSystem.FLAG_TENSILE'>b2.ParticleSystem.FLAG_TENSILE</a></li>		
+										<li><a href="../b2.ParticleSystem/FLAG_VISCOUS.html#b2.ParticleSystem.FLAG_VISCOUS" id='b2.ParticleSystem.FLAG_VISCOUS'>b2.ParticleSystem.FLAG_VISCOUS</a></li>		
+										<li><a href="../b2.ParticleSystem/FLAG_WALL.html#b2.ParticleSystem.FLAG_WALL" id='b2.ParticleSystem.FLAG_WALL'>b2.ParticleSystem.FLAG_WALL</a></li>		
+										<li><a href="../b2.ParticleSystem/FLAG_WATER.html#b2.ParticleSystem.FLAG_WATER" id='b2.ParticleSystem.FLAG_WATER'>b2.ParticleSystem.FLAG_WATER</a></li>		
+										<li><a href="../b2.ParticleSystem/FLAG_ZOMBIE.html#b2.ParticleSystem.FLAG_ZOMBIE" id='b2.ParticleSystem.FLAG_ZOMBIE'>b2.ParticleSystem.FLAG_ZOMBIE</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2PolygonShape.html#b2.PolygonShape" id='b2.PolygonShape' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.PolygonShape</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2PolygonShape/new.html#b2.PolygonShape.new" id='b2.PolygonShape.new'>b2.PolygonShape.new</a></li>		
+										<li><a href="../b2PolygonShape/set.html#b2.PolygonShape:set" id='b2.PolygonShape:set'>b2.PolygonShape:set</a></li>		
+										<li><a href="../b2PolygonShape/setAsBox.html#b2.PolygonShape:setAsBox" id='b2.PolygonShape:setAsBox'>b2.PolygonShape:setAsBox</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2PrismaticJoint.html#b2.PrismaticJoint" id='b2.PrismaticJoint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.PrismaticJoint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2PrismaticJoint/enableLimit.html#b2.PrismaticJoint:enableLimit" id='b2.PrismaticJoint:enableLimit'>b2.PrismaticJoint:enableLimit</a></li>		
+										<li><a href="../b2PrismaticJoint/enableMotor.html#b2.PrismaticJoint:enableMotor" id='b2.PrismaticJoint:enableMotor'>b2.PrismaticJoint:enableMotor</a></li>		
+										<li><a href="../b2PrismaticJoint/getJointSpeed.html#b2.PrismaticJoint:getJointSpeed" id='b2.PrismaticJoint:getJointSpeed'>b2.PrismaticJoint:getJointSpeed</a></li>		
+										<li><a href="../b2PrismaticJoint/getJointTranslation.html#b2.PrismaticJoint:getJointTranslation" id='b2.PrismaticJoint:getJointTranslation'>b2.PrismaticJoint:getJointTranslation</a></li>		
+										<li><a href="../b2PrismaticJoint/getLimits.html#b2.PrismaticJoint:getLimits" id='b2.PrismaticJoint:getLimits'>b2.PrismaticJoint:getLimits</a></li>		
+										<li><a href="../b2PrismaticJoint/getMotorSpeed.html#b2.PrismaticJoint:getMotorSpeed" id='b2.PrismaticJoint:getMotorSpeed'>b2.PrismaticJoint:getMotorSpeed</a></li>		
+										<li><a href="../b2PrismaticJoint/isLimitEnabled.html#b2.PrismaticJoint:isLimitEnabled" id='b2.PrismaticJoint:isLimitEnabled'>b2.PrismaticJoint:isLimitEnabled</a></li>		
+										<li><a href="../b2PrismaticJoint/isMotorEnabled.html#b2.PrismaticJoint:isMotorEnabled" id='b2.PrismaticJoint:isMotorEnabled'>b2.PrismaticJoint:isMotorEnabled</a></li>		
+										<li><a href="../b2PrismaticJoint/setLimits.html#b2.PrismaticJoint:setLimits" id='b2.PrismaticJoint:setLimits'>b2.PrismaticJoint:setLimits</a></li>		
+										<li><a href="../b2PrismaticJoint/setMaxMotorForce.html#b2.PrismaticJoint:setMaxMotorForce" id='b2.PrismaticJoint:setMaxMotorForce'>b2.PrismaticJoint:setMaxMotorForce</a></li>		
+										<li><a href="../b2PrismaticJoint/setMotorSpeed.html#b2.PrismaticJoint:setMotorSpeed" id='b2.PrismaticJoint:setMotorSpeed'>b2.PrismaticJoint:setMotorSpeed</a></li>		
+										<li><a href="../b2PrismaticJoint/getMotorForce.html#b2.RevoluteJoint:getMotorForce" id='b2.RevoluteJoint:getMotorForce'>b2.RevoluteJoint:getMotorForce</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2PulleyJoint.html#b2.PulleyJoint" id='b2.PulleyJoint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.PulleyJoint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2PulleyJoint/getGroundAnchorA.html#b2.PulleyJoint:getGroundAnchorA" id='b2.PulleyJoint:getGroundAnchorA'>b2.PulleyJoint:getGroundAnchorA</a></li>		
+										<li><a href="../b2PulleyJoint/getGroundAnchorB.html#b2.PulleyJoint:getGroundAnchorB" id='b2.PulleyJoint:getGroundAnchorB'>b2.PulleyJoint:getGroundAnchorB</a></li>		
+										<li><a href="../b2PulleyJoint/getLengthA.html#b2.PulleyJoint:getLengthA" id='b2.PulleyJoint:getLengthA'>b2.PulleyJoint:getLengthA</a></li>		
+										<li><a href="../b2PulleyJoint/getLengthB.html#b2.PulleyJoint:getLengthB" id='b2.PulleyJoint:getLengthB'>b2.PulleyJoint:getLengthB</a></li>		
+										<li><a href="../b2PulleyJoint/getRatio.html#b2.PulleyJoint:getRatio" id='b2.PulleyJoint:getRatio'>b2.PulleyJoint:getRatio</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2RevoluteJoint.html#b2.RevoluteJoint" id='b2.RevoluteJoint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.RevoluteJoint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2RevoluteJoint/enableLimit.html#b2.RevoluteJoint:enableLimit" id='b2.RevoluteJoint:enableLimit'>b2.RevoluteJoint:enableLimit</a></li>		
+										<li><a href="../b2RevoluteJoint/enableMotor.html#b2.RevoluteJoint:enableMotor" id='b2.RevoluteJoint:enableMotor'>b2.RevoluteJoint:enableMotor</a></li>		
+										<li><a href="../b2RevoluteJoint/getJointAngle.html#b2.RevoluteJoint:getJointAngle" id='b2.RevoluteJoint:getJointAngle'>b2.RevoluteJoint:getJointAngle</a></li>		
+										<li><a href="../b2RevoluteJoint/getJointSpeed.html#b2.RevoluteJoint:getJointSpeed" id='b2.RevoluteJoint:getJointSpeed'>b2.RevoluteJoint:getJointSpeed</a></li>		
+										<li><a href="../b2RevoluteJoint/getLimits.html#b2.RevoluteJoint:getLimits" id='b2.RevoluteJoint:getLimits'>b2.RevoluteJoint:getLimits</a></li>		
+										<li><a href="../b2RevoluteJoint/getMotorSpeed.html#b2.RevoluteJoint:getMotorSpeed" id='b2.RevoluteJoint:getMotorSpeed'>b2.RevoluteJoint:getMotorSpeed</a></li>		
+										<li><a href="../b2RevoluteJoint/getMotorTorque.html#b2.RevoluteJoint:getMotorTorque" id='b2.RevoluteJoint:getMotorTorque'>b2.RevoluteJoint:getMotorTorque</a></li>		
+										<li><a href="../b2RevoluteJoint/isLimitEnabled.html#b2.RevoluteJoint:isLimitEnabled" id='b2.RevoluteJoint:isLimitEnabled'>b2.RevoluteJoint:isLimitEnabled</a></li>		
+										<li><a href="../b2RevoluteJoint/isMotorEnabled.html#b2.RevoluteJoint:isMotorEnabled" id='b2.RevoluteJoint:isMotorEnabled'>b2.RevoluteJoint:isMotorEnabled</a></li>		
+										<li><a href="../b2RevoluteJoint/setLimits.html#b2.RevoluteJoint:setLimits" id='b2.RevoluteJoint:setLimits'>b2.RevoluteJoint:setLimits</a></li>		
+										<li><a href="../b2RevoluteJoint/setMaxMotorTorque.html#b2.RevoluteJoint:setMaxMotorTorque" id='b2.RevoluteJoint:setMaxMotorTorque'>b2.RevoluteJoint:setMaxMotorTorque</a></li>		
+										<li><a href="../b2RevoluteJoint/setMotorSpeed.html#b2.RevoluteJoint:setMotorSpeed" id='b2.RevoluteJoint:setMotorSpeed'>b2.RevoluteJoint:setMotorSpeed</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2RopeJoint.html#b2.RopeJoint" id='b2.RopeJoint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.RopeJoint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2RopeJoint/getMaxLength.html#b2.RopeJoint:getMaxLength" id='b2.RopeJoint:getMaxLength'>b2.RopeJoint:getMaxLength</a></li>		
+										<li><a href="../b2RopeJoint/setMaxLength.html#b2.RopeJoint:setMaxLength" id='b2.RopeJoint:setMaxLength'>b2.RopeJoint:setMaxLength</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2Shape.html#b2.Shape" id='b2.Shape' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.Shape</strong></a>
+							<ul class="dropdown-menu">
+																</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2WeldJoint.html#b2.WeldJoint" id='b2.WeldJoint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.WeldJoint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2WeldJoint/getDampingRatio.html#b2.WeldJoint:getDampingRatio" id='b2.WeldJoint:getDampingRatio'>b2.WeldJoint:getDampingRatio</a></li>		
+										<li><a href="../b2WeldJoint/getFrequency.html#b2.WeldJoint:getFrequency" id='b2.WeldJoint:getFrequency'>b2.WeldJoint:getFrequency</a></li>		
+										<li><a href="../b2WeldJoint/setDampingRatio.html#b2.WeldJoint:setDampingRatio" id='b2.WeldJoint:setDampingRatio'>b2.WeldJoint:setDampingRatio</a></li>		
+										<li><a href="../b2WeldJoint/setFrequency.html#b2.WeldJoint:setFrequency" id='b2.WeldJoint:setFrequency'>b2.WeldJoint:setFrequency</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2WheelJoint.html#b2.WheelJoint" id='b2.WheelJoint' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.WheelJoint</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2WheelJoint/enableMotor.html#b2.WheelJoint:enableMotor" id='b2.WheelJoint:enableMotor'>b2.WheelJoint:enableMotor</a></li>		
+										<li><a href="../b2WheelJoint/getJointSpeed.html#b2.WheelJoint:getJointSpeed" id='b2.WheelJoint:getJointSpeed'>b2.WheelJoint:getJointSpeed</a></li>		
+										<li><a href="../b2WheelJoint/getJointTranslation.html#b2.WheelJoint:getJointTranslation" id='b2.WheelJoint:getJointTranslation'>b2.WheelJoint:getJointTranslation</a></li>		
+										<li><a href="../b2WheelJoint/getMaxMotorTorque.html#b2.WheelJoint:getMaxMotorTorque" id='b2.WheelJoint:getMaxMotorTorque'>b2.WheelJoint:getMaxMotorTorque</a></li>		
+										<li><a href="../b2WheelJoint/getMotorSpeed.html#b2.WheelJoint:getMotorSpeed" id='b2.WheelJoint:getMotorSpeed'>b2.WheelJoint:getMotorSpeed</a></li>		
+										<li><a href="../b2WheelJoint/getSpringDampingRatio.html#b2.WheelJoint:getSpringDampingRatio" id='b2.WheelJoint:getSpringDampingRatio'>b2.WheelJoint:getSpringDampingRatio</a></li>		
+										<li><a href="../b2WheelJoint/getSpringFrequencyHz.html#b2.WheelJoint:getSpringFrequencyHz" id='b2.WheelJoint:getSpringFrequencyHz'>b2.WheelJoint:getSpringFrequencyHz</a></li>		
+										<li><a href="../b2WheelJoint/isMotorEnabled.html#b2.WheelJoint:isMotorEnabled" id='b2.WheelJoint:isMotorEnabled'>b2.WheelJoint:isMotorEnabled</a></li>		
+										<li><a href="../b2WheelJoint/setMaxMotorTorque.html#b2.WheelJoint:setMaxMotorTorque" id='b2.WheelJoint:setMaxMotorTorque'>b2.WheelJoint:setMaxMotorTorque</a></li>		
+										<li><a href="../b2WheelJoint/setMotorSpeed.html#b2.WheelJoint:setMotorSpeed" id='b2.WheelJoint:setMotorSpeed'>b2.WheelJoint:setMotorSpeed</a></li>		
+										<li><a href="../b2WheelJoint/setSpringDampingRatio.html#b2.WheelJoint:setSpringDampingRatio" id='b2.WheelJoint:setSpringDampingRatio'>b2.WheelJoint:setSpringDampingRatio</a></li>		
+										<li><a href="../b2WheelJoint/setSpringFrequencyHz.html#b2.WheelJoint:setSpringFrequencyHz" id='b2.WheelJoint:setSpringFrequencyHz'>b2.WheelJoint:setSpringFrequencyHz</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2World.html#b2.World" id='b2.World' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.World</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="../b2World/new.html#b2.World.new" id='b2.World.new'>b2.World.new</a></li>		
+										<li><a href="../b2World/clearForces.html#b2.World:clearForces" id='b2.World:clearForces'>b2.World:clearForces</a></li>		
+										<li><a href="../b2World/createBody.html#b2.World:createBody" id='b2.World:createBody'>b2.World:createBody</a></li>		
+										<li><a href="../b2World/createJoint.html#b2.World:createJoint" id='b2.World:createJoint'>b2.World:createJoint</a></li>		
+										<li><a href="../b2World/createParticleSystem.html#b2.World:createParticleSystem" id='b2.World:createParticleSystem'>b2.World:createParticleSystem</a></li>		
+										<li><a href="../b2World/destroyBody.html#b2.World:destroyBody" id='b2.World:destroyBody'>b2.World:destroyBody</a></li>		
+										<li><a href="../b2World/destroyJoint.html#b2.World:destroyJoint" id='b2.World:destroyJoint'>b2.World:destroyJoint</a></li>		
+										<li><a href="../b2World/getGravity.html#b2.World:getGravity" id='b2.World:getGravity'>b2.World:getGravity</a></li>		
+										<li><a href="../b2World/queryAABB.html#b2.World:queryAABB" id='b2.World:queryAABB'>b2.World:queryAABB</a></li>		
+										<li><a href="../b2World/rayCast.html#b2.World:rayCast" id='b2.World:rayCast'>b2.World:rayCast</a></li>		
+										<li><a href="../b2World/setDebugDraw.html#b2.World:setDebugDraw" id='b2.World:setDebugDraw'>b2.World:setDebugDraw</a></li>		
+										<li><a href="../b2World/setGravity.html#b2.World:setGravity" id='b2.World:setGravity'>b2.World:setGravity</a></li>		
+										<li><a href="../b2World/step.html#b2.World:step" id='b2.World:step'>b2.World:step</a></li>		
+																							<li><a href="../b2World/Event.BEGIN_CONTACT.html#Event.BEGIN_CONTACT" id='Event.BEGIN_CONTACT'>Event.BEGIN_CONTACT</a></li>		
+										<li><a href="../b2World/Event.END_CONTACT.html#Event.END_CONTACT" id='Event.END_CONTACT'>Event.END_CONTACT</a></li>		
+										<li><a href="../b2World/Event.POST_SOLVE.html#Event.POST_SOLVE" id='Event.POST_SOLVE'>Event.POST_SOLVE</a></li>		
+										<li><a href="../b2World/Event.PRE_SOLVE.html#Event.PRE_SOLVE" id='Event.PRE_SOLVE'>Event.PRE_SOLVE</a></li>		
+																	</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="../b2WorldManifold.html#b2.WorldManifold" id='b2.WorldManifold' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.WorldManifold</strong></a>
+							<ul class="dropdown-menu">
+																						<li><a href="../b2WorldManifold/normal.html#normal" id='normal'>normal</a></li>		
+										<li><a href="../b2WorldManifold/points.html#points" id='points'>points</a></li>		
+													</ul>
+			</li>
+			        </ul>
+		</div>
+      </div>
+      <div class="span8" style='min-height:1000px; padding-left: 20px;'>
+				<section id='<br />
+<b>Notice</b>:  Undefined index: page in <b>/var/docs/reference/compile/fd3a1c190f5d2bee5cd859465bfdc252e9afb797.file.method.html.php</b> on line <b>29</b><br />
+'>
+<h1>b2.Body:getLocalVector</h1>
+
+<p><strong>Available since version:</strong> Gideros 2012.09.6</p>
+
+<h3>Description:</h3>
+<div>
+Returns the local coordinates of a vector given the world coordinates.
+</div>
+
+	<h3>Syntax:</h3>
+	<pre><code>(number), (number) = b2.Body:getLocalVector(x, y)</code></pre>
+
+	<h3>Parameters:</h3>
+	<ul class='list'>
+		<li><strong>x:</strong> (number) x coordinate of the world vector</li>
+		<li><strong>y:</strong> (number) y coordinate of the world vector</li>
+		</ul>
+
+	<h3>Return value:</h3>
+	<ul class='list'>
+		<li><strong>number:</strong> x vector of the provided vector expressed in local coordinates</li>
+		<li><strong>number:</strong> y vector of the provided vector expressed in local coordinates</li>
+		</ul>
+
+
+</section>
+			</div>
+	</div>
+
+  </div>
+
+
+</div>
+    <!-- Footer
+    ================================================== -->
+		<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="getLocalVector.html#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="http://docs.giderosmobile.com/reference/physics/b2Body/js/jquery-1.8.3.min.js"><\/script>')</script>
+		<script src="../../design/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../../design/js/prettify.js"></script>
+		<script type="text/javascript" src="../../design/js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.item").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+			});
+		</script>
+  </body>
+</html>
