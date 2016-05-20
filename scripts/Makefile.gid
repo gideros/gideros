@@ -16,7 +16,7 @@ GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | sed
 
 #TOOLS
 QMAKE=qmake
-MINGWMAKE=mingw32-make
+
 CC=$(QTBASEDIR)/Tools/$(QTMINGW)/bin/gcc
 CXX=$(QTBASEDIR)/Tools/$(QTMINGW)/bin/g++
 
@@ -44,11 +44,16 @@ sdk.headers.dir:
 sdk.headers: sdk.headers.dir $(addprefix $(SDK)/include/,$(SDK_INCS))
 
 
+ifeq ($(OS),Windows_NT)
+MINGWMAKE=mingw32-make
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtWin.mk
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWin32.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidAndroid.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWinRT.mk
+else
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtMac.mk
+endif
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk
-include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWin32.mk
 
 
 		

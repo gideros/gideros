@@ -1282,6 +1282,12 @@ void ApplicationManager::suspend()
     application_->tick(&status);
     if (status.error())
         luaError(status.errorString());
+    if (networkManager_)
+    {
+        delete networkManager_;
+        networkManager_=NULL;
+    }
+
 #if THREADED_RENDER_LOOP
     [renderCond_ unlock];
 #endif
@@ -1296,6 +1302,9 @@ void ApplicationManager::resume()
 #if THREADED_RENDER_LOOP
     [renderCond_ lock];
 #endif
+    if (player_&&!networkManager_)
+        networkManager_ = new NetworkManager(this);
+
     GStatus status;
     application_->tick(&status);
     if (status.error())

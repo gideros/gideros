@@ -765,7 +765,7 @@ void MainWindow::timerEvent(QTimerEvent*)
 	{
 		QStringList parts=players_->itemData(k).toString().split('|');
 		int itime=parts[3].toInt();
-		if ((itime>ctime)||(itime<(ctime-15)))
+		if ((itime>ctime)||(itime<(ctime-60)))
 			players_->removeItem(k);
 		else
 			k++;
