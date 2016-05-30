@@ -63,6 +63,7 @@ public:
 	static ShaderProgram *stdTexture;
 	static ShaderProgram *stdTextureColor;
 	static ShaderProgram *stdParticle;
+	static ShaderProgram *stdParticles;
 	static ShaderProgram *pathShaderFillC;
 	static ShaderProgram *pathShaderStrokeC;
 	static ShaderProgram *pathShaderStrokeLC;
