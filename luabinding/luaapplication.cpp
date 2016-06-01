@@ -47,6 +47,7 @@
 #include "path2dbinder.h"
 #include "viewportbinder.h"
 #include "pixelbinder.h"
+#include "particlesbinder.h"
 
 #include "keys.h"
 
@@ -359,6 +360,7 @@ static int bindAll(lua_State* L)
     Path2DBinder path2DBinder(L);
     ViewportBinder viewportBinder(L);
     PixelBinder pixelbinder(L);
+    ParticlesBinder particlesbinder(L);
 
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
@@ -952,6 +954,11 @@ void LuaApplication::deinitialize()
 //	SoundContainer::instance().stopAllSounds();
 
 	application_->releaseView();
+
+	//Release all async tasks
+	for (std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();it!=LuaApplication::tasks_.end();++it)
+		luaL_unref(L,LUA_REGISTRYINDEX,(*it).taskRef);
+	tasks_.clear();
 
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
