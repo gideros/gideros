@@ -1,6 +1,7 @@
-#include <gmesh.h>
+#include <particles.h>
 #include <ogl.h>
 #include <color.h>
+#include <application.h>
 
 Particles::Particles(Application *application) :
 		Sprite(application) {
