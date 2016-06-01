@@ -256,6 +256,7 @@ void g_setProperty(const char* what, const char* arg){
         acceptedValue << "noMaximize" << "noClose" << "helpButton";
 
         if (acceptedValue.contains(argString)){
+            arg1 = acceptedValue.indexOf(argString);
             Qt::WindowFlags flags = MainWindow::getInstance()->windowFlags();
 
             if (argString == "reset"){
