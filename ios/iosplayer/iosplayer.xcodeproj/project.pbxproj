@@ -355,6 +355,8 @@
 		EB140D8B1C5BB83A000180C7 /* cryptobinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */; };
 		EB27A5FA1CCDFC7E003A5580 /* pixel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5F91CCDFC7E003A5580 /* pixel.cpp */; };
 		EB27A5FC1CCDFC9B003A5580 /* pixelbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */; };
+		EB27A5FE1CFF1CEA003A5580 /* particlesbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FD1CFF1CEA003A5580 /* particlesbinder.cpp */; };
+		EB27A6001CFF1D0B003A5580 /* particles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FF1CFF1D0B003A5580 /* particles.cpp */; };
 		EB35B49A1C1190C200227849 /* ft-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4971C1190C200227849 /* ft-path.c */; };
 		EB35B49B1C1190C200227849 /* prpath.h in Headers */ = {isa = PBXBuildFile; fileRef = EB35B4981C1190C200227849 /* prpath.h */; };
 		EB35B49C1C1190C200227849 /* svg-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4991C1190C200227849 /* svg-path.c */; };
@@ -778,6 +780,8 @@
 		EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cryptobinder.cpp; path = ../../luabinding/cryptobinder.cpp; sourceTree = "<group>"; };
 		EB27A5F91CCDFC7E003A5580 /* pixel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pixel.cpp; path = ../../2dsg/pixel.cpp; sourceTree = "<group>"; };
 		EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pixelbinder.cpp; path = ../../luabinding/pixelbinder.cpp; sourceTree = "<group>"; };
+		EB27A5FD1CFF1CEA003A5580 /* particlesbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = particlesbinder.cpp; path = ../../luabinding/particlesbinder.cpp; sourceTree = "<group>"; };
+		EB27A5FF1CFF1D0B003A5580 /* particles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = particles.cpp; path = ../../2dsg/particles.cpp; sourceTree = "<group>"; };
 		EB35B4971C1190C200227849 /* ft-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "ft-path.c"; sourceTree = "<group>"; };
 		EB35B4981C1190C200227849 /* prpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prpath.h; sourceTree = "<group>"; };
 		EB35B4991C1190C200227849 /* svg-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "svg-path.c"; sourceTree = "<group>"; };
@@ -1294,6 +1298,7 @@
 				EB82BDBA1B29606C00281732 /* gfxbackends */,
 				EB08A3501AAA06F900D8F27D /* Matrices.cpp */,
 				EB08A3511AAA06F900D8F27D /* Matrices.h */,
+				EB27A5FF1CFF1D0B003A5580 /* particles.cpp */,
 				EB27A5F91CCDFC7E003A5580 /* pixel.cpp */,
 				EB7A5EA61C9BE8080068EFCA /* viewport.cpp */,
 				5F321EAF15BBC3FC00542289 /* application.cpp */,
@@ -1369,6 +1374,7 @@
 		5F321F2215BBCA8000542289 /* luabinding */ = {
 			isa = PBXGroup;
 			children = (
+				EB27A5FD1CFF1CEA003A5580 /* particlesbinder.cpp */,
 				EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */,
 				EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */,
 				EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */,
@@ -1949,6 +1955,7 @@
 				5F321F4C15BBEB3200542289 /* bitmapbinder.cpp in Sources */,
 				5ECDAB3A1ADAE0D100278F39 /* utf8.c in Sources */,
 				EBD8CAA71B903A50002F9D6C /* it_load.c in Sources */,
+				EB27A5FE1CFF1CEA003A5580 /* particlesbinder.cpp in Sources */,
 				5F321F4D15BBEB3200542289 /* bitmapdatabinder.cpp in Sources */,
 				EBD8CB1C1B903A50002F9D6C /* scan.c in Sources */,
 				5F276F9F18F4020E00D78AE4 /* b2CircleContact.cpp in Sources */,
@@ -2010,6 +2017,7 @@
 				EBD8CB131B903A50002F9D6C /* mixer.c in Sources */,
 				5F58B53E1619A0BA00B8E8FE /* gmesh.cpp in Sources */,
 				5ECDAB371ADAE0D100278F39 /* drawinfo.cpp in Sources */,
+				EB27A6001CFF1D0B003A5580 /* particles.cpp in Sources */,
 				5F58B5411619A0E400B8E8FE /* meshbinder.cpp in Sources */,
 				5F450BE11665066A001D8D4B /* gaudio-loader-wav.cpp in Sources */,
 				5F450BE21665066A001D8D4B /* gaudio-sample-openal.cpp in Sources */,
