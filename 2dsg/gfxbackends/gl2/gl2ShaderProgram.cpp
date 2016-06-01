@@ -107,7 +107,7 @@ GLuint ogl2LoadShader(GLuint type, const char *code, std::string &log) {
 		glDeleteShader(shader);
 		shader = 0;
 	}
-	glog_i("Loaded shader:%d\n", shader);
+	//glog_i("Loaded shader:%d\n", shader);
 	return shader;
 }
 
@@ -126,9 +126,9 @@ GLuint ogl2BuildProgram(GLuint vertexShader, GLuint fragmentShader, std::string 
 		log.append("Shader Program:\n");
 		log.append(&infoLog[0]);
 		log.append("\n");
-		glog_i("GL Program log:%s\n", &infoLog[0]);
+		glog_e("GL Program log:%s\n", &infoLog[0]);
 	}
-	glog_i("Loaded program:%d", program);
+	//glog_i("Loaded program:%d", program);
 	return program;
 }
 

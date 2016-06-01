@@ -23,6 +23,14 @@ Particles::~Particles() {
 		texture_->unref();
 }
 
+void Particles::clearParticles()
+{
+	ttl_.clear();
+	points_.clear();
+	speeds_.clear();
+	colors_.clear();
+}
+
 int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
 	int s = -1;
 	int k = 2;

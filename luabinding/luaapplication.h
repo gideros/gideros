@@ -17,6 +17,7 @@ class Ticker;
 #include <vector>
 #include <set>
 #include <gideros_p.h>
+#include <deque>
 
 #include <gglobal.h>
 
@@ -153,6 +154,18 @@ public:
 
     lua_State *getLuaState() const;
 
+    struct AsyncLuaTask {
+    	lua_State *L;
+    	double sleepTime;
+    	bool skipFrame;
+    	bool autoYield;
+    };
+    static std::deque<AsyncLuaTask> tasks_;
+    static double meanFrameTime_; //Average frame duration
+    static double meanFreeTime_; //Average time available for async tasks
+    static int Core_asyncCall(lua_State *L);
+    static int Core_yield(lua_State *L);
+    static int Core_frameStatistics(lua_State *L);
 private:
 	float physicsScale_;
 
@@ -173,6 +186,10 @@ private:
 
     static void callback_s(int type, void *event, void *udata);
     void callback(int type, void *event);
+
+    double frameStartTime_; //Time at which that frame processing started
+    double lastFrameTime_; //Total duration of last frame
+    double taskFrameTime_; //Total time consumed by async tasks
 };
 
 

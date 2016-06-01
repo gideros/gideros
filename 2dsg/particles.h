@@ -17,6 +17,7 @@ public:
 
     int addParticle(float x, float y, float size, float angle, int ttl);
     void removeParticle(int i);
+    void clearParticles();
     void setColor(int i, unsigned int color, float alpha);
     void getColor(int i, unsigned int *color, float *alpha) const;
     void setSpeed(int i, float vx, float vy, float va, float decay);

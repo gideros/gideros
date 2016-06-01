@@ -48,8 +48,9 @@ int ParticlesBinder::removeParticles(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
-
-    if (lua_type(L, 2) == LUA_TTABLE)
+    if (lua_isnoneornil(L,2))
+    	mesh->clearParticles();
+    else if (lua_type(L, 2) == LUA_TTABLE)
     {
         int n = lua_objlen(L, 2);
         for (int k = 0; k < n; ++k)
@@ -115,40 +116,52 @@ int ParticlesBinder::addParticles(lua_State *L)
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
 
-    if (lua_type(L, 2) == LUA_TTABLE) //TODO
+    if (lua_type(L, 2) == LUA_TTABLE)
     {
         int n = lua_objlen(L, 2);
-        for (int k = 0; k < n/4; ++k)
+        lua_newtable(L);
+        for (int k = 0; k < n; ++k)
         {
-            lua_rawgeti(L, 2, k * 3 + 1);
-            int i = luaL_checkinteger(L, -1) - 1;
+        	lua_rawgeti(L, 2, k + 1);
+        	if (lua_type(L,-1) != LUA_TTABLE)
+        		return luaL_error(L,"Particle definition must be a table.");
+        	lua_getfield(L,-1,"x");
+            float x = luaL_checknumber(L, -1) ;
             lua_pop(L, 1);
 
-            lua_rawgeti(L, 2, k * 3 + 2);
-            unsigned int color = luaL_checkinteger(L, -1);
+        	lua_getfield(L,-1,"y");
+            float y = luaL_checknumber(L, -1) ;
             lua_pop(L, 1);
 
-            lua_rawgeti(L, 2, k * 3 + 3);
-            float alpha = luaL_checknumber(L, -1);
+        	lua_getfield(L,-1,"size");
+            float size = luaL_checknumber(L, -1) ;
             lua_pop(L, 1);
 
-            mesh->setColor(i, color, alpha);
+        	lua_getfield(L,-1,"angle");
+            float angle = luaL_optnumber(L, -1,0) ;
+            lua_pop(L, 1);
+
+        	lua_getfield(L,-1,"ttl");
+            int ttl = luaL_optinteger(L, -1,0) ;
+            lua_pop(L, 2);
+
+            int pnum= mesh->addParticle(x,y,size,angle,ttl);
+            lua_pushinteger(L,pnum+1);
+            lua_rawseti(L,-2,k+1);
         }
     }
     else
     {
-        int n = lua_gettop(L) - 1;
-        for (int k = 0; k < n/4; ++k)
-        {
-            int i = luaL_checkinteger(L, k * 3 + 2) - 1;
-            unsigned int color = luaL_checkinteger(L, k * 3 + 3);
-            float alpha = luaL_checknumber(L, k * 3 + 4);
-
-            mesh->setColor(i, color, alpha);
-        }
+        float x = luaL_checknumber(L, 2) ;
+        float y = luaL_checknumber(L, 3) ;
+        float size = luaL_checknumber(L, 4) ;
+        float angle = luaL_optnumber(L, 5,0) ;
+        int ttl = luaL_optinteger(L, 6,0) ;
+        int pnum= mesh->addParticle(x,y,size,angle,ttl);
+        lua_pushinteger(L,pnum+1);
     }
 
-    return 0;
+    return 1;
 }
 
 int ParticlesBinder::getSpeed(lua_State *L)
@@ -208,3 +221,4 @@ int ParticlesBinder::clearTexture(lua_State *L)
 
     return 0;
 }
+

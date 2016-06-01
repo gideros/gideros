@@ -1,7 +1,7 @@
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/Makefile.def
 
-QT=$(QTBASEDIR)/$(QTVER)/$(QTMINGW)
-PATH:=$(QT)/bin:$(QTBASEDIR)/Tools/$(QTMINGW)/bin:$(PATH):
+QT=$(QTBASEDIR)/$(QTVER)/$(QT_ARCH)
+PATH:=$(QT)/bin:$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin:$(PATH):
 JAR=$(JAVA_HOME)/bin/jar
 ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_HOME)/bin/java -classpath "$(ANT_HOME)\\lib\\ant-launcher.jar" "-Dant.home=$(ANT_HOME)" org.apache.tools.ant.launch.Launcher
 
@@ -17,8 +17,8 @@ GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | sed
 #TOOLS
 QMAKE=qmake
 
-CC=$(QTBASEDIR)/Tools/$(QTMINGW)/bin/gcc
-CXX=$(QTBASEDIR)/Tools/$(QTMINGW)/bin/g++
+CC=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/gcc
+CXX=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/g++
 
 all: qtapp.install android.install win32.install winrt.install
 
