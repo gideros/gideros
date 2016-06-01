@@ -108,6 +108,9 @@ DirectXPage::DirectXPage():
 	window->VisibilityChanged +=
 		ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &DirectXPage::OnVisibilityChanged);
 
+//	window->SizeChanged += ref new TypedEventHandler
+//		<CoreWindow ^, WindowSizeChangedEventArgs ^>(this, &DirectXPage::OnSizeChanged);
+
 	DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
 
 	currentDisplayInformation->DpiChanged +=
@@ -144,6 +147,7 @@ DirectXPage::DirectXPage():
 		m_coreInput->PointerPressed += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerPressed);
 		m_coreInput->PointerMoved += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerMoved);
 		m_coreInput->PointerReleased += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerReleased);
+		m_coreInput->PointerCaptureLost += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerLost);
 
 		// Begin processing input messages as they're delivered.
 		m_coreInput->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessUntilQuit);
@@ -157,7 +161,9 @@ DirectXPage::DirectXPage():
 	std::wstring tempPath = ApplicationData::Current->TemporaryFolder->Path->Data();
 	bool isPlayer = false;
 
-	gdr_initialize(true, nullptr, swapChainPanel, 1366, 768, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
+	gdr_initialize(true, nullptr, swapChainPanel, window->Bounds.Width, window->Bounds.Height,
+		isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
+
 	gdr_drawFirstFrame();
 
 	auto workItemHandler2 = ref new WorkItemHandler([this](IAsyncAction ^ action)
@@ -243,18 +249,58 @@ void DirectXPage::OnPointerPressed(Object ^sender, PointerEventArgs^ Args)
 		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
 }
 
-void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ e)
+void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ Args)
 {
+	if (Args->CurrentPoint->IsInContact){
+		if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+			gdr_touchMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+		else
+			gdr_mouseMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+	}
+	else{
+		gdr_mouseHover(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+	}
 }
 
-void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ e)
+void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ Args)
 {
+	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+		gdr_touchEnd(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
+	else
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
+
+}
+
+void DirectXPage::OnPointerLost(Object^ sender, PointerEventArgs^ Args)
+{
+	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+		gdr_touchCancel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
+	else
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
 }
 
 void DirectXPage::OnCompositionScaleChanged(SwapChainPanel^ sender, Object^ args)
 {
 }
 
-void DirectXPage::OnSwapChainPanelSizeChanged(Object^ sender, SizeChangedEventArgs^ e)
+void DirectXPage::OnSwapChainPanelSizeChanged(Object^ sender, SizeChangedEventArgs^ args)
 {
+//	gdr_resize(args->NewSize.Width, args->NewSize.Height);
 }
+
+//void DirectXPage::OnSizeChanged(CoreWindow ^sender, WindowSizeChangedEventArgs ^args)
+//{
+//	gdr_resize(args->Size.Width, args->Size.Height);
+//}

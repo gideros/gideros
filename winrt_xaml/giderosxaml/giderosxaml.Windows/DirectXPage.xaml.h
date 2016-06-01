@@ -37,6 +37,7 @@ namespace giderosxaml
 		void AppBarButton_Click(Platform::Object^ sender, Windows::UI::Xaml::RoutedEventArgs^ e);
 		void OnCompositionScaleChanged(Windows::UI::Xaml::Controls::SwapChainPanel^ sender, Object^ args);
 		void OnSwapChainPanelSizeChanged(Platform::Object^ sender, Windows::UI::Xaml::SizeChangedEventArgs^ e);
+//		void OnSizeChanged(CoreWindow ^sender, WindowSizeChangedEventArgs ^args);
 
 		// Track our independent input on a background worker thread.
 		Windows::Foundation::IAsyncAction^ m_inputLoopWorker;
@@ -46,6 +47,7 @@ namespace giderosxaml
 		void OnPointerPressed(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 		void OnPointerMoved(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 		void OnPointerReleased(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
+		void OnPointerLost(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 
 		bool m_windowVisible;
 
