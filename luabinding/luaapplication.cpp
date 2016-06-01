@@ -263,8 +263,10 @@ int LuaApplication::Core_yield(lua_State* L)
 
 int LuaApplication::Core_asyncCall(lua_State* L)
 {
-	lua_State *T=lua_newthread(L);
 	LuaApplication::AsyncLuaTask t;
+	lua_State *T=lua_newthread(L);
+	lua_pushvalue(L,-1);
+	t.taskRef=luaL_ref(L,LUA_REGISTRYINDEX);
 	t.L=T;
 	t.sleepTime=0;
 	t.autoYield=true;
@@ -278,7 +280,7 @@ int LuaApplication::Core_asyncCall(lua_State* L)
 	}
 	else
 		LuaApplication::tasks_.push_back(t);
-	return 0;
+	return 1;
 }
 
 
@@ -1031,7 +1033,10 @@ static void yieldHook(lua_State *L,lua_Debug *ar)
 {
 	//glog_i("YieldHook:%f %f\n",iclock(),yieldHookLimit);
 	if (iclock()>=yieldHookLimit)
-		lua_yield(L,0);
+	{
+		if (lua_canyield(L))
+			lua_yield(L,0);
+	}
 }
 
 void LuaApplication::enterFrame(GStatus *status)
@@ -1096,6 +1101,7 @@ void LuaApplication::enterFrame(GStatus *status)
     					*status = GStatus(1, lua_tostring(t.L, -1));
     			}
     			lua_pop(t.L, 1);
+    			luaL_unref(L,LUA_REGISTRYINDEX,t.taskRef);
     			break;
     		}
     		else
@@ -1103,6 +1109,7 @@ void LuaApplication::enterFrame(GStatus *status)
     			tasks_.pop_back(); //Ended: Dequeue
     			//Drop any return args
     			lua_settop(t.L,0);
+    			luaL_unref(L,LUA_REGISTRYINDEX,t.taskRef);
     		}
     		if (iclock()>timeLimit)
     			break;

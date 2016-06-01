@@ -1089,6 +1089,11 @@ LUALIB_API int luaL_callmeta(lua_State *L, int idx, const char *field)
 }
 
 /* -- Coroutine yield and resume ------------------------------------------ */
+//XXX GIDEROS ADDED
+LUA_API int lua_canyield(lua_State *L)
+{
+	return cframe_canyield(L->cframe);
+}
 
 LUA_API int lua_yield(lua_State *L, int nresults)
 {

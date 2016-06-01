@@ -53,6 +53,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\mouseevent.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\movieclip2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ogl.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\particles.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\paths\ft-path.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\paths\path.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\paths\svg-path.c" />
@@ -486,6 +487,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\matrixbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\meshbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\movieclipbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\particlesbinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\path2dbinder.cpp">
       <AdditionalIncludeDirectories>..\..\..\2dsg\gfxbackends;..\..\..\2dsg\gfxbackends\dx11;..\..\..\libnetwork;..\..\..\luabinding;..\..\..\libgid\external\freetype-2.4.12\src;..\..\..\libgid\external\freetype-2.4.12\include;..\..\..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\include;..\..\..\external\liquidfun-1.0.0\liquidfun\Box2D;..\..\..\libgid\include\winrt;..\..\..\libgid\external\snappy-1.1.0;..\..\..\libgid\external\libpng-1.6.2;..\..\..\libgid\external\jpeg-9;..\..\..\libgid\external\openal-soft-1.16.0\include\AL;..\..\..\libgid\external\mpg123-1.15.3\src\libmpg123;..\..\..\lua\src;..\..\..\libgid\external\zlib-1.2.8;..\..\..\external\glu;..\..\..\libpystring;..\..\..\winrt;..\..\..\libplatform;..\..\..\libgvfs;..\..\..\libgideros;..\..\..\2dsg;..\..\..\libgid\include;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);..\..\..\libgid\external\libxmp-4.3\include;..\..\..\2dsg\paths</AdditionalIncludeDirectories>
     </ClCompile>
@@ -548,6 +550,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\movieclip2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\ogl.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\orientation.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\particles.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\paths\khash.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\paths\kvec.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\paths\path.h" />
@@ -703,6 +706,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\matrixbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\meshbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\movieclipbinder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\particlesbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\path2dbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\pixelbinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\rendertargetbinder.h" />

@@ -156,6 +156,7 @@ public:
 
     struct AsyncLuaTask {
     	lua_State *L;
+    	int taskRef;
     	double sleepTime;
     	bool skipFrame;
     	bool autoYield;

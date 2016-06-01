@@ -439,6 +439,11 @@ LUA_API int lua_resume (lua_State *L, int nargs) {
   return status;
 }
 
+//XXX GIDEROS ADDED
+LUA_API int lua_canyield(lua_State *L)
+{
+	return (L->nCcalls <= L->baseCcalls);
+}
 
 LUA_API int lua_yield (lua_State *L, int nresults) {
   luai_userstateyield(L, nresults);

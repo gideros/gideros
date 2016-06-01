@@ -180,6 +180,7 @@ shaderbinder.o gl2PathShaders.o \
 ftlibrarysingleton.o \
 viewport.o viewportbinder.o \
 pixel.o pixelbinder.o \
+particles.o particlesbinder.o \
 path2dbinder.o path.o ft-path.o svg-path.o \
 win32_res.o
 
