@@ -87,7 +87,7 @@ int ParticlesBinder::setSpeed(lua_State *L)
     float vx=luaL_optnumber(L,3,0);
     float vy=luaL_optnumber(L,4,0);
     float va=luaL_optnumber(L,5,0);
-    float decay=luaL_optnumber(L,6,0);
+    float decay=luaL_optnumber(L,6,1.0);
 
     mesh->setSpeed(i, vx,vy,va,decay);
 
@@ -143,11 +143,37 @@ int ParticlesBinder::addParticles(lua_State *L)
 
         	lua_getfield(L,-1,"ttl");
             int ttl = luaL_optinteger(L, -1,0) ;
-            lua_pop(L, 2);
+            lua_pop(L, 1);
 
             int pnum= mesh->addParticle(x,y,size,angle,ttl);
             lua_pushinteger(L,pnum+1);
-            lua_rawseti(L,-2,k+1);
+            lua_rawseti(L,-3,k+1);
+
+        	lua_getfield(L,-1,"speedX");
+            float vx = luaL_optnumber(L, -1,0) ;
+            lua_pop(L, 1);
+        	lua_getfield(L,-1,"speedX");
+            float vy = luaL_optnumber(L, -1,0) ;
+            lua_pop(L, 1);
+        	lua_getfield(L,-1,"speedAngular");
+            float va = luaL_optnumber(L, -1,0) ;
+            lua_pop(L, 1);
+        	lua_getfield(L,-1,"decay");
+            float decay = luaL_optnumber(L, -1,1.0) ;
+            lua_pop(L, 1);
+
+            mesh->setSpeed(pnum,vx,vy,va,decay);
+
+        	lua_getfield(L,-1,"color");
+            unsigned int color = luaL_optinteger(L, -1,0xFFFFFF);
+            lua_pop(L, 1);
+        	lua_getfield(L,-1,"alpha");
+            float alpha = luaL_optnumber(L, -1, 1.0);
+            lua_pop(L, 1);
+
+            mesh->setColor(pnum, color, alpha);
+
+            lua_pop(L, 1);
         }
     }
     else

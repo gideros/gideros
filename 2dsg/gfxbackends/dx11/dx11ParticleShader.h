@@ -18,7 +18,7 @@ public:
     virtual void setConstant(int index,ConstantType type, int mult,const void *ptr);
     virtual void drawArrays(ShapeType shape, int first, unsigned int count);
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache);
-    dx11ParticleShader(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
+    dx11ParticleShader(const void *vshader,int vshadersz,const void *pshader,int pshadersz,int flags,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
 };
 

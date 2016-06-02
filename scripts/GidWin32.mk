@@ -1,7 +1,5 @@
 win32.install: win32.libs.install win32.plugins.install win32.install
 
-win32.clean: win32.libs.clean win32.plugins.clean win32.clean
-
 
 sdk.win32libs.dir:
 	mkdir -p $(SDK)/lib/win32	
@@ -115,8 +113,8 @@ win32.install: win32.libs.install win32.app
 	cp -r $(WIN32_RELEASE)/* $(RELEASE)/Templates/Win32 
 	strip $(addprefix $(RELEASE)/Templates/Win32/,GiderosPlayer.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll)
 
-win32.clean:
-	#DUMMY
+win32.clean: win32.plugins.clean
+	rm -rf $(WIN32_BUILDDIR) 
 		
 win32.plugins: $(addsuffix .win32.plugin,$(PLUGINS_WIN32))
 

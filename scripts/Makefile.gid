@@ -44,6 +44,7 @@ sdk.headers.dir:
 sdk.headers: sdk.headers.dir $(addprefix $(SDK)/include/,$(SDK_INCS))
 
 
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk
 ifeq ($(OS),Windows_NT)
 MINGWMAKE=mingw32-make
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtWin.mk
@@ -53,7 +54,6 @@ include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWinRT.mk
 else
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtMac.mk
 endif
-include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk
 
 
 		

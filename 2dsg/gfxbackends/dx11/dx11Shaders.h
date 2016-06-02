@@ -46,10 +46,6 @@ class dx11ShaderProgram : public ShaderProgram
 	ID3D11InputLayout *g_pLayout;
 	ID3D11VertexShader *g_pVS;
 	ID3D11PixelShader *g_pPS;
-	static ID3D11Buffer *g_pVBuffer;                  // Vertex buffer: we put our geometry here
-	static ID3D11Buffer *g_pCBuffer;                  // Vertex buffer: we put our geometry here
-	static ID3D11Buffer *g_pTBuffer;                  // Vertex buffer: we put our geometry here
-	static ID3D11Buffer *g_pIBuffer;                  // Vertex buffer: we put our geometry here
 	ID3D11Buffer *g_CBP, *g_CBV;                        // Constant buffer: pass settings like whether to use textures or not
 protected:
     std::vector<DataDesc> attributes;
@@ -64,11 +60,12 @@ protected:
     int cbvsData;
     ID3D11Buffer *genVBO[16+1];
     int genVBOcapacity[16+1];
+	int flags;
     void setupBuffer(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache, int stride, int offset);
     ID3D11Buffer *getGenericVBO(int index,int elmSize,int mult,int count);
 	ID3D11Buffer *getCachedVBO(ShaderBufferCache **cache, bool index, int elmSize, int mult, int count);
 	void updateConstants();
-    void buildShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
+    void buildShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz, int flags,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
 public:
     virtual void activate();
@@ -79,9 +76,9 @@ public:
     virtual void drawElements(ShapeType shape, unsigned int count, DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first=0,unsigned int dcount=0);
     virtual bool isValid();
     virtual const char *compilationLog();
-    dx11ShaderProgram(const char *vshader,const char *pshader,
+    dx11ShaderProgram(const char *vshader,const char *pshader, int flags,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
-    dx11ShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
+    dx11ShaderProgram(const void *vshader,int vshadersz,const void *pshader,int pshadersz, int flags,
                      const ConstantDesc *uniforms, const DataDesc *attributes);
     virtual ~dx11ShaderProgram();
 };

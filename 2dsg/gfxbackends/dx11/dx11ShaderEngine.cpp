@@ -25,7 +25,7 @@ IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interf
 
 ShaderProgram *dx11ShaderEngine::createShaderProgram(const char *vshader,const char *pshader,int flags, const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)
 {
-	return new dx11ShaderProgram(vshader,pshader,uniforms,attributes);
+	return new dx11ShaderProgram(vshader,pshader,flags,uniforms,attributes);
 }
 
 const char *dx11ShaderEngine::getVersion()
@@ -75,13 +75,27 @@ void dx11SetupShaders()
 		{ "vVertex", dx11ShaderProgram::DFLOAT, 3, 0, 0 },
 		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
 		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
-		{"",ShaderProgram::DFLOAT,0,0,0}
+		{ "",ShaderProgram::DFLOAT,0,0,0 }
+	};
+	const ShaderProgram::ConstantDesc stdPSConstants[] = {
+		{ "vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL },
+		{ "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
+		{ "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
+		{ "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
+		{ "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
+	};
+	const dx11ShaderProgram::DataDesc stdPSAttributes[] = {
+		{ "vVertex", dx11ShaderProgram::DFLOAT, 4, 0, 0 },
+		{ "vColor", dx11ShaderProgram::DUBYTE, 4, 1, 0 },
+		{ "vTexCoord", dx11ShaderProgram::DFLOAT, 2, 2, 0 },
+		{ "",ShaderProgram::DFLOAT,0,0,0 }
 	};
 
-    ShaderProgram::stdBasic = new dx11ShaderProgram(vBasic_cso,sizeof(vBasic_cso),pBasic_cso,sizeof(pBasic_cso),stdConstants,stdBAttributes);
-    ShaderProgram::stdColor = new dx11ShaderProgram(vColor_cso,sizeof(vColor_cso),pColor_cso,sizeof(pColor_cso),stdConstants,stdCAttributes);
-    ShaderProgram::stdTexture = new dx11ShaderProgram(vTexture_cso,sizeof(vTexture_cso),pTexture_cso,sizeof(pTexture_cso),stdConstants,stdTAttributes);
-    ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso,sizeof(vTextureColor_cso),pTextureColor_cso,sizeof(pTextureColor_cso),stdConstants,stdTCAttributes);
+    ShaderProgram::stdBasic = new dx11ShaderProgram(vBasic_cso,sizeof(vBasic_cso),pBasic_cso,sizeof(pBasic_cso),0,stdConstants,stdBAttributes);
+    ShaderProgram::stdColor = new dx11ShaderProgram(vColor_cso,sizeof(vColor_cso),pColor_cso,sizeof(pColor_cso),0,stdConstants,stdCAttributes);
+    ShaderProgram::stdTexture = new dx11ShaderProgram(vTexture_cso,sizeof(vTexture_cso),pTexture_cso,sizeof(pTexture_cso),0,stdConstants,stdTAttributes);
+	ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso, sizeof(vTextureColor_cso), pTextureColor_cso, sizeof(pTextureColor_cso), 0, stdConstants, stdTCAttributes);
+	ShaderProgram::stdParticles = new dx11ShaderProgram(vParticles_cso, sizeof(vParticles_cso), pParticles_cso, sizeof(pParticles_cso), ShaderProgram::Flag_PointShader, stdPSConstants, stdPSAttributes);
 
 	const ShaderProgram::ConstantDesc stdPConstants[]={
 			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
@@ -90,7 +104,7 @@ void dx11SetupShaders()
 			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL},
 			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
 	};
-    ShaderProgram::stdParticle = new dx11ParticleShader(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),stdPConstants,stdTCAttributes);
+    ShaderProgram::stdParticle = new dx11ParticleShader(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),(int)(ShaderProgram::Flag_PointShader),stdPConstants,stdTCAttributes);
 
 	const ShaderProgram::ConstantDesc pathUniformsFC[] = {
 		{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
@@ -123,9 +137,9 @@ void dx11SetupShaders()
 		{ "vVertex",ShaderProgram::DFLOAT, 4, 0, 0 },
 		{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
 
-	ShaderProgram::pathShaderFillC = new dx11ShaderProgram(vPathFillC_cso, sizeof(vPathFillC_cso), pPathFillC_cso, sizeof(pPathFillC_cso), pathUniformsFC, pathAttributesFC);
-	ShaderProgram::pathShaderStrokeC = new dx11ShaderProgram(vPathStrokeC_cso, sizeof(vPathStrokeC_cso), pPathStrokeC_cso, sizeof(pPathStrokeC_cso), pathUniformsSC, pathAttributesSC);
-	ShaderProgram::pathShaderStrokeLC = new dx11ShaderProgram(vPathStrokeLC_cso, sizeof(vPathStrokeLC_cso), pPathStrokeLC_cso, sizeof(pPathStrokeLC_cso), pathUniformsSL, pathAttributesSL);
+	ShaderProgram::pathShaderFillC = new dx11ShaderProgram(vPathFillC_cso, sizeof(vPathFillC_cso), pPathFillC_cso, sizeof(pPathFillC_cso), 0, pathUniformsFC, pathAttributesFC);
+	ShaderProgram::pathShaderStrokeC = new dx11ShaderProgram(vPathStrokeC_cso, sizeof(vPathStrokeC_cso), pPathStrokeC_cso, sizeof(pPathStrokeC_cso), 0, pathUniformsSC, pathAttributesSC);
+	ShaderProgram::pathShaderStrokeLC = new dx11ShaderProgram(vPathStrokeLC_cso, sizeof(vPathStrokeLC_cso), pPathStrokeLC_cso, sizeof(pPathStrokeLC_cso), 0, pathUniformsSL, pathAttributesSL);
 }
 
 dx11ShaderEngine::dx11ShaderEngine(int sw,int sh)

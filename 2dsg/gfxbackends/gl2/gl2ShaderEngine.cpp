@@ -56,6 +56,18 @@ static const char *hdrVShaderCode =
 #endif
 		"attribute highp vec3 vVertex;\n";
 
+static const char *hdrPSVShaderCode =
+#ifdef OPENGL_ES
+		"#version 100\n"
+		"#define GLES2\n"
+#else
+		"#version 120\n"
+				"#define highp\n"
+				"#define mediump\n"
+				"#define lowp\n"
+#endif
+		"attribute highp vec4 vVertex;\n";
+
 static const char *stdVShaderCode = "uniform highp mat4 vMatrix;\n"
 		"\n"
 		"void main() {\n"
@@ -104,6 +116,21 @@ static const char *stdPVShaderCode = "attribute lowp vec4 vColor;\n"
 		"  fInColor=vColor;\n"
 		"  mediump vec4 xpsize=vWorldMatrix*vec4(vPSize,0.0,0.0,1.0);\n"
 		"  gl_PointSize=length(xpsize.xyz);\n"
+		"}\n";
+
+static const char *stdPSVShaderCode =
+		"attribute lowp vec4 vColor;\n"
+		"uniform highp mat4 vMatrix;\n"
+		"uniform highp mat4 vWorldMatrix;\n"
+		"varying lowp vec4 fInColor;\n"
+		"varying mediump vec2 fStepRot;\n"
+		"void main() {\n"
+		"  highp vec4 vertex = vec4(vVertex.xy,0.0,1.0);\n"
+		"  gl_Position = vMatrix*vertex;\n"
+		"  fInColor=vColor;\n"
+		"  mediump vec4 xpsize=vWorldMatrix*vec4(vVertex.z,0.0,0.0,1.0);\n"
+		"  gl_PointSize=length(xpsize.xyz);\n"
+		"  fStepRot=vec2(sign(vVertex.z)/gl_PointSize,vVertex.w);\n"
 		"}\n";
 
 /* Fragment shader*/
@@ -158,6 +185,39 @@ static const char *stdPFShaderCode =
 				" }\n"
 				" else\n"
 				"  gl_FragColor=fInColor*texture2D(fTexture, gl_PointCoord*fTexInfo.xy);\n"
+				"}\n";
+
+static const char *stdPSFShaderCode =
+		"varying lowp vec4 fInColor;\n"
+		"varying mediump vec2 fStepRot;\n"
+		"uniform lowp sampler2D fTexture;\n"
+		"uniform mediump vec4 fTexInfo;\n"
+		"void main() {\n"
+		" if (fStepRot.x<0.0)\n"
+	"		 gl_FragColor=fInColor;\n"
+	"	 else\n"
+	"	 {\n"
+	"	 mediump vec2 rad=vec2(-0.5,-0.5)+gl_PointCoord;\n"
+	"	 if (fTexInfo.x<=0.0)\n"
+	"	 {\n"
+	"	  lowp vec4 frag;\n"
+	"	  frag=fInColor;\n"
+	"	  lowp float alpha=1.0-smoothstep(0.5-fStepRot.x,0.5+fStepRot.x,length(rad));\n"
+	"	  frag*=alpha;\n"
+	"	  gl_FragColor=frag;\n"
+	"	 }\n"
+	"	 else\n"
+	"	 {\n"
+	"	  mediump float angle=fStepRot.y*3.141592654/180.0;\n"
+	"	  mediump float ca=cos(angle);\n"
+	"	  mediump float sa=sin(angle);\n"
+	"	  mediump mat2 rot=mat2(ca,sa,-sa,ca);\n"
+	"	  rad=rad*rot;\n"
+	"	  if ((rad.x<-0.5)||(rad.y<-0.5)||(rad.x>0.5)||(rad.y>0.5))\n"
+	"		  discard;\n"
+	"	  gl_FragColor=fInColor*texture2D(fTexture, (rad+vec2(0.5,0.5))*fTexInfo.xy);\n"
+	"	 }\n"
+	"	 }\n"
 				"}\n";
 #endif
 
@@ -326,6 +386,24 @@ void ogl2SetupShaders() {
 	ShaderProgram::stdParticle = new ogl2ShaderProgram(hdrVShaderCode,
 			stdPVShaderCode, hdrFShaderCode, stdPFShaderCode, stdPUniforms,
 			stdAttributes);
+
+	const ShaderProgram::ConstantDesc stdPSConstants[] = {
+		{ "vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL },
+		{ "vWorldMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldMatrix,true,0,NULL },
+		{ "fTexture",ShaderProgram::CTEXTURE,1,ShaderProgram::SysConst_None,false,0,NULL },
+		{ "fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL },
+		{ "",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL }
+	};
+	const ShaderProgram::DataDesc stdPSAttributes[] = {
+		{ "vVertex", ShaderProgram::DFLOAT, 4, 0, 0 },
+		{ "vColor", ShaderProgram::DUBYTE, 4, 1, 0 },
+		{ "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0 },
+		{ "",ShaderProgram::DFLOAT,0,0,0 }
+	};
+
+	ShaderProgram::stdParticles = new ogl2ShaderProgram(
+			hdrPSVShaderCode,	stdPSVShaderCode, hdrFShaderCode, stdPSFShaderCode, stdPSConstants, stdPSAttributes);
+
 }
 
 ShaderProgram *ogl2ShaderEngine::createShaderProgram(const char *vshader,

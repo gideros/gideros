@@ -106,8 +106,8 @@ void dx11ParticleShader::drawElements(ShapeType shape, unsigned int count, DataT
 	//Not supported
 }
 
- dx11ParticleShader::dx11ParticleShader(const void *vshader,int vshadersz,const void *pshader,int pshadersz,
-                     const ConstantDesc *uniforms, const DataDesc *attributes) : dx11ShaderProgram(vshader,vshadersz,pshader,pshadersz,uniforms,attributes)
+ dx11ParticleShader::dx11ParticleShader(const void *vshader,int vshadersz,const void *pshader,int pshadersz,int flags,
+                     const ConstantDesc *uniforms, const DataDesc *attributes) : dx11ShaderProgram(vshader,vshadersz,pshader,pshadersz,flags,uniforms,attributes)
  {
 	 psize=1;
  }

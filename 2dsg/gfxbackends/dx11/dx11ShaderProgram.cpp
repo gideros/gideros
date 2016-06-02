@@ -106,6 +106,64 @@ ID3D11Buffer *dx11ShaderProgram::getGenericVBO(int index, int elmSize, int mult,
 	return genVBO[index];
 }
 
+static void copyEnlarge(const void *src, void *dst, int smult, int dmult, int esize, int count, int dup)
+{
+	switch (esize)
+	{
+	case 1:
+	{
+		uint8 *psrc = (uint8 *)src;
+		uint8 *pdst = (uint8 *)dst;
+		while (count--)
+		{
+			for (int kd = 0; kd < dup; kd++)
+			{
+				for (int kc = 0; kc < smult; kc++)
+					*(pdst++) = psrc[kc];
+				for (int kc = smult; kc < dmult; kc++)
+					*(pdst++) = 0;
+			}
+			psrc += smult;
+		}
+	}
+		break;
+	case 2:
+	{
+		uint16 *psrc = (uint16 *)src;
+		uint16 *pdst = (uint16 *)dst;
+		while (count--)
+		{
+			for (int kd = 0; kd < dup; kd++)
+			{
+				for (int kc = 0; kc < smult; kc++)
+					*(pdst++) = psrc[kc];
+				for (int kc = smult; kc < dmult; kc++)
+					*(pdst++) = 0;
+			}
+			psrc += smult;
+		}
+	}
+		break;
+	case 4:
+	{
+		uint32 *psrc = (uint32 *)src;
+		uint32 *pdst = (uint32 *)dst;
+		while (count--)
+		{
+			for (int kd = 0; kd < dup; kd++)
+			{
+				for (int kc = 0; kc < smult; kc++)
+					*(pdst++) = psrc[kc];
+				for (int kc = smult; kc < dmult; kc++)
+					*(pdst++) = 0;
+			}
+			psrc += smult;
+		}
+	}
+		break;
+	}
+}
+
 void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
 		ShaderBufferCache **cache,int stride,int offset) {
@@ -124,25 +182,55 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 		break;
 	}
 	DataDesc dd = attributes[index];
-	ID3D11Buffer *vbo = cache?getCachedVBO(cache,false,elmSize,dd.mult,count):getGenericVBO(index + 1, elmSize, dd.mult, count);
+	unsigned int bcount = (flags&ShaderProgram::Flag_PointShader) ? count * 4 : count;
+	ID3D11Buffer *vbo = cache?getCachedVBO(cache,false,elmSize,dd.mult,bcount):getGenericVBO(index + 1, elmSize, dd.mult, bcount);
 	if (!vbo) return;
 	if (modified || (!cache))
 	{
 		D3D11_MAPPED_SUBRESOURCE ms;
 		HRESULT hr = g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
-		if ((mult == 2) && (dd.mult == 3) && (type == DFLOAT)) //TODO should be more generic
+		if (flags&ShaderProgram::Flag_PointShader)
 		{
-			float *vdi = (float *)ptr;
-			float *vdo = (float *)ms.pData;
-			for (int k = 0; k < count; k++) {
-				*(vdo++) = *(vdi++);
-				*(vdo++) = *(vdi++);
-				*(vdo++) = 0;
+			copyEnlarge(ptr, ms.pData, mult, dd.mult, elmSize, count, 4);		
+			if (index == ShaderProgram::DataVertex)
+			{
+				int gindex = ShaderProgram::DataTexture + 1;
+				//Ensure TexCoord array is present and big enough
+				if ((genVBO[gindex] == NULL) || (genVBOcapacity[gindex] < (count * 4))) {
+					D3D11_MAPPED_SUBRESOURCE tms;
+					ID3D11Buffer *tvbo = getGenericVBO(gindex, 4, 2, count*4);
+					g_devcon->Map(tvbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &tms); // map the buffer
+					float *t = (float *)tms.pData;
+					for (int k = 0; k < count; k++) {
+						*(t++) = 0.0;
+						*(t++) = 0.0;
+						*(t++) = 1.0;
+						*(t++) = 0.0;
+						*(t++) = 1.0;
+						*(t++) = 1.0;
+						*(t++) = 0.0;
+						*(t++) = 1.0;
+					}
+					g_devcon->Unmap(tvbo, NULL);                          // unmap the buffer
+				}
 			}
-			mult = dd.mult;
 		}
 		else
-			memcpy(ms.pData, ptr, mult * elmSize * count);          // copy the data
+		{
+			if ((mult == 2) && (dd.mult == 3) && (type == DFLOAT)) //TODO should be more generic
+			{
+				float *vdi = (float *)ptr;
+				float *vdo = (float *)ms.pData;
+				for (int k = 0; k < count; k++) {
+					*(vdo++) = *(vdi++);
+					*(vdo++) = *(vdi++);
+					*(vdo++) = 0;
+				}
+				mult = dd.mult;
+			}
+			else
+				memcpy(ms.pData, ptr, mult * elmSize * count);          // copy the data
+		}
 		//floatdump(vName, ms.pData, 8);
 		g_devcon->Unmap(vbo, NULL);                              // unmap the buffer
 	}
@@ -152,6 +240,18 @@ void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 
 	UINT voff = offset;
 	g_devcon->IASetVertexBuffers(index, 1, &vbo, &tstride, &voff);
+
+	if (flags&ShaderProgram::Flag_PointShader)
+	{
+		if (index == ShaderProgram::DataVertex)
+		{
+			UINT tstride = 8;
+			UINT voff = 0;
+			int gindex = ShaderProgram::DataTexture;
+			ID3D11Buffer *tvbo = getGenericVBO(gindex+1, 4, 2, count * 4);
+			g_devcon->IASetVertexBuffers(gindex, 1, &tvbo, &tstride, &voff);
+		}
+	}
 }
 
 void dx11ShaderProgram::setData(int index, DataType type, int mult,
@@ -172,13 +272,13 @@ void dx11ShaderProgram::setConstant(int index, ConstantType type, int mult,
 }
 
 dx11ShaderProgram::dx11ShaderProgram(const void *vshader, int vshadersz,
-		const void *pshader, int pshadersz, const ConstantDesc *uniforms,
+		const void *pshader, int pshadersz, int flags, const ConstantDesc *uniforms,
 		const DataDesc *attributes) {
-	buildShaderProgram(vshader, vshadersz, pshader, pshadersz, uniforms,
+	buildShaderProgram(vshader, vshadersz, pshader, pshadersz, flags, uniforms,
 			attributes);
 }
 
-dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,
+dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,int flags,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	long VSLen, PSLen;
 	void *VSFile = LoadShaderFile(vshader, "cso", &VSLen);
@@ -223,7 +323,7 @@ dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,
 			pCode->Release();
 		}
 	}
-	buildShaderProgram(VSFile, VSLen, PSFile, PSLen, uniforms, attributes);
+	buildShaderProgram(VSFile, VSLen, PSFile, PSLen, flags, uniforms, attributes);
 	if (VSFile)
 		free(VSFile);
 	if (PSFile)
@@ -231,7 +331,7 @@ dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,
 }
 
 void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
-		const void *pshader, int pshadersz, const ConstantDesc *uniforms,
+		const void *pshader, int pshadersz, int flags, const ConstantDesc *uniforms,
 		const DataDesc *attributes) {
 	g_pVS = NULL;
 	g_pPS = NULL;
@@ -246,6 +346,7 @@ void dx11ShaderProgram::buildShaderProgram(const void *vshader, int vshadersz,
 	}
 	cbvsData = 0;
 	cbpsData = 0;
+	this->flags = flags;
 	if (!(vshader && pshader))
 		return;
 	g_dev->CreateVertexShader(vshader, vshadersz, NULL, &g_pVS);
@@ -431,7 +532,40 @@ void dx11ShaderProgram::drawArrays(ShapeType shape, int first,
 	updateConstants();
 
 	if (shape == Point)
-		g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	{
+		if (flags&ShaderProgram::Flag_PointShader)
+		{
+			D3D11_MAPPED_SUBRESOURCE ms;
+			int ntris = count;
+			bool changed = ((genVBO[0] == NULL) || (genVBOcapacity[0] < (6 * ntris))); //We should really check if first is still the same here, but current gideros code uses 0 for Point Shaders
+
+			ID3D11Buffer *vbo = getGenericVBO(0, 2, 1, 6 * ntris);
+			if (changed)
+			{
+				g_devcon->Map(vbo, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); // map the buffer
+				unsigned short *i = (unsigned short *)ms.pData;
+
+				for (int t = 0; t < ntris; t++) {
+					unsigned short b = (first + t) * 4;
+					*(i++) = b + 0;
+					*(i++) = b + 1;
+					*(i++) = b + 2;
+					*(i++) = b + 0;
+					*(i++) = b + 2;
+					*(i++) = b + 3;
+				}
+				g_devcon->Unmap(vbo, NULL);                          // unmap the buffer
+			}
+			g_devcon->IASetIndexBuffer(vbo, DXGI_FORMAT_R16_UINT, 0);
+			curIndicesVBO = vbo;
+			g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			g_devcon->DrawIndexed(ntris * 6, 0, 0);
+			return;
+		}
+		else
+			g_devcon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	}
 	else if (shape == TriangleStrip)
 		g_devcon->IASetPrimitiveTopology(
 				D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);

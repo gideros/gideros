@@ -47,7 +47,8 @@ public:
     };
     enum ShaderFlags {
     	Flag_None=0,
-    	Flag_NoDefaultHeader=1
+    	Flag_NoDefaultHeader=1,
+		Flag_PointShader=2
     };
     struct ConstantDesc {
     	std::string name;

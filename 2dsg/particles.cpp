@@ -2,6 +2,7 @@
 #include <ogl.h>
 #include <color.h>
 #include <application.h>
+#include <glog.h>
 
 Particles::Particles(Application *application) :
 		Sprite(application) {
@@ -48,6 +49,7 @@ int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
 		points_.resize(s * 4 + 4);
 		speeds_.resize(s * 4 + 4);
 		colors_.resize(s * 4 + 4);
+		originalColors_.resize(s +1);
 	}
 	points_[s * 4 + 0] = x;
 	points_[s * 4 + 1] = y;
@@ -58,10 +60,12 @@ int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
 	speeds_[s * 4 + 1] = 0;
 	speeds_[s * 4 + 2] = 0;
 	speeds_[s * 4 + 3] = 0;
-	colors_[s * 4 + 0] = 1;
-	colors_[s * 4 + 1] = 1;
-	colors_[s * 4 + 2] = 1;
-	colors_[s * 4 + 3] = 1;
+	colors_[s * 4 + 0] = 255;
+	colors_[s * 4 + 1] = 255;
+	colors_[s * 4 + 2] = 255;
+	colors_[s * 4 + 3] = 255;
+	originalColors_[s].color = 0xFFFFFF;
+	originalColors_[s].alpha = 1;
 	points_.Update();
 	speeds_.Update();
 	colors_.Update();
@@ -131,7 +135,7 @@ void Particles::getSpeed(int i, float *vx, float *vy, float *va,
 }
 
 void Particles::tick() {
-	for (int i = 0; i < ttl_.size(); i++) {
+	for (unsigned int i = 0; i < ttl_.size(); i++) {
 		if (points_[i * 4 + 2] != 0) {
 			points_[i*4]+=speeds_[i*4];
 			points_[i*4+1]+=speeds_[i*4+1];
@@ -185,11 +189,21 @@ void Particles::doDraw(const CurrentTransform &, float sx, float sy, float ex,
 		return;
 
 	ShaderProgram *p = ShaderProgram::stdParticles;
-	if (texture_)
-		ShaderEngine::Engine->bindTexture(0, texture_->data->id());
-
 	if (shader_)
 		p = shader_;
+	float textureInfo[4]={0,0,0,0};
+	if (texture_)
+	{
+		ShaderEngine::Engine->bindTexture(0,texture_->data->id());
+		textureInfo[0]=(float)texture_->data->width / (float)texture_->data->exwidth;
+		textureInfo[1]=(float)texture_->data->height / (float)texture_->data->exheight;
+		textureInfo[2]=1.0/texture_->data->exwidth;
+		textureInfo[3]=1.0/texture_->data->exheight;
+	}
+	int sc=p->getSystemConstant(ShaderProgram::SysConst_TextureInfo);
+	if (sc>=0)
+		p->setConstant(sc,ShaderProgram::CFLOAT4,1,textureInfo);
+
 	p->setData(ShaderProgram::DataVertex, ShaderProgram::DFLOAT, 4, &points_[0],
 			points_.size() / 4, points_.modified, &points_.bufferCache);
 	points_.modified = false;
