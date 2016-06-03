@@ -2606,6 +2606,7 @@ void Path2D::fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,
 
 		if ((texture==NULL)&&(convex||(p->fill_counts[0]==0)||(p->fill_counts[1]==0))) {
 			ShaderEngine::DepthStencil stencil;
+			memset(&stencil, sizeof(stencil), 0);
 			glPushColor();
 			glMultColor(fill[0], fill[1], fill[2], fill[3]);
 			fill_path(path, PATHFILLMODE_DIRECT, stencil, &xform);
