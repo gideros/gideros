@@ -26,6 +26,7 @@ macx {
         -framework OpenAL \
         -framework OpenGL \
         -framework CoreFoundation \
+        -framework IOKit\
         -L"../libgid" -lgid \
         -L"../libgvfs" -lgvfs \
         -L"../lua" -llua \

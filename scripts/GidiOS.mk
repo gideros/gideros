@@ -32,7 +32,7 @@ ios.app: player.ios.app
 
 ios.libs.install: ios.libs
 	mkdir -p $(IOS_TEMPLATE)
-	cp -R $(ROOT)/ui/Templates/Xcode4/iOS\ Template/iOS\ Template/* $(IOS_TEMPLATE)
+	cp -R $(ROOT)/ui/Templates/Xcode4/iOS\ Template/* $(IOS_TEMPLATE)/..
 	cp $(ROOT)/lua/liblua.ios.a $(IOS_TEMPLATE)/liblua.a
 	cp $(ROOT)/libgvfs/libgvfs.ios.a $(IOS_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.ios.a $(IOS_TEMPLATE)/libgideros.a
@@ -40,7 +40,6 @@ ios.libs.install: ios.libs
 
 atv.libs.install: atv.libs
 	mkdir -p $(ATV_TEMPLATE)
-	cp -R $(ROOT)/ui/Templates/Xcode4/iOS\ Template/AppleTV/* $(ATV_TEMPLATE)
 	cp $(ROOT)/lua/liblua.atv.a $(ATV_TEMPLATE)/liblua.a
 	cp $(ROOT)/libgvfs/libgvfs.atv.a $(ATV_TEMPLATE)/libgvfs.a
 	cp $(ROOT)/ios/iosplayer/libiosplayer.atv.a $(ATV_TEMPLATE)/libgideros.a
