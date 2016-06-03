@@ -53,6 +53,7 @@ include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidAndroid.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWinRT.mk
 else
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtMac.mk
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidiOS.mk
 endif
 
 
