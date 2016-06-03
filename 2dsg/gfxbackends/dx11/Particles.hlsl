@@ -17,7 +17,7 @@ VOut VShader(float4 position : vVertex, float4 color : vColor, float2 texcoord :
 	VOut output;
 
 	float psizen = position.z;
-	float psize = length(mul(vWorldMatrix, float4(position.z, 0.0, 0.0, 1.0)));
+	float psize = length(mul(vWorldMatrix, float4(position.z, 0.0, 0.0, 0.0)));
 	output.steprot = float2(sign(psizen) / psize, position.w);
 	position.w = 1.0f;
 	position.z = 0.0f;

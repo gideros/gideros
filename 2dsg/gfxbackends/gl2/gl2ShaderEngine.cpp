@@ -128,7 +128,7 @@ static const char *stdPSVShaderCode =
 		"  highp vec4 vertex = vec4(vVertex.xy,0.0,1.0);\n"
 		"  gl_Position = vMatrix*vertex;\n"
 		"  fInColor=vColor;\n"
-		"  mediump vec4 xpsize=vWorldMatrix*vec4(vVertex.z,0.0,0.0,1.0);\n"
+		"  mediump vec4 xpsize=vWorldMatrix*vec4(vVertex.z,0.0,0.0,0.0);\n"
 		"  gl_PointSize=length(xpsize.xyz);\n"
 		"  fStepRot=vec2(sign(vVertex.z)/gl_PointSize,vVertex.w);\n"
 		"}\n";
