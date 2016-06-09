@@ -4,8 +4,6 @@
 *
 * The penalty of calling select to avoid busy-wait is only paid when
 * the I/O call fail in the first place. 
-*
-* RCS ID: $Id: wsocket.c,v 1.36 2007/06/11 23:44:54 diego Exp $
 \*=========================================================================*/
 #include <string.h>
 
@@ -54,7 +52,7 @@ int socket_waitfd(p_socket ps, int sw, p_timeout tm) {
     if (timeout_iszero(tm)) return IO_TIMEOUT;  /* optimize timeout == 0 case */
     if (sw & WAITFD_R) { 
         FD_ZERO(&rfds); 
-		FD_SET(*ps, &rfds);
+        FD_SET(*ps, &rfds);
         rp = &rfds; 
     }
     if (sw & WAITFD_W) { FD_ZERO(&wfds); FD_SET(*ps, &wfds); wp = &wfds; }
@@ -171,11 +169,7 @@ int socket_listen(p_socket ps, int backlog) {
 \*-------------------------------------------------------------------------*/
 int socket_accept(p_socket ps, p_socket pa, SA *addr, socklen_t *len, 
         p_timeout tm) {
-    SA daddr;
-    socklen_t dlen = sizeof(daddr);
     if (*ps == SOCKET_INVALID) return IO_CLOSED;
-    if (!addr) addr = &daddr;
-    if (!len) len = &dlen;
     for ( ;; ) {
         int err;
         /* try to get client socket */
@@ -187,8 +181,6 @@ int socket_accept(p_socket ps, p_socket pa, SA *addr, socklen_t *len,
         /* call select to avoid busy wait */
         if ((err = socket_waitfd(ps, WAITFD_R, tm)) != IO_DONE) return err;
     } 
-    /* can't reach here */
-    return IO_UNKNOWN; 
 }
 
 /*-------------------------------------------------------------------------*\
@@ -207,7 +199,7 @@ int socket_send(p_socket ps, const char *data, size_t count,
     /* loop until we send something or we give up on error */
     for ( ;; ) {
         /* try to send something */
-		int put = send(*ps, data, (int) count, 0);
+        int put = send(*ps, data, (int) count, 0);
         /* if we sent something, we are done */
         if (put > 0) {
             *sent = put;
@@ -220,8 +212,6 @@ int socket_send(p_socket ps, const char *data, size_t count,
         /* avoid busy wait */
         if ((err = socket_waitfd(ps, WAITFD_W, tm)) != IO_DONE) return err;
     } 
-    /* can't reach here */
-    return IO_UNKNOWN;
 }
 
 /*-------------------------------------------------------------------------*\
@@ -243,14 +233,15 @@ int socket_sendto(p_socket ps, const char *data, size_t count, size_t *sent,
         if (err != WSAEWOULDBLOCK) return err;
         if ((err = socket_waitfd(ps, WAITFD_W, tm)) != IO_DONE) return err;
     } 
-    return IO_UNKNOWN;
 }
 
 /*-------------------------------------------------------------------------*\
 * Receive with timeout
 \*-------------------------------------------------------------------------*/
-int socket_recv(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm) {
-    int err;
+int socket_recv(p_socket ps, char *data, size_t count, size_t *got, 
+        p_timeout tm) 
+{
+    int err, prev = IO_DONE;
     *got = 0;
     if (*ps == SOCKET_INVALID) return IO_CLOSED;
     for ( ;; ) {
@@ -261,18 +252,25 @@ int socket_recv(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm
         }
         if (taken == 0) return IO_CLOSED;
         err = WSAGetLastError();
-        if (err != WSAEWOULDBLOCK) return err;
+        /* On UDP, a connreset simply means the previous send failed. 
+         * So we try again. 
+         * On TCP, it means our socket is now useless, so the error passes. 
+         * (We will loop again, exiting because the same error will happen) */
+        if (err != WSAEWOULDBLOCK) {
+            if (err != WSAECONNRESET || prev == WSAECONNRESET) return err;
+            prev = err;
+        }
         if ((err = socket_waitfd(ps, WAITFD_R, tm)) != IO_DONE) return err;
     }
-    return IO_UNKNOWN;
 }
 
 /*-------------------------------------------------------------------------*\
 * Recvfrom with timeout
 \*-------------------------------------------------------------------------*/
 int socket_recvfrom(p_socket ps, char *data, size_t count, size_t *got, 
-        SA *addr, socklen_t *len, p_timeout tm) {
-    int err;
+        SA *addr, socklen_t *len, p_timeout tm) 
+{
+    int err, prev = IO_DONE;
     *got = 0;
     if (*ps == SOCKET_INVALID) return IO_CLOSED;
     for ( ;; ) {
@@ -283,10 +281,16 @@ int socket_recvfrom(p_socket ps, char *data, size_t count, size_t *got,
         }
         if (taken == 0) return IO_CLOSED;
         err = WSAGetLastError();
-        if (err != WSAEWOULDBLOCK) return err;
+        /* On UDP, a connreset simply means the previous send failed. 
+         * So we try again. 
+         * On TCP, it means our socket is now useless, so the error passes.
+         * (We will loop again, exiting because the same error will happen) */
+        if (err != WSAEWOULDBLOCK) {
+            if (err != WSAECONNRESET || prev == WSAECONNRESET) return err;
+            prev = err;
+        }
         if ((err = socket_waitfd(ps, WAITFD_R, tm)) != IO_DONE) return err;
     }
-    return IO_UNKNOWN;
 }
 
 /*-------------------------------------------------------------------------*\
@@ -346,8 +350,8 @@ const char *socket_strerror(int err) {
 }
 
 const char *socket_ioerror(p_socket ps, int err) {
-	(void) ps;
-	return socket_strerror(err);
+    (void) ps;
+    return socket_strerror(err);
 }
 
 static const char *wstrerror(int err) {
@@ -399,3 +403,32 @@ static const char *wstrerror(int err) {
         default: return "Unknown error";
     }
 }
+
+const char *socket_gaistrerror(int err) {
+    if (err == 0) return NULL; 
+    switch (err) {
+        case EAI_AGAIN: return "temporary failure in name resolution";
+        case EAI_BADFLAGS: return "invalid value for ai_flags";
+#ifdef EAI_BADHINTS
+        case EAI_BADHINTS: return "invalid value for hints";
+#endif
+        case EAI_FAIL: return "non-recoverable failure in name resolution";
+        case EAI_FAMILY: return "ai_family not supported";
+        case EAI_MEMORY: return "memory allocation failure";
+        case EAI_NONAME: 
+            return "host or service not provided, or not known";
+#ifdef EAI_OVERFLOW
+        case EAI_OVERFLOW: return "argument buffer overflow";
+#endif
+#ifdef EAI_PROTOCOL
+        case EAI_PROTOCOL: return "resolved protocol is unknown";
+#endif
+        case EAI_SERVICE: return "service not supported for socket type";
+        case EAI_SOCKTYPE: return "ai_socktype not supported";
+#ifdef EAI_SYSTEM
+        case EAI_SYSTEM: return strerror(errno); 
+#endif
+        default: return gai_strerror(err);
+    }
+}
+

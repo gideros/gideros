@@ -1,8 +1,6 @@
 /*=========================================================================*\
 * Unix domain socket 
 * LuaSocket toolkit
-*
-* RCS ID: $Id: unix.c,v 1.13 2006/03/13 07:16:39 diego Exp $
 \*=========================================================================*/
 #include <string.h> 
 
@@ -39,7 +37,7 @@ static const char *unix_tryconnect(p_unix un, const char *path);
 static const char *unix_trybind(p_unix un, const char *path);
 
 /* unix object methods */
-static luaL_reg un[] = {
+static luaL_Reg unix_methods[] = {
     {"__gc",        meth_close},
     {"__tostring",  auxiliar_tostring},
     {"accept",      meth_accept},
@@ -63,15 +61,17 @@ static luaL_reg un[] = {
 };
 
 /* socket option handlers */
-static t_opt opt[] = {
-    {"keepalive",   opt_keepalive},
-    {"reuseaddr",   opt_reuseaddr},
-    {"linger",      opt_linger},
+static t_opt optset[] = {
+    {"keepalive",   opt_set_keepalive},
+    {"reuseaddr",   opt_set_reuseaddr},
+    {"linger",      opt_set_linger},
     {NULL,          NULL}
 };
 
 /* our socket creation function */
-static luaL_reg func[] = {
+/* this is an ad-hoc module that returns a single function 
+ * as such, do not include other functions in this array. */
+static luaL_Reg func[] = {
     {"unix", global_create},
     {NULL,          NULL}
 };
@@ -82,18 +82,22 @@ static luaL_reg func[] = {
 \*-------------------------------------------------------------------------*/
 int luaopen_socket_unix(lua_State *L) {
     /* create classes */
-    auxiliar_newclass(L, "unix{master}", un);
-    auxiliar_newclass(L, "unix{client}", un);
-    auxiliar_newclass(L, "unix{server}", un);
+    auxiliar_newclass(L, "unix{master}", unix_methods);
+    auxiliar_newclass(L, "unix{client}", unix_methods);
+    auxiliar_newclass(L, "unix{server}", unix_methods);
     /* create class groups */
     auxiliar_add2group(L, "unix{master}", "unix{any}");
     auxiliar_add2group(L, "unix{client}", "unix{any}");
     auxiliar_add2group(L, "unix{server}", "unix{any}");
-    /* make sure the function ends up in the package table */
+#if LUA_VERSION_NUM > 501 && !defined(LUA_COMPAT_MODULE)
+    lua_pushcfunction(L, global_create);
+    (void) func;
+#else
+    /* set function into socket namespace */
     luaL_openlib(L, "socket", func, 0);
+    lua_pushcfunction(L, global_create);
+#endif
     /* return the function instead of the 'socket' table */
-    lua_pushstring(L, "unix");
-    lua_gettable(L, -2);
     return 1;
 }
 
@@ -128,7 +132,7 @@ static int meth_setstats(lua_State *L) {
 \*-------------------------------------------------------------------------*/
 static int meth_setoption(lua_State *L) {
     p_unix un = (p_unix) auxiliar_checkgroup(L, "unix{any}", 1);
-    return opt_meth_setoption(L, opt, &un->sock);
+    return opt_meth_setoption(L, optset, &un->sock);
 }
 
 /*-------------------------------------------------------------------------*\
@@ -294,27 +298,13 @@ static int meth_listen(lua_State *L)
 \*-------------------------------------------------------------------------*/
 static int meth_shutdown(lua_State *L)
 {
-    p_unix un = (p_unix) auxiliar_checkclass(L, "unix{client}", 1);
-    const char *how = luaL_optstring(L, 2, "both");
-    switch (how[0]) {
-        case 'b':
-            if (strcmp(how, "both")) goto error;
-            socket_shutdown(&un->sock, 2);
-            break;
-        case 's':
-            if (strcmp(how, "send")) goto error;
-            socket_shutdown(&un->sock, 1);
-            break;
-        case 'r':
-            if (strcmp(how, "receive")) goto error;
-            socket_shutdown(&un->sock, 0);
-            break;
-    }
+    /* SHUT_RD,  SHUT_WR,  SHUT_RDWR  have  the value 0, 1, 2, so we can use method index directly */
+    static const char* methods[] = { "receive", "send", "both", NULL };
+    p_unix tcp = (p_unix) auxiliar_checkclass(L, "unix{client}", 1);
+    int how = luaL_checkoption(L, 2, "both", methods);
+    socket_shutdown(&tcp->sock, how);
     lua_pushnumber(L, 1);
     return 1;
-error:
-    luaL_argerror(L, 2, "invalid shutdown method");
-    return 0;
 }
 
 /*-------------------------------------------------------------------------*\

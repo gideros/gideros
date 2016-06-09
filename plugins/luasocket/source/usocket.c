@@ -5,8 +5,6 @@
 * The code is now interrupt-safe.
 * The penalty of calling select to avoid busy-wait is only paid when
 * the I/O call fail in the first place. 
-*
-* RCS ID: $Id: usocket.c,v 1.38 2007/10/13 23:55:20 diego Exp $
 \*=========================================================================*/
 #include <string.h> 
 #include <signal.h>
@@ -16,7 +14,7 @@
 /*-------------------------------------------------------------------------*\
 * Wait for readable/writable/connected socket with timeout
 \*-------------------------------------------------------------------------*/
-#ifdef SOCKET_POLL
+#ifndef SOCKET_SELECT
 #include <sys/poll.h>
 
 #define WAITFD_R        POLLIN
@@ -30,9 +28,9 @@ int socket_waitfd(p_socket ps, int sw, p_timeout tm) {
     pfd.revents = 0;
     if (timeout_iszero(tm)) return IO_TIMEOUT;  /* optimize timeout == 0 case */
     do {
-		int t = (int)(timeout_getretry(tm)*1e3);
-		ret = poll(&pfd, 1, t >= 0? t: -1);
-	} while (ret == -1 && errno == EINTR);
+        int t = (int)(timeout_getretry(tm)*1e3);
+        ret = poll(&pfd, 1, t >= 0? t: -1);
+    } while (ret == -1 && errno == EINTR);
     if (ret == -1) return errno;
     if (ret == 0) return IO_TIMEOUT;
     if (sw == WAITFD_C && (pfd.revents & (POLLIN|POLLERR))) return IO_CLOSED;
@@ -49,6 +47,7 @@ int socket_waitfd(p_socket ps, int sw, p_timeout tm) {
     fd_set rfds, wfds, *rp, *wp;
     struct timeval tv, *tp;
     double t;
+    if (*ps >= FD_SETSIZE) return EINVAL;
     if (timeout_iszero(tm)) return IO_TIMEOUT;  /* optimize timeout == 0 case */
     do {
         /* must set bits within loop, because select may have modifed them */
@@ -182,11 +181,7 @@ int socket_connect(p_socket ps, SA *addr, socklen_t len, p_timeout tm) {
 * Accept with timeout
 \*-------------------------------------------------------------------------*/
 int socket_accept(p_socket ps, p_socket pa, SA *addr, socklen_t *len, p_timeout tm) {
-    SA daddr;
-    socklen_t dlen = sizeof(daddr);
     if (*ps == SOCKET_INVALID) return IO_CLOSED; 
-    if (!addr) addr = &daddr;
-    if (!len) len = &dlen;
     for ( ;; ) {
         int err;
         if ((*pa = accept(*ps, addr, len)) != SOCKET_INVALID) return IO_DONE;
@@ -213,14 +208,13 @@ int socket_send(p_socket ps, const char *data, size_t count,
     for ( ;; ) {
         long put = (long) send(*ps, data, count, 0);
         /* if we sent anything, we are done */
-        if (put > 0) {
+        if (put >= 0) {
             *sent = put;
             return IO_DONE;
         }
         err = errno;
-        /* send can't really return 0, but EPIPE means the connection was 
-           closed */
-        if (put == 0 || err == EPIPE) return IO_CLOSED;
+        /* EPIPE means the connection was closed */
+        if (err == EPIPE) return IO_CLOSED;
         /* we call was interrupted, just try again */
         if (err == EINTR) continue;
         /* if failed fatal reason, report error */
@@ -243,12 +237,12 @@ int socket_sendto(p_socket ps, const char *data, size_t count, size_t *sent,
     if (*ps == SOCKET_INVALID) return IO_CLOSED;
     for ( ;; ) {
         long put = (long) sendto(*ps, data, count, 0, addr, len);  
-        if (put > 0) {
+        if (put >= 0) {
             *sent = put;
             return IO_DONE;
         }
         err = errno;
-        if (put == 0 || err == EPIPE) return IO_CLOSED;
+        if (err == EPIPE) return IO_CLOSED;
         if (err == EINTR) continue;
         if (err != EAGAIN) return err;
         if ((err = socket_waitfd(ps, WAITFD_W, tm)) != IO_DONE) return err;
@@ -288,6 +282,66 @@ int socket_recvfrom(p_socket ps, char *data, size_t count, size_t *got,
     if (*ps == SOCKET_INVALID) return IO_CLOSED;
     for ( ;; ) {
         long taken = (long) recvfrom(*ps, data, count, 0, addr, len);
+        if (taken > 0) {
+            *got = taken;
+            return IO_DONE;
+        }
+        err = errno;
+        if (taken == 0) return IO_CLOSED;
+        if (err == EINTR) continue;
+        if (err != EAGAIN) return err; 
+        if ((err = socket_waitfd(ps, WAITFD_R, tm)) != IO_DONE) return err; 
+    }
+    return IO_UNKNOWN;
+}
+
+
+/*-------------------------------------------------------------------------*\
+* Write with timeout
+*
+* socket_read and socket_write are cut-n-paste of socket_send and socket_recv,
+* with send/recv replaced with write/read. We can't just use write/read
+* in the socket version, because behaviour when size is zero is different.
+\*-------------------------------------------------------------------------*/
+int socket_write(p_socket ps, const char *data, size_t count, 
+        size_t *sent, p_timeout tm)
+{
+    int err;
+    *sent = 0;
+    /* avoid making system calls on closed sockets */
+    if (*ps == SOCKET_INVALID) return IO_CLOSED;
+    /* loop until we send something or we give up on error */
+    for ( ;; ) {
+        long put = (long) write(*ps, data, count);
+        /* if we sent anything, we are done */
+        if (put >= 0) {
+            *sent = put;
+            return IO_DONE;
+        }
+        err = errno;
+        /* EPIPE means the connection was closed */
+        if (err == EPIPE) return IO_CLOSED;
+        /* we call was interrupted, just try again */
+        if (err == EINTR) continue;
+        /* if failed fatal reason, report error */
+        if (err != EAGAIN) return err;
+        /* wait until we can send something or we timeout */
+        if ((err = socket_waitfd(ps, WAITFD_W, tm)) != IO_DONE) return err;
+    }
+    /* can't reach here */
+    return IO_UNKNOWN;
+}
+
+/*-------------------------------------------------------------------------*\
+* Read with timeout
+* See note for socket_write
+\*-------------------------------------------------------------------------*/
+int socket_read(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm) {
+    int err;
+    *got = 0;
+    if (*ps == SOCKET_INVALID) return IO_CLOSED;
+    for ( ;; ) {
+        long taken = (long) read(*ps, data, count);
         if (taken > 0) {
             *got = taken;
             return IO_DONE;
@@ -360,7 +414,7 @@ const char *socket_strerror(int err) {
         case ECONNABORTED: return "closed";
         case ECONNRESET: return "closed";
         case ETIMEDOUT: return "timeout";
-        default: return strerror(errno);
+        default: return strerror(err);
     }
 }
 
@@ -368,3 +422,28 @@ const char *socket_ioerror(p_socket ps, int err) {
     (void) ps;
     return socket_strerror(err);
 } 
+
+const char *socket_gaistrerror(int err) {
+    if (err == 0) return NULL; 
+    switch (err) {
+        case EAI_AGAIN: return "temporary failure in name resolution";
+        case EAI_BADFLAGS: return "invalid value for ai_flags";
+#ifdef EAI_BADHINTS
+        case EAI_BADHINTS: return "invalid value for hints";
+#endif
+        case EAI_FAIL: return "non-recoverable failure in name resolution";
+        case EAI_FAMILY: return "ai_family not supported";
+        case EAI_MEMORY: return "memory allocation failure";
+        case EAI_NONAME: 
+            return "host or service not provided, or not known";
+        case EAI_OVERFLOW: return "argument buffer overflow";
+#ifdef EAI_PROTOCOL
+        case EAI_PROTOCOL: return "resolved protocol is unknown";
+#endif
+        case EAI_SERVICE: return "service not supported for socket type";
+        case EAI_SOCKTYPE: return "ai_socktype not supported";
+        case EAI_SYSTEM: return strerror(errno); 
+        default: return gai_strerror(err);
+    }
+}
+

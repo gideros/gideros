@@ -11,8 +11,6 @@
 *
 * The module socket.h implements this interface, and thus the module tcp.h
 * is very simple.
-*
-* RCS ID: $Id: io.h,v 1.11 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
 #include <stdio.h>
 #include "lua.h"
@@ -24,7 +22,7 @@ enum {
     IO_DONE = 0,        /* operation completed successfully */
     IO_TIMEOUT = -1,    /* operation timed out */
     IO_CLOSED = -2,     /* the connection has been closed */
-	IO_UNKNOWN = -3
+	IO_UNKNOWN = -3     
 };
 
 /* interface to error message function */

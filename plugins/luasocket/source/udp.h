@@ -11,8 +11,6 @@
 * originally unconnected. They can be "connected" to a given address 
 * with a call to the setpeername function. The same function can be used to
 * break the connection.
-*
-* RCS ID: $Id: udp.h,v 1.10 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
 #include "lua.h"
 
@@ -25,6 +23,7 @@
 typedef struct t_udp_ {
     t_socket sock;
     t_timeout tm;
+    int family;
 } t_udp;
 typedef t_udp *p_udp;
 
