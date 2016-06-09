@@ -50,12 +50,25 @@ bool canOpenUrl(const char *url)
 
 std::string getLocale()
 {
-  return "placeholder";
+  TCHAR szBuff1[10], szBuff2[10]; 
+
+  LCID lcid = GetUserDefaultLCID(); 
+
+  GetLocaleInfo(lcid, LOCALE_SISO639LANGNAME, szBuff1, 10); 
+  GetLocaleInfo(lcid, LOCALE_SISO3166CTRYNAME, szBuff2, 10); 
+
+  strcat(szBuff1,"_");
+  strcat(szBuff1,szBuff2);
+
+  return szBuff1;
 }
 
 std::string getLanguage()
 {
-  return "placeholder";
+  TCHAR szBuff[10]; 
+  LCID lcid = GetUserDefaultLCID(); 
+  GetLocaleInfo(lcid, LOCALE_SISO639LANGNAME, szBuff, 10); 
+  return szBuff;
 }
 
 void setWindowSize(int width, int height)
@@ -89,7 +102,7 @@ void setWindowSize(int width, int height)
     printf("SetWindowPos: %d %d\n",rect.right-rect.left, rect.bottom-rect.top);
   }
 
-  application_->setHardwareOrientation(app_orient);
+  application_->setHardwareOrientation(app_orient);   // previously eFixed
   application_->getApplication()->setDeviceOrientation(app_orient);
 }
 

@@ -378,8 +378,8 @@ void loadProperties()
   application_->setResolution(g_windowWidth * contentScaleFactor, 
 			      g_windowHeight * contentScaleFactor);
 
-  application_->setHardwareOrientation(hardwareOrientation);
-  application_->getApplication()->setDeviceOrientation(deviceOrientation);
+  application_->setHardwareOrientation(hardwareOrientation);                     // previously eFixed
+  application_->getApplication()->setDeviceOrientation(deviceOrientation);     // previously eFixed
   application_->setOrientation((Orientation)properties.orientation);
   application_->setLogicalDimensions(properties.logicalWidth, properties.logicalHeight);
   application_->setLogicalScaleMode((LogicalScaleMode)properties.scaleMode);

@@ -16,6 +16,9 @@ local background = Bitmap.new(bgTexture)
 
 stage:addChild(background)
 
+print ("local=",application:getLocale())
+print ("language=",application:getLanguage())
+
 -- these arrays contain the image file names of each frame
 local frames1 = {
 	"bird_black_01.png",
@@ -43,14 +46,18 @@ function onKeyDown(event)
   print (event.keyCode)
   if event.keyCode==KeyCode.F then
     application:setFullScreen(true)
+
   elseif event.keyCode==KeyCode.W then
     application:setFullScreen(false)
+
   elseif event.keyCode==KeyCode.A then
     application:setWindowSize(400,700)
+
   elseif event.keyCode==KeyCode.P then
     application:setOrientation(Application.PORTRAIT)
     application:setWindowSize(300,600)
     background:setTexture(bgTextureP)
+
   elseif event.keyCode==KeyCode.L then
     application:setOrientation(Application.LANDSCAPE_LEFT)
     application:setWindowSize(300,600)
