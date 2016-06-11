@@ -82,6 +82,75 @@ void Particles::removeParticle(int i) {
 	boundsDirty_ = true;
 }
 
+void Particles::setPosition(int i, float x, float y)
+{
+	if (i > ttl_.size())
+		return;
+	points_[i * 4] = x;
+	points_[i * 4 + 1] = y;
+	points_.Update();
+}
+
+void Particles::getPosition(int i, float *x, float *y)
+{
+	if (i > ttl_.size())
+	{
+		*x=0;
+		*y=0;
+	}
+	else
+	{
+		*x=points_[i*4+0];
+		*y=points_[i*4+1];
+	}
+}
+
+void Particles::setSize(int i, float size)
+{
+	if (i > ttl_.size())
+		return;
+	points_[i * 4 + 2] = size;
+	points_.Update();
+}
+
+float Particles::getSize(int i)
+{
+	if (i > ttl_.size())
+		return 0;
+	else
+		return points_[i*4+2];
+}
+
+void Particles::setAngle(int i, float angle)
+{
+	if (i > ttl_.size())
+		return;
+	points_[i * 4 + 3] = angle;
+	points_.Update();
+}
+
+float Particles::getAngle(int i)
+{
+	if (i > ttl_.size())
+		return 0;
+	else
+		return points_[i*4+3];
+}
+
+void Particles::setTtl(int i, int ttl)
+{
+	if (i > ttl_.size())
+		return;
+	ttl_[i] = ttl;
+}
+
+int Particles::getTtl(int i)
+{
+	if (i > ttl_.size())
+		return 0;
+	return ttl_[i];
+}
+
 void Particles::setColor(int i, unsigned int color, float alpha) {
 	if (i > ttl_.size())
 		return;
