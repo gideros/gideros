@@ -392,7 +392,10 @@ isAnyAvailable() Controller - return true if any controller is connected
 virbate(ms) Controller - vibrate the controller for provided amount of miliseconds
 Core > Object
 core
+Core.asyncCall(task [, parameters]) Core - Launch function on separate thread as background task
 Core.class([base]) Core - Creates and returns new Gideros class
+Core.frameStatistics() Core - Return data about frame
+Core.yield(state) Core - Yield function running as background task
 coroutine
 coroutine.create(f) coroutine - creates coroutine from function f, returns coroutine
 coroutine.resume(co [, val1, ...]) coroutine - continues execution of co, returns bool status plus any values
@@ -690,20 +693,52 @@ huge - value "1.#INF"
 pi - value "3.1415926535898"
 Matrix > Object
 Matrix.new(m11, m12, m21, m22, tx, ty) Matrix - creates a new Matrix object
+getAnchorPosition() Matrix - get anchor position from matrix transformation
 getElements() Matrix - returns the elements of this matrix instance
 getM11() Matrix - returns the value of the m11 component
 getM12() Matrix - returns the value of the m12 component
 getM21() Matrix - returns the value of the m21 component
 getM22() Matrix - returns the value of the m22 component
+getMatrix() Matrix - get all 16 elements of 4x4 matrix
+getPosition() Matrix - get position from matrix transformation
+getRotationX() Matrix - get rotation for x axis
+getRotationY() Matrix - get rotation on y axis
+getRotationZ() Matrix - get rotation for z axis
+getScale() Matrix - get scale from matrix transformation
+getScaleX() Matrix - get scale on x axis
+getScaleY() Matrix - get scale on y axis
+getScaleZ() Matrix - get scale on z axis
 getTx() Matrix - returns the value of the tx component
 getTy() Matrix - returns the value of the ty component
+getTz() Matrix - returns the value of the tz component
+getX() Matrix - get x position
+getY() Matrix - get y position
+getZ() Matrix - get z position
+multiply(matrix) Matrix - Multiply current matrix with new one
+rotate(angle, x vector, y vector, z vector) Matrix - combine existing rotation with provided
+scale(x scale [, y scale, z scale]) Matrix - combine existing scale with provided scale
+setAnchorPosition(x, y [, z]) Matrix - transform matrix for setting anchor position
 setElements(m11, m12, m21, m22, tx, ty) Matrix - sets all 6 elements of this matrix instance
 setM11(m11) Matrix - sets the value of the m11 component
 setM12(m12) Matrix - sets the value of the m22 component
 setM21(m21) Matrix
 setM22(m22) Matrix
+setMatrix([m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44]) Matrix - set all 16 elements of 4x4 matrix
+setPosition(x, y [, z]) Matrix - transform matrix for setting position
+setRotationX(x rotation) Matrix - set rotation on x axis
+setRotationY(y rotation) Matrix - set rotation on y axis
+setRotationZ(z rotation) Matrix - set rotation on z axis
+setScale(x [, y, z]) Matrix - transform matrix for setting scale
+setScaleX(x scale) Matrix - set scale on x axis
+setScaleY(y scale) Matrix - set scale on y axis
+setScaleZ(z scale) Matrix - set scale on z axis
 setTx(tx) Matrix - sets the value of the tx component
 setTy(ty) Matrix - sets the value of the ty component
+setTz(tz) Matrix - sets the value of the tz component
+setX(x) Matrix - set x position
+setY(y) Matrix - set y position
+setZ(z) Matrix - set z position
+translate(x [, y, z]) Matrix - combine existing translation with provided translation
 Mesh > Sprite
 Mesh.new([is3d]) Mesh
 clearColorArray() Mesh
@@ -797,6 +832,16 @@ os.timer() os - returns precise time in seconds relative to some arbitrary point
 os.tmpname() os - returns a string with a filename for a temporary file(dangerous! tmpfile is better-
 package
 package.loadlib(libname, funcname) package
+Particles > Sprite
+Particles.new() Particles - Create new particles group
+addParticles(particles) Particles - Add particles
+clearTexture() Particles - Clear texture for all particles
+getColor(i) Particles - Get color and alpha value of particle
+getSpeed(i) Particles - Get speed of particle
+removeParticles(particle indeces) Particles - Remove particles by index in table or as arguments
+setColor(i, color [, alpha]) Particles - set color of particles
+setSpeed(i [, x, y, a, decay]) Particles - Set speed of particles
+setTexture(texture) Particles - Set texture to all particles
 Path2D > Sprite
 Path2D.new() Path2D - Creates Path2D object
 setConvex(convex) Path2D - Flag the shape as convex.
@@ -807,10 +852,19 @@ setLineThickness(thickness [, feather]) Path2D - Set the thickness of the outlin
 setPath(commands, coordinates [, coordinates]) Path2D - set path to draw
 setSvgPath(svg_params) Path2D - set path with svg properties
 setTexture(texture) Path2D - sets texture for fill (Not implemented yet)
+Pixel > Sprite
+Pixel.new([color, alpha, width, height]) Pixel - Create new pixel
+getColor() Pixel - Gets the color of the Pixe
+setColor([color, alpha]) Pixel - Sets the color of the Pixel
+setDimensions(w, h) Pixel - Sets both width and height of the Pixel.
+setHeight(h) Pixel - Sets the height of the pixel sprite.
+setWidth(w) Pixel - Sets the width of the pixel sprite.
 RenderTarget > TextureBase
 RenderTarget.new(width, height, filtering) RenderTarget - Creates new RenderTarget object
 clear(color, alpha [, x, y, width, height]) RenderTarget - Clears rendered texture
 draw(sprite) RenderTarget - Renders provided object
+getPixel(x, y) RenderTarget - Returns single pixels color and alpha channel
+getPixels(x, y, w, h) RenderTarget - Returns buffer containing color and alpha data from provided rectangle
 Shader > Object
 Shader.new(vertex shader, fragment shader, flags, uniform descriptor, attribute descriptor) Shader - create new shader
 getEngineVersion() Shader - get shader version
@@ -1043,6 +1097,11 @@ UrlLoader.DELETE - value "delete"
 UrlLoader.GET - value "get"
 UrlLoader.POST - value "post"
 UrlLoader.PUT - value "put"
+Viewport > Sprite
+viewport
+setContent(content) Viewport
+setProjection(matrix) Viewport - Specify a projection matrix to use when displaying the content. 
+setTransform(transform) Viewport
 zlib
 zlib.adler32([adler32, buffer]) zlib - update the adler32 value
 zlib.compress(buffer [, level, method, windowBits, memLevel, strategy]) zlib - Return compressed string
