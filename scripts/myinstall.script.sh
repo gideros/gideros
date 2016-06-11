@@ -1,13 +1,13 @@
 rm -rf ~/.wine
 wine xyz > /dev/null 2>&1
 
-export QT=/Users/ar2rsawseen/Qt/5.5/clang_64
-export QT_WIN=~/.wine/drive_c/Qt/Qt5.5.0/5.5/mingw492_32
+export QT=/Users/ar2rsawseen/Qt/5.6/clang_64
+export QT_WIN=~/.wine/drive_c/Qt/Qt5.6.0/5.6/mingw49_32
 export QT_DLL=54
 export IOS_SDK=9.1
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_NDK=/usr/local/opt/android-ndk
-export GVERSION=2015.02
+export GVERSION=2016.06
 
 rm -rf build
 mkdir build
