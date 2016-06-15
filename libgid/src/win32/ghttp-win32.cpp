@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string>
+#include <map>
 #include <ghttp.h>
 #include <pthread.h>
 #include <curl/curl.h>
@@ -24,7 +26,7 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
   size_t realsize = size * nmemb;
   MemoryStruct *mem = (MemoryStruct *)userp;
  
-  mem->memory = realloc(mem->memory, mem->size + realsize + 1);
+  mem->memory = (char*)realloc(mem->memory, mem->size + realsize + 1);
   if(mem->memory == NULL) {
     /* out of memory! */ 
     printf("not enough memory (realloc returned NULL)\n");
@@ -38,17 +40,20 @@ WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
   return realsize;
 }
 
-static void *pull_one_url(void *ptr)
+void *pull_one_url(void *ptr)
 {
   CURL *curl;
   CURLcode res;
 
-  int gid = *((int *)ptr);
+  printf("pointer = %p %d\n",ptr, *((g_id*)ptr));
+  g_id gid = *((g_id *)ptr);
+  printf("pull_one_url gid=%d\n",gid);
+
   NetworkReply reply2 = map_[gid];
 
   MemoryStruct chunk;
 
-  chunk.memory = malloc(1);
+  chunk.memory = (char*)malloc(1);
   chunk.memory[0]='\0';
   chunk.size = 0;
   
@@ -74,8 +79,12 @@ static void *pull_one_url(void *ptr)
 
   event->size = chunk.size;
   event->httpStatusCode = res;
+  event->headers[0].name=NULL;    // no idea what this is for!
+  event->headers[0].value=NULL;
 
   free(chunk.memory);
+
+  printf("enqueue event\n");
 
   gevent_EnqueueEvent(reply2.id, reply2.callback, GHTTP_RESPONSE_EVENT, event, 1, reply2.udata);
 
@@ -101,7 +110,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
   pthread_t tid;
   int error;
 
-  g_id gid = g_NextId();
+  static g_id gid = g_NextId();     // must be static
 
   NetworkReply reply2;
   reply2.id = gid;
@@ -109,7 +118,11 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
   reply2.udata = udata;
   reply2.url = url;
 
+  printf("string=%s\n",reply2.url.c_str());
+
   map_[gid] = reply2;
+
+  printf("ghttp_Get: %d %p %s\n",gid,&gid,url);
 
   error = pthread_create(&tid,
 			 NULL, /* default attributes please */

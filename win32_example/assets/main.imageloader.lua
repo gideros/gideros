@@ -19,7 +19,7 @@ local function onComplete(event)
     out:write(event.data)
     out:close()
 
-    local b = Bitmap.new(Texture.new("|D|image.png",true))
+    local b = Bitmap.new(Texture.new("|D|image.png"))
 	b:setAnchorPoint(0.5, 0.5)
 	b:setPosition(160, 240)
     stage:addChild(b)
