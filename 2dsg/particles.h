@@ -18,6 +18,14 @@ public:
     int addParticle(float x, float y, float size, float angle, int ttl);
     void removeParticle(int i);
     void clearParticles();
+    void setPosition(int i, float x, float y);
+    void getPosition(int i, float *x, float *y);
+    void setSize(int i, float size);
+    float getSize(int i);
+    void setAngle(int i, float angle);
+    float getAngle(int i);
+    void setTtl(int i, int ttl);
+    int getTtl(int i);
     void setColor(int i, unsigned int color, float alpha);
     void getColor(int i, unsigned int *color, float *alpha) const;
     void setSpeed(int i, float vx, float vy, float va, float decay);

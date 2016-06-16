@@ -8,12 +8,20 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
     Binder binder(L);
 
     static const luaL_Reg functionList[] = {
-            {"addParticles", addParticles},
-            {"removeParticles", removeParticles},
+        {"addParticles", addParticles},
+        {"removeParticles", removeParticles},
         {"setSpeed", setSpeed},
         {"setColor", setColor},
+        {"setPosition", setPosition},
+        {"setSize", setSize},
+        {"setAngle", setAngle},
+        {"setTtl", setTtl},
         {"getSpeed", getSpeed},
         {"getColor", getColor},
+        {"getPosition", getPosition},
+        {"getSize", getSize},
+        {"getAngle", getAngle},
+        {"getTtl", getTtl},
 
         {"setTexture", setTexture},
         {"clearTexture", clearTexture},
@@ -74,6 +82,7 @@ int ParticlesBinder::removeParticles(lua_State *L)
     return 0;
 }
 
+
 int ParticlesBinder::setSpeed(lua_State *L)
 {
     Binder binder(L);
@@ -90,6 +99,75 @@ int ParticlesBinder::setSpeed(lua_State *L)
     float decay=luaL_optnumber(L,6,1.0);
 
     mesh->setSpeed(i, vx,vy,va,decay);
+
+    return 0;
+}
+
+int ParticlesBinder::setPosition(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        return luaL_error(L, "The supplied index is out of bounds.");
+
+    float x=luaL_optnumber(L,3,0);
+    float y=luaL_optnumber(L,4,0);
+
+    mesh->setPosition(i, x,y);
+
+    return 0;
+}
+
+int ParticlesBinder::setSize(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        return luaL_error(L, "The supplied index is out of bounds.");
+
+    float size=luaL_optnumber(L,3,0);
+
+    mesh->setSize(i, size);
+
+    return 0;
+}
+
+int ParticlesBinder::setAngle(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        return luaL_error(L, "The supplied index is out of bounds.");
+
+    float angle=luaL_optnumber(L,3,0);
+
+    mesh->setAngle(i, angle);
+
+    return 0;
+}
+
+int ParticlesBinder::setTtl(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        return luaL_error(L, "The supplied index is out of bounds.");
+
+    int ttl=luaL_optinteger(L,3,0);
+
+    mesh->setTtl(i, ttl);
 
     return 0;
 }
@@ -152,7 +230,7 @@ int ParticlesBinder::addParticles(lua_State *L)
         	lua_getfield(L,-1,"speedX");
             float vx = luaL_optnumber(L, -1,0) ;
             lua_pop(L, 1);
-        	lua_getfield(L,-1,"speedX");
+        	lua_getfield(L,-1,"speedY");
             float vy = luaL_optnumber(L, -1,0) ;
             lua_pop(L, 1);
         	lua_getfield(L,-1,"speedAngular");
@@ -208,6 +286,67 @@ int ParticlesBinder::getSpeed(lua_State *L)
 
     return 4;
 }
+
+int ParticlesBinder::getPosition(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        return luaL_error(L, "The supplied index is out of bounds.");
+
+    float x,y;
+    mesh->getPosition(i, &x,&y);
+    lua_pushnumber(L, x);
+    lua_pushnumber(L, y);
+
+    return 2;
+}
+
+int ParticlesBinder::getSize(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        return luaL_error(L, "The supplied index is out of bounds.");
+
+    lua_pushnumber(L, mesh->getSize(i));
+
+    return 1;
+}
+
+int ParticlesBinder::getAngle(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        return luaL_error(L, "The supplied index is out of bounds.");
+
+    lua_pushnumber(L, mesh->getAngle(i));
+
+    return 1;
+}
+
+int ParticlesBinder::getTtl(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        return luaL_error(L, "The supplied index is out of bounds.");
+
+    lua_pushinteger(L, mesh->getTtl(i));
+
+    return 1;
+}
+
+
 
 int ParticlesBinder::getColor(lua_State *L)
 {
