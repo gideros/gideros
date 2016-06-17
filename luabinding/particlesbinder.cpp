@@ -10,18 +10,18 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
     static const luaL_Reg functionList[] = {
         {"addParticles", addParticles},
         {"removeParticles", removeParticles},
-        {"setSpeed", setSpeed},
-        {"setColor", setColor},
-        {"setPosition", setPosition},
-        {"setSize", setSize},
-        {"setAngle", setAngle},
-        {"setTtl", setTtl},
-        {"getSpeed", getSpeed},
-        {"getColor", getColor},
-        {"getPosition", getPosition},
-        {"getSize", getSize},
-        {"getAngle", getAngle},
-        {"getTtl", getTtl},
+        {"setParticleSpeed", setParticleSpeed},
+        {"setParticleColor", setParticleColor},
+        {"setParticlePosition", setParticlePosition},
+        {"setParticleSize", setParticleSize},
+        {"setParticleAngle", setParticleAngle},
+        {"setParticleTtl", setParticleTtl},
+        {"getParticleSpeed", getParticleSpeed},
+        {"getParticleColor", getParticleColor},
+        {"getParticlePosition", getParticlePosition},
+        {"getParticleSize", getParticleSize},
+        {"getParticleAngle", getParticleAngle},
+        {"getParticleTtl", getParticleTtl},
 
         {"setTexture", setTexture},
         {"clearTexture", clearTexture},
@@ -83,7 +83,7 @@ int ParticlesBinder::removeParticles(lua_State *L)
 }
 
 
-int ParticlesBinder::setSpeed(lua_State *L)
+int ParticlesBinder::setParticleSpeed(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -103,7 +103,7 @@ int ParticlesBinder::setSpeed(lua_State *L)
     return 0;
 }
 
-int ParticlesBinder::setPosition(lua_State *L)
+int ParticlesBinder::setParticlePosition(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -121,7 +121,7 @@ int ParticlesBinder::setPosition(lua_State *L)
     return 0;
 }
 
-int ParticlesBinder::setSize(lua_State *L)
+int ParticlesBinder::setParticleSize(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -138,7 +138,7 @@ int ParticlesBinder::setSize(lua_State *L)
     return 0;
 }
 
-int ParticlesBinder::setAngle(lua_State *L)
+int ParticlesBinder::setParticleAngle(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -155,7 +155,7 @@ int ParticlesBinder::setAngle(lua_State *L)
     return 0;
 }
 
-int ParticlesBinder::setTtl(lua_State *L)
+int ParticlesBinder::setParticleTtl(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -172,7 +172,7 @@ int ParticlesBinder::setTtl(lua_State *L)
     return 0;
 }
 
-int ParticlesBinder::setColor(lua_State *L)
+int ParticlesBinder::setParticleColor(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -268,7 +268,7 @@ int ParticlesBinder::addParticles(lua_State *L)
     return 1;
 }
 
-int ParticlesBinder::getSpeed(lua_State *L)
+int ParticlesBinder::getParticleSpeed(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -287,7 +287,7 @@ int ParticlesBinder::getSpeed(lua_State *L)
     return 4;
 }
 
-int ParticlesBinder::getPosition(lua_State *L)
+int ParticlesBinder::getParticlePosition(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -304,7 +304,7 @@ int ParticlesBinder::getPosition(lua_State *L)
     return 2;
 }
 
-int ParticlesBinder::getSize(lua_State *L)
+int ParticlesBinder::getParticleSize(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -318,7 +318,7 @@ int ParticlesBinder::getSize(lua_State *L)
     return 1;
 }
 
-int ParticlesBinder::getAngle(lua_State *L)
+int ParticlesBinder::getParticleAngle(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -332,7 +332,7 @@ int ParticlesBinder::getAngle(lua_State *L)
     return 1;
 }
 
-int ParticlesBinder::getTtl(lua_State *L)
+int ParticlesBinder::getParticleTtl(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
@@ -348,7 +348,7 @@ int ParticlesBinder::getTtl(lua_State *L)
 
 
 
-int ParticlesBinder::getColor(lua_State *L)
+int ParticlesBinder::getParticleColor(lua_State *L)
 {
     Binder binder(L);
     Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
