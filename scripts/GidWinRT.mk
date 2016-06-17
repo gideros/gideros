@@ -14,6 +14,8 @@ WINRT_BUILD_WIN=$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configura
 WINRT_BUILD_WP=$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),WindowsPhone) //p:Configuration=Release //p:Platform=ARM 
 
 
+WINRT_APPX_GIDVERSION_LIST:=$(subst ., ,$(GIDEROS_VERSION)) 0 0 0 0
+WINRT_APPX_GIDVERSION:=$(word 1,$(WINRT_APPX_GIDVERSION_LIST)).$(word 2,$(WINRT_APPX_GIDVERSION_LIST)).$(word 3,$(WINRT_APPX_GIDVERSION_LIST)).$(word 4,$(WINRT_APPX_GIDVERSION_LIST))
 
 $(WINRT_SHADERS_PATH)/$(WINRT_SHADERS_FILE): $(BIN2C) $(addsuffix .hlsl,$(addprefix $(WINRT_SHADERS_PATH)/,$(WINRT_SHADERS)))
 	rm -f $(WINRT_SHADERS_PATH)/$(WINRT_SHADERS_FILE)
@@ -79,12 +81,12 @@ winrt.player: winrt.template
 	cp winrt/gideros/gideros.Shared/giderosapi.h winrt_example/
 	rm -rf /c/winrt_player
 	cp winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak
-	sed -e 's/2015\.10/$(GIDEROS_VERSION)/'	winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak >winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest
+	sed -e 's/Version="[^"]*"/Version="$(WINRT_APPX_GIDVERSION)"/'	winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak >winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest
 	$(MSBUILD) winrt_example/giderosgame/giderosgame.WindowsPhone/giderosgame.WindowsPhone.vcxproj //t:Publish //p:Configuration=Release //p:Platform=ARM //p:AppxBundle=Always
 	cp winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest
 	rm winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak
 	cp winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak
-	sed -e 's/2015\.10/$(GIDEROS_VERSION)/'	winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak >winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest
+	sed -e 's/Version="[^"]*"/Version="$(WINRT_APPX_GIDVERSION)"/'	winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak >winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest
 	$(MSBUILD) winrt_example/giderosgame/giderosgame.Windows/giderosgame.Windows.vcxproj //t:Publish //p:Configuration=Release //p:Platform=Win32 //p:AppxBundle=Always
 	cp winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest
 	rm winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak

@@ -15,7 +15,7 @@ PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry ga
 ROOT=.
 SDK=$(ROOT)/Sdk
 RELEASE=$(ROOT)/release
-GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | sed 's/^[^"]*"\([^"]*\)"/\1/')
+GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | grep define | sed 's/^[^"]*"\([^"]*\)"/\1/')
 
 #TOOLS
 QMAKE=qmake
