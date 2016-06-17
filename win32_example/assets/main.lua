@@ -7,6 +7,9 @@ This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.ph
 
 ]]
 
+function move()
+  bmp:setY(bmp:getY()+1)
+end
 
 local info = TextField.new(nil, "loading...")
 info:setPosition(10, 10)
@@ -38,3 +41,7 @@ local loader = UrlLoader.new("http://giderosmobile.com/giderosmobile.png")
 loader:addEventListener(Event.COMPLETE, onComplete)
 loader:addEventListener(Event.ERROR, onError)
 loader:addEventListener(Event.PROGRESS, onProgress)
+
+bmp=Bitmap.new(Texture.new("ego.png"))
+stage:addChild(bmp)
+bmp:addEventListener(Event.ENTER_FRAME, move)
