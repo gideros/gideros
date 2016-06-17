@@ -1039,10 +1039,20 @@ static double yieldHookLimit;
 static void yieldHook(lua_State *L,lua_Debug *ar)
 {
 	//glog_i("YieldHook:%f %f\n",iclock(),yieldHookLimit);
-	if (iclock()>=yieldHookLimit)
+	if (ar->event == LUA_HOOKRET)
 	{
-		if (lua_canyield(L))
-			lua_yield(L,0);
+		if (iclock() >= yieldHookLimit)
+			lua_sethook(L, yieldHook, LUA_MASKCOUNT, 1);
+	}
+	else if (ar->event == LUA_HOOKCOUNT)
+	{
+		if (iclock() >= yieldHookLimit)
+		{
+			if (lua_canyield(L))
+				lua_yield(L, 0);
+			else
+				lua_sethook(L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT, 1000);
+		}
 	}
 }
 
@@ -1069,63 +1079,66 @@ void LuaApplication::enterFrame(GStatus *status)
     }
 
     //Schedule Tasks, at least one task should be runn no matter if there is enough time or not
-    if (meanFreeTime_>=0.01) //If frame rate is between 10Hz and 100Hz
-    {
-    	double taskStart=iclock();
-    	double timeLimit=taskStart+meanFreeTime_*0.9; //Limit ourselves t 90% of free time
-    	yieldHookLimit=timeLimit;
-    	int loops=0;
-    	while (!tasks_.empty())
-    	{
-    		AsyncLuaTask t=tasks_.front();
-    		tasks_.pop_front();
-    		tasks_.push_back(t);
-    		if ((t.sleepTime>iclock())||(t.skipFrame))
-    		{
-    			loops++;
-    			if (loops>tasks_.size())
-    				break;
-    			continue;
-    		}
-    		loops=0;
-    		int res=0;
-    		if (t.autoYield)
-    		{
-    			lua_sethook(t.L,yieldHook,LUA_MASKRET|LUA_MASKCOUNT,1000);
-    			res=lua_resume(t.L,0);
-    			lua_sethook(t.L,yieldHook,0,1000);
-    		}
-    		else
-    			res=lua_resume(t.L,0);
-    		if (res==LUA_YIELD)
-    		{ /* Yielded: Do nothing */ }
-    		else if (res!=0)
-    		{
-    			tasks_.pop_back(); //Error: Dequeue
-    			if (exceptionsEnabled_ == true)
-    			{
-    				if (status)
-    					*status = GStatus(1, lua_tostring(t.L, -1));
-    			}
-    			lua_pop(t.L, 1);
-    			luaL_unref(L,LUA_REGISTRYINDEX,t.taskRef);
-    			break;
-    		}
-    		else
-    		{
-    			tasks_.pop_back(); //Ended: Dequeue
-    			//Drop any return args
-    			lua_settop(t.L,0);
-    			luaL_unref(L,LUA_REGISTRYINDEX,t.taskRef);
-    		}
-    		if (iclock()>timeLimit)
-    			break;
-    	}
+	if (meanFreeTime_ >= 0.01) //If frame rate is between 10Hz and 100Hz
+	{
+		double taskStart = iclock();
+		double timeLimit = taskStart + meanFreeTime_*0.9; //Limit ourselves t 90% of free time
+		yieldHookLimit = timeLimit;
+		int loops = 0;
+		while (!tasks_.empty())
+		{
+			AsyncLuaTask t = tasks_.front();
+			tasks_.pop_front();
+			tasks_.push_back(t);
+			if ((t.sleepTime > iclock()) || (t.skipFrame))
+			{
+				loops++;
+				if (loops > tasks_.size())
+					break;
+				continue;
+			}
+			loops = 0;
+			int res = 0;
+			if (t.autoYield)
+			{
+				lua_sethook(t.L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT, 1000);
+				res = lua_resume(t.L, 0);
+				lua_sethook(t.L, yieldHook, 0, 1000);
+			}
+			else
+				res = lua_resume(t.L, 0);
+			if (res == LUA_YIELD)
+			{ /* Yielded: Do nothing */
+			}
+			else if (res != 0)
+			{
+				tasks_.pop_back(); //Error: Dequeue
+				if (exceptionsEnabled_ == true)
+				{
+					if (status)
+						*status = GStatus(1, lua_tostring(t.L, -1));
+				}
+				lua_pop(t.L, 1);
+				luaL_unref(L, LUA_REGISTRYINDEX, t.taskRef);
+				break;
+			}
+			else
+			{
+				tasks_.pop_back(); //Ended: Dequeue
+				//Drop any return args
+				lua_settop(t.L, 0);
+				luaL_unref(L, LUA_REGISTRYINDEX, t.taskRef);
+			}
+			if (iclock() > timeLimit)
+				break;
+		}
 
-    	for (std::deque<LuaApplication::AsyncLuaTask>::iterator it=LuaApplication::tasks_.begin();it!=LuaApplication::tasks_.end();++it)
-			(*it).skipFrame=false;
-    	taskFrameTime_=iclock()-taskStart;
-    }
+		for (std::deque<LuaApplication::AsyncLuaTask>::iterator it = LuaApplication::tasks_.begin(); it != LuaApplication::tasks_.end(); ++it)
+			(*it).skipFrame = false;
+		taskFrameTime_ = iclock() - taskStart;
+	}
+	else
+		taskFrameTime_ = 0;
     application_->deleteAutounrefPool(pool);
 }
 
