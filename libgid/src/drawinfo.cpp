@@ -5,6 +5,7 @@
 #include <string>
 #include <platform.h>
 #include <sstream>
+#include "gideros.h"
 
 float infoColor_[3];
 
@@ -151,13 +152,6 @@ static void drawIP(const char* ip, int size, int xx, int yy)
         ".   .  . .    .  . .     . .     . .  . .   .  . ."
         "...  ..   ... .  . ...   . .     . .  . .    ..   ";
 
-	static const char* version =
-        " ..   ..   .   ..     .. "
-        ".  . .  . ..  .      .   "
-        "  .  .  .  .  ...    ... "
-        " .   .  .  .  .  .   .  ."
-        "....  ..  ...  ..  .  .. ";
-
     static const char* resolution =
         "...  ...  ...  ..  .   .  . ..... .  ..  .  .  "
         ".  . .   .    .  . .   .  .   .   . .  . .. . ."
@@ -205,8 +199,6 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 			chr = localip;
         else if (ip[i] == 'L')
 			chr = loading;
-		else if (ip[i] == 'V')
-			chr = version;
         else if (ip[i] == 'R')
             chr = resolution;
         else if (ip[i] == 'H')
@@ -275,7 +267,7 @@ void drawInfo()
     // set background color of opengl canvas to black and clear the buffer to render again
 	ShaderEngine::Engine->clearColor(1,1,1,1);
 
-    drawIP("V", 3, 2, 2);
+    drawIP(GIDEROS_VERSION, 3, 2, 2);
     drawIP("I", 3, 2, 2+7+3+7+3+7+3);
 
 	int x = 6;
@@ -310,7 +302,7 @@ void drawInfoResolution(int width, int height, int scale, int lWidth, int lHeigh
     }
 
     int y = 1;
-    drawIP("V", 2, 1, y);
+    drawIP(GIDEROS_VERSION, 2, 1, y);
 
     y = y + 8;
     drawIP("I", 2, 1, y);

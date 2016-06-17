@@ -1,6 +1,7 @@
 #ifndef GIDEROS_H
 #define GIDEROS_H
 
+#ifndef GIDEROS_VERSION_ONLY
 #include "gplugin.h"
 
 #ifdef __cplusplus
@@ -12,7 +13,10 @@
 #include "glog.h"
 #include "gapplication.h"
 #include "gevent.h"
+#endif
 
+#ifndef GIDEROS_VERSION
 #define GIDEROS_VERSION "2016.6"
+#endif
 
 #endif
