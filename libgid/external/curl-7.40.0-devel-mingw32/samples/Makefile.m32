@@ -1,0 +1,285 @@
+#########################################################################
+## Makefile for building chkspeed.exe with MingW32 (GCC-3.2 or later)
+## and optionally OpenSSL (0.9.8), libssh2 (1.4.3), zlib (1.2.8)
+##
+## Usage:   mingw32-make -f Makefile.m32 CFG=-feature1[-feature2][-feature3][...]
+## Example: mingw32-make -f Makefile.m32 CFG=-zlib-ssl-spi-winidn
+##
+## Hint: you can also set environment vars to control the build, f.e.:
+## set ZLIB_PATH=c:/zlib-1.2.8
+## set ZLIB=1
+##
+## Comments to: /dev/nul
+#########################################################################
+
+# Edit the path below to point to the base of your Zlib sources.
+ifndef ZLIB_PATH
+ZLIB_PATH = ../../zlib-1.2.8
+endif
+# Edit the path below to point to the base of your OpenSSL package.
+ifndef OPENSSL_PATH
+OPENSSL_PATH = ../../openssl-1.0.0o
+endif
+# Edit the path below to point to the base of your LibSSH2 package.
+ifndef LIBSSH2_PATH
+LIBSSH2_PATH = ../../libssh2-1.4.3
+endif
+# Edit the path below to point to the base of your librtmp package.
+ifndef LIBRTMP_PATH
+LIBRTMP_PATH = ../../librtmp-2.3
+endif
+# Edit the path below to point to the base of your libidn package.
+ifndef LIBIDN_PATH
+LIBIDN_PATH = ../../libidn-1.18
+endif
+# Edit the path below to point to the base of your MS IDN package.
+# Microsoft Internationalized Domain Names (IDN) Mitigation APIs 1.1
+# http://www.microsoft.com/downloads/en/details.aspx?FamilyID=ad6158d7-ddba-416a-9109-07607425a815
+ifndef WINIDN_PATH
+WINIDN_PATH = ../../Microsoft IDN Mitigation APIs
+endif
+# Edit the path below to point to the base of your Novell LDAP NDK.
+ifndef LDAP_SDK
+LDAP_SDK = c:/novell/ndk/cldapsdk/win32
+endif
+
+ifndef PROOT
+PROOT = ..
+endif
+
+# Edit the path below to point to the base of your c-ares package.
+ifndef LIBCARES_PATH
+LIBCARES_PATH = $(PROOT)/ares
+endif
+
+# Edit the var below to set to your architecture or set environment var.
+ifndef ARCH
+ARCH = w32
+endif
+
+CC	= $(CROSSPREFIX)gcc
+CFLAGS	= -g -O2 -Wall
+CFLAGS	+= -fno-strict-aliasing
+ifeq ($(ARCH),w64)
+CFLAGS	+= -D_AMD64_
+LIBSFX	= 64
+endif
+# comment LDFLAGS below to keep debug info
+LDFLAGS	= -s
+RC	= $(CROSSPREFIX)windres
+RCFLAGS	= --include-dir=$(PROOT)/include -O COFF -i
+
+# We may need these someday
+# PERL = perl
+# NROFF = nroff
+
+# Platform-dependent helper tool macros
+ifeq ($(findstring /sh,$(SHELL)),/sh)
+DEL	= rm -f $1
+RMDIR	= rm -fr $1
+MKDIR	= mkdir -p $1
+COPY	= -cp -afv $1 $2
+#COPYR	= -cp -afr $1/* $2
+COPYR	= -rsync -aC $1/* $2
+TOUCH	= touch $1
+CAT	= cat
+ECHONL	= echo ""
+DL	= '
+else
+ifeq "$(OS)" "Windows_NT"
+DEL	= -del 2>NUL /q /f $(subst /,\,$1)
+RMDIR	= -rd 2>NUL /q /s $(subst /,\,$1)
+else
+DEL	= -del 2>NUL $(subst /,\,$1)
+RMDIR	= -deltree 2>NUL /y $(subst /,\,$1)
+endif
+MKDIR	= -md 2>NUL $(subst /,\,$1)
+COPY	= -copy 2>NUL /y $(subst /,\,$1) $(subst /,\,$2)
+COPYR	= -xcopy 2>NUL /q /y /e $(subst /,\,$1) $(subst /,\,$2)
+TOUCH	= copy 2>&1>NUL /b $(subst /,\,$1) +,,
+CAT	= type
+ECHONL	= $(ComSpec) /c echo.
+endif
+
+########################################################
+## Nothing more to do below this line!
+
+ifeq ($(findstring -dyn,$(CFG)),-dyn)
+DYN = 1
+endif
+ifeq ($(findstring -ares,$(CFG)),-ares)
+ARES = 1
+endif
+ifeq ($(findstring -rtmp,$(CFG)),-rtmp)
+RTMP = 1
+SSL = 1
+ZLIB = 1
+endif
+ifeq ($(findstring -ssh2,$(CFG)),-ssh2)
+SSH2 = 1
+SSL = 1
+ZLIB = 1
+endif
+ifeq ($(findstring -ssl,$(CFG)),-ssl)
+SSL = 1
+endif
+ifeq ($(findstring -zlib,$(CFG)),-zlib)
+ZLIB = 1
+endif
+ifeq ($(findstring -idn,$(CFG)),-idn)
+IDN = 1
+endif
+ifeq ($(findstring -winidn,$(CFG)),-winidn)
+WINIDN = 1
+endif
+ifeq ($(findstring -sspi,$(CFG)),-sspi)
+SSPI = 1
+endif
+ifeq ($(findstring -spnego,$(CFG)),-spnego)
+SPNEGO = 1
+endif
+ifeq ($(findstring -ldaps,$(CFG)),-ldaps)
+LDAPS = 1
+endif
+ifeq ($(findstring -ipv6,$(CFG)),-ipv6)
+IPV6 = 1
+endif
+
+INCLUDES = -I. -I$(PROOT) -I$(PROOT)/include
+
+ifdef DYN
+  curl_DEPENDENCIES = $(PROOT)/lib$(LIBSFX)/libcurldll.a $(PROOT)/bin/libcurl.dll
+  curl_LDADD = -L"$(PROOT)/lib$(LIBSFX)" -lcurldll
+else
+  curl_DEPENDENCIES = $(PROOT)/lib$(LIBSFX)/libcurl.a
+  curl_LDADD = -L"$(PROOT)/lib$(LIBSFX)" -lcurl
+  CFLAGS += -DCURL_STATICLIB
+  LDFLAGS += -static
+endif
+ifdef ARES
+  ifndef DYN
+    curl_DEPENDENCIES += $(ARES_LIB)/libcares.a
+  endif
+  CFLAGS += -DUSE_ARES
+  ifndef DEVELPACKAGE
+    curl_LDADD += -L$(ARES_LIB)
+  endif
+  curl_LDADD += -lcares
+endif
+ifdef RTMP
+  CFLAGS += -DUSE_LIBRTMP
+  ifndef DEVELPACKAGE
+    INCLUDES += -I"$(LIBRTMP_PATH)"
+    curl_LDADD += -L"$(LIBRTMP_PATH)/librtmp"
+  endif
+  curl_LDADD += -lrtmp -lwinmm
+endif
+ifdef SSH2
+  CFLAGS += -DUSE_LIBSSH2 -DHAVE_LIBSSH2_H
+  ifndef DEVELPACKAGE
+    curl_LDADD += -L$(LIBSSH2_PATH)/win32
+  endif
+  curl_LDADD += -lssh2
+endif
+ifdef SSL
+  OPENSSL_LIBS = -lssl -lcrypto
+  ifndef OPENSSL_LIBPATH
+    ifeq "$(wildcard $(OPENSSL_PATH)/out)" "$(OPENSSL_PATH)/out"
+      OPENSSL_LIBPATH = $(OPENSSL_PATH)/out
+      ifdef DYN
+        OPENSSL_LIBS = -lssl32 -leay32
+      endif
+    endif
+    ifeq "$(wildcard $(OPENSSL_PATH)/lib)" "$(OPENSSL_PATH)/lib"
+      OPENSSL_LIBPATH = $(OPENSSL_PATH)/lib
+    endif
+  endif
+  ifndef DYN
+    OPENSSL_LIBS += -lgdi32 -lcrypt32
+  endif
+  CFLAGS += -DUSE_SSLEAY
+  ifndef DEVELPACKAGE
+    curl_LDADD += -L"$(OPENSSL_LIBPATH)"
+  endif
+  curl_LDADD += $(OPENSSL_LIBS)
+endif
+ifdef ZLIB
+  CFLAGS += -DHAVE_LIBZ -DHAVE_ZLIB_H
+  ifndef DEVELPACKAGE
+    INCLUDES += -I"$(ZLIB_PATH)"
+    curl_LDADD += -L$(ZLIB_PATH)
+  endif
+  curl_LDADD += -lz
+endif
+ifdef IDN
+  CFLAGS += -DUSE_LIBIDN
+  ifndef DEVELPACKAGE
+    INCLUDES += -I"$(LIBIDN_PATH)/include"
+    curl_LDADD += -L$(LIBIDN_PATH)/lib
+  endif
+  curl_LDADD += -lidn
+endif
+ifdef WINIDN
+  CFLAGS += -DUSE_WIN32_IDN
+  CFLAGS += -DWANT_IDN_PROTOTYPES
+  ifndef DEVELPACKAGE
+    curl_LDADD += -L"$(WINIDN_PATH)"
+  endif
+  curl_LDADD += -lnormaliz
+endif
+ifdef SSPI
+  CFLAGS += -DUSE_WINDOWS_SSPI
+endif
+ifdef IPV6
+  CFLAGS += -DENABLE_IPV6
+endif
+ifdef LDAPS
+  CFLAGS += -DHAVE_LDAP_SSL
+endif
+ifdef USE_LDAP_NOVELL
+  CFLAGS += -DCURL_HAS_NOVELL_LDAPSDK
+  ifndef DEVELPACKAGE
+    curl_LDADD += -L"$(LDAP_SDK)/lib/mscvc"
+  endif
+  curl_LDADD += -lldapsdk -lldapssl -lldapx
+endif
+ifdef USE_LDAP_OPENLDAP
+  CFLAGS += -DCURL_HAS_OPENLDAP_LDAPSDK
+  ifndef DEVELPACKAGE
+    curl_LDADD += -L"$(LDAP_SDK)/lib"
+  endif
+  curl_LDADD += -lldap -llber
+endif
+ifndef USE_LDAP_NOVELL
+ifndef USE_LDAP_OPENLDAP
+curl_LDADD += -lwldap32
+endif
+endif
+curl_LDADD += -lws2_32
+
+check_PROGRAMS := $(patsubst %.c,%.exe,$(wildcard *.c))
+check_OBJECTS := $(check_PROGRAMS:.exe=.o)
+
+#RESOURCE = $(curl_PROGRAM:.exe=.res)
+
+.SUFFIXES: .rc .res
+.PRECIOUS: %.o
+
+all: $(check_PROGRAMS)
+
+%.exe: %.o $(curl_DEPENDENCIES)
+	$(CC) $(LDFLAGS) -o $@ $< $(curl_LDADD)
+
+.c.o:
+	$(CC) $(INCLUDES) $(CFLAGS) -c $<
+
+.rc.res:
+	$(RC) $(RCFLAGS) $< -o $@
+
+clean:
+	@$(call DEL, $(check_OBJECTS) $(RESOURCE))
+
+distclean vclean: clean
+	@$(call DEL, $(check_PROGRAMS))
+
+
