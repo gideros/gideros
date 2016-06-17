@@ -23,9 +23,15 @@ QMAKE=qmake
 CC=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/gcc
 CXX=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/g++
 
+ifeq ($(OS),Windows_NT)
 all: qtapp.install android.install win32.install winrt.install
 
 clean: qtapp.clean android.clean win32.clean winrt.clean
+else
+all: qtapp.install ios.install
+
+clean: qtapp.clean ios.clean
+endif
 
 #SDK includes
 vpath %.h libgideros:libgvfs:libgid/include:lua/src:libgid/external/openal-soft-1.13/include/AL
