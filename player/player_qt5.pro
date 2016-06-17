@@ -14,7 +14,7 @@ win32{
     LIBS += -lopengl32 \
         -L"../libgid/external/zlib-1.2.8/build/mingw48_32" -lzlibx\
         -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32\
-        -lwsock32\
+        -lws2_32\
         -liphlpapi\
         -L"../libgid/release" -lgid\
         -L"../libgvfs/release" -lgvfs\

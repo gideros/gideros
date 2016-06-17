@@ -20,13 +20,17 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.Header;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -37,6 +41,8 @@ import org.apache.http.impl.conn.SingleClientConnManager;
 
 public class HTTPManager {
 	static boolean ignoreSslErrors = false;
+	static String proxyName,proxyUser,proxyPass;
+	static int proxyPort=0;
 
 	void Get(String url, String[] headers, long udata, long id) {
 		HTTPThread thread = new HTTPThread(url, headers, null, 0, udata, id,
@@ -144,6 +150,13 @@ public class HTTPManager {
 
 	static public void ghttp_IgnoreSslErrors() {
 		HTTPManager.ignoreSslErrors = true;
+	}
+
+	static public void ghttp_SetProxy(String name,int port,String user,String pass) {
+		HTTPManager.proxyName=name;
+		HTTPManager.proxyPort=port;
+		HTTPManager.proxyUser=user;
+		HTTPManager.proxyPass=pass;
 	}
 
 	static public void ghttp_Get(String url, String[] headers, long udata,
@@ -280,6 +293,17 @@ class HTTPThread extends Thread {
 				httpClient=new TrustAllHttpClient();
 			else
 				httpClient=new DefaultHttpClient();
+			
+			if (HTTPManager.proxyName!=null)
+			{
+				HttpHost proxy = new HttpHost(HTTPManager.proxyName, HTTPManager.proxyPort); 
+				httpClient.getParams().setParameter(ConnRouteParams.DEFAULT_PROXY, proxy);
+				if (HTTPManager.proxyUser!=null)
+					httpClient.getCredentialsProvider().setCredentials(  
+							new AuthScope(HTTPManager.proxyName, HTTPManager.proxyPort),  
+							new UsernamePasswordCredentials(
+									HTTPManager.proxyUser,HTTPManager.proxyPass));
+			}
 
 			HttpUriRequest method = null;
 			switch (method_) {

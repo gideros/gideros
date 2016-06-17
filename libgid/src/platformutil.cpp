@@ -382,14 +382,12 @@ std::vector<std::string> getLocalIPs()
                 break;
             }
 
-			/*
 			case AF_INET6:
             {
                 struct sockaddr_in6 *s6 = (struct sockaddr_in6 *)ifa->ifa_addr;
                 in_addr = &s6->sin6_addr;
                 break;
             }
-			*/
 
             default:
                 continue;

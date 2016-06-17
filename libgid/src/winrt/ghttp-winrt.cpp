@@ -374,4 +374,8 @@ void ghttp_IgnoreSSLErrors()
 	}
 }
 
+void ghttp_SetProxy(const char *host, int port, const char *user, const char *pass)
+{
+}
+
 }

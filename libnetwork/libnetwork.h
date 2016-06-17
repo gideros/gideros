@@ -20,7 +20,8 @@
 #include <Ws2tcpip.h>
 #pragma comment(lib, "Ws2_32.lib")
 #elif WIN32
-#include <WinSock.h>
+#include <winsock2.h>
+#include <Ws2tcpip.h>
 #else
 typedef int SOCKET;
 #endif

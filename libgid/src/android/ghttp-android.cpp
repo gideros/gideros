@@ -57,6 +57,7 @@ public:
 		closeId_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_Close", "(J)V");
 		closeAllId_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_CloseAll", "()V");
 		ignoreSslErrorsId_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_IgnoreSslErrors", "()V");
+		setProxyId_ = env->GetStaticMethodID(javaNativeBridge_, "ghttp_SetProxy", "(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;)V");
 
 		env->CallStaticVoidMethod(javaNativeBridge_, initId_);
 	}
@@ -72,6 +73,21 @@ public:
 	{
 		JNIEnv *env = g_getJNIEnv();
 		env->CallStaticVoidMethod(javaNativeBridge_, ignoreSslErrorsId_);
+	}
+
+	void SetProxy(const char *host,int port,const char *user,const char *pass)
+	{
+		JNIEnv *env = g_getJNIEnv();
+
+		jstring jhost = env->NewStringUTF(host);
+		jstring juser = env->NewStringUTF(user);
+		jstring jpass = env->NewStringUTF(pass);
+
+		env->CallStaticVoidMethod(javaNativeBridge_, setProxyId_, jhost, (jint)port, juser, jpass);
+
+		env->DeleteLocalRef(jhost);
+		env->DeleteLocalRef(juser);
+		env->DeleteLocalRef(jpass);
 	}
 
 	g_id Get(const char *url, const ghttp_Header *headers, gevent_Callback callback, void *udata)
@@ -304,6 +320,7 @@ private:
 	jmethodID closeId_;
 	jmethodID closeAllId_;
 	jmethodID ignoreSslErrorsId_;
+	jmethodID setProxyId_;
 
 	std::map<g_id, CallbackElement> map_;
 };
@@ -336,6 +353,11 @@ extern "C" {
 void ghttp_IgnoreSSLErrors()
 {
 	HTTPManager::s_manager->IgnoreSslErrors();
+}
+
+void ghttp_SetProxy(const char *host, int port, const char *user, const char *pass)
+{
+	HTTPManager::s_manager->SetProxy(host, port, user, pass);
 }
 
 void ghttp_Init()

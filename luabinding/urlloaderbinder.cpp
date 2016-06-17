@@ -250,6 +250,7 @@ UrlLoaderBinder::UrlLoaderBinder(lua_State* L)
         {"load", load},
         {"close", close},
         {"ignoreSslErrors", ignoreSslErrors},
+        {"setProxy", setProxy},
         {NULL, NULL},
     };
 
@@ -437,6 +438,16 @@ int UrlLoaderBinder::load(lua_State* L)
 int UrlLoaderBinder::ignoreSslErrors(lua_State* L)
 {
 	ghttp_IgnoreSSLErrors();
+	return 0;
+}
+
+int UrlLoaderBinder::setProxy(lua_State* L)
+{
+	const char *host=luaL_optstring(L,1,NULL);
+	int port=luaL_optinteger(L,2,80);
+	const char *user=luaL_optstring(L,3,NULL);
+	const char *pass=luaL_optstring(L,4,NULL);
+	ghttp_SetProxy(host, port, user, pass);
 	return 0;
 }
 

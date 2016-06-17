@@ -212,6 +212,10 @@ void ghttp_IgnoreSSLErrors()
 	sslErrorsIgnore=true;
 }
 
+void ghttp_SetProxy(const char *host, int port, const char *user, const char *pass)
+{
+}
+
 void ghttp_Init()
 {
     s_manager = [[HTTPManager alloc] init];

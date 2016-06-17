@@ -62,11 +62,26 @@ androidplugins.install: androidplugins $(addsuffix .androidplugin.install,$(PLUG
 androidlibs.install: androidlibs
 
 %.androidplugin.install:
+	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/Android
+	cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;	\
+	cp -r libs $(CURDIR)/$(RELEASE)/All\ Plugins/$*/bin/Android/; \
+	if [ -d "res" ]; then \
+	cp -r res $(CURDIR)/$(RELEASE)/All\ Plugins/$*/bin/Android/; \
+	fi;\
+	if [ -d "assets" ]; then \
+	cp -r assets $(CURDIR)/$(RELEASE)/All\ Plugins/$*/bin/Android/; \
+	fi;\
+	if [ -d "src" ]; then \
+	cp -r src $(CURDIR)/$(RELEASE)/All\ Plugins/$*/bin/Android/; \
+	fi;
+ifneq ($(findstring $*,$(PLUGINS_DEFAULTS)),)
 	cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;	\
 	cp -R libs $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/; \
 	if [ -d "com" ]; then \
 	cp -R com $(CURDIR)/$(ROOT)/android/GiderosAndroidPlayer/src;\
 	fi
+endif	
+	
 	#cp -R com $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/src;\
 
 		

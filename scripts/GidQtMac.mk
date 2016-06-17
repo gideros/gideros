@@ -35,7 +35,11 @@ qtlibs.install: buildqtlibs
 
 %.plugin.install:
 	mkdir -p $(RELEASE)/Plugins
+	mkdir -p $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/Plugins
+	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/MacOSX
 	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp *.dylib $$R/$(RELEASE)/Plugins	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp *.dylib $$R/$(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/Plugins	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp *.dylib $$R/$(RELEASE)/All\ Plugins/$*/bin/MacOSX	 
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 

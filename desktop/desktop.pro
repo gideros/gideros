@@ -13,7 +13,7 @@ win32{
         -L"../lua/release" -llua \
         -L"../libgideros/release" -lgideros \
         -L"../libpystring/release" -lpystring \
-        -lwsock32 \
+        -lws2_32 \
         -liphlpapi
 }
 

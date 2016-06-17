@@ -16,6 +16,12 @@ static void drawIP(const char* ip, int size, int xx, int yy)
                                  " "
                                  ".";
 
+    static const char* charcolon = " "
+                                   "."
+                                   " "
+                                   "."
+                                   " ";
+
     static const char* char0 = " .. "
                                ".  ."
                                ".  ."
@@ -70,13 +76,49 @@ static void drawIP(const char* ip, int size, int xx, int yy)
                                ".  ."
                                " .. ";
 
-    static const char* char9 = " .. "
-                               ".  ."
-                               " ..."
-                               "   ."
-                               " .. ";
+	static const char* char9 = " .. "
+							   ".  ."
+		                       " ..."
+		                       "   ."
+		                       " .. ";
 
-    static const char* charPercent = ".   ."
+	static const char* chara = " .. "
+		                       ".  ."
+		                       "...."
+		                       ".  ."
+		                       ".  .";
+
+	static const char* charb = "... "
+		                       ".  ."
+		                       "... "
+		                       ".  ."
+		                       "... ";
+
+	static const char* charc = " ..."
+		                       ".   "
+		                       ".   "
+		                       ".   "
+		                       " ...";
+
+	static const char* chard = "... "
+		                       ".  ."
+		                       ".  ."
+		                       ".  ."
+		                       "... ";
+
+	static const char* chare = "...."
+		                       ".   "
+		                       "... "
+		                       ".   "
+		                       "....";
+
+	static const char* charf = "...."
+		                       ".   "
+		                       "... "
+		                       ".   "
+		                       ".   ";
+
+	static const char* charPercent = ".   ."
                                      "   . "
                                      "  .  "
                                      " .   "
@@ -137,7 +179,7 @@ static void drawIP(const char* ip, int size, int xx, int yy)
         ".    .  . .  . .   . ."
         "....  ..   ..  .   .  ";
 
-	static const char* chars[] = {char0, char1, char2, char3, char4, char5, char6, char7, char8, char9};
+	static const char* chars[] = {char0, char1, char2, char3, char4, char5, char6, char7, char8, char9, chara, charb, charc, chard, chare, charf };
 
 	glPushColor();
 
@@ -148,9 +190,11 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 	int len = strlen(ip);
 	for (int i = 0; i < len; ++i)
 	{
-		const char* chr;
+		const char* chr=charSpace;
         if (ip[i] == '.')
 			chr = chardot;
+        else if (ip[i] == ':')
+			chr = charcolon;
         else if(ip[i] == ' ')
             chr = charSpace;
         else if(ip[i] == 'X')
@@ -169,7 +213,9 @@ static void drawIP(const char* ip, int size, int xx, int yy)
             chr = hardware;
         else if (ip[i] == 'Z')
             chr = zoom;
-		else
+		else if ((ip[i]>='a')&&(ip[i]<='f'))
+			chr = chars[ip[i] - 'a'+10];
+		else if ((ip[i] >= '0') && (ip[i] <= '9'))
 			chr = chars[ip[i] - '0'];
 
 		int height = 5;
@@ -211,7 +257,7 @@ void refreshLocalIPs()
 	ips = getLocalIPs();
 
 	for (int i = (int)ips.size() - 1; i >= 0; --i)
-		if (ips[i].find_first_not_of("0123456789.") != std::string::npos)
+		if (ips[i].find_first_not_of("0123456789abcdef.:") != std::string::npos)
 			ips.erase(ips.begin() + i);
 }
 
