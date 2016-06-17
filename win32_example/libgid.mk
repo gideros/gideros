@@ -43,7 +43,7 @@ INCLUDEPATHS = \
 -I..\2dsg\gfxbackends \
 -I..\2dsg\gfxbackends\gl2 \
 -I..\libgid\include \
--I\curl-7.40.0-devel-mingw32\curl-7.40.0-devel-mingw32\include
+-I..\libgid\external\curl-7.40.0-devel-mingw32\include
 
 objfiles = \
 gapplication-win32.o \
@@ -80,7 +80,7 @@ links = ..\libgid\external\freetype-2.4.12\build\mingw48_32\libfreetype.a \
 ..\libgid\external\openal-soft-1.13\build\mingw48_32\libOpenAL32.dll.a \
 ..\libgid\external\pthreads-w32-2-9-1-release\Pre-built.2\lib\x86\libpthreadGC2.a \
 ..\libgid\external\zlib-1.2.8\build\mingw48_32\libzlibx.a \
-\curl-7.40.0-devel-mingw32\curl-7.40.0-devel-mingw32\lib\libcurldll.a \
+..\libgid\external\curl-7.40.0-devel-mingw32\lib\libcurldll.a \
 -L"../libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 -lopengl32 \
 gvfs.dll
 
