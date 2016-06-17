@@ -70,7 +70,7 @@
           </font>
          </property>
          <property name="text">
-          <string>v2016.4</string>
+          <string>v2016.6</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -85,7 +85,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Copyright © 2012-2015 Gideros Mobile</string>
+          <string>Copyright © 2012-2016 Gideros Mobile</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
