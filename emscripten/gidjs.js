@@ -40,7 +40,7 @@ Module.preRun.push(function() {
 Module.registerPlugins=function()
 {
 	Module.dynamicLibraries.forEach(function (p) {
-	    var pname=p.split(".")[0];
+	    var pname=p.split(".")[0].split("/").pop();
 	    var pentry="g_pluginMain_"+pname;
 //	    var pp=getCFunc(pentry);
 	    Module.ccall('main_registerPlugin','number', ['string'], [pentry]);
