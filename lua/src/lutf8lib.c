@@ -1292,7 +1292,7 @@ LUALIB_API int luaopen_utf8(lua_State *L) {
     ENTRY(find),
     ENTRY(gmatch),
     ENTRY(gsub),
-    ENTRY(matchUTF8),
+    {"match", Lutf8_matchUTF8},
 #undef  ENTRY
     { NULL, NULL }
   };
