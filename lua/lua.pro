@@ -42,7 +42,8 @@ HEADERS += \
     src/ldebug.h \
     src/lcode.h \
     src/lauxlib.h \
-    src/lapi.h
+    src/lapi.h \
+    src/unidata.h
 
 win32 {
 LIBS += -L"../libgvfs/release" -lgvfs
