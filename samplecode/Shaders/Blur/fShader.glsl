@@ -8,9 +8,10 @@ void main() {
  lowp vec4 frag=vec4(0,0,0,0);
  int ext=2*fRad+1;	
  mediump vec2 tc=fTexCoord-fTexelSize.xy*float(fRad);
- for (int v=0;v<ext;v++)	
+ for (int v=0;v<20;v++)	
  {
-	frag=frag+texture2D(fTexture, tc);
+	if (v<ext)
+		frag=frag+texture2D(fTexture, tc);
     tc+=fTexelSize.xy;
  }
  frag=frag/float(ext);
