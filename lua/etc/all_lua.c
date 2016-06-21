@@ -69,5 +69,6 @@
 #include "loslib.c"
 #include "lstrlib.c"
 #include "ltablib.c"
+#include "lutf8lib.c"
 
 //#include "lua.c"
