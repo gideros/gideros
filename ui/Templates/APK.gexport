@@ -35,6 +35,7 @@
 				<replace orig="AndroidTemplate" by="[[[project.namews]]]"/>
 				<replace orig="Android Template" by="[[[project.name]]]"/>
 				<replace orig="com.giderosmobile.androidtemplate" by="[[[export.packageName]]]"/>
+        		<replace orig="android:targetSdkVersion=&quot;19&quot;" by="android:targetSdkVersion=&quot;[[[export.androidTarget]]]&quot;"/>
         		<replace orig="android:versionCode=&quot;1&quot;" by="android:versionCode=&quot;[[[project.version_code]]]&quot;"/>
         		<replace orig="android:versionName=&quot;1.0&quot;" by="android:versionName=&quot;[[[project.version]]]&quot;"/>
         		<replace orig="android:screenOrientation=&quot;portrait&quot;" by="android:screenOrientation=&quot;[[[local.orientation]]]&quot;"/>
