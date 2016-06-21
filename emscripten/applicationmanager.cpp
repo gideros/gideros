@@ -69,11 +69,15 @@ static void printJS(const char *str, int len, void *data) {
   char *m=(char *)malloc(len+1);
   memcpy(m,str,len);
   m[len]=0;
-  printf(m);
+  //printf(m);
+  EM_ASM_({ Module.luaPrint(Pointer_stringify($0)) },m);
   free(m);
  }
  else
-  printf(str);
+ {
+  //printf(str);
+  EM_ASM_({ Module.luaPrint(Pointer_stringify($0)) },str);
+ }
 }
 
 static volatile const char* licenseKey_ = "9852564f4728e0c11e34ca3eb5fe20b2";
@@ -174,10 +178,10 @@ ApplicationManager::ApplicationManager(bool player,const char *appname,const cha
 	networkManager_=NULL;
 	application_ = new LuaApplication;
 	application_->setPlayerMode(player_);
-	if (player_)
+/*	if (player_)
 		application_->setPrintFunc(NetworkManager::printToServer_s,
 				networkManager_);
-        else
+        else*/
 		application_->setPrintFunc(printJS,NULL);
         
 	application_->enableExceptions();
@@ -238,7 +242,15 @@ ApplicationManager::~ApplicationManager() {
 }
 
 void ApplicationManager::luaError(const char *error) {
-	glog_e("%s", error);
+  EM_ASM_({ Module.luaError(Pointer_stringify($0)) },error);
+  if (player_)
+  {
+     running_ = false;
+     application_->deinitialize();
+     application_->initialize();       
+  }
+/*  else
+   g_exit(); */
 }
 
 void ApplicationManager::surfaceCreated() {

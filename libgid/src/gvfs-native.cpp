@@ -34,6 +34,11 @@
 #define strcasecmp stricmp
 #endif
 
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 struct FileInfo
 {
     int zipFile;
@@ -66,8 +71,13 @@ static int s_open(const char *pathname, int flags)
     int fd = -1;
 
     FileInfo fi = {-1, (size_t)-1, (size_t)-1, 0, drive};
+    
+    int local= 0;
+#ifdef __EMSCRIPTEN__
+    local=EM_ASM_INT({ return Module.requestFile(Pointer_stringify($0)); },pathname);
+#endif
 
-    if ( drive != 0 || s_zipFile.empty() )
+    if ( drive != 0 || s_zipFile.empty() || local )
     {
         fd=::open(gpath_transform(pathname), flags, 0755);
         //glog_d("Opened %s(%s) at fd %d on drive %d\n",pathname,gpath_transform(pathname),fd,drive);

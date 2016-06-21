@@ -68,6 +68,7 @@
         dynamicLibraries: [ 'luasocket.js', 'json.js', 'bit.js'
         /*GIDEROS_DYNLIB_PLUGIN*/ ],
         JSPlugins: [ /*GIDEROS_JS_PLUGIN*/ ],
+        requestFile: function (file) { return 0; },
         print: (function() {
           var element = document.getElementById('output');
           if (element) element.value = ''; // clear browser cache
@@ -93,6 +94,8 @@
             console.error(text);
           }
         },
+        luaPrint: function (text) { Module.print(text); },
+        luaError: function (text) { Module.print(text); },
         canvas: (function() {
           var canvas = document.getElementById('canvas');
 

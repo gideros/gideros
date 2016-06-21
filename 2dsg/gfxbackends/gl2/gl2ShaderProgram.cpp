@@ -126,7 +126,7 @@ GLuint ogl2BuildProgram(GLuint vertexShader, GLuint fragmentShader, std::string 
 		log.append("Shader Program:\n");
 		log.append(&infoLog[0]);
 		log.append("\n");
-		glog_e("GL Program log:%s\n", &infoLog[0]);
+		glog_v("GL Program log:%s\n", &infoLog[0]);
 	}
 	//glog_i("Loaded program:%d", program);
 	return program;

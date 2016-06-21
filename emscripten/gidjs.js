@@ -20,7 +20,10 @@ Module.preRun.push(function() {
  }); });
 
 	Module.setStatus("Loading application...");
-	FS.createPreloadedFile("/", "main.gapp", GAPP_URL, true,false);
+	//Load GAPP if supplied
+	Module.hasGApp=((typeof(GAPP_URL) != 'undefined')&&(GAPP_URL!=null));
+	if (Module.hasGApp)
+	 FS.createPreloadedFile("/", "main.gapp", GAPP_URL, true,false);
 	  // Initial syncfs to get existing saved files.
 	Module['addRunDependency']('syncfs');
      

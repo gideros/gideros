@@ -88,12 +88,12 @@ EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *e, void *userDat
 {
  int defWidth=e->windowInnerWidth;
  int defHeight=e->windowInnerHeight;	
- printf("Resize:%d,%d\n",e->windowInnerWidth,e->windowInnerHeight);
+// printf("Resize:%d,%d\n",e->windowInnerWidth,e->windowInnerHeight);
  float ratio=emscripten_get_device_pixel_ratio();
  defWidth*=ratio;
  defHeight*=ratio;
  pixelRatio=ratio;
- printf("CanvasSize: %d,%d (%f)\n",defWidth,defHeight,ratio);
+// printf("CanvasSize: %d,%d (%f)\n",defWidth,defHeight,ratio);
  
  //emscripten_set_canvas_size(width*ratio,height*ratio);
  glfwCloseWindow();
@@ -273,11 +273,12 @@ char *url=(char *) EM_ASM_INT_V({
  defWidth*=ratio;
  defHeight*=ratio;
  pixelRatio=ratio;
- printf("CanvasSize: %d,%d (%f)\n",defWidth,defHeight,ratio);
+// printf("CanvasSize: %d,%d (%f)\n",defWidth,defHeight,ratio);
 //   emscripten_get_canvas_size(&defWidth,&defHeight,&fullScreen);
     initGL(defWidth,defHeight);    
 //    glog_setLevel(0);
-    s_applicationManager=new ApplicationManager(false,"main.gapp",url);
+    bool hasGApp=EM_ASM_INT_V({ return Module.hasGApp; });
+    s_applicationManager=new ApplicationManager(false,hasGApp?"main.gapp":"",url);
     s_applicationManager->surfaceCreated();
 
     EMSCRIPTEN_RESULT ret;
@@ -294,7 +295,7 @@ char *url=(char *) EM_ASM_INT_V({
     ret = emscripten_set_keydown_callback(0, 0, true, key_callback);
     ret = emscripten_set_keyup_callback(0, 0, true, key_callback);
     ret = emscripten_set_keypress_callback(0, 0, true, key_callback);
-   printf("URL:%s\n",url);
+   //printf("URL:%s\n",url);
 
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
     emscripten_set_main_loop(looptick, 0, 1);
