@@ -97,12 +97,20 @@
 
 <category name="Graphics 43">
 	<example 	name="StarField"
-				description="Demonstrates particle drawing"
+				description="Demonstrates particle usage"
 				path="Graphics/StarField/StarField.gproj"
 				image="starfield.png"
 				/>
-
-
+	<example 	name="ParticlesClown"
+				description="Demonstrates particle drawing and exploding object"
+				path="Graphics/ParticlesClown/ParticlesClown.gproj"
+				image="clown.png"
+				/>
+	<example 	name="PixelsClown"
+				description="Demonstrates drawing image using pixels through render texture"
+				path="Graphics/PixelsClown/PixelsClown.gproj"
+				image="clown.png"
+				/>
 </category>
 
 <category name="Graphics 3D">
