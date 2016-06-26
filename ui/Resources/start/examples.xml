@@ -95,7 +95,7 @@
 				/>
 </category>
 
-<category name="Graphics 43">
+<category name="Graphics 4">
 	<example 	name="StarField"
 				description="Demonstrates particle usage"
 				path="Graphics/StarField/StarField.gproj"
@@ -110,6 +110,16 @@
 				description="Demonstrates drawing image using pixels through render texture"
 				path="Graphics/PixelsClown/PixelsClown.gproj"
 				image="clown.png"
+				/>
+    <example 	name="Bird Animation 3D"
+				description="Demonstrates viewport transformations for VR purposes"
+				path="Graphics/Bird Animation 3D/Bird Animation 3D.gproj"
+				image="bird animation.png"
+				/>
+    <example 	name="Async Texture Loading"
+				description="Demonstrates how to make progress bar while loading texture asynchronously"
+				path="Graphics/AsyncTextureLoading/AsyncTextureLoading.gproj"
+				image="bar.png"
 				/>
 </category>
 
