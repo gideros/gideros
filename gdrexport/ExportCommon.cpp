@@ -23,7 +23,7 @@ void ExportCommon::copyTemplate(QString templatePath, ExportContext *ctx) {
 		Utilities::copyFolder(dir, ctx->outputDir, ctx->renameList,
 				ctx->wildcards, ctx->replaceList,
 				QStringList() << "libgideros.so" << "libgideros.a"
-						<< "gideros.jar" << "gideros.dll" << "libgideros.dylib"
+						<< "gideros.jar" << "gideros.dll" << "gid.dll" << "libgideros.dylib"
 						<< "libgideros.1.dylib" << "gideros.WindowsPhone.lib"
 						<< "gideros.Windows.lib" << "WindowsDesktopTemplate.exe"
 						<< "MacOSXDesktopTemplate", QStringList());
