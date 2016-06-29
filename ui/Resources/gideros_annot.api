@@ -836,11 +836,19 @@ Particles > Sprite
 Particles.new() Particles - Create new particles group
 addParticles(particles) Particles - Add particles
 clearTexture() Particles - Clear texture for all particles
-getColor(i) Particles - Get color and alpha value of particle
-getSpeed(i) Particles - Get speed of particle
+getParticleAngle(i) Particles - get particle angle
+getParticleColor(i) Particles - Get color and alpha value of particle
+getParticlePosition(i) Particles - get position of particle
+getParticleSize(i) Particles - get size of particle in pixels
+getParticleSpeed(i) Particles - Get speed of particle
+getParticleTtl(i) Particles - get initial time to live of particle
 removeParticles(particle indeces) Particles - Remove particles by index in table or as arguments
-setColor(i, color [, alpha]) Particles - set color of particles
-setSpeed(i [, x, y, a, decay]) Particles - Set speed of particles
+setParticleAngle(i, angle) Particles - set angle of particle
+setParticleColor(i, color [, alpha]) Particles - set color of particles
+setParticlePosition(i, x, y) Particles - set position of particle
+setParticleSize(i, size) Particles - set size of particle
+setParticleSpeed(i [, x, y, a, decay]) Particles - Set speed of particles
+setParticleTtl(i, ttl) Particles - set time to live
 setTexture(texture) Particles - Set texture to all particles
 Path2D > Sprite
 Path2D.new() Path2D - Creates Path2D object
@@ -1097,6 +1105,32 @@ UrlLoader.DELETE - value "delete"
 UrlLoader.GET - value "get"
 UrlLoader.POST - value "post"
 UrlLoader.PUT - value "put"
+utf8
+utf8.byte(s [, i, j]) utf8 - Returns the internal numerical codes of the characters
+utf8.char(code1 [, code2, codeN]) utf8 - Returns a string from integers as characters
+utf8.charpos(s [, charpos, offset]) utf8 - convert UTF-8 position to byte offset
+utf8.codepoint(s [, i, j]) utf8 - Returns the codepoints (as integers) from all characters
+utf8.codes(s) utf8 - Returns values so that the construction
+utf8.escape(s) utf8 - Escape a str to UTF-8 format string
+utf8.find(s, pattern [, init, plain]) utf8 - Looks for the first match of pattern in the string s
+utf8.fold(s) utf8 - convert UTF-8 string s to folded case used to compare by ignore case
+utf8.gmatch(s, pattern) utf8 - Returns an iterator function
+utf8.gsub(s, pattern, repl [, n]) utf8 - Returns a copy of s in which all (or the first n, if given) occurrences of the pattern have been replaced
+utf8.insert(s [, idx, substring]) utf8 - Insert a substring to s
+utf8.len(s [, i, j]) utf8 - Returns the number of UTF-8 characters in string
+utf8.lower(s) utf8 - Receives a string and returns a copy of this string with all uppercase letters changed to lowercase
+utf8.match(s, pattern [, init]) utf8 - Looks for the first match of pattern in the string s
+utf8.ncasecmp(a, b) utf8 - Compare a and b without case
+utf8.next(s [, charpos, offset]) utf8 - Iterate though the UTF-8 string s
+utf8.offset(s, n [, i]) utf8 - Returns the position (in bytes) where the encoding of the n-th character of s
+utf8.remove(s [, start, stop]) utf8 - Delete a substring in s
+utf8.reverse(s) utf8 - Returns a string that is the string s reversed.
+utf8.sub(s, i [, j]) utf8 - Returns the substring of s that starts at i and continues until j
+utf8.title(s) utf8 - Convert UTF-8 string s to title case used to compare by ignore case
+utf8.upper(s) utf8 - Receives a string and returns a copy of this string with all lowercase letters changed to uppercase. 
+utf8.width(s [, ambi_is_double, default_width]) utf8 - calculate the width of UTF-8 string s
+utf8.widthindex(s, location [, ambi_is_double, default_width]) utf8 - Return the character index at given location in string s.
+utf8.charpattern - value "[\0-\x7F\xC2-\xF4][\x80-\xBF]*"
 Viewport > Sprite
 viewport
 setContent(content) Viewport
