@@ -42,13 +42,13 @@ bool ExportXml::Process(ExportContext *ctx) {
 		//Fill properties: Plugin
 		for (QSet<ProjectProperties::Plugin>::const_iterator it =
 				ctx->properties.plugins.begin();
-				it != ctx->properties.plugins.end(); it++)
+                it != ctx->properties.plugins.end(); it++)
 			if ((*it).name == exname) {
 				for (QMap<QString, QString>::const_iterator mit =
 						(*it).properties.begin(); mit != (*it).properties.end();
-						mit++)
-					props[QString("plugin.").append(mit.key())] = mit.value();
-			}
+                        mit++)
+                    props[QString("plugin.").append(mit.key())] = mit.value();
+            }
 		//Lookup target
 		QDomNodeList targets = exporter.elementsByTagName("target");
 		QStringList targetList;
@@ -60,16 +60,16 @@ bool ExportXml::Process(ExportContext *ctx) {
 //Fill properties: Export
 		props["sys.exportDir"] = xmlDir.path();
 		rules = exporter.firstChildElement("rules");
-		for (QSet<ProjectProperties::Export>::const_iterator it =
-				ctx->properties.exports.begin();
-				it != ctx->properties.exports.end(); it++)
-			if ((*it).name == exname) {
-				for (QMap<QString, QString>::const_iterator mit =
-						(*it).properties.begin(); mit != (*it).properties.end();
-						mit++)
-					props[QString("export.").append(mit.key())] = mit.value();
-			}
-	}
+        for (QSet<ProjectProperties::Export>::const_iterator it =
+                ctx->properties.exports.begin();
+                it != ctx->properties.exports.end(); it++)
+            if ((*it).name == exname) {
+                for (QMap<QString, QString>::const_iterator mit =
+                        (*it).properties.begin(); mit != (*it).properties.end();
+                        mit++)
+                    props[QString("export.").append(mit.key())] = mit.value();
+            }
+    }
 //Fill properties: Project
 	props["project.name"] = ctx->base;
 	props["project.namews"] = ctx->basews;
@@ -80,6 +80,11 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["project.autorotation"] = QString::number(
 			ctx->properties.autorotation);
 	props["project.orientation"] = QString::number(ctx->properties.orientation);
+
+//Fill in passed arguments
+    QHash<QString, QString>::iterator i;
+        for (i = ctx->args.begin(); i != ctx->args.end(); ++i)
+            props["args."+i.key()] = i.value();
 //Run rules
 	return ProcessRules(rules);
 }
