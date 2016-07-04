@@ -13,6 +13,12 @@
 #include <stdarg.h>
 #include <QProcess>
 #include <QImage>
+#include <QCoreApplication>
+
+static QString quote(const QString &str)
+{
+    return "\"" + str + "\"";
+}
 
 void ExportCommon::copyTemplate(QString templatePath, ExportContext *ctx) {
 	QDir dir = QDir::currentPath();
@@ -27,7 +33,7 @@ void ExportCommon::copyTemplate(QString templatePath, ExportContext *ctx) {
 		Utilities::copyFolder(dir, ctx->outputDir, ctx->renameList,
 				ctx->wildcards, ctx->replaceList,
 				QStringList() << "libgideros.so" << "libgideros.a"
-						<< "gideros.jar" << "gideros.dll" << "libgideros.dylib"
+						<< "gideros.jar" << "gideros.dll" << "gid.dll" << "libgideros.dylib"
 						<< "libgideros.1.dylib" << "gideros.WindowsPhone.lib"
 						<< "gideros.Windows.lib" << "WindowsDesktopTemplate.exe"
 						<< "MacOSXDesktopTemplate", QStringList());
@@ -131,9 +137,15 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	// disable compile with luac for iOS because 64 bit version
 	// http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
 	if (compileLua) {
+        QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
+        #if defined(Q_OS_WIN)
+            QString luac = toolsDir.filePath("luac.exe");
+        #else
+            QString luac = toolsDir.filePath("luac");
+        #endif
 		for (int i = 0; i < allluafiles_abs.size(); ++i) {
 			QString file = "\"" + allluafiles_abs[i] + "\"";
-			QProcess::execute("Tools/luac -o " + file + " " + file);
+            QProcess::execute(quote(luac) + " -o " + file + " " + file);
 		}
 	}
 

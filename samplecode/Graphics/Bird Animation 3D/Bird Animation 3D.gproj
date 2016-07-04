@@ -1,0 +1,17 @@
+<project>
+ <properties android_template="0" architecture="0" winrt_org="GiderosMobile" version="1.0" retinaDisplay="0" touchToMouse="1" packageName="com.yourdomain.yourapp" html5_host="" win_org="GiderosMobile" scaleMode="5" orientation="1" autorotation="0" win_domain="giderosmobile.com" version_code="1" iosDevice="0" html5_mem="256" winrt_package="com.yourdomain.yourapp" app_icon="" windowWidth="0" osx_org="GiderosMobile" osx_bundle="com.yourdomain." app_icon_noexport="0" logicalHeight="480" osx_category="5" osx_domain="giderosmobile.com" mouseToTouch="1" logicalWidth="320" encryptAssets="0" ios_bundle="com.yourdomain." fps="60" encryptCode="0" windowHeight="0" assetsOnly="0" mouseTouchOrder="0">
+  <imageScales/>
+  <plugins/>
+  <exports/>
+ </properties>
+ <file source="gfx/sky_2.png"/>
+ <file source="gfx/bird_black_01.png"/>
+ <file source="gfx/bird_black_02.png"/>
+ <file source="gfx/bird_black_03.png"/>
+ <file source="gfx/bird_white_01.png"/>
+ <file source="gfx/bird_white_02.png"/>
+ <file source="gfx/bird_white_03.png"/>
+ <file source="gfx/sky_world.png"/>
+ <file source="bird.lua"/>
+ <file source="main.lua"/>
+</project>

@@ -1,0 +1,8 @@
+<project>
+ <properties encryptAssets="0" app_icon="" ios_bundle="com.yourdomain." iosDevice="0" windowWidth="0" osx_category="5" scaleMode="3" touchToMouse="1" osx_domain="giderosmobile.com" encryptCode="0" autorotation="0" winrt_package="com.yourdomain.yourapp" mouseTouchOrder="0" fps="60" logicalWidth="480" osx_org="GiderosMobile" win_org="GiderosMobile" architecture="0" win_domain="giderosmobile.com" assetsOnly="0" packageName="com.yourdomain.yourapp" html5_mem="256" logicalHeight="800" android_template="0" retinaDisplay="0" app_icon_noexport="0" orientation="0" winrt_org="GiderosMobile" html5_host="" version_code="1" mouseToTouch="1" version="1.0" windowHeight="0" osx_bundle="com.yourdomain.">
+  <imageScales/>
+  <plugins/>
+  <exports/>
+ </properties>
+ <file source="main.lua"/>
+</project>

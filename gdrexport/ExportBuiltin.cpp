@@ -19,7 +19,7 @@ void ExportBuiltin::exportAllAssetsFiles(ExportContext *ctx)
     if (ctx->deviceFamily == e_Android) //Configure Jet files
     	ctx->jetset << "mp3" << "mp4" << "png" << "jpg" << "jpeg" << "wav";
 
-	ExportCommon::exportAssets(ctx,ctx->deviceFamily != e_iOS && ctx->deviceFamily != e_MacOSXDesktop);
+	ExportCommon::exportAssets(ctx,true);
     if(ctx->deviceFamily == e_MacOSXDesktop || ctx->deviceFamily == e_WindowsDesktop)
         ctx->outputDir.cd("..");
 
