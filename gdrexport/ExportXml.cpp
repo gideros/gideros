@@ -373,6 +373,16 @@ bool ExportXml::RuleTemplate(QString name, QString path, QDomElement rule) {
 							<< qMakePair(
 									ReplaceAttributes(rp.attribute("orig")).toUtf8(),
 									ReplaceAttributes(rp.attribute("by")).toUtf8());
+                else if ((!rp.isNull()) && (rp.tagName() == "prepend"))
+                        replaceList1
+                                << qMakePair(
+                                        ReplaceAttributes(rp.attribute("orig")).toUtf8(),
+                                        ReplaceAttributes(rp.attribute("by")).toUtf8()+"\n"+ReplaceAttributes(rp.attribute("orig")).toUtf8());
+                else if ((!rp.isNull()) && (rp.tagName() == "append"))
+                        replaceList1
+                                << qMakePair(
+                                        ReplaceAttributes(rp.attribute("orig")).toUtf8(),
+                                        ReplaceAttributes(rp.attribute("orig")).toUtf8()+"\n"+ReplaceAttributes(rp.attribute("by")).toUtf8());
 			}
 			ctx->wildcards << wildcards1;
 			ctx->replaceList << replaceList1;
