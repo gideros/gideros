@@ -298,6 +298,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ctx->outputDir.cdUp();
    if(ctx->deviceFamily == e_MacOSXDesktop)
        ctx->outputDir.cdUp();
+
    ExportCommon::applyPlugins(ctx);
    if (needGApp)
    {
@@ -312,10 +313,61 @@ void ExportBuiltin::doExport(ExportContext *ctx)
        ctx->outputDir.cdUp();
    }
 
+   //exporting icons
    if (ctx->deviceFamily == e_Html5)
    {
 	   ExportCommon::appIcon(ctx,615,215,QString("gideros.png"));
 	   ExportCommon::appIcon(ctx,64,64,QString("favicon.png"));
+   }
+   else if(ctx->deviceFamily == e_Android){
+       if(templatedir.compare("Eclipse") == 0){
+           ExportCommon::appIcon(ctx,36,36,QString("res/drawable-ldpi/icon.png"));
+           ExportCommon::appIcon(ctx,48,48,QString("res/drawable-mdpi/icon.png"));
+           ExportCommon::appIcon(ctx,72,72,QString("res/drawable-hdpi/icon.png"));
+           ExportCommon::appIcon(ctx,96,96,QString("res/drawable-xhdpi/icon.png"));
+           ExportCommon::appIcon(ctx,144,144,QString("res/drawable-xxhdpi/icon.png"));
+           ExportCommon::appIcon(ctx,192,192,QString("res/drawable-xxxhdpi/icon.png"));
+       }
+       else{
+           ExportCommon::appIcon(ctx,36,36,QString("app/src/main/res/drawable-ldpi/icon.png"));
+           ExportCommon::appIcon(ctx,48,48,QString("app/src/main/res/drawable-mdpi/icon.png"));
+           ExportCommon::appIcon(ctx,72,72,QString("app/src/main/res/drawable-hdpi/icon.png"));
+           ExportCommon::appIcon(ctx,96,96,QString("app/src/main/res/drawable-xhdpi/icon.png"));
+           ExportCommon::appIcon(ctx,144,144,QString("app/src/main/res/drawable-xxhdpi/icon.png"));
+           ExportCommon::appIcon(ctx,192,192,QString("app/src/main/res/drawable-xxxhdpi/icon.png"));
+       }
+   }
+   else if(ctx->deviceFamily == e_WinRT){
+        ExportCommon::appIcon(ctx,120,120,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-80.png"));
+        ExportCommon::appIcon(ctx,150,150,QString("giderosgame/giderosgame.Windows/Assets/Logo.scale-100.png"));
+        ExportCommon::appIcon(ctx,30,30,QString("giderosgame/giderosgame.Windows/Assets/SmallLogo.scale-100.png"));
+        ExportCommon::appIcon(ctx,50,50,QString("giderosgame/giderosgame.Windows/Assets/StoreLogo.scale-100.png"));
+
+        ExportCommon::appIcon(ctx,150,150,QString("giderosgame/giderosgame.WindowsPhone/Assets/Logo.scale-100.png"));
+        ExportCommon::appIcon(ctx,360,360,QString("giderosgame/giderosgame.WindowsPhone/Assets/Logo.scale-240.png"));
+        ExportCommon::appIcon(ctx,44,44,QString("giderosgame/giderosgame.WindowsPhone/Assets/SmallLogo.scale-100.png"));
+        ExportCommon::appIcon(ctx,106,106,QString("giderosgame/giderosgame.WindowsPhone/Assets/SmallLogo.scale-240.png"));
+        ExportCommon::appIcon(ctx,170,170,QString("giderosgame/giderosgame.WindowsPhone/Assets/Square71x71Logo.scale-240.png"));
+        ExportCommon::appIcon(ctx,50,50,QString("giderosgame/giderosgame.WindowsPhone/Assets/StoreLogo.scale-100.png"));
+        ExportCommon::appIcon(ctx,120,120,QString("giderosgame/giderosgame.WindowsPhone/Assets/StoreLogo.scale-240.png"));
+   }
+   else if(ctx->deviceFamily == e_iOS){
+        ExportCommon::appIcon(ctx,29,29,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon29x29.png"));
+        ExportCommon::appIcon(ctx,40,40,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon40x40.png"));
+        ExportCommon::appIcon(ctx,50,50,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon50x50.png"));
+        ExportCommon::appIcon(ctx,57,57,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon57x57.png"));
+        ExportCommon::appIcon(ctx,58,58,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon58x58.png"));
+        ExportCommon::appIcon(ctx,72,72,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon72x72.png"));
+        ExportCommon::appIcon(ctx,76,76,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon76x76.png"));
+        ExportCommon::appIcon(ctx,80,80,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon80x80.png"));
+        ExportCommon::appIcon(ctx,87,87,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon87x87.png"));
+        ExportCommon::appIcon(ctx,100,100,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon100x100.png"));
+        ExportCommon::appIcon(ctx,114,114,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon114x114.png"));
+        ExportCommon::appIcon(ctx,120,120,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon120x120.png"));
+        ExportCommon::appIcon(ctx,144,144,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon144x144.png"));
+        ExportCommon::appIcon(ctx,152,152,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon152x152.png"));
+        ExportCommon::appIcon(ctx,180,180,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon180x180.png"));
+
    }
 
 #ifdef Q_OS_MACX
