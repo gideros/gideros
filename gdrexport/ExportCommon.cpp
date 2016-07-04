@@ -20,14 +20,16 @@ static QString quote(const QString &str)
     return "\"" + str + "\"";
 }
 
-void ExportCommon::copyTemplate(QString templatePath, ExportContext *ctx) {
+void ExportCommon::copyTemplate(QString templatePath, ExportContext *ctx, bool isPlugin) {
 	QDir dir = QDir::currentPath();
 	dir.cd(templatePath);
 
 	exportInfo("Processing template\n");
 
-	ctx->renameList << qMakePair(ctx->templatename, ctx->base);
-	ctx->renameList << qMakePair(ctx->templatenamews, ctx->basews);
+    if(!isPlugin){
+        ctx->renameList << qMakePair(ctx->templatename, ctx->base);
+        ctx->renameList << qMakePair(ctx->templatenamews, ctx->basews);
+    }
 
 	if (ctx->assetsOnly)
 		Utilities::copyFolder(dir, ctx->outputDir, ctx->renameList,

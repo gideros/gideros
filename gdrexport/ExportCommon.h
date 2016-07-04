@@ -13,7 +13,7 @@ class ExportCommon {
 	static int progressMax;
 	static int progressCur;
 public:
-	static void copyTemplate(QString templatePath,ExportContext *ctx);
+    static void copyTemplate(QString templatePath,ExportContext *ctx, bool isPlugin);
 	static void exportAssets(ExportContext *ctx, bool compileLua);
 	static void exportPropertiesBin(ExportContext *ctx);
 	static void exportLuafilesTxt(ExportContext *ctx);

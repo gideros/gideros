@@ -213,6 +213,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
       templatedir = "Xcode4";
       ctx->templatename = "iOS Template";
       ctx->templatenamews = "iOS_Template";
+      ctx->platform = "iOS";
       underscore = true;
       break;
 
@@ -222,6 +223,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
           templatedir = "AndroidStudio";
       ctx->templatename = "Android Template";
       ctx->templatenamews = "AndroidTemplate";
+      ctx->platform = "Android";
       underscore = false;
       break;
 
@@ -229,6 +231,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
       templatedir = "VisualStudio";
       ctx->templatename = "WinRT Template";
       ctx->templatenamews = "WinRTTemplate";
+      ctx->platform = "WinRT";
       underscore = true;
       break;
 
@@ -236,6 +239,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
       templatedir = "win32";
       ctx->templatename = "WindowsDesktopTemplate";
       ctx->templatenamews = "WindowsDesktopTemplate";
+      ctx->platform = "Win32";
       underscore = true;
       break;
 
@@ -243,6 +247,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         templatedir = "Qt";
         ctx->templatename = "WindowsDesktopTemplate";
         ctx->templatenamews = "WindowsDesktopTemplate";
+        ctx->platform = "WindowsDesktop";
         underscore = false;
         break;
 
@@ -250,16 +255,19 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         templatedir = "Qt";
         ctx->templatename = "MacOSXDesktopTemplate";
         ctx->templatenamews = "MacOSXDesktopTemplate";
+        ctx->platform = "MacOSXDesktop";
         underscore = false;
         break;
     case e_GApp:
         underscore = false;
         needGApp = true;
+        ctx->platform = "GApp";
         break;
     case e_Html5:
     	templatedir = "Html5";
     	ctx->templatename = "Html5";
     	ctx->templatenamews = "Html5";
+        ctx->platform = "Html5";
         underscore = false;
         needGApp = true;
         break;
@@ -270,7 +278,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
    // copy template
    if (templatedir.length()>0)
-   	ExportCommon::copyTemplate(QString("Templates").append("/").append(templatedir).append("/").append(ctx->templatename),ctx);
+    ExportCommon::copyTemplate(QString("Templates").append("/").append(templatedir).append("/").append(ctx->templatename),ctx, false);
 
    ExportBuiltin::prepareAssetFolder(ctx);
    ExportBuiltin::exportAllAssetsFiles(ctx);
@@ -285,10 +293,14 @@ void ExportBuiltin::doExport(ExportContext *ctx)
        ExportBuiltin::exportAllAssetsFiles(ctx);
        WinRTExport::updateWinRTProject(QString("giderosgame.WindowsPhone.vcxproj"),ctx);
    }
-
+   ctx->outputDir.cdUp();
+   if(ctx->deviceFamily != e_WindowsDesktop && ctx->deviceFamily != e_Html5)
+        ctx->outputDir.cdUp();
+   if(ctx->deviceFamily == e_MacOSXDesktop)
+       ctx->outputDir.cdUp();
+   ExportCommon::applyPlugins(ctx);
    if (needGApp)
    {
-   	ctx->outputDir.cdUp();
        if (ctx->deviceFamily == e_GApp)
     	   ctx->outputDir.cdUp();
        GAppFormat::buildGApp(QDir::cleanPath(ctx->outputDir.absoluteFilePath(ctx->base+".GApp")),ctx);
