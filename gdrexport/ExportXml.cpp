@@ -362,7 +362,7 @@ bool ExportXml::RuleTemplate(QString name, QString path, QDomElement rule) {
 	for (QDomNode n = rule.firstChild(); !n.isNull(); n = n.nextSibling()) {
 		QDomElement rl = n.toElement();
 		if ((!rl.isNull()) && (rl.tagName() == "replacelist")) {
-			QStringList wildcards1 = rl.attribute("wildcards").split(";",
+            QStringList wildcards1 = ReplaceAttributes(rl.attribute("wildcards")).split(";",
 					QString::SkipEmptyParts);
 			QList < QPair<QByteArray, QByteArray> > replaceList1;
 			for (QDomNode n1 = rl.firstChild(); !n1.isNull();
@@ -385,7 +385,7 @@ bool ExportXml::RuleTemplate(QString name, QString path, QDomElement rule) {
 			path.toStdString().c_str());
 	ExportCommon::copyTemplate(
 			QDir::current().relativeFilePath(
-					ctx->outputDir.absoluteFilePath(path)), ctx);
+                    ctx->outputDir.absoluteFilePath(path)), ctx, isPlugin);
 	return true;
 }
 
