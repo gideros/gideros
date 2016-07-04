@@ -1,0 +1,50 @@
+<plugin
+ name="Controller"
+ description="Controller plugin to add gamepad functionality">
+  <target name="APK">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <replace orig="//GIDEROS-STATIC-INIT//" by="System.loadLibrary(&quot;controller&quot;);
+        //GIDEROS-STATIC-INIT//"/>
+            <replace orig="//GIDEROS-EXTERNAL-CLASS//" by="&quot;com.giderosmobile.android.plugins.controller.GControllerManager&quot;,
+        //GIDEROS-EXTERNAL-CLASS//"/>
+            <replace orig="//GIDEROS-ACTIVTIY-ONKEYDOWN//" by="//GIDEROS-ACTIVTIY-ONKEYDOWN//
+        if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyDown(keyCode, event)) return true;"/>
+        <replace orig="//GIDEROS-ACTIVTIY-ONKEYUP//" by="//GIDEROS-ACTIVTIY-ONKEYUP//
+        if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyUp(keyCode, event)) return true;"/>
+        <replace orig="//GIDEROS-ACTIVTIY-METHODS//" by="//GIDEROS-ACTIVTIY-METHODS//
+        
+    public boolean onGenericMotionEvent(MotionEvent event){
+        if(com.giderosmobile.android.plugins.controller.GControllerDefault.onGenericMotionEvent(event)){
+            return true;
+        }
+        return super.onGenericMotionEvent(event);
+    }"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <replace orig="//GIDEROS-STATIC-INIT//" by="System.loadLibrary(&quot;controller&quot;);
+        //GIDEROS-STATIC-INIT//"/>
+            <replace orig="//GIDEROS-EXTERNAL-CLASS//" by="&quot;com.giderosmobile.android.plugins.controller.GControllerManager&quot;,
+        //GIDEROS-EXTERNAL-CLASS//"/>
+            <replace orig="//GIDEROS-ACTIVTIY-ONKEYDOWN//" by="//GIDEROS-ACTIVTIY-ONKEYDOWN//
+        if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyDown(keyCode, event)) return true;"/>
+        <replace orig="//GIDEROS-ACTIVTIY-ONKEYUP//" by="//GIDEROS-ACTIVTIY-ONKEYUP//
+        if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyUp(keyCode, event)) return true;"/>
+        <replace orig="//GIDEROS-ACTIVTIY-METHODS//" by="//GIDEROS-ACTIVTIY-METHODS//
+        
+    public boolean onGenericMotionEvent(MotionEvent event){
+        if(com.giderosmobile.android.plugins.controller.GControllerDefault.onGenericMotionEvent(event)){
+            return true;
+        }
+        return super.onGenericMotionEvent(event);
+    }"/>
+        </replacelist>
+    </template>
+ </target>
+</plugin>
