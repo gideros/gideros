@@ -203,6 +203,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	@Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+        //GIDEROS-ACTIVTIY-ONKEYDOWN//
 		GiderosApplication app = GiderosApplication.getInstance();
 		if (app != null && app.onKeyDown(keyCode, event) == true)
 			return true;
@@ -214,12 +215,15 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	@Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
+        //GIDEROS-ACTIVTIY-ONKEYUP//
 		GiderosApplication app = GiderosApplication.getInstance();
 		if (app != null && app.onKeyUp(keyCode, event) == true)
 			return true;
 		
 		return super.onKeyUp(keyCode, event);
     }
+    
+    //GIDEROS-ACTIVTIY-METHODS//
 }
 
 class GiderosGLSurfaceView extends GLSurfaceView
