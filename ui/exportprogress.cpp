@@ -61,7 +61,8 @@ void ExportProgress::onStandardOutput()
 			else
 				ui->pgExport->setMaximum(line.mid(1).toInt());
 		}
-		ui->lbExport->append(line);
+		else
+			ui->lbExport->append(line);
 	}
 }
 

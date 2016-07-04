@@ -69,6 +69,7 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
 	}
 	if (ctx->appicon->isNull())
 		return false;
+	exportInfo("Generating app icon (%dx%d)\n",width,height);
 	ctx->appicon->scaled(width, height, Qt::KeepAspectRatio).save(
 			ctx->outputDir.absoluteFilePath(output));
 	return true;
@@ -78,6 +79,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	QStringList allluafiles;
 	QStringList allluafiles_abs;
 
+	exportInfo("Exporting assets\n");
     for (std::size_t i = 0; i < ctx->folderList.size(); ++i)
     	ctx->outputDir.mkdir(ctx->folderList[i]);
 
@@ -88,10 +90,12 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 
 	QDir path(QFileInfo(ctx->projectFileName_).path());
 
+    ExportCommon::progressSteps(ctx->fileQueue.size());
 	for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
 		const QString& s1 = ctx->fileQueue[i].first;
 		const QString& s2 = ctx->fileQueue[i].second;
 
+        ExportCommon::progressStep(s1.toUtf8().constData());
 		if (ctx->properties.app_icon_noexport)
 			if (s1==ctx->properties.app_icon)
 				continue;
@@ -137,13 +141,16 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	// disable compile with luac for iOS because 64 bit version
 	// http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
 	if (compileLua) {
+		exportInfo("Compiling lua\n");
         QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
         #if defined(Q_OS_WIN)
             QString luac = toolsDir.filePath("luac.exe");
         #else
             QString luac = toolsDir.filePath("luac");
         #endif
+        ExportCommon::progressSteps(allluafiles_abs.size());
 		for (int i = 0; i < allluafiles_abs.size(); ++i) {
+	        ExportCommon::progressStep(allluafiles_abs[i].toUtf8().constData());
 			QString file = "\"" + allluafiles_abs[i] + "\"";
             QProcess::execute(quote(luac) + " -o " + file + " " + file);
 		}
@@ -151,7 +158,10 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 
 	// encrypt lua, png, jpg, jpeg and wav files
 	if (true) {
+		exportInfo("Encrypting assets\n");
+        ExportCommon::progressSteps(ctx->allfiles_abs.size());
 		for (int i = 0; i < ctx->allfiles_abs.size(); ++i) {
+	        ExportCommon::progressStep(ctx->allfiles_abs[i].toUtf8().constData());
 			QString ext = QFileInfo(ctx->allfiles[i]).suffix().toLower();
 			if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg"
 					&& ext != "wav")
@@ -196,6 +206,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 }
 
 void ExportCommon::exportAllfilesTxt(ExportContext *ctx) {
+	exportInfo("Writing files info\n");
 	QFile file(
 			QDir::cleanPath(ctx->outputDir.absoluteFilePath("allfiles.txt")));
 	if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -212,6 +223,7 @@ void ExportCommon::exportAllfilesTxt(ExportContext *ctx) {
 }
 
 void ExportCommon::exportLuafilesTxt(ExportContext *ctx) {
+	exportInfo("Writing lua files info\n");
 	QString filename = "luafiles.txt";
 	if (!ctx->jetset.isEmpty())
 		filename += ".jet";
@@ -228,6 +240,7 @@ void ExportCommon::exportLuafilesTxt(ExportContext *ctx) {
 }
 
 void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
+	exportInfo("Writing project properties\n");
 	QString filename = "properties.bin";
 	if (!ctx->jetset.isEmpty())
 		filename += ".jet";
@@ -268,6 +281,7 @@ void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
 
 bool ExportCommon::applyPlugins(ExportContext *ctx)
 {
+	exportInfo("Applying plugins\n");
 	QMap<QString,QString> allplugins=ExportXml::availablePlugins();
 	for (QSet<ProjectProperties::Plugin>::const_iterator it=ctx->properties.plugins.begin();it!=ctx->properties.plugins.end(); it++)
 	{
