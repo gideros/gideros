@@ -368,22 +368,30 @@ bool ExportXml::RuleTemplate(QString name, QString path, QDomElement rule) {
 			for (QDomNode n1 = rl.firstChild(); !n1.isNull();
 					n1 = n1.nextSibling()) {
 				QDomElement rp = n1.toElement();
-				if ((!rp.isNull()) && (rp.tagName() == "replace"))
-					replaceList1
-							<< qMakePair(
-									ReplaceAttributes(rp.attribute("orig")).toUtf8(),
-									ReplaceAttributes(rp.attribute("by")).toUtf8());
-                else if ((!rp.isNull()) && (rp.tagName() == "prepend"))
+                if ((!rp.isNull())){
+                    if(rp.attribute("force") != "true")
+                        replaceList1
+                                << qMakePair(
+                                        ReplaceAttributes(rp.attribute("by")).toUtf8(),
+                                        QString("").toUtf8());
+                    if ((rp.tagName() == "replace"))
                         replaceList1
                                 << qMakePair(
                                         ReplaceAttributes(rp.attribute("orig")).toUtf8(),
-                                        ReplaceAttributes(rp.attribute("by")).toUtf8()+"\n"+ReplaceAttributes(rp.attribute("orig")).toUtf8());
-                else if ((!rp.isNull()) && (rp.tagName() == "append"))
-                        replaceList1
-                                << qMakePair(
-                                        ReplaceAttributes(rp.attribute("orig")).toUtf8(),
-                                        ReplaceAttributes(rp.attribute("orig")).toUtf8()+"\n"+ReplaceAttributes(rp.attribute("by")).toUtf8());
-			}
+                                        ReplaceAttributes(rp.attribute("by")).toUtf8());
+                    else if ((!rp.isNull()) && (rp.tagName() == "prepend"))
+                            replaceList1
+                                    << qMakePair(
+                                            ReplaceAttributes(rp.attribute("orig")).toUtf8(),
+                                            ReplaceAttributes(rp.attribute("by")).toUtf8()+"\n"+ReplaceAttributes(rp.attribute("orig")).toUtf8());
+                    else if ((!rp.isNull()) && (rp.tagName() == "append"))
+                            replaceList1
+                                    << qMakePair(
+                                            ReplaceAttributes(rp.attribute("orig")).toUtf8(),
+                                            ReplaceAttributes(rp.attribute("orig")).toUtf8()+"\n"+ReplaceAttributes(rp.attribute("by")).toUtf8());
+                }
+            }
+
 			ctx->wildcards << wildcards1;
 			ctx->replaceList << replaceList1;
 		}
