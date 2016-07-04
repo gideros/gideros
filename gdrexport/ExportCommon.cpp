@@ -8,13 +8,17 @@
 #include "ExportCommon.h"
 #include "Utilities.h"
 #include <bytebuffer.h>
-#include "ExportXml.h""
+#include "ExportXml.h"
+#include <stdio.h>
+#include <stdarg.h>
 #include <QProcess>
 #include <QImage>
 
 void ExportCommon::copyTemplate(QString templatePath, ExportContext *ctx) {
 	QDir dir = QDir::currentPath();
 	dir.cd(templatePath);
+
+	exportInfo("Processing template\n");
 
 	ctx->renameList << qMakePair(ctx->templatename, ctx->base);
 	ctx->renameList << qMakePair(ctx->templatenamews, ctx->basews);
@@ -262,3 +266,28 @@ bool ExportCommon::applyPlugins(ExportContext *ctx)
 	}
 	return true;
 }
+
+void ExportCommon::exportInfo(const char *fmt,...)
+{
+	va_list va;
+	va_start(va,fmt);
+	vfprintf(stdout,fmt,va);
+	va_end(va);
+	fflush(stdout);
+}
+
+int ExportCommon::progressMax=0;
+int ExportCommon::progressCur=0;
+
+void ExportCommon::progressSteps(int steps)
+{
+	progressMax+=steps;
+	exportInfo(":%d\n",progressMax);
+}
+
+void ExportCommon::progressStep(const char *title)
+{
+	progressCur++;
+	exportInfo(":%d:%d:%s\n",progressMax,progressCur,title);
+}
+

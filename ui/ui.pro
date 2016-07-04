@@ -70,6 +70,7 @@ SOURCES += \
     "../iconlibrary/iconlibrary.cpp"\
     "../libnetwork/bytebuffer.cpp" \
     exportprojectdialog.cpp \
+    exportprogress.cpp \
     aboutdialog.cpp \
     projectpropertiesdialog.cpp \
     startpagewidget2.cpp \
@@ -106,6 +107,7 @@ HEADERS  += \
     addnewfiledialog.h\
     "../libpreviewwidget/previewwidget.h" \
     exportprojectdialog.h \
+    exportprogress.h \
     aboutdialog.h \
     projectpropertiesdialog.h \
     projectproperties.h \
@@ -133,6 +135,7 @@ FORMS    += mainwindow.ui \
     codedependenciesdialog.ui \
     addnewfiledialog.ui \
     exportprojectdialog.ui \
+    exportprogress.ui \
     aboutdialog.ui \
     projectpropertiesdialog.ui \
     pluginschooser.ui \

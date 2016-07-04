@@ -8,6 +8,7 @@
 #include "Utilities.h"
 #include <QProcess>
 #include <QFile>
+#include "ExportCommon.h"
 
 QString Utilities::RemoveSpaces(QString text,bool allowUnderscore)
 {
@@ -188,6 +189,7 @@ void Utilities::copyFolder(	const QDir& sourceDir,
     QStringList files;
 
     files = sourceDir.entryList(QDir::Files | QDir::Hidden);
+    ExportCommon::progressSteps(files.count());
     for(int i = 0; i < files.count(); i++)
     {
         QString srcName = sourceDir.absoluteFilePath(files[i]);
@@ -197,9 +199,11 @@ void Utilities::copyFolder(	const QDir& sourceDir,
         QString destName = destDir.absoluteFilePath(destFile);
         if (shouldCopy(srcName, include, exclude))
             fileCopy(srcName, destName, wildcards, replaceList);
+        ExportCommon::progressStep(files[i].toUtf8().constData());
     }
 
     files = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    ExportCommon::progressSteps(files.count());
     for(int i = 0; i < files.count(); i++)
     {
         QDir sourceDir2 = sourceDir;
@@ -220,6 +224,7 @@ void Utilities::copyFolder(	const QDir& sourceDir,
                        replaceList,
                        include,
                        exclude);
+        ExportCommon::progressStep(files[i].toUtf8().constData());
     }
 }
 

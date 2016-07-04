@@ -43,6 +43,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include "exportprojectdialog.h"
+#include "exportprogress.h"
 #include "startpagewidget2.h"
 #include "aboutdialog.h"
 #include <QSplitter>
@@ -2463,11 +2464,15 @@ void MainWindow::exportProject()
         QDir out = QDir(output);
         out.mkdir(base);
         out.cd(base);
-        exportProcess->setStandardErrorFile(out.absoluteFilePath("error.log"));
-        exportProcess->start(program, arguments);
-        exportProcess->waitForFinished(-1);
 
-        QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully."));
+        exportProcess->setProgram(program);
+        exportProcess->setArguments(arguments);
+
+        ExportProgress progress(exportProcess,this);
+    	progress.exec();
+    	delete exportProcess;
+
+        //QMessageBox::information(this, tr("Gideros"), tr("Project is exported successfully."));
 	}  // if dialog was accepted
 }
 
