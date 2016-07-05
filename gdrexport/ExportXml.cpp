@@ -35,6 +35,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["sys.exeExtension"] = "";
 #endif
 	props["sys.giderosDir"] = QDir::currentPath();
+    props["sys.exportDir"] = ctx->exportDir.absolutePath();
 	QDomElement rules;
 	QDir xmlDir=QFileInfo(xmlFile).dir();
 	if (isPlugin) {
