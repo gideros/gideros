@@ -293,17 +293,17 @@ void ExportBuiltin::doExport(ExportContext *ctx)
        ExportBuiltin::exportAllAssetsFiles(ctx);
        WinRTExport::updateWinRTProject(QString("giderosgame.WindowsPhone.vcxproj"),ctx);
    }
-   ctx->outputDir.cdUp();
-   if(ctx->deviceFamily != e_WindowsDesktop && ctx->deviceFamily != e_Html5)
-        ctx->outputDir.cdUp();
-   if(ctx->deviceFamily == e_MacOSXDesktop)
-       ctx->outputDir.cdUp();
 
+   //go back to root
+   ctx->outputDir = QDir(ctx->exportDir);
+
+   //install plugins
    ExportCommon::applyPlugins(ctx);
+
    if (needGApp)
    {
        if (ctx->deviceFamily == e_GApp)
-    	   ctx->outputDir.cdUp();
+           ctx->outputDir.cdUp();
        GAppFormat::buildGApp(QDir::cleanPath(ctx->outputDir.absoluteFilePath(ctx->base+".GApp")),ctx);
        if (ctx->deviceFamily == e_GApp)
        	ctx->outputDir.cd(ctx->base);
