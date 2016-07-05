@@ -363,6 +363,20 @@ bool ExportXml::RuleSet(QString key, QString val) {
 	return true;
 }
 
+QString ExportXml::XmlAttributeOrElement(QDomElement elm,QString name)
+{
+	QString value=elm.attribute(name);
+	if (!value.isEmpty())
+		return value;
+	QDomNodeList nl=elm.elementsByTagName(name);
+	for (int i=0;i<nl.count();i++)
+	{
+		QDomElement se=nl.item(i).toElement();
+		value=value+se.text();
+	}
+	return value;
+}
+
 bool ExportXml::RuleTemplate(QString name, QString path, QDomElement rule) {
 	for (QDomNode n = rule.firstChild(); !n.isNull(); n = n.nextSibling()) {
 		QDomElement rl = n.toElement();
@@ -374,26 +388,28 @@ bool ExportXml::RuleTemplate(QString name, QString path, QDomElement rule) {
 					n1 = n1.nextSibling()) {
 				QDomElement rp = n1.toElement();
                 if ((!rp.isNull())){
+                	QString orig=ReplaceAttributes(XmlAttributeOrElement(rp,"orig"));
+                	QString by=ReplaceAttributes(XmlAttributeOrElement(rp,"by"));
                     if(rp.attribute("force") != "true")
                         replaceList1
                                 << qMakePair(
-                                        ReplaceAttributes(rp.attribute("by")).toUtf8(),
+                                        by.toUtf8(),
                                         QString("").toUtf8());
                     if ((rp.tagName() == "replace"))
                         replaceList1
                                 << qMakePair(
-                                        ReplaceAttributes(rp.attribute("orig")).toUtf8(),
-                                        ReplaceAttributes(rp.attribute("by")).toUtf8());
+                                        orig.toUtf8(),
+                                        by.toUtf8());
                     else if ((!rp.isNull()) && (rp.tagName() == "prepend"))
                             replaceList1
                                     << qMakePair(
-                                            ReplaceAttributes(rp.attribute("orig")).toUtf8(),
-                                            ReplaceAttributes(rp.attribute("by")).toUtf8()+"\n"+ReplaceAttributes(rp.attribute("orig")).toUtf8());
+                                            orig.toUtf8(),
+                                            by.toUtf8()+"\n"+orig.toUtf8());
                     else if ((!rp.isNull()) && (rp.tagName() == "append"))
                             replaceList1
                                     << qMakePair(
-                                            ReplaceAttributes(rp.attribute("orig")).toUtf8(),
-                                            ReplaceAttributes(rp.attribute("orig")).toUtf8()+"\n"+ReplaceAttributes(rp.attribute("by")).toUtf8());
+                                            orig.toUtf8(),
+                                            orig.toUtf8()+"\n"+by.toUtf8());
                 }
             }
 
