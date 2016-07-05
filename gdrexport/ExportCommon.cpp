@@ -77,8 +77,8 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
 	if (ctx->appicon->isNull())
 		return false;
 	exportInfo("Generating app icon (%dx%d)\n",width,height);
-	ctx->appicon->scaled(width, height, Qt::KeepAspectRatio).save(
-			ctx->outputDir.absoluteFilePath(output));
+    ctx->appicon->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
+            ctx->outputDir.absoluteFilePath(output), "png", 100);
 	return true;
 }
 
