@@ -20,11 +20,16 @@ static QString quote(const QString &str)
     return "\"" + str + "\"";
 }
 
-void ExportCommon::copyTemplate(QString templatePath, ExportContext *ctx, bool isPlugin) {
+void ExportCommon::copyTemplate(QString templatePath, QString templateDest, ExportContext *ctx, bool isPlugin) {
 	QDir dir = QDir::currentPath();
 	dir.cd(templatePath);
 
 	exportInfo("Processing template\n");
+    QDir dir2 = QDir(ctx->outputDir);
+    if(!templateDest.isEmpty()){
+        dir2 = QDir(templateDest);
+    }
+
 
     if(!isPlugin){
         ctx->renameList << qMakePair(ctx->templatename, ctx->base);
@@ -32,7 +37,7 @@ void ExportCommon::copyTemplate(QString templatePath, ExportContext *ctx, bool i
     }
 
 	if (ctx->assetsOnly)
-		Utilities::copyFolder(dir, ctx->outputDir, ctx->renameList,
+        Utilities::copyFolder(dir, dir2, ctx->renameList,
 				ctx->wildcards, ctx->replaceList,
 				QStringList() << "libgideros.so" << "libgideros.a"
 						<< "gideros.jar" << "gideros.dll" << "gid.dll" << "libgideros.dylib"
@@ -40,7 +45,7 @@ void ExportCommon::copyTemplate(QString templatePath, ExportContext *ctx, bool i
 						<< "gideros.Windows.lib" << "WindowsDesktopTemplate.exe"
 						<< "MacOSXDesktopTemplate", QStringList());
 	else
-		Utilities::copyFolder(dir, ctx->outputDir, ctx->renameList,
+        Utilities::copyFolder(dir, dir2, ctx->renameList,
 				ctx->wildcards, ctx->replaceList, QStringList() << "*",
 				QStringList());
 	ctx->renameList.clear();
@@ -72,8 +77,8 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
 	if (ctx->appicon->isNull())
 		return false;
 	exportInfo("Generating app icon (%dx%d)\n",width,height);
-	ctx->appicon->scaled(width, height, Qt::KeepAspectRatio).save(
-			ctx->outputDir.absoluteFilePath(output));
+    ctx->appicon->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
+            ctx->outputDir.absoluteFilePath(output), "png", 100);
 	return true;
 }
 

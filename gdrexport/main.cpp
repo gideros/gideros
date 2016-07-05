@@ -343,6 +343,7 @@ int main(int argc, char *argv[])
     outputDir.mkdir(ctx.base);
     outputDir.cd(ctx.base);
     ctx.outputDir=outputDir;
+    ctx.exportDir = QDir(outputDir);
 
     QByteArray codePrefix("312e68c04c6fd22922b5b232ea6fb3e1");
     QByteArray assetsPrefix("312e68c04c6fd22922b5b232ea6fb3e2");
