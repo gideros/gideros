@@ -278,7 +278,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
    // copy template
    if (templatedir.length()>0)
-    ExportCommon::copyTemplate(QString("Templates").append("/").append(templatedir).append("/").append(ctx->templatename),ctx, false);
+    ExportCommon::copyTemplate(QString("Templates").append("/").append(templatedir).append("/").append(ctx->templatename),"",ctx, false);
 
    ExportBuiltin::prepareAssetFolder(ctx);
    ExportBuiltin::exportAllAssetsFiles(ctx);

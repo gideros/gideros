@@ -30,7 +30,7 @@ class ExportXml {
 	bool RuleMv(QString src,QString dst);
 	bool RuleIf(QString cond,QDomElement rule);
 	bool RuleSet(QString key,QString val);
-	bool RuleTemplate(QString name,QString path,QDomElement rule);
+    bool RuleTemplate(QString name,QString path,QString dest,QDomElement rule);
 	bool RuleAppIcon(int width,int height,QString dst);
 	ExportContext *ctx;
 public:

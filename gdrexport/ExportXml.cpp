@@ -196,7 +196,7 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 		return RuleRmdir(ReplaceAttributes(rule.text()).trimmed());
 	else if (ruleName == "template")
 		return RuleTemplate(rule.attribute("name"),
-				ReplaceAttributes(rule.attribute("path")).trimmed(), rule);
+                ReplaceAttributes(rule.attribute("path")).trimmed(), ReplaceAttributes(rule.attribute("dest")).trimmed(), rule);
 	else if (ruleName == "exportAssets") {
 		QStringList jets=rule.attribute("jet").split(";",QString::SkipEmptyParts);
 		for (int i=0;i<jets.count();i++)
@@ -364,7 +364,7 @@ bool ExportXml::RuleSet(QString key, QString val) {
 	return true;
 }
 
-bool ExportXml::RuleTemplate(QString name, QString path, QDomElement rule) {
+bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomElement rule) {
 	for (QDomNode n = rule.firstChild(); !n.isNull(); n = n.nextSibling()) {
 		QDomElement rl = n.toElement();
 		if ((!rl.isNull()) && (rl.tagName() == "replacelist")) {
@@ -404,12 +404,12 @@ bool ExportXml::RuleTemplate(QString name, QString path, QDomElement rule) {
 	}
 
 	ctx->templatename = name;
-	ctx->templatenamews = Utilities::RemoveSpaces(name, false); //TODO underscores or not ?
-	fprintf(stderr, "Template: %s [%s]\n", name.toStdString().c_str(),
-			path.toStdString().c_str());
+    ctx->templatenamews = Utilities::RemoveSpaces(name, false); //TODO underscores or not ?
+    fprintf(stderr, "Template: %s from [%s] to [%s]\n", name.toStdString().c_str(),
+            path.toStdString().c_str(), dest.toStdString().c_str());
 	ExportCommon::copyTemplate(
 			QDir::current().relativeFilePath(
-                    ctx->outputDir.absoluteFilePath(path)), ctx, isPlugin);
+                    ctx->outputDir.absoluteFilePath(path)), ctx->outputDir.absoluteFilePath(dest), ctx, isPlugin);
 	return true;
 }
 
