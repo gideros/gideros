@@ -2,6 +2,7 @@
 #define PROJECTPROPERTIESDIALOG_H
 
 #include <QDialog>
+#include <QLabel>
 
 struct ProjectProperties;
 
@@ -21,11 +22,19 @@ private slots:
 	void onAccepted();
 	void add();
 	void remove();
+    void addAppIcon();
+    void addTvIcon();
+    void addSplashImage();
+    void showImage(QString fileName, QLabel* label);
+    void loadImages();
 
 
 private:
     Ui::ProjectPropertiesDialog *ui;
 	ProjectProperties* properties_;
+    QString app_icon;
+    QString tv_icon;
+    QString splash_image;
 };
 
 #endif // PROJECTPROPERTIESDIALOG_H
