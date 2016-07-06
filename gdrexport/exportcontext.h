@@ -62,6 +62,9 @@ struct ExportContext
     QStringList luafiles_abs;
     //Icons
     QImage *appicon;
+    QImage *tvicon;
+    QImage *splashhimage;
+    QImage *splashvimage;
 };
 
 
