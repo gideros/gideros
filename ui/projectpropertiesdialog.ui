@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -808,7 +808,7 @@ portrait or landscape.</string>
      </widget>
      <widget class="QWidget" name="tab_4">
       <attribute name="title">
-       <string>Graphics</string>
+       <string>Assets</string>
       </attribute>
       <widget class="QWidget" name="verticalLayoutWidget">
        <property name="geometry">
@@ -835,9 +835,16 @@ portrait or landscape.</string>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="splashImage">
+         <widget class="QPushButton" name="splashHImage">
           <property name="text">
-           <string>Change Splash</string>
+           <string>Horizontal Splash</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="splashVImage">
+          <property name="text">
+           <string>Vertical Splash</string>
           </property>
          </widget>
         </item>
@@ -881,7 +888,7 @@ portrait or landscape.</string>
         <item>
          <widget class="QLabel" name="tvIconLabel">
           <property name="text">
-           <string>TextLabel</string>
+           <string>Selected TV icon</string>
           </property>
           <property name="scaledContents">
            <bool>false</bool>
@@ -892,12 +899,22 @@ portrait or landscape.</string>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="splashImageLabel">
+         <widget class="QLabel" name="splashHImageLabel">
           <property name="text">
-           <string>Selected splash image</string>
+           <string>Selected horizontal splash image</string>
           </property>
           <property name="scaledContents">
            <bool>false</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="splashVImageLabel">
+          <property name="text">
+           <string>Selected vertical spalsh image</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>

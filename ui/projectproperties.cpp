@@ -55,7 +55,8 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
     properties.setAttribute("encryptAssets", this->encryptAssets);
     properties.setAttribute("app_icon", this->app_icon);
     properties.setAttribute("tv_icon", this->tv_icon);
-    properties.setAttribute("splash_image", this->splash_image);
+    properties.setAttribute("splash_h_image", this->splash_h_image);
+    properties.setAttribute("splash_v_image", this->splash_v_image);
 
     //Plugins
 	QDomElement plugins = doc.createElement("plugins");
@@ -180,8 +181,10 @@ void ProjectProperties::loadXml(QDomElement properties)
             this->app_icon = properties.attribute("app_icon");
         if (!properties.attribute("tv_icon").isEmpty())
             this->tv_icon = properties.attribute("tv_icon");
-        if (!properties.attribute("splash_image").isEmpty())
-            this->splash_image = properties.attribute("splash_image");
+        if (!properties.attribute("splash_h_image").isEmpty())
+            this->splash_h_image = properties.attribute("splash_h_image");
+        if (!properties.attribute("splash_v_image").isEmpty())
+            this->splash_v_image = properties.attribute("splash_v_image");
 
         //Plugins
         this->plugins.clear();

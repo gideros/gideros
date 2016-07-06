@@ -71,7 +71,8 @@ struct ProjectProperties
         encryptAssets = false;
         app_icon="";
         tv_icon="";
-        splash_image="";
+        splash_h_image="";
+        splash_v_image="";
         plugins.clear();
         exports.clear();
     }
@@ -116,7 +117,8 @@ struct ProjectProperties
     int html5_mem;
     QString app_icon;
     QString tv_icon;
-    QString splash_image;
+    QString splash_h_image;
+    QString splash_v_image;
     QSet<Plugin> plugins;
     QSet<Export> exports;
     bool encryptCode;

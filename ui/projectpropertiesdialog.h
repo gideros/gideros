@@ -24,7 +24,8 @@ private slots:
 	void remove();
     void addAppIcon();
     void addTvIcon();
-    void addSplashImage();
+    void addSplashHImage();
+    void addSplashVImage();
     void showImage(QString fileName, QLabel* label);
     void loadImages();
 
@@ -34,7 +35,8 @@ private:
 	ProjectProperties* properties_;
     QString app_icon;
     QString tv_icon;
-    QString splash_image;
+    QString splash_h_image;
+    QString splash_v_image;
 };
 
 #endif // PROJECTPROPERTIESDIALOG_H
