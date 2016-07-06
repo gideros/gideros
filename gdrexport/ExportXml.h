@@ -32,6 +32,7 @@ class ExportXml {
 	bool RuleSet(QString key,QString val);
     bool RuleTemplate(QString name,QString path,QString dest,QDomElement rule);
 	bool RuleAppIcon(int width,int height,QString dst);
+	QString XmlAttributeOrElement(QDomElement elm,QString name);
 	ExportContext *ctx;
 public:
 	ExportXml(QString xmlFile,bool isPlugin=false);
