@@ -350,6 +350,11 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ExportCommon::appIcon(ctx,170,170,QString("giderosgame/giderosgame.WindowsPhone/Assets/Square71x71Logo.scale-240.png"));
         ExportCommon::appIcon(ctx,50,50,QString("giderosgame/giderosgame.WindowsPhone/Assets/StoreLogo.scale-100.png"));
         ExportCommon::appIcon(ctx,120,120,QString("giderosgame/giderosgame.WindowsPhone/Assets/StoreLogo.scale-240.png"));
+
+        ExportCommon::splashHImage(ctx,620,300,QString("giderosgame/giderosgame.Windows/Assets/SplashScreen.scale-100.png"));
+        ExportCommon::splashVImage(ctx,480,800,QString("giderosgame/giderosgame.WindowsPhone/Assets/SplashScreen.scale-100.png"));
+        ExportCommon::splashVImage(ctx,1152,1920,QString("giderosgame/giderosgame.WindowsPhone/Assets/SplashScreen.scale-240.png"));
+        ExportCommon::splashHImage(ctx,744,360,QString("giderosgame/giderosgame.WindowsPhone/Assets/WideLogo.scale-240.png"));
    }
    else if(ctx->deviceFamily == e_iOS){
         ExportCommon::appIcon(ctx,29,29,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon29x29.png"));
@@ -371,9 +376,9 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    }
 
 #ifdef Q_OS_MACX
-   if(ctx->deviceFamily == e_MacOSXDesktop){
-   	MacOSXExport::CodeSignMacOSX(ctx);
-   }
+    if(ctx->deviceFamily == e_MacOSXDesktop){
+        MacOSXExport::CodeSignMacOSX(ctx);
+    }
 #endif
 
 }
