@@ -63,8 +63,8 @@ struct ExportContext
     //Icons
     QImage *appicon;
     QImage *tvicon;
-    QImage *splashhimage;
-    QImage *splashvimage;
+    QImage *splash_h_image;
+    QImage *splash_v_image;
 };
 
 

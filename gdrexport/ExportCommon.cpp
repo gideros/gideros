@@ -54,7 +54,7 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest, Expo
 }
 
 bool ExportCommon::appIcon(ExportContext *ctx, int width, int height, QString output) {
-	if (ctx->appicon == NULL) {
+    if (ctx->appicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.app_icon.isEmpty())
 			return true;
@@ -68,12 +68,12 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height, QString ou
 			}
 		}
 		QString src = path.absoluteFilePath(appicon);
-		ctx->appicon = new QImage(src);
-		if (ctx->appicon->isNull())
+        ctx->appicon = new QImage(src);
+        if (ctx->appicon->isNull())
 			fprintf(stderr, "App icon %s not found or not readable\n",
 				src.toStdString().c_str());
 	}
-	if (ctx->appicon->isNull())
+    if (ctx->appicon->isNull())
 		return false;
 	exportInfo("Generating app icon (%dx%d)\n",width,height);
     ctx->appicon->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
@@ -98,69 +98,68 @@ bool ExportCommon::tvIcon(ExportContext *ctx, int width, int height, QString out
         QString src = path.absoluteFilePath(tvicon);
         ctx->tvicon = new QImage(src);
         if (ctx->tvicon->isNull())
-            fprintf(stderr, "App icon %s not found or not readable\n",
+            fprintf(stderr, "TV icon %s not found or not readable\n",
                 src.toStdString().c_str());
     }
     if (ctx->tvicon->isNull())
         return false;
-    exportInfo("Generating app icon (%dx%d)\n",width,height);
-    ctx->tvicon->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
-            ctx->outputDir.absoluteFilePath(output), "png", 100);
+    exportInfo("Generating TV icon (%dx%d)\n",width,height);
+    ctx->tvicon->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(ctx->outputDir.absoluteFilePath(output), "png", 100);
     return true;
 }
 
 bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height, QString output) {
-    if (ctx->splashhimage == NULL) {
+    if (ctx->splash_h_image == NULL) {
         QDir path(QFileInfo(ctx->projectFileName_).path());
         if (ctx->properties.splash_h_image.isEmpty())
             return true;
-        QString splashhimage = ctx->properties.splash_h_image;
+        QString appicon = ctx->properties.splash_h_image;
         for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
             const QString& s1 = ctx->fileQueue[i].first;
             const QString& s2 = ctx->fileQueue[i].second;
-            if (s1 == splashhimage) {
-                splashhimage = s2;
+            if (s1 == appicon) {
+                appicon = s2;
                 break;
             }
         }
-        QString src = path.absoluteFilePath(splashhimage);
-        ctx->splashhimage = new QImage(src);
-        if (ctx->splashhimage->isNull())
-            fprintf(stderr, "App icon %s not found or not readable\n",
+        QString src = path.absoluteFilePath(appicon);
+        ctx->splash_h_image = new QImage(src);
+        if (ctx->splash_h_image->isNull())
+            fprintf(stderr, "Splash horizontal %s not found or not readable\n",
                 src.toStdString().c_str());
     }
-    if (ctx->splashhimage->isNull())
+    if (ctx->splash_h_image->isNull())
         return false;
-    exportInfo("Generating app icon (%dx%d)\n",width,height);
-    ctx->splashhimage->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
+    exportInfo("Generating splash horizontal (%dx%d)\n",width,height);
+    ctx->splash_h_image->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
             ctx->outputDir.absoluteFilePath(output), "png", 100);
     return true;
 }
 
 bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height, QString output) {
-    if (ctx->splashvimage == NULL) {
+    if (ctx->splash_v_image == NULL) {
         QDir path(QFileInfo(ctx->projectFileName_).path());
         if (ctx->properties.splash_v_image.isEmpty())
             return true;
-        QString splashvimage = ctx->properties.splash_v_image;
+        QString appicon = ctx->properties.splash_v_image;
         for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
             const QString& s1 = ctx->fileQueue[i].first;
             const QString& s2 = ctx->fileQueue[i].second;
-            if (s1 == splashvimage) {
-                splashvimage = s2;
+            if (s1 == appicon) {
+                appicon = s2;
                 break;
             }
         }
-        QString src = path.absoluteFilePath(splashvimage);
-        ctx->splashvimage = new QImage(src);
-        if (ctx->splashvimage->isNull())
-            fprintf(stderr, "App icon %s not found or not readable\n",
+        QString src = path.absoluteFilePath(appicon);
+        ctx->splash_v_image = new QImage(src);
+        if (ctx->splash_v_image->isNull())
+            fprintf(stderr, "Splash vertical %s not found or not readable\n",
                 src.toStdString().c_str());
     }
-    if (ctx->splashvimage->isNull())
+    if (ctx->splash_v_image->isNull())
         return false;
-    exportInfo("Generating app icon (%dx%d)\n",width,height);
-    ctx->splashvimage->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
+    exportInfo("Generating splash vertical (%dx%d)\n",width,height);
+    ctx->splash_v_image->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
             ctx->outputDir.absoluteFilePath(output), "png", 100);
     return true;
 }
