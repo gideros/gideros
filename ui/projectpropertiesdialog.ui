@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -235,7 +235,7 @@ portrait or landscape.</string>
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout">
+            <layout class="QHBoxLayout" name="horizontalLayout1">
              <item>
               <widget class="QLineEdit" name="windowWidth">
                <property name="sizePolicy">
@@ -259,7 +259,7 @@ portrait or landscape.</string>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_2">
+              <widget class="QLabel" name="label_21">
                <property name="text">
                 <string>x</string>
                </property>
@@ -288,14 +288,14 @@ portrait or landscape.</string>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_3">
+              <widget class="QLabel" name="label_31">
                <property name="text">
                 <string>px (0 = auto) </string>
                </property>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer">
+              <spacer name="horizontalSpacer1">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -607,7 +607,7 @@ portrait or landscape.</string>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_9">
+            <widget class="QLabel" name="label_91">
              <property name="toolTip">
               <string>Defines the integer version for Android.</string>
              </property>
@@ -631,7 +631,7 @@ each mode.</string>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_9">
+            <widget class="QLabel" name="label_92">
              <property name="toolTip">
               <string>Defines the default screen orientation, which is either 
 portrait or landscape.</string>
@@ -646,7 +646,7 @@ portrait or landscape.</string>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <layout class="QHBoxLayout" name="horizontalLayout_61">
              <item>
               <widget class="QLineEdit" name="version">
                <property name="text">
@@ -655,7 +655,7 @@ portrait or landscape.</string>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_6">
+              <spacer name="horizontalSpacer_61">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -670,7 +670,7 @@ portrait or landscape.</string>
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <layout class="QHBoxLayout" name="horizontalLayout_62">
              <item>
               <widget class="QLineEdit" name="version_code">
                <property name="text">
@@ -679,7 +679,7 @@ portrait or landscape.</string>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_6">
+              <spacer name="horizontalSpacer_62">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>

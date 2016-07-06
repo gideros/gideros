@@ -100,17 +100,17 @@ target platform to export the application source.</string>
    <item>
     <widget class="QTabWidget" name="architectureTab">
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>iOS</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+      <layout class="QVBoxLayout" name="verticalLayout_51">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_31">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label1">
            <property name="text">
             <string>Bundle ID:   </string>
            </property>
@@ -126,7 +126,7 @@ target platform to export the application source.</string>
         </layout>
        </item>
        <item>
-        <spacer name="verticalSpacer">
+        <spacer name="verticalSpacer2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -146,9 +146,9 @@ target platform to export the application source.</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_33">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label2">
            <property name="toolTip">
             <string>Defines the package name of the Android application.
 
@@ -185,9 +185,9 @@ Example: com.giderosmobile.timthetimber</string>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_39">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label3_3">
            <property name="toolTip">
             <string>Defines the package name of the Android application.
 
@@ -229,11 +229,11 @@ Example: com.giderosmobile.timthetimber</string>
       <attribute name="title">
        <string>Windows Desktop</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+      <layout class="QVBoxLayout" name="verticalLayout_52">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_40">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label4_2">
            <property name="text">
             <string>Organization:</string>
            </property>
@@ -251,7 +251,7 @@ Example: com.giderosmobile.timthetimber</string>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label5_2">
            <property name="text">
             <string>Domain:       </string>
            </property>
@@ -267,7 +267,7 @@ Example: com.giderosmobile.timthetimber</string>
         </layout>
        </item>
        <item>
-        <spacer name="verticalSpacer1">
+        <spacer name="verticalSpacer11">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -287,7 +287,7 @@ Example: com.giderosmobile.timthetimber</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_38">
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
@@ -305,9 +305,9 @@ Example: com.giderosmobile.timthetimber</string>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_36">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label5">
            <property name="text">
             <string>Domain:        </string>
            </property>
@@ -323,9 +323,9 @@ Example: com.giderosmobile.timthetimber</string>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_37">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label6">
            <property name="text">
             <string>Bundle ID:      </string>
            </property>
@@ -343,7 +343,7 @@ Example: com.giderosmobile.timthetimber</string>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_32">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label3_2">
            <property name="text">
             <string>App Category:</string>
            </property>
@@ -386,9 +386,9 @@ Example: com.giderosmobile.timthetimber</string>
       <attribute name="title">
        <string>WinRT</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_6">
+      <layout class="QVBoxLayout" name="verticalLayout_61">
        <item>
-        <widget class="QLabel" name="label_6">
+        <widget class="QLabel" name="label_61">
          <property name="text">
           <string>
 Use this to create Windows Phone and Windows Store apps (&quot;Metro Style&quot; apps)
@@ -401,9 +401,9 @@ A universal solution is created containing a Windows Phone and Windows Store pro
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_35">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label4">
            <property name="text">
             <string>Package Name:</string>
            </property>
@@ -419,9 +419,9 @@ A universal solution is created containing a Windows Phone and Windows Store pro
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_34">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="label3">
            <property name="text">
             <string>Organization:   </string>
            </property>
@@ -437,7 +437,7 @@ A universal solution is created containing a Windows Phone and Windows Store pro
         </layout>
        </item>
        <item>
-        <spacer name="verticalSpacer1">
+        <spacer name="verticalSpacer12">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -494,7 +494,7 @@ Beta version. Should be feature complete but use with caution!
 
 This is the same as Windows Desktop export except it produces a lightweight export without Qt libraries. The package is smaller and may run smoother. 
 
-The exported program will attempt to use VSYNC to time the drawing of frames (30 or 60 fps, whichever you have selected). If VSYNC (which is graphics card dependent) is not detected on the PC, it will fall back to Windows timer events. To overide this behaviour, and ALWAYS uses timer events, launch with "win32 timer"
+The exported program will attempt to use VSYNC to time the drawing of frames (30 or 60 fps, whichever you have selected). If VSYNC (which is graphics card dependent) is not detected on the PC, it will fall back to Windows timer events. To overide this behaviour, and ALWAYS uses timer events, launch with &quot;win32 timer&quot;
 
 win32.exe and win32console.exe in export are identical except the latter runs without a console window popping up.
 
@@ -506,7 +506,7 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
         </widget>
        </item>
        <item>
-        <spacer name="verticalSpacer1">
+        <spacer name="verticalSpacer12_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
