@@ -53,6 +53,48 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest, Expo
 	ctx->replaceList.clear();
 }
 
+void ExportCommon::resizeImage(QImage *image, int width, int height, QString output, int quality){
+    int iwidth = image->width(); //image width
+    int iheight = image->height(); //image height
+    int rwidth = width; //resampled width
+    int rheight = height; //resampled height
+
+    int k_w = abs(1-width/iwidth); //width scaling coef
+    int k_h = abs(1-height/iheight); //height scaling koef
+    int dst_x = 0;
+    int dst_y = 0;
+
+    if(iwidth < width && iheight >= height){
+        rheight = round((iheight * width) / iwidth);
+    }
+    else if(iwidth >= width && iheight < height){
+        rwidth = round((iwidth * height) / iheight);
+    }
+    else{
+        //use smallest
+        if(k_h < k_w){
+            rwidth = round((iwidth * height) / iheight);
+        }
+        else{
+            rheight = round((iheight * width) / iwidth);
+        }
+    }
+
+    //new width is bigger than existing
+    if(rwidth > width){
+            dst_x = (rwidth - width) / 2;
+    }
+
+    //new height is bigger than existing
+    if(rheight > height){
+        dst_y = (rheight - height) / 2;
+    }
+
+    image->scaled(rwidth, rheight, Qt::KeepAspectRatio, Qt::SmoothTransformation)
+            .copy(dst_x, dst_y, width, height)
+            .save(output, "png", quality);
+}
+
 bool ExportCommon::appIcon(ExportContext *ctx, int width, int height, QString output) {
     if (ctx->appicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
@@ -76,8 +118,7 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height, QString ou
     if (ctx->appicon->isNull())
 		return false;
 	exportInfo("Generating app icon (%dx%d)\n",width,height);
-    ctx->appicon->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
-            ctx->outputDir.absoluteFilePath(output), "png", 100);
+    resizeImage(ctx->appicon, width, height, ctx->outputDir.absoluteFilePath(output), 100);
 	return true;
 }
 
@@ -104,7 +145,7 @@ bool ExportCommon::tvIcon(ExportContext *ctx, int width, int height, QString out
     if (ctx->tvicon->isNull())
         return false;
     exportInfo("Generating TV icon (%dx%d)\n",width,height);
-    ctx->tvicon->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(ctx->outputDir.absoluteFilePath(output), "png", 100);
+    resizeImage(ctx->tvicon, width, height, ctx->outputDir.absoluteFilePath(output), 100);
     return true;
 }
 
@@ -131,8 +172,7 @@ bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height, QStri
     if (ctx->splash_h_image->isNull())
         return false;
     exportInfo("Generating splash horizontal (%dx%d)\n",width,height);
-    ctx->splash_h_image->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
-            ctx->outputDir.absoluteFilePath(output), "png", 100);
+    resizeImage(ctx->splash_h_image, width, height, ctx->outputDir.absoluteFilePath(output),-1);
     return true;
 }
 
@@ -159,8 +199,7 @@ bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height, QStri
     if (ctx->splash_v_image->isNull())
         return false;
     exportInfo("Generating splash vertical (%dx%d)\n",width,height);
-    ctx->splash_v_image->scaled(width, height, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(
-            ctx->outputDir.absoluteFilePath(output), "png", 100);
+    resizeImage(ctx->splash_v_image, width, height, ctx->outputDir.absoluteFilePath(output),-1);
     return true;
 }
 

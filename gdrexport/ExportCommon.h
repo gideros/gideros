@@ -19,6 +19,7 @@ public:
 	static void exportLuafilesTxt(ExportContext *ctx);
 	static void exportAllfilesTxt(ExportContext *ctx);
 	static bool applyPlugins(ExportContext *ctx);
+    static void resizeImage(QImage *image, int width, int height, QString output, int quality = -1);
 	static bool appIcon(ExportContext *ctx,int width,int height,QString output);
     static bool tvIcon(ExportContext *ctx, int width, int height, QString output);
     static bool splashHImage(ExportContext *ctx, int width, int height, QString output);
