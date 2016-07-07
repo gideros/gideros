@@ -235,7 +235,7 @@ bool ExportXml::ProcessRule(QDomElement rule) {
                 ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashHorizontal);
     }
 	else
-		fprintf(stderr, "Rule %s unknown\n", ruleName.toStdString().c_str());
+		ExportCommon::exportInfo("Rule %s unknown\n", ruleName.toStdString().c_str());
 	return false;
 }
 
@@ -244,7 +244,7 @@ QString ExportXml::ComputeUnary(QString op, QString arg) {
 		return QString::number(~arg.toInt());
 	else if (op == "not")
 		return QString::number(!arg.toInt());
-	fprintf(stderr, "Operator '%s' unknown\n", op.toStdString().c_str());
+	ExportCommon::exportInfo("Operator '%s' unknown\n", op.toStdString().c_str());
 	return "";
 }
 
@@ -281,7 +281,7 @@ QString ExportXml::ComputeOperator(QString op, QString arg1, QString arg2) {
 		return QString::number(arg1.toInt() || arg2.toInt());
 	else if (op == "bxor")
 		return QString::number(arg1.toInt() ^ arg2.toInt());
-	fprintf(stderr, "Operator '%s' unknown\n", op.toStdString().c_str());
+	ExportCommon::exportInfo("Operator '%s' unknown\n", op.toStdString().c_str());
 	return "";
 }
 
@@ -302,7 +302,7 @@ QString ExportXml::ReplaceAttributes(QString text) {
 		else if (ac == 3)
 			rep = ComputeOperator(args[0], args[1], args[2]);
 		text = text.replace(spos, epos + 3 - spos, rep);
-		fprintf(stderr, "Replaced %s by %s @%d\n", key.toStdString().c_str(),
+		ExportCommon::exportInfo("Replaced %s by %s @%d\n", key.toStdString().c_str(),
 				rep.toStdString().c_str(), spos);
 	}
 	return text;
@@ -316,20 +316,20 @@ bool ExportXml::RuleExec(QString cmd, QDomElement rule) {
 			env.insert(rl.attribute("key"),
 					ReplaceAttributes(rl.attribute("value")));
 	}
-	fprintf(stderr, "Exec: %s into %s\n", cmd.toStdString().c_str(),
+	ExportCommon::exportInfo("Exec: %s into %s\n", cmd.toStdString().c_str(),
 			ctx->outputDir.path().toStdString().c_str());
 	int err = Utilities::processOutput(cmd, ctx->outputDir.path(), env);
-	fprintf(stderr, "Exec returned: %d\n", err);
+	ExportCommon::exportInfo("Exec returned: %d\n", err);
 	return (err == 0);
 }
 
 bool ExportXml::RuleMkdir(QString cmd) {
-	fprintf(stderr, "MkDir: %s\n", cmd.toStdString().c_str());
+	ExportCommon::exportInfo("MkDir: %s\n", cmd.toStdString().c_str());
 	return ctx->outputDir.mkpath(cmd);
 }
 
 bool ExportXml::RuleRmdir(QString cmd) {
-	fprintf(stderr, "RmDir: %s\n", cmd.toStdString().c_str());
+	ExportCommon::exportInfo("RmDir: %s\n", cmd.toStdString().c_str());
 	QDir remdir = ctx->outputDir;
 	if (!remdir.exists(cmd))
 		return true;
@@ -341,18 +341,18 @@ bool ExportXml::RuleRmdir(QString cmd) {
 }
 
 bool ExportXml::RuleCd(QString cmd) {
-	fprintf(stderr, "Cd: %s\n", cmd.toStdString().c_str());
+	ExportCommon::exportInfo("Cd: %s\n", cmd.toStdString().c_str());
 	return ctx->outputDir.cd(cmd);
 }
 
 bool ExportXml::RuleRm(QString cmd) {
-	fprintf(stderr, "Rm: %s\n", cmd.toStdString().c_str());
+	ExportCommon::exportInfo("Rm: %s\n", cmd.toStdString().c_str());
 	ctx->outputDir.remove(cmd);
 	return !ctx->outputDir.exists(cmd);
 }
 
 bool ExportXml::RuleCp(QString src, QString dst) {
-	fprintf(stderr, "Cp: %s -> %s\n", src.toStdString().c_str(),
+	ExportCommon::exportInfo("Cp: %s -> %s\n", src.toStdString().c_str(),
 			dst.toStdString().c_str());
 	ctx->outputDir.remove(dst);
 	return QFile::copy(ctx->outputDir.absoluteFilePath(src),
@@ -360,20 +360,20 @@ bool ExportXml::RuleCp(QString src, QString dst) {
 }
 
 bool ExportXml::RuleMv(QString src, QString dst) {
-	fprintf(stderr, "Mv: %s -> %s\n", src.toStdString().c_str(),
+	ExportCommon::exportInfo("Mv: %s -> %s\n", src.toStdString().c_str(),
 			dst.toStdString().c_str());
 	return ctx->outputDir.rename(src, dst);
 }
 
 bool ExportXml::RuleIf(QString cond, QDomElement rule) {
-	fprintf(stderr, "If: %s\n", cond.toStdString().c_str());
+	ExportCommon::exportInfo("If: %s\n", cond.toStdString().c_str());
 	if (cond.toInt())
 		return ProcessRules(rule);
 	return true;
 }
 
 bool ExportXml::RuleSet(QString key, QString val) {
-	fprintf(stderr, "Set: %s -> %s\n", key.toStdString().c_str(),
+	ExportCommon::exportInfo("Set: %s -> %s\n", key.toStdString().c_str(),
 			val.toStdString().c_str());
 	props[key] = val;
 	return true;
@@ -441,7 +441,7 @@ bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomEleme
 
 	ctx->templatename = name;
     ctx->templatenamews = Utilities::RemoveSpaces(name, false); //TODO underscores or not ?
-    fprintf(stderr, "Template: %s from [%s] to [%s]\n", name.toStdString().c_str(),
+    ExportCommon::exportInfo("Template: %s from [%s] to [%s]\n", name.toStdString().c_str(),
             path.toStdString().c_str(), dest.toStdString().c_str());
 	ExportCommon::copyTemplate(
 			QDir::current().relativeFilePath(
@@ -450,7 +450,7 @@ bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomEleme
 }
 
 bool ExportXml::RuleImage(int width, int height, QString dst, ImageTypes type) {
-    fprintf(stderr, "%s: %dx%d %s\n", type, width, height,
+	ExportCommon::exportInfo("Image(Type %d): %dx%d %s\n", type, width, height,
 			dst.toStdString().c_str());
     if(type == e_appIcon)
         return ExportCommon::appIcon(ctx, width, height, dst);
