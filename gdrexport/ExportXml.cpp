@@ -178,6 +178,8 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 	else if (ruleName == "set")
 		return RuleSet(ReplaceAttributes(rule.attribute("key")),
 				ReplaceAttributes(rule.attribute("value")));
+	else if (ruleName == "ask")
+		return RuleAsk(rule);
 	else if (ruleName == "if")
 		return RuleIf(ReplaceAttributes(rule.attribute("condition")), rule);
 	else if (ruleName == "cp")
@@ -235,7 +237,7 @@ bool ExportXml::ProcessRule(QDomElement rule) {
                 ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashHorizontal);
     }
 	else
-		ExportCommon::exportInfo("Rule %s unknown\n", ruleName.toStdString().c_str());
+		ExportCommon::exportError("Rule %s unknown\n", ruleName.toStdString().c_str());
 	return false;
 }
 
@@ -244,7 +246,7 @@ QString ExportXml::ComputeUnary(QString op, QString arg) {
 		return QString::number(~arg.toInt());
 	else if (op == "not")
 		return QString::number(!arg.toInt());
-	ExportCommon::exportInfo("Operator '%s' unknown\n", op.toStdString().c_str());
+	ExportCommon::exportError("Operator '%s' unknown\n", op.toStdString().c_str());
 	return "";
 }
 
@@ -281,7 +283,7 @@ QString ExportXml::ComputeOperator(QString op, QString arg1, QString arg2) {
 		return QString::number(arg1.toInt() || arg2.toInt());
 	else if (op == "bxor")
 		return QString::number(arg1.toInt() ^ arg2.toInt());
-	ExportCommon::exportInfo("Operator '%s' unknown\n", op.toStdString().c_str());
+	ExportCommon::exportError("Operator '%s' unknown\n", op.toStdString().c_str());
 	return "";
 }
 
@@ -318,7 +320,7 @@ bool ExportXml::RuleExec(QString cmd, QDomElement rule) {
 	}
 	ExportCommon::exportInfo("Exec: %s into %s\n", cmd.toStdString().c_str(),
 			ctx->outputDir.path().toStdString().c_str());
-	int err = Utilities::processOutput(cmd, ctx->outputDir.path(), env);
+	int err = Utilities::processOutput(cmd, ctx->outputDir.path(), env,false);
 	ExportCommon::exportInfo("Exec returned: %d\n", err);
 	return (err == 0);
 }
@@ -374,6 +376,20 @@ bool ExportXml::RuleIf(QString cond, QDomElement rule) {
 
 bool ExportXml::RuleSet(QString key, QString val) {
 	ExportCommon::exportInfo("Set: %s -> %s\n", key.toStdString().c_str(),
+			val.toStdString().c_str());
+	props[key] = val;
+	return true;
+}
+
+bool ExportXml::RuleAsk(QDomElement rule) {
+	QString key=XmlAttributeOrElement(rule,"key");
+	QString title=ReplaceAttributes(XmlAttributeOrElement(rule,"title"));
+	QString question=ReplaceAttributes(XmlAttributeOrElement(rule,"question"));
+	QString def=ReplaceAttributes(XmlAttributeOrElement(rule,"default"));
+	char *ret=ExportCommon::askString(title.toUtf8().data(),question.toUtf8().data(),def.toUtf8().data());
+	QString val=QString::fromUtf8(ret);
+	free(ret);
+	ExportCommon::exportInfo("Ask: %s -> %s\n", key.toStdString().c_str(),
 			val.toStdString().c_str());
 	props[key] = val;
 	return true;
@@ -460,4 +476,5 @@ bool ExportXml::RuleImage(int width, int height, QString dst, ImageTypes type) {
         return ExportCommon::splashVImage(ctx, width, height, dst);
     else if(type == e_splashHorizontal)
         return ExportCommon::splashHImage(ctx, width, height, dst);
+    return false;
 }

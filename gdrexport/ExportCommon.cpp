@@ -388,6 +388,15 @@ void ExportCommon::exportInfo(const char *fmt,...)
 	fflush(stdout);
 }
 
+void ExportCommon::exportError(const char *fmt,...)
+{
+	va_list va;
+	va_start(va,fmt);
+	vfprintf(stderr,fmt,va);
+	va_end(va);
+	fflush(stderr);
+}
+
 int ExportCommon::progressMax=0;
 int ExportCommon::progressCur=0;
 
@@ -403,3 +412,13 @@ void ExportCommon::progressStep(const char *title)
 	exportInfo(":%d:%d:%s\n",progressMax,progressCur,title);
 }
 
+char *ExportCommon::askString(const char *title, const char *question, const char *def)
+{
+	exportInfo("?:?S%s|%s|%s\n",title,question,def);
+	char str[512];
+	fgets(str, 511, stdin);
+	int i = strlen(str)-1;
+    if (str[i] == '\n')
+    	str[i] = '\0';
+    return strdup(str);
+}

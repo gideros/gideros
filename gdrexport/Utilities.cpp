@@ -228,30 +228,28 @@ void Utilities::copyFolder(	const QDir& sourceDir,
     }
 }
 
-int Utilities::processOutput(QString command, QString dir, QProcessEnvironment env){
+int Utilities::processOutput(QString command, QString dir, QProcessEnvironment env, bool cmdlog){
     QProcess process;
     if (!dir.isEmpty())
     	process.setWorkingDirectory(dir);
     process.setProcessEnvironment(env);
     process.start(command);
-    process.waitForFinished();
-    bool commandOut = false;
-    QString output = process.readAllStandardError();
+    process.waitForFinished(-1);
+    bool commandOut = !cmdlog;
+    QString output = process.readAllStandardOutput();
     if(output.length() > 0){
-        commandOut = true;
-        fprintf(stderr, command.toStdString().c_str());
-        fprintf(stderr, "\n");
-        fprintf(stderr, output.toStdString().c_str());
-        fprintf(stderr, "\n");
+        if (!commandOut)
+        {
+        	ExportCommon::exportInfo("%s\n",command.toStdString().c_str());
+        	commandOut = true;
+        }
+    	ExportCommon::exportInfo("%s\n",output.toStdString().c_str());
     }
     QString error = process.readAllStandardError();
     if(error.length() > 0){
-        if(!commandOut){
-            fprintf(stderr, command.toStdString().c_str());
-            fprintf(stderr, "\n");
-        }
-        fprintf(stderr, error.toStdString().c_str());
-        fprintf(stderr, "\n");
+        if(!commandOut)
+        	ExportCommon::exportInfo("%s\n",command.toStdString().c_str());
+    	ExportCommon::exportError("%s\n",error.toStdString().c_str());
     }
     return (process.exitStatus()==QProcess::NormalExit)?process.exitCode():-1;
 }

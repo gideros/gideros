@@ -24,6 +24,8 @@ public:
     static bool splashHImage(ExportContext *ctx, int width, int height, QString output);
     static bool splashVImage(ExportContext *ctx, int width, int height, QString output);
 	static void exportInfo(const char *fmt,...);
+	static void exportError(const char *fmt,...);
+	static char *askString(const char *title, const char *question, const char *def);
 	static void progressSteps(int steps);
 	static void progressStep(const char *title);
 };
