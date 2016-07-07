@@ -11,6 +11,15 @@
 #include "exportcontext.h"
 #include <QMap>
 
+enum ImageTypes
+{
+  e_noImage,
+  e_appIcon,
+  e_tvIcon,
+  e_splashVertical,
+  e_splashHorizontal
+};
+
 class ExportXml {
 	bool isPlugin;
 	QString xmlFile;
@@ -31,7 +40,7 @@ class ExportXml {
 	bool RuleIf(QString cond,QDomElement rule);
 	bool RuleSet(QString key,QString val);
     bool RuleTemplate(QString name,QString path,QString dest,QDomElement rule);
-	bool RuleAppIcon(int width,int height,QString dst);
+    bool RuleImage(int width,int height,QString dst, ImageTypes type);
 	QString XmlAttributeOrElement(QDomElement elm,QString name);
 	ExportContext *ctx;
 public:

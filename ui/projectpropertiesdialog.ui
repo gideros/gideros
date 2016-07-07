@@ -235,7 +235,7 @@ portrait or landscape.</string>
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout">
+            <layout class="QHBoxLayout" name="horizontalLayout1">
              <item>
               <widget class="QLineEdit" name="windowWidth">
                <property name="sizePolicy">
@@ -259,7 +259,7 @@ portrait or landscape.</string>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_2">
+              <widget class="QLabel" name="label_21">
                <property name="text">
                 <string>x</string>
                </property>
@@ -288,14 +288,14 @@ portrait or landscape.</string>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="label_3">
+              <widget class="QLabel" name="label_31">
                <property name="text">
                 <string>px (0 = auto) </string>
                </property>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer">
+              <spacer name="horizontalSpacer1">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -607,7 +607,7 @@ portrait or landscape.</string>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_9">
+            <widget class="QLabel" name="label_91">
              <property name="toolTip">
               <string>Defines the integer version for Android.</string>
              </property>
@@ -631,7 +631,7 @@ each mode.</string>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_9">
+            <widget class="QLabel" name="label_92">
              <property name="toolTip">
               <string>Defines the default screen orientation, which is either 
 portrait or landscape.</string>
@@ -646,7 +646,7 @@ portrait or landscape.</string>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <layout class="QHBoxLayout" name="horizontalLayout_61">
              <item>
               <widget class="QLineEdit" name="version">
                <property name="text">
@@ -655,7 +655,7 @@ portrait or landscape.</string>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_6">
+              <spacer name="horizontalSpacer_61">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -670,7 +670,7 @@ portrait or landscape.</string>
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <layout class="QHBoxLayout" name="horizontalLayout_62">
              <item>
               <widget class="QLineEdit" name="version_code">
                <property name="text">
@@ -679,7 +679,7 @@ portrait or landscape.</string>
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_6">
+              <spacer name="horizontalSpacer_62">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -805,6 +805,124 @@ portrait or landscape.</string>
         </spacer>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>Assets</string>
+      </attribute>
+      <widget class="QWidget" name="verticalLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>0</y>
+         <width>121</width>
+         <height>351</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_11">
+        <item>
+         <widget class="QPushButton" name="appIcon">
+          <property name="text">
+           <string>Change App Icon</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="tvIcon">
+          <property name="text">
+           <string>Change TV Icon</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="splashHImage">
+          <property name="text">
+           <string>Horizontal Splash</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="splashVImage">
+          <property name="text">
+           <string>Vertical Splash</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="verticalLayoutWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>10</y>
+         <width>231</width>
+         <height>331</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_12">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="appIconLabel">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::RightToLeft</enum>
+          </property>
+          <property name="text">
+           <string>Selected app icon</string>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="tvIconLabel">
+          <property name="text">
+           <string>Selected TV icon</string>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="splashHImageLabel">
+          <property name="text">
+           <string>Selected horizontal splash image</string>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="splashVImageLabel">
+          <property name="text">
+           <string>Selected vertical spalsh image</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </widget>
    </item>

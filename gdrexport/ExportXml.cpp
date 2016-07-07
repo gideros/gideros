@@ -215,10 +215,25 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 	} else if (ruleName == "applyPlugins") {
 		ExportCommon::applyPlugins(ctx);
 		return true;
-	} else if (ruleName == "appIcon")
-		return RuleAppIcon(rule.attribute("width").toInt(),
+    } else if (ruleName == "appIcon"){
+        return RuleImage(rule.attribute("width").toInt(),
 				rule.attribute("height").toInt(),
-				ReplaceAttributes(rule.attribute("dest")).trimmed());
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_appIcon);
+    } else if (ruleName == "tvIcon"){
+        return RuleImage(rule.attribute("width").toInt(),
+                rule.attribute("height").toInt(),
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_tvIcon);
+    }
+    else if (ruleName == "splashVertical"){
+        return RuleImage(rule.attribute("width").toInt(),
+                rule.attribute("height").toInt(),
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashVertical);
+    }
+    else if (ruleName == "splashHorizontal"){
+        return RuleImage(rule.attribute("width").toInt(),
+                rule.attribute("height").toInt(),
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashHorizontal);
+    }
 	else
 		fprintf(stderr, "Rule %s unknown\n", ruleName.toStdString().c_str());
 	return false;
@@ -434,8 +449,15 @@ bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomEleme
 	return true;
 }
 
-bool ExportXml::RuleAppIcon(int width, int height, QString dst) {
-	fprintf(stderr, "AppIcon: %dx%d %s\n", width, height,
+bool ExportXml::RuleImage(int width, int height, QString dst, ImageTypes type) {
+    fprintf(stderr, "%s: %dx%d %s\n", type, width, height,
 			dst.toStdString().c_str());
-	return ExportCommon::appIcon(ctx, width, height, dst);
+    if(type == e_appIcon)
+        return ExportCommon::appIcon(ctx, width, height, dst);
+    else if(type == e_tvIcon)
+        return ExportCommon::tvIcon(ctx, width, height, dst);
+    else if(type == e_splashVertical)
+        return ExportCommon::splashVImage(ctx, width, height, dst);
+    else if(type == e_splashHorizontal)
+        return ExportCommon::splashHImage(ctx, width, height, dst);
 }
