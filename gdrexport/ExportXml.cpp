@@ -391,7 +391,12 @@ bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomEleme
                 if ((!rp.isNull())){
                 	QString orig=ReplaceAttributes(XmlAttributeOrElement(rp,"orig"));
                 	QString by=ReplaceAttributes(XmlAttributeOrElement(rp,"by"));
-                    if(rp.attribute("force") != "true")
+                	bool force=(rp.tagName() == "replace"); //Force by default on replace, not on append/prepend
+                    if(rp.attribute("force") == "true")
+                    	force=true;
+                    if(rp.attribute("force") == "false")
+                    	force=false;
+                    if (!force)
                         replaceList1
                                 << qMakePair(
                                         by.toUtf8(),
