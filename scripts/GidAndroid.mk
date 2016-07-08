@@ -17,6 +17,7 @@ android: androidlibs androidso androidplugins
 
 android.install: android androidlibs.install androidso.install androidplugins.install
 	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.jar $(RELEASE)/Templates/Eclipse/Android\ Template
+	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.jar $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs	
 	rm -rf $(ROOT)/android/GiderosAndroidPlayer/libs
 	cp -R $(RELEASE)/Templates/Eclipse/Android\ Template/libs $(ROOT)/android/GiderosAndroidPlayer
 	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) debug;
@@ -56,6 +57,7 @@ androidso.install: androidso
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/jni
 	cp $(ROOT)/android/lib/jni/Application.mk $(RELEASE)/Templates/Eclipse/Android\ Template/jni
 	cp -R $(ROOT)/android/lib/libs $(RELEASE)/Templates/Eclipse/Android\ Template/
+	cp -R $(ROOT)/android/lib/libs/. $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/
 
 androidplugins.install: androidplugins $(addsuffix .androidplugin.install,$(PLUGINS_ANDROID))
 
@@ -77,6 +79,7 @@ androidlibs.install: androidlibs
 ifneq ($(findstring $*,$(PLUGINS_DEFAULTS)),)
 	cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;	\
 	cp -R libs $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/; \
+	cp -R libs/. $(CURDIR)/$(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/; \
 	if [ -d "com" ]; then \
 	cp -R com $(CURDIR)/$(ROOT)/android/GiderosAndroidPlayer/src;\
 	fi
