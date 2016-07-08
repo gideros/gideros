@@ -67,6 +67,8 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	lua_setfield(L, -2, "FLAG_NONE");
 	lua_pushinteger(L, ShaderProgram::Flag_NoDefaultHeader);
 	lua_setfield(L, -2, "FLAG_NO_DEFAULT_HEADER");
+	lua_pushinteger(L, ShaderProgram::Flag_FromCode);
+	lua_setfield(L, -2, "FLAG_FROM_CODE");
 
 	lua_pop(L, 1);
 
