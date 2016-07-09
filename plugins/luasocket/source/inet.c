@@ -538,3 +538,25 @@ int inet_pton(int af, const char *src, void *dst)
 }
 
 #endif
+#ifdef WINSTORE
+int luasock_inet_pton(int af, const char *src, void *dst)
+{
+    struct addrinfo hints, *res;
+    int ret = 1;
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = af;
+    hints.ai_flags = AI_NUMERICHOST;
+    if (getaddrinfo(src, NULL, &hints, &res) != 0) return -1;
+    if (af == AF_INET) {
+        struct sockaddr_in *in = (struct sockaddr_in *) res->ai_addr;
+        memcpy(dst, &in->sin_addr, sizeof(in->sin_addr));
+    } else if (af == AF_INET6) {
+        struct sockaddr_in6 *in = (struct sockaddr_in6 *) res->ai_addr;
+        memcpy(dst, &in->sin6_addr, sizeof(in->sin6_addr));
+    } else {
+        ret = -1;
+    }
+    freeaddrinfo(res);
+    return ret;
+}
+#endif
