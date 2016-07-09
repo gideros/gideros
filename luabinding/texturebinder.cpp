@@ -24,20 +24,29 @@ int TextureBinder::create(lua_State* L)
 	LuaApplication* luaapplication = static_cast<LuaApplication*>(luaL_getdata(L));
 	Application* application = luaapplication->getApplication();
 
+	bool isFromPixels=lua_isnumber(L,3);
 	const char* filename = luaL_checkstring(L, 1);
 
-	bool smoothing = lua_toboolean(L, 2);
+	unsigned int width, height;
+	if (isFromPixels)
+	{
+		width=luaL_checkinteger(L,2);
+		height=luaL_checkinteger(L,3);
+	}
+
+	bool smoothing = lua_toboolean(L, isFromPixels?4:2);
 
 	bool maketransparent = false;
 	unsigned int transparentcolor = 0x00000000;
     Wrap wrap = eClamp;
     Format format = eRGBA8888;
-	if (!lua_isnoneornil(L, 3))
+    int paramsIndex=isFromPixels?5:3;
+	if (!lua_isnoneornil(L, paramsIndex))
 	{
-		if (lua_type(L, 3) != LUA_TTABLE)
-			return luaL_typerror(L, 3, "table");
+		if (lua_type(L, paramsIndex) != LUA_TTABLE)
+			return luaL_typerror(L, paramsIndex, "table");
 
-		lua_getfield(L, 3, "transparentColor");
+		lua_getfield(L, paramsIndex, "transparentColor");
 		if (!lua_isnil(L, -1))
 		{
 			maketransparent = true;
@@ -45,7 +54,7 @@ int TextureBinder::create(lua_State* L)
 		}
 		lua_pop(L, 1);
 
-        lua_getfield(L, 3, "wrap");
+        lua_getfield(L, paramsIndex, "wrap");
         if (!lua_isnil(L, -1))
         {
             const char *wrapstr = luaL_checkstring(L, -1);
@@ -61,7 +70,7 @@ int TextureBinder::create(lua_State* L)
         }
         lua_pop(L, 1);
 
-        lua_getfield(L, 3, "format");
+        lua_getfield(L, paramsIndex, "format");
         if (!lua_isnil(L, -1))
         {
             const char *formatstr = luaL_checkstring(L, -1);
@@ -90,7 +99,10 @@ int TextureBinder::create(lua_State* L)
 	Texture* texture = 0;
 	try
 	{
-        texture = new Texture(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor);
+		if (isFromPixels)
+	        texture = new Texture(application, (unsigned char *) filename, width, height, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor);
+		else
+			texture = new Texture(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor);
 	}
 	catch (const GiderosException& e)
 	{

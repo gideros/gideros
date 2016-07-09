@@ -9,6 +9,7 @@
 #include "Utilities.h"
 #include <bytebuffer.h>
 #include "ExportXml.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <QProcess>
