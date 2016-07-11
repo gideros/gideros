@@ -69,12 +69,12 @@ winrt.template: winrt.core winrt.plugins
 	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	cp lua/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.Windows/Release/libgvfswinrt.Windows/libgvfswinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
-	cp $(RELEASE)/AllPlugins/WinRT/Release/Win32/*.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	#ARM release version for WinPhone
 	cp winrt/gideros/gideros.WindowsPhone/ARM/Release/gideros.WindowsPhone/gideros.WindowsPhone.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	cp lua/luawinrt/luawinrt/luawinrt.WindowsPhone/ARM/Release/luawinrt.WindowsPhone/luawinrt.WindowsPhone.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.WindowsPhone/ARM/Release/libgvfswinrt.WindowsPhone/libgvfswinrt.WindowsPhone.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
-	cp $(RELEASE)/AllPlugins/WinRT/Release/ARM/*.WindowsPhone.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	#Plugins libs
+	cp $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/*.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 
 winrt.player: winrt.template
 	@echo "VERSION" $(GIDEROS_VERSION)
