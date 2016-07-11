@@ -92,6 +92,7 @@ void Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r
                         const QList<QStringList>& wildcards,
                         const QList<QList<QPair<QByteArray, QByteArray> > >& replaceList)
 {
+    ExportCommon::exportInfo("Copying %s\n",destName.toStdString().c_str());
     QString srcName2 = QFileInfo(srcName).fileName();
 
     int match = -1;

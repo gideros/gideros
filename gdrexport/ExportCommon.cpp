@@ -224,6 +224,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		const QString& s1 = ctx->fileQueue[i].first;
 		const QString& s2 = ctx->fileQueue[i].second;
 
+        exportInfo("Exporting %s\n",s1.toUtf8().constData());
         ExportCommon::progressStep(s1.toUtf8().constData());
 
 		QString src = QDir::cleanPath(path.absoluteFilePath(s2));
@@ -288,7 +289,9 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
         ExportCommon::progressSteps(ctx->allfiles_abs.size());
 		for (int i = 0; i < ctx->allfiles_abs.size(); ++i) {
 	        ExportCommon::progressStep(ctx->allfiles_abs[i].toUtf8().constData());
-			QString ext = QFileInfo(ctx->allfiles[i]).suffix().toLower();
+            QString filename = ctx->allfiles_abs[i];
+			QString ext = QFileInfo(filename).suffix().toLower();
+            exportInfo("Encrypting %s [%s]\n",filename.toUtf8().constData(),ext.toUtf8().constData());
 			if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg"
 					&& ext != "wav")
 				continue;
@@ -296,11 +299,12 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			QByteArray encryptionKey =
 					(ext == "lua") ? ctx->codeKey : ctx->assetsKey;
 
-			QString filename = ctx->allfiles_abs[i];
-
 			QFile fis(filename);
 			if (!fis.open(QIODevice::ReadOnly))
+            {
+                exportError("Failed to open %s\n",filename.toUtf8().constData());
 				continue;
+            }
 			QByteArray data = fis.readAll();
 			fis.close();
 
@@ -311,7 +315,10 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 
 			QFile fos(filename);
 			if (!fos.open(QIODevice::WriteOnly))
-				continue;
+            {
+                exportError("Failed to save %s\n",filename.toUtf8().constData());
+                continue;
+            }
 			fos.write(data);
 			fos.close();
 		}
