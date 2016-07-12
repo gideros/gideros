@@ -12,6 +12,7 @@ struct ProjectProperties
 	struct Plugin
 	{
 		QString name;
+		bool enabled;
 		QMap<QString,QString> properties;
 	};
 	struct Export

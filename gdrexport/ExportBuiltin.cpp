@@ -219,11 +219,14 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
     case e_Android:
       templatedir = "Eclipse";
+      ctx->platform = "Android";
       if(ctx->args.contains("template") && ctx->args["template"] == "androidstudio")
+      {
           templatedir = "AndroidStudio";
+          ctx->platform = "AndroidStudio";
+      }
       ctx->templatename = "Android Template";
       ctx->templatenamews = "AndroidTemplate";
-      ctx->platform = "Android";
       underscore = false;
       break;
 

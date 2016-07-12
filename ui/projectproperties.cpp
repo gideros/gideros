@@ -65,6 +65,7 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 		QDomElement plugin = doc.createElement("plugin");
 		Plugin p=*it;
 		plugin.setAttribute("name", p.name);
+		plugin.setAttribute("enabled", QString(p.enabled?"1":"0"));
 		QMap<QString, QString>::const_iterator i = p.properties.cbegin();
 		while (i != p.properties.cend()) {
 			QDomElement attr = doc.createElement("property");
@@ -196,6 +197,7 @@ void ProjectProperties::loadXml(QDomElement properties)
 			{
 				Plugin p;
 				p.name=plugin.attribute("name");
+				p.enabled=plugin.attribute("enabled").toInt()?1:0;
 				for(QDomNode n = plugin.firstChild(); !n.isNull(); n = n.nextSibling())
 				{
 					QDomElement attr = n.toElement();

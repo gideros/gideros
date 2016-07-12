@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QStringList>
 #include <QtXml/QDomNode>
+#include <QDebug>
 
 
 #define ALL_PLUGINS_PATH "All Plugins"
@@ -18,7 +19,11 @@ PluginsChooser::PluginsChooser(QSet<ProjectProperties::Plugin> selection, QWidge
 
 	QSet<QString> enabledPlugins;
 	for (QSet<ProjectProperties::Plugin>::iterator it=sel.begin();it!=sel.end();it++)
-		enabledPlugins.insert((*it).name);
+	{
+		if ((*it).enabled)
+			enabledPlugins.insert((*it).name);
+        pluginsProps[(*it).name]=(*it).properties;
+	}
 
 	ui->setupUi(this);
 
@@ -41,6 +46,8 @@ PluginsChooser::PluginsChooser(QSet<ProjectProperties::Plugin> selection, QWidge
         }
     }
 
+    ui->plugins->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->plugins->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->plugins->setRowCount(plugins.count());
     int rows=0;
 	for(int i = 0; i < plugins.count(); i++)
@@ -56,6 +63,8 @@ PluginsChooser::PluginsChooser(QSet<ProjectProperties::Plugin> selection, QWidge
             }
             file.close();
             QDomElement plugin = doc.documentElement();
+            QString name=plugin.attribute("name");
+            pluginsDesc[name]=doc;
             QDomNodeList targets=plugin.elementsByTagName("target");
             QStringList targetList;
             for (int k=0;k<targets.count();k++)
@@ -63,21 +72,20 @@ PluginsChooser::PluginsChooser(QSet<ProjectProperties::Plugin> selection, QWidge
 
             QCheckBox *cb=new QCheckBox("");
 	      ui->plugins->setCellWidget(rows,0,cb);
-	      QString name=plugin.attribute("name");
 	      cb->setChecked(enabledPlugins.contains(name));
 
 	      QTableWidgetItem *item;
 
 	      item=new QTableWidgetItem(name);
-	      item->setFlags(Qt::ItemIsEnabled);
+	      item->setFlags((item->flags()|Qt::ItemIsEnabled)&(~Qt::ItemIsEditable));
 	      ui->plugins->setItem(rows,1,item);
 
 	      item=new QTableWidgetItem(plugin.attribute("description"));
-	      item->setFlags(Qt::ItemIsEnabled);
+	      item->setFlags((item->flags()|Qt::ItemIsEnabled)&(~Qt::ItemIsEditable));
 	      ui->plugins->setItem(rows,2,item);
 
 	      item=new QTableWidgetItem(targetList.join(','));
-	      item->setFlags(Qt::ItemIsEnabled);
+	      item->setFlags((item->flags()|Qt::ItemIsEnabled)&(~Qt::ItemIsEditable));
 	      ui->plugins->setItem(rows,3,item);
 
 	      rows++;
@@ -85,8 +93,11 @@ PluginsChooser::PluginsChooser(QSet<ProjectProperties::Plugin> selection, QWidge
     ui->plugins->setRowCount(rows);
     ui->plugins->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 
+	propsTable=new PropertyEditingTable();
+    ui->propTable->addWidget(propsTable);
 
 	connect(this, SIGNAL(accepted()), this, SLOT(onAccepted()));
+	connect(ui->plugins, SIGNAL(itemSelectionChanged()), this, SLOT(onSelectionChanged()));
 }
 
 PluginsChooser::~PluginsChooser()
@@ -99,16 +110,35 @@ QSet<ProjectProperties::Plugin> PluginsChooser::selection() const
     return sel;
 }
 
+void PluginsChooser::onSelectionChanged()
+{
+	if (!currentPlugin.isEmpty())
+		pluginsProps[currentPlugin]=propsTable->extract();
+	currentPlugin=QString();
+ 	propsTable->clearContents();
+	QModelIndexList sels=ui->plugins->selectionModel()->selectedRows();
+    ui->pluginName->setText(QString("-"));
+	if (sels.count())
+	{
+		QString name=ui->plugins->item(sels.at(0).row(),1)->text();
+	    QDomElement plugin = pluginsDesc[name].documentElement();
+	    ui->pluginName->setText(name);
+		propsTable->fill(plugin,pluginsProps[name]);
+		currentPlugin=name;
+	}
+}
+
 void PluginsChooser::onAccepted()
 {
+	if (!currentPlugin.isEmpty())
+		pluginsProps[currentPlugin]=propsTable->extract();
 	sel.clear();
 	for(int i = 0; i < ui->plugins->rowCount(); i++)
 	{
-	 if (((QCheckBox *)ui->plugins->cellWidget(i,0))->isChecked())
-	 {
-		 ProjectProperties::Plugin p;
-		 p.name=ui->plugins->item(i,1)->text();
-		 sel.insert(p);
-	 }
+	 ProjectProperties::Plugin p;
+	 p.name=ui->plugins->item(i,1)->text();
+	 p.enabled=((QCheckBox *)ui->plugins->cellWidget(i,0))->isChecked();
+	 p.properties=pluginsProps[p.name];
+	 sel.insert(p);
 	}
 }

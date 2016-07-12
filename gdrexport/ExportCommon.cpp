@@ -419,7 +419,7 @@ bool ExportCommon::applyPlugins(ExportContext *ctx)
 	for (QSet<ProjectProperties::Plugin>::const_iterator it=ctx->properties.plugins.begin();it!=ctx->properties.plugins.end(); it++)
 	{
 		QString xml=allplugins[(*it).name];
-		if (!xml.isEmpty())
+		if ((!xml.isEmpty())&&((*it).enabled))
 			if (!ExportXml::exportXml(xml,true,ctx))
 				return false;
 	}

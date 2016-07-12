@@ -3,7 +3,10 @@
 
 #include <QDialog>
 #include <QSet>
+#include <QString>
+#include <QtXml/QDomNode>
 #include "projectproperties.h"
+#include "propertyeditingtable.h"
 
 namespace Ui {
     class PluginsChooserDialog;
@@ -21,10 +24,15 @@ public:
 
 private slots:
 	void onAccepted();
+	void onSelectionChanged();
 
 private:
     Ui::PluginsChooserDialog *ui;
     QSet<ProjectProperties::Plugin> sel;
+    QMap<QString,QDomDocument> pluginsDesc;
+    QMap<QString,QMap<QString,QString>> pluginsProps;
+    QString currentPlugin;
+    PropertyEditingTable *propsTable;
 };
 
 #endif // PLUGINSCHOOSER_H

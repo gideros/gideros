@@ -1,0 +1,25 @@
+<plugin
+ name="Google Play Services"
+ description="Google Play Services Plugin">
+ <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="9.2.0" />
+ <property name="gmsAppId" type="string" title="Application Id" description="Application Id for Google Play Services" default="" />
+ <target name="AndroidStudio">
+ 	<template name="GooglePlayServices" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs/" />
+ 	<template name="GooglePlayServices" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java/" />
+ 	<template name="GooglePlayServices" path="[[[sys.pluginDir]]]/bin/Android/res" dest="app/src/main/res/">
+		<replacelist wildcards="ids.xml">
+			<replace orig="561448401579" by="[[[plugin.gmsAppId]]]"/>
+       	</replacelist>		
+ 	</template>
+ 	<template name="GooglePlayServices" path="">
+		<replacelist wildcards="build.gradle">
+			<append>
+				<orig>//TAG-DEPENDENCIES//</orig>								
+				<by>
+	           compile 'com.google.android.gms:play-services:[[[plugin.gmsVersion]]]'
+				</by>
+			</append>
+       	</replacelist>		
+ 	</template>
+ </target>
+</plugin>
