@@ -10,7 +10,7 @@
 #import <GooglePlus/GooglePlus.h>
 #import <PlayGameServices/PlayGameServices.h>
 
-@interface GooglePlayService : NSObject <GPPSignInDelegate, GPGAchievementControllerDelegate, GPGLeaderboardControllerDelegate>
+@interface GooglePlayService : NSObject <GPPSignInDelegate, GPGAchievementControllerDelegate, GPGLeaderboardControllerDelegate, GPGLeaderboardsControllerDelegate>
 +(void)initialize;
 +(void)deinitialize;
 +(BOOL)isAvailable;

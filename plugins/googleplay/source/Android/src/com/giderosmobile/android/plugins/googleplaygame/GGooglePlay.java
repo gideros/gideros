@@ -262,7 +262,10 @@ RoomStatusUpdateListener, RoomUpdateListener, OnInvitationReceivedListener
     	sActivity.get().runOnUiThread(new Runnable() {
             public void run() {
             	if(mHelper.isSignedIn())
-            		sActivity.get().startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mHelper.getApiClient(), id), RC_UNUSED);
+            		if (id!=null)
+            			sActivity.get().startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mHelper.getApiClient(), id), RC_UNUSED);
+            		else
+            			sActivity.get().startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(mHelper.getApiClient()), RC_UNUSED);
             }
     	});
     }

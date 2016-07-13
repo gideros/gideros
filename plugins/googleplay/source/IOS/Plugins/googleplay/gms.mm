@@ -43,7 +43,7 @@ public:
 	
 	void showLeaderboard(const char *Id)
 	{
-		[GooglePlayService showLeaderboard:[NSString stringWithUTF8String:Id]];
+		[GooglePlayService showLeaderboard:(Id==NULL)?nil:[NSString stringWithUTF8String:Id]];
 	}
 	
 	void reportScore(const char *Id, long score, int immediate)
