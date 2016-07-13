@@ -48,7 +48,11 @@ androidso.clean:
 	cd $(ROOT)/$*; $(NDKBUILD)
 
 %.androidplugin:
-	cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;	$(NDKBUILD)
+	@cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;\
+	$(NDKBUILD);\
+	rm -f libs/armeabi/libgideros.so libs/armeabi/liblua.so;\
+	rm -f libs/armeabi-v7a/libgideros.so libs/armeabi-v7a/liblua.so;\
+	rm -f libs/x86/libgideros.so libs/x86/liblua.so;
 
 %.androidlib.clean:
 	rm -rf $(ROOT)/$*/libs $(ROOT)/$*/obj
@@ -64,8 +68,9 @@ androidplugins.install: androidplugins $(addsuffix .androidplugin.install,$(PLUG
 androidlibs.install: androidlibs
 
 %.androidplugin.install:
-	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/Android
-	cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;	\
+	@mkdir -p $(RELEASE)/All\ Plugins/$*/bin/Android
+	@cd $(ROOT)/plugins/$*/source; echo -n "Installing $*"; \
+	if [ -d "Android" ]; then cd Android; fi;	\
 	cp -r libs $(CURDIR)/$(RELEASE)/All\ Plugins/$*/bin/Android/; \
 	if [ -d "res" ]; then \
 	cp -r res $(CURDIR)/$(RELEASE)/All\ Plugins/$*/bin/Android/; \
@@ -76,15 +81,14 @@ androidlibs.install: androidlibs
 	if [ -d "src" ]; then \
 	cp -r src $(CURDIR)/$(RELEASE)/All\ Plugins/$*/bin/Android/; \
 	fi;
-ifneq ($(findstring $*,$(PLUGINS_DEFAULTS)),)
+	@if [ -n "$(findstring $*,$(PLUGINS_DEFAULT))" ]; then \
+	echo " DEFAULT";\
 	cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;	\
 	cp -R libs $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/; \
 	cp -R libs/. $(CURDIR)/$(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/; \
 	if [ -d "com" ]; then \
 	cp -R com $(CURDIR)/$(ROOT)/android/GiderosAndroidPlayer/src;\
-	fi
-endif	
-	
-	#cp -R com $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/src;\
+	fi; else echo ""; fi
+	@#cp -R com $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/src;\
 
 		

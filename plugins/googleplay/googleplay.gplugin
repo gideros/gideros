@@ -1,7 +1,7 @@
 <plugin
  name="Google Play Services"
  description="Google Play Services Plugin">
- <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="9.2.0" />
+ <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="7.8.0" />
  <property name="gmsAppId" type="string" title="Application Id" description="Application Id for Google Play Services" default="" />
  <target name="AndroidStudio">
  	<template name="GooglePlayServices" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs/" />
@@ -19,7 +19,20 @@
 	           compile 'com.google.android.gms:play-services:[[[plugin.gmsVersion]]]'
 				</by>
 			</append>
-       	</replacelist>		
+			<replace orig="minSdkVersion 8" by="minSdkVersion 9" />
+       	</replacelist>	
+ 	</template>
+ 	<template name="GooglePlayServices" path="">
+       	<replacelist wildcards="[[[project.namews]]]Activity.java">
+				<append orig="//GIDEROS-STATIC-INIT//">
+					<by>
+					System.loadLibrary("googleplay");
+					</by>
+				</append>				
+				<prepend orig="//GIDEROS-EXTERNAL-CLASS//">
+					<by>"com.giderosmobile.android.plugins.googleplaygame.GGooglePlay",</by>
+				</prepend>
+       	</replacelist>			
  	</template>
  </target>
 </plugin>

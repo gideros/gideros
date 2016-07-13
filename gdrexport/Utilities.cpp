@@ -92,7 +92,6 @@ void Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r
                         const QList<QStringList>& wildcards,
                         const QList<QList<QPair<QByteArray, QByteArray> > >& replaceList)
 {
-    ExportCommon::exportInfo("Copying %s\n",destName.toStdString().c_str());
     QString srcName2 = QFileInfo(srcName).fileName();
 
     int match = -1;
@@ -118,6 +117,7 @@ void Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r
 
     if (match != -1)
     {
+        ExportCommon::exportInfo("Updating %s\n",destName.toStdString().c_str());
         QFile in(srcName);
         if (!in.open(QFile::ReadOnly))
             return;
@@ -140,6 +140,7 @@ void Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r
     }
     else if (QFileInfo(srcName)!=QFileInfo(destName))
     {
+        ExportCommon::exportInfo("Copying %s\n",destName.toStdString().c_str());
         QFile::remove(destName);
         QFile::copy(srcName, destName);
     }
