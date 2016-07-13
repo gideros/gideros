@@ -50,9 +50,9 @@ androidso.clean:
 %.androidplugin:
 	@cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;\
 	$(NDKBUILD);\
-	rm -f libs/armeabi/libgideros.so libs/armeabi/liblua.so;\
-	rm -f libs/armeabi-v7a/libgideros.so libs/armeabi-v7a/liblua.so;\
-	rm -f libs/x86/libgideros.so libs/x86/liblua.so;
+	rm -f libs/armeabi/libgideros.so libs/armeabi/liblua.so libs/armeabi/libgvfs.so;\
+	rm -f libs/armeabi-v7a/libgideros.so libs/armeabi-v7a/liblua.so libs/armeabi-v7a/libgvfs.so;\
+	rm -f libs/x86/libgideros.so libs/x86/liblua.so libs/x86/libgvfs.so
 
 %.androidlib.clean:
 	rm -rf $(ROOT)/$*/libs $(ROOT)/$*/obj

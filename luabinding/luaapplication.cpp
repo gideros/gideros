@@ -227,12 +227,14 @@ void registerModules(lua_State* L);
 
 double LuaApplication::meanFrameTime_; //Average frame duration
 double LuaApplication::meanFreeTime_; //Average time available for async tasks
+unsigned long LuaApplication::frameCounter_; //Global frame counter
 
 int LuaApplication::Core_frameStatistics(lua_State* L)
 {
 	lua_pushnumber(L,meanFrameTime_);
 	lua_pushnumber(L,meanFreeTime_);
-	return 2;
+	lua_pushinteger(L,frameCounter_);
+	return 3;
 }
 
 int LuaApplication::Core_yield(lua_State* L)
@@ -1061,6 +1063,8 @@ void LuaApplication::enterFrame(GStatus *status)
 	if (!frameStartTime_)
 	    frameStartTime_=iclock();
 
+	frameCounter_++;
+
     void *pool = application_->createAutounrefPool();
 
 	StackChecker checker(L, "enterFrame", 0);
@@ -1339,6 +1343,7 @@ void LuaApplication::initialize()
 	application_->setScale(scale_);
 	meanFrameTime_=0;
 	meanFreeTime_=0;
+	frameCounter_=0;
 
 #if defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64)
 #define ARCH_X64 1
