@@ -30,7 +30,7 @@ private:
     Ui::PluginsChooserDialog *ui;
     QSet<ProjectProperties::Plugin> sel;
     QMap<QString,QDomDocument> pluginsDesc;
-    QMap<QString,QMap<QString,QString>> pluginsProps;
+    QMap<QString,QMap<QString,QString> > pluginsProps;
     QString currentPlugin;
     PropertyEditingTable *propsTable;
 };
