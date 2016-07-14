@@ -136,4 +136,6 @@ plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
 	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) debug
 
+bundle:
+	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 		
