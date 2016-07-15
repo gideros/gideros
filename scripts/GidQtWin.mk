@@ -136,6 +136,10 @@ plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
 	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) debug
 
+tools:
+	cd $(ROOT)/lua514u/src; gcc -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
+			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc)
+	
 bundle:
 	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 		
