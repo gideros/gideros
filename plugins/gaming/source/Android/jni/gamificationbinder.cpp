@@ -672,7 +672,7 @@ static int logout(lua_State *L)
 static int showLeaderboard(lua_State *L)
 {
 	Game *game = getInstance(L, 1);
-	const char *id = luaL_checkstring(L, 2);
+	const char *id = luaL_optstring(L, 2, NULL);
 	game->showLeaderboard(id);
     return 0;
 }

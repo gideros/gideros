@@ -137,9 +137,10 @@ public:
 	{
 		JNIEnv *env = g_getJNIEnv();
 		jstring jGame = env->NewStringUTF(game);
-		jstring jId = env->NewStringUTF(id);
+		jstring jId = (id==NULL)?NULL:env->NewStringUTF(id);
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "showLeaderboard", "(Ljava/lang/String;Ljava/lang/String;)V"), jGame, jId);
-		env->DeleteLocalRef(jId);
+		if (jId != NULL)
+			env->DeleteLocalRef(jId);
 		env->DeleteLocalRef(jGame);
 	}
 	

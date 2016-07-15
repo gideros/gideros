@@ -54,7 +54,7 @@ public:
 	
 	void showLeaderboard(const char *game, const char *Id)
 	{
-		[GameClass showLeaderboard:[NSString stringWithUTF8String:game] with:[NSString stringWithUTF8String:Id]];
+		[GameClass showLeaderboard:[NSString stringWithUTF8String:game] with:(Id==NULL)?nil:[NSString stringWithUTF8String:Id]];
 	}
 	
 	void reportAchievement(const char *game, const char *Id, int steps, int immediate)

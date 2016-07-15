@@ -237,11 +237,11 @@ public class Game {
 		catch(Exception ex)	{}
 	}
 	
-	public static void reportAchievement(String type, String id, int numSteps, int immediate)
+	public static void reportAchievement(String type, String id, double numSteps, int immediate)
 	{
 		String adp = modifyName(type);
 		if(games.containsKey(adp))
-			games.get(adp).reportAchievement(id, numSteps, immediate);
+			games.get(adp).reportAchievement(id, (int)numSteps, immediate);
 	}
 	
 	public static void loadAchievements(String type)

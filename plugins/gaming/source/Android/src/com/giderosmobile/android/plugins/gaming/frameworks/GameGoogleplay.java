@@ -98,7 +98,12 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 	@Override
 	public void showLeaderboard(final String id) {
        	if(mHelper != null && mHelper.isSignedIn())
-       		sActivity.get().startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mHelper.getApiClient(), id), RC_UNUSED);
+       	{
+    		if (id!=null)
+    			sActivity.get().startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mHelper.getApiClient(), id), RC_UNUSED);
+    		else
+    			sActivity.get().startActivityForResult(Games.Leaderboards.getAllLeaderboardsIntent(mHelper.getApiClient()), RC_UNUSED);
+       	}
 	}
 
 	@Override
@@ -151,7 +156,11 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 			{
 				if(immediate == 1)
 				{
-					PendingResult<UpdateAchievementResult> result = Games.Achievements.unlockImmediate(mHelper.getApiClient(), id);
+					PendingResult<UpdateAchievementResult> result;
+					if (numSteps>0)
+						result = Games.Achievements.setStepsImmediate(mHelper.getApiClient(), id, numSteps);
+					else
+						result = Games.Achievements.unlockImmediate(mHelper.getApiClient(), id);
 					ResultCallback<UpdateAchievementResult> mResultCallback = new
 							ResultCallback<UpdateAchievementResult>() {
 						@Override
@@ -169,7 +178,10 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 				}
 				else
 				{
-					Games.Achievements.unlock(mHelper.getApiClient(), id);
+					if (numSteps>0)
+						Games.Achievements.setSteps(mHelper.getApiClient(), id, numSteps);
+					else
+						Games.Achievements.unlock(mHelper.getApiClient(), id);
 				}
 			}
 			else
