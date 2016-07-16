@@ -159,6 +159,8 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 					PendingResult<UpdateAchievementResult> result;
 					if (numSteps>0)
 						result = Games.Achievements.setStepsImmediate(mHelper.getApiClient(), id, numSteps);
+					else if (numSteps<0)
+						result = Games.Achievements.incrementImmediate(mHelper.getApiClient(), id, -numSteps);					
 					else
 						result = Games.Achievements.unlockImmediate(mHelper.getApiClient(), id);
 					ResultCallback<UpdateAchievementResult> mResultCallback = new
@@ -180,9 +182,48 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 				{
 					if (numSteps>0)
 						Games.Achievements.setSteps(mHelper.getApiClient(), id, numSteps);
+					else if (numSteps<0)
+						Games.Achievements.increment(mHelper.getApiClient(), id, -numSteps);
 					else
 						Games.Achievements.unlock(mHelper.getApiClient(), id);
 				}
+			}
+			else
+	    		Game.reportAchievementError(this, id, Game.NOT_LOG_IN);
+		}
+		else
+		{
+			Game.reportAchievementError(this, id, Game.LIBRARY_NOT_FOUND);
+		}
+	}
+
+	@Override
+	public void revealAchievement(final String id, int immediate) {
+		if(isAvailable())
+		{
+			if(mHelper != null && mHelper.isSignedIn())
+			{
+				if(immediate == 1)
+				{
+					PendingResult<UpdateAchievementResult> result;
+					result = Games.Achievements.revealImmediate(mHelper.getApiClient(), id);
+					ResultCallback<UpdateAchievementResult> mResultCallback = new
+							ResultCallback<UpdateAchievementResult>() {
+						@Override
+						public void onResult(UpdateAchievementResult result) {
+							if(result.getStatus().getStatusCode() == GamesStatusCodes.STATUS_OK || result.getStatus().getStatusCode() == GamesStatusCodes.STATUS_ACHIEVEMENT_UNLOCKED){
+								Game.reportAchievementComplete(me, id);
+							}
+							else
+							{
+								Game.reportAchievementError(me, id, "Error: "+result.getStatus().getStatusCode());
+							}
+						}
+					};
+					result.setResultCallback(mResultCallback);
+				}
+				else
+					Games.Achievements.reveal(mHelper.getApiClient(), id);
 			}
 			else
 	    		Game.reportAchievementError(this, id, Game.NOT_LOG_IN);

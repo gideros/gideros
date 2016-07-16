@@ -72,6 +72,11 @@ public class GameHeyzap implements GameInterface {
 	}
 
 	@Override
+	public void revealAchievement(String id, int immediate) {
+		Game.reportAchievementError(this, id, Game.FEATURE_NOT_SUPPORTED);
+	}
+
+	@Override
 	public void loadAchievements() {
 		Game.loadAchievementsError(this, Game.FEATURE_NOT_SUPPORTED);
 	}

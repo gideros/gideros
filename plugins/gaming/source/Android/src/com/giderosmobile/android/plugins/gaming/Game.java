@@ -243,7 +243,14 @@ public class Game {
 		if(games.containsKey(adp))
 			games.get(adp).reportAchievement(id, (int)numSteps, immediate);
 	}
-	
+
+	public static void revealAchievement(String type, String id, int immediate)
+	{
+		String adp = modifyName(type);
+		if(games.containsKey(adp))
+			games.get(adp).revealAchievement(id, immediate);
+	}
+
 	public static void loadAchievements(String type)
 	{
 		String adp = modifyName(type);

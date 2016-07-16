@@ -33,6 +33,8 @@ public interface GameInterface {
 	
 	public void reportAchievement(String id, int numSteps, int immediate);
 	
+	public void revealAchievement(String id, int immediate);
+	
 	public void loadAchievements();
 	
 	public void loadScores(String id, int span, int collection, int maxResults);
