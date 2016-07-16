@@ -231,10 +231,14 @@ unsigned long LuaApplication::frameCounter_; //Global frame counter
 
 int LuaApplication::Core_frameStatistics(lua_State* L)
 {
+	lua_newtable(L);
 	lua_pushnumber(L,meanFrameTime_);
+	lua_setfield(L,-2,"meanFrameTime");
 	lua_pushnumber(L,meanFreeTime_);
+	lua_setfield(L,-2,"meanFreeTime");
 	lua_pushinteger(L,frameCounter_);
-	return 3;
+	lua_setfield(L,-2,"frameCounter");
+	return 1;
 }
 
 int LuaApplication::Core_yield(lua_State* L)
