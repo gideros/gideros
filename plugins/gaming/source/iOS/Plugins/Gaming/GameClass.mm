@@ -84,6 +84,12 @@ static NSMutableDictionary *games = [NSMutableDictionary dictionary];
         [game reportAchievement:Id andSteps:steps with:immediate];
     }
 }
++(void)revealAchievement:(NSString*)provider with:(NSString*)Id with:(int)immediate{
+    id game = [games objectForKey:[provider lowercaseString]];
+    if (game) {
+        [game revealAchievement:Id with:immediate];
+    }
+}
 +(void)loadAchievements:(NSString*)provider{
     id game = [games objectForKey:[provider lowercaseString]];
     if (game) {

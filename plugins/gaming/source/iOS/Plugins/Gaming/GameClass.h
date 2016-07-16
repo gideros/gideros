@@ -22,6 +22,7 @@
 +(void)reportScore:(NSString*)provider with:(NSString*)Id andScore:(long)score with:(int)immediate;
 +(void)showAchievements:(NSString*)provider;
 +(void)reportAchievement:(NSString*)provider with:(NSString*)Id andSteps:(int)steps with:(int)immediate;
++(void)revealAchievement:(NSString*)provider with:(NSString*)Id with:(int)immediate;
 +(void)loadAchievements:(NSString*)provider;
 +(void)loadScores:(NSString*)provider with:(NSString*)Id andSpan:(int) span forCollection:(int) collection withResults:(int)maxResults;
 +(void)loadState:(NSString*)provider with:(int)key;
