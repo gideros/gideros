@@ -1,0 +1,66 @@
+<plugin
+ name="Gaming"
+ description="Gaming services Plugin">
+ <property name="gmsFwGoogle" type="boolean" title="Enable Google Play Services support"/>
+ <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="7.8.0" />
+ <property name="gmsAppId" type="string" title="Application Id" description="Application Id for Google Play Services" default="" />
+ <property name="gmsFwGamecircle" type="boolean" title="Enable Amazon Gamecircle support"/>
+ <property name="gmsFwHeyzap" type="boolean" title="Enable Heyzap support"/>
+ <property name="gmsFwGamekit" type="boolean" title="Enable GameKit support"/>
+ <target name="AndroidStudio">
+ 	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs/" />
+ 	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java/" />
+ 	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/res" dest="app/src/main/res/">
+		<replacelist wildcards="ids.xml">
+			<replace orig="561448401579" by="[[[plugin.gmsAppId]]]"/>
+       	</replacelist>		
+ 	</template>
+ 	<template name="Gaming" path="">
+       	<replacelist wildcards="[[[project.namews]]]Activity.java">
+				<append orig="//GIDEROS-STATIC-INIT//">
+					<by>
+					System.loadLibrary("gaming");
+					</by>
+				</append>				
+				<prepend orig="//GIDEROS-EXTERNAL-CLASS//">
+					<by>"com.giderosmobile.android.plugins.gaming.Game",</by>
+				</prepend>
+       	</replacelist>			
+ 	</template>
+	<if condition="[[[plugin.gmsFwGoogle]]]">
+ 	<template name="Gaming" path="">
+       	<replacelist wildcards="[[[project.namews]]]Activity.java">
+				<append orig="//GIDEROS-STATIC-INIT//">
+					<by>
+					System.loadLibrary("gaming");
+					</by>
+				</append>				
+				<prepend orig="//GIDEROS-EXTERNAL-CLASS//">
+					<by>"com.giderosmobile.android.plugins.gaming.Game",</by>
+				</prepend>
+       	</replacelist>			
+	 	</template>
+	 	<template name="GooglePlayServices" path="">
+			<replacelist wildcards="build.gradle">
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+		           compile 'com.google.android.gms:play-services:[[[plugin.gmsVersion]]]'
+					</by>
+				</append>
+				<replace orig="minSdkVersion 8" by="minSdkVersion 9" />
+	       	</replacelist>	
+	 	</template>
+	 </if>
+	 <if condition="[[[not:[[[plugin.gmsFwGoogle]]]]]]">
+	 	<rmdir>app/src/main/java/com/giderosmobile/android/plugins/gaming/frameworks/googleplay</rmdir>
+	 	<rm>app/src/main/java/com/giderosmobile/android/plugins/gaming/frameworks/GameGoogleplay.java</rm>
+	 </if>
+	 <if condition="[[[not:[[[plugin.gmsFwGamecircle]]]]]]">
+	 	<rm>app/src/main/java/com/giderosmobile/android/plugins/gaming/frameworks/GameGamecircle.java</rm>
+	 </if>
+	 <if condition="[[[not:[[[plugin.gmsFwHeyzap]]]]]]">
+	 	<rm>app/src/main/java/com/giderosmobile/android/plugins/gaming/frameworks/GameHeyzap.java</rm>
+	 </if>
+ </target>
+</plugin>
