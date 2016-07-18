@@ -60,7 +60,6 @@ qt.install: buildqt qt5.install qt.player
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
-	cp -R $(ROOT)/ui/Templates/APK $(RELEASE)/Templates
 	cp -R $(ROOT)/ui/Templates/Eclipse $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/assets
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/gen
@@ -79,7 +78,6 @@ qt.install: buildqt qt5.install qt.player
 	cp $(ROOT)/gdrexport/release/gdrexport.exe $(RELEASE)/Tools
 	
 QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
-		opengl32sw libEGL libGLESv2 \
 		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml \
 		Qt5Multimedia Qt5MultimediaQuick_p QT5MultimediaWidgets
 QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
