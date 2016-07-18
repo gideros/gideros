@@ -70,10 +70,14 @@
 		<appIcon width="144" height="144" dest="app/src/main/res/drawable-xxhdpi/icon.png"/>
 		<appIcon width="192" height="192" dest="app/src/main/res/drawable-xxxhdpi/icon.png"/>
 		<applyPlugins/>
+		<set key="local.gradleCmd" value="gradlew"/>
+		<if condition="[[[eq:[[[sys.exeExtension]]]:.exe]]]">
+			<set key="local.gradleCmd" value="&quot;cmd.exe&quot; /c gradlew.bat"/>
+		</if>
 		<exec>
 			<env key="JAVA_HOME" value="[[[export.javaPath]]]"/>
 			<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
-			"cmd.exe" /c gradlew.bat assembleRelease
+			[[[local.gradleCmd]]] assembleRelease
 		</exec>
 		<cp src="app/build/outputs/apk/app-release[[[local.isUnsigned]]].apk" dst="../[[[project.namews]]][[[local.isUnsigned]]].apk"/>
 		<cd>..</cd>
