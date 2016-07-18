@@ -54,7 +54,9 @@ bool ExportXml::Process(ExportContext *ctx) {
 		QDomNodeList targets = exporter.elementsByTagName("target");
 		QStringList targetList;
 		for (int k = 0; k < targets.count(); k++) {
-			if (targets.at(k).toElement().attribute("name") == ctx->platform)
+			QString tname=targets.at(k).toElement().attribute("name");
+			QStringList tlist=tname.split(',', QString::SkipEmptyParts);
+			if (tlist.contains(ctx->platform))
 				rules = targets.at(k).toElement();
 		}
 	} else {
@@ -294,7 +296,7 @@ QString ExportXml::ReplaceAttributes(QString text) {
 		if (spos == -1)
 			break;
 		QString key = text.mid(spos + 3, epos - spos - 3);
-		QStringList args = key.split(":", QString::SkipEmptyParts);
+		QStringList args = key.split(":", QString::KeepEmptyParts);
 		int ac = args.count();
 		QString rep;
 		if (ac == 1)

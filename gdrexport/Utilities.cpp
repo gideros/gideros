@@ -236,22 +236,27 @@ int Utilities::processOutput(QString command, QString dir, QProcessEnvironment e
     	process.setWorkingDirectory(dir);
     process.setProcessEnvironment(env);
     process.start(command);
-    process.waitForFinished(-1);
     bool commandOut = !cmdlog;
-    QString output = process.readAllStandardOutput();
-    if(output.length() > 0){
-        if (!commandOut)
-        {
-        	ExportCommon::exportInfo("%s\n",command.toStdString().c_str());
-        	commandOut = true;
+    while (true)
+    {
+    	bool end=process.waitForFinished(100);
+        QString output = process.readAllStandardOutput();
+        if(output.length() > 0){
+            if (!commandOut)
+            {
+            	ExportCommon::exportInfo("%s\n",command.toStdString().c_str());
+            	commandOut = true;
+            }
+        	ExportCommon::exportInfo("%s",output.toStdString().c_str());
         }
-    	ExportCommon::exportInfo("%s\n",output.toStdString().c_str());
-    }
-    QString error = process.readAllStandardError();
-    if(error.length() > 0){
-        if(!commandOut)
-        	ExportCommon::exportInfo("%s\n",command.toStdString().c_str());
-    	ExportCommon::exportError("%s\n",error.toStdString().c_str());
+        QString error = process.readAllStandardError();
+        if(error.length() > 0){
+            if(!commandOut)
+            	ExportCommon::exportInfo("%s",command.toStdString().c_str());
+        	ExportCommon::exportError("%s",error.toStdString().c_str());
+        }
+    	if ((process.error()!=QProcess::Timedout)||end)
+    		break;
     }
     return (process.exitStatus()==QProcess::NormalExit)?process.exitCode():-1;
 }

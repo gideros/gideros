@@ -450,13 +450,13 @@ int ExportCommon::progressCur=0;
 void ExportCommon::progressSteps(int steps)
 {
 	progressMax+=steps;
-	exportInfo(":%d\n",progressMax);
+	exportInfo("$:$%d\n",progressMax);
 }
 
 void ExportCommon::progressStep(const char *title)
 {
 	progressCur++;
-	exportInfo(":%d:%d:%s\n",progressMax,progressCur,title);
+	exportInfo("$:$%d:%d:%s\n",progressMax,progressCur,title);
 }
 
 char *ExportCommon::askString(const char *title, const char *question, const char *def)
