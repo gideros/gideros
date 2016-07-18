@@ -10,7 +10,13 @@
 	<property name="keyAlias" type="string" title="Key alias" description="Alias of the key to use" default="" />
 	<rules>
 		<ask key="local.keyStorePass" type="string" title="Key store password" question="Enter your key store password:" default="" />
-		<ask key="local.keyAliasPass" type="string" title="Key alias password" question="Enter your key alias password:" default="[[[local.keyStorePass]]]" />
+		<set key="local.noSigning" value="//"/>
+		<set key="local.isUnsigned" value="-unsigned"/>
+		<if condition="[[[neq:[[[local.keyStorePass]]]:]]]">
+			<ask key="local.keyAliasPass" type="string" title="Key alias password" question="Enter your key alias password:" default="[[[local.keyStorePass]]]" />
+			<set key="local.noSigning" value=""/>
+			<set key="local.isUnsigned" value=""/>
+		</if>
 		<mkdir>tmp</mkdir>
 		<cd>tmp</cd>
 		<if condition="[[[project.autorotation]]]">
@@ -47,16 +53,16 @@
 				<replace orig="jksgid_KeyAlias" by="[[[export.keyAlias]]]"/>
 				<replace orig="jksgid_StorePass" by="[[[local.keyStorePass]]]"/>
 				<replace orig="jksgid_KeyPass" by="[[[local.keyAliasPass]]]"/>
-				<replace orig="//signingConfig" by="signingConfig"/>
+				<replace orig="//signingConfig" by="[[[local.noSigning]]]signingConfig"/>
         	</replacelist>		
 		</template>
-		<mkdir>app/src/main/assets</mkdir>
-		<cd>app/src/main/assets</cd>
+		<mkdir>app/src/main/assets/assets</mkdir>
+		<cd>app/src/main/assets/assets</cd>
 		<exportAssets jet="mp3;mp4;png;jpg;jpeg;wav" compile="1" />
 		<exportAllfilesTxt/>
 		<exportLuafilesTxt/>
 		<exportPropertiesBin/>
-		<cd>../../../..</cd>
+		<cd>../../../../..</cd>
 		<appIcon width="36" height="36" dest="app/src/main/res/drawable-ldpi/icon.png"/>
 		<appIcon width="48" height="48" dest="app/src/main/res/drawable-mdpi/icon.png"/>
 		<appIcon width="72" height="72" dest="app/src/main/res/drawable-hdpi/icon.png"/>
@@ -69,7 +75,7 @@
 			<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>
 			"cmd.exe" /c gradlew.bat assembleRelease
 		</exec>
-		<cp src="app/build/outputs/apk/bin/app-release.apk" dst="../[[[project.namews]]].apk"/>
+		<cp src="app/build/outputs/apk/app-release[[[local.isUnsigned]]].apk" dst="../[[[project.namews]]][[[local.isUnsigned]]].apk"/>
 		<cd>..</cd>
 		<rmdir>tmp</rmdir>
 	</rules>
