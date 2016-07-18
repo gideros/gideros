@@ -8,13 +8,24 @@ android {
         minSdkVersion 8
         targetSdkVersion 19
     }
+    
+    signingConfigs {
+        release {
+            storeFile file("jksgid_StoreFile")
+            storePassword "jksgid_StorePass"
+            keyAlias "jksgid_KeyAlias"
+            keyPassword "jksgid_KeyPass"
+        }
+    }    
+    
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            //signingConfig signingConfigs.release
         }
-    }
+    }    
 }
 
 dependencies {
