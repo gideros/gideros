@@ -138,11 +138,12 @@ plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
 tools:
 	cd $(ROOT)/lua514u/src; gcc -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc)
-	cd $(ROOT)/lua514u/src; gcc -o lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
-			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
-			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
-	cd $(ROOT)/lua514u/src; gcc -shared -o lua51.dll $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+	cd $(ROOT)/lua514u/src; gcc -shared -o lua51.dll -Wl,--out-implib,lua51.a $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lgc\
+			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
+	cd $(ROOT)/lua514u/src; gcc -o lua lua.c lua51.a
+	#cd $(ROOT)/lua514u/src; gcc -o lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
 	
 bundle:
