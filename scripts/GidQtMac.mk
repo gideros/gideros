@@ -78,7 +78,6 @@ qt.install: buildqt qt.player
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
-	cp -R $(ROOT)/ui/Templates/APK $(RELEASE)/Templates
 	cp -R $(ROOT)/ui/Templates/Eclipse $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/assets
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/gen
@@ -126,4 +125,7 @@ plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
 	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
 	cd $(ROOT)/$*; $(MAKE) 
 
-		
+tools:
+
+bundle:
+	mv $(RELEASE)/Templates $(RELEASE)/Gideros\ Studio.app/Contents
