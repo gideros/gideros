@@ -14,7 +14,6 @@ PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry ga
 				struct
 ROOT=.
 SDK=$(ROOT)/Sdk
-RELEASE=$(ROOT)/release
 GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | grep define | sed 's/^[^"]*"\([^"]*\)"/\1/')
 
 #TOOLS
@@ -24,10 +23,12 @@ CC=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/gcc
 CXX=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/g++
 
 ifeq ($(OS),Windows_NT)
+RELEASE=$(ROOT)/Build.Win
 all: qtapp.install android.install win32.install winrt.install
 
 clean: qtapp.clean android.clean win32.clean winrt.clean
 else
+RELEASE=$(ROOT)/Build.Mac
 all: qtapp.install ios.install
 
 clean: qtapp.clean ios.clean
