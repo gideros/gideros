@@ -158,9 +158,9 @@ void Particles::setColor(int i, unsigned int color, float alpha) {
 	originalColors_[i].alpha = alpha;
 	alpha = std::min(std::max(alpha, 0.f), 1.f);
 
-	unsigned int r = ((color >> 16) & 0xff);
-	unsigned int g = ((color >> 8) & 0xff);
-	unsigned int b = (color & 0xff);
+	unsigned int r = ((color >> 16) & 0xff) * alpha;
+	unsigned int g = ((color >> 8) & 0xff) * alpha;
+	unsigned int b = (color & 0xff) * alpha;
 	unsigned int a = 255 * alpha;
 
 	colors_[i * 4] = r;
