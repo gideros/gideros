@@ -13,6 +13,7 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	        {"setConstant", setConstant},
 	        {"isValid", isValid},
 	    	{"getEngineVersion",getEngineVersion},
+	    	{"getShaderLanguage",getShaderLanguage},
         {NULL, NULL},
 	};
 
@@ -155,6 +156,13 @@ int ShaderBinder::getEngineVersion(lua_State* L)
 {
 	StackChecker checker(L, "ShaderBinder::getEngineVersion", 1);
 	lua_pushstring(L,ShaderEngine::Engine->getVersion());
+	return 1;
+}
+
+int ShaderBinder::getShaderLanguage(lua_State* L)
+{
+	StackChecker checker(L, "ShaderBinder::getShaderLanguage", 1);
+	lua_pushstring(L,ShaderEngine::Engine->getShaderLanguage());
 	return 1;
 }
 
