@@ -1,0 +1,18 @@
+<project>
+ <properties tv_icon="GiderosPlayerIcon.png" logicalWidth="320" android_template="0" windowWidth="0" splash_h_image="GiderosPlayerIcon.png" fps="60" retinaDisplay="0" html5_mem="256" html5_host="" winrt_org="GiderosMobile" osx_category="36" osx_bundle="com.giderosmobile.player" autorotation="0" mouseTouchOrder="0" iosDevice="0" osx_org="GiderosMobile" encryptAssets="0" logicalHeight="480" winrt_package="com.giderosmobile.player" win_org="GiderosMobile" version="1.0" architecture="1" version_code="1" ios_bundle="com.giderosmobile.player" assetsOnly="0" win_domain="giderosmobile.com" scaleMode="0" splash_v_image="GiderosPlayerIcon.png" windowHeight="0" osx_domain="giderosmobile.com" app_icon="GiderosPlayerIcon.png" mouseToTouch="1" orientation="0" packageName="com.giderosmobile.player" encryptCode="0" touchToMouse="1">
+  <imageScales/>
+  <plugins/>
+  <exports>
+   <export name="APK">
+    <property value="" name="androidPath"/>
+    <property value="23" name="androidSdk"/>
+    <property value="19" name="androidTarget"/>
+    <property value="23.0.1" name="androidTools"/>
+    <property value="" name="javaPath"/>
+    <property value="" name="keyAlias"/>
+    <property value="" name="keyStore"/>
+    <property value="com.giderosmobile.player" name="packageName"/>
+   </export>
+  </exports>
+ </properties>
+</project>
