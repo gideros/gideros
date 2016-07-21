@@ -159,7 +159,7 @@ public:
 
 		StorageFile^ file = nullptr;
 		try {
-			String^ fileName = ref new String(L"Assets\\main.lua");
+			String^ fileName = ref new String(L"Assets\\properties.bin");
 			IAsyncOperation<StorageFile^> ^gfa = Windows::ApplicationModel::Package::Current->InstalledLocation->GetFileAsync(fileName);
 			while (gfa->Status == AsyncStatus::Started)
 				CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);

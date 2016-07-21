@@ -8,11 +8,13 @@
 #include "projectproperties.h"
 #include <algorithm>
 
-ProjectPropertiesDialog::ProjectPropertiesDialog(ProjectProperties* properties, QWidget *parent) :
+ProjectPropertiesDialog::ProjectPropertiesDialog(QString projectFileName,ProjectProperties* properties, QWidget *parent) :
     QDialog(parent),
 	ui(new Ui::ProjectPropertiesDialog),
 	properties_(properties)
 {
+	projectFileName_=projectFileName;
+
     ui->setupUi(this);
 
 	ui->scaleMode->setCurrentIndex(properties_->scaleMode);
@@ -132,14 +134,15 @@ void ProjectPropertiesDialog::onAccepted()
     properties_->version = ui->version->text();
     properties_->version_code = ui->version_code->text().toInt();
 
+	QDir path(QFileInfo(projectFileName_).path());
     if(!this->app_icon.isNull())
-        properties_->app_icon = this->app_icon;
+        properties_->app_icon = path.relativeFilePath(this->app_icon);
     if(!this->tv_icon.isNull())
-        properties_->tv_icon = this->tv_icon;
+        properties_->tv_icon = path.relativeFilePath(this->tv_icon);
     if(!this->splash_h_image.isNull())
-        properties_->splash_h_image = this->splash_h_image;
+        properties_->splash_h_image = path.relativeFilePath(this->splash_h_image);
     if(!this->splash_v_image.isNull())
-        properties_->splash_v_image = this->splash_v_image;
+        properties_->splash_v_image = path.relativeFilePath(this->splash_v_image);
 
 }
 
@@ -172,9 +175,11 @@ void ProjectPropertiesDialog::remove()
 void ProjectPropertiesDialog::showImage(QString fileName, QLabel* label)
 {
     if(!fileName.isNull()){
-        int w = label->width();
+		QDir path(QFileInfo(projectFileName_).path());
+		QString src = path.absoluteFilePath(fileName);
+		int w = label->width();
         int h = label->height();
-        QPixmap p = QPixmap(fileName);
+        QPixmap p = QPixmap(src);
         label->setPixmap(p.scaled(w,h,Qt::KeepAspectRatio));
         label->update();
     }

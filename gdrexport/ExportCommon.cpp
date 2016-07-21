@@ -208,6 +208,9 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	QStringList allluafiles;
 	QStringList allluafiles_abs;
 
+	if (ctx->fileQueue.size()==0) //No assets -> Player
+		return;
+
 	exportInfo("Exporting assets\n");
     for (std::size_t i = 0; i < ctx->folderList.size(); ++i)
     	ctx->outputDir.mkdir(ctx->folderList[i]);
@@ -339,6 +342,8 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 }
 
 void ExportCommon::exportAllfilesTxt(ExportContext *ctx) {
+	if (ctx->fileQueue.size()==0) //No assets -> Player
+		return;
 	exportInfo("Writing files info\n");
 	QFile file(
 			QDir::cleanPath(ctx->outputDir.absoluteFilePath("allfiles.txt")));
@@ -356,6 +361,8 @@ void ExportCommon::exportAllfilesTxt(ExportContext *ctx) {
 }
 
 void ExportCommon::exportLuafilesTxt(ExportContext *ctx) {
+	if (ctx->fileQueue.size()==0) //No assets -> Player
+		return;
 	exportInfo("Writing lua files info\n");
 	QString filename = "luafiles.txt";
 	if (!ctx->jetset.isEmpty())
@@ -373,6 +380,8 @@ void ExportCommon::exportLuafilesTxt(ExportContext *ctx) {
 }
 
 void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
+	if (ctx->fileQueue.size()==0) //No assets -> Player
+		return;
 	exportInfo("Writing project properties\n");
 	QString filename = "properties.bin";
 	if (!ctx->jetset.isEmpty())
