@@ -799,7 +799,7 @@ void LibraryTreeWidget::insertIntoDocument()
 
 void LibraryTreeWidget::projectProperties()
 {
-	ProjectPropertiesDialog dialog(&properties_, this);
+	ProjectPropertiesDialog dialog(projectFileName_,&properties_, this);
 	dialog.exec();
 }
 

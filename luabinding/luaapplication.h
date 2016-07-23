@@ -164,6 +164,7 @@ public:
     static std::deque<AsyncLuaTask> tasks_;
     static double meanFrameTime_; //Average frame duration
     static double meanFreeTime_; //Average time available for async tasks
+    static unsigned long frameCounter_; //Global frame counter
     static int Core_asyncCall(lua_State *L);
     static int Core_yield(lua_State *L);
     static int Core_frameStatistics(lua_State *L);

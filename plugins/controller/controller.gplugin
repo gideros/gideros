@@ -6,7 +6,7 @@
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;controller&quot;);"/>
-            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.controller.GControllerManager&quot;"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.controller.GControllerManager&quot;,"/>
             <append orig="//GIDEROS-ACTIVTIY-ONKEYDOWN//" by="		if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyDown(keyCode, event)) return true;"/>
             <append orig="//GIDEROS-ACTIVTIY-ONKEYUP//" by="		if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyUp(keyCode, event)) return true;"/>
             <append orig="//GIDEROS-ACTIVTIY-METHODS//" by="        
@@ -20,11 +20,17 @@
     </template>
  </target>
  <target name="Android">
-    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <if condition="[[[eq:[[[args.template]]]:androidstudio]]]">
+        <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
+        <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    </if>
+    <if condition="[[[eq:[[[args.template]]]:eclipse]]]">
+        <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    </if>
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;controller&quot;);"/>
-            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.controller.GControllerManager&quot;"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.controller.GControllerManager&quot;,"/>
             <append orig="//GIDEROS-ACTIVTIY-ONKEYDOWN//" by="		if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyDown(keyCode, event)) return true;"/>
             <append orig="//GIDEROS-ACTIVTIY-ONKEYUP//" by="		if(com.giderosmobile.android.plugins.controller.GControllerDefault.onKeyUp(keyCode, event)) return true;"/>
             <append orig="//GIDEROS-ACTIVTIY-METHODS//" by="        
@@ -34,7 +40,7 @@
         }
         return super.onGenericMotionEvent(event);
     }"/>
-        </replacelist>
+            </replacelist>
     </template>
  </target>
 </plugin>

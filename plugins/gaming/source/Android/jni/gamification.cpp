@@ -137,9 +137,10 @@ public:
 	{
 		JNIEnv *env = g_getJNIEnv();
 		jstring jGame = env->NewStringUTF(game);
-		jstring jId = env->NewStringUTF(id);
+		jstring jId = (id==NULL)?NULL:env->NewStringUTF(id);
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "showLeaderboard", "(Ljava/lang/String;Ljava/lang/String;)V"), jGame, jId);
-		env->DeleteLocalRef(jId);
+		if (jId != NULL)
+			env->DeleteLocalRef(jId);
 		env->DeleteLocalRef(jGame);
 	}
 	
@@ -152,7 +153,17 @@ public:
 		env->DeleteLocalRef(jId);
 		env->DeleteLocalRef(jGame);
 	}
-	
+
+	void revealAchievement(const char *game, const char *id, int immediate)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		jstring jGame = env->NewStringUTF(game);
+		jstring jId = env->NewStringUTF(id);
+		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "revealAchievement", "(Ljava/lang/String;Ljava/lang/String;I)V"), jGame, jId, (jint)immediate);
+		env->DeleteLocalRef(jId);
+		env->DeleteLocalRef(jGame);
+	}
+
 	void loadAchievements(const char *game)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -955,6 +966,14 @@ void game_reportAchievement(const char *game, const char *id, double steps, int 
 	if(s_game)
 	{
 		s_game->reportAchievement(game, id, steps, immediate);
+	}
+}
+
+void game_revealAchievement(const char *game, const char *id, int immediate)
+{
+	if(s_game)
+	{
+		s_game->revealAchievement(game, id, immediate);
 	}
 }
 

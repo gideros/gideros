@@ -18,6 +18,7 @@
 -(void)reportScore:(NSString*)Id andScore:(long)score with:(int)immediate;
 -(void)showAchievements;
 -(void)reportAchievement:(NSString*)Id andSteps:(int)steps with:(int)immediate;
+-(void)revealAchievement:(NSString*)Id with:(int)immediate;
 -(void)loadAchievements;
 -(void)loadScores:(NSString*)Id andSpan:(int) span forCollection:(int) collection withResults:(int)maxResults;
 -(void)loadState:(int)key;

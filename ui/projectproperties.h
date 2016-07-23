@@ -12,6 +12,7 @@ struct ProjectProperties
 	struct Plugin
 	{
 		QString name;
+		bool enabled;
 		QMap<QString,QString> properties;
 	};
 	struct Export
@@ -70,7 +71,9 @@ struct ProjectProperties
         encryptCode = false;
         encryptAssets = false;
         app_icon="";
-        app_icon_noexport=false;
+        tv_icon="";
+        splash_h_image="";
+        splash_v_image="";
         plugins.clear();
         exports.clear();
     }
@@ -114,7 +117,9 @@ struct ProjectProperties
     QString html5_host;
     int html5_mem;
     QString app_icon;
-    bool app_icon_noexport;
+    QString tv_icon;
+    QString splash_h_image;
+    QString splash_v_image;
     QSet<Plugin> plugins;
     QSet<Export> exports;
     bool encryptCode;

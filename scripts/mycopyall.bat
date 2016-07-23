@@ -29,7 +29,7 @@ xcopy /S /I ..\ui\Tools ..\..\release\Tools
 :: hg archive -I ..\ui\Tools ..\..\temp
 :: mv ..\..\temp\ui\Tools ..\..\release
 
-call mycopyqt55.bat
+call mycopyqt56.bat
 
 mkdir ..\..\release\Templates
 

@@ -99,7 +99,12 @@
             }
         
             GKAchievement* achievement = [[[GKAchievement alloc] initWithIdentifier:Id] autorelease];
-            achievement.percentComplete = steps;
+            if (steps<0)
+	            achievement.percentComplete += (-steps);
+            else if (steps>0)
+	            achievement.percentComplete = steps;
+	        else
+	            achievement.percentComplete = 100;
             if([achievement respondsToSelector:@selector(setShowsCompletionBanner:)])
                 achievement.showsCompletionBanner = true;
         
@@ -121,6 +126,44 @@
         
     }];
 }
+
+-(void)revealAchievement:(NSString*)Id with:(int)immediate{
+    
+    [GKAchievement loadAchievementsWithCompletionHandler:^(NSArray *achievements, NSError *error) {
+        
+        if(!error)
+        {
+        
+           for (GKAchievement *ach in achievements) {
+                if([ach.identifier isEqualToString:Id] && ach.completed) {
+                    return ;
+                }
+            }
+        
+            GKAchievement* achievement = [[[GKAchievement alloc] initWithIdentifier:Id] autorelease];
+            achievement.percentComplete = 0;
+            if([achievement respondsToSelector:@selector(setShowsCompletionBanner:)])
+                achievement.showsCompletionBanner = true;
+        
+            [achievement reportAchievementWithCompletionHandler:^(NSError* error)
+             {
+                 if(!error){
+                     [GameClass reportAchievementComplete:[self class] with:Id];
+                     if(achievement.completed)
+                         [self.achs setObject:achievement.identifier forKey:achievement.identifier];
+                 }
+                 else{
+                     [GameClass reportAchievementError:[self class] with:Id with:[error localizedDescription]];
+                 }
+             }];
+        }
+        else{
+            [GameClass reportAchievementError:[self class] with:Id with:[error localizedDescription]];
+        }
+        
+    }];
+}
+
 -(void)loadAchievements{
     [GKAchievementDescription loadAchievementDescriptionsWithCompletionHandler:^(NSArray* achievementDescriptions, NSError* derror)
     {

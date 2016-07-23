@@ -48,7 +48,8 @@ public:
     enum ShaderFlags {
     	Flag_None=0,
     	Flag_NoDefaultHeader=1,
-		Flag_PointShader=2
+		Flag_PointShader=2,
+		Flag_FromCode=4
     };
     struct ConstantDesc {
     	std::string name;
@@ -232,6 +233,7 @@ public:
 	virtual ~ShaderEngine() { };
 	virtual void reset(bool reinit=false);
 	virtual const char *getVersion()=0;
+	virtual const char *getShaderLanguage()=0;
 	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
 	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture)=0;
 	virtual ShaderBuffer *setFramebuffer(ShaderBuffer *fbo)=0;

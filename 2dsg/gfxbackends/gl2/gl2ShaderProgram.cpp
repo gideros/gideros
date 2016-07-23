@@ -260,11 +260,17 @@ void ogl2ShaderProgram::setConstant(int index, ConstantType type, int mult,
 
 ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader, const char *fshader,int flags,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
-	void *vs = LoadShaderFile(vshader, "glsl", NULL);
-	void *fs = LoadShaderFile(fshader, "glsl", NULL);
+	bool fromCode=(flags&ShaderProgram::Flag_FromCode);
+	void *vs = fromCode?(void *)vshader:LoadShaderFile(vshader, "glsl", NULL);
+	void *fs = fromCode?(void *)fshader:LoadShaderFile(fshader, "glsl", NULL);
 	const char *hdr=(flags&ShaderProgram::Flag_NoDefaultHeader)?"":hdrShaderCode;
 	program=0;
 	buildProgram(hdr,(char *) vs, hdr, (char *) fs, uniforms, attributes);
+	if (!fromCode)
+	{
+		if (vs) free(vs);
+		if (fs) free(fs);
+	}
 	shaders.push_back(this);
 }
 

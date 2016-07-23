@@ -72,9 +72,10 @@ public:
 	void showLeaderboard(const char *id)
 	{
 		JNIEnv *env = g_getJNIEnv();
-		jstring jId = env->NewStringUTF(id);
+		jstring jId = id?env->NewStringUTF(id):NULL;
 		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "showLeaderboard", "(Ljava/lang/String;)V"), jId);
-		env->DeleteLocalRef(jId);
+		if (jId!=NULL)
+			env->DeleteLocalRef(jId);
 	}
 	
 	void reportScore(const char *id, long score, int immediate)

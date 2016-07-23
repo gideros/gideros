@@ -599,7 +599,7 @@ static int showSettings(lua_State *L)
 static int showLeaderboard(lua_State *L)
 {
 	GooglePlay *gms = getInstance(L, 1);
-	const char *id = luaL_checkstring(L, 2);
+	const char *id = luaL_optstring(L, 2, NULL);
 	gms->showLeaderboard(id);
     return 0;
 }

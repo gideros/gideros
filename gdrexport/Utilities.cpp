@@ -117,6 +117,7 @@ void Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r
 
     if (match != -1)
     {
+        ExportCommon::exportInfo("Updating %s\n",destName.toStdString().c_str());
         QFile in(srcName);
         if (!in.open(QFile::ReadOnly))
             return;
@@ -139,6 +140,7 @@ void Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r
     }
     else if (QFileInfo(srcName)!=QFileInfo(destName))
     {
+        ExportCommon::exportInfo("Copying %s\n",destName.toStdString().c_str());
         QFile::remove(destName);
         QFile::copy(srcName, destName);
     }
@@ -228,30 +230,33 @@ void Utilities::copyFolder(	const QDir& sourceDir,
     }
 }
 
-int Utilities::processOutput(QString command, QString dir, QProcessEnvironment env){
+int Utilities::processOutput(QString command, QString dir, QProcessEnvironment env, bool cmdlog){
     QProcess process;
     if (!dir.isEmpty())
     	process.setWorkingDirectory(dir);
     process.setProcessEnvironment(env);
     process.start(command);
-    process.waitForFinished();
-    bool commandOut = false;
-    QString output = process.readAllStandardError();
-    if(output.length() > 0){
-        commandOut = true;
-        fprintf(stderr, command.toStdString().c_str());
-        fprintf(stderr, "\n");
-        fprintf(stderr, output.toStdString().c_str());
-        fprintf(stderr, "\n");
-    }
-    QString error = process.readAllStandardError();
-    if(error.length() > 0){
-        if(!commandOut){
-            fprintf(stderr, command.toStdString().c_str());
-            fprintf(stderr, "\n");
+    bool commandOut = !cmdlog;
+    while (true)
+    {
+    	bool end=process.waitForFinished(100);
+        QString output = process.readAllStandardOutput();
+        if(output.length() > 0){
+            if (!commandOut)
+            {
+            	ExportCommon::exportInfo("%s\n",command.toStdString().c_str());
+            	commandOut = true;
+            }
+        	ExportCommon::exportInfo("%s",output.toStdString().c_str());
         }
-        fprintf(stderr, error.toStdString().c_str());
-        fprintf(stderr, "\n");
+        QString error = process.readAllStandardError();
+        if(error.length() > 0){
+            if(!commandOut)
+            	ExportCommon::exportInfo("%s",command.toStdString().c_str());
+        	ExportCommon::exportError("%s",error.toStdString().c_str());
+        }
+    	if ((process.error()!=QProcess::Timedout)||end)
+    		break;
     }
     return (process.exitStatus()==QProcess::NormalExit)?process.exitCode():-1;
 }

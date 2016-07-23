@@ -60,12 +60,15 @@ qt.install: buildqt qt5.install qt.player
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
-	cp -R $(ROOT)/ui/Templates/APK $(RELEASE)/Templates
 	cp -R $(ROOT)/ui/Templates/Eclipse $(RELEASE)/Templates
-	cp -R $(ROOT)/ui/Templates/Xcode4 $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/assets
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/gen
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/res/layout
+	cp -R $(ROOT)/ui/Templates/AndroidStudio $(RELEASE)/Templates
+	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs
+	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/assets
+	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs
+	cp -R $(ROOT)/ui/Templates/Xcode4 $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
 	mkdir -p $(RELEASE)/Examples
 	cp -R $(ROOT)/samplecode/* $(RELEASE)/Examples
@@ -132,4 +135,17 @@ plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
 	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
 	cd $(ROOT)/$*; $(MINGWMAKE) debug
 
+tools:
+	cd $(ROOT)/lua514u/src; gcc -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
+			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc)
+	cd $(ROOT)/lua514u/src; gcc -shared -o lua51.dll -Wl,--out-implib,lua51.a $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lgc\
+			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
+	cd $(ROOT)/lua514u/src; gcc -o lua lua.c lua51.a
+	#cd $(ROOT)/lua514u/src; gcc -o lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
+			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
+	
+bundle:
+	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 		

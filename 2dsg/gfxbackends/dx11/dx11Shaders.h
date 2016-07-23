@@ -143,6 +143,7 @@ public:
 	virtual ~dx11ShaderEngine();
 	void reset(bool reinit=false);
 	const char *getVersion();
+	const char *getShaderLanguage() { return "hlsl"; };
 	ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	ShaderBuffer *createRenderTarget(ShaderTexture *texture);
 	ShaderBuffer *setFramebuffer(ShaderBuffer *fbo);

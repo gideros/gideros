@@ -84,6 +84,13 @@ public class GameTest implements GameInterface {
 	}
 
 	@Override
+	public void revealAchievement(String id, int immediate) {
+		Log.d("GameTest", "revealAchievement: " + id + ", " + immediate);
+		Game.reportAchievementComplete(this, id);
+		Game.reportAchievementError(this, id, "Achievement Error");
+	}
+
+	@Override
 	public void loadAchievements() {
 		Log.d("GameTest", "loadAchievements");
 		SparseArray<Bundle> arr = new SparseArray<Bundle>();

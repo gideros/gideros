@@ -280,14 +280,17 @@ dx11ShaderProgram::dx11ShaderProgram(const void *vshader, int vshadersz,
 
 dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,int flags,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
+	bool fromCode=(flags&ShaderProgram::Flag_FromCode);
 	long VSLen, PSLen;
-	void *VSFile = LoadShaderFile(vshader, "cso", &VSLen);
+	void *VSFile = fromCode?NULL:LoadShaderFile(vshader, "cso", &VSLen);
 	if (!VSFile) {
-		void *src = LoadShaderFile(vshader, "hlsl", &VSLen);
+		void *src = fromCode?(void *)vshader:LoadShaderFile(vshader, "hlsl", &VSLen);
 		ID3DBlob *pCode;
 		ID3DBlob *pError;
 		D3DCompile(src, VSLen, vshader, NULL, NULL, "VShader",
 			"vs_4_0_level_9_3", D3DCOMPILE_PREFER_FLOW_CONTROL, 0, &pCode, &pError);
+		if (src&&(!fromCode))
+			free(src);
 		if (pError) {
 			errorLog.append("VertexShader:\n");
 			errorLog.append((char *) pError->GetBufferPointer(),
@@ -302,13 +305,15 @@ dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,in
 			pCode->Release();
 		}
 	}
-	void *PSFile = LoadShaderFile(pshader, "cso", &PSLen);
+	void *PSFile = fromCode?NULL:LoadShaderFile(pshader, "cso", &PSLen);
 	if (!PSFile) {
-		void *src = LoadShaderFile(pshader, "hlsl", &PSLen);
+		void *src = fromCode?(void *)pshader:LoadShaderFile(pshader, "hlsl", &PSLen);
 		ID3DBlob *pCode;
 		ID3DBlob *pError;
 		D3DCompile(src, PSLen, pshader, NULL, NULL, "PShader",
 			"ps_4_0_level_9_3", D3DCOMPILE_PREFER_FLOW_CONTROL, 0, &pCode, &pError);
+		if (src&&(!fromCode))
+			free(src);
 		if (pError) {
 			errorLog.append("PixelShader:\n");
 			errorLog.append((char *) pError->GetBufferPointer(),

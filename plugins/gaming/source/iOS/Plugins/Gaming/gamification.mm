@@ -54,12 +54,17 @@ public:
 	
 	void showLeaderboard(const char *game, const char *Id)
 	{
-		[GameClass showLeaderboard:[NSString stringWithUTF8String:game] with:[NSString stringWithUTF8String:Id]];
+		[GameClass showLeaderboard:[NSString stringWithUTF8String:game] with:(Id==NULL)?nil:[NSString stringWithUTF8String:Id]];
 	}
 	
 	void reportAchievement(const char *game, const char *Id, int steps, int immediate)
 	{
 		[GameClass reportAchievement:[NSString stringWithUTF8String:game] with:[NSString stringWithUTF8String:Id] andSteps:steps with:immediate];
+	}
+	
+	void revealAchievement(const char *game, const char *Id, int immediate)
+	{
+		[GameClass revealAchievement:[NSString stringWithUTF8String:game] with:[NSString stringWithUTF8String:Id] with:immediate];
 	}
 	
 	void loadAchievements(const char *game)
@@ -515,6 +520,14 @@ void game_reportAchievement(const char *game, const char *id, int steps, int imm
 	if(s_game)
 	{
 		s_game->reportAchievement(game, id, steps, immediate);
+	}
+}
+
+void game_revealAchievement(const char *game, const char *id, int immediate)
+{
+	if(s_game)
+	{
+		s_game->revealAchievement(game, id, immediate);
 	}
 }
 

@@ -1,2 +1,0 @@
-MainPackage=C:\gideros_gideros\gideros\winrt_example\giderosgame\giderosgame.Windows\Release\giderosgame.Windows\giderosgame.Windows_2016.6.0.0_Bundle\giderosgame.Windows_2016.6.0.0_Win32.appx
-SymbolPackage=C:\winrt_player\giderosgame.Windows_2016.6.0.0_Test\giderosgame.Windows_2016.6.0.0_Win32.appxsym

@@ -78,12 +78,15 @@ qt.install: buildqt qt.player
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
-	cp -R $(ROOT)/ui/Templates/APK $(RELEASE)/Templates
 	cp -R $(ROOT)/ui/Templates/Eclipse $(RELEASE)/Templates
-	cp -R $(ROOT)/ui/Templates/Xcode4 $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/assets
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/gen
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/res/layout
+	cp -R $(ROOT)/ui/Templates/AndroidStudio $(RELEASE)/Templates
+	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs
+	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/assets
+	mkdir -p $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs
+	cp -R $(ROOT)/ui/Templates/Xcode4 $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
 	mkdir -p $(RELEASE)/Examples
 	cp -R $(ROOT)/samplecode/* $(RELEASE)/Examples
@@ -122,4 +125,7 @@ plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
 	cd $(ROOT)/$*; $(QMAKE) $*_qt5.pro
 	cd $(ROOT)/$*; $(MAKE) 
 
-		
+tools:
+
+bundle:
+	mv $(RELEASE)/Templates $(RELEASE)/Gideros\ Studio.app/Contents

@@ -63,9 +63,17 @@ GPGPlayer *localPlayer;
 
 +(void)showLeaderboard:(NSString*)Id{
     if ([[GPGManager sharedInstance] hasAuthorizer]) {
-        GPGLeaderboardController *leadController = [[GPGLeaderboardController alloc] initWithLeaderboardId:Id];
-        leadController.leaderboardDelegate = [[GooglePlayService alloc] init];
-        [g_getRootViewController() presentViewController:leadController animated:YES completion:nil];
+    	if (Id==NULL) {
+			GPGLeaderboardsController* leadController = [[[GPGLeaderboardsController alloc] init] autorelease];
+			leadController.leaderboardsDelegate = [[GooglePlayService alloc] init];
+			[g_getRootViewController() presentViewController:leadController animated:YES completion:nil];
+		}
+		else
+		{
+        	GPGLeaderboardController *leadController = [[GPGLeaderboardController alloc] initWithLeaderboardId:Id];
+        	leadController.leaderboardDelegate = [[GooglePlayService alloc] init];
+        	[g_getRootViewController() presentViewController:leadController animated:YES completion:nil];
+        }
     }
 }
 
@@ -379,4 +387,7 @@ GPGPlayer *localPlayer;
     [g_getRootViewController() dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)leaderboardsViewControllerDidFinish:(GPGLeaderboardsController *)viewController {
+    [g_getRootViewController() dismissViewControllerAnimated:YES completion:nil];
+}
 @end

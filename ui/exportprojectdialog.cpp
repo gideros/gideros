@@ -82,8 +82,6 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->winrt_package->setText(properties->winrt_package);
     ui->html5_host->setText(properties->html5_host);
     ui->html5_mem->setText(QString::number(properties->html5_mem));
-    ui->app_icon->setText(properties->app_icon);
-    ui->app_icon_noexport->setChecked(properties->app_icon_noexport);
     plugins=properties->plugins;
 
     if (licensed)
@@ -245,8 +243,6 @@ void ExportProjectDialog::onAccepted()
     properties_->encryptAssets = ui->encryptAssets->isChecked();
     properties_->html5_host = ui->html5_host->text();
     properties_->html5_mem = ui->html5_mem->text().toInt();
-    properties_->app_icon = ui->app_icon->text();
-    properties_->app_icon_noexport = ui->app_icon_noexport->isChecked();
     properties_->plugins=plugins;
 
     for (int tab=xmlTabStart;tab<ui->architectureTab->count();tab++)

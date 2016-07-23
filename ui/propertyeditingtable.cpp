@@ -13,6 +13,8 @@ PropertyEditingTable::PropertyEditingTable(QWidget *parent) :
 	labels << "Property" << "Value" << "";
 	setColumnCount(3);
 	setHorizontalHeaderLabels(labels);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+     setSelectionMode(QAbstractItemView::SingleSelection);
 
 	mapper = new QSignalMapper(this);
 
@@ -22,6 +24,7 @@ connect(mapper, SIGNAL(mapped(int)),
 
 void PropertyEditingTable::fill(QDomElement xml,
 	QMap<QString, QString> values) {
+	clearContents();
 QDomNodeList exprops = xml.elementsByTagName("property");
 setRowCount(exprops.count());
 for (int k = 0; k < exprops.count(); k++) {
@@ -31,7 +34,7 @@ for (int k = 0; k < exprops.count(); k++) {
 
 	item = new QTableWidgetItem(exprop.attribute("title"));
 	QString propDesc = exprop.attribute("description");
-	item->setFlags(Qt::ItemIsEnabled);
+    item->setFlags((item->flags()|Qt::ItemIsEnabled)&(~Qt::ItemIsEditable));
 	if (!propDesc.isEmpty())
 		item->setToolTip(propDesc);
 	setItem(k, 0, item);

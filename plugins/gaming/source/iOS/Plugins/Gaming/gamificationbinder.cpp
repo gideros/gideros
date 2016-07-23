@@ -132,6 +132,11 @@ public:
 		game_reportAchievement(type_, id, steps, immediate);
 	}
 	
+	void revealAchievement(const char *id, int immediate)
+	{
+		game_revealAchievement(type_, id, immediate);
+	}
+
 	void loadAchievements()
 	{
 		game_loadAchievements(type_);
@@ -589,7 +594,7 @@ static int logout(lua_State *L)
 static int showLeaderboard(lua_State *L)
 {
 	Game *game = getInstance(L, 1);
-	const char *id = luaL_checkstring(L, 2);
+	const char *id = luaL_optstring(L, 2, NULL);
 	game->showLeaderboard(id);
     return 0;
 }
@@ -633,6 +638,31 @@ static int reportAchievement(lua_State* L)
 	
 	game->reportAchievement(id, numSteps, immediate);
 	
+	return 0;
+}
+
+static int incrementAchievement(lua_State* L)
+{
+	Game *game = getInstance(L, 1);
+
+	const char* id = luaL_checkstring(L, 2);
+	double numSteps = luaL_checkinteger(L, 3);
+	int immediate = lua_toboolean(L, 4);
+
+	game->reportAchievement(id, -numSteps, immediate);
+
+	return 0;
+}
+
+static int revealAchievement(lua_State* L)
+{
+	Game *game = getInstance(L, 1);
+
+	const char* id = luaL_checkstring(L, 2);
+	int immediate = lua_toboolean(L, 3);
+
+	game->revealAchievement(id, immediate);
+
 	return 0;
 }
 
@@ -739,6 +769,8 @@ static int loader(lua_State *L)
         {"reportScore", reportScore},
         {"showAchievements", showAchievements},
         {"reportAchievement", reportAchievement},
+        {"incrementAchievement", incrementAchievement},
+        {"revealAchievement", revealAchievement},
         {"loadAchievements", loadAchievements},
         {"loadScores", loadScores},
 		{"loadState", loadState},

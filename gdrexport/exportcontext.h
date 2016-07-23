@@ -41,6 +41,7 @@ struct ExportContext
 	QString templatename;
 	QString templatenamews;
 	QDir outputDir;
+        QDir exportDir;
     QList<QStringList> wildcards;
     QList<QList<QPair<QByteArray, QByteArray> > > replaceList;
     QList<QPair<QString, QString> > renameList;
@@ -61,6 +62,9 @@ struct ExportContext
     QStringList luafiles_abs;
     //Icons
     QImage *appicon;
+    QImage *tvicon;
+    QImage *splash_h_image;
+    QImage *splash_v_image;
 };
 
 

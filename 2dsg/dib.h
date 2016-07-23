@@ -48,6 +48,11 @@ public:
 		return height_;
 	}
 
+	unsigned char *dataArray()
+	{
+		return &data_[0];
+	}
+
 	int originalWidth() const
 	{
 		return originalWidth_;

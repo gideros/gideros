@@ -164,6 +164,11 @@ public class GameGamecircle implements GameInterface {
 	}
 
 	@Override
+	public void revealAchievement(String id, int immediate) {
+		Game.reportAchievementError(this, id, Game.FEATURE_NOT_SUPPORTED);
+	}
+
+	@Override
 	public void loadAchievements() {
 		if(agsClient != null)
 		{
