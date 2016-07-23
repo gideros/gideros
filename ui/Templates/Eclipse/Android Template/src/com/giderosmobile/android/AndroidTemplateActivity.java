@@ -16,6 +16,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.graphics.PixelFormat;
+import android.view.SurfaceHolder;
 
 import com.giderosmobile.android.player.*;
 
@@ -52,7 +54,11 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	{
 		super.onCreate(savedInstanceState);
 				
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);
         mGLView = new GiderosGLSurfaceView(this);
+        mGLView.setZOrderOnTop(true);
+        SurfaceHolder giderosTrackHolder = mGLView.getHolder();
+        giderosTrackHolder.setFormat(PixelFormat.TRANSPARENT);
 		setContentView(mGLView);
 		mGLView.setOnTouchListener(this);
 		
