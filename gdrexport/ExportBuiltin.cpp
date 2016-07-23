@@ -330,6 +330,11 @@ void ExportBuiltin::doExport(ExportContext *ctx)
            ExportCommon::appIcon(ctx,96,96,QString("res/drawable-xhdpi/icon.png"));
            ExportCommon::appIcon(ctx,144,144,QString("res/drawable-xxhdpi/icon.png"));
            ExportCommon::appIcon(ctx,192,192,QString("res/drawable-xxxhdpi/icon.png"));
+           ExportCommon::appIcon(ctx,96,96,QString("res/drawable/app_icon.png"));
+
+           //tv stuff
+           ExportCommon::appIcon(ctx,732,412,QString("res/drawable-xhdpi/ouya_icon.png"));
+           ExportCommon::appIcon(ctx,320,180,QString("res/drawable/icon.png"));
 
            if(ctx->properties.orientation == 0 || ctx->properties.orientation == 2){
                ExportCommon::splashVImage(ctx,200,320,QString("res/drawable-ldpi/splash.png"));
@@ -425,6 +430,12 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ExportCommon::splashVImage(ctx,640,1136,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash640x1136.png"));
         ExportCommon::splashVImage(ctx,750,1334,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash750x1334.png"));
         ExportCommon::splashVImage(ctx,1242,2208,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1242x2208.png"));
+
+        //tv stuff
+        ExportCommon::splashHImage(ctx,1920,1080,QString(ctx->base+" iOS/Images.xcassets/TVLaunchImage.launchimage/Splash1920x1080.png"));
+        ExportCommon::tvIcon(ctx,1920,720,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1920x720.png"));
+        ExportCommon::tvIcon(ctx,1280,768,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"));
+        ExportCommon::tvIcon(ctx,400,240,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"));
    }
 
 #ifdef Q_OS_MACX
