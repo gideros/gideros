@@ -412,19 +412,18 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
 
         ExportCommon::splashHImage(ctx,1024,768,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1024x768.png"));
+        ExportCommon::splashHImage(ctx,1024,748,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1024x748.png"));
         ExportCommon::splashHImage(ctx,2048,1536,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash2048x1536.png"));
-        ExportCommon::splashHImage(ctx,480,320,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash480x320.png"));
-        ExportCommon::splashHImage(ctx,960,640,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash960x640.png"));
-        ExportCommon::splashHImage(ctx,1136,640,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1136x640.png"));
-        ExportCommon::splashHImage(ctx,1334,750,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1334x750.png"));
+        ExportCommon::splashHImage(ctx,2048,1496,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash2048x1496.png"));
         ExportCommon::splashHImage(ctx,2208,1242,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash2208x1242.png"));
 
         ExportCommon::splashVImage(ctx,768,1024,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash768x1024.png"));
+        ExportCommon::splashVImage(ctx,768,1004,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash768x1004.png"));
         ExportCommon::splashVImage(ctx,1536,2048,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1536x2048.png"));
-        ExportCommon::splashVImage(ctx,320,480,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash320x480.png"));
+        ExportCommon::splashVImage(ctx,1536,2008,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1536x2008.png"));
         ExportCommon::splashVImage(ctx,640,960,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash640x960.png"));
         ExportCommon::splashVImage(ctx,640,1136,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash640x1136.png"));
-        ExportCommon::splashVImage(ctx,750,1334,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash7501334.png"));
+        ExportCommon::splashVImage(ctx,750,1334,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash750x1334.png"));
         ExportCommon::splashVImage(ctx,1242,2208,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1242x2208.png"));
    }
 
