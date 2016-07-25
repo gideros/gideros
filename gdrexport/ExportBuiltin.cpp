@@ -319,7 +319,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    //exporting icons
    if (ctx->deviceFamily == e_Html5)
    {
-	   ExportCommon::appIcon(ctx,615,215,QString("gideros.png"));
+       ExportCommon::splashHImage(ctx,615,215,QString("gideros.png"));
 	   ExportCommon::appIcon(ctx,64,64,QString("favicon.png"));
    }
    else if(ctx->deviceFamily == e_Android){
