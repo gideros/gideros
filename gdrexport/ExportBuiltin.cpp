@@ -319,7 +319,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    //exporting icons
    if (ctx->deviceFamily == e_Html5)
    {
-	   ExportCommon::appIcon(ctx,615,215,QString("gideros.png"));
+       ExportCommon::splashHImage(ctx,615,215,QString("gideros.png"));
 	   ExportCommon::appIcon(ctx,64,64,QString("favicon.png"));
    }
    else if(ctx->deviceFamily == e_Android){
@@ -330,6 +330,11 @@ void ExportBuiltin::doExport(ExportContext *ctx)
            ExportCommon::appIcon(ctx,96,96,QString("res/drawable-xhdpi/icon.png"));
            ExportCommon::appIcon(ctx,144,144,QString("res/drawable-xxhdpi/icon.png"));
            ExportCommon::appIcon(ctx,192,192,QString("res/drawable-xxxhdpi/icon.png"));
+           ExportCommon::appIcon(ctx,96,96,QString("res/drawable/app_icon.png"));
+
+           //tv stuff
+           ExportCommon::appIcon(ctx,732,412,QString("res/drawable-xhdpi/ouya_icon.png"));
+           ExportCommon::appIcon(ctx,320,180,QString("res/drawable/icon.png"));
 
            if(ctx->properties.orientation == 0 || ctx->properties.orientation == 2){
                ExportCommon::splashVImage(ctx,200,320,QString("res/drawable-ldpi/splash.png"));
@@ -412,20 +417,25 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
 
         ExportCommon::splashHImage(ctx,1024,768,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1024x768.png"));
+        ExportCommon::splashHImage(ctx,1024,748,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1024x748.png"));
         ExportCommon::splashHImage(ctx,2048,1536,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash2048x1536.png"));
-        ExportCommon::splashHImage(ctx,480,320,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash480x320.png"));
-        ExportCommon::splashHImage(ctx,960,640,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash960x640.png"));
-        ExportCommon::splashHImage(ctx,1136,640,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1136x640.png"));
-        ExportCommon::splashHImage(ctx,1334,750,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1334x750.png"));
+        ExportCommon::splashHImage(ctx,2048,1496,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash2048x1496.png"));
         ExportCommon::splashHImage(ctx,2208,1242,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash2208x1242.png"));
 
         ExportCommon::splashVImage(ctx,768,1024,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash768x1024.png"));
+        ExportCommon::splashVImage(ctx,768,1004,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash768x1004.png"));
         ExportCommon::splashVImage(ctx,1536,2048,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1536x2048.png"));
-        ExportCommon::splashVImage(ctx,320,480,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash320x480.png"));
+        ExportCommon::splashVImage(ctx,1536,2008,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1536x2008.png"));
         ExportCommon::splashVImage(ctx,640,960,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash640x960.png"));
         ExportCommon::splashVImage(ctx,640,1136,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash640x1136.png"));
-        ExportCommon::splashVImage(ctx,750,1334,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash7501334.png"));
+        ExportCommon::splashVImage(ctx,750,1334,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash750x1334.png"));
         ExportCommon::splashVImage(ctx,1242,2208,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1242x2208.png"));
+
+        //tv stuff
+        ExportCommon::splashHImage(ctx,1920,1080,QString(ctx->base+" iOS/Images.xcassets/TVLaunchImage.launchimage/Splash1920x1080.png"));
+        ExportCommon::tvIcon(ctx,1920,720,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1920x720.png"));
+        ExportCommon::tvIcon(ctx,1280,768,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"));
+        ExportCommon::tvIcon(ctx,400,240,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"));
    }
 
 #ifdef Q_OS_MACX

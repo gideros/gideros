@@ -12,12 +12,19 @@ import android.content.Intent;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.Gravity;
+import android.graphics.Color;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.giderosmobile.android.player.*;
+import com.giderosmobile.androidtemplate.R;
 
 public class AndroidTemplateActivity extends Activity implements OnTouchListener
 {
@@ -46,6 +53,11 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 
 	private boolean mHasFocus = false;
 	private boolean mPlaying = false;
+    
+    private static FrameLayout splashLayout;
+	private static ImageView splash;
+	private static FrameLayout layout;
+	private static int hasSplash = -1;
 		
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -55,6 +67,41 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
         mGLView = new GiderosGLSurfaceView(this);
 		setContentView(mGLView);
 		mGLView.setOnTouchListener(this);
+        
+		if(getResources().getIdentifier("splash", "drawable", getPackageName()) != 0){
+			layout = (FrameLayout)getWindow().getDecorView();
+			hasSplash = 11;
+			//create a layout for animation
+			splashLayout = new FrameLayout(this);
+			//parameters for layout
+			FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+		                FrameLayout.LayoutParams.MATCH_PARENT ,
+		                FrameLayout.LayoutParams.MATCH_PARENT,
+		                Gravity.CENTER);
+			splashLayout.setLayoutParams(params);
+			//set background color
+			splashLayout.setBackgroundColor(Color.rgb(255, 255, 255));
+		 
+			//create image view for animation
+			splash = new ImageView(this);
+			//image view parameters
+			FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(
+		                 FrameLayout.LayoutParams.WRAP_CONTENT,
+		                 FrameLayout.LayoutParams.WRAP_CONTENT,
+		                 Gravity.CENTER);
+			splash.setLayoutParams(params2);
+		 
+			//scale your image
+			splash.setScaleType(ImageView.ScaleType.CENTER );
+		 
+			//load image source     
+			splash.setBackgroundResource(R.drawable.splash);
+		
+			//add image view to layout
+			splashLayout.addView(splash);
+			//add image layout to main layout
+			layout.addView(splashLayout);
+		}
 		
 		WeakActivityHolder.set(this);
 
@@ -224,6 +271,27 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
     }
     
     //GIDEROS-ACTIVTIY-METHODS//
+    
+    static public void dismisSplash(){
+    	if(hasSplash == 0){
+    		hasSplash = -1;
+    		new Handler(Looper.getMainLooper()).post(new Runnable() {
+    		    @Override
+    		    public void run() {
+    		    	splashLayout.setVisibility(View.GONE);
+    		    	splash.setBackgroundResource(0);
+    		    	//remove animation view from main layout
+    		    	layout.removeView(splashLayout);
+    		    	splashLayout = null;
+    		    	splash = null;
+    		    	layout = null;
+    		    }
+    		});
+    	}
+    	else if(hasSplash > 0){
+    		hasSplash--;
+    	}
+    }
 }
 
 class GiderosGLSurfaceView extends GLSurfaceView
@@ -274,5 +342,6 @@ class GiderosRenderer implements GLSurfaceView.Renderer
 		GiderosApplication app = GiderosApplication.getInstance();
 		if (app != null)
 			app.onDrawFrame();
+        AndroidTemplateActivity.dismisSplash();
 	}
 }

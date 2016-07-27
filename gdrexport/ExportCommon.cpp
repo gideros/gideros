@@ -60,8 +60,8 @@ void ExportCommon::resizeImage(QImage *image, int width, int height, QString out
     int rwidth = width; //resampled width
     int rheight = height; //resampled height
 
-    int k_w = abs(1-width/iwidth); //width scaling coef
-    int k_h = abs(1-height/iheight); //height scaling koef
+    float k_w = fabs(1-(float)width/(float)iwidth); //width scaling coef
+    float k_h = fabs(1-(float)height/(float)iheight); //height scaling koef
     int dst_x = 0;
     int dst_y = 0;
 
