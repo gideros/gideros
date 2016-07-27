@@ -239,6 +239,7 @@ tmp
 .qmake.stash
 */moc_*.cpp
 */qrc_*.cpp
+moc_*.cpp
 
 # other generated files and folders
 *.exe
