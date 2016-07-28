@@ -235,6 +235,7 @@ public:
 	virtual ~ShaderEngine() { };
 	virtual void reset(bool reinit=false);
 	virtual const char *getVersion()=0;
+	virtual const char *getShaderLanguage()=0;
 	virtual ShaderTexture *createTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
 	virtual ShaderBuffer *createRenderTarget(ShaderTexture *texture)=0;
 	virtual ShaderBuffer *setFramebuffer(ShaderBuffer *fbo)=0;

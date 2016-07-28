@@ -44,12 +44,12 @@ void ExportProgress::onStandardOutput()
 	{
 		QString line=QString(outputLog.left(sepPos+1)).trimmed();
 		outputLog.remove(0,sepPos+1);
-		if (line.startsWith(':'))
+		if (line.startsWith("$:$"))
 		{
-			int s1=line.indexOf(":",1);
+			int s1=line.indexOf(":",3);
 			if (s1>=0)
 			{
-				ui->pgExport->setMaximum(line.mid(1,s1-1).toInt());
+				ui->pgExport->setMaximum(line.mid(3,s1-3).toInt());
 				int s2=line.indexOf(":",s1+1);
 				if (s2>=0)
 				{
@@ -64,7 +64,7 @@ void ExportProgress::onStandardOutput()
 				}
 			}
 			else
-				ui->pgExport->setMaximum(line.mid(1).toInt());
+				ui->pgExport->setMaximum(line.mid(3).toInt());
 		}
 		else if (line.startsWith("?:?"))
 		{

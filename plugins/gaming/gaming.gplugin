@@ -7,7 +7,7 @@
  <property name="gmsFwGamecircle" type="boolean" title="Enable Amazon Gamecircle support"/>
  <property name="gmsFwHeyzap" type="boolean" title="Enable Heyzap support"/>
  <property name="gmsFwGamekit" type="boolean" title="Enable GameKit support"/>
- <target name="AndroidStudio">
+ <target name="AndroidStudio,APK">
  	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs/" />
  	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java/" />
  	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/res" dest="app/src/main/res/">

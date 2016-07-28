@@ -559,7 +559,7 @@ void Server::tick(NetworkEvent* event)
 			return;
 		}
 
-/*		if (port_)
+		if (port_)
 		{
 			int yes = 1;
 			if (setsockopt(serverSock_, SOL_SOCKET, SO_REUSEADDR, (const char*)&yes, sizeof(int)) == -1)
@@ -568,7 +568,7 @@ void Server::tick(NetworkEvent* event)
 				event->eventCode = eSetReuseAddrError;
 				return;
 			}
-		}*/
+		}
 
 #ifdef IPV6
 		sockaddr_in6 ai_addr;

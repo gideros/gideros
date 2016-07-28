@@ -15,7 +15,7 @@ class ProjectPropertiesDialog : public QDialog
     Q_OBJECT
 
 public:
-	explicit ProjectPropertiesDialog(ProjectProperties* properies, QWidget *parent = 0);
+	explicit ProjectPropertiesDialog(QString projectFileName,ProjectProperties* properies, QWidget *parent = 0);
     ~ProjectPropertiesDialog();
 
 private slots:
@@ -33,6 +33,7 @@ private slots:
 private:
     Ui::ProjectPropertiesDialog *ui;
 	ProjectProperties* properties_;
+	QString projectFileName_;
     QString app_icon;
     QString tv_icon;
     QString splash_h_image;

@@ -193,6 +193,7 @@ static const char *stdPSFShaderCode =
 		"uniform lowp sampler2D fTexture;\n"
 		"uniform mediump vec4 fTexInfo;\n"
 		"void main() {\n"
+		" if (fStepRot.x==0.0) discard;\n"
 		" if (fStepRot.x<0.0)\n"
 	"		 gl_FragColor=fInColor;\n"
 	"	 else\n"

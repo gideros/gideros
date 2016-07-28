@@ -39,8 +39,10 @@ cbuffer cbp : register(b1)
 
 float4 PShader(float4 position : SV_POSITION, float4 color : COLOR, float2 texcoord : TEXCOORD0, float2 steprot : TEXCOORD1) : SV_TARGET
 {
+	if (steprot.x == 0.0)
+		discard;
 	if (steprot.x < 0.0)
-	return color;
+		return color;
 	float2 rad = float2(-0.5,-0.5) + texcoord;
 	if (fTexInfo.x <= 0.0)
 	{

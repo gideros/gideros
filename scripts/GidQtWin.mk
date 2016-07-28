@@ -60,7 +60,6 @@ qt.install: buildqt qt5.install qt.player
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
-	cp -R $(ROOT)/ui/Templates/APK $(RELEASE)/Templates
 	cp -R $(ROOT)/ui/Templates/Eclipse $(RELEASE)/Templates
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/assets
 	mkdir -p $(RELEASE)/Templates/Eclipse/Android\ Template/gen
@@ -79,7 +78,6 @@ qt.install: buildqt qt5.install qt.player
 	cp $(ROOT)/gdrexport/release/gdrexport.exe $(RELEASE)/Tools
 	
 QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
-		opengl32sw libEGL libGLESv2 \
 		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml \
 		Qt5Multimedia Qt5MultimediaQuick_p QT5MultimediaWidgets
 QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
@@ -140,6 +138,13 @@ plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
 tools:
 	cd $(ROOT)/lua514u/src; gcc -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc)
+	cd $(ROOT)/lua514u/src; gcc -shared -o lua51.dll -Wl,--out-implib,lua51.a $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lgc\
+			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
+	cd $(ROOT)/lua514u/src; gcc -o lua lua.c lua51.a
+	#cd $(ROOT)/lua514u/src; gcc -o lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
+			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
 	
 bundle:
 	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins

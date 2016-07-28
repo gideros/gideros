@@ -55,6 +55,7 @@ int main(int argc, char *argv[]){
     QCoreApplication::setOrganizationName(Constants::ORGANIZATION_NAME);
     QCoreApplication::setOrganizationDomain(Constants::ORGANIZATION_DOMAIN);
     QCoreApplication::setApplicationName(Constants::PLAYER_APPLICATION_NAME);
+    QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 
