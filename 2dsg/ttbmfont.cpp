@@ -254,7 +254,7 @@ TTBMFont::~TTBMFont()
         application_->getTextureManager()->destroyTexture(data_);
 }
 
-void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing) const
+void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, float minx, float miny) const
 {
     int size = 0;
     for (const wchar32_t *t = text; *t; ++t, ++size)

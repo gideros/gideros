@@ -16,6 +16,7 @@ public:
     TextField(Application *application);
     TextField(Application *application, BMFontBase* font);
     TextField(Application *application, BMFontBase* font, const char* text);
+    TextField(Application *application, BMFontBase* font, const char* text, const char *sample);
 
 	virtual ~TextField()
 	{
@@ -23,7 +24,7 @@ public:
 			font_->unref();
 	}
 
-	void setFont(Font* font);
+    virtual void setFont(FontBase* font);
 
 	virtual void setText(const char* text);
 	virtual const char* text() const;
@@ -33,6 +34,11 @@ public:
 
     virtual void setLetterSpacing(float letterSpacing);
     virtual float letterSpacing() const;
+
+    virtual float lineHeight() const;
+
+    virtual void setSample(const char* sample);
+    virtual const char* sample() const;
 
 	void createGraphics();
 
@@ -49,6 +55,7 @@ private:
 	GraphicsBase graphicsBase_;
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
     float minx_, miny_, maxx_, maxy_;
+    int sminx, sminy, smaxx, smaxy;
 };
 
 #endif

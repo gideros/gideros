@@ -44,7 +44,7 @@ public:
     {
     }
 
-    virtual void drawText(GraphicsBase *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing) const = 0;
+    virtual void drawText(GraphicsBase *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing, float minx, float miny) const = 0;
 };
 
 

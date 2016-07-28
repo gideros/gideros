@@ -3,6 +3,7 @@
 #include "application.h"
 #include "texturemanager.h"
 #include "ogl.h"
+#include <utf8.h>
 
 TTTextField::TTTextField(Application* application, TTFont* font) : TextFieldBase(application)
 {
@@ -20,6 +21,23 @@ TTTextField::TTTextField(Application* application, TTFont* font) : TextFieldBase
 
 TTTextField::TTTextField(Application* application, TTFont* font, const char* text) : TextFieldBase(application)
 {
+    font_ = font;
+    font_->ref();
+
+    data_ = NULL;
+
+    text_ = text;
+    updateWide();
+
+    textColor_ = 0;
+
+    letterSpacing_ = 0;
+
+    createGraphics();
+}
+
+TTTextField::TTTextField(Application* application, TTFont* font, const char* text, const char* sample) : TextFieldBase(application)
+{
 	font_ = font;
 	font_->ref();
 
@@ -28,11 +46,18 @@ TTTextField::TTTextField(Application* application, TTFont* font, const char* tex
 	text_ = text;
 	updateWide();
 
+    sample_ = sample;
+
 	textColor_ = 0;
 
 	letterSpacing_ = 0;
 
-	createGraphics();
+    size_t wsize = utf8_to_wchar(sample_.c_str(), sample_.size(), NULL, 0, 0);
+    wsample_.resize(wsize);
+    utf8_to_wchar(sample_.c_str(), sample_.size(), &wsample_[0], wsize, 0);
+    font_->renderFont(wsample_.c_str(), letterSpacing_, &sminx, &sminy, &smaxx, &smaxy);
+
+    createGraphics();
 }
 
 TTTextField::~TTTextField()
@@ -66,8 +91,16 @@ void TTTextField::createGraphics()
 
     int ascender = font_->getAscender();
 
-	int minx, miny, maxx, maxy;
+    int minx, miny, maxx, maxy;
     Dib dib = font_->renderFont(wtext_.c_str(), letterSpacing_, &minx, &miny, &maxx, &maxy);
+
+    if (!wsample_.empty())
+    {
+        minx = minx - sminx;
+        miny = miny - sminy;
+        maxx = maxx - sminx;
+        maxy = maxy - sminy;
+    }
 
     int dx = minx - 1;
     int dy = miny - 1;
@@ -133,6 +166,17 @@ void TTTextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, 
 	graphicsBase_.draw(shader_);
 }
 
+void TTTextField::setFont(FontBase* font)
+{
+    if (font->getType() != FontBase::eTTFont) return;
+
+    font_->unref();
+    font_ = static_cast<TTFont*>(font);;
+    font_->ref();
+
+    createGraphics();
+}
+
 void TTTextField::setText(const char* text)
 {
 	if (strcmp(text, text_.c_str()) == 0)
@@ -179,3 +223,24 @@ float TTTextField::letterSpacing() const
 	return letterSpacing_;
 }
 
+float TTTextField::lineHeight() const
+{
+    return smaxy - sminy;
+}
+
+void TTTextField::setSample(const char* sample)
+{
+    sample_ = sample;
+
+    size_t wsize = utf8_to_wchar(sample_.c_str(), sample_.size(), NULL, 0, 0);
+    wsample_.resize(wsize);
+    utf8_to_wchar(sample_.c_str(), sample_.size(), &wsample_[0], wsize, 0);
+    font_->renderFont(wsample_.c_str(), letterSpacing_, &sminx, &sminy, &smaxx, &smaxy);
+
+    createGraphics();
+}
+
+const char* TTTextField::sample() const
+{
+    return sample_.c_str();
+}
