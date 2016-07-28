@@ -45,6 +45,7 @@ TextureBase::TextureBase(	Application* application,
 	parameters.transparentcolor = transparentcolor;
 
 	Dib dib(application, width, height, true);
+	if (pixels)
 	for (unsigned int y=0;y<height;y++)
 		memcpy(dib.dataArray()+y*dib.width()*4,pixels+y*width*4,width*4);
 
