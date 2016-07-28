@@ -14,12 +14,16 @@ TextFieldBinder::TextFieldBinder(lua_State* L)
 	Binder binder(L);
 
 	static const luaL_Reg functionList[] = {
+        {"setFont", setFont},
 		{"getText", getText},
 		{"setText", setText},
 		{"getTextColor", getTextColor},
 		{"setTextColor", setTextColor},
 		{"getLetterSpacing", getLetterSpacing},
 		{"setLetterSpacing", setLetterSpacing},
+        {"getLineHeight", getLineHeight},
+        {"getSample", getSample},
+        {"setSample", setSample},
 		{NULL, NULL},
 	};
 
@@ -42,19 +46,26 @@ int TextFieldBinder::create(lua_State* L)
 		font = static_cast<FontBase*>(binder.getInstance("FontBase", 1));
 
 	const char* str2 = lua_tostring(L, 2);
+    const char* str3 = lua_tostring(L, 3);
 
     switch (font->getType())
     {
         case FontBase::eFont:
         case FontBase::eTTBMFont:
             if (str2)
-                textField = new TextField(application->getApplication(), static_cast<BMFontBase*>(font), str2);
+                if (str3)
+                    textField = new TextField(application->getApplication(), static_cast<BMFontBase*>(font), str2, str3);
+                else
+                    textField = new TextField(application->getApplication(), static_cast<BMFontBase*>(font), str2);
             else
                 textField = new TextField(application->getApplication(), static_cast<BMFontBase*>(font));
             break;
         case FontBase::eTTFont:
             if (str2)
-                textField = new TTTextField(application->getApplication(), static_cast<TTFont*>(font), str2);
+                if (str3)
+                    textField = new TTTextField(application->getApplication(), static_cast<TTFont*>(font), str2, str3);
+                else
+                    textField = new TTTextField(application->getApplication(), static_cast<TTFont*>(font), str2);
             else
                 textField = new TTTextField(application->getApplication(), static_cast<TTFont*>(font));
             break;
@@ -105,6 +116,21 @@ int TextFieldBinder::destruct(lua_State* L)
 
 	return 0;
 }
+
+
+int TextFieldBinder::setFont(lua_State* L)
+{
+    StackChecker checker(L, "TextFieldBinder::setFont", 0);
+
+    Binder binder(L);
+    TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+    FontBase* font = static_cast<FontBase*>(binder.getInstance("FontBase", 2));
+
+    textField->setFont(font);
+
+    return 0;
+}
+
 
 int TextFieldBinder::getText(lua_State* L)
 {
@@ -179,4 +205,41 @@ int TextFieldBinder::setLetterSpacing(lua_State* L)
     textField->setLetterSpacing(luaL_checknumber(L, 2));
 
 	return 0;
+}
+
+int TextFieldBinder::getLineHeight(lua_State* L)
+{
+    StackChecker checker(L, "TextFieldBinder::getLineHeight", 1);
+
+    Binder binder(L);
+    TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+
+    lua_pushnumber(L, textField->lineHeight());
+
+    return 1;
+}
+
+int TextFieldBinder::getSample(lua_State* L)
+{
+    StackChecker checker(L, "TextFieldBinder::getSample", 1);
+
+    Binder binder(L);
+    TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+
+    lua_pushstring(L, textField->sample());
+
+    return 1;
+}
+
+int TextFieldBinder::setSample(lua_State* L)
+{
+    StackChecker checker(L, "TextFieldBinder::setSample", 0);
+
+    Binder binder(L);
+    TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+
+    const char* sample = luaL_checkstring(L, 2);
+    textField->setSample(sample);
+
+    return 0;
 }
