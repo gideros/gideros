@@ -1,8 +1,10 @@
 #include "gideros.h"
 #include "lua.h"
+#include "luautil.h"
 #include "lauxlib.h"
 #include "camerabinder.h"
 #include "binder.h"
+#include "luaapplication.h"
 
 TextureBase *cameraplugin::cameraTexture=NULL;
 
@@ -16,9 +18,19 @@ static int start(lua_State* L)
 	textureBase->ref();
 	cameraplugin::cameraTexture=textureBase;
 
-	cameraplugin::start();
+	lua_getglobal(L,"application");
+	(void)binder.getInstance("Application", -1);
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+	lua_pop(L,1);
 
-	return 0;
+	Orientation orientation = application->orientation();
+
+	int camwidth,camheight;
+	cameraplugin::start(orientation,&camwidth,&camheight);
+	lua_pushnumber(L,camwidth);
+	lua_pushnumber(L,camheight);
+
+	return 2;
 }
 
 static int stop(lua_State* L)
