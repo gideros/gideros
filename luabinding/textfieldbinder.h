@@ -12,6 +12,8 @@ private:
 	static int create(lua_State* L);
 	static int destruct(lua_State* L);
 
+    static int setFont(lua_State* L);
+
 	static int getText(lua_State* L);
 	static int setText(lua_State* L);
 
@@ -20,6 +22,11 @@ private:
 
 	static int getLetterSpacing(lua_State* L);
 	static int setLetterSpacing(lua_State* L);
+
+    static int getLineHeight(lua_State* L);
+
+    static int getSample(lua_State* L);
+    static int setSample(lua_State* L);
 };
 
 #endif

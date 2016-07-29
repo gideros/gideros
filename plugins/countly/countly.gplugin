@@ -1,0 +1,39 @@
+<plugin
+ name="Countly"
+ description="Basic Countly functionality">
+  <target name="AndroidStudio,APK">
+    <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;countly&quot;);"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.countly.GCountly&quot;,"/>
+        </replacelist>
+    </template>
+    <template name="AndroidManifest" path="">
+        <replacelist wildcards="AndroidManifest.xml">
+            <append orig="&lt;!-- TAG:APPLICATION-EXTRA --&gt;" by="        &lt;service android:name=&quot;org.openudid.OpenUDID_service&quot;&gt;
+	    &lt;intent-filter&gt;
+	        &lt;action android:name=&quot;org.openudid.GETUDID&quot; /&gt;
+	    &lt;/intent-filter&gt;"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;countly&quot;);"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.countly.GCountly&quot;,"/>
+        </replacelist>
+    </template>
+    <template name="AndroidManifest" path="">
+        <replacelist wildcards="AndroidManifest.xml">
+            <append orig="&lt;!-- TAG:APPLICATION-EXTRA --&gt;" by="        &lt;service android:name=&quot;org.openudid.OpenUDID_service&quot;&gt;
+	    &lt;intent-filter&gt;
+	        &lt;action android:name=&quot;org.openudid.GETUDID&quot; /&gt;
+	    &lt;/intent-filter&gt;"/>
+        </replacelist>
+    </template>
+ </target>
+</plugin>

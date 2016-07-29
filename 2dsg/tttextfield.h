@@ -11,8 +11,11 @@ class TTTextField : public TextFieldBase
 {
 public:
 	TTTextField(Application* application, TTFont* font);
-	TTTextField(Application* application, TTFont* font, const char* text);
+    TTTextField(Application* application, TTFont* font, const char* text);
+    TTTextField(Application* application, TTFont* font, const char* text, const char *sample);
 	virtual ~TTTextField();
+
+    virtual void setFont(FontBase *font);
 
 	virtual void setText(const char* text);
 	virtual const char* text() const;
@@ -22,6 +25,11 @@ public:
 
     virtual void setLetterSpacing(float letterSpacing);
     virtual float letterSpacing() const;
+
+    virtual float lineHeight() const;
+
+    virtual void setSample(const char* sample);
+    virtual const char* sample() const;
 
 private:
 	void createGraphics();
@@ -35,6 +43,7 @@ private:
 	unsigned int textColor_;
     float letterSpacing_;
 	float minx_, miny_, maxx_, maxy_;
+    int sminx, sminy, smaxx, smaxy;
 };
 
 

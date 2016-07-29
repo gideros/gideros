@@ -1049,7 +1049,8 @@ TextInputDialog.PHONE - value "phone"
 TextInputDialog.TEXT - value "text"
 TextInputDialog.URL - value "url"
 Texture > TextureBase
-Texture.new(filename, filtering, options) Texture - creates a new Texture object
+Texture.new(pixels, width, height [, filtering, options]) Texture
+Texture.new(filename, filtering [, options]) Texture - creates a new Texture object
 TextureBase > Object
 texturebase
 getHeight() TextureBase - returns the height of the texture in pixels

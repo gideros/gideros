@@ -1,0 +1,41 @@
+<plugin
+ name="Google Licensing plugin"
+ description="Provides licensing functionality for Google Play Store">
+  <target name="AndroidStudio,APK">
+    <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;googlelicensing&quot;);"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.googlelicensing.GoogleLVL&quot;,"/>
+        </replacelist>
+    </template>
+    <template name="AndroidManifest" path="">
+        <replacelist wildcards="AndroidManifest.xml">
+            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;com.android.vending.CHECK_LICENSE&quot; /&gt;"/>
+            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;android.permission.WAKE_LOCK&quot; /&gt;"/>
+            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;"/>
+            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;service android:name=&quot;com.giderosmobile.android.plugins.googlelicensing.GiderosAPKDownloader&quot; /&gt;"/>
+            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;receiver android:name=&quot;com.giderosmobile.android.plugins.googlelicensing.GiderosDownloadReceiver&quot; /&gt;"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;googlelicensing&quot;);"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.googlelicensing.GoogleLVL&quot;,"/>
+        </replacelist>
+    </template>
+    <template name="AndroidManifest" path="">
+        <replacelist wildcards="AndroidManifest.xml">
+            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;com.android.vending.CHECK_LICENSE&quot; /&gt;"/>
+            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;android.permission.WAKE_LOCK&quot; /&gt;"/>
+            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;"/>
+            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;service android:name=&quot;com.giderosmobile.android.plugins.googlelicensing.GiderosAPKDownloader&quot; /&gt;"/>
+            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;receiver android:name=&quot;com.giderosmobile.android.plugins.googlelicensing.GiderosDownloadReceiver&quot; /&gt;"/>
+        </replacelist>
+    </template>
+ </target>
+</plugin>

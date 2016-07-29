@@ -23,7 +23,7 @@ public:
         return eTTBMFont;
     }
 
-    virtual void drawText(GraphicsBase *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing) const;
+    virtual void drawText(GraphicsBase *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing, float minx, float miny) const;
 
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy) const;
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1) const;
