@@ -56,6 +56,24 @@ int gimage_parseImage(const char *pathname, int *width, int *height, int *comp)
     return GIMAGE_UNRECOGNIZED_FORMAT;
 }
 
+int gimage_saveImage(const char *pathname, int width, int height, unsigned char *data)
+{
+    G_FILE* f = g_fopen(pathname, "wb");
+    if (f == NULL)
+        return GIMAGE_CANNOT_OPEN_FILE;
+    g_fclose(f);
+
+    switch (getTypeFromPath(pathname))
+    {
+        case GIMAGE_PNG:
+            return gimage_savePng(pathname, width, height, data);
+        case GIMAGE_JPG:
+            return gimage_saveJpg(pathname, width, height, data);
+    }
+
+    return GIMAGE_UNRECOGNIZED_FORMAT;
+}
+
 
 int gimage_loadImage(const char *pathname, void *buf)
 {

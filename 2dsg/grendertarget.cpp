@@ -2,6 +2,7 @@
 #include "application.h"
 #include "sprite.h"
 #include "ogl.h"
+#include <gimage.h>
 
 GRenderTarget::GRenderTarget(Application *application, int width, int height, Filter filter) :
     TextureBase(application)
@@ -82,4 +83,13 @@ void GRenderTarget::getPixels(int x,int y,int w,int h,void *buffer)
 {
     ShaderBuffer *fbo=gtexture_RenderTargetGetFBO(data->gid);
     fbo->readPixels(x,y,w,h, ShaderTexture::FMT_RGBA, ShaderTexture::PK_UBYTE, buffer);
+}
+
+int GRenderTarget::save(const char *filename,int x,int y,int w,int h)
+{
+	unsigned char *buffer=(unsigned char *) malloc(w*h*4);
+	getPixels(x,y,w,h,buffer);
+	int ret=gimage_saveImage(filename,w,h,buffer);
+	free(buffer);
+	return ret;
 }

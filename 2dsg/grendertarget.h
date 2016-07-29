@@ -15,4 +15,5 @@ public:
     void clear(unsigned int color, float a, int x, int y, int w, int h);
     void draw(const Sprite *sprite);
     void getPixels(int x,int y,int w,int h,void *buffer);
+    int save(const char *filename,int x,int y,int w,int h);
 };

@@ -13,6 +13,7 @@ RenderTargetBinder::RenderTargetBinder(lua_State *L)
         {"draw", draw},
 		{"getPixel", getPixel},
 		{"getPixels", getPixels},
+		{"save", save},
         {NULL, NULL},
     };
 
@@ -78,10 +79,10 @@ int RenderTargetBinder::getPixels(lua_State *L)
     Binder binder(L);
 
     GRenderTarget *renderTarget = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 1));
-    int x = luaL_checkinteger(L, 2);
-    int y = luaL_checkinteger(L, 3);
-    unsigned int w = luaL_checkinteger(L, 4);
-    unsigned int h = luaL_checkinteger(L, 5);
+    int x = luaL_optinteger(L, 2, 0);
+    int y = luaL_optinteger(L, 3, 0);
+    unsigned int w = luaL_optinteger(L, 4, renderTarget->data->width);
+    unsigned int h = luaL_optinteger(L, 5, renderTarget->data->height);
     size_t bsize=w*h*4;
 
     void *buffer=malloc(bsize);
@@ -121,4 +122,33 @@ int RenderTargetBinder::getPixel(lua_State *L)
     lua_pushnumber(L,((float)pixel[3])/255.0);
 
     return 2;
+}
+
+int RenderTargetBinder::save(lua_State *L)
+{
+    Binder binder(L);
+
+    GRenderTarget *renderTarget = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 1));
+    const char *filename=luaL_checkstring(L,2);
+    int x = luaL_optinteger(L, 3, 0);
+    int y = luaL_optinteger(L, 4, 0);
+    unsigned int w = luaL_optinteger(L, 5, renderTarget->data->width);
+    unsigned int h = luaL_optinteger(L, 6, renderTarget->data->height);
+    if (x<0)
+    {
+    	w=w+x;
+    	x=0;
+    }
+    if (y<0)
+    {
+    	h=h+y;
+    	y=0;
+    }
+    if ((w>0)&&(h>0))
+    {
+    	renderTarget->save(filename,x,y,w,h);
+    }
+    //TODO error reporting
+
+    return 0;
 }

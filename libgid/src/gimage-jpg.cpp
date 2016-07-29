@@ -3,6 +3,7 @@
 #include <jpeglib.h>
 #include <jerror.h>
 #include <setjmp.h>
+#include <cstdlib>
 
 /* from from jinclude.h (jpeg-8d) */
 /*
@@ -24,6 +25,10 @@
 #define JFREAD(file,buf,sizeofbuf)  \
   ((size_t) g_fread((void *) (buf), (size_t) 1, (size_t) (sizeofbuf), (file)))
 
+#undef JFWRITE
+#define JFWRITE(file,buf,sizeofbuf)  \
+  ((size_t) g_fwrite((void *) (buf), (size_t) 1, (size_t) (sizeofbuf), (file)))
+
 
 /* from jdatasrc.c (jpeg-8d) */
 /* Expanded data source object for stdio input */
@@ -39,6 +44,73 @@ typedef struct {
 typedef my_source_mgr * my_src_ptr;
 
 #define INPUT_BUF_SIZE  4096	/* choose an efficiently fread'able size */
+
+typedef struct {
+  struct jpeg_destination_mgr pub; /* public fields */
+
+  G_FILE * outfile;		/* target stream */
+  JOCTET * buffer;		/* start of buffer */
+} my_destination_mgr;
+
+typedef my_destination_mgr * my_dest_ptr;
+
+#define OUTPUT_BUF_SIZE  4096	/* choose an efficiently fwrite'able size */
+
+METHODDEF(void)
+init_destination (j_compress_ptr cinfo)
+{
+  my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
+
+  /* Allocate the output buffer --- it will be released when done with image */
+  dest->buffer = (JOCTET *)
+      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+				  OUTPUT_BUF_SIZE * SIZEOF(JOCTET));
+
+  dest->pub.next_output_byte = dest->buffer;
+  dest->pub.free_in_buffer = OUTPUT_BUF_SIZE;
+}
+
+
+METHODDEF(boolean)
+empty_output_buffer (j_compress_ptr cinfo)
+{
+  my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
+
+  if (JFWRITE(dest->outfile, dest->buffer, OUTPUT_BUF_SIZE) !=
+      (size_t) OUTPUT_BUF_SIZE)
+    ERREXIT(cinfo, JERR_FILE_WRITE);
+
+  dest->pub.next_output_byte = dest->buffer;
+  dest->pub.free_in_buffer = OUTPUT_BUF_SIZE;
+
+  return TRUE;
+}
+
+/*
+ * Terminate destination --- called by jpeg_finish_compress
+ * after all data has been written.  Usually needs to flush buffer.
+ *
+ * NB: *not* called by jpeg_abort or jpeg_destroy; surrounding
+ * application must deal with any cleanup that should happen even
+ * for error exit.
+ */
+
+METHODDEF(void)
+term_destination (j_compress_ptr cinfo)
+{
+  my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
+  size_t datacount = OUTPUT_BUF_SIZE - dest->pub.free_in_buffer;
+
+  /* Write any data remaining in the buffer */
+  if (datacount > 0) {
+    if (JFWRITE(dest->outfile, dest->buffer, datacount) != datacount)
+      ERREXIT(cinfo, JERR_FILE_WRITE);
+  }
+  g_fflush(dest->outfile);
+  /* Make sure we wrote the output file OK */
+  if (g_ferror(dest->outfile))
+    ERREXIT(cinfo, JERR_FILE_WRITE);
+}
 
 
 /*
@@ -215,6 +287,30 @@ jpeg_gstdio_src (j_decompress_ptr cinfo, G_FILE * infile)
   src->pub.next_input_byte = NULL; /* until buffer loaded */
 }
 
+METHODDEF(void)
+jpeg_gstdio_dest (j_compress_ptr cinfo, G_FILE * outfile)
+{
+  my_dest_ptr dest;
+
+  /* The source object and input buffer are made permanent so that a series
+   * of JPEG images can be read from the same file by calling jpeg_stdio_src
+   * only before the first one.  (If we discarded the buffer at the end of
+   * one image, we'd likely lose the start of the next one.)
+   * This makes it unsafe to use this manager and a different source
+   * manager serially with the same JPEG object.  Caveat programmer.
+   */
+  if (cinfo->dest == NULL) {	/* first time for this JPEG object? */
+    cinfo->dest = (struct jpeg_destination_mgr *)
+      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+                  SIZEOF(my_destination_mgr));
+  }
+
+  dest = (my_dest_ptr) cinfo->dest;
+  dest->pub.init_destination = init_destination;
+  dest->pub.empty_output_buffer = empty_output_buffer;
+  dest->pub.term_destination = term_destination;
+  dest->outfile = outfile;
+}
 
 /* from example.c (jpeg-8d) */
 /*
@@ -370,6 +466,60 @@ int gimage_loadJpg(const char *pathname, void *buf)
 
     jpeg_finish_decompress(&cinfo);
     jpeg_destroy_decompress(&cinfo);
+    g_fclose(fp);
+
+    return GIMAGE_NO_ERROR;
+}
+
+int gimage_saveJpg(const char *pathname, int width, int height, unsigned char *data)
+{
+    G_FILE* fp = g_fopen(pathname, "wb");
+
+    if (!fp)
+        return GIMAGE_CANNOT_OPEN_FILE;
+
+    struct jpeg_compress_struct cinfo;
+    struct my_error_mgr jerr;
+
+    jpeg_create_compress(&cinfo);
+    cinfo.err = jpeg_std_error(&jerr.pub);
+    jerr.pub.error_exit = my_error_exit;
+    if (setjmp(jerr.setjmp_buffer))
+    {
+        jpeg_destroy_compress(&cinfo);
+        g_fclose(fp);
+        return GIMAGE_ERROR_WHILE_WRITING;
+    }
+
+        jpeg_gstdio_dest(&cinfo, fp);
+
+        /* Setting the parameters of the output file here */
+        cinfo.image_width = width;
+        cinfo.image_height = height;
+        cinfo.input_components = 3;
+        cinfo.in_color_space = JCS_RGB;
+        /* default compression parameters, we shouldn't be worried about these */
+        jpeg_set_defaults( &cinfo );
+        /* Now do the compression .. */
+        jpeg_start_compress( &cinfo, TRUE );
+        /* like reading a file, this time write one row at a time */
+        unsigned char *row=(unsigned char *) std::malloc(width*3);
+        while( cinfo.next_scanline < cinfo.image_height )
+        {
+        	unsigned char *rrow=row;
+        	for (int x=0;x<width;x++)
+        	{
+        		*(rrow++)=*(data++);
+        		*(rrow++)=*(data++);
+        		*(rrow++)=*(data++);
+        		data++;
+        	}
+            jpeg_write_scanlines( &cinfo, &row, 1 );
+        }
+        std::free(row);
+        /* similar to read file, clean up after we're done compressing */
+        jpeg_finish_compress( &cinfo );
+        jpeg_destroy_compress( &cinfo );
     g_fclose(fp);
 
     return GIMAGE_NO_ERROR;
