@@ -1,6 +1,6 @@
 <plugin
- name="LuaFileSystem"
- description="Providing access to file system">
+ name="Lua Socket"
+ description="Raw socket functionality in Lua">
   <target name="AndroidStudio,APK">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
     <template name="Activity" path="">
