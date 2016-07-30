@@ -1,0 +1,49 @@
+<plugin
+ name="Camera"
+ description="Allow to preview camera content into a gideros Texture">
+  <target name="AndroidStudio,APK">
+    <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;camera&quot;);"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.camera.GCamera&quot;,"/>
+            <append orig="//GIDEROS-ACTIVTIY-PREDRAW//" by="		com.giderosmobile.android.plugins.camera.GCamera.frame();"/>
+        </replacelist>
+    </template>
+    <template name="AndroidManifest" path="">
+        <replacelist wildcards="AndroidManifest.xml">
+            <append>
+            	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            	<by><![CDATA[
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />            	
+            	]]></by>
+            </append>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+           <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;camera&quot;);"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.camera.GCamera&quot;,"/>
+            <append orig="//GIDEROS-ACTIVTIY-PREDRAW//" by="		com.giderosmobile.android.plugins.camera.GCamera.frame();"/>
+        </replacelist>
+    </template>
+   <template name="AndroidManifest" path="">
+        <replacelist wildcards="AndroidManifest.xml">
+            <append>
+            	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            	<by><![CDATA[
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />            	
+            	]]></by>
+            </append>
+        </replacelist>
+    </template>
+ </target>
+</plugin>
