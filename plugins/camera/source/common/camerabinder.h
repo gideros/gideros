@@ -6,8 +6,10 @@
 
 namespace cameraplugin {
 	extern TextureBase *cameraTexture;
+	void init();
 	void start(Orientation orientation,int *camwidth,int *camheight);
 	void stop();
+	void deinit();
 }
 
 #endif

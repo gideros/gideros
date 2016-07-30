@@ -341,7 +341,11 @@ class GiderosRenderer implements GLSurfaceView.Renderer
 	{
 		GiderosApplication app = GiderosApplication.getInstance();
 		if (app != null)
+		{
+			//GIDEROS-ACTIVITY-PREDRAW//
 			app.onDrawFrame();
-        AndroidTemplateActivity.dismisSplash();
+			//GIDEROS-ACTIVITY-POSTDRAW//
+			AndroidTemplateActivity.dismisSplash();
+		}
 	}
 }

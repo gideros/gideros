@@ -45,10 +45,6 @@ static int stop(lua_State* L)
 	return 0;
 }
 
-static int destruct(lua_State* L)
-{
-	stop(L);
-}
 
 static int loader(lua_State* L)
 {
@@ -59,7 +55,8 @@ static int loader(lua_State* L)
 	};
 
 	cameraplugin::cameraTexture=NULL;
-	g_createClass(L, "Camera", NULL, NULL, destruct, functionlist);
+	cameraplugin::init();
+	g_createClass(L, "Camera", NULL, NULL, NULL, functionlist);
 
 	return 0;
 }
@@ -77,6 +74,12 @@ static void g_initializePlugin(lua_State* L)
 
 static void g_deinitializePlugin(lua_State *L)
 {
+	if (cameraplugin::cameraTexture)
+	{
+		cameraplugin::cameraTexture->unref();
+		cameraplugin::cameraTexture=NULL;
+	}
+	cameraplugin::deinit();
 }
 
 REGISTER_PLUGIN("Camera", "1.0")

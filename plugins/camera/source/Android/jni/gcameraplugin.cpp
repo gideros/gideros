@@ -196,9 +196,21 @@ private:
 
 static GCAMERA *s_gcamera = NULL;
 
-void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight) {
+void cameraplugin::init() {
 	if (!s_gcamera)
 		s_gcamera = new GCAMERA;
+}
+
+void cameraplugin::deinit() {
+	if (s_gcamera)
+	{
+		s_gcamera->stop();
+		delete s_gcamera;
+		s_gcamera = NULL;
+	}
+}
+
+void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight) {
 	int o=0;
 	switch (orientation)
 	{
@@ -221,10 +233,6 @@ void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight) {
 void cameraplugin::stop() {
 	if (s_gcamera)
 		s_gcamera->stop();
-	/*{
-		delete s_gcamera;
-		s_gcamera = NULL;
-	}*/
 }
 
 extern "C" {
