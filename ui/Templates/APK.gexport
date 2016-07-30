@@ -54,6 +54,7 @@
 				<replace orig="jksgid_StorePass" by="[[[local.keyStorePass]]]"/>
 				<replace orig="jksgid_KeyPass" by="[[[local.keyAliasPass]]]"/>
 				<replace orig="//signingConfig" by="[[[local.noSigning]]]signingConfig"/>
+				<replace orig="//storeFile" by="[[[local.noSigning]]]storeFile"/>
         	</replacelist>		
 		</template>
 		<mkdir>app/src/main/assets/assets</mkdir>
