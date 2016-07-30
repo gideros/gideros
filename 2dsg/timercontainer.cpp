@@ -58,6 +58,7 @@ void TimerContainer::tick()
 	while (queue_.empty() == false && queue_.begin()->first < clock)
 	{
 		std::vector<Timer*> timers = queue_.begin()->second;
+		double curtime = queue_.begin()->first;
 
 		queue_.erase(queue_.begin());
 
@@ -67,7 +68,7 @@ void TimerContainer::tick()
 
 		for (std::size_t i = 0; i < timers.size(); ++i)
 			if (timers[i]->running() == true)
-				queue_[clock + timers[i]->delay() / 1000].push_back(timers[i]);
+				queue_[curtime + timers[i]->delay() / 1000].push_back(timers[i]);
 	}
 
     while (!eventQueue_.empty())
