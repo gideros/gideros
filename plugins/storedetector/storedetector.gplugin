@@ -1,6 +1,6 @@
 <plugin
- name="LuaFileSystem"
- description="Providing access to file system">
+ name="Store Detector"
+ description="Detecting stores available on the device">
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
