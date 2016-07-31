@@ -225,7 +225,7 @@ float TTTextField::letterSpacing() const
 
 float TTTextField::lineHeight() const
 {
-    return smaxy - sminy;
+    return wsample_.empty()? 0 : smaxy - sminy;
 }
 
 void TTTextField::setSample(const char* sample)
