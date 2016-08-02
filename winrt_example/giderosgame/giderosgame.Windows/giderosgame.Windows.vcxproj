@@ -112,7 +112,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
       <AdditionalDependencies>luasocket.Windows.lib;gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT;..\..\..\winrt\ARM\Debug\gideros.Windows;..\..\..\winrt\ARM\Debug\libgvfswinrt.Windows;..\..\..\winrt\ARM\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store\arm;$(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\ARM\Debug\gideros.Windows;..\..\..\winrt\ARM\Debug\libgvfswinrt.Windows;..\..\..\winrt\ARM\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store\arm;$(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -129,7 +129,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
       <AdditionalDependencies>luasocket.Windows.lib;gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT;..\..\..\winrt\ARM\Release\gideros.Windows;..\..\..\winrt\ARM\Release\libgvfswinrt.Windows;..\..\..\winrt\ARM\Release\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store\arm;$(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\ARM\Release\gideros.Windows;..\..\..\winrt\ARM\Release\libgvfswinrt.Windows;..\..\..\winrt\ARM\Release\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store\arm;$(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>
       </ImageHasSafeExceptionHandlers>
     </Link>
@@ -148,7 +148,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
       <AdditionalDependencies>luasocket.Windows.lib;gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d2d1.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT;..\..\..\winrt\Debug\gideros.Windows;..\..\..\winrt\Debug\libgvfswinrt.Windows;..\..\..\winrt\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\Debug\gideros.Windows;..\..\..\winrt\Debug\libgvfswinrt.Windows;..\..\..\winrt\Debug\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -165,7 +165,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
       <AdditionalDependencies>luasocket.Windows.lib;gideros.Windows.lib;libgvfswinrt.Windows.lib;luawinrt.Windows.lib;xaudio2.lib;d2d1.lib;d3d11.lib;dxgi.lib;ole32.lib;windowscodecs.lib;dwrite.lib;D3DCompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT;..\..\..\winrt\Release\gideros.Windows;..\..\..\winrt\Release\libgvfswinrt.Windows;..\..\..\winrt\Release\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT\$(Configuration)\$(Platform);..\..\..\winrt\Release\gideros.Windows;..\..\..\winrt\Release\libgvfswinrt.Windows;..\..\..\winrt\Release\luawinrt.Windows;%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store;$(VCInstallDir)\lib</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <ClCompile>
@@ -183,7 +183,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
       <AdditionalDependencies>luasocket.Windows.lib;d2d1.lib; d3d11.lib; dxgi.lib; ole32.lib; windowscodecs.lib; dwrite.lib; %(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT;%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\amd64; $(VCInstallDir)\lib\amd64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT\$(Configuration)\$(Platform);%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\amd64; $(VCInstallDir)\lib\amd64</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -197,7 +197,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
       <AdditionalDependencies>luasocket.Windows.lib;d2d1.lib; d3d11.lib; dxgi.lib; ole32.lib; windowscodecs.lib; dwrite.lib; %(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT;%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\amd64; $(VCInstallDir)\lib\amd64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT\$(Configuration)\$(Platform);%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\amd64; $(VCInstallDir)\lib\amd64</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>

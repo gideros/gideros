@@ -429,13 +429,15 @@ public class GiderosApplication
 		List<String> projects = new ArrayList<String>();
 	    if (dir.exists()) {
 	        File[] files = dir.listFiles();
-	        for (int i = 0; i < files.length; ++i) {
-	            File file = files[i];
-	            if (file.isDirectory()) {
-	                Logger.log("Found: " + file.getName());
-	                projects.add(file.getName());
-	            }
-	        }
+            if(files != null){
+                for (int i = 0; i < files.length; ++i) {
+                    File file = files[i];
+                    if (file.isDirectory()) {
+                        Logger.log("Found: " + file.getName());
+                        projects.add(file.getName());
+                    }
+                }
+            }
 	    }
 	    return projects;
 	} 
