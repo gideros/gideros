@@ -2567,9 +2567,11 @@ void Path2D::fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture
 	ShaderEngine::Engine->setDepthStencil(stencil);
 
 	VertexBuffer<unsigned short> *ib = quadIndices;
-	float texcoords[8]=	{ 0,0,1,0,1,1,0,1 };
 	if (texture)
 	{
+		float sx=((float)texture->width)/texture->exwidth;
+		float sy=((float)texture->height)/texture->exheight;
+		float texcoords[8]=	{ 0,0,sx,0,sx,sy,0,sy };
 		if (textureMatrix)
 			for (int k=0;k<8;k+=2)
 				textureMatrix->transformPoint(texcoords[k], texcoords[k+1], texcoords+k,texcoords+k+1);
