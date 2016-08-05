@@ -8,7 +8,7 @@
         <replacelist wildcards="[[[project.namews]]]Activity.java">
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;camera&quot;);"/>
             <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.camera.GCamera&quot;,"/>
-            <append orig="//GIDEROS-ACTIVTIY-PREDRAW//" by="		com.giderosmobile.android.plugins.camera.GCamera.frame();"/>
+            <append orig="//GIDEROS-ACTIVITY-PREDRAW//" by="		com.giderosmobile.android.plugins.camera.GCamera.frame();"/>
         </replacelist>
     </template>
     <template name="AndroidManifest" path="">
@@ -30,7 +30,7 @@
         <replacelist wildcards="[[[project.namews]]]Activity.java">
            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;camera&quot;);"/>
             <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.camera.GCamera&quot;,"/>
-            <append orig="//GIDEROS-ACTIVTIY-PREDRAW//" by="		com.giderosmobile.android.plugins.camera.GCamera.frame();"/>
+            <append orig="//GIDEROS-ACTIVITY-PREDRAW//" by="		com.giderosmobile.android.plugins.camera.GCamera.frame();"/>
         </replacelist>
     </template>
    <template name="AndroidManifest" path="">
