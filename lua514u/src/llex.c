@@ -40,6 +40,7 @@ const char *const luaX_tokens [] = {
     "in", "local", "nil", "not", "or", "repeat",
     "return", "then", "true", "until", "while",
     "..", "...", "==", ">=", "<=", "~=",
+    "<<", ">>", "//",
     "<number>", "<name>", "<string>", "<eof>",
     NULL
 };
@@ -72,7 +73,7 @@ void luaX_init (lua_State *L) {
 }
 
 
-#define MAXSRC          80
+#define MAXSRC          256
 
 
 const char *luaX_token2str (LexState *ls, int token) {
@@ -176,9 +177,13 @@ static void buffreplace (LexState *ls, char from, char to) {
 
 static void trydecpoint (LexState *ls, SemInfo *seminfo) {
   /* format error: try to update decimal point separator */
-  struct lconv *cv = localeconv();
   char old = ls->decpoint;
+#ifdef __ANDROID__
+  ls->decpoint = '.';
+#else
+  struct lconv *cv = localeconv();
   ls->decpoint = (cv ? cv->decimal_point[0] : '.');
+#endif
   buffreplace(ls, old, ls->decpoint);  /* try updated decimal separator */
   if (!luaO_str2d(luaZ_buffer(ls->buff), &seminfo->r)) {
     /* format error with correct decimal point: no more options */
@@ -372,14 +377,21 @@ static int llex (LexState *ls, SemInfo *seminfo) {
         else { next(ls); return TK_EQ; }
       }
       case '<': {
-        next(ls);
-        if (ls->current != '=') return '<';
-        else { next(ls); return TK_LE; }
+      next(ls);
+      if (ls->current == '=') { next(ls); return TK_LE; }
+        else if (ls->current == '<') { next(ls); return TK_LSHFT; }
+        else  return '<';
       }
       case '>': {
         next(ls);
-        if (ls->current != '=') return '>';
-        else { next(ls); return TK_GE; }
+        if (ls->current == '=') { next(ls); return TK_GE; }
+        else if (ls->current == '>') { next(ls); return TK_RSHFT; }
+       else return '>';
+      }
+      case '/': {
+        next(ls);
+        if (ls->current != '/') return '/';
+        else { next(ls); return TK_INTDIV; }
       }
       case '~': {
         next(ls);

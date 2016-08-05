@@ -101,7 +101,10 @@ Udata *luaS_newudata (lua_State *L, size_t s, Table *e) {
   u->uv.marked = luaC_white(G(L));  /* is not finalized */
   u->uv.tt = LUA_TUSERDATA;
   u->uv.len = s;
-  u->uv.metatable = NULL;
+  u->uv.metatable = G(L)->mt[LUA_TUSERDATA];
+  if (u->uv.metatable) {
+    luaC_objbarrier(L, u, u->uv.metatable);
+  }
   u->uv.env = e;
   /* chain it on udata list (after main thread) */
   u->uv.next = G(L)->mainthread->next;

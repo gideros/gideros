@@ -192,6 +192,7 @@ LUA_API void  (lua_setfield) (lua_State *L, int idx, const char *k);
 LUA_API void  (lua_rawset) (lua_State *L, int idx);
 LUA_API void  (lua_rawseti) (lua_State *L, int idx, int n);
 LUA_API int   (lua_setmetatable) (lua_State *L, int objindex);
+LUA_API int   (lua_settypemt) (lua_State *L, int type);
 LUA_API int   (lua_setfenv) (lua_State *L, int idx);
 
 
