@@ -93,6 +93,10 @@ int luaO_str2d (const char *s, lua_Number *result) {
   if (endptr == s) return 0;  /* conversion failed */
   if (*endptr == 'x' || *endptr == 'X')  /* maybe an hexadecimal constant? */
     *result = cast_num(strtoul(s, &endptr, 16));
+  if ((*endptr == 'o' || *endptr == 'O') && (*(endptr+1) != '\0'))
+    *result = cast_num(strtoul(endptr+1, &endptr, 8));
+  if ((*endptr == 'b' || *endptr == 'B') && (*(endptr+1) != '\0'))
+    *result = cast_num(strtoul(endptr+1, &endptr, 2));
   if (*endptr == '\0') return 1;  /* most common case */
   while (isspace(cast(unsigned char, *endptr))) endptr++;
   if (*endptr != '\0') return 0;  /* invalid trailing characters? */
