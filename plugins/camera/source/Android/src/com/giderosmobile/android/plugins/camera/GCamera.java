@@ -115,8 +115,13 @@ public class GCamera {
 							dimret[1]=previewSize.height;
 						}
 
-						if(parameters.getSupportedFocusModes() != null && parameters.getSupportedFlashModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)){
-							parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+						List<String> focusmodes=parameters.getSupportedFocusModes();
+						if(focusmodes!=null)
+						{
+							if (focusmodes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE))
+								parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+							else if (focusmodes.contains(Camera.Parameters.FOCUS_MODE_AUTO))
+								parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
 						}
 
 						if (parameters.getSupportedFlashModes() != null && parameters.getSupportedFlashModes().contains(Camera.Parameters.FLASH_MODE_AUTO)){
@@ -153,10 +158,42 @@ public class GCamera {
 			}
 		}
 
-		// If we cannot find the one that matches the aspect ratio, ignore the requirement.
+		int mw=100000,mh=100000,mi=-1;
 		if (optimalSize == null) {
-			// TODO : Backup in case we don't get a size.
-			return sizes.get(0);
+			//Get the smallest size bigger than requested
+			int li=0;
+			while (li<sizes.size())
+			{
+				Camera.Size sz=sizes.get(li);
+				if ((sz.width>=width)&&(sz.height>=height)
+						&&(sz.width<mw)&&(sz.height<mh)) {
+					mw = sz.width;
+					mh = sz.height;
+					mi = li;
+				}
+				li++;
+			}
+			if (mi>=0)
+				return sizes.get(mi);
+		}
+
+		mw=0;
+		mh=0;
+		mi=-1;
+		if (optimalSize == null) {
+			//Last resort get the biggest texture
+			int li=0;
+			while (li<sizes.size())
+			{
+				Camera.Size sz=sizes.get(li);
+				if ((sz.width>=mw)&&(sz.height>=mh)) {
+					mw = sz.width;
+					mh = sz.height;
+					mi = li;
+				}
+				li++;
+			}
+			return sizes.get(mi);
 		}
 
 		return optimalSize;
