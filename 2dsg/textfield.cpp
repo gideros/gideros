@@ -10,6 +10,8 @@ TextField::TextField(Application *application) : TextFieldBase(application)
 
 	letterSpacing_ = 0;
 
+    sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
+
 	createGraphics();
 }
 
@@ -22,6 +24,8 @@ TextField::TextField(Application *application, BMFontBase* font) : TextFieldBase
 	setTextColor(0x000000);
 
 	letterSpacing_ = 0;
+
+    sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
 
 	createGraphics();
 }
@@ -38,6 +42,8 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
     setTextColor(0x000000);
 
     letterSpacing_ = 0;
+
+    sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
 
     createGraphics();
 }

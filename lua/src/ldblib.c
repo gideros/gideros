@@ -44,6 +44,22 @@ static int db_setmetatable (lua_State *L) {
 }
 
 
+static char* db_types[] = {"nil","boolean","lightuserdata",
+  "number","string","table","function","userdata","thread",NULL};
+
+
+static int db_settypemt (lua_State *L) {
+  int ty = luaL_checkoption(L, 1, NULL, db_types);
+  int t = lua_type(L, 2);
+  luaL_argcheck(L, t == LUA_TNIL || t == LUA_TTABLE, 2,
+    "nil or table expected");
+  lua_remove(L, 1);
+  lua_settop(L, 1);
+  lua_settypemt(L, ty);
+  return 0;
+}
+
+
 static int db_getfenv (lua_State *L) {
   lua_getfenv(L, 1);
   return 1;
@@ -384,6 +400,7 @@ static const luaL_Reg dblib[] = {
   {"sethook", db_sethook},
   {"setlocal", db_setlocal},
   {"setmetatable", db_setmetatable},
+  {"settypemt", db_settypemt},
   {"setupvalue", db_setupvalue},
   {"traceback", db_errorfb},
   {NULL, NULL}

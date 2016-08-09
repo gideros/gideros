@@ -693,6 +693,22 @@ LUA_API void lua_rawseti (lua_State *L, int idx, int n) {
   lua_unlock(L);
 }
 
+LUA_API int lua_settypemt (lua_State *L, int type) {
+    Table *mt;
+    lua_lock(L);
+    api_checknelems(L, 1);
+    api_check(L, ((type >= 0) && (type < LUA_NUMTAGS)));
+    if (ttisnil(L->top - 1))
+      mt = NULL;
+    else {
+      api_check(L, ttistable(L->top - 1));
+      mt = hvalue(L->top - 1);
+    }
+    G(L)->mt[type] = mt;
+    L->top--;
+    lua_unlock(L);
+    return 1;
+}
 
 LUA_API int lua_setmetatable (lua_State *L, int objindex) {
   TValue *obj;
