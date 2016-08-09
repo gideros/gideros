@@ -383,6 +383,10 @@ static void close_func (LexState *ls) {
 Proto *luaY_parser (lua_State *L, ZIO *z, Mbuffer *buff, const char *name) {
   struct LexState lexstate;
   struct FuncState funcstate;
+  lexstate.mstr = "";
+  lexstate.mpos = 0;
+  lexstate.mlen = 0;
+  lexstate.mswt = 0;
   lexstate.buff = buff;
   luaX_setinput(L, &lexstate, z, luaS_new(L, name));
   open_func(&lexstate, &funcstate);
