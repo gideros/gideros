@@ -59,16 +59,13 @@
 - (void)startRunning;
 - (void)stopRunning;
 
-// Must be running before starting recording
-// These methods are asynchronous, see the recording delegate callbacks
-- (void)startRecording;
-- (void)stopRecording;
 
 @property(readwrite) BOOL renderingEnabled; // When set to false the GPU will not be used after the setRenderingEnabled: call returns.
 
 @property(readwrite) AVCaptureVideoOrientation recordingOrientation; // client can set the orientation for the recorded movie
 
 - (CGAffineTransform)transformFromVideoBufferOrientationToOrientation:(AVCaptureVideoOrientation)orientation withAutoMirroring:(BOOL)mirroring; // only valid after startRunning has been called
+- (void) getVideoWidth:(int *)width andHeight:(int *)height;
 
 // Stats
 @property(readonly) float videoFrameRate;

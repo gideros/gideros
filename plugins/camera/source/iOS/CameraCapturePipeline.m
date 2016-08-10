@@ -35,9 +35,9 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 	CameraRecordingStatusStoppingRecording,
 }; // internal state machine
 
-@interface CameraCapturePipeline () <AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, MovieRecorderDelegate>
+@interface CameraCapturePipeline () <AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
 {
-	__weak id <CameraCapturePipelineDelegate> _delegate; // __weak doesn't actually do anything under non-ARC
+	id <CameraCapturePipelineDelegate> _delegate; // __weak doesn't actually do anything under non-ARC
 	dispatch_queue_t _delegateCallbackQueue;
 	
 	NSMutableArray *_previousSecondTimestamps;
@@ -55,16 +55,16 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 	dispatch_queue_t _sessionQueue;
 	dispatch_queue_t _videoDataOutputQueue;
 	
-	id<CameraRenderer> _renderer;
 	BOOL _renderingEnabled;
 	
 	NSURL *_recordingURL;
 	CameraRecordingStatus _recordingStatus;
 	
 	UIBackgroundTaskIdentifier _pipelineRunningTask;
+    long camWidth;
+    long camHeight;
+    CVPixelBufferRef _currentPreviewPixelBuffer;
 }
-
-@property(nonatomic, retain) __attribute__((NSObject)) CVPixelBufferRef currentPreviewPixelBuffer;
 
 @property(readwrite) float videoFrameRate;
 @property(readwrite) CMVideoDimensions videoDimensions;
@@ -118,8 +118,6 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 	[_sessionQueue release];
 	[_videoDataOutputQueue release];
 	
-	[_renderer release];
-	
 	if ( _outputVideoFormatDescription ) {
 		CFRelease( _outputVideoFormatDescription );
 	}
@@ -128,7 +126,6 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 		CFRelease( _outputAudioFormatDescription );
 	}
 	
-	[_recorder release];
 	[_recordingURL release];
 	
 	[super dealloc];
@@ -177,10 +174,7 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 {
 	dispatch_sync( _sessionQueue, ^{
 		_running = NO;
-		
-		// the captureSessionDidStopRunning method will stop recording if necessary as well, but we do it here so that the last video and audio samples are better aligned
-		[self stopRecording]; // does nothing if we aren't currently recording
-		
+				
 		[_captureSession stopRunning];
 		
 		[self captureSessionDidStopRunning];
@@ -236,14 +230,14 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 	[videoIn release];
 	
 	AVCaptureVideoDataOutput *videoOut = [[AVCaptureVideoDataOutput alloc] init];
-	videoOut.videoSettings = @{ (id)kCVPixelBufferPixelFormatTypeKey : @(_renderer.inputPixelFormat) };
+	videoOut.videoSettings = @{ (id)kCVPixelBufferPixelFormatTypeKey : [NSNumber numberWithInt:kCVPixelFormatType_32BGRA] };
 	[videoOut setSampleBufferDelegate:self queue:_videoDataOutputQueue];
 	
 	// Camera records videos and we prefer not to have any dropped frames in the video recording.
 	// By setting alwaysDiscardsLateVideoFrames to NO we ensure that minor fluctuations in system load or in our processing time for a given frame won't cause framedrops.
 	// We do however need to ensure that on average we can process frames in realtime.
 	// If we were doing preview only we would probably want to set alwaysDiscardsLateVideoFrames to YES.
-	videoOut.alwaysDiscardsLateVideoFrames = NO;
+	videoOut.alwaysDiscardsLateVideoFrames = YES;
 	
 	if ( [_captureSession canAddOutput:videoOut] ) {
 		[_captureSession addOutput:videoOut];
@@ -288,6 +282,12 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 	
 	self.videoOrientation = _videoConnection.videoOrientation;
 	
+    NSDictionary* outputSettings = [videoOut videoSettings];
+    
+    // AVVideoWidthKey and AVVideoHeightKey did not work. I had to use these literal keys.
+    camWidth  = [[outputSettings objectForKey:@"Width"]  longValue];
+    camHeight = [[outputSettings objectForKey:@"Height"] longValue];
+
 	[videoOut release];
 	
 	return;
@@ -389,7 +389,6 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 
 - (void)captureSessionDidStopRunning
 {
-	[self stopRecording]; // does nothing if we aren't currently recording
 	[self teardownVideoPipeline];
 }
 
@@ -418,14 +417,7 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 	[self videoPipelineWillStartRunning];
 	
 	self.videoDimensions = CMVideoFormatDescriptionGetDimensions( inputFormatDescription );
-	[_renderer prepareForInputWithFormatDescription:inputFormatDescription outputRetainedBufferCountHint:RETAINED_BUFFER_COUNT];
-	
-	if ( ! _renderer.operatesInPlace && [_renderer respondsToSelector:@selector(outputFormatDescription)] ) {
-		self.outputVideoFormatDescription = _renderer.outputFormatDescription;
-	}
-	else {
-		self.outputVideoFormatDescription = inputFormatDescription;
-	}
+	self.outputVideoFormatDescription = inputFormatDescription;
 }
 
 // synchronous, blocks until the pipeline is drained, don't call from within the pipeline
@@ -444,9 +436,11 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 		}
 		
 		self.outputVideoFormatDescription = nil;
-		[_renderer reset];
-		self.currentPreviewPixelBuffer = NULL;
-		
+        if (_currentPreviewPixelBuffer)
+        {
+            CFRelease(_currentPreviewPixelBuffer);
+            _currentPreviewPixelBuffer = NULL;
+        }
 		NSLog( @"-[%@ %@] finished teardown", NSStringFromClass([self class]), NSStringFromSelector(_cmd) );
 		
 		[self videoPipelineDidFinishRunning];
@@ -490,36 +484,38 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 
 - (void)setRenderingEnabled:(BOOL)renderingEnabled
 {
-	@synchronized( _renderer ) {
 		_renderingEnabled = renderingEnabled;
-	}
 }
 
 - (BOOL)renderingEnabled
 {
-	@synchronized( _renderer ) {
 		return _renderingEnabled;
-	}
 }
 
 // call under @synchronized( self )
 - (void)outputPreviewPixelBuffer:(CVPixelBufferRef)previewPixelBuffer
 {
+
 	if ( self.delegate )
 	{
+        @synchronized( self )
+        {
 		// Keep preview latency low by dropping stale frames that have not been picked up by the delegate yet
-		self.currentPreviewPixelBuffer = previewPixelBuffer;
-		
+            CVPixelBufferRef last=_currentPreviewPixelBuffer;
+            _currentPreviewPixelBuffer = previewPixelBuffer;
+            CFRetain(_currentPreviewPixelBuffer);
+            if (last)
+                CFRelease(last);
+        }
 		dispatch_async( _delegateCallbackQueue, ^{
 			@autoreleasepool
 			{
 				CVPixelBufferRef currentPreviewPixelBuffer = NULL;
 				@synchronized( self )
 				{
-					currentPreviewPixelBuffer = self.currentPreviewPixelBuffer;
+					currentPreviewPixelBuffer = _currentPreviewPixelBuffer;
 					if ( currentPreviewPixelBuffer ) {
-						CFRetain( currentPreviewPixelBuffer );
-						self.currentPreviewPixelBuffer = NULL;
+						_currentPreviewPixelBuffer = NULL;
 					}
 				}
 				
@@ -548,16 +544,6 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 			[self renderVideoSampleBuffer:sampleBuffer];
 		}
 	}
-	else if ( connection == _audioConnection )
-	{
-		self.outputAudioFormatDescription = formatDescription;
-		
-		@synchronized( self ) {
-			if ( _recordingStatus == CameraRecordingStatusRecording ) {
-				[self.recorder appendAudioSampleBuffer:sampleBuffer];
-			}
-		}
-	}
 }
 
 - (void)renderVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer
@@ -569,8 +555,6 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 	
 	// We must not use the GPU while running in the background.
 	// setRenderingEnabled: takes the same lock so the caller can guarantee no GPU usage once the setter returns.
-	@synchronized( _renderer )
-	{
 		if ( _renderingEnabled ) {
 			CVPixelBufferRef sourcePixelBuffer = CMSampleBufferGetImageBuffer( sampleBuffer );
 			renderedPixelBuffer = sourcePixelBuffer;
@@ -578,7 +562,6 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 		else {
 			return;
 		}
-	}
 	
 	@synchronized( self )
 	{
@@ -586,7 +569,7 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 		{
 			[self outputPreviewPixelBuffer:renderedPixelBuffer];
 					
-			CFRelease( renderedPixelBuffer );
+			//CFRelease( renderedPixelBuffer );
 		}
 		else
 		{
@@ -667,6 +650,12 @@ static CGFloat angleOffsetFromPortraitOrientationToOrientation(AVCaptureVideoOri
 		const float newRate = (float)( [_previousSecondTimestamps count] - 1 ) / duration;
 		self.videoFrameRate = newRate;
 	}
+}
+
+- (void) getVideoWidth:(int *)width andHeight:(int *)height
+{
+    *width=camWidth;
+    *height=camHeight;
 }
 
 @end
