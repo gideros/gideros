@@ -14,8 +14,8 @@ iosplayer.atv.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 ##RULES
 %.ios.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release -project $*.xcodeproj
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration Release -project $*.xcodeproj
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode"
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration Release -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode"
 	@cd $(IOSLIBPATH); $(LIPO) build/Release-iphoneos/lib$*.a build/Release-iphonesimulator/lib$*.a -create -output lib$*.ios.a
 
 %.atv.libs: 
@@ -53,8 +53,8 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.ios.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release HEADER_SEARCH_PATHS='${inherited} ../../../lua/src'
-	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration Release HEADER_SEARCH_PATHS='${inherited} ../../../lua/src'
+	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release HEADER_SEARCH_PATHS='${inherited} ../../../lua/src' OTHER_CFLAGS="-fembed-bitcode"
+	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration Release HEADER_SEARCH_PATHS='${inherited} ../../../lua/src' OTHER_CFLAGS="-fembed-bitcode"
 	cd $(PLUGINPATH); $(LIPO) build/Release-iphoneos/lib$*.a build/Release-iphonesimulator/lib$*.a -create -output lib$*.ios.a
 
 
@@ -108,8 +108,7 @@ player.ios.app:
 	cp $(IOS_TEMPLATE)/*.a $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
 	cp $(IOS_TEMPLATE)/giderosapi.h $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
 	mkdir -p $(RELEASE)/Players
-	rm -rf $(RELEASE)/Players/GiderosiOSPlayer.zip 
-	rm -rf $(IOS_PLAYER_DIR)/build 
-	zip -r $(RELEASE)/Players/GiderosiOSPlayer.zip $(IOS_PLAYER_DIR)
-	#cd $(IOS_PLAYER_DIR); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration Release IPHONEOS_DEPLOYMENT_TARGET=6.0 -project GiderosiOSPlayer.xcodeproj
+	#cd $(IOS_PLAYER_DIR); $(XCODEBUILD) -sdk iphoneos$$IOS_SDK -configuration Release IPHONEOS_DEPLOYMENT_TARGET=6.0 -project GiderosiOSPlayer.xcodeproj -scheme GiderosiOSPlayer -archivePath GiderosiOSPlayer.xcarchive archive
+	#cd $(IOS_PLAYER_DIR); $(XCODEBUILD) -exportArchive -exportPath ../../$(RELEASE)/Players/GiderosiOSPlayer.ipa -exportFormat ipa -archivePath GiderosiOSPlayer.xcarchive
+	R=$(PWD);cd $(IOS_PLAYER_DIR); zip -r $$R/$(RELEASE)/Players/GiderosiOSPlayer.zip GiderosiOSPlayer 
 	
