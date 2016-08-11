@@ -460,7 +460,7 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           }
           next(ls);
           save(ls, '\0');
-          char *key = malloc(strlen(ls->buff->buffer) + 1);
+          char *key = (char *) malloc(strlen(ls->buff->buffer) + 1);
           if (key) strcpy(key, ls->buff->buffer);
           else luaX_lexerror(ls, "cannot allocate enough memory",0);
           lua_pushstring(L, key);
@@ -566,7 +566,7 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           }
           save(ls, ' ');
           save(ls, '\0');
-          char *val = malloc(strlen(ls->buff->buffer) + 1);
+          char *val = (char *) malloc(strlen(ls->buff->buffer) + 1);
           if(val) strcpy(val, ls->buff->buffer);
           lua_pushstring(L, val);
           luaZ_resetbuffer(ls->buff);
@@ -586,21 +586,20 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           lua_getfield(L, -1, k);
           if (lua_isstring(L, -1)) {
             luaZ_resetbuffer(ls->buff);
-            char *s = lua_tostring(L, -1);
+            const char *s = lua_tostring(L, -1);
             if (ls->mpos < ls->mlen) {
               int len = strlen(s) + ls->mlen - ls->mpos + 1;
-              char *res = (char*) malloc(len);
-              strcpy(res, s);
               strcat(res, &ls->mstr[ls->mpos-1]);
               strcat(res, " ");
               free(ls->mstr);
-              free(s);
               ls->mstr = res;
               ls->z->n--; ls->z->p++;
             }
             else {
               if (ls->mlen > 0) free(ls->mstr);
-              ls->mstr = s;
+              char *res = (char*) malloc(strlen(s)+1);
+              strcpy(res, s);
+              ls->mstr = res;
             }
             ls->mpos = 1;
             ls->mlen = strlen(ls->mstr);
