@@ -589,6 +589,8 @@ static int llex (LexState *ls, SemInfo *seminfo) {
             const char *s = lua_tostring(L, -1);
             if (ls->mpos < ls->mlen) {
               int len = strlen(s) + ls->mlen - ls->mpos + 1;
+              char *res = (char*) malloc(len);
+              strcpy(res, s);
               strcat(res, &ls->mstr[ls->mpos-1]);
               strcat(res, " ");
               free(ls->mstr);
