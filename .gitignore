@@ -252,6 +252,9 @@ moc_*.cpp
 *.dylib
 *.app
 
+# MAC DS store
+.DS_Store
+
 # some files and folder to include
 !/release
 !*.nsi

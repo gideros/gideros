@@ -14,7 +14,7 @@ fetch.mac.pkg:
 	echo "\
 	cd $(MAC_PATH)/Build.Mac;\
 	rm -f BuildMac.zip;\
-	zip -r BuildMac.zip Players Templates All\\ Plugins;\
+	zip -r BuildMac.zip Sdk Players Templates All\\ Plugins;\
 	exit;\
 	" |	ssh $(MAC_HOST)
 	scp -B $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildMac.zip $(RELEASE)/BuildMac.zip
@@ -22,7 +22,7 @@ fetch.mac.pkg:
 push.mac.pkg:
 	cd $(RELEASE);\
 	rm -f BuildWin.zip;\
-	zip -r BuildWin.zip Players Templates All\\ Plugins;\
+	zip -r BuildWin.zip Sdk Players Templates All\\ Plugins;\
 	scp -B BuildWin.zip $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildWin.zip 
 
 sync.mac.pkg: fetch.mac.pkg push.mac.pkg
