@@ -147,5 +147,15 @@ tools:
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
 	
 bundle:
-	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
+	rm -rf $(RELEASE).Tmp
+	mkdir -p $(RELEASE).Tmp
+	rm -rf $(RELEASE).Final
+	mkdir -p $(RELEASE).Final
+	mv $(RELEASE)/*.zip $(RELEASE).Tmp
+	cp -R $(RELEASE)/* $(RELEASE).Final
+	mv $(RELEASE).Tmp/* $(RELEASE)
+	rm -rf $(RELEASE).Tmp
+	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildMac.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildMac.zip; fi
+	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
+	
 		

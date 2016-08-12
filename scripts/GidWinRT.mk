@@ -40,6 +40,7 @@ winrt.plugins:
 	$(call WINRT_BUILD_WIN,plugins/luasocket/source/winrt/luasocket,luasocket)
 	$(call WINRT_BUILD_WP,plugins/luasocket/source/winrt/luasocket,luasocket)
 	cp -R Release/All\ Plugins $(RELEASE)
+	rm -rf $(RELEASE)/All\ Plugins/*/bin/WinRT/Release
 	
 winrt.core: winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)
@@ -102,5 +103,5 @@ winrt.clean:
 
 winrt.zip: winrt.player
 	rm -f $@
-	P=$(PWD); cd $(RELEASE); zip -r $$P/$@ "Templates/VisualStudio/WinRT Template" Players/WinRT
+	P=$(PWD); cd $(RELEASE); zip -r $$P/$@ "Templates/VisualStudio/WinRT Template" Players/WinRT "All Plugins"/*/bin/WinRT
 			

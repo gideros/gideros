@@ -24,14 +24,16 @@ CXX=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/g++
 
 ifeq ($(OS),Windows_NT)
 RELEASE=$(ROOT)/Build.Win
-all: qtapp.install android.install win32.install winrt.install
+all: qtapp.install android.install winrt.install #win32.install 
 
 clean: qtapp.clean android.clean win32.clean winrt.clean
+	rm -rf $(RELEASE)
 else
 RELEASE=$(ROOT)/Build.Mac
 all: qtapp.install ios.install
 
 clean: qtapp.clean ios.clean
+	rm -rf $(RELEASE)
 endif
 
 #SDK includes
@@ -56,11 +58,12 @@ sdk.headers: sdk.headers.dir $(addprefix $(SDK)/include/,$(SDK_INCS))
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk
 ifeq ($(OS),Windows_NT)
-MINGWMAKE=mingw32-make
+MINGWMAKE=$(MAKE)
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtWin.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWin32.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidAndroid.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWinRT.mk
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidPkg.mk
 else
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtMac.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidiOS.mk
