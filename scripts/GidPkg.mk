@@ -1,12 +1,11 @@
 MAC_HOST=nico@192.168.1.190
 MAC_PATH=gideros/gideros
 
-.PHONY: build.mac.pkg fetch.mac.pkg push.mac.pkg sync.mac.pkg clean.pkg build.all.pkg all
+.PHONY: build.mac.pkg fetch.mac.pkg push.mac.pkg sync.mac.pkg clean.pkg build.all.pkg all full
  
 build.mac.pkg:
 	echo "\
 	cd $(MAC_PATH);\
-	git pull gideros master;\
 	make -f scripts/Makefile.gid;\
 	exit;\
 	" |	ssh $(MAC_HOST)
@@ -31,6 +30,7 @@ sync.mac.pkg: fetch.mac.pkg push.mac.pkg
 clean.pkg: clean
 	echo "\
 	cd $(MAC_PATH);\
+	git pull;\
 	make -f scripts/Makefile.gid clean;\
 	exit;\
 	" |	ssh $(MAC_HOST)

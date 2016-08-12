@@ -59,7 +59,8 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 
 %.ios.clean.iosplugin:
-	rm -rf $(PLUGINPATH)
+	rm -rf $(PLUGINPATH)/build
+	rm -f $(PLUGINPATH)/lib*.ios.a
 
 %.ios.install.iosplugin:
 	mkdir -p $(IOS_TEMPLATE)/Plugins
@@ -72,7 +73,8 @@ luasocket.%: PLUGINDIR=LuaSocket
 	@cd $(PLUGINPATH); $(LIPO) build/Release-appletvos/lib$*.a build/Release-appletvsimulator/lib$*.a -create -output lib$*.atv.a
 
 %.atv.clean.iosplugin:
-	rm -rf $(PLUGINPATH)
+	rm -rf $(PLUGINPATH)/build
+	rm -f $(PLUGINPATH)/lib*.atv.a
 
 %.atv.install.iosplugin:
 	mkdir -p $(ATV_TEMPLATE)/Plugins
