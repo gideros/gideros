@@ -35,10 +35,11 @@ qtlibs.install: buildqtlibs
 
 %.plugin.install:
 	mkdir -p $(RELEASE)/Plugins
-	mkdir -p $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/Plugins
+	mkdir -p $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/MacOSX
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; rm -f *.1.dylib *.1.0.dylib *.1.0.0.dylib	 
 	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp *.dylib $$R/$(RELEASE)/Plugins	 
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp *.dylib $$R/$(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/Plugins	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp *.dylib $$R/$(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins	 
 	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp *.dylib $$R/$(RELEASE)/All\ Plugins/$*/bin/MacOSX	 
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
@@ -54,8 +55,10 @@ qt.install: buildqt qt.player
 	$(DEPLOYQT) $(RELEASE)/Gideros\ Studio.app
 	cp $(QT)/lib/libqscintilla2.11.dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
 	cp -R $(ROOT)/ui/Resources $(RELEASE)/Gideros\ Studio.app/Contents/
-	cp -R $(ROOT)/ui/Tools $(RELEASE)/Gideros\ Studio.app/Contents/Tools
-	for t in gdrdeamon gdrbridge gdrexport; do cp $(ROOT)/$$t/$$t $(RELEASE)/Gideros\ Studio.app/Contents/Tools; done 
+	cp -R $(ROOT)/ui/Tools $(RELEASE)/Gideros\ Studio.app/Contents/Tools	
+	for t in gdrdeamon gdrbridge gdrexport; do \
+	install_name_tool -add_rpath @executable_path/../Frameworks $(ROOT)/$$t/$$t;\
+	cp $(ROOT)/$$t/$$t $(RELEASE)/Gideros\ Studio.app/Contents/Tools; done 
 	#PLAYER
 	rm -rf $(RELEASE)/Gideros\ Player.app
 	cp -R $(ROOT)/player/Gideros\ Player.app $(RELEASE)
@@ -90,7 +93,6 @@ qt.install: buildqt qt.player
 	mkdir -p $(RELEASE)/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
 	mkdir -p $(RELEASE)/Examples
 	cp -R $(ROOT)/samplecode/* $(RELEASE)/Examples
-	cp -R $(ROOT)/ios/GiderosiOSPlayer $(RELEASE)
 	
 
 QTDLLEXT?=
@@ -99,7 +101,8 @@ qt.player:
 	mkdir -p $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate
 	cp -R $(ROOT)/desktop/MacOSXDesktopTemplate.app $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate
 	cp -R $(ROOT)/desktop/Entitlements.plist $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate
-	$(DEPLOYQT) $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app
+	cp -R $(ROOT)/desktop/Entitlements.plist $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/
+	$(DEPLOYQT) $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/
 	cp $(SDK)/lib/desktop/*.1.dylib $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Frameworks/
 	cp libpystring/libpystring.1.dylib $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Frameworks/
 	install_name_tool -change libgvfs.1.dylib @rpath/libgvfs.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Frameworks/libgid.1.dylib 
@@ -137,4 +140,19 @@ tools:
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
 
 bundle:
-	mv $(RELEASE)/Templates $(RELEASE)/Gideros\ Studio.app/Contents
+	rm -rf $(RELEASE).Tmp
+	mkdir -p $(RELEASE).Tmp
+	rm -rf $(RELEASE).Final
+	mkdir -p $(RELEASE).Final
+	mv $(RELEASE)/*.zip $(RELEASE).Tmp
+	cp -R $(RELEASE)/* $(RELEASE).Final
+	mv $(RELEASE).Tmp/* $(RELEASE)
+	rm -rf $(RELEASE).Tmp
+	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildMac.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildMac.zip; fi
+	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
+	-wget --recursive --no-clobber --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains docs.giderosmobile.com --no-parent http://docs.giderosmobile.com/
+	rm -rf $(RELEASE).Final/Documentation
+	cp -R docs.giderosmobile.com $(RELEASE).Final/Documentation
+	mv $(RELEASE).Final/Templates $(RELEASE).Final/Gideros\ Studio.app/Contents
+	-wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE).Final/Gideros\ Studio.app/Contents/Resources/gideros_annot.api
+	
