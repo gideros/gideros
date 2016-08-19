@@ -11,4 +11,4 @@
 //Insert plugin registration stuff here (for library based plugins)
 //Ex: IMPORT_PLUGIN(Camera)
 
-//GIDEROS-TAG-IOS:IMPORTPLUGIN//
+//GIDEROS-TAG-ATV:IMPORTPLUGIN//

@@ -90,6 +90,8 @@
 		B2E3F0321BAC3E7B005599BD /* mficontroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3F0311BAC3E7B005599BD /* mficontroller.mm */; };
 		EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A05D1D66ED5000766D7E /* plugins.cpp */; };
 		EB42A05F1D66ED5000766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A05D1D66ED5000766D7E /* plugins.cpp */; };
+		EB42A0611D674BCB00766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A0601D674BCB00766D7E /* plugins.cpp */; };
+/* TAG:GIDEROS:ALL_FILES_REFS */
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -204,6 +206,8 @@
 		B2E3F02D1BAC3D24005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = mficontroller.mm; sourceTree = "<group>"; };
 		B2E3F0311BAC3E7B005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = mficontroller.mm; path = Plugins/mficontroller.mm; sourceTree = "<group>"; };
 		EB42A05D1D66ED5000766D7E /* plugins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plugins.cpp; path = Plugins/plugins.cpp; sourceTree = "<group>"; };
+		EB42A0601D674BCB00766D7E /* plugins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = plugins.cpp; sourceTree = "<group>"; };
+/* TAG:GIDEROS:ALL_FILES_REFS */
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,6 +236,7 @@
 				5F58D83915D925EA00137D76 /* libgideros.a in Frameworks */,
 				5F9FF0A81838143600AEA72F /* libgvfs.a in Frameworks */,
 				5F9FF0AA1838143E00AEA72F /* liblua.a in Frameworks */,
+				/* TAG:GIDEROS:IOS_FRAMEWORKS_BUILD */
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +261,7 @@
 				B2E3EFC81BAC1154005599BD /* AudioToolbox.framework in Frameworks */,
 				B2E3EFC61BAC1147005599BD /* GameController.framework in Frameworks */,
 				B2E3EFBD1BAC10CC005599BD /* libluasocket.a in Frameworks */,
+				/* TAG:GIDEROS:ATV_FRAMEWORKS_BUILD */
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,6 +288,7 @@
 				5FFCA70815DD337700741085 /* lfs.c */,
 				5FFCA70715DD337700741085 /* lfs_stub.cpp */,
 				EB42A05D1D66ED5000766D7E /* plugins.cpp */,
+				/* TAG:GIDEROS:IOS_PLUGINS_GROUP */
 			);
 			name = Plugins;
 			sourceTree = "<group>";
@@ -346,6 +353,7 @@
 				5FD896F315CED77F00D34824 /* OpenGLES.framework */,
 				5FE658BD18FE68EA001D8EE3 /* libz.dylib */,
 				5F58D84115D9263F00137D76 /* libsqlite3.dylib */,
+				/* TAG:GIDEROS:FRAMEWORKS_GROUP */
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -407,6 +415,7 @@
 		B2E3EF921BAC10CC005599BD /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
+				EB42A0601D674BCB00766D7E /* plugins.cpp */,
 				B2E3F02D1BAC3D24005599BD /* mficontroller.mm */,
 				B2E3EF931BAC10CC005599BD /* bit.c */,
 				B2E3EF941BAC10CC005599BD /* bit_stub.cpp */,
@@ -439,6 +448,7 @@
 				B2E3EFB21BAC10CC005599BD /* storekit.mm */,
 				B2E3EFB31BAC10CC005599BD /* strbuf.c */,
 				B2E3EFB41BAC10CC005599BD /* strbuf.h */,
+				/* TAG:GIDEROS:ATV_PLUGINS_GROUP */
 			);
 			path = Plugins;
 			sourceTree = "<group>";
@@ -562,6 +572,7 @@
 				5FC8260217E8922F00751626 /* strbuf.c in Sources */,
 				5FC8260417E8923A00751626 /* lua_cjson.c in Sources */,
 				5FC8260617E8924100751626 /* lua_cjson_stub.cpp in Sources */,
+				/* TAG:GIDEROS:IOS_SOURCES_BUILD */
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -577,6 +588,7 @@
 				B2E3EFBF1BAC10CC005599BD /* lsqlite3_stub.cpp in Sources */,
 				B2E3EEB41BAC104D005599BD /* EAGLView.m in Sources */,
 				B2E3EFBE1BAC10CC005599BD /* lsqlite3.c in Sources */,
+				EB42A0611D674BCB00766D7E /* plugins.cpp in Sources */,
 				B2E3EFC01BAC10CC005599BD /* lua_cjson.c in Sources */,
 				B25B28011BAC0F3D0034D6C7 /* AppDelegate.m in Sources */,
 				B2E3EFBA1BAC10CC005599BD /* lfs.c in Sources */,
@@ -587,6 +599,7 @@
 				B2E3EFB51BAC10CC005599BD /* bit.c in Sources */,
 				B2E3EFB71BAC10CC005599BD /* fpconv.c in Sources */,
 				B2E3EFC41BAC10CC005599BD /* strbuf.c in Sources */,
+				/* TAG:GIDEROS:ATV_SOURCES_BUILD */
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

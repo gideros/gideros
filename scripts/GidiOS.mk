@@ -65,8 +65,8 @@ camera.%: PLUGINDIR=camera
 	rm -f $(PLUGINPATH)/lib*.ios.a
 
 %.ios.install.iosplugin:
-	mkdir -p $(IOS_TEMPLATE)/Plugins
-	cp $(PLUGINPATH)/lib$*.ios.a $(IOS_TEMPLATE)/Plugins/lib$*.a
+	mkdir -p $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS
+	cp $(PLUGINPATH)/lib$*.ios.a $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS/
 
 %.atv.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
@@ -79,8 +79,8 @@ camera.%: PLUGINDIR=camera
 	rm -f $(PLUGINPATH)/lib*.atv.a
 
 %.atv.install.iosplugin:
-	mkdir -p $(ATV_TEMPLATE)/Plugins
-	cp $(PLUGINPATH)/lib$*.atv.a $(ATV_TEMPLATE)/Plugins/lib$*.a
+	mkdir -p $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS
+	cp $(PLUGINPATH)/lib$*.atv.a $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS/
 
 ios.install: ios.libs.install atv.libs.install ios.plugins.install ios.app
 
@@ -103,8 +103,12 @@ PLUGINS_IOS_DEFFILES=$(ROOT)/Sdk/include/*.h \
 IOS_PLAYER_DIR=$(ROOT)/ios/GiderosiOSPlayer
 		
 ios.plugins.install: ios.plugins $(addsuffix .ios.install.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.install.iosplugin,$(PLUGINS_ATV))
+	mkdir -p $(IOS_TEMPLATE)/Plugins
+	mkdir -p $(ATV_TEMPLATE)/Plugins
 	cp $(PLUGINS_IOS_DEFFILES) $(IOS_TEMPLATE)/Plugins
 	cp $(PLUGINS_IOS_DEFFILES) $(ATV_TEMPLATE)/Plugins
+	cp $(RELEASE)/All\ Plugins/LuaSocket/bin/iOS/libluasocket.ios.a $(IOS_TEMPLATE)/Plugins/libluasocket.a
+	cp $(RELEASE)/All\ Plugins/LuaSocket/bin/iOS/libluasocket.atv.a $(ATV_TEMPLATE)/Plugins/libluasocket.a
 
 player.ios.app: 
 	rm -rf $(IOS_PLAYER_DIR)/GiderosiOSPlayer/Plugins
