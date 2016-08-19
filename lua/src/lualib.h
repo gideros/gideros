@@ -42,9 +42,6 @@ LUALIB_API int (luaopen_package) (lua_State *L);
 #define LUA_UTF8LIBNAME	"utf8"
 LUALIB_API int (luaopen_utf8) (lua_State *L);
 
-#define LUA_INT64LIBNAME "int64"
-LUALIB_API int (luaopen_int64) (lua_State *L);
-
 /* open all previous libraries */
 LUALIB_API void (luaL_openlibs) (lua_State *L); 
 
