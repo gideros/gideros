@@ -38,7 +38,7 @@ static Int Pget(lua_State *L, int i)
 
 static int pushInt(lua_State *L, Int z)
 {
- Int *p=lua_newuserdata(L,sizeof(Int));
+ Int *p=(Int*) lua_newuserdata(L,sizeof(Int));
  *p=z;
  luaL_getmetatable(L,MYTYPE);
  lua_setmetatable(L,-2);

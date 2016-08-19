@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Reference Manual</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="../design/assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../design/assets/greference-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="../design/assets/greference-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="../design/assets/greference-72.png">
+		<link rel="apple-touch-icon-precomposed" href="../design/assets/greference-57.png">
+
+		<!-- Le styles -->
+		<link href="../design/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="../design/css/font-awesome.min.css">
+		<link rel="stylesheet" href="../design/css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="../design/css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar" data-offset="20">
+<div class="tabbable">
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+		<ul class="nav nav-tabs">
+												<li><a href="../gideros.html">Main API</a></li>
+																<li><a href="../physics.html">Physics API</a></li>
+																<li><a href="../lua.html">Lua API</a></li>
+																<li><a href="../plugin.html">Plugins</a></li>
+																<li><a href="../labs.html">Labs</a></li>
+																<li class="active"><a href="../new.html">What's new?</a></li>
+																<li><a href="../dev.html">In development</a></li>
+									</ul>
+  <div class="container-fluid">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row-fluid">
+      <div class="span4 bs-docs-sidebar">
+		<div id='contents' class='span4' data-spy="affix" data-offset-top="110">
+		<h1>Table of Contents</h1>
+        <ul class="nav nav-list bs-docs-sidenav">
+										<li class='uplist dropdown closedlist'><a href="Core.html#Core" id='Core' class='closed item'><i class="icon-chevron-right"></i> <strong>Core</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="Core/frameStatistics.html#Core.frameStatistics" id='Core.frameStatistics'>Core.frameStatistics</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="debug.html#debug" id='debug' class='closed item'><i class="icon-chevron-right"></i> <strong>debug</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="debug/settypemt.html#debug.settypemt" id='debug.settypemt'>debug.settypemt</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="int64.html#int64" id='int64' class='closed item'><i class="icon-chevron-right"></i> <strong>int64</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="int64/new.html#int64.new" id='int64.new'>int64.new</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="RenderTarget.html#RenderTarget" id='RenderTarget' class='closed item'><i class="icon-chevron-right"></i> <strong>RenderTarget</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="RenderTarget/save.html#RenderTarget:save" id='RenderTarget:save'>RenderTarget:save</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="Shader.html#Shader" id='Shader' class='closed item'><i class="icon-chevron-right"></i> <strong>Shader</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="Shader/getShaderLanguage.html#Shader:getShaderLanguage" id='Shader:getShaderLanguage'>Shader:getShaderLanguage</a></li>		
+																											<li><a href="Shader/FLAG_FROM_CODE.html#Shader.FLAG_FROM_CODE" id='Shader.FLAG_FROM_CODE'>Shader.FLAG_FROM_CODE</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown'><a href="TextField.html#TextField" id='TextField' class='opened item'><i class="icon-chevron-right"></i> <strong>TextField</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="TextField/getLineHeight.html#TextField:getLineHeight" id='TextField:getLineHeight'>TextField:getLineHeight</a></li>		
+										<li><a href="TextField/getSample.html#TextField:getSample" id='TextField:getSample'>TextField:getSample</a></li>		
+										<li><a href="TextField/setFont.html#TextField:setFont" id='TextField:setFont'>TextField:setFont</a></li>		
+										<li><a href="TextField/setSample.html#TextField:setSample" id='TextField:setSample'>TextField:setSample</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="Texture.html#Texture" id='Texture' class='closed item'><i class="icon-chevron-right"></i> <strong>Texture</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="Texture/new2.html#Texture.new" id='Texture.new'>Texture.new</a></li>		
+																					</ul>
+			</li>
+			        </ul>
+		</div>
+      </div>
+      <div class="span8" style='min-height:1000px; padding-left: 20px;'>
+				<section id='TextField'>
+<h1>TextField</h1>
+<h3>Inherits: <a href='Sprite.html'>Sprite</a></h3>
+<h3>Supported platforms: <span>
+			<img src='../design/assets/android.png' class='ico'/> 
+			<img src='../design/assets/ios.jpeg' class='ico'/> 
+			<img src='../design/assets/mac.png' class='ico'/> 
+			<img src='../design/assets/pc.jpg' class='ico'/> 
+	</span></h3>
+<p><strong>Available since version:</strong> Gideros 2011.6</p>
+<h3>Description:</h3>
+<div>
+The <a href='../gideros/TextField.html#TextField'>TextField</a> class is used to create display objects for text display.
+</div>
+
+
+	<h3>Common uses and examples:</h3>
+		<p></p>
+	<pre><code>local font = Font.new("myfont.txt", "myfont.png")
+
+local textfield = TextField.new(font, "some text")
+
+stage:addChild(textfield)
+
+textfield:setText("some other text")		-- change the text
+
+-- to use the default font, pass nil value for the font parameter
+local textfield2 = TextField.new(nil, "some other text with default font")</code></pre>
+	
+
+<h3>Methods, events and properties:</h3>
+
+
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th>Methods</th>
+		</tr>
+				<tr>
+			<td><a href="TextField/getLineHeight.html">TextField:getLineHeight</a></td>
+		</tr>
+				<tr>
+			<td><a href="TextField/getSample.html">TextField:getSample</a></td>
+		</tr>
+				<tr>
+			<td><a href="TextField/setFont.html">TextField:setFont</a></td>
+		</tr>
+				<tr>
+			<td><a href="TextField/setSample.html">TextField:setSample</a></td>
+		</tr>
+				</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th>Inherited Methods</th>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/addEventListener.html">EventDispatcher:addEventListener</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/dispatchEvent.html">EventDispatcher:dispatchEvent</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/hasEventListener.html">EventDispatcher:hasEventListener</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/new.html">EventDispatcher.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/removeEventListener.html">EventDispatcher:removeEventListener</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/addChild.html">Sprite:addChild</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/addChildAt.html">Sprite:addChildAt</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/removeChild.html">Sprite:removeChild</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/removeChildAt.html">Sprite:removeChildAt</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/contains.html">Sprite:contains</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/globalToLocal.html">Sprite:globalToLocal</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/localToGlobal.html">Sprite:localToGlobal</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getChildAt.html">Sprite:getChildAt</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getChildIndex.html">Sprite:getChildIndex</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getHeight.html">Sprite:getHeight</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getWidth.html">Sprite:getWidth</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getRotation.html">Sprite:getRotation</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setRotation.html">Sprite:setRotation</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getScaleX.html">Sprite:getScaleX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setScaleX.html">Sprite:setScaleX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getScaleY.html">Sprite:getScaleY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setScaleY.html">Sprite:setScaleY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getScale.html">Sprite:getScale</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setScale.html">Sprite:setScale</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/isVisible.html">Sprite:isVisible</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setVisible.html">Sprite:setVisible</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getX.html">Sprite:getX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setX.html">Sprite:setX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getY.html">Sprite:getY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setY.html">Sprite:setY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getPosition.html">Sprite:getPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setPosition.html">Sprite:setPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/set.html">Sprite:set</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/get.html">Sprite:get</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getParent.html">Sprite:getParent</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getNumChildren.html">Sprite:getNumChildren</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getAlpha.html">Sprite:getAlpha</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setAlpha.html">Sprite:setAlpha</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setColorTransform.html">Sprite:setColorTransform</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getColorTransform.html">Sprite:getColorTransform</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/hitTestPoint.html">Sprite:hitTestPoint</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getMatrix.html">Sprite:getMatrix</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setMatrix.html">Sprite:setMatrix</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/removeFromParent.html">Sprite:removeFromParent</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setBlendMode.html">Sprite:setBlendMode</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/clearBlendMode.html">Sprite:clearBlendMode</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getBounds.html">Sprite:getBounds</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/new.html">Sprite.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setAnchorPosition.html">Sprite:setAnchorPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getAnchorPosition.html">Sprite:getAnchorPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/swapChildrenAt.html">Sprite:swapChildrenAt</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/swapChildren.html">Sprite:swapChildren</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setClip.html">Sprite:setClip</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getZ.html">Sprite:getZ</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getRotationY.html">Sprite:getRotationY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getRotationX.html">Sprite:getRotationX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getScaleZ.html">Sprite:getScaleZ</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setZ.html">Sprite:setZ</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setRotationX.html">Sprite:setRotationX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setRotationY.html">Sprite:setRotationY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setScaleZ.html">Sprite:setScaleZ</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setShader.html">Sprite:setShader</a></td>
+		</tr>
+				<tr>
+			<td><a href="Object/getBaseClass.html">Object:getBaseClass</a></td>
+		</tr>
+				<tr>
+			<td><a href="Object/getClass.html">Object:getClass</a></td>
+		</tr>
+				<tr>
+			<td><a href="Object/isInstanceOf.html">Object:isInstanceOf</a></td>
+		</tr>
+				</table>
+	</div>
+	</div>
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th>Inherited Properties</th>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Sprite.ALPHA.html">Sprite.ALPHA</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Sprite.SCREEN.html">Sprite.SCREEN</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Sprite.MULTIPLY.html">Sprite.MULTIPLY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Sprite.ADD.html">Sprite.ADD</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Sprite.NO_ALPHA.html">Sprite.NO_ALPHA</a></td>
+		</tr>
+				</table>
+	</div>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th>Inherited Events</th>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/Event.APPLICATION_START.html">Event.APPLICATION_START</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/Event.APPLICATION_EXIT.html">Event.APPLICATION_EXIT</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/Event.APPLICATION_SUSPEND.html">Event.APPLICATION_SUSPEND</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/Event.APPLICATION_RESUME.html">Event.APPLICATION_RESUME</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/Event.APPLICATION_BACKGROUND.html">Event.APPLICATION_BACKGROUND</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/Event.APPLICATION_FOREGROUND.html">Event.APPLICATION_FOREGROUND</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/Event.MEMORY_WARNING.html">Event.MEMORY_WARNING</a></td>
+		</tr>
+				<tr>
+			<td><a href="EventDispatcher/Event.APPLICATION_RESIZE.html">Event.APPLICATION_RESIZE</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.ENTER_FRAME.html">Event.ENTER_FRAME</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.ADDED_TO_STAGE.html">Event.ADDED_TO_STAGE</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.REMOVED_FROM_STAGE.html">Event.REMOVED_FROM_STAGE</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.MOUSE_DOWN.html">Event.MOUSE_DOWN</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.MOUSE_MOVE.html">Event.MOUSE_MOVE</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.MOUSE_UP.html">Event.MOUSE_UP</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.TOUCHES_BEGIN.html">Event.TOUCHES_BEGIN</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.TOUCHES_MOVE.html">Event.TOUCHES_MOVE</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.TOUCHES_END.html">Event.TOUCHES_END</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.TOUCHES_CANCEL.html">Event.TOUCHES_CANCEL</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.KEY_UP.html">Event.KEY_UP</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.KEY_DOWN.html">Event.KEY_DOWN</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/MOUSE_WHEEL.html">Event.MOUSE_WHEEL</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/Event.MOUSE_HOVER.html">Event.MOUSE_HOVER</a></td>
+		</tr>
+				</table>
+	</div>
+	</div>
+</section>
+			</div>
+	</div>
+
+  </div>
+
+
+</div>
+    <!-- Footer
+    ================================================== -->
+		<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="TextField.html#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/jquery-1.8.3.min.js.html"><\/script>')</script>
+		<script src="../design/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../design/js/prettify.js"></script>
+		<script type="text/javascript" src="../design/js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.item").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+			});
+		</script>
+  </body>
+</html>

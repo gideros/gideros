@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Gideros Reference Manual</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="shortcut icon" href="../design/assets/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../design/assets/greference-144.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="../design/assets/greference-114.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="../design/assets/greference-72.png">
+		<link rel="apple-touch-icon-precomposed" href="../design/assets/greference-57.png">
+
+		<!-- Le styles -->
+		<link href="../design/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="../design/css/font-awesome.min.css">
+		<link rel="stylesheet" href="../design/css/theme.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,700,800,600,300' rel='stylesheet' type='text/css'>
+		<link href="../design/css/prettify.css" type="text/css" rel="stylesheet" />
+
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar" data-offset="20">
+<div class="tabbable">
+<a name='top'></a>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="middle-bar">
+				<a class="brand" href="http://giderosmobile.com" target='_blank'>GiderosMobile.com</a>
+				<h2>Gideros Documentation</h2>
+			</div>
+		</div>
+	</div>
+		<ul class="nav nav-tabs">
+												<li><a href="../gideros.html">Main API</a></li>
+																<li><a href="../physics.html">Physics API</a></li>
+																<li class="active"><a href="../lua.html">Lua API</a></li>
+																<li><a href="../plugin.html">Plugins</a></li>
+																<li><a href="../labs.html">Labs</a></li>
+																<li><a href="../new.html">What's new?</a></li>
+																<li><a href="../dev.html">In development</a></li>
+									</ul>
+  <div class="container-fluid">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row-fluid">
+      <div class="span4 bs-docs-sidebar">
+		<div id='contents' class='span4' data-spy="affix" data-offset-top="110">
+		<h1>Table of Contents</h1>
+        <ul class="nav nav-list bs-docs-sidenav">
+										<li class='uplist dropdown closedlist'><a href="global.html#(global)" id='(global)' class='closed item'><i class="icon-chevron-right"></i> <strong>(global)</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="global/assert.html#assert" id='assert'>assert</a></li>		
+										<li><a href="global/collectgarbage.html#collectgarbage" id='collectgarbage'>collectgarbage</a></li>		
+										<li><a href="global/dofile.html#dofile" id='dofile'>dofile</a></li>		
+										<li><a href="global/error.html#error" id='error'>error</a></li>		
+										<li><a href="global/getfenv.html#getfenv" id='getfenv'>getfenv</a></li>		
+										<li><a href="global/getmetatable.html#getmetatable" id='getmetatable'>getmetatable</a></li>		
+										<li><a href="global/ipairs.html#ipairs" id='ipairs'>ipairs</a></li>		
+										<li><a href="global/loadfile.html#loadfile" id='loadfile'>loadfile</a></li>		
+										<li><a href="global/loadstring.html#loadstring" id='loadstring'>loadstring</a></li>		
+										<li><a href="global/next.html#next" id='next'>next</a></li>		
+										<li><a href="global/pairs.html#pairs" id='pairs'>pairs</a></li>		
+										<li><a href="global/pcall.html#pcall" id='pcall'>pcall</a></li>		
+										<li><a href="global/print.html#print" id='print'>print</a></li>		
+										<li><a href="global/rawequal.html#rawequal" id='rawequal'>rawequal</a></li>		
+										<li><a href="global/rawget.html#rawget" id='rawget'>rawget</a></li>		
+										<li><a href="global/rawset.html#rawset" id='rawset'>rawset</a></li>		
+										<li><a href="global/require.html#require" id='require'>require</a></li>		
+										<li><a href="global/setfenv.html#setfenv" id='setfenv'>setfenv</a></li>		
+										<li><a href="global/setmetatable.html#setmetatable" id='setmetatable'>setmetatable</a></li>		
+										<li><a href="global/tonumber.html#tonumber" id='tonumber'>tonumber</a></li>		
+										<li><a href="global/tostring.html#tostring" id='tostring'>tostring</a></li>		
+										<li><a href="global/type.html#type" id='type'>type</a></li>		
+										<li><a href="global/unpack.html#unpack" id='unpack'>unpack</a></li>		
+										<li><a href="global/xpcall.html#xpcall" id='xpcall'>xpcall</a></li>		
+																											<li><a href="global/_G.html#_G" id='_G'>_G</a></li>		
+										<li><a href="global/_VERSION.html#_VERSION" id='_VERSION'>_VERSION</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="coroutine.html#coroutine" id='coroutine' class='closed item'><i class="icon-chevron-right"></i> <strong>coroutine</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="coroutine/create.html#coroutine.create" id='coroutine.create'>coroutine.create</a></li>		
+										<li><a href="coroutine/resume.html#coroutine.resume" id='coroutine.resume'>coroutine.resume</a></li>		
+										<li><a href="coroutine/status.html#coroutine.status" id='coroutine.status'>coroutine.status</a></li>		
+										<li><a href="coroutine/wrap.html#coroutine.wrap" id='coroutine.wrap'>coroutine.wrap</a></li>		
+										<li><a href="coroutine/yield.html#coroutine.yield" id='coroutine.yield'>coroutine.yield</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="debug.html#debug" id='debug' class='closed item'><i class="icon-chevron-right"></i> <strong>debug</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="debug/debug.html#debug.debug" id='debug.debug'>debug.debug</a></li>		
+										<li><a href="debug/gethook.html#debug.gethook" id='debug.gethook'>debug.gethook</a></li>		
+										<li><a href="debug/getinfo.html#debug.getinfo" id='debug.getinfo'>debug.getinfo</a></li>		
+										<li><a href="debug/getlocal.html#debug.getlocal" id='debug.getlocal'>debug.getlocal</a></li>		
+										<li><a href="debug/getupvalue.html#debug.getupvalue" id='debug.getupvalue'>debug.getupvalue</a></li>		
+										<li><a href="debug/sethook.html#debug.sethook" id='debug.sethook'>debug.sethook</a></li>		
+										<li><a href="debug/setlocal.html#debug.setlocal" id='debug.setlocal'>debug.setlocal</a></li>		
+										<li><a href="debug/settypemt.html#debug.settypemt" id='debug.settypemt'>debug.settypemt</a></li>		
+										<li><a href="debug/setupvalue.html#debug.setupvalue" id='debug.setupvalue'>debug.setupvalue</a></li>		
+										<li><a href="debug/traceback.html#debug.traceback" id='debug.traceback'>debug.traceback</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="file.html#file" id='file' class='closed item'><i class="icon-chevron-right"></i> <strong>file</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="file/close.html#file:close" id='file:close'>file:close</a></li>		
+										<li><a href="file/flush.html#file:flush" id='file:flush'>file:flush</a></li>		
+										<li><a href="file/lines.html#file:lines" id='file:lines'>file:lines</a></li>		
+										<li><a href="file/read.html#file:read" id='file:read'>file:read</a></li>		
+										<li><a href="file/seek.html#file:seek" id='file:seek'>file:seek</a></li>		
+										<li><a href="file/write.html#file:write" id='file:write'>file:write</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown'><a href="int64.html#int64" id='int64' class='opened item'><i class="icon-chevron-right"></i> <strong>int64</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="int64/new.html#int64.new" id='int64.new'>int64.new</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="io.html#io" id='io' class='closed item'><i class="icon-chevron-right"></i> <strong>io</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="io/close.html#io.close" id='io.close'>io.close</a></li>		
+										<li><a href="io/flush.html#io.flush" id='io.flush'>io.flush</a></li>		
+										<li><a href="io/input.html#io.input" id='io.input'>io.input</a></li>		
+										<li><a href="io/lines.html#io.lines" id='io.lines'>io.lines</a></li>		
+										<li><a href="io/open.html#io.open" id='io.open'>io.open</a></li>		
+										<li><a href="io/output.html#io.output" id='io.output'>io.output</a></li>		
+										<li><a href="io/read.html#io.read" id='io.read'>io.read</a></li>		
+										<li><a href="io/tmpfile.html#io.tmpfile" id='io.tmpfile'>io.tmpfile</a></li>		
+										<li><a href="io/type.html#io.type" id='io.type'>io.type</a></li>		
+										<li><a href="io/write.html#io.write" id='io.write'>io.write</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="math.html#math" id='math' class='closed item'><i class="icon-chevron-right"></i> <strong>math</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="math/abs.html#math.abs" id='math.abs'>math.abs</a></li>		
+										<li><a href="math/acos.html#math.acos" id='math.acos'>math.acos</a></li>		
+										<li><a href="math/asin.html#math.asin" id='math.asin'>math.asin</a></li>		
+										<li><a href="math/atan.html#math.atan" id='math.atan'>math.atan</a></li>		
+										<li><a href="math/atan2.html#math.atan2" id='math.atan2'>math.atan2</a></li>		
+										<li><a href="math/ceil.html#math.ceil" id='math.ceil'>math.ceil</a></li>		
+										<li><a href="math/cos.html#math.cos" id='math.cos'>math.cos</a></li>		
+										<li><a href="math/deg.html#math.deg" id='math.deg'>math.deg</a></li>		
+										<li><a href="math/exp.html#math.exp" id='math.exp'>math.exp</a></li>		
+										<li><a href="math/floor.html#math.floor" id='math.floor'>math.floor</a></li>		
+										<li><a href="math/fmod.html#math.fmod" id='math.fmod'>math.fmod</a></li>		
+										<li><a href="math/frexp.html#math.frexp" id='math.frexp'>math.frexp</a></li>		
+										<li><a href="math/ldexp.html#math.ldexp" id='math.ldexp'>math.ldexp</a></li>		
+										<li><a href="math/log.html#math.log" id='math.log'>math.log</a></li>		
+										<li><a href="math/log10.html#math.log10" id='math.log10'>math.log10</a></li>		
+										<li><a href="math/max.html#math.max" id='math.max'>math.max</a></li>		
+										<li><a href="math/min.html#math.min" id='math.min'>math.min</a></li>		
+										<li><a href="math/pow.html#math.pow" id='math.pow'>math.pow</a></li>		
+										<li><a href="math/rad.html#math.rad" id='math.rad'>math.rad</a></li>		
+										<li><a href="math/random.html#math.random" id='math.random'>math.random</a></li>		
+										<li><a href="math/randomseed.html#math.randomseed" id='math.randomseed'>math.randomseed</a></li>		
+										<li><a href="math/sin.html#math.sin" id='math.sin'>math.sin</a></li>		
+										<li><a href="math/sqrt.html#math.sqrt" id='math.sqrt'>math.sqrt</a></li>		
+										<li><a href="math/tan.html#math.tan" id='math.tan'>math.tan</a></li>		
+																											<li><a href="math/huge.html#huge" id='huge'>huge</a></li>		
+										<li><a href="math/pi.html#pi" id='pi'>pi</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="os.html#os" id='os' class='closed item'><i class="icon-chevron-right"></i> <strong>os</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="os/clock.html#os.clock" id='os.clock'>os.clock</a></li>		
+										<li><a href="os/date.html#os.date" id='os.date'>os.date</a></li>		
+										<li><a href="os/difftime.html#os.difftime" id='os.difftime'>os.difftime</a></li>		
+										<li><a href="os/execute.html#os.execute" id='os.execute'>os.execute</a></li>		
+										<li><a href="os/exit.html#os.exit" id='os.exit'>os.exit</a></li>		
+										<li><a href="os/getenv.html#os.getenv" id='os.getenv'>os.getenv</a></li>		
+										<li><a href="os/remove.html#os.remove" id='os.remove'>os.remove</a></li>		
+										<li><a href="os/rename.html#os.rename" id='os.rename'>os.rename</a></li>		
+										<li><a href="os/setlocale.html#os.setlocale" id='os.setlocale'>os.setlocale</a></li>		
+										<li><a href="os/time.html#os.time" id='os.time'>os.time</a></li>		
+										<li><a href="os/timer.html#os.timer" id='os.timer'>os.timer</a></li>		
+										<li><a href="os/tmpname.html#os.tmpname" id='os.tmpname'>os.tmpname</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="package.html#package" id='package' class='closed item'><i class="icon-chevron-right"></i> <strong>package</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="package/loadlib.html#package.loadlib" id='package.loadlib'>package.loadlib</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="string.html#string" id='string' class='closed item'><i class="icon-chevron-right"></i> <strong>string</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="string/byte.html#string.byte" id='string.byte'>string.byte</a></li>		
+										<li><a href="string/char.html#string.char" id='string.char'>string.char</a></li>		
+										<li><a href="string/dump.html#string.dump" id='string.dump'>string.dump</a></li>		
+										<li><a href="string/find.html#string.find" id='string.find'>string.find</a></li>		
+										<li><a href="string/format.html#string.format" id='string.format'>string.format</a></li>		
+										<li><a href="string/gmatch.html#string.gmatch" id='string.gmatch'>string.gmatch</a></li>		
+										<li><a href="string/gsub.html#string.gsub" id='string.gsub'>string.gsub</a></li>		
+										<li><a href="string/len.html#string.len" id='string.len'>string.len</a></li>		
+										<li><a href="string/lower.html#string.lower" id='string.lower'>string.lower</a></li>		
+										<li><a href="string/rep.html#string.rep" id='string.rep'>string.rep</a></li>		
+										<li><a href="string/sub.html#string.sub" id='string.sub'>string.sub</a></li>		
+										<li><a href="string/upper.html#string.upper" id='string.upper'>string.upper</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="table.html#table" id='table' class='closed item'><i class="icon-chevron-right"></i> <strong>table</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="table/concat.html#table.concat" id='table.concat'>table.concat</a></li>		
+										<li><a href="table/getn.html#table.getn" id='table.getn'>table.getn</a></li>		
+										<li><a href="table/insert.html#table.insert" id='table.insert'>table.insert</a></li>		
+										<li><a href="table/remove.html#table.remove" id='table.remove'>table.remove</a></li>		
+										<li><a href="table/sort.html#table.sort" id='table.sort'>table.sort</a></li>		
+																					</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="utf8.html#utf8" id='utf8' class='closed item'><i class="icon-chevron-right"></i> <strong>utf8</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="utf8/byte.html#utf8.byte" id='utf8.byte'>utf8.byte</a></li>		
+										<li><a href="utf8/char.html#utf8.char" id='utf8.char'>utf8.char</a></li>		
+										<li><a href="utf8/charpos.html#utf8.charpos" id='utf8.charpos'>utf8.charpos</a></li>		
+										<li><a href="utf8/codepoint.html#utf8.codepoint" id='utf8.codepoint'>utf8.codepoint</a></li>		
+										<li><a href="utf8/codes.html#utf8.codes" id='utf8.codes'>utf8.codes</a></li>		
+										<li><a href="utf8/escape.html#utf8.escape" id='utf8.escape'>utf8.escape</a></li>		
+										<li><a href="utf8/find.html#utf8.find" id='utf8.find'>utf8.find</a></li>		
+										<li><a href="utf8/fold.html#utf8.fold" id='utf8.fold'>utf8.fold</a></li>		
+										<li><a href="utf8/gmatch.html#utf8.gmatch" id='utf8.gmatch'>utf8.gmatch</a></li>		
+										<li><a href="utf8/gsub.html#utf8.gsub" id='utf8.gsub'>utf8.gsub</a></li>		
+										<li><a href="utf8/insert.html#utf8.insert" id='utf8.insert'>utf8.insert</a></li>		
+										<li><a href="utf8/len.html#utf8.len" id='utf8.len'>utf8.len</a></li>		
+										<li><a href="utf8/lower.html#utf8.lower" id='utf8.lower'>utf8.lower</a></li>		
+										<li><a href="utf8/match.html#utf8.match" id='utf8.match'>utf8.match</a></li>		
+										<li><a href="utf8/ncasecmp.html#utf8.ncasecmp" id='utf8.ncasecmp'>utf8.ncasecmp</a></li>		
+										<li><a href="utf8/next.html#utf8.next" id='utf8.next'>utf8.next</a></li>		
+										<li><a href="utf8/offset.html#utf8.offset" id='utf8.offset'>utf8.offset</a></li>		
+										<li><a href="utf8/remove.html#utf8.remove" id='utf8.remove'>utf8.remove</a></li>		
+										<li><a href="utf8/reverse.html#utf8.reverse" id='utf8.reverse'>utf8.reverse</a></li>		
+										<li><a href="utf8/sub.html#utf8.sub" id='utf8.sub'>utf8.sub</a></li>		
+										<li><a href="utf8/title.html#utf8.title" id='utf8.title'>utf8.title</a></li>		
+										<li><a href="utf8/upper.html#utf8.upper" id='utf8.upper'>utf8.upper</a></li>		
+										<li><a href="utf8/width.html#utf8.width" id='utf8.width'>utf8.width</a></li>		
+										<li><a href="utf8/widthindex.html#utf8.widthindex" id='utf8.widthindex'>utf8.widthindex</a></li>		
+																											<li><a href="utf8/charpattern.html#utf8.charpattern" id='utf8.charpattern'>utf8.charpattern</a></li>		
+													</ul>
+			</li>
+										<li class='uplist dropdown closedlist'><a href="zlib.html#zlib" id='zlib' class='closed item'><i class="icon-chevron-right"></i> <strong>zlib</strong></a>
+							<ul class="dropdown-menu">
+														<li><a href="zlib/adler32.html#zlib.adler32" id='zlib.adler32'>zlib.adler32</a></li>		
+										<li><a href="zlib/compress.html#zlib.compress" id='zlib.compress'>zlib.compress</a></li>		
+										<li><a href="zlib/crc32.html#zlib.crc32" id='zlib.crc32'>zlib.crc32</a></li>		
+										<li><a href="zlib/decompress.html#zlib.decompress" id='zlib.decompress'>zlib.decompress</a></li>		
+										<li><a href="zlib/deflate.html#zlib.deflate" id='zlib.deflate'>zlib.deflate</a></li>		
+										<li><a href="zlib/inflate.html#zlib.inflate" id='zlib.inflate'>zlib.inflate</a></li>		
+																					</ul>
+			</li>
+			        </ul>
+		</div>
+      </div>
+      <div class="span8" style='min-height:1000px; padding-left: 20px;'>
+				<section id='int64'>
+<h1>int64</h1>
+<h3>Supported platforms: <span>
+	</span></h3>
+<p><strong>Available since version:</strong> Gideros 2016.08</p>
+<h3>Description:</h3>
+<div>
+64-bit integers as built-in Lua library registered with int64 name. No need to require it.<br />
+You have 3 ways to create int64 numbers:<br />
+#n -- from number, shortcut for int64.new(n)<br />
+int64.new(n) -- from number<br />
+int64.new(s) -- from string<br />
+To convert them back to Lua built-in types:<br />
+num() -- to number<br />
+num"" -- to string<br />
+To get and set single bits:<br />
+num[i]<br />
+num[i] = b<br />
+All operators are supported including new bitwise ones as for Lua double numbers.
+</div>
+
+
+
+
+<h3>Methods, events and properties:</h3>
+
+
+<div class='row'>
+		<div class='span4'>
+		<table class="table">
+		<tr>
+			<th>Methods</th>
+		</tr>
+				<tr>
+			<td><a href="int64/new.html">int64.new</a></td>
+		</tr>
+				</table>
+	</div>
+	</div>
+</section>
+			</div>
+	</div>
+
+  </div>
+
+
+</div>
+    <!-- Footer
+    ================================================== -->
+		<footer>
+			<div class="footer-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="span12">
+							<p class="pull-right"><a href="int64.html#">Back to top</a></p>
+							<p>&copy; GiderosMobile.com</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+   <!-- last but not least the javascript -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/jquery-1.8.3.min.js.html"><\/script>')</script>
+		<script src="../design/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../design/js/prettify.js"></script>
+		<script type="text/javascript" src="../design/js/lang-lua.js"></script>
+		<script>
+			$(document).ready(function(){
+				//bootstrap tooltip trigger
+				$('[rel="tooltip"]').tooltip();
+				$("code").addClass("prettyprint").addClass("lang-lua");
+				prettyPrint();
+				$(".uplist").children("a.item").click(function(e){
+					if($(this).hasClass("closed"))
+					{
+						$(this).addClass("opened").removeClass("closed");
+						$(this).parent().find("ul").slideDown();
+					}
+					else
+					{
+						e.preventDefault();
+						$(this).addClass("closed").removeClass("opened");
+						$(this).parent().find("ul").slideUp();
+					}
+				});
+			});
+		</script>
+  </body>
+</html>
