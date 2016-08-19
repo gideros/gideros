@@ -82,4 +82,9 @@ static void g_deinitializePlugin(lua_State *L)
 	cameraplugin::deinit();
 }
 
+
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+REGISTER_PLUGIN_STATICNAMED_CPP("Camera", "1.0",Camera)
+#else
 REGISTER_PLUGIN("Camera", "1.0")
+#endif

@@ -45,16 +45,18 @@ atv.libs.install: atv.libs
 	cp $(ROOT)/ios/iosplayer/libiosplayer.atv.a $(ATV_TEMPLATE)/libgideros.a
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(ATV_TEMPLATE)
 
-PLUGINS_IOS=luasocket
+PLUGINS_IOS=luasocket camera
+PLUGINS_ATV=luasocket
 
 luasocket.%: PLUGINDIR=LuaSocket
+camera.%: PLUGINDIR=camera
 
 %.iosplugin: PLUGINPATH=$(ROOT)/plugins/$(PLUGINDIR)/source
 
 %.ios.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release HEADER_SEARCH_PATHS='${inherited} ../../../lua/src' OTHER_CFLAGS="-fembed-bitcode"
-	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration Release HEADER_SEARCH_PATHS='${inherited} ../../../lua/src' OTHER_CFLAGS="-fembed-bitcode"
+	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release  OTHER_CFLAGS="-fembed-bitcode"
+	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration Release OTHER_CFLAGS="-fembed-bitcode"
 	cd $(PLUGINPATH); $(LIPO) build/Release-iphoneos/lib$*.a build/Release-iphonesimulator/lib$*.a -create -output lib$*.ios.a
 
 
@@ -68,8 +70,8 @@ luasocket.%: PLUGINDIR=LuaSocket
 
 %.atv.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration Release -project $*.xcodeproj HEADER_SEARCH_PATHS='${inherited} ../../../lua/src' GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration Release -project $*.xcodeproj HEADER_SEARCH_PATHS='${inherited} ../../../lua/src' GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
+	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration Release -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
+	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration Release -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
 	@cd $(PLUGINPATH); $(LIPO) build/Release-appletvos/lib$*.a build/Release-appletvsimulator/lib$*.a -create -output lib$*.atv.a
 
 %.atv.clean.iosplugin:
@@ -84,9 +86,9 @@ ios.install: ios.libs.install atv.libs.install ios.plugins.install ios.app
 
 ios.clean: ios.plugins.clean
 		
-ios.plugins: $(addsuffix .ios.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.iosplugin,$(PLUGINS_IOS))
+ios.plugins: $(addsuffix .ios.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.iosplugin,$(PLUGINS_ATV))
 
-ios.plugins.clean: $(addsuffix .ios.clean.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.clean.iosplugin,$(PLUGINS_IOS))
+ios.plugins.clean: $(addsuffix .ios.clean.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.clean.iosplugin,$(PLUGINS_ATV))
 
 PLUGINS_IOS_DEFFILES=$(ROOT)/Sdk/include/*.h \
 	$(addprefix plugins/, \
@@ -100,7 +102,7 @@ PLUGINS_IOS_DEFFILES=$(ROOT)/Sdk/include/*.h \
 
 IOS_PLAYER_DIR=$(ROOT)/ios/GiderosiOSPlayer
 		
-ios.plugins.install: ios.plugins $(addsuffix .ios.install.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.install.iosplugin,$(PLUGINS_IOS))
+ios.plugins.install: ios.plugins $(addsuffix .ios.install.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.install.iosplugin,$(PLUGINS_ATV))
 	cp $(PLUGINS_IOS_DEFFILES) $(IOS_TEMPLATE)/Plugins
 	cp $(PLUGINS_IOS_DEFFILES) $(ATV_TEMPLATE)/Plugins
 

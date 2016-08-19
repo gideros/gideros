@@ -88,6 +88,8 @@
 		B2E3F02C1BAC2919005599BD /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDD1BAC119E005599BD /* libgideros.a */; };
 		B2E3F02E1BAC3D24005599BD /* mficontroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3F02D1BAC3D24005599BD /* mficontroller.mm */; };
 		B2E3F0321BAC3E7B005599BD /* mficontroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3F0311BAC3E7B005599BD /* mficontroller.mm */; };
+		EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A05D1D66ED5000766D7E /* plugins.cpp */; };
+		EB42A05F1D66ED5000766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A05D1D66ED5000766D7E /* plugins.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -201,6 +203,7 @@
 		B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
 		B2E3F02D1BAC3D24005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = mficontroller.mm; sourceTree = "<group>"; };
 		B2E3F0311BAC3E7B005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = mficontroller.mm; path = Plugins/mficontroller.mm; sourceTree = "<group>"; };
+		EB42A05D1D66ED5000766D7E /* plugins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plugins.cpp; path = Plugins/plugins.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,6 +281,7 @@
 				5F58D82F15D925D100137D76 /* luasocket_stub.cpp */,
 				5FFCA70815DD337700741085 /* lfs.c */,
 				5FFCA70715DD337700741085 /* lfs_stub.cpp */,
+				EB42A05D1D66ED5000766D7E /* plugins.cpp */,
 			);
 			name = Plugins;
 			sourceTree = "<group>";
@@ -544,6 +548,7 @@
 				5F4153FC15CEF227007B5365 /* ViewController.m in Sources */,
 				5F58D83115D925D100137D76 /* gamekit.mm in Sources */,
 				B2E3F0321BAC3E7B005599BD /* mficontroller.mm in Sources */,
+				EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */,
 				5F58D83215D925D100137D76 /* iad.mm in Sources */,
 				5F58D83415D925D100137D76 /* lsqlite3_stub.cpp in Sources */,
 				5F58D83515D925D100137D76 /* lsqlite3.c in Sources */,
@@ -578,6 +583,7 @@
 				B2E3EFC21BAC10CC005599BD /* luasocket_stub.cpp in Sources */,
 				B2E3EFC31BAC10CC005599BD /* storekit.mm in Sources */,
 				B25B27FE1BAC0F3D0034D6C7 /* main.m in Sources */,
+				EB42A05F1D66ED5000766D7E /* plugins.cpp in Sources */,
 				B2E3EFB51BAC10CC005599BD /* bit.c in Sources */,
 				B2E3EFB71BAC10CC005599BD /* fpconv.c in Sources */,
 				B2E3EFC41BAC10CC005599BD /* strbuf.c in Sources */,
@@ -673,12 +679,17 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Template/iOS Template-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"iOS Template/Plugins\"";
+				HEADER_SEARCH_PATHS = (
+					iOS,
+					Template/Plugins,
+				);
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/iOS Template/Plugins\"",
-					"\"$(SRCROOT)/iOS Template\"",
+					"$(SRCROOT)/iOS",
+					Template/Plugins,
+					"$(SRCROOT)/iOS",
+					Template,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -694,12 +705,17 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Template/iOS Template-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"iOS Template/Plugins\"";
+				HEADER_SEARCH_PATHS = (
+					iOS,
+					Template/Plugins,
+				);
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/iOS Template/Plugins\"",
-					"\"$(SRCROOT)/iOS Template\"",
+					"$(SRCROOT)/iOS",
+					Template/Plugins,
+					"$(SRCROOT)/iOS",
+					Template,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -726,14 +742,20 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				HEADER_SEARCH_PATHS = "\"AppleTV/Plugins\"";
+				HEADER_SEARCH_PATHS = AppleTV/Plugins;
 				INFOPLIST_FILE = AppleTV/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/AppleTV/Plugins\"",
-					"\"$(SRCROOT)/AppleTV\"",
+					"$(SRCROOT)/AppleTV/Plugins",
+					"$(SRCROOT)/AppleTV",
+					"$(PROJECT_DIR)/AppleTV",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/AppleTV/Plugins",
+					"$(SRCROOT)/AppleTV",
 					"$(PROJECT_DIR)/AppleTV",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -766,14 +788,21 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				HEADER_SEARCH_PATHS = "\"AppleTV/Plugins\"";
+				HEADER_SEARCH_PATHS = AppleTV/Plugins;
 				INFOPLIST_FILE = AppleTV/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/AppleTV/Plugins\"",
-					"\"$(SRCROOT)/AppleTV\"",
+					"$(SRCROOT)/AppleTV/Plugins",
+					"$(SRCROOT)/AppleTV",
+					"$(PROJECT_DIR)/AppleTV",
+					Template,
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/AppleTV/Plugins",
+					"$(SRCROOT)/AppleTV",
 					"$(PROJECT_DIR)/AppleTV",
 					Template,
 				);
