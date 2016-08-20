@@ -281,12 +281,6 @@ static const luaL_Reg tab_funcs[] = {
 
 LUALIB_API int luaopen_table (lua_State *L) {
   luaL_register(L, LUA_TABLIBNAME, tab_funcs);
-  lua_createtable(L, 0, 1);  /* table to be type metatable for tables */
-  lua_pushvalue(L, -1);      /* copy table */
-  lua_settypemt(L, LUA_TTABLE);   /* set table as type metatable for tables */
-  lua_pushvalue(L, -2);      /* get table library */
-  lua_setfield(L, -2, "__index");  /* metatable.__index = table */
-  lua_pop(L, 1);			 /* pop metatable */
   return 1;
 }
 
