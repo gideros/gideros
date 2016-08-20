@@ -160,4 +160,7 @@ bundle:
 	rm -rf $(RELEASE).Final/Documentation
 	cp -R docs.giderosmobile.com $(RELEASE).Final/Documentation
 	-wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE).Final/Resources/gideros_annot.api
+
+bundle.win:
+	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 	
