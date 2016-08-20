@@ -4,11 +4,12 @@
 #include "ogl.h"
 #include <gimage.h>
 
-GRenderTarget::GRenderTarget(Application *application, int width, int height, Filter filter) :
+GRenderTarget::GRenderTarget(Application *application, int width, int height, Filter filter, Wrap wrap) :
     TextureBase(application)
 {
     TextureParameters parameters;
     parameters.filter = filter;
+    parameters.wrap = wrap;
     data = application->getTextureManager()->createRenderTarget(width, height, parameters);
 
     sizescalex = 1;
@@ -69,12 +70,11 @@ void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int 
     gtexture_BindRenderTarget(oldfbo);
 }
 
-void GRenderTarget::draw(const Sprite *sprite)
+void GRenderTarget::draw(const Sprite *sprite, const Matrix transform)
 {
 	ShaderBuffer *oldfbo=prepareForDraw();
 
-    CurrentTransform currentTransform;
-    ((Sprite*)sprite)->draw(currentTransform, 0, 0, data->width, data->height);
+    ((Sprite*)sprite)->draw(transform, 0, 0, data->width, data->height);
 
     gtexture_BindRenderTarget(oldfbo);
 }

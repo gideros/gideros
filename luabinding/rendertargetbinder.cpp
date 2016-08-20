@@ -3,6 +3,7 @@
 #include "luaapplication.h"
 #include <luautil.h>
 #include <string.h>
+#include <transform.h>
 
 RenderTargetBinder::RenderTargetBinder(lua_State *L)
 {
@@ -30,8 +31,9 @@ int RenderTargetBinder::create(lua_State *L)
     int width = luaL_checkinteger(L, 1);
     int height = luaL_checkinteger(L, 2);
     bool smoothing = lua_toboolean(L, 3);
+    bool repeat = lua_toboolean(L, 4);
 
-    binder.pushInstance("RenderTarget", new GRenderTarget(application->getApplication(), width, height, smoothing ? eLinear : eNearest));
+    binder.pushInstance("RenderTarget", new GRenderTarget(application->getApplication(), width, height, smoothing ? eLinear : eNearest, repeat ? eRepeat : eClamp));
 
     return 1;
 }
@@ -69,7 +71,21 @@ int RenderTargetBinder::draw(lua_State *L)
     GRenderTarget *renderTarget = static_cast<GRenderTarget*>(binder.getInstance("RenderTarget", 1));
     Sprite *sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
 
-    renderTarget->draw(sprite);
+    Matrix4 xform;
+    if (binder.isInstanceOf("Matrix",3))
+    {
+        Transform *mat = static_cast<Transform*>(binder.getInstance("Matrix", 3));
+       	xform=mat->matrix();
+    }
+    else
+    {
+        lua_Number x=luaL_optnumber(L,3,0);
+        lua_Number y=luaL_optnumber(L,4,0);
+        lua_Number z=luaL_optnumber(L,5,0);
+    	xform.translate(x,y,z);
+    }
+
+    renderTarget->draw(sprite,xform);
 
     return 0;
 }
