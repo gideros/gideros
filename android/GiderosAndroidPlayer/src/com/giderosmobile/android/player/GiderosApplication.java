@@ -30,6 +30,7 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Vibrator;
@@ -84,7 +85,7 @@ public class GiderosApplication
 	
 	private GGMediaPlayerManager mediaPlayerManager_;
 	
-	private AudioDevice audioDevice_;
+	//private AudioDevice audioDevice_;
 	
 	private ArrayList < Class < ? >>	sAvailableClasses = new ArrayList < Class < ? >> ();
 	
@@ -141,7 +142,13 @@ public class GiderosApplication
 		
 		mediaPlayerManager_ = new GGMediaPlayerManager(mainFile, patchFile);
 
-		audioDevice_ = new AudioDevice();
+		//audioDevice_ = new AudioDevice();
+		Activity activity=WeakActivityHolder.get();
+		AudioManager am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+		String sampleRateStr = am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+		int sampleRate = Integer.parseInt(sampleRateStr);
+		if (sampleRate == 0) sampleRate = 44100; // Use a default value if property not found
+		GiderosApplication.nativeOpenALSetup(sampleRate);
 				
 		synchronized (lock)
 		{
@@ -529,7 +536,7 @@ public class GiderosApplication
 		geolocation_.stopUpdatingLocation();
 		geolocation_.stopUpdatingHeading();
 		mediaPlayerManager_.onPause();
-		audioDevice_.stop();
+		//audioDevice_.stop();
 	}
 	
 	public void onResume()
@@ -544,7 +551,7 @@ public class GiderosApplication
 		if (isHeadingStarted_)
 			geolocation_.startUpdatingHeading();
 		mediaPlayerManager_.onResume();
-		audioDevice_.start();
+		//audioDevice_.start();
 
 		for ( Class < ? > theClass : sAvailableClasses ) {
 
@@ -1102,6 +1109,7 @@ public class GiderosApplication
 	static private native boolean isRunning();
 	static private native boolean nativeKeyDown(int keyCode, int repeatCount);
 	static private native boolean nativeKeyUp(int keyCode, int repeatCount);
+	static private native void nativeOpenALSetup(int sampleRate);
 	static private native void nativeCreate(boolean player);
 	static private native void nativeSetDirectories(String externalDir, String internalDir, String cacheDir);
 	static private native void nativeSetFileSystem(String files);

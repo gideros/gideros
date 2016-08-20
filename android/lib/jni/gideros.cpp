@@ -1261,6 +1261,13 @@ static ApplicationManager *s_applicationManager = NULL;
 
 extern "C" {
 
+int GiderosOpenALConfig_sampleRate=44100;
+
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeOpenALSetup(JNIEnv *env, jclass cls, jint sampleRate)
+{
+	GiderosOpenALConfig_sampleRate=sampleRate;
+}
+
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeCreate(JNIEnv *env, jclass cls, jboolean player)
 {
 	if (s_applicationManager != NULL)
