@@ -73,7 +73,6 @@ extern "C" {
 #include "lstrlib.c"
 #include "ltablib.c"
 #include "lutf8lib.c"
-#include "lint64.c"
 
 }
 //#include "lua.c"
