@@ -1,0 +1,315 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5F9FAAA115DD87E20039718F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9FAAA015DD87E20039718F /* Foundation.framework */; };
+		EB4A6AD11D64A88100162D26 /* CameraCapturePipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = EB4A6ACE1D64A88100162D26 /* CameraCapturePipeline.h */; };
+		EB4A6AD21D64A88100162D26 /* CameraCapturePipeline.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A6ACF1D64A88100162D26 /* CameraCapturePipeline.m */; };
+		EB4A6AD31D64A88100162D26 /* CameraPlugin.mm in Sources */ = {isa = PBXBuildFile; fileRef = EB4A6AD01D64A88100162D26 /* CameraPlugin.mm */; };
+		EB4A6AD61D64A88F00162D26 /* camerabinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB4A6AD41D64A88F00162D26 /* camerabinder.cpp */; };
+		EB4A6AD71D64A88F00162D26 /* camerabinder.h in Headers */ = {isa = PBXBuildFile; fileRef = EB4A6AD51D64A88F00162D26 /* camerabinder.h */; };
+		EB4A6AD91D64A96600162D26 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AD81D64A96600162D26 /* UIKit.framework */; };
+		EB4A6ADC1D64ABF400162D26 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADB1D64ABF400162D26 /* AVFoundation.framework */; };
+		EB4A6ADE1D64AC2C00162D26 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADD1D64AC2C00162D26 /* AssetsLibrary.framework */; };
+		EB4A6AE01D64AC3100162D26 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6ADF1D64AC3100162D26 /* CoreMedia.framework */; };
+		EB4A6AE21D64AC3600162D26 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE11D64AC3600162D26 /* ImageIO.framework */; };
+		EB4A6AE41D64ACA200162D26 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */; };
+		EB4A6AE61D64ACF900162D26 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE51D64ACF900162D26 /* QuartzCore.framework */; };
+		EB4A6AE81D64AD0000162D26 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE71D64AD0000162D26 /* CoreGraphics.framework */; };
+		EB4A6AEA1D64AD0900162D26 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4A6AE91D64AD0900162D26 /* OpenGLES.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5F9FAA9D15DD87E20039718F /* libcamera.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcamera.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F9FAAA015DD87E20039718F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		5F9FAAA415DD87E20039718F /* camera-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "camera-Prefix.pch"; sourceTree = "<group>"; };
+		EB4A6ACE1D64A88100162D26 /* CameraCapturePipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraCapturePipeline.h; path = iOS/CameraCapturePipeline.h; sourceTree = SOURCE_ROOT; };
+		EB4A6ACF1D64A88100162D26 /* CameraCapturePipeline.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CameraCapturePipeline.m; path = iOS/CameraCapturePipeline.m; sourceTree = SOURCE_ROOT; };
+		EB4A6AD01D64A88100162D26 /* CameraPlugin.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CameraPlugin.mm; path = iOS/CameraPlugin.mm; sourceTree = SOURCE_ROOT; };
+		EB4A6AD41D64A88F00162D26 /* camerabinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = camerabinder.cpp; path = common/camerabinder.cpp; sourceTree = SOURCE_ROOT; };
+		EB4A6AD51D64A88F00162D26 /* camerabinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = camerabinder.h; path = common/camerabinder.h; sourceTree = SOURCE_ROOT; };
+		EB4A6AD81D64A96600162D26 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		EB4A6ADB1D64ABF400162D26 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		EB4A6ADD1D64AC2C00162D26 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		EB4A6ADF1D64AC3100162D26 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		EB4A6AE11D64AC3600162D26 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		EB4A6AE51D64ACF900162D26 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		EB4A6AE71D64AD0000162D26 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		EB4A6AE91D64AD0900162D26 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5F9FAA9A15DD87E10039718F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB4A6AEA1D64AD0900162D26 /* OpenGLES.framework in Frameworks */,
+				EB4A6AE81D64AD0000162D26 /* CoreGraphics.framework in Frameworks */,
+				EB4A6AE61D64ACF900162D26 /* QuartzCore.framework in Frameworks */,
+				EB4A6AE41D64ACA200162D26 /* CoreFoundation.framework in Frameworks */,
+				EB4A6AE21D64AC3600162D26 /* ImageIO.framework in Frameworks */,
+				EB4A6AE01D64AC3100162D26 /* CoreMedia.framework in Frameworks */,
+				EB4A6ADE1D64AC2C00162D26 /* AssetsLibrary.framework in Frameworks */,
+				EB4A6ADC1D64ABF400162D26 /* AVFoundation.framework in Frameworks */,
+				EB4A6AD91D64A96600162D26 /* UIKit.framework in Frameworks */,
+				5F9FAAA115DD87E20039718F /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5F9FAA9215DD87E10039718F = {
+			isa = PBXGroup;
+			children = (
+				5F9FAAA215DD87E20039718F /* camera */,
+				5F9FAA9F15DD87E20039718F /* Frameworks */,
+				5F9FAA9E15DD87E20039718F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5F9FAA9E15DD87E20039718F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5F9FAA9D15DD87E20039718F /* libcamera.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5F9FAA9F15DD87E20039718F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EB4A6AE91D64AD0900162D26 /* OpenGLES.framework */,
+				EB4A6AE71D64AD0000162D26 /* CoreGraphics.framework */,
+				EB4A6AE51D64ACF900162D26 /* QuartzCore.framework */,
+				EB4A6AE31D64ACA200162D26 /* CoreFoundation.framework */,
+				EB4A6AE11D64AC3600162D26 /* ImageIO.framework */,
+				EB4A6ADF1D64AC3100162D26 /* CoreMedia.framework */,
+				EB4A6ADD1D64AC2C00162D26 /* AssetsLibrary.framework */,
+				EB4A6ADB1D64ABF400162D26 /* AVFoundation.framework */,
+				EB4A6AD81D64A96600162D26 /* UIKit.framework */,
+				5F9FAAA015DD87E20039718F /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5F9FAAA215DD87E20039718F /* camera */ = {
+			isa = PBXGroup;
+			children = (
+				EB4A6AD41D64A88F00162D26 /* camerabinder.cpp */,
+				EB4A6AD51D64A88F00162D26 /* camerabinder.h */,
+				EB4A6ACE1D64A88100162D26 /* CameraCapturePipeline.h */,
+				EB4A6ACF1D64A88100162D26 /* CameraCapturePipeline.m */,
+				EB4A6AD01D64A88100162D26 /* CameraPlugin.mm */,
+				5F9FAAA315DD87E20039718F /* Supporting Files */,
+			);
+			path = camera;
+			sourceTree = "<group>";
+		};
+		5F9FAAA315DD87E20039718F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				5F9FAAA415DD87E20039718F /* camera-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		5F9FAA9B15DD87E10039718F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB4A6AD11D64A88100162D26 /* CameraCapturePipeline.h in Headers */,
+				EB4A6AD71D64A88F00162D26 /* camerabinder.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		5F9FAA9C15DD87E10039718F /* camera */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5F9FAAAA15DD87E20039718F /* Build configuration list for PBXNativeTarget "camera" */;
+			buildPhases = (
+				5F9FAA9915DD87E10039718F /* Sources */,
+				5F9FAA9A15DD87E10039718F /* Frameworks */,
+				5F9FAA9B15DD87E10039718F /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = camera;
+			productName = camera;
+			productReference = 5F9FAA9D15DD87E20039718F /* libcamera.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5F9FAA9415DD87E10039718F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = "Gideros Mobile";
+			};
+			buildConfigurationList = 5F9FAA9715DD87E10039718F /* Build configuration list for PBXProject "camera" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5F9FAA9215DD87E10039718F;
+			productRefGroup = 5F9FAA9E15DD87E20039718F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5F9FAA9C15DD87E10039718F /* camera */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5F9FAA9915DD87E10039718F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB4A6AD21D64A88100162D26 /* CameraCapturePipeline.m in Sources */,
+				EB4A6AD31D64A88100162D26 /* CameraPlugin.mm in Sources */,
+				EB4A6AD61D64A88F00162D26 /* camerabinder.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5F9FAAA815DD87E20039718F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../../Sdk/include,
+					../../../2dsg,
+					../../../libgid/include,
+					../../../luabinding,
+					../../../libgideros,
+					../../../lua/src,
+					../../../2dsg/gfxbackends,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		5F9FAAA915DD87E20039718F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../../Sdk/include,
+					../../../2dsg,
+					../../../libgid/include,
+					../../../luabinding,
+					../../../libgideros,
+					../../../lua/src,
+					../../../2dsg/gfxbackends,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5F9FAAAB15DD87E20039718F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/camera.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "camera-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		5F9FAAAC15DD87E20039718F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/camera.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "camera-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5F9FAA9715DD87E10039718F /* Build configuration list for PBXProject "camera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5F9FAAA815DD87E20039718F /* Debug */,
+				5F9FAAA915DD87E20039718F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5F9FAAAA15DD87E20039718F /* Build configuration list for PBXNativeTarget "camera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5F9FAAAB15DD87E20039718F /* Debug */,
+				5F9FAAAC15DD87E20039718F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5F9FAA9415DD87E10039718F /* Project object */;
+}

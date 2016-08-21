@@ -119,8 +119,11 @@ class ogl2ShaderTexture : public ShaderTexture
 protected:
 	GLuint glid;
 	int width,height;
+	bool native;
 public:
 	ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
+	void setNative(void *externalTexture);
+	void *getNative();
 	virtual ~ogl2ShaderTexture();
 };
 

@@ -68,7 +68,9 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		setContentView(mGLView);
 		mGLView.setOnTouchListener(this);
         
-		if(getResources().getIdentifier("splash", "drawable", getPackageName()) != 0){
+        boolean showSplash = true;
+        
+		if(showSplash && getResources().getIdentifier("splash", "drawable", getPackageName()) != 0){
 			layout = (FrameLayout)getWindow().getDecorView();
 			hasSplash = 11;
 			//create a layout for animation
@@ -273,7 +275,10 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
     //GIDEROS-ACTIVTIY-METHODS//
     
     static public void dismisSplash(){
-    	if(hasSplash == 0){
+        if(hasSplash == -1){
+            return;
+        }
+    	else if(hasSplash == 0){
     		hasSplash = -1;
     		new Handler(Looper.getMainLooper()).post(new Runnable() {
     		    @Override
@@ -341,7 +346,11 @@ class GiderosRenderer implements GLSurfaceView.Renderer
 	{
 		GiderosApplication app = GiderosApplication.getInstance();
 		if (app != null)
+		{
+			//GIDEROS-ACTIVITY-PREDRAW//
 			app.onDrawFrame();
-        AndroidTemplateActivity.dismisSplash();
+			//GIDEROS-ACTIVITY-POSTDRAW//
+			AndroidTemplateActivity.dismisSplash();
+		}
 	}
 }

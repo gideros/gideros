@@ -25,13 +25,16 @@ int TextureBinder::create(lua_State* L)
 	Application* application = luaapplication->getApplication();
 
 	bool isFromPixels=lua_isnumber(L,3);
-	const char* filename = luaL_checkstring(L, 1);
+	size_t filenamesz=0;
+	const char* filename = isFromPixels?luaL_optlstring(L,1,NULL,&filenamesz):luaL_checkstring(L, 1);
 
 	unsigned int width, height;
 	if (isFromPixels)
 	{
 		width=luaL_checkinteger(L,2);
 		height=luaL_checkinteger(L,3);
+		if (filename&&(filenamesz!=(width*height*4)))
+			filename=NULL;
 	}
 
 	bool smoothing = lua_toboolean(L, isFromPixels?4:2);

@@ -56,7 +56,7 @@ qt.install: buildqt qt5.install qt.player
 	cp $(ROOT)/texturepacker/release/GiderosTexturePacker.exe $(RELEASE)
 	cp $(ROOT)/fontcreator/release/GiderosFontCreator.exe $(RELEASE)
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
-	cp -R $(ROOT)/ui/Tools $(RELEASE)
+	cd $(ROOT)/ui/;tar cf - --exclude=Tools/lua --exclude Tools/luac --exclude Tools/make Tools | (cd ../$(RELEASE) && tar xvf - )
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
@@ -72,14 +72,13 @@ qt.install: buildqt qt5.install qt.player
 	mkdir -p $(RELEASE)/Templates/Xcode4/iOS\ Template/iOS\ Template/assets
 	mkdir -p $(RELEASE)/Examples
 	cp -R $(ROOT)/samplecode/* $(RELEASE)/Examples
-	cp -R $(ROOT)/ios/GiderosiOSPlayer $(RELEASE)
 	cp $(ROOT)/gdrdeamon/release/gdrdeamon.exe $(RELEASE)/Tools
 	cp $(ROOT)/gdrbridge/release/gdrbridge.exe $(RELEASE)/Tools
 	cp $(ROOT)/gdrexport/release/gdrexport.exe $(RELEASE)/Tools
 	
 QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml \
-		Qt5Multimedia Qt5MultimediaQuick_p QT5MultimediaWidgets
+		Qt5Multimedia Qt5MultimediaQuick_p Qt5MultimediaWidgets
 QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Network Qt5Xml
 QT5PLATFORM=qminimal qoffscreen qwindows
@@ -147,5 +146,21 @@ tools:
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
 	
 bundle:
+	rm -rf $(RELEASE).Tmp
+	mkdir -p $(RELEASE).Tmp
+	rm -rf $(RELEASE).Final
+	mkdir -p $(RELEASE).Final
+	mv $(RELEASE)/*.zip $(RELEASE).Tmp
+	cp -R $(RELEASE)/* $(RELEASE).Final
+	mv $(RELEASE).Tmp/* $(RELEASE)
+	rm -rf $(RELEASE).Tmp
+	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildMac.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildMac.zip; fi
+	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
+	-wget --recursive --no-clobber --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains docs.giderosmobile.com --no-parent http://docs.giderosmobile.com/
+	rm -rf $(RELEASE).Final/Documentation
+	cp -R docs.giderosmobile.com $(RELEASE).Final/Documentation
+	-wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE).Final/Resources/gideros_annot.api
+
+bundle.win:
 	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
-		
+	

@@ -275,7 +275,7 @@ void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float
     graphicsBase->texcoords.Update();
     graphicsBase->indices.Update();
 
-    float x = 0, y = 0;
+    float x = -minx, y = -miny;
     wchar32_t prev = 0;
     for (int i = 0; i < size; ++i)
     {

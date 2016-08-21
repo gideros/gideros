@@ -9,6 +9,18 @@ static void read_png_data(png_structp pngPtr, png_bytep data, png_size_t length)
     g_fread(data, 1, length, file);
 }
 
+static void write_png_data(png_structp pngPtr, png_bytep data, png_size_t length)
+{
+    G_FILE* file = (G_FILE*)png_get_io_ptr(pngPtr);
+    g_fwrite(data, 1, length, file);
+}
+
+static void flush_png_data(png_structp pngPtr)
+{
+    G_FILE* file = (G_FILE*)png_get_io_ptr(pngPtr);
+    g_fflush(file);
+}
+
 extern "C" {
 
 int gimage_parsePng(const char *pathname, int *width, int *height, int *comp)
@@ -143,6 +155,52 @@ int gimage_loadPng(const char *pathname, void *buf)
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
     g_fclose(fp);
 
+    return GIMAGE_NO_ERROR;
+}
+
+int gimage_savePng(const char *filename, int width, int height, unsigned char *data)
+{
+    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!png)
+        return GIMAGE_ERROR_WHILE_WRITING;
+
+    png_infop info = png_create_info_struct(png);
+    if (!info) {
+        png_destroy_write_struct(&png, &info);
+        return GIMAGE_ERROR_WHILE_WRITING;
+    }
+
+    G_FILE* fp = g_fopen(filename, "wb");
+
+    if (!fp) {
+        png_destroy_write_struct(&png, &info);
+        return GIMAGE_CANNOT_OPEN_FILE;
+    }
+
+    png_set_write_fn(png, fp, write_png_data, flush_png_data);
+    png_set_IHDR(png, info, width, height, 8 /* depth */, PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE,
+        PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+    png_colorp palette = (png_colorp)png_malloc(png, PNG_MAX_PALETTE_LENGTH * sizeof(png_color));
+    if (!palette) {
+        g_fclose(fp);
+        png_destroy_write_struct(&png, &info);
+        return false;
+    }
+    png_set_PLTE(png, info, palette, PNG_MAX_PALETTE_LENGTH);
+    png_write_info(png, info);
+    png_set_packing(png);
+
+    png_bytepp rows = (png_bytepp)png_malloc(png, height * sizeof(png_bytep));
+    for (int i = 0; i < height; ++i)
+        rows[i] = (png_bytep)(data + i * width * 4);
+
+    png_write_image(png, rows);
+    png_write_end(png, info);
+    png_free(png, palette);
+    png_destroy_write_struct(&png, &info);
+
+    g_fclose(fp);
+    png_free(png,rows);
     return GIMAGE_NO_ERROR;
 }
 

@@ -10,6 +10,7 @@
 ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)
 {
 	glid=0;
+	native=false;
 	this->width=width;
 	this->height=height;
 
@@ -58,14 +59,29 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     	case PK_USHORT_4444: gltype=GL_UNSIGNED_SHORT_4_4_4_4; break;
     	case PK_USHORT_5551: gltype=GL_UNSIGNED_SHORT_5_5_5_1; break;
     }
-    glTexImage2D(GL_TEXTURE_2D, 0, glformat, width, height, 0, glformat, gltype, data);
+    if (data)
+    	glTexImage2D(GL_TEXTURE_2D, 0, glformat, width, height, 0, glformat, gltype, data);
 
     glBindTexture(GL_TEXTURE_2D, oldTex);
 }
 
+void ogl2ShaderTexture::setNative(void *externalTexture)
+{
+	if (!native)
+		glDeleteTextures(1,&glid);
+	glid=externalTexture?(*((GLuint *)externalTexture)):0;
+	native=true;
+}
+
+void *ogl2ShaderTexture::getNative()
+{
+	return &glid;
+}
+
 ogl2ShaderTexture::~ogl2ShaderTexture()
 {
-	glDeleteTextures(1,&glid);
+	if (!native)
+		glDeleteTextures(1,&glid);
 }
 
 

@@ -100,6 +100,8 @@ class ShaderTexture
 {
 public:
 	virtual ~ShaderTexture() { };
+	virtual void setNative(void *externalTexture) {};
+	virtual void *getNative() { return NULL; };
 	enum Format {
 		FMT_ALPHA,
 		FMT_RGB,

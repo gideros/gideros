@@ -21,12 +21,90 @@ include $(PREBUILT_SHARED_LIBRARY)
 ####
 
 include $(CLEAR_VARS)
+LOCAL_MODULE			:= openal
+
+LOCAL_OPENAL_VERSION=1.17.2
+
+LOCAL_C_INCLUDES += \
+	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/include \
+	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/Include \
+	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/include \
+	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc \
+	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/backends
+
+# openal (24 files)
+LOCAL_CFLAGS += -DAL_BUILD_LIBRARY -DAL_ALEXT_PROTOTYPES -DOPENAL_SUBDIR_AL -std=c99
+#openal Common FILES
+LOCAL_SRC_FILES  := \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alAuxEffectSlot.c \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alBuffer.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alEffect.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alError.c         \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alExtension.c     \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alFilter.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alListener.c      \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alSource.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alState.c         \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alThunk.c         \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/ALc.c                  \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/alcConfig.c            \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/alcRing.c              \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/ALu.c                  \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/bs2b.c                 \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/mixer.c                \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/panning.c              
+
+#1.13 files
+#LOCAL_SRC_FILES  += \ 
+#	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alDatabuffer.c    \
+#	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/alcEcho.c              \
+#	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/alcModulator.c         \
+#	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/alcReverb.c            \
+#	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/alcThread.c            \
+#	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/android.c              \
+#	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/null.c
+#LOCAL_SRC_FILES += audiodevice.cpp
+
+#1.17 files
+LOCAL_SRC_FILES  += \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/bsinc.c                 \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/helpers.c                 \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/hrtf.c                 \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/mixer_c.c                 \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/autowah.c       \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/chorus.c       \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/compressor.c       \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/dedicated.c       \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/distortion.c       \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/echo.c       \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/equalizer.c       \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/flanger.c       \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/modulator.c       \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/null.c       \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/effects/reverb.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/backends/base.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/backends/opensl.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/backends/null.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/backends/loopback.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/sample_cvt.c         \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/common/atomic.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/common/rwlock.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/common/threads.c        \
+	../../openal-soft-$(LOCAL_OPENAL_VERSION)/common/uintmap.c        
+
+include $(BUILD_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
 
 LOCAL_MODULE := gideros
 
 LOCAL_CFLAGS := -O2
 
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES
+
+LOCAL_OPENAL_VERSION=1.17.2
+
+LOCAL_CFLAGS += -DAL_BUILD_LIBRARY -DAL_ALEXT_PROTOTYPES -DOPENAL_SUBDIR_AL 
 
 LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../2dsg \
@@ -43,14 +121,16 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../../libgvfs \
 	$(LOCAL_PATH)/../../../libgideros \
 	$(LOCAL_PATH)/../../../libpystring \
-	$(LOCAL_PATH)/../../openal-soft-1.13/include \
-	$(LOCAL_PATH)/../../openal-soft-1.13/OpenAL32/Include \
+	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/include \
+	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/Include \
+	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/include \
+	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc \
+	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/backends \
 	$(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/include \
 	$(LOCAL_PATH)/../../../libgid/external/jpeg-9
 
 LOCAL_SRC_FILES += gideros.cpp
 
-LOCAL_SRC_FILES += audiodevice.cpp
 
 LOCAL_SRC_FILES += \
     ../../../libgid/src/gimage-png.cpp \
@@ -156,36 +236,7 @@ LOCAL_SRC_FILES += \
 	../../../libgid/external/jpeg-9/jutils.c \
 	../../../libgid/external/jpeg-9/jmemmgr.c \
 	../../../libgid/external/jpeg-9/jmemnobs.c
-	
-# openal (24 files)
-LOCAL_CFLAGS += -DAL_BUILD_LIBRARY -DAL_ALEXT_PROTOTYPES -DOPENAL_SUBDIR_AL
-LOCAL_SRC_FILES  += \
-	../../openal-soft-1.13/OpenAL32/alAuxEffectSlot.c \
-	../../openal-soft-1.13/OpenAL32/alBuffer.c        \
-	../../openal-soft-1.13/OpenAL32/alDatabuffer.c    \
-	../../openal-soft-1.13/OpenAL32/alEffect.c        \
-	../../openal-soft-1.13/OpenAL32/alError.c         \
-	../../openal-soft-1.13/OpenAL32/alExtension.c     \
-	../../openal-soft-1.13/OpenAL32/alFilter.c        \
-	../../openal-soft-1.13/OpenAL32/alListener.c      \
-	../../openal-soft-1.13/OpenAL32/alSource.c        \
-	../../openal-soft-1.13/OpenAL32/alState.c         \
-	../../openal-soft-1.13/OpenAL32/alThunk.c         \
-	../../openal-soft-1.13/Alc/ALc.c                  \
-	../../openal-soft-1.13/Alc/alcConfig.c            \
-	../../openal-soft-1.13/Alc/alcEcho.c              \
-	../../openal-soft-1.13/Alc/alcModulator.c         \
-	../../openal-soft-1.13/Alc/alcReverb.c            \
-	../../openal-soft-1.13/Alc/alcRing.c              \
-	../../openal-soft-1.13/Alc/alcThread.c            \
-	../../openal-soft-1.13/Alc/ALu.c                  \
-	../../openal-soft-1.13/Alc/android.c              \
-	../../openal-soft-1.13/Alc/bs2b.c                 \
-	../../openal-soft-1.13/Alc/mixer.c                \
-	../../openal-soft-1.13/Alc/panning.c              \
-	../../openal-soft-1.13/Alc/null.c
-
-	
+		
 LOCAL_SRC_FILES += \
 	../../../2dsg/application.cpp \
 	../../../2dsg/bitmap.cpp \
@@ -460,9 +511,10 @@ LOCAL_SRC_FILES += \
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src \
 					$(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src/loaders
 
-LOCAL_LDLIBS := -lGLESv2 -ldl -llog
+LOCAL_LDLIBS := -lGLESv2 -ldl -llog -lOpenSLES
 
 LOCAL_SHARED_LIBRARIES := gvfs lua
+LOCAL_STATIC_LIBRARIES := openal
 
 include $(BUILD_SHARED_LIBRARY)
 

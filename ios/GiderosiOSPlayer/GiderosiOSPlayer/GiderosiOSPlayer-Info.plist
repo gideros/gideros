@@ -53,14 +53,14 @@
 	</dict>
 	<key>NSLocationUsageDescription</key>
 	<string>Do you accept to share your position?</string>
-    	<key>NSLocationWhenInUseUsageDescription</key>
-    	<string>Do you accept to share your position?</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Do you accept to share your position?</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array/>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UIStatusBarHidden</key>
 	<true/>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -74,5 +74,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>

@@ -14,8 +14,8 @@ iosplayer.atv.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 ##RULES
 %.ios.libs: 
 	#BUILDING $*
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release -project $*.xcodeproj
-	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration Release -project $*.xcodeproj
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode"
+	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration Release -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode"
 	@cd $(IOSLIBPATH); $(LIPO) build/Release-iphoneos/lib$*.a build/Release-iphonesimulator/lib$*.a -create -output lib$*.ios.a
 
 %.atv.libs: 
@@ -45,46 +45,50 @@ atv.libs.install: atv.libs
 	cp $(ROOT)/ios/iosplayer/libiosplayer.atv.a $(ATV_TEMPLATE)/libgideros.a
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(ATV_TEMPLATE)
 
-PLUGINS_IOS=luasocket
+PLUGINS_IOS=luasocket camera
+PLUGINS_ATV=luasocket
 
 luasocket.%: PLUGINDIR=LuaSocket
+camera.%: PLUGINDIR=camera
 
 %.iosplugin: PLUGINPATH=$(ROOT)/plugins/$(PLUGINDIR)/source
 
 %.ios.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release HEADER_SEARCH_PATHS='${inherited} ../../../lua/src'
-	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration Release HEADER_SEARCH_PATHS='${inherited} ../../../lua/src'
+	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphonesimulator$$IOS_SDK -configuration Release  OTHER_CFLAGS="-fembed-bitcode"
+	cd $(PLUGINPATH); $(XCODEBUILD) -project $*.xcodeproj -alltargets -sdk iphoneos$$IOS_SDK -configuration Release OTHER_CFLAGS="-fembed-bitcode"
 	cd $(PLUGINPATH); $(LIPO) build/Release-iphoneos/lib$*.a build/Release-iphonesimulator/lib$*.a -create -output lib$*.ios.a
 
 
 %.ios.clean.iosplugin:
-	rm -rf $(PLUGINPATH)
+	rm -rf $(PLUGINPATH)/build
+	rm -f $(PLUGINPATH)/lib*.ios.a
 
 %.ios.install.iosplugin:
-	mkdir -p $(IOS_TEMPLATE)/Plugins
-	cp $(PLUGINPATH)/lib$*.ios.a $(IOS_TEMPLATE)/Plugins/lib$*.a
+	mkdir -p $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS
+	cp $(PLUGINPATH)/lib$*.ios.a $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS/
 
 %.atv.iosplugin:
 	@echo $(PLUGINDIR) $(PLUGINPATH)
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration Release -project $*.xcodeproj HEADER_SEARCH_PATHS='${inherited} ../../../lua/src' GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
-	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration Release -project $*.xcodeproj HEADER_SEARCH_PATHS='${inherited} ../../../lua/src' GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
+	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration Release -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
+	@cd $(PLUGINPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration Release -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
 	@cd $(PLUGINPATH); $(LIPO) build/Release-appletvos/lib$*.a build/Release-appletvsimulator/lib$*.a -create -output lib$*.atv.a
 
 %.atv.clean.iosplugin:
-	rm -rf $(PLUGINPATH)
+	rm -rf $(PLUGINPATH)/build
+	rm -f $(PLUGINPATH)/lib*.atv.a
 
 %.atv.install.iosplugin:
-	mkdir -p $(ATV_TEMPLATE)/Plugins
-	cp $(PLUGINPATH)/lib$*.atv.a $(ATV_TEMPLATE)/Plugins/lib$*.a
+	mkdir -p $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS
+	cp $(PLUGINPATH)/lib$*.atv.a $(RELEASE)/All\ Plugins/$(PLUGINDIR)/bin/iOS/
 
 ios.install: ios.libs.install atv.libs.install ios.plugins.install ios.app
 
 ios.clean: ios.plugins.clean
 		
-ios.plugins: $(addsuffix .ios.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.iosplugin,$(PLUGINS_IOS))
+ios.plugins: $(addsuffix .ios.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.iosplugin,$(PLUGINS_ATV))
 
-ios.plugins.clean: $(addsuffix .ios.clean.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.clean.iosplugin,$(PLUGINS_IOS))
+ios.plugins.clean: $(addsuffix .ios.clean.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.clean.iosplugin,$(PLUGINS_ATV))
 
 PLUGINS_IOS_DEFFILES=$(ROOT)/Sdk/include/*.h \
 	$(addprefix plugins/, \
@@ -98,9 +102,13 @@ PLUGINS_IOS_DEFFILES=$(ROOT)/Sdk/include/*.h \
 
 IOS_PLAYER_DIR=$(ROOT)/ios/GiderosiOSPlayer
 		
-ios.plugins.install: ios.plugins $(addsuffix .ios.install.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.install.iosplugin,$(PLUGINS_IOS))
+ios.plugins.install: ios.plugins $(addsuffix .ios.install.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.install.iosplugin,$(PLUGINS_ATV))
+	mkdir -p $(IOS_TEMPLATE)/Plugins
+	mkdir -p $(ATV_TEMPLATE)/Plugins
 	cp $(PLUGINS_IOS_DEFFILES) $(IOS_TEMPLATE)/Plugins
 	cp $(PLUGINS_IOS_DEFFILES) $(ATV_TEMPLATE)/Plugins
+	cp $(RELEASE)/All\ Plugins/LuaSocket/bin/iOS/libluasocket.ios.a $(IOS_TEMPLATE)/Plugins/libluasocket.a
+	cp $(RELEASE)/All\ Plugins/LuaSocket/bin/iOS/libluasocket.atv.a $(ATV_TEMPLATE)/Plugins/libluasocket.a
 
 player.ios.app: 
 	rm -rf $(IOS_PLAYER_DIR)/GiderosiOSPlayer/Plugins
@@ -108,8 +116,7 @@ player.ios.app:
 	cp $(IOS_TEMPLATE)/*.a $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
 	cp $(IOS_TEMPLATE)/giderosapi.h $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
 	mkdir -p $(RELEASE)/Players
-	rm -rf $(RELEASE)/Players/GiderosiOSPlayer.zip 
-	rm -rf $(IOS_PLAYER_DIR)/build 
-	zip -r $(RELEASE)/Players/GiderosiOSPlayer.zip $(IOS_PLAYER_DIR)
-	#cd $(IOS_PLAYER_DIR); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration Release IPHONEOS_DEPLOYMENT_TARGET=6.0 -project GiderosiOSPlayer.xcodeproj
+	#cd $(IOS_PLAYER_DIR); $(XCODEBUILD) -sdk iphoneos$$IOS_SDK -configuration Release IPHONEOS_DEPLOYMENT_TARGET=6.0 -project GiderosiOSPlayer.xcodeproj -scheme GiderosiOSPlayer -archivePath GiderosiOSPlayer.xcarchive archive
+	#cd $(IOS_PLAYER_DIR); $(XCODEBUILD) -exportArchive -exportPath ../../$(RELEASE)/Players/GiderosiOSPlayer.ipa -exportFormat ipa -archivePath GiderosiOSPlayer.xcarchive
+	R=$(PWD);cd $(IOS_PLAYER_DIR); zip -r $$R/$(RELEASE)/Players/GiderosiOSPlayer.zip GiderosiOSPlayer 
 	

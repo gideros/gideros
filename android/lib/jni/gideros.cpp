@@ -518,6 +518,20 @@ void NetworkManager::calculateMD5(const char* file)
 		md5_[file] = md5;
 }
 
+static void printToLog_s(const char *str, int len, void *data)
+{
+	if (len<0)
+		glog_i("%s\n",str);
+	else
+	{
+		char* buffer = (char*)malloc(len+1);
+		memcpy(buffer, str,len);
+		buffer[len]=0;
+		glog_i("%s\n",buffer);
+		free(buffer);
+	}
+}
+
 ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 {
 	JavaVM* vm;
@@ -582,6 +596,8 @@ ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 	application_->setPlayerMode(player_);
 	if (player_)
 		application_->setPrintFunc(NetworkManager::printToServer_s, networkManager_);
+	else
+		application_->setPrintFunc(printToLog_s, NULL);
 	application_->enableExceptions();
 
 	Binder::disableTypeChecking();
@@ -1244,6 +1260,13 @@ void ApplicationManager::foreground()
 static ApplicationManager *s_applicationManager = NULL;
 
 extern "C" {
+
+int GiderosOpenALConfig_sampleRate=44100;
+
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeOpenALSetup(JNIEnv *env, jclass cls, jint sampleRate)
+{
+	GiderosOpenALConfig_sampleRate=sampleRate;
+}
 
 void Java_com_giderosmobile_android_player_GiderosApplication_nativeCreate(JNIEnv *env, jclass cls, jboolean player)
 {

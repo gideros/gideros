@@ -28,8 +28,9 @@ enum RESERVED {
   TK_IF, TK_IN, TK_LOCAL, TK_NIL, TK_NOT, TK_OR, TK_REPEAT,
   TK_RETURN, TK_THEN, TK_TRUE, TK_UNTIL, TK_WHILE,
   /* other terminal symbols */
-  TK_CONCAT, TK_DOTS, TK_EQ, TK_GE, TK_LE, TK_NE, TK_NUMBER,
-  TK_NAME, TK_STRING, TK_EOS
+  TK_CONCAT, TK_DOTS, TK_EQ, TK_GE, TK_LE, TK_NE,
+  TK_LSHFT, TK_RSHFT, TK_INTDIV,
+  TK_NUMBER, TK_NAME, TK_STRING, TK_EOS
 };
 
 /* number of reserved words */
@@ -64,6 +65,10 @@ typedef struct LexState {
   Mbuffer *buff;  /* buffer for tokens */
   TString *source;  /* current source name */
   char decpoint;  /* locale decimal point */
+  char *mstr; /* macro string */
+  int mpos; /* current character position of macro string */
+  int mlen; /* macro string length */
+  int mswt; /* number of switches between source and macro */
 } LexState;
 
 
