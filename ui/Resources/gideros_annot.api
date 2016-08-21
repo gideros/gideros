@@ -394,7 +394,7 @@ Core > Object
 core
 Core.asyncCall(task [, parameters]) Core - Launch function on separate thread as background task
 Core.class([base]) Core - Creates and returns new Gideros class
-Core.frameStatistics() Core - Return data about frame
+Core.frameStatistics() Core - Return table with data about frame
 Core.yield(state) Core - Yield function running as background task
 coroutine
 coroutine.create(f) coroutine - creates coroutine from function f, returns coroutine
@@ -415,6 +415,7 @@ debug.getlocal(level, local) debug - returns name and value of local variable wi
 debug.getupvalue(func, up) debug - returns name and value of upvalue with index up of function func
 debug.sethook(hook, mask [, count]) debug - sets given function as a hook, mask="[crl]"
 debug.setlocal(level, local, value) debug - sets local variable with index local at stack level with value
+debug.settypemt() debug - Set meta table type
 debug.setupvalue(func, up, value) debug - sets upvalue with index up of function func with value
 debug.traceback([message, level]) debug - returns a string with a traceback of the call stack
 Event > Object
@@ -595,6 +596,8 @@ iad.Banner.BOTTOM - value "bottom"
 iad.Banner.LANDSCAPE - value "landscape"
 iad.Banner.PORTRAIT - value "portrait"
 iad.Banner.TOP - value "top"
+int64
+int64.new(value) int64 - Create 64 bit integer
 io
 io.close([file]) io - closes file, or the default output file
 io.flush() io - flushes the default output file
@@ -873,9 +876,11 @@ clear(color, alpha [, x, y, width, height]) RenderTarget - Clears rendered textu
 draw(sprite) RenderTarget - Renders provided object
 getPixel(x, y) RenderTarget - Returns single pixels color and alpha channel
 getPixels(x, y, w, h) RenderTarget - Returns buffer containing color and alpha data from provided rectangle
+save(filename [, x, y, width, height]) RenderTarget - save contents of RenderTarget as image
 Shader > Object
 Shader.new(vertex shader, fragment shader, flags, uniform descriptor, attribute descriptor) Shader - create new shader
 getEngineVersion() Shader - get shader version
+getShaderLanguage() Shader - Get shader language
 setConstant(uniform name, data type, mult, data) Shader - change the value of a uniform
 Shader.CFLOAT - value 1
 Shader.CFLOAT4 - value 2
@@ -888,6 +893,7 @@ Shader.DINT - value 4
 Shader.DSHORT - value 2
 Shader.DUBYTE - value 1
 Shader.DUSHORT - value 3
+Shader.FLAG_FROM_CODE - value 4
 Shader.FLAG_NONE - value 0
 Shader.FLAG_NO_DEFAULT_HEADER - value 1
 Shader.SYS_COLOR - value 2
@@ -1028,11 +1034,15 @@ table.insert(table [, pos, value]) table - insert value at location pos in table
 table.remove(table [, pos]) table - removes element at pos from table, default pos=n
 table.sort(table [, comp]) table - sorts in-place elements 1 to n, comp(v1,v2- true if v1<v2, default <
 TextField > Sprite
-TextField.new(font, text) TextField - creates a new TextField object with the specified font and text
+TextField.new(font, text [, sample]) TextField - creates a new TextField object with the specified font and text
 getLetterSpacing() TextField - returns the letter-spacing property which is used to increase or decrease the space between characters in a text
+getLineHeight() TextField - Get line height
+getSample() TextField - get string that was used as sample for determining line height
 getText() TextField - returns the text displayed
 getTextColor() TextField - returns the color of the text in a text field in hexadecimal format
+setFont(font) TextField - set font to use
 setLetterSpacing(spacing) TextField - sets the letter-spacing property which is used to increase or decrease the space between characters in a text
+setSample(sample) TextField - Set string that will be used as sample for determining text's line height
 setText(text) TextField - sets the text to be displayed
 setTextColor(color) TextField - sets the color of the text in a text field in hexadecimal format
 TextInputDialog > AlertDialog

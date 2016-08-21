@@ -44,12 +44,10 @@
 #endif
 
 #ifdef __ANDROID__
-#if (__STDC_VERSION__ < 199901L)
 static long double strtold(const char *s, char **sp)
 {
     return strtod(s, sp);
 }
-#endif
 #endif
 
 #ifdef WINSTORE
