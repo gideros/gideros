@@ -144,9 +144,19 @@ public class GiderosApplication
 
 		//audioDevice_ = new AudioDevice();
 		Activity activity=WeakActivityHolder.get();
-		AudioManager am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-		String sampleRateStr = am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
-		int sampleRate = Integer.parseInt(sampleRateStr);
+		int sampleRate=0;
+		if (android.os.Build.VERSION.SDK_INT >= 17)
+		{
+			try
+			{
+				AudioManager am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+				String sampleRateStr = am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+				sampleRate = Integer.parseInt(sampleRateStr);
+			}
+			catch (Exception e)
+			{
+			}
+		}
 		if (sampleRate == 0) sampleRate = 44100; // Use a default value if property not found
 		GiderosApplication.nativeOpenALSetup(sampleRate);
 				

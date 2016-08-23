@@ -12,14 +12,14 @@ wine xyz > /dev/null 2>&1
 #export GVERSION=2016.06
 
 # John
-export QT=/usr/local/Cellar/qt5/5.6.1-1
+export QT=/Users/johnblackburn/Qt/5.6/clang_64
 export QT_WIN=~/.wine/drive_c/Qt/Qt5.6.0/5.6/mingw49_32
 export QT_DLL=54
 export IOS_SDK=9.3
 export TVOS_SDK=9.2
 export ANDROID_HOME=/usr/local/opt/android-sdk
-export ANDROID_NDK=/usr/local/opt/android-ndk
-export GVERSION=2016.06
+export ANDROID_NDK=/usr/local/bin
+export GVERSION=2016.8.1
 
 rm -rf build
 mkdir build
