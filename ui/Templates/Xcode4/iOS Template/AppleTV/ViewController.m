@@ -11,6 +11,9 @@
 
 #include "giderosapi.h"
 
+//GIDEROS-TAG-ATV:DRAWDEFS//
+
+
 @interface ViewController ()
 @property (nonatomic, retain) EAGLContext *context;
 @property (nonatomic, assign) CADisplayLink *displayLink;
@@ -148,7 +151,9 @@ NSMutableArray *tableData;
 
 - (void)drawFrame
 {
+    //GIDEROS-TAG-ATV:PREDRAW//
     gdr_drawFrame();
+    //GIDEROS-TAG-ATV:POSTDRAW//
 }
 
 - (void)didReceiveMemoryWarning

@@ -10,6 +10,7 @@
 #import "EAGLView.h"
 
 #include "giderosapi.h"
+//GIDEROS-TAG-IOS:DRAWDEFS//
 
 @interface ViewController ()
 @property (nonatomic, retain) EAGLContext *context;
@@ -149,7 +150,9 @@ NSMutableArray *tableData;
 
 - (void)drawFrame
 {
-	gdr_drawFrame();
+    //GIDEROS-TAG-IOS:PREDRAW//
+    gdr_drawFrame();
+    //GIDEROS-TAG-IOS:POSTDRAW//
 }
 
 - (void)didReceiveMemoryWarning

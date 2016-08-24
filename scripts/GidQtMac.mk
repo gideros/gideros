@@ -139,6 +139,9 @@ tools:
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
 
+doc:
+	-wget --recursive --no-clobber --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains docs.giderosmobile.com --no-parent http://docs.giderosmobile.com/
+
 bundle:
 	rm -rf $(RELEASE).Tmp
 	mkdir -p $(RELEASE).Tmp
@@ -150,9 +153,7 @@ bundle:
 	rm -rf $(RELEASE).Tmp
 	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildMac.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildMac.zip; fi
 	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
-	-wget --recursive --no-clobber --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains docs.giderosmobile.com --no-parent http://docs.giderosmobile.com/
 	rm -rf $(RELEASE).Final/Documentation
 	cp -R docs.giderosmobile.com $(RELEASE).Final/Documentation
-	mv $(RELEASE).Final/Templates $(RELEASE).Final/Gideros\ Studio.app/Contents
+	mv $(RELEASE).Final/Templates$ (RELEASE).Final/All\ Plugins $(RELEASE).Final/Gideros\ Studio.app/Contents
 	-wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE).Final/Gideros\ Studio.app/Contents/Resources/gideros_annot.api
-	

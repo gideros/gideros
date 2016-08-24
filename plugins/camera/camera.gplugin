@@ -54,7 +54,7 @@
         </replacelist>
     </template>
    <template name="Project" path="">
-        <replacelist wildcards="project.pbxproj">
+        <replacelist wildcards="project.pbxproj,ViewController.m">
             <prepend>
             	<orig>/* End PBXFileReference section */</orig>
             	<by><![CDATA[
@@ -74,6 +74,14 @@
 		000000011BAC10CC005599BD,
             	]]></by>
             </prepend>
+	    <prepend>
+    		<orig>//GIDEROS-TAG-IOS:PREDRAW//</orig>
+		<by>cameraplugin_render(); </by>
+	    </prepend>
+	    <append>
+    		<orig>//GIDEROS-TAG-IOS:DRAWDEFS//</orig>
+		<by>extern "C" void cameraplugin_render(); </by>
+	    </append>
         </replacelist>
     </template>
  </target>
