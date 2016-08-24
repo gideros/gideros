@@ -151,7 +151,7 @@ bundle:
 	cp -R $(RELEASE)/* $(RELEASE).Final
 	mv $(RELEASE).Tmp/* $(RELEASE)
 	rm -rf $(RELEASE).Tmp
-	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildMac.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildMac.zip; fi
+	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildWin.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildWin.zip; fi
 	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
 	rm -rf $(RELEASE).Final/Documentation
 	cp -R docs.giderosmobile.com $(RELEASE).Final/Documentation

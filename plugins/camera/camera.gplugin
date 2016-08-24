@@ -80,7 +80,7 @@
 	    </prepend>
 	    <append>
     		<orig>//GIDEROS-TAG-IOS:DRAWDEFS//</orig>
-		<by>extern "C" void cameraplugin_render(); </by>
+		<by>extern void cameraplugin_render(); </by>
 	    </append>
         </replacelist>
     </template>

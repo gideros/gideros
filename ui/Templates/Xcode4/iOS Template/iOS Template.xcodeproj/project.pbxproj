@@ -693,16 +693,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Template/iOS Template-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					iOS,
-					Template/Plugins,
+					"iOS Template/Plugins",
 				);
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/iOS",
-					Template/Plugins,
-					"$(SRCROOT)/iOS",
-					Template,
+					"$(SRCROOT)/iOS Template/Plugins",
+					"$(SRCROOT)/iOS Template",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -719,16 +716,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Template/iOS Template-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					iOS,
-					Template/Plugins,
+					"iOS Template/Plugins",
 				);
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/iOS",
-					Template/Plugins,
-					"$(SRCROOT)/iOS",
-					Template,
+					"$(SRCROOT)/iOS Template/Plugins",
+					"$(SRCROOT)/iOS Template",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
