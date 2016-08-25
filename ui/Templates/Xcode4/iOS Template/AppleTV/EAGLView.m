@@ -10,6 +10,7 @@
 #import "ViewController.h"
 
 #include "giderosapi.h"
+//GIDEROS-TAG-ATV:DRAWDEFS//
 
 @interface EAGLView (PrivateMethods)
 - (void)createFramebuffer;
@@ -126,6 +127,7 @@
         
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
         
+        //GIDEROS-TAG-ATV:PREDRAW//
         glViewport(0, 0, framebufferWidth, framebufferHeight);
     }
 }
@@ -141,6 +143,7 @@
         glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
         
         success = [context presentRenderbuffer:GL_RENDERBUFFER];
+        //GIDEROS-TAG-ATV:POSTDRAW//
     }
     
     return success;
