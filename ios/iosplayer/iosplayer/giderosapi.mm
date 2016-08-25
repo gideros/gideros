@@ -171,7 +171,8 @@ public:
 	
 	static void printToServer_s(const char *str, int len, void *data)
 	{
-		static_cast<NetworkManager*>(data)->printToServer(str, len);
+        if (data)
+            static_cast<NetworkManager*>(data)->printToServer(str, len);
 	}
 	
 	void printToServer(const char *str, int len)
@@ -1286,6 +1287,8 @@ void ApplicationManager::suspend()
     {
         delete networkManager_;
         networkManager_=NULL;
+        if (player_)
+            application_->setPrintFunc(NetworkManager::printToServer_s, NULL);
     }
 
 #if THREADED_RENDER_LOOP
@@ -1303,7 +1306,10 @@ void ApplicationManager::resume()
     [renderCond_ lock];
 #endif
     if (player_&&!networkManager_)
+    {
         networkManager_ = new NetworkManager(this);
+        application_->setPrintFunc(NetworkManager::printToServer_s, networkManager_);
+    }
 
     GStatus status;
     application_->tick(&status);
