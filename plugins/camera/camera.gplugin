@@ -54,7 +54,7 @@
         </replacelist>
     </template>
    <template name="Project" path="">
-        <replacelist wildcards="project.pbxproj;ViewController.m">
+        <replacelist wildcards="project.pbxproj;EAGLView.m »>
             <prepend>
             	<orig>/* End PBXFileReference section */</orig>
             	<by><![CDATA[

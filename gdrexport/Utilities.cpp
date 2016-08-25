@@ -57,7 +57,7 @@ bool Utilities::bitwiseMatchReplace(unsigned char *b,int bo,const unsigned char 
 		 if (memcmp(b,m,ms))
 				 return false;
 		 memcpy(b,r,ms);
-		 return false;
+		 return true;
 	 }
 	 for (int k=0;k<ms;k++)
 	 {
@@ -74,17 +74,45 @@ bool Utilities::bitwiseMatchReplace(unsigned char *b,int bo,const unsigned char 
 	 return true;
 }
 
-void Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r,int rs)
+int Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r,int rs)
 {
- int bmo=(bs-ms)*8;
+ if (!memcmp(m,r,ms))
+	return 0; //No actual replacement needed
+ int rcount=0;
  unsigned char *ub=(unsigned char *)b;
  const unsigned char *um=(const unsigned char *)m;
  const unsigned char *ur=(const unsigned char *)r;
- for (int k=0;k<bmo;k++)
+ long int bmo=bs-ms;
+ bmo=bmo*8;
+ if (ms<=2)
  {
-	 if (bitwiseMatchReplace(ub+(k>>3),k&7,um,ms,ur))
-		 k+=(ms*8)-1;
+ 	for (long int k=0;k<bmo;k++)
+	 {
+		 if (bitwiseMatchReplace(ub+(k>>3),k&7,um,ms,ur))
+	 	{
+			 k+=(ms*8)-1;
+			rcount++;
+		 }
+ 	}
  }
+ else
+ {
+  unsigned char bshift[8];
+  for (int k=0;k<8;k++)
+	bshift[k]=(um[1]|(um[2]<<8))>>k;
+  for (int k=1;k<(bs+1-ms);k++)
+  {
+   for (int bo=0;bo<8;bo++)
+    if (ub[k]==bshift[bo])
+   	if (bitwiseMatchReplace(ub+k-1,(8-bo)&7,um,ms,ur))
+   	{
+    		k+=ms-1;
+		bo=8;
+    		rcount++;
+   	}
+  }
+ }
+ return rcount;
 }
 
  void Utilities::fileCopy(	const QString& srcName,
@@ -123,20 +151,25 @@ void Utilities::bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r
             return;
         QByteArray data = in.readAll();
         in.close();
+	int rcount=0;
 
         for (int i = 0; i < replaceList[match].size(); ++i)
         	if (replaceList[match][i].first.size()==replaceList[match][i].second.size()) //Perform bitwise replacement if sizes are equal
-        		bitwiseReplace(data.data(),data.size(),
+        		rcount+=bitwiseReplace(data.data(),data.size(),
         			replaceList[match][i].first.constData(),replaceList[match][i].first.size(),
         			replaceList[match][i].second.constData(),replaceList[match][i].second.size());
         	else
+		{
         		data.replace(replaceList[match][i].first, replaceList[match][i].second);
+			rcount++;
+		}
 
         QFile out(destName);
         if (!out.open(QFile::WriteOnly))
             return;
         out.write(data);
         out.close();
+        ExportCommon::exportInfo("Updated:%d replacements\n",rcount);
     }
     else if (QFileInfo(srcName)!=QFileInfo(destName))
     {

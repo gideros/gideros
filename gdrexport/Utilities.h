@@ -18,7 +18,7 @@ class Utilities {
 public:
 	static QString RemoveSpaces(QString text,bool allowUnderscore);
 	static bool bitwiseMatchReplace(unsigned char *b,int bo,const unsigned char *m,int ms,const unsigned char *r);
-	static void bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r,int rs);
+	static int bitwiseReplace(char *b,int bs,const char *m,int ms,const char *r,int rs);
 	static void fileCopy(	const QString& srcName,
 	                        const QString& destName,
 	                        const QList<QStringList>& wildcards,
