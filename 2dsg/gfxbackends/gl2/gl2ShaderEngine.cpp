@@ -129,8 +129,10 @@ static const char *stdPSVShaderCode =
 		"  gl_Position = vMatrix*vertex;\n"
 		"  fInColor=vColor;\n"
 		"  mediump vec4 xpsize=vWorldMatrix*vec4(vVertex.z,0.0,0.0,0.0);\n"
-		"  gl_PointSize=length(xpsize.xyz);\n"
-		"  fStepRot=vec2(sign(vVertex.z)/gl_PointSize,vVertex.w);\n"
+		"  highp float xpl=length(xpsize.xyz);\n"
+		"  gl_PointSize=xpl;\n"
+		"  if (xpl==0.0) xpl=1.0;\n"
+		"  fStepRot=vec2(sign(vVertex.z)/xpl,vVertex.w);\n"
 		"}\n";
 
 /* Fragment shader*/

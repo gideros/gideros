@@ -114,10 +114,13 @@
             colorRenderbuffer = 0;
         }
     }
+    framebufferDirty=FALSE;
 }
 
 - (void)setFramebuffer
 {
+    if (framebufferDirty)
+            [self deleteFramebuffer];
     if (context)
     {
         [EAGLContext setCurrentContext:context];
@@ -152,7 +155,7 @@
 - (void)layoutSubviews
 {
     // The framebuffer will be re-created at the beginning of the next setFramebuffer method call.
-    [self deleteFramebuffer];
+    framebufferDirty=TRUE;
 }
 
 - (void)enableRetinaDisplay:(BOOL)enable
