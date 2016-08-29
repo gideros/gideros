@@ -2644,6 +2644,8 @@ void MainWindow::findInFiles()
 
 				QsciScintilla sci;
 				QTextStream in(&file);
+                in.setCodec("UTF-8");
+                sci.setUtf8(true);
 				sci.setText(in.readAll());
 
 				int line = -1, index = -1;
