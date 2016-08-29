@@ -693,13 +693,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Template/iOS Template-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					"iOS Template/Plugins",
+					"\"iOS Template/Plugins\"",
 				);
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/iOS Template/Plugins",
-					"$(SRCROOT)/iOS Template",
+					"\"$(SRCROOT)/iOS Template/Plugins\"",
+					"\"$(SRCROOT)/iOS Template\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -716,13 +716,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS Template/iOS Template-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
-					"iOS Template/Plugins",
+					"\"iOS Template/Plugins\"",
 				);
 				INFOPLIST_FILE = "iOS Template/iOS Template-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/iOS Template/Plugins",
-					"$(SRCROOT)/iOS Template",
+					"\"$(SRCROOT)/iOS Template/Plugins\"",
+					"\"$(SRCROOT)/iOS Template\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -755,14 +755,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/AppleTV/Plugins",
-					"$(SRCROOT)/AppleTV",
-					"$(PROJECT_DIR)/AppleTV",
-				);
-				"LIBRARY_SEARCH_PATHS[arch=*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/AppleTV/Plugins",
-					"$(SRCROOT)/AppleTV",
+					"\"$(SRCROOT)/AppleTV/Plugins\"",
+					"\"$(SRCROOT)/AppleTV\"",
 					"$(PROJECT_DIR)/AppleTV",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -801,15 +795,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited)";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/AppleTV/Plugins",
-					"$(SRCROOT)/AppleTV",
-					"$(PROJECT_DIR)/AppleTV",
-					Template,
-				);
-				"LIBRARY_SEARCH_PATHS[arch=*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/AppleTV/Plugins",
-					"$(SRCROOT)/AppleTV",
+					"\"$(SRCROOT)/AppleTV/Plugins\"",
+					"\"$(SRCROOT)/AppleTV\"",
 					"$(PROJECT_DIR)/AppleTV",
 					Template,
 				);
