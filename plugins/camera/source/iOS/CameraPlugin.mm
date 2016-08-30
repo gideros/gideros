@@ -159,8 +159,6 @@
 {
 	[self.capturePipeline stopRunning];
     @synchronized(self) {
-    GLuint glid=0;
-    cameraplugin::cameraTexture->data->id()->setNative(&glid);
     if (videoTexture)
     {
         CFRelease(videoTexture);
