@@ -4,6 +4,8 @@
 #include <QTabBar>
 #include "mdisubwindow.h"
 #include <QDebug>
+#include <QAction>
+#include "textedit.h"
 
 MyMdiArea::MyMdiArea(QWidget *parent) :
     QWidget(parent)
@@ -27,6 +29,80 @@ MyMdiArea::MyMdiArea(QWidget *parent) :
 MyMdiArea::~MyMdiArea()
 {
 
+}
+
+QList<QString> MyMdiArea::tabFilenameOrderList()
+{
+    if (recentTabSelectionOrder_.size() != subWindows_.size())
+    {
+        QList<QString> nameList;
+        for (int nn = 0; nn < subWindows_.size(); ++nn)
+        {
+            TextEdit* textEdit = dynamic_cast<TextEdit*>(subWindows_[nn]);
+            if (textEdit != NULL)
+            {
+                QString filename = textEdit->fileName();
+                nameList.append(filename);
+            }
+        }
+
+        for (int n = 0; n < recentTabSelectionOrder_.size(); ++n)
+        {
+            QString name = recentTabSelectionOrder_[n];
+            bool found = false;
+            for (int nn = 0; nn < nameList.size(); ++nn)
+            {
+                if (name == nameList[nn])
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                recentTabSelectionOrder_.removeAt(n);
+                --n;
+            }
+        }
+    }
+    return recentTabSelectionOrder_;
+}
+
+int MyMdiArea::getCurrentTabIndex()
+{
+    for (int i = 0; i < subWindows_.size(); ++i)
+    {
+        if (currentWidget_ == subWindows_[i])
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void MyMdiArea::changeCurrentTabIndex(int index)
+{
+    if (index >= 0 && index < subWindows_.size())
+    {
+        tabBar_->setCurrentIndex(index);
+    }
+}
+
+void MyMdiArea::changeCurrentTabByFilename(QString filenameToChange)
+{
+    for (int i = 0; i < subWindows_.size(); ++i)
+    {
+        TextEdit* textEdit = dynamic_cast<TextEdit*>(subWindows_[i]);
+        if (textEdit != NULL)
+        {
+            QString filename = textEdit->fileName();
+            if (filename == filenameToChange)
+            {
+                changeCurrentTabIndex(i);
+                return;
+            }
+        }
+    }
 }
 
 void MyMdiArea::addSubWindow(MyMdiSubWindow* window)
@@ -54,6 +130,8 @@ void MyMdiArea::addSubWindow(MyMdiSubWindow* window)
 	connect(window, SIGNAL(modifiedChanged(bool)), this, SLOT(onWindowModified()));
 	connect(window, SIGNAL(destroyed(QObject*)), this, SLOT(onDestroyed(QObject*)));
 
+    addToOrderList(window);
+
 	emit subWindowActivated(activeSubWindow());
 }
 
@@ -66,7 +144,18 @@ void MyMdiArea::onCurrentChanged(int index)
 	layout_->addWidget(currentWidget_);
 	currentWidget_->show();
 
+    setTopOrderList(currentWidget_);
+
 	emit subWindowActivated(activeSubWindow());
+
+
+    currentWidget_->setFocus();
+
+    TextEdit* textEdit = dynamic_cast<TextEdit*>(currentWidget_);
+    if (textEdit != NULL)
+    {
+        textEdit->setFocusToEdit();
+    }
 }
 
 void MyMdiArea::onTabMoved(int from, int to)
@@ -100,6 +189,8 @@ void MyMdiArea::closeActiveSubWindow()
 	int index = tabBar_->currentIndex();
 	MyMdiSubWindow* window = subWindows_[index];
 
+    removeFromOrderList(window);
+
 	if (window->close())
 		removeFromTab(window);
 }
@@ -118,9 +209,13 @@ void MyMdiArea::removeFromTab(MyMdiSubWindow* window)
 
 		layout_->removeWidget(window);
 
+        removeFromOrderList(window);
+
 		currentWidget_ = (tabBar_->count() == 0) ? emptyWidget_ : subWindows_[tabBar_->currentIndex()];
 		layout_->addWidget(currentWidget_);
 		currentWidget_->show();
+
+        setTopOrderList(currentWidget_);
 
 		emit subWindowActivated(activeSubWindow());
 	}
@@ -157,3 +252,47 @@ void MyMdiArea::onWindowModified()
 	updateTabText(static_cast<MyMdiSubWindow*>(sender()));
 }
 
+void MyMdiArea::addToOrderList(QWidget* window)
+{
+    TextEdit* textEdit = dynamic_cast<TextEdit*>(window);
+    if (textEdit != NULL)
+    {
+        QString filename = textEdit->fileName();
+        recentTabSelectionOrder_.insert(0, filename);
+    }
+}
+
+void MyMdiArea::removeFromOrderList(QWidget* window)
+{
+    TextEdit* textEdit = dynamic_cast<TextEdit*>(window);
+    if (textEdit != NULL)
+    {
+        QString filename = textEdit->fileName();
+        for (int i = 0; i < recentTabSelectionOrder_.size(); ++i)
+        {
+            if (recentTabSelectionOrder_[i] == filename)
+            {
+                recentTabSelectionOrder_.removeAt(i);
+                break;
+            }
+        }
+    }
+}
+
+void MyMdiArea::setTopOrderList(QWidget* window)
+{
+    TextEdit* textEdit = dynamic_cast<TextEdit*>(window);
+    if (textEdit != NULL)
+    {
+        QString filename = textEdit->fileName();
+        for (int i = 0; i < recentTabSelectionOrder_.size(); ++i)
+        {
+            if (recentTabSelectionOrder_[i] == filename)
+            {
+                recentTabSelectionOrder_.removeAt(i);
+                recentTabSelectionOrder_.insert(0, filename);
+                break;
+            }
+        }
+    }
+}

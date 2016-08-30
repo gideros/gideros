@@ -50,10 +50,15 @@
 #include <QImage>
 #include "mdiarea.h"
 #include <QToolBar>
+#include <QKeySequence>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    inChooseTab_ = false;
+    changeTabKeyPressState_ = 0;
+    tabListWidget_ = NULL;
+
 	ui.setupUi(this);
 
 	mdiArea_ = new MdiArea(this);
@@ -1108,6 +1113,13 @@ QString MainWindow::projectName() const
 QString MainWindow::projectDirectory() const
 {
 	return QDir::cleanPath(QDir(projectFileName_).absoluteFilePath(".."));
+}
+
+QString MainWindow::makeProjectRelativePath(const QString& path) const
+{
+    QString returnPath = path;
+    returnPath.replace(projectDirectory(), "", Qt::CaseInsensitive);
+    return returnPath;
 }
 
 /*
@@ -3172,5 +3184,103 @@ QByteArray MainWindow::expandMacro(const QString& localFileName)
         QString path = name.absolutePath()+"/";
         err.replace(path, "\\n");
         return "error \"Macro Error:\\n"+err;
+    }
+}
+
+
+void MainWindow::keyPressEvent(QKeyEvent * event)
+{
+    if (event->key() == Qt::Key_Control)
+    {
+        changeTabKeyPressState_ = 1;
+    }
+
+    if (!inChooseTab_)
+    {
+#if defined(Q_OS_WIN)
+        if (event->key() == Qt::Key_Tab)
+#else
+        if (event->key() == Qt::Key_Key_Apostrophe)
+#endif
+        {
+            if (changeTabKeyPressState_ == 1)
+            {
+                changeTabKeyPressState_ = 2;
+
+                inChooseTab_ = true;
+
+                event->accept();
+                tabListWidget_ = new QListWidget();
+
+                QList<QString> tabFilenameList = mdiArea_->tabFilenameOrderList();
+                for (int i = 0; i < tabFilenameList.size(); ++i)
+                {
+                    QString relativePath = makeProjectRelativePath(tabFilenameList[i]);
+                    tabListWidget_->addItem(new QListWidgetItem(relativePath));
+                }
+                tabListWidget_->setWindowFlags(Qt::Tool|Qt::FramelessWindowHint);
+                tabListWidget_->setFocusPolicy(Qt::NoFocus);
+
+#if QT_VERSION >= 0x040500
+                tabListWidget_->setWindowFlags(Qt::ToolTip|Qt::WindowStaysOnTopHint);
+#else
+                tabListWidget_->setWindowFlags(Qt::Tool|Qt::FramelessWindowHint);
+#endif
+                tabListWidget_->setFocusProxy(this);
+                tabListWidget_->setCurrentRow(std::min<int>(tabListWidget_->count(), 1));
+
+                tabListWidget_->show();
+            }
+            else
+            {
+            }
+        }
+    }
+    else
+    {// Ctrl+Tab,Tab,Tab... : next of current selection
+        int index = tabListWidget_->currentRow();
+        if (index + 1 < tabListWidget_->count())
+        {
+            index++;
+        }
+        else
+        {
+            index = 0;
+        }
+        tabListWidget_->setCurrentRow(index);
+    }
+
+    if (!event->isAccepted())
+    {
+        QMainWindow::keyPressEvent(event);
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent * event)
+{
+    if (event->key() == Qt::Key_Control)
+    {
+        changeTabKeyPressState_ = 0;
+
+        if (inChooseTab_)
+        {
+            inChooseTab_ = false;
+            //event->accept();
+
+            QListWidgetItem* selectedItem = tabListWidget_->item(tabListWidget_->currentRow());
+            if (selectedItem != NULL)
+            {
+                mdiArea_->changeCurrentTabByFilename(projectDirectory() + selectedItem->text());
+            }
+
+            tabListWidget_->hide();
+            tabListWidget_->deleteLater();
+            tabListWidget_ = NULL;
+        }
+    }
+
+    if (!event->isAccepted())
+    {
+        QMainWindow::keyReleaseEvent(event);
     }
 }
