@@ -3190,6 +3190,7 @@ QByteArray MainWindow::expandMacro(const QString& localFileName)
 
 void MainWindow::keyPressEvent(QKeyEvent * event)
 {
+#if defined(Q_OS_WIN)
     if (event->key() == Qt::Key_Control)
     {
         changeTabKeyPressState_ = 1;
@@ -3197,11 +3198,7 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
 
     if (!inChooseTab_)
     {
-#if defined(Q_OS_WIN)
         if (event->key() == Qt::Key_Tab)
-#else
-        if (event->key() == Qt::Key_Key_Apostrophe)
-#endif
         {
             if (changeTabKeyPressState_ == 1)
             {
@@ -3250,6 +3247,7 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
         tabListWidget_->setCurrentRow(index);
     }
 
+#endif
     if (!event->isAccepted())
     {
         QMainWindow::keyPressEvent(event);
@@ -3258,6 +3256,7 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
 
 void MainWindow::keyReleaseEvent(QKeyEvent * event)
 {
+#if defined(Q_OS_WIN)
     if (event->key() == Qt::Key_Control)
     {
         changeTabKeyPressState_ = 0;
@@ -3279,6 +3278,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event)
         }
     }
 
+#endif
     if (!event->isAccepted())
     {
         QMainWindow::keyReleaseEvent(event);
