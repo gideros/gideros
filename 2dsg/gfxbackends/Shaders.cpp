@@ -67,6 +67,12 @@ bool ShaderProgram::updateConstant(int index,ShaderProgram::ConstantType type, i
 	case CFLOAT:
 		sl=4;
 		break;
+	case CFLOAT2:
+		sl=8;
+		break;
+	case CFLOAT3:
+		sl=12;
+		break;
 	case CFLOAT4:
 		sl=16;
 		break;
