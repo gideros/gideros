@@ -26,6 +26,7 @@ private slots:
     void addTvIcon();
     void addSplashHImage();
     void addSplashVImage();
+    void chooseColor();
     void showImage(QString fileName, QLabel* label);
     void loadImages();
 
@@ -38,6 +39,7 @@ private:
     QString tv_icon;
     QString splash_h_image;
     QString splash_v_image;
+    QColor backgroundColor;
 };
 
 #endif // PROJECTPROPERTIESDIALOG_H

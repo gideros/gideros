@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>406</width>
-    <height>447</height>
+    <width>415</width>
+    <height>544</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -918,6 +918,32 @@ portrait or landscape.</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>360</y>
+         <width>361</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_13">
+        <item>
+         <widget class="QCheckBox" name="disableSplash">
+          <property name="text">
+           <string>Disable Splash</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="backgroundColor">
+          <property name="text">
+           <string>Choose Background color</string>
           </property>
          </widget>
         </item>

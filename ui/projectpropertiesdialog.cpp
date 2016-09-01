@@ -4,6 +4,7 @@
 #include <QIntValidator>
 #include <QFileDialog>
 #include <QPixmap>
+#include <QColorDialog>
 #include "projectpropertiesdialog.h"
 #include "projectproperties.h"
 #include <algorithm>
@@ -61,6 +62,13 @@ ProjectPropertiesDialog::ProjectPropertiesDialog(QString projectFileName,Project
 
     ui->version->setText(properties_->version);
     ui->version_code->setText(QString::number(properties_->version_code));
+    ui->disableSplash->setChecked(properties_->disableSplash);
+    this->backgroundColor = properties_->backgroundColor;
+    QPalette p;
+    p.setColor(QPalette::Button, properties_->backgroundColor);
+    ui->backgroundColor->setPalette(p);
+    ui->backgroundColor->setAutoFillBackground(true);
+    ui->backgroundColor->setFlat(true);
 
     connect(ui->add, SIGNAL(clicked()), this, SLOT(add()));
 	connect(ui->remove, SIGNAL(clicked()), this, SLOT(remove()));
@@ -69,6 +77,8 @@ ProjectPropertiesDialog::ProjectPropertiesDialog(QString projectFileName,Project
     connect(ui->tvIcon, SIGNAL(clicked()), this, SLOT(addTvIcon()));
     connect(ui->splashHImage, SIGNAL(clicked()), this, SLOT(addSplashHImage()));
     connect(ui->splashVImage, SIGNAL(clicked()), this, SLOT(addSplashVImage()));
+
+    connect(ui->backgroundColor, SIGNAL(clicked()), this, SLOT(chooseColor()));
 
 	connect(this, SIGNAL(accepted()), this, SLOT(onAccepted()));
     connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(loadImages()));
@@ -144,6 +154,9 @@ void ProjectPropertiesDialog::onAccepted()
     if(!this->splash_v_image.isNull())
         properties_->splash_v_image = path.relativeFilePath(this->splash_v_image);
 
+    properties_->disableSplash = ui->disableSplash->isChecked();
+    properties_->backgroundColor = this->backgroundColor;
+
 }
 
 void ProjectPropertiesDialog::loadImages()
@@ -207,4 +220,15 @@ void ProjectPropertiesDialog::addSplashVImage()
 {
     this->splash_v_image = QFileDialog::getOpenFileName(0, QObject::tr("Select vertical splash image"),"",QObject::tr("Images (*.png *.jpeg *.jpg)"));
     this->showImage(this->splash_v_image, ui->splashVImageLabel);
+}
+
+void ProjectPropertiesDialog::chooseColor()
+{
+    QColor color = QColorDialog::getColor(this->backgroundColor, 0, QObject::tr("Choose Splash Background Color"));
+    if(color.isValid()){
+        this->backgroundColor = color;
+        QPalette p;
+        p.setColor(QPalette::Button, this->backgroundColor);
+        ui->backgroundColor->setPalette(p);
+    }
 }
