@@ -9,7 +9,11 @@
 #include "Utilities.h"
 #include "ExportCommon.h"
 
+#ifdef Q_OS_MACX
+#define ALL_PLUGINS_PATH "../../../All Plugins"
+#elif
 #define ALL_PLUGINS_PATH "All Plugins"
+#endif
 
 ExportXml::ExportXml(QString xmlFile, bool isPlugin) {
 	this->isPlugin = isPlugin;
