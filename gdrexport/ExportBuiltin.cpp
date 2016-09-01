@@ -88,6 +88,10 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         }
 
         replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
+        if(ctx->properties.disableSplash)
+            replaceList1 << qMakePair(QString("boolean showSplash = true;").toUtf8(), QString("boolean showSplash = false;").toUtf8());
+
+        replaceList1 << qMakePair(QString("Color.parseColor(\"#ffffff\")").toUtf8(), QString("Color.parseColor(\""+ctx->properties.backgroundColor.name()+"\")").toUtf8());
     }
     else if(ctx->deviceFamily == e_MacOSXDesktop){
         QString category = "public.app-category.games";
