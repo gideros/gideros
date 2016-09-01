@@ -18,6 +18,12 @@ public:
 	MyMdiSubWindow* activeSubWindow() const;
 	QList<MyMdiSubWindow*> subWindowList() const;
 
+    QList<QString> tabFilenameOrderList();
+
+    int getCurrentTabIndex();
+    void changeCurrentTabIndex(int index);
+    void changeCurrentTabByFilename(QString filename);
+
 signals:
 	void subWindowActivated(MyMdiSubWindow* window);
 
@@ -36,11 +42,17 @@ private:
 	void updateTabText(MyMdiSubWindow* window);
 	void removeFromTab(MyMdiSubWindow* window);
 
+    void addToOrderList(QWidget* window);
+    void removeFromOrderList(QWidget* window);
+    void setTopOrderList(QWidget* window);
+
 private:
 	QVBoxLayout* layout_;
 	QTabBar* tabBar_;
 	QWidget* emptyWidget_;
 	QWidget* currentWidget_;
+
+    QList<QString> recentTabSelectionOrder_;
 
 	QList<MyMdiSubWindow*> subWindows_;
 };

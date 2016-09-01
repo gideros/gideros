@@ -40,6 +40,8 @@ public:
 	int replaceAll(const QString &expr, const QString &replaceStr, bool re, bool cs, bool wo,
 					bool wrap);
 
+    void setFocusToEdit();
+
 protected:
 	virtual void closeEvent(QCloseEvent* event);
 

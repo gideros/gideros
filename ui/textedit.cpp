@@ -620,3 +620,7 @@ void TextEdit::closeEvent(QCloseEvent* event)
 	}
 }
 
+void TextEdit::setFocusToEdit()
+{
+    sciScintilla_->setFocus();
+}

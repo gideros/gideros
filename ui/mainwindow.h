@@ -11,6 +11,7 @@
 #include <deque>
 #include <Qsci/qsciscintilla.h>
 #include <QFontMetrics>
+#include <QListWidget>
 
 #define NEW_CLIENT
 
@@ -161,6 +162,9 @@ private:
 	virtual void timerEvent(QTimerEvent*);
 	virtual void closeEvent(QCloseEvent* event);
 
+    virtual void keyPressEvent(QKeyEvent * event);
+    virtual void keyReleaseEvent(QKeyEvent * event);
+
 private slots:
 	void onSingleShot();
 	void onTimer();
@@ -263,6 +267,7 @@ private:
 	QString projectName() const;
 	QString projectDirectory() const;
 	QString projectFileName_;
+    QString makeProjectRelativePath(const QString& path) const;
 
 #if 0
 private slots:
@@ -291,6 +296,9 @@ private:
     bool wrapSearch_;
     bool regexp_;
 
+    bool inChooseTab_;
+    int changeTabKeyPressState_;
+    QListWidget* tabListWidget_;
 private:
 	QList<QStringList> fileAssociations_;
 
