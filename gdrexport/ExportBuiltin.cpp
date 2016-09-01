@@ -112,6 +112,8 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("com.giderosmobile.windowsphone").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.windows").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("Gideros Mobile").toUtf8(), ctx->args["organization"].toUtf8());
+        replaceList1 << qMakePair(QString("BackgroundColor=\"#464646\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor.name()+"\"").toUtf8());
+        replaceList1 << qMakePair(QString("BackgroundColor=\"transparent\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor.name()+"\"").toUtf8());
     }
     else if(ctx->deviceFamily == e_Html5){
         replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->base+"</title>").toUtf8());
