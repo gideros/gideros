@@ -6,6 +6,7 @@
 #include <QSet>
 #include <QMap>
 #include <QDomDocument>
+#include <QColor>
 
 struct ProjectProperties
 {
@@ -74,6 +75,8 @@ struct ProjectProperties
         tv_icon="";
         splash_h_image="";
         splash_v_image="";
+        disableSplash = false;
+        backgroundColor = QColor(255, 255, 255);
         plugins.clear();
         exports.clear();
     }
@@ -120,6 +123,8 @@ struct ProjectProperties
     QString tv_icon;
     QString splash_h_image;
     QString splash_v_image;
+    bool disableSplash;
+    QColor backgroundColor;
     QSet<Plugin> plugins;
     QSet<Export> exports;
     bool encryptCode;

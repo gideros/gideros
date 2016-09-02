@@ -198,7 +198,8 @@ void GMesh::resizeIndexArray(size_t size)
 
 void GMesh::resizeColorArray(size_t size)
 {
-    colors_.resize(size);
+	originalColors_.resize(size);
+	colors_.resize(size * 4);
     colors_.Update();
 }
 
@@ -227,6 +228,7 @@ void GMesh::clearIndexArray()
 
 void GMesh::clearColorArray()
 {
+	originalColors_.clear();
     colors_.clear();
     colors_.Update();
 }
@@ -281,6 +283,7 @@ void GMesh::clearTextureCoordinateArray()
 {
     originalTextureCoordinates_.clear();
     textureCoordinates_.clear();
+	textureCoordinates_.Update();
 }
 
 void GMesh::setPrimitiveType(ShaderProgram::ShapeType type)

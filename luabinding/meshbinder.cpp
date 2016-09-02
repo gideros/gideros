@@ -338,7 +338,7 @@ int MeshBinder::setGenericArray(lua_State *L)
     	lua_error(L);
     }
 
-    void *ptr;
+    void *ptr = 0;
 	switch (type)
 	{
 	case ShaderProgram::DBYTE:
@@ -390,6 +390,7 @@ int MeshBinder::setGenericArray(lua_State *L)
 	}
 
     mesh->setGenericArray(index,ptr,type,mult,count);
+	free(ptr);
 	return 0;
 }
 

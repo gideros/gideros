@@ -38,6 +38,13 @@ std::vector<std::string> getDeviceInfo()
 		env->ReleaseStringUTFChars(jstr, str);
 		env->DeleteLocalRef(jstr);
 	}
+    {
+		jstring jstr = (jstring)env->CallStaticObjectMethod(localRefCls, env->GetStaticMethodID(localRefCls, "getDeviceType", "()Ljava/lang/String;"));
+		const char *str = env->GetStringUTFChars(jstr, NULL);
+		result.push_back(str);
+		env->ReleaseStringUTFChars(jstr, str);
+		env->DeleteLocalRef(jstr);
+	}
 
 	env->DeleteLocalRef(localRefCls);
 

@@ -82,7 +82,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		                Gravity.CENTER);
 			splashLayout.setLayoutParams(params);
 			//set background color
-			splashLayout.setBackgroundColor(Color.rgb(255, 255, 255));
+			splashLayout.setBackgroundColor(Color.parseColor("#ffffff"));
 		 
 			//create image view for animation
 			splash = new ImageView(this);

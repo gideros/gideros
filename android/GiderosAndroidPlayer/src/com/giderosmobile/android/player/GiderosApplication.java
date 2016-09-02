@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import dalvik.system.DexClassLoader;
 import android.app.Activity;
+import android.app.UiModeManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
@@ -994,6 +995,24 @@ public class GiderosApplication
 	static public String getModel()
 	{
 		return android.os.Build.MODEL;
+	}
+    
+    static public String getDeviceType()
+	{
+		UiModeManager uiModeManager = (UiModeManager) WeakActivityHolder.get().getSystemService(Context.UI_MODE_SERVICE);
+        if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION) {
+            return "TV";
+        } else if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_APPLIANCE) {
+            return "Appliance";
+        } else if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_CAR) {
+            return "Car";
+        } else if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_DESK) {
+            return "Desk";
+        } else if (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_WATCH) {
+            return "Watch";
+        } else {
+            return "Mobile";
+        }
 	}
 
 	static public void openUrl(String url)
