@@ -1067,6 +1067,9 @@ int Box2DBinder2::loader(lua_State *L)
 
 #if BIND_LIQUIDFUN
     const luaL_Reg b2ParticleGroup_functionList[] = {
+        {"destroyParticles", b2ParticleGroup_destroyParticles},
+        {"getParticleCount", b2ParticleGroup_getParticleCount},
+        {"containsParticle", b2ParticleGroup_containsParticle},
         {NULL, NULL},
     };
     binder.createClass("b2ParticleGroup", NULL, NULL, NULL, b2ParticleGroup_functionList);
@@ -1076,7 +1079,8 @@ int Box2DBinder2::loader(lua_State *L)
     	{"destroyParticle",b2ParticleSystem_destroyParticle},
     	{"createParticleGroup",b2ParticleSystem_createParticleGroup},
         {"setTexture", b2ParticleSystem_setTexture},
-         {NULL, NULL},
+        {"getParticleGroupList", b2ParticleSystem_getParticleGroupList},
+        {NULL, NULL},
     };
     binder.createClass("b2ParticleSystem", "Sprite", NULL, NULL, b2ParticleSystem_functionList);
     lua_getglobal(L, "b2ParticleSystem");
@@ -5717,6 +5721,69 @@ int Box2DBinder2::b2ParticleSystem_setTexture(lua_State *L)
     ps->SetTexture(textureBase);
 
     return 0;
+}
+
+int Box2DBinder2::b2ParticleSystem_getParticleGroupList(lua_State *L)
+{
+    StackChecker checker(L, "b2ParticleSystem_getParticleGroupList", 1);
+    Binder binder(L);
+
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(binder.getInstance("b2ParticleSystem", 1));
+    if (ps == NULL)
+    {
+        return luaL_error(L, "ParticleSystem required in argument #1");
+    }
+
+    if (ps->GetWorld()->IsLocked())
+        return luaL_error(L, GStatus(5004).errorString());	// Error #5004: World is locked.
+
+    int index = 0;
+    lua_newtable(L);
+    for (b2ParticleGroup* group = ps->GetSystem()->GetParticleGroupList(); group; group = group->GetNext(), index++)
+    {
+        binder.pushInstance("b2ParticleGroup", group);
+        lua_rawseti(L, -2, index + 1);
+    }
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleGroup_destroyParticles(lua_State *L)
+{
+    StackChecker checker(L, "b2ParticleGroup_destroyParticles", 0);
+    Binder binder(L);
+
+    b2ParticleGroup* group = static_cast<b2ParticleGroup*>(binder.getInstance("b2ParticleGroup", 1));
+    bool callDestructionListener = lua_toboolean(L, 2);
+
+    group->DestroyParticles(callDestructionListener);
+
+    return 0;
+}
+
+int Box2DBinder2::b2ParticleGroup_getParticleCount(lua_State* L)
+{
+    StackChecker checker(L, "b2ParticleGroup_getParticleCount", 1);
+    Binder binder(L);
+
+    b2ParticleGroup* group = static_cast<b2ParticleGroup*>(binder.getInstance("b2ParticleGroup", 1));
+    lua_pushinteger(L, group->GetParticleCount());
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleGroup_containsParticle(lua_State* L)
+{
+    StackChecker checker(L, "b2ParticleGroup_containsParticle", 1);
+    Binder binder(L);
+
+    b2ParticleGroup* group = static_cast<b2ParticleGroup*>(binder.getInstance("b2ParticleGroup", 1));
+    int index = lua_tointeger(L, 2);
+
+    lua_pushboolean(L, group->ContainsParticle(index));
+
+    return 1;
 }
 
 
