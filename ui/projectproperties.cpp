@@ -56,7 +56,7 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
     properties.setAttribute("app_icon", this->app_icon);
     properties.setAttribute("tv_icon", this->tv_icon);
     properties.setAttribute("disableSplash", this->disableSplash);
-    properties.setAttribute("backgroundColor", this->backgroundColor.name());
+    properties.setAttribute("backgroundColor", this->backgroundColor);
     properties.setAttribute("splash_h_image", this->splash_h_image);
     properties.setAttribute("splash_v_image", this->splash_v_image);
 
@@ -191,7 +191,7 @@ void ProjectProperties::loadXml(QDomElement properties)
         if(!properties.attribute("disableSplash").isEmpty())
             this->disableSplash = properties.attribute("disableSplash").toInt() != 0;
         if(!properties.attribute("backgroundColor").isEmpty())
-            this->backgroundColor = QColor(properties.attribute("backgroundColor"));
+            this->backgroundColor = properties.attribute("backgroundColor");
 
         //Plugins
         this->plugins.clear();

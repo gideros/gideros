@@ -65,7 +65,7 @@ ProjectPropertiesDialog::ProjectPropertiesDialog(QString projectFileName,Project
     ui->disableSplash->setChecked(properties_->disableSplash);
     this->backgroundColor = properties_->backgroundColor;
     QPalette p;
-    p.setColor(QPalette::Button, properties_->backgroundColor);
+    p.setColor(QPalette::Button, QColor(properties_->backgroundColor));
     ui->backgroundColor->setPalette(p);
     ui->backgroundColor->setAutoFillBackground(true);
     ui->backgroundColor->setFlat(true);
@@ -155,7 +155,7 @@ void ProjectPropertiesDialog::onAccepted()
         properties_->splash_v_image = path.relativeFilePath(this->splash_v_image);
 
     properties_->disableSplash = ui->disableSplash->isChecked();
-    properties_->backgroundColor = this->backgroundColor;
+    properties_->backgroundColor = this->backgroundColor.name();
 
 }
 
