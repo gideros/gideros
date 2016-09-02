@@ -337,6 +337,12 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    if (player) //Do not encrypt player
+    {
+        encryptAssets=false;
+        encryptCode=false;
+    }
+    
     QDir outputDir(output);
 
     projectFileName = QDir::current().absoluteFilePath(projectFileName);
@@ -452,6 +458,8 @@ int main(int argc, char *argv[])
      ctx.codeKey=codeKey;
      ctx.assetsKey=assetsKey;
      ctx.topologicalSort=topologicalSort;
+     ctx.encryptCode=encryptCode;
+     ctx.encryptAssets=encryptAssets;
 
      //Encryption key replacement info
      QStringList wildcards2;

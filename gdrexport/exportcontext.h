@@ -48,6 +48,8 @@ struct ExportContext
     bool assetsOnly;
     bool player;
     //Encryption info
+    bool encryptCode;
+    bool encryptAssets;
     QByteArray codeKey;
     QByteArray assetsKey;
     //Assets info
