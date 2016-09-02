@@ -46,6 +46,7 @@ struct ExportContext
     QList<QList<QPair<QByteArray, QByteArray> > > replaceList;
     QList<QPair<QString, QString> > renameList;
     bool assetsOnly;
+    bool player;
     //Encryption info
     QByteArray codeKey;
     QByteArray assetsKey;

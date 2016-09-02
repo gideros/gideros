@@ -2450,8 +2450,11 @@ void MainWindow::exportProject()
             arguments << "-encrypt-assets";
         }
 
-        if(dialog.assetsOnly()){
+        if(dialog.exportMode()==1){
             arguments << "-assets-only";
+        }
+        if(dialog.exportMode()==2){
+            arguments << "-player";
         }
 
 

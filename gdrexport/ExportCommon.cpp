@@ -208,7 +208,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	QStringList allluafiles;
 	QStringList allluafiles_abs;
 
-	if (ctx->fileQueue.size()==0) //No assets -> Player
+	if ((ctx->fileQueue.size()==0)||(ctx->player)) //No assets -> Player
 		return;
 
 	exportInfo("Exporting assets\n");
@@ -240,6 +240,9 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		ctx->allfiles.push_back(s1);
 		ctx->allfiles_abs.push_back(dst);
 
+        QFile::remove(dst);
+        bool copied=false;
+        
 		if (QFileInfo(src).suffix().toLower() == "lua") {
 			allluafiles.push_back(s1);
 			allluafiles_abs.push_back(dst);
@@ -250,11 +253,26 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 				ctx->luafiles.push_back(s1);
 				ctx->luafiles_abs.push_back(dst);
 			}
+            // compile lua files (with luac)
+            if (compileLua) {
+                QString rsrc = QDir::cleanPath(QDir::current().relativeFilePath(src));
+                QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
+#if defined(Q_OS_WIN)
+                QString luac = toolsDir.filePath("luac.exe");
+#else
+                QString luac = toolsDir.filePath("luac");
+#endif
+                //Compile from source file directly to avoid absolute path from ending into compiled file
+                QString sfile = "\"" + rsrc + "\"";
+                QString dfile = "\"" + dst + "\"";
+                if (QProcess::execute(quote(luac) + " -o " + dfile + " " + sfile)>=0)
+                    copied=true;
+            }
 		}
 
-		QFile::remove(dst);
-		QFile::copy(src, dst);
-	}
+        if (!copied)
+            QFile::copy(src, dst);
+    }
 
 #if 0
 	// compile lua files
@@ -266,25 +284,6 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		delete compileThread_;
 	}
 #endif
-
-	// compile lua files (with luac)
-	// disable compile with luac for iOS because 64 bit version
-	// http://giderosmobile.com/forum/discussion/5380/ios-8-64bit-only-form-feb-2015
-	if (compileLua) {
-		exportInfo("Compiling lua\n");
-        QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
-        #if defined(Q_OS_WIN)
-            QString luac = toolsDir.filePath("luac.exe");
-        #else
-            QString luac = toolsDir.filePath("luac");
-        #endif
-        ExportCommon::progressSteps(allluafiles_abs.size());
-		for (int i = 0; i < allluafiles_abs.size(); ++i) {
-	        ExportCommon::progressStep(allluafiles_abs[i].toUtf8().constData());
-			QString file = "\"" + allluafiles_abs[i] + "\"";
-            QProcess::execute(quote(luac) + " -o " + file + " " + file);
-		}
-	}
 
 	// encrypt lua, png, jpg, jpeg and wav files
 	if (true) {
@@ -342,8 +341,8 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 }
 
 void ExportCommon::exportAllfilesTxt(ExportContext *ctx) {
-	if (ctx->fileQueue.size()==0) //No assets -> Player
-		return;
+    if ((ctx->fileQueue.size()==0)||(ctx->player)) //No assets -> Player
+        return;
 	exportInfo("Writing files info\n");
 	QFile file(
 			QDir::cleanPath(ctx->outputDir.absoluteFilePath("allfiles.txt")));
@@ -361,8 +360,8 @@ void ExportCommon::exportAllfilesTxt(ExportContext *ctx) {
 }
 
 void ExportCommon::exportLuafilesTxt(ExportContext *ctx) {
-	if (ctx->fileQueue.size()==0) //No assets -> Player
-		return;
+    if ((ctx->fileQueue.size()==0)||(ctx->player)) //No assets -> Player
+        return;
 	exportInfo("Writing lua files info\n");
 	QString filename = "luafiles.txt";
 	if (!ctx->jetset.isEmpty())
@@ -380,8 +379,8 @@ void ExportCommon::exportLuafilesTxt(ExportContext *ctx) {
 }
 
 void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
-	if (ctx->fileQueue.size()==0) //No assets -> Player
-		return;
+    if ((ctx->fileQueue.size()==0)||(ctx->player)) //No assets -> Player
+        return;
 	exportInfo("Writing project properties\n");
 	QString filename = "properties.bin";
 	if (!ctx->jetset.isEmpty())

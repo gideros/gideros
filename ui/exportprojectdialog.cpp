@@ -69,7 +69,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 	connect(ui->plugins_choose, SIGNAL(clicked()), this, SLOT(onSelectPlugins()));
 
     ui->android_template->setCurrentIndex(properties_->android_template);
-	ui->assetsOnly->setChecked(properties_->assetsOnly);
+	ui->exportMode->setCurrentIndex(properties_->exportMode);
     ui->ios_bundle->setText(properties_->ios_bundle);
 	ui->packageName->setText(properties_->packageName);
     ui->osx_org->setText(properties->osx_org);
@@ -209,9 +209,9 @@ QString ExportProjectDialog::html5_host() const
     return ui->html5_host->text();
 }
 
-bool ExportProjectDialog::assetsOnly() const
+int ExportProjectDialog::exportMode() const
 {
-	return ui->assetsOnly->isChecked();
+	return ui->exportMode->currentIndex();
 }
 
 bool ExportProjectDialog::encryptCode() const
@@ -228,7 +228,7 @@ void ExportProjectDialog::onAccepted()
 {
 	properties_->architecture = ui->architecture->currentIndex();
     properties_->android_template = ui->android_template->currentIndex();
-	properties_->assetsOnly = ui->assetsOnly->isChecked();
+	properties_->exportMode = ui->exportMode->currentIndex();
     properties_->ios_bundle = ui->ios_bundle->text();
 	properties_->packageName = ui->packageName->text();
     properties_->osx_org = ui->osx_org->text();

@@ -196,6 +196,7 @@ int main(int argc, char *argv[])
     bool encryptCode = false;
     bool encryptAssets = false;
     bool assetsOnly = false;
+    bool player = false;
 
     //Lookup XML exports scripts
     QMap<QString,QString> xmlExports=ExportXml::availableTargets();
@@ -276,6 +277,11 @@ int main(int argc, char *argv[])
         else if (arguments[i] == "-assets-only")
         {
             assetsOnly = true;
+            i++;
+        }
+        else if (arguments[i] == "-player")
+        {
+            player = true;
             i++;
         }
         else if (arguments[i].startsWith("-"))
@@ -442,6 +448,7 @@ int main(int argc, char *argv[])
          }
      }
      ctx.assetsOnly=assetsOnly;
+     ctx.player=player;
      ctx.codeKey=codeKey;
      ctx.assetsKey=assetsKey;
      ctx.topologicalSort=topologicalSort;

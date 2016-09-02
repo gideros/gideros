@@ -37,7 +37,7 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 	// export options
 	properties.setAttribute("architecture", this->architecture);
     properties.setAttribute("android_template", this->android_template);
-	properties.setAttribute("assetsOnly", this->assetsOnly ? 1 : 0);
+	properties.setAttribute("exportMode", this->exportMode);
 	properties.setAttribute("iosDevice", this->iosDevice);
     properties.setAttribute("ios_bundle", this->ios_bundle);
 	properties.setAttribute("packageName", this->packageName);
@@ -146,8 +146,8 @@ void ProjectProperties::loadXml(QDomElement properties)
 			this->architecture = properties.attribute("architecture").toInt();
         if (!properties.attribute("android_template").isEmpty())
             this->android_template = properties.attribute("android_template").toInt();
-		if (!properties.attribute("assetsOnly").isEmpty())
-			this->assetsOnly = properties.attribute("assetsOnly").toInt() != 0;
+		if (!properties.attribute("exportMode").isEmpty())
+			this->exportMode = properties.attribute("exportMode").toInt();
 		if (!properties.attribute("iosDevice").isEmpty())
 			this->iosDevice = properties.attribute("iosDevice").toInt();
         if (!properties.attribute("ios_bundle").isEmpty())

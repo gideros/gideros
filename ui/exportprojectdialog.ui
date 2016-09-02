@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>561</width>
+    <width>584</width>
     <height>391</height>
    </rect>
   </property>
@@ -583,16 +583,34 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QCheckBox" name="assetsOnly">
-       <property name="toolTip">
-        <string>Only exports Lua codes and assets, and not Java or Xcode source.
-
-If you make changes to the previous exported project
-on the disk, click this option to export only the Lua codes and assets.
-</string>
+      <widget class="QComboBox" name="exportMode">
+       <property name="currentText">
+        <string>Full export</string>
        </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>Full export</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Assets only</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Player (no assets)</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="encryptAssets">
        <property name="text">
-        <string>Export assets only</string>
+        <string>Encrypt asset files</string>
        </property>
       </widget>
      </item>
@@ -600,13 +618,6 @@ on the disk, click this option to export only the Lua codes and assets.
       <widget class="QCheckBox" name="encryptCode">
        <property name="text">
         <string>Encrypt code files</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="encryptAssets">
-       <property name="text">
-        <string>Encrypt asset files</string>
        </property>
       </widget>
      </item>

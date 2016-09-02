@@ -437,8 +437,8 @@ void Application::play(const QString &fileName)
         // export options
         if (!properties.attribute("architecture").isEmpty())
             properties_.architecture = properties.attribute("architecture").toInt();
-        if (!properties.attribute("assetsOnly").isEmpty())
-            properties_.assetsOnly = properties.attribute("assetsOnly").toInt() != 0;
+        if (!properties.attribute("exportMode").isEmpty())
+            properties_.exportMode = properties.attribute("exportMode").toInt();
         if (!properties.attribute("iosDevice").isEmpty())
             properties_.iosDevice = properties.attribute("iosDevice").toInt();
         if (!properties.attribute("packageName").isEmpty())

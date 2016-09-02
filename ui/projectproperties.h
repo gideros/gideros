@@ -52,7 +52,7 @@ struct ProjectProperties
         // export options
 		architecture = 0;
         android_template = 0;
-		assetsOnly = false;
+        exportMode = 0;
 		iosDevice = 0;
         version = "1.0";
         version_code = 1;
@@ -100,7 +100,7 @@ struct ProjectProperties
     // export options
 	int architecture;
     int android_template;
-	bool assetsOnly;
+	int exportMode;
 	int iosDevice;
     int version_code;
     QString version;

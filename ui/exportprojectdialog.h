@@ -31,7 +31,7 @@ public:
     QString winrt_org() const;
     QString winrt_package() const;
     QString html5_host() const;
-    bool assetsOnly() const;
+    int exportMode() const;
     bool encryptCode() const;
     bool encryptAssets() const;
 
