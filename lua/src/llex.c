@@ -22,6 +22,7 @@
 #include "lstring.h"
 #include "ltable.h"
 #include "lzio.h"
+#include "lauxlib.h"
 
 
 #define next(ls) (ls->current = ls->mpos < ls->mlen ? char2int(ls->mstr[ls->mpos++]) : zgetc(ls->z))
@@ -483,6 +484,31 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           char q = ls->current;
           switch (q)
           {
+          case '(':
+          {
+            next(ls);
+            q = ls->current;
+            next(ls);
+            for(;;) {
+              if (ls->current == q) {
+                next(ls);
+                if (ls->current == ')') {
+                  next(ls); break;
+                } else {
+                  save(ls, q);
+                  save_and_next(ls);
+                }
+              } else if (ls->current == EOZ)
+                luaX_lexerror(ls, "unfinished macro function definition", 0);
+              else if (ls->current == '\n') {
+                ++ls->linenumber;
+                save_and_next(ls);
+              }
+              else save_and_next(ls);
+            }
+            q = '(';
+            break;
+          }
           case '\'':
           case '"':
           {
@@ -491,8 +517,13 @@ static int llex (LexState *ls, SemInfo *seminfo) {
             {
               if (ls->current == EOZ)
                 luaX_lexerror(ls, "unfinished string at macro definition", 0);
-              if (ls->current == '\n')
+              else if (ls->current == '\n')
                 luaX_lexerror(ls, "unfinished string at macro definition", TK_STRING);
+              else if (ls->current == '\\') {
+                save_and_next(ls);
+                if (ls->current == EOZ)
+                  luaX_lexerror(ls, "unfinished string at macro definition", TK_STRING);
+              }
               save_and_next(ls);
             }
             save_and_next(ls);
@@ -538,7 +569,12 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           case '-': case '0': case '1': case '2': case '3': case '4':
           case '.': case '5': case '6': case '7': case '8': case '9':
           {
-            while (!isspace(ls->current) && ls->current != EOZ) save_and_next(ls);
+            if (q == '-') {
+              save_and_next(ls);
+              if (!isdigit(ls->current) && ls->current != '.')
+                luaX_lexerror(ls, "invalid number at macro definition", 0);
+            }
+            while (isalnum(ls->current) || ls->current == '.') save_and_next(ls);
             break;
           }
           case '`': case '~': case '!': case '#': case '$': case '%': case '^':
@@ -570,6 +606,12 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           if(val) strcpy(val, ls->buff->buffer);
           lua_pushstring(L, val);
           luaZ_resetbuffer(ls->buff);
+          if (q == '(') {
+            if (luaL_loadstring(L, val))
+              luaX_lexerror(ls, lua_tostring(L, -1), 0);
+            else
+              lua_remove(L, -2);
+          }
           lua_rawset(L, -3);
           lua_setglobal(L, MACRO);
           free(key);
@@ -584,6 +626,96 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           save(ls, '\0');
           char *k = ls->buff->buffer;
           lua_getfield(L, -1, k);
+
+          if (lua_isfunction(L, -1)) {
+            lua_newtable(L);
+            lua_pushstring(L,getstr(ls->source));
+            lua_rawseti(L,-2,0);
+            if (ls->current != '(')
+              luaX_lexerror(ls, "invalid macro function call", 0);
+            int parens = 1;
+            next(ls);
+            int t, i;
+            for (i = 1; ;i++) {
+              t = llex(ls, seminfo);
+              if (t == ')' && --parens == 0) break;
+              else if (t == '(') ++parens;
+              switch (t)
+              {
+              case TK_EOS: case EOZ:
+                luaX_lexerror(ls, "unfinished macro function call", 0);
+              case TK_STRING:
+              {
+                const char *str = getstr(seminfo->ts);
+                TString *ts = seminfo->ts;
+                size_t len = ts->tsv.len;
+                char *res = (char *) malloc(4 * len + 2);
+                res[0] = '"';
+                size_t j = 0;
+                size_t i;
+                for (i = 0; i < len; i++) {
+                  switch (str[i])
+                  {
+                  case '\a': res[++j] = '\\'; res[++j] = 'a'; break;
+                  case '\b': res[++j] = '\\'; res[++j] = 'b'; break;
+                  case '\f': res[++j] = '\\'; res[++j] = 'f'; break;
+                  case '\t': res[++j] = '\\'; res[++j] = 't'; break;
+                  case '\v': res[++j] = '\\'; res[++j] = 'v'; break;
+                  case '\n': res[++j] = '\\'; res[++j] = 'n'; break;
+                  case '\r': res[++j] = '\\'; res[++j] = 'r'; break;
+                  case  '"': res[++j] = '\\'; res[++j] = '"'; break;
+                  case '\0':
+                    res[++j] = '\\';
+                    res[++j] = '0';
+                    res[++j] = '0';
+                    res[++j] = '0';
+                    break;
+                  default:
+                    res[++j] = str[i];
+                    break;
+                  }
+                }
+                res[++j] = '"';
+                res[++j] = '\0';
+                lua_pushstring(L, res);
+                free(res);
+                break;
+              }
+              case TK_NAME:
+                lua_pushstring(L,getstr(seminfo->ts));
+                break;
+              case TK_NUMBER:
+              {
+                const char *str = ls->buff->buffer;
+                if (str[0] == '0') lua_pushstring(L,str);
+                else {
+                  char *res = (char *) malloc(strlen(str) + 1);
+                  res[0] = '\0';
+                  strcat(res, "0");
+                  strcat(res, str);
+                  lua_pushstring(L,res);
+                }
+                break;
+              }
+              default:
+                if (t<FIRST_RESERVED)
+                {
+                  char s[2]= {t,0};
+                  lua_pushstring(L,s);
+                }
+                else
+                  lua_pushstring(L,luaX_tokens[t-FIRST_RESERVED]);
+                break;
+              }
+              lua_rawseti(L,-2,i);
+            }
+            lua_call(L,1,1);
+            if (!lua_isstring(L, -1))
+              luaX_lexerror(ls, "macro function call should return string", 0);
+            lua_pushstring(L, " ");
+            lua_concat(L, 2);
+          }
+
           if (lua_isstring(L, -1)) {
             luaZ_resetbuffer(ls->buff);
             const char *s = lua_tostring(L, -1);
