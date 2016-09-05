@@ -184,7 +184,7 @@ public:
     	memcpy(buffer + 1, str,size-2);
     	buffer[size-1]=0;
 		
-		server_->sendData(buffer, size);
+		server_->sendData(buffer, size, true);
 		
 		free(buffer);
 	}	

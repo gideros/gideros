@@ -420,10 +420,14 @@ void NetworkBase::tickRecv(NetworkEvent* event)
 	}
 }
 
-int NetworkBase::sendData(const void* data, unsigned int size)
+int NetworkBase::sendData(const void* data, unsigned int size, bool noCheck)
 {
-	if (isConnected() == false)
-		return -1;
+    if (!noCheck) {
+        if (isConnected() == false)
+            return -1;
+    } else
+        if (sendQueue_.size() > 1024) //Avoid queue size beginning too big in forced mode (print mainly)
+            return -1;
 
 	QueueElement* queueElement = new QueueElement(data, size, 0);
 	sendQueue_.push_back(queueElement);

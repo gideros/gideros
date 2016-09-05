@@ -59,7 +59,7 @@ class QueueElement;
 class NetworkBase
 {
 public:
-	int sendData(const void* data, unsigned int size);
+	int sendData(const void* data, unsigned int size, bool noCheck=false);
 	void cancelSend();
 
 	SOCKET clientSock() const
@@ -126,7 +126,7 @@ public:
 	{
 		return serverSock_;
 	}
-
+    
 private:
 	SOCKET serverSock_;
     SOCKET broadcastSock_;
