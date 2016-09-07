@@ -1087,7 +1087,7 @@ void LuaApplication::enterFrame(GStatus *status)
     }
 
     //Schedule Tasks, at least one task should be runn no matter if there is enough time or not
-	if (meanFreeTime_ >= 0.01) //If frame rate is between 10Hz and 100Hz
+	if ((meanFrameTime_ >= 0.01)&&(meanFrameTime_<=0.1)) //If frame rate is between 10Hz and 100Hz
 	{
 		double taskStart = iclock();
 		double timeLimit = taskStart + meanFreeTime_*0.9; //Limit ourselves t 90% of free time

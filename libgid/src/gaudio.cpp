@@ -143,6 +143,13 @@ g_id GGSoundManager::SoundPlay(g_id sound, bool paused)
     return channel;
 }
 
+void GGSoundManager::SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz)
+{
+	  sampleInterface_->SoundListener(x,y,z,vx,vy,vz,dx,dy,dz,ux,uy,uz);
+	  streamInterface_->SoundListener(x,y,z,vx,vy,vz,dx,dy,dz,ux,uy,uz);
+}
+
+
 void GGSoundManager::ChannelStop(g_id channel)
 {
     std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
@@ -281,6 +288,17 @@ bool GGSoundManager::ChannelIsLooping(g_id channel)
     return channel2->interface->ChannelIsLooping(channel);
 }
 
+void GGSoundManager::ChannelSetWorldPosition(g_id channel, float x,float y,float z,float vx,float vy,float vz)
+{
+    std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
+    if (iter == channels_.end())
+        return ;
+
+    Channel *channel2 = iter->second;
+
+    channel2->interface->ChannelSetWorldPosition(channel, x,y,z,vx,vy,vz);
+}
+
 g_id GGSoundManager::ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata)
 {
     std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
@@ -382,6 +400,11 @@ unsigned int GGAudioManager::SoundGetLength(g_id sound)
     return soundManager_->SoundGetLength(sound);
 }
 
+void GGAudioManager::SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz)
+{
+	soundManager_->SoundListener(x,y,z,vx,vy,vz,dx,dy,dz,ux,uy,uz);
+}
+
 g_id GGAudioManager::SoundPlay(g_id sound, bool paused)
 {
     return soundManager_->SoundPlay(sound, paused);
@@ -445,6 +468,11 @@ void GGAudioManager::ChannelSetLooping(g_id channel, bool looping)
 bool GGAudioManager::ChannelIsLooping(g_id channel)
 {
     return soundManager_->ChannelIsLooping(channel);
+}
+
+void GGAudioManager::ChannelSetWorldPosition(g_id channel, float x,float y,float z,float vx,float vy,float vz)
+{
+    return soundManager_->ChannelSetWorldPosition(channel,x,y,z,vx,vy,vz);
 }
 
 g_id GGAudioManager::ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata)
@@ -664,6 +692,11 @@ g_id gaudio_SoundPlay(g_id sound, g_bool paused)
     return s_manager->SoundPlay(sound, paused);
 }
 
+void gaudio_SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz)
+{
+	s_manager->SoundListener(x,y,z,vx,vy,vz,dx,dy,dz,ux,uy,uz);
+}
+
 void gaudio_ChannelStop(g_id channel)
 {
     s_manager->ChannelStop(channel);
@@ -722,6 +755,11 @@ void gaudio_ChannelSetLooping(g_id channel, g_bool looping)
 g_bool gaudio_ChannelIsLooping(g_id channel)
 {
     return s_manager->ChannelIsLooping(channel);
+}
+
+void gaudio_ChannelSetWorldPosition(g_id channel, float x,float y,float z,float vx,float vy,float vz)
+{
+	s_manager->ChannelSetWorldPosition(channel, x,y,z,vx,vy,vz);
 }
 
 g_id gaudio_ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata)

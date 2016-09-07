@@ -41,8 +41,9 @@ public:
 
     virtual void SoundDelete(g_id sound) = 0;
     virtual unsigned int SoundGetLength(g_id sound) = 0;
-
+    virtual void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz) { };
     virtual g_id SoundPlay(g_id sound, bool paused) = 0;
+
     virtual void ChannelStop(g_id channel) = 0;
     virtual void ChannelSetPosition(g_id channel, unsigned int position) = 0;
     virtual unsigned int ChannelGetPosition(g_id channel) = 0;
@@ -59,6 +60,7 @@ public:
     virtual void ChannelRemoveCallback(g_id channel, gevent_Callback callback, void *udata) = 0;
     virtual void ChannelRemoveCallbackWithGid(g_id channel, g_id gid) = 0;
     virtual g_bool ChannelIsValid(g_id channel) = 0;
+    virtual void ChannelSetWorldPosition(g_id channel, float x, float y, float z, float vx,float vy,float vz) { };
 
     virtual void preTick() = 0;
     virtual void postTick() = 0;
@@ -122,8 +124,9 @@ public:
     g_id SoundCreateFromFile(const char *fileName, bool stream, gaudio_Error *error);
     void SoundDelete(g_id sound);
     unsigned int SoundGetLength(g_id sound);
-
+    void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
     g_id SoundPlay(g_id sound, bool paused);
+
     void ChannelStop(g_id channel);
     void ChannelSetPosition(g_id channel, unsigned int position);
     unsigned int ChannelGetPosition(g_id channel);
@@ -136,6 +139,7 @@ public:
     float ChannelGetPitch(g_id channel);
     void ChannelSetLooping(g_id channel, bool looping);
     bool ChannelIsLooping(g_id channel);
+    void ChannelSetWorldPosition(g_id channel, float x,float y,float z,float vx,float vy,float vz);
     g_id ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata);
     void ChannelRemoveCallback(g_id channel, gevent_Callback callback, void *udata);
     void ChannelRemoveCallbackWithGid(g_id channel, g_id gid);
@@ -200,8 +204,9 @@ public:
     g_id SoundCreateFromFile(const char *fileName, bool stream, gaudio_Error *error);
     void SoundDelete(g_id sound);
     unsigned int SoundGetLength(g_id sound);
-
+    void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz);
     g_id SoundPlay(g_id sound, bool paused);
+
     void ChannelStop(g_id channel);
     void ChannelSetPosition(g_id channel, unsigned int position);
     unsigned int ChannelGetPosition(g_id channel);
@@ -214,6 +219,7 @@ public:
     float ChannelGetPitch(g_id channel);
     void ChannelSetLooping(g_id channel, bool looping);
     bool ChannelIsLooping(g_id channel);
+    void ChannelSetWorldPosition(g_id channel, float x,float y,float z,float vx,float vy,float vz);
     g_id ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata);
     void ChannelRemoveCallback(g_id channel, gevent_Callback callback, void *udata);
     void ChannelRemoveCallbackWithGid(g_id channel, g_id gid);

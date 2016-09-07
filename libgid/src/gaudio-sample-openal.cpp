@@ -108,6 +108,14 @@ public:
         return sound2->length;
     }
 
+    void SoundListener(float x,float y,float z,float vx,float vy,float vz,float dx,float dy,float dz,float ux,float uy,float uz)
+    {
+    	   alListener3f( AL_POSITION, x,y,z );
+    	   alListener3f( AL_VELOCITY, vx,vy,vz );
+    	   float orient[6] = { dx,dy,dz,ux,uy,uz };
+    	   alListenerfv( AL_ORIENTATION, orient );
+    }
+
     g_id SoundPlay(g_id sound, bool paused)
     {
         std::map<g_id, Sound*>::iterator iter = sounds_.find(sound);
@@ -327,6 +335,21 @@ public:
         Channel *channel2 = iter->second;
 
         return channel2->looping;
+    }
+
+    void ChannelSetWorldPosition(g_id channel, float x, float y, float z, float vx,float vy,float vz)
+    {
+        std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
+        if (iter == channels_.end())
+            return;
+
+        Channel *channel2 = iter->second;
+
+        if (channel2->source != 0)
+        {
+        	alSource3f( channel2->source, AL_POSITION, x,y,z );
+        	alSource3f( channel2->source, AL_VELOCITY, vx,vy,vz );
+        }
     }
 
     g_id ChannelAddCallback(g_id channel, gevent_Callback callback, void *udata)

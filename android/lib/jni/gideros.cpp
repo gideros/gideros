@@ -1205,6 +1205,8 @@ bool ApplicationManager::keyUp(int keyCode, int repeatCount)
 	return true;
 }
 
+extern void gaudio_android_suspend(bool suspend);
+
 void ApplicationManager::pause()
 {
 	gtexture_SaveRenderTargets();
@@ -1215,10 +1217,12 @@ void ApplicationManager::pause()
 	application_->tick(&status);
 	if (status.error())
 		luaError(status.errorString());
+	gaudio_android_suspend(true);
  }
 
 void ApplicationManager::resume()
 {
+	gaudio_android_suspend(false);
     gapplication_enqueueEvent(GAPPLICATION_RESUME_EVENT, NULL, 0);
 
 	GStatus status;

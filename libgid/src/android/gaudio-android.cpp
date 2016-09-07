@@ -4,12 +4,15 @@
 #if defined(OPENAL_SUBDIR_OPENAL)
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
+#include <OpenAL/alext.h>
 #elif defined(OPENAL_SUBDIR_AL)
 #include <AL/al.h>
 #include <AL/alc.h>
+#include <AL/alext.h>
 #else
 #include <al.h>
 #include <alc.h>
+#include <alext.h>
 #endif
 
 extern "C" {
@@ -29,6 +32,16 @@ struct GGAudioSystemData
     ALCcontext *context;
 };
 
+struct GGAudioSystemData *OpenALData;
+
+void gaudio_android_suspend(bool suspend)
+{
+	if (suspend)
+		alcDevicePauseSOFT(OpenALData->device);
+	else
+		alcDeviceResumeSOFT(OpenALData->device);
+}
+
 void GGAudioManager::systemInit()
 {
     systemData_ = (GGAudioSystemData*)malloc(sizeof(GGAudioSystemData));
@@ -43,10 +56,12 @@ void GGAudioManager::systemInit()
     systemData_->context = alcCreateContext(systemData_->device, params);
 
     alcMakeContextCurrent(systemData_->context);
+    OpenALData=systemData_;
 }
 
 void GGAudioManager::systemCleanup()
 {
+	OpenALData=NULL;
     alcMakeContextCurrent(NULL);
     alcDestroyContext(systemData_->context);
     alcCloseDevice(systemData_->device);
