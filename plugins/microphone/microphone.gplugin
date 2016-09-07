@@ -12,7 +12,12 @@
     </template>
     <template name="AndroidManifest" path="">
         <replacelist wildcards="AndroidManifest.xml">
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android.permission.RECORD_AUDIO&quot; /&gt;"/>
+           <append>
+            	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            	<by><![CDATA[
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+            	]]></by>
+            </append>
         </replacelist>
     </template>
  </target>
@@ -26,7 +31,12 @@
     </template>
     <template name="AndroidManifest" path="">
         <replacelist wildcards="AndroidManifest.xml">
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android.permission.RECORD_AUDIO&quot; /&gt;"/>
+           <append>
+            	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            	<by><![CDATA[
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+            	]]></by>
+            </append>
         </replacelist>
     </template>
  </target>
