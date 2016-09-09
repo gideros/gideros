@@ -8,6 +8,10 @@ This code is MIT licensed, see http://www.opensource.org/licenses/mit-license.ph
 
 ]]
 
+local bit=require("bit")
+print("bitop output=",bit.tobit(0xffffffff))
+print("bitop bor=",bit.bor(1, 2, 4, 8))
+
 -- load texture, create bitmap from it and set as background
 local bgTexture=Texture.new("sky_world.png")
 local bgTextureP=Texture.new("field.png")

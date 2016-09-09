@@ -3,7 +3,12 @@
 #include <stdlib.h>
 #include <cmath>
 #include <cstdio>
+
+#ifdef WIN32_NOQT
+#define Q_OS_WIN 1
+#else
 #include <QtCore/qglobal.h>
+#endif
 
 static const float DEAD_ZONE = 0.25f;
 static const double MATH_PI = atan(1)*4;

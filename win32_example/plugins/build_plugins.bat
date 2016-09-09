@@ -1,0 +1,10 @@
+build_bitop.bat
+build_json.bat
+build_lfs.bat
+build_sqlite.bat
+build_luasocket.bat
+build_clipper.bat
+build_controller.bat
+build_struct.bat
+build_lpeg.bat
+build_microphone.bat
