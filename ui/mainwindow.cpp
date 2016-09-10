@@ -254,7 +254,6 @@ MainWindow::MainWindow(QWidget *parent)
     //QSettings settings;
 	QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
     ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
-    ui.actionMacro_Support->setChecked(settings.value("macroSupport", false).toBool());
 
 #ifndef NEW_CLIENT
 	client_ = new Client(qPrintable(playerip), 15000);
@@ -266,7 +265,6 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(client_, SIGNAL(dataReceived(const QByteArray&)), this, SLOT(dataReceived(const QByteArray&)));
 	connect(client_, SIGNAL(ackReceived(unsigned int)), this, SLOT(ackReceived(unsigned int)));
     connect(client_, SIGNAL(advertisement(const QString&,unsigned short,unsigned short,const QString&)), this, SLOT(advertisement(const QString&,unsigned short,unsigned short,const QString&)));
-    connect(client_, SIGNAL(getExpandedMacro(const QString&)), this, SLOT(expandMacro(const QString&)));
 #endif
 
 //	startTimer(1);
@@ -317,7 +315,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(ui.actionPlayer_Settings, SIGNAL(triggered()), this, SLOT(playerSettings()));
     connect(ui.actionLocalhostToggle, SIGNAL(triggered(bool)), this, SLOT(actionLocalhostToggle(bool)));
-    connect(ui.actionMacro_Support, SIGNAL(triggered(bool)), this, SLOT(actionMacro_Support(bool)));
 	connect(ui.actionAbout_Gideros_Studio, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
 	connect(ui.actionDeveloper_Center, SIGNAL(triggered()), this, SLOT(developerCenter()));
 	connect(ui.actionHelp_Support, SIGNAL(triggered()), this, SLOT(helpAndSupport()));
@@ -876,7 +873,7 @@ void MainWindow::timerEvent(QTimerEvent*)
 				}
 
 				QString fileName = QDir::cleanPath(path.absoluteFilePath(s2));
-				if (client_->sendFile(s1, fileName, ui.actionMacro_Support->isChecked()) == 0)
+                if (client_->sendFile(s1, fileName))
 				{
 					outputWidget_->append(s1 + " cannot be opened.\n");
 				}
@@ -3149,47 +3146,6 @@ void MainWindow::on_actionFold_Unfold_Top_triggered()
         textEdit->sciScintilla()->foldAll(false);
     }
 }
-
-void MainWindow::actionMacro_Support(bool checked){
-    QSettings settings;
-    settings.setValue("macroSupport", checked);
-}
-
-QByteArray MainWindow::expandMacro(const QString& localFileName)
-{
-    QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
-#if defined(Q_OS_MAC)
-    toolsDir.cdUp();
-#endif
-    toolsDir.cd("Tools");
-
-#if defined(Q_OS_WIN)
-    QString lua = toolsDir.filePath("lua.exe");
-#else
-    QString lua = toolsDir.filePath("lua");
-#endif
-
-    toolsDir.cd("luamacro");
-    QString luam = toolsDir.filePath("luam");
-    luaProcess_->start(lua, QStringList() << luam << "-d" << localFileName);
-    luaProcess_->waitForFinished();
-
-    QByteArray out = luaProcess_->readAllStandardOutput();
-    QByteArray err = luaProcess_->readAllStandardError();
-
-    if (err.isEmpty())
-    {
-        return out;
-    }
-    else
-    {
-        QFileInfo name(localFileName);
-        QString path = name.absolutePath()+"/";
-        err.replace(path, "\\n");
-        return "error \"Macro Error:\\n"+err;
-    }
-}
-
 
 void MainWindow::keyPressEvent(QKeyEvent * event)
 {

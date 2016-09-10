@@ -33,7 +33,7 @@ QMainWindow::separator {
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -135,7 +135,6 @@ QMainWindow::separator {
     <addaction name="actionUI_and_Editor_Theme"/>
     <addaction name="actionReset_UI_and_Editor_Theme"/>
     <addaction name="separator"/>
-    <addaction name="actionMacro_Support"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_Edit"/>

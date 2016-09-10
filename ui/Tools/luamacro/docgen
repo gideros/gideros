@@ -1,3 +1,0 @@
-ldoc .
-lua markdown.lua readme.md
-cp readme.html docs/index.html

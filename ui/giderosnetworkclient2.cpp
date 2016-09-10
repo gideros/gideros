@@ -204,7 +204,7 @@ void GiderosNetworkClient2::sendAck(unsigned int id)
 }
 
 
-unsigned int GiderosNetworkClient2::sendFile(const QString& remoteName, const QString& localFileName, const bool& macroProcessing)
+unsigned int GiderosNetworkClient2::sendFile(const QString& remoteName, const QString& localFileName)
 {
 	if (status_ != eConnected)
 		return 0;
@@ -217,15 +217,7 @@ unsigned int GiderosNetworkClient2::sendFile(const QString& remoteName, const QS
 	}
 
 	std::string n = remoteName.toStdString();
-    QByteArray b;
-    if (macroProcessing && QFileInfo(localFileName).suffix().toLower() == "lua")
-    {
-        b = getExpandedMacro(localFileName);
-    }
-    else
-    {
-        b = file.readAll();
-    }
+    QByteArray b = file.readAll();
 
 	std::vector<char> buffer(1 + n.size() + 1 + b.size());
 

@@ -204,8 +204,6 @@ private slots:
 
 	void closeMdiTab(int);
 
-    QByteArray expandMacro(const QString& localFileName);
-
 private slots:
 	void onOpenRequest(const QString& itemName, const QString& fileName);
 	void onPreviewRequest(const QString& itemName, const QString& fileName);
@@ -317,7 +315,6 @@ private slots:
 	void findInFiles();
 
     void actionLocalhostToggle(bool checked);
-    void actionMacro_Support(bool checked);
     void clearOutput();
     void searchOutput( const QString &text);
 

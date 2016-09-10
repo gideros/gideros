@@ -26,7 +26,7 @@ public:
 
 	qint64 bytesToWrite() const;
 
-    unsigned int sendFile(const QString& remoteName, const QString& localFileName, const bool& macroProcessing);
+    unsigned int sendFile(const QString& remoteName, const QString& localFileName);
 	unsigned int sendCreateFolder(const QString& folderName);
 	unsigned int sendPlay(const QStringList& luafiles);
 	unsigned int sendProjectName(const QString& projectName);
