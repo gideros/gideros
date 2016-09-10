@@ -264,7 +264,7 @@ int SpriteBinder::removeChildAt(lua_State* L)
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
 	int index = luaL_checknumber(L, 2);
-
+	if (index < 0) index = sprite->childCount() + index + 1;
 	if (index < 1 || index > sprite->childCount())
 		return luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index is out of bounds.
 
@@ -346,9 +346,11 @@ int SpriteBinder::swapChildrenAt(lua_State* L)
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
 	int index1 = luaL_checknumber(L, 2);
+	if (index1 < 0) index1 = sprite->childCount() + index1 + 1;
 	if (index1 < 1 || index1 > sprite->childCount())
 		return luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index1 is out of bounds.
         int index2 = luaL_checknumber(L, 3);
+        if (index2 < 0) index2 = sprite->childCount() + index2 + 1;
 	if (index2 < 1 || index2 > sprite->childCount())
 		return luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index2 is out of bounds.
 
@@ -364,7 +366,7 @@ int SpriteBinder::getChildAt(lua_State* L)
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 	int index = luaL_checkinteger(L, 2);
-
+	if (index < 0) index = sprite->childCount() + index + 1;
 	if (index < 1 || index > sprite->childCount())
 		return luaL_error(L, GStatus(2006).errorString());	// Error #2006: The supplied index is out of bounds.
 
