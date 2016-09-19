@@ -700,7 +700,7 @@ static int llex (LexState *ls, SemInfo *seminfo) {
               default:
                 if (t<FIRST_RESERVED)
                 {
-                  char s[2]= {t,0};
+                  char s[2]= {(char)t,0};
                   lua_pushstring(L,s);
                 }
                 else
