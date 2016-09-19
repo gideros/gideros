@@ -134,43 +134,55 @@ Dib::Dib(Application* application,
 
     data_.resize(width_ * height_ * 4);
 
-    for (int y = 0; y < originalHeight_; ++y)
-        for (int x = 0; x < originalWidth_; ++x)
+    if (comp == 4)
+    {// optimization for 4 components case.
+        for (int y = 0; y < originalHeight_; ++y)
         {
-            unsigned char rgba[4] = {255, 255, 255, 255};
-
-            int srcindex = (x + y * originalWidth_) * comp;
-
-            switch (comp)
-            {
-            case 1:
-                rgba[0] = rgba[1] = rgba[2] = buf[srcindex + 0];
-                break;
-            case 2:
-                rgba[0] = rgba[1] = rgba[2] = buf[srcindex + 0];
-                rgba[3] =                     buf[srcindex + 1];
-                break;
-            case 3:
-                rgba[0] = buf[srcindex + 0];
-                rgba[1] = buf[srcindex + 1];
-                rgba[2] = buf[srcindex + 2];
-                break;
-            case 4:
-                rgba[0] = buf[srcindex + 0];
-                rgba[1] = buf[srcindex + 1];
-                rgba[2] = buf[srcindex + 2];
-                rgba[3] = buf[srcindex + 3];
-                break;
-            }
-
-            int dstindex = (x + y * width_) * 4;
-
-            data_[dstindex + 0] = rgba[0];
-            data_[dstindex + 1] = rgba[1];
-            data_[dstindex + 2] = rgba[2];
-            data_[dstindex + 3] = rgba[3];
+            int srcindex = (y * originalWidth_) * 4;
+            int dstindex = (y * width_) * 4;
+            std::copy((const unsigned int*)&buf[srcindex], (const unsigned int*)(buf.data() + srcindex + originalWidth_ * 4),
+                    (unsigned int*)&data_[dstindex]);
         }
+    }
+    else
+    {
+        for (int y = 0; y < originalHeight_; ++y)
+            for (int x = 0; x < originalWidth_; ++x)
+            {
+                unsigned char rgba[4] = {255, 255, 255, 255};
 
+                int srcindex = (x + y * originalWidth_) * comp;
+
+                switch (comp)
+                {
+                case 1:
+                    rgba[0] = rgba[1] = rgba[2] = buf[srcindex + 0];
+                    break;
+                case 2:
+                    rgba[0] = rgba[1] = rgba[2] = buf[srcindex + 0];
+                    rgba[3] =                     buf[srcindex + 1];
+                    break;
+                case 3:
+                    rgba[0] = buf[srcindex + 0];
+                    rgba[1] = buf[srcindex + 1];
+                    rgba[2] = buf[srcindex + 2];
+                    break;
+                case 4:
+                    rgba[0] = buf[srcindex + 0];
+                    rgba[1] = buf[srcindex + 1];
+                    rgba[2] = buf[srcindex + 2];
+                    rgba[3] = buf[srcindex + 3];
+                    break;
+                }
+
+                int dstindex = (x + y * width_) * 4;
+
+                data_[dstindex + 0] = rgba[0];
+                data_[dstindex + 1] = rgba[1];
+                data_[dstindex + 2] = rgba[2];
+                data_[dstindex + 3] = rgba[3];
+            }
+    }
 
 	if (maketransparent)
 	{

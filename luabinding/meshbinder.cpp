@@ -684,7 +684,7 @@ int MeshBinder::getIndex(lua_State *L)
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
     int i = luaL_checkinteger(L, 2) - 1;
 
-    if (i < 0 || i >= mesh->getVertexArraySize())
+    if (i < 0 || i >= mesh->getIndexArraySize())
         return luaL_error(L, "The supplied index is out of bounds.");
 
     unsigned short index;
