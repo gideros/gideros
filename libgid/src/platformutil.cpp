@@ -443,7 +443,7 @@ double iclock()
 	static double begin = CFAbsoluteTimeGetCurrent();
 	return CFAbsoluteTimeGetCurrent() - begin;
 }
-#elif defined(__ANDROID__)
+#elif defined(__ANDROID__) || defined(STRICT_LINUX)
 static double nanoTime()
 {
 	struct timespec t;
