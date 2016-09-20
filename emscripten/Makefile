@@ -54,7 +54,7 @@ MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 ind
 SRCS+=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES))
 SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
 	ginput-js gaudio-js gaudio-stream-openal-js gaudio-sample-openal-js platform-js ghttp-js \
-	gui-js ggeolocation-js main)   
+	gui-js ggeolocation-js main jsnative)   
 
 
 INCS=2dsg libgideros libgid/include libgvfs libpystring
