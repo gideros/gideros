@@ -265,7 +265,12 @@ ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader, const char *fshader,in
 	void *fs = fromCode?(void *)fshader:LoadShaderFile(fshader, "glsl", NULL);
 	const char *hdr=(flags&ShaderProgram::Flag_NoDefaultHeader)?"":hdrShaderCode;
 	program=0;
-	buildProgram(hdr,(char *) vs, hdr, (char *) fs, uniforms, attributes);
+	if (vs&&fs)
+		buildProgram(hdr,(char *) vs, hdr, (char *) fs, uniforms, attributes);
+	else if (vs==NULL)
+		errorLog="Vertex shader code not found";
+	else
+		errorLog="Fragment shader code not found";
 	if (!fromCode)
 	{
 		if (vs) free(vs);
@@ -287,9 +292,11 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 		const ConstantDesc *uniforms, const DataDesc *attributes) {
 	cbsData=0;
     vshadercode=vshader1;
-    vshadercode.append(vshader2);
+    if (vshader2)
+    	vshadercode.append(vshader2);
     fshadercode=fshader1;
-    fshadercode.append(fshader2);
+    if (fshader2)
+    	fshadercode.append(fshader2);
 	GLint ntex = 0;
 	while (!uniforms->name.empty()) {
 		int usz = 0, ual = 4;
