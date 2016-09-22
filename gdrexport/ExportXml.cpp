@@ -10,7 +10,7 @@
 #include "ExportCommon.h"
 
 #ifdef Q_OS_MACX
-#define ALL_PLUGINS_PATH "../All Plugins"
+#define ALL_PLUGINS_PATH "../../All Plugins"
 #else
 #define ALL_PLUGINS_PATH "All Plugins"
 #endif
