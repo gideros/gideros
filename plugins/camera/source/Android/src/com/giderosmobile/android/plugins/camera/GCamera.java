@@ -109,7 +109,7 @@ public class GCamera {
 						Camera.Parameters parameters = camera.getParameters();
 
 						if (camera.getParameters().getSupportedPreviewSizes() != null){
-							Camera.Size previewSize = getOptimalPreviewSize(camera.getParameters().getSupportedPreviewSizes(), width, height);
+							Camera.Size previewSize = getOptimalPreviewSize2(camera.getParameters().getSupportedPreviewSizes(), width, height);
 							parameters.setPreviewSize(previewSize.width, previewSize.height);
 							dimret[0]=previewSize.width;
 							dimret[1]=previewSize.height;
@@ -140,7 +140,39 @@ public class GCamera {
 		return dimret;
 	}
 
-	static private Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int width, int height)
+	static private Camera.Size getOptimalPreviewSize2(List<Camera.Size> sizes, int w, int h) {
+        final double ASPECT_TOLERANCE = 0.1;
+        double targetRatio=(double)h / w;
+
+        if (sizes == null) return null;
+
+        Camera.Size optimalSize = null;
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = h;
+
+        for (Camera.Size size : sizes) {
+            double ratio = (double) size.width / size.height;
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+            if (Math.abs(size.height - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.height - targetHeight);
+            }
+        }
+
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Camera.Size size : sizes) {
+                if (Math.abs(size.height - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
+    }
+	
+	static private Camera.Size getOptimalPreviewSize1(List<Camera.Size> sizes, int width, int height)
 	{
 		// Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
 		Camera.Size optimalSize = null;
