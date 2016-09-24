@@ -33,6 +33,9 @@ static void loadPlugins(){
     #if defined(Q_OS_MAC)
         dir.cd("../../Plugins");
         QStringList files = dir.entryList(QStringList() << "*.dylib");
+    #elif defined(Q_OS_LINUX)
+        dir.cd("Plugins");
+        QStringList files = dir.entryList(QStringList() << "*.so");
     #else
         dir.cd("Plugins");
         QStringList files = dir.entryList(QStringList() << "*.dll");

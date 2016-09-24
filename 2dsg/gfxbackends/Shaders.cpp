@@ -151,6 +151,16 @@ void ShaderEngine::prepareDraw(ShaderProgram *program)
 		Matrix4 m=oglModel.inverse().transpose();
 		program->setConstant(c,ShaderProgram::CMATRIX,1,m.data());
 	}
+	c=program->getSystemConstant(ShaderProgram::SysConst_WorldInverseTransposeMatrix3);
+	if (c>=0) {
+		const float *om=oglModel.data();
+		Matrix4 m3(om[0],om[1],om[2],0,
+				om[4],om[5],om[6],0,
+				om[8],om[9],om[10],0,
+				0,0,0,1);
+		Matrix4 m=m3.inverse().transpose();
+		program->setConstant(c,ShaderProgram::CMATRIX,1,m.data());
+	}
 }
 
 Matrix4 ShaderEngine::setFrustum(float l, float r, float b, float t, float n, float f)

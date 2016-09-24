@@ -37,6 +37,10 @@
 				<set key="local.orientation" value="reverseLandscape"/>
 			</if>
 		</if>		
+		<set key="local.showSplash" value="true"/>
+		<if condition="[[[eq:[[[project.disableSplash]]]:1]]]">
+			<set key="local.showSplash" value="false"/>
+		</if>
 		<template name="Android Template" path="[[[sys.giderosDir]]]/Templates/AndroidStudio/Android Template">
 			<replacelist wildcards="*.xml;*.java;*.gradle">
 				<replace orig="AndroidTemplate" by="[[[project.namews]]]"/>
@@ -46,6 +50,8 @@
         		<replace orig="android:versionCode=&quot;1&quot;" by="android:versionCode=&quot;[[[project.version_code]]]&quot;"/>
         		<replace orig="android:versionName=&quot;1.0&quot;" by="android:versionName=&quot;[[[project.version]]]&quot;"/>
         		<replace orig="android:screenOrientation=&quot;portrait&quot;" by="android:screenOrientation=&quot;[[[local.orientation]]]&quot;"/>
+        		<replace orig="boolean showSplash = true;" by="boolean showSplash = [[[local.showSplash]]];"/>
+        		<replace orig="Color.parseColor(&quot;#ffffff&quot;)" by="Color.parseColor(&quot;[[[project.backgroundColor]]]&quot;)"/>
         		<replace orig="compileSdkVersion 21" by="compileSdkVersion [[[export.androidSdk]]]" />
         		<replace orig="buildToolsVersion &quot;22.0.0&quot;" by="buildToolsVersion &quot;[[[export.androidTools]]]&quot;" />
 				<replace orig="targetSdkVersion 19" by="targetSdkVersion [[[export.androidTarget]]]"/>

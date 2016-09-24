@@ -39,11 +39,14 @@ SRCS+=libpystring/pystring
 #		cff/cff psnames/psnames pshinter/pshinter)
 
 SRCS+=$(addprefix libgid/external/zlib-1.2.8/,$(notdir $(basename $(wildcard ../libgid/external/zlib-1.2.8/*.c))))
-PNGFILES=png pngerror pngget pngmem pngpread pngread pngrio pngrtran pngrutil pngset pngtrans
+PNGFILES=png pngerror pngget pngmem pngpread pngread pngrio pngrtran pngrutil pngset pngtrans \
+	pngwio pngwrite pngwtran pngwutil 
 SRCS+=$(addprefix libgid/external/libpng-1.6.2/,$(PNGFILES))
 JPEGFILES=jaricom jdapimin jdapistd jdarith jdatadst jdatasrc jdcoefct jdcolor jddctmgr jdhuff jdinput \
 	jdmainct jdmarker jdmaster jdmerge jdpostct jdsample jdtrans jerror jfdctflt jfdctfst jfdctint \
-	jidctflt jidctfst jidctint jquant1 jquant2 jutils jmemmgr jmemnobs jcomapi
+	jidctflt jidctfst jidctint jquant1 jquant2 jutils jmemmgr jmemnobs jcomapi \
+	jcapimin jcapistd jcarith jccoefct jccolor jcdctmgr jchuff jcinit jcmainct \
+	jcmaster jcparam jcprepct jcsample jctrans
 SRCS+=$(addprefix libgid/external/jpeg-9/,$(JPEGFILES))
 SRCS+=$(addprefix libgid/external/snappy-1.1.0/,snappy snappy-c snappy-sinksource snappy-stubs-internal)
 MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 index layer1 layer2 layer3 \
@@ -51,7 +54,7 @@ MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 ind
 SRCS+=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES))
 SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
 	ginput-js gaudio-js gaudio-stream-openal-js gaudio-sample-openal-js platform-js ghttp-js \
-	gui-js ggeolocation-js main)   
+	gui-js ggeolocation-js main jsnative)   
 
 
 INCS=2dsg libgideros libgid/include libgvfs libpystring

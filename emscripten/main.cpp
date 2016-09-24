@@ -216,6 +216,7 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 
 
 extern "C" int main_registerPlugin(const char *pname);
+extern "C" void* g_pluginMain_JSNative(lua_State* L, int type);
 
 extern const char *codeKey_;
 const char *currentUrl=NULL;
@@ -264,6 +265,7 @@ char *url=(char *) EM_ASM_INT_V({
   if ((*lurl)=='/') *lurl=0;
   
   //PLUGINS Init
+  g_registerPlugin(g_pluginMain_JSNative);
   EM_ASM(Module.registerPlugins());
 
   int defWidth=EM_ASM_INT_V({ return window.innerWidth; });

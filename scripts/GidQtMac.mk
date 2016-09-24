@@ -155,5 +155,10 @@ bundle:
 	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
 	rm -rf $(RELEASE).Final/Documentation
 	cp -R docs.giderosmobile.com $(RELEASE).Final/Documentation
-	mv $(RELEASE).Final/Templates $(RELEASE).Final/All\ Plugins $(RELEASE).Final/Gideros\ Studio.app/Contents
+	mv $(RELEASE).Final/Templates $(RELEASE).Final/Gideros\ Studio.app/Contents
 	-wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE).Final/Gideros\ Studio.app/Contents/Resources/gideros_annot.api
+
+bundle.mac:
+	cp -r $(RELEASE)/Templates $(RELEASE)/Gideros\ Studio.app/Contents/
+	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
+

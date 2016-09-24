@@ -9,7 +9,11 @@
 #include <QDebug>
 
 
+#ifdef Q_OS_MACX
+#define ALL_PLUGINS_PATH "../../All Plugins"
+#else
 #define ALL_PLUGINS_PATH "All Plugins"
+#endif
 
 PluginsChooser::PluginsChooser(QSet<ProjectProperties::Plugin> selection, QWidget *parent) :
     QDialog(parent),

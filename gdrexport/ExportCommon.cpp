@@ -23,7 +23,11 @@ static QString quote(const QString &str)
 
 void ExportCommon::copyTemplate(QString templatePath, QString templateDest, ExportContext *ctx, bool isPlugin) {
 	QDir dir = QDir::currentPath();
-	dir.cd(templatePath);
+	if (!dir.cd(templatePath))
+	{
+		exportError("Template source not found:%s\n",templatePath.toStdString().c_str());
+		return;
+	}
 
 	exportInfo("Processing template\n");
     QDir dir2 = QDir(ctx->outputDir);

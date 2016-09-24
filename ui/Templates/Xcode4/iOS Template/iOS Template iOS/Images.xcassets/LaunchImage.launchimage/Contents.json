@@ -131,6 +131,27 @@
       "filename" : "Splash2048x1536.png",
       "extent" : "full-screen",
       "scale" : "2x"
+    },
+    {
+     "orientation" : "portrait",
+     "idiom" : "iphone",
+     "extent" : "full-screen",
+     "scale" : "1x"
+    },
+    {
+     "orientation" : "portrait",
+     "idiom" : "iphone",
+     "filename" : "Splash640x960.png",
+     "extent" : "full-screen",
+     "scale" : "2x"
+    },
+    {
+     "orientation" : "portrait",
+     "idiom" : "iphone",
+     "filename" : "Splash640x1136.png",
+     "extent" : "full-screen",
+     "subtype" : "retina4",
+     "scale" : "2x"
     }
   ],
   "info" : {

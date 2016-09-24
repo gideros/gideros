@@ -10,7 +10,7 @@
 #include "ExportCommon.h"
 
 #ifdef Q_OS_MACX
-#define ALL_PLUGINS_PATH "../../../All Plugins"
+#define ALL_PLUGINS_PATH "../../All Plugins"
 #else
 #define ALL_PLUGINS_PATH "All Plugins"
 #endif
@@ -87,6 +87,8 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["project.autorotation"] = QString::number(
 			ctx->properties.autorotation);
 	props["project.orientation"] = QString::number(ctx->properties.orientation);
+	props["project.disableSplash"] = QString::number(ctx->properties.disableSplash?1:0);
+	props["project.backgroundColor"] = ctx->properties.backgroundColor;
 
 //Fill in passed arguments
     QHash<QString, QString>::iterator i;

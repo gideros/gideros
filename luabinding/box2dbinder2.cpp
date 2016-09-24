@@ -229,6 +229,10 @@ public:
 
 	static Event::Type BEGIN_CONTACT;
 	static Event::Type END_CONTACT;
+    static Event::Type BEGIN_CONTACT_PARTICLE;
+    static Event::Type END_CONTACT_PARTICLE;
+    static Event::Type BEGIN_CONTACT_PARTICLE2;
+    static Event::Type END_CONTACT_PARTICLE2;
 	static Event::Type PRE_SOLVE;
 	static Event::Type POST_SOLVE;
 
@@ -243,6 +247,10 @@ private:
 
 Event::Type b2WorldED::BEGIN_CONTACT("beginContact");
 Event::Type b2WorldED::END_CONTACT("endContact");
+Event::Type b2WorldED::BEGIN_CONTACT_PARTICLE("beginContactParticle");
+Event::Type b2WorldED::END_CONTACT_PARTICLE("endContactParticle");
+Event::Type b2WorldED::BEGIN_CONTACT_PARTICLE2("beginContactParticle2");
+Event::Type b2WorldED::END_CONTACT_PARTICLE2("endContactParticle2");
 Event::Type b2WorldED::PRE_SOLVE("preSolve");
 Event::Type b2WorldED::POST_SOLVE("postSolve");
 
@@ -335,6 +343,84 @@ private:
 			lua_pop(L, 1);
 	}
 
+    void dispatchEventParticle(const Event::Type& type, b2ParticleSystem* particleSystem, b2Fixture* fixture, int particleIndex)
+    {
+        Binder binder(L);
+
+        getb2(L, world);
+
+        if (!lua_isnil(L, -1))
+        {
+            lua_getfield(L, -1, "dispatchEvent");
+
+            lua_pushvalue(L, -2); // create copy of world
+
+            if (type.id() == b2WorldED::BEGIN_CONTACT_PARTICLE.id())
+                lua_getfield(L, -1, "__beginContactEventParticle");
+            else if (type.id() == b2WorldED::END_CONTACT_PARTICLE.id())
+                lua_getfield(L, -1, "__endContactEventParticle");
+
+            getb2(L, fixture);
+            lua_setfield(L, -2, "fixture");
+
+            lua_pushinteger(L, particleIndex);
+            lua_setfield(L, -2, "index");
+
+            getb2(L, particleSystem);
+            lua_setfield(L, -2, "system");
+
+            //lua_call(L, 2, 0); // call world:dispatchEvent(event)
+            if (lua_pcall(L, 2, 0, 0) != 0)
+            {
+                world->error = lua_tostring(L, -1);
+                lua_pop(L, 1);
+            }
+
+            lua_pop(L, 1);
+        }
+        else
+            lua_pop(L, 1);
+    }
+
+    void dispatchEventParticle2(const Event::Type& type, b2ParticleSystem* particleSystem, int particleIndex1, int particleIndex2)
+    {
+        Binder binder(L);
+
+        getb2(L, world);
+
+        if (!lua_isnil(L, -1))
+        {
+            lua_getfield(L, -1, "dispatchEvent");
+
+            lua_pushvalue(L, -2); // create copy of world
+
+            if (type.id() == b2WorldED::BEGIN_CONTACT_PARTICLE2.id())
+                lua_getfield(L, -1, "__beginContactEventParticle2");
+            else if (type.id() == b2WorldED::END_CONTACT_PARTICLE2.id())
+                lua_getfield(L, -1, "__endContactEventParticle2");
+
+            lua_pushinteger(L, particleIndex1);
+            lua_setfield(L, -2, "indexA");
+
+            lua_pushinteger(L, particleIndex2);
+            lua_setfield(L, -2, "indexB");
+
+            getb2(L, particleSystem);
+            lua_setfield(L, -2, "system");
+
+            //lua_call(L, 2, 0); // call world:dispatchEvent(event)
+            if (lua_pcall(L, 2, 0, 0) != 0)
+            {
+                world->error = lua_tostring(L, -1);
+                lua_pop(L, 1);
+            }
+
+            lua_pop(L, 1);
+        }
+        else
+            lua_pop(L, 1);
+    }
+
 public:
 	virtual void BeginContact(b2Contact* contact)
 	{
@@ -347,6 +433,35 @@ public:
 		if (world->hasEventListener(b2WorldED::END_CONTACT))
 			dispatchEvent(b2WorldED::END_CONTACT, contact, 0, 0);
 	}
+
+    virtual void BeginContact(b2ParticleSystem* particleSystem,
+                              b2ParticleBodyContact* contact)
+    {
+        if (world->hasEventListener(b2WorldED::BEGIN_CONTACT_PARTICLE))
+            dispatchEventParticle(b2WorldED::BEGIN_CONTACT_PARTICLE, particleSystem, contact->fixture, contact->index);
+    }
+
+    virtual void EndContact(b2Fixture* fixture, b2ParticleSystem* particleSystem, int32 index)
+    {
+        if (world->hasEventListener(b2WorldED::END_CONTACT_PARTICLE))
+            dispatchEventParticle(b2WorldED::END_CONTACT_PARTICLE, particleSystem, fixture, index);
+    }
+
+    virtual void BeginContact(b2ParticleSystem* particleSystem,
+                              b2ParticleContact* contact)
+    {
+        if (world->hasEventListener(b2WorldED::BEGIN_CONTACT_PARTICLE2))
+            dispatchEventParticle2(b2WorldED::BEGIN_CONTACT_PARTICLE2, particleSystem, contact->indexA, contact->indexB);
+    }
+
+    /// Called when two particles start touching if
+    /// b2_particleContactFilterParticle flag is set on either particle.
+    virtual void EndContact(b2ParticleSystem* particleSystem,
+                            int32 indexA, int32 indexB)
+    {
+        if (world->hasEventListener(b2WorldED::END_CONTACT_PARTICLE2))
+            dispatchEventParticle2(b2WorldED::END_CONTACT_PARTICLE2, particleSystem, indexA, indexB);
+    }
 
 	virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
 	{
@@ -497,6 +612,26 @@ int Box2DBinder2::b2World_create(lua_State* L)
 	lua_call(L, 1, 1); // call Event.new
 	lua_setfield(L, -3, "__endContactEvent");
 
+    lua_pushvalue(L, -1);	// duplicate Event.new
+    lua_pushstring(L, b2WorldED::BEGIN_CONTACT_PARTICLE.type());
+    lua_call(L, 1, 1); // call Event.new
+    lua_setfield(L, -3, "__beginContactEventParticle");
+
+    lua_pushvalue(L, -1);	// duplicate Event.new
+    lua_pushstring(L, b2WorldED::END_CONTACT_PARTICLE.type());
+    lua_call(L, 1, 1); // call Event.new
+    lua_setfield(L, -3, "__endContactEventParticle");
+
+    lua_pushvalue(L, -1);	// duplicate Event.new
+    lua_pushstring(L, b2WorldED::BEGIN_CONTACT_PARTICLE2.type());
+    lua_call(L, 1, 1); // call Event.new
+    lua_setfield(L, -3, "__beginContactEventParticle2");
+
+    lua_pushvalue(L, -1);	// duplicate Event.new
+    lua_pushstring(L, b2WorldED::END_CONTACT_PARTICLE2.type());
+    lua_call(L, 1, 1); // call Event.new
+    lua_setfield(L, -3, "__endContactEventParticle2");
+
 	lua_pushvalue(L, -1);	// duplicate Event.new
 	lua_pushstring(L, b2WorldED::PRE_SOLVE.type());
 	lua_call(L, 1, 1); // call Event.new
@@ -582,6 +717,18 @@ int Box2DBinder2::loader(lua_State *L)
 
 	lua_pushstring(L, b2WorldED::END_CONTACT.type());
 	lua_setfield(L, -2, "END_CONTACT");
+
+    lua_pushstring(L, b2WorldED::BEGIN_CONTACT_PARTICLE.type());
+    lua_setfield(L, -2, "BEGIN_CONTACT_PARTICLE");
+
+    lua_pushstring(L, b2WorldED::END_CONTACT_PARTICLE.type());
+    lua_setfield(L, -2, "END_CONTACT_PARTICLE");
+
+    lua_pushstring(L, b2WorldED::BEGIN_CONTACT_PARTICLE2.type());
+    lua_setfield(L, -2, "BEGIN_CONTACT_PARTICLE2");
+
+    lua_pushstring(L, b2WorldED::END_CONTACT_PARTICLE2.type());
+    lua_setfield(L, -2, "END_CONTACT_PARTICLE2");
 
 	lua_pushstring(L, b2WorldED::PRE_SOLVE.type());
 	lua_setfield(L, -2, "PRE_SOLVE");
@@ -920,6 +1067,9 @@ int Box2DBinder2::loader(lua_State *L)
 
 #if BIND_LIQUIDFUN
     const luaL_Reg b2ParticleGroup_functionList[] = {
+        {"destroyParticles", b2ParticleGroup_destroyParticles},
+        {"getParticleCount", b2ParticleGroup_getParticleCount},
+        {"containsParticle", b2ParticleGroup_containsParticle},
         {NULL, NULL},
     };
     binder.createClass("b2ParticleGroup", NULL, NULL, NULL, b2ParticleGroup_functionList);
@@ -929,7 +1079,8 @@ int Box2DBinder2::loader(lua_State *L)
     	{"destroyParticle",b2ParticleSystem_destroyParticle},
     	{"createParticleGroup",b2ParticleSystem_createParticleGroup},
         {"setTexture", b2ParticleSystem_setTexture},
-         {NULL, NULL},
+        {"getParticleGroupList", b2ParticleSystem_getParticleGroupList},
+        {NULL, NULL},
     };
     binder.createClass("b2ParticleSystem", "Sprite", NULL, NULL, b2ParticleSystem_functionList);
     lua_getglobal(L, "b2ParticleSystem");
@@ -5570,6 +5721,69 @@ int Box2DBinder2::b2ParticleSystem_setTexture(lua_State *L)
     ps->SetTexture(textureBase);
 
     return 0;
+}
+
+int Box2DBinder2::b2ParticleSystem_getParticleGroupList(lua_State *L)
+{
+    StackChecker checker(L, "b2ParticleSystem_getParticleGroupList", 1);
+    Binder binder(L);
+
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(binder.getInstance("b2ParticleSystem", 1));
+    if (ps == NULL)
+    {
+        return luaL_error(L, "ParticleSystem required in argument #1");
+    }
+
+    if (ps->GetWorld()->IsLocked())
+        return luaL_error(L, GStatus(5004).errorString());	// Error #5004: World is locked.
+
+    int index = 0;
+    lua_newtable(L);
+    for (b2ParticleGroup* group = ps->GetSystem()->GetParticleGroupList(); group; group = group->GetNext(), index++)
+    {
+        binder.pushInstance("b2ParticleGroup", group);
+        lua_rawseti(L, -2, index + 1);
+    }
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleGroup_destroyParticles(lua_State *L)
+{
+    StackChecker checker(L, "b2ParticleGroup_destroyParticles", 0);
+    Binder binder(L);
+
+    b2ParticleGroup* group = static_cast<b2ParticleGroup*>(binder.getInstance("b2ParticleGroup", 1));
+    bool callDestructionListener = lua_toboolean(L, 2);
+
+    group->DestroyParticles(callDestructionListener);
+
+    return 0;
+}
+
+int Box2DBinder2::b2ParticleGroup_getParticleCount(lua_State* L)
+{
+    StackChecker checker(L, "b2ParticleGroup_getParticleCount", 1);
+    Binder binder(L);
+
+    b2ParticleGroup* group = static_cast<b2ParticleGroup*>(binder.getInstance("b2ParticleGroup", 1));
+    lua_pushinteger(L, group->GetParticleCount());
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleGroup_containsParticle(lua_State* L)
+{
+    StackChecker checker(L, "b2ParticleGroup_containsParticle", 1);
+    Binder binder(L);
+
+    b2ParticleGroup* group = static_cast<b2ParticleGroup*>(binder.getInstance("b2ParticleGroup", 1));
+    int index = lua_tointeger(L, 2);
+
+    lua_pushboolean(L, group->ContainsParticle(index));
+
+    return 1;
 }
 
 

@@ -13,6 +13,10 @@ public:
 	void setContent(Sprite *s);
 	void setTransform(const Matrix4* matrix = NULL);
 	void setProjection(const Matrix4* matrix = NULL);
+	void lookAt(float eyex, float eyey, float eyez,
+			float centerx, float centery, float centerz,
+			float upx, float upy, float upz);
+	void lookAngles(float eyex, float eyey, float eyez,float ax, float ay, float az);
 
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);

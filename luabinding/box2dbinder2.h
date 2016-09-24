@@ -247,6 +247,11 @@ private:
     static int b2ParticleSystem_destroyParticle(lua_State* L);
     static int b2ParticleSystem_createParticleGroup(lua_State* L);
     static int b2ParticleSystem_setTexture(lua_State* L);
+    static int b2ParticleSystem_getParticleGroupList(lua_State* L);
+
+    static int b2ParticleGroup_destroyParticles(lua_State* L);
+    static int b2ParticleGroup_getParticleCount(lua_State* L);
+    static int b2ParticleGroup_containsParticle(lua_State* L);
 #endif
 };
 
