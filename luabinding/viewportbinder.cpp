@@ -11,12 +11,15 @@ ViewportBinder::ViewportBinder(lua_State* L)
 	Binder binder(L);
 
 	static const luaL_Reg functionList[] = {
-		{"setContent", setContent},
-		{"setTransform", setTransform},
-		{"setProjection", setProjection},
-		{"lookAt", lookAt},
-		{"lookAngles", lookAngles},
-		{NULL, NULL},
+			{"setContent", setContent},
+			{"setTransform", setTransform},
+			{"setProjection", setProjection},
+			{"getContent", getContent},
+			{"getTransform", getTransform},
+			{"getProjection", getProjection},
+			{"lookAt", lookAt},
+			{"lookAngles", lookAngles},
+			{NULL, NULL},
 	};
 
 	binder.createClass("Viewport", "Sprite", create, destruct, functionList);
@@ -91,6 +94,50 @@ int ViewportBinder::setContent(lua_State* L)
 	shape->setContent(s);
 
 	return 0;
+}
+
+int ViewportBinder::getTransform(lua_State* L)
+{
+	StackChecker checker(L, "ViewportBinder::getTransform", 0);
+
+	Binder binder(L);
+	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport", 1));
+	Matrix4 m=shape->getTransform();
+
+	Transform *t=new Transform();
+	t->setMatrix(m.data());
+
+    binder.pushInstance("Matrix", t);
+	return 1;
+}
+
+int ViewportBinder::getProjection(lua_State* L)
+{
+	StackChecker checker(L, "ViewportBinder::getProjection", 0);
+
+	Binder binder(L);
+	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport", 1));
+	Matrix4 m=shape->getProjection();
+
+	Transform *t=new Transform();
+	t->setMatrix(m.data());
+
+    binder.pushInstance("Matrix", t);
+	return 1;
+}
+
+int ViewportBinder::getContent(lua_State* L)
+{
+	StackChecker checker(L, "ViewportBinder::getContent", 0);
+
+	Binder binder(L);
+	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport"));
+	Sprite* s = shape->getContent();
+	if (s)
+	    binder.pushInstance("Sprite", s);
+	else
+		lua_pushnil(L);
+	return 1;
 }
 
 int ViewportBinder::lookAt(lua_State* L)

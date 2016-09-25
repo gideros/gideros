@@ -38,6 +38,8 @@ private:
 	static int translate(lua_State* L);
 	static int rotate(lua_State* L);
 	static int multiply(lua_State* L);
+	static int transformPoint(lua_State* L);
+	static int invert(lua_State* L);
 
 	static int getX(lua_State* L);
 	static int getY(lua_State* L);

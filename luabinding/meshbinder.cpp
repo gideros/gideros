@@ -46,7 +46,6 @@ MeshBinder::MeshBinder(lua_State *L)
 
         {"setTexture", setTexture},
         {"clearTexture", clearTexture},
-        {"setTextureSlot", setTextureSlot},
         {"setPrimitiveType", setPrimitiveType},
 
         {NULL, NULL},
@@ -740,25 +739,14 @@ int MeshBinder::setPrimitiveType(lua_State *L)
     return 0;
 }
 
-int MeshBinder::setTextureSlot(lua_State *L)
-{
-    Binder binder(L);
-    GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
-    int slot=luaL_checkinteger(L,2);
-    TextureBase* textureBase = static_cast<TextureBase*>(binder.getInstance("TextureBase", 3));
-
-    mesh->setTextureSlot(slot,textureBase);
-
-    return 0;
-}
-
 int MeshBinder::setTexture(lua_State *L)
 {
     Binder binder(L);
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
     TextureBase* textureBase = static_cast<TextureBase*>(binder.getInstance("TextureBase", 2));
+    int slot=luaL_optinteger(L,3,0);
 
-    mesh->setTexture(textureBase);
+    mesh->setTexture(textureBase,slot);
 
     return 0;
 }
@@ -767,8 +755,9 @@ int MeshBinder::clearTexture(lua_State *L)
 {
     Binder binder(L);
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
+    int slot=luaL_optinteger(L,2,0);
 
-    mesh->clearTexture();
+    mesh->clearTexture(slot);
 
     return 0;
 }

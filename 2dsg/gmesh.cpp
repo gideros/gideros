@@ -291,7 +291,7 @@ void GMesh::setPrimitiveType(ShaderProgram::ShapeType type)
 	meshtype_=type;
 }
 
-void GMesh::setTextureSlot(int slot,TextureBase *texture)
+void GMesh::setTexture(TextureBase *texture,int slot)
 {
     if (texture)
         texture->ref();
@@ -324,14 +324,9 @@ void GMesh::setTextureSlot(int slot,TextureBase *texture)
     }
 }
 
-void GMesh::setTexture(TextureBase *texture)
+void GMesh::clearTexture(int slot)
 {
-	setTextureSlot(0,texture);
-}
-
-void GMesh::clearTexture()
-{
-    setTexture(NULL);
+    setTexture(NULL,slot);
 }
 
 void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey)

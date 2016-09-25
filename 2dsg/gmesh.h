@@ -49,9 +49,8 @@ public:
     void getColor(int i, unsigned int *color, float *alpha) const;
     void getTextureCoordinate(int i, float *u, float *v) const;
 
-    void setTexture(TextureBase *texture);
-    void clearTexture();
-    void setTextureSlot(int slot,TextureBase *texture);
+    void setTexture(TextureBase *texture,int slot=0);
+    void clearTexture(int slot=0);
     void setPrimitiveType(ShaderProgram::ShapeType type);
 
 private:

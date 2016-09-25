@@ -13,6 +13,9 @@ public:
 	void setContent(Sprite *s);
 	void setTransform(const Matrix4* matrix = NULL);
 	void setProjection(const Matrix4* matrix = NULL);
+	Sprite *getContent() { return content_; };
+	Matrix4 getTransform() { return matrix_; };
+	Matrix4 getProjection() { return projection_; };
 	void lookAt(float eyex, float eyey, float eyez,
 			float centerx, float centery, float centerz,
 			float upx, float upy, float upz);

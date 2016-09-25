@@ -39,6 +39,8 @@ MatrixBinder::MatrixBinder(lua_State* L)
 		{"rotate",rotate},
 		{"translate",translate},
 		{"multiply",multiply},
+		{"invert",invert},
+		{"transformPoint",transformPoint},
 
 		{"getX", getX},
 		{"getY", getY},
@@ -413,6 +415,30 @@ int MatrixBinder::multiply(lua_State* L)
 	m=m*matrix2->matrix();
 	matrix->setMatrix(m.data());
 	return 0;
+}
+
+int MatrixBinder::invert(lua_State* L)
+{
+	Binder binder(L);
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+	Matrix4 m=matrix->matrix();
+	m=m.inverse();
+	matrix->setMatrix(m.data());
+	return 0;
+}
+
+int MatrixBinder::transformPoint(lua_State* L)
+{
+	Binder binder(L);
+	Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 1));
+	Matrix4 m=matrix->matrix();
+	Vector4 rhs(luaL_optnumber(L,2,0.0),luaL_optnumber(L,3,0.0),luaL_optnumber(L,4,0.0),luaL_optnumber(L,5,1.0));
+	Vector4 res=m*rhs;
+	lua_pushnumber(L,res.x);
+	lua_pushnumber(L,res.y);
+	lua_pushnumber(L,res.z);
+	lua_pushnumber(L,res.w);
+	return 4;
 }
 
 int MatrixBinder::getX(lua_State* L)
