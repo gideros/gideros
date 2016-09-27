@@ -534,10 +534,10 @@ int AudioBinder::Sound_getLength(lua_State *L)
 
 int AudioBinder::Sound_setListenerPosition(lua_State *L)
 {
-	gaudio_SoundListener(luaL_optnumber(L, 2,0.0),luaL_optnumber(L, 3,0.0),luaL_optnumber(L, 4,0.0),
-    		luaL_optnumber(L, 5,0.0),luaL_optnumber(L, 6,0.0),luaL_optnumber(L, 7,0.0),
-			luaL_optnumber(L, 8,0.0),luaL_optnumber(L, 9,0.0),luaL_optnumber(L, 10,0.0),
-			luaL_optnumber(L, 11,0.0),luaL_optnumber(L, 12,0.0),luaL_optnumber(L, 13,0.0));
+	gaudio_SoundListener(luaL_optnumber(L, 1,0.0),luaL_optnumber(L, 2,0.0),luaL_optnumber(L, 3,0.0),
+			luaL_optnumber(L, 4,0.0),luaL_optnumber(L, 5,0.0),luaL_optnumber(L, 6,0.0),
+			luaL_optnumber(L, 7,0.0),luaL_optnumber(L, 8,0.0),luaL_optnumber(L, 9,0.0),
+			luaL_optnumber(L, 10,0.0),luaL_optnumber(L, 11,0.0),luaL_optnumber(L, 12,0.0));
     return 0;
 }
 

@@ -9,6 +9,7 @@
 #include <string.h>
 #include <gstdio.h>
 #include <algorithm>
+#include "platform.h"
 
 ShaderProgram *ShaderProgram::stdBasic=NULL;
 ShaderProgram *ShaderProgram::stdColor=NULL;
@@ -160,6 +161,11 @@ void ShaderEngine::prepareDraw(ShaderProgram *program)
 				0,0,0,1);
 		Matrix4 m=m3.inverse().transpose();
 		program->setConstant(c,ShaderProgram::CMATRIX,1,m.data());
+	}
+	c=program->getSystemConstant(ShaderProgram::SysConst_Timer);
+	if (c>=0) {
+		float clk=iclock();
+		program->setConstant(c,ShaderProgram::CFLOAT,1,&clk);
 	}
 }
 

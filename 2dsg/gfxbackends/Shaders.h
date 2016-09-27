@@ -44,7 +44,8 @@ public:
     	SysConst_WorldMatrix,
 		SysConst_TextureInfo,
 		SysConst_ParticleSize,
-    	SysConst_WorldInverseTransposeMatrix3
+    	SysConst_WorldInverseTransposeMatrix3,
+		SysConst_Timer
     };
     enum ShaderFlags {
     	Flag_None=0,
