@@ -5,7 +5,7 @@
 	<property name="javaPath" type="dir" title="JDK Directory" description="Directory of your JDK installation" default="" />
 	<property name="androidTarget" type="string" title="Android Target Version" description="The android SDK version you wish to compile with" default="19" />
 	<property name="androidSdk" type="string" title="Android SDK Version" description="The android SDK version to be used for compiling" default="23" />
-	<property name="androidTools" type="string" title="Android Tools Version" description="The android tools version to be used for compiling" default="23.0.1" />
+	<property name="androidTools" type="string" title="Android Tools Version" description="The android tools version to be used for compiling" default="23.0.2" />
 	<property name="keyStore" type="file" title="Key store" description="Path to keystore for signing" default="" />
 	<property name="keyAlias" type="string" title="Key alias" description="Alias of the key to use" default="" />
 	<rules>

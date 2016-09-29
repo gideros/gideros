@@ -271,6 +271,10 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		
 		return super.onKeyUp(keyCode, event);
     }
+	
+	public void onRequestPermissionsResult(int requestCode,
+			String permissions[], int[] grantResults) {
+	}
     
     //GIDEROS-ACTIVTIY-METHODS//
     

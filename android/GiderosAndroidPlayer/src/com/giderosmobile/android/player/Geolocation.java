@@ -10,6 +10,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Build;
+import android.content.pm.PackageManager;
+import android.Manifest;
 
 public class Geolocation
 {
@@ -20,6 +23,8 @@ public class Geolocation
 	private SensorManager sensorManager;
 	private Sensor magneticSensor;
 	private SensorEventListener magneticListener_ = null;
+	boolean gps_enabled = false;
+	boolean network_enabled = false;
 
 	Geolocation()
 	{
@@ -33,9 +38,28 @@ public class Geolocation
 
 	public boolean isAvailable()
 	{
-		boolean gps_enabled = locationManager_.isProviderEnabled(LocationManager.GPS_PROVIDER);
-		boolean network_enabled = locationManager_.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-		
+		Activity activity = WeakActivityHolder.get();
+		boolean request=false;
+		gps_enabled = locationManager_.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		network_enabled = locationManager_.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+		if (android.os.Build.VERSION.SDK_INT >= 23) {
+		if (gps_enabled&&activity.checkSelfPermission(
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+				gps_enabled=false;
+				request=true;
+		}
+		if (network_enabled&&activity.checkSelfPermission(
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+				network_enabled=false;
+				request=true;
+		}
+		if (request&&(!gps_enabled))
+			activity.requestPermissions(
+					new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION},
+						0);
+			
+		}
 		return gps_enabled || network_enabled;
 	}
 
@@ -96,13 +120,16 @@ public class Geolocation
 				    public void onProviderDisabled(String arg0) {}
 				    public void onProviderEnabled(String arg0) {}
 				};
-													
-				locationManager_.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener_);
-				locationManager_.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener_);
+				if (gps_enabled)
+					locationManager_.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener_);
+				if (network_enabled)
+					locationManager_.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener_);
 
-				Location location = locationManager_.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-				if (location != null)
-					locationListener_.onLocationChanged(location);
+				if (gps_enabled) {
+					Location location = locationManager_.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+					if (location != null)
+						locationListener_.onLocationChanged(location);
+				}
 			}
 		});		
 	}

@@ -211,6 +211,9 @@ public class GiderosAndroidPlayerActivity extends Activity implements OnTouchLis
 		
 		return super.onKeyUp(keyCode, event);
     }
+	public void onRequestPermissionsResult(int requestCode,
+			String permissions[], int[] grantResults) {
+	}
 }
 
 class GiderosGLSurfaceView extends GLSurfaceView
