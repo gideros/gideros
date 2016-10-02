@@ -20,7 +20,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd LD_HorseRtime02.blend/Hair12Main2k.jpg
-map_Bump LD_HorseRtime02.blend/Hair12Main2k.jpg
+map_Bump LD_HorseRtime02.blend/Hair12Main2kNorm.jpg
 
 
 newmtl Material_HorseMain4k00.png
@@ -32,6 +32,6 @@ Ni 1.000000
 d 1.000000
 illum 2
 map_Kd LD_HorseRtime02.blend/HorseMain2k00.jpg
-map_Bump LD_HorseRtime02.blend/HorseMain2k00.jpg
+map_Bump LD_HorseRtime02.blend/HorseMain2k00Norm00.jpg
 
 

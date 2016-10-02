@@ -1,11 +1,14 @@
 <project>
- <properties iosDevice="0" logicalWidth="320" logicalHeight="480" autorotation="0" encryptCode="0" packageName="com.yourdomain.yourapp" architecture="0" retinaDisplay="0" mouseTouchOrder="0" scaleMode="0" orientation="0" mouseToTouch="1" touchToMouse="1" encryptAssets="0" assetsOnly="0" fps="60">
+ <properties architecture="0" html5_host="" osx_domain="giderosmobile.com" packageName="com.yourdomain.yourapp" backgroundColor="#ffffff" encryptAssets="0" winrt_package="com.yourdomain.yourapp" disableSplash="0" autorotation="0" html5_mem="256" osx_org="GiderosMobile" mouseToTouch="1" touchToMouse="1" osx_category="5" exportMode="0" osx_bundle="com.yourdomain." windowWidth="0" iosDevice="0" win_domain="giderosmobile.com" scaleMode="0" version_code="1" fps="60" splash_h_image="" orientation="0" mouseTouchOrder="0" android_template="0" logicalHeight="480" win_org="GiderosMobile" version="1.0" splash_v_image="" winrt_org="GiderosMobile" tv_icon="" logicalWidth="320" encryptCode="0" ios_bundle="com.yourdomain." windowHeight="0" retinaDisplay="0" app_icon="">
   <imageScales/>
+  <plugins/>
+  <exports/>
  </properties>
+ <file source="lighting.lua"/>
  <folder name="horse">
-  <file source="objloader.lua"/>
-  <file source="horse.lua"/>
   <folder name="LD_HorseRtime02.blend">
+   <file source="horse/HorseMain2k00Norm00.jpg"/>
+   <file source="horse/Hair12Main2kNorm.jpg"/>
    <file source="horse/HorseMain2k00.jpg"/>
    <file source="horse/Hair12Main2k.jpg"/>
    <file source="horse/eye_texture.jpg"/>
@@ -13,6 +16,6 @@
   <file source="horse/LD_HorseRtime02.mtl"/>
   <file source="horse/LD_HorseRtime02.obj"/>
  </folder>
- <file source="cube.lua"/>
  <file source="main.lua"/>
+ <file source="objloader.lua"/>
 </project>
