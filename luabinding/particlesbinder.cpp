@@ -15,7 +15,9 @@ ParticlesBinder::ParticlesBinder(lua_State *L)
         {"setParticlePosition", setParticlePosition},
         {"setParticleSize", setParticleSize},
         {"setParticleAngle", setParticleAngle},
+        {"setParticleDecay", setParticleDecay},
         {"setParticleTtl", setParticleTtl},
+        {"getParticleDecay", getParticleDecay},
         {"getParticleSpeed", getParticleSpeed},
         {"getParticleColor", getParticleColor},
         {"getParticlePosition", getParticlePosition},
@@ -93,12 +95,42 @@ int ParticlesBinder::setParticleSpeed(lua_State *L)
     if (i < 0 || i >= mesh->getParticleCount())
         return luaL_error(L, "The supplied index is out of bounds.");
 
+    float ivc,ivs;
+    mesh->getDecay(i,NULL,&ivc,&ivs,NULL);
+
     float vx=luaL_optnumber(L,3,0);
     float vy=luaL_optnumber(L,4,0);
     float va=luaL_optnumber(L,5,0);
     float decay=luaL_optnumber(L,6,1.0);
+    float vs=luaL_optnumber(L,6,0.0);
+    float dva=luaL_optnumber(L,6,decay);
+    float dvs=luaL_optnumber(L,6,ivs);
 
-    mesh->setSpeed(i, vx,vy,va,decay);
+    mesh->setSpeed(i, vx,vy,vs,va);
+    mesh->setDecay(i,decay,ivc,dvs,dva);
+
+    return 0;
+}
+
+int ParticlesBinder::setParticleDecay(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        return luaL_error(L, "The supplied index is out of bounds.");
+
+    float ivp,ivc,ivs,iva;
+    mesh->getDecay(i,&ivp,&ivc,&ivs,&iva);
+
+    float vp=luaL_optnumber(L,3,ivp);
+    float vc=luaL_optnumber(L,4,ivc);
+    float vs=luaL_optnumber(L,5,ivs);
+    float va=luaL_optnumber(L,6,iva);
+
+    mesh->setDecay(i, vp,vc,vs,va);
 
     return 0;
 }
@@ -236,11 +268,20 @@ int ParticlesBinder::addParticles(lua_State *L)
         	lua_getfield(L,-1,"speedAngular");
             float va = luaL_optnumber(L, -1,0) ;
             lua_pop(L, 1);
+        	lua_getfield(L,-1,"speedGrowth");
+            float vs = luaL_optnumber(L, -1,0) ;
+            lua_pop(L, 1);
         	lua_getfield(L,-1,"decay");
             float decay = luaL_optnumber(L, -1,1.0) ;
             lua_pop(L, 1);
+        	lua_getfield(L,-1,"decayAngular");
+            float decayA = luaL_optnumber(L, -1,decay) ;
+            lua_pop(L, 1);
+        	lua_getfield(L,-1,"decayGrowth");
+            float decayS = luaL_optnumber(L, -1,1.0) ;
+            lua_pop(L, 1);
 
-            mesh->setSpeed(pnum,vx,vy,va,decay);
+            mesh->setSpeed(pnum,vx,vy,vs,va);
 
         	lua_getfield(L,-1,"color");
             unsigned int color = luaL_optinteger(L, -1,0xFFFFFF);
@@ -248,8 +289,12 @@ int ParticlesBinder::addParticles(lua_State *L)
         	lua_getfield(L,-1,"alpha");
             float alpha = luaL_optnumber(L, -1, 1.0);
             lua_pop(L, 1);
+        	lua_getfield(L,-1,"decayAlpha");
+            float decayC = luaL_optnumber(L, -1,1.0) ;
+            lua_pop(L, 1);
 
             mesh->setColor(pnum, color, alpha);
+            mesh->setDecay(pnum, decay,decayC,decayS,decayA);
 
             lua_pop(L, 1);
         }
@@ -277,12 +322,31 @@ int ParticlesBinder::getParticleSpeed(lua_State *L)
     if (i < 0 || i >= mesh->getParticleCount())
         return luaL_error(L, "The supplied index is out of bounds.");
 
-    float vx,vy,va,decay;
-    mesh->getSpeed(i, &vx,&vy,&va,&decay);
+    float vx,vy,va,vs;
+    mesh->getSpeed(i, &vx,&vy,&vs,&va);
     lua_pushnumber(L, vx);
     lua_pushnumber(L, vy);
     lua_pushnumber(L, va);
-    lua_pushnumber(L, decay);
+    lua_pushnumber(L, vs);
+
+    return 4;
+}
+
+int ParticlesBinder::getParticleDecay(lua_State *L)
+{
+    Binder binder(L);
+    Particles *mesh = static_cast<Particles*>(binder.getInstance("Particles", 1));
+    int i = luaL_checkinteger(L, 2) - 1;
+
+    if (i < 0 || i >= mesh->getParticleCount())
+        return luaL_error(L, "The supplied index is out of bounds.");
+
+    float vp,vc,vs,va;
+    mesh->getDecay(i, &vp,&vc,&vs,&va);
+    lua_pushnumber(L, vp);
+    lua_pushnumber(L, vc);
+    lua_pushnumber(L, vs);
+    lua_pushnumber(L, va);
 
     return 4;
 }

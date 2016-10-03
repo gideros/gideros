@@ -30,6 +30,8 @@ public:
     void getColor(int i, unsigned int *color, float *alpha) const;
     void setSpeed(int i, float vx, float vy, float va, float decay);
     void getSpeed(int i, float *vx, float *vy, float *va, float *decay) const;
+    void setDecay(int i, float vp, float vc, float vs, float va);
+    void getDecay(int i, float *vp, float *vc, float *vs,float *va) const;
 
     void setTexture(TextureBase *texture);
     void clearTexture();
@@ -49,12 +51,16 @@ private:
     std::vector<Color> originalColors_;
     VertexBuffer<unsigned char> colors_; //r,g,b,a
     VertexBuffer<float> points_; //x,y,size,angle
-    VertexBuffer<float> speeds_; //vx,vy,va,decay
-    VertexBuffer<int> ttl_; //time to live
+    std::vector<float> speeds_; //vx,vy,vs,va
+    std::vector<float> decay_; //dp,dc,ds,da pos(speed), color(alpha), size (grow speed), angle (angular speed)
+    std::vector<float> ttl_; //time to live
+    VertexBuffer<float> texcoords_; //x,y
+    VertexBuffer<unsigned short> indices_;
     TextureBase *texture_;
     float sx_, sy_;
 
     float r_, g_, b_, a_;
+    double lastTickTime_;
 
     mutable float minx_, miny_, maxx_, maxy_;
     bool boundsDirty_;
