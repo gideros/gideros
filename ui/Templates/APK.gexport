@@ -76,6 +76,22 @@
 		<appIcon width="96" height="96" dest="app/src/main/res/drawable-xhdpi/icon.png"/>
 		<appIcon width="144" height="144" dest="app/src/main/res/drawable-xxhdpi/icon.png"/>
 		<appIcon width="192" height="192" dest="app/src/main/res/drawable-xxxhdpi/icon.png"/>
+		<if condition="[[[not:[[[band:[[[project.orientation]]]:1]]]]]]">
+			<splashVertical width="200" height="320" dest="app/src/main/res/drawable-ldpi/splash.png"/>
+			<splashVertical width="320" height="480" dest="app/src/main/res/drawable-mdpi/splash.png"/>
+			<splashVertical width="480" height="800" dest="app/src/main/res/drawable-hdpi/splash.png"/>
+			<splashVertical width="720" height="1280" dest="app/src/main/res/drawable-xhdpi/splash.png"/>
+			<splashVertical width="960" height="1600" dest="app/src/main/res/drawable-xxhdpi/splash.png"/>
+			<splashVertical width="1280" height="1920" dest="app/src/main/res/drawable-xxxhdpi/splash.png"/>
+		</if>
+		<if condition="[[[band:[[[project.orientation]]]:1]]]">
+			<splashHorizontal width="320" height="200" dest="app/src/main/res/drawable-ldpi/splash.png"/>
+			<splashHorizontal width="480" height="320" dest="app/src/main/res/drawable-mdpi/splash.png"/>
+			<splashHorizontal width="800" height="480" dest="app/src/main/res/drawable-hdpi/splash.png"/>
+			<splashHorizontal width="1280" height="720" dest="app/src/main/res/drawable-xhdpi/splash.png"/>
+			<splashHorizontal width="1600" height="960" dest="app/src/main/res/drawable-xxhdpi/splash.png"/>
+			<splashHorizontal width="1920" height="1280" dest="app/src/main/res/drawable-xxxhdpi/splash.png"/>
+		</if>
 		<applyPlugins/>
 		<set key="local.gradleCmd" value="gradlew"/>
 		<if condition="[[[eq:[[[sys.exeExtension]]]:.exe]]]">

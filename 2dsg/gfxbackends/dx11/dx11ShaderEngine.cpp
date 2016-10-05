@@ -95,7 +95,7 @@ void dx11SetupShaders()
     ShaderProgram::stdColor = new dx11ShaderProgram(vColor_cso,sizeof(vColor_cso),pColor_cso,sizeof(pColor_cso),0,stdConstants,stdCAttributes);
     ShaderProgram::stdTexture = new dx11ShaderProgram(vTexture_cso,sizeof(vTexture_cso),pTexture_cso,sizeof(pTexture_cso),0,stdConstants,stdTAttributes);
 	ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso, sizeof(vTextureColor_cso), pTextureColor_cso, sizeof(pTextureColor_cso), 0, stdConstants, stdTCAttributes);
-	ShaderProgram::stdParticles = new dx11ShaderProgram(vParticles_cso, sizeof(vParticles_cso), pParticles_cso, sizeof(pParticles_cso), ShaderProgram::Flag_PointShader, stdPSConstants, stdPSAttributes);
+	ShaderProgram::stdParticles = new dx11ShaderProgram(vParticles_cso, sizeof(vParticles_cso), pParticles_cso, sizeof(pParticles_cso), 0, stdPSConstants, stdPSAttributes);
 
 	const ShaderProgram::ConstantDesc stdPConstants[]={
 			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},

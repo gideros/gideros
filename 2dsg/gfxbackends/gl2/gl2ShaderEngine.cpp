@@ -118,21 +118,22 @@ static const char *stdPVShaderCode = "attribute lowp vec4 vColor;\n"
 		"  gl_PointSize=length(xpsize.xyz);\n"
 		"}\n";
 
-static const char *stdPSVShaderCode =
+static const char *stdPSVShaderCode = "attribute mediump vec2 vTexCoord;\n"
 		"attribute lowp vec4 vColor;\n"
 		"uniform highp mat4 vMatrix;\n"
 		"uniform highp mat4 vWorldMatrix;\n"
 		"varying lowp vec4 fInColor;\n"
 		"varying mediump vec2 fStepRot;\n"
+		"varying mediump vec2 fTexCoord;\n"
 		"void main() {\n"
-		"  highp vec4 vertex = vec4(vVertex.xy,0.0,1.0);\n"
+		"  highp vec4 vertex = vec4(vVertex.xy+((vTexCoord-vec2(0.5,0.5))*vVertex.z),0.0,1.0);\n"
 		"  gl_Position = vMatrix*vertex;\n"
 		"  fInColor=vColor;\n"
 		"  mediump vec4 xpsize=vWorldMatrix*vec4(vVertex.z,0.0,0.0,0.0);\n"
 		"  highp float xpl=length(xpsize.xyz);\n"
-		"  gl_PointSize=xpl;\n"
 		"  if (xpl==0.0) xpl=1.0;\n"
 		"  fStepRot=vec2(sign(vVertex.z)/xpl,vVertex.w);\n"
+		"  fTexCoord=vTexCoord;\n"
 		"}\n";
 
 /* Fragment shader*/
@@ -192,6 +193,7 @@ static const char *stdPFShaderCode =
 static const char *stdPSFShaderCode =
 		"varying lowp vec4 fInColor;\n"
 		"varying mediump vec2 fStepRot;\n"
+		"varying mediump vec2 fTexCoord;\n"
 		"uniform lowp sampler2D fTexture;\n"
 		"uniform mediump vec4 fTexInfo;\n"
 		"void main() {\n"
@@ -200,7 +202,7 @@ static const char *stdPSFShaderCode =
 	"		 gl_FragColor=fInColor;\n"
 	"	 else\n"
 	"	 {\n"
-	"	 mediump vec2 rad=vec2(-0.5,-0.5)+gl_PointCoord;\n"
+	"	 mediump vec2 rad=vec2(-0.5,-0.5)+fTexCoord;\n"
 	"	 if (fTexInfo.x<=0.0)\n"
 	"	 {\n"
 	"	  lowp vec4 frag;\n"
