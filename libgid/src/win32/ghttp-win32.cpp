@@ -6,7 +6,7 @@
 #include <curl/curl.h>
 
 static bool sslErrorsIgnore=false;
-static std::string colon=" : ";
+static std::string colon=": ";
 
 struct NetworkReply
 {
@@ -85,6 +85,8 @@ ReadMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
   mem->memory += copysize;
   mem->size -= copysize;
 
+  //  printf("ReadMemoryCallback %d\n",copysize);
+
   return copysize;
 }
 
@@ -102,8 +104,13 @@ static void *post_one(void *ptr)        // thread
   struct curl_slist *headers=NULL;
   std::string string;
 
-  for (int i=0; i<reply2->header.size(); i++)
+  for (int i=0; i<reply2->header.size(); i++){
     headers = curl_slist_append(headers, reply2->header[i].c_str());
+    printf("header %p %s\n",headers,reply2->header[i].c_str());
+  }
+
+  curl_easy_setopt(curl, CURLOPT_URL, reply2->url.c_str());
+  //  curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 
   /* post binary data */
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, reply2->data);
@@ -165,6 +172,10 @@ static void *put_one_url(void *ptr)     // thread
 
   chunk.memory=(char*)reply2->data;       // start of the remaining data
   chunk.size=reply2->size;         // size of the remaining data
+
+  printf("put_one_url: %s\n",reply2->url.c_str());
+
+  curl=curl_easy_init();
 
   curl_easy_setopt(curl, CURLOPT_URL, reply2->url.c_str());
   curl_easy_setopt(curl, CURLOPT_READFUNCTION, ReadMemoryCallback);
@@ -348,7 +359,7 @@ g_id ghttp_Post(const char* url, const ghttp_Header *header, const void* data, s
 
   error = pthread_create(&tid,
 			 NULL, /* default attributes please */
-			 put_one_url,
+			 post_one,
 			 (void *)&map_[gid]);
   if (0 != error)
     fprintf(stderr, "Couldn't run thread, errno %d\n", error);
@@ -391,6 +402,8 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 
   g_id gid = g_NextId();
 
+  printf("ghttp_Put: size = %d\n",size);
+
   NetworkReply reply2;
   reply2.gid = gid;
   reply2.callback = callback;
@@ -403,7 +416,7 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 
   map_[gid] = reply2;
 
-  printf("ghttp_Get: %d %p %s\n",gid,&gid,url);
+  printf("ghttp_Put: %d %p %s\n",gid,&gid,url);
 
   error = pthread_create(&tid,
 			 NULL, /* default attributes please */

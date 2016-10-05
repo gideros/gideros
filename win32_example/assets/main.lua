@@ -81,6 +81,25 @@ function onComplete(event)
   print ("Lua reads a website!: ",event.data)
 end
 
-loader = UrlLoader.new("www.haxx.se")
+local filename = "ego.png"
+local file = io.open(filename, "rb")
+local contents = file:read( "*a" )
+local boundary = "somerndstring"
+ 
+local send = "--"..boundary..
+			"\r\nContent-Disposition: form-data; "..
+			"name="..filename.."; filename="..filename..
+			"\r\nContent-type: image/png"..
+			"\r\n\r\n"..contents..
+			"\r\n--"..boundary.."--\r\n";
+			
+
+ 
+local headers = {
+	["Content-Type"] = "multipart/form-data; boundary="..boundary,
+	["Content-Length"] = #send,
+}
+
+loader = UrlLoader.new("http://httpbin.org/post", UrlLoader.POST, headers, send)
 
 loader:addEventListener(Event.COMPLETE, onComplete)
