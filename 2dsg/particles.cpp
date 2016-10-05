@@ -15,6 +15,7 @@ Particles::Particles(Application *application) :
 	b_ = 1;
 	a_ = 1;
 	boundsDirty_ = false;
+	paused_ = false;
 	minx_ = miny_ = 1e30;
 	maxx_ = maxy_ = -1e30;
 	application->addTicker(this);
@@ -53,6 +54,7 @@ int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
 		decay_.resize(s * 4 + 4);
 		originalColors_.resize(s + 1);
 		indices_.resize(s*6 + 6);
+		tag_.resize(s + 1);
 	}
 	for (int sb = 0; sb < 16; sb += 4) {
 		points_[s * 16 + sb + 0] = x;
@@ -89,6 +91,7 @@ int Particles::addParticle(float x, float y, float size, float angle, int ttl) {
 	decay_[s * 4 + 3] = 1;
 	originalColors_[s].color = 0xFFFFFF;
 	originalColors_[s].alpha = 1;
+	tag_[s]="";
 	points_.Update();
 	colors_.Update();
 	texcoords_.Update();
@@ -103,7 +106,7 @@ void Particles::removeParticle(int i) {
 }
 
 void Particles::setPosition(int i, float x, float y) {
-	if (i > ttl_.size())
+	if (i >= ttl_.size())
 		return;
 	points_[i * 16] = x;
 	points_[i * 16 + 1] = y;
@@ -117,7 +120,7 @@ void Particles::setPosition(int i, float x, float y) {
 }
 
 void Particles::getPosition(int i, float *x, float *y) {
-	if (i > ttl_.size()) {
+	if (i >= ttl_.size()) {
 		*x = 0;
 		*y = 0;
 	} else {
@@ -127,7 +130,7 @@ void Particles::getPosition(int i, float *x, float *y) {
 }
 
 void Particles::setSize(int i, float size) {
-	if (i > ttl_.size())
+	if (i >= ttl_.size())
 		return;
 	points_[i * 16 + 2] = size;
 	points_[i * 16 + 4 + 2] = size;
@@ -137,14 +140,14 @@ void Particles::setSize(int i, float size) {
 }
 
 float Particles::getSize(int i) {
-	if (i > ttl_.size())
+	if (i >= ttl_.size())
 		return 0;
 	else
 		return points_[i * 16 + 2];
 }
 
 void Particles::setAngle(int i, float angle) {
-	if (i > ttl_.size())
+	if (i >= ttl_.size())
 		return;
 	points_[i * 16 + 3] = angle;
 	points_[i * 16 + 4 + 3] = angle;
@@ -154,26 +157,26 @@ void Particles::setAngle(int i, float angle) {
 }
 
 float Particles::getAngle(int i) {
-	if (i > ttl_.size())
+	if (i >= ttl_.size())
 		return 0;
 	else
 		return points_[i * 16 + 3];
 }
 
 void Particles::setTtl(int i, int ttl) {
-	if (i > ttl_.size())
+	if (i >= ttl_.size())
 		return;
 	ttl_[i] = ttl;
 }
 
 int Particles::getTtl(int i) {
-	if (i > ttl_.size())
+	if (i >= ttl_.size())
 		return 0;
 	return ttl_[i];
 }
 
 void Particles::setColor(int i, unsigned int color, float alpha) {
-	if (i > ttl_.size())
+	if (i >= ttl_.size())
 		return;
 	originalColors_[i].color = color;
 	originalColors_[i].alpha = alpha;
@@ -194,7 +197,7 @@ void Particles::setColor(int i, unsigned int color, float alpha) {
 }
 
 void Particles::setSpeed(int i, float vx, float vy, float vs, float va) {
-	if (i > ttl_.size())
+	if (i >= ttl_.size())
 		return;
 	speeds_[i * 4] = vx;
 	speeds_[i * 4 + 1] = vy;
@@ -204,7 +207,7 @@ void Particles::setSpeed(int i, float vx, float vy, float vs, float va) {
 
 void Particles::getSpeed(int i, float *vx, float *vy, float *vs,
 		float *va) const {
-	if (i > ttl_.size()) {
+	if (i >= ttl_.size()) {
 		if (vx)
 			*vx = 0;
 		if (vy)
@@ -226,7 +229,7 @@ void Particles::getSpeed(int i, float *vx, float *vy, float *vs,
 }
 
 void Particles::setDecay(int i, float vp, float vc, float vs, float va) {
-	if (i > ttl_.size())
+	if (i >= ttl_.size())
 		return;
 	decay_[i * 4] = vp;
 	decay_[i * 4 + 1] = vc;
@@ -236,7 +239,7 @@ void Particles::setDecay(int i, float vp, float vc, float vs, float va) {
 
 void Particles::getDecay(int i, float *vp, float *vc, float *vs,
 		float *va) const {
-	if (i > ttl_.size()) {
+	if (i >= ttl_.size()) {
 		if (vp)
 			*vp = 0;
 		if (vc)
@@ -257,6 +260,20 @@ void Particles::getDecay(int i, float *vp, float *vc, float *vs,
 		*va = decay_[i * 4 + 3];
 }
 
+void Particles::setTag(int i, const char *tag)
+{
+	if (i >= ttl_.size())
+		return;
+	tag_[i]=tag?tag:"";
+}
+
+const char *Particles::getTag(int i) const
+{
+	if (i >= ttl_.size())
+		return NULL;
+	return tag_[i].c_str();
+}
+
 extern "C" {
 int g_getFps();
 }
@@ -274,6 +291,7 @@ void Particles::tick() {
 		nframes=(iclk-lastTickTime_)*fps;
 	}
 	lastTickTime_=iclk;
+	if (paused_) return;
 	for (unsigned int i = 0; i < ttl_.size(); i++) {
 		if (points_[i * 16 + 2] != 0) {
 			bool remove=false;

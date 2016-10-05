@@ -28,6 +28,11 @@ private:
     static int getParticleSize(lua_State *L);
     static int getParticleAngle(lua_State *L);
     static int getParticleTtl(lua_State *L);
+    static int setParticleTag(lua_State *L);
+    static int getParticleTag(lua_State *L);
+    static int setPaused(lua_State *L);
+    static int isPaused(lua_State *L);
+    static int getParticles(lua_State *L);
     static int setTexture(lua_State *L);
     static int clearTexture(lua_State *L);
 };

@@ -3,6 +3,7 @@
 
 #include <sprite.h>
 #include <vector>
+#include <string>
 #include <texturebase.h>
 #include "ogl.h"
 #include "ticker.h"
@@ -32,11 +33,15 @@ public:
     void getSpeed(int i, float *vx, float *vy, float *va, float *decay) const;
     void setDecay(int i, float vp, float vc, float vs, float va);
     void getDecay(int i, float *vp, float *vc, float *vs,float *va) const;
+    void setTag(int i, const char *tag);
+    const char *getTag(int i) const;
 
     void setTexture(TextureBase *texture);
     void clearTexture();
 
     int getParticleCount() const { return ttl_.size(); };
+    void setPaused(bool paused) { paused_=paused; };
+    bool isPaused() { return paused_; };
 
 private:
     virtual void doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey);
@@ -54,6 +59,7 @@ private:
     std::vector<float> speeds_; //vx,vy,vs,va
     std::vector<float> decay_; //dp,dc,ds,da pos(speed), color(alpha), size (grow speed), angle (angular speed)
     std::vector<float> ttl_; //time to live
+    std::vector<std::string> tag_; //user tag
     VertexBuffer<float> texcoords_; //x,y
     VertexBuffer<unsigned short> indices_;
     TextureBase *texture_;
@@ -64,6 +70,7 @@ private:
 
     mutable float minx_, miny_, maxx_, maxy_;
     bool boundsDirty_;
+    bool paused_;
 };
 
 #endif

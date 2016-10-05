@@ -8,6 +8,7 @@
 #include "ExportXml.h"
 #include "Utilities.h"
 #include "ExportCommon.h"
+#include <QStandardPaths>
 
 #ifdef Q_OS_MACX
 #define ALL_PLUGINS_PATH "../../All Plugins"
@@ -38,6 +39,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 #else
 	props["sys.exeExtension"] = "";
 #endif
+	props["sys.cacheDir"] = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 	props["sys.giderosDir"] = QDir::currentPath();
     props["sys.exportDir"] = ctx->exportDir.absolutePath();
 	QDomElement rules;
@@ -204,6 +206,10 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 		return RuleMkdir(ReplaceAttributes(rule.text()).trimmed());
 	else if (ruleName == "rmdir")
 		return RuleRmdir(ReplaceAttributes(rule.text()).trimmed());
+	else if (ruleName == "download")
+		return ExportCommon::download(ctx,
+                ReplaceAttributes(rule.attribute("source")).trimmed(),
+				ReplaceAttributes(rule.attribute("dest")).trimmed());
 	else if (ruleName == "template")
 		return RuleTemplate(rule.attribute("name"),
                 ReplaceAttributes(rule.attribute("path")).trimmed(), ReplaceAttributes(rule.attribute("dest")).trimmed(), rule);
