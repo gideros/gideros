@@ -24,6 +24,7 @@ public:
     static bool tvIcon(ExportContext *ctx, int width, int height, QString output);
     static bool splashHImage(ExportContext *ctx, int width, int height, QString output);
     static bool splashVImage(ExportContext *ctx, int width, int height, QString output);
+    static bool download(ExportContext *ctx,QString url,QString to);
 	static void exportInfo(const char *fmt,...);
 	static void exportError(const char *fmt,...);
 	static char *askString(const char *title, const char *question, const char *def);
