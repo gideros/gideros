@@ -1,4 +1,5 @@
 Lighting={}
+if application:getDeviceInfo()~="WinRT" then
 Lighting.normal_shader_t = Shader.new(
 [[
 attribute vec4 POSITION0;
@@ -235,15 +236,20 @@ Shader.FLAG_FROM_CODE,
 {name="NORMAL0",type=Shader.DFLOAT,mult=3,slot=3,offset=0}
 })
 
+Lighting.allShaders={Lighting.normal_shader_t,Lighting.normal_shader_b,Lighting.normal_shader_tn}
+else
+Lighting.allShaders={}
+end
+
 function Lighting.setLight(x,y,z,a)
-	local shaders={Lighting.normal_shader_t,Lighting.normal_shader_b,Lighting.normal_shader_tn}
-	for _,v in ipairs(shaders) do
+	for _,v in ipairs(Lighting.allShaders) do
 	 v:setConstant("lightPos",Shader.CFLOAT4,1,x,y,z,1)
 	 v:setConstant("ambient",Shader.CFLOAT,1,a)
 	end
 end
 
 function Lighting.apply(obj)
+	if #Lighting.allShaders>0 then
 	for _,v in pairs(obj.objs) do
 		for i=1,v:getNumChildren() do
 			local m=v:getChildAt(i)
@@ -259,5 +265,6 @@ function Lighting.apply(obj)
 				end
 			end
 		end
+	end
 	end
 end
