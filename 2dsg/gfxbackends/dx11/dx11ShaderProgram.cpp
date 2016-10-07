@@ -167,6 +167,8 @@ static void copyEnlarge(const void *src, void *dst, int smult, int dmult, int es
 void dx11ShaderProgram::setupBuffer(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
 		ShaderBufferCache **cache,int stride,int offset) {
+	if (index >= attributes.size())
+		return;
 	bool normalize = false; //TODO
 	int elmSize = 1;
 	switch (type) {

@@ -423,7 +423,10 @@ int MeshBinder::setVertexArray(lua_State *L)
             vertices[i] = luaL_checknumber(L, i + 2);
     }
 
-    mesh->setVertexArray(&vertices[0], vertices.size());
+	if (vertices.size() > 0)
+		mesh->setVertexArray(&vertices[0], vertices.size());
+	else
+		mesh->clearVertexArray();
 
     return 0;
 }
@@ -454,7 +457,10 @@ int MeshBinder::setIndexArray(lua_State *L)
             indices[i] = luaL_checkinteger(L, i + 2) - 1;
     }
 
-    mesh->setIndexArray(&indices[0], indices.size());
+	if (indices.size() > 0)
+		mesh->setIndexArray(&indices[0], indices.size());
+	else
+		mesh->clearIndexArray();
 
     return 0;
 }
@@ -497,7 +503,10 @@ int MeshBinder::setColorArray(lua_State *L)
         }
     }
 
-    mesh->setColorArray(&colors[0], &alphas[0], colors.size());
+	if (colors.size() > 0)
+		mesh->setColorArray(&colors[0], &alphas[0], colors.size());
+	else
+		mesh->clearColorArray();
 
     return 0;
 }
@@ -530,7 +539,10 @@ int MeshBinder::setTextureCoordinateArray(lua_State *L)
             textureCoordinates[i] = luaL_checknumber(L, i + 2);
     }
 
-    mesh->setTextureCoordinateArray(&textureCoordinates[0], textureCoordinates.size());
+	if (textureCoordinates.size()>0)
+		mesh->setTextureCoordinateArray(&textureCoordinates[0], textureCoordinates.size());
+	else
+		mesh->clearTextureCoordinateArray();
 
     return 0;
 }
