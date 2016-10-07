@@ -134,7 +134,7 @@ void TimerContainer::suspend()
 
 void TimerContainer::resume()
 {
-	if (pausedBeforeSuspend_)
+	if (!pausedBeforeSuspend_)
 		resumeAllTimers();
 	globalTimer_.resume();
 }

@@ -1,9 +1,9 @@
+#include <platform.h>
 #include <particles.h>
-#include <ogl.h>
 #include <color.h>
 #include <application.h>
 #include <glog.h>
-#include <platform.h>
+#include <ogl.h>
 
 Particles::Particles(Application *application) :
 		Sprite(application) {

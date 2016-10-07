@@ -1,5 +1,5 @@
-#ifndef GMESH_H
-#define GMESH_H
+#ifndef GPARTICLES_H
+#define GPARTICLES_H
 
 #include <sprite.h>
 #include <vector>
