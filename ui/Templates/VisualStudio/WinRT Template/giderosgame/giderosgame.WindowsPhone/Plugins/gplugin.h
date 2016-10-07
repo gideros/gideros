@@ -59,6 +59,22 @@ int g_registerPlugin(void*(*main)(lua_State*, int));
 	static int g_temp = g_registerPlugin(g_pluginMain); \
 	}
 
+#define REGISTER_PLUGIN_STATICNAMED_CPP(name, version, symbol) \
+	extern "C" { \
+	void* g_pluginMain_##symbol(lua_State* L, int type) \
+	{ \
+		if (type == 0) \
+			g_initializePlugin(L); \
+				else if (type == 1) \
+			g_deinitializePlugin(L); \
+				else if (type == 2) \
+			return (void*)name; \
+				else if (type == 3) \
+			return (void*)version; \
+		return NULL; \
+	} \
+	}
+
 #define REGISTER_PLUGIN_DYNAMIC_CPP(name, version) \
 	extern "C" { \
 	G_DLLEXPORT void* g_pluginMain(lua_State* L, int type) \
@@ -120,10 +136,12 @@ int g_registerPlugin(void*(*main)(lua_State*, int));
 	}
 	
 #ifdef __cplusplus
+#define REGISTER_PLUGIN_STATICNAMED(name, version, symbol) REGISTER_PLUGIN_STATICNAMED_CPP(name, version, symbol)
 #define REGISTER_PLUGIN_STATIC(name, version) REGISTER_PLUGIN_STATIC_CPP(name, version)
 #define REGISTER_PLUGIN_DYNAMIC(name, version) REGISTER_PLUGIN_DYNAMIC_CPP(name, version)
 #define REGISTER_PLUGIN_ANDROID(name, version) REGISTER_PLUGIN_ANDROID_CPP(name, version)
 #else
+#define REGISTER_PLUGIN_STATICNAMED(name, version, symbol) REGISTER_PLUGIN_STATICNAMED_C(name, version, symbol)
 #define REGISTER_PLUGIN_STATIC(name, version) REGISTER_PLUGIN_STATIC_C(name, version)
 #define REGISTER_PLUGIN_DYNAMIC(name, version) REGISTER_PLUGIN_DYNAMIC_C(name, version)
 #define REGISTER_PLUGIN_ANDROID(name, version) REGISTER_PLUGIN_ANDROID_C(name, version)
@@ -131,13 +149,24 @@ int g_registerPlugin(void*(*main)(lua_State*, int));
 
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_STATIC(name, version)
+#define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_STATIC(name, version)
 #elif __ANDROID__
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_ANDROID(name, version)
+#define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_STATIC(name, version)
 #elif WINSTORE
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_STATIC(name, version)
+#define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_STATIC(name, version)
+#elif __EMSCRIPTEN__
+#define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_STATIC(name, version)
+#define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_STATICNAMED(name, version, symbol)
 #else
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_DYNAMIC(name, version)
+#define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_DYNAMIC(name, version)
 #endif
+
+#define IMPORT_PLUGIN(symbol) \
+extern "C" void* g_pluginMain_##symbol(lua_State* L, int type);\
+static int g_pluginRef_##symbol = g_registerPlugin(g_pluginMain_##symbol);
 
 #ifdef __cplusplus
 extern "C" {
