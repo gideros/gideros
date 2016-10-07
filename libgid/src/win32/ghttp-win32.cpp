@@ -99,10 +99,15 @@ static void *post_one(void *ptr)        // thread
 
   NetworkReply *reply2 = (NetworkReply*)ptr;
 
+  MemoryStruct chunk;  // for the return message if any
+
+  chunk.memory = (char*)malloc(1);
+  chunk.memory[0]='\0';
+  chunk.size = 0;
+
   curl = curl_easy_init();
 
   struct curl_slist *headers=NULL;
-  std::string string;
 
   for (int i=0; i<reply2->header.size(); i++){
     headers = curl_slist_append(headers, reply2->header[i].c_str());
@@ -111,6 +116,9 @@ static void *post_one(void *ptr)        // thread
 
   curl_easy_setopt(curl, CURLOPT_URL, reply2->url.c_str());
   //  curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
   /* post binary data */
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, reply2->data);
@@ -135,12 +143,12 @@ static void *post_one(void *ptr)        // thread
   }
   else {
 
-    ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + 0);
+    ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + chunk.size);
 
-    event->data = NULL;
-    //  memcpy(event->data, chunk.memory, chunk.size);
+    event->data = (char*)event + sizeof(ghttp_ResponseEvent);
+    memcpy(event->data, chunk.memory, chunk.size);
 
-    event->size = 0;
+    event->size = chunk.size;
     event->httpStatusCode = res;
     event->headers[0].name=NULL;    // no idea what this is for!
     event->headers[0].value=NULL;
@@ -148,6 +156,7 @@ static void *post_one(void *ptr)        // thread
     gevent_EnqueueEvent(reply2->gid, reply2->callback, GHTTP_RESPONSE_EVENT, event, 1, reply2->udata);
   }
 
+  free(chunk.memory);
   curl_slist_free_all(headers); /* free the header list */
 
   pthread_mutex_lock (&mutexpost);
@@ -168,14 +177,33 @@ static void *put_one_url(void *ptr)     // thread
 
   NetworkReply *reply2 = (NetworkReply*)ptr;
 
+  struct curl_slist *headers=NULL;
+
+  for (int i=0; i<reply2->header.size(); i++){
+    headers = curl_slist_append(headers, reply2->header[i].c_str());
+    printf("header %p %s\n",headers,reply2->header[i].c_str());
+  }
+
   MemoryStruct chunk;
 
   chunk.memory=(char*)reply2->data;       // start of the remaining data
   chunk.size=reply2->size;         // size of the remaining data
 
+  MemoryStruct chunkRet;  // for the return message if any
+
+  chunkRet.memory = (char*)malloc(1);
+  chunkRet.memory[0]='\0';
+  chunkRet.size = 0;
+
   printf("put_one_url: %s\n",reply2->url.c_str());
 
   curl=curl_easy_init();
+
+  /* pass our list of custom made headers */
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunkRet);
 
   curl_easy_setopt(curl, CURLOPT_URL, reply2->url.c_str());
   curl_easy_setopt(curl, CURLOPT_READFUNCTION, ReadMemoryCallback);
@@ -195,17 +223,21 @@ static void *put_one_url(void *ptr)     // thread
   }
   else {
 
-    ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + 0);
+    ghttp_ResponseEvent *event = (ghttp_ResponseEvent*)malloc(sizeof(ghttp_ResponseEvent) + chunkRet.size);
 
-    event->data = NULL;
+    event->data = (char*)event + sizeof(ghttp_ResponseEvent);
+    memcpy(event->data, chunkRet.memory, chunkRet.size);
 
-    event->size = 0;
+    event->size = chunkRet.size;
     event->httpStatusCode = res;
     event->headers[0].name=NULL;    // no idea what this is for!
     event->headers[0].value=NULL;
     
     gevent_EnqueueEvent(reply2->gid, reply2->callback, GHTTP_RESPONSE_EVENT, event, 1, reply2->udata);
   }
+
+  free(chunkRet.memory);
+  curl_slist_free_all(headers); /* free the header list */
 
   pthread_mutex_lock (&mutexput);
   map_.erase(reply2->gid);
@@ -225,6 +257,13 @@ static void *get_one_url(void *ptr)          // thread
 
   NetworkReply *reply2 = (NetworkReply*)ptr;
 
+  struct curl_slist *headers=NULL;
+
+  for (int i=0; i<reply2->header.size(); i++){
+    headers = curl_slist_append(headers, reply2->header[i].c_str());
+    printf("header %p %s\n",headers,reply2->header[i].c_str());
+  }
+
   MemoryStruct chunk;
 
   chunk.memory = (char*)malloc(1);
@@ -234,6 +273,9 @@ static void *get_one_url(void *ptr)          // thread
   printf("Processing: %s\n",reply2->url.c_str());
 
   curl = curl_easy_init();
+
+  /* pass our list of custom made headers */
+  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
   curl_easy_setopt(curl, CURLOPT_URL, reply2->url.c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
@@ -269,6 +311,7 @@ static void *get_one_url(void *ptr)          // thread
   }
 
   free(chunk.memory);
+  curl_slist_free_all(headers); /* free the header list */
 
   pthread_mutex_lock (&mutexget);
   map_.erase(reply2->gid);
@@ -301,6 +344,7 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
 {
   pthread_t tid;
   int error;
+  std::string str;
 
   g_id gid = g_NextId();     // must be static
 
@@ -311,6 +355,13 @@ g_id ghttp_Get(const char* url, const ghttp_Header *header, gevent_Callback call
   reply2.url = url;
   reply2.data = NULL;
   reply2.size = 0;
+
+  if (header)
+    for (; header->name; ++header){
+      str=header->name + colon + header->value;
+      reply2.header.push_back(str);
+    } 
+
 
   map_[gid] = reply2;
 
@@ -399,6 +450,7 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
 {
   pthread_t tid;
   int error;
+  std::string str;
 
   g_id gid = g_NextId();
 
@@ -413,6 +465,13 @@ g_id ghttp_Put(const char* url, const ghttp_Header *header, const void* data, si
   reply2.size = size;
 
   memcpy(reply2.data,data,size);
+
+  if (header)
+    for (; header->name; ++header){
+      str=header->name + colon + header->value;
+      reply2.header.push_back(str);
+    } 
+
 
   map_[gid] = reply2;
 
