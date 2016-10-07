@@ -873,7 +873,7 @@ void MainWindow::timerEvent(QTimerEvent*)
 				}
 
 				QString fileName = QDir::cleanPath(path.absoluteFilePath(s2));
-                if (client_->sendFile(s1, fileName))
+                if (client_->sendFile(s1, fileName) == 0)
 				{
 					outputWidget_->append(s1 + " cannot be opened.\n");
 				}
