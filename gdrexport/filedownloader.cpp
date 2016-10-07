@@ -1,5 +1,6 @@
 #include "filedownloader.h"
 #include "ExportCommon.h"
+#include <math.h>
 
 FileDownloader::FileDownloader(QUrl url, QObject *parent) :
  QObject(parent)
