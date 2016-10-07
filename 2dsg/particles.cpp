@@ -281,7 +281,7 @@ int g_getFps();
 
 void Particles::tick() {
 	float nframes=1;
-	double iclk=iclock();
+	double iclk=application_->getTimerContainer()->getTimer();
 	if (lastTickTime_>0)
 	{
 		int fps=g_getFps();

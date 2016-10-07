@@ -124,6 +124,21 @@ void TimerContainer::removeEvents(Timer *timer)
     eventQueue_.erase(std::remove(eventQueue_.begin(), eventQueue_.end(), std::make_pair(timer, 1)), eventQueue_.end());
 }
 
+void TimerContainer::suspend()
+{
+	pausedBeforeSuspend_=isAllTimersPaused();
+	if (!pausedBeforeSuspend_)
+		pauseAllTimers();
+	globalTimer_.pause();
+}
+
+void TimerContainer::resume()
+{
+	if (pausedBeforeSuspend_)
+		resumeAllTimers();
+	globalTimer_.resume();
+}
+
 void TimerContainer::pauseAllTimers()
 {
 	stopWatch_.pause();

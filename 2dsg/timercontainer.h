@@ -20,6 +20,8 @@ public:
 	void removeTimer(Timer* timer);
 	void removeAllTimers();
 	void tick();
+	void suspend();
+	void resume();
 
     double getAdditionalDelay(const Timer *timer);
 
@@ -31,12 +33,16 @@ public:
     void queueTimerCompleteEvent(Timer *timer);
     void removeEvents(Timer *timer);
 
+    double getTimer() { return globalTimer_.clock(); };
+
 private:
     Application *application_;
     std::set<Timer*> timers_;
 	std::map<double, std::vector<Timer*> > queue_;
 	StopWatch stopWatch_;
+	StopWatch globalTimer_;
     std::deque<std::pair<Timer*, int> > eventQueue_;
+    bool pausedBeforeSuspend_;
 };
 
 #endif
