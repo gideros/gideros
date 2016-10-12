@@ -1,6 +1,6 @@
 DEPLOYQT=$(QT)/bin/macdeployqt
 
-buildqtapp: buildqtlibs buildplugins buildqt
+buildqtapp: buildqtlibs buildqtplugins buildqt
 
 qtapp.install: qtlibs.install plugins.install qt.install
 
@@ -26,14 +26,14 @@ buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs) libgid.qmake5.rel $(add
 qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
 
-%.plugin:
+%.qtplugin:
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MAKE) 
 
-%.plugin.clean:
+%.qtplugin.clean:
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MAKE) clean
 
-%.plugin.install:
+%.qtplugin.install:
 	mkdir -p $(RELEASE)/Plugins
 	mkdir -p $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/MacOSX
@@ -111,11 +111,11 @@ qt.player:
 	install_name_tool -change liblua.1.dylib @rpath/liblua.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Frameworks/libgideros.1.dylib 
 	install_name_tool -change libpystring.1.dylib @rpath/libpystring.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Frameworks/libgideros.1.dylib 
 	
-buildplugins: $(addsuffix .plugin,$(PLUGINS_WIN))
+buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN))
 
-plugins.clean: $(addsuffix .plugin.clean,$(PLUGINS_WIN))
+qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN))
 
-plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
+qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; $(MAKE) clean

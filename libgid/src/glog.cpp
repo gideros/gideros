@@ -6,6 +6,7 @@
 
 #ifdef __ANDROID__
 #include <android/log.h>
+#include <string.h>
 #endif
 
 #ifdef WINSTORE
@@ -23,6 +24,14 @@ static void log(const char *buffer)
 #if defined(QT_CORE_LIB)
     qDebug() << buffer;
 #elif defined(__ANDROID__)
+    while (strlen(buffer)>1024)
+    {
+    	char buf[1024];
+    	memcpy(buf,buffer,1023);
+    	buf[1023]=0;
+    	buffer+=1023;
+        __android_log_print(ANDROID_LOG_DEBUG, "Gideros", "%s", buf);
+    }
     __android_log_print(ANDROID_LOG_DEBUG, "Gideros", "%s", buffer);
 #elif defined(WINSTORE)
 	std::string s(buffer);

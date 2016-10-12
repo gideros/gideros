@@ -55,6 +55,10 @@ sdk.headers.dir:
 
 sdk.headers: sdk.headers.dir $(addprefix $(SDK)/include/,$(SDK_INCS))
 
+%.plugin.install:
+	@mkdir -p $(RELEASE)/All\ Plugins/$(notdir $*)
+	@for f in $(ROOT)/plugins/$*/*.gplugin; do if [ -f "$$f" ]; then cp $$f $(RELEASE)/All\ Plugins/$(notdir $*); fi; done
+
 
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidGeneric.mk
 ifeq ($(OS),Windows_NT)

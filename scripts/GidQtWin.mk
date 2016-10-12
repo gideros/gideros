@@ -1,8 +1,8 @@
-buildqtapp: buildqtlibs buildplugins buildqt
+buildqtapp: buildqtlibs buildqtplugins buildqt
 
-qtapp.install: qtlibs.install plugins.install qt.install
+qtapp.install: qtlibs.install qtplugins.install qt.install
 
-qtapp.clean: qtlibs.clean plugins.clean qt.clean
+qtapp.clean: qtlibs.clean qtplugins.clean qt.clean
 
 
 vpath %.a libgideros/release:libgvfs/release:libgid/release:lua/release:libgid/external/openal-soft-1.13/build/mingw48_32
@@ -29,14 +29,14 @@ qtlibs.install: buildqtlibs
 	cp $(ROOT)/libgideros/release/gideros.dll $(RELEASE)
 	cp $(ROOT)/libpystring/release/pystring.dll $(RELEASE)
 
-%.plugin:
+%.qtplugin:
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) release
 
-%.plugin.clean:
+%.qtplugin.clean:
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) clean
 
-%.plugin.install:
+%.qtplugin.install:
 	mkdir -p $(RELEASE)/Plugins
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/Windows
@@ -109,11 +109,11 @@ qt5.install:
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
 	
-buildplugins: $(addsuffix .plugin,$(PLUGINS_WIN))
+buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN))
 
-plugins.clean: $(addsuffix .plugin.clean,$(PLUGINS_WIN))
+qtplugins.clean: $(addsuffix .qtplugin.clean,$(PLUGINS_WIN))
 
-plugins.install: buildplugins $(addsuffix .plugin.install,$(PLUGINS_WIN))
+qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
 
 %.qmake.clean:
 	cd $(ROOT)/$*; $(MINGWMAKE) clean
