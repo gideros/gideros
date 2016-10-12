@@ -24,6 +24,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"getChildIndex", SpriteBinder::getChildIndex},
 		{"removeFromParent", SpriteBinder::removeFromParent},
 		{"setClip", SpriteBinder::setClip},
+        {"getClip", SpriteBinder::getClip},
 		{"getX", SpriteBinder::getX},
 		{"getY", SpriteBinder::getY},
 		{"getZ", SpriteBinder::getZ},
@@ -46,6 +47,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"getPosition", SpriteBinder::getPosition},
         {"setAnchorPosition", SpriteBinder::setAnchorPosition},
         {"getAnchorPosition", SpriteBinder::getAnchorPosition},
+        {"setAnchorPoint", SpriteBinder::setAnchorPoint},
+        {"getAnchorPoint", SpriteBinder::getAnchorPoint},
 		{"setScale", SpriteBinder::setScale},
 		{"getScale", SpriteBinder::getScale},
 		{"localToGlobal", SpriteBinder::localToGlobal},
@@ -396,6 +399,21 @@ int SpriteBinder::setClip(lua_State* L)
 	return 0;
 }
 
+int SpriteBinder::getClip(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::getClip", 4);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+
+    lua_pushnumber(L, sprite->clipX());
+    lua_pushnumber(L, sprite->clipY());
+    lua_pushnumber(L, sprite->clipW());
+    lua_pushnumber(L, sprite->clipH());
+
+    return 4;
+}
+
 int SpriteBinder::getX(lua_State* L)
 {
 	StackChecker checker(L, "getX", 1);
@@ -689,7 +707,42 @@ int SpriteBinder::getAnchorPosition(lua_State* L)
     return 3;
 }
 
+int SpriteBinder::setAnchorPoint(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::setAnchorPoint", 0);
 
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+
+    lua_Number x = luaL_checknumber(L, 2);
+    lua_Number y = luaL_checknumber(L, 3);
+
+    float x1, y1, x2, y2;
+    sprite->objectBounds(&x1, &y1, &x2, &y2);
+
+    sprite->setRefXY(x * (x2 - x1), y * (y2 - y1));
+
+    return 0;
+}
+
+int SpriteBinder::getAnchorPoint(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::getAnchorPoint", 2);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+
+    float x1, y1, x2, y2;
+    sprite->objectBounds(&x1, &y1, &x2, &y2);
+
+    float width = x1 != x2 ? x2 - x1 : 1;
+    float height = y1 != y2 ? y2 - y1 : 1;
+
+    lua_pushnumber(L, sprite->refX() / width);
+    lua_pushnumber(L, sprite->refY() / height);
+
+    return 2;
+}
 
 int SpriteBinder::setScale(lua_State* L)
 {
@@ -1000,7 +1053,12 @@ int SpriteBinder::getWidth(lua_State* L)
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
-	lua_pushnumber(L, sprite->width());
+    if (lua_isboolean(L, 2) && lua_toboolean(L, 2)) {
+        float x1, y1, x2, y2;
+        sprite->objectBounds(&x1, &y1, &x2, &y2);
+        lua_pushnumber(L, x2 > x1 ? x2 - x1 : 0);
+    } else
+        lua_pushnumber(L, sprite->width());
 
 	return 1;
 }
@@ -1012,7 +1070,12 @@ int SpriteBinder::getHeight(lua_State* L)
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
 
-	lua_pushnumber(L, sprite->height());
+    if (lua_isboolean(L, 2) && lua_toboolean(L, 2)) {
+        float x1, y1, x2, y2;
+        sprite->objectBounds(&x1, &y1, &x2, &y2);
+        lua_pushnumber(L, y2 > y1 ? y2 - y1 : 0);
+    } else
+        lua_pushnumber(L, sprite->height());
 
 	return 1;
 }

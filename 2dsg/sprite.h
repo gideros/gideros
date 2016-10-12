@@ -95,6 +95,26 @@ public:
     	cliph_=ch;
     }
 
+    float clipX() const
+    {
+        return clipx_;
+    }
+
+    float clipY() const
+    {
+        return clipy_;
+    }
+
+    float clipW() const
+    {
+        return clipw_;
+    }
+    float clipH() const
+
+    {
+        return cliph_;
+    }
+
 	void setRotation(float r)
 	{
         localTransform_.setRotationZ(r);
