@@ -233,6 +233,7 @@
 
 -(void)itemDidFinishPlaying:(NSNotification *) notification {
     [self stop];
+    gmedia_onMediaCompleted();
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
