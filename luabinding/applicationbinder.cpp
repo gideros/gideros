@@ -241,9 +241,9 @@ int ApplicationBinder::setKeyboardVisibility(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	::setKeyboardVisibility(lua_toboolean(L, 2) != 0);
+	lua_pushboolean(L,::setKeyboardVisibility(lua_toboolean(L, 2) != 0));
 
-	return 0;
+	return 1;
 }
 
 int ApplicationBinder::getLogicalTranslateX(lua_State* L)

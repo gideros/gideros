@@ -183,7 +183,7 @@ void vibrate(int ms);
 std::string getLocale();
 std::string getLanguage();
 void setKeepAwake(bool awake);
-void setKeyboardVisibility(bool visible);
+bool setKeyboardVisibility(bool visible);
 std::vector<std::string> getDeviceInfo();
 
 bool g_checkStringProperty(bool isSet, const char* what);

@@ -113,7 +113,8 @@ void setKeepAwake(bool awake)
 	}
 }
 
-void setKeyboardVisibility(bool visible){
+bool setKeyboardVisibility(bool visible){
+	return false;
 }
 
 static int s_fps = 60;

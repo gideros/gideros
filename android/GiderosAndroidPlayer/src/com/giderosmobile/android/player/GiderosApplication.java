@@ -979,7 +979,7 @@ public class GiderosApplication
 			activity.runOnUiThread(new Runnable() {public void run() {activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);}});
 	}
 	
-	static public void setKeyboardVisibility(final boolean visible)
+	static public boolean setKeyboardVisibility(final boolean visible)
 	{
 		final Activity activity = WeakActivityHolder.get();
 		activity.runOnUiThread(new Runnable() {
@@ -997,6 +997,7 @@ public class GiderosApplication
 		    		imm.hideSoftInputFromWindow(mGLView_.getWindowToken() ,0); 
 		    }
 		});
+		return true;
 	}
 	
 	static public void vibrate(int ms)	

@@ -61,14 +61,15 @@ void setKeepAwake(bool awake)
 	env->DeleteLocalRef(localRefCls);
 }
 
-void setKeyboardVisibility(bool visible)
+bool setKeyboardVisibility(bool visible)
 {
 	JNIEnv *env = g_getJNIEnv();
 
 	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
 	jmethodID setKeepAwakeID = env->GetStaticMethodID(localRefCls, "setKeyboardVisibility", "(Z)V");
-	env->CallStaticVoidMethod(localRefCls, setKeepAwakeID, (jboolean)visible);
+	jboolean ret=env->CallStaticBooleanMethod(localRefCls, setKeepAwakeID, (jboolean)visible);
 	env->DeleteLocalRef(localRefCls);
+	return ret;
 }
 
 

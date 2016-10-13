@@ -63,7 +63,8 @@ void setFullScreen(bool fullScreen){
 
 }
 
-void setKeyboardVisibility(bool visible){
+bool setKeyboardVisibility(bool visible){
+	return false;
 }
 
 std::string getDeviceName(){
