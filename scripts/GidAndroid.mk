@@ -5,6 +5,8 @@ android.clean: androidlibs.clean androidso.clean
 android: androidlibs androidso androidplugins
 	rm -rf $(ROOT)/android/GiderosAndroidPlayer/src/com/android
 	rm -rf $(ROOT)/android/GiderosAndroidPlayer/src/com/giderosmobile/android/plugins
+	mkdir -p $(ROOT)/android/GiderosAndroidPlayer/libs
+	cp $(ROOT)/android/GiderosAndroidPlayer/lib/*.jar $(ROOT)/android/GiderosAndroidPlayer/libs/
 	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) debug
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/BuildConfig.class
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/GiderosAndroidPlayerActivity.class

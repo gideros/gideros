@@ -3,6 +3,8 @@ cd android
 cd GiderosAndroidPlayer
 rm -rf src/com/android
 rm -rf src/com/giderosmobile/android/plugins
+mkdir -p libs
+cp lib/*.jar libs
 ant clean
 ant debug
 rm gideros.jar
