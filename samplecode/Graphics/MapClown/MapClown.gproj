@@ -1,0 +1,9 @@
+<project>
+ <properties version="1.0" encryptAssets="0" windowWidth="0" winrt_org="GiderosMobile" android_template="0" win_domain="giderosmobile.com" touchToMouse="1" win_org="GiderosMobile" encryptCode="0" scaleMode="0" version_code="1" app_icon="" mouseTouchOrder="0" html5_mem="256" autorotation="0" fps="60" osx_org="GiderosMobile" retinaDisplay="0" iosDevice="0" osx_bundle="com.yourdomain." mouseToTouch="1" osx_domain="giderosmobile.com" osx_category="5" ios_bundle="com.yourdomain." winrt_package="com.yourdomain.yourapp" orientation="1" logicalWidth="320" packageName="com.yourdomain.yourapp" architecture="0" windowHeight="0" assetsOnly="0" app_icon_noexport="0" logicalHeight="480" html5_host="">
+  <imageScales/>
+  <plugins/>
+  <exports/>
+ </properties>
+ <file source="main.lua"/>
+ <file source="clown.png"/>
+</project>

@@ -26,6 +26,8 @@ private:
 	static int removeFromParent(lua_State* L);
 	
 	static int setClip(lua_State* L);
+    static int getClip(lua_State* L);
+
 	static int getX(lua_State* L);
 	static int getY(lua_State* L);
 	static int getZ(lua_State* L);
@@ -52,6 +54,9 @@ private:
     static int setAnchorPosition(lua_State* L);
     static int getAnchorPosition(lua_State* L);
 	
+    static int setAnchorPoint(lua_State* L);
+    static int getAnchorPoint(lua_State* L);
+
 	static int setScale(lua_State* L);
 	static int getScale(lua_State* L);
 
