@@ -662,6 +662,18 @@ public:
 		return 1;
     }
 	
+    void keyChar(const char *keychar)
+    {
+        ginput_KeyEvent *event = newKeyEvent(0,0);
+    	if (strlen(keychar)<(sizeof(event->charCode)))
+    	{
+    		strcpy(event->charCode,keychar);
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_CHAR_EVENT, event, 0, this);
+    	}
+        deleteKeyEvent(event);
+    }
+
+
 private:
     ginput_KeyEvent *newKeyEvent(int keyCode, int realCode)
     {
@@ -862,6 +874,12 @@ g_bool ginputp_keyUp(int keyCode, int repeatCount)
     if (s_manager)
         return s_manager->keyUp(keyCode, repeatCount);
     return g_false;
+}
+
+void ginputp_keyChar(const char *keyChar)
+{
+    if (s_manager)
+        s_manager->keyChar(keyChar);
 }
 
 void ginput_setMouseToTouchEnabled(int enabled)

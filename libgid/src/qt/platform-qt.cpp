@@ -69,6 +69,9 @@ void setKeepAwake(bool awake)
     }
 }
 
+void setKeyboardVisibility(bool visible){
+}
+
 void vibrate(int ms)
 {
 }

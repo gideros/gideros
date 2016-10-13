@@ -187,6 +187,7 @@ public:
 	
 	bool keyDown(int keyCode, int repeatCount);
 	bool keyUp(int keyCode, int repeatCount);
+	void keyChar(const char *keyChar);
 	
 	void pause();
 	void resume();
@@ -1205,6 +1206,11 @@ bool ApplicationManager::keyUp(int keyCode, int repeatCount)
 	return true;
 }
 
+void ApplicationManager::keyChar(const char *str)
+{
+	ginputp_keyChar(str);
+}
+
 extern void gaudio_android_suspend(bool suspend);
 
 void ApplicationManager::pause()
@@ -1403,6 +1409,13 @@ jboolean Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyDown(
 jboolean Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyUp(JNIEnv* env, jclass cls, jint keyCode, jint repeatCount)
 {
 	return s_applicationManager->keyUp(keyCode, repeatCount);
+}
+
+void Java_com_giderosmobile_android_player_GiderosApplication_nativeKeyChar(JNIEnv* env, jclass cls, jstring keyChar)
+{
+	const char* sBytes = env->GetStringUTFChars(keyChar, NULL);
+	s_applicationManager->keyChar(sBytes);
+	env->ReleaseStringUTFChars(keyChar, sBytes);
 }
 
 jboolean Java_com_giderosmobile_android_player_GiderosApplication_isRunning(JNIEnv* env, jclass cls)

@@ -33,6 +33,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.opengl.GLSurfaceView;
 import android.os.Environment;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
@@ -42,6 +43,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -461,9 +463,12 @@ public class GiderosApplication
 	} 
 	
 	
-	static public void onCreate(String[] externalClasses)
+	private static GLSurfaceView mGLView_;
+	static public void onCreate(String[] externalClasses, GLSurfaceView mGLView)
 	{
+		mGLView_=mGLView;
 		instance_ = new GiderosApplication(externalClasses);
+		setKeyboardVisibility(false);
 		for ( Class < ? > theClass : instance_.sAvailableClasses ) {
 			
 			executeMethod ( theClass, null, "onCreate", new Class < ? > [] { Activity.class }, new Object [] { WeakActivityHolder.get() });
@@ -696,6 +701,8 @@ public class GiderosApplication
 			return true;
 		}
 		boolean handled = nativeKeyDown(keyCode, event.getRepeatCount());
+		if (event.getUnicodeChar()>0)
+			nativeKeyChar(Character.toString((char)event.getUnicodeChar()));
 		if(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_MUTE || keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_POWER){
 			return false;
 		}
@@ -707,6 +714,19 @@ public class GiderosApplication
 		return nativeKeyUp(keyCode, event.getRepeatCount());
 	}
 	
+	public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+		if (keyCode==KeyEvent.KEYCODE_UNKNOWN)
+			nativeKeyChar(event.getCharacters());
+		else if (event.getUnicodeChar()>0)
+		{
+			String cs=Character.toString((char)event.getUnicodeChar());
+			for (int k=0;k<event.getRepeatCount();k++)
+				nativeKeyChar(cs);
+		}
+				
+		return false; //XXX what should be return ?
+	}
+
 	public boolean isAccelerometerAvailable()
 	{
 		return accelerometer_.isAvailable();
@@ -959,6 +979,26 @@ public class GiderosApplication
 			activity.runOnUiThread(new Runnable() {public void run() {activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);}});
 	}
 	
+	static public void setKeyboardVisibility(final boolean visible)
+	{
+		final Activity activity = WeakActivityHolder.get();
+		activity.runOnUiThread(new Runnable() {
+		    public void run() {
+		    	activity.getWindow().setSoftInputMode(visible?WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE:WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		    	mGLView_.clearFocus();
+		    	if (visible)
+		    		mGLView_.requestFocus();
+		    	
+		    	InputMethodManager imm = (InputMethodManager)
+	    			activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+		    	if (visible)
+		    		imm.showSoftInput(mGLView_ , 0/*InputMethodManager.SHOW_FORCED*/);
+		    	else
+		    		imm.hideSoftInputFromWindow(mGLView_.getWindowToken() ,0); 
+		    }
+		});
+	}
+	
 	static public void vibrate(int ms)	
 	{
 		try
@@ -1138,6 +1178,7 @@ public class GiderosApplication
 	static private native boolean isRunning();
 	static private native boolean nativeKeyDown(int keyCode, int repeatCount);
 	static private native boolean nativeKeyUp(int keyCode, int repeatCount);
+	static private native void nativeKeyChar(String keyChar);
 	static private native void nativeOpenALSetup(int sampleRate);
 	static private native void nativeCreate(boolean player);
 	static private native void nativeSetDirectories(String externalDir, String internalDir, String cacheDir);

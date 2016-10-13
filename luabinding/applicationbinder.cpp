@@ -47,6 +47,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 		{"getLocale", ApplicationBinder::getLocale},
 		{"getLanguage", ApplicationBinder::getLanguage},
 		{"setKeepAwake", ApplicationBinder::setKeepAwake},
+		{"setKeyboardVisibility", ApplicationBinder::setKeyboardVisibility},
 		{"getLogicalTranslateX", ApplicationBinder::getLogicalTranslateX},
 		{"getLogicalTranslateY", ApplicationBinder::getLogicalTranslateY},
 		{"getLogicalScaleX", ApplicationBinder::getLogicalScaleX},
@@ -231,6 +232,16 @@ int ApplicationBinder::setKeepAwake(lua_State* L)
 	(void)binder.getInstance("Application", 1);
 
 	::setKeepAwake(lua_toboolean(L, 2) != 0);
+
+	return 0;
+}
+
+int ApplicationBinder::setKeyboardVisibility(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+
+	::setKeyboardVisibility(lua_toboolean(L, 2) != 0);
 
 	return 0;
 }

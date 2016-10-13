@@ -63,6 +63,9 @@ void setFullScreen(bool fullScreen){
 
 }
 
+void setKeyboardVisibility(bool visible){
+}
+
 std::string getDeviceName(){
     return [[[UIDevice currentDevice] name] UTF8String];
 }

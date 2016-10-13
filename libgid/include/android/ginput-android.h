@@ -13,6 +13,7 @@ G_API void ginputp_touchEnd(int size, int *id, int *x, int *y, float *pressure, 
 G_API void ginputp_touchesCancel(int size, int *id, int *x, int *y, float *pressure);
 G_API g_bool ginputp_keyDown(int keyCode, int repeatCount);
 G_API g_bool ginputp_keyUp(int keyCode, int repeatCount);
+G_API void ginputp_keyChar(const char *keyChar);
 
 #ifdef __cplusplus
 }

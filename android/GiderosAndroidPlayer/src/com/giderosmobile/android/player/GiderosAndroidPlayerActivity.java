@@ -10,10 +10,14 @@ import android.content.Intent;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 
 public class GiderosAndroidPlayerActivity extends Activity implements OnTouchListener
 {
@@ -49,7 +53,7 @@ public class GiderosAndroidPlayerActivity extends Activity implements OnTouchLis
 		
 		WeakActivityHolder.set(this);
 
-		GiderosApplication.onCreate(externalClasses);
+		GiderosApplication.onCreate(externalClasses,mGLView);
 	}
 
 	int[] id = new int[256];
@@ -211,6 +215,16 @@ public class GiderosAndroidPlayerActivity extends Activity implements OnTouchLis
 		
 		return super.onKeyUp(keyCode, event);
     }
+	
+	@Override
+    public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+		GiderosApplication app = GiderosApplication.getInstance();
+		if (app != null && app.onKeyMultiple(keyCode, repeatCount, event) == true)
+			return true;
+		
+		return super.onKeyMultiple(keyCode, repeatCount, event);
+    }	
+	
 	public void onRequestPermissionsResult(int requestCode,
 			String permissions[], int[] grantResults) {
 	}
@@ -242,6 +256,28 @@ class GiderosGLSurfaceView extends GLSurfaceView
 			{
 			}
 		}
+		setFocusable(true);
+		setFocusableInTouchMode(true);
+	}
+	
+	@Override
+	public InputConnection onCreateInputConnection(EditorInfo outAttrs)
+	{
+	    outAttrs.actionLabel = "";
+	    outAttrs.hintText = "";
+	    outAttrs.initialCapsMode = 0;
+	    outAttrs.initialSelEnd = outAttrs.initialSelStart = -1;
+	    outAttrs.label = "";
+	    outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI;        
+	    outAttrs.inputType = InputType.TYPE_NULL;        
+
+	    return  new BaseInputConnection(this, false);       
+	}     
+
+	@Override
+	public boolean onCheckIsTextEditor ()
+	{
+	    return true;
 	}
 
 	GiderosRenderer mRenderer;
