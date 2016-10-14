@@ -242,6 +242,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 
 		QString src = QDir::cleanPath(path.absoluteFilePath(s2));
 		QString dst = QDir::cleanPath(ctx->outputDir.absoluteFilePath(s1));
+		QString rdst = QDir::cleanPath(ctx->outputDir.relativeFilePath(s1));
 
 		QString suffix = QFileInfo(dst).suffix().toLower();
 		if ((!ctx->jetset.isEmpty()) && (!ctx->jetset.contains(suffix)))
@@ -265,20 +266,21 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			}
 			// compile lua files (with luac)
 			if (compileLua) {
-				QString rsrc = QDir::cleanPath(
-						QDir::current().relativeFilePath(src));
 				QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
 #if defined(Q_OS_WIN)
 				QString luac = toolsDir.filePath("luac.exe");
 #else
 				QString luac = toolsDir.filePath("luac");
 #endif
-				//Compile from source file directly to avoid absolute path from ending into compiled file
-				QString sfile = "\"" + rsrc + "\"";
+				QDir old=QDir::current();
+				QDir::setCurrent(ctx->outputDir.path());
 				QString dfile = "\"" + dst + "\"";
-				if (QProcess::execute(
-						quote(luac) + " -o " + dfile + " " + sfile) >= 0)
-					copied = true;
+				QString sfile = "\"" + rdst + "\"";
+				QFile::copy(src, rdst);
+				QProcess::execute(quote(luac) + " -o " + dfile + " " + sfile);
+				QFile::remove(rdst);
+				copied = true;
+				QDir::setCurrent(old.path());
 			}
 		}
 

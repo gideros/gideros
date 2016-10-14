@@ -113,7 +113,13 @@
       "idiom" : "ipad",
       "filename" : "AppIcon152x152.png",
       "scale" : "2x"
-    }
+    },
+    {
+ 	 "idiom" : "ipad",
+ 	 "size" : "83.5x83.5",
+ 	 "filename" : "AppIcon167x167.png",
+ 	 "scale" : "2x"
+ 	}
   ],
   "info" : {
     "version" : 1,
