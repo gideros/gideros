@@ -153,7 +153,7 @@ void ogl2ShaderBuffer::unbound()
      if (GLEW_ARB_framebuffer_object)
      {
 #endif
-	if (!glIsRenderbuffer(_depthRenderBuffer))
+	if (glIsRenderbuffer(_depthRenderBuffer))
 	{
 		glDeleteRenderbuffers(1, &_depthRenderBuffer);
 	}
