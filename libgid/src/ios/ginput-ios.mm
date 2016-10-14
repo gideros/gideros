@@ -664,10 +664,96 @@ private:
     std::vector<ginput_MouseEvent*> mousePool2_;
     NSLock *touchPoolMutex_;
     NSLock *mousePoolMutex_;
+    NSLock *keyPoolMutex_;
     
     int isMouseToTouchEnabled_;
     int isTouchToMouseEnabled_;
     int mouseTouchOrder_;
+
+public:
+    int keyDown(int realCode, int repeatCount)
+    {
+        int keyCode = convertKeyCode(realCode);
+        
+        if (repeatCount == 0)
+        {
+            ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_DOWN_EVENT, event, 0, this);
+            deleteKeyEvent(event);
+        }
+        
+        return 1;
+    }
+    
+    int keyUp(int realCode, int repeatCount)
+    {
+        int keyCode = convertKeyCode(realCode);
+        
+        if (repeatCount == 0)
+        {
+            ginput_KeyEvent *event = newKeyEvent(keyCode, realCode);
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_UP_EVENT, event, 0, this);
+            deleteKeyEvent(event);
+        }
+        
+        return 1;
+    }
+    
+    void keyChar(const char *keychar)
+    {
+        ginput_KeyEvent *event = newKeyEvent(0,0);
+        if (strlen(keychar)<(sizeof(event->charCode)))
+        {
+            strcpy(event->charCode,keychar);
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_KEY_CHAR_EVENT, event, 0, this);
+        }
+        deleteKeyEvent(event);
+    }
+    
+    
+private:
+    ginput_KeyEvent *newKeyEvent(int keyCode, int realCode)
+    {
+        [keyPoolMutex_ lock];
+        ginput_KeyEvent *event;
+        
+        if (keyPool1_.empty())
+        {
+            event = new ginput_KeyEvent;
+        }
+        else
+        {
+            event = keyPool1_.back();
+            keyPool1_.pop_back();
+        }
+        [keyPoolMutex_ unlock];
+        
+        event->keyCode = keyCode;
+        event->realCode = realCode;
+        
+        return event;
+    }
+    
+    void deleteKeyEvent(ginput_KeyEvent *event)
+    {
+        [keyPoolMutex_ lock];
+        keyPool2_.push_back(event);
+        [keyPoolMutex_ unlock];
+    }
+    
+    int convertKeyCode(int keyCode)
+    {
+        return keyCode;
+/*        std::map<int, int>::const_iterator iter = keyMap_.find(keyCode);
+        
+        if (iter == keyMap_.end())
+            return 0;
+        
+        return iter->second;*/
+    }	
+    std::vector<ginput_KeyEvent*> keyPool1_;
+    std::vector<ginput_KeyEvent*> keyPool2_;
+    //std::map<int, int> keyMap_;
 
 private:
     GGAccelerometer *accelerometer_;
@@ -779,6 +865,27 @@ void ginputp_touchesCancelled(NSSet *touches, NSSet *allTouches, UIView *view)
     if (s_manager)
         s_manager->touchesCancelled(touches, allTouches, view);
 }
+
+g_bool ginputp_keyDown(int keyCode, int repeatCount)
+{
+    if (s_manager)
+        return s_manager->keyDown(keyCode, repeatCount);
+    return g_false;
+}
+    
+g_bool ginputp_keyUp(int keyCode, int repeatCount)
+{
+    if (s_manager)
+        return s_manager->keyUp(keyCode, repeatCount);
+     return g_false;
+}
+    
+void ginputp_keyChar(const char *keyChar)
+{
+     if (s_manager)
+     s_manager->keyChar(keyChar);
+}
+    
 
 void ginput_setMouseToTouchEnabled(int enabled)
 {

@@ -40,6 +40,8 @@
                                         kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat,
                                         nil];
 		retinaDisplay = NO;
+        _hasText = NO;
+        _autocorrectionType = UITextAutocorrectionTypeNo;
     }
     
     return self;
@@ -51,6 +53,11 @@
     [context release];
     
     [super dealloc];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return gdr_keyboardVisible();
 }
 
 - (EAGLContext *)context
@@ -119,9 +126,9 @@
 
 - (void)setFramebuffer
 {
-    if (framebufferDirty)
+   if (framebufferDirty)
             [self deleteFramebuffer];
-    if (context)
+   if (context)
     {
         [EAGLContext setCurrentContext:context];
         
@@ -130,7 +137,7 @@
         
         glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
         
-	 //GIDEROS-TAG-IOS:PREDRAW//
+        //GIDEROS-TAG-IOS:PREDRAW//
         glViewport(0, 0, framebufferWidth, framebufferHeight);
     }
 }
@@ -146,7 +153,7 @@
         glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
         
         success = [context presentRenderbuffer:GL_RENDERBUFFER];
-	 //GIDEROS-TAG-IOS:POSTDRAW//
+        //GIDEROS-TAG-IOS:POSTDRAW//
     }
     
     return success;
@@ -199,6 +206,17 @@
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
     gdr_touchesCancelled(touches, [event allTouches]);
+}
+
+- (void)insertText:(NSString *)text;
+{
+    gdr_keyChar(text);
+}
+
+- (void)deleteBackward;
+{
+    gdr_keyDown(8,0); //Simulate a backspace key press and release
+    gdr_keyUp(8,0);
 }
 
 @end

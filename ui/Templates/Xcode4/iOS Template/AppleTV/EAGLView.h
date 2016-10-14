@@ -14,7 +14,7 @@
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.
 // Note that setting the view non-opaque will only work if the EAGL surface has an alpha channel.
-@interface EAGLView : UIView
+@interface EAGLView : UIView <UIKeyInput>
 {
 @private
     EAGLContext *context;
@@ -26,10 +26,13 @@
     // The OpenGL ES names for the framebuffer and renderbuffer used to render to this view.
     GLuint defaultFramebuffer, colorRenderbuffer;
 
+	BOOL framebufferDirty;
 	BOOL retinaDisplay;
 }
 
 @property (nonatomic, retain) EAGLContext *context;
+@property (nonatomic, readonly) BOOL hasText;
+@property (nonatomic) UITextAutocorrectionType autocorrectionType;         // default is UITextAutocorrectionTypeDefault
 
 - (void)setFramebuffer;
 - (BOOL)presentFramebuffer;
