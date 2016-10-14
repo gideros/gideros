@@ -56,7 +56,7 @@ void GRenderTarget::clear(unsigned int color, float a, int x, int y, int w, int 
 	}
 	else
 	{
-		ShaderBuffer *oldfbo=gtexture_BindRenderTarget(gtexture_RenderTargetGetFBO(data->gid));
+		oldfbo=gtexture_BindRenderTarget(gtexture_RenderTargetGetFBO(data->gid));
 		ShaderEngine::Engine->setViewport(0, 0, data->width, data->height);
 	}
 

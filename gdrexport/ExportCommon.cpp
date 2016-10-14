@@ -245,8 +245,12 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		QString rdst = QDir::cleanPath(ctx->outputDir.relativeFilePath(s1));
 
 		QString suffix = QFileInfo(dst).suffix().toLower();
+		bool isJet=false;
 		if ((!ctx->jetset.isEmpty()) && (!ctx->jetset.contains(suffix)))
+		{
 			dst += ".jet";
+			isJet=true;
+		}
 
 		ctx->allfiles.push_back(s1);
 		ctx->allfiles_abs.push_back(dst);
@@ -278,7 +282,8 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 				QString sfile = "\"" + rdst + "\"";
 				QFile::copy(src, rdst);
 				QProcess::execute(quote(luac) + " -o " + dfile + " " + sfile);
-				QFile::remove(rdst);
+				if (isJet)
+					QFile::remove(rdst);
 				copied = true;
 				QDir::setCurrent(old.path());
 			}
