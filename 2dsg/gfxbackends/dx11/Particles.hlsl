@@ -18,10 +18,16 @@ VOut VShader(float4 position : vVertex, float4 color : vColor, float2 texcoord :
 
 	float psizen = position.z;
 	float psize = length(mul(vWorldMatrix, float4(position.z, 0.0, 0.0, 0.0)));
+	float angle = position.w*3.141592654 / 180.0;
 	output.steprot = float2(sign(psizen) / psize, position.w);
 	position.w = 1.0f;
 	position.z = 0.0f;
-	output.position = mul(vMatrix, position + float4((texcoord - float2(0.5, 0.5))*psizen, 0.0, 0.0));
+	float2 rad = (texcoord - float2(0.5, 0.5))*psizen;
+	float ca=cos(angle);
+	float sa=sin(angle);
+	float2x2 rot=float2x2(ca,sa,-sa,ca);
+	rad=mul(rad,rot);
+	output.position = mul(vMatrix, position + float4(rad, 0.0, 0.0));
 	output.color = color;
 	output.texcoord = texcoord;
 
@@ -53,11 +59,6 @@ float4 PShader(float4 position : SV_POSITION, float4 color : COLOR, float2 texco
 	}
 	else
 	{
-		float angle = steprot.y*3.141592654 / 180.0;
-		float ca = cos(angle);
-		float sa = sin(angle);
-		float2x2 rot = float2x2(ca,sa,-sa,ca);
-		rad = mul(rot,rad);
 		if ((rad.x<-0.5) || (rad.y<-0.5) || (rad.x>0.5) || (rad.y>0.5))
 			discard;
 		return myTexture.Sample(samLinear, (rad + float2(0.5,0.5))*fTexInfo.xy)*color;
