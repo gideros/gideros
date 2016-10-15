@@ -994,7 +994,10 @@ public class GiderosApplication
 		    	if (visible)
 		    		imm.showSoftInput(mGLView_ , 0/*InputMethodManager.SHOW_FORCED*/);
 		    	else
+		    	{
 		    		imm.hideSoftInputFromWindow(mGLView_.getWindowToken() ,0); 
+		    		activity.onWindowFocusChanged(activity.hasWindowFocus());
+		    	}
 		    }
 		});
 		return true;
