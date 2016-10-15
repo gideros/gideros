@@ -93,6 +93,8 @@ public:
 		const int KEYCODE_Y = 53;
 		const int KEYCODE_Z = 54;
 
+		const int KEYCODE_BACKSPACE = 67;
+
 		const int KEYCODE_BUTTON_A = 96;
 		const int KEYCODE_BUTTON_B = 97;
 		const int KEYCODE_BUTTON_C = 98;
@@ -156,6 +158,7 @@ public:
 		keyMap_[KEYCODE_Y] = GINPUT_KEY_Y;
 		keyMap_[KEYCODE_Z] = GINPUT_KEY_Z;		
 
+		keyMap_[KEYCODE_BACKSPACE] = GINPUT_KEY_BACKSPACE;
 		keyMap_[KEYCODE_BUTTON_A] = GINPUT_KEY_A;
 		keyMap_[KEYCODE_BUTTON_B] = GINPUT_KEY_B;
 		keyMap_[KEYCODE_BUTTON_C] = GINPUT_KEY_C;
