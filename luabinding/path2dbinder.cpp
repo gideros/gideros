@@ -168,19 +168,27 @@ int Path2DBinder::setPath(lua_State* L)
 
 int Path2DBinder::setSvgPath(lua_State* L)
 {
-	Binder binder(L);
-	Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
+    Binder binder(L);
+    Path2D* shape = static_cast<Path2D*>(binder.getInstance("Path2D", 1));
 
-	const char* spath = luaL_checkstring(L, 2);
+    int num = lua_gettop(L);
 
-	PrPath *pr=prParseSvgPath(spath);
-	if (pr)
-	{
-		shape->setPath(pr);
-		prFreePath(pr);
-	}
+    std::string spath = luaL_checkstring(L, 2);
 
-	return 0;
+    for (int i = 3; i <= num; i++)
+    {
+        spath += luaL_checkstring(L, i);
+        spath += " ";
+    }
+
+    PrPath *pr=prParseSvgPath(spath.c_str());
+    if (pr)
+    {
+        shape->setPath(pr);
+        prFreePath(pr);
+    }
+
+    return 0;
 }
 
 int Path2DBinder::setFontPath(lua_State* L)
