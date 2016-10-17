@@ -77,12 +77,9 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
     if (error)
         throw GiderosException(GStatus(6012, filename));		// Error #6012: %s: Error while reading font file.
 
-    float scalex = application_->getLogicalScaleX();
-    float scaley = application_->getLogicalScaleY();
-
     const int RESOLUTION = 72;
 
-    error = FT_Set_Char_Size(face, 0L, (int)floor(size * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f));
+    error = FT_Set_Char_Size(face, 0L, (int)floor(size * 64 + 0.5f), RESOLUTION, RESOLUTION);
     if (error)
     {
         FT_Done_Face(face);
@@ -242,8 +239,8 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
     parameters.wrap = eClamp;
     data_ = application_->getTextureManager()->createTextureFromDib(dib, parameters);
 
-    sizescalex_ = 1 / scalex;
-    sizescaley_ = 1 / scaley;
+    sizescalex_ = 1;
+    sizescaley_ = 1;
     uvscalex_ = 1;
     uvscaley_ = 1;
 }
