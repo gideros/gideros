@@ -1,0 +1,94 @@
+<plugin
+ name="Ads"
+ description="Generic Ads interface">
+ <!--
+ <property name="adsFwAdcolony" type="boolean" title="Enable Adcolony support (Android,iOS)"/>
+ <property name="adsFwAdmob" type="boolean" title="Enable Admob support (Android,iOS)"/>
+ <property name="adsFwAmazon" type="boolean" title="Enable Amazon support (Android,iOS)"/>
+ <property name="adsFwApplovin" type="boolean" title="Enable App Lovin' support (Android,iOS)"/>
+ <property name="adsFwChartboost" type="boolean" title="Enable Chartboost support (Android,iOS)"/>
+ <property name="adsFwHeyzap" type="boolean" title="Enable Heyzap support (Android,iOS)"/>
+ <property name="adsFwIad" type="boolean" title="Enable iAd support (iOS)"/>
+ <property name="adsFwInmobi" type="boolean" title="Enable Inmobi support (Android,iOS)"/>
+ <property name="adsFwMillenial" type="boolean" title="Enable Millenial support (Android)"/>
+ <property name="adsFwMopub" type="boolean" title="Enable Mopub support (Android,iOS)"/>
+ <property name="adsFwRevmob" type="boolean" title="Enable Revmob support (Android,iOS)"/>
+ <property name="adsFwSamsung" type="boolean" title="Enable Samsung support (Android,iOS)"/>
+ <property name="adsFwTapfortap" type="boolean" title="Enable Tapfortap support (Android,iOS)"/>
+ <property name="adsFwTapjoy" type="boolean" title="Enable Tapjoy support (Android)"/> 
+ -->
+ <property name="adsFwUnity" type="boolean" title="Enable Unity Ads support (Android,iOS)"/>
+ <!--
+ <property name="adsFwVungle" type="boolean" title="Enable Vungle support (Android,iOS)"/>
+ -->
+ 
+  <target name="AndroidStudio,APK">
+    <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java" exclude="frameworks"/>
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs" include="libads*.so" />
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;ads&quot;);"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.ads.Ads&quot;,"/>
+        </replacelist>
+    </template>
+    <set key="local.adsfwd" value="app/src/main/java/com/giderosmobile/android/plugins/ads/frameworks"/>
+    <set key="local.adsfws" value="[[[sys.pluginDir]]]/bin/Android/src/com/giderosmobile/android/plugins/ads/frameworks"/>
+    <mkdir>[[[local.adsfwd]]]</mkdir>
+    <if condition="[[[plugin.adsFwUnity]]]">
+    	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.java" />
+    	<download source="https://github.com/Unity-Technologies/unity-ads-android/releases/download/2.0.5/unity-ads.aar" dest="[[[sys.cacheDir]]]/unity-ads.aar" />
+    	<cp src="[[[sys.cacheDir]]]/unity-ads.aar" dst="app/libs/unity-ads.aar" />
+    	<template name="Unity Ads AAR" path="app" dest="app">
+			<replacelist wildcards="build.gradle">
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+				    compile 'com.unity3d.ads:unity:ads@aar'
+					</by>
+				</append>
+	       	</replacelist>	
+	 	</template>
+	</if>    
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android" exclude="frameworks"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;ads&quot;);"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.ads.Ads&quot;,"/>
+        </replacelist>
+    </template>
+    <set key="local.adsfwd" value="src/main/java/com/giderosmobile/android/plugins/ads/frameworks"/>
+    <set key="local.adsfws" value="[[[sys.pluginDir]]]/bin/Android/src/com/giderosmobile/android/plugins/ads/frameworks"/>
+    <mkdir>[[[local.adsfwd]]]</mkdir>
+    <if condition="[[[plugin.adsFwUnity]]]">
+    	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsAdUnity.java" />
+	</if>
+ </target>
+ <target name="iOS">
+   <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/Plugins/Ads" dest="[[[project.namews]]]/Plugins" exclude="frameworks"/>
+   <template name="Project" path="">
+        <replacelist wildcards="project.pbxproj">
+            <prepend>
+            	<orig>/* End PBXFileReference section */</orig>
+            	<by><![CDATA[
+		000000001BAC10CC005599BD = {isa = PBXBuildFile; fileRef = 000000011BAC10CC005599BD ; };
+		000000011BAC10CC005599BD = {isa = PBXFileReference; lastKnownFileType = archive.ar; name=libcamera.ios.a; path = [[[project.namews]]]/Plugins/libcamera.ios.a; sourceTree = "<group>"; };
+            	]]></by>
+            </prepend>
+            <prepend>
+            	<orig>5FD896EC15CED77F00D34824 /* UIKit.framework in Frameworks */,</orig>
+            	<by><![CDATA[
+		000000001BAC10CC005599BD,
+            	]]></by>
+            </prepend>
+            <prepend>
+            	<orig>5FD896EB15CED77F00D34824 /* UIKit.framework */,</orig>
+            	<by><![CDATA[
+		000000011BAC10CC005599BD,
+            	]]></by>
+            </prepend>
+	    </replacelist>
+    </template>
+ </target>
+</plugin>
