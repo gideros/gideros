@@ -1,6 +1,7 @@
 #include "textfield.h"
 #include "color.h"
 #include <utf8.h>
+#include <application.h>
 
 TextField::TextField(Application *application) : TextFieldBase(application)
 {
@@ -158,6 +159,14 @@ void TextField::setSample(const char* sample)
 {
     sample_ = sample;
 
+    if (sample_.empty()) {
+        sminx = sminy = smaxx = smaxy = 0;
+        createGraphics();
+        return;
+    }
+
+    graphicsBase_.clear();
+
     size_t wsize = utf8_to_wchar(sample_.c_str(), sample_.size(), NULL, 0, 0);
     wsample_.resize(wsize);
     utf8_to_wchar(sample_.c_str(), sample_.size(), &wsample_[0], wsize, 0);
@@ -184,7 +193,7 @@ void TextField::createGraphics()
     if (font_ == NULL)
         graphicsBase_.clear();
     else
-        font_->drawText(&graphicsBase_, wtext_.c_str(), r_, g_, b_, letterSpacing_, sminx, sminy);
+        font_->drawText(&graphicsBase_, wtext_.c_str(), r_, g_, b_, letterSpacing_, !sample_.empty(), sminy);
 
     graphicsBase_.getBounds(&minx_, &miny_, &maxx_, &maxy_);
 }

@@ -254,7 +254,7 @@ TTBMFont::~TTBMFont()
         application_->getTextureManager()->destroyTexture(data_);
 }
 
-void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, float minx, float miny) const
+void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, bool hasSample, float miny) const
 {
     int size = 0;
     for (const wchar32_t *t = text; *t; ++t, ++size)
@@ -275,8 +275,17 @@ void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float
     graphicsBase->texcoords.Update();
     graphicsBase->indices.Update();
 
-    float x = -minx, y = -miny;
+    float x = 0, y = -miny;
+
+    if (hasSample) {
+        std::map<wchar32_t, TextureGlyph>::const_iterator iter = fontInfo_.textureGlyphs.find(text[0]);
+        const TextureGlyph &textureGlyph = iter->second;
+        x = -textureGlyph.left;
+        //y *= application_->getLogicalScaleY();
+    }
+
     wchar32_t prev = 0;
+
     for (int i = 0; i < size; ++i)
     {
         std::map<wchar32_t, TextureGlyph>::const_iterator iter = fontInfo_.textureGlyphs.find(text[i]);
