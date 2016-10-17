@@ -11,6 +11,7 @@ FileDownloader::FileDownloader(QUrl url, QObject *parent) :
   );
 
  QNetworkRequest request(url);
+ request.setAttribute(QNetworkRequest::FollowRedirectsAttribute,QVariant(true));
  QNetworkReply *ret=m_WebCtrl.get(request);
  connect(ret, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT (progress(qint64,qint64)) );
 }

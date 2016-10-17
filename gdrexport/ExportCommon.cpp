@@ -22,7 +22,8 @@ static QString quote(const QString &str) {
 }
 
 void ExportCommon::copyTemplate(QString templatePath, QString templateDest,
-		ExportContext *ctx, bool isPlugin) {
+		ExportContext *ctx, bool isPlugin, QStringList include,
+		QStringList exclude) {
 	QDir dir = QDir::currentPath();
 	if (!dir.cd(templatePath)) {
 		exportError("Template source not found:%s\n",
@@ -41,18 +42,19 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest,
 		ctx->renameList << qMakePair(ctx->templatenamews, ctx->basews);
 	}
 
-	if (ctx->assetsOnly)
-		Utilities::copyFolder(dir, dir2, ctx->renameList, ctx->wildcards,
-				ctx->replaceList,
-				QStringList() << "libgideros.so" << "libgideros.a"
-						<< "gideros.jar" << "gideros.dll" << "gid.dll"
-						<< "libgideros.dylib" << "libgideros.1.dylib"
-						<< "gideros.WindowsPhone.lib" << "gideros.Windows.lib"
-						<< "WindowsDesktopTemplate.exe"
-						<< "MacOSXDesktopTemplate", QStringList());
-	else
-		Utilities::copyFolder(dir, dir2, ctx->renameList, ctx->wildcards,
-				ctx->replaceList, QStringList() << "*", QStringList());
+	if (!include.count()) {
+		if (ctx->assetsOnly) {
+			include << "libgideros.so" << "libgideros.a" << "gideros.jar"
+					<< "gideros.dll" << "gid.dll" << "libgideros.dylib"
+					<< "libgideros.1.dylib" << "gideros.WindowsPhone.lib"
+					<< "gideros.Windows.lib" << "WindowsDesktopTemplate.exe"
+					<< "MacOSXDesktopTemplate";
+		} else
+			include << "*";
+	}
+
+	Utilities::copyFolder(dir, dir2, ctx->renameList, ctx->wildcards,
+			ctx->replaceList, include, exclude);
 	ctx->renameList.clear();
 	ctx->wildcards.clear();
 	ctx->replaceList.clear();
@@ -245,11 +247,10 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		QString rdst = QDir::cleanPath(ctx->outputDir.relativeFilePath(s1));
 
 		QString suffix = QFileInfo(dst).suffix().toLower();
-		bool isJet=false;
-		if ((!ctx->jetset.isEmpty()) && (!ctx->jetset.contains(suffix)))
-		{
+		bool isJet = false;
+		if ((!ctx->jetset.isEmpty()) && (!ctx->jetset.contains(suffix))) {
 			dst += ".jet";
-			isJet=true;
+			isJet = true;
 		}
 
 		ctx->allfiles.push_back(s1);
@@ -276,7 +277,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 #else
 				QString luac = toolsDir.filePath("luac");
 #endif
-				QDir old=QDir::current();
+				QDir old = QDir::current();
 				QDir::setCurrent(ctx->outputDir.path());
 				QString dfile = "\"" + dst + "\"";
 				QString sfile = "\"" + rdst + "\"";
@@ -442,6 +443,8 @@ void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
 }
 
 bool ExportCommon::applyPlugins(ExportContext *ctx) {
+	if (ctx->assetsOnly) //Don't export plugins on asset only
+		return true;
 	exportInfo("Applying plugins\n");
 	QMap < QString, QString > allplugins = ExportXml::availablePlugins();
 	for (QSet<ProjectProperties::Plugin>::const_iterator it =
@@ -455,9 +458,9 @@ bool ExportCommon::applyPlugins(ExportContext *ctx) {
 	return true;
 }
 
-bool ExportCommon::download(ExportContext *ctx,QString url, QString to) {
-	QString filePath=QDir::cleanPath(ctx->outputDir.absoluteFilePath(to));
-	QFileInfo fi=QFileInfo(filePath);
+bool ExportCommon::download(ExportContext *ctx, QString url, QString to) {
+	QString filePath = QDir::cleanPath(ctx->outputDir.absoluteFilePath(to));
+	QFileInfo fi = QFileInfo(filePath);
 	ctx->outputDir.mkpath(fi.dir().absolutePath());
 	QFile file(filePath);
 	if (file.exists())
@@ -476,12 +479,10 @@ bool ExportCommon::download(ExportContext *ctx,QString url, QString to) {
 
 		delete m_pImgCtrl;
 
-		if (data.length() > 0)
-		{
+		if (data.length() > 0) {
 			file.write(data);
 			return true;
-		}
-		else
+		} else
 			exportError("Failed to download %s\n", url.toStdString().c_str());
 	} else
 		exportError("Can't open file %s\n", to.toStdString().c_str());

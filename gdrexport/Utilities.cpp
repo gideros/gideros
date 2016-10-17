@@ -251,7 +251,7 @@ void Utilities::copyFolder(	const QDir& sourceDir,
         destDir2.mkdir(destFile);
         bool b2 = destDir2.cd(destFile);
 
-        if (b1 && b2)
+        if (b1 && b2 && shouldCopy(sourceDir2.absolutePath(), QStringList() << "*", exclude))
             copyFolder(sourceDir2,
                        destDir2,
                        renameList,
