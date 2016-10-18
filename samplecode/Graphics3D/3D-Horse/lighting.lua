@@ -1,102 +1,49 @@
 Lighting={}
-if application:getDeviceInfo()~="WinRT" then
-Lighting.normal_shader_t = Shader.new(
+
+local LightingVShader=
 [[
 attribute vec4 POSITION0;
+#ifdef TEXTURED
 attribute vec2 TEXCOORD0;
+#endif
 attribute vec3 NORMAL0;
 
 uniform mat4 g_MVPMatrix;
 uniform mat4 g_MVMatrix;
+uniform mat4 g_NMatrix;
 
 varying highp vec3 position;
+#ifdef TEXTURED
 varying mediump vec2 texCoord;
+#endif
 varying mediump vec3 normalCoord;
 
 void main()
 {
+#ifdef TEXTURED
 	texCoord = TEXCOORD0;
+#endif
 	position = (g_MVMatrix*vec4(POSITION0.xyz,0)).xyz;
-	normalCoord = normalize((g_MVMatrix*vec4(NORMAL0.xyz,0)).xyz);
+	normalCoord = normalize((g_NMatrix*vec4(NORMAL0.xyz,0)).xyz);
 	gl_Position = g_MVPMatrix * POSITION0;
 }
-]],
-[[
-uniform lowp sampler2D g_Texture;
-uniform lowp vec4 g_Color;
-uniform highp vec4 lightPos;
-uniform lowp float ambient;
+]]
 
-varying mediump vec2 texCoord;
-varying mediump vec3 normalCoord;
-varying highp vec3 position;
-
-void main()
-{
-	lowp vec3 color0 = texture2D(g_Texture, texCoord).rgb;
-	lowp vec3 color1 = vec3(0.5, 0.5, 0.5);
-	
-	highp vec3 normal = normalCoord;
-	highp vec3 lightDir = normalize(lightPos.xyz - position.xyz);
-	highp vec3 viewDir = normalize(-position.xyz);
-	mediump float diff = max(0.0, dot(normal, lightDir));
-	mediump float spec =0.0;
-	if (diff>0.0)
-	{
-		mediump float nh = max(0.0, dot(reflect(-lightDir,normal),viewDir));
-		spec = pow(nh, 96.0);
-	}
-	diff=max(diff,ambient);
-	
-	gl_FragColor = vec4(color0 * diff + color1 * spec, 1);
-}
-]],
-Shader.FLAG_FROM_CODE,
-{
-{name="g_MVPMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP, vertex=true},
-{name="g_MVMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WORLD, vertex=true},
-{name="g_Color",type=Shader.CFLOAT4,mult=1,sys=Shader.SYS_COLOR},
-{name="lightPos",type=Shader.CFLOAT4,mult=1,vertex=false},
-{name="ambient",type=Shader.CFLOAT,mult=1,vertex=false},
-{name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false}
-},
-{
-{name="POSITION0",type=Shader.DFLOAT,mult=3,slot=0,offset=0},
-{name="vColor",type=Shader.DUBYTE,mult=0,slot=1,offset=0},
-{name="TEXCOORD0",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
-{name="NORMAL0",type=Shader.DFLOAT,mult=3,slot=3,offset=0}
-})
-
-Lighting.normal_shader_tn = Shader.new(
-[[
-attribute vec4 POSITION0;
-attribute vec2 TEXCOORD0;
-attribute vec3 NORMAL0;
-
-uniform mat4 g_MVPMatrix;
-uniform mat4 g_MVMatrix;
-
-varying highp vec3 position;
-varying mediump vec2 texCoord;
-varying mediump vec3 normalCoord;
-
-void main()
-{
-	texCoord = TEXCOORD0;
-	position = (g_MVMatrix*vec4(POSITION0.xyz,0)).xyz;
-	normalCoord = normalize((g_MVMatrix*vec4(NORMAL0.xyz,0)).xyz);
-	gl_Position = g_MVPMatrix * POSITION0;
-}
-]],
-[[
+local LightingFShader=[[
 #extension GL_OES_standard_derivatives : enable
-uniform lowp sampler2D g_Texture;
 uniform lowp vec4 g_Color;
 uniform highp vec4 lightPos;
 uniform lowp float ambient;
-uniform highp sampler2D g_NormalMap;
+#ifdef TEXTURED
+uniform lowp sampler2D g_Texture;
+#endif
+#ifdef NORMMAP
+uniform lowp sampler2D g_NormalMap;
+#endif
 
+#ifdef TEXTURED
 varying mediump vec2 texCoord;
+#endif
 varying mediump vec3 normalCoord;
 varying highp vec3 position;
 
@@ -104,6 +51,7 @@ varying highp vec3 position;
 precision mediump float;
 #endif
 
+#ifdef NORMMAP
 mat3 cotangent_frame(vec3 N, vec3 p, vec2 uv)
 {
     // récupère les vecteurs du triangle composant le pixel
@@ -132,17 +80,23 @@ vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )
     mat3 TBN = cotangent_frame(N, -V, texcoord);
     return normalize(TBN * map);
 }
+#endif
 
 void main()
 {
+#ifdef TEXTURED
 	lowp vec3 color0 = texture2D(g_Texture, texCoord).rgb;
+#else
+	lowp vec3 color0 = g_Color.xyz;
+#endif
 	lowp vec3 color1 = vec3(0.5, 0.5, 0.5);
 	highp vec3 normal = normalCoord;
-	//highp vec3 normal = normalize((g_MVFMatrix*vec4(normalin,1)).xyz);
 	
 	highp vec3 lightDir = normalize(lightPos.xyz - position.xyz);
 	highp vec3 viewDir = normalize(-position.xyz);
+#ifdef NORMMAP	
 	normal=perturb_normal(normal, viewDir, texCoord);
+#endif	
 	
 	mediump float diff = max(0.0, dot(normal, lightDir));
 	mediump float spec =0.0;
@@ -155,86 +109,52 @@ void main()
 	
 	gl_FragColor = vec4(color0 * diff + color1 * spec, 1);
 }
-]],
-Shader.FLAG_FROM_CODE,
-{
-{name="g_MVPMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP, vertex=true},
-{name="g_MVMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WORLD, vertex=true},
-{name="g_Color",type=Shader.CFLOAT4,mult=1,sys=Shader.SYS_COLOR},
-{name="lightPos",type=Shader.CFLOAT4,mult=1,vertex=false},
-{name="ambient",type=Shader.CFLOAT,mult=1,vertex=false},
-{name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false},
-{name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false}
-},
+]]
+
+local LightingShaderAttrs=
 {
 {name="POSITION0",type=Shader.DFLOAT,mult=3,slot=0,offset=0},
 {name="vColor",type=Shader.DUBYTE,mult=0,slot=1,offset=0},
 {name="TEXCOORD0",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
 {name="NORMAL0",type=Shader.DFLOAT,mult=3,slot=3,offset=0}
-})
+}
+
+local LightingShaderConstants={
+{name="g_MVPMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP, vertex=true},
+{name="g_MVMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WORLD, vertex=true},
+{name="g_NMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WIT3, vertex=true},
+{name="g_Color",type=Shader.CFLOAT4,mult=1,sys=Shader.SYS_COLOR},
+{name="lightPos",type=Shader.CFLOAT4,mult=1,vertex=false},
+{name="ambient",type=Shader.CFLOAT,mult=1,vertex=false}}
+
+-- Shaders defs
+if application:getDeviceInfo()~="WinRT" then
 
 Lighting.normal_shader_b = Shader.new(
-[[
-attribute vec4 POSITION0;
-attribute vec2 TEXCOORD0;
-attribute vec3 NORMAL0;
+LightingVShader,LightingFShader,
+Shader.FLAG_FROM_CODE,LightingShaderConstants,LightingShaderAttrs)
 
-uniform mat4 g_MVPMatrix;
-uniform mat4 g_MVMatrix;
+LightingShaderConstants[#LightingShaderConstants+1]=
+	{name="g_Texture",type=Shader.CTEXTURE,mult=1,vertex=false}
 
-varying highp vec3 position;
-varying mediump vec3 normalCoord;
+Lighting.normal_shader_t = Shader.new(
+[[#define TEXTURED
+]]..LightingVShader,
+[[#define TEXTURED
+]]..LightingFShader,
+Shader.FLAG_FROM_CODE,LightingShaderConstants,LightingShaderAttrs)
 
-void main()
-{
-	position = (g_MVMatrix*vec4(POSITION0.xyz,0)).xyz;
-	normalCoord = normalize((g_MVMatrix*vec4(NORMAL0.xyz,0)).xyz);
-	gl_Position = g_MVPMatrix * POSITION0;
-}
-]],
-[[
-uniform lowp vec4 g_Color;
+LightingShaderConstants[#LightingShaderConstants+1]=
+	{name="g_NormalMap",type=Shader.CTEXTURE,mult=1,vertex=false}
 
-uniform mediump vec4 lightPos;
-uniform lowp float ambient;
-
-varying highp vec3 normalCoord;
-varying mediump vec3 position;
-
-void main()
-{
-	lowp vec3 color0 = g_Color.xyz;
-	lowp vec3 color1 = vec3(0.5, 0.5, 0.5);
-	
-	highp vec3 normal = normalCoord;
-	highp vec3 lightDir = normalize(lightPos.xyz - position.xyz);
-	highp vec3 viewDir = normalize(-position.xyz);
-	mediump float diff = max(0.0, dot(normal, lightDir));
-	mediump float spec =0.0;
-	if (diff>0.0)
-	{
-		mediump float nh = max(0.0, dot(reflect(-lightDir,normal),viewDir));
-		spec = pow(nh, 96.0);
-	}
-	diff=max(diff,ambient);
-	
-	gl_FragColor = vec4(color0 * diff + color1 * spec, 1.0);
-}
-]],
-Shader.FLAG_FROM_CODE,
-{
-{name="g_MVPMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP, vertex=true},
-{name="g_MVMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WORLD, vertex=true},
-{name="g_Color",type=Shader.CFLOAT4,mult=1,sys=Shader.SYS_COLOR},
-{name="lightPos",type=Shader.CFLOAT4,mult=1,vertex=false},
-{name="ambient",type=Shader.CFLOAT,mult=1,vertex=false},
-},
-{
-{name="POSITION0",type=Shader.DFLOAT,mult=3,slot=0,offset=0},
-{name="vColor",type=Shader.DUBYTE,mult=0,slot=1,offset=0},
-{name="TEXCOORD0",type=Shader.DFLOAT,mult=2,slot=2,offset=0},
-{name="NORMAL0",type=Shader.DFLOAT,mult=3,slot=3,offset=0}
-})
+Lighting.normal_shader_tn = Shader.new(
+[[#define TEXTURED
+#define NORMMAP
+]]..LightingVShader,
+[[#define TEXTURED
+#define NORMMAP
+]]..LightingFShader,
+Shader.FLAG_FROM_CODE,LightingShaderConstants,LightingShaderAttrs)
 
 Lighting.allShaders={Lighting.normal_shader_t,Lighting.normal_shader_b,Lighting.normal_shader_tn}
 else

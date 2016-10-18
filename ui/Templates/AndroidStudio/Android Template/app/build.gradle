@@ -28,6 +28,12 @@ android {
     }    
 }
 
+repositories {
+   flatDir {
+       dirs 'libs'
+   }
+}
+
 dependencies {
     compile files('libs/gideros.jar')
     //TAG-DEPENDENCIES//    

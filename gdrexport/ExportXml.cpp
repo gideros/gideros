@@ -424,6 +424,8 @@ QString ExportXml::XmlAttributeOrElement(QDomElement elm,QString name)
 }
 
 bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomElement rule) {
+	QStringList include= ReplaceAttributes(rule.attribute("include")).split(";",QString::SkipEmptyParts);
+	QStringList exclude= ReplaceAttributes(rule.attribute("exclude")).split(";",QString::SkipEmptyParts);
 	for (QDomNode n = rule.firstChild(); !n.isNull(); n = n.nextSibling()) {
 		QDomElement rl = n.toElement();
 		if ((!rl.isNull()) && (rl.tagName() == "replacelist")) {
@@ -473,9 +475,10 @@ bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomEleme
     ctx->templatenamews = Utilities::RemoveSpaces(name, false); //TODO underscores or not ?
     ExportCommon::exportInfo("Template: %s from [%s] to [%s]\n", name.toStdString().c_str(),
             path.toStdString().c_str(), dest.toStdString().c_str());
+
 	ExportCommon::copyTemplate(
 			QDir::current().relativeFilePath(
-                    ctx->outputDir.absoluteFilePath(path)), ctx->outputDir.absoluteFilePath(dest), ctx, isPlugin);
+                    ctx->outputDir.absoluteFilePath(path)), ctx->outputDir.absoluteFilePath(dest), ctx, isPlugin, include, exclude);
 	return true;
 }
 
