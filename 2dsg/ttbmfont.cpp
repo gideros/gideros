@@ -77,12 +77,9 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
     if (error)
         throw GiderosException(GStatus(6012, filename));		// Error #6012: %s: Error while reading font file.
 
-    float scalex = application_->getLogicalScaleX();
-    float scaley = application_->getLogicalScaleY();
-
     const int RESOLUTION = 72;
 
-    error = FT_Set_Char_Size(face, 0L, (int)floor(size * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f));
+    error = FT_Set_Char_Size(face, 0L, (int)floor(size * 64 + 0.5f), RESOLUTION, RESOLUTION);
     if (error)
     {
         FT_Done_Face(face);
@@ -242,8 +239,8 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
     parameters.wrap = eClamp;
     data_ = application_->getTextureManager()->createTextureFromDib(dib, parameters);
 
-    sizescalex_ = 1 / scalex;
-    sizescaley_ = 1 / scaley;
+    sizescalex_ = 1;
+    sizescaley_ = 1;
     uvscalex_ = 1;
     uvscaley_ = 1;
 }
@@ -254,7 +251,7 @@ TTBMFont::~TTBMFont()
         application_->getTextureManager()->destroyTexture(data_);
 }
 
-void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, float minx, float miny) const
+void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, bool hasSample, float miny) const
 {
     int size = 0;
     for (const wchar32_t *t = text; *t; ++t, ++size)
@@ -275,8 +272,17 @@ void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float
     graphicsBase->texcoords.Update();
     graphicsBase->indices.Update();
 
-    float x = -minx, y = -miny;
+    float x = 0, y = -miny;
+
+    if (hasSample) {
+        std::map<wchar32_t, TextureGlyph>::const_iterator iter = fontInfo_.textureGlyphs.find(text[0]);
+        const TextureGlyph &textureGlyph = iter->second;
+        x = -textureGlyph.left;
+        //y *= application_->getLogicalScaleY();
+    }
+
     wchar32_t prev = 0;
+
     for (int i = 0; i < size; ++i)
     {
         std::map<wchar32_t, TextureGlyph>::const_iterator iter = fontInfo_.textureGlyphs.find(text[i]);

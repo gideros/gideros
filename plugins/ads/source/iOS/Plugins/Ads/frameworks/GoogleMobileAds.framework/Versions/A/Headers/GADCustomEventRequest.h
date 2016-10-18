@@ -11,20 +11,27 @@
 
 @class GADCustomEventExtras;
 
+/// Specifies optional ad request targeting parameters that are provided by the publisher and are
+/// forwarded to custom events for purposes of populating an ad request to a 3rd party ad network.
 @interface GADCustomEventRequest : NSObject
 
-/// The end user's gender set in GADRequest. If not specified, returns kGADGenderUnknown.
+/// User's gender set in GADRequest. If not specified, returns kGADGenderUnknown.
 @property(nonatomic, readonly, assign) GADGender userGender;
 
-/// The end user's birthday set in GADRequest. If not specified, returns nil.
+/// User's birthday set in GADRequest. If not specified, returns nil.
 @property(nonatomic, readonly, copy) NSDate *userBirthday;
 
-/// The end user's latitude, longitude, and accuracy, set in GADRequest. If not specified,
-/// userHasLocation returns NO, and userLatitude, userLongitude and userLocationAccuracyInMeters
-/// will all return 0.
+/// If the user's latitude, longitude, and accuracy are not specified, userHasLocation returns NO,
+/// and userLatitude, userLongitude, and userLocationAccuracyInMeters return 0.
 @property(nonatomic, readonly, assign) BOOL userHasLocation;
+
+/// User's latitude set in GADRequest.
 @property(nonatomic, readonly, assign) CGFloat userLatitude;
+
+/// User's longitude set in GADRequest.
 @property(nonatomic, readonly, assign) CGFloat userLongitude;
+
+/// The accuracy, in meters, of the user's location data.
 @property(nonatomic, readonly, assign) CGFloat userLocationAccuracyInMeters;
 
 /// Description of the user's location, in free form text, set in GADRequest. If not available,

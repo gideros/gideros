@@ -79,6 +79,8 @@ public class AdsMopub implements AdsInterface{
 				}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 		    mInterstitial.setInterstitialAdListener(new AdsMopubInterstitialListener(mngr.getState(type)));
 		    mInterstitial.load();
@@ -106,7 +108,9 @@ public class AdsMopub implements AdsInterface{
 					public void onHide() {
 						Ads.removeAd(AdsMopub.me, adView);
 						Ads.adDismissed(AdsMopub.me, type);
-					}		
+					}	
+					@Override
+                    public void onRefresh() {}	
 				});
 				mngr.setAutoKill(type, false);
 				if(tag != null)

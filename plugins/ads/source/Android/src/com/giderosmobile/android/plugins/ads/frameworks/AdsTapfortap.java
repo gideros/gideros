@@ -70,6 +70,8 @@ public class AdsTapfortap implements AdsInterface, Banner.BannerListener, Inters
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 			
 		}
@@ -86,6 +88,8 @@ public class AdsTapfortap implements AdsInterface, Banner.BannerListener, Inters
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 		}	
 		else
@@ -108,6 +112,8 @@ public class AdsTapfortap implements AdsInterface, Banner.BannerListener, Inters
 						Ads.removeAd(AdsTapfortap.me, adView);
 						Ads.adDismissed(AdsTapfortap.me, type);
 					}	
+					@Override
+                    public void onRefresh() {}
 				});
 				mngr.setAutoKill(type, false);
 				adView.startShowingAds();

@@ -7,7 +7,7 @@ public class AdsState{
 	boolean loaded;
 	boolean show;
 	boolean autoKill = true;
-	
+	boolean preLoad = false;
 	
 	public AdsState(Object adObject, String adType){
 		ad = adObject;
@@ -27,6 +27,9 @@ public class AdsState{
 	public void setAutoKill(boolean kill){
 		autoKill = kill;
 	}
+	public void setPreLoad(boolean preload){
+		preLoad = preload;
+	}
 	
 	public Object getObject(){
 		return ad;
@@ -38,7 +41,8 @@ public class AdsState{
 	
 	public void load(){
 		loaded = true;
-		checkAction();
+		if (!preLoad)
+			checkAction();
 	}
 	
 	public void show(){
@@ -82,6 +86,16 @@ public class AdsState{
 		{
 			try{
 				listener.onHide();
+			}
+			catch(Exception e){}
+		}
+	}
+
+	public void refresh(){
+		if(listener != null)
+		{
+			try{
+				listener.onRefresh();
 			}
 			catch(Exception e){}
 		}

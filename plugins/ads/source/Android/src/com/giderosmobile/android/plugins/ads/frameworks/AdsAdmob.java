@@ -14,12 +14,13 @@ import com.giderosmobile.android.plugins.ads.*;
 import com.google.android.gms.ads.*;
 import com.google.android.gms.ads.AdRequest.Builder;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 public class AdsAdmob implements AdsInterface {
 	
 	private WeakReference<Activity> sActivity;
 	private String adsID = "";
+    private String appID = "";
 	private AdSize currentType = AdSize.BANNER;
 	private String currentName = "banner";
 	private String testID = "";
@@ -36,6 +37,7 @@ public class AdsAdmob implements AdsInterface {
 		sActivity = activity;
 		
 		adsID = "";
+
 		currentType = AdSize.BANNER;
 		currentName = "banner";
 		testID = "";
@@ -79,43 +81,74 @@ public class AdsAdmob implements AdsInterface {
 	public void setKey(final Object parameters){
 		SparseArray<String> param = (SparseArray<String>)parameters;
 		adsID = param.get(0);
-	}
-	
+    
+        if(param.get(1) != null)  //the second is the appid required by the api
+        {
+            appID = param.get(1);
+            MobileAds.initialize(sActivity.get().getApplicationContext(), appID);
+        }
+
+    }
+
+    private void requestNewInterstitial(InterstitialAd interstitial){
+        Builder adRequest = new AdRequest.Builder();
+        if(!testID.equals(""))
+        {
+            adRequest.addTestDevice(testID);
+        }
+        interstitial.loadAd(adRequest.build());
+    }
+
 	//load an Ad
 	public void loadAd(final Object parameters)
 	{
-			SparseArray<String> param = (SparseArray<String>)parameters;
-			final String type = param.get(0);
-			String adPlace = adsID;
-			if(param.get(1) != null)
-			{
-				adPlace = param.get(1);
-			}
-				if(type.equals("interstitial"))
+        SparseArray<String> param = (SparseArray<String>)parameters;
+        final String type = param.get(0);
+        String adPlace = adsID;
+        if(param.get(1) != null)
+        {
+            adPlace = param.get(1);
+        }
+
+        if(type.equals("interstitial"))
 				{
-					final InterstitialAd interstitial = new InterstitialAd(sActivity.get());
-					mngr.set(interstitial, type, new AdsStateChangeListener(){
+                     if (mngr.get(type) == null) {
+                        final InterstitialAd interstitial = new InterstitialAd(sActivity.get());
+                       
+                        mngr.set(interstitial, type, new AdsStateChangeListener() {
+                            @Override
+                            public void onShow() {
+                               
+                                if (interstitial.isLoaded()) {
+                                    Ads.adDisplayed(me, type);
+                                    interstitial.show();
+                                }
+                            }
 
-						@Override
-						public void onShow() {
-							Ads.adDisplayed(me, type);
-							interstitial.show();
-						}
+                            @Override
+                            public void onDestroy() {
+                                
+                            }
 
-						@Override
-						public void onDestroy() {}	
-						@Override
-						public void onHide() {}	
-					});
-					interstitial.setAdUnitId(adPlace);
-			
-					Builder adRequest = new AdRequest.Builder();
-					if(!testID.equals(""))
-					{
-						adRequest.addTestDevice(testID);
-					}
-					interstitial.setAdListener(new AdsAdmobListener(mngr.getState(type)));
-					interstitial.loadAd(adRequest.build());
+                            @Override
+                            public void onHide() {
+                               
+                            }
+
+                            @Override
+                            public void onRefresh() {
+                               requestNewInterstitial(interstitial);
+                            }
+                        });
+                         // interstitial should be reused
+                         mngr.setAutoKill(type, false);
+                         mngr.setPreLoad(type, true);
+                         interstitial.setAdUnitId(adPlace);
+                         interstitial.setAdListener(new AdsAdmobListener(mngr.getState(type)));
+
+                         requestNewInterstitial(interstitial);
+                    }
+
 				}
 				else
 				{
@@ -141,12 +174,19 @@ public class AdsAdmob implements AdsInterface {
 									 hideAd(type);
 									 adView.destroy();
 								}
+
 								@Override
 								public void onHide() {
 									Ads.removeAd(AdsAdmob.me, adView);
 									Ads.adDismissed(AdsAdmob.me, type);
-								}	
-							});
+								}
+
+                                @Override
+                                public void onRefresh() {
+
+                                }
+
+                            });
 							mngr.setAutoKill(type, false);
 							adView.setAdUnitId(adPlace);
 							adView.setAdSize(adTypes.get(type));
@@ -192,7 +232,18 @@ public class AdsAdmob implements AdsInterface {
 	}
 	
 	private boolean checkAvailable(){
-		return GooglePlayServicesUtil.isGooglePlayServicesAvailable(sActivity.get())== ConnectionResult.SUCCESS; 
+		//return GooglePlayServicesUtil.isGooglePlayServicesAvailable(sActivity.get())== ConnectionResult.SUCCESS;
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int result = googleApiAvailability.isGooglePlayServicesAvailable(sActivity.get());
+        if (result != ConnectionResult.SUCCESS) {
+            if (googleApiAvailability.isUserResolvableError(result)) {
+                googleApiAvailability.getErrorDialog(sActivity.get(), result, 9000).show();
+            }
+
+            return false;
+        }
+
+        return true;
 	}
 
 	@Override
@@ -251,6 +302,7 @@ class AdsAdmobListener extends AdListener{
 		Ads.adActionEnd(AdsAdmob.me, type);
 		if(type.equals("interstitial")){
 			Ads.adDismissed(AdsAdmob.me, type);
+            state.refresh();
 		}
 	}
 	
