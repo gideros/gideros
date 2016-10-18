@@ -95,6 +95,8 @@ public class AdsAmazon implements AdsInterface{
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 			interstitialAd.setListener(new AdsAmazonListener(mngr.getState(type)));
 			interstitialAd.loadAd();
@@ -140,6 +142,8 @@ public class AdsAmazon implements AdsInterface{
 						Ads.removeAd(AdsAmazon.me, adView);
 						Ads.adDismissed(AdsAmazon.me, type);
 					}	
+					@Override
+                    public void onRefresh() {}
 				});
 				mngr.setAutoKill(type, false);
 				adView.setListener(new AdsAmazonListener(mngr.getState(type)));

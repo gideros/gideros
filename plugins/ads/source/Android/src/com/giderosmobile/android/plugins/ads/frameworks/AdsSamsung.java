@@ -91,6 +91,8 @@ public class AdsSamsung implements AdsInterface, AdInterstitialListener, AdVideo
 					public void onDestroy() {}	
 					@Override
 					public void onHide() {}	
+					@Override
+                    public void onRefresh() {}
 				});
 				adHubInterstitial.setListener(this);
 			}
@@ -107,6 +109,8 @@ public class AdsSamsung implements AdsInterface, AdInterstitialListener, AdVideo
 					public void onDestroy() {}	
 					@Override
 					public void onHide() {}	
+					@Override
+                    public void onRefresh() {}
 				});
 				video.setListener(this);
 				
@@ -150,6 +154,8 @@ public class AdsSamsung implements AdsInterface, AdInterstitialListener, AdVideo
 								Ads.removeAd(AdsSamsung.me, adView);
 								Ads.adDismissed(AdsSamsung.me, type);
 							}	
+							@Override
+                    		public void onRefresh() {}
 						});
 						mngr.setAutoKill(type, false);
 						adView.init(sActivity.get(), adsID, newType);

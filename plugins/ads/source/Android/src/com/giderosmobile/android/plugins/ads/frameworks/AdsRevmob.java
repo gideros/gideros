@@ -79,6 +79,8 @@ public class AdsRevmob implements AdsInterface{
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 		}
 		else if(type.equals("popup"))
@@ -102,6 +104,8 @@ public class AdsRevmob implements AdsInterface{
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 		}
 		else if(type.equals("moregames"))
@@ -124,6 +128,8 @@ public class AdsRevmob implements AdsInterface{
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}	
 			});
 		}
 		else
@@ -155,6 +161,8 @@ public class AdsRevmob implements AdsInterface{
 						Ads.removeAd(AdsRevmob.me, adView);
 						Ads.adDismissed(AdsRevmob.me, type);
 					}	
+					@Override
+                    public void onRefresh() {}	
 				});
 			}
 		}

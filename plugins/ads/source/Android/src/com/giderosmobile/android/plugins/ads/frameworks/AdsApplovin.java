@@ -97,6 +97,8 @@ public class AdsApplovin implements AdsInterface {
 						public void onDestroy() {}	
 						@Override
 						public void onHide() {}	
+						@Override
+                    	public void onRefresh() {}
 					});
 					AdsApplovinListener listener = new AdsApplovinListener(mngr.getState(type));
 					interstitial.setAdClickListener(listener);
@@ -121,6 +123,8 @@ public class AdsApplovin implements AdsInterface {
 						public void onDestroy() {}	
 						@Override
 						public void onHide() {}	
+						@Override
+                    	public void onRefresh() {}
 					});
 					listener.setType(mngr.getState(type));
 					interstitial.preload(listener);
