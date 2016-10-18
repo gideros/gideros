@@ -7,12 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import <GoogleMobileAds/GADAdDelegate.h>
+
 @class GADInterstitial;
 @class GADRequestError;
 
 /// Delegate for receiving state change messages from a GADInterstitial such as interstitial ad
 /// requests succeeding/failing.
-@protocol GADInterstitialDelegate<NSObject>
+@protocol GADInterstitialDelegate<GADAdDelegate>
 
 @optional
 
@@ -33,6 +35,9 @@
 /// application in case the user leaves while the interstitial is on screen (e.g. to visit the App
 /// Store from a link on the interstitial).
 - (void)interstitialWillPresentScreen:(GADInterstitial *)ad;
+
+/// Called when |ad| fails to present.
+- (void)interstitialDidFailToPresentScreen:(GADInterstitial *)ad;
 
 /// Called before the interstitial is to be animated off the screen.
 - (void)interstitialWillDismissScreen:(GADInterstitial *)ad;

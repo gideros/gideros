@@ -15,9 +15,10 @@
 
 @interface AdsAdmob : NSObject <AdsProtocol, GADInterstitialDelegate>
 @property(nonatomic, assign) const GADAdSize *currentType;
-@property(nonatomic, retain) NSString *currentSize;
-@property(nonatomic, retain) NSString *appKey;
-@property(nonatomic, retain) NSString *testID;
+@property(nonatomic, copy) NSString *currentSize;
+@property(nonatomic, copy) NSString *appKey;
+@property(nonatomic, copy) NSString *interstitialId;  //save the id for reload automatically
+@property(nonatomic, copy) NSString *testID;
 @property (nonatomic, retain) AdsManager *mngr;
 @end
 

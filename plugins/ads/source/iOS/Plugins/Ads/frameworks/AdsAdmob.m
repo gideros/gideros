@@ -15,6 +15,7 @@
     self.currentType = &kGADAdSizeBanner;
     self.currentSize = @"banner";
     self.appKey = @"";
+    self.interstitialId = @"";
     self.mngr = [[AdsManager alloc] init];
     return self;
 }
@@ -54,10 +55,20 @@
     [self.mngr destroy];
     [self.mngr release];
     self.mngr = nil;
+    
+    self.currentSize = nil;
+    self.appKey = nil;
+    self.interstitialId = nil;
+    self.testID = nil;
 }
 
 -(void)setKey:(NSMutableArray*)parameters{
-    self.appKey = [parameters objectAtIndex:0];
+    self.appKey = [parameters objectAtIndex:0];  //the first is banner id
+    
+    if ([parameters count] > 1) //the second is app id
+    {
+        [GADMobileAds configureWithApplicationID:[parameters objectAtIndex:1]];
+    }
 }
 
 -(void)loadAd:(NSMutableArray*)parameters{
@@ -72,12 +83,15 @@
         placeId = self.appKey;
     }
     if ([type isEqualToString:@"interstitial"]) {
-        GADInterstitial *interstitial_ = [[GADInterstitial alloc] init];
+        self.interstitialId = placeId;
+        GADInterstitial *interstitial_ = [[GADInterstitial alloc] initWithAdUnitID:placeId];
         
         AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
         [listener setShow:^(){
-            [AdsClass adDisplayed:[self class] forType:type];
-            [interstitial_ presentFromRootViewController:[AdsClass getRootViewController]];
+            if (interstitial_.isReady){
+                [AdsClass adDisplayed:[self class] forType:type];
+                [interstitial_ presentFromRootViewController:[AdsClass getRootViewController]];
+            }
         }];
         [listener setDestroy:^(){
             [self hideAd:type];
@@ -88,7 +102,8 @@
         [self.mngr set:interstitial_ forType:type withListener:listener];
 
         [interstitial_ setDelegate:self];
-        interstitial_.adUnitID = placeId;
+        [self.mngr setPreload:true forType:type];
+        
         GADRequest *request = [GADRequest request];
         if(![self.testID isEqualToString:@""])
         {
@@ -101,13 +116,14 @@
             if([self.mngr get:type] == nil)
             {
                 self.currentType = [self getAdType:type];
+                
                 GADBannerView *view_ = [[GADBannerView alloc] initWithAdSize:*self.currentType];
                 view_.adUnitID = placeId;
                 view_.rootViewController = [AdsClass getRootViewController];
                 
                 AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
                 [listener setShow:^(){
-                    self.currentSize = [type copy];
+                    self.currentSize = type;
                     [AdsClass adDisplayed:[self class] forType:type];
                     [view_.rootViewController.view addSubview:view_];
                 }];
@@ -136,12 +152,12 @@
                     request.testDevices = @[self.testID];
                 }
                 [view_ loadRequest:request];
-
-        }
-        else
-        {
-            [AdsClass adError:[self class] with:[NSString stringWithFormat:@"Unknown type: %@", type]];
-        }
+                
+            }
+            else
+            {
+                [AdsClass adError:[self class] with:[NSString stringWithFormat:@"Unknown type: %@", type]];
+            }
     }
 }
 
@@ -198,6 +214,8 @@
 
 -(void)interstitialWillDismissScreen:(GADInterstitial *)ad{
     [AdsClass adDismissed:[self class] forType:@"interstitial"];
+    //preload interstitial automatically
+    [self loadAd:[NSMutableArray arrayWithObjects:@"interstitial",self.interstitialId, nil]];
 }
 
 @end
@@ -218,7 +236,8 @@
 
 - (void)adView:(GADBannerView *)bannerView didFailToReceiveAdWithError:(GADRequestError *)error{
     [AdsClass adFailed:[self.instance class] with:[error localizedDescription] forType:[self.state getType]];
-    [self.state reset];
+    //the banner view should be valid and can continue to use
+	//[self.state reset];
 }
 
 - (void)adViewWillPresentScreen:(GADBannerView *)bannerView{

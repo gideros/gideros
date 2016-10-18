@@ -91,6 +91,8 @@ public class AdsAdcolony implements AdsInterface, AdColonyAdAvailabilityListener
 					public void onDestroy() {}	
 					@Override
 					public void onHide() {}	
+					@Override
+                    public void onRefresh() {}
 				});
 				videoAd.withListener(new AdsAdcolonyListener(mngr.getState(type)));
 				mngr.load(type);
@@ -128,6 +130,8 @@ public class AdsAdcolony implements AdsInterface, AdColonyAdAvailabilityListener
 					public void onDestroy() {}	
 					@Override
 					public void onHide() {}	
+					@Override
+                    public void onRefresh() {}
 				});
 				rewardAd.withListener(new AdsAdcolonyListener(mngr.getState(type)));
 				mngr.load(type);

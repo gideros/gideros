@@ -86,6 +86,8 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 				@Override
 				public void onHide() {
 				}	
+				@Override
+                public void onRefresh() {}
 			});
 			if(tag != null)
 				VideoAd.fetch(tag);
@@ -108,6 +110,8 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 				@Override
 				public void onHide() {
 				}	
+				@Override
+                public void onRefresh() {}
 			});
 			IncentivizedAd.fetch();
 		}
@@ -131,6 +135,8 @@ public class AdsHeyzap implements AdsInterface, OnStatusListener, OnIncentiveRes
 				@Override
 				public void onHide() {
 				}	
+				@Override
+                public void onRefresh() {}	
 			});
 			if(tag != null)
 				InterstitialAd.fetch(tag);

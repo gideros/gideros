@@ -110,6 +110,7 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
 			float screenWidth = 0;
 			float screenHeight = 0;
 			CGRect screenRect = [[UIScreen mainScreen] bounds];
+            /*
 			if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation]))
 			{
 				screenWidth = screenRect.size.width;
@@ -120,6 +121,19 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
 				screenWidth = screenRect.size.height;
 				screenHeight = screenRect.size.width;
 			}
+             */
+            
+            if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) && ([[[UIDevice currentDevice] systemVersion] floatValue] < 8.0 || floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_7_1))
+            {
+                screenHeight = screenRect.size.width;
+                screenWidth = screenRect.size.height;
+            }
+            else
+            {
+                screenHeight = screenRect.size.height;
+                screenWidth = screenRect.size.width;
+                
+            }
 			if([hor isEqualToString:@"right"]){
 				x = screenWidth - view_.frame.size.width;
 			}

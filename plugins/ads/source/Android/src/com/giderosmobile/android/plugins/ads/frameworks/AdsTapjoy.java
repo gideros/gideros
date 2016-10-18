@@ -88,6 +88,8 @@ public class AdsTapjoy implements AdsInterface, TapjoyFullScreenAdNotifier, Tapj
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 		}
 		else if(type.equals("offers"))
@@ -102,6 +104,8 @@ public class AdsTapjoy implements AdsInterface, TapjoyFullScreenAdNotifier, Tapj
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 			mngr.load(type);
 			Ads.adReceived(AdsTapjoy.me, type);
@@ -144,6 +148,8 @@ public class AdsTapjoy implements AdsInterface, TapjoyFullScreenAdNotifier, Tapj
 							Ads.removeAd(AdsTapjoy.me, (View)mngr.get(type));
 							Ads.adDismissed(AdsTapjoy.me, type);
 						}	
+						@Override
+                    	public void onRefresh() {}
 					});
 				}
 			}

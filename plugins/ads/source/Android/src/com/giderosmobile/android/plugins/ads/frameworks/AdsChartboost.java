@@ -88,6 +88,8 @@ public class AdsChartboost extends ChartboostDelegate implements AdsInterface{
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 			if(Chartboost.hasInterstitial(tag)){
 				mngr.load(type);
@@ -108,6 +110,8 @@ public class AdsChartboost extends ChartboostDelegate implements AdsInterface{
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 			if(Chartboost.hasMoreApps(tag)){
 				mngr.load(type);
@@ -128,6 +132,9 @@ public class AdsChartboost extends ChartboostDelegate implements AdsInterface{
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}	
+
 			});
 			if(Chartboost.hasRewardedVideo(tag)){
 				mngr.load(type);

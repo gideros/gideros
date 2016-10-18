@@ -124,6 +124,8 @@ public class AdsVungle implements AdsInterface {
 				public void onDestroy() {}
 				@Override
 				public void onHide() {}
+				@Override
+                public void onRefresh() {}
 			});
 			mngr.load(type);
 		}
@@ -140,6 +142,8 @@ public class AdsVungle implements AdsInterface {
 				public void onDestroy() {}
 				@Override
 				public void onHide() {}
+				@Override
+                public void onRefresh() {}
 			});
 			mngr.load(type);
 		}
