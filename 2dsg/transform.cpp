@@ -116,11 +116,13 @@ void Transform::compose()
 	 * 0		0			sz			0
 	 * -refx*sx	-refy*sy	-refz*sz	1
 	 */
-	if (rotationZ_)
+    if (rotationZ_||skewX_||skewY_)
 	{
 		//matrix_.rotateZ(rotationZ_);
 	    float c = cosf(rotationZ_ * DEG2RAD);
 	    float s = sinf(rotationZ_ * DEG2RAD);
+        float sx = tanf(skewX_ * DEG2RAD);
+        float sy = tanf(skewY_ * DEG2RAD);
 	    float m0 = m[0],  m1 = m[1],
 	          m4 = m[4],  m5 = m[5],
 	          m8 = m[8],  m9 = m[9],
@@ -129,8 +131,8 @@ void Transform::compose()
 	    // First rot: m1, m2, m4, m6, m8 and m9 are zero
 
 	    m[0] = m0 * c /*+ m1 *-s*/;
-	    m[1] = m0 * s /*+ m1 * c*/;
-	    m[4] = /*m4 * c +*/ m5 *-s;
+        m[1] = m0 * s + sy /*+ m1 * c*/;
+        m[4] = /*m4 * c +*/ m5 *-s + sx;
 	    m[5] = /*m4 * s +*/ m5 * c;
 	    //m[8] = m8 * c + m9 *-s;
 	    //m[9] = m8 * s + m9 * c;

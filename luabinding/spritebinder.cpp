@@ -34,6 +34,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"getScaleX", SpriteBinder::getScaleX},
 		{"getScaleY", SpriteBinder::getScaleY},
 		{"getScaleZ", SpriteBinder::getScaleZ},
+        {"getSkewX", SpriteBinder::getSkewX},
+        {"getSkewY", SpriteBinder::getSkewY},
 		{"setX", SpriteBinder::setX},
 		{"setY", SpriteBinder::setY},
 		{"setZ", SpriteBinder::setZ},
@@ -43,6 +45,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"setScaleX", SpriteBinder::setScaleX},
 		{"setScaleY", SpriteBinder::setScaleY},
 		{"setScaleZ", SpriteBinder::setScaleZ},
+        {"setSkewX", SpriteBinder::setSkewX},
+        {"setSkewY", SpriteBinder::setSkewY},
 		{"setPosition", SpriteBinder::setPosition},
 		{"getPosition", SpriteBinder::getPosition},
         {"setAnchorPosition", SpriteBinder::setAnchorPosition},
@@ -51,6 +55,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
         {"getAnchorPoint", SpriteBinder::getAnchorPoint},
 		{"setScale", SpriteBinder::setScale},
 		{"getScale", SpriteBinder::getScale},
+        {"setSkew", SpriteBinder::setSkew},
+        {"getSkew", SpriteBinder::getSkew},
 		{"localToGlobal", SpriteBinder::localToGlobal},
 		{"globalToLocal", SpriteBinder::globalToLocal},
 		{"isVisible", SpriteBinder::isVisible},
@@ -522,6 +528,30 @@ int SpriteBinder::getScaleZ(lua_State* L)
 	return 1;
 }
 
+int SpriteBinder::getSkewX(lua_State* L)
+{
+    StackChecker checker(L, "getSkewX", 1);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+    lua_pushnumber(L, sprite->skewX());
+
+    return 1;
+}
+
+int SpriteBinder::getSkewY(lua_State* L)
+{
+    StackChecker checker(L, "getSkewY", 1);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+    lua_pushnumber(L, sprite->skewY());
+
+    return 1;
+}
+
 int SpriteBinder::setX(lua_State* L)
 {
 	StackChecker checker(L, "setX");
@@ -637,6 +667,32 @@ int SpriteBinder::setScaleZ(lua_State* L)
 	sprite->setScaleZ(scaleZ);
 
 	return 0;
+}
+
+int SpriteBinder::setSkewX(lua_State* L)
+{
+    StackChecker checker(L, "setScaleX");
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+    double skewX = luaL_checknumber(L, 2);
+    sprite->setSkewX(skewX);
+
+    return 0;
+}
+
+int SpriteBinder::setSkewY(lua_State* L)
+{
+    StackChecker checker(L, "setScaleY");
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+    double skewY = luaL_checknumber(L, 2);
+    sprite->setSkewY(skewY);
+
+    return 0;
 }
 
 int SpriteBinder::setPosition(lua_State* L)
@@ -778,6 +834,32 @@ int SpriteBinder::getScale(lua_State* L)
 	return 3;
 }
 
+int SpriteBinder::setSkew(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::setSkew", 0);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+
+    lua_Number x = luaL_checknumber(L, 2);
+    lua_Number y = luaL_checknumber(L, 3);
+    sprite->setSkewXY(x, y);
+
+    return 0;
+}
+
+int SpriteBinder::getSkew(lua_State* L)
+{
+    StackChecker checker(L, "SpriteBinder::getSkew", 2);
+
+    Binder binder(L);
+    Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+
+    lua_pushnumber(L, sprite->skewX());
+    lua_pushnumber(L, sprite->skewY());
+
+    return 2;
+}
 
 int SpriteBinder::getParent(lua_State* L)
 {

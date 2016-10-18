@@ -37,6 +37,8 @@ private:
 	static int getScaleX(lua_State* L);
 	static int getScaleY(lua_State* L);
 	static int getScaleZ(lua_State* L);
+    static int getSkewX(lua_State* L);
+    static int getSkewY(lua_State* L);
 
 	static int setX(lua_State* L);
 	static int setY(lua_State* L);
@@ -47,6 +49,8 @@ private:
 	static int setScaleX(lua_State* L);
 	static int setScaleY(lua_State* L);
 	static int setScaleZ(lua_State* L);
+    static int setSkewX(lua_State* L);
+    static int setSkewY(lua_State* L);
 
 	static int setPosition(lua_State* L);
 	static int getPosition(lua_State* L);
@@ -59,6 +63,9 @@ private:
 
 	static int setScale(lua_State* L);
 	static int getScale(lua_State* L);
+
+    static int setSkew(lua_State* L);
+    static int getSkew(lua_State* L);
 
 	static int set(lua_State* L);
 	static int get(lua_State* L);

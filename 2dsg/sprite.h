@@ -160,6 +160,21 @@ public:
         localTransform_.setScaleXYZ(s, s, s);
 	}
 
+    void setSkewX(float sx)
+    {
+        localTransform_.setSkewX(sx);
+    }
+
+    void setSkewY(float sy)
+    {
+        localTransform_.setSkewY(sy);
+    }
+
+    void setSkewXY(float sx, float sy)
+    {
+        localTransform_.setSkewXY(sx, sy);
+    }
+
 	void setX(float x)
 	{
         localTransform_.setX(x);
@@ -239,6 +254,16 @@ public:
 	{
         return localTransform_.scaleZ();
 	}
+
+    float skewX() const
+    {
+        return localTransform_.skewX();
+    }
+
+    float skewY() const
+    {
+        return localTransform_.skewY();
+    }
 
 	float x() const
 	{

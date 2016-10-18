@@ -1151,6 +1151,12 @@ void Sprite::set(int param, float value, GStatus* status) {
 	case eStringIdAlphaMultiplier:
 		setAlphaMultiplier(value);
 		break;
+    case eStringIdSkewX:
+        setSkewX(value);
+        break;
+    case eStringIdSkewY:
+        setSkewY(value);
+        break;
 	default:
 		if (status)
 			*status = GStatus(2008, "param"); // Error #2008: Parameter '%s' must be one of the accepted values.
@@ -1194,6 +1200,10 @@ float Sprite::get(int param, GStatus* status) {
 		return getBlueMultiplier();
 	case eStringIdAlphaMultiplier:
 		return getAlphaMultiplier();
+    case eStringIdSkewX:
+        return skewX();
+    case eStringIdSkewY:
+        return skewY();
 	}
 
 	if (status)
