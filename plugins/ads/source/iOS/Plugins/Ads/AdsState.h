@@ -16,12 +16,14 @@
 @property(nonatomic) BOOL loaded;
 @property(nonatomic) BOOL showed;
 @property(nonatomic) BOOL autokill_;
+@property(nonatomic) BOOL preload_;
 
 -(id)init:(NSObject*)ad withType:(NSString*)type;
 -(void)destruct;
 -(void)setObject:(NSObject*)ad;
 -(void)setListener:(AdsStateChangeListener*)listener;
 -(void)setAutokill:(BOOL)autokill;
+-(void)setPreload:(BOOL)preload;
 -(NSObject*)getObject;
 -(NSString*)getType;
 -(void)load;

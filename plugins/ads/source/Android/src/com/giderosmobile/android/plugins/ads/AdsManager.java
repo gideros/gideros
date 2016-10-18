@@ -54,6 +54,11 @@ public class AdsManager {
 		if(adViews != null && type != null && adViews.get(type) != null)
 			adViews.get(type).setAutoKill(kill);
 	}
+
+	public void setPreLoad(String type, boolean preload){
+		if(adViews != null && type != null && adViews.get(type) != null)
+			adViews.get(type).setPreLoad(preload);
+	}
 	
 	public void remove(String type){
 		if(adViews != null && type != null && adViews.get(type) != null)
