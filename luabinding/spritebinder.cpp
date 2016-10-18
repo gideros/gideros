@@ -71,8 +71,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"getAlpha", SpriteBinder::getAlpha},
 		{"setAlpha", SpriteBinder::setAlpha},
 		{"getBounds", SpriteBinder::getBounds},
-		{"setBlendFunc", SpriteBinder::setBlendFunc},
-		{"clearBlendFunc", SpriteBinder::clearBlendFunc},
+        {"setBlendMode", SpriteBinder::setBlendMode},
+        {"clearBlendMode", SpriteBinder::clearBlendMode},
 		{"setShader", SpriteBinder::setShader},
 		{"setShaderConstant", SpriteBinder::setShaderConstant},
 
@@ -83,7 +83,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 
 	binder.createClass("Sprite", "EventDispatcher", create, destruct, functionList);
 
-	lua_newtable(L);
+    //lua_newtable(L);
+    lua_getglobal(L, "Sprite");
 
 	lua_pushinteger(L, ShaderEngine::ZERO);
 	lua_setfield(L, -2, "ZERO");
@@ -116,7 +117,18 @@ SpriteBinder::SpriteBinder(lua_State* L)
 	lua_pushinteger(L, ShaderEngine::SRC_ALPHA_SATURATE);
 	lua_setfield(L, -2, "SRC_ALPHA_SATURATE");
 
-	lua_setglobal(L, "BlendFactor");
+    lua_pushstring(L, "alpha");
+    lua_setfield(L, -2, "ALPHA");
+    lua_pushstring(L, "noAlpha");
+    lua_setfield(L, -2, "NO_ALPHA");
+    lua_pushstring(L, "add");
+    lua_setfield(L, -2, "ADD");
+    lua_pushstring(L, "multiply");
+    lua_setfield(L, -2, "MULTIPLY");
+    lua_pushstring(L, "screen");
+    lua_setfield(L, -2, "SCREEN");
+
+    lua_setglobal(L, "Sprite");
 }
 
 int SpriteBinder::create(lua_State* L)
@@ -1246,22 +1258,38 @@ int SpriteBinder::getBounds(lua_State* L)
 	return 4;
 }
 
-int SpriteBinder::setBlendFunc(lua_State* L)
+int SpriteBinder::setBlendMode(lua_State* L)
 {
 	StackChecker checker(L, "SpriteBinder::setBlendFunc", 0);
 
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
-	ShaderEngine::BlendFactor src = static_cast<ShaderEngine::BlendFactor>(luaL_checkinteger(L, 2));
-	ShaderEngine::BlendFactor dst = static_cast<ShaderEngine::BlendFactor>(luaL_checkinteger(L, 3));
 
-	sprite->setBlendFunc(src, dst);
+    if (lua_type(L, 2) == LUA_TSTRING) {
+        std::string m = lua_tostring(L, 2);
+        if (m == "alpha") sprite->setBlendFunc(
+            ShaderEngine::SRC_COLOR, ShaderEngine::ONE_MINUS_SRC_ALPHA);
+        else if (m == "noAlpha") sprite->setBlendFunc(
+            ShaderEngine::ONE, ShaderEngine::ZERO);
+        else if (m == "add") sprite->setBlendFunc(
+            ShaderEngine::ONE, ShaderEngine::ONE);
+        else if (m == "multiply") sprite->setBlendFunc(
+            ShaderEngine::DST_COLOR, ShaderEngine::ONE_MINUS_SRC_ALPHA);
+        else if (m == "screen") sprite->setBlendFunc(
+            ShaderEngine::ONE, ShaderEngine::ONE_MINUS_SRC_COLOR);
+        else luaL_error(L, "Parameter 'blendMode' must be one of the accepted values.");
+    } else {
+        int src = luaL_checkinteger(L, 2);
+        int dst = luaL_checkinteger(L, 3);
+        sprite->setBlendFunc(static_cast<ShaderEngine::BlendFactor>(src),
+                             static_cast<ShaderEngine::BlendFactor>(dst));
+    }
 
-	return 0;
+    return 0;
 }
 
 
-int SpriteBinder::clearBlendFunc(lua_State* L)
+int SpriteBinder::clearBlendMode(lua_State* L)
 {
 	StackChecker checker(L, "SpriteBinder::clearBlendFunc", 0);
 
