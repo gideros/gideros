@@ -15,6 +15,7 @@
     self.loaded = false;
     self.showed = false;
     self.autokill_ = true;
+    self.preload_ = false;
     return self;
 }
 -(void)destruct{
@@ -36,6 +37,9 @@
 -(void)setAutokill:(BOOL)autokill{
     self.autokill_ = autokill;
 }
+-(void)setPreload:(BOOL)preload{
+    self.preload_ = preload;
+}
 -(NSObject*)getObject{
     return self.ad_;
 }
@@ -44,7 +48,10 @@
 }
 -(void)load{
     self.loaded = true;
-    [self checkAction];
+    
+    if (!self.preload_) {
+         [self checkAction];
+    }
 }
 -(void)show{
     self.showed = true;

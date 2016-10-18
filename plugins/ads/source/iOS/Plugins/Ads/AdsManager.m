@@ -46,6 +46,11 @@
     if(state != nil)
         [state setAutokill:autokill];
 }
+-(void)setPreload:(BOOL)preload forType:(NSString*)type{
+    AdsState *state = [self.adViews_ objectForKey:type];
+    if(state != nil)
+        [state setPreload:preload];
+}
 -(void)remove:(NSString*)type{
     AdsState *state = [self.adViews_ objectForKey:type];
     if(state != nil)

@@ -93,6 +93,8 @@ public class AdsMillenial implements AdsInterface {
 					public void onDestroy() {}	
 					@Override
 					public void onHide() {}	
+					@Override
+                    public void onRefresh() {}
 				});
 
 				MMRequest request = new MMRequest();
@@ -134,6 +136,8 @@ public class AdsMillenial implements AdsInterface {
 								Ads.removeAd(AdsMillenial.me, adView);
 								Ads.adDismissed(AdsMillenial.me, type);
 							}	
+							@Override
+                    		public void onRefresh() {}
 						});
 						mngr.setAutoKill(type, false);
 							

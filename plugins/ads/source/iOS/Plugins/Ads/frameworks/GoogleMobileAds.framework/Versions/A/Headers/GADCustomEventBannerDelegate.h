@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import <GoogleMobileAds/GoogleMobileAdsDefines.h>
+
 @protocol GADCustomEventBanner;
 
 /// Call back to this delegate in your custom event. You must call customEventBanner:didReceiveAd:
@@ -27,8 +29,8 @@
 
 /// Your Custom Event object should call this when the user touches or "clicks" the ad to initiate
 /// an action. When the SDK receives this callback, it reports the click back to the mediation
-/// server. This callback is optional.
-- (void)customEventBanner:(id<GADCustomEventBanner>)customEvent clickDidOccurInAd:(UIView *)view;
+/// server.
+- (void)customEventBannerWasClicked:(id<GADCustomEventBanner>)customEvent;
 
 /// The rootViewController that you set in GADBannerView. Use this UIViewController to show a modal
 /// view when a user taps on the ad.
@@ -50,5 +52,12 @@
 
 /// Your Custom Event should call this method when a user action will result in App switching.
 - (void)customEventBannerWillLeaveApplication:(id<GADCustomEventBanner>)customEvent;
+
+#pragma mark Deprecated
+
+/// Deprecated. Use customEventBannerWasClicked:.
+- (void)customEventBanner:(id<GADCustomEventBanner>)customEvent
+        clickDidOccurInAd:(UIView *)view
+    GAD_DEPRECATED_MSG_ATTRIBUTE("Use customEventBannerWasClicked:.");
 
 @end

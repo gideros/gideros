@@ -90,6 +90,8 @@ public class AdsInmobi implements AdsInterface{
 				public void onDestroy() {}	
 				@Override
 				public void onHide() {}	
+				@Override
+                public void onRefresh() {}
 			});
 			interstitial.setIMInterstitialListener(new AdsInmobiInterstitialListener(mngr.getState(type)));
 			interstitial.loadInterstitial();
@@ -136,6 +138,8 @@ public class AdsInmobi implements AdsInterface{
 							Ads.removeAd(AdsInmobi.me, adView);
 							Ads.adDismissed(AdsInmobi.me, type);
 						}	
+						@Override
+                    	public void onRefresh() {}
 					});
 					mngr.setAutoKill(type, false);
 					adView.setIMBannerListener(new AdsInmobiBannerListener(mngr.getState(type)));

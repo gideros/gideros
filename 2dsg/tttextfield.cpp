@@ -86,19 +86,14 @@ void TTTextField::createGraphics()
 		return;
 	}
 
-	float scalex = application_->getLogicalScaleX();
-	float scaley = application_->getLogicalScaleY();
-
-    int ascender = font_->getAscender();
-
     int minx, miny, maxx, maxy;
     Dib dib = font_->renderFont(wtext_.c_str(), letterSpacing_, &minx, &miny, &maxx, &maxy);
 
     if (!wsample_.empty())
     {
-        minx = minx - sminx;
+        maxx = maxx - minx;
+        minx = 0;
         miny = miny - sminy;
-        maxx = maxx - sminx;
         maxy = maxy - sminy;
     }
 
@@ -115,10 +110,10 @@ void TTTextField::createGraphics()
 	graphicsBase_.mode = ShaderProgram::TriangleStrip;
 
 	graphicsBase_.vertices.resize(4);
-	graphicsBase_.vertices[0] = Point2f(dx / scalex,					dy / scaley);
-	graphicsBase_.vertices[1] = Point2f((data_->width + dx) / scalex,	dy / scaley);
-	graphicsBase_.vertices[2] = Point2f((data_->width + dx) / scalex,	(data_->height + dy) / scaley);
-	graphicsBase_.vertices[3] = Point2f(dx / scalex,					(data_->height + dy) / scaley);
+    graphicsBase_.vertices[0] = Point2f(dx, dy);
+    graphicsBase_.vertices[1] = Point2f(data_->width + dx, dy);
+    graphicsBase_.vertices[2] = Point2f(data_->width + dx, data_->height + dy);
+    graphicsBase_.vertices[3] = Point2f(dx, data_->height + dy);
 	graphicsBase_.vertices.Update();
 
 	float u = (float)data_->width / (float)data_->exwidth;
@@ -143,10 +138,10 @@ void TTTextField::createGraphics()
 	int b = textColor_ & 0xff;
 	graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, 1);
 
-    minx_ = minx / scalex;
-    miny_ = miny / scaley;
-    maxx_ = maxx / scalex;
-    maxy_ = maxy / scaley;
+    minx_ = minx;
+    miny_ = miny;
+    maxx_ = maxx;
+    maxy_ = maxy;
 }
 
 void TTTextField::extraBounds(float* minx, float* miny, float* maxx, float* maxy) const

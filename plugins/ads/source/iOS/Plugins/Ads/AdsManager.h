@@ -20,6 +20,7 @@
 -(void)setObject:(NSObject*)object forType:(NSString*)type;
 -(void)setListener:(AdsStateChangeListener*)listener forType:(NSString*)type;
 -(void)setAutoKill:(BOOL)autokill forType:(NSString*)type;
+-(void)setPreload:(BOOL)preload forType:(NSString*)type;
 -(void)remove:(NSString*)type;
 -(void)hide:(NSString*)type;
 -(void)destroy;
