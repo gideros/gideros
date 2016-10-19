@@ -16,6 +16,7 @@
 #include <QImage>
 #include <QCoreApplication>
 #include "filedownloader.h"
+#include "cendian.h"
 
 static QString quote(const QString &str) {
 	return "\"" + str + "\"";
@@ -488,6 +489,81 @@ bool ExportCommon::download(ExportContext *ctx, QString url, QString to) {
 		exportError("Can't open file %s\n", to.toStdString().c_str());
 	return false;
 }
+
+#define PACKED __attribute__((packed))
+bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
+	QDir toPath = QFileInfo(
+			QDir::cleanPath(ctx->outputDir.absoluteFilePath(dest))).dir();
+	QFile zfile(file);
+	if (!zfile.open(QIODevice::ReadOnly)) {
+		exportError("Can't open file %s\n", file.toStdString().c_str());
+		return false;
+	}
+
+	while (true) {
+		struct _ZipHdr {
+			unsigned long Signature;//	local file header signature     4 bytes  (0x04034b50)
+#define ZIPHDR_SIG 0x04034b50
+			unsigned short Version;	//	version needed to extract       2 bytes
+			unsigned short Flags;	//	general purpose bit flag        2 bytes
+			unsigned short Compression;	//	compression method              2 bytes
+			unsigned short ModTime;	//	last mod file time              2 bytes
+			unsigned short ModDate;	//	last mod file date              2 bytes
+			unsigned long Crc32;	//	crc-32                          4 bytes
+			unsigned long CompSize;	//	compressed size                 4 bytes
+			unsigned long OrigSize;	//	uncompressed size               4 bytes
+			unsigned short NameLen;	//  file name length                2 bytes
+			unsigned short ExtraLen;//  extra field length              2 bytes
+		}PACKED Hdr;
+		if (zfile.read((char *) &Hdr, sizeof(Hdr)) != sizeof(Hdr))
+			break;
+		if (_letohl(Hdr.Signature) != ZIPHDR_SIG)
+			break;
+		if (_letohs(Hdr.Version) > 20) {
+			exportError("Unsupported ZIP version for %s [%d]\n",
+					file.toStdString().c_str(), _letohs(Hdr.Version));
+			return false;
+		}
+		if (Hdr.Flags != 0) {
+			exportError("Unsupported flags for %s [%d]\n",
+					file.toStdString().c_str(), Hdr.Flags);
+			return false;
+		}
+		if ((Hdr.Compression > 0) && (_letohs(Hdr.Compression) != 8)) {
+			exportError("Unsupported compression method for %s [%d]\n",
+					file.toStdString().c_str(), _letohs(Hdr.Compression));
+			return false;
+		}
+		QByteArray fname = zfile.read(_letohs(Hdr.NameLen));
+		zfile.read(_letohs(Hdr.ExtraLen));
+		QByteArray fcont = zfile.read(
+				Hdr.Compression ? _letohl(Hdr.CompSize) : _letohl(Hdr.OrigSize));
+		if (Hdr.Compression) {
+			quint32 szhdr = _htobel(_letohl(Hdr.OrigSize));
+			fname.prepend((const char *)&szhdr, 4);
+			fcont = qUncompress(fcont);
+		}
+		QString lname = QString(fname);
+		if (lname.endsWith("/"))
+			ctx->outputDir.mkpath(toPath.absoluteFilePath(lname));
+		else {
+			QFile ofile(toPath.absoluteFilePath(lname));
+			if (ofile.open(QIODevice::WriteOnly))
+			{
+				ofile.write(fcont);
+				ofile.close();
+			}
+			else {
+				exportError("Can't open file %s\n",
+						lname.toStdString().c_str());
+				break;
+			}
+		}
+	}
+	zfile.close();
+	return true;
+}
+
 void ExportCommon::exportInfo(const char *fmt, ...) {
 	va_list va;
 	va_start(va, fmt);

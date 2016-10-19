@@ -11,6 +11,8 @@ public:
 		scaleX_=1;
 		scaleY_=1;
 		scaleZ_=1;
+        skewX_=0;
+        skewY_=0;
 		tx_=0;
 		ty_=0;
 		tz_=0;
@@ -73,6 +75,25 @@ public:
 		scaleZ_ = sz;
 		compose();
 	}
+
+    void setSkewX(float sx)
+    {
+        skewX_ = sx;
+        compose();
+    }
+
+    void setSkewY(float sy)
+    {
+        skewY_ = sy;
+        compose();
+    }
+
+    void setSkewXY(float sx, float sy)
+    {
+        skewX_ = sx;
+        skewY_ = sy;
+        compose();
+    }
 
 	void setX(float x)
 	{
@@ -173,6 +194,16 @@ public:
 		return scaleZ_;
 	}
 
+    float skewX() const
+    {
+        return skewX_;
+    }
+
+    float skewY() const
+    {
+        return skewY_;
+    }
+
 	float x() const
 	{
 		return tx_;
@@ -218,6 +249,8 @@ private:
 	float scaleX_;
 	float scaleY_;
 	float scaleZ_;
+    float skewX_;
+    float skewY_;
 	float tx_,ty_,tz_;
     float refX_;
     float refY_;

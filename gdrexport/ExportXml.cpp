@@ -210,6 +210,10 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 		return ExportCommon::download(ctx,
                 ReplaceAttributes(rule.attribute("source")).trimmed(),
 				ReplaceAttributes(rule.attribute("dest")).trimmed());
+	else if (ruleName == "unzip")
+		return ExportCommon::unzip(ctx,
+                ReplaceAttributes(rule.attribute("source")).trimmed(),
+				ReplaceAttributes(rule.attribute("dest")).trimmed());
 	else if (ruleName == "template")
 		return RuleTemplate(rule.attribute("name"),
                 ReplaceAttributes(rule.attribute("path")).trimmed(), ReplaceAttributes(rule.attribute("dest")).trimmed(), rule);

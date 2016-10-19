@@ -17,6 +17,8 @@ StringId::StringId()
 	idmap_["scaleX"] = eStringIdScaleX;
 	idmap_["scaleY"] = eStringIdScaleY;
 	idmap_["scaleZ"] = eStringIdScaleZ;
+    idmap_["skewX"] = eStringIdSkewX;
+    idmap_["skewY"] = eStringIdSkewY;
 	idmap_["anchorX"] = eStringIdAnchorX;
     idmap_["anchorY"] = eStringIdAnchorY;
     idmap_["anchorZ"] = eStringIdAnchorZ;
