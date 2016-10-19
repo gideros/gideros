@@ -1,0 +1,14 @@
+<project>
+ <properties osx_category="5" app_icon="" mouseToTouch="1" logicalWidth="320" logicalHeight="480" ios_bundle="com.yourdomain." winrt_package="com.yourdomain.yourapp" backgroundColor="#ffffff" iosDevice="0" windowWidth="0" osx_bundle="com.yourdomain." android_template="0" splash_h_image="" disableSplash="0" splash_v_image="" orientation="0" scaleMode="5" osx_domain="giderosmobile.com" fps="60" win_org="GiderosMobile" tv_icon="" version="1.0" html5_host="" version_code="1" osx_org="GiderosMobile" mouseTouchOrder="0" win_domain="giderosmobile.com" encryptAssets="0" touchToMouse="1" retinaDisplay="0" encryptCode="0" windowHeight="0" html5_mem="256" exportMode="0" architecture="0" packageName="com.yourdomain.yourapp" autorotation="0" winrt_org="GiderosMobile">
+  <imageScales/>
+  <plugins/>
+  <exports/>
+ </properties>
+ <file source="3.wav"/>
+ <file source="3.png"/>
+ <file source="2.wav"/>
+ <file source="2.png"/>
+ <file source="1.wav"/>
+ <file source="1.png"/>
+ <file source="main.lua"/>
+</project>

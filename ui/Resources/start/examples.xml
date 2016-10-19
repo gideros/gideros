@@ -116,10 +116,10 @@
 				path="Graphics/Bird Animation 3D/Bird Animation 3D.gproj"
 				image="bird animation.png"
 				/>
-    <example 	name="Async Texture Loading"
-				description="Demonstrates how to make progress bar while loading texture asynchronously"
-				path="Graphics/AsyncTextureLoading/AsyncTextureLoading.gproj"
-				image="bar.png"
+    <example 	name="Map Clown"
+				description="Demonstrates building of a tilemap from a texture"
+				path="Graphics/MapClown/MapClown.gproj"
+				image="clown.png"
 				/>
 </category>
 
@@ -185,6 +185,11 @@
 				description="A minimal music player"
 				path="Audio/Music Player/Music Player.gproj"
 				image="music_player.png" 
+				/>
+	<example 	name="Moving sound"
+				description="Positionnal sounds demo"
+				path="Audio/Moving sound/Moving sound.gproj"
+				image="touch explorer.png" 
 				/>
 </category>
 
@@ -287,11 +292,16 @@
 </category>
 
 
-<category name="Timers">
+<category name="Scheduling">
 	<example 	name="Timers"
 				description="Showing timers"
 				path="Timers/Timers/Timers.gproj"
 				image="timers.png"
+				/>
+    <example 	name="Async Texture Loading"
+				description="Demonstrates how to make progress bar while loading texture asynchronously"
+				path="Graphics/AsyncTextureLoading/AsyncTextureLoading.gproj"
+				image="bar.png"
 				/>
 </category>
 
