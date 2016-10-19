@@ -78,6 +78,8 @@ public class AdsUnity implements AdsInterface, IUnityAdsListener {
 				public void onDestroy() {}
 				@Override
 				public void onHide() {}
+				@Override
+                public void onRefresh() {}
 			});
 			mngr.load(type);
 	}
