@@ -424,7 +424,6 @@ static int bindAll(lua_State* L)
 
 #include "property.c.in"
 #include "texturepack.c.in"
-#include "sprite.c.in"
 #include "compatibility.c.in"
 
 	lua_newtable(L);
