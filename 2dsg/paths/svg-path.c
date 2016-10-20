@@ -237,5 +237,8 @@ struct PrPath *prParseSvgPath(const char *pathString)
         memcpy(svgPath->coords, kv_data(coords), svgPath->numCoords * sizeof(float));
     }
 
+    kv_free(commands);
+    kv_free(coords);
+
     return svgPath;
 }
