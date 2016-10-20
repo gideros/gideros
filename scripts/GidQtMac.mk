@@ -2,9 +2,9 @@ DEPLOYQT=$(QT)/bin/macdeployqt
 
 buildqtapp: buildqtlibs buildqtplugins buildqt
 
-qtapp.install: qtlibs.install plugins.install qt.install
+qtapp.install: qtlibs.install qtplugins.install qt.install
 
-qtapp.clean: qtlibs.clean plugins.clean qt.clean
+qtapp.clean: qtlibs.clean qtplugins.clean qt.clean
 
 
 vpath %.dylib libgideros:libgvfs:libgid:lua

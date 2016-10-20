@@ -30,16 +30,16 @@
 
 - (NSString *) mapType:(NSString *)type
 {
-		if ([type equals:@"rewardedVideo"])
-			self.v4vcMap=NO;
-		if (v4vcMap&&[type equals:@"v4vc"])
+		if ([type isEqual:@"rewardedVideo"])
+			_v4vcMap=NO;
+		if (_v4vcMap&&[type isEqual:@"v4vc"])
 			return @"rewardedVideo";
 		return type;
 }
 	
 - (NSString *) unmapType:(NSString *)type
 {
-		if (v4vcMap&&[type equals:@"rewardedVideo"])
+		if (_v4vcMap&&[type isEqual:@"rewardedVideo"])
 			return @"v4vc";
 		return type;		
 }

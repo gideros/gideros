@@ -32,6 +32,8 @@ SOURCES += \
     ../ui/dependencygraph.cpp \
     ../libnetwork/bytebuffer.cpp
 
+LIBS += -lz
+
 macx {
 	LIBS += -framework CoreFoundation
 	LIBS += -framework IOKit

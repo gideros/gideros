@@ -412,6 +412,9 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GiderosiOSPlayer/GiderosiOSPlayer-Prefix.pch";
 				HEADER_SEARCH_PATHS = GiderosiOSPlayer/Plugins;
@@ -431,6 +434,9 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "GiderosiOSPlayer/GiderosiOSPlayer-Prefix.pch";
 				HEADER_SEARCH_PATHS = GiderosiOSPlayer/Plugins;
