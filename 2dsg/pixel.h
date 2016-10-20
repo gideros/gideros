@@ -3,17 +3,14 @@
 
 #include "sprite.h"
 #include "graphicsbase.h"
+#include "texturebase.h"
 
+#define PIXEL_MAX_TEXTURES 8
 class Pixel : public Sprite
 {
 	static VertexBuffer<unsigned short> quad;
-	static VertexBuffer<Point2f> texquad;
 public:
-    Pixel(Application *application) : Sprite(application)
-	{
-    	setColor(1,1,1,1);
-    	setDimensions(1,1);
-	}
+    Pixel(Application *application);
 
 	void setColor(float r, float g, float b, float a)
 	{
@@ -47,6 +44,7 @@ public:
 		setDimensions(width_,height);
 	}
 	void setDimensions(float width,float height);
+	void setTexture(TextureBase *texture,int slot, const Matrix4* matrix = NULL);
 
 
 private:
@@ -54,6 +52,8 @@ private:
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
 
 	VertexBuffer<Point2f> vertices;
+	VertexBuffer<Point2f> texcoords;
+    TextureBase *texture_[PIXEL_MAX_TEXTURES];
 	float r_, g_, b_, a_;
 	float width_,height_;
 	bool isWhite_;

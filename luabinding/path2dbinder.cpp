@@ -114,7 +114,7 @@ int Path2DBinder::setTexture(lua_State *L)
 	Transform* matrix = NULL;
 	if (!lua_isnone(L, 3))
 		matrix = static_cast<Transform*>(binder.getInstance("Matrix", 3));
-    bitmap->setTexture(textureBase, &matrix->matrix());
+    bitmap->setTexture(textureBase, matrix?&matrix->matrix():NULL);
 
     return 0;
 }

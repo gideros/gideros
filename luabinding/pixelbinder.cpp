@@ -14,6 +14,7 @@ PixelBinder::PixelBinder(lua_State* L)
         {"setDimensions", setDimensions},
         {"setColor", setColor},
         {"getColor", getColor},
+        {"setTexture", setTexture},
         {NULL, NULL},
 	};
 
@@ -92,6 +93,24 @@ int PixelBinder::setDimensions(lua_State* L)
 
 	return 0;
 }
+
+int PixelBinder::setTexture(lua_State *L)
+{
+    Binder binder(L);
+
+	Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
+    TextureBase *textureBase = NULL;
+	if (!lua_isnone(L, 2))
+    	textureBase=static_cast<TextureBase*>(binder.getInstance("TextureBase", 2));
+    int slot=luaL_optinteger(L,3,0);
+	Transform* matrix = NULL;
+	if (!lua_isnone(L, 4))
+		matrix = static_cast<Transform*>(binder.getInstance("Matrix", 4));
+    bitmap->setTexture(textureBase, slot,matrix?&matrix->matrix():NULL);
+
+    return 0;
+}
+
 
 int PixelBinder::setColor(lua_State* L)
 {
