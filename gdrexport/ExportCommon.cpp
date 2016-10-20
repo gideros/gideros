@@ -17,6 +17,7 @@
 #include <QCoreApplication>
 #include "filedownloader.h"
 #include "cendian.h"
+#include <zlib.h>
 
 static QString quote(const QString &str) {
 	return "\"" + str + "\"";
@@ -490,6 +491,99 @@ bool ExportCommon::download(ExportContext *ctx, QString url, QString to) {
 	return false;
 }
 
+
+#define GZIP_CHUNK_SIZE 32 * 1024
+
+static bool gzInflate(QByteArray input, QByteArray &output)
+{
+    // Prepare output
+    output.clear();
+
+    // Is there something to do?
+    if(input.length() > 0)
+    {
+        // Prepare inflater status
+        z_stream strm;
+        strm.zalloc = Z_NULL;
+        strm.zfree = Z_NULL;
+        strm.opaque = Z_NULL;
+        strm.avail_in = 0;
+        strm.next_in = Z_NULL;
+
+        // Initialize inflater
+        int ret = inflateInit2(&strm, -15);
+
+        if (ret != Z_OK)
+            return(false);
+
+        // Extract pointer to input data
+        char *input_data = input.data();
+        int input_data_left = input.length();
+
+        // Decompress data until available
+        do {
+            // Determine current chunk size
+            int chunk_size = qMin(GZIP_CHUNK_SIZE, input_data_left);
+
+            // Check for termination
+            if(chunk_size <= 0)
+                break;
+
+            // Set inflater references
+            strm.next_in = (unsigned char*)input_data;
+            strm.avail_in = chunk_size;
+
+            // Update interval variables
+            input_data += chunk_size;
+            input_data_left -= chunk_size;
+
+            // Inflate chunk and cumulate output
+            do {
+
+                // Declare vars
+                char out[GZIP_CHUNK_SIZE];
+
+                // Set inflater references
+                strm.next_out = (unsigned char*)out;
+                strm.avail_out = GZIP_CHUNK_SIZE;
+
+                // Try to inflate chunk
+                ret = inflate(&strm, Z_NO_FLUSH);
+
+                switch (ret) {
+                case Z_NEED_DICT:
+                    ret = Z_DATA_ERROR;
+                case Z_DATA_ERROR:
+                case Z_MEM_ERROR:
+                case Z_STREAM_ERROR:
+                    // Clean-up
+                    inflateEnd(&strm);
+
+                    // Return
+                    return(false);
+                }
+
+                // Determine decompressed size
+                int have = (GZIP_CHUNK_SIZE - strm.avail_out);
+
+                // Cumulate result
+                if(have > 0)
+                    output.append((char*)out, have);
+
+            } while (strm.avail_out == 0);
+
+        } while (ret != Z_STREAM_END);
+
+        // Clean-up
+        inflateEnd(&strm);
+
+        // Return
+        return (ret == Z_STREAM_END);
+    }
+    else
+        return(true);
+}
+
 #define PACKED __attribute__((packed))
 bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 	QDir toPath = QFileInfo(
@@ -502,18 +596,18 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 
 	while (true) {
 		struct _ZipHdr {
-			unsigned long Signature;//	local file header signature     4 bytes  (0x04034b50)
+			quint32 Signature;//	local file header signature     4 bytes  (0x04034b50)
 #define ZIPHDR_SIG 0x04034b50
-			unsigned short Version;	//	version needed to extract       2 bytes
-			unsigned short Flags;	//	general purpose bit flag        2 bytes
-			unsigned short Compression;	//	compression method              2 bytes
-			unsigned short ModTime;	//	last mod file time              2 bytes
-			unsigned short ModDate;	//	last mod file date              2 bytes
-			unsigned long Crc32;	//	crc-32                          4 bytes
-			unsigned long CompSize;	//	compressed size                 4 bytes
-			unsigned long OrigSize;	//	uncompressed size               4 bytes
-			unsigned short NameLen;	//  file name length                2 bytes
-			unsigned short ExtraLen;//  extra field length              2 bytes
+			quint16 Version;	//	version needed to extract       2 bytes
+			quint16 Flags;	//	general purpose bit flag        2 bytes
+			quint16 Compression;	//	compression method              2 bytes
+			quint16 ModTime;	//	last mod file time              2 bytes
+			quint16 ModDate;	//	last mod file date              2 bytes
+			quint32 Crc32;	//	crc-32                          4 bytes
+			quint32 CompSize;	//	compressed size                 4 bytes
+			quint32 OrigSize;	//	uncompressed size               4 bytes
+			quint16 NameLen;	//  file name length                2 bytes
+			quint16 ExtraLen;//  extra field length              2 bytes
 		}PACKED Hdr;
 		if (zfile.read((char *) &Hdr, sizeof(Hdr)) != sizeof(Hdr))
 			break;
@@ -525,7 +619,7 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 			return false;
 		}
 		if (Hdr.Flags != 0) {
-			exportError("Unsupported flags for %s [%d]\n",
+			exportError("Unsupported flags for %s [%04x]\n",
 					file.toStdString().c_str(), Hdr.Flags);
 			return false;
 		}
@@ -535,15 +629,21 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 			return false;
 		}
 		QByteArray fname = zfile.read(_letohs(Hdr.NameLen));
+		QString lname = QString(fname);
 		zfile.read(_letohs(Hdr.ExtraLen));
+		exportInfo("Extracting %s\n",lname.toStdString().c_str()); 
 		QByteArray fcont = zfile.read(
 				Hdr.Compression ? _letohl(Hdr.CompSize) : _letohl(Hdr.OrigSize));
 		if (Hdr.Compression) {
-			quint32 szhdr = _htobel(_letohl(Hdr.OrigSize));
-			fname.prepend((const char *)&szhdr, 4);
-			fcont = qUncompress(fcont);
+			QByteArray decomp;
+			if (!gzInflate(fcont,decomp))
+			{
+				exportError("Failed to uncompress %s\n",
+						lname.toStdString().c_str());
+				break;
+			}
+			fcont = decomp;
 		}
-		QString lname = QString(fname);
 		if (lname.endsWith("/"))
 			ctx->outputDir.mkpath(toPath.absoluteFilePath(lname));
 		else {
