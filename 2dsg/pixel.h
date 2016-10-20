@@ -35,6 +35,8 @@ public:
 	{
 	}
 
+    void updateTexture();
+
 	void setWidth(float width)
 	{
 		setDimensions(width,height_);
@@ -44,6 +46,26 @@ public:
 		setDimensions(width_,height);
 	}
 	void setDimensions(float width,float height);
+    void getDimensions(float &width, float &height)
+    {
+        width = width_;
+        height = height_;
+    }
+
+    void setTexturePosition(float x,float y);
+    void getTexturePosition(float &x, float &y)
+    {
+        x = x_;
+        y = y_;
+    }
+
+    void setTextureScale(float sx,float sy);
+    void getTextureScale(float &sx, float &sy)
+    {
+        sx = sx_;
+        sy = sy_;
+    }
+
 	void setTexture(TextureBase *texture,int slot, const Matrix4* matrix = NULL);
 
 
@@ -56,6 +78,8 @@ private:
     TextureBase *texture_[PIXEL_MAX_TEXTURES];
 	float r_, g_, b_, a_;
 	float width_,height_;
+    float x_, y_;
+    float sx_, sy_;
 	bool isWhite_;
 };
 
