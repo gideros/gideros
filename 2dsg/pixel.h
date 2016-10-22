@@ -68,6 +68,7 @@ public:
 
 	void setTexture(TextureBase *texture,int slot, const Matrix4* matrix = NULL);
 
+    void setTextureMatrix(const Matrix4* matrix);
 
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);

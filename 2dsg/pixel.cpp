@@ -110,21 +110,18 @@ void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)
 
     if (slot==0)
     {
-    	float sx=1,sy=1;
-    	if (texture)
-    	{
-    		sx = ((float)texture->data->width) / texture->data->exwidth;
-    		sy = ((float)texture->data->height) / texture->data->exheight;
-    	}
- 		texcoords[0] = Point2f(0,0);
- 		texcoords[1] = Point2f(sx,0);
- 		texcoords[2] = Point2f(sx,sy);
- 		texcoords[3] = Point2f(0,sy);
- 		if (matrix)
- 	    for (int tc=0;tc<4;tc++)
+        if (texture) updateTexture();
+        if (matrix) for (int tc=0;tc<4;tc++)
 			matrix->transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
  		texcoords.Update();
  	}
+}
+
+void Pixel::setTextureMatrix(const Matrix4* matrix)
+{
+    for (int tc=0;tc<4;tc++)
+        matrix->transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x, &texcoords[tc].y);
+    texcoords.Update();
 }
 
 void Pixel::setTexturePosition(float x, float y)

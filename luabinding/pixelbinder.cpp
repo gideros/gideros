@@ -16,6 +16,7 @@ PixelBinder::PixelBinder(lua_State* L)
         {"setColor", setColor},
         {"getColor", getColor},
         {"setTexture", setTexture},
+        {"setTextureMatrix", setTextureMatrix},
         {"setTexturePosition", setTexturePosition},
         {"getTexturePosition", getTexturePosition},
         {"setTextureScale", setTextureScale},
@@ -37,7 +38,6 @@ int PixelBinder::create(lua_State* L)
     Pixel* bitmap = new Pixel(application->getApplication());
 
     if (lua_type(L, 1) == LUA_TTABLE) {
-
         TextureBase *textureBase = NULL;
         textureBase=static_cast<TextureBase*>(binder.getInstance("TextureBase", 1));
 
@@ -60,15 +60,15 @@ int PixelBinder::create(lua_State* L)
         return 1;
     }
 
-	unsigned int color = luaL_optinteger(L, 1, 0);
+    unsigned int color = luaL_optinteger(L, 1, 0xffffff);
 	lua_Number alpha = luaL_optnumber(L, 2, 1.0);
-	lua_Number w = luaL_optnumber(L, 3, 1.0);
-	lua_Number h = luaL_optnumber(L, 4, w);
 	int r = (color >> 16) & 0xff;
 	int g = (color >> 8) & 0xff;
 	int b = color & 0xff;
-
 	bitmap->setColor(r/255.f,g/255.f,b/255.f,alpha);
+
+    lua_Number w = luaL_optnumber(L, 3, 1.0);
+    lua_Number h = luaL_optnumber(L, 4, w);
 	bitmap->setDimensions(w,h);
 
 	binder.pushInstance("Pixel", bitmap);
@@ -156,6 +156,17 @@ int PixelBinder::setTexture(lua_State *L)
     return 0;
 }
 
+int PixelBinder::setTextureMatrix(lua_State *L)
+{
+    Binder binder(L);
+
+    Pixel* bitmap = static_cast<Pixel*>(binder.getInstance("Pixel", 1));
+
+    Transform* matrix = static_cast<Transform*>(binder.getInstance("Matrix", 2));
+    bitmap->setTextureMatrix(&matrix->matrix());
+
+    return 0;
+}
 
 int PixelBinder::setColor(lua_State* L)
 {

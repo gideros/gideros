@@ -19,6 +19,7 @@ private:
     static int setColor(lua_State *L);
     static int getColor(lua_State *L);
     static int setTexture(lua_State *L);
+    static int setTextureMatrix(lua_State *L);
     static int setTexturePosition(lua_State *L);
     static int getTexturePosition(lua_State *L);
     static int setTextureScale(lua_State *L);
