@@ -97,8 +97,6 @@ TTFont::~TTFont()
 
 void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy) const
 {
-    float scalex = application_->getLogicalScaleX();
-
     int minx = 0x7fffffff;
     int miny = 0x7fffffff;
     int maxx = -0x7fffffff;
@@ -158,7 +156,7 @@ void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx, i
 
         x += face_->glyph->advance.x >> 6;
 
-        x += (int)(letterSpacing * scalex);
+        x += (int)(letterSpacing);
     }
 
     if (pminx)
@@ -173,8 +171,6 @@ void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx, i
 
 Dib TTFont::renderFont(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy)
 {
-    float scalex = application_->getLogicalScaleX();
-
     int minx, miny, maxx, maxy;
     getBounds(text, letterSpacing, &minx, &miny, &maxx, &maxy);
 
@@ -262,7 +258,7 @@ Dib TTFont::renderFont(const wchar32_t *text, float letterSpacing, int *pminx, i
 
         x += g.advX;
 
-        x += (int)(letterSpacing * scalex);
+        x += (int)(letterSpacing);
     }
 
     if (pminx)
@@ -303,8 +299,6 @@ void TTFont::getBounds(const char *text, float letterSpacing, float *pminx, floa
 
 float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) const
 {
-    float scalex = application_->getLogicalScaleX();
-
     std::vector<wchar32_t> wtext;
     size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
     if (len != 0)
@@ -334,12 +328,12 @@ float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) const
 
         x += face_->glyph->advance.x >> 6;
 
-        x += (int)(letterSpacing * scalex);
+        x += (int)(letterSpacing);
     }
 
     x += kerning(prev, FT_Get_Char_Index(face_, text[size])) >> 6;
 
-    return x / scalex;
+    return x;
 }
 
 int TTFont::kerning(FT_UInt left, FT_UInt right) const
@@ -356,12 +350,10 @@ int TTFont::kerning(FT_UInt left, FT_UInt right) const
 
 float TTFont::getAscender() const
 {
-    float scaley = application_->getLogicalScaleY();
-    return ascender_ / scaley;
+    return ascender_;
 }
 
 float TTFont::getLineHeight() const
 {
-    float scaley = application_->getLogicalScaleY();
-    return height_ / scaley;
+    return height_;
 }
