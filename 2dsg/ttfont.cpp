@@ -291,17 +291,14 @@ void TTFont::getBounds(const char *text, float letterSpacing, float *pminx, floa
     int minx, miny, maxx, maxy;
     getBounds(&wtext[0], letterSpacing, &minx, &miny, &maxx, &maxy);
 
-    float scalex = application_->getLogicalScaleX();
-    float scaley = application_->getLogicalScaleY();
-
     if (pminx)
-        *pminx = minx / scalex;
+        *pminx = minx;
     if (pminy)
-        *pminy = miny / scaley;
+        *pminy = miny;
     if (pmaxx)
-        *pmaxx = maxx / scalex;
+        *pmaxx = maxx;
     if (pmaxy)
-        *pmaxy = maxy / scaley;
+        *pmaxy = maxy;
 }
 
 float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) const
