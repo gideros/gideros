@@ -6,8 +6,10 @@ VertexBuffer<unsigned short> Pixel::quad;
 
 Pixel::Pixel(Application *application) : Sprite(application)
 {
-	setColor(1,1,1,1);
-	setDimensions(1,1);
+    r_ = 1, g_ = 1, b_ = 1, a_ = 1;
+    width_ = 1, height_ = 1;
+    sx_ = 1, sy_ = 1;
+    x_ = 0, y_ = 0;
 	for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
 		texture_[t]=NULL;
 	texcoords.resize(4);
@@ -67,6 +69,23 @@ void Pixel::extraBounds(float* minx, float* miny, float* maxx, float* maxy) cons
         *maxy = height_;
 }
 
+void Pixel::updateTexture()
+{
+    TextureBase* texture = texture_[0];
+
+    float w = width_ / texture->data->exwidth / sx_;
+    float h = height_ / texture->data->exheight / sy_;
+
+    float x = x_ / (float)(texture->data->width);
+    float y = y_ / (float)(texture->data->height);
+
+    texcoords[0] = Point2f(x,y);
+    texcoords[1] = Point2f(x+w,y);
+    texcoords[2] = Point2f(x+w,y+h);
+    texcoords[3] = Point2f(x,y+h);
+    texcoords.Update();
+}
+
 
 void Pixel::setDimensions(float width,float height)
 {
@@ -78,6 +97,7 @@ void Pixel::setDimensions(float width,float height)
     vertices[2] = Point2f(width_,height_);
     vertices[3] = Point2f(0,height_);
 	vertices.Update();
+    if (texture_[0]) updateTexture();
 }
 
 void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)
@@ -90,19 +110,32 @@ void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)
 
     if (slot==0)
     {
-    	float sx=1,sy=1;
-    	if (texture)
-    	{
-    		sx = ((float)texture->data->width) / texture->data->exwidth;
-    		sy = ((float)texture->data->height) / texture->data->exheight;
-    	}
- 		texcoords[0] = Point2f(0,0);
- 		texcoords[1] = Point2f(sx,0);
- 		texcoords[2] = Point2f(sx,sy);
- 		texcoords[3] = Point2f(0,sy);
- 		if (matrix)
- 	    for (int tc=0;tc<4;tc++)
+        if (texture) updateTexture();
+        if (matrix) for (int tc=0;tc<4;tc++)
 			matrix->transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x,&texcoords[tc].y);
  		texcoords.Update();
  	}
+}
+
+void Pixel::setTextureMatrix(const Matrix4* matrix)
+{
+    for (int tc=0;tc<4;tc++)
+        matrix->transformPoint(texcoords[tc].x, texcoords[tc].y, &texcoords[tc].x, &texcoords[tc].y);
+    texcoords.Update();
+}
+
+void Pixel::setTexturePosition(float x, float y)
+{
+    x_ = x;
+    y_ = y;
+
+    if (texture_[0]) updateTexture();
+}
+
+void Pixel::setTextureScale(float sx, float sy)
+{
+    sx_ = sx;
+    sy_ = sy;
+
+    if (texture_[0]) updateTexture();
 }
