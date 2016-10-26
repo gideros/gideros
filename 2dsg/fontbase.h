@@ -26,10 +26,10 @@ public:
         eTTBMFont,
 	};
 
-    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy) const = 0;
-    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1) const = 0;
-    virtual float getAscender() const = 0;
-    virtual float getLineHeight() const = 0;
+    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy) = 0;
+    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1) = 0;
+    virtual float getAscender() = 0;
+    virtual float getLineHeight() = 0;
 
 	virtual Type getType() const = 0;
 
@@ -44,7 +44,7 @@ public:
     {
     }
 
-    virtual void drawText(GraphicsBase *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing, bool hasSample, float miny) const = 0;
+    virtual void drawText(GraphicsBase *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny) = 0;
 };
 
 

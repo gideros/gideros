@@ -21,12 +21,12 @@ public:
 		return eFont;
 	}
 
-    virtual void drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, bool hasSample, float miny) const;
+    virtual void drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny);
 
-    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy) const;
-    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1) const;
-    virtual float getAscender() const;
-    virtual float getLineHeight() const;
+    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy);
+    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);
+    virtual float getAscender();
+    virtual float getLineHeight();
 
 private:
     void constructor(const char *glympfile, const char *imagefile, bool filtering);
