@@ -79,8 +79,6 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
 
     float scalex = application_->getLogicalScaleX();
     float scaley = application_->getLogicalScaleY();
-    if (scalex<1) scalex*=ceil(1.0/scalex);
-    if (scaley<1) scaley*=ceil(1.0/scaley);
 
     const int RESOLUTION = 72;
     error = FT_Set_Char_Size(face, 0L, (int)floor(size * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f));
