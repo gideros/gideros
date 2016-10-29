@@ -4,6 +4,145 @@
 #include "luaapplication.h"
 #include <luautil.h>
 #include <stdlib.h>
+#include <map>
+
+class ShaderParser
+{
+public:
+    static std::vector<std::string> parseQualifiers(std::string str, std::string kw);
+    static std::map<std::string, ShaderProgram::ConstantType> ConstantTypeMap;
+    static std::map<std::string, ShaderProgram::SystemConstant> SystemConstantMap;
+    static std::map<std::string, ShaderProgram::DataType> DataTypeMap;
+    static std::map<std::string, int> VectorSizeMap;
+    static const char* defaultVertexShader;
+    static const char* defaultFragmentShader;
+};
+
+std::vector<std::string> ShaderParser::parseQualifiers(std::string str, std::string kw) {
+    std::vector<std::string> vec;
+    size_t len = str.length();
+    size_t l = kw.length();
+    size_t pos = 0;
+    size_t end;
+    char prev, next;
+    std::string name, type, size;
+    size_t p, p1, p2;
+    while(true) {
+        pos = str.find(kw, pos);
+        if (pos == std::string::npos || pos + l > len) break;
+
+        // check char before keyword
+        if (pos > 0) {
+            prev = str.at(pos-1);
+            if (!isspace(prev) && prev != ';') {pos = pos + l; continue;}
+        }
+
+        // check char after keyword
+        pos += l;
+        next = str.at(pos);
+        if(!isspace(next)) continue;
+        end = str.find(";", pos); // find end of declaration
+        if (end == std::string::npos) break;
+
+        // reset p1, p2 and size
+        p1 = pos;
+        p2 = end;
+        size = "";
+
+        // find variable name
+        for (p = end-1; p >= pos; --p) if (!isspace(str.at(p))) {p2 = p; break;};
+        if (str.at(p2) == ']') { // array size
+            p1 = p2 - 1;
+            for (p = p2-1; p >= pos; --p) if (str.at(p) == '[') {p2 = p; break;};
+            size = str.substr(p2+1, p1 - p2);
+            for (p = p2-1; p >= pos; --p) if (!isspace(str.at(p))) {p2 = p; break;};
+        }
+
+        for (p = p2; p >= pos; --p) if (isspace(str.at(p))) {p1 = p+1; break;};
+        name = str.substr(p1, p2 - p1 + 1);
+
+        // find variable type
+        for (p = p1-1; p >= pos; --p) if (!isspace(str.at(p))) {p2 = p; break;};
+        if (str.at(p2) == ']') { // array size
+            p1 = p2 - 1;
+            for (p = p2-1; p >= pos; --p) if (str.at(p) == '[') {p2 = p; break;};
+            size = str.substr(p2+1, p1 - p2);
+            for (p = p2-1; p >= pos; --p) if (!isspace(str.at(p))) {p2 = p; break;};
+        }
+        for (p = p2; p >= pos; --p) if (isspace(str.at(p))) {p1 = p+1; break;};
+        type = str.substr(p1, p2 - p1 + 1);
+
+        pos = end;
+
+        vec.push_back(type);
+        vec.push_back(name);
+        vec.push_back(size);
+    }
+    return vec;
+}
+
+std::map<std::string, ShaderProgram::ConstantType> ShaderParser::ConstantTypeMap = {
+            {"int", ShaderProgram::CINT},
+            {"float", ShaderProgram::CFLOAT},
+            {"vec2", ShaderProgram::CFLOAT2},
+            {"vec3", ShaderProgram::CFLOAT3},
+            {"vec4", ShaderProgram::CFLOAT4},
+            {"mat4", ShaderProgram::CMATRIX},
+            {"sampler2D", ShaderProgram::CTEXTURE},
+};
+
+std::map<std::string, ShaderProgram::SystemConstant> ShaderParser::SystemConstantMap = {
+    {"SYS_NONE", ShaderProgram::SysConst_None},
+    {"SYS_WVP", ShaderProgram::SysConst_WorldViewProjectionMatrix},
+    {"SYS_COLOR", ShaderProgram::SysConst_Color},
+    {"SYS_WIT", ShaderProgram::SysConst_WorldInverseTransposeMatrix},
+    {"SYS_WORLD", ShaderProgram::SysConst_WorldMatrix},
+    {"SYS_TEXTUREINFO", ShaderProgram::SysConst_TextureInfo},
+    {"SYS_PARTICLESIZE", ShaderProgram::SysConst_ParticleSize},
+    {"SYS_WIT3", ShaderProgram::SysConst_WorldInverseTransposeMatrix3},
+    {"SYS_TIMER", ShaderProgram::SysConst_Timer},
+};
+
+std::map<std::string, ShaderProgram::DataType> ShaderParser::DataTypeMap = {
+    //{"byte", ShaderProgram::DBYTE},
+    {"byte", ShaderProgram::DUBYTE},
+    {"unsigned byte", ShaderProgram::DUBYTE},
+    {"short", ShaderProgram::DSHORT},
+    {"unsigned short", ShaderProgram::DUSHORT},
+    {"int", ShaderProgram::DINT},
+    {"float", ShaderProgram::DFLOAT},
+    {"vec2", ShaderProgram::DFLOAT},
+    {"vec3", ShaderProgram::DFLOAT},
+    {"vec4", ShaderProgram::DFLOAT},
+};
+
+std::map<std::string, int> ShaderParser::VectorSizeMap = {
+    {"vec2", 2},
+    {"vec3", 3},
+    {"vec4", 4},
+};
+
+const char* ShaderParser::defaultVertexShader = "\
+attribute highp vec3 vVertex;\
+attribute mediump vec2 vTexCoord;\
+uniform highp mat4 SYS_WVP;\
+varying mediump vec2 fTexCoord;\
+void main() {\
+    vec4 vertex = vec4(vVertex,1.0);\
+    gl_Position = SYS_WVP*vertex;\
+    fTexCoord = vTexCoord;\
+}\
+";
+
+const char* ShaderParser::defaultFragmentShader = "\
+varying mediump vec2 fTexCoord;\
+void main() {\
+    if ((mod(5.5*(fTexCoord.x+1.0), 1.0) < 0.5)\
+    ^^ (mod(5.5*(fTexCoord.y+1.0), 1.0) < 0.5))\
+        gl_FragColor = vec4(0.0,0.0,0.0,1.0);\
+    else gl_FragColor = vec4(1.0,1.0,1.0,1.0);\
+}\
+";
 
 ShaderBinder::ShaderBinder(lua_State* L)
 {
@@ -85,53 +224,141 @@ int ShaderBinder::create(lua_State* L)
 
     Binder binder(L);
 
-	const char* vs = luaL_checkstring(L, 1);
-	const char* ps = luaL_checkstring(L, 2);
-	int flags=luaL_checkinteger(L,3);
-    luaL_checktype(L, 4, LUA_TTABLE);
-    luaL_checktype(L, 5, LUA_TTABLE);
+    const char* vs = lua_isnil(L, 1) ? ShaderParser::defaultVertexShader : luaL_checkstring(L, 1);
+    const char* ps = lua_isnil(L, 2) ? ShaderParser::defaultFragmentShader : luaL_checkstring(L, 2);
+    int flags = ShaderProgram::Flag_FromCode;
 
-	std::vector<ShaderProgram::ConstantDesc> constants;
-	std::vector<ShaderProgram::DataDesc> datas;
+    std::vector<ShaderProgram::ConstantDesc> constants;
+    std::vector<ShaderProgram::DataDesc> datas;
 
-    int n = luaL_getn(L, 4);  /* get size of table */
-    for (int i=1; i<=n; i++) {
-    	ShaderProgram::ConstantDesc cst={"",ShaderProgram::CINT,1,ShaderProgram::SysConst_None,false,0,NULL};
-        lua_rawgeti(L, 4, i);  /* push t[i] */
-        luaL_checktype(L,-1,LUA_TTABLE); //Check table
-        lua_getfield(L,-1,"name");
-        cst.name=luaL_checkstring(L,-1);
-        lua_getfield(L,-2,"type");
-        cst.type=(ShaderProgram::ConstantType)luaL_checkinteger(L,-1);
-        lua_getfield(L,-3,"vertex");
-        cst.vertexShader=lua_toboolean(L,-1);
-        lua_getfield(L,-4,"sys");
-        cst.sys=(ShaderProgram::SystemConstant) luaL_optinteger(L,-1,0);
-        lua_getfield(L,-5,"mult");
-        cst.mult=luaL_optinteger(L,-1,1);
-        lua_pop(L,6);
-    	constants.push_back(cst);
-      }
+    if (lua_gettop(L) == 2) {
+        std::vector<std::string> vec;
+        std::string vartype, varname, varsize;
 
-    n = luaL_getn(L, 5);  /* get size of table */
-    for (int i=1; i<=n; i++) {
-    	ShaderProgram::DataDesc cst={"",ShaderProgram::DFLOAT,0,0,0};
-        lua_rawgeti(L, 5, i);  /* push t[i] */
-        luaL_checktype(L,-1,LUA_TTABLE); //Check table
-        lua_getfield(L,-1,"name");
-        cst.name=luaL_checkstring(L,-1);
-        lua_getfield(L,-2,"type");
-        cst.type=(ShaderProgram::DataType)luaL_checkinteger(L,-1);
-        lua_getfield(L,-3,"mult");
-        cst.mult=luaL_checkinteger(L,-1);
-        lua_getfield(L,-4,"slot");
-        cst.slot=luaL_optinteger(L,-1,0);
-        lua_getfield(L,-5,"offset");
-        cst.offset=luaL_optinteger(L,-1,0);
-        lua_pop(L,6);
-    	datas.push_back(cst);
-      }
+        vec = ShaderParser::parseQualifiers(std::string(ps), "uniform");
+        for (size_t i = 0; i < vec.size(); i += 3) {
+            vartype = vec.at(i);
+            varname = vec.at(i+1);
+            varsize = vec.at(i+2);
 
+            if (!ShaderParser::ConstantTypeMap.count(vartype))
+                luaL_error(L, ("Fragment shader: unknown type '" + vartype + "'").c_str());
+            if (varsize.size() > 0) {
+                for (size_t j = 0; j < varsize.size(); j++)
+                    if (!isdigit(varsize.at(j)) && !isspace(varsize.at(j)))
+                        luaL_error(L, ("Fragment shader: invalid array size '" + varsize + "'").c_str());
+            } else varsize = "1";
+
+            ShaderProgram::ConstantDesc cst = {
+                varname,
+                ShaderParser::ConstantTypeMap[vartype],
+                std::stoi(varsize),
+                ShaderParser::SystemConstantMap.count(varname) ? ShaderParser::SystemConstantMap[varname]: ShaderProgram::SysConst_None,
+                false,
+                0,
+                NULL
+            };
+            constants.push_back(cst);
+        }
+
+        vec = ShaderParser::parseQualifiers(std::string(vs), "uniform");
+        for (size_t i = 0; i < vec.size(); i += 3) {
+            vartype = vec.at(i);
+            varname = vec.at(i+1);
+            varsize = vec.at(i+2);
+
+            if (!ShaderParser::ConstantTypeMap.count(vartype))
+                luaL_error(L, ("Vertex shader: unknown type '" + vartype + "'").c_str());
+            if (varsize.size() > 0) {
+                for (size_t j = 0; j < varsize.size(); j++)
+                    if (!isdigit(varsize.at(j)) && !isspace(varsize.at(j)))
+                        luaL_error(L, ("Vertex shader: invalid array size '" + varsize + "'").c_str());
+            } else varsize = "1";
+
+            ShaderProgram::ConstantDesc cst = {
+                varname,
+                ShaderParser::ConstantTypeMap[vartype],
+                std::stoi(varsize),
+                ShaderParser::SystemConstantMap.count(varname) ? ShaderParser::SystemConstantMap[varname]: ShaderProgram::SysConst_None,
+                true,
+                0,
+                NULL
+            };
+            constants.push_back(cst);
+        }
+
+        vec = ShaderParser::parseQualifiers(std::string(vs), "attribute");
+        ShaderProgram::DataDesc cst;
+        cst = {"vVertex",ShaderProgram::DFLOAT,0,0,0}; datas.push_back(cst);
+        cst = {"vColor",ShaderProgram::DFLOAT,0,0,0}; datas.push_back(cst);
+        cst = {"vTexCoord",ShaderProgram::DFLOAT,0,0,0}; datas.push_back(cst);
+        for (size_t i = 0; i < vec.size(); i += 3) {
+            vartype = vec.at(i);
+            varname = vec.at(i+1);
+            varsize = vec.at(i+2);
+
+            if (varname == "vVertex" || varname == "vColor" || varname == "vTexCoord") continue;
+
+            if (!ShaderParser::DataTypeMap.count(vartype))
+                luaL_error(L, ("Vertex shader: unknown type '" + vartype + "'").c_str());
+            if (varsize.size() > 0) {
+                for (size_t j = 0; j < varsize.size(); j++)
+                    if (!isdigit(varsize.at(j)) && !isspace(varsize.at(j)))
+                        luaL_error(L, ("Vertex shader: invalid array size '" + varsize + "'").c_str());
+            } else varsize = "1";
+
+            ShaderProgram::DataDesc cst = {
+                varname,
+                ShaderParser::DataTypeMap[vartype],
+                (unsigned char) (std::stoi(varsize) * (ShaderParser::VectorSizeMap.count(vartype) ? ShaderParser::VectorSizeMap[vartype] : 1)),
+                (unsigned char) (i / 3 + 3),
+                0
+            };
+            datas.push_back(cst);
+        }
+    } else {
+        flags = luaL_checkinteger(L,3);
+        luaL_checktype(L, 4, LUA_TTABLE);
+        luaL_checktype(L, 5, LUA_TTABLE);
+
+        int n = luaL_getn(L, 4);  /* get size of table */
+        for (int i=1; i<=n; i++) {
+            ShaderProgram::ConstantDesc cst={"",ShaderProgram::CINT,1,ShaderProgram::SysConst_None,false,0,NULL};
+            lua_rawgeti(L, 4, i);  /* push t[i] */
+            luaL_checktype(L,-1,LUA_TTABLE); //Check table
+            lua_getfield(L,-1,"name");
+            cst.name=luaL_checkstring(L,-1);
+            lua_getfield(L,-2,"type");
+            cst.type=(ShaderProgram::ConstantType)luaL_checkinteger(L,-1);
+            lua_getfield(L,-3,"vertex");
+            cst.vertexShader=lua_toboolean(L,-1);
+            lua_getfield(L,-4,"sys");
+            cst.sys=(ShaderProgram::SystemConstant) luaL_optinteger(L,-1,0);
+            lua_getfield(L,-5,"mult");
+            cst.mult=luaL_optinteger(L,-1,1);
+            lua_pop(L,6);
+            constants.push_back(cst);
+        }
+
+        n = luaL_getn(L, 5);  /* get size of table */
+        for (int i=1; i<=n; i++) {
+            ShaderProgram::DataDesc cst={"",ShaderProgram::DFLOAT,0,0,0};
+            lua_rawgeti(L, 5, i);  /* push t[i] */
+            luaL_checktype(L,-1,LUA_TTABLE); //Check table
+            lua_getfield(L,-1,"name");
+            cst.name=luaL_checkstring(L,-1);
+            lua_getfield(L,-2,"type");
+            cst.type=(ShaderProgram::DataType)luaL_checkinteger(L,-1);
+            lua_getfield(L,-3,"mult");
+            cst.mult=luaL_checkinteger(L,-1);
+            lua_getfield(L,-4,"slot");
+            cst.slot=luaL_optinteger(L,-1,0);
+            lua_getfield(L,-5,"offset");
+            cst.offset=luaL_optinteger(L,-1,0);
+            lua_pop(L,6);
+            datas.push_back(cst);
+        }
+    }
 
 	ShaderProgram::ConstantDesc clast={"",ShaderProgram::CINT,1,ShaderProgram::SysConst_None,false,0,NULL};
 	ShaderProgram::DataDesc dlast={"",ShaderProgram::DFLOAT,0,0,0};
