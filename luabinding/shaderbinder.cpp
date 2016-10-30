@@ -252,7 +252,7 @@ int ShaderBinder::create(lua_State* L)
             ShaderProgram::ConstantDesc cst = {
                 varname,
                 ShaderParser::ConstantTypeMap[vartype],
-                std::stoi(varsize),
+                atoi(varsize.c_str()),
                 ShaderParser::SystemConstantMap.count(varname) ? ShaderParser::SystemConstantMap[varname]: ShaderProgram::SysConst_None,
                 false,
                 0,
@@ -278,7 +278,7 @@ int ShaderBinder::create(lua_State* L)
             ShaderProgram::ConstantDesc cst = {
                 varname,
                 ShaderParser::ConstantTypeMap[vartype],
-                std::stoi(varsize),
+                atoi(varsize.c_str()),
                 ShaderParser::SystemConstantMap.count(varname) ? ShaderParser::SystemConstantMap[varname]: ShaderProgram::SysConst_None,
                 true,
                 0,
@@ -310,7 +310,7 @@ int ShaderBinder::create(lua_State* L)
             ShaderProgram::DataDesc cst = {
                 varname,
                 ShaderParser::DataTypeMap[vartype],
-                (unsigned char) (std::stoi(varsize) * (ShaderParser::VectorSizeMap.count(vartype) ? ShaderParser::VectorSizeMap[vartype] : 1)),
+                (unsigned char) (atoi(varsize.c_str()) * (ShaderParser::VectorSizeMap.count(vartype) ? ShaderParser::VectorSizeMap[vartype] : 1)),
                 (unsigned char) (i / 3 + 3),
                 0
             };
