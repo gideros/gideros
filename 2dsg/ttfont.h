@@ -22,14 +22,14 @@ public:
 		return eTTFont;
 	}
 
-    void getBounds(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy) const;
+    void getBounds(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy);
 
     Dib renderFont(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy);
 
-    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy) const;
-    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1) const;
-    virtual float getAscender() const;
-    virtual float getLineHeight() const;
+    virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy);
+    virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);
+    virtual float getAscender();
+    virtual float getLineHeight();
 
     bool getSmoothing() const
     {
@@ -49,6 +49,9 @@ private:
 	int height_;
 	FT_StreamRec stream_;
     bool smoothing_;
+    float currentLogicalScaleX_,currentLogicalScaleY_;
+    float defaultSize_;
+    void checkLogicalScale();
     struct GlyphData
     {
     	FT_UInt 		glyph;

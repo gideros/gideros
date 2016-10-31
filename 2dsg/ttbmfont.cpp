@@ -77,9 +77,12 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
     if (error)
         throw GiderosException(GStatus(6012, filename));		// Error #6012: %s: Error while reading font file.
 
-    const int RESOLUTION = 72;
+    float scalex = application_->getLogicalScaleX();
+    float scaley = application_->getLogicalScaleY();
 
-    error = FT_Set_Char_Size(face, 0L, (int)floor(size * 64 + 0.5f), RESOLUTION, RESOLUTION);
+    const int RESOLUTION = 72;
+    error = FT_Set_Char_Size(face, 0L, (int)floor(size * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f));
+
     if (error)
     {
         FT_Done_Face(face);
@@ -239,8 +242,8 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
     parameters.wrap = eClamp;
     data_ = application_->getTextureManager()->createTextureFromDib(dib, parameters);
 
-    sizescalex_ = 1;
-    sizescaley_ = 1;
+    sizescalex_ = 1 / scalex;
+    sizescaley_ = 1 / scaley;
     uvscalex_ = 1;
     uvscaley_ = 1;
 }
@@ -251,7 +254,7 @@ TTBMFont::~TTBMFont()
         application_->getTextureManager()->destroyTexture(data_);
 }
 
-void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, bool hasSample, float miny) const
+void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny)
 {
     int size = 0;
     for (const wchar32_t *t = text; *t; ++t, ++size)
@@ -272,7 +275,7 @@ void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float
     graphicsBase->texcoords.Update();
     graphicsBase->indices.Update();
 
-    float x = 0, y = -miny;
+    float x = -minx/sizescalex_, y = -miny/sizescaley_;
 
     if (hasSample) {
         std::map<wchar32_t, TextureGlyph>::const_iterator iter = fontInfo_.textureGlyphs.find(text[0]);
@@ -339,7 +342,7 @@ void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float
     }
 }
 
-void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx, float *pminy, float *pmaxx, float *pmaxy) const
+void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx, float *pminy, float *pmaxx, float *pmaxy)
 {
     float minx = 1e30;
     float miny = 1e30;
@@ -403,7 +406,7 @@ void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx, fl
         *pmaxy = maxy;
 }
 
-float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size) const
+float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size)
 {
     std::vector<wchar32_t> wtext;
     size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
@@ -449,12 +452,12 @@ int TTBMFont::kerning(wchar32_t left, wchar32_t right) const
     return (iter != fontInfo_.kernings.end()) ? iter->second : 0;
 }
 
-float TTBMFont::getAscender() const
+float TTBMFont::getAscender()
 {
     return fontInfo_.ascender * sizescaley_;
 }
 
-float TTBMFont::getLineHeight() const
+float TTBMFont::getLineHeight()
 {
     return fontInfo_.height * sizescaley_;
 }
