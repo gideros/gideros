@@ -84,7 +84,7 @@ comb:setVertexArray(0,0,texw,0,texw,texh,0,texh)
 comb:setTextureCoordinateArray(0,0,texw,0,texw,texh,0,texh)
 comb:setIndexArray(1,2,3,1,3,4)
 comb:setTexture(self.rtgt1)
-comb:setTextureSlot(1,self.rtgts)
+comb:setTexture(self.rtgts,1)
 comb:setShader(Bloom.bloomCombine)
 self:addChild(comb)
 end
