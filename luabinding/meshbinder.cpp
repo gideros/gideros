@@ -711,7 +711,7 @@ int MeshBinder::getColor(lua_State *L)
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
     int i = luaL_checkinteger(L, 2) - 1;
 
-    if (i < 0 || i >= mesh->getVertexArraySize())
+    if (i < 0 || i >= mesh->getColorArraySize())
         return luaL_error(L, "The supplied index is out of bounds.");
 
     unsigned int color;
@@ -729,7 +729,7 @@ int MeshBinder::getTextureCoordinate(lua_State *L)
     GMesh *mesh = static_cast<GMesh*>(binder.getInstance("Mesh", 1));
     int i = luaL_checkinteger(L, 2) - 1;
 
-    if (i < 0 || i >= mesh->getVertexArraySize())
+    if (i < 0 || i >= mesh->getTextureCoordinateArraySize())
         return luaL_error(L, "The supplied index is out of bounds.");
 
     float u, v;
