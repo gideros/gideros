@@ -241,9 +241,13 @@
 			</li>
 										<li class='uplist dropdown closedlist'><a href="b2.ParticleSystem.html#b2.ParticleSystem" id='b2.ParticleSystem' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.ParticleSystem</strong></a>
 							<ul class="dropdown-menu">
-														<li><a href="b2.ParticleSystem/createParticle.html#b2.ParticleSystem:createParticle" id='b2.ParticleSystem:createParticle'>b2.ParticleSystem:createParticle</a></li>		
+														<li><a href="b2.ParticleSystem/containsParticle.html#b2.ParticleSystem:containsParticle" id='b2.ParticleSystem:containsParticle'>b2.ParticleSystem:containsParticle</a></li>		
+										<li><a href="b2.ParticleSystem/createParticle.html#b2.ParticleSystem:createParticle" id='b2.ParticleSystem:createParticle'>b2.ParticleSystem:createParticle</a></li>		
 										<li><a href="b2.ParticleSystem/createParticleGroup.html#b2.ParticleSystem:createParticleGroup" id='b2.ParticleSystem:createParticleGroup'>b2.ParticleSystem:createParticleGroup</a></li>		
 										<li><a href="b2.ParticleSystem/destroyParticle.html#b2.ParticleSystem:destroyParticle" id='b2.ParticleSystem:destroyParticle'>b2.ParticleSystem:destroyParticle</a></li>		
+										<li><a href="b2.ParticleSystem/destroyParticles.html#b2.ParticleSystem:destroyParticles" id='b2.ParticleSystem:destroyParticles'>b2.ParticleSystem:destroyParticles</a></li>		
+										<li><a href="b2.ParticleSystem/getParticleCount.html#b2.ParticleSystem:getParticleCount" id='b2.ParticleSystem:getParticleCount'>b2.ParticleSystem:getParticleCount</a></li>		
+										<li><a href="b2.ParticleSystem/getParticleGroupList.html#b2.ParticleSystem:getParticleGroupList" id='b2.ParticleSystem:getParticleGroupList'>b2.ParticleSystem:getParticleGroupList</a></li>		
 										<li><a href="b2.ParticleSystem/setTexture.html#b2.ParticleSystem:setTexture" id='b2.ParticleSystem:setTexture'>b2.ParticleSystem:setTexture</a></li>		
 																											<li><a href="b2.ParticleSystem/FLAG_COLOR_MIXING.html#b2.ParticleSystem.FLAG_COLOR_MIXING" id='b2.ParticleSystem.FLAG_COLOR_MIXING'>b2.ParticleSystem.FLAG_COLOR_MIXING</a></li>		
 										<li><a href="b2.ParticleSystem/FLAG_ELASTIC.html#b2.ParticleSystem.FLAG_ELASTIC" id='b2.ParticleSystem.FLAG_ELASTIC'>b2.ParticleSystem.FLAG_ELASTIC</a></li>		
@@ -354,6 +358,7 @@
 										<li><a href="b2World/setGravity.html#b2.World:setGravity" id='b2.World:setGravity'>b2.World:setGravity</a></li>		
 										<li><a href="b2World/step.html#b2.World:step" id='b2.World:step'>b2.World:step</a></li>		
 																							<li><a href="b2World/Event.BEGIN_CONTACT.html#Event.BEGIN_CONTACT" id='Event.BEGIN_CONTACT'>Event.BEGIN_CONTACT</a></li>		
+										<li><a href="b2World/Event.BEGIN_CONTACT_PARTICLE.html#Event.BEGIN_CONTACT_PARTICLE" id='Event.BEGIN_CONTACT_PARTICLE'>Event.BEGIN_CONTACT_PARTICLE</a></li>		
 										<li><a href="b2World/Event.END_CONTACT.html#Event.END_CONTACT" id='Event.END_CONTACT'>Event.END_CONTACT</a></li>		
 										<li><a href="b2World/Event.POST_SOLVE.html#Event.POST_SOLVE" id='Event.POST_SOLVE'>Event.POST_SOLVE</a></li>		
 										<li><a href="b2World/Event.PRE_SOLVE.html#Event.PRE_SOLVE" id='Event.PRE_SOLVE'>Event.PRE_SOLVE</a></li>		
@@ -469,19 +474,22 @@ stage:addChild(debugDraw)</code></pre>
 			<td><a href="Sprite/addChildAt.html">Sprite:addChildAt</a></td>
 		</tr>
 				<tr>
-			<td><a href="Sprite/removeChild.html">Sprite:removeChild</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/removeChildAt.html">Sprite:removeChildAt</a></td>
+			<td><a href="Sprite/clearBlendMode.html">Sprite:clearBlendMode</a></td>
 		</tr>
 				<tr>
 			<td><a href="Sprite/contains.html">Sprite:contains</a></td>
 		</tr>
 				<tr>
-			<td><a href="Sprite/globalToLocal.html">Sprite:globalToLocal</a></td>
+			<td><a href="Sprite/get.html">Sprite:get</a></td>
 		</tr>
 				<tr>
-			<td><a href="Sprite/localToGlobal.html">Sprite:localToGlobal</a></td>
+			<td><a href="Sprite/getAlpha.html">Sprite:getAlpha</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getAnchorPosition.html">Sprite:getAnchorPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getBounds.html">Sprite:getBounds</a></td>
 		</tr>
 				<tr>
 			<td><a href="Sprite/getChildAt.html">Sprite:getChildAt</a></td>
@@ -490,136 +498,118 @@ stage:addChild(debugDraw)</code></pre>
 			<td><a href="Sprite/getChildIndex.html">Sprite:getChildIndex</a></td>
 		</tr>
 				<tr>
-			<td><a href="Sprite/getHeight.html">Sprite:getHeight</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getWidth.html">Sprite:getWidth</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getRotation.html">Sprite:getRotation</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setRotation.html">Sprite:setRotation</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getScaleX.html">Sprite:getScaleX</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setScaleX.html">Sprite:setScaleX</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getScaleY.html">Sprite:getScaleY</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setScaleY.html">Sprite:setScaleY</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getScale.html">Sprite:getScale</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setScale.html">Sprite:setScale</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/isVisible.html">Sprite:isVisible</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setVisible.html">Sprite:setVisible</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getX.html">Sprite:getX</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setX.html">Sprite:setX</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getY.html">Sprite:getY</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setY.html">Sprite:setY</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getPosition.html">Sprite:getPosition</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setPosition.html">Sprite:setPosition</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/set.html">Sprite:set</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/get.html">Sprite:get</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getParent.html">Sprite:getParent</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getNumChildren.html">Sprite:getNumChildren</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getAlpha.html">Sprite:getAlpha</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setAlpha.html">Sprite:setAlpha</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setColorTransform.html">Sprite:setColorTransform</a></td>
+			<td><a href="Sprite/getClip.html">Sprite:getClip</a></td>
 		</tr>
 				<tr>
 			<td><a href="Sprite/getColorTransform.html">Sprite:getColorTransform</a></td>
 		</tr>
 				<tr>
-			<td><a href="Sprite/hitTestPoint.html">Sprite:hitTestPoint</a></td>
+			<td><a href="Sprite/getHeight.html">Sprite:getHeight</a></td>
 		</tr>
 				<tr>
 			<td><a href="Sprite/getMatrix.html">Sprite:getMatrix</a></td>
 		</tr>
 				<tr>
-			<td><a href="Sprite/setMatrix.html">Sprite:setMatrix</a></td>
+			<td><a href="Sprite/getNumChildren.html">Sprite:getNumChildren</a></td>
 		</tr>
 				<tr>
-			<td><a href="Sprite/removeFromParent.html">Sprite:removeFromParent</a></td>
+			<td><a href="Sprite/getParent.html">Sprite:getParent</a></td>
 		</tr>
 				<tr>
-			<td><a href="Sprite/setBlendMode.html">Sprite:setBlendMode</a></td>
+			<td><a href="Sprite/getPosition.html">Sprite:getPosition</a></td>
 		</tr>
 				<tr>
-			<td><a href="Sprite/clearBlendMode.html">Sprite:clearBlendMode</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getBounds.html">Sprite:getBounds</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/new.html">Sprite.new</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setAnchorPosition.html">Sprite:setAnchorPosition</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getAnchorPosition.html">Sprite:getAnchorPosition</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/swapChildrenAt.html">Sprite:swapChildrenAt</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/swapChildren.html">Sprite:swapChildren</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/setClip.html">Sprite:setClip</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getZ.html">Sprite:getZ</a></td>
-		</tr>
-				<tr>
-			<td><a href="Sprite/getRotationY.html">Sprite:getRotationY</a></td>
+			<td><a href="Sprite/getRotation.html">Sprite:getRotation</a></td>
 		</tr>
 				<tr>
 			<td><a href="Sprite/getRotationX.html">Sprite:getRotationX</a></td>
 		</tr>
 				<tr>
+			<td><a href="Sprite/getRotationY.html">Sprite:getRotationY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getScale.html">Sprite:getScale</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getScaleX.html">Sprite:getScaleX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getScaleY.html">Sprite:getScaleY</a></td>
+		</tr>
+				<tr>
 			<td><a href="Sprite/getScaleZ.html">Sprite:getScaleZ</a></td>
 		</tr>
 				<tr>
-			<td><a href="Sprite/setZ.html">Sprite:setZ</a></td>
+			<td><a href="Sprite/getSkew.html">Sprite:getSkew</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getSkewX.html">Sprite:getSkewX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getSkewY.html">Sprite:getSkewY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getWidth.html">Sprite:getWidth</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getX.html">Sprite:getX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getY.html">Sprite:getY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/getZ.html">Sprite:getZ</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/globalToLocal.html">Sprite:globalToLocal</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/hitTestPoint.html">Sprite:hitTestPoint</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/isVisible.html">Sprite:isVisible</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/localToGlobal.html">Sprite:localToGlobal</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/new.html">Sprite.new</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/removeChild.html">Sprite:removeChild</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/removeChildAt.html">Sprite:removeChildAt</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/removeFromParent.html">Sprite:removeFromParent</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/set.html">Sprite:set</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setAlpha.html">Sprite:setAlpha</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setAnchorPosition.html">Sprite:setAnchorPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setBlendMode.html">Sprite:setBlendMode</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setClip.html">Sprite:setClip</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setColorTransform.html">Sprite:setColorTransform</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setMatrix.html">Sprite:setMatrix</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setPosition.html">Sprite:setPosition</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setRotation.html">Sprite:setRotation</a></td>
 		</tr>
 				<tr>
 			<td><a href="Sprite/setRotationX.html">Sprite:setRotationX</a></td>
@@ -628,10 +618,46 @@ stage:addChild(debugDraw)</code></pre>
 			<td><a href="Sprite/setRotationY.html">Sprite:setRotationY</a></td>
 		</tr>
 				<tr>
+			<td><a href="Sprite/setScale.html">Sprite:setScale</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setScaleX.html">Sprite:setScaleX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setScaleY.html">Sprite:setScaleY</a></td>
+		</tr>
+				<tr>
 			<td><a href="Sprite/setScaleZ.html">Sprite:setScaleZ</a></td>
 		</tr>
 				<tr>
 			<td><a href="Sprite/setShader.html">Sprite:setShader</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setSkew.html">Sprite:setSkew</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setSkewX.html">Sprite:setSkewX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setSkewY.html">Sprite:setSkewY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setVisible.html">Sprite:setVisible</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setX.html">Sprite:setX</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setY.html">Sprite:setY</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/setZ.html">Sprite:setZ</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/swapChildren.html">Sprite:swapChildren</a></td>
+		</tr>
+				<tr>
+			<td><a href="Sprite/swapChildrenAt.html">Sprite:swapChildrenAt</a></td>
 		</tr>
 				</table>
 	</div>

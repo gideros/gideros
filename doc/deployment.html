@@ -122,7 +122,12 @@ open, build, deploy this project from Xcode. The process of installing the iOS G
 by Gideros, see <a href="deployment.html#devices" data-toggle="tab">Deploy to devices</a> for detailed instructions on how to do this</p>
 
 <p><strong>For Android</strong></p>
-<p>There is a ready to use application for Android development <code>GiderosAndroidPlayer.apk</code> which comes with the installation. You can install it directly on your device using USB data transfer cable, or memory card on your phone, or uploading it to a server (as dropbox) and accessing it from there.</p>
+<p>There is a ready to use application for Android development <code>GiderosAndroidPlayer.apk</code> which comes with the installation. 
+You can install it by hosting it on a website (eg dropbox) and navigating to the APK using the browser on your Android device. 
+Alternatively connect the Android device to
+your computer using a USB cable and drag the APK onto the device. Now download "APK Installer" (free) from Google Play. Run this app and navigate to
+the Gideros Studio APK (wherever you copied it to) to install it. Note: you will need to set your Android device to "install
+apps from unknown sources" within the Android Settings menu.
 
 <p><strong>For Windows Phone</strong></p>
 <p>To install the Windows Phone player on a Windows Phone you must first unlock you Windows Phone. Run the program "Windows Phone Developer Registration (8.1)". It comes with Visual Studio (Windows Phone SDK 8.1 folder) and looks like this</p>
@@ -268,24 +273,28 @@ installation of apps from unknown sources.)</p>
 <h3> Create a signed APK directly using Gideros Studio</h3>
 
 Choose File -> Export and choose the APK tab as shown
-<p><img src="images/apkexport.png" alt="Select keystore" /></p>
+<p><img src="images/apkexport2.png" alt="Select keystore" /></p>
 
-<p>Enter the package name in the form com.companyname.appname. Enter the location of the Android SDK, Java JDK and Ant. You should have installed all these following
-the instructions in <a href="deployment.html#vendor_sdks" data-toggle="tab">Installing OS-specific SDKs</a>. The ant directory shown is a bit weird because in my case it was
-installed as part of Eclipse. Typically you will download Ant (a simple ZIP file) and extract it to any directory. Simply enter the directory you extracted it to here.</p>
+<p>Enter the package name in the form com.companyname.appname. Enter the location of the Android SDK and Java JDK. You should have installed all these following
+the instructions in <a href="deployment.html#vendor_sdks" data-toggle="tab">Installing OS-specific SDKs</a>.</p>
 
 <p> All apps uploaded to Google Play must be signed with a keystore. To prepare the keystore use <a href="https://support.globalsign.com/customer/en/portal/articles/2121490-java-keytool---create-keystore">
 keytool</a> which comes with your Java Development Kit. (on my computer it is located at C:\Program Files\Java\jdk1.8.0_74\bin) 
-Now enter the location of your keystore in the dialog box and enter its password below. You will also
-need to enter the alias and password of the key you want to use.</p>
+Now enter the location of your keystore in the dialog box and select which alias you want to use.</p>
 
-<p>Having entered all these details, click OK to create both a signed and unsigned APK at a selected location. If anything goes wrong a file error.log will be
-exported. An error may occur if you have failed to indicate the location of one of the tools needed.</p>
+<p> Enter the Android SDK version and Android Tools version you have installed on your computer. If you are not sure, run Android SDK Manager from the 
+Start Menu. You can leave the Android Target SDK at 19, the default.</p>
 
-<p> To install the APK on your device, there are several options. You can host the APK on a website eg dropbox and just double click it from the device. 
+<p>Having entered all these details, click OK to create both a signed and unsigned APK at a selected location. You will be prompted to enter
+the password for the keystore and the keystore alias.</p>
+
+<p>Note, the first time you export in this way, Gideros will download and install Gradle which may take 5-10 minutes. Just be patient, subsequent exports
+will be much faster.</p>
+
+<p> To install the APK on your Android device, there are several options. You can host the APK on a website eg dropbox and just double click it from the device. 
 If you don't want to use the internet, you can connect your computer to the device using USB cable and drag the APK onto the device. Then go to Google Play and install a
 free app called "Apk Installer". Launch the app and navigate to your APK to install it. (On the device go to Settings and check the "Unknown Sources" box to allow
-installation of apps from unknown sources.)</p>
+installation of apps from outside of Google Play)</p>
 
 
 <h2> Create a Windows Phone/Store package (APPX)</h2>

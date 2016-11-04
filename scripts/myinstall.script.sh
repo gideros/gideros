@@ -28,6 +28,9 @@ cd scripts
 echo 'Updating api annotation'
 wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O ../ui/Resources/gideros_annot.api
 
+echo 'updating docs'
+bash docs-update.sh
+
 echo 'Installing Qt for Windows...'
 tar zxf ../../dependencies/Qt.tar.bz2 -C ~/.wine/drive_c
 
