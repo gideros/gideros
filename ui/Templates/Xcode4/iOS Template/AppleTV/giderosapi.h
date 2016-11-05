@@ -31,6 +31,10 @@ void gdr_touchesMoved(NSSet* touches, NSSet* allTouches);
 void gdr_touchesEnded(NSSet* touches, NSSet* allTouches);
 void gdr_touchesCancelled(NSSet* touches, NSSet* allTouches);
 #endif
+void gdr_keyDown(int keyCode, int repeat);
+void gdr_keyUp(int keyCode, int repeat);
+void gdr_keyChar(NSString *text);
+BOOL gdr_keyboardVisible();
 #ifdef __cplusplus
 }
 #endif

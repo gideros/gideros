@@ -241,9 +241,13 @@
 			</li>
 										<li class='uplist dropdown closedlist'><a href="../b2.ParticleSystem.html#b2.ParticleSystem" id='b2.ParticleSystem' class='closed item'><i class="icon-chevron-right"></i> <strong>b2.ParticleSystem</strong></a>
 							<ul class="dropdown-menu">
-														<li><a href="../b2.ParticleSystem/createParticle.html#b2.ParticleSystem:createParticle" id='b2.ParticleSystem:createParticle'>b2.ParticleSystem:createParticle</a></li>		
+														<li><a href="../b2.ParticleSystem/containsParticle.html#b2.ParticleSystem:containsParticle" id='b2.ParticleSystem:containsParticle'>b2.ParticleSystem:containsParticle</a></li>		
+										<li><a href="../b2.ParticleSystem/createParticle.html#b2.ParticleSystem:createParticle" id='b2.ParticleSystem:createParticle'>b2.ParticleSystem:createParticle</a></li>		
 										<li><a href="../b2.ParticleSystem/createParticleGroup.html#b2.ParticleSystem:createParticleGroup" id='b2.ParticleSystem:createParticleGroup'>b2.ParticleSystem:createParticleGroup</a></li>		
 										<li><a href="../b2.ParticleSystem/destroyParticle.html#b2.ParticleSystem:destroyParticle" id='b2.ParticleSystem:destroyParticle'>b2.ParticleSystem:destroyParticle</a></li>		
+										<li><a href="../b2.ParticleSystem/destroyParticles.html#b2.ParticleSystem:destroyParticles" id='b2.ParticleSystem:destroyParticles'>b2.ParticleSystem:destroyParticles</a></li>		
+										<li><a href="../b2.ParticleSystem/getParticleCount.html#b2.ParticleSystem:getParticleCount" id='b2.ParticleSystem:getParticleCount'>b2.ParticleSystem:getParticleCount</a></li>		
+										<li><a href="../b2.ParticleSystem/getParticleGroupList.html#b2.ParticleSystem:getParticleGroupList" id='b2.ParticleSystem:getParticleGroupList'>b2.ParticleSystem:getParticleGroupList</a></li>		
 										<li><a href="../b2.ParticleSystem/setTexture.html#b2.ParticleSystem:setTexture" id='b2.ParticleSystem:setTexture'>b2.ParticleSystem:setTexture</a></li>		
 																											<li><a href="../b2.ParticleSystem/FLAG_COLOR_MIXING.html#b2.ParticleSystem.FLAG_COLOR_MIXING" id='b2.ParticleSystem.FLAG_COLOR_MIXING'>b2.ParticleSystem.FLAG_COLOR_MIXING</a></li>		
 										<li><a href="../b2.ParticleSystem/FLAG_ELASTIC.html#b2.ParticleSystem.FLAG_ELASTIC" id='b2.ParticleSystem.FLAG_ELASTIC'>b2.ParticleSystem.FLAG_ELASTIC</a></li>		
@@ -354,6 +358,7 @@
 										<li><a href="../b2World/setGravity.html#b2.World:setGravity" id='b2.World:setGravity'>b2.World:setGravity</a></li>		
 										<li><a href="../b2World/step.html#b2.World:step" id='b2.World:step'>b2.World:step</a></li>		
 																							<li><a href="../b2World/Event.BEGIN_CONTACT.html#Event.BEGIN_CONTACT" id='Event.BEGIN_CONTACT'>Event.BEGIN_CONTACT</a></li>		
+										<li><a href="../b2World/Event.BEGIN_CONTACT_PARTICLE.html#Event.BEGIN_CONTACT_PARTICLE" id='Event.BEGIN_CONTACT_PARTICLE'>Event.BEGIN_CONTACT_PARTICLE</a></li>		
 										<li><a href="../b2World/Event.END_CONTACT.html#Event.END_CONTACT" id='Event.END_CONTACT'>Event.END_CONTACT</a></li>		
 										<li><a href="../b2World/Event.POST_SOLVE.html#Event.POST_SOLVE" id='Event.POST_SOLVE'>Event.POST_SOLVE</a></li>		
 										<li><a href="../b2World/Event.PRE_SOLVE.html#Event.PRE_SOLVE" id='Event.PRE_SOLVE'>Event.PRE_SOLVE</a></li>		
@@ -378,29 +383,39 @@
 
 <h3>Description:</h3>
 <div>
-Sets the blend mode of the sprite. Currently supported blending modes are:<br />
-<ul><br />
-<li>Sprite.ALPHA = "alpha"</li><br />
-<li>Sprite.NO_ALPHA = "noAlpha"</li><br />
-<li>Sprite.ADD = "add"</li><br />
-<li>Sprite.MULTIPLY = "multiply"</li><br />
-<li>Sprite.SCREEN = "screen"</li><br />
-</ul><br />
-If a <a href='../../gideros/Sprite.html#Sprite'>Sprite</a> object doesn&#039;t set any blending mode, it takes the blending mode from its parent sprite.<br />
-<ul><br />
-<li>*Note:** The following two lines are completely same:</li><br />
-</ul><br />
-<pre><code>sprite:setBlendMode("add")
-	sprite:setBlendMode(Sprite.ADD)</code></pre><br />
-It&#039;s a matter of taste which one to choose.
+Sets the blend mode of the sprite. This method can be called with 1 or 2 parameters. <br />
+If one parameter is passed it must be one of the following blending modes:<br />
+Sprite.ALPHA = "alpha"<br />
+Sprite.NO_ALPHA = "noAlpha"<br />
+Sprite.ADD = "add"<br />
+Sprite.MULTIPLY = "multiply"<br />
+Sprite.SCREEN = "screen"<br />
+If a <a href='../../gideros/Sprite.html#Sprite'>Sprite</a> object doesn't set any blending mode, it takes the blending mode from its parent sprite.<br />
+*Note:** The following two lines are completely same:<br />
+	sprite:setBlendMode("add")<br />
+	sprite:setBlendMode(Sprite.ADD)<br />
+It's a matter of taste which one to choose.<br />
+If two parameters are passed to this method, then a source and destination blend can be set (in that order) and each take the values:<br />
+Sprite.ZERO = "zero"<br />
+Sprite.ONE = "one"<br />
+Sprite.SRC_COLOR = "srcColor"<br />
+Sprite.ONE_MINUS_SRC_COLOR = "oneMinusSrcColor"<br />
+Sprite.DST_COLOR = "dstColor"<br />
+Sprite.ONE_MINUS_DST_COLOR = "oneMinusDstColor"<br />
+Sprite.SRC_ALPHA = "srcAlpha"<br />
+Sprite.ONE_MINUS_SRC_ALPHA = "oneMinusSrcAlpha"<br />
+Sprite.DST_ALPHA = "dstAlpha"<br />
+Sprite.ONE_MINUS_DST_ALPHA = "oneMinusDstAlpha"<br />
+Sprite.SRC_ALPHA_SATURATE = "srcAlphaSaturate"
 </div>
 
 	<h3>Syntax:</h3>
-	<pre><code>Sprite:setBlendMode(blendMode)</code></pre>
+	<pre><code>Sprite:setBlendMode(blendMode or src [, dst])</code></pre>
 
 	<h3>Parameters:</h3>
 	<ul class='list'>
-		<li><strong>blendMode:</strong> (String) </li>
+		<li><strong>blendMode or src:</strong> (String) If one parameter is used, this is the blend mode. If two parameters are used this is the source blend specification.</li>
+		<li><strong>dst:</strong> (string) Destination blend mode</li>
 		</ul>
 
 
