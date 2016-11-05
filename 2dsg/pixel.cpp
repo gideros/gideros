@@ -10,6 +10,7 @@ Pixel::Pixel(Application *application) : Sprite(application)
     width_ = 1, height_ = 1;
     sx_ = 1, sy_ = 1;
     x_ = 0, y_ = 0;
+    isStretching_ = false;
 	for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
 		texture_[t]=NULL;
 	texcoords.resize(4);
@@ -31,7 +32,7 @@ Pixel::Pixel(Application *application) : Sprite(application)
 
 void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
-	if (!a_ && !shader_) return;
+    if (!a_ && !shader_) return;
 	if (isWhite_ == false)
 	{
 		glPushColor();
@@ -41,12 +42,17 @@ void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float 
 	for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
 		if (texture_[t])
 			ShaderEngine::Engine->bindTexture(t,texture_[t]->data->id());
-	ShaderProgram *shp=(texture_[0])?ShaderProgram::stdTexture:ShaderProgram::stdBasic;
-	if (shader_)
-		shp=shader_;
+    ShaderProgram *shp=(texture_[0])?ShaderProgram::stdTexture:(
+        colors_.empty()?ShaderProgram::stdBasic:ShaderProgram::stdColor);
+    if (shader_) shp=shader_;
 
     shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),vertices.modified,&vertices.bufferCache);
     shp->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,&texcoords[0],texcoords.size(),texcoords.modified,&texcoords.bufferCache);
+    if (!colors_.empty())
+    {
+        shp->setData(ShaderProgram::DataColor,ShaderProgram::DUBYTE,4,&colors_[0],colors_.size()/4,colors_.modified,&colors_.bufferCache);
+        colors_.modified=false;
+    }
     shp->drawElements(ShaderProgram::TriangleStrip, quad.size(), ShaderProgram::DUSHORT, &quad[0], quad.modified, &quad.bufferCache);
     vertices.modified = false;
 	texcoords.modified = false;
@@ -70,18 +76,26 @@ void Pixel::extraBounds(float* minx, float* miny, float* maxx, float* maxy) cons
         *maxy = height_;
 }
 
+
 void Pixel::updateTexture()
 {
     TextureBase* texture = texture_[0];
 
-    float tw = (float)(texture->data->width)/texture->data->exwidth;
-    float th = (float)(texture->data->height)/texture->data->exheight;
+    float tw = texture->data->exwidth;
+    float th = texture->data->exheight;
 
     float x = x_ / tw;
     float y = y_ / th;
 
-    float w = tw / sx_;
-    float h = th / sy_;
+    float w = width_ / tw / sx_;
+    float h = height_ / th / sy_;
+
+    if (isStretching_) {
+        w = (float)(texture->data->width) / tw / sx_;
+        h = (float)(texture->data->height) / th / sy_;
+        x = 0.5 * w * (sx_ - 1) - x_ * w; // x_ is relative for stretching
+        y = 0.5 * h * (sy_ - 1) - y_ * h; // y_ is relative for stretching
+    }
 
     texcoords[0] = Point2f(x,y);
     texcoords[1] = Point2f(x+w,y);
@@ -89,7 +103,6 @@ void Pixel::updateTexture()
     texcoords[3] = Point2f(x,y+h);
     texcoords.Update();
 }
-
 
 void Pixel::setDimensions(float width,float height)
 {
@@ -142,4 +155,27 @@ void Pixel::setTextureScale(float sx, float sy)
     sy_ = sy;
 
     if (texture_[0]) updateTexture();
+}
+
+void Pixel::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, int c4, float a4)
+{
+    c1_ = c1, a1_ = a1, c2_ = c2, a2_ = a2, c3_ = c3, a3_ = a3, c4_ = c4, a4_ = a4;
+    colors_.resize(16);
+    colors_[0] = ((c1 >> 16) & 0xff) * a1;
+    colors_[1] = ((c1 >> 8) & 0xff) * a1;
+    colors_[2] = (c1 & 0xff) * a1;
+    colors_[3] = 255 * a1;
+    colors_[4] = ((c2 >> 16) & 0xff) * a2;
+    colors_[5] = ((c2 >> 8) & 0xff) * a2;
+    colors_[6] = (c2 & 0xff) * a2;
+    colors_[7] = 255 * a2;
+    colors_[8] = ((c3 >> 16) & 0xff) * a3;
+    colors_[9] = ((c3 >> 8) & 0xff) * a3;
+    colors_[10] = (c3 & 0xff) * a3;
+    colors_[11] = 255 * a3;
+    colors_[12] = ((c4 >> 16) & 0xff) * a4;
+    colors_[13] = ((c4 >> 8) & 0xff) * a4;
+    colors_[14] = (c4 & 0xff) * a4;
+    colors_[15] = 255 * a4;
+    colors_.Update();
 }

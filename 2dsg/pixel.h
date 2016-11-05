@@ -70,18 +70,43 @@ public:
 
     void setTextureMatrix(const Matrix4* matrix);
 
+    void setGradient(int c1, float a1, int c2, float a2, int c3, float a3, int c4, float a4);
+    bool hasGradient()
+    {
+        return !colors_.empty();
+    }
+    void getGradient(int &c1, float &a1, int &c2, float &a2, int &c3, float &a3, int &c4, float &a4)
+    {
+        c1 = c1_, a1 = a1_, c2 = c2_, a2 = a2_, c3 = c3_, a3 = a3_, c4 = c4_, a4 = a4_;
+    }
+
+    void clearGradient()
+    {
+        colors_.clear();
+    }
+
+    void setStretching(bool isStretching)
+    {
+        isStretching_ = isStretching;
+    }
+
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
 
 	VertexBuffer<Point2f> vertices;
 	VertexBuffer<Point2f> texcoords;
+    VertexBuffer<unsigned char> colors_;
     TextureBase *texture_[PIXEL_MAX_TEXTURES];
 	float r_, g_, b_, a_;
+    int c1_, c2_, c3_, c4_;
+    float a1_, a2_, a3_, a4_;
 	float width_,height_;
     float x_, y_;
     float sx_, sy_;
 	bool isWhite_;
+    bool isStretching_;
+
 };
 
 #endif
