@@ -79,7 +79,7 @@ public:
     {
         c1 = c1_, a1 = a1_, c2 = c2_, a2 = a2_, c3 = c3_, a3 = a3_, c4 = c4_, a4 = a4_;
     }
-
+    void setGradientWithAngle(int co1, int co2, float angle);
     void clearGradient()
     {
         colors_.clear();
@@ -93,6 +93,7 @@ public:
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
+    int getMixedColor(int c1, int c2, float a);
 
 	VertexBuffer<Point2f> vertices;
 	VertexBuffer<Point2f> texcoords;

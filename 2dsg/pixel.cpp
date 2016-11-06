@@ -28,6 +28,7 @@ Pixel::Pixel(Application *application) : Sprite(application)
 		quad[3] = 2;
 		quad.Update();
 	}
+    vertices.resize(4);
 }
 
 void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
@@ -81,26 +82,81 @@ void Pixel::updateTexture()
 {
     TextureBase* texture = texture_[0];
 
-    float tw = texture->data->exwidth;
-    float th = texture->data->exheight;
+    float tw = texture->data->width;
+    float th = texture->data->height;
 
-    float x = x_ / tw;
-    float y = y_ / th;
+    float etw = texture->data->exwidth;
+    float eth = texture->data->exheight;
 
-    float w = width_ / tw / sx_;
-    float h = height_ / th / sy_;
+    if (isStretching_ || texture->data->parameters.wrap == eRepeat) {
+        float w = (isStretching_ ? tw : width_) / (etw * sx_);
+        float h = (isStretching_ ? th : height_) / (eth * sy_);
+        float x = -x_ / etw * tw;
+        float y = -y_ / eth * th;
 
-    if (isStretching_) {
-        w = (float)(texture->data->width) / tw / sx_;
-        h = (float)(texture->data->height) / th / sy_;
-        x = 0.5 * w * (sx_ - 1) - x_ * w; // x_ is relative for stretching
-        y = 0.5 * h * (sy_ - 1) - y_ * h; // y_ is relative for stretching
+        texcoords[0] = Point2f(x,y);
+        texcoords[1] = Point2f(x+w,y);
+        texcoords[2] = Point2f(x+w,y+h);
+        texcoords[3] = Point2f(x,y+h);
+        texcoords.Update();
+        return;
     }
 
-    texcoords[0] = Point2f(x,y);
-    texcoords[1] = Point2f(x+w,y);
-    texcoords[2] = Point2f(x+w,y+h);
-    texcoords[3] = Point2f(x,y+h);
+    float w, h;
+
+    if (width_ / tw < height_ / th) {
+        h = sy_ * width_ * th / tw;
+        w = width_ * sx_;
+    } else {
+        w = sx_ * height_ * tw / th;
+        h = height_ * sy_;
+    }
+
+    float x1, y1, x2, y2;
+
+    x1 = 0.5 * (width_ - w) + x_ * w;
+    y1 = 0.5 * (height_ - h) + y_ * h;
+    x2 = x1 + w;
+    y2 = y1 + h;
+
+    float dx1, dy1, dx2, dy2;
+
+    dx1 = x1 < 0 ? x1 : 0;
+    dy1 = y1 < 0 ? y1 : 0;
+    dx2 = x2 > width_ ? x2 - width_ : 0;
+    dy2 = y2 > height_ ? y2 - height_: 0;
+
+    if (x1 < 0) x1 = 0;
+    if (y1 < 0) y1 = 0;
+    if (x2 > width_) x2 = width_;
+    if (y2 > height_) y2 = height_;
+
+    vertices[0] = Point2f(x1,y1);
+    vertices[1] = Point2f(x2,y1);
+    vertices[2] = Point2f(x2,y2);
+    vertices[3] = Point2f(x1,y2);
+    vertices.Update();
+
+    float tx1, ty1, tx2, ty2;
+
+    float u = tw / etw;
+    float v = th / eth;
+
+    float rw = x2 - x1;
+    float rh = y2 - y1;
+
+    float rx = 0.5 - 0.5 * rw / w;
+    float ry = 0.5 - 0.5 * rh / h;
+
+    tx1 = u * rx;
+    ty1 = v * ry;
+    tx2 = u * (rw / w + rx);
+    ty2 = v * (rh / h + ry);
+
+    texcoords[0] = Point2f(tx1,ty1);
+    texcoords[1] = Point2f(tx2,ty1);
+    texcoords[2] = Point2f(tx2,ty2);
+    texcoords[3] = Point2f(tx1,ty2);
     texcoords.Update();
 }
 
@@ -108,7 +164,6 @@ void Pixel::setDimensions(float width,float height)
 {
 	width_=width;
 	height_=height;
-	vertices.resize(4);
     vertices[0] = Point2f(0,0);
     vertices[1] = Point2f(width_,0);
     vertices[2] = Point2f(width_,height_);
@@ -178,4 +233,52 @@ void Pixel::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, in
     colors_[14] = (c4 & 0xff) * a4;
     colors_[15] = 255 * a4;
     colors_.Update();
+}
+
+int Pixel::getMixedColor(int c1, int c2, float a)
+{
+    int b1 = c1 % 256;
+    int g1 = int(c1/256)%256;
+    int r1 = int(c1/65536)%256;
+    int b2 = c2 % 256;
+    int g2 = int(c2/256)%256;
+    int r2 = int(c2/65536)%256;
+    int r = r1*a+r2*(1-a);
+    int g = g1*a+g2*(1-a);
+    int b = b1*a+b2*(1-a);
+    return int(r)*65536+int(g)*256+int(b);
+}
+
+void Pixel::setGradientWithAngle(int co1, int co2, float angle)
+{
+    const float PI =3.141592653589793238463;
+
+    float dirx = cos(angle/180*PI)/2;
+    float diry = sin(angle/180*PI)/2;
+
+    float f1 = 0.5-dirx-diry;
+    float f2 = 0.5+dirx-diry;
+    float f3 = 0.5+dirx+diry;
+    float f4 = 0.5-dirx+diry;
+
+    float fmin = f1 < f2 ? f1 : f2;
+    fmin = fmin < f3 ? fmin : f3;
+    fmin = fmin < f4 ? fmin : f4;
+
+    float fmax = f1 > f2 ? f1 : f2;
+    fmax = fmax > f3 ? fmax : f3;
+    fmax = fmax > f4 ? fmax : f4;
+
+    float fscl = 1/(fmax-fmin);
+    f1 = (f1-fmin)*fscl;
+    f2 = (f2-fmin)*fscl;
+    f3 = (f3-fmin)*fscl;
+    f4 = (f4-fmin)*fscl;
+
+    float c1 = getMixedColor(co1,co2,f1);
+    float c2 = getMixedColor(co1,co2,f2);
+    float c3 = getMixedColor(co1,co2,f3);
+    float c4 = getMixedColor(co1,co2,f4);
+
+    setGradient(c1, 1.0, c2, 1.0, c3, 1.0, c4, 1.0);
 }
