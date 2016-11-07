@@ -79,7 +79,7 @@ public:
     {
         c1 = c1_, a1 = a1_, c2 = c2_, a2 = a2_, c3 = c3_, a3 = a3_, c4 = c4_, a4 = a4_;
     }
-    void setGradientWithAngle(int co1, int co2, float angle);
+    void setGradientWithAngle(int co1, float a1, int co2, float a2, float angle);
     void clearGradient()
     {
         colors_.clear();

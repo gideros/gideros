@@ -232,9 +232,10 @@ int PixelBinder::setColor(lua_State* L)
                 luaL_checknumber(L, 2), luaL_checknumber(L, 3),
                 luaL_checknumber(L, 4), luaL_checknumber(L, 5),
                 luaL_checknumber(L, 4), luaL_checknumber(L, 5));
-    else if (lua_gettop(L) == 4) bitmap->setGradientWithAngle(
+    else if (lua_gettop(L) == 6) bitmap->setGradientWithAngle(
                 luaL_checknumber(L, 2), luaL_checknumber(L, 3),
-                luaL_checknumber(L, 4));
+                luaL_checknumber(L, 4), luaL_checknumber(L, 5),
+                luaL_checknumber(L, 6));
     else {
         unsigned int color = luaL_optinteger(L, 2, 0);
         lua_Number alpha = luaL_optnumber(L, 3, 1.0);

@@ -251,7 +251,7 @@ int Pixel::getMixedColor(int c1, int c2, float a)
     return int(r)*65536+int(g)*256+int(b);
 }
 
-void Pixel::setGradientWithAngle(int co1, int co2, float angle)
+void Pixel::setGradientWithAngle(int co1, float a1, int co2, float a2, float angle)
 {
     const float PI =3.141592653589793238463;
 
