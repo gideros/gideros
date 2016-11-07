@@ -79,17 +79,17 @@ int PixelBinder::create(lua_State* L)
         bitmap->setTexture(textureBase, 0, NULL);
         bitmap->setColor(1, 1, 1, 1);
 
-        lua_Number x = luaL_optnumber(L, 2, 0.0);
-        lua_Number y = luaL_optnumber(L, 3, 0.0);
-        bitmap->setTexturePosition(x, y);
-
-        lua_Number w = luaL_optnumber(L, 4, textureBase->data->width);
-        lua_Number h = luaL_optnumber(L, 5, textureBase->data->height);
+        lua_Number w = luaL_optnumber(L, 2, textureBase->data->width);
+        lua_Number h = luaL_optnumber(L, 3, textureBase->data->height);
         bitmap->setDimensions(w, h);
 
-        lua_Number sx = luaL_optnumber(L, 6, 1.0);
-        lua_Number sy = luaL_optnumber(L, 7, 1.0);
+        lua_Number sx = luaL_optnumber(L, 4, 1.0);
+        lua_Number sy = luaL_optnumber(L, 5, 1.0);
         bitmap->setTextureScale(sx, sy);
+
+        lua_Number x = luaL_optnumber(L, 6, 0.0);
+        lua_Number y = luaL_optnumber(L, 7, 0.0);
+        bitmap->setTexturePosition(x, y);
 
         binder.pushInstance("Pixel", bitmap);
         return 1;

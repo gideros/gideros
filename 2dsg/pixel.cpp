@@ -89,10 +89,18 @@ void Pixel::updateTexture()
     float eth = texture->data->exheight;
 
     if (isStretching_ || texture->data->parameters.wrap == eRepeat) {
-        float w = (isStretching_ ? tw : width_) / (etw * sx_);
-        float h = (isStretching_ ? th : height_) / (eth * sy_);
-        float x = -x_ / etw * tw;
-        float y = -y_ / eth * th;
+        float w, h, x, y;
+        if (isStretching_) {
+            w = tw / (etw * sx_);
+            h = th / (eth * sy_);
+            x = 0.5 * w * (sx_ - 1) - x_ * w;
+            y = 0.5 * h * (sy_ - 1) - y_ * h;
+        } else {
+            w = width_ / (etw * sx_);
+            h = height_ / (eth * sy_);
+            x = -x_ / etw * tw;
+            y = -y_ / eth * th;
+        }
 
         texcoords[0] = Point2f(x,y);
         texcoords[1] = Point2f(x+w,y);
@@ -114,17 +122,11 @@ void Pixel::updateTexture()
 
     float x1, y1, x2, y2;
 
-    x1 = 0.5 * (width_ - w) + x_ * w;
-    y1 = 0.5 * (height_ - h) + y_ * h;
+    x1 = 0.5 * (width_ - w) + x_ * width_;
+    y1 = 0.5 * (height_ - h) + y_ * height_;
+
     x2 = x1 + w;
     y2 = y1 + h;
-
-    float dx1, dy1, dx2, dy2;
-
-    dx1 = x1 < 0 ? x1 : 0;
-    dy1 = y1 < 0 ? y1 : 0;
-    dx2 = x2 > width_ ? x2 - width_ : 0;
-    dy2 = y2 > height_ ? y2 - height_: 0;
 
     if (x1 < 0) x1 = 0;
     if (y1 < 0) y1 = 0;
@@ -145,8 +147,8 @@ void Pixel::updateTexture()
     float rw = x2 - x1;
     float rh = y2 - y1;
 
-    float rx = 0.5 - 0.5 * rw / w;
-    float ry = 0.5 - 0.5 * rh / h;
+    float rx = 0.5 - (0.5 + x_) * rw / w;
+    float ry = 0.5 - (0.5 + y_) * rh / h;
 
     tx1 = u * rx;
     ty1 = v * ry;
