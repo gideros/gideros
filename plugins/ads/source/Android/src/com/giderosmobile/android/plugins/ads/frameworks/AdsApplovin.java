@@ -160,6 +160,8 @@ public class AdsApplovin implements AdsInterface {
 									Ads.removeAd(AdsApplovin.me, adView);
 									Ads.adDismissed(AdsApplovin.me, type);
 								}	
+								@Override
+			                    public void onRefresh() {}
 							});
 							mngr.setAutoKill(type, false);
 							AdsApplovinListener listener = new AdsApplovinListener(mngr.getState(type));
