@@ -209,6 +209,18 @@ b2Timer.o: \
  ..\external\liquidfun-1.0.0\liquidfun\Box2D/Box2D/Common/b2Settings.h
 	g++ -U_WIN32 $(CXXFLAGS) -c $<
 
+# needs C++11
+shaderbinder.o: ..\luabinding\shaderbinder.cpp \
+ ..\luabinding\shaderbinder.h ..\luabinding\binder.h ..\lua\src/lua.hpp \
+ ..\lua\src/lua.h ..\lua\src/luaconf.h ..\lua\src/lualib.h \
+ ..\lua\src/lauxlib.h ..\2dsg\gfxbackends/Shaders.h ..\2dsg/Matrices.h \
+ ..\2dsg/Vectors.h ..\luabinding\stackchecker.h \
+ ..\luabinding\luaapplication.h ..\libgideros/gideros_p.h \
+ ..\libgideros/gexport.h ..\libgid\include/gglobal.h ..\libgvfs/gexport.h \
+ ..\2dsg/orientation.h ..\2dsg/gstatus.h ..\libgideros/luautil.h \
+ ..\lua\src/lua.h ..\lua\src/lauxlib.h ..\lua\src/lualib.h
+	g++ -std=c++11 $(CXXFLAGS) -c $<
+
 -include win32.dep
 -include box2d1.dep
 -include box2d2.dep
