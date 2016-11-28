@@ -1,0 +1,59 @@
+<plugin
+ name="Require"
+ description="Allow to set requirements in Android Manifest">
+ <property name="reqGps" type="boolean" title="Gps is mandatory"/>
+ <property name="reqAccel" type="boolean" title="Accelerometer is mandatory"/>
+ <property name="reqGyro" type="boolean" title="Gyroscope is mandatory"/>
+ <property name="reqCompass" type="boolean" title="Compass is mandatory"/>
+ <target name="AndroidStudio,APK,Android">
+    <set key="local.reqGps" value="false"/>
+    <if condition="[[[plugin.reqGps]]]">
+    	<set key="local.reqGps" value="true"/>
+    </if>
+    <template name="AndroidManifest" path="">
+        <replacelist wildcards="AndroidManifest.xml">
+            <replace>
+            	<orig>android:name="android.hardware.location" android:required="false"</orig>
+            	<by>android:name="android.hardware.location" android:required="[[[local.reqGps]]]"</by>
+            </replace>
+            <replace>
+            	<orig>android:name="android.hardware.location.gps" android:required="false"</orig>
+            	<by>android:name="android.hardware.location.gps" android:required="[[[local.reqGps]]]"</by>
+            </replace>
+        </replacelist>
+    </template>
+    <if condition="[[[plugin.reqAccel]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+            	<append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            		<by><![CDATA[
+<uses-feature android:name="android.hardware.sensor.accelerometer"/>]]></by>
+    	        </append>
+        	</replacelist>
+    	</template>
+    </if>
+    <if condition="[[[plugin.reqGyro]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+            	<append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            		<by><![CDATA[
+<uses-feature android:name="android.hardware.sensor.gyroscope"/>]]></by>
+    	        </append>
+        	</replacelist>
+    	</template>
+    </if>
+    <if condition="[[[plugin.reqCompass]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+            	<append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            		<by><![CDATA[
+<uses-feature android:name="android.hardware.sensor.compass"/>]]></by>
+    	        </append>
+        	</replacelist>
+    	</template>
+    </if>
+ </target>
+</plugin>
