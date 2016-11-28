@@ -5,7 +5,10 @@
  <property name="adsFwAdcolony" type="boolean" title="Enable Adcolony support (Android,iOS)"/>
  <property name="adsFwAdmob" type="boolean" title="Enable Admob support (Android,iOS)"/>
  <property name="adsFwAmazon" type="boolean" title="Enable Amazon support (Android,iOS)"/>
- <property name="adsFwApplovin" type="boolean" title="Enable App Lovin' support (Android,iOS)"/>
+ -->
+ <property name="adsFwApplovin" type="boolean" title="Enable AppLovin support (Android, require GMS)"/>
+ <property name="adsFwApplovinKey" type="string" title="AppLovin SDK key (Android)"/>
+ <!--
  <property name="adsFwChartboost" type="boolean" title="Enable Chartboost support (Android,iOS)"/>
  <property name="adsFwHeyzap" type="boolean" title="Enable Heyzap support (Android,iOS)"/>
  <property name="adsFwIad" type="boolean" title="Enable iAd support (iOS)"/>
@@ -48,7 +51,28 @@
 				</append>
 	       	</replacelist>	
 	 	</template>
-	</if>    
+	</if>  
+    <if condition="[[[plugin.adsFwApplovin]]]">
+    	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.java" />
+	    <template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="applovin*.jar" />
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml;build.gradle">
+            	<append>
+            		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+            		<by><![CDATA[
+<meta-data android:name="applovin.sdk.key" android:value="[[[plugin.adsFwApplovinKey]]]"  />
+<activity android:name="com.applovin.adview.AppLovinInterstitialActivity" android:configChanges="orientation|screenSize" />
+<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" />]]></by>
+    	        </append>
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+				    compile fileTree(include: ['applovin*.jar'], dir: 'libs')
+					</by>
+				</append>
+        	</replacelist>
+    	</template>
+    </if>	  
  </target>
  <target name="Android">
     <template name="binares" path="[[[sys.pluginDir]]]/bin/Android" exclude="frameworks"/>
