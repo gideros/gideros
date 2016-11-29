@@ -64,6 +64,11 @@
 <activity android:name="com.applovin.adview.AppLovinInterstitialActivity" android:configChanges="orientation|screenSize" />
 <activity android:name="com.applovin.adview.AppLovinConfirmationActivity" />]]></by>
     	        </append>
+            	<append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            		<by><![CDATA[
+    	            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>]]></by>
+    	        </append>    	        
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
@@ -87,6 +92,11 @@
                android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
                android:configChanges="keyboardHidden|orientation|screenSize" />]]></by>
     	        </append>
+            	<append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            		<by><![CDATA[
+    	            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>]]></by>
+    	        </append>    	        
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
