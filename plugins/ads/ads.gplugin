@@ -8,8 +8,8 @@
  -->
  <property name="adsFwApplovin" type="boolean" title="Enable AppLovin support (Android, require GMS)"/>
  <property name="adsFwApplovinKey" type="string" title="AppLovin SDK key (Android)"/>
+ <property name="adsFwChartboost" type="boolean" title="Enable Chartboost support (Android, require GMS)"/>
  <!--
- <property name="adsFwChartboost" type="boolean" title="Enable Chartboost support (Android,iOS)"/>
  <property name="adsFwHeyzap" type="boolean" title="Enable Heyzap support (Android,iOS)"/>
  <property name="adsFwIad" type="boolean" title="Enable iAd support (iOS)"/>
  <property name="adsFwInmobi" type="boolean" title="Enable Inmobi support (Android,iOS)"/>
@@ -68,6 +68,29 @@
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
 				    compile fileTree(include: ['applovin*.jar'], dir: 'libs')
+					</by>
+				</append>
+        	</replacelist>
+    	</template>
+    </if>	  
+    <if condition="[[[plugin.adsFwChartboost]]]">
+    	<template name="ChartBoost" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsChartboost.java" />
+	    <template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="chartboos*.jar" />
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml;build.gradle">
+            	<append>
+            		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+            		<by><![CDATA[
+<activity android:name="com.chartboost.sdk.CBImpressionActivity"
+               android:excludeFromRecents="true"
+               android:hardwareAccelerated="true"
+               android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+               android:configChanges="keyboardHidden|orientation|screenSize" />]]></by>
+    	        </append>
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+				    compile fileTree(include: ['chartboos*.jar'], dir: 'libs')
 					</by>
 				</append>
         	</replacelist>
