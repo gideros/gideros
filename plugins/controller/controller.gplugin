@@ -4,6 +4,7 @@
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+	<template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="com.bda.controller.jar" />
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;controller&quot;);"/>
@@ -18,10 +19,19 @@
         return super.onGenericMotionEvent(event);
     }"/>
         </replacelist>
+		<replacelist wildcards="build.gradle">
+			<append>
+				<orig>//TAG-DEPENDENCIES//</orig>								
+				<by>
+				compile fileTree(include: ['com.bda.controller.jar'], dir: 'libs')
+				</by>
+			</append>
+		</replacelist>
     </template>
  </target>
  <target name="Android">
     <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+	<template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="com.bda.controller.jar" />
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;controller&quot;);"/>

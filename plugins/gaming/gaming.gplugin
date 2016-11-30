@@ -2,10 +2,10 @@
  name="Gaming"
  description="Gaming services Plugin">
  <property name="gmsFwGoogle" type="boolean" title="Enable Google Play Services support"/>
- <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="7.8.0" />
+ <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="9.2.0" />
  <property name="gmsAppId" type="string" title="Application Id" description="Application Id for Google Play Services" default="" />
  <property name="gmsFwGamecircle" type="boolean" title="Enable Amazon Gamecircle support"/>
- <property name="gmsFwHeyzap" type="boolean" title="Enable Heyzap support"/>
+<!-- <property name="gmsFwHeyzap" type="boolean" title="Enable Heyzap support"/> -->
  <property name="gmsFwGamekit" type="boolean" title="Enable GameKit support"/>
  <target name="AndroidStudio,APK">
  	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs/" />
@@ -45,7 +45,9 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-		           compile 'com.google.android.gms:play-services:[[[plugin.gmsVersion]]]'
+		           compile 'com.google.android.gms:play-services-games:[[[plugin.gmsVersion]]]'
+		           compile 'com.google.android.gms:play-services-drive:[[[plugin.gmsVersion]]]'
+		           compile 'com.google.android.gms:play-services-plus:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
 				<replace orig="minSdkVersion 8" by="minSdkVersion 9" />
@@ -57,7 +59,6 @@
             		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
             		<by><![CDATA[
 <meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/app_id" />
-<meta-data android:name="com.google.android.gms.appstate.APP_ID" android:value="@string/app_id" />
 <meta-data android:name="com.google.android.gms.version"  android:value="@integer/google_play_services_version" />]]></by> 
     	        </append>
 	       	</replacelist>	

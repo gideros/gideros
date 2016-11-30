@@ -1,6 +1,7 @@
 <plugin
  name="Ads"
  description="Generic Ads interface">
+ <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="9.2.0" />
  <!--
  <property name="adsFwAdcolony" type="boolean" title="Enable Adcolony support (Android,iOS)"/>
  -->
@@ -42,6 +43,11 @@
     <set key="local.adsfwd" value="app/src/main/java/com/giderosmobile/android/plugins/ads/frameworks"/>
     <set key="local.adsfws" value="[[[sys.pluginDir]]]/bin/Android/src/com/giderosmobile/android/plugins/ads/frameworks"/>
     <mkdir>[[[local.adsfwd]]]</mkdir>
+ 	<template name="GMS" path="[[[sys.pluginDir]]]/bin/Android/res" dest="app/src/main/res/">
+		<replacelist wildcards="ids.xml">
+			<replace orig="561448401579" by="[[[plugin.gmsAppId]]]"/>
+       	</replacelist>		
+ 	</template>
     <if condition="[[[plugin.adsFwUnity]]]">
     	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.java" />
     	<download source="https://github.com/Unity-Technologies/unity-ads-android/releases/download/2.0.5/unity-ads.aar" dest="[[[sys.cacheDir]]]/unity-ads.aar" />
@@ -78,6 +84,7 @@
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
 				    compile fileTree(include: ['applovin*.jar'], dir: 'libs')
+		            compile 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
         	</replacelist>
@@ -106,6 +113,7 @@
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
 				    compile fileTree(include: ['chartboos*.jar'], dir: 'libs')
+		            compile 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
         	</replacelist>
@@ -128,6 +136,12 @@
             		<by><![CDATA[
     	            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>]]></by>
     	        </append>   
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+		            compile 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
+					</by>
+				</append>
             	<prepend>
             		<orig><![CDATA[</resources>]]></orig>
             		<by><![CDATA[    <!-- AdMob ad unit IDs -->
