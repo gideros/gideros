@@ -28,18 +28,6 @@
        	</replacelist>			
  	</template>
 	<if condition="[[[plugin.gmsFwGoogle]]]">
- 	<template name="Gaming" path="">
-       	<replacelist wildcards="[[[project.namews]]]Activity.java">
-				<append orig="//GIDEROS-STATIC-INIT//">
-					<by>
-					System.loadLibrary("gaming");
-					</by>
-				</append>				
-				<prepend orig="//GIDEROS-EXTERNAL-CLASS//">
-					<by>"com.giderosmobile.android.plugins.gaming.Game",</by>
-				</prepend>
-       	</replacelist>			
-	 	</template>
 	 	<template name="GooglePlayServices" path="">
 			<replacelist wildcards="build.gradle">
 				<append>

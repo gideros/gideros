@@ -48,6 +48,16 @@
 			<replace orig="561448401579" by="[[[plugin.gmsAppId]]]"/>
        	</replacelist>		
  	</template>
+   	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+            	<append>
+            		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+            		<by><![CDATA[
+<meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/app_id" />
+<meta-data android:name="com.google.android.gms.version"  android:value="@integer/google_play_services_version" />]]></by> 
+    	        </append>
+	       	</replacelist>	
+ 	</template>	 	
     <if condition="[[[plugin.adsFwUnity]]]">
     	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.java" />
     	<download source="https://github.com/Unity-Technologies/unity-ads-android/releases/download/2.0.5/unity-ads.aar" dest="[[[sys.cacheDir]]]/unity-ads.aar" />
