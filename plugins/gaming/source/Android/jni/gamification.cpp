@@ -230,9 +230,13 @@ public:
 		jstring jretStr = (jstring)env->CallObjectMethod(jsubobj, env->GetMethodID(clsBundle, "getString", "(Ljava/lang/String;)Ljava/lang/String;"), jStr);
 		env->DeleteLocalRef(jStr);
 	
-		const char *retVal = env->GetStringUTFChars(jretStr, NULL);
-		std::string result = retVal;
-		env->ReleaseStringUTFChars(jretStr, retVal);
+		std::string result;
+		if (jretStr)
+		{
+			const char *retVal = env->GetStringUTFChars(jretStr, NULL);
+			result= retVal;
+			env->ReleaseStringUTFChars(jretStr, retVal);
+		}
 
 		return result;
 	}
