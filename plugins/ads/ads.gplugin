@@ -2,6 +2,7 @@
  name="Ads"
  description="Generic Ads interface">
  <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="9.2.0" />
+ <property name="gmsAppId" type="string" title="Application Id" description="Application Id for Google Play Services" default="" />
  <!--
  <property name="adsFwAdcolony" type="boolean" title="Enable Adcolony support (Android,iOS)"/>
  -->
