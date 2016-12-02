@@ -61,14 +61,16 @@
  	</template>	 	
     <if condition="[[[plugin.adsFwUnity]]]">
     	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.java" />
-    	<download source="https://github.com/Unity-Technologies/unity-ads-android/releases/download/2.0.5/unity-ads.aar" dest="[[[sys.cacheDir]]]/unity-ads.aar" />
-    	<cp src="[[[sys.cacheDir]]]/unity-ads.aar" dst="app/libs/unity-ads.aar" />
+    	<set key="local.adsAarVer" value="2.0.5" />
+    	<set key="local.adsJarVer" value="unity-ads-[[[local.adsAarVer]]].aar" />
+    	<download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+    	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
     	<template name="Unity Ads AAR" path="app" dest="app">
 			<replacelist wildcards="build.gradle">
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-				    compile 'com.unity3d.ads:unity:ads@aar'
+				    compile 'com.unity3d.ads:unity:ads:[[[local.adsAarVer]]]@aar'
 					</by>
 				</append>
 	       	</replacelist>	
@@ -97,7 +99,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-				    compile files('[[[local.adsJarVer]]]')
+				    compile files('libs/[[[local.adsJarVer]]]')
 		            compile 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
@@ -129,7 +131,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-				    compile files('[[[local.adsJarVer]]]')
+				    compile files('libs/[[[local.adsJarVer]]]')
 		            compile 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
@@ -279,7 +281,7 @@
     </template>
     <if condition="[[[plugin.adsFwUnity]]]">
     	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.*" exclude="*.framework" />
-    	<download source="https://github.com/Unity-Technologies/unity-ads-ios/releases/download/2.0.5/UnityAds.framework.zip" dest="[[[sys.cacheDir]]]/UnityAds.framework.zip" />
+    	<download source="http://giderosmobile.com/ext/ios/UnityAds.framework-2.0.5.zip" dest="[[[sys.cacheDir]]]/UnityAds.framework.zip" />
     	<unzip source="[[[sys.cacheDir]]]/UnityAds.framework.zip" dest="[[[local.adsfwd]]]/UnityAds.framework" />
     	<template name="Unity Ads Framework" path="">
         <replacelist wildcards="project.pbxproj">

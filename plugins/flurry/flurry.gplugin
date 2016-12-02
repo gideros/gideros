@@ -17,7 +17,7 @@
 			<append>
 				<orig>//TAG-DEPENDENCIES//</orig>								
 				<by>
-				    compile files('[[[local.adsJarVer]]]')
+				    compile files('libs/[[[local.adsJarVer]]]')
 				</by>
 			</append>
 		</replacelist>
@@ -25,7 +25,9 @@
  </target>
  <target name="Android">
     <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
-	<template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="FlurryAnalytic*.jar" />
+    <set key="local.adsJarVer" value="FlurryAnalytics-5.5.0.jar" />
+    <download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+    <cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="libs/[[[local.adsJarVer]]]" />
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;flurry&quot;);"/>
