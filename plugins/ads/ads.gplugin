@@ -76,7 +76,10 @@
 	</if>  
     <if condition="[[[plugin.adsFwApplovin]]]">
     	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.java" />
-	    <template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="applovin*.jar" />
+    	<set key="local.adsJarVer" value="applovin-sdk-6.4.0.jar" />
+    	<download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+    	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
+	    <!-- <template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="applovin*.jar" /> -->
     	<template name="AndroidManifest" path="">
         	<replacelist wildcards="AndroidManifest.xml;build.gradle">
             	<append>
@@ -94,7 +97,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-				    compile fileTree(include: ['applovin*.jar'], dir: 'libs')
+				    compile files('[[[local.adsJarVer]]]')
 		            compile 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
@@ -103,7 +106,10 @@
     </if>	  
     <if condition="[[[plugin.adsFwChartboost]]]">
     	<template name="ChartBoost" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsChartboost.java" />
-	    <template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="chartboos*.jar" />
+    	<set key="local.adsJarVer" value="chartboost-sdk-6.6.1.jar" />
+    	<download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+    	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
+	    <!-- <template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="chartboos*.jar" /> -->
     	<template name="AndroidManifest" path="">
         	<replacelist wildcards="AndroidManifest.xml;build.gradle">
             	<append>
@@ -123,7 +129,7 @@
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
-				    compile fileTree(include: ['chartboos*.jar'], dir: 'libs')
+				    compile files('[[[local.adsJarVer]]]')
 		            compile 'com.google.android.gms:play-services-ads:[[[plugin.gmsVersion]]]'
 					</by>
 				</append>
