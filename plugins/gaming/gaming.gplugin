@@ -4,6 +4,7 @@
  <property name="gmsFwGoogle" type="boolean" title="Enable Google Play Services support"/>
  <property name="gmsVersion" type="string" title="Google Play Services version" description="" default="9.2.0" />
  <property name="gmsAppId" type="string" title="Application Id" description="Application Id for Google Play Services" default="" />
+ <property name="gmsApiKey" type="string" title="Api Key" description="Api Key for Amazon GameCircle Services" default="" />
  <property name="gmsFwGamecircle" type="boolean" title="Enable Amazon Gamecircle support"/>
 <!-- <property name="gmsFwHeyzap" type="boolean" title="Enable Heyzap support"/> -->
  <property name="gmsFwGamekit" type="boolean" title="Enable GameKit support"/>
@@ -52,6 +53,64 @@
 	       	</replacelist>	
 	 	</template>	 	
 	 </if>
+	 
+	<if condition="[[[plugin.gmsFwGamecircle]]]">
+		<template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
+		<template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+		<set key="local.gmsJar1" value="AmazonInsights-android-sdk-2.1.26.jar" />
+		<set key="local.gmsJar2" value="gamecirclesdk.jar" />
+		<set key="local.gmsJar3" value="login-with-amazon-sdk.jar" />
+		<download source="http://giderosmobile.com/ext/android/[[[local.gmsJar1]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar1]]]" />
+		<download source="http://giderosmobile.com/ext/android/[[[local.gmsJar2]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar2]]]" />
+		<download source="http://giderosmobile.com/ext/android/[[[local.gmsJar3]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar3]]]" />
+		<cp src="[[[sys.cacheDir]]]/[[[local.gmsJar1]]]" dst="app/libs/[[[local.gmsJar1]]]" />
+		<cp src="[[[sys.cacheDir]]]/[[[local.gmsJar2]]]" dst="app/libs/[[[local.gmsJar2]]]" />
+		<cp src="[[[sys.cacheDir]]]/[[[local.gmsJar3]]]" dst="app/libs/[[[local.gmsJar3]]]" />
+	 	<template name="Activity" path="">
+		<replacelist wildcards="build.gradle">
+			<append>
+				<orig>//TAG-DEPENDENCIES//</orig>								
+				<by>
+				compile files('libs/[[[local.gmsJar1]]]')
+				compile files('libs/[[[local.gmsJar2]]]')
+				compile files('libs/[[[local.gmsJar3]]]')
+				</by>
+			</append>
+		</replacelist>
+	 	</template>
+		<template name="Gaming" path="[[[sys.pluginDir]]]/amazon/res" dest="app/src/main/res" />
+		<template name="Gaming" path="[[[sys.pluginDir]]]/amazon/assets" dest="app/src/main/assets">
+			<replacelist wildcards="api_key.txt">
+				<replace orig="ab_123456789" by="[[[plugin.gmsApiKey]]]"/>
+			</replacelist>		
+		</template>
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+            	<append>
+            		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+            		<by><![CDATA[
+<activity android:name="com.amazon.ags.html5.overlay.GameCircleUserInterface" android:theme="@style/GCOverlay"></activity>
+		<activity android:name="com.amazon.identity.auth.device.authorization.AuthorizationActivity" android:theme="@android:style/Theme.NoDisplay" android:allowTaskReparenting="true" android:launchMode="singleTask">
+  			<intent-filter>
+     			<action android:name="android.intent.action.VIEW" />
+     			<category android:name="android.intent.category.DEFAULT" />
+     			<category android:name="android.intent.category.BROWSABLE" />
+     			<data android:host="[[[project.package]]]" android:scheme="amzn" />
+  			</intent-filter>
+		</activity>
+		<activity android:name="com.amazon.ags.html5.overlay.GameCircleAlertUserInterface" android:theme="@style/GCAlert"></activity>
+		<receiver android:name="com.amazon.identity.auth.device.authorization.PackageIntentReceiver" android:enabled="true">
+  			<intent-filter>
+     			<action android:name="android.intent.action.PACKAGE_INSTALL" />
+     			<action android:name="android.intent.action.PACKAGE_ADDED" />
+     			<data android:scheme="package" />
+  			</intent-filter>
+		</receiver> ]]></by> 
+    	        </append>
+	       	</replacelist>	
+	 	</template>	
+	 </if>
+	 
 	 <if condition="[[[not:[[[plugin.gmsFwGoogle]]]]]]">
 	 	<rmdir>app/src/main/java/com/giderosmobile/android/plugins/gaming/frameworks/googleplay</rmdir>
 	 	<rm>app/src/main/java/com/giderosmobile/android/plugins/gaming/frameworks/GameGoogleplay.java</rm>
