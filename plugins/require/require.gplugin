@@ -7,10 +7,21 @@
  <property name="reqGps" type="boolean" title="Gps is mandatory"/>
  <property name="reqGyro" type="boolean" title="Gyroscope is mandatory"/>
  <property name="reqTouch" type="boolean" title="Touchscreen is mandatory"/>
- <property name="reqTVCompat" type="boolean" title="Android TV extended compatibility"/>
+ <property name="reqTVCompat" type="boolean" title="Android TV compatibility"/>
+ <property name="reqTVExtCompat" type="boolean" title="Android TV extended compatibility"/>
  <property name="reqNoVibrator" type="boolean" title="Vibrator not used in this app"/>
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+            	<append>
+            		<orig><![CDATA[<application ]]></orig>
+            		<by>android:hardwareAccelerated="true" android:isGame="true" </by>
+    	        </append>
+        	</replacelist>
+    	</template>
+    </if> 
+ 	<if condition="[[[plugin.reqTVExtCompat]]]">
     	<template name="AndroidManifest" path="">
         	<replacelist wildcards="AndroidManifest.xml">
             	<append>
@@ -22,7 +33,7 @@
     <uses-feature android:name="android.hardware.nfc" android:required="false"/>
     <uses-feature android:name="android.hardware.gps" android:required="false"/>
     <uses-feature android:name="android.hardware.microphone" android:required="false"/>
-    <uses-feature android:name="android.hardware.sensor" android:required="false"/>
+    <uses-feature android:name="android.hardware.sensor" android:required="false"/>]]></by>
     	        </append>
         	</replacelist>
     	</template>
