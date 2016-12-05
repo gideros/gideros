@@ -328,7 +328,11 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 					ctx->allfiles_abs[i].toUtf8().constData());
 			QString filename = ctx->allfiles_abs[i];
 			QString ext = QFileInfo(ctx->allfiles[i]).suffix().toLower();
-			exportInfo("Encrypting %s [%s]\n", filename.toUtf8().constData(),
+			bool encrypt =
+					(ext == "lua") ? ctx->encryptCode : ctx->encryptAssets;
+			if (!encrypt)
+				continue;
+			exportInfo("Encrypting %s [%s]\n",filename.toUtf8().constData(),
 					ext.toUtf8().constData());
 			if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg"
 					&& ext != "wav")

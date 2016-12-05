@@ -17,6 +17,7 @@
 			<set key="local.noSigning" value=""/>
 			<set key="local.isUnsigned" value=""/>
 		</if>
+		<rmdir>tmp</rmdir>
 		<mkdir>tmp</mkdir>
 		<cd>tmp</cd>
 		<if condition="[[[project.autorotation]]]">
@@ -78,7 +79,7 @@
 		<appIcon width="144" height="144" dest="app/src/main/res/drawable-xxhdpi/icon.png"/>
 		<appIcon width="192" height="192" dest="app/src/main/res/drawable-xxxhdpi/icon.png"/>
 		<tvIcon width="732" height="412" dest="app/src/main/res/drawable-xhdpi/ouya_icon.png"/>
-		<tvIcon width="320" height="180" alpha="0" dest="app/src/main/res/banner/banner.png"/>
+		<tvIcon width="320" height="180" alpha="0" dest="app/src/main/res/drawable/banner.png"/>
 		<if condition="[[[not:[[[band:[[[project.orientation]]]:1]]]]]]">
 			<splashVertical width="200" height="320" dest="app/src/main/res/drawable-ldpi/splash.png"/>
 			<splashVertical width="320" height="480" dest="app/src/main/res/drawable-mdpi/splash.png"/>
