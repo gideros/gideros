@@ -41,7 +41,7 @@ class ExportXml {
 	bool RuleSet(QString key,QString val);
 	bool RuleAsk(QDomElement rule);
     bool RuleTemplate(QString name,QString path,QString dest,QDomElement rule);
-    bool RuleImage(int width,int height,QString dst, ImageTypes type);
+    bool RuleImage(int width,int height,QString dst, ImageTypes type, bool alpha);
 	QString XmlAttributeOrElement(QDomElement elm,QString name);
 	ExportContext *ctx;
 public:

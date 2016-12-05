@@ -19,11 +19,11 @@ public:
 	static void exportLuafilesTxt(ExportContext *ctx);
 	static void exportAllfilesTxt(ExportContext *ctx);
 	static bool applyPlugins(ExportContext *ctx);
-    static void resizeImage(QImage *image, int width, int height, QString output, int quality = -1);
-	static bool appIcon(ExportContext *ctx,int width,int height,QString output);
-    static bool tvIcon(ExportContext *ctx, int width, int height, QString output);
-    static bool splashHImage(ExportContext *ctx, int width, int height, QString output);
-    static bool splashVImage(ExportContext *ctx, int width, int height, QString output);
+    static void resizeImage(QImage *image, int width, int height, QString output, int quality = -1,bool withAlpha=true);
+	static bool appIcon(ExportContext *ctx,int width,int height,QString output,bool withAlpha=true);
+    static bool tvIcon(ExportContext *ctx, int width, int height, QString output,bool withAlpha=true);
+    static bool splashHImage(ExportContext *ctx, int width, int height, QString output,bool withAlpha=true);
+    static bool splashVImage(ExportContext *ctx, int width, int height, QString output,bool withAlpha=true);
     static bool download(ExportContext *ctx,QString url,QString to);
     static bool unzip(ExportContext *ctx, QString file,QString dest);
 	static void exportInfo(const char *fmt,...);

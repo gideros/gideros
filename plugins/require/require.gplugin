@@ -1,27 +1,74 @@
 <plugin
  name="Require"
  description="Allow to set requirements in Android Manifest">
- <property name="reqGps" type="boolean" title="Gps is mandatory"/>
  <property name="reqAccel" type="boolean" title="Accelerometer is mandatory"/>
- <property name="reqGyro" type="boolean" title="Gyroscope is mandatory"/>
  <property name="reqCompass" type="boolean" title="Compass is mandatory"/>
+ <property name="reqNoGps" type="boolean" title="Gps is not used in this app"/>
+ <property name="reqGps" type="boolean" title="Gps is mandatory"/>
+ <property name="reqGyro" type="boolean" title="Gyroscope is mandatory"/>
+ <property name="reqTouch" type="boolean" title="Touchscreen is mandatory"/>
+ <property name="reqTVCompat" type="boolean" title="Android TV extended compatibility"/>
+ <property name="reqNoVibrator" type="boolean" title="Vibrator not used in this app"/>
  <target name="AndroidStudio,APK,Android">
-    <set key="local.reqGps" value="false"/>
+ 	<if condition="[[[plugin.reqTVCompat]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+            	<append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            		<by><![CDATA[
+    <uses-feature android:name="android.hardware.telephony" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
+    <uses-feature android:name="android.hardware.nfc" android:required="false"/>
+    <uses-feature android:name="android.hardware.gps" android:required="false"/>
+    <uses-feature android:name="android.hardware.microphone" android:required="false"/>
+    <uses-feature android:name="android.hardware.sensor" android:required="false"/>
+    	        </append>
+        	</replacelist>
+    	</template>
+    </if> 
+ 	<if condition="[[[plugin.reqNoGps]]]">
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="AndroidManifest.xml">
+	            <replace>
+            		<orig><![CDATA[<uses-feature android:name="android.hardware.location" android:required="false"/>]]></orig>
+        	    	<by></by>
+    	        </replace>
+	            <replace>
+            		<orig><![CDATA[<uses-feature android:name="android.hardware.location.gps" android:required="false"/>]]></orig>
+            		<by></by>
+        	    </replace>
+	            <replace>
+            		<orig><![CDATA[<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>]]></orig>
+            		<by></by>
+        	    </replace>
+    	    </replacelist>
+	    </template>
+ 	</if>
+ 	<if condition="[[[plugin.reqNoVibrator]]]">
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="AndroidManifest.xml">
+	            <replace>
+            		<orig><![CDATA[<uses-permission android:name="android.permission.VIBRATE"/>]]></orig>
+            		<by></by>
+        	    </replace>
+    	    </replacelist>
+	    </template>
+ 	</if>
     <if condition="[[[plugin.reqGps]]]">
-    	<set key="local.reqGps" value="true"/>
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="AndroidManifest.xml">
+	            <replace>
+            		<orig>android:name="android.hardware.location" android:required="false"</orig>
+        	    	<by>android:name="android.hardware.location" android:required="true"</by>
+    	        </replace>
+	            <replace>
+            		<orig>android:name="android.hardware.location.gps" android:required="false"</orig>
+            		<by>android:name="android.hardware.location.gps" android:required="true"</by>
+        	    </replace>
+    	    </replacelist>
+	    </template>
     </if>
-    <template name="AndroidManifest" path="">
-        <replacelist wildcards="AndroidManifest.xml">
-            <replace>
-            	<orig>android:name="android.hardware.location" android:required="false"</orig>
-            	<by>android:name="android.hardware.location" android:required="[[[local.reqGps]]]"</by>
-            </replace>
-            <replace>
-            	<orig>android:name="android.hardware.location.gps" android:required="false"</orig>
-            	<by>android:name="android.hardware.location.gps" android:required="[[[local.reqGps]]]"</by>
-            </replace>
-        </replacelist>
-    </template>
     <if condition="[[[plugin.reqAccel]]]">
     	<template name="AndroidManifest" path="">
         	<replacelist wildcards="AndroidManifest.xml">
@@ -52,6 +99,16 @@
             		<by><![CDATA[
 <uses-feature android:name="android.hardware.sensor.compass"/>]]></by>
     	        </append>
+        	</replacelist>
+    	</template>
+    </if>
+    <if condition="[[[plugin.reqTouch]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+	            <replace>
+            		<orig>android:name="android.hardware.touchscreen" android:required="false"</orig>
+        	    	<by>android:name="android.hardware.touchscreen" android:required="true"</by>
+    	        </replace>
         	</replacelist>
     	</template>
     </if>

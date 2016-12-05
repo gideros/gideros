@@ -238,21 +238,21 @@ bool ExportXml::ProcessRule(QDomElement rule) {
     } else if (ruleName == "appIcon"){
         return RuleImage(rule.attribute("width").toInt(),
 				rule.attribute("height").toInt(),
-                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_appIcon);
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_appIcon,rule.attribute("alpha","1").toInt());
     } else if (ruleName == "tvIcon"){
         return RuleImage(rule.attribute("width").toInt(),
                 rule.attribute("height").toInt(),
-                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_tvIcon);
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_tvIcon,rule.attribute("alpha","1").toInt());
     }
     else if (ruleName == "splashVertical"){
         return RuleImage(rule.attribute("width").toInt(),
                 rule.attribute("height").toInt(),
-                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashVertical);
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashVertical,rule.attribute("alpha","1").toInt());
     }
     else if (ruleName == "splashHorizontal"){
         return RuleImage(rule.attribute("width").toInt(),
                 rule.attribute("height").toInt(),
-                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashHorizontal);
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashHorizontal,rule.attribute("alpha","1").toInt());
     }
 	else
 		ExportCommon::exportError("Rule %s unknown\n", ruleName.toStdString().c_str());
@@ -486,16 +486,16 @@ bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomEleme
 	return true;
 }
 
-bool ExportXml::RuleImage(int width, int height, QString dst, ImageTypes type) {
+bool ExportXml::RuleImage(int width, int height, QString dst, ImageTypes type, bool alpha) {
 	ExportCommon::exportInfo("Image(Type %d): %dx%d %s\n", type, width, height,
 			dst.toStdString().c_str());
     if(type == e_appIcon)
-        return ExportCommon::appIcon(ctx, width, height, dst);
+        return ExportCommon::appIcon(ctx, width, height, dst,alpha);
     else if(type == e_tvIcon)
-        return ExportCommon::tvIcon(ctx, width, height, dst);
+        return ExportCommon::tvIcon(ctx, width, height, dst,alpha);
     else if(type == e_splashVertical)
-        return ExportCommon::splashVImage(ctx, width, height, dst);
+        return ExportCommon::splashVImage(ctx, width, height, dst,alpha);
     else if(type == e_splashHorizontal)
-        return ExportCommon::splashHImage(ctx, width, height, dst);
+        return ExportCommon::splashHImage(ctx, width, height, dst,alpha);
     return false;
 }

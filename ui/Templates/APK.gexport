@@ -74,8 +74,11 @@
 		<appIcon width="48" height="48" dest="app/src/main/res/drawable-mdpi/icon.png"/>
 		<appIcon width="72" height="72" dest="app/src/main/res/drawable-hdpi/icon.png"/>
 		<appIcon width="96" height="96" dest="app/src/main/res/drawable-xhdpi/icon.png"/>
+		<appIcon width="96" height="96" dest="app/src/main/res/drawable/icon.png"/>
 		<appIcon width="144" height="144" dest="app/src/main/res/drawable-xxhdpi/icon.png"/>
 		<appIcon width="192" height="192" dest="app/src/main/res/drawable-xxxhdpi/icon.png"/>
+		<tvIcon width="732" height="412" dest="app/src/main/res/drawable-xhdpi/ouya_icon.png"/>
+		<tvIcon width="320" height="180" alpha="0" dest="app/src/main/res/banner/banner.png"/>
 		<if condition="[[[not:[[[band:[[[project.orientation]]]:1]]]]]]">
 			<splashVertical width="200" height="320" dest="app/src/main/res/drawable-ldpi/splash.png"/>
 			<splashVertical width="320" height="480" dest="app/src/main/res/drawable-mdpi/splash.png"/>

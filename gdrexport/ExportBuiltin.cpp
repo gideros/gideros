@@ -339,11 +339,11 @@ void ExportBuiltin::doExport(ExportContext *ctx)
            ExportCommon::appIcon(ctx,96,96,QString("res/drawable-xhdpi/icon.png"));
            ExportCommon::appIcon(ctx,144,144,QString("res/drawable-xxhdpi/icon.png"));
            ExportCommon::appIcon(ctx,192,192,QString("res/drawable-xxxhdpi/icon.png"));
-           ExportCommon::appIcon(ctx,96,96,QString("res/drawable/app_icon.png"));
+           ExportCommon::appIcon(ctx,96,96,QString("res/drawable/icon.png"));
 
            //tv stuff
-           ExportCommon::appIcon(ctx,732,412,QString("res/drawable-xhdpi/ouya_icon.png"));
-           ExportCommon::appIcon(ctx,320,180,QString("res/drawable/icon.png"));
+           ExportCommon::tvIcon(ctx,732,412,QString("res/drawable-xhdpi/ouya_icon.png"));
+           ExportCommon::tvIcon(ctx,320,180,QString("res/drawable/banner.png"),false);
 
            if(ctx->properties.orientation == 0 || ctx->properties.orientation == 2){
                ExportCommon::splashVImage(ctx,200,320,QString("res/drawable-ldpi/splash.png"));
@@ -369,6 +369,10 @@ void ExportBuiltin::doExport(ExportContext *ctx)
            ExportCommon::appIcon(ctx,96,96,QString("app/src/main/res/drawable-xhdpi/icon.png"));
            ExportCommon::appIcon(ctx,144,144,QString("app/src/main/res/drawable-xxhdpi/icon.png"));
            ExportCommon::appIcon(ctx,192,192,QString("app/src/main/res/drawable-xxxhdpi/icon.png"));
+           ExportCommon::appIcon(ctx,96,96,QString("app/src/main/res/drawable/icon.png"));
+           //tv stuff
+           ExportCommon::tvIcon(ctx,732,412,QString("app/src/main/res/drawable-xhdpi/ouya_icon.png"));
+           ExportCommon::tvIcon(ctx,320,180,QString("app/src/main/res/drawable/banner.png"),false);
 
            if(ctx->properties.orientation == 0 || ctx->properties.orientation == 2){
                ExportCommon::splashVImage(ctx,200,320,QString("app/src/main/res/drawable-ldpi/splash.png"));

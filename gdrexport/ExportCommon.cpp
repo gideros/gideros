@@ -14,6 +14,7 @@
 #include <stdarg.h>
 #include <QProcess>
 #include <QImage>
+#include <QPainter>
 #include <QCoreApplication>
 #include "filedownloader.h"
 #include "cendian.h"
@@ -63,14 +64,14 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest,
 }
 
 void ExportCommon::resizeImage(QImage *image, int width, int height,
-		QString output, int quality) {
+		QString output, int quality,bool withAlpha) {
 	int iwidth = image->width(); //image width
 	int iheight = image->height(); //image height
 	int rwidth = width; //resampled width
 	int rheight = height; //resampled height
 
 	float k_w = fabs(1 - (float) width / (float) iwidth); //width scaling coef
-	float k_h = fabs(1 - (float) height / (float) iheight); //height scaling koef
+	float k_h = fabs(1 - (float) height / (float) iheight); //height scaling coef
 	int dst_x = 0;
 	int dst_y = 0;
 
@@ -97,13 +98,24 @@ void ExportCommon::resizeImage(QImage *image, int width, int height,
 		dst_y = (rheight - height) / 2;
 	}
 
-	image->scaled(rwidth, rheight, Qt::KeepAspectRatio,
-			Qt::SmoothTransformation).copy(dst_x, dst_y, width, height).save(
-			output, "png", quality);
+	QImage xform=image->scaled(rwidth, rheight, Qt::KeepAspectRatio,
+			Qt::SmoothTransformation);
+	if (dst_x || dst_y)
+	{
+		QImage larger(rwidth,rheight,QImage::Format_ARGB32);
+		larger.fill(0);
+		QPainter painter(&larger);
+		painter.drawImage(dst_x,dst_y, xform);
+		painter.end();
+		xform=larger;
+	}
+	if (!withAlpha)
+		xform=xform.convertToFormat(QImage::Format_RGB888);
+	xform.save(output, "png", quality);
 }
 
 bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
-		QString output) {
+		QString output, bool withAlpha) {
 	if (ctx->appicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.app_icon.isEmpty())
@@ -127,12 +139,12 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
 		return false;
 	exportInfo("Generating app icon (%dx%d)\n", width, height);
 	resizeImage(ctx->appicon, width, height,
-			ctx->outputDir.absoluteFilePath(output), 100);
+			ctx->outputDir.absoluteFilePath(output), 100, withAlpha);
 	return true;
 }
 
 bool ExportCommon::tvIcon(ExportContext *ctx, int width, int height,
-		QString output) {
+		QString output, bool withAlpha) {
 	if (ctx->tvicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.tv_icon.isEmpty())
@@ -156,12 +168,12 @@ bool ExportCommon::tvIcon(ExportContext *ctx, int width, int height,
 		return false;
 	exportInfo("Generating TV icon (%dx%d)\n", width, height);
 	resizeImage(ctx->tvicon, width, height,
-			ctx->outputDir.absoluteFilePath(output), 100);
+			ctx->outputDir.absoluteFilePath(output), 100, withAlpha);
 	return true;
 }
 
 bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height,
-		QString output) {
+		QString output, bool withAlpha) {
 	if (ctx->splash_h_image == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.splash_h_image.isEmpty())
@@ -185,12 +197,12 @@ bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height,
 		return false;
 	exportInfo("Generating splash horizontal (%dx%d)\n", width, height);
 	resizeImage(ctx->splash_h_image, width, height,
-			ctx->outputDir.absoluteFilePath(output), -1);
+			ctx->outputDir.absoluteFilePath(output), -1, withAlpha);
 	return true;
 }
 
 bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
-		QString output) {
+		QString output, bool withAlpha) {
 	if (ctx->splash_v_image == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.splash_v_image.isEmpty())
@@ -214,7 +226,7 @@ bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
 		return false;
 	exportInfo("Generating splash vertical (%dx%d)\n", width, height);
 	resizeImage(ctx->splash_v_image, width, height,
-			ctx->outputDir.absoluteFilePath(output), -1);
+			ctx->outputDir.absoluteFilePath(output), -1, withAlpha);
 	return true;
 }
 
