@@ -6,6 +6,7 @@
  */
 
 #include "ExportXml.h"
+#include "ExportLua.h"
 #include "Utilities.h"
 #include "ExportCommon.h"
 #include <QStandardPaths>
@@ -181,6 +182,14 @@ QMap<QString, QString> ExportXml::availablePlugins() {
 	return xmlPlugins;
 }
 
+bool ExportXml::ProcessRuleString(const char *xml)
+{
+	QString input(xml);
+	QDomDocument xmlDoc;
+	xmlDoc.setContent(input);
+	return ProcessRule(xmlDoc.firstChild().toElement());
+}
+
 bool ExportXml::ProcessRule(QDomElement rule) {
 	QString ruleName = rule.tagName();
 	if (ruleName == "exec")
@@ -254,9 +263,21 @@ bool ExportXml::ProcessRule(QDomElement rule) {
                 rule.attribute("height").toInt(),
                 ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashHorizontal,rule.attribute("alpha","1").toInt());
     }
+    else if (ruleName == "lua"){
+	    return RuleLua(ReplaceAttributes(rule.attribute("file")).trimmed(),
+	        		rule.text().trimmed());
+    }
 	else
 		ExportCommon::exportError("Rule %s unknown\n", ruleName.toStdString().c_str());
 	return false;
+}
+
+bool ExportXml::RuleLua(QString file,QString content)
+{
+	if (file.isEmpty())
+		return ExportLUA_CallCode(ctx,this,content.toStdString().c_str());
+	else
+		return ExportLUA_CallFile(ctx,this,file.toStdString().c_str());
 }
 
 QString ExportXml::ComputeUnary(QString op, QString arg) {
