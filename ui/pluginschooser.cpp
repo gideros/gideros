@@ -119,7 +119,7 @@ void PluginsChooser::onSelectionChanged()
 	if (!currentPlugin.isEmpty())
 		pluginsProps[currentPlugin]=propsTable->extract();
 	currentPlugin=QString();
- 	propsTable->clearContents();
+ 	propsTable->setRowCount(0);
 	QModelIndexList sels=ui->plugins->selectionModel()->selectedRows();
     ui->pluginName->setText(QString("-"));
 	if (sels.count())

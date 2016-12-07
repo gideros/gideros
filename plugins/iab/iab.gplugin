@@ -54,7 +54,7 @@
             	<append>
             		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
             		<by><![CDATA[
-    	            <uses-permission android:name="android.permission.BILLING"/>]]></by>
+    	            <uses-permission android:name="com.android.vending.BILLING"/>]]></by>
     	        </append>  
         	</replacelist>
     	</template>
