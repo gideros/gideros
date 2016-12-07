@@ -17,6 +17,7 @@
 #include "ExportCommon.h"
 #include "ExportBuiltin.h"
 #include "ExportXml.h"
+#include "ExportLua.h"
 
 static bool readProjectFile(const QString& fileName,
                             ProjectProperties &properties,
@@ -474,10 +475,12 @@ int main(int argc, char *argv[])
      replaceList2 << qMakePair(assetsPrefix + encryptionZero, assetsPrefixRnd + assetsKey);
      ctx.replaceList << replaceList2;
 
+     ExportLUA_Init(&ctx);
      if (ctx.deviceFamily==e_Xml)
     	 ExportXml::exportXml(xmlExports[ctx.platform],false,&ctx);
      else
     	 ExportBuiltin::doExport(&ctx);
+     ExportLUA_Cleanup(&ctx);
 
     return 0;
 }

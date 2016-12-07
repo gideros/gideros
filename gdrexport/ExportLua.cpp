@@ -2,10 +2,12 @@
 #include "ExportCommon.h"
 extern "C" {
 #include "lua.h"
+#include "lualib.h"
 #include "lauxlib.h"
 }
 
 static ExportXml *currentXml=NULL;
+static bool inited=false;
 
 static int getProperty(lua_State* L)
 {
@@ -55,6 +57,7 @@ static int bindAll(lua_State* L)
 void ExportLUA_Init(ExportContext *ctx)
 {
  ctx->L = luaL_newstate();
+ luaL_openlibs(ctx->L);
  lua_pushcfunction(ctx->L, bindAll);
  lua_call(ctx->L, 0, 0);
 }
@@ -67,6 +70,11 @@ void ExportLUA_Cleanup(ExportContext *ctx)
 
 bool ExportLUA_CallFile(ExportContext *ctx,ExportXml *xml,const char *fn)
 {
+	if (!inited)
+	{
+		inited=true;
+		ExportLUA_CallFile(ctx,xml,"Tools/export_init.lua");
+	}
 	if (luaL_loadfile(ctx->L,fn))
 	{
     	const char *err=lua_tostring(ctx->L, -1);
@@ -89,6 +97,11 @@ bool ExportLUA_CallFile(ExportContext *ctx,ExportXml *xml,const char *fn)
 
 bool ExportLUA_CallCode(ExportContext *ctx,ExportXml *xml,const char *code)
 {
+	if (!inited)
+	{
+		inited=true;
+		ExportLUA_CallFile(ctx,xml,"Tools/export_init.lua");
+	}
 	if (luaL_loadstring(ctx->L,code))
 	{
     	const char *err=lua_tostring(ctx->L, -1);
