@@ -78,15 +78,17 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 	
 	@Override
 	public void request(Hashtable<String, String> products) {
-		mHelper.flagEndAsync();
-		List<String> skuList = new ArrayList<String>();
-    	Enumeration<String> e = products.keys();
-		while(e.hasMoreElements())
-		{
-			String prodName = e.nextElement();
-        	skuList.add(products.get(prodName));
-        }
-        mHelper.queryInventoryAsync(true, skuList, this);
+		if (sdkAvailable == 1) {
+			mHelper.flagEndAsync();
+			List<String> skuList = new ArrayList<String>();
+			Enumeration<String> e = products.keys();
+			while(e.hasMoreElements())
+			{
+				String prodName = e.nextElement();
+				skuList.add(products.get(prodName));
+			}
+			mHelper.queryInventoryAsync(true, skuList, this);
+		}
 	}
 
 	@Override
