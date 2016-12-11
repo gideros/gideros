@@ -43,7 +43,7 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 	@Override
 	public void onDestroy() {
 		if (mHelper != null) 
-			mHelper.dispose();
+			mHelper.disposeWhenFinished();  // updated from just dispose because of note in helper saying dispose shouldn't be used.
 		mHelper = null;
 	}
 	
@@ -87,7 +87,12 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 				String prodName = e.nextElement();
 				skuList.add(products.get(prodName));
 			}
-			mHelper.queryInventoryAsync(true, skuList, this);
+			try {
+				mHelper.queryInventoryAsync(true, skuList, null, this);
+			}
+			catch (Exception e2) {
+				
+			}
 		}
 	}
 
@@ -106,7 +111,12 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 	@Override
 	public void restore() {
 		mHelper.flagEndAsync();
-		mHelper.queryInventoryAsync(new IabGooglePurchased(this));
+		try {
+			mHelper.queryInventoryAsync(new IabGooglePurchased(this));
+		}
+		catch (Exception e2) {
+			
+		}
 	}
 
 	@Override
@@ -164,7 +174,12 @@ public class IabGoogle implements IabInterface, IabHelper.OnIabSetupFinishedList
 		}
 		if(Iab.isConsumable(info.getSku(), this))
 		{
-			mHelper.consumeAsync(info, this);
+			try {
+				mHelper.consumeAsync(info, this);
+			}
+			catch (Exception e2) {
+				
+			}
 		}
 		else
 		{
