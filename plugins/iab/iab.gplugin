@@ -16,7 +16,9 @@
     <set key="local.iabfws" value="[[[sys.pluginDir]]]/bin/Android/src/com/giderosmobile/android/plugins/iab/frameworks"/>
 	<if condition="[[[plugin.iabAmazon]]]">
 		<template name="Amazon" path="[[[local.iabfws]]]" dest="[[[local.iabfwd]]]" include="IabAmazon.java" />
-		<template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="in-app-purchasing*.jar" />
+    	<set key="local.adsJarVer" value="in-app-purchasing-2.0.76.jar" />
+    	<download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+    	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
 		<template name="Activity" path="">
 			<replacelist wildcards="build.gradle">
 				<append>
