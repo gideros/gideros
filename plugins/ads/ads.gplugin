@@ -44,6 +44,17 @@
     <set key="local.adsfwd" value="app/src/main/java/com/giderosmobile/android/plugins/ads/frameworks"/>
     <set key="local.adsfws" value="[[[sys.pluginDir]]]/bin/Android/src/com/giderosmobile/android/plugins/ads/frameworks"/>
     <mkdir>[[[local.adsfwd]]]</mkdir>
+    <set key="local.adsReqGms" value="0"/>
+    <if condition="[[[plugin.adsFwApplovin]]]">
+	    <set key="local.adsReqGms" value="1"/>
+    </if>
+    <if condition="[[[plugin.adsFwChartboost]]]">
+	    <set key="local.adsReqGms" value="1"/>
+    </if>
+    <if condition="[[[plugin.adsFwAdmob]]]">
+	    <set key="local.adsReqGms" value="1"/>
+    </if>
+    <if condition="[[[local.adsReqGms]]]">
  	<template name="GMS" path="[[[sys.pluginDir]]]/bin/Android/res" dest="app/src/main/res/">
 		<replacelist wildcards="ids.xml">
 			<replace orig="561448401579" by="[[[plugin.gmsAppId]]]"/>
@@ -59,6 +70,7 @@
     	        </append>
 	       	</replacelist>	
  	</template>	 	
+ 	</if>
     <if condition="[[[plugin.adsFwUnity]]]">
     	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.java" />
     	<set key="local.adsAarVer" value="2.0.5" />
