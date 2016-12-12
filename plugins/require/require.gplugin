@@ -10,6 +10,7 @@
  <property name="reqTVCompat" type="boolean" title="Android TV compatibility"/>
  <property name="reqTVExtCompat" type="boolean" title="Android TV extended compatibility"/>
  <property name="reqNoVibrator" type="boolean" title="Vibrator not used in this app"/>
+ <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and horizontal"/>
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -62,6 +63,20 @@
 	            <replace>
             		<orig><![CDATA[<uses-permission android:name="android.permission.VIBRATE"/>]]></orig>
             		<by></by>
+        	    </replace>
+    	    </replacelist>
+	    </template>
+ 	</if>
+ 	<if condition="[[[plugin.reqFullOrientation]]]">
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="AndroidManifest.xml">
+	            <replace>
+            		<orig><![CDATA[android:screenOrientation="sensorLandscape"]]></orig>
+            		<by>android:screenOrientation="fullSensor"</by>
+        	    </replace>
+	            <replace>
+            		<orig><![CDATA[android:screenOrientation="sensorPortrait"]]></orig>
+            		<by>android:screenOrientation="fullSensor"</by>
         	    </replace>
     	    </replacelist>
 	    </template>
