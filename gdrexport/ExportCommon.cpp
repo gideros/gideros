@@ -111,7 +111,7 @@ void ExportCommon::resizeImage(QImage *image, int width, int height,
 	}
 	if (!withAlpha)
 		xform=xform.convertToFormat(QImage::Format_RGB888);
-	xform.save(output, "png", quality);
+	xform.save(output, "png", -1); //Use default compression for PNG, not quality
 }
 
 bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,

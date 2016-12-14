@@ -199,144 +199,37 @@
     	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsAdUnity.java" />
 	</if>
  </target>
+
  <target name="iOS">
    <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/Plugins/" dest="[[[project.namews]]]/Plugins/" exclude="frameworks"/>
     <set key="local.adsfwd" value="[[[project.namews]]]/Plugins/Ads/frameworks"/>
     <set key="local.adsfws" value="[[[sys.pluginDir]]]/source/iOS/Plugins/Ads/frameworks"/>
     <mkdir>[[[local.adsfwd]]]</mkdir>
-   <template name="Project" path="">
-        <replacelist wildcards="project.pbxproj">
-            <prepend>
-            	<orig>/* End PBXFileReference section */</orig>
-            	<by><![CDATA[
- 		EB0FCCBB1DB6518A0048AD30 /* ads.mm in Sources */ = {isa = PBXBuildFile; fileRef = EB0FCB9B1DB651890048AD30 /* ads.mm */; };
- 		EB0FCCBC1DB6518A0048AD30 /* adsbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB0FCB9C1DB651890048AD30 /* adsbinder.cpp */; };
- 		EB0FCCBD1DB6518A0048AD30 /* AdsClass.mm in Sources */ = {isa = PBXBuildFile; fileRef = EB0FCB9E1DB651890048AD30 /* AdsClass.mm */; };
- 		EB0FCCBE1DB6518A0048AD30 /* AdsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = EB0FCBA01DB651890048AD30 /* AdsManager.m */; };
- 		EB0FCCBF1DB6518A0048AD30 /* AdsState.m in Sources */ = {isa = PBXBuildFile; fileRef = EB0FCBA31DB651890048AD30 /* AdsState.m */; };
- 		EB0FCCC01DB6518A0048AD30 /* AdsStateChangeListener.m in Sources */ = {isa = PBXBuildFile; fileRef = EB0FCBA51DB651890048AD30 /* AdsStateChangeListener.m */; };
- 		EB0FCD2D1DB6518A0048AD30 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = EB0FCCBA1DB6518A0048AD30 /* Reachability.m */; };
- 		EB0FCB9A1DB651890048AD30 /* ads.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ads.h; sourceTree = "<group>"; };
- 		EB0FCB9B1DB651890048AD30 /* ads.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ads.mm; sourceTree = "<group>"; };
- 		EB0FCB9C1DB651890048AD30 /* adsbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = adsbinder.cpp; sourceTree = "<group>"; };
- 		EB0FCB9D1DB651890048AD30 /* AdsClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdsClass.h; sourceTree = "<group>"; };
- 		EB0FCB9E1DB651890048AD30 /* AdsClass.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AdsClass.mm; sourceTree = "<group>"; };
- 		EB0FCB9F1DB651890048AD30 /* AdsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdsManager.h; sourceTree = "<group>"; };
- 		EB0FCBA01DB651890048AD30 /* AdsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdsManager.m; sourceTree = "<group>"; };
- 		EB0FCBA11DB651890048AD30 /* AdsProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdsProtocol.h; sourceTree = "<group>"; };
- 		EB0FCBA21DB651890048AD30 /* AdsState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdsState.h; sourceTree = "<group>"; };
- 		EB0FCBA31DB651890048AD30 /* AdsState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdsState.m; sourceTree = "<group>"; };
- 		EB0FCBA41DB651890048AD30 /* AdsStateChangeListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdsStateChangeListener.h; sourceTree = "<group>"; };
- 		EB0FCBA51DB651890048AD30 /* AdsStateChangeListener.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdsStateChangeListener.m; sourceTree = "<group>"; };
- 		EB0FCCB91DB6518A0048AD30 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
- 		EB0FCCBA1DB6518A0048AD30 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
-
-		EB0FCB991DB651890048AD30 /* Ads */ = {
-			isa = PBXGroup;
-			children = (
-				EB0FCB9A1DB651890048AD30 /* ads.h */,
-				EB0FCB9B1DB651890048AD30 /* ads.mm */,
-				EB0FCB9C1DB651890048AD30 /* adsbinder.cpp */,
-				EB0FCB9D1DB651890048AD30 /* AdsClass.h */,
-				EB0FCB9E1DB651890048AD30 /* AdsClass.mm */,
-				EB0FCB9F1DB651890048AD30 /* AdsManager.h */,
-				EB0FCBA01DB651890048AD30 /* AdsManager.m */,
-				EB0FCBA11DB651890048AD30 /* AdsProtocol.h */,
-				EB0FCBA21DB651890048AD30 /* AdsState.h */,
-				EB0FCBA31DB651890048AD30 /* AdsState.m */,
-				EB0FCBA41DB651890048AD30 /* AdsStateChangeListener.h */,
-				EB0FCBA51DB651890048AD30 /* AdsStateChangeListener.m */,
-				EB0FCBA61DB651890048AD30 /* frameworks */,
-				EB0FCCB91DB6518A0048AD30 /* Reachability.h */,
-				EB0FCCBA1DB6518A0048AD30 /* Reachability.m */,
-			);
-			name = Ads;
-			path = Plugins/Ads;
-			sourceTree = "<group>";
-		};
-		EB0FCBA61DB651890048AD30 /* frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				/* ADS-FRAMEWORKS */
-			);
-			path = frameworks;
-			sourceTree = "<group>";
-		};
-
-            	]]></by>
-            </prepend>
-	<prepend>
-		<orig>EB42A05D1D66ED5000766D7E /* plugins.cpp */,</orig>
-            	<by><![CDATA[
-		EB0FCB991DB651890048AD30 /* Ads */,
-            	]]></by>
-	</prepend>
-	<append>
-		<orig>EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */,</orig>
-            	<by><![CDATA[
-				EB0FCCBF1DB6518A0048AD30 /* AdsState.m in Sources */,
-				EB0FCCBB1DB6518A0048AD30 /* ads.mm in Sources */,
-				EB0FCCBC1DB6518A0048AD30 /* adsbinder.cpp in Sources */,
-				EB0FCCBE1DB6518A0048AD30 /* AdsManager.m in Sources */,
-				EB0FCCBD1DB6518A0048AD30 /* AdsClass.mm in Sources */,
- 				EB0FCCC01DB6518A0048AD30 /* AdsStateChangeListener.m in Sources */,
- 				EB0FCD2D1DB6518A0048AD30 /* Reachability.m in Sources */,
-            	]]></by>
-	</append>		
-            <append>
-            	<orig>FRAMEWORK_SEARCH_PATHS = (</orig>
-            	<by><![CDATA[
- 		"$(PROJECT_DIR)/[[[local.adsfwd]]]",
-            	]]></by>
-            </append>
-	    </replacelist>
-    </template>
-    <if condition="[[[plugin.adsFwUnity]]]">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("Ads","Plugins/Ads","GroupAds_ios","GroupPlugins_ios")
+iOSProject.addGroup("frameworks","frameworks","GroupAdsFrameworks_ios","GroupAds_ios")
+iOSProject.addGroup("Ads","Plugins/Ads","GroupAds_atv","GroupPlugins_atv")
+iOSProject.addGroup("frameworks","frameworks","GroupAdsFrameworks_atv","GroupAds_atv")
+iOSProject.addSources({
+ "ads.mm","adsbinder.cpp","AdsClass.mm","AdsManager.m","AdsState.m",
+ "AdsStateChangeListener.m","Reachability.m",
+ "ads.h","AdsClass.h","AdsManager.h","AdsProtocol.h","AdsState.h","AdsStateChangeListener.h","Reachability.h"
+},"GroupAds","ios")
+iOSProject.addFrameworkPath(Export.getProperty("project.namews").."/Plugins/Ads/frameworks")
+iOSProject.commit()
+	]]></lua>
+       <if condition="[[[plugin.adsFwUnity]]]">
     	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.*" exclude="*.framework" />
     	<download source="http://giderosmobile.com/ext/ios/UnityAds.framework-2.0.5.zip" dest="[[[sys.cacheDir]]]/UnityAds.framework.zip" />
     	<unzip source="[[[sys.cacheDir]]]/UnityAds.framework.zip" dest="[[[local.adsfwd]]]/UnityAds.framework" />
-    	<template name="Unity Ads Framework" path="">
-        <replacelist wildcards="project.pbxproj">
-            <prepend>
-            	<orig>/* End PBXFileReference section */</orig>
-            	<by><![CDATA[
- 		EB0FCD251DB6518A0048AD30 /* UnityAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB0FCCAF1DB6518A0048AD30 /* UnityAds.framework */; };
- 		EB0FCCCE1DB6518A0048AD30 /* AdsUnity.m in Sources */ = {isa = PBXBuildFile; fileRef = EB0FCBC11DB6518A0048AD30 /* AdsUnity.m */; };
- 		EB0FCBC01DB6518A0048AD30 /* AdsUnity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdsUnity.h; sourceTree = "<group>"; };
- 		EB0FCBC11DB6518A0048AD30 /* AdsUnity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdsUnity.m; sourceTree = "<group>"; };
- 		EB0FCCAF1DB6518A0048AD30 /* UnityAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UnityAds.framework; sourceTree = "<group>"; };
-            	]]></by>
-            </prepend>
-	<append>
-		<orig>/* ADS-FRAMEWORKS */</orig>
-            	<by><![CDATA[
- 				EB0FCBC01DB6518A0048AD30 /* AdsUnity.h */,
- 				EB0FCBC11DB6518A0048AD30 /* AdsUnity.m */,
-				EB0FCCAF1DB6518A0048AD30,
-            	]]></by>
-	</append>
-	<append>
-		<orig>EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */,</orig>
-            	<by><![CDATA[
- 				EB0FCCCE1DB6518A0048AD30 /* AdsUnity.m in Sources */,
-            	]]></by>
-	</append>		
-		<prepend>
-            	<orig>5FD896EC15CED77F00D34824 /* UIKit.framework in Frameworks */,</orig>
-            	<by><![CDATA[
-		EB0FCD251DB6518A0048AD30,
-            	]]></by>
-            </prepend>
-           
-            <prepend>
-            	<orig>5FD896EB15CED77F00D34824 /* UIKit.framework in Frameworks */,</orig>
-            	<by><![CDATA[
- 		EB0FCCAF1DB6518A0048AD30 /* UnityAds.framework in Frameworks */,
-            	]]></by>
-            </prepend>
-
-	    </replacelist>
-    </template>
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addSources({
+ "AdsUnity.m","AdsUnity.h","UnityAds.framework"
+},"GroupAdsFrameworks","ios")
+iOSProject.commit()
+	]]></lua>
 	</if>    
  </target>
 </plugin>
