@@ -11,6 +11,8 @@ QT       -= gui
 TARGET = gdrdeamon
 #CONFIG   += console
 CONFIG   -= app_bundle
+CONFIG   += silent
+
 
 TEMPLATE = app
 

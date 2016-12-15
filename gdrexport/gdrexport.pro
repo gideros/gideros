@@ -11,6 +11,7 @@ QT       += core network xml
 TARGET = gdrexport
 CONFIG   += console
 CONFIG   -= app_bundle
+CONFIG   += silent
 
 TEMPLATE = app
 

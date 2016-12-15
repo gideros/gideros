@@ -8,6 +8,7 @@ QT       -= gui
 
 TARGET = pystring
 TEMPLATE = lib
+CONFIG   += silent
 
 DEFINES += PYSTRING_LIBRARY
 

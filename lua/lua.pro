@@ -8,6 +8,7 @@ QT       -= core gui
 
 TARGET = lua
 TEMPLATE = lib
+CONFIG   += silent
 
 win32 {
 DEFINES += LUA_BUILD_AS_DLL
