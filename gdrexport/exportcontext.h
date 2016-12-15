@@ -43,6 +43,7 @@ struct ExportContext
 	QString basews;
 	QString templatename;
 	QString templatenamews;
+	QString appName;
 	QDir outputDir;
         QDir exportDir;
     QList<QStringList> wildcards;

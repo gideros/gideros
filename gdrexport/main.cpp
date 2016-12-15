@@ -461,6 +461,9 @@ int main(int argc, char *argv[])
      ctx.topologicalSort=topologicalSort;
      ctx.encryptCode=encryptCode;
      ctx.encryptAssets=encryptAssets;
+     ctx.appName=ctx.properties.app_name;
+     if (ctx.appName.isEmpty())
+    	 ctx.appName=ctx.base;
 
      //Encryption key replacement info
      QStringList wildcards2;

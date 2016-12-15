@@ -85,8 +85,11 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["project.namews"] = ctx->basews;
 	props["project.package"] = ctx->properties.packageName;
 	props["project.version"] = ctx->properties.version;
+	props["project.app_name"] = ctx->appName;
 	props["project.version_code"] = QString::number(
 			ctx->properties.version_code);
+	props["project.build_number"] = QString::number(
+			ctx->properties.build_number);
 	props["project.autorotation"] = QString::number(
 			ctx->properties.autorotation);
 	props["project.orientation"] = QString::number(ctx->properties.orientation);

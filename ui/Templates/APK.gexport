@@ -46,6 +46,7 @@
 			<replacelist wildcards="*.xml;*.java;*.gradle">
 				<replace orig="AndroidTemplate" by="[[[project.namews]]]"/>
 				<replace orig="Android Template" by="[[[project.name]]]"/>
+		        <replace orig="Android Template App Name" by="[[[project.app_name]]]"/>
 				<replace orig="com.giderosmobile.androidtemplate" by="[[[export.packageName]]]"/>
         		<replace orig="android:targetSdkVersion=&quot;19&quot;" by="android:targetSdkVersion=&quot;[[[export.androidTarget]]]&quot;"/>
         		<replace orig="android:versionCode=&quot;1&quot;" by="android:versionCode=&quot;[[[project.version_code]]]&quot;"/>
