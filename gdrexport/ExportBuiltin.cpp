@@ -56,6 +56,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     	replaceList1 << qMakePair(ctx->templatenamews.toLatin1(), ctx->basews.toLatin1());
     }
     if (ctx->deviceFamily == e_Android){
+        replaceList1 << qMakePair(QString("Android Template App Name").toUtf8(), ctx->appName.toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("android:versionCode=\"1\"").toUtf8(), ("android:versionCode=\""+QString::number(ctx->properties.version_code)+"\"").toUtf8());
         replaceList1 << qMakePair(QString("android:versionName=\"1.0\"").toUtf8(), ("android:versionName=\""+ctx->properties.version+"\"").toUtf8());
@@ -102,12 +103,14 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
     }
     else if(ctx->deviceFamily == e_iOS){
+        replaceList1 << qMakePair(QString("iOS Template App Name").toUtf8(), ctx->appName.toUtf8());
         if(ctx->args.contains("bundle"))
             replaceList1 << qMakePair(QString("com.yourcompany.${PRODUCT_NAME:rfc1034identifier}").toUtf8(), ctx->args["bundle"].toUtf8());
         replaceList1 << qMakePair(QString("<string>1.0</string>").toUtf8(), ("<string>"+ctx->properties.version+"</string>").toUtf8());
+        replaceList1 << qMakePair(QString("<string>BUILD_NUMBER</string>").toUtf8(), ("<string>"+QString::number(ctx->properties.build_number)+"</string>").toUtf8());
     }
     else if(ctx->deviceFamily == e_WinRT){
-        replaceList1 << qMakePair(QString("Gideros Player").toUtf8(), ctx->base.toUtf8());
+        replaceList1 << qMakePair(QString("Gideros Player").toUtf8(), ctx->appName.toUtf8());
         replaceList1 << qMakePair(QString("giderosgame").toUtf8(), ctx->basews.toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.windowsphone").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.windows").toUtf8(), ctx->args["package"].toUtf8());
@@ -116,7 +119,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("BackgroundColor=\"transparent\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
     }
     else if(ctx->deviceFamily == e_Html5){
-        replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->base+"</title>").toUtf8());
+        replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->appName+"</title>").toUtf8());
         replaceList1 << qMakePair(QString("<body class=\"fullscreen\">").toUtf8(), ("<body class=\"fullscreen\" style=\"background-color:"+ctx->properties.backgroundColor+";\">").toUtf8());
         if(ctx->properties.disableSplash)
             replaceList1 << qMakePair(QString("<img src=\"gideros.png\" />").toUtf8(), QString("<img src=\"gideros.png\" style=\"display:none;\"/>").toUtf8());
