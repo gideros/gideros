@@ -85,6 +85,7 @@ camera.%: PLUGINDIR=camera
 ios.install: ios.libs.install atv.libs.install ios.plugins.install ios.app
 
 ios.clean: ios.plugins.clean
+	@cd $(IOSLIBPATH); rm -rf build
 		
 ios.plugins: $(addsuffix .ios.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.iosplugin,$(PLUGINS_ATV))
 
