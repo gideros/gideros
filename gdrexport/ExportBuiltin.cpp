@@ -89,8 +89,10 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         }
 
         replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
-        if(ctx->properties.disableSplash)
+        if (ctx->properties.disableSplash)
             replaceList1 << qMakePair(QString("boolean showSplash = true;").toUtf8(), QString("boolean showSplash = false;").toUtf8());
+        if (ctx->player)
+            replaceList1 << qMakePair(QString("<!-- TAG:MANIFEST-EXTRA -->").toUtf8(), QString("<!-- TAG:MANIFEST-EXTRA -->\n<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>").toUtf8());
 
         replaceList1 << qMakePair(QString("Color.parseColor(\"#ffffff\")").toUtf8(), QString("Color.parseColor(\""+ctx->properties.backgroundColor+"\")").toUtf8());
     }

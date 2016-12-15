@@ -416,7 +416,7 @@ public class GiderosApplication
 		text.setTextSize(25);
 		text.setBackgroundColor(Color.WHITE);
 		projectList.addHeaderView(text);
-		ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(WeakActivityHolder.get(), android.R.layout.simple_list_item_1, android.R.id.text1, traverse(new File(getExternalFilesDir(null),"gideros"))){
+		ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(WeakActivityHolder.get(), android.R.layout.simple_list_item_1, android.R.id.text1, traverse(new File(WeakActivityHolder.get().getExternalFilesDir(null),"gideros"))){
 			@Override
 	        public View getView(int position, View convertView, ViewGroup parent) {
 	            View view =super.getView(position, convertView, parent);

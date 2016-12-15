@@ -43,6 +43,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["sys.cacheDir"] = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 	props["sys.giderosDir"] = QDir::currentPath();
     props["sys.exportDir"] = ctx->exportDir.absolutePath();
+	props["sys.exportType"]=QString(ctx->player?"player":(ctx->assetsOnly?"assets":"full"));
 	QDomElement rules;
 	QDir xmlDir=QFileInfo(xmlFile).dir();
 	if (isPlugin) {

@@ -65,6 +65,16 @@
 				<replace orig="//storeFile" by="[[[local.noSigning]]]storeFile"/>
         	</replacelist>		
 		</template>
+		<if condition="[[[eq:[[[sys.exporType]]]:player]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+	            <append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+        	    	<by><![CDATA[<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>]]></by>
+    	        </append>
+        	</replacelist>
+    	</template>
+		</if>
 		<mkdir>app/src/main/assets/assets</mkdir>
 		<cd>app/src/main/assets/assets</cd>
 		<exportAssets jet="mp3;mp4;png;jpg;jpeg;wav" compile="1" />
