@@ -11,6 +11,7 @@
  <property name="reqTVExtCompat" type="boolean" title="Android TV extended compatibility"/>
  <property name="reqNoVibrator" type="boolean" title="Vibrator not used in this app"/>
  <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and horizontal"/>
+ <property name="reqWriteExternalStorage" type="boolean" title="App needs to to write external storage"/>
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -138,5 +139,15 @@
         	</replacelist>
     	</template>
     </if>
+    <if condition="[[[plugin.reqWriteExternalStorage]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+	            <append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+        	    	<by><![CDATA[<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>]]></by>
+    	        </append>
+        	</replacelist>
+    	</template>
+    </if>            
  </target>
 </plugin>

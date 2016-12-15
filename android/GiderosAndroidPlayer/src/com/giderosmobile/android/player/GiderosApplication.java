@@ -399,7 +399,7 @@ public class GiderosApplication
 			mExternalStorageAvailable = mExternalStorageWriteable = false;
 		}
 
-		externalDir_ = Environment.getExternalStorageDirectory().getAbsolutePath();
+		externalDir_ = WeakActivityHolder.get().getExternalFilesDir(null).getAbsolutePath();
 		internalDir_ = WeakActivityHolder.get().getFilesDir().getAbsolutePath();
 		cacheDir_ = WeakActivityHolder.get().getCacheDir().getAbsolutePath();
 
@@ -416,7 +416,7 @@ public class GiderosApplication
 		text.setTextSize(25);
 		text.setBackgroundColor(Color.WHITE);
 		projectList.addHeaderView(text);
-		ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(WeakActivityHolder.get(), android.R.layout.simple_list_item_1, android.R.id.text1, traverse(new File(Environment.getExternalStorageDirectory().toString()+"/gideros"))){
+		ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(WeakActivityHolder.get(), android.R.layout.simple_list_item_1, android.R.id.text1, traverse(new File(getExternalFilesDir(null),"gideros"))){
 			@Override
 	        public View getView(int position, View convertView, ViewGroup parent) {
 	            View view =super.getView(position, convertView, parent);
