@@ -3,7 +3,7 @@
       package="com.giderosmobile.androidtemplate"
       android:versionCode="1"
       android:versionName="1.0"
-	  android:installLocation="auto">
+	  android:installLocation="preferExternal">
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="19" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
