@@ -481,12 +481,36 @@ bool ExportCommon::download(ExportContext *ctx, QString url, QString to) {
 	QFileInfo fi = QFileInfo(filePath);
 	ctx->outputDir.mkpath(fi.dir().absolutePath());
 	QFile file(filePath);
+	exportInfo("Checking %s\n", url.toStdString().c_str());
+	QUrl imageUrl(url);
+
 	if (file.exists())
-		return true;
+	{
+		FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl,true);
+
+		QEventLoop loop;
+		loop.connect(m_pImgCtrl, SIGNAL(downloaded()), &loop, SLOT(quit()));
+		loop.exec();
+
+		quint64 size= m_pImgCtrl->fileSize();
+
+		delete m_pImgCtrl;
+
+		if (size==0)
+		{
+			exportInfo("Couldn't check file size for %s, assuming valid\n", url.toStdString().c_str());
+			return true; //Same file as far as we can tell
+		}
+
+		if (size==file.size()) {
+			exportInfo("File %s already in cache\n", url.toStdString().c_str());
+			return true; //Same file as far as we can tell
+		}
+	}
+
 	if (file.open(QIODevice::WriteOnly)) {
 		exportInfo("Downloading %s\n", url.toStdString().c_str());
 
-		QUrl imageUrl(url);
 		FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl);
 
 		QEventLoop loop;

@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
@@ -884,7 +884,7 @@ portrait or landscape.</string>
         <item>
          <widget class="QPushButton" name="tvIcon">
           <property name="text">
-           <string>Change TV Icon</string>
+           <string>Change TV Banner</string>
           </property>
          </widget>
         </item>
@@ -942,7 +942,7 @@ portrait or landscape.</string>
         <item>
          <widget class="QLabel" name="tvIconLabel">
           <property name="text">
-           <string>Selected TV icon</string>
+           <string>Selected TV banner</string>
           </property>
           <property name="scaledContents">
            <bool>false</bool>
