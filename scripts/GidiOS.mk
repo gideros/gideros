@@ -7,6 +7,9 @@ ATV_TEMPLATE=$(RELEASE)/Templates/Xcode4/iOS\ Template/AppleTV
 lua.ios.libs: IOSLIBPATH=$(ROOT)/lua
 gvfs.ios.libs: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.ios.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
+lua.ios.libs.clean: IOSLIBPATH=$(ROOT)/lua
+gvfs.ios.libs.clean: IOSLIBPATH=$(ROOT)/libgvfs
+iosplayer.ios.libs.clean: IOSLIBPATH=$(ROOT)/ios/iosplayer
 lua.atv.libs: IOSLIBPATH=$(ROOT)/lua
 gvfs.atv.libs: IOSLIBPATH=$(ROOT)/libgvfs
 iosplayer.atv.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
@@ -18,6 +21,9 @@ iosplayer.atv.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk iphoneos$$IOS_SDK -configuration Release -project $*.xcodeproj OTHER_CFLAGS="-fembed-bitcode"
 	@cd $(IOSLIBPATH); $(LIPO) build/Release-iphoneos/lib$*.a build/Release-iphonesimulator/lib$*.a -create -output lib$*.ios.a
 
+%.ios.libs.clean:
+	cd $(IOSLIBPATH); rm -rf build
+
 %.atv.libs: 
 	#BUILDING $*
 	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvsimulator$$TVOS_SDK -configuration Release -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1'
@@ -25,6 +31,7 @@ iosplayer.atv.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 	@cd $(IOSLIBPATH); $(LIPO) build/Release-appletvos/lib$*.a build/Release-appletvsimulator/lib$*.a -create -output lib$*.atv.a
 
 ios.libs: gvfs.ios.libs lua.ios.libs iosplayer.ios.libs
+ios.libs.clean : gvfs.ios.libs.clean lua.ios.libs.clean iosplayer.ios.libs.clean
 atv.libs: gvfs.atv.libs lua.atv.libs iosplayer.atv.libs
 
 
@@ -84,8 +91,7 @@ camera.%: PLUGINDIR=camera
 
 ios.install: ios.libs.install atv.libs.install ios.plugins.install ios.app
 
-ios.clean: ios.plugins.clean
-	@cd $(IOSLIBPATH); rm -rf build
+ios.clean: ios.plugins.clean ios.libs.clean
 		
 ios.plugins: $(addsuffix .ios.iosplugin,$(PLUGINS_IOS)) $(addsuffix .atv.iosplugin,$(PLUGINS_ATV))
 

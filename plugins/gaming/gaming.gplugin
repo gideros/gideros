@@ -60,9 +60,9 @@
 		<set key="local.gmsJar1" value="AmazonInsights-android-sdk-2.1.26.jar" />
 		<set key="local.gmsJar2" value="gamecirclesdk.jar" />
 		<set key="local.gmsJar3" value="login-with-amazon-sdk.jar" />
-		<download source="http://giderosmobile.com/ext/android/[[[local.gmsJar1]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar1]]]" />
-		<download source="http://giderosmobile.com/ext/android/[[[local.gmsJar2]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar2]]]" />
-		<download source="http://giderosmobile.com/ext/android/[[[local.gmsJar3]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar3]]]" />
+		<download source="http://apps.giderosmobile.com/ext/android/[[[local.gmsJar1]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar1]]]" />
+		<download source="http://apps.giderosmobile.com/ext/android/[[[local.gmsJar2]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar2]]]" />
+		<download source="http://apps.giderosmobile.com/ext/android/[[[local.gmsJar3]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar3]]]" />
 		<cp src="[[[sys.cacheDir]]]/[[[local.gmsJar1]]]" dst="app/libs/[[[local.gmsJar1]]]" />
 		<cp src="[[[sys.cacheDir]]]/[[[local.gmsJar2]]]" dst="app/libs/[[[local.gmsJar2]]]" />
 		<cp src="[[[sys.cacheDir]]]/[[[local.gmsJar3]]]" dst="app/libs/[[[local.gmsJar3]]]" />

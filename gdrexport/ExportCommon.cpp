@@ -484,18 +484,21 @@ bool ExportCommon::download(ExportContext *ctx, QString url, QString to) {
 	exportInfo("Checking %s\n", url.toStdString().c_str());
 	QUrl imageUrl(url);
 
+    quint64 size=0;
+    {
+        FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl,true);
+        
+        QEventLoop loop;
+        loop.connect(m_pImgCtrl, SIGNAL(downloaded()), &loop, SLOT(quit()));
+        loop.exec();
+        
+        size= m_pImgCtrl->fileSize();
+        
+        delete m_pImgCtrl;
+    }
+    
 	if (file.exists())
 	{
-		FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl,true);
-
-		QEventLoop loop;
-		loop.connect(m_pImgCtrl, SIGNAL(downloaded()), &loop, SLOT(quit()));
-		loop.exec();
-
-		quint64 size= m_pImgCtrl->fileSize();
-
-		delete m_pImgCtrl;
-
 		if (size==0)
 		{
 			exportInfo("Couldn't check file size for %s, assuming valid\n", url.toStdString().c_str());
@@ -507,11 +510,19 @@ bool ExportCommon::download(ExportContext *ctx, QString url, QString to) {
 			return true; //Same file as far as we can tell
 		}
 	}
+    else
+    {
+        if (size==0)
+        {
+            exportError("Failed to determine file size for %s, aborting\n", url.toStdString().c_str());
+            return false;
+        }
+    }
 
 	if (file.open(QIODevice::WriteOnly)) {
-		exportInfo("Downloading %s\n", url.toStdString().c_str());
+		exportInfo("Downloading %s (%lld bytes)\n", url.toStdString().c_str(),size);
 
-		FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl);
+		FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl,false,size);
 
 		QEventLoop loop;
 		loop.connect(m_pImgCtrl, SIGNAL(downloaded()), &loop, SLOT(quit()));

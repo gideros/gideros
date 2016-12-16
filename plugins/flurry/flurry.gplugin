@@ -5,7 +5,7 @@
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
     <set key="local.adsJarVer" value="FlurryAnalytics-5.5.0.jar" />
-    <download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+    <download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
     <cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
 	<!-- <template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="FlurryAnalytic*.jar" /> -->
     <template name="Activity" path="">
@@ -26,7 +26,7 @@
  <target name="Android">
     <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
     <set key="local.adsJarVer" value="FlurryAnalytics-5.5.0.jar" />
-    <download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+    <download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
     <cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="libs/[[[local.adsJarVer]]]" />
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">

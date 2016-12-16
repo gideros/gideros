@@ -6,8 +6,8 @@
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
     <set key="local.adsJarVer" value="com.bda.controller.jar" />
 	<set key="local.adsJarVer2" value="JavaInputUnifier130220.jar" />
-    <download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
-	<download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer2]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer2]]]" />
+    <download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer2]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer2]]]" />
     <cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="app/libs/[[[local.adsJarVer]]]" />
 	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer2]]]" dst="app/libs/[[[local.adsJarVer2]]]" />
 	<!--<template name="binaries" path="[[[sys.pluginDir]]]/source/Android/libs" dest="app/libs" include="com.bda.controller.jar" /> -->
@@ -40,8 +40,8 @@
     <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
     <set key="local.adsJarVer" value="com.bda.controller.jar" />
 	<set key="local.adsJarVer2" value="JavaInputUnifier130220.jar" />
-    <download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
-	<download source="http://giderosmobile.com/ext/android/[[[local.adsJarVer2]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer2]]]" />
+    <download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer2]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer2]]]" />
     <cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dst="libs/[[[local.adsJarVer]]]" />
 	<cp src="[[[sys.cacheDir]]]/[[[local.adsJarVer2]]]" dst="libs/[[[local.adsJarVer2]]]" />
     <template name="Activity" path="">
