@@ -34,7 +34,7 @@
  <target name="iOS">
    <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/Plugins/" dest="[[[project.namews]]]/Plugins/" />
     	<download source="http://apps.giderosmobile.com/ext/ios/FacebookSDK.framework-3.24.4.zip" dest="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" />
-    	<unzip source="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" dest="[[[project.namews]]]/Plugins/Faceboook/FacebookSDK.framework" />
+    	<unzip source="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" dest="[[[project.namews]]]/Plugins/Facebook/FacebookSDK.framework" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.addGroup("Facebook","Plugins/Facebook","GroupFacebook_ios","GroupPlugins_ios")
