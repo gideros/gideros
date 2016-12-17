@@ -19,9 +19,9 @@
 
             <UI:AdControl ApplicationId="3f83fe91-d6be-434d-a0ae-7351c5a997f1"
                       AdUnitId="10865270"
-                      HorizontalAlignment="Center"
+                      HorizontalAlignment="Left"
                       Height="250"
-                      VerticalAlignment="Center"
+                      VerticalAlignment="Top"
                       Width="300"/>
 
         <TextBlock Text="Bottom text!"
