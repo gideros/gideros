@@ -1,14 +1,16 @@
-#if TARGET_OS_TV == 0
 #include <ginput.h>
 #include <ginput-ios.h>
 #include <UIKit/UIKit.h>
+#if TARGET_OS_TV == 0
 #import <CoreMotion/CoreMotion.h>
+#endif
 #include <map>
 #include <vector>
 #include <gevent.h>
 
 class GGInputManager;
 
+#if TARGET_OS_TV == 0
 @interface GGAccelerometer : NSObject<UIAccelerometerDelegate>
 {
     UIAccelerometer *accelerometer_;
@@ -73,17 +75,19 @@ class GGInputManager;
 }
 
 @end
-
+#endif
 
 class GGInputManager
 {
 public:
     GGInputManager()
     {
+#if TARGET_OS_TV == 0
         accelerometer_ = [[GGAccelerometer alloc] init];
 
 		if (NSClassFromString(@"CMMotionManager") != nil)
 			motionManager_ = [[CMMotionManager alloc] init];
+#endif
 		
 		accelerometerStartCount_ = 0;
 		gyroscopeStartCount_ = 0;
@@ -102,10 +106,12 @@ public:
     
     ~GGInputManager()
     {
+#if TARGET_OS_TV == 0
         [accelerometer_ release];
 		if (motionManager_)
 			[motionManager_ release];		
-
+#endif
+        
         gevent_RemoveCallbackWithGid(gid_);
         
         gevent_RemoveCallback(posttick_s, this);
@@ -147,36 +153,46 @@ public:
     
     bool isAccelerometerAvailable()
     {
+#if TARGET_OS_TV == 0
         return true;
+#else
+        return false;
+#endif
     }
     
     void startAccelerometer()
     {
+#if TARGET_OS_TV == 0
 		accelerometerStartCount_++;
 		if (accelerometerStartCount_ == 1)
 			[accelerometer_ start];
+#endif
     }
     
     void stopAccelerometer()
     {
+#if TARGET_OS_TV == 0
 		if (accelerometerStartCount_ > 0)
 		{
 			accelerometerStartCount_--;
 			if (accelerometerStartCount_ == 0)
 				[accelerometer_ stop];
 		}
+#endif
     }
     
     void getAcceleration(double *x, double *y, double *z)
     {
         double x2 = 0, y2 = 0, z2 = 0;
 
+#if TARGET_OS_TV == 0
         if (accelerometerStartCount_ > 0)
         {
             x2 = accelerometer_.x;
             y2 = accelerometer_.y;
             z2 = accelerometer_.z;
         }
+#endif
         
         if (x)
             *x = x2;
@@ -188,7 +204,11 @@ public:
 	
 	bool isGyroscopeAvailable()
     {
+#if TARGET_OS_TV == 0
         return motionManager_ && [motionManager_ isGyroAvailable];
+#else
+        return false;
+#endif
     }
 	
 	void startGyroscope()
@@ -196,9 +216,11 @@ public:
 		if (!isGyroscopeAvailable())
 			return;
 		
+#if TARGET_OS_TV == 0
 		gyroscopeStartCount_++;
 		if (gyroscopeStartCount_ == 1)
 			[motionManager_ startGyroUpdates];
+#endif
     }
     
     void stopGyroscope()
@@ -206,18 +228,21 @@ public:
 		if (!isGyroscopeAvailable())
 			return;
 
+#if TARGET_OS_TV == 0
 		if (gyroscopeStartCount_ > 0)
 		{
 			gyroscopeStartCount_--;
 			if (gyroscopeStartCount_ == 0)
 				[motionManager_ stopGyroUpdates];
 		}
+#endif
     }
 	
 	void getGyroscopeRotationRate(double *x, double *y, double *z)
     {
         double x2 = 0, y2 = 0, z2 = 0;
 		
+#if TARGET_OS_TV == 0
         if (gyroscopeStartCount_ > 0)
         {
 			CMRotationRate rotationRate = motionManager_.gyroData.rotationRate;
@@ -225,6 +250,7 @@ public:
             y2 = rotationRate.y;
             z2 = rotationRate.z;
         }
+#endif
         
         if (x)
             *x = x2;
@@ -756,9 +782,11 @@ private:
     //std::map<int, int> keyMap_;
 
 private:
+#if TARGET_OS_TV == 0
     GGAccelerometer *accelerometer_;
+    CMMotionManager *motionManager_;
+#endif
 	int accelerometerStartCount_;
-	CMMotionManager *motionManager_;
 	int gyroscopeStartCount_;
 
 public:
@@ -918,4 +946,4 @@ void ginput_removeCallbackWithGid(g_id gid)
 }
 
 }
-#endif
+

@@ -643,9 +643,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
     gapplication_init();
 	
 	// input
-#if TARGET_OS_TV == 0
     ginput_init();
-#endif
 	
 	// geolocation
 #if TARGET_OS_TV == 0
@@ -783,9 +781,7 @@ ApplicationManager::~ApplicationManager()
 #endif
 	
 	// input
-#if TARGET_OS_TV == 0
     ginput_cleanup();
-#endif
 	
     // application
     gapplication_cleanup();
@@ -1087,11 +1083,9 @@ void ApplicationManager::loadProperties()
 #endif
 
 	g_setFps(properties_.fps);
-#if TARGET_OS_TV == 0
 	ginput_setMouseToTouchEnabled(properties_.mouseToTouch);
 	ginput_setTouchToMouseEnabled(properties_.touchToMouse);
 	ginput_setMouseTouchOrder(properties_.mouseTouchOrder);
-#endif
 }
 
 void ApplicationManager::loadLuaFiles()
@@ -1169,11 +1163,9 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 #endif
 
 	g_setFps(properties_.fps);
-#if TARGET_OS_TV == 0
 	ginput_setMouseToTouchEnabled(properties_.mouseToTouch);
 	ginput_setTouchToMouseEnabled(properties_.touchToMouse);
 	ginput_setMouseTouchOrder(properties_.mouseTouchOrder);
-#endif
 
     GStatus status;
     for (std::size_t i = 0; i < luafiles.size(); ++i)
