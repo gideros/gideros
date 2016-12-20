@@ -32,7 +32,7 @@ return id
 end
 
 iOSProject.insertData=function(section,line)
-print("insertData",section,line)
+--print("insertData",section,line)
 table.insert(iOSProject.insertPoints[section].data,line)
 end
 
@@ -52,7 +52,7 @@ end
 end
 if #rep>0 then
 rep=iOSProject.XML_TEMPLATE:format(rep)
-print("XML",rep)
+--print("XML",rep)
 Export.callXml(rep)
 end
 end

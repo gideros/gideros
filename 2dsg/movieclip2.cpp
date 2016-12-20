@@ -955,6 +955,7 @@ Parameter::Parameter(const char* strparam, float start, float end, const char* t
 MovieClip::MovieClip(Type type, Application *application) : Sprite(application)
 {
     type_ = type;
+    playing_ = false;
 }
 
 MovieClip::~MovieClip()

@@ -70,39 +70,33 @@ void ExportCommon::resizeImage(QImage *image, int width, int height,
 	int rwidth = width; //resampled width
 	int rheight = height; //resampled height
 
-	float k_w = fabs(1 - (float) width / (float) iwidth); //width scaling coef
-	float k_h = fabs(1 - (float) height / (float) iheight); //height scaling coef
+	float k_w = fabs((float) width / (float) iwidth); //width scaling coef
+	float k_h = fabs((float) height / (float) iheight); //height scaling coef
 	int dst_x = 0;
 	int dst_y = 0;
 
-	if (iwidth < width && iheight >= height) {
-		rheight = round((iheight * width) / iwidth);
-	} else if (iwidth >= width && iheight < height) {
+	//use smallest
+	if (k_h < k_w) {
 		rwidth = round((iwidth * height) / iheight);
 	} else {
-		//use smallest
-		if (k_h < k_w) {
-			rwidth = round((iwidth * height) / iheight);
-		} else {
-			rheight = round((iheight * width) / iwidth);
-		}
+		rheight = round((iheight * width) / iwidth);
 	}
 
 	//new width is bigger than existing
-	if (rwidth > width) {
-		dst_x = (rwidth - width) / 2;
+	if (width > rwidth) {
+		dst_x = (width - rwidth) / 2;
 	}
 
 	//new height is bigger than existing
-	if (rheight > height) {
-		dst_y = (rheight - height) / 2;
+	if (height > rheight) {
+		dst_y = (height - rheight) / 2;
 	}
 
 	QImage xform=image->scaled(rwidth, rheight, Qt::KeepAspectRatio,
 			Qt::SmoothTransformation);
 	if (dst_x || dst_y)
 	{
-		QImage larger(rwidth,rheight,QImage::Format_ARGB32);
+		QImage larger(width,height,QImage::Format_ARGB32);
 		larger.fill(0);
 		QPainter painter(&larger);
 		painter.drawImage(dst_x,dst_y, xform);
