@@ -10,6 +10,7 @@
 #include "Utilities.h"
 #include "ExportCommon.h"
 #include <QStandardPaths>
+#include <QFileInfo>
 
 #ifdef Q_OS_MACX
 #define ALL_PLUGINS_PATH "../../All Plugins"
@@ -42,6 +43,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 #endif
 	props["sys.cacheDir"] = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 	props["sys.giderosDir"] = QDir::currentPath();
+	props["sys.homeDir"] = QDir::homePath();
     props["sys.exportDir"] = ctx->exportDir.absolutePath();
 	props["sys.exportType"]=QString(ctx->player?"player":(ctx->assetsOnly?"assets":"full"));
 	QDomElement rules;
@@ -289,6 +291,11 @@ QString ExportXml::ComputeUnary(QString op, QString arg) {
 		return QString::number(~arg.toInt());
 	else if (op == "not")
 		return QString::number(!arg.toInt());
+	else if (op == "exists")
+	{
+		QFileInfo check_file(arg);
+		return check_file.exists()?"1":"0";
+	}
 	ExportCommon::exportError("Operator '%s' unknown\n", op.toStdString().c_str());
 	return "";
 }
