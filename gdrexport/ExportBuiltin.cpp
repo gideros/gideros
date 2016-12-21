@@ -52,11 +52,13 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     QList<QPair<QByteArray, QByteArray> > replaceList1;
     if (!ctx->templatename.isEmpty())
     {
-    	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
+        if ((ctx->deviceFamily != e_Android) && (ctx->deviceFamily != e_iOS))
+        	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
     	replaceList1 << qMakePair(ctx->templatenamews.toLatin1(), ctx->basews.toLatin1());
     }
     if (ctx->deviceFamily == e_Android){
         replaceList1 << qMakePair(QString("Android Template App Name").toUtf8(), ctx->appName.toUtf8());
+    	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("android:versionCode=\"1\"").toUtf8(), ("android:versionCode=\""+QString::number(ctx->properties.version_code)+"\"").toUtf8());
         replaceList1 << qMakePair(QString("android:versionName=\"1.0\"").toUtf8(), ("android:versionName=\""+ctx->properties.version+"\"").toUtf8());
@@ -106,6 +108,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     }
     else if(ctx->deviceFamily == e_iOS){
         replaceList1 << qMakePair(QString("iOS Template App Name").toUtf8(), ctx->appName.toUtf8());
+    	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
         if(ctx->args.contains("bundle"))
             replaceList1 << qMakePair(QString("com.yourcompany.${PRODUCT_NAME:rfc1034identifier}").toUtf8(), ctx->args["bundle"].toUtf8());
         replaceList1 << qMakePair(QString("<string>1.0</string>").toUtf8(), ("<string>"+ctx->properties.version+"</string>").toUtf8());
