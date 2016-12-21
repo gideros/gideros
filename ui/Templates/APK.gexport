@@ -12,7 +12,7 @@
 		<if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
 			<!-- MAC -->
 			<if condition="[[[eq:[[[export.androidPath]]]:]]]">
-				<set key="export.androidPath" value="[[[sys.homeDir]]]/Android/sdk" />
+				<set key="export.androidPath" value="[[[sys.homeDir]]]/Library/Android/sdk" />
 			</if>
 			<if condition="[[[eq:[[[export.javaPath]]]:]]]">
 				<set key="export.javaPath" value="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/jre" />
