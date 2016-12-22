@@ -113,7 +113,7 @@ plugins.clean:
 SUBLIBS=CORE B2D LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3
 SUBLIBS_AR=$(addprefix $(BUILD)/lib,$(addsuffix .a,$(SUBLIBS)))
 
-define SUB_template =
+define SUB_template
 $$(BUILD)/lib$(1).a: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
 SUBLIBS_SRCS+=$$($(1)_SRCS)
 endef
