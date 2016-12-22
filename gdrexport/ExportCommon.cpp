@@ -64,7 +64,7 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest,
 }
 
 void ExportCommon::resizeImage(QImage *image, int width, int height,
-		QString output, int quality,bool withAlpha) {
+		QString output, int quality,bool withAlpha, QColor fill) {
 	int iwidth = image->width(); //image width
 	int iheight = image->height(); //image height
 	int rwidth = width; //resampled width
@@ -97,7 +97,7 @@ void ExportCommon::resizeImage(QImage *image, int width, int height,
 	if (dst_x || dst_y)
 	{
 		QImage larger(width,height,QImage::Format_ARGB32);
-		larger.fill(0);
+		larger.fill(fill);
 		QPainter painter(&larger);
 		painter.drawImage(dst_x,dst_y, xform);
 		painter.end();
@@ -190,8 +190,9 @@ bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height,
 	if (ctx->splash_h_image->isNull())
 		return false;
 	exportInfo("Generating splash horizontal (%dx%d)\n", width, height);
+
 	resizeImage(ctx->splash_h_image, width, height,
-			ctx->outputDir.absoluteFilePath(output), -1, withAlpha);
+			ctx->outputDir.absoluteFilePath(output), -1, withAlpha,QColor(ctx->properties.backgroundColor));
 	return true;
 }
 
@@ -220,7 +221,7 @@ bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
 		return false;
 	exportInfo("Generating splash vertical (%dx%d)\n", width, height);
 	resizeImage(ctx->splash_v_image, width, height,
-			ctx->outputDir.absoluteFilePath(output), -1, withAlpha);
+			ctx->outputDir.absoluteFilePath(output), -1, withAlpha,QColor(ctx->properties.backgroundColor));
 	return true;
 }
 
