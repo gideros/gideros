@@ -100,7 +100,7 @@ TEMPLATE=$(BUILD)/Html5/Html5
 PLUGINS=bitop luasocket json
 
 template: main plugins
-	R=$(PWD); cd $(BUILD)/Html5/Html5; for j in *.js; do echo "CRUNCHING" $$j; $$R/$(CRUNCHME_TOOL) -nostrip $$j tmp.jsz; mv tmp.jsz $$j; done
+	R=$(PWD); cd $(BUILD)/Html5/Html5; for j in gideros.js pace.min.js; do echo "CRUNCHING" $$j; $$R/$(CRUNCHME_TOOL) -nostrip $$j tmp.jsz; mv tmp.jsz $$j; done
 	cd $(BUILD); rm -f Html5.zip; zip -r Html5.zip Html5/; 
 
 plugins:
