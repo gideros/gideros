@@ -199,6 +199,7 @@ public class Geolocation
 					return;
 		
 				sensorManager.unregisterListener(magneticListener_, magneticSensor);
+				magneticListener_=null; 
 			}
 		});		
 	}
