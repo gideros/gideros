@@ -74,6 +74,7 @@ void ExportCommon::resizeImage(QImage *image, int width, int height,
 	float k_h = fabs((float) height / (float) iheight); //height scaling coef
 	int dst_x = 0;
 	int dst_y = 0;
+	bool redraw = false;
 
 	//use smallest
 	if (k_h < k_w) {
@@ -85,16 +86,18 @@ void ExportCommon::resizeImage(QImage *image, int width, int height,
 	//new width is bigger than existing
 	if (width > rwidth) {
 		dst_x = (width - rwidth) / 2;
+		redraw = true;
 	}
 
 	//new height is bigger than existing
 	if (height > rheight) {
 		dst_y = (height - rheight) / 2;
+		redraw = true;
 	}
 
 	QImage xform=image->scaled(rwidth, rheight, Qt::KeepAspectRatio,
 			Qt::SmoothTransformation);
-	if (dst_x || dst_y)
+	if (redraw)  //(dst_x || dst_y)
 	{
 		QImage larger(width,height,QImage::Format_ARGB32);
 		larger.fill(fill);
