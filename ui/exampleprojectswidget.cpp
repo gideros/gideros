@@ -61,6 +61,13 @@ ExampleProjectsWidget::ExampleProjectsWidget(QWidget *parent) :
 			iter = iter.nextSibling();
 		}
 	}
+    else
+    {
+        categories_.resize(1);
+
+        categories_[0].name = "Empty";
+        categories_[0].items.resize(0);
+    }
 
 /*
 	categories_.resize(3);

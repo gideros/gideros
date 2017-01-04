@@ -1,6 +1,8 @@
 <plugin
  name="Camera"
  description="Allow to preview camera content into a gideros Texture">
+ <property name="camUsageDesc" type="string" title="Camera usage description (iOS)" default="This app needs to access your camera"/>
+ <property name="camRequired" type="boolean" title="Camera is mandatory (Android)"/>
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
@@ -11,14 +13,18 @@
             <append orig="//GIDEROS-ACTIVITY-PREDRAW//" by="		com.giderosmobile.android.plugins.camera.GCamera.frame();"/>
         </replacelist>
     </template>
+    <set key="local.required" value="false"/>
+    <if condition="[[[plugin.camRequired]]]">
+    	<set key="local.required" value="true"/>
+    </if>
     <template name="AndroidManifest" path="">
         <replacelist wildcards="AndroidManifest.xml">
             <append>
             	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
             	<by><![CDATA[
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />            	
+    <uses-feature android:name="android.hardware.camera" android:required="[[[local.required]]]"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />            	
             	]]></by>
             </append>
         </replacelist>
@@ -54,7 +60,7 @@
         </replacelist>
     </template>
    <template name="Project" path="">
-        <replacelist wildcards="project.pbxproj;EAGLView.m">
+        <replacelist wildcards="project.pbxproj;EAGLView.m;[[[project.namews]]]-Info.plist">
             <prepend>
             	<orig>/* End PBXFileReference section */</orig>
             	<by><![CDATA[
@@ -82,6 +88,13 @@
     		<orig>//GIDEROS-TAG-IOS:DRAWDEFS//</orig>
 		<by>extern void cameraplugin_render(); </by>
 	    </append>
+	    <prepend>
+		<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
+		<by><![CDATA[	
+			<key>NSCameraUsageDescription</key>
+			<string>[[[plugin.camUsageDesc]]]</string>
+		]]></by>
+	    </prepend>
         </replacelist>
     </template>
  </target>

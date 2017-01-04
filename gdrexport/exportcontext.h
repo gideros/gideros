@@ -14,6 +14,9 @@
 #include <QImage>
 #include <projectproperties.h>
 #include <dependencygraph.h>
+extern "C" {
+#include "lua.h"
+}
 
 enum DeviceFamily
 {
@@ -40,6 +43,7 @@ struct ExportContext
 	QString basews;
 	QString templatename;
 	QString templatenamews;
+	QString appName;
 	QDir outputDir;
         QDir exportDir;
     QList<QStringList> wildcards;
@@ -68,6 +72,8 @@ struct ExportContext
     QImage *tvicon;
     QImage *splash_h_image;
     QImage *splash_v_image;
+    // LUA
+    lua_State *L;
 };
 
 

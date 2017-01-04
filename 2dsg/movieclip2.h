@@ -94,9 +94,9 @@ public:
 	void finalize();
 	
 	void play();
-	void stop();
+	bool stop();
 	void gotoAndPlay(int frame);
-	void gotoAndStop(int frame);
+	bool gotoAndStop(int frame);
 
 protected:
 	struct Frame
@@ -115,7 +115,7 @@ private:
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
 
 private:
-    void oneFrame();
+    bool oneFrame();
     void nextFrame(EnterFrameEvent* event);
     void gotoFrame(int frame);
 	void interpolateParameters();

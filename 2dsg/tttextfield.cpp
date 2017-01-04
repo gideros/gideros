@@ -52,10 +52,18 @@ TTTextField::TTTextField(Application* application, TTFont* font, const char* tex
 
 	letterSpacing_ = 0;
 
+    float scalex = application_->getLogicalScaleX();
+    float scaley = application_->getLogicalScaleY();
+
     size_t wsize = utf8_to_wchar(sample_.c_str(), sample_.size(), NULL, 0, 0);
     wsample_.resize(wsize);
     utf8_to_wchar(sample_.c_str(), sample_.size(), &wsample_[0], wsize, 0);
     font_->renderFont(wsample_.c_str(), letterSpacing_, &sminx, &sminy, &smaxx, &smaxy);
+    sminx = sminx/scalex;
+    sminy = sminy/scaley;
+    smaxx = smaxx/scalex;
+    smaxy = smaxy/scaley;
+
 
     createGraphics();
 }
@@ -86,6 +94,10 @@ void TTTextField::createGraphics()
 		return;
 	}
 
+    float scalex = application_->getLogicalScaleX();
+    float scaley = application_->getLogicalScaleY();
+
+
     int minx, miny, maxx, maxy;
     Dib dib = font_->renderFont(wtext_.c_str(), letterSpacing_, &minx, &miny, &maxx, &maxy);
 
@@ -93,8 +105,8 @@ void TTTextField::createGraphics()
     {
         maxx = maxx - minx;
         minx = 0;
-        miny = miny - sminy;
-        maxy = maxy - sminy;
+        miny = miny - sminy*scaley;
+        maxy = maxy - sminy*scaley;
     }
 
     int dx = minx - 1;
@@ -110,10 +122,10 @@ void TTTextField::createGraphics()
 	graphicsBase_.mode = ShaderProgram::TriangleStrip;
 
 	graphicsBase_.vertices.resize(4);
-    graphicsBase_.vertices[0] = Point2f(dx, dy);
-    graphicsBase_.vertices[1] = Point2f(data_->width + dx, dy);
-    graphicsBase_.vertices[2] = Point2f(data_->width + dx, data_->height + dy);
-    graphicsBase_.vertices[3] = Point2f(dx, data_->height + dy);
+	graphicsBase_.vertices[0] = Point2f(dx / scalex,					dy / scaley);
+	graphicsBase_.vertices[1] = Point2f((data_->width + dx) / scalex,	dy / scaley);
+	graphicsBase_.vertices[2] = Point2f((data_->width + dx) / scalex,	(data_->height + dy) / scaley);
+	graphicsBase_.vertices[3] = Point2f(dx / scalex,					(data_->height + dy) / scaley);
 	graphicsBase_.vertices.Update();
 
 	float u = (float)data_->width / (float)data_->exwidth;
@@ -138,10 +150,10 @@ void TTTextField::createGraphics()
 	int b = textColor_ & 0xff;
 	graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, 1);
 
-    minx_ = minx;
-    miny_ = miny;
-    maxx_ = maxx;
-    maxy_ = maxy;
+    minx_ = minx/scalex;
+    miny_ = miny/scaley;
+    maxx_ = maxx/scalex;
+    maxy_ = maxy/scaley;
 }
 
 void TTTextField::extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
@@ -220,6 +232,7 @@ float TTTextField::letterSpacing() const
 
 float TTTextField::lineHeight() const
 {
+    float scaley = application_->getLogicalScaleY();
     return wsample_.empty()? 0 : smaxy - sminy;
 }
 
@@ -227,10 +240,17 @@ void TTTextField::setSample(const char* sample)
 {
     sample_ = sample;
 
+    float scalex = application_->getLogicalScaleX();
+    float scaley = application_->getLogicalScaleY();
+
     size_t wsize = utf8_to_wchar(sample_.c_str(), sample_.size(), NULL, 0, 0);
     wsample_.resize(wsize);
     utf8_to_wchar(sample_.c_str(), sample_.size(), &wsample_[0], wsize, 0);
     font_->renderFont(wsample_.c_str(), letterSpacing_, &sminx, &sminy, &smaxx, &smaxy);
+    sminx = sminx/scalex;
+    sminy = sminy/scaley;
+    smaxx = smaxx/scalex;
+    smaxy = smaxy/scaley;
 
     createGraphics();
 }

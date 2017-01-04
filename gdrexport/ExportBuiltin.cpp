@@ -52,10 +52,13 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     QList<QPair<QByteArray, QByteArray> > replaceList1;
     if (!ctx->templatename.isEmpty())
     {
-    	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
+        if ((ctx->deviceFamily != e_Android) && (ctx->deviceFamily != e_iOS))
+        	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
     	replaceList1 << qMakePair(ctx->templatenamews.toLatin1(), ctx->basews.toLatin1());
     }
     if (ctx->deviceFamily == e_Android){
+        replaceList1 << qMakePair(QString("Android Template App Name").toUtf8(), ctx->appName.toUtf8());
+    	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("android:versionCode=\"1\"").toUtf8(), ("android:versionCode=\""+QString::number(ctx->properties.version_code)+"\"").toUtf8());
         replaceList1 << qMakePair(QString("android:versionName=\"1.0\"").toUtf8(), ("android:versionName=\""+ctx->properties.version+"\"").toUtf8());
@@ -88,8 +91,10 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         }
 
         replaceList1 << qMakePair(QString("android:screenOrientation=\"portrait\"").toUtf8(), orientation.toUtf8());
-        if(ctx->properties.disableSplash)
+        if (ctx->properties.disableSplash)
             replaceList1 << qMakePair(QString("boolean showSplash = true;").toUtf8(), QString("boolean showSplash = false;").toUtf8());
+        if (ctx->player)
+            replaceList1 << qMakePair(QString("<!-- TAG:MANIFEST-EXTRA -->").toUtf8(), QString("<!-- TAG:MANIFEST-EXTRA -->\n<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>").toUtf8());
 
         replaceList1 << qMakePair(QString("Color.parseColor(\"#ffffff\")").toUtf8(), QString("Color.parseColor(\""+ctx->properties.backgroundColor+"\")").toUtf8());
     }
@@ -102,12 +107,15 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
     }
     else if(ctx->deviceFamily == e_iOS){
+        replaceList1 << qMakePair(QString("iOS Template App Name").toUtf8(), ctx->appName.toUtf8());
+    	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
         if(ctx->args.contains("bundle"))
             replaceList1 << qMakePair(QString("com.yourcompany.${PRODUCT_NAME:rfc1034identifier}").toUtf8(), ctx->args["bundle"].toUtf8());
         replaceList1 << qMakePair(QString("<string>1.0</string>").toUtf8(), ("<string>"+ctx->properties.version+"</string>").toUtf8());
+        replaceList1 << qMakePair(QString("<string>BUILD_NUMBER</string>").toUtf8(), ("<string>"+QString::number(ctx->properties.build_number)+"</string>").toUtf8());
     }
     else if(ctx->deviceFamily == e_WinRT){
-        replaceList1 << qMakePair(QString("Gideros Player").toUtf8(), ctx->base.toUtf8());
+        replaceList1 << qMakePair(QString("Gideros Player").toUtf8(), ctx->appName.toUtf8());
         replaceList1 << qMakePair(QString("giderosgame").toUtf8(), ctx->basews.toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.windowsphone").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.windows").toUtf8(), ctx->args["package"].toUtf8());
@@ -116,7 +124,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("BackgroundColor=\"transparent\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
     }
     else if(ctx->deviceFamily == e_Html5){
-        replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->base+"</title>").toUtf8());
+        replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->appName+"</title>").toUtf8());
         replaceList1 << qMakePair(QString("<body class=\"fullscreen\">").toUtf8(), ("<body class=\"fullscreen\" style=\"background-color:"+ctx->properties.backgroundColor+";\">").toUtf8());
         if(ctx->properties.disableSplash)
             replaceList1 << qMakePair(QString("<img src=\"gideros.png\" />").toUtf8(), QString("<img src=\"gideros.png\" style=\"display:none;\"/>").toUtf8());
@@ -339,11 +347,11 @@ void ExportBuiltin::doExport(ExportContext *ctx)
            ExportCommon::appIcon(ctx,96,96,QString("res/drawable-xhdpi/icon.png"));
            ExportCommon::appIcon(ctx,144,144,QString("res/drawable-xxhdpi/icon.png"));
            ExportCommon::appIcon(ctx,192,192,QString("res/drawable-xxxhdpi/icon.png"));
-           ExportCommon::appIcon(ctx,96,96,QString("res/drawable/app_icon.png"));
+           ExportCommon::appIcon(ctx,96,96,QString("res/drawable/icon.png"));
 
            //tv stuff
-           ExportCommon::appIcon(ctx,732,412,QString("res/drawable-xhdpi/ouya_icon.png"));
-           ExportCommon::appIcon(ctx,320,180,QString("res/drawable/icon.png"));
+           ExportCommon::tvIcon(ctx,732,412,QString("res/drawable-xhdpi/ouya_icon.png"));
+           ExportCommon::tvIcon(ctx,320,180,QString("res/drawable/banner.png"),false);
 
            if(ctx->properties.orientation == 0 || ctx->properties.orientation == 2){
                ExportCommon::splashVImage(ctx,200,320,QString("res/drawable-ldpi/splash.png"));
@@ -369,6 +377,10 @@ void ExportBuiltin::doExport(ExportContext *ctx)
            ExportCommon::appIcon(ctx,96,96,QString("app/src/main/res/drawable-xhdpi/icon.png"));
            ExportCommon::appIcon(ctx,144,144,QString("app/src/main/res/drawable-xxhdpi/icon.png"));
            ExportCommon::appIcon(ctx,192,192,QString("app/src/main/res/drawable-xxxhdpi/icon.png"));
+           ExportCommon::appIcon(ctx,96,96,QString("app/src/main/res/drawable/icon.png"));
+           //tv stuff
+           ExportCommon::tvIcon(ctx,732,412,QString("app/src/main/res/drawable-xhdpi/ouya_icon.png"));
+           ExportCommon::tvIcon(ctx,320,180,QString("app/src/main/res/drawable/banner.png"),false);
 
            if(ctx->properties.orientation == 0 || ctx->properties.orientation == 2){
                ExportCommon::splashVImage(ctx,200,320,QString("app/src/main/res/drawable-ldpi/splash.png"));

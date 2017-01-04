@@ -1,0 +1,47 @@
+<plugin
+ name="Facebook"
+ description="Facebook connector">
+ 
+  <target name="AndroidStudio,APK">
+    <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java" exclude="frameworks"/>
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs" include="libf*.so" />
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;facebook&quot;);"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.facebook.GFacebook&quot;,"/>
+        </replacelist>
+        <replacelist wildcards="AndroidManifest.xml">
+            <append>
+            	<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+            	<by><![CDATA[
+        <activity android:name="com.facebook.LoginActivity"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:label="@string/app_name" />
+            	]]></by>
+            </append>
+        </replacelist>        
+			<replacelist wildcards="build.gradle">
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+  // Android SDK
+  compile 'com.facebook.android:facebook-android-sdk:3.+'
+  					</by>
+				</append>
+	       	</replacelist>	
+    </template>
+ </target>
+ <target name="iOS">
+   <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/Plugins/" dest="[[[project.namews]]]/Plugins/" />
+    	<download source="http://apps.giderosmobile.com/ext/ios/FacebookSDK.framework-3.24.4.zip" dest="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" />
+    	<unzip source="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" dest="[[[project.namews]]]/Plugins/Facebook/FacebookSDK.framework" />
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("Facebook","Plugins/Facebook","GroupFacebook_ios","GroupPlugins_ios")
+iOSProject.addGroup("Facebook","Plugins/Facebook","GroupFacebook_atv","GroupPlugins_atv")
+iOSProject.addSources({ "GFBook.h", "GFBook.mm", "gfacebook.h", "gfacebook.mm", "facebookbinder.cpp", "FacebookSDK.framework" }, "GroupFacebook", "ios")
+iOSProject.addFrameworkPath(Export.getProperty("project.namews").."/Plugins/Facebook")
+iOSProject.commit()
+	]]></lua>
+ </target>
+</plugin>

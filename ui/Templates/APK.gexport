@@ -9,6 +9,24 @@
 	<property name="keyStore" type="file" title="Key store" description="Path to keystore for signing" default="" />
 	<property name="keyAlias" type="string" title="Key alias" description="Alias of the key to use" default="" />
 	<rules>
+		<if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
+			<!-- MAC -->
+			<if condition="[[[eq:[[[export.androidPath]]]:]]]">
+				<set key="export.androidPath" value="[[[sys.homeDir]]]/Library/Android/sdk" />
+			</if>
+			<if condition="[[[eq:[[[export.javaPath]]]:]]]">
+				<set key="export.javaPath" value="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/jre" />
+			</if>
+        </if>
+		<if condition="[[[eq:[[[sys.exeExtension]]]:.exe]]]">
+			<!-- WIN -->
+			<if condition="[[[eq:[[[export.androidPath]]]:]]]">
+				<set key="export.androidPath" value="[[[sys.homeDir]]]/AppData/Local/Android/sdk" />
+			</if>
+			<if condition="[[[eq:[[[export.javaPath]]]:]]]">
+				<set key="export.javaPath" value="C:/Program Files/Android/Android Studio/jre" />
+			</if>
+        </if>
 		<ask key="local.keyStorePass" type="string" title="Key store password" question="Enter your key store password:" default="" />
 		<set key="local.noSigning" value="//"/>
 		<set key="local.isUnsigned" value="-unsigned"/>
@@ -17,6 +35,7 @@
 			<set key="local.noSigning" value=""/>
 			<set key="local.isUnsigned" value=""/>
 		</if>
+		<rmdir>tmp</rmdir>
 		<mkdir>tmp</mkdir>
 		<cd>tmp</cd>
 		<if condition="[[[project.autorotation]]]">
@@ -44,6 +63,7 @@
 		<template name="Android Template" path="[[[sys.giderosDir]]]/Templates/AndroidStudio/Android Template">
 			<replacelist wildcards="*.xml;*.java;*.gradle">
 				<replace orig="AndroidTemplate" by="[[[project.namews]]]"/>
+		        <replace orig="Android Template App Name" by="[[[project.app_name]]]"/>
 				<replace orig="Android Template" by="[[[project.name]]]"/>
 				<replace orig="com.giderosmobile.androidtemplate" by="[[[export.packageName]]]"/>
         		<replace orig="android:targetSdkVersion=&quot;19&quot;" by="android:targetSdkVersion=&quot;[[[export.androidTarget]]]&quot;"/>
@@ -63,6 +83,16 @@
 				<replace orig="//storeFile" by="[[[local.noSigning]]]storeFile"/>
         	</replacelist>		
 		</template>
+		<if condition="[[[eq:[[[sys.exporType]]]:player]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+	            <append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+        	    	<by><![CDATA[<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>]]></by>
+    	        </append>
+        	</replacelist>
+    	</template>
+		</if>
 		<mkdir>app/src/main/assets/assets</mkdir>
 		<cd>app/src/main/assets/assets</cd>
 		<exportAssets jet="mp3;mp4;png;jpg;jpeg;wav" compile="1" />
@@ -74,8 +104,11 @@
 		<appIcon width="48" height="48" dest="app/src/main/res/drawable-mdpi/icon.png"/>
 		<appIcon width="72" height="72" dest="app/src/main/res/drawable-hdpi/icon.png"/>
 		<appIcon width="96" height="96" dest="app/src/main/res/drawable-xhdpi/icon.png"/>
+		<appIcon width="96" height="96" dest="app/src/main/res/drawable/icon.png"/>
 		<appIcon width="144" height="144" dest="app/src/main/res/drawable-xxhdpi/icon.png"/>
 		<appIcon width="192" height="192" dest="app/src/main/res/drawable-xxxhdpi/icon.png"/>
+		<tvIcon width="732" height="412" dest="app/src/main/res/drawable-xhdpi/ouya_icon.png"/>
+		<tvIcon width="320" height="180" alpha="0" dest="app/src/main/res/drawable/banner.png"/>
 		<if condition="[[[not:[[[band:[[[project.orientation]]]:1]]]]]]">
 			<splashVertical width="200" height="320" dest="app/src/main/res/drawable-ldpi/splash.png"/>
 			<splashVertical width="320" height="480" dest="app/src/main/res/drawable-mdpi/splash.png"/>
@@ -93,10 +126,10 @@
 			<splashHorizontal width="1920" height="1280" dest="app/src/main/res/drawable-xxxhdpi/splash.png"/>
 		</if>
 		<applyPlugins/>
-		<set key="local.gradleCmd" value="gradlew"/>
-		<if condition="[[[eq:[[[sys.exeExtension]]]:.exe]]]">
-			<set key="local.gradleCmd" value="&quot;cmd.exe&quot; /c gradlew.bat"/>
-		</if>
+		<set key="local.gradleCmd" value="&quot;cmd.exe&quot; /c gradlew.bat"/>
+        <if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
+            <set key="local.gradleCmd" value="bash gradlew"/>
+        </if>
 		<exec>
 			<env key="JAVA_HOME" value="[[[export.javaPath]]]"/>
 			<env key="ANDROID_HOME" value="[[[export.androidPath]]]"/>

@@ -1,4 +1,5 @@
 QT += core gui opengl network multimedia
+CONFIG   += silent
 
 INCLUDEPATH += \
     "../libgid/external/zlib-1.2.8"\

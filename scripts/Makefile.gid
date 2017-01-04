@@ -24,7 +24,7 @@ CXX=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/g++
 
 ifeq ($(OS),Windows_NT)
 RELEASE=$(ROOT)/Build.Win
-all: qtapp.install android.install winrt.install #win32.install 
+all: qtapp.install android.install winrt.install html5.install #win32.install 
 
 clean: qtapp.clean android.clean win32.clean winrt.clean
 	rm -rf $(RELEASE)
@@ -67,6 +67,7 @@ include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtWin.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWin32.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidAndroid.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWinRT.mk
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidHtml5.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidPkg.mk
 else
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtMac.mk

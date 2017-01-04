@@ -145,7 +145,7 @@ void Font::constructor(const char *glympfile, const char *imagefile, bool filter
     }
 }
 
-void Font::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, bool hasSample, float miny) const
+void Font::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny)
 {
     int size = 0;
     for (const wchar32_t *t = text; *t; ++t, ++size)
@@ -169,7 +169,7 @@ void Font::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, 
 	graphicsBase->texcoords.Update();
 	graphicsBase->indices.Update();
 
-    float x = 0, y = -miny;
+    float x = -minx/sizescalex_, y = -miny/sizescaley_;
 
     if (hasSample) {
         std::map<wchar32_t, TextureGlyph>::const_iterator iter = fontInfo_.textureGlyphs.find(text[0]);
@@ -453,7 +453,7 @@ Font::~Font()
         application_->getTextureManager()->destroyTexture(data_);
 }
 
-void Font::getBounds(const char *text, float letterSpacing, float *pminx, float *pminy, float *pmaxx, float *pmaxy) const
+void Font::getBounds(const char *text, float letterSpacing, float *pminx, float *pminy, float *pmaxx, float *pmaxy)
 {
     float minx = 1e30;
     float miny = 1e30;
@@ -517,7 +517,7 @@ void Font::getBounds(const char *text, float letterSpacing, float *pminx, float 
         *pmaxy = maxy;
 }
 
-float Font::getAdvanceX(const char *text, float letterSpacing, int size) const
+float Font::getAdvanceX(const char *text, float letterSpacing, int size)
 {
     std::vector<wchar32_t> wtext;
     size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
@@ -563,12 +563,12 @@ int Font::kerning(wchar32_t left, wchar32_t right) const
     return (iter != fontInfo_.kernings.end()) ? iter->second : 0;
 }
 
-float Font::getAscender() const
+float Font::getAscender()
 {
     return fontInfo_.ascender * sizescaley_;
 }
 
-float Font::getLineHeight() const
+float Font::getLineHeight()
 {
     return fontInfo_.height * sizescaley_;
 }

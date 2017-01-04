@@ -2,6 +2,7 @@ QT +=
 
 TARGET = gvfs
 TEMPLATE = lib
+CONFIG   += silent
 
 DEFINES += GIDEROS_LIBRARY
 

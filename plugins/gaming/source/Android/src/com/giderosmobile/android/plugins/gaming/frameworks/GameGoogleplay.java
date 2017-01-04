@@ -1,16 +1,15 @@
 package com.giderosmobile.android.plugins.gaming.frameworks;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.giderosmobile.android.plugins.gaming.*;
 import com.giderosmobile.android.plugins.gaming.frameworks.googleplay.GameHelper;
 import com.giderosmobile.android.plugins.gaming.frameworks.googleplay.GameHelper.GameHelperListener;
-import com.google.android.gms.appstate.AppStateManager;
-import com.google.android.gms.appstate.AppStateManager.StateDeletedResult;
-import com.google.android.gms.appstate.AppStateManager.StateResult;
-import com.google.android.gms.appstate.AppStateStatusCodes;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
@@ -23,16 +22,23 @@ import com.google.android.gms.games.leaderboard.LeaderboardScore;
 import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 import com.google.android.gms.games.leaderboard.Leaderboards.LoadScoresResult;
+import com.google.android.gms.games.snapshot.Snapshot;
+import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
+import com.google.android.gms.games.snapshot.Snapshots.CommitSnapshotResult;
+import com.google.android.gms.games.snapshot.Snapshots.DeleteSnapshotResult;
+import com.google.android.gms.games.snapshot.Snapshots.OpenSnapshotResult;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.SparseArray;
 
+import static com.google.android.gms.games.Games.Snapshots;
+
 public class GameGoogleplay implements GameInterface, GameHelperListener {
 	private static WeakReference<Activity> sActivity;
 	protected static GameHelper mHelper;
-	protected static int mRequestedClients = GameHelper.CLIENT_APPSTATE|GameHelper.CLIENT_GAMES|GameHelper.CLIENT_PLUS;
+	protected static int mRequestedClients = GameHelper.CLIENT_DRIVE|GameHelper.CLIENT_GAMES|GameHelper.CLIENT_PLUS;
 	final static int RC_UNUSED = 9002;
 	boolean signed = false;
 	GameGoogleplay me;
@@ -333,53 +339,67 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 			Game.loadScoresError(this, id, Game.LIBRARY_NOT_FOUND);
 		}
 	}
-	
+
+	Map<Integer,Snapshot> snapShots=new HashMap<Integer,Snapshot>();
 	@Override
 	public void loadState(final int key) {
 		if (mHelper != null && mHelper.isSignedIn()) {
-    		PendingResult<StateResult> result = AppStateManager.load(mHelper.getApiClient(), key);
-    		ResultCallback<StateResult> mResultCallback = new
-		            ResultCallback<StateResult>() {
+    		PendingResult<OpenSnapshotResult> result = Snapshots.open(mHelper.getApiClient(), ""+key,true);
+    		ResultCallback<OpenSnapshotResult> mResultCallback = new
+		            ResultCallback<OpenSnapshotResult>() {
 		        @Override
-		        public void onResult(StateResult result) {
+		        public void onResult(OpenSnapshotResult result) {
+
 		        	int statusCode = result.getStatus().getStatusCode();
 		        	int stateKey = key;
-		        	result.getLoadedResult();
-		        	if (statusCode == AppStateStatusCodes.STATUS_OK || statusCode == AppStateStatusCodes.STATUS_NETWORK_ERROR_STALE_DATA) {
-		        		
-		        		AppStateManager.StateConflictResult conflictResult = result.getConflictResult();
-		                AppStateManager.StateLoadedResult loadedResult = result.getLoadedResult();
-		                if (loadedResult != null) {
-		    				Game.stateLoaded(this, stateKey, loadedResult.getLocalData(), 1);
-		                } else if (conflictResult != null) {
-		                	Game.stateConflict(this, stateKey, conflictResult.getResolvedVersion(), conflictResult.getLocalData(), conflictResult.getServerData());
-		                }
+		        	if (statusCode == GamesStatusCodes.STATUS_OK || statusCode == GamesStatusCodes.STATUS_SNAPSHOT_CONTENTS_UNAVAILABLE
+							|| statusCode ==GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT) {
+						snapShots.put(stateKey,result.getSnapshot());
+		        		if (statusCode ==GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT)
+						{
+							try {
+								Game.stateConflict(this, stateKey,
+										result.getConflictId(),
+										result.getConflictingSnapshot().getSnapshotContents().readFully(),
+										result.getSnapshot().getSnapshotContents().readFully());
+							} catch (IOException e) {
+								Game.stateError(this, stateKey, "error while loading state");
+							}
+						}
+						else
+						{
+							try {
+								Game.stateLoaded(this, stateKey, result.getSnapshot().getSnapshotContents().readFully(),1);
+							} catch (IOException e) {
+								Game.stateError(this, stateKey, "error while loading state");
+							}
+						}
 		    		} else {
 
 	    				String error = "unknown error";
-	    				if(statusCode == AppStateStatusCodes.STATUS_CLIENT_RECONNECT_REQUIRED)
+	    				if(statusCode == GamesStatusCodes.STATUS_CLIENT_RECONNECT_REQUIRED)
 	    				{
 	    					error = "need to reconnect client";
 	    				}
-	    				else if(statusCode == AppStateStatusCodes.STATUS_NETWORK_ERROR_OPERATION_FAILED)
+	    				else if(statusCode == GamesStatusCodes.STATUS_NETWORK_ERROR_OPERATION_FAILED)
 	    				{
 	    					error = "could not connect server";
 	    				}
-	    				else if(statusCode == AppStateStatusCodes.STATUS_NETWORK_ERROR_NO_DATA)
+	    				else if(statusCode == GamesStatusCodes.STATUS_NETWORK_ERROR_NO_DATA)
 	    				{
 	    					error = "could not connect server";
 	    				}
-	    				else if(statusCode == AppStateStatusCodes.STATUS_STATE_KEY_NOT_FOUND)
+	    				else if(statusCode == GamesStatusCodes.STATUS_SNAPSHOT_NOT_FOUND)
 	    				{
 	    					error = "no data";
 	    				}
-	    				else if(statusCode == AppStateStatusCodes.STATUS_STATE_KEY_LIMIT_EXCEEDED)
+	    				else if(statusCode == GamesStatusCodes.STATUS_SNAPSHOT_CREATION_FAILED)
 	    				{
-	    					error = "key limit exceeded";
+	    					error = "creation failed";
 	    				}
-	    				else if(statusCode == AppStateStatusCodes.STATUS_WRITE_SIZE_EXCEEDED)
+	    				else if(statusCode == GamesStatusCodes.STATUS_INTERNAL_ERROR)
 	    				{
-	    					error = "too much data passed";
+	    					error = "internal error";
 	    				}
 	    				Game.stateError(this, stateKey, error);
 	    			}
@@ -394,58 +414,56 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 	@Override
 	public void updateState(final int key, byte[] state, int immediate) {
 		if (mHelper != null && mHelper.isSignedIn()) {
-    		if(immediate == 1)
-    		{
-    			PendingResult<StateResult> result = AppStateManager.updateImmediate(mHelper.getApiClient(), key, state);
-    			ResultCallback<StateResult> mResultCallback = new
-    		            ResultCallback<StateResult>() {
+				Snapshot s=snapShots.get(key);
+				if (s==null) {
+					loadState(key);
+					s=snapShots.get(key);
+					if (s==null) return;
+				}
+				s.getSnapshotContents().writeBytes(state);
+				SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder().build();
+			    PendingResult<CommitSnapshotResult> result = Snapshots.commitAndClose(mHelper.getApiClient(),s,metadataChange);
+				snapShots.remove(key);
+
+    			ResultCallback<CommitSnapshotResult> mResultCallback = new
+    		            ResultCallback<CommitSnapshotResult>() {
     		        @Override
-    		        public void onResult(StateResult result) {
+    		        public void onResult(CommitSnapshotResult result) {
     		        	int statusCode = result.getStatus().getStatusCode();
     		        	int stateKey = key;
-    		        	result.getLoadedResult();
-    		        	if (statusCode == AppStateStatusCodes.STATUS_OK || statusCode == AppStateStatusCodes.STATUS_NETWORK_ERROR_STALE_DATA) {
-    		        		
-    		        		AppStateManager.StateConflictResult conflictResult = result.getConflictResult();
-    		                if (conflictResult != null) {
-    		                	Game.stateConflict(this, stateKey, conflictResult.getResolvedVersion(), conflictResult.getLocalData(), conflictResult.getServerData());
-    		                }
+    		        	if (statusCode == GamesStatusCodes.STATUS_OK || statusCode == GamesStatusCodes.STATUS_SNAPSHOT_CONFLICT) {
+							//Conflicts will be dealt with on next 'load'
     		    		} else {
    		    				String error = "unknown error";
-   		    				if(statusCode == AppStateStatusCodes.STATUS_CLIENT_RECONNECT_REQUIRED)
+   		    				if(statusCode == GamesStatusCodes.STATUS_CLIENT_RECONNECT_REQUIRED)
    		    				{
    		    					error = "need to reconnect client";
    		    				}
-   		    				else if(statusCode == AppStateStatusCodes.STATUS_NETWORK_ERROR_OPERATION_FAILED)
+   		    				else if(statusCode == GamesStatusCodes.STATUS_NETWORK_ERROR_OPERATION_FAILED)
    		    				{
    		    					error = "could not connect server";
    		    				}
-   		    				else if(statusCode == AppStateStatusCodes.STATUS_NETWORK_ERROR_NO_DATA)
+   		    				else if(statusCode == GamesStatusCodes.STATUS_NETWORK_ERROR_NO_DATA)
    		    				{
    		    					error = "could not connect server";
    		    				}
-   		    				else if(statusCode == AppStateStatusCodes.STATUS_STATE_KEY_NOT_FOUND)
+   		    				else if(statusCode == GamesStatusCodes.STATUS_SNAPSHOT_NOT_FOUND)
    		    				{
    		    					error = "no data";
    		    				}
-   		    				else if(statusCode == AppStateStatusCodes.STATUS_STATE_KEY_LIMIT_EXCEEDED)
+   		    				else if(statusCode == GamesStatusCodes.STATUS_INTERNAL_ERROR)
    		    				{
-   		    					error = "key limit exceeded";
+   		    					error = "internal error";
    		    				}
-   		    				else if(statusCode == AppStateStatusCodes.STATUS_WRITE_SIZE_EXCEEDED)
+   		    				else if(statusCode == GamesStatusCodes.STATUS_SNAPSHOT_COMMIT_FAILED)
    		    				{
-   		    					error = "too much data passed";
+   		    					error = "commit failed";
    		    				}
    		    				Game.stateError(this, stateKey, error);
     		    		}
     		        }
     		    };
     			result.setResultCallback(mResultCallback);
-    		}
-    		else
-    		{
-    			AppStateManager.update(mHelper.getApiClient(), key, state);
-    		}
     	}
 		else
     		Game.stateError(this, key, Game.NOT_LOG_IN);
@@ -454,34 +472,53 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 	@Override
 	public void resolveState(int key, String version, byte[] state) {
 		if (mHelper != null && mHelper.isSignedIn()) {
-    		AppStateManager.resolve(mHelper.getApiClient(),key, version, state);
+			Snapshot s=snapShots.get(key);
+			if (s==null) {
+				loadState(key);
+				s=snapShots.get(key);
+				if (s==null) return;
+			}
+			s.getSnapshotContents().writeBytes(state);
+			Games.Snapshots.resolveConflict(mHelper.getApiClient(), version, s);
+			snapShots.remove(key);
     	}
 	}
 
 	@Override
 	public void deleteState(final int key) {
 		if (mHelper != null && mHelper.isSignedIn()) {
-    		PendingResult<StateDeletedResult> result = AppStateManager.delete(mHelper.getApiClient(), key);
-    		ResultCallback<StateDeletedResult> mResultCallback = new
-		            ResultCallback<StateDeletedResult>() {
+			Snapshot s=snapShots.get(key);
+			if (s==null) {
+				loadState(key);
+				s=snapShots.get(key);
+				if (s==null) return;
+			}
+    		PendingResult<DeleteSnapshotResult> result = Snapshots.delete(mHelper.getApiClient(), s.getMetadata());
+			snapShots.remove(key);
+    		ResultCallback<DeleteSnapshotResult> mResultCallback = new
+		            ResultCallback<DeleteSnapshotResult>() {
 		        @Override
-		        public void onResult(StateDeletedResult result) {
+		        public void onResult(DeleteSnapshotResult result) {
 		        	int statusCode = result.getStatus().getStatusCode();
 		        	int stateKey = key;
-		        	if (statusCode == AppStateStatusCodes.STATUS_OK) {
+		        	if (statusCode == GamesStatusCodes.STATUS_OK || statusCode == GamesStatusCodes.STATUS_SNAPSHOT_NOT_FOUND) {
 		        		Game.stateDeleted(this, stateKey);
 		    		}
 		    		else
 		    		{
 		    			String error = "unknown error";
-		    			if(statusCode == AppStateStatusCodes.STATUS_CLIENT_RECONNECT_REQUIRED)
+		    			if(statusCode == GamesStatusCodes.STATUS_CLIENT_RECONNECT_REQUIRED)
 		    			{
 		    				error = "need to reconnect client";
 		    			}
-		    			else if(statusCode == AppStateStatusCodes.STATUS_NETWORK_ERROR_OPERATION_FAILED)
+		    			else if(statusCode == GamesStatusCodes.STATUS_NETWORK_ERROR_OPERATION_FAILED)
 		    			{
 		    				error = "could not connect server";
 		    			}
+						else if(statusCode == GamesStatusCodes.STATUS_INTERNAL_ERROR)
+						{
+							error = "internal error";
+						}
 		    			Game.stateError(this, stateKey, error);
 		    		}
 		        }
@@ -493,7 +530,7 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 	}
 	
 	private boolean isAvailable(){
-    	int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(sActivity.get());
+    	int result = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(sActivity.get());
     	if(result == ConnectionResult.SUCCESS)
     	{
     		return true;

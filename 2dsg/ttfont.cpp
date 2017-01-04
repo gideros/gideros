@@ -72,8 +72,12 @@ void TTFont::constructor(const char *filename, float size, bool smoothing)
     if (FT_Open_Face(FT_Library_Singleton::instance(), &args, 0, &face_))
         throw GiderosException(GStatus(6012, filename));		// Error #6012: %s: Error while reading font file.
 
+    float scalex = application_->getLogicalScaleX();
+    float scaley = application_->getLogicalScaleY();
+
     const int RESOLUTION = 72;
-    if (FT_Set_Char_Size(face_, 0L, (int)floor(size * 64 + 0.5f), RESOLUTION, RESOLUTION))
+
+    if (FT_Set_Char_Size(face_, 0L, (int)floor(size * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f)))
     {
         FT_Done_Face(face_);
         face_ = NULL;
@@ -83,7 +87,33 @@ void TTFont::constructor(const char *filename, float size, bool smoothing)
     ascender_ = face_->size->metrics.ascender >> 6;
     height_ = face_->size->metrics.height >> 6;
 
+    currentLogicalScaleX_=scalex;
+    currentLogicalScaleX_=scaley;
+    defaultSize_=size;
+
     smoothing_ = smoothing;
+}
+
+void TTFont::checkLogicalScale()
+{
+    float scalex = application_->getLogicalScaleX();
+    float scaley = application_->getLogicalScaleY();
+
+    if ((scalex!=currentLogicalScaleX_)||(scaley!=currentLogicalScaleY_))
+    {
+        for(std::map<wchar32_t,GlyphData>::iterator it = glyphCache_.begin(); it != glyphCache_.end(); it++) {
+            free(it->second.bitmap);
+        }
+        glyphCache_.clear();
+        const int RESOLUTION = 72;
+        if (!FT_Set_Char_Size(face_, 0L, (int)floor(defaultSize_ * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f)))
+        {
+            currentLogicalScaleX_=scalex;
+            currentLogicalScaleX_=scaley;
+            ascender_ = face_->size->metrics.ascender >> 6;
+            height_ = face_->size->metrics.height >> 6;
+        }
+    }
 }
 
 TTFont::~TTFont()
@@ -95,11 +125,12 @@ TTFont::~TTFont()
     }
 }
 
-void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy) const
+void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy)
 {
-    float scalex = application_->getLogicalScaleX();
+	float scalex = application_->getLogicalScaleX();
+	checkLogicalScale();
 
-    int minx = 0x7fffffff;
+	int minx = 0x7fffffff;
     int miny = 0x7fffffff;
     int maxx = -0x7fffffff;
     int maxy = -0x7fffffff;
@@ -173,7 +204,8 @@ void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx, i
 
 Dib TTFont::renderFont(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy)
 {
-    float scalex = application_->getLogicalScaleX();
+	float scalex = application_->getLogicalScaleX();
+	checkLogicalScale();
 
     int minx, miny, maxx, maxy;
     getBounds(text, letterSpacing, &minx, &miny, &maxx, &maxy);
@@ -277,7 +309,7 @@ Dib TTFont::renderFont(const wchar32_t *text, float letterSpacing, int *pminx, i
     return dib;
 }
 
-void TTFont::getBounds(const char *text, float letterSpacing, float *pminx, float *pminy, float *pmaxx, float *pmaxy) const
+void TTFont::getBounds(const char *text, float letterSpacing, float *pminx, float *pminy, float *pmaxx, float *pmaxy)
 {
     std::vector<wchar32_t> wtext;
     size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
@@ -295,18 +327,19 @@ void TTFont::getBounds(const char *text, float letterSpacing, float *pminx, floa
     float scaley = application_->getLogicalScaleY();
 
     if (pminx)
-        *pminx = minx / scalex;
+        *pminx = minx/scalex;
     if (pminy)
-        *pminy = miny / scaley;
+        *pminy = miny/scaley;
     if (pmaxx)
-        *pmaxx = maxx / scalex;
+        *pmaxx = maxx/scalex;
     if (pmaxy)
-        *pmaxy = maxy / scaley;
+        *pmaxy = maxy/scaley;
 }
 
-float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) const
+float TTFont::getAdvanceX(const char *text, float letterSpacing, int size)
 {
     float scalex = application_->getLogicalScaleX();
+	checkLogicalScale();
 
     std::vector<wchar32_t> wtext;
     size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
@@ -342,7 +375,7 @@ float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) const
 
     x += kerning(prev, FT_Get_Char_Index(face_, text[size])) >> 6;
 
-    return x / scalex;
+    return x/scalex;
 }
 
 int TTFont::kerning(FT_UInt left, FT_UInt right) const
@@ -357,14 +390,16 @@ int TTFont::kerning(FT_UInt left, FT_UInt right) const
     return 0;
 }
 
-float TTFont::getAscender() const
+float TTFont::getAscender()
 {
     float scaley = application_->getLogicalScaleY();
-    return ascender_ / scaley;
+	checkLogicalScale();
+    return ascender_/scaley;
 }
 
-float TTFont::getLineHeight() const
+float TTFont::getLineHeight()
 {
     float scaley = application_->getLogicalScaleY();
-    return height_ / scaley;
+	checkLogicalScale();
+    return height_/scaley;
 }

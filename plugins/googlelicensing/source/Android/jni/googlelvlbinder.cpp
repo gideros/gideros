@@ -7,6 +7,8 @@
 #define abs_index(L, i) ((i) > 0 || (i) <= LUA_REGISTRYINDEX ? (i) : lua_gettop(L) + (i) + 1)
 #endif
 
+static lua_State *L = NULL;
+
 static void luaL_newweaktable(lua_State *L, const char *mode)
 {
 	lua_newtable(L);			// create table for instance list
@@ -45,7 +47,7 @@ static char keyWeak = ' ';
 class GoogleLVL : public GEventDispatcherProxy
 {
 public:
-    GoogleLVL(lua_State *L) : L(L)
+    GoogleLVL(lua_State *L)
     {
         ggooglelvl_init();
 		ggooglelvl_addCallback(callback_s, this);		
@@ -173,7 +175,6 @@ private:
 	}
 
 private:
-    lua_State *L;
     bool initialized_;
 };
 
@@ -281,6 +282,7 @@ static int loader(lua_State *L)
     
 static void g_initializePlugin(lua_State *L)
 {
+	::L = L;
     lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
 	
@@ -292,7 +294,7 @@ static void g_initializePlugin(lua_State *L)
 
 static void g_deinitializePlugin(lua_State *L)
 {
-    
+    ::L = NULL;
 }
 
 REGISTER_PLUGIN("Google Licensing", "1.0")

@@ -6,9 +6,11 @@
  */
 
 #include "ExportXml.h"
+#include "ExportLua.h"
 #include "Utilities.h"
 #include "ExportCommon.h"
 #include <QStandardPaths>
+#include <QFileInfo>
 
 #ifdef Q_OS_MACX
 #define ALL_PLUGINS_PATH "../../All Plugins"
@@ -41,7 +43,9 @@ bool ExportXml::Process(ExportContext *ctx) {
 #endif
 	props["sys.cacheDir"] = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 	props["sys.giderosDir"] = QDir::currentPath();
+	props["sys.homeDir"] = QDir::homePath();
     props["sys.exportDir"] = ctx->exportDir.absolutePath();
+	props["sys.exportType"]=QString(ctx->player?"player":(ctx->assetsOnly?"assets":"full"));
 	QDomElement rules;
 	QDir xmlDir=QFileInfo(xmlFile).dir();
 	if (isPlugin) {
@@ -84,8 +88,11 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["project.namews"] = ctx->basews;
 	props["project.package"] = ctx->properties.packageName;
 	props["project.version"] = ctx->properties.version;
+	props["project.app_name"] = ctx->appName;
 	props["project.version_code"] = QString::number(
 			ctx->properties.version_code);
+	props["project.build_number"] = QString::number(
+			ctx->properties.build_number);
 	props["project.autorotation"] = QString::number(
 			ctx->properties.autorotation);
 	props["project.orientation"] = QString::number(ctx->properties.orientation);
@@ -181,6 +188,14 @@ QMap<QString, QString> ExportXml::availablePlugins() {
 	return xmlPlugins;
 }
 
+bool ExportXml::ProcessRuleString(const char *xml)
+{
+	QString input(xml);
+	QDomDocument xmlDoc;
+	xmlDoc.setContent(input);
+	return ProcessRule(xmlDoc.firstChild().toElement());
+}
+
 bool ExportXml::ProcessRule(QDomElement rule) {
 	QString ruleName = rule.tagName();
 	if (ruleName == "exec")
@@ -210,6 +225,10 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 		return ExportCommon::download(ctx,
                 ReplaceAttributes(rule.attribute("source")).trimmed(),
 				ReplaceAttributes(rule.attribute("dest")).trimmed());
+	else if (ruleName == "unzip")
+		return ExportCommon::unzip(ctx,
+                ReplaceAttributes(rule.attribute("source")).trimmed(),
+				ReplaceAttributes(rule.attribute("dest")).trimmed());
 	else if (ruleName == "template")
 		return RuleTemplate(rule.attribute("name"),
                 ReplaceAttributes(rule.attribute("path")).trimmed(), ReplaceAttributes(rule.attribute("dest")).trimmed(), rule);
@@ -234,25 +253,37 @@ bool ExportXml::ProcessRule(QDomElement rule) {
     } else if (ruleName == "appIcon"){
         return RuleImage(rule.attribute("width").toInt(),
 				rule.attribute("height").toInt(),
-                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_appIcon);
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_appIcon,rule.attribute("alpha","1").toInt());
     } else if (ruleName == "tvIcon"){
         return RuleImage(rule.attribute("width").toInt(),
                 rule.attribute("height").toInt(),
-                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_tvIcon);
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_tvIcon,rule.attribute("alpha","1").toInt());
     }
     else if (ruleName == "splashVertical"){
         return RuleImage(rule.attribute("width").toInt(),
                 rule.attribute("height").toInt(),
-                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashVertical);
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashVertical,rule.attribute("alpha","1").toInt());
     }
     else if (ruleName == "splashHorizontal"){
         return RuleImage(rule.attribute("width").toInt(),
                 rule.attribute("height").toInt(),
-                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashHorizontal);
+                ReplaceAttributes(rule.attribute("dest")).trimmed(), e_splashHorizontal,rule.attribute("alpha","1").toInt());
+    }
+    else if (ruleName == "lua"){
+	    return RuleLua(ReplaceAttributes(rule.attribute("file")).trimmed(),
+	        		rule.text().trimmed());
     }
 	else
 		ExportCommon::exportError("Rule %s unknown\n", ruleName.toStdString().c_str());
 	return false;
+}
+
+bool ExportXml::RuleLua(QString file,QString content)
+{
+	if (file.isEmpty())
+		return ExportLUA_CallCode(ctx,this,content.toStdString().c_str());
+	else
+		return ExportLUA_CallFile(ctx,this,file.toStdString().c_str());
 }
 
 QString ExportXml::ComputeUnary(QString op, QString arg) {
@@ -260,6 +291,11 @@ QString ExportXml::ComputeUnary(QString op, QString arg) {
 		return QString::number(~arg.toInt());
 	else if (op == "not")
 		return QString::number(!arg.toInt());
+	else if (op == "exists")
+	{
+		QFileInfo check_file(arg);
+		return check_file.exists()?"1":"0";
+	}
 	ExportCommon::exportError("Operator '%s' unknown\n", op.toStdString().c_str());
 	return "";
 }
@@ -482,16 +518,16 @@ bool ExportXml::RuleTemplate(QString name, QString path, QString dest, QDomEleme
 	return true;
 }
 
-bool ExportXml::RuleImage(int width, int height, QString dst, ImageTypes type) {
+bool ExportXml::RuleImage(int width, int height, QString dst, ImageTypes type, bool alpha) {
 	ExportCommon::exportInfo("Image(Type %d): %dx%d %s\n", type, width, height,
 			dst.toStdString().c_str());
     if(type == e_appIcon)
-        return ExportCommon::appIcon(ctx, width, height, dst);
+        return ExportCommon::appIcon(ctx, width, height, dst,alpha);
     else if(type == e_tvIcon)
-        return ExportCommon::tvIcon(ctx, width, height, dst);
+        return ExportCommon::tvIcon(ctx, width, height, dst,alpha);
     else if(type == e_splashVertical)
-        return ExportCommon::splashVImage(ctx, width, height, dst);
+        return ExportCommon::splashVImage(ctx, width, height, dst,alpha);
     else if(type == e_splashHorizontal)
-        return ExportCommon::splashHImage(ctx, width, height, dst);
+        return ExportCommon::splashHImage(ctx, width, height, dst,alpha);
     return false;
 }

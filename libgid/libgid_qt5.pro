@@ -8,6 +8,7 @@ QT += opengl network
 
 TARGET = gid
 TEMPLATE = lib
+CONFIG   += silent
 
 DEFINES += GIDEROS_LIBRARY
 

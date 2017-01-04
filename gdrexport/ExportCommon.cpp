@@ -14,8 +14,11 @@
 #include <stdarg.h>
 #include <QProcess>
 #include <QImage>
+#include <QPainter>
 #include <QCoreApplication>
 #include "filedownloader.h"
+#include "cendian.h"
+#include <zlib.h>
 
 static QString quote(const QString &str) {
 	return "\"" + str + "\"";
@@ -61,47 +64,52 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest,
 }
 
 void ExportCommon::resizeImage(QImage *image, int width, int height,
-		QString output, int quality) {
+		QString output, int quality,bool withAlpha, QColor fill) {
 	int iwidth = image->width(); //image width
 	int iheight = image->height(); //image height
 	int rwidth = width; //resampled width
 	int rheight = height; //resampled height
 
-	float k_w = fabs(1 - (float) width / (float) iwidth); //width scaling coef
-	float k_h = fabs(1 - (float) height / (float) iheight); //height scaling koef
+	float k_w = fabs((float) width / (float) iwidth); //width scaling coef
+	float k_h = fabs((float) height / (float) iheight); //height scaling coef
 	int dst_x = 0;
 	int dst_y = 0;
 
-	if (iwidth < width && iheight >= height) {
-		rheight = round((iheight * width) / iwidth);
-	} else if (iwidth >= width && iheight < height) {
+	//use smallest
+	if (k_h < k_w) {
 		rwidth = round((iwidth * height) / iheight);
 	} else {
-		//use smallest
-		if (k_h < k_w) {
-			rwidth = round((iwidth * height) / iheight);
-		} else {
-			rheight = round((iheight * width) / iwidth);
-		}
+		rheight = round((iheight * width) / iwidth);
 	}
 
 	//new width is bigger than existing
-	if (rwidth > width) {
-		dst_x = (rwidth - width) / 2;
+	if (width > rwidth) {
+		dst_x = (width - rwidth) / 2;
 	}
 
 	//new height is bigger than existing
-	if (rheight > height) {
-		dst_y = (rheight - height) / 2;
+	if (height > rheight) {
+		dst_y = (height - rheight) / 2;
 	}
 
-	image->scaled(rwidth, rheight, Qt::KeepAspectRatio,
-			Qt::SmoothTransformation).copy(dst_x, dst_y, width, height).save(
-			output, "png", quality);
+	QImage xform=image->scaled(rwidth, rheight, Qt::KeepAspectRatio,
+			Qt::SmoothTransformation);
+	if (dst_x || dst_y)
+	{
+		QImage larger(width,height,QImage::Format_ARGB32);
+		larger.fill(fill);
+		QPainter painter(&larger);
+		painter.drawImage(dst_x,dst_y, xform);
+		painter.end();
+		xform=larger;
+	}
+	if (!withAlpha)
+		xform=xform.convertToFormat(QImage::Format_RGB888);
+	xform.save(output, "png", -1); //Use default compression for PNG, not quality
 }
 
 bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
-		QString output) {
+		QString output, bool withAlpha) {
 	if (ctx->appicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.app_icon.isEmpty())
@@ -125,12 +133,12 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
 		return false;
 	exportInfo("Generating app icon (%dx%d)\n", width, height);
 	resizeImage(ctx->appicon, width, height,
-			ctx->outputDir.absoluteFilePath(output), 100);
+			ctx->outputDir.absoluteFilePath(output), 100, withAlpha);
 	return true;
 }
 
 bool ExportCommon::tvIcon(ExportContext *ctx, int width, int height,
-		QString output) {
+		QString output, bool withAlpha) {
 	if (ctx->tvicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.tv_icon.isEmpty())
@@ -154,12 +162,12 @@ bool ExportCommon::tvIcon(ExportContext *ctx, int width, int height,
 		return false;
 	exportInfo("Generating TV icon (%dx%d)\n", width, height);
 	resizeImage(ctx->tvicon, width, height,
-			ctx->outputDir.absoluteFilePath(output), 100);
+			ctx->outputDir.absoluteFilePath(output), 100, withAlpha);
 	return true;
 }
 
 bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height,
-		QString output) {
+		QString output, bool withAlpha) {
 	if (ctx->splash_h_image == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.splash_h_image.isEmpty())
@@ -182,13 +190,14 @@ bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height,
 	if (ctx->splash_h_image->isNull())
 		return false;
 	exportInfo("Generating splash horizontal (%dx%d)\n", width, height);
+
 	resizeImage(ctx->splash_h_image, width, height,
-			ctx->outputDir.absoluteFilePath(output), -1);
+			ctx->outputDir.absoluteFilePath(output), -1, withAlpha,QColor(ctx->properties.backgroundColor));
 	return true;
 }
 
 bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
-		QString output) {
+		QString output, bool withAlpha) {
 	if (ctx->splash_v_image == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.splash_v_image.isEmpty())
@@ -212,7 +221,7 @@ bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
 		return false;
 	exportInfo("Generating splash vertical (%dx%d)\n", width, height);
 	resizeImage(ctx->splash_v_image, width, height,
-			ctx->outputDir.absoluteFilePath(output), -1);
+			ctx->outputDir.absoluteFilePath(output), -1, withAlpha,QColor(ctx->properties.backgroundColor));
 	return true;
 }
 
@@ -314,7 +323,11 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 					ctx->allfiles_abs[i].toUtf8().constData());
 			QString filename = ctx->allfiles_abs[i];
 			QString ext = QFileInfo(ctx->allfiles[i]).suffix().toLower();
-			exportInfo("Encrypting %s [%s]\n", filename.toUtf8().constData(),
+			bool encrypt =
+					(ext == "lua") ? ctx->encryptCode : ctx->encryptAssets;
+			if (!encrypt)
+				continue;
+			exportInfo("Encrypting %s [%s]\n",filename.toUtf8().constData(),
 					ext.toUtf8().constData());
 			if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg"
 					&& ext != "wav")
@@ -463,13 +476,48 @@ bool ExportCommon::download(ExportContext *ctx, QString url, QString to) {
 	QFileInfo fi = QFileInfo(filePath);
 	ctx->outputDir.mkpath(fi.dir().absolutePath());
 	QFile file(filePath);
-	if (file.exists())
-		return true;
-	if (file.open(QIODevice::WriteOnly)) {
-		exportInfo("Downloading %s\n", url.toStdString().c_str());
+	exportInfo("Checking %s\n", url.toStdString().c_str());
+	QUrl imageUrl(url);
 
-		QUrl imageUrl(url);
-		FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl);
+    quint64 size=0;
+    {
+        FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl,true);
+        
+        QEventLoop loop;
+        loop.connect(m_pImgCtrl, SIGNAL(downloaded()), &loop, SLOT(quit()));
+        loop.exec();
+        
+        size= m_pImgCtrl->fileSize();
+        
+        delete m_pImgCtrl;
+    }
+    
+	if (file.exists())
+	{
+		if (size==0)
+		{
+			exportInfo("Couldn't check file size for %s, assuming valid\n", url.toStdString().c_str());
+			return true; //Same file as far as we can tell
+		}
+
+		if (size==file.size()) {
+			exportInfo("File %s already in cache\n", url.toStdString().c_str());
+			return true; //Same file as far as we can tell
+		}
+	}
+    else
+    {
+        if (size==0)
+        {
+            exportError("Failed to determine file size for %s, aborting\n", url.toStdString().c_str());
+            return false;
+        }
+    }
+
+	if (file.open(QIODevice::WriteOnly)) {
+		exportInfo("Downloading %s (%lld bytes)\n", url.toStdString().c_str(),size);
+
+		FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl,false,size);
 
 		QEventLoop loop;
 		loop.connect(m_pImgCtrl, SIGNAL(downloaded()), &loop, SLOT(quit()));
@@ -488,6 +536,180 @@ bool ExportCommon::download(ExportContext *ctx, QString url, QString to) {
 		exportError("Can't open file %s\n", to.toStdString().c_str());
 	return false;
 }
+
+
+#define GZIP_CHUNK_SIZE 32 * 1024
+
+static bool gzInflate(QByteArray input, QByteArray &output)
+{
+    // Prepare output
+    output.clear();
+
+    // Is there something to do?
+    if(input.length() > 0)
+    {
+        // Prepare inflater status
+        z_stream strm;
+        strm.zalloc = Z_NULL;
+        strm.zfree = Z_NULL;
+        strm.opaque = Z_NULL;
+        strm.avail_in = 0;
+        strm.next_in = Z_NULL;
+
+        // Initialize inflater
+        int ret = inflateInit2(&strm, -15);
+
+        if (ret != Z_OK)
+            return(false);
+
+        // Extract pointer to input data
+        char *input_data = input.data();
+        int input_data_left = input.length();
+
+        // Decompress data until available
+        do {
+            // Determine current chunk size
+            int chunk_size = qMin(GZIP_CHUNK_SIZE, input_data_left);
+
+            // Check for termination
+            if(chunk_size <= 0)
+                break;
+
+            // Set inflater references
+            strm.next_in = (unsigned char*)input_data;
+            strm.avail_in = chunk_size;
+
+            // Update interval variables
+            input_data += chunk_size;
+            input_data_left -= chunk_size;
+
+            // Inflate chunk and cumulate output
+            do {
+
+                // Declare vars
+                char out[GZIP_CHUNK_SIZE];
+
+                // Set inflater references
+                strm.next_out = (unsigned char*)out;
+                strm.avail_out = GZIP_CHUNK_SIZE;
+
+                // Try to inflate chunk
+                ret = inflate(&strm, Z_NO_FLUSH);
+
+                switch (ret) {
+                case Z_NEED_DICT:
+                    ret = Z_DATA_ERROR;
+                case Z_DATA_ERROR:
+                case Z_MEM_ERROR:
+                case Z_STREAM_ERROR:
+                    // Clean-up
+                    inflateEnd(&strm);
+
+                    // Return
+                    return(false);
+                }
+
+                // Determine decompressed size
+                int have = (GZIP_CHUNK_SIZE - strm.avail_out);
+
+                // Cumulate result
+                if(have > 0)
+                    output.append((char*)out, have);
+
+            } while (strm.avail_out == 0);
+
+        } while (ret != Z_STREAM_END);
+
+        // Clean-up
+        inflateEnd(&strm);
+
+        // Return
+        return (ret == Z_STREAM_END);
+    }
+    else
+        return(true);
+}
+
+#define PACKED __attribute__((packed))
+bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
+	QDir toPath = QFileInfo(
+			QDir::cleanPath(ctx->outputDir.absoluteFilePath(dest))).dir();
+	QFile zfile(file);
+	if (!zfile.open(QIODevice::ReadOnly)) {
+		exportError("Can't open file %s\n", file.toStdString().c_str());
+		return false;
+	}
+
+	while (true) {
+		struct _ZipHdr {
+			quint32 Signature;//	local file header signature     4 bytes  (0x04034b50)
+#define ZIPHDR_SIG 0x04034b50
+			quint16 Version;	//	version needed to extract       2 bytes
+			quint16 Flags;	//	general purpose bit flag        2 bytes
+			quint16 Compression;	//	compression method              2 bytes
+			quint16 ModTime;	//	last mod file time              2 bytes
+			quint16 ModDate;	//	last mod file date              2 bytes
+			quint32 Crc32;	//	crc-32                          4 bytes
+			quint32 CompSize;	//	compressed size                 4 bytes
+			quint32 OrigSize;	//	uncompressed size               4 bytes
+			quint16 NameLen;	//  file name length                2 bytes
+			quint16 ExtraLen;//  extra field length              2 bytes
+		}PACKED Hdr;
+		if (zfile.read((char *) &Hdr, sizeof(Hdr)) != sizeof(Hdr))
+			break;
+		if (_letohl(Hdr.Signature) != ZIPHDR_SIG)
+			break;
+		if (_letohs(Hdr.Version) > 20) {
+			exportError("Unsupported ZIP version for %s [%d]\n",
+					file.toStdString().c_str(), _letohs(Hdr.Version));
+			return false;
+		}
+		if (Hdr.Flags != 0) {
+			exportError("Unsupported flags for %s [%04x]\n",
+					file.toStdString().c_str(), Hdr.Flags);
+			return false;
+		}
+		if ((Hdr.Compression > 0) && (_letohs(Hdr.Compression) != 8)) {
+			exportError("Unsupported compression method for %s [%d]\n",
+					file.toStdString().c_str(), _letohs(Hdr.Compression));
+			return false;
+		}
+		QByteArray fname = zfile.read(_letohs(Hdr.NameLen));
+		QString lname = QString(fname);
+		zfile.read(_letohs(Hdr.ExtraLen));
+		exportInfo("Extracting %s\n",lname.toStdString().c_str()); 
+		QByteArray fcont = zfile.read(
+				Hdr.Compression ? _letohl(Hdr.CompSize) : _letohl(Hdr.OrigSize));
+		if (Hdr.Compression) {
+			QByteArray decomp;
+			if (!gzInflate(fcont,decomp))
+			{
+				exportError("Failed to uncompress %s\n",
+						lname.toStdString().c_str());
+				break;
+			}
+			fcont = decomp;
+		}
+		if (lname.endsWith("/"))
+			ctx->outputDir.mkpath(toPath.absoluteFilePath(lname));
+		else {
+			QFile ofile(toPath.absoluteFilePath(lname));
+			if (ofile.open(QIODevice::WriteOnly))
+			{
+				ofile.write(fcont);
+				ofile.close();
+			}
+			else {
+				exportError("Can't open file %s\n",
+						lname.toStdString().c_str());
+				break;
+			}
+		}
+	}
+	zfile.close();
+	return true;
+}
+
 void ExportCommon::exportInfo(const char *fmt, ...) {
 	va_list va;
 	va_start(va, fmt);

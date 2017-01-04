@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui xml network
+CONFIG   += silent
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

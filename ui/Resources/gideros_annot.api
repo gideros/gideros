@@ -104,6 +104,7 @@ setBackgroundColor(color) Application - sets the background color in hexadecimal
 setFps(fps) Application - sets the frame rate of the application
 setFullScreen(fullscreen) Application - Full screen or window mode
 setKeepAwake(keepAwake) Application - enables/disables screen dimming and device sleeping
+setKeyboardVisibility(visible) Application
 setLogicalDimensions(width, height) Application - sets the logical dimensions of the application
 setOrientation(orientation) Application - sets the orientation of the application
 setScaleMode(scaleMode) Application - sets the automatic scale mode of the application
@@ -268,9 +269,13 @@ setMaxForce(force) b2.MouseJoint - sets the maximum force in N
 setTarget(x, y) b2.MouseJoint - updates the target point
 b2.ParticleSystem
 b2.particlesystem
+containsParticle(id) b2.ParticleSystem
 createParticle(particleDef) b2.ParticleSystem - create new particle
 createParticleGroup(particleGoupDef) b2.ParticleSystem - create group of particles
 destroyParticle(id) b2.ParticleSystem - destroy particle by id
+destroyParticles(ids) b2.ParticleSystem
+getParticleCount() b2.ParticleSystem
+getParticleGroupList() b2.ParticleSystem
 setTexture(texture) b2.ParticleSystem - set texture to particles
 b2.ParticleSystem.FLAG_COLOR_MIXING - value 256
 b2.ParticleSystem.FLAG_ELASTIC - value 16
@@ -442,6 +447,7 @@ Event.BANNER_ACTION_FINISHED - value "bannerActionFinished"
 Event.BANNER_AD_FAILED - value "bannerAdFailed"
 Event.BANNER_AD_LOADED - value "bannerAdLoaded"
 Event.BEGIN_CONTACT - value "beginContact"
+Event.BEGIN_CONTACT_PARTICLE - value "beginContactParticle"
 Event.CHECK_BILLING_SUPPORTED_COMPLETE - value "checkBillingSupportedComplete"
 Event.COMPLETE - value "complete"
 Event.COMPLETE - value "complete"
@@ -609,6 +615,9 @@ io.read(format1 [, ...]) io - reads file according to given formats, returns rea
 io.tmpfile() io - returns a handle for a temporary file, opened in update mode
 io.type(obj) io - returns "file" if obj is an open file handle, "close file" if closed, or nil if not a file handle
 io.write(value1 [, ...]) io - writes strings or numbers to file
+JS
+js
+JS.eval(code) JS
 json
 json.decode(jsondata) json - Returns Lua table from provided json encoded string
 json.encode(data) json - Returns encoded json string from provided Lua table
@@ -717,7 +726,11 @@ getTz() Matrix - returns the value of the tz component
 getX() Matrix - get x position
 getY() Matrix - get y position
 getZ() Matrix - get z position
+invert() Matrix
 multiply(matrix) Matrix - Multiply current matrix with new one
+orthographicProjection(left, right, bottom, top, near, far) Matrix
+perspectiveProjection(left, right, bottom, top, near, far) Matrix
+perspectiveProjection(fov, aspect, near, far) Matrix
 rotate(angle, x vector, y vector, z vector) Matrix - combine existing rotation with provided
 scale(x scale [, y scale, z scale]) Matrix - combine existing scale with provided scale
 setAnchorPosition(x, y [, z]) Matrix - transform matrix for setting anchor position
@@ -741,12 +754,13 @@ setTz(tz) Matrix - sets the value of the tz component
 setX(x) Matrix - set x position
 setY(y) Matrix - set y position
 setZ(z) Matrix - set z position
+transformPoint() Matrix
 translate(x [, y, z]) Matrix - combine existing translation with provided translation
 Mesh > Sprite
 Mesh.new([is3d]) Mesh
 clearColorArray() Mesh
 clearIndexArray() Mesh
-clearTexture() Mesh
+clearTexture([slot]) Mesh
 clearTextureCoordinateArray() Mesh
 clearVertexArray() Mesh
 getColor(i) Mesh - Returns color and alpha of the i-th element from color array
@@ -767,7 +781,7 @@ setColors(colors) Mesh
 setIndex(i, index) Mesh
 setIndexArray(indices) Mesh
 setIndices(indices) Mesh
-setTexture(texture) Mesh
+setTexture(texture [, slot]) Mesh
 setTextureCoordinate(i, u, v) Mesh
 setTextureCoordinateArray(textureCoordinates) Mesh
 setTextureCoordinates(textureCoordinates) Mesh
@@ -841,17 +855,25 @@ addParticles(particles) Particles - Add particles
 clearTexture() Particles - Clear texture for all particles
 getParticleAngle(i) Particles - get particle angle
 getParticleColor(i) Particles - Get color and alpha value of particle
+getParticleDecay(i) Particles
 getParticlePosition(i) Particles - get position of particle
+getParticles([set, tag]) Particles
 getParticleSize(i) Particles - get size of particle in pixels
 getParticleSpeed(i) Particles - Get speed of particle
+getParticleTag(i) Particles
 getParticleTtl(i) Particles - get initial time to live of particle
+isPaused() Particles
 removeParticles(particle indeces) Particles - Remove particles by index in table or as arguments
 setParticleAngle(i, angle) Particles - set angle of particle
 setParticleColor(i, color [, alpha]) Particles - set color of particles
+setParticleDecay(i, decay, decayAlpha, decayGrowth, decayAngular) Particles
 setParticlePosition(i, x, y) Particles - set position of particle
 setParticleSize(i, size) Particles - set size of particle
-setParticleSpeed(i [, x, y, a, decay]) Particles - Set speed of particles
+setParticleSpeed(i [, x, y, a, s]) Particles - Set speed of particles
+setParticlesTag() Particles
+setParticleTag(i, tag) Particles
 setParticleTtl(i, ttl) Particles - set time to live
+setPaused(paused) Particles
 setTexture(texture) Particles - Set texture to all particles
 Path2D > Sprite
 Path2D.new() Path2D - Creates Path2D object
@@ -864,11 +886,19 @@ setPath(commands, coordinates [, coordinates]) Path2D - set path to draw
 setSvgPath(svg_params) Path2D - set path with svg properties
 setTexture(texture) Path2D - sets texture for fill (Not implemented yet)
 Pixel > Sprite
+Pixel.new(texture [, x, y, width, height, sx, sy]) Pixel
 Pixel.new([color, alpha, width, height]) Pixel - Create new pixel
 getColor() Pixel - Gets the color of the Pixe
+getDimensions() Pixel
+getTexturePosition() Pixel
+getTextureScale() Pixel
 setColor([color, alpha]) Pixel - Sets the color of the Pixel
 setDimensions(w, h) Pixel - Sets both width and height of the Pixel.
 setHeight(h) Pixel - Sets the height of the pixel sprite.
+setTexture(texture [, slot, matrix]) Pixel
+setTextureMatrix(matrix) Pixel
+setTexturePosition(x, y) Pixel
+setTextureScale(sx, sy) Pixel
 setWidth(w) Pixel - Sets the width of the pixel sprite.
 RenderTarget > TextureBase
 RenderTarget.new(width, height, filtering) RenderTarget - Creates new RenderTarget object
@@ -920,6 +950,7 @@ Shape.SOLID - value "solid"
 Shape.TEXTURE - value "texture"
 Sound > Object
 Sound.new(filename) Sound - creates a new Sound object
+Sound.setListenerPosition(x, y [, z, vx, vy, vz, dx, dy, dz, ux, uy, uz]) Sound
 getLength() Sound
 play(startTime, looping, paused) Sound - creates a new SoundChannel object to play the sound
 SoundChannel > Object
@@ -935,6 +966,7 @@ setPaused(paused) SoundChannel - sets the paused state of the channel
 setPitch(pitch) SoundChannel - sets the pitch of the sound channel
 setPosition(position) SoundChannel - sets the position of the current playback
 setVolume(volume) SoundChannel - sets the volume of the sound channel
+setWorldPosition(x, y [, z, vx, vy, vz]) SoundChannel
 stop() SoundChannel - stops the sound playing in the channel
 Sprite > EventDispatcher
 Sprite.new() Sprite - creates a new Sprite object
@@ -948,8 +980,9 @@ getAnchorPosition() Sprite - Returns anchor position of Sprite
 getBounds(targetSprite) Sprite - returns the bounds as it appears in another sprite's coordinate system
 getChildAt(index) Sprite - returns the child sprite that exists at the specified index
 getChildIndex(child) Sprite - returns the index of the specified child sprite
+getClip() Sprite
 getColorTransform() Sprite - returns the red, green, blue and alpha channel multipliers
-getHeight() Sprite - returns the height
+getHeight([withoutTransform]) Sprite - returns the height
 getMatrix() Sprite - returns the transformation matrix of the sprite
 getNumChildren() Sprite - returns the number of children of this sprite
 getParent() Sprite - returns the parent sprite
@@ -961,7 +994,10 @@ getScale() Sprite - returns the horizontal, vertical and z scales of the sprite
 getScaleX() Sprite - returns the horizontal scale of the sprite
 getScaleY() Sprite - returns the vertical scale of the sprite
 getScaleZ() Sprite - returns the scale on z axis of the sprite
-getWidth() Sprite - returns the width
+getSkew() Sprite
+getSkewX() Sprite
+getSkewY() Sprite
+getWidth([withoutTransform]) Sprite - returns the width
 getX() Sprite - returns the x coordinate of the sprite
 getY() Sprite - returns the y coordinate of the sprite
 getZ() Sprite - returns the z coordinate of the sprite
@@ -975,7 +1011,7 @@ removeFromParent() Sprite - if the sprite has a parent, removes the sprite from 
 set(param, value) Sprite - sets the specified property by its name
 setAlpha(alpha) Sprite - sets the alpha transparency of this sprite
 setAnchorPosition(anchorX, anchorY [, anchorZ]) Sprite - Set anchor position
-setBlendMode(blendMode) Sprite - sets the blend mode of the sprite
+setBlendMode(blendMode or src [, dst]) Sprite - sets the blend mode of the sprite
 setClip(x, y, width, height) Sprite - Clip Sprite contents
 setColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier) Sprite - sets the red, green, blue and alpha channel multipliers
 setMatrix(matrix) Sprite - sets the transformation matrix of the sprite
@@ -988,6 +1024,9 @@ setScaleX(scaleX) Sprite - sets the horizontal scale of the sprite
 setScaleY(scaleY) Sprite - sets the vertical scale of the sprite
 setScaleZ(scale) Sprite - Set scale on z axis
 setShader(shader) Sprite - Set shader for this sprite
+setSkew(kx, ky) Sprite
+setSkewX(kx) Sprite
+setSkewY(ky) Sprite
 setVisible(visible) Sprite - sets the visibility of sprite
 setX(x) Sprite - sets the x coordinate of the sprite
 setY(y) Sprite - sets the y coordinate of the sprite
@@ -1144,6 +1183,8 @@ utf8.widthindex(s, location [, ambi_is_double, default_width]) utf8 - Return the
 utf8.charpattern - value "[\0-\x7F\xC2-\xF4][\x80-\xBF]*"
 Viewport > Sprite
 viewport
+lookAngles(eyex, eyey, eyez, pitch, yaw, roll) Viewport
+lookAt(eyex, eyey, eyez, targetx, targety, targetz, upx, upy, upz) Viewport
 setContent(content) Viewport
 setProjection(matrix) Viewport - Specify a projection matrix to use when displaying the content. 
 setTransform(transform) Viewport

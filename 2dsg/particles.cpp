@@ -18,6 +18,7 @@ Particles::Particles(Application *application) :
 	paused_ = false;
 	minx_ = miny_ = 1e30;
 	maxx_ = maxy_ = -1e30;
+	lastTickTime_=0;
 	application->addTicker(this);
 }
 

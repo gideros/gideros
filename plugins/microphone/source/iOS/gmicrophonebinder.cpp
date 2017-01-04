@@ -13,6 +13,8 @@
   microphone:stop()
 */
 
+static lua_State *L = NULL;
+
 namespace {
 
 static const char* DATA_AVAILABLE = "dataAvailable";
@@ -52,7 +54,7 @@ static char keyWeak = ' ';
 class GMicrophone : public GEventDispatcherProxy
 {
 public:
-    GMicrophone(lua_State *L, const char *deviceName, int numChannels, int sampleRate, int bitsPerSample, gmicrophone_Error *error) : L(L)
+    GMicrophone(lua_State *L, const char *deviceName, int numChannels, int sampleRate, int bitsPerSample, gmicrophone_Error *error) 
     {
         if (++instanceCount_ == 1)
             gmicrophone_Init();
@@ -214,7 +216,6 @@ private:
     }
 
 private:
-    lua_State *L;
     g_id microphone_;
     int numChannels_, sampleRate_, bitsPerSample_;
     g_id outputFile_;
@@ -394,6 +395,7 @@ static int loader(lua_State* L)
 
 static void g_initializePlugin(lua_State *L)
 {
+	::L = L;
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
 
@@ -405,6 +407,7 @@ static void g_initializePlugin(lua_State *L)
 
 static void g_deinitializePlugin(lua_State *L)
 {
+	::L = NULL;
 }
 
 REGISTER_PLUGIN("Microphone", "1.0")

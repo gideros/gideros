@@ -955,6 +955,7 @@ Parameter::Parameter(const char* strparam, float start, float end, const char* t
 MovieClip::MovieClip(Type type, Application *application) : Sprite(application)
 {
     type_ = type;
+    playing_ = false;
 }
 
 MovieClip::~MovieClip()
@@ -1039,40 +1040,41 @@ void MovieClip::finalize()
     }
 }
 
-void MovieClip::oneFrame()
+bool MovieClip::oneFrame()
 {
     if (!playing_)
     {
-        return;
+        return false;
     }
 
 	if (passoneframe_ == true)
 	{
 		passoneframe_ = false;
-		return;
+		return false;
 	}
 
 	std::map<int, int>::iterator iter2 = actions_.find(frame_);
 	if (iter2 != actions_.end())
 	{
+		bool unref=false;
         if (iter2->second == -1)
         {
-			stop();
+			unref=stop();
             CompleteEvent event(CompleteEvent::COMPLETE);
             dispatchEvent(&event);
         }
 		else
 			gotoFrame(iter2->second);
 
-		return;
+		return unref;
 	}
 
 	if (frame_ == maxframe_)
 	{
-		stop();
+		bool unref=stop();
         CompleteEvent event(CompleteEvent::COMPLETE);
         dispatchEvent(&event);
-        return;
+        return unref;
 	}
 
 	std::map<int, std::vector<Frame*> >::iterator iter;
@@ -1100,6 +1102,8 @@ void MovieClip::oneFrame()
 	}
 	
 	interpolateParameters();
+
+	return false;
 }
 
 void MovieClip::nextFrame(EnterFrameEvent *)
@@ -1107,7 +1111,8 @@ void MovieClip::nextFrame(EnterFrameEvent *)
     switch (type_)
     {
     case eFrame:
-        oneFrame();
+        if (oneFrame())
+        	unref();
         break;
     case eTime:
     {
@@ -1118,7 +1123,11 @@ void MovieClip::nextFrame(EnterFrameEvent *)
         delta = std::min(std::max(delta, 0), 1000);
 
         for (int i = 0; i < delta; ++i)
-            oneFrame();
+            if (oneFrame())
+            {
+            	unref();
+            	return;
+            }
         break;
     }
     }
@@ -1202,25 +1211,34 @@ void MovieClip::gotoAndPlay(int frame)
 	play();
 }
 
-void MovieClip::gotoAndStop(int frame)
+bool MovieClip::gotoAndStop(int frame)
 {
 	gotoFrame(frame);
-	stop();
+	return stop();
 }
 
 void MovieClip::play()
 {
 	passoneframe_ = true;
-	playing_ = true;
     prevClock_ = iclock();
-	addEventListener(EnterFrameEvent::ENTER_FRAME, &MovieClip::nextFrame);
+    if (!playing_)
+    {
+    	playing_ = true;
+    	addEventListener(EnterFrameEvent::ENTER_FRAME, &MovieClip::nextFrame);
+    	ref();
+    }
 }
 
-void MovieClip::stop()
+bool MovieClip::stop()
 {
 	passoneframe_ = false;
-	playing_ = false;
-	removeEventListener(EnterFrameEvent::ENTER_FRAME, &MovieClip::nextFrame);
+	if (playing_)
+	{
+		playing_ = false;
+		removeEventListener(EnterFrameEvent::ENTER_FRAME, &MovieClip::nextFrame);
+		return true;
+	}
+	return false;
 }
 
 void MovieClip::setStopAction(int frame)

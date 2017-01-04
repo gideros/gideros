@@ -171,7 +171,7 @@ void TextField::setSample(const char* sample)
     wsample_.resize(wsize);
     utf8_to_wchar(sample_.c_str(), sample_.size(), &wsample_[0], wsize, 0);
 
-    font_->drawText(&graphicsBase_, wsample_.c_str(), r_, g_, b_, letterSpacing_, 0, 0);
+    font_->drawText(&graphicsBase_, wsample_.c_str(), r_, g_, b_, letterSpacing_, false, 0, 0);
     float minx, miny, maxx, maxy;
     graphicsBase_.getBounds(&minx, &miny, &maxx, &maxy);
 
@@ -193,7 +193,7 @@ void TextField::createGraphics()
     if (font_ == NULL)
         graphicsBase_.clear();
     else
-        font_->drawText(&graphicsBase_, wtext_.c_str(), r_, g_, b_, letterSpacing_, !sample_.empty(), sminy);
+        font_->drawText(&graphicsBase_, wtext_.c_str(), r_, g_, b_, letterSpacing_, !sample_.empty(), sminx, sminy);
 
     graphicsBase_.getBounds(&minx_, &miny_, &maxx_, &maxy_);
 }

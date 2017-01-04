@@ -24,9 +24,10 @@ connect(mapper, SIGNAL(mapped(int)),
 
 void PropertyEditingTable::fill(QDomElement xml,
 	QMap<QString, QString> values) {
-	clearContents();
+	setRowCount(0);
 QDomNodeList exprops = xml.elementsByTagName("property");
 setRowCount(exprops.count());
+props.clear();
 for (int k = 0; k < exprops.count(); k++) {
 	QDomElement exprop = exprops.at(k).toElement();
 

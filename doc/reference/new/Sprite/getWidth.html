@@ -106,12 +106,17 @@
 <h3>Description:</h3>
 <div>
 Returns the width of the sprite, in pixels. The width is calculated based on the<br />
-bounds of the content of the sprite.
+bounds of the content of the sprite.<br />
+If the parameter "true" is passed, the original width is returned without transformations.
 </div>
 
 	<h3>Syntax:</h3>
-	<pre><code>Sprite:getWidth()</code></pre>
+	<pre><code>Sprite:getWidth([withoutTransform])</code></pre>
 
+	<h3>Parameters:</h3>
+	<ul class='list'>
+		<li><strong>withoutTransform:</strong> (boolean) If true, return the width of the Sprite without transformations else return the transformed width</li>
+		</ul>
 
 	<h3>Return value:</h3>
 	<ul class='list'>

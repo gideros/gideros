@@ -31,6 +31,8 @@ enum StringIdType
     eStringIdGreenMultiplier,
     eStringIdBlueMultiplier,
     eStringIdAlphaMultiplier,
+    eStringIdSkewX,
+    eStringIdSkewY,
 
 	eStringIdLinear,
 	eStringIdInQuad,
