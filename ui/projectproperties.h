@@ -79,6 +79,7 @@ struct ProjectProperties
         splash_v_image="";
         disableSplash = false;
         backgroundColor = "#ffffff";
+        splashScaleMode = 0;
         plugins.clear();
         exports.clear();
     }
@@ -133,6 +134,7 @@ struct ProjectProperties
     QSet<Export> exports;
     bool encryptCode;
     bool encryptAssets;
+    int splashScaleMode;
 };
 
 inline bool operator==(const ProjectProperties::Plugin &p1, const ProjectProperties::Plugin &p2) { return (p1.name==p2.name)&&(p1.properties==p2.properties); };

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>415</width>
-    <height>544</height>
+    <width>482</width>
+    <height>558</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -869,7 +869,7 @@ portrait or landscape.</string>
         <rect>
          <x>10</x>
          <y>0</y>
-         <width>121</width>
+         <width>171</width>
          <height>351</height>
         </rect>
        </property>
@@ -981,7 +981,7 @@ portrait or landscape.</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>360</y>
+         <y>390</y>
          <width>361</width>
          <height>80</height>
         </rect>
@@ -1002,6 +1002,39 @@ portrait or landscape.</string>
          </widget>
         </item>
        </layout>
+      </widget>
+      <widget class="QComboBox" name="splashScaleMode">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>350</y>
+         <width>131</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>Show All</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Crop</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="label_13">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>360</y>
+         <width>121</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Splash Scale Mode:</string>
+       </property>
       </widget>
      </widget>
     </widget>

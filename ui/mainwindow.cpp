@@ -2363,7 +2363,6 @@ void MainWindow::exportProject()
         QString templatename;
         QString templatenamews;
 
-
         if (exportType=="iOS")
         {
             arguments << "-platform" << "ios";
@@ -2428,9 +2427,11 @@ void MainWindow::exportProject()
         }
 
 
-
         QDir dir2 = QDir::currentPath();
-        dir2.cd("Templates");
+        if(!dir2.cd("Templates")){
+            QMessageBox::information(this, tr("Gideros"), tr("No Templates folder."));
+            return;
+        }
         if(!dir2.cd(templatedir) || !dir2.cd(templatename)){
             QMessageBox::information(this, tr("Gideros"), tr("No template found."));
             return;

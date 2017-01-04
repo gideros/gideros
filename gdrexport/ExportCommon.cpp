@@ -64,7 +64,7 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest,
 }
 
 void ExportCommon::resizeImage(QImage *image, int width, int height,
-		QString output, int quality,bool withAlpha, QColor fill) {
+        QString output, int quality,bool withAlpha, QColor fill, int mode) {
 	int iwidth = image->width(); //image width
 	int iheight = image->height(); //image height
 	int rwidth = width; //resampled width
@@ -75,25 +75,49 @@ void ExportCommon::resizeImage(QImage *image, int width, int height,
 	int dst_x = 0;
 	int dst_y = 0;
 	bool redraw = false;
+    int sx = 0;
+    int sy = 0;
+    int sw = -1;
+    int sh = -1;
 
-	//use smallest
-	if (k_h < k_w) {
-		rwidth = round((iwidth * height) / iheight);
-	} else {
-		rheight = round((iheight * width) / iwidth);
-	}
+    if (mode == 0){  //show all
+        //use smallest
+        if (k_h < k_w) {
+            rwidth = round((iwidth * height) / iheight);
+        } else {
+            rheight = round((iheight * width) / iwidth);
+        }
 
-	//new width is bigger than existing
-	if (width > rwidth) {
-		dst_x = (width - rwidth) / 2;
-		redraw = true;
-	}
+        //new width is bigger than existing
+        if (width > rwidth) {
+            dst_x = (width - rwidth) / 2;
+            redraw = true;
+        }
 
-	//new height is bigger than existing
-	if (height > rheight) {
-		dst_y = (height - rheight) / 2;
-		redraw = true;
-	}
+        //new height is bigger than existing
+        if (height > rheight) {
+            dst_y = (height - rheight) / 2;
+            redraw = true;
+        }
+    }else if(mode == 1){  //crop
+        if (k_h < k_w) {
+            rheight = round((iheight * width) / iwidth);
+        } else {
+            rwidth = round((iwidth * height) / iheight);
+        }
+
+        if (width < rwidth) {
+            sx = (rwidth - width) / 2;
+            sw = width;
+            redraw = true;
+        }
+
+        if (height < rheight) {
+            sy = (rheight - height) / 2;
+            sh = height;
+            redraw = true;
+        }
+    }
 
 	QImage xform=image->scaled(rwidth, rheight, Qt::KeepAspectRatio,
 			Qt::SmoothTransformation);
@@ -102,7 +126,7 @@ void ExportCommon::resizeImage(QImage *image, int width, int height,
 		QImage larger(width,height,QImage::Format_ARGB32);
 		larger.fill(fill);
 		QPainter painter(&larger);
-		painter.drawImage(dst_x,dst_y, xform);
+        painter.drawImage(dst_x,dst_y, xform, sx, sy, sw, sh);
 		painter.end();
 		xform=larger;
 	}
@@ -192,10 +216,12 @@ bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height,
 	}
 	if (ctx->splash_h_image->isNull())
 		return false;
-	exportInfo("Generating splash horizontal (%dx%d)\n", width, height);
+
+    int mode = ctx->properties.splashScaleMode;
+    exportInfo("Generating splash horizontal (%dx%d) scale mode (%d)\n", width, height, mode);
 
 	resizeImage(ctx->splash_h_image, width, height,
-			ctx->outputDir.absoluteFilePath(output), -1, withAlpha,QColor(ctx->properties.backgroundColor));
+            ctx->outputDir.absoluteFilePath(output), -1, withAlpha,QColor(ctx->properties.backgroundColor), mode);
 	return true;
 }
 
@@ -222,9 +248,10 @@ bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
 	}
 	if (ctx->splash_v_image->isNull())
 		return false;
-	exportInfo("Generating splash vertical (%dx%d)\n", width, height);
+    int mode = ctx->properties.splashScaleMode;
+    exportInfo("Generating splash vertical (%dx%d) scale mode (%d)\n", width, height, mode);
 	resizeImage(ctx->splash_v_image, width, height,
-			ctx->outputDir.absoluteFilePath(output), -1, withAlpha,QColor(ctx->properties.backgroundColor));
+            ctx->outputDir.absoluteFilePath(output), -1, withAlpha,QColor(ctx->properties.backgroundColor), mode);
 	return true;
 }
 

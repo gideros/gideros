@@ -62,6 +62,8 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
     properties.setAttribute("splash_v_image", this->splash_v_image);
     properties.setAttribute("app_name", this->app_name);
 
+    properties.setAttribute("splashScaleMode", this->splashScaleMode);
+
     //Plugins
 	QDomElement plugins = doc.createElement("plugins");
 	for (QSet<Plugin>::const_iterator it=this->plugins.begin();it!=this->plugins.end(); it++)
@@ -198,6 +200,8 @@ void ProjectProperties::loadXml(QDomElement properties)
             this->disableSplash = properties.attribute("disableSplash").toInt() != 0;
         if(!properties.attribute("backgroundColor").isEmpty())
             this->backgroundColor = properties.attribute("backgroundColor");
+        if (!properties.attribute("splashScaleMode").isEmpty())
+            this->splashScaleMode = properties.attribute("splashScaleMode").toInt();
 
         //Plugins
         this->plugins.clear();
