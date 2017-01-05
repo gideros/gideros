@@ -134,12 +134,11 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 	}
 
     //add "show in finder" in the first position just as Xcode did
-#if defined(Q_OS_MAC)   //only for Mac since I have not tested on Windows yet, after tested, this macro may safely removed.
     if (size == 1 && file)
     {
         menu.addAction(showInFindeAction_);
     }
-#endif
+
 	if (size == 1 && (folder || project))
 	{
 		menu.addAction(addNewFileAction_);
