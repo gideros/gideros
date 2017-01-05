@@ -18,6 +18,8 @@
 
 #include "addnewfiledialog.h"
 #include "projectpropertiesdialog.h"
+#include "qtutils.h"
+
 
 LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 	: QTreeWidget(parent)
@@ -73,6 +75,14 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
     excludeFromExecutionAction_->setCheckable(true);
     connect(excludeFromExecutionAction_, SIGNAL(triggered(bool)), this, SLOT(excludeFromExecution(bool)));
 
+#if defined(Q_OS_WIN)
+    showInFindeAction_ = new QAction(tr("Show in Explorer"), this);
+#else
+    showInFindeAction_ = new QAction(tr("Show in Finder"), this);
+#endif
+
+    connect(showInFindeAction_, SIGNAL(triggered()), this, SLOT(showInFinder()));
+
     setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, SIGNAL(customContextMenuRequested  (const QPoint&)),
 			this, SLOT  (onCustomContextMenuRequested(const QPoint&)));
@@ -123,6 +133,13 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 		}
 	}
 
+    //add "show in finder" in the first position just as Xcode did
+#if defined(Q_OS_MAC)   //only for Mac since I have not tested on Windows yet, after tested, this macro may safely removed.
+    if (size == 1 && file)
+    {
+        menu.addAction(showInFindeAction_);
+    }
+#endif
 	if (size == 1 && (folder || project))
 	{
 		menu.addAction(addNewFileAction_);
@@ -215,6 +232,23 @@ void LibraryTreeWidget::newFont()
 }
 */
 
+
+void LibraryTreeWidget::showInFinder()
+{
+    if (selectedItems().empty() == true)
+        return;
+
+    QTreeWidgetItem* item = selectedItems()[0];
+
+    QString fileName = item->data(0, Qt::UserRole).toMap()["filename"].toString();
+
+    QDir dir = QFileInfo(projectFileName_).dir();
+
+    QString path = QDir::cleanPath(dir.absoluteFilePath(fileName));
+
+    doShowInFinder(path);
+}
+
 void LibraryTreeWidget::remove()
 {
 	QList<QTreeWidgetItem*> selectedItems = this->selectedItems();
@@ -256,6 +290,7 @@ void LibraryTreeWidget::remove()
 
 	checkModification();
 }
+
 
 void LibraryTreeWidget::rename()
 {
