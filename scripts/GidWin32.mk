@@ -1,4 +1,4 @@
-win32.install: win32.libs.install win32.plugins.install win32.install
+win32.install: win32.libs.install win32.plugins.install
 
 
 sdk.win32libs.dir:
@@ -15,7 +15,7 @@ WIN32_RELEASE=$(RELEASE)/win32
 
 LIBS_lua+=$(WIN32_BUILDDIR)/gvfs.dll
 
-INCLUDEPATHS_gid+=libgid/include/win32
+INCLUDEPATHS_gid+=libgid/include/win32 libgid/external/curl-7.40.0-devel-mingw32/include
 OBJFILES_gid+= $(addprefix libgid/src/win32/,gapplication-win32 gaudio-win32 ggeolocation-win32 ghttp-win32 \
 				 ginput-win32 gui-win32)
 LIBS_gid+= libgid/external/freetype-2.4.12/build/mingw48_32/libfreetype.a \
@@ -24,6 +24,7 @@ LIBS_gid+= libgid/external/freetype-2.4.12/build/mingw48_32/libfreetype.a \
  libgid/external/mpg123-1.15.3/lib/mingw48_32/libmpg123.a \
  libgid/external/openal-soft-1.13/build/mingw48_32/libOpenAL32.dll.a \
  libgid/external/zlib-1.2.8/build/mingw48_32/libzlibx.a \
+ libgid/external/curl-7.40.0-devel-mingw32/lib/libcurldll.a \
  -L"libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 -lopengl32 \
  $(WIN32_BUILDDIR)/gvfs.dll
 #LIBS_gid+=libgid/external/pthreads-w32-2-9-1-release/Pre-built.2/lib/x86/libpthreadGC2.a \
@@ -108,6 +109,7 @@ win32.install: win32.libs.install win32.app
 	cp $(WIN32_BUILDDIR)/player.exe $(WIN32_RELEASE)/GiderosPlayer.exe
 	cp $(ROOT)/libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $(WIN32_RELEASE)
 	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(WIN32_RELEASE)
+	cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.dll $(WIN32_RELEASE)
 	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(QT)/bin/$$f.dll $(WIN32_RELEASE); done
 	mkdir -p $(RELEASE)/Templates/Win32
 	cp -r $(WIN32_RELEASE)/* $(RELEASE)/Templates/Win32 

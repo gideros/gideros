@@ -399,8 +399,9 @@ public class GiderosApplication
 			mExternalStorageAvailable = mExternalStorageWriteable = false;
 		}
 
-		externalDir_ = WeakActivityHolder.get().getExternalFilesDir(null).getAbsolutePath();
+		File extdir = WeakActivityHolder.get().getExternalFilesDir(null);
 		internalDir_ = WeakActivityHolder.get().getFilesDir().getAbsolutePath();
+		externalDir_ = (extdir==null)?internalDir_:extdir.getAbsolutePath();
 		cacheDir_ = WeakActivityHolder.get().getCacheDir().getAbsolutePath();
 
 		Logger.log("externalDir: " + externalDir_);
