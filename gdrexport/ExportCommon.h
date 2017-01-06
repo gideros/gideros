@@ -19,7 +19,7 @@ public:
 	static void exportLuafilesTxt(ExportContext *ctx);
 	static void exportAllfilesTxt(ExportContext *ctx);
 	static bool applyPlugins(ExportContext *ctx);
-    static void resizeImage(QImage *image, int width, int height, QString output, int quality = -1,bool withAlpha=true,QColor fill=QColor("transparent"));
+    static void resizeImage(QImage *image, int width, int height, QString output, int quality = -1,bool withAlpha=true,QColor fill=QColor("transparent"), int mode = 0);
 	static bool appIcon(ExportContext *ctx,int width,int height,QString output,bool withAlpha=true);
     static bool tvIcon(ExportContext *ctx, int width, int height, QString output,bool withAlpha=true);
     static bool splashHImage(ExportContext *ctx, int width, int height, QString output,bool withAlpha=true);

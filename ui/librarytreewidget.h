@@ -65,7 +65,7 @@ private slots:
 	void projectProperties();
     void automaticDownsizing(bool checked);
     void excludeFromExecution(bool checked);
-
+    void showInFinder();
 private slots:
 	void checkModification();
 
@@ -87,7 +87,7 @@ private:
 	QAction* projectPropertiesAction_;
 	QAction* automaticDownsizingAction_;
     QAction* excludeFromExecutionAction_;
-
+    QAction* showInFindeAction_;
 private:
 	QString xmlString_;
 	bool isModifed_;

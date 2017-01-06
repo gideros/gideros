@@ -72,6 +72,8 @@ ProjectPropertiesDialog::ProjectPropertiesDialog(QString projectFileName,Project
     ui->backgroundColor->setAutoFillBackground(true);
     ui->backgroundColor->setFlat(true);
 
+    ui->splashScaleMode->setCurrentIndex(properties_->splashScaleMode);
+
     connect(ui->add, SIGNAL(clicked()), this, SLOT(add()));
 	connect(ui->remove, SIGNAL(clicked()), this, SLOT(remove()));
 
@@ -160,6 +162,8 @@ void ProjectPropertiesDialog::onAccepted()
 
     properties_->disableSplash = ui->disableSplash->isChecked();
     properties_->backgroundColor = this->backgroundColor.name();
+
+    properties_->splashScaleMode = ui->splashScaleMode->currentIndex();
 
 }
 
