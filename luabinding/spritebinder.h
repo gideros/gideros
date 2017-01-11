@@ -83,6 +83,7 @@ private:
 
 	static int getWidth(lua_State* L);
 	static int getHeight(lua_State* L);
+	static int getSize(lua_State* L);
 
 	static int getMatrix(lua_State* L);
 	static int setMatrix(lua_State* L);
