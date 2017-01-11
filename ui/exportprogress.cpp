@@ -3,13 +3,16 @@
 #include <QDebug>
 #include <QLineEdit>
 #include <QInputDialog>
+#include "qtutils.h"
 
-ExportProgress::ExportProgress(QProcess *exportProcess_, QWidget *parent) :
+ExportProgress::ExportProgress(QProcess *exportProcess_, QString& out, QWidget *parent) :
+    _out(out),
     QDialog(parent),
     ui(new Ui::ExportProgress)
 {
 	ui->setupUi(this);
 	connect(ui->btEnd, SIGNAL(clicked()), this, SLOT(onEnd()));
+    connect(ui->btShow, SIGNAL(clicked()), this, SLOT(onShowInFinder()));
 
 	exportProcess=exportProcess_;
 
@@ -93,6 +96,12 @@ void ExportProgress::onStandardOutput()
 void ExportProgress::onEnd()
 {
 	accept();
+}
+
+void ExportProgress::onShowInFinder()
+{
+    doShowInFinder(_out);
+    accept();
 }
 
 void ExportProgress::onFinished(int exitCode, QProcess::ExitStatus exitStatus)

@@ -2481,7 +2481,8 @@ void MainWindow::exportProject()
         exportProcess->setProgram(program);
         exportProcess->setArguments(arguments);
 
-        ExportProgress progress(exportProcess,this);
+        QString outPath = QDir::cleanPath(out.absolutePath());
+        ExportProgress progress(exportProcess, outPath, this);
     	progress.exec();
     	delete exportProcess;
 

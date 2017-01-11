@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>603</width>
-    <height>452</height>
+    <width>607</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,8 +24,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>583</width>
-        <height>401</height>
+        <width>581</width>
+        <height>382</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -58,6 +58,13 @@
        </property>
        <property name="textDirection">
         <enum>QProgressBar::BottomToTop</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btShow">
+       <property name="text">
+        <string>Show</string>
        </property>
       </widget>
      </item>
