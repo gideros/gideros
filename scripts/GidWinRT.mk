@@ -39,8 +39,8 @@ winrt.libs: winrt.lua winrt.gvfs
 winrt.plugins:
 	$(call WINRT_BUILD_WIN,plugins/luasocket/source/winrt/luasocket,luasocket)
 	$(call WINRT_BUILD_WP,plugins/luasocket/source/winrt/luasocket,luasocket)
-	cp -R Release/All\ Plugins $(RELEASE)
-	rm -rf $(RELEASE)/All\ Plugins/*/bin/WinRT/Release
+	cp -R Release/All\ Plugins/luasocket/bin/WinRT/Release/ARM/*.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT
+	cp -R Release/All\ Plugins/luasocket/bin/WinRT/Release/Win32/*.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT
 	
 winrt.core: winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)

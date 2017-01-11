@@ -13,7 +13,8 @@ $(SDK)/lib/desktop/%: %
 	cp $^ $(SDK)/lib/desktop
 	
 
-SDK_LIBS_QT=libgideros.1.dylib liblua.1.dylib libgid.1.dylib libgvfs.1.dylib
+SDK_LIBS_QTLIST=libgideros liblua libgid libgvfs
+SDK_LIBS_QT=$(addsuffix .1.dylib,$(SDK_LIBS_QTLIST)) $(addsuffix .dylib,$(SDK_LIBS_QTLIST))
 
 sdk.qtlibs.dir:
 	mkdir -p $(SDK)/lib/desktop	
@@ -48,12 +49,14 @@ buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel 
 
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
+QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(firstword $(shell otool -L $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla))))
 qt.install: buildqt qt.player
 	#STUDIO
 	rm -rf $(RELEASE)/Gideros\ Studio.app
 	cp -R $(ROOT)/ui/Gideros\ Studio.app $(RELEASE)
 	$(DEPLOYQT) $(RELEASE)/Gideros\ Studio.app
-	cp $(QT)/lib/libqscintilla2.11.dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
+	cp $(QT)/lib/libqscintilla2.$(QSCINTILLA_LIBVER).dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
+	install_name_tool -change libqscintilla2.$(QSCINTILLA_LIBVER).dylib @rpath/libqscintilla2.$(QSCINTILLA_LIBVER).dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
 	cp -R $(ROOT)/ui/Resources $(RELEASE)/Gideros\ Studio.app/Contents/
 	cp -R $(ROOT)/ui/Tools $(RELEASE)/Gideros\ Studio.app/Contents/Tools	
 	for t in gdrdeamon gdrbridge gdrexport; do \
@@ -70,6 +73,11 @@ qt.install: buildqt qt.player
 	install_name_tool -change libgid.1.dylib @rpath/libgid.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/Frameworks/libgideros.1.dylib 
 	install_name_tool -change liblua.1.dylib @rpath/liblua.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/Frameworks/libgideros.1.dylib 
 	install_name_tool -change libpystring.1.dylib @rpath/libpystring.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/Frameworks/libgideros.1.dylib 
+	install_name_tool -change libgvfs.1.dylib @rpath/libgvfs.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/MacOS/Gideros\ Player 
+	install_name_tool -change libgideros.1.dylib @rpath/libgideros.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/MacOS/Gideros\ Player 
+	install_name_tool -change libgid.1.dylib @rpath/libgid.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/MacOS/Gideros\ Player 
+	install_name_tool -change liblua.1.dylib @rpath/liblua.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/MacOS/Gideros\ Player 
+	install_name_tool -change libpystring.1.dylib @rpath/libpystring.1.dylib  $(RELEASE)/Gideros\ Player.app/Contents/MacOS/Gideros\ Player 
 	#TEXTUREPACKER
 	rm -rf $(RELEASE)/Gideros\ Texture\ Packer.app
 	cp -R $(ROOT)/texturepacker/Gideros\ Texture\ Packer.app $(RELEASE)
@@ -110,6 +118,11 @@ qt.player:
 	install_name_tool -change libgid.1.dylib @rpath/libgid.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Frameworks/libgideros.1.dylib 
 	install_name_tool -change liblua.1.dylib @rpath/liblua.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Frameworks/libgideros.1.dylib 
 	install_name_tool -change libpystring.1.dylib @rpath/libpystring.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Frameworks/libgideros.1.dylib 
+	install_name_tool -change libgideros.1.dylib @rpath/libgideros.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate 
+	install_name_tool -change libgvfs.1.dylib @rpath/libgvfs.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate 
+	install_name_tool -change libgid.1.dylib @rpath/libgid.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate 
+	install_name_tool -change liblua.1.dylib @rpath/liblua.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate 
+	install_name_tool -change libpystring.1.dylib @rpath/libpystring.1.dylib  $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/MacOS/MacOSXDesktopTemplate 
 	
 buildqtplugins: $(addsuffix .qtplugin,$(PLUGINS_WIN))
 
