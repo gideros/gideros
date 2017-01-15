@@ -316,8 +316,7 @@ int MovieClipBinder::stop(lua_State* L)
 	Binder binder(L);
 	MovieClip* movieclip = static_cast<MovieClip*>(binder.getInstance("MovieClip", 1));	
 
-	if (movieclip->stop())
-		movieclip->unref();
+	movieclip->stop();
 
 	return 0;
 }
@@ -343,8 +342,7 @@ int MovieClipBinder::gotoAndStop(lua_State* L)
 	MovieClip* movieclip = static_cast<MovieClip*>(binder.getInstance("MovieClip", 1));	
 
 	int frame = luaL_checkinteger(L, 2);
-	if (movieclip->gotoAndStop(frame))
-		movieclip->unref();
+	movieclip->gotoAndStop(frame);
 
 	return 0;
 }

@@ -1060,7 +1060,7 @@ bool MovieClip::oneFrame()
 		bool unref=false;
         if (iter2->second == -1)
         {
-			unref=stop();
+			unref=stop(false);
             CompleteEvent event(CompleteEvent::COMPLETE);
             dispatchEvent(&event);
         }
@@ -1072,7 +1072,7 @@ bool MovieClip::oneFrame()
 
 	if (frame_ == maxframe_)
 	{
-		bool unref=stop();
+		bool unref=stop(false);
         CompleteEvent event(CompleteEvent::COMPLETE);
         dispatchEvent(&event);
         return unref;
@@ -1212,10 +1212,10 @@ void MovieClip::gotoAndPlay(int frame)
 	play();
 }
 
-bool MovieClip::gotoAndStop(int frame)
+void MovieClip::gotoAndStop(int frame)
 {
 	gotoFrame(frame);
-	return stop();
+	stop();
 }
 
 void MovieClip::play()
@@ -1231,13 +1231,18 @@ void MovieClip::play()
     }
 }
 
-bool MovieClip::stop()
+bool MovieClip::stop(bool unrefNow)
 {
 	passoneframe_ = false;
 	if (playing_)
 	{
 		playing_ = false;
 		removeEventListener(EnterFrameEvent::ENTER_FRAME, &MovieClip::nextFrame);
+		if (unrefNow&&holdWhilePlaying_)
+		{
+			unref();
+			return false;
+		}
 		return true;
 	}
 	return false;

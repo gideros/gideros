@@ -94,9 +94,9 @@ public:
 	void finalize();
 	
 	void play();
-	bool stop();
+	bool stop(bool unrefNow=true);
 	void gotoAndPlay(int frame);
-	bool gotoAndStop(int frame);
+	void gotoAndStop(int frame);
 
 protected:
 	struct Frame
