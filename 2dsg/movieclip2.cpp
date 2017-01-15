@@ -952,10 +952,11 @@ Parameter::Parameter(const char* strparam, float start, float end, const char* t
 	tweenFunction = getTweenFunction((TweenType)StringId::instance().id(tweenType));
 }
 
-MovieClip::MovieClip(Type type, Application *application) : Sprite(application)
+MovieClip::MovieClip(Type type, Application *application, bool holdWhilePlaying) : Sprite(application)
 {
     type_ = type;
     playing_ = false;
+    holdWhilePlaying_ = holdWhilePlaying;
 }
 
 MovieClip::~MovieClip()
@@ -1111,7 +1112,7 @@ void MovieClip::nextFrame(EnterFrameEvent *)
     switch (type_)
     {
     case eFrame:
-        if (oneFrame())
+        if (oneFrame()&&holdWhilePlaying_)
         	unref();
         break;
     case eTime:
@@ -1123,7 +1124,7 @@ void MovieClip::nextFrame(EnterFrameEvent *)
         delta = std::min(std::max(delta, 0), 1000);
 
         for (int i = 0; i < delta; ++i)
-            if (oneFrame())
+            if (oneFrame()&&holdWhilePlaying_)
             {
             	unref();
             	return;
@@ -1225,7 +1226,8 @@ void MovieClip::play()
     {
     	playing_ = true;
     	addEventListener(EnterFrameEvent::ENTER_FRAME, &MovieClip::nextFrame);
-    	ref();
+    	if (holdWhilePlaying_)
+    		ref();
     }
 }
 
