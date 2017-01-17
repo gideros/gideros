@@ -1,0 +1,47 @@
+<plugin
+ name="Exampleplugin"
+ description="Send a start event, wifi count and needed permissions. Can send a stop event.">
+   <target name="AndroidStudio,APK">
+	    <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java"/>
+	    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+	    <template name="Activity" path="">
+	    	<replacelist wildcards="[[[project.namews]]]Activity.java">
+				<append orig="//GIDEROS-STATIC-INIT//" by="System.loadLibrary(&quot;exampleplugin&quot;);"/>
+	 			<append orig="//GIDEROS-EXTERNAL-CLASS//" by="&quot;com.giderosmobile.android.plugins.exampleplugin.GExampleplugin&quot;,"/>
+	        </replacelist>
+	    <receiver android:name="com.giderosmobile.android.plugins.exampleplugin.GExampleplugin"></receiver>
+	    </template>
+	    <template name="AndroidManifest" path="">
+	        <replacelist wildcards="AndroidManifest.xml">
+	            <append>
+	            	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+	            	<by><![CDATA[
+	    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+	    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+	            	]]></by>
+	            </append>
+	        </replacelist>
+    	</template>
+ 	</target>
+	 	<target name="Android">
+	    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+	    <template name="Activity" path="">
+	        <replacelist wildcards="[[[project.namews]]]Activity.java">
+	            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;exampleplugin&quot;);"/>
+	            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.exampleplugin.GExampleplugin&quot;,"/>
+	        </replacelist>
+	        <receiver android:name="com.giderosmobile.android.plugins.exampleplugin.GExampleplugin"></receiver>
+	    </template>
+	   <template name="AndroidManifest" path="">
+	        <replacelist wildcards="AndroidManifest.xml">
+	            <append>
+	            	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+	            	<by><![CDATA[
+	   <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+	   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+	            	]]></by>
+	            </append>
+	        </replacelist>
+	    </template>
+	 </target>
+</plugin>

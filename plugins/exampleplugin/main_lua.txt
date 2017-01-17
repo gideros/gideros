@@ -1,0 +1,110 @@
+pcall(function () require("exampleplugin") end)
+if exampleplugin then
+	local function isRunning()
+		return exampleplugin.test_lua()
+	end
+	local function stop()
+		if isRunning() then
+			exampleplugin.stop_lua()
+		end
+	end
+	local function onEvent(event)
+		local e = event and event:getType() or nil
+		if e and e==Event.EXAMPLEPLUGIN_STATE then
+			print("event:")
+			print(e)
+			print("state:")
+			print(event.state_lua)
+			print("description:")
+			print(event.description_lua)
+			if event.state_lua and event.state_lua==0 then --remove listeners after received stop !
+				exampleplugin:removeEventListener(Event.EXAMPLEPLUGIN_STATE, onEvent)
+				exampleplugin:removeEventListener(Event.EXAMPLEPLUGIN_WIFI, onEvent)
+			end
+		elseif e and e==Event.EXAMPLEPLUGIN_WIFI then
+			print("event:")
+			print(e)
+			print("action:")
+			print(event.action_lua)
+			print("count:")
+			print(tostring(event.count_lua))
+			print("granted:")
+			print(tostring(event.granted_lua))
+			if event.permissions_all_lua then
+				print("permissions_all:")
+				for k,v in pairs(event.permissions_all_lua) do
+					print("index:")
+					print(k)
+					print("value:")
+					print(v)
+				end
+			end
+			if event.permissions_checked_lua then
+				print("permissions_checked:")
+				for k,v in ipairs(event.permissions_checked_lua) do
+					print("index:")
+					print(k)
+					print("value:")
+					print(v and v.permission_lua)
+				end
+			end
+			stop()
+		end
+	end
+	local function start()
+		if not isRunning() then
+			--add listeners before start to receive events :
+			exampleplugin:addEventListener(Event.EXAMPLEPLUGIN_STATE, onEvent)
+			exampleplugin:addEventListener(Event.EXAMPLEPLUGIN_WIFI, onEvent)
+			exampleplugin.start_lua()
+		end
+	end
+	start()
+	--(if needed) Event.APPLICATION_FOREGROUND stop()
+	--(if needed) Event.APPLICATION_SUSPEND start()
+end
+
+--[[ PRINT Android Studio:
+	event:
+	exampleplugin_state
+	state:
+	1
+	description:
+	START !
+	event:
+	exampleplugin_wifi
+	action:
+	android.net.wifi.SCAN_RESULTS
+	count:
+	1
+	granted:
+	true
+	permissions_all:
+	index:
+	1
+	value:
+	android.permission.CHANGE_WIFI_STATE
+	index:
+	2
+	value:
+	android.permission.ACCESS_COARSE_LOCATION
+	index:
+	3
+	value:
+	android.permission.ACCESS_FINE_LOCATION
+	permissions_checked:
+	index:
+	1
+	value:
+	android.permission.CHANGE_WIFI_STATE
+	index:
+	2
+	value:
+	android.permission.ACCESS_COARSE_LOCATION
+	event:
+	exampleplugin_state
+	state:
+	0
+	description:
+	STOP !
+]]
