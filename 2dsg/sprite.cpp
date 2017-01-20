@@ -36,9 +36,11 @@ Sprite::~Sprite() {
 	delete colorTransform_;
 //	delete graphics_;
 
-	for (std::size_t i = 0; i < children_.size(); ++i)
+	for (std::size_t i = 0; i < children_.size(); ++i){
+		children_[i]->parent_ = 0;
 		children_[i]->unref();
-
+	}
+	
 	allSprites_.erase(this);
 	allSpritesWithListeners_.erase(this);
 

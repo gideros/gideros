@@ -81,7 +81,7 @@ public:
         eTime
     };
 
-    MovieClip(Type type, Application *application);
+    MovieClip(Type type, Application *application, bool holdWhilePlaying);
 	virtual ~MovieClip();
 
 	// start >= 1 && end >= 1 && start <= end
@@ -94,9 +94,9 @@ public:
 	void finalize();
 	
 	void play();
-	bool stop();
+	bool stop(bool unrefNow=true);
 	void gotoAndPlay(int frame);
-	bool gotoAndStop(int frame);
+	void gotoAndStop(int frame);
 
 protected:
 	struct Frame
@@ -127,6 +127,7 @@ private:
 	int maxframe_;
 	bool playing_;
 	bool passoneframe_;
+	bool holdWhilePlaying_;
 
 	std::map<int, std::vector<Frame*> > allFrames_;			// indexed with start
 	std::map<int, std::vector<Frame*> > activeFrames_;		// indexed with end

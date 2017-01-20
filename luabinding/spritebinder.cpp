@@ -66,6 +66,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"hitTestPoint", SpriteBinder::hitTestPoint},
 		{"getWidth", SpriteBinder::getWidth},
 		{"getHeight", SpriteBinder::getHeight},
+		{"getSize", SpriteBinder::getSize},
 		{"getMatrix", SpriteBinder::getMatrix},
 		{"setMatrix", SpriteBinder::setMatrix},
 		{"getAlpha", SpriteBinder::getAlpha},
@@ -1172,6 +1173,37 @@ int SpriteBinder::getHeight(lua_State* L)
         lua_pushnumber(L, sprite->height());
 
 	return 1;
+}
+
+/*
+	simply return the width and height of the sprite
+	DO NOT add extra parameter check to return the non-transformed values.
+	turn to getBounds if you need that.
+*/
+int SpriteBinder::getSize(lua_State* L)
+{
+	StackChecker checker(L, "SpriteBinder::getSize", 1);
+	
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+
+    float minx, miny, maxx, maxy;
+	
+	sprite->localBounds(&minx, &miny, &maxx, &maxy);
+		
+	if (minx > maxx || miny > maxy)
+	{
+		// empty bounds
+		lua_pushnumber(L, 0);
+		lua_pushnumber(L, 0);
+	}
+	else
+	{
+		lua_pushnumber(L, maxx - minx);
+		lua_pushnumber(L, maxy - miny);
+	}
+      
+	return 2;
 }
 
 

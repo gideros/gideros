@@ -16,18 +16,19 @@ class ExportProgress : public QDialog
     QByteArray errorLog;
     QByteArray outputLog;
 public:
-    explicit ExportProgress(QProcess *exportProcess_,QWidget *parent = 0);
+    explicit ExportProgress(QProcess *exportProcess_, QString& out, QWidget *parent = 0);
     ~ExportProgress();
 
 private slots:
 	void onStandardError();
 	void onStandardOutput();
 	void onEnd();
+    void onShowInFinder();
 	void onFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
     Ui::ExportProgress *ui;
-
+    QString _out;
 };
 
 #endif // EXPORTPROGRESS_H

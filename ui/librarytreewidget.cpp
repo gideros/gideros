@@ -134,7 +134,7 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 	}
 
     //add "show in finder" in the first position just as Xcode did
-    if (size == 1 && file)
+    if (size == 1 && (file || project))
     {
         menu.addAction(showInFindeAction_);
     }
@@ -239,11 +239,19 @@ void LibraryTreeWidget::showInFinder()
 
     QTreeWidgetItem* item = selectedItems()[0];
 
-    QString fileName = item->data(0, Qt::UserRole).toMap()["filename"].toString();
 
-    QDir dir = QFileInfo(projectFileName_).dir();
+    QString path;
 
-    QString path = QDir::cleanPath(dir.absoluteFilePath(fileName));
+    if (item->parent() == NULL){
+        path = projectFileName_;
+    }else
+    {
+        QString fileName = item->data(0, Qt::UserRole).toMap()["filename"].toString();
+
+        QDir dir = QFileInfo(projectFileName_).dir();
+
+        path = QDir::cleanPath(dir.absoluteFilePath(fileName));
+    }
 
     doShowInFinder(path);
 }

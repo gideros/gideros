@@ -998,6 +998,7 @@ getSkew() Sprite
 getSkewX() Sprite
 getSkewY() Sprite
 getWidth([withoutTransform]) Sprite - returns the width
+getSize() Sprite - returns the width and height of the sprite
 getX() Sprite - returns the x coordinate of the sprite
 getY() Sprite - returns the y coordinate of the sprite
 getZ() Sprite - returns the z coordinate of the sprite
