@@ -231,8 +231,10 @@
             ShaderEngine::Engine->setProjection(projection);
             Matrix4 model;
             ShaderEngine::Engine->setModel(model);
+            ShaderEngine::Engine->clearColor(0,0,0,0);
             
             GLuint glid=CVOpenGLESTextureGetName(videoTexture);
+            glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, glid);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -249,6 +251,7 @@
             vertices.modified = false;
             texcoords.modified = false;
             indices.modified = false;
+            glBindTexture(GL_TEXTURE_2D, 0);
             
             ShaderEngine::Engine->setFramebuffer(oldfbo);
 

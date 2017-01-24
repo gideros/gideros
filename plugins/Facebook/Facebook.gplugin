@@ -1,6 +1,7 @@
 <plugin
  name="Facebook"
  description="Facebook connector">
+  <property name="fbAppId" type="string" title="Facebook App ID" default="" />
  
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java" exclude="frameworks"/>
@@ -35,6 +36,17 @@
    <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/Plugins/" dest="[[[project.namews]]]/Plugins/" />
     	<download source="http://apps.giderosmobile.com/ext/ios/FacebookSDK.framework-3.24.4.zip" dest="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" />
     	<unzip source="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" dest="[[[project.namews]]]/Plugins/Facebook/FacebookSDK.framework" />
+	<template name="Project" path="">
+        <replacelist wildcards="project.pbxproj;EAGLView.m;[[[project.namews]]]-Info.plist">
+	    <prepend>
+		<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
+		<by><![CDATA[	
+			<key>FacebookAppID</key>
+			<string>[[[plugin.fbAppId]]]</string>
+		]]></by>
+	    </prepend>
+        </replacelist>
+       </template>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.addGroup("Facebook","Plugins/Facebook","GroupFacebook_ios","GroupPlugins_ios")
