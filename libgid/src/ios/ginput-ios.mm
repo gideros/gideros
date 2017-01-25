@@ -97,7 +97,8 @@ public:
         mouseTouchOrder_= 0;
 		
         touchPoolMutex_ = [[NSLock alloc] init];
-		mousePoolMutex_ = [[NSLock alloc] init];
+        mousePoolMutex_ = [[NSLock alloc] init];
+        keyPoolMutex_ = [[NSLock alloc] init];
         
         gevent_AddCallback(posttick_s, this);
         
@@ -149,6 +150,15 @@ public:
 		[mousePoolMutex_ unlock];
         
         [mousePoolMutex_ release];
+        
+        [keyPoolMutex_ lock];
+        for (size_t i = 0; i < keyPool1_.size(); ++i)
+            delete keyPool1_[i];
+        for (size_t i = 0; i < keyPool2_.size(); ++i)
+            delete keyPool2_[i];
+        [keyPoolMutex_ unlock];
+        
+        [keyPoolMutex_ release];
     }
     
     bool isAccelerometerAvailable()
@@ -279,11 +289,17 @@ private:
 		touchPool2_.clear();
 		[touchPoolMutex_ unlock];
 
-		[mousePoolMutex_ lock];
+        [mousePoolMutex_ lock];
         for (size_t i = 0; i < mousePool2_.size(); ++i)
             mousePool1_.push_back(mousePool2_[i]);
         mousePool2_.clear();
-		[mousePoolMutex_ unlock];
+        [mousePoolMutex_ unlock];
+
+        [keyPoolMutex_ lock];
+        for (size_t i = 0; i < keyPool2_.size(); ++i)
+            keyPool1_.push_back(keyPool2_[i]);
+        keyPool2_.clear();
+        [keyPoolMutex_ unlock];
     }
     
 public:

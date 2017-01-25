@@ -1,6 +1,6 @@
 <plugin
  name="Require"
- description="Allow to set requirements in Android Manifest">
+ description="Allow to set requirements in Android Manifest or iOS files" >
  <property name="reqAccel" type="boolean" title="Accelerometer is mandatory"/>
  <property name="reqCompass" type="boolean" title="Compass is mandatory"/>
  <property name="reqNoGps" type="boolean" title="Gps is not used in this app"/>
@@ -12,6 +12,7 @@
  <property name="reqNoVibrator" type="boolean" title="Vibrator not used in this app"/>
  <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and horizontal"/>
  <property name="reqWriteExternalStorage" type="boolean" title="App needs to to write external storage"/>
+ <property name="reqPhoneOnly" type="boolean" title="This app is targeting phones only, no tablets"/>
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -149,5 +150,17 @@
         	</replacelist>
     	</template>
     </if>            
+ </target>
+ <target name="iOS">
+    <if condition="[[[plugin.reqPhoneOnly]]]">
+   	<template name="Project" path="">
+        	<replacelist wildcards="project.pbxproj">
+	    		<replace>
+				<orig><![CDATA[TARGETED_DEVICE_FAMILY = "1,2"]]></orig>
+				<by><![CDATA[TARGETED_DEVICE_FAMILY = 1]]></by>
+	    		</replace>
+        	</replacelist>
+       </template>
+    </if>
  </target>
 </plugin>

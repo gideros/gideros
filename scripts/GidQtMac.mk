@@ -49,7 +49,7 @@ buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel 
 
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
-QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(firstword $(shell otool -L $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla))))
+QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(filter libqscintilla%,$(subst /, ,$(shell otool -L $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla)))))
 qt.install: buildqt qt.player
 	#STUDIO
 	rm -rf $(RELEASE)/Gideros\ Studio.app
