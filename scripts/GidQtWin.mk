@@ -155,12 +155,14 @@ bundle:
 	mv $(RELEASE).Tmp/* $(RELEASE)
 	rm -rf $(RELEASE).Tmp
 	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildMac.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildMac.zip; fi
-	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
-	-wget --recursive --no-clobber --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains docs.giderosmobile.com --no-parent http://docs.giderosmobile.com/
-	rm -rf $(RELEASE).Final/Documentation
-	cp -R docs.giderosmobile.com $(RELEASE).Final/Documentation
-	-wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE).Final/Resources/gideros_annot.api
+	-cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
 
 bundle.win:
-	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
+	-cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
+	
+bundle.installer: bundle
+	cp $(ROOT)\Release\gideros_mui2.nsi $(RELEASE).Final
+	cd $(RELEASE).Final; $(NSIS) gideros_mui2.nsi
+	mv $(RELEASE)/Final/Gideros.exe $(RELEASE)/
+	
 	

@@ -1,8 +1,11 @@
-MAC_HOST=nico@192.168.1.190
-MAC_PATH=gideros/gideros
-
 .PHONY: build.mac.pkg fetch.mac.pkg push.mac.pkg sync.mac.pkg clean.pkg build.all.pkg all full
- 
+
+fetchdoc:
+	-wget --quiet --recursive --no-clobber --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains docs.giderosmobile.com --no-parent http://docs.giderosmobile.com/
+	rm -rf $(RELEASE)/Documentation
+	cp -R docs.giderosmobile.com $(RELEASE)/Documentation
+	-wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE)/Resources/gideros_annot.api
+	 
 build.mac.pkg:
 	echo "\
 	cd $(MAC_PATH);\
@@ -22,8 +25,15 @@ fetch.mac.pkg:
 push.mac.pkg:
 	cd $(RELEASE);\
 	rm -f BuildWin.zip;\
-	zip -r BuildWin.zip Sdk Players Templates All\\ Plugins;\
+	zip -r BuildWin.zip Sdk Players Templates All\\ Plugins Resources Documentation;\
 	scp -B BuildWin.zip $(MAC_HOST):$(MAC_PATH)/Build.Mac/BuildWin.zip 
+
+bundle.mac.pkg:
+	echo "\
+	cd $(MAC_PATH);\
+	make -f scripts/Makefile.gid bundle.installer;\
+	exit;\
+	" |	ssh $(MAC_HOST)
 
 sync.mac.pkg: fetch.mac.pkg push.mac.pkg
 
@@ -38,12 +48,17 @@ clean.pkg: clean
 %.subthr:
 	$(MAKE) -j1 -f scripts/Makefile.gid $*
 	
-build.all.thrun : all.subthr build.mac.pkg.subthr
+build.all.thrun : all.subthr build.mac.pkg.subthr fetchdoc
 
 build.all.thr:
-	$(MAKE) -j2 -f scripts/Makefile.gid build.all.thrun
+	$(MAKE) -j3 -f scripts/Makefile.gid build.all.thrun
+
+bundle.all.thrun : bundle.installer.subthr bundle.mac.pkg.subthr fetchdoc
+
+bundle.all.thr:
+	$(MAKE) -j2 -f scripts/Makefile.gid bundle.all.thrun
 	
-all.pkg: start.pkg build.all.thr fetch.mac.pkg push.mac.pkg bundle
+all.pkg: start.pkg build.all.thr fetch.mac.pkg push.mac.pkg bundle.all.thr
 	echo -n "Finished on "; date
 
 start.pkg:
