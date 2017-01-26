@@ -27,7 +27,7 @@ ifeq ($(OS),Windows_NT)
 RELEASE=$(ROOT)/Build.Win
 all: qtapp.install android.install winrt.install html5.install win32.install 
 
-clean: qtapp.clean android.clean win32.clean winrt.clean
+clean: qtapp.clean android.clean win32.clean html5.clean winrt.clean
 	rm -rf $(RELEASE)
 else
 RELEASE=$(ROOT)/Build.Mac
