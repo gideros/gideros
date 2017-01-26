@@ -163,6 +163,6 @@ bundle.win:
 bundle.installer: bundle
 	cp $(ROOT)\Release\gideros_mui2.nsi $(RELEASE).Final
 	cd $(RELEASE).Final; $(NSIS) gideros_mui2.nsi
-	mv $(RELEASE)/Final/Gideros.exe $(RELEASE)/
+	mv $(RELEASE).Final/Gideros.exe $(ROOT)/
 	
 	

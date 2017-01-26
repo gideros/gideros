@@ -7,7 +7,7 @@ sdk.win32libs.dir:
 sdk.win32libs: sdk.headers sdk.win32libs.dir #COPY libs
 
 WIN32_BUILDDIR=win32_example/build
-WIN32_RELEASE=$(RELEASE)/win32
+WIN32_RELEASE=$(RELEASE)/Templates/win32/WindowsDesktopTemplate
 
 #####LIBS
 #INCLUDEPATHS_gvfs+=libgid/external/pthreads-w32-2-9-1-release/Pre-built.2/include
@@ -55,6 +55,7 @@ win32.libs.build: CXXFLAGS = -g -O2 -fno-keep-inline-dllexport $(addprefix -D,$(
 win32.libs.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 	#LINK $(LIBNAME).dll
 	@$(CXX) -g -o $(WIN32_BUILDDIR)/$(LIBNAME).dll -shared $^ $(LIBS)
+	cp $(WIN32_BUILDDIR)/$(LIBNAME).dll $(SDK)/lib/win32
 
 %.win32.app: $(OBJFILES_%) $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES_%))) $(LIBS_%)
 	#BUILDING $*
@@ -82,7 +83,7 @@ $(WIN32_BUILDDIR)/%.o : %.c
 depend:
 	g++ $(INCLUDEPATHS) -MM ../libgvfs/*.cpp ../libgvfs/*.c > libgvfs.dep
 			
-win32.libs: gvfs.win32.libs pystring.win32.libs lua.win32.libs gid.win32.libs gideros.win32.libs
+win32.libs: sdk.win32libs.dir gvfs.win32.libs pystring.win32.libs lua.win32.libs gid.win32.libs gideros.win32.libs
 
 win32.app: player.win32.app
 
@@ -95,25 +96,27 @@ win32.libs.install: win32.libs
 	cp $(WIN32_BUILDDIR)/pystring.dll $(WIN32_RELEASE)
 
 %.win32.plugin:
-	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro
-	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) release
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "win32" ]; then cd win32; ROOT=$$R/$(ROOT) RELEASE=$$R/$(RELEASE) $(MINGWMAKE); fi
 
 %.win32.plugin.clean:
-	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) clean
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "win32" ]; then cd win32; ROOT=$$R/$(ROOT) RELEASE=$$R/$(RELEASE) $(MINGWMAKE) clean; fi
 
 %.win32.plugin.install:
-	mkdir -p $(RELEASE)/Plugins
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp release/*.dll $$R/$(RELEASE)/Plugins	 
+	@if [ -d "$(ROOT)/plugins/$*/source/win32" ]; then echo -n "Installing" $*; \
+		mkdir -p $(RELEASE)/"All Plugins"/$*/bin/win32; \
+		cp $(ROOT)/plugins/$*/source/win32/Build/*.dll $(RELEASE)/"All Plugins"/$*/bin/win32; \
+		if [ -n "$(findstring $(notdir $*),$(PLUGINS_DEFAULT))" ]; then \
+			echo " DEFAULT"; mkdir -p $(WIN32_RELEASE)/plugins; \
+			cp $(ROOT)/plugins/$*/source/win32/Build/*.dll $(WIN32_RELEASE)/plugins; \
+	else echo ""; fi; fi
 
-win32.install: win32.libs.install win32.app
+win32.install: win32.libs.install win32.plugins.install win32.app
 	cp $(WIN32_BUILDDIR)/player.exe $(WIN32_RELEASE)/GiderosPlayer.exe
 	cp $(ROOT)/libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $(WIN32_RELEASE)
 	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(WIN32_RELEASE)
 	cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.dll $(WIN32_RELEASE)
 	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(QT)/bin/$$f.dll $(WIN32_RELEASE); done
-	mkdir -p $(RELEASE)/Templates/Win32
-	cp -r $(WIN32_RELEASE)/* $(RELEASE)/Templates/Win32 
-	strip $(addprefix $(RELEASE)/Templates/Win32/,GiderosPlayer.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll)
+	strip $(addprefix $(WIN32_RELEASE)/,GiderosPlayer.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll)
 
 win32.clean: win32.plugins.clean
 	rm -rf $(WIN32_BUILDDIR) 
