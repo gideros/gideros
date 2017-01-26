@@ -175,5 +175,5 @@ bundle.installer: bundle
 	mkdir  -p $(ROOT)/ROOTMAC/Applications
 	mv $(RELEASE).Final $(ROOT)/ROOTMAC/Applications/Gideros\ Studio
 	rm -f $(ROOT)/Gideros.pkg
-	pkgbuild --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros $(ROOT)/Gideros.pkg
+	pkgbuild --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros --component-plist $(ROOT)/Release/pkg.plist $(ROOT)/Gideros.pkg
 	rm -rf $(ROOT)/ROOTMAC
