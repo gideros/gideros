@@ -164,17 +164,16 @@ bundle:
 	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildWin.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildWin.zip; fi
 	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
 	mv $(RELEASE).Final/Templates $(RELEASE).Final/Gideros\ Studio.app/Contents
-	mv -f $(RELEASE).Final/Resources $(RELEASE).Final/Gideros\ Studio.app/Contents
+	cp -r $(RELEASE).Final/Resources $(RELEASE).Final/Gideros\ Studio.app/Contents
 
 bundle.mac:
 	cp -r $(RELEASE)/Templates $(RELEASE)/Gideros\ Studio.app/Contents/
 	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 
 bundle.installer: bundle
-	mkdir  -p $(RELEASE)/Gideros
-	mv $(RELEASE).Final $(RELEASE)/Gideros/Gideros\ Studio
-	ln -s /Applications $(RELEASE)/Gideros/Applications
-	rm $(RELEASE)/gideros.dmg
-	hdiutil create $(RELEASE)/gideros.dmg -srcfolder $(RELEASE)/Gideros
-	
-
+	rm -rf $(ROOT)/ROOTMAC
+	mkdir  -p $(ROOT)/ROOTMAC/Applications
+	mv $(RELEASE).Final $(ROOT)/ROOTMAC/Applications/Gideros\ Studio
+	rm -f $(ROOT)/Gideros.pkg
+	pkgbuild --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros $(ROOT)/Gideros.pkg
+	rm -rf $(ROOT)/ROOTMAC
