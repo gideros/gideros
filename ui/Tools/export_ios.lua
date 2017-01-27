@@ -17,6 +17,8 @@ Frameworks_ios={ tag="5FD896EC15CED77F00D34824 /* UIKit.framework in Frameworks 
 Frameworks_atv={ tag="B2E3EFD61BAC117B005599BD /* UIKit.framework in Frameworks */,", data={}},
 SourceBuild_ios={ tag="EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */,", data={}},
 SourceBuild_atv={ tag="EB42A0611D674BCB00766D7E /* plugins.cpp in Sources */,", data={}},
+ResourceBuild_ios={ tag="5F58D85315D9268900137D76 /* assets in Resources */,", data={}},
+ResourceBuild_atv={ tag="B2E3EFE31BAC1249005599BD /* assets in Resources */,", data={}},
 --Paths
 FrameworksPaths={ tag="FRAMEWORK_SEARCH_PATHS = (", data={}},
 }
@@ -147,6 +149,10 @@ if s:ends(".m") or s:ends(".mm") or s:ends(".c") or s:ends(".cpp") then --Source
 local sref,bref=iOSProject.addSource(s)
 iOSProject.addToGroup(dest,sref,flavor)
 iOSProject.addToGroup("SourceBuild",bref,flavor)
+elseif s:ends(".plist") then
+local sref,bref=iOSProject.addSource(s)
+iOSProject.addToGroup(dest,sref,flavor)
+iOSProject.addToGroup("ResourceBuild",bref,flavor)
 elseif s:ends(".framework") then
 local sref=iOSProject.addFramework(s,flavor)
 iOSProject.addToGroup(dest,sref,flavor)
