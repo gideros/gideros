@@ -80,7 +80,7 @@ void ExportProgress::onStandardOutput()
 				{
 					bool ok;
 					QString text = QInputDialog::getText(this, line.mid(4,s1-4),
-				                                         line.mid(s1+1,s2-s1-1), QLineEdit::Normal,
+				                                         line.mid(s1+1,s2-s1-1), (type=='K')?QLineEdit::Password:QLineEdit::Normal,
 				                                         line.mid(s2+1), &ok);
 					if (!ok)
 						text=line.mid(s2+1);

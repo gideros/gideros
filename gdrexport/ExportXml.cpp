@@ -18,6 +18,23 @@
 #define ALL_PLUGINS_PATH "All Plugins"
 #endif
 
+static bool IsSecret(QString key)
+{
+	return key.startsWith("secret.");
+}
+
+static QString SecretVal(QString val)
+{
+	return "******";
+}
+
+static QString SecretVal(QString key,QString val)
+{
+	if (IsSecret(key))
+		return SecretVal(val);
+	return val;
+}
+
 ExportXml::ExportXml(QString xmlFile, bool isPlugin) {
 	this->isPlugin = isPlugin;
 	this->xmlFile=xmlFile;
@@ -339,11 +356,13 @@ QString ExportXml::ComputeOperator(QString op, QString arg1, QString arg2) {
 
 QString ExportXml::ReplaceAttributes(QString text) {
 	int epos = -1;
+	bool secret=false;
 	while ((epos = text.indexOf("]]]")) != -1) {
 		int spos = text.lastIndexOf("[[[", epos);
 		if (spos == -1)
 			break;
 		QString key = text.mid(spos + 3, epos - spos - 3);
+		secret|=IsSecret(key);
 		QStringList args = key.split(":", QString::KeepEmptyParts);
 		int ac = args.count();
 		QString rep;
@@ -354,8 +373,8 @@ QString ExportXml::ReplaceAttributes(QString text) {
 		else if (ac == 3)
 			rep = ComputeOperator(args[0], args[1], args[2]);
 		text = text.replace(spos, epos + 3 - spos, rep);
-		ExportCommon::exportInfo("Replaced %s by %s @%d\n", key.toStdString().c_str(),
-				rep.toStdString().c_str(), spos);
+		ExportCommon::exportInfo("Replaced %s by %s @%d\n", (((ac>=2)&&secret)?SecretVal(key):key).toStdString().c_str(),
+				(secret?SecretVal(rep):rep).toStdString().c_str(), spos);
 	}
 	return text;
 }
@@ -426,7 +445,7 @@ bool ExportXml::RuleIf(QString cond, QDomElement rule) {
 
 bool ExportXml::RuleSet(QString key, QString val) {
 	ExportCommon::exportInfo("Set: %s -> %s\n", key.toStdString().c_str(),
-			val.toStdString().c_str());
+			SecretVal(key,val).toStdString().c_str());
 	props[key] = val;
 	return true;
 }
@@ -436,11 +455,11 @@ bool ExportXml::RuleAsk(QDomElement rule) {
 	QString title=ReplaceAttributes(XmlAttributeOrElement(rule,"title"));
 	QString question=ReplaceAttributes(XmlAttributeOrElement(rule,"question"));
 	QString def=ReplaceAttributes(XmlAttributeOrElement(rule,"default"));
-	char *ret=ExportCommon::askString(title.toUtf8().data(),question.toUtf8().data(),def.toUtf8().data());
+	char *ret=ExportCommon::askString(title.toUtf8().data(),question.toUtf8().data(),def.toUtf8().data(),IsSecret(key));
 	QString val=QString::fromUtf8(ret);
 	free(ret);
 	ExportCommon::exportInfo("Ask: %s -> %s\n", key.toStdString().c_str(),
-			val.toStdString().c_str());
+			SecretVal(key,val).toStdString().c_str());
 	props[key] = val;
 	return true;
 }
