@@ -6,6 +6,8 @@ extern "C" {
 #include "lauxlib.h"
 }
 
+#include "lfs.h"
+
 static ExportXml *currentXml=NULL;
 static bool inited=false;
 
@@ -50,6 +52,14 @@ static int bindAll(lua_State* L)
 	lua_newtable(L);
     luaL_register(L, NULL, functionList);
     lua_setglobal(L, "Export");
+
+    lua_getglobal(L, "package");
+    lua_getfield(L, -1, "preload");
+
+    lua_pushcfunction(L, luaopen_lfs);
+    lua_setfield(L, -2, "lfs");
+
+    lua_pop(L, 2);
 
 	return 0;
 }
