@@ -105,6 +105,7 @@ win32.libs.install: win32.libs
 	@if [ -d "$(ROOT)/plugins/$*/source/win32" ]; then echo -n "Installing" $*; \
 		mkdir -p $(RELEASE)/"All Plugins"/$*/bin/win32; \
 		cp $(ROOT)/plugins/$*/source/win32/Build/*.dll $(RELEASE)/"All Plugins"/$*/bin/win32; \
+		strip $(RELEASE)/"All Plugins"/$*/bin/win32/*.dll; \
 		if [ -n "$(findstring $(notdir $*),$(PLUGINS_DEFAULT))" ]; then \
 			echo " DEFAULT"; mkdir -p $(WIN32_RELEASE)/plugins; \
 			cp $(ROOT)/plugins/$*/source/win32/Build/*.dll $(WIN32_RELEASE)/plugins; \
