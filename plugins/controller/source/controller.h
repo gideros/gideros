@@ -66,6 +66,7 @@ private:
 private:
     g_id gid_;
     std::map<int, GController*> players;
+    static int detectCounter;
 };
 
 typedef struct ghid_KeyEvent

@@ -964,7 +964,7 @@ void Gamepad_processEvents() {
 					IDirectInputDevice8_Acquire(devicePrivate->deviceInterface);
 					result = IDirectInputDevice8_GetDeviceData(devicePrivate->deviceInterface, sizeof(DIDEVICEOBJECTDATA), events, &eventCount, 0);
 				}
-				if (result != DI_OK) {
+				if (!SUCCEEDED(result)) {
 					removeDevice(deviceIndex);
 					deviceIndex--;
 					continue;
