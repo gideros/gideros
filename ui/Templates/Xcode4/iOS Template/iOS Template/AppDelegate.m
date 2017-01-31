@@ -11,6 +11,8 @@
 
 #include "giderosapi.h"
 
+//GIDEROS-TAG-IOS:APP-DELEGATE-DECL//
+
 #ifndef NSFoundationVersionNumber_iOS_7_1
 # define NSFoundationVersionNumber_iOS_7_1 1047.25
 #endif
@@ -83,6 +85,8 @@
 
     gdr_drawFirstFrame();
 
+    //GIDEROS-TAG-IOS:APP-LAUNCHED//
+
     return YES;
 }
 
@@ -127,6 +131,17 @@
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     gdr_foreground();
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    //GIDEROS-TAG-IOS:NOTIFICATION-RX//
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    UIBackgroundFetchResult result=UIBackgroundFetchResultNewData;
+    //GIDEROS-TAG-IOS:NOTIFICATION-RX-CH//
+    completionHandler(result);
 }
 
 - (void)dealloc

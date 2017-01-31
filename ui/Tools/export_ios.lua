@@ -59,7 +59,7 @@ Export.callXml(rep)
 end
 end
 
-iOSProject.addReference=function(filename,filetype)
+iOSProject.addReference=function(filename,filetype,filepath,filetree)
 if filetype==nil then
 if filename:ends(".m") then
 filetype="sourcecode.c.objc"
@@ -89,15 +89,15 @@ end
 end
 local refid=iOSProject.newId()
 local refline=
-("%s /* %s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = %s; path = %s; sourceTree = \"<group>\"; };\n")
-:format(refid,filename,filetype,filename)
+("%s /* %s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = %s; path = %s; sourceTree = \"%s\"; };\n")
+:format(refid,filename,filetype,filepath or filename, filetree or "<group>")
 iOSProject.insertData("Refs",refline)
 return refid
 end
 
-iOSProject.addSource=function(filename,filetype)
+iOSProject.addSource=function(filename,filetype,filepath,filetree)
 print("addSource",filename)
-local refid=iOSProject.addReference(filename,filetype)
+local refid=iOSProject.addReference(filename,filetype,filepath,filetree)
 local fileid=iOSProject.newId()
 local refline=
 ("%s /* %s */ = {isa = PBXBuildFile; fileRef = %s /* %s */; };\n")
@@ -106,10 +106,10 @@ iOSProject.insertData("Refs",refline)
 return refid,fileid
 end
 
-iOSProject.addFramework=function(filename,flavor)
+iOSProject.addFramework=function(filename,flavor,filepath,filetree)
 flavor=flavor or "ios"
 print("addFramework",filename,flavor)
-local refid,fileid=iOSProject.addSource(filename)
+local refid,fileid=iOSProject.addSource(filename,nil,filepath,filetree)
 local refline=
 ("%s /* %s */,\n")
 :format(fileid,filename)
