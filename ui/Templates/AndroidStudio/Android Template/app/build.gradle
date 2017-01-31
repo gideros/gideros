@@ -38,3 +38,5 @@ dependencies {
     compile files('libs/gideros.jar')
     //TAG-DEPENDENCIES//    
 }
+
+//TAG-APP-GRADLE-MAIN//

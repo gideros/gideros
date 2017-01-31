@@ -9,7 +9,6 @@
 				<append orig="//GIDEROS-STATIC-INIT//" by="System.loadLibrary(&quot;exampleplugin&quot;);"/>
 	 			<append orig="//GIDEROS-EXTERNAL-CLASS//" by="&quot;com.giderosmobile.android.plugins.exampleplugin.GExampleplugin&quot;,"/>
 	        </replacelist>
-	    <receiver android:name="com.giderosmobile.android.plugins.exampleplugin.GExampleplugin"></receiver>
 	    </template>
 	    <template name="AndroidManifest" path="">
 	        <replacelist wildcards="AndroidManifest.xml">
@@ -30,8 +29,7 @@
 	            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;exampleplugin&quot;);"/>
 	            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.exampleplugin.GExampleplugin&quot;,"/>
 	        </replacelist>
-	        <receiver android:name="com.giderosmobile.android.plugins.exampleplugin.GExampleplugin"></receiver>
-	    </template>
+	       </template>
 	   <template name="AndroidManifest" path="">
 	        <replacelist wildcards="AndroidManifest.xml">
 	            <append>
