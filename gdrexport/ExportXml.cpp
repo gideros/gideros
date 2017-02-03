@@ -173,6 +173,28 @@ QMap<QString, QString> ExportXml::availablePlugins() {
 	QMap < QString, QString > xmlPlugins;
 	QStringList plugins;
 	QStringList dirs;
+
+	QDir shared(
+			QStandardPaths::writableLocation(
+					QStandardPaths::GenericDataLocation));
+	shared.mkpath("Gideros/UserPlugins");
+	bool sharedOk = shared.cd("Gideros") && shared.cd("UserPlugins");
+	if (sharedOk) {
+		dirs = shared.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+		for (int i = 0; i < dirs.count(); i++) {
+			QDir sourceDir2 = shared;
+			if (sourceDir2.cd(dirs[i])) {
+				QStringList filters;
+				filters << "*.gplugin";
+				sourceDir2.setNameFilters(filters);
+				QStringList files = sourceDir2.entryList(
+						QDir::Files | QDir::Hidden);
+				for (int i = 0; i < files.count(); i++)
+					plugins << sourceDir2.absoluteFilePath(files[i]);
+			}
+		}
+	}
+
 	QDir sourceDir(ALL_PLUGINS_PATH);
 	dirs = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
 	for (int i = 0; i < dirs.count(); i++) {
@@ -200,7 +222,8 @@ QMap<QString, QString> ExportXml::availablePlugins() {
 		file.close();
 		QDomElement exporter = doc.documentElement();
 		QString exname = exporter.attribute("name");
-		xmlPlugins[exname] = plugins[i];
+		if (!xmlPlugins.contains(exname))
+			xmlPlugins[exname] = plugins[i];
 	}
 	return xmlPlugins;
 }
