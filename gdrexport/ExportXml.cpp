@@ -105,6 +105,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["project.namews"] = ctx->basews;
 	props["project.package"] = ctx->properties.packageName;
 	props["project.version"] = ctx->properties.version;
+	props["project.platform"] = ctx->platform;
 	props["project.app_name"] = ctx->appName;
 	props["project.version_code"] = QString::number(
 			ctx->properties.version_code);
@@ -115,6 +116,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["project.orientation"] = QString::number(ctx->properties.orientation);
 	props["project.disableSplash"] = QString::number(ctx->properties.disableSplash?1:0);
 	props["project.backgroundColor"] = ctx->properties.backgroundColor;
+	props["project.ios_bundle"] = ctx->properties.ios_bundle;
 
 //Fill in passed arguments
     QHash<QString, QString>::iterator i;
