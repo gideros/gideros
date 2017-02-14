@@ -26,13 +26,7 @@
 extern "C" {
 #endif
 
-#if _MSC_VER <= 1600
-#define bool int
-#define true 1
-#define false 0
-#else
 #include <stdbool.h>
-#endif
 
 struct Gamepad_device {
 	// Unique device identifier for application session, starting at 0 for the first device attached and
