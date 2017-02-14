@@ -349,7 +349,7 @@ static void onDeviceMatched(void * context, IOReturn result, void * sender, IOHI
 static void disposeDevice(struct Gamepad_device * deviceRecord) {
 	unsigned int inputEventIndex, deviceEventIndex;
 	
-	IOHIDDeviceRegisterInputValueCallback(((struct Gamepad_devicePrivate *) deviceRecord->privateData)->deviceRef, NULL, NULL);
+    //IOHIDDeviceRegisterInputValueCallback(((struct Gamepad_devicePrivate *) deviceRecord->privateData)->deviceRef, NULL, NULL);
 	
 	for (inputEventIndex = 0; inputEventIndex < inputEventCount; inputEventIndex++) {
 		if (inputEventQueue[inputEventIndex].deviceID == deviceRecord->deviceID) {

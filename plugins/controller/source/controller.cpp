@@ -13,8 +13,6 @@ void ghid_onButtonUp(struct Gamepad_device * device, unsigned int buttonID, doub
 void ghid_onAxisMoved(struct Gamepad_device * device, unsigned int axisID, float value, float lastValue, double timestamp, void * context);
 }
 
-int GHID::detectCounter=0;
-
 GHID::GHID()
 {
     gid_ = g_NextId();
@@ -26,7 +24,6 @@ GHID::GHID()
     Gamepad_axisMoveFunc(ghid_onAxisMoved, (void *) 0x5);
     Gamepad_init();
     gevent_AddCallback(onEnterFrame, this);
-    detectCounter=0;
 }
 
 GHID::~GHID()
@@ -227,12 +224,7 @@ void GHID::onEnterFrame(int type, void *event, void *udata)
 {
     if(type == GEVENT_PRE_TICK_EVENT)
     {
-    	if (detectCounter<=0)
-    	{
-    		Gamepad_detectDevices();
-        	detectCounter=60; //Occasionnally: target 1Hz for 60fps, but this would give 0.25Hz at 15fps
-    	}
-    	detectCounter--;
+        Gamepad_detectDevices();
         Gamepad_processEvents();
     }
 }
