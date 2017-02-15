@@ -770,8 +770,8 @@ void ExportCommon::progressStep(const char *title) {
 }
 
 char *ExportCommon::askString(const char *title, const char *question,
-		const char *def) {
-	exportInfo("?:?S%s|%s|%s\n", title, question, def);
+		const char *def, bool key) {
+	exportInfo("?:?%c%s|%s|%s\n", key?'K':'S',title, question, def);
 	char str[512];
 	fgets(str, 511, stdin);
 	int i = strlen(str) - 1;

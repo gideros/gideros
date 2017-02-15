@@ -4,7 +4,7 @@ export EMSDK_PREFIX
 export CRUNCHME
 
 html5.clean:
-	cd emscripten; $(MAKE) clean
+	cd emscripten; $(MAKE) clean plugins.clean
 
 html5.libs:
 	cd emscripten; $(MAKE) -j 4

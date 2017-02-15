@@ -49,7 +49,7 @@ buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel 
 
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
-QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(firstword $(shell otool -L $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla))))
+QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(filter libqscintilla%,$(subst /, ,$(shell otool -L $(ROOT)/ui/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla)))))
 qt.install: buildqt qt.player
 	#STUDIO
 	rm -rf $(RELEASE)/Gideros\ Studio.app
@@ -152,9 +152,6 @@ tools:
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
 			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
 
-doc:
-	-wget --recursive --no-clobber --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains docs.giderosmobile.com --no-parent http://docs.giderosmobile.com/
-
 bundle:
 	rm -rf $(RELEASE).Tmp
 	mkdir -p $(RELEASE).Tmp
@@ -166,12 +163,17 @@ bundle:
 	rm -rf $(RELEASE).Tmp
 	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildWin.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildWin.zip; fi
 	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
-	rm -rf $(RELEASE).Final/Documentation
-	cp -R docs.giderosmobile.com $(RELEASE).Final/Documentation
 	mv $(RELEASE).Final/Templates $(RELEASE).Final/Gideros\ Studio.app/Contents
-	-wget "http://docs.giderosmobile.com/reference/autocomplete.php" -O $(RELEASE).Final/Gideros\ Studio.app/Contents/Resources/gideros_annot.api
+	cp -r $(RELEASE).Final/Resources $(RELEASE).Final/Gideros\ Studio.app/Contents
 
 bundle.mac:
 	cp -r $(RELEASE)/Templates $(RELEASE)/Gideros\ Studio.app/Contents/
 	cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 
+bundle.installer: bundle
+	rm -rf $(ROOT)/ROOTMAC
+	mkdir  -p $(ROOT)/ROOTMAC/Applications
+	mv $(RELEASE).Final $(ROOT)/ROOTMAC/Applications/Gideros\ Studio
+	rm -f $(ROOT)/Gideros.pkg
+	pkgbuild --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros --component-plist $(ROOT)/Release/pkg.plist $(ROOT)/Gideros.pkg
+	rm -rf $(ROOT)/ROOTMAC

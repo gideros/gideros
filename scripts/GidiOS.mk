@@ -58,6 +58,7 @@ PLUGINS_ATV=luasocket
 luasocket.%: PLUGINDIR=LuaSocket
 camera.%: PLUGINDIR=camera
 
+%.iosplugin: PLUGINDIR?=$*
 %.iosplugin: PLUGINPATH=$(ROOT)/plugins/$(PLUGINDIR)/source
 
 %.ios.iosplugin:

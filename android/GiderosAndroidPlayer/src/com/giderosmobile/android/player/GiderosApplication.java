@@ -1174,7 +1174,64 @@ public class GiderosApplication
 		}
 	}
 	
-	static public void throwLuaException(String error) throws LuaException{
+	static String toJFunctionName(String fn)
+	{
+		return fn.trim().replaceAll("\\s","_").replaceAll("\\W","");
+	}
+	
+	static String toJFileName(String fn)
+	{
+		return fn.trim().replaceAll("\\s","_").replaceAll("[^a-zA-Z0-9_\\-\\.]","");
+	}
+	
+	static public void throwLuaException(String error) throws Exception{
+		if ((error!=null)&&error.contains("stack traceback:"))
+		{
+			int sidx=error.indexOf("stack traceback:\n\t");
+			String[] stack=error.substring(sidx+18).split("\n\t");
+			LuaException le=null;
+			try {
+				StackTraceElement[] st = new StackTraceElement[stack.length];
+				for (int k=0;k<stack.length;k++)
+				{
+					String te=stack[k];
+					int sepsearch=0;
+					if (te.startsWith("["))
+						sepsearch=te.indexOf(']')+1;
+					int sep1=te.indexOf(' ',sepsearch);
+					if (sep1>=0)
+					{
+						String[] fl=te.substring(0,sep1).split(":");
+						String fn=te.substring(sep1+1);
+						int ln=1234;
+						if (fl.length>1)
+						{
+							try {
+								ln=Integer.parseInt(fl[1]);
+							}
+							catch (Exception pe)
+							{								
+								throw pe;
+							}
+						}
+						if (fn.startsWith("in function "))
+							fn=fn.substring(12);
+						else if (fn.startsWith("in main chunk"))
+							fn="MAIN_CHUNK";
+						st[k]=new StackTraceElement("LUA",toJFunctionName(fn),toJFileName(fl[0]),ln);						
+					}
+					else
+						st[k]=new StackTraceElement("LUA",toJFunctionName(te),"",0);
+				}
+				le=new LuaException(error/*.substring(0,sidx)*/);
+				le.setStackTrace(st);
+			}
+			catch (Exception se)
+			{			
+				throw se;
+			}
+			throw le;
+		}
 		throw new LuaException(error);
 	}
 

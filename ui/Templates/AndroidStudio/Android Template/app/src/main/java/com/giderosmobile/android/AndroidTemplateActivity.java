@@ -112,6 +112,7 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		WeakActivityHolder.set(this);
 
 		GiderosApplication.onCreate(externalClasses,mGLView);
+        processIntent(getIntent());
 	}
 
 	int[] id = new int[256];
@@ -119,6 +120,19 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 	int[] y = new int[256];
     float[] pressure = new float[256];
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        processIntent(intent);
+    }
+    
+    protected void processIntent(Intent intent)
+    {
+		//Line below is a marker for plugin insertion scripts. Do not remove or change
+		//GIDEROS-PROCESS-INTENT//
+    	//Wouldn't it be cool to process URL open requests here too ?
+    }
+    
 	@Override
 	public void onStart()
 	{

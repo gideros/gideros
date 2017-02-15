@@ -21,7 +21,7 @@ SOURCES += main.cpp GAppFormat.cpp Utilities.cpp WinRTExport.cpp MacOSXExport.cp
 HEADERS += GAppFormat.h Utilities.h WinRTExport.h MacOSXExport.h ExportCommon.h \
 	ExportBuiltin.h ExportXml.h filedownloader.h ExportLua.h
 
-INCLUDEPATH += ../ui ../libnetwork ../2dsg
+INCLUDEPATH += ../ui ../libnetwork ../2dsg 
 
 HEADERS += \
     ../ui/projectproperties.h \
@@ -64,6 +64,10 @@ SOURCES += \
 	../lua514u/src/ltablib.c \
 	../lua514u/src/lstrlib.c \
 	../lua514u/src/loadlib.c
+
+INCLUDEPATH += ./luaext
+SOURCES += \
+	./luaext/lfs.c
 
 LIBS += -lz
 

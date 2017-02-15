@@ -25,6 +25,8 @@ public:
 private slots:
 	void onAccepted();
 	void onSelectionChanged();
+    void onShowUserPlugins();
+    void onShowStandardPlugins();
 
 private:
     Ui::PluginsChooserDialog *ui;

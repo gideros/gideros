@@ -18,6 +18,23 @@
 #define ALL_PLUGINS_PATH "All Plugins"
 #endif
 
+static bool IsSecret(QString key)
+{
+	return key.startsWith("secret.");
+}
+
+static QString SecretVal(QString val)
+{
+	return "******";
+}
+
+static QString SecretVal(QString key,QString val)
+{
+	if (IsSecret(key))
+		return SecretVal(val);
+	return val;
+}
+
 ExportXml::ExportXml(QString xmlFile, bool isPlugin) {
 	this->isPlugin = isPlugin;
 	this->xmlFile=xmlFile;
@@ -88,6 +105,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["project.namews"] = ctx->basews;
 	props["project.package"] = ctx->properties.packageName;
 	props["project.version"] = ctx->properties.version;
+	props["project.platform"] = ctx->platform;
 	props["project.app_name"] = ctx->appName;
 	props["project.version_code"] = QString::number(
 			ctx->properties.version_code);
@@ -98,6 +116,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["project.orientation"] = QString::number(ctx->properties.orientation);
 	props["project.disableSplash"] = QString::number(ctx->properties.disableSplash?1:0);
 	props["project.backgroundColor"] = ctx->properties.backgroundColor;
+	props["project.ios_bundle"] = ctx->properties.ios_bundle;
 
 //Fill in passed arguments
     QHash<QString, QString>::iterator i;
@@ -156,6 +175,28 @@ QMap<QString, QString> ExportXml::availablePlugins() {
 	QMap < QString, QString > xmlPlugins;
 	QStringList plugins;
 	QStringList dirs;
+
+	QDir shared(
+			QStandardPaths::writableLocation(
+					QStandardPaths::GenericDataLocation));
+	shared.mkpath("Gideros/UserPlugins");
+	bool sharedOk = shared.cd("Gideros") && shared.cd("UserPlugins");
+	if (sharedOk) {
+		dirs = shared.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+		for (int i = 0; i < dirs.count(); i++) {
+			QDir sourceDir2 = shared;
+			if (sourceDir2.cd(dirs[i])) {
+				QStringList filters;
+				filters << "*.gplugin";
+				sourceDir2.setNameFilters(filters);
+				QStringList files = sourceDir2.entryList(
+						QDir::Files | QDir::Hidden);
+				for (int i = 0; i < files.count(); i++)
+					plugins << sourceDir2.absoluteFilePath(files[i]);
+			}
+		}
+	}
+
 	QDir sourceDir(ALL_PLUGINS_PATH);
 	dirs = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
 	for (int i = 0; i < dirs.count(); i++) {
@@ -183,7 +224,8 @@ QMap<QString, QString> ExportXml::availablePlugins() {
 		file.close();
 		QDomElement exporter = doc.documentElement();
 		QString exname = exporter.attribute("name");
-		xmlPlugins[exname] = plugins[i];
+		if (!xmlPlugins.contains(exname))
+			xmlPlugins[exname] = plugins[i];
 	}
 	return xmlPlugins;
 }
@@ -339,11 +381,13 @@ QString ExportXml::ComputeOperator(QString op, QString arg1, QString arg2) {
 
 QString ExportXml::ReplaceAttributes(QString text) {
 	int epos = -1;
+	bool secret=false;
 	while ((epos = text.indexOf("]]]")) != -1) {
 		int spos = text.lastIndexOf("[[[", epos);
 		if (spos == -1)
 			break;
 		QString key = text.mid(spos + 3, epos - spos - 3);
+		secret|=IsSecret(key);
 		QStringList args = key.split(":", QString::KeepEmptyParts);
 		int ac = args.count();
 		QString rep;
@@ -354,8 +398,8 @@ QString ExportXml::ReplaceAttributes(QString text) {
 		else if (ac == 3)
 			rep = ComputeOperator(args[0], args[1], args[2]);
 		text = text.replace(spos, epos + 3 - spos, rep);
-		ExportCommon::exportInfo("Replaced %s by %s @%d\n", key.toStdString().c_str(),
-				rep.toStdString().c_str(), spos);
+		ExportCommon::exportInfo("Replaced %s by %s @%d\n", (((ac>=2)&&secret)?SecretVal(key):key).toStdString().c_str(),
+				(secret?SecretVal(rep):rep).toStdString().c_str(), spos);
 	}
 	return text;
 }
@@ -426,7 +470,7 @@ bool ExportXml::RuleIf(QString cond, QDomElement rule) {
 
 bool ExportXml::RuleSet(QString key, QString val) {
 	ExportCommon::exportInfo("Set: %s -> %s\n", key.toStdString().c_str(),
-			val.toStdString().c_str());
+			SecretVal(key,val).toStdString().c_str());
 	props[key] = val;
 	return true;
 }
@@ -436,11 +480,11 @@ bool ExportXml::RuleAsk(QDomElement rule) {
 	QString title=ReplaceAttributes(XmlAttributeOrElement(rule,"title"));
 	QString question=ReplaceAttributes(XmlAttributeOrElement(rule,"question"));
 	QString def=ReplaceAttributes(XmlAttributeOrElement(rule,"default"));
-	char *ret=ExportCommon::askString(title.toUtf8().data(),question.toUtf8().data(),def.toUtf8().data());
+	char *ret=ExportCommon::askString(title.toUtf8().data(),question.toUtf8().data(),def.toUtf8().data(),IsSecret(key));
 	QString val=QString::fromUtf8(ret);
 	free(ret);
 	ExportCommon::exportInfo("Ask: %s -> %s\n", key.toStdString().c_str(),
-			val.toStdString().c_str());
+			SecretVal(key,val).toStdString().c_str());
 	props[key] = val;
 	return true;
 }

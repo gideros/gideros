@@ -6,12 +6,13 @@ JAR=$(JAVA_HOME)/bin/jar
 ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_HOME)/bin/java -classpath "$(ANT_HOME)\\lib\\ant-launcher.jar" "-Dant.home=$(ANT_HOME)" org.apache.tools.ant.launch.Launcher
 
 #DEFS
-PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json googlebilling iad gamekit storekit microphone
+PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit
 PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia
 PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller
+PLUGINS_WIN32=bitop lsqlite3 luasocket lpeg lfs json microphone clipper struct controller
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
-				struct
+				struct camera
 ROOT=.
 SDK=$(ROOT)/Sdk
 GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | grep define | sed 's/^[^"]*"\([^"]*\)"/\1/')
@@ -24,9 +25,9 @@ CXX=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/g++
 
 ifeq ($(OS),Windows_NT)
 RELEASE=$(ROOT)/Build.Win
-all: qtapp.install android.install winrt.install html5.install #win32.install 
+all: qtapp.install android.install winrt.install html5.install win32.install 
 
-clean: qtapp.clean android.clean win32.clean winrt.clean
+clean: qtapp.clean android.clean win32.clean html5.clean winrt.clean
 	rm -rf $(RELEASE)
 else
 RELEASE=$(ROOT)/Build.Mac

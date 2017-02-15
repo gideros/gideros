@@ -5,6 +5,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.2'
+        //TAG-CLASSPATH-DEPENDENCIES//
     }
 }
 
@@ -13,3 +14,5 @@ allprojects {
         jcenter()
     }
 }
+
+//TAG-TOP-GRADLE-MAIN//
