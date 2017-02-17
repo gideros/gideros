@@ -83,14 +83,5 @@ androidlibs.install: androidlibs
 	if [ -d "src" ]; then \
 	cp -r src $(CURDIR)/$(RELEASE)/All\ Plugins/$(notdir $*)/bin/Android/; \
 	fi;
-	#@if [ -n "$(findstring $(notdir $*),$(PLUGINS_DEFAULT))" ]; then \
-	echo " DEFAULT";\
-	cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;	\
-	cp -R libs $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/; \
-	cp -R libs/. $(CURDIR)/$(RELEASE)/Templates/AndroidStudio/Android\ Template/app/src/main/jniLibs/; \
-	if [ -d "com" ]; then \
-	cp -R com $(CURDIR)/$(ROOT)/android/GiderosAndroidPlayer/src;\
-	fi; else echo ""; fi
-	@#cp -R com $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/src;\
 
 		

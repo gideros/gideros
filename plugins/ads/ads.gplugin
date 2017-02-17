@@ -316,8 +316,8 @@ iOSProject.commit()
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
     <template name="Activity" path="">
         <replacelist wildcards="gideros.html">
-            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="Ads.js"/>
-            <append orig="/*GIDEROS_JS_PLUGIN*/" by="AdsAdSense.js"/>
+            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;Ads.js&quot;,"/>
+            <append orig="/*GIDEROS_JS_PLUGIN*/" by="&quot;AdsAdSense.js&quot;,"/>
         </replacelist>
     </template>
  </target>
