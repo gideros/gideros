@@ -38,5 +38,6 @@
 +(void)adActionEnd:(Class)adprovider forType:(NSString*)type;
 +(void)adDismissed:(Class)adprovider forType:(NSString*)type;
 +(void)adDisplayed:(Class)adprovider forType:(NSString*)type;
++(void)adRewarded:(Class)adprovider forType:(NSString*)type withAmount:(int)amount;
 +(void)adError:(Class)adprovider with:(NSString*)error;
 @end
