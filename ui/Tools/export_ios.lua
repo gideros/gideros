@@ -149,7 +149,7 @@ if s:ends(".m") or s:ends(".mm") or s:ends(".c") or s:ends(".cpp") then --Source
 local sref,bref=iOSProject.addSource(s)
 iOSProject.addToGroup(dest,sref,flavor)
 iOSProject.addToGroup("SourceBuild",bref,flavor)
-elseif s:ends(".plist") then
+elseif s:ends(".plist") or s:ends(".bundle") then
 local sref,bref=iOSProject.addSource(s)
 iOSProject.addToGroup(dest,sref,flavor)
 iOSProject.addToGroup("ResourceBuild",bref,flavor)

@@ -22,8 +22,9 @@
  <property name="adsFwInmobi" type="boolean" title="Enable Inmobi support (Android,iOS)"/>
  -->
  <property name="adsFwKiip" type="boolean" title="Enable Kiip support (Android,iOS)"/>
- <property name="adsFwKiipKey" type="string" title="Kiip App key" description="Kiip key for your application" default="" />
- <!-- 
+<property name="adsFwKiipKey" type="string" title="Kiip Key Android" description="Kiip key for your application" default="" />
+<property name="adsFwKiipKeyIos" type="string" title="Kiip Key iOS" description="Kiip key for your application" default="" />
+ <!--
  <property name="adsFwMillenial" type="boolean" title="Enable Millenial support (Android)"/>
  <property name="adsFwMopub" type="boolean" title="Enable Mopub support (Android,iOS)"/>
  <property name="adsFwRevmob" type="boolean" title="Enable Revmob support (Android,iOS)"/>
@@ -270,17 +271,45 @@ iOSProject.addSources({
 iOSProject.addFrameworkPath(Export.getProperty("project.namews").."/Plugins/Ads/frameworks")
 iOSProject.commit()
 	]]></lua>
-       <if condition="[[[plugin.adsFwUnity]]]">
-    	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.*" exclude="*.framework" />
-    	<download source="http://apps.giderosmobile.com/ext/ios/UnityAds.framework-2.0.5.zip" dest="[[[sys.cacheDir]]]/UnityAds.framework.zip" />
-    	<unzip source="[[[sys.cacheDir]]]/UnityAds.framework.zip" dest="[[[local.adsfwd]]]/UnityAds.framework" />
-	<lua><![CDATA[
+<if condition="[[[plugin.adsFwUnity]]]">
+<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.*" exclude="*.framework" />
+<download source="http://apps.giderosmobile.com/ext/ios/UnityAds.framework-2.0.5.zip" dest="[[[sys.cacheDir]]]/UnityAds.framework.zip" />
+<unzip source="[[[sys.cacheDir]]]/UnityAds.framework.zip" dest="[[[local.adsfwd]]]/UnityAds.framework" />
+<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.addSources({
- "AdsUnity.m","AdsUnity.h","UnityAds.framework"
+"AdsUnity.m","AdsUnity.h","UnityAds.framework"
 },"GroupAdsFrameworks","ios")
 iOSProject.commit()
-	]]></lua>
-	</if>    
+]]></lua>
+</if>
+<if condition="[[[plugin.adsFwKiip]]]">
+<template name="Kiip" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsKiip.*" exclude="*.framework">
+<replacelist wildcards="AdsKiip.m">
+<replace orig="GIDEROS_KIIP_APP_KEY" by="[[[plugin.adsFwKiipKeyIos]]]"/>
+</replacelist>
+</template>
+<set key="local.adsVer" value="2.3.0" />
+<set key="local.adsJarVer" value="Kiip-iOS-SDK-v[[[local.adsVer]]].zip" />
+<download source="http://apps.giderosmobile.com/ext/ios/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+<mkdir>KiipSDK</mkdir>
+<unzip source="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dest="KiipSDK" />
+<rmdir>[[[local.adsfwd]]]/KiipSDK.framework</rmdir>
+<mv src="KiipSDK/KiipSDK.framework" dst="[[[local.adsfwd]]]/KiipSDK.framework" />"
+<rmdir>[[[local.adsfwd]]]/KiipSDKResources.bundle</rmdir>
+<mv src="KiipSDK/KiipSDKResources.bundle" dst="[[[local.adsfwd]]]/KiipSDKResources.bundle" />"
+<rmdir>KiipSDK</rmdir>
+<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addSources({
+"AdsKiip.m","AdsKiip.h","KiipSDK.framework","KiipSDKResources.bundle"
+},"GroupAdsFrameworks","ios")
+local sysFW={ "AdSupport","PassKit","MediaPlayer","SystemConfiguration","CoreTelephony" }
+for _,v in ipairs(sysFW) do
+    iOSProject.addFramework(v..".framework","ios","System/Library/Frameworks/"..v..".framework","$SDKROOT")
+end
+iOSProject.commit()
+]]></lua>
+</if>
  </target>
 </plugin>
