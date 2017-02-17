@@ -30,6 +30,8 @@ import android.text.InputType;
 import com.giderosmobile.android.player.*;
 import com.giderosmobile.androidtemplate.R;
 
+//GIDEROS-ACTIVITY-IMPORT//
+
 public class AndroidTemplateActivity extends Activity implements OnTouchListener
 {
 	static

@@ -532,19 +532,25 @@ public class Ads {
 		if (sData != 0)
 			onAdDisplayed(getCallerName(caller), adType, sData);
 	}
-	
+
 	public static void adError(Object caller, String error){
 		if (sData != 0)
 			onAdError(getCallerName(caller), error, sData);
 	}
-	
-	
+	public static void adRewarded(Object caller, String adType, int amount){
+		if (sData != 0)
+			onAdRewarded(getCallerName(caller), adType, amount, sData);
+	}
+
+
+
 	private static native void onAdReceived(String ad, String adType, long data);
 	private static native void onAdFailed(String ad, String adType, String error, long data);
 	private static native void onAdActionBegin(String ad, String adType, long data);
 	private static native void onAdActionEnd(String ad, String adType, long data);
 	private static native void onAdDismissed(String ad, String adType, long data);
 	private static native void onAdDisplayed(String ad, String adType, long data);
+	private static native void onAdRewarded(String ad, String adType, int amount, long data);
 	private static native void onAdError(String ad, String error, long data);
 	
 	private static String modifyName(String adprovider){

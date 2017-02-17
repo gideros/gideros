@@ -20,6 +20,10 @@
  <property name="adsFwHeyzap" type="boolean" title="Enable Heyzap support (Android,iOS)"/>
  <property name="adsFwIad" type="boolean" title="Enable iAd support (iOS)"/>
  <property name="adsFwInmobi" type="boolean" title="Enable Inmobi support (Android,iOS)"/>
+ -->
+ <property name="adsFwKiip" type="boolean" title="Enable Kiip support (Android,iOS)"/>
+ <property name="adsFwKiipKey" type="string" title="Kiip App key" description="Kiip key for your application" default="" />
+ <!-- 
  <property name="adsFwMillenial" type="boolean" title="Enable Millenial support (Android)"/>
  <property name="adsFwMopub" type="boolean" title="Enable Mopub support (Android,iOS)"/>
  <property name="adsFwRevmob" type="boolean" title="Enable Revmob support (Android,iOS)"/>
@@ -85,6 +89,53 @@
 				    compile 'com.unity3d.ads:unity:ads:[[[local.adsAarVer]]]@aar'
 					</by>
 				</append>
+	       	</replacelist>	
+	 	</template>
+	</if>  
+    <if condition="[[[plugin.adsFwKiip]]]">
+    	<template name="Kiip" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsKiip.java">
+         <replacelist wildcards="AdsKiip.java">
+            <replace orig="GIDEROS_KIIP_APP_KEY" by="[[[plugin.adsFwKiipKey]]]"/>
+         </replacelist>
+    	</template>
+    	<set key="local.adsVer" value="2.3.1" />
+    	<set key="local.adsJarVer" value="Kiip-Android-SDK-v[[[local.adsVer]]].zip" />
+    	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+    	<mkdir>_tmpKiip</mkdir>
+    	<cd>_tmpKiip</cd>
+    	<unzip source="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dest="" />
+    	<cd>..</cd>
+    	<template name="Kiip" path="_tmpKiip/KiipSDK/src/main/res" dest="app/src/main/res" />
+    	<cp src="_tmpKiip/KiipSDK/libs/KiipSDK.jar" dst="app/libs/KiipSDK.jar" />
+    	<rmdir>_tmpKiip</rmdir>
+   		<template name="Activity" path="">
+         <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-ACTIVITY-IMPORT//" by="&#10;import android.support.v4.app.FragmentActivity;"/>
+            <replace orig="[[[project.namews]]]Activity extends Activity" by="[[[project.namews]]]Activity extends FragmentActivity"/>
+         </replacelist>
+    	</template>
+    	<template name="Kiip" path="app" dest="app">
+			<replacelist wildcards="AndroidManifest.xml;build.gradle">
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+    compile 'com.android.support:support-v4:[[[export.androidSdk]]]+'
+    compile files('libs/KiipSDK.jar')
+					</by>
+				</append>
+            	<append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            		<by><![CDATA[
+    	            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>]]></by>
+    	        </append>
+            	<append>
+            		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+            		<by><![CDATA[
+        <meta-data android:name="me.kiip.sdk.AppKey" android:value="[[[plugin.adsFwKiipKey]]]"/>
+        <provider android:name="me.kiip.sdk.KiipSDKProvider"
+            android:authorities="me.kiip.sdk.KiipSDKProvider[[[plugin.adsFwKiipKey]]]"
+            android:exported="true" />]]></by>    	        
+    	        </append>
 	       	</replacelist>	
 	 	</template>
 	</if>  
