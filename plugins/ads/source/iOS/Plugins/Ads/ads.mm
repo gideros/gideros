@@ -163,6 +163,16 @@ public:
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_DISPLAYED_EVENT, event, 1, this);
 	}
 	
+	void onAdRewarded(const char *ad, const char *type, int amount)
+	{
+		gads_RewardEvent *event = (gads_RewardEvent*)gevent_CreateEventStruct2(
+            sizeof(gads_RewardEvent),
+            offsetof(gads_RewardEvent, ad), ad,
+            offsetof(gads_RewardEvent, type), type);
+		event->amount=amount;
+		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_REWARDED_EVENT, event, 1, this);
+	}
+
 	void onAdError(const char *ad, const char *error)
 	{
 		gads_AdErrorEvent *event = (gads_AdErrorEvent*)gevent_CreateEventStruct2(
@@ -387,6 +397,13 @@ void gads_adDisplayed(const char *ad, const char *type){
     if(s_ads)
     {
         s_ads->onAdDisplayed(ad, type);
+    }
+}
+    
+void gads_adRewarded(const char *ad, const char *type, int amount){
+    if(s_ads)
+    {
+        s_ads->onAdRewarded(ad, type, amount);
     }
 }
     
