@@ -662,8 +662,9 @@ static bool gzInflate(QByteArray input, QByteArray &output)
 
 #define PACKED __attribute__((packed))
 bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
-	QDir toPath = QFileInfo(
-			QDir::cleanPath(ctx->outputDir.absoluteFilePath(dest))).dir();
+	QDir toPath(ctx->outputDir);
+	toPath.cd(dest);
+	exportInfo("Unzip %s to %s\n",file.toStdString().c_str(),toPath.absolutePath().toStdString().c_str());
 	QFile zfile(file);
 	if (!zfile.open(QIODevice::ReadOnly)) {
 		exportError("Can't open file %s\n", file.toStdString().c_str());
@@ -671,6 +672,7 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 	}
 
 	while (true) {
+#pragma pack(push,1)
 		struct _ZipHdr {
 			quint32 Signature;//	local file header signature     4 bytes  (0x04034b50)
 #define ZIPHDR_SIG 0x04034b50
@@ -685,6 +687,7 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 			quint16 NameLen;	//  file name length                2 bytes
 			quint16 ExtraLen;//  extra field length              2 bytes
 		}PACKED Hdr;
+#pragma pack(pop)
 		if (zfile.read((char *) &Hdr, sizeof(Hdr)) != sizeof(Hdr))
 			break;
 		if (_letohl(Hdr.Signature) != ZIPHDR_SIG)
@@ -721,7 +724,7 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 			fcont = decomp;
 		}
 		if (lname.endsWith("/"))
-			ctx->outputDir.mkpath(toPath.absoluteFilePath(lname));
+			toPath.mkpath(lname);
 		else {
 			QFile ofile(toPath.absoluteFilePath(lname));
 			if (ofile.open(QIODevice::WriteOnly))

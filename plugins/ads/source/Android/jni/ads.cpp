@@ -303,6 +303,23 @@ public:
 		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_DISPLAYED_EVENT, event, 1, this);
 	}
 	
+	void onAdRewarded(jstring jAd, jstring jAdType, jint amount)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		const char *ad = env->GetStringUTFChars(jAd, NULL);
+		const char *type = env->GetStringUTFChars(jAdType, NULL);
+
+		gads_RewardEvent *event = (gads_RewardEvent*)gevent_CreateEventStruct2(
+            sizeof(gads_RewardEvent),
+            offsetof(gads_RewardEvent, ad), ad,
+            offsetof(gads_RewardEvent, type), type);
+		event->amount=amount;
+
+		env->ReleaseStringUTFChars(jAdType, ad);
+		env->ReleaseStringUTFChars(jAd, type);
+		gevent_EnqueueEvent(gid_, callback_s, GADS_AD_REWARDED_EVENT, event, 1, this);
+	}
+
 	void onAdError(jstring jAd, jstring jerror)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -389,6 +406,11 @@ void Java_com_giderosmobile_android_plugins_ads_Ads_onAdDisplayed(JNIEnv *env, j
 void Java_com_giderosmobile_android_plugins_ads_Ads_onAdError(JNIEnv *env, jclass clz, jstring jAd, jstring jerror, jlong data)
 {
 	((GAds*)data)->onAdError(jAd, jerror);
+}
+
+void Java_com_giderosmobile_android_plugins_ads_Ads_onAdRewarded(JNIEnv *env, jclass clz, jstring jAd, jstring jAdType, jint amount, jlong data)
+{
+	((GAds*)data)->onAdRewarded(jAd, jAdType, amount);
 }
 
 }
