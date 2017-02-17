@@ -65,9 +65,8 @@
         preRun: [],
         postRun: [],
         TOTAL_MEMORY: GIDEROS_MEMORY_MB*1024*1024,
-        dynamicLibraries: [ 'luasocket.js', 'json.js', 'bit.js'
-        /*GIDEROS_DYNLIB_PLUGIN*/ ],
-        JSPlugins: [ /*GIDEROS_JS_PLUGIN*/ ],
+        dynamicLibraries: [ /*GIDEROS_DYNLIB_PLUGIN*/ null ],
+        JSPlugins: [ /*GIDEROS_JS_PLUGIN*/ null ],
         requestFile: function (file) { return 0; },
         print: (function() {
           var element = document.getElementById('output');

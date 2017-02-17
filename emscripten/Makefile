@@ -97,14 +97,15 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	$(OPTS)
 TEMPLATE=$(BUILD)/Html5/Html5
 
-PLUGINS=bitop luasocket json
+PLUGINS=$(HTML5_PLUGINS)
+PLUGINS?=bitop luasocket json
 
 template: main plugins
 	R=$(PWD); cd $(BUILD)/Html5/Html5; for j in gideros.js pace.min.js; do echo "CRUNCHING" $$j; $$R/$(CRUNCHME_TOOL) -nostrip $$j tmp.jsz; mv tmp.jsz $$j; done
 	cd $(BUILD); rm -f Html5.zip; zip -r Html5.zip Html5/; 
 
 plugins:
-	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE); cp Build/*.js* $$R/$(TEMPLATE)/; cd -; done
+	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE); cd -; done
 
 plugins.clean:
 	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE) clean; cd -; done

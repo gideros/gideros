@@ -83,7 +83,7 @@ androidlibs.install: androidlibs
 	if [ -d "src" ]; then \
 	cp -r src $(CURDIR)/$(RELEASE)/All\ Plugins/$(notdir $*)/bin/Android/; \
 	fi;
-	@if [ -n "$(findstring $(notdir $*),$(PLUGINS_DEFAULT))" ]; then \
+	#@if [ -n "$(findstring $(notdir $*),$(PLUGINS_DEFAULT))" ]; then \
 	echo " DEFAULT";\
 	cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;	\
 	cp -R libs $(CURDIR)/$(RELEASE)/Templates/Eclipse/Android\ Template/; \

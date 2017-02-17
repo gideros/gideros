@@ -2,7 +2,7 @@ TARGET=Facebook
 SRCS=$(addprefix emscripten/,facebookbinder gfacebook)
 INCS=../../../Sdk/include
 
-EMCC=emcc
+EMCC=$(EMSDK_PREFIX) emcc
 BUILD=Build
 
 OPTS=-O2 
@@ -17,7 +17,8 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	$(OPTS) --bind
 
 all: path $(OBJS)
-	emcc $(OBJS) -s SIDE_MODULE=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) --pre-js gfacebook.js -o $(BUILD)/$(TARGET).js
+	@echo "EMLINK" $(TARGET)
+	@$(EMCC) $(OBJS) -s SIDE_MODULE=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) --pre-js gfacebook.js -o $(BUILD)/$(TARGET).js
 
 path:
 	mkdir -p $(sort $(dir $(OBJS)))
@@ -26,8 +27,9 @@ clean:
 	rm -rf $(BUILD)
 
 $(BUILD)/%.em.o: ../%.cpp
-	$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
+	@echo "EMCC $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
 
 $(BUILD)/%.em.o: ../%.c
-	$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
-
+	@echo "EMCC $<"
+	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
