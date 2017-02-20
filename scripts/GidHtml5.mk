@@ -17,3 +17,18 @@ html5.install: html5.libs
 	for p in $(HTML5_PLUGINS); do mkdir -p $(RELEASE)/All\ Plugins/$$p/bin/Html5; cp plugins/$$p/source/emscripten/Build/*.js $(RELEASE)/All\ Plugins/$$p/bin/Html5; done	
 
 html5: html5.install
+
+CRUNCHME_SRCS=$(addprefix src/liblzg/lib/,checksum decode encode version)
+CRUNCHME_SRCS+=$(addprefix src/zlib/,adler32 compress crc32 deflate inftrees trees zutil)
+CRUNCHME_SRCS+=$(addprefix src/,crunchme png)
+
+crunchme.html5: $(addprefix emscripten/crunchme-0.4/,$(addsuffix .co,$(CRUNCHME_SRCS)))
+	$(CXX)  -o emscripten/crunchme-0.4/bin/crunchme-qt-win $^
+	
+%.co: %.cpp
+	$(CXX) -c $< -Iemscripten/crunchme-0.4/src/liblzg/include -o $@
+
+%.co: %.c
+	$(CC) -c $< -o $@
+
+	

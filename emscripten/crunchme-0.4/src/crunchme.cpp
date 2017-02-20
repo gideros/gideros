@@ -68,14 +68,18 @@ static const char jsSfxCodeTail16[] = "\0'\0,\0e\0v\0a\0l\0)\0)\0\012";
 // Self extracting JavaScript code, Latin 1 version for PNG compressed data
 // Note: This is basically js/unpack-png-latin1.js, compiled with the Google
 // Closure Compiler
-static const char jsSfxCodeHeadPng[] = "//\300\012(function(b,l){for(var e='',d=0,a;d<b.length;)a=b.charCodeAt(d++)&255,a>=240&&(a=(a&15)<<4|b.charCodeAt(d++)&15),a<32?a+=208:a>=208&&a<240&&(a-=208),e+=String.fromCharCode(a);var c=document.createElement('canvas'),f=c.getContext('2d');b=new Image;b.style.position='absolute';b.style.left='-17000px';document.body.appendChild(b);b.onload=function(){c.width=this.offsetWidth;c.height=this.offsetHeight;f.drawImage(this,0,0);var a=f.getImageData(0,0,c.width,c.height).data,b='';for(i=0;i<a.length;i+=4)(c=a[i])&&(b+=String.fromCharCode(c));l(b)};b.src='data:image/png;base64,'+btoa(e)}('";
+static const char jsSfxCodeHeadPng[] = "//\300\012(function(b,l){for(var e='',d=0,a;d<b.length;)a=b.charCodeAt(d++)&255,a>=240&&(a=(a&15)<<4|b.charCodeAt(d++)&15),a<32?a+=208:a>=208&&a<240&&(a-=208),e+=String.fromCharCode(a);var c=document.createElement('canvas'),f=c.getContext('2d');b=new Image;b.style.position='absolute';b.style.left='-17000px';document.body.appendChild(b);b.onload=function(){c.width=this.offsetWidth;c.height=this.offsetHeight;f.drawImage(this,0,0);var a=f.getImageData(0,0,c.width,c.height).data,b='';for(i=0;i<a.length;i++)(c=a[i])&&(b+=String.fromCharCode(c));l(b)};b.src='data:image/png;base64,'+btoa(e)}('";
 static const char jsSfxCodeTailPng[] = "',eval))\012";
 
 // Self extracting JavaScript code, UTF-16 version for PNG compressed data
 // Note: This is basically js/preunpack-utf16.js and js/unpack-png-utf16.js,
 // compiled with the Google Closure Compiler
 static const char jsSfxCodeHead16Png[]  = "\xfe\xff\0(\0f\0u\0n\0c\0t\0i\0o\0n\0(\0f\0,\0l\0)\0{\0f\0o\0r\0(\0v\0a\0r\0 \0x\0=\0000\0,\0y\0=\0'\0'\0,\0v\0=\0S\0t\0r\0i\0n\0g\0.\0f\0r\0o\0m\0C\0h\0a\0r\0C\0o\0d\0e\0,\0w\0=\0'"
-                                          "for(var a='',b=0,c,d;b<f.length;)d=f.charCodeAt(b++),c=(d>>8)-1&255,c!=213&&(a+=v(c)),a+=v(d&255);var i=document,e=i.createElement('canvas'),j=e.getContext('2d'),g=new Image,k=g.style;k.position='absolute';k.left='-17000px';i.body.appendChild(g);g.onload=function(){e.width=this.offsetWidth;e.height=this.offsetHeight;j.drawImage(this,0,0);b=0;d=j.getImageData(0,0,e.width,e.height).data;for(a='';b<d.length;b+=4)(c=d[b])&&(a+=v(c));l(a)};g.src='data:image/png;base64,'+btoa(a);"
+                                          "for(var a='',b=0,c,d;b<f.length;)d=f.charCodeAt(b++),c=(d>>8)-1&255,c!=213&&(a+=v(c)),a+=v(d&255);var i=document,e=i.createElement('canvas'),j=e.getContext('2d'),g=new Image,k=g.style;k.position='absolute';k.left='-17000px';i.body.appendChild(g);g.onload=function(){e.width=this.offsetWidth;e.height=this.offsetHeight;j.drawImage(this,0,0);b=0;d=j.getImageData(0,0,e.width,e.height).data;for(a='';b<d.length;b++)(c=d[b])&&(a+=v(c));l(a)};"
+		"ba=[];for(var o= 0;o<e.length;o+=512){var s=e.slice(o,o+512);"
+		"var bn=new Array(slice.length);for (var i=0;i<slice.length;i++){bn[i]=slice.charCodeAt(i);}"
+	    "ba.push(new Uint8Array(bn));}var bl=new Blob(ba,{type:'image/png'});"
+		"g.src=URL.createObjectURL(bl);"
                                           "\0'\0,\0z\0;\0x\0<\0w\0.\0l\0e\0n\0g\0t\0h\0;\0)\0z\0=\0w\0.\0c\0h\0a\0r\0C\0o\0d\0e\0A\0t\0(\0x\0+\0+\0)\0,\0y\0+\0=\0v\0(\0z\0>\0>\08\0&\0002\0005\0005\0,\0z\0&\0002\0005\0005\0)\0;\0e\0v\0a\0l\0(\0y\0)\0}\0(\0'";
 static const char jsSfxCodeTail16Png[] = "\0'\0,\0e\0v\0a\0l\0)\0)\0\012";
 
@@ -293,6 +297,7 @@ void ShowUsage(char *prgName)
     cerr << " -lzg      Use LZG compression (most portable)" << endl;
     cerr << " -q        Be quiet" << endl;
     cerr << " -V        Show program version and exit" << endl;
+    cerr << " -I        Output PNG only" << endl;
     cerr << endl << "If no output file is given, stdout is used for output." << endl;
     cerr << endl << "NOTE: The input file must be Latin 1 encoded!" << endl;
 }
@@ -303,6 +308,7 @@ int main(int argc, char **argv)
     char *inName = NULL, *outName = NULL;
     bool verbose = true;
     bool strip = true;
+    bool imageOnly=false;
     
     enc_t encoding = ENC_UTF16;
     comp_t compression = COMP_PNG;
@@ -323,6 +329,8 @@ int main(int argc, char **argv)
             compression = COMP_LZG;
         else if (arg == "-png")
             compression = COMP_PNG;
+        else if (arg == "-i")
+            imageOnly=true;
         else if (arg == "-V")
         {
             cout << "CrunchMe version: " << CRUNCHME_VERSION << endl;
@@ -460,6 +468,28 @@ int main(int argc, char **argv)
                         ((100 * encSize) / fileSize) << "% of the original)" << endl;
             }
 
+            if (imageOnly)
+            {
+                // Write the result...
+                bool failed = false;
+                if (outName)
+                {
+                    ofstream outFile(outName, ios_base::out | ios_base::binary);
+                    if (outFile.fail())
+                        cerr << "Unable to open file \"" << outName << "\"." << endl;
+                    outFile.write((char *) encBuf, encSize);
+                    failed = outFile.fail();
+                    outFile.close();
+                }
+                else
+                {
+                    cout.write((char*)encBuf, encSize);
+                    failed = cout.fail();
+                }
+                if (failed)
+                    cerr << "Error writing to output file." << endl;
+            	return 0;
+            }
             unsigned char *strBuf = (unsigned char*) malloc(encSize * 2);
             if (strBuf)
             {

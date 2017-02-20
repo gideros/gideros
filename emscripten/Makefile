@@ -101,7 +101,6 @@ PLUGINS=$(HTML5_PLUGINS)
 PLUGINS?=bitop luasocket json
 
 template: main plugins
-	R=$(PWD); cd $(BUILD)/Html5/Html5; for j in gideros.js pace.min.js; do echo "CRUNCHING" $$j; $$R/$(CRUNCHME_TOOL) -nostrip $$j tmp.jsz; mv tmp.jsz $$j; done
 	cd $(BUILD); rm -f Html5.zip; zip -r Html5.zip Html5/; 
 
 plugins:
@@ -127,14 +126,21 @@ $(BUILD)/lib%.a:
 	@echo "EMAR" $@
 	@$(EMAR) r $@ $^
 			
-$(TEMPLATE)/gideros.js: $(SUBLIBS_AR) $(OBJS)
+$(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidshell.html
 	@echo "EMLINK gideros"
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(SUBLIBS_AR) -o $(TEMPLATE)/gideros.html --pre-js gidjs.js --pre-js gui.js --shell-file gidshell.html
+	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --shell-file gidshell.html
 
-main: path $(TEMPLATE)/gideros.js
+main: path $(BUILD)/gideros.js
 	cp gideros.png $(TEMPLATE)
 	cp gideros.css $(TEMPLATE)
-	cp pace.* $(TEMPLATE)
+	cp $(BUILD)/gideros.html $(TEMPLATE) 
+	cp $(BUILD)/gideros.html.mem $(TEMPLATE) 
+	$(CRUNCHME_TOOL) -nostrip -i pace.min.js $(TEMPLATE)/pace.js.png
+	cp pace.ldr.js $(TEMPLATE)/pace.js
+	$(CRUNCHME_TOOL) -nostrip -i $(BUILD)/gideros.js $(TEMPLATE)/gideros.js.png
+	cp gideros.ldr.js $(TEMPLATE)/gideros.js
+	cp jzptool.js $(TEMPLATE)
+	
 
 path:
 	mkdir -p $(sort $(dir $(SUBLIBS_OBJS)))

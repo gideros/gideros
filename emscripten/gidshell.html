@@ -36,7 +36,8 @@
 <!--    <hr/>
     <textarea class="emscripten" id="output" rows="8"></textarea>
     <hr>-->
-    <script data-pace-options='{ "elements": false, "target": "#progress_box" }' src='pace.min.js'></script>
+    <script src='jzptool.js'></script>
+    <script data-pace-options='{ "elements": false, "target": "#progress_box" }' src='pace.js'></script>
     <script type='text/javascript'>
 	function getParameterByName(name, url) {
 		if (!url) url = window.location.href;
@@ -138,6 +139,8 @@
           //Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         }
       };
+      Module.dynamicLibraries.pop();
+      Module.JSPlugins.pop();
       Module.setStatus('Preparing...');
       window.onerror = function() {
         Module.setStatus('Exception thrown, see JavaScript console');

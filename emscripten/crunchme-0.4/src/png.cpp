@@ -17,6 +17,7 @@
 * along with CrunchMe.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cstring>
 #include <iostream>
 #include <cmath>
 #include "png.h"
@@ -117,9 +118,9 @@ unsigned int png::deflate(const char *in, unsigned int inSize, char *out,
 
 static void calcBmpSize(unsigned int size, unsigned int &w, unsigned int &h)
 {
-    w = size < 16384 ? size : 16384;
-    h = (size + w - 1) / w;
-    if (w * h < size) ++h;
+    w = size < 4096 ? ((size+2)/3) : 4096;
+    h = (size + w*3 - 1) / (w*3);
+    if (w * h*3 < size) ++h;
 }
 
 // Compress a data stream as a PNG image
@@ -129,7 +130,7 @@ unsigned int png::compress(const char *in, unsigned int inSize, char *out,
     // Allocate memory for a raw "bitmap"
     unsigned int bmpWidth, bmpHeight;
     calcBmpSize(inSize, bmpWidth, bmpHeight);
-    unsigned int bmpSize = (bmpWidth + 1) * bmpHeight;
+    unsigned int bmpSize = (bmpWidth*3 + 1) * bmpHeight;
     char *bmp = new char[bmpSize];
     if (!bmp)
         return 0;
@@ -140,12 +141,12 @@ unsigned int png::compress(const char *in, unsigned int inSize, char *out,
     for (unsigned int y = 0; y < bmpHeight; ++y)
     {
         *dst++ = 0;    // Filter type: 0 (none)
-        for (unsigned int x = 0; x < bmpWidth; ++x)   // Raw "pixel" data
+        for (unsigned int x = 0; x < (bmpWidth*3); ++x)   // Raw "pixel" data
         {
             if (count < inSize)
                 *dst++ = *src++;
             else
-                *dst++ = 0;
+                *dst++ = ' ';
             ++count;
         }
     }
@@ -168,7 +169,7 @@ unsigned int png::compress(const char *in, unsigned int inSize, char *out,
         bmpWidth>>24,bmpWidth>>16,bmpWidth>>8,bmpWidth,     // Width
         bmpHeight>>24,bmpHeight>>16,bmpHeight>>8,bmpHeight, // Height
         8,                                      // Bit depth
-        0,                                      // Color type (grey scale)
+        2,                                      // Color type (RGBA)
         0,                                      // Compression method (DEFLATE)
         0,                                      // Filter method (adaptive)
         0                                       // Interlace method (no interlace)
@@ -212,7 +213,7 @@ unsigned int png::maxCompressedSize(unsigned int size)
     // Get bitmap size
     unsigned int w, h, bmpSize;
     calcBmpSize(size, w, h);
-    bmpSize = (w + 1) * h;
+    bmpSize = (w*3 + 1) * h;
 
     // Take into account zlib growth and PNG format overhead
     return bmpSize + (bmpSize >> 7) + 70;
