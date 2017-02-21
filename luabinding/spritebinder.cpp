@@ -1182,7 +1182,7 @@ int SpriteBinder::getHeight(lua_State* L)
 */
 int SpriteBinder::getSize(lua_State* L)
 {
-	StackChecker checker(L, "SpriteBinder::getSize", 1);
+	StackChecker checker(L, "SpriteBinder::getSize", 2);
 	
 	Binder binder(L);
 	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
