@@ -97,6 +97,7 @@ public:
 	bool stop(bool unrefNow=true);
 	void gotoAndPlay(int frame);
 	void gotoAndStop(int frame);
+	int getFrame();
 
 protected:
 	struct Frame
