@@ -44,6 +44,8 @@ class ExportXml {
 	ExportContext *ctx;
 public:
 	ExportXml(QString xmlFile,bool isPlugin=false);
+	ExportXml();
+	void SetupProperties(ExportContext *ctx);
 	bool Process(ExportContext *ctx);
 	bool ProcessRuleString(const char *xml);
 	bool isPlugin;

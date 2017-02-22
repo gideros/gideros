@@ -72,6 +72,17 @@ void ExportLUA_Init(ExportContext *ctx)
  lua_call(ctx->L, 0, 0);
 }
 
+void ExportLUA_DonePlugins(ExportContext *ctx)
+{
+	 if (inited)
+	 {
+		 ExportXml *tmp=new ExportXml();
+		 tmp->SetupProperties(ctx);
+		 ExportLUA_CallCode(ctx,tmp,"Export._finish()");
+		 delete tmp;
+	 }
+}
+
 void ExportLUA_Cleanup(ExportContext *ctx)
 {
  lua_close(ctx->L);

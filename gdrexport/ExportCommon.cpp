@@ -9,6 +9,7 @@
 #include "Utilities.h"
 #include <bytebuffer.h>
 #include "ExportXml.h"
+#include "ExportLua.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -487,7 +488,10 @@ void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
 
 bool ExportCommon::applyPlugins(ExportContext *ctx) {
 	if (ctx->assetsOnly) //Don't export plugins on asset only
+	{
+		ExportLUA_DonePlugins(ctx);
 		return true;
+	}
 	exportInfo("Applying plugins\n");
 	QMap < QString, QString > allplugins = ExportXml::availablePlugins();
 	for (QSet<ProjectProperties::Plugin>::const_iterator it =
@@ -498,6 +502,7 @@ bool ExportCommon::applyPlugins(ExportContext *ctx) {
 			if (!ExportXml::exportXml(xml, true, ctx))
 				return false;
 	}
+	ExportLUA_DonePlugins(ctx);
 	return true;
 }
 
