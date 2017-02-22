@@ -206,6 +206,7 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
   pfd.iPixelType = PFD_TYPE_RGBA;
   pfd.cColorBits = 24;
   pfd.cDepthBits = 16;
+  pfd.cStencilBits = 8;
   pfd.iLayerType = PFD_MAIN_PLANE;
 
   format = ChoosePixelFormat( *hDC, &pfd );

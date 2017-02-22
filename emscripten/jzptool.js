@@ -1,5 +1,5 @@
 // Create a 2D canvas
-JPZLoad=function (fl,ev)
+JPZConvert=function (fl,cb)
 {
 var doc = document, canv = doc.createElement("canvas"), ctx = canv.getContext("2d");
 
@@ -15,21 +15,25 @@ img.onload = function()
     canv.height = this.offsetHeight;
     ctx.globalCompositeOperation='copy';
     ctx.drawImage(this, 0, 0);
-    
-    w = ctx.getImageData(0, 0, canv.width, canv.height).data;
-    canv= null;
-    u=new Uint8Array(3*(w.length/4));
-    for (k = 0, ki = 0; k < w.length; k ++)
+    doc.body.removeChild(this);
+    var bb;
     {
-    	u[ki++]=w[k++];
-    	u[ki++]=w[k++];
-    	u[ki++]=w[k++];
+    	var w= ctx.getImageData(0, 0, canv.width, canv.height).data;
+        u=new Uint8Array(3*(w.length/4));
+        for (k = 0, ki = 0; k < w.length; k ++)
+        {
+        	u[ki++]=w[k++];
+        	u[ki++]=w[k++];
+        	u[ki++]=w[k++];
+        }
+        bb = new Blob([u]);
     }
+    canv.width=1;
+    canv.height=1;
     
-    var bb = new Blob([u]);
     var f = new FileReader();
     f.onload = function(e) {
-    	ev(e.target.result);
+    	cb(e.target.result);
     };
     f.readAsText(bb);
 
@@ -51,4 +55,14 @@ img.onload = function()
     */
 }
 img.src = fl;
+}
+
+JPZLoad=function (fl,ev)
+{
+	JPZConvert(fl,function (code)
+	{
+		 setTimeout(function() { 
+			 ev(code)
+		},1)
+	})
 }
