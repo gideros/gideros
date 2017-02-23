@@ -1,4 +1,5 @@
 <export name="APK" 
+    label="Android"
 	description="Export as an Android APK file">
 	<property name="packageName" type="string" title="Package name" description="" default="com.yourdomain.yourapp" />
 	<property name="androidTarget" type="string" title="Android Target Version" description="The android SDK version you wish to compile with" default="19" />
@@ -67,6 +68,7 @@ if lfs.attributes(tools.."/"..buildVer,"mode")~="directory" then
 end
 print("Android Build Tools:"..buildVer)
 	</lua>
+		<set key="project.package" value="[[[export.packageName]]]"/>
 		<ask key="secret.keyStorePass" type="string" title="Key store password" question="Enter your key store password:" default="" />
 		<set key="local.noSigning" value="//"/>
 		<set key="local.isUnsigned" value="-unsigned"/>
