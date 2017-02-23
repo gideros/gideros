@@ -4,6 +4,7 @@
 	<property name="packageName" type="string" title="Package name" description="" default="com.yourdomain.yourapp" />
 	<property name="androidTarget" type="string" title="Android Target Version" description="The android SDK version you wish to compile with" default="19" />
 	<property name="buildApk" type="boolean" title="Build APK file" description="Build the APK file directly, otherwise outputs the Android Studio project" default="1" />	
+	<property name="deployApk" type="boolean" title="Install APK to device" description="Try to deploy APK to connected device" default="0" />	
 	<property name="keyStore" type="file" title="Key store" description="Path to keystore for signing" default="" />
 	<property name="keyAlias" type="string" title="Key alias" description="Alias of the key to use" default="" />
 	<property name="androidPath" type="dir" title="Android SDK Directory" description="Directory of your Android SDK (optional)" default="" />
@@ -183,6 +184,15 @@ print("Android Build Tools:"..buildVer)
 			<cp src="app/build/outputs/apk/app-release[[[local.isUnsigned]]].apk" dst="../[[[project.namews]]][[[local.isUnsigned]]].apk"/>
 			<cd>..</cd>
 			<rmdir>tmp</rmdir>
+			<if condition="[[[export.deployApk]]]">
+				<set key="local.adbCmd" value="[[[export.androidPath]]]\\platform-tools\\adb.exe"/>
+	    	    <if condition="[[[neq:[[[sys.exeExtension]]]:.exe]]]">
+					<set key="local.adbCmd" value="[[[export.androidPath]]]/platform-tools/adb"/>
+        		</if>
+				<exec>
+					[[[local.adbCmd]]] install -rt [[[project.namews]]][[[local.isUnsigned]]].apk
+				</exec>
+			</if>
 		</if>
 	</rules>
 </export>
