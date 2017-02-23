@@ -219,4 +219,10 @@
     gdr_keyUp(8,0);
 }
 
+- (void) reportLuaError:(NSString *)error
+{
+    //GIDEROS-TAG-IOS:LUAERROR//
+    @throw [[LuaException alloc] initWithName:@"Lua" reason:error userInfo:nil];
+}
+
 @end
