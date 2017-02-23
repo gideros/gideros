@@ -212,4 +212,9 @@
     gdr_keyUp(8,0);
 }
 
+- (void) reportLuaError:(NSString *)error
+{
+ @throw [[LuaException alloc] initWithName:@"Lua" reason:error userInfo:nil];
+}
+
 @end
