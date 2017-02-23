@@ -100,7 +100,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     }
 
     //XML based templates
-    xmlTabStart=ui->architectureTab->count();
+    xmlTabCount=0;
     QDir sourceDir("Templates");
    	QStringList filters;
     filters << "*.gexport";
@@ -134,7 +134,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
             ui->architectureTab->insertTab(0,table,exlabel);
             ui->architecture->insertItem(0,exlabel);
             table->fill(exporter,props);
-
+            xmlTabCount++;
 	}
 
 	ui->architecture->setCurrentIndex(properties_->architecture);
@@ -248,9 +248,9 @@ void ExportProjectDialog::onAccepted()
     properties_->html5_mem = ui->html5_mem->text().toInt();
     properties_->plugins=plugins;
 
-    for (int tab=xmlTabStart;tab<ui->architectureTab->count();tab++)
+    for (int tab=0;tab<xmlTabCount;tab++)
     {
-    	QString exname=ui->architectureTab->tabText(tab);
+    	QString exname=exportTypes[tab];
     	PropertyEditingTable *table=(PropertyEditingTable *)ui->architectureTab->widget(tab);
      	for (QSet<ProjectProperties::Export>::iterator it=properties_->exports.begin();it!=properties_->exports.end();)
         		if ((*it).name==exname)

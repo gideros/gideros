@@ -47,11 +47,6 @@ target platform to export the application source.</string>
        </item>
        <item>
         <property name="text">
-         <string>Android</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
          <string>Windows Desktop</string>
         </property>
        </item>
@@ -80,6 +75,11 @@ target platform to export the application source.</string>
          <string>Html5</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Android (Old)</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item>
@@ -100,7 +100,7 @@ target platform to export the application source.</string>
    <item>
     <widget class="QTabWidget" name="architectureTab">
      <property name="currentIndex">
-      <number>0</number>
+      <number>7</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -495,7 +495,7 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Android (Deprecated)</string>
+       <string>Android (Old)</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>

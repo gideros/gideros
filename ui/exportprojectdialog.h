@@ -43,7 +43,7 @@ private:
     Ui::ExportProjectDialog *ui;
 	ProjectProperties* properties_;
 	QSet<ProjectProperties::Plugin> plugins;
-	int xmlTabStart;
+	int xmlTabCount;
 	QStringList exportTypes;
     QMap<QString, QString> osxCat;
 };
