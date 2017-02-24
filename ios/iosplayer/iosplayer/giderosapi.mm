@@ -100,11 +100,6 @@
 
 @end
 
-@interface LuaException : NSException
-@end
-@implementation LuaException
-@end
-
 
 extern "C" {
 void g_setFps(int);

@@ -17,6 +17,12 @@
 - (void)deleteFramebuffer;
 @end
 
+@interface LuaException : NSException
+@end
+@implementation LuaException
+@end
+
+
 @implementation EAGLView
 
 @dynamic context;
