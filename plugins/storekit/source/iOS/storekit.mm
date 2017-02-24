@@ -77,7 +77,16 @@ static void dispatchEvent(lua_State* L, const char* type,
 
 			lua_pushstring(L, [product.productIdentifier UTF8String]);
 			lua_setfield(L, -2, "productIdentifier");
-			
+            
+            
+            NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+            [numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+            [numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+            [numberFormatter setLocale:product.priceLocale];
+            NSString *formattedPrice = [numberFormatter stringFromNumber:product.price];
+            lua_pushstring(L, [formattedPrice UTF8String]);
+            lua_setfield(L, -2, "currencyString");
+            
 			lua_rawseti(L, -2, i + 1);
 		}
 		lua_setfield(L, -2, "products");
@@ -139,6 +148,8 @@ static void dispatchEvent(lua_State* L, const char* type,
 				lua_pushstring(L, RESTORED);
 				lua_setfield(L, -2, "state");
 				break;
+            default:
+                break;
         }
 		
 		if (transaction.transactionState == SKPaymentTransactionStatePurchased ||
@@ -363,7 +374,7 @@ static int requestProducts(lua_State* L)
 	
     luaL_checktype(L, 2, LUA_TTABLE);
     
-	int len = lua_objlen(L, 2);
+	int len = (int)lua_objlen(L, 2);
 	
 	NSMutableSet* productIdentifiers = [NSMutableSet setWithCapacity:len];
 	
@@ -384,7 +395,7 @@ static int purchase(lua_State* L)
 	StoreKit* storekit = getInstance(L, 1);
 	
 	NSString* productIdentifier = [NSString stringWithUTF8String:luaL_checkstring(L, 2)];
-    int quantity = luaL_optinteger(L, 3, 1);
+    int quantity = (int)luaL_optinteger(L, 3, 1);
 	
     storekit->purchase(productIdentifier, quantity);
 	
@@ -487,3 +498,4 @@ static void g_deinitializePlugin(lua_State *L)
 }
 
 REGISTER_PLUGIN("Store Kit", "1.0")
+
