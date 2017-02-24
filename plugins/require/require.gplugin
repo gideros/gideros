@@ -13,6 +13,7 @@
  <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and horizontal"/>
  <property name="reqWriteExternalStorage" type="boolean" title="App needs to to write external storage"/>
  <property name="reqPhoneOnly" type="boolean" title="This app is targeting phones only, no tablets"/>
+ <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -163,4 +164,18 @@
        </template>
     </if>
  </target>
+ <target name="iOS">
+    <if condition="[[[plugin.reqExpRegCompliance]]]">
+   	<template name="Project" path="">
+       	<replacelist wildcards="[[[project.namews]]]-Info.plist;Info.plist">
+		    <prepend>
+				<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
+				<by><![CDATA[	
+					<key>ITSAppUsesNonExemptEncryption</key><false/>
+				]]></by>
+	    	</prepend>
+        </replacelist>
+	</template>
+    </if>
+ </target> 
 </plugin>
