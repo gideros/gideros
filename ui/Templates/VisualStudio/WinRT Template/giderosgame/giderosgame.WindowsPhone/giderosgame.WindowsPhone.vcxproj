@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
@@ -181,7 +181,7 @@
     <Image Include="Assets\WideLogo.scale-240.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-INSERT_ASSETS_HERE
+    <!--GIDEROS_INSERT_ASSETS_HERE-->
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -220,9 +220,6 @@ INSERT_ASSETS_HERE
   <ItemGroup>
     <ClInclude Include="Plugins\lfs.h" />
     <ClInclude Include="Plugins\sqlite3.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="SQLite.WP81, Version=3.9.2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

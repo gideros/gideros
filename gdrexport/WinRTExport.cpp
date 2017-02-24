@@ -46,7 +46,7 @@ void WinRTExport::updateWinRTProject(QString projfile,ExportContext *ctx)
       data = in.readAll();
       in.close();
 
-      data.replace("INSERT_ASSETS_HERE",replacement);
+      data.replace("<!--GIDEROS_INSERT_ASSETS_HERE-->",replacement);
 
       QFile out(ctx->outputDir.absoluteFilePath(projfile));
       out.open(QFile::WriteOnly);

@@ -216,7 +216,7 @@
     <Image Include="Assets\StoreLogo.scale-100.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-INSERT_ASSETS_HERE
+	<!--GIDEROS_INSERT_ASSETS_HERE-->
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
