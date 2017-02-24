@@ -94,6 +94,9 @@
     <ClCompile Include="Plugins\lua_cjson_stub.cpp">
       <Filter>Plugins</Filter>
     </ClCompile>
+    <ClCompile Include="Plugins\sqlite3.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Plugins\lfs.h">
