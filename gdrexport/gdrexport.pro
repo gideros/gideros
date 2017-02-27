@@ -64,6 +64,8 @@ SOURCES += \
 	../lua/src/loslib.c \
 	../lua/src/ltablib.c \
 	../lua/src/lstrlib.c \
+	../lua/src/lutf8lib.c \
+	../lua/src/lint64.c \
 	../lua/src/loadlib.c
 
 INCLUDEPATH += ./luaext
