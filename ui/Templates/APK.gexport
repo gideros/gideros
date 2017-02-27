@@ -70,13 +70,15 @@ end
 print("Android Build Tools:"..buildVer)
 	</lua>
 		<set key="project.package" value="[[[export.packageName]]]"/>
-		<ask key="secret.keyStorePass" type="string" title="Key store password" question="Enter your key store password:" default="" />
 		<set key="local.noSigning" value="//"/>
 		<set key="local.isUnsigned" value="-unsigned"/>
-		<if condition="[[[neq:[[[secret.keyStorePass]]]:]]]">
-			<ask key="secret.keyAliasPass" type="string" title="Key alias password" question="Enter your key alias password:" default="[[[secret.keyStorePass]]]" />
-			<set key="local.noSigning" value=""/>
-			<set key="local.isUnsigned" value=""/>
+		<if condition="[[[neq:[[[export.keyAlias]]]:]]]">
+			<ask key="secret.keyStorePass" type="string" title="Key store password" question="Enter your key store password:" default="" />
+			<if condition="[[[neq:[[[secret.keyStorePass]]]:]]]">
+				<ask key="secret.keyAliasPass" type="string" title="Key alias password" question="Enter your key alias password:" default="[[[secret.keyStorePass]]]" />
+				<set key="local.noSigning" value=""/>
+				<set key="local.isUnsigned" value=""/>
+			</if>
 		</if>
 		<if condition="[[[export.buildApk]]]">
 			<rmdir>tmp</rmdir>

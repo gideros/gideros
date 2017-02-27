@@ -273,6 +273,8 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	ctx->luafiles.clear();
 	ctx->luafiles_abs.clear();
 
+	QStringList luafiles_src;
+
 	QDir path(QFileInfo(ctx->projectFileName_).path());
 
 	ExportCommon::progressSteps(ctx->fileQueue.size());
@@ -303,11 +305,14 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 					== ctx->topologicalSort.end()) {
 				ctx->luafiles.push_back(s1);
 				ctx->luafiles_abs.push_back(dst);
+				luafiles_src.push_back(src);
 				if (!compileLua)
 				{
 					ctx->allfiles.push_back(s1);
 					ctx->allfiles_abs.push_back(dst);
 				}
+				else
+					copied=true;
 			} else // compile independant lua files (with luac)
 			{
 				ctx->allfiles.push_back(s1);
@@ -364,7 +369,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			QString rdst = QDir::cleanPath(
 					ctx->outputDir.relativeFilePath(difile));
 			sfile = sfile + " \"" + rdst + "\"";
-			QFile::copy(difile, rdst);
+			QFile::copy(luafiles_src[i], rdst);
 		}
 		QFileInfo di(dfile);
 		QProcess::execute(quote(luac) + " -o \"" + dfile + "\" " + sfile);
