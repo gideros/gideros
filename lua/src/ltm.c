@@ -34,7 +34,7 @@ void luaT_init (lua_State *L) {
     "__add", "__sub", "__mul", "__div", "__mod",
     "__pow", "__unm", "__len", "__lt", "__le",
     "__concat", "__call",
-    "__bor", "__band", "__bxor", "__shl", "__shr", "__bnot", "__idiv"
+    "__bor", "__band", "__bxor", "__shl", "__shr", "__bnot", "__idiv", "__max", "__min"
   };
   int i;
   for (i=0; i<TM_N; i++) {

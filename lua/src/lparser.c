@@ -804,6 +804,8 @@ static BinOpr getbinopr (int op) {
     case TK_LSHFT: return OPR_BLSHFT;
     case TK_RSHFT: return OPR_BRSHFT;
     case TK_INTDIV: return OPR_INTDIV;
+	case TK_MAX: return OPR_MAX;
+	case TK_MIN: return OPR_MIN;
     case TK_CONCAT: return OPR_CONCAT;
     case TK_NE: return OPR_NE;
     case TK_EQ: return OPR_EQ;
@@ -823,7 +825,7 @@ static const struct {
   lu_byte right; /* right priority */
 } priority[] = {  /* ORDER OPR */
    {6, 6}, {6, 6}, {7, 7}, {7, 7}, {7, 7},  /* `+' `-' `/' `%' */
-   {6, 6}, {6, 6}, {6, 6}, {7, 7}, {7, 7}, {7, 7}, /* `|' `&' `!' `<<' `>>' `//' */
+   {6, 6}, {6, 6}, {6, 6}, {7, 7}, {7, 7}, {7, 7}, {7,7}, {7,7}, /* `|' `&' `!' `<<' `>>' `//' `<>' `><' */
    {10, 9}, {5, 4},                 /* power and concat (right associative) */
    {3, 3}, {3, 3},                  /* equality and inequality */
    {3, 3}, {3, 3}, {3, 3}, {3, 3},  /* order */

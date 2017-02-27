@@ -40,6 +40,8 @@ typedef enum {
   TM_BRSHFT,
   TM_BNOT,
   TM_INTDIV,
+  TM_MAX,
+  TM_MIN,
   TM_N		/* number of elements in the enum */
 } TMS;
 

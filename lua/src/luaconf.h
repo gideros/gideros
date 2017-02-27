@@ -571,6 +571,8 @@ union luai_Cast { double l_d; long l_l; };
 #define luai_nummul(a,b)	((a)*(b))
 #define luai_numdiv(a,b)	((a)/(b))
 #define luai_numintdiv(a,b)	(floor((a)/(b)))
+#define luai_nummax(a,b)	(((a) > (b)) ? (a) : (b))
+#define luai_nummin(a,b)	(((a) < (b)) ? (a) : (b))
 #define luai_nummod(a,b)	((a) - floor((a)/(b))*(b))
 #define luai_numpow(a,b)	(pow(a,b))
 #define luai_numunm(a)		(-(a))

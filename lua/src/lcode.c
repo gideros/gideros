@@ -659,6 +659,8 @@ static int constfolding (OpCode op, expdesc *e1, expdesc *e2) {
     case OP_INTDIV:
       if (v2 == 0) return 0;  /* do not attempt to divide by 0 */
       r = luai_numintdiv(v1, v2); break;
+	case OP_MAX: r = luai_nummax(v1,v2); break;
+	case OP_MIN: r = luai_nummin(v1,v2); break;
     default: lua_assert(0); r = 0; break;
   }
   if (luai_numisnan(r)) return 0;  /* do not attempt to produce NaN */
@@ -799,12 +801,15 @@ void luaK_posfix (FuncState *fs, BinOpr op, expdesc *e1, expdesc *e2) {
     case OPR_BLSHFT: codearith(fs, OP_BLSHFT, e1, e2); break;
     case OPR_BRSHFT: codearith(fs, OP_BRSHFT, e1, e2); break;
     case OPR_INTDIV: codearith(fs, OP_INTDIV, e1, e2); break;
+	case OPR_MAX: codearith(fs, OP_MAX, e1, e2); break;
+	case OPR_MIN: codearith(fs, OP_MIN, e1, e2); break;
     case OPR_EQ: codecomp(fs, OP_EQ, 1, e1, e2); break;
     case OPR_NE: codecomp(fs, OP_EQ, 0, e1, e2); break;
     case OPR_LT: codecomp(fs, OP_LT, 1, e1, e2); break;
     case OPR_LE: codecomp(fs, OP_LE, 1, e1, e2); break;
     case OPR_GT: codecomp(fs, OP_LT, 0, e1, e2); break;
     case OPR_GE: codecomp(fs, OP_LE, 0, e1, e2); break;
+	
     default: lua_assert(0);
   }
 }

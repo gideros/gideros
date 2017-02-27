@@ -136,6 +136,8 @@ static void PrintCode(const Proto* f)
      if (ISK(c)) PrintConstant(f,INDEXK(c)); else printf("-");
     }
     break;
+   case OP_MAX:
+   case OP_MIN:
    case OP_JMP:
    case OP_FORLOOP:
    case OP_FORPREP:

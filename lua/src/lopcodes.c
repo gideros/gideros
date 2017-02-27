@@ -39,6 +39,8 @@ const char *const luaP_opnames[NUM_OPCODES+1] = {
   "BRSHFT",
   "BNOT",
   "INTDIV",
+  "MAX",
+  "MIN",
   "UNM",
   "NOT",
   "LEN",
@@ -92,6 +94,8 @@ const lu_byte luaP_opmodes[NUM_OPCODES] = {
  ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_BRSHFT */
  ,opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_BNOT */
  ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_INTDIV */
+ ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_MAX */
+ ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_MIN */
  ,opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_UNM */
  ,opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_NOT */
  ,opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_LEN */

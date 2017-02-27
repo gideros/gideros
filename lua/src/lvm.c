@@ -326,6 +326,8 @@ static void Arith (lua_State *L, StkId ra, const TValue *rb,
       case TM_POW: setnvalue(ra, luai_numpow(nb, nc)); break;
       case TM_UNM: setnvalue(ra, luai_numunm(nb)); break;
       case TM_INTDIV: setnvalue(ra, luai_numintdiv(nb, nc)); break;
+	  case TM_MAX: setnvalue(ra, luai_nummax(nb, nc)); break;
+	  case TM_MIN: setnvalue(ra, luai_nummin(nb, nc)); break;
       default: lua_assert(0); break;
     }
   }
@@ -576,6 +578,14 @@ void luaV_execute (lua_State *L, int nexeccalls) {
         arith_op(luai_numintdiv, TM_INTDIV);
         continue;
       }
+	  case OP_MAX: {
+		  arith_op(luai_nummax, TM_MAX);
+		  continue;
+	  }
+	  case OP_MIN: {
+		  arith_op(luai_nummin, TM_MIN);
+		  continue;
+	  }
       case OP_NOT: {
         int res = l_isfalse(RB(i));  /* next assignment may change this value */
         setbvalue(ra, res);
