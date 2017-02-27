@@ -19,7 +19,11 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#ifndef DESKTOP_TOOLS
 #include <gpath.h>
+#else
+#define gpath_transform(p) p
+#endif
 
 static int os_pushresult (lua_State *L, int i, const char *filename) {
   int en = errno;  /* calls to Lua API may change this value */

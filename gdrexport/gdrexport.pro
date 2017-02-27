@@ -33,37 +33,38 @@ SOURCES += \
     ../ui/dependencygraph.cpp \
     ../libnetwork/bytebuffer.cpp
 
-INCLUDEPATH += ../lua514u/src
+DEFINES += DESKTOP_TOOLS 
+INCLUDEPATH += ../lua/src
 SOURCES += \
-	../lua514u/src/lapi.c \
-	../lua514u/src/lauxlib.c \
-	../lua514u/src/lcode.c \
-	../lua514u/src/ldebug.c \
-	../lua514u/src/ldo.c \
-	../lua514u/src/ldump.c \
-	../lua514u/src/lfunc.c \
-	../lua514u/src/llex.c \
-	../lua514u/src/lmem.c \
-	../lua514u/src/lobject.c \
-	../lua514u/src/lopcodes.c \
-	../lua514u/src/lparser.c \
-	../lua514u/src/lstate.c \
-	../lua514u/src/lstring.c \
-	../lua514u/src/ltable.c \
-	../lua514u/src/ltm.c \
-	../lua514u/src/lundump.c \
-	../lua514u/src/lvm.c \
-	../lua514u/src/lzio.c \
-	../lua514u/src/lgc.c \
-	../lua514u/src/linit.c \
-	../lua514u/src/lbaselib.c \
-	../lua514u/src/ldblib.c \
-	../lua514u/src/liolib.c \
-	../lua514u/src/lmathlib.c \
-	../lua514u/src/loslib.c \
-	../lua514u/src/ltablib.c \
-	../lua514u/src/lstrlib.c \
-	../lua514u/src/loadlib.c
+	../lua/src/lapi.c \
+	../lua/src/lauxlib.c \
+	../lua/src/lcode.c \
+	../lua/src/ldebug.c \
+	../lua/src/ldo.c \
+	../lua/src/ldump.c \
+	../lua/src/lfunc.c \
+	../lua/src/llex.c \
+	../lua/src/lmem.c \
+	../lua/src/lobject.c \
+	../lua/src/lopcodes.c \
+	../lua/src/lparser.c \
+	../lua/src/lstate.c \
+	../lua/src/lstring.c \
+	../lua/src/ltable.c \
+	../lua/src/ltm.c \
+	../lua/src/lundump.c \
+	../lua/src/lvm.c \
+	../lua/src/lzio.c \
+	../lua/src/lgc.c \
+	../lua/src/linit.c \
+	../lua/src/lbaselib.c \
+	../lua/src/ldblib.c \
+	../lua/src/liolib.c \
+	../lua/src/lmathlib.c \
+	../lua/src/loslib.c \
+	../lua/src/ltablib.c \
+	../lua/src/lstrlib.c \
+	../lua/src/loadlib.c
 
 INCLUDEPATH += ./luaext
 SOURCES += \
