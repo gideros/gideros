@@ -22,6 +22,10 @@ android.install: android androidlibs.install androidso.install androidplugins.in
 	cp $(ROOT)/android/GiderosAndroidPlayer/gideros.jar $(RELEASE)/Templates/AndroidStudio/Android\ Template/app/libs	
 	rm -rf $(ROOT)/android/GiderosAndroidPlayer/libs
 	cp -R $(RELEASE)/Templates/Eclipse/Android\ Template/libs $(ROOT)/android/GiderosAndroidPlayer
+	for p in $(PLUGINS_DEFAULT); do \
+	cd $(ROOT)/plugins/$$p/source; if [ -d "Android" ]; then cd Android; fi;	\
+	cp -R libs $(CURDIR)/android/GiderosAndroidPlayer; \
+	cd $(CURDIR); done
 	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) debug;
 	mkdir -p $(RELEASE)/Players
 	mv $(ROOT)/android/GiderosAndroidPlayer/bin/GiderosAndroidPlayer-debug.apk $(RELEASE)/Players/GiderosAndroidPlayer.apk
@@ -71,7 +75,7 @@ androidlibs.install: androidlibs
 
 %.androidplugin.install: %.plugin.install
 	@mkdir -p $(RELEASE)/All\ Plugins/$(notdir $*)/bin/Android
-	@cd $(ROOT)/plugins/$*/source; echo -n "Installing $*"; \
+	@cd $(ROOT)/plugins/$*/source; echo "Installing $*"; \
 	if [ -d "Android" ]; then cd Android; fi;	\
 	cp -r libs $(CURDIR)/$(RELEASE)/All\ Plugins/$(notdir $*)/bin/Android/; \
 	if [ -d "res" ]; then \
