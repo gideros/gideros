@@ -3,41 +3,6 @@
 ** Lua compiler (saves bytecodes to files; also list bytecodes)
 ** See Copyright Notice in lua.h
 */
-
-#include "lapi.c"
-#include "lcode.c"
-#include "ldebug.c"
-#include "ldo.c"
-#include "ldump.c"
-#include "lfunc.c"
-#include "lgc.c"
-#include "llex.c"
-#include "lmem.c"
-#include "lobject.c"
-#include "lopcodes.c"
-#include "lparser.c"
-#include "lstate.c"
-#include "lstring.c"
-#include "ltable.c"
-#include "ltm.c"
-#include "lundump.c"
-#include "lvm.c"
-#include "lzio.c"
-
-#include "lauxlib.c"
-#include "lbaselib.c"
-#include "ldblib.c"
-#include "liolib.c"
-#include "lmathlib.c"
-#include "loadlib.c"
-#include "luacoslib.c"
-#include "lstrlib.c"
-#include "ltablib.c"
-#include "lutf8lib.c"
-#include "lint64.c"
-#include "linit.c"
-#include "print.c"
-
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
