@@ -39,8 +39,6 @@ const char *const luaP_opnames[NUM_OPCODES+1] = {
   "BRSHFT",
   "BNOT",
   "INTDIV",
-  "MAX",
-  "MIN",
   "UNM",
   "NOT",
   "LEN",
@@ -61,6 +59,8 @@ const char *const luaP_opnames[NUM_OPCODES+1] = {
   "CLOSE",
   "CLOSURE",
   "VARARG",
+  "MAX",
+  "MIN",
   NULL
 };
 
