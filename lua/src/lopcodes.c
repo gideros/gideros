@@ -21,7 +21,7 @@ const char *const luaP_opnames[NUM_OPCODES+1] = {
   "GETUPVAL",
   "GETGLOBAL",
   "GETTABLE",
-  "SETGLOBAL"
+  "SETGLOBAL",
   "SETUPVAL",
   "SETTABLE",
   "NEWTABLE",
@@ -94,8 +94,6 @@ const lu_byte luaP_opmodes[NUM_OPCODES] = {
  ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_BRSHFT */
  ,opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_BNOT */
  ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_INTDIV */
- ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_MAX */
- ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_MIN */
  ,opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_UNM */
  ,opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_NOT */
  ,opmode(0, 1, OpArgR, OpArgN, iABC)		/* OP_LEN */
@@ -116,5 +114,7 @@ const lu_byte luaP_opmodes[NUM_OPCODES] = {
  ,opmode(0, 0, OpArgN, OpArgN, iABC)		/* OP_CLOSE */
  ,opmode(0, 1, OpArgU, OpArgN, iABx)		/* OP_CLOSURE */
  ,opmode(0, 1, OpArgU, OpArgN, iABC)		/* OP_VARARG */
+ ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_MAX */
+ ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_MIN */
 };
 
