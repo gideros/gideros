@@ -21,7 +21,7 @@ const char *const luaP_opnames[NUM_OPCODES+1] = {
   "GETUPVAL",
   "GETGLOBAL",
   "GETTABLE",
-  "SETGLOBAL",
+  "SETGLOBAL"
   "SETUPVAL",
   "SETTABLE",
   "NEWTABLE",

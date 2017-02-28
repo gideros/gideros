@@ -217,7 +217,7 @@ OP_MIN/* A B C  R(A) := MIN (RK(B),RK(C))  */
 } OpCode;
 
 
-#define NUM_OPCODES	(cast(int, OP_VARARG) + 1)
+#define NUM_OPCODES	(cast(int, OP_MIN) + 1)
 
 
 
