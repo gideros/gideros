@@ -213,11 +213,13 @@ OP_CLOSURE,/*	A Bx	R(A) := closure(KPROTO[Bx], R(A), ... ,R(A+n))	*/
 
 OP_VARARG,/*	A B	R(A), R(A+1), ..., R(A+B-1) = vararg		*/
 OP_MAX,/* A B C  R(A) := MAX (RK(B),RK(C))  */
-OP_MIN/* A B C  R(A) := MIN (RK(B),RK(C))  */
+OP_MIN,/* A B C  R(A) := MIN (RK(B),RK(C))  */
+OP_DEG,/*	A B	R(A) := R(180/pi*A)					*/
+OP_RAD/*	A B	R(A) := R(pi/180*A)					*/
 } OpCode;
 
+#define NUM_OPCODES	(cast(int, OP_RAD) + 1)
 
-#define NUM_OPCODES	(cast(int, OP_MIN) + 1)
 
 
 

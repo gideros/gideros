@@ -42,6 +42,8 @@ typedef enum {
   TM_INTDIV,
   TM_MAX,
   TM_MIN,
+  TM_DEG,
+  TM_RAD,
   TM_N		/* number of elements in the enum */
 } TMS;
 

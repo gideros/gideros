@@ -61,6 +61,8 @@ const char *const luaP_opnames[NUM_OPCODES+1] = {
   "VARARG",
   "MAX",
   "MIN",
+  "DEG",
+  "RAD",
   NULL
 };
 
@@ -116,5 +118,7 @@ const lu_byte luaP_opmodes[NUM_OPCODES] = {
  ,opmode(0, 1, OpArgU, OpArgN, iABC)		/* OP_VARARG */
  ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_MAX */
  ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_MIN */
+ ,opmode(0, 1, OpArgK, OpArgN, iABC)		/* OP_DEG */
+ ,opmode(0, 1, OpArgK, OpArgN, iABC)		/* OP_RAD */
 };
 

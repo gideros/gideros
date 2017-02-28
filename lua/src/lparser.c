@@ -785,6 +785,8 @@ static UnOpr getunopr (int op) {
     case '-': return OPR_MINUS;
     case '#': return OPR_LEN;
     case '~': return OPR_BNOT;
+	case TK_DEG: return OPR_DEG;
+	case TK_RAD: return OPR_RAD;
     default: return OPR_NOUNOPR;
   }
 }

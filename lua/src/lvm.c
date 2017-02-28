@@ -328,6 +328,8 @@ static void Arith (lua_State *L, StkId ra, const TValue *rb,
       case TM_INTDIV: setnvalue(ra, luai_numintdiv(nb, nc)); break;
 	  case TM_MAX: setnvalue(ra, luai_nummax(nb, nc)); break;
 	  case TM_MIN: setnvalue(ra, luai_nummin(nb, nc)); break;
+	  case TM_DEG: setnvalue(ra, luai_numdeg(nb)); break;
+	  case TM_RAD: setnvalue(ra, luai_numrad(nb)); break;
       default: lua_assert(0); break;
     }
   }
@@ -838,6 +840,28 @@ void luaV_execute (lua_State *L, int nexeccalls) {
           else {
             setnilvalue(ra + j);
           }
+        }
+        continue;
+      }
+      case OP_DEG: {
+        TValue *rb = RB(i);
+        if (ttisnumber(rb)) {
+          lua_Number nb = nvalue(rb);
+          setnvalue(ra, luai_numdeg(nb));
+        }
+        else {
+          Protect(Arith(L, ra, rb, rb, TM_DEG));
+        }
+        continue;
+      }
+      case OP_RAD: {
+        TValue *rb = RB(i);
+        if (ttisnumber(rb)) {
+          lua_Number nb = nvalue(rb);
+          setnvalue(ra, luai_numrad(nb));
+        }
+        else {
+          Protect(Arith(L, ra, rb, rb, TM_RAD));
         }
         continue;
       }
