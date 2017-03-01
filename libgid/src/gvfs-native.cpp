@@ -111,24 +111,39 @@ static int s_open(const char *pathname, int flags)
     if (drive == 0)
     {
        	//Probe encryption
-       	if (fi.length>=4)
-       	{
-       		unsigned char cryptsig[4];
+   		unsigned char cryptsig[4];
+   		int rdc=0;
+   		off_t rlength=0;
+   		if (fi.length==((size_t)-1))
+   		{
+       		rlength=::lseek(fd, -4, SEEK_END);
+       		rdc=::read(fd, cryptsig, 4);
+            ::lseek(fd, 0, SEEK_SET);
+  		}
+   		else
+   		{
        		::lseek(fd, fi.startOffset+fi.length-4, SEEK_SET);
-       		::read(fd, cryptsig, 4);
-       		cryptsig[0]^=((fi.length-4)>>24)&0xFF;
-       		cryptsig[1]^=((fi.length-4)>>16)&0xFF;
-       		cryptsig[2]^=((fi.length-4)>>8)&0xFF;
-       		cryptsig[3]^=((fi.length-4)>>0)&0xFF;
+       		rdc=::read(fd, cryptsig, 4);
+            ::lseek(fd, fi.startOffset, SEEK_SET);
+            rlength=fi.length-4;
+  		}
+   		if (rdc==4)
+   		{
+       		cryptsig[0]^=(rlength>>24)&0xFF;
+       		cryptsig[1]^=(rlength>>16)&0xFF;
+       		cryptsig[2]^=(rlength>>8)&0xFF;
+       		cryptsig[3]^=(rlength>>0)&0xFF;
        		if ((cryptsig[0]=='G')&&(cryptsig[1]=='x')&&(cryptsig[2]==0xE7))
        		{
        			if ((cryptsig[3]==1)||(cryptsig[3]==2))
        			{
                        fi.encrypt = cryptsig[3];
-                       fi.length-=4;
+                       fi.length=rlength;
+                       fi.startOffset=0;
+                       fi.drive=drive;
        			}
        		}
-       	}
+   		}
    }
 
     s_fileInfos[fd] = fi;
