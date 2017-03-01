@@ -287,6 +287,9 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 		QStringList jets=rule.attribute("jet").split(";",QString::SkipEmptyParts);
 		for (int i=0;i<jets.count();i++)
 			ctx->jetset << jets[i];
+		QStringList noencExt=rule.attribute("dontEncryptExts").split(";",QString::SkipEmptyParts);
+		for (int i=0;i<noencExt.count();i++)
+			ctx->noEncryptionExt.insert(noencExt[i]);
 		ExportCommon::exportAssets(ctx, rule.attribute("compile").toInt() != 0);
 		return true;
 	} else if (ruleName == "exportAllfilesTxt") {

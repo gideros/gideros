@@ -7,6 +7,8 @@
 class FindDialog : public QDialog
 {
 	Q_OBJECT
+protected:
+	void hideEvent(QHideEvent * event);
 
 public:
 	FindDialog(QWidget *parent = 0);

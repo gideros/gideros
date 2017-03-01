@@ -83,23 +83,25 @@ static int s_open(const char *pathname, int flags)
 
     if (drive == 0)
     {
-        const char *ext = strrchr(pathname, '.');
-
-        if (ext)
-        {
-            ext++;
-            if (!strcasecmp(ext, "lua"))
-            {
-                fi.encrypt = 1;
-            }
-            else if (!strcasecmp(ext, "jpeg") ||
-                     !strcasecmp(ext, "jpg") ||
-                     !strcasecmp(ext, "png") ||
-                     !strcasecmp(ext, "wav"))
-            {
-                fi.encrypt = 2;
-            }
-        }
+    	//Probe encryption
+    	if (fi.length>=4)
+    	{
+    		unsigned char cryptsig[4];
+    		::lseek(fd, fi.startOffset+fi.length-4, SEEK_SET);
+    		::read(fd, cryptsig, 4);
+    		cryptsig[0]^=((fi.length-4)>>24)&0xFF;
+    		cryptsig[1]^=((fi.length-4)>>16)&0xFF;
+    		cryptsig[2]^=((fi.length-4)>>8)&0xFF;
+    		cryptsig[3]^=((fi.length-4)>>0)&0xFF;
+    		if ((cryptsig[0]=='G')&&(cryptsig[1]=='x')&&(cryptsig[2]==0xE7))
+    		{
+    			if ((cryptsig[3]==1)||(cryptsig[3]==2))
+    			{
+                    fi.encrypt = cryptsig[3];
+                    fi.length-=4;
+    			}
+    		}
+    	}
     }
 
     ::lseek(fd, iter->second.startOffset, SEEK_SET);

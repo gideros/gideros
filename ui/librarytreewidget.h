@@ -65,12 +65,13 @@ private slots:
 	void projectProperties();
     void automaticDownsizing(bool checked);
     void excludeFromExecution(bool checked);
+    void excludeFromEncryption(bool checked);
     void showInFinder();
 private slots:
 	void checkModification();
 
 private:
-    QTreeWidgetItem* createFileItem(const QString& file, bool downsizing = false, bool excludeFromExecution = false);
+    QTreeWidgetItem* createFileItem(const QString& file, bool downsizing = false, bool excludeFromExecution = false, bool excludeFromEncryption = false);
 	QTreeWidgetItem* createFolderItem(const QString& name);
 	QTreeWidgetItem* createProjectItem(const QString& name);
 
@@ -87,6 +88,7 @@ private:
 	QAction* projectPropertiesAction_;
 	QAction* automaticDownsizingAction_;
     QAction* excludeFromExecutionAction_;
+    QAction* excludeFromEncryptionAction_;
     QAction* showInFindeAction_;
 private:
 	QString xmlString_;

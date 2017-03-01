@@ -142,7 +142,7 @@ print("Android Build Tools:"..buildVer)
 		</if>
 		<mkdir>app/src/main/assets/assets</mkdir>
 		<cd>app/src/main/assets/assets</cd>
-		<exportAssets jet="mp3;mp4;png;jpg;jpeg;wav" compile="1" />
+		<exportAssets jet="mp3;mp4;png;jpg;jpeg;wav" compile="1" dontEncryptExts="mp3" />
 		<exportAllfilesTxt/>
 		<exportLuafilesTxt/>
 		<exportPropertiesBin/>

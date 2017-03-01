@@ -396,17 +396,21 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		for (int i = 0; i < ctx->allfiles_abs.size(); ++i) {
 			ExportCommon::progressStep(
 					ctx->allfiles_abs[i].toUtf8().constData());
+			if (ctx->noEncryption.count(ctx->allfiles[i]))
+				continue; //File marked as non encryotable
 			QString filename = ctx->allfiles_abs[i];
 			QString ext = QFileInfo(ctx->allfiles[i]).suffix().toLower();
+			if (ctx->noEncryptionExt.count(ext))
+				continue; //Extension marked as non encryptable
 			bool encrypt =
 					(ext == "lua") ? ctx->encryptCode : ctx->encryptAssets;
 			if (!encrypt)
 				continue;
 			exportInfo("Encrypting %s [%s]\n", filename.toUtf8().constData(),
 					ext.toUtf8().constData());
-			if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg"
+			/*if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg"
 					&& ext != "wav")
-				continue;
+				continue;*/
 
 			QByteArray encryptionKey =
 					(ext == "lua") ? ctx->codeKey : ctx->assetsKey;
@@ -424,6 +428,16 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			for (int j = 32; j < data.size(); ++j)
 				data[j] = data[j]
 						^ encryptionKey[((j * 13) + ((j / ks) * 31)) % ks];
+
+			//Add encryption marker
+			unsigned char sig[4]={'G','x',0xE7,0};
+			unsigned long dlength=data.size();
+			sig[3]=(ext == "lua") ? 1:2;
+	  		sig[0]^=(dlength>>24)&0xFF;
+	    	sig[1]^=(dlength>>16)&0xFF;
+	    	sig[2]^=(dlength>>8)&0xFF;
+	    	sig[3]^=(dlength>>0)&0xFF;
+			data.append((char *)sig,4);
 
 			QFile fos(filename);
 			if (!fos.open(QIODevice::WriteOnly)) {
