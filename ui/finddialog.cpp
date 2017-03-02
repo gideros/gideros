@@ -22,6 +22,7 @@ void FindDialog::hideEvent(QHideEvent * event)
 	QSettings settings;
     settings.setValue("finddialog matchcase",ui.matchCase->isChecked());
     settings.setValue("finddialog wrap",ui.wrap->isChecked());
+	ui.findNext->setFocus(Qt::OtherFocusReason);
 }
 
 QString FindDialog::findWhat() const

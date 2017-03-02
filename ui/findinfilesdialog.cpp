@@ -1,4 +1,5 @@
 #include "findinfilesdialog.h"
+#include <QSettings>
 
 FindInFilesDialog::FindInFilesDialog(QWidget *parent)
 	: QDialog(parent)
@@ -6,11 +7,21 @@ FindInFilesDialog::FindInFilesDialog(QWidget *parent)
 	ui.setupUi(this);
 	connect(ui.findAll, SIGNAL(clicked()), this, SLOT(accept()));
 	connect(ui.cancel, SIGNAL(clicked()), this, SLOT(reject()));
+	QSettings settings;
+    ui.matchCase->setChecked(settings.value("findinfilesdialog matchcase", false).toBool());
 }
 
 FindInFilesDialog::~FindInFilesDialog()
 {
 
+}
+
+void FindInFilesDialog::hideEvent(QHideEvent * event)
+{
+	QDialog::hideEvent(event);
+	QSettings settings;
+    settings.setValue("findinfilesdialog matchcase",ui.matchCase->isChecked());
+	ui.findAll->setFocus(Qt::OtherFocusReason);
 }
 
 QString FindInFilesDialog::findWhat() const
