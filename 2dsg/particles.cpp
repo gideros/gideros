@@ -300,7 +300,7 @@ void Particles::tick() {
 			float ny = points_[i * 16 + 1] + speeds_[i * 4 + 1]*nframes;
 			float ns = points_[i * 16 + 2] + speeds_[i * 4 + 2]*nframes;
 			float na = points_[i * 16 + 3] + speeds_[i * 4 + 3]*nframes;
-			if (abs(ns)<0.1)
+			if (fabs(ns)<0.1)
 				remove=true;
 			for (int k = 0; k < 16; k += 4) {
 				points_[i * 16 + k] = nx;

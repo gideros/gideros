@@ -132,7 +132,7 @@ $(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidshell.html
 
 main: path $(BUILD)/gideros.js
 	cp gideros.png $(TEMPLATE)
-	cp gideros.css $(TEMPLATE)
+	cp gideros.css pace.css $(TEMPLATE)
 	cp $(BUILD)/gideros.html $(TEMPLATE) 
 	cp $(BUILD)/gideros.html.mem $(TEMPLATE) 
 	$(CRUNCHME_TOOL) -nostrip -i pace.min.js $(TEMPLATE)/pace.js.png

@@ -163,8 +163,6 @@
         	</replacelist>
        </template>
     </if>
- </target>
- <target name="iOS">
     <if condition="[[[plugin.reqExpRegCompliance]]]">
    	<template name="Project" path="">
        	<replacelist wildcards="[[[project.namews]]]-Info.plist;Info.plist">

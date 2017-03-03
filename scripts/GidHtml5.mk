@@ -5,6 +5,7 @@ HTML5_PLUGINS=bitop luasocket json ads Facebook
 export EMSDK_PREFIX
 export CRUNCHME
 export HTML5_PLUGINS
+export DEBUG
 
 html5.clean:
 	cd emscripten; $(MAKE) clean plugins.clean

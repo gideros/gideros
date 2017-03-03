@@ -137,9 +137,10 @@ static int s_open(const char *pathname, int flags)
        		{
        			if ((cryptsig[3]==1)||(cryptsig[3]==2))
        			{
-                       fi.encrypt = cryptsig[3];
+       				   if (fi.length==((size_t)-1))
+       				    	fi.startOffset=0;
+       				   fi.encrypt = cryptsig[3];
                        fi.length=rlength;
-                       fi.startOffset=0;
                        fi.drive=drive;
        			}
        		}
