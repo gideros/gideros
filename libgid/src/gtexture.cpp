@@ -388,6 +388,11 @@ public:
 
         RenderTargetElement *element = new RenderTargetElement;
 
+		//Ensure requested size is never negative or 0
+		if (width <= 0) width = 1;
+		if (height <= 0) height = 1;
+
+
         element->refcount = 1;
         element->width = width;
         element->height = height;

@@ -2427,7 +2427,7 @@ static void fill_path(unsigned int path, int fill_mode,
 	VertexBuffer<vector4f> *vb = p->fill_vertex_buffer;
 	VertexBuffer<unsigned short> *ib = p->fill_index_buffer;
 	ShaderProgram::pathShaderFillC->setData(0, ShaderProgram::DFLOAT, 4,
-			&((*vb)[0]), vb->size(), vb->modified, &vb->bufferCache);
+		vb->size()?&((*vb)[0]):NULL, vb->size(), vb->modified, &vb->bufferCache);
 	vb->modified = false;
 	/*
 	 glog_d("Fill path: VB Size:%d",vb->size());

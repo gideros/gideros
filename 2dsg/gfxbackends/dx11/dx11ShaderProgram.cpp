@@ -289,6 +289,8 @@ dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,in
 		void *src = fromCode?(void *)vshader:LoadShaderFile(vshader, "hlsl", &VSLen);
 		ID3DBlob *pCode;
 		ID3DBlob *pError;
+		if (fromCode&&vshader)
+			VSLen = strlen(vshader);
 		D3DCompile(src, VSLen, vshader, NULL, NULL, "VShader",
 			"vs_4_0_level_9_3", D3DCOMPILE_PREFER_FLOW_CONTROL, 0, &pCode, &pError);
 		if (src&&(!fromCode))
@@ -312,6 +314,8 @@ dx11ShaderProgram::dx11ShaderProgram(const char *vshader, const char *pshader,in
 		void *src = fromCode?(void *)pshader:LoadShaderFile(pshader, "hlsl", &PSLen);
 		ID3DBlob *pCode;
 		ID3DBlob *pError;
+		if (fromCode&&pshader)
+			PSLen = strlen(pshader);
 		D3DCompile(src, PSLen, pshader, NULL, NULL, "PShader",
 			"ps_4_0_level_9_3", D3DCOMPILE_PREFER_FLOW_CONTROL, 0, &pCode, &pError);
 		if (src&&(!fromCode))

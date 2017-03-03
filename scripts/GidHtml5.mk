@@ -1,6 +1,6 @@
 .PHONY: html5.clean html5.libs html5.install html5
 
-HTML5_PLUGINS=bitop luasocket json ads Facebook
+HTML5_PLUGINS=bitop luasocket json ads Facebook lsqlite3 lfs
 
 export EMSDK_PREFIX
 export CRUNCHME
