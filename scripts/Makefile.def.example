@@ -10,6 +10,7 @@ CRUNCHME=crunchme-win32.exe
 
 MAC_HOST=user@host
 MAC_PATH=gideros/gideros
+OSX_SIGNING_IDENTITY="ID"
 
 QT_ARCH=mingw491_32
 QT_TOOLSARCH=mingw491_32
