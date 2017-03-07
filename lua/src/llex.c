@@ -674,11 +674,12 @@ static int llex (LexState *ls, SemInfo *seminfo) {
                     fseek (f, 0, SEEK_END);
                     length = ftell (f);
                     fseek (f, 0, SEEK_SET);
-                    buffer = (char *) malloc (length + 1);
+                    buffer = (char *) malloc (length + 2);
                     if (buffer)
                     {
                       fread (buffer, 1, length, f);
-                      buffer[length] = '\0';
+                      buffer[length] = ' ';
+                      buffer[length+1] = '\0';
                     }
                     fclose (f);
                   }
