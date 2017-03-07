@@ -147,8 +147,8 @@ void luaX_setinput (lua_State *L, LexState *ls, ZIO *z, TString *source) {
   ls->lastline = 1;
   ls->source = source;
 
-  lua_pushnil(L);
-  lua_setglobal(L, MACRO);
+  //lua_pushnil(L); XXX Used to clear macro table between each input file
+  //lua_setglobal(L, MACRO);
 
   luaZ_resizebuffer(ls->L, ls->buff, LUA_MINBUFFER);  /* initialize buffer */
   next(ls);  /* read first char */
