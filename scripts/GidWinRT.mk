@@ -3,6 +3,9 @@ WINRT_SHADERS_PATH=2dsg/gfxbackends/dx11
 WINRT_SHADERS_FILE=dx11_shaders.c
 BIN2C=$(ROOT)/scripts/bin2c
 
+WINRT_PLAYERDIR=winrt_xaml
+WINRT_PLAYERSUBDIR=giderosxaml
+
 #Macros
 #$(call WINRT_PROJECT basepath name target)
 WINRT_PROJECT=$(1)/$(2)/$(2).$(3)/$(2).$(3).vcxproj
@@ -66,7 +69,7 @@ winrt.template: winrt.core winrt.plugins
 	mkdir -p $(RELEASE)/Templates
 	cp -r ui/Templates/VisualStudio $(RELEASE)/Templates
 	#Common
-	cp winrt_example/winrt.cpp "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	#cp $(WINRT_PLAYERDIR)/*.cpp "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	cp winrt/gideros/gideros.Shared/giderosapi.h "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	#X86 Release version for Windows
 	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
@@ -81,21 +84,24 @@ winrt.template: winrt.core winrt.plugins
 
 winrt.player: winrt.template
 	@echo "VERSION" $(GIDEROS_VERSION)
-	cp winrt/gideros/gideros.Shared/giderosapi.h winrt_example/
+	cp winrt/gideros/gideros.Shared/giderosapi.h $(WINRT_PLAYERDIR)/
 	rm -rf /c/winrt_player
-	cp winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak
-	sed -e 's/Version="[^"]*"/Version="$(WINRT_APPX_GIDVERSION)"/'	winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak >winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest
-	$(MSBUILD) winrt_example/giderosgame/giderosgame.WindowsPhone/giderosgame.WindowsPhone.vcxproj //t:Publish //p:Configuration=Release //p:Platform=ARM //p:AppxBundle=Always //v:m
-	cp winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest
-	rm winrt_example/giderosgame/giderosgame.WindowsPhone/Package.appxmanifest.bak
-	cp winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak
-	sed -e 's/Version="[^"]*"/Version="$(WINRT_APPX_GIDVERSION)"/'	winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak >winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest
-	$(MSBUILD) winrt_example/giderosgame/giderosgame.Windows/giderosgame.Windows.vcxproj //t:Publish //p:Configuration=Release //p:Platform=Win32 //p:AppxBundle=Always //V:m
-	cp winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest
-	rm winrt_example/giderosgame/giderosgame.Windows/Package.appxmanifest.bak
+	cp $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/Package.appxmanifest $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/Package.appxmanifest.bak
+	sed -e 's/Version="[^"]*"/Version="$(WINRT_APPX_GIDVERSION)"/'	$(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/Package.appxmanifest.bak >$(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/Package.appxmanifest
+	$(MSBUILD) $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/$(WINRT_PLAYERSUBDIR).WindowsPhone.vcxproj //t:Publish //p:Configuration=Release //p:Platform=ARM //p:AppxBundle=Always //v:m
+	cp $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/Package.appxmanifest.bak $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/Package.appxmanifest
+	rm $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/Package.appxmanifest.bak
+	cp $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak
+	sed -e 's/Version="[^"]*"/Version="$(WINRT_APPX_GIDVERSION)"/'	$(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak >$(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest
+	$(MSBUILD) $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj //t:Publish //p:Configuration=Release //p:Platform=Win32 //p:AppxBundle=Always //V:m
+	cp $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest
+	rm $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/Package.appxmanifest.bak
 	mkdir -p $(RELEASE)/Players
 	rm -rf $(RELEASE)/Players/WinRT
-	mv /c/winrt_player $(RELEASE)/Players/WinRT
+	#mv /c/winrt_player $(RELEASE)/Players/WinRT
+	mkdir -p $(RELEASE)/Players/WinRT
+	cp -r $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/AppPackages/$(WINRT_PLAYERSUBDIR).WindowsPhone/* $(RELEASE)/Players/WinRT
+	cp -r $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/AppPackages/$(WINRT_PLAYERSUBDIR).Windows/* $(RELEASE)/Players/WinRT
 	
 winrt.install: winrt.player
 

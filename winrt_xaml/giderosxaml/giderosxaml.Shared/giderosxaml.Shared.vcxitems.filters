@@ -1,14 +1,60 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)giderosapi.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\adsbinder.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\fpconv.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lfs.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lfs_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lsqlite3.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lsqlite3_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lua_cjson.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lua_cjson_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\sqlite3.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\strbuf.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gapplication.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gevent.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gexport.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gfile.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gglobal.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gideros.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)giderosapi.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)glog.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gpath.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gplugin.h" />
@@ -18,48 +64,29 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)lua.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)luaconf.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)lualib.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\ads.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.h">
       <Filter>Plugins</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\AdsAbstract.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h">
       <Filter>Plugins</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\frameworks\AdsPubcenter.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.h">
       <Filter>Plugins</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\ads.cpp">
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\lfs.h">
       <Filter>Plugins</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\adsbinder.cpp">
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\sqlite3.h">
       <Filter>Plugins</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\frameworks\AdsPubcenter.cpp">
-      <Filter>Plugins</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\bit.c">
-      <Filter>Plugins</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\bit_stub.cpp">
-      <Filter>Plugins</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Common">
-      <UniqueIdentifier>{9fd4af0a-93d0-4455-84eb-dcc2c7c76e36}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Content">
-      <UniqueIdentifier>{05a5ea86-aff3-4703-8f48-101805758c03}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Plugins">
-      <UniqueIdentifier>{25b28e6a-8e6f-433e-9749-07601d356259}</UniqueIdentifier>
-    </Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)DirectXPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Plugins">
+      <UniqueIdentifier>{0a9b21b7-7fb2-4b51-a7c0-dce1af5edf00}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

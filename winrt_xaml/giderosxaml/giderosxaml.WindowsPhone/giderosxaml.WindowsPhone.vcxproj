@@ -75,12 +75,21 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
       <AdditionalDependencies>WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\winrt\gideros\gideros.Shared;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_x86)</AdditionalLibraryDirectories>
       <AdditionalDependencies>WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\winrt\gideros\gideros.Shared;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
@@ -89,14 +98,18 @@
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\..\winrt\gideros\gideros.Shared;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;_DEBUG;SQLITE_OS_WINRT;NO_GETCWD;NO_CHDIR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\winrt\ARM\Release\gideros.WindowsPhone;..\..\..\winrt\ARM\Release\libgvfswinrt.WindowsPhone;..\..\..\winrt\ARM\Release\luawinrt.WindowsPhone;%(AdditionalLibraryDirectories);$(WindowsPhoneSDK_LibraryPath_arm)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gideros.WindowsPhone.lib;libgvfswinrt.WindowsPhone.lib;luawinrt.WindowsPhone.lib;xaudio2.lib;d3dcompiler.lib;windowscodecs.lib;dwrite.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;DXGI.lib;D3D11.lib;D2D1.lib;DWrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\winrt\gideros\gideros.Shared;%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PTW32_STATIC_LIB;WINSTORE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
