@@ -14,5 +14,4 @@
 #include <concrt.h>
 #include <collection.h>
 #include <ppltasks.h>
-#include "App.xaml.h"
 #include <windows.ui.xaml.media.dxinterop.h>

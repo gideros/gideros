@@ -56,45 +56,76 @@ extern "C"
 	}
 }
 
-// This function is only needed for the player. Should be empty for export projects as it contains
-// APIs not permitted in Windows Store apps (FindNextFileA etc)
-
-//#include <Windows.h>
 void getDirectoryListing(const char* dir, std::vector<std::string>* files, std::vector<std::string>* directories)
 {
 	files->clear();
 	directories->clear();
 
-	WIN32_FIND_DATAA ffd;
-	HANDLE hFind;
-
 	std::string dirstar;
-
 	int dirlen = strlen(dir);
 	if (dirlen > 0 && (dir[dirlen - 1] == '/' || dir[dirlen - 1] == '\\'))
-		dirstar = std::string(dir) + "*";
+		dirstar = std::string(dir, dirlen - 1);
 	else
-		dirstar = std::string(dir) + "/*";
-
+		dirstar = std::string(dir);
 	std::wstring wsTmp(dirstar.begin(), dirstar.end());
+	for (auto it = wsTmp.begin(); it != wsTmp.end(); it++)
+		if ((*it) == '/')
+			*it = '\\';
 
-	hFind = FindFirstFileEx(wsTmp.c_str(), FINDEX_INFO_LEVELS::FindExInfoBasic, &ffd, FINDEX_SEARCH_OPS::FindExSearchNameMatch, nullptr, 0);
-
-	do
+	String^ dirName = ref new String(wsTmp.c_str());
+	StorageFolder ^fld = nullptr;
+	task<int> work = create_task(StorageFolder::GetFolderFromPathAsync(dirName)).then([&](StorageFolder^ folder)
 	{
-		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			if (strcmp(ffd.cFileName, ".") == 0 || strcmp(ffd.cFileName, "..") == 0)
-				continue;
-
-		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			directories->push_back(ffd.cFileName);
-		else
-			files->push_back(ffd.cFileName);
-	} while (FindNextFileA(hFind, &ffd) != 0);
-
-	FindClose(hFind);
+		fld = folder;
+		return fld->GetFilesAsync();
+	}).then([&](task<IVectorView<StorageFile^>^> task) {
+		for (auto it = task.get()->First(); it->HasCurrent; it->MoveNext())
+		{
+			StorageFile^ file = it->Current;
+			std::wstring ws = file->Name->Data();
+			std::string fn(ws.begin(), ws.end());
+			files->push_back(fn);
+		}
+		return fld->GetFoldersAsync();
+	}).then([&](task<IVectorView<StorageFolder^>^> task) {
+		for (auto it = task.get()->First(); it->HasCurrent; it->MoveNext())
+		{
+			StorageFolder^ file = it->Current;
+			std::wstring ws = file->Name->Data();
+			std::string fn(ws.begin(), ws.end());
+			directories->push_back(fn);
+		}
+		return 0;
+	});
+	
+	while (!work.is_done())
+		Sleep(1);
 }
 
+static int canvasWidth=480, canvasHeight=320;
+static DisplayOrientations canvasOrientation;
+static bool canvasUpdated=false;
+static CoreDispatcher^ uiDispatcher;
+
+extern "C" void gdr_dispatchUi(std::function<void()> func,bool wait)
+{
+	try {
+	if (uiDispatcher->HasThreadAccess)
+		func();
+	else
+	{
+		Windows::Foundation::IAsyncAction ^action=uiDispatcher->RunAsync(CoreDispatcherPriority::Normal,
+			ref new Windows::UI::Core::DispatchedHandler(func));
+		if (wait)
+			while (action->Status == Windows::Foundation::AsyncStatus::Started)
+				Sleep(1); //XXX There must be better to do
+	}
+	}
+	catch (Exception ^e)
+	{
+		__debugbreak();
+	}
+}
 
 DirectXPage::DirectXPage():
 	m_windowVisible(true),
@@ -155,9 +186,34 @@ DirectXPage::DirectXPage():
 	std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
 	std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
 	std::wstring tempPath = ApplicationData::Current->TemporaryFolder->Path->Data();
-	bool isPlayer = false;
 
-	gdr_initialize(true, nullptr, swapChainPanel, 480, 800, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
+	uiDispatcher = CoreWindow::GetForCurrentThread()->Dispatcher;
+	StorageFile^ file = nullptr;
+	try {
+		String^ fileName = ref new String(L"Assets\\properties.bin");
+		IAsyncOperation<StorageFile^> ^gfa = Windows::ApplicationModel::Package::Current->InstalledLocation->GetFileAsync(fileName);
+		while (gfa->Status == AsyncStatus::Started)
+			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+		file = gfa->GetResults();
+	}
+	catch (Exception^ e)
+	{
+		file = nullptr;
+	}
+
+	bool isPlayer = (file == nullptr);
+
+	int sw = swapChainPanel->ActualWidth;
+	int sh = swapChainPanel->ActualHeight;
+	if (sw&&sh)
+	{
+		canvasHeight = sh;
+		canvasWidth = sw;
+	}
+	canvasOrientation = DisplayInformation::GetForCurrentView()->CurrentOrientation;
+	canvasUpdated = true;
+
+	gdr_initialize(true, nullptr, swapChainPanel, canvasWidth, canvasHeight, isPlayer, resourcePath.c_str(), docsPath.c_str(), tempPath.c_str());
 	gdr_drawFirstFrame();
 
 	auto workItemHandler2 = ref new WorkItemHandler([this](IAsyncAction ^ action)
@@ -167,11 +223,33 @@ DirectXPage::DirectXPage():
 		{
 //			Game.Update();
 //			Game.Render();
-			gdr_drawFrame(true);
+
+			if (canvasUpdated)
+			{
+				canvasUpdated = false;
+				int orientation = 0;
+				switch (canvasOrientation)
+				{
+				case DisplayOrientations::Portrait: orientation = 0; break;
+				case DisplayOrientations::Landscape: orientation = 1; break;
+				case DisplayOrientations::PortraitFlipped: orientation = 2; break;
+				case DisplayOrientations::LandscapeFlipped: orientation = 3; break;
+				}
+				gdr_resize(canvasWidth, canvasHeight, orientation);
+			}
+			try {
+				gdr_drawFrame(true);
+			}
+			catch (Exception^ e)
+			{
+				__debugbreak();
+			}
 		}
+		canvasWidth = 0;
 	});
 
 	// Run task on a dedicated high priority background thread.
+
 
 	m_renderLoopWorker = ThreadPool::RunAsync(workItemHandler2, WorkItemPriority::High, WorkItemOptions::TimeSliced);
 }
@@ -217,6 +295,8 @@ void DirectXPage::OnDpiChanged(DisplayInformation^ sender, Object^ args)
 
 void DirectXPage::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
 {
+	canvasOrientation = sender->CurrentOrientation;
+	canvasUpdated = true;
 }
 
 
@@ -243,18 +323,111 @@ void DirectXPage::OnPointerPressed(Object ^sender, PointerEventArgs^ Args)
 		gdr_mouseDown(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
 }
 
-void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ e)
+void DirectXPage::OnPointerMoved(Object^ sender, PointerEventArgs^ Args)
 {
+	if (Args->CurrentPoint->IsInContact) {
+		if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+			gdr_touchMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+		else
+			gdr_mouseMove(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+	}
+	else {
+		gdr_mouseHover(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y);
+	}
 }
 
-void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ e)
+void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ Args)
 {
+	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+		gdr_touchEnd(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
+	else
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
 }
+
+void DirectXPage::OnPointerLost(Object^ sender, PointerEventArgs^ Args)
+{
+	if (Args->CurrentPoint->PointerDevice->PointerDeviceType == Windows::Devices::Input::PointerDeviceType::Touch)
+		gdr_touchCancel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->PointerId);
+	else if (Args->CurrentPoint->Properties->IsLeftButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 1);
+	else if (Args->CurrentPoint->Properties->IsRightButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 2);
+	else if (Args->CurrentPoint->Properties->IsBarrelButtonPressed || Args->CurrentPoint->Properties->IsHorizontalMouseWheel || Args->CurrentPoint->Properties->IsMiddleButtonPressed)
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 4);
+	else
+		gdr_mouseUp(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, 0);
+}
+
+void DirectXPage::OnKeyDown(Object^ sender, KeyEventArgs^ Args)
+{
+	Args->Handled = true;
+	gdr_keyDown((int)Args->VirtualKey);
+}
+
+void DirectXPage::OnKeyUp(Object^ sender, KeyEventArgs^ Args)
+{
+	Args->Handled = true;
+	gdr_keyUp((int)Args->VirtualKey);
+}
+
+void DirectXPage::OnKeyChar(Object^ sender, CharacterReceivedEventArgs^ Args)
+{
+	Args->Handled = true;
+	char buf[16];
+	memset(buf, 0, 16);
+	wchar_t wc = Args->KeyCode;
+	WideCharToMultiByte(CP_UTF8, 0, &wc, 1,
+		buf, 15, NULL, NULL);
+	gdr_keyChar(buf);
+}
+
+void DirectXPage::OnWheelChanged(Object^ sender, PointerEventArgs^ Args)
+{
+	gdr_mouseWheel(Args->CurrentPoint->Position.X, Args->CurrentPoint->Position.Y, Args->CurrentPoint->Properties->MouseWheelDelta);
+}
+
+/*
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+void DirectXPage::OnBackButtonPressed(Object^ sender, BackPressedEventArgs^ args)
+{
+	gdr_keyDown(301);
+	gdr_keyUp(301);
+	args->Handled = true;
+}
+#endif
+*/
+
+using namespace Microsoft::WRL; 
+#ifdef WINSTORE
+extern ComPtr<IDXGISwapChain1> g_swapchain;             // the pointer to the swap chain interface (11.1)
+#else
+extern IDXGISwapChain *g_swapchain;             // the pointer to the swap chain interface
+#endif
 
 void DirectXPage::OnCompositionScaleChanged(SwapChainPanel^ sender, Object^ args)
 {
+#ifdef WINSTORE
+	if (g_swapchain)
+	{
+		DXGI_MATRIX_3X2_F inverseScale = { 0 };
+		inverseScale._11 = 1.0f / sender->CompositionScaleX;
+		inverseScale._22 = 1.0f / sender->CompositionScaleY;
+		Microsoft::WRL::ComPtr<IDXGISwapChain2>  m_swapChain;
+		g_swapchain.As(&m_swapChain);
+		m_swapChain->SetMatrixTransform(&inverseScale);
+	}
+#endif
 }
 
 void DirectXPage::OnSwapChainPanelSizeChanged(Object^ sender, SizeChangedEventArgs^ e)
 {
+	canvasWidth = e->NewSize.Width;
+	canvasHeight = e->NewSize.Height;
+	canvasUpdated = true;
 }

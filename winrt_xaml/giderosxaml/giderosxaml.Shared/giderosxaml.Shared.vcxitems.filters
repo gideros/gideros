@@ -18,9 +18,35 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)lua.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)luaconf.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)lualib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\ads.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\AdsAbstract.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\frameworks\AdsPubcenter.h">
+      <Filter>Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\ads.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\adsbinder.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\frameworks\AdsPubcenter.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\bit.c">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\bit_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Common">
@@ -29,5 +55,11 @@
     <Filter Include="Content">
       <UniqueIdentifier>{05a5ea86-aff3-4703-8f48-101805758c03}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Plugins">
+      <UniqueIdentifier>{25b28e6a-8e6f-433e-9749-07601d356259}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)DirectXPage.xaml" />
   </ItemGroup>
 </Project>

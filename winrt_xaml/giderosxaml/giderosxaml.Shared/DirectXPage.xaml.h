@@ -46,6 +46,15 @@ namespace giderosxaml
 		void OnPointerPressed(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 		void OnPointerMoved(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
 		void OnPointerReleased(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
+		void OnPointerLost(Platform::Object^ sender, Windows::UI::Core::PointerEventArgs^ e);
+		void OnWheelChanged(Object ^ sender, Windows::UI::Core::PointerEventArgs ^ Args);
+
+		void OnKeyDown(Object ^ sender, Windows::UI::Core::KeyEventArgs ^ Args);
+		void OnKeyUp(Object ^ sender, Windows::UI::Core::KeyEventArgs ^ Args);
+		void OnKeyChar(Object ^ sender, Windows::UI::Core::CharacterReceivedEventArgs ^ Args);
+/*#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+		void OnBackButtonPressed(Object^ sender, Windows::UI::Core::BackPressedEventArgs^ args);
+#endif*/
 
 		bool m_windowVisible;
 

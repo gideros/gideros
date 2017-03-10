@@ -8,10 +8,6 @@
     mc:Ignorable="d">
 
   <SwapChainPanel x:Name="swapChainPanel">
-    <TextBlock Text="XAML on win phone!"
-               HorizontalAlignment="Right"
-               VerticalAlignment="Top"
-               FontSize="30" />
   </SwapChainPanel>
 
   <!-- Uncomment this if using the app bar in your phone application.

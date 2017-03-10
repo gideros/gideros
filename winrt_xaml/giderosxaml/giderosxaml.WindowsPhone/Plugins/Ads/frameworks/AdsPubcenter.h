@@ -20,6 +20,5 @@ class AdsPubcenter : public AdsAbstract
 	private:
 		std::string key;
 		std::map<std::string, std::pair<int, int>> adSizes;
-		std::map<std::string, std::string> testUnits;
 		bool test = false;
 };

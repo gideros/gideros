@@ -5,6 +5,8 @@
 
 #include "pch.h"
 #include "DirectXPage.xaml.h"
+#include "App.xaml.h"
+#include "giderosapi.h"
 
 using namespace giderosxaml;
 
@@ -44,7 +46,7 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
 #if _DEBUG
 	if (IsDebuggerPresent())
 	{
-		DebugSettings->EnableFrameRateCounter = true;
+		//DebugSettings->EnableFrameRateCounter = true;
 	}
 #endif
 
@@ -61,6 +63,7 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
 	// Place the page in the current window and ensure that it is active.
 	Window::Current->Content = m_directXPage;
 	Window::Current->Activate();
+	Windows::UI::ViewManagement::StatusBar::GetForCurrentView()->HideAsync(); //Hidden by default
 }
 
 /// <summary>
@@ -75,6 +78,7 @@ void App::OnSuspending(Object^ sender, SuspendingEventArgs^ e)
 	(void) sender;	// Unused parameter
 	(void) e;	// Unused parameter
 
+	gdr_suspend();
 	m_directXPage->SaveInternalState(ApplicationData::Current->LocalSettings->Values);
 }
 
@@ -89,4 +93,5 @@ void App::OnResuming(Object ^sender, Object ^args)
 	(void) args; // Unused parameter
 
 	m_directXPage->LoadInternalState(ApplicationData::Current->LocalSettings->Values);
+	gdr_resume();
 }

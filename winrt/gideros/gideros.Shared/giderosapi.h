@@ -2,6 +2,7 @@
 #define GIDEROSAPI_H
 
 using namespace Windows::UI::Core;
+#include <functional>
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,7 +33,8 @@ extern "C" {
 	void gdr_touchMove(int x, int y, int id);
 	void gdr_touchEnd(int x, int y, int id);
 	void gdr_touchCancel(int x, int y, int id);
-	void gdr_resize(int width, int height);
+	void gdr_resize(int width, int height, int orientation);
+	void gdr_dispatchUi(std::function<void()> func, bool wait);
 	Windows::UI::Xaml::Controls::SwapChainPanel^ gdr_getRootView();
 #ifdef __cplusplus
 }

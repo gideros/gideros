@@ -22,6 +22,7 @@ extern "C" {
 	bool gdr_isRunning();
 	void gdr_keyDown(int keyCode);
 	void gdr_keyUp(int keyCode);
+	void gdr_keyChar(const char *keyChar);
 	void gdr_mouseDown(int x, int y, int button);
 	void gdr_mouseMove(int x, int y);
 	void gdr_mouseHover(int x, int y);
@@ -31,7 +32,8 @@ extern "C" {
 	void gdr_touchMove(int x, int y, int id);
 	void gdr_touchEnd(int x, int y, int id);
 	void gdr_touchCancel(int x, int y, int id);
-	void gdr_resize(int width, int height);
+	void gdr_resize(int width, int height, int orientation);
+	void gdr_dispatchUi(std::function<void()> func,bool wait);
 	Windows::UI::Xaml::Controls::SwapChainPanel^ gdr_getRootView();
 #ifdef __cplusplus
 }

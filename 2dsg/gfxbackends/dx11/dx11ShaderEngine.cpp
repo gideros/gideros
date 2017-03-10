@@ -293,7 +293,7 @@ void dx11ShaderEngine::resizeFramebuffer(int width,int height)
         HRESULT hr;
         // Preserve the existing buffer count and format.
         // Automatically choose the width and height to match the client rect for HWNDs.
-        hr = g_swapchain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        hr = g_swapchain->ResizeBuffers(0, width, height, DXGI_FORMAT_UNKNOWN, 0);
 
         // Perform error handling here!
 

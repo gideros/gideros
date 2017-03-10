@@ -14,6 +14,31 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\ads.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\adsbinder.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>PSAPI_VERSION=2;WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP;_UITHREADCTXT_SUPPORT=0;%(PreprocessorDefinitions);WINSTORE</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\frameworks\AdsPubcenter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\bit.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\bit_stub.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>PSAPI_VERSION=2;WINAPI_FAMILY=WINAPI_FAMILY_PHONE_APP;_UITHREADCTXT_SUPPORT=0;%(PreprocessorDefinitions);WINSTORE</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.cpp">
+      <DependentUpon>$(MSBuildThisFileDirectory)DirectXPage.xaml</DependentUpon>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\ads.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\AdsAbstract.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\giderosxaml.WindowsPhone\Plugins\Ads\frameworks\AdsPubcenter.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.h">
+      <DependentUpon>$(MSBuildThisFileDirectory)DirectXPage.xaml</DependentUpon>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)gapplication.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gevent.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)gexport.h" />
@@ -37,5 +62,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)DirectXPage.xaml" />
   </ItemGroup>
 </Project>

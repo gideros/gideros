@@ -5,6 +5,8 @@
 
 #include "pch.h"
 #include "DirectXPage.xaml.h"
+#include "App.xaml.h"
+#include "giderosapi.h"
 
 using namespace giderosxaml;
 
@@ -75,6 +77,7 @@ void App::OnSuspending(Object^ sender, SuspendingEventArgs^ e)
 	(void) sender;	// Unused parameter
 	(void) e;	// Unused parameter
 
+	gdr_suspend();
 	m_directXPage->SaveInternalState(ApplicationData::Current->LocalSettings->Values);
 }
 
@@ -89,4 +92,5 @@ void App::OnResuming(Object ^sender, Object ^args)
 	(void) args; // Unused parameter
 
 	m_directXPage->LoadInternalState(ApplicationData::Current->LocalSettings->Values);
+	gdr_resume();
 }

@@ -184,62 +184,44 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Image Include="Assets\bird_black_01.png" />
-    <Image Include="Assets\bird_black_02.png" />
-    <Image Include="Assets\bird_black_03.png" />
-    <Image Include="Assets\bird_white_01.png" />
-    <Image Include="Assets\bird_white_02.png" />
-    <Image Include="Assets\bird_white_03.png" />
-    <Image Include="Assets\Logo.png" />
-    <Image Include="Assets\sky_world.png" />
-    <Image Include="Assets\SmallLogo.png" />
-    <Image Include="Assets\StoreLogo.png" />
-    <Image Include="Assets\SplashScreen.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
-    </ClInclude>
-    <ClInclude Include="DirectXPage.xaml.h">
-      <DependentUpon>DirectXPage.xaml</DependentUpon>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.xaml.cpp">
       <DependentUpon>App.xaml</DependentUpon>
     </ClCompile>
-    <ClCompile Include="DirectXPage.xaml.cpp">
-      <DependentUpon>DirectXPage.xaml</DependentUpon>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest">
-      <SubType>Designer</SubType>
-    </AppxManifest>
-    <None Include="Assets\bird.lua">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Assets\main.lua">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Assets\properties.bin">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="giderosxaml.Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="DirectXPage.xaml">
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="Microsoft.AdMediatorWindows81, Version=1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
-    </Page>
+    </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Assets\luafiles.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="MSAdvertisingXaml, Version=8.1" />
+    <Image Include="Assets\Logo.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Assets\SmallLogo.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Assets\SplashScreen.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
