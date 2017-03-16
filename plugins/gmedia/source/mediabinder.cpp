@@ -651,9 +651,9 @@ static int getPicture(lua_State *L)
 static int getFile(lua_State *L)
 {
     GMediaManager *g = getInstance(L, 1);
-    const char* initialPath = g_pathForFile(luaL_checkstring(L, 2));
-    const char* extensions = g_pathForFile(luaL_checkstring(L, 3));
-    g->getFile(initialPath,extensions);
+    const char* extensions = g_pathForFile(luaL_checkstring(L, 2));
+    const char* initialPath = g_pathForFile(luaL_checkstring(L, 3));    
+    g->getFile(extensions,initialPath);
     return 0;
   
   
