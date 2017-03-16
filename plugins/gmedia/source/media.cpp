@@ -92,7 +92,7 @@
         }
 	}
 	
-	void GMEDIA::getFile(const char* extensions,const char* initialPath)
+	void GMEDIA::getFile(const char* extensions, const char* initialPath)
 	{
         QString fileName = QFileDialog::getOpenFileName(0, QObject::tr("Open File"),initialPath,QObject::tr(extensions);
         if(fileName.isNull())
@@ -132,7 +132,7 @@
         }
 	}
 
-void GMEDIA::saveFile(const char* path,const char* initialPath)
+void GMEDIA::saveFile(const char* path, const char* initialPath)
 	{
         QFileInfo info(path);
         QString format = info.suffix();        
@@ -260,10 +260,18 @@ void gmedia_getPicture(){
     s_gmedia->getPicture();
 }
 
+void gmedia_getFile(const char* extensions, const char* initialPath){
+    s_gmedia->getFile(extensions, initialPath);
+}
+	
 void gmedia_savePicture(const char* path){
     s_gmedia->savePicture(path);
 }
 
+void gmedia_saveFile(const char* path, const char* initialPath){
+    s_gmedia->saveFile(path, initialPath);
+}
+	
 void gmedia_playVideo(const char* path, int force){
     s_gmedia->playVideo(path, force);
 }
