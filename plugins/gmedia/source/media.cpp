@@ -94,7 +94,7 @@
 	
 	void GMEDIA::getFile(const char* extensions, const char* initialPath)
 	{
-        QString fileName = QFileDialog::getOpenFileName(0, QObject::tr("Open File"),initialPath,QObject::tr(extensions);
+        QString fileName = QFileDialog::getOpenFileName(0, QObject::tr("Open File"),initialPath,QObject::tr(extensions));
         if(fileName.isNull())
             onMediaCanceled();
         else{
