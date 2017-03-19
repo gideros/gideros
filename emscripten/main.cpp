@@ -280,7 +280,7 @@ char *url=(char *) EM_ASM_INT_V({
     initGL(defWidth,defHeight);    
 //    glog_setLevel(0);
     bool hasGApp=EM_ASM_INT_V({ return Module.hasGApp; });
-    s_applicationManager=new ApplicationManager(false,hasGApp?"main.gapp":"",url);
+    s_applicationManager=new ApplicationManager(!hasGApp,hasGApp?"main.gapp":"",url);
     s_applicationManager->surfaceCreated();
 
     EMSCRIPTEN_RESULT ret;

@@ -39,6 +39,8 @@ Module.preRun.push(function() {
 	    }	    
 	    Module['removeRunDependency']('syncfs');
 	});
+	
+	GiderosNetplayerWS=null;
 })
 Module.registerPlugins=function()
 {
@@ -50,6 +52,11 @@ Module.registerPlugins=function()
 	    //g_registerPlugin(g_pluginMain_##symbol);
 	    console.log(pname);
 	});
+}
+
+Module.gnetplayerSend=function(data) {
+	if ((GiderosNetplayerWS!=null)&&(GiderosNetplayerWS.readyState == 1))
+        GiderosNetplayerWS.send(data);
 }
 
 Module.ghttpjs_urlload=function(url, request, rhdr, param, arg, free, onload, onerror, onprogress) {

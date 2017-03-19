@@ -128,7 +128,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("<body class=\"fullscreen\">").toUtf8(), ("<body class=\"fullscreen\" style=\"background-color:"+ctx->properties.backgroundColor+";\">").toUtf8());
         if(ctx->properties.disableSplash)
             replaceList1 << qMakePair(QString("<img src=\"gideros.png\" />").toUtf8(), QString("<img src=\"gideros.png\" style=\"display:none;\"/>").toUtf8());
-        replaceList1 << qMakePair(QString("gideros.GApp").toUtf8(), (ctx->base+".GApp").toUtf8());
+        replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("//GAPP_URL=\""+ctx->base+".GApp\"").toUtf8());
         replaceList1 << qMakePair(QString("GIDEROS_MEMORY_MB=128").toUtf8(),QString("GIDEROS_MEMORY_MB=%1").arg(ctx->properties.html5_mem).toUtf8());
     }
     ctx->replaceList << replaceList1;

@@ -7,6 +7,8 @@
 #include <QString>
 #include <QTcpSocket>
 #include <QUdpSocket>
+#include "QtWebSockets/qwebsocketserver.h"
+#include "QtWebSockets/qwebsocket.h"
 
 struct ProjectProperties;
 
@@ -52,6 +54,9 @@ public slots:
 private slots:
 	void onConnected();
 	void onDisconnected();
+	void onWebConnection();
+	void onWebClosed();
+	void onWebMessage(QByteArray data);
 	void error(QAbstractSocket::SocketError socketError);
 	void bytesWritten(qint64 bytes);
 	void readyRead();
@@ -75,6 +80,8 @@ private:
 	Status status_;
 	int nextid_;
 	QByteArray readArray_;
+	QWebSocketServer *websocket_;
+	QList<QWebSocket *> webclients;
 };
 
 #endif // GIDEROSNETWORKCLIENT2_H
