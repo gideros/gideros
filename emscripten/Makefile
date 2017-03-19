@@ -101,6 +101,8 @@ PLUGINS=$(HTML5_PLUGINS)
 PLUGINS?=bitop luasocket json
 
 template: main plugins
+
+template.zip: template
 	cd $(BUILD); rm -f Html5.zip; zip -r Html5.zip Html5/; 
 
 plugins:

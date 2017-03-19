@@ -5,7 +5,8 @@
 
 using namespace emscripten;
 
-static int dataSent,dataReceived;
+static int dataSent=0,dataReceived=0;
+static bool srvOn=false;
 
 static void wsSend(const char *data,int size)
 {
@@ -15,6 +16,7 @@ static void wsSend(const char *data,int size)
 
 extern "C" void serverStop()
 {
+	srvOn=false;
 	EM_ASM({
 		if (GiderosNetplayerWS)
 			GiderosNetplayerWS.close();
@@ -25,21 +27,7 @@ extern "C" void serverStart()
 {
 	dataSent=0;
 	dataReceived=0;
-	EM_ASM({
-        try {
-            if (typeof MozWebSocket == 'function')
-                WebSocket = MozWebSocket;
-            if ( GiderosNetplayerWS && GiderosNetplayerWS.readyState == 1 )
-            	GiderosNetplayerWS.close();
-            GiderosNetplayerWSQ=[];
-            GiderosNetplayerWS = new WebSocket( "ws://127.0.0.1:15001" );
-            GiderosNetplayerWS.binaryType = 'arraybuffer';
-            GiderosNetplayerWS.onmessage = function (evt) {
-            	GiderosNetplayerWSQ.push(evt.data);
-            };
-        } catch (exception) {
-        }
-	});
+	srvOn=true;
 }
 
 static int nextId=0;
@@ -79,6 +67,31 @@ static time_t lastBcastTime_;
 #define ADVERTISE_PERIOD	1	//Advertise every 1 seconds
 extern "C" void serverTick(NetworkEvent *event)
 {
+	if (srvOn)
+	EM_ASM({
+        try {
+            if (GiderosNetplayerWS==null)
+            {
+            if (typeof MozWebSocket == 'function')
+                WebSocket = MozWebSocket;
+            GiderosNetplayerWSQ=[];
+            GiderosNetplayerWS = new WebSocket( "ws://127.0.0.1:15001" );
+            GiderosNetplayerWS.binaryType = 'arraybuffer';
+            GiderosNetplayerWS.onmessage = function (evt) {
+            	GiderosNetplayerWSQ.push(evt.data);
+            };
+            GiderosNetplayerWS.onclose = function (evt) {
+            	GiderosNetplayerWS = null;
+            };
+            GiderosNetplayerWS.onerror = function (evt) {
+            	GiderosNetplayerWS = null;
+            };
+            }
+        } catch (exception) {
+        	GiderosNetplayerWS = null;
+        }
+	});
+
 	event->eventCode = eNone;
     time_t ctime=time(NULL);
     if ((lastBcastTime_<=(ctime-ADVERTISE_PERIOD))||
