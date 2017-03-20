@@ -7,7 +7,7 @@
 
 #include "DirectXPage.g.h"
 
-namespace giderosxaml
+namespace giderosgame
 {
 	/// <summary>
 	/// A page that hosts a DirectX SwapChainPanel.

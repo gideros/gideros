@@ -8,7 +8,7 @@
 #include "App.xaml.h"
 #include "giderosapi.h"
 
-using namespace giderosxaml;
+using namespace giderosgame;
 
 using namespace Platform;
 using namespace Windows::ApplicationModel;

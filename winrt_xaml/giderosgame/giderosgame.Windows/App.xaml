@@ -1,13 +1,13 @@
 ﻿<Application
-    x:Class="giderosxaml.App"
+    x:Class="giderosgame.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:giderosxaml"
+    xmlns:local="using:giderosgame"
     xmlns:localData="using:Shared">
 
     <Application.Resources>
 
-      <x:String x:Key="AppName">giderosxaml</x:String>
+      <x:String x:Key="AppName">giderosgame</x:String>
 
     </Application.Resources>
 </Application>

@@ -28,13 +28,13 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1f1102c1-daf7-47a5-8adf-d2ec2ca795d0}</ProjectGuid>
-    <RootNamespace>giderosxaml</RootNamespace>
+    <RootNamespace>giderosgame</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
     <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
-    <ProjectName>giderosxaml.Windows</ProjectName>
+    <ProjectName>giderosgame.Windows</ProjectName>
     <GidProjectType>Windows</GidProjectType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -95,10 +95,10 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <Import Project="..\giderosxaml.Shared\giderosxaml.Shared.vcxitems" Label="Shared" />
+  <Import Project="..\giderosgame.Shared\giderosgame.Shared.vcxitems" Label="Shared" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>giderosxaml.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>giderosgame.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>2B15CEE01DE9831357551EF0FF58C3E4C9EB54EA</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -196,7 +196,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="giderosxaml.Windows_TemporaryKey.pfx" />
+    <None Include="giderosgame.Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

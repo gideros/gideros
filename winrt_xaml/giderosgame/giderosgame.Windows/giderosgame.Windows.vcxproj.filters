@@ -21,7 +21,7 @@
     <ClInclude Include="App.xaml.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="giderosxaml.Windows_TemporaryKey.pfx" />
+    <None Include="giderosgame.Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />

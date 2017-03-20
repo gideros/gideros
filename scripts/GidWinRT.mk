@@ -4,7 +4,7 @@ WINRT_SHADERS_FILE=dx11_shaders.c
 BIN2C=$(ROOT)/scripts/bin2c
 
 WINRT_PLAYERDIR=winrt_xaml
-WINRT_PLAYERSUBDIR=giderosxaml
+WINRT_PLAYERSUBDIR=giderosgame
 
 #Macros
 #$(call WINRT_PROJECT basepath name target)
@@ -67,12 +67,16 @@ winrt.core: winrt.libs winrt.shaders
 winrt.template: winrt.core winrt.plugins 
 	rm -rf $(RELEASE)/Templates/VisualStudio
 	mkdir -p $(RELEASE)/Templates
-	cp -r ui/Templates/VisualStudio $(RELEASE)/Templates
-	#Common
+	#Non XAML
+	#cp -r ui/Templates/VisualStudio $(RELEASE)/Templates
 	#cp $(WINRT_PLAYERDIR)/*.cpp "$(RELEASE)/Templates/VisualStudio/WinRT Template"
-	#cat giderosxaml.Shared.vcxitems | sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2'
+	#cp winrt/gideros/gideros.Shared/giderosapi.h "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	#XAML
+	mkdir -p "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	cd $(WINRT_PLAYERDIR); git archive master | tar -x -C "../$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2' $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/$(WINRT_PLAYERSUBDIR).Shared.vcxitems >"$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/$(WINRT_PLAYERSUBDIR).Shared.vcxitems"
+	cp winrt/gideros/gideros.Shared/giderosapi.h "$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/"
 	
-	cp winrt/gideros/gideros.Shared/giderosapi.h "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	#X86 Release version for Windows
 	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	cp lua/luawinrt/luawinrt/luawinrt.Windows/Release/luawinrt.Windows/luawinrt.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"

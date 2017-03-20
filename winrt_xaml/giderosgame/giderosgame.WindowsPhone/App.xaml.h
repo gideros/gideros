@@ -8,7 +8,7 @@
 #include "App.g.h"
 #include "DirectXPage.xaml.h"
 
-namespace giderosxaml
+namespace giderosgame
 {
 		/// <summary>
 	/// Provides application-specific behavior to supplement the default Application class.
