@@ -174,5 +174,5 @@ Module.checkALMuted=function()
 
 Module.GiderosJSEvent=function(type,context,value,data)
 {
-    Module.ccall('JSNative_enqueueEvent','number', ['string','number",'number",'string','number'], [type,context,value,data,data.length]);
+    Module.ccall('JSNative_enqueueEvent','number', ['string','number','number','string','number'], [type,context,value,data,data.length]);
 }
