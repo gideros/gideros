@@ -45,7 +45,11 @@ std::string getLocale()
 
 std::string getLanguage()
 {
-	return "en"; //TODO
+	char *lang=(char *) EM_ASM_INT_V({
+	 return allocate(intArrayFromString(Module.gplatformLanguage()), 'i8', ALLOC_STACK);
+	});
+
+	return lang;
 }
 
 void openUrl(const char* url)

@@ -28,4 +28,4 @@ static void g_deinitializePlugin(lua_State* L)
 
 }
 
-REGISTER_PLUGIN("LuaSQLite3", "1.0")
+REGISTER_PLUGIN_NAMED("LuaSQLite3", "1.0", lsqlite3)

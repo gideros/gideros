@@ -4,6 +4,7 @@
 #include <libnetwork.h>
 #include <string>
 #include <stdlib.h>
+#include "netplayer.h"
 
 struct ProjectProperties {
 	ProjectProperties() {
@@ -61,7 +62,7 @@ public:
 		memcpy(buffer + 1, str, size - 2);
 		buffer[size - 1] = 0;
 
-		server_->sendData(buffer, size);
+		serverSendData(buffer, size);
 
 		free(buffer);
 	}
@@ -85,7 +86,6 @@ private:
 
 private:
 	ApplicationManager *application_;
-	Server *server_;
 	std::string resourceDirectory_;
 };
 
