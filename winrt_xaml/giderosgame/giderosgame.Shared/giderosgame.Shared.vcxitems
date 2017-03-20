@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Platform)'=='ARM'" Label="Configuration">
+    <GidPlatformPath>ARM\</GidPlatformPath>
+  </PropertyGroup>
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
@@ -7,19 +10,25 @@
     <ItemsRootNamespace>giderosgame</ItemsRootNamespace>
     <ItemsProjectName>giderosgame.Shared</ItemsProjectName>
     <SharedGUID>9fd4af0a-93d0-4455-84eb-dcc2c7c76e36</SharedGUID>
+    <GidLibsPath>..\..\..\winrt\$(GidPlatformPath)$(Configuration)\gideros.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\libgvfswinrt.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\luawinrt.$(GidProjectType)</GidLibsPath>
   </PropertyGroup>
+  
   <ItemDefinitionGroup>
     <ClCompile>
+   	  <!--GIDEROS-COMPILE-SHARED-->
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
+      <AdditionalLibraryDirectories>$(GidLibsPath)</AdditionalLibraryDirectories>
+   	  <!--GIDEROS-LINK-SHARED-->
    <!--PLUGINS-START-->
       <AdditionalDependencies>luasocket.$(GidProjectType).lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
    <!--PLUGINS-END-->
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+   <!--GIDEROS-PLUGIN-FILES-->
    <!--PLUGINS-START-->
     <ClCompile Include="$(ProjectDir)\..\..\..\Plugins\luasocket\source\luasocket_stub.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>      
