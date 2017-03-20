@@ -15,6 +15,8 @@ public:
 
 	~GAds()
 	{
+		for (auto it = instances.begin(); it != instances.end(); it++)
+			delete it->second;
 		frameworks.clear();
 		gevent_RemoveEventsWithGid(gid_);
 	}
@@ -22,13 +24,19 @@ public:
 	void init(const char *ad)
 	{
 		if (instances.find(ad) == instances.end())
-			instances[ad] = new AdsPubcenter();
+		{
+			if (frameworks[ad] != NULL)
+				instances[ad] = frameworks[ad]();
+		}
 	}
 	
 	void destroy(const char *ad)
 	{
 		if (instances.find(ad) != instances.end())
+		{
+			delete instances[ad];
 			instances.erase(ad);
+		}
 	}
 	
 	void setKey(const char *ad, gads_Parameter *params)

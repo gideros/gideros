@@ -28,5 +28,7 @@ public:
 
 	virtual int getHeight() = 0;
 
+	virtual ~AdsAbstract() { };
+
 };
 #endif

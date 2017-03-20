@@ -80,6 +80,8 @@ bool ShaderProgram::updateConstant(int index,ShaderProgram::ConstantType type, i
 	case CMATRIX:
 		sl=64;
 		break;
+	case CTEXTURE:
+		break;
 	}
 	if (!sl) return false;
 	sl*=mult;

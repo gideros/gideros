@@ -45,6 +45,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\strbuf.c">
       <Filter>Plugins</Filter>
     </ClCompile>
+    <ClCompile Include="$(ProjectDir)\..\..\..\Plugins\luasocket\source\luasocket_stub.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.h" />

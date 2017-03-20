@@ -208,6 +208,7 @@ void Application::renderScene(int deltaFrameCount) {
 		} else {
 			switch (orientation_) {
 			case ePortrait:
+			case eFixed:
 				break;
 			case ePortraitUpsideDown:
 				projection.translate(-(width_ / scale_) / 2,
@@ -233,6 +234,7 @@ void Application::renderScene(int deltaFrameCount) {
 			}
 
 			switch (hardwareOrientation_) {
+			case eFixed:
 			case ePortrait:
 				break;
 			case ePortraitUpsideDown:
@@ -489,6 +491,7 @@ void Application::resolution(int* width, int* height) {
 void Application::correctTouchPosition(int* x, int* y) {
 	if (hardwareOrientation_==eFixed) return;
 	switch (orientation_) {
+	case eFixed:
 	case ePortrait:
 		break;
 	case ePortraitUpsideDown:

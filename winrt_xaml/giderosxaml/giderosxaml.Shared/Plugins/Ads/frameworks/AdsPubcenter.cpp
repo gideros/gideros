@@ -7,7 +7,7 @@ using namespace Microsoft::Advertising::WinRT::UI;
 using namespace Windows::UI::Xaml;
 using namespace Windows::UI::Core;
 
-std::string curSize = "250x250";
+static std::string curSize = "250x250";
 
 ref class AdsPubcenterListener{
 public:
@@ -52,6 +52,7 @@ AdsPubcenter::AdsPubcenter()
 
 AdsPubcenter::~AdsPubcenter()
 {
+	hideAd("");
 	adSizes.clear();
 }
 
@@ -111,35 +112,38 @@ void AdsPubcenter::loadAd(gads_Parameter *params){
 
 void AdsPubcenter::showAd(gads_Parameter *params){
 	loadAd(params);
-	if (!ad->Parent){
-		gdr_dispatchUi([&]()
-		{
+	gdr_dispatchUi([&]()
+	{
+		if (!ad->Parent) {
 			gdr_getRootView()->Children->Append(ad);
 			gads_adDisplayed("pubcenter", curSize.c_str());
-		},false);
-	}
+		}
+	},false);
 }
 
 void AdsPubcenter::hideAd(const char* type){
-	if (ad->Parent){
+	if (ad){
 		gdr_dispatchUi([&]()
 		{
-			int cur = 0;
-			for each (auto item in gdr_getRootView()->Children)
+			if (ad->Parent)
 			{
-				if (item == static_cast<UIElement^>(ad)){
-					break;
+				int cur = 0;
+				for each (auto item in gdr_getRootView()->Children)
+				{
+					if (item == static_cast<UIElement^>(ad)) {
+						break;
+					}
+					cur++;
 				}
-				cur++;
+				gdr_getRootView()->Children->RemoveAt(cur);
+				gads_adDismissed("pubcenter", curSize.c_str());
 			}
-			gdr_getRootView()->Children->RemoveAt(cur);
-			gads_adDismissed("pubcenter", curSize.c_str());
 		},false);
 	}
 }
 
 void AdsPubcenter::setAlignment(const char *hor, const char *verr){
-	if (ad->Parent)
+	if (ad)
 		gdr_dispatchUi([=]()
 		{
 			if (ad){

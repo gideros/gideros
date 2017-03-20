@@ -133,6 +133,10 @@ void GMesh::setGenericArray(int index,const void *pointer, ShaderProgram::DataTy
 	case ShaderProgram::DUSHORT:
 		ps=2;
 		break;
+	case ShaderProgram::DINT:
+	case ShaderProgram::DFLOAT:
+		ps=4;
+		break;
 	}
 	genericArray[index].ptr=malloc(ps*mult*count);
 	memcpy(genericArray[index].ptr,pointer,ps*mult*count);
@@ -389,7 +393,7 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
         colors_.modified=false;
     }
 
-    if (texture_ && !textureCoordinates_.empty())
+    if (texture_[0] && !textureCoordinates_.empty())
     {
         p->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2, &textureCoordinates_[0],textureCoordinates_.size()/2,textureCoordinates_.modified,&textureCoordinates_.bufferCache);
         textureCoordinates_.modified=false;

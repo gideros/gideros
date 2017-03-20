@@ -70,6 +70,8 @@ winrt.template: winrt.core winrt.plugins
 	cp -r ui/Templates/VisualStudio $(RELEASE)/Templates
 	#Common
 	#cp $(WINRT_PLAYERDIR)/*.cpp "$(RELEASE)/Templates/VisualStudio/WinRT Template"
+	#cat giderosxaml.Shared.vcxitems | sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2'
+	
 	cp winrt/gideros/gideros.Shared/giderosapi.h "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	#X86 Release version for Windows
 	cp winrt/gideros/gideros.Windows/Release/gideros.Windows/gideros.Windows.lib "$(RELEASE)/Templates/VisualStudio/WinRT Template"

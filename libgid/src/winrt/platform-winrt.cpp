@@ -5,6 +5,7 @@
 #include <memory>
 #include <concrt.h>
 #include <ppltasks.h>
+#include <giderosapi.h>
 
 using namespace Windows::System;
 using namespace Platform;
@@ -101,16 +102,18 @@ bool requested = false;
 
 void setKeepAwake(bool awake)
 {
-	if (!dispRequest){
-		dispRequest = ref new DisplayRequest();
-	}
-	if (awake != requested){
-		requested = !requested;
-		if (awake)
-			dispRequest->RequestActive();
-		else
-			dispRequest->RequestRelease();
-	}
+	gdr_dispatchUi([&] {
+		if (!dispRequest){
+			dispRequest = ref new DisplayRequest();
+		}
+		if (awake != requested){
+			requested = !requested;
+			if (awake)
+				dispRequest->RequestActive();
+			else
+				dispRequest->RequestRelease();
+		}
+	}, true);
 }
 
 bool setKeyboardVisibility(bool visible){

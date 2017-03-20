@@ -62,6 +62,7 @@ int StageBinder::getOrientation(lua_State* L)
 	switch (stage->application()->orientation())
 	{
 	case ePortrait:
+	case eFixed:
 		lua_getfield(L, 1, "PORTRAIT");
 		break;
 	case ePortraitUpsideDown:

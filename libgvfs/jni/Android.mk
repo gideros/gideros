@@ -51,6 +51,6 @@ LOCAL_SRC_FILES += \
     ../gfile.cpp \
     ../gpath.cpp
 	
-LOCAL_LDLIBS := -ldl
+LOCAL_LDLIBS := -ldl -latomic
 
 include $(BUILD_SHARED_LIBRARY)

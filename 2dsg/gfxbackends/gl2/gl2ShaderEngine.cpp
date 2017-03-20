@@ -582,6 +582,9 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 			case STENCIL_GEQUAL: sf=GL_GEQUAL; break;
 			case STENCIL_EQUAL: sf=GL_EQUAL; break;
 			case STENCIL_NOTEQUAL: sf=GL_NOTEQUAL; break;
+			case STENCIL_ALWAYS:
+			case STENCIL_DISABLE:
+				break;
 		}
 		glStencilFunc(sf,state.sRef,state.sMask);
 	}
@@ -641,6 +644,8 @@ GLenum ogl2ShaderEngine::blendFactor2GLenum(BlendFactor blendFactor) {
 		//   return GL_ONE_MINUS_CONSTANT_ALPHA;
 	case SRC_ALPHA_SATURATE:
 		return GL_SRC_ALPHA_SATURATE;
+	default:
+		break;
 	}
 
 	return GL_ZERO;

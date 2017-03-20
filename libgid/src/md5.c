@@ -49,7 +49,7 @@ void md5_starts( md5_context *ctx )
     ctx->state[3] = 0x10325476;
 }
 
-void md5_process( md5_context *ctx, uint8 data[64] )
+void md5_process( md5_context *ctx, const uint8 data[64] )
 {
     uint32 X[16], A, B, C, D;
 

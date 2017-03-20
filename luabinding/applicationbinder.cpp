@@ -421,6 +421,7 @@ int ApplicationBinder::getOrientation(lua_State* L)
 
 	switch (application->getApplication()->orientation())
 	{
+	case eFixed:
 	case ePortrait:
 		lua_pushstring(L, PORTRAIT);
 		break;
@@ -639,6 +640,7 @@ int ApplicationBinder::getDeviceOrientation(lua_State *L)
 
     switch (application->getApplication()->getDeviceOrientation())
     {
+	case eFixed:
     case ePortrait:
         lua_pushstring(L, PORTRAIT);
         break;
