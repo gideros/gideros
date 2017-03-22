@@ -324,7 +324,7 @@ iOSProject.commit()
  <target name="WinRT">
     <template name="sources" path="[[[sys.pluginDir]]]/source/WinRT"  dest="giderosgame/giderosgame.Shared/Plugins"/>
     <template name="project" path="">
-        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <replacelist wildcards="giderosgame.Shared.vcxitems;*.vcxproj">
         <append>
             <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
             <by><![CDATA[
@@ -339,6 +339,16 @@ iOSProject.commit()
     <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.h" />]]></by>
             </append>
+        <append>
+            <orig><![CDATA[<!--SDK-REFERENCE-WIN-->]]></orig>
+            <by><![CDATA[
+    <SDKReference Include="Microsoft.AdMediatorWindows81, Version=1.0" />]]></by>
+         </append>
+        <append>
+            <orig><![CDATA[<!--SDK-REFERENCE-WINPHONE-->]]></orig>
+            <by><![CDATA[
+        <SDKReference Include="Microsoft.AdMediator81, Version=1.0" />]]></by>
+         </append>
         </replacelist>
     </template>
  </target>

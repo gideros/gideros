@@ -36,11 +36,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\luasocket_stub.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>      
     </ClCompile>]]></by>
-            </append>
+        </append>
+        <append>
             <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
             <by><![CDATA[
       <AdditionalDependencies>luasocket.$(GidProjectType).lib</AdditionalDependencies>]]></by>
-            </append> 
+        </append> 
         </replacelist>
     </template>
  </target>
