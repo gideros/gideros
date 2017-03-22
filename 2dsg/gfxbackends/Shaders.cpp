@@ -14,6 +14,7 @@
 ShaderProgram *ShaderProgram::stdBasic=NULL;
 ShaderProgram *ShaderProgram::stdColor=NULL;
 ShaderProgram *ShaderProgram::stdTexture=NULL;
+ShaderProgram *ShaderProgram::stdTextureAlpha=NULL;
 ShaderProgram *ShaderProgram::stdTextureColor=NULL;
 ShaderProgram *ShaderProgram::stdParticle=NULL;
 ShaderProgram *ShaderProgram::stdParticles=NULL;

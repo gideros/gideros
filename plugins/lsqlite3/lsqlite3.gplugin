@@ -25,4 +25,30 @@
         </replacelist>
     </template>
  </target>
+ <target name="WinRT">
+    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lsqlite3.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lsqlite3_stub.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\sqlite3.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);SQLITE_OMIT_LOAD_EXTENSION=1;SQLITE_OS_WINRT;SQLITE_MAX_MMAP_SIZE=0;SQLITE_OMIT_WAL</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4703</DisableSpecificWarnings>
+     </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\sqlite3.h" />]]></by>
+           </append>
+        </replacelist>
+    </template>
+ </target>
 </plugin>

@@ -109,6 +109,18 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
         format = GTEXTURE_RGBA;
         type = GTEXTURE_UNSIGNED_SHORT_5_5_5_1;
         break;
+    case eY8:
+        format = GTEXTURE_LUMINANCE;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eA8:
+        format = GTEXTURE_ALPHA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eYA8:
+        format = GTEXTURE_LUMINANCE_ALPHA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
     }
 
     if (!sig.empty())
@@ -161,6 +173,24 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
     {
         std::vector<unsigned short> data = dib.to5551();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], &sig[0], sig.size());
+        break;
+    }
+    case eY8:
+    {
+        std::vector<unsigned char> data = dib.toY8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        break;
+    }
+    case eA8:
+    {
+        std::vector<unsigned char> data = dib.toA8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        break;
+    }
+    case eYA8:
+    {
+        std::vector<unsigned char> data = dib.toYA8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
         break;
     }
     }
@@ -230,6 +260,18 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
         format = GTEXTURE_RGBA;
         type = GTEXTURE_UNSIGNED_SHORT_5_5_5_1;
         break;
+    case eY8:
+        format = GTEXTURE_LUMINANCE;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eA8:
+        format = GTEXTURE_ALPHA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
+    case eYA8:
+        format = GTEXTURE_LUMINANCE_ALPHA;
+        type = GTEXTURE_UNSIGNED_BYTE;
+        break;
     }
 
 
@@ -270,6 +312,24 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
     case eRGBA5551:
     {
         std::vector<unsigned short> data = dib2.to5551();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        break;
+    }
+    case eY8:
+    {
+        std::vector<unsigned char> data = dib2.toY8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        break;
+    }
+    case eA8:
+    {
+        std::vector<unsigned char> data = dib2.toA8();
+        gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
+        break;
+    }
+    case eYA8:
+    {
+        std::vector<unsigned char> data = dib2.toYA8();
         gid = gtexture_create(dib.width(), dib.height(), format, type, wrap, filter, &data[0], NULL, 0);
         break;
     }

@@ -1,5 +1,11 @@
 /* Lua CJSON floating point conversion routines */
 
+#ifdef WINSTORE
+#define inline __inline
+#define strncasecmp(s1,s2,len) _stricmp(s1,s2)
+#define snprintf sprintf_s
+#endif
+
 /* Buffer required to store the largest string representation of a double.
  *
  * Longest double printed with %.14g is 21 characters long:

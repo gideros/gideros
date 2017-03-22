@@ -131,6 +131,9 @@ public:
     std::vector<unsigned short> to565() const;
     std::vector<unsigned short> to4444() const;
     std::vector<unsigned short> to5551() const;
+    std::vector<unsigned char> toY8() const;
+    std::vector<unsigned char> toA8() const;
+    std::vector<unsigned char> toYA8() const;
 
 private:
 	std::vector<unsigned char> data_;

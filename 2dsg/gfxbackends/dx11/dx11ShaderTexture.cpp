@@ -36,7 +36,9 @@ dx11ShaderTexture::dx11ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     tdesc.Format = DXGI_FORMAT_UNKNOWN;
     switch (format)
     {
-    	case FMT_ALPHA: tbsd.SysMemPitch = width; tdesc.Format = DXGI_FORMAT_A8_UNORM; break;
+		case FMT_ALPHA: tbsd.SysMemPitch = width; tdesc.Format = DXGI_FORMAT_A8_UNORM; break;
+		//case FMT_Y: tbsd.SysMemPitch = width; tdesc.Format = DXGI_FORMAT_L8_UNORM; break;
+		//case FMT_YA: tbsd.SysMemPitch = width*2; tdesc.Format = DXGI_FORMAT_A8L8_UNORM; break; //XXX bytes need to be swapped, but this mode is not used by gideros anyhow
     	case FMT_RGB:
     		switch (packing)
     		{

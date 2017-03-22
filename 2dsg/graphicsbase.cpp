@@ -30,7 +30,7 @@ void GraphicsBase::draw(ShaderProgram *shp, VertexBuffer<unsigned short> *common
 	if (data)
 	{
         ShaderEngine::Engine->bindTexture(0,data->id());
-        if (!shp) shp=ShaderProgram::stdTexture;
+        if (!shp) shp=(data->parameters.format==eA8)?ShaderProgram::stdTextureAlpha:ShaderProgram::stdTexture;
         shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),vertices.modified,&vertices.bufferCache);
         shp->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,&texcoords[0],texcoords.size(),texcoords.modified,&texcoords.bufferCache);
 

@@ -321,4 +321,25 @@ iOSProject.commit()
         </replacelist>
     </template>
  </target>
+ <target name="WinRT">
+    <template name="sources" path="[[[sys.pluginDir]]]/source/WinRT"  dest="giderosgame/giderosgame.Shared/Plugins"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\adsbinder.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.h" />]]></by>
+            </append>
+        </replacelist>
+    </template>
+ </target>
 </plugin>

@@ -240,6 +240,7 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
     TextureParameters parameters;
     parameters.filter = filtering ? eLinear : eNearest;
     parameters.wrap = eClamp;
+    parameters.format = eA8;
     data_ = application_->getTextureManager()->createTextureFromDib(dib, parameters);
 
     sizescalex_ = 1 / scalex;

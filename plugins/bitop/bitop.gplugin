@@ -25,4 +25,22 @@
         </replacelist>
     </template>
  </target>
+ <target name="WinRT">
+    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit_stub.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>]]></by>
+           </append>
+        </replacelist>
+    </template>
+ </target>
 </plugin>

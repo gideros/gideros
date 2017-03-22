@@ -1,4 +1,4 @@
-WINRT_SHADERS=Basic Color Texture TextureColor Particle Particles PathFillC PathStrokeC PathStrokeLC
+WINRT_SHADERS=Basic Color Texture TextureAlpha TextureColor Particle Particles PathFillC PathStrokeC PathStrokeLC
 WINRT_SHADERS_PATH=2dsg/gfxbackends/dx11
 WINRT_SHADERS_FILE=dx11_shaders.c
 BIN2C=$(ROOT)/scripts/bin2c
@@ -74,7 +74,8 @@ winrt.template: winrt.core winrt.plugins
 	#XAML
 	mkdir -p "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	cd $(WINRT_PLAYERDIR); git archive master | tar -x -C "../$(RELEASE)/Templates/VisualStudio/WinRT Template"
-	sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2' $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/$(WINRT_PLAYERSUBDIR).Shared.vcxitems | sed -e 's/\$\(GidLibsPath\)/\.\.\\\.\./' >"$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/$(WINRT_PLAYERSUBDIR).Shared.vcxitems"
+	rm -rf "$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/Plugins/"*
+	sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2' $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/$(WINRT_PLAYERSUBDIR).Shared.vcxitems | sed -e 's/$$(GidLibsPath)/\.\.\\\.\./' >"$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/$(WINRT_PLAYERSUBDIR).Shared.vcxitems"
 	sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2' $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj >"$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj"
 	sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2' $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/$(WINRT_PLAYERSUBDIR).WindowsPhone.vcxproj >"$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/$(WINRT_PLAYERSUBDIR).WindowsPhone.vcxproj"
 	cp winrt/gideros/gideros.Shared/giderosapi.h "$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/"

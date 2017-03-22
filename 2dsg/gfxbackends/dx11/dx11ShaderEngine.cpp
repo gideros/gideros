@@ -94,6 +94,7 @@ void dx11SetupShaders()
     ShaderProgram::stdBasic = new dx11ShaderProgram(vBasic_cso,sizeof(vBasic_cso),pBasic_cso,sizeof(pBasic_cso),0,stdConstants,stdBAttributes);
     ShaderProgram::stdColor = new dx11ShaderProgram(vColor_cso,sizeof(vColor_cso),pColor_cso,sizeof(pColor_cso),0,stdConstants,stdCAttributes);
     ShaderProgram::stdTexture = new dx11ShaderProgram(vTexture_cso,sizeof(vTexture_cso),pTexture_cso,sizeof(pTexture_cso),0,stdConstants,stdTAttributes);
+    ShaderProgram::stdTextureAlpha = new dx11ShaderProgram(vTextureAlpha_cso,sizeof(vTextureAlpha_cso),pTextureAlpha_cso,sizeof(pTextureAlpha_cso),0,stdConstants,stdTAttributes);
 	ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso, sizeof(vTextureColor_cso), pTextureColor_cso, sizeof(pTextureColor_cso), 0, stdConstants, stdTCAttributes);
 	ShaderProgram::stdParticles = new dx11ShaderProgram(vParticles_cso, sizeof(vParticles_cso), pParticles_cso, sizeof(pParticles_cso), 0, stdPSConstants, stdPSAttributes);
 
@@ -360,6 +361,7 @@ dx11ShaderEngine::~dx11ShaderEngine()
     delete ShaderProgram::stdBasic;
     delete ShaderProgram::stdColor;
     delete ShaderProgram::stdTexture;
+    delete ShaderProgram::stdTextureAlpha;
     delete ShaderProgram::stdTextureColor;
     delete ShaderProgram::stdParticle;
 	delete ShaderProgram::pathShaderFillC;

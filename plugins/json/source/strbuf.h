@@ -25,6 +25,12 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#ifdef WINSTORE
+#define inline __inline
+#define strncasecmp(s1,s2,len) _stricmp(s1,s2)
+#define snprintf sprintf_s
+#endif
+
 /* Size: Total bytes allocated to *buf
  * Length: String length, excluding optional NULL terminator.
  * Increment: Allocation increments when resizing the string buffer.
