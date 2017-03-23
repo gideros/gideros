@@ -33,7 +33,7 @@ LOCAL_ARM_MODE         := arm
 LOCAL_CFLAGS           := -O2
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/../../../../../Sdk/include $(LOCAL_PATH)/..
 LOCAL_SRC_FILES        := gamification.cpp gamificationbinder.cpp
-LOCAL_LDLIBS           := -ldl -llog
+LOCAL_LDLIBS           := -ldl -llog -latomic
 LOCAL_SHARED_LIBRARIES := gideros lua
 
 include $(BUILD_SHARED_LIBRARY)

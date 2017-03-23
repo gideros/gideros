@@ -73,7 +73,7 @@ INCS+=lua/src
 INCS+=libgvfs/private
 INCS+=emscripten
 
-LIBS+=prebuilt/libfreetype.so
+#LIBS+=prebuilt/libfreetype.so
 
 EMCC=$(EMSDK_PREFIX) emcc
 EMAR=$(EMSDK_PREFIX) emar
