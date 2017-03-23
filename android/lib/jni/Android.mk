@@ -163,30 +163,33 @@ LOCAL_SRC_FILES += \
 
 # modified from http://source-android.frandroid.com/external/freetype/Android.mk
 # also ftmodule.h should be configured like http://source-android.frandroid.com/external/freetype/include/freetype/config/ftmodule.h
+#FREETYPE_VER=2.4.12
+FREETYPE_VER=2.7.1
 LOCAL_CFLAGS += -DFT2_BUILD_LIBRARY
 LOCAL_CFLAGS += -DDARWIN_NO_CARBON
 LOCAL_C_INCLUDES += \
-	$(LOCAL_PATH)/../../../libgid/external/freetype-2.4.12/include \
-	$(LOCAL_PATH)/../../../libgid/external/freetype-2.4.12/src
+	$(LOCAL_PATH)/../../../libgid/external/freetype-$(FREETYPE_VER)/include \
+	$(LOCAL_PATH)/../../../libgid/external/freetype-$(FREETYPE_VER)/src
 LOCAL_SRC_FILES += \
-	../../../libgid/external/freetype-2.4.12/src/base/ftbbox.c \
-	../../../libgid/external/freetype-2.4.12/src/base/ftbitmap.c \
-	../../../libgid/external/freetype-2.4.12/src/base/ftglyph.c \
-	../../../libgid/external/freetype-2.4.12/src/base/ftlcdfil.c \
-	../../../libgid/external/freetype-2.4.12/src/base/ftstroke.c \
-	../../../libgid/external/freetype-2.4.12/src/base/ftxf86.c \
-	../../../libgid/external/freetype-2.4.12/src/base/ftbase.c \
-	../../../libgid/external/freetype-2.4.12/src/base/ftsystem.c \
-	../../../libgid/external/freetype-2.4.12/src/base/ftinit.c \
-	../../../libgid/external/freetype-2.4.12/src/base/ftgasp.c \
-	../../../libgid/external/freetype-2.4.12/src/raster/raster.c \
-	../../../libgid/external/freetype-2.4.12/src/sfnt/sfnt.c \
-	../../../libgid/external/freetype-2.4.12/src/smooth/smooth.c \
-	../../../libgid/external/freetype-2.4.12/src/autofit/autofit.c \
-	../../../libgid/external/freetype-2.4.12/src/truetype/truetype.c \
-	../../../libgid/external/freetype-2.4.12/src/cff/cff.c \
-	../../../libgid/external/freetype-2.4.12/src/psnames/psnames.c \
-	../../../libgid/external/freetype-2.4.12/src/pshinter/pshinter.c
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/base/ftbbox.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/base/ftbitmap.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/base/ftglyph.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/base/ftlcdfil.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/base/ftstroke.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/base/ftbase.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/base/ftsystem.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/base/ftinit.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/base/ftgasp.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/raster/raster.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/sfnt/sfnt.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/smooth/smooth.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/autofit/autofit.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/truetype/truetype.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/cff/cff.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/gzip/ftgzip.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/psnames/psnames.c \
+    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/pshinter/pshinter.c
+#2.4.12    ../../../libgid/external/freetype-$(FREETYPE_VER)/src/base/ftxf86.c
 
 # jpeg-9
 LOCAL_SRC_FILES += \

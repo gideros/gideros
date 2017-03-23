@@ -33,10 +33,11 @@ LGVFS_SRCS+=$(addprefix libgvfs/,$(notdir $(basename $(wildcard ../libgvfs/*.cpp
 LSUP_SRCS+=lua/etc/all_lua
 LSUP_SRCS+=libpystring/pystring
 
-#SRCS+=$(addprefix libgid/external/freetype-2.6.1/src/,base/ftbbox base/ftbitmap base/ftglyph base/ftlcdfil \
-#		base/ftstroke base/ftxf86 base/ftbase base/ftsystem base/ftinit base/ftgasp \
-#		raster/raster sfnt/sfnt smooth/smooth autofit/autofit truetype/truetype \
-#		cff/cff psnames/psnames pshinter/pshinter)
+FREETYPE_VER=2.7.1
+LFRT_SRCS= $(addprefix libgid/external/freetype-$(FREETYPE_VER)/src/, \
+	$(addprefix base/,ftbbox ftbitmap ftglyph ftlcdfil ftstroke ftbase ftsystem ftinit ftgasp) \
+	raster/raster sfnt/sfnt smooth/smooth autofit/autofit truetype/truetype cff/cff gzip/ftgzip  \
+	psnames/psnames pshinter/pshinter)
 
 LZIP_SRCS=$(addprefix libgid/external/zlib-1.2.8/,$(notdir $(basename $(wildcard ../libgid/external/zlib-1.2.8/*.c))))
 PNGFILES=png pngerror pngget pngmem pngpread pngread pngrio pngrtran pngrutil pngset pngtrans \
@@ -57,10 +58,11 @@ CORE_SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
 	gui-js ggeolocation-js main jsnative netplayer)   
 
 
+
 INCS=2dsg libgideros libgid/include libgvfs libpystring
 INCS+=2dsg/gfxbackends 2dsg/gfxbackends/gl2 2dsg/paths
 INCS+=luabinding libnetwork
-INCS+=$(addprefix libgid/external/freetype-2.6.1/,include src)
+INCS+=$(addprefix libgid/external/freetype-$(FREETYPE_VER)/,include src)
 INCS+=$(LIQUIDFUN)/.. external/glu
 INCS+=libgid/external/zlib-1.2.8 libgid/external/libpng-1.6.2 \
 	$(addprefix libgid/external/openal-soft-1.13/,include/AL OpenAL32/Include) \
@@ -112,7 +114,7 @@ plugins.clean:
 	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE) clean; cd -; done
 
 
-SUBLIBS=CORE B2D LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3
+SUBLIBS=CORE B2D LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3 LFRT
 SUBLIBS_AR=$(addprefix $(BUILD)/lib,$(addsuffix .a,$(SUBLIBS)))
 
 define SUB_template

@@ -227,6 +227,7 @@
     <Image Include="Assets\StoreLogo.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+	<!--GIDEROS_INSERT_ASSETS_HERE-->
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

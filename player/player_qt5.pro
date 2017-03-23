@@ -188,6 +188,6 @@ SOURCES += \
     ../libgid/external/freetype-$${FREETYPE_VER}/src/gzip/ftgzip.c \
     ../libgid/external/freetype-$${FREETYPE_VER}/src/psnames/psnames.c \
     ../libgid/external/freetype-$${FREETYPE_VER}/src/pshinter/pshinter.c
+#2.4.12    ../libgid/external/freetype-$${FREETYPE_VER}/src/base/ftxf86.c
 
-#    ../libgid/external/freetype-$${FREETYPE_VER}/src/base/ftxf86.c \
     

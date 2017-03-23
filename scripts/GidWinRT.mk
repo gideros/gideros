@@ -15,6 +15,15 @@ WINRT_MANIFEST=$(1)/$(2)/$(2).$(3)/$(2).$(3).Package.appxmanifest
 WINRT_BUILD_WIN=$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //p:Configuration=Release //p:Platform=Win32 //v:m
 #$(call WINRT_BUILD_WP basepath name)
 WINRT_BUILD_WP=$(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),WindowsPhone) //p:Configuration=Release //p:Platform=ARM //v:m
+WINRT_CLEAN=\
+ $(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),WindowsPhone) //t:Clean //p:Configuration=Release //p:Platform=ARM //v:m;\
+ $(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),WindowsPhone) //t:Clean //p:Configuration=Release //p:Platform=Win32 //v:m;\
+ $(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),WindowsPhone) //t:Clean //p:Configuration=Debug //p:Platform=ARM //v:m;\
+ $(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),WindowsPhone) //t:Clean //p:Configuration=Debug //p:Platform=Win32 //v:m;\
+ $(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //t:Clean //p:Configuration=Release //p:Platform=ARM //v:m;\
+ $(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //t:Clean //p:Configuration=Release //p:Platform=Win32 //v:m;\
+ $(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //t:Clean //p:Configuration=Debug //p:Platform=ARM //v:m;\
+ $(MSBUILD) $(call WINRT_PROJECT,$(1),$(2),Windows) //t:Clean //p:Configuration=Debug //p:Platform=Win32 //v:m;
 
 
 WINRT_APPX_GIDVERSION_LIST:=$(subst ., ,$(GIDEROS_VERSION)) 0 0 0 0
@@ -33,11 +42,19 @@ winrt.lua:
 	$(call WINRT_BUILD_WIN,lua/luawinrt,luawinrt)
 	$(call WINRT_BUILD_WP,lua/luawinrt,luawinrt)
 
+winrt.lua.clean:
+	$(call WINRT_CLEAN,lua/luawinrt,luawinrt)
+
 winrt.gvfs:
 	$(call WINRT_BUILD_WIN,libgvfs/libgvfswinrt,libgvfswinrt)
 	$(call WINRT_BUILD_WP,libgvfs/libgvfswinrt,libgvfswinrt)
 
+winrt.gvfs.clean:
+	$(call WINRT_CLEAN,libgvfs/libgvfswinrt,libgvfswinrt)
+
 winrt.libs: winrt.lua winrt.gvfs
+
+winrt.libs.clean: winrt.lua.clean winrt.gvfs.clean
 
 winrt.plugins:
 	$(call WINRT_BUILD_WIN,plugins/luasocket/source/winrt/luasocket,luasocket)
@@ -45,6 +62,9 @@ winrt.plugins:
 	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT
 	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/ARM/*.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
 	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/Win32/*.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
+
+winrt.plugins.clean:
+	$(call WINRT_CLEAN,plugins/luasocket/source/winrt/luasocket,luasocket)
 	
 winrt.core: winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)
@@ -63,6 +83,9 @@ winrt.core: winrt.libs winrt.shaders
 	cp lua/luawinrt/luawinrt/luawinrt.WindowsPhone/ARM/Release/luawinrt.WindowsPhone/luawinrt.WindowsPhone.lib winrt/ARM/Release/luawinrt.WindowsPhone
 	mkdir -p winrt/ARM/Release/libgvfswinrt.WindowsPhone
 	cp libgvfs/libgvfswinrt/libgvfswinrt/libgvfswinrt.WindowsPhone/ARM/Release/libgvfswinrt.WindowsPhone/libgvfswinrt.WindowsPhone.lib winrt/ARM/Release/libgvfswinrt.WindowsPhone
+
+winrt.core.clean: winrt.libs.clean
+	$(call WINRT_CLEAN,winrt,gideros) 
 	 
 winrt.template: winrt.core winrt.plugins 
 	rm -rf $(RELEASE)/Templates/VisualStudio
@@ -111,11 +134,13 @@ winrt.player: winrt.template
 	mkdir -p $(RELEASE)/Players/WinRT
 	cp -r $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/AppPackages/$(WINRT_PLAYERSUBDIR).WindowsPhone/* $(RELEASE)/Players/WinRT
 	cp -r $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/AppPackages/$(WINRT_PLAYERSUBDIR).Windows/* $(RELEASE)/Players/WinRT
+
+winrt.player.clean:
+	$(call WINRT_CLEAN,$(WINRT_PLAYERDIR),$(WINRT_PLAYERSUBDIR)) 
 	
 winrt.install: winrt.player
 
-winrt.clean:
-	#DUMMY
+winrt.clean: winrt.core.clean winrt.player.clean
 
 winrt.zip: winrt.player
 	rm -f $@

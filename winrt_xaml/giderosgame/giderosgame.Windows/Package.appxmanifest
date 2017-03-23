@@ -2,7 +2,7 @@
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
   <Identity Name="8c0c5d57-e808-4cb1-a76b-f499b5b87e45" Publisher="CN=Gideros Mobile" Version="2017.3.1.0" />
   <Properties>
-    <DisplayName>giderosgame.Windows</DisplayName>
+    <DisplayName>Gideros Player</DisplayName>
     <PublisherDisplayName>Gideros Mobile</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="giderosgame_Windows.App">
-      <m2:VisualElements DisplayName="giderosgame.Windows" Description="giderosgame.Windows" BackgroundColor="#464646" ForegroundText="light" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png">
+      <m2:VisualElements DisplayName="Gideros Player" Description="Gideros Player" BackgroundColor="#464646" ForegroundText="light" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png">
         <m2:DefaultTile>
           <m2:ShowNameOnTiles>
             <m2:ShowOn Tile="square150x150Logo" />
