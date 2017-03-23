@@ -279,7 +279,10 @@ void DirectXPage::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEvent
 	m_windowVisible = args->Visible;
 	if (m_windowVisible)
 	{
-//		m_main->StartRenderLoop();
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+		Windows::UI::ViewManagement::StatusBar::GetForCurrentView()->HideAsync(); //Hidden by default
+#endif
+		//		m_main->StartRenderLoop();
 	}
 	else
 	{

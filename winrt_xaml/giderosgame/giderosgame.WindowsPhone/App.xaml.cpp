@@ -63,7 +63,6 @@ void App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEvent
 	// Place the page in the current window and ensure that it is active.
 	Window::Current->Content = m_directXPage;
 	Window::Current->Activate();
-	Windows::UI::ViewManagement::StatusBar::GetForCurrentView()->HideAsync(); //Hidden by default
 }
 
 /// <summary>

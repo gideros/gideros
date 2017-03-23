@@ -15,8 +15,8 @@ void WinRTExport::updateWinRTProject(QString projfile,ExportContext *ctx)
    	ctx->outputDir.cdUp();
 
       QByteArray replacement;
-      for (int i = 0; i < ctx->assetfiles.size(); i++){
-        QString assetfile=ctx->assetfiles[i];
+      for (int i = 0; i < ctx->allfiles.size(); i++){
+        QString assetfile=ctx->allfiles[i];
         QString suffix = QFileInfo(assetfile).suffix().toLower();
         //		    outputWidget_->insertPlainText(assetfile);
         //		    outputWidget_->insertPlainText(suffix);

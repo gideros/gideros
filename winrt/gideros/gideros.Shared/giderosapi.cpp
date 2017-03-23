@@ -1183,6 +1183,7 @@ void ApplicationManager::setProjectProperties(const ProjectProperties &propertie
 	properties_ = properties;
 }
 
+using namespace Platform;
 
 void ApplicationManager::luaError(const char *error)
 {
@@ -1199,7 +1200,11 @@ void ApplicationManager::luaError(const char *error)
 	}
 	else
 	{
-		g_exit();
+		std::string s_str = std::string(error);
+		std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
+		const wchar_t* w_char = wid_str.c_str();
+		Platform::String^ p_string = ref new Platform::String(w_char);
+		throw Exception::CreateException(0x80004005,p_string);
 	}
 }
 
