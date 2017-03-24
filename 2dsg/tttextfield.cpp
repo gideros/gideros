@@ -113,7 +113,7 @@ void TTTextField::createGraphics()
     int dy = miny - 1;
 
 	TextureParameters parameters;
-    if (font_->getSmoothing())
+    if (font_->getSmoothing()!=0)
         parameters.filter = eLinear;
     parameters.format=eA8;
 	data_ = application_->getTextureManager()->createTextureFromDib(dib, parameters);

@@ -14,11 +14,13 @@ struct ProjectProperties
 		QString name;
 		bool enabled;
 		QMap<QString,QString> properties;
+		bool operator <(const struct Plugin &p) const { return name<p.name; }
 	};
 	struct Export
 	{
 		QString name;
 		QMap<QString,QString> properties;
+		bool operator <(const struct Export &p) const { return name<p.name; }
 	};
 	ProjectProperties()
 	{

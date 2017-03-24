@@ -33,7 +33,7 @@ static void close(FT_Stream stream)
     g_fclose(fis);
 }
 
-TTBMFont::TTBMFont(Application *application, const char *filename, float size, const char *chars, bool filtering, GStatus *status) : BMFontBase(application)
+TTBMFont::TTBMFont(Application *application, const char *filename, float size, const char *chars, float filtering, GStatus *status) : BMFontBase(application)
 {
     try
     {
@@ -46,7 +46,7 @@ TTBMFont::TTBMFont(Application *application, const char *filename, float size, c
     }
 }
 
-void TTBMFont::constructor(const char *filename, float size, const char *chars, bool filtering)
+void TTBMFont::constructor(const char *filename, float size, const char *chars, float filtering)
 {
     data_ = NULL;
 
@@ -80,7 +80,9 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
     float scalex = application_->getLogicalScaleX();
     float scaley = application_->getLogicalScaleY();
 
-    const int RESOLUTION = 72;
+    float RESOLUTION = 72;
+    if (filtering>1)
+    	RESOLUTION/=filtering;
     error = FT_Set_Char_Size(face, 0L, (int)floor(size * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f));
 
     if (error)
@@ -238,7 +240,7 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
     FT_Done_Face(face);
 
     TextureParameters parameters;
-    parameters.filter = filtering ? eLinear : eNearest;
+    parameters.filter = (filtering!=0) ? eLinear : eNearest;
     parameters.wrap = eClamp;
     parameters.format = eA8;
     data_ = application_->getTextureManager()->createTextureFromDib(dib, parameters);

@@ -66,19 +66,21 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 
     //Plugins
 	QDomElement plugins = doc.createElement("plugins");
-	for (QSet<Plugin>::const_iterator it=this->plugins.begin();it!=this->plugins.end(); it++)
+	QList<Plugin> pl=this->plugins.toList();
+	qSort(pl);
+	for (QList<Plugin>::const_iterator it=pl.begin();it!=pl.end(); it++)
 	{
 		QDomElement plugin = doc.createElement("plugin");
 		Plugin p=*it;
 		plugin.setAttribute("name", p.name);
 		plugin.setAttribute("enabled", QString(p.enabled?"1":"0"));
-		QMap<QString, QString>::const_iterator i = p.properties.cbegin();
-		while (i != p.properties.cend()) {
+		QList<QString> ml=p.properties.keys();
+		qSort(ml);
+		for (QList<QString>::const_iterator i=ml.begin();i!=ml.end();i++) {
 			QDomElement attr = doc.createElement("property");
-			attr.setAttribute("name",i.key());
-			attr.setAttribute("value",i.value());
+			attr.setAttribute("name",*i);
+			attr.setAttribute("value",p.properties[*i]);
 			plugin.appendChild(attr);
-		    ++i;
 		}
 		plugins.appendChild(plugin);
 	}
@@ -86,18 +88,20 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 
 	//Exports
 	QDomElement exports = doc.createElement("exports");
-	for (QSet<Export>::const_iterator it=this->exports.begin();it!=this->exports.end(); it++)
+	QList<Export> el=this->exports.toList();
+	qSort(el);
+	for (QList<Export>::const_iterator it=el.begin();it!=el.end(); it++)
 	{
 		QDomElement plugin = doc.createElement("export");
 		Export p=*it;
 		plugin.setAttribute("name", p.name);
-		QMap<QString, QString>::const_iterator i = p.properties.cbegin();
-		while (i != p.properties.cend()) {
+		QList<QString> ml=p.properties.keys();
+		qSort(ml);
+		for (QList<QString>::const_iterator i=ml.begin();i!=ml.end();i++) {
 			QDomElement attr = doc.createElement("property");
-			attr.setAttribute("name",i.key());
-			attr.setAttribute("value",i.value());
+			attr.setAttribute("name",*i);
+			attr.setAttribute("value",p.properties[*i]);
 			plugin.appendChild(attr);
-		    ++i;
 		}
 		exports.appendChild(plugin);
 	}

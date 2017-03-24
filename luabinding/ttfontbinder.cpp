@@ -33,12 +33,20 @@ int TTFontBinder::create(lua_State* L)
     if (lua_type(L, 3) == LUA_TSTRING)
     {
         const char *chars = luaL_checkstring(L, 3);
-        bool smoothing = lua_toboolean(L, 4);
+        float smoothing=0;
+        if (lua_isnumber(L,4))
+        	smoothing = lua_tonumber(L, 4);
+        else if (lua_toboolean(L,4))
+        	smoothing=1;
         font = new TTBMFont(application, filename, size, chars, smoothing, &status);
     }
     else
     {
-        bool smoothing = lua_toboolean(L, 3);
+        float smoothing=0;
+        if (lua_isnumber(L,3))
+        	smoothing = lua_tonumber(L, 3);
+        else if (lua_toboolean(L,3))
+        	smoothing=1;
         font = new TTFont(application, filename, size, smoothing, &status);
     }
 

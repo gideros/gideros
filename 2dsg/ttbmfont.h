@@ -15,7 +15,7 @@ struct TextureData;
 class TTBMFont : public BMFontBase
 {
 public:
-    TTBMFont(Application *application, const char *filename, float size, const char *chars, bool filtering, GStatus *status);
+    TTBMFont(Application *application, const char *filename, float size, const char *chars, float filtering, GStatus *status);
     virtual ~TTBMFont();
 
     virtual Type getType() const
@@ -31,7 +31,7 @@ public:
     virtual float getLineHeight();
 
 private:
-    void constructor(const char *filename, float size, const char *chars, bool filtering);
+    void constructor(const char *filename, float size, const char *chars, float filtering);
     int kerning(wchar32_t left, wchar32_t right) const;
 
 private:

@@ -14,7 +14,7 @@
 class TTFont : public FontBase
 {
 public:
-    TTFont(Application *application, const char *filename, float size, bool smoothing, GStatus *status);
+    TTFont(Application *application, const char *filename, float size, float smoothing, GStatus *status);
     virtual ~TTFont();
 
 	virtual Type getType() const
@@ -31,7 +31,7 @@ public:
     virtual float getAscender();
     virtual float getLineHeight();
 
-    bool getSmoothing() const
+    float getSmoothing() const
     {
         return smoothing_;
     }
@@ -40,7 +40,7 @@ public:
     	return face_;
     }
 private:
-    void constructor(const char *filename, float size, bool smoothing);
+    void constructor(const char *filename, float size, float smoothing);
     int kerning(FT_UInt left, FT_UInt right) const;
 
 private:
@@ -48,7 +48,7 @@ private:
 	int ascender_;
 	int height_;
 	FT_StreamRec stream_;
-    bool smoothing_;
+    float smoothing_;
     float currentLogicalScaleX_,currentLogicalScaleY_;
     float defaultSize_;
     void checkLogicalScale();

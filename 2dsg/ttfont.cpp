@@ -31,7 +31,7 @@ static void close(FT_Stream stream)
     g_fclose(fis);
 }
 
-TTFont::TTFont(Application *application, const char *filename, float size, bool smoothing, GStatus *status) : FontBase(application)
+TTFont::TTFont(Application *application, const char *filename, float size, float smoothing, GStatus *status) : FontBase(application)
 {
     try
     {
@@ -44,7 +44,7 @@ TTFont::TTFont(Application *application, const char *filename, float size, bool 
     }
 }
 
-void TTFont::constructor(const char *filename, float size, bool smoothing)
+void TTFont::constructor(const char *filename, float size, float smoothing)
 {
     face_ = NULL;
 
@@ -75,7 +75,9 @@ void TTFont::constructor(const char *filename, float size, bool smoothing)
     float scalex = application_->getLogicalScaleX();
     float scaley = application_->getLogicalScaleY();
 
-    const int RESOLUTION = 72;
+    float RESOLUTION = 72;
+    if (smoothing_>1)
+    	RESOLUTION/=smoothing_;
 
     if (FT_Set_Char_Size(face_, 0L, (int)floor(size * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f)))
     {
@@ -105,7 +107,9 @@ void TTFont::checkLogicalScale()
             free(it->second.bitmap);
         }
         glyphCache_.clear();
-        const int RESOLUTION = 72;
+        float RESOLUTION = 72;
+        if (smoothing_>1)
+        	RESOLUTION/=smoothing_;
         if (!FT_Set_Char_Size(face_, 0L, (int)floor(defaultSize_ * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f)))
         {
             currentLogicalScaleX_=scalex;

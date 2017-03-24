@@ -13,6 +13,7 @@
 #include "Utilities.h"
 #include <bytebuffer.h>
 #include <QFile>
+#include <QRegularExpression>
 
 void ExportBuiltin::exportAllAssetsFiles(ExportContext *ctx)
 {
@@ -115,13 +116,24 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("<string>BUILD_NUMBER</string>").toUtf8(), ("<string>"+QString::number(ctx->properties.build_number)+"</string>").toUtf8());
     }
     else if(ctx->deviceFamily == e_WinRT){
-        replaceList1 << qMakePair(QString("Gideros Player").toUtf8(), ctx->appName.toUtf8());
+    	QString winver=ctx->properties.version.remove(QRegularExpression(QString("[^0-9.]")));
+    	if (winver.endsWith("."))
+    		winver=winver+"0.0";
+    	else
+    		winver=winver+".0.0";
+    	if (!winver.startsWith("."))
+    		winver="1"+winver;
+    	QStringList wvparts=winver.split(".", QString::SkipEmptyParts);
+    	winver=wvparts[0]+"."+wvparts[1]+"."+wvparts[2]+"."+QString::number(ctx->properties.build_number);
+
+		replaceList1 << qMakePair(QString("Gideros Player").toUtf8(), ctx->appName.toUtf8());
         replaceList1 << qMakePair(QString("giderosgame").toUtf8(), ctx->basews.toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.windowsphone").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.windows").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("Gideros Mobile").toUtf8(), ctx->args["organization"].toUtf8());
         replaceList1 << qMakePair(QString("BackgroundColor=\"#464646\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
         replaceList1 << qMakePair(QString("BackgroundColor=\"transparent\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
+        replaceList1 << qMakePair(QString("Version=\"1.0.0.0\"").toUtf8(), ("Version=\""+winver+"\"").toUtf8());
     }
     else if(ctx->deviceFamily == e_Html5){
         replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->appName+"</title>").toUtf8());
