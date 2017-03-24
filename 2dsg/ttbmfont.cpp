@@ -82,7 +82,10 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars, 
 
     float RESOLUTION = 72;
     if (filtering>1)
-    	RESOLUTION/=filtering;
+    {
+    	scalex/=filtering;
+    	scaley/=filtering;
+    }
     error = FT_Set_Char_Size(face, 0L, (int)floor(size * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f));
 
     if (error)
@@ -309,8 +312,8 @@ void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float
         float x0 = x + left;
         float y0 = y - top;
 
-        float x1 = x + left + width;
-        float y1 = y - top + height;
+        float x1 = x0 + width;
+        float y1 = y0 + height;
 
         graphicsBase->vertices[i * 4 + 0] = Point2f(sizescalex_ * x0, sizescaley_ * y0);
         graphicsBase->vertices[i * 4 + 1] = Point2f(sizescalex_ * x1, sizescaley_ * y0);
@@ -339,9 +342,9 @@ void TTBMFont::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float
         graphicsBase->indices[i * 6 + 4] = i * 4 + 2;
         graphicsBase->indices[i * 6 + 5] = i * 4 + 3;
 
-        x += textureGlyph.advancex >> 6;
+        x += (textureGlyph.advancex) >> 6;
 
-        x += (int)(letterSpacing / sizescalex_);
+        x += letterSpacing/sizescalex_;
     }
 }
 
@@ -396,7 +399,7 @@ void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx, fl
 
         x += textureGlyph.advancex >> 6;
 
-        x += (int)(letterSpacing / sizescalex_);
+        x += (int)(letterSpacing / sizescalex_ );
     }
 
     if (pminx)
@@ -440,7 +443,7 @@ float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size)
 
         x += textureGlyph.advancex >> 6;
 
-        x += (int)(letterSpacing / sizescalex_);
+        x += (int)(letterSpacing / sizescalex_ );
     }
 
     x += kerning(prev, wtext[size]) >> 6;

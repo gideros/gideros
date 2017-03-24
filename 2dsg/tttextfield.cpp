@@ -97,9 +97,20 @@ void TTTextField::createGraphics()
     float scalex = application_->getLogicalScaleX();
     float scaley = application_->getLogicalScaleY();
 
+	TextureParameters parameters;
+	float smoothing=font_->getSmoothing();
+    if (smoothing!=0)
+    {
+        parameters.filter = eLinear;
+        scalex/=smoothing;
+        scaley/=smoothing;
+    }
+    parameters.format=eA8;
+
 
     int minx, miny, maxx, maxy;
     Dib dib = font_->renderFont(wtext_.c_str(), letterSpacing_, &minx, &miny, &maxx, &maxy);
+
 
     if (!wsample_.empty())
     {
@@ -112,10 +123,6 @@ void TTTextField::createGraphics()
     int dx = minx - 1;
     int dy = miny - 1;
 
-	TextureParameters parameters;
-    if (font_->getSmoothing()!=0)
-        parameters.filter = eLinear;
-    parameters.format=eA8;
 	data_ = application_->getTextureManager()->createTextureFromDib(dib, parameters);
 
 	graphicsBase_.data = data_;
@@ -243,6 +250,12 @@ void TTTextField::setSample(const char* sample)
 
     float scalex = application_->getLogicalScaleX();
     float scaley = application_->getLogicalScaleY();
+	float smoothing=font_->getSmoothing();
+    if (smoothing!=0)
+    {
+        scalex/=smoothing;
+        scaley/=smoothing;
+    }
 
     size_t wsize = utf8_to_wchar(sample_.c_str(), sample_.size(), NULL, 0, 0);
     wsample_.resize(wsize);

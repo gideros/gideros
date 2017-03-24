@@ -1468,6 +1468,10 @@ void ApplicationManager::resize(int width, int height,int orientation)
 		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
+
+	Event event(Event::APPLICATION_RESIZE);
+	GStatus status;
+	application_->broadcastEvent(&event, &status);
 }
 
 static ApplicationManager *s_manager = NULL;
