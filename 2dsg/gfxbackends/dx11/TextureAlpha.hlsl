@@ -32,7 +32,7 @@ cbuffer cbp : register(b1)
 float4 PShader(float4 position : SV_POSITION, float2 texcoord : TEXCOORD) : SV_TARGET
 {
 	float4 frag = myTexture.Sample(samLinear, texcoord);
-	frag=frag.aaaa*fColor;
+	frag=frag.rrrr*fColor;
 	if (frag.a == 0.0) discard;
 	return frag;
 }

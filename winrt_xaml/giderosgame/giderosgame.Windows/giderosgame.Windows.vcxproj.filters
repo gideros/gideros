@@ -27,16 +27,19 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\Logo.png">
+    <Image Include="Assets\Logo.scale-80.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\SmallLogo.png">
+    <Image Include="Assets\Logo.scale-100.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\SplashScreen.png">
+    <Image Include="Assets\SmallLogo.scale-100.png">
       <Filter>Assets</Filter>
     </Image>
-    <Image Include="Assets\StoreLogo.png">
+    <Image Include="Assets\SplashScreen.scale-100.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.scale-100.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>

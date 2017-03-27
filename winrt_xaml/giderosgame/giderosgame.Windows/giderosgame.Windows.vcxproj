@@ -204,10 +204,10 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-   <!--SDK-REFERENCE-WIN-->
-   <!--PLUGINS-START-->
+    <!--SDK-REFERENCE-WIN-->
+    <!--PLUGINS-START-->
     <SDKReference Include="Microsoft.AdMediatorWindows81, Version=1.0" />
-   <!--PLUGINS-END-->
+    <!--PLUGINS-END-->
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -215,19 +215,12 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\Logo.png">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
-    <Image Include="Assets\SmallLogo.png">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
-    <Image Include="Assets\SplashScreen.png">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
-    <Image Include="Assets\StoreLogo.png">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
-	<!--GIDEROS_INSERT_ASSETS_HERE-->
+    <Image Include="Assets\Logo.scale-100.png" />
+    <Image Include="Assets\Logo.scale-80.png" />
+    <Image Include="Assets\SmallLogo.scale-100.png" />
+    <Image Include="Assets\SplashScreen.scale-100.png" />
+    <Image Include="Assets\StoreLogo.scale-100.png" />
+    <!--GIDEROS_INSERT_ASSETS_HERE-->
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

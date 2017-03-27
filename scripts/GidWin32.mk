@@ -59,7 +59,8 @@ win32.libs.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
 %.win32.app: $(OBJFILES_%) $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES_%))) $(LIBS_%)
 	#BUILDING $*
 	@mkdir -p $(addprefix $(WIN32_BUILDDIR)/,$(dir $(sort $(OBJFILES_$*))))
-	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*)" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" APPNAME=$* $(MAKE) -f $(firstword $(MAKEFILE_LIST)) win32.app.build
+	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*) -mwindows" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" APPNAME=$* $(MAKE) -f $(firstword $(MAKEFILE_LIST)) win32.app.build
+	@OBJFILES="$(OBJFILES_$*)" LIBS="$(LIBS_$*) -mconsole" INCLUDEPATHS="$(INCLUDEPATHS_$*)" DEFINES="$(DEFINES_$*)" APPNAME=$*-console $(MAKE) -f $(firstword $(MAKEFILE_LIST)) win32.app.build
 
 win32.app.build: CXXFLAGS = -g -O2 -fno-keep-inline-dllexport $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDEPATHS))
 win32.app.build: $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES)))
@@ -111,12 +112,13 @@ win32.libs.install: win32.libs
 	else echo ""; fi; fi
 
 win32.install: win32.libs.install win32.plugins.install win32.app
-	cp $(WIN32_BUILDDIR)/player.exe $(WIN32_RELEASE)/GiderosPlayer.exe
+	cp $(WIN32_BUILDDIR)/player.exe $(WIN32_RELEASE)/WindowsDesktopTemplate.exe
+	cp $(WIN32_BUILDDIR)/player-console.exe $(WIN32_RELEASE)/WindowsDesktopTemplate-Console.exe
 	cp $(ROOT)/libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $(WIN32_RELEASE)
 	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(WIN32_RELEASE)
 	cp $(ROOT)/libgid/external/curl-7.40.0-devel-mingw32/bin/*.dll $(WIN32_RELEASE)
 	for f in libgcc_s_dw2-1 libstdc++-6 libwinpthread-1; do cp $(QT)/bin/$$f.dll $(WIN32_RELEASE); done
-	strip $(addprefix $(WIN32_RELEASE)/,GiderosPlayer.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll)
+	strip $(addprefix $(WIN32_RELEASE)/,WindowsDesktopTemplate.exe WindowsDesktopTemplate-Console.exe gid.dll gvfs.dll lua.dll pystring.dll gideros.dll)
 
 win32.clean: win32.plugins.clean
 	rm -rf $(WIN32_BUILDDIR) 
