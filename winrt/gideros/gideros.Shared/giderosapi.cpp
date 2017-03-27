@@ -971,16 +971,20 @@ void ApplicationManager::drawFrame(bool useXaml)
 	if (!useXaml) Window = CoreWindow::GetForCurrentThread();
 
 	int FPS = g_getFps();
+	glog_setLevel(GLOG_DEBUG);
 	if (FPS > 0) {
+		double rdrRef1 = iclock();
 		if (!useXaml) Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
 		GStatus status;
 		application_->enterFrame(&status);
 		if (status.error())
 			luaError(status.errorString());
+		double rdrRef2 = iclock();
 
 		gaudio_AdvanceStreamBuffers();
 
+		double rdrRef3 = iclock();
 		nframe_++;
 
 		if (networkManager_)
@@ -989,16 +993,27 @@ void ApplicationManager::drawFrame(bool useXaml)
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
+		double rdrRef4 = iclock();
 		ShaderEngine::Engine->setFramebuffer(NULL);
 		application_->clearBuffers();
+		double rdrRef5 = iclock();
 
 		application_->renderScene(1);
+		double rdrRef6 = iclock();
 		drawIPs();
 
 		if (FPS==60)	
 			g_swapchain->Present(1, 0);
 		else if (FPS==30)
 			g_swapchain->Present(2, 0);
+		double rdrRef7 = iclock();
+		double t1 = rdrRef2 - rdrRef1;
+		double t2 = rdrRef3 - rdrRef2;
+		double t3 = rdrRef4 - rdrRef3;
+		double t4 = rdrRef5 - rdrRef4;
+		double t5 = rdrRef6 - rdrRef5;
+		double t6 = rdrRef7 - rdrRef6;
+		glog_d("FRM TIME:%f,%f,%f,%f,%f,%f\n", t1, t2, t3, t4, t5, t6);
 	}
 	else {
 

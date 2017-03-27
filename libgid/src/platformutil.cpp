@@ -456,6 +456,12 @@ double iclock()
 	static double begin = nanoTime();
 	return nanoTime() - begin;
 }
+#elif __EMSCRIPTEN__
+#include "emscripten.h"
+double iclock()
+{
+	return emscripten_get_now()/1000;
+}
 #else
 double iclock()
 {

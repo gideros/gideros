@@ -161,34 +161,12 @@ DirectXPage::DirectXPage():
 //	pointerVisualizationSettings->IsContactFeedbackEnabled = false; 
 //	pointerVisualizationSettings->IsBarrelButtonFeedbackEnabled = false;
 
-	// Register our SwapChainPanel to get independent input pointer events
-	auto workItemHandler = ref new WorkItemHandler([this] (IAsyncAction ^)
-	{
-		// The CoreIndependentInputSource will raise pointer events for the specified device types on whichever thread it's created on.
-		m_coreInput = swapChainPanel->CreateCoreIndependentInputSource(
-			Windows::UI::Core::CoreInputDeviceTypes::Mouse |
-			Windows::UI::Core::CoreInputDeviceTypes::Touch |
-			Windows::UI::Core::CoreInputDeviceTypes::Pen
-			);
-
-		// Register for pointer events, which will be raised on the background thread.
-		m_coreInput->PointerPressed += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerPressed);
-		m_coreInput->PointerMoved += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerMoved);
-		m_coreInput->PointerReleased += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerReleased);
-		m_coreInput->PointerWheelChanged += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnWheelChanged);
-		// Begin processing input messages as they're delivered.
-		m_coreInput->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessUntilQuit);
-	});
-
 	window->KeyUp += ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &DirectXPage::OnKeyUp);
 	window->KeyDown += ref new TypedEventHandler<CoreWindow^, KeyEventArgs^>(this, &DirectXPage::OnKeyDown);
 	window->CharacterReceived += ref new TypedEventHandler<CoreWindow^, CharacterReceivedEventArgs^>(this, &DirectXPage::OnKeyChar);
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 	HardwareButtons::BackPressed += ref new EventHandler<BackPressedEventArgs^>(this, &DirectXPage::OnBackButtonPressed);
 #endif
-
-	// Run task on a dedicated high priority background thread.
-	m_inputLoopWorker = ThreadPool::RunAsync(workItemHandler, WorkItemPriority::High, WorkItemOptions::TimeSliced);
 
 	std::wstring resourcePath = Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Data();
 	std::wstring docsPath = ApplicationData::Current->LocalFolder->Path->Data();
@@ -225,6 +203,18 @@ DirectXPage::DirectXPage():
 
 	auto workItemHandler2 = ref new WorkItemHandler([this](IAsyncAction ^ action)
 	{
+		// The CoreIndependentInputSource will raise pointer events for the specified device types on whichever thread it's created on.
+		m_coreInput = swapChainPanel->CreateCoreIndependentInputSource(
+			Windows::UI::Core::CoreInputDeviceTypes::Mouse |
+			Windows::UI::Core::CoreInputDeviceTypes::Touch |
+			Windows::UI::Core::CoreInputDeviceTypes::Pen
+		);
+
+		// Register for pointer events, which will be raised on the background thread.
+		m_coreInput->PointerPressed += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerPressed);
+		m_coreInput->PointerMoved += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerMoved);
+		m_coreInput->PointerReleased += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnPointerReleased);
+		m_coreInput->PointerWheelChanged += ref new TypedEventHandler<Object^, PointerEventArgs^>(this, &DirectXPage::OnWheelChanged);
 		// Calculate the updated frame and render once per vertical blanking interval.
 		while (action->Status == AsyncStatus::Started)
 		{
@@ -244,6 +234,8 @@ DirectXPage::DirectXPage():
 				}
 				gdr_resize(canvasWidth, canvasHeight, orientation);
 			}
+			// Begin processing input messages as they're delivered.
+			m_coreInput->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 			try {
 				gdr_drawFrame(true);
 			}

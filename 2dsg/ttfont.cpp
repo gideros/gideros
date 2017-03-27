@@ -93,7 +93,7 @@ void TTFont::constructor(const char *filename, float size, float smoothing)
     height_ = face_->size->metrics.height >> 6;
 
     currentLogicalScaleX_=scalex;
-    currentLogicalScaleX_=scaley;
+    currentLogicalScaleY_=scaley;
     defaultSize_=size;
 
     smoothing_ = smoothing;
@@ -119,7 +119,7 @@ void TTFont::checkLogicalScale()
         if (!FT_Set_Char_Size(face_, 0L, (int)floor(defaultSize_ * 64 + 0.5f), (int)floor(RESOLUTION * scalex + 0.5f), (int)floor(RESOLUTION * scaley + 0.5f)))
         {
             currentLogicalScaleX_=scalex;
-            currentLogicalScaleX_=scaley;
+            currentLogicalScaleY_=scaley;
             ascender_ = face_->size->metrics.ascender >> 6;
             height_ = face_->size->metrics.height >> 6;
         }

@@ -23,7 +23,7 @@ html5.player: html5.libs
 	for p in $(HTML5_PLUGINS); do cp plugins/$$p/source/emscripten/Build/*.js $(RELEASE)/Players/Html5; done
 	sed -e 's/\/\*GIDEROS_DYNLIB_PLUGIN\*\//"luasocket.js", "json.js", "bit.js", "lfs.js", "lsqlite3.js", /' emscripten/Build/Html5/Html5/gideros.html >$(RELEASE)/Players/Html5/gideros.html
 
-html5.install: html5.install html5.player
+html5.install: html5.template html5.player
 
 html5: html5.install
 
