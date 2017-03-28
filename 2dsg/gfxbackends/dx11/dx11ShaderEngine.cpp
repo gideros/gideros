@@ -96,7 +96,7 @@ void dx11SetupShaders()
     ShaderProgram::stdTexture = new dx11ShaderProgram(vTexture_cso,sizeof(vTexture_cso),pTexture_cso,sizeof(pTexture_cso),0,stdConstants,stdTAttributes);
     ShaderProgram::stdTextureAlpha = new dx11ShaderProgram(vTextureAlpha_cso,sizeof(vTextureAlpha_cso),pTextureAlpha_cso,sizeof(pTextureAlpha_cso),0,stdConstants,stdTAttributes);
 	ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso, sizeof(vTextureColor_cso), pTextureColor_cso, sizeof(pTextureColor_cso), 0, stdConstants, stdTCAttributes);
-	ShaderProgram::stdParticles = new dx11ShaderProgram(vParticles_cso, sizeof(vParticles_cso), pParticles_cso, sizeof(pParticles_cso), 0, stdPSConstants, stdPSAttributes);
+	ShaderProgram::stdParticles = new dx11ShaderProgram(vParticles_cso, sizeof(vParticles_cso), pParticles_cso, sizeof(pParticles_cso), (int)(ShaderProgram::Flag_PointShader), stdPSConstants, stdPSAttributes);
 
 	const ShaderProgram::ConstantDesc stdPConstants[]={
 			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
@@ -105,7 +105,7 @@ void dx11SetupShaders()
 			{"fTexInfo",ShaderProgram::CFLOAT4,1,ShaderProgram::SysConst_TextureInfo,false,0,NULL},
 			{"",ShaderProgram::CFLOAT,0,ShaderProgram::SysConst_None,false,0,NULL}
 	};
-    ShaderProgram::stdParticle = new dx11ParticleShader(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),(int)(ShaderProgram::Flag_PointShader),stdPConstants,stdTCAttributes);
+    ShaderProgram::stdParticle = new dx11ParticleShader(vParticle_cso,sizeof(vParticle_cso),pParticle_cso,sizeof(pParticle_cso),0,stdPConstants,stdTCAttributes);
 
 	const ShaderProgram::ConstantDesc pathUniformsFC[] = {
 		{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },

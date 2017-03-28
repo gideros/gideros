@@ -185,7 +185,7 @@ void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::Swap
 	scd.SampleDesc.Quality = 0;
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;      	// how swap chain is to be used    
 	scd.BufferCount = 2;                                    	// one back buffer for WP8 (Windows 8: 2)
-	//scd.Scaling = DXGI_SCALING_STRETCH;                       // WP8 (Windows 8: not set)
+	scd.Scaling = DXGI_SCALING_STRETCH;                       // WP8 (Windows 8: not set)
 	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;                // WP8 (Windows 8: DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL)
 	scd.Flags = 0;
 
@@ -965,26 +965,35 @@ void ApplicationManager::drawFirstFrame()
 	drawIPs();
 }
 
+//#define LOG_FRAME_RATE
 void ApplicationManager::drawFrame(bool useXaml)
 {
 	CoreWindow^ Window; 
 	if (!useXaml) Window = CoreWindow::GetForCurrentThread();
 
 	int FPS = g_getFps();
+#ifdef LOG_FRAME_RATE
 	glog_setLevel(GLOG_DEBUG);
+#endif
 	if (FPS > 0) {
+#ifdef LOG_FRAME_RATE
 		double rdrRef1 = iclock();
+#endif
 		if (!useXaml) Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
 		GStatus status;
 		application_->enterFrame(&status);
 		if (status.error())
 			luaError(status.errorString());
+#ifdef LOG_FRAME_RATE
 		double rdrRef2 = iclock();
+#endif
 
 		gaudio_AdvanceStreamBuffers();
 
+#ifdef LOG_FRAME_RATE
 		double rdrRef3 = iclock();
+#endif
 		nframe_++;
 
 		if (networkManager_)
@@ -993,27 +1002,35 @@ void ApplicationManager::drawFrame(bool useXaml)
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
+#ifdef LOG_FRAME_RATE
 		double rdrRef4 = iclock();
+#endif
 		ShaderEngine::Engine->setFramebuffer(NULL);
 		application_->clearBuffers();
+#ifdef LOG_FRAME_RATE
 		double rdrRef5 = iclock();
+#endif
 
 		application_->renderScene(1);
+#ifdef LOG_FRAME_RATE
 		double rdrRef6 = iclock();
+#endif
 		drawIPs();
 
 		if (FPS==60)	
 			g_swapchain->Present(1, 0);
 		else if (FPS==30)
 			g_swapchain->Present(2, 0);
+#ifdef LOG_FRAME_RATE
 		double rdrRef7 = iclock();
-		double t1 = rdrRef2 - rdrRef1;
-		double t2 = rdrRef3 - rdrRef2;
-		double t3 = rdrRef4 - rdrRef3;
-		double t4 = rdrRef5 - rdrRef4;
-		double t5 = rdrRef6 - rdrRef5;
-		double t6 = rdrRef7 - rdrRef6;
+		double t1 = (rdrRef2 - rdrRef1) * 1000;
+		double t2 = (rdrRef3 - rdrRef2) * 1000;
+		double t3 = (rdrRef4 - rdrRef3) * 1000;
+		double t4 = (rdrRef5 - rdrRef4) * 1000;
+		double t5 = (rdrRef6 - rdrRef5) * 1000;
+		double t6 = (rdrRef7 - rdrRef6)*1000;
 		glog_d("FRM TIME:%f,%f,%f,%f,%f,%f\n", t1, t2, t3, t4, t5, t6);
+#endif
 	}
 	else {
 

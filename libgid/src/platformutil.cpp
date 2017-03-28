@@ -413,7 +413,7 @@ std::vector<std::string> getLocalIPs()
 #endif
 
 
-#if defined(_WIN32) && !defined(WINSTORE)
+#if defined(_WIN32) || defined(WINSTORE)
 double iclock()
 {
 	static LARGE_INTEGER freq;

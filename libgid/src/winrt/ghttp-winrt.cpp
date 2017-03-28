@@ -21,7 +21,7 @@ task<IBuffer^> readData(IInputStream^ stream, g_id id)
 {
 	// Do an asynchronous read. We need to use use_current() with the continuations since the tasks are completed on
 	// background threads and we need to run on the UI thread to update the UI.
-	Buffer^ readBuffer = ref new Buffer(1000);
+	Buffer^ readBuffer = ref new Buffer(1<<17);
 	return create_task(
 		stream->ReadAsync(readBuffer, readBuffer->Capacity, InputStreamOptions::Partial),
 		cancellationTokenSource.get_token()).then([=](task<IBuffer^> readTask)
