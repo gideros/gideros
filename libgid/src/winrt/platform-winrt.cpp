@@ -116,9 +116,23 @@ void setKeepAwake(bool awake)
 	}, true);
 }
 
-bool setKeyboardVisibility(bool visible){
+#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
+bool setKeyboardVisibility(bool visible) {
 	return false;
 }
+#else
+bool setKeyboardVisibility(bool visible) {
+	bool done = false;
+	gdr_dispatchUi([&] {
+		Windows::UI::ViewManagement::InputPane^ ip = Windows::UI::ViewManagement::InputPane::GetForCurrentView();
+		if (visible)
+			done = ip->TryShow();
+		else
+			done = ip->TryHide();
+	}, true);
+	return done;
+}
+#endif
 
 static int s_fps = 60;
 
