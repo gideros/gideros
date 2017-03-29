@@ -58,7 +58,8 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     	replaceList1 << qMakePair(ctx->templatenamews.toLatin1(), ctx->basews.toLatin1());
     }
     if (ctx->deviceFamily == e_Android){
-        replaceList1 << qMakePair(QString("Android Template App Name").toUtf8(), ctx->appName.toUtf8());
+    	ctx->noEncryptionExt.insert("mp3"); //Android uses backgroundplayer
+    	replaceList1 << qMakePair(QString("Android Template App Name").toUtf8(), ctx->appName.toUtf8());
     	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("android:versionCode=\"1\"").toUtf8(), ("android:versionCode=\""+QString::number(ctx->properties.version_code)+"\"").toUtf8());
@@ -108,7 +109,8 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
     }
     else if(ctx->deviceFamily == e_iOS){
-        replaceList1 << qMakePair(QString("iOS Template App Name").toUtf8(), ctx->appName.toUtf8());
+    	ctx->noEncryptionExt.insert("mp3"); //iOS uses backgroundplayer
+    	replaceList1 << qMakePair(QString("iOS Template App Name").toUtf8(), ctx->appName.toUtf8());
     	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
         if(ctx->args.contains("bundle"))
             replaceList1 << qMakePair(QString("com.yourcompany.${PRODUCT_NAME:rfc1034identifier}").toUtf8(), ctx->args["bundle"].toUtf8());

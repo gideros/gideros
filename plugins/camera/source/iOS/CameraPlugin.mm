@@ -54,7 +54,7 @@
         NSAssert(NO, @"Error at CVOpenGLESTextureCacheCreate %d",err);
     }
     tex=NULL;
-    rdrTarget=NULL;
+    rdrTgt=NULL;
     self.capturePipeline = [[[CameraCapturePipeline alloc] init] autorelease];
     [self.capturePipeline setDelegate:self callbackQueue:dispatch_get_main_queue()];
         indices.resize(4);
