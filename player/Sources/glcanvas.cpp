@@ -913,7 +913,13 @@ void GLCanvas::mousePressEvent(QMouseEvent* event) {
     if (event->button() <= 4){
         mouseButtonPressed_[event->button()] = true;
     }
-    ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
+    Qt::KeyboardModifiers qmod=event->modifiers();
+    int m=0;
+    if (qmod&Qt::ShiftModifier) m|=GINPUT_SHIFT_MODIFIER;
+    if (qmod&Qt::AltModifier) m|=GINPUT_ALT_MODIFIER;
+    if (qmod&Qt::ControlModifier) m|=GINPUT_CTRL_MODIFIER;
+    if (qmod&Qt::MetaModifier) m|=GINPUT_META_MODIFIER;
+    ginputp_mouseDown(event->x() * deviceScale_, event->y() * deviceScale_, event->button(),m);
 }
 
 void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
@@ -921,18 +927,24 @@ void GLCanvas::mouseMoveEvent(QMouseEvent* event) {
 	  event->accept();
 	  return;
 	}
+   Qt::KeyboardModifiers qmod=event->modifiers();
+   int m=0;
+   if (qmod&Qt::ShiftModifier) m|=GINPUT_SHIFT_MODIFIER;
+   if (qmod&Qt::AltModifier) m|=GINPUT_ALT_MODIFIER;
+   if (qmod&Qt::ControlModifier) m|=GINPUT_CTRL_MODIFIER;
+   if (qmod&Qt::MetaModifier) m|=GINPUT_META_MODIFIER;
     bool mousePressed = false;
     for( int i=1; i<=4; ++i )
     {
         if( mouseButtonPressed_[i])
         {
-            ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_, i);
+            ginputp_mouseMove(event->x() * deviceScale_, event->y() * deviceScale_, i,m);
             mousePressed = true;
         }
     }
 
     if (mousePressed == false) {
-        ginputp_mouseHover(event->x() * deviceScale_, event->y() * deviceScale_, 0);
+        ginputp_mouseHover(event->x() * deviceScale_, event->y() * deviceScale_, 0,m);
     }
 }
 
@@ -944,12 +956,24 @@ void GLCanvas::mouseReleaseEvent(QMouseEvent* event) {
     if (event->button() <= 4){
         if(mouseButtonPressed_[event->button()]) mouseButtonPressed_[event->button()] = false;
     }
-    ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, event->button());
+    Qt::KeyboardModifiers qmod=event->modifiers();
+    int m=0;
+    if (qmod&Qt::ShiftModifier) m|=GINPUT_SHIFT_MODIFIER;
+    if (qmod&Qt::AltModifier) m|=GINPUT_ALT_MODIFIER;
+    if (qmod&Qt::ControlModifier) m|=GINPUT_CTRL_MODIFIER;
+    if (qmod&Qt::MetaModifier) m|=GINPUT_META_MODIFIER;
+    ginputp_mouseUp(event->x() * deviceScale_, event->y() * deviceScale_, event->button(),m);
 }
 
 void GLCanvas::wheelEvent(QWheelEvent* event) {
+    Qt::KeyboardModifiers qmod=event->modifiers();
+    int m=0;
+    if (qmod&Qt::ShiftModifier) m|=GINPUT_SHIFT_MODIFIER;
+    if (qmod&Qt::AltModifier) m|=GINPUT_ALT_MODIFIER;
+    if (qmod&Qt::ControlModifier) m|=GINPUT_CTRL_MODIFIER;
+    if (qmod&Qt::MetaModifier) m|=GINPUT_META_MODIFIER;
 	ginputp_mouseWheel(event->x() * deviceScale_, event->y() * deviceScale_,
-            event->buttons(), event->delta());
+            event->buttons(), event->delta(),m);
 }
 
 void GLCanvas::keyPressEvent(QKeyEvent* event) {
@@ -979,16 +1003,22 @@ void GLCanvas::tabletEvent(QTabletEvent* event) {
     ids[0] = 0;
     pressures[0] = event->pressure();
     touchTypes[0] = 3;
+    Qt::KeyboardModifiers qmod=event->modifiers();
+    int m=0;
+    if (qmod&Qt::ShiftModifier) m|=GINPUT_SHIFT_MODIFIER;
+    if (qmod&Qt::AltModifier) m|=GINPUT_ALT_MODIFIER;
+    if (qmod&Qt::ControlModifier) m|=GINPUT_CTRL_MODIFIER;
+    if (qmod&Qt::MetaModifier) m|=GINPUT_META_MODIFIER;
 
 
     if(event->type() == QEvent::TabletPress){
-        ginputp_touchesBegin(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes);
+        ginputp_touchesBegin(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m);
 
     }else if(event->type() == QEvent::TabletMove){
-        ginputp_touchesMove(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes);
+        ginputp_touchesMove(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m);
 
     }else if(event->type() == QEvent::TabletRelease){
-        ginputp_touchesEnd(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes);
+        ginputp_touchesEnd(xs[0], ys[0], ids[0], pressures[0], touchTypes[0], 1, xs, ys, ids, pressures, touchTypes,m);
     }
     event->accept();
 }
@@ -999,6 +1029,13 @@ bool GLCanvas::event(QEvent *event){
         QTouchEvent* touchEvent = (QTouchEvent*)event;
         const QList<QTouchEvent::TouchPoint> &list = touchEvent->touchPoints();
         int size = list.count();
+
+        Qt::KeyboardModifiers qmod=touchEvent->modifiers();
+        int m=0;
+        if (qmod&Qt::ShiftModifier) m|=GINPUT_SHIFT_MODIFIER;
+        if (qmod&Qt::AltModifier) m|=GINPUT_ALT_MODIFIER;
+        if (qmod&Qt::ControlModifier) m|=GINPUT_CTRL_MODIFIER;
+        if (qmod&Qt::MetaModifier) m|=GINPUT_META_MODIFIER;
 
         int xs[size];
         int ys[size];
@@ -1020,16 +1057,16 @@ bool GLCanvas::event(QEvent *event){
         {
             QTouchEvent::TouchPoint p = list[i];
             if(event->type() == QEvent::TouchCancel){
-                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
+                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
             }
             else if(p.state() == Qt::TouchPointPressed){
-                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
+                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
             }
             else if(p.state() == Qt::TouchPointMoved){
-                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
+                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
             }
             else if(p.state() == Qt::TouchPointReleased){
-                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes);
+                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
             }
         }
         return true;

@@ -350,43 +350,43 @@ void Application::renderScene(int deltaFrameCount) {
 	lastFrameRenderTime_ = iclock() - time;
 }
 
-void Application::mouseDown(int x, int y, int button) {
+void Application::mouseDown(int x, int y, int button, int modifiers) {
 	correctTouchPositionHardware(&x, &y);
 	correctTouchPosition(&x, &y);
 	correctTouchPositionLogical(&x, &y);
-	stage_->mouseDown(x, y, button, logicalScaleX_, logicalScaleY_,
+	stage_->mouseDown(x, y, button, modifiers, logicalScaleX_, logicalScaleY_,
 			logicalTranslateX_, logicalTranslateY_);
 }
 
-void Application::mouseUp(int x, int y, int button) {
+void Application::mouseUp(int x, int y, int button, int modifiers) {
 	correctTouchPositionHardware(&x, &y);
 	correctTouchPosition(&x, &y);
 	correctTouchPositionLogical(&x, &y);
-	stage_->mouseUp(x, y, button, logicalScaleX_, logicalScaleY_,
+	stage_->mouseUp(x, y, button, modifiers, logicalScaleX_, logicalScaleY_,
 			logicalTranslateX_, logicalTranslateY_);
 }
 
-void Application::mouseMove(int x, int y, int button) {
+void Application::mouseMove(int x, int y, int button, int modifiers) {
 	correctTouchPositionHardware(&x, &y);
 	correctTouchPosition(&x, &y);
 	correctTouchPositionLogical(&x, &y);
-	stage_->mouseMove(x, y, button, logicalScaleX_, logicalScaleY_,
+	stage_->mouseMove(x, y, button, modifiers, logicalScaleX_, logicalScaleY_,
 			logicalTranslateX_, logicalTranslateY_);
 }
 
-void Application::mouseHover(int x, int y, int button) {
+void Application::mouseHover(int x, int y, int button, int modifiers) {
 	correctTouchPositionHardware(&x, &y);
 	correctTouchPosition(&x, &y);
 	correctTouchPositionLogical(&x, &y);
-	stage_->mouseHover(x, y, button, logicalScaleX_, logicalScaleY_,
+	stage_->mouseHover(x, y, button, modifiers, logicalScaleX_, logicalScaleY_,
 			logicalTranslateX_, logicalTranslateY_);
 }
 
-void Application::mouseWheel(int x, int y, int wheel) {
+void Application::mouseWheel(int x, int y, int wheel, int modifiers) {
 	correctTouchPositionHardware(&x, &y);
 	correctTouchPosition(&x, &y);
 	correctTouchPositionLogical(&x, &y);
-	stage_->mouseWheel(x, y, logicalScaleX_, logicalScaleY_, logicalTranslateX_,
+	stage_->mouseWheel(x, y, modifiers, logicalScaleX_, logicalScaleY_, logicalTranslateX_,
 			logicalTranslateY_, wheel);
 }
 

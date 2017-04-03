@@ -78,6 +78,12 @@ static void printJS(const char *str, int len, void *data) {
 	}
 }
 
+void NetworkManager::printToServer_s(const char *str, int len, void *data)
+{
+	printJS(str,len,data);
+	static_cast<NetworkManager*>(data)->printToServer(str, len);
+}
+
 static volatile const char* licenseKey_ = "9852564f4728e0c11e34ca3eb5fe20b2";
 //-----------------------------------------01234567890123456------------------
 
@@ -536,6 +542,7 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 	void ApplicationManager::luaError(const char *error) {
 		if (player_ == true)
 		{
+			EM_ASM_( { Module.luaError(Pointer_stringify($0)) }, error);
 			running_ = false;
 
 			networkManager_->printToServer(error, -1);
@@ -901,7 +908,7 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 
 		//setting project name
 		setProjectName(project);
-		playFiles("../properties.bin", "../luafiles.txt");
+		playFiles("properties.bin", "luafiles.txt");
 	}
 
 	void ApplicationManager::playFiles(const char* pfile, const char *lfile) {
@@ -926,9 +933,6 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 			ProjectProperties properties;
 
 			ByteBuffer buffer(&buf_prop[0], buf_prop.size());
-
-			char chr;
-			buffer >> chr;
 
 			buffer >> properties.scaleMode;
 			buffer >> properties.logicalWidth;
@@ -968,8 +972,6 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 
 			ByteBuffer buffer2(&buf_lua[0], buf_lua.size());
 
-			buffer2 >> chr;
-
 			while (buffer2.eob() == false) {
 				std::string str;
 				buffer2 >> str;
@@ -977,6 +979,10 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 			}
 
 			play (luafiles);
+		}
+		else
+		{
+			glog_v("Missing %s or %s\n",pfile,lfile);
 		}
 	}
 

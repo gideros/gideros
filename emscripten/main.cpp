@@ -7,6 +7,8 @@
 #include <iostream>
 #include "emscripten.h"
 #include "html5.h"
+#include <sys/stat.h>
+#include <gstdio.h>
 #include <glog.h>
 #include <ginput-js.h>
 #include <gplugin.h>
@@ -153,25 +155,29 @@ EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent *e, void *userD
 	 int x=e->canvasX*pixelRatio;
 	 int y=e->canvasY*pixelRatio;
 	 int b=e->buttons;
-	 int bs=0;
+	 int bs=0,m=0;
 	 if (e->button==0)
 	  bs=1;
          else if (e->button==1)
           bs=4;
          else if (e->button==2)
           bs=2;
-          
 	 b=(b&1)|((b&2)<<1)|((b&4)>>1); //Convert buttons to gideros mask
+	 if (e->ctrlKey) m|=GINPUT_CTRL_MODIFIER;
+	 if (e->shiftKey) m|=GINPUT_SHIFT_MODIFIER;
+	 if (e->altKey) m|=GINPUT_ALT_MODIFIER;
+	 if (e->metaKey) m|=GINPUT_META_MODIFIER;
+
 	 if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
-		 ginputp_mouseDown(x,y,bs);
+		 ginputp_mouseDown(x,y,bs,m);
 	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
-		 ginputp_mouseUp(x,y,bs);
+		 ginputp_mouseUp(x,y,bs,m);
 	 else if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE)
 	 {
 		 if (b)
-			 ginputp_mouseMove(x,y,b);
+			 ginputp_mouseMove(x,y,b,m);
 		 else
-			 ginputp_mouseHover(x,y,b);
+			 ginputp_mouseHover(x,y,b,m);
 	}
 
   return true;
@@ -188,28 +194,33 @@ EM_BOOL wheel_callback(int eventType, const EmscriptenWheelEvent *e, void *userD
  int y=e->mouse.canvasY*pixelRatio;
  int b=e->mouse.buttons;
  b=(b&1)|((b&2)<<1)|(b&4>>1); //Convert buttons to gideros mask
-  ginputp_mouseWheel(x,y,b,-w);
+  ginputp_mouseWheel(x,y,b,-w,0);
   return true;
 }
 
 EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userData)
 {
+	int m=0;
+	 if (e->ctrlKey) m|=GINPUT_CTRL_MODIFIER;
+	 if (e->shiftKey) m|=GINPUT_SHIFT_MODIFIER;
+	 if (e->altKey) m|=GINPUT_ALT_MODIFIER;
+	 if (e->metaKey) m|=GINPUT_META_MODIFIER;
     for (int k=0;k<e->numTouches;k++) {
      if (!e->touches[k].isChanged) continue;
 	 int x=e->touches[k].canvasX*pixelRatio;
 	 int y=e->touches[k].canvasY*pixelRatio;
 	 int i=e->touches[k].identifier;
 	 if (eventType == EMSCRIPTEN_EVENT_TOUCHSTART)
-		 ginputp_touchBegin(x,y,i);
+		 ginputp_touchBegin(x,y,i,m);
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHEND)
 	 {
 	         EM_ASM( Module.checkALMuted(); );	         
-		 ginputp_touchEnd(x,y,i);
+		 ginputp_touchEnd(x,y,i,m);
          }
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHMOVE)
-		 ginputp_touchMove(x,y,i);
+		 ginputp_touchMove(x,y,i,m);
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHCANCEL)
-		 ginputp_touchCancel(x,y,i);
+		 ginputp_touchCancel(x,y,i,m);
   }
   return true;
 }
@@ -334,4 +345,35 @@ void flushDrive(int drive)
            });
   });
  }
+}
+
+extern "C" void JSPlayer_play(const char *project)
+{
+	s_applicationManager->openProject(project);
+}
+
+extern "C" void JSPlayer_stop()
+{
+	s_applicationManager->stop();
+}
+
+extern "C" void JSPlayer_writeFile(const char *project, const char *path,const char *data,int datasize)
+{
+	char tmp[PATH_MAX];
+	char *p = NULL;
+	size_t len;
+	snprintf(tmp, sizeof(tmp), "gideros/%s/resource/%s", project,path);
+	len = strlen(tmp);
+	if (tmp[len - 1] == '/')
+		tmp[len - 1] = 0;
+	for (p = tmp + 1; *p; p++)
+		if (*p == '/') {
+			*p = 0;
+			mkdir(tmp, S_IRWXU);
+			*p = '/';
+		}
+	FILE* fos = fopen(tmp, "wb");
+	fwrite(data,datasize, 1, fos);
+	fclose(fos);
+	glog_v("Wrote file '%s' (%d)\n",tmp,datasize);
 }

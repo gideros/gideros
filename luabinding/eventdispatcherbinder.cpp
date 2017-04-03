@@ -372,6 +372,9 @@ public:
 
             lua_pushnumber(L, v->button);
             lua_setfield(L, -2, "button");
+
+            lua_pushnumber(L, v->modifiers);
+            lua_setfield(L, -2, "modifiers");
 		}
 		else
 		{
@@ -419,7 +422,12 @@ public:
         lua_pushnumber(L, ry);
         lua_setfield(L, -2, "ry");
 		
-		
+        lua_pushnumber(L, touch->modifiers);
+        lua_setfield(L, -2, "modifiers");
+
+        lua_pushnumber(L, touch->mouseButton);
+        lua_setfield(L, -2, "mouseButton");
+
         lua_pushnumber(L, touch->pressure);
         lua_setfield(L, -2, "pressure");
 

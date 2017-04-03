@@ -50,9 +50,7 @@ public:
 		loadMD5();
 	}
 
-	static void printToServer_s(const char *str, int len, void *data) {
-		static_cast<NetworkManager*>(data)->printToServer(str, len);
-	}
+	static void printToServer_s(const char *str, int len, void *data);
 
 	void printToServer(const char *str, int len) {
 		unsigned int size = 1 + ((len < 0) ? strlen(str) : len) + 1;

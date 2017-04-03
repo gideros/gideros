@@ -383,6 +383,8 @@ public:
 		touchEvent->touch.y = y[actionIndex];
         touchEvent->touch.pressure = pressure[actionIndex];
         touchEvent->touch.touchType = 0;
+        touchEvent->touch.modifiers = 0;
+        touchEvent->touch.mouseButton = 0;
 		touchEvent->touch.id = id[actionIndex];
 		
 		for (int i = 0; i < size; ++i)
@@ -391,6 +393,8 @@ public:
 			touchEvent->allTouches[i].y = y[i];
             touchEvent->allTouches[i].pressure = pressure[i];
             touchEvent->allTouches[i].touchType = 0;
+            touchEvent->allTouches[i].modifiers = 0;
+            touchEvent->allTouches[i].mouseButton = 0;
 			touchEvent->allTouches[i].id = id[i];
 		}
 		
@@ -432,6 +436,8 @@ public:
             touchEvent->touch.pressure = pressure[i];
             touchEvent->touch.touchType = 0;
 			touchEvent->touch.id = id[i];
+	        touchEvent->touch.modifiers = 0;
+	        touchEvent->touch.mouseButton = 0;
 			
 			for (int j = 0; j < size; ++j)
 			{
@@ -439,6 +445,8 @@ public:
 				touchEvent->allTouches[j].y = y[j];
 	            touchEvent->allTouches[j].pressure = pressure[j];
 	            touchEvent->allTouches[j].touchType = 0;
+	            touchEvent->allTouches[i].modifiers = 0;
+	            touchEvent->allTouches[i].mouseButton = 0;
 				touchEvent->allTouches[j].id = id[j];
 			}
 			
@@ -478,6 +486,8 @@ public:
         touchEvent->touch.pressure = pressure[actionIndex];
         touchEvent->touch.touchType = 0;
 		touchEvent->touch.id = id[actionIndex];
+        touchEvent->touch.modifiers = 0;
+        touchEvent->touch.mouseButton = 0;
 		
 		for (int i = 0; i < size; ++i)
 		{
@@ -485,6 +495,8 @@ public:
 			touchEvent->allTouches[i].y = y[i];
             touchEvent->allTouches[i].pressure = pressure[i];
             touchEvent->allTouches[i].touchType = 0;
+            touchEvent->allTouches[i].modifiers = 0;
+            touchEvent->allTouches[i].mouseButton = 0;
 			touchEvent->allTouches[i].id = id[i];
 		}
 
@@ -524,6 +536,8 @@ public:
 			touchEvent->touch.y = y[i];
             touchEvent->touch.pressure = pressure[i];
             touchEvent->touch.touchType = 0;
+	        touchEvent->touch.modifiers = 0;
+	        touchEvent->touch.mouseButton = 0;
 			touchEvent->touch.id = id[i];
 			
 			for (int j = 0; j < size; ++j)
@@ -532,6 +546,8 @@ public:
 				touchEvent->allTouches[j].y = y[j];
 	            touchEvent->allTouches[j].pressure = pressure[j];
 	            touchEvent->allTouches[j].touchType = 0;
+	            touchEvent->allTouches[i].modifiers = 0;
+	            touchEvent->allTouches[i].mouseButton = 0;
 				touchEvent->allTouches[j].id = id[j];
 			}
 			
@@ -614,6 +630,7 @@ private:
         event->y = y;
         event->button = button;
         event->wheel = 0;
+        event->modifiers=0;
 
         return event;
     }

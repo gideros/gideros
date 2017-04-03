@@ -79,11 +79,21 @@ enum
     GINPUT_MIDDLE_BUTTON = 4,
 };
 
+enum
+{
+    GINPUT_NO_MODIFIER = 0,
+    GINPUT_SHIFT_MODIFIER = 1,
+    GINPUT_ALT_MODIFIER = 2,
+    GINPUT_CTRL_MODIFIER = 4,
+    GINPUT_META_MODIFIER = 8,
+};
+
 typedef struct ginput_MouseEvent
 {
     int x, y;
     int button;
     int wheel;
+    int modifiers;
 } ginput_MouseEvent;
 
 typedef struct ginput_Touch
@@ -93,6 +103,8 @@ typedef struct ginput_Touch
     int id;
     float pressure;
     int touchType;
+    int mouseButton;
+    int modifiers;
 } ginput_Touch;
 
 typedef struct ginput_TouchEvent

@@ -174,5 +174,46 @@ Module.checkALMuted=function()
 
 Module.GiderosJSEvent=function(type,context,value,data)
 {
-    Module.ccall('JSNative_enqueueEvent','number', ['string','number','number','string','number'], [type,context,value,data,data.length]);
+	var etype='number';
+	var len=data.length;
+	if (typeof data == 'string')
+		etype='string';
+	else
+	{
+		var dataPtr = Module._malloc(len);
+		var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, len);
+		dataHeap.set(data);	
+		data=dataPtr;
+	}
+    Module.ccall('JSNative_enqueueEvent','number', ['string','number','number',etype,'number'], [type,context,value,data,len]);
+    if (etype=='number')
+    	Module._free(dataPtr);
+}
+
+Module.GiderosPlayer_Play=function(project)
+{
+    Module.ccall('JSPlayer_play','number', ['string'], [project]);
+}
+
+Module.GiderosPlayer_Stop=function()
+{
+    Module.ccall('JSPlayer_stop','number', [], []);
+}
+
+Module.GiderosPlayer_WriteFile=function(project,path,data)
+{
+	var etype='number';
+	var len=data.length;
+	if (typeof data == 'string')
+		etype='string';
+	else
+	{
+		var dataPtr = Module._malloc(len);
+		var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, len);
+		dataHeap.set(data);	
+		data=dataPtr;
+	}
+    Module.ccall('JSPlayer_writeFile','number', ['string','string',etype,'number'], [project,path,data,len]);
+    if (etype=='number')
+    	Module._free(dataPtr);
 }

@@ -720,6 +720,7 @@ static bool gzInflate(QByteArray input, QByteArray &output) {
 #define PACKED __attribute__((packed))
 bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 	QDir toPath(ctx->outputDir);
+	toPath.mkpath(dest);
 	toPath.cd(dest);
 	exportInfo("Unzip %s to %s\n", file.toStdString().c_str(),
 			toPath.absolutePath().toStdString().c_str());
