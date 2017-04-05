@@ -92,6 +92,24 @@
         }
 	}
 	
+	void GMEDIA::getFile(const char* extensions, const char* initialPath)
+	{
+        QString fileName = QFileDialog::getOpenFileName(0, QObject::tr("Open File"),initialPath,QObject::tr(extensions));
+        if(fileName.isNull())
+            onMediaCanceled();
+        else{
+            QFileInfo info(fileName);
+            QDateTime createdDate = QDateTime::currentDateTime();
+            QString destName = getAppPath() + "/" + createdDate.toString("yyyyMMdd_HHmmss") + "_gideros." + info.suffix();
+            if(QFile::exists(destName))
+            {
+                QFile::remove(destName);
+            }
+            QFile::copy(fileName, destName);
+            onMediaReceived(destName.toStdString().c_str());
+        }							
+	}
+
     void GMEDIA::savePicture(const char* path)
 	{
         QFileInfo info(path);
@@ -114,6 +132,27 @@
         }
 	}
 
+void GMEDIA::saveFile(const char* path, const char* initialPath)
+	{
+        QFileInfo info(path);
+        QString format = info.suffix();        
+
+        QString fileName = QFileDialog::getSaveFileName(0, QObject::tr("Save As"),
+                                        initialPath,
+                                        QObject::tr("%1 Files (*.%2);;All Files (*)")
+                                        .arg(format.toUpper())
+                                        .arg(format));
+        if (!fileName.isEmpty())
+        {
+            if(QFile::exists(fileName))
+            {
+                QFile::remove(fileName);
+            }
+
+            QFile::copy(path, fileName);
+        }
+	}
+							
     void GMEDIA::playVideo(const char* path, bool force)
     {
         QMediaPlayer* player = new QMediaPlayer;
@@ -221,10 +260,18 @@ void gmedia_getPicture(){
     s_gmedia->getPicture();
 }
 
+void gmedia_getFile(const char* extensions, const char* initialPath){
+    s_gmedia->getFile(extensions, initialPath);
+}
+	
 void gmedia_savePicture(const char* path){
     s_gmedia->savePicture(path);
 }
 
+void gmedia_saveFile(const char* path, const char* initialPath){
+    s_gmedia->saveFile(path, initialPath);
+}
+	
 void gmedia_playVideo(const char* path, int force){
     s_gmedia->playVideo(path, force);
 }
