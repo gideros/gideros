@@ -441,7 +441,7 @@ int main(int argc, char **argv)
             if (verbose)
             {
                 config.progressfun = ShowProgress;
-                config.userdata = (void*)&cerr;
+                config.userdata = (void*)&cout;
             }
             encSize = LZG_Encode(decBuf, decSize, encBuf, maxEncSize, &config);
             if (encSize && (encBuf[15] != 1))
@@ -464,7 +464,7 @@ int main(int argc, char **argv)
         {
             if (verbose)
             {
-                cerr << "Binary packed size:  " << encSize << " bytes (" <<
+                cout << "Binary packed size:  " << encSize << " bytes (" <<
                         ((100 * encSize) / fileSize) << "% of the original)" << endl;
             }
 
@@ -502,7 +502,7 @@ int main(int argc, char **argv)
 
                 if (verbose)
                 {
-                    cerr << "String encoded size: " << encSize << " bytes (" <<
+                    cout << "String encoded size: " << encSize << " bytes (" <<
                             ((100 * encSize) / fileSize) << "% of the original)" << endl;
                 }
 
@@ -577,7 +577,7 @@ int main(int argc, char **argv)
 
                         if (verbose)
                         {
-                            cerr << "Final result:        " << encSize << " bytes (" <<
+                            cout << "Final result:        " << encSize << " bytes (" <<
                                     ((100 * encSize) / fileSize) << "% of the original)" << endl;
                         }
         
@@ -612,8 +612,8 @@ int main(int argc, char **argv)
                     // original/stripped file
                     if (verbose)
                     {
-                        cerr << "*** Compressed result grew. Emitting the plain text version..." << endl;
-                        cerr << "Final result:        " << decSize << " bytes (" <<
+                        cout << "*** Compressed result grew. Emitting the plain text version..." << endl;
+                        cout << "Final result:        " << decSize << " bytes (" <<
                                 ((100 * decSize) / fileSize) << "% of the original)" << endl;
                     }
 

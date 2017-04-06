@@ -52,6 +52,7 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
     properties.setAttribute("winrt_package", this->winrt_package);
     properties.setAttribute("html5_host", this->html5_host);
     properties.setAttribute("html5_mem", this->html5_mem);
+    properties.setAttribute("html5_pack", this->html5_pack ? 1 : 0);
     properties.setAttribute("encryptCode", this->encryptCode);
     properties.setAttribute("encryptAssets", this->encryptAssets);
     properties.setAttribute("app_icon", this->app_icon);
@@ -188,6 +189,8 @@ void ProjectProperties::loadXml(QDomElement properties)
             this->html5_host = properties.attribute("html5_host");
         if (!properties.attribute("html5_mem").isEmpty())
             this->html5_mem = properties.attribute("html5_mem").toInt();
+        if (!properties.attribute("html5_mem").isEmpty())
+            this->html5_pack = properties.attribute("html5_pack").toInt() != 0;
         if (!properties.attribute("encryptCode").isEmpty())
             this->encryptCode = properties.attribute("encryptCode").toInt() != 0;
         if (!properties.attribute("encryptAssets").isEmpty())

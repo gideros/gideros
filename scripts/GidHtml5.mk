@@ -27,12 +27,14 @@ html5.install: html5.template html5.player
 
 html5: html5.install
 
+html5.tools: html5.crunchme
+
 CRUNCHME_SRCS=$(addprefix src/liblzg/lib/,checksum decode encode version)
 CRUNCHME_SRCS+=$(addprefix src/zlib/,adler32 compress crc32 deflate inftrees trees zutil)
 CRUNCHME_SRCS+=$(addprefix src/,crunchme png)
 
-crunchme.html5: $(addprefix emscripten/crunchme-0.4/,$(addsuffix .co,$(CRUNCHME_SRCS)))
-	$(CXX)  -o emscripten/crunchme-0.4/bin/crunchme-qt-win $^
+html5.crunchme: $(addprefix emscripten/crunchme-0.4/,$(addsuffix .co,$(CRUNCHME_SRCS)))
+	$(CXX)  -o $(ROOT)/ui/Tools/crunchme $^
 	
 %.co: %.cpp
 	$(CXX) -c $< -Iemscripten/crunchme-0.4/src/liblzg/include -o $@

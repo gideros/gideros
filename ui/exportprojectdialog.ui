@@ -100,7 +100,7 @@ target platform to export the application source.</string>
    <item>
     <widget class="QTabWidget" name="architectureTab">
      <property name="currentIndex">
-      <number>7</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -477,6 +477,13 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
           <widget class="QLineEdit" name="html5_mem"/>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="html5_pack">
+         <property name="text">
+          <string>Compress files: lower download time but higher memory usage during loading</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer_3">

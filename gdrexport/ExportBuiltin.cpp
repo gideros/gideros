@@ -14,6 +14,8 @@
 #include <bytebuffer.h>
 #include <QFile>
 #include <QRegularExpression>
+#include <QCoreApplication>
+#include <QProcess>
 
 void ExportBuiltin::exportAllAssetsFiles(ExportContext *ctx)
 {
@@ -233,6 +235,10 @@ void ExportBuiltin::prepareAssetFolder(ExportContext *ctx)
         }
 }
 
+static QString quote(const QString &str) {
+	return "\"" + str + "\"";
+}
+
 void ExportBuiltin::doExport(ExportContext *ctx)
 {
     QString templatedir;
@@ -331,6 +337,35 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
    //go back to root
    ctx->outputDir = QDir(ctx->exportDir);
+
+   if (ctx->deviceFamily == e_Html5)
+   {
+	   if (ctx->properties.html5_pack)
+	   {
+			QDir toolsDir = QDir(
+					QCoreApplication::applicationDirPath());
+#if defined(Q_OS_WIN)
+			QString pack = toolsDir.filePath("crunchme.exe");
+#else
+			QString pack = toolsDir.filePath("crunchme");
+#endif
+			QDir old = QDir::current();
+			QDir::setCurrent(ctx->outputDir.path());
+			QProcess::execute(quote(pack) + " -nostrip -i pace.js pace.js.png");
+			QProcess::execute(quote(pack) + " -nostrip -i gideros.js gideros.js.png");
+			QDir::setCurrent(old.path());
+			ctx->outputDir.remove("gideros.js");
+			ctx->outputDir.remove("pace.js");
+			ctx->outputDir.rename("gideros.ldr.js","gideros.js");
+			ctx->outputDir.rename("pace.ldr.js","pace.js");
+	   }
+	   else
+	   {
+		   ctx->outputDir.remove("gideros.ldr.js");
+		   ctx->outputDir.remove("pace.ldr.js");
+		   ctx->outputDir.remove("jzptool.js");
+	   }
+   }
 
    //install plugins
    ExportCommon::applyPlugins(ctx);

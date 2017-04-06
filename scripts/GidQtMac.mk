@@ -50,7 +50,7 @@ buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel 
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
 QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(filter libqscintilla%,$(subst /, ,$(shell otool -L $(ROOT)/ui/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla)))))
-qt.install: buildqt qt.player tools
+qt.install: buildqt qt.player tools html5.tools
 	#STUDIO
 	rm -rf $(RELEASE)/Gideros\ Studio.app
 	cp -R $(ROOT)/ui/Gideros\ Studio.app $(RELEASE)
@@ -58,6 +58,7 @@ qt.install: buildqt qt.player tools
 	cp $(QT)/lib/libqscintilla2.$(QSCINTILLA_LIBVER).dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
 	install_name_tool -change libqscintilla2.$(QSCINTILLA_LIBVER).dylib @rpath/libqscintilla2.$(QSCINTILLA_LIBVER).dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
 	cp -R $(ROOT)/ui/Resources $(RELEASE)/Gideros\ Studio.app/Contents/
+	install_name_tool -add_rpath @executable_path/../Frameworks $(ROOT)/ui/Tools/crunchme
 	cp -R $(ROOT)/ui/Tools $(RELEASE)/Gideros\ Studio.app/Contents/Tools
 	cp $(ROOT)/lua/src/lua $(RELEASE)/Gideros\ Studio.app/Contents/Tools
 	cp $(ROOT)/lua/src/luac $(RELEASE)/Gideros\ Studio.app/Contents/Tools

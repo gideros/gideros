@@ -19,6 +19,7 @@ build.mac.pkg:
 	
 fetch.mac.pkg:
 	echo "\
+	cp -r $(MAC_PATH)/$(SDK) $(MAC_PATH)/Build.Mac;\
 	cd $(MAC_PATH)/Build.Mac;\
 	rm -f BuildMac.zip;\
 	zip -r BuildMac.zip Sdk Players Templates All\\ Plugins;\
@@ -30,6 +31,7 @@ fetchbundle.mac.pkg:
 	scp -B $(MAC_HOST):$(MAC_PATH)/Gideros.pkg $(ROOT)/Gideros.pkg
 
 push.mac.pkg:
+	cp -r $(SDK) $(RELEASE);\
 	cd $(RELEASE);\
 	rm -f BuildWin.zip;\
 	zip -r BuildWin.zip Sdk Players Templates "All Plugins" Resources Documentation $(TXTFILES);\

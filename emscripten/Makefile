@@ -139,11 +139,13 @@ main: path $(BUILD)/gideros.js
 	cp gideros.css pace.css $(TEMPLATE)
 	cp $(BUILD)/gideros.html $(TEMPLATE) 
 	cp $(BUILD)/gideros.html.mem $(TEMPLATE) 
-	$(CRUNCHME_TOOL) -nostrip -i pace.min.js $(TEMPLATE)/pace.js.png
-	cp pace.ldr.js $(TEMPLATE)/pace.js
-	$(CRUNCHME_TOOL) -nostrip -i $(BUILD)/gideros.js $(TEMPLATE)/gideros.js.png
-	cp gideros.ldr.js $(TEMPLATE)/gideros.js
+	cp pace.min.js $(TEMPLATE)/pace.js
+	cp $(BUILD)/gideros.js $(TEMPLATE)
+	cp pace.ldr.js $(TEMPLATE)
+	cp gideros.ldr.js $(TEMPLATE)
 	cp jzptool.js $(TEMPLATE)
+	#$(CRUNCHME_TOOL) -nostrip -i pace.min.js $(TEMPLATE)/pace.js.png
+	#$(CRUNCHME_TOOL) -nostrip -i $(BUILD)/gideros.js $(TEMPLATE)/gideros.js.png
 	
 
 path:

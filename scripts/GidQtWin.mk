@@ -50,7 +50,7 @@ buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel 
 
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
-qt.install: buildqt qt5.install qt.player tools
+qt.install: buildqt qt5.install qt.player tools html5.tools
 	cp $(ROOT)/ui/release/GiderosStudio.exe $(RELEASE)
 	cp $(ROOT)/player/release/GiderosPlayer.exe $(RELEASE)
 	cp $(ROOT)/texturepacker/release/GiderosTexturePacker.exe $(RELEASE)

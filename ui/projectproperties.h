@@ -73,6 +73,7 @@ struct ProjectProperties
         winrt_package = "com.yourdomain.yourapp";
         html5_host = "";
         html5_mem = 256;
+        html5_pack = false;
         encryptCode = false;
         encryptAssets = false;
         app_icon="";
@@ -126,6 +127,7 @@ struct ProjectProperties
     QString winrt_package;
     QString html5_host;
     int html5_mem;
+    bool html5_pack;
     QString app_icon;
     QString tv_icon;
     QString splash_h_image;
