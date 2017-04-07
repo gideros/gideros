@@ -18,6 +18,7 @@
 #include "ExportBuiltin.h"
 #include "ExportXml.h"
 #include "ExportLua.h"
+#include <QCryptographicHash>
 
 static bool readProjectFile(const QString& fileName,
                             ProjectProperties &properties,
@@ -391,12 +392,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    if ((ctx.deviceFamily==e_Html5)&&(!ctx.args["hostname"].isEmpty()))
-    {
-    	encryptAssets=true;
-    	encryptCode=true;
-    }
-
     if (encryptCode)
     {
         codeKey = randomData.mid(64,256);
@@ -411,10 +406,24 @@ int main(int argc, char *argv[])
 
     if (ctx.deviceFamily==e_Html5)
     {
-    	encryptAssets=true;
-    	encryptCode=true;
     	if (!(ctx.args["hostname"].isEmpty()))
     	{
+        	encryptAssets=true;
+        	encryptCode=true;
+            codePrefixRnd=randomData.mid(0,32);
+            assetsPrefixRnd=randomData.mid(32,32);
+            for (int n=0;n<16;n++)
+            {
+            	QByteArray lrnd=QCryptographicHash::hash(ctx.args["hostname"].toUtf8()+n,QCryptographicHash::Md5);
+            	int lrndn=0;
+            	for (int k=n*16;k<(n*16+16);k++)
+            	{
+            		codeKey[k]=codeKey.at(k)^lrnd.at(lrndn);
+            		assetsKey[k]=assetsKey.at(k)^lrnd.at(lrndn);
+            		lrndn++;
+            	}
+            }
+
     		QByteArray mkey=ctx.args["hostname"].toUtf8();
         	int msize=mkey.size();
         	if (msize>255)
