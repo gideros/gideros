@@ -414,7 +414,7 @@ int main(int argc, char *argv[])
             assetsPrefixRnd=randomData.mid(32,32);
             for (int n=0;n<16;n++)
             {
-            	QByteArray lrnd=QCryptographicHash::hash(ctx.args["hostname"].toUtf8()+QString::number(n),QCryptographicHash::Md5);
+            	QByteArray lrnd=QCryptographicHash::hash((ctx.args["hostname"]+QString::number(n)).toUtf8(),QCryptographicHash::Md5);
             	int lrndn=0;
             	for (int k=n*16;k<(n*16+16);k++)
             	{
