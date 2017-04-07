@@ -264,6 +264,10 @@ static NSMutableDictionary *ads = [NSMutableDictionary dictionary];
     gads_adDismissed([[AdsClass modifyName:adprovider] UTF8String], [type UTF8String]);
 }
 
++(void)adRewarded:(Class)adprovider forType:(NSString*)type withAmount:(int)amount {
+    gads_adRewarded([[AdsClass modifyName:adprovider] UTF8String], [type UTF8String], amount);
+}
+
 +(void)adError:(Class)adprovider with:(NSString*)error{
     gads_adError([[AdsClass modifyName:adprovider] UTF8String],[error UTF8String]);
 }

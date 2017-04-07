@@ -16,6 +16,7 @@ enum
 	GADS_AD_ACTION_END_EVENT,
 	GADS_AD_DISMISSED_EVENT,
 	GADS_AD_ERROR_EVENT,
+	GADS_AD_REWARDED_EVENT,
 };
 
 typedef struct gads_AdErrorEvent
@@ -36,6 +37,13 @@ typedef struct gads_SimpleEvent
 	const char *ad;
 	const char *type;
 } gads_SimpleEvent;
+
+typedef struct gads_RewardEvent
+{
+	const char *ad;
+	const char *type;
+	int amount;
+} gads_RewardEvent;
 
 typedef struct gads_Parameter
 {
@@ -67,6 +75,7 @@ G_API int gads_getX(const char *ad);
 G_API int gads_getY(const char *ad);
 G_API int gads_getWidth(const char *ad);
 G_API int gads_getHeight(const char *ad);
+G_API int gads_hasConnection(const char *ad);
 
 G_API g_id gads_addCallback(gevent_Callback callback, void *udata);
 G_API void gads_removeCallback(gevent_Callback callback, void *udata);

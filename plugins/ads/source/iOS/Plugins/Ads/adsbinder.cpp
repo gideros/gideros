@@ -114,6 +114,7 @@ static const char *AD_ACTION_BEGIN = "adActionBegin";
 static const char *AD_ACTION_END = "adActionEnd";
 static const char *AD_DISMISSED = "adDismissed";
 static const char *AD_DISPLAYED = "adDisplayed";
+static const char *AD_REWARDED = "adRewarded";
 static const char *AD_ERROR = "adError";
 
 static char keyWeak = ' ';
@@ -133,6 +134,11 @@ public:
 		gads_destroy(ad_);
 		gads_removeCallback(callback_s, this);
 		free((char*)ad_);
+    }
+    
+    int hasConnection()
+    {
+        return gads_hasConnection();
     }
 	
 	void setKey(gads_Parameter *params)
@@ -227,6 +233,14 @@ private:
 					shouldDispatch = 1;
 				}
 			}
+			else if (type == GADS_AD_REWARDED_EVENT)
+			{
+				gads_RewardEvent *event2 = (gads_RewardEvent*)event;
+				if(strcmp(event2->ad, ad_) == 0)
+				{
+					shouldDispatch = 1;
+				}
+			}
 			else
 			{
 				gads_SimpleEvent *event2 = (gads_SimpleEvent*)event;
@@ -275,6 +289,9 @@ private:
                     case GADS_AD_DISPLAYED_EVENT:
 						lua_pushstring(L, AD_DISPLAYED);
 						break;
+                    case GADS_AD_REWARDED_EVENT:
+						lua_pushstring(L, AD_REWARDED);
+						break;
 					case GADS_AD_ERROR_EVENT:
 						lua_pushstring(L, AD_ERROR);
 						break;
@@ -299,6 +316,16 @@ private:
 					lua_pushstring(L, event2->error);
 					lua_setfield(L, -2, "error");
 				}
+				else if (type == GADS_AD_REWARDED_EVENT)
+				{
+					gads_RewardEvent *event2 = (gads_RewardEvent*)event;
+
+					lua_pushstring(L, event2->type);
+					lua_setfield(L, -2, "type");
+
+					lua_pushinteger(L, event2->amount);
+					lua_setfield(L, -2, "amount");
+				}
 				else
 				{
 					gads_SimpleEvent *event2 = (gads_SimpleEvent*)event;
@@ -317,6 +344,8 @@ private:
 private:
 	const char* ad_;
 };
+
+
 
 static int destruct(lua_State* L)
 {
@@ -352,6 +381,15 @@ static int init(lua_State *L)
 	lua_pushvalue(L, -1);
     return 1;
 }
+
+static int hasConnection(lua_State *L)
+{
+    Ads *ads = getInstance(L, 1);
+    int has = ads->hasConnection();
+    lua_pushboolean(L, has);
+    return 1;
+}
+
 
 static int setKey(lua_State *L)
 {
@@ -532,6 +570,8 @@ static int getHeight(lua_State *L)
     return 1;
 }
 
+
+
 static int loader(lua_State *L)
 {
 	const luaL_Reg functionlist[] = {
@@ -552,6 +592,7 @@ static int loader(lua_State *L)
         {"getHeight", getHeight},
 		{"set", set},
 		{"get", get},
+        {"hasConnection", hasConnection},
 		{NULL, NULL},
 	};
     
@@ -574,6 +615,8 @@ static int loader(lua_State *L)
 	lua_setfield(L, -2, "AD_DISMISSED");
     lua_pushstring(L, AD_DISPLAYED);
 	lua_setfield(L, -2, "AD_DISPLAYED");
+    lua_pushstring(L, AD_REWARDED);
+	lua_setfield(L, -2, "AD_REWARDED");
 	lua_pushstring(L, AD_ERROR);
 	lua_setfield(L, -2, "AD_ERROR");
 	lua_pop(L, 1);

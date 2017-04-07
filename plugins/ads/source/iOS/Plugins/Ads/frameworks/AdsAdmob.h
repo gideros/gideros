@@ -13,11 +13,12 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "AdsManager.h"
 
-@interface AdsAdmob : NSObject <AdsProtocol, GADInterstitialDelegate>
+@interface AdsAdmob : NSObject <AdsProtocol, GADInterstitialDelegate, GADRewardBasedVideoAdDelegate>
 @property(nonatomic, assign) const GADAdSize *currentType;
 @property(nonatomic, copy) NSString *currentSize;
 @property(nonatomic, copy) NSString *appKey;
 @property(nonatomic, copy) NSString *interstitialId;  //save the id for reload automatically
+@property(nonatomic, copy) NSString *rewardedVideoId;
 @property(nonatomic, copy) NSString *testID;
 @property (nonatomic, retain) AdsManager *mngr;
 @end

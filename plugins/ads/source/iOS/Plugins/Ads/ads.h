@@ -13,6 +13,7 @@ enum
 	GADS_AD_DISMISSED_EVENT,
     GADS_AD_DISPLAYED_EVENT,
 	GADS_AD_ERROR_EVENT,
+	GADS_AD_REWARDED_EVENT,
 };
 
 typedef struct gads_AdErrorEvent
@@ -34,6 +35,13 @@ typedef struct gads_SimpleEvent
     const char *type;
 } gads_SimpleEvent;
 
+typedef struct gads_RewardEvent
+{
+	const char *ad;
+	const char *type;
+    int amount;
+} gads_RewardEvent;
+
 typedef struct gads_Parameter
 {
     const char *value;
@@ -48,6 +56,8 @@ G_API int gads_isAvailable();
 G_API void gads_init();
 G_API void gads_cleanup();
 
+G_API int gads_hasConnection();
+    
 G_API void gads_initialize(const char *ad);
 G_API void gads_destroy(const char *ad);
 G_API void gads_setKey(const char *ad, gads_Parameter *params);
@@ -75,6 +85,7 @@ G_API void gads_adActionBegin(const char *ad, const char *type);
 G_API void gads_adActionEnd(const char *ad, const char *type);
 G_API void gads_adDismissed(const char *ad, const char *type);
 G_API void gads_adDisplayed(const char *ad, const char *type);
+G_API void gads_adRewarded(const char *ad, const char *type, int amount);
 G_API void gads_adError(const char *ad, const char *error);
 
 #ifdef __cplusplus
