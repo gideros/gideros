@@ -65,6 +65,7 @@ public:
 	static ShaderProgram *stdBasic;
 	static ShaderProgram *stdColor;
 	static ShaderProgram *stdTexture;
+	static ShaderProgram *stdTextureAlpha;
 	static ShaderProgram *stdTextureColor;
 	static ShaderProgram *stdParticle;
 	static ShaderProgram *stdParticles;

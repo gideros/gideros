@@ -206,6 +206,7 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
   pfd.iPixelType = PFD_TYPE_RGBA;
   pfd.cColorBits = 24;
   pfd.cDepthBits = 16;
+  pfd.cStencilBits = 8;
   pfd.iLayerType = PFD_MAIN_PLANE;
 
   format = ChoosePixelFormat( *hDC, &pfd );
@@ -551,15 +552,24 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
   }
   else if (iMsg==WM_LBUTTONDOWN){
-    ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 0);
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseDown(LOWORD(lParam), HIWORD(lParam), 0,m);
     return 0;
   }
   else if (iMsg==WM_LBUTTONUP){
-    ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 0);
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseUp(LOWORD(lParam), HIWORD(lParam), 0,m);
     return 0;
   }
   else if (iMsg==WM_MOUSEMOVE && wParam & MK_LBUTTON !=0){
-    ginputp_mouseMove(LOWORD(lParam), HIWORD(lParam));
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseMove(LOWORD(lParam), HIWORD(lParam),m);
     return 0;
   }
   else if (iMsg==WM_KEYDOWN){

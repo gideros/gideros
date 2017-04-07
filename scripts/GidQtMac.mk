@@ -50,7 +50,7 @@ buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel 
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
 QSCINTILLA_LIBVER=$(word 2,$(subst ., ,$(filter libqscintilla%,$(subst /, ,$(shell otool -L $(ROOT)/ui/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio | grep libqscintilla)))))
-qt.install: buildqt qt.player
+qt.install: buildqt qt.player tools html5.tools
 	#STUDIO
 	rm -rf $(RELEASE)/Gideros\ Studio.app
 	cp -R $(ROOT)/ui/Gideros\ Studio.app $(RELEASE)
@@ -58,7 +58,10 @@ qt.install: buildqt qt.player
 	cp $(QT)/lib/libqscintilla2.$(QSCINTILLA_LIBVER).dylib $(RELEASE)/Gideros\ Studio.app/Contents/Frameworks/ 
 	install_name_tool -change libqscintilla2.$(QSCINTILLA_LIBVER).dylib @rpath/libqscintilla2.$(QSCINTILLA_LIBVER).dylib  $(RELEASE)/Gideros\ Studio.app/Contents/MacOS/Gideros\ Studio
 	cp -R $(ROOT)/ui/Resources $(RELEASE)/Gideros\ Studio.app/Contents/
-	cp -R $(ROOT)/ui/Tools $(RELEASE)/Gideros\ Studio.app/Contents/Tools	
+	install_name_tool -add_rpath @executable_path/../Frameworks $(ROOT)/ui/Tools/crunchme
+	cp -R $(ROOT)/ui/Tools $(RELEASE)/Gideros\ Studio.app/Contents/Tools
+	cp $(ROOT)/lua/src/lua $(RELEASE)/Gideros\ Studio.app/Contents/Tools
+	cp $(ROOT)/lua/src/luac $(RELEASE)/Gideros\ Studio.app/Contents/Tools
 	for t in gdrdeamon gdrbridge gdrexport; do \
 	install_name_tool -add_rpath @executable_path/../Frameworks $(ROOT)/$$t/$$t;\
 	cp $(ROOT)/$$t/$$t $(RELEASE)/Gideros\ Studio.app/Contents/Tools; done 
@@ -142,15 +145,11 @@ qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
 	cd $(ROOT)/$*; $(MAKE) 
 
 tools:
-	cd $(ROOT)/lua514u/src; gcc -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc)
-	#cd $(ROOT)/lua514u/src; gcc -shared -o lua51.dll -Wl,--out-implib,lua51.a $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
-			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lgc\
-			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
-	#cd $(ROOT)/lua514u/src; gcc -o lua lua.c lua51.a
-	cd $(ROOT)/lua514u/src; gcc -o lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
-			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
+			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib lutf8lib lint64)
 
 bundle:
 	rm -rf $(RELEASE).Tmp
@@ -162,6 +161,8 @@ bundle:
 	mv $(RELEASE).Tmp/* $(RELEASE)
 	rm -rf $(RELEASE).Tmp
 	cd $(RELEASE).Final; if [ -f ../$(notdir $(RELEASE))/BuildWin.zip ]; then unzip -o ../$(notdir $(RELEASE))/BuildWin.zip; fi
+	#Use our local version of that file due to line endings change
+	cp $(ROOT)/ui/Templates/AndroidStudio/Android\ Template/gradlew $(RELEASE).Final/Templates/AndroidStudio/Android\ Template
 	cd plugins; git archive master | tar -x -C ../$(RELEASE).Final/All\ Plugins
 	mv $(RELEASE).Final/Templates $(RELEASE).Final/Gideros\ Studio.app/Contents
 	cp -r $(RELEASE).Final/Resources $(RELEASE).Final/Gideros\ Studio.app/Contents
@@ -175,5 +176,6 @@ bundle.installer: bundle
 	mkdir  -p $(ROOT)/ROOTMAC/Applications
 	mv $(RELEASE).Final $(ROOT)/ROOTMAC/Applications/Gideros\ Studio
 	rm -f $(ROOT)/Gideros.pkg
-	pkgbuild --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros --component-plist $(ROOT)/Release/pkg.plist $(ROOT)/Gideros.pkg
+	pkgbuild --root $(ROOT)/ROOTMAC --identifier com.giderosmobile.gideros --version $(GIDEROS_VERSION) --component-plist $(ROOT)/Release/pkg.plist $(ROOT)/Gideros-App.pkg
+	security -v unlock-keychain -p $(OSX_SIGNING_PASSWORD) "$$HOME/Library/Keychains/login.keychain" && productbuild --distribution Release/GiderosDist.plist --package-path $(ROOT)/Gideros-App.pkg --sign $(OSX_SIGNING_IDENTITY) $(ROOT)/Gideros.pkg
 	rm -rf $(ROOT)/ROOTMAC

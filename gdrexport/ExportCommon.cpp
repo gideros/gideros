@@ -9,6 +9,7 @@
 #include "Utilities.h"
 #include <bytebuffer.h>
 #include "ExportXml.h"
+#include "ExportLua.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -64,7 +65,7 @@ void ExportCommon::copyTemplate(QString templatePath, QString templateDest,
 }
 
 void ExportCommon::resizeImage(QImage *image, int width, int height,
-        QString output, int quality,bool withAlpha, QColor fill, int mode) {
+		QString output, int quality, bool withAlpha, QColor fill, int mode) {
 	int iwidth = image->width(); //image width
 	int iheight = image->height(); //image height
 	int rwidth = width; //resampled width
@@ -75,63 +76,63 @@ void ExportCommon::resizeImage(QImage *image, int width, int height,
 	int dst_x = 0;
 	int dst_y = 0;
 	bool redraw = false;
-    int sx = 0;
-    int sy = 0;
-    int sw = -1;
-    int sh = -1;
+	int sx = 0;
+	int sy = 0;
+	int sw = -1;
+	int sh = -1;
 
-    if (mode == 0){  //show all
-        //use smallest
-        if (k_h < k_w) {
-            rwidth = round((iwidth * height) / iheight);
-        } else {
-            rheight = round((iheight * width) / iwidth);
-        }
+	if (mode == 0) {  //show all
+		//use smallest
+		if (k_h < k_w) {
+			rwidth = round((iwidth * height) / iheight);
+		} else {
+			rheight = round((iheight * width) / iwidth);
+		}
 
-        //new width is bigger than existing
-        if (width > rwidth) {
-            dst_x = (width - rwidth) / 2;
-            redraw = true;
-        }
+		//new width is bigger than existing
+		if (width > rwidth) {
+			dst_x = (width - rwidth) / 2;
+			redraw = true;
+		}
 
-        //new height is bigger than existing
-        if (height > rheight) {
-            dst_y = (height - rheight) / 2;
-            redraw = true;
-        }
-    }else if(mode == 1){  //crop
-        if (k_h < k_w) {
-            rheight = round((iheight * width) / iwidth);
-        } else {
-            rwidth = round((iwidth * height) / iheight);
-        }
+		//new height is bigger than existing
+		if (height > rheight) {
+			dst_y = (height - rheight) / 2;
+			redraw = true;
+		}
+	} else if (mode == 1) {  //crop
+		if (k_h < k_w) {
+			rheight = round((iheight * width) / iwidth);
+		} else {
+			rwidth = round((iwidth * height) / iheight);
+		}
 
-        if (width < rwidth) {
-            sx = (rwidth - width) / 2;
-            sw = width;
-            redraw = true;
-        }
+		if (width < rwidth) {
+			sx = (rwidth - width) / 2;
+			sw = width;
+			redraw = true;
+		}
 
-        if (height < rheight) {
-            sy = (rheight - height) / 2;
-            sh = height;
-            redraw = true;
-        }
-    }
+		if (height < rheight) {
+			sy = (rheight - height) / 2;
+			sh = height;
+			redraw = true;
+		}
+	}
 
-	QImage xform=image->scaled(rwidth, rheight, Qt::KeepAspectRatio,
+	QImage xform = image->scaled(rwidth, rheight, Qt::KeepAspectRatio,
 			Qt::SmoothTransformation);
 	if (redraw)  //(dst_x || dst_y)
 	{
-		QImage larger(width,height,QImage::Format_ARGB32);
+		QImage larger(width, height, QImage::Format_ARGB32);
 		larger.fill(fill);
 		QPainter painter(&larger);
-        painter.drawImage(dst_x,dst_y, xform, sx, sy, sw, sh);
+		painter.drawImage(dst_x, dst_y, xform, sx, sy, sw, sh);
 		painter.end();
-		xform=larger;
+		xform = larger;
 	}
 	if (!withAlpha)
-		xform=xform.convertToFormat(QImage::Format_RGB888);
+		xform = xform.convertToFormat(QImage::Format_RGB888);
 	xform.save(output, "png", -1); //Use default compression for PNG, not quality
 }
 
@@ -217,11 +218,13 @@ bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height,
 	if (ctx->splash_h_image->isNull())
 		return false;
 
-    int mode = ctx->properties.splashScaleMode;
-    exportInfo("Generating splash horizontal (%dx%d) scale mode (%d)\n", width, height, mode);
+	int mode = ctx->properties.splashScaleMode;
+	exportInfo("Generating splash horizontal (%dx%d) scale mode (%d)\n", width,
+			height, mode);
 
 	resizeImage(ctx->splash_h_image, width, height,
-            ctx->outputDir.absoluteFilePath(output), -1, withAlpha,QColor(ctx->properties.backgroundColor), mode);
+			ctx->outputDir.absoluteFilePath(output), -1, withAlpha,
+			QColor(ctx->properties.backgroundColor), mode);
 	return true;
 }
 
@@ -248,17 +251,16 @@ bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
 	}
 	if (ctx->splash_v_image->isNull())
 		return false;
-    int mode = ctx->properties.splashScaleMode;
-    exportInfo("Generating splash vertical (%dx%d) scale mode (%d)\n", width, height, mode);
+	int mode = ctx->properties.splashScaleMode;
+	exportInfo("Generating splash vertical (%dx%d) scale mode (%d)\n", width,
+			height, mode);
 	resizeImage(ctx->splash_v_image, width, height,
-            ctx->outputDir.absoluteFilePath(output), -1, withAlpha,QColor(ctx->properties.backgroundColor), mode);
+			ctx->outputDir.absoluteFilePath(output), -1, withAlpha,
+			QColor(ctx->properties.backgroundColor), mode);
 	return true;
 }
 
 void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
-	QStringList allluafiles;
-	QStringList allluafiles_abs;
-
 	if ((ctx->fileQueue.size() == 0) || (ctx->player)) //No assets -> Player
 		return;
 
@@ -270,6 +272,8 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	ctx->allfiles_abs.clear();
 	ctx->luafiles.clear();
 	ctx->luafiles_abs.clear();
+
+	QStringList luafiles_src;
 
 	QDir path(QFileInfo(ctx->projectFileName_).path());
 
@@ -292,57 +296,98 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			isJet = true;
 		}
 
-		ctx->allfiles.push_back(s1);
-		ctx->allfiles_abs.push_back(dst);
-
 		QFile::remove(dst);
 		bool copied = false;
 
 		if (QFileInfo(src).suffix().toLower() == "lua") {
-			allluafiles.push_back(s1);
-			allluafiles_abs.push_back(dst);
-
 			if (std::find(ctx->topologicalSort.begin(),
 					ctx->topologicalSort.end(), std::make_pair(s2, true))
 					== ctx->topologicalSort.end()) {
 				ctx->luafiles.push_back(s1);
 				ctx->luafiles_abs.push_back(dst);
-			}
-			// compile lua files (with luac)
-			if (compileLua) {
-				QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
+				luafiles_src.push_back(src);
+				if (!compileLua)
+				{
+					ctx->allfiles.push_back(s1);
+					ctx->allfiles_abs.push_back(dst);
+				}
+				else
+					copied=true;
+			} else // compile independant lua files (with luac)
+			{
+				ctx->allfiles.push_back(s1);
+				ctx->allfiles_abs.push_back(dst);
+				if (compileLua) {
+					QDir toolsDir = QDir(
+							QCoreApplication::applicationDirPath());
 #if defined(Q_OS_WIN)
-				QString luac = toolsDir.filePath("luac.exe");
+					QString luac = toolsDir.filePath("luac.exe");
 #else
-				QString luac = toolsDir.filePath("luac");
+					QString luac = toolsDir.filePath("luac");
 #endif
-				QDir old = QDir::current();
-				QDir::setCurrent(ctx->outputDir.path());
-				QString dfile = "\"" + dst + "\"";
-				QString sfile = "\"" + rdst + "\"";
-				QFile::copy(src, rdst);
-				QProcess::execute(quote(luac) + " -o " + dfile + " " + sfile);
-				if (isJet)
-					QFile::remove(rdst);
-				copied = true;
-				QDir::setCurrent(old.path());
+					QDir old = QDir::current();
+					QDir::setCurrent(ctx->outputDir.path());
+					QString dfile = "\"" + dst + "\"";
+					QString sfile = "\"" + rdst + "\"";
+					QFile::copy(src, rdst);
+					QProcess::execute(
+							quote(luac) + " -o " + dfile + " " + sfile);
+					if (isJet)
+						QFile::remove(rdst);
+					QDir::setCurrent(old.path());
+				} else {
+				}
 			}
+		}
+		else
+		{
+			ctx->allfiles.push_back(s1);
+			ctx->allfiles_abs.push_back(dst);
 		}
 
 		if (!copied)
 			QFile::copy(src, dst);
 	}
 
-#if 0
-	// compile lua files
-	if (false)
-	{
-		compileThread_ = new CompileThread(ctx->luafiles_abs, false, "", QString(), this);
-		compileThread_->start();
-		compileThread_->wait();
-		delete compileThread_;
-	}
+	// compile building lua files
+	if (compileLua) {
+		QDir toolsDir = QDir(QCoreApplication::applicationDirPath());
+#if defined(Q_OS_WIN)
+		QString luac = toolsDir.filePath("luac.exe");
+#else
+		QString luac = toolsDir.filePath("luac");
 #endif
+		QDir old = QDir::current();
+		QDir::setCurrent(ctx->outputDir.path());
+
+		QString dfile = "";
+		QString difile = "";
+		QString sfile = "";
+		for (int i = 0; i < ctx->luafiles_abs.size(); ++i) {
+			dfile = ctx->luafiles_abs[i];
+			difile=ctx->luafiles[i];
+			QString rdst = QDir::cleanPath(
+					ctx->outputDir.relativeFilePath(difile));
+			sfile = sfile + " \"" + rdst + "\"";
+			QFile::copy(luafiles_src[i], rdst);
+		}
+		QFileInfo di(dfile);
+		QProcess::execute(quote(luac) + " -o \"" + dfile + "\" " + sfile);
+		for (int i = 0; i < ctx->luafiles_abs.size(); ++i) {
+			QString rdst = QDir::cleanPath(
+					ctx->outputDir.relativeFilePath(ctx->luafiles[i]));
+			QFileInfo ri(rdst);
+			if (ri != di)
+				QFile::remove(rdst);
+		}
+		ctx->luafiles.clear();
+		ctx->luafiles_abs.clear();
+		ctx->luafiles.push_back(difile);
+		ctx->luafiles_abs.push_back(dfile);
+		ctx->allfiles.push_back(difile);
+		ctx->allfiles_abs.push_back(dfile);
+		QDir::setCurrent(old.path());
+	}
 
 	// encrypt lua, png, jpg, jpeg and wav files
 	if (true) {
@@ -351,17 +396,21 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		for (int i = 0; i < ctx->allfiles_abs.size(); ++i) {
 			ExportCommon::progressStep(
 					ctx->allfiles_abs[i].toUtf8().constData());
+			if (ctx->noEncryption.count(ctx->allfiles[i]))
+				continue; //File marked as non encryotable
 			QString filename = ctx->allfiles_abs[i];
 			QString ext = QFileInfo(ctx->allfiles[i]).suffix().toLower();
+			if (ctx->noEncryptionExt.count(ext))
+				continue; //Extension marked as non encryptable
 			bool encrypt =
 					(ext == "lua") ? ctx->encryptCode : ctx->encryptAssets;
 			if (!encrypt)
 				continue;
-			exportInfo("Encrypting %s [%s]\n",filename.toUtf8().constData(),
+			exportInfo("Encrypting %s [%s]\n", filename.toUtf8().constData(),
 					ext.toUtf8().constData());
-			if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg"
+			/*if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg"
 					&& ext != "wav")
-				continue;
+				continue;*/
 
 			QByteArray encryptionKey =
 					(ext == "lua") ? ctx->codeKey : ctx->assetsKey;
@@ -379,6 +428,16 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			for (int j = 32; j < data.size(); ++j)
 				data[j] = data[j]
 						^ encryptionKey[((j * 13) + ((j / ks) * 31)) % ks];
+
+			//Add encryption marker
+			unsigned char sig[4]={'G','x',0xE7,0};
+			unsigned long dlength=data.size();
+			sig[3]=(ext == "lua") ? 1:2;
+	  		sig[0]^=(dlength>>24)&0xFF;
+	    	sig[1]^=(dlength>>16)&0xFF;
+	    	sig[2]^=(dlength>>8)&0xFF;
+	    	sig[3]^=(dlength>>0)&0xFF;
+			data.append((char *)sig,4);
 
 			QFile fos(filename);
 			if (!fos.open(QIODevice::WriteOnly)) {
@@ -487,7 +546,10 @@ void ExportCommon::exportPropertiesBin(ExportContext *ctx) {
 
 bool ExportCommon::applyPlugins(ExportContext *ctx) {
 	if (ctx->assetsOnly) //Don't export plugins on asset only
+	{
+		ExportLUA_DonePlugins(ctx);
 		return true;
+	}
 	exportInfo("Applying plugins\n");
 	QMap < QString, QString > allplugins = ExportXml::availablePlugins();
 	for (QSet<ProjectProperties::Plugin>::const_iterator it =
@@ -498,6 +560,7 @@ bool ExportCommon::applyPlugins(ExportContext *ctx) {
 			if (!ExportXml::exportXml(xml, true, ctx))
 				return false;
 	}
+	ExportLUA_DonePlugins(ctx);
 	return true;
 }
 
@@ -509,45 +572,43 @@ bool ExportCommon::download(ExportContext *ctx, QString url, QString to) {
 	exportInfo("Checking %s\n", url.toStdString().c_str());
 	QUrl imageUrl(url);
 
-    quint64 size=0;
-    {
-        FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl,true);
-        
-        QEventLoop loop;
-        loop.connect(m_pImgCtrl, SIGNAL(downloaded()), &loop, SLOT(quit()));
-        loop.exec();
-        
-        size= m_pImgCtrl->fileSize();
-        
-        delete m_pImgCtrl;
-    }
-    
-	if (file.exists())
+	quint64 size = 0;
 	{
-		if (size==0)
-		{
-			exportInfo("Couldn't check file size for %s, assuming valid\n", url.toStdString().c_str());
+		FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl, true);
+
+		QEventLoop loop;
+		loop.connect(m_pImgCtrl, SIGNAL(downloaded()), &loop, SLOT(quit()));
+		loop.exec();
+
+		size = m_pImgCtrl->fileSize();
+
+		delete m_pImgCtrl;
+	}
+
+	if (file.exists()) {
+		if (size == 0) {
+			exportInfo("Couldn't check file size for %s, assuming valid\n",
+					url.toStdString().c_str());
 			return true; //Same file as far as we can tell
 		}
 
-		if (size==file.size()) {
+		if (size == file.size()) {
 			exportInfo("File %s already in cache\n", url.toStdString().c_str());
 			return true; //Same file as far as we can tell
 		}
+	} else {
+		if (size == 0) {
+			exportError("Failed to determine file size for %s, aborting\n",
+					url.toStdString().c_str());
+			return false;
+		}
 	}
-    else
-    {
-        if (size==0)
-        {
-            exportError("Failed to determine file size for %s, aborting\n", url.toStdString().c_str());
-            return false;
-        }
-    }
 
 	if (file.open(QIODevice::WriteOnly)) {
-		exportInfo("Downloading %s (%lld bytes)\n", url.toStdString().c_str(),size);
+		exportInfo("Downloading %s (%lld bytes)\n", url.toStdString().c_str(),
+				size);
 
-		FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl,false,size);
+		FileDownloader *m_pImgCtrl = new FileDownloader(imageUrl, false, size);
 
 		QEventLoop loop;
 		loop.connect(m_pImgCtrl, SIGNAL(downloaded()), &loop, SLOT(quit()));
@@ -567,103 +628,102 @@ bool ExportCommon::download(ExportContext *ctx, QString url, QString to) {
 	return false;
 }
 
-
 #define GZIP_CHUNK_SIZE 32 * 1024
 
-static bool gzInflate(QByteArray input, QByteArray &output)
-{
-    // Prepare output
-    output.clear();
+static bool gzInflate(QByteArray input, QByteArray &output) {
+	// Prepare output
+	output.clear();
 
-    // Is there something to do?
-    if(input.length() > 0)
-    {
-        // Prepare inflater status
-        z_stream strm;
-        strm.zalloc = Z_NULL;
-        strm.zfree = Z_NULL;
-        strm.opaque = Z_NULL;
-        strm.avail_in = 0;
-        strm.next_in = Z_NULL;
+	// Is there something to do?
+	if (input.length() > 0) {
+		// Prepare inflater status
+		z_stream strm;
+		strm.zalloc = Z_NULL;
+		strm.zfree = Z_NULL;
+		strm.opaque = Z_NULL;
+		strm.avail_in = 0;
+		strm.next_in = Z_NULL;
 
-        // Initialize inflater
-        int ret = inflateInit2(&strm, -15);
+		// Initialize inflater
+		int ret = inflateInit2(&strm, -15);
 
-        if (ret != Z_OK)
-            return(false);
+		if (ret != Z_OK)
+			return (false);
 
-        // Extract pointer to input data
-        char *input_data = input.data();
-        int input_data_left = input.length();
+		// Extract pointer to input data
+		char *input_data = input.data();
+		int input_data_left = input.length();
 
-        // Decompress data until available
-        do {
-            // Determine current chunk size
-            int chunk_size = qMin(GZIP_CHUNK_SIZE, input_data_left);
+		// Decompress data until available
+		do {
+			// Determine current chunk size
+			int chunk_size = qMin(GZIP_CHUNK_SIZE, input_data_left);
 
-            // Check for termination
-            if(chunk_size <= 0)
-                break;
+			// Check for termination
+			if (chunk_size <= 0)
+				break;
 
-            // Set inflater references
-            strm.next_in = (unsigned char*)input_data;
-            strm.avail_in = chunk_size;
+			// Set inflater references
+			strm.next_in = (unsigned char*) input_data;
+			strm.avail_in = chunk_size;
 
-            // Update interval variables
-            input_data += chunk_size;
-            input_data_left -= chunk_size;
+			// Update interval variables
+			input_data += chunk_size;
+			input_data_left -= chunk_size;
 
-            // Inflate chunk and cumulate output
-            do {
+			// Inflate chunk and cumulate output
+			do {
 
-                // Declare vars
-                char out[GZIP_CHUNK_SIZE];
+				// Declare vars
+				char out[GZIP_CHUNK_SIZE];
 
-                // Set inflater references
-                strm.next_out = (unsigned char*)out;
-                strm.avail_out = GZIP_CHUNK_SIZE;
+				// Set inflater references
+				strm.next_out = (unsigned char*) out;
+				strm.avail_out = GZIP_CHUNK_SIZE;
 
-                // Try to inflate chunk
-                ret = inflate(&strm, Z_NO_FLUSH);
+				// Try to inflate chunk
+				ret = inflate(&strm, Z_NO_FLUSH);
 
-                switch (ret) {
-                case Z_NEED_DICT:
-                    ret = Z_DATA_ERROR;
-                case Z_DATA_ERROR:
-                case Z_MEM_ERROR:
-                case Z_STREAM_ERROR:
-                    // Clean-up
-                    inflateEnd(&strm);
+				switch (ret) {
+				case Z_NEED_DICT:
+					ret = Z_DATA_ERROR;
+				case Z_DATA_ERROR:
+				case Z_MEM_ERROR:
+				case Z_STREAM_ERROR:
+					// Clean-up
+					inflateEnd(&strm);
 
-                    // Return
-                    return(false);
-                }
+					// Return
+					return (false);
+				}
 
-                // Determine decompressed size
-                int have = (GZIP_CHUNK_SIZE - strm.avail_out);
+				// Determine decompressed size
+				int have = (GZIP_CHUNK_SIZE - strm.avail_out);
 
-                // Cumulate result
-                if(have > 0)
-                    output.append((char*)out, have);
+				// Cumulate result
+				if (have > 0)
+					output.append((char*) out, have);
 
-            } while (strm.avail_out == 0);
+			} while (strm.avail_out == 0);
 
-        } while (ret != Z_STREAM_END);
+		} while (ret != Z_STREAM_END);
 
-        // Clean-up
-        inflateEnd(&strm);
+		// Clean-up
+		inflateEnd(&strm);
 
-        // Return
-        return (ret == Z_STREAM_END);
-    }
-    else
-        return(true);
+		// Return
+		return (ret == Z_STREAM_END);
+	} else
+		return (true);
 }
 
 #define PACKED __attribute__((packed))
 bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
-	QDir toPath = QFileInfo(
-			QDir::cleanPath(ctx->outputDir.absoluteFilePath(dest))).dir();
+	QDir toPath(ctx->outputDir);
+	toPath.mkpath(dest);
+	toPath.cd(dest);
+	exportInfo("Unzip %s to %s\n", file.toStdString().c_str(),
+			toPath.absolutePath().toStdString().c_str());
 	QFile zfile(file);
 	if (!zfile.open(QIODevice::ReadOnly)) {
 		exportError("Can't open file %s\n", file.toStdString().c_str());
@@ -671,8 +731,9 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 	}
 
 	while (true) {
+#pragma pack(push,1)
 		struct _ZipHdr {
-			quint32 Signature;//	local file header signature     4 bytes  (0x04034b50)
+			quint32 Signature; //	local file header signature     4 bytes  (0x04034b50)
 #define ZIPHDR_SIG 0x04034b50
 			quint16 Version;	//	version needed to extract       2 bytes
 			quint16 Flags;	//	general purpose bit flag        2 bytes
@@ -683,8 +744,9 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 			quint32 CompSize;	//	compressed size                 4 bytes
 			quint32 OrigSize;	//	uncompressed size               4 bytes
 			quint16 NameLen;	//  file name length                2 bytes
-			quint16 ExtraLen;//  extra field length              2 bytes
+			quint16 ExtraLen;	//  extra field length              2 bytes
 		}PACKED Hdr;
+#pragma pack(pop)
 		if (zfile.read((char *) &Hdr, sizeof(Hdr)) != sizeof(Hdr))
 			break;
 		if (_letohl(Hdr.Signature) != ZIPHDR_SIG)
@@ -707,13 +769,13 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 		QByteArray fname = zfile.read(_letohs(Hdr.NameLen));
 		QString lname = QString(fname);
 		zfile.read(_letohs(Hdr.ExtraLen));
-		exportInfo("Extracting %s\n",lname.toStdString().c_str()); 
+		exportInfo("Extracting %s\n", lname.toStdString().c_str());
 		QByteArray fcont = zfile.read(
-				Hdr.Compression ? _letohl(Hdr.CompSize) : _letohl(Hdr.OrigSize));
+				Hdr.Compression ?
+						_letohl(Hdr.CompSize) : _letohl(Hdr.OrigSize));
 		if (Hdr.Compression) {
 			QByteArray decomp;
-			if (!gzInflate(fcont,decomp))
-			{
+			if (!gzInflate(fcont, decomp)) {
 				exportError("Failed to uncompress %s\n",
 						lname.toStdString().c_str());
 				break;
@@ -721,15 +783,13 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 			fcont = decomp;
 		}
 		if (lname.endsWith("/"))
-			ctx->outputDir.mkpath(toPath.absoluteFilePath(lname));
+			toPath.mkpath(lname);
 		else {
 			QFile ofile(toPath.absoluteFilePath(lname));
-			if (ofile.open(QIODevice::WriteOnly))
-			{
+			if (ofile.open(QIODevice::WriteOnly)) {
 				ofile.write(fcont);
 				ofile.close();
-			}
-			else {
+			} else {
 				exportError("Can't open file %s\n",
 						lname.toStdString().c_str());
 				break;
@@ -771,7 +831,7 @@ void ExportCommon::progressStep(const char *title) {
 
 char *ExportCommon::askString(const char *title, const char *question,
 		const char *def, bool key) {
-	exportInfo("?:?%c%s|%s|%s\n", key?'K':'S',title, question, def);
+	exportInfo("?:?%c%s|%s|%s\n", key ? 'K' : 'S', title, question, def);
 	char str[512];
 	fgets(str, 511, stdin);
 	int i = strlen(str) - 1;

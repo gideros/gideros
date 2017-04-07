@@ -20,6 +20,11 @@
  <property name="adsFwHeyzap" type="boolean" title="Enable Heyzap support (Android,iOS)"/>
  <property name="adsFwIad" type="boolean" title="Enable iAd support (iOS)"/>
  <property name="adsFwInmobi" type="boolean" title="Enable Inmobi support (Android,iOS)"/>
+ -->
+ <property name="adsFwKiip" type="boolean" title="Enable Kiip support (Android,iOS)"/>
+<property name="adsFwKiipKey" type="string" title="Kiip Key Android" description="Kiip key for your application" default="" />
+<property name="adsFwKiipKeyIos" type="string" title="Kiip Key iOS" description="Kiip key for your application" default="" />
+ <!--
  <property name="adsFwMillenial" type="boolean" title="Enable Millenial support (Android)"/>
  <property name="adsFwMopub" type="boolean" title="Enable Mopub support (Android,iOS)"/>
  <property name="adsFwRevmob" type="boolean" title="Enable Revmob support (Android,iOS)"/>
@@ -88,6 +93,53 @@
 	       	</replacelist>	
 	 	</template>
 	</if>  
+    <if condition="[[[plugin.adsFwKiip]]]">
+    	<template name="Kiip" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsKiip.java">
+         <replacelist wildcards="AdsKiip.java">
+            <replace orig="GIDEROS_KIIP_APP_KEY" by="[[[plugin.adsFwKiipKey]]]"/>
+         </replacelist>
+    	</template>
+    	<set key="local.adsVer" value="2.3.1" />
+    	<set key="local.adsJarVer" value="Kiip-Android-SDK-v[[[local.adsVer]]].zip" />
+    	<download source="http://apps.giderosmobile.com/ext/android/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+    	<mkdir>_tmpKiip</mkdir>
+    	<cd>_tmpKiip</cd>
+    	<unzip source="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dest="" />
+    	<cd>..</cd>
+    	<template name="Kiip" path="_tmpKiip/KiipSDK/src/main/res" dest="app/src/main/res" />
+    	<cp src="_tmpKiip/KiipSDK/libs/KiipSDK.jar" dst="app/libs/KiipSDK.jar" />
+    	<rmdir>_tmpKiip</rmdir>
+   		<template name="Activity" path="">
+         <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-ACTIVITY-IMPORT//" by="&#10;import android.support.v4.app.FragmentActivity;"/>
+            <replace orig="[[[project.namews]]]Activity extends Activity" by="[[[project.namews]]]Activity extends FragmentActivity"/>
+         </replacelist>
+    	</template>
+    	<template name="Kiip" path="app" dest="app">
+			<replacelist wildcards="AndroidManifest.xml;build.gradle">
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+    compile 'com.android.support:support-v4:[[[export.androidSdk]]]+'
+    compile files('libs/KiipSDK.jar')
+					</by>
+				</append>
+            	<append>
+            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            		<by><![CDATA[
+    	            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>]]></by>
+    	        </append>
+            	<append>
+            		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+            		<by><![CDATA[
+        <meta-data android:name="me.kiip.sdk.AppKey" android:value="[[[plugin.adsFwKiipKey]]]"/>
+        <provider android:name="me.kiip.sdk.KiipSDKProvider"
+            android:authorities="me.kiip.sdk.KiipSDKProvider[[[plugin.adsFwKiipKey]]]"
+            android:exported="true" />]]></by>    	        
+    	        </append>
+	       	</replacelist>	
+	 	</template>
+	</if>  
     <if condition="[[[plugin.adsFwApplovin]]]">
     	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.java" />
     	<set key="local.adsJarVer" value="applovin-sdk-6.4.0.jar" />
@@ -150,7 +202,7 @@
         	</replacelist>
     	</template>
     </if>	  
-    <if condition="[[[plugin.adsFwAdMob]]]">
+    <if condition="[[[plugin.adsFwAdmob]]]">
     	<template name="AdMob" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsAdmob.java" />
     	<template name="AndroidManifest" path="">
         	<replacelist wildcards="AndroidManifest.xml;build.gradle;strings.xml">
@@ -176,8 +228,8 @@
             	<prepend>
             		<orig><![CDATA[</resources>]]></orig>
             		<by><![CDATA[    <!-- AdMob ad unit IDs -->
-    <string name="banner_home_footer">[[[plugin.adsFwAdmodClient]]]/[[[plugin.adsFwAdmobBanner]]]</string>
-    <string name="interstitial_full_screen">[[[plugin.adsFwAdmodClient]]]/[[[plugin.adsFwAdmobInterstitial]]]</string>            		
+    <string name="banner_home_footer">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobBanner]]]</string>
+    <string name="interstitial_full_screen">[[[plugin.adsFwAdmobClient]]]/[[[plugin.adsFwAdmobInterstitial]]]</string>            		
             		]]></by>
     	        </prepend>   
         	</replacelist>
@@ -219,17 +271,85 @@ iOSProject.addSources({
 iOSProject.addFrameworkPath(Export.getProperty("project.namews").."/Plugins/Ads/frameworks")
 iOSProject.commit()
 	]]></lua>
-       <if condition="[[[plugin.adsFwUnity]]]">
-    	<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.*" exclude="*.framework" />
-    	<download source="http://apps.giderosmobile.com/ext/ios/UnityAds.framework-2.0.5.zip" dest="[[[sys.cacheDir]]]/UnityAds.framework.zip" />
-    	<unzip source="[[[sys.cacheDir]]]/UnityAds.framework.zip" dest="[[[local.adsfwd]]]/UnityAds.framework" />
-	<lua><![CDATA[
+<if condition="[[[plugin.adsFwUnity]]]">
+<template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.*" exclude="*.framework" />
+<download source="http://apps.giderosmobile.com/ext/ios/UnityAds.framework-2.0.5.zip" dest="[[[sys.cacheDir]]]/UnityAds.framework.zip" />
+<unzip source="[[[sys.cacheDir]]]/UnityAds.framework.zip" dest="[[[local.adsfwd]]]/UnityAds.framework" />
+<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.addSources({
- "AdsUnity.m","AdsUnity.h","UnityAds.framework"
+"AdsUnity.m","AdsUnity.h","UnityAds.framework"
 },"GroupAdsFrameworks","ios")
 iOSProject.commit()
-	]]></lua>
-	</if>    
+]]></lua>
+</if>
+<if condition="[[[plugin.adsFwKiip]]]">
+<template name="Kiip" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsKiip.*" exclude="*.framework">
+<replacelist wildcards="AdsKiip.m">
+<replace orig="GIDEROS_KIIP_APP_KEY" by="[[[plugin.adsFwKiipKeyIos]]]"/>
+</replacelist>
+</template>
+<set key="local.adsVer" value="2.3.0" />
+<set key="local.adsJarVer" value="Kiip-iOS-SDK-v[[[local.adsVer]]].zip" />
+<download source="http://apps.giderosmobile.com/ext/ios/[[[local.adsJarVer]]]" dest="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" />
+<mkdir>KiipSDK</mkdir>
+<unzip source="[[[sys.cacheDir]]]/[[[local.adsJarVer]]]" dest="KiipSDK" />
+<rmdir>[[[local.adsfwd]]]/KiipSDK.framework</rmdir>
+<mv src="KiipSDK/KiipSDK.framework" dst="[[[local.adsfwd]]]/KiipSDK.framework" />"
+<rmdir>[[[local.adsfwd]]]/KiipSDKResources.bundle</rmdir>
+<mv src="KiipSDK/KiipSDKResources.bundle" dst="[[[local.adsfwd]]]/KiipSDKResources.bundle" />"
+<rmdir>KiipSDK</rmdir>
+<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addSources({
+"AdsKiip.m","AdsKiip.h","KiipSDK.framework","KiipSDKResources.bundle"
+},"GroupAdsFrameworks","ios")
+local sysFW={ "AdSupport","PassKit","MediaPlayer","SystemConfiguration","CoreTelephony" }
+for _,v in ipairs(sysFW) do
+    iOSProject.addFramework(v..".framework","ios","System/Library/Frameworks/"..v..".framework","$SDKROOT")
+end
+iOSProject.commit()
+]]></lua>
+</if>
+ </target>
+ <target name="Html5">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="gideros.html">
+            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;Ads.js&quot;,"/>
+            <append orig="/*GIDEROS_JS_PLUGIN*/" by="&quot;AdsAdSense.js&quot;,"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="WinRT">
+    <template name="sources" path="[[[sys.pluginDir]]]/source/WinRT"  dest="giderosgame/giderosgame.Shared/Plugins"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems;*.vcxproj">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\adsbinder.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.h" />]]></by>
+            </append>
+        <append>
+            <orig><![CDATA[<!--SDK-REFERENCE-WIN-->]]></orig>
+            <by><![CDATA[
+    <SDKReference Include="Microsoft.AdMediatorWindows81, Version=1.0" />]]></by>
+         </append>
+        <append>
+            <orig><![CDATA[<!--SDK-REFERENCE-WINPHONE-->]]></orig>
+            <by><![CDATA[
+        <SDKReference Include="Microsoft.AdMediator81, Version=1.0" />]]></by>
+         </append>
+        </replacelist>
+    </template>
  </target>
 </plugin>

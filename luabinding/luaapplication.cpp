@@ -552,6 +552,17 @@ static int bindAll(lua_State* L)
     lua_pushinteger(L, GINPUT_MIDDLE_BUTTON);
     lua_setfield(L, -2, "MOUSE_MIDDLE");
 
+    lua_pushinteger(L, GINPUT_NO_MODIFIER);
+    lua_setfield(L, -2, "MODIFIER_NONE");
+    lua_pushinteger(L, GINPUT_SHIFT_MODIFIER);
+    lua_setfield(L, -2, "MODIFIER_SHIFT");
+    lua_pushinteger(L, GINPUT_CTRL_MODIFIER);
+    lua_setfield(L, -2, "MODIFIER_CTRL");
+    lua_pushinteger(L, GINPUT_ALT_MODIFIER);
+    lua_setfield(L, -2, "MODIFIER_ALT");
+    lua_pushinteger(L, GINPUT_META_MODIFIER);
+    lua_setfield(L, -2, "MODIFIER_META");
+
 	lua_setglobal(L, "KeyCode");
 
 
@@ -616,27 +627,27 @@ void LuaApplication::callback(int type, void *event)
     if (type == GINPUT_MOUSE_DOWN_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseDown(event2->x, event2->y, event2->button);
+        application_->mouseDown(event2->x, event2->y, event2->button, event2->modifiers);
     }
     else if (type == GINPUT_MOUSE_MOVE_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseMove(event2->x, event2->y, event2->button);
+        application_->mouseMove(event2->x, event2->y, event2->button, event2->modifiers);
     }
     else if (type == GINPUT_MOUSE_HOVER_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseHover(event2->x, event2->y, event2->button);
+        application_->mouseHover(event2->x, event2->y, event2->button, event2->modifiers);
     }
     else if (type == GINPUT_MOUSE_UP_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseUp(event2->x, event2->y, event2->button);
+        application_->mouseUp(event2->x, event2->y, event2->button, event2->modifiers);
     }
     else if (type == GINPUT_MOUSE_WHEEL_EVENT)
     {
         ginput_MouseEvent *event2 = (ginput_MouseEvent*)event;
-        application_->mouseWheel(event2->x, event2->y, event2->wheel);
+        application_->mouseWheel(event2->x, event2->y, event2->wheel, event2->modifiers);
     }
     else if (type == GINPUT_KEY_DOWN_EVENT)
     {

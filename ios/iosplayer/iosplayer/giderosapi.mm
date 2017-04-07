@@ -100,11 +100,6 @@
 
 @end
 
-@interface LuaException : NSException
-@end
-@implementation LuaException
-@end
-
 
 extern "C" {
 void g_setFps(int);
@@ -1021,7 +1016,7 @@ void ApplicationManager::luaError(const char *error)
 	}
 	else
 	{
-        @throw [[LuaException alloc] initWithName:@"Lua" reason:[NSString stringWithUTF8String:error] userInfo:nil];
+        [view_ reportLuaError:[NSString stringWithUTF8String:error]];
 		//g_exit();
 	}
 }

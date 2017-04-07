@@ -33,6 +33,10 @@ int RenderTargetBinder::create(lua_State *L)
     bool smoothing = lua_toboolean(L, 3);
     bool repeat = lua_toboolean(L, 4);
 
+	//Ensure requested size is never negative
+	if (width <= 0) width = 0;
+	if (height <= 0) height = 0;
+
     binder.pushInstance("RenderTarget", new GRenderTarget(application->getApplication(), width, height, smoothing ? eLinear : eNearest, repeat ? eRepeat : eClamp));
 
     return 1;

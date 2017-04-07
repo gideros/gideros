@@ -46,12 +46,15 @@
     self = [super init];
     if ( self )
     {
+    videoTextureCache=NULL;
     EAGLContext *context=[EAGLContext currentContext];
     CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge CVEAGLContext) context, NULL,&videoTextureCache);
     if (err)
     {
         NSAssert(NO, @"Error at CVOpenGLESTextureCacheCreate %d",err);
     }
+    tex=NULL;
+    rdrTgt=NULL;
     self.capturePipeline = [[[CameraCapturePipeline alloc] init] autorelease];
     [self.capturePipeline setDelegate:self callbackQueue:dispatch_get_main_queue()];
         indices.resize(4);
@@ -168,6 +171,12 @@
     {
         CFRelease(curTexture);
         curTexture=NULL;
+    }
+    if (tex)
+    {
+    	tex = NULL;
+    	delete rdrTgt;
+    	rdrTgt=NULL;
     }
     }
 }

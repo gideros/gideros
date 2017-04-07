@@ -39,6 +39,8 @@ Module.preRun.push(function() {
 	    }	    
 	    Module['removeRunDependency']('syncfs');
 	});
+	
+	GiderosNetplayerWS=null;
 })
 Module.registerPlugins=function()
 {
@@ -50,6 +52,35 @@ Module.registerPlugins=function()
 	    //g_registerPlugin(g_pluginMain_##symbol);
 	    console.log(pname);
 	});
+}
+
+Module.gplatformLanguage=function() {
+var lang;
+if (navigator
+        && navigator.userAgent
+        && (lang = navigator.userAgent
+                .match(/android.*\W(\w\w)-(\w\w)\W/i))) {
+    lang = lang[1];
+}
+
+if (!lang && navigator) {
+    if (navigator.language) {
+        lang = navigator.language;
+    } else if (navigator.browserLanguage) {
+        lang = navigator.browserLanguage;
+    } else if (navigator.systemLanguage) {
+        lang = navigator.systemLanguage;
+    } else if (navigator.userLanguage) {
+        lang = navigator.userLanguage;
+    }
+    lang = lang.substr(0, 2);
+}
+ return lang;
+}
+
+Module.gnetplayerSend=function(data) {
+	if ((GiderosNetplayerWS!=null)&&(GiderosNetplayerWS.readyState == 1))
+        GiderosNetplayerWS.send(data);
 }
 
 Module.ghttpjs_urlload=function(url, request, rhdr, param, arg, free, onload, onerror, onprogress) {
@@ -139,4 +170,50 @@ Module.checkALMuted=function()
            }, 0);
                  
  }
+}
+
+Module.GiderosJSEvent=function(type,context,value,data)
+{
+	var etype='number';
+	var len=data.length;
+	if (typeof data == 'string')
+		etype='string';
+	else
+	{
+		var dataPtr = Module._malloc(len);
+		var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, len);
+		dataHeap.set(data);	
+		data=dataPtr;
+	}
+    Module.ccall('JSNative_enqueueEvent','number', ['string','number','number',etype,'number'], [type,context,value,data,len]);
+    if (etype=='number')
+    	Module._free(dataPtr);
+}
+
+Module.GiderosPlayer_Play=function(project)
+{
+    Module.ccall('JSPlayer_play','number', ['string'], [project]);
+}
+
+Module.GiderosPlayer_Stop=function()
+{
+    Module.ccall('JSPlayer_stop','number', [], []);
+}
+
+Module.GiderosPlayer_WriteFile=function(project,path,data)
+{
+	var etype='number';
+	var len=data.length;
+	if (typeof data == 'string')
+		etype='string';
+	else
+	{
+		var dataPtr = Module._malloc(len);
+		var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, len);
+		dataHeap.set(data);	
+		data=dataPtr;
+	}
+    Module.ccall('JSPlayer_writeFile','number', ['string','string',etype,'number'], [project,path,data,len]);
+    if (etype=='number')
+    	Module._free(dataPtr);
 }

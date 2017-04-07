@@ -659,6 +659,10 @@ static int constfolding (OpCode op, expdesc *e1, expdesc *e2) {
     case OP_INTDIV:
       if (v2 == 0) return 0;  /* do not attempt to divide by 0 */
       r = luai_numintdiv(v1, v2); break;
+	case OP_MAX: r = luai_nummax(v1,v2); break;
+	case OP_MIN: r = luai_nummin(v1,v2); break;
+	case OP_DEG: r = luai_numdeg(v1); break;
+	case OP_RAD: r = luai_numrad(v1); break;
     default: lua_assert(0); r = 0; break;
   }
   if (luai_numisnan(r)) return 0;  /* do not attempt to produce NaN */
@@ -671,7 +675,7 @@ static void codearith (FuncState *fs, OpCode op, expdesc *e1, expdesc *e2) {
   if (constfolding(op, e1, e2))
     return;
   else {
-    int o2 = (op != OP_UNM && op != OP_LEN && op != OP_BNOT) ? luaK_exp2RK(fs, e2) : 0;
+    int o2 = (op != OP_UNM && op != OP_LEN && op != OP_BNOT && op != OP_DEG && op != OP_RAD) ? luaK_exp2RK(fs, e2) : 0;
     int o1 = luaK_exp2RK(fs, e1);
     if (o1 > o2) {
       freeexp(fs, e1);
@@ -723,6 +727,18 @@ void luaK_prefix (FuncState *fs, UnOpr op, expdesc *e) {
     case OPR_LEN: {
       luaK_exp2anyreg(fs, e);  /* cannot operate on constants */
       codearith(fs, OP_LEN, e, &e2);
+      break;
+    }
+    case OPR_DEG: {
+      if (!isnumeral(e))
+        luaK_exp2anyreg(fs, e);  /* cannot operate on non-numeric constants */
+      codearith(fs, OP_DEG, e, &e2);
+      break;
+    }
+    case OPR_RAD: {
+      if (!isnumeral(e))
+        luaK_exp2anyreg(fs, e);  /* cannot operate on non-numeric constants */
+      codearith(fs, OP_RAD, e, &e2);
       break;
     }
     default: lua_assert(0);
@@ -799,12 +815,15 @@ void luaK_posfix (FuncState *fs, BinOpr op, expdesc *e1, expdesc *e2) {
     case OPR_BLSHFT: codearith(fs, OP_BLSHFT, e1, e2); break;
     case OPR_BRSHFT: codearith(fs, OP_BRSHFT, e1, e2); break;
     case OPR_INTDIV: codearith(fs, OP_INTDIV, e1, e2); break;
+	case OPR_MAX: codearith(fs, OP_MAX, e1, e2); break;
+	case OPR_MIN: codearith(fs, OP_MIN, e1, e2); break;
     case OPR_EQ: codecomp(fs, OP_EQ, 1, e1, e2); break;
     case OPR_NE: codecomp(fs, OP_EQ, 0, e1, e2); break;
     case OPR_LT: codecomp(fs, OP_LT, 1, e1, e2); break;
     case OPR_LE: codecomp(fs, OP_LE, 1, e1, e2); break;
     case OPR_GT: codecomp(fs, OP_LT, 0, e1, e2); break;
     case OPR_GE: codecomp(fs, OP_LE, 0, e1, e2); break;
+	
     default: lua_assert(0);
   }
 }

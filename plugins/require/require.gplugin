@@ -10,9 +10,11 @@
  <property name="reqTVCompat" type="boolean" title="Android TV compatibility"/>
  <property name="reqTVExtCompat" type="boolean" title="Android TV extended compatibility"/>
  <property name="reqNoVibrator" type="boolean" title="Vibrator not used in this app"/>
- <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and horizontal"/>
+ <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and landscape"/>
+ <property name="reqMaxAspect" type="boolean" title="Support aspect ratios of 2.1 or higher"/>
  <property name="reqWriteExternalStorage" type="boolean" title="App needs to to write external storage"/>
  <property name="reqPhoneOnly" type="boolean" title="This app is targeting phones only, no tablets"/>
+ <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -83,6 +85,19 @@
     	    </replacelist>
 	    </template>
  	</if>
+	
+    <if condition="[[[plugin.reqMaxAspect]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="AndroidManifest.xml">
+            	<append>
+            		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+            		<by><![CDATA[
+<meta-data android:name="android.max_aspect" android:value="2.1"/>]]></by>
+    	        </append>
+        	</replacelist>
+    	</template>
+    </if>
+	
     <if condition="[[[plugin.reqGps]]]">
     	<template name="AndroidManifest" path="">
 	        <replacelist wildcards="AndroidManifest.xml">
@@ -162,5 +177,17 @@
         	</replacelist>
        </template>
     </if>
- </target>
+    <if condition="[[[plugin.reqExpRegCompliance]]]">
+   	<template name="Project" path="">
+       	<replacelist wildcards="[[[project.namews]]]-Info.plist;Info.plist">
+		    <prepend>
+				<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
+				<by><![CDATA[	
+					<key>ITSAppUsesNonExemptEncryption</key><false/>
+				]]></by>
+	    	</prepend>
+        </replacelist>
+	</template>
+    </if>
+ </target> 
 </plugin>

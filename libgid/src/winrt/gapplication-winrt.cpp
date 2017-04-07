@@ -1,5 +1,6 @@
 #include <gapplication.h>
 #include <gapplication-winrt.h>
+#include <giderosapi.h>
 
 using namespace Windows::Graphics::Display;
 using namespace Windows::ApplicationModel::Core;
@@ -20,8 +21,12 @@ public:
 	
 	int getScreenDensity()
     {   
-		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
-		return (dinfo->RawDpiX+dinfo->RawDpiY)/2;
+		int dpi;
+		gdr_dispatchUi([&] {
+			DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
+			dpi= (dinfo->RawDpiX + dinfo->RawDpiY) / 2;
+		}, true);
+		return dpi;
     }
 
 	void exit()

@@ -337,6 +337,8 @@ public:
             CGPoint location = [touch locationInView:view];
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
+            touchEvent->touch.modifiers = 0;
+            touchEvent->touch.mouseButton = 0;
             touchEvent->touch.pressure = 0;
             
             #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
@@ -360,6 +362,8 @@ public:
                 #endif
 
                 touchEvent->allTouches[i].touchType = 0;
+                touchEvent->allTouches[i].modifiers = 0;
+                touchEvent->allTouches[i].mouseButton = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
             }
@@ -410,6 +414,8 @@ public:
             CGPoint location = [touch locationInView:view];
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
+            touchEvent->touch.modifiers = 0;
+            touchEvent->touch.mouseButton = 0;
             touchEvent->touch.pressure = 0;
 #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
             if(has3Dtouch)
@@ -430,6 +436,8 @@ public:
                     touchEvent->allTouches[i].pressure = touch2.force/touch2.maximumPossibleForce;
 #endif
                 touchEvent->allTouches[i].touchType = 0;
+                touchEvent->allTouches[i].modifiers = 0;
+                touchEvent->allTouches[i].mouseButton = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
             }
@@ -480,6 +488,8 @@ public:
             CGPoint location = [touch locationInView:view];
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
+            touchEvent->touch.modifiers = 0;
+            touchEvent->touch.mouseButton = 0;
             touchEvent->touch.pressure = 0;
 #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
             if(has3Dtouch)
@@ -499,6 +509,8 @@ public:
                 if(has3Dtouch)
                     touchEvent->allTouches[i].pressure = touch2.force/touch2.maximumPossibleForce;
 #endif
+                touchEvent->allTouches[i].modifiers = 0;
+                touchEvent->allTouches[i].mouseButton = 0;
                 touchEvent->allTouches[i].touchType = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
@@ -554,6 +566,8 @@ public:
             CGPoint location = [touch locationInView:view];
             touchEvent->touch.x = location.x * contentScaleFactor;
             touchEvent->touch.y = location.y * contentScaleFactor;
+            touchEvent->touch.modifiers = 0;
+            touchEvent->touch.mouseButton = 0;
             touchEvent->touch.pressure = 0;
 #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
             if(has3Dtouch)
@@ -574,6 +588,8 @@ public:
                     touchEvent->allTouches[i].pressure = touch2.force/touch2.maximumPossibleForce;
 #endif
                 touchEvent->allTouches[i].touchType = 0;
+                touchEvent->allTouches[i].modifiers = 0;
+                touchEvent->allTouches[i].mouseButton = 0;
                 touchEvent->allTouches[i].id = addTouch(touch2);
                 ++i;
             }
@@ -687,7 +703,8 @@ private:
         event->x = x;
         event->y = y;
         event->button = button;
-        event->wheel = 0;        
+        event->wheel = 0;      
+        event->modifiers=0;  
         
         return event;
     }

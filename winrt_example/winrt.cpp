@@ -49,6 +49,26 @@ extern "C"
 	}
 }
 
+extern "C" void gdr_dispatchUi(std::function<void()> func, bool wait)
+{
+	try {
+		if (CoreWindow::GetForCurrentThread()->Dispatcher->HasThreadAccess)
+			func();
+		else
+		{
+			Windows::Foundation::IAsyncAction ^action = CoreWindow::GetForCurrentThread()->Dispatcher->RunAsync(CoreDispatcherPriority::Normal,
+				ref new Windows::UI::Core::DispatchedHandler(func));
+			if (wait)
+				while (action->Status == Windows::Foundation::AsyncStatus::Started)
+					Sleep(1); //XXX There must be better to do
+		}
+	}
+	catch (Exception ^e)
+	{
+		__debugbreak();
+	}
+}
+
 // This function is only needed for the player. Should be empty for export projects as it contains
 // APIs not permitted in Windows Store apps (FindNextFileA etc)
 
@@ -251,7 +271,7 @@ public:
 
     void OnSizeChanged(CoreWindow ^sender, WindowSizeChangedEventArgs ^args)
     {
-		gdr_resize(args->Size.Width, args->Size.Height);
+		gdr_resize(args->Size.Width, args->Size.Height,args->Size.Width>args->Size.Height?1:0);
     }
 
     void PointerPressed(CoreWindow^ Window, PointerEventArgs^ Args)

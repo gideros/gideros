@@ -36,9 +36,11 @@ const char *const luaX_tokens [] = {
   "and", "break", "do", "else", "elseif",
   "end", "false", "for", "function", "if",
   "in", "local", "nil", "not", "or", "repeat",
-  "return", "then", "true", "until", "while",
-  "..", "...", "==", ">=", "<=", "~=",
+  "return", "then", "true", "until", "include", "while",
+  "..", "...", "==", ">=", "<=", "~=", 
   "<<", ">>", "//",
+  "<>", "><",
+  "^>","^<",
   "<number>", "<name>", "<string>", "<eof>",
   NULL
 };
@@ -144,6 +146,10 @@ void luaX_setinput (lua_State *L, LexState *ls, ZIO *z, TString *source) {
   ls->linenumber = 1;
   ls->lastline = 1;
   ls->source = source;
+
+  //lua_pushnil(L); XXX Used to clear macro table between each input file
+  //lua_setglobal(L, MACRO);
+
   luaZ_resizebuffer(ls->L, ls->buff, LUA_MINBUFFER);  /* initialize buffer */
   next(ls);  /* read first char */
 }
@@ -332,6 +338,32 @@ static void read_string (LexState *ls, int del, SemInfo *seminfo) {
                                luaZ_bufflen(ls->buff) - 2);
 }
 
+static int insert_string(LexState *ls, const char* s) {
+    luaZ_resetbuffer(ls->buff);
+    if (ls->mpos < ls->mlen) {
+      int len = strlen(s) + ls->mlen - ls->mpos + 1;
+      char *res = (char*) malloc(len);
+      strcpy(res, s);
+      strcat(res, &ls->mstr[ls->mpos-1]);
+      strcat(res, " ");
+      free(ls->mstr);
+      ls->mstr = res;
+      ls->z->n--; ls->z->p++;
+    }
+    else {
+      if (ls->mlen > 0) free(ls->mstr);
+      char *res = (char*) malloc(strlen(s)+1);
+      strcpy(res, s);
+      ls->mstr = res;
+    }
+    ls->mpos = 1;
+    ls->mlen = strlen(ls->mstr);
+    if (ls->mlen > 0) {
+      ls->current = ls->mstr[0];
+      ls->z->n++; ls->z->p--;
+    }
+    return 0;
+}
 
 static int llex (LexState *ls, SemInfo *seminfo) {
   luaZ_resetbuffer(ls->buff);
@@ -379,13 +411,21 @@ static int llex (LexState *ls, SemInfo *seminfo) {
       next(ls);
       if (ls->current == '=') { next(ls); return TK_LE; }
       else if (ls->current == '<') { next(ls); return TK_LSHFT; }
+	  else if (ls->current == '>') { next(ls); return TK_MAX; }
       else  return '<';
     }
     case '>': {
       next(ls);
       if (ls->current == '=') { next(ls); return TK_GE; }
       else if (ls->current == '>') { next(ls); return TK_RSHFT; }
+	  else if (ls->current == '<') { next(ls); return TK_MIN; }
       else return '>';
+    }
+    case '^': {
+      next(ls);
+      if (ls->current == '<') { next(ls); return TK_RAD; }
+      else if (ls->current == '>') { next(ls); return TK_DEG; }
+      else return '^';
     }
     case '/': {
       next(ls);
@@ -466,12 +506,14 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           else luaX_lexerror(ls, "cannot allocate enough memory",0);
           lua_pushstring(L, key);
           lua_gettable(L, -2);
+
           if (!lua_isnil(L, -1))
           {
             if (ls->current != '@')
               luaX_lexerror(ls, "definition of existent macro", 0);
           } else if (ls->current == '@')
             luaX_lexerror(ls, "redefinition of nonexistent macro", 0);
+
           if (ls->current == '@') next(ls);
           lua_pop(L, 1);
           lua_pushstring(L, key);
@@ -618,8 +660,41 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           free(val);
           continue;
         }
-        if (ts->tsv.reserved > 0)  /* reserved word? */
+        if (ts->tsv.reserved > 0) {  /* reserved word? */
+          if (ts->tsv.reserved == TK_INCLUDE - FIRST_RESERVED + 1) {
+              int t = llex(ls, seminfo);
+              if (t == TK_STRING) {
+                  const char *filename = getstr(seminfo->ts);
+                  char * buffer = 0;
+                  long length;
+                  FILE * f = fopen (filename, "rb");
+
+                  if (f)
+                  {
+                    fseek (f, 0, SEEK_END);
+                    length = ftell (f);
+                    fseek (f, 0, SEEK_SET);
+                    buffer = (char *) malloc (length + 2);
+                    if (buffer)
+                    {
+                      fread (buffer, 1, length, f);
+                      buffer[length] = ' ';
+                      buffer[length+1] = '\0';
+                    }
+                    fclose (f);
+                  }
+
+                  if (buffer)
+                  {
+                    ++ls->mpos;
+                    insert_string(ls, buffer);
+                    continue;
+                  }
+                  luaX_lexerror(ls, "file not found", TK_INCLUDE);
+              } else luaX_lexerror(ls, "string expected", TK_INCLUDE);
+          }
           return ts->tsv.reserved - 1 + FIRST_RESERVED;
+        }
         lua_State *L = ls->L;
         lua_getglobal(L, MACRO);
         if (lua_istable(L, -1)) {
@@ -717,39 +792,18 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           }
 
           if (lua_isstring(L, -1)) {
-            luaZ_resetbuffer(ls->buff);
             const char *s = lua_tostring(L, -1);
-            if (ls->mpos < ls->mlen) {
-              int len = strlen(s) + ls->mlen - ls->mpos + 1;
-              char *res = (char*) malloc(len);
-              strcpy(res, s);
-              strcat(res, &ls->mstr[ls->mpos-1]);
-              strcat(res, " ");
-              free(ls->mstr);
-              ls->mstr = res;
-              ls->z->n--; ls->z->p++;
-            }
-            else {
-              if (ls->mlen > 0) free(ls->mstr);
-              char *res = (char*) malloc(strlen(s)+1);
-              strcpy(res, s);
-              ls->mstr = res;
-            }
-            ls->mpos = 1;
-            ls->mlen = strlen(ls->mstr);
-            if (ls->mlen > 0) {
-              ls->current = ls->mstr[0];
-              ls->z->n++; ls->z->p--;
-            }
+            insert_string(ls, s);
             lua_pop(L, 1);
             lua_pop(L, 1);
             if (ls->mswt++ > 1e6) luaX_lexerror(ls, "possible mutual macro recursion", 0);
             continue;
           }
+
           lua_pop(L, 1);
         }
-        lua_pop(L, 1);
 
+        lua_pop(L, 1);
         seminfo->ts = ts;
         return TK_NAME;
       }

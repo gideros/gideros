@@ -838,58 +838,58 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\zlib-1.2.8\zutil.c">
       <Filter>zlib</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbase.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\base\ftbase.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbbox.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\base\ftbbox.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftbitmap.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\base\ftbitmap.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftglyph.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\base\ftglyph.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftlcdfil.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\base\ftlcdfil.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftstroke.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\base\ftstroke.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftxf86.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\base\ftsystem.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftsystem.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\base\ftgasp.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftgasp.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\base\ftinit.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\base\ftinit.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\raster\raster.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\raster\raster.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\sfnt\sfnt.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\sfnt\sfnt.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\smooth\smooth.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\smooth\smooth.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\autofit\autofit.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\autofit\autofit.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\truetype\truetype.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\truetype\truetype.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\cff\cff.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\cff\cff.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\gzip\ftgzip.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\psnames\psnames.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\psnames\psnames.c">
       <Filter>freetype</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.4.12\src\pshinter\pshinter.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\freetype-2.7.1\src\pshinter\pshinter.c">
       <Filter>freetype</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libgid\external\minizip-1.1\ioapi.c">

@@ -4,6 +4,7 @@
 #include <libnetwork.h>
 #include <string>
 #include <stdlib.h>
+#include "netplayer.h"
 
 struct ProjectProperties {
 	ProjectProperties() {
@@ -49,9 +50,7 @@ public:
 		loadMD5();
 	}
 
-	static void printToServer_s(const char *str, int len, void *data) {
-		static_cast<NetworkManager*>(data)->printToServer(str, len);
-	}
+	static void printToServer_s(const char *str, int len, void *data);
 
 	void printToServer(const char *str, int len) {
 		unsigned int size = 1 + ((len < 0) ? strlen(str) : len) + 1;
@@ -61,7 +60,7 @@ public:
 		memcpy(buffer + 1, str, size - 2);
 		buffer[size - 1] = 0;
 
-		server_->sendData(buffer, size);
+		serverSendData(buffer, size);
 
 		free(buffer);
 	}
@@ -85,7 +84,6 @@ private:
 
 private:
 	ApplicationManager *application_;
-	Server *server_;
 	std::string resourceDirectory_;
 };
 

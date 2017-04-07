@@ -185,7 +185,7 @@ void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::Swap
 	scd.SampleDesc.Quality = 0;
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;      	// how swap chain is to be used    
 	scd.BufferCount = 2;                                    	// one back buffer for WP8 (Windows 8: 2)
-	//scd.Scaling = DXGI_SCALING_STRETCH;                       // WP8 (Windows 8: not set)
+	scd.Scaling = DXGI_SCALING_STRETCH;                       // WP8 (Windows 8: not set)
 	scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;                // WP8 (Windows 8: DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL)
 	scd.Flags = 0;
 
@@ -216,29 +216,10 @@ void InitD3D(bool useXaml, CoreWindow^ Window, Windows::UI::Xaml::Controls::Swap
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
-	float scaley;
-
-//	if (useXaml){
-//		scaley = 1;
-//	}
-//	else {
-		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
-#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-		scaley = dinfo->RawPixelsPerViewPixel; // Windows phone
-#else
-		scaley = ((int)dinfo->ResolutionScale)*0.01f*dinfo->LogicalDpi/ 96.0f;   // Windows 8 PC
-#endif
-//    }
-
-	float basex = 0;
-	float basey = 0;
-	float windoww = width*scaley;
-	float windowh = height*scaley;
-
-	viewport.TopLeftX = basex;
-	viewport.TopLeftY = basey;
-	viewport.Width = windoww;  // Direct3D needs actual pixels
-	viewport.Height = windowh;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = width;  // Direct3D needs actual pixels
+	viewport.Height = height;
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1.0;
 
@@ -404,7 +385,7 @@ public:
 	void exitRenderLoop();
 	void foreground();
 	void background();
-	void resize(int width, int height);
+	void resize(int width, int height, int orientation);
 
 	Windows::UI::Xaml::Controls::SwapChainPanel^ getRoot();
 
@@ -439,6 +420,7 @@ private:
 	int nframe_;
 
 	Platform::WeakReference xamlRoot_;
+	bool xaml;
 };
 
 
@@ -736,26 +718,26 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 	if (swapChainPanel!=nullptr)
 		xamlRoot_ = Platform::WeakReference(swapChainPanel);
 
-	InitD3D(useXaml, Window, swapChainPanel, width, height);
-	InitXAudio2();
+	xaml = useXaml;
 
-//	if (useXaml)
-//		contentScaleFactor = 1;
-//	else {
+	{
 		DisplayInformation ^dinfo = DisplayInformation::GetForCurrentView();
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
 		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01f*dinfo->LogicalDpi/96.0f;   // Windows 8 PC
 #endif
-//	}
+	}
 
 	width_ = width;
 	height_ = height;
 	player_ = player;
-	resourcePath_ = resourcePath;
-	docsPath_ = docsPath;
-	tempPath_ = tempPath;
+	resourcePath_ =_wcsdup( resourcePath);
+	docsPath_ = _wcsdup(docsPath);
+	tempPath_ = _wcsdup(tempPath);
+
+	InitD3D(useXaml, Window, swapChainPanel, width_, height_);
+	InitXAudio2();
 
 	// gpath & gvfs
 	gpath_init();
@@ -820,9 +802,22 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 
 	Binder::disableTypeChecking();
 
+	if (xaml)
+	{
+		if (width_>height_){
+			hardwareOrientation_ = eFixed;
+			deviceOrientation_ = eLandscapeLeft;
+	    }
+		else {
+			hardwareOrientation_ = eFixed;
+			deviceOrientation_ = ePortrait;
+		}
+	}
+	else
+	{
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
-	hardwareOrientation_ = ePortrait;
-	deviceOrientation_ = ePortrait;
+       hardwareOrientation_ = ePortrait;
+       deviceOrientation_ = ePortrait;
 #else
 	if (width_>height_){
 		hardwareOrientation_ = eLandscapeLeft;
@@ -833,6 +828,7 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 		deviceOrientation_ = ePortrait;
 	}
 #endif
+	}
 
 	running_ = false;
 
@@ -924,6 +920,13 @@ Windows::UI::Xaml::Controls::SwapChainPanel^ ApplicationManager::getRoot(){
 
 void ApplicationManager::getStdCoords(float xp, float yp, float &x, float &y)
 {
+	if (xaml)
+	{
+		x = xp*contentScaleFactor;
+		y = yp*contentScaleFactor;
+	}
+	else
+	{
 	xp = xp*contentScaleFactor;
 	yp = yp*contentScaleFactor;
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
@@ -951,6 +954,7 @@ void ApplicationManager::getStdCoords(float xp, float yp, float &x, float &y)
 	x = xp;
 	y = yp;
 #endif
+	}
 }
 
 void ApplicationManager::drawFirstFrame()
@@ -961,22 +965,35 @@ void ApplicationManager::drawFirstFrame()
 	drawIPs();
 }
 
+//#define LOG_FRAME_RATE
 void ApplicationManager::drawFrame(bool useXaml)
 {
 	CoreWindow^ Window; 
 	if (!useXaml) Window = CoreWindow::GetForCurrentThread();
 
 	int FPS = g_getFps();
+#ifdef LOG_FRAME_RATE
+	glog_setLevel(GLOG_DEBUG);
+#endif
 	if (FPS > 0) {
+#ifdef LOG_FRAME_RATE
+		double rdrRef1 = iclock();
+#endif
 		if (!useXaml) Window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
 		GStatus status;
 		application_->enterFrame(&status);
 		if (status.error())
 			luaError(status.errorString());
+#ifdef LOG_FRAME_RATE
+		double rdrRef2 = iclock();
+#endif
 
 		gaudio_AdvanceStreamBuffers();
 
+#ifdef LOG_FRAME_RATE
+		double rdrRef3 = iclock();
+#endif
 		nframe_++;
 
 		if (networkManager_)
@@ -985,16 +1002,35 @@ void ApplicationManager::drawFrame(bool useXaml)
 		if (application_->isErrorSet())
 			luaError(application_->getError());
 
+#ifdef LOG_FRAME_RATE
+		double rdrRef4 = iclock();
+#endif
 		ShaderEngine::Engine->setFramebuffer(NULL);
 		application_->clearBuffers();
+#ifdef LOG_FRAME_RATE
+		double rdrRef5 = iclock();
+#endif
 
 		application_->renderScene(1);
+#ifdef LOG_FRAME_RATE
+		double rdrRef6 = iclock();
+#endif
 		drawIPs();
 
 		if (FPS==60)	
 			g_swapchain->Present(1, 0);
 		else if (FPS==30)
 			g_swapchain->Present(2, 0);
+#ifdef LOG_FRAME_RATE
+		double rdrRef7 = iclock();
+		double t1 = (rdrRef2 - rdrRef1) * 1000;
+		double t2 = (rdrRef3 - rdrRef2) * 1000;
+		double t3 = (rdrRef4 - rdrRef3) * 1000;
+		double t4 = (rdrRef5 - rdrRef4) * 1000;
+		double t5 = (rdrRef6 - rdrRef5) * 1000;
+		double t6 = (rdrRef7 - rdrRef6)*1000;
+		glog_d("FRM TIME:%f,%f,%f,%f,%f,%f\n", t1, t2, t3, t4, t5, t6);
+#endif
 	}
 	else {
 
@@ -1179,6 +1215,7 @@ void ApplicationManager::setProjectProperties(const ProjectProperties &propertie
 	properties_ = properties;
 }
 
+using namespace Platform;
 
 void ApplicationManager::luaError(const char *error)
 {
@@ -1195,7 +1232,11 @@ void ApplicationManager::luaError(const char *error)
 	}
 	else
 	{
-		g_exit();
+		std::string s_str = std::string(error);
+		std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
+		const wchar_t* w_char = wid_str.c_str();
+		Platform::String^ p_string = ref new Platform::String(w_char);
+		throw Exception::CreateException(0x80004005,p_string);
 	}
 }
 
@@ -1206,8 +1247,7 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->deinitialize();
 	application_->initialize();
 
-    // First arg to setResolution should be the smaller dimension
-	if (width_ < height_)
+	if (xaml||(width_ < height_))
 		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	else
 		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
@@ -1305,8 +1345,7 @@ void ApplicationManager::loadProperties()
 	buffer >> properties_.touchToMouse;
 	buffer >> properties_.mouseTouchOrder;
 
-	// the first arg to setResolution should be the smaller dimension
-	if (width_ < height_)
+	if (xaml||(width_ < height_))
 		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	else
 		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
@@ -1444,7 +1483,7 @@ void ApplicationManager::exitRenderLoop()
 		luaError(status.errorString());
 }
 
-void ApplicationManager::resize(int width, int height)
+void ApplicationManager::resize(int width, int height,int orientation)
 {
 
 	//if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
@@ -1452,18 +1491,19 @@ void ApplicationManager::resize(int width, int height)
 	width_ = width;
 	height_ = height;
 
-	if (width < height){
-		hardwareOrientation_ = ePortrait;
-		deviceOrientation_ = ePortrait;
-		application_->setResolution(width*contentScaleFactor, height*contentScaleFactor);
-	}
-	else {
-		hardwareOrientation_ = eLandscapeLeft;
-		deviceOrientation_ = eLandscapeLeft;
-		application_->setResolution(height*contentScaleFactor, width*contentScaleFactor);
-	}
+	hardwareOrientation_ = xaml?eFixed:(Orientation) orientation;
+	deviceOrientation_ = (Orientation) orientation;
+
+	if (xaml||(width_ < height_))
+		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
+	else
+		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
+
+	Event event(Event::APPLICATION_RESIZE);
+	GStatus status;
+	application_->broadcastEvent(&event, &status);
 }
 
 static ApplicationManager *s_manager = NULL;
@@ -1544,19 +1584,19 @@ extern "C" {
 		lastMouseButton_ = button;
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseDown(xn, yn, button);
+		ginputp_mouseDown(xn, yn, button,0);
 	}
 
 	void gdr_mouseMove(int x, int y){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseMove(xn, yn, lastMouseButton_);
+		ginputp_mouseMove(xn, yn, lastMouseButton_,0);
 	}
 
 	void gdr_mouseHover(int x, int y){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseHover(xn, yn, 0);
+		ginputp_mouseHover(xn, yn, 0,0);
 	}
 
 	void gdr_mouseUp(int x, int y, int button){
@@ -1564,42 +1604,42 @@ extern "C" {
 			lastMouseButton_ = 0;
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseUp(xn, yn, button);
+		ginputp_mouseUp(xn, yn, button,0);
 	}
 
 	void gdr_mouseWheel(int x, int y, int delta){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_mouseWheel(xn, yn, 0, delta);
+		ginputp_mouseWheel(xn, yn, 0, delta,0);
 	}
 
 	void gdr_touchBegin(int x, int y, int id){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_touchBegin(xn, yn, id);
+		ginputp_touchBegin(xn, yn, id,0);
 	}
 
 	void gdr_touchMove(int x, int y, int id){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_touchMove(xn, yn, id);
+		ginputp_touchMove(xn, yn, id,0);
 	}
 
 	void gdr_touchEnd(int x, int y, int id){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_touchEnd(xn, yn, id);
+		ginputp_touchEnd(xn, yn, id,0);
 	}
 
 	void gdr_touchCancel(int x, int y, int id){
 		float xn, yn;
 		s_manager->getStdCoords(x, y, xn, yn);
-		ginputp_touchCancel(xn, yn, id);
+		ginputp_touchCancel(xn, yn, id,0);
 	}
 
-	void gdr_resize(int width, int height)
+	void gdr_resize(int width, int height, int orientation)
 	{
-		s_manager->resize(width, height);
+		s_manager->resize(width, height, orientation);
 	}
 
 }

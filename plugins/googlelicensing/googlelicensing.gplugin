@@ -12,16 +12,21 @@
     </template>
     <template name="AndroidManifest" path="">
         <replacelist wildcards="AndroidManifest.xml">
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;com.android.vending.CHECK_LICENSE&quot; /&gt;"/>
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;android.permission.WAKE_LOCK&quot; /&gt;"/>
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;"/>
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;service android:name=&quot;com.giderosmobile.android.plugins.googlelicensing.GiderosAPKDownloader&quot; /&gt;"/>
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;receiver android:name=&quot;com.giderosmobile.android.plugins.googlelicensing.GiderosDownloadReceiver&quot; /&gt;"/>
+            <append>
+            	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            	<by><![CDATA[
+    <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <service android:name="com.giderosmobile.android.plugins.googlelicensing.GiderosAPKDownloader" />
+    <receiver android:name="com.giderosmobile.android.plugins.googlelicensing.GiderosDownloadReceiver" />
+            	]]></by>
+            </append>
         </replacelist>
     </template>
  </target>
  <target name="Android">
-    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android"/>
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;googlelicensing&quot;);"/>
@@ -30,11 +35,16 @@
     </template>
     <template name="AndroidManifest" path="">
         <replacelist wildcards="AndroidManifest.xml">
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;com.android.vending.CHECK_LICENSE&quot; /&gt;"/>
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;android.permission.WAKE_LOCK&quot; /&gt;"/>
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;uses-permission android:name=&quot;android.permission.ACCESS_NETWORK_STATE&quot; /&gt;"/>
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;service android:name=&quot;com.giderosmobile.android.plugins.googlelicensing.GiderosAPKDownloader&quot; /&gt;"/>
-            <append orig="<!-- TAG:MANIFEST-EXTRA -->" by="&lt;receiver android:name=&quot;com.giderosmobile.android.plugins.googlelicensing.GiderosDownloadReceiver&quot; /&gt;"/>
+            <append>
+            	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
+            	<by><![CDATA[
+    <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <service android:name="com.giderosmobile.android.plugins.googlelicensing.GiderosAPKDownloader" />
+    <receiver android:name="com.giderosmobile.android.plugins.googlelicensing.GiderosDownloadReceiver" />
+            	]]></by>
+            </append>
         </replacelist>
     </template>
  </target>

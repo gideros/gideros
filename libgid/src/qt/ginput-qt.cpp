@@ -148,9 +148,9 @@ public:
         pthread_mutex_unlock(&touchPoolMutex_);
     }
 
-    void mouseDown(int x, int y, int button)
+    void mouseDown(int x, int y, int button, int mod)
     {
-        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button);
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
 
         ginput_TouchEvent *touchEvent = NULL;
         if (isMouseToTouchEnabled_)
@@ -161,11 +161,15 @@ public:
             touchEvent->touch.id = 0;
             touchEvent->touch.pressure = 0;
             touchEvent->touch.touchType = 2;
+            touchEvent->touch.mouseButton = button;
+            touchEvent->touch.modifiers = mod;
             touchEvent->allTouches[0].x = x;
             touchEvent->allTouches[0].y = y;
             touchEvent->allTouches[0].id = 0;
             touchEvent->allTouches[0].pressure = 0;
             touchEvent->allTouches[0].touchType = 2;
+            touchEvent->allTouches[0].mouseButton = button;
+            touchEvent->allTouches[0].modifiers = mod;
         }
 
         if (mouseTouchOrder_ == 0)
@@ -191,9 +195,9 @@ public:
         }
     }
 
-    void mouseMove(int x, int y, int button)
+    void mouseMove(int x, int y, int button, int mod)
     {
-        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button);
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
 
         ginput_TouchEvent *touchEvent = NULL;
         if (isMouseToTouchEnabled_)
@@ -204,11 +208,15 @@ public:
             touchEvent->touch.id = 0;
             touchEvent->touch.pressure = 0;
             touchEvent->touch.touchType = 2;
+            touchEvent->touch.mouseButton = button;
+            touchEvent->touch.modifiers = mod;
             touchEvent->allTouches[0].x = x;
             touchEvent->allTouches[0].y = y;
             touchEvent->allTouches[0].id = 0;
             touchEvent->allTouches[0].pressure = 0;
             touchEvent->allTouches[0].touchType = 2;
+            touchEvent->allTouches[0].mouseButton = button;
+            touchEvent->allTouches[0].modifiers = mod;
         }
 
         if (mouseTouchOrder_ == 0)
@@ -234,17 +242,17 @@ public:
         }
     }
 
-    void mouseHover(int x, int y, int button)
+    void mouseHover(int x, int y, int button, int mod)
     {
-        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button);
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
 
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_HOVER_EVENT, mouseEvent, 0, this);
         deleteMouseEvent(mouseEvent);
     }
 
-    void mouseUp(int x, int y, int button)
+    void mouseUp(int x, int y, int button, int mod)
     {
-        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button);
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
 
         ginput_TouchEvent *touchEvent = NULL;
         if (isMouseToTouchEnabled_)
@@ -255,11 +263,15 @@ public:
             touchEvent->touch.id = 0;
             touchEvent->touch.pressure = 0;
             touchEvent->touch.touchType = 2;
+            touchEvent->touch.mouseButton = button;
+            touchEvent->touch.modifiers = mod;
             touchEvent->allTouches[0].x = x;
             touchEvent->allTouches[0].y = y;
             touchEvent->allTouches[0].id = 0;
             touchEvent->allTouches[0].pressure = 0;
             touchEvent->allTouches[0].touchType = 2;
+            touchEvent->allTouches[0].mouseButton = button;
+            touchEvent->allTouches[0].modifiers = mod;
         }
 
         if (mouseTouchOrder_ == 0)
@@ -285,15 +297,15 @@ public:
         }
     }
 
-    void mouseWheel(int x, int y, int buttons,int delta)
+    void mouseWheel(int x, int y, int buttons,int delta, int mod)
     {
-        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, buttons);
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, buttons, mod);
         mouseEvent->wheel=delta;
         gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_WHEEL_EVENT, mouseEvent, 0, this);
         deleteMouseEvent(mouseEvent);
     }
 
-    void touchesBegin(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
+    void touchesBegin(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[], int mod)
     {
         ginput_TouchEvent *touchEvent = newTouchEvent(touches);
         touchEvent->touch.x = x;
@@ -301,6 +313,8 @@ public:
         touchEvent->touch.id = id;
         touchEvent->touch.pressure = pressure;
         touchEvent->touch.touchType = touchType;
+        touchEvent->touch.mouseButton = 0;
+        touchEvent->touch.modifiers = mod;
 
         for(int i = 0; i < touches; i++){
             touchEvent->allTouches[i].x = xs[i];
@@ -308,12 +322,14 @@ public:
             touchEvent->allTouches[i].id = ids[i];
             touchEvent->allTouches[i].pressure = pressures[i];
             touchEvent->allTouches[i].touchType = touchTypes[i];
+            touchEvent->allTouches[i].mouseButton = 0;
+            touchEvent->allTouches[i].modifiers = 0;
         }
 
         ginput_MouseEvent *mouseEvent = NULL;
         if (isTouchToMouseEnabled_)
         {
-            mouseEvent = newMouseEvent(x, y, 0);
+            mouseEvent = newMouseEvent(x, y, 0, mod);
         }
 
         if (mouseTouchOrder_ == 0)
@@ -339,7 +355,7 @@ public:
         }
     }
 
-    void touchesMove(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
+    void touchesMove(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[], int mod)
     {
         ginput_MouseEvent *mouseEvent = NULL;
 
@@ -349,17 +365,21 @@ public:
         touchEvent->touch.id = id;
         touchEvent->touch.pressure = pressure;
         touchEvent->touch.touchType = touchType;
+        touchEvent->touch.mouseButton = 0;
+        touchEvent->touch.modifiers = mod;
         for(int i = 0; i < touches; i++){
             touchEvent->allTouches[i].x = xs[i];
             touchEvent->allTouches[i].y = ys[i];
             touchEvent->allTouches[i].id = ids[i];
             touchEvent->allTouches[i].pressure = pressures[i];
             touchEvent->allTouches[i].touchType = touchTypes[i];
+            touchEvent->allTouches[i].mouseButton = 0;
+            touchEvent->allTouches[i].modifiers = 0;
         }
 
         if (isTouchToMouseEnabled_)
         {
-            mouseEvent = newMouseEvent(x, y, GINPUT_NO_BUTTON);
+            mouseEvent = newMouseEvent(x, y, GINPUT_NO_BUTTON, mod);
         }
 
         if (mouseTouchOrder_ == 0)
@@ -385,7 +405,7 @@ public:
         }
     }
     
-    void touchesEnd(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
+    void touchesEnd(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[], int mod)
     {
         ginput_MouseEvent *mouseEvent = NULL;
 
@@ -395,17 +415,21 @@ public:
         touchEvent->touch.id = id;
         touchEvent->touch.pressure = pressure;
         touchEvent->touch.touchType = touchType;
+        touchEvent->touch.mouseButton = 0;
+        touchEvent->touch.modifiers = mod;
         for(int i = 0; i < touches; i++){
             touchEvent->allTouches[i].x = xs[i];
             touchEvent->allTouches[i].y = ys[i];
             touchEvent->allTouches[i].id = ids[i];
             touchEvent->allTouches[i].pressure = pressures[i];
             touchEvent->allTouches[i].touchType = touchTypes[i];
+            touchEvent->allTouches[i].mouseButton = 0;
+            touchEvent->allTouches[i].modifiers = 0;
         }
 
         if (isTouchToMouseEnabled_)
         {
-            mouseEvent = newMouseEvent(x, y, 0);
+            mouseEvent = newMouseEvent(x, y, 0, mod);
         }
 
         if (mouseTouchOrder_ == 0)
@@ -431,7 +455,7 @@ public:
         }
     }
 
-    void touchesCancel(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
+    void touchesCancel(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[], int mod)
     {
         ginput_MouseEvent *mouseEvent = NULL;
 
@@ -441,17 +465,21 @@ public:
         touchEvent->touch.id = id;
         touchEvent->touch.pressure = pressure;
         touchEvent->touch.touchType = touchType;
+        touchEvent->touch.mouseButton = 0;
+        touchEvent->touch.modifiers = mod;
         for(int i = 0; i < touches; i++){
             touchEvent->allTouches[i].x = xs[i];
             touchEvent->allTouches[i].y = ys[i];
             touchEvent->allTouches[i].id = ids[i];
             touchEvent->allTouches[i].pressure = pressures[i];
             touchEvent->allTouches[i].touchType = touchTypes[i];
+            touchEvent->allTouches[i].mouseButton = 0;
+            touchEvent->allTouches[i].modifiers = 0;
         }
 
         if (isTouchToMouseEnabled_)
         {
-            mouseEvent = newMouseEvent(x, y, 0);
+            mouseEvent = newMouseEvent(x, y, 0, mod);
         }
 
         if (mouseTouchOrder_ == 0)
@@ -522,7 +550,7 @@ public:
     }
 
 private:
-    ginput_MouseEvent *newMouseEvent(int x, int y, int button)
+    ginput_MouseEvent *newMouseEvent(int x, int y, int button, int mod)
     {
         ginput_MouseEvent *event;
 
@@ -540,6 +568,7 @@ private:
         event->y = y;
         event->button = button;
         event->wheel = 0;
+        event->modifiers = mod;
 
         return event;
     }
@@ -725,58 +754,58 @@ void ginput_getGyroscopeRotationRate(double *x, double *y, double *z)
         *z = 0;
 }
 
-void ginputp_mouseDown(int x, int y, int button)
+void ginputp_mouseDown(int x, int y, int button, int mod)
 {
     if (s_manager)
-        s_manager->mouseDown(x, y, button);
+        s_manager->mouseDown(x, y, button, mod);
 }
 
-void ginputp_mouseMove(int x, int y, int button)
+void ginputp_mouseMove(int x, int y, int button, int mod)
 {
     if (s_manager)
-        s_manager->mouseMove(x, y, button);
+        s_manager->mouseMove(x, y, button, mod);
 }
 
-void ginputp_mouseHover(int x, int y, int button)
+void ginputp_mouseHover(int x, int y, int button, int mod)
 {
     if (s_manager)
-        s_manager->mouseHover(x, y, button);
+        s_manager->mouseHover(x, y, button, mod);
 }
 
-void ginputp_mouseUp(int x, int y, int button)
+void ginputp_mouseUp(int x, int y, int button, int mod)
 {
     if (s_manager)
-        s_manager->mouseUp(x, y, button);
+        s_manager->mouseUp(x, y, button, mod);
 }
 
-void ginputp_mouseWheel(int x, int y, int buttons, int delta)
+void ginputp_mouseWheel(int x, int y, int buttons, int delta, int mod)
 {
     if (s_manager)
-        s_manager->mouseWheel(x, y, buttons,delta);
+        s_manager->mouseWheel(x, y, buttons,delta, mod);
 }
 
-void ginputp_touchesBegin(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
+void ginputp_touchesBegin(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[], int mod)
 {
     if (s_manager)
-        s_manager->touchesBegin(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes);
+        s_manager->touchesBegin(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes, mod);
 }
 
-void ginputp_touchesMove(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
+void ginputp_touchesMove(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[], int mod)
 {
     if (s_manager)
-        s_manager->touchesMove(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes);
+        s_manager->touchesMove(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes, mod);
 }
 
-void ginputp_touchesEnd(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
+void ginputp_touchesEnd(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[], int mod)
 {
     if (s_manager)
-        s_manager->touchesEnd(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes);
+        s_manager->touchesEnd(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes, mod);
 }
 
-void ginputp_touchesCancel(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[])
+void ginputp_touchesCancel(int x, int y, int id, float pressure, int touchType, int touches, int xs[], int ys[], int ids[], float pressures[], int touchTypes[], int mod)
 {
     if (s_manager)
-        s_manager->touchesCancel(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes);
+        s_manager->touchesCancel(x, y, id, pressure, touchType, touches, xs, ys, ids, pressures, touchTypes, mod);
 }
 
 void ginputp_keyDown(int keyCode)

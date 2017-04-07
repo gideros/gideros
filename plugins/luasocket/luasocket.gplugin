@@ -17,4 +17,32 @@
         </replacelist>
     </template>
  </target>
+ <target name="Html5">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="gideros.html">
+            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;luasocket.js&quot;,"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="WinRT">
+    <template name="sources" path="[[[sys.pluginDir]]]/bin/WinRT" />
+    <template name="binaries" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins" include="luasocket_stub.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\luasocket_stub.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>      
+    </ClCompile>]]></by>
+        </append>
+        <append>
+            <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
+            <by><![CDATA[
+      <AdditionalDependencies>luasocket.$(GidProjectType).lib</AdditionalDependencies>]]></by>
+        </append> 
+        </replacelist>
+    </template>
+ </target>
 </plugin>

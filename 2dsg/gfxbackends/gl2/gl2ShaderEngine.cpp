@@ -170,6 +170,15 @@ static const char *stdTFShaderCode = "uniform lowp vec4 fColor;\n"
 		" if (frag.a==0.0) discard;\n"
 		" gl_FragColor = frag;\n"
 		"}\n";
+static const char *stdTAFShaderCode = "uniform lowp vec4 fColor;\n"
+		"uniform lowp sampler2D fTexture;\n"
+		"varying mediump vec2 fTexCoord;\n"
+		"void main() {\n"
+		" lowp vec4 frag=texture2D(fTexture, fTexCoord);\n"
+		" frag=fColor*frag.aaaa;\n"
+		" if (frag.a==0.0) discard;\n"
+		" gl_FragColor = frag;\n"
+		"}\n";
 static const char *stdCTFShaderCode = "varying lowp vec4 fInColor;\n"
 		"uniform lowp sampler2D fTexture;\n"
 		"varying mediump vec2 fTexCoord;\n"
@@ -373,6 +382,9 @@ void ogl2SetupShaders() {
 	ShaderProgram::stdTexture = new ogl2ShaderProgram(hdrVShaderCode,
 			stdTVShaderCode, hdrFShaderCode, stdTFShaderCode, stdUniforms,
 			stdAttributes);
+	ShaderProgram::stdTextureAlpha = new ogl2ShaderProgram(hdrVShaderCode,
+			stdTVShaderCode, hdrFShaderCode, stdTAFShaderCode, stdUniforms,
+			stdAttributes);
 	ShaderProgram::stdTextureColor = new ogl2ShaderProgram(hdrVShaderCode,
 			stdCTVShaderCode, hdrFShaderCode, stdCTFShaderCode, stdUniforms,
 			stdAttributes);
@@ -449,6 +461,7 @@ ogl2ShaderEngine::~ogl2ShaderEngine() {
 	delete ShaderProgram::stdBasic;
 	delete ShaderProgram::stdColor;
 	delete ShaderProgram::stdTexture;
+	delete ShaderProgram::stdTextureAlpha;
 	delete ShaderProgram::stdTextureColor;
 	delete ShaderProgram::stdParticle;
 	pathShadersRelease();
@@ -582,6 +595,9 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 			case STENCIL_GEQUAL: sf=GL_GEQUAL; break;
 			case STENCIL_EQUAL: sf=GL_EQUAL; break;
 			case STENCIL_NOTEQUAL: sf=GL_NOTEQUAL; break;
+			case STENCIL_ALWAYS:
+			case STENCIL_DISABLE:
+				break;
 		}
 		glStencilFunc(sf,state.sRef,state.sMask);
 	}
@@ -641,6 +657,8 @@ GLenum ogl2ShaderEngine::blendFactor2GLenum(BlendFactor blendFactor) {
 		//   return GL_ONE_MINUS_CONSTANT_ALPHA;
 	case SRC_ALPHA_SATURATE:
 		return GL_SRC_ALPHA_SATURATE;
+	default:
+		break;
 	}
 
 	return GL_ZERO;

@@ -50,13 +50,16 @@ buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel 
 
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
-qt.install: buildqt qt5.install qt.player
+qt.install: buildqt qt5.install qt.player tools html5.tools
 	cp $(ROOT)/ui/release/GiderosStudio.exe $(RELEASE)
 	cp $(ROOT)/player/release/GiderosPlayer.exe $(RELEASE)
 	cp $(ROOT)/texturepacker/release/GiderosTexturePacker.exe $(RELEASE)
 	cp $(ROOT)/fontcreator/release/GiderosFontCreator.exe $(RELEASE)
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
 	cd $(ROOT)/ui/;tar cf - --exclude=Tools/lua --exclude Tools/luac --exclude Tools/make Tools | (cd ../$(RELEASE) && tar xvf - )
+	cp $(ROOT)/lua/src/lua.exe $(RELEASE)/Tools
+	cp $(ROOT)/lua/src/luac.exe $(RELEASE)/Tools
+	cp $(ROOT)/lua/src/lua51.dll $(RELEASE)/Tools
 	mkdir -p $(RELEASE)/Templates
 	#Other templates	
 	cp -R $(ROOT)/ui/Templates/*.gexport $(RELEASE)/Templates
@@ -78,9 +81,9 @@ qt.install: buildqt qt5.install qt.player
 	
 QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Gui Qt5Network Qt5OpenGL Qt5PrintSupport Qt5Widgets Qt5Xml \
-		Qt5Multimedia Qt5MultimediaQuick_p Qt5MultimediaWidgets
+		Qt5Multimedia Qt5MultimediaQuick_p Qt5MultimediaWidgets Qt5WebSockets
 QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
-		Qt5Core Qt5Network Qt5Xml
+		Qt5Core Qt5Network Qt5Xml Qt5WebSockets
 QT5PLATFORM=qminimal qoffscreen qwindows
 QTDLLEXT?=
 
@@ -135,15 +138,12 @@ qtplugins.install: buildqtplugins $(addsuffix .qtplugin.install,$(PLUGINS_WIN))
 	cd $(ROOT)/$*; $(MINGWMAKE) debug
 
 tools:
-	cd $(ROOT)/lua514u/src; gcc -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o luac $(addsuffix .c,print lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio luac lgc)
-	cd $(ROOT)/lua514u/src; gcc -shared -o lua51.dll -Wl,--out-implib,lua51.a $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -shared -o lua51.dll -Wl,--out-implib,lua51.a $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
 			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lgc\
-			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
-	cd $(ROOT)/lua514u/src; gcc -o lua lua.c lua51.a
-	#cd $(ROOT)/lua514u/src; gcc -o lua $(addsuffix .c,lapi lauxlib lcode ldebug ldo ldump\
-			 lfunc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio lua lgc\
-			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib)
+			 linit lbaselib ldblib liolib lmathlib loslib ltablib lstrlib loadlib lutf8lib lint64)
+	cd $(ROOT)/lua/src; gcc -I. -DDESKTOP_TOOLS -o lua lua.c lua51.a
 	
 bundle:
 	rm -rf $(RELEASE).Tmp

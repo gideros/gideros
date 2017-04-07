@@ -5,7 +5,6 @@
 #include <map>
 
 class Application;
-class TextureData;
 class Dib;
 
 enum Filter
@@ -27,6 +26,9 @@ enum Format
     eRGB565,
     eRGBA4444,
     eRGBA5551,
+	eY8,
+	eA8,
+	eYA8
 };
 
 struct TextureParameters

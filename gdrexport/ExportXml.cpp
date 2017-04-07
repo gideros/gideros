@@ -48,10 +48,14 @@ ExportXml::ExportXml(QString xmlFile, bool isPlugin) {
 	exporter = doc.documentElement();
 }
 
-bool ExportXml::Process(ExportContext *ctx) {
+ExportXml::ExportXml() {
+	this->isPlugin = false;
+}
+
+void ExportXml::SetupProperties(ExportContext *ctx)
+{
 	this->ctx = ctx;
 	ctx->basews = Utilities::RemoveSpaces(ctx->base, false);
-	QString exname = exporter.attribute("name");
 	//Fill properties: System
 #ifdef Q_OS_WIN32
 	props["sys.exeExtension"]=".exe";
@@ -63,6 +67,33 @@ bool ExportXml::Process(ExportContext *ctx) {
 	props["sys.homeDir"] = QDir::homePath();
     props["sys.exportDir"] = ctx->exportDir.absolutePath();
 	props["sys.exportType"]=QString(ctx->player?"player":(ctx->assetsOnly?"assets":"full"));
+	//Fill properties: Project
+	props["project.name"] = ctx->base;
+	props["project.namews"] = ctx->basews;
+	props["project.package"] = ctx->properties.packageName;
+	props["project.version"] = ctx->properties.version;
+	props["project.platform"] = ctx->platform;
+	props["project.app_name"] = ctx->appName;
+	props["project.version_code"] = QString::number(
+			ctx->properties.version_code);
+	props["project.build_number"] = QString::number(
+			ctx->properties.build_number);
+	props["project.autorotation"] = QString::number(
+			ctx->properties.autorotation);
+	props["project.orientation"] = QString::number(ctx->properties.orientation);
+	props["project.disableSplash"] = QString::number(ctx->properties.disableSplash?1:0);
+	props["project.backgroundColor"] = ctx->properties.backgroundColor;
+	props["project.ios_bundle"] = ctx->properties.ios_bundle;
+
+	//Fill in passed arguments
+    QHash<QString, QString>::iterator i;
+        for (i = ctx->args.begin(); i != ctx->args.end(); ++i)
+            props["args."+i.key()] = i.value();
+}
+
+bool ExportXml::Process(ExportContext *ctx) {
+	SetupProperties(ctx);
+	QString exname = exporter.attribute("name");
 	QDomElement rules;
 	QDir xmlDir=QFileInfo(xmlFile).dir();
 	if (isPlugin) {
@@ -100,28 +131,6 @@ bool ExportXml::Process(ExportContext *ctx) {
                     props[QString("export.").append(mit.key())] = mit.value();
             }
     }
-//Fill properties: Project
-	props["project.name"] = ctx->base;
-	props["project.namews"] = ctx->basews;
-	props["project.package"] = ctx->properties.packageName;
-	props["project.version"] = ctx->properties.version;
-	props["project.platform"] = ctx->platform;
-	props["project.app_name"] = ctx->appName;
-	props["project.version_code"] = QString::number(
-			ctx->properties.version_code);
-	props["project.build_number"] = QString::number(
-			ctx->properties.build_number);
-	props["project.autorotation"] = QString::number(
-			ctx->properties.autorotation);
-	props["project.orientation"] = QString::number(ctx->properties.orientation);
-	props["project.disableSplash"] = QString::number(ctx->properties.disableSplash?1:0);
-	props["project.backgroundColor"] = ctx->properties.backgroundColor;
-	props["project.ios_bundle"] = ctx->properties.ios_bundle;
-
-//Fill in passed arguments
-    QHash<QString, QString>::iterator i;
-        for (i = ctx->args.begin(); i != ctx->args.end(); ++i)
-            props["args."+i.key()] = i.value();
 //Run rules
 	return ProcessRules(rules);
 }
@@ -278,6 +287,9 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 		QStringList jets=rule.attribute("jet").split(";",QString::SkipEmptyParts);
 		for (int i=0;i<jets.count();i++)
 			ctx->jetset << jets[i];
+		QStringList noencExt=rule.attribute("dontEncryptExts").split(";",QString::SkipEmptyParts);
+		for (int i=0;i<noencExt.count();i++)
+			ctx->noEncryptionExt.insert(noencExt[i]);
 		ExportCommon::exportAssets(ctx, rule.attribute("compile").toInt() != 0);
 		return true;
 	} else if (ruleName == "exportAllfilesTxt") {

@@ -174,8 +174,8 @@ void FontCanvas::paintEvent(QPaintEvent *)
         iter->second.x = xo;
         iter->second.y = yo;
 
-        width = std::min(width, bitmap.width);
-        height = std::min(height, bitmap.rows);
+        width = std::min(width, (int)bitmap.width);
+        height = std::min(height, (int)bitmap.rows);
 
         QImage image(width, height, QImage::Format_RGB32);
 

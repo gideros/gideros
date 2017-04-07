@@ -10,7 +10,7 @@ import android.media.MediaRecorder;
 class GMicrophone {
 	private static GMicrophone sInstance;
 	private static long sData;
-	private static boolean sActive = false;
+	private static boolean sActive = true;
 
 	private static int GMICROPHONE_NO_ERROR = 0;
 	private static int GMICROPHONE_CANNOT_OPEN_DEVICE = 1;

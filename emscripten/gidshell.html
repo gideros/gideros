@@ -36,7 +36,8 @@
 <!--    <hr/>
     <textarea class="emscripten" id="output" rows="8"></textarea>
     <hr>-->
-    <script data-pace-options='{ "elements": false, "target": "#progress_box" }' src='pace.min.js'></script>
+    <script src='jzptool.js'></script>
+    <script data-pace-options='{ "elements": false, "target": "#progress_box" }' src='pace.js'></script>
     <script type='text/javascript'>
 	function getParameterByName(name, url) {
 		if (!url) url = window.location.href;
@@ -48,7 +49,8 @@
                 if (!results[2]) return '';
                 return decodeURIComponent(results[2].replace(/\+/g," "));
          }      
-      var GAPP_URL="gideros.GApp";
+      var GAPP_URL=null;
+      //GAPP_URL="gideros.GApp";
       var uarg=getParameterByName("GIDEROS_GAPP");
       if ((uarg!=null) && (uarg!=""))
         GAPP_URL=uarg;
@@ -65,9 +67,8 @@
         preRun: [],
         postRun: [],
         TOTAL_MEMORY: GIDEROS_MEMORY_MB*1024*1024,
-        dynamicLibraries: [ 'luasocket.js', 'json.js', 'bit.js'
-        /*GIDEROS_DYNLIB_PLUGIN*/ ],
-        JSPlugins: [ /*GIDEROS_JS_PLUGIN*/ ],
+        dynamicLibraries: [ /*GIDEROS_DYNLIB_PLUGIN*/ null ],
+        JSPlugins: [ /*GIDEROS_JS_PLUGIN*/ null ],
         requestFile: function (file) { return 0; },
         print: (function() {
           var element = document.getElementById('output');
@@ -139,6 +140,8 @@
           //Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         }
       };
+      Module.dynamicLibraries.pop();
+      Module.JSPlugins.pop();
       Module.setStatus('Preparing...');
       window.onerror = function() {
         Module.setStatus('Exception thrown, see JavaScript console');

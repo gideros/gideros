@@ -13,6 +13,9 @@
 #include "Utilities.h"
 #include <bytebuffer.h>
 #include <QFile>
+#include <QRegularExpression>
+#include <QCoreApplication>
+#include <QProcess>
 
 void ExportBuiltin::exportAllAssetsFiles(ExportContext *ctx)
 {
@@ -57,7 +60,8 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     	replaceList1 << qMakePair(ctx->templatenamews.toLatin1(), ctx->basews.toLatin1());
     }
     if (ctx->deviceFamily == e_Android){
-        replaceList1 << qMakePair(QString("Android Template App Name").toUtf8(), ctx->appName.toUtf8());
+    	ctx->noEncryptionExt.insert("mp3"); //Android uses backgroundplayer
+    	replaceList1 << qMakePair(QString("Android Template App Name").toUtf8(), ctx->appName.toUtf8());
     	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.androidtemplate").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("android:versionCode=\"1\"").toUtf8(), ("android:versionCode=\""+QString::number(ctx->properties.version_code)+"\"").toUtf8());
@@ -107,7 +111,8 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
     }
     else if(ctx->deviceFamily == e_iOS){
-        replaceList1 << qMakePair(QString("iOS Template App Name").toUtf8(), ctx->appName.toUtf8());
+    	ctx->noEncryptionExt.insert("mp3"); //iOS uses backgroundplayer
+    	replaceList1 << qMakePair(QString("iOS Template App Name").toUtf8(), ctx->appName.toUtf8());
     	replaceList1 << qMakePair(ctx->templatename.toUtf8(), ctx->base.toUtf8());
         if(ctx->args.contains("bundle"))
             replaceList1 << qMakePair(QString("com.yourcompany.${PRODUCT_NAME:rfc1034identifier}").toUtf8(), ctx->args["bundle"].toUtf8());
@@ -115,20 +120,32 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         replaceList1 << qMakePair(QString("<string>BUILD_NUMBER</string>").toUtf8(), ("<string>"+QString::number(ctx->properties.build_number)+"</string>").toUtf8());
     }
     else if(ctx->deviceFamily == e_WinRT){
-        replaceList1 << qMakePair(QString("Gideros Player").toUtf8(), ctx->appName.toUtf8());
+    	QString winver=ctx->properties.version.remove(QRegularExpression(QString("[^0-9.]")));
+    	if (winver.endsWith("."))
+    		winver=winver+"0.0";
+    	else
+    		winver=winver+".0.0";
+    	if (!winver.startsWith("."))
+    		winver="1"+winver;
+    	QStringList wvparts=winver.split(".", QString::SkipEmptyParts);
+    	winver=wvparts[0]+"."+wvparts[1]+"."+wvparts[2]+"."+QString::number(ctx->properties.build_number);
+
+		replaceList1 << qMakePair(QString("Gideros Player").toUtf8(), ctx->appName.toUtf8());
         replaceList1 << qMakePair(QString("giderosgame").toUtf8(), ctx->basews.toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.windowsphone").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("com.giderosmobile.windows").toUtf8(), ctx->args["package"].toUtf8());
         replaceList1 << qMakePair(QString("Gideros Mobile").toUtf8(), ctx->args["organization"].toUtf8());
         replaceList1 << qMakePair(QString("BackgroundColor=\"#464646\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
         replaceList1 << qMakePair(QString("BackgroundColor=\"transparent\"").toUtf8(), ("BackgroundColor=\""+ctx->properties.backgroundColor+"\"").toUtf8());
+        replaceList1 << qMakePair(QString("Version=\"1.0.0.0\"").toUtf8(), ("Version=\""+winver+"\"").toUtf8());
     }
     else if(ctx->deviceFamily == e_Html5){
         replaceList1 << qMakePair(QString("<title>Gideros</title>").toUtf8(), ("<title>"+ctx->appName+"</title>").toUtf8());
         replaceList1 << qMakePair(QString("<body class=\"fullscreen\">").toUtf8(), ("<body class=\"fullscreen\" style=\"background-color:"+ctx->properties.backgroundColor+";\">").toUtf8());
         if(ctx->properties.disableSplash)
             replaceList1 << qMakePair(QString("<img src=\"gideros.png\" />").toUtf8(), QString("<img src=\"gideros.png\" style=\"display:none;\"/>").toUtf8());
-        replaceList1 << qMakePair(QString("gideros.GApp").toUtf8(), (ctx->base+".GApp").toUtf8());
+        if (!ctx->player)
+        	replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("GAPP_URL=\""+ctx->base+".GApp\"").toUtf8());
         replaceList1 << qMakePair(QString("GIDEROS_MEMORY_MB=128").toUtf8(),QString("GIDEROS_MEMORY_MB=%1").arg(ctx->properties.html5_mem).toUtf8());
     }
     ctx->replaceList << replaceList1;
@@ -216,6 +233,10 @@ void ExportBuiltin::prepareAssetFolder(ExportContext *ctx)
             	ctx->outputDir.cd("Assets");
             }
         }
+}
+
+static QString quote(const QString &str) {
+	return "\"" + str + "\"";
 }
 
 void ExportBuiltin::doExport(ExportContext *ctx)
@@ -316,6 +337,35 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
    //go back to root
    ctx->outputDir = QDir(ctx->exportDir);
+
+   if (ctx->deviceFamily == e_Html5)
+   {
+	   if (ctx->properties.html5_pack)
+	   {
+			QDir toolsDir = QDir(
+					QCoreApplication::applicationDirPath());
+#if defined(Q_OS_WIN)
+			QString pack = toolsDir.filePath("crunchme.exe");
+#else
+			QString pack = toolsDir.filePath("crunchme");
+#endif
+			QDir old = QDir::current();
+			QDir::setCurrent(ctx->outputDir.path());
+			QProcess::execute(quote(pack) + " -nostrip -i pace.js pace.js.png");
+			QProcess::execute(quote(pack) + " -nostrip -i gideros.js gideros.js.png");
+			QDir::setCurrent(old.path());
+			ctx->outputDir.remove("gideros.js");
+			ctx->outputDir.remove("pace.js");
+			ctx->outputDir.rename("gideros.ldr.js","gideros.js");
+			ctx->outputDir.rename("pace.ldr.js","pace.js");
+	   }
+	   else
+	   {
+		   ctx->outputDir.remove("gideros.ldr.js");
+		   ctx->outputDir.remove("pace.ldr.js");
+		   ctx->outputDir.remove("jzptool.js");
+	   }
+   }
 
    //install plugins
    ExportCommon::applyPlugins(ctx);

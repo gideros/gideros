@@ -98,7 +98,7 @@ int ViewportBinder::setContent(lua_State* L)
 
 int ViewportBinder::getTransform(lua_State* L)
 {
-	StackChecker checker(L, "ViewportBinder::getTransform", 0);
+	StackChecker checker(L, "ViewportBinder::getTransform", 1);
 
 	Binder binder(L);
 	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport", 1));
@@ -113,7 +113,7 @@ int ViewportBinder::getTransform(lua_State* L)
 
 int ViewportBinder::getProjection(lua_State* L)
 {
-	StackChecker checker(L, "ViewportBinder::getProjection", 0);
+	StackChecker checker(L, "ViewportBinder::getProjection", 1);
 
 	Binder binder(L);
 	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport", 1));
@@ -128,7 +128,7 @@ int ViewportBinder::getProjection(lua_State* L)
 
 int ViewportBinder::getContent(lua_State* L)
 {
-	StackChecker checker(L, "ViewportBinder::getContent", 0);
+	StackChecker checker(L, "ViewportBinder::getContent", 1);
 
 	Binder binder(L);
 	Viewport* shape = static_cast<Viewport*>(binder.getInstance("Viewport"));

@@ -2438,7 +2438,7 @@ void MainWindow::exportProject()
         }
 
 		QSettings settings;
-        QString lastExportDirectory = settings.value(templatenamews+"lastExportDirectory", QString()).toString();
+        QString lastExportDirectory = settings.value(exportType+"lastExportDirectory", QString()).toString();
 
 		QString output = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
 			lastExportDirectory,
@@ -2447,7 +2447,7 @@ void MainWindow::exportProject()
 		if (output.isEmpty() == true)
 			return;
 
-        settings.setValue(templatenamews+"lastExportDirectory", output);
+        settings.setValue(exportType+"lastExportDirectory", output);
 
         if (dialog.encryptCode() && dialog.encryptAssets())
         {

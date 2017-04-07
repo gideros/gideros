@@ -305,6 +305,50 @@ std::vector<unsigned char> Dib::to888() const
     return result;
 }
 
+std::vector<unsigned char> Dib::toY8() const
+{
+    std::vector<unsigned char> result(width_ * height_);
+
+    for (int y = 0; y < height_; ++y)
+        for (int x = 0; x < width_; ++x)
+        {
+            int index = x + y * width_;
+            result[index] = data_[index * 4 + 1];
+        }
+
+    return result;
+}
+
+std::vector<unsigned char> Dib::toA8() const
+{
+    std::vector<unsigned char> result(width_ * height_);
+
+    for (int y = 0; y < height_; ++y)
+        for (int x = 0; x < width_; ++x)
+        {
+            int index = x + y * width_;
+            result[index] = data_[index * 4 + 3];
+        }
+
+    return result;
+}
+
+std::vector<unsigned char> Dib::toYA8() const
+{
+    std::vector<unsigned char> result(width_ * height_ * 2);
+
+    for (int y = 0; y < height_; ++y)
+        for (int x = 0; x < width_; ++x)
+        {
+            int index = x + y * width_;
+            result[index*2 + 0] = data_[index * 4 + 1];
+            result[index*2 + 1] = data_[index * 4 + 3];
+        }
+
+    return result;
+}
+
+
 std::vector<unsigned short> Dib::to4444() const
 {
     std::vector<unsigned short> result(width_ * height_);

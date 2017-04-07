@@ -7,6 +7,11 @@ std::vector<std::string> getDeviceInfo()
   std::vector<std::string> result;
         
   result.push_back("Web");
+	char *userAgentC=(char *) EM_ASM_INT_V({
+	 return allocate(intArrayFromString(navigator.userAgent), 'i8', ALLOC_STACK);
+	});
+  std::string userAgent=userAgentC;
+  result.push_back(userAgent);
                                 
  return result;
 }
@@ -45,7 +50,11 @@ std::string getLocale()
 
 std::string getLanguage()
 {
-	return "en"; //TODO
+	char *lang=(char *) EM_ASM_INT_V({
+	 return allocate(intArrayFromString(Module.gplatformLanguage()), 'i8', ALLOC_STACK);
+	});
+
+	return lang;
 }
 
 void openUrl(const char* url)

@@ -33,10 +33,11 @@ LGVFS_SRCS+=$(addprefix libgvfs/,$(notdir $(basename $(wildcard ../libgvfs/*.cpp
 LSUP_SRCS+=lua/etc/all_lua
 LSUP_SRCS+=libpystring/pystring
 
-#SRCS+=$(addprefix libgid/external/freetype-2.6.1/src/,base/ftbbox base/ftbitmap base/ftglyph base/ftlcdfil \
-#		base/ftstroke base/ftxf86 base/ftbase base/ftsystem base/ftinit base/ftgasp \
-#		raster/raster sfnt/sfnt smooth/smooth autofit/autofit truetype/truetype \
-#		cff/cff psnames/psnames pshinter/pshinter)
+FREETYPE_VER=2.7.1
+LFRT_SRCS= $(addprefix libgid/external/freetype-$(FREETYPE_VER)/src/, \
+	$(addprefix base/,ftbbox ftbitmap ftglyph ftlcdfil ftstroke ftbase ftsystem ftinit ftgasp) \
+	raster/raster sfnt/sfnt smooth/smooth autofit/autofit truetype/truetype cff/cff gzip/ftgzip  \
+	psnames/psnames pshinter/pshinter)
 
 LZIP_SRCS=$(addprefix libgid/external/zlib-1.2.8/,$(notdir $(basename $(wildcard ../libgid/external/zlib-1.2.8/*.c))))
 PNGFILES=png pngerror pngget pngmem pngpread pngread pngrio pngrtran pngrutil pngset pngtrans \
@@ -54,13 +55,14 @@ MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 ind
 LMP3_SRCS=$(addprefix libgid/external/mpg123-1.15.3/src/libmpg123/,$(MP3FILES))
 CORE_SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
 	ginput-js gaudio-js gaudio-stream-openal-js gaudio-sample-openal-js platform-js ghttp-js \
-	gui-js ggeolocation-js main jsnative)   
+	gui-js ggeolocation-js main jsnative netplayer)   
+
 
 
 INCS=2dsg libgideros libgid/include libgvfs libpystring
 INCS+=2dsg/gfxbackends 2dsg/gfxbackends/gl2 2dsg/paths
 INCS+=luabinding libnetwork
-INCS+=$(addprefix libgid/external/freetype-2.6.1/,include src)
+INCS+=$(addprefix libgid/external/freetype-$(FREETYPE_VER)/,include src)
 INCS+=$(LIQUIDFUN)/.. external/glu
 INCS+=libgid/external/zlib-1.2.8 libgid/external/libpng-1.6.2 \
 	$(addprefix libgid/external/openal-soft-1.13/,include/AL OpenAL32/Include) \
@@ -71,7 +73,7 @@ INCS+=lua/src
 INCS+=libgvfs/private
 INCS+=emscripten
 
-LIBS+=prebuilt/libfreetype.so
+#LIBS+=prebuilt/libfreetype.so
 
 EMCC=$(EMSDK_PREFIX) emcc
 EMAR=$(EMSDK_PREFIX) emar
@@ -97,20 +99,22 @@ CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	$(OPTS)
 TEMPLATE=$(BUILD)/Html5/Html5
 
-PLUGINS=bitop luasocket json
+PLUGINS=$(HTML5_PLUGINS)
+PLUGINS?=bitop luasocket json
 
 template: main plugins
-	R=$(PWD); cd $(BUILD)/Html5/Html5; for j in gideros.js pace.min.js; do echo "CRUNCHING" $$j; $$R/$(CRUNCHME_TOOL) -nostrip $$j tmp.jsz; mv tmp.jsz $$j; done
+
+template.zip: template
 	cd $(BUILD); rm -f Html5.zip; zip -r Html5.zip Html5/; 
 
 plugins:
-	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE); cp Build/*.js* $$R/$(TEMPLATE)/; cd -; done
+	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE); cd -; done
 
 plugins.clean:
 	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE) clean; cd -; done
 
 
-SUBLIBS=CORE B2D LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3
+SUBLIBS=CORE B2D LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3 LFRT
 SUBLIBS_AR=$(addprefix $(BUILD)/lib,$(addsuffix .a,$(SUBLIBS)))
 
 define SUB_template
@@ -126,14 +130,23 @@ $(BUILD)/lib%.a:
 	@echo "EMAR" $@
 	@$(EMAR) r $@ $^
 			
-$(TEMPLATE)/gideros.js: $(SUBLIBS_AR) $(OBJS)
+$(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidshell.html
 	@echo "EMLINK gideros"
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(SUBLIBS_AR) -o $(TEMPLATE)/gideros.html --pre-js gidjs.js --pre-js gui.js --shell-file gidshell.html
+	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --shell-file gidshell.html
 
-main: path $(TEMPLATE)/gideros.js
+main: path $(BUILD)/gideros.js
 	cp gideros.png $(TEMPLATE)
-	cp gideros.css $(TEMPLATE)
-	cp pace.* $(TEMPLATE)
+	cp gideros.css pace.css $(TEMPLATE)
+	cp $(BUILD)/gideros.html $(TEMPLATE) 
+	cp $(BUILD)/gideros.html.mem $(TEMPLATE) 
+	cp pace.min.js $(TEMPLATE)/pace.js
+	cp $(BUILD)/gideros.js $(TEMPLATE)
+	cp pace.ldr.js $(TEMPLATE)
+	cp gideros.ldr.js $(TEMPLATE)
+	cp jzptool.js $(TEMPLATE)
+	#$(CRUNCHME_TOOL) -nostrip -i pace.min.js $(TEMPLATE)/pace.js.png
+	#$(CRUNCHME_TOOL) -nostrip -i $(BUILD)/gideros.js $(TEMPLATE)/gideros.js.png
+	
 
 path:
 	mkdir -p $(sort $(dir $(SUBLIBS_OBJS)))

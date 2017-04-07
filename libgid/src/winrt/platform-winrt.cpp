@@ -5,6 +5,7 @@
 #include <memory>
 #include <concrt.h>
 #include <ppltasks.h>
+#include <giderosapi.h>
 
 using namespace Windows::System;
 using namespace Platform;
@@ -101,21 +102,37 @@ bool requested = false;
 
 void setKeepAwake(bool awake)
 {
-	if (!dispRequest){
-		dispRequest = ref new DisplayRequest();
-	}
-	if (awake != requested){
-		requested = !requested;
-		if (awake)
-			dispRequest->RequestActive();
-		else
-			dispRequest->RequestRelease();
-	}
+	gdr_dispatchUi([&] {
+		if (!dispRequest){
+			dispRequest = ref new DisplayRequest();
+		}
+		if (awake != requested){
+			requested = !requested;
+			if (awake)
+				dispRequest->RequestActive();
+			else
+				dispRequest->RequestRelease();
+		}
+	}, true);
 }
 
-bool setKeyboardVisibility(bool visible){
+#if WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP
+bool setKeyboardVisibility(bool visible) {
 	return false;
 }
+#else
+bool setKeyboardVisibility(bool visible) {
+	bool done = false;
+	gdr_dispatchUi([&] {
+		Windows::UI::ViewManagement::InputPane^ ip = Windows::UI::ViewManagement::InputPane::GetForCurrentView();
+		if (visible)
+			done = ip->TryShow();
+		else
+			done = ip->TryHide();
+	}, true);
+	return done;
+}
+#endif
 
 static int s_fps = 60;
 

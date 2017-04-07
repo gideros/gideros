@@ -382,6 +382,8 @@ void ogl2ShaderProgram::recreate() {
 		case CTEXTURE:
 			glUniform1i(gluniforms[gluniforms.size() - 1], ntex++);
 			break;
+		default:
+			break;
 		}
 	}
 	for (int k=0;k<attributes.size();k++) {

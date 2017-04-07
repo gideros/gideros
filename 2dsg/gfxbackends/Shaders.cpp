@@ -14,6 +14,7 @@
 ShaderProgram *ShaderProgram::stdBasic=NULL;
 ShaderProgram *ShaderProgram::stdColor=NULL;
 ShaderProgram *ShaderProgram::stdTexture=NULL;
+ShaderProgram *ShaderProgram::stdTextureAlpha=NULL;
 ShaderProgram *ShaderProgram::stdTextureColor=NULL;
 ShaderProgram *ShaderProgram::stdParticle=NULL;
 ShaderProgram *ShaderProgram::stdParticles=NULL;
@@ -79,6 +80,8 @@ bool ShaderProgram::updateConstant(int index,ShaderProgram::ConstantType type, i
 		break;
 	case CMATRIX:
 		sl=64;
+		break;
+	case CTEXTURE:
 		break;
 	}
 	if (!sl) return false;

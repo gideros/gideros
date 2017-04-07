@@ -96,6 +96,7 @@ MovieClipBinder::MovieClipBinder(lua_State* L)
 		{"setStopAction", setStopAction},
 		{"setGotoAction", setGotoAction},
 		{"clearAction", clearAction},
+		{"getFrame", getFrame},
 		{NULL, NULL},
 	};
 
@@ -388,4 +389,17 @@ int MovieClipBinder::clearAction(lua_State* L)
 	movieclip->clearAction(frame);
 
 	return 0;
+}
+
+int MovieClipBinder::getFrame(lua_State* L)
+{
+	StackChecker checker(L, "MovieClipBinder::getFrame", 1);
+
+	Binder binder(L);
+	MovieClip* movieclip = static_cast<MovieClip*>(binder.getInstance("MovieClip", 1));
+
+	int frame=movieclip->getFrame();
+	lua_pushinteger(L,frame);
+
+	return 1;
 }

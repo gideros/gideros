@@ -515,24 +515,24 @@
 		5F0CD87915BB112300479287 /* jquant1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jquant1.c; path = "../../../libgid/external/jpeg-9/jquant1.c"; sourceTree = "<group>"; };
 		5F0CD87A15BB112300479287 /* jquant2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jquant2.c; path = "../../../libgid/external/jpeg-9/jquant2.c"; sourceTree = "<group>"; };
 		5F0CD87B15BB112300479287 /* jutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jutils.c; path = "../../../libgid/external/jpeg-9/jutils.c"; sourceTree = "<group>"; };
-		5F0CD90F15BB492A00479287 /* ftbbox.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftbbox.c; path = "../../libgid/external/freetype-2.4.12/src/base/ftbbox.c"; sourceTree = "<group>"; };
-		5F0CD91115BB493200479287 /* ftbitmap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftbitmap.c; path = "../../libgid/external/freetype-2.4.12/src/base/ftbitmap.c"; sourceTree = "<group>"; };
-		5F0CD91315BB493B00479287 /* ftglyph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftglyph.c; path = "../../libgid/external/freetype-2.4.12/src/base/ftglyph.c"; sourceTree = "<group>"; };
-		5F0CD91515BB494600479287 /* ftlcdfil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftlcdfil.c; path = "../../libgid/external/freetype-2.4.12/src/base/ftlcdfil.c"; sourceTree = "<group>"; };
-		5F0CD91715BB495000479287 /* ftstroke.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftstroke.c; path = "../../libgid/external/freetype-2.4.12/src/base/ftstroke.c"; sourceTree = "<group>"; };
-		5F0CD91915BB495900479287 /* ftxf86.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftxf86.c; path = "../../libgid/external/freetype-2.4.12/src/base/ftxf86.c"; sourceTree = "<group>"; };
-		5F0CD91B15BB496400479287 /* ftbase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftbase.c; path = "../../libgid/external/freetype-2.4.12/src/base/ftbase.c"; sourceTree = "<group>"; };
-		5F0CD91D15BB496D00479287 /* ftsystem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftsystem.c; path = "../../libgid/external/freetype-2.4.12/src/base/ftsystem.c"; sourceTree = "<group>"; };
-		5F0CD91F15BB498100479287 /* ftinit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftinit.c; path = "../../libgid/external/freetype-2.4.12/src/base/ftinit.c"; sourceTree = "<group>"; };
-		5F0CD92115BB498A00479287 /* ftgasp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftgasp.c; path = "../../libgid/external/freetype-2.4.12/src/base/ftgasp.c"; sourceTree = "<group>"; };
-		5F0CD92315BB499400479287 /* raster.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = raster.c; path = "../../libgid/external/freetype-2.4.12/src/raster/raster.c"; sourceTree = "<group>"; };
-		5F0CD92515BB499C00479287 /* sfnt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sfnt.c; path = "../../libgid/external/freetype-2.4.12/src/sfnt/sfnt.c"; sourceTree = "<group>"; };
-		5F0CD92715BB49A500479287 /* smooth.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = smooth.c; path = "../../libgid/external/freetype-2.4.12/src/smooth/smooth.c"; sourceTree = "<group>"; };
-		5F0CD92915BB49B100479287 /* autofit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = autofit.c; path = "../../libgid/external/freetype-2.4.12/src/autofit/autofit.c"; sourceTree = "<group>"; };
-		5F0CD92B15BB49BA00479287 /* truetype.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = truetype.c; path = "../../libgid/external/freetype-2.4.12/src/truetype/truetype.c"; sourceTree = "<group>"; };
-		5F0CD92D15BB49C100479287 /* cff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cff.c; path = "../../libgid/external/freetype-2.4.12/src/cff/cff.c"; sourceTree = "<group>"; };
-		5F0CD92F15BB49CB00479287 /* psnames.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = psnames.c; path = "../../libgid/external/freetype-2.4.12/src/psnames/psnames.c"; sourceTree = "<group>"; };
-		5F0CD93115BB49D600479287 /* pshinter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pshinter.c; path = "../../libgid/external/freetype-2.4.12/src/pshinter/pshinter.c"; sourceTree = "<group>"; };
+		5F0CD90F15BB492A00479287 /* ftbbox.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftbbox.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftbbox.c"; sourceTree = "<group>"; };
+		5F0CD91115BB493200479287 /* ftbitmap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftbitmap.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftbitmap.c"; sourceTree = "<group>"; };
+		5F0CD91315BB493B00479287 /* ftglyph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftglyph.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftglyph.c"; sourceTree = "<group>"; };
+		5F0CD91515BB494600479287 /* ftlcdfil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftlcdfil.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftlcdfil.c"; sourceTree = "<group>"; };
+		5F0CD91715BB495000479287 /* ftstroke.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftstroke.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftstroke.c"; sourceTree = "<group>"; };
+		5F0CD91B15BB496400479287 /* ftbase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftbase.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftbase.c"; sourceTree = "<group>"; };
+		5F0CD91D15BB496D00479287 /* ftsystem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftsystem.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftsystem.c"; sourceTree = "<group>"; };
+		5F0CD91F15BB498100479287 /* ftinit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftinit.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftinit.c"; sourceTree = "<group>"; };
+		5F0CD92115BB498A00479287 /* ftgasp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftgasp.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftgasp.c"; sourceTree = "<group>"; };
+		5F0CD92315BB499400479287 /* raster.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = raster.c; path = "../../libgid/external/freetype-2.7.1/src/raster/raster.c"; sourceTree = "<group>"; };
+		5F0CD92515BB499C00479287 /* sfnt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sfnt.c; path = "../../libgid/external/freetype-2.7.1/src/sfnt/sfnt.c"; sourceTree = "<group>"; };
+		5F0CD92715BB49A500479287 /* smooth.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = smooth.c; path = "../../libgid/external/freetype-2.7.1/src/smooth/smooth.c"; sourceTree = "<group>"; };
+		5F0CD92915BB49B100479287 /* autofit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = autofit.c; path = "../../libgid/external/freetype-2.7.1/src/autofit/autofit.c"; sourceTree = "<group>"; };
+		5F0CD92B15BB49BA00479287 /* truetype.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = truetype.c; path = "../../libgid/external/freetype-2.7.1/src/truetype/truetype.c"; sourceTree = "<group>"; };
+		5F0CD92D15BB49C100479287 /* cff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cff.c; path = "../../libgid/external/freetype-2.7.1/src/cff/cff.c"; sourceTree = "<group>"; };
+		5F0CD91915BB495900479287 /* ftgzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftxf86.c; path = "../../libgid/external/freetype-2.7.1/src/gzip/ftgzip.c"; sourceTree = "<group>"; };
+		5F0CD92F15BB49CB00479287 /* psnames.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = psnames.c; path = "../../libgid/external/freetype-2.7.1/src/psnames/psnames.c"; sourceTree = "<group>"; };
+		5F0CD93115BB49D600479287 /* pshinter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pshinter.c; path = "../../libgid/external/freetype-2.7.1/src/pshinter/pshinter.c"; sourceTree = "<group>"; };
 		5F276EAC18F4020E00D78AE4 /* Box2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Box2D.h; path = "../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Box2D.h"; sourceTree = "<group>"; };
 		5F276EAE18F4020E00D78AE4 /* b2BroadPhase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2BroadPhase.cpp; sourceTree = "<group>"; };
 		5F276EAF18F4020E00D78AE4 /* b2BroadPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2BroadPhase.h; sourceTree = "<group>"; };
@@ -931,7 +931,7 @@
 			isa = PBXGroup;
 			children = (
 				EBD8C95C1B9039DB002F9D6C /* libxmp-4.3 */,
-				5F0CD90D15BB48F600479287 /* freetype-2.4.12 */,
+				5F0CD90D15BB48F600479287 /* freetype-2.7.1 */,
 				5F0CD84B15BB107900479287 /* jpeg-9 */,
 				5F0CD82915BB0B1500479287 /* libpng-1.6.2 */,
 				5F0CD7BC15BB01FD00479287 /* snappy-1.1.0 */,
@@ -1067,7 +1067,7 @@
 			name = libpystring;
 			sourceTree = "<group>";
 		};
-		5F0CD90D15BB48F600479287 /* freetype-2.4.12 */ = {
+		5F0CD90D15BB48F600479287 /* freetype-2.7.1 */ = {
 			isa = PBXGroup;
 			children = (
 				5F0CD90F15BB492A00479287 /* ftbbox.c */,
@@ -1075,7 +1075,6 @@
 				5F0CD91315BB493B00479287 /* ftglyph.c */,
 				5F0CD91515BB494600479287 /* ftlcdfil.c */,
 				5F0CD91715BB495000479287 /* ftstroke.c */,
-				5F0CD91915BB495900479287 /* ftxf86.c */,
 				5F0CD91B15BB496400479287 /* ftbase.c */,
 				5F0CD91D15BB496D00479287 /* ftsystem.c */,
 				5F0CD91F15BB498100479287 /* ftinit.c */,
@@ -1086,10 +1085,11 @@
 				5F0CD92915BB49B100479287 /* autofit.c */,
 				5F0CD92B15BB49BA00479287 /* truetype.c */,
 				5F0CD92D15BB49C100479287 /* cff.c */,
+				5F0CD91915BB495900479287 /* ftgzip.c */,
 				5F0CD92F15BB49CB00479287 /* psnames.c */,
 				5F0CD93115BB49D600479287 /* pshinter.c */,
 			);
-			name = "freetype-2.4.12";
+			name = "freetype-2.7.1";
 			path = ..;
 			sourceTree = "<group>";
 		};
@@ -2089,8 +2089,8 @@
 					../../libgid/include/private,
 					"../../libgid/external/snappy-1.1.0",
 					"../../libgid/external/libpng-1.6.2",
-					"../../libgid/external/freetype-2.4.12/include",
-					"../../libgid/external/freetype-2.4.12/src",
+					"../../libgid/external/freetype-2.7.1/include",
+					"../../libgid/external/freetype-2.7.1/src",
 					"../../external/liquidfun-1.0.0/liquidfun/Box2D",
 					../../libgid/include/ios,
 					"../../libgid/external/zlib-1.2.8",
@@ -2139,8 +2139,8 @@
 					../../libgid/include/private,
 					"../../libgid/external/snappy-1.1.0",
 					"../../libgid/external/libpng-1.6.2",
-					"../../libgid/external/freetype-2.4.12/include",
-					"../../libgid/external/freetype-2.4.12/src",
+					"../../libgid/external/freetype-2.7.1/include",
+					"../../libgid/external/freetype-2.7.1/src",
 					"../../external/liquidfun-1.0.0/liquidfun/Box2D",
 					../../libgid/include/ios,
 					"../../libgid/external/zlib-1.2.8",
@@ -2183,8 +2183,8 @@
 					../../libgid/include/private,
 					"../../libgid/external/snappy-1.1.0",
 					"../../libgid/external/libpng-1.6.2",
-					"../../libgid/external/freetype-2.4.12/include",
-					"../../libgid/external/freetype-2.4.12/src",
+					"../../libgid/external/freetype-2.7.1/include",
+					"../../libgid/external/freetype-2.7.1/src",
 					"../../external/liquidfun-1.0.0/liquidfun/Box2D",
 					../../libgid/include/ios,
 					"../../libgid/external/zlib-1.2.8",
@@ -2226,8 +2226,8 @@
 					../../libgid/include/private,
 					"../../libgid/external/snappy-1.1.0",
 					"../../libgid/external/libpng-1.6.2",
-					"../../libgid/external/freetype-2.4.12/include",
-					"../../libgid/external/freetype-2.4.12/src",
+					"../../libgid/external/freetype-2.7.1/include",
+					"../../libgid/external/freetype-2.7.1/src",
 					"../../external/liquidfun-1.0.0/liquidfun/Box2D",
 					../../libgid/include/ios,
 					"../../libgid/external/zlib-1.2.8",

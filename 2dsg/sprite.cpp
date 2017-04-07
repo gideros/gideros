@@ -193,7 +193,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			sprite->childrenDrawn();
 			if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1)
 				glPopColor();
-			if (sprite->sfactor_ != -1)
+			if (sprite->sfactor_ != (ShaderEngine::BlendFactor)-1)
 				glPopBlendFunc();
 			if ((sprite->cliph_ >= 0) && (sprite->clipw_ >= 0))
 				ShaderEngine::Engine->popClip();
@@ -221,7 +221,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			glMultColor(r, g, b, a * sprite->alpha_);
 		}
 
-		if (sprite->sfactor_ != -1) {
+		if (sprite->sfactor_ != (ShaderEngine::BlendFactor)-1) {
 			glPushBlendFunc();
 			glSetBlendFunc(sprite->sfactor_, sprite->dfactor_);
 		}

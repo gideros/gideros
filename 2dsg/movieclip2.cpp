@@ -1263,6 +1263,11 @@ void MovieClip::clearAction(int frame)
 	actions_.erase(frame);
 }
 
+int MovieClip::getFrame()
+{
+	return frame_;
+}
+
 void MovieClip::addChild2(Sprite* sprite)
 {
 	std::map<Sprite*, int>::iterator iter = counts_.find(sprite);

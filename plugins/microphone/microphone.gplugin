@@ -7,7 +7,7 @@
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;microphone&quot;);"/>
-            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.GMicrophone&quot;,"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.microphone.GMicrophone&quot;,"/>
         </replacelist>
     </template>
     <template name="AndroidManifest" path="">
@@ -26,7 +26,7 @@
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
             <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;microphone&quot;);"/>
-            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.GMicrophone&quot;,"/>
+            <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.microphone.GMicrophone&quot;,"/>
         </replacelist>
     </template>
     <template name="AndroidManifest" path="">

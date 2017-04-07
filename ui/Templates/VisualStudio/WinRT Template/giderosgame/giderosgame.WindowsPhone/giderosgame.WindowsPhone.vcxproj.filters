@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Common">
@@ -51,13 +51,7 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\PixelShader.cso">
-      <Filter>Assets</Filter>
-    </None>
     <None Include="Assets\properties.bin">
-      <Filter>Assets</Filter>
-    </None>
-    <None Include="Assets\VertexShader.cso">
       <Filter>Assets</Filter>
     </None>
   </ItemGroup>
@@ -98,6 +92,9 @@
       <Filter>Plugins</Filter>
     </ClCompile>
     <ClCompile Include="Plugins\lua_cjson_stub.cpp">
+      <Filter>Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\sqlite3.c">
       <Filter>Plugins</Filter>
     </ClCompile>
   </ItemGroup>

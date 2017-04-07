@@ -30,6 +30,8 @@ import android.text.InputType;
 import com.giderosmobile.android.player.*;
 import com.giderosmobile.androidtemplate.R;
 
+//GIDEROS-ACTIVITY-IMPORT//
+
 public class AndroidTemplateActivity extends Activity implements OnTouchListener
 {
 	static
@@ -37,12 +39,6 @@ public class AndroidTemplateActivity extends Activity implements OnTouchListener
 		System.loadLibrary("gvfs");
 		System.loadLibrary("lua");
 		System.loadLibrary("gideros");
-
-		System.loadLibrary("luasocket");
-		System.loadLibrary("lfs");
-		System.loadLibrary("lsqlite3");
-		System.loadLibrary("json");
-		System.loadLibrary("bitop");
 		//Line below is a marker for plugin insertion scripts. Do not remove or change
 		//GIDEROS-STATIC-INIT//
 	}

@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Platform)'=='ARM'" Label="Configuration">
+    <GidPlatformPath>ARM\</GidPlatformPath>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{f9d2c644-9c0b-41e9-b66f-8f48fd1e7bb7}</ItemsProjectGuid>
+    <ItemsRootNamespace>giderosgame</ItemsRootNamespace>
+    <ItemsProjectName>giderosgame.Shared</ItemsProjectName>
+    <SharedGUID>9fd4af0a-93d0-4455-84eb-dcc2c7c76e36</SharedGUID>
+    <GidLibsPath>..\..\..\winrt\$(GidPlatformPath)$(Configuration)\gideros.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\libgvfswinrt.$(GidProjectType);..\..\..\winrt\$(GidPlatformPath)\$(Configuration)\luawinrt.$(GidProjectType)</GidLibsPath>
+  </PropertyGroup>
+  
+  <ItemDefinitionGroup>
+    <ClCompile>
+   	  <!--GIDEROS-COMPILE-SHARED-->
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4244</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(GidLibsPath)</AdditionalLibraryDirectories>
+   	  <!--GIDEROS-LINK-SHARED-->
+   <!--PLUGINS-START-->
+      <AdditionalDependencies>luasocket.$(GidProjectType).lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(ProjectDir)\..\..\..\release\All Plugins\luasocket\bin\WinRT\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
+   <!--PLUGINS-END-->
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.cpp">
+      <DependentUpon>$(MSBuildThisFileDirectory)DirectXPage.xaml</DependentUpon>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.h">
+      <DependentUpon>$(MSBuildThisFileDirectory)DirectXPage.xaml</DependentUpon>
+    </ClInclude>
+   <!--GIDEROS-PLUGIN-FILES-->
+   <!--PLUGINS-START-->
+    <ClCompile Include="$(ProjectDir)\..\..\..\Plugins\luasocket\source\luasocket_stub.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>      
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bit_stub.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lua_cjson.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lua_cjson_stub.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\fpconv.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\strbuf.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lfs.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;NO_GETCWD;NO_CHDIR</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lfs_stub.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\lfs.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lsqlite3.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\lsqlite3_stub.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\sqlite3.c">
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);SQLITE_OMIT_LOAD_EXTENSION=1;SQLITE_OS_WINRT;SQLITE_MAX_MMAP_SIZE=0;SQLITE_OMIT_WAL</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4703</DisableSpecificWarnings>
+     </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\sqlite3.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\adsbinder.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\ads.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\AdsAbstract.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\Ads\frameworks\AdsPubcenter.h" />
+   <!--PLUGINS-END-->
+    <ClInclude Include="$(MSBuildThisFileDirectory)gapplication.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gevent.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gexport.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gfile.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gglobal.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gideros.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)giderosapi.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)glog.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gpath.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gplugin.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)gproxy.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)greferenced.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lauxlib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lua.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)luaconf.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)lualib.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)DirectXPage.xaml" />
+  </ItemGroup>
+</Project>

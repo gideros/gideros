@@ -8,5 +8,6 @@ void ExportLUA_Init(ExportContext *ctx);
 void ExportLUA_Cleanup(ExportContext *ctx);
 bool ExportLUA_CallFile(ExportContext *ctx,ExportXml *xml,const char *fn);
 bool ExportLUA_CallCode(ExportContext *ctx,ExportXml *xml,const char *code);
+void ExportLUA_DonePlugins(ExportContext *ctx);
 
 #endif

@@ -39,7 +39,7 @@ typedef struct gads_RewardEvent
 {
 	const char *ad;
 	const char *type;
-    int amount;
+	int amount;
 } gads_RewardEvent;
 
 typedef struct gads_Parameter

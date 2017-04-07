@@ -17,6 +17,12 @@
 - (void)deleteFramebuffer;
 @end
 
+@interface LuaException : NSException
+@end
+@implementation LuaException
+@end
+
+
 @implementation EAGLView
 
 @dynamic context;
@@ -217,6 +223,12 @@
 {
     gdr_keyDown(8,0); //Simulate a backspace key press and release
     gdr_keyUp(8,0);
+}
+
+- (void) reportLuaError:(NSString *)error
+{
+    //GIDEROS-TAG-IOS:LUAERROR//
+    @throw [[LuaException alloc] initWithName:@"Lua" reason:error userInfo:nil];
 }
 
 @end

@@ -805,6 +805,7 @@ void ApplicationManager::drawFrame()
 			*/
 
 			applicationStarted_ = true;
+			running_ = true;
 		}
 		
 		if (splashScreen_ && splashScreen_->isFinished())
@@ -815,6 +816,7 @@ void ApplicationManager::drawFrame()
 
 			loadLuaFiles();
 			skipFirstEnterFrame_ = true;
+			running_ = true;
 		}
 	}	
 
@@ -1219,10 +1221,13 @@ void ApplicationManager::pause()
 
     gapplication_enqueueEvent(GAPPLICATION_PAUSE_EVENT, NULL, 0);
 
-	GStatus status;
-	application_->tick(&status);
-	if (status.error())
-		luaError(status.errorString());
+	if (running_ == true)
+	{
+		GStatus status;
+		application_->tick(&status);
+		if (status.error())
+			luaError(status.errorString());
+	}
 	gaudio_android_suspend(true);
  }
 
@@ -1231,40 +1236,52 @@ void ApplicationManager::resume()
 	gaudio_android_suspend(false);
     gapplication_enqueueEvent(GAPPLICATION_RESUME_EVENT, NULL, 0);
 
-	GStatus status;
-	application_->tick(&status);
-	if (status.error())
-		luaError(status.errorString());
+	if (running_ == true)
+	{
+		GStatus status;
+		application_->tick(&status);
+		if (status.error())
+			luaError(status.errorString());
+	}
  }
 
 void ApplicationManager::lowMemory()
 {
     gapplication_enqueueEvent(GAPPLICATION_MEMORY_LOW_EVENT, NULL, 0);
 
-	GStatus status;
-	application_->tick(&status);
-	if (status.error())
-		luaError(status.errorString());
+	if (running_ == true)
+	{
+		GStatus status;
+		application_->tick(&status);
+		if (status.error())
+			luaError(status.errorString());
+	}
 }
 
 void ApplicationManager::background()
 {
     gapplication_enqueueEvent(GAPPLICATION_BACKGROUND_EVENT, NULL, 0);
 
-	GStatus status;
-	application_->tick(&status);
-	if (status.error())
-		luaError(status.errorString());
+	if (running_ == true)
+	{
+		GStatus status;
+		application_->tick(&status);
+		if (status.error())
+			luaError(status.errorString());
+	}
  }
 
 void ApplicationManager::foreground()
 {
     gapplication_enqueueEvent(GAPPLICATION_FOREGROUND_EVENT, NULL, 0);
 
-	GStatus status;
-	application_->tick(&status);
-	if (status.error())
-		luaError(status.errorString());
+	if (running_ == true)
+	{
+		GStatus status;
+		application_->tick(&status);
+		if (status.error())
+			luaError(status.errorString());
+	}
  }
 
 static ApplicationManager *s_applicationManager = NULL;

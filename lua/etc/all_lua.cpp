@@ -4,7 +4,7 @@
 
 #define luaall_c
 
-
+#ifndef DESKTOP_TOOLS
 #include <gstdio.h>
 
 #undef stdin
@@ -38,7 +38,7 @@
 #define ftell g_ftell
 #define setvbuf g_setvbuf
 #define fflush g_fflush
-
+#endif
 
 extern "C" {
 

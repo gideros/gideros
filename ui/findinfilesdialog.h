@@ -7,6 +7,8 @@
 class FindInFilesDialog : public QDialog
 {
 	Q_OBJECT
+protected:
+	void hideEvent(QHideEvent * event);
 
 public:
 	FindInFilesDialog(QWidget *parent = 0);

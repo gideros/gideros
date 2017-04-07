@@ -29,7 +29,9 @@ public:
 	void takePicture();
     void takeScreenshot();
 	void getPicture();
+	void getFile(const char* extensions, const char* initialPath);	
     void savePicture(const char* path);
+    void saveFile(const char* path, const char* initialPath);
     void playVideo(const char* path, bool force);
     QString getAppPath();
     void onMediaReceived(const char* path);
@@ -63,7 +65,9 @@ int gmedia_isCameraAvailable();
 void gmedia_takePicture();
 void gmedia_takeScreenshot();
 void gmedia_getPicture();
+void gmedia_getFile(const char* extensions, const char* initialPath);
 void gmedia_savePicture(const char* path);
+void gmedia_saveFile(const char* path, const char* initialPath);
 void gmedia_playVideo(const char* path, int force);
 
 g_id gmedia_addCallback(gevent_Callback callback, void *udata);

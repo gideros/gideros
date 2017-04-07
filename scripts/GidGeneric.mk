@@ -26,8 +26,6 @@ XMP_LOADERS=xm_load s3m_load it_load \
 XMP_LOADERS_HDR=it loader mod s3m xm
 
 INCLUDEPATHS_gid = libgid/external/glew-1.10.0/include \
-	libgid/external/freetype-2.4.12/src \
-	libgid/external/freetype-2.4.12/include \
 	libgid/external/snappy-1.1.0 \
 	libgid/external/libpng-1.6.2 \
 	libgid/external/jpeg-9 \
@@ -63,12 +61,13 @@ OBJFILES_gideros = $(addprefix libgideros/,binderutil stringid eventdispatcher \
 DEFINES_gideros=GIDEROS_LIBRARY
 
 ##PLAYER
+FREETYPE_VER=2.7.1
 INCLUDEPATHS_player = libgvfs libgideros lua/src libpystring libgid/include \
 	libnetwork libpvrt luabinding \
 	2dsg 2dsg/gfxbackends 2dsg/paths \
 	libgid/external/glew-1.10.0/include \
-	libgid/external/freetype-2.4.12/src \
-	libgid/external/freetype-2.4.12/include \
+	libgid/external/freetype-$(FREETYPE_VER)/src \
+	libgid/external/freetype-$(FREETYPE_VER)/include \
 	libgid/external/mpg123-1.15.3/src \
 	libgid/external/snappy-1.1.0 \
 	libgid/external/libpng-1.6.2 \
@@ -79,6 +78,8 @@ INCLUDEPATHS_player = libgvfs libgideros lua/src libpystring libgid/include \
 	libgid/external/libxmp-4.3/include \
 	external/liquidfun-1.0.0/liquidfun/Box2D \
 	external/glu 
+
+DEFINES_player=FT2_BUILD_LIBRARY DARWIN_NO_CARBON
 	
 OBJFILES_player= $(basename $(wildcard luabinding/*.cpp luabinding/*.c))
 OBJFILES_player+= $(basename $(wildcard libpvrt/*.cpp))
@@ -90,3 +91,8 @@ OBJFILES_player+= $(basename $(wildcard $(addprefix external/liquidfun-1.0.0/liq
 OBJFILES_player+= $(basename $(wildcard external/glu/libtess/*.c))
 OBJFILES_player+= $(addprefix libgid/src/,aes md5 platformutil utf8 drawinfo gtimer)
 OBJFILES_player+= $(addprefix external/minizip-1.1/source/,ioapi unzip)
+OBJFILES_player+= $(addprefix libgid/external/freetype-$(FREETYPE_VER)/src/, \
+	$(addprefix base/,ftbbox ftbitmap ftglyph ftlcdfil ftstroke ftbase ftsystem ftinit ftgasp) \
+	raster/raster sfnt/sfnt smooth/smooth autofit/autofit truetype/truetype cff/cff gzip/ftgzip  \
+	psnames/psnames pshinter/pshinter)
+#2.4.12  base/ftxf86.c

@@ -413,7 +413,7 @@ std::vector<std::string> getLocalIPs()
 #endif
 
 
-#if defined(_WIN32) && !defined(WINSTORE)
+#if defined(_WIN32) || defined(WINSTORE)
 double iclock()
 {
 	static LARGE_INTEGER freq;
@@ -455,6 +455,12 @@ double iclock()
 {
 	static double begin = nanoTime();
 	return nanoTime() - begin;
+}
+#elif __EMSCRIPTEN__
+#include "emscripten.h"
+double iclock()
+{
+	return emscripten_get_now()/1000;
 }
 #else
 double iclock()
