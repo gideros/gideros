@@ -68,12 +68,12 @@ include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtWin.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWin32.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidAndroid.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidWinRT.mk
-include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidHtml5.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidPkg.mk
 else
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidQtMac.mk
 include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidiOS.mk
 endif
+include $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/GidHtml5.mk
 
 
 		
