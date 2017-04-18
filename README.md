@@ -57,7 +57,7 @@ stage:addChild(shape)
 * [**Developer Center:**](http://giderosmobile.com/DevCenter/index.php/Main_Page) Developer Center contains different articles and posts about Gideros, that might help you deal with some specific problems.
 * [**Everything else...**](http://giderosmobile.com/guide) All developer related documentation... 
 
-##3rd party tools 
+## 3rd party tools 
 
 Gideros runs with many 3rd party applications, from Particle Candy to Physics Editor to Texture Packer. [Here'a an incomplete list](http://giderosmobile.com/tools).
 
