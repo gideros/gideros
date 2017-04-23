@@ -20,16 +20,17 @@ GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | gre
 #TOOLS
 QMAKE=qmake
 
+ifeq ($(OS),Windows_NT)
 CC=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/gcc
 CXX=$(QTBASEDIR)/Tools/$(QT_TOOLSARCH)/bin/g++
-
-ifeq ($(OS),Windows_NT)
 RELEASE=$(ROOT)/Build.Win
 all: qtapp.install android.install winrt.install html5.install win32.install 
 
 clean: qtapp.clean android.clean win32.clean html5.clean winrt.clean
 	rm -rf $(RELEASE)
 else
+CC=gcc
+CXX=g++
 RELEASE=$(ROOT)/Build.Mac
 all: qtapp.install ios.install
 

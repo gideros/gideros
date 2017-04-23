@@ -34,12 +34,12 @@ CRUNCHME_SRCS+=$(addprefix src/zlib/,adler32 compress crc32 deflate inftrees tre
 CRUNCHME_SRCS+=$(addprefix src/,crunchme png)
 
 html5.crunchme: $(addprefix emscripten/crunchme-0.4/,$(addsuffix .co,$(CRUNCHME_SRCS)))
-	g++  -o $(ROOT)/ui/Tools/crunchme $^
+	$(CXX) -o $(ROOT)/ui/Tools/crunchme $^
 	
 %.co: %.cpp
-	g++ -c $< -Iemscripten/crunchme-0.4/src/liblzg/include -o $@
+	$(CXX) -c -o $@ -Iemscripten/crunchme-0.4/src/liblzg/include $< 
 
 %.co: %.c
-	gcc -c $< -o $@
+	$(CC) -c -o $@ $<
 
 	
