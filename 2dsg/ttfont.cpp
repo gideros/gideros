@@ -69,6 +69,8 @@ void TTFont::constructor(const char *filename, float size, float smoothing)
     args.flags = FT_OPEN_STREAM;
     args.stream = &stream_;
 
+	smoothing_ = smoothing;
+
     if (FT_Open_Face(FT_Library_Singleton::instance(), &args, 0, &face_))
         throw GiderosException(GStatus(6012, filename));		// Error #6012: %s: Error while reading font file.
 
@@ -95,8 +97,6 @@ void TTFont::constructor(const char *filename, float size, float smoothing)
     currentLogicalScaleX_=scalex;
     currentLogicalScaleY_=scaley;
     defaultSize_=size;
-
-    smoothing_ = smoothing;
 }
 
 void TTFont::checkLogicalScale()

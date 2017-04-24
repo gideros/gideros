@@ -553,6 +553,7 @@ bool hasDocuments=EM_ASM_INT_V( {return FS.documentsOk;}
 		else
 		{
 			EM_ASM_( { Module.luaError(Pointer_stringify($0)) }, error);
+			throw luaException(error);
 		// g_exit();
 		}
 	}

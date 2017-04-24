@@ -20,6 +20,20 @@ EGLDisplay display;
 #endif
 float pixelRatio=1.0;
 
+static void errorAbort(const char *detail)
+{
+	const char *type="genErr";
+	EM_ASM_( { Module.showError(Pointer_stringify($0),Pointer_stringify($1)) }, type, detail);
+	emscripten_force_exit(1);
+}
+
+static void errorLua(const char *detail)
+{
+	const char *type="luaErr";
+	EM_ASM_( { Module.showError(Pointer_stringify($0),Pointer_stringify($1)) }, type, detail);
+	emscripten_force_exit(1);
+}
+
 int initGL(int width, int height)
 {
  //emscripten_set_canvas_size(width,height);
@@ -78,12 +92,26 @@ int initGL(int width, int height)
 extern "C" void GGStreamOpenALTick();                                                                                                    
 void looptick()
 {
-    s_applicationManager->drawFrame();
+	try {
+		s_applicationManager->drawFrame();
 #ifndef EGL
     glfwSwapBuffers();
 #else
     eglSwapInterval(display,1);
 #endif
+	}
+	catch(const luaException& e)
+	{
+	    errorLua(e.what());
+	}
+	catch(const std::exception& e)
+	{
+		errorAbort(e.what());
+	}
+	catch(...)
+	{
+		errorAbort("Generic error");
+	}
 }
 
 EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *e, void *userData)
@@ -233,6 +261,7 @@ extern const char *codeKey_;
 const char *currentUrl=NULL;
 int main() {
   EM_ASM(Module.setStatus("Initializing"));
+  try {
           
 char *url=(char *) EM_ASM_INT_V({
  return allocate(intArrayFromString(location.href), 'i8', ALLOC_STACK);
@@ -313,6 +342,19 @@ char *url=(char *) EM_ASM_INT_V({
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
     emscripten_set_main_loop(looptick, 0, 1);
     main_registerPlugin(NULL);
+  }
+  catch(const luaException& e)
+  {
+      errorLua(e.what());
+  }
+  catch(const std::exception& e)
+  {
+      errorAbort(e.what());
+  }
+  catch(...)
+  {
+      errorAbort("Generic error");
+  }
 }
 
 int main_registerPlugin(const char *pname)

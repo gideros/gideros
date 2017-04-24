@@ -130,9 +130,9 @@ $(BUILD)/lib%.a:
 	@echo "EMAR" $@
 	@$(EMAR) r $@ $^
 			
-$(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidshell.html
+$(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html
 	@echo "EMLINK gideros"
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --shell-file gidshell.html
+	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
 main: path $(BUILD)/gideros.js
 	cp gideros.png $(TEMPLATE)

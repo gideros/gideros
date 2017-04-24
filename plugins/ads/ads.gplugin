@@ -274,7 +274,7 @@ iOSProject.commit()
 <if condition="[[[plugin.adsFwUnity]]]">
 <template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.*" exclude="*.framework" />
 <download source="http://apps.giderosmobile.com/ext/ios/UnityAds.framework-2.0.5.zip" dest="[[[sys.cacheDir]]]/UnityAds.framework.zip" />
-<unzip source="[[[sys.cacheDir]]]/UnityAds.framework.zip" dest="[[[local.adsfwd]]]/UnityAds.framework" />
+<unzip source="[[[sys.cacheDir]]]/UnityAds.framework.zip" dest="[[[local.adsfwd]]]" />
 <lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.addSources({

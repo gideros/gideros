@@ -21,6 +21,23 @@
     </div>
     </figure>
   </div>
+  <div id="oops" class="fullscreen oops" style="display: none">
+  <h1>Ooops, something went wrong...</h1>
+  <div id="memoryErr" style="display: none">
+  <h3>This app ran out of memory</h3>
+  Try to close some other apps or tabs in your browser and try again.
+  </div>
+  <div id="luaErr" style="display: none">
+  <h3>An error occured in the code</h3>
+  Please inform the app developer about the details below, they will help him fix this in the future.
+  </div>
+  <div id="genErr" style="display: none">
+  <h3>An unexpected error occured</h3>
+  The details below may be helpful to you or the app developer... hopefully.
+  </div>
+  <pre id="errDetails">
+  </pre>
+  </div>
   <!-- Put canvas on top of everything so that it catches events -->
   <canvas class="fullscreen" id="canvas" oncontextmenu="event.preventDefault()"
   hidden=1></canvas>
@@ -62,10 +79,13 @@
       var progressElement = document.getElementById('progress');
       var spinnerElement = document.getElementById('spinner');
       var infopaneElement = document.getElementById('infopane');
+      var errDetailsElement = document.getElementById('errDetails');
+      var oopsElement = document.getElementById('oops');
 
       var Module = {
         preRun: [],
         postRun: [],
+        preInit: [],
         TOTAL_MEMORY: GIDEROS_MEMORY_MB*1024*1024,
         dynamicLibraries: [ /*GIDEROS_DYNLIB_PLUGIN*/ null ],
         JSPlugins: [ /*GIDEROS_JS_PLUGIN*/ null ],
@@ -107,6 +127,20 @@
 
           return canvas;
         })(),
+        showError: function(type,detail) {
+        	spinnerElement.hidden = true;
+      		infopaneElement.style.display="none";
+      		canvas.hidden = true;  
+      		oopsElement.style.display="block";
+      		errDetailsElement.innerHTML=detail;
+      		document.getElementById(type).style.display="block";
+        },
+        gidAbort: function (what) {
+        	if (what.includes('ALLOW_MEMORY_GROWTH=1'))
+        		Module.showError("memoryErr",what);
+        	else
+        		Module.showError("genErr",what);
+        },
         setStatus: function(text) {
           if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
           if (text === Module.setStatus.text) return;
@@ -149,6 +183,7 @@
         Module.setStatus = function(text) {
           if (text) Module.printErr('[post-exception status] ' + text);
         };
+        //Module.showError("genErr","");
       };
     </script>
     {{{ SCRIPT }}}

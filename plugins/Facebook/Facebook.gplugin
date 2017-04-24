@@ -35,7 +35,7 @@
  <target name="iOS">
    <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/Plugins/" dest="[[[project.namews]]]/Plugins/" />
     	<download source="http://apps.giderosmobile.com/ext/ios/FacebookSDK.framework-3.24.4.zip" dest="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" />
-    	<unzip source="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" dest="[[[project.namews]]]/Plugins/Facebook/FacebookSDK.framework" />
+    	<unzip source="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" dest="[[[project.namews]]]/Plugins/Facebook" />
 	<template name="Project" path="">
         <replacelist wildcards="project.pbxproj;EAGLView.m;[[[project.namews]]]-Info.plist">
 	    <prepend>
