@@ -289,7 +289,7 @@ particles.
 For a group of particles, use the `b2ParticleGroupFlag` enum, which provides
 two types of particle groups:
 
-###Solid
+### Solid
 
 A solid particle group prevents other bodies from lodging inside of it. Should
 anything penetrate it, the solid particle group pushes the offending body back
@@ -306,7 +306,7 @@ specify a solid particle group. For example:
 
 &nbsp;&nbsp;&nbsp;`pd.groupFlags = b2_solidParticleGroup;`
 
-###Rigid
+### Rigid
 
 Rigid particle groups are ones whose shape does not change, even when they
 collide
