@@ -52,10 +52,10 @@ Application::Application(QObject *parent) :
     server2_->listen("gdrdeamon2");
 #else
     server_ = new QTcpServer(this);
-    server_->listen(QHostAddress::Any, 15001);
+    server_->listen(QHostAddress::Any, 15011);
 
     server2_ = new QTcpServer(this);
-    server2_->listen(QHostAddress::Any, 15002);
+    server2_->listen(QHostAddress::Any, 15012);
 #endif
     connect(server_, SIGNAL(newConnection()), this, SLOT(newConnection()));
     connect(server2_, SIGNAL(newConnection()), this, SLOT(ignoreConnection()));
@@ -323,10 +323,11 @@ void Application::newConnection()
     }
     else if (command == "setip")
     {
-        QString ip;
+        QString ip,port;
         instream >> ip;
+        instream >> port;
 
-        client_->connectToHost(ip, 15000);
+        client_->connectToHost(ip, port.toInt());
     }
     else if (command == "isconnected")
     {
