@@ -105,8 +105,9 @@
 			 }
 			 else
 				 onMediaCanceled();
+			 dialog->deleteLater();
 		});
-
+		dialog->show();
 	}
 
     void GMEDIA::savePicture(const char* path)
@@ -155,8 +156,9 @@ void GMEDIA::saveFile(const char* path, const char* initialPath)
 			            QFile::copy(path, fileName);
 			        }
 			 }
+			 dialog->deleteLater();
 		});
-
+		dialog->show();
 	}
 							
     void GMEDIA::playVideo(const char* path, bool force)
