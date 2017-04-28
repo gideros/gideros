@@ -942,6 +942,21 @@ void *GetSymbol(void *handle, const char *name)
 
 #endif /* HAVE_DLFCN_H */
 
+//GIDEROS:hgy29:log to logcat on android
+#ifdef __ANDROID__
+#include <android/log.h>
+
+void al_print(const char *type, const char *func, const char *fmt, ...)
+{
+   va_list ap;
+
+    va_start(ap, fmt);
+    __android_log_print(ANDROID_LOG_INFO, "AL lib", "%s %s: ", type, func);
+    __android_log_vprint(ANDROID_LOG_INFO, "AL lib", fmt, ap);
+    va_end(ap);
+}
+
+#else
 void al_print(const char *type, const char *func, const char *fmt, ...)
 {
     va_list ap;
@@ -953,7 +968,7 @@ void al_print(const char *type, const char *func, const char *fmt, ...)
 
     fflush(LogFile);
 }
-
+#endif
 
 FILE *OpenDataFile(const char *fname, const char *subdir)
 {

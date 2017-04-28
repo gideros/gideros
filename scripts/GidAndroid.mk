@@ -36,7 +36,7 @@ androidlibs: libgvfs.androidlib lua.androidlib
 
 androidlibs.clean: libgvfs.androidlib.clean lua.androidlib.clean
 
-androidso: androidso.prep
+androidso: versioning androidso.prep
 	cd $(ROOT)/android/lib;$(NDKBUILD)
 	rm -rf $(ROOT)/Sdk/lib/android
 	mkdir -p $(ROOT)/Sdk/lib/android

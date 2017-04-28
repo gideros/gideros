@@ -10,7 +10,7 @@ export DEBUG
 html5.clean:
 	cd emscripten; $(MAKE) clean plugins.clean
 
-html5.libs:
+html5.libs: versioning 
 	cd emscripten; $(MAKE) -j 4
 	
 html5.template: html5.libs

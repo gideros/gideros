@@ -1,6 +1,7 @@
 #include "../ggaudiomanager.h"
 #include <jni.h>
 #include <gpath.h>
+#include <stdlib.h>
 
 #include <pystring.h>
 

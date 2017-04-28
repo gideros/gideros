@@ -12,9 +12,11 @@
 class gl2ShaderBufferCache : public ShaderBufferCache {
 public:
 	GLuint VBO;
+	int keptCounter;
 	gl2ShaderBufferCache()
 	{
 		VBO = 0;
+		keptCounter=0;
 		if (!allVBO)
 			allVBO=new std::set<gl2ShaderBufferCache*>();
 		allVBO->insert(this);
@@ -44,17 +46,50 @@ public:
 };
 
 std::set<gl2ShaderBufferCache *> *gl2ShaderBufferCache::allVBO=NULL;
+int ogl2ShaderProgram::vboFreeze=0;
+int ogl2ShaderProgram::vboUnfreeze=0;
 
 GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified) {
 	if (!cache) return 0; //XXX: Could we check for VBO availability ?
 	if (!*cache)
 		*cache = new gl2ShaderBufferCache();
 	gl2ShaderBufferCache *dc = static_cast<gl2ShaderBufferCache*> (*cache);
-	if (!dc->valid())
+	bool useVBO=dc->valid();
+	if (ogl2ShaderProgram::vboFreeze>1)
 	{
-		glGenBuffers(1,&dc->VBO);
-		modified=true;
+		if (modified)
+		{
+			dc->keptCounter=(dc->keptCounter>0)?0:dc->keptCounter-1;
+			if (dc->keptCounter<=(-ogl2ShaderProgram::vboUnfreeze))
+			{
+				useVBO=false;
+				dc->keptCounter=-ogl2ShaderProgram::vboUnfreeze;
+			}
+		}
+		else
+		{
+			dc->keptCounter=(dc->keptCounter>0)?dc->keptCounter+1:1;
+			if (dc->keptCounter>=(ogl2ShaderProgram::vboFreeze))
+			{
+				useVBO=false;
+				dc->keptCounter=ogl2ShaderProgram::vboFreeze;
+			}
+		}
 	}
+	else if (ogl2ShaderProgram::vboFreeze==1)
+		useVBO=true;
+	else
+		useVBO=false;
+	if (useVBO)
+	{
+		if (!dc->valid())
+		{
+			glGenBuffers(1,&dc->VBO);
+			modified=true;
+		}
+	}
+	else
+		dc->recreate();
 	return dc->VBO;
 }
 

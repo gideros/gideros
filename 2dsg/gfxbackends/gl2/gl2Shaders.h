@@ -86,10 +86,12 @@ class ogl2ShaderProgram : public ShaderProgram
     static GLint curProg;
     static ShaderProgram *current;
     static std::vector<ogl2ShaderProgram *> shaders;
+
     void buildProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
 					 const ConstantDesc *uniforms, const DataDesc *attributes);
 public:
+	static int vboFreeze, vboUnfreeze;
     virtual void activate();
     virtual void deactivate();
     virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache,int stride=0,int offset=0);
@@ -176,6 +178,7 @@ public:
 	void setClip(int x,int y,int w,int h);
 	void setBlendFunc(BlendFactor sfactor, BlendFactor dfactor);
 	void setDepthStencil(DepthStencil state);
+	void setVBOThreshold(int freeze,int unfreeze) { ogl2ShaderProgram::vboFreeze=freeze; ogl2ShaderProgram::vboUnfreeze=unfreeze; };
 };
 
 

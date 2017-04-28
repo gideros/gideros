@@ -9,6 +9,7 @@
 #include <queue>
 
 #include <stdexcept>
+#include <string>
 
 extern "C" {
 JavaVM *g_getJavaVM();

@@ -66,7 +66,7 @@ winrt.plugins:
 winrt.plugins.clean:
 	$(call WINRT_CLEAN,plugins/luasocket/source/winrt/luasocket,luasocket)
 	
-winrt.core: winrt.libs winrt.shaders
+winrt.core: versioning winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)
 	#X86 Release version for Windows
 	mkdir -p winrt/Release/gideros.Windows

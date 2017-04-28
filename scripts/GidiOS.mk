@@ -30,9 +30,9 @@ iosplayer.atv.libs: IOSLIBPATH=$(ROOT)/ios/iosplayer
 	@cd $(IOSLIBPATH); $(XCODEBUILD) -alltargets -sdk appletvos$$TVOS_SDK -configuration Release -project $*.xcodeproj GCC_PREPROCESSOR_DEFINITIONS='$${inherited} TARGET_OS_TV=1' OTHER_CFLAGS="-fembed-bitcode"
 	@cd $(IOSLIBPATH); $(LIPO) build/Release-appletvos/lib$*.a build/Release-appletvsimulator/lib$*.a -create -output lib$*.atv.a
 
-ios.libs: gvfs.ios.libs lua.ios.libs iosplayer.ios.libs
+ios.libs: versioning  gvfs.ios.libs lua.ios.libs iosplayer.ios.libs
 ios.libs.clean : gvfs.ios.libs.clean lua.ios.libs.clean iosplayer.ios.libs.clean
-atv.libs: gvfs.atv.libs lua.atv.libs iosplayer.atv.libs
+atv.libs: versioning gvfs.atv.libs lua.atv.libs iosplayer.atv.libs
 
 
 ios.app: player.ios.app

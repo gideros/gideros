@@ -33,7 +33,7 @@ LOCAL_C_INCLUDES += \
 	$(LOCAL_PATH)/../../openal-soft-$(LOCAL_OPENAL_VERSION)/Alc/backends
 
 # openal (24 files)
-LOCAL_CFLAGS += -DAL_BUILD_LIBRARY -DAL_ALEXT_PROTOTYPES -DOPENAL_SUBDIR_AL
+LOCAL_CFLAGS += -DAL_BUILD_LIBRARY -DAL_ALEXT_PROTOTYPES -DOPENAL_SUBDIR_AL 
 #openal Common FILES
 LOCAL_SRC_FILES  := \
 	../../openal-soft-$(LOCAL_OPENAL_VERSION)/OpenAL32/alAuxEffectSlot.c \
@@ -514,7 +514,7 @@ LOCAL_SRC_FILES += \
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src \
 					$(LOCAL_PATH)/../../../libgid/external/libxmp-4.3/src/loaders
 
-LOCAL_LDLIBS := -lGLESv2 -ldl -llog -lOpenSLES
+LOCAL_LDLIBS := -lGLESv2 -ldl -llog -lOpenSLES -latomic
 
 LOCAL_SHARED_LIBRARIES := gvfs lua
 LOCAL_STATIC_LIBRARIES := openal

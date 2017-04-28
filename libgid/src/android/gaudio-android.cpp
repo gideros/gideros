@@ -1,5 +1,6 @@
 #include <gaudio.h>
 #include "../ggaudiomanager.h"
+#include <stdlib.h>
 
 #if defined(OPENAL_SUBDIR_OPENAL)
 #include <OpenAL/al.h>

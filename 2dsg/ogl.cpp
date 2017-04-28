@@ -17,6 +17,7 @@ void oglInitialize(unsigned int sw, unsigned int sh) {
 #else
 	ShaderEngine::Engine = new ogl2ShaderEngine(sw, sh);
 #endif
+	ShaderEngine::Engine->setVBOThreshold(10,10);
 	gtexture_set_engine(ShaderEngine::Engine);
 }
 

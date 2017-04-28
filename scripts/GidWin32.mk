@@ -85,7 +85,7 @@ depend:
 			
 win32.libs: sdk.win32libs.dir gvfs.win32.libs pystring.win32.libs lua.win32.libs gid.win32.libs gideros.win32.libs
 
-win32.app: player.win32.app
+win32.app: versioning player.win32.app
 
 win32.libs.install: win32.libs
 	mkdir -p $(WIN32_RELEASE)

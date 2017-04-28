@@ -600,8 +600,13 @@ int ApplicationBinder::getApiVersion(lua_State* L)
     LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     lua_pushliteral(L, GIDEROS_VERSION);
-
-    return 1;
+    lua_pushliteral(L, __DATE__ " " __TIME__);
+#ifdef GIDEROS_GIT_HASH
+    lua_pushliteral(L, GIDEROS_GIT_HASH);
+#else
+    lua_pushliteral(L,"undefined");
+#endif
+    return 3;
 }
 
 int ApplicationBinder::getTextureMemoryUsage(lua_State* L)

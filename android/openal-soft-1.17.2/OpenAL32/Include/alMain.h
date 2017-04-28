@@ -81,12 +81,12 @@ typedef ALuint64SOFT ALuint64;
 #endif
 
 #ifdef __GNUC__
-#define DECL_CONST __attribute__((const))
+//#define DECL_CONST __attribute__((const))
 #define DECL_FORMAT(x, y, z) __attribute__((format(x, (y), (z))))
 #else
-#define DECL_CONST
 #define DECL_FORMAT(x, y, z)
 #endif
+#define DECL_CONST //GIDEROS:hgy29: Using const attribute cause crashes with clang
 
 #if defined(__GNUC__) && defined(__i386__)
 /* force_align_arg_pointer is required for proper function arguments aligning
@@ -674,7 +674,8 @@ inline ALint GetChannelIdxByName(const ALCdevice *device, enum Channel chan)
 
 extern FILE *LogFile;
 
-#if defined(__GNUC__) && !defined(_WIN32) && !defined(IN_IDE_PARSER)
+//GIDEROS:hgy29:log to logcat on android
+#if defined(__GNUC__) && !defined(_WIN32) && !defined(IN_IDE_PARSER) &&!defined(__ANDROID__)
 #define AL_PRINT(T, MSG, ...) fprintf(LogFile, "AL lib: %s %s: "MSG, T, __FUNCTION__ , ## __VA_ARGS__)
 #else
 void al_print(const char *type, const char *func, const char *fmt, ...) DECL_FORMAT(printf, 3,4);

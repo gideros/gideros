@@ -270,6 +270,8 @@ public:
 	virtual void setClip(int x,int y,int w,int h)=0;
 	//Internal
 	virtual void prepareDraw(ShaderProgram *program);
+	//Parameters
+	virtual void setVBOThreshold(int freeze,int unfreeze) { };
 };
 
 #endif
