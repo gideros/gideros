@@ -21,7 +21,7 @@ LSUP_SRCS+=$(addprefix external/glu/libtess/,$(notdir $(basename $(wildcard ../e
 LSUP_SRCS+=$(addprefix external/minizip-1.1/source/,ioapi unzip)
 LGID_SRCS=$(addprefix libgid/src/,aes md5 platformutil utf8 drawinfo gtimer \
 	gimage gimage-png gimage-jpg gtexture gevent glog gglobal gaudio \
-	gaudio-loader-wav gaudio-loader-mp3 \
+	gaudio-loader-wav gaudio-loader-mp3 gaudio-loader-xmp \
 	gvfs-native)
 LGID_SRCS+=$(addprefix libgideros/,event eventdispatcher eventvisitor refptr stringid luautil pluginmanager binderutil)
 
@@ -57,6 +57,19 @@ CORE_SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
 	ginput-js gaudio-js gaudio-stream-openal-js gaudio-sample-openal-js platform-js ghttp-js \
 	gui-js ggeolocation-js main jsnative netplayer)   
 
+LOCAL_CFLAGS+=-D_REENTRANT -DLIBXMP_CORE_PLAYER
+XMP_SRC=virtual period player read_event dataio lfo envelope \
+		scan control filter effects mixer mix_all load_helpers load \
+		hio smix memio
+XMP_HDR=common effects envelope format lfo list mixer period player \
+		virtual precomp_lut hio memio mdataio tempfile 
+XMP_LOADERS=xm_load s3m_load it_load \
+			common itsex sample
+XMP_LOADERS_HDR=it loader mod s3m xm
+LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/src/,$(XMP_SRC))
+LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/src/loaders/,$(XMP_LOADERS))
+LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/lite/src/,format loaders/mod_load)
+					
 
 
 INCS=2dsg libgideros libgid/include libgvfs libpystring
@@ -68,7 +81,10 @@ INCS+=libgid/external/zlib-1.2.8 libgid/external/libpng-1.6.2 \
 	$(addprefix libgid/external/openal-soft-1.13/,include/AL OpenAL32/Include) \
 	libgid/external/snappy-1.1.0 libgid/external/jpeg-9 \
 	libgid/external/mpg123-1.15.3/src \
-	libgid/external/mpg123-1.15.3/src/libmpg123
+	libgid/external/mpg123-1.15.3/src/libmpg123 \
+	libgid/external/libxmp-4.3/include \
+	libgid/external/libxmp-4.3/src \
+	libgid/external/libxmp-4.3/src/loaders 
 INCS+=lua/src
 INCS+=libgvfs/private
 INCS+=emscripten
@@ -96,6 +112,7 @@ endif
 CINCS=$(addprefix -I../,$(INCS))
 CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
+	-D_REENTRANT -DLIBXMP_CORE_PLAYER \
 	$(OPTS)
 TEMPLATE=$(BUILD)/Html5/Html5
 
@@ -114,7 +131,7 @@ plugins.clean:
 	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE) clean; cd -; done
 
 
-SUBLIBS=CORE B2D LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3 LFRT
+SUBLIBS=CORE B2D LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3 LFRT LXMP
 SUBLIBS_AR=$(addprefix $(BUILD)/lib,$(addsuffix .a,$(SUBLIBS)))
 
 define SUB_template

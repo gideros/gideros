@@ -60,8 +60,8 @@ winrt.plugins:
 	$(call WINRT_BUILD_WIN,plugins/luasocket/source/winrt/luasocket,luasocket)
 	$(call WINRT_BUILD_WP,plugins/luasocket/source/winrt/luasocket,luasocket)
 	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT
-	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/ARM/*.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
-	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/Win32/*.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
+	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/ARM/*.WindowsPhone.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
+	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
 
 winrt.plugins.clean:
 	$(call WINRT_CLEAN,plugins/luasocket/source/winrt/luasocket,luasocket)

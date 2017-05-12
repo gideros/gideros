@@ -27,7 +27,7 @@ public:
 	}
 };
 
-AdControl^ ad;
+AdControl^ ad = nullptr;
 AdsPubcenterListener^ listener;
 
 Platform::String^ StringFromAscIIChars(const char* chars)
