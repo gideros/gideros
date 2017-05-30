@@ -36,7 +36,7 @@ LOCAL_ARM_MODE         := arm
 LOCAL_CFLAGS           := -O2
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/$(GIDEROS_SDK)/include $(LOCAL_PATH)/.. $(LOCAL_PATH)/../../Common
 LOCAL_SRC_FILES        := gtts-android.cpp ../../Common/gttsbinder.cpp
-LOCAL_LDLIBS           := -ldl -llog
+LOCAL_LDLIBS           := -ldl -llog -latomic
 LOCAL_SHARED_LIBRARIES := gvfs lua gideros
 
 include $(BUILD_SHARED_LIBRARY)
