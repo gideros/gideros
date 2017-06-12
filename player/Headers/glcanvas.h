@@ -53,6 +53,8 @@ private:
     int width_, height_;
     bool isPlayer_;
     std::string resourceDirectory_;
+    std::string documentsDirectory_;
+    std::string temporaryDirectory_;
     std::string md5filename_;
     int fps_;
     double clock_;

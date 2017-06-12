@@ -438,10 +438,11 @@ void GLCanvas::timerEvent(QTimerEvent *){
                             dir_.mkdir("temporary");
                             dir_.mkdir("resource");
 
-                            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
-
-                            setDocumentsDirectory(dir_.absoluteFilePath("documents").toStdString().c_str());
-                            setTemporaryDirectory(dir_.absoluteFilePath("temporary").toStdString().c_str());
+                            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString();
+                            documentsDirectory_ = dir_.absoluteFilePath("documents").toStdString();
+                            temporaryDirectory_ = dir_.absoluteFilePath("temporary").toStdString();
+                            setDocumentsDirectory(documentsDirectory_.c_str());
+                            setTemporaryDirectory(temporaryDirectory_.c_str());
                             setResourceDirectory(resourceDirectory_.c_str());
                         }
 
@@ -540,9 +541,6 @@ void GLCanvas::play(QDir directory){
         projectName_ = directory.dirName();
         emit projectNameChanged(projectName_);
 
-        const char* documentsDirectory;
-        const char* temporaryDirectory;
-
         if(exportedApp_){
             resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
             QString docLocation;
@@ -556,10 +554,8 @@ void GLCanvas::play(QDir directory){
             QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
             directory.mkpath(docLocation);
             directory.mkpath(tempLocation);
-            documentsDirectory = docLocation.toStdString().c_str();
-            setDocumentsDirectory(documentsDirectory);
-            temporaryDirectory = tempLocation.toStdString().c_str();
-            setTemporaryDirectory(temporaryDirectory);
+            documentsDirectory_ = docLocation.toStdString();
+            temporaryDirectory_ = tempLocation.toStdString();
         }else{
             dir_ = QDir::temp();
             dir_.mkdir("gideros");
@@ -569,13 +565,13 @@ void GLCanvas::play(QDir directory){
             dir_.mkdir("documents");
             dir_.mkdir("temporary");
 
-            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
-            documentsDirectory = dir_.absoluteFilePath("documents").toStdString().c_str();
-            setDocumentsDirectory(documentsDirectory);
-            temporaryDirectory = dir_.absoluteFilePath("temporary").toStdString().c_str();
-            setTemporaryDirectory(temporaryDirectory);
+            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString();
+            documentsDirectory_ = dir_.absoluteFilePath("documents").toStdString();
+            temporaryDirectory_ = dir_.absoluteFilePath("temporary").toStdString();
         }
 
+        setDocumentsDirectory(documentsDirectory_.c_str());
+        setTemporaryDirectory(temporaryDirectory_.c_str());
         setResourceDirectory(resourceDirectory_.c_str());
 
         file.open(QIODevice::ReadOnly);
@@ -736,9 +732,6 @@ void GLCanvas::play(QString gapp) {
 	projectName_ = gappname.baseName();
 	emit projectNameChanged(projectName_);
 
-	const char* documentsDirectory;
-	const char* temporaryDirectory;
-
 	dir_ = QDir::temp();
 	dir_.mkdir("gideros");
 	dir_.cd("gideros");
@@ -748,12 +741,12 @@ void GLCanvas::play(QString gapp) {
 	dir_.mkdir("temporary");
 
 	resourceDirectory_ = "";
-	documentsDirectory = qPrintable(dir_.absoluteFilePath("documents"));
-	temporaryDirectory = qPrintable(dir_.absoluteFilePath("temporary"));
+	documentsDirectory_ = dir_.absoluteFilePath("documents").toStdString();
+	temporaryDirectory_ = dir_.absoluteFilePath("temporary").toStdString();
 
-	setDocumentsDirectory(documentsDirectory);
-	setTemporaryDirectory(temporaryDirectory);
-	setResourceDirectory("");
+	setDocumentsDirectory(documentsDirectory_.c_str());
+	setTemporaryDirectory(temporaryDirectory_.c_str());
+	setResourceDirectory(resourceDirectory_.c_str());
 
 	G_FILE* fis = g_fopen("properties.bin", "rb");
 	if (fis) {
