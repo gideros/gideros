@@ -7,6 +7,9 @@ android {
         applicationId "com.giderosmobile.androidtemplate"
         minSdkVersion 9
         targetSdkVersion 19
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
+        }
     }
     
     signingConfigs {

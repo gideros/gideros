@@ -17,6 +17,19 @@
         </replacelist>
     </template>
  </target>
+ <target name="iOS">
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.namews]]]/Plugins/json" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/json" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("json","Plugins/json","GroupJson_ios","GroupPlugins_ios")
+iOSProject.addGroup("json","Plugins/json","GroupJson_atv","GroupPlugins_atv")
+local sources={ "lua_cjson.c", "lua_cjson_stub.cpp", "fpconv.c", "strbuf.c"  }
+iOSProject.addSources(sources, "GroupJson", "ios")
+iOSProject.addSources(sources, "GroupJson", "atv")
+iOSProject.commit()
+	]]></lua>
+ </target>
  <target name="Html5">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
     <template name="Activity" path="">

@@ -45,11 +45,13 @@ class ExportXml {
 public:
 	ExportXml(QString xmlFile,bool isPlugin=false);
 	ExportXml();
+	void SetProperty(QString k,QString v);
+	QString GetProperty(QString k);
 	void SetupProperties(ExportContext *ctx);
 	bool Process(ExportContext *ctx);
 	bool ProcessRuleString(const char *xml);
 	bool isPlugin;
-	QMap<QString,QString> props;
+	QMap<QString,QString> lprops;
 	QString xmlFile;
 	static bool exportXml(QString xmlFile,bool plugin,ExportContext *ctx);
 	static QMap<QString, QString> availableTargets();

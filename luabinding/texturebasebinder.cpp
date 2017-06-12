@@ -30,6 +30,12 @@ TextureBaseBinder::TextureBaseBinder(lua_State* L)
     lua_setfield(L, -2, "RGBA4444");
     lua_pushstring(L, "rgba5551");
     lua_setfield(L, -2, "RGBA5551");
+    lua_pushstring(L, "y8");
+    lua_setfield(L, -2, "Y8");
+    lua_pushstring(L, "a8");
+    lua_setfield(L, -2, "A8");
+    lua_pushstring(L, "ya8");
+    lua_setfield(L, -2, "YA8");
     lua_pop(L, 1);
 }
 

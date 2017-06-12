@@ -8,6 +8,7 @@ PROOT:=$(patsubst %/,%,$(dir $(strip $(MAKEFILE_LIST))))
 CURDIR:=$(PWD)
 PBUILD=$(PROOT)/Build
 
+ANDROID_ARCHS=armeabi armeabi-v7a x86 mips mips64 x86_64 arm64-v8a
 #Standalone build
 standalone:
 	rm -rf $(PBUILD)
@@ -15,9 +16,8 @@ standalone:
 	cp -r $(GIDEROS_SDK) $(PBUILD)
 	@cd source; BDIR=../..; if [ -d "Android" ]; then BDIR=../$$BDIR; cd Android; fi;\
 	GIDEROS_SDK=$$BDIR/$(PBUILD)/Sdk $(NDKBUILD);\
-	rm -f libs/armeabi/libgideros.so libs/armeabi/liblua.so libs/armeabi/libgvfs.so;\
-	rm -f libs/armeabi-v7a/libgideros.so libs/armeabi-v7a/liblua.so libs/armeabi-v7a/libgvfs.so;\
-	rm -f libs/x86/libgideros.so libs/x86/liblua.so libs/x86/libgvfs.so
+	for a in $(ANDROID_ARCHS); do \
+	rm -f libs/$$a/libgideros.so libs/$$a/liblua.so libs/$$a/libgvfs.so; done; \
 	@mkdir -p $(PBUILD)/$(PLUGIN)/bin/Android
 	@cd source;  \
 	if [ -d "Android" ]; then cd Android; fi;	\
