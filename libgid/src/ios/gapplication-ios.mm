@@ -45,7 +45,7 @@ public:
             @"iPad5,2": @163, //Mini4
 		};
 
-		NSInteger *mdpi=modelDpi[getSysInfoByName("hw.machine")];
+		id mdpi=modelDpi[getSysInfoByName("hw.machine")];
 		if (mdpi)
 			return [mdpi integerValue]*scale;
 		

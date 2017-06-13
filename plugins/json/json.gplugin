@@ -18,7 +18,7 @@
     </template>
  </target>
  <target name="iOS">
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.namews]]]/Plugins/json" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.namews]]]/Plugins/json/" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/json" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
