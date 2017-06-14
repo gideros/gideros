@@ -101,12 +101,13 @@ ios.plugins.clean: $(addsuffix .ios.clean.iosplugin,$(PLUGINS_IOS)) $(addsuffix 
 PLUGINS_IOS_DEFFILES=$(ROOT)/Sdk/include/*.h \
 	$(addprefix plugins/, \
 		gamekit/source/iOS/gamekit.mm	storekit/source/iOS/storekit.mm mficontroller/source/iOS/mficontroller.mm \
-		iad/source/iOS/iad.mm LuaSocket/source/luasocket_stub.cpp \
+		iad/source/iOS/iad.mm \
+	)
+PLUGINS_IOS_PLAYER=$(addprefix plugins/, \
+		LuaSocket/source/luasocket_stub.cpp \
 		$(addprefix lsqlite3/source/,lsqlite3.c lsqlite3_stub.cpp) \
 		$(addprefix lfs/source/,lfs.h lfs.c lfs_stub.cpp) \
 		$(addprefix BitOp/source/,bit.c bit_stub.cpp) \
-	)
-PLUGINS_IOS_PLAYER=$(addprefix plugins/, \
 		$(addprefix JSON/source/,fpconv.c fpconv.h strbuf.c strbuf.h lua_cjson.c lua_cjson_stub.cpp) \
 	)
 
@@ -118,13 +119,12 @@ ios.plugins.install: ios.plugins $(addsuffix .ios.install.iosplugin,$(PLUGINS_IO
 	mkdir -p $(ATV_TEMPLATE)/Plugins
 	cp $(PLUGINS_IOS_DEFFILES) $(IOS_TEMPLATE)/Plugins
 	cp $(PLUGINS_IOS_DEFFILES) $(ATV_TEMPLATE)/Plugins
-	cp $(RELEASE)/All\ Plugins/LuaSocket/bin/iOS/libluasocket.ios.a $(IOS_TEMPLATE)/Plugins/libluasocket.a
-	cp $(RELEASE)/All\ Plugins/LuaSocket/bin/iOS/libluasocket.atv.a $(ATV_TEMPLATE)/Plugins/libluasocket.a
 
 player.ios.app: 
 	rm -rf $(IOS_PLAYER_DIR)/GiderosiOSPlayer/Plugins
 	cp -R $(IOS_TEMPLATE)/Plugins $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
 	cp $(PLUGINS_IOS_PLAYER) $(IOS_TEMPLATE)/Plugins
+	cp $(RELEASE)/All\ Plugins/LuaSocket/bin/iOS/libluasocket.ios.a $(IOS_PLAYER_DIR)/GiderosiOSPlayer/Plugins/libluasocket.a
 	cp $(IOS_TEMPLATE)/*.a $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
 	cp $(IOS_TEMPLATE)/giderosapi.h $(IOS_PLAYER_DIR)/GiderosiOSPlayer/
 	mkdir -p $(RELEASE)/Players

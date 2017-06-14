@@ -17,6 +17,22 @@
         </replacelist>
     </template>
  </target>
+ <target name="iOS">
+   <mkdir>[[[project.namews]]]/Plugins/luasocket</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.namews]]]/Plugins/luasocket" include="*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.namews]]]/Plugins/luasocket" include="*.ios.a" />
+   <mkdir>AppleTV/Plugins/luasocket</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/luasocket" include="*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins/luasocket" include="*.atv.a" />
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("luasocket","Plugins/luasocket","GroupLuasocket_ios","GroupPlugins_ios")
+iOSProject.addGroup("luasocket","Plugins/luasocket","GroupLuasocket_atv","GroupPlugins_atv")
+iOSProject.addSources({ "libluasocket.ios.a", "luasocket_stub.cpp"  }, "GroupLuasocket", "ios")
+iOSProject.addSources({ "libluasocket.atv.a", "luasocket_stub.cpp"  }, "GroupLuasocket", "atv")
+iOSProject.commit()
+	]]></lua>
+ </target>
  <target name="Html5">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
     <template name="Activity" path="">

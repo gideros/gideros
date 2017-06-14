@@ -17,6 +17,21 @@
         </replacelist>
     </template>
  </target>
+ <target name="iOS">
+   <mkdir>[[[project.namews]]]/Plugins/lfs</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.namews]]]/Plugins/lfs" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <mkdir>AppleTV/Plugins/lfs</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/lfs" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("lfs","Plugins/lfs","GroupLfs_ios","GroupPlugins_ios")
+iOSProject.addGroup("lfs","Plugins/lfs","GroupLfs_atv","GroupPlugins_atv")
+local sources={ "lfs.c", "lfs_stub.cpp"  }
+iOSProject.addSources(sources, "GroupLfs", "ios")
+iOSProject.addSources(sources, "GroupLfs", "atv")
+iOSProject.commit()
+	]]></lua>
+ </target>
  <target name="Html5">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
     <template name="Activity" path="">

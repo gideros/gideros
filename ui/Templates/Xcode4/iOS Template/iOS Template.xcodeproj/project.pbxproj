@@ -16,10 +16,6 @@
 		5F4EA0A817816A9D0043BBCD /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F4EA0A517816A9D0043BBCD /* Default@2x.png */; };
 		5F58D83115D925D100137D76 /* gamekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D82A15D925D100137D76 /* gamekit.mm */; };
 		5F58D83215D925D100137D76 /* iad.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D82B15D925D100137D76 /* iad.mm */; };
-		5F58D83315D925D100137D76 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F58D82C15D925D100137D76 /* libluasocket.a */; };
-		5F58D83415D925D100137D76 /* lsqlite3_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D82D15D925D100137D76 /* lsqlite3_stub.cpp */; };
-		5F58D83515D925D100137D76 /* lsqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D82E15D925D100137D76 /* lsqlite3.c */; };
-		5F58D83615D925D100137D76 /* luasocket_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D82F15D925D100137D76 /* luasocket_stub.cpp */; };
 		5F58D83715D925D100137D76 /* storekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D83015D925D100137D76 /* storekit.mm */; };
 		5F58D83915D925EA00137D76 /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F58D83815D925EA00137D76 /* libgideros.a */; };
 		5F58D84615D9263F00137D76 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F58D83A15D9263F00137D76 /* AudioToolbox.framework */; };
@@ -36,8 +32,6 @@
 		5F58D85315D9268900137D76 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
 		5F9FF0A81838143600AEA72F /* libgvfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9FF0A71838143600AEA72F /* libgvfs.a */; };
 		5F9FF0AA1838143E00AEA72F /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F9FF0A91838143E00AEA72F /* liblua.a */; };
-		5FC825FB17E890B300751626 /* bit.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825FA17E890B300751626 /* bit.c */; };
-		5FC825FE17E890E600751626 /* bit_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FC825FD17E890E600751626 /* bit_stub.cpp */; };
 		5FD896EC15CED77F00D34824 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896EB15CED77F00D34824 /* UIKit.framework */; };
 		5FD896EE15CED77F00D34824 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896ED15CED77F00D34824 /* Foundation.framework */; };
 		5FD896F015CED77F00D34824 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FD896EF15CED77F00D34824 /* CoreGraphics.framework */; };
@@ -45,21 +39,11 @@
 		5FD896FA15CED77F00D34824 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 5FD896F815CED77F00D34824 /* InfoPlist.strings */; };
 		5FD896FC15CED77F00D34824 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FD896FB15CED77F00D34824 /* main.m */; };
 		5FE658BE18FE68EA001D8EE3 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FE658BD18FE68EA001D8EE3 /* libz.dylib */; };
-		5FFCA70915DD337700741085 /* lfs_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FFCA70715DD337700741085 /* lfs_stub.cpp */; };
-		5FFCA70A15DD337700741085 /* lfs.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FFCA70815DD337700741085 /* lfs.c */; };
 		B2011F921BAD9A24008812D4 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2011F911BAD9A24008812D4 /* GameController.framework */; };
 		B25B27FE1BAC0F3D0034D6C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B27FD1BAC0F3D0034D6C7 /* main.m */; };
 		B25B28011BAC0F3D0034D6C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B28001BAC0F3D0034D6C7 /* AppDelegate.m */; };
 		B25B28041BAC0F3D0034D6C7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B28031BAC0F3D0034D6C7 /* ViewController.m */; };
 		B2E3EEB41BAC104D005599BD /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EEB31BAC104D005599BD /* EAGLView.m */; };
-		B2E3EFB51BAC10CC005599BD /* bit.c in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EF931BAC10CC005599BD /* bit.c */; };
-		B2E3EFB61BAC10CC005599BD /* bit_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EF941BAC10CC005599BD /* bit_stub.cpp */; };
-		B2E3EFBA1BAC10CC005599BD /* lfs.c in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFA51BAC10CC005599BD /* lfs.c */; };
-		B2E3EFBB1BAC10CC005599BD /* lfs_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFA71BAC10CC005599BD /* lfs_stub.cpp */; };
-		B2E3EFBD1BAC10CC005599BD /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFA91BAC10CC005599BD /* libluasocket.a */; };
-		B2E3EFBE1BAC10CC005599BD /* lsqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFAA1BAC10CC005599BD /* lsqlite3.c */; };
-		B2E3EFBF1BAC10CC005599BD /* lsqlite3_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFAB1BAC10CC005599BD /* lsqlite3_stub.cpp */; };
-		B2E3EFC21BAC10CC005599BD /* luasocket_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFB11BAC10CC005599BD /* luasocket_stub.cpp */; };
 		B2E3EFC31BAC10CC005599BD /* storekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFB21BAC10CC005599BD /* storekit.mm */; };
 		B2E3EFC61BAC1147005599BD /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFC51BAC1147005599BD /* GameController.framework */; };
 		B2E3EFC81BAC1154005599BD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFC71BAC1154005599BD /* AudioToolbox.framework */; };
@@ -99,10 +83,6 @@
 		5F4EA0A517816A9D0043BBCD /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		5F58D82A15D925D100137D76 /* gamekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = gamekit.mm; path = Plugins/gamekit.mm; sourceTree = "<group>"; };
 		5F58D82B15D925D100137D76 /* iad.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = iad.mm; path = Plugins/iad.mm; sourceTree = "<group>"; };
-		5F58D82C15D925D100137D76 /* libluasocket.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libluasocket.a; path = Plugins/libluasocket.a; sourceTree = "<group>"; };
-		5F58D82D15D925D100137D76 /* lsqlite3_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lsqlite3_stub.cpp; path = Plugins/lsqlite3_stub.cpp; sourceTree = "<group>"; };
-		5F58D82E15D925D100137D76 /* lsqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lsqlite3.c; path = Plugins/lsqlite3.c; sourceTree = "<group>"; };
-		5F58D82F15D925D100137D76 /* luasocket_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = luasocket_stub.cpp; path = Plugins/luasocket_stub.cpp; sourceTree = "<group>"; };
 		5F58D83015D925D100137D76 /* storekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = storekit.mm; path = Plugins/storekit.mm; sourceTree = "<group>"; };
 		5F58D83815D925EA00137D76 /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgideros.a; path = "iOS Template/libgideros.a"; sourceTree = "<group>"; };
 		5F58D83A15D9263F00137D76 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -119,8 +99,6 @@
 		5F58D85215D9268900137D76 /* assets */ = {isa = PBXFileReference; lastKnownFileType = text; path = assets; sourceTree = "<group>"; };
 		5F9FF0A71838143600AEA72F /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgvfs.a; path = "iOS Template/libgvfs.a"; sourceTree = "<group>"; };
 		5F9FF0A91838143E00AEA72F /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = "iOS Template/liblua.a"; sourceTree = "<group>"; };
-		5FC825FA17E890B300751626 /* bit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bit.c; path = Plugins/bit.c; sourceTree = "<group>"; };
-		5FC825FD17E890E600751626 /* bit_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = bit_stub.cpp; path = Plugins/bit_stub.cpp; sourceTree = "<group>"; };
 		5FD896E715CED77F00D34824 /* iOS Template iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Template iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FD896EB15CED77F00D34824 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		5FD896ED15CED77F00D34824 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -131,8 +109,6 @@
 		5FD896FB15CED77F00D34824 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		5FD896FD15CED77F00D34824 /* iOS Template-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iOS Template-Prefix.pch"; sourceTree = "<group>"; };
 		5FE658BD18FE68EA001D8EE3 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
-		5FFCA70715DD337700741085 /* lfs_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lfs_stub.cpp; path = Plugins/lfs_stub.cpp; sourceTree = "<group>"; };
-		5FFCA70815DD337700741085 /* lfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lfs.c; path = Plugins/lfs.c; sourceTree = "<group>"; };
 		B2011F911BAD9A24008812D4 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		B25B27FA1BAC0F3D0034D6C7 /* iOS Template AppleTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iOS Template AppleTV.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B25B27FD1BAC0F3D0034D6C7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -143,8 +119,6 @@
 		B25B280A1BAC0F3D0034D6C7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B2E3EEB21BAC104D005599BD /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
 		B2E3EEB31BAC104D005599BD /* EAGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAGLView.m; sourceTree = "<group>"; };
-		B2E3EF931BAC10CC005599BD /* bit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bit.c; sourceTree = "<group>"; };
-		B2E3EF941BAC10CC005599BD /* bit_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bit_stub.cpp; sourceTree = "<group>"; };
 		B2E3EF981BAC10CC005599BD /* gapplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gapplication.h; sourceTree = "<group>"; };
 		B2E3EF991BAC10CC005599BD /* gevent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gevent.h; sourceTree = "<group>"; };
 		B2E3EF9A1BAC10CC005599BD /* gexport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gexport.h; sourceTree = "<group>"; };
@@ -157,16 +131,9 @@
 		B2E3EFA11BAC10CC005599BD /* gproxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gproxy.h; sourceTree = "<group>"; };
 		B2E3EFA21BAC10CC005599BD /* greferenced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = greferenced.h; sourceTree = "<group>"; };
 		B2E3EFA41BAC10CC005599BD /* lauxlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lauxlib.h; sourceTree = "<group>"; };
-		B2E3EFA51BAC10CC005599BD /* lfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lfs.c; sourceTree = "<group>"; };
-		B2E3EFA61BAC10CC005599BD /* lfs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lfs.h; sourceTree = "<group>"; };
-		B2E3EFA71BAC10CC005599BD /* lfs_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lfs_stub.cpp; sourceTree = "<group>"; };
-		B2E3EFA91BAC10CC005599BD /* libluasocket.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libluasocket.a; sourceTree = "<group>"; };
-		B2E3EFAA1BAC10CC005599BD /* lsqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lsqlite3.c; sourceTree = "<group>"; };
-		B2E3EFAB1BAC10CC005599BD /* lsqlite3_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lsqlite3_stub.cpp; sourceTree = "<group>"; };
 		B2E3EFAC1BAC10CC005599BD /* lua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lua.h; sourceTree = "<group>"; };
 		B2E3EFAF1BAC10CC005599BD /* luaconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = luaconf.h; sourceTree = "<group>"; };
 		B2E3EFB01BAC10CC005599BD /* lualib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lualib.h; sourceTree = "<group>"; };
-		B2E3EFB11BAC10CC005599BD /* luasocket_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luasocket_stub.cpp; sourceTree = "<group>"; };
 		B2E3EFB21BAC10CC005599BD /* storekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = storekit.mm; sourceTree = "<group>"; };
 		B2E3EFC51BAC1147005599BD /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/GameController.framework; sourceTree = DEVELOPER_DIR; };
 		B2E3EFC71BAC1154005599BD /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
@@ -214,7 +181,6 @@
 				5FD896EE15CED77F00D34824 /* Foundation.framework in Frameworks */,
 				5FD896F015CED77F00D34824 /* CoreGraphics.framework in Frameworks */,
 				5FD896F415CED77F00D34824 /* OpenGLES.framework in Frameworks */,
-				5F58D83315D925D100137D76 /* libluasocket.a in Frameworks */,
 				5F58D83915D925EA00137D76 /* libgideros.a in Frameworks */,
 				5F9FF0A81838143600AEA72F /* libgvfs.a in Frameworks */,
 				5F9FF0AA1838143E00AEA72F /* liblua.a in Frameworks */,
@@ -242,7 +208,6 @@
 				B2E3EFCA1BAC1158005599BD /* AVFoundation.framework in Frameworks */,
 				B2E3EFC81BAC1154005599BD /* AudioToolbox.framework in Frameworks */,
 				B2E3EFC61BAC1147005599BD /* GameController.framework in Frameworks */,
-				B2E3EFBD1BAC10CC005599BD /* libluasocket.a in Frameworks */,
 				/* TAG:GIDEROS:ATV_FRAMEWORKS_BUILD */
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -254,17 +219,9 @@
 			isa = PBXGroup;
 			children = (
 				B2E3F0311BAC3E7B005599BD /* mficontroller.mm */,
-				5FC825FA17E890B300751626 /* bit.c */,
-				5FC825FD17E890E600751626 /* bit_stub.cpp */,
 				5F58D82B15D925D100137D76 /* iad.mm */,
 				5F58D82A15D925D100137D76 /* gamekit.mm */,
 				5F58D83015D925D100137D76 /* storekit.mm */,
-				5F58D82E15D925D100137D76 /* lsqlite3.c */,
-				5F58D82D15D925D100137D76 /* lsqlite3_stub.cpp */,
-				5F58D82C15D925D100137D76 /* libluasocket.a */,
-				5F58D82F15D925D100137D76 /* luasocket_stub.cpp */,
-				5FFCA70815DD337700741085 /* lfs.c */,
-				5FFCA70715DD337700741085 /* lfs_stub.cpp */,
 				EB42A05D1D66ED5000766D7E /* plugins.cpp */,
 				/* TAG:GIDEROS:IOS_PLUGINS_GROUP */
 			);
@@ -395,8 +352,6 @@
 			children = (
 				EB42A0601D674BCB00766D7E /* plugins.cpp */,
 				B2E3F02D1BAC3D24005599BD /* mficontroller.mm */,
-				B2E3EF931BAC10CC005599BD /* bit.c */,
-				B2E3EF941BAC10CC005599BD /* bit_stub.cpp */,
 				B2E3EF981BAC10CC005599BD /* gapplication.h */,
 				B2E3EF991BAC10CC005599BD /* gevent.h */,
 				B2E3EF9A1BAC10CC005599BD /* gexport.h */,
@@ -409,16 +364,9 @@
 				B2E3EFA11BAC10CC005599BD /* gproxy.h */,
 				B2E3EFA21BAC10CC005599BD /* greferenced.h */,
 				B2E3EFA41BAC10CC005599BD /* lauxlib.h */,
-				B2E3EFA51BAC10CC005599BD /* lfs.c */,
-				B2E3EFA61BAC10CC005599BD /* lfs.h */,
-				B2E3EFA71BAC10CC005599BD /* lfs_stub.cpp */,
-				B2E3EFA91BAC10CC005599BD /* libluasocket.a */,
-				B2E3EFAA1BAC10CC005599BD /* lsqlite3.c */,
-				B2E3EFAB1BAC10CC005599BD /* lsqlite3_stub.cpp */,
 				B2E3EFAC1BAC10CC005599BD /* lua.h */,
 				B2E3EFAF1BAC10CC005599BD /* luaconf.h */,
 				B2E3EFB01BAC10CC005599BD /* lualib.h */,
-				B2E3EFB11BAC10CC005599BD /* luasocket_stub.cpp */,
 				B2E3EFB21BAC10CC005599BD /* storekit.mm */,
 				/* TAG:GIDEROS:ATV_PLUGINS_GROUP */
 			);
@@ -532,14 +480,7 @@
 				B2E3F0321BAC3E7B005599BD /* mficontroller.mm in Sources */,
 				EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */,
 				5F58D83215D925D100137D76 /* iad.mm in Sources */,
-				5F58D83415D925D100137D76 /* lsqlite3_stub.cpp in Sources */,
-				5F58D83515D925D100137D76 /* lsqlite3.c in Sources */,
-				5F58D83615D925D100137D76 /* luasocket_stub.cpp in Sources */,
 				5F58D83715D925D100137D76 /* storekit.mm in Sources */,
-				5FFCA70915DD337700741085 /* lfs_stub.cpp in Sources */,
-				5FFCA70A15DD337700741085 /* lfs.c in Sources */,
-				5FC825FB17E890B300751626 /* bit.c in Sources */,
-				5FC825FE17E890E600751626 /* bit_stub.cpp in Sources */,
 				/* TAG:GIDEROS:IOS_SOURCES_BUILD */
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -549,20 +490,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				B25B28041BAC0F3D0034D6C7 /* ViewController.m in Sources */,
-				B2E3EFB61BAC10CC005599BD /* bit_stub.cpp in Sources */,
 				B2E3F02E1BAC3D24005599BD /* mficontroller.mm in Sources */,
-				B2E3EFBB1BAC10CC005599BD /* lfs_stub.cpp in Sources */,
-				B2E3EFBF1BAC10CC005599BD /* lsqlite3_stub.cpp in Sources */,
 				B2E3EEB41BAC104D005599BD /* EAGLView.m in Sources */,
-				B2E3EFBE1BAC10CC005599BD /* lsqlite3.c in Sources */,
 				EB42A0611D674BCB00766D7E /* plugins.cpp in Sources */,
 				B25B28011BAC0F3D0034D6C7 /* AppDelegate.m in Sources */,
-				B2E3EFBA1BAC10CC005599BD /* lfs.c in Sources */,
-				B2E3EFC21BAC10CC005599BD /* luasocket_stub.cpp in Sources */,
 				B2E3EFC31BAC10CC005599BD /* storekit.mm in Sources */,
 				B25B27FE1BAC0F3D0034D6C7 /* main.m in Sources */,
 				EB42A05F1D66ED5000766D7E /* plugins.cpp in Sources */,
-				B2E3EFB51BAC10CC005599BD /* bit.c in Sources */,
 				/* TAG:GIDEROS:ATV_SOURCES_BUILD */
 			);
 			runOnlyForDeploymentPostprocessing = 0;
