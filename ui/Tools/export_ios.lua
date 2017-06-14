@@ -153,7 +153,7 @@ elseif s:ends(".plist") or s:ends(".bundle") then
 local sref,bref=iOSProject.addSource(s)
 iOSProject.addToGroup(dest,sref,flavor)
 iOSProject.addToGroup("ResourceBuild",bref,flavor)
-elseif s:ends(".framework") then
+elseif s:ends(".framework") or s:ends(".a") then
 local sref=iOSProject.addFramework(s,flavor)
 iOSProject.addToGroup(dest,sref,flavor)
 else

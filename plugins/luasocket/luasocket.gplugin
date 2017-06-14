@@ -20,16 +20,18 @@
  <target name="iOS">
    <mkdir>[[[project.namews]]]/Plugins/luasocket</mkdir>
    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.namews]]]/Plugins/luasocket" include="*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.namews]]]/Plugins/luasocket" include="*.ios.a" />
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.namews]]]/Plugins" include="*.ios.a" />
    <mkdir>AppleTV/Plugins/luasocket</mkdir>
    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/luasocket" include="*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
-   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins/luasocket" include="*.atv.a" />
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.addGroup("luasocket","Plugins/luasocket","GroupLuasocket_ios","GroupPlugins_ios")
 iOSProject.addGroup("luasocket","Plugins/luasocket","GroupLuasocket_atv","GroupPlugins_atv")
-iOSProject.addSources({ "libluasocket.ios.a", "luasocket_stub.cpp"  }, "GroupLuasocket", "ios")
-iOSProject.addSources({ "libluasocket.atv.a", "luasocket_stub.cpp"  }, "GroupLuasocket", "atv")
+iOSProject.addSources({ "luasocket_stub.cpp"  }, "GroupLuasocket", "ios")
+iOSProject.addSources({ "luasocket_stub.cpp"  }, "GroupLuasocket", "atv")
+iOSProject.addSources({ "Plugins/libluasocket.ios.a"  }, "GroupPlugins", "ios")
+iOSProject.addSources({ "Plugins/libluasocket.atv.a"  }, "GroupPlugins", "atv")
 iOSProject.commit()
 	]]></lua>
  </target>
