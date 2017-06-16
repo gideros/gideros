@@ -288,32 +288,32 @@ public class Ads {
 	}
 	
 	//load an Ad
-		public static void loadAd(final String adprovider, final Object parameters){
-			if(!hasConnection())
-	        {
-	            SparseArray<String> param = (SparseArray<String>)parameters;
-	            adFailed(adprovider, "No Internet Connection", param.get(0));
-	            return;
-	        }
-			final String adp = modifyName(adprovider);
-			try
-			{	
-				// Non UI thread
-				Runnable myRunnable = new Runnable(){
-					
-					@Override
-					public void run() {
-						if(ads.containsKey(adp))
-						{
-							ads.get(adp).loadAd(parameters);
-						}
-					}
-					
-				};
-				sActivity.get().runOnUiThread(myRunnable) ;
-			}
-			catch(Exception ex)	{}
-		}
+    public static void loadAd(final String adprovider, final Object parameters){
+        if(!hasConnection())
+        {
+            SparseArray<String> param = (SparseArray<String>)parameters;
+            adFailed(adprovider, "No Internet Connection", param.get(0));
+            return;
+        }
+        final String adp = modifyName(adprovider);
+        try
+        {
+            // Non UI thread
+            Runnable myRunnable = new Runnable(){
+
+                @Override
+                public void run() {
+                    if(ads.containsKey(adp))
+                    {
+                        ads.get(adp).loadAd(parameters);
+                    }
+                }
+
+            };
+            sActivity.get().runOnUiThread(myRunnable) ;
+        }
+        catch(Exception ex)	{}
+    }
 		
 	public static void showAd(final String adprovider, final Object parameters){
 		if(!hasConnection())
@@ -565,7 +565,7 @@ public class Ads {
          return name.toLowerCase();
 	}
 	
-	private static boolean hasConnection() {
+	public static boolean hasConnection() {
         ConnectivityManager conMgr = (ConnectivityManager)sActivity.get().getSystemService(Context.CONNECTIVITY_SERVICE);
         // ARE WE CONNECTED TO THE NET
         if (conMgr != null && conMgr.getActiveNetworkInfo() != null

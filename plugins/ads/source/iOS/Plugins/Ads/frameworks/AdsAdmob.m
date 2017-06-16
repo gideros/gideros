@@ -9,6 +9,7 @@
 #import "AdsAdmob.h"
 #import "AdsClass.h"
 
+
 @implementation AdsAdmob
 -(id)init{
     self.testID = @"";
@@ -16,11 +17,13 @@
     self.currentSize = @"banner";
     self.appKey = @"";
     self.interstitialId = @"";
+    self.rewardedVideoId = @"";
     self.mngr = [[AdsManager alloc] init];
+    [GADRewardBasedVideoAd sharedInstance].delegate = self;
     return self;
 }
 
--(const GADAdSize*)getAdType:(NSString*)type{
+-(const GADAdSize*)getAdType:(NSString*)type orientation:(NSString*)orientation{
     if([type isEqual:@"banner"])
     {
         return &kGADAdSizeBanner;
@@ -39,6 +42,7 @@
     }
     else if([type isEqual:@"smart_banner"] || [type isEqual:@"auto"])
     {
+        /*
         if ([AdsClass isPortrait])
         {
             return &kGADAdSizeSmartBannerPortrait;
@@ -46,6 +50,23 @@
         else
         {
             return &kGADAdSizeSmartBannerLandscape;
+        }
+        */
+        if (orientation == nil){
+            if ([AdsClass isPortrait])
+            {
+                return &kGADAdSizeSmartBannerPortrait;
+            }
+            else
+            {
+                return &kGADAdSizeSmartBannerLandscape;
+            }
+        }
+        else{
+            if ([orientation isEqual:@"landscapeLeft"] || [orientation isEqual:@"landscapeRight"])
+                return &kGADAdSizeSmartBannerLandscape;
+            else
+                return &kGADAdSizeSmartBannerPortrait;
         }
     }
     return &kGADAdSizeBanner;
@@ -59,6 +80,7 @@
     self.currentSize = nil;
     self.appKey = nil;
     self.interstitialId = nil;
+    self.rewardedVideoId = nil;
     self.testID = nil;
 }
 
@@ -83,6 +105,11 @@
         placeId = self.appKey;
     }
     if ([type isEqualToString:@"interstitial"]) {
+        //release it after closed
+        if([self.mngr get:type] != nil){
+            [self.mngr reset:type];
+        }
+        
         self.interstitialId = placeId;
         GADInterstitial *interstitial_ = [[GADInterstitial alloc] initWithAdUnitID:placeId];
         
@@ -104,6 +131,9 @@
         [interstitial_ setDelegate:self];
         [self.mngr setPreload:true forType:type];
         
+        //is it OK  to release the interstitial_ when it is showing the ads if set autokill to true?
+        [self.mngr setAutoKill:false forType:type];
+        
         GADRequest *request = [GADRequest request];
         if(![self.testID isEqualToString:@""])
         {
@@ -111,53 +141,87 @@
         }
         [interstitial_ loadRequest:request];
     }
+    else if([type isEqualToString:@"rewarded"]){
+        
+        if([self.mngr get:type] == nil){
+            self.rewardedVideoId = placeId;
+            
+            AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
+            [listener setShow:^(){
+                if ([[GADRewardBasedVideoAd sharedInstance] isReady]){
+                    [AdsClass adDisplayed:[self class] forType:type];
+                    [[GADRewardBasedVideoAd sharedInstance] presentFromRootViewController:[AdsClass getRootViewController]];
+                    AdsState *state = [self.mngr getState:type];
+                    if(state != nil)
+                        [state reset:false];
+                }
+            }];
+            [listener setDestroy:^(){
+               
+            }];
+            [listener setHide:^(){
+               
+            }];
+            [self.mngr set:[GADRewardBasedVideoAd sharedInstance] forType:type withListener:listener];
+            
+            [self.mngr setPreload:true forType:type];
+            
+            [self.mngr setAutoKill:false forType:type];
+        }
+        
+        GADRequest *request = [GADRequest request];
+        if(![self.testID isEqualToString:@""])
+        {
+            request.testDevices = @[self.testID];
+        }
+        [[GADRewardBasedVideoAd sharedInstance] loadRequest:request withAdUnitID:self.rewardedVideoId];
+    }
     else
     {
-            if([self.mngr get:type] == nil)
-            {
-                self.currentType = [self getAdType:type];
-                
-                GADBannerView *view_ = [[GADBannerView alloc] initWithAdSize:*self.currentType];
-                view_.adUnitID = placeId;
-                view_.rootViewController = [AdsClass getRootViewController];
-                
-                AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
-                [listener setShow:^(){
-                    self.currentSize = type;
-                    [AdsClass adDisplayed:[self class] forType:type];
-                    [view_.rootViewController.view addSubview:view_];
-                }];
-                [listener setDestroy:^(){
-                    [self hideAd:type];
-                    if(view_ != nil)
-                    {
-                        view_.delegate = nil;
-                        [view_ release];
-                    }
-                }];
-                [listener setHide:^(){
-                    if(view_ != nil)
-                    {
-                        [view_ removeFromSuperview];
-                        [AdsClass adDismissed:[self class] forType:type];
-                    }
-
-                }];
-                [self.mngr set:view_ forType:type withListener:listener];
-                [view_ setDelegate:[[AdsAdmobListener alloc] init:[self.mngr getState:type] with:self]];
-                [self.mngr setAutoKill:false forType:type];
-                GADRequest *request = [GADRequest request];
-                if(![self.testID isEqualToString:@""])
+        if([self.mngr get:type] == nil)
+        {
+            NSString *orientation = nil;
+            if ([parameters count] > 2)
+                orientation = [parameters objectAtIndex:2];
+            
+            self.currentType = [self getAdType:type orientation:orientation];
+            
+            GADBannerView *view_ = [[GADBannerView alloc] initWithAdSize:*self.currentType];
+            view_.adUnitID = placeId;
+            view_.rootViewController = [AdsClass getRootViewController];
+            
+            AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
+            [listener setShow:^(){
+                self.currentSize = type;
+                [AdsClass adDisplayed:[self class] forType:type];
+                [view_.rootViewController.view addSubview:view_];
+            }];
+            [listener setDestroy:^(){
+                [self hideAd:type];
+                if(view_ != nil)
                 {
-                    request.testDevices = @[self.testID];
+                    view_.delegate = nil;
+                    [view_ release];
                 }
-                [view_ loadRequest:request];
-                
-            }
-            else
+            }];
+            [listener setHide:^(){
+                if(view_ != nil)
+                {
+                    [view_ removeFromSuperview];
+                    [AdsClass adDismissed:[self class] forType:type];
+                }
+
+            }];
+            [self.mngr set:view_ forType:type withListener:listener];
+            [view_ setDelegate:[[AdsAdmobListener alloc] init:[self.mngr getState:type] with:self]];
+            [self.mngr setAutoKill:false forType:type];
+            GADRequest *request = [GADRequest request];
+            if(![self.testID isEqualToString:@""])
             {
-                [AdsClass adError:[self class] with:[NSString stringWithFormat:@"Unknown type: %@", type]];
+                request.testDevices = @[self.testID];
             }
+            [view_ loadRequest:request];
+        }
     }
 }
 
@@ -172,6 +236,7 @@
     [self.mngr hide:type];
 }
 
+
 -(void)enableTesting{
     NSString *test;
     if (NSClassFromString(@"ASIdentifierManager")) {
@@ -184,7 +249,7 @@
         unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
         
         // Create 16 byte MD5 hash value, store in buffer
-        CC_MD5(ptr, strlen(ptr), md5Buffer);
+        CC_MD5(ptr, (CC_LONG)strlen(ptr), md5Buffer);
         
         // Convert MD5 value in the buffer to NSString of hex values
         NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
@@ -206,6 +271,8 @@
 -(void)interstitial:(GADInterstitial *)ad didFailToReceiveAdWithError:(GADRequestError *)error{
     [AdsClass adFailed:[self class] with:[error localizedDescription] forType:@"interstitial"];
     [self.mngr reset:@"interstitial"];
+    //we should delay to call loadAd to avoid too many requests.
+    //[self loadAd:[NSMutableArray arrayWithObjects:@"interstitial",self.interstitialId, nil]];
 }
 
 -(void)interstitialWillPresentScreen:(GADInterstitial *)ad{
@@ -216,6 +283,54 @@
     [AdsClass adDismissed:[self class] forType:@"interstitial"];
     //preload interstitial automatically
     [self loadAd:[NSMutableArray arrayWithObjects:@"interstitial",self.interstitialId, nil]];
+}
+
+
+#pragma mark GADRewardBasedVideoAdDelegate implementation
+
+- (void)rewardBasedVideoAd:(GADRewardBasedVideoAd *)rewardBasedVideoAd
+   didRewardUserWithReward:(GADAdReward *)reward {
+    int amount = [reward.amount intValue];
+    [AdsClass adRewarded:[self class] forType:@"rewarded" withAmount:amount];
+    NSString *rewardMessage =
+    [NSString stringWithFormat:@"Reward received with currency %@ , amount %d",
+     reward.type,
+     amount];
+    NSLog(@"%@", rewardMessage);
+}
+
+- (void)rewardBasedVideoAdDidReceiveAd:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
+    NSLog(@"Reward based video ad is received.");
+    [AdsClass adReceived:[self class] forType:@"rewarded"];
+    [self.mngr load:@"rewarded"];
+
+}
+
+- (void)rewardBasedVideoAdDidOpen:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
+    NSLog(@"Opened reward based video ad.");
+    
+    [AdsClass adActionBegin:[self class] forType:@"rewarded"];
+}
+
+- (void)rewardBasedVideoAdDidStartPlaying:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
+    NSLog(@"Reward based video ad started playing.");
+}
+
+- (void)rewardBasedVideoAdDidClose:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
+    NSLog(@"Reward based video ad is closed.");
+    
+    [AdsClass adDismissed:[self class] forType:@"rewarded"];
+    [[GADRewardBasedVideoAd sharedInstance] loadRequest:[GADRequest request] withAdUnitID:self.rewardedVideoId];
+}
+
+- (void)rewardBasedVideoAdWillLeaveApplication:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
+    NSLog(@"Reward based video ad will leave application.");
+}
+
+- (void)rewardBasedVideoAd:(GADRewardBasedVideoAd *)rewardBasedVideoAd
+    didFailToLoadWithError:(NSError *)error {
+    NSLog(@"Reward based video ad failed to load.");
+    [AdsClass adFailed:[self class] with:[error localizedDescription] forType:@"rewarded"];
 }
 
 @end
@@ -238,6 +353,7 @@
     [AdsClass adFailed:[self.instance class] with:[error localizedDescription] forType:[self.state getType]];
     //the banner view should be valid and can continue to use
 	//[self.state reset];
+    
 }
 
 - (void)adViewWillPresentScreen:(GADBannerView *)bannerView{

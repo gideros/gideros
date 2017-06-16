@@ -27,6 +27,11 @@ public:
 	{
 		[AdsClass destroy:[NSString stringWithUTF8String:ad]];
 	}
+    
+    int hasConnection()
+    {
+        return 	[AdsClass hasConnection];
+    }
 	
 	void setKey(const char *ad, gads_Parameter *params)
 	{
@@ -221,6 +226,15 @@ extern "C" {
 int gads_isAvailable()
 {
 	return 1;
+}
+    
+int gads_hasConnection()
+{
+    if(s_ads)
+    {
+        return s_ads->hasConnection();
+    }
+    return 0;
 }
 
 void gads_init()
