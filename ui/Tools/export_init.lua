@@ -31,10 +31,10 @@ function Export.mkdir(path)
   Export.callXml("<mkdir>"..path.."</mkdir>")
 end
 
-function Export.recursiveCopy(t_name,source,dest,include,exclude)
+function Export.recursiveCopy(t_name,source,dest,includes,excludes)
   if dest then dest=" dest=\""..dest.."\"" else dest="" end
-  if include then include=" include=\""..include.."\"" else include="" end
-  if exclude then exclude=" exclude=\""..exclude.."\"" else exclude="" end
+  if includes then includes=" include=\""..includes.."\"" else includes="" end
+  if excludes then excludes=" exclude=\""..excludes.."\"" else excludes="" end
   Export.callXml(([[<template name="%s" path="%s"%s%s%s></template>]])
-                    :format(t_name,source,dest,include,exclude))
+                    :format(t_name,source,dest,includes,excludes))
 end

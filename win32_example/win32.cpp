@@ -572,6 +572,13 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     ginputp_mouseMove(LOWORD(lParam), HIWORD(lParam),m);
     return 0;
   }
+  else if (iMsg==WM_MOUSEWHEEL){
+	  int m=0;
+	  if (wParam&MK_CONTROL) m|=GINPUT_CTRL_MODIFIER;
+	  if (wParam&MK_SHIFT) m|=GINPUT_SHIFT_MODIFIER;
+    ginputp_mouseWheel(LOWORD(lParam), HIWORD(lParam), 0,HIWORD(wParam),m);
+    return 0;
+  }
   else if (iMsg==WM_KEYDOWN){
     ginputp_keyDown(wParam);
     return 0;
