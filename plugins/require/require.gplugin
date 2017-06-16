@@ -15,6 +15,7 @@
  <property name="reqWriteExternalStorage" type="boolean" title="App needs to to write external storage"/>
  <property name="reqPhoneOnly" type="boolean" title="This app is targeting phones only, no tablets"/>
  <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
+ <property name="reqEnable64bits" type="boolean" title="Enable 64bits libs (android)"/> 
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -164,7 +165,17 @@
     	        </append>
         	</replacelist>
     	</template>
-    </if>            
+    </if>
+    <if condition="[[[plugin.reqEnable64bits]]]">
+    	<template name="AndroidManifest" path="">
+        	<replacelist wildcards="build.gradle">
+	            <append>
+            		<orig>abiFilters "armeabi", "armeabi-v7a", "x86", "mips"</orig>
+        	    	<by></by>
+    	        </append>
+        	</replacelist>
+    	</template>
+    </if>                
  </target>
  <target name="iOS">
     <if condition="[[[plugin.reqPhoneOnly]]]">
