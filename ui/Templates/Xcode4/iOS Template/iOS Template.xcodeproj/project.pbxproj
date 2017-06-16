@@ -14,9 +14,6 @@
 		5F4EA0A617816A9D0043BBCD /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F4EA0A317816A9D0043BBCD /* Default-568h@2x.png */; };
 		5F4EA0A717816A9D0043BBCD /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F4EA0A417816A9D0043BBCD /* Default.png */; };
 		5F4EA0A817816A9D0043BBCD /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F4EA0A517816A9D0043BBCD /* Default@2x.png */; };
-		5F58D83115D925D100137D76 /* gamekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D82A15D925D100137D76 /* gamekit.mm */; };
-		5F58D83215D925D100137D76 /* iad.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D82B15D925D100137D76 /* iad.mm */; };
-		5F58D83715D925D100137D76 /* storekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5F58D83015D925D100137D76 /* storekit.mm */; };
 		5F58D83915D925EA00137D76 /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F58D83815D925EA00137D76 /* libgideros.a */; };
 		5F58D84615D9263F00137D76 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F58D83A15D9263F00137D76 /* AudioToolbox.framework */; };
 		5F58D84715D9263F00137D76 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F58D83B15D9263F00137D76 /* AVFoundation.framework */; };
@@ -62,8 +59,6 @@
 		B2E3EFE31BAC1249005599BD /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 5F58D85215D9268900137D76 /* assets */; };
 		B2E3EFE71BAC1AE5005599BD /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */; };
 		B2E3F02C1BAC2919005599BD /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDD1BAC119E005599BD /* libgideros.a */; };
-		B2E3F02E1BAC3D24005599BD /* mficontroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3F02D1BAC3D24005599BD /* mficontroller.mm */; };
-		B2E3F0321BAC3E7B005599BD /* mficontroller.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3F0311BAC3E7B005599BD /* mficontroller.mm */; };
 		EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A05D1D66ED5000766D7E /* plugins.cpp */; };
 		EB42A05F1D66ED5000766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A05D1D66ED5000766D7E /* plugins.cpp */; };
 		EB42A0611D674BCB00766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A0601D674BCB00766D7E /* plugins.cpp */; };
@@ -81,9 +76,6 @@
 		5F4EA0A317816A9D0043BBCD /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		5F4EA0A417816A9D0043BBCD /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		5F4EA0A517816A9D0043BBCD /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
-		5F58D82A15D925D100137D76 /* gamekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = gamekit.mm; path = Plugins/gamekit.mm; sourceTree = "<group>"; };
-		5F58D82B15D925D100137D76 /* iad.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = iad.mm; path = Plugins/iad.mm; sourceTree = "<group>"; };
-		5F58D83015D925D100137D76 /* storekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = storekit.mm; path = Plugins/storekit.mm; sourceTree = "<group>"; };
 		5F58D83815D925EA00137D76 /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgideros.a; path = "iOS Template/libgideros.a"; sourceTree = "<group>"; };
 		5F58D83A15D9263F00137D76 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		5F58D83B15D9263F00137D76 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -152,8 +144,6 @@
 		B2E3EFDF1BAC119E005599BD /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = AppleTV/liblua.a; sourceTree = "<group>"; };
 		B2E3EFE41BAC1A5C005599BD /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
-		B2E3F02D1BAC3D24005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = mficontroller.mm; sourceTree = "<group>"; };
-		B2E3F0311BAC3E7B005599BD /* mficontroller.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = mficontroller.mm; path = Plugins/mficontroller.mm; sourceTree = "<group>"; };
 		EB42A05D1D66ED5000766D7E /* plugins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = plugins.cpp; path = Plugins/plugins.cpp; sourceTree = "<group>"; };
 		EB42A0601D674BCB00766D7E /* plugins.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = plugins.cpp; sourceTree = "<group>"; };
 /* TAG:GIDEROS:ALL_FILES_REFS */
@@ -218,10 +208,6 @@
 		5F58D82915D925B400137D76 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				B2E3F0311BAC3E7B005599BD /* mficontroller.mm */,
-				5F58D82B15D925D100137D76 /* iad.mm */,
-				5F58D82A15D925D100137D76 /* gamekit.mm */,
-				5F58D83015D925D100137D76 /* storekit.mm */,
 				EB42A05D1D66ED5000766D7E /* plugins.cpp */,
 				/* TAG:GIDEROS:IOS_PLUGINS_GROUP */
 			);
@@ -351,7 +337,6 @@
 			isa = PBXGroup;
 			children = (
 				EB42A0601D674BCB00766D7E /* plugins.cpp */,
-				B2E3F02D1BAC3D24005599BD /* mficontroller.mm */,
 				B2E3EF981BAC10CC005599BD /* gapplication.h */,
 				B2E3EF991BAC10CC005599BD /* gevent.h */,
 				B2E3EF9A1BAC10CC005599BD /* gexport.h */,
@@ -367,7 +352,6 @@
 				B2E3EFAC1BAC10CC005599BD /* lua.h */,
 				B2E3EFAF1BAC10CC005599BD /* luaconf.h */,
 				B2E3EFB01BAC10CC005599BD /* lualib.h */,
-				B2E3EFB21BAC10CC005599BD /* storekit.mm */,
 				/* TAG:GIDEROS:ATV_PLUGINS_GROUP */
 			);
 			path = Plugins;

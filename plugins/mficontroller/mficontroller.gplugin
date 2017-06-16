@@ -1,0 +1,13 @@
+<plugin
+ name="MFI Controller"
+ description="MFI Controller support for iOS">
+ <target name="iOS">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportPluginFiles("mficontroller",
+	"[[[sys.pluginDir]]]/source/iOS",
+	{ "mficontroller.mm" },
+	true,true)
+	]]></lua>
+ </target>
+</plugin>

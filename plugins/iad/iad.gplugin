@@ -1,0 +1,13 @@
+<plugin
+ name="iAd"
+ description="standalone iAd support for iOS">
+ <target name="iOS">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportPluginFiles("iad",
+	"[[[sys.pluginDir]]]/source/iOS",
+	{ "iad.mm" },
+	true,false)
+	]]></lua>
+ </target>
+</plugin>
