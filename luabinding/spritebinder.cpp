@@ -76,6 +76,7 @@ SpriteBinder::SpriteBinder(lua_State* L)
         {"clearBlendMode", SpriteBinder::clearBlendMode},
 		{"setShader", SpriteBinder::setShader},
 		{"setShaderConstant", SpriteBinder::setShaderConstant},
+		{"setStencilOperation", SpriteBinder::setStencilOperation},
 
 		{"set", SpriteBinder::set},
 		{"get", SpriteBinder::get},
@@ -117,6 +118,40 @@ SpriteBinder::SpriteBinder(lua_State* L)
 	//lua_setfield(L, -2, "ONE_MINUS_CONSTANT_ALPHA");
 	lua_pushinteger(L, ShaderEngine::SRC_ALPHA_SATURATE);
 	lua_setfield(L, -2, "SRC_ALPHA_SATURATE");
+
+	lua_pushinteger(L, ShaderEngine::STENCIL_ALWAYS);
+	lua_setfield(L, -2, "STENCIL_ALWAYS");
+	lua_pushinteger(L, ShaderEngine::STENCIL_DECR);
+	lua_setfield(L, -2, "STENCIL_DECR");
+	lua_pushinteger(L, ShaderEngine::STENCIL_DECR_WRAP);
+	lua_setfield(L, -2, "STENCIL_DECR_WRAP");
+	lua_pushinteger(L, ShaderEngine::STENCIL_INCR);
+	lua_setfield(L, -2, "STENCIL_INCR");
+	lua_pushinteger(L, ShaderEngine::STENCIL_INCR_WRAP);
+	lua_setfield(L, -2, "STENCIL_INCR_WRAP");
+	lua_pushinteger(L, ShaderEngine::STENCIL_DISABLE);
+	lua_setfield(L, -2, "STENCIL_DISABLE");
+	lua_pushinteger(L, ShaderEngine::STENCIL_EQUAL);
+	lua_setfield(L, -2, "STENCIL_EQUAL");
+	lua_pushinteger(L, ShaderEngine::STENCIL_GEQUAL);
+	lua_setfield(L, -2, "STENCIL_GEQUAL");
+	lua_pushinteger(L, ShaderEngine::STENCIL_INVERT);
+	lua_setfield(L, -2, "STENCIL_INVERT");
+	lua_pushinteger(L, ShaderEngine::STENCIL_KEEP);
+	lua_setfield(L, -2, "STENCIL_KEEP");
+	lua_pushinteger(L, ShaderEngine::STENCIL_LEQUAL);
+	lua_setfield(L, -2, "STENCIL_LEQUAL");
+	lua_pushinteger(L, ShaderEngine::STENCIL_LESS);
+	lua_setfield(L, -2, "STENCIL_LESS");
+	lua_pushinteger(L, ShaderEngine::STENCIL_NEVER);
+	lua_setfield(L, -2, "STENCIL_NEVER");
+	lua_pushinteger(L, ShaderEngine::STENCIL_NOTEQUAL);
+	lua_setfield(L, -2, "STENCIL_NOTEQUAL");
+	lua_pushinteger(L, ShaderEngine::STENCIL_REPLACE);
+	lua_setfield(L, -2, "STENCIL_REPLACE");
+	lua_pushinteger(L, ShaderEngine::STENCIL_ZERO);
+	lua_setfield(L, -2, "STENCIL_ZERO");
+
 
     lua_pushstring(L, "alpha");
     lua_setfield(L, -2, "ALPHA");
@@ -1424,6 +1459,53 @@ int SpriteBinder::setShaderConstant(lua_State* L)
 	}
 
 	sprite->setShaderConstant(sp);
+	return 0;
+}
+
+int SpriteBinder::setStencilOperation(lua_State* L)
+{
+	StackChecker checker(L, "SpriteBinder::setStencilOperation", 0);
+
+	Binder binder(L);
+
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite", 1));
+	ShaderEngine::DepthStencil ds;
+
+	if (lua_isnoneornil(L,2))
+		ds.dTest=false;
+	else if (lua_istable(L,2))
+	{
+		luaL_checktype(L,2,LUA_TTABLE);
+		lua_getfield(L,2,"stencilClear");
+		if (!lua_isnil(L,-1))
+			ds.sClear=lua_toboolean(L,-1);
+		lua_pop(L,1);
+		lua_getfield(L,2,"stencilMask");
+		if (!lua_isnil(L,-1))
+			ds.sMask=luaL_checkinteger(L,-1);
+		lua_pop(L,1);
+		lua_getfield(L,2,"stencilRef");
+		if (!lua_isnil(L,-1))
+			ds.sRef=luaL_checkinteger(L,-1);
+		lua_pop(L,1);
+		lua_getfield(L,2,"stencilFunc");
+		if (!lua_isnil(L,-1))
+			ds.sFunc=(ShaderEngine::StencilFunc) luaL_checkinteger(L,-1);
+		lua_pop(L,1);
+		lua_getfield(L,2,"depthPass");
+		if (!lua_isnil(L,-1))
+			ds.dPass=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
+		lua_pop(L,1);
+		lua_getfield(L,2,"stencilFail");
+		if (!lua_isnil(L,-1))
+			ds.sFail=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
+		lua_pop(L,1);
+		lua_getfield(L,2,"depthFail");
+		if (!lua_isnil(L,-1))
+			ds.dFail=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
+		lua_pop(L,1);
+	}
+
 	return 0;
 }
 

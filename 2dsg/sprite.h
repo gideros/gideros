@@ -440,6 +440,7 @@ protected:
 
 protected:
 	ShaderProgram *shader_;
+	ShaderEngine::DepthStencil stencil_;
 	std::map<std::string,ShaderParam> shaderParams_;
 //	typedef std::list<GraphicsBase, Gideros::STLAllocator<GraphicsBase, StdAllocator> > GraphicsBaseList;
 //	GraphicsBaseList graphicsBases_;
