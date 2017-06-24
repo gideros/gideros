@@ -51,15 +51,10 @@
 		<template name="Google" path="[[[local.iabfws]]]/google" dest="[[[local.iabfwd]]]/google" />
 		<mkdir>app/src/main/aidl/com/android</mkdir>
         <template name="AIDL" path="[[[sys.pluginDir]]]/bin/Android/src/com/android" dest="app/src/main/aidl/com/android"/>
-		<template name="AndroidManifest" path="">
-        	<replacelist wildcards="AndroidManifest.xml">
-            	<append>
-            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
-            		<by><![CDATA[
-    	            <uses-permission android:name="com.android.vending.BILLING"/>]]></by>
-    	        </append>  
-        	</replacelist>
-    	</template>
+    <lua>
+    local ap=require("export_android")
+    ap.usePermission("com.android.vending.BILLING")
+    </lua>
 	</if> 
  </target>
 </plugin>

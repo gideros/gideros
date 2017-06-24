@@ -22,13 +22,16 @@
             <append>
             	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
             	<by><![CDATA[
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="[[[local.required]]]"/>
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />            	
             	]]></by>
             </append>
         </replacelist>
     </template>
+    <lua>
+    local ap=require("export_android")
+    ap.usePermission("android.permission.CAMERA")
+    </lua>
  </target>
  <target name="Android">
     <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>

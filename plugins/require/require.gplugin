@@ -157,14 +157,10 @@
     	</template>
     </if>
     <if condition="[[[plugin.reqWriteExternalStorage]]]">
-    	<template name="AndroidManifest" path="">
-        	<replacelist wildcards="AndroidManifest.xml">
-	            <append>
-            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
-        	    	<by><![CDATA[<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>]]></by>
-    	        </append>
-        	</replacelist>
-    	</template>
+    <lua>
+    local ap=require("export_android")
+    ap.usePermission("android.permission.WRITE_EXTERNAL_STORAGE")
+    </lua>
     </if>
     <if condition="[[[plugin.reqEnable64bits]]]">
     	<template name="AndroidManifest" path="">
