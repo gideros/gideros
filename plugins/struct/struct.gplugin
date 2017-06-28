@@ -17,4 +17,13 @@
         </replacelist>
     </template>
  </target>
+ <target name="iOS">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportPluginFiles("struct",
+	"[[[sys.pluginDir]]]/source",
+	{ "struct.c", "struct_stub.cpp" },
+	true,true)
+	]]></lua>
+ </target>
 </plugin>

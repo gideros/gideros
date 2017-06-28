@@ -195,6 +195,11 @@ public:
 	{
 		return gads_getHeight(ad_);
 	}
+	
+	int hasConnection()
+	{
+		return gads_hasConnection(ad_);
+	}
     
 private:
 	static void callback_s(int type, void *event, void *udata)
@@ -554,6 +559,14 @@ static int getHeight(lua_State *L)
     return 1;
 }
 
+static int hasConnection(lua_State *L)
+{
+    Ads *ads = getInstance(L, 1);
+    int has = ads->hasConnection();
+    lua_pushboolean(L, has);
+    return 1;
+}
+
 static int loader(lua_State *L)
 {
 	const luaL_Reg functionlist[] = {
@@ -574,6 +587,7 @@ static int loader(lua_State *L)
         {"getHeight", getHeight},
 		{"set", set},
 		{"get", get},
+		{"hasConnection",hasConnection},
 		{NULL, NULL},
 	};
     

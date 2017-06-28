@@ -125,7 +125,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     		winver=winver+"0.0";
     	else
     		winver=winver+".0.0";
-    	if (!winver.startsWith("."))
+    	if (winver.startsWith("."))
     		winver="1"+winver;
     	QStringList wvparts=winver.split(".", QString::SkipEmptyParts);
     	winver=wvparts[0]+"."+wvparts[1]+"."+wvparts[2]+"."+QString::number(ctx->properties.build_number);

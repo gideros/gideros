@@ -125,11 +125,6 @@
 					</by>
 				</append>
             	<append>
-            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
-            		<by><![CDATA[
-    	            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>]]></by>
-    	        </append>
-            	<append>
             		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
             		<by><![CDATA[
         <meta-data android:name="me.kiip.sdk.AppKey" android:value="[[[plugin.adsFwKiipKey]]]"/>
@@ -139,6 +134,10 @@
     	        </append>
 	       	</replacelist>	
 	 	</template>
+    <lua>
+    local ap=require("export_android")
+    ap.usePermission("android.permission.ACCESS_NETWORK_STATE")
+    </lua>
 	</if>  
     <if condition="[[[plugin.adsFwApplovin]]]">
     	<template name="AppLovin" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.java" />
@@ -155,11 +154,6 @@
 <activity android:name="com.applovin.adview.AppLovinInterstitialActivity" android:configChanges="orientation|screenSize" />
 <activity android:name="com.applovin.adview.AppLovinConfirmationActivity" />]]></by>
     	        </append>
-            	<append>
-            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
-            		<by><![CDATA[
-    	            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>]]></by>
-    	        </append>    	        
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
@@ -169,6 +163,11 @@
 				</append>
         	</replacelist>
     	</template>
+    <lua>
+    local ap=require("export_android")
+    ap.usePermission("android.permission.ACCESS_NETWORK_STATE")
+    ap.usePermission("android.permission.WRITE_EXTERNAL_STORAGE",18)
+    </lua>
     </if>	  
     <if condition="[[[plugin.adsFwChartboost]]]">
     	<template name="ChartBoost" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsChartboost.java" />
@@ -187,11 +186,6 @@
                android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
                android:configChanges="keyboardHidden|orientation|screenSize" />]]></by>
     	        </append>
-            	<append>
-            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
-            		<by><![CDATA[
-    	            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>]]></by>
-    	        </append>    	        
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
@@ -201,6 +195,10 @@
 				</append>
         	</replacelist>
     	</template>
+    <lua>
+    local ap=require("export_android")
+    ap.usePermission("android.permission.ACCESS_NETWORK_STATE")
+    </lua>
     </if>	  
     <if condition="[[[plugin.adsFwAdmob]]]">
     	<template name="AdMob" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsAdmob.java" />
@@ -214,11 +212,6 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:theme="@android:style/Theme.Translucent" />]]></by>
     	        </append>
-            	<append>
-            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
-            		<by><![CDATA[
-    	            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>]]></by>
-    	        </append>   
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
@@ -234,6 +227,10 @@
     	        </prepend>   
         	</replacelist>
     	</template>
+    <lua>
+    local ap=require("export_android")
+    ap.usePermission("android.permission.ACCESS_NETWORK_STATE")
+    </lua>
     </if>	  
  </target>
  <target name="Android">

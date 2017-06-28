@@ -16,7 +16,7 @@ static int getProperty(lua_State* L)
 	if (!currentXml)
 		return 0;
 	const char *prop=luaL_checkstring(L,1);
-	lua_pushstring(L,currentXml->props[QString(prop)].toStdString().c_str());
+	lua_pushstring(L,currentXml->GetProperty(QString(prop)).toStdString().c_str());
 	return 1;
 }
 
@@ -26,7 +26,7 @@ static int setProperty(lua_State* L)
 		return 0;
 	const char *prop=luaL_checkstring(L,1);
 	const char *val=luaL_checkstring(L,2);
-	currentXml->props[QString(prop)]=QString(val);
+	currentXml->SetProperty(QString(prop),QString(val));
 	return 0;
 }
 

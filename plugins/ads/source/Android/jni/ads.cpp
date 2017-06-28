@@ -200,6 +200,15 @@ public:
 		return height;
 	}
 	
+	int hasConnection(const char *ad)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		jstring jAd = env->NewStringUTF(ad);
+		int has = (int)env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "hasConnection", "()Z"), jAd);
+		env->DeleteLocalRef(jAd);
+		return has;
+	}
+	
 	void onAdReceived(jstring jAd, jstring jAdType)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -536,6 +545,11 @@ int gads_getWidth(const char *ad)
 int gads_getHeight(const char *ad)
 {
 	return s_ads->getHeight(ad);
+}
+
+int gads_hasConnection(const char *ad)
+{
+	return s_ads->hasConnection(ad);
 }
 
 g_id gads_addCallback(gevent_Callback callback, void *udata)

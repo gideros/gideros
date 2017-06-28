@@ -14,16 +14,16 @@
 #include "gapplication.h"
 #include "gevent.h"
 
+#endif
+
 #if defined(__has_include)
 #if __has_include("gideros_build.h")
 # include "gideros_build.h"
 #endif
 #endif
 
-#endif
-
 #ifndef GIDEROS_VERSION
-#define GIDEROS_VERSION "2017.4.1"
+#define GIDEROS_VERSION "2017.6"
 #endif
 
 #endif

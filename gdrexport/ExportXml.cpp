@@ -56,39 +56,42 @@ void ExportXml::SetupProperties(ExportContext *ctx)
 {
 	this->ctx = ctx;
 	ctx->basews = Utilities::RemoveSpaces(ctx->base, false);
+	if (ctx->props.empty())
+	{
 	//Fill properties: System
 #ifdef Q_OS_WIN32
-	props["sys.exeExtension"]=".exe";
+		ctx->props["sys.exeExtension"]=".exe";
 #else
-	props["sys.exeExtension"] = "";
+	ctx->props["sys.exeExtension"] = "";
 #endif
-	props["sys.cacheDir"] = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-	props["sys.giderosDir"] = QDir::currentPath();
-	props["sys.homeDir"] = QDir::homePath();
-    props["sys.exportDir"] = ctx->exportDir.absolutePath();
-	props["sys.exportType"]=QString(ctx->player?"player":(ctx->assetsOnly?"assets":"full"));
+	ctx->props["sys.cacheDir"] = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+	ctx->props["sys.giderosDir"] = QDir::currentPath();
+	ctx->props["sys.homeDir"] = QDir::homePath();
+	ctx->props["sys.exportDir"] = ctx->exportDir.absolutePath();
+    ctx->props["sys.exportType"]=QString(ctx->player?"player":(ctx->assetsOnly?"assets":"full"));
 	//Fill properties: Project
-	props["project.name"] = ctx->base;
-	props["project.namews"] = ctx->basews;
-	props["project.package"] = ctx->properties.packageName;
-	props["project.version"] = ctx->properties.version;
-	props["project.platform"] = ctx->platform;
-	props["project.app_name"] = ctx->appName;
-	props["project.version_code"] = QString::number(
+	ctx->props["project.name"] = ctx->base;
+	ctx->props["project.namews"] = ctx->basews;
+	ctx->props["project.package"] = ctx->properties.packageName;
+	ctx->props["project.version"] = ctx->properties.version;
+	ctx->props["project.platform"] = ctx->platform;
+	ctx->props["project.app_name"] = ctx->appName;
+	ctx->props["project.version_code"] = QString::number(
 			ctx->properties.version_code);
-	props["project.build_number"] = QString::number(
+	ctx->props["project.build_number"] = QString::number(
 			ctx->properties.build_number);
-	props["project.autorotation"] = QString::number(
+	ctx->props["project.autorotation"] = QString::number(
 			ctx->properties.autorotation);
-	props["project.orientation"] = QString::number(ctx->properties.orientation);
-	props["project.disableSplash"] = QString::number(ctx->properties.disableSplash?1:0);
-	props["project.backgroundColor"] = ctx->properties.backgroundColor;
-	props["project.ios_bundle"] = ctx->properties.ios_bundle;
+	ctx->props["project.orientation"] = QString::number(ctx->properties.orientation);
+	ctx->props["project.disableSplash"] = QString::number(ctx->properties.disableSplash?1:0);
+	ctx->props["project.backgroundColor"] = ctx->properties.backgroundColor;
+	ctx->props["project.ios_bundle"] = ctx->properties.ios_bundle;
 
 	//Fill in passed arguments
     QHash<QString, QString>::iterator i;
         for (i = ctx->args.begin(); i != ctx->args.end(); ++i)
-            props["args."+i.key()] = i.value();
+        	ctx->props["args."+i.key()] = i.value();
+	}
 }
 
 bool ExportXml::Process(ExportContext *ctx) {
@@ -97,7 +100,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 	QDomElement rules;
 	QDir xmlDir=QFileInfo(xmlFile).dir();
 	if (isPlugin) {
-		props["sys.pluginDir"] = xmlDir.path();
+		lprops["sys.pluginDir"] = xmlDir.path();
 		//Fill properties: Plugin
 		for (QSet<ProjectProperties::Plugin>::const_iterator it =
 				ctx->properties.plugins.begin();
@@ -106,7 +109,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 				for (QMap<QString, QString>::const_iterator mit =
 						(*it).properties.begin(); mit != (*it).properties.end();
                         mit++)
-                    props[QString("plugin.").append(mit.key())] = mit.value();
+                    lprops[QString("plugin.").append(mit.key())] = mit.value();
             }
 		//Lookup target
 		QDomNodeList targets = exporter.elementsByTagName("target");
@@ -119,7 +122,7 @@ bool ExportXml::Process(ExportContext *ctx) {
 		}
 	} else {
 //Fill properties: Export
-		props["sys.exportDir"] = xmlDir.path();
+		ctx->props["sys.exporterDir"] = xmlDir.path();
 		rules = exporter.firstChildElement("rules");
         for (QSet<ProjectProperties::Export>::const_iterator it =
                 ctx->properties.exports.begin();
@@ -128,7 +131,7 @@ bool ExportXml::Process(ExportContext *ctx) {
                 for (QMap<QString, QString>::const_iterator mit =
                         (*it).properties.begin(); mit != (*it).properties.end();
                         mit++)
-                    props[QString("export.").append(mit.key())] = mit.value();
+                    ctx->props[QString("export.").append(mit.key())] = mit.value();
             }
     }
 //Run rules
@@ -404,7 +407,7 @@ QString ExportXml::ReplaceAttributes(QString text) {
 		int ac = args.count();
 		QString rep;
 		if (ac == 1)
-			rep = props[args[0]];
+			rep = GetProperty(args[0]);
 		else if (ac == 2)
 			rep = ComputeUnary(args[0], args[1]);
 		else if (ac == 3)
@@ -483,7 +486,7 @@ bool ExportXml::RuleIf(QString cond, QDomElement rule) {
 bool ExportXml::RuleSet(QString key, QString val) {
 	ExportCommon::exportInfo("Set: %s -> %s\n", key.toStdString().c_str(),
 			SecretVal(key,val).toStdString().c_str());
-	props[key] = val;
+	SetProperty(key,val);
 	return true;
 }
 
@@ -497,9 +500,25 @@ bool ExportXml::RuleAsk(QDomElement rule) {
 	free(ret);
 	ExportCommon::exportInfo("Ask: %s -> %s\n", key.toStdString().c_str(),
 			SecretVal(key,val).toStdString().c_str());
-	props[key] = val;
+	SetProperty(key,val);
 	return true;
 }
+
+void ExportXml::SetProperty(QString k,QString v)
+{
+	if (!(ctx->props[k].isEmpty()))
+		ctx->props[k]=v;
+	else
+		lprops[k]=v;
+}
+
+QString ExportXml::GetProperty(QString k)
+{
+	if (!(ctx->props[k].isEmpty()))
+		return ctx->props[k];
+	return lprops[k];
+}
+
 
 QString ExportXml::XmlAttributeOrElement(QDomElement elm,QString name)
 {

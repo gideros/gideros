@@ -153,7 +153,7 @@ elseif s:ends(".plist") or s:ends(".bundle") then
 local sref,bref=iOSProject.addSource(s)
 iOSProject.addToGroup(dest,sref,flavor)
 iOSProject.addToGroup("ResourceBuild",bref,flavor)
-elseif s:ends(".framework") then
+elseif s:ends(".framework") or s:ends(".a") then
 local sref=iOSProject.addFramework(s,flavor)
 iOSProject.addToGroup(dest,sref,flavor)
 else
@@ -166,6 +166,24 @@ end
 iOSProject.addFrameworkPath=function(path)
 local refline=("\"$(PROJECT_DIR)/%s\",\n"):format(path)
 iOSProject.insertData("FrameworksPaths",refline)
+end
+
+iOSProject.exportPluginFiles=function(pname,srcdir,srcfiles,foriOS,forATV)
+  if foriOS then
+    local tgtDir=Export.getProperty("project.namews").."/Plugins/"..pname    
+    Export.mkdir(tgtDir)
+    Export.recursiveCopy(pname,srcdir,tgtDir,"*.m;*.mm;*.c;*.h;*.cpp","emscripten;win32;jni;iOS;Android")
+    iOSProject.addGroup(pname,"Plugins/"..pname,"Group"..pname.."_ios","GroupPlugins_ios")
+    iOSProject.addSources(srcfiles, "Group"..pname, "ios")
+  end
+  if forATV then
+    local tgtDir="AppleTV/Plugins/"..pname    
+    Export.mkdir(tgtDir)
+    Export.recursiveCopy(pname,srcdir,tgtDir,"*.m;*.mm;*.c;*.h;*.cpp","emscripten;win32;jni;iOS;Android")
+    iOSProject.addGroup(pname,"Plugins/"..pname,"Group"..pname.."_atv","GroupPlugins_atv")
+    iOSProject.addSources(srcfiles, "Group"..pname, "atv")
+  end
+  iOSProject.commit()
 end
 
 return iOSProject

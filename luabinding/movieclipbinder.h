@@ -18,6 +18,7 @@ private:
 	static int gotoAndStop(lua_State* L);
 	static int setStopAction(lua_State* L);
 	static int setGotoAction(lua_State* L);
+	static int setReverseAction(lua_State* L);
 	static int clearAction(lua_State* L);
 	static int getFrame(lua_State* L);
 };

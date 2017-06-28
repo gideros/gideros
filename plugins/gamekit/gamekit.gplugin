@@ -1,0 +1,13 @@
+<plugin
+ name="GameKit"
+ description="GameKit support for iOS">
+ <target name="iOS">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportPluginFiles("gamekit",
+	"[[[sys.pluginDir]]]/source/iOS",
+	{ "gamekit.mm" },
+	true,false)
+	]]></lua>
+ </target>
+</plugin>

@@ -387,7 +387,7 @@ public:
 	void background();
 	void resize(int width, int height, int orientation);
 
-	Windows::UI::Xaml::Controls::SwapChainPanel^ getRoot();
+	static Windows::UI::Xaml::Controls::SwapChainPanel^ getRoot();
 
 private:
 	void loadProperties();
@@ -419,10 +419,11 @@ private:
 
 	int nframe_;
 
-	Platform::WeakReference xamlRoot_;
+	static Platform::WeakReference xamlRoot_;
 	bool xaml;
 };
 
+Platform::WeakReference ApplicationManager::xamlRoot_;
 
 NetworkManager::NetworkManager(ApplicationManager* application)
 {
@@ -725,7 +726,7 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01f*dinfo->LogicalDpi/96.0f;   // Windows 8 PC
+		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01f;// *dinfo->LogicalDpi / 96.0f;   // Windows 8 PC
 #endif
 	}
 
@@ -1517,7 +1518,7 @@ extern "C" {
 	}
 
 	Windows::UI::Xaml::Controls::SwapChainPanel^ gdr_getRootView(){
-		return s_manager->getRoot();
+		return ApplicationManager::getRoot();
 	}
 
 	void gdr_drawFrame(bool useXaml)

@@ -2,6 +2,8 @@
 #include <gapplication-ios.h>
 #import <UIKit/UIKit.h>
 
+extern NSString* getSysInfoByName(const char* typeSpecifier);
+
 class GGApplicationManager
 {
     
@@ -24,7 +26,29 @@ public:
         float scale = 1;
         if ([glView respondsToSelector:@selector(contentScaleFactor)])
             scale = glView.contentScaleFactor;
+            
+         NSDictionary *modelDpi = @{
+            @"iPhone7,1": @133, //6+ x3=401
+            @"iPhone8,2": @133, //6S+
+            @"iPhone9,2": @133, //7+
+            @"iPhone9,4": @133, //7+
+            @"iPad2,5": @163, //Mini
+            @"iPad2,6": @163, //Mini
+            @"iPad2,7": @163, //Mini
+            @"iPad4,4": @163, //Mini2 x2=326
+            @"iPad4,5": @163, //Mini2
+            @"iPad4,6": @163, //Mini2
+            @"iPad4,7": @163, //Mini3
+            @"iPad4,8": @163, //Mini3
+            @"iPad4,9": @163, //Mini3
+            @"iPad5,1": @163, //Mini4
+            @"iPad5,2": @163, //Mini4
+		};
 
+		id mdpi=modelDpi[getSysInfoByName("hw.machine")];
+		if (mdpi)
+			return [mdpi integerValue]*scale;
+		
         int dpi;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
         {

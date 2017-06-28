@@ -156,7 +156,7 @@ const char *match (lua_State *L, const char *o, const char *s, const char *e,
   stack->p = &giveup; stack->s = s; stack->caplevel = 0; stack++;
   lua_pushlightuserdata(L, stackbase);
   for (;;) {
-#if defined(DEBUG)
+#if defined(LPEG_DEBUG)
       printf("s: |%s| stck:%d, dyncaps:%d, caps:%d  ",
              s, stack - getstackbase(L, ptop), ndyncap, captop);
       printinst(op, p);

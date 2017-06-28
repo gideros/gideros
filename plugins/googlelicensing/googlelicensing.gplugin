@@ -15,15 +15,18 @@
             <append>
             	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
             	<by><![CDATA[
-    <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <service android:name="com.giderosmobile.android.plugins.googlelicensing.GiderosAPKDownloader" />
     <receiver android:name="com.giderosmobile.android.plugins.googlelicensing.GiderosDownloadReceiver" />
             	]]></by>
             </append>
         </replacelist>
     </template>
+    <lua>
+    local ap=require("export_android")
+    ap.usePermission("android.permission.ACCESS_NETWORK_STATE")
+    ap.usePermission("android.permission.WAKE_LOCK")
+    ap.usePermission("com.android.vending.CHECK_LICENSE")
+    </lua>
  </target>
  <target name="Android">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android"/>

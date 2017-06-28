@@ -75,6 +75,7 @@ G_API int gads_getX(const char *ad);
 G_API int gads_getY(const char *ad);
 G_API int gads_getWidth(const char *ad);
 G_API int gads_getHeight(const char *ad);
+G_API int gads_hasConnection(const char *ad);
 
 G_API g_id gads_addCallback(gevent_Callback callback, void *udata);
 G_API void gads_removeCallback(gevent_Callback callback, void *udata);

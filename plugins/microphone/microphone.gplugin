@@ -10,16 +10,10 @@
             <append orig="//GIDEROS-EXTERNAL-CLASS//" by="		&quot;com.giderosmobile.android.plugins.microphone.GMicrophone&quot;,"/>
         </replacelist>
     </template>
-    <template name="AndroidManifest" path="">
-        <replacelist wildcards="AndroidManifest.xml">
-           <append>
-            	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
-            	<by><![CDATA[
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-            	]]></by>
-            </append>
-        </replacelist>
-    </template>
+    <lua>
+    local ap=require("export_android")
+    ap.usePermission("android.permission.RECORD_AUDIO")
+    </lua>
  </target>
  <target name="Android">
     <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
@@ -39,5 +33,14 @@
             </append>
         </replacelist>
     </template>
+ </target>
+ <target name="iOS">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportPluginFiles("microphone",
+	"[[[sys.pluginDir]]]/source/iOS",
+	{ "gmicrophone-ios.mm", "gmicrophonebinder.cpp", "gsoundencoder-wav.cpp" },
+	true,true)
+	]]></lua>
  </target>
 </plugin>

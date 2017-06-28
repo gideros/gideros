@@ -87,6 +87,12 @@ int TextureBinder::create(lua_State* L)
                 format = eRGBA4444;
             else if (strcmp(formatstr, "rgba5551") == 0)
                 format = eRGBA5551;
+            else if (strcmp(formatstr, "y8") == 0)
+                format = eY8;
+            else if (strcmp(formatstr, "a8") == 0)
+                format = eA8;
+            else if (strcmp(formatstr, "ya8") == 0)
+                format = eYA8;
             else
             {
                 GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.

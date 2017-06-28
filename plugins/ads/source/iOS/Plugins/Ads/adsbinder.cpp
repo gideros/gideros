@@ -135,6 +135,11 @@ public:
 		gads_removeCallback(callback_s, this);
 		free((char*)ad_);
     }
+    
+    int hasConnection()
+    {
+        return gads_hasConnection();
+    }
 	
 	void setKey(gads_Parameter *params)
 	{
@@ -340,6 +345,8 @@ private:
 	const char* ad_;
 };
 
+
+
 static int destruct(lua_State* L)
 {
 	void *ptr = *(void**)lua_touserdata(L, 1);
@@ -374,6 +381,15 @@ static int init(lua_State *L)
 	lua_pushvalue(L, -1);
     return 1;
 }
+
+static int hasConnection(lua_State *L)
+{
+    Ads *ads = getInstance(L, 1);
+    int has = ads->hasConnection();
+    lua_pushboolean(L, has);
+    return 1;
+}
+
 
 static int setKey(lua_State *L)
 {
@@ -554,6 +570,8 @@ static int getHeight(lua_State *L)
     return 1;
 }
 
+
+
 static int loader(lua_State *L)
 {
 	const luaL_Reg functionlist[] = {
@@ -574,6 +592,7 @@ static int loader(lua_State *L)
         {"getHeight", getHeight},
 		{"set", set},
 		{"get", get},
+        {"hasConnection", hasConnection},
 		{NULL, NULL},
 	};
     
