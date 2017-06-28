@@ -15,6 +15,7 @@
  <property name="reqWriteExternalStorage" type="boolean" title="App needs to to write external storage"/>
  <property name="reqPhoneOnly" type="boolean" title="This app is targeting phones only, no tablets"/>
  <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
+ <property name="reqCanOpenUrl" type="string" title="This app can open url : (with ',' separator)"/>
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -189,5 +190,31 @@
         </replacelist>
 	</template>
     </if>
+	<lua><![CDATA[
+		local urls = Export.getProperty("plugin.reqCanOpenUrl")
+		if urls and string.len(urls)>0 then
+			local t,pattern = {},urls.format("([^%s]+)", ",")
+			urls:gsub(pattern, function(s) t[#t+1] = s end)
+			if #t>0 then
+				local keys = ""
+				for i,v in ipairs(t) do
+					local key = v and "<string>"..v.."</string>" or ""
+					keys = keys..key
+				end
+				Export.setProperty("plugin.reqCanOpenUrl",keys)
+			end
+		end
+	]]></lua>
+	<template name="Project" path="">
+		<replacelist wildcards="[[[project.namews]]]-Info.plist;Info.plist">
+			<prepend>
+				<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
+				<by><![CDATA[
+					<key>LSApplicationQueriesSchemes</key>
+					<array>[[[plugin.reqCanOpenUrl]]]</array>
+				]]></by>
+			</prepend>
+		</replacelist>
+	</template>
  </target> 
 </plugin>
