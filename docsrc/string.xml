@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="string" page="string" parent="" type="lua" version="Gideros 2011.6"><![CDATA[This library provides generic functions for string manipulation, such as finding and extracting substrings, and pattern matching. When indexing a string in Lua, the first character is at position 1 (not at 0, as in C). Indices are allowed to be negative and are interpreted as indexing backwards, from the end of the string. Thus, the last character is at position -1, and so on. 
+
+ The string library provides all its functions inside the table string. It also sets a metatable for strings where the __index field points to the string table. Therefore, you can use the string functions in object-oriented style. For instance, string.byte(s, i) can be written as s:byte(i). 
+
+ The string library assumes one-byte character encodings.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="string.byte" page="byte" shortdesc="returns numerical code, nil if index out of range, default i=1" version="Gideros 2011.6"><![CDATA[Returns the internal numerical codes of the characters s[i], s[i+1], ···, s[j]. The default value for i is 1; the default value for j is i. 
+
+Note that numerical codes are not necessarily portable across platforms.]]>
+    <parameter name="s" optional="false" type="string"><![CDATA[string to get numerical codes from]]></parameter>
+    <parameter name="i" optional="true" type="number"><![CDATA[start symbol (default = 1)]]></parameter>
+    <parameter name="j" optional="true" type="number"><![CDATA[end symbol (defaults = i)]]></parameter>
+    <return type="numbers"><![CDATA[numerical codes of characters in provided range]]></return>
+  </method>
+  <method name="string.char" page="char" shortdesc="returns a string built from 0 or more integers" version="Gideros 2011.6"><![CDATA[Receives zero or more integers. Returns a string with length equal to the number of arguments, in which each character has the internal numerical code equal to its corresponding argument. 
+
+
+ Note that numerical codes are not necessarily portable across platforms.]]>
+    <parameter name="i1" optional="false" type="number"><![CDATA[first character represented by numerical code]]></parameter>
+    <parameter name="i2" optional="true" type="number"><![CDATA[second character represented by numerical code]]></parameter>
+    <parameter name="..." optional="true" type="multiple"><![CDATA[more optional characters represented by numerical codes]]></parameter>
+    <return type="string"><![CDATA[string created from characters]]></return>
+  </method>
+  <method name="string.dump" page="dump" shortdesc="returns binary representation of function, used with loadstring" version="Gideros 2011.6"><![CDATA[Returns a string containing a binary representation of the given function, so that a later loadstring on this string returns a copy of the function. function must be a Lua function without upvalues.]]>
+    <parameter name="function" optional="false" type="function"><![CDATA[function to convert to string]]></parameter>
+    <return type="string"><![CDATA[string representation of function]]></return>
+  </method>
+  <method name="string.find" page="find" shortdesc="matches pattern in s, returns start,end indices, else nil" version="Gideros 2011.6"><![CDATA[Looks for the first match of pattern in the string s. If it finds a match, then find returns the indices of s where this occurrence starts and ends; otherwise, it returns nil. A third, optional numerical argument init specifies where to start the search; its default value is 1 and can be negative. A value of true as a fourth, optional argument plain turns off the pattern matching facilities, so the function does a plain "find substring" operation, with no characters in pattern being considered "magic". Note that if plain is given, then init must be given as well. 
+
+
+ If the pattern has captures, then in a successful match the captured values are also returned, after the two indices.]]>
+    <parameter name="s" optional="false" type="string"><![CDATA[string where to find a pattern]]></parameter>
+    <parameter name="pattern" optional="false" type="string"><![CDATA[pattern to find]]></parameter>
+    <parameter name="init" optional="true" type="number"><![CDATA[index where to start searching for pattern]]></parameter>
+    <parameter name="plain" optional="true" type="bool"><![CDATA[if true, then it simply matches substring without any special symbols (default = false)]]></parameter>
+    <return type="numbers"><![CDATA[indexes of occurrence of the pattern or nil]]></return>
+  </method>
+  <method name="string.format" page="format" shortdesc="returns formatted string, printf-style" version="Gideros 2011.6"><![CDATA[Returns a formatted version of its variable number of arguments following the description given in its first argument (which must be a string). The format string follows the same rules as the printf family of standard C functions. The only differences are that the options/modifiers *, l, L, n, p, and h are not supported and that there is an extra option, q. The q option formats a string in a form suitable to be safely read back by the Lua interpreter: the string is written between double quotes, and all double quotes, newlines, embedded zeros, and backslashes in the string are correctly escaped when written. For instance, the call 
+
+     `string.format('%q', 'a string with "quotes" and \n new line')`
+
+ will produce the string: 
+
+     `"a string with \"quotes\" and \
+      new line"`
+
+
+ The options c, d, E, e, f, g, G, i, o, u, X, and x all expect a number as argument, whereas q and s expect a string. 
+
+
+ This function does not accept string values containing embedded zeros, except as arguments to the q option.]]>
+    <parameter name="formatstring" optional="false" type="string"><![CDATA[the string defining the format of the output]]></parameter>
+    <parameter name="e1" optional="true" type="string"><![CDATA[first parameter for the format string]]></parameter>
+    <parameter name="e2" optional="true" type="string"><![CDATA[second parameter to format string]]></parameter>
+    <parameter name="..." optional="true" type="multiple"><![CDATA[more optional parameters for format string]]></parameter>
+  </method>
+  <method name="string.gmatch" page="gmatch" shortdesc="returns iterator function that returns next captures from pattern pat on s" version="Gideros 2011.6"><![CDATA[Returns an iterator function that, each time it is called, returns the next captures from pattern over string s. If pattern specifies no captures, then the whole match is produced in each call. 
+
+
+ As an example, the following loop 
+
+     `s = "hello world from Lua"`
+     `for w in string.gmatch(s, "%a+") do`
+       `print(w)`
+     `end`
+</pre>
+
+ will iterate over all the words from string s, printing one per line. The next example collects all pairs key=value from the given string into a table: 
+
+     `t = {}`
+     `s = "from=world, to=Lua"`
+     `for k, v in string.gmatch(s, "(%w+)=(%w+)") do`
+       `t[k] = v`
+     `end`
+
+
+ For this function, a '^' at the start of a pattern does not work as an anchor, as this would prevent the iteration.]]>
+    <parameter name="s" optional="false" type="string"><![CDATA[string where to look for patterns]]></parameter>
+    <parameter name="pat" optional="false" type="string"><![CDATA[pattern to look for]]></parameter>
+    <return type="function"><![CDATA[iterator function]]></return>
+  </method>
+  <method name="string.gsub" page="gsub" shortdesc="returns copy of s with pat replaced by repl, and substitutions made" version="Gideros 2011.6"><![CDATA[Returns a copy of s in which all (or the first n, if given) occurrences of the pattern have been replaced by a replacement string specified by repl, which can be a string, a table, or a function. gsub also returns, as its second value, the total number of matches that occurred. 
+
+
+ If repl is a string, then its value is used for replacement. The character % works as an escape character: any sequence in repl of the form %n, with n between 1 and 9, stands for the value of the n-th captured substring (see below). The sequence %0 stands for the whole match. The sequence %% stands for a single %. 
+
+
+ If repl is a table, then the table is queried for every match, using the first capture as the key; if the pattern specifies no captures, then the whole match is used as the key. 
+
+
+ If repl is a function, then this function is called every time a match occurs, with all captured substrings passed as arguments, in order; if the pattern specifies no captures, then the whole match is passed as a sole argument. 
+
+
+ If the value returned by the table query or by the function call is a string or a number, then it is used as the replacement string; otherwise, if it is false or nil, then there is no replacement (that is, the original match is kept in the string). 
+
+
+ Here are some examples: 
+
+`x = string.gsub("hello world", "(%w+)", "%1 %1") --> x="hello hello world world"`
+     
+`x = string.gsub("hello world", "%w+", "%0 %0", 1) --> x="hello hello world"`
+     
+`x = string.gsub("hello world from Lua", "(%w+)%s*(%w+)", "%2 %1") --> x="world hello Lua from"`
+     
+`x = string.gsub("home = $HOME, user = $USER", "%$(%w+)", os.getenv)`
+`--> x="home = /home/roberto, user = roberto"`
+     
+`x = string.gsub("4%2B5 = $return 4%2B5$", "%$(.-)%$", function (s) return loadstring(s)() end) --> x="4%2B5 = 9"`
+<br/>
+`local t = {name="lua", version="5.1"}`
+`x = string.gsub("$name-$version.tar.gz", "%$(%w+)", t) --> x="lua-5.1.tar.gz"`]]>
+    <parameter name="s" optional="false" type="string"><![CDATA[string where to make replacements]]></parameter>
+    <parameter name="pat" optional="false" type="string"><![CDATA[pattern what to replace]]></parameter>
+    <parameter name="repl" optional="false" type="varies"><![CDATA[to what to replace]]></parameter>
+    <parameter name="n" optional="true" type="number"><![CDATA[number of replacements]]></parameter>
+    <return type="string"><![CDATA[modified string with replacements]]></return>
+  </method>
+  <method name="string.len" page="len" shortdesc="returns string length" version="Gideros 2011.6"><![CDATA[Receives a string and returns its length. The empty string "" has length 0. Embedded zeros are counted, so "a\000bc\000" has length 5.]]>
+    <parameter name="s" optional="false" type="string"><![CDATA[string for which to measure length]]></parameter>
+    <return type="number"><![CDATA[the length of the string]]></return>
+  </method>
+  <method name="string.lower" page="lower" shortdesc="returns string with letters in lower case" version="Gideros 2011.6"><![CDATA[Receives a string and returns a copy of this string with all uppercase letters changed to lowercase. All other characters are left unchanged. The definition of what an uppercase letter is depends on the current locale.]]>
+    <parameter name="s" optional="false" type="string"><![CDATA[string to modify]]></parameter>
+    <return type="string"><![CDATA[lowercased string]]></return>
+  </method>
+  <method name="string.rep" page="rep" shortdesc="returns string with n copies of string s" version="Gideros 2011.6"><![CDATA[Returns a string that is the concatenation of n copies of the string s.]]>
+    <parameter name="s" optional="false" type="string"><![CDATA[string to copy]]></parameter>
+    <parameter name="n" optional="false" type="number"><![CDATA[how many times to copy a string]]></parameter>
+    <return type="string"><![CDATA[concatenated by n copies]]></return>
+  </method>
+  <method name="string.sub" page="sub" shortdesc="returns substring from index i to j of s, default j=-1(string length-" version="Gideros 2011.6"><![CDATA[Returns the substring of s that starts at i and continues until j; i and j can be negative. If j is absent, then it is assumed to be equal to -1 (which is the same as the string length). In particular, the call string.sub(s,1,j) returns a prefix of s with length j, and string.sub(s, -i) returns a suffix of s with length i.]]>
+    <parameter name="s" optional="false" type="string"><![CDATA[string to get substring from]]></parameter>
+    <parameter name="i" optional="false" type="number"><![CDATA[start index of substring]]></parameter>
+    <parameter name="j" optional="true" type="number"><![CDATA[index of the last character of substring]]></parameter>
+    <return type="string"><![CDATA[substring]]></return>
+  </method>
+  <method name="string.upper" page="upper" shortdesc="returns string with letters in upper case" version="Gideros 2011.6"><![CDATA[Make all the lower case characters upper case.]]>
+    <parameter name="s" optional="false" type="string"><![CDATA[string to modify]]></parameter>
+    <return type="string"><![CDATA[uppercased string]]></return>
+  </method>
+  <method name="string.match" page="match" shortdesc="Searches a string for a pattern." version="Gideros 2011.6"><![CDATA[Find the first match of the regular expression "pattern" in "str", starting at position "index".
+
+The starting position (index) is optional, and defaults to 1 (the start of the string).
+
+If found, returns any captures in the pattern. If no captures were specified the entire matching string is returned.
+
+If not found, returns nil.
+
+This is similar to string.find, except that the starting and ending index are not returned.
+
+
+print (string.match ("You see dogs and cats", "s..")) --> see]]>
+    <parameter name="string" optional="false" type="String"><![CDATA[Any string.]]></parameter>
+    <parameter name="pattern" optional="false" type="String"><![CDATA[Specifies the pattern to match.]]></parameter>
+    <return type="string"><![CDATA[String matching pattern.]]></return>
+  </method>
+</object>

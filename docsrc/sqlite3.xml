@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="sqlite3" page="sqlite3" parent="" type="plugin" version="Gideros 2012.2.1"><![CDATA[<br />
+Gideros runtime supports public domain SQLite3 database engine for iOS, Android and Desktop platforms. <br />
+For more information and detailed documentation, please visit [http://lua.sqlite.org](http://lua.sqlite.org).<br />
+<br />
+&lt;h3&gt;SQLite3 on Android platforms&lt;/h3&gt;<br />
+Currently, LuaSQLite3 plugin cannot open databases stored in APK files. Therefore, database file should be<br />
+copied from resource directory to documents directory.<br />
+<br />
+To copy a file, this function can be used:<br />
+<br />
+&lt;pre&gt;&lt;code&gt;<br />
+	local function copy(src, dst)<br />
+		local srcf = io.open(src, &quot;rb&quot;)<br />
+		local dstf = io.open(dst, &quot;wb&quot;)<br />
+	 <br />
+		local size = 2^13      -- good buffer size (8K)<br />
+		while true do<br />
+			local block = srcf:read(size)<br />
+			if not block then break end<br />
+			dstf:write(block)<br />
+		end<br />
+	 <br />
+		srcf:close()<br />
+		dstf:close()<br />
+	end<br />
+<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+Also it&#039;s better to check if the database file is previously copied or not. To check if a file can be found <br />
+on the underlying file system, this function can be used:<br />
+<br />
+&lt;pre&gt;&lt;code&gt;<br />
+	local function exists(file)<br />
+		local f = io.open(file, &quot;rb&quot;)<br />
+		if f == nil then<br />
+			return false<br />
+		end<br />
+		f:close()<br />
+		return true<br />
+	end<br />
+<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+By using these two function, you can copy the database file from resource to documents directory before using it:<br />
+<br />
+&lt;pre&gt;&lt;code&gt;<br />
+	if not exists(&quot;|D|database.db&quot;) then<br />
+		copy(&quot;database.db&quot;, &quot;|D|database.db&quot;)<br />
+	end<br />
+<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+
+&lt;h3&gt;SQLite3 on on WinRT need to add an extension to Visual Studio&lt;/h3&gt;
+
+Gideros now supports sqlite and to make this work on Windows Phone, it is necessary to add an extension to Visual Studio. Even if you don't use sqlite, you will need to add this extension or Windows Phone projects exported by Gideros will not compile. It's easy to do as explained next. Of course, you only need to add the extension once. 
+&lt;br/&gt;
+Open Visual Studio and go to `TOOLS > Extensions and Updates`. Select the `Online` tab on the left and type sqlite in the search bar at the top right. Select `SQLite` for Windows 8.1 or/and Windows Phone 8.1 and select install. You will need to restart VS for the extension to take effect.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+</object>

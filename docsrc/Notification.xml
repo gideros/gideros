@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Notification" page="Notification" parent="" type="labs" version="Gideros 2011.6"><![CDATA[Notification class is used to compose and schedule new local notifications. You need to provide an ID of notification to constructor. Using same provided ID you can create a new instance of Notification class and modify existing notification with that ID. Additionally the ID allows you to identify local notification in the table of scheduled local notifications retrieved from `NotificationManager:getScheduledNotifications`, or table of local notifications that were already displayed using `NotificationManager:getLocalNotifications`
+
+`Notification` consists of notification message, title, sound and number. Only message is the mandatory one. You can combine others as you wish.]]>
+  <constant name="Notification.DEFAULT_SOUND" page="DEFAULT_SOUND" value="default" version="Gideros 2011.6"><![CDATA[Constant that represent default system sound usage in notifications and can be used in `Notification:setSound` method.]]></constant>
+  <method name="Notification.new" page="new" shortdesc="creates new notification" version="Gideros 2011.6"><![CDATA[Creates new notification object with provided id. Scheduled notifications can later be canceled or modified using provided ID.
+
+Here are couple of scenarios that may happen, when creating notifications:
+
+Notification with provided ID does not exist yet, so you simply create new scheduled notification.
+Next if you create another notification with same ID, while the first one is till scheduled, you will simply modify the existing scheduled notification with new title, message, etc and can even change it's scheduled time by redispatching it.
+If you create notification with same ID, while the first notification was already displayed, you will simply create a new notification.
+
+
+So as you see, you may use notification ID's as types of notifications. For example, if you have a energy bar that will be restored after some time, you could always dispatch this notification with same ID.
+
+However, if you want to display for example, that there are new chat messages from different users, they should have different IDs.]]></method>
+  <method name="Notification:setTitle" page="setTitle" shortdesc="set the title of notification" version="Gideros 2011.6"><![CDATA[Sets the title text of local notification, usually used as app name.
+
+On Android title is displayed as ticker text and title inside local notification.
+
+On IOS title represents the action on slide bar.]]></method>
+  <method name="Notification:getTitle" page="getTitle" shortdesc="get title of notification" version="Gideros 2011.6"><![CDATA[Retrieves the title of local notification that was previously set.]]></method>
+  <method name="Notification:getMessage" page="getMessage" shortdesc="get message of notification" version="Gideros 2011.6"><![CDATA[Retrieves the message of local notification that was previously set.]]></method>
+  <method name="Notification:setNumber" page="setNumber" shortdesc="set notification number" version="Gideros 2011.6"><![CDATA[Sets the number of local notification. Usually number is used to represent amount of events awaiting for user, as amount of unreplied messages, etc. By default number is 0 and is not shown.
+
+On Android number in local notifications is visible only starting from Android 3.0 version (but can be provided in any version).
+
+On IOS number is represented as a badge number at your application icon.]]></method>
+  <method name="Notification:getNumber" page="getNumber" shortdesc="get notification number" version="Gideros 2011.6"><![CDATA[Retrieves the number of local notification that was previously set.]]></method>
+  <method name="Notification:setSound" page="setSound" shortdesc="set notification sound" version="Gideros 2011.6"><![CDATA[Sets the sound which is played when notification is shown.
+
+By default no sound is played and if you want to play default system sound, then you can use `Notification.DEFAULT_SOUND` constant
+
+For cross-platform compatability it is better to use .wav file types.
+
+For IOS the audio length can not exceed 30 seconds
+
+You can reference this <a href='https://developer.apple.com/library/IOs/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/IPhoneOSClientImp.html' target='_blank'>IOS notification guide</a> for converting sound to needed formats on IOS.]]></method>
+  <method name="Notification:getSound" page="getSound" shortdesc="get sound of notification" version="Gideros 2011.6"><![CDATA[Retrieves the sound of local notification that was previously set.]]></method>
+  <method name="Notification:cancel" page="cancel" shortdesc="cancel notification" version="Gideros 2011.6"><![CDATA[Cancels previously scheduled, but not yet displayed notification]]></method>
+  <method name="Notification:getId" page="getId" shortdesc="get id of notification" version="Gideros 2011.6"><![CDATA[Returns user assigned ID of local notification]]></method>
+  <method name="Notification:dispatchNow" page="dispatchNow" shortdesc="dispatch notification now" version="Gideros 2011.6"><![CDATA[Dispatches notification right away. Note that based on app settings, user might not be able to see the notification dispatched when you app is opened, but it will still be available in the devices list of dispatched notifications]]></method>
+  <method name="Notification:dispatchOn" page="dispatchOn" shortdesc="dispatch on specified date" version="Gideros 2011.6"><![CDATA[Dispatches notification on provided date in device's timezone. Optionally you can provide repeat time interval, in which notification should be repeated until canceled.
+
+Both dispatch date and repeating time format is similar to os.date("*t") retrieved format. As in you can provide date as table with these options as keys:
+ 
+sec - for seconds
+min - for minutes
+hour - for hours
+day - for day of the month
+month - for month
+year - for year]]></method>
+  <method name="Notification:dispatchAfter" page="dispatchAfter" shortdesc="Dispatch notification after specified time" version="Gideros 2011.6"><![CDATA[Dispatches notification after provided period of time. Optionally can provide repeat time interval, in which notification should be repeated until canceled.
+
+Both dispatch after period of time and repeating time format is similar to os.date("*t") retrieved format. As in you can provide time as table with these options as keys: 
+
+sec - for seconds
+min - for minutes
+hour - for hours
+day - for day of the month
+month - for month
+year - for year]]></method>
+  <example name="Create new notification and dispatch right away"><![CDATA[local note = Notification.new(1)
+note:setTitle("Notification app")
+note:setMessage("Do you see me?")
+note:setSound("./some_sound.wav")
+note:dispatchNow()]]></example>
+  <example name="Create new notification and dispatch after one hour with repeating period of one day"><![CDATA[local note = Notification.new(2)
+note:setTitle("Notification app")
+note:setMessage("I will bother you each day")
+note:dispatchAfter({hour = 1}, {day = 1})]]></example>
+  <example name="Create new notification and dispatch on specific date in specific time"><![CDATA[local note = Notification.new(3)
+note:setTitle("Notification app")
+note:setMessage("Happy Birthday")
+note:dispatchOn({year = 2013, month = 8, day = 1, hour = 9, min = 0, sec = 0})]]></example>
+  <example name="Modifying existing scheduled notification"><![CDATA[--id of notification to modify
+local id = 1
+
+--retrieve shared instance
+local mngr = NotificationManager.getSharedInstance()
+
+--retrieve table with scheduled notifications
+local t = mngr:getScheduledNotifications()
+
+--check if id is in it
+if t[id] then
+	--notification is still scheduled
+	--let's modify it by creating new instance with same id
+	local note = Notification.new(id)
+	note:setTitle("New title")
+	note:setMessage("New message")
+	--if we want to modify dispatch time we need to redispatch it
+	note:dispatchAfter({day = 1})
+end]]></example>
+</object>

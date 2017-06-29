@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Cryptography" page="Cryptography" parent="" type="gideros" version="Gideros 2016.04"><![CDATA[Cryptographic primitives]]>
+  <method name="Cryptography.md5" page="md5" shortdesc="Compute the MD5 hash of the input string" version="Gideros 2016.04"><![CDATA[Compute the MD5 hash of the input string]]>
+    <parameter name="input" optional="false" type="string"><![CDATA[String whose content is to be hashed]]></parameter>
+    <return type="string"><![CDATA[MD5 hash (a 16 byte string)]]></return>
+  </method>
+  <method name="Cryptography.aesEncrypt" page="aesEncrypt" shortdesc="Encrypt a string with AES" version="Gideros 2016.04"><![CDATA[Encrypt a string with AES 128 cipher, either in ECB mode or CBC mode]]>
+    <parameter name="plaintext" optional="false" type="string"><![CDATA[The message to be encrypted]]></parameter>
+    <parameter name="key" optional="false" type="string"><![CDATA[encryption key as a 16 byte string ]]></parameter>
+    <parameter name="iv" optional="true" type="string"><![CDATA[a 16 byte IV to be used for CBC mode. If not provided ECB mode is used.]]></parameter>
+    <parameter name="paddingType" optional="true" type="number"><![CDATA[Type of padding to be used. Currently defined values are:</br>
+<ul>
+<li>0: 0 padding </li>
+<li>1: PKCS7 padding</li>
+</ul>
+]]></parameter>
+    <return type="string"><![CDATA[ciphered message]]></return>
+  </method>
+  <method name="Cryptography.aesDecrypt" page="aesDecrypt" shortdesc="Decrypt an AES 128 string" version="Gideros 2016.04"><![CDATA[Decrypt an AES 128 cipher text, ECB or CBC]]>
+    <parameter name="ciphertext" optional="false" type="string"><![CDATA[AES128 encrypted message]]></parameter>
+    <parameter name="key" optional="false" type="string"><![CDATA[encryption key as a 16 byte string]]></parameter>
+    <parameter name="iv" optional="true" type="string"><![CDATA[a 16 byte IV to be used for CBC mode. If not provided ECB mode is used.]]></parameter>
+    <parameter name="paddingType" optional="true" type="number"><![CDATA[Type of padding to be used. Currently defined values are:</br>
+<ul>
+<li>0: 0 padding </li>
+<li>1: PKCS7 padding</li>
+</ul>
+]]></parameter>
+    <return type="string"><![CDATA[deciphered message]]></return>
+  </method>
+</object>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Font" page="Font" parent="FontBase" type="gideros" version="Gideros 2011.6"><![CDATA[The `Font` class is used to load fonts created by "Gideros Font Creator".<br />
+<br />
+![images/font_creator.png]<br />
+<br />
+<br />
+Gideros Font Creator exports two files: A `.txt` file that specifies the positions of character glyph a `.png` file of font.<br />]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Font.new" page="new" shortdesc="creates a new Font object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `Font` object.<br />
+<br />
+]]>
+    <parameter name="txtfile" optional="false" type="string"/>
+    <parameter name="imagefile" optional="false" type="string"/>
+    <parameter name="filtering" optional="false" type="boolean, default = false"><![CDATA[Whether or not the font texture is filtered]]></parameter>
+  </method>
+  <method name="Font.getDefault" page="getDefault" shortdesc="Get default font" version="Gideros 2015.08"><![CDATA[Returns Font object used as default font in Gideros]]></method>
+  <example name="Use these two files to create `Font` object as:"><![CDATA[local font = Font.new("font.txt", "font.png")]]></example>
+</object>

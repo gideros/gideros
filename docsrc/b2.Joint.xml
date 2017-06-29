@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.Joint" page="b2Joint" parent="" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+The `b2.Joint` class is the base joint class. Joints are used to constraint two bodies together in various fashions. Some joints also feature limits and motors. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.Joint:getType" page="getType" shortdesc="returns a value that represents the type" version="Gideros 2011.6"><![CDATA[<br />
+Returns the type of the concrete joint. The return value can be one of the `b2.REVOLUTE_JOINT`, `b2.PRISMATIC_JOINT`, `b2.DISTANCE_JOINT`, `b2.PULLEY_JOINT`,<br />
+`b2,MOUSE_JOINT`, `b2.GEAR_JOINT`, `b2.LINE_JOINT`, `b2.WELD_JOINT`, `b2.FRICTION_JOINT`, `b2.ROPE_JOINT`.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[The type of the joint]]></return>
+  </method>
+  <method name="b2.Joint:getBodyA" page="getBodyA" shortdesc="returns the first body attached to this joint" version="Gideros 2011.6"><![CDATA[<br />
+Returns the first body attached to this joint.<br />
+<br />
+]]>
+    <return type="b2.Body"><![CDATA[The first body attached to this joint]]></return>
+  </method>
+  <method name="b2.Joint:getBodyB" page="getBodyB" shortdesc="returns the second body attached to this joint" version="Gideros 2011.6"><![CDATA[<br />
+Returns the second body attached to this joint.<br />
+<br />
+]]>
+    <return type="b2.Body"><![CDATA[The second body attached to this joint]]></return>
+  </method>
+  <method name="b2.Joint:getAnchorA" page="getAnchorA" shortdesc="returns the anchor point on bodyA in world coordinates" version="Gideros 2011.6"><![CDATA[<br />
+Returns the anchor point on bodyA in world coordinates.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[x coordinate of the anchor point]]></return>
+    <return type="number"><![CDATA[y coordinate of the anchor point]]></return>
+  </method>
+  <method name="b2.Joint:getAnchorB" page="getAnchorB" shortdesc="returns the anchor point on bodyB in world coordinates" version="Gideros 2011.6"><![CDATA[<br />
+Returns the anchor point on bodyB in world coordinates.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[x coordinate of the anchor point]]></return>
+    <return type="number"><![CDATA[y coordinate of the anchor point]]></return>
+  </method>
+  <method name="b2.Joint:isActive" page="isActive" shortdesc="is active?" version="Gideros 2011.6"><![CDATA[<br />
+Short-cut function to determine if either body is inactive. <br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if both bodyA and bodyB is active, `false` otherwise]]></return>
+  </method>
+  <method name="b2.Joint:getReactionForce" page="getReactionForce" shortdesc="returns the reaction force on bodyB at the joint anchor" version="Gideros 2011.6"><![CDATA[<br />
+Returns the reaction force on bodyB at the joint anchor in Newtons.<br />
+<br />
+]]>
+    <parameter name="inv_dt" optional="false" type="number"/>
+    <return type="number"><![CDATA[x component of the reaction force on bodyB at the joint anchor in Newtons]]></return>
+    <return type="number"><![CDATA[y component of the reaction force on bodyB at the joint anchor in Newtons]]></return>
+  </method>
+  <method name="b2.Joint:getReactionTorque" page="getReactionTorque" shortdesc="returns the reaction torque on bodyB" version="Gideros 2011.6"><![CDATA[<br />
+Returns the reaction torque on bodyB in N*m. <br />
+<br />
+]]>
+    <parameter name="inv_dt" optional="false" type="number"/>
+    <return type="number"><![CDATA[The reaction torque on bodyB in N*m]]></return>
+  </method>
+</object>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Pixel" page="Pixel" parent="Sprite" type="gideros" version="Gideros 2016.06"><![CDATA[A rectangular Sprite which can be filled with solid colors, gradients or textures.
+Pixel aims at being a simpler and faster alternative to Shape when needing to display a coloured box or box with a gradient. It is also useful as Bitmap replacement since every texture will be fitted into Pixel dimensions automatically.]]>
+  <method name="Pixel:setWidth" page="setWidth" shortdesc="Sets the width of the pixel sprite." version="Gideros 2016.06"><![CDATA[Sets the width of the pixel sprite.]]>
+    <parameter name="w" optional="false" type="number"><![CDATA[The new width.]]></parameter>
+  </method>
+  <method name="Pixel:setHeight" page="setHeight" shortdesc="Sets the height of the pixel sprite." version="Gideros 2016.06"><![CDATA[Sets the height of the pixel sprite.]]>
+    <parameter name="h" optional="false" type="number"><![CDATA[The new height]]></parameter>
+  </method>
+  <method name="Pixel:setDimensions" page="setDimensions" shortdesc="Sets both width and height of the Pixel." version="Gideros 2016.06"><![CDATA[Sets both width and height of the Pixel.]]>
+    <parameter name="w" optional="false" type="number"><![CDATA[The new width]]></parameter>
+    <parameter name="h" optional="false" type="number"><![CDATA[The new height]]></parameter>
+  </method>
+  <method name="Pixel:setColor" page="setColor" shortdesc="Sets the color of the Pixel" version="Gideros 2016.06"><![CDATA[Sets the color of the Pixel]]>
+    <parameter name="color" optional="true" type="number"><![CDATA[new color]]></parameter>
+    <parameter name="alpha" optional="true" type="number"><![CDATA[New alpha value]]></parameter>
+  </method>
+  <method name="Pixel:getColor" page="getColor" shortdesc="Gets the color(s) of the Pixel" version="Gideros 2016.06"><![CDATA[Gets the color of the Pixel or 4 color-alpha pairs if it has a gradient.]]>
+    <return type="number"><![CDATA[Color]]></return>
+    <return type="number"><![CDATA[alpha]]></return>
+  </method>
+  <method name="Pixel.new" page="new" shortdesc="Create new pixel" version="Gideros 2016.06"><![CDATA[Create new pixel]]>
+    <parameter name="color" optional="true" type="number"><![CDATA[hex value representing color]]></parameter>
+    <parameter name="alpha" optional="true" type="number"><![CDATA[alpha value from 0 to 1]]></parameter>
+    <parameter name="width" optional="true" type="number"><![CDATA[width of pixel]]></parameter>
+    <parameter name="height" optional="true" type="number"><![CDATA[height of pixel]]></parameter>
+  </method>
+  <method name="Pixel:setTexture" page="setTexture" shortdesc="" version="in development"><![CDATA[Associate a texture to this pixel]]>
+    <parameter name="texture" optional="false" type="TextureBase"><![CDATA[The texture to associate to this pixel, or nil to deassociate.]]></parameter>
+    <parameter name="slot" optional="true" type="number"><![CDATA[The texture slot that the texture should be associated to. Leave empty or set to 0 for main texture, or if you don't use a specific shader.]]></parameter>
+    <parameter name="matrix" optional="true" type="Matrix"><![CDATA[an optional transform for the texture]]></parameter>
+  </method>
+  <method name="Pixel.new" page="new2" shortdesc="Constructor to create a Pixel with texture in letterbox mode." version="in development"><![CDATA[Constructor to create a Pixel with texture in letterbox mode. Every texture will be fitted into Pixel dimensions with preserving texture aspect ratio.]]>
+    <parameter name="texture" optional="false" type="Texture"><![CDATA[texture to use for the pixel]]></parameter>
+    <parameter name="width" optional="true" type="number"><![CDATA[width of the Pixel]]></parameter>
+    <parameter name="height" optional="true" type="number"><![CDATA[height of the Pixel]]></parameter>
+    <parameter name="texture_scale_x" optional="true" type="number"><![CDATA[horizontal scale of the pixel texture]]></parameter>
+    <parameter name="texture_scale_y" optional="true" type="number"><![CDATA[vertical scale of the pixel texture]]></parameter>
+    <parameter name="texture_x" optional="true" type="number"><![CDATA[horizontal position of the pixel texture]]></parameter>
+    <parameter name="texture_y" optional="true" type="number"><![CDATA[vertical position of the pixel texture]]></parameter>
+  </method>
+  <method name="Pixel:setTextureMatrix" page="setTextureMatrix" shortdesc="" version="in development"><![CDATA[Sets the matrix of the Pixel's texture]]>
+    <parameter name="matrix" optional="false" type="Matrix"><![CDATA[The matrix.]]></parameter>
+  </method>
+  <method name="Pixel:setTexturePosition" page="setTexturePosition" shortdesc="" version="Gideros 2011.6"><![CDATA[Sets the texture's position]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x-coordinate of texture]]></parameter>
+    <parameter name="y" optional="false" type="any"><![CDATA[y-coordinate of texture]]></parameter>
+  </method>
+  <method name="Pixel:setTextureScale" page="setTextureScale" shortdesc="" version="in development"><![CDATA[Sets the texture's scale for the Pixel]]>
+    <parameter name="sx" optional="false" type="number"><![CDATA[Texture's x-scale]]></parameter>
+    <parameter name="sy" optional="false" type="number"><![CDATA[Texture's y-scale]]></parameter>
+  </method>
+  <method name="Pixel:getTexturePosition" page="getTexturePosition" shortdesc="" version="in development"><![CDATA[Returns the texture position for the Pixel]]>
+    <return type="number"><![CDATA[The x-coordinate of the texture]]></return>
+    <return type="number"><![CDATA[The y-coordinate of the texture]]></return>
+  </method>
+  <method name="Pixel:getTextureScale" page="getTextureScale" shortdesc="" version="in development"><![CDATA[Returns the texture scale for the Pixel]]>
+    <return type="number"><![CDATA[The x-scale of the texture]]></return>
+    <return type="number"><![CDATA[The y-scale of the texture]]></return>
+  </method>
+  <method name="Pixel:getDimensions" page="getDimensions" shortdesc="" version="in development"><![CDATA[Return the width and height of the Pixel]]>
+    <return type="number"><![CDATA[The Pixel's width]]></return>
+    <return type="number"><![CDATA[The Pixel's height]]></return>
+  </method>
+  <method name="Pixel:setColor" page="setColor2" shortdesc="" version="Gideros 2011.6"><![CDATA[Sets two-colour gradient fill with optional rotation to Pixel.]]>
+    <parameter name="color1" optional="false" type="number"><![CDATA[First color of the gradient.]]></parameter>
+    <parameter name="alpha1" optional="false" type="number"><![CDATA[First alpha of the gradient.]]></parameter>
+    <parameter name="color2" optional="false" type="number"><![CDATA[Second color of the gradient.]]></parameter>
+    <parameter name="alpha2" optional="false" type="number"><![CDATA[Second alpha of the gradient.]]></parameter>
+    <parameter name="angle" optional="true" type="number"><![CDATA[Sets rotation of the gradient in degrees. Default value is 270: top-bottom gradient.]]></parameter>
+  </method>
+  <method name="Pixel:setColor" page="setColor3" shortdesc="Sets 4-colour gradient." version="Gideros 2011.6"><![CDATA[Sets 4-colour gradient fill to Pixel.]]>
+    <parameter name="color1" optional="false" type="number"><![CDATA[Color of top-left gradient corner.]]></parameter>
+    <parameter name="alpha1" optional="false" type="number"><![CDATA[Alpha of top-left gradient corner.]]></parameter>
+    <parameter name="color2" optional="false" type="number"><![CDATA[Color of top-right gradient corner.]]></parameter>
+    <parameter name="alpha2" optional="false" type="number"><![CDATA[Alpha of top-right gradient corner.]]></parameter>
+    <parameter name="color3" optional="false" type="number"><![CDATA[Color of bottom-right gradient corner.]]></parameter>
+    <parameter name="alpha3" optional="false" type="number"><![CDATA[Alpha of bottom-right gradient corner.]]></parameter>
+    <parameter name="color4" optional="false" type="number"><![CDATA[Color of bottom-left gradient corner.]]></parameter>
+    <parameter name="alpha4" optional="false" type="number"><![CDATA[Alpha of bottom-left gradient corner.]]></parameter>
+  </method>
+</object>

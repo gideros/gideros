@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.DistanceJoint" page="b2DistanceJoint" parent="b2.Joint" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A distance joint constrains two points on two bodies to remain at a fixed distance from each other. You can view this as a massless, rigid rod. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.DistanceJoint:setLength" page="setLength" shortdesc="sets the natural joint length in meters" version="Gideros 2011.6"><![CDATA[<br />
+Sets the natural length. Manipulating the length can lead to non-physical behavior when the frequency is zero. <br />
+<br />
+]]>
+    <parameter name="length" optional="false" type="number"><![CDATA[the length of this distance joint, usually in meters.]]></parameter>
+  </method>
+  <method name="b2.DistanceJoint:getLength" page="getLength" shortdesc="returns the length of this distance joint in meters" version="Gideros 2011.6"><![CDATA[<br />
+Returns the length of this distance joint, usually in meters.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The length of this distance joint, usually in meters]]></return>
+  </method>
+  <method name="b2.DistanceJoint:setFrequency" page="setFrequency" shortdesc="sets the mass-spring-damper frequency in Hertz" version="Gideros 2011.6"><![CDATA[<br />
+Sets the mass-spring-damper frequency in Hertz.<br />
+<br />
+]]>
+    <parameter name="frequency" optional="false" type="number"><![CDATA[the mass-spring-damper frequency in Hertz]]></parameter>
+  </method>
+  <method name="b2.DistanceJoint:getFrequency" page="getFrequency" shortdesc="returns the mass-spring-damper frequency in Hertz" version="Gideros 2011.6"><![CDATA[<br />
+Returns the mass-spring-damper frequency of this distance joint in Hertz.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The mass-spring-damper frequency in Hertz.]]></return>
+  </method>
+  <method name="b2.DistanceJoint:setDampingRatio" page="setDampingRatio" shortdesc="sets the damping ratio (0 = no damping, 1 = critical damping)" version="Gideros 2011.6"><![CDATA[<br />
+Sets the damping ratio of this distance joint. 0 = no damping, 1 = critical damping. <br />
+<br />
+]]>
+    <parameter name="ratio" optional="false" type="number"><![CDATA[the damping ratio]]></parameter>
+  </method>
+  <method name="b2.DistanceJoint:getDampingRatio" page="getDampingRatio" shortdesc="returns the damping ratio" version="Gideros 2011.6"><![CDATA[<br />
+Returns the damping ratio of this distance joint.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The damping ratio of this distance joint]]></return>
+  </method>
+  <example name="Distance joint"><![CDATA[local jointDef = b2.createDistanceJointDef(body1, body2, 100, 100, 200, 100)
+local distanceJoint = world:createJoint(jointDef)
+--by default length between two bodies is the length they have between them when joint was created
+--but it is possilbe to change it using
+distanceJoint:setLength(200)
+distanceJoint:setDampingRatio(0.5)
+distanceJoint:setFrequency(4)]]></example>
+</object>

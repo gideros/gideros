@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.Shape" page="b2Shape" parent="" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A shape is used for collision detection.<br />
+You can not create a `b2.Shape` instance directly, but instead you create `b2.CircleShape`, `b2.ChainShape` and `b2.PolygonShape` instances.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+</object>

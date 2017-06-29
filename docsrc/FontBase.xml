@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="FontBase" page="FontBase" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+`FontBase` is the base class for `Font` and `TTFont` classes.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="FontBase:getBounds" page="getBounds" shortdesc="returns the tight bounding rectangle of the characters in the string specified by text" version="Gideros 2011.6"><![CDATA[<br />
+Returns the tight bounding rectangle of the characters in the string specified by `text`.<br />
+<br />
+]]>
+    <parameter name="text" optional="false" type="string"/>
+    <return type="number"><![CDATA[x coordinate of the bound]]></return>
+    <return type="number"><![CDATA[y coordinate of the bound]]></return>
+    <return type="number"><![CDATA[width of the bound]]></return>
+    <return type="number"><![CDATA[height of the bound]]></return>
+  </method>
+  <method name="FontBase:getAdvanceX" page="getAdvanceX" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Returns the width of the first `size` characters of `text`. <br />
+Note that this value is not equal to the 3rd return value (width) of `getBounds()`. <br />
+`getBounds()` returns a rectangle describing the bounds this string will cover <br />
+whereas `getAdvanceX()` returns the distance to where the next string should be drawn.<br />
+<br />
+]]>
+    <parameter name="text" optional="false" type="string"/>
+    <parameter name="letterSpacing" optional="false" type="number, default = 0"/>
+    <parameter name="size" optional="false" type="number, optional"/>
+    <return type="number"><![CDATA[The width of the first size characters of text.]]></return>
+  </method>
+  <method name="FontBase:getAscender" page="getAscender" shortdesc="returns the ascender of the font" version="Gideros 2011.6"><![CDATA[<br />
+Returns the ascender of the font. The ascender of a font is the distance from the baseline to the highest position characters extend to.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The ascender of the font]]></return>
+  </method>
+  <method name="FontBase:getLineHeight" page="getLineHeight" shortdesc="returns the distance from one base line to the next" version="Gideros 2011.6"><![CDATA[<br />
+Returns the distance from one base line to the next.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The distance from one base line to the next.]]></return>
+  </method>
+</object>

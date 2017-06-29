@@ -1,0 +1,694 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Sprite" page="Sprite" parent="EventDispatcher" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The `Sprite` class is the base class for all objects that can be placed on the scene tree. It is the basic scene tree building block.<br />
+A sprite can contain child sprites which makes the scene tree hierarchy.
+Transformations such as translation, rotation, scaling and color transforms propogates its effect to all of its children.<br />
+The drawing order is defined by the order of children. First child is drawn first and last child is drawn last. It is possible to change the drawing order by modifying the order of child list.<br />
+A `Sprite` instance can exists without attaching the scene tree.<br />
+An unattached sprite can receive `Event.ENTER_FRAME` event but it will only receive mouse and touch events when it is attached to the scene tree.<br />]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="Sprite.ALPHA" page="Sprite.ALPHA" value="alpha" version="Gideros 2011.6"/>
+  <constant name="Sprite.SCREEN" page="Sprite.SCREEN" value="screen" version="Gideros 2011.6"/>
+  <constant name="Sprite.MULTIPLY" page="Sprite.MULTIPLY" value="multiply" version="Gideros 2011.6"/>
+  <constant name="Sprite.ADD" page="Sprite.ADD" value="add" version="Gideros 2011.6"/>
+  <constant name="Sprite.NO_ALPHA" page="Sprite.NO_ALPHA" value="noAlpha" version="Gideros 2011.6"/>
+  <method name="Sprite:addChild" page="addChild" shortdesc="adds a sprite as a child" version="Gideros 2011.6"><![CDATA[<br />
+Adds a sprite as a child to this sprite. The child is<br />
+added as a last child of this `Sprite` instance.<br />
+<br />
+Sprites can have only one parent. Therefore if you add a child<br />
+object that already has a different sprite as a parent,<br />
+the sprite is removed from the child list of the other sprite<br />
+and then added to this sprite.<br />
+<br />
+]]>
+    <parameter name="child" optional="false" type="Sprite"><![CDATA[The child sprite to add.]]></parameter>
+  </method>
+  <method name="Sprite:addChildAt" page="addChildAt" shortdesc="add a sprite as a child at the index position specified" version="Gideros 2011.6"><![CDATA[<br />
+Adds a sprite as a child to this sprite. The child is<br />
+added at the index position specified. Indices start from 1.<br />
+<br />
+Sprites can have only one parent. Therefore if you add a child<br />
+object that already has a different sprite as a parent,<br />
+the sprite is removed from the child list of the other sprite<br />
+and then added to this sprite.<br />
+<br />
+]]>
+    <parameter name="child" optional="false" type="Sprite"><![CDATA[The child sprite to add.]]></parameter>
+    <parameter name="index" optional="false" type="number"><![CDATA[The index position to which the child is added.]]></parameter>
+  </method>
+  <method name="Sprite:removeChild" page="removeChild" shortdesc="removes the child sprite" version="Gideros 2011.6"><![CDATA[<br />
+Removes the specified child `Sprite` instance from the child list of this `Sprite` instance.<br />
+<br />
+]]>
+    <parameter name="child" optional="false" type="Sprite"><![CDATA[The child sprite to remove.]]></parameter>
+  </method>
+  <method name="Sprite:removeChildAt" page="removeChildAt" shortdesc="removes the child sprite at the specifed index" version="Gideros 2011.6"><![CDATA[<br />
+Removes the child `Sprite` instance at the specifed index. Index of the first child is 1<br />
+and index of the last child can be get from `Sprite:getNumChildren` function.<br />
+<br />
+]]>
+    <parameter name="index" optional="false" type="number"><![CDATA[The child index of the sprite to remove.]]></parameter>
+  </method>
+  <method name="Sprite:contains" page="contains" shortdesc="determines whether the specified sprite is contained in the subtree of this sprite" version="Gideros 2011.6"><![CDATA[<br />
+Determines whether the specified sprite is contained in the subtree of<br />
+this `Sprite` instance.<br />
+<br />
+]]>
+    <parameter name="child" optional="false" type="Sprite"><![CDATA[The child object to test.]]></parameter>
+    <return type="bool"><![CDATA[`true` if the child object is contained in the subtree of this `Sprite` instance, otherwise `false`.]]></return>
+  </method>
+  <method name="Sprite:globalToLocal" page="globalToLocal" shortdesc="converts the x,y coordinates from the global to the sprite's (local) coordinates" version="Gideros 2011.6"><![CDATA[<br />
+Converts the x,y coordinates from the global to the sprite's (local) coordinates.<br />
+<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the global coordinate.]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the global coordinate.]]></parameter>
+    <return type="number"><![CDATA[1. x coordinate relative to the display object.]]></return>
+    <return type="number"><![CDATA[2. y coordinate relative to the display object.]]></return>
+  </method>
+  <method name="Sprite:localToGlobal" page="localToGlobal" shortdesc="converts the x,y coordinates from the sprite's (local) coordinates to the global coordinates" version="Gideros 2011.6"><![CDATA[<br />
+Converts the x,y coordinates from the sprite's (local) coordinates to the global coordinates.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the local coordinate.]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the local coordinate.]]></parameter>
+    <return type="number"><![CDATA[1. x coordinate relative to the display area.]]></return>
+    <return type="number"><![CDATA[2. y coordinate relative to the display area.]]></return>
+  </method>
+  <method name="Sprite:getChildAt" page="getChildAt" shortdesc="returns the child sprite that exists at the specified index" version="Gideros 2011.6"><![CDATA[<br />
+Returns the child `Sprite` instance that exists at the specified index. First child is at index 1.<br />
+<br />
+]]>
+    <parameter name="index" optional="false" type="number"><![CDATA[The index position of the child object.]]></parameter>
+    <return type="Sprite"><![CDATA[The child sprite at the specified index position.]]></return>
+  </method>
+  <method name="Sprite:getChildIndex" page="getChildIndex" shortdesc="returns the index of the specified child sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the index of the specified child sprite.<br />
+<br />
+]]>
+    <parameter name="child" optional="false" type="Sprite"><![CDATA[The child sprite to identify.]]></parameter>
+    <return type="number"><![CDATA[The index of the specified child sprite.]]></return>
+  </method>
+  <method name="Sprite:getHeight" page="getHeight" shortdesc="returns the height" version="Gideros 2011.6"><![CDATA[<br />
+Returns the height of the sprite, in pixels. The height is calculated based on the<br />
+bounds of the content of the sprite.<br />
+<br />
+If "true" is passed to this method, the original height is returned without accounting for transformations.
+]]>
+    <parameter name="withoutTransform" optional="true" type="boolean"><![CDATA[If true, return the height without transformation, else return the transformed height]]></parameter>
+    <return type="number"><![CDATA[Height of the sprite.]]></return>
+  </method>
+  <method name="Sprite:getWidth" page="getWidth" shortdesc="returns the width" version="Gideros 2011.6"><![CDATA[<br />
+Returns the width of the sprite, in pixels. The width is calculated based on the<br />
+bounds of the content of the sprite.<br />
+<br />
+If the parameter "true" is passed, the original width is returned without transformations.
+]]>
+    <parameter name="withoutTransform" optional="true" type="boolean"><![CDATA[If true, return the width of the Sprite without transformations else return the transformed width]]></parameter>
+    <return type="any"><![CDATA[Width of the sprite.]]></return>
+    <return type="any"><![CDATA[Width of the sprite.]]></return>
+  </method>
+  <method name="Sprite:getRotation" page="getRotation" shortdesc="returns the rotation of the sprite in degrees" version="Gideros 2011.6"><![CDATA[<br />
+Returns the rotation of the sprite in degrees.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[Rotation of the Sprite in degrees]]></return>
+  </method>
+  <method name="Sprite:setRotation" page="setRotation" shortdesc="sets the rotation of the sprite in degrees" version="Gideros 2011.6"><![CDATA[<br />
+Sets the rotation of the sprite in degrees.<br />
+<br />
+]]>
+    <parameter name="rotation" optional="false" type="number"><![CDATA[rotation of the sprite]]></parameter>
+  </method>
+  <method name="Sprite:getScaleX" page="getScaleX" shortdesc="returns the horizontal scale of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the horizontal scale of the sprite.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The horizontal scale  of the sprite.]]></return>
+  </method>
+  <method name="Sprite:setScaleX" page="setScaleX" shortdesc="sets the horizontal scale of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Sets the horizontal scale of the sprite.<br />
+<br />
+]]>
+    <parameter name="scaleX" optional="false" type="number"><![CDATA[horizontal scale of the sprite]]></parameter>
+  </method>
+  <method name="Sprite:getScaleY" page="getScaleY" shortdesc="returns the vertical scale of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the vertical scale of the sprite.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The vertical scale of the object.]]></return>
+  </method>
+  <method name="Sprite:setScaleY" page="setScaleY" shortdesc="sets the vertical scale of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Sets the vertical scale of the sprite.<br />
+<br />
+]]>
+    <parameter name="scaleY" optional="false" type="number"><![CDATA[of the object]]></parameter>
+  </method>
+  <method name="Sprite:getScale" page="getScale" shortdesc="returns the horizontal, vertical and z scales of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the horizontal, vertical and z axis scales of the sprite.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The horizontal scale of the sprite]]></return>
+    <return type="number"><![CDATA[The vertical scale of the sprite]]></return>
+    <return type="number"><![CDATA[The depth scale of the sprite]]></return>
+  </method>
+  <method name="Sprite:setScale" page="setScale" shortdesc="sets the horizontal, vertical and z axis scales of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Sets the horizontal, vertical and z axis scales of the sprite.<br />
+<br />
+]]>
+    <parameter name="scaleX" optional="false" type="number"><![CDATA[of the object]]></parameter>
+    <parameter name="scaleY" optional="false" type="number, default = scaleX"><![CDATA[of the object]]></parameter>
+    <parameter name="scaleZ" optional="false" type="number, default = scaleX"><![CDATA[of the object]]></parameter>
+  </method>
+  <method name="Sprite:isVisible" page="isVisible" shortdesc="returns the visibility of sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns whether or not the sprite is visible. Child sprites that are not visible are also taken<br />
+into consideration while calculating bounds.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[A value of `true` if sprite is visible; `false` otherwise.]]></return>
+  </method>
+  <method name="Sprite:setVisible" page="setVisible" shortdesc="sets the visibility of sprite" version="Gideros 2011.6"><![CDATA[<br />
+Sets whether or not the sprite is visible. Sprites that are not visible are also taken<br />
+into consideration while calculating bounds.<br />
+<br />
+]]>
+    <parameter name="visible" optional="false" type="bool"><![CDATA[whether or not the sprite is visible]]></parameter>
+  </method>
+  <method name="Sprite:getX" page="getX" shortdesc="returns the x coordinate of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the x coordinate of the sprite.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The x coordinate of the sprite]]></return>
+  </method>
+  <method name="Sprite:setX" page="setX" shortdesc="sets the x coordinate of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Sets the x coordinate of the sprite<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[The new x coordinate of the sprite]]></parameter>
+  </method>
+  <method name="Sprite:getY" page="getY" shortdesc="returns the y coordinate of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the y coordinate of the sprite.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The y coordinate of the sprite]]></return>
+    <return type="any"><![CDATA[The y coordinate of the sprite]]></return>
+  </method>
+  <method name="Sprite:setY" page="setY" shortdesc="sets the y coordinate of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Sets the y coordinate of the sprite.<br />
+<br />
+]]>
+    <parameter name="y" optional="false" type="number"><![CDATA[The new y coordinate of the sprite]]></parameter>
+  </method>
+  <method name="Sprite:getPosition" page="getPosition" shortdesc="gets the x,y and z coordinates of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the x, y and z coordinates of the sprite.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The x coordinates of the sprite]]></return>
+    <return type="number"><![CDATA[The y coordinates of the sprite]]></return>
+    <return type="number"><![CDATA[The z coordinates of the sprite]]></return>
+  </method>
+  <method name="Sprite:setPosition" page="setPosition" shortdesc="sets the x,y and z coordinates of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Sets the x, y and z coordinates of the sprite.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[The new x coordinate of the sprite]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[The new y coordinate of the sprite]]></parameter>
+    <parameter name="z" optional="true" type="number"><![CDATA[The new z coordinate of the sprite]]></parameter>
+  </method>
+  <method name="Sprite:set" page="set" shortdesc="sets the specified property by its name" version="Gideros 2011.6"><![CDATA[<br />
+Sets the specified property of this sprite instance by its name. These names are supported:<br />
+<br />
+<ul><br />
+<li>`"x"`</li><br />
+<li>`"y"`</li><br />
+<li>`"z"`</li><br />
+<li>`"rotation"`</li><br />
+<li>`"rotationX"`</li><br />
+<li>`"rotationY"`</li><br />
+<li>`"scaleX"`</li><br />
+<li>`"scaleY"`</li><br />
+<li>`"scaleZ"`</li><br />
+<li>`"alpha"`</li><br />
+<li>`"redMultiplier"`</li><br />
+<li>`"greenMultiplier"`</li><br />
+<li>`"blueMultiplier"`</li><br />
+<li>`"alphaMultiplier"`</li><br />
+<li>`"anchorX"`</li><br />
+<li>`"anchorY"`</li><br />
+<li>`"anchorZ"`</li><br />
+</ul><br />
+<br />
+]]>
+    <parameter name="param" optional="false" type="string"><![CDATA[The name of the parameter]]></parameter>
+    <parameter name="value" optional="false" type="number"><![CDATA[The new value of the specified parameter]]></parameter>
+    <example><![CDATA[-- the following two lines do the same thing<br />
+sprite:setX(10)<br />
+sprite:set(&quot;x&quot;, 10)<br />
+		<br />
+-- the following two lines do the same thing<br />
+sprite:setY(10)<br />
+sprite:set(&quot;y&quot;, 10)<br />
+<br />
+-- the following two lines do the same thing<br />
+sprite:setRotation(10)<br />
+sprite:set(&quot;rotation&quot;, 10)<br />
+<br />
+-- the following two lines do the same thing<br />
+sprite:setScaleX(0.5)<br />
+sprite:set(&quot;scaleX&quot;, 0.5)<br />
+<br />
+-- the following two lines do the same thing<br />
+sprite:setScaleY(0.5)<br />
+sprite:set(&quot;scaleY&quot;, 0.5)<br />
+<br />
+-- the following two lines do the same thing<br />
+sprite:setScale(0.5)<br />
+sprite:set(&quot;scale&quot;, 0.5)<br />
+]]></example>
+  </method>
+  <method name="Sprite:get" page="get" shortdesc="gets the specified property by its name" version="Gideros 2011.6"><![CDATA[<br />
+Returns the specified property of this sprite instance by its name. These names are supported:<br />
+<br />
+<ul><br />
+<li>`"x"`</li><br />
+<li>`"y"`</li><br />
+<li>`"z"`</li><br />
+<li>`"rotation"`</li><br />
+<li>`"rotationX"`</li><br />
+<li>`"rotationY"`</li><br />
+<li>`"scaleX"`</li><br />
+<li>`"scaleY"`</li><br />
+<li>`"scaleZ"`</li><br />
+<li>`"alpha"`</li><br />
+<li>`"redMultiplier"`</li><br />
+<li>`"greenMultiplier"`</li><br />
+<li>`"blueMultiplier"`</li><br />
+<li>`"alphaMultiplier"`</li><br />
+<li>`"anchorX"`</li><br />
+<li>`"anchorY"`</li><br />
+<li>`"anchorZ"`</li><br />
+</ul><br />
+<br />
+]]>
+    <parameter name="param" optional="false" type="string"><![CDATA[The name of the parameter]]></parameter>
+    <return type="number"><![CDATA[The value of the parameter]]></return>
+    <example><![CDATA[-- the following two lines do the same thing<br />
+x = sprite:getX()<br />
+x = sprite:get(&quot;x&quot;)<br />
+	<br />
+-- the following two lines do the same thing<br />
+y = sprite:getY()<br />
+y = sprite:get(&quot;y&quot;)<br />
+<br />
+-- the following two lines do the same thing<br />
+rotation = sprite:getRotation()<br />
+rotation = sprite:get(&quot;rotation&quot;)<br />
+<br />
+-- the following two lines do the same thing<br />
+scaleX = sprite:getScaleX()<br />
+scaleX = sprite:get(&quot;scaleX&quot;)<br />
+<br />
+-- the following two lines do the same thing<br />
+scaleY = sprite:getScaleY()<br />
+scaleY = sprite:get(&quot;scaleY&quot;)<br />
+]]></example>
+  </method>
+  <method name="Sprite:getParent" page="getParent" shortdesc="returns the parent sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the `Sprite` object that contains this `Sprite` object.<br />
+<br />
+]]>
+    <return type="Sprite"><![CDATA[The parent sprite.]]></return>
+  </method>
+  <method name="Sprite:getNumChildren" page="getNumChildren" shortdesc="returns the number of children of this sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the number of children of this sprite.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The number of children of this sprite.]]></return>
+    <example><![CDATA[local container1 = Sprite.new()<br />
+local container2 = Sprite.new()<br />
+<br />
+local sprite1 = Sprite.new();<br />
+local sprite2 = Sprite.new();<br />
+<br />
+container2:addChild(container1)<br />
+container1:addChild(sprite1)<br />
+container1:addChild(sprite2)<br />
+<br />
+print(container1:getNumChildren()) --&gt; 2<br />
+print(container2:getNumChildren()) --&gt; 1<br />
+print(sprite1:getNumChildren()) --&gt; 0<br />
+print(sprite2:getNumChildren()) --&gt; 0
+]]></example>
+  </method>
+  <method name="Sprite:getAlpha" page="getAlpha" shortdesc="returns the alpha transparency of this sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the alpha transparency of this sprite. 0 means fully transparent and 1 means fully opaque.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The alpha of the sprite (value between 0-1)]]></return>
+  </method>
+  <method name="Sprite:setAlpha" page="setAlpha" shortdesc="sets the alpha transparency of this sprite" version="Gideros 2011.6"><![CDATA[<br />
+Sets the alpha transparency of this sprite. 0 means fully transparent and 1 means fully opaque.<br />
+<br />
+]]>
+    <parameter name="alpha" optional="false" type="number"><![CDATA[The new alpha transparency of the sprite]]></parameter>
+  </method>
+  <method name="Sprite:setColorTransform" page="setColorTransform" shortdesc="sets the red, green, blue and alpha channel multipliers" version="Gideros 2011.6"><![CDATA[<br />
+Sets the red, green, blue and alpha channel multipliers (values between 0 and 1). This function lets you adjust the color multipliers of a display object.<br />
+This adjustment also applies to the children of this sprite instance.<br />
+<br />
+]]>
+    <parameter name="redMultiplier" optional="false" type="number, default = 1"><![CDATA[The red multiplier of this sprite (values between 0 and 1)]]></parameter>
+    <parameter name="greenMultiplier" optional="false" type="number, default = 1"><![CDATA[The green multiplier of this sprite(values between 0 and 1)]]></parameter>
+    <parameter name="blueMultiplier" optional="false" type="number, default = 1"><![CDATA[The blue multiplier of this sprite(values between 0 and 1)]]></parameter>
+    <parameter name="alphaMultiplier" optional="false" type="number, default = 1"><![CDATA[The alpha multiplier of this sprite(values between 0 and 1)]]></parameter>
+  </method>
+  <method name="Sprite:getColorTransform" page="getColorTransform" shortdesc="returns the red, green, blue and alpha channel multipliers" version="Gideros 2011.6"><![CDATA[Returns the red, green, blue and alpha channel multipliers.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[redMultiplier]]></return>
+    <return type="number"><![CDATA[greenMultiplier]]></return>
+    <return type="number"><![CDATA[blueMultiplier]]></return>
+    <return type="number"><![CDATA[alphaMultiplier]]></return>
+  </method>
+  <method name="Sprite:hitTestPoint" page="hitTestPoint" shortdesc="checks the given coordinates is in bounds of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Checks whether the given coordinates (in global coordinate system) is in bounds of the sprite.<br />
+<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"/>
+    <parameter name="y" optional="false" type="number"/>
+    <parameter name="shapeFlag" optional="true" type="bool"><![CDATA[Take clipping/masking into consideration when testing hit point]]></parameter>
+    <return type="bool"><![CDATA[`true` if the given global coordinates are in bounds of the sprite, `false` otherwise.]]></return>
+  </method>
+  <method name="Sprite:getMatrix" page="getMatrix" shortdesc="returns the transformation matrix of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Returns the transformation matrix of the sprite. Each invocation of this function returns a new `Matrix` object.<br />
+<br />
+]]>
+    <return type="Matrix"><![CDATA[The transformation matrix of the sprite]]></return>
+  </method>
+  <method name="Sprite:setMatrix" page="setMatrix" shortdesc="sets the transformation matrix of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Sets the transformation matrix of the sprite.<br />
+<br />
+]]>
+    <parameter name="matrix" optional="false" type="Matrix"/>
+  </method>
+  <method name="Sprite:removeFromParent" page="removeFromParent" shortdesc="if the sprite has a parent, removes the sprite from the child list of its parent sprite." version="Gideros 2011.6"><![CDATA[<br />
+If the sprite has a parent, removes the sprite from the child list of its parent sprite. This function is equilavent to:<br />
+<br />
+&lt;pre&gt;&lt;code&gt;<br />
+	function Sprite:removeFromParent()<br />
+		local parent = self:getParent()<br />
+		if parent ~= nil then<br />
+			parent:removeChild(self)<br />
+		end<br />
+	end<br />
+<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+]]></method>
+  <method name="Sprite:setBlendMode" page="setBlendMode" shortdesc="sets the blend mode of the sprite" version="Gideros 2011.6"><![CDATA[<br />
+Sets the blend mode of the sprite. This method can be called with 1 or 2 parameters. 
+If one parameter is passed it must be one of the following blending modes:<br />
+<br />
+<ul><br />
+<li>Sprite.ALPHA = "alpha"</li><br />
+<li>Sprite.NO_ALPHA = "noAlpha"</li><br />
+<li>Sprite.ADD = "add"</li><br />
+<li>Sprite.MULTIPLY = "multiply"</li><br />
+<li>Sprite.SCREEN = "screen"</li><br />
+</ul><br />
+<br />
+If a `Sprite` object doesn't set any blending mode, it takes the blending mode from its parent sprite.<br />
+<br />
+<ul><br />
+<li>*Note:** The following two lines are completely same:</li><br />
+</ul><br />
+<pre><code><br />
+	sprite:setBlendMode("add")<br />
+	sprite:setBlendMode(Sprite.ADD)<br />
+</code></pre><br />
+It's a matter of taste which one to choose.<br />
+<br />
+<br />
+If two parameters are passed to this method, then a source and destination blend can be set (in that order) and each take the values:
+<br />
+<ul><br />
+<li>Sprite.ZERO = "zero"</li><br />
+<li>Sprite.ONE = "one"</li><br />
+<li>Sprite.SRC_COLOR = "srcColor"</li><br />
+<li>Sprite.ONE_MINUS_SRC_COLOR = "oneMinusSrcColor"</li><br />
+<li>Sprite.DST_COLOR = "dstColor"</li><br />
+<li>Sprite.ONE_MINUS_DST_COLOR = "oneMinusDstColor"</li><br />
+<li>Sprite.SRC_ALPHA = "srcAlpha"</li><br />
+<li>Sprite.ONE_MINUS_SRC_ALPHA = "oneMinusSrcAlpha"</li><br />
+<li>Sprite.DST_ALPHA = "dstAlpha"</li><br />
+<li>Sprite.ONE_MINUS_DST_ALPHA = "oneMinusDstAlpha"</li><br />
+<li>Sprite.SRC_ALPHA_SATURATE = "srcAlphaSaturate"</li><br />
+</ul><br />
+]]>
+    <parameter name="blendMode or src" optional="false" type="String"><![CDATA[If one parameter is used, this is the blend mode. If two parameters are used this is the source blend specification.]]></parameter>
+    <parameter name="dst" optional="true" type="string"><![CDATA[Destination blend mode]]></parameter>
+  </method>
+  <method name="Sprite:clearBlendMode" page="clearBlendMode" shortdesc="clears the blending mode" version="Gideros 2011.6"><![CDATA[<br />
+Clears the blending mode.<br />
+<br />
+]]></method>
+  <method name="Sprite:getBounds" page="getBounds" shortdesc="returns the bounds as it appears in another sprite's coordinate system" version="Gideros 2011.6"><![CDATA[<br />
+Returns a rectangle (as x, y, width and height) that encloses the sprite as it appears in another sprite's coordinate system.<br />
+<br />
+]]>
+    <parameter name="targetSprite" optional="false" type="Sprite"><![CDATA[the sprite that defines the other coordinate system to transform]]></parameter>
+    <return type="number"><![CDATA[x coordinate]]></return>
+    <return type="number"><![CDATA[y coordinate]]></return>
+    <return type="number"><![CDATA[width of Sprite]]></return>
+    <return type="number"><![CDATA[height of Sprite]]></return>
+    <example><![CDATA[local x, y, width, height = sprite:getBounds(sprite) -- returns local (untransformed) bounds<br />
+local x, y, width, height = sprite:getBounds(stage) -- returns bounds as transformed to stage&#039;s coordinate system<br />
+]]></example>
+  </method>
+  <method name="Sprite.new" page="new" shortdesc="creates a new Sprite object" version="Gideros 2011.6"><![CDATA[Creates a new Sprite object]]></method>
+  <method name="Sprite:setAnchorPosition" page="setAnchorPosition" shortdesc="Set anchor position" version="Gideros 2015.03.22"><![CDATA[Sets x, y, z anchor position of `Sprite` in it's relative coordinates.
+
+Meaning Sprite with dimensions 100x100 and anchor position of 50x50 would rotate around its center]]>
+    <parameter name="anchorX" optional="false" type="number"><![CDATA[Anchor position in Sprite's internal coordinates]]></parameter>
+    <parameter name="anchorY" optional="false" type="number"><![CDATA[Anchor position in Sprite's internal coordinates]]></parameter>
+    <parameter name="anchorZ" optional="true" type="number"><![CDATA[Anchor position in Sprite's internal coordinates]]></parameter>
+  </method>
+  <method name="Sprite:getAnchorPosition" page="getAnchorPosition" shortdesc="Returns anchor position of Sprite" version="Gideros 2015.03.22"><![CDATA[Returns x,y,z anchor position of the `Sprite` in its relative coordinates]]>
+    <return type="number"><![CDATA[anchor x position]]></return>
+    <return type="number"><![CDATA[anchor y position]]></return>
+    <return type="number"><![CDATA[anchor z position]]></return>
+  </method>
+  <method name="Sprite:swapChildrenAt" page="swapChildrenAt" shortdesc="Swaps two child sprites." version="Gideros 2015.04.04"><![CDATA[<br />
+Swaps two child sprites at specifed indexes. Each index must be between 1<br />
+and the index number of the last child.  Can be used to sort sprites into<br />
+a specific order much faster than adding and removing sprites.<br/>
+<br />
+]]>
+    <parameter name="index1" optional="false" type="number"><![CDATA[The child index of the first sprite to swap.]]></parameter>
+    <parameter name="index2" optional="false" type="number"><![CDATA[The child index of the second sprite to swap.]]></parameter>
+  </method>
+  <method name="Sprite:swapChildren" page="swapChildren" shortdesc="Swap two children index places" version="Gideros 2015.04.04"><![CDATA[Swap two children index places]]>
+    <parameter name="child1" optional="false" type="Sprite"><![CDATA[First child]]></parameter>
+    <parameter name="child2" optional="false" type="Sprite"><![CDATA[Second child]]></parameter>
+  </method>
+  <method name="Sprite:setClip" page="setClip" shortdesc="Clip Sprite contents" version="Gideros 2015.04.04"><![CDATA[Clip Sprite contents from provided x, y position to provided width and height
+
+Setting width or height to -1 will disable it]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x position from where to clip]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y position from where to clip]]></parameter>
+    <parameter name="width" optional="false" type="number"><![CDATA[width of how much to display before clipping]]></parameter>
+    <parameter name="height" optional="false" type="number"><![CDATA[width of how much to display before clipping]]></parameter>
+  </method>
+  <method name="Sprite:getZ" page="getZ" shortdesc="returns the z coordinate of the sprite" version="Gideros 2015.04.04"><![CDATA[<br />
+Returns the z coordinate of the sprite.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[z position]]></return>
+  </method>
+  <method name="Sprite:getRotationY" page="getRotationY" shortdesc="returns the rotation of the sprite around y axis in degrees" version="Gideros 2015.04.04"><![CDATA[<br />
+Returns the rotation of the sprite around Y axis in degrees.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[Rotation of the Sprite on y in degrees]]></return>
+  </method>
+  <method name="Sprite:getRotationX" page="getRotationX" shortdesc="returns the rotation of the sprite around x axis in degrees" version="Gideros 2015.04.04"><![CDATA[<br />
+Returns the rotation of the sprite around x axis in degrees.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[Rotation of the Sprite on x in degrees]]></return>
+  </method>
+  <method name="Sprite:getScaleZ" page="getScaleZ" shortdesc="returns the scale on z axis of the sprite" version="Gideros 2015.04.04"><![CDATA[<br />
+Returns the scale on z axis of the sprite.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[z axis scale]]></return>
+  </method>
+  <method name="Sprite:setZ" page="setZ" shortdesc="sets the z coordinate of the sprite" version="Gideros 2015.04.04"><![CDATA[<br />
+Sets the z coordinate of the sprite<br />
+<br />
+]]>
+    <parameter name="z" optional="false" type="number"><![CDATA[position on z axis]]></parameter>
+  </method>
+  <method name="Sprite:setRotationX" page="setRotationX" shortdesc="sets the rotation of the sprite in degrees around x axis" version="Gideros 2015.04.04"><![CDATA[<br />
+Sets the rotation of the sprite in degrees around x axis.<br />
+]]></method>
+  <method name="Sprite:setRotationY" page="setRotationY" shortdesc="sets the rotation of the sprite in degrees around y axis" version="Gideros 2015.04.04"><![CDATA[<br />
+Sets the rotation of the sprite in degrees around y axis.<br />
+]]></method>
+  <method name="Sprite:setScaleZ" page="setScaleZ" shortdesc="Set scale on z axis" version="Gideros 2015.04.04"><![CDATA[Set scale on z axis]]>
+    <parameter name="scale" optional="false" type="number"><![CDATA[scale on z axis]]></parameter>
+  </method>
+  <method name="Sprite:setShader" page="setShader" shortdesc="Set shader for this sprite" version="Gideros 2015.06.30"><![CDATA[Set shader for this sprite. If nil is provided, sets default shader for current object]]>
+    <parameter name="shader" optional="false" type="Shader"><![CDATA[shader to use for this object]]></parameter>
+  </method>
+  <method name="Sprite:setSkewX" page="setSkewX" shortdesc="" version="in development"><![CDATA[Skew (aka "shear") transformation effect]]>
+    <parameter name="kx" optional="false" type="number"><![CDATA[Amount of skew in range -90... 90 degrees]]></parameter>
+  </method>
+  <method name="Sprite:getSkewX" page="getSkewX" shortdesc="" version="in development"><![CDATA[Returns the sprite's X-skew (ie shear)]]>
+    <return type="number"><![CDATA[The sprite's X-skew]]></return>
+  </method>
+  <method name="Sprite:setSkewY" page="setSkewY" shortdesc="" version="in development"><![CDATA[Set's the Sprite's Y-skew (ie shear)]]>
+    <parameter name="ky" optional="false" type="number"><![CDATA[The y-skew of the Sprite]]></parameter>
+  </method>
+  <method name="Sprite:setSkew" page="setSkew" shortdesc="" version="in development"><![CDATA[Set the skew (ie shear) of the Sprite]]>
+    <parameter name="kx" optional="false" type="number"><![CDATA[The x-skew of the Sprite]]></parameter>
+    <parameter name="ky" optional="false" type="number"><![CDATA[The y-skew of the Sprite]]></parameter>
+  </method>
+  <method name="Sprite:getSkewY" page="getSkewY" shortdesc="" version="in development"><![CDATA[Returns the y-skew of the Sprite]]>
+    <return type="number"><![CDATA[The y-skew of the Sprite]]></return>
+  </method>
+  <method name="Sprite:getSkew" page="getSkew" shortdesc="" version="in development"><![CDATA[Returns the x and y skew parameters of the Sprite]]>
+    <return type="number"><![CDATA[The x-skew of the Sprite]]></return>
+    <return type="number"><![CDATA[The y-skew of the Sprite]]></return>
+  </method>
+  <method name="Sprite:getClip" page="getClip" shortdesc="" version="in development"><![CDATA[Returns the coordinates of the Sprite clip range if set with setClip]]>
+    <return type="number"><![CDATA[x-coordinate of clip origin]]></return>
+    <return type="number"><![CDATA[y-coordinate of clip origin]]></return>
+    <return type="number"><![CDATA[width of clip region]]></return>
+    <return type="number"><![CDATA[Height of clip region]]></return>
+  </method>
+  <event name="Event.ENTER_FRAME" page="Event.ENTER_FRAME" value="enterFrame" version="Gideros 2011.6"><![CDATA[The Gideros runtime dispatches the built-in `Event.ENTER_FRAME` event to `Sprite` instances before rendering the screen. Visual changes made by any `Event.ENTER_FRAME` listener function will be visible at next frame.]]>
+    <parameter name="deltaTime" type="number"><![CDATA[time passed from previous frame]]></parameter>
+    <parameter name="time" type="number"><![CDATA[time passed from app start]]></parameter>
+    <parameter name="frameCount" type="number"><![CDATA[frame count from app start]]></parameter>
+  </event>
+  <event name="Event.ADDED_TO_STAGE" page="Event.ADDED_TO_STAGE" value="addedToStage" version="Gideros 2011.6"><![CDATA[This event is dispatched when object is added to the stage hierarchy]]></event>
+  <event name="Event.REMOVED_FROM_STAGE" page="Event.REMOVED_FROM_STAGE" value="removedFromStage" version="Gideros 2011.6"><![CDATA[This event is dispatched when object is removed from stage hierarchy]]></event>
+  <event name="Event.MOUSE_DOWN" page="Event.MOUSE_DOWN" value="mouseDown" version="Gideros 2011.6"><![CDATA[This event is dispatched on mouse down action. It is possible to generate this event using touch actions, by enabling this option through project settings.
+
+Mouse button can have values of:
+`KeyCode.MOUSE_NONE`
+`KeyCode.MOUSE_LEFT`
+`KeyCode.MOUSE_RIGHT`
+`KeyCode.MOUSE_MIDDLE`]]>
+    <parameter name="x" type="number"><![CDATA[x coordinate of the click]]></parameter>
+    <parameter name="y" type="number"><![CDATA[y coordinate of the click]]></parameter>
+    <parameter name="rx" type="number"><![CDATA[unrounded x coordinate of the click]]></parameter>
+    <parameter name="ry" type="number"><![CDATA[unrounded y coordinate of the click]]></parameter>
+    <parameter name="button" type="number"><![CDATA[Mouse button pressed]]></parameter>
+  </event>
+  <event name="Event.MOUSE_MOVE" page="Event.MOUSE_MOVE" value="mouseMove" version="Gideros 2011.6"><![CDATA[This event is dispatched when mouse is moved. It is possible to generate this event using touch actions, by enabling this option through project settings.
+
+Difference between `Event.MOUSE_HOVER`
+ is that mouse move have at least 1 button pressed, but mouse hover does not have any mouse buttons pressed.
+
+Mouse move events that are emulated on mobiles have left button pressed by default.
+ 
+Mouse button can have values of:
+`KeyCode.MOUSE_NONE`
+`KeyCode.MOUSE_LEFT`
+`KeyCode.MOUSE_RIGHT`
+`KeyCode.MOUSE_MIDDLE`]]>
+    <parameter name="x" type="number"><![CDATA[x coordinate of the click]]></parameter>
+    <parameter name="y" type="number"><![CDATA[y coordinate of the click]]></parameter>
+    <parameter name="rx" type="number"><![CDATA[unrounded x coordinate of the click]]></parameter>
+    <parameter name="ry" type="number"><![CDATA[unrounded y coordinate of the click]]></parameter>
+    <parameter name="button" type="number"><![CDATA[Mouse button pressed]]></parameter>
+  </event>
+  <event name="Event.MOUSE_UP" page="Event.MOUSE_UP" value="mouseUp" version="Gideros 2011.6"><![CDATA[This event is dispatched when mouse button is released. It is possible to generate this event using touch actions, by enabling this option through project settings.
+
+Mouse button can have values of:
+`KeyCode.MOUSE_NONE`
+`KeyCode.MOUSE_LEFT`
+`KeyCode.MOUSE_RIGHT`
+`KeyCode.MOUSE_MIDDLE`]]>
+    <parameter name="x" type="number"><![CDATA[x coordinate of the click]]></parameter>
+    <parameter name="y" type="number"><![CDATA[y coordinate of the click]]></parameter>
+    <parameter name="rx" type="number"><![CDATA[unrounded x coordinate of the click]]></parameter>
+    <parameter name="ry" type="number"><![CDATA[unrounded y coordinate of the click]]></parameter>
+    <parameter name="button" type="number"><![CDATA[Mouse button pressed]]></parameter>
+  </event>
+  <event name="Event.TOUCHES_BEGIN" page="Event.TOUCHES_BEGIN" value="touchesBegin" version="Gideros 2011.6"><![CDATA[This event is dispatched on touch begin action. It is possible to generate this event using mouse actions, by enabling this option through project settings.]]>
+    <parameter name="touch.x" type="number"><![CDATA[x coordinate of the current touch]]></parameter>
+    <parameter name="touch.y" type="number"><![CDATA[y coordinate of the current touch]]></parameter>
+    <parameter name="touch.rx" type="number"><![CDATA[unrounded x coordinate of the touch]]></parameter>
+    <parameter name="touch.ry" type="number"><![CDATA[unrounded y coordinate of the touch]]></parameter>
+    <parameter name="touch.id" type="number"><![CDATA[the id of current touch. This number is 1 if this is a first touch, 2 if it is a second, etc.]]></parameter>
+    <parameter name="touch.type" type="string"><![CDATA[Input type, possible values: finger, pen, mouse, penTablet]]></parameter>
+    <parameter name="touch.pressure" type="number"><![CDATA[Pressure on screen, 0 if not able to detect]]></parameter>
+    <parameter name="allTouches" type="table"><![CDATA[lua table containing previously described touch table with x, y, rx, ry and id properties for all touches that are currently on device.]]></parameter>
+  </event>
+  <event name="Event.TOUCHES_MOVE" page="Event.TOUCHES_MOVE" value="touchesMove" version="Gideros 2011.6"><![CDATA[This event is dispatched on touch move action. It is possible to generate this event using mouse actions, by enabling this option through project settings.]]>
+    <parameter name="touch.x" type="number"><![CDATA[x coordinate of the current touch]]></parameter>
+    <parameter name="touch.y" type="number"><![CDATA[y coordinate of the current touch]]></parameter>
+    <parameter name="touch.rx" type="number"><![CDATA[unrounded x coordinate of the touch]]></parameter>
+    <parameter name="touch.ry" type="number"><![CDATA[unrounded y coordinate of the touch]]></parameter>
+    <parameter name="touch.id" type="number"><![CDATA[the id of current touch. This number is 1 if this is a first touch, 2 if it is a second, etc.]]></parameter>
+    <parameter name="touch.type" type="string"><![CDATA[Input type, possible values: finger, pen, mouse, penTablet]]></parameter>
+    <parameter name="touch.pressure" type="number"><![CDATA[Pressure on screen, 0 if not able to detect]]></parameter>
+    <parameter name="allTouches" type="table"><![CDATA[lua table containing previously described touch table with x, y, rx, ry and id properties for all touches that are currently on device.]]></parameter>
+  </event>
+  <event name="Event.TOUCHES_END" page="Event.TOUCHES_END" value="touchesEnd" version="Gideros 2011.6"><![CDATA[This event is dispatched then touch is ended. It is possible to generate this event using mouse actions, by enabling this option through project settings.]]>
+    <parameter name="touch.x" type="number"><![CDATA[x coordinate of the current touch]]></parameter>
+    <parameter name="touch.y" type="number"><![CDATA[y coordinate of the current touch]]></parameter>
+    <parameter name="touch.rx" type="number"><![CDATA[unrounded x coordinate of the touch]]></parameter>
+    <parameter name="touch.ry" type="number"><![CDATA[unrounded y coordinate of the touch]]></parameter>
+    <parameter name="touch.id" type="number"><![CDATA[the id of current touch. This number is 1 if this is a first touch, 2 if it is a second, etc.]]></parameter>
+    <parameter name="touch.type" type="string"><![CDATA[Input type, possible values: finger, pen, mouse, penTablet]]></parameter>
+    <parameter name="touch.pressure" type="number"><![CDATA[Pressure on screen, 0 if not able to detect]]></parameter>
+    <parameter name="allTouches" type="table"><![CDATA[lua table containing previously described touch table with x, y, rx, ry and id properties for all touches that are currently on device.]]></parameter>
+  </event>
+  <event name="Event.TOUCHES_CANCEL" page="Event.TOUCHES_CANCEL" value="touchesCancel" version="Gideros 2011.6"><![CDATA[This event is dispatched when touch is interrupted, for example, by a phone call, or any sort of modal dialog.
+This event is dispatched only on devices.]]>
+    <parameter name="touch.x" type="number"><![CDATA[x coordinate of the current touch]]></parameter>
+    <parameter name="touch.y" type="number"><![CDATA[y coordinate of the current touch]]></parameter>
+    <parameter name="touch.rx" type="number"><![CDATA[unrounded x coordinate of the touch]]></parameter>
+    <parameter name="touch.ry" type="number"><![CDATA[unrounded y coordinate of the touch]]></parameter>
+    <parameter name="touch.id" type="number"><![CDATA[the id of current touch. This number is 1 if this is a first touch, 2 if it is a second, etc.]]></parameter>
+    <parameter name="touch.type" type="string"><![CDATA[Input type, possible values: finger, pen, mouse, penTablet]]></parameter>
+    <parameter name="touch.pressure" type="number"><![CDATA[Pressure on screen, 0 if not able to detect]]></parameter>
+    <parameter name="allTouches" type="table"><![CDATA[lua table containing previously described touch table with x, y, rx, ry and id properties for all touches that are currently on device.
+]]></parameter>
+  </event>
+  <event name="Event.KEY_UP" page="Event.KEY_UP" value="keyUp" version="Gideros 2011.6"><![CDATA[This event is dispatched when a supported key is released. For the list of supported keys, check `KeyCode` class.]]>
+    <parameter name="keyCode" type="number"><![CDATA[code of the key pressed.]]></parameter>
+    <parameter name="realCode" type="number"><![CDATA[real keyCode underneath]]></parameter>
+  </event>
+  <event name="Event.KEY_DOWN" page="Event.KEY_DOWN" value="keyDown" version="Gideros 2011.6"><![CDATA[This event is dispatched when a supported key is pressed. For the list of supported keys, check `KeyCode` class.]]>
+    <parameter name="keyCode" type="number"><![CDATA[code of the key pressed.]]></parameter>
+    <parameter name="realCode" type="number"><![CDATA[real keyCode underneath]]></parameter>
+  </event>
+  <event name="Event.MOUSE_WHEEL" page="MOUSE_WHEEL" value="mouseWheel" version="Gideros 2015.04.26"><![CDATA[Event that fires when mouse wheel is used]]>
+    <parameter name="x" type="number"><![CDATA[x coordinate of the click]]></parameter>
+    <parameter name="y" type="number"><![CDATA[y coordinate of the click]]></parameter>
+    <parameter name="rx" type="number"><![CDATA[unrounded x coordinate of the click]]></parameter>
+    <parameter name="ry" type="number"><![CDATA[unrounded y coordinate of the click]]></parameter>
+    <parameter name="wheel" type="number"><![CDATA[negative value when scrolled down and positive value when scrolled up]]></parameter>
+  </event>
+  <event name="Event.MOUSE_HOVER" page="Event.MOUSE_HOVER" value="mouseHover" version="Gideros 2015.08"><![CDATA[This event is dispatched when mouse is moved and not button is pressed. The event is available only on desktops as Windows, MacOS and WinRT
+
+Difference between `Event.MOUSE_MOVE`
+ is that mouse hover does not have any mouse buttons pressed, but mouse move has at least 1 mouse button pressed
+ ]]>
+    <parameter name="x" type="number"><![CDATA[x coordinate of mouse cursor]]></parameter>
+    <parameter name="y" type="number"><![CDATA[y coordinate of mouse cursor]]></parameter>
+    <parameter name="rx" type="number"><![CDATA[unrounded x coordinate of the mouse cursor]]></parameter>
+    <parameter name="ry" type="number"><![CDATA[unrounded y coordinate of the mouse cursor]]></parameter>
+    <parameter name="button" type="number"><![CDATA[button pressed - none]]></parameter>
+  </event>
+</object>

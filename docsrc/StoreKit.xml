@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="StoreKit" page="StoreKit" parent="" type="plugin" version="Gideros 2012.2.2"><![CDATA[<br />
+The `StoreKit` class provides the functionality that allow an application to request payment from a user. <br />
+This class is only available to iOS platforms.<br />
+<br />
+The `StoreKit` class is defined in module &quot;storekit&quot;. Therefore, you need to call<br />
+`require(&quot;storekit&quot;)` before using it. Loading the &quot;storekit&quot; module <br />
+also creates a global variable `storekit` of type `StoreKit` for direct use. <br />
+<br />
+&lt;h3&gt;State of a Transaction&lt;/h3&gt;<br />
+<br />
+The state of a transaction is defined by 3 string constants:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**StoreKit.PURCHASED = &quot;purchased&quot;**: The App Store successfully processed payment. Your application should provide the content the user purchased.&lt;/li&gt;<br />
+&lt;li&gt;**StoreKit.FAILED = &quot;failed&quot;**: The transaction failed. Check the `event.errorCode` and `event.errorDescription` fields to determine what happened.&lt;/li&gt;<br />
+&lt;li&gt;**StoreKit.RESTORED = &quot;restored&quot;**: This transaction restores content previously purchased by the user. Read the `event.originalTransaction` field to obtain information about the original purchase.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+&lt;h3&gt;StoreKit Events&lt;/h3&gt;<br />
+<br />
+The `StoreKit` class dispatches the events `Event.REQUEST_PRODUCTS_COMPLETE`, `Event.TRANSACTION` and `Event.RESTORE_TRANSACTIONS_COMPLETE`.<br />
+<br />
+&lt;h3&gt;# Event.REQUEST_PRODUCTS_COMPLETE&lt;/h3&gt;<br />
+The function [[StoreKit:requestProducts]] is used to retrieve localized information about a list of products from the Apple App Store. <br />
+When the request completes, `Event.REQUEST_PRODUCTS_COMPLETE` event is dispatched. The resulting event table contains <br />
+these additional fields about the products:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**event.error:** (number) error code if the request failed to execute&lt;/li&gt;<br />
+&lt;li&gt;**event.errorDescription:** (string) error description if the request failed to execute&lt;/li&gt;<br />
+&lt;li&gt;**event.products:** (table) array of products where each element is a table which contains the product information&lt;/li&gt;<br />
+&lt;li&gt;**event.invalidProductIdentifiers:** (table) array of product identifier strings that were not recognized by the Apple App Store&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+Each table in `event.products` array contains these fields:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**title:** (number) localized name of the product&lt;/li&gt;<br />
+&lt;li&gt;**description:** (string) localized description of the product&lt;/li&gt;<br />
+&lt;li&gt;**price:** (number) cost of the product in the local currency&lt;/li&gt;<br />
+&lt;li&gt;**productIdentifier:** (string) string that identifies the product to the Apple App Store&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+For example, this code can be used to print the retrieved product information:<br />
+&lt;pre&gt;&lt;code&gt;<br />
+	<br />
+	local function onRequestProductsComplete(event)<br />
+		if event.errorCode ~= nil then<br />
+			print(&quot;error&quot;, event.errorCode, event.errorDescription)<br />
+			return<br />
+		end<br />
+<br />
+		print(&quot;products:&quot;)<br />
+		for i=1,#event.products do<br />
+			print(&quot;title&quot;, event.products[i].title)<br />
+			print(&quot;description&quot;, event.products[i].description)<br />
+			print(&quot;price&quot;, event.products[i].price)<br />
+			print(&quot;productIdentifier&quot;, event.products[i].productIdentifier)<br />
+		end<br />
+<br />
+		print(&quot;invalidProductIdentifiers:&quot;)<br />
+		for i=1,#event.invalidProductIdentifiers do<br />
+			print(event.invalidProductIdentifiers[i])<br />
+		end<br />
+	end<br />
+<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+&lt;h3&gt;# Event.TRANSACTION&lt;/h3&gt;<br />
+<br />
+This event is dispatched when a transaction is updated. The event listener should process all successful transactions, <br />
+unlock the functionality purchased by the user, and then finish the transaction by calling [[StoreKit:finishTransaction]] method. The resulting event table can <br />
+contain these additional fields about the products:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**event.errorCode:** (number) error code if `event.transaction.state` is set to `StoreKit.FAILED`&lt;/li&gt;<br />
+&lt;li&gt;**event.errorDescription:** (string) error description if `event.transaction.state` is set to `StoreKit.FAILED`&lt;/li&gt;<br />
+&lt;li&gt;**event.payment.productIdentifier:** (string) product identifier of the transaction&lt;/li&gt;<br />
+&lt;li&gt;**event.payment.quantity:** (number) number of items the user wants to purchase&lt;/li&gt;<br />
+&lt;li&gt;**event.transaction.state:** (string) current state of the transaction&lt;/li&gt;<br />
+&lt;li&gt;**event.transaction.identifier:** (string) string that uniquely identifies a successful payment transaction&lt;/li&gt;<br />
+&lt;li&gt;**event.transaction.receipt:** (string) signed receipt that records all information about a successful payment transaction&lt;/li&gt;<br />
+&lt;li&gt;**event.transaction.date:** (string) date the transaction was added to the App Store&#039;s payment queue&lt;/li&gt;<br />
+&lt;li&gt;**event.originalTransaction.identifier:** (string) identifier of original transaction&lt;/li&gt;<br />
+&lt;li&gt;**event.originalTransaction.date:** (string) date of the original transaction&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+This code can be used to print the transaction information and unlock the functionality purchased by the user:<br />
+<br />
+&lt;pre&gt;&lt;code&gt;<br />
+	local function onTransaction(event)<br />
+		print(&quot;payment.productIdentifier&quot;, event.payment.productIdentifier)<br />
+		print(&quot;payment.quantity&quot;, event.payment.quantity)<br />
+		<br />
+		print(&quot;transaction.state&quot;, event.transaction.state)<br />
+<br />
+		if event.transaction.state == StoreKit.FAILED then<br />
+			print(&quot;error&quot;, event.errorCode, event.errorDescription)<br />
+		else		<br />
+			print(&quot;transaction.identifier&quot;, event.transaction.identifier)<br />
+			print(&quot;transaction.date&quot;, event.transaction.date)<br />
+<br />
+			if event.transaction.state == StoreKit.PURCHASED then<br />
+				print(&quot;transaction.receipt&quot;, event.transaction.receipt)<br />
+			end<br />
+			<br />
+			if event.transaction.state == StoreKit.RESTORED then<br />
+				print(&quot;originalTransaction.identifier&quot;, event.originalTransaction.identifier)<br />
+				print(&quot;originalTransaction.date&quot;, event.originalTransaction.date)<br />
+			end<br />
+			<br />
+			-- unlock the functionality purchased by the user<br />
+		end<br />
+			<br />
+		storekit:finishTransaction(event.transaction)<br />
+	end<br />
+<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+&lt;h3&gt;# Event.RESTORE_TRANSACTIONS_COMPLETE&lt;/h3&gt;<br />
+<br />
+This event is dispatched after the transactions are delivered. The resulting event table can contain these additional fields:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**event.errorCode:** (number) error code if an error occurred while restoring transactions&lt;/li&gt;<br />
+&lt;li&gt;**event.errorDescription:** (string) description of the error if an error occurred while restoring transactions&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+If all transactions are delivered successfully, `event.errorCode` and `event.errorDescription` will be `nil`.<br />
+<br />
+]]>
+  <platform>ios</platform>
+  <constant name="StoreKit.PURCHASED" page="StoreKit.PURCHASED" value="purchased" version="Gideros 2012.2.2"><![CDATA[Indicates the state of the purchase as purchased. You can unlock content at this state.]]></constant>
+  <constant name="StoreKit.RESTORED" page="StoreKit.RESTORED" value="restored" version="Gideros 2012.2.2"><![CDATA[This transaction restores content previously purchased by the user. Read the `event.originalTransaction` field to obtain information about the original purchase.]]></constant>
+  <constant name="StoreKit.FAILED" page="StoreKit.FAILED" value="failed" version="Gideros 2012.2.2"><![CDATA[The transaction failed. Check the `event.errorCode` and `event.errorDescription` fields to determine what happened.]]></constant>
+  <method name="StoreKit:canMakePayments" page="canMakePayments" shortdesc="StoreKit - returns whether the user is allowed to make payments" version="Gideros 2012.2.2"><![CDATA[<br />
+Returns whether the user is allowed to make payments.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if the user is allowed to authorize payment. `false` if they do not have permission.]]></return>
+  </method>
+  <method name="StoreKit:requestProducts" page="requestProducts" shortdesc="StoreKit - retrieve localized information about a list of products" version="Gideros 2012.2.2"><![CDATA[<br />
+Retrieve localized information about a list of products from the Apple App Store. When the request completes, `Event.REQUEST_PRODUCTS_COMPLETE` event is dispatched.<br />
+<br />
+]]>
+    <parameter name="productIdentifiers" optional="false" type="table"><![CDATA[An array of product identifiers for the products you wish to retrieve descriptions of.]]></parameter>
+  </method>
+  <method name="StoreKit:purchase" page="purchase" shortdesc="StoreKit - process a payment request" version="Gideros 2012.2.2"><![CDATA[<br />
+Process a payment request. When that transaction is complete or if a failure occurs, `Event.TRANSACTION` event is dispatched.<br />
+<br />
+]]>
+    <parameter name="productIdentifier" optional="false" type="string"><![CDATA[A string used to identify a product that can be purchased from within your application.]]></parameter>
+    <parameter name="quantity" optional="false" type="number, default = 1"><![CDATA[The number of items the user wants to purchase. This value should be greater than or equal to 1.]]></parameter>
+  </method>
+  <method name="StoreKit:restoreCompletedTransactions" page="restoreCompletedTransactions" shortdesc="StoreKit - restore previously completed purchases" version="Gideros 2012.2.2"><![CDATA[<br />
+Restore previously completed purchases. `Event.TRANSACTION` event is dispatched for each previously completed transaction that can be restored. <br />
+Each transaction includes a copy of the original transaction.<br />
+<br />
+After the transactions are delivered, `Event.RESTORE_TRANSACTIONS_COMPLETE` event is dispatched. If an error occurred while restoring transactions, `event.errorCode` and <br />
+`event.errorDescription` fields contain the details of the error.<br />
+<br />
+]]></method>
+  <method name="StoreKit:finishTransaction" page="finishTransaction" shortdesc="StoreKit - completes a pending transaction" version="Gideros 2012.2.2"><![CDATA[<br />
+Completes a pending transaction. Your application should call this function only after it has successfully processed the transaction and unlocked the functionality <br />
+purchased by the user.<br />
+<br />
+]]>
+    <parameter name="transaction" optional="false" type="table"><![CDATA[transaction information recevied with the event Event.TRANSACTION.]]></parameter>
+  </method>
+  <event name="Event.REQUEST_PRODUCTS_COMPLETE" page="Event.REQUEST_PRODUCTS_COMPLETE" value="requestProductsComplete" version="Gideros 2012.2.2"><![CDATA[This event is dispatched after the method `StoreKit:requestProducts` is called and completed request. It provides information about products available.]]>
+    <parameter name="error" type="number"><![CDATA[error code if the request failed to execute]]></parameter>
+    <parameter name="errorDescription" type="string"><![CDATA[error description if the request failed to execute]]></parameter>
+    <parameter name="invalidProductIdentifiers" type="table"><![CDATA[array of product identifier strings that were not recognized by the Apple App Store]]></parameter>
+    <parameter name="products" type="table"><![CDATA[array of products where each element is a table which contains the product information]]></parameter>
+    <parameter name="products[].title" type="string"><![CDATA[localized name of the product]]></parameter>
+    <parameter name="products[].description" type="string"><![CDATA[localized description of the product]]></parameter>
+    <parameter name="products[].price" type="price"><![CDATA[cost of the product in the local currency]]></parameter>
+    <parameter name="products[].productIdentifier" type="string"><![CDATA[string that identifies the product in the Apple App Store]]></parameter>
+  </event>
+  <event name="Event.TRANSACTION" page="Event.TRANSACTION" value="transaction" version="Gideros 2012.2.2"><![CDATA[This event is dispatched when a transaction is updated. The event listener should process all successful transactions, unlock the functionality purchased by the user, and then finish the transaction by calling `StoreKit:finishTransaction` method.]]>
+    <parameter name="errorCode" type="number"><![CDATA[error code if the request failed to execute and event.transaction.state is set to StoreKit.FAILED]]></parameter>
+    <parameter name="errorDescription" type="string"><![CDATA[error description if the request failed to execute and event.transaction.state is set to StoreKit.FAILED]]></parameter>
+    <parameter name="payment.productIdentifier" type="string"><![CDATA[product identifier for this transaction]]></parameter>
+    <parameter name="payment.quantity" type="number"><![CDATA[number of items the user wants to purchase]]></parameter>
+    <parameter name="transaction.state" type="string"><![CDATA[current state of the transaction]]></parameter>
+    <parameter name="transaction.identifier" type="string"><![CDATA[string that uniquely identifies a successful payment transaction]]></parameter>
+    <parameter name="transaction.receipt" type="string"><![CDATA[signed receipt that records all information about a successful payment transaction]]></parameter>
+    <parameter name="transaction.date" type="string"><![CDATA[date the transaction was added to the App Store’s payment queue]]></parameter>
+    <parameter name="originalTransaction.identifier" type="string"><![CDATA[identifier of original transaction]]></parameter>
+    <parameter name="originalTransaction.date" type="string"><![CDATA[date of the original transaction]]></parameter>
+  </event>
+  <event name="Event.RESTORE_TRANSACTIONS_COMPLETE" page="Event.RESTORE_TRANSACTIONS_COMPLETE" value="restoreTransactionsComplete" version="Gideros 2012.2.2"><![CDATA[This event is dispatched after call of `StoreKit:restoreCompletedTransactions` and when it's request is completed.]]>
+    <parameter name="errorCode" type="number"><![CDATA[error code if an error occurred while restoring transactions]]></parameter>
+    <parameter name="errorDescription" type="string"><![CDATA[description of the error if an error occurred while restoring transactions]]></parameter>
+  </event>
+</object>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.RopeJoint" page="b2RopeJoint" parent="b2.Joint" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A rope joint enforces a maximum distance between two points on two bodies. It has no other effect.<br />
+Warning: if you attempt to change the maximum length during the simulation you will get some non-physical behavior.<br />
+A model that would allow you to dynamically modify the length would have some sponginess, so I chose not to implement it that way.<br />
+See `b2.DistanceJoint` if you want to dynamically control length. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.RopeJoint:setMaxLength" page="setMaxLength" shortdesc="" version="Gideros 2012.09.3"><![CDATA[<br />
+Sets the maximum length of the rope. <br />
+<br />
+]]>
+    <parameter name="maxLength" optional="false" type="number"/>
+  </method>
+  <method name="b2.RopeJoint:getMaxLength" page="getMaxLength" shortdesc="" version="Gideros 2012.09.3"><![CDATA[<br />
+Returns the maximum length of the rope. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The maximum length of the rope.]]></return>
+  </method>
+</object>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.Contact" page="b2Contact" parent="" type="physics" version="Gideros 2012.09.6"><![CDATA[<br />
+The class manages contact between two shapes. A contact exists for each overlapping AABB in the broad-phase (except if filtered). Therefore a contact object may exist that has no contact points.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.Contact:getManifold" page="getManifold" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns the contact manifold as a table. This table contains `points`, `localNormal`, `localPoint` and `type` fields.<br />
+<br />
+]]>
+    <return type="b2.Manifold"><![CDATA[the manifold of contact]]></return>
+  </method>
+  <method name="b2.Contact:getWorldManifold" page="getWorldManifold" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns the world manifold as a table. This table contains `normal` and `points` fields.<br />
+<br />
+]]>
+    <return type="b2.WorldManifold"><![CDATA[Information about contact between 2 bodies relative to the world]]></return>
+  </method>
+  <method name="b2.Contact:isTouching" page="isTouching" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns whether the contact is touching or not.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[Whether the contact is touching or not.]]></return>
+  </method>
+  <method name="b2.Contact:setEnabled" page="setEnabled" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Enables/disables the contact. This can be used inside the pre-solve contact listener. The contact is only disabled for the current time step (or sub-step in continuous collisions).<br />
+<br />
+]]>
+    <parameter name="flag" optional="false" type="boolean"/>
+  </method>
+  <method name="b2.Contact:getFixtureA" page="getFixtureA" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns fixture A in this contact. <br />
+<br />
+]]>
+    <return type="b2.Fixture"><![CDATA[Fixture A in this contact.]]></return>
+  </method>
+  <method name="b2.Contact:getChildIndexA" page="getChildIndexA" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns the child primitive index for fixture A. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[Returns the child primitive index for fixture A.]]></return>
+  </method>
+  <method name="b2.Contact:getFixtureB" page="getFixtureB" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns fixture B in this contact. <br />
+<br />
+]]>
+    <return type="b2.Fixture"><![CDATA[Fixture B in this contact.]]></return>
+  </method>
+  <method name="b2.Contact:getChildIndexB" page="getChildIndexB" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns the child primitive index for fixture B. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[Returns the child primitive index for fixture B.]]></return>
+  </method>
+  <method name="b2.Contact:setFriction" page="setFriction" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Overrides the default friction mixture. You can call this in pre-solve event. This value persists until set or reset. <br />
+<br />
+]]>
+    <parameter name="friction" optional="false" type="number"/>
+  </method>
+  <method name="b2.Contact:getFriction" page="getFriction" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns the friction.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The friction.]]></return>
+  </method>
+  <method name="b2.Contact:resetFriction" page="resetFriction" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Resets the friction mixture to the default value. <br />
+<br />
+]]></method>
+  <method name="b2.Contact:setRestitution" page="setRestitution" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Overrides the default restitution mixture. You can call this in pre-solve event. This value persists until set or reset. <br />
+<br />
+]]>
+    <parameter name="restitution" optional="false" type="number"/>
+  </method>
+  <method name="b2.Contact:getRestitution" page="getRestitution" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns the restitution.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The restitution.]]></return>
+  </method>
+  <method name="b2.Contact:resetRestitution" page="resetRestitution" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Resets the restitution mixture to the default value. <br />
+<br />
+<br />
+]]></method>
+  <example name="Checking collisions from bottom using b2.Contact"><![CDATA[local isTouchingGround = false
+world:addEventListener(Event.BEGIN_CONTACT, function(e)
+	local manifold = e.contact:getWorldManifold()
+	if manifold.normal.y > 0.9 then
+		--collision came from bottom
+		isTouchingGround = true
+	end
+end)
+ 
+world:addEventListener(Event.END_CONTACT, function(e)
+	local manifold = e.contact:getWorldManifold()
+	if manifold.normal.y < 0.1 then
+		--collision ended from bottom
+		isTouchingGround = false
+	end
+end)]]></example>
+</object>

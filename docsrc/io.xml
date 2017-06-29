@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="io" page="io" parent="" type="lua" version="Gideros 2011.6"><![CDATA[Manages main input/output operations]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="io.close" page="close" shortdesc="closes file, or the default output file" version="Gideros 2011.6"><![CDATA[Equivalent to `file:close`. Without a file, closes the default output file.]]>
+    <parameter name="file" optional="true" type="file"><![CDATA[file object to close]]></parameter>
+  </method>
+  <method name="io.flush" page="flush" shortdesc="flushes the default output file" version="Gideros 2011.6"><![CDATA[Equivalent to file:flush over the default output file.]]></method>
+  <method name="io.input" page="input" shortdesc="opens file in text mode, sets as default input file, or returns current default input file" version="Gideros 2011.6"><![CDATA[When called with a file name, it opens the named file (in text mode), and sets its handle as the default input file. When called with a file handle, it simply sets this file handle as the default input file. When called without parameters, it returns the current default input file. 
+
+
+ In case of errors this function raises the error, instead of returning an error code.]]>
+    <parameter name="file" optional="true" type="file"><![CDATA[file object to use as default input]]></parameter>
+    <return type="file"><![CDATA[default input file object]]></return>
+  </method>
+  <method name="io.lines" page="lines" shortdesc="open file in read mode, returns iterator function to return lines, nil ends" version="Gideros 2011.6"><![CDATA[Opens the given file name in read mode and returns an iterator function that, each time it is called, returns a new line from the file. Therefore, the construction 
+
+     `for line in io.lines(filename) do body end`
+
+ will iterate over all lines of the file. When the iterator function detects the end of file, it returns nil (to finish the loop) and automatically closes the file. 
+
+
+ The call io.lines() (with no file name) is equivalent to io.input():lines(); that is, it iterates over the lines of the default input file. In this case it does not close the file when the loop ends.]]>
+    <parameter name="filename" optional="true" type="string"><![CDATA[filename to open]]></parameter>
+    <return type="function"><![CDATA[iterator function]]></return>
+  </method>
+  <method name="io.open" page="open" shortdesc="opens file in specified mode &quot;[rawb ]&quot;, returns handle or nil" version="Gideros 2011.6"><![CDATA[This function opens a file, in the mode specified in the string mode. It returns a new file handle, or, in case of errors, nil plus an error message. 
+
+
+ The mode string can be any of the following: 
+
+"r": read mode (the default);
+"w": write mode;
+"a": append mode;
+"r+": update mode, all previous data is preserved;
+"w+": update mode, all previous data is erased;
+"a+": append update mode, previous data is preserved, writing is only allowed at the end of file.
+
+ The mode string can also have a 'b' at the end, which is needed in some systems to open the file in binary mode. This string is exactly what is used in the standard C function fopen.]]>
+    <parameter name="filename" optional="false" type="string"><![CDATA[filename to open]]></parameter>
+    <parameter name="mode" optional="true" type="string"><![CDATA[mode in which to open the file]]></parameter>
+    <return type="file"><![CDATA[file object]]></return>
+  </method>
+  <method name="io.output" page="output" shortdesc="opens file in text mode, sets as default output file, or returns current default output file" version="Gideros 2011.6"><![CDATA[When called with a file name, it opens the named file (in text mode), and sets its handle as the default output file. When called with a file handle, it simply sets this file handle as the default output file. When called without parameters, it returns the current default output file. 
+
+
+ In case of errors this function raises the error, instead of returning an error code.]]>
+    <parameter name="file" optional="true" type="file"><![CDATA[file object to use as default output]]></parameter>
+    <return type="file"><![CDATA[default output file object]]></return>
+  </method>
+  <method name="io.read" page="read" shortdesc="reads file according to given formats, returns read values or nil" version="Gideros 2011.6"><![CDATA[Reading from default input, basically equivalent to io.input():read]]>
+    <parameter name="format1" optional="false" type="string"><![CDATA[reading format]]></parameter>
+    <parameter name="..." optional="true" type="string"><![CDATA[more optional formats]]></parameter>
+    <return type="string"><![CDATA[returns read values or nil]]></return>
+  </method>
+  <method name="io.tmpfile" page="tmpfile" shortdesc="returns a handle for a temporary file, opened in update mode" version="Gideros 2011.6"><![CDATA[Returns a handle for a temporary file. This file is opened in update mode and it is automatically removed when the program ends.]]>
+    <return type="file"><![CDATA[file object for temporary file]]></return>
+  </method>
+  <method name="io.type" page="type" shortdesc="returns &quot;file&quot; if obj is an open file handle, &quot;close file&quot; if closed, or nil if not a file handle" version="Gideros 2011.6"><![CDATA[Checks whether obj is a valid file handle. Returns the string "file" if obj is an open file handle, "closed file" if obj is a closed file handle, or nil if obj is not a file handle.]]>
+    <parameter name="obj" optional="false" type="any"><![CDATA[object to test]]></parameter>
+    <return type="string"><![CDATA[string representing the state of the object or nil if not file handler]]></return>
+  </method>
+  <method name="io.write" page="write" shortdesc="writes strings or numbers to file" version="Gideros 2011.6"><![CDATA[Writes value to default output, basically equivalent to io.output():write.]]>
+    <parameter name="value1" optional="false" type="string"><![CDATA[value to write]]></parameter>
+    <parameter name="..." optional="true" type="multiple"><![CDATA[other optional values to write]]></parameter>
+  </method>
+  <example name="Copy a file"><![CDATA[local function copy(src, dst)
+	local srcf = io.open(src, "rb")
+	local dstf = io.open(dst, "wb")
+	local size = 2^13      -- good buffer size (8K)
+	while true do
+		local block = srcf:read(size)
+		if not block then break end
+		dstf:write(block)
+	end
+	srcf:close()
+	dstf:close()
+end]]></example>
+</object>

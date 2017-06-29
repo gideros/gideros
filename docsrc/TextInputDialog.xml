@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="TextInputDialog" page="TextInputDialog" parent="AlertDialog" type="gideros" version="Gideros 2012.8"><![CDATA[<br />
+The `TextInputDialog` class is used to display native text input dialogs with one text edit field, one button (as cancel button) and two optional buttons. When the user presses any buttons in the alert dialog, it&#039;s dismissed and `Event.COMPLETE` event is dispatched.<br />
+If text input dialog is dismissed by any other means (by pressing back button on Android or by pressing close button on desktop), it behaves as cancel button is pressed.<br />]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="TextInputDialog.URL" page="TextInputDialog.URL" value="url" version="Gideros 2011.6"/>
+  <constant name="TextInputDialog.PHONE" page="TextInputDialog.PHONE" value="phone" version="Gideros 2011.6"/>
+  <constant name="TextInputDialog.TEXT" page="TextInputDialog.TEXT" value="text" version="Gideros 2011.6"/>
+  <constant name="TextInputDialog.EMAIL" page="TextInputDialog.EMAIL" value="email" version="Gideros 2011.6"/>
+  <constant name="TextInputDialog.NUMBER" page="TextInputDialog.NUMBER" value="number" version="Gideros 2011.6"/>
+  <method name="TextInputDialog.new" page="new" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Creates a new `TextInputDialog` object.<br />
+ <br />
+]]>
+    <parameter name="title" optional="false" type="string"/>
+    <parameter name="message" optional="false" type="string"><![CDATA[Descriptive text that provides more details than the title.]]></parameter>
+    <parameter name="text" optional="false" type="string"><![CDATA[The text on the text field.]]></parameter>
+    <parameter name="cancelButton" optional="false" type="string"><![CDATA[The text of the cancel button.]]></parameter>
+    <parameter name="button1" optional="false" type="string, optional"><![CDATA[The text of the 1st optional button.]]></parameter>
+    <parameter name="button2" optional="false" type="string, optional"><![CDATA[The text of the 2st optional button.]]></parameter>
+  </method>
+  <method name="TextInputDialog:setText" page="setText" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Sets the text on the text field.<br />
+<br />
+]]>
+    <parameter name="text" optional="false" type="string"><![CDATA[The text on the text field.]]></parameter>
+  </method>
+  <method name="TextInputDialog:getText" page="getText" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Returns the text on the text field.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[The text on the text field.]]></return>
+  </method>
+  <method name="TextInputDialog:setInputType" page="setInputType" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Sets the input (keyboard) type associated with the text field. The options are:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;`TextInputDialog.TEXT`: Default keyboard type&lt;/li&gt;<br />
+&lt;li&gt;`TextInputDialog.NUMBER`: Numeric keypad&lt;/li&gt;<br />
+&lt;li&gt;`TextInputDialog.PHONE`: Keypad designed for entering telephone numbers&lt;/li&gt;<br />
+&lt;li&gt;`TextInputDialog.EMAIL`: Keyboard optimized for specifying email addresses&lt;/li&gt;<br />
+&lt;li&gt;`TextInputDialog.URL`: Keyboard optimized for URL entry&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+    <parameter name="type" optional="false" type="string"><![CDATA[Tnput type associated with the text field.]]></parameter>
+  </method>
+  <method name="TextInputDialog:getInputType" page="getInputType" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Returns the keyboard type associated with the text field.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[The keyboard type associated with the text field (TextInputDialog.EMAIL, TextInputDialog.NUMBER, TextInputDialog.PHONE, TextInputDialog.TEXT, TextInputDialog.URL)]]></return>
+  </method>
+  <method name="TextInputDialog:setSecureInput" page="setSecureInput" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Sets whether the text object should hide the text being entered.<br />
+<br />
+]]>
+    <parameter name="secureInput" optional="false" type="boolean"><![CDATA[If &#039;true&#039;, the text object hides the text being entered.]]></parameter>
+  </method>
+  <method name="TextInputDialog:isSecureInput" page="isSecureInput" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Returns whether the text object hides the text being entered.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[Whether the text object hides the text being entered.]]></return>
+  </method>
+  <event name="Event.COMPLETE" page="Event.COMPLETE" value="complete" version="Gideros 2012.8"><![CDATA[This event is dispatched when user presses any button on TextInputDialog or the dialog is dismissed by any other reason.]]>
+    <parameter name="text" type="string"><![CDATA[the text entered into text input field]]></parameter>
+    <parameter name="buttonIndex" type="number"><![CDATA[the index of the button pressed. It is nil when cancel button is pressed, 1 when 1st button is pressed and 2 when 2nd button is pressed.]]></parameter>
+    <parameter name="buttonText" type="string"><![CDATA[the text of the button pressed]]></parameter>
+  </event>
+  <example name=""><![CDATA[local textInputDialog = TextInputDialog.new(&quot;my title&quot;, &quot;my message&quot;, &quot;some text&quot;, &quot;Cancel&quot;, &quot;OK&quot;)<br />
+<br />
+local function onComplete(event)<br />
+	print(event.text, event.buttonIndex, event.buttonText)<br />
+end<br />
+<br />
+textInputDialog:addEventListener(Event.COMPLETE, onComplete)<br />
+textInputDialog:show()
+]]></example>
+</object>

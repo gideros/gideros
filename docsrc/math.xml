@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="math" page="math" parent="" type="lua" version="Gideros 2011.6"><![CDATA[`math` table holds most commonly used math functions and constants]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="huge" page="huge" value="1.#INF" version="Gideros 2011.6"><![CDATA[Constant value close to infinity]]></constant>
+  <constant name="pi" page="pi" value="3.1415926535898" version="Gideros 2011.6"><![CDATA[Constant value of PI]]></constant>
+  <method name="math.abs" page="abs" shortdesc="returns absolute value of v" version="Gideros 2011.6"><![CDATA[Returns the absolute value of v.]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[number to use for absolute value]]></parameter>
+    <return type="number"><![CDATA[absolute value of v]]></return>
+  </method>
+  <method name="math.acos" page="acos" shortdesc="returns arc cosine value of v in radians" version="Gideros 2011.6"><![CDATA[Returns the arc cosine of v (in radians).]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[value to get acos from]]></parameter>
+    <return type="number"><![CDATA[acos value of provided value]]></return>
+  </method>
+  <method name="math.asin" page="asin" shortdesc="returns arc sine value of v in radians" version="Gideros 2011.6"><![CDATA[ returns arc sine value of v in radians]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[value to get asin from]]></parameter>
+    <return type="number"><![CDATA[asin value from v]]></return>
+  </method>
+  <method name="math.atan" page="atan" shortdesc="returns arc tangent value of v in radians" version="Gideros 2011.6"><![CDATA[ returns arc tangent value of v in radians]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[value to get atan from]]></parameter>
+    <return type="number"><![CDATA[atan value of v]]></return>
+  </method>
+  <method name="math.atan2" page="atan2" shortdesc="returns arc tangent value of v1/v2 in radians" version="Gideros 2011.6"><![CDATA[Returns the arc tangent of v1/v2 (in radians), but uses the signs of both parameters to find the quadrant of the result. (It also handles correctly the case of v2 being zero.)]]>
+    <parameter name="v1" optional="false" type="number"><![CDATA[first value]]></parameter>
+    <parameter name="v2" optional="false" type="number"><![CDATA[second value]]></parameter>
+    <return type="number"><![CDATA[result]]></return>
+  </method>
+  <method name="math.ceil" page="ceil" shortdesc="returns smallest integer &amp;gt;= v" version="Gideros 2011.6"><![CDATA[ returns smallest integer &gt;= v]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[value to ceil]]></parameter>
+    <return type="number"><![CDATA[ceiled value]]></return>
+  </method>
+  <method name="math.cos" page="cos" shortdesc="returns cosine value of angle rad" version="Gideros 2011.6"><![CDATA[ returns cosine value of angle rad]]>
+    <parameter name="rad" optional="false" type="number"><![CDATA[angle in radians]]></parameter>
+    <return type="number"><![CDATA[result]]></return>
+  </method>
+  <method name="math.deg" page="deg" shortdesc="returns angle in degrees of radians rad" version="Gideros 2011.6"><![CDATA[ returns angle in degrees of radians rad]]>
+    <parameter name="rad" optional="false" type="number"><![CDATA[radian value to convert to degree]]></parameter>
+    <return type="number"><![CDATA[result in degree]]></return>
+  </method>
+  <method name="math.exp" page="exp" shortdesc="returns e^v" version="Gideros 2011.6"><![CDATA[ returns e^v]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[level of exponentiation for e]]></parameter>
+    <return type="number"><![CDATA[result of exponentiation]]></return>
+  </method>
+  <method name="math.floor" page="floor" shortdesc="returns largest integer &amp;lt;= v" version="Gideros 2011.6"><![CDATA[ returns largest integer &lt;= v]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[value to floor]]></parameter>
+    <return type="number"><![CDATA[floored value]]></return>
+  </method>
+  <method name="math.frexp" page="frexp" shortdesc="returns mantissa [0.5,1- and exponent values of v" version="Gideros 2011.6"><![CDATA[Returns m and e such that v = m2^e, e is an integer and the absolute value of m is in the range [0.5, 1) (or zero when v is zero).]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[value]]></parameter>
+    <return type="number"><![CDATA[result]]></return>
+  </method>
+  <method name="math.ldexp" page="ldexp" shortdesc="returns v1*2^v2" version="Gideros 2011.6"><![CDATA[Returns v12^v2 (v2 should be an integer).]]>
+    <parameter name="v1" optional="false" type="number"><![CDATA[first value]]></parameter>
+    <parameter name="v2" optional="false" type="number"><![CDATA[second value]]></parameter>
+    <return type="number"><![CDATA[result]]></return>
+  </method>
+  <method name="math.log" page="log" shortdesc="returns natural logarithm of v" version="Gideros 2011.6"><![CDATA[ returns natural logarithm of v]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[value]]></parameter>
+    <return type="number"><![CDATA[result]]></return>
+  </method>
+  <method name="math.log10" page="log10" shortdesc="returns logarithm 10 of v" version="Gideros 2011.6"><![CDATA[Returns the base-10 logarithm of v]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[value]]></parameter>
+    <return type="number"><![CDATA[result]]></return>
+  </method>
+  <method name="math.max" page="max" shortdesc="returns maximum in a list of one or more values" version="Gideros 2011.6"><![CDATA[ returns maximum in a list of one or more values]]>
+    <parameter name="v1" optional="false" type="number"><![CDATA[first value]]></parameter>
+    <parameter name="..." optional="true" type="multiple"><![CDATA[more optional numbers]]></parameter>
+    <return type="number"><![CDATA[highest number of all provided numbers]]></return>
+  </method>
+  <method name="math.min" page="min" shortdesc="returns minimum in a list of one or more values" version="Gideros 2011.6"><![CDATA[ returns minimum in a list of one or more values]]>
+    <parameter name="v1" optional="false" type="number"><![CDATA[firs value]]></parameter>
+    <parameter name="..." optional="true" type="multiple"><![CDATA[more optional numbers]]></parameter>
+    <return type="number"><![CDATA[smallest number of all provided numbers]]></return>
+  </method>
+  <method name="math.fmod" page="fmod" shortdesc="returns remainder of v1/v2 which is v1 - iV2 for some integer i" version="Gideros 2011.6"><![CDATA[Returns the remainder of the division of v1 by v2 that rounds the quotient towards zero.]]>
+    <parameter name="v1" optional="false" type="number"><![CDATA[first value]]></parameter>
+    <parameter name="v2" optional="false" type="number"><![CDATA[second value]]></parameter>
+    <return type="number"><![CDATA[remainder of division]]></return>
+  </method>
+  <method name="math.pow" page="pow" shortdesc="returns v1 raised to the power of v2" version="Gideros 2011.6"><![CDATA[ returns v1 raised to the power of v2]]>
+    <parameter name="v1" optional="false" type="number"><![CDATA[value to exponentiate]]></parameter>
+    <parameter name="v2" optional="false" type="number"><![CDATA[power in which to exponentiate]]></parameter>
+    <return type="number"><![CDATA[result of exponentiation]]></return>
+  </method>
+  <method name="math.rad" page="rad" shortdesc="returns angle in radians of degrees deg" version="Gideros 2011.6"><![CDATA[ returns angle in radians of degrees deg]]>
+    <parameter name="deg" optional="false" type="number"><![CDATA[angle in degrees]]></parameter>
+    <return type="number"><![CDATA[angle in radians]]></return>
+  </method>
+  <method name="math.random" page="random" shortdesc="returns random real [0,1-, integer [1,n] or real [1,u](with n=1-" version="Gideros 2011.6"><![CDATA[This function is an interface to the simple pseudo-random generator function rand provided by ANSI C. (No guarantees can be given for its statistical properties.) 
+
+
+ When called without arguments, returns a uniform pseudo-random real number in the range [0,1). When called with an integer number m, math.random returns a uniform pseudo-random integer in the range [1, m]. When called with two integer numbers m and n, math.random returns a uniform pseudo-random integer in the range [m, n].]]>
+    <parameter name="n" optional="true" type="number"><![CDATA[upper limit if only n provided, lower limit if u also provided]]></parameter>
+    <parameter name="u" optional="true" type="number"><![CDATA[upper limit]]></parameter>
+    <return type="number"><![CDATA[pseudo random number]]></return>
+  </method>
+  <method name="math.randomseed" page="randomseed" shortdesc="sets seed for pseudo-random number generator" version="Gideros 2011.6"><![CDATA[Sets x as the "seed" for the pseudo-random generator: equal seeds produce equal sequences of numbers.]]>
+    <parameter name="seed" optional="false" type="number"><![CDATA[seed for random number generator]]></parameter>
+  </method>
+  <method name="math.sin" page="sin" shortdesc="returns sine value of angle rad" version="Gideros 2011.6"><![CDATA[ returns sine value of angle rad]]>
+    <parameter name="rad" optional="false" type="number"><![CDATA[angle in radians]]></parameter>
+    <return type="number"><![CDATA[sine of provided angle]]></return>
+  </method>
+  <method name="math.sqrt" page="sqrt" shortdesc="returns square root of v" version="Gideros 2011.6"><![CDATA[ returns square root of v]]>
+    <parameter name="v" optional="false" type="number"><![CDATA[value to compute the square root for]]></parameter>
+    <return type="number"><![CDATA[square root]]></return>
+  </method>
+  <method name="math.tan" page="tan" shortdesc="returns tangent value of angle rad" version="Gideros 2011.6"><![CDATA[ returns tangent value of angle rad]]>
+    <parameter name="rad" optional="false" type="number"><![CDATA[angle in radians]]></parameter>
+    <return type="number"><![CDATA[tangent of the angle]]></return>
+  </method>
+</object>

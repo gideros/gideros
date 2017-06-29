@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.WheelJoint" page="b2WheelJoint" parent="b2.Joint" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A wheel joint provides two degrees of freedom: translation along an axis fixed in bodyA and rotation in the plane. You can use a <br />
+joint limit to restrict the range of motion and a joint motor to drive the rotation or to model rotational friction. This joint <br />
+is designed for vehicle suspensions.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.WheelJoint:getJointTranslation" page="getJointTranslation" shortdesc="returns the current joint translation in meters." version="Gideros 2011.6"><![CDATA[<br />
+Returns the current joint translation in meters.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current joint translation in meters]]></return>
+  </method>
+  <method name="b2.WheelJoint:getJointSpeed" page="getJointSpeed" shortdesc="returns the current joint translation speed in meters per second." version="Gideros 2011.6"><![CDATA[<br />
+Returns the current joint translation speed in meters per second. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current joint translation speed in meters per second]]></return>
+  </method>
+  <method name="b2.WheelJoint:isMotorEnabled" page="isMotorEnabled" shortdesc="is the joint motor enabled?" version="Gideros 2011.6"><![CDATA[<br />
+Is the joint motor enabled? <br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if joint motor is enabled, `false` otherwise]]></return>
+  </method>
+  <method name="b2.WheelJoint:enableMotor" page="enableMotor" shortdesc="enables or disables the joint motor" version="Gideros 2011.6"><![CDATA[<br />
+Enables or disables the joint motor. <br />
+<br />
+]]>
+    <parameter name="flag" optional="false" type="boolean"><![CDATA[enable flag of joint motor]]></parameter>
+  </method>
+  <method name="b2.WheelJoint:setMotorSpeed" page="setMotorSpeed" shortdesc="sets the motor speed in radians per second" version="Gideros 2011.6"><![CDATA[<br />
+Sets the motor speed in radians per second. <br />
+<br />
+]]>
+    <parameter name="speed" optional="false" type="number"><![CDATA[motor speed in radians per second]]></parameter>
+  </method>
+  <method name="b2.WheelJoint:getMotorSpeed" page="getMotorSpeed" shortdesc="returns the motor speed in radians per second" version="Gideros 2011.6"><![CDATA[<br />
+Returns the motor speed in radians per second. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The motor speed in radians per second]]></return>
+  </method>
+  <method name="b2.WheelJoint:setMaxMotorTorque" page="setMaxMotorTorque" shortdesc="sets the maximum motor torque in N*m" version="Gideros 2011.6"><![CDATA[<br />
+Sets the maximum motor torque in N*m. <br />
+<br />
+]]>
+    <parameter name="torque" optional="false" type="number"><![CDATA[the maximum motor torque in N-m]]></parameter>
+  </method>
+  <method name="b2.WheelJoint:getMaxMotorTorque" page="getMaxMotorTorque" shortdesc="returns the maximum motor torque in N*m" version="Gideros 2011.6"><![CDATA[<br />
+Returns the maximum motor torque in N*m. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The maximum motor torque in N-m]]></return>
+  </method>
+  <method name="b2.WheelJoint:setSpringFrequencyHz" page="setSpringFrequencyHz" shortdesc="sets the spring frequency in Hertz (0 = disable the spring)" version="Gideros 2011.6"><![CDATA[ <br />
+Sets the spring frequency in hertz. Setting the frequency to zero disables the spring.<br />
+<br />
+]]>
+    <parameter name="frequency" optional="false" type="number"><![CDATA[spring frequency in hertz]]></parameter>
+  </method>
+  <method name="b2.WheelJoint:getSpringFrequencyHz" page="getSpringFrequencyHz" shortdesc="returns the spring frequency in Hertz" version="Gideros 2011.6"><![CDATA[<br />
+Returns the spring frequency in hertz.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The spring frequency in hertz.]]></return>
+  </method>
+  <method name="b2.WheelJoint:setSpringDampingRatio" page="setSpringDampingRatio" shortdesc="sets the spring damping ratio" version="Gideros 2011.6"><![CDATA[<br />
+Sets the spring damping ratio. <br />
+<br />
+]]>
+    <parameter name="damping" optional="false" type="number"><![CDATA[damping ratio]]></parameter>
+  </method>
+  <method name="b2.WheelJoint:getSpringDampingRatio" page="getSpringDampingRatio" shortdesc="returns the spring damping ratio" version="Gideros 2011.6"><![CDATA[<br />
+Returns the spring damping ratio. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The spring damping ratio]]></return>
+  </method>
+  <example name="Wheel joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+ground:setPosition(350, 480)
+
+--axisx, 	axisy	values usually between 0 and 1
+--0			0		moves freely
+--0			1		force pulling back on y axis
+--1			0		force pulling back on x axis
+--1			1		force pulling back all diretions
+local jointDef = b2.createWheelJointDef(body, ground, 350, 200, 1, 1)
+local wheelJoint = world:createJoint(jointDef)]]></example>
+</object>

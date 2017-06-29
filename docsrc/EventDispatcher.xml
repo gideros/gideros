@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="EventDispatcher" page="EventDispatcher" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+All classes that dispatch events inherit from `EventDispatcher`. The target of an event is a listener function and an optional data value.<br />
+When an event is dispatched, the registered function is called.<br />
+If the optional data value is given, it is used as a first parameter while calling the listener function.<br />
+Event dispatching and event targets are the core part of the Gideros event model. Different event types (such as `Event.ENTER_FRAME`, `Event.TOUCHES_BEGIN` or `Event.MOUSE_DOWN`) flow through the scene tree hierarchy differently. When a touch or mouse event occurs, Gideros dispatches an event object into the event flow from the root of the scene tree.<br />
+On the other hand, `Event.ENTER_FRAME` event is dispatched to all `Sprite` objects.<br />
+<br />
+If you want to define a class that dispatches events, you can inherit your class from `EventDispatcher`.<br />]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="EventDispatcher:addEventListener" page="addEventListener" shortdesc="registers a listener function" version="Gideros 2011.6"><![CDATA[<br />
+Registers a listener function and an optional data value so that the listener function is called when an event<br />
+of a particular type occurs.<br />
+<br />
+]]>
+    <parameter name="type" optional="false" type="string"><![CDATA[The type of event.]]></parameter>
+    <parameter name="listener" optional="false" type="function"><![CDATA[The listener function that processes the event.]]></parameter>
+    <parameter name="data" optional="true" type="any"><![CDATA[An optional data parameter that is passed as a first argument to the listener function.]]></parameter>
+  </method>
+  <method name="EventDispatcher:removeEventListener" page="removeEventListener" shortdesc="removes a listener function" version="Gideros 2011.6"><![CDATA[<br />
+Removes a listener from the `EventDispatcher` object. `removeEventListener()` function expects<br />
+the same arguments with `addEventListener()` to remove the event. If there is no matching listener<br />
+registered, a call to this function has no effect.<br />
+<br />
+]]>
+    <parameter name="type" optional="false" type="string"><![CDATA[The type of event.]]></parameter>
+    <parameter name="listener" optional="false" type="function"><![CDATA[The listener object to remove.]]></parameter>
+    <parameter name="data" optional="false" type="any"><![CDATA[The data parameter that is used while registering the event.]]></parameter>
+  </method>
+  <method name="EventDispatcher:dispatchEvent" page="dispatchEvent" shortdesc="dispatches an event" version="Gideros 2011.6"><![CDATA[<br />
+Dispatches an event to this `EventDispatcher` instance.<br />
+<br />
+]]>
+    <parameter name="event" optional="false" type="Event"><![CDATA[The `Event` object to be dispatched.]]></parameter>
+  </method>
+  <method name="EventDispatcher:hasEventListener" page="hasEventListener" shortdesc="checks if the EventDispatcher object has a event listener" version="Gideros 2011.6"><![CDATA[<br />
+Checks if the `EventDispatcher` object has a event listener registered for the specified type of event.<br />
+<br />
+]]>
+    <parameter name="type" optional="false" type="string"><![CDATA[The type of event.]]></parameter>
+    <return type="bool"><![CDATA[A value of `true` if a listener of the specified type is registered; `false` otherwise.]]></return>
+  </method>
+  <method name="EventDispatcher.new" page="new" shortdesc="creates a new EventDispatcher object" version="Gideros 2011.6"><![CDATA[Creates a new EventDispatcher object]]></method>
+  <event name="Event.APPLICATION_START" page="Event.APPLICATION_START" value="applicationStart" version="Gideros 2011.6"><![CDATA[This event is dispatched when application is started]]></event>
+  <event name="Event.APPLICATION_EXIT" page="Event.APPLICATION_EXIT" value="applicationExit" version="Gideros 2011.6"><![CDATA[This event is dispatched when application is closed]]></event>
+  <event name="Event.APPLICATION_SUSPEND" page="Event.APPLICATION_SUSPEND" value="applicationSuspend" version="Gideros 2011.6"><![CDATA[This event is dispatched when application is suspended (becomes inactive). 
+It does not always mean that application was sent to background, for example, this event is dispatched, when low battery notification is displayed.]]></event>
+  <event name="Event.APPLICATION_RESUME" page="Event.APPLICATION_RESUME" value="applicationResume" version="Gideros 2011.6"><![CDATA[This event is dispatched when application is resumed (become active)]]></event>
+  <event name="Event.APPLICATION_BACKGROUND" page="Event.APPLICATION_BACKGROUND" value="applicationBackground" version="Gideros 2012.09"><![CDATA[This event is dispatched when application gets sent to background. Sent to background also means application is suspended, thus `Event.APPLICATION_SUSPEND` is dispatched first.]]></event>
+  <event name="Event.APPLICATION_FOREGROUND" page="Event.APPLICATION_FOREGROUND" value="applicationForeground" version="Gideros 2012.09"><![CDATA[This event is dispatched when application gets sent back to foreground.]]></event>
+  <event name="Event.MEMORY_WARNING" page="Event.MEMORY_WARNING" value="memoryWarning" version="Gideros 2013.09"><![CDATA[This event is dispatched when device has low memory and you can try to free memory in your app, by releasing unnecessary resources.]]></event>
+  <event name="Event.APPLICATION_RESIZE" page="Event.APPLICATION_RESIZE" value="applicationResize" version="Gideros 2015.03.22"><![CDATA[This event is dispatched when app window has changed its size on Desktops]]></event>
+  <example name=""><![CDATA[-- example 1
+ClassA = Core.class(EventDispatcher)
+ClassB = Core.class(EventDispatcher)
+
+function ClassA:funcA(event)
+	print(&quot;funcA&quot;, self, event:getType(), event:getTarget())
+end
+
+local a = ClassA.new()
+local b = ClassB.new()
+
+b:addEventListener(&quot;myevent&quot;, a.funcA, a)	-- when b dispatches an &quot;myevent&quot; event,
+										-- a.funcA will be called with &#039;a&#039;
+										-- as first parameter
+
+b:dispatchEvent(Event.new(&quot;myevent&quot;))		-- will print &quot;funcA&quot;
+
+
+-- example 2
+Ball = Core.class(Sprite)
+
+function Ball:onEnterFrame()
+	self:setX(self:getX()   1)
+end
+
+ball = Ball.new()<br />
+ball:addEventListener(Event.ENTER_FRAME, ball.onEnterFrame, ball)
+]]></example>
+</object>

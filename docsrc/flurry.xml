@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="flurry" page="flurry" parent="" type="plugin" version="Gideros 2011.6"><![CDATA[<br />
+This table stores all the functions related to Flurry analytics library.<br />
+<br />
+Flurry is available only for iOS as an external plugin. To use flurry:<br />
+<br />
+1. Create an account on [http://www.flurry.com](http://www.flurry.com) and follow the instructions about creating a new application.<br />
+2. Download Flurry header and libraries and add them to your Xcode project.<br />
+3. Add {Gideros Installation Directory}/All Plugins/Flurry/source/iOS/flurry.mm file to your Xcode project.<br />
+<br />
+To load the Flurry library, call `require &quot;flurry&quot;`.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <method name="flurry.isAvailable" page="isAvailable" shortdesc="returns true if Flurry is available" version="Gideros 2011.6"><![CDATA[<br />
+Returns `true` if Flurry is available for this platform. Currently, Flurry is available only for iOS.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if Flurry is available for this platform, `false` otherwise.]]></return>
+  </method>
+  <method name="flurry.startSession" page="startSession" shortdesc="starts the Flurry session with your API key" version="Gideros 2011.6"><![CDATA[<br />
+Starts the Flurry session with your API key. To create an account on Flurry and to obtain the API key specific to your application,<br />
+please visit [http://www.flurry.com](http://www.flurry.com) and follow the instructions there.<br />
+<br />
+You need to call this function once after your application starts. For example, `init.lua` is suitable to call this function.<br />
+<br />
+]]>
+    <parameter name="apiKey" optional="false" type="string"><![CDATA[The Flurry API key.]]></parameter>
+  </method>
+  <method name="flurry.logEvent" page="logEvent" shortdesc="logs Flurry event" version="Gideros 2011.6"><![CDATA[Use this function to count the number of times certain events happen during a session of your application and to pass dynamic parameters <br />
+to be recorded with that event. Event parameters is optional and can be passed in as a table value. Your application is currently limited to counting <br />
+occurrences for 100 different event ids (maximum length 255 characters). Maximum of 10 event parameters per event is supported.<br />
+<br />
+To start a timed event, pass `timed` parameter as `true`.<br />
+<br />
+]]>
+    <parameter name="eventName" optional="false" type="string"><![CDATA[The event name to be logged at Flurry service.]]></parameter>
+    <parameter name="parameters" optional="false" type="table, optional"><![CDATA[Optional paramaters to be recorted with this event.]]></parameter>
+    <parameter name="timed" optional="false" type="boolean, optional"><![CDATA[Specifies this is a timed event.]]></parameter>
+    <example><![CDATA[flurry.logEvent(&quot;myEvent1&quot;)<br />
+flurry.logEvent(&quot;myEvent2&quot;, {key=&quot;value&quot;})<br />
+flurry.logEvent(&quot;myEvent3&quot;, {key=&quot;value&quot;}, true)<br />
+]]></example>
+  </method>
+  <method name="flurry.endTimedEvent" page="endTimedEvent" shortdesc="ends Flurry timed event" version="Gideros 2011.6"><![CDATA[<br />
+Use this function to end timed event before app exists, otherwise timed events automatically end when app exists. When ending the timed event, <br />
+a new event parameters table can be used to update event parameters. If you don&#039;t specify a new event parameters table, event parameters are kept the same.<br />
+<br />
+]]>
+    <parameter name="eventName" optional="false" type="string"><![CDATA[The event name of end timed event.]]></parameter>
+    <parameter name="parameters" optional="false" type="table, optional"><![CDATA[If specified, event paramaters updated for this event.]]></parameter>
+  </method>
+</object>

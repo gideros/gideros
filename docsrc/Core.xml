@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Core" page="Core" parent="Object" type="gideros" version="Gideros 2012.2"><![CDATA[Gideros Core functions]]>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Core.class" page="class" shortdesc="Creates and returns new Gideros class" version="Gideros 2012.2"><![CDATA[Creates and returns new Gideros class]]>
+    <parameter name="base" optional="true" type="GiderosClass"><![CDATA[Gideros class from which to inherit]]></parameter>
+  </method>
+  <method name="Core.asyncCall" page="asyncCall" shortdesc="Launch function on separate thread as background task" version="Gideros 2016.06"><![CDATA[Launch function on separate thread as background task.
+
+Background threads are only executed when main thread is not running]]>
+    <parameter name="task" optional="false" type="function"><![CDATA[function to run in background]]></parameter>
+    <parameter name="parameters" optional="true" type="multiple"><![CDATA[multiple parameters to pass to function]]></parameter>
+  </method>
+  <method name="Core.yield" page="yield" shortdesc="Yield function running as background task" version="Gideros 2016.06"><![CDATA[Yield function running as background task.
+
+Core.yield([number of seconds to wait])
+Core.yield(true) -- yield for a single frame and disable auto yield
+ Core.yield(false) -- don't yield now, but reenable autoyield]]>
+    <parameter name="state" optional="false" type="number or boolean"><![CDATA[number of seconds to yield or boolean to enable/disable auto yield]]></parameter>
+  </method>
+  <method name="Core.frameStatistics" page="frameStatistics" shortdesc="Return table with data about frame" version="Gideros 2016.08"><![CDATA[Returns table with fields: 
+*meanFrameTime* - the average duration of a frame (useful to get current fps), 
+*meanFreeTime* - the average free cpu time in a frame
+*frameCounter* - frame's number]]>
+    <return type="table"><![CDATA[table with data]]></return>
+  </method>
+  <example name=""><![CDATA[MySprite = Core.class(Sprite)
+--my custom sprite class
+function MySprite:init()
+end]]></example>
+</object>

@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Mesh" page="Mesh" parent="Sprite" type="gideros" version="Gideros 2012.09"><![CDATA[<br />
+Mesh class is used to create and display custom constructed set of triangles (triangle meshes). It basically consists of<br />
+4 arrays: vertex, index, color (optional), textureCoordinate (optional) and a texture (optional) and it provides more than<br />
+one way to set/modify these arrays.<br />
+<br />
+Mesh can be 2D or 3D, the latter expects an additionnal Z coordinate in its vertices. Additionnally, 3D meshes and their children are rendered with depth testing enabled, which prevents far objects to be drawn above nearest ones, irrespective of actual drawing order.
+<br />
+<ul><br />
+<li>`Note 1:` Mesh class doesn't do bounds check. If an element at index array points to an non-existent vertex, the application may crash.</li><br />
+</ul><br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Mesh.new" page="new" shortdesc="" version="Gideros 2015.04.04"><![CDATA[<br />
+Creates a new `Mesh` object.<br />
+<br />
+]]>
+    <parameter name="is3d" optional="true" type="boolean"><![CDATA[Specifies that this mesh expect Z coordinate in its vertex array and is thus a 3D mesh]]></parameter>
+  </method>
+  <method name="Mesh:setVertex" page="setVertex" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets a vertex at vertex array. Indices are start from 1. If the vertex array is not large enough, it&#039;s expanded automatically.<br />
+<br />
+]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index]]></parameter>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate]]></parameter>
+    <example><![CDATA[-- set the first 3 vertex positions as (100, 100), (150, 100) and (100, 150).<br />
+mesh:setVertex(1, 100, 100)<br />
+mesh:setVertex(2, 150, 100)<br />
+mesh:setVertex(3, 100, 150)<br />
+]]></example>
+  </method>
+  <method name="Mesh:setIndex" page="setIndex" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets a index at index array. Indices are start from 1. If the index array is not large enough, it&#039;s expanded automatically.<br />
+<br />
+]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index]]></parameter>
+    <parameter name="index" optional="false" type="number"><![CDATA[index]]></parameter>
+    <example><![CDATA[-- set the first 3 indices as 10, 11 and 12.<br />
+mesh:setIndex(1, 10)<br />
+mesh:setIndex(2, 11)<br />
+mesh:setIndex(3, 12)<br />
+]]></example>
+  </method>
+  <method name="Mesh:setColor" page="setColor" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets a color at color array. Indices are start from 1. If the color array is not large enough, it&#039;s expanded automatically.<br />
+<br />
+]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index]]></parameter>
+    <parameter name="color" optional="false" type="number"><![CDATA[color in hexedecial value]]></parameter>
+    <parameter name="alpha" optional="false" type="number, default=1.0"><![CDATA[alpha value]]></parameter>
+    <example><![CDATA[-- set the first 3 colors as (0xff0000, 0.5), (0x00ff00, 0.7) and (0x0000ff, 1.0).<br />
+mesh:setColor(1, 0xff0000, 0.5)  -- red with 0.5 alpha<br />
+mesh:setColor(2, 0x00ff00, 0.7)  -- green with 0.7 alpha<br />
+mesh:setColor(3, 0x0000ff)       -- blue with 1.0 alpha<br />
+]]></example>
+  </method>
+  <method name="Mesh:setTextureCoordinate" page="setTextureCoordinate" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets a texture coordinate at texture coordinate array. Indices are start from 1. If the texture coordinate array is not large enough, it&#039;s expanded automatically.<br />
+<br />
+]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index]]></parameter>
+    <parameter name="u" optional="false" type="number"><![CDATA[u coordinate]]></parameter>
+    <parameter name="v" optional="false" type="number"><![CDATA[v coordinate]]></parameter>
+    <example><![CDATA[-- set the first 3 texture coordinates as (0, 0), (100, 0) and (0, 100).<br />
+mesh:setTextureCoordinate(1, 0, 0)<br />
+mesh:setTextureCoordinate(2, 100, 0)<br />
+mesh:setTextureCoordinate(3, 0, 100)<br />
+]]></example>
+  </method>
+  <method name="Mesh:setVertices" page="setVertices" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets zero or more vertices at vertex array with a single function call. It accepts multiple values or a Lua array.<br />
+<br />
+]]>
+    <parameter name="vertices" optional="false" type="any"/>
+    <example><![CDATA[-- set 3 vertices with seperate function calls<br />
+mesh:setVertex(1, 100, 100)<br />
+mesh:setVertex(2, 150, 100)<br />
+mesh:setVertex(3, 100, 150)<br />
+<br />
+-- set 3 vertices with one function call<br />
+mesh:setVertices(1, 100, 100, 2, 150, 100, 3, 100, 150)<br />
+<br />
+-- same as above<br />
+mesh:setVertices{1, 100, 100, 2, 150, 100, 3, 100, 150}<br />
+<br />
+-- these two functions do nothing<br />
+mesh:setVertices()<br />
+mesh:setVertices{}<br />
+]]></example>
+  </method>
+  <method name="Mesh:setIndices" page="setIndices" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets zero or more indices at index array with a single function call. It accepts multiple values or a Lua array.<br />
+<br />
+]]>
+    <parameter name="indices" optional="false" type="any"/>
+    <example><![CDATA[-- set 3 indices with seperate function calls<br />
+mesh:setIndex(1, 10)<br />
+mesh:setIndex(2, 11)<br />
+mesh:setIndex(3, 12)<br />
+<br />
+-- set 3 indices with one function call<br />
+mesh:setIndices(1, 10, 2, 11, 3, 12)<br />
+<br />
+-- same as above<br />
+mesh:setIndices{1, 10, 2, 11, 3, 12}<br />
+<br />
+-- these two functions do nothing<br />
+mesh:setIndices()<br />
+mesh:setIndices{}<br />
+]]></example>
+  </method>
+  <method name="Mesh:setColors" page="setColors" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets zero or more colors at color array with a single function call. It accepts multiple values or a Lua array.<br />
+<br />
+]]>
+    <parameter name="colors" optional="false" type="any"/>
+    <example><![CDATA[-- set 3 colors with seperate function calls<br />
+mesh:setColor(1, 0xff0000, 0.5)<br />
+mesh:setColor(2, 0x00ff00, 0.7)<br />
+mesh:setColor(3, 0x0000ff)<br />
+<br />
+-- set 3 colors with one function call<br />
+mesh:setColors(1, 0xff0000, 0.5, 2, 0x00ff00, 0.7, 3, 0x0000ff, 1.0)<br />
+<br />
+-- same as above<br />
+mesh:setColors{1, 0xff0000, 0.5, 2, 0x00ff00, 0.7, 3, 0x0000ff, 1.0}<br />
+<br />
+-- these two functions do nothing<br />
+mesh:setColors()<br />
+mesh:setColors{}<br />
+]]></example>
+  </method>
+  <method name="Mesh:setTextureCoordinates" page="setTextureCoordinates" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+]]>
+    <parameter name="textureCoordinates" optional="false" type="any"><![CDATA[Sets zero or more texture coordinates at texture coordinate array with a single function call. It accepts multiple values or a Lua array.]]></parameter>
+    <example><![CDATA[-- set 3 texture coordinates with seperate function calls<br />
+mesh:setTextureCoordinate(1, 0, 0)<br />
+mesh:setTextureCoordinate(2, 100, 0)<br />
+mesh:setTextureCoordinate(3, 0, 100)<br />
+<br />
+-- set 3 texture coordinates with one function call<br />
+mesh:setTextureCoordinates(1, 0, 0, 2, 100, 0, 3, 0, 100)<br />
+<br />
+-- same as above<br />
+mesh:setTextureCoordinates{1, 0, 0, 2, 100, 0, 3, 0, 100}<br />
+<br />
+-- these two functions do nothing<br />
+mesh:setTextureCoordinates()<br />
+mesh:setTextureCoordinates{}<br />
+]]></example>
+  </method>
+  <method name="Mesh:setVertexArray" page="setVertexArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Assigns new content to the vertex array, dropping all the elements contained in the vertex array before the call and replacing them by those specified by the parameters. It accepts multiple values or a Lua array.<br />
+<br />
+]]>
+    <parameter name="vertices" optional="false" type="any"/>
+    <example><![CDATA[-- set the vertex array as (100, 100), (150, 100) and (100, 150)<br />
+mesh:setVertexArray(100, 100, 150, 100, 100, 150)<br />
+<br />
+-- same as above<br />
+mesh:setVertexArray{100, 100, 150, 100, 100, 150}<br />
+]]></example>
+  </method>
+  <method name="Mesh:setIndexArray" page="setIndexArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Assigns new content to the index array, dropping all the elements contained in the index array before the call and replacing them by those specified by the parameters. It accepts multiple values or a Lua array.<br />
+<br />
+]]>
+    <parameter name="indices" optional="false" type="any"/>
+    <example><![CDATA[-- set the index array as 10, 11 and 12.<br />
+mesh:setIndexArray(10, 11, 12)<br />
+<br />
+-- same as above<br />
+mesh:setIndexArray{10, 11, 12}<br />
+]]></example>
+  </method>
+  <method name="Mesh:setColorArray" page="setColorArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Assigns new content to the color array, dropping all the elements contained in the color array before the call and replacing them by those specified by the parameters. It accepts multiple values or a Lua array.<br />
+<br />
+]]>
+    <parameter name="colors" optional="false" type="any"/>
+    <example><![CDATA[-- set the color array as (0xff0000, 0.5), (0x00ff00, 0.7) and (0x0000ff, 1.0).<br />
+mesh:setColorArray(0xff0000, 0.5, 0x00ff00, 0.7, 0x0000ff, 1.0)<br />
+<br />
+-- same as above<br />
+mesh:setColorArray{0xff0000, 0.5, 0x00ff00, 0.7, 0x0000ff, 1.0}<br />
+]]></example>
+  </method>
+  <method name="Mesh:setTextureCoordinateArray" page="setTextureCoordinateArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Assigns new content to the texture coordinate array, dropping all the elements contained in the texture coordinate array before the call and replacing them by those specified by the parameters. It accepts multiple values or a Lua array.<br />
+<br />
+]]>
+    <parameter name="textureCoordinates" optional="false" type="any"/>
+    <example><![CDATA[-- set the color array as (0, 0), (100, 0) and (0, 100)<br />
+mesh:setTextureCoordinateArray(0, 0, 100, 0, 0, 100)<br />
+<br />
+-- same as above<br />
+mesh:setTextureCoordinateArray{0, 0, 100, 0, 0, 100}<br />
+]]></example>
+  </method>
+  <method name="Mesh:resizeVertexArray" page="resizeVertexArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Resizes the vertex array to contain `size` elements.<br />
+<br />
+If `size` is smaller than the current vertex array size, the content is reduced to its first `size` elements, the rest being dropped.<br />
+<br />
+If `size` is greater than the current vertex array size, the content is expanded by inserting at the end as many copies of 0s as needed to reach a size of `size` elements.<br />
+<br />
+]]>
+    <parameter name="size" optional="false" type="number"><![CDATA[new vertex array size]]></parameter>
+  </method>
+  <method name="Mesh:resizeIndexArray" page="resizeIndexArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Resizes the index array to contain `size` elements.<br />
+<br />
+If `size` is smaller than the current index array size, the content is reduced to its first `size` elements, the rest being dropped.<br />
+<br />
+If `size` is greater than the current index array size, the content is expanded by inserting at the end as many copies of 0s as needed to reach a size of `size` elements.<br />
+<br />
+]]>
+    <parameter name="size" optional="false" type="number"><![CDATA[new index array size]]></parameter>
+  </method>
+  <method name="Mesh:resizeColorArray" page="resizeColorArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Resizes the color array to contain `size` elements.<br />
+<br />
+If `size` is smaller than the current color array size, the content is reduced to its first `size` elements, the rest being dropped.<br />
+<br />
+If `size` is greater than the current color array size, the content is expanded by inserting at the end as many copies of 0s as needed to reach a size of `size` elements.<br />
+<br />
+]]>
+    <parameter name="size" optional="false" type="number"><![CDATA[new color array size]]></parameter>
+  </method>
+  <method name="Mesh:resizeTextureCoordinateArray" page="resizeTextureCoordinateArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Resizes the texture coordinate array to contain `size` elements.<br />
+<br />
+If `size` is smaller than the current texture coordinate array size, the content is reduced to its first `size` elements, the rest being dropped.<br />
+<br />
+If `size` is greater than the current texture coordinate array size, the content is expanded by inserting at the end as many copies of 0s as needed to reach a size of `size` elements.<br />
+<br />
+]]>
+    <parameter name="size" optional="false" type="number"><![CDATA[new texture coordinate array size]]></parameter>
+  </method>
+  <method name="Mesh:clearVertexArray" page="clearVertexArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Clears the vertex array.<br />
+<br />
+]]></method>
+  <method name="Mesh:clearIndexArray" page="clearIndexArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Clears the index array.<br />
+<br />
+]]></method>
+  <method name="Mesh:clearColorArray" page="clearColorArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Clears the color array.<br />
+<br />
+]]></method>
+  <method name="Mesh:clearTextureCoordinateArray" page="clearTextureCoordinateArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Clears the texture coordinate array.<br />
+<br />
+]]></method>
+  <method name="Mesh:setTexture" page="setTexture" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets the texture.<br />
+<br />
+]]>
+    <parameter name="texture" optional="false" type="TextureBase"/>
+    <parameter name="slot" optional="true" type="number"><![CDATA[The slot number which we are adding the Texture to (Meshes can have multiple Textures, one per slot). If omitted, slot=0 is assumed]]></parameter>
+  </method>
+  <method name="Mesh:clearTexture" page="clearTexture" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Clears the texture. By default the texture at slot 0 is cleared. To clear a particular texture, pass its slot number to this method<br />
+<br />
+]]>
+    <parameter name="slot" optional="true" type="number"><![CDATA[The slot number of the texture to clear. If no argument is provided, slot=0 is assumed]]></parameter>
+  </method>
+  <method name="Mesh:getVertexArraySize" page="getVertexArraySize" shortdesc="Get size of the Vertices array" version="Gideros 2013.06"><![CDATA[Get size of the Vertices array]]>
+    <return type="number"><![CDATA[size of vertex array]]></return>
+  </method>
+  <method name="Mesh:getIndexArraySize" page="getIndexArraySize" shortdesc="Get size of the Index array" version="Gideros 2013.06"><![CDATA[Get size of the Index array]]>
+    <return type="number"><![CDATA[size of index array]]></return>
+  </method>
+  <method name="Mesh:getColorArraySize" page="getColorArraySize" shortdesc="Get size of the Color array" version="Gideros 2013.06"><![CDATA[Get size of the Color array]]>
+    <return type="number"><![CDATA[size of color array]]></return>
+  </method>
+  <method name="Mesh:getTextureCoordinateArraySize" page="getTextureCoordinateArraySize" shortdesc="Get size of the Texture Coordinate array" version="Gideros 2013.06"><![CDATA[Get size of the Texture Coordinate array]]>
+    <return type="number"><![CDATA[size of coordinate array]]></return>
+  </method>
+  <method name="Mesh:getVertex" page="getVertex" shortdesc="Returns x and y coordinate of the i-th element from vertex array" version="Gideros 2013.06"><![CDATA[Returns x and y coordinate of the i-th element from vertex array
+]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index]]></parameter>
+    <return type="number"><![CDATA[x coordinate of vertex]]></return>
+    <return type="number"><![CDATA[y coordinate of vertex]]></return>
+  </method>
+  <method name="Mesh:getIndex" page="getIndex" shortdesc="Returns the i-th element from index array" version="Gideros 2013.06"><![CDATA[Returns the i-th element from index array]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index]]></parameter>
+    <return type="number"><![CDATA[index of element]]></return>
+  </method>
+  <method name="Mesh:getColor" page="getColor" shortdesc="Returns color and alpha of the i-th element from color array" version="Gideros 2013.06"><![CDATA[Returns color and alpha of the i-th element from color array]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index]]></parameter>
+    <return type="number"><![CDATA[color]]></return>
+    <return type="number"><![CDATA[normalizes alpha (0-1)]]></return>
+  </method>
+  <method name="Mesh:getTextureCoordinate" page="getTextureCoordinate" shortdesc="Returns u and v coordinate of the i-th element from texture coordinate array" version="Gideros 2013.06"><![CDATA[Returns u and v coordinate of the i-th element from texture coordinate array]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index]]></parameter>
+    <return type="number"><![CDATA[u coordinate]]></return>
+    <return type="number"><![CDATA[v cordinate]]></return>
+  </method>
+  <example name="Mesh usage"><![CDATA[local mesh = Mesh.new()
+stage:addChild(mesh)
+-- 1. vertex (0, 0)
+-- 2. vertex (100, 0)
+-- 3. vertex (100, 150)
+-- 4. vertex (0, 150)
+mesh:setVertexArray(0, 0,   100, 0,   100, 150,   0, 150)
+
+-- 1. triangle from 1, 2 and 3 vertex
+-- 2. triangle from 1, 3 and 4 vertex
+mesh:setIndexArray(1, 2, 3,     1, 3, 4)
+
+-- 1. vertex 0xff0000 color with 0.5 alpha
+-- 2. vertex 0x00ff00 color with 0.7 alpha
+-- 3. vertex 0x0000ff color with 1 alpha
+-- 4. vertex 0xffff00 color with 0 alpha
+mesh:setColorArray(0xff0000, 0.5, 0x00ff00, 0.7, 0x0000ff, 1.0, 0xffff00, 0)]]></example>
+</object>

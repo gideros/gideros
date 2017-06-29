@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="JS" page="JS" parent="" type="gideros" version="in development"><![CDATA[Run JavaScript code]]>
+  <method name="JS.eval" page="eval" shortdesc="" version="in development"><![CDATA[execute arbitrary Javascript code on HTML5 platform]]>
+    <parameter name="code" optional="false" type="string"><![CDATA[JavaScript code to execute]]></parameter>
+  </method>
+</object>

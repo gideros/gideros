@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Path2D" page="Path2D" parent="Sprite" type="gideros" version="Gideros 2016.04"><![CDATA[Draw quick 2D vector paths. This class aims at being a faster alternative to Shape for complex/curvy shapes.]]>
+  <method name="Path2D:setLineColor" page="setLineColor" shortdesc="Sets line color" version="Gideros 2016.04"><![CDATA[Sets line color]]>
+    <parameter name="color" optional="false" type="hex"><![CDATA[color to use]]></parameter>
+    <parameter name="alpha" optional="true" type="number"><![CDATA[opacity of line from 0 to 1, default 1]]></parameter>
+  </method>
+  <method name="Path2D.new" page="new" shortdesc="Creates Path2D object" version="Gideros 2016.04"><![CDATA[Creates Path2D object]]></method>
+  <method name="Path2D:setFillColor" page="setFillColor" shortdesc="Sets fill color" version="Gideros 2016.04"><![CDATA[Sets fill color]]>
+    <parameter name="color" optional="false" type="hex"><![CDATA[color to use]]></parameter>
+    <parameter name="alpha" optional="true" type="number"><![CDATA[opacity of fill from 0 to 1, default 1]]></parameter>
+  </method>
+  <method name="Path2D:setLineThickness" page="setLineThickness" shortdesc="Set the thickness of the outline" version="Gideros 2016.04"><![CDATA[Sets the thickness (width) of the outline, and optionnally set the amount of 'feather' effect.]]>
+    <parameter name="thickness" optional="false" type="number"><![CDATA[line thickness in sprite coordinates units]]></parameter>
+    <parameter name="feather" optional="true" type="number"><![CDATA[Sets the amount of 'feather' effect, i.e. the ratio of the line thickness that will be blurred with background. Values range from 0 (sharp edges) to 1.]]></parameter>
+  </method>
+  <method name="Path2D:setConvex" page="setConvex" shortdesc="Flag the shape as convex." version="Gideros 2016.04"><![CDATA[Flag this shape as convex. Convex shapes can be rendered faster.]]>
+    <parameter name="convex" optional="false" type="bool"><![CDATA[true if convex]]></parameter>
+  </method>
+  <method name="Path2D:setTexture" page="setTexture" shortdesc="sets texture for fill" version="Gideros 2016.04"><![CDATA[Sets texture for fill and optionally apply transformation matrix to it.]]>
+    <parameter name="texture" optional="false" type="TextureBase"><![CDATA[texture to use as fill]]></parameter>
+    <parameter name="matrix" optional="true" type="Matrix"><![CDATA[transformation matrix for texture]]></parameter>
+  </method>
+  <method name="Path2D:setPath" page="setPath" shortdesc="set path to draw" version="Gideros 2016.04"><![CDATA[Set path to draw, using string with commands represented as:
+<ul>
+<li>M - MoveTo, 2 values (x,y)</li>
+<li>L - LineTo, 2 values (x,y)</li>
+<li>Q - QuadTo, 4 values (c0x,c0y,x,y)</li>
+<li>C - CubicTo, 6 values (c0x,c0y,c1x,c1y,x,y)</li>
+<li>H - Horzontal Line, 1 value (x)</li>
+<li>V - Vertical Line, 1 value (y)</li>
+<li>A - ArcTo, 7 values (r1,r2,angle,largeArc,sweep,x,y)</li>
+<li>Z - Close, no parameter</li>
+<li>* - repeat last command until all coordinates are exhausted</li>
+</ul>
+and provided coordinates as table or simply arguments]]>
+    <parameter name="commands" optional="false" type="string"><![CDATA[list of commands as ML**Z expecting according coordinates]]></parameter>
+    <parameter name="coordinates" optional="false" type="table or number"><![CDATA[lua table with coordinates for each command, in the same order as commands]]></parameter>
+    <parameter name="coordinates" optional="true" type="number"><![CDATA[if second argument is not table, you can provide more coordinates as separate arguments]]></parameter>
+    <example name="Drawing Moon"><![CDATA[--Moon
+local p=Path2D.new()
+local ms="MQQZ" --MoveTo, QuadTo, QuadTo, Close
+local mp={100,0, -50,100, 100,200, 20,100, 100,0 }
+p:setPath(ms,mp) --Set the path from a set of commands and coordinates
+p:setLineThickness(3) -- Outline width
+p:setFillColor(0xE0E0E0,0.7) --Fill color
+p:setLineColor(0xC0C0C0) --Line color
+p:setAnchorPosition(100,100)
+stage:addChild(p)]]></example>
+  </method>
+  <method name="Path2D:setSvgPath" page="setSvgPath" shortdesc="set path with svg properties" version="Gideros 2016.04"><![CDATA[Set path with svg properties in single string separated by comma (,)]]>
+    <parameter name="svg_params" optional="false" type="string"><![CDATA[svg params separated by comma]]></parameter>
+    <example name="Drawing banana"><![CDATA[--Banana shape, SVG path format
+local banana="M8.64,223.948c0,0,143.468,3.431,185.777-181.808c2.673-11.702-1.23-20.154,1.316-33.146h16.287c0,0-3.14,17.248,1.095,30.848c21.392,68.692-4.179,242.343-204.227,196.59L8.64,223.948z"
+p=Path2D.new()
+p:setSvgPath(banana) --Set the path from a SVG path description
+p:setLineThickness(5) -- Outline width
+p:setFillColor(0xFFFF80,0.7) --Fill color
+p:setLineColor(0x404000) --Line color
+p:setAnchorPosition(100,100)
+stage:addChild(p)]]></example>
+  </method>
+  <method name="Path2D:setFontPath" page="setFontPath" shortdesc="Sets the path from the outline of a TTFont character" version="Gideros 2016.04"><![CDATA[Sets the path from the outline of a character in a TTFont.]]>
+    <parameter name="font" optional="false" type="TTFont"><![CDATA[Vector font to use]]></parameter>
+    <parameter name="character" optional="false" type="string"><![CDATA[character to use from font]]></parameter>
+  </method>
+  <example name="Drawing Moon"><![CDATA[--Moon
+local p=Path2D.new()
+local ms="MQQZ" --MoveTo, QuadTo, QuadTo, Close
+local mp={100,0, -50,100, 100,200, 20,100, 100,0 }
+p:setPath(ms,mp) --Set the path from a set of commands and coordinates
+p:setLineThickness(3) -- Outline width
+p:setFillColor(0xE0E0E0,0.7) --Fill color
+p:setLineColor(0xC0C0C0) --Line color
+p:setAnchorPosition(100,100)
+stage:addChild(p)]]></example>
+  <example name="Drawing banana"><![CDATA[--Banana shape, SVG path format
+local banana="M8.64,223.948c0,0,143.468,3.431,185.777-181.808c2.673-11.702-1.23-20.154,1.316-33.146h16.287c0,0-3.14,17.248,1.095,30.848c21.392,68.692-4.179,242.343-204.227,196.59L8.64,223.948z"
+p=Path2D.new()
+p:setSvgPath(banana) --Set the path from a SVG path description
+p:setLineThickness(5) -- Outline width
+p:setFillColor(0xFFFF80,0.7) --Fill color
+p:setLineColor(0x404000) --Line color
+p:setAnchorPosition(100,100)
+stage:addChild(p)]]></example>
+</object>

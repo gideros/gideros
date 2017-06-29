@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.WorldManifold" page="b2WorldManifold" parent="" type="physics" version="Gideros 2012.09.6"><![CDATA[Contains information about contact relative to the world]]>
+  <constant name="normal" page="normal" value="table" version="Gideros 2012.09.6"><![CDATA[Contains x and y properties with normalized vector values (from -1 to 1).
+For example: { y = -1, x => 0}]]></constant>
+  <constant name="points" page="points" value="table" version="Gideros 2012.09.6"><![CDATA[Indexed array of table with x and y properties of all contacts points of manifold]]></constant>
+  <example name="Checking collisions from bottom using b2.Contact"><![CDATA[local isTouchingGround = false
+world:addEventListener(Event.BEGIN_CONTACT, function(e)
+	local manifold = e.contact:getWorldManifold()
+	if manifold.normal.y > 0.9 then
+		--collision came from bottom
+		isTouchingGround = true
+	end
+end)
+ 
+world:addEventListener(Event.END_CONTACT, function(e)
+	local manifold = e.contact:getWorldManifold()
+	if manifold.normal.y < 0.1 then
+		--collision ended from bottom
+		isTouchingGround = false
+	end
+end)]]></example>
+  <example name="Example content of b2.WorldManifold"><![CDATA[[normal] => Table {
+        {
+          [y] => -1
+          [x] => 0
+        }
+[points] => Table {
+        {
+          [1] => Table {
+             {
+               [y] => 319.92502212524
+               [x] => 99.999997615814
+             }
+        }]]></example>
+</object>

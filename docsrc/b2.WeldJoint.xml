@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.WeldJoint" page="b2WeldJoint" parent="b2.Joint" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A weld joint essentially glues two bodies together. A weld joint may distort somewhat because the island constraint solver is approximate. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.WeldJoint:setFrequency" page="setFrequency" shortdesc="sets frequency in Hz" version="Gideros 2011.6"><![CDATA[<br />
+Sets frequency in Hz.<br />
+<br />
+]]>
+    <parameter name="frequency" optional="false" type="number"><![CDATA[frequency in Hz]]></parameter>
+  </method>
+  <method name="b2.WeldJoint:getFrequency" page="getFrequency" shortdesc="returns frequency in Hz" version="Gideros 2011.6"><![CDATA[<br />
+Returns frequency in Hz. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[Frequency in Hz]]></return>
+  </method>
+  <method name="b2.WeldJoint:setDampingRatio" page="setDampingRatio" shortdesc="sets damping ratio" version="Gideros 2011.6"><![CDATA[<br />
+Sets damping ratio. <br />
+<br />
+]]>
+    <parameter name="damping" optional="false" type="number"><![CDATA[damping ratio]]></parameter>
+  </method>
+  <method name="b2.WeldJoint:getDampingRatio" page="getDampingRatio" shortdesc="returns damping ratio" version="Gideros 2011.6"><![CDATA[<br />
+Returns damping ratio. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[Damping ratio]]></return>
+  </method>
+  <example name="Weld joint"><![CDATA[local jointDef = b2.createWeldJointDef(body1, body2, 100, 100, 130, 100)
+local weldJoint = world:createJoint(jointDef)]]></example>
+</object>

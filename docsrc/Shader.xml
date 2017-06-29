@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Shader" page="Shader" parent="Object" type="gideros" version="Gideros 2015.06.30"><![CDATA[Gideros internally uses five distinct shaders:
+- the ‘Basic’ shader handle shapes with a constant color
+- the ‘Color’ shader handle shapes with per-vertex colors (mostly used by Mesh sprite)
+- the ‘Texture’ shader handle textured shapes (Bitmaps)
+- the ‘TextureColor’ shader handle textured and per-vertex colored shapes
+- and the ‘Particle’ shader deals with Box2D particle systems
+
+The new shader API allows to replace the default shader used by Gideros with a custom one, on a sprite per sprite basis. As with most of Gideros API’s this one is straight-forward: create a Shader object and assign it to one or several sprites.
+
+That said, since Gideros will use your shader as if it was the standard one, you will have to make sure that your custom shader is compatible with the standard one, which essentially means that it takes the same input parameters.]]>
+  <constant name="Shader.CINT" page="CINT" value="0" version="Gideros 2015.06.30"><![CDATA[Uniform descriptor CINT data type]]></constant>
+  <constant name="Shader.CFLOAT" page="CFLOAT" value="1" version="Gideros 2015.06.30"><![CDATA[Uniform descriptor CFLOAT data type]]></constant>
+  <constant name="Shader.CFLOAT4" page="CFLOAT4" value="2" version="Gideros 2015.06.30"><![CDATA[Uniform descriptor CFLOAT4 data type]]></constant>
+  <constant name="Shader.CMATRIX" page="CMATRIX" value="3" version="Gideros 2015.06.30"><![CDATA[Uniform descriptor CMATRIX data type]]></constant>
+  <constant name="Shader.CTEXTURE" page="CTEXTURE" value="4" version="Gideros 2015.06.30"><![CDATA[Uniform descriptor CTEXTURE data type]]></constant>
+  <constant name="Shader.SYS_NONE" page="SYS_NONE" value="0" version="Gideros 2015.06.30"><![CDATA[none]]></constant>
+  <constant name="Shader.SYS_WVP" page="SYS_WVP" value="1" version="Gideros 2015.06.30"><![CDATA[this uniform of type CMATRIX will hold the World/View/Projection matrix]]></constant>
+  <constant name="Shader.SYS_COLOR" page="SYS_COLOR" value="2" version="Gideros 2015.06.30"><![CDATA[this uniform of type CFLOAT4 will hold the constant color to be used to draw the shape]]></constant>
+  <constant name="Shader.SYS_WIT" page="SYS_WIT" value="3" version="Gideros 2015.06.30"><![CDATA[this uniform of type CMATRIX will hold the World Inverse Transpose matrix]]></constant>
+  <constant name="Shader.SYS_WORLD" page="SYS_WORLD" value="4" version="Gideros 2015.06.30"><![CDATA[this uniform of type CMATRIX will hold the World transform matrix]]></constant>
+  <constant name="Shader.SYS_TEXTUREINFO" page="SYS_TEXTUREINFO" value="5" version="Gideros 2015.06.30"><![CDATA[this uniform of type CFLOAT4 will hold information about the texture used in a particle shader.]]></constant>
+  <constant name="Shader.SYS_PARTICLESIZE" page="SYS_PARTICLESIZE" value="6" version="Gideros 2015.06.30"><![CDATA[the uniform of type CFLOAT will hold the particle size to use in a particle shader.]]></constant>
+  <constant name="Shader.DBYTE" page="DBYTE" value="0" version="Gideros 2015.06.30"><![CDATA[Attributes descriptor DBYTE data type]]></constant>
+  <constant name="Shader.DUBYTE" page="DUBYTE" value="1" version="Gideros 2015.06.30"><![CDATA[Attributes descriptor DUBYTE data type]]></constant>
+  <constant name="Shader.DSHORT" page="DSHORT" value="2" version="Gideros 2015.06.30"><![CDATA[Attributes descriptor DSHORT data type]]></constant>
+  <constant name="Shader.DUSHORT" page="DUSHORT" value="3" version="Gideros 2015.06.30"><![CDATA[Attributes descriptor DUSHORT data type]]></constant>
+  <constant name="Shader.DINT" page="DINT" value="4" version="Gideros 2015.06.30"><![CDATA[Attributes descriptor DINT data type]]></constant>
+  <constant name="Shader.DFLOAT" page="DFLOAT" value="5" version="Gideros 2015.06.30"><![CDATA[Attributes descriptor DFLOAT data type]]></constant>
+  <constant name="Shader.FLAG_NONE" page="FLAG_NONE" value="0" version="Gideros 2015.06.30"><![CDATA[No flags]]></constant>
+  <constant name="Shader.FLAG_NO_DEFAULT_HEADER" page="FLAG_NO_DEFAULT_HEADER" value="1" version="Gideros 2015.06.30"><![CDATA[Suppress the automatic addition of a default header for GLSL programs.]]></constant>
+  <constant name="Shader.FLAG_FROM_CODE" page="FLAG_FROM_CODE" value="4" version="Gideros 2016.08"><![CDATA[Shader loaded from code]]></constant>
+  <method name="Shader.new" page="new" shortdesc="create new shader" version="Gideros 2015.06.30"><![CDATA[Create new shader instance.
+
+The ‘Shader.new()’ constructor takes five arguments:
+- The path and name for the vertex shader without its extension. Gideros will search the assets for a file with the supplied name, automatically adding the extension relevant for the target platform: .glsl for OpenGL, .cso or .hlsl for DirectX.
+- The path and name for the fragment shader without its extension. Same remark as above applies too.
+- A set of numerical flags or 0 if none. See description below.
+- An array of uniforms/constants descriptors
+- An array of attributes descriptors]]>
+    <parameter name="vertex shader" optional="false" type="string"><![CDATA[The path and name for the vertex shader without its extension]]></parameter>
+    <parameter name="fragment shader" optional="false" type="string"><![CDATA[The path and name for the fragment shader without its extension]]></parameter>
+    <parameter name="flags" optional="false" type="number"><![CDATA[A set of numerical flags or 0 if none]]></parameter>
+    <parameter name="uniform descriptor" optional="false" type="table"><![CDATA[An array of uniforms/constants descriptors]]></parameter>
+    <parameter name="attribute descriptor" optional="false" type="table"><![CDATA[An array of attributes descriptors]]></parameter>
+    <example name="Shader example"><![CDATA[--Shaders are in vShader.glsl and fShader.glsl files
+
+local shader=Shader.new("vShader","fShader",0, {
+ {name="vMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP,vertex=true}, 
+{name="fColor",type=Shader.CFLOAT4,sys=Shader.SYS_COLOR,vertex=false}, 
+{name="fTexture",type=Shader.CTEXTURE,vertex=false}, 
+{name="fTexelSize",type=Shader.CFLOAT4,vertex=false}, 
+{name="fRad",type=Shader.CINT,vertex=false}, }, 
+{ {name="vVertex",type=Shader.DFLOAT,mult=3,slot=0,offset=0}, 
+{name="vColor",type=Shader.DUBYTE,mult=4,slot=1,offset=0}, 
+{name="vTexCoord",type=Shader.DFLOAT,mult=2,slot=2,offset=0}, });
+
+shader:setConstant("fRad",Shader.CINT,1,0) --Initial blur level 
+shader:setConstant("fTexelSize",Shader.CFLOAT4,1,{1/texw,1/texh,0,0}) --Initial texel size
+
+sprite:setShader(shader)
+]]></example>
+  </method>
+  <method name="Shader:setConstant" page="setConstant" shortdesc="change the value of a uniform" version="Gideros 2015.06.30"><![CDATA[To change the value of a uniform from lua]]>
+    <parameter name="uniform name" optional="false" type="string"><![CDATA[The uniform name to change]]></parameter>
+    <parameter name="data type" optional="false" type="int"><![CDATA[The type if data to set (one of the Shader.Cxxx constants)]]></parameter>
+    <parameter name="mult" optional="false" type="number"><![CDATA[number of elements of the given type to set]]></parameter>
+    <parameter name="data" optional="false" type="varies"><![CDATA[And the actual data to set, either as a table or as multiple arguments]]></parameter>
+  </method>
+  <method name="Shader:getEngineVersion" page="getEngineVersion" shortdesc="get shader version" version="Gideros 2015.06.30"><![CDATA[Returns the version of the shader engine]]>
+    <return type="string"><![CDATA[shader engine version]]></return>
+  </method>
+  <method name="Shader:getShaderLanguage" page="getShaderLanguage" shortdesc="Get shader language" version="Gideros 2016.08"><![CDATA[Get shader language, returns string with values as: glsl or hlsl]]></method>
+  <example name="Shader example"><![CDATA[--Shaders are in vShader.glsl and fShader.glsl files
+
+local shader=Shader.new("vShader","fShader",0, {
+ {name="vMatrix",type=Shader.CMATRIX,sys=Shader.SYS_WVP,vertex=true}, 
+{name="fColor",type=Shader.CFLOAT4,sys=Shader.SYS_COLOR,vertex=false}, 
+{name="fTexture",type=Shader.CTEXTURE,vertex=false}, 
+{name="fTexelSize",type=Shader.CFLOAT4,vertex=false}, 
+{name="fRad",type=Shader.CINT,vertex=false}, }, 
+{ {name="vVertex",type=Shader.DFLOAT,mult=3,slot=0,offset=0}, 
+{name="vColor",type=Shader.DUBYTE,mult=4,slot=1,offset=0}, 
+{name="vTexCoord",type=Shader.DFLOAT,mult=2,slot=2,offset=0}, });
+
+shader:setConstant("fRad",Shader.CINT,1,0) --Initial blur level 
+shader:setConstant("fTexelSize",Shader.CFLOAT4,1,{1/texw,1/texh,0,0}) --Initial texel size
+
+sprite:setShader(shader)
+]]></example>
+</object>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="package" page="package" parent="" type="lua" version="Gideros 2011.6"><![CDATA[Table containing manipulations for packages/modules/libraries]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="package.loadlib" page="loadlib" shortdesc="" version="Gideros 2011.6"><![CDATA[Dynamically links the host program with the C library libname. Inside this library, looks for a function funcname and returns this function as a C function. (So, funcname must follow the protocol (see lua_CFunction)). 
+
+
+ This is a low-level function. It completely bypasses the package and module system. Unlike require, it does not perform any path searching and does not automatically adds extensions. libname must be the complete file name of the C library, including if necessary a path and extension. funcname must be the exact name exported by the C library (which may depend on the C compiler and linker used). 
+
+
+ This function is not supported by ANSI C. As such, it is only available on some platforms (Windows, Linux, Mac OS X, Solaris, BSD, plus other Unix systems that support the dlfcn standard).]]>
+    <parameter name="libname" optional="false" type="string"><![CDATA[name of the library to load]]></parameter>
+    <parameter name="funcname" optional="false" type="string"><![CDATA[name of the function in library]]></parameter>
+  </method>
+</object>

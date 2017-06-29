@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="lfs" page="lfs" parent="" type="plugin" version="Gideros 2012.8"><![CDATA[LFS or LuaFileSystem is a Lua library developed to complement the set of functions related to file systems offered by the standard Lua distribution.
+LuaFileSystem offers a portable way to access the underlying directory structure and file attributes.
+
+For more information and detailed documentation, please visit [http://keplerproject.github.io/luafilesystem/manual.html#reference](http://keplerproject.github.io/luafilesystem/manual.html#reference).]]>
+  <platform>mac</platform>
+  <platform>pc</platform>
+</object>

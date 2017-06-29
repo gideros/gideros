@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Application" page="Application" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+`Application` class contains the common functions that&#039;s available to the current application. There is a global variable `application` of type `Application` to access these functions.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="Application.LANDSCAPE_RIGHT" page="LANDSCAPE_RIGHT" value="landscapeRight" version="Gideros 2011.6"><![CDATA[Representation of landscape right]]></constant>
+  <constant name="Application.PORTRAIT_UPSIDE_DOWN" page="PORTRAIT_UPSIDE_DOWN" value="portraitUpsideDown" version="Gideros 2011.6"><![CDATA[Representation of portrait upside down]]></constant>
+  <constant name="Application.LANDSCAPE_LEFT" page="LANDSCAPE_LEFT" value="landscapeLeft" version="Gideros 2011.6"><![CDATA[Representation of landscape left]]></constant>
+  <constant name="Application.PORTRAIT" page="PORTRAIT" value="portrait" version="Gideros 2011.6"><![CDATA[Representation of portrait]]></constant>
+  <method name="Application:openUrl" page="openUrl" shortdesc="Application - opens the given URL in the appropriate application" version="Gideros 2011.6"><![CDATA[<br />
+Opens the given URL (Universal Resource Locator) in the appropriate application. URL can be one of the `http:`, `https:`, `tel:`, or `mailto:` schemes.<br />
+<br />
+The following example opens a web page in the browser:<br />
+&lt;pre&gt;&lt;code&gt;<br />
+	application:openUrl(&quot;http://www.giderosmobile.com&quot;)<br />
+<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+If `mailto:` scheme is specified, the user&#039;s e-mail client will be used to open a composer window containing the options specified in the URL.<br />
+For example, the following URL contains a recipient (user@foo.com), a subject (Test), and a message body (Just a test):<br />
+&lt;pre&gt;&lt;code&gt;<br />
+	application:openUrl(&quot;mailto:user@foo.com?subject=Test&amp;body=Just a test&quot;)<br />
+<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+Or to call a number:<br />
+&lt;pre&gt;&lt;code&gt;<br />
+	application:openUrl(&quot;tel:555-123-4567&quot;)<br />
+<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+]]>
+    <parameter name="url" optional="false" type="string"><![CDATA[url to open]]></parameter>
+  </method>
+  <method name="Application:getLogicalWidth" page="getLogicalWidth" shortdesc="Application - returns the logical width of the application" version="Gideros 2011.6"><![CDATA[<br />
+Returns the logical width of the application that is specified at the project properties.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The logical width of the application]]></return>
+  </method>
+  <method name="Application:getLogicalHeight" page="getLogicalHeight" shortdesc="Application - returns the logical height of the application" version="Gideros 2011.6"><![CDATA[<br />
+Returns the logical height of the application that is specified at the project properties.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The logical height of the application]]></return>
+  </method>
+  <method name="Application:getDeviceWidth" page="getDeviceWidth" shortdesc="Application - returns the physical width of the device in pixels" version="Gideros 2011.6"><![CDATA[<br />
+Returns the physical width of the device in pixels. For example,<br />
+for iPhone 3GS this function returns 320 and for iPhone 4 (with retina display enabled) this function returns 640.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The physical width of the device in pixels]]></return>
+  </method>
+  <method name="Application:getDeviceHeight" page="getDeviceHeight" shortdesc="Application - returns the physical height of the device in pixels" version="Gideros 2011.6"><![CDATA[<br />
+Returns the physical height of the device in pixels. For example,<br />
+for iPhone 3GS this function returns 480 and for iPhone 4 (with retina display enabled) this function returns 960.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The physical height of the device in pixels]]></return>
+  </method>
+  <method name="Application:vibrate" page="vibrate" shortdesc="Application - vibrates the device" version="Gideros 2011.6"><![CDATA[<br />
+Vibrates the device. If the device doesn&#039;t support vibration, this function has no effect.<br />
+<br />
+]]></method>
+  <method name="Application:getLocale" page="getLocale" shortdesc="Application - returns the device locale" version="Gideros 2011.6"><![CDATA[<br />
+Returns the device locale. The locale string is a combination of ISO 639-1 and ISO 3166-1. For example, en_US, ja_JP.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[The device locale]]></return>
+  </method>
+  <method name="Application:getLanguage" page="getLanguage" shortdesc="Application - returns the user language" version="Gideros 2011.6"><![CDATA[<br />
+Returns the user language in ISO 639-1 format.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[The the user language]]></return>
+  </method>
+  <method name="Application:setKeepAwake" page="setKeepAwake" shortdesc="Application - enables/disables screen dimming and device sleeping" version="Gideros 2011.6"><![CDATA[<br />
+Controls the screen dimming and device sleeping of the device. When the application has no touches as user input for some period,<br />
+the system puts the device into a sleep state where the screen dims. However some applications have no input and controlled<br />
+by accelerometer or gyroscope only. For these kind applications, the screen should be kept awake by calling this function<br />
+with parameter `true`.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;*Note:** This function has no effect on desktop.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+    <parameter name="keepAwake" optional="false" type="boolean"><![CDATA[if true, screen is kept awake.]]></parameter>
+    <example><![CDATA[application:setKeepAwake(true)	-- disable screen dimming and device sleeping<br />
+application:setKeepAwake(false)	-- enable screen dimming and device sleeping<br />]]></example>
+  </method>
+  <method name="Application:getLogicalTranslateX" page="getLogicalTranslateX" shortdesc="Application - returns the translation of automatic screen scaling on the x-axis" version="Gideros 2011.6"><![CDATA[<br />
+Returns the translation of automatic screen scaling on the x-axis.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The translation of automatic screen scaling on the x-axis.]]></return>
+  </method>
+  <method name="Application:getLogicalTranslateY" page="getLogicalTranslateY" shortdesc="Application - returns the translation of automatic screen scaling on the y-axis" version="Gideros 2011.6"><![CDATA[<br />
+Returns the translation of automatic screen scaling on the y-axis.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The translation of automatic screen scaling on the y-axis.]]></return>
+  </method>
+  <method name="Application:getLogicalScaleX" page="getLogicalScaleX" shortdesc="Application - returns the scaling of automatic screen scaling on the x-axis" version="Gideros 2011.6"><![CDATA[<br />
+Returns the scaling of automatic screen scaling on the x-axis.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The scaling of automatic screen scaling on the x-axis.]]></return>
+  </method>
+  <method name="Application:getLogicalScaleY" page="getLogicalScaleY" shortdesc="Application - returns the scaling of automatic screen scaling on the y-axis" version="Gideros 2011.6"><![CDATA[<br />
+Returns the scaling of automatic screen scaling on the y-axis.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The scaling of automatic screen scaling on the y-axis.]]></return>
+  </method>
+  <method name="Application:getDeviceInfo" page="getDeviceInfo" shortdesc="Application - returns information about device" version="Gideros 2011.6"><![CDATA[<br />
+Returns information about device.<br />
+<br />
+- For iOS, returns 5 values: &quot;iOS&quot;, iOS version, device type, user interface idiom and device model<br />
+- For Android, returns 4 values: &quot;Android&quot;, Android version, manufacturer and model information<br />
+- For Windows returns 1 value: &quot;Windows&quot;<br />
+- For Mac OS X returns 1 value: &quot;Mac OS&quot;<br />
+<br />
+
+`iOS values`
+1st value -> "iOS"
+2nd value -> [[UIDevice currentDevice] systemVersion]
+3rd value -> [[UIDevice currentDevice] model]
+4th value -> UI_USER_INTERFACE_IDIOM() (as "iPhone" or "iPad")
+5th value -> hw.machine. 
+Here are the possibilities:
+iPhone1,1 -> iPhone 1G, M68
+iPhone1,2 -> iPhone 3G, N82
+iPhone2,1 -> iPhone 3GS, N88
+iPhone3,1 -> iPhone 4/AT&T, N89
+iPhone3,2 -> iPhone 4/Other Carrier?, ??
+iPhone3,3 -> iPhone 4/Verizon, TBD
+iPhone4,1 -> (iPhone 4S/GSM), TBD
+iPhone4,2 -> (iPhone 4S/CDMA), TBD
+iPhone4,3 -> (iPhone 4S/???)
+iPhone5,1 -> iPhone Next Gen, TBD
+iPhone5,1 -> iPhone Next Gen, TBD
+iPhone5,1 -> iPhone Next Gen, TBD
+ 
+iPod1,1 -> iPod touch 1G, N45
+iPod2,1 -> iPod touch 2G, N72
+iPod2,2 -> Unknown, ??
+iPod3,1 -> iPod touch 3G, N18
+iPod4,1 -> iPod touch 4G, N80
+ 
+iPad1,1 -> iPad 1G, WiFi and 3G, K48
+iPad2,1 -> iPad 2G, WiFi, K93
+iPad2,2 -> iPad 2G, GSM 3G, K94
+iPad2,3 -> iPad 2G, CDMA 3G, K95
+iPad3,1 -> (iPad 3G, WiFi)
+iPad3,2 -> (iPad 3G, GSM)
+iPad3,3 -> (iPad 3G, CDMA)
+iPad4,1 -> (iPad 4G, WiFi)
+iPad4,2 -> (iPad 4G, GSM)
+iPad4,3 -> (iPad 4G, CDMA)
+ 
+i386, x86_64 -> iPhone Simulator
+
+`Android values`
+1st value -> "Android"
+2nd value -> android.os.Build.VERSION.SDK_INT
+3rd value -> android.os.Build.MANUFACTURER
+4th value -> android.os.Build.MODEL
+]]>
+    <return type="varies"><![CDATA[Information about device, returned informations varies depending on platform]]></return>
+  </method>
+  <method name="Application:getContentWidth" page="getContentWidth" shortdesc="Application - returns content width" version="Gideros 2011.6"><![CDATA[<br />
+If the orientation is portrait, this function returns logical width. If the orientation is landscape, this function<br />
+returns logical height.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[Logical width or logical height depending on orientation.]]></return>
+  </method>
+  <method name="Application:getContentHeight" page="getContentHeight" shortdesc="Application - returns content height" version="Gideros 2011.6"><![CDATA[<br />
+If the orientation is portrait, this function returns logical height. If the orientation is landscape, this function<br />
+returns logical width.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[Logical width or logical height depending on orientation.]]></return>
+  </method>
+  <method name="Application:setBackgroundColor" page="setBackgroundColor" shortdesc="Application - sets the background color in hexadecimal format" version="Gideros 2011.6"><![CDATA[<br />
+Sets the background color (or clear color) of the application in hexadecimal format. Default background color is white (0xffffff).<br />
+<br />
+]]>
+    <parameter name="color" optional="false" type="number"><![CDATA[background color in hexadecimal format]]></parameter>
+  </method>
+  <method name="Application:getBackgroundColor" page="getBackgroundColor" shortdesc="Application - returns the background color in hexadecimal format" version="Gideros 2011.6"><![CDATA[<br />
+Returns the background color (or clear color) of the application in hexadecimal format.<br />
+<br />
+]]>
+    <return type="color"><![CDATA[The background color in hexadecimal format.]]></return>
+  </method>
+  <method name="Application:setOrientation" page="setOrientation" shortdesc="Application - sets the orientation of the application" version="Gideros 2011.6"><![CDATA[<br />
+Sets the orientation of the application. Accepted values are:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;Application.PORTRAIT = &quot;portrait&quot;&lt;/li&gt;<br />
+&lt;li&gt;Application.PORTRAIT_UPSIDE_DOWN = &quot;portraitUpsideDown&quot;&lt;/li&gt;<br />
+&lt;li&gt;Application.LANDSCAPE_LEFT = &quot;landscapeLeft&quot;&lt;/li&gt;<br />
+&lt;li&gt;Application.LANDSCAPE_RIGHT = &quot;landscapeRight&quot;&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+    <parameter name="orientation" optional="false" type="string"/>
+    <example><![CDATA[application:setOrientation(Application.PORTRAIT)             -- the buttons are on the bottom<br />
+application:setOrientation(Application.PORTRAIT_UPSIDE_DOWN) -- the buttons are at the top<br />
+application:setOrientation(Application.LANDSCAPE_LEFT)       -- the buttons are on the right side<br />
+application:setOrientation(Application.LANDSCAPE_RIGHT)      -- the buttons are on the left side<br />
+]]></example>
+  </method>
+  <method name="Application:getOrientation" page="getOrientation" shortdesc="Application - returns the orientation of the application" version="Gideros 2011.6"><![CDATA[<br />
+Returns the orientation of the application.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[Values "portrait", "portraitUpsideDown", "landscapeLeft", "landscapeRight"]]></return>
+  </method>
+  <method name="Application:setScaleMode" page="setScaleMode" shortdesc="Application - sets the automatic scale mode of the application" version="Gideros 2012.2.2"><![CDATA[<br />
+Sets the automatic scale mode of the application. Accepted values are:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;Application.NO_SCALE = &quot;noScale&quot;&lt;/li&gt;<br />
+&lt;li&gt;Application.CENTER = &quot;center&quot;&lt;/li&gt;<br />
+&lt;li&gt;Application.PIXEL_PERFECT = &quot;pixelPerfect&quot;&lt;/li&gt;<br />
+&lt;li&gt;Application.LETTERBOX = &quot;letterbox&quot;&lt;/li&gt;<br />
+&lt;li&gt;Application.CROP = &quot;crop&quot;&lt;/li&gt;<br />
+&lt;li&gt;Application.STRETCH = &quot;stretch&quot;&lt;/li&gt;<br />
+&lt;li&gt;Application.FIT_WIDTH = &quot;fitWidth&quot;&lt;/li&gt;<br />
+&lt;li&gt;Application.FIT_HEIGHT = &quot;fitHeight&quot;&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+    <parameter name="scaleMode" optional="false" type="string"/>
+  </method>
+  <method name="Application:getScaleMode" page="getScaleMode" shortdesc="Application - returns the automatic scale mode of the application" version="Gideros 2012.2.2"><![CDATA[<br />
+Returns the automatic scale mode of the application.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[The automatic scale mode of the application]]></return>
+  </method>
+  <method name="Application:setLogicalDimensions" page="setLogicalDimensions" shortdesc="Application - sets the logical dimensions of the application" version="Gideros 2012.2.2"><![CDATA[<br />
+Sets the logical dimensions of the application.<br />
+<br />
+]]>
+    <parameter name="width" optional="false" type="number"><![CDATA[logical width]]></parameter>
+    <parameter name="height" optional="false" type="number"><![CDATA[logical height]]></parameter>
+  </method>
+  <method name="Application:setFps" page="setFps" shortdesc="Application - sets the frame rate of the application" version="Gideros 2012.2.2"><![CDATA[<br />
+Sets the frame rate of the application. Accepted values are `30` and `60`.<br />
+<br />
+You can also use setFps(-60) or setFps(-30) to maintain an apparent frame rate of 60 or 30 fps by skipping frames if the system notices it is running slow. So for example, it updates the game logic 60 times per second but redraws the screen 30 times. The game is playable but will not be so smooth on slow devices. (currently available on WinRT)]]>
+    <parameter name="fps" optional="false" type="number"><![CDATA[the new frame rate of the application]]></parameter>
+  </method>
+  <method name="Application:getFps" page="getFps" shortdesc="Application - returns the frame rate of the application" version="Gideros 2012.2.2"><![CDATA[<br />
+Returns the frame rate of the application.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The frame rate of the application.]]></return>
+  </method>
+  <method name="Application:exit" page="exit" shortdesc="Application - terminates the application" version="Gideros 2012.2.2"><![CDATA[<br />
+Terminates the application. Although this function is available to all platforms, it should be used on Android only.<br />
+<br />
+]]></method>
+  <method name="Application:getApiVersion" page="getApiVersion" shortdesc="Application - returns the API version" version="Gideros 2012.08.2"><![CDATA[<br />
+Returns the API version.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[The API version.]]></return>
+  </method>
+  <method name="Application:getTextureMemoryUsage" page="getTextureMemoryUsage" shortdesc="Application - returns the texture memory usage in Kbytes" version="Gideros 2012.08.3"><![CDATA[<br />
+Returns the texture memory usage (in Kbytes).<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The texture memory usage (in Kbytes).]]></return>
+  </method>
+  <method name="Application:getScreenDensity" page="getScreenDensity" shortdesc="Application - returns the screen density in pixels per inch" version="Gideros 2012.09.2"><![CDATA[<br />
+Returns the screen density in pixels per inch. If screen density information is not available, returns `nil`.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[If available returns the screen density in pixels per inch, otherwise returns `nil`.]]></return>
+  </method>
+  <method name="Application:canOpenUrl" page="canOpenUrl" shortdesc="Tests if it is possible to open provided url" version="Gideros 2013.06"><![CDATA[Tests if it is possible to open provided url using `Application:openUrl` method]]>
+    <parameter name="url" optional="false" type="string"><![CDATA[url to test if can be opened]]></parameter>
+  </method>
+  <method name="Application:getDeviceOrientation" page="getDeviceOrientation" shortdesc="Get the device orientation" version="Gideros 2014.01"><![CDATA[Get the device orientation (and not what is that in project properties as done with `getOrientation`).Check Accelerometer example project for usage]]>
+    <return type="string"><![CDATA[Values "portrait", "portraitUpsideDown", "landscapeLeft", "landscapeRight"]]></return>
+  </method>
+  <method name="Application:configureFrustum" page="Application:configureFrustum" shortdesc="Configure the projection for 3D perspective." version="Gideros 2015.04.04"><![CDATA[Configure the field of view (fov) and far clipping plane for 3D projection.
+
+Setting a fov of 0 selects default orthographic projection (no perspective).
+
+The field of view specifies the angle of vision by which the largest side of the scene is seen. It is used to compute the distance of the eye relative to the screen along the Z axis:
+<br/><br/>
+Z=(largest screen dimension/2)/tan(fov/2)
+<br/><br/>is eye location. The far clipping plane specifies the maximum distance of an object. Objects more distant than the far clipping plane are not drawn.
+<br/>
+Note the perspective is oriented so that the full screen is at Z=0 (so sprite:setPosition(x,y,0) will place the sprite at exactly (x,y) pixels on the screen, irrespective of fov) and distant objects are placed at negative Z values.
+<br/>
+<br/>
+If the fov is set at non-zero then perspective projection is activated. If farplane is then not set it takes the default value 100*(screen height). Normally the user should set this value. Note that there is no nearplane in perspective mode (objects are clipped only at the eye position)
+<br/>
+If fov is set at 0 then the eye is at +infinity and a near plane is set at z=+farplane. Objects closer than this are clipped. The farplane remains at z=-farplane.]]>
+    <parameter name="fov" optional="false" type="number"><![CDATA[Specifies the field of view angle in degrees If fov>0 a perspective projection is used with the eye at position z=+h/tan(fov/2) where h is half the larger screen dimension (logical coordinates). In this case there is a farplane but no nearplane: clipping is done only at the eye position. If fov=0, an orthographic projection is used with both a farplane and a nearplane (see below)]]></parameter>
+    <parameter name="farplane" optional="true" type="number"><![CDATA[The distance of the far clipping plane along Z axis. If fov>0 and this value is not set, the farplane is set at distance 100*(screen height) from the origin (z=0). If fov=0 (orthographic projection), a nearplane is also used at distance farplane from the origin. If fov=0 and no farplane is set then near and farplanes are set at 1 pixel from the origin.]]></parameter>
+  </method>
+  <method name="Application:isPlayerMode" page="isPlayerMode" shortdesc="Check if app runs on player" version="Gideros 2015.03.22"><![CDATA[Returns true if app is ran on Gideros player and false, if it is ran as stand alone app]]></method>
+  <method name="Application:setFullScreen" page="setFullScreen" shortdesc="Full screen or window mode" version="Gideros 2015.04.12"><![CDATA[Enables full screen mode or windowed mode for desktop app]]>
+    <parameter name="fullscreen" optional="false" type="bool"><![CDATA[true for fullscreen, false for windowed mode]]></parameter>
+  </method>
+  <method name="Application:setWindowSize" page="setWindowSize" shortdesc="Sets desktop window to a specific size" version="Gideros 2015.04.12"><![CDATA[Sets desktop window to a specific size]]>
+    <parameter name="width" optional="false" type="number"><![CDATA[new width of the window]]></parameter>
+    <parameter name="height" optional="false" type="number"><![CDATA[new height of the window]]></parameter>
+  </method>
+  <method name="Application:setKeyboardVisibility" page="setKeyboardVisibility" shortdesc="" version="in development"><![CDATA[Show or hide to native on-screen keyboard if available]]>
+    <parameter name="visible" optional="false" type="boolean"><![CDATA[if the keyboard should be shown]]></parameter>
+    <return type="boolean"><![CDATA[true if the device support a native on screen keyboard]]></return>
+  </method>
+</object>

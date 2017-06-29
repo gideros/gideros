@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="table" page="table" parent="" type="lua" version="Gideros 2011.6"><![CDATA[This library provides generic functions for table manipulation. It provides all its functions inside the table table. 
+
+
+ Most functions in the table library assume that the table represents an array or a list. For these functions, when we talk about the "length" of a table we mean the result of the length operator.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="table.concat" page="concat" shortdesc="returns concatenated table elements i to j separated by sep" version="Gideros 2011.6"><![CDATA[Given an array where all elements are strings or numbers, returns table[i]..sep..table[i+1] ··· sep..table[j]. The default value for sep is the empty string, the default for i is 1, and the default for j is the length of the table. If i is greater than j, returns the empty string.]]>
+    <parameter name="table" optional="false" type="table"><![CDATA[table of values to concatenate]]></parameter>
+    <parameter name="sep" optional="true" type="string"><![CDATA[separator what to insert between table elements]]></parameter>
+    <parameter name="i" optional="true" type="number"><![CDATA[concatenate from this element (default is 1)]]></parameter>
+    <parameter name="j" optional="true" type="number"><![CDATA[concatenate until this element (default is table length)]]></parameter>
+    <return type="string"><![CDATA[concatenated string]]></return>
+  </method>
+  <method name="table.getn" page="getn" shortdesc="returns size of table, or n field, or table.setn value, or 1 less first index with nil value&#10; [Deprecated in Lua 5.1, use # operator]" version="Gideros 2011.6"><![CDATA[ returns size of table, or n field, or table.setn value, or 1 less first index with nil value\n [Deprecated in Lua 5.1, use # operator]]]>
+    <parameter name="table" optional="false" type="any"/>
+  </method>
+  <method name="table.insert" page="insert" shortdesc="insert value at location pos in table, default pos=n 1" version="Gideros 2011.6"><![CDATA[Inserts element value at position pos in table, shifting up other elements to open space, if necessary. The default value for pos is n+1, where n is the length of the table, so that a call table.insert(t,x) inserts x at the end of table t.]]>
+    <parameter name="table" optional="false" type="table"><![CDATA[table where to insert new element]]></parameter>
+    <parameter name="pos" optional="true" type="number"><![CDATA[index where to insert new element]]></parameter>
+    <parameter name="value" optional="true" type="any"><![CDATA[value to insert in table]]></parameter>
+  </method>
+  <method name="table.remove" page="remove" shortdesc="removes element at pos from table, default pos=n" version="Gideros 2011.6"><![CDATA[Removes from table the element at position pos, shifting down other elements to close the space, if necessary. Returns the value of the removed element. The default value for pos is n, where n is the length of the table, so that a call table.remove(t) removes the last element of table t.]]>
+    <parameter name="table" optional="false" type="table"><![CDATA[table from which to remove element]]></parameter>
+    <parameter name="pos" optional="true" type="number"><![CDATA[index at which to remove element (default is last element)]]></parameter>
+    <return type="varies"><![CDATA[removed value]]></return>
+  </method>
+  <method name="table.sort" page="sort" shortdesc="sorts in-place elements 1 to n, comp(v1,v2- true if v1&lt;v2, default &lt;" version="Gideros 2011.6"><![CDATA[Sort the elements of a table in-place (i.e. alter the table). 
+`> t = { 3,2,5,1,4 }`
+`> table.sort(t)`
+`> = table.concat(t, ", ")  -- display sorted values`
+`1, 2, 3, 4, 5`
+
+A comparison function can be provided to customise the element sorting. The comparison function must return a boolean value specifying whether the first argument should be before the second argument in the sequence. The default behaviour is for the < comparison to be made. For example, the following behaves the same as no function being supplied:]]>
+    <parameter name="table" optional="false" type="table"><![CDATA[table to sort]]></parameter>
+    <parameter name="comp" optional="true" type="function"><![CDATA[comparison function returning bool comparison result]]></parameter>
+  </method>
+</object>

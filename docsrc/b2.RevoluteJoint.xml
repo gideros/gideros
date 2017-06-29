@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.RevoluteJoint" page="b2RevoluteJoint" parent="b2.Joint" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A revolute joint constrains two bodies to share a common point while they are free to rotate about the point. The relative rotation about the shared point is the joint angle. You can limit the relative rotation with a joint limit that specifies a lower and upper angle. You can use a motor to drive the relative rotation about the shared point. A maximum motor torque is provided so that infinite forces are not generated. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.RevoluteJoint:getJointAngle" page="getJointAngle" shortdesc="returns the current joint angle in radians" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current joint angle in radians.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current joint angle in radians]]></return>
+  </method>
+  <method name="b2.RevoluteJoint:getJointSpeed" page="getJointSpeed" shortdesc="returns the current joint angle speed in radians per second" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current joint angle speed in radians per second. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current joint angle speed in radians per second]]></return>
+  </method>
+  <method name="b2.RevoluteJoint:isLimitEnabled" page="isLimitEnabled" shortdesc="is the joint limit enabled?" version="Gideros 2011.6"><![CDATA[<br />
+Is the joint limit enabled? <br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if joint limit is enabled, `false` otherwise]]></return>
+  </method>
+  <method name="b2.RevoluteJoint:enableLimit" page="enableLimit" shortdesc="enables or disables the joint limit" version="Gideros 2011.6"><![CDATA[<br />
+Enables or disables the joint limit. <br />
+<br />
+]]>
+    <parameter name="flag" optional="false" type="boolean"><![CDATA[enable flag of joint limit]]></parameter>
+  </method>
+  <method name="b2.RevoluteJoint:getLimits" page="getLimits" shortdesc="returns the lower and upper joint limit in radians" version="Gideros 2011.6"><![CDATA[<br />
+Returns the lower and upper joint limit in radians. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[lower joint limit in radians]]></return>
+    <return type="number"><![CDATA[upper joint limit in radians]]></return>
+  </method>
+  <method name="b2.RevoluteJoint:setLimits" page="setLimits" shortdesc="sets the joint limits in radians" version="Gideros 2011.6"><![CDATA[<br />
+Sets the joint limits in radians. <br />
+<br />
+]]>
+    <parameter name="lower" optional="false" type="number"><![CDATA[lower joint limit in radians]]></parameter>
+    <parameter name="upper" optional="false" type="number"><![CDATA[upper joint limit in radians]]></parameter>
+  </method>
+  <method name="b2.RevoluteJoint:isMotorEnabled" page="isMotorEnabled" shortdesc="is the joint motor enabled?" version="Gideros 2011.6"><![CDATA[<br />
+Is the joint motor enabled? <br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if joint motor is enabled, `false` otherwise]]></return>
+  </method>
+  <method name="b2.RevoluteJoint:enableMotor" page="enableMotor" shortdesc="enables or disables the joint motor" version="Gideros 2011.6"><![CDATA[<br />
+Enables or disables the joint motor. <br />
+<br />
+]]>
+    <parameter name="flag" optional="false" type="boolean"><![CDATA[enable flag of joint motor]]></parameter>
+  </method>
+  <method name="b2.RevoluteJoint:setMotorSpeed" page="setMotorSpeed" shortdesc="sets the motor speed in radians per second" version="Gideros 2011.6"><![CDATA[<br />
+Sets the motor speed in radians per second. <br />
+<br />
+]]>
+    <parameter name="speed" optional="false" type="number"><![CDATA[motor speed in radians per second]]></parameter>
+  </method>
+  <method name="b2.RevoluteJoint:getMotorSpeed" page="getMotorSpeed" shortdesc="returns the motor speed in radians per second" version="Gideros 2011.6"><![CDATA[<br />
+Returns the motor speed in radians per second. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The motor speed in radians per second]]></return>
+  </method>
+  <method name="b2.RevoluteJoint:setMaxMotorTorque" page="setMaxMotorTorque" shortdesc="sets the maximum motor torque in N*m" version="Gideros 2011.6"><![CDATA[<br />
+Sets the maximum motor torque, usually in N-m. <br />
+<br />
+]]>
+    <parameter name="torque" optional="false" type="number"><![CDATA[the maximum motor torque, usually in N-m]]></parameter>
+  </method>
+  <method name="b2.RevoluteJoint:getMotorTorque" page="getMotorTorque" shortdesc="returns the current motor torque given the inverse time step" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current motor torque given the inverse time step. Unit is N*m. <br />
+<br />
+]]>
+    <parameter name="inv_dt" optional="false" type="number"/>
+    <return type="number"><![CDATA[The current motor torque given the inverse time step. Unit is N*m]]></return>
+  </method>
+  <example name="Revolute joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+ground:setPosition(300, 480)
+
+local jointDef = b2.createRevoluteJointDef(body, ground, 300, 300)
+local revoluteJoint = world:createJoint(jointDef)
+--will not let ball spin for ever
+revoluteJoint:setMaxMotorTorque(1)
+revoluteJoint:enableMotor(true)]]></example>
+</object>

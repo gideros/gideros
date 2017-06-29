@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="(global)" page="global" parent="" type="lua" version="Gideros 2011.6"><![CDATA[Global scope of Lua environment]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="_G" page="_G" value="" version="Gideros 2011.6"><![CDATA[A global variable (not a function) that holds the global environment (that is, _G._G = _G). Lua itself does not use this variable; changing its value does not affect any environment, nor vice-versa. (Use setfenv to change environments.)]]></constant>
+  <constant name="_VERSION" page="_VERSION" value="Lua 5.1.x" version="Gideros 2011.6"><![CDATA[A global variable (not a function) that holds a string containing the current interpreter version. The current contents of this variable is "Lua 5.1".]]></constant>
+  <method name="assert" page="assert" shortdesc="error if v nil or false, otherwise returns v" version="Gideros 2011.6"><![CDATA[Issues an error when the value of its argument v is false (i.e., nil or false); otherwise, returns all its arguments. message is an error message; when absent, it defaults to "assertion failed!"]]>
+    <parameter name="v" optional="false" type="any"><![CDATA[expression/function to assert]]></parameter>
+    <parameter name="message" optional="true" type="string"><![CDATA[error message if assert fails]]></parameter>
+  </method>
+  <method name="collectgarbage" page="collectgarbage" shortdesc="opts: stop, restart, collect, count, step, setpause, setstepmul" version="Gideros 2011.6"><![CDATA[This function is a generic interface to the garbage collector. It performs different functions according to its first argument, opt: 
+<ul>
+<li>"stop": stops the garbage collector. </li>
+<li>"restart": restarts the garbage collector. </li>
+<li>"collect": performs a full garbage-collection cycle. </li>
+<li>"count": returns the total memory in use by Lua (in Kbytes). </li>
+<li>"step": performs a garbage-collection step. The step "size" is controlled by arg (larger values mean more steps) in a non-specified way. If you want to control the step size you must experimentally tune the value of arg. Returns true if the step finished a collection cycle. </li>
+<li>"setpause": sets arg as the new value for the pause of the collector. Returns the previous value for pause. </li>
+<li>"setstepmul": sets arg as the new value for the step multiplier of the collector. Returns the previous value for step.</li>
+</ul>]]>
+    <parameter name="opt" optional="false" type="string"><![CDATA[command for garbage collector mechanism]]></parameter>
+    <parameter name="arg" optional="true" type="varies"><![CDATA[additional parameters for command]]></parameter>
+  </method>
+  <method name="dofile" page="dofile" shortdesc="executes as Lua chunk, default stdin, returns value" version="Gideros 2011.6"><![CDATA[Opens the named file and executes its contents as a Lua chunk. When called without arguments, dofile executes the contents of the standard input (stdin). Returns all values returned by the chunk. In case of errors, dofile propagates the error to its caller (that is, dofile does not run in protected mode).]]>
+    <parameter name="filename" optional="false" type="string"><![CDATA[file to execute]]></parameter>
+  </method>
+  <method name="error" page="error" shortdesc="terminates protected func, never returns" version="Gideros 2011.6"><![CDATA[Terminates the last protected function called and returns message as the error message. Function error never returns. 
+
+
+ Usually, error adds some information about the error position at the beginning of the message. The level argument specifies how to get the error position. With level 1 (the default), the error position is where the error function was called. Level 2 points the error to where the function that called error was called; and so on. Passing a level 0 avoids the addition of error position information to the message.]]>
+    <parameter name="message" optional="false" type="string"><![CDATA[error message]]></parameter>
+    <parameter name="level" optional="true" type="number"><![CDATA[the call stack level]]></parameter>
+  </method>
+  <method name="getfenv" page="getfenv" shortdesc="gets env, f can be a function or number(stack level)" version="Gideros 2011.6"><![CDATA[Returns the current environment in use by the function. f can be a Lua function or a number that specifies the function at that stack level: Level 1 is the function calling getfenv. If the given function is not a Lua function, or if f is 0, getfenv returns the global environment. The default for f is 1.]]>
+    <parameter name="f" optional="true" type="varies"><![CDATA[function or number(call stack level)]]></parameter>
+    <return type="table"><![CDATA[environment with all the defined values in environment scope]]></return>
+  </method>
+  <method name="getmetatable" page="getmetatable" shortdesc="returns metatable of given object, otherwise nil" version="Gideros 2011.6"><![CDATA[If object does not have a metatable, returns nil. Otherwise, if the object's metatable has a "__metatable" field, returns the associated value. Otherwise, returns the metatable of the given object.]]>
+    <parameter name="object" optional="false" type="object"><![CDATA[Object from which to get metatable]]></parameter>
+    <return type="table"><![CDATA[metatable]]></return>
+  </method>
+  <method name="ipairs" page="ipairs" shortdesc="returns an iterator function, table t and 0" version="Gideros 2011.6"><![CDATA[Returns three values: an iterator function, the table t, and 0, so that the construction 
+
+     `for i,v in ipairs(t) do body end`
+
+ will iterate over the pairs (1,t[1]), (2,t[2]), ···, up to the first integer key absent from the table.]]>
+    <parameter name="t" optional="false" type="table"><![CDATA[indexed table to iterate through]]></parameter>
+    <return type="function"><![CDATA[iterator function]]></return>
+    <return type="table"><![CDATA[provided table t]]></return>
+    <return type="any"><![CDATA[value 0]]></return>
+  </method>
+  <method name="loadfile" page="loadfile" shortdesc="loads chunk without execution, returns chunk as function, else nil plus error" version="Gideros 2011.6"><![CDATA[Loads a chunk from the file without execution. 
+
+ If there are no errors, returns the compiled chunk as a function; otherwise, returns nil plus the error message. The environment of the returned function is the global environment.]]>
+    <parameter name="filename" optional="false" type="string"><![CDATA[name of the file to load]]></parameter>
+    <return type="function"><![CDATA[compiled chunk as a function; otherwise, returns nil]]></return>
+  </method>
+  <method name="loadstring" page="loadstring" shortdesc="loads string as chunk, returns chunk as function, else nil plus error" version="Gideros 2011.6"><![CDATA[Gets the chunk from the given string. 
+To load and run a given string, use the idiom 
+
+     `assert(loadstring(s))()`
+
+Chunkname is used as the chunk name for error messages and debug information. When absent, chunkname defaults to the given string.]]>
+    <parameter name="string" optional="false" type="string"><![CDATA[string to load and compile]]></parameter>
+    <parameter name="chunkname" optional="true" type="string"><![CDATA[is used as the chunk name for error messages and debug information.]]></parameter>
+    <return type="function"><![CDATA[compiled chunk as a function; otherwise, returns nil]]></return>
+  </method>
+  <method name="next" page="next" shortdesc="returns next index,value pair, if index=nil(default-, returns first index" version="Gideros 2011.6"><![CDATA[Allows a program to traverse all fields of a table. Its first argument is a table and its second argument is an index in this table. next returns the next index of the table and its associated value. When called with nil as its second argument, next returns an initial index and its associated value. When called with the last index, or with nil in an empty table, next returns nil. If the second argument is absent, then it is interpreted as nil. In particular, you can use next(t) to check whether a table is empty. 
+
+
+ The order in which the indices are enumerated is not specified, even for numeric indices. (To traverse a table in numeric order, use a numerical for or the `ipairs` function.) 
+
+
+ The behavior of next is undefined if, during the traversal, you assign any value to a non-existent field in the table. You may however modify existing fields. In particular, you may clear existing fields.]]>
+    <parameter name="table" optional="false" type="table"><![CDATA[table to traverse]]></parameter>
+    <parameter name="index" optional="true" type="number"><![CDATA[previous table index]]></parameter>
+  </method>
+  <method name="pairs" page="pairs" shortdesc="returns the next function and table t plus a nil, iterates over all key-value pairs" version="Gideros 2011.6"><![CDATA[Returns three values: an iterator function, the table t, and nil, so that the construction 
+
+     for i,v in pairs(t) do body end
+
+ will iterate over any key pairs (indexed or associative) even with nil values]]>
+    <parameter name="t" optional="false" type="table"><![CDATA[table to iterate]]></parameter>
+    <return type="function"><![CDATA[iterator function]]></return>
+    <return type="table"><![CDATA[provided table]]></return>
+    <return type="nil"><![CDATA[nil value]]></return>
+  </method>
+  <method name="pcall" page="pcall" shortdesc="protected mode call, catches errors, returns status code first" version="Gideros 2011.6"><![CDATA[Calls function f with the given arguments in protected mode. This means that any error inside f is not propagated; instead, `pcall` catches the error and returns a status code. Its first result is the status code (a boolean), which is true if the call succeeds without errors. In such case, `pcall` also returns all results from the call, after this first result. In case of any error, `pcall` returns false plus the error message.]]>
+    <parameter name="f" optional="false" type="function"><![CDATA[function to call in protected mode]]></parameter>
+    <parameter name="arg1" optional="true" type="any"><![CDATA[argument to pass to the function]]></parameter>
+    <parameter name="arg2" optional="true" type="any"><![CDATA[argument to pass to the function]]></parameter>
+    <parameter name="..." optional="true" type="any"><![CDATA[other optional arguments]]></parameter>
+    <return type="bool"><![CDATA[false if there was error, true if function call succeeded]]></return>
+    <return type="any"><![CDATA[all the results that function returns]]></return>
+  </method>
+  <method name="print" page="print" shortdesc="prints values to stdout using tostring" version="Gideros 2011.6"><![CDATA[Receives any number of arguments, and prints their values to `stdout`, using the `tostring` function to convert them to strings. print is not intended for formatted output, but only as a quick way to show a value, typically for debugging. For formatted output, use `string.format`.]]>
+    <parameter name="e1" optional="false" type="any"><![CDATA[any argument]]></parameter>
+    <parameter name="e2" optional="true" type="any"><![CDATA[any second argument]]></parameter>
+    <parameter name="..." optional="true" type="any"><![CDATA[other optional arguments]]></parameter>
+  </method>
+  <method name="rawequal" page="rawequal" shortdesc="non-metamethod v1==v2, returns boolean" version="Gideros 2011.6"><![CDATA[Checks whether v1 is equal to v2, without invoking any metamethod. Returns a boolean.]]>
+    <parameter name="v1" optional="false" type="any"><![CDATA[first value to compare]]></parameter>
+    <parameter name="v2" optional="false" type="any"><![CDATA[second value to compare]]></parameter>
+    <return type="bool"><![CDATA[true if values are equal, or false if different]]></return>
+  </method>
+  <method name="rawget" page="rawget" shortdesc="non-metamethod get value of table[index], index != nil" version="Gideros 2011.6"><![CDATA[Gets the real value of table[index], without invoking any metamethod. table must be a table; index may be any value.]]>
+    <parameter name="table" optional="false" type="table"><![CDATA[table to get value from]]></parameter>
+    <parameter name="key" optional="false" type="any"><![CDATA[key value in the table]]></parameter>
+    <return type="any"><![CDATA[value from the table]]></return>
+  </method>
+  <method name="rawset" page="rawset" shortdesc="non-metamethod set value of table[index], index != nil" version="Gideros 2011.6"><![CDATA[Sets the real value of table[index] to value, without invoking any metamethod. table must be a table, index any value different from nil, and value any Lua value. 
+
+
+ This function returns table.]]>
+    <parameter name="table" optional="false" type="table"><![CDATA[table to set the value to]]></parameter>
+    <parameter name="key" optional="false" type="any"><![CDATA[key of the table to set the value to]]></parameter>
+    <parameter name="value" optional="false" type="any"><![CDATA[value to store in the table]]></parameter>
+    <return type="table"><![CDATA[provided table]]></return>
+  </method>
+  <method name="require" page="require" shortdesc="loads package, updates _LOADED, returns boolean" version="Gideros 2011.6"><![CDATA[Loads and runs libraries. Roughly, `require` does the same job as `dofile`, but, `require` searches for the file in a path. Because of that, `require` is the preferred function in Lua for loading libraries.]]>
+    <parameter name="packagename" optional="false" type="string"><![CDATA[library to load]]></parameter>
+  </method>
+  <method name="setfenv" page="setfenv" shortdesc="sets env, f can be a function or number(stack level, default=1-, 0=global env" version="Gideros 2011.6"><![CDATA[Sets the environment to be used by the given function. f can be a Lua function or a number that specifies the function at that stack level: Level 1 is the function calling setfenv. setfenv returns the given function. 
+
+
+ As a special case, when f is 0 setfenv changes the environment of the running thread. In this case, setfenv returns no values.]]>
+    <parameter name="f" optional="false" type="varies"><![CDATA[function or number(call stack level)]]></parameter>
+    <parameter name="table" optional="false" type="table"><![CDATA[environment table to set]]></parameter>
+    <return type="varies"><![CDATA[returns provided function or nil]]></return>
+  </method>
+  <method name="setmetatable" page="setmetatable" shortdesc="sets metatable, nil to remove metatable" version="Gideros 2011.6"><![CDATA[Sets the `metatable` for the given table. (You cannot change the `metatable` of other types from Lua, only from C.) If `metatable` is nil, removes the `metatable` of the given table. If the original `metatable` has a "__metatable" field, raises an error. 
+
+
+ This function returns table.]]>
+    <parameter name="table" optional="false" type="table"><![CDATA[table to set metatable to]]></parameter>
+    <parameter name="metatable" optional="false" type="varies"><![CDATA[value to use as metatable]]></parameter>
+    <return type="table"><![CDATA[provided table]]></return>
+  </method>
+  <method name="tonumber" page="tonumber" shortdesc="convert to number, returns number, nil if non-convertible, 2&lt;=base&lt;=36" version="Gideros 2011.6"><![CDATA[Tries to convert its argument to a number. If the argument is already a number or a string convertible to a number, then tonumber returns this number; otherwise, it returns nil. 
+
+
+ An optional argument specifies the base to interpret the numeral. The base may be any integer between 2 and 36, inclusive. In bases above 10, the letter 'A' (in either upper or lower case) represents 10, 'B' represents 11, and so forth, with 'Z' representing 35. In base 10 (the default), the number can have a decimal part, as well as an optional exponent part. In other bases, only unsigned integers are accepted.]]>
+    <parameter name="e" optional="false" type="any"><![CDATA[value to convert to number]]></parameter>
+    <parameter name="base" optional="true" type="varies"><![CDATA[the base to convert number to, default: 10]]></parameter>
+    <return type="number"><![CDATA[returns the number or nil if it could not be converted]]></return>
+  </method>
+  <method name="tostring" page="tostring" shortdesc="convert to string, returns string" version="Gideros 2011.6"><![CDATA[Receives an argument of any type and converts it to a string in a reasonable format. For complete control of how numbers are converted, use string.format. 
+
+ If the `metatable` of e has a "__tostring" field, then `tostring` calls the corresponding value with e as argument, and uses the result of the call as its result.]]>
+    <parameter name="e" optional="false" type="any"><![CDATA[value to convert to string]]></parameter>
+    <return type="string"><![CDATA[value converted to string or nil]]></return>
+  </method>
+  <method name="type" page="type" shortdesc="returns type of v as a string" version="Gideros 2011.6"><![CDATA[Returns the type of its only argument, coded as a string. The possible results of this function are "nil" (a string, not the value nil), "number", "string", "boolean", "table", "function", "thread", and "userdata".]]>
+    <parameter name="v" optional="false" type="any"><![CDATA[value to get type from]]></parameter>
+    <return type="string"><![CDATA[type of the variable]]></return>
+  </method>
+  <method name="unpack" page="unpack" shortdesc="returns all elements from list" version="Gideros 2011.6"><![CDATA[Returns the elements from the given table. This function is equivalent to 
+
+     return list[i], list[i+1], ···, list[j]
+
+ except that the above code can be written only for a fixed number of elements. By default, i is 1 and j is the length of the list, as defined by the length operator.]]>
+    <parameter name="list" optional="false" type="table"><![CDATA[table from which to extract elements]]></parameter>
+    <return type="multiple"><![CDATA[all values from table as separate values]]></return>
+  </method>
+  <method name="xpcall" page="xpcall" shortdesc="pcall function f with new error handler err" version="Gideros 2011.6"><![CDATA[`pcall` function f with new error handler err.
+The operations related to coroutines comprise a sub-library of the basic library and come inside the table coroutine.]]>
+    <parameter name="f" optional="false" type="function"><![CDATA[pcall function]]></parameter>
+    <parameter name="err" optional="false" type="string"><![CDATA[error message]]></parameter>
+  </method>
+</object>

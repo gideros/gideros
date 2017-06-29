@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.PolygonShape" page="b2PolygonShape" parent="b2.Shape" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A convex polygon. It is assumed that the interior of the polygon is to the left of each edge.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.PolygonShape.new" page="new" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `b2.PolygonShape` instance.<br />
+<br />
+]]>
+    <return type="any"><![CDATA[A new `b2.PolygonShape` object.]]></return>
+    <return type="any"><![CDATA[A new `b2.PolygonShape` object.]]></return>
+  </method>
+  <method name="b2.PolygonShape:setAsBox" page="setAsBox" shortdesc="set vertices to represent an oriented box" version="Gideros 2011.6"><![CDATA[<br />
+Build vertices to represent an oriented box.<br />
+<br />
+]]>
+    <parameter name="hx" optional="false" type="number"><![CDATA[the half-width]]></parameter>
+    <parameter name="hy" optional="false" type="number"><![CDATA[the half-heigh]]></parameter>
+    <parameter name="centerx" optional="false" type="number, default = 0"><![CDATA[the x coordinate of the center of the box in local coordinates]]></parameter>
+    <parameter name="centery" optional="false" type="number, default = 0"><![CDATA[the y coordinate of the center of the box in local coordinates]]></parameter>
+    <parameter name="angle" optional="false" type="number, default = 0"><![CDATA[the rotation of the box in local coordinates]]></parameter>
+  </method>
+  <method name="b2.PolygonShape:set" page="set" shortdesc="sets vertices" version="Gideros 2011.6"><![CDATA[<br />
+Copy vertices. This assumes the vertices define a convex polygon. It is assumed that the exterior is the the right of each edge.<br />
+<br />
+]]>
+    <parameter name="vertices" optional="false" type="any"><![CDATA[A list of numbers that contains the x, y coordinates of the vertices sequentially]]></parameter>
+    <example><![CDATA[local polygonShape = b2.PolygonShape.new()<br />
+polygonShape:set(1,4, 2,6, 3,7)<br />
+]]></example>
+  </method>
+  <example name="Create a square box2d box"><![CDATA[--create box2d physical object
+local body = world:createBody{type = b2.STATIC_BODY}
+local poly = b2.PolygonShape.new()
+poly:setAsBox(100, 100)
+local fixture = body:createFixture{shape = poly, density = 1.0, 
+friction = 0.1, restitution = 0.2}]]></example>
+</object>

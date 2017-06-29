@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="bit" page="bit" parent="" type="plugin" version="Gideros 2013.09"><![CDATA[Provides bit based operations]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="bit.tobit" page="tobit" shortdesc="Normalizes a number to the numeric range for bit operations" version="Gideros 2013.09"><![CDATA[Normalizes a number to the numeric range for bit operations and returns it. This function is usually not needed since all bit operations already normalize all of their input arguments.]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[number which range to normalize]]></parameter>
+    <return type="number"><![CDATA[normalized number]]></return>
+  </method>
+  <method name="bit.tohex" page="tohex" shortdesc="Converts its first argument to a hex string." version="Gideros 2013.09"><![CDATA[Converts its first argument to a hex string. The number of hex digits is given by the absolute value of the optional second argument. Positive numbers between 1 and 8 generate lowercase hex digits. Negative numbers generate uppercase hex digits. Only the least-significant 4*|n| bits are used. The default is to generate 8 lowercase hex digits.]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[number to convert to hex string]]></parameter>
+    <parameter name="n" optional="true" type="number"><![CDATA[number of hex digits to convert]]></parameter>
+    <return type="string"><![CDATA[hex string]]></return>
+  </method>
+  <method name="bit.bnot" page="bnot" shortdesc="Returns the bitwise not of its argument." version="Gideros 2013.09"><![CDATA[Returns the bitwise not of its argument.]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[number to which to apply bitwise not]]></parameter>
+    <return type="number"><![CDATA[bitwise not]]></return>
+  </method>
+  <method name="bit.bor" page="bor" shortdesc="Returns the bitwise or of its argument." version="Gideros 2013.09"><![CDATA[Returns the bitwise or of its argument.]]>
+    <parameter name="x1" optional="false" type="number"><![CDATA[first number for or operation]]></parameter>
+    <parameter name="x2" optional="true" type="number"><![CDATA[second and more numbers can be provided for or operation]]></parameter>
+    <return type="number"><![CDATA[bitwise or]]></return>
+  </method>
+  <method name="bit.band" page="band" shortdesc="Returns the bitwise and of its argument." version="Gideros 2013.09"><![CDATA[Returns the bitwise and of its argument.]]>
+    <parameter name="x1" optional="false" type="number"><![CDATA[first number for and operation]]></parameter>
+    <parameter name="x2" optional="true" type="number"><![CDATA[second and more numbers can be provided for and operation]]></parameter>
+    <return type="number"><![CDATA[bitwise and]]></return>
+  </method>
+  <method name="bit.bxor" page="bxor" shortdesc="Returns the bitwise xor of its argument." version="Gideros 2013.09"><![CDATA[Returns the bitwise xor of its argument.]]>
+    <parameter name="x1" optional="false" type="number"><![CDATA[first number for xor operation]]></parameter>
+    <parameter name="x2" optional="true" type="number"><![CDATA[second and more numbers can be provided for xor operation]]></parameter>
+    <return type="number"><![CDATA[bitwise xor]]></return>
+  </method>
+  <method name="bit.lshift" page="lshift" shortdesc="Returns the bitwise logical left-shift" version="Gideros 2013.09"><![CDATA[Returns the bitwise logical left-shift by the number of bits given by the second argument.]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[number to shift]]></parameter>
+    <parameter name="n" optional="false" type="number"><![CDATA[amount of bits to shift]]></parameter>
+    <return type="number"><![CDATA[bitwise logical left-shift]]></return>
+  </method>
+  <method name="bit.rshift" page="rshift" shortdesc="Returns the bitwise logical right-shift" version="Gideros 2013.09"><![CDATA[Returns the bitwise logical right-shift by the number of bits given by the second argument.]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[number to shift]]></parameter>
+    <parameter name="n" optional="false" type="number"><![CDATA[amount of bits to shift]]></parameter>
+    <return type="number"><![CDATA[bitwise logical right-shift]]></return>
+  </method>
+  <method name="bit.arshift" page="arshift" shortdesc="Returns the bitwise arithmetic right-shift" version="Gideros 2013.09"><![CDATA[Returns the bitwise arithmetic right-shift by the number of bits given by the second argument.]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[number to shift]]></parameter>
+    <parameter name="n" optional="false" type="number"><![CDATA[amount of bits to shift]]></parameter>
+    <return type="number"><![CDATA[bitwise arithmetic right-shift]]></return>
+  </method>
+  <method name="bit.rol" page="rol" shortdesc="Returns the bitwise left rotation" version="Gideros 2013.09"><![CDATA[Returns the bitwise left rotation of its first argument by the number of bits given by the second argument. Bits shifted out on one side are shifted back in on the other side.]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[number to rotate]]></parameter>
+    <parameter name="n" optional="false" type="number"><![CDATA[amount of bits to rotate]]></parameter>
+    <return type="number"><![CDATA[bitwise left rotation]]></return>
+  </method>
+  <method name="bit.ror" page="ror" shortdesc="Returns the bitwise right rotation" version="Gideros 2013.09"><![CDATA[Returns the bitwise right rotation of its first argument by the number of bits given by the second argument. Bits shifted out on one side are shifted back in on the other side.]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[number to rotate]]></parameter>
+    <parameter name="n" optional="false" type="number"><![CDATA[amount of bits to rotate]]></parameter>
+    <return type="number"><![CDATA[bitwise right rotation]]></return>
+  </method>
+  <method name="bit.bswap" page="bswap" shortdesc="Swaps the bytes of its argument and returns it" version="Gideros 2013.09"><![CDATA[Swaps the bytes of its argument and returns it. This can be used to convert little-endian 32 bit numbers to big-endian 32 bit numbers or vice versa.]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[number to swap]]></parameter>
+    <return type="number"><![CDATA[Swapped bytes]]></return>
+  </method>
+</object>

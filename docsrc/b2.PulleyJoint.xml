@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.PulleyJoint" page="b2PulleyJoint" parent="b2.Joint" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+The pulley joint is connected to two bodies and two fixed ground points. The pulley supports a ratio such that: length1   ratio * length2 &lt;= constant Yes, the force transmitted is scaled by the ratio. The pulley also enforces a maximum length limit on both sides. This is useful to prevent one side of the pulley hitting the top. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.PulleyJoint:getGroundAnchorA" page="getGroundAnchorA" shortdesc="returns the x and y coordinates of the first ground anchor" version="Gideros 2011.6"><![CDATA[<br />
+Returns the x and y coordinates of the first ground anchor. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[x coordinates of the first ground anchor]]></return>
+    <return type="number"><![CDATA[y coordinates of the first ground anchor]]></return>
+  </method>
+  <method name="b2.PulleyJoint:getGroundAnchorB" page="getGroundAnchorB" shortdesc="returns the x and y coordinates of the second ground anchor" version="Gideros 2011.6"><![CDATA[<br />
+Returns the x and y coordinates of the second ground anchor. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[x coordinates of the second ground anchor]]></return>
+    <return type="number"><![CDATA[y coordinates of the second ground anchor]]></return>
+  </method>
+  <method name="b2.PulleyJoint:getLengthA" page="getLengthA" shortdesc="returns the current length of the segment attached to bodyA" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current length of the segment attached to bodyA. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current length of the segment attached to bodyA]]></return>
+  </method>
+  <method name="b2.PulleyJoint:getLengthB" page="getLengthB" shortdesc="returns the current length of the segment attached to bodyB" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current length of the segment attached to bodyB. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current length of the segment attached to bodyB]]></return>
+  </method>
+  <method name="b2.PulleyJoint:getRatio" page="getRatio" shortdesc="returns the joint ratio" version="Gideros 2011.6"><![CDATA[<br />
+Returns the pulley ratio.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The pulley ratio]]></return>
+  </method>
+  <example name="Pulley joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+
+local jointDef = b2.createPulleyJointDef(body1, body2, 
+	200, 100, --coordinates where "imaginary string" is attached in the air for body 1
+	350, 100, --coordinates where "imaginary string" is attached in the air for body 2
+	200, 300, --coordinates where "imaginary string" is attached to the body 1
+	350, 300, --coordinates where "imaginary string" is attached in the body 2
+	1) -- ratio (if < 1 -> makes body 2 heavier, > 1 makes body 1 heavier, =1 makes them equal
+local pulleyJoint = world:createJoint(jointDef)]]></example>
+</object>

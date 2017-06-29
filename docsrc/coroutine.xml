@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="coroutine" page="coroutine" parent="" type="lua" version="Gideros 2011.6"><![CDATA[Suspends the execution of the calling coroutine. The coroutine cannot be running a C function, a metamethod, or an iterator. Any arguments to yield are passed as extra results to resume.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="coroutine.create" page="create" shortdesc="creates coroutine from function f, returns coroutine" version="Gideros 2011.6"><![CDATA[Creates a new coroutine, with body f. f must be a Lua function. Returns this new coroutine, an object with type "thread".]]>
+    <parameter name="f" optional="false" type="function"><![CDATA[lua function]]></parameter>
+    <return type="coroutine"><![CDATA[created coroutine]]></return>
+  </method>
+  <method name="coroutine.resume" page="resume" shortdesc="continues execution of co, returns bool status plus any values" version="Gideros 2011.6"><![CDATA[Starts or continues the execution of coroutine co. The first time you resume a coroutine, it starts running its body. The values val1, ··· are passed as the arguments to the body function. If the coroutine has yielded, resume restarts it; the values val1, ··· are passed as the results from the yield. 
+
+
+ If the coroutine runs without any errors, resume returns true plus any values passed to yield (if the coroutine yields) or any values returned by the body function (if the coroutine terminates). If there is any error, resume returns false plus the error message.]]>
+    <parameter name="co" optional="false" type="coroutine"><![CDATA[coroutine to start or resume]]></parameter>
+    <parameter name="val1" optional="true" type="any"><![CDATA[value to pass as the result]]></parameter>
+    <parameter name="..." optional="true" type="any"><![CDATA[other optional values to pass as results]]></parameter>
+    <return type="bool"><![CDATA[true if coroutine ran without errors, false otherwise]]></return>
+    <return type="multiple"><![CDATA[values provided to coroutine.yield function call]]></return>
+  </method>
+  <method name="coroutine.status" page="status" shortdesc="returns co status: &quot;running&quot;, &quot;suspended&quot; or &quot;dead&quot;" version="Gideros 2011.6"><![CDATA[Returns the status of `coroutine` co, as a string: "running", if the coroutine is running (that is, it called status); "suspended", if the coroutine is suspended in a call to yield, or if it has not started running yet; "normal" if the coroutine is active but not running (that is, it has resumed another coroutine); and "dead" if the coroutine has finished its body function, or if it has stopped with an error.]]>
+    <parameter name="co" optional="false" type="coroutine"><![CDATA[coroutine to check status for]]></parameter>
+    <return type="string"><![CDATA[the state of coroutine]]></return>
+  </method>
+  <method name="coroutine.wrap" page="wrap" shortdesc="creates coroutine with body f, returns function that resumes co" version="Gideros 2011.6"><![CDATA[Creates a new coroutine, with body f. f must be a Lua function. Returns a function that resumes the coroutine each time it is called. Any arguments passed to the function behave as the extra arguments to resume. Returns the same values returned by resume, except the first boolean. In case of error, propagates the error.]]>
+    <parameter name="f" optional="false" type="function"><![CDATA[lua function]]></parameter>
+    <return type="function"><![CDATA[function that resumes coroutine every time it is called, behaving similar to coroutine.resume]]></return>
+  </method>
+  <method name="coroutine.yield" page="yield" shortdesc="suspend execution of calling coroutine" version="Gideros 2011.6"><![CDATA[In order for multiple coroutines to share execution they must stop executing (after performing a sensible amount of processing) and pass control to another thread. This act of submission is called yielding. Coroutines explicitly call a Lua function coroutine.yield(), which is similar to using return in functions. What differentiates yielding from function returns is that at a later point we can reenter the thread and carry on where we left off. When you exit a function scope using return the scope is destroyed and we cannot reenter it, e.g.,]]>
+    <parameter name="val1" optional="true" type="any"><![CDATA[value to return from coroutine.resume call]]></parameter>
+    <parameter name="..." optional="true" type="multiple"><![CDATA[other optional values that will be returned from coroutine.resume call]]></parameter>
+  </method>
+  <example name="Simple coroutine usage example"><![CDATA[--To create a coroutine we must have function which represents it, e.g., 
+function foo()
+	print("foo", 1)
+	coroutine.yield()
+	print("foo", 2)
+end
+
+ --[[ We create a coroutine using the coroutine.create(fn) function. We pass it an entry point for the thread which is a Lua function. The object returned by Lua is a thread: ]]
+
+ co = coroutine.create(foo) -- create a coroutine with foo as the entry
+print(type(co))                 -- display the type of object "co" = thread
+
+--[[ We can find out what state the thread is in using the coroutine.status() function, e.g., ]]
+print(coroutine.status(co)) --suspended
+
+--[[ The state suspended means that the thread is alive, and as you would expect, not doing anything. Note that when we created the thread it did not start executing. To start the thread we use the coroutine.resume() function. Lua will enter the thread and leave when the thread yields. ]]
+coroutine.resume(co) -- prints foo     1
+
+--[[ The coroutine.resume() function returns the error status of the resume call. The output acknowledges that we entered the function foo and then exited with no errors. Now is the interesting bit. With a function we would not be able to carry on where we left off, but with coroutines we can resume again: ]]
+coroutine.resume(co) -- prints foo     2
+
+--[[ We can see we executed the line after the yield in foo and again returned without error. However, if we look at the status we can see that we exited the function foo and the coroutine terminated. ]]
+print(coroutine.status(co)) --prints dead
+
+--[[ If we try to resume again a pair of values is returned: an error flag and an error message: ]]
+print(coroutine.resume(co)) -- prints false   cannot resume dead coroutine
+
+-- Once a coroutine exits or returns like a function it cannot be resumed.]]></example>
+</object>

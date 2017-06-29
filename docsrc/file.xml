@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="file" page="file" parent="" type="lua" version="Gideros 2011.6"><![CDATA[file object is usually returned by `io.open` used to manipulate (read and write) files in lua]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="file:close" page="close" shortdesc="closes file" version="Gideros 2011.6"><![CDATA[Closes file. Note that files are automatically closed when their handles are garbage collected, but that takes an unpredictable amount of time to happen.]]></method>
+  <method name="file:flush" page="flush" shortdesc="saves any written data to file" version="Gideros 2011.6"><![CDATA[Saves any written data to file.]]></method>
+  <method name="file:lines" page="lines" shortdesc="returns iterator function to return lines, nil ends" version="Gideros 2011.6"><![CDATA[Returns an iterator function that, each time it is called, returns a new line from the file. Therefore, the construction 
+
+     `for line in file:lines() do body end`
+
+ will iterate over all lines of the file. (Unlike io.lines, this function does not close the file when the loop ends.)]]>
+    <return type="function"><![CDATA[iterator function]]></return>
+  </method>
+  <method name="file:read" page="read" shortdesc="reads file according to given formats, returns read values or nil" version="Gideros 2011.6"><![CDATA[Reads the file file, according to the given formats, which specify what to read. For each format, the function returns a string (or a number) with the characters read, or nil if it cannot read data with the specified format. When called without formats, it uses a default format that reads the entire next line (see below). 
+
+
+ The available formats are 
+
+
+"*n": reads a number; this is the only format that returns a number instead of a string. 
+
+"*a": reads the whole file, starting at the current position. On end of file, it returns the empty string. 
+
+"*l": reads the next line (skipping the end of line), returning nil on end of file. This is the default format. 
+
+number: reads a string with up to this number of characters, returning nil on end of file. If number is zero, it reads nothing and returns an empty string, or nil on end of file.]]>
+    <parameter name="format1" optional="false" type="string"><![CDATA[format]]></parameter>
+    <parameter name="..." optional="true" type="string"><![CDATA[more optional formats]]></parameter>
+    <return type="string"><![CDATA[read string from file]]></return>
+  </method>
+  <method name="file:seek" page="seek" shortdesc="sets file pos, whence=&quot;set&quot;|&quot;cur&quot;|&quot;end&quot;, defaults &quot;curr&quot;,0, returns file pos" version="Gideros 2011.6"><![CDATA[Sets and gets the file position, measured from the beginning of the file, to the position given by offset plus a base specified by the string whence, as follows: 
+
+"set": base is position 0 (beginning of the file);
+"cur": base is current position;
+"end": base is end of file;
+
+ In case of success, function seek returns the final file position, measured in bytes from the beginning of the file. If this function fails, it returns nil, plus a string describing the error. 
+
+
+ The default value for whence is "cur", and for offset is 0. Therefore, the call file:seek() returns the current file position, without changing it; the call file:seek("set") sets the position to the beginning of the file (and returns 0); and the call file:seek("end") sets the position to the end of the file, and returns its size.]]>
+    <parameter name="whence" optional="true" type="string"><![CDATA[setting the base point for offset]]></parameter>
+    <parameter name="offset" optional="true" type="number"><![CDATA[offset to set position to]]></parameter>
+    <return type="number"><![CDATA[the position in file measured in bytes from the beginning of the file]]></return>
+  </method>
+  <method name="file:write" page="write" shortdesc="writes strings or numbers to file" version="Gideros 2011.6"><![CDATA[Writes strings or numbers to file]]>
+    <parameter name="value1" optional="false" type="string"><![CDATA[value to write to file]]></parameter>
+    <parameter name="..." optional="true" type="multiple"><![CDATA[other optional values to write to file]]></parameter>
+  </method>
+  <example name="Copy a file"><![CDATA[local function copy(src, dst)
+	local srcf = io.open(src, "rb")
+	local dstf = io.open(dst, "wb")
+	local size = 2^13      -- good buffer size (8K)
+	while true do
+		local block = srcf:read(size)
+		if not block then break end
+		dstf:write(block)
+	end
+	srcf:close()
+	dstf:close()
+end]]></example>
+</object>

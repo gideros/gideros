@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="TileMap" page="TileMap" parent="Sprite" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The `TileMap` class is used to work with tile maps easily and efficiently.<br />
+<br />
+Check `Desert` and `Sewers` examples provided with Gideros for usage of TileMap with export from editor
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="TileMap.FLIP_DIAGONAL" page="TileMap.FLIP_DIAGONAL" value="1" version="Gideros 2011.6"/>
+  <constant name="TileMap.FLIP_VERTICAL" page="TileMap.FLIP_VERTICAL" value="2" version="Gideros 2011.6"/>
+  <constant name="TileMap.FLIP_HORIZONTAL" page="TileMap.FLIP_HORIZONTAL" value="4" version="Gideros 2011.6"/>
+  <method name="TileMap.new" page="new" shortdesc="creates a new TileMap instance" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `TileMap` instance.<br />
+<br />
+]]>
+    <parameter name="width" optional="false" type="number"><![CDATA[The width of the map in tiles]]></parameter>
+    <parameter name="height" optional="false" type="number"><![CDATA[The height of the map in tiles]]></parameter>
+    <parameter name="texture" optional="false" type="TextureBase"><![CDATA[The texture used in rendering tile map]]></parameter>
+    <parameter name="tilewidth" optional="false" type="number"><![CDATA[The width of a tile in pixels]]></parameter>
+    <parameter name="tileheight" optional="false" type="number"><![CDATA[The height of a tile in pixels]]></parameter>
+    <parameter name="spacingx" optional="false" type="number, default = 0"><![CDATA[The x-spacing in pixels between the tiles in this tileset]]></parameter>
+    <parameter name="spacingy" optional="false" type="number, default = 0"><![CDATA[The y-spacing in pixels between the tiles in this tileset]]></parameter>
+    <parameter name="marginx" optional="false" type="number, default = 0"><![CDATA[The x-margin from the top-left of the texture]]></parameter>
+    <parameter name="marginy" optional="false" type="number, default = 0"><![CDATA[The y-margin from the top-left of the texture]]></parameter>
+    <parameter name="displaywidth" optional="false" type="number, default = tilewidth"><![CDATA[The display width of a tile in pixels]]></parameter>
+    <parameter name="displayheight" optional="false" type="number, default = tileheight"><![CDATA[The display height of a tile in pixels]]></parameter>
+  </method>
+  <method name="TileMap:getTile" page="getTile" shortdesc="returns the index of the tile" version="Gideros 2011.6"><![CDATA[<br />
+Returns the index of the tile. The tile indices are starting from 1.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[The x-position of tile]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[The y-position of tile]]></parameter>
+    <return type="number"><![CDATA[x tile position of texture or nil if tile is not set]]></return>
+    <return type="number"><![CDATA[y tile position of texture or nil if tile is not set]]></return>
+    <return type="number"><![CDATA[flip flag (TileMap.FLIP_DIAGONAL, TileMap.FLIP_HORIZONTAL, TileMap.FLIP_VERTICAL) of tile or nil if tile is not set]]></return>
+  </method>
+  <method name="TileMap:setTile" page="setTile" shortdesc="sets the index of the tile" version="Gideros 2011.6"><![CDATA[<br />
+Sets the index of the tile. The tile indices are starting from 1.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[The x-position of tile]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[The y-position of tile]]></parameter>
+    <parameter name="tx" optional="false" type="number"><![CDATA[The x-index of the tile]]></parameter>
+    <parameter name="ty" optional="false" type="number"><![CDATA[The y-index of the tile]]></parameter>
+    <parameter name="flip" optional="false" type="number, default = 0"><![CDATA[flip flag of tile. Can be combination of TileMap.FLIP_HORIZONTAL, TileMap.FLIP_VERTICAL and TileMap.FLIP_DIAGONAL]]></parameter>
+  </method>
+  <method name="TileMap:clearTile" page="clearTile" shortdesc="set an empty tile at given indices" version="Gideros 2011.6"><![CDATA[<br />
+Set an empty tile at given indices. The tile indices are starting from 1.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[The x-position of tile]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[The y-position of tile]]></parameter>
+  </method>
+  <method name="TileMap:shift" page="shift" shortdesc="shifts the tile map" version="Gideros 2011.6"><![CDATA[Shifts the tile map to change tile's graphic. The arguments are in tiles, not in pixels. By shifting the tile map one by one as needed, you can create dynamic tile maps.<br />
+<br />
+]]>
+    <parameter name="dx" optional="false" type="number"><![CDATA[The x amount of shift in tiles]]></parameter>
+    <parameter name="dy" optional="false" type="number"><![CDATA[The y amount of shift in tiles]]></parameter>
+    <example><![CDATA[tilemap:shift(-1, 0)  -- shifts the tile map to the left<br />
+tilemap:shift(1, 0)	  -- shifts the tile map to the right<br />
+tilemap:shift(0, -1)  -- shifts the tile map to the up<br />
+tilemap:shift(0, 1)   -- shifts the tile map to the down<br />
+]]></example>
+  </method>
+</object>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="UrlLoader" page="UrlLoader" parent="Object" type="gideros" version="Gideros 2012.2.2"><![CDATA[<br />
+The `UrlLoader` class is used to download data from an URL. It can be used to download (and optionally save) text files, XML files, JSON files, image files or binary files, etc.<br />
+Downloaded data is delivered at `event.data` field of `Event.COMPLETE` event as string. Lua is eight-bit clean and so strings may contain characters with any numeric value, including embedded zeros. That means that you can store any binary data into a string.<br />
+
+<h3>HTTP Request Methods</h3><br />
+<br />
+UrlLoader supports GET, POST, PUT and DELETE methods. These are defined by these string constants:<br />
+<br />
+<ul><br />
+<li>`UrlLoader.GET = "get"`</li><br />
+<li>`UrlLoader.POST = "post"`</li><br />
+<li>`UrlLoader.PUT = "put"`</li><br />
+<li>`UrlLoader.DELETE = "delete"`</li><br />
+</ul><br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="UrlLoader.PUT" page="UrlLoader.PUT" value="put" version="Gideros 2011.6"/>
+  <constant name="UrlLoader.GET" page="UrlLoader.GET" value="get" version="Gideros 2011.6"/>
+  <constant name="UrlLoader.DELETE" page="UrlLoader.DELETE" value="delete" version="Gideros 2011.6"/>
+  <constant name="UrlLoader.POST" page="UrlLoader.POST" value="post" version="Gideros 2011.6"/>
+  <method name="UrlLoader.new" page="new" shortdesc="creates a new UrlLoader object" version="Gideros 2012.2.2"><![CDATA[<br />
+Creates a new `UrlLoader` object.<br />
+<br />
+`url` parameter specifies the URL to download. This parameter is optional and if specified loading starts immediately.<br />
+<br />
+`method` parameter specifies the HTTP request method. It can be one of the values of `UrlLoader.GET`, `UrlLoader.POST`, `UrlLoader.PUT` or `UrlLoader.DELETE`.<br />
+The default HTTP method is `UrlLoader.GET`.<br />
+<br />
+`body` parameter specifies the HTTP body data. This parameter is used only when the HTTP method is `UrlLoader.POST` or or `UrlLoader.PUT`.<br />
+<br />
+After loading is finished, loaded data is stored at `event.data` field of `Event.COMPLETE` event as string.<br />
+<br />
+]]>
+    <parameter name="url" optional="false" type="string, optional"><![CDATA[URL to download. This parameter is optional and if specified loading starts immediately.]]></parameter>
+    <parameter name="method" optional="false" type="string, default = &amp;quot;get&amp;quot;"><![CDATA[HTTP request method.]]></parameter>
+    <parameter name="headers" optional="false" type="table, optional"><![CDATA[HTTP headers.]]></parameter>
+    <parameter name="body" optional="false" type="string, optional"><![CDATA[HTTP body data. This data is sent as the message body of a request.]]></parameter>
+    <example><![CDATA[local url = &quot;http://www.[yourDomain].com/application.php?userid=gideros&amp;login=guest&quot;<br />
+<br />
+local loader1 = UrlLoader.new(url)<br />
+local loader2 = UrlLoader.new(url, UrlLoader.GET) -- same as the previous line<br />
+local loader3 = UrlLoader.new(url, UrlLoader.POST, &quot;my post data&quot;)<br />
+local loader4 = UrlLoader.new(url, UrlLoader.PUT, &quot;my put data&quot;)<br />
+local loader5 = UrlLoader.new(url, UrlLoader.DELETE)<br />
+<br />
+local headers = {<br />
+	[&quot;Content-Type&quot;] = &quot;application/x-www-form-urlencoded&quot;,<br />
+	[&quot;User-Agent&quot;] = &quot;Gideros Browser&quot;,<br />
+}<br />
+local loader6 = UrlLoader.new(url, UrlLoader.PUT, headers, &quot;key=value&quot;)<br />
+]]></example>
+  </method>
+  <method name="UrlLoader:load" page="load" shortdesc="loads data from the specified URL" version="Gideros 2012.2.2"><![CDATA[<br />
+Loads data from the specified URL. If there is any load operation in progress, it is terminated and new progress starts.<br />
+Please refer to [[UrlLoader.new]] for more detailed description of `url`, `method` and `body` parameters.<br />
+<br />
+]]>
+    <parameter name="url" optional="false" type="string, optional"><![CDATA[URL to download. This parameter is optional and if specified loading starts immediately.]]></parameter>
+    <parameter name="method" optional="false" type="string, default = &amp;quot;get&amp;quot;"><![CDATA[HTTP request method.]]></parameter>
+    <parameter name="headers" optional="false" type="table, optional"><![CDATA[HTTP headers.]]></parameter>
+    <parameter name="body" optional="false" type="string, optional"><![CDATA[HTTP body data. This data is sent as the message body of a request.]]></parameter>
+  </method>
+  <method name="UrlLoader:close" page="close" shortdesc="terminates the current loading operation" version="Gideros 2012.2.2"><![CDATA[<br />
+Terminates the current loading operation.<br />
+<br />
+]]></method>
+  <method name="UrlLoader:ignoreSslErrors" page="ignoreSslErrors" shortdesc="Ignores SSL certificate related errors" version="Gideros 2015.04.18"><![CDATA[Ignores SSL certificate related errors]]></method>
+  <event name="Event.COMPLETE" page="Event.COMPLETE" value="complete" version="Gideros 2011.6"><![CDATA[This event is dispatched when `UrlLoader` has reached the host and loading is complete.]]>
+    <parameter name="data" type="string"><![CDATA[The downloaded data.]]></parameter>
+    <parameter name="httpStatusCode" type="number"><![CDATA[HTTP Response Code from server]]></parameter>
+    <parameter name="headers" type="table"><![CDATA[HTTP response headers]]></parameter>
+  </event>
+  <event name="Event.PROGRESS" page="Event.PROGRESS" value="progress" version="Gideros 2011.6"><![CDATA[This event is dispatched to notify of how far the download has progressed.]]>
+    <parameter name="bytesLoaded" type="number"><![CDATA[The number of bytes loaded.]]></parameter>
+    <parameter name="bytesTotal" type="number"><![CDATA[The total number of bytes that will be loaded or -1 if the length can't be determined.]]></parameter>
+  </event>
+  <event name="Event.ERROR" page="Event.ERROR" value="error" version="Gideros 2011.6"><![CDATA[This event is dispatched when `UrlLoader` can't reach the provided host.]]></event>
+  <example name="The example below shows downloading an image file from an URL, saving it to the documents folder and displaying it&lt;br /&gt;&#13;&#10;on the stage. This example also shows downloading progress and handling errors.&lt;br /&gt;&#13;&#10;&lt;br /&gt;"><![CDATA[local loader = UrlLoader.new(&quot;http://example.com/image.png&quot;)<br />
+<br />
+local function onComplete(event)<br />
+	local out = io.open(&quot;|D|image.png&quot;, &quot;wb&quot;)<br />
+	out:write(event.data)<br />
+	out:close()<br />
+<br />
+	local b = Bitmap.new(Texture.new(&quot;|D|image.png&quot;))<br />
+	stage:addChild(b)<br />
+end<br />
+<br />
+local function onError()<br />
+	print(&quot;error&quot;)<br />
+end<br />
+<br />
+local function onProgress(event)<br />
+	print(&quot;progress: &quot; .. event.bytesLoaded .. &quot; of &quot; .. event.bytesTotal)<br />
+end<br />
+<br />
+loader:addEventListener(Event.COMPLETE, onComplete)<br />
+loader:addEventListener(Event.ERROR, onError)<br />
+loader:addEventListener(Event.PROGRESS, onProgress)]]></example>
+  <example name="Uploading a file"><![CDATA[local filename = "crate.png"
+local file = io.open(filename, "rb")
+local contents = file:read( "*a" )
+local boundary = "somerndstring"
+ 
+local send = "--"..boundary..
+			"\r\nContent-Disposition: form-data; "..
+			"name="..filename.."; filename="..filename..
+			"\r\nContent-type: image/png"..
+			"\r\n\r\n"..contents..
+			"\r\n--"..boundary.."--\r\n";
+ 
+local headers = {
+	["Content-Type"] = "multipart/form-data; boundary="..boundary,
+	["Content-Length"] = #send,
+}
+ 
+local loader = UrlLoader.new("http://localhost/gideros.php", UrlLoader.POST, headers, send)
+ 
+loader:addEventListener(Event.COMPLETE, function(e)
+	print(e.data)
+end)]]></example>
+</object>

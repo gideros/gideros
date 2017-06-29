@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Accelerometer" page="Accelerometer" parent="Object" type="gideros" version="Gideros 2012.8"><![CDATA[<br />
+The `Accelerometer` class is used to access accelerometer data. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <method name="Accelerometer.isAvailable" page="isAvailable" shortdesc="Accelerometer - does the accelerometer available?" version="Gideros 2012.8"><![CDATA[<br />
+Returns `true` if accelerometer is available for this platform, `false` otherwise.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if accelerometer is available for this platform, `false` otherwise.]]></return>
+  </method>
+  <method name="Accelerometer:start" page="start" shortdesc="Accelerometer - starts accelerometer updates" version="Gideros 2012.8"><![CDATA[<br />
+Starts the generation of accelerometer samples.<br />
+<br />
+]]></method>
+  <method name="Accelerometer:stop" page="stop" shortdesc="Accelerometer - starts accelerometer updates" version="Gideros 2012.8"><![CDATA[<br />
+Stops the generation of accelerometer samples.<br />
+<br />
+]]></method>
+  <method name="Accelerometer:getAcceleration" page="getAcceleration" shortdesc="Accelerometer - returns the 3-axis acceleration measured by the accelerometer" version="Gideros 2012.8"><![CDATA[<br />
+Returns the 3-axis acceleration measured by the accelerometer.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[acceleration on x-axis in G's]]></return>
+    <return type="number"><![CDATA[acceleration on y-axis in G's]]></return>
+    <return type="number"><![CDATA[acceleration on z-axis in G's]]></return>
+  </method>
+  <method name="Accelerometer.new" page="new" shortdesc="Creates new Accelerometer instance" version="Gideros 2012.8"><![CDATA[Creates new Accelerometer instance]]></method>
+  <example name=""><![CDATA[--create instance
+local accelerometer = Accelerometer.new()
+--start receiving data
+accelerometer:start()
+---get values for example on each enter frame event
+local x, y, z = accelerometer:getAcceleration()
+print(x, y, z)
+
+--once you don't need it, stop it
+accelerometer:stop()
+]]></example>
+</object>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="zlib" page="zlib" parent="" type="lua" version="Gideros 2015.04.18"><![CDATA[Zlib lua binding from <a href='https://github.com/LuaDist/lzlib/blob/master/README'>https://github.com/LuaDist/lzlib/blob/master/README</a>
+
+]]>
+  <method name="zlib.adler32" page="adler32" shortdesc="update the adler32 value" version="Gideros 2015.04.18"><![CDATA[Without any parameters, returns the inicial adler32 value.
+Call to update the adler32 value, adler is the current value, buffer is passed to adler32 zlib function and the updated value is returned.]]>
+    <parameter name="adler32" optional="true" type="number"><![CDATA[adler value]]></parameter>
+    <parameter name="buffer" optional="true" type="string"><![CDATA[buffer to modify value for]]></parameter>
+    <return type="string"><![CDATA[without parameters returns initial value]]></return>
+  </method>
+  <method name="zlib.crc32" page="crc32" shortdesc="update the crc32 value" version="Gideros 2015.04.18"><![CDATA[Without any parameters, returns the inicial crc32 value.
+Call to update the crc32 value, crc is the current value, buffer is passed to crc32 zlib function and the updated value is returned.]]>
+    <parameter name="crc32" optional="true" type="number"><![CDATA[crc32 value]]></parameter>
+    <parameter name="buffer" optional="true" type="string"><![CDATA[buffer to modify value]]></parameter>
+    <return type="string"><![CDATA[without parameters returns initial value]]></return>
+  </method>
+  <method name="zlib.compress" page="compress" shortdesc="Return compressed string" version="Gideros 2015.04.18"><![CDATA[Return a string containing the compressed buffer according to the given parameters.]]>
+    <parameter name="buffer" optional="false" type="string"><![CDATA[string to compress]]></parameter>
+    <parameter name="level" optional="true" type="number"><![CDATA[compression level, 0 no compression, 9 best compression, -1 default compression]]></parameter>
+    <parameter name="method" optional="true" type="number"><![CDATA[compression method, should be 8 for this version]]></parameter>
+    <parameter name="windowBits" optional="true" type="number"><![CDATA[from 8 to 15, larger values of this parameter result in better compression at the expense of memory usage]]></parameter>
+    <parameter name="memLevel" optional="true" type="number"><![CDATA[1 uses minimum memory but is slow and reduces compression ratio; 9 uses maximum memory for optimal speed]]></parameter>
+    <parameter name="strategy" optional="true" type="number"><![CDATA[1 - Filtered, 2 - Huffman, 3 - RLE, 4 - Fixed, 0 - default]]></parameter>
+    <return type="string"><![CDATA[compressed string]]></return>
+  </method>
+  <method name="zlib.decompress" page="decompress" shortdesc="Return the decompressed stream" version="Gideros 2015.04.18"><![CDATA[Return the decompressed stream after processing the given buffer.]]>
+    <parameter name="buffer" optional="false" type="string"><![CDATA[buffer to deflate]]></parameter>
+    <parameter name="windowBits" optional="true" type="number"><![CDATA[from 8 to 15, larger values of this parameter result in better compression at the expense of memory usage]]></parameter>
+    <return type="string"><![CDATA[decompressed buffer]]></return>
+  </method>
+  <method name="zlib.deflate" page="deflate" shortdesc="Return a deflate stream." version="Gideros 2015.04.18"><![CDATA[Return a deflate stream.]]>
+    <parameter name="sink" optional="false" type="function or table"><![CDATA[function | { write: function [, close: function, flush: function ] },]]></parameter>
+    <parameter name="level" optional="true" type="number"><![CDATA[compression level, 0 no compression, 9 best compression, -1 default compression]]></parameter>
+    <parameter name="method" optional="true" type="number"><![CDATA[compression method, should be 8 for this version]]></parameter>
+    <parameter name="windowBits" optional="true" type="number"><![CDATA[from 8 to 15, larger values of this parameter result in better compression at the expense of memory usage]]></parameter>
+    <parameter name="memLevel" optional="true" type="number"><![CDATA[1 uses minimum memory but is slow and reduces compression ratio; 9 uses maximum memory for optimal speed]]></parameter>
+    <parameter name="strategy" optional="true" type="number"><![CDATA[1 - Filtered, 2 - Huffman, 3 - RLE, 4 - Fixed, 0 - default]]></parameter>
+    <parameter name="dictionary" optional="true" type="string"><![CDATA[compression dictionary]]></parameter>
+    <return type="stream"><![CDATA[deflate stream]]></return>
+  </method>
+  <method name="zlib.inflate" page="inflate" shortdesc="Return an inflate stream." version="Gideros 2015.04.18"><![CDATA[Return an inflate stream.]]>
+    <parameter name="source" optional="false" type="many"><![CDATA[string | function | { read: function, close: function }]]></parameter>
+    <parameter name="windowBits" optional="true" type="number"><![CDATA[from 8 to 15, larger values of this parameter result in better compression at the expense of memory usage]]></parameter>
+    <parameter name="dictionary" optional="true" type="string"><![CDATA[compression dictionary]]></parameter>
+    <return type="stream"><![CDATA[inflate stream]]></return>
+  </method>
+</object>

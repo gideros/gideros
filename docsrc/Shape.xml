@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Shape" page="Shape" parent="Sprite" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The `Shape` class is used create and display vector graphics.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="Shape.NONE" page="Shape.NONE" value="none" version="Gideros 2011.6"/>
+  <constant name="Shape.EVEN_ODD" page="Shape.EVEN_ODD" value="evenOdd" version="Gideros 2011.6"/>
+  <constant name="Shape.TEXTURE" page="Shape.TEXTURE" value="texture" version="Gideros 2011.6"/>
+  <constant name="Shape.SOLID" page="Shape.SOLID" value="solid" version="Gideros 2011.6"/>
+  <constant name="Shape.NON_ZERO" page="Shape.NON_ZERO" value="nonZero" version="Gideros 2011.6"/>
+  <method name="Shape.new" page="new" shortdesc="creates a new Shape object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `Shape` object.<br />
+<br />
+]]></method>
+  <method name="Shape:setFillStyle" page="setFillStyle" shortdesc="sets the fill style that Shape object uses for subsequent drawings" version="Gideros 2011.6"><![CDATA[<br />
+Sets the fill style that `Shape` object uses for subsequent drawings. The fill style remains in effect until you call `setFillStyle()` function with different<br />
+parameters.<br />
+<br />
+`type` parameter can be one of the following values:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**Shape.NONE:** Clears the fill style.&lt;/li&gt;<br />
+&lt;li&gt;**Shape.SOLID:** Sets the fill style as a solid color. In this mode, the parameters are color (in hexedecial value) and an optional alpha value.&lt;/li&gt;<br />
+&lt;li&gt;**Shape.TEXTURE:** Sets the fill style as a textured. In this mode, the parameters are texture and an optional transformation matrix.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+See the following example for more detailed usage of this function.<br />
+<br />
+]]>
+    <parameter name="type" optional="false" type="string"><![CDATA[The type of the fill. Can be one of the Shape.NONE, Shape.SOLID or Shape.TEXTURE.]]></parameter>
+    <parameter name="..." optional="false" type="any"><![CDATA[Parameters of the fill style.]]></parameter>
+    <example><![CDATA[setFillStyle(Shape.NONE)						-- clears the fill style<br />
+<br />
+setFillStyle(Shape.SOLID, 0xff0000)				-- sets the fill style as solid red color<br />
+<br />
+setFillStyle(Shape.SOLID, 0xff0000, 0.5)		-- sets the fill style as solid red color with 0.5 transparency<br />
+<br />
+local texture = Texture.new(&quot;image.png&quot;)<br />
+setFillStyle(Shape.TEXTURE, texture)			-- sets the fill style as texture with &quot;image.png&quot;<br />
+<br />
+local matrix = Matrix.new(0.5, 0, 0, 0.5, 0, 0)<br />
+setFillStyle(Shape.TEXTURE, texture, matrix)	-- sets the fill style as texture with &quot;image.png&quot; with a transformation matrix<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+&lt;!--<br />
+&lt;pre&gt;&lt;code&gt;<br />
+setFillStyle(Shape.LINEAR_GRADIENT, {}, {}, {}, (optional) matrix)		-- not supported yet<br />
+setFillStyle(Shape.RADIAL_GRADIENT, {}, {}, {}, (optional) matrix)		-- not supported yet<br />
+&lt;/code&gt;&lt;/pre&gt;<br />
+--&gt;<br />
+<br />
+]]></example>
+  </method>
+  <method name="Shape:setLineStyle" page="setLineStyle" shortdesc="sets the line style that Shape object uses for subsequent drawings" version="Gideros 2011.6"><![CDATA[<br />
+Sets the line style that `Shape` object uses for subsequent drawings. The line style remains in effect until you call `setLineStyle()` function with different<br />
+parameters.<br />
+<br />
+]]>
+    <parameter name="width" optional="false" type="number"><![CDATA[The width of the line. If this parameter is 0, line is not drawn.]]></parameter>
+    <parameter name="color" optional="false" type="number, default = 0x000000"><![CDATA[A hexadecimal color value of the line. For example, red is 0xFF0000, blue is 0x0000FF, and so on.]]></parameter>
+    <parameter name="alpha" optional="false" type="number, default = 1"><![CDATA[The alpha value of the color of the line.]]></parameter>
+  </method>
+  <method name="Shape:beginPath" page="beginPath" shortdesc="resets the current path" version="Gideros 2011.6"><![CDATA[<br />
+Resets the current path.<br />
+<br />
+]]>
+    <parameter name="winding" optional="false" type="string, default = Shape.EVEN_ODD"><![CDATA[Specifies the winding rule. It can be either Shape.EVEN_ODD or Shape.NON_ZERO.]]></parameter>
+  </method>
+  <method name="Shape:moveTo" page="moveTo" shortdesc="creates a new subpath with the given point" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new subpath with the given point.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the point.]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the point.]]></parameter>
+  </method>
+  <method name="Shape:lineTo" page="lineTo" shortdesc="adds the given point to the current subpath, connected to the previous one by a straight line." version="Gideros 2011.6"><![CDATA[<br />
+Adds the given point to the current subpath, connected to the previous one by a straight line.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the point.]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the point.]]></parameter>
+  </method>
+  <method name="Shape:endPath" page="endPath" shortdesc="ends the current path and draws the geometry by using the specified line and fill styles" version="Gideros 2011.6"><![CDATA[<br />
+Ends the current path and draws the geometry by using the specified line and fill styles. <br />
+<br />
+]]></method>
+  <method name="Shape:closePath" page="closePath" shortdesc="marks the current subpath as closed, and starts a new subpath with a point the same as the start and end of the newly closed subpath" version="Gideros 2011.6"><![CDATA[<br />
+Marks the current subpath as closed, and starts a new subpath with a point the same as the start and end of the newly closed subpath.<br />
+<br />
+]]></method>
+  <method name="Shape:clear" page="clear" shortdesc="clears the graphics that were drawn to this Shape object, and resets fill and line style settings" version="Gideros 2011.6"><![CDATA[<br />
+Clears the graphics that were drawn to this `Shape` object, and resets fill and line style settings.<br />
+<br />
+]]></method>
+  <example name="Drawing red square"><![CDATA[local shape = Shape.new()
+shape:setFillStyle(Shape.SOLID, 0xff0000, 1)
+shape:beginPath()
+shape:moveTo(0,0)
+shape:lineTo(100, 0)
+shape:lineTo(100, 100)
+shape:lineTo(0, 100)
+shape:lineTo(0, 0)
+shape:endPath()
+shape:setPosition(0, 150)
+stage:addChild(shape)]]></example>
+</object>

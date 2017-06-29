@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Particles" page="Particles" parent="Sprite" type="gideros" version="Gideros 2016.06"><![CDATA[Particles sprite (alpha), which allows to draw several identical dots or bitmaps with varying colour and orientation]]>
+  <method name="Particles.new" page="new" shortdesc="Create new particles group" version="Gideros 2016.06"><![CDATA[Create new particles group]]></method>
+  <method name="Particles:getParticleSpeed" page="getParticleSpeed" shortdesc="Get speed of particle" version="Gideros 2016.06"><![CDATA[Get speed of particle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[particle index]]></parameter>
+    <return type="number"><![CDATA[x vector]]></return>
+    <return type="number"><![CDATA[y vector]]></return>
+    <return type="number"><![CDATA[angular velocity]]></return>
+    <return type="number"><![CDATA[growth speed]]></return>
+  </method>
+  <method name="Particles:setParticleSpeed" page="setParticleSpeed" shortdesc="Set speed of particles" version="Gideros 2016.06"><![CDATA[Set speed of particles]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[particle index]]></parameter>
+    <parameter name="x" optional="true" type="number"><![CDATA[x vector]]></parameter>
+    <parameter name="y" optional="true" type="number"><![CDATA[y vector]]></parameter>
+    <parameter name="a" optional="true" type="number"><![CDATA[angular velocity]]></parameter>
+    <parameter name="s" optional="true" type="number"><![CDATA[growth speed]]></parameter>
+  </method>
+  <method name="Particles:setParticleColor" page="setParticleColor" shortdesc="set color of particles" version="Gideros 2016.06"><![CDATA[set color of particles]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[particle index]]></parameter>
+    <parameter name="color" optional="false" type="number"><![CDATA[hex value of color]]></parameter>
+    <parameter name="alpha" optional="true" type="number"><![CDATA[alpha value from 0 to 1, default 1]]></parameter>
+  </method>
+  <method name="Particles:getParticleColor" page="getParticleColor" shortdesc="Get color and alpha value of particle" version="Gideros 2016.06"><![CDATA[Get color and alpha value of particle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[particle index]]></parameter>
+    <return type="color"><![CDATA[color value]]></return>
+    <return type="alpha"><![CDATA[alpha value from 0 to 1]]></return>
+  </method>
+  <method name="Particles:setTexture" page="setTexture" shortdesc="Set texture to all particles" version="Gideros 2016.06"><![CDATA[Set texture to all particles]]>
+    <parameter name="texture" optional="false" type="TextureBase"><![CDATA[texture to use in particles]]></parameter>
+  </method>
+  <method name="Particles:clearTexture" page="clearTexture" shortdesc="Clear texture for all particles" version="Gideros 2016.06"><![CDATA[Clear texture for all particles]]></method>
+  <method name="Particles:addParticles" page="addParticles" shortdesc="Add particles" version="Gideros 2016.06"><![CDATA[Add particle a single particle (short form)  or several ones (long form) to this particle system.
+<br/>
+Short form (single particle):
+`particles:addParticles(x,y,size,angle,ttl)`
+<br/>
+Extended form:
+`particles:addParticles{particleDesc1,particleDesc2,...,particleDescN}`
+where particleDescX is a table describing a particle to be added. This table can contain the following parameters:
+<ul>
+<li>x,y: particle position</li>
+<li>size: particle size</li>
+<li>angle: particle orientation</li>
+<li>color: particle color</li>
+<li>alpha: particle alpha</li>
+<li>ttl: time to leave, number of frames this particle will stay on screen</li>
+<li>tag: tag associated with this particle</li>
+<li>speedX,speedY,speedAngular,speedGrowth: Amount added to x,y,angle and size at the beginning of each frame</li>
+<li>decay,decayAngular,decayGrowth,decayAlpha: factor applied to speedX and speedY, speedAngular, speedGrowth and alpha at the beginning of each frame</li>
+</ul>
+]]>
+    <parameter name="particles" optional="false" type="table or arguments"><![CDATA[table for multiple particles or arguments for single]]></parameter>
+    <return type="number or table"><![CDATA[index or table with indexes of added particles]]></return>
+  </method>
+  <method name="Particles:removeParticles" page="removeParticles" shortdesc="Remove particles by index in table or as arguments" version="Gideros 2016.06"><![CDATA[Remove particles by index in table or as arguments
+
+remove all particles
+`particles:removeParticles()`
+
+or remove specific partilces:
+
+`particles:removeParticles({1,2,3})`
+
+or
+
+`particles:removeParticles(1,2,3)`]]>
+    <parameter name="particle indeces" optional="false" type="table or arguments"><![CDATA[table or arguments of indexes to remove]]></parameter>
+  </method>
+  <method name="Particles:setParticlePosition" page="setParticlePosition" shortdesc="set position of particle" version="Gideros 2016.06"><![CDATA[set position of particle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index of particle]]></parameter>
+    <parameter name="x" optional="false" type="number"><![CDATA[x position]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y position]]></parameter>
+  </method>
+  <method name="Particles:setParticleSize" page="setParticleSize" shortdesc="set size of particle" version="Gideros 2016.06"><![CDATA[set size of particle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index of particle]]></parameter>
+    <parameter name="size" optional="false" type="number"><![CDATA[size of particle in pixels]]></parameter>
+  </method>
+  <method name="Particles:setParticleAngle" page="setParticleAngle" shortdesc="set angle of particle" version="Gideros 2016.06"><![CDATA[set angle of particle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index of particle]]></parameter>
+    <parameter name="angle" optional="false" type="number"><![CDATA[angle in degrees]]></parameter>
+  </method>
+  <method name="Particles:setParticleTtl" page="setParticleTtl" shortdesc="set time to live" version="Gideros 2016.06"><![CDATA[set time to live]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index of particle]]></parameter>
+    <parameter name="ttl" optional="false" type="number"><![CDATA[time to live in seconds]]></parameter>
+  </method>
+  <method name="Particles:getParticlePosition" page="getParticlePosition" shortdesc="get position of particle" version="Gideros 2016.06"><![CDATA[get position of particle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index of particle]]></parameter>
+    <return type="number"><![CDATA[x position]]></return>
+    <return type="number"><![CDATA[y position]]></return>
+  </method>
+  <method name="Particles:getParticleSize" page="getParticleSize" shortdesc="get size of particle in pixels" version="Gideros 2016.06"><![CDATA[get size of particle in pixels]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index of particle]]></parameter>
+    <return type="number"><![CDATA[size in pixels]]></return>
+  </method>
+  <method name="Particles:getParticleAngle" page="getParticleAngle" shortdesc="get particle angle" version="Gideros 2016.06"><![CDATA[get particle angle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index of particle]]></parameter>
+    <return type="number"><![CDATA[angle of particle in degrees]]></return>
+  </method>
+  <method name="Particles:getParticleTtl" page="getParticleTtl" shortdesc="get initial time to live of particle" version="Gideros 2016.06"><![CDATA[get initial time to live of particle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[index of particle]]></parameter>
+    <return type="number"><![CDATA[initial time to live in seconds]]></return>
+  </method>
+  <method name="Particles:setParticleTag" page="setParticleTag" shortdesc="" version="in development"><![CDATA[set the tag associated to the given particle.]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[particle index]]></parameter>
+    <parameter name="tag" optional="false" type="string"><![CDATA[tag to associate to this particle]]></parameter>
+  </method>
+  <method name="Particles:getParticleTag" page="getParticleTag" shortdesc="" version="in development"><![CDATA[returns the tag associated to the given particle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[particle index]]></parameter>
+    <return type="string"><![CDATA[tag]]></return>
+  </method>
+  <method name="Particles:setPaused" page="setPaused" shortdesc="" version="in development"><![CDATA[Pause or resume this particle system]]>
+    <parameter name="paused" optional="false" type="boolean"><![CDATA[true to pause the particle system, false to resume]]></parameter>
+  </method>
+  <method name="Particles:isPaused" page="isPaused" shortdesc="" version="in development"><![CDATA[Returns wether this particle system is paused or not]]>
+    <return type="boolean"><![CDATA[true when paused]]></return>
+  </method>
+  <method name="Particles:getParticles" page="getParticles" shortdesc="" version="in development"><![CDATA[Retrieve particles states of this system]]>
+    <parameter name="set" optional="true" type="table, optional"><![CDATA[Optional set of particle indices to query]]></parameter>
+    <parameter name="tag" optional="true" type="string, optional"><![CDATA[only return particles matching this tag]]></parameter>
+    <return type="table"><![CDATA[table containing the state of each particle in the system matching tag if any]]></return>
+  </method>
+  <method name="Particles:getParticleDecay" page="getParticleDecay" shortdesc="" version="in development"><![CDATA[Get decay values for the given particle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[particle index]]></parameter>
+    <return type="number"><![CDATA[speed decay factor]]></return>
+    <return type="number"><![CDATA[alpha decay factor]]></return>
+    <return type="number"><![CDATA[growth speed decay factor]]></return>
+    <return type="number"><![CDATA[angular speed decay factor]]></return>
+  </method>
+  <method name="Particles:setParticleDecay" page="setParticleDecay" shortdesc="" version="in development"><![CDATA[Configure decay values for the given particle]]>
+    <parameter name="i" optional="false" type="number"><![CDATA[particle index]]></parameter>
+    <parameter name="decay" optional="false" type="number"><![CDATA[speed decay factor]]></parameter>
+    <parameter name="decayAlpha" optional="false" type="number"><![CDATA[alpha decay factor]]></parameter>
+    <parameter name="decayGrowth" optional="false" type="number"><![CDATA[growth speed decay factor]]></parameter>
+    <parameter name="decayAngular" optional="false" type="number"><![CDATA[angular speed decay factor]]></parameter>
+  </method>
+  <method name="Particles:setParticlesTag" page="setParticlesTag" shortdesc="" version="in development"><![CDATA[set the tag associated to the given particle]]></method>
+</object>

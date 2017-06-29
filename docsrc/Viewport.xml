@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Viewport" page="Viewport" parent="Sprite" type="gideros" version="Gideros 2016.04"><![CDATA[A Viewport sprite allows to display another view of a tree hierarchy already on stage. Sprites can't have two parents, but thanks to Viewport you can display the same Sprite twice on the stage. Useful for split screen games, mini maps and so on.]]>
+  <method name="Viewport:setContent" page="setContent" shortdesc="" version="Gideros 2016.04"><![CDATA[Specify which sprite should be displayed by this Viewport]]>
+    <parameter name="content" optional="false" type="sprite"><![CDATA[The sprite hierarchy to be displayed by this Viewport]]></parameter>
+  </method>
+  <method name="Viewport:setTransform" page="setTransform" shortdesc="" version="Gideros 2016.04"><![CDATA[Specify a matrix by which the content will be transformed before being displayed.]]>
+    <parameter name="transform" optional="false" type="Matrix"><![CDATA[A Matrix object which will be applied to the content before display]]></parameter>
+  </method>
+  <method name="Viewport:setProjection" page="setProjection" shortdesc="Specify a projection matrix to use when displaying the content. " version="Gideros 2016.06"><![CDATA[Specify a projection matrix to use when displaying the content. Useful for rendering 3D worlds where units are not related to screen dimensions, and where a perspective must be applied.]]>
+    <parameter name="matrix" optional="false" type="Matrix"><![CDATA[Matrix to transform viewport]]></parameter>
+  </method>
+  <method name="Viewport:lookAt" page="lookAt" shortdesc="" version="in development"><![CDATA[Set up the transform matrix of this viewport taking eye and target positions and up direction as arguments. ]]>
+    <parameter name="eyex" optional="false" type="number"><![CDATA[eye X coordinate]]></parameter>
+    <parameter name="eyey" optional="false" type="number"><![CDATA[eye Y coordinate]]></parameter>
+    <parameter name="eyez" optional="false" type="number"><![CDATA[eye Z coordinate]]></parameter>
+    <parameter name="targetx" optional="false" type="number"><![CDATA[target X coordinate]]></parameter>
+    <parameter name="targety" optional="false" type="number"><![CDATA[target Y coordinate]]></parameter>
+    <parameter name="targetz" optional="false" type="number"><![CDATA[target Z coordinate]]></parameter>
+    <parameter name="upx" optional="false" type="number"><![CDATA[up X coordinate]]></parameter>
+    <parameter name="upy" optional="false" type="number"><![CDATA[up Y coordinate]]></parameter>
+    <parameter name="upz" optional="false" type="number"><![CDATA[up Z coordinate]]></parameter>
+  </method>
+  <method name="Viewport:lookAngles" page="lookAngles" shortdesc="" version="in development"><![CDATA[Set up the transform matrix of this viewport taking eye position and pitch,yaw,roll angles as arguments]]>
+    <parameter name="eyex" optional="false" type="number"><![CDATA[eye X coordinate]]></parameter>
+    <parameter name="eyey" optional="false" type="number"><![CDATA[eye Y coordinate]]></parameter>
+    <parameter name="eyez" optional="false" type="number"><![CDATA[eye Z coordinate]]></parameter>
+    <parameter name="pitch" optional="false" type="number"><![CDATA[pitch angle in degrees]]></parameter>
+    <parameter name="yaw" optional="false" type="number"><![CDATA[yaw angle in degrees]]></parameter>
+    <parameter name="roll" optional="false" type="number"><![CDATA[roll angle in degrees]]></parameter>
+  </method>
+  <example name="Displaying same Bitmap in multiple views"><![CDATA[-- content we want to display in multiple views
+local content = Bitmap.new(Texture.new("ball.png"))
+
+-- now setup view 1 as a 300x300 window
+view1=Viewport.new()
+view1:setClip(0,0,300,300)
+view1:setContent(content)
+
+-- add some transformations, just to see the difference
+view1:setTransform(Matrix.new(1.7320507764816, -1.0000001192093, 1.0000001192093, 1.7320507764816, 50, 50))
+
+-- add view to stage
+stage:addChild(view1)
+
+
+-- now setup view 2 as a 200x200 window
+view2=Viewport.new()
+view2:setClip(0,0,200,200)
+view2:setPosition(0,300) -- lower down the screen
+view2:setContent(content)
+
+-- add some transformations, just to see the difference
+view2:setTransform(Matrix.new(0.32139378786087, -0.38302224874496, 0.38302224874496, 0.32139378786087, 30, 30))
+
+-- add view to stage
+stage:addChild(view2)]]></example>
+</object>

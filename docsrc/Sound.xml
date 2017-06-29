@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Sound" page="Sound" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The `Sound` class lets you load and play WAV, MP3, MOD, XM, S3M and IT sound files.<br />
+Control of the playing sound is performed through the `SoundChannel`<br />
+object.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Sound.new" page="new" shortdesc="creates a new Sound object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `Sound` object.<br />
+<br />
+]]>
+    <parameter name="filename" optional="false" type="string"><![CDATA[The name of the sound file to be loaded.]]></parameter>
+  </method>
+  <method name="Sound:play" page="play" shortdesc="creates a new SoundChannel object to play the sound" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `SoundChannel` object to play the sound. By using the retured `SoundChannel` object,<br />
+you can stop the sound and monitor the position.<br />
+<br />
+]]>
+    <parameter name="startTime" optional="false" type="number, default = 0"><![CDATA[The initial position in milliseconds at which playback should start.]]></parameter>
+    <parameter name="looping" optional="false" type="boolean, default = false"/>
+    <parameter name="paused" optional="false" type="boolean, default = false"/>
+    <return type="SoundChannel"><![CDATA[A `SoundChannel` object, which you use to control the sound. This function returns `nil` if you run out of available sound channels.]]></return>
+  </method>
+  <method name="Sound:getLength" page="getLength" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Returns the duration of the sound in miliseconds.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The duration of the sound in miliseconds.]]></return>
+  </method>
+  <method name="Sound.setListenerPosition" page="setListenerPosition" shortdesc="" version="in development"><![CDATA[Sets the position of the listener in a 3D environment]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[X coordinate of the listener]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[Y coordinate of the listener]]></parameter>
+    <parameter name="z" optional="true" type="number"><![CDATA[z coordinate of the listener]]></parameter>
+    <parameter name="vx" optional="true" type="number"><![CDATA[X component of listener's velocity]]></parameter>
+    <parameter name="vy" optional="true" type="number"><![CDATA[Y component of listener's velocity]]></parameter>
+    <parameter name="vz" optional="true" type="number"><![CDATA[Z component of listener's velocity]]></parameter>
+    <parameter name="dx" optional="true" type="number"><![CDATA[X component of the direction the listener is facing]]></parameter>
+    <parameter name="dy" optional="true" type="number"><![CDATA[Y component of the direction the listener is facing]]></parameter>
+    <parameter name="dz" optional="true" type="number"><![CDATA[Z component of the direction the listener is facing]]></parameter>
+    <parameter name="ux" optional="true" type="number"><![CDATA[X component of up direction relative to the listener]]></parameter>
+    <parameter name="uy" optional="true" type="number"><![CDATA[Y component of up direction relative to the listener]]></parameter>
+    <parameter name="uz" optional="true" type="number"><![CDATA[Z component of up direction relative to the listener]]></parameter>
+  </method>
+  <example name=""><![CDATA[local sound = Sound.new(&quot;music.mp3&quot;)
+
+local channel = sound:play()
+
+-- after some time --
+channel:stop()
+
+]]></example>
+</object>

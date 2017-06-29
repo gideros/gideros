@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="AlertDialog" page="AlertDialog" parent="Object" type="gideros" version="Gideros 2012.8"><![CDATA[<br />
+The `AlertDialog` class is used to display native alert dialogs with one, two or three buttons. Cancel button<br />
+is mandatory but other two buttons are optional. When the user presses any button in the alert dialog,<br />
+it&#039;s dismissed and `Event.COMPLETE` event is dispatched.<br />
+<br />
+
+If alert dialog is dismissed by any other means (by pressing back button on Android or by pressing close button on desktop), it behaves as cancel button is pressed.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="AlertDialog.new" page="new" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Creates a new `AlertDialog` object.<br />
+ <br />
+]]>
+    <parameter name="title" optional="false" type="string"><![CDATA[The string that appears in the receiver&#039;s title bar. Can be empty string.]]></parameter>
+    <parameter name="message" optional="false" type="string"><![CDATA[Descriptive text that provides more details than the title. Can be empty string.]]></parameter>
+    <parameter name="cancelButton" optional="false" type="string"><![CDATA[The text of the cancel button.]]></parameter>
+    <parameter name="button1" optional="true" type="string"><![CDATA[The text of the 1st optional button.]]></parameter>
+    <parameter name="button2" optional="true" type="string"><![CDATA[The text of the 2st optional button.]]></parameter>
+  </method>
+  <method name="AlertDialog:show" page="show" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Shows the alert dialog.<br />
+<br />
+]]></method>
+  <method name="AlertDialog:hide" page="hide" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Hides the alert dialog.<br />
+<br />
+]]></method>
+  <event name="Event.COMPLETE" page="Event.COMPLETE" value="complete" version="Gideros 2012.8"><![CDATA[This event is dispatched when user presses any button on AlertDialog or the dialog is dismissed by any other reason.]]>
+    <parameter name="buttonIndex" type="number"><![CDATA[the index of the button pressed. It is nil when cancel button is pressed, 1 when 1st button is pressed and 2 when 2nd button is pressed.]]></parameter>
+    <parameter name="buttonText" type="string"><![CDATA[the text of the button pressed]]></parameter>
+  </event>
+  <example name=""><![CDATA[local alertDialog = AlertDialog.new(&quot;This is my title&quot;, &quot;And my message&quot;, &quot;Cancel&quot;, &quot;Yes&quot;, &quot;No&quot;)<br />
+<br />
+local function onComplete(event)<br />
+	print(event.buttonIndex, event.buttonText)<br />
+end<br />
+<br />
+alertDialog:addEventListener(Event.COMPLETE, onComplete)<br />
+alertDialog:show()
+]]></example>
+</object>

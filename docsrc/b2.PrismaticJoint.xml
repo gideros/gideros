@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.PrismaticJoint" page="b2PrismaticJoint" parent="b2.Joint" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A prismatic joint. This joint provides one degree of freedom: translation along an axis fixed in body1. Relative rotation is prevented. You can use a joint limit to restrict the range of motion and a joint motor to drive the motion or to model joint friction. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.PrismaticJoint:getJointTranslation" page="getJointTranslation" shortdesc="returns the current joint translation in meters" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current joint translation, usually in meters. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current joint translation, usually in meters]]></return>
+  </method>
+  <method name="b2.PrismaticJoint:getJointSpeed" page="getJointSpeed" shortdesc="returns the current joint translation speed in meters per second" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current joint translation speed, usually in meters per second. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current joint translation speed, usually in meters per second]]></return>
+  </method>
+  <method name="b2.PrismaticJoint:isLimitEnabled" page="isLimitEnabled" shortdesc="is the joint limit enabled?" version="Gideros 2011.6"><![CDATA[Is the joint limit enabled? <br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if joint limit is enabled, `false` otherwise]]></return>
+  </method>
+  <method name="b2.PrismaticJoint:enableLimit" page="enableLimit" shortdesc="enables or disables the joint limit" version="Gideros 2011.6"><![CDATA[<br />
+Enables or disables the joint limit. <br />
+<br />
+]]>
+    <parameter name="flag" optional="false" type="boolean"><![CDATA[enable flag of joint limit]]></parameter>
+  </method>
+  <method name="b2.PrismaticJoint:getLimits" page="getLimits" shortdesc="returns the lower and upper joint limits in meters" version="Gideros 2011.6"><![CDATA[<br />
+Returns the lower and upper joint limit, usually in meters. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[lower joint limit, usually in meters]]></return>
+    <return type="number"><![CDATA[upper joint limit, usually in meters]]></return>
+  </method>
+  <method name="b2.PrismaticJoint:setLimits" page="setLimits" shortdesc="sets the joint limits in meters" version="Gideros 2011.6"><![CDATA[<br />
+Sets the joint limits, usually in meters. <br />
+<br />
+]]>
+    <parameter name="lower" optional="false" type="number"><![CDATA[lower joint limit in meters]]></parameter>
+    <parameter name="upper" optional="false" type="number"><![CDATA[upper joint limit in meters]]></parameter>
+  </method>
+  <method name="b2.PrismaticJoint:isMotorEnabled" page="isMotorEnabled" shortdesc="is the joint motor enabled?" version="Gideros 2011.6"><![CDATA[<br />
+Is the joint motor enabled? <br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if joint motor is enabled, `false` otherwise]]></return>
+  </method>
+  <method name="b2.PrismaticJoint:enableMotor" page="enableMotor" shortdesc="enables or disables the joint motor" version="Gideros 2011.6"><![CDATA[<br />
+Enables or disables the joint motor. <br />
+<br />
+]]>
+    <parameter name="flag" optional="false" type="boolean"><![CDATA[enable flag of joint motor]]></parameter>
+  </method>
+  <method name="b2.PrismaticJoint:setMotorSpeed" page="setMotorSpeed" shortdesc="sets the motor speed in meters per second" version="Gideros 2011.6"><![CDATA[<br />
+Sets the motor speed in meters per second. <br />
+<br />
+]]>
+    <parameter name="speed" optional="false" type="number"><![CDATA[motor speed in meters per second]]></parameter>
+  </method>
+  <method name="b2.PrismaticJoint:getMotorSpeed" page="getMotorSpeed" shortdesc="returns the motor speed in meters per second" version="Gideros 2011.6"><![CDATA[<br />
+Returns the motor speed in meters per second. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The motor speed in meters per second]]></return>
+  </method>
+  <method name="b2.PrismaticJoint:setMaxMotorForce" page="setMaxMotorForce" shortdesc="sets the maximum motor force in N" version="Gideros 2011.6"><![CDATA[<br />
+Sets the maximum motor force, usually in N. <br />
+<br />
+]]>
+    <parameter name="force" optional="false" type="number"><![CDATA[the maximum motor force, usually in N.]]></parameter>
+  </method>
+  <method name="b2.RevoluteJoint:getMotorForce" page="getMotorForce" shortdesc="returns the current motor force given the inverse time step" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current motor force given the inverse time step, usually in N. <br />
+<br />
+]]>
+    <parameter name="inv_dt" optional="false" type="number"/>
+    <return type="number"><![CDATA[The current motor force given the inverse time step, usually in N]]></return>
+  </method>
+  <example name="Prismatic joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+ground:setPosition(465, 480)
+
+--axisx, 	axisy	values usually between 0 and 1
+--0			0		moves freely
+--0			1		moves on y axis
+--1			0		moves on x axis
+--1			1		moves on diagonal
+local jointDef = b2.createPrismaticJointDef(body, ground, 350, 100, 0.3, 1)
+local prismaticJoint = world:createJoint(jointDef)]]></example>
+</object>

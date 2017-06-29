@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.CircleShape" page="b2CircleShape" parent="b2.Shape" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A circle shape.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.CircleShape.new" page="new" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `b2.CircleShape` instance and optionally set its center point and radius.<br />
+If this function is called with more than 3 parameters, `b2.CircleShape` instance<br />
+is created and its center point and radius are set. If this function is called without any <br />
+paramaters, only `b2.CircleShape` instance is created and you should set the center<br />
+point and radius with [[b2.CircleShape:set]] function.<br />
+<br />
+]]>
+    <parameter name="centerx" optional="false" type="number, optional"><![CDATA[the x coordinate of the center]]></parameter>
+    <parameter name="centery" optional="false" type="number, optional"><![CDATA[the y coordinate of the center]]></parameter>
+    <parameter name="radius" optional="false" type="number, optional"><![CDATA[the radius]]></parameter>
+    <return type="any"><![CDATA[A new `b2.CircleShape` object.]]></return>
+    <return type="any"><![CDATA[A new `b2.CircleShape` object.]]></return>
+  </method>
+  <method name="b2.CircleShape:set" page="set" shortdesc="sets the center point and radius" version="Gideros 2011.6"><![CDATA[<br />
+Sets the center point and radius of this instance.<br />
+<br />
+]]>
+    <parameter name="centerx" optional="false" type="number, optional"><![CDATA[the x coordinate of the center]]></parameter>
+    <parameter name="centery" optional="false" type="number, optional"><![CDATA[the y coordinate of the center]]></parameter>
+    <parameter name="radius" optional="false" type="number, optional"><![CDATA[the radius]]></parameter>
+  </method>
+  <example name="Creating a circle body"><![CDATA[--create ball bitmap object from ball graphic
+local ball = Bitmap.new(Texture.new("./ball.png"))
+--reference center of the ball for positioning
+ball:setAnchorPoint(0.5,0.5)
+ 
+ball:setPosition(x,y)
+ 
+--get radius
+local radius = ball:getWidth()/2
+ 
+--create box2d physical object
+local body = world:createBody{type = b2.DYNAMIC_BODY}
+body:setPosition(ball:getX(), ball:getY())
+body:setAngle(ball:getRotation() * math.pi/180)
+local circle = b2.CircleShape.new(0, 0, radius)
+local fixture = body:createFixture{shape = circle, density = 1.0, 
+friction = 0.1, restitution = 0.2}]]></example>
+</object>

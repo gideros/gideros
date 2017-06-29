@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="int64" page="int64" parent="" type="lua" version="Gideros 2016.08"><![CDATA[64-bit integers as built-in Lua library registered with int64 name. No need to require it.
+
+You have 3 ways to create int64 numbers:
+
+#n -- from number, shortcut for int64.new(n)
+int64.new(n) -- from number
+int64.new(s) -- from string
+To convert them back to Lua built-in types:
+
+num() -- to number
+num"" -- to string
+To get and set single bits:
+
+num[i]
+num[i] = b
+All operators are supported including new bitwise ones as for Lua double numbers.]]>
+  <method name="int64.new" page="new" shortdesc="Create 64 bit integer" version="Gideros 2016.08"><![CDATA[Create 64 bit integer]]>
+    <parameter name="value" optional="false" type="string or number"><![CDATA[value to use as 64 bit integer]]></parameter>
+  </method>
+</object>

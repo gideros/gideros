@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="GoogleBilling" page="GoogleBilling" parent="" type="plugin" version="Gideros 2012.09"><![CDATA[<br />
+The `GoogleBilling` class is defined in the module &quot;googlebilling&quot;. Therefore, you need to call<br />
+`require(&quot;googlebilling&quot;)` before using it. Loading the Google Billing module <br />
+also creates a global variable `googlebilling` of type `GoogleBilling` for direct use. <br />
+ <br />
+&lt;h3&gt;GoogleBilling Events and Response Codes&lt;/h3&gt;<br />
+<br />
+`GoogleBilling` class dispatches 5 events: `Event.CHECK_BILLING_SUPPORTED_COMPLETE`,<br />
+`Event.REQUEST_PURCHASE_COMPLETE`,`Event.RESTORE_TRANSACTIONS_COMPLETE`,<br />
+`Event.CONFIRM_NOTIFICATION_COMPLETE` and `Event.PURCHASE_STATE_CHANGE`.<br />
+<br />
+`Event.*_COMPLETE` events contains a field `event.responseCode` which provides status information <br />
+and error information about a request. Response code can be one of these values:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;`GoogleBilling.OK`: Indicates that the request was sent to the server successfully. When this code is returned&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+in response to a `checkBillingSupported` function, indicates that billing is supported.<br />
+&lt;ul&gt;<br />
+&lt;li&gt;`GoogleBilling.USER_CANCELED`: Indicates that the user pressed the back button on the checkout page instead of buying the item.&lt;/li&gt;<br />
+&lt;li&gt;`GoogleBilling.SERVICE_UNAVAILABLE`: Indicates that the network connection is down.&lt;/li&gt;<br />
+&lt;li&gt;`GoogleBilling.BILLING_UNAVAILABLE`: Indicates that in-app billing is not available because the API version that&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+you specified is not recognized by the Google Play application or the user is ineligible for in-app billing <br />
+(for example, the user resides in a country that prohibits in-app purchases).<br />
+&lt;ul&gt;<br />
+&lt;li&gt;`GoogleBilling.ITEM_UNAVAILABLE`: Indicates that Google Play cannot find the requested item in the application&#039;s product list.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+This can happen if the product ID is misspelled in your `requestPurchase` function or if an item is unpublished in the application&#039;s product list.<br />
+&lt;ul&gt;<br />
+&lt;li&gt;`GoogleBilling.DEVELOPER_ERROR`: Indicates that an application is trying to make an in-app billing request but the application has not declared the&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+com.android.vending.BILLING permission in its manifest. Can also indicate that an application is not properly signed, <br />
+or that you sent a malformed request, such as a request with missing Bundle keys or a request that uses an unrecognized request type.<br />
+&lt;ul&gt;<br />
+&lt;li&gt;`GoogleBilling.ERROR`: Indicates an unexpected server error. For example, this error is triggered if you try to purchase an item from yourself, which is not allowed by Google Wallet.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+&lt;h3&gt;# Event.CHECK_BILLING_SUPPORTED_COMPLETE&lt;/h3&gt;<br />
+Dispatched when `checkBillingSuported` function completes. It contains `event.responseCode` and `event.productType` fields.<br />
+<br />
+&lt;h3&gt;# Event.REQUEST_PURCHASE_COMPLETE&lt;/h3&gt;<br />
+Dispatched when `requestPurchase` function completes. It contains `event.responseCode`, `event.productId`, `event.productType` and `event.developerPayload` fields.<br />
+<br />
+&lt;h3&gt;# Event.RESTORE_TRANSACTIONS_COMPLETE&lt;/h3&gt;<br />
+Dispatched when `restoreTransactions` function completes. It contains `event.responseCode` fields.<br />
+<br />
+&lt;h3&gt;# Event.CONFIRM_NOTIFICATION_COMPLETE&lt;/h3&gt;<br />
+Dispatched when `confirmNotification` function completes. It contains `event.responseCode` and `event.notificationId` fields.<br />
+<br />
+&lt;h3&gt;# Event.PURCHASE_STATE_CHANGE&lt;/h3&gt;<br />
+Dispatched when information about a transaction is received. It contains `event.purchaseState`, `event.productId`, `event.notificationId`, `event.purchaseTime` and `event.developerPayload` fields.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <constant name="GoogleBilling.OK" page="GoogleBilling.OK" value="ok" version="Gideros 2012.09"><![CDATA[Indicates that the request was sent to the server successfully. When this code is returned in response to a `GoogleBilling:checkBillingSupported` function, indicates that billing is supported.]]></constant>
+  <constant name="GoogleBilling.USER_CANCELED" page="GoogleBilling.USER_CANCELED" value="userCanceled" version="Gideros 2012.09"><![CDATA[Indicates that the user pressed the back button on the checkout page instead of buying the item.]]></constant>
+  <constant name="GoogleBilling.SERVICE_UNAVAILABLE" page="GoogleBilling.SERVICE_UNAVAILABLE" value="serviceUnavailable" version="Gideros 2012.09"><![CDATA[Indicates that the network connection is down.]]></constant>
+  <constant name="GoogleBilling.BILLING_UNAVAILABLE" page="GoogleBilling.BILLING_UNAVAILABLE" value="billingUnavailable" version="Gideros 2012.09"><![CDATA[Indicates that in-app billing is not available because the API version that  you specified is not recognized by the Google Play application or the user is ineligible for in-app billing (for example, the user resides in a country that prohibits in-app purchases).]]></constant>
+  <constant name="GoogleBilling.ITEM_UNAVAILABLE" page="GoogleBilling.ITEM_UNAVAILABLE" value="itemUnavailable" version="Gideros 2012.09"><![CDATA[Indicates that Google Play cannot find the requested item in the application's product list. 
+ This can happen if the product ID is misspelled in your `GoogleBilling:requestPurchase` function or if an item is unpublished in the application's product list.]]></constant>
+  <constant name="GoogleBilling.DEVELOPER_ERROR" page="GoogleBilling.DEVELOPER_ERROR" value="developerError" version="Gideros 2012.09"><![CDATA[Indicates that an application is trying to make an in-app billing request but the application has not declared the com.android.vending.BILLING permission in its manifest. Can also indicate that an application is not properly signed, or that you sent a malformed request, such as a request with missing Bundle keys or a request that uses an unrecognized request type.]]></constant>
+  <constant name="GoogleBilling.ERROR" page="GoogleBilling.ERROR" value="error" version="Gideros 2012.09"><![CDATA[Indicates an unexpected server error. For example, this error is triggered if you try to purchase an item from yourself, which is not allowed by Google Wallet.]]></constant>
+  <constant name="GoogleBilling.PURCHASED" page="GoogleBilling.PURCHASED" value="purchased" version="Gideros 2012.09"><![CDATA[Indicates status of order as purchased. You can unlock the content on this state]]></constant>
+  <constant name="GoogleBilling.CANCELED" page="GoogleBilling.CANCELED" value="canceled" version="Gideros 2012.09"><![CDATA[Indicates status of order as canceled, when user interrupted the purchase in the middle. Don't unlock content on this state.]]></constant>
+  <constant name="GoogleBilling.REFUNDED" page="GoogleBilling.REFUNDED" value="refunded" version="Gideros 2012.09"><![CDATA[Indicates status of order as refunded. Meaning user asked money back, you need to lock the content that you provided previously on this state.]]></constant>
+  <constant name="GoogleBilling.EXPIRED" page="GoogleBilling.EXPIRED" value="expired" version="Gideros 2012.09"><![CDATA[Indicates status of order as expired. It mean that there was a subscription for this user, which now is expired and you need to lock the subscription service back, and probably notify user about renewing this subscription on this state.]]></constant>
+  <constant name="GoogleBilling.INAPP" page="GoogleBilling.INAPP" value="inapp" version="Gideros 2012.09"><![CDATA[Indicates the product type as in app purchase]]></constant>
+  <constant name="GoogleBilling.SUBS" page="GoogleBilling.SUBS" value="subs" version="Gideros 2012.09"><![CDATA[Indicates the product type as subscription]]></constant>
+  <method name="GoogleBilling:setPublicKey" page="setPublicKey" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets the public key. You can find the public key portion of this key pair on your Google Play account&#039;s profile page.<br />
+<br />
+]]>
+    <parameter name="publicKey" optional="false" type="string"><![CDATA[Your Google Play public key]]></parameter>
+  </method>
+  <method name="GoogleBilling:setApiVersion" page="setApiVersion" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets the API version. You can find more information http://developer.android.com/guide/google/play/billing/billing_reference.html#billing-versions<br />
+<br />
+]]>
+    <parameter name="apiVersion" optional="false" type="number"/>
+  </method>
+  <method name="GoogleBilling:checkBillingSupported" page="checkBillingSupported" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+This request verifies that the Google Play application supports in-app billing.<br />
+You usually send this request when your application first starts up. This request is<br />
+useful if you want to enable or disable certain UI features that are relevant only to<br />
+in-app billing.<br />
+<br />
+]]>
+    <parameter name="productType" optional="false" type="string, optional"><![CDATA[The item type. It can be GoogleBilling.INAPP or GoogleBilling.SUBS.]]></parameter>
+    <return type="bool"><![CDATA[`true` if in-app billing service is available, `false` otherwise.]]></return>
+  </method>
+  <method name="GoogleBilling:requestPurchase" page="requestPurchase" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+This request sends a purchase message to the Google Play application and is the foundation of in-app billing.<br />
+You send this request when a user indicates that he or she wants to purchase an item in your application.<br />
+Google Play then handles the financial transaction by displaying the checkout user interface.<br />
+<br />
+]]>
+    <parameter name="productId" optional="false" type="string"/>
+    <parameter name="productType" optional="false" type="string, optional"/>
+    <parameter name="developerPayload" optional="false" type="string, optional"/>
+    <return type="bool"><![CDATA[`true` if in-app billing service is available, `false` otherwise.]]></return>
+  </method>
+  <method name="GoogleBilling:confirmNotification" page="confirmNotification" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+This request acknowledges that your application received the details of a purchase state change.<br />
+<br />
+]]>
+    <parameter name="notificationId" optional="false" type="string"/>
+    <return type="bool"><![CDATA[`true` if in-app billing service is available, `false` otherwise.]]></return>
+  </method>
+  <method name="GoogleBilling:restoreTransactions" page="restoreTransactions" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+This request retrieves a user&#039;s transaction status for managed purchases. You should send this message only when you need to<br />
+retrieve a user&#039;s transaction status, which is usually only when your application is reinstalled or installed for the first time on a device.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if in-app billing service is available, `false` otherwise.]]></return>
+  </method>
+  <event name="Event.CHECK_BILLING_SUPPORTED_COMPLETE" page="Event.CHECK_BILLING_SUPPORTED_COMPLETE" value="checkBillingSupportedComplete" version="Gideros 2012.09"><![CDATA[Dispatched when `GoogleBilling:checkBillingSupported` function completes with these response codes:
+`GoogleBilling.OK` indicates that purchases can be made
+`GoogleBilling.SERVICE_UNAVAILABLE` indicates that the network connection is down and
+`GoogleBilling.BILLING_UNAVAILABLE` indicates that in-app billing is not available because the API version that you specified is not recognized by the Google Play application or the user is ineligible for in-app billing (for example, the user resides in a country that prohibits in-app purchases).]]>
+    <parameter name="responseCode" type="string"><![CDATA[response code]]></parameter>
+    <parameter name="productType" type="string"><![CDATA[type of product available or nil if any product type can be used]]></parameter>
+  </event>
+  <event name="Event.REQUEST_PURCHASE_COMPLETE" page="Event.REQUEST_PURCHASE_COMPLETE" value="requestPurchaseComplete" version="Gideros 2012.09"><![CDATA[Dispatched when `GoogleBilling:requestPurchase` function completes with these response codes:
+`GoogleBilling.USER_CANCELED` indicates that the user pressed the back button on the checkout page instead of buying the item.
+`GoogleBilling.SERVICE_UNAVAILABLE` indicates that the network connection is down.
+`GoogleBilling.BILLING_UNAVAILABLE` indicates that in-app billing is not available because the API version that you specified is not recognized by the Google Play application or the user is ineligible for in-app billing (for example, the user resides in a country that prohibits in-app purchases).
+`GoogleBilling.ITEM_UNAVAILABLE` indicates that Google Play cannot find the requested item in the application's product list.
+`GoogleBilling.DEVELOPER_ERROR` Indicates that an application is trying to make an in-app billing request but the application has not declared the com.android.vending.BILLING permission in its manifest. Can also indicate that an application is not properly signed, or that you sent a malformed request, such as a request with missing Bundle keys or a request that uses an unrecognized request type.
+`GoogleBilling.ERROR` indicates an unexpected server error. For example, this error is triggered if you try to purchase an item from yourself, which is not allowed by Google Wallet.]]>
+    <parameter name="productId" type="string"><![CDATA[your given id of the product purchased]]></parameter>
+    <parameter name="responseCode" type="string"><![CDATA[response code.]]></parameter>
+    <parameter name="productType" type="string"><![CDATA[type of the product purchased]]></parameter>
+    <parameter name="developerPayload" type="string"><![CDATA[A developer-specified string that can be specified when you make a purchase request.]]></parameter>
+  </event>
+  <event name="Event.RESTORE_TRANSACTIONS_COMPLETE" page="Event.RESTORE_TRANSACTIONS_COMPLETE" value="restoreTransactionsComplete" version="Gideros 2012.09"><![CDATA[Dispatched when `GoogleBilling:restoreTransactions` function completes with these response codes:
+`GoogleBilling.OK` indicates that the request was sent to the server successfully.
+`GoogleBilling.ERROR` indicates an unexpected server error. For example, this error is triggered if you try to purchase an item from yourself, which is not allowed by Google Wallet.
+`GoogleBilling.DEVELOPER_ERROR` indicates that an application is trying to make an in-app billing request but the application has not declared the  com.android.vending.BILLING permission in its manifest. Can also indicate that an application is not properly signed, or that you sent a malformed request, such as a request with missing Bundle keys or a request that uses an unrecognized request type.]]>
+    <parameter name="responseCode" type="string"><![CDATA[response code]]></parameter>
+  </event>
+  <event name="Event.CONFIRM_NOTIFICATION_COMPLETE" page="Event.CONFIRM_NOTIFICATION_COMPLETE" value="confirmNotificationComplete" version="Gideros 2012.09"><![CDATA[Dispatched when `GoogleBilling:confirmNotification` function completes with these response codes:
+`GoogleBilling.OK` indicates that the request was sent to the server successfully.
+`GoogleBilling.ERROR` indicates an unexpected server error. For example, this error is triggered if you try to purchase an item from yourself, which is not allowed by Google Wallet.
+`GoogleBilling.DEVELOPER_ERROR` indicates that an application is trying to make an in-app billing request but the application has not declared the  com.android.vending.BILLING permission in its manifest. Can also indicate that an application is not properly signed, or that you sent a malformed request, such as a request with missing Bundle keys or a request that uses an unrecognized request type.]]>
+    <parameter name="responseCode" type="string"><![CDATA[response code]]></parameter>
+    <parameter name="notificationId" type="string"><![CDATA[id of notification that was confirmed]]></parameter>
+  </event>
+  <event name="Event.PURCHASE_STATE_CHANGE" page="Event.PURCHASE_STATE_CHANGE" value="purchaseStateChange" version="Gideros 2012.09"><![CDATA[Dispatched when information about a transaction is received with these purchase states:
+`GoogleBilling.CANCELED` indicates that purchase was canceled
+`GoogleBilling.PURCHASED` indicates that item was purchased you can enable it in your app
+`GoogleBilling.REFUNDED` indicates that item previously purchased was refunded, remove purchased item from users app
+`GoogleBilling.EXPIRED` indicates that item previously subscribed is expired, disable any subscription services]]>
+    <parameter name="purchaseState" type="string"><![CDATA[purchase state]]></parameter>
+    <parameter name="productId" type="string"><![CDATA[your assigned product id]]></parameter>
+    <parameter name="notificationId" type="string"><![CDATA[id of notification, that you need to confirm]]></parameter>
+    <parameter name="purchaseTime" type="string"><![CDATA[time when purchase was made]]></parameter>
+    <parameter name="developerPayload" type="string"><![CDATA[A developer-specified string that can be specified when you make a purchase request.]]></parameter>
+  </event>
+</object>

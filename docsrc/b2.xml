@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2" page="b2" parent="" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+To load the Box2D library, call `require &quot;box2d&quot;`. After loading Box2D library, `b2` table stores all <br />
+classes and functions related to Box2D physics library. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="b2.GEAR_JOINT" page="b2.GEAR_JOINT" value="6" version="Gideros 2011.6"/>
+  <constant name="b2.FRICTION_JOINT" page="b2.FRICTION_JOINT" value="9" version="Gideros 2011.6"/>
+  <constant name="b2.WHEEL_JOINT" page="b2.WHEEL_JOINT" value="7" version="Gideros 2011.6"/>
+  <constant name="b2.STATIC_BODY" page="b2.STATIC_BODY" value="0" version="Gideros 2011.6"/>
+  <constant name="b2.MOUSE_JOINT" page="b2.MOUSE_JOINT" value="5" version="Gideros 2011.6"/>
+  <constant name="b2.ROPE_JOINT" page="b2.ROPE_JOINT" value="10" version="Gideros 2011.6"/>
+  <constant name="b2.DISTANCE_JOINT" page="b2.DISTANCE_JOINT" value="3" version="Gideros 2011.6"/>
+  <constant name="b2.KINEMATIC_BODY" page="b2.KINEMATIC_BODY" value="1" version="Gideros 2011.6"/>
+  <constant name="b2.PULLEY_JOINT" page="b2.PULLEY_JOINT" value="4" version="Gideros 2011.6"/>
+  <constant name="b2.DYNAMIC_BODY" page="b2.DYNAMIC_BODY" value="2" version="Gideros 2011.6"/>
+  <constant name="b2.REVOLUTE_JOINT" page="b2.REVOLUTE_JOINT" value="1" version="Gideros 2011.6"/>
+  <constant name="b2.WELD_JOINT" page="b2.WELD_JOINT" value="8" version="Gideros 2011.6"/>
+  <constant name="b2.PRISMATIC_JOINT" page="b2.PRISMATIC_JOINT" value="2" version="Gideros 2011.6"/>
+  <method name="b2.setScale" page="setScale" shortdesc="sets the global pixels to meters scale" version="Gideros 2011.6"><![CDATA[<br />
+Box2D is tuned for MKS (meters-kilogram-second) units and the size of moving objects should roughly between 0.1 and 10 meters.<br />
+If you directly use the pixels as your units, unfortunately this will lead to a poor simulation and possibly weird behavior.<br />
+<br />
+Gideros uses an internal scale system to convert between meters and pixels. By default, the value of this scale is 30<br />
+which means 1 meter = 30 pixels. This is a global value and effects all the physics system. Therefore, it is recommended to set this<br />
+value once before any physical objects are instantiated (e.g. right after calling `require &quot;box2d&quot;`)<br />
+<br />
+]]>
+    <parameter name="scale" optional="false" type="number"><![CDATA[- the global pixels to meters scale]]></parameter>
+  </method>
+  <method name="b2.getScale" page="getScale" shortdesc="returns the global pixels to meters scale" version="Gideros 2011.6"><![CDATA[<br />
+Returns the global pixels to meters scale (Please refer to [[b2.setScale]] function for more information about pixels to meters scaling).<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The global pixels to meters scale]]></return>
+  </method>
+  <method name="b2.createRevoluteJointDef" page="createRevoluteJointDef" shortdesc="creates and returns a revolute joint definition table" version="Gideros 2011.6"><![CDATA[<br />
+Creates and returns a revolute joint definition table with the bodies, local anchors, and reference angle using a world anchor point.<br />
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a revolute joint).<br />
+<br />
+]]>
+    <parameter name="bodyA" optional="false" type="b2.Body"><![CDATA[the first attached body]]></parameter>
+    <parameter name="bodyB" optional="false" type="b2.Body"><![CDATA[the second attached body]]></parameter>
+    <parameter name="anchorx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point]]></parameter>
+    <parameter name="anchory" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point]]></parameter>
+    <return type="table"><![CDATA[A new revolute joint definition table]]></return>
+    <example><![CDATA[local jointdef = b2.createRevoluteJointDef(bodyA, bodyB, anchorx, anchory)<br />
+local joint = b2.World:createJoint(jointdef)<br />
+]]></example>
+    <example name="Revolute joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+ground:setPosition(300, 480)
+
+local jointDef = b2.createRevoluteJointDef(body, ground, 300, 300)
+local revoluteJoint = world:createJoint(jointDef)
+--will not let ball spin for ever
+revoluteJoint:setMaxMotorTorque(1)
+revoluteJoint:enableMotor(true)]]></example>
+  </method>
+  <method name="b2.createPrismaticJointDef" page="createPrismaticJointDef" shortdesc="creates and returns a prismatic joint definition table" version="Gideros 2011.6"><![CDATA[<br />
+Creates and returns a prismatic joint definition table with the bodies, anchors, axis, and reference angle using the world anchor and world axis.<br />
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a prismatic joint).<br />
+<br />
+]]>
+    <parameter name="bodyA" optional="false" type="b2.Body"><![CDATA[the first attached body]]></parameter>
+    <parameter name="bodyB" optional="false" type="b2.Body"><![CDATA[the second attached body]]></parameter>
+    <parameter name="anchorx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point]]></parameter>
+    <parameter name="anchory" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point]]></parameter>
+    <parameter name="axisx" optional="false" type="number"><![CDATA[the x coordinate of the world axis]]></parameter>
+    <parameter name="axisy" optional="false" type="number"><![CDATA[the y coordinate of the world axis]]></parameter>
+    <return type="table"><![CDATA[A new prismatic joint definition table]]></return>
+    <example name="Prismatic joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+ground:setPosition(465, 480)
+
+--axisx, 	axisy	values usually between 0 and 1
+--0			0		moves freely
+--0			1		moves on y axis
+--1			0		moves on x axis
+--1			1		moves on diagonal
+local jointDef = b2.createPrismaticJointDef(body, ground, 350, 100, 0.3, 1)
+local prismaticJoint = world:createJoint(jointDef)]]></example>
+  </method>
+  <method name="b2.createDistanceJointDef" page="createDistanceJointDef" shortdesc="creates and returns a distance joint definition table" version="Gideros 2011.6"><![CDATA[<br />
+Creates and returns a distance joint definition table with the bodies, anchors, and length using the world anchors.<br />
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a distance joint).<br />
+<br />
+]]>
+    <parameter name="bodyA" optional="false" type="b2.Body"><![CDATA[the first attached body]]></parameter>
+    <parameter name="bodyB" optional="false" type="b2.Body"><![CDATA[the second attached body]]></parameter>
+    <parameter name="anchorAx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point of bodyA]]></parameter>
+    <parameter name="anchorAy" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point of bodyA]]></parameter>
+    <parameter name="anchorBx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point of bodyB]]></parameter>
+    <parameter name="anchorBy" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point of bodyB]]></parameter>
+    <return type="table"><![CDATA[A new distance joint definition table]]></return>
+    <example name="Distance joint"><![CDATA[local jointDef = b2.createDistanceJointDef(body1, body2, 100, 100, 200, 100)
+local distanceJoint = world:createJoint(jointDef)
+--by default length between two bodies is the length they have between them when joint was created
+--but it is possilbe to change it using
+distanceJoint:setLength(200)
+distanceJoint:setDampingRatio(0.5)
+distanceJoint:setFrequency(4)]]></example>
+  </method>
+  <method name="b2.createPulleyJointDef" page="createPulleyJointDef" shortdesc="creates and returns a pulley joint definition table" version="Gideros 2011.6"><![CDATA[<br />
+Creates and returns a pulley joint definition table with the bodies, anchors, lengths, max lengths, and ratio using the world anchors.<br />
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a pulley joint).<br />
+<br />
+]]>
+    <parameter name="bodyA" optional="false" type="b2.Body"><![CDATA[the first attached body]]></parameter>
+    <parameter name="bodyB" optional="false" type="b2.Body"><![CDATA[the second attached body]]></parameter>
+    <parameter name="groundAnchorAx" optional="false" type="number"><![CDATA[the x coordinate of the first ground anchor in world coordinates. This point never moves.]]></parameter>
+    <parameter name="groundAnchorAy" optional="false" type="number"><![CDATA[the y coordinate of the first ground anchor in world coordinates. This point never moves.]]></parameter>
+    <parameter name="groundAnchorBx" optional="false" type="number"><![CDATA[the x coordinate of the second ground anchor in world coordinates. This point never moves.]]></parameter>
+    <parameter name="groundAnchorBy" optional="false" type="number"><![CDATA[the y coordinate of the second ground anchor in world coordinates. This point never moves.]]></parameter>
+    <parameter name="anchorAx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point of bodyA]]></parameter>
+    <parameter name="anchorAy" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point of bodyA]]></parameter>
+    <parameter name="anchorBx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point of bodyB]]></parameter>
+    <parameter name="anchorBy" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point of bodyB]]></parameter>
+    <parameter name="ratio" optional="false" type="number"><![CDATA[the pulley ratio, used to simulate a block-and-tackle]]></parameter>
+    <return type="table"><![CDATA[A new pulley joint definition table]]></return>
+    <example name="Pulley joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+
+local jointDef = b2.createPulleyJointDef(body1, body2, 
+	200, 100, --coordinates where "imaginary string" is attached in the air for body 1
+	350, 100, --coordinates where "imaginary string" is attached in the air for body 2
+	200, 300, --coordinates where "imaginary string" is attached to the body 1
+	350, 300, --coordinates where "imaginary string" is attached in the body 2
+	1) -- ratio (if < 1 -> makes body 2 heavier, > 1 makes body 1 heavier, =1 makes them equal
+local pulleyJoint = world:createJoint(jointDef)]]></example>
+  </method>
+  <method name="b2.createMouseJointDef" page="createMouseJointDef" shortdesc="creates and returns a mouse joint definition table" version="Gideros 2011.6"><![CDATA[<br />
+Creates and returns a mouse joint definition table with the bodies, world target point, maxForce and optional frequencyHz and dampingRatio.<br />
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a mouse joint).<br />
+<br />
+]]>
+    <parameter name="bodyA" optional="false" type="b2.Body"><![CDATA[the first attached body]]></parameter>
+    <parameter name="bodyB" optional="false" type="b2.Body"><![CDATA[the second attached body]]></parameter>
+    <parameter name="targetx" optional="false" type="number"><![CDATA[the x coordinate of the world target point]]></parameter>
+    <parameter name="targety" optional="false" type="number"><![CDATA[the y coordinate of the world target point]]></parameter>
+    <parameter name="maxForce" optional="false" type="number"><![CDATA[the maximum constraint force that can be exerted to move the candidate body]]></parameter>
+    <parameter name="frequencyHz" optional="false" type="number, default = 5"><![CDATA[the response speed]]></parameter>
+    <parameter name="dampingRatio" optional="false" type="number, default = 0.7"><![CDATA[the damping ratio. 0 = no damping, 1 = critical damping]]></parameter>
+    <return type="table"><![CDATA[A new mouse joint definition table]]></return>
+    <example name="Mouse joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+
+--joint with dummy body
+local mouseJoint = nil
+
+-- create a mouse joint on mouse down
+function self:onMouseDown(event)
+	local jointDef = b2.createMouseJointDef(ground, body, event.x, event.y, 100000)
+	mouseJoint = world:createJoint(jointDef)
+end
+
+-- update the target of mouse joint on mouse move
+function self:onMouseMove(event)
+	if mouseJoint ~= nil then
+		mouseJoint:setTarget(event.x, event.y)
+	end
+end
+
+-- destroy the mouse joint on mouse up
+function self:onMouseUp(event)
+	if mouseJoint ~= nil then
+		world:destroyJoint(mouseJoint)
+		mouseJoint = nil
+	end
+end]]></example>
+  </method>
+  <method name="b2.createGearJointDef" page="createGearJointDef" shortdesc="creates and returns a gear joint definition table" version="Gideros 2011.6"><![CDATA[<br />
+Creates and returns a gear joint definition table.<br />
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a gear joint).<br />
+<br />
+]]>
+    <parameter name="bodyA" optional="false" type="b2.Body"><![CDATA[the first attached body]]></parameter>
+    <parameter name="bodyB" optional="false" type="b2.Body"><![CDATA[the second attached body]]></parameter>
+    <parameter name="joint1" optional="false" type="b2.Joint"><![CDATA[the first revolute/prismatic joint attached to the gear joint]]></parameter>
+    <parameter name="joint2" optional="false" type="b2.Joint"><![CDATA[the second revolute/prismatic joint attached to the gear joint]]></parameter>
+    <parameter name="ratio" optional="false" type="number, default = 1"><![CDATA[the gear ratio]]></parameter>
+    <return type="table"><![CDATA[A new gear joint definition table]]></return>
+    <example name="Gear joint combining revolute and prismatic joints"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+
+--create revolute joint
+--note that ground should be passed as first parameter here
+local jointDef = b2.createRevoluteJointDef(ground, body1, 300, 300)
+local revoluteJoint = world:createJoint(jointDef)
+--set motor
+revoluteJoint:setMaxMotorTorque(1)
+revoluteJoint:enableMotor(true)
+
+--axisx, 	axisy	values usually between 0 and 1
+--note that ground should be passed as first parameter here
+local jointDef = b2.createPrismaticJointDef(ground, body2, 350, 100, 0.3, 1)
+local prismaticJoint = world:createJoint(jointDef)
+--set motor
+prismaticJoint:setMaxMotorForce(1)
+prismaticJoint:enableMotor(true)
+
+
+--create gear joint using two already created joints
+local jointDef = b2.createGearJointDef(body1, body2, revoluteJoint, prismaticJoint, 1)
+local gearJoint = world:createJoint(jointDef)]]></example>
+  </method>
+  <method name="b2.createWheelJointDef" page="createWheelJointDef" shortdesc="creates and returns a wheel joint definition table" version="Gideros 2011.6"><![CDATA[<br />
+Creates and returns a wheel joint definition table.<br />
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a wheel joint).<br />
+<br />
+]]>
+    <parameter name="bodyA" optional="false" type="b2.Body"><![CDATA[the first attached body]]></parameter>
+    <parameter name="bodyB" optional="false" type="b2.Body"><![CDATA[the second attached body]]></parameter>
+    <parameter name="anchorx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point]]></parameter>
+    <parameter name="anchory" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point]]></parameter>
+    <parameter name="axisx" optional="false" type="number"><![CDATA[the x coordinate of the world translation axis in bodyA]]></parameter>
+    <parameter name="axisy" optional="false" type="number"><![CDATA[the y coordinate of the world translation axis in bodyA]]></parameter>
+    <return type="table"><![CDATA[A new wheel joint definition table]]></return>
+    <example name="Wheel joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+ground:setPosition(350, 480)
+
+--axisx, 	axisy	values usually between 0 and 1
+--0			0		moves freely
+--0			1		force pulling back on y axis
+--1			0		force pulling back on x axis
+--1			1		force pulling back all diretions
+local jointDef = b2.createWheelJointDef(body, ground, 350, 200, 1, 1)
+local wheelJoint = world:createJoint(jointDef)]]></example>
+  </method>
+  <method name="b2.createWeldJointDef" page="createWeldJointDef" shortdesc="creates and returns a weld joint definition table" version="Gideros 2011.6"><![CDATA[<br />
+Creates and returns a weld joint definition table with the bodies, anchors, and reference angle using a world anchor point.<br />
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a weld joint).<br />
+<br />
+]]>
+    <parameter name="bodyA" optional="false" type="b2.Body"><![CDATA[the first attached body]]></parameter>
+    <parameter name="bodyB" optional="false" type="b2.Body"><![CDATA[the second attached body]]></parameter>
+    <parameter name="anchorAx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point of bodyA]]></parameter>
+    <parameter name="anchorAy" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point of bodyA]]></parameter>
+    <parameter name="anchorBx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point of bodyB]]></parameter>
+    <parameter name="anchorBy" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point of bodyB]]></parameter>
+    <return type="table"><![CDATA[A new weld joint definition table]]></return>
+    <example name="Weld joint"><![CDATA[local jointDef = b2.createWeldJointDef(body1, body2, 100, 100, 130, 100)
+local weldJoint = world:createJoint(jointDef)]]></example>
+  </method>
+  <method name="b2.createFrictionJointDef" page="createFrictionJointDef" shortdesc="creates and returns a friction joint definition table" version="Gideros 2011.6"><![CDATA[<br />
+Creates and returns a friction joint definition table with the bodies and local anchors using a world anchor point.<br />
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a friction joint).<br />
+<br />
+]]>
+    <parameter name="bodyA" optional="false" type="b2.Body"><![CDATA[the first attached body]]></parameter>
+    <parameter name="bodyB" optional="false" type="b2.Body"><![CDATA[the second attached body]]></parameter>
+    <parameter name="anchorx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point]]></parameter>
+    <parameter name="anchory" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point]]></parameter>
+    <return type="table"><![CDATA[A new friction joint definition table]]></return>
+    <example name="Friction joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+ground:setPosition(350, 480)
+
+--create friction joint
+local jointDef = b2.createFrictionJointDef(body, ground, 350, 200)
+local frictionJoint = world:createJoint(jointDef)
+
+--set maximum friction force to slow down the ball
+frictionJoint:setMaxForce(100)]]></example>
+  </method>
+  <method name="b2.createRopeJointDef" page="createRopeJointDef" shortdesc="" version="Gideros 2012.09.3"><![CDATA[<br />
+Creates and returns a rope joint definition table with the bodies and local anchors using a world anchor point.<br />
+(Please refer to [[b2.World:createJoint]] function for more information about all the information needed to create a rope joint).<br />
+<br />
+]]>
+    <parameter name="bodyA" optional="false" type="b2.Body"><![CDATA[the first attached body]]></parameter>
+    <parameter name="bodyB" optional="false" type="b2.Body"><![CDATA[the second attached body]]></parameter>
+    <parameter name="anchorAx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point of bodyA]]></parameter>
+    <parameter name="anchorAy" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point of bodyA]]></parameter>
+    <parameter name="anchorBx" optional="false" type="number"><![CDATA[the x coordinate of the world anchor point of bodyB]]></parameter>
+    <parameter name="anchorBy" optional="false" type="number"><![CDATA[the y coordinate of the world anchor point of bodyB]]></parameter>
+    <parameter name="maxLength" optional="false" type="number"><![CDATA[the maximum length of the rope]]></parameter>
+    <return type="table"><![CDATA[A new rope joint definition table]]></return>
+  </method>
+</object>

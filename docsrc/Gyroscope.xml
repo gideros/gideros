@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Gyroscope" page="Gyroscope" parent="Object" type="gideros" version="Gideros 2012.8"><![CDATA[<br />
+The `Gyroscope` class is used to access gyroscope data. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <method name="Gyroscope.isAvailable" page="isAvailable" shortdesc="Gyroscope - does the gyroscope available?" version="Gideros 2012.8"><![CDATA[<br />
+Returns `true` if gyroscope is available for this platform, `false` otherwise.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if gyroscope is available for this platform, `false` otherwise.]]></return>
+  </method>
+  <method name="Gyroscope:start" page="start" shortdesc="Gyroscope - starts gyroscope updates" version="Gideros 2012.8"><![CDATA[<br />
+Starts the generation of gyroscope samples.<br />
+<br />
+]]></method>
+  <method name="Gyroscope:stop" page="stop" shortdesc="Gyroscope - stops gyroscope updates" version="Gideros 2012.8"><![CDATA[<br />
+Stops the generation of gyroscope samples.<br />
+<br />
+]]></method>
+  <method name="Gyroscope:getRotationRate" page="getRotationRate" shortdesc="Gyroscope - returns the rotation rate in radians per second" version="Gideros 2012.8"><![CDATA[<br />
+Returns the device&#039;s rate of rotation around three axes in radians per second.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[rate of rotation around x]]></return>
+    <return type="number"><![CDATA[rate of rotation around y]]></return>
+    <return type="number"><![CDATA[rate of rotation around z]]></return>
+  </method>
+  <method name="Gyroscope.new" page="new" shortdesc="Creates new Gyroscope instance" version="Gideros 2012.8"><![CDATA[Creates new Gyroscope instance]]></method>
+  <example name=""><![CDATA[local gyroscope = Gyroscope.new()<br />
+gyroscope:start()<br />
+<br />
+local angx = 0<br />
+local angy = 0<br />
+local angz = 0<br />
+local function onEnterFrame(event)<br />
+	local x, y, z = gyroscope:getRotationRate()<br />
+		<br />
+	angx = angx   x * event.deltaTime<br />
+	angy = angy   y * event.deltaTime<br />
+	angz = angz   z * event.deltaTime<br />
+		<br />
+	print(angx * 180 / math.pi, angy * 180 / math.pi, angz * 180 / math.pi)<br />
+end<br />
+<br />
+stage:addEventListener(&quot;enterFrame&quot;, onEnterFrame)]]></example>
+</object>

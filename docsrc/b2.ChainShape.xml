@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.ChainShape" page="b2ChainShape" parent="b2.Shape" type="physics" version="Gideros 2012.2.2"><![CDATA[<br />
+A chain shape is a free form sequence of line segments. The chain has two-sided collision, so you can use inside <br />
+and outside collision. Therefore, you may use any winding order. Connectivity information is used to create smooth collisions.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;*Note:** The chain will not collide properly if there are self-intersections.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.ChainShape.new" page="new" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `b2.ChainShape` object.<br />
+<br />
+]]></method>
+  <method name="b2.ChainShape:createChain" page="createChain" shortdesc="creates a chain with isolated end vertices" version="Gideros 2011.6"><![CDATA[<br />
+Creates a chain with isolated end vertices.<br />
+<br />
+]]>
+    <parameter name="vertices" optional="false" type="any"><![CDATA[A list of numbers that contains the x, y coordinates of the vertices sequentially]]></parameter>
+  </method>
+  <method name="b2.ChainShape:createLoop" page="createLoop" shortdesc="creates a loop" version="Gideros 2011.6"><![CDATA[<br />
+Creates a loop. This automatically adjusts connectivity.<br />
+<br />
+]]>
+    <parameter name="vertices" optional="false" type="any"><![CDATA[A list of numbers that contains the x, y coordinates of the vertices sequentially]]></parameter>
+  </method>
+  <example name="Create world bounds using ChainShape"><![CDATA[local body = world:createBody{type = b2.STATIC_BODY}
+body:setPosition(0, 0)
+local chain = b2.ChainShape.new()
+chain:createLoop(
+	0,0,
+	application:getContentWidth(), 0,
+	application:getContentWidth(), application:getContentHeight(),
+	0, application:getContentHeight()
+)
+local fixture = body:createFixture{shape = chain, density = 1.0, 
+friction = 1, restitution = 0.3}]]></example>
+</object>

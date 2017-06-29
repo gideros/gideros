@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Stage" page="Stage" parent="Sprite" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+<br />
+The `Stage` class represents the top of the scene tree hierarchy. The instances of `Stage` is not created directly (there is not any `Stage.new` function) but<br />
+there is already a global variable `stage`.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Stage:setClearColorBuffer" page="setClearColorBuffer" shortdesc="Enable/disable draw call for background color" version="Gideros 2011.6"><![CDATA[If you are covering whole background with image, you can disable background color draw call for better performance]]>
+    <parameter name="state" optional="false" type="bool"><![CDATA[false to disable draw call, true to enable]]></parameter>
+  </method>
+</object>

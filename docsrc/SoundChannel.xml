@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="SoundChannel" page="SoundChannel" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The `SoundChannel` class is used to control and monitor a playing sound.<br />
+<br />
+<h3>SoundChannel Events</h3><br />
+<ul><br />
+<li>`Event.COMPLETE = "complete"` When the sound channel has finished playing, `Event.COMPLETE` event is dispatched.</li><br />
+</ul><br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="SoundChannel:stop" page="stop" shortdesc="stops the sound playing in the channel" version="Gideros 2011.6"><![CDATA[<br />
+Stops the sound playing in the channel.<br />
+<br />
+]]></method>
+  <method name="SoundChannel:setPosition" page="setPosition" shortdesc="sets the position of the current playback" version="Gideros 2011.6"><![CDATA[<br />
+Sets the current playback position in miliseconds.<br />
+<br />
+]]>
+    <parameter name="position" optional="false" type="number"><![CDATA[position of the channel to set in miliseconds]]></parameter>
+  </method>
+  <method name="SoundChannel:getPosition" page="getPosition" shortdesc="returns the position of the current playback" version="Gideros 2011.6"><![CDATA[<br />
+If the sound is playing, `getPosition` returns the position of the current playback, measured in miliseconds from the start of the sound.<br />
+If the sound is not playing (paused or stopped), `getPosition` returns the last point that was played.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The position of the sound in miliseconds.]]></return>
+  </method>
+  <method name="SoundChannel:setVolume" page="setVolume" shortdesc="sets the volume of the sound channel" version="Gideros 2011.6"><![CDATA[<br />
+Sets the volume of the sound channel.<br />
+<br />
+]]>
+    <parameter name="volume" optional="false" type="number"><![CDATA[The new volume of the sound channel. Valid range of this parameter is between 0.0 and 1.0, where 1.0 is the maximum volume value.]]></parameter>
+  </method>
+  <method name="SoundChannel:getVolume" page="getVolume" shortdesc="returns the current volume of the sound channel" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current volume of the sound channel.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current volume of the sound channel.]]></return>
+  </method>
+  <method name="SoundChannel:setPitch" page="setPitch" shortdesc="sets the pitch of the sound channel" version="Gideros 2012.09.3"><![CDATA[<br />
+Sets the pitch relative to the pitch of the original sound channel. 
+Default pitch is 1. 
+Setting pitch as 0.5 will make the pitch lower
+Setting pitch as 1.5 will make the pitch higher
+You cannot set the pitch of a background music (mp3).<br />
+<br />
+]]>
+    <parameter name="pitch" optional="false" type="number"><![CDATA[pitch relative to original (1 < - higher pitch, 1 > 0 lower pitch)]]></parameter>
+  </method>
+  <method name="SoundChannel:getPitch" page="getPitch" shortdesc="returns the current pitch of the sound channel" version="Gideros 2012.09.3"><![CDATA[<br />
+Returns the current pitch of the sound channel. (Original pitch is 1)<br />
+<br />
+]]>
+    <return type="any"><![CDATA[The current pitch of the sound channel.]]></return>
+    <return type="any"><![CDATA[The current pitch of the sound channel.]]></return>
+  </method>
+  <method name="SoundChannel:setPaused" page="setPaused" shortdesc="sets the paused state of the channel" version="Gideros 2011.6"><![CDATA[<br />
+Sets the paused state of the channel.  <br />
+<br />
+]]>
+    <parameter name="paused" optional="false" type="boolean"><![CDATA[paused state to set]]></parameter>
+  </method>
+  <method name="SoundChannel:isPaused" page="isPaused" shortdesc="returns the paused state of the channel" version="Gideros 2011.6"><![CDATA[<br />
+Returns the paused state of the channel.  <br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if the channel is paused, `false` otherwise.]]></return>
+  </method>
+  <method name="SoundChannel:setLooping" page="setLooping" shortdesc="sets the looping state of the channel" version="Gideros 2011.6"><![CDATA[<br />
+Sets the looping state of the channel.  <br />
+<br />
+]]>
+    <parameter name="looping" optional="false" type="boolean"><![CDATA[looping state to set]]></parameter>
+  </method>
+  <method name="SoundChannel:isLooping" page="isLooping" shortdesc="returns the looping state of the channel" version="Gideros 2011.6"><![CDATA[<br />
+Returns the looping state of the channel.  <br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if the channel is looping, `false` otherwise.]]></return>
+  </method>
+  <method name="SoundChannel:isPlaying" page="isPlaying" shortdesc="returns the playing state for the sound channel" version="Gideros 2011.6"><![CDATA[<br />
+Returns the playing state for the sound channel.  <br />
+<br />
+]]>
+    <return type="any"><![CDATA[`true` if the channel is currently playing a sound, `false` otherwise.]]></return>
+    <return type="any"><![CDATA[`true` if the channel is currently playing a sound, `false` otherwise.]]></return>
+  </method>
+  <method name="SoundChannel:setWorldPosition" page="setWorldPosition" shortdesc="" version="in development"><![CDATA[Sets the position of this sound in a 3D world]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[X coordinate of this sound]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[Y coordinate of this sound]]></parameter>
+    <parameter name="z" optional="true" type="number"><![CDATA[Z coordinate of this sound]]></parameter>
+    <parameter name="vx" optional="true" type="number"><![CDATA[X component of this sound's velocity]]></parameter>
+    <parameter name="vy" optional="true" type="number"><![CDATA[Y component of this sound's velocity]]></parameter>
+    <parameter name="vz" optional="true" type="number"><![CDATA[Z component of this sound's velocity]]></parameter>
+  </method>
+  <event name="Event.COMPLETE" page="Event.COMPLETE" value="complete" version="Gideros 2011.6"><![CDATA[This event is dispatched when the sound channel has finished playing.]]></event>
+</object>

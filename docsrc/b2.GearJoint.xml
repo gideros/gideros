@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.GearJoint" page="b2GearJoint" parent="b2.Joint" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A gear joint is used to connect two joints together. Either joint can be a revolute or prismatic joint. You specify a gear ratio to bind the motions together: coordinate1   ratio * coordinate2 = constant The ratio can be negative or positive. If one joint is a revolute joint and the other joint is a prismatic joint, then the ratio will have units of length or units of 1/length.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.GearJoint:setRatio" page="setRatio" shortdesc="sets the gear ratio" version="Gideros 2011.6"><![CDATA[<br />
+Sets the gear ratio. <br />
+<br />
+]]>
+    <parameter name="ratio" optional="false" type="number"><![CDATA[the gear ratio]]></parameter>
+  </method>
+  <method name="b2.GearJoint:getRatio" page="getRatio" shortdesc="returns the gear ratio" version="Gideros 2011.6"><![CDATA[<br />
+Returns the gear ratio. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The gear ratio]]></return>
+  </method>
+  <example name="Gear joint combining revolute and prismatic joints"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+
+--create revolute joint
+--note that ground should be passed as first parameter here
+local jointDef = b2.createRevoluteJointDef(ground, body1, 300, 300)
+local revoluteJoint = world:createJoint(jointDef)
+--set motor
+revoluteJoint:setMaxMotorTorque(1)
+revoluteJoint:enableMotor(true)
+
+--axisx, 	axisy	values usually between 0 and 1
+--note that ground should be passed as first parameter here
+local jointDef = b2.createPrismaticJointDef(ground, body2, 350, 100, 0.3, 1)
+local prismaticJoint = world:createJoint(jointDef)
+--set motor
+prismaticJoint:setMaxMotorForce(1)
+prismaticJoint:enableMotor(true)
+
+
+--create gear joint using two already created joints
+local jointDef = b2.createGearJointDef(body1, body2, revoluteJoint, prismaticJoint, 1)
+local gearJoint = world:createJoint(jointDef)]]></example>
+</object>

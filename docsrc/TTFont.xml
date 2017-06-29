@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="TTFont" page="TTFont" parent="FontBase" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The `TTFont` class is used to load true type fonts. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="TTFont.new" page="new" shortdesc="creates a new TTFont object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `TTFont` object.<br />
+<br />
+]]>
+    <parameter name="filename" optional="false" type="string"><![CDATA[The name of the TTF file to be loaded]]></parameter>
+    <parameter name="size" optional="false" type="number"><![CDATA[size of the font]]></parameter>
+    <parameter name="text" optional="false" type="string, optional"><![CDATA[if specified, TTFont caches the characters of specified text to speed up the rendering]]></parameter>
+    <parameter name="filtering" optional="false" type="boolean, default = false"><![CDATA[Whether or not the font texture is filtered]]></parameter>
+  </method>
+  <example name=""><![CDATA[local font = TTFont.new("tahoma.ttf", 30)]]></example>
+</object>
