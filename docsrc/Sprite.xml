@@ -546,6 +546,30 @@ Sets the rotation of the sprite in degrees around y axis.<br />
   <method name="Sprite:setShader" page="setShader" shortdesc="Set shader for this sprite" version="Gideros 2015.06.30"><![CDATA[Set shader for this sprite. If nil is provided, sets default shader for current object]]>
     <parameter name="shader" optional="false" type="Shader"><![CDATA[shader to use for this object]]></parameter>
   </method>
+  <method name="Sprite:setShaderConstant" page="setShaderConstant" shortdesc="Change the value of a uniform for this sprite" version="Gideros 2017.4"><![CDATA[To change the value of a uniform from lua]]>
+    <parameter name="uniform name" optional="false" type="string"><![CDATA[The uniform name to change]]></parameter>
+    <parameter name="data type" optional="false" type="int"><![CDATA[The type if data to set (one of the Shader.Cxxx constants)]]></parameter>
+    <parameter name="mult" optional="false" type="number"><![CDATA[number of elements of the given type to set]]></parameter>
+    <parameter name="data" optional="false" type="varies"><![CDATA[And the actual data to set, either as a table or as multiple arguments]]></parameter>
+  </method>
+  <method name="Sprite:setStencilOperation" page="setStencilOperation" shortdesc="Set the stencil operation for this sprite" version="Gideros 2017.6">
+    <parameter name="op" optional="false" type="table">
+    	<![CDATA[A table containing the stencil operation settings, or nil to disable stencil]]>
+    </parameter>
+    <![CDATA[Allows to set a stencil operation to be used when drawing this sprite.<br />
+    The table can contain the following fields:<br />
+    <ul>
+    <li><b>stencilClear</b>: (boolean) whether the stencil should be cleared beforehand.</li>
+    <li><b>stencilMask</b>: (integer) the mask value used in stencil operations.</li>
+    <li><b>stencilRef</b>: (integer) the reference value used in stencil operations.</li>
+    <li><b>stencilFunc</b>: (integer) the stencil function to use.</li>
+    <li><b>stencilFail</b>: (integer) the stencil operation when stencil test failed.</li>
+    <li><b>depthFail</b>: (integer) the stencil operation when depth test failed.</li>
+    <li><b>depthPass</b>: (integer) the stencil operation when depth test has passed.</li>
+    </ul><br />
+    Stencil function and operations code are defined in Sprite.STENCIL_xxx fields and correspond to the GL_xxx relevant values in OpenGL stencil documentation.
+    ]]>
+  </method>
   <method name="Sprite:setSkewX" page="setSkewX" shortdesc="" version="in development"><![CDATA[Skew (aka "shear") transformation effect]]>
     <parameter name="kx" optional="false" type="number"><![CDATA[Amount of skew in range -90... 90 degrees]]></parameter>
   </method>
