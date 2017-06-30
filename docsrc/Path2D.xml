@@ -35,7 +35,7 @@
 and provided coordinates as table or simply arguments]]>
     <parameter name="commands" optional="false" type="string"><![CDATA[list of commands as ML**Z expecting according coordinates]]></parameter>
     <parameter name="coordinates" optional="false" type="table or number"><![CDATA[lua table with coordinates for each command, in the same order as commands]]></parameter>
-    <parameter name="coordinates" optional="true" type="number"><![CDATA[if second argument is not table, you can provide more coordinates as separate arguments]]></parameter>
+    <parameter name="more coordinates" optional="true" type="number"><![CDATA[if second argument is not table, you can provide more coordinates as separate arguments]]></parameter>
     <example name="Drawing Moon"><![CDATA[--Moon
 local p=Path2D.new()
 local ms="MQQZ" --MoveTo, QuadTo, QuadTo, Close
