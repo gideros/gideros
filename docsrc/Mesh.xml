@@ -206,10 +206,11 @@ mesh:setTextureCoordinateArray{0, 0, 100, 0, 0, 100}<br />
 Assigns new content to a generic additional array to be used by a shader. It accepts multiple values or a Lua array.<br />
 <br />
 ]]>
-    <parameter name="index" optional="false" type="number">The data attribute index in the corresponding shader.</parameter>
-    <parameter name="type" optional="false" type="number">The data type, one of Shader.Dxxx constants.</parameter>
-    <parameter name="mult" optional="false" type="number">The vector dimension (1 for simple values, 2 for a vec2/float2, etc).</parameter>
-    <parameter name="count" optional="false" type="number">The number of elements in the array.</parameter>
+    <parameter name="index" optional="false" type="number"><![CDATA[The data attribute index in the corresponding shader]]></parameter>
+    <parameter name="type" optional="false" type="number"><![CDATA[The data type, one of Shader.Dxxx constants]]></parameter>
+    <parameter name="mult" optional="false" type="number"><![CDATA[The vector dimension (1 for simple values, 2 for a vec2/float2, etc)]]></parameter>
+    <parameter name="count" optional="false" type="number"><![CDATA[The number of elements in the array]]></parameter>
+    <parameter name="data" optional="false" type="any"><![CDATA[The actual values]]></parameter>
   </method>
   <method name="Mesh:resizeVertexArray" page="resizeVertexArray" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
 Resizes the vertex array to contain `size` elements.<br />
