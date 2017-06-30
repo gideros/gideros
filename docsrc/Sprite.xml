@@ -561,6 +561,7 @@ Sets the rotation of the sprite in degrees around y axis.<br />
     <ul>
     <li><b>stencilClear</b>: (boolean) whether the stencil should be cleared beforehand.</li>
     <li><b>stencilMask</b>: (integer) the mask value used in stencil operations.</li>
+    <li><b>stencilWriteMask</b>: (integer) the mask value used when writing to stencil.</li>
     <li><b>stencilRef</b>: (integer) the reference value used in stencil operations.</li>
     <li><b>stencilFunc</b>: (integer) the stencil function to use.</li>
     <li><b>stencilFail</b>: (integer) the stencil operation when stencil test failed.</li>

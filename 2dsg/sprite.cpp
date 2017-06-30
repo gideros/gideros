@@ -243,6 +243,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			stencil.dPass=sprite->stencil_.dPass;
 			stencil.sFunc=sprite->stencil_.sFunc;
 			stencil.sMask=sprite->stencil_.sMask;
+			stencil.sWMask=sprite->stencil_.sWMask;
 			stencil.sRef=sprite->stencil_.sRef;
 		}
 

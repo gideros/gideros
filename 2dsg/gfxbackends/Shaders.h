@@ -168,6 +168,7 @@ public:
 		StencilFunc sFunc;
 		int sRef;
 		unsigned int sMask;
+		unsigned int sWMask;
 		StencilOp sFail;
 		StencilOp dFail;
 		StencilOp dPass;

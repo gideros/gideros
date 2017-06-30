@@ -541,7 +541,7 @@ void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 		// Stencil test parameters
 		dsDesc.StencilEnable = (state.sFunc != STENCIL_DISABLE);
 		dsDesc.StencilReadMask = state.sMask;
-		dsDesc.StencilWriteMask = state.sMask;
+		dsDesc.StencilWriteMask = state.sWMask;
 
 		// Stencil operations if pixel is front-facing
 		dsDesc.FrontFace.StencilFailOp = stencilopToDX11(state.sFail);

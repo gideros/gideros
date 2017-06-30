@@ -2564,6 +2564,7 @@ void Path2D::fillBounds(VertexBuffer<float> *vb,float *fill,TextureData *texture
 	stencil.sFail = ShaderEngine::STENCIL_KEEP;
 	stencil.sRef = 0;
 	stencil.sMask = 0xFF;
+	stencil.sWMask = 0xFF;
 	ShaderEngine::Engine->setDepthStencil(stencil);
 
 	VertexBuffer<unsigned short> *ib = quadIndices;

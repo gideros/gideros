@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationName("GiderosMobile");
 	QCoreApplication::setOrganizationDomain("giderosmobile.com");
 	QCoreApplication::setApplicationName("GiderosFontCreator");
+	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 

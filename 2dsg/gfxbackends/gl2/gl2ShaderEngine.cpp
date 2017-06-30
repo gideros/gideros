@@ -600,6 +600,7 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 				break;
 		}
 		glStencilFunc(sf,state.sRef,state.sMask);
+		glStencilMask(state.sWMask);
 	}
 	dsCurrent=state;
 }
