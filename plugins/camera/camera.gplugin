@@ -101,4 +101,22 @@
         </replacelist>
     </template>
  </target>
+  <target name="WinRT">
+    <mkdir>giderosgame/giderosgame.Shared/Plugins/camera</mkdir>
+    <template name="sources" path="[[[sys.pluginDir]]]/source/WinRT"  dest="giderosgame/giderosgame.Shared/Plugins/camera"/>
+    <template name="sources" path="[[[sys.pluginDir]]]/source/common"  dest="giderosgame/giderosgame.Shared/Plugins/camera"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems;*.vcxproj">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\camera\camerabinder.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\camera\CameraPlugin.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\camera\camerabinder.h" />]]></by>
+            </append>
+        </replacelist>
+    </template>
+ </target>
 </plugin>

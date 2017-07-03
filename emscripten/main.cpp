@@ -155,14 +155,22 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
  if ((!strcmp(key,"Backspace"))||(*key=='\b')) skey=2;
  if ((!strcmp(key,"Enter"))||(*key=='\r')) skey=4;
  if ((!strcmp(key,"Escape"))||(*key=='\e')) skey=8;
+ //printf("PressCode:%s %d (%d)\n",key,skey,eventType);
  if (eventType == EMSCRIPTEN_EVENT_KEYDOWN)
  {
-  ginputp_keyDown(key,e->code);
+	 if (!e->repeat)
+		 ginputp_keyDown(key,e->code);
   //printf("DownCode:%s %d\n",key,skey);
   if (skey==1) ginputp_keyChar("\t");
   if (skey==2) ginputp_keyChar("\b");
   if (skey==4) ginputp_keyChar("\r");
   if (skey==8) ginputp_keyChar("\e");
+  //Emulate keypress
+  if( (!skey)&&(*key))
+  {
+	  if ((utf8len(key)==1)||((*key)<'A')||((*key)>'Z'))
+		   ginputp_keyChar(key);
+  }
  }
  else if (eventType == EMSCRIPTEN_EVENT_KEYUP)
  {
@@ -171,8 +179,10 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
  }
  else if (eventType == EMSCRIPTEN_EVENT_KEYPRESS)
  {
+	 //Keypress is being deprecated and no longer works in some situations, rely on keydown instead
+/*  printf("PressCode:%s %d\n",key,skey);
   if ((utf8len(key)==1)&&(!skey))
-   ginputp_keyChar(key);
+   ginputp_keyChar(key);*/
  }
 
  return true;
