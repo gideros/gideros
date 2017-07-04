@@ -14,6 +14,7 @@ void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
 	QString script = "";
 	QProcess postProcess;
 	QString cmd;
+	QStringList dylibs;
 	if (ctx->outputDir.cd("Frameworks")) {
 		QStringList frameworks = ctx->outputDir.entryList(
 				QStringList() << "*.framework");
@@ -30,7 +31,7 @@ void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
 			script += cmd + "\n";
 			Utilities::processOutput(cmd);
 		}
-		QStringList dylibs = ctx->outputDir.entryList(
+		dylibs = ctx->outputDir.entryList(
 				QStringList() << "*.dylib");
 		for (int i = 0; i < dylibs.size(); ++i) {
 			QString filename = ctx->outputDir.absoluteFilePath(dylibs[i]);
