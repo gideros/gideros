@@ -15,15 +15,15 @@ void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
 	QProcess postProcess;
 	QString cmd;
 	QStringList dylibs;
+	QString signingId = ctx->args["signingId"];
+	if (signingId.isEmpty())
+		signingId = ctx->properties.osx_signingId;
+	QString installerId = ctx->args["installerId"];
+	if (installerId.isEmpty())
+		installerId = ctx->properties.osx_installerId;
 	if (ctx->outputDir.cd("Frameworks")) {
 		QStringList frameworks = ctx->outputDir.entryList(
 				QStringList() << "*.framework");
-		QString signingId = ctx->args["signingId"];
-		if (signingId.isEmpty())
-			signingId = ctx->properties.osx_signingId;
-		QString installerId = ctx->args["installerId"];
-		if (installerId.isEmpty())
-			installerId = ctx->properties.osx_installerId;
 		for (int i = 0; i < frameworks.size(); ++i) {
 			QString filename = ctx->outputDir.absoluteFilePath(frameworks[i]);
 			cmd = "codesign -f -s \"" + signingId + "\" \"" + filename
