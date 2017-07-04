@@ -245,6 +245,7 @@ void TileMap::doDraw(const CurrentTransform& transform, float hsx, float hsy, fl
 	texcoords.resize(tileCount * 12);
 
 	int pos = 0;
+	float textureMargin=(texture_->data->parameters.filter==eNearest)?0.1f:0.5f;
 
 	for (int y = sy; y < ey; ++y)
 		for (int x = sx; x < ex; ++x)
@@ -290,10 +291,10 @@ void TileMap::doDraw(const CurrentTransform& transform, float hsx, float hsy, fl
 				int u1 = marginx_ + tx * (tilewidth_ + spacingx_) + tilewidth_;
 				int v1 = marginy_ + ty * (tileheight_ + spacingy_) + tileheight_;
 
-                float fu0 = (float)u0 / (float)texture_->data->exwidth;
-                float fv0 = (float)v0 / (float)texture_->data->exheight;
-                float fu1 = (float)u1 / (float)texture_->data->exwidth;
-                float fv1 = (float)v1 / (float)texture_->data->exheight;
+                float fu0 = (textureMargin+u0) / (float)texture_->data->exwidth;
+                float fv0 = (textureMargin+v0) / (float)texture_->data->exheight;
+                float fu1 = (-textureMargin+u1) / (float)texture_->data->exwidth;
+                float fv1 = (-textureMargin+v1) / (float)texture_->data->exheight;
 
                 fu0 *= texture_->uvscalex;
                 fv0 *= texture_->uvscaley;
@@ -311,11 +312,6 @@ void TileMap::doDraw(const CurrentTransform& transform, float hsx, float hsy, fl
                     std::swap(fu0, fu1);
                     std::swap(fv0, fv1);
                 }
-
-                fu0 += 0.0001f;
-                fv0 += 0.0001f;
-                fu1 -= 0.0001f;
-                fv1 -= 0.0001f;
 
                 if (!flip_diagonal)
                 {
