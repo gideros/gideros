@@ -10,7 +10,8 @@
 #include "Utilities.h"
 
 void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
-	ctx->outputDir.cdUp();
+	ctx->outputDir.cd(ctx->base + ".app");
+	ctx->outputDir.cd("Contents");
 	QString script = "";
 	QProcess postProcess;
 	QString cmd;
