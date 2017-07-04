@@ -2410,6 +2410,7 @@ void MainWindow::exportProject()
             arguments << "-organization" << dialog.osx_org();
             arguments << "-domain" << dialog.osx_domain();
             arguments << "-bundle" << dialog.osx_bundle();
+            arguments << "-signingId" << dialog.osx_signingId();
             arguments << "-category" << dialog.osx_category();
         } else if (exportType=="GApp") {
             arguments << "-platform" << "gapp";

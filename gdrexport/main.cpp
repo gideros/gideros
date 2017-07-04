@@ -170,6 +170,7 @@ void usage()
     fprintf(stderr, "    -organization <name>       #organization name\n");
     fprintf(stderr, "    -domain <domain_name>      #domain name\n");
     fprintf(stderr, "    -bundle <bundle_id>        #bundle id\n");
+    fprintf(stderr, "    -signingId <signing_id>        #signing identity\n");
     fprintf(stderr, "    -category <app category>   #category of your app\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Options winrt: \n");

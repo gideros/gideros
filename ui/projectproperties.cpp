@@ -45,6 +45,7 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 	properties.setAttribute("osx_org", this->osx_org);
 	properties.setAttribute("osx_domain", this->osx_domain);
     properties.setAttribute("osx_bundle", this->osx_bundle);
+    properties.setAttribute("osx_signingId", this->osx_signingId);
     properties.setAttribute("osx_category", this->osx_category);
     properties.setAttribute("win_org", this->win_org);
 	properties.setAttribute("win_domain", this->win_domain);
@@ -174,7 +175,9 @@ void ProjectProperties::loadXml(QDomElement properties)
         if (!properties.attribute("osx_domain").isEmpty())
 			this->osx_domain = properties.attribute("osx_domain");
         if (!properties.attribute("osx_bundle").isEmpty())
-            this->osx_bundle = properties.attribute("osx_bundle");
+            this->osx_bundle = properties.attribute("osx_signingId");
+        if (!properties.attribute("osx_bundle").isEmpty())
+            this->osx_signingId = properties.attribute("osx_signingId");
         if (!properties.attribute("osx_category").isEmpty())
             this->osx_category = properties.attribute("osx_category").toInt();
         if (!properties.attribute("win_org").isEmpty())
