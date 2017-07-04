@@ -27,6 +27,7 @@ public:
     QString osx_bundle() const;
     QString osx_category() const;
     QString osx_signingId() const;
+    QString osx_installerId() const;
     QString win_org() const;
     QString win_domain() const;
     QString winrt_org() const;

@@ -100,7 +100,7 @@ target platform to export the application source.</string>
    <item>
     <widget class="QTabWidget" name="architectureTab">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -293,6 +293,20 @@ target platform to export the application source.</string>
          </item>
          <item>
           <widget class="QLineEdit" name="osx_signingid"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>Installer signing identity:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="osx_installerid"/>
          </item>
         </layout>
        </item>

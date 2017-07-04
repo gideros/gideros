@@ -69,7 +69,7 @@ if [ -f $d.pro ]; then
 mkdir ../../../$BUILD_DIR/mac/All\ Plugins/$d/bin/Mac\ OS
 cp lib$d.dylib ../../../$BUILD_DIR/mac/All\ Plugins/$d/bin/Mac\ OS/$d.dylib
 cp lib$d.dylib ../../../$BUILD_DIR/mac/Plugins/$d.dylib
-cp lib$d.dylib ../../../$BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/PlugIns/$d.dylib
+cp lib$d.dylib ../../../$BUILD_DIR/mac/Gideros\ Studio.app/Contents/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins/$d.dylib
 fi
 if [ -d Android ] || [ -d jni ] ; then
 if [ -d Android ]; then

@@ -2411,6 +2411,7 @@ void MainWindow::exportProject()
             arguments << "-domain" << dialog.osx_domain();
             arguments << "-bundle" << dialog.osx_bundle();
             arguments << "-signingId" << dialog.osx_signingId();
+            arguments << "-installerId" << dialog.osx_installerId();
             arguments << "-category" << dialog.osx_category();
         } else if (exportType=="GApp") {
             arguments << "-platform" << "gapp";

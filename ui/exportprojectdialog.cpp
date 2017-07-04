@@ -76,6 +76,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->osx_domain->setText(properties->osx_domain);
     ui->osx_bundle->setText(properties_->osx_bundle);
     ui->osx_signingid->setText(properties_->osx_signingId);
+    ui->osx_installerid->setText(properties_->osx_installerId);
     ui->osx_category->setCurrentIndex(properties_->osx_category);
     ui->win_org->setText(properties->win_org);
     ui->win_domain->setText(properties->win_domain);
@@ -189,6 +190,11 @@ QString ExportProjectDialog::osx_signingId() const
     return ui->osx_signingid->text();
 }
 
+QString ExportProjectDialog::osx_installerId() const
+{
+    return ui->osx_installerid->text();
+}
+
 QString ExportProjectDialog::osx_category() const
 {
     return osxCat[ui->osx_category->currentText()];
@@ -245,6 +251,7 @@ void ExportProjectDialog::onAccepted()
     properties_->osx_domain = ui->osx_domain->text();
     properties_->osx_bundle = ui->osx_bundle->text();
     properties_->osx_signingId = ui->osx_signingid->text();
+    properties_->osx_installerId = ui->osx_installerid->text();
     properties_->osx_category = ui->osx_category->currentIndex();
     properties_->win_org = ui->win_org->text();
     properties_->win_domain = ui->win_domain->text();

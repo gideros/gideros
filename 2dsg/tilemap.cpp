@@ -245,7 +245,8 @@ void TileMap::doDraw(const CurrentTransform& transform, float hsx, float hsy, fl
 	texcoords.resize(tileCount * 12);
 
 	int pos = 0;
-	float textureMargin=(texture_->data->parameters.filter==eNearest)?0.1f:0.5f;
+	float textureMargin=((texture_->data->parameters.filter==eNearest)||
+			(spacingx_!=0)||(spacingy_!=0))?0.1f:0.5f;
 
 	for (int y = sy; y < ey; ++y)
 		for (int x = sx; x < ex; ++x)

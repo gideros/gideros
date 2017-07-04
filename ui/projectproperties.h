@@ -67,6 +67,7 @@ struct ProjectProperties
         osx_domain = "giderosmobile.com";
         osx_bundle = "com.yourdomain.";
         osx_signingId = "";
+        osx_installerId = "";
         osx_category = 5;
         win_org = "GiderosMobile";
         win_domain = "giderosmobile.com";
@@ -122,6 +123,7 @@ struct ProjectProperties
     QString osx_domain;
     QString osx_bundle;
     QString osx_signingId;
+    QString osx_installerId;
     int osx_category;
     QString win_org;
     QString win_domain;
