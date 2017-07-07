@@ -126,6 +126,10 @@ void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
 
 		ctx->outputDir.cdUp();
 	}
+	cmd = "codesign -f -s \"" + signingId + "\" \"" + ctx->outputDir.absoluteFilePath("Entitlements.plist")	+ "\"";
+	script += cmd + "\n";
+	Utilities::processOutput(cmd);
+
 	ctx->outputDir.cdUp();
 	ctx->outputDir.cdUp();
 	cmd = "codesign -f -s \"" + signingId + "\" --entitlements \"/"
