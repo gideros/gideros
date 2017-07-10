@@ -159,7 +159,7 @@
     </if>
     <if condition="[[[plugin.reqWriteExternalStorage]]]">
     <lua>
-    local ap=require("export_android")
+    local ap=require("Tools/export_android")
     ap.usePermission("android.permission.WRITE_EXTERNAL_STORAGE")
     </lua>
     </if>

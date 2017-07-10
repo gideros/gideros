@@ -22,7 +22,7 @@
         </replacelist>
     </template>
     <lua>
-    local ap=require("export_android")
+    local ap=require("Tools/export_android")
     ap.usePermission("android.permission.ACCESS_NETWORK_STATE")
     ap.usePermission("android.permission.WAKE_LOCK")
     ap.usePermission("com.android.vending.CHECK_LICENSE")

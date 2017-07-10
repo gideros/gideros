@@ -29,7 +29,7 @@
         </replacelist>
     </template>
     <lua>
-    local ap=require("export_android")
+    local ap=require("Tools/export_android")
     ap.usePermission("android.permission.CAMERA")
     </lua>
  </target>
