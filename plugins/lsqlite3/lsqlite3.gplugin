@@ -18,8 +18,8 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.namews]]]/Plugins/lsqlite3</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.namews]]]/Plugins/lsqlite3" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <mkdir>[[[project.name]]]/Plugins/lsqlite3</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/lsqlite3" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
    <mkdir>AppleTV/Plugins/lsqlite3</mkdir>
    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/lsqlite3" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
 	<lua><![CDATA[

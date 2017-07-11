@@ -56,7 +56,7 @@
     </template>
  </target>
  <target name="iOS">
-    <template name="binaries" path="[[[sys.pluginDir]]]/bin/iOS" dest="[[[project.namews]]]/Plugins" />
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/iOS" dest="[[[project.name]]]/Plugins" />
     <template name="Activity" path="">
         <replacelist wildcards="plugins.cpp">
            <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Camera) "/>
@@ -68,7 +68,7 @@
             	<orig>/* End PBXFileReference section */</orig>
             	<by><![CDATA[
 		000000001BAC10CC005599BD = {isa = PBXBuildFile; fileRef = 000000011BAC10CC005599BD ; };
-		000000011BAC10CC005599BD = {isa = PBXFileReference; lastKnownFileType = archive.ar; name=libcamera.ios.a; path = [[[project.namews]]]/Plugins/libcamera.ios.a; sourceTree = "<group>"; };
+		000000011BAC10CC005599BD = {isa = PBXFileReference; lastKnownFileType = archive.ar; name=libcamera.ios.a; path = [[[project.name]]]/Plugins/libcamera.ios.a; sourceTree = "<group>"; };
             	]]></by>
             </prepend>
             <prepend>

@@ -250,8 +250,8 @@
  </target>
 
  <target name="iOS">
-   <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/Plugins/" dest="[[[project.namews]]]/Plugins/" exclude="frameworks"/>
-    <set key="local.adsfwd" value="[[[project.namews]]]/Plugins/Ads/frameworks"/>
+   <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/Plugins/" dest="[[[project.name]]]/Plugins/" exclude="frameworks"/>
+    <set key="local.adsfwd" value="[[[project.name]]]/Plugins/Ads/frameworks"/>
     <set key="local.adsfws" value="[[[sys.pluginDir]]]/source/iOS/Plugins/Ads/frameworks"/>
     <mkdir>[[[local.adsfwd]]]</mkdir>
 	<lua><![CDATA[

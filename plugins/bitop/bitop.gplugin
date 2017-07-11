@@ -18,8 +18,8 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.namews]]]/Plugins/bit</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.namews]]]/Plugins/bit" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <mkdir>[[[project.name]]]/Plugins/bit</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/bit" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
    <mkdir>AppleTV/Plugins/bit</mkdir>
    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/bit" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
 	<lua><![CDATA[
