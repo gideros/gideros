@@ -164,13 +164,13 @@ end
 end
 
 iOSProject.addFrameworkPath=function(path)
-local refline=("\"$(PROJECT_DIR)/%s\",\n"):format(path)
+local refline=("\"\\\"$(PROJECT_DIR)/%s\\\"\",\n"):format(path)
 iOSProject.insertData("FrameworksPaths",refline)
 end
 
 iOSProject.exportPluginFiles=function(pname,srcdir,srcfiles,foriOS,forATV)
   if foriOS then
-    local tgtDir=Export.getProperty("project.namews").."/Plugins/"..pname    
+    local tgtDir=Export.getProperty("project.name").."/Plugins/"..pname    
     Export.mkdir(tgtDir)
     Export.recursiveCopy(pname,srcdir,tgtDir,"*.m;*.mm;*.c;*.h;*.cpp","emscripten;win32;jni;iOS;Android")
     iOSProject.addGroup(pname,"Plugins/"..pname,"Group"..pname.."_ios","GroupPlugins_ios")
