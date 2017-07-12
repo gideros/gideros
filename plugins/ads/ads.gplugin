@@ -265,7 +265,7 @@ iOSProject.addSources({
  "AdsStateChangeListener.m","Reachability.m",
  "ads.h","AdsClass.h","AdsManager.h","AdsProtocol.h","AdsState.h","AdsStateChangeListener.h","Reachability.h"
 },"GroupAds","ios")
-iOSProject.addFrameworkPath(Export.getProperty("project.namews").."/Plugins/Ads/frameworks")
+iOSProject.addFrameworkPath(Export.getProperty("project.name").."/Plugins/Ads/frameworks")
 iOSProject.commit()
 	]]></lua>
 <if condition="[[[plugin.adsFwUnity]]]">

@@ -63,7 +63,7 @@
         </replacelist>
     </template>
    <template name="Project" path="">
-        <replacelist wildcards="project.pbxproj;EAGLView.m;[[[project.namews]]]-Info.plist">
+        <replacelist wildcards="project.pbxproj;EAGLView.m;[[[project.name]]]-Info.plist">
             <prepend>
             	<orig>/* End PBXFileReference section */</orig>
             	<by><![CDATA[

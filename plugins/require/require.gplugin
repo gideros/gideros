@@ -187,7 +187,7 @@
     </if>
     <if condition="[[[plugin.reqExpRegCompliance]]]">
    	<template name="Project" path="">
-       	<replacelist wildcards="[[[project.namews]]]-Info.plist;Info.plist">
+       	<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">
 		    <prepend>
 				<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
 				<by><![CDATA[	
@@ -213,7 +213,7 @@
 		end
 	]]></lua>
 	<template name="Project" path="">
-		<replacelist wildcards="[[[project.namews]]]-Info.plist;Info.plist">
+		<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">
 			<prepend>
 				<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
 				<by><![CDATA[
