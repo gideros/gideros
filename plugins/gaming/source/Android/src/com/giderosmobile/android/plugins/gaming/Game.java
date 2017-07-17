@@ -236,7 +236,14 @@ public class Game {
 		}
 		catch(Exception ex)	{}
 	}
-	
+
+	public static void getPlayerInfo(String type)
+	{
+		final String adp = modifyName(type);
+		if(games.containsKey(adp))
+			games.get(adp).getPlayerInfo();
+	}
+
 	public static void reportAchievement(String type, String id, double numSteps, int immediate)
 	{
 		String adp = modifyName(type);
@@ -342,7 +349,17 @@ public class Game {
 		if (sData != 0)
 			onLoadScoresError(getCallerName(caller), id, error, sData);
 	}
+
+	public static void playerInfoComplete(Object caller, String id, String name, String pic){
+		if (sData != 0)
+			onPlayerInfoComplete(getCallerName(caller), id, name, pic, sData);
+	}
 	
+	public static void playerInfoError(Object caller, String error){
+		if (sData != 0)
+			onPlayerInfoError(getCallerName(caller), error, sData);
+	}
+
 	public static void stateLoaded(Object caller, int key, byte[] state, int fresh){
 		if (sData != 0)
 			onStateLoaded(getCallerName(caller), key, state, fresh, sData);
@@ -371,6 +388,9 @@ public class Game {
 	
 	private static native void onReportScoreComplete(String caller, String id, long score, long data);
 	private static native void onReportScoreError(String caller, String id, String error, long score, long data);
+	
+	private static native void onPlayerInfoComplete(String caller, String id, String name, String pic, long data);
+	private static native void onPlayerInfoError(String caller, String error, long data);
 	
 	private static native void onLoadAchievementsComplete(String caller, Object arr, long data);
 	private static native void onLoadAchievementsError(String caller, String error, long data);

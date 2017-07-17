@@ -13,6 +13,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.Player;
 import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.achievement.Achievement;
 import com.google.android.gms.games.achievement.AchievementBuffer;
@@ -146,6 +147,25 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 		}
 		else
 			Game.reportScoreError(this, id, score, Game.LIBRARY_NOT_FOUND);
+	}
+
+	@Override
+	public void getPlayerInfo() {
+		if(isAvailable())
+		{
+			if(mHelper != null && mHelper.isSignedIn())
+	    	{
+    			Player p = Games.Players.getCurrentPlayer(mHelper.getApiClient());
+    			if (p==null)
+    				Game.playerInfoError(this, ""); //XXX Get error code
+    			else
+    				Game.playerInfoComplete(this,p.getPlayerId(),p.getDisplayName(),(p.hasHiResImage()?p.getHiResImageUri():p.getIconImageUri()).toString());
+	    	}
+	       	else
+	    		Game.playerInfoError(this, Game.NOT_LOG_IN);
+		}
+		else
+			Game.playerInfoError(this, Game.LIBRARY_NOT_FOUND);
 	}
 
 	@Override

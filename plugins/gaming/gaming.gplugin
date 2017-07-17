@@ -7,7 +7,7 @@
  <property name="gmsApiKey" type="string" title="Api Key" description="Api Key for Amazon GameCircle Services" default="" />
  <property name="gmsFwGamecircle" type="boolean" title="Enable Amazon Gamecircle support"/>
 <!-- <property name="gmsFwHeyzap" type="boolean" title="Enable Heyzap support"/> -->
- <property name="gmsFwGamekit" type="boolean" title="Enable GameKit support"/>
+ <property name="gmsFwGamekit" type="boolean" title="Enable GameKit support (iOS)"/>
  <target name="AndroidStudio,APK">
  	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs/" />
  	<template name="Gaming" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java/" />
@@ -122,4 +122,32 @@
 	 	<rm>app/src/main/java/com/giderosmobile/android/plugins/gaming/frameworks/GameHeyzap.java</rm>
 	 </if>
  </target>
+  <target name="iOS">
+   <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/Plugins/" dest="[[[project.name]]]/Plugins/" exclude="frameworks"/>
+    <set key="local.adsfwd" value="[[[project.name]]]/Plugins/Gaming/frameworks"/>
+    <set key="local.adsfws" value="[[[sys.pluginDir]]]/source/iOS/Plugins/Gaming/frameworks"/>
+    <mkdir>[[[local.adsfwd]]]</mkdir>
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("Gaming","Plugins/Gaming","GroupGaming_ios","GroupPlugins_ios")
+iOSProject.addGroup("frameworks","frameworks","GroupGamingFrameworks_ios","GroupGaming_ios")
+iOSProject.addGroup("Gaming","Plugins/Gaming","GroupGaming_atv","GroupPlugins_atv")
+iOSProject.addGroup("frameworks","frameworks","GroupGamingFrameworks_atv","GroupGaming_atv")
+iOSProject.addSources({
+ "gamification.mm","gamificationbinder.cpp","GameClass.mm"
+ "gamification.h","GameClass.h","GameProtocol.h"},"GroupGaming","ios")
+iOSProject.addFrameworkPath(Export.getProperty("project.name").."/Plugins/Gaming/frameworks")
+iOSProject.commit()
+	]]></lua>
+	<if condition="[[[plugin.gmsFwGamekit]]]">
+		<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="GameGamekit.*" exclude="*.framework" />
+		<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addSources({
+"GameGamekit.m","GameGamekit.h"
+},"GroupGamingFrameworks","ios")
+iOSProject.commit()
+		]]></lua>
+	</if>
+  </target>
 </plugin>

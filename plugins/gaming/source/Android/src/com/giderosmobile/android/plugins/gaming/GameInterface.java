@@ -31,6 +31,8 @@ public interface GameInterface {
 	
 	public void showAchievements();
 	
+	public void getPlayerInfo();
+	
 	public void reportAchievement(String id, int numSteps, int immediate);
 	
 	public void revealAchievement(String id, int immediate);

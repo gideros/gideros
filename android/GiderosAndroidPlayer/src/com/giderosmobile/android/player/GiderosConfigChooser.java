@@ -24,6 +24,7 @@ package com.giderosmobile.android.player;
                     EGL10.EGL_ALPHA_SIZE, 0,
                     EGL10.EGL_DEPTH_SIZE, 0,
                     EGL10.EGL_STENCIL_SIZE, 0,
+                    EGL10.EGL_RENDERABLE_TYPE, 0x04,
                     EGL10.EGL_NONE
             };
 

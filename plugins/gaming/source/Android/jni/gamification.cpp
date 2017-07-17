@@ -133,6 +133,14 @@ public:
 		env->DeleteLocalRef(jGame);
 	}
 	
+	void getPlayerInfo(const char *game)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		jstring jGame = env->NewStringUTF(game);
+		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "getPlayerInfo", "(Ljava/lang/String;)V"), jGame);
+		env->DeleteLocalRef(jGame);
+	}
+
 	void showLeaderboard(const char *game, const char *id)
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -954,6 +962,14 @@ void game_showAchievements(const char *game)
 	if(s_game)
 	{
 		s_game->showAchievements(game);
+	}
+}
+
+void game_getPlayerInfo(const char *game)
+{
+	if(s_game)
+	{
+		s_game->getPlayerInfo(game);
 	}
 }
 
