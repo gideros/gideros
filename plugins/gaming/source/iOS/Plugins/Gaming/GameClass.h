@@ -21,6 +21,7 @@
 +(void)showLeaderboard:(NSString*)provider with:(NSString*)Id;
 +(void)reportScore:(NSString*)provider with:(NSString*)Id andScore:(long)score with:(int)immediate;
 +(void)showAchievements:(NSString*)provider;
++(void)getPlayerInfo:(NSString*)provider;
 +(void)reportAchievement:(NSString*)provider with:(NSString*)Id andSteps:(int)steps with:(int)immediate;
 +(void)revealAchievement:(NSString*)provider with:(NSString*)Id with:(int)immediate;
 +(void)loadAchievements:(NSString*)provider;

@@ -49,6 +49,11 @@ public class GameHeyzap implements GameInterface {
 	}
 
 	@Override
+	public void getPlayerInfo() {
+			Game.playerInfoError(this, Game.FEATURE_NOT_SUPPORTED);
+	}
+
+	@Override
 	public void reportScore(String id, long score, int immediate) {
 		if(immediate == 1)
 		{

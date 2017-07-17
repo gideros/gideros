@@ -59,6 +59,12 @@ static std::map<std::string, std::string> tableToMap(lua_State *L, int index)
 }
 static const char *LOGIN_COMPLETE = "loginComplete";
 static const char *LOGIN_ERROR = "loginError";
+
+static const char *PLAYER_INFORMATION_COMPLETE = "playerInformationComplete";
+static const char *PLAYER_INFORMATION_ERROR = "playerInformationError";
+static const char *PLAYER_SCORE_COMPLETE = "playerScoreComplete";
+static const char *PLAYER_SCORE_ERROR = "playerScoreError";
+
 static const char *LOAD_ACHIEVEMENTS_COMPLETE = "loadAchievementsComplete";
 static const char *LOAD_ACHIEVEMENTS_ERROR = "loadAchievementsError";
 static const char *REPORT_ACHIEVEMENT_COMPLETE = "reportAchievementComplete";
@@ -117,6 +123,11 @@ public:
 		game_showAchievements(type_);
 	}
 	
+	void getPlayerInfo()
+	{
+		game_getPlayerInfo(type_);
+	}
+
 	void showLeaderboard(const char *id)
 	{
 		game_showLeaderboard(type_, id);
@@ -127,7 +138,7 @@ public:
 		game_reportScore(type_, id, score, immediate);
 	}
 	
-	void reportAchievement(const char *id, int steps, int immediate)
+	void reportAchievement(const char *id, double steps, int immediate)
 	{
 		game_reportAchievement(type_, id, steps, immediate);
 	}
@@ -183,7 +194,7 @@ private:
 		if(L != NULL)
 		{
 			int shouldDispatch = 0;
-			if (type == GAME_REPORT_ACHIEVEMENT_COMPLETE_EVENT || type == GAME_LOAD_ACHIEVEMENTS_ERROR_EVENT || GAME_LOGIN_ERROR_EVENT)
+			if (type == GAME_REPORT_ACHIEVEMENT_COMPLETE_EVENT || type == GAME_LOAD_ACHIEVEMENTS_ERROR_EVENT || type == GAME_LOGIN_ERROR_EVENT || type == GAME_PLAYER_INFORMATION_ERROR_EVENT)
 			{
 				game_Report *event2 = (game_Report*)event;
 				if(strcmp(event2->caller, type_) == 0)
@@ -223,7 +234,7 @@ private:
 					shouldDispatch = 1;
 				}
 			}
-			else if(type == GAME_LOAD_SCORES_ERROR_EVENT || type == GAME_REPORT_ACHIEVEMENT_ERROR_EVENT)
+			else if(type == GAME_LOAD_SCORES_ERROR_EVENT || type == GAME_REPORT_ACHIEVEMENT_ERROR_EVENT || type == GAME_PLAYER_SCORE_ERROR_EVENT)
 			{
 				game_LoadError *event2 = (game_LoadError*)event;
 				if(strcmp(event2->caller, type_) == 0)
@@ -271,6 +282,22 @@ private:
 					shouldDispatch = 1;
 				}
 			}
+			else if(type == GAME_PLAYER_INFORMATION_COMPLETE_EVENT)
+			{
+				game_Player *event2 = (game_Player*)event;
+				if(strcmp(event2->caller, type_) == 0)
+				{
+					shouldDispatch = 1;
+				}
+			}
+			else if(type == GAME_PLAYER_SCORE_COMPLETE_EVENT)
+			{
+				game_PlayerScore *event2 = (game_PlayerScore*)event;
+				if(strcmp(event2->caller, type_) == 0)
+				{
+					shouldDispatch = 1;
+				}
+			}
 			
 			if(shouldDispatch)
 			{
@@ -298,6 +325,18 @@ private:
 						break;
 					case GAME_LOGIN_ERROR_EVENT:
 						lua_pushstring(L, LOGIN_ERROR);
+						break;
+					case GAME_PLAYER_INFORMATION_COMPLETE_EVENT:
+						lua_pushstring(L, PLAYER_INFORMATION_COMPLETE);
+						break;
+					case GAME_PLAYER_INFORMATION_ERROR_EVENT:
+						lua_pushstring(L, PLAYER_INFORMATION_ERROR);
+						break;	
+					case GAME_PLAYER_SCORE_COMPLETE_EVENT:
+						lua_pushstring(L, PLAYER_SCORE_COMPLETE);
+						break;
+					case GAME_PLAYER_SCORE_ERROR_EVENT:
+						lua_pushstring(L, PLAYER_SCORE_ERROR);
 						break;
 					case GAME_LOAD_ACHIEVEMENTS_COMPLETE_EVENT:
 						lua_pushstring(L, LOAD_ACHIEVEMENTS_COMPLETE);
@@ -433,6 +472,9 @@ private:
 						lua_pushstring(L, event2->scores[i].playerId);
 						lua_setfield(L, -2, "playerId");
 			
+						lua_pushstring(L, event2->scores[i].pic);
+						lua_setfield(L, -2, "picture");
+			
 						lua_pushnumber(L, event2->scores[i].timestamp);
 						lua_setfield(L, -2, "timestamp");
 						
@@ -469,6 +511,52 @@ private:
 					
 					lua_pushnumber(L, event2->score);
 					lua_setfield(L, -2, "score");
+					
+					lua_pushstring(L, event2->error);
+					lua_setfield(L, -2, "error");
+				}
+				else if(type == GAME_PLAYER_INFORMATION_COMPLETE_EVENT)
+				{
+					game_Player *event2 = (game_Player*)event;
+				
+					lua_pushstring(L, event2->playerId);
+					lua_setfield(L, -2, "id");
+					
+					lua_pushstring(L, event2->name);
+					lua_setfield(L, -2, "name");
+					
+					lua_pushstring(L, event2->pic);
+					lua_setfield(L, -2, "picture");
+				}
+				else if(type == GAME_PLAYER_INFORMATION_ERROR_EVENT)
+				{
+					game_Report *event2 = (game_Report*)event;
+				
+					lua_pushstring(L, event2->value);
+					lua_setfield(L, -2, "error");
+				}
+				else if(type == GAME_PLAYER_SCORE_COMPLETE_EVENT)
+				{
+					game_PlayerScore *event2 = (game_PlayerScore*)event;
+				
+					lua_pushstring(L, event2->id);
+					lua_setfield(L, -2, "id");
+					
+					lua_pushnumber(L, event2->rank);
+					lua_setfield(L, -2, "rank");
+					
+					lua_pushnumber(L, event2->score);
+					lua_setfield(L, -2, "score");
+					
+					lua_pushnumber(L, event2->timestamp);
+					lua_setfield(L, -2, "timestamp");
+				}
+				else if(type == GAME_PLAYER_SCORE_ERROR_EVENT)
+				{
+					game_LoadError *event2 = (game_LoadError*)event;
+				
+					lua_pushstring(L, event2->value);
+					lua_setfield(L, -2, "id");
 					
 					lua_pushstring(L, event2->error);
 					lua_setfield(L, -2, "error");
@@ -616,12 +704,19 @@ static int showAchievements(lua_State *L)
     return 0;
 }
 
+static int getPlayerInfo(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+	game->getPlayerInfo();
+    return 0;
+}
+
 static int reportAchievement(lua_State* L)
 {
 	Game *game = getInstance(L, 1);
 
 	const char* id = luaL_checkstring(L, 2);
-	int numSteps = 0;
+	double numSteps = 0;
 	int immediate = 0;
 	if (!lua_isnoneornil(L, 3))
 	{
@@ -768,6 +863,7 @@ static int loader(lua_State *L)
 		{"showLeaderboard", showLeaderboard},
         {"reportScore", reportScore},
         {"showAchievements", showAchievements},
+        {"getPlayerInfo", getPlayerInfo},
         {"reportAchievement", reportAchievement},
         {"incrementAchievement", incrementAchievement},
         {"revealAchievement", revealAchievement},
@@ -795,6 +891,14 @@ static int loader(lua_State *L)
 	lua_setfield(L, -2, "LOAD_ACHIEVEMENTS_COMPLETE");
 	lua_pushstring(L, LOAD_ACHIEVEMENTS_ERROR);
 	lua_setfield(L, -2, "LOAD_ACHIEVEMENTS_ERROR");
+	lua_pushstring(L, PLAYER_INFORMATION_COMPLETE);
+	lua_setfield(L, -2, "PLAYER_INFORMATION_COMPLETE");
+	lua_pushstring(L, PLAYER_INFORMATION_ERROR);
+	lua_setfield(L, -2, "PLAYER_INFORMATION_ERROR");
+	lua_pushstring(L, PLAYER_SCORE_COMPLETE);
+	lua_setfield(L, -2, "PLAYER_SCORE_COMPLETE");
+	lua_pushstring(L, PLAYER_SCORE_ERROR);
+	lua_setfield(L, -2, "PLAYER_SCORE_ERROR");
 	lua_pushstring(L, REPORT_ACHIEVEMENT_COMPLETE);
 	lua_setfield(L, -2, "REPORT_ACHIEVEMENT_COMPLETE");
 	lua_pushstring(L, REPORT_ACHIEVEMENT_ERROR);

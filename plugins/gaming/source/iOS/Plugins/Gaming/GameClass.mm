@@ -78,6 +78,12 @@ static NSMutableDictionary *games = [NSMutableDictionary dictionary];
         [game showAchievements];
     }
 }
++(void)getPlayerInfo:(NSString*)provider{
+    id game = [games objectForKey:[provider lowercaseString]];
+    if (game) {
+        [game getPlayerInfo];
+    }
+}
 +(void)reportAchievement:(NSString*)provider with:(NSString*)Id andSteps:(int)steps with:(int)immediate{
     id game = [games objectForKey:[provider lowercaseString]];
     if (game) {
@@ -145,6 +151,18 @@ static NSMutableDictionary *games = [NSMutableDictionary dictionary];
 }
 +(void)reportScoreError:(Class)provider with:(NSString*)lId with:(long)score with:(NSString*)error{
     game_onReportScoreError([[GameClass modifyName:provider] UTF8String], [lId UTF8String], [error UTF8String], score);
+}
++(void)playerInfoComplete:(Class)provider with:(NSString*)lId with:(NSString*)name with:(NSString*)pic{
+    game_onPlayerInfoComplete([[GameClass modifyName:provider] UTF8String], [lId UTF8String], [name UTF8String], [pic UTF8String]);
+}
++(void)playerInfoError:(Class)provider with:(NSString*)error{
+    game_onPlayerInfoError([[GameClass modifyName:provider] UTF8String], [error UTF8String]);
+}
++(void)playerScoreComplete:(Class)provider with:(NSString*)lId with:(int)rank with:(long)score with:(int)timeout{
+    game_onPlayerScoreComplete([[GameClass modifyName:provider] UTF8String], [lId UTF8String], rank, score, timeout);
+}
++(void)playerScoreError:(Class)provider with:(NSString*)lId with:(NSString*)error{
+    game_onPlayerScoreError([[GameClass modifyName:provider] UTF8String], [lId UTF8String], [error UTF8String]);
 }
 +(void)loadAchievementsComplete:(Class)provider with:(NSArray*) arr{
     std::vector<Achievement> achievements;

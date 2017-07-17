@@ -72,6 +72,12 @@ public class GameTest implements GameInterface {
 	}
 
 	@Override
+	public void getPlayerInfo() {
+		Log.d("GameTest", "getPlayerInfo");
+		Game.playerInfoError(this, Game.FEATURE_NOT_SUPPORTED);
+	}
+
+	@Override
 	public void showAchievements() {
 		Log.d("GameTest", "showAchievements");
 	}

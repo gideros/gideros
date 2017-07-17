@@ -51,6 +51,11 @@ public:
 	{
 		[GameClass showAchievements:[NSString stringWithUTF8String:game]];
 	}
+
+	void getPlayerInfo(const char *game)
+	{
+		[GameClass getPlayerInfo:[NSString stringWithUTF8String:game]];
+	}
 	
 	void showLeaderboard(const char *game, const char *Id)
 	{
@@ -143,13 +148,55 @@ public:
 		gevent_EnqueueEvent(gid_, callback_s, GAME_LOGIN_ERROR_EVENT, event, 1, this);
 	}
 	
-	void onReportAchievementComplete(const char *caller, const char *value){
-		
+	void onPlayerInfoComplete(const char *caller, const char *id, const char *name, const char *pic){
+		game_Player *event = (game_Player*)gevent_CreateEventStruct4(
+			sizeof(game_Player),
+			offsetof(game_Player, caller), caller,
+			offsetof(game_Player, playerId), id,
+			offsetof(game_Player, name), name,
+			offsetof(game_Player, pic), pic);
+	
+		gevent_EnqueueEvent(gid_, callback_s, GAME_PLAYER_INFORMATION_COMPLETE_EVENT, event, 1, this);
+	}
+	
+	void onPlayerInfoError(const char *caller, const char *value){
 		game_Report *event = (game_Report*)gevent_CreateEventStruct2(
 			sizeof(game_Report),
 			offsetof(game_Report, caller), caller,
 			offsetof(game_Report, value), value);
 		
+		gevent_EnqueueEvent(gid_, callback_s, GAME_PLAYER_INFORMATION_ERROR_EVENT, event, 1, this);
+	}
+	
+	void onPlayerScoreComplete(const char *caller, const char *value, int rank, long score, int timestamp){
+		game_PlayerScore *event = (game_PlayerScore*)gevent_CreateEventStruct2(
+			sizeof(game_PlayerScore),
+			offsetof(game_PlayerScore, caller), caller,
+			offsetof(game_PlayerScore, id), value);
+		
+		event->rank = (int)rank;
+		event->score = (long)score;
+		event->timestamp = (int)timestamp;
+		
+		gevent_EnqueueEvent(gid_, callback_s, GAME_PLAYER_SCORE_COMPLETE_EVENT, event, 1, this);
+	}
+	
+	void onPlayerScoreError(const char *caller, const char *value, const char *error){
+		game_LoadError *event = (game_LoadError*)gevent_CreateEventStruct3(
+			sizeof(game_LoadError),
+			offsetof(game_LoadError, caller), caller,
+			offsetof(game_LoadError, value), value,
+			offsetof(game_LoadError, error), error);
+	
+		gevent_EnqueueEvent(gid_, callback_s, GAME_PLAYER_SCORE_ERROR_EVENT, event, 1, this);
+	}
+	
+	void onReportAchievementComplete(const char *caller, const char *value){
+		game_Report *event = (game_Report*)gevent_CreateEventStruct2(
+			sizeof(game_Report),
+			offsetof(game_Report, caller), caller,
+			offsetof(game_Report, value), value);
+	
 		gevent_EnqueueEvent(gid_, callback_s, GAME_REPORT_ACHIEVEMENT_COMPLETE_EVENT, event, 1, this);
 	}
 	
@@ -507,6 +554,14 @@ void game_showAchievements(const char *game)
 	}
 }
 
+void game_getPlayerInfo(const char *game)
+{
+	if(s_game)
+	{
+		s_game->getPlayerInfo(game);
+	}
+}
+
 void game_showLeaderboard(const char *game, const char *id)
 {
 	if(s_game)
@@ -515,7 +570,7 @@ void game_showLeaderboard(const char *game, const char *id)
 	}
 }
 
-void game_reportAchievement(const char *game, const char *id, int steps, int immediate)
+void game_reportAchievement(const char *game, const char *id, double steps, int immediate)
 {
 	if(s_game)
 	{
@@ -579,6 +634,31 @@ void game_onLoginError(const char *caller, const char *value){
     if(s_game)
         s_game->onLoginError(caller, value);
 }
+
+void game_onPlayerInfoComplete(const char *caller,const char *id, const char *name,const char *pic)
+{
+    if(s_game)
+    	s_game->onPlayerInfoComplete(caller,id,name,pic);
+}
+
+void game_onPlayerInfoError(const char *caller, const char *error)
+{
+    if(s_game)
+    	s_game->onPlayerInfoError(caller,error);
+}
+
+void game_onPlayerScoreComplete(const char *caller, const char *id, int rank, long score, int timestamp)
+{
+    if(s_game)
+    	s_game->onPlayerScoreComplete(caller,id, rank, score, timestamp);
+}
+
+void game_onPlayerScoreError(const char *caller, const char *id, const char *error)
+{
+    if(s_game)
+    	s_game->>onPlayerScoreError(caller,id,error);
+}
+
 void game_onReportAchievementComplete(const char *caller, const char *value){
     if(s_game)
         s_game->onReportAchievementComplete(caller, value);

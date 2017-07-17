@@ -85,6 +85,12 @@
         [self presentViewController:achievementsVC];
     }
 }
+-(void)getPlayerInfo{
+   GKLocalPlayer p=[GKLocalPlayer localPlayer];
+   [GameClass playerInfoComplete:[self class] with:[p playerID] with:[p displayName] with:@""];
+   //[GameClass playerInfoError:[self class] with:@"N/A"];
+}
+
 -(void)reportAchievement:(NSString*)Id andSteps:(int)steps with:(int)immediate{
     
     [GKAchievement loadAchievementsWithCompletionHandler:^(NSArray *achievements, NSError *error) {

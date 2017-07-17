@@ -17,6 +17,7 @@
 -(void)showLeaderboard:(NSString*)Id;
 -(void)reportScore:(NSString*)Id andScore:(long)score with:(int)immediate;
 -(void)showAchievements;
+-(void)getPlayerInfo;
 -(void)reportAchievement:(NSString*)Id andSteps:(int)steps with:(int)immediate;
 -(void)revealAchievement:(NSString*)Id with:(int)immediate;
 -(void)loadAchievements;

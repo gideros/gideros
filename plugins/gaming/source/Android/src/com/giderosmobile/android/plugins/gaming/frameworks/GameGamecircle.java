@@ -99,6 +99,11 @@ public class GameGamecircle implements GameInterface {
 	public void onActivityResult(int request, int response, Intent data) {}
 
 	@Override
+	public void getPlayerInfo() {
+			Game.playerInfoError(this, Game.FEATURE_NOT_SUPPORTED);
+	}
+
+	@Override
 	public void showLeaderboard(String id) {
 		if(agsClient != null)
 		{
