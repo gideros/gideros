@@ -86,7 +86,7 @@
     }
 }
 -(void)getPlayerInfo{
-   GKLocalPlayer p=[GKLocalPlayer localPlayer];
+   GKLocalPlayer *p=[GKLocalPlayer localPlayer];
    [GameClass playerInfoComplete:[self class] with:[p playerID] with:[p displayName] with:@""];
    //[GameClass playerInfoError:[self class] with:@"N/A"];
 }
@@ -251,6 +251,7 @@
                           [achievement setObject:[NSString stringWithFormat:@"%lld", score.value] forKey:@"score"];
                           [achievement setObject:@"name" forKey:@"name"];
                           [achievement setObject:score.playerID forKey:@"playerId"];
+                          [achievement setObject:@"" forKey:@"playerId"];
                           [achievement setObject:[NSString stringWithFormat:@"%f", [score.date timeIntervalSince1970]] forKey:@"timestamp"];
                           [arr insertObject:achievement atIndex:i];
                       }

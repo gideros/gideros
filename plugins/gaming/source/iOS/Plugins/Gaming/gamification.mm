@@ -1,6 +1,32 @@
 #include "gamification.h"
 #import "GameClass.h"
 
+static void *gevent_CreateEventStruct4(size_t structSize,
+                                       size_t offset1, const char *value1,
+                                       size_t offset2, const char *value2,
+                                       size_t offset3, const char *value3,
+                                       size_t offset4, const char *value4)
+{
+    size_t size1 = value1 ? (strlen(value1) + 1) : 0;
+    size_t size2 = value2 ? (strlen(value2) + 1) : 0;
+    size_t size3 = value3 ? (strlen(value3) + 1) : 0;
+    size_t size4 = value4 ? (strlen(value4) + 1) : 0;
+    
+    void *result = malloc(structSize + size1 + size2 + size3 + size4);
+    
+    char **field1 = (char**)((char*)result + offset1);
+    char **field2 = (char**)((char*)result + offset2);
+    char **field3 = (char**)((char*)result + offset3);
+    char **field4 = (char**)((char*)result + offset4);
+    
+    *field1 = value1 ? strcpy((char*)result + structSize,                 			value1) : NULL;
+    *field2 = value2 ? strcpy((char*)result + structSize + size1,         			value2) : NULL;
+    *field3 = value3 ? strcpy((char*)result + structSize + size1 + size2, 			value3) : NULL;
+    *field4 = value3 ? strcpy((char*)result + structSize + size1 + size2 + size3, 	value4) : NULL;
+    
+    return result;
+}
+
 class GGame
 {
 public:
@@ -123,7 +149,7 @@ public:
 		if(score)
 		{
             while (!score->rank.empty()){
-                Score gscores = {score->rank, score->score, score->name, score->playerId, score->timestamp};
+                Score gscores = {score->rank, score->score, score->name, score->playerId, score->pic, score->timestamp};
                 scores.push_back(gscores);
                 ++score;
             }
@@ -656,7 +682,7 @@ void game_onPlayerScoreComplete(const char *caller, const char *id, int rank, lo
 void game_onPlayerScoreError(const char *caller, const char *id, const char *error)
 {
     if(s_game)
-    	s_game->>onPlayerScoreError(caller,id,error);
+    	s_game->onPlayerScoreError(caller,id,error);
 }
 
 void game_onReportAchievementComplete(const char *caller, const char *value){

@@ -8,7 +8,10 @@
 #include "gideros.h"
 #import "AdsChartboost.h"
 #import "AdsClass.h"
+
+#ifdef HAS_NEWSFEED
 #import <Chartboost/CBNewsfeedUI.h>
+#endif
 
 @implementation AdsChartboost
 -(id)init{
@@ -24,7 +27,9 @@
 
 -(void)setKey:(NSMutableArray*)parameters{
     [Chartboost startWithAppId:[parameters objectAtIndex:0] appSignature:[parameters objectAtIndex:1] delegate:self];
+#ifdef HAS_NEWSFEED
     [CBNewsfeed startWithDelegate:self];
+#endif
 }
 
 -(void)loadAd:(NSMutableArray*)parameters{
@@ -64,6 +69,7 @@
         else
             [Chartboost cacheMoreApps:tag];
     }
+#ifdef HAS_NEWSFEED
     else if ([type isEqualToString:@"feed"]) {
         AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
         [listener setShow:^(){
@@ -84,6 +90,7 @@
         [self.mngr load:type];
         [AdsClass adReceived:[self class] forType:type];
     }
+#endif
     else if ([type isEqualToString:@"v4vc"]) {
         AdsStateChangeListener *listener = [[AdsStateChangeListener alloc] init];
         [listener setShow:^(){

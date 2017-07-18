@@ -734,10 +734,9 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 	int eocd = lastBytes.lastIndexOf(eocdMarker);
 
 	if (eocd > 0) //If central dir was found, just get it
-			{
-		zfile.seek(eocd + 16);
+	{
 		quint32 cdoff;
-		zfile.read((char *) &cdoff, 4);
+		memcpy(&cdoff,lastBytes.constData()+eocd+16,4);
 		zfile.seek(_letohl(cdoff));
 		//Scan central directory
 		while (true) {
@@ -807,6 +806,7 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 			exportInfo("Extracting %s\n", lname.toStdString().c_str());
 			//Grab file data
 			qint64 fpos=zfile.pos();
+			zfile.seek(_letohl(Hdr.Offset));
 			if (zfile.read((char *) &FHdr, sizeof(FHdr)) != sizeof(FHdr))
 				break;
 			zfile.read(_letohs(FHdr.NameLen));
@@ -835,10 +835,13 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 			if ((unixattr>=0)&&((unixattr & 0120000) == 0120000)) //SymLink
 			{
 				exportInfo("Link %s\n", lname.toStdString().c_str());
-				if (!QFile::link(QString(fcont), toPath.absoluteFilePath(lname)))
+				QFile ofile(toPath.absoluteFilePath(lname));
+				ofile.remove();				
+				QString tgt=QString(fcont);
+				if (!QFile::link(tgt, toPath.absoluteFilePath(lname)))
 						exportError("Can't make link %s to %s\n",
 								lname.toStdString().c_str(),
-								QString(fcont).toStdString().c_str());
+								tgt.toStdString().c_str());
 			}
 			else if (lname.endsWith("/"))
 				toPath.mkpath(lname);

@@ -45,4 +45,9 @@
 +(void)stateError:(Class)provider with:(int) key with:(NSString*) error;
 +(void)stateConflict:(Class)provider with:(int)key with:(NSString*) ver with:(NSData*)localData with:(NSData*)serverData;
 +(void)stateDeleted:(Class)provider with:(int) key;
++(void)playerInfoComplete:(Class)provider with:(NSString*)lId with:(NSString*)name with:(NSString*)pic;
++(void)playerInfoError:(Class)provider with:(NSString*)error;
++(void)playerScoreComplete:(Class)provider with:(NSString*)lId with:(int)rank with:(long)score with:(int)timeout;
++(void)playerScoreError:(Class)provider with:(NSString*)lId with:(NSString*)error;
+
 @end

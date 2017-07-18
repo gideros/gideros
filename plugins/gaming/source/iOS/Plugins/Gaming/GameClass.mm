@@ -181,7 +181,7 @@ static NSMutableDictionary *games = [NSMutableDictionary dictionary];
 +(void)loadScoresComplete:(Class)provider with:(NSString*)lId with:(NSString*)name with:(NSArray*) arr{
     std::vector<Score> cscores;
     for (NSMutableDictionary *nextScore in arr) {
-        Score gscores = {[[nextScore objectForKey:@"rank"] UTF8String], [[nextScore objectForKey:@"score"] UTF8String], [[nextScore objectForKey:@"name"] UTF8String], [[nextScore objectForKey:@"playerId"] UTF8String], [[nextScore objectForKey:@"timestamp"] intValue]};
+        Score gscores = {[[nextScore objectForKey:@"rank"] UTF8String], [[nextScore objectForKey:@"score"] UTF8String], [[nextScore objectForKey:@"name"] UTF8String], [[nextScore objectForKey:@"playerId"] UTF8String], [[nextScore objectForKey:@"pic"] UTF8String], [[nextScore objectForKey:@"timestamp"] intValue]};
         
         cscores.push_back(gscores);
     }

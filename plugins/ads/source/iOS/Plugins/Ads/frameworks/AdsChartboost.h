@@ -9,9 +9,14 @@
 #import <Foundation/Foundation.h>
 #import "AdsProtocol.h"
 #import <Chartboost/Chartboost.h>
-#import <Chartboost/CBNewsfeed.h>
 #import "AdsManager.h"
 
+#ifdef HAS_NEWSFEED
+#import <Chartboost/CBNewsfeed.h>
 @interface AdsChartboost : NSObject <AdsProtocol, ChartboostDelegate,CBNewsfeedDelegate>
+#else
+@interface AdsChartboost : NSObject <AdsProtocol, ChartboostDelegate>
+#endif
+
 @property (nonatomic, retain) AdsManager *mngr;
 @end
