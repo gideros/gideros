@@ -87,7 +87,7 @@
 }
 -(void)getPlayerInfo{
    GKLocalPlayer *p=[GKLocalPlayer localPlayer];
-   [GameClass playerInfoComplete:[self class] with:[p playerID] with:[p displayName] with:@""];
+   [GameClass playerInfoComplete:[self class] with:[p playerID] with:[p alias] with:@""];
    //[GameClass playerInfoError:[self class] with:@"N/A"];
 }
 
