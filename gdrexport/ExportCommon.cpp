@@ -735,6 +735,7 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 		struct _ZipHdr {
 			quint32 Signature; //	local file header signature     4 bytes  (0x04034b50)
 #define ZIPHDR_SIG 0x04034b50
+#define ZIPCHDR_SIG 0x02014b50
 			quint16 Version;	//	version needed to extract       2 bytes
 			quint16 Flags;	//	general purpose bit flag        2 bytes
 			quint16 Compression;	//	compression method              2 bytes
@@ -750,7 +751,10 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 		if (zfile.read((char *) &Hdr, sizeof(Hdr)) != sizeof(Hdr))
 			break;
 		if (_letohl(Hdr.Signature) != ZIPHDR_SIG)
+		{
+			zfile.seek(zfile.pos()-sizeof(Hdr));
 			break;
+		}
 		if (_letohs(Hdr.Version) > 20) {
 			exportError("Unsupported ZIP version for %s [%d]\n",
 					file.toStdString().c_str(), _letohs(Hdr.Version));
@@ -793,6 +797,63 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 				exportError("Can't open file %s\n",
 						lname.toStdString().c_str());
 				break;
+			}
+		}
+	}
+	while (true) {
+#pragma pack(push,1)
+		struct _ZipHdr {
+			quint32 Signature; //	local file header signature     4 bytes  (0x04034b50)
+#define ZIPCHDR_SIG 0x02014b50
+			quint16 VMade;	//	version made       2 bytes
+			quint16 Version;	//	version needed to extract       2 bytes
+			quint16 Flags;	//	general purpose bit flag        2 bytes
+			quint16 Compression;	//	compression method              2 bytes
+			quint16 ModTime;	//	last mod file time              2 bytes
+			quint16 ModDate;	//	last mod file date              2 bytes
+			quint32 Crc32;	//	crc-32                          4 bytes
+			quint32 CompSize;	//	compressed size                 4 bytes
+			quint32 OrigSize;	//	uncompressed size               4 bytes
+			quint16 NameLen;	//  file name length                2 bytes
+			quint16 ExtraLen;	//  extra field length              2 bytes
+			quint16 CommLen;	//  comm field length              2 bytes
+			quint16 DiskNum;	//  disk # start             2 bytes
+			quint16 IntAttr;	//  internal attr              2 bytes
+			quint32 ExtAttr;	//  external attr              2 bytes
+			quint32 Offset;	//  offset of local header              2 bytes
+		}PACKED Hdr;
+#pragma pack(pop)
+		if (zfile.read((char *) &Hdr, sizeof(Hdr)) != sizeof(Hdr))
+			break;
+		if (_letohl(Hdr.Signature) != ZIPCHDR_SIG)
+		{
+			zfile.seek(zfile.pos()-sizeof(Hdr));
+			break;
+		}
+		QByteArray fname = zfile.read(_letohs(Hdr.NameLen));
+		QString lname = QString(fname);
+		zfile.read(_letohs(Hdr.ExtraLen));
+		zfile.read(_letohs(Hdr.CommLen));
+		if ((_letohs(Hdr.VMade)>>8)==3) //Unix
+		{
+			quint16 p=_letohl(Hdr.ExtAttr)>>16;
+			if ((Hdr.ExtAttr&0120000)==0120000) //SymLink
+			{
+				QFile ofile(toPath.absoluteFilePath(lname));
+
+				exportInfo("Link %s\n",	lname.toStdString().c_str());
+				if (ofile.open(QIODevice::ReadOnly)) {
+					QString link=QString(ofile.read(ofile.size()));
+					ofile.close();
+					ofile.remove();
+					if (!QFile::link(link,toPath.absoluteFilePath(lname)))
+						exportError("Can't make link %s to %s\n",
+								lname.toStdString().c_str(),link.toStdString().c_str());
+				} else {
+					exportError("Can't open file %s\n",
+							lname.toStdString().c_str());
+					break;
+				}
 			}
 		}
 	}

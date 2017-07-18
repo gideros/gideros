@@ -15,7 +15,7 @@
  -->
  <property name="adsFwApplovin" type="boolean" title="Enable AppLovin support (Android, Gaming/Google Play)"/>
  <property name="adsFwApplovinKey" type="string" title="AppLovin SDK key (Android)"/>
- <property name="adsFwChartboost" type="boolean" title="Enable Chartboost support (Android, Gaming/Google Play)"/>
+ <property name="adsFwChartboost" type="boolean" title="Enable Chartboost support (Android, iOS, Gaming/Google Play)"/>
  <!--
  <property name="adsFwHeyzap" type="boolean" title="Enable Heyzap support (Android,iOS)"/>
  <property name="adsFwIad" type="boolean" title="Enable iAd support (iOS)"/>
@@ -268,6 +268,34 @@ iOSProject.addSources({
 iOSProject.addFrameworkPath(Export.getProperty("project.name").."/Plugins/Ads/frameworks")
 iOSProject.commit()
 	]]></lua>
+
+
+<if condition="[[[plugin.adsFwAdmob]]]">
+	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsAdmob.*" exclude="*.framework" />
+	<download source="http://apps.giderosmobile.com/ext/ios/GoogleMobileAds.framework-7.2.1.0.zip" dest="[[[sys.cacheDir]]]/GoogleMobileAds.framework.zip" />
+	<unzip source="[[[sys.cacheDir]]]/GoogleMobileAds.framework.zip" dest="[[[local.adsfwd]]]" />
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addSources({
+"AdsAdmob.m","AdsAdmob.h","GoogleMobileAds.framework"
+},"GroupAdsFrameworks","ios")
+iOSProject.commit()
+	]]></lua>
+</if>
+
+<if condition="[[[plugin.adsFwChartboost]]]">
+	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsChartboost.*" exclude="*.framework" />
+	<download source="http://apps.giderosmobile.com/ext/ios/Chartboost.framework-6.6.3.zip" dest="[[[sys.cacheDir]]]/Chartboost.framework.zip" />
+	<unzip source="[[[sys.cacheDir]]]/Chartboost.framework.zip" dest="[[[local.adsfwd]]]" />
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addSources({
+"AdsChartboost.m","AdsChartboost.h","Chartboost.framework"
+},"GroupAdsFrameworks","ios")
+iOSProject.commit()
+	]]></lua>
+</if>
+
 <if condition="[[[plugin.adsFwUnity]]]">
 <template name="Unity Ads" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsUnity.*" exclude="*.framework" />
 <download source="http://apps.giderosmobile.com/ext/ios/UnityAds.framework-2.0.5.zip" dest="[[[sys.cacheDir]]]/UnityAds.framework.zip" />
