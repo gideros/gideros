@@ -134,7 +134,7 @@ iOSProject.addGroup("frameworks","frameworks","GroupGamingFrameworks_ios","Group
 iOSProject.addGroup("Gaming","Plugins/Gaming","GroupGaming_atv","GroupPlugins_atv")
 iOSProject.addGroup("frameworks","frameworks","GroupGamingFrameworks_atv","GroupGaming_atv")
 iOSProject.addSources({
- "gamification.mm","gamificationbinder.cpp","GameClass.mm"
+ "gamification.mm","gamificationbinder.cpp","GameClass.mm",
  "gamification.h","GameClass.h","GameProtocol.h"},"GroupGaming","ios")
 iOSProject.addFrameworkPath(Export.getProperty("project.name").."/Plugins/Gaming/frameworks")
 iOSProject.commit()
