@@ -6,15 +6,15 @@
  <!--
  <property name="adsFwAdcolony" type="boolean" title="Enable Adcolony support (Android,iOS)"/>
  -->
- <property name="adsFwAdmob" type="boolean" title="Enable Admob support (Android, require Gaming/Google Play)"/>
+ <property name="adsFwAdmob" type="boolean" title="Enable Admob support (Android, iOS, require Gaming/Google Play)"/>
  <property name="adsFwAdmobClient" type="string" title="Admob client key (ca-app-pub-xxx)"/>
  <property name="adsFwAdmobBanner" type="string" title="Admob banner key"/>
  <property name="adsFwAdmobInterstitial" type="string" title="Admob interstitial key"/>
  <!--
  <property name="adsFwAmazon" type="boolean" title="Enable Amazon support (Android,iOS)"/>
  -->
- <property name="adsFwApplovin" type="boolean" title="Enable AppLovin support (Android, Gaming/Google Play)"/>
- <property name="adsFwApplovinKey" type="string" title="AppLovin SDK key (Android)"/>
+ <property name="adsFwApplovin" type="boolean" title="Enable AppLovin support (Android, iOS, Gaming/Google Play)"/>
+ <property name="adsFwApplovinKey" type="string" title="AppLovin SDK key (Android, iOS)"/>
  <property name="adsFwChartboost" type="boolean" title="Enable Chartboost support (Android, iOS, Gaming/Google Play)"/>
  <!--
  <property name="adsFwHeyzap" type="boolean" title="Enable Heyzap support (Android,iOS)"/>
@@ -269,10 +269,37 @@ iOSProject.addFrameworkPath(Export.getProperty("project.name").."/Plugins/Ads/fr
 iOSProject.commit()
 	]]></lua>
 
+<if condition="[[[plugin.adsFwApplovin]]]">
+	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsApplovin.*" exclude="*.framework" />
+	<download source="http://apps.giderosmobile.com/ext/ios/AppLovinSDK.framework-4.2.1.zip" dest="[[[sys.cacheDir]]]/AppLovinSDK.framework.zip" />
+	<unzip source="[[[sys.cacheDir]]]/AppLovinSDK.framework.zip" dest="[[[local.adsfwd]]]" />
+   <template name="Project" path="">
+        <replacelist wildcards="[[[project.name]]]-Info.plist">
+	    	<prepend>
+			<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
+			<by><![CDATA[	
+				<key>AppLovinSdkKey</key>
+				<string>[[[plugin.adsFwApplovinKey]]]</string>
+			]]></by>
+	    </prepend>
+        </replacelist>
+    </template>	
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addSources({
+"AdsApplovin.m","AdsApplovin.h","AppLovinSDK.framework"
+},"GroupAdsFrameworks","ios")
+local sysFW={ "AdSupport","SystemConfiguration","CoreTelephony" }
+for _,v in ipairs(sysFW) do
+    iOSProject.addFramework(v..".framework","ios","System/Library/Frameworks/"..v..".framework","$SDKROOT")
+end
+iOSProject.commit()
+	]]></lua>
+</if>
 
 <if condition="[[[plugin.adsFwAdmob]]]">
 	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsAdmob.*" exclude="*.framework" />
-	<download source="http://apps.giderosmobile.com/ext/ios/GoogleMobileAds.framework-7.2.1.0.zip" dest="[[[sys.cacheDir]]]/GoogleMobileAds.framework.zip" />
+	<download source="http://apps.giderosmobile.com/ext/ios/GoogleMobileAds.framework-7.21.0.zip" dest="[[[sys.cacheDir]]]/GoogleMobileAds.framework.zip" />
 	<unzip source="[[[sys.cacheDir]]]/GoogleMobileAds.framework.zip" dest="[[[local.adsfwd]]]" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
