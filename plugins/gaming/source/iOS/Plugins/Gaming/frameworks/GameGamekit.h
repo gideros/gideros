@@ -10,7 +10,7 @@
 #import "GameProtocol.h"
 #import <GameKit/GameKit.h> 
 
-@interface GameGamekit : NSObject<GameProtocol, GKLeaderboardViewControllerDelegate, GKAchievementViewControllerDelegate>
+@interface GameGamekit : NSObject<GameProtocol, GKGameCenterControllerDelegate>
 @property(nonatomic, retain)NSMutableDictionary *achs;
 @property(nonatomic, retain)NSURL *ubiq;
 @end
