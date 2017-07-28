@@ -98,6 +98,7 @@ CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
 OPTS+=-O2 --bind
+LOPTS+= --separate-asm
 
 EOPTS+=MAIN_MODULE=1 
 EOPTS+=FULL_ES2=1 
@@ -107,6 +108,8 @@ EOPTS+=DISABLE_EXCEPTION_CATCHING=0
 ifneq ($(DEBUG),)
 OPTS+=-g4
 EOPTS+=ASSERTIONS=2
+else
+OPTS+=--emit-symbol-map
 endif
 
 CINCS=$(addprefix -I../,$(INCS))
@@ -149,7 +152,7 @@ $(BUILD)/lib%.a:
 			
 $(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html
 	@echo "EMLINK gideros"
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
+	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(LOPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
 main: path $(BUILD)/gideros.js
 	cp gideros.png $(TEMPLATE)
@@ -158,6 +161,9 @@ main: path $(BUILD)/gideros.js
 	cp $(BUILD)/gideros.html.mem $(TEMPLATE) 
 	cp pace.min.js $(TEMPLATE)/pace.js
 	cp $(BUILD)/gideros.js $(TEMPLATE)
+	cp $(BUILD)/gideros.asm.js $(TEMPLATE)
+	-cp $(BUILD)/gideros.js.symbols $(TEMPLATE)
+	-cp $(BUILD)/gideros.js.map $(TEMPLATE)
 	cp pace.ldr.js $(TEMPLATE)
 	cp gideros.ldr.js $(TEMPLATE)
 	cp jzptool.js $(TEMPLATE)

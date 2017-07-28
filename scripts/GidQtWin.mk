@@ -4,6 +4,15 @@ qtapp.install: qtlibs.install qtplugins.install qt.install
 
 qtapp.clean: qtlibs.clean qtplugins.clean qt.clean
 
+QTDLLEXT?=
+
+ifneq ($(DEBUG),)
+QTTGT_EXT=dbg
+QTDLLEXT=d
+else
+QTTGT_EXT=rel
+endif
+
 
 vpath %.a libgideros/release:libgvfs/release:libgid/release:lua/release:libgid/external/openal-soft-1.13/build/mingw48_32
 
@@ -46,7 +55,7 @@ qtlibs.install: buildqtlibs
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 
-buildqt: versioning $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel $(addsuffix .qmake.rel,gdrdeamon gdrbridge gdrexport desktop)
+buildqt: versioning $(addsuffix .qmake.$(QTTGT_EXT),texturepacker fontcreator ui) player.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),gdrdeamon gdrbridge gdrexport desktop)
 
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
@@ -85,7 +94,6 @@ QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 lib
 QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Network Qt5Xml Qt5WebSockets
 QT5PLATFORM=qminimal qoffscreen qwindows
-QTDLLEXT?=
 
 qt.player:
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate

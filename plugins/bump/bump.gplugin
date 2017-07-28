@@ -1,0 +1,57 @@
+<plugin
+ name="Bump"
+ description="Native version of Bump.lua">
+  <target name="AndroidStudio,APK">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;bump&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;bump&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="iOS">
+   <mkdir>[[[project.name]]]/Plugins/bit</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/bump" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <mkdir>AppleTV/Plugins/bump</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/bump" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("bump","Plugins/bump","GroupBit_ios","GroupPlugins_ios")
+iOSProject.addGroup("bump","Plugins/bump","GroupBit_atv","GroupPlugins_atv")
+local sources={ "bump.cpp"  }
+iOSProject.addSources(sources, "GroupBit", "ios")
+iOSProject.addSources(sources, "GroupBit", "atv")
+iOSProject.commit()
+	]]></lua>
+ </target>
+ <target name="Html5">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="gideros.html">
+            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;bump.js&quot;,"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="WinRT">
+    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bump.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>]]></by>
+           </append>
+        </replacelist>
+    </template>
+ </target>
+</plugin>

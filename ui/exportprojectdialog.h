@@ -39,12 +39,12 @@ public:
 
 private slots:
 	void onAccepted();
-	void onSelectPlugins();
+	//void onSelectPlugins();
 
 private:
     Ui::ExportProjectDialog *ui;
 	ProjectProperties* properties_;
-	QSet<ProjectProperties::Plugin> plugins;
+	//QSet<ProjectProperties::Plugin> plugins;
 	int xmlTabCount;
 	QStringList exportTypes;
     QMap<QString, QString> osxCat;

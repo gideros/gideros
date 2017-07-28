@@ -1,7 +1,7 @@
 #include "exportprojectdialog.h"
 #include "ui_exportprojectdialog.h"
 #include "projectproperties.h"
-#include "pluginschooser.h"
+//#include "pluginschooser.h"
 #include "propertyeditingtable.h"
 
 #include <QDir>
@@ -66,7 +66,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 
 	connect(ui->architecture, SIGNAL(currentIndexChanged(int)), ui->architectureTab, SLOT(setCurrentIndex(int)));
 	connect(ui->architectureTab, SIGNAL(currentChanged(int)), ui->architecture, SLOT(setCurrentIndex(int)));
-	connect(ui->plugins_choose, SIGNAL(clicked()), this, SLOT(onSelectPlugins()));
+	//connect(ui->plugins_choose, SIGNAL(clicked()), this, SLOT(onSelectPlugins()));
 
     ui->android_template->setCurrentIndex(properties_->android_template);
 	ui->exportMode->setCurrentIndex(properties_->exportMode);
@@ -85,7 +85,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->html5_host->setText(properties->html5_host);
     ui->html5_mem->setText(QString::number(properties->html5_mem));
     ui->html5_pack->setChecked(properties_->html5_pack);
-    plugins=properties->plugins;
+    //plugins=properties->plugins;
 
     if (licensed)
     {
@@ -262,7 +262,7 @@ void ExportProjectDialog::onAccepted()
     properties_->html5_host = ui->html5_host->text();
     properties_->html5_mem = ui->html5_mem->text().toInt();
     properties_->html5_pack = ui->html5_pack->isChecked();
-    properties_->plugins=plugins;
+    //properties_->plugins=plugins;
 
     for (int tab=0;tab<xmlTabCount;tab++)
     {
@@ -280,6 +280,7 @@ void ExportProjectDialog::onAccepted()
     }
 }
 
+/*
 void ExportProjectDialog::onSelectPlugins()
 {
     PluginsChooser dialog(plugins, this);
@@ -288,3 +289,4 @@ void ExportProjectDialog::onSelectPlugins()
 		plugins=dialog.selection();
 	}
 }
+*/

@@ -15,6 +15,9 @@ IconLibrary::IconLibrary()
     iconMap_["lua with stop"] = icon(14, 18, 4, 0, 4, 4);
     iconMap_["file"] = icon(14, 32);
 	iconMap_["folder"] = icon(11, 12);
+	iconMap_["folder plugins"] = icon(13, 12);
+	iconMap_["folder files"] = icon(6, 13);
+	iconMap_["plugin"] = icon(2, 6);
 	iconMap_["sound"] = icon(14, 16);
 
 	iconMap_["new"] = icon(3, 272 / 16);
@@ -71,7 +74,7 @@ const QIcon& IconLibrary::icon(int category, const QString& name) const
 	else if (category == 1)
 	{
 		std::map<QString, QIcon>::const_iterator iter = danish_.find(name);
-		if (iter != iconMap_.end())
+		if (iter != danish_.end())
 			return iter->second;
 	}
 
