@@ -1015,20 +1015,20 @@ int worldProject(lua_State *L) {
 	}
 	int item = lua_tonumber(L, -1);
 	lua_pop(L, 2);
-	double x = luaL_checknumber(L, 2);
-	double y = luaL_checknumber(L, 3);
-	double w = luaL_checknumber(L, 4);
-	double h = luaL_checknumber(L, 5);
-	double gx = luaL_checknumber(L, 6);
-	double gy = luaL_checknumber(L, 7);
+	double x = luaL_checknumber(L, 3);
+	double y = luaL_checknumber(L, 4);
+	double w = luaL_checknumber(L, 5);
+	double h = luaL_checknumber(L, 6);
+	double gx = luaL_checknumber(L, 7);
+	double gy = luaL_checknumber(L, 8);
 
 	ColFilter *f = NULL;
 	LuaColFilter lf;
 	lf.L = L;
 	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 8)) {
-		luaL_checktype(L, 8, LUA_TFUNCTION);
-		lf.func = 4;
+	if (!lua_isnoneornil(L, 9)) {
+		luaL_checktype(L, 9, LUA_TFUNCTION);
+		lf.func = 9;
 		f = &lf;
 	}
 	double ax, ay;
@@ -1306,7 +1306,7 @@ int worldQuerySegmentWithCoords(lua_State *L) {
 }
 
 int worldAdd(lua_State *L) {
-	assertIsRect(L, 2, 3, 4, 5);
+	assertIsRect(L, 3, 4, 5,6);
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
@@ -1318,10 +1318,10 @@ int worldAdd(lua_State *L) {
 	}
 	lua_pop(L, 1);
 	int item = wr->rects.size() + 1;
-	double x = luaL_checknumber(L, 2);
-	double y = luaL_checknumber(L, 3);
-	double w = luaL_checknumber(L, 4);
-	double h = luaL_checknumber(L, 5);
+	double x = luaL_checknumber(L, 3);
+	double y = luaL_checknumber(L, 4);
+	double w = luaL_checknumber(L, 5);
+	double h = luaL_checknumber(L, 6);
 	wr->add(item, x, y, w, h);
 	lua_pushvalue(L, 2);
 	lua_pushinteger(L, item);
@@ -1359,7 +1359,7 @@ int worldRemove(lua_State *L) {
 }
 
 int worldUpdate(lua_State *L) {
-	assertIsRect(L, 2, 3, 4, 5);
+	assertIsRect(L, 3, 4, 5, 6);
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
@@ -1372,10 +1372,10 @@ int worldUpdate(lua_State *L) {
 	}
 	int item = lua_tonumber(L, -1);
 	lua_pop(L, 2);
-	double x = luaL_checknumber(L, 2);
-	double y = luaL_checknumber(L, 3);
-	double w = luaL_checknumber(L, 4);
-	double h = luaL_checknumber(L, 5);
+	double x = luaL_checknumber(L, 3);
+	double y = luaL_checknumber(L, 4);
+	double w = luaL_checknumber(L, 5);
+	double h = luaL_checknumber(L, 6);
 	wr->update(item, x, y, w, h);
 	return 0;
 }
@@ -1394,20 +1394,20 @@ int worldMove(lua_State *L) {
 	}
 	int item = lua_tonumber(L, -1);
 	lua_pop(L, 2);
-	double x = luaL_checknumber(L, 2);
-	double y = luaL_checknumber(L, 3);
+	double x = luaL_checknumber(L, 3);
+	double y = luaL_checknumber(L, 4);
 
 	ColFilter *f = NULL;
 	LuaColFilter lf;
 	lf.L = L;
 	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 4)) {
-		luaL_checktype(L, 4, LUA_TFUNCTION);
-		lf.func = 4;
+	if (!lua_isnoneornil(L, 5)) {
+		luaL_checktype(L, 5, LUA_TFUNCTION);
+		lf.func = 5;
 		f = &lf;
 	}
 	double ax, ay;
-	std::vector<Collision> items = wr->move(item, y, x, f, ax, ay);
+	std::vector<Collision> items = wr->move(item, x, y, f, ax, ay);
 	int n = 0;
 	for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
 			it++) {
@@ -1498,20 +1498,20 @@ int worldCheck(lua_State *L) {
 	}
 	int item = lua_tonumber(L, -1);
 	lua_pop(L, 2);
-	double x = luaL_checknumber(L, 2);
-	double y = luaL_checknumber(L, 3);
+	double x = luaL_checknumber(L, 3);
+	double y = luaL_checknumber(L, 4);
 
 	ColFilter *f = NULL;
 	LuaColFilter lf;
 	lf.L = L;
 	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 4)) {
-		luaL_checktype(L, 4, LUA_TFUNCTION);
-		lf.func = 4;
+	if (!lua_isnoneornil(L, 5)) {
+		luaL_checktype(L, 5, LUA_TFUNCTION);
+		lf.func = 5;
 		f = &lf;
 	}
 	double ax, ay;
-	std::vector<Collision> items = wr->check(item, y, x, f, ax, ay);
+	std::vector<Collision> items = wr->check(item, x, y, f, ax, ay);
 	int n = 0;
 	for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
 			it++) {
