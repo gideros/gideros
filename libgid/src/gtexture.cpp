@@ -609,6 +609,11 @@ void gtexture_set_engine(ShaderEngine *e)
 	engine=e;
 }
 
+ShaderEngine *gtexture_get_engine()
+{
+	return engine;
+}
+
 void gtexture_init()
 {
     s_manager = new TextureManager;

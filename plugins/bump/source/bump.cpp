@@ -602,6 +602,7 @@ struct World {
 				it != dictItemsInCellRect.end(); it++) {
 			int other = *it;
 			if (visited.find(other) == visited.end()) {
+				visited.insert(other);
 				const char *responseName = filter->Filter(item, other);
 				if (responseName) {
 					double ox, oy, ow, oh;

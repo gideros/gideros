@@ -32,6 +32,7 @@ extern "C" {
 G_API void gtexture_init();
 G_API void gtexture_cleanup();
 G_API void gtexture_set_engine(ShaderEngine *e);
+G_API ShaderEngine *gtexture_get_engine();
 
 G_API g_id gtexture_create(int width, int height,
                            int format, int type,
