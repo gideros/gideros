@@ -220,6 +220,7 @@ void cameraplugin::deinit()
 
 void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight)
 {
+	if (!camera) { *camwidth=0; *camheight=0; return; }
 	int o=0;
 	switch (orientation)
 	{
@@ -272,6 +273,7 @@ void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight)
 
 void cameraplugin::stop()
 {
+	if (!camera) return;
 	camera->stop();
 	if (camerasurface)
 	{
