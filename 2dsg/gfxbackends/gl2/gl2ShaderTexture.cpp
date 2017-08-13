@@ -9,36 +9,37 @@
 
 ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)
 {
+	GLCALL_INIT;
 	glid=0;
 	native=false;
 	this->width=width;
 	this->height=height;
 
     GLint oldTex = 0;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTex);
+    GLCALL glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTex);
 
-    glGenTextures(1, &glid);
-    glBindTexture(GL_TEXTURE_2D, glid);
+    GLCALL glGenTextures(1, &glid);
+    GLCALL glBindTexture(GL_TEXTURE_2D, glid);
     switch (wrap)
     {
     case WRAP_CLAMP:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         break;
     case WRAP_REPEAT:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         break;
     }
     switch (filtering)
     {
     case FILT_NEAREST:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         break;
     case FILT_LINEAR:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GLCALL glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         break;
     }
 
@@ -60,15 +61,16 @@ ogl2ShaderTexture::ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture:
     	case PK_USHORT_5551: gltype=GL_UNSIGNED_SHORT_5_5_5_1; break;
     }
     if (data)
-    	glTexImage2D(GL_TEXTURE_2D, 0, glformat, width, height, 0, glformat, gltype, data);
+    	GLCALL glTexImage2D(GL_TEXTURE_2D, 0, glformat, width, height, 0, glformat, gltype, data);
 
-    glBindTexture(GL_TEXTURE_2D, oldTex);
+    GLCALL glBindTexture(GL_TEXTURE_2D, oldTex);
 }
 
 void ogl2ShaderTexture::setNative(void *externalTexture)
 {
+	GLCALL_INIT;
 	if (!native)
-		glDeleteTextures(1,&glid);
+		GLCALL glDeleteTextures(1,&glid);
 	glid=externalTexture?(*((GLuint *)externalTexture)):0;
 	native=true;
 }
@@ -80,8 +82,9 @@ void *ogl2ShaderTexture::getNative()
 
 ogl2ShaderTexture::~ogl2ShaderTexture()
 {
+	GLCALL_INIT;
 	if (!native)
-		glDeleteTextures(1,&glid);
+		GLCALL glDeleteTextures(1,&glid);
 }
 
 

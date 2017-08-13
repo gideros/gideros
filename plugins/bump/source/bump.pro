@@ -1,4 +1,5 @@
-QT -= core gui
+QT -= gui
+#QT -= core
 
 TARGET = bump
 TEMPLATE = lib

@@ -14,6 +14,10 @@
 #include <mutex>
 #include "Shaders.h"
 #include "graphicsbase.h"
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#define GLCALL_INIT QOpenGLFunctions *glFuncs = QOpenGLContext::currentContext()->functions();
+#define GLCALL glFuncs->
 
 #include "../common/camerabinder.h"
 
@@ -138,12 +142,13 @@ VideoFrameSurface::~VideoFrameSurface() {
 }
 
 void VideoFrameSurface::render() {
+	GLCALL_INIT;
 	if(g_frame.map(QAbstractVideoBuffer::ReadOnly))
 	{
 		GLuint tid=*((GLuint *)camtex->getNative());
-		glBindTexture(GL_TEXTURE_2D, tid);
+		GLCALL glBindTexture(GL_TEXTURE_2D, tid);
 		//qDebug() << "Render:" << g_frame.width()<< g_frame.height() << tid;
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, cw, ch,0, GL_RGBA, GL_UNSIGNED_BYTE, g_frame.bits());
+		GLCALL glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, cw, ch,0, GL_RGBA, GL_UNSIGNED_BYTE, g_frame.bits());
 		ShaderEngine *engine=gtexture_get_engine();
 		engine->reset();
 		ShaderBuffer *oldfbo = engine->setFramebuffer(rdrTgt);
@@ -199,28 +204,40 @@ QList<QVideoFrame::PixelFormat> VideoFrameSurface::supportedPixelFormats(QAbstra
 
 void cameraplugin::init()
 {
-	if (!camera)
-	{
-		QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
-		foreach (const QCameraInfo &cameraInfo, cameras) {
-			camera = new QCamera(cameraInfo);
-			break;
-		}
+}
+
+std::vector<cameraplugin::CameraDesc> cameraplugin::availableDevices()
+{
+	std::vector<cameraplugin::CameraDesc> cams;
+	QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
+	foreach (const QCameraInfo &cameraInfo, cameras) {
+		cameraplugin::CameraDesc cam;
+		cam.name=cameraInfo.deviceName().toStdString();
+		cam.description=cameraInfo.description().toStdString();
+		cam.pos=cameraplugin::CameraDesc::POS_UNKNOWN;
+		if (cameraInfo.position()==QCamera::FrontFace)
+			cam.pos=cameraplugin::CameraDesc::POS_FRONTFACING;
+		if (cameraInfo.position()==QCamera::BackFace)
+			cam.pos=cameraplugin::CameraDesc::POS_BACKFACING;
+		cams.push_back(cam);
 	}
+	return cams;
 }
 
 void cameraplugin::deinit()
 {
-	if (camera)
-	{
-		delete camera;
-		camera=NULL;
-	}
+	stop();
 }
 
-void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight)
+void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,const char *cam)
 {
-	if (!camera) { *camwidth=0; *camheight=0; return; }
+	QCameraInfo caminfo=QCameraInfo::defaultCamera();
+	if (cam)
+		caminfo=QCameraInfo(QByteArray(cam));
+	*camwidth=0; *camheight=0;
+	if (caminfo.isNull()) return;
+	camera = new QCamera(caminfo);
+	if (!camera) return;
 	int o=0;
 	switch (orientation)
 	{
@@ -243,11 +260,13 @@ void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight)
     QList<QSize> reslist=camera->supportedViewfinderResolutions();
     int best=0,opt=-1,bestw=0,optw=0;
 
+    int expw=cameraplugin::cameraTexture->data->width;
+    int exph=cameraplugin::cameraTexture->data->height;
     for (int k=0;k<reslist.size();k++)
     {
     	int weight=reslist[k].width()*reslist[k].height();
     	if (weight>bestw) { best=k; bestw=weight; }
-    	if ((reslist[k].width()>=(*camwidth))&&(reslist[k].height()>=(*camheight)))
+    	if ((reslist[k].width()>=expw)&&(reslist[k].height()>=exph))
     	{
     		if ((opt<0)||(optw>weight))
     		{
@@ -275,6 +294,11 @@ void cameraplugin::stop()
 {
 	if (!camera) return;
 	camera->stop();
+	if (camera)
+	{
+		delete camera;
+		camera=NULL;
+	}
 	if (camerasurface)
 	{
 		delete camerasurface;

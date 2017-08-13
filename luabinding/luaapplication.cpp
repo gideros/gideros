@@ -48,7 +48,7 @@
 #include "viewportbinder.h"
 #include "pixelbinder.h"
 #include "particlesbinder.h"
-
+#include "screenbinder.h"
 #include "keys.h"
 
 #include "ogl.h"
@@ -367,6 +367,7 @@ static int bindAll(lua_State* L)
     ViewportBinder viewportBinder(L);
     PixelBinder pixelbinder(L);
     ParticlesBinder particlesbinder(L);
+    ScreenBinder screenbinder(L);
 
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)

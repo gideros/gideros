@@ -1,7 +1,3 @@
-#ifndef RASPBERRY_PI
-#include <GL/glew.h>
-#endif
-
 #include "glcanvas.h"
 #include "luaapplication.h"
 #include "libnetwork.h"
@@ -35,6 +31,135 @@
 #include <gpath.h>
 #include <gvfs-native.h>
 #include "mainwindow.h"
+
+#include <QOpenGLWindow>
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QScreen>
+#include <screen.h>
+#include <Qt>
+
+class QtScreenManager : public ScreenManager {
+public:
+	QOpenGLWidget *master_;
+	QtScreenManager(QOpenGLWidget *master);
+	virtual Screen *openScreen(Application *application,int id);
+	virtual void screenDestroyed();
+};
+
+class QtScreen : public Screen,protected QOpenGLWindow {
+	virtual void tick();
+protected:
+	virtual void setVisible(bool);
+public:
+	virtual void setSize(int w,int h);
+	virtual void getSize(int &w,int &h);
+	virtual void setPosition(int w,int h);
+	virtual void getPosition(int &w,int &h);
+	virtual void setState(int state);
+	virtual int getState();
+	virtual void getMaxSize(int &w,int &h);
+	virtual int getId();
+	QtScreen(Application *application);
+	~QtScreen();
+};
+
+
+void QtScreen::tick()
+{
+	if (isExposed())
+	{
+		Matrix4 m;
+		QOpenGLContext *c=((QtScreenManager *)(ScreenManager::manager))->master_->context();
+		c->makeCurrent(this);
+		c->functions()->glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+		draw(m);
+		c->swapBuffers(this);
+	}
+}
+
+void QtScreen::setSize(int w,int h)
+{
+	resize(w,h);
+}
+
+void QtScreen::getSize(int &w,int &h)
+{
+	w=width();
+	h=height();
+}
+
+void QtScreen::setState(int state)
+{
+	Qt::WindowState st=Qt::WindowNoState;
+	if (state&MINIMIZED) st=Qt::WindowMinimized;
+	if (state&MAXIMIZED) st=Qt::WindowMaximized;
+	if (state&FULLSCREEN) st=Qt::WindowFullScreen;
+	setWindowState(st);
+}
+
+int QtScreen::getState()
+{
+	Qt::WindowState state=windowState();
+	if (state==Qt::WindowMinimized) return MINIMIZED;
+	if (state==Qt::WindowMaximized) return MAXIMIZED;
+	if (state==Qt::WindowFullScreen) return FULLSCREEN;
+	return NORMAL;
+}
+
+void QtScreen::getMaxSize(int &w,int &h)
+{
+	QSize s=screen()->size();
+	w=s.width();
+	h=s.height();
+}
+
+void QtScreen::setPosition(int w,int h)
+{
+	setPosition(w,h);
+}
+
+void QtScreen::getPosition(int &w,int &h)
+{
+	w=x();
+	h=y();
+}
+
+int QtScreen::getId()
+{
+	return 0;
+}
+
+void QtScreen::setVisible(bool visible)
+{
+	if (visible) show(); else hide();
+}
+
+QtScreen::QtScreen(Application *application) : Screen(application), QOpenGLWindow()
+{
+}
+
+QtScreen::~QtScreen()
+{
+}
+
+
+QtScreenManager::QtScreenManager(QOpenGLWidget *master)
+{
+	master_=master;
+}
+
+void QtScreenManager::screenDestroyed()
+{
+	if (!QOpenGLContext::currentContext())
+		master_->makeCurrent();
+}
+
+
+Screen *QtScreenManager::openScreen(Application *application,int id)
+{
+	return new QtScreen(application);
+}
 
 static int __mkdir(const char* path) {
 #ifdef _WIN32
@@ -86,7 +211,7 @@ static void deltree(const char* dir) {
 }
 
 GLCanvas::GLCanvas(QWidget *parent) :
-		QGLWidget(parent) {
+		QOpenGLWidget(parent) {
 	setAttribute(Qt::WA_AcceptTouchEvents);
     for( int i=1; i<=4; ++i )
     {
@@ -119,9 +244,11 @@ GLCanvas::GLCanvas(QWidget *parent) :
 	 platformImplementation_ = new PlatformImplementation(application_);
 	 setPlatformInterface(platformImplementation_);
 	 */
+	ScreenManager::manager=new QtScreenManager(this);
 }
 
 GLCanvas::~GLCanvas() {
+	makeCurrent();
 	if (running_ == true) {
 		Event event(Event::APPLICATION_EXIT);
 		GStatus status;
@@ -153,6 +280,9 @@ GLCanvas::~GLCanvas() {
 	 setPlatformInterface(NULL);
 	 delete platformImplementation_;
 	 */
+
+	delete ScreenManager::manager;
+	ScreenManager::manager=NULL;
 
 	if (isPlayer_) {
 		delete server_;
@@ -215,10 +345,6 @@ void GLCanvas::setupApplicationProperties() {
 }
 
 void GLCanvas::initializeGL() {
-#ifndef RASPBERRY_PI
-	glewInit();
-#endif
-
 	application_->initialize();
 	setupApplicationProperties();
 }
@@ -291,6 +417,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
     printf(".");
     printf("%d\n", Referenced::instanceCount);
     */
+	makeCurrent();
     if(!projectDir_.isEmpty()){
         play(QDir(projectDir_));
         projectDir_.clear();
@@ -511,6 +638,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
         }
     }
 
+    ScreenManager::manager->tick();
     update();
 }
 
@@ -790,7 +918,7 @@ void GLCanvas::play(QString gapp) {
 
 void GLCanvas::loadProperties(std::vector<char> data) {
 	ByteBuffer buffer(&data[0], data.size());
-
+	makeCurrent();
 	if (!exportedApp_) {
 		char chr;
 		buffer >> chr;
@@ -854,6 +982,7 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles) {
 	GStatus status;
+	makeCurrent();
 	for (std::size_t i = 0; i < luafiles.size(); ++i) {
 		application_->loadFile(luafiles[i].c_str(), &status);
 		if (status.error())
@@ -1124,7 +1253,7 @@ bool GLCanvas::event(QEvent *event){
             checkLuaError(status);
         }
     }
-    return QGLWidget::event(event);
+    return QOpenGLWidget::event(event);
 }
 
 void GLCanvas::onTimer() {

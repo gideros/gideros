@@ -1,16 +1,13 @@
 #include <gapplication.h>
 
-
 extern "C" {
 
 void gapplication_init()
 {
-
 }
 
 void gapplication_cleanup()
 {
-
 }
 
 int gapplication_getScreenDensity()

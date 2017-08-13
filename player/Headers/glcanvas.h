@@ -1,7 +1,7 @@
 #ifndef GLCANVAS_H
 #define GLCANVAS_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QDir>
 
 class LuaApplication;
@@ -14,7 +14,7 @@ class Server;
 #include <gfile_p.h>
 #include <gstatus.h>
 
-class GLCanvas : public QGLWidget{
+class GLCanvas : public QOpenGLWidget{
 	Q_OBJECT
 
 public:

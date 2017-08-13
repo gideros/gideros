@@ -23,8 +23,10 @@ public:
 	}
 	virtual ~gl2ShaderBufferCache()
 	{
+		GLCALL_CHECK;
+		GLCALL_INIT;
 		if (VBO)
-			glDeleteBuffers(1,&VBO);
+			GLCALL glDeleteBuffers(1,&VBO);
 		allVBO->erase(this);
 		if (allVBO->empty())
 		{
@@ -34,8 +36,9 @@ public:
 	}
 	void recreate()
 	{
+		GLCALL_INIT;
 		if (VBO)
-			glDeleteBuffers(1,&VBO);
+			GLCALL glDeleteBuffers(1,&VBO);
 		VBO=0;
 	}
 	bool valid()
@@ -82,9 +85,10 @@ GLuint getCachedVBO(ShaderBufferCache **cache,bool &modified) {
 		useVBO=false;
 	if (useVBO)
 	{
+		GLCALL_INIT;
 		if (!dc->valid())
 		{
-			glGenBuffers(1,&dc->VBO);
+			GLCALL glGenBuffers(1,&dc->VBO);
 			modified=true;
 		}
 	}
@@ -106,6 +110,12 @@ void ogl2ShaderProgram::resetAll()
 			  (*it)->recreate();
 }
 
+void ogl2ShaderProgram::resetAllUniforms()
+{
+	  for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); ++it)
+		  (*it)->resetUniforms();
+}
+
 
 const char *hdrShaderCode=
 #ifdef OPENGL_ES
@@ -120,26 +130,27 @@ const char *hdrShaderCode=
 
 
 GLuint ogl2LoadShader(GLuint type, const char *code, std::string &log) {
-	GLuint shader = glCreateShader(type);
-	glShaderSource(shader, 1, &code, NULL);
-	glCompileShader(shader);
+	GLCALL_INIT;
+	GLuint shader = GLCALL glCreateShader(type);
+	GLCALL glShaderSource(shader, 1, &code, NULL);
+	GLCALL glCompileShader(shader);
 
 	GLint isCompiled = 0;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
+	GLCALL glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
 	if (isCompiled == GL_FALSE) {
 		GLint maxLength = 0;
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+		GLCALL glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
 		if (maxLength > 0) {
 			//The maxLength includes the NULL character
 			std::vector<GLchar> infoLog(maxLength);
-			glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
+			GLCALL glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
 			log.append((type==GL_FRAGMENT_SHADER)?"FragmentShader:\n":"VertexShader:\n");
 			log.append(&infoLog[0]);
 			log.append("\n");
 			glog_e("Shader Compile: %s\n", &infoLog[0]);
 		}
-		glDeleteShader(shader);
+		GLCALL glDeleteShader(shader);
 		shader = 0;
 	}
 	//glog_i("Loaded shader:%d\n", shader);
@@ -147,17 +158,18 @@ GLuint ogl2LoadShader(GLuint type, const char *code, std::string &log) {
 }
 
 GLuint ogl2BuildProgram(GLuint vertexShader, GLuint fragmentShader, std::string log) {
-	GLuint program = glCreateProgram();
-	glAttachShader(program, vertexShader);
-	glAttachShader(program, fragmentShader);
-	glBindAttribLocation(program, 0, "vVertex"); //Ensure vertex is at 0
-	glLinkProgram(program);
+	GLCALL_INIT;
+	GLuint program = GLCALL glCreateProgram();
+	GLCALL glAttachShader(program, vertexShader);
+	GLCALL glAttachShader(program, fragmentShader);
+	GLCALL glBindAttribLocation(program, 0, "vVertex"); //Ensure vertex is at 0
+	GLCALL glLinkProgram(program);
 
 	GLint maxLength = 0;
-	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
+	GLCALL glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 	if (maxLength > 0) {
 		std::vector<GLchar> infoLog(maxLength);
-		glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
+		GLCALL glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
 		log.append("Shader Program:\n");
 		log.append(&infoLog[0]);
 		log.append("\n");
@@ -178,16 +190,18 @@ const char *ogl2ShaderProgram::compilationLog()
 }
 
 void ogl2ShaderProgram::deactivate() {
+	GLCALL_INIT;
 	for (std::vector<GLint>::iterator it = glattributes.begin();
 			it != glattributes.end(); ++it) {
 		GLint att = *it;
 		if (att >= 0)
-			glDisableVertexAttribArray(*it);
+			GLCALL glDisableVertexAttribArray(*it);
 	}
 	current = NULL;
 }
 
 void ogl2ShaderProgram::activate() {
+	GLCALL_INIT;
 	useProgram();
 	if (current == this)
 		return;
@@ -198,14 +212,15 @@ void ogl2ShaderProgram::activate() {
 			it != glattributes.end(); ++it) {
 		GLint att = *it;
 		if (att >= 0)
-			glEnableVertexAttribArray(*it);
+			GLCALL glEnableVertexAttribArray(*it);
 	}
 
 }
 
 void ogl2ShaderProgram::useProgram() {
 	if (curProg != program) {
-		glUseProgram(program);
+		GLCALL_INIT;
+		GLCALL glUseProgram(program);
 		curProg = program;
 	}
 }
@@ -213,6 +228,7 @@ void ogl2ShaderProgram::useProgram() {
 void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 		const void *ptr, unsigned int count, bool modified,
 		ShaderBufferCache **cache,int stride,int offset) {
+	GLCALL_INIT;
 	useProgram();
 	GLenum gltype = GL_FLOAT;
 	bool normalize = false;
@@ -243,18 +259,18 @@ void ogl2ShaderProgram::setData(int index, DataType type, int mult,
 		break;
 	}
 #ifdef GIDEROS_GL1
-	glVertexPointer(mult,gltype, stride, ((char *)ptr)+offset);
+	GLCALL glVertexPointer(mult,gltype, stride, ((char *)ptr)+offset);
 #else
 	GLuint vbo=getCachedVBO(cache,modified);
-	glBindBuffer(GL_ARRAY_BUFFER,vbo);
+	GLCALL glBindBuffer(GL_ARRAY_BUFFER,vbo);
 	if (vbo)
 	{
 		if (modified)
-			glBufferData(GL_ARRAY_BUFFER,elmSize * mult * count,ptr,GL_DYNAMIC_DRAW);
+			GLCALL glBufferData(GL_ARRAY_BUFFER,elmSize * mult * count,ptr,GL_DYNAMIC_DRAW);
 		ptr=NULL;
 	}
 	if ((index<glattributes.size())&&(glattributes[index]>=0))
-	glVertexAttribPointer(glattributes[index], mult, gltype, normalize, stride, ((char *)ptr)+offset);
+	GLCALL glVertexAttribPointer(glattributes[index], mult, gltype, normalize, stride, ((char *)ptr)+offset);
 #endif
 
 }
@@ -263,32 +279,33 @@ void ogl2ShaderProgram::setConstant(int index, ConstantType type, int mult,
 		const void *ptr) {
 	if ((!updateConstant(index, type, mult, ptr))&&(!(uninit_uniforms&(1<<index))))
 		return;
+	GLCALL_INIT;
 	useProgram();
 	uninit_uniforms&=~(1<<index);
 	switch (type) {
 	case CINT:
 	case CTEXTURE:
-		glUniform1iv(gluniforms[index], mult,((GLint *) ptr));
+		GLCALL glUniform1iv(gluniforms[index], mult,((GLint *) ptr));
 		break;
 	case CFLOAT:
-		glUniform1fv(gluniforms[index],mult, ((GLfloat *) ptr));
+		GLCALL glUniform1fv(gluniforms[index],mult, ((GLfloat *) ptr));
 		break;
 	case CFLOAT2:
-		glUniform2fv(gluniforms[index], mult, ((GLfloat *) ptr));
+		GLCALL glUniform2fv(gluniforms[index], mult, ((GLfloat *) ptr));
 		break;
 	case CFLOAT3:
-		glUniform3fv(gluniforms[index], mult, ((GLfloat *) ptr));
+		GLCALL glUniform3fv(gluniforms[index], mult, ((GLfloat *) ptr));
 		break;
 	case CFLOAT4:
-		glUniform4fv(gluniforms[index], mult, ((GLfloat *) ptr));
+		GLCALL glUniform4fv(gluniforms[index], mult, ((GLfloat *) ptr));
 		break;
 	case CMATRIX:
-		glUniformMatrix4fv(gluniforms[index], mult, false, ((GLfloat *) ptr));
+		GLCALL glUniformMatrix4fv(gluniforms[index], mult, false, ((GLfloat *) ptr));
 		break;
 	}
 	/*
 #ifdef GIDEROS_GL1
-	glColor4f(r,g,b,a);
+	GLCALL glColor4f(r,g,b,a);
 #endif
 */
 }
@@ -387,46 +404,52 @@ void ogl2ShaderProgram::buildProgram(const char *vshader1, const char *vshader2,
 }
 
 void ogl2ShaderProgram::recreate() {
+	GLCALL_INIT;
 	errorLog="";
     uninit_uniforms=-1;
-    if (glIsProgram(program))
+    if (GLCALL glIsProgram(program))
     {
     	if (current==this)
     		deactivate();
     	if (curProg == program) {
-    		glUseProgram(0);
+    		GLCALL glUseProgram(0);
     		curProg = 0;
     	}
-    	glDetachShader(program, vertexShader);
-    	glDetachShader(program, fragmentShader);
-    	glDeleteShader(vertexShader);
-    	glDeleteShader(fragmentShader);
-    	glDeleteProgram(program);
+    	GLCALL glDetachShader(program, vertexShader);
+    	GLCALL glDetachShader(program, fragmentShader);
+    	GLCALL glDeleteShader(vertexShader);
+    	GLCALL glDeleteShader(fragmentShader);
+    	GLCALL glDeleteProgram(program);
     }
 	vertexShader = ogl2LoadShader(GL_VERTEX_SHADER, vshadercode.c_str(),errorLog);
 	fragmentShader = ogl2LoadShader(GL_FRAGMENT_SHADER, fshadercode.c_str(),errorLog);
 	program = ogl2BuildProgram(vertexShader, fragmentShader,errorLog);
 	gluniforms.clear();
 	glattributes.clear();
-	glUseProgram(program);
+	GLCALL glUseProgram(program);
 	GLint ntex = 0;
 	for (int k=0;k<uniforms.size();k++) {
 		ConstantDesc cd=uniforms[k];
-		this->gluniforms.push_back(glGetUniformLocation(program, cd.name.c_str()));
+		this->gluniforms.push_back(GLCALL glGetUniformLocation(program, cd.name.c_str()));
 		switch (cd.type) {
 		case CTEXTURE:
-			glUniform1i(gluniforms[gluniforms.size() - 1], ntex++);
+			GLCALL glUniform1i(gluniforms[gluniforms.size() - 1], ntex++);
 			break;
 		default:
 			break;
 		}
 	}
 	for (int k=0;k<attributes.size();k++) {
-		glattributes.push_back(glGetAttribLocation(program, attributes[k].name.c_str()));
+		glattributes.push_back(GLCALL glGetAttribLocation(program, attributes[k].name.c_str()));
 	}
 }
 
+void ogl2ShaderProgram::resetUniforms() {
+    uninit_uniforms=-1;
+}
+
 ogl2ShaderProgram::~ogl2ShaderProgram() {
+	GLCALL_INIT;
 	 for (std::vector<ogl2ShaderProgram *>::iterator it = shaders.begin() ; it != shaders.end(); )
 		if (*it==this)
 			it=shaders.erase(it);
@@ -436,20 +459,21 @@ ogl2ShaderProgram::~ogl2ShaderProgram() {
 	if (current==this)
 		deactivate();
 	if (curProg == program) {
-		glUseProgram(0);
+		GLCALL glUseProgram(0);
 		curProg = 0;
 	}
-	glDetachShader(program, vertexShader);
-	glDetachShader(program, fragmentShader);
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	glDeleteProgram(program);
+	GLCALL glDetachShader(program, vertexShader);
+	GLCALL glDetachShader(program, fragmentShader);
+	GLCALL glDeleteShader(vertexShader);
+	GLCALL glDeleteShader(fragmentShader);
+	GLCALL glDeleteProgram(program);
 	glog_i("Deleted program:%d", program);
 	free(cbData);
 }
 
 void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 		unsigned int count) {
+	GLCALL_INIT;
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 	GLenum mode = GL_POINTS;
@@ -473,11 +497,12 @@ void ogl2ShaderProgram::drawArrays(ShapeType shape, int first,
 		mode = GL_TRIANGLE_STRIP;
 		break;
 	}
-	glDrawArrays(mode, first, count);
+	GLCALL glDrawArrays(mode, first, count);
 
 }
 void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 		DataType type, const void *indices, bool modified, ShaderBufferCache **cache,unsigned int first,unsigned int dcount) {
+	GLCALL_INIT;
 	ShaderEngine::Engine->prepareDraw(this);
 	activate();
 
@@ -530,12 +555,12 @@ void ogl2ShaderProgram::drawElements(ShapeType shape, unsigned int count,
 		break;
 	}
 	GLuint vbo=getCachedVBO(cache,modified);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo);
+	GLCALL glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo);
 	if (vbo)
 	{
 		if (modified)
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER,elmSize * count,indices,GL_DYNAMIC_DRAW);
+			GLCALL glBufferData(GL_ELEMENT_ARRAY_BUFFER,elmSize * count,indices,GL_DYNAMIC_DRAW);
 		indices=NULL;
 	}
-	glDrawElements(mode, dcount?dcount:count, dtype, ((char *)indices)+elmSize*first);
+	GLCALL glDrawElements(mode, dcount?dcount:count, dtype, ((char *)indices)+elmSize*first);
 }

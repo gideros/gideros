@@ -209,8 +209,13 @@ void cameraplugin::deinit() {
 		s_gcamera = NULL;
 	}
 }
+std::vector<cameraplugin::CameraDesc> cameraplugin::availableDevices()
+{
+	std::vector<cameraplugin::CameraDesc> cams;
+	return cams;
+}
 
-void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight) {
+void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,const char *device) {
 	int o=0;
 	switch (orientation)
 	{

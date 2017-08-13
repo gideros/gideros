@@ -355,6 +355,8 @@
 		EB140D8B1C5BB83A000180C7 /* cryptobinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */; };
 		EB27A5FA1CCDFC7E003A5580 /* pixel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5F91CCDFC7E003A5580 /* pixel.cpp */; };
 		EB27A5FC1CCDFC9B003A5580 /* pixelbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */; };
+		EB27A5FA1CCDFC7E003A5581 /* screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5F91CCDFC7E003A5581 /* screen.cpp */; };
+		EB27A5FC1CCDFC9B003A5581 /* screenbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FB1CCDFC9B003A5581 /* screenbinder.cpp */; };
 		EB27A5FE1CFF1CEA003A5580 /* particlesbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FD1CFF1CEA003A5580 /* particlesbinder.cpp */; };
 		EB27A6001CFF1D0B003A5580 /* particles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FF1CFF1D0B003A5580 /* particles.cpp */; };
 		EB35B49A1C1190C200227849 /* ft-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4971C1190C200227849 /* ft-path.c */; };
@@ -780,6 +782,8 @@
 		EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cryptobinder.cpp; path = ../../luabinding/cryptobinder.cpp; sourceTree = "<group>"; };
 		EB27A5F91CCDFC7E003A5580 /* pixel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pixel.cpp; path = ../../2dsg/pixel.cpp; sourceTree = "<group>"; };
 		EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pixelbinder.cpp; path = ../../luabinding/pixelbinder.cpp; sourceTree = "<group>"; };
+		EB27A5F91CCDFC7E003A5581 /* screen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = screen.cpp; path = ../../2dsg/screen.cpp; sourceTree = "<group>"; };
+		EB27A5FB1CCDFC9B003A5581 /* screenbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = screenbinder.cpp; path = ../../luabinding/screenbinder.cpp; sourceTree = "<group>"; };
 		EB27A5FD1CFF1CEA003A5580 /* particlesbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = particlesbinder.cpp; path = ../../luabinding/particlesbinder.cpp; sourceTree = "<group>"; };
 		EB27A5FF1CFF1D0B003A5580 /* particles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = particles.cpp; path = ../../2dsg/particles.cpp; sourceTree = "<group>"; };
 		EB35B4971C1190C200227849 /* ft-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "ft-path.c"; sourceTree = "<group>"; };
@@ -1300,6 +1304,7 @@
 				EB08A3511AAA06F900D8F27D /* Matrices.h */,
 				EB27A5FF1CFF1D0B003A5580 /* particles.cpp */,
 				EB27A5F91CCDFC7E003A5580 /* pixel.cpp */,
+				EB27A5F91CCDFC7E003A5581 /* screen.cpp */,
 				EB7A5EA61C9BE8080068EFCA /* viewport.cpp */,
 				5F321EAF15BBC3FC00542289 /* application.cpp */,
 				5F321EB015BBC3FC00542289 /* bitmap.cpp */,
@@ -1376,6 +1381,7 @@
 			children = (
 				EB27A5FD1CFF1CEA003A5580 /* particlesbinder.cpp */,
 				EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */,
+				EB27A5FB1CCDFC9B003A5581 /* screenbinder.cpp */,
 				EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */,
 				EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */,
 				EBD9AC7E1B99EF5A006C8316 /* path2dbinder.cpp */,
@@ -1861,6 +1867,7 @@
 				5F321EE415BBC3FC00542289 /* dib.cpp in Sources */,
 				5F321EE515BBC3FC00542289 /* enterframeevent.cpp in Sources */,
 				EB27A5FC1CCDFC9B003A5580 /* pixelbinder.cpp in Sources */,
+				EB27A5FC1CCDFC9B003A5581 /* screenbinder.cpp in Sources */,
 				5F321EE615BBC3FC00542289 /* errorevent.cpp in Sources */,
 				5F276F6518F4020E00D78AE4 /* b2CollidePolygon.cpp in Sources */,
 				5F321EE715BBC3FC00542289 /* font.cpp in Sources */,
@@ -1927,6 +1934,7 @@
 				5F321F1915BBC47500542289 /* geom.c in Sources */,
 				5F276FB718F4020E00D78AE4 /* b2MouseJoint.cpp in Sources */,
 				EB27A5FA1CCDFC7E003A5580 /* pixel.cpp in Sources */,
+				EB27A5FA1CCDFC7E003A5581 /* screen.cpp in Sources */,
 				5F321F1A15BBC47500542289 /* memalloc.c in Sources */,
 				5F321F1B15BBC47500542289 /* mesh.c in Sources */,
 				5FE658B418FBF0FB001D8EE3 /* infback.c in Sources */,

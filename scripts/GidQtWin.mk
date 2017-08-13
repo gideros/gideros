@@ -9,12 +9,14 @@ QTDLLEXT?=
 ifneq ($(DEBUG),)
 QTTGT_EXT=dbg
 QTDLLEXT=d
+QTTGT_DIR=debug
 else
 QTTGT_EXT=rel
+QTTGT_DIR=release
 endif
 
 
-vpath %.a libgideros/release:libgvfs/release:libgid/release:lua/release:libgid/external/openal-soft-1.13/build/mingw48_32
+vpath %.a libgideros/$(QTTGT_DIR):libgvfs/$(QTTGT_DIR):libgid/$(QTTGT_DIR):lua/$(QTTGT_DIR):libgid/external/openal-soft-1.13/build/mingw48_32
 
 $(SDK)/lib/desktop/%: %
 	cp $^ $(SDK)/lib/desktop
@@ -27,16 +29,16 @@ sdk.qtlibs.dir:
 
 sdk.qtlibs: sdk.headers sdk.qtlibs.dir $(addprefix $(SDK)/lib/desktop/,$(SDK_LIBS_QT))			
 			
-buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs) libgid.qmake5.rel $(addsuffix .qmake.rel,lua libgideros) sdk.qtlibs
+buildqtlibs: $(addsuffix .qmake.$(QTTGT_EXT),libpystring libgvfs) libgid.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),lua libgideros) sdk.qtlibs
 
 
 qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
-	cp $(ROOT)/libgid/release/gid.dll $(RELEASE)
-	cp $(ROOT)/libgvfs/release/gvfs.dll $(RELEASE)
-	cp $(ROOT)/lua/release/lua.dll $(RELEASE)
-	cp $(ROOT)/libgideros/release/gideros.dll $(RELEASE)
-	cp $(ROOT)/libpystring/release/pystring.dll $(RELEASE)
+	cp $(ROOT)/libgid/$(QTTGT_DIR)/gid.dll $(RELEASE)
+	cp $(ROOT)/libgvfs/$(QTTGT_DIR)/gvfs.dll $(RELEASE)
+	cp $(ROOT)/lua/$(QTTGT_DIR)/lua.dll $(RELEASE)
+	cp $(ROOT)/libgideros/$(QTTGT_DIR)/gideros.dll $(RELEASE)
+	cp $(ROOT)/libpystring/$(QTTGT_DIR)/pystring.dll $(RELEASE)
 
 %.qtplugin:
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro
@@ -60,10 +62,10 @@ buildqt: versioning $(addsuffix .qmake.$(QTTGT_EXT),texturepacker fontcreator ui
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
 qt.install: buildqt qt5.install qt.player tools html5.tools
-	cp $(ROOT)/ui/release/GiderosStudio.exe $(RELEASE)
-	cp $(ROOT)/player/release/GiderosPlayer.exe $(RELEASE)
-	cp $(ROOT)/texturepacker/release/GiderosTexturePacker.exe $(RELEASE)
-	cp $(ROOT)/fontcreator/release/GiderosFontCreator.exe $(RELEASE)
+	cp $(ROOT)/ui/$(QTTGT_DIR)/GiderosStudio.exe $(RELEASE)
+	cp $(ROOT)/player/$(QTTGT_DIR)/GiderosPlayer.exe $(RELEASE)
+	cp $(ROOT)/texturepacker/$(QTTGT_DIR)/GiderosTexturePacker.exe $(RELEASE)
+	cp $(ROOT)/fontcreator/$(QTTGT_DIR)/GiderosFontCreator.exe $(RELEASE)
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
 	cd $(ROOT)/ui/;tar cf - --exclude=Tools/lua --exclude Tools/luac --exclude Tools/make Tools | (cd ../$(RELEASE) && tar xvf - )
 	cp $(ROOT)/lua/src/lua.exe $(RELEASE)/Tools

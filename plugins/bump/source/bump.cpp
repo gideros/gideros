@@ -5,6 +5,7 @@
 #include <map>
 #include <set>
 #include <algorithm>
+#include <QDebug>
 
 #define MATH_HUGE HUGE_VAL
 /*
@@ -47,12 +48,22 @@ static double nearest(double x, double a, double b) {
 	return fabs(a - x) < fabs(b - x) ? a : b;
 }
 
+static const char *luaL_tostring(lua_State *L,int narg)
+{
+	lua_getglobal(L, "tostring");
+	lua_pushvalue(L,narg);
+	lua_call(L, 1, 1);
+	const char *str=lua_tostring(L,-1);
+	lua_pop(L,1);
+	return str;
+}
+
 static void assertNumber(lua_State *L, int narg, const char *name) {
 	lua_Integer d = lua_tointeger(L, narg);
 	if (d == 0 && !lua_isnumber(L, narg)) /* avoid extra test when d is not 0 */
 	{
 		lua_pushfstring(L, "%s must be a number, but was %s (a %s)", name,
-				lua_tostring(L, narg), lua_typename(L, narg));
+				luaL_tostring(L, narg), lua_typename(L, narg));
 		lua_error(L);
 	}
 }
@@ -61,7 +72,7 @@ static void assertIsPositiveNumber(lua_State *L, int narg, const char *name) {
 	lua_Integer d = lua_tointeger(L, narg);
 	if (d <= 0) {
 		lua_pushfstring(L, "%s must be a positive integer, but was %s (a %s)",
-				name, lua_tostring(L, narg), lua_typename(L, narg));
+				name, luaL_tostring(L, narg), lua_typename(L, narg));
 		lua_error(L);
 	}
 }
@@ -222,10 +233,10 @@ static bool rect_detectCollision(double x1, double y1, double w1, double h1,
 	double x, y, w, h;
 	rect_getDiff(x1, y1, w1, h1, x2, y2, w2, h2, x, y, w, h);
 
-	bool overlaps;
+	bool overlaps=false;
 	double ti;
 	bool cf = false;
-	double nx, ny;
+	double nx=0, ny=0;
 
 	if (rect_containsPoint(x, y, w, h, 0, 0)) { //-- item was intersecting other
 		double px, py;
@@ -816,7 +827,7 @@ struct World {
 		std::set<int> visited;
 		ColFilter *filter;
 		const char *Filter(int item, int other) {
-			if (visited.find(item) != visited.end())
+			if (visited.find(other) != visited.end())
 				return NULL;
 			return filter->Filter(item, other);
 		}
@@ -982,8 +993,11 @@ struct LuaColFilter: ColFilter {
 		lua_rawgeti(L, itemsr - 1, item);
 		lua_rawgeti(L, itemsr - 2, other);
 		lua_call(L, 2, 1);
-		const char *ret = lua_tostring(L, -1);
-		lua_pop(L, 2);
+
+		const char *ret = NULL;
+		if (lua_toboolean(L,-1))
+			ret=lua_tostring(L, -1);
+		lua_pop(L, 1);
 		return ret;
 	}
 };
@@ -996,22 +1010,21 @@ struct LuaItemFilter: ItemFilter {
 		lua_pushvalue(L, func);
 		lua_rawgeti(L, itemsr - 1, item);
 		lua_call(L, 1, 1);
-		bool ret = lua_isnoneornil(L, -1);
-		lua_pop(L, 2);
+		bool ret = lua_toboolean(L,-1);
+		lua_pop(L, 1);
 		return ret;
 	}
 };
 
 int worldProject(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
-	lua_newtable(L);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
 	lua_gettable(L, -2);
 	if (lua_isnil(L, -1)) {
 		lua_pushfstring(L,
 				"Item %s must be added to the world before getting its rect. Use world:add(item, x,y,w,h) to add it first.",
-				lua_tostring(L, 2));
+				luaL_tostring(L, 2));
 		lua_error(L);
 	}
 	int item = lua_tonumber(L, -1);
@@ -1033,8 +1046,11 @@ int worldProject(lua_State *L) {
 		f = &lf;
 	}
 	double ax, ay;
+	lua_getfield(L, 1, "__itemsr");
 	std::vector<Collision> items = wr->project(item, y, x, w,h, gx,gy,f);
+	lua_pop(L, 1);
 	int n = 0;
+	lua_newtable(L);
 	for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
 			it++) {
 		lua_newtable(L);
@@ -1116,7 +1132,7 @@ int worldHasItem(lua_State *L) {
 	lua_gettable(L, -2);
 	bool isnil = lua_isnil(L, -1);
 	lua_pop(L, 2);
-	lua_pushboolean(L, isnil);
+	lua_pushboolean(L, !isnil);
 	return 1;
 }
 
@@ -1142,7 +1158,7 @@ int worldGetRect(lua_State *L) {
 	if (lua_isnil(L, -1)) {
 		lua_pushfstring(L,
 				"Item %s must be added to the world before getting its rect. Use world:add(item, x,y,w,h) to add it first.",
-				lua_tostring(L, 2));
+				luaL_tostring(L, 2));
 		lua_error(L);
 	}
 	int idx = lua_tonumber(L, -1);
@@ -1180,6 +1196,11 @@ int worldToCell(lua_State *L) {
 
 int worldQueryRect(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
+	bool hasFilter=false;
+	if (!lua_isnoneornil(L, 6)) {
+		luaL_checktype(L, 6, LUA_TFUNCTION);
+		hasFilter=true;
+	}
 	assertIsRect(L, 2, 3, 4, 5);
 	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
@@ -1192,8 +1213,7 @@ int worldQueryRect(lua_State *L) {
 	LuaItemFilter lf;
 	lf.L = L;
 	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 6)) {
-		luaL_checktype(L, 6, LUA_TFUNCTION);
+	if (hasFilter) {
 		lf.func = 6;
 		f = &lf;
 	}
@@ -1204,11 +1224,17 @@ int worldQueryRect(lua_State *L) {
 		lua_rawseti(L, -3, ++n);
 	}
 	lua_pop(L, 1);
-	return 1;
+	lua_pushinteger(L,n);
+	return 2;
 }
 
 int worldQueryPoint(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
+	bool hasFilter=false;
+	if (!lua_isnoneornil(L, 4)) {
+		luaL_checktype(L, 4, LUA_TFUNCTION);
+		hasFilter=true;
+	}
 	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
 
@@ -1218,8 +1244,7 @@ int worldQueryPoint(lua_State *L) {
 	LuaItemFilter lf;
 	lf.L = L;
 	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 4)) {
-		luaL_checktype(L, 4, LUA_TFUNCTION);
+	if (hasFilter) {
 		lf.func = 4;
 		f = &lf;
 	}
@@ -1230,11 +1255,17 @@ int worldQueryPoint(lua_State *L) {
 		lua_rawseti(L, -3, ++n);
 	}
 	lua_pop(L, 1);
-	return 1;
+	lua_pushinteger(L,n);
+	return 2;
 }
 
 int worldQuerySegment(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
+	bool hasFilter=false;
+	if (!lua_isnoneornil(L, 6)) {
+		luaL_checktype(L, 6, LUA_TFUNCTION);
+		hasFilter=true;
+	}
 	assertIsRect(L, 2, 3, 4, 5);
 	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
@@ -1247,8 +1278,7 @@ int worldQuerySegment(lua_State *L) {
 	LuaItemFilter lf;
 	lf.L = L;
 	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 6)) {
-		luaL_checktype(L, 6, LUA_TFUNCTION);
+	if (hasFilter) {
 		lf.func = 6;
 		f = &lf;
 	}
@@ -1259,11 +1289,17 @@ int worldQuerySegment(lua_State *L) {
 		lua_rawseti(L, -3, ++n);
 	}
 	lua_pop(L, 1);
-	return 1;
+	lua_pushinteger(L,n);
+	return 2;
 }
 
 int worldQuerySegmentWithCoords(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
+	bool hasFilter=false;
+	if (!lua_isnoneornil(L, 6)) {
+		luaL_checktype(L, 6, LUA_TFUNCTION);
+		hasFilter=true;
+	}
 	assertIsRect(L, 2, 3, 4, 5);
 	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
@@ -1276,8 +1312,7 @@ int worldQuerySegmentWithCoords(lua_State *L) {
 	LuaItemFilter lf;
 	lf.L = L;
 	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 6)) {
-		luaL_checktype(L, 6, LUA_TFUNCTION);
+	if (hasFilter) {
 		lf.func = 6;
 		f = &lf;
 	}
@@ -1303,7 +1338,8 @@ int worldQuerySegmentWithCoords(lua_State *L) {
 		lua_rawseti(L, -3, ++n);
 	}
 	lua_pop(L, 1);
-	return 1;
+	lua_pushinteger(L,n);
+	return 2;
 }
 
 int worldAdd(lua_State *L) {
@@ -1314,7 +1350,7 @@ int worldAdd(lua_State *L) {
 	lua_gettable(L, -2);
 	if (!lua_isnil(L, -1)) {
 		lua_pushfstring(L, "Item %s added to the world twice.",
-				lua_tostring(L, 2));
+				luaL_tostring(L, 2));
 		lua_error(L);
 	}
 	lua_pop(L, 1);
@@ -1343,7 +1379,7 @@ int worldRemove(lua_State *L) {
 	if (lua_isnil(L, -1)) {
 		lua_pushfstring(L,
 				"Item %s must be added to the world before getting its rect. Use world:add(item, x,y,w,h) to add it first.",
-				lua_tostring(L, 2));
+				luaL_tostring(L, 2));
 		lua_error(L);
 	}
 	int item = lua_tonumber(L, -1);
@@ -1368,7 +1404,7 @@ int worldUpdate(lua_State *L) {
 	if (lua_isnil(L, -1)) {
 		lua_pushfstring(L,
 				"Item %s must be added to the world before getting its rect. Use world:add(item, x,y,w,h) to add it first.",
-				lua_tostring(L, 2));
+				luaL_tostring(L, 2));
 		lua_error(L);
 	}
 	int item = lua_tonumber(L, -1);
@@ -1382,15 +1418,19 @@ int worldUpdate(lua_State *L) {
 }
 
 int worldMove(lua_State *L) {
+	bool hasFilter=false;
+	if (!lua_isnoneornil(L, 5)) {
+		luaL_checktype(L, 5, LUA_TFUNCTION);
+		hasFilter=true;
+	}
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
-	lua_newtable(L);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
 	lua_gettable(L, -2);
 	if (lua_isnil(L, -1)) {
 		lua_pushfstring(L,
 				"Item %s must be added to the world before getting its rect. Use world:add(item, x,y,w,h) to add it first.",
-				lua_tostring(L, 2));
+				luaL_tostring(L, 2));
 		lua_error(L);
 	}
 	int item = lua_tonumber(L, -1);
@@ -1402,12 +1442,13 @@ int worldMove(lua_State *L) {
 	LuaColFilter lf;
 	lf.L = L;
 	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 5)) {
-		luaL_checktype(L, 5, LUA_TFUNCTION);
+	if (hasFilter) {
 		lf.func = 5;
 		f = &lf;
 	}
 	double ax, ay;
+	lua_newtable(L);
+	lua_getfield(L, 1, "__itemsr");
 	std::vector<Collision> items = wr->move(item, x, y, f, ax, ay);
 	int n = 0;
 	for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
@@ -1487,14 +1528,18 @@ int worldMove(lua_State *L) {
 
 int worldCheck(lua_State *L) {
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
-	lua_newtable(L);
+	bool hasFilter=false;
+	if (!lua_isnoneornil(L, 5)) {
+		luaL_checktype(L, 5, LUA_TFUNCTION);
+		hasFilter=true;
+	}
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
 	lua_gettable(L, -2);
 	if (lua_isnil(L, -1)) {
 		lua_pushfstring(L,
 				"Item %s must be added to the world before getting its rect. Use world:add(item, x,y,w,h) to add it first.",
-				lua_tostring(L, 2));
+				luaL_tostring(L, 2));
 		lua_error(L);
 	}
 	int item = lua_tonumber(L, -1);
@@ -1506,12 +1551,13 @@ int worldCheck(lua_State *L) {
 	LuaColFilter lf;
 	lf.L = L;
 	lf.itemsr = -1;
-	if (!lua_isnoneornil(L, 5)) {
-		luaL_checktype(L, 5, LUA_TFUNCTION);
+	if (hasFilter) {
 		lf.func = 5;
 		f = &lf;
 	}
 	double ax, ay;
+	lua_newtable(L);
+	lua_getfield(L, 1, "__itemsr");
 	std::vector<Collision> items = wr->check(item, x, y, f, ax, ay);
 	int n = 0;
 	for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
@@ -1612,7 +1658,7 @@ int rectGetSegmentIntersectionIndices(lua_State *L) {
 	double y2 = luaL_checknumber(L, 6);
 	double w2 = luaL_checknumber(L, 7);
 	double h2 = luaL_checknumber(L, 8);
-	double ti1, ti2, nx1, ny1, nx2, ny2;
+	double ti1=0, ti2=1, nx1, ny1, nx2, ny2;
 	rect_getSegmentIntersectionIndices(x1, y1, w1, h1, x2, y2, w2, h2, ti1, ti2,
 			nx1, ny1, nx2, ny2);
 	lua_pushnumber(L, ti1);
@@ -1746,8 +1792,9 @@ int rectDetectCollision(lua_State *L) {
 }
 
 int bumpNewWorld(lua_State *L) {
+	if (!lua_isnoneornil(L,1))
+		assertIsPositiveNumber(L, 1, "cellSize");
 	int cs = luaL_optinteger(L, 1, 64);
-	assertIsPositiveNumber(L, cs, "cellSize");
 	lua_getglobal(L, "BumpWorld");
 	lua_getfield(L, -1, "new");
 	lua_call(L, 0, 1);
@@ -1803,7 +1850,7 @@ static void g_initializePlugin(lua_State *L) {
 	lua_getfield(L, -1, "preload");
 
 	lua_pushcfunction(L, loader);
-	lua_setfield(L, -2, "bump");
+	lua_setfield(L, -2, "cbump");
 
 	lua_pop(L, 2);
 }

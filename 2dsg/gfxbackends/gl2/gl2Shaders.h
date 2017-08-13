@@ -13,11 +13,20 @@
 #include "Matrices.h"
 #include "gtexture.h"
 
+#
+
 #ifdef __APPLE__
    #include <TargetConditionals.h>
 #endif
 
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+#ifdef QT_CORE_LIB
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#define GLCALL_CHECK if (!QOpenGLContext::currentContext()) return;
+#define GLCALL_INIT QOpenGLFunctions *glFuncs = QOpenGLContext::currentContext()->functions();
+#define GLCALL glFuncs->
+#define OPENGL_ES
+#elif TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 #ifdef GIDEROS_GL1
     #include <OpenGLES/ES1/gl.h>
     #include <OpenGLES/ES1/glext.h>
@@ -53,6 +62,12 @@
 
 #ifdef OPENGL_DESKTOP
 #include "glcompat.h"
+#endif
+
+#ifndef GLCALL
+#define GLCALL
+#define GLCALL_INIT
+#define GLCALL_CHECK
 #endif
 
 #ifdef OPENGL_ES
@@ -102,7 +117,9 @@ public:
     virtual const char *compilationLog();
 
     virtual void recreate();
+    virtual void resetUniforms();
     static void resetAll();
+    static void resetAllUniforms();
 
     ogl2ShaderProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,

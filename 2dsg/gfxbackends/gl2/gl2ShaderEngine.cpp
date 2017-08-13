@@ -246,6 +246,7 @@ const char *ogl2ShaderEngine::getVersion() {
 
 void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
 {
+	GLCALL_INIT;
     /*
     int fw=width,fh=height,crb=0;
     //XXX width and height may not match the framebuffer (reversed), get them from the current fb
@@ -266,16 +267,17 @@ void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
 #endif
 
 #ifdef OPENGL_ES
-    glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+    GLCALL glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
+	GLCALL glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
+	GLCALL glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+	GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 #endif
 }
 
 
 void ogl2ShaderEngine::reset(bool reinit) {
+	GLCALL_INIT;
 	if (reinit) {
 		s_texture = 0;
 		s_depthEnable = 0;
@@ -293,25 +295,25 @@ void ogl2ShaderEngine::reset(bool reinit) {
 #endif
 
 #ifdef OPENGL_ES
-		if (!glIsRenderbuffer(_depthRenderBuffer))
+		if (!GLCALL glIsRenderbuffer(_depthRenderBuffer))
 		{
-			glGenRenderbuffers(1, &_depthRenderBuffer);
-			glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
-			glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
-			glBindRenderbuffer(GL_RENDERBUFFER, 0);
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+			GLCALL glGenRenderbuffers(1, &_depthRenderBuffer);
+			GLCALL glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
+			GLCALL glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
+			GLCALL glBindRenderbuffer(GL_RENDERBUFFER, 0);
+			GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+			GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 		}
 #endif
 #ifdef GL_POINT_SPRITE_OES
-		glEnable(GL_POINT_SPRITE_OES);
+		GLCALL glEnable(GL_POINT_SPRITE_OES);
 #else
 #ifdef GL_POINT_SPRITE
-		glEnable(GL_POINT_SPRITE);
+		GLCALL glEnable(GL_POINT_SPRITE);
 #endif
 #endif
 #ifdef GL_VERTEX_PROGRAM_POINT_SIZE
-		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+		GLCALL glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 #endif
 		ogl2ShaderProgram::resetAll();
 	}
@@ -319,37 +321,38 @@ void ogl2ShaderEngine::reset(bool reinit) {
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);*/
 
 	ShaderEngine::reset(reinit);
+	ogl2ShaderProgram::resetAllUniforms();
 	s_texture = 0;
 	s_depthEnable = 0;
 	s_depthBufferCleared = false;
 
 #ifdef GIDEROS_GL1
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); /* sanity set */
+	GLCALL glDisableClientState(GL_VERTEX_ARRAY);
+	GLCALL glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	GLCALL glDisableClientState(GL_COLOR_ARRAY);
+	GLCALL glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); /* sanity set */
 #endif
 
 #ifdef GIDEROS_GL1
-	glDisable(GL_TEXTURE_2D);
+	GLCALL glDisable(GL_TEXTURE_2D);
 #endif
 
-	glBindTexture(GL_TEXTURE_2D, 0);
-	//glClearColor(0.5, 0.1, 0.2, 1.f);
-	//glClear(GL_COLOR_BUFFER_BIT);
+	GLCALL glBindTexture(GL_TEXTURE_2D, 0);
+	//GLCALL glClearColor(0.5, 0.1, 0.2, 1.f);
+	//GLCALL glClear(GL_COLOR_BUFFER_BIT);
 
-	glEnable(GL_BLEND);
-	glDisable(GL_SCISSOR_TEST);
-	glDepthFunc(GL_LEQUAL);
+	GLCALL glEnable(GL_BLEND);
+	GLCALL glDisable(GL_SCISSOR_TEST);
+	GLCALL glDepthFunc(GL_LEQUAL);
 
 #ifndef PREMULTIPLIED_ALPHA
 #error PREMULTIPLIED_ALPHA is not defined
 #endif
 
 #if PREMULTIPLIED_ALPHA
-	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	GLCALL glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 #else
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GLCALL glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 }
 
@@ -357,8 +360,9 @@ extern void pathShadersInit();
 extern void pathShadersRelease();
 
 void ogl2SetupShaders() {
-	glog_i("GL_VERSION:%s\n", glGetString(GL_VERSION));
-	glog_i("GLSL_VERSION:%s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+	GLCALL_INIT;
+	glog_i("GL_VERSION:%s\n", GLCALL glGetString(GL_VERSION));
+	glog_i("GLSL_VERSION:%s\n", GLCALL glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	const ShaderProgram::ConstantDesc stdUniforms[] = { { "vMatrix",
 			ShaderProgram::CMATRIX, 1,
@@ -455,6 +459,7 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
 }
 
 ogl2ShaderEngine::~ogl2ShaderEngine() {
+	GLCALL_INIT;
 	if (currentBuffer)
 		setFramebuffer(NULL);
 
@@ -466,7 +471,7 @@ ogl2ShaderEngine::~ogl2ShaderEngine() {
 	delete ShaderProgram::stdParticle;
 	pathShadersRelease();
 #ifdef OPENGL_ES
-	glDeleteRenderbuffers(1,&_depthRenderBuffer);
+	GLCALL glDeleteRenderbuffers(1,&_depthRenderBuffer);
 #endif
 }
 
@@ -482,17 +487,18 @@ ShaderBuffer *ogl2ShaderEngine::createRenderTarget(ShaderTexture *texture) {
 }
 
 ShaderBuffer *ogl2ShaderEngine::setFramebuffer(ShaderBuffer *fbo) {
+	GLCALL_INIT;
 	ShaderBuffer *previous = currentBuffer;
 	GLint oldFBO = 0;
-	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
+	GLCALL glGetIntegerv(GL_FRAMEBUFFER_BINDING, &oldFBO);
 #ifdef OPENGL_DESKTOP
 	if (GLEW_ARB_framebuffer_object)
 #endif
-		glBindFramebuffer(GL_FRAMEBUFFER,
+		GLCALL glBindFramebuffer(GL_FRAMEBUFFER,
 				fbo ? ((ogl2ShaderBuffer *) fbo)->glid : 0);
 #ifdef OPENGL_DESKTOP
 	else
-		glBindFramebufferEXT(GL_FRAMEBUFFER,
+		GLCALL glBindFramebufferEXT(GL_FRAMEBUFFER,
 				fbo ? ((ogl2ShaderBuffer *) fbo)->glid : 0);
 #endif
 	if (previous)
@@ -503,22 +509,23 @@ ShaderBuffer *ogl2ShaderEngine::setFramebuffer(ShaderBuffer *fbo) {
 }
 
 void ogl2ShaderEngine::setViewport(int x, int y, int width, int height) {
-	glViewport(x, y, width, height);
+	GLCALL_INIT;
+	GLCALL glViewport(x, y, width, height);
 }
 
 void ogl2ShaderEngine::setModel(const Matrix4 m) {
 	ShaderEngine::setModel(m);
 #ifdef GIDEROS_GL1
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(m.data());
+	GLCALL glMatrixMode(GL_MODELVIEW);
+	GLCALL glLoadMatrixf(m.data());
 #endif
 }
 
 void ogl2ShaderEngine::setProjection(const Matrix4 p) {
 	ShaderEngine::setProjection(p);
 #ifdef GIDEROS_GL1
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(p.data());
+	GLCALL glMatrixMode(GL_PROJECTION);
+	GLCALL glLoadMatrixf(p.data());
 #endif
 }
 
@@ -545,6 +552,7 @@ static GLint stencilopToGl(ShaderEngine::StencilOp sf)
 
 void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 {
+	GLCALL_INIT;
 	if (state.dClear)
 	{
 		state.dClear=false;
@@ -556,19 +564,19 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 				currentBuffer->needDepthStencil();
 			if ((!s_depthBufferCleared)||(state.dClear)) {
 	#ifdef OPENGL_ES
-				glClearDepthf(1);
+				GLCALL glClearDepthf(1);
 	#endif
-				glClear(GL_DEPTH_BUFFER_BIT);
+				GLCALL glClear(GL_DEPTH_BUFFER_BIT);
 				s_depthBufferCleared = true;
     			state.dClear=false;
 			}
 			s_depthEnable=true;
-			glEnable(GL_DEPTH_TEST);
+			GLCALL glEnable(GL_DEPTH_TEST);
 		}
 	} else {
 		if (s_depthEnable)
 		{
-			glDisable(GL_DEPTH_TEST);
+			GLCALL glDisable(GL_DEPTH_TEST);
 			s_depthEnable=false;
 		}
 	}
@@ -576,15 +584,15 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 	{
 		if (currentBuffer)
 			currentBuffer->needDepthStencil();
-		glClear(GL_STENCIL_BUFFER_BIT);
+		GLCALL glClear(GL_STENCIL_BUFFER_BIT);
 		state.sClear=false;
 	}
-	glStencilOp(stencilopToGl(state.sFail),stencilopToGl(state.dFail),stencilopToGl(state.dPass));
+	GLCALL glStencilOp(stencilopToGl(state.sFail),stencilopToGl(state.dFail),stencilopToGl(state.dPass));
 	if (state.sFunc==STENCIL_DISABLE)
-		glDisable(GL_STENCIL_TEST);
+		GLCALL glDisable(GL_STENCIL_TEST);
 	else
 	{
-		glEnable(GL_STENCIL_TEST);
+		GLCALL glEnable(GL_STENCIL_TEST);
 		GLenum sf=GL_ALWAYS;
 		switch (state.sFunc)
 		{
@@ -599,8 +607,8 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 			case STENCIL_DISABLE:
 				break;
 		}
-		glStencilFunc(sf,state.sRef,state.sMask);
-		glStencilMask(state.sWMask);
+		GLCALL glStencilFunc(sf,state.sRef,state.sMask);
+		GLCALL glStencilMask(state.sWMask);
 	}
 	dsCurrent=state;
 }
@@ -608,21 +616,24 @@ void ogl2ShaderEngine::setDepthStencil(DepthStencil state)
 
 
 void ogl2ShaderEngine::clearColor(float r, float g, float b, float a) {
-	glClearColor(r * a, g * a, b * a, a);
-	glClear(GL_COLOR_BUFFER_BIT);
+	GLCALL_INIT;
+	GLCALL glClearColor(r * a, g * a, b * a, a);
+	GLCALL glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void ogl2ShaderEngine::bindTexture(int num, ShaderTexture *texture) {
-	glActiveTexture(GL_TEXTURE0 + num);
-	glBindTexture(GL_TEXTURE_2D, ((ogl2ShaderTexture *) texture)->glid);
+	GLCALL_INIT;
+	GLCALL glActiveTexture(GL_TEXTURE0 + num);
+	GLCALL glBindTexture(GL_TEXTURE_2D, ((ogl2ShaderTexture *) texture)->glid);
 }
 
 void ogl2ShaderEngine::setClip(int x, int y, int w, int h) {
+	GLCALL_INIT;
 	if ((w < 0) || (h < 0))
-		glDisable(GL_SCISSOR_TEST);
+		GLCALL glDisable(GL_SCISSOR_TEST);
 	else {
-		glEnable(GL_SCISSOR_TEST);
-		glScissor(x, y, w, h);
+		GLCALL glEnable(GL_SCISSOR_TEST);
+		GLCALL glScissor(x, y, w, h);
 	}
 }
 
@@ -666,6 +677,7 @@ GLenum ogl2ShaderEngine::blendFactor2GLenum(BlendFactor blendFactor) {
 }
 
 void ogl2ShaderEngine::setBlendFunc(BlendFactor sfactor, BlendFactor dfactor) {
-	glBlendFunc(blendFactor2GLenum(sfactor), blendFactor2GLenum(dfactor));
+	GLCALL_INIT;
+	GLCALL glBlendFunc(blendFactor2GLenum(sfactor), blendFactor2GLenum(dfactor));
 }
 

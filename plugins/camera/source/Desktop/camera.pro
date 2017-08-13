@@ -19,7 +19,7 @@ SOURCES += \
 HEADERS += \
     ../common/camerabinder.h
 
-LIBS += -L"../../../../Sdk/lib/desktop" -llua -lgid -lgideros -lopengl32
+LIBS += -L"../../../../Sdk/lib/desktop" -llua -lgid -lgideros
 
 DEFINES += GID_LIBRARY FIXED_ORIENTATION
 
