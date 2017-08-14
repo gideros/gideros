@@ -443,7 +443,7 @@ struct World {
 	int cellSize;
 	std::map<int, Rect> rects;
 	std::map<int, std::map<int, Cell>> rows;
-	std::map<const char *, Response *> responses;
+	std::map<std::string, Response *> responses;
 //-- Private functions and methods
 	static bool sortByWeight(ItemInfo a, ItemInfo b) {
 		return a.weight < b.weight;
