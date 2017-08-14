@@ -8,7 +8,7 @@ ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_H
 #DEFS
 PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit
 PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump
-PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller
+PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera
 PLUGINS_WIN32=bitop lsqlite3 luasocket lpeg lfs json microphone clipper struct controller bump
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \

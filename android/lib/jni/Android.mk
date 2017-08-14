@@ -299,6 +299,7 @@ LOCAL_SRC_FILES += \
     ../../../2dsg/paths/ft-path.c \
     ../../../2dsg/paths/svg-path.c \
     ../../../2dsg/viewport.cpp \
+    ../../../2dsg/screen.cpp \
 	../../../2dsg/pixel.cpp \
 	../../../2dsg/particles.cpp \
 	../../../libgideros/luautil.cpp
@@ -493,6 +494,7 @@ LOCAL_SRC_FILES += \
 	../../../luabinding/path2dbinder.cpp \
 	../../../luabinding/viewportbinder.cpp \
 	../../../luabinding/pixelbinder.cpp \
+	../../../luabinding/screenbinder.cpp \
 	../../../luabinding/particlesbinder.cpp \
 	../../../luabinding/rendertargetbinder.cpp
 
