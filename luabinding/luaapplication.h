@@ -139,8 +139,8 @@ public:
 	     return orientation_;
 	}
 
-	void addTicker(Ticker* ticker);
-	void removeTicker(Ticker* ticker);
+	virtual void addTicker(Ticker* ticker); //Virtual calls are accessible to .DLL plugins
+	virtual void removeTicker(Ticker* ticker);
 
 	float getLogicalTranslateX() const;
 	float getLogicalTranslateY() const;

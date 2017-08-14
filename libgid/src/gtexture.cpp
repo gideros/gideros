@@ -29,7 +29,7 @@
 
 namespace g_private {
 static ShaderEngine *engine =NULL;
-
+static ScreenManager *screenManager = NULL;
 struct CommonElement
 {
     int refcount;
@@ -612,6 +612,16 @@ void gtexture_set_engine(ShaderEngine *e)
 ShaderEngine *gtexture_get_engine()
 {
 	return engine;
+}
+
+void gtexture_set_screenmanager(ScreenManager *e)
+{
+	screenManager=e;
+}
+
+ScreenManager *gtexture_get_screenmanager()
+{
+	return screenManager;
 }
 
 void gtexture_init()

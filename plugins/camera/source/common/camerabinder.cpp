@@ -7,12 +7,13 @@
 #include "luaapplication.h"
 
 TextureBase *cameraplugin::cameraTexture=NULL;
+LuaApplication *cameraplugin::application=NULL;
 
 static int availableDevices(lua_State* L)
 {
  std::vector<cameraplugin::CameraDesc> cams=cameraplugin::availableDevices();
  lua_newtable(L);
- for (int k=0;k<cams.size();k++)
+ for (size_t k=0;k<cams.size();k++)
  {
 	 cameraplugin::CameraDesc cam=cams[k];
 	 lua_newtable(L);
@@ -34,8 +35,6 @@ static int availableDevices(lua_State* L)
 
 static int start(lua_State* L)
 {
-	Binder binder(L);
-
 	TextureBase* textureBase = static_cast<TextureBase*>(g_getInstance(L,"TextureBase",1));
 	const char *name=luaL_optstring(L,2,NULL);
 	if (cameraplugin::cameraTexture)
@@ -46,8 +45,9 @@ static int start(lua_State* L)
 
 	Orientation orientation=eFixed;
 	lua_getglobal(L,"application");
+	LuaApplication* application=static_cast<LuaApplication *>(luaL_getdata(L));
+	cameraplugin::application=application;
 #ifndef FIXED_ORIENTATION
-	LuaApplication* application=static_cast<LuaApplication *>(g_getInstance(L,"Application", -1));
 	lua_pop(L,1);
 	orientation = application->orientation();
 #else
@@ -75,6 +75,7 @@ static int start(lua_State* L)
 
 static int stop(lua_State* L)
 {
+	G_UNUSED(L);
 	cameraplugin::stop();
 
 	if (cameraplugin::cameraTexture)
@@ -115,6 +116,7 @@ static void g_initializePlugin(lua_State* L)
 
 static void g_deinitializePlugin(lua_State *L)
 {
+	G_UNUSED(L);
 	if (cameraplugin::cameraTexture)
 	{
 		cameraplugin::cameraTexture->unref();

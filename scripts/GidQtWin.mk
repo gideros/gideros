@@ -42,7 +42,7 @@ qtlibs.install: buildqtlibs
 
 %.qtplugin:
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro
-	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) release
+	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) $(QTTGT_DIR)
 
 %.qtplugin.clean:
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) clean
@@ -51,9 +51,9 @@ qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)/Plugins
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/Windows
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp release/*.dll $$R/$(RELEASE)/Plugins	 
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp release/*.dll $$R/$(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins	 
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp release/*.dll $$R/$(RELEASE)/All\ Plugins/$*/bin/Windows	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp $(QTTGT_DIR)/*.dll $$R/$(RELEASE)/Plugins	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp $(QTTGT_DIR)/*.dll $$R/$(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp $(QTTGT_DIR)/*.dll $$R/$(RELEASE)/All\ Plugins/$*/bin/Windows	 
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 

@@ -31,14 +31,14 @@ public:
     	FULLSCREEN=4,
     	ACTIVE=8
     };
-	virtual void setSize(int w,int h) {};
+	virtual void setSize(int w,int h) { G_UNUSED(w); G_UNUSED(h); };
 	virtual void getSize(int &w,int &h) { w=0; h=0; };
-	virtual void setPosition(int w,int h) {};
+	virtual void setPosition(int w,int h) { G_UNUSED(w); G_UNUSED(h); };
 	virtual void getPosition(int &w,int &h) { w=0; h=0; };
 	virtual void getMaxSize(int &w,int &h) { w=0; h=0; };
     void clear(unsigned int color, float a);
 	virtual int getId()=0;
-	virtual void setState(int state) {};
+	virtual void setState(int state) { G_UNUSED(state); };
 	virtual int getState() { return 0; };
 	virtual void tick() {};
 	Screen(Application *application);

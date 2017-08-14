@@ -3,11 +3,13 @@
 
 #include "texturebase.h"
 #include "application.h"
+#include "luaapplication.h"
 #include <string>
 #include <vector>
 
 namespace cameraplugin {
 	extern TextureBase *cameraTexture;
+	extern LuaApplication* application;
 	struct CameraDesc {
 		std::string name;
 		std::string description;

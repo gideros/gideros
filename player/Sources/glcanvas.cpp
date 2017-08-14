@@ -229,6 +229,8 @@ GLCanvas::GLCanvas(QWidget *parent) :
 	 formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'écran
 	 this->setFormat(formatGL);
 	 */
+
+    setUpdateBehavior(QOpenGLWidget::PartialUpdate); // Prevent QT from calling glClear by itself
     isPlayer_ = true;
 
 	setupProperties();
@@ -392,6 +394,8 @@ void GLCanvas::paintGL() {
 //		glMatrixMode(GL_MODELVIEW);
 //		glLoadIdentity();
 //		glScalef(1.f / scale_, 1.f / scale_, 1);
+		Matrix4 ident;
+		ShaderEngine::Engine->setModel(ident);
 
 		int lWidth = application_->getLogicalWidth();
 		int lHeight = application_->getLogicalHeight();

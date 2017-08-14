@@ -103,7 +103,7 @@ class ShaderTexture
 {
 public:
 	virtual ~ShaderTexture() { };
-	virtual void setNative(void *externalTexture) {};
+	virtual void setNative(void *externalTexture) { G_UNUSED(externalTexture); };
 	virtual void *getNative() { return NULL; };
 	enum Format {
 		FMT_ALPHA,
@@ -252,7 +252,7 @@ public:
 	virtual Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
 	virtual void setProjection(const Matrix4 p) { oglProjection=p; }
 	virtual void setViewportProjection(const Matrix4 vp, float width, float height);
-	virtual void adjustViewportProjection(Matrix4 &vp, float width, float height) {};
+	virtual void adjustViewportProjection(Matrix4 &vp, float width, float height) { G_UNUSED(vp); G_UNUSED(width); G_UNUSED(height);};
 	virtual void setModel(const Matrix4 m);
 	virtual const Matrix4 getModel() { return oglModel; }
 	virtual const Matrix4 getProjection() { return oglProjection; }
@@ -272,7 +272,7 @@ public:
 	//Internal
 	virtual void prepareDraw(ShaderProgram *program);
 	//Parameters
-	virtual void setVBOThreshold(int freeze,int unfreeze) { };
+	virtual void setVBOThreshold(int freeze,int unfreeze) { G_UNUSED(freeze); G_UNUSED(unfreeze); };
 };
 
 #endif

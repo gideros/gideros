@@ -14,6 +14,8 @@
 #include <mutex>
 #include "Shaders.h"
 #include "graphicsbase.h"
+#include "screen.h"
+#include "ticker.h"
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #define GLCALL_INIT QOpenGLFunctions *glFuncs = QOpenGLContext::currentContext()->functions();
@@ -51,7 +53,7 @@ static const ShaderProgram::DataDesc camAttributes[] = { { "vVertex",
 		ShaderProgram::DFLOAT, 0, 0, 0 } };
 
 
-class VideoFrameSurface : public QAbstractVideoSurface {
+class VideoFrameSurface : public QAbstractVideoSurface, public Ticker {
 	TextureData *gtex;
 	ShaderBuffer *rdrTgt;
 	ShaderTexture *camtex;
@@ -65,6 +67,7 @@ class VideoFrameSurface : public QAbstractVideoSurface {
 	QVideoFrame g_frame;
 	bool present(const QVideoFrame& frame);
 	QList<QVideoFrame::PixelFormat> supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const;
+	void tick();
 public:
 	VideoFrameSurface(TextureData *tex,int w,int h, int o);
 	~VideoFrameSurface();
@@ -75,6 +78,7 @@ static QCamera *camera=NULL;
 static VideoFrameSurface *camerasurface=NULL;
 
 VideoFrameSurface::VideoFrameSurface(TextureData *tex,int w,int h, int o) {
+	G_UNUSED(o);
 	gtex=tex;
 	cw=w;
 	ch=h;
@@ -179,13 +183,20 @@ void VideoFrameSurface::render() {
 	g_frame.unmap();
 }
 
+void VideoFrameSurface::tick()
+{
+	g_mutex.lock();
+	gtexture_get_screenmanager()->screenDestroyed();
+	render();
+	g_mutex.unlock();
+}
+
 bool VideoFrameSurface::present(const QVideoFrame& frame)
 {
 	if(frame.isValid())
 	{
 		g_mutex.lock();
 		g_frame=QVideoFrame(frame);
-		render();
 		g_mutex.unlock();
 	}
 
@@ -194,6 +205,7 @@ bool VideoFrameSurface::present(const QVideoFrame& frame)
 
 QList<QVideoFrame::PixelFormat> VideoFrameSurface::supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const
 {
+	G_UNUSED(handleType);
 	// Return the formats you will support
 	return QList<QVideoFrame::PixelFormat>()
 			<< QVideoFrame::Format_ARGB32
@@ -241,6 +253,7 @@ void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,co
 	int o=0;
 	switch (orientation)
 	{
+	case eFixed:
 	case ePortrait:
 		o=0;
 		break;
@@ -288,22 +301,18 @@ void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,co
 	camerasurface=new VideoFrameSurface(cameraplugin::cameraTexture->data,cw,ch,o);
     camera->setViewfinder(camerasurface);
     camera->start();
+   	cameraplugin::application->addTicker(camerasurface);
 }
 
 void cameraplugin::stop()
 {
 	if (!camera) return;
+    cameraplugin::application->removeTicker(camerasurface);
 	camera->stop();
-	if (camera)
-	{
-		delete camera;
-		camera=NULL;
-	}
-	if (camerasurface)
-	{
-		delete camerasurface;
-		camerasurface=NULL;
-	}
+	delete camerasurface;
+	camerasurface=NULL;
+	delete camera;
+	camera=NULL;
 }
 
 

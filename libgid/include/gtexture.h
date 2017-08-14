@@ -33,6 +33,9 @@ G_API void gtexture_init();
 G_API void gtexture_cleanup();
 G_API void gtexture_set_engine(ShaderEngine *e);
 G_API ShaderEngine *gtexture_get_engine();
+class ScreenManager;
+G_API void gtexture_set_screenmanager(ScreenManager *e);
+G_API ScreenManager *gtexture_get_screenmanager();
 
 G_API g_id gtexture_create(int width, int height,
                            int format, int type,
