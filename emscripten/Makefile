@@ -162,7 +162,7 @@ main: path $(BUILD)/gideros.js
 	cp pace.min.js $(TEMPLATE)/pace.js
 	cp $(BUILD)/gideros.js $(TEMPLATE)
 	cp $(BUILD)/gideros.asm.js $(TEMPLATE)
-	-cp $(BUILD)/gideros.js.symbols $(TEMPLATE)
+	-cp $(BUILD)/gideros.html.symbols $(TEMPLATE)
 	-cp $(BUILD)/gideros.js.map $(TEMPLATE)
 	cp pace.ldr.js $(TEMPLATE)
 	cp gideros.ldr.js $(TEMPLATE)

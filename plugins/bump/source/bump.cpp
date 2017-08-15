@@ -5,7 +5,7 @@
 #include <map>
 #include <set>
 #include <algorithm>
-#include <QDebug>
+//#include <QDebug>
 
 #define MATH_HUGE HUGE_VAL
 /*
@@ -41,6 +41,7 @@
 
 #define DELTA 1e-10 // -- floating-point margin of error
 
+#define iabs(a) ((a>=0)?a:-a)
 static double sign(double x) {
 	return (x > 0) ? 1 : ((x == 0) ? 0 : -1);
 }
@@ -241,8 +242,8 @@ static bool rect_detectCollision(double x1, double y1, double w1, double h1,
 	if (rect_containsPoint(x, y, w, h, 0, 0)) { //-- item was intersecting other
 		double px, py;
 		rect_getNearestCorner(x, y, w, h, 0, 0, px, py);
-		double wi = (w1 < abs(px)) ? w1 : abs(px);
-		double hi = (h1 < abs(py)) ? h1 : abs(py);
+		double wi = (w1 < fabs(px)) ? w1 : fabs(px);
+		double hi = (h1 < fabs(py)) ? h1 : fabs(py);
 		ti = -wi * hi; //-- ti is the negative area of intersection
 		overlaps = true;
 		cf = true;
@@ -252,7 +253,7 @@ static bool rect_detectCollision(double x1, double y1, double w1, double h1,
 		if (rect_getSegmentIntersectionIndices(x, y, w, h, 0, 0, dx, dy, ti1,
 				ti2, nx1, ny1, nx2, ny2)) {
 			//-- item tunnels into other
-			if ((ti1 < 1) && (abs(ti1 - ti2) >= DELTA) //-- special case for rect going through another rect's corner
+			if ((ti1 < 1) && (fabs(ti1 - ti2) >= DELTA) //-- special case for rect going through another rect's corner
 					&& ((0 < (ti1 + DELTA)) || ((0 == ti1) && (ti2 > 0)))) {
 				ti = ti1;
 				nx = nx1;
@@ -273,7 +274,7 @@ static bool rect_detectCollision(double x1, double y1, double w1, double h1,
 			//-- intersecting and not moving - use minimum displacement vector
 			double px, py;
 			rect_getNearestCorner(x, y, w, h, 0, 0, px, py);
-			if (abs(px) < abs(py))
+			if (fabs(px) < fabs(py))
 				py = 0;
 			else
 				px = 0;
@@ -372,7 +373,7 @@ static void grid_traverse(int cellSize, double x1, double y1, double x2,
 	//-- The default implementation had an infinite loop problem when
 	//-- approaching the last cell in some occassions. We finish iterating
 	//-- when we are *next* to the last cell
-	while ((fabs(cx - cx2) + fabs(cy - cy2)) > 1) {
+	while ((iabs(cx - cx2) + iabs(cy - cy2)) > 1) {
 		if (tx < ty) {
 			tx += dx;
 			cx += stepX;
@@ -406,9 +407,9 @@ struct World;
  -- Responses
  ------------------------------------------*/
 struct Response {
-	virtual std::vector<Collision> ComputeResponse(World *world, Collision col, double x,
+	virtual void ComputeResponse(World *world, Collision col, double x,
 			double y, double w, double h, double goalX, double goalY,
-			ColFilter *filter, double &actualX, double &actualY)=0;
+			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols)=0;
 	virtual ~Response() {
 	}
 	;
@@ -442,7 +443,7 @@ struct ItemFilter {
 struct World {
 	int cellSize;
 	std::map<int, Rect> rects;
-	std::map<int, std::map<int, Cell>> rows;
+	std::map<int, std::map<int, Cell> > rows;
 	std::map<std::string, Response *> responses;
 //-- Private functions and methods
 	static bool sortByWeight(ItemInfo a, ItemInfo b) {
@@ -467,7 +468,7 @@ struct World {
 	}
 
 	bool removeItemFromCell(int item, int cx, int cy) {
-		std::map<int, std::map<int, Cell>>::iterator row = rows.find(cy);
+		std::map<int, std::map<int, Cell> >::iterator row = rows.find(cy);
 		if (row == rows.end())
 			return false;
 		std::map<int, Cell>::iterator cell = row->second.find(cx);
@@ -479,10 +480,9 @@ struct World {
 		return true;
 	}
 
-	std::set<int> getDictItemsInCellRect(int cl, int ct, int cw, int ch) {
-		std::set<int> items_dict;
+	void getDictItemsInCellRect(int cl, int ct, int cw, int ch, std::set<int> &items_dict) {
 		for (int cy = ct; cy < ct + ch; cy++) {
-			std::map<int, std::map<int, Cell>>::iterator row = rows.find(cy);
+			std::map<int, std::map<int, Cell> >::iterator row = rows.find(cy);
 			if (row == rows.end())
 				continue;
 			for (int cx = cl; cx < cl + cw; cx++) {
@@ -497,8 +497,6 @@ struct World {
 				}
 			}
 		}
-
-		return items_dict;
 	}
 	struct _CellTraversal {
 		World *world;
@@ -506,7 +504,7 @@ struct World {
 	};
 	static void cellsTraversal_(void *ctx, int cx, int cy) {
 		struct _CellTraversal *ct = (struct _CellTraversal *) ctx;
-		std::map<int, std::map<int, Cell>>::iterator row = ct->world->rows.find(
+		std::map<int, std::map<int, Cell> >::iterator row = ct->world->rows.find(
 				cy);
 		if (row == ct->world->rows.end())
 			return;
@@ -523,10 +521,9 @@ struct World {
 		return ct.cells;
 	}
 
-	std::vector<ItemInfo> getInfoAboutItemsTouchedBySegment(double x1,
-			double y1, double x2, double y2, ItemFilter *filter) {
+	void getInfoAboutItemsTouchedBySegment(double x1,
+			double y1, double x2, double y2, ItemFilter *filter, std::vector<ItemInfo> &itemInfo) {
 		std::set<Cell *> cells = getCellsTouchedBySegment(x1, y1, x2, y2);
-		std::vector<ItemInfo> itemInfo;
 		std::set<int> visited;
 
 		for (std::set<Cell *>::iterator it = cells.begin(); it != cells.end();
@@ -564,7 +561,6 @@ struct World {
 			}
 		}
 		std::sort(itemInfo.begin(), itemInfo.end(), sortByWeight);
-		return itemInfo;
 	}
 
 	Response *getResponseByName(const char *name) {
@@ -581,15 +577,14 @@ struct World {
 		responses[name] = response;
 	}
 
-	std::vector<Collision> project(int item, double x, double y, double w,
-			double h, double goalX, double goalY, ColFilter *filter) {
+	void project(int item, double x, double y, double w,
+			double h, double goalX, double goalY, ColFilter *filter,std::vector<Collision> &collisions) {
 		//assertIsRect(x,y,w,h) TODO
 
 		//goalX = goalX or x
 		//goalY = goalY or y
 		//filter  = filter  or defaultFilter
 
-		std::vector<Collision> collisions;
 		std::set<int> visited;
 		if (item)
 			visited.insert(item);
@@ -606,8 +601,8 @@ struct World {
 		int cl, ct, cw, ch;
 		grid_toCellRect(cellSize, tl, tt, tw, th, cl, ct, cw, ch);
 
-		std::set<int> dictItemsInCellRect = getDictItemsInCellRect(cl, ct, cw,
-				ch);
+		std::set<int> dictItemsInCellRect;
+		getDictItemsInCellRect(cl, ct, cw, ch,dictItemsInCellRect);
 
 		for (std::set<int>::iterator it = dictItemsInCellRect.begin();
 				it != dictItemsInCellRect.end(); it++) {
@@ -631,13 +626,11 @@ struct World {
 		}
 
 		std::sort(collisions.begin(), collisions.end(), sortByTiAndDistance);
-
-		return collisions;
 	}
 
 	int countCells() {
 		int count = 0;
-		for (std::map<int, std::map<int, Cell>>::iterator row = rows.begin();
+		for (std::map<int, std::map<int, Cell> >::iterator row = rows.begin();
 				row != rows.end(); row++)
 			count += row->second.size();
 		return count;
@@ -676,13 +669,13 @@ struct World {
 
 //--- Query methods
 
-	std::set<int> queryRect(double x, double y, double w, double h,
-			ItemFilter *filter) {
+	void queryRect(double x, double y, double w, double h,
+			ItemFilter *filter, std::set<int> &dictItemsInCellRect) {
 
 		int cl, ct, cw, ch;
 		grid_toCellRect(cellSize, x, y, w, h, cl, ct, cw, ch);
-		std::set<int> dictItemsInCellRect = getDictItemsInCellRect(cl, ct, cw,
-				ch);
+		getDictItemsInCellRect(cl, ct, cw,
+				ch, dictItemsInCellRect);
 		for (std::set<int>::iterator it = dictItemsInCellRect.begin();
 				it != dictItemsInCellRect.end();) {
 			Rect rect = rects[*it];
@@ -693,14 +686,13 @@ struct World {
 			else
 				++it;
 		}
-		return dictItemsInCellRect;
 	}
 
-	std::set<int> queryPoint(double x, double y, ItemFilter *filter) {
+	void queryPoint(double x, double y, ItemFilter *filter, std::set<int> &dictItemsInCellRect) {
 		int cx, cy;
 		toCell(x, y, cx, cy);
-		std::set<int> dictItemsInCellRect = getDictItemsInCellRect(cx, cy, 1,
-				1);
+		getDictItemsInCellRect(cx, cy, 1,
+				1,dictItemsInCellRect);
 		for (std::set<int>::iterator it = dictItemsInCellRect.begin();
 				it != dictItemsInCellRect.end();) {
 			Rect rect = rects[*it];
@@ -711,26 +703,24 @@ struct World {
 			else
 				++it;
 		}
-		return dictItemsInCellRect;
 	}
 
-	std::set<int> querySegment(double x1, double y1, double x2, double y2,
-			ItemFilter *filter) {
-		std::vector<ItemInfo> itemInfo = getInfoAboutItemsTouchedBySegment(x1, y1,
-				x2, y2, filter);
-		std::set<int> items;
+	void querySegment(double x1, double y1, double x2, double y2,
+			ItemFilter *filter, std::set<int> &items) {
+		std::vector<ItemInfo> itemInfo;
+		getInfoAboutItemsTouchedBySegment(x1, y1,
+				x2, y2, filter, itemInfo);
 		for (std::vector<ItemInfo>::iterator it = itemInfo.begin();
 				it != itemInfo.end(); it++)
 			items.insert((*it).item);
-		return items;
 	}
 
-	std::vector<ItemInfo> querySegmentWithCoords(double x1, double y1, double x2,
-			double y2, ItemFilter *filter) {
-		std::vector<ItemInfo> itemInfo = getInfoAboutItemsTouchedBySegment(x1, y1,
-				x2, y2, filter);
+	void querySegmentWithCoords(double x1, double y1, double x2,
+			double y2, ItemFilter *filter, std::vector<ItemInfo> &itemInfo2) {
+		std::vector<ItemInfo> itemInfo;
+		getInfoAboutItemsTouchedBySegment(x1, y1,
+				x2, y2, filter, itemInfo);
 		double dx = x2 - x1, dy = y2 - y1;
-		std::vector<ItemInfo> itemInfo2;
 		for (std::vector<ItemInfo>::iterator it = itemInfo.begin();
 				it != itemInfo.end(); it++) {
 			ItemInfo i=*it;
@@ -740,7 +730,6 @@ struct World {
 			i.y2 = y1 + dy * i.ti2;
 			itemInfo2.push_back(i);
 		}
-		return itemInfo2;
 	}
 
 //--- Main methods
@@ -815,12 +804,11 @@ struct World {
 		}
 	}
 
-	std::vector<Collision> move(int item, double goalX, double goalY,
-			ColFilter *filter, double &actualX, double &actualY) {
-		std::vector<Collision> cols = check(item, goalX, goalY, filter, actualX,
-				actualY);
+	void move(int item, double goalX, double goalY,
+			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
+		check(item, goalX, goalY, filter, actualX,
+				actualY,cols);
 		update(item, actualX, actualY, -1, -1);
-		return cols;
 	}
 
 	struct VisitedFilter: ColFilter {
@@ -832,8 +820,8 @@ struct World {
 			return filter->Filter(item, other);
 		}
 	};
-	std::vector<Collision> check(int item, double goalX, double goalY,
-			ColFilter *filter, double &actualX, double &actualY) {
+	void check(int item, double goalX, double goalY,
+			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
 		defaultFilter df;
 		if (!filter)
 			filter = &df;
@@ -844,10 +832,9 @@ struct World {
 
 		Rect r = rects[item];
 
-		std::vector<Collision> cols;
-
-		std::vector<Collision> projected_cols = project(item, r.x, r.y, r.w,
-				r.h, goalX, goalY, &vf);
+		std::vector<Collision> projected_cols;
+		project(item, r.x, r.y, r.w,
+				r.h, goalX, goalY, &vf,projected_cols);
 
 		while (projected_cols.size() > 0) {
 			Collision col = projected_cols[0];
@@ -855,43 +842,40 @@ struct World {
 			vf.visited.insert(col.other);
 			Response *response = getResponseByName(col.type);
 
-			projected_cols = response->ComputeResponse(this, col, r.x, r.y, r.w, r.h,
-					goalX, goalY, &vf, goalX, goalY);
+			projected_cols.clear();
+			response->ComputeResponse(this, col, r.x, r.y, r.w, r.h,
+					goalX, goalY, &vf, goalX, goalY,projected_cols);
 		}
 
 		actualX = goalX;
 		actualY = goalY;
-		return cols;
 	}
 };
 
 struct TouchResponse: Response {
-	std::vector<Collision> ComputeResponse(World *world, Collision col, double x,
+	void ComputeResponse(World *world, Collision col, double x,
 			double y, double w, double h, double goalX, double goalY,
-			ColFilter *filter, double &actualX, double &actualY) {
+			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
 		actualX = col.touch.x;
 		actualY = col.touch.y;
-		std::vector<Collision> cols;
-		return cols;
 	}
 };
 
 struct CrossResponse: Response {
-	std::vector<Collision> ComputeResponse(World *world, Collision col, double x,
+	void ComputeResponse(World *world, Collision col, double x,
 			double y, double w, double h, double goalX, double goalY,
-			ColFilter *filter, double &actualX, double &actualY) {
-		std::vector<Collision> cols = world->project(col.item, x, y, w, h, goalX,
-				goalY, filter);
+			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
+		world->project(col.item, x, y, w, h, goalX,
+				goalY, filter,cols);
 		actualX = goalX;
 		actualY = goalY;
-		return cols;
 	}
 };
 
 struct SlideResponse: Response {
-	std::vector<Collision> ComputeResponse(World *world, Collision col, double x,
+	void ComputeResponse(World *world, Collision col, double x,
 			double y, double w, double h, double goalX, double goalY,
-			ColFilter *filter, double &actualX, double &actualY) {
+			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
 		//goalX = goalX or x TODO
 		//goalY = goalY or y TODO
 
@@ -912,18 +896,17 @@ struct SlideResponse: Response {
 		y = col.touch.y;
 		goalX = sx;
 		goalY = sy;
-		std::vector<Collision> cols = world->project(col.item, x, y, w, h, goalX,
-				goalY, filter);
+		world->project(col.item, x, y, w, h, goalX,
+				goalY, filter,cols);
 		actualX = goalX;
 		actualY = goalY;
-		return cols;
 	}
 };
 
 struct BounceResponse: Response {
-	std::vector<Collision> ComputeResponse(World *world, Collision col, double x,
+	void ComputeResponse(World *world, Collision col, double x,
 			double y, double w, double h, double goalX, double goalY,
-			ColFilter *filter, double &actualX, double &actualY) {
+			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
 		double tx = col.touch.x;
 		double ty = col.touch.y;
 		double bx = tx;
@@ -945,11 +928,10 @@ struct BounceResponse: Response {
 		y = ty;
 		goalX = bx;
 		goalY = by;
-		std::vector<Collision> cols = world->project(col.item, x, y, w, h, goalX,
-				goalY, filter);
+		world->project(col.item, x, y, w, h, goalX,
+				goalY, filter, cols);
 		actualX = goalX;
 		actualY = goalY;
-		return cols;
 	}
 };
 
@@ -975,7 +957,7 @@ int worldCreate(lua_State *L) {
 }
 
 int worldDestruct(lua_State *L) {
-	World *w = (World *) g_getInstance(L, "BumpWorld", -1);
+	World *w = *(World **)lua_touserdata(L, 1);
 	w->responses.erase("touch");
 	w->responses.erase("cross");
 	w->responses.erase("bounce");
@@ -1047,7 +1029,8 @@ int worldProject(lua_State *L) {
 	}
 	double ax, ay;
 	lua_getfield(L, 1, "__itemsr");
-	std::vector<Collision> items = wr->project(item, y, x, w,h, gx,gy,f);
+	std::vector<Collision> items;
+	wr->project(item, y, x, w,h, gx,gy,f,items);
 	lua_pop(L, 1);
 	int n = 0;
 	lua_newtable(L);
@@ -1217,7 +1200,8 @@ int worldQueryRect(lua_State *L) {
 		lf.func = 6;
 		f = &lf;
 	}
-	std::set<int> items = wr->queryRect(x, y, w, h, f);
+	std::set<int> items;
+	wr->queryRect(x, y, w, h, f, items);
 	int n = 0;
 	for (std::set<int>::iterator it = items.begin(); it != items.end(); it++) {
 		lua_rawgeti(L, -1, *it);
@@ -1248,7 +1232,8 @@ int worldQueryPoint(lua_State *L) {
 		lf.func = 4;
 		f = &lf;
 	}
-	std::set<int> items = wr->queryPoint(x, y, f);
+	std::set<int> items;
+	wr->queryPoint(x, y, f, items);
 	int n = 0;
 	for (std::set<int>::iterator it = items.begin(); it != items.end(); it++) {
 		lua_rawgeti(L, -1, *it);
@@ -1282,7 +1267,8 @@ int worldQuerySegment(lua_State *L) {
 		lf.func = 6;
 		f = &lf;
 	}
-	std::set<int> items = wr->querySegment(x1, y1, x2, y2, f);
+	std::set<int> items;
+	wr->querySegment(x1, y1, x2, y2, f, items);
 	int n = 0;
 	for (std::set<int>::iterator it = items.begin(); it != items.end(); it++) {
 		lua_rawgeti(L, -1, *it);
@@ -1316,7 +1302,8 @@ int worldQuerySegmentWithCoords(lua_State *L) {
 		lf.func = 6;
 		f = &lf;
 	}
-	std::vector<ItemInfo> items = wr->querySegmentWithCoords(x1, y1, x2, y2, f);
+	std::vector<ItemInfo> items;
+	wr->querySegmentWithCoords(x1, y1, x2, y2, f, items);
 	int n = 0;
 	for (std::vector<ItemInfo>::iterator it = items.begin(); it != items.end();
 			it++) {
@@ -1396,7 +1383,16 @@ int worldRemove(lua_State *L) {
 }
 
 int worldUpdate(lua_State *L) {
-	assertIsRect(L, 3, 4, 5, 6);
+	assertNumber(L, 3, "x");
+	assertNumber(L, 4, "y");
+	if (!lua_isnoneornil(L,5))
+		assertIsPositiveNumber(L, 5, "w");
+	if (!lua_isnoneornil(L,6))
+		assertIsPositiveNumber(L, 6, "h");
+	double x = luaL_checknumber(L, 3);
+	double y = luaL_checknumber(L, 4);
+	double w = luaL_optnumber(L, 5,-1);
+	double h = luaL_optnumber(L, 6,-1);
 	World *wr = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
@@ -1409,10 +1405,6 @@ int worldUpdate(lua_State *L) {
 	}
 	int item = lua_tonumber(L, -1);
 	lua_pop(L, 2);
-	double x = luaL_checknumber(L, 3);
-	double y = luaL_checknumber(L, 4);
-	double w = luaL_checknumber(L, 5);
-	double h = luaL_checknumber(L, 6);
 	wr->update(item, x, y, w, h);
 	return 0;
 }
@@ -1449,7 +1441,8 @@ int worldMove(lua_State *L) {
 	double ax, ay;
 	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
-	std::vector<Collision> items = wr->move(item, x, y, f, ax, ay);
+	std::vector<Collision> items;
+	wr->move(item, x, y, f, ax, ay, items);
 	int n = 0;
 	for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
 			it++) {
@@ -1558,7 +1551,8 @@ int worldCheck(lua_State *L) {
 	double ax, ay;
 	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
-	std::vector<Collision> items = wr->check(item, x, y, f, ax, ay);
+	std::vector<Collision> items;
+	wr->check(item, x, y, f, ax, ay, items);
 	int n = 0;
 	for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
 			it++) {
