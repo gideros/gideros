@@ -9,6 +9,10 @@
 //}
 #include "lua.hpp"
 
+#ifndef G_UNUSED
+#define G_UNUSED(x) (void)(x)
+#endif
+
 class PrintStackChecker
 {
 public:
@@ -27,6 +31,9 @@ class EmptyStackChecker
 public:
 	EmptyStackChecker(lua_State* L, const char* pre = "", int delta = 0)
 	{
+		G_UNUSED(L);
+		G_UNUSED(pre);
+		G_UNUSED(delta);
 	}
 };
 

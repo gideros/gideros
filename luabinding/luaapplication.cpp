@@ -581,6 +581,14 @@ static int bindAll(lua_State* L)
 	lua_setfield(L, -2, "yield");
 	lua_pushcfunction(L, LuaApplication::Core_frameStatistics);
 	lua_setfield(L, -2, "frameStatistics");
+	lua_pushcfunction(L, LuaApplication::Core_profilerStart);
+	lua_setfield(L, -2, "profilerStart");
+	lua_pushcfunction(L, LuaApplication::Core_profilerStop);
+	lua_setfield(L, -2, "profilerStop");
+	lua_pushcfunction(L, LuaApplication::Core_profilerReset);
+	lua_setfield(L, -2, "profilerReset");
+	lua_pushcfunction(L, LuaApplication::Core_profilerReport);
+	lua_setfield(L, -2, "profilerReport");
 	lua_pop(L, 1);
 
 	// register collectgarbagelater
@@ -898,8 +906,6 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 //int touchesMoved(lua_State* L);
 //int touchesEnded(lua_State* L);
 //int touchesCancelled(lua_State* L);
-
-
 
 static int callFile(lua_State* L)
 {
@@ -1518,3 +1524,159 @@ lua_State *LuaApplication::getLuaState() const
 {
     return L;
 }
+
+//PROFILER
+#include "lstate.h"
+struct ProfileInfo {
+	std::string fid;
+	std::string name;
+	double time;
+	int count;
+	double entered;
+	int enterCount;
+	std::string callret;
+	std::map<std::string,double> cTime;
+	std::map<std::string,int> cCount;
+};
+static std::map<std::string,ProfileInfo*> proFuncs;
+static std::map<Closure*,ProfileInfo*> proLookup;
+static ProfileInfo *profilerGetInfo(Closure *cl)
+{
+	ProfileInfo*p=proLookup[cl];
+	if (!p)
+	{
+		std::string fid;
+		char fmt[255];
+		if (cl->c.isC)
+			sprintf(fmt,"=[C] %p",cl->c.f);
+		else
+			sprintf(fmt,"%s:%d",getstr(cl->l.p->source),cl->l.p->linedefined);
+		fid=fmt;
+		p=proFuncs[fid];
+		if (!p) {
+			p=(ProfileInfo *)new ProfileInfo;
+			proFuncs[fid]=p;
+			proLookup[cl]=p;
+			p->fid=fid;
+			p->time=0;
+			p->count=0;
+			p->enterCount=0;
+		}
+	}
+	return p;
+}
+
+static void profilerHook(lua_State *L,int enter)
+{
+	double time=iclock();
+	Closure *cl=curr_func(L);
+	ProfileInfo *p=profilerGetInfo(cl);
+	if (enter)
+	{
+		if (!(p->enterCount++))
+		{
+			p->entered=time;
+			if (p->name.empty())
+			{
+				lua_Debug ar;
+				ar.name=NULL;
+				ar.i_ci = cast_int(L->ci - L->base_ci);
+				lua_getinfo(L,"n",&ar);
+				if (ar.name) p->name=ar.name;
+				else p->name="Unknown";
+			}
+			if (L->ci>L->base_ci)
+			{
+				CallInfo *ci=L->ci;
+				ci--;
+			    if(ttisfunction(ci->func))
+			    {
+			    	Closure *ccl=ci_func(ci);
+			    	ProfileInfo *cp=profilerGetInfo(ccl);
+			    	p->callret=cp->fid;
+			    }
+			}
+		}
+	}
+	else
+	{
+		int rcalls=1;
+		if (f_isLua(L->ci)) {  /* Lua function? */
+		    rcalls+=L->ci->tailcalls;
+		}
+
+		while (p&&(rcalls--)) {
+			if (p->enterCount)
+			{
+				double ctime=0;
+				if (!(--p->enterCount))
+					ctime=time-p->entered;
+				p->time+=ctime;
+				p->count++;
+				ProfileInfo *np=NULL;
+				if (!(p->callret.empty()))
+				{
+					p->cCount[p->callret]=p->cCount[p->callret]+1;
+					p->cTime[p->callret]=p->cTime[p->callret]+ctime;
+					np=proFuncs[p->callret];
+					p->callret.clear();
+				}
+				p=np;
+			}
+		}
+	}
+}
+
+int LuaApplication::Core_profilerStart(lua_State *L)
+{
+	L->profilerHook=profilerHook;
+	return 0;
+}
+
+int LuaApplication::Core_profilerStop(lua_State *L)
+{
+	L->profilerHook=NULL;
+	return 0;
+}
+
+int LuaApplication::Core_profilerReport(lua_State *L)
+{
+	lua_newtable(L);
+	for (std::map<std::string,ProfileInfo*>::iterator it=proFuncs.begin();it!=proFuncs.end();it++)
+	{
+		ProfileInfo *p=it->second;
+		lua_newtable(L);
+		lua_pushinteger(L,p->count);
+		lua_setfield(L,-2,"count");
+		lua_pushnumber(L,p->time);
+		lua_setfield(L,-2,"time");
+		lua_pushstring(L,p->name.c_str());
+		lua_setfield(L,-2,"name");
+
+		lua_newtable(L);
+		for (std::map<std::string,int>::iterator it2=p->cCount.begin();it2!=p->cCount.end();it2++)
+		{
+			lua_newtable(L);
+			lua_pushinteger(L,it2->second);
+			lua_setfield(L,-2,"count");
+			lua_pushnumber(L,p->cTime[it2->first]);
+			lua_setfield(L,-2,"time");
+			lua_setfield(L,-2,it2->first.c_str());
+		}
+		lua_setfield(L,-2,"callers");
+
+		lua_setfield(L,-2,it->first.c_str());
+	}
+	return 1;
+}
+
+int LuaApplication::Core_profilerReset(lua_State *L)
+{
+	proLookup.clear();
+	for (std::map<std::string,ProfileInfo*>::iterator it=proFuncs.begin();it!=proFuncs.end();it++)
+		delete it->second;
+	proFuncs.clear();
+	return 0;
+}
+
+//

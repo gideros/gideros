@@ -1788,7 +1788,6 @@ static void create_stroke_geometry(struct path *path) {
 
 		float spx = 0, spy = 0;
 		float cpx = 0, cpy = 0;
-		float pepx = 0, pepy = 0;
 		float ncpx = 0, ncpy = 0;
 		float npepx = 0, npepy = 0;
 
@@ -1823,8 +1822,6 @@ static void create_stroke_geometry(struct path *path) {
 
 			cpx = ncpx;
 			cpy = ncpy;
-			pepx = npepx;
-			pepy = npepy;
 		}
 
 		size_t ncorners = kv_size(corners);
@@ -2096,7 +2093,6 @@ static void create_fill_geometry(struct path *path) {
 
 		float spx = 0, spy = 0;
 		float cpx = 0, cpy = 0;
-		float pepx = 0, pepy = 0;
 		float ncpx = 0, ncpy = 0;
 		float npepx = 0, npepy = 0;
 
@@ -2132,8 +2128,6 @@ static void create_fill_geometry(struct path *path) {
 
 			cpx = ncpx;
 			cpy = ncpy;
-			pepx = npepx;
-			pepy = npepy;
 		}
 
 		if (closed == 0) {
@@ -2609,7 +2603,7 @@ void Path2D::fillPath(int path,Matrix4 xform,float fill[4],TextureData *texture,
 
 		if ((texture==NULL)&&(convex||(p->fill_counts[0]==0)||(p->fill_counts[1]==0))) {
 			ShaderEngine::DepthStencil stencil;
-			memset(&stencil, sizeof(stencil), 0);
+			memset(&stencil, 0, sizeof(stencil));
 			glPushColor();
 			glMultColor(fill[0], fill[1], fill[2], fill[3]);
 			fill_path(path, PATHFILLMODE_DIRECT, stencil, &xform);

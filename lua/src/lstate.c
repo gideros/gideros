@@ -104,6 +104,7 @@ static void preinit_state (lua_State *L, global_State *g) {
   L->base_ci = L->ci = NULL;
   L->savedpc = NULL;
   L->errfunc = 0;
+  L->profilerHook = NULL;
   setnilvalue(gt(L));
 }
 
