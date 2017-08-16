@@ -806,6 +806,8 @@ void LibraryTreeWidget::newProject(const QString& projectFileName)
 	QTreeWidgetItem* filesFolder = createCatFolderItem("Files","folder files",NODETYPE_FILES, true);
 	rootitem->addChild(filesFolder);
 
+	rootitem->setExpanded(true);
+	filesFolder->setExpanded(true);
 
 	projectFileName_ = projectFileName;
 
