@@ -678,10 +678,14 @@ struct World {
 				ch, dictItemsInCellRect);
 		for (std::set<int>::iterator it = dictItemsInCellRect.begin();
 				it != dictItemsInCellRect.end();) {
-			Rect rect = rects[*it];
-			if ((filter && !filter->Filter(*it))
-					|| !rect_isIntersecting(x, y, w, h, rect.x, rect.y, rect.w,
-							rect.h))
+			bool drop=(filter && !filter->Filter(*it));
+			if (!drop)
+			{
+				Rect rect = rects[*it];
+				drop|=!rect_isIntersecting(x, y, w, h, rect.x, rect.y, rect.w,
+						rect.h);
+			}
+			if (drop)
 				dictItemsInCellRect.erase(it++);
 			else
 				++it;
