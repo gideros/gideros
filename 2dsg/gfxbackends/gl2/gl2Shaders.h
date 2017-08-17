@@ -175,6 +175,7 @@ class ogl2ShaderEngine : public ShaderEngine
 	bool s_depthBufferCleared;
 	GLenum blendFactor2GLenum(BlendFactor blendFactor);
 	int devWidth,devHeight;
+	GLint defaultFramebuffer;
 public:
 	ogl2ShaderEngine(int sw,int sh);
 	virtual ~ogl2ShaderEngine();

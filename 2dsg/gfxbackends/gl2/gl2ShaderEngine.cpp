@@ -265,13 +265,14 @@ void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
 #else
 	depthfmt = GL_DEPTH24_STENCIL8;
 #endif
-
+#ifndef QT_CORE_LIB
 #ifdef OPENGL_ES
     GLCALL glBindRenderbuffer(GL_RENDERBUFFER, _depthRenderBuffer);
 	GLCALL glRenderbufferStorage(GL_RENDERBUFFER, depthfmt, devWidth,devHeight);
 	GLCALL glBindRenderbuffer(GL_RENDERBUFFER, 0);
     GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 	GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
+#endif
 #endif
 }
 
@@ -294,6 +295,7 @@ void ogl2ShaderEngine::reset(bool reinit) {
 		depthfmt = GL_DEPTH24_STENCIL8;
 #endif
 
+#ifndef QT_CORE_LIB
 #ifdef OPENGL_ES
 		if (!GLCALL glIsRenderbuffer(_depthRenderBuffer))
 		{
@@ -304,6 +306,7 @@ void ogl2ShaderEngine::reset(bool reinit) {
 			GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 			GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 		}
+#endif
 #endif
 #ifdef GL_POINT_SPRITE_OES
 		GLCALL glEnable(GL_POINT_SPRITE_OES);
@@ -449,6 +452,11 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
 	devWidth = sw;
 	devHeight = sh;
 	_depthRenderBuffer = 0;
+	defaultFramebuffer=0;
+#ifdef QT_CORE_LIB
+	GLCALL_INIT;
+	GLCALL glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFramebuffer);
+#endif
 
 #ifndef GIDEROS_GL1
 	ogl2SetupShaders();
@@ -495,11 +503,11 @@ ShaderBuffer *ogl2ShaderEngine::setFramebuffer(ShaderBuffer *fbo) {
 	if (GLEW_ARB_framebuffer_object)
 #endif
 		GLCALL glBindFramebuffer(GL_FRAMEBUFFER,
-				fbo ? ((ogl2ShaderBuffer *) fbo)->glid : 0);
+				fbo ? ((ogl2ShaderBuffer *) fbo)->glid : defaultFramebuffer);
 #ifdef OPENGL_DESKTOP
 	else
 		GLCALL glBindFramebufferEXT(GL_FRAMEBUFFER,
-				fbo ? ((ogl2ShaderBuffer *) fbo)->glid : 0);
+				fbo ? ((ogl2ShaderBuffer *) fbo)->glid : defaultFramebuffer);
 #endif
 	if (previous)
 		previous->unbound();

@@ -230,7 +230,7 @@ GLCanvas::GLCanvas(QWidget *parent) :
 	 this->setFormat(formatGL);
 	 */
 
-    setUpdateBehavior(QOpenGLWidget::PartialUpdate); // Prevent QT from calling glClear by itself
+    //setUpdateBehavior(QOpenGLWidget::PartialUpdate); // Prevent QT from calling glClear by itself
     isPlayer_ = true;
 
 	setupProperties();
@@ -381,6 +381,7 @@ bool GLCanvas::checkLuaError(GStatus status)
 }
 
 void GLCanvas::paintGL() {
+
 	GStatus status;
 	application_->enterFrame(&status);
 
@@ -388,7 +389,6 @@ void GLCanvas::paintGL() {
 
 	application_->clearBuffers();
 	application_->renderScene();
-
 	// if not running or if drawInfos enabled, and is not an exported app
 	if ((!running_ || drawInfos_) && !exportedApp_) {
 //		glMatrixMode(GL_MODELVIEW);
@@ -407,10 +407,11 @@ void GLCanvas::paintGL() {
 
 		void drawInfoResolution(int width, int height, int scale, int lWidth,
 				int lHeight, bool drawRunning, float canvasColor[3],
-				float infoColor[3]);
+				float infoColor[3],int ho, int ao, float fps, float cpu);
 
 		drawInfoResolution(width_, height_, scale, lWidth, lHeight,
-				running_ && drawInfos_, canvasColor_, infoColor_);
+				running_ && drawInfos_, canvasColor_, infoColor_, (int) application_->hardwareOrientation(), (int) application_->orientation(),
+				1.0/application_->meanFrameTime_,1-(application_->meanFreeTime_/application_->meanFrameTime_));
 	}
 }
 
