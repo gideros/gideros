@@ -495,7 +495,8 @@ bool ExportXml::RuleAsk(QDomElement rule) {
 	QString title=ReplaceAttributes(XmlAttributeOrElement(rule,"title"));
 	QString question=ReplaceAttributes(XmlAttributeOrElement(rule,"question"));
 	QString def=ReplaceAttributes(XmlAttributeOrElement(rule,"default"));
-	char *ret=ExportCommon::askString(title.toUtf8().data(),question.toUtf8().data(),def.toUtf8().data(),IsSecret(key));
+	QString uid=ReplaceAttributes(XmlAttributeOrElement(rule,"uid"));
+	char *ret=ExportCommon::askString(title.toUtf8().data(),question.toUtf8().data(),def.toUtf8().data(),IsSecret(key),uid.toUtf8().data());
 	QString val=QString::fromUtf8(ret);
 	free(ret);
 	ExportCommon::exportInfo("Ask: %s -> %s\n", key.toStdString().c_str(),

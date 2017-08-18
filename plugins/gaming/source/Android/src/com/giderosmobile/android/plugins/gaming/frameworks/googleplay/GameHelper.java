@@ -72,6 +72,7 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
          *                                            occurred.
          */
         void onSignInFailed();
+		void onLicenseFailed();
 
         /** Called when sign-in succeeds. */
         void onSignInSucceeded();
@@ -625,8 +626,17 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
         if (mListener != null) {
             if (success) {
                 mListener.onSignInSucceeded();
-            } else {
-                mListener.onSignInFailed();
+            }
+			else
+			{
+				if ((mSignInFailureReason != null) && (mSignInFailureReason.getActivityResultCode() == GamesActivityResultCodes.RESULT_LICENSE_FAILED))
+				{
+					mListener.onLicenseFailed();
+				}
+				else
+				{
+					mListener.onSignInFailed();
+				}
             }
         }
     }
@@ -900,8 +910,10 @@ public class GameHelper implements GoogleApiClient.ConnectionCallbacks,
             // print debug info for the developer
             GameHelperUtils.printMisconfiguredDebugInfo(mAppContext);
         }
-
-        showFailureDialog();
+		if (reason.mActivityResultCode != GamesActivityResultCodes.RESULT_LICENSE_FAILED)
+		{
+			showFailureDialog();
+		}
         mConnecting = false;
         notifyListener(false);
     }

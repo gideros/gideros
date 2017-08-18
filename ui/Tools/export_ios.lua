@@ -186,4 +186,20 @@ iOSProject.exportPluginFiles=function(pname,srcdir,srcfiles,foriOS,forATV)
   iOSProject.commit()
 end
 
+iOSProject.needObjCLinking=function () iOSProject.needObjCLinkingFlag=true end
+
+local function apply()
+  if iOSProject.needObjCLinkingFlag then
+    Export.callXml([[<template name="Project" path=""><replacelist wildcards="project.pbxproj">
+    <append>
+     <orig>COMPRESS_PNG_FILES = NO;</orig>
+     <by>
+OTHER_LDFLAGS = "-ObjC";</by>
+    </append>
+    </replacelist></template>]])
+  end
+end
+
+Export.registerPreFinish(apply)
+
 return iOSProject

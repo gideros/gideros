@@ -28,7 +28,7 @@ public:
     static bool unzip(ExportContext *ctx, QString file,QString dest);
 	static void exportInfo(const char *fmt,...);
 	static void exportError(const char *fmt,...);
-	static char *askString(const char *title, const char *question, const char *def, bool key=false);
+	static char *askString(const char *title, const char *question, const char *def, bool key=false, const char *uid="");
 	static void progressSteps(int steps);
 	static void progressStep(const char *title);
 };

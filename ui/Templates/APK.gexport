@@ -73,9 +73,9 @@ print("Android Build Tools:"..buildVer)
 		<set key="local.noSigning" value="//"/>
 		<set key="local.isUnsigned" value="-unsigned"/>
 		<if condition="[[[neq:[[[export.keyAlias]]]:]]]">
-			<ask key="secret.keyStorePass" type="string" title="Key store password" question="Enter your key store password:" default="" />
+			<ask key="secret.keyStorePass" uid="[[[export.keyStore]]]" type="string" title="Key store password" question="Enter your key store password:" default="" />
 			<if condition="[[[neq:[[[secret.keyStorePass]]]:]]]">
-				<ask key="secret.keyAliasPass" type="string" title="Key alias password" question="Enter your key alias password:" default="[[[secret.keyStorePass]]]" />
+				<ask key="secret.keyAliasPass" uid="[[[export.keyAlias]]]@[[[export.keyStore]]]" type="string" title="Key alias password" question="Enter your key alias password:" default="[[[secret.keyStorePass]]]" />
 				<set key="local.noSigning" value=""/>
 				<set key="local.isUnsigned" value=""/>
 			</if>

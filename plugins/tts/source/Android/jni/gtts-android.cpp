@@ -62,7 +62,7 @@ static g_id gid = g_NextId();
 JNIEXPORT void JNICALL Java_com_giderosmobile_android_plugins_tts_TTSManager_eventTtsInit(JNIEnv *env, jclass clz, jint tid)
 {
 	if (tts_udata.find(tid)!=tts_udata.end())
-		gevent_EnqueueEvent(gid, callback_, GTTS_INIT_COMPLETE_EVENT, NULL, 1, tts_udata[tid]);
+		gevent_EnqueueEvent(gid, callback_, GTts::GTTS_INIT_COMPLETE_EVENT, NULL, 1, tts_udata[tid]);
 }
 
 JNIEXPORT void JNICALL Java_com_giderosmobile_android_plugins_tts_TTSManager_eventTtsError(JNIEnv *env, jclass clz, jint tid, jstring error)
@@ -70,7 +70,7 @@ JNIEXPORT void JNICALL Java_com_giderosmobile_android_plugins_tts_TTSManager_eve
 	if (tts_udata.find(tid)!=tts_udata.end())
 	{
 		void *event=GetJStringDup(env,error);
-		gevent_EnqueueEvent(gid, callback_, GTTS_ERROR_EVENT, event, 1, tts_udata[tid]);
+		gevent_EnqueueEvent(gid, callback_, GTts::GTTS_ERROR_EVENT, event, 1, tts_udata[tid]);
 	}
 }
 
@@ -84,7 +84,7 @@ JNIEXPORT void JNICALL Java_com_giderosmobile_android_plugins_tts_TTSManager_eve
 		strcpy(event+strlen(cstate)+1,cutterance);
 		free(cstate);
 		free(cutterance);
-		gevent_EnqueueEvent(gid, callback_, GTTS_UTTERANCE_COMPLETE_EVENT, event, 1, tts_udata[tid]);
+		gevent_EnqueueEvent(gid, callback_, GTts::GTTS_UTTERANCE_COMPLETE_EVENT, event, 1, tts_udata[tid]);
 	}
 }
 
@@ -128,60 +128,89 @@ void gtts_Cleanup()
 	gevent_RemoveEventsWithGid(gid);
 }
 
-int gtts_Create(const char *lang,float speed,float pitch,void *udata)
+class AndroidTts : public GTts {
+	int tid;
+public:
+	AndroidTts(lua_State *L,const char *lang,float speed,float pitch);
+	~AndroidTts();
+	bool SetLanguage(const char *lang);
+	bool SetPitch(float pitch);
+	bool SetSpeed(float speed);
+	void Stop();
+	void Shutdown();
+	bool Speak(const char *text,const char *utteranceId);
+    float GetSpeed();
+    float GetPitch();
+    float GetVolume();
+    bool SetVolume(float v);
+    bool SetVoice(const char *v);
+};
+
+
+AndroidTts::AndroidTts(lua_State *L,const char *lang,float speed,float pitch) : GTts(L)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		jstring jlang=env->NewStringUTF(lang);
+		tid=env->CallStaticIntMethod(cls_, env->GetStaticMethodID(cls_, "Create", "(Ljava/lang/String;FF)I"),jlang,speed,pitch);
+		tts_udata[tid]=this;
+	}
+AndroidTts::~AndroidTts() {
+		JNIEnv *env = g_getJNIEnv();
+		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "Destroy", "(I)V"),tid);
+		tts_udata.erase(tid);
+	}
+		bool AndroidTts::SetLanguage(const char *lang)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		jstring jlang=env->NewStringUTF(lang);
+		return env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "SetLanguage", "(ILjava/lang/String;)Z"),tid,jlang);
+	}
+
+	bool AndroidTts::SetPitch(float pitch)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		return env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "SetPitch", "(IF)Z"),tid,pitch);
+	}
+
+	bool AndroidTts::SetSpeed(float speed)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		return env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "SetSpeechRate", "(IF)Z"),tid,speed);
+	}
+
+	void AndroidTts::Stop()
+	{
+		JNIEnv *env = g_getJNIEnv();
+		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "Stop", "(I)V"),tid);
+	}
+
+	void AndroidTts::Shutdown()
+	{
+		JNIEnv *env = g_getJNIEnv();
+		env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "Shutdown", "(I)V"),tid);
+	}
+
+	bool AndroidTts::Speak(const char *text,const char *utteranceId)
+	{
+		JNIEnv *env = g_getJNIEnv();
+		jstring jtext=env->NewStringUTF(text);
+		jstring juid=env->NewStringUTF(utteranceId);
+		return env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "Speak", "(ILjava/lang/String;Ljava/lang/String;)Z"),tid,jtext,juid);
+	}
+
+    float AndroidTts::GetSpeed() { return 0; } //TODO
+    float AndroidTts::GetPitch() { return 1; } //TODO
+    float AndroidTts::GetVolume() { return 1; } //TODO
+    bool AndroidTts::SetVolume(float v) { return false; } //TODO
+    bool AndroidTts::SetVoice(const char *v) { return false; } //TODO
+
+GTts *gtts_Create(lua_State *L,const char *lang,float speed,float pitch)
 {
-	JNIEnv *env = g_getJNIEnv();
-	jstring jlang=env->NewStringUTF(lang);
-	jint tid=env->CallStaticIntMethod(cls_, env->GetStaticMethodID(cls_, "Create", "(Ljava/lang/String;FF)I"),jlang,speed,pitch);
-	tts_udata[tid]=udata;
-	return tid;
+	return new AndroidTts(L,lang,speed,pitch);
 }
 
-
-void gtts_Destroy(int tid)
-{
-	JNIEnv *env = g_getJNIEnv();
-	env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "Destroy", "(I)V"),tid);
-	tts_udata.erase(tid);
+std::vector<struct VoiceInfo> gtts_GetVoicesInstalled(){
+	std::vector<struct VoiceInfo> voices;
+    return voices;
 }
 
-bool gtts_SetLanguage(int tid,const char *lang)
-{
-	JNIEnv *env = g_getJNIEnv();
-	jstring jlang=env->NewStringUTF(lang);
-	return env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "SetLanguage", "(ILjava/lang/String;)Z"),tid,jlang);
-}
-
-bool gtts_SetPitch(int tid,float pitch)
-{
-	JNIEnv *env = g_getJNIEnv();
-	return env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "SetPitch", "(IF)Z"),tid,pitch);
-}
-
-bool gtts_SetSpeed(int tid,float speed)
-{
-	JNIEnv *env = g_getJNIEnv();
-	return env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "SetSpeechRate", "(IF)Z"),tid,speed);
-}
-
-void gtts_Stop(int tid)
-{
-	JNIEnv *env = g_getJNIEnv();
-	env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "Stop", "(I)V"),tid);
-}
-
-void gtts_Shutdown(int tid)
-{
-	JNIEnv *env = g_getJNIEnv();
-	env->CallStaticVoidMethod(cls_, env->GetStaticMethodID(cls_, "Shutdown", "(I)V"),tid);
-}
-
-bool gtts_Speak(int tid,const char *text,const char *utteranceId)
-{
-	JNIEnv *env = g_getJNIEnv();
-	jstring jtext=env->NewStringUTF(text);
-	jstring juid=env->NewStringUTF(utteranceId);
-	return env->CallStaticBooleanMethod(cls_, env->GetStaticMethodID(cls_, "Speak", "(ILjava/lang/String;Ljava/lang/String;)Z"),tid,jtext,juid);
-}
-
-//}

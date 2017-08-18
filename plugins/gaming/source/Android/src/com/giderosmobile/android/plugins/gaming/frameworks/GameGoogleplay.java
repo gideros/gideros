@@ -560,7 +560,12 @@ public class GameGoogleplay implements GameInterface, GameHelperListener {
 
 	@Override
 	public void onSignInFailed() {
-		Game.loginError(this, "Could not sign in");
+		Game.loginError(this, "Could not sign in");		
+	}
+	
+	@Override
+	public void onLicenseFailed() {
+		Game.loginError(this, "No license.");		
 	}
 
 	@Override

@@ -1,6 +1,4 @@
 #include "../../../tts/source/Common/gtts.h"
-#include "gideros.h"
-#include "lua.h"
 #include "lauxlib.h"
 
 
@@ -47,11 +45,10 @@ function TTSEngine:speak( text, utteranceID )
   TTSEngine.speak( "Say something" )
 end*/
 
-namespace {
-
 static const char* TTS_INIT_COMPLETE = "ttsInitComplete";
 static const char* TTS_ERROR = "ttsInitError";
 static const char* TTS_UTTERANCE_COMPLETE = "ttsUtteranceComplete";
+static const char *TTS_UTTERANCE_STARTED = "ttsUtteranceStarted";
 
 // some Lua helper functions
 #ifndef abs_index
@@ -85,35 +82,15 @@ static void luaL_rawsetptr(lua_State *L, int idx, void *ptr)
 static char keyStrong = ' ';
 static char keyWeak = ' ';
 
-class GTts : public GEventDispatcherProxy
+
+GTts::GTts(lua_State *L) : L(L)
 {
-public:
-    GTts(lua_State *L,const char *lang,float speed,float pitch) : L(L)
-    {
-    	tid=gtts_Create(lang,speed,pitch,this);
-    }
+}
 
-    ~GTts()
-    {
-        gtts_Destroy(tid);
-    }
-
-    bool SetPitch(float v) { return gtts_SetPitch(tid,v); }
-    bool SetSpeed(float v) { return gtts_SetSpeed(tid,v); }
-    bool SetLanguage(const char *v) { return gtts_SetLanguage(tid,v); }
-    bool Speak(const char *text, const char *utteranceId) { return gtts_Speak(tid,text,utteranceId); }
-    void Stop() { gtts_Stop(tid); }
-    void Shutdown() { gtts_Shutdown(tid); }
-
-    static void callback_s(int type, void *event, void *udata)
-    {
-    	if (udata)
-    		static_cast<GTts*>(udata)->callback(type, event);
-    }
-private:
-    int tid;
-
-    void callback(int type, void *event)
+GTts::~GTts()
+{
+}
+    void GTts::callback(int type, void *event)
     {
         if (type == GTTS_ERROR_EVENT)
         {
@@ -139,7 +116,7 @@ private:
 
             lua_pop(L, 2);
         }
-        else if (type == GTTS_UTTERANCE_COMPLETE_EVENT)
+        else if ((type == GTTS_UTTERANCE_COMPLETE_EVENT)||(type == GTTS_UTTERANCE_STARTED_EVENT))
         {
              luaL_rawgetptr(L, LUA_REGISTRYINDEX, &keyWeak);
             luaL_rawgetptr(L, -1, this);
@@ -154,7 +131,7 @@ private:
 
             lua_pushvalue(L, -2);
 
-            lua_getfield(L, -1, "__utteranceCompleteEvent");
+            lua_getfield(L, -1, (type == GTTS_UTTERANCE_STARTED_EVENT)?"__utteranceStartedEvent":"__utteranceCompleteEvent");
 
             lua_pushstring(L, (const char *)event);
             lua_setfield(L, -2, "state");
@@ -187,11 +164,6 @@ private:
             lua_pop(L, 2);
         }
     }
-
-private:
-    lua_State *L;
-};
-
 
 static int create(lua_State *L)
 {
@@ -231,7 +203,7 @@ static int create(lua_State *L)
 	}
 
 
-    GTts *tts = new GTts(L,lang,speed,pitch);
+    GTts *tts = gtts_Create(L,lang,speed,pitch);
 
     g_pushInstance(L, "TTS", tts->object());
 
@@ -250,6 +222,11 @@ static int create(lua_State *L)
     lua_pushstring(L, TTS_UTTERANCE_COMPLETE);
     lua_call(L, 1, 1);
     lua_setfield(L, -3, "__utteranceCompleteEvent");
+
+    lua_getfield(L, -1, "new");
+    lua_pushstring(L, TTS_UTTERANCE_STARTED);
+    lua_call(L, 1, 1);
+    lua_setfield(L, -3, "__utteranceStartedEvent");
 
     lua_pop(L, 1);
 
@@ -279,62 +256,130 @@ static GTts *getInstanceTts(lua_State *L, int index)
     return static_cast<GTts*>(proxy);
 }
 
-static int setPitch(lua_State *L)
-{
-    GTts * ble = getInstanceTts(L, 1);
-    float v=luaL_checknumber(L,2);
-    lua_pushboolean(L,ble->SetPitch(v));
-    return 1;
-}
-
-static int setSpeed(lua_State *L)
-{
-    GTts * ble = getInstanceTts(L, 1);
-    float v=luaL_checknumber(L,2);
-    lua_pushboolean(L,ble->SetSpeed(v));
-    return 1;
-}
-
-static int setLanguage(lua_State *L)
-{
-    GTts * ble = getInstanceTts(L, 1);
-    const char *v=luaL_checkstring(L,2);
-    lua_pushboolean(L,ble->SetLanguage(v));
-    return 1;
-}
-
 static int speak(lua_State *L)
 {
-    GTts * ble = getInstanceTts(L, 1);
+    GTts * tts = getInstanceTts(L, 1);
     const char *v=luaL_checkstring(L,2);
     const char *uid=luaL_optstring(L,3,"");
-    lua_pushboolean(L,ble->Speak(v,uid));
+    lua_pushboolean(L,tts->Speak(v,uid));
     return 1;
 }
 
 static int stop(lua_State *L)
 {
-    GTts * ble = getInstanceTts(L, 1);
-    ble->Stop();
+    GTts * tts = getInstanceTts(L, 1);
+    tts->Stop();
     return 0;
+}
+
+static int setLanguage(lua_State *L)
+{
+    GTts * tts = getInstanceTts(L, 1);
+    const char *v=luaL_checkstring(L,2);
+    lua_pushboolean(L,tts->SetLanguage(v));
+    return 1;
+}
+
+static int setVoice(lua_State *L)
+{
+    GTts * tts = getInstanceTts(L, 1);
+    const char *v=luaL_checkstring(L,2);
+    lua_pushboolean(L,tts->SetVoice(v));
+    return 1;
+}
+
+
+static int getVoicesInstalled(lua_State*L)
+{
+	std::vector<VoiceInfo> voices=gtts_GetVoicesInstalled();    
+    lua_createtable(L, voices.size(), 0);
+    
+    int index = 1;
+    for (std::vector<VoiceInfo>::iterator it=voices.begin();it!=voices.end();it++) {
+        lua_createtable(L, 0, 4);
+        lua_pushstring(L, (*it).identifier.c_str());
+        lua_setfield(L, -2, "identifier");
+        lua_pushstring(L, (*it).name.c_str());
+        lua_setfield(L, -2, "name");
+        lua_pushnumber(L, (*it).quality);
+        lua_setfield(L, -2, "quality");
+        lua_pushstring(L, (*it).language.c_str());
+        lua_setfield(L, -2, "language");
+        lua_rawseti(L, -2,index++);
+    }
+    return 1;
+}
+
+static int setPitch(lua_State *L)
+{
+    GTts * tts = getInstanceTts(L, 1);
+    float v=luaL_checknumber(L,2);
+    lua_pushboolean(L,tts->SetPitch(v));
+    return 1;
+}
+
+static int getPitch(lua_State *L)
+{
+    GTts * tts = getInstanceTts(L, 1);
+    float pitchMultiplier = tts->GetPitch();
+    lua_pushnumber(L, pitchMultiplier);
+    return 1;
+}
+
+static int setSpeed(lua_State *L)
+{
+    GTts * tts = getInstanceTts(L, 1);
+    float v=luaL_checknumber(L,2);
+    lua_pushboolean(L,tts->SetSpeed(v));
+    return 1;
+}
+
+static int getSpeed(lua_State *L)
+{
+    GTts * tts = getInstanceTts(L, 1);
+    float speed = tts->GetSpeed();
+    lua_pushnumber(L, speed);
+    return 1;
+}
+
+static int setVolume(lua_State *L)
+{
+    GTts * tts = getInstanceTts(L, 1);
+    float v=luaL_checknumber(L,2);
+    lua_pushboolean(L,tts->SetVolume(v));
+    return 1;
+}
+
+static int getVolume(lua_State *L)
+{
+    GTts * tts = getInstanceTts(L, 1);
+    float volume = tts->GetVolume();
+    lua_pushnumber(L, volume);
+    return 1;
 }
 
 static int shutdown(lua_State *L)
 {
-    GTts * ble = getInstanceTts(L, 1);
-    ble->Shutdown();
+    GTts * tts = getInstanceTts(L, 1);
+	tts->Shutdown();
     return 0;
 }
 
 static int loader(lua_State* L)
 {
     const luaL_Reg functionlist[] = {
+			{"speak", speak }, //string, utterance
+    		{"stop", stop},
+    		{"setLanguage", setLanguage}, //string
+        	{"setVoice", setVoice},
     		{"setPitch", setPitch}, //float
     		{"setSpeed", setSpeed}, //float
-    		{"setLanguage", setLanguage}, //string
-    		{"stop", stop},
+	        {"setVolume", setVolume},
+        	{"getPitch", getPitch},
+    	    {"getSpeed", getSpeed},
+	        {"getVolume", getVolume},
+	        {"getVoicesInstalled", getVoicesInstalled},
     		{"shutdown", shutdown},
-			{"speak", speak }, //string, utterance
         {NULL, NULL},
     };
 
@@ -348,6 +393,8 @@ static int loader(lua_State* L)
     lua_setfield(L, -2, "TTS_INIT_COMPLETE");
     lua_pushstring(L, TTS_UTTERANCE_COMPLETE);
     lua_setfield(L, -2, "TTS_UTTERANCE_COMPLETE");
+	lua_pushstring(L, TTS_UTTERANCE_STARTED);
+	lua_setfield(L, -2, "TTS_UTTERANCE_STARTED");
     lua_pop(L, 1);
 
     lua_newtable(L);
@@ -358,8 +405,6 @@ static int loader(lua_State* L)
 
     lua_getglobal(L, "TTS");
     return 1;
-}
-
 }
 
 static void g_initializePlugin(lua_State *L)
@@ -379,4 +424,4 @@ static void g_deinitializePlugin(lua_State *L)
 	gtts_Cleanup();
 }
 
-REGISTER_PLUGIN("TTS", "1.0")
+REGISTER_PLUGIN("TTS", "1.1")

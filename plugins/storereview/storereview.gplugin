@@ -1,0 +1,13 @@
+<plugin
+ name="StoreReview"
+ description="Add store review call (iOS)">
+ <target name="iOS">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportPluginFiles("StoreReview",
+	"[[[sys.pluginDir]]]/source/IOS/StoreReview",
+	{ "gstoreReview-ios.mm", "storeReviewBinder.cpp" },
+	true,true)
+	]]></lua>
+ </target>
+</plugin>

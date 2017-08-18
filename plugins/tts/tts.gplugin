@@ -11,4 +11,16 @@
         </replacelist>
     </template>
  </target>
+ <target name="iOS">
+ <mkdir>[[[project.name]]]/Plugins/TTS</mkdir>
+ <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/" dest="[[[project.name]]]/Plugins/TTS" />
+ <template name="binaries" path="[[[sys.pluginDir]]]/source/Common/" dest="[[[project.name]]]/Plugins/TTS" />
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("TTS","Plugins/TTS","GroupTTS_ios","GroupPlugins_ios")
+--iOSProject.addGroup("TTS","Plugins/TTS","GroupTTS_atv","GroupPlugins_atv")
+iOSProject.addSources({ "gtts.h", "TTS.mm", "gttsbinder.cpp" }, "GroupTTS", "ios")
+iOSProject.commit()
+	]]></lua>
+ </target>
 </plugin>

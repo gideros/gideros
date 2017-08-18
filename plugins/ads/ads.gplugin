@@ -33,9 +33,7 @@
  <property name="adsFwTapjoy" type="boolean" title="Enable Tapjoy support (Android)"/> 
  -->
  <property name="adsFwUnity" type="boolean" title="Enable Unity Ads support (Android,iOS)"/>
- <!--
  <property name="adsFwVungle" type="boolean" title="Enable Vungle support (Android,iOS)"/>
- -->
  
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src" dest="app/src/main/java" exclude="frameworks"/>
@@ -89,6 +87,24 @@
 					<by>
 				    compile 'com.unity3d.ads:unity:ads:[[[local.adsAarVer]]]@aar'
 					</by>
+				</append>
+	       	</replacelist>	
+	 	</template>
+	</if>  
+    <if condition="[[[plugin.adsFwVungle]]]">
+    	<template name="Binaries" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsVungle.java" />
+    	<template name="Binaries" path="" dest="">
+			<replacelist wildcards="build.gradle">
+				<append>
+					<orig>//TAG-DEPENDENCIES//</orig>								
+					<by>
+					compile 'com.github.vungle:vungle-android-sdk:5.1.0'
+					</by>
+				</append>
+				<append>
+					<orig>///TAG-TOP-GRADLE-ALLREPOS//</orig>								
+					<by>
+					maven { url 'https://jitpack.io' }</by>
 				</append>
 	       	</replacelist>	
 	 	</template>
@@ -286,6 +302,7 @@ iOSProject.commit()
     </template>	
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
+iOSProject.needObjCLinking()
 iOSProject.addSources({
 "AdsApplovin.m","AdsApplovin.h","AppLovinSDK.framework"
 },"GroupAdsFrameworks","ios")
