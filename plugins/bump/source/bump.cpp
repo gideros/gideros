@@ -1189,7 +1189,6 @@ int worldQueryRect(lua_State *L) {
 		hasFilter=true;
 	}
 	assertIsRect(L, 2, 3, 4, 5);
-	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
 
 	double x = luaL_checknumber(L, 2);
@@ -1206,12 +1205,13 @@ int worldQueryRect(lua_State *L) {
 	}
 	std::set<int> items;
 	wr->queryRect(x, y, w, h, f, items);
+	lua_createtable(L,items.size(),0);
 	int n = 0;
 	for (std::set<int>::iterator it = items.begin(); it != items.end(); it++) {
-		lua_rawgeti(L, -1, *it);
-		lua_rawseti(L, -3, ++n);
+		lua_rawgeti(L, -2, *it);
+		lua_rawseti(L, -2, ++n);
 	}
-	lua_pop(L, 1);
+	lua_remove(L, -2);
 	lua_pushinteger(L,n);
 	return 2;
 }
@@ -1443,14 +1443,15 @@ int worldMove(lua_State *L) {
 		f = &lf;
 	}
 	double ax, ay;
-	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
 	std::vector<Collision> items;
 	wr->move(item, x, y, f, ax, ay, items);
 	int n = 0;
+	lua_createtable(L,items.size(),0);
+	lua_insert(L,-2);
 	for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
 			it++) {
-		lua_newtable(L);
+		lua_createtable(L,0,10);
 		lua_rawgeti(L, -2, (*it).item);
 		lua_setfield(L, -2, "item");
 		lua_rawgeti(L, -2, (*it).other);
@@ -1462,19 +1463,19 @@ int worldMove(lua_State *L) {
 		lua_pushnumber(L, (*it).ti);
 		lua_setfield(L, -2, "ti");
 
-		lua_newtable(L);
+		lua_createtable(L,0,2);
 		lua_pushnumber(L, (*it).move.x);
 		lua_setfield(L, -2, "x");
 		lua_pushnumber(L, (*it).move.y);
 		lua_setfield(L, -2, "y");
 		lua_setfield(L, -2, "move");
-		lua_newtable(L);
+		lua_createtable(L,0,2);
 		lua_pushnumber(L, (*it).normal.x);
 		lua_setfield(L, -2, "x");
 		lua_pushnumber(L, (*it).normal.y);
 		lua_setfield(L, -2, "y");
 		lua_setfield(L, -2, "normal");
-		lua_newtable(L);
+		lua_createtable(L,0,2);
 		lua_pushnumber(L, (*it).touch.x);
 		lua_setfield(L, -2, "x");
 		lua_pushnumber(L, (*it).touch.y);
@@ -1482,7 +1483,7 @@ int worldMove(lua_State *L) {
 		lua_setfield(L, -2, "touch");
 
 		if ((!strcmp((*it).type, "bounce")) || (!strcmp((*it).type, "slide"))) {
-			lua_newtable(L);
+			lua_createtable(L,0,2);
 			lua_pushnumber(L, (*it).response.x);
 			lua_setfield(L, -2, "x");
 			lua_pushnumber(L, (*it).response.y);
@@ -1490,7 +1491,7 @@ int worldMove(lua_State *L) {
 			lua_setfield(L, -2, (*it).type);
 		}
 
-		lua_newtable(L);
+		lua_createtable(L,0,4);
 		lua_pushnumber(L, (*it).itemRect.x);
 		lua_setfield(L, -2, "x");
 		lua_pushnumber(L, (*it).itemRect.y);
@@ -1500,7 +1501,7 @@ int worldMove(lua_State *L) {
 		lua_pushnumber(L, (*it).itemRect.h);
 		lua_setfield(L, -2, "h");
 		lua_setfield(L, -2, "itemRect");
-		lua_newtable(L);
+		lua_createtable(L,0,4);
 		lua_pushnumber(L, (*it).otherRect.x);
 		lua_setfield(L, -2, "x");
 		lua_pushnumber(L, (*it).otherRect.y);
@@ -1553,14 +1554,15 @@ int worldCheck(lua_State *L) {
 		f = &lf;
 	}
 	double ax, ay;
-	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
 	std::vector<Collision> items;
 	wr->check(item, x, y, f, ax, ay, items);
 	int n = 0;
+	lua_createtable(L,items.size(),0);
+	lua_insert(L,-2);
 	for (std::vector<Collision>::iterator it = items.begin(); it != items.end();
 			it++) {
-		lua_newtable(L);
+		lua_createtable(L,0,10);
 		lua_rawgeti(L, -2, (*it).item);
 		lua_setfield(L, -2, "item");
 		lua_rawgeti(L, -2, (*it).other);
@@ -1572,19 +1574,19 @@ int worldCheck(lua_State *L) {
 		lua_pushnumber(L, (*it).ti);
 		lua_setfield(L, -2, "ti");
 
-		lua_newtable(L);
+		lua_createtable(L,0,2);
 		lua_pushnumber(L, (*it).move.x);
 		lua_setfield(L, -2, "x");
 		lua_pushnumber(L, (*it).move.y);
 		lua_setfield(L, -2, "y");
 		lua_setfield(L, -2, "move");
-		lua_newtable(L);
+		lua_createtable(L,0,2);
 		lua_pushnumber(L, (*it).normal.x);
 		lua_setfield(L, -2, "x");
 		lua_pushnumber(L, (*it).normal.y);
 		lua_setfield(L, -2, "y");
 		lua_setfield(L, -2, "normal");
-		lua_newtable(L);
+		lua_createtable(L,0,2);
 		lua_pushnumber(L, (*it).touch.x);
 		lua_setfield(L, -2, "x");
 		lua_pushnumber(L, (*it).touch.y);
@@ -1592,7 +1594,7 @@ int worldCheck(lua_State *L) {
 		lua_setfield(L, -2, "touch");
 
 		if ((!strcmp((*it).type, "bounce")) || (!strcmp((*it).type, "slide"))) {
-			lua_newtable(L);
+			lua_createtable(L,0,2);
 			lua_pushnumber(L, (*it).response.x);
 			lua_setfield(L, -2, "x");
 			lua_pushnumber(L, (*it).response.y);
@@ -1600,7 +1602,7 @@ int worldCheck(lua_State *L) {
 			lua_setfield(L, -2, (*it).type);
 		}
 
-		lua_newtable(L);
+		lua_createtable(L,0,4);
 		lua_pushnumber(L, (*it).itemRect.x);
 		lua_setfield(L, -2, "x");
 		lua_pushnumber(L, (*it).itemRect.y);
@@ -1610,7 +1612,7 @@ int worldCheck(lua_State *L) {
 		lua_pushnumber(L, (*it).itemRect.h);
 		lua_setfield(L, -2, "h");
 		lua_setfield(L, -2, "itemRect");
-		lua_newtable(L);
+		lua_createtable(L,0,4);
 		lua_pushnumber(L, (*it).otherRect.x);
 		lua_setfield(L, -2, "x");
 		lua_pushnumber(L, (*it).otherRect.y);
