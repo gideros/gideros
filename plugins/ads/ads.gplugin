@@ -314,6 +314,24 @@ iOSProject.commit()
 	]]></lua>
 </if>
 
+<if condition="[[[plugin.adsFwVungle]]]">
+	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsVungle.*" exclude="*.framework" />
+	<download source="http://apps.giderosmobile.com/ext/ios/vungle510.zip" dest="[[[sys.cacheDir]]]/vungle.zip" />
+	<unzip source="[[[sys.cacheDir]]]/vungle.zip" dest="[[[local.adsfwd]]]" />
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.needObjCLinking()
+iOSProject.addSources({
+"AdsVungle.m","AdsVungle.h","VungleSDK.framework"
+},"GroupAdsFrameworks","ios")
+local sysFW={ "AdSupport","SystemConfiguration", "CFNetwork", "CoreMedia","WebKit","MediaPlayer" }
+for _,v in ipairs(sysFW) do
+    iOSProject.addFramework(v..".framework","ios","System/Library/Frameworks/"..v..".framework","$SDKROOT")
+end
+iOSProject.commit()
+	]]></lua>
+</if>
+
 <if condition="[[[plugin.adsFwAdmob]]]">
 	<template name="" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsAdmob.*" exclude="*.framework" />
 	<download source="http://apps.giderosmobile.com/ext/ios/GoogleMobileAds.framework-7.21.0.zip" dest="[[[sys.cacheDir]]]/GoogleMobileAds.framework.zip" />

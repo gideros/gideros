@@ -966,7 +966,7 @@ void ExportCommon::progressStep(const char *title) {
 }
 
 char *ExportCommon::askString(const char *title, const char *question,
-		const char *def, bool key, const char *uid="") {
+		const char *def, bool key, const char *uid) {
 	exportInfo("?:?%c%s|%s|%s|%s\n", key ? 'K' : 'S', title, question, def, uid);
 	char str[512];
 	fgets(str, 511, stdin);
