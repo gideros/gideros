@@ -12,10 +12,8 @@
 #import "AdsManager.h"
 
 @interface AdsVungle : NSObject <AdsProtocol, VungleSDKDelegate>
-@property(nonatomic) BOOL hasVideo;
-@property(nonatomic) BOOL hasV4vc;
 @property (nonatomic, retain) AdsManager *mngr;
+@property (nonatomic, retain) NSString *user;
 
--(IBAction)showAd;
--(IBAction)showIncentivizedAd;
+-(IBAction)showAd:(NSString*) placement forUser:(NSString *)user;
 @end
