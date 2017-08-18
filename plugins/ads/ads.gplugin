@@ -94,7 +94,7 @@
     <if condition="[[[plugin.adsFwVungle]]]">
     	<template name="Binaries" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsVungle.java" />
     	<template name="Binaries" path="" dest="">
-			<replacelist wildcards="build.gradle">
+			<replacelist wildcards="build.gradle;AndroidManfiest.xml">
 				<append>
 					<orig>//TAG-DEPENDENCIES//</orig>								
 					<by>
@@ -106,8 +106,28 @@
 					<by>
 					maven { url 'https://jitpack.io' }</by>
 				</append>
+				<append>
+            		<orig><![CDATA[<!-- TAG:APPLICATION-EXTRA -->]]></orig>
+            		<by><![CDATA[
+	<activity android:name="com.vungle.publisher.VideoFullScreenAdActivity"
+     android:configChanges="keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize"
+     android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+
+    <activity android:name="com.vungle.publisher.MraidFullScreenAdActivity"
+     android:configChanges="keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize"
+     android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
+
+    <activity android:name="com.vungle.publisher.FlexViewAdActivity"
+     android:configChanges="keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize"
+     android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>]]></by>    	        
+    	        </append>
 	       	</replacelist>	
 	 	</template>
+	    <lua>
+    	local ap=require("Tools/export_android")
+    	ap.usePermission("android.permission.ACCESS_NETWORK_STATE")
+    	ap.usePermission("android.permission.WRITE_EXTERNAL_STORAGE",18)
+    	</lua>
 	</if>  
     <if condition="[[[plugin.adsFwKiip]]]">
     	<template name="Kiip" path="[[[local.adsfws]]]" dest="[[[local.adsfwd]]]" include="AdsKiip.java">

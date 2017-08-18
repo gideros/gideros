@@ -285,6 +285,7 @@ void LibraryTreeWidget::addPlugin()
 					m=*it;
 					properties_.plugins.erase(it);
 					found=true;
+					break;
 				}
 			}
 			if (!found)
@@ -315,6 +316,7 @@ void LibraryTreeWidget::propPlugin()
 				m=*it;
 				properties_.plugins.erase(it);
 				found=true;
+				break;
 			}
 		}
 		if (found)
@@ -362,6 +364,7 @@ void LibraryTreeWidget::remove()
 					m=*it;
 					properties_.plugins.erase(it);
 					found=true;
+					break;
 				}
 			}
 			if (found)
