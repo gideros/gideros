@@ -88,21 +88,18 @@ void ExportProgress::onStandardOutput()
 						QString def=line.mid(s2+1,s3-s2-1);
 						QString uid=line.mid(s3+1);
 						QString text;
-						if (uid.isEmpty()||(!responseCache.contains(uid)))
+						if ((!uid.isEmpty())&&(responseCache.contains(uid)))
+							def=responseCache.contains(uid);
+						text = QInputDialog::getText(this, title, question,
+									(type=='K')?QLineEdit::Password:QLineEdit::Normal,
+									def, &ok);
+						if (ok)
 						{
-							text = QInputDialog::getText(this, title, question,
-										(type=='K')?QLineEdit::Password:QLineEdit::Normal,
-										def, &ok);
-							if (ok)
-							{
-								if (!uid.isEmpty())
-									responseCache[uid]=text;
-							}
-							else
-								text=def;
+							if (!uid.isEmpty())
+								responseCache[uid]=text;
 						}
 						else
-							text=responseCache[uid];
+							text=def;
 						exportProcess->write((text+"\n").toUtf8());
 					}
 				}

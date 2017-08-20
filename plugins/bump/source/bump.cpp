@@ -7,6 +7,8 @@
 #include <algorithm>
 //#include <QDebug>
 
+#define UNUSED(x) (void)(x)
+
 #define MATH_HUGE HUGE_VAL
 /*
  local bump = {
@@ -91,7 +93,7 @@ struct ColFilter {
 };
 
 struct defaultFilter: ColFilter {
-	const char *Filter(int item, int other) {
+	const char *Filter(int item, int other) { UNUSED(item); UNUSED(other);
 		return "slide";
 	}
 	;
@@ -860,6 +862,8 @@ struct TouchResponse: Response {
 	void ComputeResponse(World *world, Collision col, double x,
 			double y, double w, double h, double goalX, double goalY,
 			ColFilter *filter, double &actualX, double &actualY,std::vector<Collision> &cols) {
+		UNUSED(world); UNUSED(x); UNUSED(y); UNUSED(w); UNUSED(h);
+		UNUSED(filter); UNUSED(goalX); UNUSED(goalY); UNUSED(cols);
 		actualX = col.touch.x;
 		actualY = col.touch.y;
 	}
@@ -1031,10 +1035,9 @@ int worldProject(lua_State *L) {
 		lf.func = 9;
 		f = &lf;
 	}
-	double ax, ay;
 	lua_getfield(L, 1, "__itemsr");
 	std::vector<Collision> items;
-	wr->project(item, y, x, w,h, gx,gy,f,items);
+	wr->project(item, x, y, w,h, gx,gy,f,items);
 	lua_pop(L, 1);
 	int n = 0;
 	lua_newtable(L);
@@ -1113,7 +1116,7 @@ int worldCountItems(lua_State *L) {
 }
 
 int worldHasItem(lua_State *L) {
-	World *w = (World *) g_getInstance(L, "BumpWorld", 1);
+	//World *w = (World *) g_getInstance(L, "BumpWorld", 1);
 	lua_getfield(L, 1, "__items");
 	lua_pushvalue(L, 2);
 	lua_gettable(L, -2);
@@ -1125,15 +1128,15 @@ int worldHasItem(lua_State *L) {
 
 int worldGetItems(lua_State *L) {
 	World *w = (World *) g_getInstance(L, "BumpWorld", 1);
-	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
 	std::set<int> items = w->getItems();
+	lua_createtable(L,items.size(),0);
 	int n = 0;
 	for (std::set<int>::iterator it = items.begin(); it != items.end(); it++) {
-		lua_rawgeti(L, -1, *it);
-		lua_rawseti(L, -3, ++n);
+		lua_rawgeti(L, -2, *it);
+		lua_rawseti(L, -2, ++n);
 	}
-	lua_pop(L, 1);
+	lua_remove(L, -2);
 	return 1;
 }
 
@@ -1223,7 +1226,6 @@ int worldQueryPoint(lua_State *L) {
 		luaL_checktype(L, 4, LUA_TFUNCTION);
 		hasFilter=true;
 	}
-	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
 
 	double x = luaL_checknumber(L, 2);
@@ -1238,12 +1240,13 @@ int worldQueryPoint(lua_State *L) {
 	}
 	std::set<int> items;
 	wr->queryPoint(x, y, f, items);
+	lua_createtable(L,items.size(),0);
 	int n = 0;
 	for (std::set<int>::iterator it = items.begin(); it != items.end(); it++) {
-		lua_rawgeti(L, -1, *it);
-		lua_rawseti(L, -3, ++n);
+		lua_rawgeti(L, -2, *it);
+		lua_rawseti(L, -2, ++n);
 	}
-	lua_pop(L, 1);
+	lua_remove(L, -2);
 	lua_pushinteger(L,n);
 	return 2;
 }
@@ -1256,7 +1259,6 @@ int worldQuerySegment(lua_State *L) {
 		hasFilter=true;
 	}
 	assertIsRect(L, 2, 3, 4, 5);
-	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
 
 	double x1 = luaL_checknumber(L, 2);
@@ -1273,12 +1275,13 @@ int worldQuerySegment(lua_State *L) {
 	}
 	std::set<int> items;
 	wr->querySegment(x1, y1, x2, y2, f, items);
+	lua_createtable(L,items.size(),0);
 	int n = 0;
 	for (std::set<int>::iterator it = items.begin(); it != items.end(); it++) {
-		lua_rawgeti(L, -1, *it);
-		lua_rawseti(L, -3, ++n);
+		lua_rawgeti(L, -2, *it);
+		lua_rawseti(L, -2, ++n);
 	}
-	lua_pop(L, 1);
+	lua_remove(L, -2);
 	lua_pushinteger(L,n);
 	return 2;
 }
@@ -1291,7 +1294,6 @@ int worldQuerySegmentWithCoords(lua_State *L) {
 		hasFilter=true;
 	}
 	assertIsRect(L, 2, 3, 4, 5);
-	lua_newtable(L);
 	lua_getfield(L, 1, "__itemsr");
 
 	double x1 = luaL_checknumber(L, 2);
@@ -1308,11 +1310,12 @@ int worldQuerySegmentWithCoords(lua_State *L) {
 	}
 	std::vector<ItemInfo> items;
 	wr->querySegmentWithCoords(x1, y1, x2, y2, f, items);
+	lua_createtable(L,items.size(),0);
 	int n = 0;
 	for (std::vector<ItemInfo>::iterator it = items.begin(); it != items.end();
 			it++) {
-		lua_newtable(L);
-		lua_rawgeti(L, -2, (*it).item);
+		lua_createtable(L,0,7);
+		lua_rawgeti(L, -3, (*it).item);
 		lua_setfield(L, -2, "item");
 		lua_pushnumber(L, (*it).ti1);
 		lua_setfield(L, -2, "ti1");
@@ -1326,9 +1329,9 @@ int worldQuerySegmentWithCoords(lua_State *L) {
 		lua_setfield(L, -2, "x2");
 		lua_pushnumber(L, (*it).y2);
 		lua_setfield(L, -2, "y2");
-		lua_rawseti(L, -3, ++n);
+		lua_rawseti(L, -2, ++n);
 	}
-	lua_pop(L, 1);
+	lua_remove(L, -2);
 	lua_pushinteger(L,n);
 	return 2;
 }
@@ -1856,5 +1859,6 @@ static void g_initializePlugin(lua_State *L) {
 }
 
 static void g_deinitializePlugin(lua_State *L) {
+	UNUSED(L);
 }
 REGISTER_PLUGIN_NAMED("Bump", "3.1.7", bump)
