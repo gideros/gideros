@@ -1,6 +1,7 @@
 #include "gideros.h"
 #include "lua.h"
 #include "lauxlib.h"
+#include "gtts.h"
 
 #import <AVFoundation/AVSpeechSynthesis.h>
 
@@ -49,7 +50,7 @@
 @implementation TTSSpeechSynthesizer
 @end
 
-
+class TTS;
 @interface TTSDelegate : NSObject<AVSpeechSynthesizerDelegate>
 {
 }
@@ -58,6 +59,31 @@
 
 @property (nonatomic, assign) TTS *tts;
 @end
+
+class TTS : public GTts
+{
+public:
+    TTS(lua_State *L,const char *lang,float speed,float pitch);
+    ~TTS();
+    bool SetLanguage(const char *lang);
+    bool SetPitch(float pitch);
+    bool SetSpeed(float speed);
+    void Stop();
+    void Shutdown();
+    bool Speak(const char *text,const char *utteranceId);
+    float GetSpeed();
+    float GetPitch();
+    float GetVolume();
+    bool SetVolume(float v);
+    bool SetVoice(const char *v);
+    void utteranceComplete(NSString * utteranceId);
+    void utteranceStarted(NSString * utteranceId);
+    void dispatchEvent(int type, NSString *utteranceId, NSString *state);
+private:
+    TTSDelegate *delegate_;
+    TTSSpeechSynthesizer *synthesizer_;
+};
+
 
 //-----------------------------------
 
@@ -74,31 +100,8 @@ void gtts_Cleanup()
 	gevent_RemoveEventsWithGid(gid);
 }
 
-class TTS : public GTts
-{    
-public:
-	TTS(lua_State *L,const char *lang,float speed,float pitch);
-	~TTS();
-	bool SetLanguage(const char *lang);
-	bool SetPitch(float pitch);
-	bool SetSpeed(float speed);
-	void Stop();
-	void Shutdown();
-	bool Speak(const char *text,const char *utteranceId);
-    float GetSpeed();
-    float GetPitch();
-    float GetVolume();
-    bool SetVolume(float v);
-    bool SetVoice(const char *v);	
-	void utteranceComplete(NSString * utteranceId);
-    void utteranceStarted(NSString * utteranceId);
-	void dispatchEvent(int type, NSString *utteranceId, NSString *state);
-private:
-	TTSDelegate *delegate_;
-	TTSSpeechSynthesizer *synthesizer_;	
-};
-    
-	TTS::TTS(lua_State *L,const char *lang,float speed,float pitch) : Gtts(L)
+
+	TTS::TTS(lua_State *L,const char *lang,float speed,float pitch) : GTts(L)
 	{
         synthesizer_ = [[TTSSpeechSynthesizer alloc] init];
         synthesizer_.voiceIdentifier=@"com.apple.ttsbundle.siri_female_en-US_compact" ;
@@ -119,7 +122,7 @@ private:
         [synthesizer_ stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     }
 
-	virtual TTS::~TTS()
+	TTS::~TTS()
 	{
         NSLog(@"~TTS()");
         Shutdown();
@@ -141,7 +144,7 @@ private:
         utterance.voice = synthesizer_.voice;
         
         [synthesizer_ speakUtterance:utterance];
-		
+        return true;
 	}
     
 
@@ -215,15 +218,13 @@ private:
         }
     }
 	
-	void dispatchEvent(int type, NSString *utteranceId, NSString *state)
+void TTS::dispatchEvent(int type, NSString *utteranceId, NSString *state)
 	{
-		char *cstate= [state UTF8String];
-		char *cutterance=[utteranceId UTF8String];
+		const char *cstate= [state UTF8String];
+		const char *cutterance=[utteranceId UTF8String];
 		char *event=(char *)malloc(strlen(cstate)+strlen(cutterance)+2);
 		strcpy(event,cstate);
 		strcpy(event+strlen(cstate)+1,cutterance);
-		free(cstate);
-		free(cutterance);
 		gevent_EnqueueEvent(gid, callback_, type, event, 1, this);
 	}
 	
@@ -273,12 +274,12 @@ std::vector<struct VoiceInfo> gtts_GetVoicesInstalled(){
     NSArray *allVoices = [AVSpeechSynthesisVoice speechVoices];
     for (AVSpeechSynthesisVoice *voice in allVoices) {
         // NSLog(@"Voice Name: %@, Identifier: %@, Quality: %ld@, Language: %@", voice.name, voice.identifier, (long)voice.quality, voice.language);
-        struct VoiceInfo voice;
+        struct VoiceInfo v;
 		v.identifier=[voice.identifier UTF8String];
 		v.name=[voice.name UTF8String];
         v.quality=voice.quality;
         v.language=[voice.language UTF8String];
-        voices.push_back(v)
+        voices.push_back(v);
     }
     return voices;
 }
