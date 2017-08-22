@@ -89,7 +89,7 @@ void ExportProgress::onStandardOutput()
 						QString uid=line.mid(s3+1);
 						QString text;
 						if ((!uid.isEmpty())&&(responseCache.contains(uid)))
-							def=responseCache.contains(uid);
+							def=responseCache[uid];
 						text = QInputDialog::getText(this, title, question,
 									(type=='K')?QLineEdit::Password:QLineEdit::Normal,
 									def, &ok);

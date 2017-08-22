@@ -4,7 +4,7 @@ Tools to simplify android exports
 
 AndroidProject={
   permissions={},
-  minSdk=9
+  _minSdk=9
 }
 
 local MAX_SDK=1000
@@ -18,8 +18,8 @@ function AndroidProject.usePermission(name,maxSdk)
 end
 
 function AndroidProject.minSdk(minsdk)
-  if minsdk>AndroidProject.minSdk then
-    AndroidProject.minSdk=minsdk
+  if minsdk>AndroidProject._minSdk then
+    AndroidProject._minSdk=minsdk
   end
 end
 
@@ -45,7 +45,7 @@ local function apply()
         <replace><orig>minSdkVersion 9</orig><by>minSdkVersion %d</by></replace>
         <replace><orig>android:minSdkVersion="9"</orig><by>android:minSdkVersion="%d"</by></replace>
        </replacelist>
-  </template>]]):format(AndroidProject.minSdk,AndroidProject.minSdk))  
+  </template>]]):format(AndroidProject._minSdk,AndroidProject._minSdk))  
 end
 
 Export.registerPreFinish(apply)

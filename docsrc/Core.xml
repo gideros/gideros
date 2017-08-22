@@ -24,6 +24,23 @@ Core.yield(true) -- yield for a single frame and disable auto yield
 *frameCounter* - frame's number]]>
     <return type="table"><![CDATA[table with data]]></return>
   </method>
+  <method name="Core.profilerStart" page="profilerStart" shortdesc="Start profiling lua code" version="Gideros 2017.8">
+  <![CDATA[Start recording of time spent in each lua function]]>
+  </method>
+  <method name="Core.profilerStop" page="profilerStop" shortdesc="Stop profiling" version="Gideros 2017.8">
+  <![CDATA[Stop collecting profiling data]]>
+  </method>
+  <method name="Core.profilerReset" page="profilerReset" shortdesc="Clear recorded profiling data" version="Gideros 2017.8">
+  <![CDATA[Drop currently recorded data and reset profiler for a clean subsequent start]]>
+  </method>
+  <method name="Core.profilerReport" page="profilerReport" shortdesc="Output profiling results" version="Gideros 2017.8">
+  <![CDATA[Returns an associative array of tables describing CPU usage of lua functions. Each table in the array is indexed by an unique function id and has the following content: 
+*name* - Name of the function 
+*time* - Total time spent in the function (seconds)
+*count* - Number of times this function was called
+*callers* - A table containing the same information has above for each function which called this one]]>
+    <return type="table"><![CDATA[table with profiling data]]></return>
+  </method>
   <example name=""><![CDATA[MySprite = Core.class(Sprite)
 --my custom sprite class
 function MySprite:init()

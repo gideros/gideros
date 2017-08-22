@@ -96,28 +96,23 @@ QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 lib
 QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Network Qt5Xml Qt5WebSockets
 QT5PLATFORM=qminimal qoffscreen qwindows
+QT5PLUGINS=$(addprefix mediaservice/,dsengine qtmedia_audioengine) $(addprefix platforms/,$(QT5PLATFORM)) imageformats/qjpeg
 
 qt.player:
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
 	cp $(ROOT)/desktop/release/WindowsDesktopTemplate.exe $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
 	for f in gid gvfs lua gideros pystring; do cp $(RELEASE)/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate; done
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate; done
-	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/imageformats
-	cp $(QT)/plugins/imageformats/qjpeg.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/imageformats
-	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/platforms
-	for f in $(addsuffix $(QTDLLEXT),$(QT5PLATFORM)); do cp $(QT)/plugins/platforms/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/platforms; done
-	cp $(ROOT)/libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
+	mkdir -p $(addprefix $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/,$(dir $(QT5PLUGINS)))
+	for a in $(QT5PLUGINS); do cp $(QT)/plugins/$$a.dll$(QTDLLEXT) $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/$$a.dll$(QTDLLEXT); done
 	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins
 
 qt5.install:
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE); done
-	mkdir -p $(RELEASE)/imageformats
-	cp $(QT)/plugins/imageformats/qjpeg.dll $(RELEASE)/imageformats
-	mkdir -p $(RELEASE)/platforms
-	for f in $(addsuffix $(QTDLLEXT),$(QT5PLATFORM)); do cp $(QT)/plugins/platforms/$$f.dll $(RELEASE)/platforms; done
+	mkdir -p $(addprefix $(RELEASE)/,$(dir $(QT5PLUGINS)))
+	for a in $(QT5PLUGINS); do cp $(QT)/plugins/$$a.dll$(QTDLLEXT) $(RELEASE)/$$a.dll$(QTDLLEXT); done
 	cp $(QT)/lib/qscintilla2.dll $(RELEASE)
-	cp $(ROOT)/libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $(RELEASE)
 	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(RELEASE)
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
