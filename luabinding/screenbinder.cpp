@@ -36,6 +36,10 @@ ScreenBinder::ScreenBinder(lua_State *L)
 	lua_setfield(L, -2, "STATE_FULLSCREEN");
 	lua_pushinteger(L, Screen::ACTIVE);
 	lua_setfield(L, -2, "STATE_ACTIVE");
+	lua_pushinteger(L, Screen::HIDDEN);
+	lua_setfield(L, -2, "STATE_HIDDEN");
+	lua_pushinteger(L, Screen::CLOSED);
+	lua_setfield(L, -2, "STATE_CLOSED");
 
 	lua_pop(L,1);
 }

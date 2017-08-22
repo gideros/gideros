@@ -109,6 +109,7 @@ void gtts_Cleanup()
         synthesizer_.language= [NSString stringWithUTF8String:((*lang)?lang:"en-US")];
         synthesizer_.rate=speed*0.5;
         synthesizer_.pitch=pitch;
+        synthesizer_.volume=1;
         synthesizer_.voice = [AVSpeechSynthesisVoice voiceWithLanguage:synthesizer_.language];
 		delegate_ = [[TTSDelegate alloc] initWithTTS:this];
 		synthesizer_.delegate = delegate_;

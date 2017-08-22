@@ -29,7 +29,9 @@ public:
     	MINIMIZED=1,
     	MAXIMIZED=2,
     	FULLSCREEN=4,
-    	ACTIVE=8
+    	ACTIVE=8,
+		HIDDEN=16,
+		CLOSED=32
     };
 	virtual void setSize(int w,int h) { G_UNUSED(w); G_UNUSED(h); };
 	virtual void getSize(int &w,int &h) { w=0; h=0; };

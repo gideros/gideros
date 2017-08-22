@@ -51,6 +51,7 @@ class QtScreen : public Screen,protected QOpenGLWindow {
 	virtual void tick();
 protected:
 	virtual void setVisible(bool);
+	bool closed_;
 public:
 	virtual void setSize(int w,int h);
 	virtual void getSize(int &w,int &h);
@@ -60,10 +61,25 @@ public:
 	virtual int getState();
 	virtual void getMaxSize(int &w,int &h);
 	virtual int getId();
+	bool event(QEvent* ev);
 	QtScreen(Application *application);
 	~QtScreen();
 };
 
+bool QtScreen::event(QEvent* ev)
+{
+        if (ev->type() == QEvent::PlatformSurface) {
+        	if (((QPlatformSurfaceEvent *)ev)->surfaceEventType()==QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
+        	{
+        		setContent(NULL);
+        		closed_=true;
+        	}
+        	else
+        		closed_=false;
+        }
+        // Make sure the rest of events are handled
+        return QOpenGLWindow::event(ev);
+}
 
 void QtScreen::tick()
 {
@@ -101,10 +117,13 @@ void QtScreen::setState(int state)
 int QtScreen::getState()
 {
 	Qt::WindowState state=windowState();
-	if (state==Qt::WindowMinimized) return MINIMIZED;
-	if (state==Qt::WindowMaximized) return MAXIMIZED;
-	if (state==Qt::WindowFullScreen) return FULLSCREEN;
-	return NORMAL;
+	int s=NORMAL;
+	if (state==Qt::WindowMinimized) s=MINIMIZED;
+	if (state==Qt::WindowMaximized) s=MAXIMIZED;
+	if (state==Qt::WindowFullScreen) s=FULLSCREEN;
+	if (!isVisible()) s|=HIDDEN;
+	if (closed_) s|=CLOSED;
+	return s;
 }
 
 void QtScreen::getMaxSize(int &w,int &h)
@@ -137,6 +156,7 @@ void QtScreen::setVisible(bool visible)
 
 QtScreen::QtScreen(Application *application) : Screen(application), QOpenGLWindow()
 {
+	closed_=true;
 }
 
 QtScreen::~QtScreen()

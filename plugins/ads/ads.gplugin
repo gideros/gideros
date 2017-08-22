@@ -102,7 +102,7 @@
 					</by>
 				</append>
 				<append>
-					<orig>///TAG-TOP-GRADLE-ALLREPOS//</orig>								
+					<orig>//TAG-TOP-GRADLE-ALLREPOS//</orig>								
 					<by>
 					maven { url 'https://jitpack.io' }</by>
 				</append>
@@ -125,6 +125,7 @@
 	 	</template>
 	    <lua>
     	local ap=require("Tools/export_android")
+    	ap.minSdk(11)
     	ap.usePermission("android.permission.ACCESS_NETWORK_STATE")
     	ap.usePermission("android.permission.WRITE_EXTERNAL_STORAGE",18)
     	</lua>
