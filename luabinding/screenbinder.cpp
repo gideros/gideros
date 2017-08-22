@@ -90,7 +90,9 @@ int ScreenBinder::setContent(lua_State* L)
 {
 	Binder binder(L);
 	Screen* shape = static_cast<Screen*>(binder.getInstance("Screen"));
-	Sprite* s = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
+	Sprite *s=NULL;
+	if (!lua_isnoneornil(L,2))
+		s = static_cast<Sprite*>(binder.getInstance("Sprite", 2));
 	shape->setContent(s);
 
 	return 0;
