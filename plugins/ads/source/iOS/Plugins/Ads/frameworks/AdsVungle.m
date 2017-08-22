@@ -37,9 +37,12 @@
         placements=[parameters subarrayWithRange:placementsRange];
     }
     else
-        placements=[[NSArray alloc] init];
+    {
+        placements=@[ @"Default" ];
+    }
     
-    NSError *error;
+    self.user=user;
+    NSError *error=NULL;
     [sdk setDelegate:self];
     [sdk startWithAppId:[parameters objectAtIndex:0] placements:placements error:&error];
     if (error) {
@@ -58,6 +61,7 @@
 - (void)vungleAdPlayabilityUpdate:(BOOL)isAdPlayable placementID:(NSString *)placementID {
     if (isAdPlayable) {
         NSLog(@"An ad is available for playback");
+        [self.mngr load:placementID];
         [AdsClass adReceived:[self class] forType:placementID];
 
     } else {
@@ -94,7 +98,7 @@
                               VunglePlayAdOptionKeyIncentivizedAlertTitleText : @"Careful!"};
     
     // Pass in dict of options, play ad
-    NSError *error;
+    NSError *error=NULL;
     [sdk playAd:[AdsClass getRootViewController] options:options placementID:placement error:&error];
     if (error) {
         NSLog(@"Error encountered playing ad: %@", error);
@@ -104,7 +108,7 @@
 
 -(void)loadAd:(NSMutableArray*)parameters{
     NSString *type = [parameters objectAtIndex:0];
-    NSString *user = user;
+    NSString *user = self.user;
     if([parameters count] > 1)
     {
         user = [parameters objectAtIndex:1];
@@ -118,7 +122,7 @@
             [listener setHide:^(){}];
             [self.mngr set:type forType:type withListener:listener];
     
-    NSError* error;
+    NSError* error=NULL;
     VungleSDK* sdk = [VungleSDK sharedSDK];
     [sdk loadPlacementWithID:type error:&error];
     if (error) {
