@@ -511,8 +511,16 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    }
    else if(ctx->deviceFamily == e_MacOSXDesktop){
 	    ctx->outputDir.mkpath("icon.iconset/");
-        ExportCommon::appIcon(ctx,512,512,QString("icon.iconset/AppIcon512x512.png"));
-        ExportCommon::appIcon(ctx,1024,1024,QString("icon.iconset/AppIcon512x512@x2.png"));
+        ExportCommon::appIcon(ctx,16,16,QString("icon.iconset/icon_16x16.png"));
+        ExportCommon::appIcon(ctx,32,32,QString("icon.iconset/icon_16x16@2x.png"));
+        ExportCommon::appIcon(ctx,32,32,QString("icon.iconset/icon_32x32.png"));
+        ExportCommon::appIcon(ctx,64,64,QString("icon.iconset/icon_32x32@2x.png"));
+        ExportCommon::appIcon(ctx,128,128,QString("icon.iconset/icon_128x128.png"));
+        ExportCommon::appIcon(ctx,256,256,QString("icon.iconset/icon_128x128@2x.png"));
+        ExportCommon::appIcon(ctx,256,256,QString("icon.iconset/icon_256x256.png"));
+        ExportCommon::appIcon(ctx,512,512,QString("icon.iconset/icon_256x256@2x.png"));
+        ExportCommon::appIcon(ctx,512,512,QString("icon.iconset/icon_512x512.png"));
+        ExportCommon::appIcon(ctx,1024,1024,QString("icon.iconset/icon_512x512@2x.png"));
    }
 #ifdef Q_OS_MACX
     if(ctx->deviceFamily == e_MacOSXDesktop){
