@@ -293,6 +293,14 @@ void DirectXPage::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEvent
 
 void DirectXPage::OnDpiChanged(DisplayInformation^ sender, Object^ args)
 {
+	float s;
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+		s = sender->RawPixelsPerViewPixel; // Windows phone
+#else
+		s = ((int)sender->ResolutionScale)*0.01f;// *dinfo->LogicalDpi / 96.0f;   // Windows 8 PC
+#endif
+
+	gdr_scaleChanged(s);
 }
 
 void DirectXPage::OnOrientationChanged(DisplayInformation^ sender, Object^ args)

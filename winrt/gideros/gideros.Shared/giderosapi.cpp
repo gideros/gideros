@@ -386,6 +386,7 @@ public:
 	void foreground();
 	void background();
 	void resize(int width, int height, int orientation);
+	void scaleChanged(float scale);
 
 	static Windows::UI::Xaml::Controls::SwapChainPanel^ getRoot();
 
@@ -726,7 +727,7 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01f *dinfo->LogicalDpi / 96.0f;   // Windows 8 PC
+		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01f;// *dinfo->LogicalDpi / 96.0f;   // Windows 8 PC
 #endif
 	}
 
@@ -917,6 +918,11 @@ ApplicationManager::~ApplicationManager()
 
 Windows::UI::Xaml::Controls::SwapChainPanel^ ApplicationManager::getRoot(){
 	return xamlRoot_.Resolve<Windows::UI::Xaml::Controls::SwapChainPanel>();
+}
+
+void ApplicationManager::scaleChanged(float s)
+{
+	contentScaleFactor = s;
 }
 
 void ApplicationManager::getStdCoords(float xp, float yp, float &x, float &y)
@@ -1641,6 +1647,11 @@ extern "C" {
 	void gdr_resize(int width, int height, int orientation)
 	{
 		s_manager->resize(width, height, orientation);
+	}
+
+	void gdr_scaleChanged(float scale)
+	{
+		s_manager->scaleChanged(scale);
 	}
 
 }

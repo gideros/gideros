@@ -22,6 +22,10 @@ void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
 	QString installerId = ctx->args["installerId"];
 	if (installerId.isEmpty())
 		installerId = ctx->properties.osx_installerId;
+	cmd = "iconutil -c icns icon.iconset";
+	script += cmd + "\n";
+	Utilities::processOutput(cmd);
+
 	if (ctx->outputDir.cd("Frameworks")) {
 		QStringList frameworks = ctx->outputDir.entryList(
 				QStringList() << "*.framework");

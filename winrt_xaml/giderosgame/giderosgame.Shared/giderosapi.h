@@ -34,6 +34,7 @@ extern "C" {
 	void gdr_touchEnd(int x, int y, int id);
 	void gdr_touchCancel(int x, int y, int id);
 	void gdr_resize(int width, int height, int orientation);
+	void gdr_scaleChanged(float s);
 	void gdr_dispatchUi(std::function<void()> func, bool wait);
 	Windows::UI::Xaml::Controls::SwapChainPanel^ gdr_getRootView();
 #ifdef __cplusplus

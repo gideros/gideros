@@ -509,7 +509,11 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ExportCommon::tvIcon(ctx,1280,768,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"));
         ExportCommon::tvIcon(ctx,400,240,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"));
    }
-
+   else if(ctx->deviceFamily == e_MacOSXDesktop){
+	    ctx->outputDir.mkpath("icon.iconset/");
+        ExportCommon::appIcon(ctx,512,512,QString("icon.iconset/AppIcon512x512.png"));
+        ExportCommon::appIcon(ctx,1024,1024,QString("icon.iconset/AppIcon512x512@x2.png"));
+   }
 #ifdef Q_OS_MACX
     if(ctx->deviceFamily == e_MacOSXDesktop){
         MacOSXExport::CodeSignMacOSX(ctx);
