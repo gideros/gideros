@@ -13,7 +13,7 @@
 	UIBackgroundTaskIdentifier _backgroundRecordingID;
 	BOOL _allowedToUseGPU;
     CVOpenGLESTextureCacheRef videoTextureCache;
-    CVOpenGLESTextureRef videoTexture,curTexture;
+	CVPixelBufferRef videoBuffer;
     ShaderBuffer *rdrTgt;
     TextureData *tex;
     VertexBuffer<unsigned short> indices;
@@ -47,6 +47,7 @@
     if ( self )
     {
     videoTextureCache=NULL;
+    videoBuffer=NULL;
     EAGLContext *context=[EAGLContext currentContext];
     CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge CVEAGLContext) context, NULL,&videoTextureCache);
     if (err)
@@ -162,15 +163,10 @@
 {
 	[self.capturePipeline stopRunning];
     @synchronized(self) {
-    if (videoTexture)
+    if (videoBuffer)
     {
-        CFRelease(videoTexture);
-        videoTexture=NULL;
-    }
-    if (curTexture)
-    {
-        CFRelease(curTexture);
-        curTexture=NULL;
+        CFRelease(videoBuffer);
+        videoBuffer=NULL;
     }
     if (tex)
     {
@@ -202,12 +198,28 @@
 		return;
 	}
 
-	size_t frameWidth = CVPixelBufferGetWidth(pixelBuffer);
-    size_t frameHeight = CVPixelBufferGetHeight(pixelBuffer);
-    CVOpenGLESTextureRef texture = NULL;
-    CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+    @synchronized (self) {
+        if (videoBuffer==NULL) {
+        	CFRetain(pixelBuffer);
+        	videoBuffer=pixelBuffer;
+        }
+    }
+}
+
+- (void) renderCamera
+{
+	bool hasBuffer=false;
+	@synchronized (self) {
+    	hasBuffer=(videobuffer!=NULL);
+    }
+        if (hasBuffer)
+        {
+            size_t frameWidth = CVPixelBufferGetWidth(pixelBuffer);
+    		size_t frameHeight = CVPixelBufferGetHeight(pixelBuffer);
+    		CVOpenGLESTextureRef texture = NULL;
+    		CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                                 videoTextureCache,
-                                                                pixelBuffer,
+                                                                videoBuffer,
                                                                 NULL,
                                                                 GL_TEXTURE_2D,
                                                                 GL_RGBA,
@@ -217,21 +229,9 @@
                                                                 GL_UNSIGNED_BYTE,
                                                                 0,
                                                                 &texture);
-	if (texture)
-	{
-        @synchronized (self) {
-        if (videoTexture)
-            CFRelease(videoTexture);
-        videoTexture=texture;
-        }
-	}
-}
-
-- (void) renderCamera
-{
-    @synchronized (self) {
-        if (videoTexture)
-        {
+                                                                
+			if (texture)
+			{
             ShaderEngine::Engine->reset();
             ShaderBuffer *oldfbo = ShaderEngine::Engine->setFramebuffer(rdrTgt);
             ShaderEngine::Engine->setViewport(0, 0, tex->width, tex->height);
@@ -241,8 +241,8 @@
             Matrix4 model;
             ShaderEngine::Engine->setModel(model);
             ShaderEngine::Engine->clearColor(0,0,0,0);
-            
-            GLuint glid=CVOpenGLESTextureGetName(videoTexture);
+                        
+            GLuint glid=CVOpenGLESTextureGetName(texture);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, glid);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -263,11 +263,14 @@
             glBindTexture(GL_TEXTURE_2D, 0);
             
             ShaderEngine::Engine->setFramebuffer(oldfbo);
+            CFRelease(texture);
+            }
+            
 
-            if (curTexture)
-                CFRelease(curTexture);
-            curTexture=videoTexture;
-            videoTexture=NULL;
+		@synchronized (self) {
+			CFRelease(videoBuffer);
+			videoBuffer=NULL;
+    	}
         }
     }
 }
