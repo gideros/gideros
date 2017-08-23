@@ -210,14 +210,14 @@
 {
 	bool hasBuffer=false;
 	@synchronized (self) {
-    	hasBuffer=(videobuffer!=NULL);
+    	hasBuffer=(videoBuffer!=NULL);
     }
-        if (hasBuffer)
-        {
-            size_t frameWidth = CVPixelBufferGetWidth(pixelBuffer);
-    		size_t frameHeight = CVPixelBufferGetHeight(pixelBuffer);
-    		CVOpenGLESTextureRef texture = NULL;
-    		CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+    if (hasBuffer)
+    {
+        size_t frameWidth = CVPixelBufferGetWidth(videoBuffer);
+        size_t frameHeight = CVPixelBufferGetHeight(videoBuffer);
+    	CVOpenGLESTextureRef texture = NULL;
+    	CVReturn err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
                                                                 videoTextureCache,
                                                                 videoBuffer,
                                                                 NULL,
@@ -230,8 +230,8 @@
                                                                 0,
                                                                 &texture);
                                                                 
-			if (texture)
-			{
+		if (texture)
+		{
             ShaderEngine::Engine->reset();
             ShaderBuffer *oldfbo = ShaderEngine::Engine->setFramebuffer(rdrTgt);
             ShaderEngine::Engine->setViewport(0, 0, tex->width, tex->height);
@@ -264,14 +264,13 @@
             
             ShaderEngine::Engine->setFramebuffer(oldfbo);
             CFRelease(texture);
-            }
+        }
             
 
 		@synchronized (self) {
 			CFRelease(videoBuffer);
 			videoBuffer=NULL;
     	}
-        }
     }
 }
 
