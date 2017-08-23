@@ -22,7 +22,7 @@ void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
 	QString installerId = ctx->args["installerId"];
 	if (installerId.isEmpty())
 		installerId = ctx->properties.osx_installerId;
-	cmd = "iconutil -c icns icon.iconset";
+	cmd = "iconutil -c icns -o "+ctx->outputDir.absoluteFilePath("Resources/desktop.icns")+" "+ctx->outputDir.absoluteFilePath("../../icon.iconset");
 	script += cmd + "\n";
 	Utilities::processOutput(cmd);
 

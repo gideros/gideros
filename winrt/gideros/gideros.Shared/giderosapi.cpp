@@ -727,7 +727,8 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01f;// *dinfo->LogicalDpi / 96.0f;   // Windows 8 PC
+		contentScaleFactor = /*((int)dinfo->ResolutionScale)*0.01f;// */dinfo->LogicalDpi / 96.0f;   // Windows 8 PC
+		glog_i("Display Scale=%d, Logical DPI=%f, Selected Scale=%f\n", (int)dinfo->ResolutionScale, dinfo->LogicalDpi, contentScaleFactor);
 #endif
 	}
 
