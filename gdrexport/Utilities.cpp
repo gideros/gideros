@@ -278,9 +278,9 @@ void Utilities::copyFolder(	const QDir& sourceDir,
                 for (int i = 0; i < renameList.size(); ++i)
                     destFile.replace(renameList[i].first, renameList[i].second);
                 QString destName = destDir.absoluteFilePath(destFile);
+                QString target;
 #ifdef Q_OS_MACX
                 char buffer[1024];
-                QString target;
                 if (readlink(srcName.toUtf8().constData(),buffer,1024))
                 	target=QString::fromUtf8(buffer);
                 else
