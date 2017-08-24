@@ -108,7 +108,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
             category = ctx->args["category"];
         if(ctx->args.contains("bundle"))
             replaceList1 << qMakePair(QString("com.yourcompany."+ctx->base).toUtf8(), ctx->args["bundle"].toUtf8());
-        replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
+        replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+QString::number(ctx->properties.build_number)+"</string>\n	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
     }
     else if(ctx->deviceFamily == e_iOS){
     	ctx->noEncryptionExt.insert("mp3"); //iOS uses backgroundplayer

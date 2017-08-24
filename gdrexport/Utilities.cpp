@@ -271,24 +271,31 @@ void Utilities::copyFolder(	const QDir& sourceDir,
     {
     	if (syms[i].isSymLink())
     	{
-            QString srcName = sourceDir.absoluteFilePath(syms[i].filePath());
+            QString srcName = sourceDir.absoluteFilePath(syms[i].fileName());
+            ExportCommon::exportInfo("Processing symlink %s\n",srcName.toStdString().c_str());
             if (shouldCopy(srcName, include, exclude))
             {
-                QString destFile = syms[i].filePath();
+                QString destFile = syms[i].fileName();
                 for (int i = 0; i < renameList.size(); ++i)
                     destFile.replace(renameList[i].first, renameList[i].second);
                 QString destName = destDir.absoluteFilePath(destFile);
                 QString target;
 #ifdef Q_OS_MACX
                 char buffer[1024];
-                if (readlink(srcName.toUtf8().constData(),buffer,1024))
+                int linkLen=readlink(srcName.toUtf8().constData(),buffer,1024);
+                if (linkLen>=0)
+                {
+                    buffer[linkLen]=0;
                 	target=QString::fromUtf8(buffer);
+                }
                 else
 #else
                 	target = syms[i].symLinkTarget();
 #endif
                 for (int i = 0; i < renameList.size(); ++i)
                     target.replace(renameList[i].first, renameList[i].second);
+                ExportCommon::exportInfo("Link %s -> %s\n",destName.toStdString().c_str(),target.toStdString().c_str());
+                QFile::remove(destName);
                 QFile::link(target,destName);
             }
     	}
