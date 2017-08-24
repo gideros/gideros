@@ -10,6 +10,10 @@
 #include <QFile>
 #include "ExportCommon.h"
 
+#ifdef Q_OS_MACX
+#include <unistd.h>
+#endif
+
 QString Utilities::RemoveSpaces(QString text,bool allowUnderscore)
 {
 	QString res;
