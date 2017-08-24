@@ -31,8 +31,7 @@ void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
 				QStringList() << "*.framework");
 		for (int i = 0; i < frameworks.size(); ++i) {
 			QString filename = ctx->outputDir.absoluteFilePath(frameworks[i]);
-			cmd = "codesign -f -s \"" + signingId + "\" \"" + filename
-					+ "/Versions/Current\"";
+			cmd = "codesign -f -s \"" + signingId + "\" \"" + filename;
 			script += cmd + "\n";
 			Utilities::processOutput(cmd);
 		}

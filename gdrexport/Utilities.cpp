@@ -223,7 +223,7 @@ void Utilities::copyFolder(	const QDir& sourceDir,
 
     QStringList files;
 
-    files = sourceDir.entryList(QDir::Files | QDir::Hidden);
+    files = sourceDir.entryList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     ExportCommon::progressSteps(files.count());
     for(int i = 0; i < files.count(); i++)
     {
@@ -237,7 +237,7 @@ void Utilities::copyFolder(	const QDir& sourceDir,
         ExportCommon::progressStep(files[i].toUtf8().constData());
     }
 
-    files = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    files = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
     ExportCommon::progressSteps(files.count());
     for(int i = 0; i < files.count(); i++)
     {
@@ -261,6 +261,35 @@ void Utilities::copyFolder(	const QDir& sourceDir,
                        exclude);
         ExportCommon::progressStep(files[i].toUtf8().constData());
     }
+
+    QFileInfoList syms = sourceDir.entryInfoList(QDir::Files | QDir::Hidden | QDir::AllDirs | QDir::NoDotAndDotDot);
+    for(int i = 0; i < syms.count(); i++)
+    {
+    	if (syms[i].isSymLink())
+    	{
+            QString srcName = sourceDir.absoluteFilePath(syms[i].filePath());
+            if (shouldCopy(srcName, include, exclude))
+            {
+                QString destFile = syms[i].filePath();
+                for (int i = 0; i < renameList.size(); ++i)
+                    destFile.replace(renameList[i].first, renameList[i].second);
+                QString destName = destDir.absoluteFilePath(destFile);
+#ifdef Q_OS_MACX
+                char buffer[1024];
+                if (readlink(srcName.toUtf8().constData(),&buffer))
+                {
+                	QString target=QString::fromUtf8(buffer);
+                }
+#else
+                QString target = syms[i].symLinkTarget();
+#endif
+                for (int i = 0; i < renameList.size(); ++i)
+                    target.replace(renameList[i].first, renameList[i].second);
+                QFile::link(target,destName);
+            }
+    	}
+    }
+
 }
 
 int Utilities::processOutput(QString command, QString dir, QProcessEnvironment env, bool cmdlog){
