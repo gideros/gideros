@@ -280,12 +280,12 @@ void Utilities::copyFolder(	const QDir& sourceDir,
                 QString destName = destDir.absoluteFilePath(destFile);
 #ifdef Q_OS_MACX
                 char buffer[1024];
+                QString target;
                 if (readlink(srcName.toUtf8().constData(),&buffer))
-                {
-                	QString target=QString::fromUtf8(buffer);
-                }
+                	target=QString::fromUtf8(buffer);
+                else
 #else
-                QString target = syms[i].symLinkTarget();
+                	target = syms[i].symLinkTarget();
 #endif
                 for (int i = 0; i < renameList.size(); ++i)
                     target.replace(renameList[i].first, renameList[i].second);
