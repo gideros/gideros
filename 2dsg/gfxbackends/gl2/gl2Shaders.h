@@ -176,8 +176,9 @@ class ogl2ShaderEngine : public ShaderEngine
 	GLenum blendFactor2GLenum(BlendFactor blendFactor);
 	int devWidth,devHeight;
 	GLint defaultFramebuffer;
+    bool isGLES;
 public:
-	ogl2ShaderEngine(int sw,int sh);
+    ogl2ShaderEngine(int sw,int sh);
 	virtual ~ogl2ShaderEngine();
 	const char *getVersion();
 	const char *getShaderLanguage() { return "glsl"; };

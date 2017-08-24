@@ -44,29 +44,28 @@ void main() {\
 }";
 #else
 /* Vertex shader*/
-static const char *hdrVShaderCode =
-#ifdef OPENGL_ES
-		"#version 100\n"
-		"#define GLES2\n"
-#else
-		"#version 120\n"
-				"#define highp\n"
-				"#define mediump\n"
-				"#define lowp\n"
-#endif
-		"attribute highp vec3 vVertex;\n";
+static const char *hdrVShaderCode_DK =
+        "#version 120\n"
+                "#define highp\n"
+                "#define mediump\n"
+                "#define lowp\n"
+        "attribute highp vec3 vVertex;\n";
 
-static const char *hdrPSVShaderCode =
-#ifdef OPENGL_ES
-		"#version 100\n"
-		"#define GLES2\n"
-#else
-		"#version 120\n"
-				"#define highp\n"
-				"#define mediump\n"
-				"#define lowp\n"
-#endif
-		"attribute highp vec4 vVertex;\n";
+static const char *hdrVShaderCode_ES =
+        "#version 100\n"
+        "#define GLES2\n"
+        "attribute highp vec3 vVertex;\n";
+
+static const char *hdrPSVShaderCode_DK =
+        "#version 120\n"
+                "#define highp\n"
+                "#define mediump\n"
+                "#define lowp\n"
+        "attribute highp vec4 vVertex;\n";
+static const char *hdrPSVShaderCode_ES =
+        "#version 100\n"
+        "#define GLES2\n"
+        "attribute highp vec4 vVertex;\n";
 
 static const char *stdVShaderCode = "uniform highp mat4 vMatrix;\n"
 		"\n"
@@ -143,16 +142,14 @@ static const char *stdPSVShaderCode = "attribute mediump vec2 vTexCoord;\n"
 		"}\n";
 
 /* Fragment shader*/
-static const char *hdrFShaderCode =
-#ifdef OPENGL_ES
-		"#version 100\n"
-		"#define GLES2\n";
-#else
-		"#version 120\n"
-				"#define highp\n"
-				"#define mediump\n"
-				"#define lowp\n";
-#endif
+static const char *hdrFShaderCode_DK =
+        "#version 120\n"
+                "#define highp\n"
+                "#define mediump\n"
+                "#define lowp\n";
+static const char *hdrFShaderCode_ES =
+        "#version 100\n"
+        "#define GLES2\n";
 
 static const char *stdFShaderCode = "uniform lowp vec4 fColor;\n"
 		"void main() {\n"
@@ -237,11 +234,7 @@ static const char *stdPSFShaderCode =
 #endif
 
 const char *ogl2ShaderEngine::getVersion() {
-#ifdef OPENGL_ES
-	return "GLES2";
-#else
-	return "GL2";
-#endif
+    return isGLES?"GLES2":"GL2";
 }
 
 void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
@@ -359,10 +352,10 @@ void ogl2ShaderEngine::reset(bool reinit) {
 #endif
 }
 
-extern void pathShadersInit();
+extern void pathShadersInit(bool isGLES);
 extern void pathShadersRelease();
 
-void ogl2SetupShaders() {
+void ogl2SetupShaders(bool isGLES) {
 	GLCALL_INIT;
 	glog_i("GL_VERSION:%s\n", GLCALL glGetString(GL_VERSION));
 	glog_i("GLSL_VERSION:%s\n", GLCALL glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -380,7 +373,10 @@ void ogl2SetupShaders() {
 			ShaderProgram::DFLOAT, 3, 0, 0 }, { "vColor", ShaderProgram::DUBYTE,
 			4, 1, 0 }, { "vTexCoord", ShaderProgram::DFLOAT, 2, 2, 0 }, { "",
 			ShaderProgram::DFLOAT, 0, 0, 0 } };
-	ShaderProgram::stdBasic = new ogl2ShaderProgram(hdrVShaderCode,
+    const char *hdrVShaderCode=isGLES?hdrVShaderCode_ES:hdrVShaderCode_DK;
+    const char *hdrPSVShaderCode=isGLES?hdrPSVShaderCode_ES:hdrPSVShaderCode_DK;
+    const char *hdrFShaderCode=isGLES?hdrFShaderCode_ES:hdrFShaderCode_DK;
+    ShaderProgram::stdBasic = new ogl2ShaderProgram(hdrVShaderCode,
 			stdVShaderCode, hdrFShaderCode, stdFShaderCode, stdUniforms,
 			stdAttributes);
 	ShaderProgram::stdColor = new ogl2ShaderProgram(hdrVShaderCode,
@@ -452,15 +448,21 @@ ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
 	devWidth = sw;
 	devHeight = sh;
 	_depthRenderBuffer = 0;
-	defaultFramebuffer=0;
+    defaultFramebuffer=0;
+#ifdef OPENGL_ES
+    isGLES=true;
+#else
+    isGLES=false;
+#endif
 #ifdef QT_CORE_LIB
 	GLCALL_INIT;
+    isGLES=QOpenGLContext::currentContext()->isOpenGLES();
 	GLCALL glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFramebuffer);
 #endif
 
 #ifndef GIDEROS_GL1
-	ogl2SetupShaders();
-	pathShadersInit();
+    ogl2SetupShaders(isGLES);
+    pathShadersInit(isGLES);
 #endif
 
 	reset(true);
@@ -478,8 +480,10 @@ ogl2ShaderEngine::~ogl2ShaderEngine() {
 	delete ShaderProgram::stdTextureColor;
 	delete ShaderProgram::stdParticle;
 	pathShadersRelease();
+#ifndef QT_CORE_LIB
 #ifdef OPENGL_ES
 	GLCALL glDeleteRenderbuffers(1,&_depthRenderBuffer);
+#endif
 #endif
 }
 
