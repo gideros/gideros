@@ -79,6 +79,18 @@ void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
 			ctx->outputDir.cdUp();
 		}
 
+		if (ctx->outputDir.cd("iconengines")) {
+			dylibs = ctx->outputDir.entryList(QStringList() << "*.dylib");
+			for (int i = 0; i < dylibs.size(); ++i) {
+				QString filename = ctx->outputDir.absoluteFilePath(dylibs[i]);
+				cmd = "codesign -f -s \"" + signingId + "\" \"" + filename
+						+ "\"";
+				script += cmd + "\n";
+				Utilities::processOutput(cmd);
+			}
+			ctx->outputDir.cdUp();
+		}
+
 		if (ctx->outputDir.cd("platforms")) {
 			dylibs = ctx->outputDir.entryList(QStringList() << "*.dylib");
 			for (int i = 0; i < dylibs.size(); ++i) {
@@ -129,14 +141,12 @@ void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
 
 		ctx->outputDir.cdUp();
 	}
-	cmd = "codesign -f -s \"" + signingId + "\" \"" + ctx->outputDir.absoluteFilePath("Entitlements.plist")	+ "\"";
-	script += cmd + "\n";
-	Utilities::processOutput(cmd);
 
 	ctx->outputDir.cdUp();
 	ctx->outputDir.cdUp();
-	cmd = "codesign -f -s \"" + signingId + "\" --entitlements \"/"
-			+ ctx->outputDir.absolutePath() + "/Entitlements.plist\" \""
+	QString entitlements=ctx->outputDir.absoluteFilePath("Entitlements.plist");
+	cmd = "codesign -f --deep -s \"" + signingId + "\" --entitlements \""
+			+ entitlements +"\" \""
 			+ ctx->outputDir.absoluteFilePath(ctx->base + ".app") + "\"";
 	script += cmd + "\n";
 	Utilities::processOutput(cmd);
