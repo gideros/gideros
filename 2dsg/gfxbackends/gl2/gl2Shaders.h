@@ -125,7 +125,7 @@ public:
                      const char *fshader1, const char *fshader2,
 					 const ConstantDesc *uniforms, const DataDesc *attributes);
     ogl2ShaderProgram(const char *vshader,const char *fshader,int flags,
-					 const ConstantDesc *uniforms, const DataDesc *attributes);
+					 const ConstantDesc *uniforms, const DataDesc *attributes, bool isGLES);
     virtual ~ogl2ShaderProgram();
     void useProgram();
 };

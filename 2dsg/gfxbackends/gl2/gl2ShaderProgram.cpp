@@ -117,16 +117,15 @@ void ogl2ShaderProgram::resetAllUniforms()
 }
 
 
-const char *hdrShaderCode=
-#ifdef OPENGL_ES
-    "#version 100\n"
-    "#define GLES2\n";
-#else
+const char *hdrShaderCode_DK=
     "#version 120\n"
     "#define highp\n"
     "#define mediump\n"
     "#define lowp\n";
-#endif
+
+const char *hdrShaderCode_ES=
+    "#version 100\n"
+    "#define GLES2\n";
 
 
 GLuint ogl2LoadShader(GLuint type, const char *code, std::string &log) {
@@ -311,11 +310,11 @@ void ogl2ShaderProgram::setConstant(int index, ConstantType type, int mult,
 }
 
 ogl2ShaderProgram::ogl2ShaderProgram(const char *vshader, const char *fshader,int flags,
-		const ConstantDesc *uniforms, const DataDesc *attributes) {
+		const ConstantDesc *uniforms, const DataDesc *attributes,bool isGLES) {
 	bool fromCode=(flags&ShaderProgram::Flag_FromCode);
 	void *vs = fromCode?(void *)vshader:LoadShaderFile(vshader, "glsl", NULL);
 	void *fs = fromCode?(void *)fshader:LoadShaderFile(fshader, "glsl", NULL);
-	const char *hdr=(flags&ShaderProgram::Flag_NoDefaultHeader)?"":hdrShaderCode;
+	const char *hdr=(flags&ShaderProgram::Flag_NoDefaultHeader)?"":(isGLES?hdrShaderCode_ES:hdrShaderCode_DK);
 	program=0;
 	if (vs&&fs)
 		buildProgram(hdr,(char *) vs, hdr, (char *) fs, uniforms, attributes);

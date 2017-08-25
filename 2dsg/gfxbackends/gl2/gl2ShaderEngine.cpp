@@ -431,7 +431,7 @@ ShaderProgram *ogl2ShaderEngine::createShaderProgram(const char *vshader,
 		const char *pshader, int flags,
 		const ShaderProgram::ConstantDesc *uniforms,
 		const ShaderProgram::DataDesc *attributes) {
-	return new ogl2ShaderProgram(vshader, pshader, flags, uniforms, attributes);
+	return new ogl2ShaderProgram(vshader, pshader, flags, uniforms, attributes, isGLES);
 }
 
 ogl2ShaderEngine::ogl2ShaderEngine(int sw, int sh) {
