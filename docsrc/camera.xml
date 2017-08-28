@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="camera" page="camera" parent="" type="plugin" version="Gideros 2017.8"><![CDATA[Renders live camera stream into a Texture]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="camera.start" page="start" shortdesc="Start streaming camera pictures to a Texture" version="Gideros 2017.8">
+  <![CDATA[Start live streaming of camera images to the specified Texture.]]>
+    <parameter name="texture" optional="false" type="Texture"><![CDATA[The texture to render camera stream into]]></parameter>
+    <parameter name="device" optional="true" type="string"><![CDATA[The camera to use or nil to use the default one]]></parameter>
+    <return type="number"><![CDATA[Nominal width of camera images]]></return>
+    <return type="number"><![CDATA[Nominal height of camera images]]></return>
+  </method>
+  <method name="camera.stop" page="stop" shortdesc="Stop camera streaming." version="Gideros 2017.8">
+  	<![CDATA[Stops live camera streaming and releases resources.]]>
+  </method>
+  <method name="camera.availableDevices" page="availableDevices" shortdesc="Return a list of available devices." version="Gideros 2017.8">
+  <![CDATA[Returns a list of tables describing each available camera in the system. Each list entry has the following fields:
+	*name* - Internal name of the device
+	*description* - Description of the device
+	*position* - Position of the device, can be 'front','back' or 'unknown'
+  ]]>
+     <return type="table"><![CDATA[List of available cameras]]></return>
+  </method>
+<example name=""><![CDATA[
+require "camera"
+
+-- Probe camera size (use a dummy 512x512 surface)
+Camera.texture=Texture.new(nil,512,512)
+cw,ch=Camera.start(Camera.texture)
+Camera.stop()
+
+-- Restart camera with a full sized texture
+Camera.texture=Texture.new(nil,cw,ch,true)
+cw,ch=Camera.start(Camera.texture)
+
+application:setLogicalDimensions(ch,cw)
+
+local b=Bitmap.new(Camera.texture) 
+stage:addChild(b)
+]]></example>
+</object>

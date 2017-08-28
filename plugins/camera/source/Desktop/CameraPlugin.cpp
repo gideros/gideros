@@ -62,7 +62,6 @@ class VideoFrameSurface : public QAbstractVideoSurface, public Ticker {
 	VertexBuffer<Point2f> vertices;
 	VertexBuffer<Point2f> texcoords;
 	int cw,ch;
-	char *cambuf;
 	std::mutex g_mutex;
 	QVideoFrame g_frame;
 	bool present(const QVideoFrame& frame);
@@ -122,16 +121,23 @@ VideoFrameSurface::VideoFrameSurface(TextureData *tex,int w,int h, int o) {
 		texcoords[1] = Point2f(1, 1);
 		break;
 	}*/
-	texcoords[0] = Point2f(0, 1);
-	texcoords[1] = Point2f(1, 1);
-	texcoords[2] = Point2f(1, 0);
-	texcoords[3] = Point2f(0, 0);
+	texcoords[0] = Point2f(0, 0);
+	texcoords[1] = Point2f(1, 0);
+	texcoords[2] = Point2f(1, 1);
+	texcoords[3] = Point2f(0, 1);
 	texcoords.Update();
 
+#ifdef Q_OS_MACX
 	vertices[0] = Point2f(0, 0);
 	vertices[1] = Point2f(gtex->width, 0);
 	vertices[2] = Point2f(gtex->width, gtex->height);
 	vertices[3] = Point2f(0, gtex->height);
+#else
+	vertices[0] = Point2f(0, gtex->height);
+	vertices[1] = Point2f(gtex->width, gtex->height);
+	vertices[2] = Point2f(gtex->width, 0);
+	vertices[3] = Point2f(0, 0);
+#endif
 	vertices.Update();
 
 	rdrTgt = gtexture_get_engine()->createRenderTarget(gtexture_getInternalTexture(gtex->gid));
