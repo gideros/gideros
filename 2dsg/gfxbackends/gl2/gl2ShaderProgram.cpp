@@ -23,10 +23,12 @@ public:
 	}
 	virtual ~gl2ShaderBufferCache()
 	{
-		GLCALL_CHECK;
-		GLCALL_INIT;
 		if (VBO)
-			GLCALL glDeleteBuffers(1,&VBO);
+        {
+            GLCALL_CHECK;
+            GLCALL_INIT;
+            GLCALL glDeleteBuffers(1,&VBO);
+        }
 		allVBO->erase(this);
 		if (allVBO->empty())
 		{
@@ -36,9 +38,11 @@ public:
 	}
 	void recreate()
 	{
-		GLCALL_INIT;
 		if (VBO)
-			GLCALL glDeleteBuffers(1,&VBO);
+        {
+            GLCALL_INIT;
+            GLCALL glDeleteBuffers(1,&VBO);
+        }
 		VBO=0;
 	}
 	bool valid()
