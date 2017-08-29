@@ -987,8 +987,10 @@ QString LibraryTreeWidget::fileName(const QString& itemName) const
 		return QString();
 
 	QTreeWidgetItem* item = invisibleRootItem();
-	if (item->childCount())
-		item = item->child(0);
+	if (!item->childCount()) return QString();
+	item = item->child(0);
+	if (item->childCount()<2) return QString();
+	item = item->child(1);
 
 	for (int i = 0; i < items.size(); ++i)
 	{
