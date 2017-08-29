@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Screen" page="Screen" parent="Sprite" type="gideros" version="Gideros 2017.8">
+<![CDATA[Screen class allows to access secondary displays or windows.]]>
+  <method name="Screen:setContent" page="setContent" shortdesc="" version="Gideros 2017.8"><![CDATA[Specify which sprite should be displayed by this Screen]]>
+    <parameter name="content" optional="false" type="sprite"><![CDATA[The sprite hierarchy to be displayed by this Screen]]></parameter>
+  </method>
+  <method name="Screen:clear" page="clear" shortdesc="Sets the background color of this screen" version="Gideros 2017.8">
+  <![CDATA[Sets this screen's background to the provided color and opacity]]>
+    <parameter name="color" optional="false" type="number"><![CDATA[background color]]></parameter>
+    <parameter name="alpha" optional="false" type="number"><![CDATA[background transparency]]></parameter>
+  </method>
+  <method name="Screen:setSize" page="setSize" shortdesc="Sets the size of this screen, if possible." version="Gideros 2017.8">
+    <![CDATA[Attempts to fix the size of this screen or window, if allowed by the platform.]]>
+    <parameter name="w" optional="false" type="number"><![CDATA[The new width]]></parameter>
+    <parameter name="h" optional="false" type="number"><![CDATA[The new height]]></parameter>
+  </method>
+  <method name="Screen:getSize" page="getSize" shortdesc="Returns the size of this screen" version="Gideros 2017.8">
+   <![CDATA[Return the width and height of the screen]]>
+    <return type="number"><![CDATA[The Screen's width]]></return>
+    <return type="number"><![CDATA[The Screen's height]]></return>
+  </method>
+  <method name="Screen:getMaxSize" page="getMaxSize" shortdesc="Returns the maximum size this screen can have" version="Gideros 2017.8">
+   <![CDATA[Returns the maximum size this screen can have, typically the display size for a windowed system.]]>
+    <return type="number"><![CDATA[The Screen's maximum width]]></return>
+    <return type="number"><![CDATA[The Screen's maximum height]]></return>
+  </method>
+  <method name="Screen:setPosition" page="setPosition" shortdesc="Sets the position of this screen, if possible." version="Gideros 2017.8">
+    <![CDATA[Attempts to position this screen or window, if allowed by the platform.]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[The new x coordinate]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[The new y coordinate]]></parameter>
+  </method>
+  <method name="Screen:getPosition" page="getPosition" shortdesc="Returns the position of this screen" version="Gideros 2017.8">
+   <![CDATA[Return the position of the screen on the display, for windowed systems]]>
+    <return type="number"><![CDATA[The Screen's x coordinate]]></return>
+    <return type="number"><![CDATA[The Screen's y coordinate]]></return>
+  </method>
+  <method name="Screen:setState" page="setState" shortdesc="Sets the state of this screen, if possible." version="Gideros 2017.8">
+    <![CDATA[Attempts to configure this screen or window, if allowed by the platform.]]>
+    <parameter name="state" optional="false" type="number"><![CDATA[The required state of this screen]]></parameter>
+  </method>
+  <method name="Screen:getState" page="getState" shortdesc="Returns the state of this screen" version="Gideros 2017.8">
+   <![CDATA[Return the state of the screen. The returned number is the or-sum of the following possible values:
+   	* Screen.STATE_MINIMIZED: Screen/Window is minimized. 
+   	* Screen.STATE_MAXIMIZED: Screen/Window is maximized. 
+   	* Screen.STATE_FULLSCREEN: Screen/Window is fullscreen. 
+   	* Screen.STATE_ACTIVE: Screen/Window is active/focused. 
+   	* Screen.STATE_HIDDEN: Screen/Window is not displayed. 
+   	* Screen.STATE_CLOSED: Screen/Window is closed. 
+   ]]>
+    <return type="number"><![CDATA[The Screen's state]]></return>
+  </method>
+  <method name="Screen:getId" page="getId" shortdesc="Returns the screen's id" version="Gideros 2017.8">
+   <![CDATA[Return the id this screens was created with.]]>
+    <return type="number"><![CDATA[The Screen's id]]></return>
+  </method>
+    <method name="Screen.new" page="new" shortdesc="Open a new screen" version="Gideros 2017.8">
+    <![CDATA[Open a screen of the specified platform dependant type id. For desktop exports, set id to 0.]]>
+    <parameter name="id" optional="false" type="number"><![CDATA[The kind of screen to open, platform dependant]]></parameter>
+  </method>
+</object>
