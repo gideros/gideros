@@ -135,7 +135,7 @@ void QtScreen::getMaxSize(int &w,int &h)
 
 void QtScreen::setPosition(int w,int h)
 {
-	setPosition(w,h);
+	QOpenGLWindow::setPosition(w,h);
 }
 
 void QtScreen::getPosition(int &w,int &h)

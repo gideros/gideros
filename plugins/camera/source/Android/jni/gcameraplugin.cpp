@@ -127,7 +127,7 @@ public:
 			texcoords[1] = Point2f(0, 1);
 			texcoords[2] = Point2f(1, 1);
 			break;
-		case 90: //Landscape left
+		case 270: //Landscape left
 			texcoords[0] = Point2f(1, 0);
 			texcoords[1] = Point2f(0, 0);
 			texcoords[2] = Point2f(0, 1);
@@ -139,7 +139,7 @@ public:
 			texcoords[3] = Point2f(0, 1);
 			texcoords[0] = Point2f(1, 1);
 			break;
-		case 270: //Landscape right
+		case 90: //Landscape right
 			texcoords[2] = Point2f(1, 0);
 			texcoords[3] = Point2f(0, 0);
 			texcoords[0] = Point2f(0, 1);
