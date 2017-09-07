@@ -92,6 +92,7 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 #else
     showInFindeAction_ = new QAction(tr("Show in Finder"), this);
 #endif
+	connect(showInFindeAction_, SIGNAL(triggered()), this, SLOT(showInFinder()));
 
 	addPluginAction_ = new QAction(tr("Add plugin"), this);
 	connect(addPluginAction_, SIGNAL(triggered()), this, SLOT(addPlugin()));
@@ -1009,7 +1010,7 @@ void LibraryTreeWidget::insertIntoDocument()
 
 	QString result;
 	QTreeWidgetItem* item = selectedItems()[0];
-	while (item->parent())
+	while (item->parent()&&item->parent()->parent())
 	{
 		if (result.isEmpty())
 			result = item->text(0);

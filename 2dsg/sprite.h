@@ -389,6 +389,11 @@ public:
         localTransform_ = transform;
 	}
 
+    void setStencilOperation(const ShaderEngine::DepthStencil ds)
+    {
+    	stencil_=ds;
+    }
+
 
 
 protected:

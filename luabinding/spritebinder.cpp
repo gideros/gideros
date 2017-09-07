@@ -1508,7 +1508,10 @@ int SpriteBinder::setStencilOperation(lua_State* L)
 		if (!lua_isnil(L,-1))
 			ds.dFail=(ShaderEngine::StencilOp) luaL_checkinteger(L,-1);
 		lua_pop(L,1);
+		ds.dTest=true;
 	}
+
+	sprite->setStencilOperation(ds);
 
 	return 0;
 }
