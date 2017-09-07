@@ -61,6 +61,8 @@
 
 
 @property(readwrite) BOOL renderingEnabled; // When set to false the GPU will not be used after the setRenderingEnabled: call returns.
+@property(readwrite) BOOL frontFacing;
+@property(nonatomic, retain) NSString *camdev;
 
 @property(readwrite) AVCaptureVideoOrientation recordingOrientation; // client can set the orientation for the recorded movie
 
@@ -70,6 +72,7 @@
 // Stats
 @property(readonly) float videoFrameRate;
 @property(readonly) CMVideoDimensions videoDimensions;
+@property(nonatomic, readwrite) AVCaptureVideoOrientation videoOrientation;
 
 @end
 

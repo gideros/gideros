@@ -92,7 +92,7 @@
 	self.capturePipeline.renderingEnabled = YES;
 }
 
-- (void)start:(TextureData *)texture o:(int) orientation cw:(int *)camwidth ch:(int *)camheight
+- (void)start:(TextureData *)texture o:(int) orientation cw:(int *)camwidth ch:(int *)camheight device:(NSString *) dev
 {
     tex = texture;
     rdrTgt = ShaderEngine::Engine->createRenderTarget(tex->id());
@@ -101,35 +101,6 @@
     vertices[2] = Point2f(tex->width, tex->height);
     vertices[3] = Point2f(0, tex->height);
     vertices.Update();
-    switch (orientation)
-    {
-        case 0: //Portrait
-            texcoords[3] = Point2f(1, 1);
-            texcoords[0] = Point2f(0, 1);
-            texcoords[1] = Point2f(0, 0);
-            texcoords[2] = Point2f(1, 0);
-            break;
-        case 270: //Landscape left
-            texcoords[0] = Point2f(1, 1);
-            texcoords[1] = Point2f(0, 1);
-            texcoords[2] = Point2f(0, 0);
-            texcoords[3] = Point2f(1, 0);
-            break;
-        case 180: //Portrait upside down
-            texcoords[1] = Point2f(1, 1);
-            texcoords[2] = Point2f(0, 1);
-            texcoords[3] = Point2f(0, 0);
-            texcoords[0] = Point2f(1, 0);
-            break;
-        case 90: //Landscape right
-            texcoords[2] = Point2f(1, 1);
-            texcoords[3] = Point2f(0, 1);
-            texcoords[0] = Point2f(0, 0);
-            texcoords[1] = Point2f(1, 0);
-            break;
-    }
-    texcoords.Update();
-
 	
     if (!_addedObservers)
     {
@@ -154,9 +125,63 @@
     
 	// the willEnterForeground and didEnterBackground notifications are subsequently used to update _allowedToUseGPU
 	_allowedToUseGPU = ( [UIApplication sharedApplication].applicationState != UIApplicationStateBackground );
-	self.capturePipeline.renderingEnabled = _allowedToUseGPU;
+    self.capturePipeline.renderingEnabled = _allowedToUseGPU;
+    self.capturePipeline.camdev = dev;
     [self.capturePipeline startRunning];
     [self.capturePipeline getVideoWidth:camwidth andHeight:camheight];
+    AVCaptureVideoOrientation avo=self.capturePipeline.videoOrientation;
+    int ao=0;
+    switch (avo) {
+        case AVCaptureVideoOrientationPortrait: ao=0; break;
+        case AVCaptureVideoOrientationLandscapeLeft: ao=270; break;
+        case AVCaptureVideoOrientationPortraitUpsideDown: ao=180; break;
+        case AVCaptureVideoOrientationLandscapeRight: ao=90; break;
+    }
+    ao=(orientation-ao+360)%360;
+    int x0=0;
+    int x1=1;
+    if (self.capturePipeline.frontFacing) { x0=1; x1=0; }
+    switch (ao)
+    {
+        case 0:
+            texcoords[0] = Point2f(x0, 0);
+            texcoords[1] = Point2f(x1, 0);
+            texcoords[2] = Point2f(x1, 1);
+            texcoords[3] = Point2f(x0, 1);
+            break;
+        case 90:
+            texcoords[0] = Point2f(x1, 0);
+            texcoords[1] = Point2f(x1, 1);
+            texcoords[2] = Point2f(x0, 1);
+            texcoords[3] = Point2f(x0, 0);
+            break;
+        case 180:
+            texcoords[0] = Point2f(x1, 1);
+            texcoords[1] = Point2f(x0, 1);
+            texcoords[2] = Point2f(x0, 0);
+            texcoords[3] = Point2f(x1, 0);
+            break;
+        case 270:
+            texcoords[0] = Point2f(x0, 1);
+            texcoords[1] = Point2f(x0, 0);
+            texcoords[2] = Point2f(x1, 0);
+            texcoords[3] = Point2f(x1, 1);
+            break;
+    }
+    texcoords.Update();
+    switch (ao)
+    {
+        case 90:
+        case 270:
+        {
+            int tmp=*camwidth;
+            *camwidth=*camheight;
+            *camheight=tmp;
+        }
+            break;
+        default:
+            break;
+    }
 }
 
 - (void)stop
@@ -291,6 +316,21 @@ void cameraplugin::init()
 std::vector<cameraplugin::CameraDesc> cameraplugin::availableDevices()
 {
 	std::vector<cameraplugin::CameraDesc> cams;
+    NSArray *devices=[AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    for (int k=0;k<[devices count];k++)
+    {
+        cameraplugin::CameraDesc cd;
+        AVCaptureDevice *ad=[devices objectAtIndex:k];
+        cd.name=[ad.uniqueID UTF8String];
+        cd.description=[ad.localizedName UTF8String];
+        cd.pos=cameraplugin::CameraDesc::POS_UNKNOWN;
+        if (ad.position==AVCaptureDevicePositionBack)
+            cd.pos=cameraplugin::CameraDesc::POS_BACKFACING;
+        if (ad.position==AVCaptureDevicePositionFront)
+            cd.pos=cameraplugin::CameraDesc::POS_FRONTFACING;
+        cams.push_back(cd);
+    }
+    
 	return cams;
 }
 
@@ -313,7 +353,10 @@ void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,co
             break;
     }
 
-    [ctrl start:cameraplugin::cameraTexture->data o:o cw:camwidth ch:camheight];
+    NSString *dev=NULL;
+    if (device)
+        dev=[NSString stringWithUTF8String:device];
+    [ctrl start:cameraplugin::cameraTexture->data o:o cw:camwidth ch:camheight device:dev];
 }
 
 void cameraplugin::stop()
@@ -325,6 +368,7 @@ void cameraplugin::deinit()
 {
     if (ctrl)
     {
+        [ctrl stop];
         [ctrl release];
         ctrl=NULL;
     }

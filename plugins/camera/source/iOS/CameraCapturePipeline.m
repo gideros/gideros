@@ -68,7 +68,6 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 
 @property(readwrite) float videoFrameRate;
 @property(readwrite) CMVideoDimensions videoDimensions;
-@property(nonatomic, readwrite) AVCaptureVideoOrientation videoOrientation;
 
 @property(nonatomic, retain) __attribute__((NSObject)) CMFormatDescriptionRef outputVideoFormatDescription;
 @property(nonatomic, retain) __attribute__((NSObject)) CMFormatDescriptionRef outputAudioFormatDescription;
@@ -97,6 +96,8 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 		dispatch_set_target_queue( _videoDataOutputQueue, dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ) );
 						
 		_pipelineRunningTask = UIBackgroundTaskInvalid;
+        
+        _camdev=NULL;
 	}
 	return self;
 }
@@ -221,7 +222,12 @@ typedef NS_ENUM( NSInteger, CameraRecordingStatus )
 #endif // RECORD_AUDIO
 	
 	/* Video */
-	AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    AVCaptureDevice *videoDevice=NULL;
+    if (_camdev)
+        videoDevice= [AVCaptureDevice deviceWithUniqueID:_camdev];
+    if (!videoDevice)
+        videoDevice= [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    _frontFacing=(videoDevice.position==AVCaptureDevicePositionFront);
 	_videoDevice = videoDevice;
 	AVCaptureDeviceInput *videoIn = [[AVCaptureDeviceInput alloc] initWithDevice:videoDevice error:nil];
 	if ( [_captureSession canAddInput:videoIn] ) {
