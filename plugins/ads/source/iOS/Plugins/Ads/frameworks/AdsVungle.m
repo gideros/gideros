@@ -77,7 +77,7 @@
 
 - (void)vungleWillCloseAdWithViewInfo:(VungleViewInfo *)info placementID:(NSString *)placementID
 {
-        if(info.completedView){
+        if([info.completedView boolValue]){
             [AdsClass adActionEnd:[self class] forType:placementID];
         } else {
             [AdsClass adDismissed:[self class] forType:placementID];
