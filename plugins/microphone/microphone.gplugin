@@ -40,7 +40,7 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("microphone",
 	"[[[sys.pluginDir]]]/source/iOS",
 	{ "gmicrophone-ios.mm", "gmicrophonebinder.cpp", "gsoundencoder-wav.cpp" },
-	true,true)
+	true, false)
 	]]></lua>
  </target>
 </plugin>

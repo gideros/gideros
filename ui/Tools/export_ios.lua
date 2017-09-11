@@ -180,7 +180,7 @@ iOSProject.exportPluginFiles=function(pname,srcdir,srcfiles,foriOS,forATV)
     local tgtDir="AppleTV/Plugins/"..pname    
     Export.mkdir(tgtDir)
     Export.recursiveCopy(pname,srcdir,tgtDir,"*.m;*.mm;*.c;*.h;*.cpp","emscripten;win32;jni;iOS;Android")
-    iOSProject.addGroup(pname,"Plugins/"..pname,"Group"..pname.."_atv","GroupPlugins_atv")
+    iOSProject.addGroup(pname,pname,"Group"..pname.."_atv","GroupPlugins_atv")
     iOSProject.addSources(srcfiles, "Group"..pname, "atv")
   end
   iOSProject.commit()

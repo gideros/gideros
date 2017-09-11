@@ -41,7 +41,6 @@
 		B25B28011BAC0F3D0034D6C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B28001BAC0F3D0034D6C7 /* AppDelegate.m */; };
 		B25B28041BAC0F3D0034D6C7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B25B28031BAC0F3D0034D6C7 /* ViewController.m */; };
 		B2E3EEB41BAC104D005599BD /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EEB31BAC104D005599BD /* EAGLView.m */; };
-		B2E3EFC31BAC10CC005599BD /* storekit.mm in Sources */ = {isa = PBXBuildFile; fileRef = B2E3EFB21BAC10CC005599BD /* storekit.mm */; };
 		B2E3EFC61BAC1147005599BD /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFC51BAC1147005599BD /* GameController.framework */; };
 		B2E3EFC81BAC1154005599BD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFC71BAC1154005599BD /* AudioToolbox.framework */; };
 		B2E3EFCA1BAC1158005599BD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFC91BAC1158005599BD /* AVFoundation.framework */; };
@@ -60,7 +59,6 @@
 		B2E3EFE71BAC1AE5005599BD /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFE61BAC1AE5005599BD /* libsqlite3.tbd */; };
 		B2E3F02C1BAC2919005599BD /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E3EFDD1BAC119E005599BD /* libgideros.a */; };
 		EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A05D1D66ED5000766D7E /* plugins.cpp */; };
-		EB42A05F1D66ED5000766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A05D1D66ED5000766D7E /* plugins.cpp */; };
 		EB42A0611D674BCB00766D7E /* plugins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB42A0601D674BCB00766D7E /* plugins.cpp */; };
 /* TAG:GIDEROS:ALL_FILES_REFS */
 /* End PBXBuildFile section */
@@ -126,7 +124,6 @@
 		B2E3EFAC1BAC10CC005599BD /* lua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lua.h; sourceTree = "<group>"; };
 		B2E3EFAF1BAC10CC005599BD /* luaconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = luaconf.h; sourceTree = "<group>"; };
 		B2E3EFB01BAC10CC005599BD /* lualib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lualib.h; sourceTree = "<group>"; };
-		B2E3EFB21BAC10CC005599BD /* storekit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = storekit.mm; sourceTree = "<group>"; };
 		B2E3EFC51BAC1147005599BD /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/GameController.framework; sourceTree = DEVELOPER_DIR; };
 		B2E3EFC71BAC1154005599BD /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/AudioToolbox.framework; sourceTree = DEVELOPER_DIR; };
 		B2E3EFC91BAC1158005599BD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -460,11 +457,7 @@
 				5F4153FA15CEF227007B5365 /* AppDelegate.m in Sources */,
 				5F4153FB15CEF227007B5365 /* EAGLView.m in Sources */,
 				5F4153FC15CEF227007B5365 /* ViewController.m in Sources */,
-				5F58D83115D925D100137D76 /* gamekit.mm in Sources */,
-				B2E3F0321BAC3E7B005599BD /* mficontroller.mm in Sources */,
 				EB42A05E1D66ED5000766D7E /* plugins.cpp in Sources */,
-				5F58D83215D925D100137D76 /* iad.mm in Sources */,
-				5F58D83715D925D100137D76 /* storekit.mm in Sources */,
 				/* TAG:GIDEROS:IOS_SOURCES_BUILD */
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -474,13 +467,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				B25B28041BAC0F3D0034D6C7 /* ViewController.m in Sources */,
-				B2E3F02E1BAC3D24005599BD /* mficontroller.mm in Sources */,
 				B2E3EEB41BAC104D005599BD /* EAGLView.m in Sources */,
 				EB42A0611D674BCB00766D7E /* plugins.cpp in Sources */,
 				B25B28011BAC0F3D0034D6C7 /* AppDelegate.m in Sources */,
-				B2E3EFC31BAC10CC005599BD /* storekit.mm in Sources */,
 				B25B27FE1BAC0F3D0034D6C7 /* main.m in Sources */,
-				EB42A05F1D66ED5000766D7E /* plugins.cpp in Sources */,
 				/* TAG:GIDEROS:ATV_SOURCES_BUILD */
 			);
 			runOnlyForDeploymentPostprocessing = 0;

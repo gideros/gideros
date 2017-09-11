@@ -18,18 +18,12 @@
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/bit</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/bit" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
-   <mkdir>AppleTV/Plugins/bit</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/bit" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("bit","Plugins/bit","GroupBit_ios","GroupPlugins_ios")
-iOSProject.addGroup("bit","Plugins/bit","GroupBit_atv","GroupPlugins_atv")
-local sources={ "bit.c", "bit_stub.cpp"  }
-iOSProject.addSources(sources, "GroupBit", "ios")
-iOSProject.addSources(sources, "GroupBit", "atv")
-iOSProject.commit()
+iOSProject.exportPluginFiles("bit",
+	"[[[sys.pluginDir]]]/source",
+	{ "bit.c", "bit_stub.cpp"  },
+	true,true)
 	]]></lua>
  </target>
  <target name="Html5">

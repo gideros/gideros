@@ -27,11 +27,11 @@
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.addGroup("luasocket","Plugins/luasocket","GroupLuasocket_ios","GroupPlugins_ios")
-iOSProject.addGroup("luasocket","Plugins/luasocket","GroupLuasocket_atv","GroupPlugins_atv")
+iOSProject.addGroup("luasocket","luasocket","GroupLuasocket_atv","GroupPlugins_atv")
 iOSProject.addSources({ "luasocket_stub.cpp"  }, "GroupLuasocket", "ios")
 iOSProject.addSources({ "luasocket_stub.cpp"  }, "GroupLuasocket", "atv")
 iOSProject.addSources({ "Plugins/libluasocket.ios.a"  }, "GroupPlugins", "ios")
-iOSProject.addSources({ "Plugins/libluasocket.atv.a"  }, "GroupPlugins", "atv")
+iOSProject.addSources({ "libluasocket.atv.a"  }, "GroupPlugins", "atv")
 iOSProject.commit()
 	]]></lua>
  </target>
