@@ -145,7 +145,7 @@ void Font::constructor(const char *glympfile, const char *imagefile, bool filter
     }
 }
 
-void Font::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny)
+void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const wchar32_t* text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny)
 {
     int size = 0;
     for (const wchar32_t *t = text; *t; ++t, ++size)
@@ -153,9 +153,12 @@ void Font::drawText(GraphicsBase* graphicsBase, const wchar32_t* text, float r, 
 
     if (size == 0)
     {
-        graphicsBase->clear();
+        vGraphicsBase->clear();
         return;
     }
+
+   	vGraphicsBase->resize(1);
+   	GraphicsBase *graphicsBase=&((*vGraphicsBase)[0]);
 
     graphicsBase->data = data_;
     if (fontInfo_.isSetTextColorAvailable)

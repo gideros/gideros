@@ -173,7 +173,16 @@ void TextField::setSample(const char* sample)
 
     font_->drawText(&graphicsBase_, wsample_.c_str(), r_, g_, b_, letterSpacing_, false, 0, 0);
     float minx, miny, maxx, maxy;
-    graphicsBase_.getBounds(&minx, &miny, &maxx, &maxy);
+    minx = 1e30;    miny = 1e30;    maxx = -1e30;    maxy = -1e30;
+	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
+	{
+		float lminx_, lminy_, lmaxx_, lmaxy_;
+		(*it).getBounds(&lminx_, &lminy_, &lmaxx_, &lmaxy_);
+		minx = std::min(minx, lminx_);
+		miny = std::min(miny, lminy_);
+		maxx = std::max(maxx, lmaxx_);
+		maxy = std::max(maxy, lmaxy_);
+	}
 
     sminx = (int) minx;
     sminy = (int) miny;
@@ -195,10 +204,20 @@ void TextField::createGraphics()
     else
         font_->drawText(&graphicsBase_, wtext_.c_str(), r_, g_, b_, letterSpacing_, !sample_.empty(), sminx, sminy);
 
-    graphicsBase_.getBounds(&minx_, &miny_, &maxx_, &maxy_);
+    minx_ = 1e30;    miny_ = 1e30;    maxx_ = -1e30;    maxy_ = -1e30;
+	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
+	{
+		float lminx_, lminy_, lmaxx_, lmaxy_;
+		(*it).getBounds(&lminx_, &lminy_, &lmaxx_, &lmaxy_);
+		minx_ = std::min(minx_, lminx_);
+		miny_ = std::min(miny_, lminy_);
+		maxx_ = std::max(maxx_, lmaxx_);
+		maxy_ = std::max(maxy_, lmaxy_);
+	}
 }
 
 void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
-	graphicsBase_.draw(shader_);
+	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
+		(*it).draw(shader_);
 }

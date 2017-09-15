@@ -52,7 +52,7 @@ private:
     float letterSpacing_;
 
 private:
-	GraphicsBase graphicsBase_;
+	std::vector<GraphicsBase> graphicsBase_;
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
     float minx_, miny_, maxx_, maxy_;
     int sminx, sminy, smaxx, smaxy;

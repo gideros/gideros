@@ -4,6 +4,8 @@
 #include <fontbase.h>
 #include <wchar32.h>
 #include <map>
+#include <texturepacker.h>
+#include <dib.h>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -23,7 +25,7 @@ public:
         return eTTBMFont;
     }
 
-    virtual void drawText(GraphicsBase *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny);
+    virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny);
 
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy);
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);
@@ -33,6 +35,8 @@ public:
 private:
     void constructor(const char *filename, float size, const char *chars, float filtering);
     int kerning(wchar32_t left, wchar32_t right) const;
+    bool addGlyph(const wchar32_t chr);
+    void ensureChars(const wchar32_t *text);
 
 private:
     struct TextureGlyph
@@ -43,6 +47,7 @@ private:
         int width, height;
         int left, top;
         int advancex, advancey;
+        unsigned int texture;
     };
 
     struct FontInfo
@@ -53,6 +58,13 @@ private:
         std::map<std::pair<wchar32_t, wchar32_t>, int> kernings;
     };
 
+    std::vector<TextureData *> textureData_;
+    TexturePacker *currentPacker_;
+    Dib *currentDib_;
+    bool filtering_;
+
+    FT_Face fontFace_;
+    FT_StreamRec stream_;
     FontInfo fontInfo_;
 
     float sizescalex_;
@@ -60,7 +72,6 @@ private:
     float uvscalex_;
     float uvscaley_;
 
-    TextureData *data_;
 };
 
 #endif

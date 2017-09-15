@@ -3,6 +3,7 @@
  description="Generic IAB interface">
  <property name="iabAmazon" type="boolean" title="Enable Amazon support (Android)"/>
  <property name="iabGoogle" type="boolean" title="Enable Google support (Android)"/>
+ <property name="iabiOS" type="boolean" title="Enable Apple support (iOS)"/>
   <target name="AndroidStudio,APK">
     <template name="sources" path="[[[sys.pluginDir]]]/bin/Android/src/com/giderosmobile" dest="app/src/main/java/com/giderosmobile" exclude="frameworks"/>
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
@@ -57,4 +58,16 @@
     </lua>
 	</if> 
  </target>
+   <target name="iOS">
+   <if condition="[[[plugin.iabiOS]]]">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportPluginFiles("iab",
+	"[[[sys.pluginDir]]]/source/IOS/Plugins/iab",
+	{ "iab.mm", "IabIos.mm "iabbinder.cpp" },
+	true, false)
+	]]></lua>
+	</if>
+ </target>
+ 
 </plugin>

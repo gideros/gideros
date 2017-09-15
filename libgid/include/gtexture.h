@@ -43,6 +43,12 @@ G_API g_id gtexture_create(int width, int height,
                            const void *pixels,
                            const void *signature, size_t siglength);
 
+G_API void gtexture_update(g_id gid,
+						   int width, int height,
+                           int format, int type,
+                           int wrap, int filter,
+                           const void *pixels);
+
 G_API g_id gtexture_reuse(int format, int type,
                           int wrap, int filter,
                           const void *signature, size_t siglength);

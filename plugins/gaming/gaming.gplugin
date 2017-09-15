@@ -59,7 +59,7 @@
 		<template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
 		<set key="local.gmsJar1" value="AmazonInsights-android-sdk-2.1.26.jar" />
 		<set key="local.gmsJar2" value="gamecirclesdk.jar" />
-		<set key="local.gmsJar3" value="login-with-amazon-sdk.jar" />
+		<set key="local.gmsJar3" value="login-with-amazon-sdk-3.0.2.jar" />
 		<download source="http://apps.giderosmobile.com/ext/android/[[[local.gmsJar1]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar1]]]" />
 		<download source="http://apps.giderosmobile.com/ext/android/[[[local.gmsJar2]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar2]]]" />
 		<download source="http://apps.giderosmobile.com/ext/android/[[[local.gmsJar3]]]" dest="[[[sys.cacheDir]]]/[[[local.gmsJar3]]]" />

@@ -126,6 +126,7 @@ public:
 		FILT_LINEAR,
 		FILT_NEAREST
 	};
+	virtual void updateData(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
 };
 
 class ShaderBuffer

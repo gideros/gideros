@@ -44,7 +44,7 @@ public:
     {
     }
 
-    virtual void drawText(GraphicsBase *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny) = 0;
+    virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny) = 0;
 };
 
 

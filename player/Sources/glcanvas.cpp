@@ -1195,7 +1195,7 @@ bool GLCanvas::event(QEvent *event){
             QTouchEvent::TouchPoint p = list[i];
             xs[i] = p.pos().x() * deviceScale_;
             ys[i] = p.pos().y() * deviceScale_;
-            ids[i] = i;
+            ids[i] = p.id();
             pressures[i] = p.pressure();
             touchTypes[i] = p.flags();
         }
@@ -1204,16 +1204,16 @@ bool GLCanvas::event(QEvent *event){
         {
             QTouchEvent::TouchPoint p = list[i];
             if(event->type() == QEvent::TouchCancel){
-                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, p.id(), p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
             }
             else if(p.state() == Qt::TouchPointPressed){
-                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.id(),p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
             }
             else if(p.state() == Qt::TouchPointMoved){
-                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.id(),p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
             }
             else if(p.state() == Qt::TouchPointReleased){
-                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.id(),p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
             }
         }
         return true;
