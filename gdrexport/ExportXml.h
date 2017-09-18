@@ -40,6 +40,7 @@ class ExportXml {
     bool RuleTemplate(QString name,QString path,QString dest,QDomElement rule);
     bool RuleImage(int width,int height,QString dst, ImageTypes type, bool alpha);
     bool RuleLua(QString file,QString content);
+    bool RuleOpenUrl(QString url);
 	QString XmlAttributeOrElement(QDomElement elm,QString name);
 	ExportContext *ctx;
 public:

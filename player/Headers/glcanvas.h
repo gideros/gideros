@@ -68,6 +68,8 @@ private:
     float infoColor_[3];
     bool exportedApp_;
     bool mouseButtonPressed_[5];
+    QMap<int,int> touchIdMap;
+    quint32 touchIdUsed;
     //	PlatformImplementation* platformImplementation_;
 
     void setupProperties();

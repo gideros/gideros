@@ -33,6 +33,11 @@ public:
 
 	virtual Type getType() const = 0;
 
+	struct FontSpec {
+		std::string filename;
+		float sizeMult;
+	};
+
 protected:
     Application *application_;
 };

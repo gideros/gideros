@@ -732,8 +732,15 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 #endif
 	}
 
-	width_ = width;
-	height_ = height;
+	if (xaml) {
+		width_ = width * contentScaleFactor;
+		height_ = height * contentScaleFactor;
+	}
+	else
+	{
+		width_ = width;
+		height_ = height;
+	}
 	player_ = player;
 	resourcePath_ =_wcsdup( resourcePath);
 	docsPath_ = _wcsdup(docsPath);
@@ -801,7 +808,10 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 
 	application_->enableExceptions();
 	application_->initialize();
-	application_->setResolution(width_* contentScaleFactor, height_* contentScaleFactor);
+	if (xaml)
+		application_->setResolution(width_, height_);
+	else
+		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 
 	Binder::disableTypeChecking();
 
@@ -1255,7 +1265,9 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->deinitialize();
 	application_->initialize();
 
-	if (xaml||(width_ < height_))
+	if (xaml)
+		application_->setResolution(width_, height_);
+	else if (width_ < height_)
 		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	else
 		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
@@ -1354,7 +1366,7 @@ void ApplicationManager::loadProperties()
 	buffer >> properties_.mouseTouchOrder;
 
 	if (xaml||(width_ < height_))
-		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
+		application_->setResolution(width_, height_);
 	else
 		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
 
@@ -1496,13 +1508,22 @@ void ApplicationManager::resize(int width, int height,int orientation)
 
 	//if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
 
-	width_ = width;
-	height_ = height;
+	if (xaml) {
+		width_ = width * contentScaleFactor;
+		height_ = height * contentScaleFactor;
+	}
+	else
+	{ 
+		width_ = width;
+		height_ = height;
+	}
 
 	hardwareOrientation_ = xaml?eFixed:(Orientation) orientation;
 	deviceOrientation_ = (Orientation) orientation;
 
-	if (xaml||(width_ < height_))
+	if (xaml)
+		application_->setResolution(width_, height_);
+	else if (width_ < height_)
 		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	else
 		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);

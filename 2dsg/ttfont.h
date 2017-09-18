@@ -14,7 +14,7 @@
 class TTFont : public FontBase
 {
 public:
-    TTFont(Application *application, const char *filename, float size, float smoothing, GStatus *status);
+    TTFont(Application *application, std::vector<FontSpec> filenames, float size, float smoothing, GStatus *status);
     virtual ~TTFont();
 
 	virtual Type getType() const
@@ -35,25 +35,28 @@ public:
     {
         return smoothing_;
     }
-    void *getFace() const
-    {
-    	return face_;
-    }
+    FT_Face getFace(int chr, FT_UInt &glpyhIndex);
 private:
-    void constructor(const char *filename, float size, float smoothing);
-    int kerning(FT_UInt left, FT_UInt right) const;
+    void constructor(std::vector<FontSpec> filenames, float size, float smoothing);
+    int kerning(FT_Face face, FT_UInt left, FT_UInt right) const;
 
 private:
-	FT_Face face_;
+    struct FontFace
+    {
+        FT_Face face;
+        FT_StreamRec stream;
+        float sizeMult;
+    };
+    std::vector<FontFace> fontFaces_;
 	int ascender_;
 	int height_;
-	FT_StreamRec stream_;
     float smoothing_;
     float currentLogicalScaleX_,currentLogicalScaleY_;
     float defaultSize_;
     void checkLogicalScale();
     struct GlyphData
     {
+    	FT_Face			face;
     	FT_UInt 		glyph;
     	int				advX;
     	int 			top;

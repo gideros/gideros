@@ -28,32 +28,39 @@ static void close(FT_Stream stream) {
 	g_fclose(fis);
 }
 
-TTBMFont::TTBMFont(Application *application, const char *filename, float size,
+TTBMFont::TTBMFont(Application *application, std::vector<FontSpec> filenames, float size,
 		const char *chars, float filtering, GStatus *status) :
 		BMFontBase(application) {
 	try {
-		constructor(filename, size, chars, filtering);
+		constructor(filenames, size, chars, filtering);
 	} catch (GiderosException &e) {
 		if (status)
 			*status = e.status();
 	}
 }
 
-bool TTBMFont::addGlyph(const wchar32_t chr)
-{
-	FT_UInt glyphIndex = FT_Get_Char_Index(fontFace_, chr);
+bool TTBMFont::addGlyph(const wchar32_t chr) {
+	FT_Face face;
+	FT_UInt glyphIndex=0;
+	for (std::vector<FontFace>::iterator it=fontFaces_.begin();it!=fontFaces_.end();it++)
+	{
+		face=(*it).face;
+		glyphIndex = FT_Get_Char_Index(face, chr);
+		if (glyphIndex != 0)	// 0 means `undefined character code'
+			break;
+	}
 	if (glyphIndex == 0)	// 0 means `undefined character code'
 		return false;
 
 	FT_Error error;
-	error = FT_Load_Glyph(fontFace_, glyphIndex, FT_LOAD_DEFAULT);
+	error = FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT);
 	if (error)
 		return false;
 
 	int top, left, width, height;
-	if (fontFace_->glyph->format == FT_GLYPH_FORMAT_OUTLINE) {
+	if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE) {
 		FT_BBox bbox;
-		FT_Outline_Get_CBox(&fontFace_->glyph->outline, &bbox);
+		FT_Outline_Get_CBox(&face->glyph->outline, &bbox);
 
 		bbox.xMin &= ~63;
 		bbox.yMin &= ~63;
@@ -64,11 +71,11 @@ bool TTBMFont::addGlyph(const wchar32_t chr)
 		height = (bbox.yMax - bbox.yMin) >> 6;
 		top = bbox.yMax >> 6;
 		left = bbox.xMin >> 6;
-	} else if (fontFace_->glyph->format == FT_GLYPH_FORMAT_BITMAP) {
-		width = fontFace_->glyph->bitmap.width;
-		height = fontFace_->glyph->bitmap.rows;
-		top = fontFace_->glyph->bitmap_top;
-		left = fontFace_->glyph->bitmap_left;
+	} else if (face->glyph->format == FT_GLYPH_FORMAT_BITMAP) {
+		width = face->glyph->bitmap.width;
+		height = face->glyph->bitmap.rows;
+		top = face->glyph->bitmap_top;
+		left = face->glyph->bitmap_left;
 	} else
 		return false;
 
@@ -79,41 +86,20 @@ bool TTBMFont::addGlyph(const wchar32_t chr)
 	textureGlyph.left = left;
 	textureGlyph.width = width;
 	textureGlyph.height = height;
-	textureGlyph.advancex = fontFace_->glyph->advance.x;
-	textureGlyph.advancey = fontFace_->glyph->advance.y;
+	textureGlyph.advancex = face->glyph->advance.x;
+	textureGlyph.advancey = face->glyph->advance.y;
+	textureGlyph.face = face;
 
 	fontInfo_.textureGlyphs[chr] = textureGlyph;
 	return true;
 }
 
-void TTBMFont::constructor(const char *filename, float size, const char *chars,
+void TTBMFont::constructor(std::vector<FontSpec> filenames, float size, const char *chars,
 		float filtering) {
 
-	G_FILE *fis = g_fopen(filename, "rb");
-	if (!fis)
-		throw GiderosException(GStatus(6000, filename));// Error #6000: %s: No such file or directory.
-
-    memset(&stream_, 0, sizeof(stream_));
-
-	g_fseek(fis, 0, SEEK_END);
-    stream_.size = g_ftell(fis);
-	g_fseek(fis, 0, SEEK_SET);
-    stream_.descriptor.pointer = fis;
-    stream_.read = read;
-    stream_.close = close;
-
-	FT_Open_Args args;
-	memset(&args, 0, sizeof(args));
-	args.flags = FT_OPEN_STREAM;
-    args.stream = &stream_;
-
+	fontInfo_.ascender = 0;
+	fontInfo_.descender = 0;
 	FT_Error error;
-
-	FT_Face face;
-
-	error = FT_Open_Face(FT_Library_Singleton::instance(), &args, 0, &face);
-	if (error)
-		throw GiderosException(GStatus(6012, filename));// Error #6012: %s: Error while reading font file.
 
 	float scalex = application_->getLogicalScaleX();
 	float scaley = application_->getLogicalScaleY();
@@ -123,14 +109,48 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars,
 		scalex /= filtering;
 		scaley /= filtering;
 	}
-	error = FT_Set_Char_Size(face, 0L, (int) floor(size * 64 + 0.5f),
+
+    fontFaces_.resize(filenames.size());
+    int nf=0;
+	for (std::vector<FontSpec>::iterator it=filenames.begin();it!=filenames.end();it++)
+	{
+	G_FILE *fis = g_fopen((*it).filename.c_str(), "rb");
+	if (!fis)
+		throw GiderosException(GStatus(6000, (*it).filename.c_str()));// Error #6000: %s: No such file or directory.
+
+    FontFace &ff=fontFaces_[nf++];
+    memset(&ff.stream, 0, sizeof(ff.stream));
+
+	g_fseek(fis, 0, SEEK_END);
+	ff.stream.size = g_ftell(fis);
+	g_fseek(fis, 0, SEEK_SET);
+	ff.stream.descriptor.pointer = fis;
+	ff.stream.read = read;
+	ff.stream.close = close;
+
+	FT_Open_Args args;
+	memset(&args, 0, sizeof(args));
+	args.flags = FT_OPEN_STREAM;
+	args.stream = &ff.stream;
+
+	error = FT_Open_Face(FT_Library_Singleton::instance(), &args, 0, &ff.face);
+	if (error)
+		throw GiderosException(GStatus(6012, (*it).filename.c_str()));// Error #6012: %s: Error while reading font file.
+
+	error = FT_Set_Char_Size(ff.face, 0L, (int) floor(size * 64 * (*it).sizeMult + 0.5f),
 			(int) floor(RESOLUTION * scalex + 0.5f),
 			(int) floor(RESOLUTION * scaley + 0.5f));
 
 	if (error) {
-		FT_Done_Face(face);
-		throw GiderosException(GStatus(6017, filename));// Error #6017: Invalid font size.
+		FT_Done_Face (ff.face);
+		throw GiderosException(GStatus(6017, (*it).filename.c_str()));// Error #6017: Invalid font size.
 	}
+
+	fontInfo_.ascender = std::max(fontInfo_.ascender,(int)(ff.face->size->metrics.ascender >> 6));
+	fontInfo_.descender = std::max(fontInfo_.descender,(int)((ff.face->size->metrics.height-ff.face->size->metrics.ascender) >> 6));
+	}
+
+	fontInfo_.height = fontInfo_.ascender+fontInfo_.descender;
 
 	std::vector<wchar32_t> wchars;
 	size_t len = utf8_to_wchar(chars, strlen(chars), NULL, 0, 0);
@@ -139,15 +159,13 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars,
 		utf8_to_wchar(chars, strlen(chars), &wchars[0], len, 0);
 	}
 
-	fontInfo_.ascender = face->size->metrics.ascender >> 6;
-	fontInfo_.height = face->size->metrics.height >> 6;
 
 	std::map<wchar32_t, TextureGlyph> &textureGlyphs = fontInfo_.textureGlyphs;
 
 	textureGlyphs.clear();
-	fontFace_=face;
-    currentDib_=NULL;
-    currentPacker_=NULL;
+
+	currentDib_ = NULL;
+	currentPacker_ = NULL;
 
 	if (len) {
 		for (size_t i = 0; i < len; ++i) {
@@ -160,29 +178,28 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars,
 
 		kernings.clear();
 
-		if (FT_HAS_KERNING(face)) {
-			std::map<wchar32_t, TextureGlyph>::iterator iter1, iter2, e =
-					textureGlyphs.end();
+		std::map<wchar32_t, TextureGlyph>::iterator iter1, iter2, e =
+				textureGlyphs.end();
 
-			for (iter1 = textureGlyphs.begin(); iter1 != e; ++iter1)
-				for (iter2 = textureGlyphs.begin(); iter2 != e; ++iter2) {
-					const TextureGlyph &g1 = iter1->second;
-					const TextureGlyph &g2 = iter2->second;
+		for (iter1 = textureGlyphs.begin(); iter1 != e; ++iter1)
+			for (iter2 = textureGlyphs.begin(); iter2 != e; ++iter2) {
+				const TextureGlyph &g1 = iter1->second;
+				const TextureGlyph &g2 = iter2->second;
+				if ((g1.face == g2.face) && FT_HAS_KERNING(g1.face)) {
 
 					FT_Vector delta;
-					FT_Get_Kerning(face, g1.glyphIndex, g2.glyphIndex,
+					FT_Get_Kerning(g1.face, g1.glyphIndex, g2.glyphIndex,
 							FT_KERNING_DEFAULT, &delta);
 
 					if (delta.x != 0)
 						kernings[std::make_pair(g1.chr, g2.chr)] = delta.x;
 				}
-		}
+			}
 
 		TexturePacker *tp = createTexturePacker();
 
 		tp->setTextureCount(textureGlyphs.size());
-		std::map<wchar32_t, TextureGlyph>::iterator iter, e =
-				textureGlyphs.end();
+		std::map<wchar32_t, TextureGlyph>::iterator iter;
 		for (iter = textureGlyphs.begin(); iter != e; ++iter)
 			tp->addTexture(iter->second.width, iter->second.height);
 
@@ -201,24 +218,25 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars,
 			int xo, yo;
 			int width, height;
 			tp->getTextureLocation(i, &xo, &yo, &width, &height);
+            const TextureGlyph &g1 = iter->second;
 
-			FT_UInt glyph_index = FT_Get_Char_Index(face, iter->second.chr);
+			FT_UInt glyph_index = FT_Get_Char_Index(g1.face, g1.chr);
 			if (glyph_index == 0)
 				continue;
 
-			error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+			error = FT_Load_Glyph(g1.face, glyph_index, FT_LOAD_DEFAULT);
 			if (error)
 				continue;
 
-			error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+			error = FT_Render_Glyph(g1.face->glyph, FT_RENDER_MODE_NORMAL);
 			if (error)
 				continue;
 
-			FT_Bitmap &bitmap = face->glyph->bitmap;
+			FT_Bitmap &bitmap = g1.face->glyph->bitmap;
 
 			iter->second.x = xo;
 			iter->second.y = yo;
-			iter->second.texture = 0;
+            iter->second.texture = 0;
 
 			width = std::min(width, (int) bitmap.width);
 			height = std::min(height, (int) bitmap.rows);
@@ -234,102 +252,111 @@ void TTBMFont::constructor(const char *filename, float size, const char *chars,
 
 		releaseTexturePacker(tp);
 
-		FT_Done_Face(face);
-		fontFace_=NULL;
+		for (std::vector<FontFace>::iterator it=fontFaces_.begin();it!=fontFaces_.end();it++)
+			FT_Done_Face ((*it).face);
+		fontFaces_.clear();
 
 		TextureParameters parameters;
 		parameters.filter = (filtering != 0) ? eLinear : eNearest;
 		parameters.wrap = eClamp;
 		parameters.format = eA8;
-		textureData_.push_back(application_->getTextureManager()->createTextureFromDib(dib,
-				parameters));
+		textureData_.push_back(
+				application_->getTextureManager()->createTextureFromDib(dib,
+						parameters));
 	} else {
-		currentDib_ =new Dib(application_, 1024, 1024, true); //use 102x1024 textures for packing
-		currentPacker_ = createProgressiveTexturePacker(currentDib_->width(),currentDib_->height());
+		currentDib_ = new Dib(application_, 1024, 1024, true); //use 102x1024 textures for packing
+		currentPacker_ = createProgressiveTexturePacker(currentDib_->width(),
+				currentDib_->height());
 		TextureParameters parameters;
 		parameters.filter = (filtering != 0) ? eLinear : eNearest;
 		parameters.wrap = eClamp;
 		parameters.format = eA8;
-		textureData_.push_back(application_->getTextureManager()->createTextureFromDib(*currentDib_,
-				parameters));
+		textureData_.push_back(
+				application_->getTextureManager()->createTextureFromDib(
+						*currentDib_, parameters));
 	}
 
-	filtering_=filtering;
+	filtering_ = filtering;
 	sizescalex_ = 1 / scalex;
 	sizescaley_ = 1 / scaley;
 	uvscalex_ = 1;
 	uvscaley_ = 1;
 }
 
-void TTBMFont::ensureChars(const wchar32_t *text)
-{
-	if (!currentPacker_) return;
+void TTBMFont::ensureChars(const wchar32_t *text) {
+	if (!currentPacker_)
+		return;
 	std::map<std::pair<wchar32_t, wchar32_t>, int> &kernings =
 			fontInfo_.kernings;
 	std::map<wchar32_t, TextureGlyph> &textureGlyphs = fontInfo_.textureGlyphs;
-	bool updateTexture=false;
-	wchar32_t lchar=0;
-	for (const wchar32_t *t = text; *t; ++t)
-	{
-		wchar32_t chr=*t;
-		bool newGlyph=false;
-		if (textureGlyphs.find(chr)==textureGlyphs.end())
-		{
-			if (!addGlyph(chr)) continue;
-			newGlyph=true;
+	bool updateTexture = false;
+	wchar32_t lchar = 0;
+	for (const wchar32_t *t = text; *t; ++t) {
+		wchar32_t chr = *t;
+		bool newGlyph = false;
+		if (textureGlyphs.find(chr) == textureGlyphs.end()) {
+			if (!addGlyph(chr))
+				continue;
+			newGlyph = true;
 		}
-		if (FT_HAS_KERNING(fontFace_)&&lchar) {
-				FT_Vector delta;
-				FT_Get_Kerning(fontFace_, textureGlyphs[lchar].glyphIndex, textureGlyphs[chr].glyphIndex,
-						FT_KERNING_DEFAULT, &delta);
+		const TextureGlyph &g = textureGlyphs[chr];
+		if (lchar)
+		{
+		const TextureGlyph &gl = textureGlyphs[lchar];
+		if ((g.face==gl.face)&&FT_HAS_KERNING(gl.face)) {
+			FT_Vector delta;
+			FT_Get_Kerning(gl.face, textureGlyphs[lchar].glyphIndex,
+					textureGlyphs[chr].glyphIndex, FT_KERNING_DEFAULT, &delta);
 
-				if (delta.x != 0)
-					kernings[std::make_pair(lchar, chr)] = delta.x;
+			if (delta.x != 0)
+				kernings[std::make_pair(lchar, chr)] = delta.x;
 		}
-		if (newGlyph)
-		{
-			if (!currentPacker_->addTexture(textureGlyphs[chr].width, textureGlyphs[chr].height))
-			{
+		}
+		if (newGlyph) {
+			if (!currentPacker_->addTexture(g.width,g.height)) {
 				//Build a new layer
-				if (updateTexture)
-				{
-					application_->getTextureManager()->updateTextureFromDib(textureData_[textureData_.size()-1],*currentDib_);
-					updateTexture=false;
+				if (updateTexture) {
+					application_->getTextureManager()->updateTextureFromDib(
+							textureData_[textureData_.size() - 1],
+							*currentDib_);
+					updateTexture = false;
 				}
 				releaseTexturePacker(currentPacker_);
-				currentPacker_ = createProgressiveTexturePacker(currentDib_->width(),currentDib_->height());
+				currentPacker_ = createProgressiveTexturePacker(
+						currentDib_->width(), currentDib_->height());
 				unsigned char rgba[] = { 255, 255, 255, 0 };
 				currentDib_->fill(rgba);
 				TextureParameters parameters;
 				parameters.filter = (filtering_ != 0) ? eLinear : eNearest;
 				parameters.wrap = eClamp;
 				parameters.format = eA8;
-				textureData_.push_back(application_->getTextureManager()->createTextureFromDib(*currentDib_,
-						parameters));
-				currentPacker_->addTexture(textureGlyphs[chr].width, textureGlyphs[chr].height);
+				textureData_.push_back(
+						application_->getTextureManager()->createTextureFromDib(
+								*currentDib_, parameters));
+				currentPacker_->addTexture(g.width,g.height);
 			}
 			int xo, yo;
 			int width, height;
 			currentPacker_->getTextureLocation(-1, &xo, &yo, &width, &height);
 
-			FT_UInt glyph_index = FT_Get_Char_Index(fontFace_, chr);
+			FT_UInt glyph_index = FT_Get_Char_Index(g.face, chr);
 			if (glyph_index == 0)
 				continue;
 			FT_Error error;
 
-			error = FT_Load_Glyph(fontFace_, glyph_index, FT_LOAD_DEFAULT);
+			error = FT_Load_Glyph(g.face, glyph_index, FT_LOAD_DEFAULT);
 			if (error)
 				continue;
 
-			error = FT_Render_Glyph(fontFace_->glyph, FT_RENDER_MODE_NORMAL);
+			error = FT_Render_Glyph(g.face->glyph, FT_RENDER_MODE_NORMAL);
 			if (error)
 				continue;
 
-			FT_Bitmap &bitmap = fontFace_->glyph->bitmap;
+			FT_Bitmap &bitmap = g.face->glyph->bitmap;
 
 			textureGlyphs[chr].x = xo;
 			textureGlyphs[chr].y = yo;
-			textureGlyphs[chr].texture = textureData_.size()-1;
+			textureGlyphs[chr].texture = textureData_.size() - 1;
 
 			width = std::min(width, (int) bitmap.width);
 			height = std::min(height, (int) bitmap.rows);
@@ -341,22 +368,24 @@ void TTBMFont::ensureChars(const wchar32_t *text)
 
 					currentDib_->setAlpha(xo + x, yo + y, c);
 				}
-			updateTexture=true;
+			updateTexture = true;
 		}
 	}
-	if (updateTexture)
-	{
-		application_->getTextureManager()->updateTextureFromDib(textureData_[textureData_.size()-1],*currentDib_);
-		updateTexture=false;
+	if (updateTexture) {
+		application_->getTextureManager()->updateTextureFromDib(
+				textureData_[textureData_.size() - 1], *currentDib_);
+		updateTexture = false;
 	}
 }
 
 TTBMFont::~TTBMFont() {
-	for (std::vector<TextureData *>::iterator it=textureData_.begin();it!=textureData_.end();it++)
+	for (std::vector<TextureData *>::iterator it = textureData_.begin();
+			it != textureData_.end(); it++)
 		if (*it)
 			application_->getTextureManager()->destroyTexture(*it);
-	if (fontFace_)
-		FT_Done_Face(fontFace_);
+	for (std::vector<FontFace>::iterator it=fontFaces_.begin();it!=fontFaces_.end();it++)
+		FT_Done_Face ((*it).face);
+	fontFaces_.clear();
 	if (currentDib_)
 		delete currentDib_;
 	if (currentPacker_)
@@ -367,7 +396,8 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		const wchar32_t* text, float r, float g, float b, float letterSpacing,
 		bool hasSample, float minx, float miny) {
 	int size = 0;
-	for (const wchar32_t *t = text; *t; ++t, ++size);
+	for (const wchar32_t *t = text; *t; ++t, ++size)
+		;
 	ensureChars(text);
 
 	if (size == 0) {
@@ -375,40 +405,40 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		return;
 	}
 
-	std::map<int,int> layerMap;
-	std::map<int,int> gfxMap;
-	int gfx=0;
+	std::map<int, int> layerMap;
+	std::map<int, int> gfxMap;
+	int gfx = 0;
 	for (int i = 0; i < size; ++i) {
-			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
-					fontInfo_.textureGlyphs.find(text[i]);
+		std::map<wchar32_t, TextureGlyph>::const_iterator iter =
+				fontInfo_.textureGlyphs.find(text[i]);
 
-			if (iter == fontInfo_.textureGlyphs.end())
-				continue;
-			const TextureGlyph &textureGlyph = iter->second;
-			int l=layerMap[textureGlyph.texture];
-			if (!l) {
-				gfx++;
-				layerMap[textureGlyph.texture]=gfx;
-				l=gfx;
-			}
-			l--;
-			gfxMap[l]=gfxMap[l]+1;
+		if (iter == fontInfo_.textureGlyphs.end())
+			continue;
+		const TextureGlyph &textureGlyph = iter->second;
+		int l = layerMap[textureGlyph.texture];
+		if (!l) {
+			gfx++;
+			layerMap[textureGlyph.texture] = gfx;
+			l = gfx;
+		}
+		l--;
+		gfxMap[l] = gfxMap[l] + 1;
 	}
 
 	vGraphicsBase->resize(gfx);
 
-	for (std::map<int,int>::iterator it=gfxMap.begin();it!=gfxMap.end();it++)
-	{
-	GraphicsBase *graphicsBase = &((*vGraphicsBase)[it->first]);
-	int size=it->second;
-	graphicsBase->setColor(r, g, b, 1);
-	graphicsBase->vertices.resize(size * 4);
-	graphicsBase->texcoords.resize(size * 4);
-	graphicsBase->indices.resize(size * 6);
-	graphicsBase->vertices.Update();
-	graphicsBase->texcoords.Update();
-	graphicsBase->indices.Update();
-	it->second=0;
+	for (std::map<int, int>::iterator it = gfxMap.begin(); it != gfxMap.end();
+			it++) {
+		GraphicsBase *graphicsBase = &((*vGraphicsBase)[it->first]);
+		int size = it->second;
+		graphicsBase->setColor(r, g, b, 1);
+		graphicsBase->vertices.resize(size * 4);
+		graphicsBase->texcoords.resize(size * 4);
+		graphicsBase->indices.resize(size * 6);
+		graphicsBase->vertices.Update();
+		graphicsBase->texcoords.Update();
+		graphicsBase->indices.Update();
+		it->second = 0;
 	}
 
 	float x = -minx / sizescalex_, y = -miny / sizescaley_;
@@ -431,7 +461,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			continue;
 
 		const TextureGlyph &textureGlyph = iter->second;
-		int gfx=layerMap[textureGlyph.texture]-1;
+		int gfx = layerMap[textureGlyph.texture] - 1;
 		GraphicsBase *graphicsBase = &((*vGraphicsBase)[gfx]);
 		graphicsBase->data = textureData_[textureGlyph.texture];
 
@@ -448,8 +478,8 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 
 		float x1 = x0 + width;
 		float y1 = y0 + height;
-		int vi=gfxMap[gfx];
-		gfxMap[gfx]=vi+1;
+		int vi = gfxMap[gfx];
+		gfxMap[gfx] = vi + 1;
 
 		graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,
 				sizescaley_ * y0);
@@ -460,10 +490,14 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x0,
 				sizescaley_ * y1);
 
-		float u0 = (float) textureGlyph.x / (float) textureData_[textureGlyph.texture]->exwidth;
-		float v0 = (float) textureGlyph.y / (float) textureData_[textureGlyph.texture]->exheight;
-		float u1 = (float) (textureGlyph.x + width) / (float) textureData_[textureGlyph.texture]->exwidth;
-		float v1 = (float) (textureGlyph.y + height) / (float) textureData_[textureGlyph.texture]->exheight;
+		float u0 = (float) textureGlyph.x
+				/ (float) textureData_[textureGlyph.texture]->exwidth;
+		float v0 = (float) textureGlyph.y
+				/ (float) textureData_[textureGlyph.texture]->exheight;
+		float u1 = (float) (textureGlyph.x + width)
+				/ (float) textureData_[textureGlyph.texture]->exwidth;
+		float v1 = (float) (textureGlyph.y + height)
+				/ (float) textureData_[textureGlyph.texture]->exheight;
 
 		u0 *= uvscalex_;
 		v0 *= uvscaley_;
@@ -559,7 +593,7 @@ float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 		utf8_to_wchar(text, strlen(text), &wtext[0], len, 0);
 	}
 
-	if (size < 0 || size > wtext.size())
+    if (size < 0 || size > ((int) wtext.size()))
 		size = wtext.size();
 
 	wtext.push_back(0);

@@ -11,6 +11,7 @@
 #include "ExportCommon.h"
 #include <QStandardPaths>
 #include <QFileInfo>
+#include <QDesktopServices>
 
 #ifdef Q_OS_MACX
 #define ALL_PLUGINS_PATH "../../All Plugins"
@@ -330,6 +331,9 @@ bool ExportXml::ProcessRule(QDomElement rule) {
 	    return RuleLua(ReplaceAttributes(rule.attribute("file")).trimmed(),
 	        		rule.text().trimmed());
     }
+    else if (ruleName == "openUrl"){
+	    return RuleOpenUrl(ReplaceAttributes(rule.text().trimmed()));
+    }
 	else
 		ExportCommon::exportError("Rule %s unknown\n", ruleName.toStdString().c_str());
 	return false;
@@ -503,6 +507,11 @@ bool ExportXml::RuleAsk(QDomElement rule) {
 			SecretVal(key,val).toStdString().c_str());
 	SetProperty(key,val);
 	return true;
+}
+
+bool ExportXml::RuleOpenUrl(QString url)
+{
+	return QDesktopServices::openUrl(QUrl(url));
 }
 
 void ExportXml::SetProperty(QString k,QString v)
