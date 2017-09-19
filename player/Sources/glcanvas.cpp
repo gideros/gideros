@@ -1229,14 +1229,14 @@ bool GLCanvas::event(QEvent *event){
             			break;
             		}
             }
-            ids[i] = tid;
+            ids[i] = tid-1;
             curIds|=(1<<(tid-1));
         }
 
         for( int i=0; i<size; ++i )
         {
             QTouchEvent::TouchPoint p = list[i];
-            int tid=touchIdMap[p.id()];
+            int tid=touchIdMap[p.id()]-1;
             if(event->type() == QEvent::TouchCancel){
                 ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, tid, p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
             }
