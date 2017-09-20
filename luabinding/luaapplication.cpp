@@ -1683,7 +1683,7 @@ int LuaApplication::Core_profilerReset(lua_State *L)
 	return 0;
 }
 
-#include "CoreRandom.cpp"
+#include "CoreRandom.cpp.inc"
 int LuaApplication::Core_random(lua_State *L)
 {
 	int gen=luaL_optnumber(L,1,0);
