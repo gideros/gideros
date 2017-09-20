@@ -10,6 +10,10 @@ The `TTFont` class is used to load true type fonts. <br />
   <method name="TTFont.new" page="new" shortdesc="creates a new TTFont object" version="Gideros 2011.6"><![CDATA[<br />
 Creates a new `TTFont` object.<br />
 <br />
+Starting from gideros 2017.9, 'text' optional parameter can be the empty string, in which case Gideros will automatically cache characters as they are used.
+Also, 2017.9 allows filename to be a table of several file names and associated size factor. 
+Two forms are accepted: {"font1.ttf","font2.ttf",..} or {{file="font1.ttf", sizeMult=1},{file="font2.ttf", sizeMult=1.1},...}.
+Characters will be looked up in each file in sequence until a glyph is found.
 ]]>
     <parameter name="filename" optional="false" type="string"><![CDATA[The name of the TTF file to be loaded]]></parameter>
     <parameter name="size" optional="false" type="number"><![CDATA[size of the font]]></parameter>

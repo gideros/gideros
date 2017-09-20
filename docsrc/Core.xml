@@ -41,6 +41,24 @@ Core.yield(true) -- yield for a single frame and disable auto yield
 *callers* - A table containing the same information has above for each function which called this one]]>
     <return type="table"><![CDATA[table with profiling data]]></return>
   </method>
+  <method name="Core.random" page="random" shortdesc="Generate a random number" version="Gideros 2017.9">
+  <![CDATA[Generate and return a pseudo random number. The random number sequence is guaranteed to be consistent across
+  devices for a given seed.
+  If bounds aren't specified, the function will return a floating point number between 0 and 1.
+  If one bound is specified, the function will return an integer number between 1 and that bound (inclusive).
+  If both bounds are specified, the function will return an integer between bound1 and bound2. bound2 must be greater than bound1.
+  ]]>
+    <parameter name="generator" optional="true" type="number"><![CDATA[PRNG algorithm to use, use 0 for default engine (MT19937)]]></parameter>
+    <parameter name="bound1" optional="true" type="number"><![CDATA[First bound of the range returned number must be in]]></parameter>
+    <parameter name="bound2" optional="true" type="number"><![CDATA[Second bound of the range returned number must be in]]></parameter>
+    <return>random number</return>
+  </method>
+  <method name="Core.randomSeed" page="randomSeed" shortdesc="Set the random generator seed" version="Gideros 2017.9">
+  <![CDATA[Set the current seed of the specified random number generator.]]>
+    <parameter name="generator" optional="true" type="number"><![CDATA[PRNG algorithm to use, use 0 for default engine (MT19937)]]></parameter>
+    <parameter name="seed" optional="true" type="number"><![CDATA[Seed for that generator]]></parameter>
+    <return>A seed usable for later resuming the RNG</return>
+  </method>
   <example name=""><![CDATA[MySprite = Core.class(Sprite)
 --my custom sprite class
 function MySprite:init()

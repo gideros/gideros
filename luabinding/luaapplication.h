@@ -172,6 +172,8 @@ public:
     static int Core_profilerStop(lua_State *L);
     static int Core_profilerReset(lua_State *L);
     static int Core_profilerReport(lua_State *L);
+    static int Core_random(lua_State *L);
+    static int Core_randomSeed(lua_State *L);
 private:
 	float physicsScale_;
 

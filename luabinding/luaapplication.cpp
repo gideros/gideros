@@ -589,6 +589,10 @@ static int bindAll(lua_State* L)
 	lua_setfield(L, -2, "profilerReset");
 	lua_pushcfunction(L, LuaApplication::Core_profilerReport);
 	lua_setfield(L, -2, "profilerReport");
+	lua_pushcfunction(L, LuaApplication::Core_random);
+	lua_setfield(L, -2, "random");
+	lua_pushcfunction(L, LuaApplication::Core_randomSeed);
+	lua_setfield(L, -2, "randomSeed");
 	lua_pop(L, 1);
 
 	// register collectgarbagelater
@@ -1678,5 +1682,55 @@ int LuaApplication::Core_profilerReset(lua_State *L)
 	proFuncs.clear();
 	return 0;
 }
+
+#include "CoreRandom.cpp"
+int LuaApplication::Core_random(lua_State *L)
+{
+	int gen=luaL_optnumber(L,1,0);
+	switch (gen)
+	{
+	default:
+		if (lua_isnoneornil(L,2))
+		{
+			double val=Rnd::MT19937::ExtractDouble();
+			lua_pushnumber(L,val);
+			return 1;
+		}
+		uint32_t uival=Rnd::MT19937::ExtractU32();
+		int a=luaL_checkinteger(L,2);
+		if (lua_isnoneornil(L,3))
+		{
+			lua_pushinteger(L,1+((uival*a)));
+		}
+		else
+		{
+			int b=luaL_checkinteger(L,3);
+			lua_pushinteger(L,a+((uival*(b+1-a))));
+		}
+		return 1;
+	break;
+	}
+	return 1;
+}
+
+int LuaApplication::Core_randomSeed(lua_State *L)
+{
+	int gen=luaL_optnumber(L,1,0);
+	if (!lua_isnoneornil(L,2))
+	{
+		int seed=luaL_checknumber(L,2);
+		switch (gen)
+		{
+		default: Rnd::MT19937::Initialize(seed); break;
+		}
+	}
+	switch (gen)
+	{
+		default: lua_pushinteger(L,Rnd::MT19937::GetSeed()); break;
+	}
+	return 1;
+}
+
+
 
 //
