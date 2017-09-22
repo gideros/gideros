@@ -69,6 +69,7 @@
 #include <gapplication.h>
 
 #include "tlsf.h"
+#include "CoreRandom.cpp.inc"
 
 std::deque<LuaApplication::AsyncLuaTask> LuaApplication::tasks_;
 
@@ -1419,6 +1420,8 @@ void LuaApplication::initialize()
 	lua_pushcfunction(L, bindAll);
 	lua_pushlightuserdata(L, application_);
 	lua_call(L, 1, 0);
+
+	Rnd::Initialize(iclock()*0xFFFF);
 }
 
 void LuaApplication::setScale(float scale)
@@ -1683,7 +1686,6 @@ int LuaApplication::Core_profilerReset(lua_State *L)
 	return 0;
 }
 
-#include "CoreRandom.cpp.inc"
 int LuaApplication::Core_random(lua_State *L)
 {
 	int gen=luaL_optnumber(L,1,0);
@@ -1696,16 +1698,16 @@ int LuaApplication::Core_random(lua_State *L)
 			lua_pushnumber(L,val);
 			return 1;
 		}
-		uint32_t uival=Rnd::MT19937::ExtractU32();
+		uint64_t uival=Rnd::MT19937::ExtractU32();
 		int a=luaL_checkinteger(L,2);
 		if (lua_isnoneornil(L,3))
 		{
-			lua_pushinteger(L,1+((uival*a)));
+			lua_pushinteger(L,1+(((uival*a)>>32)&0xFFFFFFFF));
 		}
 		else
 		{
 			int b=luaL_checkinteger(L,3);
-			lua_pushinteger(L,a+((uival*(b+1-a))));
+			lua_pushinteger(L,a+(((uival*(b+1-a))>>32)&0xFFFFFFFF));
 		}
 		return 1;
 	break;
@@ -1716,17 +1718,10 @@ int LuaApplication::Core_random(lua_State *L)
 int LuaApplication::Core_randomSeed(lua_State *L)
 {
 	int gen=luaL_optnumber(L,1,0);
-	if (!lua_isnoneornil(L,2))
-	{
-		int seed=luaL_checknumber(L,2);
-		switch (gen)
-		{
-		default: Rnd::MT19937::Initialize(seed); break;
-		}
-	}
+	int seed=luaL_optinteger(L,2,iclock()*0xFFFF);
 	switch (gen)
 	{
-		default: lua_pushinteger(L,Rnd::MT19937::GetSeed()); break;
+	default: lua_pushinteger(L,Rnd::MT19937::GetSeed()); Rnd::MT19937::Initialize(seed); break;
 	}
 	return 1;
 }

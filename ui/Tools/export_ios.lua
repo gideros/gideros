@@ -95,26 +95,30 @@ iOSProject.insertData("Refs",refline)
 return refid
 end
 
-iOSProject.addSource=function(filename,filetype,filepath,filetree)
+iOSProject.addSource=function(filename,filetype,filepath,filetree,extra)
 print("addSource",filename)
 local refid=iOSProject.addReference(filename,filetype,filepath,filetree)
 local fileid=iOSProject.newId()
 local refline=
-("%s /* %s */ = {isa = PBXBuildFile; fileRef = %s /* %s */; };\n")
-:format(fileid,filename,refid,filename)
+("%s /* %s */ = {isa = PBXBuildFile; fileRef = %s /* %s */; %s};\n")
+:format(fileid,filename,refid,filename,extra or "")
 iOSProject.insertData("Refs",refline)
 return refid,fileid
 end
 
-iOSProject.addFramework=function(filename,flavor,filepath,filetree)
+iOSProject.addFramework=function(filename,flavor,filepath,filetree,extra)
 flavor=flavor or "ios"
 print("addFramework",filename,flavor)
-local refid,fileid=iOSProject.addSource(filename,nil,filepath,filetree)
+local refid,fileid=iOSProject.addSource(filename,nil,filepath,filetree,extra)
 local refline=
 ("%s /* %s */,\n")
 :format(fileid,filename)
 iOSProject.insertData("Frameworks_"..flavor,refline)
 return refid,fileid
+end
+
+iOSProject.addWeakFramework=function(filename,flavor,filepath,filetree)
+  return addFramework(filename,flavor,filepath,filetree," settings = {ATTRIBUTES = (Weak, );  };")
 end
 
 iOSProject.addGroup=function(foldername,path,publicname,dest)

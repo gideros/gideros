@@ -106,4 +106,8 @@ double ExtractDouble() {
 }
 }
 
+void Initialize(uint32_t val)
+{
+	MT19937::Initialize(val);
+}
 }
