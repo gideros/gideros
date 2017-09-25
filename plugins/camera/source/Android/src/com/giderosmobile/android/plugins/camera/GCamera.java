@@ -181,8 +181,11 @@ public class GCamera {
 				android.hardware.Camera.getCameraInfo(camId, info);
 
 				if ((angle%180)!=(info.orientation%180)) { int c=dimret[0]; dimret[0]=dimret[1]; dimret[1]=c; }
-				dimret[2] = (angle+ info.orientation + 360) % 360;
-				dimret[3]=(info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)?0:1;
+				if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
+					dimret[2] = (angle - info.orientation + 360) % 360;
+				else
+					dimret[2] = (angle + info.orientation + 360) % 360;
+				dimret[3] = 1;
 				camera.setDisplayOrientation(0);
 				camera.startPreview();
 			}
