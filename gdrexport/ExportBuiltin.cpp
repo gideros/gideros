@@ -486,6 +486,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ExportCommon::appIcon(ctx,152,152,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon152x152.png"));
         ExportCommon::appIcon(ctx,167,167,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon167x167.png"));
         ExportCommon::appIcon(ctx,180,180,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon180x180.png"));
+        ExportCommon::appIcon(ctx,1024,1024,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon1024x1024.png"));
 
 
         ExportCommon::splashHImage(ctx,1024,768,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1024x768.png"));

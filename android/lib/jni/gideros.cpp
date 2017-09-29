@@ -522,13 +522,13 @@ void NetworkManager::calculateMD5(const char* file)
 static void printToLog_s(const char *str, int len, void *data)
 {
 	if (len<0)
-		glog_i("%s\n",str);
+		glog(str);
 	else
 	{
 		char* buffer = (char*)malloc(len+1);
 		memcpy(buffer, str,len);
 		buffer[len]=0;
-		glog_i("%s\n",buffer);
+		glog(buffer);
 		free(buffer);
 	}
 }

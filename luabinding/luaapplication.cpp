@@ -70,6 +70,7 @@
 
 #include "tlsf.h"
 #include "CoreRandom.cpp.inc"
+#include "MemCache.cpp.inc"
 
 std::deque<LuaApplication::AsyncLuaTask> LuaApplication::tasks_;
 
@@ -830,13 +831,22 @@ static void g_free(void *ptr)
         ::free(ptr);
 }
 
+static size_t g_getsize(void *ptr)
+{
+    if (memory_pool <= ptr && ptr < memory_pool_end)
+        tlsf_block_size(ptr);
+    else
+        ::free(ptr);
+}
+
 static void *g_realloc(void *ptr, size_t osize, size_t size)
 {
     void* p = NULL;
 
     if (ptr && size == 0)
     {
-        g_free(ptr);
+        size_t *ps=(size_t *)ptr;
+        g_free(ps-1);
     }
     else if (ptr == NULL)
     {
@@ -844,7 +854,11 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
             p = tlsf_malloc(memory_pool, size);
 
         if (p == NULL)
-            p = ::malloc(size);
+        {
+            size_t *ps = (size_t *)::malloc(size+sizeof(size_t));
+            *ps=size;
+            p=ps+1;
+        }
     }
     else
     {
@@ -855,36 +869,37 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
 
             if (p == NULL)
             {
-                p = ::malloc(size);
+                size_t *ps = (size_t *)::malloc(size+sizeof(size_t));
+                *ps=size;
+                p=ps+1;
                 memcpy(p, ptr, osize);
                 tlsf_free(memory_pool, ptr);
             }
         }
         else
         {
-            p = ::realloc(ptr, size);
+            size_t *ps=(size_t *)ptr;
+            ps = (size_t *)::realloc(ps-1, size+sizeof(size_t));
+            *ps=size;
+            p=ps+1;
         }
     }
 
     return p;
 }
 
-#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
-static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
+class MemCacheLua : public MemCache
 {
-    (void)ud;
-    (void)osize;
-    if (nsize == 0)
-    {
-        free(ptr);
-        return NULL;
-    }
-    else
-        return realloc(ptr, nsize);
-}
-#else
-static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
+public:
+	MemCacheLua();
+	void *MasterAllocateMemory(size_t Size);
+	void MasterFreeMemory(void *Memory);
+	size_t MasterGetSize(void *Memory);
+};
+
+MemCacheLua::MemCacheLua()
 {
+#ifndef EMSCRIPTEN
     if (memory_pool == NULL)
     {
         const size_t mpsize = 1024 * 1024;
@@ -892,16 +907,55 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
         memory_pool = tlsf_create_with_pool(malloc(mpsize), mpsize);
         memory_pool_end = (char*)memory_pool + mpsize;
     }
+    Reset();
+#endif
+}
 
+void *MemCacheLua::MasterAllocateMemory(size_t Size)
+{
+#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
+	size_t *bk=(size_t *) realloc(NULL,Size+sizeof(size_t));
+	*bk=Size;
+	return bk+1;
+#else
+	return g_realloc(NULL, 0, Size);
+#endif
+}
+
+void MemCacheLua::MasterFreeMemory(void *Memory)
+{
+#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
+	size_t *bk=(size_t *)Memory;
+	return free(bk-1);
+#else
+	return g_free(Memory);
+#endif
+}
+
+size_t MemCacheLua::MasterGetSize(void *Memory)
+{
+#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
+	return *((size_t *)Memory);
+#else
+	return g_getsize(Memory);
+#endif
+}
+
+static MemCacheLua luamem;
+static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
+{
+    (void)ud;
+    (void)osize;
     if (nsize == 0)
     {
-        g_free(ptr);
+        luamem.FreeMemory(ptr);
         return NULL;
     }
+    else if (ptr==NULL)
+    	return luamem.AllocateMemory(nsize);
     else
-        return g_realloc(ptr, osize, nsize);
+        return luamem.ResizeMemory(ptr, nsize);
 }
-#endif
 
 //int renderScene(lua_State* L);
 //int mouseDown(lua_State* L);

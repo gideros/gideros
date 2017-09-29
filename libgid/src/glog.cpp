@@ -43,6 +43,10 @@ static void log(const char *buffer)
 }
 
 extern "C" {
+G_API void glog(const char *buffer)
+{
+	log(buffer);
+}
 
 G_API void glog_v(const char *format, ...)
 {

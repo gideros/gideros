@@ -188,7 +188,7 @@ public class Iab {
 				@Override
 				public void run() {
 					String adp = modifyName(iabtype);
-					iab.get(adp).request(products.get(adp));
+					 if (adp != null) iab.get(adp).request(products.get(adp));
 				}
 				
 			};

@@ -39,6 +39,8 @@
 #include "gaudio.h"
 #include "ghttp.h"
 #include "orientation.h"
+#include <map>
+#include <screen.h>
 
 extern "C" {
   void g_setFps(int);
@@ -188,6 +190,231 @@ struct ProjectProperties
   int windowHeight;
 };
 
+// ### SCREENS
+class W32Screen;
+LRESULT CALLBACK W32Proc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+static std::map<HWND,W32Screen *> screenMap;
+
+class W32ScreenManager : public ScreenManager {
+public:
+	HGLRC master;
+	HDC defaultDC;
+	HINSTANCE hInstance;
+	W32ScreenManager(HDC dc,HGLRC gl,HINSTANCE hInstance);
+	virtual Screen *openScreen(Application *application,int id);
+	virtual void screenDestroyed();
+};
+
+class W32Screen : public Screen {
+	virtual void tick();
+	HDC dc;
+	HWND wnd;
+	W32FullScreen fs;
+protected:
+	virtual void setVisible(bool);
+public:
+	virtual void setSize(int w,int h);
+	virtual void getSize(int &w,int &h);
+	virtual void setPosition(int w,int h);
+	virtual void getPosition(int &w,int &h);
+	virtual void setState(int state);
+	virtual int getState();
+	virtual void getMaxSize(int &w,int &h);
+	virtual int getId();
+	virtual void closed();
+	W32Screen(Application *application,HINSTANCE hInstance);
+	~W32Screen();
+};
+
+void W32Screen::tick()
+{
+	if (!wnd) return;
+	if (IsWindowVisible(wnd))
+	{
+		Matrix4 m;
+		W32ScreenManager *sm=((W32ScreenManager *)(ScreenManager::manager));
+		wglMakeCurrent(dc,sm->master);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0/*defaultFramebufferObject()*/);
+		draw(m);
+	    SwapBuffers(dc);
+	}
+}
+
+void W32Screen::setSize(int w,int h)
+{
+	if (!wnd) return;
+    RECT rect;
+    rect.top=0;
+    rect.left=0;
+    rect.right=w;
+    rect.bottom=h;
+
+    AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
+    SetWindowPos(wnd,HWND_TOP,0,0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE);
+}
+
+void W32Screen::getSize(int &w,int &h)
+{
+	if (!wnd) return;
+ 	RECT rect;
+	GetClientRect(wnd,&rect);
+	w=rect.right-rect.left;
+	h=rect.bottom-rect.top;
+}
+
+void W32Screen::setState(int state)
+{
+	if (!wnd) return;
+	W32SetFullScreen((state&FULLSCREEN),wnd,&fs);
+	if (state&MINIMIZED) ShowWindow(wnd,SW_SHOWMINIMIZED);
+	if (state&MAXIMIZED) ShowWindow(wnd,SW_SHOWMAXIMIZED);
+}
+
+int W32Screen::getState()
+{
+	if (!wnd) return 0;
+	int s=NORMAL;
+	if (fs.isFullScreen) s=FULLSCREEN;
+	else
+	{
+		if (IsIconic(wnd)) s=MINIMIZED;
+		if (IsZoomed(wnd)) s=MAXIMIZED;
+	}
+	if (!IsWindowVisible(wnd)) s|=HIDDEN;
+	if (wnd==0) s|=CLOSED;
+	return s;
+}
+
+void W32Screen::getMaxSize(int &w,int &h)
+{
+    MONITORINFO monitor_info;
+    monitor_info.cbSize = sizeof(monitor_info);
+    GetMonitorInfo(MonitorFromWindow(hwndcopy, MONITOR_DEFAULTTONEAREST),
+                    &monitor_info);
+	w=monitor_info.rcMonitor.right-monitor_info.rcMonitor.left;
+	h=monitor_info.rcMonitor.bottom-monitor_info.rcMonitor.top;
+}
+
+void W32Screen::setPosition(int w,int h)
+{
+	if (!wnd) return;
+    RECT rect;
+    rect.top=w;
+    rect.left=h;
+    rect.right=0;
+    rect.bottom=0;
+
+    AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
+    SetWindowPos(wnd,HWND_TOP,0,0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOSIZE);
+}
+
+void W32Screen::getPosition(int &w,int &h)
+{
+	if (!wnd) return;
+	RECT rect;
+	GetClientRect(wnd,&rect);
+	w=rect.left;
+	h=rect.top;
+}
+
+int W32Screen::getId()
+{
+	return 0;
+}
+
+void W32Screen::setVisible(bool visible)
+{
+	if (!wnd) return;
+	ShowWindow(wnd,visible?SW_SHOW:SW_HIDE);
+}
+
+static ATOM W32Class=0;
+
+W32Screen::W32Screen(Application *application,HINSTANCE hInstance) : Screen(application)
+{
+	if (!W32Class)
+	{
+	  WNDCLASSEX  wndclass;
+
+	  wndclass.cbSize        = sizeof (wndclass) ;
+	  wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
+	  wndclass.lpfnWndProc   = W32Proc ;
+	  wndclass.cbClsExtra    = 0 ;
+	  wndclass.cbWndExtra    = 0 ;
+	  wndclass.hInstance     = hInstance ;
+	  wndclass.hIcon         = NULL;
+	  wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
+	  wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
+	  wndclass.lpszMenuName  = MAKEINTRESOURCE(100);
+	  wndclass.lpszClassName = "" ;
+	  wndclass.hIconSm       = NULL ;
+
+	  W32Class=RegisterClassEx (&wndclass) ;
+	}
+
+	  wnd = CreateWindow ((LPCTSTR)W32Class,         // window class name
+			       "",     // window caption
+			       WS_OVERLAPPEDWINDOW,     // window style
+			       0,           // initial x position
+			       0,           // initial y position
+			       100,           // initial x size
+			       100,           // initial y size
+			       NULL,                    // parent window handle
+			       NULL,                    // window menu handle
+			       hInstance,               // program instance handle
+			       NULL) ;		             // creation parameters
+	  dc=GetDC(wnd);
+}
+
+W32Screen::~W32Screen()
+{
+}
+
+void W32Screen::closed()
+{
+	wnd=0;
+}
+
+LRESULT CALLBACK W32Proc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+  PAINTSTRUCT ps ;
+  if (iMsg==WM_PAINT){
+
+    BeginPaint (hwnd, &ps) ;
+    EndPaint (hwnd, &ps) ;
+    return 0 ;
+  }
+  else if (iMsg==WM_CLOSE){
+    DestroyWindow(hwnd);
+    screenMap[hwnd]->closed();
+    return 0;
+  }
+  else if (iMsg==WM_DESTROY){
+    return 0 ;
+  }
+
+  return DefWindowProc(hwnd, iMsg, wParam, lParam) ;
+}
+
+
+W32ScreenManager::W32ScreenManager(HDC dc,HGLRC gl,HINSTANCE hInstance)
+{
+	defaultDC=dc;
+	master=gl;
+	this->hInstance=hInstance;
+}
+
+void W32ScreenManager::screenDestroyed()
+{
+	wglMakeCurrent(defaultDC,master);
+}
+
+
+Screen *W32ScreenManager::openScreen(Application *application,int id)
+{
+	return new W32Screen(application,hInstance);
+}
+
 // ######################################################################
 
 void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
@@ -304,10 +531,11 @@ void loadLuaFiles()
 
 // ######################################################################
 
-void loadProperties()
+bool loadProperties()
 {
   ProjectProperties properties;
   G_FILE* fis = g_fopen("properties.bin", "rb");
+  if (!fis) return false;
 
   g_fseek(fis, 0, SEEK_END);
   int len = g_ftell(fis);
@@ -391,10 +619,18 @@ void loadProperties()
   ginput_setMouseToTouchEnabled(properties.mouseToTouch);
   ginput_setTouchToMouseEnabled(properties.touchToMouse);
   ginput_setMouseTouchOrder(properties.mouseTouchOrder);
+ return true;
 }
 
 // ######################################################################
 
+static HINSTANCE hInst;
+static bool isPlayer_;
+static Server *server_=NULL;
+
+void netTick() {
+    ScreenManager::manager->tick();
+}
 LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 
@@ -477,7 +713,13 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     application_->initialize();
     application_->setPrintFunc(printFunc);
     
-    loadProperties();
+    if (!loadProperties())
+    {
+    	isPlayer_=true;
+    	g_portrait=false;
+    	g_windowWidth=320;
+    	g_windowHeight=480;
+    }
 
     //    GetClientRect(hwnd,&clientRect);
     //    GetWindowRect(hwnd,&winRect);
@@ -513,8 +755,15 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 //      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowHeight+dxChrome+14,g_windowWidth+dyChrome+14,SWP_NOMOVE);
       SetWindowPos(hwnd,HWND_TOP,0,0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE);
     }
+	ScreenManager::manager=new W32ScreenManager(hDC,hRC,hInst);
 
-    loadLuaFiles();
+	application_->setPlayerMode(isPlayer_);
+    if (isPlayer_) {
+        //application_->setPrintFunc(printToServer);
+		server_ = new Server(0, ::getDeviceName().c_str()); //Default port
+    }
+    else
+    	loadLuaFiles();
     printf("Loaded Lua files\n");
 
     return 0;
@@ -588,7 +837,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
   }
   else if (iMsg==WM_PAINT){
-
+	netTick();
     BeginPaint (hwnd, &ps) ;
 
     //    glClear(GL_COLOR_BUFFER_BIT);
@@ -602,7 +851,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
   }
   else if (iMsg==WM_TIMER){
     //    gaudio_AdvanceStreamBuffers();
-
+    netTick();
     GStatus status;
     application_->enterFrame(&status);
 
@@ -738,6 +987,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   
   RegisterClassEx (&wndclass) ;
 
+  hInst=hInstance;
   hwnd = CreateWindow (szAppName,         // window class name
 		       "Gideros Win32 (no Qt)",     // window caption
 		       WS_OVERLAPPEDWINDOW,     // window style

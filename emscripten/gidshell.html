@@ -177,6 +177,9 @@
       Module.dynamicLibraries.pop();
       Module.JSPlugins.pop();
       Module.setStatus('Preparing...');
+      window.addEventListener('click',function(){
+          window.focus();
+      });    
       window.onerror = function() {
         Module.setStatus('Exception thrown, see JavaScript console');
         spinnerElement.style.display = 'none';
