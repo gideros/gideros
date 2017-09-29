@@ -1,0 +1,471 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EB077F771F7D340600320DD5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB077F761F7D340600320DD5 /* Assets.xcassets */; };
+		EB077F7D1F7D340600320DD5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB077F7C1F7D340600320DD5 /* main.m */; };
+		EB077F921F7D3E8300320DD5 /* libgvfs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077F8C1F7D3E8200320DD5 /* libgvfs.a */; };
+		EB077F931F7D3E8300320DD5 /* EAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB077F8F1F7D3E8300320DD5 /* EAGLView.m */; };
+		EB077F941F7D3E8300320DD5 /* libgideros.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077F901F7D3E8300320DD5 /* libgideros.a */; };
+		EB077F951F7D3E8300320DD5 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077F911F7D3E8300320DD5 /* liblua.a */; };
+		EB077F991F7D3E9000320DD5 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB077F961F7D3E8F00320DD5 /* ViewController.m */; };
+		EB077F9D1F7D3E9F00320DD5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EB077F9C1F7D3E9F00320DD5 /* AppDelegate.m */; };
+		EB077FA01F7D50BC00320DD5 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077F9F1F7D50BC00320DD5 /* AVFoundation.framework */; };
+		EB077FA51F7D50F100320DD5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077FA11F7D50F000320DD5 /* Cocoa.framework */; };
+		EB077FA61F7D50F100320DD5 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077FA21F7D50F000320DD5 /* CoreLocation.framework */; };
+		EB077FA71F7D50F100320DD5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077FA31F7D50F000320DD5 /* CoreGraphics.framework */; };
+		EB077FA81F7D50F100320DD5 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077FA41F7D50F100320DD5 /* CoreAudio.framework */; };
+		EB077FAA1F7D513A00320DD5 /* libc++.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077FA91F7D513A00320DD5 /* libc++.1.tbd */; };
+		EB077FAC1F7D527A00320DD5 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077FAB1F7D527A00320DD5 /* OpenAL.framework */; };
+		EB077FFC1F7E8E8A00320DD5 /* bit_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB077FDD1F7E8E8100320DD5 /* bit_stub.cpp */; };
+		EB077FFD1F7E8E8A00320DD5 /* strbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = EB077FE01F7E8E8200320DD5 /* strbuf.c */; };
+		EB077FFE1F7E8E8A00320DD5 /* libluasocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB077FE11F7E8E8200320DD5 /* libluasocket.a */; };
+		EB077FFF1F7E8E8A00320DD5 /* lua_cjson_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB077FE51F7E8E8300320DD5 /* lua_cjson_stub.cpp */; };
+		EB0780001F7E8E8A00320DD5 /* lsqlite3_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB077FE71F7E8E8300320DD5 /* lsqlite3_stub.cpp */; };
+		EB0780011F7E8E8A00320DD5 /* lua_cjson.c in Sources */ = {isa = PBXBuildFile; fileRef = EB077FE81F7E8E8300320DD5 /* lua_cjson.c */; };
+		EB0780021F7E8E8A00320DD5 /* fpconv.c in Sources */ = {isa = PBXBuildFile; fileRef = EB077FE91F7E8E8400320DD5 /* fpconv.c */; };
+		EB0780031F7E8E8A00320DD5 /* lsqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = EB077FEF1F7E8E8500320DD5 /* lsqlite3.c */; };
+		EB0780041F7E8E8A00320DD5 /* lfs_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB077FF01F7E8E8600320DD5 /* lfs_stub.cpp */; };
+		EB0780051F7E8E8A00320DD5 /* bit.c in Sources */ = {isa = PBXBuildFile; fileRef = EB077FF11F7E8E8600320DD5 /* bit.c */; };
+		EB0780061F7E8E8A00320DD5 /* lfs.c in Sources */ = {isa = PBXBuildFile; fileRef = EB077FF21F7E8E8600320DD5 /* lfs.c */; };
+		EB0780071F7E8E8A00320DD5 /* luasocket_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB077FFA1F7E8E8900320DD5 /* luasocket_stub.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		EB077F701F7D340600320DD5 /* MacPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB077F761F7D340600320DD5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EB077F7B1F7D340600320DD5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EB077F7C1F7D340600320DD5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		EB077F7E1F7D340600320DD5 /* MacPlayer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacPlayer.entitlements; sourceTree = "<group>"; };
+		EB077F8C1F7D3E8200320DD5 /* libgvfs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgvfs.a; sourceTree = "<group>"; };
+		EB077F8D1F7D3E8200320DD5 /* giderosapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = giderosapi.h; sourceTree = "<group>"; };
+		EB077F8E1F7D3E8200320DD5 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
+		EB077F8F1F7D3E8300320DD5 /* EAGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EAGLView.m; sourceTree = "<group>"; };
+		EB077F901F7D3E8300320DD5 /* libgideros.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgideros.a; sourceTree = "<group>"; };
+		EB077F911F7D3E8300320DD5 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = liblua.a; sourceTree = "<group>"; };
+		EB077F961F7D3E8F00320DD5 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		EB077F981F7D3E9000320DD5 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		EB077F9B1F7D3E9F00320DD5 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		EB077F9C1F7D3E9F00320DD5 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		EB077F9F1F7D50BC00320DD5 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		EB077FA11F7D50F000320DD5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		EB077FA21F7D50F000320DD5 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		EB077FA31F7D50F000320DD5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		EB077FA41F7D50F100320DD5 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		EB077FA91F7D513A00320DD5 /* libc++.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.1.tbd"; path = "usr/lib/libc++.1.tbd"; sourceTree = SDKROOT; };
+		EB077FAB1F7D527A00320DD5 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		EB077FDD1F7E8E8100320DD5 /* bit_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bit_stub.cpp; sourceTree = "<group>"; };
+		EB077FDE1F7E8E8100320DD5 /* gapplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gapplication.h; sourceTree = "<group>"; };
+		EB077FDF1F7E8E8100320DD5 /* gstdio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gstdio.h; sourceTree = "<group>"; };
+		EB077FE01F7E8E8200320DD5 /* strbuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strbuf.c; sourceTree = "<group>"; };
+		EB077FE11F7E8E8200320DD5 /* libluasocket.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libluasocket.a; sourceTree = "<group>"; };
+		EB077FE21F7E8E8200320DD5 /* fpconv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpconv.h; sourceTree = "<group>"; };
+		EB077FE31F7E8E8200320DD5 /* gexport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gexport.h; sourceTree = "<group>"; };
+		EB077FE41F7E8E8200320DD5 /* gfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gfile.h; sourceTree = "<group>"; };
+		EB077FE51F7E8E8300320DD5 /* lua_cjson_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lua_cjson_stub.cpp; sourceTree = "<group>"; };
+		EB077FE61F7E8E8300320DD5 /* gplugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gplugin.h; sourceTree = "<group>"; };
+		EB077FE71F7E8E8300320DD5 /* lsqlite3_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lsqlite3_stub.cpp; sourceTree = "<group>"; };
+		EB077FE81F7E8E8300320DD5 /* lua_cjson.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lua_cjson.c; sourceTree = "<group>"; };
+		EB077FE91F7E8E8400320DD5 /* fpconv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fpconv.c; sourceTree = "<group>"; };
+		EB077FEA1F7E8E8400320DD5 /* glog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glog.h; sourceTree = "<group>"; };
+		EB077FEB1F7E8E8400320DD5 /* gpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gpath.h; sourceTree = "<group>"; };
+		EB077FEC1F7E8E8500320DD5 /* lauxlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lauxlib.h; sourceTree = "<group>"; };
+		EB077FED1F7E8E8500320DD5 /* lua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lua.h; sourceTree = "<group>"; };
+		EB077FEE1F7E8E8500320DD5 /* gglobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gglobal.h; sourceTree = "<group>"; };
+		EB077FEF1F7E8E8500320DD5 /* lsqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lsqlite3.c; sourceTree = "<group>"; };
+		EB077FF01F7E8E8600320DD5 /* lfs_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lfs_stub.cpp; sourceTree = "<group>"; };
+		EB077FF11F7E8E8600320DD5 /* bit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bit.c; sourceTree = "<group>"; };
+		EB077FF21F7E8E8600320DD5 /* lfs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lfs.c; sourceTree = "<group>"; };
+		EB077FF31F7E8E8700320DD5 /* gideros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gideros.h; sourceTree = "<group>"; };
+		EB077FF41F7E8E8700320DD5 /* lualib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lualib.h; sourceTree = "<group>"; };
+		EB077FF51F7E8E8700320DD5 /* lfs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lfs.h; sourceTree = "<group>"; };
+		EB077FF61F7E8E8800320DD5 /* luaconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = luaconf.h; sourceTree = "<group>"; };
+		EB077FF71F7E8E8800320DD5 /* gevent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gevent.h; sourceTree = "<group>"; };
+		EB077FF81F7E8E8800320DD5 /* gproxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gproxy.h; sourceTree = "<group>"; };
+		EB077FF91F7E8E8900320DD5 /* strbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = strbuf.h; sourceTree = "<group>"; };
+		EB077FFA1F7E8E8900320DD5 /* luasocket_stub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = luasocket_stub.cpp; sourceTree = "<group>"; };
+		EB077FFB1F7E8E8A00320DD5 /* greferenced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = greferenced.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EB077F6D1F7D340600320DD5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB077FAC1F7D527A00320DD5 /* OpenAL.framework in Frameworks */,
+				EB077FAA1F7D513A00320DD5 /* libc++.1.tbd in Frameworks */,
+				EB077FA51F7D50F100320DD5 /* Cocoa.framework in Frameworks */,
+				EB077FA61F7D50F100320DD5 /* CoreLocation.framework in Frameworks */,
+				EB077FA71F7D50F100320DD5 /* CoreGraphics.framework in Frameworks */,
+				EB077FA81F7D50F100320DD5 /* CoreAudio.framework in Frameworks */,
+				EB077FA01F7D50BC00320DD5 /* AVFoundation.framework in Frameworks */,
+				EB077F951F7D3E8300320DD5 /* liblua.a in Frameworks */,
+				EB077F921F7D3E8300320DD5 /* libgvfs.a in Frameworks */,
+				EB077F941F7D3E8300320DD5 /* libgideros.a in Frameworks */,
+				EB077FFE1F7E8E8A00320DD5 /* libluasocket.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EB077F671F7D340600320DD5 = {
+			isa = PBXGroup;
+			children = (
+				EB077F721F7D340600320DD5 /* MacPlayer */,
+				EB077F711F7D340600320DD5 /* Products */,
+				EB077F9E1F7D50BB00320DD5 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		EB077F711F7D340600320DD5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EB077F701F7D340600320DD5 /* MacPlayer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EB077F721F7D340600320DD5 /* MacPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				EB077FDC1F7E8E3300320DD5 /* Plugins */,
+				EB077F9B1F7D3E9F00320DD5 /* AppDelegate.h */,
+				EB077F9C1F7D3E9F00320DD5 /* AppDelegate.m */,
+				EB077F981F7D3E9000320DD5 /* ViewController.h */,
+				EB077F961F7D3E8F00320DD5 /* ViewController.m */,
+				EB077F8E1F7D3E8200320DD5 /* EAGLView.h */,
+				EB077F8F1F7D3E8300320DD5 /* EAGLView.m */,
+				EB077F8D1F7D3E8200320DD5 /* giderosapi.h */,
+				EB077F901F7D3E8300320DD5 /* libgideros.a */,
+				EB077F8C1F7D3E8200320DD5 /* libgvfs.a */,
+				EB077F911F7D3E8300320DD5 /* liblua.a */,
+				EB077F761F7D340600320DD5 /* Assets.xcassets */,
+				EB077F7B1F7D340600320DD5 /* Info.plist */,
+				EB077F7C1F7D340600320DD5 /* main.m */,
+				EB077F7E1F7D340600320DD5 /* MacPlayer.entitlements */,
+			);
+			path = MacPlayer;
+			sourceTree = "<group>";
+		};
+		EB077F9E1F7D50BB00320DD5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EB077FAB1F7D527A00320DD5 /* OpenAL.framework */,
+				EB077FA91F7D513A00320DD5 /* libc++.1.tbd */,
+				EB077FA11F7D50F000320DD5 /* Cocoa.framework */,
+				EB077FA41F7D50F100320DD5 /* CoreAudio.framework */,
+				EB077FA31F7D50F000320DD5 /* CoreGraphics.framework */,
+				EB077FA21F7D50F000320DD5 /* CoreLocation.framework */,
+				EB077F9F1F7D50BC00320DD5 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		EB077FDC1F7E8E3300320DD5 /* Plugins */ = {
+			isa = PBXGroup;
+			children = (
+				EB077FDD1F7E8E8100320DD5 /* bit_stub.cpp */,
+				EB077FF11F7E8E8600320DD5 /* bit.c */,
+				EB077FE91F7E8E8400320DD5 /* fpconv.c */,
+				EB077FE21F7E8E8200320DD5 /* fpconv.h */,
+				EB077FDE1F7E8E8100320DD5 /* gapplication.h */,
+				EB077FF71F7E8E8800320DD5 /* gevent.h */,
+				EB077FE31F7E8E8200320DD5 /* gexport.h */,
+				EB077FE41F7E8E8200320DD5 /* gfile.h */,
+				EB077FEE1F7E8E8500320DD5 /* gglobal.h */,
+				EB077FF31F7E8E8700320DD5 /* gideros.h */,
+				EB077FEA1F7E8E8400320DD5 /* glog.h */,
+				EB077FEB1F7E8E8400320DD5 /* gpath.h */,
+				EB077FE61F7E8E8300320DD5 /* gplugin.h */,
+				EB077FF81F7E8E8800320DD5 /* gproxy.h */,
+				EB077FFB1F7E8E8A00320DD5 /* greferenced.h */,
+				EB077FDF1F7E8E8100320DD5 /* gstdio.h */,
+				EB077FEC1F7E8E8500320DD5 /* lauxlib.h */,
+				EB077FF01F7E8E8600320DD5 /* lfs_stub.cpp */,
+				EB077FF21F7E8E8600320DD5 /* lfs.c */,
+				EB077FF51F7E8E8700320DD5 /* lfs.h */,
+				EB077FE11F7E8E8200320DD5 /* libluasocket.a */,
+				EB077FE71F7E8E8300320DD5 /* lsqlite3_stub.cpp */,
+				EB077FEF1F7E8E8500320DD5 /* lsqlite3.c */,
+				EB077FE51F7E8E8300320DD5 /* lua_cjson_stub.cpp */,
+				EB077FE81F7E8E8300320DD5 /* lua_cjson.c */,
+				EB077FED1F7E8E8500320DD5 /* lua.h */,
+				EB077FF61F7E8E8800320DD5 /* luaconf.h */,
+				EB077FF41F7E8E8700320DD5 /* lualib.h */,
+				EB077FFA1F7E8E8900320DD5 /* luasocket_stub.cpp */,
+				EB077FE01F7E8E8200320DD5 /* strbuf.c */,
+				EB077FF91F7E8E8900320DD5 /* strbuf.h */,
+			);
+			path = Plugins;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EB077F6F1F7D340600320DD5 /* MacPlayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB077F811F7D340600320DD5 /* Build configuration list for PBXNativeTarget "MacPlayer" */;
+			buildPhases = (
+				EB077F6C1F7D340600320DD5 /* Sources */,
+				EB077F6D1F7D340600320DD5 /* Frameworks */,
+				EB077F6E1F7D340600320DD5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacPlayer;
+			productName = MacPlayer;
+			productReference = EB077F701F7D340600320DD5 /* MacPlayer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EB077F681F7D340600320DD5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0900;
+				ORGANIZATIONNAME = "Gideros Mobile";
+				TargetAttributes = {
+					EB077F6F1F7D340600320DD5 = {
+						CreatedOnToolsVersion = 9.0;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = EB077F6B1F7D340600320DD5 /* Build configuration list for PBXProject "MacPlayer" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EB077F671F7D340600320DD5;
+			productRefGroup = EB077F711F7D340600320DD5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EB077F6F1F7D340600320DD5 /* MacPlayer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EB077F6E1F7D340600320DD5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB077F771F7D340600320DD5 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EB077F6C1F7D340600320DD5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB0780001F7E8E8A00320DD5 /* lsqlite3_stub.cpp in Sources */,
+				EB077F9D1F7D3E9F00320DD5 /* AppDelegate.m in Sources */,
+				EB077FFC1F7E8E8A00320DD5 /* bit_stub.cpp in Sources */,
+				EB0780071F7E8E8A00320DD5 /* luasocket_stub.cpp in Sources */,
+				EB0780041F7E8E8A00320DD5 /* lfs_stub.cpp in Sources */,
+				EB077F991F7D3E9000320DD5 /* ViewController.m in Sources */,
+				EB0780051F7E8E8A00320DD5 /* bit.c in Sources */,
+				EB0780011F7E8E8A00320DD5 /* lua_cjson.c in Sources */,
+				EB077F7D1F7D340600320DD5 /* main.m in Sources */,
+				EB077FFF1F7E8E8A00320DD5 /* lua_cjson_stub.cpp in Sources */,
+				EB0780061F7E8E8A00320DD5 /* lfs.c in Sources */,
+				EB077F931F7D3E8300320DD5 /* EAGLView.m in Sources */,
+				EB077FFD1F7E8E8A00320DD5 /* strbuf.c in Sources */,
+				EB0780021F7E8E8A00320DD5 /* fpconv.c in Sources */,
+				EB0780031F7E8E8A00320DD5 /* lsqlite3.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		EB077F7F1F7D340600320DD5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		EB077F801F7D340600320DD5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		EB077F821F7D340600320DD5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MacPlayer/MacPlayer.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = FC78K26J4W;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MacPlayer/Plugins";
+				INFOPLIST_FILE = MacPlayer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MacPlayer",
+					"$(PROJECT_DIR)/MacPlayer/Plugins",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = GiderosMobile.MacPlayer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EB077F831F7D340600320DD5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MacPlayer/MacPlayer.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = FC78K26J4W;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MacPlayer/Plugins";
+				INFOPLIST_FILE = MacPlayer/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MacPlayer",
+					"$(PROJECT_DIR)/MacPlayer/Plugins",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				PRODUCT_BUNDLE_IDENTIFIER = GiderosMobile.MacPlayer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EB077F6B1F7D340600320DD5 /* Build configuration list for PBXProject "MacPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB077F7F1F7D340600320DD5 /* Debug */,
+				EB077F801F7D340600320DD5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EB077F811F7D340600320DD5 /* Build configuration list for PBXNativeTarget "MacPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB077F821F7D340600320DD5 /* Debug */,
+				EB077F831F7D340600320DD5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EB077F681F7D340600320DD5 /* Project object */;
+}

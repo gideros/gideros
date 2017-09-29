@@ -35,6 +35,9 @@
 	#include <OpenGLES/ES2/glext.h>
 #endif
 #define OPENGL_ES
+#elif TARGET_OS_MAC
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
 #elif __ANDROID__
 #ifdef GIDEROS_GL1
     #include <GLES/gl.h>

@@ -1,8 +1,12 @@
 #include <ginput.h>
 #include <ginput-ios.h>
-#include <UIKit/UIKit.h>
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
 #import <CoreMotion/CoreMotion.h>
+#endif
+#if TARGET_OS_MAC
+//TODO Use this for touchscreen/touchpad on OSX
+@interface UITouch: NSObject
+@end
 #endif
 #include <map>
 #include <vector>
@@ -10,7 +14,7 @@
 
 class GGInputManager;
 
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
 @interface GGAccelerometer : NSObject<UIAccelerometerDelegate>
 {
     UIAccelerometer *accelerometer_;
@@ -76,19 +80,17 @@ class GGInputManager;
 
 @end
 #endif
-
 class GGInputManager
 {
 public:
     GGInputManager()
     {
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
         accelerometer_ = [[GGAccelerometer alloc] init];
 
 		if (NSClassFromString(@"CMMotionManager") != nil)
 			motionManager_ = [[CMMotionManager alloc] init];
 #endif
-		
 		accelerometerStartCount_ = 0;
 		gyroscopeStartCount_ = 0;
 
@@ -107,12 +109,11 @@ public:
     
     ~GGInputManager()
     {
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
         [accelerometer_ release];
 		if (motionManager_)
 			[motionManager_ release];		
 #endif
-        
         gevent_RemoveCallbackWithGid(gid_);
         
         gevent_RemoveCallback(posttick_s, this);
@@ -163,7 +164,7 @@ public:
     
     bool isAccelerometerAvailable()
     {
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
         return true;
 #else
         return false;
@@ -172,7 +173,7 @@ public:
     
     void startAccelerometer()
     {
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
 		accelerometerStartCount_++;
 		if (accelerometerStartCount_ == 1)
 			[accelerometer_ start];
@@ -181,7 +182,7 @@ public:
     
     void stopAccelerometer()
     {
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
 		if (accelerometerStartCount_ > 0)
 		{
 			accelerometerStartCount_--;
@@ -195,7 +196,7 @@ public:
     {
         double x2 = 0, y2 = 0, z2 = 0;
 
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
         if (accelerometerStartCount_ > 0)
         {
             x2 = accelerometer_.x;
@@ -214,7 +215,7 @@ public:
 	
 	bool isGyroscopeAvailable()
     {
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
         return motionManager_ && [motionManager_ isGyroAvailable];
 #else
         return false;
@@ -226,7 +227,7 @@ public:
 		if (!isGyroscopeAvailable())
 			return;
 		
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
 		gyroscopeStartCount_++;
 		if (gyroscopeStartCount_ == 1)
 			[motionManager_ startGyroUpdates];
@@ -238,7 +239,7 @@ public:
 		if (!isGyroscopeAvailable())
 			return;
 
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
 		if (gyroscopeStartCount_ > 0)
 		{
 			gyroscopeStartCount_--;
@@ -252,7 +253,7 @@ public:
     {
         double x2 = 0, y2 = 0, z2 = 0;
 		
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
         if (gyroscopeStartCount_ > 0)
         {
 			CMRotationRate rotationRate = motionManager_.gyroData.rotationRate;
@@ -322,9 +323,10 @@ public:
     void touchesBegan(NSSet *touches, NSSet *allTouches, UIView *view)
     {
         float contentScaleFactor = 1;
+#if !TARGET_OS_MAC
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
-            
+#endif
         bool has3Dtouch = false;
         #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
         if([[view traitCollection] forceTouchCapability] == UIForceTouchCapabilityAvailable)
@@ -397,8 +399,10 @@ public:
     void touchesMoved(NSSet *touches, NSSet *allTouches, UIView *view)
     {
         float contentScaleFactor = 1;
+#if !TARGET_OS_MAC
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
+#endif
         
         bool has3Dtouch = false;
 #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
@@ -471,9 +475,10 @@ public:
     void touchesEnded(NSSet *touches, NSSet *allTouches, UIView *view)
     {
         float contentScaleFactor = 1;
+#if !TARGET_OS_MAC
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
-        
+#endif
         bool has3Dtouch = false;
 #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
         if([[view traitCollection] forceTouchCapability] == UIForceTouchCapabilityAvailable)
@@ -549,9 +554,10 @@ public:
     void touchesCancelled(NSSet *touches, NSSet *allTouches, UIView *view)
     {
         float contentScaleFactor = 1;
+#if !TARGET_OS_MAC
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
-        
+#endif
         bool has3Dtouch = false;
 #if __IPHONE_OS_VERSION_MIN_REQUIRED > __IPHONE_8_2
         if([[view traitCollection] forceTouchCapability] == UIForceTouchCapabilityAvailable)
@@ -684,7 +690,7 @@ private:
 		[touchPoolMutex_ unlock];
 	}
 
-    ginput_MouseEvent *newMouseEvent(int x, int y, int button)
+    ginput_MouseEvent *newMouseEvent(int x, int y, int button, int mod=0)
     {
         [mousePoolMutex_ lock];
         ginput_MouseEvent *event;
@@ -704,7 +710,7 @@ private:
         event->y = y;
         event->button = button;
         event->wheel = 0;      
-        event->modifiers=0;  
+        event->modifiers=mod;
         
         return event;
     }
@@ -715,7 +721,164 @@ private:
         mousePool2_.push_back(event);
         [mousePoolMutex_ unlock];
     }
+public:
+    void mouseDown(int x, int y, int button,int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
+        
+        ginput_TouchEvent *touchEvent = NULL;
+        if (isMouseToTouchEnabled_)
+        {
+            touchEvent = newTouchEvent(1);
+            touchEvent->touch.x = x;
+            touchEvent->touch.y = y;
+            touchEvent->touch.id = 0;
+            touchEvent->touch.pressure = 0;
+            touchEvent->touch.touchType = 2;
+            touchEvent->touch.modifiers = mod;
+            touchEvent->touch.mouseButton=button;
+            touchEvent->allTouches[0].x = x;
+            touchEvent->allTouches[0].y = y;
+            touchEvent->allTouches[0].id = 0;
+            touchEvent->allTouches[0].pressure = 0;
+            touchEvent->allTouches[0].touchType = 2;
+            touchEvent->allTouches[0].modifiers = mod;
+            touchEvent->allTouches[0].mouseButton=button;
+        }
+        
+        if (mouseTouchOrder_ == 0)
+        {
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_DOWN_EVENT, mouseEvent, 0, this);
+            deleteMouseEvent(mouseEvent);
+            if (touchEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_BEGIN_EVENT, touchEvent, 0, this);
+                deleteTouchEvent(touchEvent);
+            }
+            
+        }
+        else
+        {
+            if (touchEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_BEGIN_EVENT, touchEvent, 0, this);
+                deleteTouchEvent(touchEvent);
+            }
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_DOWN_EVENT, mouseEvent, 0, this);
+            deleteMouseEvent(mouseEvent);
+        }
+    }
     
+    void mouseMove(int x, int y, int button, int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
+        
+        ginput_TouchEvent *touchEvent = NULL;
+        if (isMouseToTouchEnabled_)
+        {
+            touchEvent = newTouchEvent(1);
+            touchEvent->touch.x = x;
+            touchEvent->touch.y = y;
+            touchEvent->touch.id = 0;
+            touchEvent->touch.pressure = 0;
+            touchEvent->touch.touchType = 2;
+            touchEvent->touch.modifiers = mod;
+            touchEvent->touch.mouseButton=button;
+            touchEvent->allTouches[0].x = x;
+            touchEvent->allTouches[0].y = y;
+            touchEvent->allTouches[0].id = 0;
+            touchEvent->allTouches[0].pressure = 0;
+            touchEvent->allTouches[0].touchType = 2;
+            touchEvent->allTouches[0].modifiers = mod;
+            touchEvent->allTouches[0].mouseButton=button;
+        }
+        
+        if (mouseTouchOrder_ == 0)
+        {
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_MOVE_EVENT, mouseEvent, 0, this);
+            deleteMouseEvent(mouseEvent);
+            if (touchEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_MOVE_EVENT, touchEvent, 0, this);
+                deleteTouchEvent(touchEvent);
+            }
+            
+        }
+        else
+        {
+            if (touchEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_MOVE_EVENT, touchEvent, 0, this);
+                deleteTouchEvent(touchEvent);
+            }
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_MOVE_EVENT, mouseEvent, 0, this);
+            deleteMouseEvent(mouseEvent);
+        }
+    }
+    
+    void mouseHover(int x, int y, int button, int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
+        
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_HOVER_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+    
+    void mouseUp(int x, int y, int button, int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, button, mod);
+        
+        ginput_TouchEvent *touchEvent = NULL;
+        if (isMouseToTouchEnabled_)
+        {
+            touchEvent = newTouchEvent(1);
+            touchEvent->touch.x = x;
+            touchEvent->touch.y = y;
+            touchEvent->touch.id = 0;
+            touchEvent->touch.pressure = 0;
+            touchEvent->touch.touchType = 2;
+            touchEvent->touch.modifiers = mod;
+            touchEvent->touch.mouseButton=button;
+            touchEvent->allTouches[0].x = x;
+            touchEvent->allTouches[0].y = y;
+            touchEvent->allTouches[0].id = 0;
+            touchEvent->allTouches[0].pressure = 0;
+            touchEvent->allTouches[0].touchType = 2;
+            touchEvent->allTouches[0].modifiers = mod;
+            touchEvent->allTouches[0].mouseButton=button;
+        }
+        
+        if (mouseTouchOrder_ == 0)
+        {
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_UP_EVENT, mouseEvent, 0, this);
+            deleteMouseEvent(mouseEvent);
+            if (touchEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_END_EVENT, touchEvent, 0, this);
+                deleteTouchEvent(touchEvent);
+            }
+            
+        }
+        else
+        {
+            if (touchEvent)
+            {
+                gevent_EnqueueEvent(gid_, callback_s, GINPUT_TOUCH_END_EVENT, touchEvent, 0, this);
+                deleteTouchEvent(touchEvent);
+            }
+            gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_UP_EVENT, mouseEvent, 0, this);
+            deleteMouseEvent(mouseEvent);
+        }
+    }
+    
+    void mouseWheel(int x, int y, int buttons,int delta, int mod)
+    {
+        ginput_MouseEvent *mouseEvent = newMouseEvent(x, y, buttons, mod);
+        mouseEvent->wheel=delta;
+        gevent_EnqueueEvent(gid_, callback_s, GINPUT_MOUSE_WHEEL_EVENT, mouseEvent, 0, this);
+        deleteMouseEvent(mouseEvent);
+    }
+private:
     std::vector<UITouch*> touches_;
 	std::map<size_t, std::vector<ginput_TouchEvent*> > touchPool1_;
 	std::map<size_t, std::vector<ginput_TouchEvent*> > touchPool2_;
@@ -815,7 +978,7 @@ private:
     //std::map<int, int> keyMap_;
 
 private:
-#if TARGET_OS_TV == 0
+#if (!TARGET_OS_TV && !TARGET_OS_MAC)
     GGAccelerometer *accelerometer_;
     CMMotionManager *motionManager_;
 #endif
@@ -947,6 +1110,35 @@ void ginputp_keyChar(const char *keyChar)
      s_manager->keyChar(keyChar);
 }
     
+    void ginputp_mouseDown(int x, int y, int button, int mod)
+    {
+        if (s_manager)
+            s_manager->mouseDown(x, y, button, mod);
+    }
+    
+    void ginputp_mouseMove(int x, int y, int button, int mod)
+    {
+        if (s_manager)
+            s_manager->mouseMove(x, y, button, mod);
+    }
+    
+    void ginputp_mouseHover(int x, int y, int button, int mod)
+    {
+        if (s_manager)
+            s_manager->mouseHover(x, y, button, mod);
+    }
+    
+    void ginputp_mouseUp(int x, int y, int button, int mod)
+    {
+        if (s_manager)
+            s_manager->mouseUp(x, y, button, mod);
+    }
+    
+    void ginputp_mouseWheel(int x, int y, int buttons, int delta, int mod)
+    {
+        if (s_manager)
+            s_manager->mouseWheel(x, y, buttons,delta, mod);
+    }
 
 void ginput_setMouseToTouchEnabled(int enabled)
 {

@@ -13,9 +13,13 @@
 #endif
 
 #import <AVFoundation/AVFoundation.h>
+#if !TARGET_OS_MAC
 #import <UIKit/UIKit.h>
+#else
+#import <Cocoa/Cocoa.h>
+#endif
 
-#if TARGET_OS_TV == 0
+#if !TARGET_OS_TV && !TARGET_OS_MAC
 @interface GGAVAudioSessionDelegate : NSObject<AVAudioSessionDelegate>
 #else
 @interface GGAVAudioSessionDelegate : NSObject<NSObject>
@@ -39,7 +43,7 @@
 
 - (void)endInterruptionWithFlags:(NSUInteger)flags
 {
-#if TARGET_OS_TV == 0
+#if !TARGET_OS_TV && !TARGET_OS_MAC
     if (flags & AVAudioSessionInterruptionFlags_ShouldResume)
         audioManager_->endInterruption();
 #endif
@@ -78,11 +82,11 @@ struct GGAudioSystemData
 void GGAudioManager::systemInit()
 {
     systemData_ = (GGAudioSystemData*)malloc(sizeof(GGAudioSystemData));
-
-    [[AVAudioSession sharedInstance] setActive:YES error:nil];
     
     systemData_->delegate = [[GGAVAudioSessionDelegate alloc] init];
     systemData_->delegate.audioManager = this;
+#if !TARGET_OS_MAC
+    [[AVAudioSession sharedInstance] setActive:YES error:nil];
 #if TARGET_OS_TV == 0
     [[AVAudioSession sharedInstance] setDelegate:systemData_->delegate];
 #endif
@@ -91,7 +95,7 @@ void GGAudioManager::systemInit()
      selector:@selector(applicationDidBecomeActive:)
      name:UIApplicationDidBecomeActiveNotification
      object:nil];
-    
+#endif
     systemData_->device = alcOpenDevice(NULL);
 
     systemData_->context = alcCreateContext(systemData_->device, NULL);
@@ -104,13 +108,15 @@ void GGAudioManager::systemCleanup()
     alcMakeContextCurrent(NULL);
     alcDestroyContext(systemData_->context);
     alcCloseDevice(systemData_->device);
+#if !TARGET_OS_MAC
 #if TARGET_OS_TV == 0
     [[AVAudioSession sharedInstance] setDelegate:nil];
 #endif
     [[NSNotificationCenter defaultCenter] removeObserver:systemData_->delegate];
-    [systemData_->delegate release];
-
     [[AVAudioSession sharedInstance] setActive:NO error:nil];
+#endif
+
+    [systemData_->delegate release];
 
     free(systemData_);
 }

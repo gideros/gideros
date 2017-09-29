@@ -1,4 +1,8 @@
+#if TARGET_OS_MAC
+#import <Cocoa/Cocoa.h>
+#else
 #import <UIKit/UIKit.h>
+#endif
 
 #include <sys/stat.h>
 
@@ -18,9 +22,8 @@
 
 #include <gstdio.h>
 
-#include <splashscreen.h>
-#include <application.h>
 #include <stage.h>
+#include <splashscreen.h>
 
 #include <gpath.h>
 
@@ -253,7 +256,7 @@ public:
 	void exitRenderLoopHelper();
 	
 	void didReceiveMemoryWarning();
-#if TARGET_OS_TV == 0
+#if !TARGET_OS_TV && !TARGET_OS_MAC
 	BOOL shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation);	
 	void willRotateToInterfaceOrientationHelper(UIInterfaceOrientation toInterfaceOrientation);
 	void willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation);
@@ -361,7 +364,7 @@ void NetworkManager::tick()
                     const char* absfilename = g_pathForFile("../luafiles.txt");
                     FILE* fos = fopen(absfilename, "wb");
                     fwrite(&data[0], data.size(), 1, fos);
-                    +fclose(fos);
+                    fclose(fos);
 					play(data);
                 }
 					break;
@@ -671,7 +674,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	application_->enableExceptions();
 	application_->initialize();
 	application_->setResolution(width_, height_);
-#if TARGET_OS_TV == 0
+#if !TARGET_OS_TV && !TARGET_OS_MAC
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
@@ -680,7 +683,9 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	Binder::disableTypeChecking();
 	
 	hardwareOrientation_ = ePortrait;
-    
+#if TARGET_OS_MAC
+    hardwareOrientation_ = eFixed;
+#endif
     deviceOrientation_ = ePortrait;
 
 #if TARGET_OS_TV == 1
@@ -795,7 +800,7 @@ ApplicationManager::~ApplicationManager()
 
 void ApplicationManager::drawFirstFrame()
 {
-#if TARGET_OS_TV == 0
+#if !TARGET_OS_TV && !TARGET_OS_MAC
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
@@ -1057,21 +1062,27 @@ void ApplicationManager::loadProperties()
 	buffer >> properties_.touchToMouse;
 	buffer >> properties_.mouseTouchOrder;
 
+#if !TARGET_OS_MAC
 	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
+#else
+    bool phone= false;
+#endif
 	bool notRetina = (properties_.retinaDisplay == 0) || (properties_.retinaDisplay == 1 && !phone) || (properties_.retinaDisplay == 2 && phone);
 	
 	float contentScaleFactor = 1;
 	[view_ enableRetinaDisplay:(notRetina ? NO : YES)];
+#if !TARGET_OS_MAC
 	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
 		contentScaleFactor = view_.contentScaleFactor;
-	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
+#endif
+    application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	application_->setOrientation((Orientation)properties_.orientation);
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
-#if TARGET_OS_TV == 0
+#if !TARGET_OS_TV && !TARGET_OS_MAC
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
@@ -1137,13 +1148,19 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->deinitialize();
 	application_->initialize();
 
+#if !TARGET_OS_MAC
 	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
+#else
+    bool phone = false;
+#endif
 	bool notRetina = (properties_.retinaDisplay == 0) || (properties_.retinaDisplay == 1 && !phone) || (properties_.retinaDisplay == 2 && phone);
 	
 	float contentScaleFactor = 1;
 	[view_ enableRetinaDisplay:(notRetina ? NO : YES)];
+#if !TARGET_OS_MAC
 	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
 		contentScaleFactor = view_.contentScaleFactor;
+#endif
 	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
@@ -1151,7 +1168,7 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
-#if TARGET_OS_TV == 0
+#if !TARGET_OS_TV && !TARGET_OS_MAC
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
@@ -1412,7 +1429,7 @@ void ApplicationManager::didReceiveMemoryWarning()
 #endif
 }
 
-#if TARGET_OS_TV == 0
+#if !TARGET_OS_TV && !TARGET_OS_MAC
 BOOL ApplicationManager::shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation)
 {
 	BOOL result;
@@ -1455,7 +1472,7 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 }
 #endif
 
-#if TARGET_OS_TV == 1
+#if TARGET_OS_TV || TARGET_OS_MAC
 void ApplicationManager::willRotateToInterfaceOrientationHelperTV(Orientation deviceOrientation_)
 {
     application_->getApplication()->setDeviceOrientation(deviceOrientation_);
@@ -1562,7 +1579,17 @@ void ApplicationManager::background()
 
 void ApplicationManager::surfaceChanged(int width,int height)
 {
+#if TARGET_OS_MAC
+    width_ = width;
+    height_ = height;
+    application_->setResolution(width_, height_);
+#endif
     if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
+    Event event(Event::APPLICATION_RESIZE);
+    GStatus status;
+    application_->broadcastEvent(&event, &status);
+    if (status.error())
+        luaError(status.errorString());
 }
 
 
@@ -1638,7 +1665,7 @@ void gdr_resume()
 {
 	s_manager->resume();
 }
-#if TARGET_OS_TV == 0
+#if !TARGET_OS_TV && !TARGET_OS_MAC
 BOOL gdr_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation)
 {
 	return s_manager->shouldAutorotateToInterfaceOrientation(interfaceOrientation);
@@ -1665,27 +1692,44 @@ void gdr_didReceiveMemoryWarning()
 }
 
 #if TARGET_OS_TV == 0
-void gdr_touchesBegan(NSSet *touches, NSSet *allTouches)
-{
-	s_manager->touchesBegan(touches, allTouches);
-}
-
-void gdr_touchesMoved(NSSet *touches, NSSet *allTouches)
-{
-	s_manager->touchesMoved(touches, allTouches);
-}
-
-void gdr_touchesEnded(NSSet *touches, NSSet *allTouches)
-{
-	s_manager->touchesEnded(touches, allTouches);
-}
-
-void gdr_touchesCancelled(NSSet *touches, NSSet *allTouches)
-{
-	s_manager->touchesCancelled(touches, allTouches);
-}
-#endif
+    void gdr_touchesBegan(NSSet *touches, NSSet *allTouches)
+    {
+        s_manager->touchesBegan(touches, allTouches);
+    }
     
+    void gdr_touchesMoved(NSSet *touches, NSSet *allTouches)
+    {
+        s_manager->touchesMoved(touches, allTouches);
+    }
+    
+    void gdr_touchesEnded(NSSet *touches, NSSet *allTouches)
+    {
+        s_manager->touchesEnded(touches, allTouches);
+    }
+    
+    void gdr_touchesCancelled(NSSet *touches, NSSet *allTouches)
+    {
+        s_manager->touchesCancelled(touches, allTouches);
+    }
+#endif
+#if TARGET_OS_MAC
+    void gdr_mouseDown(int x, int y, int button,int mod) {
+        ginputp_mouseDown(x,y,button,mod);
+    }
+    void gdr_mouseMove(int x, int y, int button,int mod) {
+        ginputp_mouseMove(x,y,button,mod);
+    }
+    void gdr_mouseHover(int x, int y, int button,int mod) {
+        ginputp_mouseHover(x,y,button,mod);
+    }
+    void gdr_mouseUp(int x, int y, int button,int mod) {
+        ginputp_mouseUp(x,y,button,mod);
+    }
+    void gdr_mouseWheel(int x, int y, int button, int delta,int mod) {
+        ginputp_mouseWheel(x,y,button,delta,mod);
+    }
+#endif
+
 void gdr_keyDown(int keyCode, int repeat)
 {
     s_manager->keyDown(keyCode,repeat);

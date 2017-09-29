@@ -1,7 +1,10 @@
 #include <gapplication.h>
 #include <gapplication-ios.h>
+#if !TARGET_OS_MAC
 #import <UIKit/UIKit.h>
-
+#else
+#import <Cocoa/Cocoa.h>
+#endif
 extern NSString* getSysInfoByName(const char* typeSpecifier);
 
 class GGApplicationManager
@@ -20,6 +23,17 @@ public:
     
     int getScreenDensity()
     {
+#if TARGET_OS_MAC
+        NSScreen *screen = [NSScreen mainScreen];
+        NSDictionary *description = [screen deviceDescription];
+        NSSize displayPixelSize = [[description objectForKey:NSDeviceSize] sizeValue];
+        CGSize displayPhysicalSize = CGDisplayScreenSize(
+                                                         [[description objectForKey:@"NSScreenNumber"] unsignedIntValue]);
+        
+        float fdpi=(displayPixelSize.width / displayPhysicalSize.width) * 25.4f;
+        fdpi=fdpi*[screen backingScaleFactor];
+        int dpi=fdpi;
+#else
         UIViewController *rootViewController = [[UIApplication sharedApplication].delegate viewController];
         UIView *glView = [rootViewController glView];
 
@@ -62,7 +76,7 @@ public:
         {
             dpi = 160 * scale;
         }
-        
+#endif
         return dpi;
     }
     
