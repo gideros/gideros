@@ -354,8 +354,8 @@
 		EB140D891C5BB810000180C7 /* aes.c in Sources */ = {isa = PBXBuildFile; fileRef = EB140D881C5BB810000180C7 /* aes.c */; };
 		EB140D8B1C5BB83A000180C7 /* cryptobinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */; };
 		EB27A5FA1CCDFC7E003A5580 /* pixel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5F91CCDFC7E003A5580 /* pixel.cpp */; };
-		EB27A5FC1CCDFC9B003A5580 /* pixelbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */; };
 		EB27A5FA1CCDFC7E003A5581 /* screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5F91CCDFC7E003A5581 /* screen.cpp */; };
+		EB27A5FC1CCDFC9B003A5580 /* pixelbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */; };
 		EB27A5FC1CCDFC9B003A5581 /* screenbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FB1CCDFC9B003A5581 /* screenbinder.cpp */; };
 		EB27A5FE1CFF1CEA003A5580 /* particlesbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FD1CFF1CEA003A5580 /* particlesbinder.cpp */; };
 		EB27A6001CFF1D0B003A5580 /* particles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB27A5FF1CFF1D0B003A5580 /* particles.cpp */; };
@@ -522,6 +522,7 @@
 		5F0CD91315BB493B00479287 /* ftglyph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftglyph.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftglyph.c"; sourceTree = "<group>"; };
 		5F0CD91515BB494600479287 /* ftlcdfil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftlcdfil.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftlcdfil.c"; sourceTree = "<group>"; };
 		5F0CD91715BB495000479287 /* ftstroke.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftstroke.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftstroke.c"; sourceTree = "<group>"; };
+		5F0CD91915BB495900479287 /* ftxf86.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftxf86.c; path = "../../libgid/external/freetype-2.7.1/src/gzip/ftgzip.c"; sourceTree = "<group>"; };
 		5F0CD91B15BB496400479287 /* ftbase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftbase.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftbase.c"; sourceTree = "<group>"; };
 		5F0CD91D15BB496D00479287 /* ftsystem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftsystem.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftsystem.c"; sourceTree = "<group>"; };
 		5F0CD91F15BB498100479287 /* ftinit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftinit.c; path = "../../libgid/external/freetype-2.7.1/src/base/ftinit.c"; sourceTree = "<group>"; };
@@ -532,7 +533,6 @@
 		5F0CD92915BB49B100479287 /* autofit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = autofit.c; path = "../../libgid/external/freetype-2.7.1/src/autofit/autofit.c"; sourceTree = "<group>"; };
 		5F0CD92B15BB49BA00479287 /* truetype.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = truetype.c; path = "../../libgid/external/freetype-2.7.1/src/truetype/truetype.c"; sourceTree = "<group>"; };
 		5F0CD92D15BB49C100479287 /* cff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cff.c; path = "../../libgid/external/freetype-2.7.1/src/cff/cff.c"; sourceTree = "<group>"; };
-		5F0CD91915BB495900479287 /* ftgzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ftxf86.c; path = "../../libgid/external/freetype-2.7.1/src/gzip/ftgzip.c"; sourceTree = "<group>"; };
 		5F0CD92F15BB49CB00479287 /* psnames.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = psnames.c; path = "../../libgid/external/freetype-2.7.1/src/psnames/psnames.c"; sourceTree = "<group>"; };
 		5F0CD93115BB49D600479287 /* pshinter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pshinter.c; path = "../../libgid/external/freetype-2.7.1/src/pshinter/pshinter.c"; sourceTree = "<group>"; };
 		5F276EAC18F4020E00D78AE4 /* Box2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Box2D.h; path = "../../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Box2D.h"; sourceTree = "<group>"; };
@@ -781,8 +781,8 @@
 		EB140D881C5BB810000180C7 /* aes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aes.c; path = ../../../libgid/src/aes.c; sourceTree = "<group>"; };
 		EB140D8A1C5BB83A000180C7 /* cryptobinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cryptobinder.cpp; path = ../../luabinding/cryptobinder.cpp; sourceTree = "<group>"; };
 		EB27A5F91CCDFC7E003A5580 /* pixel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pixel.cpp; path = ../../2dsg/pixel.cpp; sourceTree = "<group>"; };
-		EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pixelbinder.cpp; path = ../../luabinding/pixelbinder.cpp; sourceTree = "<group>"; };
 		EB27A5F91CCDFC7E003A5581 /* screen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = screen.cpp; path = ../../2dsg/screen.cpp; sourceTree = "<group>"; };
+		EB27A5FB1CCDFC9B003A5580 /* pixelbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pixelbinder.cpp; path = ../../luabinding/pixelbinder.cpp; sourceTree = "<group>"; };
 		EB27A5FB1CCDFC9B003A5581 /* screenbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = screenbinder.cpp; path = ../../luabinding/screenbinder.cpp; sourceTree = "<group>"; };
 		EB27A5FD1CFF1CEA003A5580 /* particlesbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = particlesbinder.cpp; path = ../../luabinding/particlesbinder.cpp; sourceTree = "<group>"; };
 		EB27A5FF1CFF1D0B003A5580 /* particles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = particles.cpp; path = ../../2dsg/particles.cpp; sourceTree = "<group>"; };
@@ -1089,7 +1089,7 @@
 				5F0CD92915BB49B100479287 /* autofit.c */,
 				5F0CD92B15BB49BA00479287 /* truetype.c */,
 				5F0CD92D15BB49C100479287 /* cff.c */,
-				5F0CD91915BB495900479287 /* ftgzip.c */,
+				5F0CD91915BB495900479287 /* ftxf86.c */,
 				5F0CD92F15BB49CB00479287 /* psnames.c */,
 				5F0CD93115BB49D600479287 /* pshinter.c */,
 			);
@@ -2105,7 +2105,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				ONLY_ACTIVE_ARCH = NO;
-				SDKROOT = iphoneos;
+				SDKROOT = macosx10.13;
 			};
 			name = Debug;
 		};
@@ -2155,7 +2155,7 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				ONLY_ACTIVE_ARCH = NO;
-				SDKROOT = iphoneos;
+				SDKROOT = macosx10.13;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

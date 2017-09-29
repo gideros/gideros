@@ -1,5 +1,5 @@
-#ifndef EVENT_H
-#define EVENT_H
+#ifndef GID_EVENT_H
+#define GID_EVENT_H
 
 #include "stringid.h"
 #include "eventtype.h"

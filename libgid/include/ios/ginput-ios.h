@@ -2,7 +2,12 @@
 #define _GINPUT_IOS_H_
 
 #include <gglobal.h>
+#if TARGET_OS_MAC
+#import <Cocoa/Cocoa.h>
+#define UIView NSView
+#else
 #import <UIKit/UIKit.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,6 +20,11 @@ G_API void ginputp_touchesCancelled(NSSet *touches, NSSet *allTouches, UIView *v
 G_API g_bool ginputp_keyDown(int keyCode, int repeatCount);
 G_API g_bool ginputp_keyUp(int keyCode, int repeatCount);
 G_API void ginputp_keyChar(const char *keyChar);
+G_API void ginputp_mouseDown(int x, int y, int button,int mod);
+G_API void ginputp_mouseMove(int x, int y, int button,int mod);
+G_API void ginputp_mouseHover(int x, int y, int button,int mod);
+G_API void ginputp_mouseUp(int x, int y, int button,int mod);
+G_API void ginputp_mouseWheel(int x, int y, int button, int delta,int mod);
 
 #ifdef __cplusplus
 }
