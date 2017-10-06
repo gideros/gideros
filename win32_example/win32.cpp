@@ -39,6 +39,7 @@
 #include "gaudio.h"
 #include "ghttp.h"
 #include "orientation.h"
+#include "applicationmanager.h"
 #include <map>
 #include <screen.h>
 
@@ -56,14 +57,11 @@ char commandLine[256];
 // int dxChrome,dyChrome;
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 PFNWGLGETSWAPINTERVALEXTPROC wglGetSwapIntervalEXT;
-LuaApplication *application_;
 
-static int g_windowWidth;    // width if window was in portrait mode [used only to communicate between loadProperties and WM_CREATE]
-static int g_windowHeight;   // height if window was in portrait mode > windowWidth
-static bool g_portrait, drawok;
-static bool use_timer=false;
+static bool drawok=false;
 static int vsyncVal=0;
 static HDC hDC;
+static HGLRC hRC;
 
 // ######################################################################
 
@@ -126,70 +124,6 @@ std::string getDeviceName()
 
 // ######################################################################
 
-struct ProjectProperties
-{
-  ProjectProperties()
-  {
-    clear();
-  }
-
-  void clear()
-  {
-    // graphics options
-    scaleMode = 0;
-    logicalWidth = 320;
-    logicalHeight = 480;
-    imageScales.clear();
-    orientation = 0;
-    fps = 60;
-		
-    // iOS options
-    retinaDisplay = 0;
-    autorotation = 0;
-
-    // input options
-    mouseToTouch = true;
-    touchToMouse = true;
-    mouseTouchOrder = 0;
-
-    // export options
-    architecture = 0;
-    assetsOnly = false;
-    iosDevice = 0;
-    packageName = "com.yourdomain.yourapp";
-    encryptCode = false;
-    encryptAssets = false;
-  }
-
-  // graphics options
-  int scaleMode;
-  int logicalWidth;
-  int logicalHeight;
-  std::vector<std::pair<std::string, float> > imageScales;
-  int orientation;
-  int fps;
-  
-  // iOS options
-  int retinaDisplay;
-  int autorotation;
-
-  // input options
-  int mouseToTouch;
-  int touchToMouse;
-  int mouseTouchOrder;
-  
-  // export options
-  int architecture;
-  bool assetsOnly;
-  int iosDevice;
-  std::string packageName;
-  bool encryptCode;
-  bool encryptAssets;
-
-  int windowWidth;
-  int windowHeight;
-};
-
 // ### SCREENS
 class W32Screen;
 LRESULT CALLBACK W32Proc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
@@ -237,6 +171,7 @@ void W32Screen::tick()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0/*defaultFramebufferObject()*/);
 		draw(m);
 	    SwapBuffers(dc);
+		wglMakeCurrent(NULL,NULL);
 	}
 }
 
@@ -346,13 +281,13 @@ W32Screen::W32Screen(Application *application,HINSTANCE hInstance) : Screen(appl
 	  wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
 	  wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
 	  wndclass.lpszMenuName  = MAKEINTRESOURCE(100);
-	  wndclass.lpszClassName = "" ;
+	  wndclass.lpszClassName = "GidW32Screen" ;
 	  wndclass.hIconSm       = NULL ;
 
 	  W32Class=RegisterClassEx (&wndclass) ;
 	}
 
-	  wnd = CreateWindow ((LPCTSTR)W32Class,         // window class name
+	  wnd = CreateWindow ("GidW32Screen",         // window class name
 			       "",     // window caption
 			       WS_OVERLAPPEDWINDOW,     // window style
 			       0,           // initial x position
@@ -364,6 +299,24 @@ W32Screen::W32Screen(Application *application,HINSTANCE hInstance) : Screen(appl
 			       hInstance,               // program instance handle
 			       NULL) ;		             // creation parameters
 	  dc=GetDC(wnd);
+	  //printf("ScreenCreated:%d DC:%d\n",wnd,dc);
+	  // set the pixel format for the DC
+	  PIXELFORMATDESCRIPTOR pfd;
+	  int format,i;
+	  ZeroMemory( &pfd, sizeof( pfd ) );
+	  pfd.nSize = sizeof( pfd );
+	  pfd.nVersion = 1;
+	  pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+	  pfd.iPixelType = PFD_TYPE_RGBA;
+	  pfd.cColorBits = 24;
+	  pfd.cDepthBits = 16;
+	  pfd.cStencilBits = 8;
+	  pfd.iLayerType = PFD_MAIN_PLANE;
+
+	  format = ChoosePixelFormat( dc, &pfd );
+
+	  SetPixelFormat( dc, format, &pfd );
+	  screenMap[wnd]=this;
 }
 
 W32Screen::~W32Screen()
@@ -378,7 +331,10 @@ void W32Screen::closed()
 LRESULT CALLBACK W32Proc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
   PAINTSTRUCT ps ;
-  if (iMsg==WM_PAINT){
+  if (iMsg==WM_CREATE){
+	  return 0;
+  }
+  else if (iMsg==WM_PAINT){
 
     BeginPaint (hwnd, &ps) ;
     EndPaint (hwnd, &ps) ;
@@ -406,13 +362,12 @@ W32ScreenManager::W32ScreenManager(HDC dc,HGLRC gl,HINSTANCE hInstance)
 
 void W32ScreenManager::screenDestroyed()
 {
-	wglMakeCurrent(defaultDC,master);
 }
 
 
 Screen *W32ScreenManager::openScreen(Application *application,int id)
 {
-	return new W32Screen(application,hInstance);
+	return (Screen *)SendMessage(hwndcopy,WM_USER+0x10,0,(LPARAM)application);
 }
 
 // ######################################################################
@@ -444,7 +399,7 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
   *hRC = wglCreateContext( *hDC );
   wglMakeCurrent( *hDC, *hRC );
 
-  if (! use_timer) {
+  vsyncVal=0;
     PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
 
     _wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC) wglGetProcAddress("wglGetExtensionsStringEXT");
@@ -459,19 +414,16 @@ void EnableOpenGL(HWND hWnd, HDC *hDC, HGLRC *hRC)
     
     if (wglSwapIntervalEXT == NULL){
       printf("No wglSwapIntervalEXT, reverting to timer events\n");
-      use_timer=true;
       return;
     }
-    //    wglSwapIntervalEXT(vsyncVal);
 
-    wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC) wglGetProcAddress("wglGetSwapIntervalEXT");
-
-    if (wglGetSwapIntervalEXT == NULL){
-      printf("No wglGetSwapIntervalEXT\n");
-    }
-    //    printf("wglGetSwapIntervalEXT=%d\n",wglGetSwapIntervalEXT());
-
-  }
+    if (strstr(_wglGetExtensionsStringEXT(), "WGL_EXT_swap_control_tear") == NULL)
+    	vsyncVal=1;
+    else
+    	vsyncVal=-1;
+    vsyncVal=0;
+    printf("VSYNC VAL:%d\n",vsyncVal);
+    wglSwapIntervalEXT(vsyncVal);
 
 }
 
@@ -486,155 +438,31 @@ void DisableOpenGL(HWND hWnd, HDC hDC, HGLRC hRC)
 
 // ######################################################################
 
-void loadLuaFiles()
-{
-  std::vector<std::string> luafiles;
-
-  G_FILE* fis = g_fopen("luafiles.txt", "rt");
-
-  if (fis){
-    char line[1024];
-    while (true){
-      if (g_fgets(line, 1024, fis) == NULL)
-	break;
-      
-      size_t len = strlen(line);
-      
-      if (len > 0 && line[len - 1] == 0xa)
-	line[--len] = 0;
-      
-      if (len > 0 && line[len - 1] == 0xd)
-	line[--len] = 0;
-      
-      if (len > 0)
-	luafiles.push_back(line);
-    }
-
-    g_fclose(fis);
-  }
-
-  GStatus status;
-  for (size_t i = 0; i < luafiles.size(); ++i){
-    application_->loadFile(luafiles[i].c_str(), &status);
-    if (status.error())
-      break;
-  }
-
-  if (!status.error()){
-    gapplication_enqueueEvent(GAPPLICATION_START_EVENT, NULL, 0);
-    application_->tick(&status);
-  }
-
-  if (status.error())
-    luaError(status.errorString());
-}
-
-// ######################################################################
-
-bool loadProperties()
-{
-  ProjectProperties properties;
-  G_FILE* fis = g_fopen("properties.bin", "rb");
-  if (!fis) return false;
-
-  g_fseek(fis, 0, SEEK_END);
-  int len = g_ftell(fis);
-  g_fseek(fis, 0, SEEK_SET);
-  
-  std::vector<char> buf(len);
-  g_fread(&buf[0], 1, len, fis);
-  g_fclose(fis);
-  
-  ByteBuffer buffer(&buf[0], buf.size());
-  
-  buffer >> properties.scaleMode;
-  buffer >> properties.logicalWidth;
-  buffer >> properties.logicalHeight;
-
-  int scaleCount;
-  buffer >> scaleCount;
-  properties.imageScales.resize(scaleCount);
-
-  for (int i = 0; i < scaleCount; ++i) {
-    buffer >> properties.imageScales[i].first;
-    buffer >> properties.imageScales[i].second;
-  }
-
-  buffer >> properties.orientation;
-  buffer >> properties.fps;
-  buffer >> properties.retinaDisplay;
-  buffer >> properties.autorotation;
-  buffer >> properties.mouseToTouch;
-  buffer >> properties.touchToMouse;
-  buffer >> properties.mouseTouchOrder;
-
-  //  properties.scaleMode=3; (letterbox) for testing
-
-  printf("properties components\n");
-  printf("logicalWidth, logicalHeight, orientation, scaleMode=%d %d %d %d\n",
-	 properties.logicalWidth, properties.logicalHeight, 
-	 properties.orientation, properties.scaleMode);
-
-  buffer >> properties.windowWidth;
-  buffer >> properties.windowHeight;
-
-  printf("windowWidth, windowHeight=%d %d\n",properties.windowWidth, properties.windowHeight);
-
-  if (properties.windowWidth==0 || properties.windowHeight==0){
-    g_windowWidth=properties.logicalWidth;
-    g_windowHeight=properties.logicalHeight;
-  }    
-  else {
-    g_windowWidth=properties.windowWidth;
-    g_windowHeight=properties.windowHeight;
-  }
-
-  float contentScaleFactor = 1;
-  Orientation hardwareOrientation;
-  Orientation deviceOrientation;
-
-  if (properties.orientation==0 || properties.orientation==2){
-    hardwareOrientation = ePortrait;
-    deviceOrientation = ePortrait;
-    g_portrait=true;
-  }
-  else {
-    hardwareOrientation = eLandscapeLeft;
-    deviceOrientation = eLandscapeLeft;
-    g_portrait=false;
-  }
-
-  application_->setResolution(g_windowWidth * contentScaleFactor, 
-			      g_windowHeight * contentScaleFactor);
-
-  application_->setHardwareOrientation(hardwareOrientation);                     // previously eFixed
-  application_->getApplication()->setDeviceOrientation(deviceOrientation);     // previously eFixed
-  application_->setOrientation((Orientation)properties.orientation);
-  application_->setLogicalDimensions(properties.logicalWidth, properties.logicalHeight);
-  application_->setLogicalScaleMode((LogicalScaleMode)properties.scaleMode);
-  application_->setImageScales(properties.imageScales);
-  
-  g_setFps(properties.fps);
-
-  ginput_setMouseToTouchEnabled(properties.mouseToTouch);
-  ginput_setTouchToMouseEnabled(properties.touchToMouse);
-  ginput_setMouseTouchOrder(properties.mouseTouchOrder);
- return true;
-}
 
 // ######################################################################
 
 static HINSTANCE hInst;
-static bool isPlayer_;
-static Server *server_=NULL;
+static ApplicationManager *s_applicationManager;
+LuaApplication *application_;
+static bool glChanged;
+static int glWidth,glHeight;
 
-void netTick() {
+void render()
+{
+	wglMakeCurrent(hDC,hRC);
+	if (glChanged)
+	{
+		s_applicationManager->surfaceChanged(glWidth,glHeight,glWidth>glHeight?90:0);
+		glChanged=false;
+	}
+    s_applicationManager->drawFrame();
+    SwapBuffers(hDC);
+    wglMakeCurrent(NULL,NULL);
     ScreenManager::manager->tick();
 }
+
 LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-
-  static HGLRC hRC;
   static RECT clientRect,winRect;
 
   PAINTSTRUCT ps ;
@@ -650,23 +478,11 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     hwndcopy=hwnd;                  // for platform-win32
 
-    // gpath & gvfs
-    gpath_init();
-    gpath_addDrivePrefix(0, "|R|");
-    gpath_addDrivePrefix(0, "|r|");
-    gpath_addDrivePrefix(1, "|D|");
-    gpath_addDrivePrefix(1, "|d|");
-    gpath_addDrivePrefix(2, "|T|");
-    gpath_addDrivePrefix(2, "|t|");
-    
-    gpath_setDriveFlags(0, GPATH_RO | GPATH_REAL);
-    gpath_setDriveFlags(1, GPATH_RW | GPATH_REAL);
-    gpath_setDriveFlags(2, GPATH_RW | GPATH_REAL);
-    
-    gpath_setAbsolutePathFlags(GPATH_RW | GPATH_REAL);
-	
-    gpath_setDefaultDrive(0);
+    loadPlugins();
 
+    s_applicationManager=new ApplicationManager();
+    application_=s_applicationManager->getApplication();
+    
     char resourcePath[MAX_PATH];
     strcpy(resourcePath,"assets\\");
     gpath_setDrivePath(0,resourcePath);
@@ -676,120 +492,20 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     strcat(docsPath, "\\giderosgame\\");
     CreateDirectory(docsPath,NULL);        // create dir if it does not exist
     gpath_setDrivePath(1,docsPath);
-
-    gvfs_init();
-    //    gvfs_setCodeKey(codeKey_ + 32);
-    //    gvfs_setAssetsKey(assetsKey_ + 32);
-	
-    // event
-    gevent_Init();
-
-    // application
-    gapplication_init();
     
-    // input
-    ginput_init();
-    
-    // geolocation
-    ggeolocation_init();
-    
-    // http
-    ghttp_Init();
-    
-    // ui
-    gui_init();
-    
-    // texture
-    gtexture_init();
-    
-    // audio
-    gaudio_Init();
-
-    loadPlugins();
-
-    application_ = new LuaApplication;
-
-    application_->enableExceptions();
-    application_->initialize();
-    application_->setPrintFunc(printFunc);
-    
-    if (!loadProperties())
-    {
-    	isPlayer_=true;
-    	g_portrait=false;
-    	g_windowWidth=320;
-    	g_windowHeight=480;
-    }
-
-    //    GetClientRect(hwnd,&clientRect);
-    //    GetWindowRect(hwnd,&winRect);
-
-    //    dxChrome=winRect.right-winRect.left-(clientRect.right-clientRect.left);
-    //    dyChrome=winRect.bottom-winRect.top-(clientRect.bottom-clientRect.top);
-
-    if (g_portrait){
-      RECT rect;
-      rect.top=0;
-      rect.left=0;
-      rect.right=g_windowWidth;
-      rect.bottom=g_windowHeight;
-
-      printf("WM_CREATE: portrait input rect = %d %d\n",rect.right,rect.bottom);
-      AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
-      printf("adjusted rect = %d %d %d %d\n",rect.left,rect.top,rect.right,rect.bottom);
-
-      //      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowWidth+dxChrome+13,g_windowHeight+dyChrome+13,SWP_NOMOVE);
-      SetWindowPos(hwnd,HWND_TOP,0,0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE);
-    }
-    else {
-      RECT rect;
-      rect.left=0;
-      rect.top=0;
-      rect.right=g_windowHeight;
-      rect.bottom=g_windowWidth;
-
-      printf("WM_CREATE landscape input rect = %d %d\n",rect.right,rect.bottom);
-      AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
-      printf("adjusted rect = %d %d %d %d\n",rect.left,rect.top,rect.right,rect.bottom);
-
-//      SetWindowPos(hwnd,HWND_TOP,0,0,g_windowHeight+dxChrome+14,g_windowWidth+dyChrome+14,SWP_NOMOVE);
-      SetWindowPos(hwnd,HWND_TOP,0,0, rect.right-rect.left, rect.bottom-rect.top, SWP_NOMOVE);
-    }
+    s_applicationManager->surfaceCreated();
 	ScreenManager::manager=new W32ScreenManager(hDC,hRC,hInst);
+	wglMakeCurrent(NULL,NULL);
+	drawok=true;
 
-	application_->setPlayerMode(isPlayer_);
-    if (isPlayer_) {
-        //application_->setPrintFunc(printToServer);
-		server_ = new Server(0, ::getDeviceName().c_str()); //Default port
-    }
-    else
-    	loadLuaFiles();
-    printf("Loaded Lua files\n");
-
-    return 0;
+   return 0;
   }
   else if (iMsg==WM_SIZE){
 
-    int width=LOWORD(lParam);
-    int height=HIWORD(lParam);
-
-    //    printf("WM_SIZE: %d x %d\n",width,height);
-
-    int windowWidth, windowHeight;
-
-    if (application_->orientation()==ePortrait || application_->orientation()==ePortraitUpsideDown){              // previously width < height
-      windowWidth=width;
-      windowHeight=height;
-    }
-    else {
-      windowWidth=height;
-      windowHeight=width;
-    }
-
-    float contentScaleFactor = 1;
-    application_->setResolution(windowWidth  * contentScaleFactor, 
-				windowHeight * contentScaleFactor);
-    
+    glWidth=LOWORD(lParam);
+    glHeight=HIWORD(lParam);
+    glChanged=true;
+    //printf("WM_SIZE: %d x %d\n",glWidth,glHeight);
     return 0;
   }
   // allows large windows bigger than screen
@@ -837,42 +553,19 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     return 0;
   }
   else if (iMsg==WM_PAINT){
-	netTick();
     BeginPaint (hwnd, &ps) ;
-
-    //    glClear(GL_COLOR_BUFFER_BIT);
-    application_->clearBuffers();
-    application_->renderScene(1);
-
-    SwapBuffers(hDC);
-
     EndPaint (hwnd, &ps) ;
     return 0 ;
   }
-  else if (iMsg==WM_TIMER){
-    //    gaudio_AdvanceStreamBuffers();
-    netTick();
-    GStatus status;
-    application_->enterFrame(&status);
-
-    if (status.error())
-      luaError(status.errorString());
-
-    //    glClear(GL_COLOR_BUFFER_BIT);
-    application_->clearBuffers();
-
-    application_->renderScene();
-
-    SwapBuffers(hDC);
-
-    return 0;
+  else if (iMsg==(WM_USER+0x10)) {
+		return (LRESULT) new W32Screen(application_->getApplication(),hInst);
   }
   else if (iMsg==WM_CLOSE){
+	    drawok=false;
+	    Sleep(30);
+		wglMakeCurrent(hDC,hRC);
     printf("WM_CLOSE Called\n");
 
-    if (use_timer)
-      KillTimer(hwnd, ID_TIMER);
-    else {
       PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress("wglSwapIntervalEXT"); 
     
       if (wglSwapIntervalEXT == NULL){
@@ -880,44 +573,10 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	exit(1);
       }
       wglSwapIntervalEXT(0);
-    }
     
     // application
-    application_->deinitialize();
-    delete application_;
-    
-    // audio
-    gaudio_Cleanup();
-
-    // texture
-    gtexture_cleanup();
-
-    // ui
-    gui_cleanup();
-
-    // http
-    ghttp_Cleanup();
-
-    // geolocation
-    ggeolocation_cleanup();
-
-    // input
-    ginput_cleanup();
-
-    // application
-    gapplication_cleanup();
-
-    // event
-    gevent_Cleanup();
-	
-    // gpath & gvfs
-    gvfs_cleanup();
-    
-    gpath_cleanup();
-
+    delete s_applicationManager;
     DisableOpenGL(hwnd, hDC, hRC);
-
-    drawok=false;
 
     DestroyWindow(hwnd);
     return 0;
@@ -933,21 +592,35 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 }
 
 // ######################################################################
-
-void render()
+static bool runRender=true;
+DWORD WINAPI RenderMain(LPVOID lpParam)
 {
-  GStatus status;
-  application_->enterFrame(&status);
-  
-  if (status.error())
-    luaError(status.errorString());
-
-  //    glClear(GL_COLOR_BUFFER_BIT);
-  application_->clearBuffers();
-  
-  application_->renderScene();
-  
-  SwapBuffers(hDC);
+	double ck=iclock();
+	double ifrm=0;
+	int fps=0;
+	timeBeginPeriod(1);
+	while (runRender)
+	{
+		if (g_getFps() != fps){
+			fps=g_getFps();
+			ifrm=(g_getFps()>0)?1.0/g_getFps():0;
+		}
+		double ct=iclock();
+		if (drawok&&((ct-ck)>=ifrm))
+		{
+			render();
+			ck=ct;
+		}
+		double mt=iclock();
+		double wt=ifrm-(mt-ck);
+		int wti=(wt*1000);
+		if (wti>1)
+		{
+			Sleep(wti-1);
+		}
+	}
+	timeEndPeriod(1);
+	return 0;
 }
 
 // ######################################################################
@@ -962,15 +635,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   int ret;
 
   printf("szCmdLine=%s\n",szCmdLine);
-
-  if (strcmp(szCmdLine,"timer")==0){
-    printf("Using timer as requested\n");
-    use_timer=true;
-  }
-  else {
-    printf("Will use VSYNC if available\n");
-    use_timer=false;
-  }
 
   wndclass.cbSize        = sizeof (wndclass) ;
   wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
@@ -989,7 +653,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   hInst=hInstance;
   hwnd = CreateWindow (szAppName,         // window class name
-		       "Gideros Win32 (no Qt)",     // window caption
+		       "Gideros Win32",     // window caption
 		       WS_OVERLAPPEDWINDOW,     // window style
 		       0,           // initial x position
 		       0,           // initial y position
@@ -1009,62 +673,13 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   ShowWindow (hwnd, iCmdShow) ;
   //  UpdateWindow (hwnd) ;
 
-  int fps;
-  if (use_timer){
-
-    fps=-1;
-
-    while (GetMessage (&msg, NULL, 0, 0)) {
-
-      if (g_getFps() != fps){
-	fps=g_getFps();
-	if (fps==30)
-	  SetTimer(hwnd, ID_TIMER, 30, NULL);
-	else if (fps==60)
-	  SetTimer(hwnd, ID_TIMER, 10, NULL);   // 10 is the minimum, actually more like 16 ms.
-	else {
-	  printf("Illegal FPS (timer): %d\n",fps);
-	  exit(1);
-	}
-      }
-
-      TranslateMessage (&msg) ;
-      DispatchMessage (&msg) ;
-    }
+  HANDLE rThread=CreateThread(NULL,0,&RenderMain,NULL,0,NULL);
+  while (GetMessage (&msg, NULL, 0, 0)) {
+    TranslateMessage (&msg) ;
+    DispatchMessage (&msg) ;
   }
-  else {
-
-    fps=-1;
-
-    drawok=true;
-
-    while (TRUE) {
-
-      if (g_getFps() != fps){
-	fps=g_getFps();
-	if (fps==30)
-	  wglSwapIntervalEXT(2);
-	else if (fps==60)
-	  wglSwapIntervalEXT(1);
-	else {
-	  printf("Illegal FPS (VSYNC): %d\n",fps);
-	  exit(1);
-	}
-      }
-
-      if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE)) {
-	if (msg.message == WM_QUIT){
-	  printf("WM_QUIT message received\n");
-	  break ;
-	}
-
-	TranslateMessage (&msg) ;
-	DispatchMessage (&msg) ;
-      }
-
-      if (drawok) render();
-    }
-  }
+  runRender=false;
+  WaitForSingleObject(rThread, INFINITE);
 
   printf("program ends\n");
   return msg.wParam ;

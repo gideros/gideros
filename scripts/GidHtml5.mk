@@ -7,8 +7,14 @@ export CRUNCHME
 export HTML5_PLUGINS
 export DEBUG
 
+html5.setup:
+	$(EMSDK_PREFIX) emsdk.bat activate latest
+	
 html5.clean:
 	cd emscripten; $(MAKE) clean plugins.clean
+
+html5.main:  
+	cd emscripten; $(MAKE) -j 4 main
 
 html5.libs: versioning 
 	cd emscripten; $(MAKE) -j 4

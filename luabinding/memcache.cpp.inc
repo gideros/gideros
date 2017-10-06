@@ -20,6 +20,7 @@ public:
  virtual size_t GetSize(void *Memory);
  virtual void Reclaim();
  virtual void Cleanup();
+ virtual void *MasterResizeMemory(void *Old,size_t Size)=0;
  virtual void *MasterAllocateMemory(size_t Size)=0;
  virtual void MasterFreeMemory(void *Memory)=0;
  virtual size_t MasterGetSize(void *Memory)=0;
@@ -117,5 +118,5 @@ MemCache::MemCache()
 
 MemCache::~MemCache()
 {
-	Cleanup();
+	//Cleanup(); can't call this in destructor
 }

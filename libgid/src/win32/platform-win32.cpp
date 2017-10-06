@@ -100,8 +100,8 @@ void setWindowSize(int width, int height)
     printf("SetWindowPos: %d %d\n",rect.right-rect.left, rect.bottom-rect.top);
   }
 
-  application_->setHardwareOrientation(app_orient);   // previously eFixed
-  application_->getApplication()->setDeviceOrientation(app_orient);
+  //application_->setHardwareOrientation(app_orient);   // previously eFixed
+  //application_->getApplication()->setDeviceOrientation(app_orient);
 }
 
 void W32SetFullScreen(bool fullScreen,HWND wnd,W32FullScreen *save)

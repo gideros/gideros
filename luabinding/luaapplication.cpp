@@ -828,15 +828,15 @@ static void g_free(void *ptr)
     if (memory_pool <= ptr && ptr < memory_pool_end)
         tlsf_free(memory_pool, ptr);
     else
-        ::free(ptr);
+        ::free(((size_t *)ptr)-1);
 }
 
 static size_t g_getsize(void *ptr)
 {
     if (memory_pool <= ptr && ptr < memory_pool_end)
-        tlsf_block_size(ptr);
+        return tlsf_block_size(ptr);
     else
-        ::free(ptr);
+    	return *(((size_t *)ptr)-1);
 }
 
 static void *g_realloc(void *ptr, size_t osize, size_t size)
@@ -845,8 +845,7 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
 
     if (ptr && size == 0)
     {
-        size_t *ps=(size_t *)ptr;
-        g_free(ps-1);
+        g_free(ptr);
     }
     else if (ptr == NULL)
     {
@@ -895,6 +894,7 @@ public:
 	void *MasterAllocateMemory(size_t Size);
 	void MasterFreeMemory(void *Memory);
 	size_t MasterGetSize(void *Memory);
+	void *MasterResizeMemory(void *Old,size_t Size);
 };
 
 MemCacheLua::MemCacheLua()
@@ -925,17 +925,31 @@ void *MemCacheLua::MasterAllocateMemory(size_t Size)
 void MemCacheLua::MasterFreeMemory(void *Memory)
 {
 #if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
-	size_t *bk=(size_t *)Memory;
-	return free(bk-1);
+	size_t *bk=((size_t *)Memory)-1;
+	return free(bk);
 #else
 	return g_free(Memory);
 #endif
 }
 
+void *MemCacheLua::MasterResizeMemory(void *Memory,size_t Size)
+{
+#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
+	size_t *bk=((size_t *)Memory)-1;
+	bk=(size_t *)realloc(bk,Size+sizeof(size_t));
+	*bk=Size;
+	return bk+1;
+#else
+	return g_realloc(Memory,g_getsize(Memory),Size);
+#endif
+}
+
+
 size_t MemCacheLua::MasterGetSize(void *Memory)
 {
 #if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
-	return *((size_t *)Memory);
+	size_t *bk=((size_t *)Memory)-1;
+	return *bk;
 #else
 	return g_getsize(Memory);
 #endif
@@ -948,13 +962,14 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
     (void)osize;
     if (nsize == 0)
     {
-        luamem.FreeMemory(ptr);
+    	if (ptr)
+    		luamem.MasterFreeMemory(ptr);
         return NULL;
     }
     else if (ptr==NULL)
-    	return luamem.AllocateMemory(nsize);
+    	return luamem.MasterAllocateMemory(nsize);
     else
-        return luamem.ResizeMemory(ptr, nsize);
+        return luamem.MasterResizeMemory(ptr, nsize);
 }
 
 //int renderScene(lua_State* L);

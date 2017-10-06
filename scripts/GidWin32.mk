@@ -35,14 +35,15 @@ LIBS_gideros+= $(addprefix $(WIN32_BUILDDIR)/,gid.dll lua.dll pystring.dll)
 INCLUDEPATHS_player+=libgid/include/win32
 OBJFILES_player+= $(basename $(wildcard 2dsg/gfxbackends/gl2/*.cpp))
 #OBJFILES_player+= $(basename $(wildcard 2dsg/gfxbackends/dx11/*.cpp)) $(basename $(wildcard 2dsg/gfxbackends/dx11/*.c))
-OBJFILES_player+= win32_example/win32 libgid/src/win32/platform-win32
+OBJFILES_player+= win32_example/win32 win32_example/applicationmanager libgid/src/win32/platform-win32
+INCLUDEPATHS_player+=win32_example
 INCLUDEPATHS_player+=2dsg/gfxbackends/gl2
 INCLUDEPATHS_player+=2dsg/gfxbackends/dx11
 DEFINES_player+=WIN32=1
 LIBS_player = $(addprefix $(WIN32_BUILDDIR)/,gvfs.dll gid.dll lua.dll pystring.dll gideros.dll) \
 	libgid/external/zlib-1.2.8/build/mingw48_32/libzlibx.a \
 	-L"libgid/external/glew-1.10.0/lib/mingw48_32" -lglew32 \
-	-lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi
+	-lopengl32 -luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lws2_32 -liphlpapi -lwinmm
 
 ##RULES
 %.win32.libs: $(OBJFILES_%) $(addprefix $(WIN32_BUILDDIR)/,$(addsuffix .o,$(OBJFILES_%))) $(LIBS_%)

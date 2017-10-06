@@ -5,8 +5,8 @@
 #include <GL/glfw.h>
 #endif
 #include <iostream>
-#include "emscripten.h"
-#include "html5.h"
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 #include <sys/stat.h>
 #include <gstdio.h>
 #include <glog.h>

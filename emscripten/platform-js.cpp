@@ -1,6 +1,6 @@
 #include <platform.h>
-#include "emscripten.h"
-#include "html5.h"
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 
 std::vector<std::string> getDeviceInfo()
 {

@@ -472,7 +472,7 @@ void NetworkManager::tick()
 				const char* absfilename = g_pathForFile("../luafiles.txt");
 				FILE* fos = fopen(absfilename, "wb");
 				fwrite(&data[0], data.size(), 1, fos);
-				+fclose(fos);
+				fclose(fos);
 				play(data);
 			}
 				   break;
