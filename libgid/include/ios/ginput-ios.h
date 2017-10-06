@@ -2,7 +2,7 @@
 #define _GINPUT_IOS_H_
 
 #include <gglobal.h>
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
 #import <Cocoa/Cocoa.h>
 #define UIView NSView
 #else
