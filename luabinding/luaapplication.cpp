@@ -70,7 +70,7 @@
 
 #include "tlsf.h"
 #include "CoreRandom.cpp.inc"
-#include "MemCache.cpp.inc"
+#include "memcache.cpp.inc"
 
 std::deque<LuaApplication::AsyncLuaTask> LuaApplication::tasks_;
 
