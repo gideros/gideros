@@ -147,7 +147,7 @@ int g_registerPlugin(void*(*main)(lua_State*, int));
 #define REGISTER_PLUGIN_ANDROID(name, version) REGISTER_PLUGIN_ANDROID_C(name, version)
 #endif
 
-#ifdef QT_CORE_LIB
+#ifdef QT_NO_DEBUG 
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_DYNAMIC(name, version)
 #define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_DYNAMIC(name, version)
 #elif TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || TARGET_OS_MAC
