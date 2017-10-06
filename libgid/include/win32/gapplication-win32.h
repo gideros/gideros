@@ -5,6 +5,7 @@
 #include <gevent.h>
 
 #ifdef __cplusplus
+#include <windows.h>
 struct W32FullScreen {
 	bool maximized;
 	bool isFullScreen;
