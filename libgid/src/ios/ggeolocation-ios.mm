@@ -51,7 +51,7 @@ public:
 	{
         if (locationManager_==nil)
             return NO;
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
         if (([locationManager_ respondsToSelector:@selector(requestWhenInUseAuthorization)])&&(authStatus_==kCLAuthorizationStatusNotDetermined))
             [locationManager_ requestWhenInUseAuthorization];
 		BOOL locationServicesEnabledInstancePropertyAvailable = [locationManager_ respondsToSelector:@selector(locationServicesEnabled)]; // iOS 3.x
@@ -62,7 +62,7 @@ public:
 		{
 			return [CLLocationManager locationServicesEnabled];
 		} 
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 		else if (locationServicesEnabledInstancePropertyAvailable)
 		{
 			return [(id)locationManager_ locationServicesEnabled];
@@ -75,7 +75,7 @@ public:
 	{
         if (locationManager_==nil)
             return NO;
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 		BOOL headingInstancePropertyAvailable = [locationManager_ respondsToSelector:@selector(headingAvailable)]; // iOS 3.x
 #endif
 		BOOL headingClassPropertyAvailable = [CLLocationManager respondsToSelector:@selector(headingAvailable)]; // iOS 4.x
@@ -84,7 +84,7 @@ public:
 		{
 			return [CLLocationManager headingAvailable];
 		} 
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 		else if (headingInstancePropertyAvailable)
 		{
 			return [(id)locationManager_ headingAvailable];
@@ -157,7 +157,7 @@ public:
         if (locationManager_==nil)
             return;
 		headingStartCount_++;
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 		if (headingStartCount_ == 1)
 			[locationManager_ startUpdatingHeading];		
 #endif
@@ -170,7 +170,7 @@ public:
 		if (headingStartCount_ > 0)
 		{
 			headingStartCount_--;
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 			if (headingStartCount_ == 0)
 				[locationManager_ stopUpdatingHeading];
 #endif

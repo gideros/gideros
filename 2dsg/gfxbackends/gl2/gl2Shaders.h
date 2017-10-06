@@ -35,7 +35,7 @@
 	#include <OpenGLES/ES2/glext.h>
 #endif
 #define OPENGL_ES
-#elif TARGET_OS_MAC
+#elif TARGET_OS_OSX
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
 #elif __ANDROID__

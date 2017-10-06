@@ -594,12 +594,16 @@ static int loader(lua_State *L)
     return 0;
 }
 
+static bool _initOnce=true;
 static void g_initializePlugin(lua_State *L)
 {
 	::L = L;
 
-    _embind_register_std_string(TypeID<std::string>::get(), "std::string");
-    _embind_register_emval(TypeID<val>::get(), "emscripten::val");
+	if (_initOnce) {
+		_embind_register_std_string(TypeID<std::string>::get(), "std::string");
+		_embind_register_emval(TypeID<val>::get(), "emscripten::val");
+		_initOnce=false;
+	}
 
     lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");

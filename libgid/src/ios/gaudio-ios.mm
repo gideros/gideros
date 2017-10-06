@@ -13,13 +13,13 @@
 #endif
 
 #import <AVFoundation/AVFoundation.h>
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #else
 #import <Cocoa/Cocoa.h>
 #endif
 
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
 @interface GGAVAudioSessionDelegate : NSObject<AVAudioSessionDelegate>
 #else
 @interface GGAVAudioSessionDelegate : NSObject<NSObject>
@@ -43,7 +43,7 @@
 
 - (void)endInterruptionWithFlags:(NSUInteger)flags
 {
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
     if (flags & AVAudioSessionInterruptionFlags_ShouldResume)
         audioManager_->endInterruption();
 #endif
@@ -85,7 +85,7 @@ void GGAudioManager::systemInit()
     
     systemData_->delegate = [[GGAVAudioSessionDelegate alloc] init];
     systemData_->delegate.audioManager = this;
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
     [[AVAudioSession sharedInstance] setActive:YES error:nil];
 #if TARGET_OS_TV == 0
     [[AVAudioSession sharedInstance] setDelegate:systemData_->delegate];
@@ -108,7 +108,7 @@ void GGAudioManager::systemCleanup()
     alcMakeContextCurrent(NULL);
     alcDestroyContext(systemData_->context);
     alcCloseDevice(systemData_->device);
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 #if TARGET_OS_TV == 0
     [[AVAudioSession sharedInstance] setDelegate:nil];
 #endif

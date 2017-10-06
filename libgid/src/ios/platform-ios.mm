@@ -1,4 +1,4 @@
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
 #import <Cocoa/Cocoa.h>
 #define UIApplication NSApplication
 #define UIViewController NSViewController
@@ -35,7 +35,7 @@ std::vector<std::string> getDeviceInfo()
 {
 	std::vector<std::string> result;
 
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
     result.push_back("MacOS");
     result.push_back([[[NSProcessInfo processInfo] operatingSystemVersionString] UTF8String]);
     result.push_back([getSysInfoByName("hw.model") UTF8String]);
@@ -76,7 +76,7 @@ void setFullScreen(bool fullScreen){
 }
 
 std::string getDeviceName(){
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
     return [[[NSHost currentHost] localizedName] UTF8String];
 #else
     return [[[UIDevice currentDevice] name] UTF8String];
@@ -85,7 +85,7 @@ std::string getDeviceName(){
 
 void vibrate(int ms)
 {
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
 #else
 	AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
 #endif
@@ -93,7 +93,7 @@ void vibrate(int ms)
 
 void openUrl(const char* url)
 {
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
 #else
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
@@ -102,7 +102,7 @@ void openUrl(const char* url)
 
 bool canOpenUrl(const char *url)
 {
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
     return true;
     //[[NSWorkspace sharedWorkspace] canOpenURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
 #else
@@ -126,7 +126,7 @@ std::string getLanguage()
 
 void setKeepAwake(bool awake)
 {
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
 #else
 	[[UIApplication sharedApplication] setIdleTimerDisabled:(awake ? YES : NO)];
 #endif

@@ -1,9 +1,9 @@
 #include <ginput.h>
 #include <ginput-ios.h>
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
 #import <CoreMotion/CoreMotion.h>
 #endif
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
 //TODO Use this for touchscreen/touchpad on OSX
 @interface UITouch: NSObject
 @end
@@ -14,7 +14,7 @@
 
 class GGInputManager;
 
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
 @interface GGAccelerometer : NSObject<UIAccelerometerDelegate>
 {
     UIAccelerometer *accelerometer_;
@@ -85,7 +85,7 @@ class GGInputManager
 public:
     GGInputManager()
     {
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
         accelerometer_ = [[GGAccelerometer alloc] init];
 
 		if (NSClassFromString(@"CMMotionManager") != nil)
@@ -109,7 +109,7 @@ public:
     
     ~GGInputManager()
     {
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
         [accelerometer_ release];
 		if (motionManager_)
 			[motionManager_ release];		
@@ -164,7 +164,7 @@ public:
     
     bool isAccelerometerAvailable()
     {
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
         return true;
 #else
         return false;
@@ -173,7 +173,7 @@ public:
     
     void startAccelerometer()
     {
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
 		accelerometerStartCount_++;
 		if (accelerometerStartCount_ == 1)
 			[accelerometer_ start];
@@ -182,7 +182,7 @@ public:
     
     void stopAccelerometer()
     {
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
 		if (accelerometerStartCount_ > 0)
 		{
 			accelerometerStartCount_--;
@@ -196,7 +196,7 @@ public:
     {
         double x2 = 0, y2 = 0, z2 = 0;
 
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
         if (accelerometerStartCount_ > 0)
         {
             x2 = accelerometer_.x;
@@ -215,7 +215,7 @@ public:
 	
 	bool isGyroscopeAvailable()
     {
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
         return motionManager_ && [motionManager_ isGyroAvailable];
 #else
         return false;
@@ -227,7 +227,7 @@ public:
 		if (!isGyroscopeAvailable())
 			return;
 		
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
 		gyroscopeStartCount_++;
 		if (gyroscopeStartCount_ == 1)
 			[motionManager_ startGyroUpdates];
@@ -239,7 +239,7 @@ public:
 		if (!isGyroscopeAvailable())
 			return;
 
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
 		if (gyroscopeStartCount_ > 0)
 		{
 			gyroscopeStartCount_--;
@@ -253,7 +253,7 @@ public:
     {
         double x2 = 0, y2 = 0, z2 = 0;
 		
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
         if (gyroscopeStartCount_ > 0)
         {
 			CMRotationRate rotationRate = motionManager_.gyroData.rotationRate;
@@ -323,7 +323,7 @@ public:
     void touchesBegan(NSSet *touches, NSSet *allTouches, UIView *view)
     {
         float contentScaleFactor = 1;
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
 #endif
@@ -399,7 +399,7 @@ public:
     void touchesMoved(NSSet *touches, NSSet *allTouches, UIView *view)
     {
         float contentScaleFactor = 1;
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
 #endif
@@ -475,7 +475,7 @@ public:
     void touchesEnded(NSSet *touches, NSSet *allTouches, UIView *view)
     {
         float contentScaleFactor = 1;
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
 #endif
@@ -554,7 +554,7 @@ public:
     void touchesCancelled(NSSet *touches, NSSet *allTouches, UIView *view)
     {
         float contentScaleFactor = 1;
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
         if ([view respondsToSelector:@selector(contentScaleFactor)] == YES)
             contentScaleFactor = view.contentScaleFactor;
 #endif
@@ -978,7 +978,7 @@ private:
     //std::map<int, int> keyMap_;
 
 private:
-#if (!TARGET_OS_TV && !TARGET_OS_MAC)
+#if (!TARGET_OS_TV && !TARGET_OS_OSX)
     GGAccelerometer *accelerometer_;
     CMMotionManager *motionManager_;
 #endif

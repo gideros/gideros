@@ -1,5 +1,5 @@
 #include <gui.h>
-#if TARGET_OS_MAC==1
+#if TARGET_OS_OSX==1
 #import <Cocoa/Cocoa.h>
 #define UIViewController NSViewController
 #define UITextField NSTextField
@@ -104,7 +104,7 @@ private:
 			  udata:(void*)udata
 				gid:(g_id)gid
 {
-#if TARGET_OS_MAC==1
+#if TARGET_OS_OSX==1
     self=[super init];
     alertView_ = [[NSAlert alloc] init];
     [alertView_ setMessage:title];
@@ -191,7 +191,7 @@ private:
 
 - (void)dealloc
 {
-#if TARGET_OS_MAC ==0
+#if TARGET_OS_OSX ==0
 #if TARGET_OS_TV == 0
 		((UIAlertView *)alertView_).delegate = nil;
 	        [alertView_ dismissWithClickedButtonIndex:-1 animated:NO];
@@ -206,7 +206,7 @@ private:
 
 - (void)show
 {	
-#if TARGET_OS_MAC ==0
+#if TARGET_OS_OSX ==0
 	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 		[[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertView_ animated:YES completion:nil];
 	}
@@ -223,7 +223,7 @@ private:
 
 - (void)hide
 {
-#if TARGET_OS_MAC ==0
+#if TARGET_OS_OSX ==0
 	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 		if ([alertView_ isViewLoaded]) [alertView_ dismissViewControllerAnimated:YES completion:nil];
 	}
@@ -238,7 +238,7 @@ private:
 
 - (BOOL)isVisible
 {
-#if TARGET_OS_MAC ==0
+#if TARGET_OS_OSX ==0
 	if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
 		return [alertView_ isViewLoaded];
 	}
@@ -265,7 +265,7 @@ private:
         gevent_EnqueueEvent(gid_, callback_, GUI_ALERT_DIALOG_COMPLETE_EVENT, event, 1, udata_);
 }
 
-#if TARGET_OS_MAC ==0
+#if TARGET_OS_OSX ==0
 #if TARGET_OS_TV == 0
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
@@ -278,7 +278,7 @@ private:
 #endif
 @end
 
-#if TARGET_OS_MAC ==0
+#if TARGET_OS_OSX ==0
 #if TARGET_OS_TV == 0
 
 @interface GGAlertView : UIAlertView
@@ -392,7 +392,7 @@ private:
 
 @interface GGTextInputDialog : UIViewController
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
 #if TARGET_OS_TV == 0
 	GGAlertView *alertView4_;   // for <  iOS 5
 #endif
@@ -430,7 +430,7 @@ private:
 			  udata:(void*)udata
 				gid:(g_id)gid
 {
-#if TARGET_OS_MAC ==1
+#if TARGET_OS_OSX ==1
     self = [super init];
     callback_ = callback;
     udata_ = udata;
@@ -550,7 +550,7 @@ private:
 
 - (void)dealloc
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
 #if TARGET_OS_TV == 0
 	UIAlertView * tmpAlertView = (UIAlertView*)alertView_;
 	tmpAlertView.delegate = nil;
@@ -566,7 +566,7 @@ private:
 
 - (void)show
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
 #if TARGET_OS_TV == 0
     if ([[UIDevice currentDevice].systemVersion floatValue] < 8) {
 	[((UIAlertView *)alertView_) show];
@@ -583,7 +583,7 @@ private:
 
 - (void)hide
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
 #if TARGET_OS_TV == 0
     if ([[UIDevice currentDevice].systemVersion floatValue] < 8) {
 	[alertView_ dismissWithClickedButtonIndex:-1 animated:YES];
@@ -598,7 +598,7 @@ private:
 
 - (BOOL)isVisible
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
 #if TARGET_OS_TV == 0
     if ([[UIDevice currentDevice].systemVersion floatValue] < 8) {
 	return [alertView_ isVisible];
@@ -615,7 +615,7 @@ private:
 
 - (void)setText:(NSString *)text
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
     textField_.text = text;
 #else
     textField_.stringValue = text;
@@ -624,7 +624,7 @@ private:
 
 - (NSString *)getText
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
     return textField_.text;
 #else
     return textField_.stringValue;
@@ -633,7 +633,7 @@ private:
 
 - (void)setInputType:(int)inputType
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
     switch (inputType)
     {
         case GUI_TEXT_INPUT_DIALOG_TEXT:
@@ -657,7 +657,7 @@ private:
 
 - (int)getInputType
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
     switch (textField_.keyboardType)
     {
         case UIKeyboardTypeDefault:
@@ -679,7 +679,7 @@ private:
 
 - (void)setSecureInput:(BOOL)secureInput
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
     textField_.secureTextEntry = secureInput;
 #else
     [alertView_ setAccessoryView:secureInput?secTextField_:textField_];
@@ -688,7 +688,7 @@ private:
 
 - (BOOL)isSecureInput
 {
-#if TARGET_OS_MAC == 0
+#if TARGET_OS_OSX == 0
     return textField_.secureTextEntry;
 #else
     return secTextField_.superview!=nil;
@@ -710,7 +710,7 @@ private:
                 gevent_EnqueueEvent(gid_, callback_, GUI_TEXT_INPUT_DIALOG_COMPLETE_EVENT, event, 1, udata_);
 }
 
-#if TARGET_OS_MAC ==0
+#if TARGET_OS_OSX ==0
 #if TARGET_OS_TV == 0
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {

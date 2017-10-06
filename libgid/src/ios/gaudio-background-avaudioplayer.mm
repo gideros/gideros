@@ -393,7 +393,7 @@ public:
         if (channel2->interrupted == true)
         {
             if (channel2->player != nil)
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
                 if (flags & AVAudioSessionInterruptionFlags_ShouldResume)
                     [channel2->player play];
 #endif

@@ -1,6 +1,6 @@
 #include <gapplication.h>
 #include <gapplication-ios.h>
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
 #else
 #import <Cocoa/Cocoa.h>
@@ -23,7 +23,7 @@ public:
     
     int getScreenDensity()
     {
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
         NSScreen *screen = [NSScreen mainScreen];
         NSDictionary *description = [screen deviceDescription];
         NSSize displayPixelSize = [[description objectForKey:NSDeviceSize] sizeValue];

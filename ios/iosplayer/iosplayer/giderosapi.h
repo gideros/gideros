@@ -13,7 +13,7 @@ void gdr_exitGameLoop();
 void gdr_deinitialize();
 void gdr_suspend();
 void gdr_resume();
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
 BOOL gdr_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation);
 void gdr_willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation);
 void gdr_didRotateFromInterfaceOrientation(UIInterfaceOrientation fromInterfaceOrientation);
@@ -31,7 +31,7 @@ BOOL gdr_isRunning();
     void gdr_touchesEnded(NSSet* touches, NSSet* allTouches);
     void gdr_touchesCancelled(NSSet* touches, NSSet* allTouches);
 #endif
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
     void gdr_mouseDown(int x, int y, int button,int mod);
     void gdr_mouseMove(int x, int y, int button,int mod);
     void gdr_mouseHover(int x, int y, int button,int mod);

@@ -1,4 +1,4 @@
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
 #import <Cocoa/Cocoa.h>
 #else
 #import <UIKit/UIKit.h>
@@ -256,7 +256,7 @@ public:
 	void exitRenderLoopHelper();
 	
 	void didReceiveMemoryWarning();
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
 	BOOL shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation);	
 	void willRotateToInterfaceOrientationHelper(UIInterfaceOrientation toInterfaceOrientation);
 	void willRotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation);
@@ -674,7 +674,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	application_->enableExceptions();
 	application_->initialize();
 	application_->setResolution(width_, height_);
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
@@ -683,7 +683,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 	Binder::disableTypeChecking();
 	
 	hardwareOrientation_ = ePortrait;
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
     hardwareOrientation_ = eFixed;
 #endif
     deviceOrientation_ = ePortrait;
@@ -800,7 +800,7 @@ ApplicationManager::~ApplicationManager()
 
 void ApplicationManager::drawFirstFrame()
 {
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
@@ -1062,7 +1062,7 @@ void ApplicationManager::loadProperties()
 	buffer >> properties_.touchToMouse;
 	buffer >> properties_.mouseTouchOrder;
 
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
 #else
     bool phone= false;
@@ -1071,7 +1071,7 @@ void ApplicationManager::loadProperties()
 	
 	float contentScaleFactor = 1;
 	[view_ enableRetinaDisplay:(notRetina ? NO : YES)];
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
 		contentScaleFactor = view_.contentScaleFactor;
 #endif
@@ -1082,7 +1082,7 @@ void ApplicationManager::loadProperties()
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
@@ -1148,7 +1148,7 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->deinitialize();
 	application_->initialize();
 
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
 #else
     bool phone = false;
@@ -1157,7 +1157,7 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	
 	float contentScaleFactor = 1;
 	[view_ enableRetinaDisplay:(notRetina ? NO : YES)];
-#if !TARGET_OS_MAC
+#if !TARGET_OS_OSX
 	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
 		contentScaleFactor = view_.contentScaleFactor;
 #endif
@@ -1168,7 +1168,7 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->setLogicalDimensions(properties_.logicalWidth, properties_.logicalHeight);
 	application_->setLogicalScaleMode((LogicalScaleMode)properties_.scaleMode);
 	application_->setImageScales(properties_.imageScales);
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
     willRotateToInterfaceOrientationHelper([UIApplication sharedApplication].statusBarOrientation);
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
@@ -1429,7 +1429,7 @@ void ApplicationManager::didReceiveMemoryWarning()
 #endif
 }
 
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
 BOOL ApplicationManager::shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation)
 {
 	BOOL result;
@@ -1472,7 +1472,7 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 }
 #endif
 
-#if TARGET_OS_TV || TARGET_OS_MAC
+#if TARGET_OS_TV || TARGET_OS_OSX
 void ApplicationManager::willRotateToInterfaceOrientationHelperTV(Orientation deviceOrientation_)
 {
     application_->getApplication()->setDeviceOrientation(deviceOrientation_);
@@ -1579,7 +1579,7 @@ void ApplicationManager::background()
 
 void ApplicationManager::surfaceChanged(int width,int height)
 {
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
     width_ = width;
     height_ = height;
     application_->setResolution(width_, height_);
@@ -1665,7 +1665,7 @@ void gdr_resume()
 {
 	s_manager->resume();
 }
-#if !TARGET_OS_TV && !TARGET_OS_MAC
+#if !TARGET_OS_TV && !TARGET_OS_OSX
 BOOL gdr_shouldAutorotateToInterfaceOrientation(UIInterfaceOrientation interfaceOrientation)
 {
 	return s_manager->shouldAutorotateToInterfaceOrientation(interfaceOrientation);
@@ -1712,7 +1712,7 @@ void gdr_didReceiveMemoryWarning()
         s_manager->touchesCancelled(touches, allTouches);
     }
 #endif
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
     void gdr_mouseDown(int x, int y, int button,int mod) {
         ginputp_mouseDown(x,y,button,mod);
     }

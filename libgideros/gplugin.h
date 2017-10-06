@@ -150,7 +150,7 @@ int g_registerPlugin(void*(*main)(lua_State*, int));
 #ifdef QT_CORE_LIB
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_DYNAMIC(name, version)
 #define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_DYNAMIC(name, version)
-#elif TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || TARGET_OS_MAC
+#elif TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || TARGET_OS_OSX
 #define REGISTER_PLUGIN(name, version) REGISTER_PLUGIN_STATIC(name, version)
 #define REGISTER_PLUGIN_NAMED(name, version, symbol) REGISTER_PLUGIN_STATIC(name, version)
 #elif __ANDROID__
@@ -192,9 +192,9 @@ GIDEROS_API int g_isInstanceOf(lua_State* L, const char* classname, int index);
 GIDEROS_API int g_error(lua_State* L, const char* msg);
 
 
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || TARGET_OS_MAC
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || TARGET_OS_OSX
 #ifdef __OBJC__
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
 #define UIViewController NSViewController
 #endif
 @class UIViewController;

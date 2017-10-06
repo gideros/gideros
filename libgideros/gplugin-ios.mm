@@ -1,4 +1,4 @@
-#if TARGET_OS_MAC
+#if TARGET_OS_OSX
 #import <Cocoa/Cocoa.h>
 #define UIApplication NSApplication
 #define UIViewController NSViewController

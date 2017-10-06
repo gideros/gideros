@@ -963,13 +963,13 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
     if (nsize == 0)
     {
     	if (ptr)
-    		luamem.MasterFreeMemory(ptr);
+    		luamem.FreeMemory(ptr);
         return NULL;
     }
     else if (ptr==NULL)
-    	return luamem.MasterAllocateMemory(nsize);
+    	return luamem.AllocateMemory(nsize);
     else
-        return luamem.MasterResizeMemory(ptr, nsize);
+        return luamem.ResizeMemory(ptr, nsize);
 }
 
 //int renderScene(lua_State* L);
