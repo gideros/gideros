@@ -64,8 +64,21 @@ public:
 		TLF_VCENTER=16,
 		TLF_NOWRAP=32,
 		TLF_RTL=64,
+        TLF_REF_BASELINE=0,
+        TLF_REF_TOP=128,
+        TLF_REF_MIDDLE=256,
+        TLF_REF_BOTTOM=512
 	};
-	virtual TextLayout layoutText(const char *text, float w, float h,int flags,float letterSpacing,float lineSpacing,float tabSpacing);
+
+	struct TextLayoutParameters {
+		TextLayoutParameters() : w(0),h(0),flags(TLF_NOWRAP),letterSpacing(0),lineSpacing(0),tabSpace(4) {};
+		float w,h;
+		int flags;
+		float letterSpacing;
+		float lineSpacing;
+		float tabSpace;
+	};
+	virtual TextLayout layoutText(const char *text, TextLayoutParameters *params);
 protected:
     Application *application_;
 };
@@ -77,7 +90,7 @@ public:
     {
     }
 
-    virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const wchar32_t *text, float r, float g, float b, float letterSpacing, bool hasSample, float minx, float miny) = 0;
+    virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, TextLayoutParameters *layout, bool hasSample, float minx, float miny) = 0;
 };
 
 

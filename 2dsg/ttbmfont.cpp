@@ -28,8 +28,8 @@ static void close(FT_Stream stream) {
 	g_fclose(fis);
 }
 
-TTBMFont::TTBMFont(Application *application, std::vector<FontSpec> filenames, float size,
-		const char *chars, float filtering, GStatus *status) :
+TTBMFont::TTBMFont(Application *application, std::vector<FontSpec> filenames,
+		float size, const char *chars, float filtering, GStatus *status) :
 		BMFontBase(application) {
 	try {
 		constructor(filenames, size, chars, filtering);
@@ -41,10 +41,10 @@ TTBMFont::TTBMFont(Application *application, std::vector<FontSpec> filenames, fl
 
 bool TTBMFont::addGlyph(const wchar32_t chr) {
 	FT_Face face;
-	FT_UInt glyphIndex=0;
-	for (std::vector<FontFace>::iterator it=fontFaces_.begin();it!=fontFaces_.end();it++)
-	{
-		face=(*it).face;
+	FT_UInt glyphIndex = 0;
+	for (std::vector<FontFace>::iterator it = fontFaces_.begin();
+			it != fontFaces_.end(); it++) {
+		face = (*it).face;
 		glyphIndex = FT_Get_Char_Index(face, chr);
 		if (glyphIndex != 0)	// 0 means `undefined character code'
 			break;
@@ -94,8 +94,8 @@ bool TTBMFont::addGlyph(const wchar32_t chr) {
 	return true;
 }
 
-void TTBMFont::constructor(std::vector<FontSpec> filenames, float size, const char *chars,
-		float filtering) {
+void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
+		const char *chars, float filtering) {
 
 	fontInfo_.ascender = 0;
 	fontInfo_.descender = 0;
@@ -110,47 +110,52 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size, const ch
 		scaley /= filtering;
 	}
 
-    fontFaces_.resize(filenames.size());
-    int nf=0;
-	for (std::vector<FontSpec>::iterator it=filenames.begin();it!=filenames.end();it++)
-	{
-	G_FILE *fis = g_fopen((*it).filename.c_str(), "rb");
-	if (!fis)
-		throw GiderosException(GStatus(6000, (*it).filename.c_str()));// Error #6000: %s: No such file or directory.
+	fontFaces_.resize(filenames.size());
+	int nf = 0;
+	for (std::vector<FontSpec>::iterator it = filenames.begin();
+			it != filenames.end(); it++) {
+		G_FILE *fis = g_fopen((*it).filename.c_str(), "rb");
+		if (!fis)
+			throw GiderosException(GStatus(6000, (*it).filename.c_str()));// Error #6000: %s: No such file or directory.
 
-    FontFace &ff=fontFaces_[nf++];
-    memset(&ff.stream, 0, sizeof(ff.stream));
+		FontFace &ff = fontFaces_[nf++];
+		memset(&ff.stream, 0, sizeof(ff.stream));
 
-	g_fseek(fis, 0, SEEK_END);
-	ff.stream.size = g_ftell(fis);
-	g_fseek(fis, 0, SEEK_SET);
-	ff.stream.descriptor.pointer = fis;
-	ff.stream.read = read;
-	ff.stream.close = close;
+		g_fseek(fis, 0, SEEK_END);
+		ff.stream.size = g_ftell(fis);
+		g_fseek(fis, 0, SEEK_SET);
+		ff.stream.descriptor.pointer = fis;
+		ff.stream.read = read;
+		ff.stream.close = close;
 
-	FT_Open_Args args;
-	memset(&args, 0, sizeof(args));
-	args.flags = FT_OPEN_STREAM;
-	args.stream = &ff.stream;
+		FT_Open_Args args;
+		memset(&args, 0, sizeof(args));
+		args.flags = FT_OPEN_STREAM;
+		args.stream = &ff.stream;
 
-	error = FT_Open_Face(FT_Library_Singleton::instance(), &args, 0, &ff.face);
-	if (error)
-		throw GiderosException(GStatus(6012, (*it).filename.c_str()));// Error #6012: %s: Error while reading font file.
+		error = FT_Open_Face(FT_Library_Singleton::instance(), &args, 0,
+				&ff.face);
+		if (error)
+			throw GiderosException(GStatus(6012, (*it).filename.c_str()));// Error #6012: %s: Error while reading font file.
 
-	error = FT_Set_Char_Size(ff.face, 0L, (int) floor(size * 64 * (*it).sizeMult + 0.5f),
-			(int) floor(RESOLUTION * scalex + 0.5f),
-			(int) floor(RESOLUTION * scaley + 0.5f));
+		error = FT_Set_Char_Size(ff.face, 0L,
+				(int) floor(size * 64 * (*it).sizeMult + 0.5f),
+				(int) floor(RESOLUTION * scalex + 0.5f),
+				(int) floor(RESOLUTION * scaley + 0.5f));
 
-	if (error) {
-		FT_Done_Face (ff.face);
-		throw GiderosException(GStatus(6017, (*it).filename.c_str()));// Error #6017: Invalid font size.
+		if (error) {
+			FT_Done_Face(ff.face);
+			throw GiderosException(GStatus(6017, (*it).filename.c_str()));// Error #6017: Invalid font size.
+		}
+
+		fontInfo_.ascender = std::max(fontInfo_.ascender,
+				(int) (ff.face->size->metrics.ascender >> 6));
+		fontInfo_.descender = std::max(fontInfo_.descender,
+				(int) ((ff.face->size->metrics.height
+						- ff.face->size->metrics.ascender) >> 6));
 	}
 
-	fontInfo_.ascender = std::max(fontInfo_.ascender,(int)(ff.face->size->metrics.ascender >> 6));
-	fontInfo_.descender = std::max(fontInfo_.descender,(int)((ff.face->size->metrics.height-ff.face->size->metrics.ascender) >> 6));
-	}
-
-	fontInfo_.height = fontInfo_.ascender+fontInfo_.descender;
+	fontInfo_.height = fontInfo_.ascender + fontInfo_.descender;
 
 	std::vector<wchar32_t> wchars;
 	size_t len = utf8_to_wchar(chars, strlen(chars), NULL, 0, 0);
@@ -158,7 +163,6 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size, const ch
 		wchars.resize(len);
 		utf8_to_wchar(chars, strlen(chars), &wchars[0], len, 0);
 	}
-
 
 	std::map<wchar32_t, TextureGlyph> &textureGlyphs = fontInfo_.textureGlyphs;
 
@@ -218,7 +222,7 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size, const ch
 			int xo, yo;
 			int width, height;
 			tp->getTextureLocation(i, &xo, &yo, &width, &height);
-            const TextureGlyph &g1 = iter->second;
+			const TextureGlyph &g1 = iter->second;
 
 			FT_UInt glyph_index = FT_Get_Char_Index(g1.face, g1.chr);
 			if (glyph_index == 0)
@@ -236,7 +240,7 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size, const ch
 
 			iter->second.x = xo;
 			iter->second.y = yo;
-            iter->second.texture = 0;
+			iter->second.texture = 0;
 
 			width = std::min(width, (int) bitmap.width);
 			height = std::min(height, (int) bitmap.rows);
@@ -252,8 +256,9 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size, const ch
 
 		releaseTexturePacker(tp);
 
-		for (std::vector<FontFace>::iterator it=fontFaces_.begin();it!=fontFaces_.end();it++)
-			FT_Done_Face ((*it).face);
+		for (std::vector<FontFace>::iterator it = fontFaces_.begin();
+				it != fontFaces_.end(); it++)
+			FT_Done_Face((*it).face);
 		fontFaces_.clear();
 
 		TextureParameters parameters;
@@ -300,20 +305,20 @@ void TTBMFont::ensureChars(const wchar32_t *text) {
 			newGlyph = true;
 		}
 		const TextureGlyph &g = textureGlyphs[chr];
-		if (lchar)
-		{
-		const TextureGlyph &gl = textureGlyphs[lchar];
-		if ((g.face==gl.face)&&FT_HAS_KERNING(gl.face)) {
-			FT_Vector delta;
-			FT_Get_Kerning(gl.face, textureGlyphs[lchar].glyphIndex,
-					textureGlyphs[chr].glyphIndex, FT_KERNING_DEFAULT, &delta);
+		if (lchar) {
+			const TextureGlyph &gl = textureGlyphs[lchar];
+			if ((g.face == gl.face) && FT_HAS_KERNING(gl.face)) {
+				FT_Vector delta;
+				FT_Get_Kerning(gl.face, textureGlyphs[lchar].glyphIndex,
+						textureGlyphs[chr].glyphIndex, FT_KERNING_DEFAULT,
+						&delta);
 
-			if (delta.x != 0)
-				kernings[std::make_pair(lchar, chr)] = delta.x;
-		}
+				if (delta.x != 0)
+					kernings[std::make_pair(lchar, chr)] = delta.x;
+			}
 		}
 		if (newGlyph) {
-			if (!currentPacker_->addTexture(g.width,g.height)) {
+			if (!currentPacker_->addTexture(g.width, g.height)) {
 				//Build a new layer
 				if (updateTexture) {
 					application_->getTextureManager()->updateTextureFromDib(
@@ -333,7 +338,7 @@ void TTBMFont::ensureChars(const wchar32_t *text) {
 				textureData_.push_back(
 						application_->getTextureManager()->createTextureFromDib(
 								*currentDib_, parameters));
-				currentPacker_->addTexture(g.width,g.height);
+				currentPacker_->addTexture(g.width, g.height);
 			}
 			int xo, yo;
 			int width, height;
@@ -383,8 +388,9 @@ TTBMFont::~TTBMFont() {
 			it != textureData_.end(); it++)
 		if (*it)
 			application_->getTextureManager()->destroyTexture(*it);
-	for (std::vector<FontFace>::iterator it=fontFaces_.begin();it!=fontFaces_.end();it++)
-		FT_Done_Face ((*it).face);
+	for (std::vector<FontFace>::iterator it = fontFaces_.begin();
+			it != fontFaces_.end(); it++)
+		FT_Done_Face((*it).face);
 	fontFaces_.clear();
 	if (currentDib_)
 		delete currentDib_;
@@ -393,132 +399,140 @@ TTBMFont::~TTBMFont() {
 }
 
 void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
-		const wchar32_t* text, float r, float g, float b, float letterSpacing,
-		bool hasSample, float minx, float miny) {
-	int size = 0;
-	for (const wchar32_t *t = text; *t; ++t, ++size)
-		;
-	ensureChars(text);
+		const char* text, float r, float g, float b,
+		TextLayoutParameters *layout, bool hasSample, float minx, float miny) {
 
-	if (size == 0) {
+	if (strlen(text) == 0) {
 		vGraphicsBase->clear();
 		return;
 	}
 
-	std::map<int, int> layerMap;
-	std::map<int, int> gfxMap;
-	int gfx = 0;
-	for (int i = 0; i < size; ++i) {
-		std::map<wchar32_t, TextureGlyph>::const_iterator iter =
-				fontInfo_.textureGlyphs.find(text[i]);
+    TextLayout l = layoutText(text, layout);
 
-		if (iter == fontInfo_.textureGlyphs.end())
-			continue;
-		const TextureGlyph &textureGlyph = iter->second;
-		int l = layerMap[textureGlyph.texture];
-		if (!l) {
-			gfx++;
-			layerMap[textureGlyph.texture] = gfx;
-			l = gfx;
+    for (size_t pn = 0; pn < l.parts.size(); pn++) {
+		ChunkLayout c = l.parts[pn];
+
+		std::basic_string<wchar32_t> wtext;
+		size_t wsize = utf8_to_wchar(c.text.c_str(), c.text.size(), NULL, 0, 0);
+		wtext.resize(wsize);
+		utf8_to_wchar(c.text.c_str(), c.text.size(), &wtext[0], wsize, 0);
+        ensureChars (&wtext[0]);
+
+		std::map<int, int> layerMap;
+		std::map<int, int> gfxMap;
+		int gfx = 0;
+        for (size_t i = 0; i < wsize; ++i) {
+			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
+					fontInfo_.textureGlyphs.find(wtext[i]);
+
+			if (iter == fontInfo_.textureGlyphs.end())
+				continue;
+			const TextureGlyph &textureGlyph = iter->second;
+			int l = layerMap[textureGlyph.texture];
+			if (!l) {
+				gfx++;
+				layerMap[textureGlyph.texture] = gfx;
+				l = gfx;
+			}
+			l--;
+			gfxMap[l] = gfxMap[l] + 1;
 		}
-		l--;
-		gfxMap[l] = gfxMap[l] + 1;
-	}
 
-	vGraphicsBase->resize(gfx);
+		vGraphicsBase->resize(gfx);
 
-	for (std::map<int, int>::iterator it = gfxMap.begin(); it != gfxMap.end();
-			it++) {
-		GraphicsBase *graphicsBase = &((*vGraphicsBase)[it->first]);
-		int size = it->second;
-		graphicsBase->setColor(r, g, b, 1);
-		graphicsBase->vertices.resize(size * 4);
-		graphicsBase->texcoords.resize(size * 4);
-		graphicsBase->indices.resize(size * 6);
-		graphicsBase->vertices.Update();
-		graphicsBase->texcoords.Update();
-		graphicsBase->indices.Update();
-		it->second = 0;
-	}
+		for (std::map<int, int>::iterator it = gfxMap.begin();
+				it != gfxMap.end(); it++) {
+			GraphicsBase *graphicsBase = &((*vGraphicsBase)[it->first]);
+			int size = it->second;
+			graphicsBase->setColor(r, g, b, 1);
+			graphicsBase->vertices.resize(size * 4);
+			graphicsBase->texcoords.resize(size * 4);
+			graphicsBase->indices.resize(size * 6);
+			graphicsBase->vertices.Update();
+			graphicsBase->texcoords.Update();
+			graphicsBase->indices.Update();
+			it->second = 0;
+		}
 
-	float x = -minx / sizescalex_, y = -miny / sizescaley_;
+		float x = -c.x / sizescalex_, y = -c.y / sizescaley_;
 
-	if (hasSample) {
-		std::map<wchar32_t, TextureGlyph>::const_iterator iter =
-				fontInfo_.textureGlyphs.find(text[0]);
-		const TextureGlyph &textureGlyph = iter->second;
-		x = -textureGlyph.left;
-		//y *= application_->getLogicalScaleY();
-	}
+		if (hasSample) {
+			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
+					fontInfo_.textureGlyphs.find(text[0]);
+			const TextureGlyph &textureGlyph = iter->second;
+			x = -textureGlyph.left;
+			//y *= application_->getLogicalScaleY();
+		}
 
-	wchar32_t prev = 0;
+		wchar32_t prev = 0;
 
-	for (int i = 0; i < size; ++i) {
-		std::map<wchar32_t, TextureGlyph>::const_iterator iter =
-				fontInfo_.textureGlyphs.find(text[i]);
+        for (size_t i = 0; i < wsize; ++i) {
+			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
+					fontInfo_.textureGlyphs.find(wtext[i]);
 
-		if (iter == fontInfo_.textureGlyphs.end())
-			continue;
+			if (iter == fontInfo_.textureGlyphs.end())
+				continue;
 
-		const TextureGlyph &textureGlyph = iter->second;
-		int gfx = layerMap[textureGlyph.texture] - 1;
-		GraphicsBase *graphicsBase = &((*vGraphicsBase)[gfx]);
-		graphicsBase->data = textureData_[textureGlyph.texture];
+			const TextureGlyph &textureGlyph = iter->second;
+			int gfx = layerMap[textureGlyph.texture] - 1;
+			GraphicsBase *graphicsBase = &((*vGraphicsBase)[gfx]);
+			graphicsBase->data = textureData_[textureGlyph.texture];
 
-		int width = textureGlyph.width;
-		int height = textureGlyph.height;
-		int left = textureGlyph.left;
-		int top = textureGlyph.top;
+			int width = textureGlyph.width;
+			int height = textureGlyph.height;
+			int left = textureGlyph.left;
+			int top = textureGlyph.top;
 
-		x += kerning(prev, text[i]) >> 6;
-		prev = text[i];
+			x += kerning(prev, wtext[i]) >> 6;
+			prev = wtext[i];
 
-		float x0 = x + left;
-		float y0 = y - top;
+			float x0 = x + left;
+			float y0 = y - top;
 
-		float x1 = x0 + width;
-		float y1 = y0 + height;
-		int vi = gfxMap[gfx];
-		gfxMap[gfx] = vi + 1;
+			float x1 = x0 + width;
+			float y1 = y0 + height;
+			int vi = gfxMap[gfx];
+			gfxMap[gfx] = vi + 1;
 
-		graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,
-				sizescaley_ * y0);
-		graphicsBase->vertices[vi * 4 + 1] = Point2f(sizescalex_ * x1,
-				sizescaley_ * y0);
-		graphicsBase->vertices[vi * 4 + 2] = Point2f(sizescalex_ * x1,
-				sizescaley_ * y1);
-		graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x0,
-				sizescaley_ * y1);
+			graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,
+					sizescaley_ * y0);
+			graphicsBase->vertices[vi * 4 + 1] = Point2f(sizescalex_ * x1,
+					sizescaley_ * y0);
+			graphicsBase->vertices[vi * 4 + 2] = Point2f(sizescalex_ * x1,
+					sizescaley_ * y1);
+			graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x0,
+					sizescaley_ * y1);
 
-		float u0 = (float) textureGlyph.x
-				/ (float) textureData_[textureGlyph.texture]->exwidth;
-		float v0 = (float) textureGlyph.y
-				/ (float) textureData_[textureGlyph.texture]->exheight;
-		float u1 = (float) (textureGlyph.x + width)
-				/ (float) textureData_[textureGlyph.texture]->exwidth;
-		float v1 = (float) (textureGlyph.y + height)
-				/ (float) textureData_[textureGlyph.texture]->exheight;
+			float u0 = (float) textureGlyph.x
+					/ (float) textureData_[textureGlyph.texture]->exwidth;
+			float v0 = (float) textureGlyph.y
+					/ (float) textureData_[textureGlyph.texture]->exheight;
+			float u1 = (float) (textureGlyph.x + width)
+					/ (float) textureData_[textureGlyph.texture]->exwidth;
+			float v1 = (float) (textureGlyph.y + height)
+					/ (float) textureData_[textureGlyph.texture]->exheight;
 
-		u0 *= uvscalex_;
-		v0 *= uvscaley_;
-		u1 *= uvscalex_;
-		v1 *= uvscaley_;
+			u0 *= uvscalex_;
+			v0 *= uvscaley_;
+			u1 *= uvscalex_;
+			v1 *= uvscaley_;
 
-		graphicsBase->texcoords[vi * 4 + 0] = Point2f(u0, v0);
-		graphicsBase->texcoords[vi * 4 + 1] = Point2f(u1, v0);
-		graphicsBase->texcoords[vi * 4 + 2] = Point2f(u1, v1);
-		graphicsBase->texcoords[vi * 4 + 3] = Point2f(u0, v1);
+			graphicsBase->texcoords[vi * 4 + 0] = Point2f(u0, v0);
+			graphicsBase->texcoords[vi * 4 + 1] = Point2f(u1, v0);
+			graphicsBase->texcoords[vi * 4 + 2] = Point2f(u1, v1);
+			graphicsBase->texcoords[vi * 4 + 3] = Point2f(u0, v1);
 
-		graphicsBase->indices[vi * 6 + 0] = vi * 4 + 0;
-		graphicsBase->indices[vi * 6 + 1] = vi * 4 + 1;
-		graphicsBase->indices[vi * 6 + 2] = vi * 4 + 2;
-		graphicsBase->indices[vi * 6 + 3] = vi * 4 + 0;
-		graphicsBase->indices[vi * 6 + 4] = vi * 4 + 2;
-		graphicsBase->indices[vi * 6 + 5] = vi * 4 + 3;
+			graphicsBase->indices[vi * 6 + 0] = vi * 4 + 0;
+			graphicsBase->indices[vi * 6 + 1] = vi * 4 + 1;
+			graphicsBase->indices[vi * 6 + 2] = vi * 4 + 2;
+			graphicsBase->indices[vi * 6 + 3] = vi * 4 + 0;
+			graphicsBase->indices[vi * 6 + 4] = vi * 4 + 2;
+			graphicsBase->indices[vi * 6 + 5] = vi * 4 + 3;
 
-		x += (textureGlyph.advancex) >> 6;
+			x += (textureGlyph.advancex) >> 6;
 
-		x += letterSpacing / sizescalex_;
+			x += layout->letterSpacing / sizescalex_;
+		}
 	}
 }
 
@@ -593,7 +607,7 @@ float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 		utf8_to_wchar(text, strlen(text), &wtext[0], len, 0);
 	}
 
-    if (size < 0 || size > ((int) wtext.size()))
+	if (size < 0 || size > ((int) wtext.size()))
 		size = wtext.size();
 
 	wtext.push_back(0);

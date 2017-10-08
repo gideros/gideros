@@ -24,7 +24,11 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
 	lua_pushinteger(L,FontBase::TLF_LEFT); lua_setfield(L,-2,"TLF_LEFT");
 	lua_pushinteger(L,FontBase::TLF_JUSTIFIED); lua_setfield(L,-2,"TLF_JUSTIFIED");
 	lua_pushinteger(L,FontBase::TLF_NOWRAP); lua_setfield(L,-2,"TLF_NOWRAP");
-	lua_pop(L,1);
+    lua_pushinteger(L,FontBase::TLF_REF_BASELINE); lua_setfield(L,-2,"TLF_REF_BASELINE");
+    lua_pushinteger(L,FontBase::TLF_REF_TOP); lua_setfield(L,-2,"TLF_REF_TOP");
+    lua_pushinteger(L,FontBase::TLF_REF_MIDDLE); lua_setfield(L,-2,"TLF_REF_MIDDLE");
+    lua_pushinteger(L,FontBase::TLF_REF_BOTTOM); lua_setfield(L,-2,"TLF_REF_BOTTOM");
+    lua_pop(L,1);
 }
 
 int FontBaseBinder::getBounds(lua_State *L)
@@ -100,13 +104,15 @@ int FontBaseBinder::layoutText(lua_State *L)
 
     FontBase *font = static_cast<FontBase*>(binder.getInstance("FontBase", 1));
 
-    FontBase::TextLayout tl=font->layoutText(luaL_checkstring(L,2),
-    		luaL_optnumber(L,3,0),
-    		luaL_optnumber(L,4,0),
-    		luaL_optinteger(L,5,(int)FontBase::TLF_NOWRAP),
-    		luaL_optnumber(L,6,0),
-    		luaL_optnumber(L,7,0),
-    		luaL_optnumber(L,8,4));
+    FontBase::TextLayoutParameters tp;
+    tp.w=luaL_optnumber(L,3,0);
+    tp.h=luaL_optnumber(L,4,0);
+    tp.flags=luaL_optinteger(L,5,(int)FontBase::TLF_NOWRAP);
+    tp.letterSpacing=luaL_optnumber(L,6,0);
+    tp.lineSpacing=luaL_optnumber(L,7,0);
+    tp.tabSpace=luaL_optnumber(L,8,4);
+
+    FontBase::TextLayout tl=font->layoutText(luaL_checkstring(L,2),&tp);
     lua_createtable(L,0,6);
     lua_pushnumber(L,tl.x);
     lua_setfield(L,-2,"x");

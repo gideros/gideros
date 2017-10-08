@@ -27,6 +27,9 @@ private:
 
     static int getSample(lua_State* L);
     static int setSample(lua_State* L);
+
+    static int getLayout(lua_State* L);
+    static int setLayout(lua_State* L);
 };
 
 #endif
