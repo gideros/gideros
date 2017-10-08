@@ -12,6 +12,7 @@
 #include <QStandardPaths>
 #include <QFileInfo>
 #include <QDesktopServices>
+#include <QUrl>
 
 #ifdef Q_OS_MACX
 #define ALL_PLUGINS_PATH "../../All Plugins"

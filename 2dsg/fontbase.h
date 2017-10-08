@@ -3,6 +3,7 @@
 
 #include <refptr.h>
 #include <wchar32.h>
+#include <vector>
 
 class Application;
 class GraphicsBase;
@@ -38,6 +39,33 @@ public:
 		float sizeMult;
 	};
 
+	struct ChunkLayout {
+		std::string text;
+		float x,y;
+		float w,h;
+		float dx,dy;
+		int line;
+		char sep;
+	};
+	struct TextLayout {
+		float x,y;
+		float w,h;
+		int lines;
+		std::vector<struct ChunkLayout> parts;
+	};
+
+	enum TextLayoutFlags {
+		TLF_LEFT=0,
+		TLF_RIGHT=1,
+		TLF_CENTER=2,
+		TLF_JUSTIFIED=4,
+		TLF_TOP=0,
+		TLF_BOTTOM=8,
+		TLF_VCENTER=16,
+		TLF_NOWRAP=32,
+		TLF_RTL=64,
+	};
+	virtual TextLayout layoutText(const char *text, float w, float h,int flags,float letterSpacing,float lineSpacing,float tabSpacing);
 protected:
     Application *application_;
 };
