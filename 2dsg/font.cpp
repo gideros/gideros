@@ -172,13 +172,13 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 		wtext.resize(wsize);
 		utf8_to_wchar(c.text.c_str(), c.text.size(), &wtext[0], wsize, 0);
 
-        float x = -l.x / sizescalex_+c.dx, y = -l.y / sizescaley_+c.dy;
+        float x = c.dx-minx, y = c.dy-miny;
 
 		if (hasSample) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 					fontInfo_.textureGlyphs.find(text[0]);
 			const TextureGlyph &textureGlyph = iter->second;
-			x = -textureGlyph.left;
+			x = c.dx-textureGlyph.left;
 		}
 
 		wchar32_t prev = 0;

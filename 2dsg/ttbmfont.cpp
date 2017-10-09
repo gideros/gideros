@@ -454,13 +454,13 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			it->second = 0;
 		}
 
-		float x = -c.x / sizescalex_, y = -c.y / sizescaley_;
+		float x = c.dx-minx, y = c.dy-miny;
 
 		if (hasSample) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 					fontInfo_.textureGlyphs.find(text[0]);
 			const TextureGlyph &textureGlyph = iter->second;
-			x = -textureGlyph.left;
+			x = c.dx-textureGlyph.left;
 			//y *= application_->getLogicalScaleY();
 		}
 
