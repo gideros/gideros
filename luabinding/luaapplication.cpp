@@ -819,7 +819,6 @@ static void maxmem()
 }
 */
 
-
 static tlsf_t memory_pool = NULL;
 static void *memory_pool_end = NULL;
 
@@ -907,8 +906,8 @@ MemCacheLua::MemCacheLua()
         memory_pool = tlsf_create_with_pool(malloc(mpsize), mpsize);
         memory_pool_end = (char*)memory_pool + mpsize;
     }
-    Reset();
 #endif
+    Reset();
 }
 
 void *MemCacheLua::MasterAllocateMemory(size_t Size)
@@ -960,16 +959,17 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
     (void)ud;
     (void)osize;
+    void *ret=NULL;
     if (nsize == 0)
     {
     	if (ptr)
-    		luamem.FreeMemory(ptr);
-        return NULL;
+            luamem.FreeMemory(ptr);
     }
     else if (ptr==NULL)
-    	return luamem.AllocateMemory(nsize);
+        ret=luamem.AllocateMemory(nsize);
     else
-        return luamem.ResizeMemory(ptr, nsize);
+        ret=luamem.ResizeMemory(ptr, nsize);
+    return ret;
 }
 
 //int renderScene(lua_State* L);

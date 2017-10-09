@@ -24,10 +24,22 @@ TextFieldBinder::TextFieldBinder(lua_State* L)
         {"getLineHeight", getLineHeight},
         {"getSample", getSample},
         {"setSample", setSample},
-		{NULL, NULL},
+        {"getLayout", getLayout},
+        {"setLayout", setLayout},
+        {NULL, NULL},
 	};
 
 	binder.createClass("TextField", "Sprite", create, destruct, functionList);
+}
+
+static void populateLayout(lua_State* L,int index,FontBase::TextLayoutParameters *tp)
+{
+    lua_getfield(L,index,"w"); tp->w=luaL_optnumber(L,-1,0); lua_pop(L,1);
+    lua_getfield(L,index,"h"); tp->h=luaL_optnumber(L,-1,0); lua_pop(L,1);
+    lua_getfield(L,index,"flags"); tp->flags=luaL_optinteger(L,-1,(int)FontBase::TLF_NOWRAP); lua_pop(L,1);
+    lua_getfield(L,index,"letterSpacing");  tp->letterSpacing=luaL_optnumber(L,-1,0); lua_pop(L,1);
+    lua_getfield(L,index,"lineSpacing"); tp->lineSpacing=luaL_optnumber(L,-1,0); lua_pop(L,1);
+    lua_getfield(L,index,"tabSpace"); tp->tabSpace=luaL_optnumber(L,-1,4); lua_pop(L,1);
 }
 
 int TextFieldBinder::create(lua_State* L)
@@ -46,28 +58,30 @@ int TextFieldBinder::create(lua_State* L)
 		font = static_cast<FontBase*>(binder.getInstance("FontBase", 1));
 
 	const char* str2 = lua_tostring(L, 2);
-    const char* str3 = lua_tostring(L, 3);
+    const char* str3=NULL;
+    FontBase::TextLayoutParameters *layout=NULL,tp;
+    if (lua_istable(L,3))
+    {
+        populateLayout(L,3,&tp);
+        layout=&tp;
+    }
+    else {
+        str3 = lua_tostring(L, 3);
+        if (lua_istable(L,4))
+        {
+            populateLayout(L,4,&tp);
+            layout=&tp;
+        }
+    }
 
     switch (font->getType())
     {
         case FontBase::eFont:
         case FontBase::eTTBMFont:
-            if (str2)
-                if (str3)
-                    textField = new TextField(application->getApplication(), static_cast<BMFontBase*>(font), str2, str3);
-                else
-                    textField = new TextField(application->getApplication(), static_cast<BMFontBase*>(font), str2);
-            else
-                textField = new TextField(application->getApplication(), static_cast<BMFontBase*>(font));
+            textField = new TextField(application->getApplication(), static_cast<BMFontBase*>(font), str2, str3, layout);
             break;
         case FontBase::eTTFont:
-            if (str2)
-                if (str3)
-                    textField = new TTTextField(application->getApplication(), static_cast<TTFont*>(font), str2, str3);
-                else
-                    textField = new TTTextField(application->getApplication(), static_cast<TTFont*>(font), str2);
-            else
-                textField = new TTTextField(application->getApplication(), static_cast<TTFont*>(font));
+            textField = new TTTextField(application->getApplication(), static_cast<TTFont*>(font), str2, str3, layout);
             break;
     }
 
@@ -242,4 +256,32 @@ int TextFieldBinder::setSample(lua_State* L)
     textField->setSample(sample);
 
     return 0;
+}
+
+int TextFieldBinder::setLayout(lua_State *L)
+{
+    Binder binder(L);
+    TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+
+    FontBase::TextLayoutParameters tp;
+    populateLayout(L,2,&tp);
+    textField->setLayout(&tp);
+
+    return 0;
+}
+
+int TextFieldBinder::getLayout(lua_State *L)
+{
+    Binder binder(L);
+    TextFieldBase* textField = static_cast<TextFieldBase*>(binder.getInstance("TextField", 1));
+    FontBase::TextLayoutParameters tp=textField->getLayout();
+    lua_createtable(L,0,6);
+    lua_pushnumber(L,tp.w); lua_setfield(L,-2,"w");
+    lua_pushnumber(L,tp.h); lua_setfield(L,-2,"h");
+    lua_pushinteger(L,tp.flags); lua_setfield(L,-2,"flags");
+    lua_pushnumber(L,tp.lineSpacing); lua_setfield(L,-2,"lineSpacing");
+    lua_pushnumber(L,tp.letterSpacing); lua_setfield(L,-2,"letterSpacing");
+    lua_pushnumber(L,tp.tabSpace); lua_setfield(L,-2,"tabSpace");
+
+    return 1;
 }

@@ -12,7 +12,7 @@ class Application;
 class TextFieldBase : public Sprite
 {
 public:
-    TextFieldBase(Application *application) : Sprite(application) {}
+    TextFieldBase(Application *application) : Sprite(application), layout_() {}
     virtual ~TextFieldBase() {}
 
     virtual void setFont(FontBase* font) = 0;
@@ -31,13 +31,13 @@ public:
     virtual void setSample(const char* sample) = 0;
     virtual const char* sample() const = 0;
 
-protected:
-	void updateWide();
+    virtual void setLayout(FontBase::TextLayoutParameters *l=NULL)=0;
+    virtual FontBase::TextLayoutParameters getLayout() { return layout_; }
 
+protected:
 	std::string text_;
     std::string sample_;
-    std::basic_string<wchar32_t> wtext_;
-    std::basic_string<wchar32_t> wsample_;
+    FontBase::TextLayoutParameters layout_;
 };
 
 #endif

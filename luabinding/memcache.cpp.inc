@@ -60,7 +60,7 @@ void MemCache::FreeMemory(void *Memory)
 {
  size_t size=MasterGetSize(Memory);
  if (!size) size++;
- size=((size+15)>>4)-1;
+ size=(size>>4)-1;
  if ((size>=16)||(!Memory))
  {
   MasterFreeMemory(Memory);
@@ -79,9 +79,11 @@ void *MemCache::ResizeMemory(void *Old,size_t Size)
 {
  size_t oldsize=MasterGetSize(Old);
  if ((oldsize>=Size)&&((oldsize-Size)<1024)) return Old; // Don't bother freeing unsued mem
+ if ((oldsize>256)&&(Size>256))
+ 	return MasterResizeMemory(Old,Size);
  void *n=AllocateMemory(Size);
  if (!n) return NULL;
- memcpy(n,Old,oldsize);
+ memcpy(n,Old,oldsize>Size?Size:oldsize);
  FreeMemory(Old);
  return n;
 }
