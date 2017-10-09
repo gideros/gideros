@@ -235,6 +235,8 @@ void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx,
 		x += (int) (letterSpacing * scalex);
 	}
 
+    if (!x) minx=miny=maxx=maxy=0;
+
 	if (pminx)
 		*pminx = minx;
 	if (pminy)

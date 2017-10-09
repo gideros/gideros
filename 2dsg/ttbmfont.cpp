@@ -288,7 +288,7 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 	uvscaley_ = 1;
 }
 
-void TTBMFont::ensureChars(const wchar32_t *text) {
+void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 	if (!currentPacker_)
 		return;
 	std::map<std::pair<wchar32_t, wchar32_t>, int> &kernings =
@@ -296,7 +296,7 @@ void TTBMFont::ensureChars(const wchar32_t *text) {
 	std::map<wchar32_t, TextureGlyph> &textureGlyphs = fontInfo_.textureGlyphs;
 	bool updateTexture = false;
 	wchar32_t lchar = 0;
-	for (const wchar32_t *t = text; *t; ++t) {
+    for (const wchar32_t *t = text; size; size--,t++) {
 		wchar32_t chr = *t;
 		bool newGlyph = false;
 		if (textureGlyphs.find(chr) == textureGlyphs.end()) {
@@ -409,6 +409,11 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 
     TextLayout l = layoutText(text, layout);
 
+    std::map<int, int> layerMap;
+    std::map<int, int> gfxMap;
+    std::map<int, int> gfxMap2;
+    int gfx = 0;
+
     for (size_t pn = 0; pn < l.parts.size(); pn++) {
 		ChunkLayout c = l.parts[pn];
 
@@ -416,11 +421,8 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		size_t wsize = utf8_to_wchar(c.text.c_str(), c.text.size(), NULL, 0, 0);
 		wtext.resize(wsize);
 		utf8_to_wchar(c.text.c_str(), c.text.size(), &wtext[0], wsize, 0);
-        ensureChars (&wtext[0]);
+        ensureChars (&wtext[0],wsize);
 
-		std::map<int, int> layerMap;
-		std::map<int, int> gfxMap;
-		int gfx = 0;
         for (size_t i = 0; i < wsize; ++i) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 					fontInfo_.textureGlyphs.find(wtext[i]);
@@ -438,7 +440,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			gfxMap[l] = gfxMap[l] + 1;
 		}
 
-		vGraphicsBase->resize(gfx);
+        vGraphicsBase->resize(gfx);
 
 		for (std::map<int, int>::iterator it = gfxMap.begin();
 				it != gfxMap.end(); it++) {
@@ -451,16 +453,15 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			graphicsBase->vertices.Update();
 			graphicsBase->texcoords.Update();
 			graphicsBase->indices.Update();
-			it->second = 0;
 		}
 
-		float x = c.dx-minx, y = c.dy-miny;
+        float x = c.dx/sizescalex_-minx, y = c.dy/sizescaley_-miny;
 
 		if (hasSample) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 					fontInfo_.textureGlyphs.find(text[0]);
 			const TextureGlyph &textureGlyph = iter->second;
-			x = c.dx-textureGlyph.left;
+            x = c.dx/sizescalex_-textureGlyph.left;
 			//y *= application_->getLogicalScaleY();
 		}
 
@@ -491,8 +492,8 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 
 			float x1 = x0 + width;
 			float y1 = y0 + height;
-			int vi = gfxMap[gfx];
-			gfxMap[gfx] = vi + 1;
+            int vi = gfxMap2[gfx];
+            gfxMap2[gfx] = vi + 1;
 
 			graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,
 					sizescaley_ * y0);
@@ -549,9 +550,10 @@ void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx,
 		wtext.resize(len);
 		utf8_to_wchar(text, strlen(text), &wtext[0], len, 0);
 	}
+    ensureChars (&wtext[0],len);
 
 	float x = 0, y = 0;
-	wchar32_t prev = 0;
+    wchar32_t prev = 0;
 	for (std::size_t i = 0; i < wtext.size(); ++i) {
 		std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 				fontInfo_.textureGlyphs.find(wtext[i]);
@@ -589,6 +591,8 @@ void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx,
 		x += (int) (letterSpacing / sizescalex_);
 	}
 
+    if (!x) minx=miny=maxx=maxy=0;
+
 	if (pminx)
 		*pminx = minx;
 	if (pminy)
@@ -611,6 +615,7 @@ float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 		size = wtext.size();
 
 	wtext.push_back(0);
+    ensureChars (&wtext[0],len);
 
 	float x = 0;
 	wchar32_t prev = 0;

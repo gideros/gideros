@@ -38,7 +38,7 @@ private:
     void constructor(std::vector<FontSpec> filenames, float size, const char *chars, float filtering);
     int kerning(wchar32_t left, wchar32_t right) const;
     bool addGlyph(const wchar32_t chr);
-    void ensureChars(const wchar32_t *text);
+    void ensureChars(const wchar32_t *text, int size);
 
 private:
     struct TextureGlyph

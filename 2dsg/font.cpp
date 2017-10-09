@@ -172,13 +172,13 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 		wtext.resize(wsize);
 		utf8_to_wchar(c.text.c_str(), c.text.size(), &wtext[0], wsize, 0);
 
-        float x = c.dx-minx, y = c.dy-miny;
+        float x = c.dx/sizescalex_-minx, y = c.dy/sizescaley_-miny;
 
 		if (hasSample) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 					fontInfo_.textureGlyphs.find(text[0]);
 			const TextureGlyph &textureGlyph = iter->second;
-			x = c.dx-textureGlyph.left;
+            x = c.dx/sizescalex_-textureGlyph.left;
 		}
 
 		wchar32_t prev = 0;
@@ -496,6 +496,8 @@ void Font::getBounds(const char *text, float letterSpacing, float *pminx,
 
 		x += letterSpacing / sizescalex_;
 	}
+
+    if (!x) minx=miny=maxx=maxy=0;
 
 	if (pminx)
 		*pminx = minx;

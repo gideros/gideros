@@ -13,7 +13,6 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
 	if (font_ != 0)
 		font_->ref();
 
-	setTextColor(0x000000);
 
     sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
 
@@ -23,7 +22,7 @@ TextField::TextField(Application *application, BMFontBase* font, const char* tex
 	if (params)
         layout_=*params;
 
-    createGraphics();
+    setTextColor(0x000000);
 }
 
 /*
