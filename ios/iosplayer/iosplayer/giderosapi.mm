@@ -1435,16 +1435,17 @@ BOOL ApplicationManager::shouldAutorotateToInterfaceOrientation(UIInterfaceOrien
 	BOOL result;
 	
 	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
-	bool dontAutorotate = (properties_.autorotation == 0) || (properties_.autorotation == 1 && !phone) || (properties_.autorotation == 2 && phone);
+    bool dontAutorotate = !(((properties_.autorotation&1) && phone) || ((properties_.autorotation&2) && !phone));
 	
 	if (dontAutorotate)
 		result = (interfaceOrientation == UIInterfaceOrientationPortrait);
 	else
 	{
-		if (application_->orientation() == eLandscapeLeft || application_->orientation() == eLandscapeRight)
+/*		if (application_->orientation() == eLandscapeLeft || application_->orientation() == eLandscapeRight)
 			result = (interfaceOrientation == UIInterfaceOrientationLandscapeLeft || interfaceOrientation == UIInterfaceOrientationLandscapeRight);
 		else
-			result = (interfaceOrientation == UIInterfaceOrientationPortrait || interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown);
+			result = (interfaceOrientation == UIInterfaceOrientationPortrait || interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown); */
+        result = TRUE;
 	}
 
 	return result;
@@ -1455,17 +1456,19 @@ NSUInteger ApplicationManager::supportedInterfaceOrientations()
 	NSUInteger result;
 	
 	bool phone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
-	bool dontAutorotate = (properties_.autorotation == 0) || (properties_.autorotation == 1 && !phone) || (properties_.autorotation == 2 && phone);
+	bool dontAutorotate = !(((properties_.autorotation&1) && phone) || ((properties_.autorotation&2) && !phone));
 
     if (dontAutorotate){
         result = UIInterfaceOrientationMaskPortrait;
     }
     else
     {
+        /*
 		if (application_->orientation() == eLandscapeLeft || application_->orientation() == eLandscapeRight)
             result = UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
         else
-            result = UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+            result = UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;*/
+        result= UIInterfaceOrientationMaskAll;
     }
 
     return result;

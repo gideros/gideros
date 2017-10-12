@@ -89,7 +89,7 @@ player.mac.app:
 	cp $(MAC_TEMPLATE)/*.a $(MAC_PLAYER_DIR)/MacPlayer/
 	cp $(MAC_TEMPLATE)/giderosapi.h $(MAC_PLAYER_DIR)/MacPlayer/
 	mkdir -p $(RELEASE)/Players
-	#cd $(MAC_PLAYER_DIR); $(XCODEBUILD) -sdk iphoneos$$MAC_SDK -configuration Release IPHONEOS_DEPLOYMENT_TARGET=6.0 -project GiderosMACPlayer.xcodeproj -scheme GiderosMACPlayer -archivePath GiderosMACPlayer.xcarchive archive
+	#cd $(MAC_PLAYER_DIR); $(XCODEBUILD) -sdk macosx$$MAC_SDK -configuration Release IPHONEOS_DEPLOYMENT_TARGET=6.0 -project GiderosMACPlayer.xcodeproj -scheme GiderosMACPlayer -archivePath GiderosMACPlayer.xcarchive archive
 	#cd $(MAC_PLAYER_DIR); $(XCODEBUILD) -exportArchive -exportPath ../../$(RELEASE)/Players/GiderosMACPlayer.ipa -exportFormat ipa -archivePath GiderosMACPlayer.xcarchive
 	#R=$(PWD);cd $(MAC_PLAYER_DIR)/..; zip -r $$R/$(RELEASE)/Players/GiderosMACPlayer.zip GiderosMACPlayer 
 	
