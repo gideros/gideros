@@ -52,6 +52,7 @@ public:
     virtual bool ChannelIsPlaying(g_id channel) = 0;
     virtual void ChannelSetVolume(g_id channel, float volume) = 0;
     virtual float ChannelGetVolume(g_id channel) = 0;
+    virtual g_id ChannelGetStreamId(g_id channel) { return 0;};
     virtual void ChannelSetPitch(g_id channel, float pitch) = 0;
     virtual float ChannelGetPitch(g_id channel) = 0;
     virtual void ChannelSetLooping(g_id channel, bool looping) = 0;
@@ -92,6 +93,7 @@ struct GGAudioLoader
     typedef size_t (*ReadFunc)(g_id id, size_t size, void *data);
     typedef int (*SeekFunc)(g_id id, long int offset, int whence);
     typedef long int (*TellFunc)(g_id id);
+    typedef void (*FormatFunc)(g_id id, int *sampleRate, int *numChannels);
 
     GGAudioLoader()
     {
@@ -102,7 +104,8 @@ struct GGAudioLoader
         close(close),
         read(read),
         seek(seek),
-        tell(tell)
+        tell(tell),
+		format(NULL)
     {
 
     }
@@ -112,6 +115,7 @@ struct GGAudioLoader
     ReadFunc read;
     SeekFunc seek;
     TellFunc tell;
+    FormatFunc format;
 };
 
 
@@ -135,6 +139,7 @@ public:
     bool ChannelIsPlaying(g_id channel);
     void ChannelSetVolume(g_id channel, float volume);
     float ChannelGetVolume(g_id channel);
+    g_id ChannelGetStreamId(g_id channel);
     void ChannelSetPitch(g_id channel, float pitch);
     float ChannelGetPitch(g_id channel);
     void ChannelSetLooping(g_id channel, bool looping);
@@ -148,6 +153,9 @@ public:
     void postTick();
 
 	void AdvanceStreamBuffers();
+
+	void registerLoader(const char *name, GGAudioLoader &loader);
+	void unregisterLoader(const char *name);
 
 private:
     void interfacesInit();
@@ -215,6 +223,7 @@ public:
     bool ChannelIsPlaying(g_id channel);
     void ChannelSetVolume(g_id channel, float volume);
     float ChannelGetVolume(g_id channel);
+    g_id ChannelGetStreamId(g_id channel);
     void ChannelSetPitch(g_id channel, float pitch);
     float ChannelGetPitch(g_id channel);
     void ChannelSetLooping(g_id channel, bool looping);
@@ -249,6 +258,8 @@ public:
     void endInterruption();
 
 	void AdvanceStreamBuffers();
+	void RegisterType(const char *name,GGAudioLoader &loader);
+	void UnregisterType(const char *name);
 
 private:
     static void tick_s(int type, void *event, void *udata);
@@ -267,5 +278,16 @@ private:
     GGSoundManager *soundManager_;
     GGBackgroundMusicInterface *backgroundMusicInterface_;
 };
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+G_API void gaudio_registerType(const char *name,GGAudioLoader &loader);
+G_API void gaudio_unregisterType(const char *name);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -886,6 +886,7 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
     return p;
 }
 
+#ifndef  EMSCRIPTEN //memalloc has issues with emscripten, disable til I know more...
 class MemCacheLua : public MemCache
 {
 public:
@@ -898,7 +899,6 @@ public:
 
 MemCacheLua::MemCacheLua()
 {
-#ifndef EMSCRIPTEN
     if (memory_pool == NULL)
     {
         const size_t mpsize = 1024 * 1024;
@@ -906,60 +906,49 @@ MemCacheLua::MemCacheLua()
         memory_pool = tlsf_create_with_pool(malloc(mpsize), mpsize);
         memory_pool_end = (char*)memory_pool + mpsize;
     }
-#endif
     Reset();
 }
 
 void *MemCacheLua::MasterAllocateMemory(size_t Size)
 {
-#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
-	size_t *bk=(size_t *) realloc(NULL,Size+sizeof(size_t));
-	*bk=Size;
-	return bk+1;
-#else
 	return g_realloc(NULL, 0, Size);
-#endif
 }
 
 void MemCacheLua::MasterFreeMemory(void *Memory)
 {
-#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
-	size_t *bk=((size_t *)Memory)-1;
-	return free(bk);
-#else
 	return g_free(Memory);
-#endif
 }
 
 void *MemCacheLua::MasterResizeMemory(void *Memory,size_t Size)
 {
-#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
-	size_t *bk=((size_t *)Memory)-1;
-	bk=(size_t *)realloc(bk,Size+sizeof(size_t));
-	*bk=Size;
-	return bk+1;
-#else
 	return g_realloc(Memory,g_getsize(Memory),Size);
-#endif
 }
 
 
 size_t MemCacheLua::MasterGetSize(void *Memory)
 {
-#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
-	size_t *bk=((size_t *)Memory)-1;
-	return *bk;
-#else
 	return g_getsize(Memory);
-#endif
 }
 
 static MemCacheLua luamem;
+#endif
+
 static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
     (void)ud;
     (void)osize;
     void *ret=NULL;
+#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
+    if (nsize == 0)
+    {
+    	if (ptr)
+            free(ptr);
+    }
+    else if (ptr==NULL)
+        ret=malloc(nsize);
+    else
+        ret=realloc(ptr, nsize);
+#else
     if (nsize == 0)
     {
     	if (ptr)
@@ -969,6 +958,7 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
         ret=luamem.AllocateMemory(nsize);
     else
         ret=luamem.ResizeMemory(ptr, nsize);
+#endif
     return ret;
 }
 

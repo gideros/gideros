@@ -482,17 +482,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     s_applicationManager=new ApplicationManager();
     application_=s_applicationManager->getApplication();
-    
-    char resourcePath[MAX_PATH];
-    strcpy(resourcePath,"assets\\");
-    gpath_setDrivePath(0,resourcePath);
-    
-    char docsPath[MAX_PATH];
-    strcpy(docsPath,getenv("APPDATA"));
-    strcat(docsPath, "\\giderosgame\\");
-    CreateDirectory(docsPath,NULL);        // create dir if it does not exist
-    gpath_setDrivePath(1,docsPath);
-    
+
     s_applicationManager->surfaceCreated();
 	ScreenManager::manager=new W32ScreenManager(hDC,hRC,hInst);
 	wglMakeCurrent(NULL,NULL);
@@ -657,8 +647,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		       WS_OVERLAPPEDWINDOW,     // window style
 		       0,           // initial x position
 		       0,           // initial y position
-		       100,           // initial x size
-		       100,           // initial y size
+		       320,           // initial x size
+		       480,           // initial y size
 		       NULL,                    // parent window handle
 		       NULL,                    // window menu handle
 		       hInstance,               // program instance handle

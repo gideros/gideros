@@ -64,6 +64,7 @@ G_API void gaudio_SoundListener(float x,float y,float z,float vx,float vy,float 
 G_API void gaudio_ChannelStop(g_id channel);
 G_API void gaudio_ChannelSetPosition(g_id channel, unsigned int position);
 G_API unsigned int gaudio_ChannelGetPosition(g_id channel);
+G_API g_id gaudio_ChannelGetStreamId(g_id channel);
 G_API void gaudio_ChannelSetPaused(g_id channel, g_bool paused);
 G_API g_bool gaudio_ChannelIsPaused(g_id channel);
 G_API g_bool gaudio_ChannelIsPlaying(g_id channel);

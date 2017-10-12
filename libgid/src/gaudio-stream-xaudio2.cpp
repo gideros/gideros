@@ -390,6 +390,17 @@ public:
         return channel2->volume;
     }
 
+    g_id ChannelGetStreamId(g_id channel)
+    {
+        std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
+        if (iter == channels_.end())
+            return 0.f;
+
+        Channel *channel2 = iter->second;
+
+        return channel2->file;
+    }
+
     void ChannelSetPitch(g_id channel, float pitch)
     {
         GGLock lock(mutex_);
@@ -741,12 +752,18 @@ private:
 
         if (size != 0)
         {
+        	int chn=channel->sound->numChannels;
+        	int csr=channel->sound->sampleRate;
+        	if (channel->sound->loader.format)
+        	{
+        		channel->sound->loader.format(channel->file,&csr,&chn);
+        	}
 //			OutputDebugStringA("size not zero\n");
         //     alBufferData(buffer, channel->sound->format, data, size, channel->sound->sampleRate);
 			// either allocate new memory and put data into it, or, if already allocated, replace.
 			buffer->Create(data,
-				channel->sound->numChannels,
-				channel->sound->sampleRate,
+				chn,
+				csr,
 				channel->sound->bitsPerSample,
 				channel->sound->numSamples, size);
 

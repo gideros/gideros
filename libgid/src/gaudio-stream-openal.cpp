@@ -168,7 +168,7 @@ public:
         if (file == 0)
             return 0;
 
-        g_id gid = g_NextId();
+        g_id gid = file;
 
         Channel *channel = new Channel(gid, file, sound2, source);
 
@@ -342,6 +342,17 @@ public:
         Channel *channel2 = iter->second;
 
         return channel2->volume;
+    }
+
+    g_id ChannelGetStreamId(g_id channel)
+    {
+        std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
+        if (iter == channels_.end())
+            return 0.f;
+
+        Channel *channel2 = iter->second;
+
+        return channel2->file;
     }
 
     void ChannelSetPitch(g_id channel, float pitch)
@@ -658,7 +669,28 @@ private:
 
         if (size != 0)
         {
-            alBufferData(buffer, channel->sound->format, data, size, channel->sound->sampleRate);
+        	ALenum cformat=channel->sound->format;
+        	int csr=channel->sound->sampleRate;
+        	if (channel->sound->loader.format)
+        	{
+        		int chn;
+        		channel->sound->loader.format(channel->file,&csr,&chn);
+	            if (channel->sound->bitsPerSample == 8)
+	            {
+	                if (chn == 1)
+	                	cformat = AL_FORMAT_MONO8;
+        		    else if (chn == 2)
+        		        cformat = AL_FORMAT_STEREO8;
+        		}
+        		else if (channel->sound->bitsPerSample == 16)
+        		{
+        		     if (chn == 1)
+        		          cformat = AL_FORMAT_MONO16;
+        		     else if (chn == 2)
+        		          cformat = AL_FORMAT_STEREO16;
+        		}
+        	}
+            alBufferData(buffer, cformat, data, size, csr);
             alSourceQueueBuffers(channel->source, 1, &buffer);
             channel->buffers.push_back(std::make_pair(buffer, pos));
             if (!channel->paused)
