@@ -1,4 +1,4 @@
-QT -=  gui
+QT -= core gui
 
 TARGET = ogg
 TEMPLATE = lib

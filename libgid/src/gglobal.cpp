@@ -1,4 +1,5 @@
 #include <gglobal.h>
+#include <time.h>
 
 static g_id s_nextgid = 1;
 

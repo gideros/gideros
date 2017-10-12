@@ -1,11 +1,11 @@
 <plugin
- name="Bump"
- description="Native version of Bump.lua">
+ name="Ogg"
+ description="Add support for Ogg Audio and Theora video">
   <target name="AndroidStudio,APK">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
-            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;bump&quot;);"/>
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;ogg&quot;);"/>
         </replacelist>
     </template>
  </target>
@@ -13,22 +13,23 @@
     <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
-            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;bump&quot;);"/>
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;ogg&quot;);"/>
         </replacelist>
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/bump</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/bump" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
-   <mkdir>AppleTV/Plugins/bump</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/bump" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <mkdir>[[[project.name]]]/Plugins/ogg</mkdir>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
+   <mkdir>AppleTV/Plugins/ogg</mkdir>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("bump","Plugins/bump","GroupBump_ios","GroupPlugins_ios")
-iOSProject.addGroup("bump","Plugins/bump","GroupBump_atv","GroupPlugins_atv")
-local sources={ "bump.cpp"  }
-iOSProject.addSources(sources, "GroupBump", "ios")
-iOSProject.addSources(sources, "GroupBump", "atv")
+iOSProject.addGroup("ogg","Plugins/ogg","GroupOgg_ios","GroupPlugins_ios")
+iOSProject.addGroup("ogg","ogg","GroupOgg_atv","GroupPlugins_atv")
+iOSProject.addSources({ "ogg_stub.cpp"  }, "GroupOgg", "ios")
+iOSProject.addSources({ "ogg_stub.cpp"  }, "GroupOgg", "atv")
+iOSProject.addSources({ "Plugins/libogg.ios.a"  }, "GroupPlugins", "ios")
+iOSProject.addSources({ "libogg.atv.a"  }, "GroupPlugins", "atv")
 iOSProject.commit()
 	]]></lua>
  </target>
@@ -36,11 +37,11 @@ iOSProject.commit()
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
     <template name="Activity" path="">
         <replacelist wildcards="gideros.html">
-            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;bump.js&quot;,"/>
+            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;ogg.js&quot;,"/>
         </replacelist>
     </template>
  </target>
- <target name="WinRT">
+<!-- <target name="WinRT">
     <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
     <template name="project" path="">
         <replacelist wildcards="giderosgame.Shared.vcxitems">
@@ -53,5 +54,5 @@ iOSProject.commit()
            </append>
         </replacelist>
     </template>
- </target>
+ </target> -->
 </plugin>

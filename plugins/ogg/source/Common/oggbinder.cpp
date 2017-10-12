@@ -44,12 +44,12 @@ struct GGOggHandle
 	 TextureBase *uplane;
 	 TextureBase *vplane;
 
-	int              theora_p=0;
-	int              vorbis_p=0;
-	int              stateflag=0;
-	int videobuf_ready=0;
-	double       videobuf_time=0;
-	double playstart=0;
+	int              theora_p;
+	int              vorbis_p;
+	int              stateflag;
+	int videobuf_ready;
+	double       videobuf_time;
+	double playstart;
 };
 
 static std::map<g_id,GGOggHandle *> ctxmap;
@@ -496,7 +496,6 @@ class Renderer : public Ticker {
 	void renderContext(GGOggHandle *hnd);
 };
 
-#include <QDebug.h>
 void Renderer::renderContext(GGOggHandle *handle)
 {
    if(handle->stateflag && handle->videobuf_ready && handle->videobuf_time<=(g_iclock()-handle->playstart)){
