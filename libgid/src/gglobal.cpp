@@ -12,8 +12,8 @@ g_id g_NextId()
     return s_nextgid++;
 }
 
-#if defined(WINSTORE)
-#elif defined(_WIN32)
+//#if defined(WINSTORE)
+#if defined(_WIN32)
 #include <Windows.h>
 #endif
 

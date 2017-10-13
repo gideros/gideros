@@ -116,7 +116,7 @@ int TextureBinder::create(lua_State* L)
 		if (isFromPixels)
 	        texture = new Texture(application, (unsigned char *) filename, width, height, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2);
 		else
-			texture = new Texture(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor);
+			texture = new Texture(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2);
 	}
 	catch (const GiderosException& e)
 	{

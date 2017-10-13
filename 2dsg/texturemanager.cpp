@@ -40,7 +40,7 @@ TextureManager::~TextureManager()
 {
 }
 
-TextureData* TextureManager::createTextureFromFile(const char* filename, const TextureParameters& parameters)
+TextureData* TextureManager::createTextureFromFile(const char* filename, const TextureParameters& parameters,bool pow2)
 {
     int flags = gpath_getDriveFlags(gpath_getPathDrive(filename));
 
@@ -136,7 +136,7 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
         }
     }
 
-    Dib dib(application_, filename, true, true, parameters.maketransparent, parameters.transparentcolor);
+    Dib dib(application_, filename, true, pow2, parameters.maketransparent, parameters.transparentcolor);
 
     if (parameters.grayscale)
         dib.convertGrayscale();

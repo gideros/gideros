@@ -68,7 +68,7 @@ public:
     TextureManager(Application* application);
     ~TextureManager();
 
-    TextureData* createTextureFromFile(const char* filename, const TextureParameters& parameters);
+    TextureData* createTextureFromFile(const char* filename, const TextureParameters& parameters, bool pow2=true);
     TextureData* createTextureFromDib(const Dib& dib, const TextureParameters& parameters);
     TextureData* createRenderTarget(int width, int height, const TextureParameters& parameters);
     void updateTextureFromDib(TextureData* data, const Dib& dib);
