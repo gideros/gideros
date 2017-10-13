@@ -32,6 +32,11 @@ iOSProject.addSources({ "Plugins/libogg.ios.a"  }, "GroupPlugins", "ios")
 iOSProject.addSources({ "libogg.atv.a"  }, "GroupPlugins", "atv")
 iOSProject.commit()
 	]]></lua>
+    <template name="Activity" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Ogg) "/>
+        </replacelist>
+    </template>
  </target>
  <target name="Html5">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>

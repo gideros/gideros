@@ -52,11 +52,12 @@ atv.libs.install: atv.libs
 	cp $(ROOT)/ios/iosplayer/libiosplayer.atv.a $(ATV_TEMPLATE)/libgideros.a
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(ATV_TEMPLATE)
 
-PLUGINS_IOS=luasocket camera
-PLUGINS_ATV=luasocket
+PLUGINS_IOS=luasocket camera ogg
+PLUGINS_ATV=luasocket ogg
 
 luasocket.%: PLUGINDIR=LuaSocket
 camera.%: PLUGINDIR=camera
+ogg.%: PLUGINDIR=ogg
 
 %.iosplugin: PLUGINDIR?=$*
 %.iosplugin: PLUGINPATH=$(ROOT)/plugins/$(PLUGINDIR)/source
