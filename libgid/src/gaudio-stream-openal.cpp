@@ -471,7 +471,7 @@ public:
         {
             Channel *channel2 = iter->second;
 
-            if (channel2->source == 0)
+            if (channel2->toClose)
             {
                 channel2->sound->loader.close(channel2->file);
 
@@ -481,6 +481,8 @@ public:
             }
             else
             {
+                if (channel2->source==0)
+                    channel2->toClose=true; //Delay close for one cycle, in case event was enqueued asynchronously
                 ++iter;
             }
         }
@@ -578,7 +580,8 @@ private:
             pitch(1.f),
             looping(false),
             nodata(false),
-            lastPosition(0)
+            lastPosition(0),
+            toClose(false)
         {
         }
 
@@ -591,6 +594,7 @@ private:
         float pitch;
         bool looping;
         bool nodata;
+        bool toClose;
         unsigned int lastPosition;
 
         std::deque<std::pair<ALuint, unsigned int> > buffers;

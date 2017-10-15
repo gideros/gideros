@@ -104,7 +104,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate, int
 
 	  /* Ogg file open; parse the headers */
 	  /* Only interested in Vorbis/Theora streams */
-	  handle->stateflag=0;
+	  handle->stateflag=0; /* playback has not begun */
 	  while(!handle->stateflag){
 	    int ret=buffer_data(file,&handle->oy);
 	    if(ret==0)break;
@@ -300,7 +300,6 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 	     assumption in Ogg A/V streams! It will always be true of the
 	     example_encoder (and most streams) though. */
 
-	  handle->stateflag=0; /* playback has not begun */
 	  /* single frame video buffering */
 	  ogg_int64_t  videobuf_granulepos=-1;
 
