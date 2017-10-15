@@ -31,6 +31,13 @@ Pixel::Pixel(Application *application) : Sprite(application)
     vertices.resize(4);
 }
 
+Pixel::~Pixel()
+{
+    for (int t=0;t<PIXEL_MAX_TEXTURES;t++)
+        if (texture_[t])
+            texture_[t]->unref();
+}
+
 void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
     if (!a_ && !shader_) return;

@@ -139,7 +139,7 @@ void *ogl2ShaderTexture::getNative()
 
 ogl2ShaderTexture::~ogl2ShaderTexture()
 {
-	GLCALL_INIT;
+    GLCALL_INIT;
 	if (!native)
 		GLCALL glDeleteTextures(1,&glid);
 }

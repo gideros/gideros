@@ -74,6 +74,8 @@ static int _fseek64_wrap(G_FILE *f,ogg_int64_t off,int whence){
   return g_fseek(f,off,whence);
 }
 
+void gaudio_OggClose(g_id gid);
+
 g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate, int *bitsPerSample, int *numSamples, gaudio_Error *error)
 {
     G_FILE *file = g_fopen(fileName, "rb");
@@ -96,6 +98,9 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate, int
 	  /* init supporting Theora structures needed in header parsing */
 	  th_comment_init(&handle->tc);
 	  th_info_init(&handle->ti);
+
+	    g_id gid=(g_id)handle;
+	    ctxmap[gid]=handle;
 
 	  /* Ogg file open; parse the headers */
 	  /* Only interested in Vorbis/Theora streams */
@@ -178,9 +183,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate, int
 	      int ret=buffer_data(file,&handle->oy); /* someone needs more data */
 	      if(ret==0){
 	        fprintf(stderr,"End of file while searching for codec headers.\n");
-	        //TODO
-	        g_fclose(file);
-			delete handle;
+	        gaudio_OggClose(gid);
 	        if (error)
 	            *error = GAUDIO_UNRECOGNIZED_FORMAT;
 	        return 0;
@@ -246,8 +249,7 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate, int
 	  if (!handle->vorbis_p)
 	  {
 		  //We need an audio track
-      g_fclose(file);
-		delete handle;
+        gaudio_OggClose(gid);
       if (error)
           *error = GAUDIO_UNRECOGNIZED_FORMAT;
       return 0;
@@ -263,9 +265,6 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate, int
         *numSamples = -1;
     if (error)
         *error = GAUDIO_NO_ERROR;
-
-    g_id gid=(g_id)handle;
-    ctxmap[gid]=handle;
 
     return gid;
 }
@@ -485,7 +484,7 @@ void gaudio_OggClose(g_id gid)
 	    th_info_clear(&handle->ti);
 	  }
 	  ogg_sync_clear(&handle->oy);
-	  
+      g_fclose(handle->file);
     delete handle;
 }
 

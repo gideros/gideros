@@ -31,9 +31,7 @@ public:
 	}
 
 
-	virtual ~Pixel()
-	{
-	}
+    virtual ~Pixel();
 
     void updateTexture();
 
