@@ -50,6 +50,11 @@ bool LibraryWidget::isModified() const
 	return ui.treeWidget->isModified();
 }
 
+QMap<QString, QString> LibraryWidget::usedPlugins()
+{
+	return ui.treeWidget->usedPlugins();
+}
+
 QString LibraryWidget::fileName(const QString& itemName) const
 {
 	return ui.treeWidget->fileName(itemName);

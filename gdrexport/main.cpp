@@ -67,6 +67,40 @@ static bool readProjectFile(const QString& fileName,
         noEncryption.clear();
         std::vector<std::pair<QString, QString> > dependencies_;
 
+    	//Add lua plugins
+    	QMap<QString, QString> plugins;
+    	QMap<QString, QString> allPlugins=ProjectProperties::availablePlugins();
+    	bool hasLuaPlugin=false;
+    	for (QSet<ProjectProperties::Plugin>::const_iterator it=properties_.plugins.begin();it!=properties_.plugins.end(); it++)
+    	{
+    		ProjectProperties::Plugin p=*it;
+    		if (p.enabled)
+    		{
+    			QString ppath=allPlugins[p.name];
+    			if (!ppath.isEmpty())
+    			{
+    	    		QFileInfo path(ppath);
+    	    		QDir pf=path.dir();
+    	    		if (pf.cd("luaplugin"))
+    	    		{
+    	    			QStringList filters;
+    	    			filters << "*.lua";
+    	    			pf.setNameFilters(filters);
+    	    			QFileInfoList files = pf.entryInfoList(
+    	    					QDir::Files | QDir::Hidden);
+    	    			hasLuaPlugin=true;
+    	    			for (int i = 0; i < files.count(); i++)
+    	    			{
+    	    				fileList_.push_back(std::make_pair("_LuaPlugins_/"+files[i].fileName(), files[i].filePath()));
+    	    				dependencyGraph_.addCode(files[i].filePath(),true);
+    	    			}
+    	    		}
+
+    			}
+    		}
+    	}
+    	if (hasLuaPlugin)
+            folderList.push_back("_LuaPlugins_/");
         std::stack<QDomNode> stack;
         stack.push(doc.documentElement());
 

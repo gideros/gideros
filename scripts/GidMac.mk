@@ -35,8 +35,6 @@ mac.libs.install: mac.libs
 	cp $(ROOT)/ios/iosplayer/iosplayer/giderosapi.h $(MAC_TEMPLATE)
 
 
-PLUGINS_MAC=luasocket ogg
-
 luasocket.%: PLUGINDIR=LuaSocket
 camera.%: PLUGINDIR=camera
 ogg.%: PLUGINDIR=ogg

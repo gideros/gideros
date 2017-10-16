@@ -1,5 +1,73 @@
 #include "projectproperties.h"
+#include <QDir>
+#include <QFile>
+#include <QStringList>
+#include <QStandardPaths>
 
+#ifdef Q_OS_MACX
+#define ALL_PLUGINS_PATH "../../All Plugins"
+#else
+#define ALL_PLUGINS_PATH "All Plugins"
+#endif
+
+QMap<QString, QString> ProjectProperties::availablePlugins() {
+	QMap < QString, QString > xmlPlugins;
+	QStringList plugins;
+	QStringList dirs;
+
+	QDir shared(
+			QStandardPaths::writableLocation(
+					QStandardPaths::GenericDataLocation));
+	shared.mkpath("Gideros/UserPlugins");
+	bool sharedOk = shared.cd("Gideros") && shared.cd("UserPlugins");
+	if (sharedOk) {
+		dirs = shared.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+		for (int i = 0; i < dirs.count(); i++) {
+			QDir sourceDir2 = shared;
+			if (sourceDir2.cd(dirs[i])) {
+				QStringList filters;
+				filters << "*.gplugin";
+				sourceDir2.setNameFilters(filters);
+				QStringList files = sourceDir2.entryList(
+						QDir::Files | QDir::Hidden);
+				for (int i = 0; i < files.count(); i++)
+					plugins << sourceDir2.absoluteFilePath(files[i]);
+			}
+		}
+	}
+
+	QDir sourceDir(ALL_PLUGINS_PATH);
+	dirs = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+	for (int i = 0; i < dirs.count(); i++) {
+		QDir sourceDir2 = sourceDir;
+		if (sourceDir2.cd(dirs[i])) {
+			QStringList filters;
+			filters << "*.gplugin";
+			sourceDir2.setNameFilters(filters);
+			QStringList files = sourceDir2.entryList(
+					QDir::Files | QDir::Hidden);
+			for (int i = 0; i < files.count(); i++)
+				plugins << sourceDir2.absoluteFilePath(files[i]);
+		}
+	}
+
+	for (int i = 0; i < plugins.count(); i++) {
+		QDomDocument doc("plugin");
+		QFile file(plugins[i]);
+		if (!file.open(QIODevice::ReadOnly))
+			continue;
+		if (!doc.setContent(&file)) {
+			file.close();
+			continue;
+		}
+		file.close();
+		QDomElement exporter = doc.documentElement();
+		QString exname = exporter.attribute("name");
+		if (!xmlPlugins.contains(exname))
+			xmlPlugins[exname] = plugins[i];
+	}
+	return xmlPlugins;
+}
 
 void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 {

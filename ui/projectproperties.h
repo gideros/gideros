@@ -29,6 +29,7 @@ struct ProjectProperties
 
 	void loadXml(QDomElement xml);
 	void toXml(QDomDocument doc,QDomElement xml) const;
+	static QMap<QString, QString> availablePlugins();
 
 	void clear()
 	{

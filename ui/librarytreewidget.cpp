@@ -1028,6 +1028,23 @@ void LibraryTreeWidget::projectProperties()
 	dialog.exec();
 }
 
+QMap<QString, QString> LibraryTreeWidget::usedPlugins()
+{
+	QMap<QString, QString> usedPlugins;
+	QMap<QString, QString> allPlugins=ProjectProperties::availablePlugins();
+	for (QSet<ProjectProperties::Plugin>::const_iterator it=properties_.plugins.begin();it!=properties_.plugins.end(); it++)
+	{
+		ProjectProperties::Plugin p=*it;
+		if (p.enabled)
+		{
+			QString path=allPlugins[p.name];
+			if (!path.isEmpty())
+				usedPlugins[p.name]=path;
+		}
+	}
+	return usedPlugins;
+}
+
 void LibraryTreeWidget::automaticDownsizing(bool checked)
 {
 	if (selectedItems().empty() == true)

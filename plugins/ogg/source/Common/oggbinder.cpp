@@ -581,7 +581,7 @@ static void g_initializePlugin(lua_State *L)
     lua_getfield(L, -1, "preload");
 
     lua_pushcfunction(L, loader);
-    lua_setfield(L, -2, "theora");
+    lua_setfield(L, -2, "theora.core");
 
     lua_pop(L, 2);
 

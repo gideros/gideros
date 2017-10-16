@@ -2496,6 +2496,24 @@ std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downs
 {
 	std::vector<std::pair<QString, QString> > result;
 
+	//Add lua plugins
+	QMap<QString, QString> plugins=libraryWidget_->usedPlugins();
+	for (QMap<QString,QString>::const_iterator it=plugins.begin();it!=plugins.end(); it++)
+	{
+		QFileInfo path(it.value());
+		QDir pf=path.dir();
+		if (pf.cd("luaplugin"))
+		{
+			QStringList filters;
+			filters << "*.lua";
+			pf.setNameFilters(filters);
+			QFileInfoList files = pf.entryInfoList(
+					QDir::Files | QDir::Hidden);
+			for (int i = 0; i < files.count(); i++)
+				result.push_back(std::make_pair("_LuaPlugins_/"+files[i].fileName(), files[i].filePath()));
+		}
+	}
+
 	QDomDocument doc = libraryWidget_->toXml();
 
 	std::stack<QDomNode> stack;

@@ -7,12 +7,21 @@ ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_H
 
 #DEFS
 PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit
-PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump
-PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera ogg
-PLUGINS_WIN32=bitop lsqlite3 luasocket lpeg lfs json microphone clipper struct controller bump
+PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg
+
+PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera
+PLUGINS_WIN32=bitop lsqlite3 luasocket lpeg lfs json microphone clipper struct controller bump ogg
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
-				struct camera tts ogg
+				struct camera tts
+PLUGINS_HTML5=bitop luasocket json ads Facebook lsqlite3 lfs bump ogg
+#Precompiled plugins only below
+PLUGINS_IOS=luasocket camera ogg
+PLUGINS_ATV=luasocket ogg
+PLUGINS_MAC=luasocket ogg
+#For reference
+PLUGINS_WINRT=luasocket 
+
 ROOT=.
 SDK=$(ROOT)/Sdk
 GIDEROS_VERSION:=$(shell grep GIDEROS_VERSION $(ROOT)/libgideros/gideros.h | grep define | sed 's/^[^"]*"\([^"]*\)"/\1/')
