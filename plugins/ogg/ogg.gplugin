@@ -26,8 +26,6 @@
 local iOSProject=require("Tools/export_ios")
 iOSProject.addGroup("ogg","Plugins/ogg","GroupOgg_ios","GroupPlugins_ios")
 iOSProject.addGroup("ogg","ogg","GroupOgg_atv","GroupPlugins_atv")
-iOSProject.addSources({ "ogg_stub.cpp"  }, "GroupOgg", "ios")
-iOSProject.addSources({ "ogg_stub.cpp"  }, "GroupOgg", "atv")
 iOSProject.addSources({ "Plugins/libogg.ios.a"  }, "GroupPlugins", "ios")
 iOSProject.addSources({ "libogg.atv.a"  }, "GroupPlugins", "atv")
 iOSProject.commit()

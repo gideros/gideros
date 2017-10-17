@@ -61,7 +61,7 @@ The returned table contains the following fields:
 - x,y,w,h: Computed bounding box of the full text
 - lines: The number of lines used to display the text
 - parts: Information about individual chunks of texts.
-
+<br /><br />
 Each table in the part field of the returned table describe the placement of chunks of text. Their fields are:
 - text: The text to display in this chunk
 - x,y,w,h: Computed bounding box of this chunk  
@@ -76,6 +76,6 @@ Each table in the part field of the returned table describe the placement of chu
     <parameter name="letterSpacing" optional="false" type="number, default = 0"/>
     <parameter name="lineSpacing" optional="false" type="number, default = 0"/>
     <parameter name="tabSpace" optional="false" type="number, default = 4"/>
-    <return type="array"><![CDATA[A table describing how to draw the given text.]]></return>
+    <return type="table"><![CDATA[A table describing how to draw the given text.]]></return>
   </method>
 </object>

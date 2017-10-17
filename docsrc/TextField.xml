@@ -73,13 +73,13 @@ Returns the letter-spacing property which is used to increase or decrease the sp
     <return type="table"><![CDATA[Layout parameters]]></return>
   </method>
   <method name="TextField:setLayout" page="setLayout" shortdesc="Change the layout parameters for this TextField" version="Gideros 2017.10"><![CDATA[Change the layout parameters for this TextField]]>
-    <parameter name="layout" optional="false" type="table"><![CDATA[Layout parameters]]></parameter>
     Layout parameters can contain the following fields:
     - w,h: Width/height of the area to layout the text in
     - flags: A or combination of `FontBase`.TLF_xxx constants instructing how to layout the text
     - letterSpacing: The space to add between each letter of the text
     - lineSpacing: The space to add between each line of the text
     - tabSpace: The size of a tab in space characters increment, default to 4 if unspecified
+    <parameter name="layout" optional="false" type="table"><![CDATA[Layout parameters]]></parameter>
   </method>
   <example name=""><![CDATA[local font = Font.new(&quot;myfont.txt&quot;, &quot;myfont.png&quot;)<br />
 <br />
