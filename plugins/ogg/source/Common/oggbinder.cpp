@@ -499,7 +499,9 @@ void Renderer::renderContext(GGOggHandle *handle)
    if(handle->stateflag && handle->videobuf_ready && handle->videobuf_time<=(g_iclock()-handle->playstart)){
 	  th_ycbcr_buffer yuv;
 	  th_decode_ycbcr_out(handle->td,yuv);
-	  gtexture_get_screenmanager()->screenDestroyed();
+	  ScreenManager *sm=gtexture_get_screenmanager();
+	  if (sm)
+		  sm->screenDestroyed();
 	  if (handle->yplane)
 		  gtexture_getInternalTexture(handle->yplane->data->gid)->updateData(ShaderTexture::FMT_Y, ShaderTexture::PK_UBYTE,
 				  yuv[0].stride,yuv[0].height,yuv[0].data,ShaderTexture::WRAP_CLAMP,ShaderTexture::FILT_LINEAR);

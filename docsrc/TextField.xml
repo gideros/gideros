@@ -15,6 +15,7 @@ default font. If you specify `nil` for the font parameter while creating the `Te
     <parameter name="font" optional="false" type="FontBase"><![CDATA[The font used for displaying this `TextField` object. If nil, default font is used.]]></parameter>
     <parameter name="text" optional="false" type="string, optional"><![CDATA[The text to be displayed.]]></parameter>
     <parameter name="sample" optional="true" type="string"><![CDATA[sample to determine line height]]></parameter>
+    <parameter name="layout" optional="true" type="table"><![CDATA[Layout parameters, see `TextField:setLayout`]]></parameter>
   </method>
   <method name="TextField:setText" page="setText" shortdesc="sets the text to be displayed" version="Gideros 2011.6"><![CDATA[<br />
 Sets the text to be displayed.<br />
@@ -67,6 +68,18 @@ Returns the letter-spacing property which is used to increase or decrease the sp
   </method>
   <method name="TextField:setSample" page="setSample" shortdesc="Set string that will be used as sample for determining text's line height" version="Gideros 2016.08"><![CDATA[Set string that will be used as sample for determining text's line height]]>
     <parameter name="sample" optional="false" type="string"><![CDATA[string to use as sample]]></parameter>
+  </method>
+  <method name="TextField:getLayout" page="getLayout" shortdesc="Retrieve the layout parameters of this Textfield" version="Gideros 2017.10"><![CDATA[Retrieve the layout parameters of this TextField]]>
+    <return type="table"><![CDATA[Layout parameters]]></return>
+  </method>
+  <method name="TextField:setLayout" page="setLayout" shortdesc="Change the layout parameters for this TextField" version="Gideros 2017.10"><![CDATA[Change the layout parameters for this TextField]]>
+    <parameter name="layout" optional="false" type="table"><![CDATA[Layout parameters]]></parameter>
+    Layout parameters can contain the following fields:
+    - w,h: Width/height of the area to layout the text in
+    - flags: A or combination of `FontBase`.TLF_xxx constants instructing how to layout the text
+    - letterSpacing: The space to add between each letter of the text
+    - lineSpacing: The space to add between each line of the text
+    - tabSpace: The size of a tab in space characters increment, default to 4 if unspecified
   </method>
   <example name=""><![CDATA[local font = Font.new(&quot;myfont.txt&quot;, &quot;myfont.png&quot;)<br />
 <br />

@@ -10,7 +10,7 @@ PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit
 PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg
 
 PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera
-PLUGINS_WIN32=bitop lsqlite3 luasocket lpeg lfs json microphone clipper struct controller bump ogg
+PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
 				struct camera tts
