@@ -71,7 +71,7 @@ Each table in the part field of the returned table describe the placement of chu
 ]]>
     <parameter name="text" optional="false" type="string"/>
     <parameter name="width" optional="false" type="number"/>
-    <parameter name="height optional="false" type="number"/>
+    <parameter name="height" optional="false" type="number"/>
     <parameter name="flags" optional="false" type="number, default=FontBase.TLF_NOWRAP"/>
     <parameter name="letterSpacing" optional="false" type="number, default = 0"/>
     <parameter name="lineSpacing" optional="false" type="number, default = 0"/>
