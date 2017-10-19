@@ -582,6 +582,10 @@ void TextEdit::redo()
 	sciScintilla_->redo();
 }
 
+void TextEdit::background() {
+	sciScintilla_->cancelList();
+}
+
 bool TextEdit::maybeSave()
 {
 	if (isModified())

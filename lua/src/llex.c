@@ -24,6 +24,8 @@
 #include "lzio.h"
 #include "lauxlib.h"
 
+#define lua_isalpha(c) ((c&0x80)||isalpha(c)) //Allow UTF8 identifiers
+#define lua_isalnum(c) ((c&0x80)||isalnum(c)) //Allow UTF8 identifiers
 
 #define next(ls) (ls->current = ls->mpos < ls->mlen ? char2int(ls->mstr[ls->mpos++]) : zgetc(ls->z))
 
@@ -474,11 +476,11 @@ static int llex (LexState *ls, SemInfo *seminfo) {
         read_numeral(ls, seminfo);
         return TK_NUMBER;
       }
-      else if (isalpha(ls->current) || ls->current == '_') {
+      else if (lua_isalpha(ls->current) || ls->current == '_') {
         TString *ts;
         do {
           save_and_next(ls);
-        } while (isalnum(ls->current) || ls->current == '_');
+        } while (lua_isalnum(ls->current) || ls->current == '_');
         ts = luaX_newstring(ls, luaZ_buffer(ls->buff),
                             luaZ_bufflen(ls->buff));
         while (isspace(ls->current)) {
@@ -635,10 +637,10 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           }
           default:
           {
-            if (isalpha(ls->current) || ls->current == '_') {
+            if (lua_isalpha(ls->current) || ls->current == '_') {
               do {
                 save_and_next(ls);
-              } while (isalnum(ls->current) || ls->current == '_');
+              } while (lua_isalnum(ls->current) || ls->current == '_');
             } else luaX_lexerror(ls, "invalid macro marker", 0);
           }
           }
