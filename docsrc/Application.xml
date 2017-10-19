@@ -121,6 +121,7 @@ Returns information about device.<br />
 - For Android, returns 4 values: &quot;Android&quot;, Android version, manufacturer and model information<br />
 - For Windows returns 1 value: &quot;Windows&quot;<br />
 - For Mac OS X returns 1 value: &quot;Mac OS&quot;<br />
+- For Win32 returns 1 value: &quot;Win32&quot;<br />
 <br />
 
 `iOS values`
