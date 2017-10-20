@@ -30,6 +30,8 @@
 namespace g_private {
 static ShaderEngine *engine =NULL;
 static ScreenManager *screenManager = NULL;
+static SpriteProxyFactory *spritefactory=NULL;
+
 struct CommonElement
 {
     int refcount;
@@ -684,6 +686,16 @@ void gtexture_set_engine(ShaderEngine *e)
 ShaderEngine *gtexture_get_engine()
 {
 	return engine;
+}
+
+void gtexture_set_spritefactory(SpriteProxyFactory *e)
+{
+	spritefactory=e;
+}
+
+SpriteProxyFactory *gtexture_get_spritefactory()
+{
+	return spritefactory;
 }
 
 void gtexture_set_screenmanager(ScreenManager *e)

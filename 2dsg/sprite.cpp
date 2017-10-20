@@ -1288,3 +1288,25 @@ float Sprite::getAlphaMultiplier() const {
 	return colorTransform_->alphaMultiplier();
 }
 
+
+SpriteProxy::SpriteProxy(Application* application,void *c,SpriteProxyDraw df,SpriteProxyDestroy kf) : Sprite(application)
+{
+	context=c;
+	drawF=df;
+	destroyF=kf;
+}
+
+SpriteProxy::~SpriteProxy()
+{
+	destroyF(context);
+}
+
+void SpriteProxy::doDraw(const CurrentTransform& m, float sx, float sy, float ex, float ey)
+{
+	drawF(context,m,sx,sy,ex,ey);
+}
+
+SpriteProxy *SpriteProxyFactory::createProxy(Application* application,void *c,SpriteProxyDraw df,SpriteProxyDestroy kf) {
+	return new SpriteProxy(application,c,df,kf);
+}
+
