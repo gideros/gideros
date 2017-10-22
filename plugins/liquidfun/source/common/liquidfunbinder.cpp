@@ -445,7 +445,7 @@ int Box2DBinder2::loader(lua_State *L)
     };
     binder.createClass("b2WorldManifold", NULL, NULL, NULL, b2WorldManifold_functionList);
 
-#if BIND_LIQUIDFUN
+
     const luaL_Reg b2ParticleGroup_functionList[] = {
         {"destroyParticles", b2ParticleGroup_destroyParticles},
         {"getParticleCount", b2ParticleGroup_getParticleCount},
@@ -460,6 +460,18 @@ int Box2DBinder2::loader(lua_State *L)
     	{"createParticleGroup",b2ParticleSystem_createParticleGroup},
         {"setTexture", b2ParticleSystem_setTexture},
         {"getParticleGroupList", b2ParticleSystem_getParticleGroupList},
+        {"getPaused",b2ParticleSystem_getPaused},
+        {"setPaused", b2ParticleSystem_setPaused},
+        {"getDensity", b2ParticleSystem_getDensity},
+        {"setDensity", b2ParticleSystem_setDensity},
+        {"getGravityScale", b2ParticleSystem_getGravityScale},
+        {"setGravityScale", b2ParticleSystem_setGravityScale},
+        {"getDamping", b2ParticleSystem_getDamping},
+        {"setDamping", b2ParticleSystem_setDamping},
+        {"getStaticPressureIterations", b2ParticleSystem_getStaticPressureIterations},
+        {"setStaticPressureIterations", b2ParticleSystem_setStaticPressureIterations},
+        {"getRadius", b2ParticleSystem_getRadius},
+        {"setRadius", b2ParticleSystem_setRadius},
         {NULL, NULL},
     };
     binder.createClass("b2ParticleSystem", "Sprite", NULL, NULL, b2ParticleSystem_functionList);
@@ -503,8 +515,6 @@ int Box2DBinder2::loader(lua_State *L)
     lua_setfield(L, -2, "FLAG_PARTICLE_CONTACT_FILTER");
 
     lua_pop(L, 1);  // b2ParticleSystem
-
-#endif
 
 	lua_newtable(L);
 

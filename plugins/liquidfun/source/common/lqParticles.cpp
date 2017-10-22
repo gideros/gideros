@@ -9,6 +9,7 @@
 #include "lqSprites.h"
 #include "lqWorld.h"
 
+//COMPLETE 1.1.0
 static void tableToParticleSystemDef(lua_State* L, int index, b2ParticleSystemDef* particleDef, float physicsScale)
 {
     Binder binder(L);
@@ -93,10 +94,9 @@ int Box2DBinder2::b2World_createParticleSystem(lua_State* L)
     return 1;
 }
 
+//COMPLETE 1.1.0
 static void tableToParticleDef(lua_State* L, int index, b2ParticleDef* particleDef, float physicsScale)
 {
-    // TODO: index'tekinin table oldugunu test et
-
     Binder binder(L);
 
     lua_getfield(L, index, "flags");
@@ -149,8 +149,6 @@ static void tableToParticleDef(lua_State* L, int index, b2ParticleDef* particleD
 
 int Box2DBinder2::b2ParticleSystem_createParticle(lua_State* L)
 {
-    //StackChecker checker(L, "b2ParticleSystem_createParticle", 1);
-
     LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     Binder binder(L);
@@ -256,11 +254,9 @@ int Box2DBinder2::b2ParticleGroup_containsParticle(lua_State* L)
     return 1;
 }
 
-
+//COMPLETE 1.1.0
 static void tableToParticleGroupDef(lua_State* L, int index, b2ParticleGroupDef* particleGroupDef, float physicsScale)
 {
-    // TODO: index'tekinin table oldugunu test et
-
     Binder binder(L);
 
     lua_getfield(L, index, "flags");
@@ -321,14 +317,61 @@ static void tableToParticleGroupDef(lua_State* L, int index, b2ParticleGroupDef*
     lua_pop(L, 1);
 
     lua_getfield(L, index, "shape");
-    if (lua_isnil(L, -1))
-        luaL_error(L, "shape must exist in particle group definition table");
-    particleGroupDef->shape = toShape(binder, -1);
+    if (!lua_isnil(L, -1))
+    	particleGroupDef->shape = toShape(binder, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "shapes");
+    if (!lua_isnil(L, -1))
+    {
+    	if (!lua_istable(L,-1))
+           luaL_error(L, "shapes must be table");
+    	int sc=lua_objlen(L,-1);
+    	b2Shape **sh=new b2Shape *[sc];
+    	particleGroupDef->shapes=sh;
+    	particleGroupDef->shapeCount=sc;
+    	for (int i=1;i<=sc;i++)
+    	{
+    		lua_rawgeti(L,-1,i);
+    		sh[i-1]=toShape(binder,-1);
+    		lua_pop(L,1);
+    	}
+    }
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "stride");
+    if (!lua_isnil(L, -1))
+        particleGroupDef->stride = luaL_checknumber(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "particles");
+    if (!lua_isnil(L, -1))
+    {
+    	if (!lua_istable(L,-1))
+           luaL_error(L, "particles must be table");
+    	int sc=lua_objlen(L,-1);
+    	b2Vec2 *sh=new b2Vec2 [sc];
+    	particleGroupDef->positionData=sh;
+    	particleGroupDef->particleCount=sc;
+    	for (int i=1;i<=sc;i++)
+    	{
+    		lua_rawgeti(L,-1,i);
+    		sh[i-1]=tableToVec2(L,-1);
+            sh[i-1].x /= physicsScale;
+            sh[i-1].y /= physicsScale;
+    		lua_pop(L,1);
+    	}
+    }
     lua_pop(L, 1);
 
     lua_getfield(L, index, "lifetime");
     if (!lua_isnil(L, -1))
         particleGroupDef->lifetime = luaL_checknumber(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "group");
+    if (!lua_isnil(L, -1))
+    	particleGroupDef->group = static_cast<b2ParticleGroup*>(binder.getInstance("b2ParticleGroup", -1));
     lua_pop(L, 1);
 }
 
@@ -354,6 +397,125 @@ int Box2DBinder2::b2ParticleSystem_createParticleGroup(lua_State* L)
     return 1;
 }
 
+int Box2DBinder2::b2ParticleSystem_getPaused(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    lua_pushboolean(L,ps->GetSystem()->GetPaused());
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_setPaused(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    ps->GetSystem()->SetPaused(lua_toboolean(L,2));
+
+    return 0;
+}
+
+int Box2DBinder2::b2ParticleSystem_getDensity(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    lua_pushnumber(L,ps->GetSystem()->GetDensity());
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_setDensity(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    ps->GetSystem()->SetDensity(luaL_checknumber(L,2));
+
+    return 0;
+}
+
+int Box2DBinder2::b2ParticleSystem_getGravityScale(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    lua_pushnumber(L,ps->GetSystem()->GetGravityScale());
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_setGravityScale(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    ps->GetSystem()->SetGravityScale(luaL_checknumber(L,2));
+
+    return 0;
+}
+
+int Box2DBinder2::b2ParticleSystem_getDamping(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    lua_pushnumber(L,ps->GetSystem()->GetDamping());
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_setDamping(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    ps->GetSystem()->SetDamping(luaL_checknumber(L,2));
+
+    return 0;
+}
+
+int Box2DBinder2::b2ParticleSystem_getStaticPressureIterations(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    lua_pushinteger(L,ps->GetSystem()->GetStaticPressureIterations());
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_setStaticPressureIterations(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    ps->GetSystem()->SetStaticPressureIterations(luaL_checkinteger(L,2));
+
+    return 0;
+}
+
+int Box2DBinder2::b2ParticleSystem_getRadius(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    lua_pushnumber(L,ps->GetSystem()->GetRadius());
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_setRadius(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    ps->GetSystem()->SetRadius(luaL_checknumber(L,2));
+
+    return 0;
+}
 
 
 

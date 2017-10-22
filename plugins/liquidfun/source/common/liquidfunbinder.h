@@ -263,7 +263,19 @@ private:
     static int b2ParticleSystem_destroyParticle(lua_State* L);
     static int b2ParticleSystem_createParticleGroup(lua_State* L);
     static int b2ParticleSystem_setTexture(lua_State* L);
-    static int b2ParticleSystem_getParticleGroupList(lua_State* L);
+    static int b2ParticleSystem_getParticleGroupList(lua_State* L);;
+    static int b2ParticleSystem_getPaused(lua_State *L);
+    static int b2ParticleSystem_setPaused(lua_State *L);
+    static int b2ParticleSystem_getDensity(lua_State *L);
+    static int b2ParticleSystem_setDensity(lua_State *L);
+    static int b2ParticleSystem_getGravityScale(lua_State *L);
+    static int b2ParticleSystem_setGravityScale(lua_State *L);
+    static int b2ParticleSystem_getDamping(lua_State *L);
+    static int b2ParticleSystem_setDamping(lua_State *L);
+    static int b2ParticleSystem_getStaticPressureIterations(lua_State *L);
+    static int b2ParticleSystem_setStaticPressureIterations(lua_State *L);
+    static int b2ParticleSystem_getRadius(lua_State *L);
+    static int b2ParticleSystem_setRadius(lua_State *L);
 
     static int b2ParticleGroup_destroyParticles(lua_State* L);
     static int b2ParticleGroup_getParticleCount(lua_State* L);
