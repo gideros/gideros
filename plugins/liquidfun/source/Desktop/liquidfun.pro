@@ -16,8 +16,7 @@ INCLUDEPATH += ../liquidfun/Box2D
 INCLUDEPATH += ../common
 
 SOURCES += \
-    ../common/liquidfunbinder.cpp \
-    ../common/lfstatus.cpp \
+    $$files(../common/*.cpp) \
    	../../../../luabinding/binder.cpp \
    	../../../../2dsg/Matrices.cpp \
     $$files(../liquidfun/Box2D/Box2D/Common/*.cpp) \

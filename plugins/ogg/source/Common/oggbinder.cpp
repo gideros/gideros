@@ -246,19 +246,20 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate, int
 	  }
 
 	  handle->file=file;
-	  if (!handle->vorbis_p)
+/*	  if (!handle->vorbis_p)
 	  {
 		  //We need an audio track
         gaudio_OggClose(gid);
       if (error)
           *error = GAUDIO_UNRECOGNIZED_FORMAT;
       return 0;
-	  }
+	  }*/
 
     if (numChannels)
-        *numChannels = handle->vi.channels;
+        *numChannels = handle->vorbis_p?handle->vi.channels:2;
     if (sampleRate)
-        *sampleRate = handle->vi.rate;
+        *sampleRate = handle->vorbis_p?handle->vi.rate:22050;
+
     if (bitsPerSample)
         *bitsPerSample = 16;
     if (numSamples)
@@ -454,7 +455,8 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 #endif
 	    }
 	    if(g_feof(handle->file)) break;
-	    if (audiobuf_ready&&(handle->videobuf_ready||(!handle->theora_p))) break;
+	    if ((audiobuf_ready||(!handle->vorbis_p))&&
+	    		(handle->videobuf_ready||(!handle->theora_p))) break;
 	  }
 
 	  handle->stateflag=1;

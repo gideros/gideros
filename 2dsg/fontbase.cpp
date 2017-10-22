@@ -2,12 +2,12 @@
 #include <math.h>
 #include <algorithm>
 
-static void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags)
+static void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags, bool wrapped=false)
 {
 	size_t cur=tl->parts.size();
 	size_t cnt=cur-start;
 	float ox=0;
-	if (flags&FontBase::TLF_JUSTIFIED)
+	if ((flags&FontBase::TLF_JUSTIFIED)&&wrapped)
         sw+=(cnt>1)?((w-cw)/(cnt-1)):0;
 	else if (flags&FontBase::TLF_RIGHT)
 		ox=w-cw;
@@ -62,7 +62,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		if (wrap&&cw&&((cw+cl.w+ns)>params->w))
 		{
 			//The current line will exceed max width (and is not empty): wrap
-			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags);
+			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,true);
 			st=tl.parts.size();
 			y+=lh;
 			cl.y+=lh;
@@ -89,7 +89,6 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	//Layout final line
 	if (cw)
 	{
-		//The current line will exceed max width (and is not empty): wrap
 		layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags);
 		st=tl.parts.size();
 		y+=lh;

@@ -1,10 +1,27 @@
 #ifndef BOX2DBINDER2
 #define BOX2DBINDER2
 
+#define _U(n)
+
 #include "binder.h"
+#include "luautil.h"
+#include <stddef.h>
+#include <Box2D/Box2D.h>
 
-#define BIND_LIQUIDFUN 1
 
+namespace b2Global {
+extern lua_State *L;
+
+b2Vec2 tableToVec2(lua_State* L, int index);
+b2Shape* toShape(const Binder& binder, int index);
+
+void getb2(lua_State* L);
+void getb2(lua_State* L, void* ptr);
+void setb2(lua_State* L);
+
+}
+
+using namespace b2Global;
 class Box2DBinder2
 {
 public:
@@ -241,7 +258,6 @@ private:
 
     static int testOverlap(lua_State *L);
 
-#if BIND_LIQUIDFUN
     static int b2World_createParticleSystem(lua_State* L);
     static int b2ParticleSystem_createParticle(lua_State* L);
     static int b2ParticleSystem_destroyParticle(lua_State* L);
@@ -252,7 +268,6 @@ private:
     static int b2ParticleGroup_destroyParticles(lua_State* L);
     static int b2ParticleGroup_getParticleCount(lua_State* L);
     static int b2ParticleGroup_containsParticle(lua_State* L);
-#endif
 };
 
 #endif
