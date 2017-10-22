@@ -173,8 +173,9 @@ int Box2DBinder2::b2ParticleSystem_destroyParticle(lua_State* L)
 
     Binder binder(L);
     b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    bool callDestructionListener = lua_toboolean(L, 3);
 
-    ps->GetSystem()->DestroyParticle((int)luaL_checkinteger(L, 2));
+    ps->GetSystem()->DestroyParticle((int)luaL_checkinteger(L, 2),callDestructionListener);
 
     return 0;
 }
@@ -375,7 +376,66 @@ static void tableToParticleGroupDef(lua_State* L, int index, b2ParticleGroupDef*
     lua_pop(L, 1);
 }
 
-
+/*
+const b2ParticleHandle * 	GetParticleHandleFromIndex (const int32 index) Retrieve a handle to the particle at the specified index. More...
+void 	DestroyOldestParticle (const int32 index, const bool callDestructionListener)
+int32 	DestroyParticlesInShape (const b2Shape &shape, const b2Transform &xf)
+int32 	DestroyParticlesInShape (const b2Shape &shape, const b2Transform &xf, bool callDestructionListener)
+void 	JoinParticleGroups (b2ParticleGroup *groupA, b2ParticleGroup *groupB)
+void 	SplitParticleGroup (b2ParticleGroup *group)
+b2ParticleGroup * 	GetParticleGroupList ()
+const b2ParticleGroup * 	GetParticleGroupList () const
+int32 	GetParticleGroupCount () const Get the number of particle groups.
+uint32 	GetAllParticleFlags () const Get all existing particle flags.
+uint32 	GetAllGroupFlags () const Get all existing particle group flags.
+b2Vec2 * 	GetPositionBuffer ()
+const b2Vec2 * 	GetPositionBuffer () const
+b2Vec2 * 	GetVelocityBuffer ()
+const b2Vec2 * 	GetVelocityBuffer () const
+b2ParticleColor * 	GetColorBuffer ()
+const b2ParticleColor * 	GetColorBuffer () const
+b2ParticleGroup *const * 	GetGroupBuffer ()
+const b2ParticleGroup *const * 	GetGroupBuffer () const
+float32 * 	GetWeightBuffer ()
+const float32 * 	GetWeightBuffer () const
+const uint32 * 	GetFlagsBuffer () const
+void 	SetParticleFlags (int32 index, uint32 flags) Set flags for a particle. See the b2ParticleFlag enum.
+uint32 	GetParticleFlags (const int32 index) Get flags for a particle. See the b2ParticleFlag enum.
+void 	SetFlagsBuffer (uint32 *buffer, int32 capacity)
+void 	SetPositionBuffer (b2Vec2 *buffer, int32 capacity)
+void 	SetVelocityBuffer (b2Vec2 *buffer, int32 capacity)
+void 	SetColorBuffer (b2ParticleColor *buffer, int32 capacity)
+void 	SetUserDataBuffer (void **buffer, int32 capacity)
+const b2ParticleContact * 	GetContacts () const
+int32 	GetContactCount () const
+const b2ParticleBodyContact * 	GetBodyContacts () const
+int32 	GetBodyContactCount () const
+const b2ParticlePair * 	GetPairs () const
+int32 	GetPairCount () const
+const b2ParticleTriad * 	GetTriads () const
+int32 	GetTriadCount () const
+void 	SetStuckThreshold (int32 iterations)
+const int32 * 	GetStuckCandidates () const
+int32 	GetStuckCandidateCount () const Get the number of stuck particle candidates from the last step.
+float32 	ComputeCollisionEnergy () const Compute the kinetic energy that can be lost by damping force.
+void 	SetStrictContactCheck (bool enabled)
+bool 	GetStrictContactCheck () const Get the status of the strict contact check.
+void 	SetDestructionByAge (const bool enable)
+bool 	GetDestructionByAge () const
+const int32 * 	GetExpirationTimeBuffer ()
+float32 	ExpirationTimeToLifetime (const int32 expirationTime) const
+const int32 * 	GetIndexByExpirationTimeBuffer ()
+void 	ParticleApplyLinearImpulse (int32 index, const b2Vec2 &impulse)
+void 	ApplyLinearImpulse (int32 firstIndex, int32 lastIndex, const b2Vec2 &impulse)
+void 	ParticleApplyForce (int32 index, const b2Vec2 &force)
+void 	ApplyForce (int32 firstIndex, int32 lastIndex, const b2Vec2 &force)
+b2ParticleSystem * 	GetNext () Get the next particle-system in the world's particle-system list.
+const b2ParticleSystem * 	GetNext () const
+void 	QueryAABB (b2QueryCallback *callback, const b2AABB &aabb) const
+void 	QueryShapeAABB (b2QueryCallback *callback, const b2Shape &shape, const b2Transform &xf) const
+void 	RayCast (b2RayCastCallback *callback, const b2Vec2 &point1, const b2Vec2 &point2) const
+void 	ComputeAABB (b2AABB *const aabb) const
+*/
 int Box2DBinder2::b2ParticleSystem_createParticleGroup(lua_State* L)
 {
     //StackChecker checker(L, "b2ParticleSystem_createParticleGroup", 1);
@@ -493,6 +553,46 @@ int Box2DBinder2::b2ParticleSystem_setStaticPressureIterations(lua_State *L)
 
     b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
     ps->GetSystem()->SetStaticPressureIterations(luaL_checkinteger(L,2));
+
+    return 0;
+}
+
+int Box2DBinder2::b2ParticleSystem_getParticleLifetime(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    lua_pushnumber(L,ps->GetSystem()->GetParticleLifetime(luaL_checkinteger(L,2)));
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_setParticleLifetime(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    ps->GetSystem()->SetParticleLifetime(luaL_checkinteger(L,2),luaL_checknumber(L,3));
+
+    return 0;
+}
+
+int Box2DBinder2::b2ParticleSystem_getMaxParticleCount(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    lua_pushinteger(L,ps->GetSystem()->GetMaxParticleCount());
+
+    return 1;
+}
+
+int Box2DBinder2::b2ParticleSystem_setMaxParticleCount(lua_State *L)
+{
+    Binder binder(L);
+
+    b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
+    ps->GetSystem()->SetMaxParticleCount(luaL_checkinteger(L,2));
 
     return 0;
 }

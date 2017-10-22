@@ -276,6 +276,10 @@ private:
     static int b2ParticleSystem_setStaticPressureIterations(lua_State *L);
     static int b2ParticleSystem_getRadius(lua_State *L);
     static int b2ParticleSystem_setRadius(lua_State *L);
+    static int b2ParticleSystem_getParticleLifetime(lua_State *L);
+    static int b2ParticleSystem_setParticleLifetime(lua_State *L);
+    static int b2ParticleSystem_getMaxParticleCount(lua_State *L);
+    static int b2ParticleSystem_setMaxParticleCount(lua_State *L);
 
     static int b2ParticleGroup_destroyParticles(lua_State* L);
     static int b2ParticleGroup_getParticleCount(lua_State* L);
