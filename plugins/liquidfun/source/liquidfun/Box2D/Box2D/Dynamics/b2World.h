@@ -281,7 +281,7 @@ public:
 	/// Set gravity with direct floats.
 	void SetGravity(float32 gravityX, float32 gravityY);
 #endif // LIQUIDFUN_EXTERNAL_LANGUAGE_API
-
+	static bool EnableARM_NEON;
 private:
 
 	// m_flags

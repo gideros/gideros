@@ -76,6 +76,7 @@ struct ExportContext
     QImage *splash_v_image;
     //XML
 	QMap<QString,QString> props; //global properties
+	bool exportError;
     // LUA
     lua_State *L;
 };

@@ -1,11 +1,11 @@
 <plugin
- name="Bump"
- description="Native version of Bump.lua">
+ name="LiquidFun"
+ description="LiquidFun physics library">
   <target name="AndroidStudio,APK">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
-            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;bump&quot;);"/>
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;liquidfun&quot;);"/>
         </replacelist>
     </template>
  </target>
@@ -13,22 +13,22 @@
     <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
     <template name="Activity" path="">
         <replacelist wildcards="[[[project.namews]]]Activity.java">
-            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;bump&quot;);"/>
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;liquidfun&quot;);"/>
         </replacelist>
     </template>
  </target>
  <target name="iOS">
-   <mkdir>[[[project.name]]]/Plugins/bump</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/bump" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
-   <mkdir>AppleTV/Plugins/bump</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/bump" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <mkdir>[[[project.name]]]/Plugins/liquidfun</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/liquidfun" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <mkdir>AppleTV/Plugins/liquidfun</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/liquidfun" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("bump","Plugins/bump","GroupBump_ios","GroupPlugins_ios")
-iOSProject.addGroup("bump","Plugins/bump","GroupBump_atv","GroupPlugins_atv")
-local sources={ "bump.cpp"  }
-iOSProject.addSources(sources, "GroupBump", "ios")
-iOSProject.addSources(sources, "GroupBump", "atv")
+iOSProject.addGroup("liquidfun","Plugins/liquidfun","GroupLiquidFun_ios","GroupPlugins_ios")
+iOSProject.addGroup("liquidfun","Plugins/liquidfun","GroupLiquidFun_atv","GroupPlugins_atv")
+local sources={ "liquidfun.cpp"  }
+iOSProject.addSources(sources, "GroupLiquidFun", "ios")
+iOSProject.addSources(sources, "GroupLiquidFun", "atv")
 iOSProject.commit()
 	]]></lua>
  </target>
@@ -36,7 +36,7 @@ iOSProject.commit()
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
     <template name="Activity" path="">
         <replacelist wildcards="gideros.html">
-            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;bump.js&quot;,"/>
+            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;liquidfun.js&quot;,"/>
         </replacelist>
     </template>
  </target>
@@ -47,7 +47,7 @@ iOSProject.commit()
         <append>
             <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
             <by><![CDATA[
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\bump.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\liquidfun.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>]]></by>
            </append>

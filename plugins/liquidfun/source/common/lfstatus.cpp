@@ -48,6 +48,7 @@ void LFStatus::init(int errorCode)
 		s_errors[5002] = LFStatusElement(eRuntimeError, "Fixture is already destroyed.", false);
 		s_errors[5003] = LFStatusElement(eRuntimeError, "Joint is already destroyed.", false);
 		s_errors[5004] = LFStatusElement(eRuntimeError, "World is locked.", false);
+		s_errors[5005] = LFStatusElement(eRuntimeError, "Group is already destroyed.", false);
 	}
 	errorCode_ = errorCode;
     errorString_ = NULL;

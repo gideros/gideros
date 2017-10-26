@@ -35,8 +35,19 @@
 #include <Box2D/Common/b2Timer.h>
 #include <new>
 
+bool b2World::EnableARM_NEON=false;;
+
+#if __ANDROID__
+#include <cpu-features.h>
+#endif
+
 b2World::b2World(const b2Vec2& gravity)
 {
+#if __ANDROID__
+	if (android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM &&
+			(android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON) != 0)
+		EnableARM_NEON=true;
+#endif
 	Init(gravity);
 }
 

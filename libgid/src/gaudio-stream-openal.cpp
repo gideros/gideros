@@ -467,6 +467,7 @@ public:
         GGLock lock(mutex_);
 
         std::map<g_id, Channel*>::iterator iter = channels_.begin(), end = channels_.end();
+        std::vector<g_id> closeList;
         while (iter != end)
         {
             Channel *channel2 = iter->second;
@@ -477,15 +478,17 @@ public:
 
                 channel2->sound->channels.erase(channel2);
                 delete channel2;
-                channels_.erase(iter++);
+            	closeList.push_back(iter->first);
             }
             else
             {
                 if (channel2->source==0)
                     channel2->toClose=true; //Delay close for one cycle, in case event was enqueued asynchronously
-                ++iter;
             }
+            ++iter;
         }
+        for (std::vector<g_id>::iterator it=closeList.begin();it!=closeList.end();it++)
+            channels_.erase(*it);
     }
 
 private:

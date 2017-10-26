@@ -1986,7 +1986,10 @@ void b2ParticleSystem::FindContacts(
 	b2GrowableBuffer<b2ParticleContact>& contacts) const
 {
 	#if defined(LIQUIDFUN_SIMD_NEON)
-		FindContacts_Simd(contacts);
+		if (b2World::EnableARM_NEON)
+			FindContacts_Simd(contacts);
+		else
+			FindContacts_Reference(contacts);
 	#else
 		FindContacts_Reference(contacts);
 	#endif
@@ -2136,7 +2139,10 @@ void b2ParticleSystem::UpdateProxies(
 	#endif
 
 	#if defined(LIQUIDFUN_SIMD_NEON)
-		UpdateProxies_Simd(proxies);
+		if (b2World::EnableARM_NEON)
+			UpdateProxies_Simd(proxies);
+		else
+			UpdateProxies_Reference(proxies);
 	#else
 		UpdateProxies_Reference(proxies);
 	#endif

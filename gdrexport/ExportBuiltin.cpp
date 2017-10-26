@@ -368,7 +368,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    }
 
    //install plugins
-   ExportCommon::applyPlugins(ctx);
+   if (!ExportCommon::applyPlugins(ctx))
+		ctx->exportError=true;
 
    if (needGApp)
    {

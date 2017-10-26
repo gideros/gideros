@@ -65,7 +65,7 @@ private:
 	virtual void DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color);
 	virtual void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color);
 	virtual void DrawTransform(const b2Transform& xf);
-    virtual void DrawParticles(const b2Vec2 * _U(centers), float32 _U(radius), const b2ParticleColor *_U(colors), int32 _U(count)) { }
+    virtual void DrawParticles(const b2Vec2 * _UNUSED(centers), float32 _UNUSED(radius), const b2ParticleColor *_UNUSED(colors), int32 _UNUSED(count)) { }
 
 private:
 	friend class b2WorldED;

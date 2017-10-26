@@ -94,29 +94,3 @@ function Theora:_getVideo(width,height)
 end
 
 return Theora
---[[
-
---local s=Sound.new("AnotherDay.ogg")
-local s=Sound.new("test.ogv")
-local c=s:play()
-local sid=c:getStreamId()
-local th=require "theora"
-local thi=th.getVideoInfo(sid)
---print(thi.width,thi.height,thi.fps,thi.format)
-application:setLogicalDimensions(thi.height,thi.width)
-local yp=Texture.new(nil,thi.width,thi.height, true, { extend=false})
-local up=Texture.new(nil,thi.width/2,thi.height/2, true, { extend=false})
-local vp=Texture.new(nil,thi.width/2,thi.height/2, true, { extend=false})
-th.setVideoSurface(sid,yp,up,vp)
-
-scrw,scrh=application:getContentWidth(),application:getContentHeight()
-local camview=Mesh.new()
-camview:setVertexArray(0,0,scrw,0,scrw,scrh,0,scrh)
-camview:setTextureCoordinateArray(0,0,thi.width,0,thi.width,thi.height,0,thi.height)
-camview:setIndexArray(1,2,3,1,3,4)
-camview:setTexture(yp)
-camview:setTexture(up,1)
-camview:setTexture(vp,2)
-camview:setShader(ChromaKeyShader)
-stage:addChild(camview)
-]]

@@ -101,6 +101,7 @@ bool ExportLUA_CallFile(ExportContext *ctx,ExportXml *xml,const char *fn)
     	const char *err=lua_tostring(ctx->L, -1);
     	ExportCommon::exportError("Lua error:%s\n",err);
         lua_pop(ctx->L, 2);
+		ctx->exportError=true;
         return false;
 	}
 	currentXml=xml;
@@ -110,6 +111,7 @@ bool ExportLUA_CallFile(ExportContext *ctx,ExportXml *xml,const char *fn)
     	const char *err=lua_tostring(ctx->L, -1);
     	ExportCommon::exportError("Lua error:%s\n",err);
         lua_pop(ctx->L, 1);
+		ctx->exportError=true;
         return false;
     }
 	currentXml=NULL;
@@ -128,6 +130,7 @@ bool ExportLUA_CallCode(ExportContext *ctx,ExportXml *xml,const char *code)
     	const char *err=lua_tostring(ctx->L, -1);
     	ExportCommon::exportError("Lua error:%s\n",err);
         lua_pop(ctx->L, 2);
+		ctx->exportError=true;
         return false;
 	}
 	currentXml=xml;
@@ -137,6 +140,7 @@ bool ExportLUA_CallCode(ExportContext *ctx,ExportXml *xml,const char *code)
     	const char *err=lua_tostring(ctx->L, -1);
     	ExportCommon::exportError("Lua error:%s\n",err);
         lua_pop(ctx->L, 1);
+		ctx->exportError=true;
         return false;
     }
 	currentXml=NULL;

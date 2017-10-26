@@ -24,8 +24,8 @@
 #include "lzio.h"
 #include "lauxlib.h"
 
-#define lua_isalpha(c) ((c&0x80)||isalpha(c)) //Allow UTF8 identifiers
-#define lua_isalnum(c) ((c&0x80)||isalnum(c)) //Allow UTF8 identifiers
+#define lua_isalpha(c) ((((c)>0)&&((c)&0x80))||isalpha(c)) //Allow UTF8 identifiers
+#define lua_isalnum(c) ((((c)>0)&&((c)&0x80))||isalnum(c)) //Allow UTF8 identifiers
 
 #define next(ls) (ls->current = ls->mpos < ls->mlen ? char2int(ls->mstr[ls->mpos++]) : zgetc(ls->z))
 

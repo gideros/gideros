@@ -1,12 +1,13 @@
 #ifndef BOX2DBINDER2
 #define BOX2DBINDER2
 
-#define _U(n)
+#define _UNUSED(n)
 
 #include "binder.h"
 #include "luautil.h"
 #include <stddef.h>
 #include <Box2D/Box2D.h>
+#include "luaapplication.h"
 
 
 namespace b2Global {
@@ -14,9 +15,10 @@ extern lua_State *L;
 
 b2Vec2 tableToVec2(lua_State* L, int index);
 b2Shape* toShape(const Binder& binder, int index);
+b2Transform toTransform(lua_State *L,int index,LuaApplication *application);
 
 void getb2(lua_State* L);
-void getb2(lua_State* L, void* ptr);
+void getb2(lua_State* L, const void* ptr);
 void setb2(lua_State* L);
 
 }
@@ -40,6 +42,7 @@ private:
 	static int b2World_DestroyBody(lua_State* L);
 	static int b2World_ClearForces(lua_State* L);
 	static int b2World_QueryAABB(lua_State* L);
+	static int b2World_queryShapeAABB(lua_State* L);
 	static int b2World_rayCast(lua_State* L);
 	static int b2World_createJoint(lua_State* L);
 	static int b2World_destroyJoint(lua_State* L);
@@ -266,6 +269,10 @@ private:
     static int b2ParticleSystem_getParticleGroupList(lua_State* L);;
     static int b2ParticleSystem_getPaused(lua_State *L);
     static int b2ParticleSystem_setPaused(lua_State *L);
+    static int b2ParticleSystem_getDestructionByAge(lua_State *L);
+    static int b2ParticleSystem_setDestructionByAge(lua_State *L);
+    static int b2ParticleSystem_getStrictContactCheck(lua_State *L);
+    static int b2ParticleSystem_setStrictContactCheck(lua_State *L);
     static int b2ParticleSystem_getDensity(lua_State *L);
     static int b2ParticleSystem_setDensity(lua_State *L);
     static int b2ParticleSystem_getGravityScale(lua_State *L);
@@ -280,10 +287,55 @@ private:
     static int b2ParticleSystem_setParticleLifetime(lua_State *L);
     static int b2ParticleSystem_getMaxParticleCount(lua_State *L);
     static int b2ParticleSystem_setMaxParticleCount(lua_State *L);
+    static int b2ParticleSystem_getParticleFlags(lua_State *L);
+    static int b2ParticleSystem_setParticleFlags(lua_State *L);
+    static int b2ParticleSystem_getContacts(lua_State *L);
+    static int b2ParticleSystem_getContactCount(lua_State *L);
+    static int b2ParticleSystem_getBodyContacts(lua_State *L);
+    static int b2ParticleSystem_getBodyContactCount(lua_State *L);
+    static int b2ParticleSystem_getPairs(lua_State *L);
+    static int b2ParticleSystem_getPairCount(lua_State *L);
+    static int b2ParticleSystem_getTriads(lua_State *L);
+    static int b2ParticleSystem_getTriadCount(lua_State *L);
+    static int b2ParticleSystem_setStuckThreshold(lua_State *L);
+    static int b2ParticleSystem_getStuckCandidates(lua_State *L);
+    static int b2ParticleSystem_getStuckCandidateCount(lua_State *L);
+    static int b2ParticleSystem_computeCollisionEnergy(lua_State *L);
+    static int b2ParticleSystem_particleApplyLinearImpulse(lua_State *L);
+    static int b2ParticleSystem_applyLinearImpulse(lua_State *L);
+    static int b2ParticleSystem_particleApplyForce(lua_State *L);
+    static int b2ParticleSystem_applyForce(lua_State *L);
+    static int b2ParticleSystem_destroyOldestParticle(lua_State* L);
+    static int b2ParticleSystem_destroyParticlesInShape(lua_State* L);
+    static int b2ParticleSystem_joinParticleGroups(lua_State* L);
+    static int b2ParticleSystem_splitParticleGroup(lua_State* L);
+    static int b2ParticleSystem_computeAABB(lua_State* L);
+    static int b2ParticleSystem_queryShapeAABB(lua_State* L);
+    static int b2ParticleSystem_queryAABB(lua_State* L);
+    static int b2ParticleSystem_rayCast(lua_State* L);
+    static int b2ParticleSystem_getParticleGroupCount(lua_State *L);
+    static int b2ParticleSystem_getAllParticleFlags(lua_State *L);
+    static int b2ParticleSystem_getAllGroupFlags(lua_State *L);
+    static int b2ParticleSystem_expirationTimeToLifetime(lua_State *L);
 
     static int b2ParticleGroup_destroyParticles(lua_State* L);
     static int b2ParticleGroup_getParticleCount(lua_State* L);
     static int b2ParticleGroup_containsParticle(lua_State* L);
+    static int b2ParticleGroup_applyLinearImpulse(lua_State *L);
+    static int b2ParticleGroup_applyForce(lua_State *L);
+    static int b2ParticleGroup_getAllParticleFlags(lua_State *L);
+    static int b2ParticleGroup_getGroupFlags(lua_State *L);
+    static int b2ParticleGroup_setGroupFlags(lua_State *L);
+    static int b2ParticleGroup_getMass(lua_State *L);
+    static int b2ParticleGroup_getInertia(lua_State *L);
+    static int b2ParticleGroup_getAngularVelocity(lua_State *L);
+    static int b2ParticleGroup_getAngle(lua_State *L);
+    static int b2ParticleGroup_getCenter(lua_State *L);
+    static int b2ParticleGroup_getPosition(lua_State *L);
+    static int b2ParticleGroup_getLinearVelocity(lua_State *L);
+    static int b2ParticleGroup_getLinearVelocityFromWorldPoint(lua_State *L);
+    static int b2ParticleGroup_getTransform(lua_State *L);
+    static int b2ParticleGroup_getParticleSystem(lua_State *L);
 };
 
 #endif

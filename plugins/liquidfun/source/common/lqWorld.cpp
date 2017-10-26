@@ -66,7 +66,7 @@ public:
     EventContactListener(b2WorldED* world) : world(world) {}
 
 private:
-	void dispatchEvent(const Event::Type& type, b2Contact* contact, const b2Manifold* _U(oldManifold), const b2ContactImpulse* impulse)
+	void dispatchEvent(const Event::Type& type, b2Contact* contact, const b2Manifold* _UNUSED(oldManifold), const b2ContactImpulse* impulse)
 	{
         Binder binder(L);
 
@@ -369,6 +369,31 @@ public:
 		}
 	}
 
+	virtual void SayGoodbye(b2ParticleGroup* group)
+	{
+		getb2(L, group);
+
+		if (!lua_isnil(L, -1))
+		{
+			Binder binder(L);
+		    binder.setInstance(-1, NULL);
+		    lua_pushlightuserdata(L, group);
+			lua_pushnil(L);
+			setb2(L);
+		}
+		lua_pop(L, 1);
+	}
+
+	/// Called when a particle is about to be destroyed.
+	/// The index can be used in conjunction with
+	/// b2ParticleSystem::GetUserDataBuffer() or
+	/// b2ParticleSystem::GetParticleHandleFromIndex() to determine which
+	/// particle has been destroyed.
+	virtual void SayGoodbye(b2ParticleSystem* particleSystem, int32 index)
+	{
+		B2_NOT_USED(particleSystem);
+		B2_NOT_USED(index);
+	}
 private:
 	b2WorldED* world;
 };

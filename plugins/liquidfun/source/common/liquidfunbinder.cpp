@@ -31,9 +31,9 @@ void getb2(lua_State* L)
 	lua_remove(L, -2);
 }
 
-void getb2(lua_State* L, void* ptr)
+void getb2(lua_State* L, const void* ptr)
 {
-	lua_pushlightuserdata(L, ptr);
+	lua_pushlightuserdata(L, (void *) ptr);
 	getb2(L);
 }
 
@@ -67,6 +67,19 @@ b2Shape* toShape(const Binder& binder, int index)
 	return static_cast<b2Shape*>(binder.getInstance("b2Shape", index));
 }
 
+b2Transform toTransform(lua_State *L,int index,LuaApplication *application)
+{
+    b2Transform xf;
+    if (lua_istable(L,index))
+    {
+        float physicsScale = application->getPhysicsScale();
+        lua_getfield(L,-1,"x"); lua_Number x = luaL_optnumber(L, -1,0); lua_pop(L,1);
+        lua_getfield(L,-1,"y"); lua_Number y = luaL_optnumber(L, -1,0); lua_pop(L,1);
+        lua_getfield(L,-1,"angle"); lua_Number angle = luaL_optnumber(L, -1,0); lua_pop(L,1);
+        xf.Set(b2Vec2(x / physicsScale, y / physicsScale), angle);
+    }
+    return xf;
+}
 }
 
 Box2DBinder2::Box2DBinder2(lua_State* L)
@@ -124,15 +137,14 @@ int Box2DBinder2::loader(lua_State *L)
 		{"step", b2World_Step},
 		{"clearForces", b2World_ClearForces},
 		{"queryAABB", b2World_QueryAABB},
+		{"queryShapeAABB",b2World_queryShapeAABB},
 		{"rayCast", b2World_rayCast},
 		{"createJoint", b2World_createJoint},
 		{"destroyJoint", b2World_destroyJoint},
 		{"getGravity", b2World_getGravity},
 		{"setGravity", b2World_setGravity},
 		{"setDebugDraw", b2World_setDebugDraw},
-#if BIND_LIQUIDFUN
 		{"createParticleSystem", b2World_createParticleSystem},
-#endif
 		{NULL, NULL},
 	};
 	binder.createClass("b2World", "EventDispatcher", b2World_create, b2World_destruct, b2World_functionList);
@@ -450,6 +462,21 @@ int Box2DBinder2::loader(lua_State *L)
         {"destroyParticles", b2ParticleGroup_destroyParticles},
         {"getParticleCount", b2ParticleGroup_getParticleCount},
         {"containsParticle", b2ParticleGroup_containsParticle},
+	    {"applyLinearImpulse",b2ParticleGroup_applyLinearImpulse},
+	    {"applyForce",b2ParticleGroup_applyForce},
+	    {"getAllParticleFlags",b2ParticleGroup_getAllParticleFlags},
+	    {"getGroupFlags",b2ParticleGroup_getGroupFlags},
+	    {"setGroupFlags",b2ParticleGroup_setGroupFlags},
+	    {"getMass",b2ParticleGroup_getMass},
+	    {"getInertia",b2ParticleGroup_getInertia},
+	    {"getAngularVelocity",b2ParticleGroup_getAngularVelocity},
+	    {"getAngle",b2ParticleGroup_getAngle},
+	    {"getCenter",b2ParticleGroup_getCenter},
+	    {"getPosition",b2ParticleGroup_getPosition},
+	    {"getLinearVelocity",b2ParticleGroup_getLinearVelocity},
+	    {"getLinearVelocityFromWorldPoint",b2ParticleGroup_getLinearVelocityFromWorldPoint},
+	    {"getTransform",b2ParticleGroup_getTransform},
+	    {"getParticleSystem",b2ParticleGroup_getParticleSystem},
         {NULL, NULL},
     };
     binder.createClass("b2ParticleGroup", NULL, NULL, NULL, b2ParticleGroup_functionList);
@@ -462,6 +489,10 @@ int Box2DBinder2::loader(lua_State *L)
         {"getParticleGroupList", b2ParticleSystem_getParticleGroupList},
         {"getPaused",b2ParticleSystem_getPaused},
         {"setPaused", b2ParticleSystem_setPaused},
+        {"getDestructionByAge",b2ParticleSystem_getDestructionByAge},
+        {"setDestructionByAge", b2ParticleSystem_setDestructionByAge},
+        {"getStrictContactCheck",b2ParticleSystem_getStrictContactCheck},
+        {"setStrictContactCheck", b2ParticleSystem_setStrictContactCheck},
         {"getDensity", b2ParticleSystem_getDensity},
         {"setDensity", b2ParticleSystem_setDensity},
         {"getGravityScale", b2ParticleSystem_getGravityScale},
@@ -472,6 +503,36 @@ int Box2DBinder2::loader(lua_State *L)
         {"setStaticPressureIterations", b2ParticleSystem_setStaticPressureIterations},
         {"getRadius", b2ParticleSystem_getRadius},
         {"setRadius", b2ParticleSystem_setRadius},
+	    {"getParticleFlags",b2ParticleSystem_getParticleFlags},
+	    {"setParticleFlags",b2ParticleSystem_setParticleFlags},
+	    {"getContacts",b2ParticleSystem_getContacts},
+	    {"getContactCount",b2ParticleSystem_getContactCount},
+	    {"getBodyContacts",b2ParticleSystem_getBodyContacts},
+	    {"getBodyContactCount",b2ParticleSystem_getBodyContactCount},
+	    {"getPairs",b2ParticleSystem_getPairs},
+	    {"getPairCount",b2ParticleSystem_getPairCount},
+	    {"getTriads",b2ParticleSystem_getTriads},
+	    {"getTriadCount",b2ParticleSystem_getTriadCount},
+	    {"setStuckThreshold",b2ParticleSystem_setStuckThreshold},
+	    {"getStuckCandidates",b2ParticleSystem_getStuckCandidates},
+	    {"getStuckCandidateCount",b2ParticleSystem_getStuckCandidateCount},
+	    {"computeCollisionEnergy",b2ParticleSystem_computeCollisionEnergy},
+	    {"particleApplyLinearImpulse",b2ParticleSystem_particleApplyLinearImpulse},
+	    {"applyLinearImpulse",b2ParticleSystem_applyLinearImpulse},
+	    {"particleApplyForce",b2ParticleSystem_particleApplyForce},
+	    {"applyForce",b2ParticleSystem_applyForce},
+	    {"destroyOldestParticle",b2ParticleSystem_destroyOldestParticle},
+	    {"destroyParticlesInShape",b2ParticleSystem_destroyParticlesInShape},
+	    {"joinParticleGroups",b2ParticleSystem_joinParticleGroups},
+	    {"splitParticleGroup",b2ParticleSystem_splitParticleGroup},
+	    {"computeAABB",b2ParticleSystem_computeAABB},
+	    {"queryShapeAABB",b2ParticleSystem_queryShapeAABB},
+	    {"queryAABB",b2ParticleSystem_queryAABB},
+	    {"rayCast",b2ParticleSystem_rayCast},
+	    {"getParticleGroupCount",b2ParticleSystem_getParticleGroupCount},
+	    {"getAllParticleFlags",b2ParticleSystem_getAllParticleFlags},
+	    {"getAllGroupFlags",b2ParticleSystem_getAllGroupFlags},
+	    {"expirationTimeToLifetime",b2ParticleSystem_expirationTimeToLifetime},
         {NULL, NULL},
     };
     binder.createClass("b2ParticleSystem", "Sprite", NULL, NULL, b2ParticleSystem_functionList);
@@ -641,7 +702,6 @@ int Box2DBinder2::loader(lua_State *L)
     lua_pushnil(L);
     lua_setglobal(L, "b2WorldManifold");
 
-#if BIND_LIQUIDFUN
     lua_getglobal(L, "b2ParticleGroup");
     lua_setfield(L, -2, "ParticleGroup");
     lua_pushnil(L);
@@ -651,7 +711,6 @@ int Box2DBinder2::loader(lua_State *L)
     lua_setfield(L, -2, "ParticleSystem");
     lua_pushnil(L);
     lua_setglobal(L, "b2ParticleSystem");
-#endif
 
 	lua_pushinteger(L, b2_staticBody);
 	lua_setfield(L, -2, "STATIC_BODY");
@@ -868,6 +927,10 @@ int Box2DBinder2::b2World_CreateBody(lua_State* L)
 	lua_settable(L, -3);
 	lua_pop(L, 1);
 
+	lua_pushlightuserdata(L, body);
+	lua_pushvalue(L, -2);
+	setb2(L);
+
 	return 1;
 }
 
@@ -979,6 +1042,11 @@ int Box2DBinder2::b2World_DestroyBody(lua_State* L)
 	lua_settable(L, -3);
 	lua_pop(L, 1);
 
+	lua_pushlightuserdata(L, body);
+	lua_pushnil(L);
+	setb2(L);
+
+
 	return 0;
 }
 
@@ -993,18 +1061,6 @@ int Box2DBinder2::b2World_ClearForces(lua_State* L)
 
 	return 0;
 }
-
-class MyQueryCallback : public b2QueryCallback
-{
-public:
-	bool ReportFixture(b2Fixture* fixture)
-	{
-		fixtures.push_back(fixture);
-		return true;
-	}
-
-	std::vector<b2Fixture*> fixtures;
-};
 
 int Box2DBinder2::b2World_QueryAABB(lua_State* L)
 {
@@ -1028,67 +1084,22 @@ int Box2DBinder2::b2World_QueryAABB(lua_State* L)
 	MyQueryCallback callback;
 	world->QueryAABB(&callback, aabb);
 
-	lua_newtable(L);
-#if 0
-	lua_getglobal(L, "table");
-	lua_getfield(L, -1, "insert"); // table.insert function
-	for (std::size_t i = 0; i < callback.fixtures.size(); ++i)
-	{
-		b2Fixture* fixture = callback.fixtures[i];
-
-		lua_pushvalue(L, -1);		// table.insert
-		lua_pushvalue(L, -4);		// result
-		getb2(L, fixture);			// fixture
-		lua_call(L, 2, 0);			// table.insert(result, fixture)
-	}
-	lua_pop(L, 2);	// pop table and table.insert
-#else
-	for (std::size_t i = 0; i < callback.fixtures.size(); ++i)
-	{
-		getb2(L, callback.fixtures[i]);
-		lua_rawseti(L, -2, i + 1);
-	}
-#endif
-
-	return 1;
+	return callback.Result(L);
 }
-
-class MyRayCastCallback : public b2RayCastCallback
+int Box2DBinder2::b2World_queryShapeAABB(lua_State* L)
 {
-public:
-    MyRayCastCallback(lua_State* L) : L(L) {}
-    virtual float32 ReportFixture(	b2Fixture* fixture, const b2Vec2& point,
-                                    const b2Vec2& normal, float32 fraction)
-    {
-        LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
-        float physicsScale = application->getPhysicsScale();
+	Binder binder(L);
+	b2WorldED* world = static_cast<b2WorldED*>(binder.getInstance("b2World", 1));
 
-        bool data = !lua_isnone(L, 7);
+    b2Shape *shape=toShape(binder,2);
+    LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
+    b2Transform xf=toTransform(L,3,application);
 
-        lua_pushvalue(L, 6);
+    MyQueryCallback callback;
+	world->QueryShapeAABB(&callback, *shape, xf);
 
-        if (data)
-            lua_pushvalue(L, 7);
-
-        getb2(L, fixture);
-        lua_pushnumber(L, point.x * physicsScale);
-        lua_pushnumber(L, point.y * physicsScale);
-        lua_pushnumber(L, normal.x);
-        lua_pushnumber(L, normal.y);
-        lua_pushnumber(L, fraction);
-
-        lua_call(L, data ? 7 : 6, 1);
-
-        lua_Number result = luaL_optnumber(L, -1, -1);
-
-        lua_pop(L, 1);
-
-        return result;
-    }
-
-private:
-    lua_State* L;
-};
+	return callback.Result(L);
+}
 
 int Box2DBinder2::b2World_rayCast(lua_State* L)
 {
@@ -1112,7 +1123,7 @@ int Box2DBinder2::b2World_rayCast(lua_State* L)
     return 0;
 }
 
-int Box2DBinder2::b2Body_destruct(lua_State* _U(L))
+int Box2DBinder2::b2Body_destruct(lua_State* _UNUSED(L))
 {
 #if 0
 	void* ptr = *(void**)lua_touserdata(L, 1);
@@ -1881,7 +1892,7 @@ int Box2DBinder2::b2Body_getTransform(lua_State* L)
 }
 
 
-int Box2DBinder2::b2Fixture_destruct(lua_State* _U(L))
+int Box2DBinder2::b2Fixture_destruct(lua_State* _UNUSED(L))
 {
 #if 0
 	void* ptr = *(void**)lua_touserdata(L, 1);
@@ -3112,7 +3123,7 @@ int Box2DBinder2::b2Joint_getReactionTorque(lua_State* L)
     return 1;
 }
 
-int Box2DBinder2::b2Joint_destruct(lua_State* _U(L))
+int Box2DBinder2::b2Joint_destruct(lua_State* _UNUSED(L))
 {
 #if 0
 	void* ptr = *(void**)lua_touserdata(L, 1);
@@ -4711,7 +4722,7 @@ static void g_initializePlugin(lua_State *L) {
 	Box2DBinder2 b2(L);
 }
 
-static void g_deinitializePlugin(lua_State *_U(L)) {
+static void g_deinitializePlugin(lua_State *_UNUSED(L)) {
 }
 
 REGISTER_PLUGIN_NAMED("LiquidFun", "1.1.0", liquidfun)

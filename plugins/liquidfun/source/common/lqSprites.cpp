@@ -131,7 +131,7 @@ void b2DebugDraw::DrawTransform(const b2Transform& xf)
 	DrawSegment(p1,p2,b2Color(0,1,0));
 }
 
-void b2DebugDraw::doDraw(const CurrentTransform& , float _U(sx), float _U(sy), float _U(ex), float _U(ey))
+void b2DebugDraw::doDraw(const CurrentTransform& , float _UNUSED(sx), float _UNUSED(sy), float _UNUSED(ex), float _UNUSED(ey))
 {
 	if (world_)
 	{
@@ -270,7 +270,7 @@ b2ParticleSystemSprite::~b2ParticleSystemSprite()
 	//TODO Destroy system ?
 }
 
-void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float _U(sx), float _U(sy), float _U(ex), float _U(ey))
+void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float _UNUSED(sx), float _UNUSED(sy), float _UNUSED(ex), float _UNUSED(ey))
 {
 	if (ps_)
 	{

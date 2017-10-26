@@ -34,7 +34,10 @@ void ExportProgress::onStandardError()
 		QString line=QString(errorLog.left(sepPos+1)).trimmed();
 		errorLog.remove(0,sepPos+1);
 		QColor col=ui->lbExport->palette().color(QPalette::Text);
-		ui->lbExport->setTextColor(QColor("red"));
+		if (line.startsWith("note",Qt::CaseInsensitive))
+			ui->lbExport->setTextColor(QColor("orange"));
+		else
+			ui->lbExport->setTextColor(QColor("red"));
 		ui->lbExport->append(line);
 		ui->lbExport->setTextColor(col);
 	}
@@ -123,17 +126,17 @@ void ExportProgress::onShowInFinder()
 
 void ExportProgress::onFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-	if (exitStatus==QProcess::NormalExit)
+	if ((exitStatus==QProcess::NormalExit)&&(exitCode==0))
 	{
 		ui->lbExport->append("Export done.");
+		ui->btEnd->setText("Done");
 	}
 	else
 	{
 		ui->lbExport->setTextColor(QColor("red"));
 		ui->lbExport->append("Export failed! See details above.");
+		ui->btEnd->setText("Failed!");
 	}
-
-	ui->btEnd->setText("Done");
 }
 
 ExportProgress::~ExportProgress()
