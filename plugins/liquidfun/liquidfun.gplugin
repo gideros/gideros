@@ -24,11 +24,10 @@
    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/liquidfun" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
-iOSProject.addGroup("liquidfun","Plugins/liquidfun","GroupLiquidFun_ios","GroupPlugins_ios")
-iOSProject.addGroup("liquidfun","Plugins/liquidfun","GroupLiquidFun_atv","GroupPlugins_atv")
-local sources={ "liquidfun.cpp"  }
-iOSProject.addSources(sources, "GroupLiquidFun", "ios")
-iOSProject.addSources(sources, "GroupLiquidFun", "atv")
+iOSProject.addGroup("liquidfun","Plugins/liquidfun","GroupLiquidfun_ios","GroupPlugins_ios")
+iOSProject.addGroup("liquidfun","liquidfun","GroupLiquidfun_atv","GroupPlugins_atv")
+iOSProject.addSources({ "Plugins/libliquidfun.ios.a"  }, "GroupPlugins", "ios")
+iOSProject.addSources({ "libliquidfun.atv.a"  }, "GroupPlugins", "atv")
 iOSProject.commit()
 	]]></lua>
  </target>
