@@ -69,7 +69,11 @@ LFStatus::LFStatus(int errorCode, ...)
 
 		char* buffer = (char*)malloc(1025);
 		va_start(args, errorCode);
+#ifdef _MSC_VER
+		vsnprintf_s(buffer, 1025, 1024, s_errors[errorCode].errorString, args);
+#else
 		vsnprintf(buffer, 1024, s_errors[errorCode].errorString, args);
+#endif
 		va_end(args);
 		errorString_ = new std::string(buffer);
 		free(buffer);
@@ -83,7 +87,11 @@ LFStatus::LFStatus(int errorCode, const char* arg1)
 	if (s_errors[errorCode].vararg == true)
 	{
 		char* buffer = (char*)malloc(1025);
+#ifdef _MSC_VER
+		_snprintf_s(buffer, 1025, 1024, s_errors[errorCode].errorString, arg1);
+#else
 		_snprintf(buffer, 1024, s_errors[errorCode].errorString, arg1);
+#endif
 		errorString_ = new std::string(buffer);
 		free(buffer);
 	}
@@ -96,7 +104,11 @@ LFStatus::LFStatus(int errorCode, const char* arg1, const char* arg2)
 	if (s_errors[errorCode].vararg == true)
 	{
 		char* buffer = (char*)malloc(1025);
+#ifdef _MSC_VER
+		_snprintf_s(buffer, 1025, 1024, s_errors[errorCode].errorString, arg1, arg2);
+#else
 		_snprintf(buffer, 1024, s_errors[errorCode].errorString, arg1, arg2);
+#endif
 		errorString_ = new std::string(buffer);
 		free(buffer);
 	}

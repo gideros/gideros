@@ -56,15 +56,29 @@ winrt.libs: winrt.lua winrt.gvfs
 
 winrt.libs.clean: winrt.lua.clean winrt.gvfs.clean
 
-winrt.plugins:
+%.plugin.winrt:
+	$(call WINRT_BUILD_WIN,plugins/$*/source/winrt,$*)
+	$(call WINRT_BUILD_WP,plugins/$*/source/winrt,$*)
+	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/WinRT
+	cp plugins/$*/source/winrt/$*/$*.WindowsPhone/ARM/Release/$*.WindowsPhone/*.WindowsPhone.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/
+	cp plugins/$*/source/winrt/$*/$*.Windows/Release/$*.Windows/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/
+
+luasocket.plugin.winrt:
 	$(call WINRT_BUILD_WIN,plugins/luasocket/source/winrt/luasocket,luasocket)
 	$(call WINRT_BUILD_WP,plugins/luasocket/source/winrt/luasocket,luasocket)
 	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT
 	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/ARM/*.WindowsPhone.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
 	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
 
-winrt.plugins.clean:
+%.plugin.winrt.clean:
+	$(call WINRT_CLEAN,plugins/$*/source/winrt,$*)
+
+luasocket.plugin.winrt.clean:
 	$(call WINRT_CLEAN,plugins/luasocket/source/winrt/luasocket,luasocket)
+
+winrt.plugins: $(addsuffix .plugin.winrt,$(PLUGINS_WINRT))
+	
+winrt.plugins.clean: $(addsuffix .plugin.winrt.clean,$(PLUGINS_WINRT))
 	
 winrt.core: versioning winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)

@@ -311,7 +311,6 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 	  ogg_int16_t *audiobuf=(ogg_int16_t *) data;
 	  ogg_int64_t  audiobuf_granulepos=0; /* time position of last sample */
 	  int i,j;
-	  int frames;
 
 	  while(true){
 
@@ -374,7 +373,6 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 	        }
 	        if(th_decode_packetin(handle->td,&handle->op,&videobuf_granulepos)==0){
 	          handle->videobuf_time=th_granule_time(handle->td,videobuf_granulepos);
-	          frames++;
 
 	          /* is it already too old to be useful?  This is only actually
 	             useful cosmetically after a SIGSTOP.  Note that we have to
@@ -612,7 +610,7 @@ static void g_deinitializePlugin(lua_State *L)
 	gaudio_unregisterType("ogv");
 }
 
-#if TARGET_OS_MAC
+#if defined(TARGET_OS_MAC) || defined(_MSVC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("Ogg", "1.0",Ogg)
 #else
 REGISTER_PLUGIN("Ogg", "1.0")

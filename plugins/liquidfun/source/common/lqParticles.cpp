@@ -8,6 +8,8 @@
 #include "lfstatus.h"
 #include "lqSprites.h"
 #include "lqWorld.h"
+#undef min
+#undef max
 
 //COMPLETE 1.1.0
 static void tableToParticleSystemDef(lua_State* L, int index, b2ParticleSystemDef* particleDef, float physicsScale)

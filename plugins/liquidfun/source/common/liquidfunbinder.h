@@ -9,7 +9,6 @@
 #include <Box2D/Box2D.h>
 #include "luaapplication.h"
 
-
 namespace b2Global {
 extern lua_State *L;
 

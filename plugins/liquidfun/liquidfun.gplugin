@@ -22,6 +22,11 @@
    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/liquidfun" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
    <mkdir>AppleTV/Plugins/liquidfun</mkdir>
    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/liquidfun" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(liquidfun) "/>
+        </replacelist>
+    </template>
 	<lua><![CDATA[
 local iOSProject=require("Tools/export_ios")
 iOSProject.addGroup("liquidfun","Plugins/liquidfun","GroupLiquidfun_ios","GroupPlugins_ios")
@@ -39,17 +44,20 @@ iOSProject.commit()
         </replacelist>
     </template>
  </target>
- <target name="WinRT">
-    <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="giderosgame/giderosgame.Shared/Plugins" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+  <target name="WinRT">
+   <template name="sources" path="[[[sys.pluginDir]]]/bin/WinRT" />
+   <template name="binary" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-WINRT:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(liquidfun) "/>
+        </replacelist>
+    </template>
     <template name="project" path="">
         <replacelist wildcards="giderosgame.Shared.vcxitems">
         <append>
-            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
             <by><![CDATA[
-    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\liquidfun.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>]]></by>
-           </append>
+      <AdditionalDependencies>liquidfun.$(GidProjectType).lib</AdditionalDependencies>]]></by>
+        </append> 
         </replacelist>
     </template>
  </target>
