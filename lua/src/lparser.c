@@ -421,10 +421,10 @@ static void field (LexState *ls, expdesc *v) {
 
 static void yindex (LexState *ls, expdesc *v) {
   /* index -> '[' expr ']' */
-  luaX_next(ls);  /* skip the '[' */
+//  luaX_next(ls);  /* skip the '[' */
   expr(ls, v);
   luaK_exp2val(ls->fs, v);
-  checknext(ls, ']');
+//  checknext(ls, ']');
 }
 
 
@@ -454,8 +454,11 @@ static void recfield (LexState *ls, struct ConsControl *cc) {
     luaY_checklimit(fs, cc->nh, MAX_INT, "items in a constructor");
     checkname(ls, &key);
   }
-  else  /* ls->t.token == '[' */
+  else { /* ls->t.token == '[' */
+	luaX_next(ls); /* skip the '[' */
     yindex(ls, &key);
+	checknext(ls,']');
+  }
   cc->nh++;
   checknext(ls, '=');
   rkkey = luaK_exp2RK(fs, &key);
@@ -704,9 +707,13 @@ static void primaryexp (LexState *ls, expdesc *v) {
       }
       case '[': {  /* `[' exp1 `]' */
         expdesc key;
-        luaK_exp2anyreg(fs, v);
-        yindex(ls, &key);
-        luaK_indexed(fs, v, &key);
+		luaX_next(ls); /* skip the '[' */
+		do {
+			luaK_exp2anyreg(fs, v);
+			yindex(ls, &key);
+			luaK_indexed(fs, v, &key);
+		} while (testnext(ls, ','));
+		checknext(ls,']');
         break;
       }
       case ':': {  /* `:' NAME funcargs */
