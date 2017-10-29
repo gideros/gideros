@@ -421,10 +421,10 @@ static void field (LexState *ls, expdesc *v) {
 
 static void yindex (LexState *ls, expdesc *v) {
   /* index -> '[' expr ']' */
-  luaX_next(ls);  /* skip the '[' */
+//  luaX_next(ls);  /* skip the '[' */
   expr(ls, v);
   luaK_exp2val(ls->fs, v);
-  checknext(ls, ']');
+//  checknext(ls, ']');
 }
 
 
@@ -454,8 +454,11 @@ static void recfield (LexState *ls, struct ConsControl *cc) {
     luaY_checklimit(fs, cc->nh, MAX_INT, "items in a constructor");
     checkname(ls, &key);
   }
-  else  /* ls->t.token == '[' */
+  else { /* ls->t.token == '[' */
+	luaX_next(ls); /* skip the '[' */
     yindex(ls, &key);
+	checknext(ls,']');
+  }
   cc->nh++;
   checknext(ls, '=');
   rkkey = luaK_exp2RK(fs, &key);
@@ -704,9 +707,13 @@ static void primaryexp (LexState *ls, expdesc *v) {
       }
       case '[': {  /* `[' exp1 `]' */
         expdesc key;
-        luaK_exp2anyreg(fs, v);
-        yindex(ls, &key);
-        luaK_indexed(fs, v, &key);
+		luaX_next(ls); /* skip the '[' */
+		do {
+			luaK_exp2anyreg(fs, v);
+			yindex(ls, &key);
+			luaK_indexed(fs, v, &key);
+		} while (testnext(ls, ','));
+		checknext(ls,']');
         break;
       }
       case ':': {  /* `:' NAME funcargs */
@@ -960,7 +967,8 @@ static void assignment (LexState *ls, struct LHS_assign *lh, int nvars) {
   }
   else {  /* assignment -> `=' explist1 */
     int nexps;
-    checknext(ls, '=');
+//    checknext(ls, '=');
+	luaX_next(ls); /* consume '=' token. */
     nexps = explist1(ls, &e);
     if (nexps != nvars) {
       adjust_assign(ls, nvars, nexps, &e);
@@ -977,6 +985,35 @@ static void assignment (LexState *ls, struct LHS_assign *lh, int nvars) {
   luaK_storevar(ls->fs, &lh->v, &e);
 }
 
+static BinOpr getcompopr (int op) {
+  switch (op) {
+    case TK_ADD_EQ: return OPR_ADD_EQ;
+    case TK_SUB_EQ: return OPR_SUB_EQ;
+    case TK_MUL_EQ: return OPR_MUL_EQ;
+    case TK_DIV_EQ: return OPR_DIV_EQ;
+    case TK_MOD_EQ: return OPR_MOD_EQ;
+    case TK_POW_EQ: return OPR_POW_EQ;
+    default: return OPR_NOBINOPR;
+  }
+}
+
+static void compound (LexState *ls, struct LHS_assign *lh) {
+  expdesc rh;
+  int nexps;
+  BinOpr op;
+
+  check_condition(ls, VLOCAL <= lh->v.k && lh->v.k <= VINDEXED,
+                      "syntax error");
+  /* parse Compound operation. */
+  op = getcompopr(ls->t.token);
+  luaX_next(ls);
+
+  /* parse right-hand expression */
+  nexps = explist1(ls, &rh);
+  check_condition(ls, nexps == 1, "syntax error");
+
+  luaK_posfix(ls->fs, op, &(lh->v), &rh);
+}
 
 static int cond (LexState *ls) {
   /* cond -> exp */
@@ -1238,15 +1275,33 @@ static void funcstat (LexState *ls, int line) {
 
 
 static void exprstat (LexState *ls) {
-  /* stat -> func | assignment */
+  /* stat -> func | compound | assignment */
   FuncState *fs = ls->fs;
   struct LHS_assign v;
   primaryexp(ls, &v.v);
   if (v.v.k == VCALL)  /* stat -> func */
     SETARG_C(getcode(fs, &v.v), 1);  /* call statement uses no results */
-  else {  /* stat -> assignment */
+  else {  /* stat -> compound | assignment */
     v.prev = NULL;
-    assignment(ls, &v, 1);
+    switch(ls->t.token) {
+      case TK_ADD_EQ:
+      case TK_SUB_EQ:
+      case TK_MUL_EQ:
+      case TK_DIV_EQ:
+      case TK_MOD_EQ:
+      case TK_POW_EQ:
+        compound(ls, &v);
+        break;
+      case ',':
+      case '=':
+        assignment(ls, &v, 1);
+        break;
+      default:
+        luaX_syntaxerror(ls,
+          luaO_pushfstring(ls->L,
+                           "'+=','-=','*=', '/=', '%=', '^=', '=' expected"));
+        break;
+    }
   }
 }
 
