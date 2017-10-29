@@ -98,7 +98,7 @@ static int Lnind(lua_State *L)  /** _newindex(z, x) */
  Int i=Z(2);
  Int v=Z(3);
  Int *p =(Int*) lua_touserdata(L, 1);
- *p = (z ^ (-v ^ z) & (1 << i));
+ *p = (z ^ ((-v ^ z) & (1 << i)));
  return 0;
 }
 

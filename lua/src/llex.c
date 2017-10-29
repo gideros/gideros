@@ -24,8 +24,8 @@
 #include "lzio.h"
 #include "lauxlib.h"
 
-#define lua_isalpha(c) ((c&0x80)||isalpha(c)) //Allow UTF8 identifiers
-#define lua_isalnum(c) ((c&0x80)||isalnum(c)) //Allow UTF8 identifiers
+#define lua_isalpha(c) ((((c)>0)&&((c)&0x80))||isalpha(c)) //Allow UTF8 identifiers
+#define lua_isalnum(c) ((((c)>0)&&((c)&0x80))||isalnum(c)) //Allow UTF8 identifiers
 
 #define next(ls) (ls->current = ls->mpos < ls->mlen ? char2int(ls->mstr[ls->mpos++]) : zgetc(ls->z))
 
@@ -43,6 +43,7 @@ const char *const luaX_tokens [] = {
   "<<", ">>", "//",
   "<>", "><",
   "^>","^<",
+  "+=", "-=", "*=", "/=", "%=", "^=",
   "<number>", "<name>", "<string>", "<eof>",
   NULL
 };
@@ -378,6 +379,10 @@ static int llex (LexState *ls, SemInfo *seminfo) {
     }
     case '-': {
       next(ls);
+	  if (ls->current == '=') {
+		next(ls);
+	    return TK_SUB_EQ;
+	  }	  
       if (ls->current != '-') return '-';
       /* else is a comment */
       next(ls);
@@ -427,18 +432,37 @@ static int llex (LexState *ls, SemInfo *seminfo) {
       next(ls);
       if (ls->current == '<') { next(ls); return TK_RAD; }
       else if (ls->current == '>') { next(ls); return TK_DEG; }
+	  else if (ls->current == '=') { next(ls); return TK_POW_EQ; }
       else return '^';
     }
     case '/': {
       next(ls);
-      if (ls->current != '/') return '/';
-      else { next(ls); return TK_INTDIV; }
+	  if (ls->current == '=') { next(ls); return TK_DIV_EQ; }
+	  else if (ls->current == '/') { next(ls); return TK_INTDIV; }
+	  else return '/';
     }
     case '~': {
       next(ls);
       if (ls->current != '=') return '~';
       else { next(ls); return TK_NE; }
     }
+	
+	  case '+': {
+		next(ls);
+		if (ls->current != '=') return '+';
+		else { next(ls); return TK_ADD_EQ; }
+	  }
+	  case '*': {
+		next(ls);
+		if (ls->current != '=') return '*';
+		else { next(ls); return TK_MUL_EQ; }
+	  }
+	  case '%': {
+		next(ls);
+		if (ls->current != '=') return '%';
+		else { next(ls); return TK_MOD_EQ; }
+	  }
+	
     case '!': {
       luaX_lexerror(ls, "assembler support is not implemented yet", 0);
     }
@@ -835,4 +859,3 @@ void luaX_lookahead (LexState *ls) {
   lua_assert(ls->lookahead.token == TK_EOS);
   ls->lookahead.token = llex(ls, &ls->lookahead.seminfo);
 }
-
