@@ -35,7 +35,7 @@ void ExportProgress::onStandardError()
 		errorLog.remove(0,sepPos+1);
 		QColor col=ui->lbExport->palette().color(QPalette::Text);
 		if (line.startsWith("note",Qt::CaseInsensitive))
-			ui->lbExport->setTextColor(QColor("orange"));
+			ui->lbExport->setTextColor(QColor("blue"));
 		else
 			ui->lbExport->setTextColor(QColor("red"));
 		ui->lbExport->append(line);
