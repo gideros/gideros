@@ -59,7 +59,7 @@ iOSProject.commit()
         <append>
             <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
             <by><![CDATA[
-      <AdditionalDependencies>ogg.$(GidProjectType).lib</AdditionalDependencies>]]></by>
+      <AdditionalDependencies>%(AdditionalDependencies);ogg.$(GidProjectType).lib</AdditionalDependencies>]]></by>
         </append> 
         </replacelist>
     </template>

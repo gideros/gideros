@@ -144,9 +144,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,9 +158,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,9 +172,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -180,9 +186,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);../../../../../../luabinding;../../../../../../Sdk/include;../../../../../../Sdk/include/gideros;../../../../../../2dsg;../../../../../../2dsg/gfxbackends;../../../../../../libgideros;../../../../../../libgid/include;../../../../../../lua/src;../../../libogg-1.3.2/include;../../../libtheora-1.1.1/include;../../../libvorbis-1.3.5/include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

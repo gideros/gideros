@@ -43,6 +43,7 @@ struct GGOggHandle
 	 TextureBase *yplane;
 	 TextureBase *uplane;
 	 TextureBase *vplane;
+	 int planeWidth,planeHeight;
 
 	int              theora_p;
 	int              vorbis_p;
@@ -503,8 +504,12 @@ void Renderer::renderContext(GGOggHandle *handle)
 	  if (sm)
 		  sm->screenDestroyed();
 	  if (handle->yplane)
+	  {
 		  gtexture_getInternalTexture(handle->yplane->data->gid)->updateData(ShaderTexture::FMT_Y, ShaderTexture::PK_UBYTE,
 				  yuv[0].stride,yuv[0].height,yuv[0].data,ShaderTexture::WRAP_CLAMP,ShaderTexture::FILT_LINEAR);
+		  handle->planeWidth=yuv[0].stride;
+		  handle->planeHeight=yuv[0].height;
+	  }
 	  if (handle->uplane)
 		  gtexture_getInternalTexture(handle->uplane->data->gid)->updateData(ShaderTexture::FMT_Y, ShaderTexture::PK_UBYTE,
 				  yuv[1].stride,yuv[1].height,yuv[1].data,ShaderTexture::WRAP_CLAMP,ShaderTexture::FILT_LINEAR);
@@ -533,8 +538,10 @@ static int getVideoInfo(lua_State* L) {
 	else
 	{
 		lua_newtable(L);
-		lua_pushnumber(L,hnd->ti.frame_width); lua_setfield(L,-2,"width");
-		lua_pushnumber(L,hnd->ti.frame_height); lua_setfield(L,-2,"height");
+		lua_pushinteger(L,hnd->ti.frame_width); lua_setfield(L,-2,"width");
+		lua_pushinteger(L,hnd->ti.frame_height); lua_setfield(L,-2,"height");
+		lua_pushinteger(L,hnd->planeWidth); lua_setfield(L,-2,"surfaceWidth");
+		lua_pushinteger(L,hnd->planeHeight); lua_setfield(L,-2,"surfaceHeight");
 		lua_pushnumber(L,((double)(hnd->ti.fps_numerator))/hnd->ti.fps_denominator); lua_setfield(L,-2,"fps");
 		lua_pushinteger(L,hnd->ti.pixel_fmt); lua_setfield(L,-2,"format");
 	}
@@ -610,7 +617,7 @@ static void g_deinitializePlugin(lua_State *L)
 	gaudio_unregisterType("ogv");
 }
 
-#if defined(TARGET_OS_MAC) || defined(_MSVC_VER)
+#if defined(TARGET_OS_MAC) || defined(_MSC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("Ogg", "1.0",Ogg)
 #else
 REGISTER_PLUGIN("Ogg", "1.0")

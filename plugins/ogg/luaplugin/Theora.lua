@@ -38,6 +38,61 @@ void main()
 }]]
 
 
+if Shader.getShaderLanguage()=="hlsl" then
+ChromaVShader=[[
+struct VOut
+{
+  float4 position : SV_POSITION;
+  float2 texcoord : TEXCOORD;
+};
+
+cbuffer cbv : register(b0)
+{
+  float4x4 g_MVPMatrix;
+};
+
+VOut VShader(float4 position : POSITION0, float2 texcoord : TEXCOORD0)
+{
+  VOut output;
+
+  position.w = 1.0f;
+
+  output.position = mul(g_MVPMatrix, position);
+  output.texcoord = texcoord;
+
+  return output;
+}
+]]
+
+
+ChromaFShader=[[
+Texture2D gTexture : register(t0);
+SamplerState samY : register(s0);
+Texture2D gU : register(t1);
+SamplerState samU : register(s1);
+Texture2D gV : register(t2);
+SamplerState samV : register(s2);
+
+cbuffer cbp : register(b1)
+{
+};
+
+float4 PShader(float4 position : SV_POSITION, float2 texcoord : TEXCOORD) : SV_TARGET
+{
+  float4 yb = gTexture.Sample(samY, texcoord);
+  float4 ub = gU.Sample(samU, texcoord);
+  float4 vb = gV.Sample(samV, texcoord);
+
+  float B = 1.164*(yb.r - 0.125/2.0)                   + 2.018*(ub.r - 0.5);
+    float G = 1.164*(yb.r - 0.125/2.0) - 0.813*(vb.r - 0.5) - 0.391*(ub.r - 0.5);
+    float R = 1.164*(yb.r - 0.125/2.0) + 1.596*(vb.r - 0.5);
+  
+  return float4(R,G,B,1.0);
+}
+]]
+end
+
+
 local ChromaShaderAttrs=
 {
 {name="POSITION0",type=Shader.DFLOAT,mult=3,slot=0,offset=0},

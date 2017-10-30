@@ -5,6 +5,7 @@
  *      Author: Nico
  */
 
+#include <gplugin.h>
 //GIDEROS-TAG-WINRT:IMPORTPLUGIN//
 
 

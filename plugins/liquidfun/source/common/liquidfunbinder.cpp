@@ -4727,7 +4727,7 @@ static void g_initializePlugin(lua_State *L) {
 static void g_deinitializePlugin(lua_State *_UNUSED(L)) {
 }
 
-#if defined(TARGET_OS_MAC) || defined(_MSVC_VER)
+#if defined(TARGET_OS_MAC) || defined(_MSC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("LiquidFun", "1.1.0", liquidfun)
 #else
 REGISTER_PLUGIN_NAMED("LiquidFun", "1.1.0", liquidfun)

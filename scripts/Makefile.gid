@@ -20,7 +20,7 @@ PLUGINS_IOS=luasocket camera ogg liquidfun
 PLUGINS_ATV=luasocket ogg liquidfun
 PLUGINS_MAC=luasocket ogg liquidfun
 #For reference
-PLUGINS_WINRT=luasocket liquidfun
+PLUGINS_WINRT=luasocket ogg liquidfun
 
 ROOT=.
 SDK=$(ROOT)/Sdk

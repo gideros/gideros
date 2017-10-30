@@ -56,7 +56,7 @@ iOSProject.commit()
         <append>
             <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
             <by><![CDATA[
-      <AdditionalDependencies>liquidfun.$(GidProjectType).lib</AdditionalDependencies>]]></by>
+      <AdditionalDependencies>%(AdditionalDependencies);liquidfun.$(GidProjectType).lib</AdditionalDependencies>]]></by>
         </append> 
         </replacelist>
     </template>
