@@ -187,7 +187,7 @@ int Box2DBinder2::b2World_setDebugDraw(lua_State* L)
 	}
 	else
 	{
-		b2DebugDraw* debugDraw = static_cast<b2DebugDraw*>(binder.getInstance("b2DebugDraw", 2));
+		b2DebugDraw* debugDraw = static_cast<b2DebugDraw*>(static_cast<SpriteProxy *>(binder.getInstance("b2DebugDraw", 2))->getContext());
 		world->SetDebugDraw(debugDraw);
 	}
 
