@@ -92,7 +92,6 @@ float4 PShader(float4 position : SV_POSITION, float2 texcoord : TEXCOORD) : SV_T
 ]]
 end
 
-
 local ChromaShaderAttrs=
 {
 {name="POSITION0",type=Shader.DFLOAT,mult=3,slot=0,offset=0},
@@ -117,35 +116,45 @@ local Theora=Core.class(Sound)
 Theora.__play=Theora.play
 
 function Theora:play(startTime,looping,paused)
-	local c=self:__play(startTime,looping,paused)
-	c.getVideo=Theora._getVideo
-	local sid=c:getStreamId()
-	local thi=th.getVideoInfo(sid)
-	local yp=Texture.new(nil,thi.width,thi.height, true, { extend=false})
-	local up=Texture.new(nil,thi.width/2,thi.height/2, true, { extend=false})
-	local vp=Texture.new(nil,thi.width/2,thi.height/2, true, { extend=false})
-	th.setVideoSurface(sid,yp,up,vp)
-	c.__thi=thi
-	c.__yp=yp
-	c.__up=up
-	c.__vp=vp
-	return c
+  local c=self:__play(startTime,looping,paused)
+  c.getVideo=Theora._getVideo
+  local sid=c:getStreamId()
+  local thi=th.getVideoInfo(sid)
+  local yp=Texture.new(nil,thi.width,thi.height, true, { extend=false})
+  local up=Texture.new(nil,thi.width/2,thi.height/2, true, { extend=false})
+  local vp=Texture.new(nil,thi.width/2,thi.height/2, true, { extend=false})
+  c.__videos={}
+  yp._videoSizeUpdated=function (w,h)
+    --Gideros doesn't know about texture size change, compute values that would result in correct bounds
+    local w=(thi.width/w)*thi.width 
+    local h=(thi.height/h)*thi.height
+    for _,v in ipairs(c.__videos) do
+      v:setTextureCoordinateArray(0,0,w,0,w,h,0,h)     
+    end 
+  end
+  th.setVideoSurface(sid,yp,up,vp)
+  c.__thi=thi
+  c.__yp=yp
+  c.__up=up
+  c.__vp=vp
+  return c
 end
 
 function Theora:_getVideo(width,height)
-	local sid=self:getStreamId()
-	local thi=self.__thi
-	local camview=Mesh.new()
-	local scrw=width or thi.width
-	local scrh=height or thi.height
-	camview:setVertexArray(0,0,scrw,0,scrw,scrh,0,scrh)
-	camview:setTextureCoordinateArray(0,0,thi.width,0,thi.width,thi.height,0,thi.height)
-	camview:setIndexArray(1,2,3,1,3,4)
-	camview:setTexture(self.__yp)
-	camview:setTexture(self.__up,1)
-	camview:setTexture(self.__vp,2)
-	camview:setShader(ChromaShader)
-	return camview
+  local sid=self:getStreamId()
+  local thi=self.__thi
+  local camview=Mesh.new()
+  local scrw=width or thi.width
+  local scrh=height or thi.height
+  camview:setVertexArray(0,0,scrw,0,scrw,scrh,0,scrh)
+  camview:setTextureCoordinateArray(0,0,thi.width,0,thi.width,thi.height,0,thi.height)
+  camview:setIndexArray(1,2,3,1,3,4)
+  camview:setTexture(self.__yp)
+  camview:setTexture(self.__up,1)
+  camview:setTexture(self.__vp,2)
+  camview:setShader(ChromaShader)
+  table.insert(self.__videos,camview)
+  return camview
 end
 
 return Theora
