@@ -147,13 +147,13 @@ void EventManager::removeEventsWithGid(g_id gid)
 
     std::deque<EventQueueElement>::iterator first = eventQueue_.begin();
     std::deque<EventQueueElement>::iterator last = eventQueue_.end();
-    std::deque<EventQueueElement>::iterator result = std::remove_if(first, last, equal_gid<EventQueueElement>(gid));
+    std::deque<EventQueueElement>::iterator it;
 
-    for (first = result; first != last; ++first)
-        if (first->free)
-            free(first->event);
+    for (it=first; it != last; ++it)
+        if ((it->free)&&(it->gid==gid))
+            free(it->event);
 
-    eventQueue_.erase(result, last);
+    eventQueue_.erase(std::remove_if(first, last, equal_gid<EventQueueElement>(gid)),last);
 
     pthread_mutex_unlock(&mutex_);
 }
@@ -164,13 +164,13 @@ void EventManager::removeEventsWithType(int type)
 
     std::deque<EventQueueElement>::iterator first = eventQueue_.begin();
     std::deque<EventQueueElement>::iterator last = eventQueue_.end();
-    std::deque<EventQueueElement>::iterator result = std::remove_if(first, last, equal_type<EventQueueElement>(type));
-
-    for (first = result; first != last; ++first)
-        if (first->free)
-            free(first->event);
-
-    eventQueue_.erase(result, last);
+    std::deque<EventQueueElement>::iterator it;
+    
+    for (it=first; it != last; ++it)
+        if ((it->free)&&(it->type==type))
+            free(it->event);
+    
+    eventQueue_.erase(std::remove_if(first, last, equal_type<EventQueueElement>(type)),last);
 
     pthread_mutex_unlock(&mutex_);
 }
