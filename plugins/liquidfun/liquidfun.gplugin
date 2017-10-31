@@ -19,9 +19,9 @@
  </target>
  <target name="iOS">
    <mkdir>[[[project.name]]]/Plugins/liquidfun</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/liquidfun" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a"/>
    <mkdir>AppleTV/Plugins/liquidfun</mkdir>
-   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/liquidfun" include="*.c;*.h;*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
     <template name="Activity" path="">
         <replacelist wildcards="plugins.cpp">
            <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(liquidfun) "/>
