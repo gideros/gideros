@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Trigonometry Conversion Operators" page="trigconversion" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
+Operators to convert from one type of measurement to another.<br /><br />
+
+<b> ^< </b>deg &emsp; Convert 'deg' into radians.<br />
+<b> ^> </b>rad &emsp; Convert 'rad' into degrees.<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <example name="Simple ^< examples"><![CDATA[<br /> 
+r=^<d -- faster than r=math.rad(d)
+radAngle=^<sprite:getRotation()
+pi=^<180 -- pi is 3.142 in radians or 180 in degrees
+]]></example>
+  <example name="Simple ^> examples"><![CDATA[<br /> 
+d=^>r -- faster than d=math.deg(r)
+sprite:setRotation(^>math.sin(0.5))
+]]></example>
+</object>

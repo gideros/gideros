@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Better and easier syntax for arrays" page="easyarray" parent="" type="enhancement" version="Gideros 2017.11"><![CDATA[<br />
+Operators to return the larger or smaller of two values.<br /><br />
+
+a=b[c<b> , </b>d] &emsp; The same as 'a=b[c][d]' but shorter and easier to understand and read.<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <example name="Simple examples"><![CDATA[<br /> 
+a={{1,2,3},{4,5,6},{7,8,9}}
+b=a[2,2] -- b will be 5, easier to read than b=[a][b]
+a[2,2]=7 -- same as a[2][2]=7
+]]></example>
+</object>

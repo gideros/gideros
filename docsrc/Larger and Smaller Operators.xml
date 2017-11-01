@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Larger and Smaller Operators" page="bigsmall" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
+Operators to return the larger or smaller of two values.<br /><br />
+
+a<b> <> </b>b &emsp; Compare 'a' and 'b', return the larger of them.<br />
+a<b> >< </b>b &emsp; Compare 'a' and 'b', return the smaller of them.<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <example name="Simple larger examples"><![CDATA[<br /> 
+x=a<>b -- faster than x=math.max(a,b)
+x=(x-1)<>5 -- decrement x, but don't go below 5
+]]></example>
+  <example name="Simple smaller examples"><![CDATA[<br /> 
+x=a><b -- faster than x=math.min(a,b)
+x=(x+1)><15 -- increment x, but don't go above 15
+]]></example>
+  <example name="Make sure x is within bounds example"><![CDATA[<br /> 
+x=(x<>min)><max
+]]></example>
+  <example name="Always return the negative of a number"><![CDATA[<br /> 
+x=-x><x -- faster than -math.abs
+]]></example>
+  <example name="Always return the positive of a number"><![CDATA[<br /> 
+x=-x<>x -- faster than math.abs
+]]></example>
+</object>

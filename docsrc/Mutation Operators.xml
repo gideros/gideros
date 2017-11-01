@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Mutation Operators" page="mutation" parent="" type="enhancement" version="Gideros 2017.11"><![CDATA[<br />
+Operators to mutate a value.<br /><br />
+
+a<b> += </b>b &emsp; Add 'b' to 'a'.<br />
+a<b> -= </b>b &emsp; Subtract 'b from 'a'.<br />
+a<b> *= </b>b &emsp; Multiply 'a' by 'b', result in 'a'.<br />
+a<b> /= </b>b &emsp; Divide 'a' by 'b', result in 'a'.<br />
+a<b> %= </b>b &emsp; The result of 'a%b' is placed in 'a'.<br />
+a<b> ^= </b>b &emsp; The result of 'a^b' is placed in 'a'.  ^ is faster than a=math.pow(a,b)<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <example name="Simple larger example"><![CDATA[<br /> 
+score+=1  -- faster and less typing than score=score+1
+
+]]></example>
+</object>

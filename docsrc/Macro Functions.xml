@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Macro Functions" page="macrofunctions" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
+Macro Functions receive a list of tokens and output a string which will be pasted into code at compile time.<br /><br />
+
+name @ (| ...body... |)<br /><br />
+
+You should use parenthesis around markers - '|' is the preferred marker.  The same marker should be used to close macro body with closing parenthesis right after it.
+You can use any of these markers.<br />
+\`~ ! # $ % ^ & * / + = |<br /><br />
+
+You can redefine a macro with @@.<br />
+name @@ (| ...another_body... |)<br /><br />
+
+To call macro function use it's name with parenthesis as with usual functions:<br />
+name(...arguments...)<br /><br />
+
+
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+
+  <example name="Enumeration"><![CDATA[<br /> 
+enum @ (|
+	local t = ...
+	local r = {}
+	for i = 1, #t, 2 do
+		table.insert(r, t[i] .. " @ " .. i // 2 + 1)
+	end
+	print(table.concat(r, " "))
+	return table.concat(r, " ")
+|)
+ 
+enum(apple, orange, melon)
+print(apple, orange, melon) --> 1 2 3
+]]></example>
+
+  <example name="Turning off the print command"><![CDATA[<br /> 
+print @ (| return "" |)
+]]></example>
+
+  <example name="Unroll loops"><![CDATA[<br /> 
+dotimes @ (|
+	local times = table.remove(..., 1)
+	return (table.concat(..., " ").." "):rep(times)
+|)
+ 
+local t = {}
+ 
+dotimes(10 print "Boom!")
+]]></example>
+</object>

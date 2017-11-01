@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Bitwise Operators" page="bitwise" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
+Bitwise operators to manipulate numbers.<br /><br />
+
+a<b> | </b>b &emsp; Bitwise 'a OR b'.<br />
+a<b> & </b>b &emsp; Bitwise 'a AND b'.<br />
+a<b> ~ </b>b &emsp; Bitwise 'a XOR b'.<br />
+a<b> << </b>b &emsp; Bitwise shift 'a' by 'b' left.<br />
+a<b> >> </b>b &emsp; Bitwise shift 'a' by 'b' right.<br />
+<b> ~ </b>a &emsp; Bitwise 'NOT a'.<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+
+  <example name="Set joypad switches"><![CDATA[<br /> 
+if k==KeyCode.UP then joypad=joypad|0b001000
+elseif k==KeyCode.DOWN then joypad=joypad|0b000100
+elseif k==KeyCode.LEFT then joypad=joypad|0b000010
+elseif k==KeyCode.RIGHT then joypad=joypad|0b000001
+end
+]]></example>
+  <example name="Clear joypad switches"><![CDATA[<br /> 
+if k==KeyCode.UP then joypad=joypad&0b0111
+elseif k==KeyCode.DOWN then joypad=joypadRGUDLR&0b1011
+elseif k==KeyCode.LEFT then joypad=joypadRGUDLR&0b1101
+elseif k==KeyCode.RIGHT then joypad=joypadRGUDLR&0b1110
+end
+]]></example>
+  <example name="Move in a direction based on joystick switches (using above examples)"><![CDATA[<br /> 
+local deltaX={0,-1,1,0,0,-1,1,0,0,-1,1,0,0,-1,1,0}
+local deltaY={0,0,0,0,1,1,1,1,-1,-1,-1,-1,0,0,0,0}
+x=x+deltaX[joypad+1]
+y=y+deltaY[joypad+1]
+]]></example>
+  <example name="Debounce bits, eg joypad switches"><![CDATA[<br /> 
+joypad=(joypad~joypadOld)&joypad
+joypadOld=joypad
+]]></example>
+</object>
