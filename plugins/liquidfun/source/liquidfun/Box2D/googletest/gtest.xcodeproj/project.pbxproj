@@ -1,0 +1,851 @@
+// !$*UTF8*$!
+{
+       archiveVersion = 1;
+       classes = {
+       };
+       objectVersion = 46;
+       objects = {
+
+/* Begin PBXAggregateTarget section */
+              DC8B7644B8264DCBBAA2803E /* ALL_BUILD */ = {
+                     isa = PBXAggregateTarget;
+                     buildConfigurationList = 8D94BBF10AC74A96AB575590 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */;
+                     buildPhases = (
+                            AA5D553E577B49DFA294C99B /* CMake Rules */,
+                     );
+                     dependencies = (
+                            DCB386A68B1C4736A55CE98F /* PBXTargetDependency */,
+                            A32A5CC135D140C097C5AA7E /* PBXTargetDependency */,
+                     );
+                     name = ALL_BUILD;
+                     productName = ALL_BUILD;
+              };
+              3D84C33765744DC4932FB30E /* install */ = {
+                     isa = PBXAggregateTarget;
+                     buildConfigurationList = 3EC62BB558564D98B3FFF097 /* Build configuration list for PBXAggregateTarget "install" */;
+                     buildPhases = (
+                            1EFC07E94982458E878583CE /* CMake PostBuild Rules */,
+                     );
+                     dependencies = (
+                            BC7DB838947645669F4E2E2E /* PBXTargetDependency */,
+                     );
+                     name = install;
+                     productName = install;
+              };
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+EE609CF3E1C74F858B8E201F /* ../../../googletest/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = 8255C96C72C34FCB9CFF3772 /* ../../../googletest/CMakeLists.txt */; settings = { COMPILER_FLAGS = ""; }; };
+918DCCF1479F4FBC85306F85 /* ../../../googletest/src/gtest-all.cc */ = {isa = PBXBuildFile; fileRef = B9604C20AE8F4F20BB9021E9 /* ../../../googletest/src/gtest-all.cc */; settings = { COMPILER_FLAGS = ""; }; };
+85F67961F8B04478BBEE8832 /* ../../../googletest/CMakeLists.txt */ = {isa = PBXBuildFile; fileRef = 8255C96C72C34FCB9CFF3772 /* ../../../googletest/CMakeLists.txt */; settings = { COMPILER_FLAGS = ""; }; };
+2336A42EACF145CEA10C349F /* ../../../googletest/src/gtest_main.cc */ = {isa = PBXBuildFile; fileRef = 73AAC8D8D05F41BC8B1ADEAF /* ../../../googletest/src/gtest_main.cc */; settings = { COMPILER_FLAGS = ""; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+              B140E3787EF145EA81833B90 /*  */ = {
+                     isa = PBXBuildStyle;
+              };
+              876B8AA93BBC4413B884E331 /* Debug */ = {
+                     isa = PBXBuildStyle;
+                     buildSettings = {
+                            COPY_PHASE_STRIP = NO;
+                     };
+                     name = Debug;
+              };
+              C21C27C3BA9545F5A7DE6146 /* Release */ = {
+                     isa = PBXBuildStyle;
+                     buildSettings = {
+                            COPY_PHASE_STRIP = NO;
+                     };
+                     name = Release;
+              };
+              864EFB52C4934142BDDC9736 /* MinSizeRel */ = {
+                     isa = PBXBuildStyle;
+                     buildSettings = {
+                            COPY_PHASE_STRIP = NO;
+                     };
+                     name = MinSizeRel;
+              };
+              2D50551450B54DD782FF38FE /* RelWithDebInfo */ = {
+                     isa = PBXBuildStyle;
+                     buildSettings = {
+                            COPY_PHASE_STRIP = NO;
+                     };
+                     name = RelWithDebInfo;
+              };
+/* End PBXBuildStyle section */
+
+/* Begin PBXContainerItemProxy section */
+              E39661B690DA44CA809DD62E /* PBXContainerItemProxy */ = {
+                     isa = PBXContainerItemProxy;
+                     containerPortal = 510D469168FE460C87A22C76 /* Project object */;
+                     proxyType = 1;
+                     remoteGlobalIDString = E9546561C783416FA9DF40ED;
+                     remoteInfo = gtest;
+              };
+              18CECC357C114C8E8FF75C06 /* PBXContainerItemProxy */ = {
+                     isa = PBXContainerItemProxy;
+                     containerPortal = 510D469168FE460C87A22C76 /* Project object */;
+                     proxyType = 1;
+                     remoteGlobalIDString = FED1F8BEFA814BCE9CB2BDE8;
+                     remoteInfo = gtest_main;
+              };
+              B23AB472856945B58BAD33F9 /* PBXContainerItemProxy */ = {
+                     isa = PBXContainerItemProxy;
+                     containerPortal = 510D469168FE460C87A22C76 /* Project object */;
+                     proxyType = 1;
+                     remoteGlobalIDString = E9546561C783416FA9DF40ED;
+                     remoteInfo = gtest;
+              };
+              B894A3F3501F43ED9CED7F95 /* PBXContainerItemProxy */ = {
+                     isa = PBXContainerItemProxy;
+                     containerPortal = 510D469168FE460C87A22C76 /* Project object */;
+                     proxyType = 1;
+                     remoteGlobalIDString = DC8B7644B8264DCBBAA2803E;
+                     remoteInfo = ALL_BUILD;
+              };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+8255C96C72C34FCB9CFF3772 /* ../../../googletest/CMakeLists.txt */ = {isa = PBXFileReference; explicitFileType = "sourcecode.text"; fileEncoding = 4; name = "CMakeLists.txt"; path = "CMakeLists.txt"; sourceTree = SOURCE_ROOT; };
+B9604C20AE8F4F20BB9021E9 /* ../../../googletest/src/gtest-all.cc */ = {isa = PBXFileReference; explicitFileType = "sourcecode.cpp.cpp"; fileEncoding = 4; name = "gtest-all.cc"; path = "src/gtest-all.cc"; sourceTree = SOURCE_ROOT; };
+26FC90F0DEE042D7924BAFAE /* gtest */ = {isa = PBXFileReference; explicitFileType = "archive.ar"; path = "libgtest.a"; refType = 0; sourceTree = BUILT_PRODUCTS_DIR; };
+73AAC8D8D05F41BC8B1ADEAF /* ../../../googletest/src/gtest_main.cc */ = {isa = PBXFileReference; explicitFileType = "sourcecode.cpp.cpp"; fileEncoding = 4; name = "gtest_main.cc"; path = "src/gtest_main.cc"; sourceTree = SOURCE_ROOT; };
+3694A99E100247F4800512DC /* gtest_main */ = {isa = PBXFileReference; explicitFileType = "archive.ar"; path = "libgtest_main.a"; refType = 0; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+              7F3C863923CD40F9B63806CD  = {
+                     isa = PBXGroup;
+                     children = (
+                            705D803935F24D59A246BD66 /* Sources */,
+                            43B13E87FF30418880BDEC15 /* Resources */,
+                            A6DFB9B03CC740639BB52C10 /* Products */,
+                     );
+                     sourceTree = "<group>";
+              };
+              705D803935F24D59A246BD66 /* Sources */ = {
+                     isa = PBXGroup;
+                     children = (
+                            8D81D400521F47D0B7B54B7D /* ALL_BUILD */,
+                            06793300845D49B387E38941 /* gtest */,
+                            41D95A23862648D3A2CD0D96 /* gtest_main */,
+                     );
+                     name = Sources;
+                     sourceTree = "<group>";
+              };
+              43B13E87FF30418880BDEC15 /* Resources */ = {
+                     isa = PBXGroup;
+                     children = (
+                     );
+                     name = Resources;
+                     sourceTree = "<group>";
+              };
+              8D81D400521F47D0B7B54B7D /* ALL_BUILD */ = {
+                     isa = PBXGroup;
+                     children = (
+                            C6980AB489E540E697E6633A /* CMake Rules */,
+                            8255C96C72C34FCB9CFF3772 /* ../../../googletest/CMakeLists.txt */,
+                     );
+                     name = ALL_BUILD;
+                     sourceTree = "<group>";
+              };
+              C6980AB489E540E697E6633A /* CMake Rules */ = {
+                     isa = PBXGroup;
+                     children = (
+                     );
+                     name = "CMake Rules";
+                     sourceTree = "<group>";
+              };
+              06793300845D49B387E38941 /* gtest */ = {
+                     isa = PBXGroup;
+                     children = (
+                            87DA010ABDFB457FBB321294 /* Source Files */,
+                            8255C96C72C34FCB9CFF3772 /* ../../../googletest/CMakeLists.txt */,
+                     );
+                     name = gtest;
+                     sourceTree = "<group>";
+              };
+              87DA010ABDFB457FBB321294 /* Source Files */ = {
+                     isa = PBXGroup;
+                     children = (
+                            B9604C20AE8F4F20BB9021E9 /* ../../../googletest/src/gtest-all.cc */,
+                     );
+                     name = "Source Files";
+                     sourceTree = "<group>";
+              };
+              41D95A23862648D3A2CD0D96 /* gtest_main */ = {
+                     isa = PBXGroup;
+                     children = (
+                            C90BFD913A234AEDADDE2637 /* Source Files */,
+                            8255C96C72C34FCB9CFF3772 /* ../../../googletest/CMakeLists.txt */,
+                     );
+                     name = gtest_main;
+                     sourceTree = "<group>";
+              };
+              C90BFD913A234AEDADDE2637 /* Source Files */ = {
+                     isa = PBXGroup;
+                     children = (
+                            73AAC8D8D05F41BC8B1ADEAF /* ../../../googletest/src/gtest_main.cc */,
+                     );
+                     name = "Source Files";
+                     sourceTree = "<group>";
+              };
+              A6DFB9B03CC740639BB52C10 /* Products */ = {
+                     isa = PBXGroup;
+                     children = (
+                            26FC90F0DEE042D7924BAFAE /* gtest */,
+                            3694A99E100247F4800512DC /* gtest_main */,
+                     );
+                     name = Products;
+                     sourceTree = "<group>";
+              };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+              E9546561C783416FA9DF40ED /* gtest */ = {
+                     isa = PBXNativeTarget;
+                     buildConfigurationList = 753B1F1937A44567A7701ECB /* Build configuration list for PBXNativeTarget "gtest" */;
+                     buildPhases = (
+                            7A849AB825FA45859CF9DBB7 /* Sources */,
+                     );
+                     buildRules = (
+                     );
+                     dependencies = (
+                     );
+                     name = gtest;
+                     productName = gtest;
+                     productReference = 26FC90F0DEE042D7924BAFAE /* gtest */;
+                     productType = "com.apple.product-type.library.static";
+              };
+              FED1F8BEFA814BCE9CB2BDE8 /* gtest_main */ = {
+                     isa = PBXNativeTarget;
+                     buildConfigurationList = 20D4A6A12BDF49429B899538 /* Build configuration list for PBXNativeTarget "gtest_main" */;
+                     buildPhases = (
+                            B7318ECB85DA46CDB307A02A /* Sources */,
+                     );
+                     buildRules = (
+                     );
+                     dependencies = (
+                            1FCBABB1BEDD434496B5C80A /* PBXTargetDependency */,
+                     );
+                     name = gtest_main;
+                     productName = gtest_main;
+                     productReference = 3694A99E100247F4800512DC /* gtest_main */;
+                     productType = "com.apple.product-type.library.static";
+              };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+              510D469168FE460C87A22C76 /* Project object */ = {
+                     isa = PBXProject;
+                     attributes = {
+                            BuildIndependentTargetsInParallel = YES;
+                     };
+                     buildConfigurationList = 9F14A6A51F6944C1B022BB9A /* Build configuration list for PBXProject  "gtest" */;
+                     buildSettings = {
+                     };
+                     buildStyles = (
+                            876B8AA93BBC4413B884E331 /* Debug */,
+                            C21C27C3BA9545F5A7DE6146 /* Release */,
+                            864EFB52C4934142BDDC9736 /* MinSizeRel */,
+                            2D50551450B54DD782FF38FE /* RelWithDebInfo */,
+                     );
+                     compatibilityVersion = "Xcode 3.2";
+                     hasScannedForEncodings = 0;
+                     mainGroup = 7F3C863923CD40F9B63806CD;
+                     projectDirPath = ../../../googletest;
+                     projectRoot = "";
+                     targets = (
+                            DC8B7644B8264DCBBAA2803E /* ALL_BUILD */,
+                            E9546561C783416FA9DF40ED /* gtest */,
+                            FED1F8BEFA814BCE9CB2BDE8 /* gtest_main */,
+                            3D84C33765744DC4932FB30E /* install */,
+                     );
+              };
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+              B7295092BD0B4176A63A0824 /*  */ = {
+                     isa = PBXShellScriptBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                     );
+                     inputPaths = (
+                     );
+                     outputPaths = (
+                     );
+                     runOnlyForDeploymentPostprocessing = 0;
+                     shellPath = /bin/sh;
+                     shellScript = "## shell script goes here
+exit 0";
+                     showEnvVarsInLog = 0;
+              };
+              AA5D553E577B49DFA294C99B /* CMake Rules */ = {
+                     isa = PBXShellScriptBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                     );
+                     name = "CMake Rules";
+                     runOnlyForDeploymentPostprocessing = 0;
+                     shellPath = /bin/sh;
+                     shellScript = "#make -C . -f CMakeScripts/ALL_BUILD_cmakeRulesBuildPhase.make$CONFIGURATION all";
+                     showEnvVarsInLog = 0;
+              };
+              D55F2C146AAC46F298F0FA27 /*  */ = {
+                     isa = PBXShellScriptBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                     );
+                     inputPaths = (
+                     );
+                     outputPaths = (
+                     );
+                     runOnlyForDeploymentPostprocessing = 0;
+                     shellPath = /bin/sh;
+                     shellScript = "## shell script goes here
+exit 0";
+                     showEnvVarsInLog = 0;
+              };
+              1EFC07E94982458E878583CE /* CMake PostBuild Rules */ = {
+                     isa = PBXShellScriptBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                     );
+                     name = "CMake PostBuild Rules";
+                     runOnlyForDeploymentPostprocessing = 0;
+                     shellPath = /bin/sh;
+                     shellScript = "#make -C . -f CMakeScripts/install_postBuildPhase.make$CONFIGURATION all";
+                     showEnvVarsInLog = 0;
+              };
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+              7A849AB825FA45859CF9DBB7 /* Sources */ = {
+                     isa = PBXSourcesBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                            918DCCF1479F4FBC85306F85 /* ../../../googletest/src/gtest-all.cc */,
+                     );
+                     runOnlyForDeploymentPostprocessing = 0;
+              };
+              B7318ECB85DA46CDB307A02A /* Sources */ = {
+                     isa = PBXSourcesBuildPhase;
+                     buildActionMask = 2147483647;
+                     files = (
+                            2336A42EACF145CEA10C349F /* ../../../googletest/src/gtest_main.cc */,
+                     );
+                     runOnlyForDeploymentPostprocessing = 0;
+              };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+              DCB386A68B1C4736A55CE98F /* PBXTargetDependency */ = {
+                     isa = PBXTargetDependency;
+                     target = E9546561C783416FA9DF40ED /* gtest */;
+                     targetProxy = E39661B690DA44CA809DD62E /* PBXContainerItemProxy */;
+              };
+              A32A5CC135D140C097C5AA7E /* PBXTargetDependency */ = {
+                     isa = PBXTargetDependency;
+                     target = FED1F8BEFA814BCE9CB2BDE8 /* gtest_main */;
+                     targetProxy = 18CECC357C114C8E8FF75C06 /* PBXContainerItemProxy */;
+              };
+              1FCBABB1BEDD434496B5C80A /* PBXTargetDependency */ = {
+                     isa = PBXTargetDependency;
+                     target = E9546561C783416FA9DF40ED /* gtest */;
+                     targetProxy = B23AB472856945B58BAD33F9 /* PBXContainerItemProxy */;
+              };
+              BC7DB838947645669F4E2E2E /* PBXTargetDependency */ = {
+                     isa = PBXTargetDependency;
+                     target = DC8B7644B8264DCBBAA2803E /* ALL_BUILD */;
+                     targetProxy = B894A3F3501F43ED9CED7F95 /* PBXContainerItemProxy */;
+              };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+              8A97CBA139F04966B4D48CD9 /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+                            ONLY_ACTIVE_ARCH = YES;
+                            SDKROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk";
+                            SYMROOT = ../googletest/build;
+                     };
+                     name = Debug;
+              };
+              1055ECD9459746199C0EDD3B /* Release */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+                            ONLY_ACTIVE_ARCH = YES;
+                            SDKROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk";
+                            SYMROOT = ../googletest/build;
+                     };
+                     name = Release;
+              };
+              69509DFD30BF42D38A96D802 /* MinSizeRel */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+                            ONLY_ACTIVE_ARCH = YES;
+                            SDKROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk";
+                            SYMROOT = ../googletest/build;
+                     };
+                     name = MinSizeRel;
+              };
+              FFF1CFAA718847AF9E708BCF /* RelWithDebInfo */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+                            ONLY_ACTIVE_ARCH = YES;
+                            SDKROOT = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk";
+                            SYMROOT = ../googletest/build;
+                     };
+                     name = RelWithDebInfo;
+              };
+              3A789E9BFDB34795A92144D5 /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = ALL_BUILD;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Debug;
+              };
+              B1AD58162A654C4D9677DB37 /* Release */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = ALL_BUILD;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Release;
+              };
+              E893F48F4BB740669C729430 /* MinSizeRel */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = ALL_BUILD;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = MinSizeRel;
+              };
+              FCEAE53FD2D04AFA8FB8B649 /* RelWithDebInfo */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = ALL_BUILD;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = RelWithDebInfo;
+              };
+              7D9B53552CF94E07BDE38B90 /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros    -DDEBUG=1  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_CPLUSPLUSFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros    -DDEBUG=1  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = gtest;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = "-Wall -Werror -Wno-long-long -Wno-variadic-macros";
+                     };
+                     name = Debug;
+              };
+              D8DA7867D0214598ADF6A766 /* Release */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 3;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros     -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_CPLUSPLUSFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros     -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = gtest;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = "-Wall -Werror -Wno-long-long -Wno-variadic-macros";
+                     };
+                     name = Release;
+              };
+              70353827EA934AB2BCA0266D /* MinSizeRel */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = s;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros     -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_CPLUSPLUSFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros     -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = gtest;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = "-Wall -Werror -Wno-long-long -Wno-variadic-macros";
+                     };
+                     name = MinSizeRel;
+              };
+              7864E7D8C14A4D959704C39F /* RelWithDebInfo */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 2;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros        -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_CPLUSPLUSFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros        -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = gtest;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = "-Wall -Werror -Wno-long-long -Wno-variadic-macros";
+                     };
+                     name = RelWithDebInfo;
+              };
+              315E2D38683B4B26A004ABD8 /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros    -DDEBUG=1  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_CPLUSPLUSFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros    -DDEBUG=1  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = gtest_main;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = "-Wall -Werror -Wno-long-long -Wno-variadic-macros";
+                     };
+                     name = Debug;
+              };
+              4AD47A6E31204AF891445919 /* Release */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 3;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros     -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_CPLUSPLUSFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros     -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = gtest_main;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = "-Wall -Werror -Wno-long-long -Wno-variadic-macros";
+                     };
+                     name = Release;
+              };
+              376A7B4FD46445568C3265F7 /* MinSizeRel */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = s;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros     -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_CPLUSPLUSFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros     -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = gtest_main;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = "-Wall -Werror -Wno-long-long -Wno-variadic-macros";
+                     };
+                     name = MinSizeRel;
+              };
+              E6AC7EA040914480B90EB32A /* RelWithDebInfo */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            EXECUTABLE_PREFIX = lib;
+                            EXECUTABLE_SUFFIX = ".a";
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 2;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", "'LIQUIDFUN_EXTERNAL_LANGUAGE_API=1'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            LIBRARY_STYLE = STATIC;
+                            OTHER_CFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros        -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_CPLUSPLUSFLAGS = " -Wall -Werror -Wno-long-long -Wno-variadic-macros        -DNDEBUG -DDEBUG=0  -Wall -Werror -Wno-long-long -Wno-variadic-macros  -DGTEST_HAS_PTHREAD=1    ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = gtest_main;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = "-Wall -Werror -Wno-long-long -Wno-variadic-macros";
+                     };
+                     name = RelWithDebInfo;
+              };
+              088F39EBD86D4125BB0EDE32 /* Debug */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = install;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Debug;
+              };
+              2350B7043457417D803CCA3B /* Release */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = install;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = Release;
+              };
+              BEDAD6F5D7DF49F9BD627399 /* MinSizeRel */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = install;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = MinSizeRel;
+              };
+              1559A16A980849AB9B49029A /* RelWithDebInfo */ = {
+                     isa = XCBuildConfiguration;
+                     buildSettings = {
+                            COMBINE_HIDPI_IMAGES = YES;
+                            GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+                            GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+                            GCC_OPTIMIZATION_LEVEL = 0;
+                            GCC_PREPROCESSOR_DEFINITIONS = ("'CMAKE_INTDIR=\"$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)\"'", );
+                            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+                            HEADER_SEARCH_PATHS = (../../../googletest/include, ../../../googletest, );
+                            INSTALL_PATH = "";
+                            OTHER_CFLAGS = "  ";
+                            OTHER_LDFLAGS = " ";
+                            OTHER_REZFLAGS = "";
+                            PRODUCT_NAME = install;
+                            SECTORDER_FLAGS = "";
+                            SYMROOT = ../googletest;
+                            USE_HEADERMAP = NO;
+                            WARNING_CFLAGS = ("-Wmost", "-Wno-four-char-constants", "-Wno-unknown-pragmas", );
+                     };
+                     name = RelWithDebInfo;
+              };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+              9F14A6A51F6944C1B022BB9A /* Build configuration list for PBXProject  "gtest" */ = {
+                     isa = XCConfigurationList;
+                     buildConfigurations = (
+                            8A97CBA139F04966B4D48CD9 /* Debug */,
+                            1055ECD9459746199C0EDD3B /* Release */,
+                            69509DFD30BF42D38A96D802 /* MinSizeRel */,
+                            FFF1CFAA718847AF9E708BCF /* RelWithDebInfo */,
+                     );
+                     defaultConfigurationIsVisible = 0;
+                     defaultConfigurationName = Debug;
+              };
+              8D94BBF10AC74A96AB575590 /* Build configuration list for PBXAggregateTarget "ALL_BUILD" */ = {
+                     isa = XCConfigurationList;
+                     buildConfigurations = (
+                            3A789E9BFDB34795A92144D5 /* Debug */,
+                            B1AD58162A654C4D9677DB37 /* Release */,
+                            E893F48F4BB740669C729430 /* MinSizeRel */,
+                            FCEAE53FD2D04AFA8FB8B649 /* RelWithDebInfo */,
+                     );
+                     defaultConfigurationIsVisible = 0;
+                     defaultConfigurationName = Debug;
+              };
+              753B1F1937A44567A7701ECB /* Build configuration list for PBXNativeTarget "gtest" */ = {
+                     isa = XCConfigurationList;
+                     buildConfigurations = (
+                            7D9B53552CF94E07BDE38B90 /* Debug */,
+                            D8DA7867D0214598ADF6A766 /* Release */,
+                            70353827EA934AB2BCA0266D /* MinSizeRel */,
+                            7864E7D8C14A4D959704C39F /* RelWithDebInfo */,
+                     );
+                     defaultConfigurationIsVisible = 0;
+                     defaultConfigurationName = Debug;
+              };
+              20D4A6A12BDF49429B899538 /* Build configuration list for PBXNativeTarget "gtest_main" */ = {
+                     isa = XCConfigurationList;
+                     buildConfigurations = (
+                            315E2D38683B4B26A004ABD8 /* Debug */,
+                            4AD47A6E31204AF891445919 /* Release */,
+                            376A7B4FD46445568C3265F7 /* MinSizeRel */,
+                            E6AC7EA040914480B90EB32A /* RelWithDebInfo */,
+                     );
+                     defaultConfigurationIsVisible = 0;
+                     defaultConfigurationName = Debug;
+              };
+              3EC62BB558564D98B3FFF097 /* Build configuration list for PBXAggregateTarget "install" */ = {
+                     isa = XCConfigurationList;
+                     buildConfigurations = (
+                            088F39EBD86D4125BB0EDE32 /* Debug */,
+                            2350B7043457417D803CCA3B /* Release */,
+                            BEDAD6F5D7DF49F9BD627399 /* MinSizeRel */,
+                            1559A16A980849AB9B49029A /* RelWithDebInfo */,
+                     );
+                     defaultConfigurationIsVisible = 0;
+                     defaultConfigurationName = Debug;
+              };
+/* End XCConfigurationList section */
+       };
+       rootObject = 510D469168FE460C87A22C76;
+}

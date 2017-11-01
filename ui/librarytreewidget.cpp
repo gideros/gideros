@@ -50,6 +50,9 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 	importToLibraryAction_ = new QAction(tr("Add Existing Files..."), this);
 	connect(importToLibraryAction_, SIGNAL(triggered()), this, SLOT(importToLibrary()));
 
+	importFolderAction_ = new QAction(tr("Add folder content..."), this);
+	connect(importFolderAction_, SIGNAL(triggered()), this, SLOT(importFolder()));
+
 //	newFontAction_ = new QAction(tr("New Font..."), this);
 //	connect(newFontAction_, SIGNAL(triggered()), this, SLOT(newFont()));
 
@@ -148,6 +151,7 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 		menu.addAction(addNewFileAction_);
 		menu.addAction(importToLibraryAction_);
 		menu.addAction(newFolderAction_);
+		menu.addAction(importFolderAction_);
 	}
 
 	if (size > 0 && (nodetype&(NODETYPE_FILE|NODETYPE_FOLDER|NODETYPE_PLUGIN)))
@@ -230,6 +234,75 @@ void LibraryTreeWidget::importToLibrary()
 		}
 
 		++it;
+	}
+	checkModification();
+}
+
+void LibraryTreeWidget::importFolder()
+{
+	QTreeWidgetItem* root = invisibleRootItem();
+
+	if (selectedItems().empty() == false)
+		root = selectedItems().front();
+
+	QString path = QFileInfo(projectFileName_).path();
+	QDir dir(path);
+
+	QString basedir = QFileDialog::getExistingDirectory(this, tr("Import folder content"), path);
+
+	struct _Folder {
+		QString basedir;
+		QTreeWidgetItem *root;
+		_Folder(QString d,QTreeWidgetItem *i) : basedir(d), root(i) { };
+	};
+
+	std::vector<_Folder> stack;
+	stack.push_back(_Folder(basedir,root));
+
+	while (stack.size()>0)
+	{
+		_Folder f=stack.back();
+		stack.pop_back();
+		basedir=f.basedir;
+		root=f.root;
+		QFileInfoList entryList=QDir(basedir).entryInfoList( QStringList() << "*", QDir::Dirs|QDir::Files|QDir::NoSymLinks|QDir::NoDotAndDotDot|QDir::Readable );
+
+		QFileInfoList::Iterator it = entryList.begin();
+		while(it != entryList.end())
+		{
+			if ((*it).isFile())
+			{
+				QString fileName = dir.relativeFilePath((*it).absoluteFilePath());
+
+				if (isFileAlreadyImported(fileName))
+				{
+					//QMessageBox::information(this, tr("Gideros"), tr("The file '%1' cannot be added to the library because it is already a member of the library.").arg(fileName));
+				}
+				else
+				{
+					QTreeWidgetItem *item = createFileItem(fileName);
+					if (root == invisibleRootItem())
+						root->addChild(item);
+					else
+						root->insertChild(0, item);
+					root->setExpanded(true);
+				}
+			}
+			else if ((*it).isDir())
+			{
+				QTreeWidgetItem *item = createFolderItem((*it).fileName());
+
+				root->setExpanded(true);
+				if (root == invisibleRootItem())
+					root->addChild(item);
+				else
+					root->insertChild(0, item);
+
+				stack.push_back(_Folder((*it).filePath(),item));
+			}
+
+			++it;
+		}
 	}
 	checkModification();
 }

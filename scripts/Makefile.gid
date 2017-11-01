@@ -7,20 +7,20 @@ ANT=export JAVA_HOME=$(JAVA_HOME); export ANDROID_HOME=$(ANDROID_HOME); $(JAVA_H
 
 #DEFS
 PLUGINS_DEFAULT=bitop lsqlite3 luasocket lfs json iad gamekit storekit
-PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg
+PLUGINS_ALL=bitop lsqlite3 luasocket lpeg lfs json microphone gmedia bump ogg liquidfun
 
 PLUGINS_WIN=$(PLUGINS_ALL) clipper struct controller camera
-PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg
+PLUGINS_WIN32=bitop lsqlite3 luasocket lfs json lpeg microphone clipper struct controller bump ogg liquidfun
 PLUGINS_ANDROID=$(PLUGINS_ALL) ads clipper controller countly Facebook flurry gaming giftiz googlebilling \
 				googlelicensing googleplay iab native notification storedetector \
 				struct camera tts
-PLUGINS_HTML5=bitop luasocket json ads Facebook lsqlite3 lfs bump ogg
+PLUGINS_HTML5=bitop luasocket json ads Facebook lsqlite3 lfs bump ogg liquidfun
 #Precompiled plugins only below
-PLUGINS_IOS=luasocket camera ogg
-PLUGINS_ATV=luasocket ogg
-PLUGINS_MAC=luasocket ogg
+PLUGINS_IOS=luasocket camera ogg liquidfun
+PLUGINS_ATV=luasocket ogg liquidfun
+PLUGINS_MAC=luasocket ogg liquidfun
 #For reference
-PLUGINS_WINRT=luasocket 
+PLUGINS_WINRT=luasocket ogg liquidfun
 
 ROOT=.
 SDK=$(ROOT)/Sdk

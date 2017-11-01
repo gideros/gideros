@@ -118,7 +118,7 @@ return refid,fileid
 end
 
 iOSProject.addWeakFramework=function(filename,flavor,filepath,filetree)
-  return addFramework(filename,flavor,filepath,filetree," settings = {ATTRIBUTES = (Weak, );  };")
+  return iOSProject.addFramework(filename,flavor,filepath,filetree," settings = {ATTRIBUTES = (Weak, );  };")
 end
 
 iOSProject.addGroup=function(foldername,path,publicname,dest)

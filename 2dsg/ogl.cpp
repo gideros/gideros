@@ -9,6 +9,7 @@
 #include "gl2Shaders.h"
 #endif
 #include "screen.h"
+
 void oglInitialize(unsigned int sw, unsigned int sh) {
 	if (ShaderEngine::Engine)
 		return;

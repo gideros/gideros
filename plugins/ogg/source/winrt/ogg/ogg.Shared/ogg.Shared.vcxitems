@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{44725aea-718f-4a96-903d-58d4eb02b614}</ItemsProjectGuid>
+    <ItemsRootNamespace>ogg</ItemsRootNamespace>
+    <ItemsProjectName>ogg.Shared</ItemsProjectName>
+    <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Common\oggbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libogg-1.3.2\src\bitwise.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libogg-1.3.2\src\framing.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\apiwrapper.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\bitpack.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\decapiwrapper.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\decinfo.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\decode.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\dequant.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\fragment.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\huffdec.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\idct.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\internal.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\quant.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\state.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libtheora-1.1.1\lib\th_info.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\bitrate.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\block.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\codebook.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\envelope.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\floor0.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\floor1.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\info.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\lpc.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\lsp.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\mapping0.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\mdct.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\psy.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\registry.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\res0.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\sharedbook.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\smallft.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\synthesis.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\vorbisfile.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\libvorbis-1.3.5\lib\window.c" />
+  </ItemGroup>
+</Project>

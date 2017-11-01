@@ -47,4 +47,21 @@ iOSProject.commit()
  <target name="Win32">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
  </target>
+  <target name="WinRT">
+   <template name="sources" path="[[[sys.pluginDir]]]/bin/WinRT" />
+   <template name="binary" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-WINRT:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Ogg) "/>
+        </replacelist>
+    </template>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
+            <by><![CDATA[
+      <AdditionalDependencies>%(AdditionalDependencies);ogg.$(GidProjectType).lib</AdditionalDependencies>]]></by>
+        </append> 
+        </replacelist>
+    </template>
+ </target>
 </plugin>

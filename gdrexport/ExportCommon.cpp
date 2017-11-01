@@ -415,6 +415,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			if (!fis.open(QIODevice::ReadOnly)) {
 				exportError("Failed to open %s\n",
 						filename.toUtf8().constData());
+				ctx->exportError=true;
 				continue;
 			}
 			QByteArray data = fis.readAll();
@@ -439,6 +440,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			if (!fos.open(QIODevice::WriteOnly)) {
 				exportError("Failed to save %s\n",
 						filename.toUtf8().constData());
+				ctx->exportError=true;
 				continue;
 			}
 			fos.write(data);

@@ -234,6 +234,7 @@ int main(int argc, char *argv[])
     ctx.tvicon=NULL;
     ctx.splash_h_image=NULL;
     ctx.splash_v_image=NULL;
+    ctx.exportError=false;
     QString projectFileName;
     QString output;
     bool encryptCode = false;
@@ -531,10 +532,13 @@ int main(int argc, char *argv[])
      ctx.noEncryptionExt.insert("ttf"); // TTF files do not pass through gvfs!
      ExportLUA_Init(&ctx);
      if (ctx.deviceFamily==e_Xml)
-    	 ExportXml::exportXml(xmlExports[ctx.platform],false,&ctx);
+     {
+    	 if (!ExportXml::exportXml(xmlExports[ctx.platform],false,&ctx))
+			ctx.exportError=true;
+     }
      else
     	 ExportBuiltin::doExport(&ctx);
      ExportLUA_Cleanup(&ctx);
 
-    return 0;
+    return ctx.exportError?1:0;
 }

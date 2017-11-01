@@ -1,0 +1,67 @@
+<plugin
+ name="LiquidFun"
+ description="LiquidFun physics library">
+  <target name="AndroidStudio,APK">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;liquidfun&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;liquidfun&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="iOS">
+   <mkdir>[[[project.name]]]/Plugins/liquidfun</mkdir>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a"/>
+   <mkdir>AppleTV/Plugins/liquidfun</mkdir>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
+    <template name="Activity" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(liquidfun) "/>
+        </replacelist>
+    </template>
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("liquidfun","Plugins/liquidfun","GroupLiquidfun_ios","GroupPlugins_ios")
+iOSProject.addGroup("liquidfun","liquidfun","GroupLiquidfun_atv","GroupPlugins_atv")
+iOSProject.addSources({ "Plugins/libliquidfun.ios.a"  }, "GroupPlugins", "ios")
+iOSProject.addSources({ "libliquidfun.atv.a"  }, "GroupPlugins", "atv")
+iOSProject.commit()
+	]]></lua>
+ </target>
+ <target name="Html5">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="gideros.html">
+            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;liquidfun.js&quot;,"/>
+        </replacelist>
+    </template>
+ </target>
+  <target name="WinRT">
+   <template name="sources" path="[[[sys.pluginDir]]]/bin/WinRT" />
+   <template name="binary" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-WINRT:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(liquidfun) "/>
+        </replacelist>
+    </template>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
+            <by><![CDATA[
+      <AdditionalDependencies>%(AdditionalDependencies);liquidfun.$(GidProjectType).lib</AdditionalDependencies>]]></by>
+        </append> 
+        </replacelist>
+    </template>
+ </target>
+ <target name="Win32">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
+ </target>
+</plugin>

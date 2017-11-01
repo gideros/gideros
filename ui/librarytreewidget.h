@@ -57,6 +57,7 @@ private slots:
 private slots:
 	void addNewFile();
 	void importToLibrary();
+	void importFolder();
 //	void newFont();
 	void newFolder();
 	void remove();
@@ -83,6 +84,7 @@ private:
 private:
 	QAction* addNewFileAction_;
 	QAction* importToLibraryAction_;
+	QAction* importFolderAction_;
 //	QAction* newFontAction_;
 	QAction* newFolderAction_;
 	QAction* removeAction_;

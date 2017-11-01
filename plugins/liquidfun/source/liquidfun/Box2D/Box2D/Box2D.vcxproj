@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{14FA8548-594F-41FC-8999-E9544C7CDF67}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>Box2D</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\Box2D\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Box2D.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">liquidfun</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\Box2D\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Box2D.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">liquidfun</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">..\Box2D\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Box2D.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">liquidfun</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">..\Box2D\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Box2D.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">liquidfun</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;DEBUG=1;LIQUIDFUN_EXTERNAL_LANGUAGE_API=1;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;DEBUG=1;LIQUIDFUN_EXTERNAL_LANGUAGE_API=1;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;DEBUG=0;LIQUIDFUN_EXTERNAL_LANGUAGE_API=1;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;DEBUG=0;LIQUIDFUN_EXTERNAL_LANGUAGE_API=1;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;DEBUG=0;LIQUIDFUN_EXTERNAL_LANGUAGE_API=1;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;DEBUG=0;LIQUIDFUN_EXTERNAL_LANGUAGE_API=1;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;DEBUG=0;LIQUIDFUN_EXTERNAL_LANGUAGE_API=1;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;DEBUG=0;LIQUIDFUN_EXTERNAL_LANGUAGE_API=1;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>..\Box2D/..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Box2D.h" />
+    <ClInclude Include="Dynamics\Joints\b2DistanceJoint.h" />
+    <ClInclude Include="Dynamics\Joints\b2FrictionJoint.h" />
+    <ClInclude Include="Dynamics\Joints\b2GearJoint.h" />
+    <ClInclude Include="Dynamics\Joints\b2Joint.h" />
+    <ClInclude Include="Dynamics\Joints\b2MotorJoint.h" />
+    <ClInclude Include="Dynamics\Joints\b2MouseJoint.h" />
+    <ClInclude Include="Dynamics\Joints\b2PrismaticJoint.h" />
+    <ClInclude Include="Dynamics\Joints\b2PulleyJoint.h" />
+    <ClInclude Include="Dynamics\Joints\b2RevoluteJoint.h" />
+    <ClInclude Include="Dynamics\Joints\b2RopeJoint.h" />
+    <ClInclude Include="Dynamics\Joints\b2WeldJoint.h" />
+    <ClInclude Include="Dynamics\Joints\b2WheelJoint.h" />
+    <ClInclude Include="Dynamics\Contacts\b2CircleContact.h" />
+    <ClInclude Include="Dynamics\Contacts\b2Contact.h" />
+    <ClInclude Include="Dynamics\Contacts\b2ContactSolver.h" />
+    <ClInclude Include="Dynamics\Contacts\b2PolygonAndCircleContact.h" />
+    <ClInclude Include="Dynamics\Contacts\b2EdgeAndCircleContact.h" />
+    <ClInclude Include="Dynamics\Contacts\b2EdgeAndPolygonContact.h" />
+    <ClInclude Include="Dynamics\Contacts\b2ChainAndCircleContact.h" />
+    <ClInclude Include="Dynamics\Contacts\b2ChainAndPolygonContact.h" />
+    <ClInclude Include="Dynamics\Contacts\b2PolygonContact.h" />
+    <ClInclude Include="Dynamics\b2Body.h" />
+    <ClInclude Include="Dynamics\b2ContactManager.h" />
+    <ClInclude Include="Dynamics\b2Fixture.h" />
+    <ClInclude Include="Dynamics\b2Island.h" />
+    <ClInclude Include="Dynamics\b2TimeStep.h" />
+    <ClInclude Include="Dynamics\b2World.h" />
+    <ClInclude Include="Dynamics\b2WorldCallbacks.h" />
+    <ClInclude Include="Common\b2BlockAllocator.h" />
+    <ClInclude Include="Common\b2Draw.h" />
+    <ClInclude Include="Common\b2FreeList.h" />
+    <ClInclude Include="Common\b2GrowableStack.h" />
+    <ClInclude Include="Common\b2IntrusiveList.h" />
+    <ClInclude Include="Common\b2Math.h" />
+    <ClInclude Include="Common\b2Settings.h" />
+    <ClInclude Include="Common\b2SlabAllocator.h" />
+    <ClInclude Include="Common\b2StackAllocator.h" />
+    <ClInclude Include="Common\b2Stat.h" />
+    <ClInclude Include="Common\b2Timer.h" />
+    <ClInclude Include="Common\b2TrackedBlock.h" />
+    <ClInclude Include="Collision\Shapes\b2CircleShape.h" />
+    <ClInclude Include="Collision\Shapes\b2EdgeShape.h" />
+    <ClInclude Include="Collision\Shapes\b2ChainShape.h" />
+    <ClInclude Include="Collision\Shapes\b2PolygonShape.h" />
+    <ClInclude Include="Collision\Shapes\b2Shape.h" />
+    <ClInclude Include="Collision\b2BroadPhase.h" />
+    <ClInclude Include="Collision\b2Collision.h" />
+    <ClInclude Include="Collision\b2Distance.h" />
+    <ClInclude Include="Collision\b2DynamicTree.h" />
+    <ClInclude Include="Collision\b2TimeOfImpact.h" />
+    <ClInclude Include="Particle\b2Particle.h" />
+    <ClInclude Include="Particle\b2ParticleGroup.h" />
+    <ClInclude Include="Particle\b2ParticleSystem.h" />
+    <ClInclude Include="Particle\b2StackQueue.h" />
+    <ClInclude Include="Particle\b2VoronoiDiagram.h" />
+    <ClInclude Include="Rope\b2Rope.h" />
+    <ClCompile Include="Dynamics\Joints\b2DistanceJoint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2FrictionJoint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2GearJoint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2Joint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2MotorJoint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2MouseJoint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2PrismaticJoint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2PulleyJoint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2RevoluteJoint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2RopeJoint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2WeldJoint.cpp"  />
+    <ClCompile Include="Dynamics\Joints\b2WheelJoint.cpp"  />
+    <ClCompile Include="Dynamics\Contacts\b2CircleContact.cpp"  />
+    <ClCompile Include="Dynamics\Contacts\b2Contact.cpp"  />
+    <ClCompile Include="Dynamics\Contacts\b2ContactSolver.cpp"  />
+    <ClCompile Include="Dynamics\Contacts\b2PolygonAndCircleContact.cpp"  />
+    <ClCompile Include="Dynamics\Contacts\b2EdgeAndCircleContact.cpp"  />
+    <ClCompile Include="Dynamics\Contacts\b2EdgeAndPolygonContact.cpp"  />
+    <ClCompile Include="Dynamics\Contacts\b2ChainAndCircleContact.cpp"  />
+    <ClCompile Include="Dynamics\Contacts\b2ChainAndPolygonContact.cpp"  />
+    <ClCompile Include="Dynamics\Contacts\b2PolygonContact.cpp"  />
+    <ClCompile Include="Dynamics\b2Body.cpp"  />
+    <ClCompile Include="Dynamics\b2ContactManager.cpp"  />
+    <ClCompile Include="Dynamics\b2Fixture.cpp"  />
+    <ClCompile Include="Dynamics\b2Island.cpp"  />
+    <ClCompile Include="Dynamics\b2World.cpp"  />
+    <ClCompile Include="Dynamics\b2WorldCallbacks.cpp"  />
+    <ClCompile Include="Common\b2BlockAllocator.cpp"  />
+    <ClCompile Include="Common\b2Draw.cpp"  />
+    <ClCompile Include="Common\b2FreeList.cpp"  />
+    <ClCompile Include="Common\b2Math.cpp"  />
+    <ClCompile Include="Common\b2Settings.cpp"  />
+    <ClCompile Include="Common\b2StackAllocator.cpp"  />
+    <ClCompile Include="Common\b2Stat.cpp"  />
+    <ClCompile Include="Common\b2Timer.cpp"  />
+    <ClCompile Include="Common\b2TrackedBlock.cpp"  />
+    <ClCompile Include="Collision\Shapes\b2CircleShape.cpp"  />
+    <ClCompile Include="Collision\Shapes\b2EdgeShape.cpp"  />
+    <ClCompile Include="Collision\Shapes\b2ChainShape.cpp"  />
+    <ClCompile Include="Collision\Shapes\b2PolygonShape.cpp"  />
+    <ClCompile Include="Collision\b2BroadPhase.cpp"  />
+    <ClCompile Include="Collision\b2CollideCircle.cpp"  />
+    <ClCompile Include="Collision\b2CollideEdge.cpp"  />
+    <ClCompile Include="Collision\b2CollidePolygon.cpp"  />
+    <ClCompile Include="Collision\b2Collision.cpp"  />
+    <ClCompile Include="Collision\b2Distance.cpp"  />
+    <ClCompile Include="Collision\b2DynamicTree.cpp"  />
+    <ClCompile Include="Collision\b2TimeOfImpact.cpp"  />
+    <ClCompile Include="Particle\b2Particle.cpp"  />
+    <ClCompile Include="Particle\b2ParticleGroup.cpp"  />
+    <ClCompile Include="Particle\b2ParticleSystem.cpp"  />
+    <ClCompile Include="Particle\b2VoronoiDiagram.cpp"  />
+    <ClCompile Include="Rope\b2Rope.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

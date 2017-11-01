@@ -18,6 +18,7 @@
 #include "ticker.h"
 #include "luaapplication.h"
 
+static lua_State *L=NULL;
 struct GGOggHandle
 {
 	//OGG GENERIC
@@ -43,6 +44,7 @@ struct GGOggHandle
 	 TextureBase *yplane;
 	 TextureBase *uplane;
 	 TextureBase *vplane;
+	 int planeWidth,planeHeight;
 
 	int              theora_p;
 	int              vorbis_p;
@@ -50,6 +52,9 @@ struct GGOggHandle
 	int videobuf_ready;
 	double       videobuf_time;
 	double playstart;
+
+	//LUA
+	int tref;
 };
 
 static std::map<g_id,GGOggHandle *> ctxmap;
@@ -246,19 +251,21 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate, int
 	  }
 
 	  handle->file=file;
-	  if (!handle->vorbis_p)
+	  handle->tref=LUA_NOREF;
+/*	  if (!handle->vorbis_p)
 	  {
 		  //We need an audio track
         gaudio_OggClose(gid);
       if (error)
           *error = GAUDIO_UNRECOGNIZED_FORMAT;
       return 0;
-	  }
+	  }*/
 
     if (numChannels)
-        *numChannels = handle->vi.channels;
+        *numChannels = handle->vorbis_p?handle->vi.channels:2;
     if (sampleRate)
-        *sampleRate = handle->vi.rate;
+        *sampleRate = handle->vorbis_p?handle->vi.rate:22050;
+
     if (bitsPerSample)
         *bitsPerSample = 16;
     if (numSamples)
@@ -310,7 +317,6 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 	  ogg_int16_t *audiobuf=(ogg_int16_t *) data;
 	  ogg_int64_t  audiobuf_granulepos=0; /* time position of last sample */
 	  int i,j;
-	  int frames;
 
 	  while(true){
 
@@ -373,7 +379,6 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 	        }
 	        if(th_decode_packetin(handle->td,&handle->op,&videobuf_granulepos)==0){
 	          handle->videobuf_time=th_granule_time(handle->td,videobuf_granulepos);
-	          frames++;
 
 	          /* is it already too old to be useful?  This is only actually
 	             useful cosmetically after a SIGSTOP.  Note that we have to
@@ -454,7 +459,8 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 #endif
 	    }
 	    if(g_feof(handle->file)) break;
-	    if (audiobuf_ready&&(handle->videobuf_ready||(!handle->theora_p))) break;
+	    if ((audiobuf_ready||(!handle->vorbis_p))&&
+	    		(handle->videobuf_ready||(!handle->theora_p))) break;
 	  }
 
 	  handle->stateflag=1;
@@ -468,6 +474,11 @@ void gaudio_OggClose(g_id gid)
 	GGOggHandle *handle = (GGOggHandle*)gid;
 
 	ctxmap.erase(gid);
+	if (handle->tref!=LUA_NOREF)
+	{
+		lua_unref(::L,handle->tref);
+		handle->tref=LUA_NOREF;
+	}
 
 	  if(handle->vorbis_p){
 	    ogg_stream_clear(&handle->vo);
@@ -503,14 +514,28 @@ void Renderer::renderContext(GGOggHandle *handle)
 	  if (sm)
 		  sm->screenDestroyed();
 	  if (handle->yplane)
+	  {
 		  gtexture_getInternalTexture(handle->yplane->data->gid)->updateData(ShaderTexture::FMT_Y, ShaderTexture::PK_UBYTE,
 				  yuv[0].stride,yuv[0].height,yuv[0].data,ShaderTexture::WRAP_CLAMP,ShaderTexture::FILT_LINEAR);
+	  }
 	  if (handle->uplane)
 		  gtexture_getInternalTexture(handle->uplane->data->gid)->updateData(ShaderTexture::FMT_Y, ShaderTexture::PK_UBYTE,
 				  yuv[1].stride,yuv[1].height,yuv[1].data,ShaderTexture::WRAP_CLAMP,ShaderTexture::FILT_LINEAR);
 	  if (handle->vplane)
 		  gtexture_getInternalTexture(handle->vplane->data->gid)->updateData(ShaderTexture::FMT_Y, ShaderTexture::PK_UBYTE,
 				  yuv[2].stride,yuv[2].height,yuv[2].data,ShaderTexture::WRAP_CLAMP,ShaderTexture::FILT_LINEAR);
+	  bool changed=(handle->planeWidth!=yuv[0].stride)||(handle->planeHeight!=yuv[0].height);
+	  handle->planeWidth=yuv[0].stride;
+	  handle->planeHeight=yuv[0].height;
+	  if (changed&&(handle->tref!=LUA_NOREF))
+	  {
+		  lua_State *L=::L;
+		  lua_getref(L,handle->tref);
+		  lua_pushinteger(L,handle->planeWidth);
+		  lua_pushinteger(L,handle->planeHeight);
+		  if (lua_pcall(L,2,0,0)!=0)
+			  lua_pop(L,1); //Pop error message, as we have no way to display it in this context
+	  }
       handle->videobuf_ready=0;
     }
 
@@ -533,8 +558,10 @@ static int getVideoInfo(lua_State* L) {
 	else
 	{
 		lua_newtable(L);
-		lua_pushnumber(L,hnd->ti.frame_width); lua_setfield(L,-2,"width");
-		lua_pushnumber(L,hnd->ti.frame_height); lua_setfield(L,-2,"height");
+		lua_pushinteger(L,hnd->ti.frame_width); lua_setfield(L,-2,"width");
+		lua_pushinteger(L,hnd->ti.frame_height); lua_setfield(L,-2,"height");
+		lua_pushinteger(L,hnd->planeWidth); lua_setfield(L,-2,"surfaceWidth");
+		lua_pushinteger(L,hnd->planeHeight); lua_setfield(L,-2,"surfaceHeight");
 		lua_pushnumber(L,((double)(hnd->ti.fps_numerator))/hnd->ti.fps_denominator); lua_setfield(L,-2,"fps");
 		lua_pushinteger(L,hnd->ti.pixel_fmt); lua_setfield(L,-2,"format");
 	}
@@ -557,6 +584,15 @@ static int setVideoSurface(lua_State* L) {
 		if (hnd->uplane) hnd->uplane->unref();	if (textureBase) textureBase->ref(); hnd->uplane=textureBase;
 		textureBase = static_cast<TextureBase*>(g_getInstance(L,"TextureBase",4));
 		if (hnd->vplane) hnd->vplane->unref();	if (textureBase) textureBase->ref(); hnd->vplane=textureBase;
+		lua_getfield(L,2,"_videoSizeUpdated");
+		if (lua_isfunction(L,-1))
+		{
+			if (hnd->tref==LUA_NOREF)
+				lua_unref(L,hnd->tref);
+			hnd->tref=lua_ref(L,1);
+		}
+		else
+			lua_pop(L,1);
 	}
 	return 0;
 }
@@ -579,6 +615,8 @@ GGAudioLoader audioOgg(gaudio_OggOpen, gaudio_OggClose, gaudio_OggRead, gaudio_O
 
 static void g_initializePlugin(lua_State *L)
 {
+	::L=L;
+
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "preload");
 
@@ -610,7 +648,7 @@ static void g_deinitializePlugin(lua_State *L)
 	gaudio_unregisterType("ogv");
 }
 
-#if TARGET_OS_MAC
+#if defined(TARGET_OS_MAC) || defined(_MSC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("Ogg", "1.0",Ogg)
 #else
 REGISTER_PLUGIN("Ogg", "1.0")

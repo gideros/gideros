@@ -1007,6 +1007,7 @@ int ov_open(FILE *f,OggVorbis_File *vf,const char *initial,long ibytes){
   return ov_open_callbacks((void *)f, vf, initial, ibytes, callbacks);
 }
 
+#if 0
 int ov_fopen(const char *path,OggVorbis_File *vf){
   int ret;
   FILE *f = fopen(path,"rb");
@@ -1016,7 +1017,7 @@ int ov_fopen(const char *path,OggVorbis_File *vf){
   if(ret) fclose(f);
   return ret;
 }
-
+#endif
 
 /* cheap hack for game usage where downsampling is desirable; there's
    no need for SRC as we can just do it cheaply in libvorbis. */
