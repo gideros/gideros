@@ -543,8 +543,10 @@ ApplicationManager::ApplicationManager() {
 		else
 		{
 			printf("%s\n",error);
-			throw luaException(error);
-		// g_exit();
+			MessageBox(NULL,error,"Fatal error",MB_OK);
+
+			//throw luaException(error);
+			g_exit();
 		}
 	}
 
