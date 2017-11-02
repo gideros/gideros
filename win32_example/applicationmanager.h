@@ -35,6 +35,8 @@ struct ProjectProperties {
 		mouseToTouch = 1;
 		touchToMouse = 1;
 		mouseTouchOrder = 0;
+		windowWidth=0;
+		windowHeight=0;
 	}
 
 	int scaleMode;
@@ -48,6 +50,8 @@ struct ProjectProperties {
 	int mouseToTouch;
 	int touchToMouse;
 	int mouseTouchOrder;
+	int windowWidth;
+	int windowHeight;
 };
 
 class ApplicationManager;

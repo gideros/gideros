@@ -51,6 +51,7 @@ TTTextField::~TTTextField()
 
 void TTTextField::createGraphics()
 {
+	scaleChanged(); //Mark current scale as graphics scale
 	if (data_)
 	{
 		application_->getTextureManager()->destroyTexture(data_);
@@ -148,6 +149,7 @@ void TTTextField::extraBounds(float* minx, float* miny, float* maxx, float* maxy
 
 void TTTextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
+	if (scaleChanged()) createGraphics();
 	graphicsBase_.draw(shader_);
 }
 

@@ -39,6 +39,8 @@ private:
     int kerning(wchar32_t left, wchar32_t right) const;
     bool addGlyph(const wchar32_t chr);
     void ensureChars(const wchar32_t *text, int size);
+    bool staticCharsetInit();
+    void checkLogicalScale();
 
 private:
     struct TextureGlyph
@@ -66,6 +68,7 @@ private:
     {
         FT_Face face;
         FT_StreamRec stream;
+        float sizeMult;
     };
 
     std::vector<TextureData *> textureData_;
@@ -73,6 +76,7 @@ private:
     Dib *currentDib_;
     bool filtering_;
     std::vector<FontFace> fontFaces_;
+    std::string charset_;
 
     FontInfo fontInfo_;
 
@@ -80,6 +84,8 @@ private:
     float sizescaley_;
     float uvscalex_;
     float uvscaley_;
+    float defaultSize_;
+    float currentLogicalScaleX_,currentLogicalScaleY_;
 
 };
 

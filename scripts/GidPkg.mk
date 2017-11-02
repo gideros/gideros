@@ -9,6 +9,13 @@ gendoc:
 	exit;\
 	" |	ssh root@giderosmobile.com
 
+updatedoc:
+	-echo "\
+	cd /opt/gid_docs;\
+	./update_docs.sh;\
+	exit;\
+	" |	ssh root@giderosmobile.com
+
 fetchdoc: gendoc
 	rm -rf docs.giderosmobile.com _docs.zip
 	#-wget -nv --recursive --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains docs.giderosmobile.com --no-parent http://docs.giderosmobile.com/
