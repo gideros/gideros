@@ -2,7 +2,7 @@
 <object name="Binary Numbers" page="binary" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
 Binary number representation.<br /><br />
 
-<b>0b</b>binarypattern &emsp; Enter a number in binary format.<br />
+<b>0b</b>BinaryPattern &emsp; Enter a number in binary format.<br />
 ]]>
   <platform>android</platform>
   <platform>ios</platform>
