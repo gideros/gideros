@@ -5,8 +5,8 @@ Bitwise operators to manipulate numbers.<br /><br />
 a<b> | </b>b &emsp; Bitwise 'a OR b'.<br />
 a<b> & </b>b &emsp; Bitwise 'a AND b'.<br />
 a<b> ~ </b>b &emsp; Bitwise 'a XOR b'.<br />
-a<b> << </b>b &emsp; Bitwise shift 'a' by 'b' left.<br />
-a<b> >> </b>b &emsp; Bitwise shift 'a' by 'b' right.<br />
+a<b> &lt;&lt; </b>b &emsp; Bitwise shift 'a' by 'b' left.<br />
+a<b> &gt;&gt; </b>b &emsp; Bitwise shift 'a' by 'b' right.<br />
 <b> ~ </b>a &emsp; Bitwise 'NOT a'.<br />
 ]]>
   <platform>android</platform>
