@@ -155,6 +155,7 @@ const char* TextField::sample() const
 
 void TextField::createGraphics()
 {
+	scaleChanged(); //Mark current scale as graphics scale
     if (font_ == NULL)
         graphicsBase_.clear();
     else
@@ -174,6 +175,7 @@ void TextField::createGraphics()
 
 void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
+	if (scaleChanged()) createGraphics();
 	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
 		(*it).draw(shader_);
 }

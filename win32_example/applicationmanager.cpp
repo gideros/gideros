@@ -746,8 +746,17 @@ ApplicationManager::ApplicationManager() {
 		buffer >> properties_.touchToMouse;
 		buffer >> properties_.mouseTouchOrder;
 
-		application_->setResolution(width_, height_);
+		buffer >> properties_.windowWidth;
+		buffer >> properties_.windowHeight;
+
+		width_=properties_.windowWidth?properties_.windowWidth:properties_.logicalWidth;
+		height_=properties_.windowHeight?properties_.windowHeight:properties_.logicalHeight;
+
+		if ((properties_.orientation==eLandscapeRight)||(properties_.orientation==eLandscapeLeft)) //Landscape
+			std::swap(width_,height_);
 		setWindowSize(width_, height_);
+
+		application_->setResolution(width_, height_);
 		application_->setOrientation((Orientation) properties_.orientation);
 		updateHardwareOrientation();
 		application_->getApplication()->setDeviceOrientation(
@@ -961,6 +970,8 @@ ApplicationManager::ApplicationManager() {
 			buffer >> properties.mouseToTouch;
 			buffer >> properties.touchToMouse;
 			buffer >> properties.mouseTouchOrder;
+			buffer >> properties_.windowWidth;
+			buffer >> properties_.windowHeight;
 
 			setProjectProperties(properties);
 
@@ -996,6 +1007,12 @@ ApplicationManager::ApplicationManager() {
 
 	void ApplicationManager::play(const std::vector<std::string>& luafiles) {
 		running_ = true;
+
+		width_=properties_.windowWidth?properties_.windowWidth:properties_.logicalWidth;
+		height_=properties_.windowHeight?properties_.windowHeight:properties_.logicalHeight;
+		if ((properties_.orientation==eLandscapeRight)||(properties_.orientation==eLandscapeLeft)) //Landscape
+			std::swap(width_,height_);
+		setWindowSize(width_, height_);
 
 		application_->deinitialize();
 		application_->initialize();

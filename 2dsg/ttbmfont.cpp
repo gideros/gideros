@@ -94,11 +94,120 @@ bool TTBMFont::addGlyph(const wchar32_t chr) {
 	return true;
 }
 
+bool TTBMFont::staticCharsetInit() {
+	std::vector<wchar32_t> wchars;
+	size_t len = utf8_to_wchar(charset_.c_str(), charset_.size(), NULL, 0, 0);
+	if (len != 0) {
+		wchars.resize(len);
+		utf8_to_wchar(charset_.c_str(), charset_.size(), &wchars[0], len, 0);
+	}
+
+	if (!len)
+		return false;
+
+	FT_Error error;
+	std::map<wchar32_t, TextureGlyph> &textureGlyphs = fontInfo_.textureGlyphs;
+
+	for (size_t i = 0; i < len; ++i) {
+		wchar32_t chr = wchars[i];
+		addGlyph(chr);
+	}
+
+	std::map<std::pair<wchar32_t, wchar32_t>, int> &kernings =
+			fontInfo_.kernings;
+
+	kernings.clear();
+
+	std::map<wchar32_t, TextureGlyph>::iterator iter1, iter2, e =
+			textureGlyphs.end();
+
+	for (iter1 = textureGlyphs.begin(); iter1 != e; ++iter1)
+		for (iter2 = textureGlyphs.begin(); iter2 != e; ++iter2) {
+			const TextureGlyph &g1 = iter1->second;
+			const TextureGlyph &g2 = iter2->second;
+			if ((g1.face == g2.face) && FT_HAS_KERNING(g1.face)) {
+
+				FT_Vector delta;
+				FT_Get_Kerning(g1.face, g1.glyphIndex, g2.glyphIndex,
+						FT_KERNING_DEFAULT, &delta);
+
+				if (delta.x != 0)
+					kernings[std::make_pair(g1.chr, g2.chr)] = delta.x;
+			}
+		}
+
+	TexturePacker *tp = createTexturePacker();
+
+	tp->setTextureCount(textureGlyphs.size());
+	std::map<wchar32_t, TextureGlyph>::iterator iter;
+	for (iter = textureGlyphs.begin(); iter != e; ++iter)
+		tp->addTexture(iter->second.width, iter->second.height);
+
+	int width = 0, height = 0;
+	tp->packTextures(&width, &height, 2, false);
+
+	width = std::max(width, 1);
+	height = std::max(height, 1);
+
+	Dib dib(application_, width, height, true);
+	unsigned char rgba[] = { 255, 255, 255, 0 };
+	dib.fill(rgba);
+
+	int i = 0;
+	for (iter = textureGlyphs.begin(); iter != e; ++iter, ++i) {
+		int xo, yo;
+		int width, height;
+		tp->getTextureLocation(i, &xo, &yo, &width, &height);
+		const TextureGlyph &g1 = iter->second;
+
+		FT_UInt glyph_index = FT_Get_Char_Index(g1.face, g1.chr);
+		if (glyph_index == 0)
+			continue;
+
+		error = FT_Load_Glyph(g1.face, glyph_index, FT_LOAD_DEFAULT);
+		if (error)
+			continue;
+
+		error = FT_Render_Glyph(g1.face->glyph, FT_RENDER_MODE_NORMAL);
+		if (error)
+			continue;
+
+		FT_Bitmap &bitmap = g1.face->glyph->bitmap;
+
+		iter->second.x = xo;
+		iter->second.y = yo;
+		iter->second.texture = 0;
+
+		width = std::min(width, (int) bitmap.width);
+		height = std::min(height, (int) bitmap.rows);
+
+		for (int y = 0; y < height; ++y)
+			for (int x = 0; x < width; ++x) {
+				int index = x + y * bitmap.pitch;
+				int c = bitmap.buffer[index];
+
+				dib.setAlpha(xo + x, yo + y, c);
+			}
+	}
+
+	releaseTexturePacker(tp);
+
+	TextureParameters parameters;
+	parameters.filter = (filtering_ != 0) ? eLinear : eNearest;
+	parameters.wrap = eClamp;
+	parameters.format = eA8;
+	textureData_.push_back(
+			application_->getTextureManager()->createTextureFromDib(dib,
+					parameters));
+	return true;
+}
+
 void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 		const char *chars, float filtering) {
 
 	fontInfo_.ascender = 0;
 	fontInfo_.descender = 0;
+	defaultSize_ = size;
 	FT_Error error;
 
 	float scalex = application_->getLogicalScaleX();
@@ -142,6 +251,7 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 				(int) floor(size * 64 * (*it).sizeMult + 0.5f),
 				(int) floor(RESOLUTION * scalex + 0.5f),
 				(int) floor(RESOLUTION * scaley + 0.5f));
+		ff.sizeMult = (*it).sizeMult;
 
 		if (error) {
 			FT_Done_Face(ff.face);
@@ -157,12 +267,7 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 
 	fontInfo_.height = fontInfo_.ascender + fontInfo_.descender;
 
-	std::vector<wchar32_t> wchars;
-	size_t len = utf8_to_wchar(chars, strlen(chars), NULL, 0, 0);
-	if (len != 0) {
-		wchars.resize(len);
-		utf8_to_wchar(chars, strlen(chars), &wchars[0], len, 0);
-	}
+	charset_ = chars;
 
 	std::map<wchar32_t, TextureGlyph> &textureGlyphs = fontInfo_.textureGlyphs;
 
@@ -171,104 +276,14 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 	currentDib_ = NULL;
 	currentPacker_ = NULL;
 
-	if (len) {
-		for (size_t i = 0; i < len; ++i) {
-			wchar32_t chr = wchars[i];
-			addGlyph(chr);
-		}
+	std::vector<wchar32_t> wchars;
+	size_t len = utf8_to_wchar(charset_.c_str(), charset_.size(), NULL, 0, 0);
+	if (len != 0) {
+		wchars.resize(len);
+		utf8_to_wchar(charset_.c_str(), charset_.size(), &wchars[0], len, 0);
+	}
 
-		std::map<std::pair<wchar32_t, wchar32_t>, int> &kernings =
-				fontInfo_.kernings;
-
-		kernings.clear();
-
-		std::map<wchar32_t, TextureGlyph>::iterator iter1, iter2, e =
-				textureGlyphs.end();
-
-		for (iter1 = textureGlyphs.begin(); iter1 != e; ++iter1)
-			for (iter2 = textureGlyphs.begin(); iter2 != e; ++iter2) {
-				const TextureGlyph &g1 = iter1->second;
-				const TextureGlyph &g2 = iter2->second;
-				if ((g1.face == g2.face) && FT_HAS_KERNING(g1.face)) {
-
-					FT_Vector delta;
-					FT_Get_Kerning(g1.face, g1.glyphIndex, g2.glyphIndex,
-							FT_KERNING_DEFAULT, &delta);
-
-					if (delta.x != 0)
-						kernings[std::make_pair(g1.chr, g2.chr)] = delta.x;
-				}
-			}
-
-		TexturePacker *tp = createTexturePacker();
-
-		tp->setTextureCount(textureGlyphs.size());
-		std::map<wchar32_t, TextureGlyph>::iterator iter;
-		for (iter = textureGlyphs.begin(); iter != e; ++iter)
-			tp->addTexture(iter->second.width, iter->second.height);
-
-		int width = 0, height = 0;
-		tp->packTextures(&width, &height, 2, false);
-
-		width = std::max(width, 1);
-		height = std::max(height, 1);
-
-		Dib dib(application_, width, height, true);
-		unsigned char rgba[] = { 255, 255, 255, 0 };
-		dib.fill(rgba);
-
-		int i = 0;
-		for (iter = textureGlyphs.begin(); iter != e; ++iter, ++i) {
-			int xo, yo;
-			int width, height;
-			tp->getTextureLocation(i, &xo, &yo, &width, &height);
-			const TextureGlyph &g1 = iter->second;
-
-			FT_UInt glyph_index = FT_Get_Char_Index(g1.face, g1.chr);
-			if (glyph_index == 0)
-				continue;
-
-			error = FT_Load_Glyph(g1.face, glyph_index, FT_LOAD_DEFAULT);
-			if (error)
-				continue;
-
-			error = FT_Render_Glyph(g1.face->glyph, FT_RENDER_MODE_NORMAL);
-			if (error)
-				continue;
-
-			FT_Bitmap &bitmap = g1.face->glyph->bitmap;
-
-			iter->second.x = xo;
-			iter->second.y = yo;
-			iter->second.texture = 0;
-
-			width = std::min(width, (int) bitmap.width);
-			height = std::min(height, (int) bitmap.rows);
-
-			for (int y = 0; y < height; ++y)
-				for (int x = 0; x < width; ++x) {
-					int index = x + y * bitmap.pitch;
-					int c = bitmap.buffer[index];
-
-					dib.setAlpha(xo + x, yo + y, c);
-				}
-		}
-
-		releaseTexturePacker(tp);
-
-		for (std::vector<FontFace>::iterator it = fontFaces_.begin();
-				it != fontFaces_.end(); it++)
-			FT_Done_Face((*it).face);
-		fontFaces_.clear();
-
-		TextureParameters parameters;
-		parameters.filter = (filtering != 0) ? eLinear : eNearest;
-		parameters.wrap = eClamp;
-		parameters.format = eA8;
-		textureData_.push_back(
-				application_->getTextureManager()->createTextureFromDib(dib,
-						parameters));
-	} else {
+	if (!staticCharsetInit()) {
 		currentDib_ = new Dib(application_, 1024, 1024, true); //use 102x1024 textures for packing
 		currentPacker_ = createProgressiveTexturePacker(currentDib_->width(),
 				currentDib_->height());
@@ -286,9 +301,12 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 	sizescaley_ = 1 / scaley;
 	uvscalex_ = 1;
 	uvscaley_ = 1;
+	currentLogicalScaleX_ = scalex;
+	currentLogicalScaleY_ = scaley;
 }
 
 void TTBMFont::ensureChars(const wchar32_t *text, int size) {
+	checkLogicalScale();
 	if (!currentPacker_)
 		return;
 	std::map<std::pair<wchar32_t, wchar32_t>, int> &kernings =
@@ -296,7 +314,7 @@ void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 	std::map<wchar32_t, TextureGlyph> &textureGlyphs = fontInfo_.textureGlyphs;
 	bool updateTexture = false;
 	wchar32_t lchar = 0;
-    for (const wchar32_t *t = text; size; size--,t++) {
+	for (const wchar32_t *t = text; size; size--, t++) {
 		wchar32_t chr = *t;
 		bool newGlyph = false;
 		if (textureGlyphs.find(chr) == textureGlyphs.end()) {
@@ -396,6 +414,70 @@ TTBMFont::~TTBMFont() {
 		delete currentDib_;
 	if (currentPacker_)
 		releaseTexturePacker(currentPacker_);
+	fontInfo_.kernings.clear();
+	fontInfo_.textureGlyphs.clear();
+}
+
+void TTBMFont::checkLogicalScale() {
+	float scalex = application_->getLogicalScaleX();
+	float scaley = application_->getLogicalScaleY();
+	if (filtering_ > 1) {
+		scalex /= filtering_;
+		scaley /= filtering_;
+	}
+
+	float RESOLUTION = 72;
+	if ((scalex != currentLogicalScaleX_)
+			|| (scaley != currentLogicalScaleY_)) {
+		sizescalex_ = 1 / scalex;
+		sizescaley_ = 1 / scaley;
+
+		currentLogicalScaleX_ = scalex;
+		currentLogicalScaleY_ = scaley;
+		for (std::vector<TextureData *>::iterator it = textureData_.begin();
+				it != textureData_.end(); it++)
+			if (*it)
+				application_->getTextureManager()->destroyTexture(*it);
+		textureData_.clear();
+
+		fontInfo_.ascender = 0;
+		fontInfo_.descender = 0;
+
+		for (std::vector<FontFace>::iterator it = fontFaces_.begin();
+				it != fontFaces_.end(); it++) {
+			FT_Face face = (*it).face;
+			if (!FT_Set_Char_Size(face, 0L,
+					(int) floor(defaultSize_ * (*it).sizeMult * 64 + 0.5f),
+					(int) floor(RESOLUTION * scalex + 0.5f),
+					(int) floor(RESOLUTION * scaley + 0.5f))) {
+			}
+			fontInfo_.ascender = std::max(fontInfo_.ascender,
+					(int) ((*it).face->size->metrics.ascender >> 6));
+			fontInfo_.descender = std::max(fontInfo_.descender,
+					(int) (((*it).face->size->metrics.height
+							- (*it).face->size->metrics.ascender) >> 6));
+		}
+		fontInfo_.kernings.clear();
+		fontInfo_.textureGlyphs.clear();
+
+		if (!staticCharsetInit()) {
+			if (currentDib_)
+				delete currentDib_;
+			if (currentPacker_)
+				releaseTexturePacker(currentPacker_);
+			currentDib_ = new Dib(application_, 1024, 1024, true); //use 102x1024 textures for packing
+			currentPacker_ = createProgressiveTexturePacker(
+					currentDib_->width(), currentDib_->height());
+			TextureParameters parameters;
+			parameters.filter = (filtering_ != 0) ? eLinear : eNearest;
+			parameters.wrap = eClamp;
+			parameters.format = eA8;
+			textureData_.push_back(
+					application_->getTextureManager()->createTextureFromDib(
+							*currentDib_, parameters));
+		}
+		fontInfo_.height = fontInfo_.ascender + fontInfo_.descender;
+	}
 }
 
 void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
@@ -407,23 +489,23 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		return;
 	}
 
-    TextLayout l = layoutText(text, layout);
+	TextLayout l = layoutText(text, layout);
 
-    std::map<int, int> layerMap;
-    std::map<int, int> gfxMap;
-    std::map<int, int> gfxMap2;
-    int gfx = 0;
+	std::map<int, int> layerMap;
+	std::map<int, int> gfxMap;
+	std::map<int, int> gfxMap2;
+	int gfx = 0;
 
-    for (size_t pn = 0; pn < l.parts.size(); pn++) {
+	for (size_t pn = 0; pn < l.parts.size(); pn++) {
 		ChunkLayout c = l.parts[pn];
 
 		std::basic_string<wchar32_t> wtext;
 		size_t wsize = utf8_to_wchar(c.text.c_str(), c.text.size(), NULL, 0, 0);
 		wtext.resize(wsize);
 		utf8_to_wchar(c.text.c_str(), c.text.size(), &wtext[0], wsize, 0);
-        ensureChars (&wtext[0],wsize);
+		ensureChars(&wtext[0], wsize);
 
-        for (size_t i = 0; i < wsize; ++i) {
+		for (size_t i = 0; i < wsize; ++i) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 					fontInfo_.textureGlyphs.find(wtext[i]);
 
@@ -440,7 +522,7 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			gfxMap[l] = gfxMap[l] + 1;
 		}
 
-        vGraphicsBase->resize(gfx);
+		vGraphicsBase->resize(gfx);
 
 		for (std::map<int, int>::iterator it = gfxMap.begin();
 				it != gfxMap.end(); it++) {
@@ -455,19 +537,19 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			graphicsBase->indices.Update();
 		}
 
-        float x = c.dx/sizescalex_-minx, y = c.dy/sizescaley_-miny;
+		float x = c.dx / sizescalex_ - minx, y = c.dy / sizescaley_ - miny;
 
 		if (hasSample) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 					fontInfo_.textureGlyphs.find(text[0]);
 			const TextureGlyph &textureGlyph = iter->second;
-            x = c.dx/sizescalex_-textureGlyph.left;
+			x = c.dx / sizescalex_ - textureGlyph.left;
 			//y *= application_->getLogicalScaleY();
 		}
 
 		wchar32_t prev = 0;
 
-        for (size_t i = 0; i < wsize; ++i) {
+		for (size_t i = 0; i < wsize; ++i) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 					fontInfo_.textureGlyphs.find(wtext[i]);
 
@@ -492,8 +574,8 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 
 			float x1 = x0 + width;
 			float y1 = y0 + height;
-            int vi = gfxMap2[gfx];
-            gfxMap2[gfx] = vi + 1;
+			int vi = gfxMap2[gfx];
+			gfxMap2[gfx] = vi + 1;
 
 			graphicsBase->vertices[vi * 4 + 0] = Point2f(sizescalex_ * x0,
 					sizescaley_ * y0);
@@ -550,10 +632,10 @@ void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx,
 		wtext.resize(len);
 		utf8_to_wchar(text, strlen(text), &wtext[0], len, 0);
 	}
-    ensureChars (&wtext[0],len);
+	ensureChars(&wtext[0], len);
 
 	float x = 0, y = 0;
-    wchar32_t prev = 0;
+	wchar32_t prev = 0;
 	for (std::size_t i = 0; i < wtext.size(); ++i) {
 		std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 				fontInfo_.textureGlyphs.find(wtext[i]);
@@ -591,7 +673,8 @@ void TTBMFont::getBounds(const char *text, float letterSpacing, float *pminx,
 		x += (int) (letterSpacing / sizescalex_);
 	}
 
-    if (!x) minx=miny=maxx=maxy=0;
+	if (!x)
+		minx = miny = maxx = maxy = 0;
 
 	if (pminx)
 		*pminx = minx;
@@ -615,7 +698,7 @@ float TTBMFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 		size = wtext.size();
 
 	wtext.push_back(0);
-    ensureChars (&wtext[0],len);
+	ensureChars(&wtext[0], len);
 
 	float x = 0;
 	wchar32_t prev = 0;
