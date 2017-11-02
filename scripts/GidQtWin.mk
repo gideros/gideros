@@ -166,7 +166,8 @@ bundle.win:
 	-cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 	
 bundle.installer: bundle
-	cp $(ROOT)\Release\*.ns* $(RELEASE).Final
+	cp $(ROOT)/Release/*.nsi $(RELEASE).Final
+	cp $(ROOT)/Release/*.nsh $(RELEASE).Final
 	cd $(RELEASE).Final; $(NSIS) gideros_mui2.nsi
 	mv $(RELEASE).Final/Gideros.exe $(ROOT)/
 	
