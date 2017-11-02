@@ -9,6 +9,7 @@
  <property name="reqTouch" type="boolean" title="Touchscreen is mandatory"/>
  <property name="reqTVCompat" type="boolean" title="Android TV compatibility"/>
  <property name="reqTVExtCompat" type="boolean" title="Android TV extended compatibility"/>
+ <property name="reqNoInternet" type="boolean" title="This app never access internet"/>
  <property name="reqNoVibrator" type="boolean" title="Vibrator not used in this app"/>
  <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and landscape"/>
  <property name="reqMaxAspect" type="boolean" title="Support aspect ratios of 2.1 or higher"/>
@@ -69,6 +70,16 @@
 	        <replacelist wildcards="AndroidManifest.xml">
 	            <replace>
             		<orig><![CDATA[<uses-permission android:name="android.permission.VIBRATE"/>]]></orig>
+            		<by></by>
+        	    </replace>
+    	    </replacelist>
+	    </template>
+ 	</if>
+ 	<if condition="[[[plugin.reqNoInternet]]]">
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="AndroidManifest.xml">
+	            <replace>
+            		<orig><![CDATA[<uses-permission android:name="android.permission.INTERNET"/>]]></orig>
             		<by></by>
         	    </replace>
     	    </replacelist>

@@ -435,7 +435,11 @@ void MainWindow::closeMdiTab(int i)
 
 void MainWindow::onSingleShot()
 {
-	showStartPage();
+    QStringList args=QCoreApplication::arguments();
+    if (args.size()>1)
+    	openProject(args[1].toUtf8().data());
+    else
+    	showStartPage();
 }
 
 void MainWindow::showStartPage()

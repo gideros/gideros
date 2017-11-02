@@ -2,7 +2,7 @@
 ;Include Modern UI
 
   !include "MUI2.nsh"
-
+  !include "FileAssociation.nsh"
 ;--------------------------------
 ;General
 
@@ -56,6 +56,7 @@ Section "Remove previous install"
   RMDir /r "$INSTDIR\Tools"
   Delete "$INSTDIR\*.dll"
   Delete "$INSTDIR\*.exe"
+  ${unregisterExtension} ".gproj" "Gideros project"
 SectionEnd
 
 ;--------------------------------
@@ -75,6 +76,8 @@ Section "Gideros (required)"
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
+  ${registerExtension} "$INSTDIR\GiderosStudio.exe" ".gproj" "Gideros project" 
+  
 SectionEnd
 
 ; Optional section (can be disabled by the user)
@@ -123,5 +126,7 @@ Section "Uninstall"
   RMDir "$SMPROGRAMS\Gideros"
 
   DeleteRegKey HKCU "Software\Gideros"
+  
+  ${unregisterExtension} ".gproj" "Gideros project"
 
 SectionEnd
