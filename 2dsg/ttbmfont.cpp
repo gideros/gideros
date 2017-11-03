@@ -14,6 +14,7 @@
 #include <utf8.h>
 #include <algorithm>
 
+#define FONT_SIZE_LIMIT 300.0
 static unsigned long read(FT_Stream stream, unsigned long offset,
 		unsigned char *buffer, unsigned long count) {
 	G_FILE *fis = (G_FILE*) stream->descriptor.pointer;
@@ -218,6 +219,14 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 		scalex /= filtering;
 		scaley /= filtering;
 	}
+    //Limit font size
+    float scaleRatio=(FONT_SIZE_LIMIT/defaultSize_)/scaley;
+    if (scaleRatio<1)
+    {
+        scaley*=scaleRatio;
+        scalex*=scaleRatio;
+    }
+
 
 	fontFaces_.resize(filenames.size());
 	int nf = 0;
@@ -425,6 +434,12 @@ void TTBMFont::checkLogicalScale() {
 		scalex /= filtering_;
 		scaley /= filtering_;
 	}
+    float scaleRatio=(FONT_SIZE_LIMIT/defaultSize_)/scaley;
+    if (scaleRatio<1)
+    {
+        scaley*=scaleRatio;
+        scalex*=scaleRatio;
+    }
 
 	float RESOLUTION = 72;
 	if ((scalex != currentLogicalScaleX_)

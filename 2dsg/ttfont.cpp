@@ -420,7 +420,8 @@ float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 		x += (int) (letterSpacing * scalex);
 	}
 
-	x += kerning(prevFace, prev, FT_Get_Char_Index(prevFace, text[size])) >> 6;
+    if (prevFace)
+        x += kerning(prevFace, prev, FT_Get_Char_Index(prevFace, text[size])) >> 6;
 
 	return x / scalex;
 }
