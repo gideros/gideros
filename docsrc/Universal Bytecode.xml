@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<object name="Univeral Bytecode" page="universal" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
+<object name="Universal Bytecode" page="universal" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
 Unlike other versions of Lua, the exported bytecode with Gideros Lua is automatically compatible with both 32 and 64 bit systems.<br /><br />
 ]]>
   <platform>android</platform>
