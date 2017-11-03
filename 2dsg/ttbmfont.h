@@ -74,7 +74,7 @@ private:
     std::vector<TextureData *> textureData_;
     TexturePacker *currentPacker_;
     Dib *currentDib_;
-    bool filtering_;
+    float filtering_;
     std::vector<FontFace> fontFaces_;
     std::string charset_;
 
