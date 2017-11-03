@@ -14,6 +14,7 @@
 #include <utf8.h>
 #include <algorithm>
 
+// Textures shouldn't exceed 1024x1024 on most platforms, so limit possible font size to allow at least a few chars to be rendered
 #define FONT_SIZE_LIMIT 300.0
 static unsigned long read(FT_Stream stream, unsigned long offset,
 		unsigned char *buffer, unsigned long count) {
