@@ -5,6 +5,7 @@
  <property name="reqCompass" type="boolean" title="Compass is mandatory"/>
  <property name="reqNoGps" type="boolean" title="Gps is not used in this app"/>
  <property name="reqGps" type="boolean" title="Gps is mandatory"/>
+ <property name="reqGpsBackground" type="boolean" title="Gps shall be available in background"/>
  <property name="reqGyro" type="boolean" title="Gyroscope is mandatory"/>
  <property name="reqTouch" type="boolean" title="Touchscreen is mandatory"/>
  <property name="reqTVCompat" type="boolean" title="Android TV compatibility"/>
@@ -126,6 +127,16 @@
     	    </replacelist>
 	    </template>
     </if>
+    <if condition="[[[plugin.reqGpsBackground]]]">
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="GiderosSettings.java">
+	            <replace>
+            		<orig>backgroundLocation=false</orig>
+        	    	<by>backgroundLocation=true</by>
+    	        </replace>
+    	    </replacelist>
+	    </template>
+    </if>
     <if condition="[[[plugin.reqAccel]]]">
     	<template name="AndroidManifest" path="">
         	<replacelist wildcards="AndroidManifest.xml">
@@ -235,5 +246,17 @@
 			</prepend>
 		</replacelist>
 	</template>
+	   <if condition="[[[plugin.reqGpsBackground]]]">
+    	<template name="Project" path="">
+		<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">
+			<prepend>
+				<orig><![CDATA[<!-- TAG:GIDEROS-IOS:PLIST:BGMODES -->]]></orig>
+				<by><![CDATA[
+					<string>location</string>
+				]]></by>
+			</prepend>
+		</replacelist>
+		</template>
+    </if>
  </target> 
 </plugin>

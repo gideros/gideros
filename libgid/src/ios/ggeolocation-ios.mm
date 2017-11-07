@@ -30,7 +30,7 @@ public:
 		delegate_.manager = this;
 		accuracy_ = 0;
 		locationStartCount_ = 0;
-		headingStartCount_ = 0;
+		headingStartCount_ = 0;		
         
         gid_ = g_NextId();
 	}
@@ -137,7 +137,14 @@ public:
             return;
 		locationStartCount_++;
 		if (locationStartCount_ == 1)
+		{
+#if TARGET_OS_IOS
+			id pval=[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
+			if (pval&&[pval containsObject:@"location"])
+				locationManager_.allowsBackgroundLocationUpdates=YES;
+#endif				
 			[locationManager_ startUpdatingLocation];
+		}
 	}
 	
 	void stopUpdatingLocation()
@@ -209,6 +216,7 @@ public:
     void enqueueEvent(int type, void *event, int free)
     {
         gevent_EnqueueEvent(gid_, callback_s, type, event, free, this);
+        gevent_Flush();
     }
     
 private:

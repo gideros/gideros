@@ -153,6 +153,7 @@ public:
     void enqueueEvent(int type, void *event, int free)
     {
         gevent_EnqueueEvent(gid_, callback_s, type, event, free, this);
+        gevent_Flush();
     }
     
 private:

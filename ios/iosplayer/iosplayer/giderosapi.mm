@@ -218,6 +218,7 @@ public:
     void drawFirstFrame();
 
 	void luaError(const char *msg);
+	void forceTick();
 	
 //	void surfaceCreated();
 //	void surfaceChanged(int width, int height);
@@ -606,6 +607,7 @@ void NetworkManager::calculateMD5(const char* file)
 		md5_[file] = md5;
 }
 
+extern void eventFlush();
 
 ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool player)
 {
@@ -636,6 +638,7 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 
 	// event
 	gevent_Init();
+	gevent_SetFlusher(eventFlush);
 
     // application
     gapplication_init();
@@ -1285,6 +1288,17 @@ void ApplicationManager::setProjectProperties(const ProjectProperties &propertie
 	properties_ = properties;
 }
 
+void ApplicationManager::forceTick()
+{
+ 	if (!renderLoopActive_)
+ 	{
+    	GStatus status;
+    	application_->tick(&status);
+    	if (status.error())
+        	luaError(status.errorString());
+    }
+}
+
 void ApplicationManager::suspend()
 {
     gapplication_enqueueEvent(GAPPLICATION_PAUSE_EVENT, NULL, 0);
@@ -1616,6 +1630,12 @@ bool setKeyboardVisibility(bool visible){
     if (s_manager)
         return s_manager->setKeyboardVisibility(visible);
     return false;
+}
+
+void eventFlush()
+{
+    if (s_manager)
+        s_manager->forceTick();
 }
 
 extern "C" {

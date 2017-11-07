@@ -249,6 +249,8 @@ void LibraryTreeWidget::importFolder()
 	QDir dir(path);
 
 	QString basedir = QFileDialog::getExistingDirectory(this, tr("Import folder content"), path);
+	if(basedir.isEmpty())
+		return;
 
 	struct _Folder {
 		QString basedir;

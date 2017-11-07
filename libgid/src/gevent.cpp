@@ -199,6 +199,18 @@ void gevent_Tick()
     s_manager->tick();
 }
 
+static void (*_flusher)()=NULL;
+void gevent_SetFlusher(void (*flusher)())
+{
+	_flusher=flusher;
+}
+
+void gevent_Flush()
+{
+	if (_flusher)
+		_flusher();
+}
+
 void gevent_EnqueueEvent(g_id gid, gevent_Callback callback, int type, void *event, int free, void *udata)
 {
     s_manager->enqueueEvent(gid, callback, type, event, free, udata);

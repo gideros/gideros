@@ -196,6 +196,7 @@ public:
 
 	void background();
 	void foreground();	
+	void forceTick();
 	
 private:
 	void loadProperties();
@@ -211,6 +212,7 @@ private:
 	bool init_;
 	
 	bool running_;
+	bool paused_;
 	
 	int width_, height_;
 
@@ -533,6 +535,8 @@ static void printToLog_s(const char *str, int len, void *data)
 	}
 }
 
+extern void eventFlush();
+
 ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 {
 	JavaVM* vm;
@@ -540,6 +544,7 @@ ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 	jnb_setJavaVM(vm);
 
 	player_ = player;
+	paused_ = false;
 	
 	// gpath & gvfs
 	gpath_init();
@@ -563,6 +568,7 @@ ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 
 	// event
 	gevent_Init();
+	gevent_SetFlusher(eventFlush);
 	
 	// application
 	gapplication_init();
@@ -1229,10 +1235,12 @@ void ApplicationManager::pause()
 			luaError(status.errorString());
 	}
 	gaudio_android_suspend(true);
+	paused_=true;
  }
 
 void ApplicationManager::resume()
 {
+	paused_=false;
 	gaudio_android_suspend(false);
     gapplication_enqueueEvent(GAPPLICATION_RESUME_EVENT, NULL, 0);
 
@@ -1284,7 +1292,24 @@ void ApplicationManager::foreground()
 	}
  }
 
+void ApplicationManager::forceTick()
+{
+ 	if (paused_&&running_)
+	{
+		GStatus status;
+		application_->tick(&status);
+		if (status.error())
+			luaError(status.errorString());
+	}
+}
+
+
 static ApplicationManager *s_applicationManager = NULL;
+void eventFlush()
+{
+    if (s_applicationManager)
+    	s_applicationManager->forceTick();
+}
 
 extern "C" {
 

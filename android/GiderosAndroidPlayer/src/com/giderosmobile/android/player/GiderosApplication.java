@@ -51,6 +51,8 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.giderosmobile.android.GiderosSettings;
+
 public class GiderosApplication
 {
 	public Object lock = new Object();
@@ -550,8 +552,11 @@ public class GiderosApplication
 		
 		accelerometer_.disable();
 		gyroscope_.disable();
-		geolocation_.stopUpdatingLocation();
-		geolocation_.stopUpdatingHeading();
+		if (!GiderosSettings.backgroundLocation)
+		{
+			geolocation_.stopUpdatingLocation();
+			geolocation_.stopUpdatingHeading();
+		}
 		mediaPlayerManager_.onPause();
 		//audioDevice_.stop();
 	}
@@ -563,10 +568,13 @@ public class GiderosApplication
 			accelerometer_.enable();
 		if (isGyroscopeStarted_)
 			gyroscope_.enable();
-		if (isLocationStarted_)
-			geolocation_.startUpdatingLocation();
-		if (isHeadingStarted_)
-			geolocation_.startUpdatingHeading();
+		if (!GiderosSettings.backgroundLocation)
+		{
+			if (isLocationStarted_)
+				geolocation_.startUpdatingLocation();
+			if (isHeadingStarted_)
+				geolocation_.startUpdatingHeading();
+		}
 		mediaPlayerManager_.onResume();
 		//audioDevice_.start();
 

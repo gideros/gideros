@@ -40,6 +40,8 @@ struct GGOggHandle
 	 int pp_level_max;
 	 int pp_level;
 	 int pp_inc;
+	 ogg_int64_t audio_granulepos;
+	 ogg_int64_t video_granulepos;
 
 	 TextureBase *yplane;
 	 TextureBase *uplane;
@@ -50,8 +52,11 @@ struct GGOggHandle
 	int              vorbis_p;
 	int              stateflag;
 	int videobuf_ready;
-	double       videobuf_time;
+	double videobuf_time;
+	double audio_time;
 	double playstart;
+	int sampleRate;
+	int sampleSize;
 
 	//LUA
 	int tref;
@@ -261,10 +266,20 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate, int
       return 0;
 	  }*/
 
+	  handle->audio_time=0;
+	  handle->videobuf_time=0;
+	  handle->video_granulepos=-1;
+	  handle->audio_granulepos=0; /* time position of last sample */
+
+
+	int rate=handle->vorbis_p?handle->vi.rate:22050;
+	int channels=handle->vorbis_p?handle->vi.channels:2;
+	handle->sampleRate=rate;
+	handle->sampleSize=channels*2;
     if (numChannels)
-        *numChannels = handle->vorbis_p?handle->vi.channels:2;
+        *numChannels = channels;
     if (sampleRate)
-        *sampleRate = handle->vorbis_p?handle->vi.rate:22050;
+        *sampleRate = rate;
 
     if (bitsPerSample)
         *bitsPerSample = 16;
@@ -276,18 +291,33 @@ g_id gaudio_OggOpen(const char *fileName, int *numChannels, int *sampleRate, int
     return gid;
 }
 
-int gaudio_OggSeek(g_id gid, long int offset, int whence)
-{
-    GGOggHandle *handle = (GGOggHandle*)gid;
-
-    return 0;
-}
-
 long int gaudio_OggTell(g_id gid)
 {
     GGOggHandle *handle = (GGOggHandle*)gid;
+    double time=handle->vorbis_p?handle->audio_time:handle->videobuf_time;
 
-    return 0;
+    return (long int)(time*handle->sampleRate);
+}
+
+int gaudio_OggSeek(g_id gid, long int offset, int whence)
+{
+    GGOggHandle *handle = (GGOggHandle*)gid;
+    if (whence==SEEK_CUR)
+    	offset+=gaudio_OggTell(gid);
+
+    if (offset==0) //Rewind, only case needed for looping
+    {
+	  handle->audio_time=0;
+	  handle->videobuf_time=0;
+	  handle->video_granulepos=-1;
+	  handle->audio_granulepos=0; /* time position of last sample */
+	  return g_fseek(handle->file,0,SEEK_SET);
+    }
+
+    double tm=((double)offset)/handle->sampleRate;
+    //TODO bisect search to find granule pos
+
+    return -1;
 }
 
 void gaudio_OggFormat(g_id gid,int *csr,int *chn)
@@ -308,14 +338,12 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 	     example_encoder (and most streams) though. */
 
 	  /* single frame video buffering */
-	  ogg_int64_t  videobuf_granulepos=-1;
 
 	  /* single audio fragment audio buffering */
 	  int          audiobuf_fill=0;
 	  int          audiobuf_ready=0;
 	  int          audiofd_fragsize=size;
 	  ogg_int16_t *audiobuf=(ogg_int16_t *) data;
-	  ogg_int64_t  audiobuf_granulepos=0; /* time position of last sample */
 	  int i,j;
 
 	  while(true){
@@ -342,10 +370,10 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 	        audiobuf_fill+=i*handle->vi.channels*2;
 	        if(audiobuf_fill==audiofd_fragsize)audiobuf_ready=1;
 	        if(handle->vd.granulepos>=0)
-	          audiobuf_granulepos=handle->vd.granulepos-ret+i;
+	          handle->audio_granulepos=handle->vd.granulepos-ret+i;
 	        else
-	          audiobuf_granulepos+=i;
-
+	        	handle->audio_granulepos+=i;
+	        handle->audio_time=vorbis_granule_time(&handle->vd,handle->audio_granulepos);
 	      }else{
 
 	        /* no pending audio; is there a pending packet to decode? */
@@ -377,8 +405,8 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 	          th_decode_ctl(handle->td,TH_DECCTL_SET_GRANPOS,&handle->op.granulepos,
 	           sizeof(handle->op.granulepos));
 	        }
-	        if(th_decode_packetin(handle->td,&handle->op,&videobuf_granulepos)==0){
-	          handle->videobuf_time=th_granule_time(handle->td,videobuf_granulepos);
+	        if(th_decode_packetin(handle->td,&handle->op,&video_granulepos)==0){
+	          handle->videobuf_time=th_granule_time(handle->td,handle->video_granulepos);
 
 	          /* is it already too old to be useful?  This is only actually
 	             useful cosmetically after a SIGSTOP.  Note that we have to

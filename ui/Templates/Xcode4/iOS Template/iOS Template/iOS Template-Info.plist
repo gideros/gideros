@@ -43,6 +43,10 @@
 	<true/>
 	<key>UIStatusBarHidden</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<!-- TAG:GIDEROS-IOS:PLIST:BGMODES -->
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
