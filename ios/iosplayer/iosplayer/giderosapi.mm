@@ -167,6 +167,7 @@ public:
 	
 	static void printToServer_s(const char *str, int len, void *data)
 	{
+        NSLog(@"%s", str);
         if (data)
             static_cast<NetworkManager*>(data)->printToServer(str, len);
 	}
@@ -179,7 +180,7 @@ public:
     	buffer[0] = 4;
     	memcpy(buffer + 1, str,size-2);
     	buffer[size-1]=0;
-		
+        
 		server_->sendData(buffer, size, true);
 		
 		free(buffer);

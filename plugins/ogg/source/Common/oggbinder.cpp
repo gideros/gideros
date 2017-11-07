@@ -405,7 +405,7 @@ size_t gaudio_OggRead(g_id gid, size_t size, void *data)
 	          th_decode_ctl(handle->td,TH_DECCTL_SET_GRANPOS,&handle->op.granulepos,
 	           sizeof(handle->op.granulepos));
 	        }
-	        if(th_decode_packetin(handle->td,&handle->op,&video_granulepos)==0){
+	        if(th_decode_packetin(handle->td,&handle->op,&handle->video_granulepos)==0){
 	          handle->videobuf_time=th_granule_time(handle->td,handle->video_granulepos);
 
 	          /* is it already too old to be useful?  This is only actually
