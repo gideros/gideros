@@ -62,6 +62,6 @@ QString LibraryWidget::fileName(const QString& itemName) const
 
 void LibraryWidget::onModificationChanged(bool m)
 {
-	ui.label->setText(tr("Project") + (m ? "*" : ""));
+	//ui.label->setText(tr("Project") + (m ? "*" : ""));
 	emit modificationChanged(m);
 }

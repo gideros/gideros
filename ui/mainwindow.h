@@ -30,6 +30,7 @@ class FindInFilesDialog;
 class QSplitter;
 class QProcess;
 class QComboBox;
+class OutlineWidget;
 
 #include "mdiarea.h"
 
@@ -234,6 +235,7 @@ private:
 	LibraryWidget* libraryWidget_;
 	QTextEditEx* outputWidget_;
 	PreviewWidget* previewWidget_;
+	OutlineWidget* outlineWidget_;
 	QComboBox *players_;
 #ifndef NEW_CLIENT
 	Client* client_;
@@ -255,6 +257,7 @@ private:
 	QDockWidget* libraryDock_;
 	QDockWidget* outputDock_;
 	QDockWidget* previewDock_;
+    QDockWidget* outlineDock_;
 	MdiArea* mdiArea_;
 
 	QSplitter* splitter1_;

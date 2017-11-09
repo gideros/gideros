@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QDockWidget>
 #include "librarywidget.h"
+#include "outlinewidget.h"
 #include <QAction>
 #include <QIcon>
 #include <QPixmap>
@@ -193,6 +194,7 @@ MainWindow::MainWindow(QWidget *parent)
 	previewDock_ = NULL;
 
 	libraryWidget_ = new LibraryWidget;
+	//connect(libraryWidget_, SIGNAL(modificationChanged(bool)), libraryDock_, SLOT(setWindowModified(bool))); TODO
 
     outputWidget_ = new QTextEditEx;
 	outputWidget_->setReadOnly(true);
@@ -222,27 +224,38 @@ MainWindow::MainWindow(QWidget *parent)
     outputDock_ = new QDockWidget(tr("Output"), this);
     outputDock_->setAllowedAreas(Qt::BottomDockWidgetArea);
     outputDock_->setObjectName("output");
-    outputDock_->setFeatures(QDockWidget::DockWidgetFloatable);
+    outputDock_->setFeatures(QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable);
     outputDock_->setWidget(outputContainer);
+	addDockWidget(Qt::BottomDockWidgetArea,outputDock_);
 
+	QDockWidget *dock;
 	previewWidget_ = new PreviewWidget;
+	dock = new QDockWidget(tr("Preview"), this);
+	dock->setAllowedAreas(Qt::RightDockWidgetArea|Qt::LeftDockWidgetArea);
+	dock->setObjectName("preview");
+	dock->setFeatures(QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable);
+	dock->setWidget(previewWidget_);
+	addDockWidget(Qt::LeftDockWidgetArea,dock);
 
-	splitter1_ = new QSplitter(Qt::Vertical);
-	splitter2_ = new QSplitter(Qt::Horizontal);
-	splitter3_ = new QSplitter(Qt::Vertical);
+	dock = new QDockWidget(tr("Library"), this);
+	dock->setAllowedAreas(Qt::RightDockWidgetArea|Qt::LeftDockWidgetArea);
+	dock->setObjectName("library");
+	dock->setFeatures(QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable);
+	dock->setWidget(libraryWidget_);
+	addDockWidget(Qt::LeftDockWidgetArea,dock);
 
-	splitter3_->addWidget(libraryWidget_);
-	splitter3_->addWidget(previewWidget_);
+	outlineWidget_=new OutlineWidget();
+	dock = new QDockWidget(tr("Outline"), this);
+	dock->setAllowedAreas(Qt::RightDockWidgetArea|Qt::LeftDockWidgetArea);
+	dock->setObjectName("outline");
+	dock->setFeatures(QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable);
+	dock->setWidget(outlineWidget_);
+    outlineDock_=dock;
+	addDockWidget(Qt::RightDockWidgetArea,dock);
 
-	splitter2_->addWidget(splitter3_);
-	splitter2_->addWidget(mdiArea_);
+	//splitter3_->setSizes(QList<int>() << 200 << 200);
 
-	splitter1_->addWidget(splitter2_);
-    splitter1_->addWidget(outputDock_);
-
-	splitter3_->setSizes(QList<int>() << 200 << 200);
-
-	setCentralWidget(splitter1_);
+	setCentralWidget(mdiArea_);
 #endif
 
 	//Target player combobox
@@ -363,17 +376,17 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(ui.actionGo_To_Line, SIGNAL(triggered()), this, SLOT(goToLine()));
 
-    splitter1_->setSizes(QList<int>() << 550 << 200);
+/*    splitter1_->setSizes(QList<int>() << 550 << 200);
     splitter2_->setSizes(QList<int>() << 200 << 800);
-
+*/
 	{
 		QSettings settings;
 		restoreGeometry(settings.value("geometry").toByteArray());
 		restoreState(settings.value("windowState").toByteArray());
 
-		splitter1_->restoreState(settings.value("splitter1").toByteArray());
+	/*	splitter1_->restoreState(settings.value("splitter1").toByteArray());
 		splitter2_->restoreState(settings.value("splitter2").toByteArray());
-		splitter3_->restoreState(settings.value("splitter3").toByteArray());
+		splitter3_->restoreState(settings.value("splitter3").toByteArray());*/
 	}
 
 	connect(ui.actionOutput_Panel, SIGNAL(triggered()), outputDock_, SLOT(show()));
@@ -1220,6 +1233,9 @@ void MainWindow::updateUI()
 	ui.actionFind_Next->setEnabled(hasMdiChild);
 	ui.actionFind_Previous->setEnabled(hasMdiChild);
 	ui.actionGo_To_Line->setEnabled(hasMdiChild);
+
+    outlineWidget_->setDocument(textEdit);
+    outlineDock_->setVisible(isProjectOpen);
 }
 
 void MainWindow::save()
@@ -1754,9 +1770,9 @@ void MainWindow::closeEvent(QCloseEvent* event)
 		QSettings settings;
 		settings.setValue("geometry", saveGeometry());
 		settings.setValue("windowState", saveState());
-		settings.setValue("splitter1", splitter1_->saveState());
+/*		settings.setValue("splitter1", splitter1_->saveState());
 		settings.setValue("splitter2", splitter2_->saveState());
-		settings.setValue("splitter3", splitter3_->saveState());
+		settings.setValue("splitter3", splitter3_->saveState());*/
 
 		event->accept();
 	} 

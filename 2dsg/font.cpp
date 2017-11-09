@@ -244,6 +244,9 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
             gi++;
 		}
 	}
+	graphicsBase->vertices.resize(gi * 4);
+	graphicsBase->texcoords.resize(gi * 4);
+	graphicsBase->indices.resize(gi * 6);
 }
 
 static bool readLine(G_FILE *f, std::string *line) {

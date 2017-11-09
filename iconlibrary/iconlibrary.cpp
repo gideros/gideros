@@ -37,8 +37,12 @@ IconLibrary::IconLibrary()
 	iconMap_["previous bookmark"] = icon(2, 400 / 16, 1, 0, -3, 3);
 	iconMap_["clear bookmarks"] = icon(2, 400 / 16, 4, 0, 4, 4);
 
-	iconMap_["green dot"] = icon(11, 0);
-	iconMap_["red dot"] = icon(7, 1);
+    iconMap_["blue dot"] = icon(3, 0);
+    iconMap_["green dot"] = icon(11, 0);
+    iconMap_["red dot"] = icon(7, 1);
+    iconMap_["purple dot"] = icon(5, 1);
+    iconMap_["yellow dot"] = icon(15, 1);
+    iconMap_["orange dot"] = icon(1, 1);
 
 	iconMap_["project"] = icon(2, 17);
 

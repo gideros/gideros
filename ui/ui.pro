@@ -52,6 +52,7 @@ SOURCES += \
     main.cpp\
     mainwindow.cpp\
     librarywidget.cpp\
+    outlinewidget.cpp\
     giderosnetworkclient2.cpp\
     finddialog.cpp\
     replacedialog.cpp\
@@ -106,6 +107,7 @@ HEADERS  += \
     gotolinedialog.h\
     savechangesdialog.h\
     librarytreewidget.h\
+    outlinewidget.h\
     codedependenciesdialog.h\
     addnewfiledialog.h\
     "../libpreviewwidget/previewwidget.h" \
@@ -146,6 +148,42 @@ FORMS    += mainwindow.ui \
     pluginselector.ui \
     plugineditor.ui \
     startpagewidget2.ui
+
+
+DEFINES += DESKTOP_TOOLS 
+INCLUDEPATH += ../lua/src
+SOURCES += \
+	../lua/src/lapi.c \
+	../lua/src/lauxlib.c \
+	../lua/src/lcode.c \
+	../lua/src/ldebug.c \
+	../lua/src/ldo.c \
+	../lua/src/ldump.c \
+	../lua/src/lfunc.c \
+	../lua/src/llex.c \
+	../lua/src/lmem.c \
+	../lua/src/lobject.c \
+	../lua/src/lopcodes.c \
+	../lua/src/lparser.c \
+	../lua/src/lstate.c \
+	../lua/src/lstring.c \
+	../lua/src/ltable.c \
+	../lua/src/ltm.c \
+	../lua/src/lundump.c \
+	../lua/src/lvm.c \
+	../lua/src/lzio.c \
+	../lua/src/lgc.c \
+	../lua/src/linit.c \
+	../lua/src/lbaselib.c \
+	../lua/src/ldblib.c \
+	../lua/src/liolib.c \
+	../lua/src/lmathlib.c \
+	../lua/src/loslib.c \
+	../lua/src/ltablib.c \
+	../lua/src/lstrlib.c \
+	../lua/src/lutf8lib.c \
+	../lua/src/lint64.c \
+	../lua/src/loadlib.c
 
 win32 {
 	LIBS += -liphlpapi
