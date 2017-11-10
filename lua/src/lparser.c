@@ -148,6 +148,12 @@ static int registerlocalvar (LexState *ls, TString *varname) {
                   LocVar, SHRT_MAX, "too many local variables");
   while (oldsize < f->sizelocvars) f->locvars[oldsize++].varname = NULL;
   f->locvars[fs->nlocvars].varname = varname;
+  f->locvars[fs->nlocvars].line = ls->linenumber;
+  f->locvars[fs->nlocvars].isfunction = 0; //Will be changed if it turns out this is a function
+  int levels=0;
+  BlockCnt *bl=fs->bl;
+  while (bl) { levels++; bl=bl->previous; }
+  f->locvars[fs->nlocvars].level = levels;
   luaC_objbarrier(ls->L, f, varname);
   return fs->nlocvars++;
 }
@@ -1219,6 +1225,7 @@ static void localfunc (LexState *ls) {
   expdesc v, b;
   FuncState *fs = ls->fs;
   new_localvar(ls, str_checkname(ls), 0);
+  getlocvar(fs, fs->nactvar).isfunction = 1;
   init_exp(&v, VLOCAL, fs->freereg);
   luaK_reserveregs(fs, 1);
   adjustlocalvars(ls, 1);

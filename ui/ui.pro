@@ -198,7 +198,13 @@ macx {
 }
 
 win32 {
-   LIBS += -lqscintilla2
+	CONFIG(debug, debug|release) {
+	  LIBS += -lqscintilla2_qt5d
+	}
+	else
+	{
+   		LIBS += -lqscintilla2
+   	}
 }
 
 macx {
