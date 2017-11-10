@@ -18,6 +18,7 @@ class Ticker;
 #include <set>
 #include <gideros_p.h>
 #include <deque>
+#include <map>
 
 #include <gglobal.h>
 
@@ -174,6 +175,11 @@ public:
     static int Core_profilerReport(lua_State *L);
     static int Core_random(lua_State *L);
     static int Core_randomSeed(lua_State *L);
+    //Debugger support
+    static bool hasBreakpoints;
+    static std::map<int,bool> breakpoints;
+    static void (*debuggerHook)(void *context,lua_State *L,lua_Debug *ar);
+    static void *debuggerContext;
 private:
 	float physicsScale_;
 

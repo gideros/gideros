@@ -73,6 +73,10 @@
 #include "memcache.cpp.inc"
 
 std::deque<LuaApplication::AsyncLuaTask> LuaApplication::tasks_;
+bool LuaApplication::hasBreakpoints=false;
+std::map<int,bool> LuaApplication::breakpoints;
+void (*LuaApplication::debuggerHook)(void *context,lua_State *L,lua_Debug *ar)=NULL;
+void *LuaApplication::debuggerContext=NULL;
 
 const char* LuaApplication::fileNameFunc_s(const char* filename, void* data)
 {
@@ -1136,7 +1140,7 @@ static void yieldHook(lua_State *L,lua_Debug *ar)
 	if (ar->event == LUA_HOOKRET)
 	{
 		if (iclock() >= yieldHookLimit)
-			lua_sethook(L, yieldHook, LUA_MASKCOUNT, 1);
+			lua_sethook(L, yieldHook, LUA_MASKCOUNT | (LuaApplication::hasBreakpoints?LUA_MASKLINE:0), 1);
 	}
 	else if (ar->event == LUA_HOOKCOUNT)
 	{
@@ -1145,7 +1149,16 @@ static void yieldHook(lua_State *L,lua_Debug *ar)
 			if (lua_canyield(L))
 				lua_yield(L, 0);
 			else
-				lua_sethook(L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT, 1000);
+				lua_sethook(L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (LuaApplication::hasBreakpoints?LUA_MASKLINE:0), 1000);
+		}
+	}
+	else if (ar->event == LUA_HOOKLINE)
+	{
+		lua_getinfo(L, "l", ar);
+		if (LuaApplication::debuggerHook&&LuaApplication::breakpoints[ar->currentline])
+		{
+			lua_getinfo(L, "S", ar); //Possible match, resolve source name and let debuggerHook decide
+			LuaApplication::debuggerHook(LuaApplication::debuggerContext,L,ar);
 		}
 	}
 }
@@ -1197,9 +1210,9 @@ void LuaApplication::enterFrame(GStatus *status)
 			int res = 0;
 			if (t.autoYield)
 			{
-				lua_sethook(t.L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT, 1000);
+				lua_sethook(t.L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (hasBreakpoints?LUA_MASKLINE:0), 1000);
 				res = lua_resume(t.L, 0);
-				lua_sethook(t.L, yieldHook, 0, 1000);
+				lua_sethook(t.L, yieldHook, hasBreakpoints?LUA_MASKLINE:0, 1000);
 			}
 			else
 				res = lua_resume(t.L, 0);
@@ -1481,6 +1494,8 @@ void LuaApplication::initialize()
 	lua_call(L, 1, 0);
 
 	Rnd::Initialize(iclock()*0xFFFF);
+
+	lua_sethook(L, yieldHook, LuaApplication::hasBreakpoints?LUA_MASKLINE:0, 1);
 }
 
 void LuaApplication::setScale(float scale)
