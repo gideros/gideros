@@ -15,6 +15,7 @@
 #include <QList>
 #include <QScrollBar>
 #include <QAction>
+#include <QPainter>
 
 #include "iconlibrary.h"
 #include "lua.hpp"
@@ -197,7 +198,8 @@ void OutlineWorkerThread::run()
   emit updateOutline(outline);
 }
 
-OutlineWidgetItem::OutlineWidgetItem(QWidget *parent) : QWidget(parent){
+OutlineWidgetItem::OutlineWidgetItem(QObject *parent) : QStyledItemDelegate(parent){
+	container=new QWidget();
     icon=new QLabel();
     label=new QLabel();
 
@@ -206,7 +208,30 @@ OutlineWidgetItem::OutlineWidgetItem(QWidget *parent) : QWidget(parent){
     layout->addWidget(icon);
     layout->addWidget(label);
     layout->addStretch(1);
-    setLayout(layout);
+    container->setLayout(layout);
+}
+
+void OutlineWidgetItem::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    if (option.state & QStyle::State_Selected)
+        painter->fillRect(option.rect, option.palette.highlight());
+
+    QStandardItem *li=((QStandardItemModel *)index.model())->item(index.row());
+    int type=li->data(Qt::UserRole+2).toInt();
+    QString name=li->text();
+    QString stype="variable";
+    if (type&OT_FUNCTION) stype="function";
+    QString iconName="purple dot";
+    if (type&OT_GLOBAL) iconName="green dot";
+    if (type&OT_LOCAL) iconName="red dot";
+    icon->setPixmap(IconLibrary::instance().icon(0,iconName).pixmap(QSize(16,16)));
+    label->setText("<html>"+name+"<font color='gray'>&nbsp;"+stype+"</font></html>");
+
+    painter->save();
+    container->resize( option.rect.size() );
+    painter->translate(option.rect.topLeft());
+    container->render(painter, QPoint(), QRegion(), QWidget::DrawChildren );
+    painter->restore();
 }
 
 void OutlineWidgetItem::setValue(OutLineItem &item)
@@ -230,9 +255,9 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     : QWidget(parent)
 {
     qRegisterMetaType<OutLineItemList>("OutLineItemList");
-    list_=new QListWidget();
-    connect(list_, SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)),
-            this, SLOT  (onItemChanged(QListWidgetItem *,QListWidgetItem *)));
+    list_=new QListView();
+    connect(list_, SIGNAL(clicked(const QModelIndex &)),
+            this, SLOT  (onItemClicked(const QModelIndex &)));
     working_=false;
     QVBoxLayout *layout=new QVBoxLayout();
     layout->setContentsMargins(0,0,0,0);
@@ -251,16 +276,18 @@ OutlineWidget::OutlineWidget(QWidget *parent)
     layout->addWidget(list_);
     layout->setStretchFactor(list_,1);
     setLayout(layout);
+    model_=new QStandardItemModel();
+    list_->setModel(model_);
+    list_->setItemDelegate(new OutlineWidgetItem());
 }
 
 OutlineWidget::~OutlineWidget()
 {
 }
 
-void OutlineWidget::onItemChanged(QListWidgetItem *i,QListWidgetItem *)
+void OutlineWidget::onItemClicked(const QModelIndex &idx)
 {
-    if (!i) return;
-    int line=i->data(Qt::UserRole+1).toInt();
+    int line=model_->itemFromIndex(idx)->data(Qt::UserRole+1).toInt();
     if (doc_)
     {
         int ml=line-1;
@@ -276,12 +303,16 @@ void OutlineWidget::onItemChanged(QListWidgetItem *i,QListWidgetItem *)
 void OutlineWidget::sort()
 {
     OutLineItemList l;
-    for (int i=0;i<list_->count();i++)
+    for (int i=0;i<model_->rowCount();i++)
     {
-        QListWidgetItem *li=list_->item(i);
+        QStandardItem *li=model_->item(i);
         int line=li->data(Qt::UserRole+1).toInt();
         if (line>=0)
-            l << ((OutlineWidgetItem *) list_->itemWidget(li))->getValue();
+        {
+            int type=li->data(Qt::UserRole+2).toInt();
+            QString name=li->text();
+            l << OutLineItem(name,type,line);
+        }
     }
     updateOutline(l);
 }
@@ -301,34 +332,31 @@ void OutlineWidget::updateOutline(QList<OutLineItem> s)
     bool vLocal=actLoc_->isChecked();
     QScrollBar *vb = list_->verticalScrollBar();
     int oldValue = vb->value();
-    int ni=list_->count();
+    int ni=model_->rowCount();
     int i=0;
     foreach( OutLineItem item, s )
     {
-        QListWidgetItem *li;
-        OutlineWidgetItem *wid;
+        int t=item.type&0xF0;
+        bool hidden=(!(((t==OT_GLOBAL)&&vGlobal)||((t==OT_LOCAL)&&vLocal)||((t==0)&&vTable)));
+        QStandardItem *li;
         if (i<ni)
-        {
-            li=list_->item(i);
-            wid=(OutlineWidgetItem *) list_->itemWidget(li);
-        }
+            li=model_->item(i);
         else
         {
-            li=new QListWidgetItem();
-            list_->addItem(li);
-            wid=new OutlineWidgetItem();
-            list_->setItemWidget(li,wid);
+            li=new QStandardItem();
+            model_->appendRow(li);
         }
-        li->setData(Qt::UserRole+1,item.line);
-        int t=item.type&0xF0;
-        li->setHidden(!(((t==OT_GLOBAL)&&vGlobal)||((t==OT_LOCAL)&&vLocal)||((t==0)&&vTable)));
-        wid->setValue(item);
+        li->setData(item.line,Qt::UserRole+1);
+        li->setData(item.type,Qt::UserRole+2);
+        li->setText(item.name);
+        list_->setRowHidden(i,hidden);
         i++;
     }
     while (i<ni)
     {
-        list_->item(i)->setData(Qt::UserRole+1,-1);
-        list_->item(i++)->setHidden(true);
+        QStandardItem *li=model_->item(i);
+        li->setData(Qt::UserRole+1,-1);
+        list_->setRowHidden(i++,true);
     }
     vb->setValue(oldValue);
     working_=false;
@@ -357,6 +385,7 @@ void OutlineWidget::reportError(const QString error)
 }
 
 void OutlineWidget::parse() {
+	OutLineItemList empty;
     if (doc_) {
         QFileInfo fileInfo(doc_->fileName());
         if (!fileInfo.suffix().compare(QString("lua"),Qt::CaseInsensitive))
@@ -376,10 +405,10 @@ void OutlineWidget::parse() {
             working_=true;
         }
         else
-            list_->clear();
+           updateOutline(empty);
     }
     else
-        list_->clear();
+        updateOutline(empty);
 }
 
 void OutlineWidget::checkParse() {

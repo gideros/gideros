@@ -7,6 +7,7 @@
 #include <QTime>
 #include <QThread>
 #include <QLabel>
+#include <QStyledItemDelegate>
 #include "textedit.h"
 
 struct OutLineItem {
@@ -33,17 +34,19 @@ signals:
     void reportError(const QString error);
 };
 
-class OutlineWidgetItem : public QWidget
+class OutlineWidgetItem : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    OutlineWidgetItem(QWidget *parent=0);
+    OutlineWidgetItem(QObject *parent=0);
     ~OutlineWidgetItem();
     OutLineItem value_;
     void setValue(OutLineItem &item);
     OutLineItem getValue() { return value_; }
+	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 private:
+    QWidget *container;
     QLabel *icon;
     QLabel *label;
 };
@@ -59,7 +62,8 @@ public:
 private:
     TextEdit *doc_;
     QTime refresh_;
-    QListWidget *list_;
+    QListView *list_;
+    QStandardItemModel *model_;
     bool working_;
     bool needParse_;
     void parse();
@@ -71,7 +75,7 @@ private:
     QAction *actTbl_;
 private slots:
     void checkParse();
-    void onItemChanged(QListWidgetItem *,QListWidgetItem *);
+    void onItemClicked(const QModelIndex &);
     void updateOutline(QList<OutLineItem> s);
     void reportError(const QString error);
 };
