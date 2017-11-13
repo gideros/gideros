@@ -248,7 +248,7 @@ void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx,
 }
 
 Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
-		int *pminx, int *pminy, int *pmaxx, int *pmaxy, uint32_t color, bool &isRGB) {
+		int *pminx, int *pminy, int *pmaxx, int *pmaxy, unsigned int color, bool &isRGB) {
 	checkLogicalScale();
     float scalex = currentLogicalScaleX_;
     float scaley = currentLogicalScaleY_;
@@ -333,7 +333,7 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 
 			if (l.styleFlags&TEXTSTYLEFLAG_COLOR) {
 				unsigned char rgba[4];
-                uint32_t col=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?c.color:color|0xFF000000;
+                unsigned int col=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?c.color:color|0xFF000000;
 				rgba[0]=(col>>16)&0xFF;
 				rgba[1]=(col>>8)&0xFF;
 				rgba[2]=(col>>0)&0xFF;

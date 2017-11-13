@@ -1,6 +1,7 @@
 #include "fontbase.h"
 #include <math.h>
 #include <algorithm>
+#include <stdlib.h>
 
 static void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags, bool wrapped=false)
 {

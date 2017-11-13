@@ -49,7 +49,7 @@ public:
 		char sep;
 		//Styling
 		int styleFlags;
-		uint32_t color;
+		unsigned int color;
 	};
 	struct TextLayout {
 		float x,y;
