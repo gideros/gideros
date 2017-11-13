@@ -39,6 +39,7 @@ public:
 		float sizeMult;
 	};
 
+#define TEXTSTYLEFLAG_COLOR	1
 	struct ChunkLayout {
 		std::string text;
 		float x,y;
@@ -46,11 +47,15 @@ public:
 		float dx,dy;
 		int line;
 		char sep;
+		//Styling
+		int styleFlags;
+		uint32_t color;
 	};
 	struct TextLayout {
 		float x,y;
 		float w,h;
 		int lines;
+		int styleFlags;
 		std::vector<struct ChunkLayout> parts;
 	};
 

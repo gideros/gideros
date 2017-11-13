@@ -17,7 +17,9 @@ static void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float 
 	{
 		tl->parts[i].x+=ox;
 		tl->parts[i].dx=ox;
-		float ns=(tl->parts[i].sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):sw;
+        char sep=tl->parts[i].sep;
+        float ns=(sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):sw;
+        if (sep=='\e') ns=0;
 		ox+=tl->parts[i].w+ns;
 	}
 }
@@ -32,6 +34,8 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	bool wrap=!(params->flags&TLF_NOWRAP);
 	const char *bt=text;
 	const char *rt=bt;
+	ChunkLayout styles; //To hold styling info
+	styles.styleFlags=0;
 	//Cut text around spaces and control chars (ascii<' ')
 	float y=0;
 	float cw=0;
@@ -58,8 +62,10 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		cl.dy=y;
 		cl.sep=*rt;
 		cl.line=lines+1;
+		cl.styleFlags=styles.styleFlags;
+		cl.color=styles.color;
 		float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):sw;
-		if (wrap&&cw&&((cw+cl.w+ns)>params->w))
+		if (wrap&&cw&&((*rt)!='\e')&&((cw+cl.w+ns)>params->w))
 		{
 			//The current line will exceed max width (and is not empty): wrap
 			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,true);
@@ -83,7 +89,72 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 			cw=0;
 			lines++;
 		}
-		if (*rt) rt++;
+		if ((*rt)=='\e') {
+			//Parse styles
+			if ((*(++rt))=='[')
+			{
+				const char *ss=rt+1;
+				const char *se=ss;
+				while ((*se)&&((*se)!=']')) se++;
+				if (*se==']')
+				{
+					rt=se+1;
+					while (true) {
+						const char *sp=ss;
+						const char *sa=NULL;
+						while ((sp<se)&&((*sp)!=','))
+						{
+							if ((*sp)=='=') sa=sp;
+							sp++;
+						}
+						std::string key,val;
+						if (sa)
+						{
+							key=std::string(ss,sa-ss);
+							val=std::string(sa+1,sp-sa-1);
+						}
+						else
+							key=std::string(ss,sp-ss);
+						if (!key.compare("color"))
+						{
+							if ((val.size()==0)||(val.at(0)!='#'))
+								styles.styleFlags&=~TEXTSTYLEFLAG_COLOR;
+							else
+							{
+								styles.styleFlags|=TEXTSTYLEFLAG_COLOR;
+								int param=strtol(val.c_str()+1,NULL,16);
+								switch (val.size())
+								{
+									case 4:
+										styles.color=((param&0x0F)<<4)|((param&0x0F)<<0)|
+													 ((param&0xF0)<<8)|((param&0xF0)<<4)|
+													 ((param&0xF00)<<12)|((param&0xF00)<<8)|
+													 0xFF000000;
+										break;
+									case 5:
+										styles.color=((param&0x0F)<<28)|((param&0x0F)<<24)|
+													 ((param&0xF0)<<0)|((param&0xF0)>>4)|
+													 ((param&0xF00)<<4)|((param&0xF00)>>0)|
+													 ((param&0xF000)<<8)|((param&0xF000)<<4);
+										break;
+									case 7:
+										styles.color=param|0xFF000000;
+										break;
+									case 9:
+										styles.color=(param>>8)|(param&0xFF)<<24;
+										break;
+									default:
+										styles.styleFlags&=~TEXTSTYLEFLAG_COLOR;
+								}
+							}
+						}
+						if (sp==se) break;
+						ss=sp+1;
+					}
+				}
+			}
+		}
+		else if (*rt) rt++;
 		bt=rt;
 	}
 	//Layout final line
@@ -112,6 +183,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	tl.x = 1e30;
 	tl.y = 1e30;
 	float mx=-1e30,my=-1e30;
+	tl.styleFlags=0;
 	for (size_t k=0;k<tl.parts.size();k++)
 	{
 		tl.parts[k].y+=yo;
@@ -120,6 +192,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		tl.y=std::min(tl.y,tl.parts[k].y);
 		mx=std::max(mx,tl.parts[k].x+tl.parts[k].w-1);
 		my=std::max(my,tl.parts[k].y+tl.parts[k].h-1);
+		tl.styleFlags|=tl.parts[k].styleFlags;
 	}
 	tl.w=mx-tl.x+1;
 	tl.h=my-tl.y+1;

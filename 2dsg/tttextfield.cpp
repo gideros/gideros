@@ -28,7 +28,8 @@ TTTextField::TTTextField(Application* application, TTFont* font, const char* tex
 		layout_=*layout;
 
     FontBase::TextLayoutParameters empty;
-    font_->renderFont(sample_.c_str(), &empty, &sminx, &sminy, &smaxx, &smaxy);
+    bool isRGB;
+    font_->renderFont(sample_.c_str(), &empty, &sminx, &sminy, &smaxx, &smaxy, textColor_, isRGB);
     sminx = sminx/scalex;
     sminy = sminy/scaley;
     smaxx = smaxx/scalex;
@@ -76,11 +77,12 @@ void TTTextField::createGraphics()
         scalex/=smoothing;
         scaley/=smoothing;
     }
-    parameters.format=eA8;
 
 
     int minx, miny, maxx, maxy;
-    Dib dib = font_->renderFont(text_.c_str(), &layout_, &minx, &miny, &maxx, &maxy);
+    bool isRGB;
+    Dib dib = font_->renderFont(text_.c_str(), &layout_, &minx, &miny, &maxx, &maxy,textColor_,isRGB);
+    parameters.format=isRGB?eRGBA8888:eA8;
 
 
     if (!sample_.empty())
@@ -124,10 +126,13 @@ void TTTextField::createGraphics()
 	graphicsBase_.indices[3] = 2;
 	graphicsBase_.indices.Update();
 
-	int r = (textColor_ >> 16) & 0xff;
-	int g = (textColor_ >> 8) & 0xff;
-	int b = textColor_ & 0xff;
-	graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, 1);
+	if (!isRGB)
+	{
+		int r = (textColor_ >> 16) & 0xff;
+		int g = (textColor_ >> 8) & 0xff;
+		int b = textColor_ & 0xff;
+		graphicsBase_.setColor(r / 255.f, g / 255.f, b / 255.f, 1);
+	}
 
     minx_ = minx/scalex;
     miny_ = miny/scaley;
@@ -229,7 +234,8 @@ void TTTextField::setSample(const char* sample)
     }
 
     FontBase::TextLayoutParameters empty;
-    font_->renderFont(sample, &empty, &sminx, &sminy, &smaxx, &smaxy);
+    bool isRGB;
+    font_->renderFont(sample, &empty, &sminx, &sminy, &smaxx, &smaxy,textColor_,isRGB);
     sminx = sminx/scalex;
     sminy = sminy/scaley;
     smaxx = smaxx/scalex;

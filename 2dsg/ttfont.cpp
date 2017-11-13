@@ -248,7 +248,7 @@ void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx,
 }
 
 Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
-		int *pminx, int *pminy, int *pmaxx, int *pmaxy) {
+		int *pminx, int *pminy, int *pmaxx, int *pmaxy, uint32_t color, bool &isRGB) {
 	checkLogicalScale();
     float scalex = currentLogicalScaleX_;
     float scaley = currentLogicalScaleY_;
@@ -331,6 +331,22 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
             int yo = y - g.top - l.y*scaley;
 			int index = 0;
 
+			if (l.styleFlags&TEXTSTYLEFLAG_COLOR) {
+				unsigned char rgba[4];
+                uint32_t col=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?c.color:color|0xFF000000;
+				rgba[0]=(col>>16)&0xFF;
+				rgba[1]=(col>>8)&0xFF;
+				rgba[2]=(col>>0)&0xFF;
+				for (unsigned int y = 0; y < g.height; ++y) {
+					for (unsigned int x = 0; x < g.width; ++x)
+					{
+                        rgba[3]=(((col>>24)&0xFF)*g.bitmap[index++])>>8;
+						dib.setPixel(xo + x, yo + y, rgba);
+					}
+					index = index + g.pitch - g.width;
+				}
+			}
+			else
 			for (unsigned int y = 0; y < g.height; ++y) {
 				for (unsigned int x = 0; x < g.width; ++x)
 					dib.satAlpha(xo + x, yo + y, g.bitmap[index++]);
@@ -343,6 +359,10 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 		}
 
 	}
+
+    isRGB=(l.styleFlags&TEXTSTYLEFLAG_COLOR);
+    if (isRGB)
+		dib.premultiplyAlpha();
 
 	if (pminx)
         *pminx = l.x*scalex;

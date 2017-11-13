@@ -515,6 +515,16 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 	for (size_t pn = 0; pn < l.parts.size(); pn++) {
 		ChunkLayout c = l.parts[pn];
 
+		unsigned char rgba[4];
+		if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+		{
+			float ca=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.color>>24)&0xFF):1.0f;
+			rgba[0]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>16)&0xFF:r*255));
+			rgba[1]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>8)&0xFF:g*255));
+			rgba[2]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>0)&0xFF:b*255));
+			rgba[3]=(unsigned char)(ca*255);
+		}
+
 		std::basic_string<wchar32_t> wtext;
 		size_t wsize = utf8_to_wchar(c.text.c_str(), c.text.size(), NULL, 0, 0);
 		wtext.resize(wsize);
@@ -544,7 +554,13 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 				it != gfxMap.end(); it++) {
 			GraphicsBase *graphicsBase = &((*vGraphicsBase)[it->first]);
 			int size = it->second;
-			graphicsBase->setColor(r, g, b, 1);
+			if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+			{
+				graphicsBase->colors.resize(size * 16);
+				graphicsBase->colors.Update();
+			}
+			else
+				graphicsBase->setColor(r, g, b, 1);
 			graphicsBase->vertices.resize(size * 4);
 			graphicsBase->texcoords.resize(size * 4);
 			graphicsBase->indices.resize(size * 6);
@@ -620,6 +636,17 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			graphicsBase->texcoords[vi * 4 + 1] = Point2f(u1, v0);
 			graphicsBase->texcoords[vi * 4 + 2] = Point2f(u1, v1);
 			graphicsBase->texcoords[vi * 4 + 3] = Point2f(u0, v1);
+
+			if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+			{
+				for (int v=0;v<16;v+=4) {
+					graphicsBase->colors[vi * 16 + 0 + v] = rgba[0];
+					graphicsBase->colors[vi * 16 + 1 + v] = rgba[1];
+					graphicsBase->colors[vi * 16 + 2 + v] = rgba[2];
+					graphicsBase->colors[vi * 16 + 3 + v] = rgba[3];
+				}
+			}
+
 
 			graphicsBase->indices[vi * 6 + 0] = vi * 4 + 0;
 			graphicsBase->indices[vi * 6 + 1] = vi * 4 + 1;

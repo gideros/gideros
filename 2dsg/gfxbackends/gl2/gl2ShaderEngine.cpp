@@ -186,6 +186,15 @@ static const char *stdCTFShaderCode = "varying lowp vec4 fInColor;\n"
 		" if (frag.a==0.0) discard;\n"
 		" gl_FragColor = frag;\n"
 		"}\n";
+static const char *stdCTAFShaderCode = "varying lowp vec4 fInColor;\n"
+		"uniform lowp sampler2D fTexture;\n"
+		"varying mediump vec2 fTexCoord;\n"
+		"void main() {\n"
+		" lowp vec4 frag=texture2D(fTexture, fTexCoord);\n"
+		" frag=fInColor*frag.aaaa;\n"
+		" if (frag.a==0.0) discard;\n"
+		" gl_FragColor = frag;\n"
+		"}\n";
 static const char *stdPFShaderCode =
 		"varying lowp vec4 fInColor;\n"
 				"uniform lowp sampler2D fTexture;\n"
@@ -392,6 +401,9 @@ void ogl2SetupShaders(bool isGLES) {
 			stdAttributes);
 	ShaderProgram::stdTextureColor = new ogl2ShaderProgram(hdrVShaderCode,
 			stdCTVShaderCode, hdrFShaderCode, stdCTFShaderCode, stdUniforms,
+			stdAttributes);
+	ShaderProgram::stdTextureAlphaColor = new ogl2ShaderProgram(hdrVShaderCode,
+			stdCTVShaderCode, hdrFShaderCode, stdCTAFShaderCode, stdUniforms,
 			stdAttributes);
 	const ShaderProgram::ConstantDesc stdPUniforms[] = { { "vMatrix",
 			ShaderProgram::CMATRIX, 1,

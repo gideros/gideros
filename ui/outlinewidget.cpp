@@ -321,6 +321,7 @@ void OutlineWidget::updateOutline(QList<OutLineItem> s)
 {
     bool sAlpha=actSort_->isChecked();
     bool sGroup=actType_->isChecked();
+    if (s.size()>1)
     std::sort(s.begin(),s.end(),[sGroup,sAlpha](OutLineItem &a,OutLineItem &b) {
         if (sGroup&&((a.type&0x0F)>(b.type&0x0F))) return true;
         if (sGroup&&((a.type&0x0F)<(b.type&0x0F))) return false;
@@ -380,19 +381,22 @@ void OutlineWidget::reportError(const QString error)
         s->SendScintilla(QsciScintillaBase::SCI_STYLESETBACK,stylenum,QColor("darkred"));
         s->setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
         s->annotate(lineNum-1,err,stylenum);
+        if (lineNum>=s->lines())
+            s->SendScintilla(QsciScintillaBase::SCI_SCROLLTOEND,0,0L);
     }
 
 }
 
 void OutlineWidget::parse() {
-	OutLineItemList empty;
+    bool noContent=true;
+    needParse_=working_;
+    if (working_)
+        return;
     if (doc_) {
         QFileInfo fileInfo(doc_->fileName());
         if (!fileInfo.suffix().compare(QString("lua"),Qt::CaseInsensitive))
         {
-            needParse_=working_;
-            if (working_)
-                return;
+            noContent=false;
             QsciScintilla *s=doc_->sciScintilla();
             QString text=s->text();
             QByteArray btext=text.toUtf8();
@@ -404,11 +408,9 @@ void OutlineWidget::parse() {
             workerThread->start();
             working_=true;
         }
-        else
-           updateOutline(empty);
     }
-    else
-        updateOutline(empty);
+    if (noContent)
+        updateOutline(OutLineItemList());
 }
 
 void OutlineWidget::checkParse() {

@@ -1,4 +1,4 @@
-WINRT_SHADERS=Basic Color Texture TextureAlpha TextureColor Particle Particles PathFillC PathStrokeC PathStrokeLC
+WINRT_SHADERS=Basic Color Texture TextureAlpha TextureColor TextureAlphaColor Particle Particles PathFillC PathStrokeC PathStrokeLC
 WINRT_SHADERS_PATH=2dsg/gfxbackends/dx11
 WINRT_SHADERS_FILE=dx11_shaders.c
 BIN2C=$(ROOT)/scripts/bin2c
