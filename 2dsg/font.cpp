@@ -154,9 +154,20 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 
 	graphicsBase->data = data_;
 	if (fontInfo_.isSetTextColorAvailable)
-		graphicsBase->setColor(r, g, b, 1);
+	{
+		if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+		{
+			graphicsBase->colors.resize(size * 16);
+			graphicsBase->colors.Update();
+		}
+		else
+			graphicsBase->setColor(r, g, b, 1);
+	}
 	else
+	{
 		graphicsBase->setColor(1, 1, 1, 1);
+		l.styleFlags&=(~TEXTSTYLEFLAG_COLOR);
+	}
 	graphicsBase->vertices.resize(size * 4);
 	graphicsBase->texcoords.resize(size * 4);
 	graphicsBase->indices.resize(size * 6);
@@ -167,6 +178,15 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
     size_t gi=0;
 	for (int pn = 0; pn < l.parts.size(); pn++) {
 		ChunkLayout c = l.parts[pn];
+		unsigned char rgba[4];
+		if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+		{
+			float ca=(c.styleFlags&TEXTSTYLEFLAG_COLOR)?(1.0/255)*((c.color>>24)&0xFF):1.0f;
+			rgba[0]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>16)&0xFF:r*255));
+			rgba[1]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>8)&0xFF:g*255));
+			rgba[2]=(unsigned char)(ca*((c.styleFlags&TEXTSTYLEFLAG_COLOR)?(c.color>>0)&0xFF:b*255));
+			rgba[3]=(unsigned char)(ca*255);
+		}
 		std::basic_string<wchar32_t> wtext;
 		size_t wsize = utf8_to_wchar(c.text.c_str(), c.text.size(), NULL, 0, 0);
 		wtext.resize(wsize);
@@ -230,6 +250,16 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
             graphicsBase->texcoords[gi * 4 + 1] = Point2f(u1, v0);
             graphicsBase->texcoords[gi * 4 + 2] = Point2f(u1, v1);
             graphicsBase->texcoords[gi * 4 + 3] = Point2f(u0, v1);
+
+			if (l.styleFlags&TEXTSTYLEFLAG_COLOR)
+			{
+				for (int v=0;v<16;v+=4) {
+					graphicsBase->colors[gi * 16 + 0 + v] = rgba[0];
+					graphicsBase->colors[gi * 16 + 1 + v] = rgba[1];
+					graphicsBase->colors[gi * 16 + 2 + v] = rgba[2];
+					graphicsBase->colors[gi * 16 + 3 + v] = rgba[3];
+				}
+			}
 
             graphicsBase->indices[gi * 6 + 0] = gi * 4 + 0;
             graphicsBase->indices[gi * 6 + 1] = gi * 4 + 1;
