@@ -207,6 +207,9 @@ bool TTBMFont::staticCharsetInit() {
 void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 		const char *chars, float filtering) {
 
+    currentDib_ = NULL;
+    currentPacker_ = NULL;
+
 	fontInfo_.ascender = 0;
 	fontInfo_.descender = 0;
 	defaultSize_ = size;
@@ -282,9 +285,6 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 	std::map<wchar32_t, TextureGlyph> &textureGlyphs = fontInfo_.textureGlyphs;
 
 	textureGlyphs.clear();
-
-	currentDib_ = NULL;
-	currentPacker_ = NULL;
 
 	std::vector<wchar32_t> wchars;
 	size_t len = utf8_to_wchar(charset_.c_str(), charset_.size(), NULL, 0, 0);
@@ -569,15 +569,14 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			graphicsBase->indices.Update();
 		}
 
-		float x = c.dx / sizescalex_ - minx, y = c.dy / sizescaley_ - miny;
+        float x = (c.dx-minx) / sizescalex_, y = (c.dy-miny) / sizescaley_;
 
-		if (hasSample) {
+        /* if (hasSample) {
 			std::map<wchar32_t, TextureGlyph>::const_iterator iter =
 					fontInfo_.textureGlyphs.find(text[0]);
 			const TextureGlyph &textureGlyph = iter->second;
-			x = c.dx / sizescalex_ - textureGlyph.left;
-			//y *= application_->getLogicalScaleY();
-		}
+            x = c.dx / sizescalex_ - textureGlyph.left; //FIXME is this needed ?
+        }*/
 
 		wchar32_t prev = 0;
 

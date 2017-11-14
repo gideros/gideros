@@ -170,5 +170,8 @@ bundle.installer: bundle
 	cp $(ROOT)/Release/*.nsh $(RELEASE).Final
 	cd $(RELEASE).Final; $(NSIS) gideros_mui2.nsi
 	mv $(RELEASE).Final/Gideros.exe $(ROOT)/
-	
+ifneq($(WIN_KEYSTORE),)	
+	$(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //t $(WIN_KEYTSS) $(ROOT)/Gideros.exe
+	$(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //fd sha256 //tr $(WIN_KEYTSS) //td sha256 //as $(ROOT)/Gideros.exe
+endif	
 	
