@@ -48,7 +48,7 @@ NSMutableArray *tableData;
 	self.view = rootView;
 }
 
-- (CGRect) getSafeArea 
+- (void) getSafeArea:(CGRect *) sa 
 {
  	CGRect r;
     if (@available (iOS 11,*)) {
@@ -60,7 +60,7 @@ NSMutableArray *tableData;
     }
     else
         r=CGRectMake(0,0,0,0);
- 	return r;
+    *sa=r;
 }
 
 - (void)viewDidLoad

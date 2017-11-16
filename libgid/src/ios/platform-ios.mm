@@ -139,7 +139,8 @@ std::string getAppId(){
 void getSafeDisplayArea(int &l,int &t,int &r,int &b)
 {
 		UIViewController *viewController = g_getRootViewController();
-		CGRect sa=[viewController getSafeArea];
+		CGRect sa;
+		[viewController getSafeArea:&sa];
 		l=sa.origin.x;
 		t=sa.origin.y;
 		r=sa.size.w;

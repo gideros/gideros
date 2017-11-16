@@ -44,6 +44,11 @@
 	self.view = rootView;
 }
 
+- (void) getSafeArea:(CGRect *) sa 
+{
+ 	*sa=CGRectMake(0,0,0,0);
+}
+
 - (NSInteger)animationFrameInterval
 {
     return animationFrameInterval;
