@@ -136,6 +136,10 @@ std::string getAppId(){
 	return [[[NSBundle mainBundle] bundleIdentifier] UTF8String];
 }
 
+extern "C" {
+UIViewController *g_getRootViewController();
+}
+
 void getSafeDisplayArea(int &l,int &t,int &r,int &b)
 {
 		UIViewController *viewController = g_getRootViewController();
@@ -145,10 +149,6 @@ void getSafeDisplayArea(int &l,int &t,int &r,int &b)
 		t=sa.origin.y;
 		r=sa.size.w;
 		b=sa.size.h;
-}
-
-extern "C" {
-UIViewController *g_getRootViewController();
 }
 
 static int s_fps = 60;
