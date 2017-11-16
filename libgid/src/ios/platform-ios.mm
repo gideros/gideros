@@ -147,8 +147,8 @@ void getSafeDisplayArea(int &l,int &t,int &r,int &b)
 		[viewController getSafeArea:&sa];
 		l=sa.origin.x;
 		t=sa.origin.y;
-		r=sa.size.w;
-		b=sa.size.h;
+		r=sa.size.width;
+		b=sa.size.height;
 }
 
 static int s_fps = 60;
