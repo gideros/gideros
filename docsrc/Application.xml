@@ -15,21 +15,21 @@
 Opens the given URL (Universal Resource Locator) in the appropriate application. URL can be one of the `http:`, `https:`, `tel:`, or `mailto:` schemes.<br />
 <br />
 The following example opens a web page in the browser:<br />
-&lt;pre&gt;&lt;code&gt;<br />
-	application:openUrl(&quot;http://www.giderosmobile.com&quot;)<br />
+<pre><code><br />
+	application:openUrl("http://www.giderosmobile.com")<br />
 <br />
-&lt;/code&gt;&lt;/pre&gt;<br />
+</code></pre><br />
 If `mailto:` scheme is specified, the user&#039;s e-mail client will be used to open a composer window containing the options specified in the URL.<br />
 For example, the following URL contains a recipient (user@foo.com), a subject (Test), and a message body (Just a test):<br />
-&lt;pre&gt;&lt;code&gt;<br />
+<pre><code><br />
 	application:openUrl(&quot;mailto:user@foo.com?subject=Test&amp;body=Just a test&quot;)<br />
 <br />
-&lt;/code&gt;&lt;/pre&gt;<br />
+</code></pre><br />
 Or to call a number:<br />
-&lt;pre&gt;&lt;code&gt;<br />
+<pre><code><br />
 	application:openUrl(&quot;tel:555-123-4567&quot;)<br />
 <br />
-&lt;/code&gt;&lt;/pre&gt;<br />
+</code></pre><br />
 ]]>
     <parameter name="url" optional="false" type="string"><![CDATA[url to open]]></parameter>
   </method>
@@ -75,15 +75,30 @@ Returns the user language in ISO 639-1 format.<br />
 ]]>
     <return type="string"><![CDATA[The the user language]]></return>
   </method>
+  <method name="Application:getAppId" page="getAppId" shortdesc="Application - returns the app id or bundle id" version="Gideros 2017.11.2"><![CDATA[<br />
+returns the application identifier or bundle identifier.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[App id]]></return>
+  </method>
+  <method name="Application:getDeviceSafeArea" page="getDeviceSafeArea" shortdesc="Application - returns the safe area insets" version="Gideros 2017.11.2"><![CDATA[<br />
+Returns the insets defining the safe display area in device coordinates<br />
+<br />
+]]>
+    <return type="number"><![CDATA[Left margin]]></return>
+    <return type="number"><![CDATA[Top margin]]></return>
+    <return type="number"><![CDATA[Right margin]]></return>
+    <return type="number"><![CDATA[Bottom margin]]></return>
+  </method>
   <method name="Application:setKeepAwake" page="setKeepAwake" shortdesc="Application - enables/disables screen dimming and device sleeping" version="Gideros 2011.6"><![CDATA[<br />
 Controls the screen dimming and device sleeping of the device. When the application has no touches as user input for some period,<br />
 the system puts the device into a sleep state where the screen dims. However some applications have no input and controlled<br />
 by accelerometer or gyroscope only. For these kind applications, the screen should be kept awake by calling this function<br />
 with parameter `true`.<br />
 <br />
-&lt;ul&gt;<br />
-&lt;li&gt;*Note:** This function has no effect on desktop.&lt;/li&gt;<br />
-&lt;/ul&gt;<br />
+<ul><br />
+<li>*Note:** This function has no effect on desktop.</li><br />
+</ul><br />
 <br />
 ]]>
     <parameter name="keepAwake" optional="false" type="boolean"><![CDATA[if true, screen is kept awake.]]></parameter>
@@ -200,12 +215,12 @@ Returns the background color (or clear color) of the application in hexadecimal 
   <method name="Application:setOrientation" page="setOrientation" shortdesc="Application - sets the orientation of the application" version="Gideros 2011.6"><![CDATA[<br />
 Sets the orientation of the application. Accepted values are:<br />
 <br />
-&lt;ul&gt;<br />
-&lt;li&gt;Application.PORTRAIT = &quot;portrait&quot;&lt;/li&gt;<br />
-&lt;li&gt;Application.PORTRAIT_UPSIDE_DOWN = &quot;portraitUpsideDown&quot;&lt;/li&gt;<br />
-&lt;li&gt;Application.LANDSCAPE_LEFT = &quot;landscapeLeft&quot;&lt;/li&gt;<br />
-&lt;li&gt;Application.LANDSCAPE_RIGHT = &quot;landscapeRight&quot;&lt;/li&gt;<br />
-&lt;/ul&gt;<br />
+<ul><br />
+<li>Application.PORTRAIT = &quot;portrait&quot;</li><br />
+<li>Application.PORTRAIT_UPSIDE_DOWN = &quot;portraitUpsideDown&quot;</li><br />
+<li>Application.LANDSCAPE_LEFT = &quot;landscapeLeft&quot;</li><br />
+<li>Application.LANDSCAPE_RIGHT = &quot;landscapeRight&quot;</li><br />
+</ul><br />
 <br />
 ]]>
     <parameter name="orientation" optional="false" type="string"/>
@@ -224,16 +239,16 @@ Returns the orientation of the application.<br />
   <method name="Application:setScaleMode" page="setScaleMode" shortdesc="Application - sets the automatic scale mode of the application" version="Gideros 2012.2.2"><![CDATA[<br />
 Sets the automatic scale mode of the application. Accepted values are:<br />
 <br />
-&lt;ul&gt;<br />
-&lt;li&gt;Application.NO_SCALE = &quot;noScale&quot;&lt;/li&gt;<br />
-&lt;li&gt;Application.CENTER = &quot;center&quot;&lt;/li&gt;<br />
-&lt;li&gt;Application.PIXEL_PERFECT = &quot;pixelPerfect&quot;&lt;/li&gt;<br />
-&lt;li&gt;Application.LETTERBOX = &quot;letterbox&quot;&lt;/li&gt;<br />
-&lt;li&gt;Application.CROP = &quot;crop&quot;&lt;/li&gt;<br />
-&lt;li&gt;Application.STRETCH = &quot;stretch&quot;&lt;/li&gt;<br />
-&lt;li&gt;Application.FIT_WIDTH = &quot;fitWidth&quot;&lt;/li&gt;<br />
-&lt;li&gt;Application.FIT_HEIGHT = &quot;fitHeight&quot;&lt;/li&gt;<br />
-&lt;/ul&gt;<br />
+<ul><br />
+<li>Application.NO_SCALE = &quot;noScale&quot;</li><br />
+<li>Application.CENTER = &quot;center&quot;</li><br />
+<li>Application.PIXEL_PERFECT = &quot;pixelPerfect&quot;</li><br />
+<li>Application.LETTERBOX = &quot;letterbox&quot;</li><br />
+<li>Application.CROP = &quot;crop&quot;</li><br />
+<li>Application.STRETCH = &quot;stretch&quot;</li><br />
+<li>Application.FIT_WIDTH = &quot;fitWidth&quot;</li><br />
+<li>Application.FIT_HEIGHT = &quot;fitHeight&quot;</li><br />
+</ul><br />
 <br />
 ]]>
     <parameter name="scaleMode" optional="false" type="string"/>
