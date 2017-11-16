@@ -51,18 +51,17 @@ NSMutableArray *tableData;
 - (CGRect) getSafeArea 
 {
  	CGRect r;
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_11
-	UIEdgeInsets *sa=[self.view safeAreaInsets];
- 	r.origin.x=sa.left;
- 	r.origin.y=sa.top;
- 	r.size.height=sa.bottom;
- 	r.size.width=sa.top;
-#else 	
-	r=CGMakeRect(0,0,0,0);
-#endif 
+    if (@available (tvOS 11,*)) {
+        UIEdgeInsets sa=[self.view safeAreaInsets];
+        r.origin.x=sa.left;
+        r.origin.y=sa.top;
+        r.size.height=sa.bottom;
+        r.size.width=sa.top;
+    }
+    else
+        r=CGRectMake(0,0,0,0);
  	return r;
 }
-
 
 - (void)viewDidLoad
 {
