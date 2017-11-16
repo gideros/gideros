@@ -1034,6 +1034,12 @@ public class GiderosApplication
 		Locale locale = Locale.getDefault();
 		return locale.getLanguage();
 	}
+	
+	static public String getAppId()
+	{
+		final Activity activity = WeakActivityHolder.get();
+		return activity.getPackageName();
+	}
 
 	static public String getVersion()
 	{

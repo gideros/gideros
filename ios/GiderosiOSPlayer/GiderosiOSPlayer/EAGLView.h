@@ -27,6 +27,7 @@
     GLuint defaultFramebuffer, colorRenderbuffer;
 
 	BOOL retinaDisplay;
+	CAEAGLLayer *eaglLayer;
 }
 
 @property (nonatomic, retain) EAGLContext *context;

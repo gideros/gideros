@@ -61,6 +61,14 @@ std::string getLanguage()
 	return s.substr(0,2);
 }
 
+std::string getAppId(){
+	return "";
+}
+
+void getSafeDisplayArea(int &x,int &y,int &w,int &h)
+{
+}
+
 void setWindowSize(int width, int height){
 
 }

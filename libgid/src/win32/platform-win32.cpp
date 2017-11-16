@@ -69,6 +69,14 @@ std::string getLanguage()
   return szBuff;
 }
 
+std::string getAppId(){
+	return "";
+}
+
+void getSafeDisplayArea(int &x,int &y,int &w,int &h)
+{
+}
+
 void setWindowSize(int width, int height)
 {
   printf("setWindowSize: %d x %d. hwndcopy=%p\n",width,height,hwndcopy);

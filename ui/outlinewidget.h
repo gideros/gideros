@@ -73,6 +73,7 @@ private:
     QAction *actGlb_;
     QAction *actLoc_;
     QAction *actTbl_;
+    OutLineItemList currentOutline_;
 private slots:
     void checkParse();
     void onItemClicked(const QModelIndex &);

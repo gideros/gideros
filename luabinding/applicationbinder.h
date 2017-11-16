@@ -18,6 +18,8 @@ private:
 	static int vibrate(lua_State* L);
 	static int getLocale(lua_State* L);
 	static int getLanguage(lua_State* L);
+	static int getAppId(lua_State* L);
+	static int getDeviceSafeArea(lua_State* L);
 	static int setKeepAwake(lua_State* L);
 	static int setKeyboardVisibility(lua_State* L);
 	static int getLogicalTranslateX(lua_State* L);

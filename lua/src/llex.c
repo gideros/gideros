@@ -556,6 +556,8 @@ static int llex (LexState *ls, SemInfo *seminfo) {
           case '(':
           {
             next(ls);
+            if (ls->current == EOZ)
+                luaX_lexerror(ls, "unfinished macro function definition", 0);
             q = ls->current;
             next(ls);
             for(;;) {

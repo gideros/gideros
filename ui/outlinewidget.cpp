@@ -302,23 +302,13 @@ void OutlineWidget::onItemClicked(const QModelIndex &idx)
 
 void OutlineWidget::sort()
 {
-    OutLineItemList l;
-    for (int i=0;i<model_->rowCount();i++)
-    {
-        QStandardItem *li=model_->item(i);
-        int line=li->data(Qt::UserRole+1).toInt();
-        if (line>=0)
-        {
-            int type=li->data(Qt::UserRole+2).toInt();
-            QString name=li->text();
-            l << OutLineItem(name,type,line);
-        }
-    }
-    updateOutline(l);
+    updateOutline(currentOutline_);
 }
 
 void OutlineWidget::updateOutline(QList<OutLineItem> s)
 {
+    if (!doc_) return;
+    currentOutline_=s;
     bool sAlpha=actSort_->isChecked();
     bool sGroup=actType_->isChecked();
     if (s.size()>1)
@@ -333,31 +323,18 @@ void OutlineWidget::updateOutline(QList<OutLineItem> s)
     bool vLocal=actLoc_->isChecked();
     QScrollBar *vb = list_->verticalScrollBar();
     int oldValue = vb->value();
-    int ni=model_->rowCount();
-    int i=0;
+
+    model_->clear();
     foreach( OutLineItem item, s )
     {
         int t=item.type&0xF0;
         bool hidden=(!(((t==OT_GLOBAL)&&vGlobal)||((t==OT_LOCAL)&&vLocal)||((t==0)&&vTable)));
-        QStandardItem *li;
-        if (i<ni)
-            li=model_->item(i);
-        else
-        {
-            li=new QStandardItem();
-            model_->appendRow(li);
-        }
+        if (hidden) continue;
+        QStandardItem *li=new QStandardItem();
         li->setData(item.line,Qt::UserRole+1);
         li->setData(item.type,Qt::UserRole+2);
         li->setText(item.name);
-        list_->setRowHidden(i,hidden);
-        i++;
-    }
-    while (i<ni)
-    {
-        QStandardItem *li=model_->item(i);
-        li->setData(Qt::UserRole+1,-1);
-        list_->setRowHidden(i++,true);
+        model_->appendRow(li);
     }
     vb->setValue(oldValue);
     working_=false;
@@ -367,6 +344,7 @@ void OutlineWidget::updateOutline(QList<OutLineItem> s)
 
 void OutlineWidget::reportError(const QString error)
 {
+    if (!doc_) return;
     QsciScintilla *s=doc_->sciScintilla();
     s->clearAnnotations();
     if (error.isEmpty()) return;
@@ -381,8 +359,13 @@ void OutlineWidget::reportError(const QString error)
         s->SendScintilla(QsciScintillaBase::SCI_STYLESETBACK,stylenum,QColor("darkred"));
         s->setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
         s->annotate(lineNum-1,err,stylenum);
-        if (lineNum>=s->lines())
-            s->SendScintilla(QsciScintillaBase::SCI_SCROLLTOEND,0,0L);
+        if (lineNum>=s->lines()) //Last line has error
+        {
+            int cline,cindex;
+            s->getCursorPosition(&cline,&cindex);
+            if ((lineNum-cline)<4) //Faulty line is around editing point, so scroll
+                s->SendScintilla(QsciScintillaBase::SCI_SCROLLTOEND,0,0L);
+        }
     }
 
 }

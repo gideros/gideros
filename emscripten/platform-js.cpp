@@ -15,7 +15,15 @@ std::vector<std::string> getDeviceInfo()
                                 
  return result;
 }
-                                        
+
+std::string getAppId(){
+	return "";
+}
+
+void getSafeDisplayArea(int &x,int &y,int &w,int &h)
+{
+}
+
 void setKeepAwake(bool awake)
 {
 }

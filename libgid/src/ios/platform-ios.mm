@@ -132,6 +132,19 @@ void setKeepAwake(bool awake)
 #endif
 }
 
+std::string getAppId(){
+	return [[[NSBundle mainBundle] bundleIdentifier] UTF8String];
+}
+
+void getSafeDisplayArea(int &l,int &t,int &r,int &b)
+{
+		UIViewController *viewController = g_getRootViewController();
+		CGRect sa=[viewController getSafeArea];
+		l=sa.origin.x;
+		t=sa.origin.y;
+		r=sa.size.w;
+		b=sa.size.h;
+}
 
 extern "C" {
 UIViewController *g_getRootViewController();
