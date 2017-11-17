@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Ads" page="Ads" parent="EventDispatcher" type="labs" version="Gideros 2011.6"><![CDATA[The idea is to provide common Ads interface for most of available ad frameworks, so that user's would not have to create a plugin for each of them separately, but rather it would be possible to wrap ad framework in single Java or Objective-C class (depending on the platform) and add it to the project, without even recompiling existing Ads Interface plugin.
+
+Additionally it would be able to support multiple ad frameworks simultaneously so users could switch and fall back between ad frameworks on runtime.
+
+More information available in [http://docs.giderosmobile.com/interface/ads](Ads interface guide).]]>
+  <method name="Ads.new" page="new" shortdesc="initializes new ad framework" version="Gideros 2014.01"><![CDATA[Initializes new ad framework
+For the possible values check [http://docs.giderosmobile.com/interface/ads](Ads Interface Guide)]]>
+    <parameter name="adframework" optional="false" type="string"><![CDATA[name of the adframework]]></parameter>
+  </method>
+  <method name="Ads:setKey" page="setKey" shortdesc="set keys for the framework" version="Gideros 2014.01"><![CDATA[provide all the keys/appids/etc needed for the framework, which you will get in same order on Native part in Map/Array object
+For the possible values check [http://docs.giderosmobile.com/interface/ads](Ads Interface Guide) Methods tab]]>
+    <parameter name="..." optional="false" type="values"><![CDATA[Varies for each ad framework]]></parameter>
+  </method>
+  <method name="Ads:showAd" page="showAd" shortdesc="display ad" version="Gideros 2011.6"><![CDATA[Display provided ad type with any other additional information.
+For the possible values check [http://docs.giderosmobile.com/interface/ads](Ads Interface Guide) Methods tab]]>
+    <parameter name="..." optional="false" type="varies"><![CDATA[varies for each ad framework]]></parameter>
+  </method>
+  <method name="Ads:hideAd" page="hideAd" shortdesc="hides ads" version="Gideros 2014.01"><![CDATA[Hides displayed ads]]></method>
+  <method name="Ads:enableTesting" page="enableTesting" shortdesc="enable testing ads" version="Gideros 2011.6"><![CDATA[Enable testing ads if supported by framework]]></method>
+  <method name="Ads:setAlignment" page="setAlignment" shortdesc="sets alignment of the ad" version="Gideros 2014.01"><![CDATA[Sets alignment of the ad
+First value is for the horizontal alignment and can have values as "left", "center", "right"
+Second value is for the vertical alignment and can have values as "top", "center", "bottom"]]>
+    <parameter name="horizontal" optional="false" type="strong"><![CDATA[horizontal alignment]]></parameter>
+    <parameter name="vertical" optional="false" type="string"><![CDATA[vertical alignment]]></parameter>
+  </method>
+  <method name="Ads:setPosition" page="setPosition" shortdesc="sets position of the ad" version="Gideros 2014.01"><![CDATA[Sets position of the ad in Gideros logical dimensions, taking into consideration applied automatic scaling]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x position to set]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y position to set]]></parameter>
+  </method>
+  <method name="Ads:setX" page="setX" shortdesc="Sets x position of the ad" version="Gideros 2014.01"><![CDATA[Sets x position of the ad in Gideros logical dimensions, taking into consideration applied automatic scaling]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[set x coordinate]]></parameter>
+  </method>
+  <method name="Ads:setY" page="setY" shortdesc="sets y position of the ad" version="Gideros 2014.01"><![CDATA[Sets y position of the ad in Gideros logical dimensions, taking into consideration applied automatic scaling]]>
+    <parameter name="y" optional="false" type="number"><![CDATA[set y coordinate]]></parameter>
+  </method>
+  <method name="Ads:getX" page="getX" shortdesc="gets x position of the ad" version="Gideros 2014.01"><![CDATA[Gets x position of the ad in Gideros logical dimensions, taking into consideration applied automatic scaling]]>
+    <return type="number"><![CDATA[x position of the ad]]></return>
+  </method>
+  <method name="Ads:getY" page="getY" shortdesc="gets y position of the ad" version="Gideros 2014.01"><![CDATA[Gets y position of the ad in Gideros logical dimensions, taking into consideration applied automatic scaling]]>
+    <return type="number"><![CDATA[get y position of the ad]]></return>
+  </method>
+  <method name="Ads:getPosition" page="getPosition" shortdesc="gets x and y position of the ad" version="Gideros 2011.6"><![CDATA[Gets x and y position of the ad in Gideros logical dimensions, taking into consideration applied automatic scaling]]>
+    <return type="number"><![CDATA[x position of the ad]]></return>
+    <return type="number"><![CDATA[y position of the ad]]></return>
+  </method>
+  <method name="Ads:getWidth" page="getWidth" shortdesc="gets width of the ad" version="Gideros 2014.01"><![CDATA[Gets width of the ad in Gideros logical dimensions, taking into consideration applied automatic scaling]]>
+    <return type="number"><![CDATA[width of the banner ad]]></return>
+  </method>
+  <method name="Ads:getHeight" page="getHeight" shortdesc="gets the height of the ad" version="Gideros 2011.6"><![CDATA[Gets the height of the ad in Gideros logical dimensions, taking into consideration applied automatic scaling]]>
+    <return type="number"><![CDATA[height of the banner ad]]></return>
+  </method>
+  <method name="Ads:get" page="get" shortdesc="gets property value of the ad" version="Gideros 2011.6"><![CDATA[Gets property value of the ad (accepted values x, y)]]>
+    <parameter name="property" optional="false" type="string"><![CDATA[value for which property to get]]></parameter>
+    <return type="varies"><![CDATA[value of the property]]></return>
+  </method>
+  <method name="Ads:set" page="set" shortdesc="sets property value of the ad" version="Gideros 2011.6"><![CDATA[Sets property value of the ad (accepted values: x, y)]]>
+    <parameter name="property" optional="false" type="string"><![CDATA[name of the property to set]]></parameter>
+    <parameter name="value" optional="false" type="varies"><![CDATA[value to set]]></parameter>
+  </method>
+  <event name="Event.AD_RECEIVED" page="Event.AD_RECEIVED" value="adReceived" version="Gideros 2014.01"><![CDATA[Ad was received]]></event>
+  <event name="Event.AD_FAILED" page="Event.AD_FAILED" value="adFailed" version="Gideros 2014.01"><![CDATA[Failed to retrieve ad]]>
+    <parameter name="error" type="string"><![CDATA[string describing what failed]]></parameter>
+  </event>
+  <event name="Event.AD_ACTION_BEGIN" page="Event.AD_ACTION_BEGIN" value="adActionBegin" version="Gideros 2014.01"><![CDATA[Some action like user clicked begin on the ad]]></event>
+  <event name="Event.AD_ACTION_END" page="Event.AD_ACTION_END" value="adActionEnd" version="Gideros 2014.01"><![CDATA[Some action as, for example, video was watched, ended on the ad]]></event>
+  <event name="Event.AD_DISMISSED" page="Event.AD_DISMISSED" value="adDismissed" version="Gideros 2014.01"><![CDATA[Ad was dismissed/removed from the screen]]></event>
+  <event name="Event.AD_ERROR" page="Event.AD_ERROR" value="adError" version="Gideros 2014.01"><![CDATA[There was an internal developer error, most probably something was not set up right]]>
+    <parameter name="error" type="string"><![CDATA[string describing error]]></parameter>
+  </event>
+  <example name="Creating fallbacks with Ads frameworks"><![CDATA[--require plugin
+require "ads"
+
+--initialize amazon
+amazon = Ads.new("amazon")
+amazon:setKey("amazon-key")
+
+--initialize admob
+admob = Ads.new("admob")
+admob:setKey("admob-key")
+
+--if amazon fails
+--show admob
+amazon:addEventListener(Event.AD_FAILED, function(e)
+	print("amazon AD_FAILED", e.error)
+	admob:showAd("auto")
+end)
+
+--if admob fails
+--show amazon
+admob:addEventListener(Event.AD_FAILED, function(e)
+	print("admob AD_FAILED", e.error)
+	amazon:showAd("auto")
+end)
+
+--start displaying amazon ads
+amazon:showAd("auto");]]></example>
+</object>

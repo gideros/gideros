@@ -41,8 +41,10 @@ static int os_pushresult (lua_State *L, int i, const char *filename) {
 
 
 static int os_execute (lua_State *L) {
-  #if TARGET_OS_TV == 0
+  #ifdef QT_NO_DEBUG 
   lua_pushinteger(L, system(luaL_optstring(L, 1, NULL)));
+  #else
+  lua_pushnil(L);
   #endif
   return 1;
 }

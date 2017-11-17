@@ -5,16 +5,20 @@
  <property name="reqCompass" type="boolean" title="Compass is mandatory"/>
  <property name="reqNoGps" type="boolean" title="Gps is not used in this app"/>
  <property name="reqGps" type="boolean" title="Gps is mandatory"/>
+ <property name="reqGpsBackground" type="boolean" title="Gps shall be available in background"/>
  <property name="reqGyro" type="boolean" title="Gyroscope is mandatory"/>
  <property name="reqTouch" type="boolean" title="Touchscreen is mandatory"/>
  <property name="reqTVCompat" type="boolean" title="Android TV compatibility"/>
  <property name="reqTVExtCompat" type="boolean" title="Android TV extended compatibility"/>
+ <property name="reqNoInternet" type="boolean" title="This app never access internet"/>
  <property name="reqNoVibrator" type="boolean" title="Vibrator not used in this app"/>
  <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and landscape"/>
  <property name="reqMaxAspect" type="boolean" title="Support aspect ratios of 2.1 or higher"/>
  <property name="reqWriteExternalStorage" type="boolean" title="App needs to to write external storage"/>
  <property name="reqPhoneOnly" type="boolean" title="This app is targeting phones only, no tablets"/>
  <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
+ <property name="reqCanOpenUrl" type="string" title="This app can open url : (with ',' separator)"/>
+ <property name="reqEnable64bits" type="boolean" title="Enable 64bits libs (android)"/> 
  <target name="AndroidStudio,APK,Android">
  	<if condition="[[[plugin.reqTVCompat]]]">
     	<template name="AndroidManifest" path="">
@@ -34,6 +38,7 @@
             		<by><![CDATA[
     <uses-feature android:name="android.hardware.telephony" android:required="false"/>
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
+	<uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
     <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
     <uses-feature android:name="android.hardware.nfc" android:required="false"/>
     <uses-feature android:name="android.hardware.gps" android:required="false"/>
@@ -66,6 +71,16 @@
 	        <replacelist wildcards="AndroidManifest.xml">
 	            <replace>
             		<orig><![CDATA[<uses-permission android:name="android.permission.VIBRATE"/>]]></orig>
+            		<by></by>
+        	    </replace>
+    	    </replacelist>
+	    </template>
+ 	</if>
+ 	<if condition="[[[plugin.reqNoInternet]]]">
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="AndroidManifest.xml">
+	            <replace>
+            		<orig><![CDATA[<uses-permission android:name="android.permission.INTERNET"/>]]></orig>
             		<by></by>
         	    </replace>
     	    </replacelist>
@@ -109,6 +124,16 @@
             		<orig>android:name="android.hardware.location.gps" android:required="false"</orig>
             		<by>android:name="android.hardware.location.gps" android:required="true"</by>
         	    </replace>
+    	    </replacelist>
+	    </template>
+    </if>
+    <if condition="[[[plugin.reqGpsBackground]]]">
+    	<template name="AndroidManifest" path="">
+	        <replacelist wildcards="GiderosSettings.java">
+	            <replace>
+            		<orig>backgroundLocation=false</orig>
+        	    	<by>backgroundLocation=true</by>
+    	        </replace>
     	    </replacelist>
 	    </template>
     </if>
@@ -156,15 +181,21 @@
     	</template>
     </if>
     <if condition="[[[plugin.reqWriteExternalStorage]]]">
+    <lua>
+    local ap=require("Tools/export_android")
+    ap.usePermission("android.permission.WRITE_EXTERNAL_STORAGE")
+    </lua>
+    </if>
+    <if condition="[[[plugin.reqEnable64bits]]]">
     	<template name="AndroidManifest" path="">
-        	<replacelist wildcards="AndroidManifest.xml">
+        	<replacelist wildcards="build.gradle">
 	            <append>
-            		<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
-        	    	<by><![CDATA[<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>]]></by>
+            		<orig>abiFilters "armeabi", "armeabi-v7a", "x86", "mips"</orig>
+        	    	<by></by>
     	        </append>
         	</replacelist>
     	</template>
-    </if>            
+    </if>                
  </target>
  <target name="iOS">
     <if condition="[[[plugin.reqPhoneOnly]]]">
@@ -179,7 +210,7 @@
     </if>
     <if condition="[[[plugin.reqExpRegCompliance]]]">
    	<template name="Project" path="">
-       	<replacelist wildcards="[[[project.namews]]]-Info.plist;Info.plist">
+       	<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">
 		    <prepend>
 				<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
 				<by><![CDATA[	
@@ -188,6 +219,44 @@
 	    	</prepend>
         </replacelist>
 	</template>
+    </if>
+	<lua><![CDATA[
+		local urls = Export.getProperty("plugin.reqCanOpenUrl")
+		if urls and string.len(urls)>0 then
+			local t,pattern = {},urls.format("([^%s]+)", ",")
+			urls:gsub(pattern, function(s) t[#t+1] = s end)
+			if #t>0 then
+				local keys = ""
+				for i,v in ipairs(t) do
+					local key = v and "<string>"..v.."</string>" or ""
+					keys = keys..key
+				end
+				Export.setProperty("plugin.reqCanOpenUrl",keys)
+			end
+		end
+	]]></lua>
+	<template name="Project" path="">
+		<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">
+			<prepend>
+				<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
+				<by><![CDATA[
+					<key>LSApplicationQueriesSchemes</key>
+					<array>[[[plugin.reqCanOpenUrl]]]</array>
+				]]></by>
+			</prepend>
+		</replacelist>
+	</template>
+	   <if condition="[[[plugin.reqGpsBackground]]]">
+    	<template name="Project" path="">
+		<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">
+			<prepend>
+				<orig><![CDATA[<!-- TAG:GIDEROS-IOS:PLIST:BGMODES -->]]></orig>
+				<by><![CDATA[
+					<string>location</string>
+				]]></by>
+			</prepend>
+		</replacelist>
+		</template>
     </if>
  </target> 
 </plugin>

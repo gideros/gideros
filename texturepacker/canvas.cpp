@@ -2,7 +2,9 @@
 #include <QPainter>
 #include "texturepacker.h"
 #include <QColor>
+#include <QDebug>
 #include <limits.h>
+#include <QMessageBox>
 
 Canvas::Canvas(QWidget *parent)
 	: QWidget(parent)
@@ -84,6 +86,9 @@ QString Canvas::packTextures(const QStringList& textureFileNames, const QStringL
 	QList<QImage> images;
 	QList<QPoint> deltamin;
 	QList<QPoint> deltamax;
+    QList<int> failingIndices;
+    QMap<int,int> imageNameMap;
+
 	for (int i = 0; i < textureFileNames.size(); ++i)
 	{
 		QImage image;
@@ -97,19 +102,22 @@ QString Canvas::packTextures(const QStringList& textureFileNames, const QStringL
 
 			if (minx <= maxx && miny <= maxy)
 			{
-				images.push_back(image);
+                imageNameMap[images.size()]=i;
+                images.push_back(image);
 				deltamin.push_back(QPoint(minx, miny));
 				deltamax.push_back(QPoint(owidth - 1 - maxx, oheight - 1 - maxy));
 			}
 			else
 			{
-				// TODO: give a warning here (bence burada transparan texture'u direk atlayabiliriz. 1x1'e gerek yok)
+                failingIndices.push_back(i);
+                QMessageBox::warning(this, QString("Input file issue"), QString("Image size too large:") + names[i]);
 			}
 		}
 		else
 		{
-			// TODO: give a warning here (bence burada yuklenmeyen texture'u direk atlayabiliriz. 1x1'e gerek yok)
-		}
+            failingIndices.push_back(i);
+            QMessageBox::warning(this, QString("Input file issue"), QString("Image cannot be loaded:") + names[i]);
+        }
 	}
 
 	if (images.empty())
@@ -153,7 +161,7 @@ QString Canvas::packTextures(const QStringList& textureFileNames, const QStringL
 			tp->getTextureLocation(i, &xo, &yo, &width, &height);
 
 			textureLocationList_ += QString("%1, %2, %3, %4, %5, %6, %7, %8, %9\n").
-										arg(names[i]).
+                                        arg(names[imageNameMap[i]]).
 										arg(xo).
 										arg(yo).
 										arg(width).

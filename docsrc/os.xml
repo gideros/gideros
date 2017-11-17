@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="os" page="os" parent="" type="lua" version="Gideros 2011.6"><![CDATA[Operating System Facilities]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="os.timer" page="timer" shortdesc="returns precise time in seconds relative to some arbitrary point" version="Gideros 2011.6"><![CDATA[<br />
+Returns precise time in seconds relative to some arbitrary point.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[Precise time in seconds relative to some arbitrary point]]></return>
+  </method>
+  <method name="os.clock" page="clock" shortdesc="returns CPU time used by program in seconds" version="Gideros 2011.6"><![CDATA[ returns CPU time used by program in seconds]]>
+    <return type="number"><![CDATA[time in seconds]]></return>
+  </method>
+  <method name="os.date" page="date" shortdesc="returns a string or table containing date and time, &quot;*t&quot; returns a table" version="Gideros 2011.6"><![CDATA[Returns a string or a table containing date and time, formatted according to the given string format. 
+
+
+ If the time argument is present, this is the time to be formatted (see the os.time function for a description of this value). Otherwise, date formats the current time. 
+
+
+ If format starts with '!', then the date is formatted in Coordinated Universal Time. After this optional character, if format is the string "*t", then date returns a table with the following fields: year (four digits), month (1--12), day (1--31), hour (0--23), min (0--59), sec (0--61), wday (weekday, Sunday is 1), yday (day of the year), and isdst (daylight saving flag, a boolean). 
+
+
+ If format is not "*t", then date returns the date as a string, formatted according to the same rules as the C function strftime. 
+
+
+ When called without arguments, date returns a reasonable date and time representation that depends on the host system and on the current locale (that is, os.date() is equivalent to os.date("%c")).]]>
+    <parameter name="format" optional="false" type="string"><![CDATA[format of the date]]></parameter>
+    <parameter name="time" optional="true" type="number"><![CDATA[time to format]]></parameter>
+  </method>
+  <method name="os.difftime" page="difftime" shortdesc="returns number of seconds from time t1 to time t2" version="Gideros 2011.6"><![CDATA[ returns number of seconds from time t1 to time t2]]>
+    <parameter name="t2" optional="false" type="number"><![CDATA[first time]]></parameter>
+    <parameter name="t1" optional="false" type="number"><![CDATA[second time]]></parameter>
+    <return type="number"><![CDATA[different between time dates in seconds]]></return>
+  </method>
+  <method name="os.execute" page="execute" shortdesc="executes command using C function system, returns status code" version="Gideros 2011.6"><![CDATA[This function is equivalent to the C function system. It passes command to be executed by an operating system shell. It returns a status code, which is system-dependent. If command is absent, then it returns nonzero if a shell is available and zero otherwise.]]>
+    <parameter name="command" optional="false" type="string"><![CDATA[command to execute]]></parameter>
+    <return type="number"><![CDATA[status code]]></return>
+  </method>
+  <method name="os.exit" page="exit" shortdesc="terminates host program with optional code, default is success code" version="Gideros 2011.6"><![CDATA[Calls the C function exit, with an optional code, to terminate the host program. The default value for code is the success code.]]>
+    <parameter name="code" optional="true" type="string"><![CDATA[exit code]]></parameter>
+  </method>
+  <method name="os.getenv" page="getenv" shortdesc="returns value of environment variable varname. nil if not defined" version="Gideros 2011.6"><![CDATA[Returns the value of the process environment variable varname, or nil if the variable is not defined.]]>
+    <parameter name="varname" optional="false" type="string"><![CDATA[name of the variable]]></parameter>
+    <return type="any"><![CDATA[value of the variable]]></return>
+  </method>
+  <method name="os.remove" page="remove" shortdesc="deletes file with given name, nil if fails" version="Gideros 2011.6"><![CDATA[Deletes the file or directory with the given name. Directories must be empty to be removed. If this function fails, it returns nil, plus a string describing the error.]]>
+    <parameter name="filename" optional="false" type="string"><![CDATA[filename to delete]]></parameter>
+  </method>
+  <method name="os.rename" page="rename" shortdesc="renames file oldname to newname, nil if fails" version="Gideros 2011.6"><![CDATA[Renames file or directory named oldname to newname. If this function fails, it returns nil, plus a string describing the error.]]>
+    <parameter name="oldname" optional="false" type="string"><![CDATA[current name of the file]]></parameter>
+    <parameter name="newname" optional="false" type="string"><![CDATA[new name of the file]]></parameter>
+  </method>
+  <method name="os.setlocale" page="setlocale" shortdesc="set current locale of program, returns name of new locate or nil" version="Gideros 2011.6"><![CDATA[Sets the current locale of the program. locale is a string specifying a locale; category is an optional string describing which category to change: "all", "collate", "ctype", "monetary", "numeric", or "time"; the default category is "all". The function returns the name of the new locale, or nil if the request cannot be honored. 
+
+
+ If locale is the empty string, the current locale is set to an implementation-defined native locale. If locale is the string "C", the current locale is set to the standard C locale. 
+
+
+ When called with nil as the first argument, this function only returns the name of the current locale for the given category.]]>
+    <parameter name="locale" optional="false" type="string"><![CDATA[locale to set]]></parameter>
+    <parameter name="category" optional="true" type="string"><![CDATA[category to change]]></parameter>
+    <return type="string"><![CDATA[name if current locale]]></return>
+  </method>
+  <method name="os.time" page="time" shortdesc="returns current time(usually seconds- or time as represented by table" version="Gideros 2011.6"><![CDATA[Returns the current time when called without arguments, or a time representing the date and time specified by the given table. This table must have fields year, month, and day, and may have fields hour, min, sec, and isdst (for a description of these fields, see the os.date function). 
+
+
+ The returned value is a number, whose meaning depends on your system. In POSIX, Windows, and some other systems, this number counts the number of seconds since some given start time (the "epoch"). In other systems, the meaning is not specified, and the number returned by time can be used only as an argument to date and `difftime`.]]>
+    <parameter name="table" optional="true" type="table"><![CDATA[table representing a date time]]></parameter>
+    <return type="number"><![CDATA[time in seconds]]></return>
+  </method>
+  <method name="os.tmpname" page="tmpname" shortdesc="returns a string with a filename for a temporary file(dangerous! tmpfile is better-" version="Gideros 2011.6"><![CDATA[Returns a string with a file name that can be used for a temporary file. The file must be explicitly opened before its use and explicitly removed when no longer needed. 
+
+ On some systems (POSIX), this function also creates a file with that name, to avoid security risks. (Someone else might create the file with wrong permissions in the time between getting the name and creating the file.) You still have to open the file to use it and to remove it (even if you do not use it). 
+
+ When possible, you may prefer to use `io.tmpfile`, which automatically removes the file when the program ends.]]>
+    <return type="string"><![CDATA[name for the temporary file]]></return>
+  </method>
+</object>

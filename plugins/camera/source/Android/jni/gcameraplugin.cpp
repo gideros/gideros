@@ -11,6 +11,17 @@ JavaVM *g_getJavaVM();
 JNIEnv *g_getJNIEnv();
 }
 
+static void GetJStringContent(JNIEnv *AEnv, jstring AStr, std::string &ARes) {
+  if (!AStr) {
+    ARes.clear();
+    return;
+  }
+
+  const char *s = AEnv->GetStringUTFChars(AStr,NULL);
+  ARes=s;
+  AEnv->ReleaseStringUTFChars(AStr,s);
+}
+
 static const char *VShaderCode = "attribute highp vec3 vVertex;\n"
 		"attribute mediump vec2 vTexCoord;\n"
 		"uniform highp mat4 vMatrix;\n"
@@ -33,6 +44,8 @@ static const char *FShaderCode =
 
 static const ShaderProgram::ConstantDesc camUniforms[] =
 		{ { "tMatrix", ShaderProgram::CMATRIX, 1, ShaderProgram::SysConst_None,
+		true, 0, NULL },
+		 { "rMatrix", ShaderProgram::CMATRIX, 1, ShaderProgram::SysConst_None,
 				true, 0, NULL },
 		 { "vMatrix", ShaderProgram::CMATRIX, 1,
 						ShaderProgram::SysConst_WorldViewProjectionMatrix, true,
@@ -100,6 +113,36 @@ public:
 				env->GetStaticMethodID(cls_, "isCameraAvailable", "()Z"));
 	}
 
+	std::vector<cameraplugin::CameraDesc> availableDevices()
+	{
+		std::vector<cameraplugin::CameraDesc> cams;
+		JNIEnv *env = g_getJNIEnv();
+		jobject	jcams=env->CallStaticObjectMethod(cls_,
+				env->GetStaticMethodID(cls_, "availableDevices", "()[Lcom/giderosmobile/android/plugins/camera/GCamera$CamInfo;"));
+		jobjectArray *arr = reinterpret_cast<jobjectArray*>(&jcams);
+		jsize asize=env->GetArrayLength(*arr);
+		jclass ccls = env->FindClass(
+				"com/giderosmobile/android/plugins/camera/GCamera$CamInfo");
+		jfieldID name=env->GetFieldID(ccls,"name","Ljava/lang/String;");
+		jfieldID desc=env->GetFieldID(ccls,"description","Ljava/lang/String;");
+		jfieldID pos=env->GetFieldID(ccls,"position","I");
+		for (int i=0;i<asize;i++)
+		{
+			cameraplugin::CameraDesc c;
+			jobject data=env->GetObjectArrayElement(*arr,i);
+			GetJStringContent(env,(jstring)env->GetObjectField(data,name),c.name);
+			GetJStringContent(env,(jstring)env->GetObjectField(data,desc),c.description);
+			int cp= env->GetIntField(data,pos);
+			switch (cp) {
+			case 0: c.pos=cameraplugin::CameraDesc::POS_UNKNOWN; break;
+			case 1: c.pos=cameraplugin::CameraDesc::POS_FRONTFACING; break;
+			case 2: c.pos=cameraplugin::CameraDesc::POS_BACKFACING; break;
+			}
+			cams.push_back(c);
+		}
+		return cams;
+	}
+
 	void stop() {
 		if (running)
 		{
@@ -111,7 +154,7 @@ public:
 		}
 	}
 
-	void start(TextureData *texture,int orientation,int *camwidth,int *camheight) {
+	void start(TextureData *texture,int orientation,int *camwidth,int *camheight,const char *device) {
 		tex = texture;
 		rdrTgt = ShaderEngine::Engine->createRenderTarget(tex->id());
 		vertices[0] = Point2f(0, 0);
@@ -119,42 +162,47 @@ public:
 		vertices[2] = Point2f(tex->width, tex->height);
 		vertices[3] = Point2f(0, tex->height);
 		vertices.Update();
-		switch (orientation)
-		{
-		case 0: //Portrait
-			texcoords[3] = Point2f(1, 0);
-			texcoords[0] = Point2f(0, 0);
-			texcoords[1] = Point2f(0, 1);
-			texcoords[2] = Point2f(1, 1);
-			break;
-		case 90: //Landscape left
-			texcoords[0] = Point2f(1, 0);
-			texcoords[1] = Point2f(0, 0);
-			texcoords[2] = Point2f(0, 1);
-			texcoords[3] = Point2f(1, 1);
-			break;
-		case 180: //Portrait upside down
-			texcoords[1] = Point2f(1, 0);
-			texcoords[2] = Point2f(0, 0);
-			texcoords[3] = Point2f(0, 1);
-			texcoords[0] = Point2f(1, 1);
-			break;
-		case 270: //Landscape right
-			texcoords[2] = Point2f(1, 0);
-			texcoords[3] = Point2f(0, 0);
-			texcoords[0] = Point2f(0, 1);
-			texcoords[1] = Point2f(1, 1);
-			break;
-		}
-		texcoords.Update();
-
 		JNIEnv *env = g_getJNIEnv();
+		jstring jdev=device?env->NewStringUTF(device):NULL;
 		jintArray ret=(jintArray) env->CallStaticObjectMethod(cls_,
-				env->GetStaticMethodID(cls_, "start", "(III)[I"),tex->width, tex->height,orientation);
+				env->GetStaticMethodID(cls_, "start", "(IIILjava/lang/String;)[I"),tex->width, tex->height,orientation,jdev);
 		jboolean isCopy;
 		jint *rvals = env->GetIntArrayElements(ret, &isCopy);
 		*camwidth=rvals[0];
 		*camheight=rvals[1];
+	    int x0=0;
+	    int x1=1;
+	    if (rvals[3]) { x0=1; x1=0; }
+	    switch (rvals[2])
+		{
+		        case 0:
+		            texcoords[0] = Point2f(x0, 0);
+		            texcoords[1] = Point2f(x1, 0);
+		            texcoords[2] = Point2f(x1, 1);
+		            texcoords[3] = Point2f(x0, 1);
+		            break;
+		        case 90:
+		            texcoords[0] = Point2f(x1, 0);
+		            texcoords[1] = Point2f(x1, 1);
+		            texcoords[2] = Point2f(x0, 1);
+		            texcoords[3] = Point2f(x0, 0);
+		            break;
+		        case 180:
+		            texcoords[0] = Point2f(x1, 1);
+		            texcoords[1] = Point2f(x0, 1);
+		            texcoords[2] = Point2f(x0, 0);
+		            texcoords[3] = Point2f(x1, 0);
+		            break;
+		        case 270:
+		            texcoords[0] = Point2f(x0, 1);
+		            texcoords[1] = Point2f(x0, 0);
+		            texcoords[2] = Point2f(x1, 0);
+		            texcoords[3] = Point2f(x1, 1);
+		            break;
+		}
+		texcoords.Update();
+		env->ReleaseIntArrayElements(ret, rvals, 0);
+
 		running=true;
 	}
 
@@ -209,12 +257,20 @@ void cameraplugin::deinit() {
 		s_gcamera = NULL;
 	}
 }
+std::vector<cameraplugin::CameraDesc> cameraplugin::availableDevices()
+{
+	if (s_gcamera)
+		return s_gcamera->availableDevices();
+	std::vector<cameraplugin::CameraDesc> cams;
+	return cams;
+}
 
-void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight) {
+void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight,const char *device) {
 	int o=0;
 	switch (orientation)
 	{
 	case ePortrait:
+	case eFixed:
 		o=0;
 		break;
 	case eLandscapeLeft:
@@ -227,7 +283,7 @@ void cameraplugin::start(Orientation orientation,int *camwidth,int *camheight) {
 		o=270;
 		break;
 	}
-	s_gcamera->start(cameraplugin::cameraTexture->data,o,camwidth,camheight);
+	s_gcamera->start(cameraplugin::cameraTexture->data,o,camwidth,camheight,device);
 }
 
 void cameraplugin::stop() {
@@ -243,6 +299,7 @@ void Java_com_giderosmobile_android_plugins_camera_GCamera_nativeRender(
 		jboolean isCopy;
 		jfloat *fmat = env->GetFloatArrayElements(mat, &isCopy);
 		s_gcamera->nativeRender((int) camtex, fmat);
+		env->ReleaseFloatArrayElements(mat,fmat,0);
 	}
 }
 

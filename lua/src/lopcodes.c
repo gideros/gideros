@@ -63,6 +63,12 @@ const char *const luaP_opnames[NUM_OPCODES+1] = {
   "MIN",
   "DEG",
   "RAD",
+  "ADD_EQ",
+  "SUB_EQ",
+  "MUL_EQ",
+  "DIV_EQ",
+  "MOD_EQ",
+  "POW_EQ",
   NULL
 };
 
@@ -120,5 +126,11 @@ const lu_byte luaP_opmodes[NUM_OPCODES] = {
  ,opmode(0, 1, OpArgK, OpArgK, iABC)		/* OP_MIN */
  ,opmode(0, 1, OpArgK, OpArgN, iABC)		/* OP_DEG */
  ,opmode(0, 1, OpArgK, OpArgN, iABC)		/* OP_RAD */
+ ,opmode(0, 1, OpArgK, OpArgN, iABC)		/* OP_ADD_EQ */
+ ,opmode(0, 1, OpArgK, OpArgN, iABC)		/* OP_SUB_EQ */
+ ,opmode(0, 1, OpArgK, OpArgN, iABC)		/* OP_MUL_EQ */
+ ,opmode(0, 1, OpArgK, OpArgN, iABC)		/* OP_DIV_EQ */
+ ,opmode(0, 1, OpArgK, OpArgN, iABC)		/* OP_MOD_EQ */
+ ,opmode(0, 1, OpArgK, OpArgN, iABC)		/* OP_POW_EQ */
 };
 

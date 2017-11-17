@@ -1,4 +1,6 @@
 #ANDROID
+ANDROID_ARCHS=armeabi armeabi-v7a x86 mips mips64 x86_64 arm64-v8a
+
 android.clean: androidlibs.clean androidso.clean
 	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) clean
 
@@ -10,6 +12,7 @@ android: androidlibs androidso androidplugins
 	cd $(ROOT)/android/GiderosAndroidPlayer; $(ANT) debug
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/BuildConfig.class
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/GiderosAndroidPlayerActivity.class
+	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/GiderosSettings.class
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/GiderosGLSurfaceView.class
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/GiderosRenderer.class
 	rm -f $(ROOT)/android/GiderosAndroidPlayer/bin/classes/com/giderosmobile/android/player/R.class
@@ -36,7 +39,7 @@ androidlibs: libgvfs.androidlib lua.androidlib
 
 androidlibs.clean: libgvfs.androidlib.clean lua.androidlib.clean
 
-androidso: androidso.prep
+androidso: versioning androidso.prep
 	cd $(ROOT)/android/lib;$(NDKBUILD)
 	rm -rf $(ROOT)/Sdk/lib/android
 	mkdir -p $(ROOT)/Sdk/lib/android
@@ -56,9 +59,8 @@ androidso.clean:
 %.androidplugin:
 	@cd $(ROOT)/plugins/$*/source; if [ -d "Android" ]; then cd Android; fi;\
 	$(NDKBUILD);\
-	rm -f libs/armeabi/libgideros.so libs/armeabi/liblua.so libs/armeabi/libgvfs.so;\
-	rm -f libs/armeabi-v7a/libgideros.so libs/armeabi-v7a/liblua.so libs/armeabi-v7a/libgvfs.so;\
-	rm -f libs/x86/libgideros.so libs/x86/liblua.so libs/x86/libgvfs.so
+	for a in $(ANDROID_ARCHS); do \
+	rm -f libs/$$a/libgideros.so libs/$$a/liblua.so libs/$$a/libgvfs.so; done; 
 
 %.androidlib.clean:
 	rm -rf $(ROOT)/$*/libs $(ROOT)/$*/obj

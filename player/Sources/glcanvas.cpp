@@ -1,7 +1,3 @@
-#ifndef RASPBERRY_PI
-#include <GL/glew.h>
-#endif
-
 #include "glcanvas.h"
 #include "luaapplication.h"
 #include "libnetwork.h"
@@ -35,6 +31,155 @@
 #include <gpath.h>
 #include <gvfs-native.h>
 #include "mainwindow.h"
+
+#include <QOpenGLWindow>
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QScreen>
+#include <screen.h>
+#include <Qt>
+
+class QtScreenManager : public ScreenManager {
+public:
+	QOpenGLWidget *master_;
+	QtScreenManager(QOpenGLWidget *master);
+	virtual Screen *openScreen(Application *application,int id);
+	virtual void screenDestroyed();
+};
+
+class QtScreen : public Screen,protected QOpenGLWindow {
+	virtual void tick();
+protected:
+	virtual void setVisible(bool);
+	bool closed_;
+public:
+	virtual void setSize(int w,int h);
+	virtual void getSize(int &w,int &h);
+	virtual void setPosition(int w,int h);
+	virtual void getPosition(int &w,int &h);
+	virtual void setState(int state);
+	virtual int getState();
+	virtual void getMaxSize(int &w,int &h);
+	virtual int getId();
+	bool event(QEvent* ev);
+	QtScreen(Application *application);
+	~QtScreen();
+};
+
+bool QtScreen::event(QEvent* ev)
+{
+        if (ev->type() == QEvent::PlatformSurface) {
+        	if (((QPlatformSurfaceEvent *)ev)->surfaceEventType()==QPlatformSurfaceEvent::SurfaceAboutToBeDestroyed)
+        	{
+        		setContent(NULL);
+        		closed_=true;
+        	}
+        	else
+        		closed_=false;
+        }
+        // Make sure the rest of events are handled
+        return QOpenGLWindow::event(ev);
+}
+
+void QtScreen::tick()
+{
+	if (isExposed())
+	{
+		Matrix4 m;
+		QOpenGLContext *c=((QtScreenManager *)(ScreenManager::manager))->master_->context();
+		c->makeCurrent(this);
+		c->functions()->glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+		draw(m);
+		c->swapBuffers(this);
+	}
+}
+
+void QtScreen::setSize(int w,int h)
+{
+	resize(w,h);
+}
+
+void QtScreen::getSize(int &w,int &h)
+{
+	w=width();
+	h=height();
+}
+
+void QtScreen::setState(int state)
+{
+	Qt::WindowState st=Qt::WindowNoState;
+	if (state&MINIMIZED) st=Qt::WindowMinimized;
+	if (state&MAXIMIZED) st=Qt::WindowMaximized;
+	if (state&FULLSCREEN) st=Qt::WindowFullScreen;
+	setWindowState(st);
+}
+
+int QtScreen::getState()
+{
+	Qt::WindowState state=windowState();
+	int s=NORMAL;
+	if (state==Qt::WindowMinimized) s=MINIMIZED;
+	if (state==Qt::WindowMaximized) s=MAXIMIZED;
+	if (state==Qt::WindowFullScreen) s=FULLSCREEN;
+	if (!isVisible()) s|=HIDDEN;
+	if (closed_) s|=CLOSED;
+	return s;
+}
+
+void QtScreen::getMaxSize(int &w,int &h)
+{
+	QSize s=screen()->size();
+	w=s.width();
+	h=s.height();
+}
+
+void QtScreen::setPosition(int w,int h)
+{
+	QOpenGLWindow::setPosition(w,h);
+}
+
+void QtScreen::getPosition(int &w,int &h)
+{
+	w=x();
+	h=y();
+}
+
+int QtScreen::getId()
+{
+	return 0;
+}
+
+void QtScreen::setVisible(bool visible)
+{
+	if (visible) show(); else hide();
+}
+
+QtScreen::QtScreen(Application *application) : Screen(application), QOpenGLWindow()
+{
+	closed_=true;
+}
+
+QtScreen::~QtScreen()
+{
+}
+
+
+QtScreenManager::QtScreenManager(QOpenGLWidget *master)
+{
+	master_=master;
+}
+
+void QtScreenManager::screenDestroyed()
+{
+	if (!QOpenGLContext::currentContext())
+		master_->makeCurrent();
+}
+
+
+Screen *QtScreenManager::openScreen(Application *application,int id)
+{
+	return new QtScreen(application);
+}
 
 static int __mkdir(const char* path) {
 #ifdef _WIN32
@@ -86,7 +231,7 @@ static void deltree(const char* dir) {
 }
 
 GLCanvas::GLCanvas(QWidget *parent) :
-		QGLWidget(parent) {
+		QOpenGLWidget(parent) {
 	setAttribute(Qt::WA_AcceptTouchEvents);
     for( int i=1; i<=4; ++i )
     {
@@ -104,6 +249,8 @@ GLCanvas::GLCanvas(QWidget *parent) :
 	 formatGL.setSwapInterval(1); // Synchronisation du Double Buffer et de l'écran
 	 this->setFormat(formatGL);
 	 */
+
+    //setUpdateBehavior(QOpenGLWidget::PartialUpdate); // Prevent QT from calling glClear by itself
     isPlayer_ = true;
 
 	setupProperties();
@@ -119,9 +266,11 @@ GLCanvas::GLCanvas(QWidget *parent) :
 	 platformImplementation_ = new PlatformImplementation(application_);
 	 setPlatformInterface(platformImplementation_);
 	 */
+	ScreenManager::manager=new QtScreenManager(this);
 }
 
 GLCanvas::~GLCanvas() {
+	makeCurrent();
 	if (running_ == true) {
 		Event event(Event::APPLICATION_EXIT);
 		GStatus status;
@@ -153,6 +302,9 @@ GLCanvas::~GLCanvas() {
 	 setPlatformInterface(NULL);
 	 delete platformImplementation_;
 	 */
+
+	delete ScreenManager::manager;
+	ScreenManager::manager=NULL;
 
 	if (isPlayer_) {
 		delete server_;
@@ -215,10 +367,6 @@ void GLCanvas::setupApplicationProperties() {
 }
 
 void GLCanvas::initializeGL() {
-#ifndef RASPBERRY_PI
-	glewInit();
-#endif
-
 	application_->initialize();
 	setupApplicationProperties();
 }
@@ -253,6 +401,7 @@ bool GLCanvas::checkLuaError(GStatus status)
 }
 
 void GLCanvas::paintGL() {
+
 	GStatus status;
 	application_->enterFrame(&status);
 
@@ -260,12 +409,13 @@ void GLCanvas::paintGL() {
 
 	application_->clearBuffers();
 	application_->renderScene();
-
 	// if not running or if drawInfos enabled, and is not an exported app
 	if ((!running_ || drawInfos_) && !exportedApp_) {
 //		glMatrixMode(GL_MODELVIEW);
 //		glLoadIdentity();
 //		glScalef(1.f / scale_, 1.f / scale_, 1);
+		Matrix4 ident;
+		ShaderEngine::Engine->setModel(ident);
 
 		int lWidth = application_->getLogicalWidth();
 		int lHeight = application_->getLogicalHeight();
@@ -277,10 +427,11 @@ void GLCanvas::paintGL() {
 
 		void drawInfoResolution(int width, int height, int scale, int lWidth,
 				int lHeight, bool drawRunning, float canvasColor[3],
-				float infoColor[3]);
+				float infoColor[3],int ho, int ao, float fps, float cpu);
 
 		drawInfoResolution(width_, height_, scale, lWidth, lHeight,
-				running_ && drawInfos_, canvasColor_, infoColor_);
+				running_ && drawInfos_, canvasColor_, infoColor_, (int) application_->hardwareOrientation(), (int) application_->orientation(),
+				1.0/application_->meanFrameTime_,1-(application_->meanFreeTime_/application_->meanFrameTime_));
 	}
 }
 
@@ -291,6 +442,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
     printf(".");
     printf("%d\n", Referenced::instanceCount);
     */
+	makeCurrent();
     if(!projectDir_.isEmpty()){
         play(QDir(projectDir_));
         projectDir_.clear();
@@ -438,10 +590,11 @@ void GLCanvas::timerEvent(QTimerEvent *){
                             dir_.mkdir("temporary");
                             dir_.mkdir("resource");
 
-                            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
-
-                            setDocumentsDirectory(dir_.absoluteFilePath("documents").toStdString().c_str());
-                            setTemporaryDirectory(dir_.absoluteFilePath("temporary").toStdString().c_str());
+                            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString();
+                            documentsDirectory_ = dir_.absoluteFilePath("documents").toStdString();
+                            temporaryDirectory_ = dir_.absoluteFilePath("temporary").toStdString();
+                            setDocumentsDirectory(documentsDirectory_.c_str());
+                            setTemporaryDirectory(temporaryDirectory_.c_str());
                             setResourceDirectory(resourceDirectory_.c_str());
                         }
 
@@ -510,6 +663,7 @@ void GLCanvas::timerEvent(QTimerEvent *){
         }
     }
 
+    ScreenManager::manager->tick();
     update();
 }
 
@@ -540,9 +694,6 @@ void GLCanvas::play(QDir directory){
         projectName_ = directory.dirName();
         emit projectNameChanged(projectName_);
 
-        const char* documentsDirectory;
-        const char* temporaryDirectory;
-
         if(exportedApp_){
             resourceDirectory_ = directory.absoluteFilePath("resource").toStdString().c_str();
             QString docLocation;
@@ -556,10 +707,8 @@ void GLCanvas::play(QDir directory){
             QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
             directory.mkpath(docLocation);
             directory.mkpath(tempLocation);
-            documentsDirectory = docLocation.toStdString().c_str();
-            setDocumentsDirectory(documentsDirectory);
-            temporaryDirectory = tempLocation.toStdString().c_str();
-            setTemporaryDirectory(temporaryDirectory);
+            documentsDirectory_ = docLocation.toStdString();
+            temporaryDirectory_ = tempLocation.toStdString();
         }else{
             dir_ = QDir::temp();
             dir_.mkdir("gideros");
@@ -569,13 +718,13 @@ void GLCanvas::play(QDir directory){
             dir_.mkdir("documents");
             dir_.mkdir("temporary");
 
-            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString().c_str();
-            documentsDirectory = dir_.absoluteFilePath("documents").toStdString().c_str();
-            setDocumentsDirectory(documentsDirectory);
-            temporaryDirectory = dir_.absoluteFilePath("temporary").toStdString().c_str();
-            setTemporaryDirectory(temporaryDirectory);
+            resourceDirectory_ = dir_.absoluteFilePath("resource").toStdString();
+            documentsDirectory_ = dir_.absoluteFilePath("documents").toStdString();
+            temporaryDirectory_ = dir_.absoluteFilePath("temporary").toStdString();
         }
 
+        setDocumentsDirectory(documentsDirectory_.c_str());
+        setTemporaryDirectory(temporaryDirectory_.c_str());
         setResourceDirectory(resourceDirectory_.c_str());
 
         file.open(QIODevice::ReadOnly);
@@ -736,9 +885,6 @@ void GLCanvas::play(QString gapp) {
 	projectName_ = gappname.baseName();
 	emit projectNameChanged(projectName_);
 
-	const char* documentsDirectory;
-	const char* temporaryDirectory;
-
 	dir_ = QDir::temp();
 	dir_.mkdir("gideros");
 	dir_.cd("gideros");
@@ -748,12 +894,12 @@ void GLCanvas::play(QString gapp) {
 	dir_.mkdir("temporary");
 
 	resourceDirectory_ = "";
-	documentsDirectory = qPrintable(dir_.absoluteFilePath("documents"));
-	temporaryDirectory = qPrintable(dir_.absoluteFilePath("temporary"));
+	documentsDirectory_ = dir_.absoluteFilePath("documents").toStdString();
+	temporaryDirectory_ = dir_.absoluteFilePath("temporary").toStdString();
 
-	setDocumentsDirectory(documentsDirectory);
-	setTemporaryDirectory(temporaryDirectory);
-	setResourceDirectory("");
+	setDocumentsDirectory(documentsDirectory_.c_str());
+	setTemporaryDirectory(temporaryDirectory_.c_str());
+	setResourceDirectory(resourceDirectory_.c_str());
 
 	G_FILE* fis = g_fopen("properties.bin", "rb");
 	if (fis) {
@@ -797,7 +943,7 @@ void GLCanvas::play(QString gapp) {
 
 void GLCanvas::loadProperties(std::vector<char> data) {
 	ByteBuffer buffer(&data[0], data.size());
-
+	makeCurrent();
 	if (!exportedApp_) {
 		char chr;
 		buffer >> chr;
@@ -861,6 +1007,7 @@ void GLCanvas::loadProperties(std::vector<char> data) {
 
 void GLCanvas::playLoadedFiles(std::vector<std::string> luafiles) {
 	GStatus status;
+	makeCurrent();
 	for (std::size_t i = 0; i < luafiles.size(); ++i) {
 		application_->loadFile(luafiles[i].c_str(), &status);
 		if (status.error())
@@ -1043,32 +1190,67 @@ bool GLCanvas::event(QEvent *event){
         float pressures[size];
         int touchTypes[size];
 
+        //Mark all previously known touches
+        quint32 curIds=0;
         for( int i=0; i<size; ++i )
         {
             QTouchEvent::TouchPoint p = list[i];
-            xs[i] = p.pos().x() * deviceScale_;
-            ys[i] = p.pos().y() * deviceScale_;
-            ids[i] = i;
-            pressures[i] = p.pressure();
-            touchTypes[i] = p.flags();
+            int tid=touchIdMap[p.id()];
+            if (tid)
+            	curIds|=(1<<(tid-1));
+        }
+
+        //Free up dropped touches
+        touchIdUsed&=curIds;
+        QList<int> knownIds=touchIdMap.keys();
+        for (int i=0;i<knownIds.size();i++)
+        {
+        	int ctid=touchIdMap[knownIds[i]];
+        	if (ctid&&(!(curIds&(1<<(ctid-1)))))
+        		touchIdMap.remove(knownIds[i]);
         }
 
         for( int i=0; i<size; ++i )
         {
             QTouchEvent::TouchPoint p = list[i];
+            xs[i] = p.pos().x() * deviceScale_;
+            ys[i] = p.pos().y() * deviceScale_;
+            pressures[i] = p.pressure();
+            touchTypes[i] = p.flags();
+            int tid=touchIdMap[p.id()];
+            if (!tid) //New touch, allocate a touch id
+            {
+            	for (int k=0;k<32;k++)
+            		if (!(touchIdUsed&(1<<k)))
+            		{
+            			touchIdMap[p.id()]=k+1;
+            			touchIdUsed|=(1<<k);
+            			tid=k+1;
+            			break;
+            		}
+            }
+            ids[i] = tid-1;
+            curIds|=(1<<(tid-1));
+        }
+
+        for( int i=0; i<size; ++i )
+        {
+            QTouchEvent::TouchPoint p = list[i];
+            int tid=touchIdMap[p.id()]-1;
             if(event->type() == QEvent::TouchCancel){
-                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesCancel(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_, tid, p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
             }
             else if(p.state() == Qt::TouchPointPressed){
-                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesBegin(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,tid,p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
             }
             else if(p.state() == Qt::TouchPointMoved){
-                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesMove(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,tid,p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
             }
             else if(p.state() == Qt::TouchPointReleased){
-                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,p.pressure(), p.flags(), i, size, xs, ys, ids, pressures, touchTypes,m);
+                ginputp_touchesEnd(p.pos().x() * deviceScale_, p.pos().y() * deviceScale_,tid,p.pressure(), p.flags(), size, xs, ys, ids, pressures, touchTypes,m);
             }
         }
+        touchIdUsed=curIds;
         return true;
     }
     else if(event->type() == QEvent::MouseButtonPress){
@@ -1131,7 +1313,7 @@ bool GLCanvas::event(QEvent *event){
             checkLuaError(status);
         }
     }
-    return QGLWidget::event(event);
+    return QOpenGLWidget::event(event);
 }
 
 void GLCanvas::onTimer() {

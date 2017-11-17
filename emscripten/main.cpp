@@ -5,8 +5,8 @@
 #include <GL/glfw.h>
 #endif
 #include <iostream>
-#include "emscripten.h"
-#include "html5.h"
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 #include <sys/stat.h>
 #include <gstdio.h>
 #include <glog.h>
@@ -19,6 +19,20 @@ static ApplicationManager *s_applicationManager = NULL;
 EGLDisplay display;
 #endif
 float pixelRatio=1.0;
+
+static void errorAbort(const char *detail)
+{
+	const char *type="genErr";
+	EM_ASM_( { Module.showError(Pointer_stringify($0),Pointer_stringify($1)) }, type, detail);
+	emscripten_force_exit(1);
+}
+
+static void errorLua(const char *detail)
+{
+	const char *type="luaErr";
+	EM_ASM_( { Module.showError(Pointer_stringify($0),Pointer_stringify($1)) }, type, detail);
+	emscripten_force_exit(1);
+}
 
 int initGL(int width, int height)
 {
@@ -78,12 +92,26 @@ int initGL(int width, int height)
 extern "C" void GGStreamOpenALTick();                                                                                                    
 void looptick()
 {
-    s_applicationManager->drawFrame();
+	try {
+		s_applicationManager->drawFrame();
 #ifndef EGL
     glfwSwapBuffers();
 #else
     eglSwapInterval(display,1);
 #endif
+	}
+	catch(const luaException& e)
+	{
+	    errorLua(e.what());
+	}
+	catch(const std::exception& e)
+	{
+		errorAbort(e.what());
+	}
+	catch(...)
+	{
+		errorAbort("Generic error");
+	}
 }
 
 EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *e, void *userData)
@@ -127,14 +155,22 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
  if ((!strcmp(key,"Backspace"))||(*key=='\b')) skey=2;
  if ((!strcmp(key,"Enter"))||(*key=='\r')) skey=4;
  if ((!strcmp(key,"Escape"))||(*key=='\e')) skey=8;
+ //printf("PressCode:%s %d (%d)\n",key,skey,eventType);
  if (eventType == EMSCRIPTEN_EVENT_KEYDOWN)
  {
-  ginputp_keyDown(key,e->code);
+	 if (!e->repeat)
+		 ginputp_keyDown(key,e->code);
   //printf("DownCode:%s %d\n",key,skey);
   if (skey==1) ginputp_keyChar("\t");
   if (skey==2) ginputp_keyChar("\b");
   if (skey==4) ginputp_keyChar("\r");
   if (skey==8) ginputp_keyChar("\e");
+  //Emulate keypress
+  if( (!skey)&&(*key))
+  {
+	  if ((utf8len(key)==1)||((*key)<'A')||((*key)>'Z'))
+		   ginputp_keyChar(key);
+  }
  }
  else if (eventType == EMSCRIPTEN_EVENT_KEYUP)
  {
@@ -143,8 +179,10 @@ EM_BOOL key_callback(int eventType, const EmscriptenKeyboardEvent *e, void *user
  }
  else if (eventType == EMSCRIPTEN_EVENT_KEYPRESS)
  {
+	 //Keypress is being deprecated and no longer works in some situations, rely on keydown instead
+/*  printf("PressCode:%s %d\n",key,skey);
   if ((utf8len(key)==1)&&(!skey))
-   ginputp_keyChar(key);
+   ginputp_keyChar(key);*/
  }
 
  return true;
@@ -233,6 +271,7 @@ extern const char *codeKey_;
 const char *currentUrl=NULL;
 int main() {
   EM_ASM(Module.setStatus("Initializing"));
+  try {
           
 char *url=(char *) EM_ASM_INT_V({
  return allocate(intArrayFromString(location.href), 'i8', ALLOC_STACK);
@@ -313,6 +352,19 @@ char *url=(char *) EM_ASM_INT_V({
     s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
     emscripten_set_main_loop(looptick, 0, 1);
     main_registerPlugin(NULL);
+  }
+  catch(const luaException& e)
+  {
+      errorLua(e.what());
+  }
+  catch(const std::exception& e)
+  {
+      errorAbort(e.what());
+  }
+  catch(...)
+  {
+      errorAbort("Generic error");
+  }
 }
 
 int main_registerPlugin(const char *pname)

@@ -196,6 +196,7 @@ public:
 
 	void background();
 	void foreground();	
+	void forceTick();
 	
 private:
 	void loadProperties();
@@ -211,6 +212,7 @@ private:
 	bool init_;
 	
 	bool running_;
+	bool paused_;
 	
 	int width_, height_;
 
@@ -522,16 +524,18 @@ void NetworkManager::calculateMD5(const char* file)
 static void printToLog_s(const char *str, int len, void *data)
 {
 	if (len<0)
-		glog_i("%s\n",str);
+		glog(str);
 	else
 	{
 		char* buffer = (char*)malloc(len+1);
 		memcpy(buffer, str,len);
 		buffer[len]=0;
-		glog_i("%s\n",buffer);
+		glog(buffer);
 		free(buffer);
 	}
 }
+
+extern void eventFlush();
 
 ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 {
@@ -540,6 +544,7 @@ ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 	jnb_setJavaVM(vm);
 
 	player_ = player;
+	paused_ = false;
 	
 	// gpath & gvfs
 	gpath_init();
@@ -563,6 +568,7 @@ ApplicationManager::ApplicationManager(JNIEnv *env, bool player)
 
 	// event
 	gevent_Init();
+	gevent_SetFlusher(eventFlush);
 	
 	// application
 	gapplication_init();
@@ -1229,10 +1235,12 @@ void ApplicationManager::pause()
 			luaError(status.errorString());
 	}
 	gaudio_android_suspend(true);
+	paused_=true;
  }
 
 void ApplicationManager::resume()
 {
+	paused_=false;
 	gaudio_android_suspend(false);
     gapplication_enqueueEvent(GAPPLICATION_RESUME_EVENT, NULL, 0);
 
@@ -1284,7 +1292,24 @@ void ApplicationManager::foreground()
 	}
  }
 
+void ApplicationManager::forceTick()
+{
+ 	if (paused_&&running_)
+	{
+		GStatus status;
+		application_->tick(&status);
+		if (status.error())
+			luaError(status.errorString());
+	}
+}
+
+
 static ApplicationManager *s_applicationManager = NULL;
+void eventFlush()
+{
+    if (s_applicationManager)
+    	s_applicationManager->forceTick();
+}
 
 extern "C" {
 

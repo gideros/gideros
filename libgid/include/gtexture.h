@@ -32,12 +32,25 @@ extern "C" {
 G_API void gtexture_init();
 G_API void gtexture_cleanup();
 G_API void gtexture_set_engine(ShaderEngine *e);
+G_API ShaderEngine *gtexture_get_engine();
+class ScreenManager;
+G_API void gtexture_set_screenmanager(ScreenManager *e);
+G_API ScreenManager *gtexture_get_screenmanager();
+class SpriteProxyFactory;
+G_API void gtexture_set_spritefactory(SpriteProxyFactory *e);
+G_API SpriteProxyFactory *gtexture_get_spritefactory();
 
 G_API g_id gtexture_create(int width, int height,
                            int format, int type,
                            int wrap, int filter,
                            const void *pixels,
                            const void *signature, size_t siglength);
+
+G_API void gtexture_update(g_id gid,
+						   int width, int height,
+                           int format, int type,
+                           int wrap, int filter,
+                           const void *pixels);
 
 G_API g_id gtexture_reuse(int format, int type,
                           int wrap, int filter,

@@ -83,7 +83,7 @@ gid.dll \
 -lopengl32 -mwindows -lws2_32 -liphlpapi
 
 
-objfiles = win32.o \
+objfiles = win32.o applicationmanager.o \
 accelerometerbinder.o         alertdialogbinder.o \
 application.o                 applicationbinder.o \
 asyncloader.o                 audiobinder.o \
@@ -246,7 +246,7 @@ shaderbinder.o: ..\luabinding\shaderbinder.cpp \
 
 .PHONY : depend
 depend :
-	g++ $(INCLUDEPATHS) -MM win32.cpp > win32.dep
+	g++ $(INCLUDEPATHS) -MM win32.cpp applicationmanager.cpp > win32.dep
 	g++ $(INCLUDEPATHS) -MM ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Common\*.cpp > box2d1.dep
 	g++ $(INCLUDEPATHS) -MM ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\*.cpp > box2d2.dep
 	g++ $(INCLUDEPATHS) -MM ..\external\liquidfun-1.0.0\liquidfun\Box2D\Box2D\Collision\Shapes\*.cpp > box2d3.dep

@@ -13,7 +13,7 @@ TextureBase::TextureBase(Application* application) : application_(application)
 
 TextureBase::TextureBase(	Application* application,
                             const char* filename, Filter filter, Wrap wrap, Format format,
-							bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/) :
+							bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/, bool pow2) :
 	application_(application)
 {
 
@@ -24,7 +24,7 @@ TextureBase::TextureBase(	Application* application,
 	parameters.maketransparent = maketransparent;
 	parameters.transparentcolor = transparentcolor;
 
-	data = application_->getTextureManager()->createTextureFromFile(filename, parameters);
+	data = application_->getTextureManager()->createTextureFromFile(filename, parameters,pow2);
 	sizescalex = 1;
 	sizescaley = 1;
     uvscalex = (float)data->width / (float)data->baseWidth;
@@ -33,7 +33,7 @@ TextureBase::TextureBase(	Application* application,
 
 TextureBase::TextureBase(	Application* application,
                             const unsigned char* pixels,unsigned int width,unsigned int height, Filter filter, Wrap wrap, Format format,
-							bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/) :
+							bool maketransparent/* = false*/, unsigned int transparentcolor/* = 0x00000000*/, bool pow2) :
 	application_(application)
 {
 
@@ -44,7 +44,7 @@ TextureBase::TextureBase(	Application* application,
 	parameters.maketransparent = maketransparent;
 	parameters.transparentcolor = transparentcolor;
 
-	Dib dib(application, width, height, true);
+	Dib dib(application, width, height, pow2);
 	if (pixels)
 	for (unsigned int y=0;y<height;y++)
 		memcpy(dib.dataArray()+y*dib.width()*4,pixels+y*width*4,width*4);

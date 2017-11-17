@@ -30,6 +30,7 @@ Sprite::Sprite(Application* application) :
 	cliph_ = -1;
 
 	shader_ = NULL;
+	stencil_.dTest=false;
 }
 
 Sprite::~Sprite() {
@@ -197,6 +198,8 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 				glPopBlendFunc();
 			if ((sprite->cliph_ >= 0) && (sprite->clipw_ >= 0))
 				ShaderEngine::Engine->popClip();
+			if (sprite->stencil_.dTest)
+				ShaderEngine::Engine->popDepthStencil();
 			continue;
 		}
 
@@ -229,6 +232,21 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 		if ((sprite->cliph_ >= 0) && (sprite->clipw_ >= 0))
 			ShaderEngine::Engine->pushClip(sprite->clipx_, sprite->clipy_,
 					sprite->clipw_, sprite->cliph_);
+
+		if (sprite->stencil_.dTest)
+		{
+			ShaderEngine::DepthStencil stencil =
+				ShaderEngine::Engine->pushDepthStencil();
+			stencil.sClear=sprite->stencil_.sClear;
+			stencil.sFail=sprite->stencil_.sFail;
+			stencil.dFail=sprite->stencil_.dFail;
+			stencil.dPass=sprite->stencil_.dPass;
+			stencil.sFunc=sprite->stencil_.sFunc;
+			stencil.sMask=sprite->stencil_.sMask;
+			stencil.sWMask=sprite->stencil_.sWMask;
+			stencil.sRef=sprite->stencil_.sRef;
+			ShaderEngine::Engine->setDepthStencil(stencil);
+		}
 
 		if (sprite->shader_)
 		for(std::map<std::string,ShaderParam>::iterator it = sprite->shaderParams_.begin(); it != sprite->shaderParams_.end(); ++it) {
@@ -1268,5 +1286,27 @@ float Sprite::getAlphaMultiplier() const {
 		colorTransform_ = new ColorTransform();
 
 	return colorTransform_->alphaMultiplier();
+}
+
+
+SpriteProxy::SpriteProxy(Application* application,void *c,SpriteProxyDraw df,SpriteProxyDestroy kf) : Sprite(application)
+{
+	context=c;
+	drawF=df;
+	destroyF=kf;
+}
+
+SpriteProxy::~SpriteProxy()
+{
+	destroyF(context);
+}
+
+void SpriteProxy::doDraw(const CurrentTransform& m, float sx, float sy, float ex, float ey)
+{
+	drawF(context,m,sx,sy,ex,ey);
+}
+
+SpriteProxy *SpriteProxyFactory::createProxy(Application* application,void *c,SpriteProxyDraw df,SpriteProxyDestroy kf) {
+	return new SpriteProxy(application,c,df,kf);
 }
 

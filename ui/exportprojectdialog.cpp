@@ -1,7 +1,7 @@
 #include "exportprojectdialog.h"
 #include "ui_exportprojectdialog.h"
 #include "projectproperties.h"
-#include "pluginschooser.h"
+//#include "pluginschooser.h"
 #include "propertyeditingtable.h"
 
 #include <QDir>
@@ -66,7 +66,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 
 	connect(ui->architecture, SIGNAL(currentIndexChanged(int)), ui->architectureTab, SLOT(setCurrentIndex(int)));
 	connect(ui->architectureTab, SIGNAL(currentChanged(int)), ui->architecture, SLOT(setCurrentIndex(int)));
-	connect(ui->plugins_choose, SIGNAL(clicked()), this, SLOT(onSelectPlugins()));
+	//connect(ui->plugins_choose, SIGNAL(clicked()), this, SLOT(onSelectPlugins()));
 
     ui->android_template->setCurrentIndex(properties_->android_template);
 	ui->exportMode->setCurrentIndex(properties_->exportMode);
@@ -75,6 +75,8 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->osx_org->setText(properties->osx_org);
     ui->osx_domain->setText(properties->osx_domain);
     ui->osx_bundle->setText(properties_->osx_bundle);
+    ui->osx_signingid->setText(properties_->osx_signingId);
+    ui->osx_installerid->setText(properties_->osx_installerId);
     ui->osx_category->setCurrentIndex(properties_->osx_category);
     ui->win_org->setText(properties->win_org);
     ui->win_domain->setText(properties->win_domain);
@@ -83,7 +85,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->html5_host->setText(properties->html5_host);
     ui->html5_mem->setText(QString::number(properties->html5_mem));
     ui->html5_pack->setChecked(properties_->html5_pack);
-    plugins=properties->plugins;
+    //plugins=properties->plugins;
 
     if (licensed)
     {
@@ -183,6 +185,16 @@ QString ExportProjectDialog::osx_bundle() const
     return ui->osx_bundle->text();
 }
 
+QString ExportProjectDialog::osx_signingId() const
+{
+    return ui->osx_signingid->text();
+}
+
+QString ExportProjectDialog::osx_installerId() const
+{
+    return ui->osx_installerid->text();
+}
+
 QString ExportProjectDialog::osx_category() const
 {
     return osxCat[ui->osx_category->currentText()];
@@ -238,6 +250,8 @@ void ExportProjectDialog::onAccepted()
     properties_->osx_org = ui->osx_org->text();
     properties_->osx_domain = ui->osx_domain->text();
     properties_->osx_bundle = ui->osx_bundle->text();
+    properties_->osx_signingId = ui->osx_signingid->text();
+    properties_->osx_installerId = ui->osx_installerid->text();
     properties_->osx_category = ui->osx_category->currentIndex();
     properties_->win_org = ui->win_org->text();
     properties_->win_domain = ui->win_domain->text();
@@ -248,7 +262,7 @@ void ExportProjectDialog::onAccepted()
     properties_->html5_host = ui->html5_host->text();
     properties_->html5_mem = ui->html5_mem->text().toInt();
     properties_->html5_pack = ui->html5_pack->isChecked();
-    properties_->plugins=plugins;
+    //properties_->plugins=plugins;
 
     for (int tab=0;tab<xmlTabCount;tab++)
     {
@@ -266,6 +280,7 @@ void ExportProjectDialog::onAccepted()
     }
 }
 
+/*
 void ExportProjectDialog::onSelectPlugins()
 {
     PluginsChooser dialog(plugins, this);
@@ -274,3 +289,4 @@ void ExportProjectDialog::onSelectPlugins()
 		plugins=dialog.selection();
 	}
 }
+*/

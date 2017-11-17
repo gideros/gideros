@@ -18,7 +18,6 @@ Module.preRun.push(function() {
    Module['addRunDependency'](p);
    xhr.send();
  }); });
-
 	Module.setStatus("Loading application...");
 	//Load GAPP if supplied
 	Module.hasGApp=((typeof(GAPP_URL) != 'undefined')&&(GAPP_URL!=null));

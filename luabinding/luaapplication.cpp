@@ -48,7 +48,7 @@
 #include "viewportbinder.h"
 #include "pixelbinder.h"
 #include "particlesbinder.h"
-
+#include "screenbinder.h"
 #include "keys.h"
 
 #include "ogl.h"
@@ -69,8 +69,14 @@
 #include <gapplication.h>
 
 #include "tlsf.h"
+#include "CoreRandom.cpp.inc"
+#include "memcache.cpp.inc"
 
 std::deque<LuaApplication::AsyncLuaTask> LuaApplication::tasks_;
+bool LuaApplication::hasBreakpoints=false;
+std::map<int,bool> LuaApplication::breakpoints;
+void (*LuaApplication::debuggerHook)(void *context,lua_State *L,lua_Debug *ar)=NULL;
+void *LuaApplication::debuggerContext=NULL;
 
 const char* LuaApplication::fileNameFunc_s(const char* filename, void* data)
 {
@@ -367,6 +373,7 @@ static int bindAll(lua_State* L)
     ViewportBinder viewportBinder(L);
     PixelBinder pixelbinder(L);
     ParticlesBinder particlesbinder(L);
+    ScreenBinder screenbinder(L);
 
 	PluginManager& pluginManager = PluginManager::instance();
 	for (size_t i = 0; i < pluginManager.plugins.size(); ++i)
@@ -580,6 +587,18 @@ static int bindAll(lua_State* L)
 	lua_setfield(L, -2, "yield");
 	lua_pushcfunction(L, LuaApplication::Core_frameStatistics);
 	lua_setfield(L, -2, "frameStatistics");
+	lua_pushcfunction(L, LuaApplication::Core_profilerStart);
+	lua_setfield(L, -2, "profilerStart");
+	lua_pushcfunction(L, LuaApplication::Core_profilerStop);
+	lua_setfield(L, -2, "profilerStop");
+	lua_pushcfunction(L, LuaApplication::Core_profilerReset);
+	lua_setfield(L, -2, "profilerReset");
+	lua_pushcfunction(L, LuaApplication::Core_profilerReport);
+	lua_setfield(L, -2, "profilerReport");
+	lua_pushcfunction(L, LuaApplication::Core_random);
+	lua_setfield(L, -2, "random");
+	lua_pushcfunction(L, LuaApplication::Core_randomSeed);
+	lua_setfield(L, -2, "randomSeed");
 	lua_pop(L, 1);
 
 	// register collectgarbagelater
@@ -804,7 +823,6 @@ static void maxmem()
 }
 */
 
-
 static tlsf_t memory_pool = NULL;
 static void *memory_pool_end = NULL;
 
@@ -813,7 +831,15 @@ static void g_free(void *ptr)
     if (memory_pool <= ptr && ptr < memory_pool_end)
         tlsf_free(memory_pool, ptr);
     else
-        ::free(ptr);
+        ::free(((size_t *)ptr)-1);
+}
+
+static size_t g_getsize(void *ptr)
+{
+    if (memory_pool <= ptr && ptr < memory_pool_end)
+        return tlsf_block_size(ptr);
+    else
+    	return *(((size_t *)ptr)-1);
 }
 
 static void *g_realloc(void *ptr, size_t osize, size_t size)
@@ -830,7 +856,11 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
             p = tlsf_malloc(memory_pool, size);
 
         if (p == NULL)
-            p = ::malloc(size);
+        {
+            size_t *ps = (size_t *)::malloc(size+sizeof(size_t));
+            *ps=size;
+            p=ps+1;
+        }
     }
     else
     {
@@ -841,35 +871,37 @@ static void *g_realloc(void *ptr, size_t osize, size_t size)
 
             if (p == NULL)
             {
-                p = ::malloc(size);
+                size_t *ps = (size_t *)::malloc(size+sizeof(size_t));
+                *ps=size;
+                p=ps+1;
                 memcpy(p, ptr, osize);
                 tlsf_free(memory_pool, ptr);
             }
         }
         else
         {
-            p = ::realloc(ptr, size);
+            size_t *ps=(size_t *)ptr;
+            ps = (size_t *)::realloc(ps-1, size+sizeof(size_t));
+            *ps=size;
+            p=ps+1;
         }
     }
 
     return p;
 }
 
-#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
-static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
+#ifndef  EMSCRIPTEN //memalloc has issues with emscripten, disable til I know more...
+class MemCacheLua : public MemCache
 {
-    (void)ud;
-    (void)osize;
-    if (nsize == 0)
-    {
-        free(ptr);
-        return NULL;
-    }
-    else
-        return realloc(ptr, nsize);
-}
-#else
-static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
+public:
+	MemCacheLua();
+	void *MasterAllocateMemory(size_t Size);
+	void MasterFreeMemory(void *Memory);
+	size_t MasterGetSize(void *Memory);
+	void *MasterResizeMemory(void *Old,size_t Size);
+};
+
+MemCacheLua::MemCacheLua()
 {
     if (memory_pool == NULL)
     {
@@ -878,16 +910,61 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
         memory_pool = tlsf_create_with_pool(malloc(mpsize), mpsize);
         memory_pool_end = (char*)memory_pool + mpsize;
     }
+    Reset();
+}
 
+void *MemCacheLua::MasterAllocateMemory(size_t Size)
+{
+	return g_realloc(NULL, 0, Size);
+}
+
+void MemCacheLua::MasterFreeMemory(void *Memory)
+{
+	return g_free(Memory);
+}
+
+void *MemCacheLua::MasterResizeMemory(void *Memory,size_t Size)
+{
+	return g_realloc(Memory,g_getsize(Memory),Size);
+}
+
+
+size_t MemCacheLua::MasterGetSize(void *Memory)
+{
+	return g_getsize(Memory);
+}
+
+static MemCacheLua luamem;
+#endif
+
+static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
+{
+    (void)ud;
+    (void)osize;
+    void *ret=NULL;
+#if EMSCRIPTEN //TLSF has issues with emscripten, disable til I know more...
     if (nsize == 0)
     {
-        g_free(ptr);
-        return NULL;
+    	if (ptr)
+            free(ptr);
     }
+    else if (ptr==NULL)
+        ret=malloc(nsize);
     else
-        return g_realloc(ptr, osize, nsize);
-}
+        ret=realloc(ptr, nsize);
+#else
+    if (nsize == 0)
+    {
+    	if (ptr)
+            luamem.FreeMemory(ptr);
+    }
+    else if (ptr==NULL)
+        ret=luamem.AllocateMemory(nsize);
+    else
+        ret=luamem.ResizeMemory(ptr, nsize);
 #endif
+    return ret;
+}
 
 //int renderScene(lua_State* L);
 //int mouseDown(lua_State* L);
@@ -897,8 +974,6 @@ static void *l_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 //int touchesMoved(lua_State* L);
 //int touchesEnded(lua_State* L);
 //int touchesCancelled(lua_State* L);
-
-
 
 static int callFile(lua_State* L)
 {
@@ -1065,7 +1140,7 @@ static void yieldHook(lua_State *L,lua_Debug *ar)
 	if (ar->event == LUA_HOOKRET)
 	{
 		if (iclock() >= yieldHookLimit)
-			lua_sethook(L, yieldHook, LUA_MASKCOUNT, 1);
+			lua_sethook(L, yieldHook, LUA_MASKCOUNT | (LuaApplication::hasBreakpoints?LUA_MASKLINE:0), 1);
 	}
 	else if (ar->event == LUA_HOOKCOUNT)
 	{
@@ -1074,7 +1149,16 @@ static void yieldHook(lua_State *L,lua_Debug *ar)
 			if (lua_canyield(L))
 				lua_yield(L, 0);
 			else
-				lua_sethook(L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT, 1000);
+				lua_sethook(L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (LuaApplication::hasBreakpoints?LUA_MASKLINE:0), 1000);
+		}
+	}
+	else if (ar->event == LUA_HOOKLINE)
+	{
+		lua_getinfo(L, "l", ar);
+		if (LuaApplication::debuggerHook&&LuaApplication::breakpoints[ar->currentline])
+		{
+			lua_getinfo(L, "S", ar); //Possible match, resolve source name and let debuggerHook decide
+			LuaApplication::debuggerHook(LuaApplication::debuggerContext,L,ar);
 		}
 	}
 }
@@ -1126,9 +1210,9 @@ void LuaApplication::enterFrame(GStatus *status)
 			int res = 0;
 			if (t.autoYield)
 			{
-				lua_sethook(t.L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT, 1000);
+				lua_sethook(t.L, yieldHook, LUA_MASKRET | LUA_MASKCOUNT | (hasBreakpoints?LUA_MASKLINE:0), 1000);
 				res = lua_resume(t.L, 0);
-				lua_sethook(t.L, yieldHook, 0, 1000);
+				lua_sethook(t.L, yieldHook, hasBreakpoints?LUA_MASKLINE:0, 1000);
 			}
 			else
 				res = lua_resume(t.L, 0);
@@ -1408,6 +1492,10 @@ void LuaApplication::initialize()
 	lua_pushcfunction(L, bindAll);
 	lua_pushlightuserdata(L, application_);
 	lua_call(L, 1, 0);
+
+	Rnd::Initialize(iclock()*0xFFFF);
+
+	lua_sethook(L, yieldHook, LuaApplication::hasBreakpoints?LUA_MASKLINE:0, 1);
 }
 
 void LuaApplication::setScale(float scale)
@@ -1517,3 +1605,201 @@ lua_State *LuaApplication::getLuaState() const
 {
     return L;
 }
+
+//PROFILER
+#include "lstate.h"
+struct ProfileInfo {
+	std::string fid;
+	std::string name;
+	double time;
+	int count;
+	double entered;
+	int enterCount;
+	std::string callret;
+	std::map<std::string,double> cTime;
+	std::map<std::string,int> cCount;
+};
+static std::map<std::string,ProfileInfo*> proFuncs;
+static std::map<Closure*,ProfileInfo*> proLookup;
+static ProfileInfo *profilerGetInfo(Closure *cl)
+{
+	ProfileInfo*p=proLookup[cl];
+	if (!p)
+	{
+		std::string fid;
+		char fmt[255];
+		if (cl->c.isC)
+			sprintf(fmt,"=[C] %p",cl->c.f);
+		else
+			sprintf(fmt,"%s:%d",getstr(cl->l.p->source),cl->l.p->linedefined);
+		fid=fmt;
+		p=proFuncs[fid];
+		if (!p) {
+			p=(ProfileInfo *)new ProfileInfo;
+			proFuncs[fid]=p;
+			proLookup[cl]=p;
+			p->fid=fid;
+			p->time=0;
+			p->count=0;
+			p->enterCount=0;
+		}
+	}
+	return p;
+}
+
+static void profilerHook(lua_State *L,int enter)
+{
+	double time=iclock();
+	Closure *cl=curr_func(L);
+	ProfileInfo *p=profilerGetInfo(cl);
+	if (enter)
+	{
+		if (!(p->enterCount++))
+		{
+			p->entered=time;
+			if (p->name.empty())
+			{
+				lua_Debug ar;
+				ar.name=NULL;
+				ar.i_ci = cast_int(L->ci - L->base_ci);
+				lua_getinfo(L,"n",&ar);
+				if (ar.name) p->name=ar.name;
+				else p->name="Unknown";
+			}
+			if (L->ci>L->base_ci)
+			{
+				CallInfo *ci=L->ci;
+				ci--;
+			    if(ttisfunction(ci->func))
+			    {
+			    	Closure *ccl=ci_func(ci);
+			    	ProfileInfo *cp=profilerGetInfo(ccl);
+			    	p->callret=cp->fid;
+			    }
+			}
+		}
+	}
+	else
+	{
+		int rcalls=1;
+		if (f_isLua(L->ci)) {  /* Lua function? */
+		    rcalls+=L->ci->tailcalls;
+		}
+
+		while (p&&(rcalls--)) {
+			if (p->enterCount)
+			{
+				double ctime=0;
+				if (!(--p->enterCount))
+					ctime=time-p->entered;
+				p->time+=ctime;
+				p->count++;
+				ProfileInfo *np=NULL;
+				if (!(p->callret.empty()))
+				{
+					p->cCount[p->callret]=p->cCount[p->callret]+1;
+					p->cTime[p->callret]=p->cTime[p->callret]+ctime;
+					np=proFuncs[p->callret];
+					p->callret.clear();
+				}
+				p=np;
+			}
+		}
+	}
+}
+
+int LuaApplication::Core_profilerStart(lua_State *L)
+{
+	L->profilerHook=profilerHook;
+	return 0;
+}
+
+int LuaApplication::Core_profilerStop(lua_State *L)
+{
+	L->profilerHook=NULL;
+	return 0;
+}
+
+int LuaApplication::Core_profilerReport(lua_State *L)
+{
+	lua_newtable(L);
+	for (std::map<std::string,ProfileInfo*>::iterator it=proFuncs.begin();it!=proFuncs.end();it++)
+	{
+		ProfileInfo *p=it->second;
+		lua_newtable(L);
+		lua_pushinteger(L,p->count);
+		lua_setfield(L,-2,"count");
+		lua_pushnumber(L,p->time);
+		lua_setfield(L,-2,"time");
+		lua_pushstring(L,p->name.c_str());
+		lua_setfield(L,-2,"name");
+
+		lua_newtable(L);
+		for (std::map<std::string,int>::iterator it2=p->cCount.begin();it2!=p->cCount.end();it2++)
+		{
+			lua_newtable(L);
+			lua_pushinteger(L,it2->second);
+			lua_setfield(L,-2,"count");
+			lua_pushnumber(L,p->cTime[it2->first]);
+			lua_setfield(L,-2,"time");
+			lua_setfield(L,-2,it2->first.c_str());
+		}
+		lua_setfield(L,-2,"callers");
+
+		lua_setfield(L,-2,it->first.c_str());
+	}
+	return 1;
+}
+
+int LuaApplication::Core_profilerReset(lua_State *L)
+{
+	proLookup.clear();
+	for (std::map<std::string,ProfileInfo*>::iterator it=proFuncs.begin();it!=proFuncs.end();it++)
+		delete it->second;
+	proFuncs.clear();
+	return 0;
+}
+
+int LuaApplication::Core_random(lua_State *L)
+{
+	int gen=luaL_optnumber(L,1,0);
+	switch (gen)
+	{
+	default:
+		if (lua_isnoneornil(L,2))
+		{
+			double val=Rnd::MT19937::ExtractDouble();
+			lua_pushnumber(L,val);
+			return 1;
+		}
+		uint64_t uival=Rnd::MT19937::ExtractU32();
+		int a=luaL_checkinteger(L,2);
+		if (lua_isnoneornil(L,3))
+		{
+			lua_pushinteger(L,1+(((uival*a)>>32)&0xFFFFFFFF));
+		}
+		else
+		{
+			int b=luaL_checkinteger(L,3);
+			lua_pushinteger(L,a+(((uival*(b+1-a))>>32)&0xFFFFFFFF));
+		}
+		return 1;
+	break;
+	}
+	return 1;
+}
+
+int LuaApplication::Core_randomSeed(lua_State *L)
+{
+	int gen=luaL_optnumber(L,1,0);
+	int seed=luaL_optinteger(L,2,iclock()*0xFFFF);
+	switch (gen)
+	{
+	default: lua_pushinteger(L,Rnd::MT19937::GetSeed()); Rnd::MT19937::Initialize(seed); break;
+	}
+	return 1;
+}
+
+
+
+//

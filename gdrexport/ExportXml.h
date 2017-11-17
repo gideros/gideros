@@ -40,16 +40,19 @@ class ExportXml {
     bool RuleTemplate(QString name,QString path,QString dest,QDomElement rule);
     bool RuleImage(int width,int height,QString dst, ImageTypes type, bool alpha);
     bool RuleLua(QString file,QString content);
+    bool RuleOpenUrl(QString url);
 	QString XmlAttributeOrElement(QDomElement elm,QString name);
 	ExportContext *ctx;
 public:
 	ExportXml(QString xmlFile,bool isPlugin=false);
 	ExportXml();
+	void SetProperty(QString k,QString v);
+	QString GetProperty(QString k);
 	void SetupProperties(ExportContext *ctx);
 	bool Process(ExportContext *ctx);
 	bool ProcessRuleString(const char *xml);
 	bool isPlugin;
-	QMap<QString,QString> props;
+	QMap<QString,QString> lprops;
 	QString xmlFile;
 	static bool exportXml(QString xmlFile,bool plugin,ExportContext *ctx);
 	static QMap<QString, QString> availableTargets();

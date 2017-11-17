@@ -60,4 +60,20 @@
             </replacelist>
     </template>
  </target>
+ 
+  <target name="iOS">
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.exportPluginFiles("controller",
+	"[[[sys.pluginDir]]]/source/iOS/Plugins/Controller",
+	{ "controller.h","controller.mm", "GController.h","GController.mm", "GControllerManager.h","GControllerManager.mm",
+	  "controllerbinder.cpp","ControllerProtocol.h", "iCadeState.h", "iCadeReaderView.h", "iCadeReaderView.m", 
+	  "GControllerIcade.h","GControllerIcade.m", "GControllerDefault.h","GControllerDefault.m" },
+	true,true)
+	]]></lua>
+ </target>
+  <target name="Win32">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
+ </target>
+ 
 </plugin>

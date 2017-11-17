@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.Body" page="b2Body" parent="" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A rigid body. These are created via `b2.World:createBody`.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.Body:getPosition" page="getPosition" shortdesc="returns the world body origin position" version="Gideros 2011.6"><![CDATA[<br />
+Returns the world body origin position.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[x coordinate of the body position]]></return>
+    <return type="number"><![CDATA[y coordinate of the body position]]></return>
+  </method>
+  <method name="b2.Body:setPosition" page="setPosition" shortdesc="sets the world body origin position" version="Gideros 2011.6"><![CDATA[<br />
+Sets the world body origin position.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the position]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the position]]></parameter>
+  </method>
+  <method name="b2.Body:setAngle" page="setAngle" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Sets the current world rotation angle in radians.<br />
+<br />
+]]>
+    <parameter name="angle" optional="false" type="number"><![CDATA[world rotation angle in radians]]></parameter>
+  </method>
+  <method name="b2.Body:getAngle" page="getAngle" shortdesc="returns the current world rotation angle in radians" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current world rotation angle in radians.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[Current body angle in radians]]></return>
+  </method>
+  <method name="b2.Body:getLinearVelocity" page="getLinearVelocity" shortdesc="returns the linear velocity of the center of mass" version="Gideros 2011.6"><![CDATA[<br />
+Returns the linear velocity of the center of mass.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[x vector of the linear velocity]]></return>
+    <return type="number"><![CDATA[y vector of the linear velocity]]></return>
+  </method>
+  <method name="b2.Body:setLinearVelocity" page="setLinearVelocity" shortdesc="sets the linear velocity of the center of mass" version="Gideros 2011.6"><![CDATA[<br />
+Sets the linear velocity of the center of mass.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the linear velocity]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the linear velocity]]></parameter>
+  </method>
+  <method name="b2.Body:setAngularVelocity" page="setAngularVelocity" shortdesc="sets the angular velocity" version="Gideros 2011.6"><![CDATA[<br />
+Sets the angular velocity.<br />
+<br />
+]]>
+    <parameter name="omega" optional="false" type="number"><![CDATA[the new angular velocity in radians/second]]></parameter>
+  </method>
+  <method name="b2.Body:getAngularVelocity" page="getAngularVelocity" shortdesc="returns the angular velocity" version="Gideros 2011.6"><![CDATA[<br />
+Returns the angular velocity.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[Angular velocity in radians/second]]></return>
+  </method>
+  <method name="b2.Body:createFixture" page="createFixture" shortdesc="creates a fixture and attach it to this body" version="Gideros 2011.6"><![CDATA[<br />
+Creates a fixture and attach it to this body. If the density is non-zero, this function automatically<br />
+updates the mass of the body. Contacts are not created until the next time step. The fixture definition is given<br />
+as a ordinary table. The fields of the fixture definition table are:<br />
+<br />
+<ul><br />
+<li>`shape`: (b2.Shape) The shape, this must be set.</li><br />
+<li>`friction`: (number) The friction coefficient, usually in the range [0,1].</li><br />
+<li>`restitution`: (number) The restitution (elasticity) usually in the range [0,1].</li><br />
+<li>`density`: (number) The density, usually in kg/m^2.</li><br />
+<li>`isSensor`: (boolean) A sensor shape collects contact information but never generates a collision response.</li><br />
+<li>`filter`: (table) Contact filtering data. The definition of contact filtering data is given at `b2.Fixture:setFilterData` function.</li><br />
+</ul><br />
+<br />
+The unset fields gets default values.<br />
+<br />
+<ul><br />
+<li>`Warning`: This function is locked during callbacks.</li><br />
+</ul><br />
+<br />
+]]>
+    <parameter name="fixtureDef" optional="false" type="table"/>
+    <return type="b2.Fixture"><![CDATA[The created fixture instance.]]></return>
+  </method>
+  <method name="b2.Body:destroyFixture" page="destroyFixture" shortdesc="destroys a fixture" version="Gideros 2011.6"><![CDATA[<br />
+Destroy a fixture. This removes the fixture from the broad-phase and destroys all<br />
+contacts associated with this fixture. This will automatically adjust the mass of the body if the<br />
+body is dynamic and the fixture has positive density. All fixtures attached to a body are implicitly<br />
+destroyed when the body is destroyed.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;*Warning:** This function is locked during callbacks.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+    <parameter name="fixture" optional="false" type="b2.Fixture"><![CDATA[the fixture to be removed]]></parameter>
+  </method>
+  <method name="b2.Body:applyForce" page="applyForce" shortdesc="applies a force at a world point" version="Gideros 2011.6"><![CDATA[<br />
+Applies a force at a world point. If the force is not<br />
+applied at the center of mass, it will generate a torque and<br />
+affect the angular velocity. This wakes up the body.<br />
+<br />
+]]>
+    <parameter name="forcex" optional="false" type="number"/>
+    <parameter name="forcey" optional="false" type="number"/>
+    <parameter name="pointx" optional="false" type="number"><![CDATA[the x coordinate of the world position of the point of application]]></parameter>
+    <parameter name="pointy" optional="false" type="number"><![CDATA[the y coordinate of the world position of the point of application]]></parameter>
+  </method>
+  <method name="b2.Body:applyTorque" page="applyTorque" shortdesc="applies a torque" version="Gideros 2011.6"><![CDATA[<br />
+Applies a torque. This affects the angular velocity without affecting<br />
+the linear velocity of the center of mass. This wakes up the body.<br />
+<br />
+]]>
+    <parameter name="torque" optional="false" type="number"><![CDATA[, usually in N-m]]></parameter>
+  </method>
+  <method name="b2.Body:applyLinearImpulse" page="applyLinearImpulse" shortdesc="applies an impulse at a point" version="Gideros 2011.6"><![CDATA[<br />
+Applies an impulse at a point. This immediately modifies the velocity. It also<br />
+modifies the angular velocity if the point of application is not at the center of<br />
+mass. This wakes up the body.<br />
+<br />
+]]>
+    <parameter name="impulsex" optional="false" type="number"><![CDATA[the x coordinate of the world impulse vector, usually in N-seconds or kg-m/s]]></parameter>
+    <parameter name="impulsey" optional="false" type="number"><![CDATA[the y coordinate of the world impulse vector, usually in N-seconds or kg-m/s]]></parameter>
+    <parameter name="pointx" optional="false" type="number"><![CDATA[the x coordinate of the world position of the point of application]]></parameter>
+    <parameter name="pointy" optional="false" type="number"><![CDATA[the y coordinate of the world position of the point of application]]></parameter>
+  </method>
+  <method name="b2.Body:applyAngularImpulse" page="applyAngularImpulse" shortdesc="applies an angular impulse" version="Gideros 2011.6"><![CDATA[<br />
+Applies an angular impulse.<br />
+<br />
+]]>
+    <parameter name="impulse" optional="false" type="number"><![CDATA[the angular impulse in units of kg*m*m/s]]></parameter>
+  </method>
+  <method name="b2.Body:isAwake" page="isAwake" shortdesc="returns the sleeping state of the body" version="Gideros 2011.6"><![CDATA[<br />
+Returns the sleeping state of this body. Returns `true` if body is awake (not sleeping), `false` otherwise.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[The sleeping state of this body.]]></return>
+  </method>
+  <method name="b2.Body:setAwake" page="setAwake" shortdesc="sets the sleep state of the body" version="Gideros 2012.2.2.1"><![CDATA[<br />
+Set the sleep state of the body. A sleeping body has very low CPU cost.<br />
+<br />
+]]>
+    <parameter name="awake" optional="false" type="boolean"><![CDATA[set to true to wake body, false to put it to sleep]]></parameter>
+  </method>
+  <method name="b2.Body:setActive" page="setActive" shortdesc="sets the active state of the body" version="Gideros 2011.6"><![CDATA[<br />
+Sets the active state of the body. An inactive body is not simulated and cannot be collided with or woken up. <br />
+If you pass a flag of true, all fixtures will be added to the broad-phase. If you pass a flag of false,<br />
+all fixtures will be removed from the broad-phase and all contacts will be destroyed. Fixtures and joints are <br />
+otherwise unaffected. You may continue to create/destroy fixtures and joints on inactive bodies. <br />
+Fixtures on an inactive body are implicitly inactive and will not participate in collisions, ray-casts, or queries. <br />
+Joints connected to an inactive body are implicitly inactive. An inactive body is still owned by a [[b2.World]] object and <br />
+remains in the body list.<br />
+<br />
+]]>
+    <parameter name="flag" optional="false" type="boolean"><![CDATA[active flag]]></parameter>
+  </method>
+  <method name="b2.Body:isActive" page="isActive" shortdesc="returns the active state of the body" version="Gideros 2011.6"><![CDATA[<br />
+Returns the active state of the body.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if the body is active, `false` otherwise]]></return>
+  </method>
+  <method name="b2.Body:getLinearDamping" page="getLinearDamping" shortdesc="returns the linear damping of the body" version="Gideros 2012.2.2"><![CDATA[<br />
+Returns the linear damping of the body. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The linear damping of the body]]></return>
+  </method>
+  <method name="b2.Body:setLinearDamping" page="setLinearDamping" shortdesc="sets the linear damping of the body" version="Gideros 2012.2.2"><![CDATA[<br />
+Sets the linear damping of the body. <br />
+<br />
+]]>
+    <parameter name="linearDamping" optional="false" type="number"><![CDATA[new linear damping of the body]]></parameter>
+  </method>
+  <method name="b2.Body:getAngularDamping" page="getAngularDamping" shortdesc="returns the angular damping of the body" version="Gideros 2012.2.2"><![CDATA[<br />
+Returns the angular damping of the body. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The angular damping of the body]]></return>
+  </method>
+  <method name="b2.Body:setAngularDamping" page="setAngularDamping" shortdesc="sets the angular damping of the body" version="Gideros 2012.2.2"><![CDATA[<br />
+Sets the angular damping of the body. <br />
+<br />
+]]>
+    <parameter name="angularDamping" optional="false" type="number"><![CDATA[new angular damping of the body]]></parameter>
+  </method>
+  <method name="b2.Body:getWorldCenter" page="getWorldCenter" shortdesc="returns the world position of the center of mass" version="Gideros 2012.2.2"><![CDATA[<br />
+Returns the world position of the center of mass.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[x coordinate of the world position of the center of mass]]></return>
+    <return type="number"><![CDATA[x coordinate of the world position of the center of mass]]></return>
+  </method>
+  <method name="b2.Body:getLocalCenter" page="getLocalCenter" shortdesc="returns the local position of the center of mass" version="Gideros 2012.2.2"><![CDATA[<br />
+Returns the local position of the center of mass. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[x coordinate of the local position of the center of mass]]></return>
+    <return type="number"><![CDATA[x coordinate of the local position of the center of mass]]></return>
+  </method>
+  <method name="b2.Body:getMass" page="getMass" shortdesc="returns the total mass of the body in kilograms (kg)" version="Gideros 2012.2.2"><![CDATA[<br />
+Returns the total mass of the body in kilograms (kg).<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The total mass of the body in kilograms (kg)]]></return>
+  </method>
+  <method name="b2.Body:getInertia" page="getInertia" shortdesc="returns the rotational inertia of the body about the local origin in kg-m^2" version="Gideros 2012.2.2"><![CDATA[<br />
+Returns the rotational inertia of the body about the local origin in kg-m^2.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The rotational inertia of the body about the local origin in kg-m^2.]]></return>
+  </method>
+  <method name="b2.Body:setGravityScale" page="setGravityScale" shortdesc="sets the gravity scale of the body" version="Gideros 2012.2.2.1"><![CDATA[<br />
+Sets the gravity scale of the body. <br />
+<br />
+]]>
+    <parameter name="scale" optional="false" type="number"><![CDATA[new gravity scale of the body]]></parameter>
+  </method>
+  <method name="b2.Body:getGravityScale" page="getGravityScale" shortdesc="returns the gravity scale of the body" version="Gideros 2012.2.2.1"><![CDATA[<br />
+Returns the gravity scale of the body. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The gravity scale of the body]]></return>
+  </method>
+  <method name="b2.Body:getWorldPoint" page="getWorldPoint" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns the world coordinates of a point given the local coordinates.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the local point]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the local point]]></parameter>
+    <return type="number"><![CDATA[x coordinate of the provided point expressed in world coordinates]]></return>
+    <return type="number"><![CDATA[y coordinate of the provided point expressed in world coordinates]]></return>
+  </method>
+  <method name="b2.Body:getWorldVector" page="getWorldVector" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns the world coordinates of a vector given the local coordinates. <br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the local vector]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the local vector]]></parameter>
+    <return type="number"><![CDATA[x vector of the provided vector expressed in world coordinates]]></return>
+    <return type="number"><![CDATA[x vector of the provided vector expressed in world coordinates]]></return>
+  </method>
+  <method name="b2.Body:getLocalPoint" page="getLocalPoint" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns the local coordinates of a point given the world coordinates.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the world point]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the world point]]></parameter>
+    <return type="number"><![CDATA[x coordinate of the provided point expressed in local coordinates]]></return>
+    <return type="number"><![CDATA[y coordinate of the provided point expressed in local coordinates]]></return>
+  </method>
+  <method name="b2.Body:getLocalVector" page="getLocalVector" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+Returns the local coordinates of a vector given the world coordinates. <br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the world vector]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the world vector]]></parameter>
+    <return type="number"><![CDATA[x vector of the provided vector expressed in local coordinates]]></return>
+    <return type="number"><![CDATA[y vector of the provided vector expressed in local coordinates]]></return>
+  </method>
+  <method name="b2.Body:setFixedRotation" page="setFixedRotation" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+]]>
+    <parameter name="flag" optional="false" type="boolean"/>
+  </method>
+  <method name="b2.Body:isFixedRotation" page="isFixedRotation" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+]]>
+    <return type="bool"><![CDATA[if body has fixed rotation set]]></return>
+  </method>
+  <method name="b2.Body:setBullet" page="setBullet" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+]]>
+    <parameter name="flag" optional="false" type="boolean"/>
+  </method>
+  <method name="b2.Body:isBullet" page="isBullet" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+]]>
+    <return type="bool"><![CDATA[if body is set to behave bullet]]></return>
+  </method>
+  <method name="b2.Body:setSleepingAllowed" page="setSleepingAllowed" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+]]>
+    <parameter name="flag" optional="false" type="boolean"/>
+  </method>
+  <method name="b2.Body:isSleepingAllowed" page="isSleepingAllowed" shortdesc="" version="Gideros 2012.09.6"><![CDATA[<br />
+]]>
+    <return type="bool"><![CDATA[if body is allowed to sleep]]></return>
+  </method>
+  <example name="Creating Box2d body and moving Bitmap along the body"><![CDATA[require "box2d"
+local world = b2.World.new(0, 10, true)
+
+--create ball bitmap object from ball graphic
+local ball = Bitmap.new(Texture.new("ball.png"))
+--reference center of the ball for positioning
+ball:setAnchorPoint(0.5,0.5)
+ 
+ball:setPosition(100,100)
+ 
+--get radius
+local radius = ball:getWidth()/2
+ 
+--create box2d physical object
+local body = world:createBody{type = b2.DYNAMIC_BODY}
+local circle = b2.CircleShape.new(0, 0, radius)
+local fixture = body:createFixture{shape = circle, density = 1.0, 
+friction = 0.1, restitution = 0.2}
+ball.body = body
+ 
+--add to scene
+stage:addChild(ball)
+
+stage:addEventListener(Event.ENTER_FRAME, function()
+	-- edit the step values if required. These are good defaults!
+    world:step(1/60, 8, 3)
+	ball:setPosition(ball.body:getPosition())
+	ball:setRotation(math.rad(ball.body:getAngle()))
+end)]]></example>
+</object>

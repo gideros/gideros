@@ -79,14 +79,56 @@ public class GCamera {
 	static native void nativeRender(int camtex, float[] mat);
 	private static int GL_TEXTURE_EXTERNAL_OES = 0x8D65;
 
+	public static class CamInfo {
+		public String name;
+		public String description;
+		public int position;
+	}
+
+	public static CamInfo[] availableDevices() {
+		int ncams=Camera.getNumberOfCameras();
+		CamInfo[] cams=new CamInfo[ncams];
+		Camera.CameraInfo cami=new Camera.CameraInfo();
+		for (int k=0;k<ncams;k++) {
+			Camera.getCameraInfo(k,cami);
+			CamInfo cam=new CamInfo();
+			cam.name=""+k;
+			cam.description="Builtin "+
+					((cami.facing==Camera.CameraInfo.CAMERA_FACING_FRONT)?"front":"back")+
+					" camera #"+k;
+			cam.position=(cami.facing==Camera.CameraInfo.CAMERA_FACING_FRONT)?1:2;
+			cams[k]=cam;
+		}
+		return cams;
+	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public static int[] start(int width,int height,int angle)
+	public static int[] start(int width,int height,int angle,String device)
 	{
-		int[] dimret=new int[2];
+		int[] dimret=new int[4];
+		int camId=-1;
+		try {
+			camId=Integer.parseInt(device);
+		} catch (Exception e)
+		{
+		}
+		if ((camId==-1)||(camId>=Camera.getNumberOfCameras()))
+		{
+			int ncams=Camera.getNumberOfCameras();
+			Camera.CameraInfo cami=new Camera.CameraInfo();
+			camId=0;
+			for (int k=0;k<ncams;k++) {
+				Camera.getCameraInfo(k,cami);
+				if (cami.facing==Camera.CameraInfo.CAMERA_FACING_BACK) {
+					camId = k;
+					break;
+				}
+			}
+		}
+
 		if (camera==null)
 		{
-			camera = Camera.open();
+			camera = Camera.open(camId);
 			if (camera!=null)
 			{
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -134,6 +176,17 @@ public class GCamera {
 						e.printStackTrace();
 					}
 				}
+				android.hardware.Camera.CameraInfo info =
+						new android.hardware.Camera.CameraInfo();
+				android.hardware.Camera.getCameraInfo(camId, info);
+
+				if ((angle%180)!=(info.orientation%180)) { int c=dimret[0]; dimret[0]=dimret[1]; dimret[1]=c; }
+				if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT)
+					dimret[2] = (angle - info.orientation + 360) % 360;
+				else
+					dimret[2] = (angle + info.orientation + 360) % 360;
+				dimret[3] = 1;
+				camera.setDisplayOrientation(0);
 				camera.startPreview();
 			}
 		}

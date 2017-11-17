@@ -198,8 +198,8 @@ QSettings lls(theme, QSettings::IniFormat);
         lls.value("FontSize", 12).toInt()));
 #else
     sciScintilla_->setFont(QFont(
-        lls.value("FontFamily", "Courier New").toString(),
-        lls.value("FontSize", 10).toInt()));
+        lls.value("FontFamily", "Lucida Console").toString(),
+        lls.value("FontSize", 12).toInt()));
 #endif
 
 	sciScintilla_->setFolding(QsciScintilla::BoxedTreeFoldStyle, 3);
@@ -580,6 +580,10 @@ void TextEdit::undo()
 void TextEdit::redo()
 {
 	sciScintilla_->redo();
+}
+
+void TextEdit::background() {
+	sciScintilla_->cancelList();
 }
 
 bool TextEdit::maybeSave()

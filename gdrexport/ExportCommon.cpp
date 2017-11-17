@@ -306,13 +306,11 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 				ctx->luafiles.push_back(s1);
 				ctx->luafiles_abs.push_back(dst);
 				luafiles_src.push_back(src);
-				if (!compileLua)
-				{
+				if (!compileLua) {
 					ctx->allfiles.push_back(s1);
 					ctx->allfiles_abs.push_back(dst);
-				}
-				else
-					copied=true;
+				} else
+					copied = true;
 			} else // compile independant lua files (with luac)
 			{
 				ctx->allfiles.push_back(s1);
@@ -338,9 +336,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 				} else {
 				}
 			}
-		}
-		else
-		{
+		} else {
 			ctx->allfiles.push_back(s1);
 			ctx->allfiles_abs.push_back(dst);
 		}
@@ -365,7 +361,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		QString sfile = "";
 		for (int i = 0; i < ctx->luafiles_abs.size(); ++i) {
 			dfile = ctx->luafiles_abs[i];
-			difile=ctx->luafiles[i];
+			difile = ctx->luafiles[i];
 			QString rdst = QDir::cleanPath(
 					ctx->outputDir.relativeFilePath(difile));
 			sfile = sfile + " \"" + rdst + "\"";
@@ -409,8 +405,8 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			exportInfo("Encrypting %s [%s]\n", filename.toUtf8().constData(),
 					ext.toUtf8().constData());
 			/*if (ext != "lua" && ext != "png" && ext != "jpeg" && ext != "jpg"
-					&& ext != "wav")
-				continue;*/
+			 && ext != "wav")
+			 continue;*/
 
 			QByteArray encryptionKey =
 					(ext == "lua") ? ctx->codeKey : ctx->assetsKey;
@@ -419,6 +415,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			if (!fis.open(QIODevice::ReadOnly)) {
 				exportError("Failed to open %s\n",
 						filename.toUtf8().constData());
+				ctx->exportError=true;
 				continue;
 			}
 			QByteArray data = fis.readAll();
@@ -430,19 +427,20 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 						^ encryptionKey[((j * 13) + ((j / ks) * 31)) % ks];
 
 			//Add encryption marker
-			unsigned char sig[4]={'G','x',0xE7,0};
-			unsigned long dlength=data.size();
-			sig[3]=(ext == "lua") ? 1:2;
-	  		sig[0]^=(dlength>>24)&0xFF;
-	    	sig[1]^=(dlength>>16)&0xFF;
-	    	sig[2]^=(dlength>>8)&0xFF;
-	    	sig[3]^=(dlength>>0)&0xFF;
-			data.append((char *)sig,4);
+			unsigned char sig[4] = { 'G', 'x', 0xE7, 0 };
+			unsigned long dlength = data.size();
+			sig[3] = (ext == "lua") ? 1 : 2;
+			sig[0] ^= (dlength >> 24) & 0xFF;
+			sig[1] ^= (dlength >> 16) & 0xFF;
+			sig[2] ^= (dlength >> 8) & 0xFF;
+			sig[3] ^= (dlength >> 0) & 0xFF;
+			data.append((char *) sig, 4);
 
 			QFile fos(filename);
 			if (!fos.open(QIODevice::WriteOnly)) {
 				exportError("Failed to save %s\n",
 						filename.toUtf8().constData());
+				ctx->exportError=true;
 				continue;
 			}
 			fos.write(data);
@@ -729,73 +727,213 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 		exportError("Can't open file %s\n", file.toStdString().c_str());
 		return false;
 	}
+	//Attempt to locate central directory: expect EOCD in last 512 bytes of the file
+	qint64 fsz = zfile.size();
+	if (fsz > 512)
+		zfile.seek(fsz - 512);
+	QByteArray lastBytes = zfile.read((fsz > 512) ? 512 : fsz);
+	const char eocdMarker[5] = { 'P', 'K', 5, 6, 0 };
+	int eocd = lastBytes.lastIndexOf(eocdMarker);
 
-	while (true) {
+	if (eocd > 0) //If central dir was found, just get it
+	{
+		quint32 cdoff;
+		memcpy(&cdoff,lastBytes.constData()+eocd+16,4);
+		zfile.seek(_letohl(cdoff));
+		//Scan central directory
+		while (true) {
 #pragma pack(push,1)
-		struct _ZipHdr {
-			quint32 Signature; //	local file header signature     4 bytes  (0x04034b50)
-#define ZIPHDR_SIG 0x04034b50
-			quint16 Version;	//	version needed to extract       2 bytes
-			quint16 Flags;	//	general purpose bit flag        2 bytes
-			quint16 Compression;	//	compression method              2 bytes
-			quint16 ModTime;	//	last mod file time              2 bytes
-			quint16 ModDate;	//	last mod file date              2 bytes
-			quint32 Crc32;	//	crc-32                          4 bytes
-			quint32 CompSize;	//	compressed size                 4 bytes
-			quint32 OrigSize;	//	uncompressed size               4 bytes
-			quint16 NameLen;	//  file name length                2 bytes
-			quint16 ExtraLen;	//  extra field length              2 bytes
-		}PACKED Hdr;
+			struct _ZipHdr {
+				quint32 Signature; //	local file header signature     4 bytes  (0x04034b50)
+#define ZIPCHDR_SIG 0x02014b50
+				quint16 VMade;	//	version made       2 bytes
+				quint16 Version;	//	version needed to extract       2 bytes
+				quint16 Flags;	//	general purpose bit flag        2 bytes
+				quint16 Compression;//	compression method              2 bytes
+				quint16 ModTime;	//	last mod file time              2 bytes
+				quint16 ModDate;	//	last mod file date              2 bytes
+				quint32 Crc32;	//	crc-32                          4 bytes
+				quint32 CompSize;	//	compressed size                 4 bytes
+				quint32 OrigSize;	//	uncompressed size               4 bytes
+				quint16 NameLen;	//  file name length                2 bytes
+				quint16 ExtraLen;	//  extra field length              2 bytes
+				quint16 CommLen;	//  comm field length              2 bytes
+				quint16 DiskNum;	//  disk # start             2 bytes
+				quint16 IntAttr;	//  internal attr              2 bytes
+				quint32 ExtAttr;	//  external attr              2 bytes
+				quint32 Offset;	//  offset of local header              2 bytes
+			}PACKED Hdr;
+			struct _ZipHdr2 {
+				quint32 Signature; //	local file header signature     4 bytes  (0x04034b50)
+#define ZIPFHDR_SIG 0x04034b50
+				quint16 Version;	//	version needed to extract       2 bytes
+				quint16 Flags;	//	general purpose bit flag        2 bytes
+				quint16 Compression;//	compression method              2 bytes
+				quint16 ModTime;	//	last mod file time              2 bytes
+				quint16 ModDate;	//	last mod file date              2 bytes
+				quint32 Crc32;	//	crc-32                          4 bytes
+				quint32 CompSize;	//	compressed size                 4 bytes
+				quint32 OrigSize;	//	uncompressed size               4 bytes
+				quint16 NameLen;	//  file name length                2 bytes
+				quint16 ExtraLen;	//  extra field length              2 bytes
+			}PACKED FHdr;
 #pragma pack(pop)
-		if (zfile.read((char *) &Hdr, sizeof(Hdr)) != sizeof(Hdr))
-			break;
-		if (_letohl(Hdr.Signature) != ZIPHDR_SIG)
-			break;
-		if (_letohs(Hdr.Version) > 20) {
-			exportError("Unsupported ZIP version for %s [%d]\n",
-					file.toStdString().c_str(), _letohs(Hdr.Version));
-			return false;
-		}
-		if (Hdr.Flags != 0) {
-			exportError("Unsupported flags for %s [%04x]\n",
-					file.toStdString().c_str(), Hdr.Flags);
-			return false;
-		}
-		if ((Hdr.Compression > 0) && (_letohs(Hdr.Compression) != 8)) {
-			exportError("Unsupported compression method for %s [%d]\n",
-					file.toStdString().c_str(), _letohs(Hdr.Compression));
-			return false;
-		}
-		QByteArray fname = zfile.read(_letohs(Hdr.NameLen));
-		QString lname = QString(fname);
-		zfile.read(_letohs(Hdr.ExtraLen));
-		exportInfo("Extracting %s\n", lname.toStdString().c_str());
-		QByteArray fcont = zfile.read(
-				Hdr.Compression ?
-						_letohl(Hdr.CompSize) : _letohl(Hdr.OrigSize));
-		if (Hdr.Compression) {
-			QByteArray decomp;
-			if (!gzInflate(fcont, decomp)) {
-				exportError("Failed to uncompress %s\n",
-						lname.toStdString().c_str());
+			if (zfile.read((char *) &Hdr, sizeof(Hdr)) != sizeof(Hdr))
+				break;
+			if (_letohl(Hdr.Signature) != ZIPCHDR_SIG) {
+				zfile.seek(zfile.pos() - sizeof(Hdr));
 				break;
 			}
-			fcont = decomp;
-		}
-		if (lname.endsWith("/"))
-			toPath.mkpath(lname);
-		else {
-			QFile ofile(toPath.absoluteFilePath(lname));
-			if (ofile.open(QIODevice::WriteOnly)) {
-				ofile.write(fcont);
-				ofile.close();
-			} else {
-				exportError("Can't open file %s\n",
-						lname.toStdString().c_str());
+			if (_letohs(Hdr.Version) > 20) {
+				exportError("Unsupported ZIP version for %s [%d]\n",
+						file.toStdString().c_str(), _letohs(Hdr.Version));
+				return false;
+			}
+			if ((Hdr.Flags&(~8)) != 0) {
+				exportError("Unsupported flags for %s [%04x]\n",
+						file.toStdString().c_str(), Hdr.Flags);
+				return false;
+			}
+			if ((Hdr.Compression > 0) && (_letohs(Hdr.Compression) != 8)) {
+				exportError("Unsupported compression method for %s [%d]\n",
+						file.toStdString().c_str(), _letohs(Hdr.Compression));
+				return false;
+			}
+
+			QByteArray fname = zfile.read(_letohs(Hdr.NameLen));
+			QString lname = QString(fname);
+			zfile.read(_letohs(Hdr.ExtraLen));
+			zfile.read(_letohs(Hdr.CommLen));
+
+			exportInfo("Extracting %s\n", lname.toStdString().c_str());
+			//Grab file data
+			qint64 fpos=zfile.pos();
+			zfile.seek(_letohl(Hdr.Offset));
+			if (zfile.read((char *) &FHdr, sizeof(FHdr)) != sizeof(FHdr))
 				break;
+			zfile.read(_letohs(FHdr.NameLen));
+			zfile.read(_letohs(FHdr.ExtraLen));
+			QByteArray fcont = zfile.read(
+					Hdr.Compression ?
+							_letohl(Hdr.CompSize) : _letohl(Hdr.OrigSize));
+
+			zfile.seek(fpos);
+
+			if (Hdr.Compression) {
+				QByteArray decomp;
+				if (!gzInflate(fcont, decomp)) {
+					exportError("Failed to uncompress %s\n",
+							lname.toStdString().c_str());
+					break;
+				}
+				fcont = decomp;
+			}
+			int unixattr=-1;
+			if ((_letohs(Hdr.VMade) >> 8) == 3) //Unix
+					{
+				unixattr = _letohl(Hdr.ExtAttr) >> 16;
+			}
+
+			if ((unixattr>=0)&&((unixattr & 0120000) == 0120000)) //SymLink
+			{
+				exportInfo("Link %s\n", lname.toStdString().c_str());
+				QFile ofile(toPath.absoluteFilePath(lname));
+				ofile.remove();				
+				QString tgt=QString(fcont);
+				if (!QFile::link(tgt, toPath.absoluteFilePath(lname)))
+						exportError("Can't make link %s to %s\n",
+								lname.toStdString().c_str(),
+								tgt.toStdString().c_str());
+			}
+			else if (lname.endsWith("/"))
+				toPath.mkpath(lname);
+			else {
+				QFile ofile(toPath.absoluteFilePath(lname));
+				if (ofile.open(QIODevice::WriteOnly)) {
+					ofile.write(fcont);
+					ofile.close();
+				} else {
+					exportError("Can't open file %s\n",
+							lname.toStdString().c_str());
+					break;
+				}
+			}
+			if ((unixattr>=0)&&(unixattr&1))
+			{
+				QFile ofile(toPath.absoluteFilePath(lname));
+			    ofile.setPermissions(QFile::ReadOwner|QFile::WriteOwner|QFile::ExeOwner|QFile::ReadGroup|QFile::ExeGroup|QFile::ReadOther|QFile::ExeOther);
 			}
 		}
-	}
+	} else
+		//Otherwise scan through the files
+		while (true) {
+#pragma pack(push,1)
+			struct _ZipHdr {
+				quint32 Signature; //	local file header signature     4 bytes  (0x04034b50)
+#define ZIPHDR_SIG 0x04034b50
+				quint16 Version;	//	version needed to extract       2 bytes
+				quint16 Flags;	//	general purpose bit flag        2 bytes
+				quint16 Compression;//	compression method              2 bytes
+				quint16 ModTime;	//	last mod file time              2 bytes
+				quint16 ModDate;	//	last mod file date              2 bytes
+				quint32 Crc32;	//	crc-32                          4 bytes
+				quint32 CompSize;	//	compressed size                 4 bytes
+				quint32 OrigSize;	//	uncompressed size               4 bytes
+				quint16 NameLen;	//  file name length                2 bytes
+				quint16 ExtraLen;	//  extra field length              2 bytes
+			}PACKED Hdr;
+#pragma pack(pop)
+			if (zfile.read((char *) &Hdr, sizeof(Hdr)) != sizeof(Hdr))
+				break;
+			if (_letohl(Hdr.Signature) != ZIPHDR_SIG) {
+				zfile.seek(zfile.pos() - sizeof(Hdr));
+				break;
+			}
+			if (_letohs(Hdr.Version) > 20) {
+				exportError("Unsupported ZIP version for %s [%d]\n",
+						file.toStdString().c_str(), _letohs(Hdr.Version));
+				return false;
+			}
+			if (Hdr.Flags != 0) {
+				exportError("Unsupported flags for %s [%04x]\n",
+						file.toStdString().c_str(), Hdr.Flags);
+				return false;
+			}
+			if ((Hdr.Compression > 0) && (_letohs(Hdr.Compression) != 8)) {
+				exportError("Unsupported compression method for %s [%d]\n",
+						file.toStdString().c_str(), _letohs(Hdr.Compression));
+				return false;
+			}
+			QByteArray fname = zfile.read(_letohs(Hdr.NameLen));
+			QString lname = QString(fname);
+			zfile.read(_letohs(Hdr.ExtraLen));
+			exportInfo("Extracting %s\n", lname.toStdString().c_str());
+			QByteArray fcont = zfile.read(
+					Hdr.Compression ?
+							_letohl(Hdr.CompSize) : _letohl(Hdr.OrigSize));
+			if (Hdr.Compression) {
+				QByteArray decomp;
+				if (!gzInflate(fcont, decomp)) {
+					exportError("Failed to uncompress %s\n",
+							lname.toStdString().c_str());
+					break;
+				}
+				fcont = decomp;
+			}
+			if (lname.endsWith("/"))
+				toPath.mkpath(lname);
+			else {
+				QFile ofile(toPath.absoluteFilePath(lname));
+				if (ofile.open(QIODevice::WriteOnly)) {
+					ofile.write(fcont);
+					ofile.close();
+				} else {
+					exportError("Can't open file %s\n",
+							lname.toStdString().c_str());
+					break;
+				}
+			}
+		}
 	zfile.close();
 	return true;
 }
@@ -830,8 +968,8 @@ void ExportCommon::progressStep(const char *title) {
 }
 
 char *ExportCommon::askString(const char *title, const char *question,
-		const char *def, bool key) {
-	exportInfo("?:?%c%s|%s|%s\n", key ? 'K' : 'S', title, question, def);
+		const char *def, bool key, const char *uid) {
+	exportInfo("?:?%c%s|%s|%s|%s\n", key ? 'K' : 'S', title, question, def, uid);
 	char str[512];
 	fgets(str, 511, stdin);
 	int i = strlen(str) - 1;

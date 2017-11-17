@@ -13,10 +13,7 @@ class Application;
 class TextField : public TextFieldBase
 {
 public:
-    TextField(Application *application);
-    TextField(Application *application, BMFontBase* font);
-    TextField(Application *application, BMFontBase* font, const char* text);
-    TextField(Application *application, BMFontBase* font, const char* text, const char *sample);
+    TextField(Application *application, BMFontBase* font=NULL, const char* text=NULL, const char *sample=NULL, FontBase::TextLayoutParameters *params=NULL);
 
 	virtual ~TextField()
 	{
@@ -40,6 +37,8 @@ public:
     virtual void setSample(const char* sample);
     virtual const char* sample() const;
 
+    virtual void setLayout(FontBase::TextLayoutParameters *l=NULL);
+
 	void createGraphics();
 
 private:
@@ -49,10 +48,9 @@ private:
 
 	float r_, g_, b_;
 	unsigned int textColor_;
-    float letterSpacing_;
 
 private:
-	GraphicsBase graphicsBase_;
+	std::vector<GraphicsBase> graphicsBase_;
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
     float minx_, miny_, maxx_, maxy_;
     int sminx, sminy, smaxx, smaxy;

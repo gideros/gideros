@@ -1,0 +1,364 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2BroadPhase.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\Shapes\b2ChainShape.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\Shapes\b2CircleShape.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2Collision.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2Distance.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2DynamicTree.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\Shapes\b2EdgeShape.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\Shapes\b2PolygonShape.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\Shapes\b2Shape.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2TimeOfImpact.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2BlockAllocator.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2Draw.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2FreeList.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2GrowableBuffer.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2GrowableStack.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2IntrusiveList.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2Math.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2Settings.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2SlabAllocator.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2StackAllocator.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2Stat.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2Timer.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2TrackedBlock.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2Body.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2ContactManager.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2Fixture.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2Island.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2TimeStep.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2World.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2WorldCallbacks.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2CircleContact.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2Contact.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ContactSolver.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2DistanceJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2FrictionJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2GearJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2Joint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2MotorJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2MouseJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2PolygonContact.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2PrismaticJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2PulleyJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2Particle.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2ParticleAssembly.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2ParticleGroup.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2ParticleSystem.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Rope\b2Rope.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2StackQueue.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2VoronoiDiagram.h">
+      <Filter>LiquidFun</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\common\lfstatus.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\common\liquidfunbinder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\common\lqSprites.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\common\lqWorld.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2BroadPhase.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\Shapes\b2ChainShape.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\Shapes\b2CircleShape.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2CollideCircle.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2CollideEdge.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2CollidePolygon.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2Collision.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2Distance.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2DynamicTree.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\Shapes\b2EdgeShape.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\Shapes\b2PolygonShape.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Collision\b2TimeOfImpact.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2BlockAllocator.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2Draw.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2FreeList.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2Math.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2Settings.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2StackAllocator.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2Stat.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2Timer.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Common\b2TrackedBlock.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2Body.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2ContactManager.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2Fixture.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2Island.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2World.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\b2WorldCallbacks.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ChainAndCircleContact.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ChainAndPolygonContact.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2CircleContact.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2Contact.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2ContactSolver.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2DistanceJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndCircleContact.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2EdgeAndPolygonContact.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2FrictionJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2GearJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2Joint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2MotorJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2MouseJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2PolygonAndCircleContact.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Contacts\b2PolygonContact.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2PrismaticJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2PulleyJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2RevoluteJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2RopeJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2Particle.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2ParticleAssembly.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2ParticleGroup.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2ParticleSystem.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Rope\b2Rope.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\liquidfun\Box2D\Box2D\Particle\b2VoronoiDiagram.cpp">
+      <Filter>LiquidFun</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\common\lfstatus.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\common\liquidfunbinder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\common\lqParticles.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\common\lqSprites.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\common\lqWorld.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\..\2dsg\Matrices.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\..\luabinding\binder.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="LiquidFun">
+      <UniqueIdentifier>{6fa8d784-63df-4f13-b907-79f8b19f61f5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

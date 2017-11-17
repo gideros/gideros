@@ -106,6 +106,14 @@ std::string getLanguage()
 	return "en";
 }
 
+std::string getAppId(){
+	return "";
+}
+
+void getSafeDisplayArea(int &x,int &y,int &w,int &h)
+{
+}
+
 void openUrl(const char* url)
 {
     QDesktopServices::openUrl(QUrl::fromEncoded(url));

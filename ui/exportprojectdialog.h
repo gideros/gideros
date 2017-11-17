@@ -26,6 +26,8 @@ public:
     QString osx_domain() const;
     QString osx_bundle() const;
     QString osx_category() const;
+    QString osx_signingId() const;
+    QString osx_installerId() const;
     QString win_org() const;
     QString win_domain() const;
     QString winrt_org() const;
@@ -37,12 +39,12 @@ public:
 
 private slots:
 	void onAccepted();
-	void onSelectPlugins();
+	//void onSelectPlugins();
 
 private:
     Ui::ExportProjectDialog *ui;
 	ProjectProperties* properties_;
-	QSet<ProjectProperties::Plugin> plugins;
+	//QSet<ProjectProperties::Plugin> plugins;
 	int xmlTabCount;
 	QStringList exportTypes;
     QMap<QString, QString> osxCat;

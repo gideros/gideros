@@ -144,14 +144,14 @@ PreviewWidget::PreviewWidget(QWidget *parent) : QWidget(parent)
 	widget_ = new ImageWidget(QString(), QString(), this);
 	widget_->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-	QLabel* label = new QLabel("Preview");
+	/*QLabel* label = new QLabel("Preview");
 	label->setMargin(2);
 	label->setStyleSheet(
 		"border: 1px solid #AAAAAA;"
 		"background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FCFCFC, stop: 1 #E2E2E2);"
-	);
+	);*/
 
-	layout()->addWidget(label);
+	//layout()->addWidget(label);
 	layout()->addWidget(widget_);
 }
 

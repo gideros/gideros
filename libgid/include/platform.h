@@ -185,6 +185,8 @@ std::string getLanguage();
 void setKeepAwake(bool awake);
 bool setKeyboardVisibility(bool visible);
 std::vector<std::string> getDeviceInfo();
+std::string getAppId();
+void getSafeDisplayArea(int &l,int &t,int &r,int &b);
 
 bool g_checkStringProperty(bool isSet, const char* what);
 const char* g_getProperty(const char* what, const char* arg);

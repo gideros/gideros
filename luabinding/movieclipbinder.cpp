@@ -95,6 +95,7 @@ MovieClipBinder::MovieClipBinder(lua_State* L)
 		{"gotoAndStop", gotoAndStop},
 		{"setStopAction", setStopAction},
 		{"setGotoAction", setGotoAction},
+		{"setReverseAction", setReverseAction},
 		{"clearAction", clearAction},
 		{"getFrame", getFrame},
 		{NULL, NULL},
@@ -157,12 +158,14 @@ int MovieClipBinder::create(lua_State* L)
     int index;
     MovieClip::Type type;
     bool holdWhilePlaying=false;
+    bool stopped=false;
 
     if (lua_type(L, 1) == LUA_TTABLE)
     {
         index = 1;
         type = MovieClip::eFrame;
         holdWhilePlaying=lua_toboolean(L,2);
+        stopped=lua_toboolean(L,3);
     }
     else if (lua_type(L, 1) == LUA_TSTRING)
     {
@@ -183,6 +186,7 @@ int MovieClipBinder::create(lua_State* L)
 
         index = 2;
         holdWhilePlaying=lua_toboolean(L,3);
+        stopped=lua_toboolean(L,4);
     }
     else
         return luaL_typerror(L, 1, "string or table");
@@ -281,7 +285,7 @@ int MovieClipBinder::create(lua_State* L)
 
 	autounref.release();
 
-	movieclip->finalize();
+	movieclip->finalize(!stopped);
 
 	binder.pushInstance("MovieClip", movieclip);
 
@@ -305,7 +309,7 @@ int MovieClipBinder::play(lua_State* L)
 	Binder binder(L);
 	MovieClip* movieclip = static_cast<MovieClip*>(binder.getInstance("MovieClip", 1));	
 
-	movieclip->play();
+	movieclip->play(lua_toboolean(L,2));
 
 	return 0;
 }
@@ -330,7 +334,7 @@ int MovieClipBinder::gotoAndPlay(lua_State* L)
 	MovieClip* movieclip = static_cast<MovieClip*>(binder.getInstance("MovieClip", 1));	
 
 	int frame = luaL_checkinteger(L, 2);
-	movieclip->gotoAndPlay(frame);
+	movieclip->gotoAndPlay(frame, lua_toboolean(L,3));
 
 	return 0;
 }
@@ -358,6 +362,20 @@ int MovieClipBinder::setStopAction(lua_State* L)
 	int frame = luaL_checkinteger(L, 2);
 
 	movieclip->setStopAction(frame);
+
+	return 0;
+}
+
+int MovieClipBinder::setReverseAction(lua_State* L)
+{
+	StackChecker checker(L, "MovieClipBinder::setReverseAction", 0);
+
+	Binder binder(L);
+	MovieClip* movieclip = static_cast<MovieClip*>(binder.getInstance("MovieClip", 1));
+
+	int frame = luaL_checkinteger(L, 2);
+
+	movieclip->setReverseAction(frame);
 
 	return 0;
 }

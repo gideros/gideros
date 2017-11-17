@@ -7,16 +7,14 @@
 
 #include "gl2Shaders.h"
 
-static const char *hdrShaderCode =
-#ifdef OPENGL_ES
-		"#version 100\n"
-		"#define GLES2\n";
-#else
-		"#version 120\n"
-				"#define highp\n"
-				"#define mediump\n"
-				"#define lowp\n";
-#endif
+static const char *hdrShaderCode_DK =
+        "#version 120\n"
+                "#define highp\n"
+                "#define mediump\n"
+                "#define lowp\n";
+static const char *hdrShaderCode_ES =
+        "#version 100\n"
+        "#define GLES2\n";
 
 static const char *vs_codeFC =
 "uniform highp mat4 mvp;                                                      \n"
@@ -177,7 +175,7 @@ static const char *fs_codeSL =
 "  gl_FragColor = frag;				         \n"
 "}                                          \n";
 
-void pathShadersInit()
+void pathShadersInit(bool isGLES)
 {
 	const ShaderProgram::ConstantDesc pathUniforms[] = {
 			{ "mvp",ShaderProgram::CMATRIX, 1,ShaderProgram::SysConst_WorldViewProjectionMatrix, true, 0, NULL },
@@ -214,6 +212,7 @@ void pathShadersInit()
 			{ "data0",ShaderProgram::DFLOAT, 4, 0, 0 },
 			{ "", ShaderProgram::DFLOAT, 0, 0, 0 } };
 
+    const char *hdrShaderCode=isGLES?hdrShaderCode_ES:hdrShaderCode_DK;
 	ShaderProgram::pathShaderFillC = new ogl2ShaderProgram(hdrShaderCode,
 			vs_codeFC, hdrShaderCode, fs_codeFC, pathUniforms,
 			pathAttributesFillC);

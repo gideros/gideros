@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.ParticleSystem" page="b2.ParticleSystem" parent="" type="physics" version="Gideros 2015.06.30"><![CDATA[Defines particle system in box2d world using Liquid fun]]>
+  <constant name="b2.ParticleSystem.FLAG_WATER" page="FLAG_WATER" value="0" version="Gideros 2015.06.30"><![CDATA[Flag defining particle behavior]]></constant>
+  <constant name="b2.ParticleSystem.FLAG_ZOMBIE" page="FLAG_ZOMBIE" value="2" version="Gideros 2011.6"><![CDATA[c]]></constant>
+  <constant name="b2.ParticleSystem.FLAG_WALL" page="FLAG_WALL" value="4" version="Gideros 2015.06.30"><![CDATA[c]]></constant>
+  <constant name="b2.ParticleSystem.FLAG_SPRING" page="FLAG_SPRING" value="8" version="Gideros 2015.06.30"><![CDATA[c]]></constant>
+  <constant name="b2.ParticleSystem.FLAG_ELASTIC" page="FLAG_ELASTIC" value="16" version="Gideros 2015.06.30"><![CDATA[c]]></constant>
+  <constant name="b2.ParticleSystem.FLAG_VISCOUS" page="FLAG_VISCOUS" value="32" version="Gideros 2015.06.30"><![CDATA[c]]></constant>
+  <constant name="b2.ParticleSystem.FLAG_POWDER" page="FLAG_POWDER" value="64" version="Gideros 2015.06.30"><![CDATA[c]]></constant>
+  <constant name="b2.ParticleSystem.FLAG_TENSILE" page="FLAG_TENSILE" value="128" version="Gideros 2015.06.30"><![CDATA[c]]></constant>
+  <constant name="b2.ParticleSystem.FLAG_COLOR_MIXING" page="FLAG_COLOR_MIXING" value="256" version="Gideros 2015.06.30"><![CDATA[c]]></constant>
+  <method name="b2.ParticleSystem:setTexture" page="setTexture" shortdesc="set texture to particles" version="Gideros 2015.06.30"><![CDATA[Sets texture to particles in this system]]>
+    <parameter name="texture" optional="false" type="Texture"><![CDATA[texture to use for particles]]></parameter>
+  </method>
+  <method name="b2.ParticleSystem:createParticle" page="createParticle" shortdesc="create new particle" version="Gideros 2015.06.30"><![CDATA[Creates new particle.
+Accepts table with possible keys:
+"flags", 
+"position",
+"velocity", 
+"color", 
+"alpha"
+
+and returns particle id]]>
+    <parameter name="particleDef" optional="false" type="table"><![CDATA[table with particle data]]></parameter>
+    <return type="number"><![CDATA[particle id]]></return>
+  </method>
+  <method name="b2.ParticleSystem:createParticleGroup" page="createParticleGroup" shortdesc="create group of particles" version="Gideros 2011.6"><![CDATA[Create group of multiple particles with same properties, that can be defined in table with:
+"flags"
+"groupFlags"
+"position"
+"angle"
+"linearVelocity"
+"angularVelocity"
+"color"
+"alpha"
+"strength"
+"shape"
+"lifetime"]]>
+    <parameter name="particleGoupDef" optional="false" type="table"><![CDATA[table with particle group data]]></parameter>
+  </method>
+  <method name="b2.ParticleSystem:destroyParticle" page="destroyParticle" shortdesc="destroy particle by id" version="Gideros 2015.06.30"><![CDATA[Destroy particle by Id]]>
+    <parameter name="id" optional="false" type="number"><![CDATA[id of particle to destroy]]></parameter>
+  </method>
+  <method name="b2.ParticleSystem:destroyParticles" page="destroyParticles" shortdesc="" version="in development"><![CDATA[Destroys particles]]>
+    <parameter name="ids" optional="false" type="table"><![CDATA[List of particle ids to destroy]]></parameter>
+  </method>
+  <method name="b2.ParticleSystem:getParticleCount" page="getParticleCount" shortdesc="" version="in development"><![CDATA[Returns the number of particles]]>
+    <return type="number"><![CDATA[The number of particles]]></return>
+  </method>
+  <method name="b2.ParticleSystem:getParticleGroupList" page="getParticleGroupList" shortdesc="" version="Gideros 2011.6"><![CDATA[Returns a list of particle groups.]]></method>
+  <method name="b2.ParticleSystem:containsParticle" page="containsParticle" shortdesc="" version="in development"><![CDATA[Returns true of particle is within the particle system]]>
+    <parameter name="id" optional="false" type="number"><![CDATA[Particle id]]></parameter>
+    <return type="boolean"><![CDATA[True if the particle is within the particle system else false.]]></return>
+  </method>
+  <example name="Simple particle system example"><![CDATA[-- create world
+local world = b2.World.new(0, 9.8)
+
+local ps1= world:createParticleSystem({ radius=5})
+ps1:setTexture(Texture.new("Bubble.png"))
+stage:addChild(ps1)
+
+ps1:createParticleGroup({shape=shape2, 
+position={x=500,y=250},
+color = 0xFF0000,
+alpha=1,
+flags=0
+})
+
+ps1:createParticleGroup({shape=shape1, 
+position={x=400,y=50},
+color = 0x0000FF,
+alpha=1,
+flags=0
+})
+
+
+-- step the world and then update the position and rotation of sprites
+local function onEnterFrame()
+	world:step(1/60, 8, 3)
+end
+
+stage:addEventListener(Event.ENTER_FRAME, onEnterFrame)]]></example>
+</object>

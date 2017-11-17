@@ -14,6 +14,7 @@ extern "C" {
 #endif
 
 G_API g_id g_NextId();
+G_API double g_iclock();
 
 #ifdef __cplusplus
 }

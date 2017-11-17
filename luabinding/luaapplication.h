@@ -18,6 +18,7 @@ class Ticker;
 #include <set>
 #include <gideros_p.h>
 #include <deque>
+#include <map>
 
 #include <gglobal.h>
 
@@ -139,8 +140,8 @@ public:
 	     return orientation_;
 	}
 
-	void addTicker(Ticker* ticker);
-	void removeTicker(Ticker* ticker);
+	virtual void addTicker(Ticker* ticker); //Virtual calls are accessible to .DLL plugins
+	virtual void removeTicker(Ticker* ticker);
 
 	float getLogicalTranslateX() const;
 	float getLogicalTranslateY() const;
@@ -168,6 +169,17 @@ public:
     static int Core_asyncCall(lua_State *L);
     static int Core_yield(lua_State *L);
     static int Core_frameStatistics(lua_State *L);
+    static int Core_profilerStart(lua_State *L);
+    static int Core_profilerStop(lua_State *L);
+    static int Core_profilerReset(lua_State *L);
+    static int Core_profilerReport(lua_State *L);
+    static int Core_random(lua_State *L);
+    static int Core_randomSeed(lua_State *L);
+    //Debugger support
+    static bool hasBreakpoints;
+    static std::map<int,bool> breakpoints;
+    static void (*debuggerHook)(void *context,lua_State *L,lua_Debug *ar);
+    static void *debuggerContext;
 private:
 	float physicsScale_;
 

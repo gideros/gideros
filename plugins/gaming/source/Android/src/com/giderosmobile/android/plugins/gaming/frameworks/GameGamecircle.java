@@ -18,6 +18,9 @@ import com.amazon.ags.api.leaderboards.GetScoresResponse;
 import com.amazon.ags.api.leaderboards.LeaderboardsClient;
 import com.amazon.ags.api.leaderboards.Score;
 import com.amazon.ags.api.leaderboards.SubmitScoreResponse;
+import com.amazon.ags.api.player.Player;
+import com.amazon.ags.api.player.PlayerClient;
+import com.amazon.ags.api.player.RequestPlayerResponse;
 import com.amazon.ags.api.whispersync.GameDataMap;
 import com.amazon.ags.api.whispersync.WhispersyncEventListener;
 import com.amazon.ags.api.whispersync.model.SyncableDeveloperString;
@@ -97,6 +100,35 @@ public class GameGamecircle implements GameInterface {
 
 	@Override
 	public void onActivityResult(int request, int response, Intent data) {}
+
+	@Override
+	public void getPlayerInfo() {
+		if(agsClient != null)
+		{
+			PlayerClient lbClient = agsClient.getPlayerClient();
+            AGResponseHandle<RequestPlayerResponse> handle = lbClient.getLocalPlayer();
+
+            // Optional callback to receive notification of success/failure.
+            handle.setCallback(new AGResponseCallback<RequestPlayerResponse>() {
+                @Override
+                public void onComplete(RequestPlayerResponse result) {
+                    if (result.isError()) {
+                        Game.playerInfoError(this, Game.NOT_LOG_IN);
+                    } else {
+						Player p = result.getPlayer();
+						if (p==null)
+							Game.playerInfoError(this, ""); //XXX Get error code
+						else
+						{
+							Game.playerInfoComplete(this,p.getPlayerId(),p.getAlias(),p.getAvatarUrl());
+						}
+                    }
+                }
+            });	
+		}
+		else
+			Game.playerInfoError(this, Game.NOT_LOG_IN);
+	}
 
 	@Override
 	public void showLeaderboard(String id) {

@@ -151,7 +151,7 @@ public class GControllerDefault implements GControllerInterface {
 			{
 				GController controller = getController(device);
 				controller.handleLeftStick(event.getAxisValue(MotionEvent.AXIS_X), event.getAxisValue(MotionEvent.AXIS_Y));
-				if(checkName("X-Box", event.getDevice()))
+				if(checkName("X-Box", device))
         	    {
 					controller.handleRightStick(event.getAxisValue(MotionEvent.AXIS_RX), event.getAxisValue(MotionEvent.AXIS_RY));
         	    }
@@ -160,7 +160,7 @@ public class GControllerDefault implements GControllerInterface {
 					controller.handleRightStick(event.getAxisValue(MotionEvent.AXIS_Z), event.getAxisValue(MotionEvent.AXIS_RZ));
 				}
 				
-				if(checkName("Moga", event.getDevice()))
+				if(checkName("Moga", device))
         	    {
 					controller.handleL2Button(event.getAxisValue(MotionEvent.AXIS_BRAKE));
 					controller.handleR2Button(event.getAxisValue(MotionEvent.AXIS_GAS));
@@ -171,7 +171,7 @@ public class GControllerDefault implements GControllerInterface {
 					controller.handleLeftTrigger(event.getAxisValue(MotionEvent.AXIS_BRAKE));
 					controller.handleRightTrigger(event.getAxisValue(MotionEvent.AXIS_GAS));
         	    }
-				else if(checkName("X-Box", event.getDevice()))
+				else if(checkName("X-Box", device))
 	        	{
 					controller.handleLeftTrigger((event.getAxisValue(MotionEvent.AXIS_Z) + 1)/2);
 					controller.handleRightTrigger((event.getAxisValue(MotionEvent.AXIS_RZ)+1)/2);
@@ -182,7 +182,7 @@ public class GControllerDefault implements GControllerInterface {
 					controller.handleDPadLeftButton(event.getAxisValue(MotionEvent.AXIS_HAT_X));
 					controller.handleDPadRightButton(event.getAxisValue(MotionEvent.AXIS_HAT_X));
 	        	}
-				else if(checkName("Amazon", event.getDevice()))
+				else if(checkName("Amazon", device))
 	        	{
 					controller.handleL2Button(event.getAxisValue(MotionEvent.AXIS_BRAKE));
 					controller.handleR2Button(event.getAxisValue(MotionEvent.AXIS_GAS));
@@ -214,7 +214,7 @@ public class GControllerDefault implements GControllerInterface {
 	
 	public static void addDeviceBySystem(int deviceId){
 		InputDevice device = InputDevice.getDevice(deviceId);
-		if(checkDevice(device) && !systemDevices.containsKey(deviceId))
+		if(device!=null && checkDevice(device) && !systemDevices.containsKey(deviceId))
 		{
 			String id = getIdentifier(device);
 			systemDevices.put(deviceId, id);

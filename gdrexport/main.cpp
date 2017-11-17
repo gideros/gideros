@@ -18,6 +18,7 @@
 #include "ExportBuiltin.h"
 #include "ExportXml.h"
 #include "ExportLua.h"
+#include <QCryptographicHash>
 
 static bool readProjectFile(const QString& fileName,
                             ProjectProperties &properties,
@@ -66,6 +67,40 @@ static bool readProjectFile(const QString& fileName,
         noEncryption.clear();
         std::vector<std::pair<QString, QString> > dependencies_;
 
+    	//Add lua plugins
+    	QMap<QString, QString> plugins;
+    	QMap<QString, QString> allPlugins=ProjectProperties::availablePlugins();
+    	bool hasLuaPlugin=false;
+    	for (QSet<ProjectProperties::Plugin>::const_iterator it=properties_.plugins.begin();it!=properties_.plugins.end(); it++)
+    	{
+    		ProjectProperties::Plugin p=*it;
+    		if (p.enabled)
+    		{
+    			QString ppath=allPlugins[p.name];
+    			if (!ppath.isEmpty())
+    			{
+    	    		QFileInfo path(ppath);
+    	    		QDir pf=path.dir();
+    	    		if (pf.cd("luaplugin"))
+    	    		{
+    	    			QStringList filters;
+    	    			filters << "*.lua";
+    	    			pf.setNameFilters(filters);
+    	    			QFileInfoList files = pf.entryInfoList(
+    	    					QDir::Files | QDir::Hidden);
+    	    			hasLuaPlugin=true;
+    	    			for (int i = 0; i < files.count(); i++)
+    	    			{
+    	    				fileList_.push_back(std::make_pair("_LuaPlugins_/"+files[i].fileName(), files[i].filePath()));
+    	    				dependencyGraph_.addCode(files[i].filePath(),true);
+    	    			}
+    	    		}
+
+    			}
+    		}
+    	}
+    	if (hasLuaPlugin)
+            folderList.push_back("_LuaPlugins_/");
         std::stack<QDomNode> stack;
         stack.push(doc.documentElement());
 
@@ -169,6 +204,8 @@ void usage()
     fprintf(stderr, "    -organization <name>       #organization name\n");
     fprintf(stderr, "    -domain <domain_name>      #domain name\n");
     fprintf(stderr, "    -bundle <bundle_id>        #bundle id\n");
+    fprintf(stderr, "    -signingId <signing_id>    #signing identity\n");
+    fprintf(stderr, "    -installerId <signing_id>  #installer signing identity\n");
     fprintf(stderr, "    -category <app category>   #category of your app\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Options winrt: \n");
@@ -197,6 +234,7 @@ int main(int argc, char *argv[])
     ctx.tvicon=NULL;
     ctx.splash_h_image=NULL;
     ctx.splash_v_image=NULL;
+    ctx.exportError=false;
     QString projectFileName;
     QString output;
     bool encryptCode = false;
@@ -391,12 +429,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    if ((ctx.deviceFamily==e_Html5)&&(!ctx.args["hostname"].isEmpty()))
-    {
-    	encryptAssets=true;
-    	encryptCode=true;
-    }
-
     if (encryptCode)
     {
         codeKey = randomData.mid(64,256);
@@ -411,10 +443,24 @@ int main(int argc, char *argv[])
 
     if (ctx.deviceFamily==e_Html5)
     {
-    	encryptAssets=true;
-    	encryptCode=true;
     	if (!(ctx.args["hostname"].isEmpty()))
     	{
+        	encryptAssets=true;
+        	encryptCode=true;
+            codePrefixRnd=randomData.mid(0,32);
+            assetsPrefixRnd=randomData.mid(32,32);
+            for (int n=0;n<16;n++)
+            {
+            	QByteArray lrnd=QCryptographicHash::hash((ctx.args["hostname"]+QString::number(n)).toUtf8(),QCryptographicHash::Md5);
+            	int lrndn=0;
+            	for (int k=n*16;k<(n*16+16);k++)
+            	{
+            		codeKey[k]=codeKey.at(k)^lrnd.at(lrndn);
+            		assetsKey[k]=assetsKey.at(k)^lrnd.at(lrndn);
+            		lrndn++;
+            	}
+            }
+
     		QByteArray mkey=ctx.args["hostname"].toUtf8();
         	int msize=mkey.size();
         	if (msize>255)
@@ -474,7 +520,7 @@ int main(int argc, char *argv[])
      QStringList wildcards2;
      wildcards2 << "libgideros.so" << "libgideros.a" << "gid.dll"
      		   << "libgid.1.dylib" << "gideros.WindowsPhone.lib"
-     		   << "gideros.Windows.lib" << "gideros.html.mem";
+     		   << "gideros.Windows.lib" << "gideros.html.mem" << "*.exe";
      ctx.wildcards << wildcards2;
 
      QList<QPair<QByteArray, QByteArray> > replaceList2;
@@ -486,10 +532,13 @@ int main(int argc, char *argv[])
      ctx.noEncryptionExt.insert("ttf"); // TTF files do not pass through gvfs!
      ExportLUA_Init(&ctx);
      if (ctx.deviceFamily==e_Xml)
-    	 ExportXml::exportXml(xmlExports[ctx.platform],false,&ctx);
+     {
+    	 if (!ExportXml::exportXml(xmlExports[ctx.platform],false,&ctx))
+			ctx.exportError=true;
+     }
      else
     	 ExportBuiltin::doExport(&ctx);
      ExportLUA_Cleanup(&ctx);
 
-    return 0;
+    return ctx.exportError?1:0;
 }

@@ -28,7 +28,7 @@ class Slot : public SlotBase
 public:
 	Slot(T1* obj, void (T1::*slot)(T2*)) : obj_(obj), slot_(slot)
 	{
-		Event* e = (T2 *)0;
+		//Event* e = (T2 *)0;
 	}
 
 	virtual void call(Event* event)

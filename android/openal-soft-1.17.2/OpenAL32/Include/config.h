@@ -44,13 +44,13 @@
 #define HAVE_C99_BOOL
 
 /* Define if we have C11 _Static_assert support */
-//#define HAVE_C11_STATIC_ASSERT
+#define HAVE_C11_STATIC_ASSERT
 
 /* Define if we have C11 _Alignas support */
 //#define HAVE_C11_ALIGNAS
 
 /* Define if we have C11 _Atomic support */
-//#define HAVE_C11_ATOMIC
+#define HAVE_C11_ATOMIC
 
 /* Define if we have GCC's destructor attribute */
 #define HAVE_GCC_DESTRUCTOR
@@ -110,7 +110,7 @@
 #define HAVE_FLOAT_H
 
 /* Define if we have fenv.h */
-#define HAVE_FENV_H
+//#define HAVE_FENV_H
 
 /* Define if we have GCC's __get_cpuid() */
 //#define HAVE_GCC_GET_CPUID

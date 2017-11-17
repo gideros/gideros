@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="TextureBase" page="TextureBase" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+`TextureBase` is the base class for `Texture` and `TexturePack` classes. It provides a common functionaly to texture related classes.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;TextureBase.CLAMP = &quot;clamp&quot;&lt;/li&gt;<br />
+&lt;li&gt;TextureBase.REPEAT = &quot;repeat&quot;&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="TextureBase.REPEAT" page="TextureBase.REPEAT" value="repeat" version="Gideros 2011.6"/>
+  <constant name="TextureBase.CLAMP" page="TextureBase.CLAMP" value="clamp" version="Gideros 2011.6"/>
+  <constant name="TextureBase.RGBA8888" page="RGBA8888" value="rgba8888" version="Gideros 2013.06"><![CDATA[Texture format that can be provided to Texture and TexturePack options table]]></constant>
+  <constant name="TextureBase.RGB888" page="RGB888" value="rgb888" version="Gideros 2013.06"><![CDATA[Texture format that can be provided to Texture and TexturePack options table]]></constant>
+  <constant name="TextureBase.RGBA5551" page="RGBA5551" value="rgba5551" version="Gideros 2013.06"><![CDATA[Texture format that can be provided to Texture and TexturePack options table]]></constant>
+  <constant name="TextureBase.RGBA4444" page="RGBA4444" value="rgba4444" version="Gideros 2013.06"><![CDATA[Texture format that can be provided to Texture and TexturePack options table]]></constant>
+  <constant name="TextureBase.RGB565" page="RGB565" value="rgb565" version="Gideros 2013.06"><![CDATA[Texture format that can be provided to Texture and TexturePack options table]]></constant>
+  <method name="TextureBase:getWidth" page="getWidth" shortdesc="returns the width of the texture in pixels" version="Gideros 2011.6"><![CDATA[<br />
+Returns the width of the texture in pixels.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The width of the texture in pixels.]]></return>
+  </method>
+  <method name="TextureBase:getHeight" page="getHeight" shortdesc="returns the height of the texture in pixels" version="Gideros 2011.6"><![CDATA[<br />
+Returns the height of the texture in pixels.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The height of the texture in pixels.]]></return>
+  </method>
+</object>

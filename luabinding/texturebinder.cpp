@@ -44,6 +44,7 @@ int TextureBinder::create(lua_State* L)
     Wrap wrap = eClamp;
     Format format = eRGBA8888;
     int paramsIndex=isFromPixels?5:3;
+    bool pow2=true;
 	if (!lua_isnoneornil(L, paramsIndex))
 	{
 		if (lua_type(L, paramsIndex) != LUA_TTABLE)
@@ -87,12 +88,22 @@ int TextureBinder::create(lua_State* L)
                 format = eRGBA4444;
             else if (strcmp(formatstr, "rgba5551") == 0)
                 format = eRGBA5551;
+            else if (strcmp(formatstr, "y8") == 0)
+                format = eY8;
+            else if (strcmp(formatstr, "a8") == 0)
+                format = eA8;
+            else if (strcmp(formatstr, "ya8") == 0)
+                format = eYA8;
             else
             {
                 GStatus status(2008, "format");		// Error #2008: Parameter %s must be one of the accepted values.
                 luaL_error(L, status.errorString());
             }
         }
+        lua_pop(L, 1);
+        lua_getfield(L, paramsIndex, "extend");
+        if (!lua_isnil(L, -1))
+          pow2=lua_toboolean(L,-1);
         lua_pop(L, 1);
     }
 
@@ -103,9 +114,9 @@ int TextureBinder::create(lua_State* L)
 	try
 	{
 		if (isFromPixels)
-	        texture = new Texture(application, (unsigned char *) filename, width, height, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor);
+	        texture = new Texture(application, (unsigned char *) filename, width, height, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2);
 		else
-			texture = new Texture(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor);
+			texture = new Texture(application, filename, smoothing ? eLinear : eNearest, wrap, format, maketransparent, transparentcolor, pow2);
 	}
 	catch (const GiderosException& e)
 	{

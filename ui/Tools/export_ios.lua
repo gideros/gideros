@@ -95,26 +95,30 @@ iOSProject.insertData("Refs",refline)
 return refid
 end
 
-iOSProject.addSource=function(filename,filetype,filepath,filetree)
+iOSProject.addSource=function(filename,filetype,filepath,filetree,extra)
 print("addSource",filename)
 local refid=iOSProject.addReference(filename,filetype,filepath,filetree)
 local fileid=iOSProject.newId()
 local refline=
-("%s /* %s */ = {isa = PBXBuildFile; fileRef = %s /* %s */; };\n")
-:format(fileid,filename,refid,filename)
+("%s /* %s */ = {isa = PBXBuildFile; fileRef = %s /* %s */; %s};\n")
+:format(fileid,filename,refid,filename,extra or "")
 iOSProject.insertData("Refs",refline)
 return refid,fileid
 end
 
-iOSProject.addFramework=function(filename,flavor,filepath,filetree)
+iOSProject.addFramework=function(filename,flavor,filepath,filetree,extra)
 flavor=flavor or "ios"
 print("addFramework",filename,flavor)
-local refid,fileid=iOSProject.addSource(filename,nil,filepath,filetree)
+local refid,fileid=iOSProject.addSource(filename,nil,filepath,filetree,extra)
 local refline=
 ("%s /* %s */,\n")
 :format(fileid,filename)
 iOSProject.insertData("Frameworks_"..flavor,refline)
 return refid,fileid
+end
+
+iOSProject.addWeakFramework=function(filename,flavor,filepath,filetree)
+  return iOSProject.addFramework(filename,flavor,filepath,filetree," settings = {ATTRIBUTES = (Weak, );  };")
 end
 
 iOSProject.addGroup=function(foldername,path,publicname,dest)
@@ -153,7 +157,7 @@ elseif s:ends(".plist") or s:ends(".bundle") then
 local sref,bref=iOSProject.addSource(s)
 iOSProject.addToGroup(dest,sref,flavor)
 iOSProject.addToGroup("ResourceBuild",bref,flavor)
-elseif s:ends(".framework") then
+elseif s:ends(".framework") or s:ends(".a") then
 local sref=iOSProject.addFramework(s,flavor)
 iOSProject.addToGroup(dest,sref,flavor)
 else
@@ -164,8 +168,42 @@ end
 end
 
 iOSProject.addFrameworkPath=function(path)
-local refline=("\"$(PROJECT_DIR)/%s\",\n"):format(path)
+local refline=("\"\\\"$(PROJECT_DIR)/%s\\\"\",\n"):format(path)
 iOSProject.insertData("FrameworksPaths",refline)
 end
+
+iOSProject.exportPluginFiles=function(pname,srcdir,srcfiles,foriOS,forATV)
+  if foriOS then
+    local tgtDir=Export.getProperty("project.name").."/Plugins/"..pname    
+    Export.mkdir(tgtDir)
+    Export.recursiveCopy(pname,srcdir,tgtDir,"*.m;*.mm;*.c;*.h;*.cpp","emscripten;win32;jni;iOS;Android")
+    iOSProject.addGroup(pname,"Plugins/"..pname,"Group"..pname.."_ios","GroupPlugins_ios")
+    iOSProject.addSources(srcfiles, "Group"..pname, "ios")
+  end
+  if forATV then
+    local tgtDir="AppleTV/Plugins/"..pname    
+    Export.mkdir(tgtDir)
+    Export.recursiveCopy(pname,srcdir,tgtDir,"*.m;*.mm;*.c;*.h;*.cpp","emscripten;win32;jni;iOS;Android")
+    iOSProject.addGroup(pname,pname,"Group"..pname.."_atv","GroupPlugins_atv")
+    iOSProject.addSources(srcfiles, "Group"..pname, "atv")
+  end
+  iOSProject.commit()
+end
+
+iOSProject.needObjCLinking=function () iOSProject.needObjCLinkingFlag=true end
+
+local function apply()
+  if iOSProject.needObjCLinkingFlag then
+    Export.callXml([[<template name="Project" path=""><replacelist wildcards="project.pbxproj">
+    <append>
+     <orig>COMPRESS_PNG_FILES = NO;</orig>
+     <by>
+OTHER_LDFLAGS = "-ObjC";</by>
+    </append>
+    </replacelist></template>]])
+  end
+end
+
+Export.registerPreFinish(apply)
 
 return iOSProject

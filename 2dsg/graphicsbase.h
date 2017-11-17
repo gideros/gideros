@@ -53,6 +53,7 @@ public:
 	VertexBuffer<unsigned short> indices;
 	VertexBuffer<Point2f> vertices;
 	VertexBuffer<Point2f> texcoords;
+    VertexBuffer<unsigned char> colors;
 
     void getBounds(float* pminx, float* pminy, float* pmaxx, float* pmaxy) const;
 

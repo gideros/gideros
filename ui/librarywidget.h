@@ -22,6 +22,7 @@ public:
 
 	void setModified(bool m);
 	bool isModified() const;
+	QMap<QString, QString> usedPlugins();
 
     std::vector<std::pair<QString, bool> > topologicalSort() const
 	{

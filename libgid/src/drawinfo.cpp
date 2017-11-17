@@ -119,17 +119,132 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 		                       ".   "
 		                       ".   ";
 
+	static const char* charg =
+        " ..."
+        ".   "
+        ". .."
+        ".  ."
+        " ...";
+    static const char* charh =
+        ".  ."
+        ".  ."
+        "...."
+        ".  ."
+        ".  .";
+	static const char* chari =
+	        "."
+	        "."
+	        "."
+	        "."
+	        ".";
+	static const char* charj =
+	        "   ."
+	        "   ."
+	        "   ."
+	        ".  ."
+	        " .. ";
+	static const char* chark =
+	        ".  ."
+	        ". . "
+	        "..  "
+	        ". . "
+	        ".  .";
+	static const char* charl =
+	        ".  "
+	        ".  "
+	        ".  "
+	        ".  "
+	        "...";
+    static const char* charm =
+        ".   ."
+        ".. .."
+        ". . ."
+        ".   ."
+        ".   .";
+    static const char* charn =
+        ".  ."
+        ".. ."
+        ". .."
+        ".  ."
+        ".  .";
+	static const char* charo =
+	        " .. "
+	        ".  ."
+	        ".  ."
+	        ".  ."
+	        " .. ";
+	static const char* charp =
+	        "... "
+	        ".  ."
+	        "... "
+	        ".   "
+	        ".   ";
+	static const char* charq =
+	        " ..  "
+	        ".  . "
+	        ". .. "
+	        ".  . "
+	        " .. .";
+    static const char* charr =
+        "... "
+        ".  ."
+        "... "
+        ". . "
+        ".  .";
+    static const char* chars =
+        " ..."
+        ".   "
+        " .. "
+        "   ."
+        "... ";
+    static const char* chart =
+        "....."
+        "  .  "
+        "  .  "
+        "  .  "
+        "  .  ";
+    static const char* charu =
+        ".  ."
+        ".  ."
+        ".  ."
+        ".  ."
+        " .. ";
+    static const char* charv =
+        ".   ."
+        ".   ."
+        " . . "
+        " . . "
+        "  .  ";
+    static const char* charw =
+        ". . ."
+        ". . ."
+        ". . ."
+        " . . "
+        " . . ";
+    static const char* charx = ".  ."
+                               ".  ."
+                               " .. "
+                               ".  ."
+                               ".  .";
+    static const char* chary =
+        ".   ."
+        ".   ."
+        " ... "
+        "  .  "
+        "  .  ";
+    static const char* charz =
+        "...."
+        "   ."
+        " .. "
+        ".   "
+        "....";
+
 	static const char* charPercent = ".   ."
                                      "   . "
                                      "  .  "
                                      " .   "
                                      ".   .";
 
-    static const char* charX = ".  ."
-                               ".  ."
-                               " .. "
-                               ".  ."
-                               ".  .";
 
     static const char* charSpace = " "
                                    " "
@@ -137,43 +252,10 @@ static void drawIP(const char* ip, int size, int xx, int yy)
                                    " "
                                    " ";
 
-	static const char* loading =
-        ".    ..   ..  ...  . .  .  ..."
-        ".   .  . .  . .  . . .. . .   "
-        ".   .  . .... .  . . . .. . .."
-        ".   .  . .  . .  . . .  . .  ."
-        "...  ..  .  . ...  . .  .  ...";
 
-
-	static const char* localip =
-        ".    ..   ...  ..  .     . ...   . .  . ...  ..   "
-        ".   .  . .    .  . .     . .  .  . .. . .   .  . ."
-        ".   .  . .    .... .     . ...   . . .. ... .  .  "
-        ".   .  . .    .  . .     . .     . .  . .   .  . ."
-        "...  ..   ... .  . ...   . .     . .  . .    ..   ";
-
-    static const char* resolution =
-        "...  ...  ...  ..  .   .  . ..... .  ..  .  .  "
-        ".  . .   .    .  . .   .  .   .   . .  . .. . ."
-        "...  ...  ..  .  . .   .  .   .   . .  . . ..  "
-        ". .  .      . .  . .   .  .   .   . .  . .  . ."
-        ".  . ... ...   ..  ...  ..    .   .  ..  .  .  ";
-
-    static const char* hardware =
-        ".  .  ..  ...  ...  . . .  ..  ...  ...  "
-        ".  . .  . .  . .  . . . . .  . .  . .   ."
-        ".... .... ...  .  . . . . .... ...  ...  "
-        ".  . .  . . .  .  .  . .  .  . . .  .   ."
-        ".  . .  . .  . ...   . .  .  . .  . ...  ";
-
-    static const char* zoom =
-        "....  ..   ..  .   .  "
-        "   . .  . .  . .. .. ."
-        " ..  .  . .  . . . .  "
-        ".    .  . .  . .   . ."
-        "....  ..   ..  .   .  ";
-
-	static const char* chars[] = {char0, char1, char2, char3, char4, char5, char6, char7, char8, char9, chara, charb, charc, chard, chare, charf };
+	static const char* _chars[] = {char0, char1, char2, char3, char4, char5, char6, char7, char8, char9,
+			chara, charb, charc, chard, chare, charf,charg,charh,chari,charj,chark,charl,charm,charn,charo,
+			charp,charq,charr,chars,chart,charu,charv,charw,charx,chary,charz};
 
 	glPushColor();
 
@@ -191,24 +273,12 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 			chr = charcolon;
         else if(ip[i] == ' ')
             chr = charSpace;
-        else if(ip[i] == 'X')
-            chr = charX;
         else if(ip[i] == '%')
             chr = charPercent;
-        else if (ip[i] == 'I')
-			chr = localip;
-        else if (ip[i] == 'L')
-			chr = loading;
-        else if (ip[i] == 'R')
-            chr = resolution;
-        else if (ip[i] == 'H')
-            chr = hardware;
-        else if (ip[i] == 'Z')
-            chr = zoom;
-		else if ((ip[i]>='a')&&(ip[i]<='f'))
-			chr = chars[ip[i] - 'a'+10];
+		else if (((ip[i]>='a')&&(ip[i]<='z'))||((ip[i]>='A')&&(ip[i]<='Z')))
+			chr = _chars[(ip[i]&(~0x20)) - 'A'+10];
 		else if ((ip[i] >= '0') && (ip[i] <= '9'))
-			chr = chars[ip[i] - '0'];
+			chr = _chars[ip[i] - '0'];
 
 		int height = 5;
 		int width = strlen(chr) / height;
@@ -268,7 +338,7 @@ void drawInfo()
 	ShaderEngine::Engine->clearColor(1,1,1,1);
 
     drawIP(GIDEROS_VERSION, 3, 2, 2);
-    drawIP("I", 3, 2, 2+7+3+7+3+7+3);
+    drawIP("local ip info:", 3, 2, 2+7+3+7+3+7+3);
 
 	int x = 6;
     int y = 2+7+3+7+3+7+1;
@@ -282,7 +352,9 @@ void drawInfo()
 	}
 }
 
-void drawInfoResolution(int width, int height, int scale, int lWidth, int lHeight, bool drawRunning, float canvasColor[3], float infoColor[3]){
+static const char *orientations[6]={"PT","LL","PU","LR","FX","UK"};
+void drawInfoResolution(int width, int height, int scale, int lWidth, int lHeight, bool drawRunning, float canvasColor[3], float infoColor[3],
+		int ho, int ao, float fps, float cpu){
     static int frame = 0;
 
     #ifdef __ANDROID__
@@ -305,7 +377,7 @@ void drawInfoResolution(int width, int height, int scale, int lWidth, int lHeigh
     drawIP(GIDEROS_VERSION, 2, 1, y);
 
     y = y + 8;
-    drawIP("I", 2, 1, y);
+    drawIP("local ip info:", 2, 1, y);
 
     y = y + 8;
     for (std::size_t i = 0; i < ips.size(); ++i)
@@ -319,35 +391,38 @@ void drawInfoResolution(int width, int height, int scale, int lWidth, int lHeigh
     }
 
     // draw the hardware label and value on non running canvas
-    drawIP("H", 2, 1, y);
+    drawIP("hardware:", 2, 1, y);
 
-    std::ostringstream oWidth;
-    std::ostringstream oHeight;
-    oWidth << width;
-    oHeight << height;
-    std::string hardware = oWidth.str() + " X " + oHeight.str();
+    std::ostringstream ostr;
+    ostr << width << " X " << height << " " << orientations[((ho>5)||(ho<0))?5:ho];
 
     y = y + 8;
-    drawIP(hardware.c_str(), 2, 4, y);
+    drawIP(ostr.str().c_str(), 2, 4, y);
 
     // draw the resolution label and value on non running canvas
     if(drawRunning){
         y = y + 8;
-        drawIP("R", 2, 1, y);
+        drawIP("resolution:", 2, 1, y);
 
-        std::ostringstream logWidth;
-        std::ostringstream logHeight;
-        logWidth << lWidth;
-        logHeight << lHeight;
-        std::string resolution = logWidth.str() + " X " + logHeight.str();
+        std::ostringstream ostr;
+        ostr << lWidth << " X " << lHeight << " " << orientations[((ao>5)||(ao<0))?5:ao];
 
         y = y + 8;
-        drawIP(resolution.c_str(), 2, 4, y);
+        drawIP(ostr.str().c_str(), 2, 4, y);
+
+        char fpsbuf[64];
+        sprintf(fpsbuf,"fps: %3.1f",fps);
+        y = y + 8;
+        drawIP(fpsbuf, 2, 1, y);
+
+        sprintf(fpsbuf,"cpu: %3.1f%%",cpu*100);
+        y = y + 8;
+        drawIP(fpsbuf, 2, 1, y);
     }
 
     // draw zoom label and value passed as parameters
     y = y + 8;
-    drawIP("Z", 2, 2, y);
+    drawIP("zoom:", 2, 1, y);
 
     std::ostringstream oScale;
     oScale << scale;

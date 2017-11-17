@@ -46,6 +46,8 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 		{"vibrate", ApplicationBinder::vibrate},
 		{"getLocale", ApplicationBinder::getLocale},
 		{"getLanguage", ApplicationBinder::getLanguage},
+		{"getAppId", ApplicationBinder::getAppId},
+		{"getDeviceSafeArea", ApplicationBinder::getDeviceSafeArea},
 		{"setKeepAwake", ApplicationBinder::setKeepAwake},
 		{"setKeyboardVisibility", ApplicationBinder::setKeyboardVisibility},
 		{"getLogicalTranslateX", ApplicationBinder::getLogicalTranslateX},
@@ -224,6 +226,31 @@ int ApplicationBinder::getLanguage(lua_State* L)
 	lua_pushstring(L, ::getLanguage().c_str());
 
 	return 1;
+}
+
+int ApplicationBinder::getAppId(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+
+	lua_pushstring(L, ::getAppId().c_str());
+
+	return 1;
+}
+
+int ApplicationBinder::getDeviceSafeArea(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+
+	int l=0,t=0,r=0,b=0;
+	getSafeDisplayArea(l,t,r,b);
+	lua_pushnumber(L,l);
+	lua_pushnumber(L,t);
+	lua_pushnumber(L,r);
+	lua_pushnumber(L,b);
+
+	return 4;
 }
 
 int ApplicationBinder::setKeepAwake(lua_State* L)
@@ -600,8 +627,13 @@ int ApplicationBinder::getApiVersion(lua_State* L)
     LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
     lua_pushliteral(L, GIDEROS_VERSION);
-
-    return 1;
+    lua_pushliteral(L, __DATE__ " " __TIME__);
+#ifdef GIDEROS_GIT_HASH
+    lua_pushliteral(L, GIDEROS_GIT_HASH);
+#else
+    lua_pushliteral(L,"undefined");
+#endif
+    return 3;
 }
 
 int ApplicationBinder::getTextureMemoryUsage(lua_State* L)

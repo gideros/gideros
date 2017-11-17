@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Object" page="Object" parent="" type="gideros" version="Gideros 2015.08"><![CDATA[Main Object class from which all Gideros classes inherit.<br/>
+There is no other purpose for this classes, rather a neat way to add methods to all Gideros classes]]>
+  <method name="Object:getClass" page="getClass" shortdesc="returns class name" version="Gideros 2015.08"><![CDATA[Returns the class name of the instance as string]]>
+    <return type="string"><![CDATA[class name as string]]></return>
+  </method>
+  <method name="Object:getBaseClass" page="getBaseClass" shortdesc="returns base class" version="Gideros 2015.08"><![CDATA[Returns the class name which object directly inherits from]]>
+    <return type="string"><![CDATA[returns base class name]]></return>
+  </method>
+  <method name="Object:isInstanceOf" page="isInstanceOf" shortdesc="checks if instance belongs to class" version="Gideros 2015.08"><![CDATA[Returns true if instance is of provided class name or if it inherits from provided class name]]>
+    <parameter name="classname" optional="false" type="string"><![CDATA[The name of the class to check relation to]]></parameter>
+    <return type="boolean"><![CDATA[true if instance belongs or inherits from class, false otherwise]]></return>
+  </method>
+  <example name="Example usage"><![CDATA[local bmp = Bitmap.new("image.png")
+print(bmp:getClass()) -- prints Bitmap
+print(bmp:getBaseClass()) -- prints Sprite
+print(bmp:isInstanceOf("Bitmap")) -- prints true
+print(bmp:isInstanceOf("Sprite")) -- prints true
+print(bmp:isInstanceOf("EventDispatcher")) -- prints true
+print(bmp:isInstanceOf("Object")) -- prints true
+print(bmp:isInstanceOf("TileMap")) -- prints false]]></example>
+</object>

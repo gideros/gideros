@@ -1,6 +1,11 @@
 #include <gapplication.h>
 #include <gapplication-ios.h>
+#if !TARGET_OS_OSX
 #import <UIKit/UIKit.h>
+#else
+#import <Cocoa/Cocoa.h>
+#endif
+extern NSString* getSysInfoByName(const char* typeSpecifier);
 
 class GGApplicationManager
 {
@@ -18,13 +23,50 @@ public:
     
     int getScreenDensity()
     {
+#if TARGET_OS_OSX
+        NSScreen *screen = [NSScreen mainScreen];
+        NSDictionary *description = [screen deviceDescription];
+        NSSize displayPixelSize = [[description objectForKey:NSDeviceSize] sizeValue];
+        CGSize displayPhysicalSize = CGDisplayScreenSize(
+                                                         [[description objectForKey:@"NSScreenNumber"] unsignedIntValue]);
+        
+        float fdpi=(displayPixelSize.width / displayPhysicalSize.width) * 25.4f;
+        fdpi=fdpi*[screen backingScaleFactor];
+        int dpi=fdpi;
+#else
         UIViewController *rootViewController = [[UIApplication sharedApplication].delegate viewController];
         UIView *glView = [rootViewController glView];
 
         float scale = 1;
         if ([glView respondsToSelector:@selector(contentScaleFactor)])
             scale = glView.contentScaleFactor;
+            
+         NSDictionary *modelDpi = @{
+            @"iPhone7,1": @133, //6+ x3=401
+            @"iPhone8,2": @133, //6S+
+            @"iPhone9,2": @133, //7+
+            @"iPhone9,4": @133, //7+
+            @"iPhone10,2": @133, //8+            
+            @"iPhone10,5": @133, //8+            
+            @"iPhone10,3": @153, //X x3=458            
+            @"iPhone10,6": @153, //X           
+            @"iPad2,5": @163, //Mini
+            @"iPad2,6": @163, //Mini
+            @"iPad2,7": @163, //Mini
+            @"iPad4,4": @163, //Mini2 x2=326
+            @"iPad4,5": @163, //Mini2
+            @"iPad4,6": @163, //Mini2
+            @"iPad4,7": @163, //Mini3
+            @"iPad4,8": @163, //Mini3
+            @"iPad4,9": @163, //Mini3
+            @"iPad5,1": @163, //Mini4
+            @"iPad5,2": @163, //Mini4
+		};
 
+		id mdpi=modelDpi[getSysInfoByName("hw.machine")];
+		if (mdpi)
+			return [mdpi integerValue]*scale;
+		
         int dpi;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
         {
@@ -38,7 +80,7 @@ public:
         {
             dpi = 160 * scale;
         }
-        
+#endif
         return dpi;
     }
     

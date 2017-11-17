@@ -13,11 +13,20 @@
 #include "Matrices.h"
 #include "gtexture.h"
 
+#
+
 #ifdef __APPLE__
    #include <TargetConditionals.h>
 #endif
 
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+#ifdef QT_CORE_LIB
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#define GLCALL_CHECK if (!QOpenGLContext::currentContext()) return;
+#define GLCALL_INIT QOpenGLFunctions *glFuncs = QOpenGLContext::currentContext()->functions();
+#define GLCALL glFuncs->
+#define OPENGL_ES
+#elif TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 #ifdef GIDEROS_GL1
     #include <OpenGLES/ES1/gl.h>
     #include <OpenGLES/ES1/glext.h>
@@ -26,6 +35,9 @@
 	#include <OpenGLES/ES2/glext.h>
 #endif
 #define OPENGL_ES
+#elif TARGET_OS_OSX
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
 #elif __ANDROID__
 #ifdef GIDEROS_GL1
     #include <GLES/gl.h>
@@ -53,6 +65,12 @@
 
 #ifdef OPENGL_DESKTOP
 #include "glcompat.h"
+#endif
+
+#ifndef GLCALL
+#define GLCALL
+#define GLCALL_INIT
+#define GLCALL_CHECK
 #endif
 
 #ifdef OPENGL_ES
@@ -86,10 +104,12 @@ class ogl2ShaderProgram : public ShaderProgram
     static GLint curProg;
     static ShaderProgram *current;
     static std::vector<ogl2ShaderProgram *> shaders;
+
     void buildProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
 					 const ConstantDesc *uniforms, const DataDesc *attributes);
 public:
+	static int vboFreeze, vboUnfreeze;
     virtual void activate();
     virtual void deactivate();
     virtual void setData(int index,DataType type,int mult,const void *ptr,unsigned int count, bool modified, ShaderBufferCache **cache,int stride=0,int offset=0);
@@ -100,13 +120,15 @@ public:
     virtual const char *compilationLog();
 
     virtual void recreate();
+    virtual void resetUniforms();
     static void resetAll();
+    static void resetAllUniforms();
 
     ogl2ShaderProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
 					 const ConstantDesc *uniforms, const DataDesc *attributes);
     ogl2ShaderProgram(const char *vshader,const char *fshader,int flags,
-					 const ConstantDesc *uniforms, const DataDesc *attributes);
+					 const ConstantDesc *uniforms, const DataDesc *attributes, bool isGLES);
     virtual ~ogl2ShaderProgram();
     void useProgram();
 };
@@ -122,6 +144,7 @@ protected:
 	bool native;
 public:
 	ogl2ShaderTexture(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
+	void updateData(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering);
 	void setNative(void *externalTexture);
 	void *getNative();
 	virtual ~ogl2ShaderTexture();
@@ -156,8 +179,10 @@ class ogl2ShaderEngine : public ShaderEngine
 	bool s_depthBufferCleared;
 	GLenum blendFactor2GLenum(BlendFactor blendFactor);
 	int devWidth,devHeight;
+	GLint defaultFramebuffer;
+    bool isGLES;
 public:
-	ogl2ShaderEngine(int sw,int sh);
+    ogl2ShaderEngine(int sw,int sh);
 	virtual ~ogl2ShaderEngine();
 	const char *getVersion();
 	const char *getShaderLanguage() { return "glsl"; };
@@ -176,6 +201,7 @@ public:
 	void setClip(int x,int y,int w,int h);
 	void setBlendFunc(BlendFactor sfactor, BlendFactor dfactor);
 	void setDepthStencil(DepthStencil state);
+	void setVBOThreshold(int freeze,int unfreeze) { ogl2ShaderProgram::vboFreeze=freeze; ogl2ShaderProgram::vboUnfreeze=unfreeze; };
 };
 
 

@@ -36,6 +36,7 @@ struct GGSoundInterface
     g_id (*ChannelAddCallback)(g_id channel, gevent_Callback callback, void *udata);
     void (*ChannelRemoveCallback)(g_id channel, gevent_Callback callback, void *udata);
     void (*ChannelRemoveCallbackWithGid)(g_id channel, g_id gid);
+    g_id (*ChannelGetStreamId)(g_id channel);
 };
 
 class GGSound : public GReferenced
@@ -145,6 +146,7 @@ private:
         interface.ChannelAddCallback = gaudio_ChannelAddCallback;
         interface.ChannelRemoveCallback = gaudio_ChannelRemoveCallback;
         interface.ChannelRemoveCallbackWithGid = gaudio_ChannelRemoveCallbackWithGid;
+        interface.ChannelGetStreamId = gaudio_ChannelGetStreamId;
     }
 
     void setBackgroundMusicInterface()
@@ -168,6 +170,7 @@ private:
         interface.ChannelAddCallback = gaudio_BackgroundChannelAddCallback;
         interface.ChannelRemoveCallback = gaudio_BackgroundChannelRemoveCallback;
         interface.ChannelRemoveCallbackWithGid = gaudio_BackgroundChannelRemoveCallbackWithGid;
+        interface.ChannelGetStreamId = NULL;
     }
 };
 
@@ -266,6 +269,11 @@ public:
     float getPitch()
     {
         return pitch_;
+    }
+
+    g_id getStreamId()
+    {
+        return (gid&&interface.ChannelGetStreamId)?interface.ChannelGetStreamId(gid):0;
     }
 
     bool isPitchingAvailable()
@@ -400,6 +408,7 @@ AudioBinder::AudioBinder(lua_State *L)
         {"setLooping", SoundChannel_setLooping},
         {"isLooping", SoundChannel_isLooping},
         {"setWorldPosition", SoundChannel_setWorldPosition},
+        {"getStreamId", SoundChannel_getStreamId},
         {NULL, NULL},
     };
 
@@ -650,6 +659,17 @@ int AudioBinder::SoundChannel_getVolume(lua_State *L)
     GGSoundChannel *soundChannel = static_cast<GGSoundChannel*>(binder.getInstance("SoundChannel", 1));
 
     lua_pushnumber(L, soundChannel->getVolume());
+
+    return 1;
+}
+
+int AudioBinder::SoundChannel_getStreamId(lua_State *L)
+{
+    Binder binder(L);
+
+    GGSoundChannel *soundChannel = static_cast<GGSoundChannel*>(binder.getInstance("SoundChannel", 1));
+
+    lua_pushnumber(L, soundChannel->getStreamId());
 
     return 1;
 }

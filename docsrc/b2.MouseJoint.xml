@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.MouseJoint" page="b2MouseJoint" parent="b2.Joint" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A mouse joint is used to make a point on a body track a specified world point. This a soft constraint with a maximum force. This allows the constraint to stretch and without applying huge forces.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.MouseJoint:setTarget" page="setTarget" shortdesc="updates the target point" version="Gideros 2011.6"><![CDATA[<br />
+Updates the target point.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x coordinate of the target point]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y coordinate of the target point]]></parameter>
+  </method>
+  <method name="b2.MouseJoint:getTarget" page="getTarget" shortdesc="returns the x and y coordinates of the target point" version="Gideros 2011.6"><![CDATA[<br />
+Returns the x and y coordinates of the target point.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[x coordinate of the target point]]></return>
+    <return type="number"><![CDATA[y coordinate of the target point]]></return>
+  </method>
+  <method name="b2.MouseJoint:setMaxForce" page="setMaxForce" shortdesc="sets the maximum force in N" version="Gideros 2011.6"><![CDATA[<br />
+Sets the maximum force in Newtons.<br />
+<br />
+]]>
+    <parameter name="force" optional="false" type="number"><![CDATA[the maximum force in Newtons]]></parameter>
+  </method>
+  <method name="b2.MouseJoint:getMaxForce" page="getMaxForce" shortdesc="returns the maximum force in N" version="Gideros 2011.6"><![CDATA[<br />
+Returns the maximum force in Newtons.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The maximum force in Newtons.]]></return>
+  </method>
+  <method name="b2.MouseJoint:setFrequency" page="setFrequency" shortdesc="sets the response frequency in Hertz" version="Gideros 2011.6"><![CDATA[<br />
+Sets the response speed in Hertz.<br />
+<br />
+]]>
+    <parameter name="frequency" optional="false" type="number"><![CDATA[the response speed in Hertz]]></parameter>
+  </method>
+  <method name="b2.MouseJoint:getFrequency" page="getFrequency" shortdesc="returns the response frequency in Hertz" version="Gideros 2011.6"><![CDATA[<br />
+Returns the response speed in Hertz.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The response speed in Hertz]]></return>
+  </method>
+  <method name="b2.MouseJoint:setDampingRatio" page="setDampingRatio" shortdesc="sets the damping ratio (0 = no damping, 1 = critical damping)" version="Gideros 2011.6"><![CDATA[<br />
+Sets the damping ratio. 0 = no damping, 1 = critical damping. <br />
+<br />
+]]>
+    <parameter name="ratio" optional="false" type="number"><![CDATA[the damping ratio]]></parameter>
+  </method>
+  <method name="b2.MouseJoint:getDampingRatio" page="getDampingRatio" shortdesc="returns the damping ratio" version="Gideros 2011.6"><![CDATA[<br />
+Returns the damping ratio. 0 = no damping, 1 = critical damping. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The damping ratio]]></return>
+  </method>
+  <example name="Mouse joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+
+--joint with dummy body
+local mouseJoint = nil
+
+-- create a mouse joint on mouse down
+function self:onMouseDown(event)
+	local jointDef = b2.createMouseJointDef(ground, body, event.x, event.y, 100000)
+	mouseJoint = world:createJoint(jointDef)
+end
+
+-- update the target of mouse joint on mouse move
+function self:onMouseMove(event)
+	if mouseJoint ~= nil then
+		mouseJoint:setTarget(event.x, event.y)
+	end
+end
+
+-- destroy the mouse joint on mouse up
+function self:onMouseUp(event)
+	if mouseJoint ~= nil then
+		world:destroyJoint(mouseJoint)
+		mouseJoint = nil
+	end
+end]]></example>
+</object>

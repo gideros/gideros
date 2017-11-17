@@ -7,26 +7,66 @@
 #include "luaapplication.h"
 
 TextureBase *cameraplugin::cameraTexture=NULL;
+LuaApplication *cameraplugin::application=NULL;
+
+static int availableDevices(lua_State* L)
+{
+ std::vector<cameraplugin::CameraDesc> cams=cameraplugin::availableDevices();
+ lua_newtable(L);
+ for (size_t k=0;k<cams.size();k++)
+ {
+	 cameraplugin::CameraDesc cam=cams[k];
+	 lua_newtable(L);
+	 lua_pushstring(L,cam.name.c_str());
+	 lua_setfield(L,-2,"name");
+	 lua_pushstring(L,cam.description.c_str());
+	 lua_setfield(L,-2,"description");
+	 if (cam.pos==cameraplugin::CameraDesc::POS_FRONTFACING)
+		 lua_pushstring(L,"front");
+	 else if (cam.pos==cameraplugin::CameraDesc::POS_BACKFACING)
+		 lua_pushstring(L,"back");
+	 else
+		 lua_pushstring(L,"unknown");
+	 lua_setfield(L,-2,"position");
+	 lua_rawseti(L,-2,k+1);
+ }
+ return 1;
+}
 
 static int start(lua_State* L)
 {
-	Binder binder(L);
-
-	TextureBase* textureBase = static_cast<TextureBase*>(binder.getInstance("TextureBase"));
+	TextureBase* textureBase = static_cast<TextureBase*>(g_getInstance(L,"TextureBase",1));
+	const char *name=luaL_optstring(L,2,NULL);
 	if (cameraplugin::cameraTexture)
 		cameraplugin::cameraTexture->unref();
 	textureBase->ref();
 	cameraplugin::cameraTexture=textureBase;
 
-	lua_getglobal(L,"application");
-	(void)binder.getInstance("Application", -1);
-	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
-	lua_pop(L,1);
 
-	Orientation orientation = application->orientation();
+	Orientation orientation=eFixed;
+	lua_getglobal(L,"application");
+	LuaApplication* application=static_cast<LuaApplication *>(luaL_getdata(L));
+	cameraplugin::application=application;
+#ifndef FIXED_ORIENTATION
+	lua_pop(L,1);
+	orientation = application->orientation();
+#else
+	lua_getfield(L,-1,"getOrientation");
+	lua_getglobal(L,"application");
+	lua_call(L,1,1);
+	const char *ors=lua_tostring(L,-1);
+	lua_pop(L,1);
+	orientation=ePortrait;
+	if (!strcmp(ors,"landscapeLeft"))
+		orientation=eLandscapeLeft;
+	else if (!strcmp(ors,"landscapeRight"))
+		orientation=eLandscapeRight;
+	else if (!strcmp(ors,"portraitUpsideDown"))
+		orientation=ePortraitUpsideDown;
+#endif
 
 	int camwidth,camheight;
-	cameraplugin::start(orientation,&camwidth,&camheight);
+	cameraplugin::start(orientation,&camwidth,&camheight,name);
 	lua_pushnumber(L,camwidth);
 	lua_pushnumber(L,camheight);
 
@@ -35,6 +75,7 @@ static int start(lua_State* L)
 
 static int stop(lua_State* L)
 {
+	G_UNUSED(L);
 	cameraplugin::stop();
 
 	if (cameraplugin::cameraTexture)
@@ -51,6 +92,7 @@ static int loader(lua_State* L)
 	const luaL_Reg functionlist[] = {
 		{"start", start},
 		{"stop", stop},
+		{"availableDevices", availableDevices},
 		{NULL, NULL},
 	};
 
@@ -74,6 +116,7 @@ static void g_initializePlugin(lua_State* L)
 
 static void g_deinitializePlugin(lua_State *L)
 {
+	G_UNUSED(L);
 	if (cameraplugin::cameraTexture)
 	{
 		cameraplugin::cameraTexture->unref();

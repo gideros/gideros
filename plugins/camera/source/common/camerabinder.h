@@ -3,11 +3,25 @@
 
 #include "texturebase.h"
 #include "application.h"
+#include "luaapplication.h"
+#include <string>
+#include <vector>
 
 namespace cameraplugin {
 	extern TextureBase *cameraTexture;
+	extern LuaApplication* application;
+	struct CameraDesc {
+		std::string name;
+		std::string description;
+		enum {
+			POS_UNKNOWN,
+			POS_FRONTFACING,
+			POS_BACKFACING
+		} pos;
+	};
 	void init();
-	void start(Orientation orientation,int *camwidth,int *camheight);
+	std::vector<CameraDesc> availableDevices();
+	void start(Orientation orientation,int *camwidth,int *camheight,const char *device);
 	void stop();
 	void deinit();
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Macro Constants" page="macroconstants" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
+Macro Constants can be used for string and numeric constants.<br /><br />
+
+Just use @ rather than = when defining the macro.<br /><br />
+
+You can use any of these delimiters after @ but they must be used in pairs.  Numbers are auto-detected.<br />
+\`~ ! # $ % ^ & * / + = |<br />
+
+
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+
+  <example name="Simple examples"><![CDATA[<br /> 
+pi@3.14159265358979324
+num1 @ -100.54
+num2 @ 232
+num3 @ 444.10
+str1 @ 'hello'
+str2 @ "world"
+str3 @ [[
+Hello,
+world!
+]]
+]]></example>
+
+  <example name="Commenting out the print command"><![CDATA[<br /> 
+print @ |--|
+
+print(x, y, z, x + y, y * z) -- this line will be skipped
+]]></example>
+</object>

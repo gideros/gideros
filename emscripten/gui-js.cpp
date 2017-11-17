@@ -1,7 +1,7 @@
 #include <gglobal.h>
 #include <gevent.h>
 #include <gui.h>
-#include <emscripten.h>
+#include <emscripten/emscripten.h>
 
 #include <map>
 #include <string>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.Manifold" page="b2Manifold" parent="" type="physics" version="Gideros 2012.09.6"><![CDATA[Holds the local information about contact between 2 bodies]]>
+  <constant name="localNormal" page="localNormal" value="table" version="Gideros 2012.09.6"><![CDATA[Contains x and y properties with normalized vector values (from -1 to 1).
+For example: `{ y = -1, x = 0 }`
+]]></constant>
+  <constant name="localPoint" page="localPoint" value="table" version="Gideros 2012.09.6"><![CDATA[Table with x and y coordinates of collision.
+For example: `{y = 320, x = 480}`]]></constant>
+  <constant name="points" page="points" value="table" version="Gideros 2012.09.6"><![CDATA[Indexed array of information about contact points, including normalImpulse, tangentImpulse values and localPoint table for each contact point]]></constant>
+  <example name="Example content of b2.Manifold"><![CDATA[[localNormal] => Table {
+             {
+               [y] => -1
+               [x] => -0
+             }
+[points] => Table {
+             {
+               [1] => Table {
+                  {
+                    [normalImpulse] => 0
+                    [localPoint] => Table {
+                                {
+                                  [y] => 0
+                                  [x] => 0
+                                }
+                    [tangentImpulse] => 0
+                  }
+             }
+[localPoint] => Table {
+             {
+               [y] => 320.00000953674
+               [x] => 480
+             }
+]]></example>
+</object>

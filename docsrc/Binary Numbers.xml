@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Binary Numbers" page="binary" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
+Binary number representation.<br /><br />
+
+<b>0b</b>BinaryPattern &emsp; Enter a number in binary format.<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+
+  <example name="Simple examples"><![CDATA[<br /> 
+a=0b00000001 -- a = 1
+a=0b00000010 -- a = 2
+a=0b00000011 -- a = 3
+a=0b00000100 -- a = 4
+a=0b00000101 -- a = 5
+a=0b00000110 -- a = 6
+a=0b00000111 -- a = 7
+a=0b00001000 -- a = 8
+a=0b00001001 -- a = 9
+]]></example>
+
+</object>

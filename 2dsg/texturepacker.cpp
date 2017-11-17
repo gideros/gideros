@@ -6,9 +6,13 @@
 class MyTexturePacker : public TexturePacker
 {
 public:
-	MyTexturePacker()
+	MyTexturePacker(bool progressive,int pwidth=0, int pheight=0)
 	{
 		textureindex_ = 0;
+		progressive_=progressive;
+		proWidth_=pwidth;
+		proHeight_=pheight;
+        if (progressive_) binPack_.Init(pwidth, pheight);
 	}
 
 	virtual ~MyTexturePacker() {}
@@ -18,10 +22,26 @@ public:
 		textureindex_ = 0;
 	}
 
-	virtual void addTexture(int width, int height)
+	virtual bool addTexture(int width, int height)
 	{
-		rects_[textureindex_].width = width;
-		rects_[textureindex_++].height = height;
+		if (progressive_)
+		{
+			RectSize r;
+			r.width=width;
+			r.height=height;
+			rects_.push_back(r);
+            if (!packInto(proWidth_,proHeight_,2))
+			{
+				rects_.pop_back();
+				return false;
+			}
+		}
+		else
+		{
+			rects_[textureindex_].width = width;
+			rects_[textureindex_++].height = height;
+		}
+		return true;
 	}
 
 	virtual void packTextures(int* pwidth, int* pheight, int border, bool forceSquare)
@@ -86,8 +106,33 @@ public:
 		}
 	}
 
+	virtual bool packInto(int pwidth, int pheight, int border)
+	{
+		if (border)
+		for (size_t i = 0; i < rects_.size(); ++i)
+		{
+			rects_[i].width += border * 2;
+			rects_[i].height += border * 2;
+		}
+
+		packHelper2(pwidth, pheight);
+
+		if (result_.size() != rects_.size()) return false;
+
+		if (border)
+		for (size_t i = 0; i < result_.size(); ++i)
+		{
+			result_[i].width -= 2 * border;
+			result_[i].height -= 2 * border;
+			result_[i].x += border;
+			result_[i].y += border;
+		}
+		return true;
+	}
+
 	virtual void getTextureLocation(int index, int* x, int* y, int* width, int* height)
 	{
+        if (index<0) index=result_.size()-1;
 		*x = result_[index].x;
 		*y = result_[index].y;
 		*width = result_[index].width;
@@ -116,6 +161,17 @@ private:
 
 	void packHelper2(int width, int height)
 	{
+		if (progressive_)
+		{
+			for (size_t i = result_.size(); i < rects_.size(); ++i)
+			{
+				Rect rect = binPack_.Insert(rects_[i].width, rects_[i].height, MaxRectsBinPack::RectBestAreaFit);
+				if (rect.height == 0)
+					break;
+				result_.push_back(rect);
+			}
+			return;
+		}
 		packHelper1(width, height, MaxRectsBinPack::RectBestShortSideFit);
 		if (result_.size() == rects_.size())
 			return;
@@ -136,12 +192,21 @@ private:
 	std::vector<RectSize> rects_;
 	std::vector<Rect> result_;
 	int textureindex_;
+	bool progressive_;
 	MaxRectsBinPack binPack_;
+	int proWidth_;
+	int proHeight_;
 };
 
 TexturePacker* createTexturePacker(void)
 {
-	MyTexturePacker* m = new MyTexturePacker;
+	MyTexturePacker* m = new MyTexturePacker(false);
+	return static_cast<TexturePacker*>(m);
+}
+
+TexturePacker* createProgressiveTexturePacker(int width,int height)
+{
+	MyTexturePacker* m = new MyTexturePacker(true,width,height);
 	return static_cast<TexturePacker*>(m);
 }
 

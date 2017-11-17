@@ -19,6 +19,11 @@
 #ifndef MATH_MATRICES_H
 #define MATH_MATRICES_H
 
+#ifndef G_UNUSED
+#define G_UNUSED(x) (void)(x)
+#endif
+
+
 #include <iostream>
 #include <iomanip>
 #include "Vectors.h"

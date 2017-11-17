@@ -17,6 +17,7 @@ public:
 	bool loadFile(const QString& fileName, bool suppressErrors = false);
 	const QString& fileName() const;
 	bool save();
+	virtual void background();
 
 	QsciScintilla* sciScintilla() const
 	{

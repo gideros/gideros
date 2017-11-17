@@ -6,6 +6,7 @@
 #include "pch.h"
 #include "DirectXPage.xaml.h"
 #include "giderosapi.h"
+#include "glog.h"
 
 using namespace giderosgame;
 
@@ -293,6 +294,15 @@ void DirectXPage::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEvent
 
 void DirectXPage::OnDpiChanged(DisplayInformation^ sender, Object^ args)
 {
+	float s;
+#if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
+		s = sender->RawPixelsPerViewPixel; // Windows phone
+#else
+	s = /*((int)sender->ResolutionScale)*0.01f;// */sender->LogicalDpi / 96.0f;   // Windows 8 PC
+	glog_i("Display Scale=%d, Logical DPI=%f, Selected Scale=%f\n", (int)sender->ResolutionScale, sender->LogicalDpi, s);
+#endif
+
+	gdr_scaleChanged(s);
 }
 
 void DirectXPage::OnOrientationChanged(DisplayInformation^ sender, Object^ args)

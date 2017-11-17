@@ -301,6 +301,9 @@ int luaD_precall (lua_State *L, StkId func, int nresults) {
       luaD_callhook(L, LUA_HOOKCALL, -1);
       L->savedpc--;  /* correct 'pc' */
     }
+    if (L->profilerHook)
+    	L->profilerHook(L,1);
+
     return PCRLUA;
   }
   else {  /* if is a C function, call it */
@@ -315,6 +318,8 @@ int luaD_precall (lua_State *L, StkId func, int nresults) {
     ci->nresults = nresults;
     if (L->hookmask & LUA_MASKCALL)
       luaD_callhook(L, LUA_HOOKCALL, -1);
+    if (L->profilerHook)
+    	L->profilerHook(L,1);
     lua_unlock(L);
     n = (*curr_func(L)->c.f)(L);  /* do the actual call */
     lua_lock(L);
@@ -343,6 +348,8 @@ int luaD_poscall (lua_State *L, StkId firstResult) {
   StkId res;
   int wanted, i;
   CallInfo *ci;
+  if (L->profilerHook)
+  	L->profilerHook(L,0);
   if (L->hookmask & LUA_MASKRET)
     firstResult = callrethooks(L, firstResult);
   ci = L->ci--;

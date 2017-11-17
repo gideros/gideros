@@ -23,6 +23,7 @@ public:
 
 	void setModified(bool m);
 	bool isModified() const;
+	QMap<QString, QString> usedPlugins();
 
     std::vector<std::pair<QString, bool> > topologicalSort() const
 	{
@@ -56,6 +57,7 @@ private slots:
 private slots:
 	void addNewFile();
 	void importToLibrary();
+	void importFolder();
 //	void newFont();
 	void newFolder();
 	void remove();
@@ -67,6 +69,8 @@ private slots:
     void excludeFromExecution(bool checked);
     void excludeFromEncryption(bool checked);
     void showInFinder();
+    void addPlugin();
+    void propPlugin();
 private slots:
 	void checkModification();
 
@@ -74,10 +78,13 @@ private:
     QTreeWidgetItem* createFileItem(const QString& file, bool downsizing = false, bool excludeFromExecution = false, bool excludeFromEncryption = false);
 	QTreeWidgetItem* createFolderItem(const QString& name);
 	QTreeWidgetItem* createProjectItem(const QString& name);
+	QTreeWidgetItem* createCatFolderItem(const QString& name, const QString& icon, int nodetype, bool drop=false);
+    QTreeWidgetItem* createPluginItem(const QString& name);
 
 private:
 	QAction* addNewFileAction_;
 	QAction* importToLibraryAction_;
+	QAction* importFolderAction_;
 //	QAction* newFontAction_;
 	QAction* newFolderAction_;
 	QAction* removeAction_;
@@ -90,6 +97,8 @@ private:
     QAction* excludeFromExecutionAction_;
     QAction* excludeFromEncryptionAction_;
     QAction* showInFindeAction_;
+    QAction* addPluginAction_;
+    QAction* propPluginAction_;
 private:
 	QString xmlString_;
 	bool isModifed_;

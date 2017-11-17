@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Facebook" page="Facebook" parent="EventDispatcher" type="plugin" version="Gideros 2012.09"><![CDATA[<br />
+Facebook SDK plugin is available for only iOS as an external plugin. To use facebook module:<br />
+<br />
+1. Download and install Facebook SDK from https://developers.facebook.com/ios/downloads/<br />
+2. Add FacebookSDK.framework to your project.<br />
+3. Add the backward compatibility headers as described https://developers.facebook.com/docs/howtos/feed-dialog-using-ios-sdk/#step2<br />
+4. Add {Gideros Installation Directory}/All Plugins/Facebook/source/iOS/* files to your Xcode project.<br />
+5. If enabled, disable &quot;Application does not run in background&quot; property in .plist file.<br />
+<br />
+The `Facebook` class is defined in module &quot;facebook&quot;. Therefore, you need to call<br />
+`require(&quot;facebook&quot;)` before using it. Loading the Facebook module <br />
+also creates a global variable `facebook` of type `Facebook` for direct use. <br />]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <method name="Facebook:setAppId" page="setAppId" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Initializes the Facebook library and sets App ID. This function should be called first before other functions.<br />
+<br />
+]]>
+    <parameter name="appId" optional="false" type="string"><![CDATA[The Facebook application id.]]></parameter>
+  </method>
+  <method name="Facebook:authorize" page="authorize" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Starts the authorization flow for the user with the requested permissions.<br />
+<br />
+]]>
+    <parameter name="permissions" optional="false" type="table, optional"><![CDATA[An array of the requested permissions.]]></parameter>
+  </method>
+  <method name="Facebook:logout" page="logout" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Invalidates the current user session. This method does not unauthorized the application, it simply invalidates the access token. The user can unauthorized the application through the app settings page on the Facebook website.<br />
+<br />
+]]></method>
+  <method name="Facebook:isSessionValid" page="isSessionValid" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Checks if the access token is available and has not expired.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if the access token is valid, `false` otherwise.]]></return>
+  </method>
+  <method name="Facebook:dialog" page="dialog" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Generate a UI dialog for the desired action.<br />
+<br />
+]]>
+    <parameter name="action" optional="false" type="string"><![CDATA[The type of dialog to call. Currently supported methods are oauth, feed, and apprequests.]]></parameter>
+    <parameter name="paramaters" optional="false" type="table, optional"><![CDATA[Table representing parameters specific to a particular dialog.]]></parameter>
+  </method>
+  <method name="Facebook:graphRequest" page="graphRequest" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Makes a request to the Graph API.<br />
+<br />
+]]>
+    <parameter name="graphPath" optional="false" type="string"><![CDATA[The path to the Graph API endpoint. For example, to fetch data about the currently logged in user this parameter should be &#039;&#039;me&#039;&#039;, representing a call to the https://graph.facebook.com/me endpoint.]]></parameter>
+    <parameter name="paramaters" optional="false" type="table, optional"><![CDATA[Table representing the API call parameters.]]></parameter>
+    <parameter name="method" optional="false" type="string, optional"><![CDATA[HTTP method.]]></parameter>
+  </method>
+  <method name="Facebook:setAccessToken" page="setAccessToken" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets the access token.<br />
+<br />
+]]>
+    <parameter name="accessToken" optional="false" type="string"/>
+  </method>
+  <method name="Facebook:getAccessToken" page="getAccessToken" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Returns the access token.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[The access token.]]></return>
+  </method>
+  <method name="Facebook:setExpirationDate" page="setExpirationDate" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Sets the expiration date.<br />
+<br />
+]]>
+    <parameter name="expirationDate" optional="false" type="string"/>
+  </method>
+  <method name="Facebook:getExpirationDate" page="getExpirationDate" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Returns the expiration date;<br />
+<br />
+]]>
+    <return type="string"><![CDATA[The expiration date if it's set, `nil` otherwise.]]></return>
+  </method>
+  <method name="Facebook:extendAccessToken" page="extendAccessToken" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Extends the access token. <br />
+<br />
+]]></method>
+  <method name="Facebook:extendAccessTokenIfNeeded" page="extendAccessTokenIfNeeded" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Attempts to extend the access token. The access token expires after a certain amount of time and when you call this method it will be refreshed if it is still active and only after some time has passed since the last refresh. To ensure that you keep the access token fresh for active users, call this method in your `Application.RESUME` event.<br />
+<br />
+]]></method>
+  <method name="Facebook:shouldExtendAccessToken" page="shouldExtendAccessToken" shortdesc="" version="Gideros 2012.09"><![CDATA[<br />
+Returns if the access token should be extended.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if the access token should be extended, `false` otherwise.]]></return>
+  </method>
+  <event name="Event.LOGIN_COMPLETE" page="Event.LOGIN_COMPLETE" value="loginComplete" version="Gideros 2012.09"><![CDATA[Dispatched when the user has logged in with Facebook]]></event>
+  <event name="Event.LOGIN_ERROR" page="Event.LOGIN_ERROR" value="loginError" version="Gideros 2012.09"><![CDATA[Dispatched when a Facebook dialog has failed. `event.errorCode` and `event.errorDescription` fields give detailed information about the fail reason.]]></event>
+  <event name="Event.LOGIN_CANCEL" page="Event.LOGIN_CANCEL" value="loginCancel" version="Gideros 2012.09"><![CDATA[Dispatched when the user cancelled Facebook login.]]></event>
+  <event name="Event.LOGOUT_COMPLETE" page="Event.LOGOUT_COMPLETE" value="logoutComplete" version="Gideros 2012.09"><![CDATA[Dispatched when the user has logged out with Facebook.]]></event>
+  <event name="Event.DIALOG_COMPLETE" page="Event.DIALOG_COMPLETE" value="dialogComplete" version="Gideros 2012.09"><![CDATA[Dispatched when a Facebook dialog has finished.]]></event>
+  <event name="Event.DIALOG_ERROR" page="Event.DIALOG_ERROR" value="dialogError" version="Gideros 2012.09"><![CDATA[Dispatched when a Facebook dialog has failed.]]>
+    <parameter name="errorCode" type="number"><![CDATA[code of occurred error]]></parameter>
+    <parameter name="errorDescription" type="string"><![CDATA[Description of the error]]></parameter>
+  </event>
+  <event name="Event.DIALOG_CANCEL" page="Event.DIALOG_CANCEL" value="dialogCancel" version="Gideros 2012.09"><![CDATA[Dispatched when a Facebook dialog is cancelled.]]></event>
+  <event name="Event.REQUEST_COMPLETE" page="Event.REQUEST_COMPLETE" value="requestComplete" version="Gideros 2012.09"><![CDATA[Dispatched when a Facebook graph request returns a response.]]>
+    <parameter name="response" type="string"><![CDATA[contains the raw response of the completed Facebook graph request.]]></parameter>
+  </event>
+  <event name="Event.REQUEST_ERROR" page="Event.REQUEST_ERROR" value="requestError" version="Gideros 2012.09"><![CDATA[Dispatched when a Facebook graph request has failed.]]>
+    <parameter name="errorCode" type="number"><![CDATA[code of occurred error]]></parameter>
+    <parameter name="errorDescription" type="string"><![CDATA[Description of the error]]></parameter>
+  </event>
+</object>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Controller" page="Controller" parent="EventDispatcher" type="labs" version="Gideros 2014.01"><![CDATA[Controller interface allows you to use most popular controllers on all supported operating systems under the same interface.
+
+Internally Controller Interface also matches all buttons and controller behavior under the same scheme so you won't have to worry about that anymore.
+
+For more information check out [http://docs.giderosmobile.com/interface/controller](Controller Interface Guide)]]>
+  <method name="Controller:isAnyAvailable" page="Controller:isAnyAvailable" shortdesc="return true if any controller is connected" version="Gideros 2014.01"><![CDATA[Returns true if any of controller is connected to device]]>
+    <return type="bool"><![CDATA[if any controller is connected]]></return>
+  </method>
+  <method name="Controller:getPlayerCount" page="Controller:getPlayerCount" shortdesc="returns amount of connected controllers" version="Gideros 2014.01"><![CDATA[Returns amount of connected controllers]]>
+    <return type="number"><![CDATA[amount of connected controllers]]></return>
+  </method>
+  <method name="Controller:getControllerName" page="Controller:getControllerName" shortdesc="gets the name of controller" version="Gideros 2014.01"><![CDATA[Get the name of controller]]>
+    <parameter name="id" optional="false" type="number"><![CDATA[controller id]]></parameter>
+    <return type="string"><![CDATA[controller name]]></return>
+  </method>
+  <method name="Controller:getPlayers" page="Controller:getPlayers" shortdesc="returns table with controller IDs" version="Gideros 2014.01"><![CDATA[Returns table with controller IDs]]>
+    <return type="table"><![CDATA[indexed table with controller ids as values]]></return>
+  </method>
+  <method name="Controller:vibrate" page="Controller:vibrate" shortdesc="vibrate the controller for provided amount of miliseconds" version="Gideros 2014.01"><![CDATA[Vibrate the controller for provided amount of miliseconds. Works only if it is supported by the platform and controller, don't rely on it to work, and only use as addition to the game play]]>
+    <parameter name="ms" optional="false" type="number"><![CDATA[time in miliseconds]]></parameter>
+  </method>
+  <event name="Event.RIGHT_JOYSTICK" page="Event.RIGHT_JOYSTICK" value="rightJoystick" version="Gideros 2011.6"><![CDATA[Event for movement of the right joystick]]>
+    <parameter name="x" type="number"><![CDATA[x vector from -1 to 1]]></parameter>
+    <parameter name="y" type="number"><![CDATA[y vector from -1 to 1]]></parameter>
+    <parameter name="angle" type="number"><![CDATA[angle at which joystick is positioned in radians, left being 0 and increasing in clockwise direction]]></parameter>
+    <parameter name="strength" type="number"><![CDATA[distance vector from the center to current position from 0 to 1]]></parameter>
+    <parameter name="playerId" type="number"><![CDATA[id of controller/player]]></parameter>
+  </event>
+  <event name="Event.LEFT_JOYSTICK" page="Event.LEFT_JOYSTICK" value="leftJoystick" version="Gideros 2011.6"><![CDATA[Event for movement of the left joystick]]>
+    <parameter name="x" type="number"><![CDATA[x vector from -1 to 1]]></parameter>
+    <parameter name="y" type="number"><![CDATA[y vector from -1 to 1]]></parameter>
+    <parameter name="angle" type="number"><![CDATA[angle at which joystick is positioned in radians, left being 0 and increasing in clockwise direction]]></parameter>
+    <parameter name="strength" type="number"><![CDATA[distance vector from the center to current position from 0 to 1]]></parameter>
+    <parameter name="playerId" type="number"><![CDATA[id of controller/player]]></parameter>
+  </event>
+  <event name="Event.KEY_DOWN" page="Event.KEY_DOWN" value="keyDown" version="Gideros 2011.6"><![CDATA[Button on controller was pushed down]]>
+    <parameter name="playerId" type="number"><![CDATA[id of controller/player that pressed the button]]></parameter>
+    <parameter name="keyCode" type="number"><![CDATA[button key code that was pressed]]></parameter>
+  </event>
+  <event name="Event.KEY_UP" page="Event.KEY_UP" value="keyUp" version="Gideros 2011.6"><![CDATA[Button on controller was released up]]>
+    <parameter name="playerId" type="number"><![CDATA[id of controller/player that released the button]]></parameter>
+    <parameter name="keyCode" type="number"><![CDATA[button key code that was released]]></parameter>
+  </event>
+  <event name="Event.RIGHT_TRIGGER" page="Event.RIGHT_TRIGGER" value="rightTrigger" version="Gideros 2011.6"><![CDATA[Event for analog right trigger]]>
+    <parameter name="strength" type="number"><![CDATA[strength of the press, from 0 to 1]]></parameter>
+    <parameter name="playerId" type="number"><![CDATA[id of controller/player using trigger]]></parameter>
+  </event>
+  <event name="Event.LEFT_TRIGGER" page="Event.LEFT_TRIGGER" value="leftTrigger" version="Gideros 2011.6"><![CDATA[Event for analog left trigger]]>
+    <parameter name="strength" type="number"><![CDATA[strength of the press, from 0 to 1]]></parameter>
+    <parameter name="playerId" type="number"><![CDATA[id of controller/player using trigger]]></parameter>
+  </event>
+  <event name="Event.CONNECTED" page="Event.CONNECTED" value="connected" version="Gideros 2011.6"><![CDATA[Event when controller is connected]]>
+    <parameter name="playerId" type="number"><![CDATA[id of controller/player]]></parameter>
+  </event>
+  <event name="Event.DISCONNECTED" page="Event.DISCONNECTED" value="disconnected" version="Gideros 2011.6"><![CDATA[Event when controller is disconnected]]>
+    <parameter name="playerId" type="number"><![CDATA[id of controller/player]]></parameter>
+  </event>
+  <example name="Using Controller example"><![CDATA[require "controller"
+
+controller:addEventListener(Event.KEY_DOWN, function(e)
+	print("Button Down ", e.playerId, e.keyCode, findKeyCode(e.keyCode))
+end)
+
+controller:addEventListener(Event.KEY_UP, function(e)
+	print("Button Up ", e.playerId, e.keyCode, findKeyCode(e.keyCode))
+end)
+
+controller:addEventListener(Event.RIGHT_JOYSTICK, function(e)
+	print("Player: ", e.playerId)
+	print("RIGHT_JOYSTICK:", "x:"..e.x, "y:"..e.y, "angle:"..e.angle, "strength:"..e.strength)
+end)
+
+controller:addEventListener(Event.LEFT_JOYSTICK, function(e)
+	print("Player: ", e.playerId)
+	print("LEFT_JOYSTICK:", "x:"..e.x, "y:"..e.y, "angle:"..e.angle, "strength:"..e.strength)
+end)
+
+controller:addEventListener(Event.RIGHT_TRIGGER, function(e)
+	print("Player: ", e.playerId)
+	print("RIGHT_TRIGGER:", "strength:"..e.strength)
+end)
+
+controller:addEventListener(Event.LEFT_TRIGGER, function(e)
+	print("Player: ", e.playerId)
+	print("LEFT_TRIGGER:", "strength:"..e.strength)
+end)
+
+controller:addEventListener(Event.CONNECTED, function(e)
+	print("Player: ", e.playerId, "connected")
+	print("Are there any controllers?", controller:isAnyAvailable())
+	print("Controller count", controller:getPlayerCount())
+	print("Name of controller "..e.playerId, controller:getControllerName(e.playerId))
+	print("players", #controller:getPlayers())
+end)
+
+controller:addEventListener(Event.DISCONNECTED, function(e)
+	print("Player: ", e.playerId, "disconnected")
+end)]]></example>
+</object>

@@ -1,4 +1,10 @@
+#if TARGET_OS_OSX
+#import <Cocoa/Cocoa.h>
+#define UIApplication NSApplication
+#define UIViewController NSViewController
+#else
 #import <UIKit/UIKit.h>
+#endif
 
 extern "C" {
 

@@ -78,6 +78,12 @@ int main(int argc, char *argv[]){
         QCoreApplication::setApplicationName(Constants::DESK_APPLICATION_NAME);
     }
 
+    QSurfaceFormat formatGL;
+	formatGL.setSwapInterval(0);
+	formatGL.setStencilBufferSize(8);
+	formatGL.setDepthBufferSize(16);
+	formatGL.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+	QSurfaceFormat::setDefaultFormat(formatGL);
 
 	QDir::setCurrent(dir.absolutePath());
 

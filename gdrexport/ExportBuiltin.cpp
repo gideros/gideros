@@ -108,7 +108,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
             category = ctx->args["category"];
         if(ctx->args.contains("bundle"))
             replaceList1 << qMakePair(QString("com.yourcompany."+ctx->base).toUtf8(), ctx->args["bundle"].toUtf8());
-        replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
+        replaceList1 << qMakePair(QString("<key>NOTE</key>").toUtf8(), ("<key>LSApplicationCategoryType</key>\n	<string>"+category.toUtf8()+"</string>\n	<key>CFBundleShortVersionString</key>\n	<string>"+ctx->properties.version+"</string>\n	<key>CFBundleVersion</key>\n	<string>"+QString::number(ctx->properties.build_number)+"</string>\n	<key>CFBundleName</key>\n	<string>"+ctx->base.toUtf8()+"</string>\n	<key>NOTE</key>").toUtf8());
     }
     else if(ctx->deviceFamily == e_iOS){
     	ctx->noEncryptionExt.insert("mp3"); //iOS uses backgroundplayer
@@ -125,7 +125,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
     		winver=winver+"0.0";
     	else
     		winver=winver+".0.0";
-    	if (!winver.startsWith("."))
+    	if (winver.startsWith("."))
     		winver="1"+winver;
     	QStringList wvparts=winver.split(".", QString::SkipEmptyParts);
     	winver=wvparts[0]+"."+wvparts[1]+"."+wvparts[2]+"."+QString::number(ctx->properties.build_number);
@@ -368,7 +368,8 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    }
 
    //install plugins
-   ExportCommon::applyPlugins(ctx);
+   if (!ExportCommon::applyPlugins(ctx))
+		ctx->exportError=true;
 
    if (needGApp)
    {
@@ -486,6 +487,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ExportCommon::appIcon(ctx,152,152,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon152x152.png"));
         ExportCommon::appIcon(ctx,167,167,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon167x167.png"));
         ExportCommon::appIcon(ctx,180,180,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon180x180.png"));
+        ExportCommon::appIcon(ctx,1024,1024,QString(ctx->base+" iOS/Images.xcassets/AppIcon.appiconset/AppIcon1024x1024.png"));
 
 
         ExportCommon::splashHImage(ctx,1024,768,QString(ctx->base+" iOS/Images.xcassets/LaunchImage.launchimage/Splash1024x768.png"));
@@ -509,7 +511,19 @@ void ExportBuiltin::doExport(ExportContext *ctx)
         ExportCommon::tvIcon(ctx,1280,768,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon1280x768.png"));
         ExportCommon::tvIcon(ctx,400,240,QString(ctx->base+" iOS/Images.xcassets/App Icon & Top Shelf Image.brandassets/Top Shelf Image.imageset/TVIcon400x240.png"));
    }
-
+   else if(ctx->deviceFamily == e_MacOSXDesktop){
+	    ctx->outputDir.mkpath("icon.iconset/");
+        ExportCommon::appIcon(ctx,16,16,QString("icon.iconset/icon_16x16.png"));
+        ExportCommon::appIcon(ctx,32,32,QString("icon.iconset/icon_16x16@2x.png"));
+        ExportCommon::appIcon(ctx,32,32,QString("icon.iconset/icon_32x32.png"));
+        ExportCommon::appIcon(ctx,64,64,QString("icon.iconset/icon_32x32@2x.png"));
+        ExportCommon::appIcon(ctx,128,128,QString("icon.iconset/icon_128x128.png"));
+        ExportCommon::appIcon(ctx,256,256,QString("icon.iconset/icon_128x128@2x.png"));
+        ExportCommon::appIcon(ctx,256,256,QString("icon.iconset/icon_256x256.png"));
+        ExportCommon::appIcon(ctx,512,512,QString("icon.iconset/icon_256x256@2x.png"));
+        ExportCommon::appIcon(ctx,512,512,QString("icon.iconset/icon_512x512.png"));
+        ExportCommon::appIcon(ctx,1024,1024,QString("icon.iconset/icon_512x512@2x.png"));
+   }
 #ifdef Q_OS_MACX
     if(ctx->deviceFamily == e_MacOSXDesktop){
         MacOSXExport::CodeSignMacOSX(ctx);

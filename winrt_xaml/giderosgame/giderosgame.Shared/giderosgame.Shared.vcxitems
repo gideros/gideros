@@ -35,6 +35,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)DirectXPage.xaml.h">
       <DependentUpon>$(MSBuildThisFileDirectory)DirectXPage.xaml</DependentUpon>
     </ClInclude>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\plugins.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
    <!--GIDEROS-PLUGIN-FILES-->
    <!--PLUGINS-START-->
     <ClCompile Include="$(ProjectDir)\..\..\..\Plugins\luasocket\source\luasocket_stub.cpp">

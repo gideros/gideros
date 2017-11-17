@@ -26,7 +26,8 @@ typedef struct ALvoice {
     struct ALsource *volatile Source;
 
     /** Method to update mixing parameters. */
-    ALvoid (*Update)(struct ALvoice *self, const struct ALsource *source, const ALCcontext *context);
+    //GIDEROS:hgy29: remove const to ALSource because ATOMIC_LOAD erroneously require non-const
+    ALvoid (*Update)(struct ALvoice *self, struct ALsource *source, const ALCcontext *context);
 
     /** Current target parameters used for mixing. */
     ALint Step;

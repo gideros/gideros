@@ -311,8 +311,9 @@ void ComputeBFormatGains(const ALCdevice *device, const ALfloat mtx[4], ALfloat 
 
 ALvoid UpdateContextSources(ALCcontext *context);
 
-ALvoid CalcSourceParams(struct ALvoice *voice, const struct ALsource *source, const ALCcontext *ALContext);
-ALvoid CalcNonAttnSourceParams(struct ALvoice *voice, const struct ALsource *source, const ALCcontext *ALContext);
+//GIDEROS:hgy29: remove const to ALSource because ATOMIC_LOAD erroneously require non-const
+ALvoid CalcSourceParams(struct ALvoice *voice, struct ALsource *source, const ALCcontext *ALContext);
+ALvoid CalcNonAttnSourceParams(struct ALvoice *voice, struct ALsource *source, const ALCcontext *ALContext);
 
 ALvoid MixSource(struct ALvoice *voice, struct ALsource *source, ALCdevice *Device, ALuint SamplesToDo);
 

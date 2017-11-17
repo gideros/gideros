@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Texture" page="Texture" parent="TextureBase" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+<br />
+The `Texture` class lets you work with textures in an application. The `Texture` class lets you create<br />
+a new `Texture` object to load from an image file and display in scene tree.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Texture.new" page="new" shortdesc="creates a new Texture object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new Texture object.<br />
+<br />
+]]>
+    <parameter name="filename" optional="false" type="string"><![CDATA[The name of the texture file to be loaded.]]></parameter>
+    <parameter name="filtering" optional="false" type="boolean, default = false"><![CDATA[Whether or not the texture is filtered.]]></parameter>
+    <parameter name="options" optional="true" type="table, optional"><![CDATA[A table that specifies optional paramaters. Currently, "transparentColor", "wrap", "format" and "extend" fields are supported.]]></parameter>
+    <example><![CDATA[local texture = Texture.new(&quot;image.png&quot;, false, {transparentColor = 0xff00ff})	-- do not filter and make the color 0xff00ff transparent<br />
+local texture = Texture.new(&quot;image.png&quot;, true, {wrap = Texture.REPEAT})	-- enable filtering and repeat the texture<br />
+]]></example>
+  </method>
+  <method name="Texture.new" page="new2" shortdesc="" version="Gideros 2016.08"><![CDATA[Create a texture from pixel data.]]>
+    <parameter name="pixels" optional="false" type="string"><![CDATA[A string containing actual R,G,B,A compoents of each pixel in the new texture. Each component is stored as a byte. You can pass nil if you don't need to initialize texture content]]></parameter>
+    <parameter name="width" optional="false" type="number"><![CDATA[width of the texture to create]]></parameter>
+    <parameter name="height" optional="false" type="number"><![CDATA[Height of the texture to create]]></parameter>
+    <parameter name="filtering" optional="true" type="boolean, default to false"><![CDATA[indicate that the texture should be filtered]]></parameter>
+    <parameter name="options" optional="true" type="table, optional"><![CDATA[A table that specifies optional paramaters. Currently, "transparentColor", "wrap", "format" and "extend" fields are supported.]]></parameter>
+  <example><![CDATA[local texture = Texture.new(nil,300,400;, false, {extend=false})	-- Create a 300x400 empty texture. Prevent gideros from extending the texture to the next power of two size<br />
+]]></example>
+  </method>
+</object>

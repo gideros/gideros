@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="bump" page="bump" parent="" type="plugin" version="Gideros 2017.8">
+   <![CDATA[This is a native (and much faster) implementation of excellent bump.lua collision library.
+   See full original documentations here: https://github.com/kikito/bump.lua
+   Just require 'cbump' instead of 'bump' to use this native version.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <platform>html5</platform>
+  <platform>winrt</platform>
+  <platform>win32</platform>
+</object>

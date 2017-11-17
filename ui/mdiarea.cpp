@@ -110,6 +110,8 @@ void MyMdiArea::addSubWindow(MyMdiSubWindow* window)
 	Q_ASSERT(subWindows_.contains(window) == false);
 
 	currentWidget_->hide();
+	if (currentWidget_!=emptyWidget_)
+		((MyMdiSubWindow *)currentWidget_)->background();
 	layout_->removeWidget(currentWidget_);
 
 	layout_->addWidget(window);
@@ -138,6 +140,8 @@ void MyMdiArea::addSubWindow(MyMdiSubWindow* window)
 void MyMdiArea::onCurrentChanged(int index)
 {
 	currentWidget_->hide();
+	if (currentWidget_!=emptyWidget_)
+		((MyMdiSubWindow *)currentWidget_)->background();
 	layout_->removeWidget(currentWidget_);
 
 	currentWidget_ = subWindows_[index];

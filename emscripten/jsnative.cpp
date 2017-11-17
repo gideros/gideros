@@ -1,8 +1,8 @@
 #include "gideros.h"
 #include "lua.hpp"
 #include <lauxlib.h>
-#include "emscripten.h"
-#include "html5.h"
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 #include <gevent.h>
 #include <stdlib.h>
 static lua_State* luaState = NULL;

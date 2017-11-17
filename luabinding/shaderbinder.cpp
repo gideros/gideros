@@ -14,6 +14,7 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	        {"isValid", isValid},
 	    	{"getEngineVersion",getEngineVersion},
 	    	{"getShaderLanguage",getShaderLanguage},
+			{"enableVBO",enableVBO},
         {NULL, NULL},
 	};
 
@@ -168,6 +169,21 @@ int ShaderBinder::getShaderLanguage(lua_State* L)
 	StackChecker checker(L, "ShaderBinder::getShaderLanguage", 1);
 	lua_pushstring(L,ShaderEngine::Engine->getShaderLanguage());
 	return 1;
+}
+
+int ShaderBinder::enableVBO(lua_State* L)
+{
+	StackChecker checker(L, "ShaderBinder::enableVBO", 0);
+	int freeze,unfreeze;
+	if (lua_isnumber(L,1))
+	{
+		freeze=lua_tonumber(L,1);
+		unfreeze=luaL_optnumber(L,2,freeze);
+	}
+	else
+		unfreeze=freeze=(lua_toboolean(L,1))?1:0;
+	ShaderEngine::Engine->setVBOThreshold(freeze, unfreeze);
+	return 0;
 }
 
 int ShaderBinder::setConstant(lua_State* L)

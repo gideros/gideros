@@ -13,6 +13,10 @@ AboutDialog::AboutDialog(QWidget *parent) :
 
 	QString giderosVersion=QString(GIDEROS_VERSION);
     ui->labelVersion->setText(giderosVersion);
+#ifdef GIDEROS_GIT_HASH
+	QString giderosHash=QString(GIDEROS_GIT_HASH);
+    ui->labelHash->setText(giderosHash);
+#endif
     QString cptext=ui->labelCopyright->text();
     cptext.replace(QString("ENDYEAR"), giderosVersion.split(".")[0]);
     ui->labelCopyright->setText(cptext);

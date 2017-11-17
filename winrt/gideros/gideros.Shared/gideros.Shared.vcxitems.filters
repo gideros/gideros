@@ -1091,7 +1091,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\pixel.cpp">
       <Filter>2dsg</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\screen.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\pixelbinder.cpp">
+      <Filter>luabinding</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\screenbinder.cpp">
       <Filter>luabinding</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\particles.cpp">
@@ -1728,6 +1734,12 @@
       <Filter>2dsg</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\pixelbinder.h">
+      <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\screen.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\screenbinder.h">
       <Filter>luabinding</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\particles.h">

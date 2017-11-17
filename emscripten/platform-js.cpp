@@ -1,6 +1,6 @@
 #include <platform.h>
-#include "emscripten.h"
-#include "html5.h"
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 
 std::vector<std::string> getDeviceInfo()
 {
@@ -15,7 +15,15 @@ std::vector<std::string> getDeviceInfo()
                                 
  return result;
 }
-                                        
+
+std::string getAppId(){
+	return "";
+}
+
+void getSafeDisplayArea(int &x,int &y,int &w,int &h)
+{
+}
+
 void setKeepAwake(bool awake)
 {
 }

@@ -14,6 +14,7 @@
 extern "C" {
 #endif
 
+G_API void glog(const char *buffer);
 G_API void glog_v(const char *format, ...);
 G_API void glog_d(const char *format, ...);
 G_API void glog_i(const char *format, ...);

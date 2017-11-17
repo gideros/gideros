@@ -29,6 +29,8 @@
 
 namespace g_private {
 static ShaderEngine *engine =NULL;
+static ScreenManager *screenManager = NULL;
+static SpriteProxyFactory *spritefactory=NULL;
 
 struct CommonElement
 {
@@ -163,6 +165,78 @@ public:
         glog_v("Creating texture %s. Total memory is %g KB.", name, (bufferMemory_ + textureMemory_) / 1024.0);
 
         return nextid_++;
+    }
+
+    void update(g_id gid,
+    		    int width, int height,
+                int format, int type,
+                int wrap, int filter,
+                const void *pixels)
+    {
+    	std::map<g_id, TextureElement*>::iterator iter = textureElements_.find(gid);
+
+    	if (iter != textureElements_.end())
+    	{
+    	     TextureElement* element = iter->second;
+
+    	        ShaderTexture::Format format;
+    	        switch (element->format)
+    	        {
+    	        case GTEXTURE_ALPHA:
+    	            format = ShaderTexture::FMT_ALPHA;
+    	            break;
+    	        case GTEXTURE_RGB:
+    	            format = ShaderTexture::FMT_RGB;
+    	            break;
+    	        case GTEXTURE_RGBA:
+    	            format = ShaderTexture::FMT_RGBA;
+    	            break;
+    	        case GTEXTURE_LUMINANCE:
+    	            format = ShaderTexture::FMT_Y;
+    	            break;
+    	        case GTEXTURE_LUMINANCE_ALPHA:
+    	            format = ShaderTexture::FMT_YA;
+    	            break;
+    	        }
+
+    	        ShaderTexture::Packing type;
+    	        switch (element->type)
+    	        {
+    	        case GTEXTURE_UNSIGNED_BYTE:
+    	            type = ShaderTexture::PK_UBYTE;
+    	            break;
+    	        case GTEXTURE_UNSIGNED_SHORT_5_6_5:
+    	            type = ShaderTexture::PK_USHORT_565;
+    	            break;
+    	        case GTEXTURE_UNSIGNED_SHORT_4_4_4_4:
+    	            type = ShaderTexture::PK_USHORT_4444;
+    	            break;
+    	        case GTEXTURE_UNSIGNED_SHORT_5_5_5_1:
+    	            type = ShaderTexture::PK_USHORT_5551;
+    	            break;
+    	        }
+    	        ShaderTexture::Wrap wrap=ShaderTexture::WRAP_CLAMP;
+    	        if (element->wrap==GTEXTURE_REPEAT)
+    	        	wrap=ShaderTexture::WRAP_REPEAT;
+    	        ShaderTexture::Filtering filtering=ShaderTexture::FILT_LINEAR;
+    	        if (element->filter==GTEXTURE_NEAREST)
+    	        	filtering=ShaderTexture::FILT_NEAREST;
+    	     element->_texture->updateData(format,type,element->width, element->height,pixels,wrap,filtering);
+
+    	     textureMemory_ -= element->textureSize;
+    	     element->textureSize = width * height * pixelSize(format, type);
+    	     textureMemory_ += element->textureSize;
+
+    	     if (caching_)
+    	     {
+    	    	 bufferMemory_-=element->buffer.size();
+    	    	 size_t output_length = snappy_max_compressed_length(element->textureSize);
+    	    	 element->buffer.resize(output_length);
+    	    	 snappy_compress((const char*)pixels, element->textureSize, &element->buffer[0], &output_length);
+    	    	 element->buffer.resize(output_length);
+    	    	 bufferMemory_ += element->buffer.size();
+    	     }
+    	}
     }
 
     g_bool deleteTexture(g_id id)
@@ -609,6 +683,31 @@ void gtexture_set_engine(ShaderEngine *e)
 	engine=e;
 }
 
+ShaderEngine *gtexture_get_engine()
+{
+	return engine;
+}
+
+void gtexture_set_spritefactory(SpriteProxyFactory *e)
+{
+	spritefactory=e;
+}
+
+SpriteProxyFactory *gtexture_get_spritefactory()
+{
+	return spritefactory;
+}
+
+void gtexture_set_screenmanager(ScreenManager *e)
+{
+	screenManager=e;
+}
+
+ScreenManager *gtexture_get_screenmanager()
+{
+	return screenManager;
+}
+
 void gtexture_init()
 {
     s_manager = new TextureManager;
@@ -631,6 +730,18 @@ g_id gtexture_create(int width, int height,
                              wrap, filter,
                              pixels,
                              signature, siglength);
+}
+
+void gtexture_update(g_id gid,
+					 int width, int height,
+                     int format, int type,
+                     int wrap, int filter,
+                     const void *pixels)
+{
+    return s_manager->update(gid, width, height,
+                             format, type,
+                             wrap, filter,
+                             pixels);
 }
 
 g_bool gtexture_delete(g_id id)

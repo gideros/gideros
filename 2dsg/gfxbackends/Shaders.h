@@ -67,6 +67,7 @@ public:
 	static ShaderProgram *stdTexture;
 	static ShaderProgram *stdTextureAlpha;
 	static ShaderProgram *stdTextureColor;
+	static ShaderProgram *stdTextureAlphaColor;
 	static ShaderProgram *stdParticle;
 	static ShaderProgram *stdParticles;
 	static ShaderProgram *pathShaderFillC;
@@ -87,8 +88,8 @@ public:
     void Release();
     ShaderProgram();
     virtual ~ShaderProgram() { };
-    int getSystemConstant(SystemConstant t);
-    int getConstantByName(const char *name);
+    virtual int getSystemConstant(SystemConstant t);
+    virtual int getConstantByName(const char *name);
 protected:
     int refCount;
     std::vector<ConstantDesc> uniforms;
@@ -103,7 +104,7 @@ class ShaderTexture
 {
 public:
 	virtual ~ShaderTexture() { };
-	virtual void setNative(void *externalTexture) {};
+	virtual void setNative(void *externalTexture) { G_UNUSED(externalTexture); };
 	virtual void *getNative() { return NULL; };
 	enum Format {
 		FMT_ALPHA,
@@ -126,6 +127,7 @@ public:
 		FILT_LINEAR,
 		FILT_NEAREST
 	};
+	virtual void updateData(ShaderTexture::Format format,ShaderTexture::Packing packing,int width,int height,const void *data,ShaderTexture::Wrap wrap,ShaderTexture::Filtering filtering)=0;
 };
 
 class ShaderBuffer
@@ -168,6 +170,7 @@ public:
 		StencilFunc sFunc;
 		int sRef;
 		unsigned int sMask;
+		unsigned int sWMask;
 		StencilOp sFail;
 		StencilOp dFail;
 		StencilOp dPass;
@@ -246,18 +249,29 @@ public:
 	                     const ShaderProgram::ConstantDesc *uniforms, const ShaderProgram::DataDesc *attributes)=0;
 	virtual void setViewport(int x,int y,int width,int height)=0;
 	virtual void resizeFramebuffer(int width,int height)=0;
+	enum StandardProgram {
+		STDP_BASIC,
+		STDP_COLOR,
+		STDP_TEXTURE,
+		STDP_TEXTUREALPHA,
+		STDP_TEXTURECOLOR,
+		STDP_PARTICLE,
+		STDP_PARTICLES
+	};
+	virtual ShaderProgram *getDefault(StandardProgram id);
 	//Matrices
 	virtual Matrix4 setFrustum(float l, float r, float b, float t, float n, float f);
 	virtual Matrix4 setOrthoFrustum(float l, float r, float b, float t, float n, float f);
 	virtual void setProjection(const Matrix4 p) { oglProjection=p; }
 	virtual void setViewportProjection(const Matrix4 vp, float width, float height);
-	virtual void adjustViewportProjection(Matrix4 &vp, float width, float height) {};
+	virtual void adjustViewportProjection(Matrix4 &vp, float width, float height) { G_UNUSED(vp); G_UNUSED(width); G_UNUSED(height);};
 	virtual void setModel(const Matrix4 m);
 	virtual const Matrix4 getModel() { return oglModel; }
 	virtual const Matrix4 getProjection() { return oglProjection; }
 	virtual const Matrix4 getViewportProjection() { return oglVPProjectionUncorrected; }
 	//Attributes
 	virtual void setColor(float r,float g,float b,float a);
+	virtual void getColor(float &r,float &g,float &b,float &a);
 	virtual void clearColor(float r,float g,float b,float a)=0;
 	virtual void bindTexture(int num,ShaderTexture *texture)=0;
 	virtual ShaderEngine::DepthStencil pushDepthStencil();
@@ -270,6 +284,8 @@ public:
 	virtual void setClip(int x,int y,int w,int h)=0;
 	//Internal
 	virtual void prepareDraw(ShaderProgram *program);
+	//Parameters
+	virtual void setVBOThreshold(int freeze,int unfreeze) { G_UNUSED(freeze); G_UNUSED(unfreeze); };
 };
 
 #endif

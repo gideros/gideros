@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Event" page="Event" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The objects of `Event` class contains information about an event that has occurred. `Event` objects<br />
+are passed to event listeners when an event occurs.<br />
+<br />
+Usually event objects contains specific additional information about the event that has occured. For example,<br />
+when an `Event.MOUSE_DOWN` event occurs, `x` and `y` fields contain the coordinates.<br />
+Users can create their own events and dispatch through the event mechanism.<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Event.new" page="new" shortdesc="creates a new Event object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `Event` object to be dispatched from an `EventDispatcher`.<br />
+<br />
+]]>
+    <parameter name="type" optional="false" type="string"/>
+    <return type="any"><![CDATA[New `Event` object.]]></return>
+    <return type="any"><![CDATA[New `Event` object.]]></return>
+  </method>
+  <method name="Event:getType" page="getType" shortdesc="returns the type of Event" version="Gideros 2011.6"><![CDATA[<br />
+Returns a string that represents the type of the event.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[Type of event.]]></return>
+  </method>
+  <method name="Event:getTarget" page="getTarget" shortdesc="returns the element on which the event listener was registered" version="Gideros 2011.6"><![CDATA[<br />
+Returns the element on which the event listener was registered.<br />
+<br />
+]]>
+    <return type="object"><![CDATA[Target of event.]]></return>
+  </method>
+  <method name="Event:stopPropagation" page="stopPropagation" shortdesc="stops the propagation of the current event in the scene tree hierarchy" version="Gideros 2011.6"><![CDATA[<br />
+Disables the propagation of the current event in the scene tree hierarchy.<br />
+]]></method>
+  <example name="Mouse down event example"><![CDATA[function onMouseDown(event)
+	print(event.x, event.y)
+end
+mysprite:addEventListener(Event.MOUSE_DOWN, onMouseDown)]]></example>
+  <example name="User created event"><![CDATA[local event = Event.new(&quot;myevent&quot;)
+event.data1 = &quot;12345&quot;
+event.data2 = &quot;abcde&quot;
+mydispatcher:dispatchEvent(event)]]></example>
+</object>

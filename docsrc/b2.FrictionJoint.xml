@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.FrictionJoint" page="b2FrictionJoint" parent="b2.Joint" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+Friction joint. This is used for top-down friction. It provides 2D translational friction and angular friction. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.FrictionJoint:setMaxForce" page="setMaxForce" shortdesc="sets the maximum friction force in N" version="Gideros 2011.6"><![CDATA[<br />
+Sets the maximum friction force in N. <br />
+<br />
+]]>
+    <parameter name="force" optional="false" type="number"><![CDATA[the maximum friction force in N]]></parameter>
+  </method>
+  <method name="b2.FrictionJoint:getMaxForce" page="getMaxForce" shortdesc="returns the maximum friction force in N" version="Gideros 2011.6"><![CDATA[<br />
+Returns the maximum friction force in N. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The maximum friction force in N]]></return>
+  </method>
+  <method name="b2.FrictionJoint:setMaxTorque" page="setMaxTorque" shortdesc="sets the maximum friction torque in N*m" version="Gideros 2011.6"><![CDATA[<br />
+Sets the maximum friction torque in N*m. <br />
+<br />
+]]>
+    <parameter name="torque" optional="false" type="number"><![CDATA[the maximum friction torque in N*m]]></parameter>
+  </method>
+  <method name="b2.FrictionJoint:getMaxTorque" page="getMaxTorque" shortdesc="returns the maximum friction torque in N*m" version="Gideros 2011.6"><![CDATA[<br />
+Returns the maximum friction torque in N*m. <br />
+<br />
+]]>
+    <return type="number"><![CDATA[The maximum friction torque in N*m]]></return>
+  </method>
+  <example name="Friction joint"><![CDATA[--create empty box2d body for joint
+local ground = world:createBody({})
+ground:setPosition(350, 480)
+
+--create friction joint
+local jointDef = b2.createFrictionJointDef(body, ground, 350, 200)
+local frictionJoint = world:createJoint(jointDef)
+
+--set maximum friction force to slow down the ball
+frictionJoint:setMaxForce(100)]]></example>
+</object>

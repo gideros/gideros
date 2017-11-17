@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Geolocation" page="Geolocation" parent="Object" type="gideros" version="Gideros 2012.8"><![CDATA[<br />
+The `Geolocation` class is used to configure the parameters and dispatching of location and heading related events.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <method name="Geolocation.isAvailable" page="isAvailable" shortdesc="Geolocation - does this device have the capability to determine current location?" version="Gideros 2012.8"><![CDATA[<br />
+Returns `true` if the device has the capability to determine current location and this capability is enabled, `false` otherwise.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if geolocation is available, `false` otherwise]]></return>
+  </method>
+  <method name="Geolocation.isHeadingAvailable" page="isHeadingAvailable" shortdesc="Geolocation - does this device have the capability to determine heading?" version="Gideros 2012.8"><![CDATA[<br />
+Returns `true` if the device has the capability to determine heading, `false` otherwise.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if heading is available, `false` otherwise]]></return>
+  </method>
+  <method name="Geolocation.setAccuracy" page="setAccuracy" shortdesc="of the location data" version="Gideros 2012.8"><![CDATA[<br />
+Sets the desired accuracy (in meters) of the location data. The receiver does its best to achieve the requested <br />
+accuracy. However the actual accuracy is not guaranteed. The default value is 0 (best accuracy).<br />
+<br />
+]]>
+    <parameter name="accuracy" optional="false" type="number"><![CDATA[the desired accuracy]]></parameter>
+  </method>
+  <method name="Geolocation.getAccuracy" page="getAccuracy" shortdesc="Geolocation - returns the previously set desired accuracy" version="Gideros 2012.8"><![CDATA[<br />
+Returns the previously set desired accuracy.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The previously set desired accuracy]]></return>
+  </method>
+  <method name="Geolocation.setThreshold" page="setThreshold" shortdesc="threshold" version="Gideros 2012.8"><![CDATA[<br />
+Sets the minimum distance (in meters) threshold. If threshold distance is greater than 0, <br />
+a location event will only be dispatched if the device moves by threshold. The default value <br />
+is 0 (as frequently as possible).<br />
+<br />
+]]>
+    <parameter name="threshold" optional="false" type="number"><![CDATA[the minimum distance threshold]]></parameter>
+  </method>
+  <method name="Geolocation.getThreshold" page="getThreshold" shortdesc="Geolocation - returns the previously set minimum distance threshold" version="Gideros 2012.8"><![CDATA[<br />
+Returns the previously set minimum distance threshold.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The previously set minimum distance threshold]]></return>
+  </method>
+  <method name="Geolocation:start" page="start" shortdesc="Geolocation - starts the generation of updates that report the current location and heading" version="Gideros 2012.8"><![CDATA[<br />
+Starts the generation of updates that report the current location and heading.<br />
+<br />
+]]></method>
+  <method name="Geolocation:stop" page="stop" shortdesc="Geolocation - stops the generation of updates that report the current location and heading" version="Gideros 2012.8"><![CDATA[<br />
+Stops the generation of updates that report the current location and heading.<br />
+<br />
+]]></method>
+  <method name="Geolocation:startUpdatingLocation" page="startUpdatingLocation" shortdesc="Geolocation - starts the generation of updates that report the current location" version="Gideros 2012.8"><![CDATA[<br />
+Starts the generation of updates that report the current location.<br />
+<br />
+]]></method>
+  <method name="Geolocation:stopUpdatingLocation" page="stopUpdatingLocation" shortdesc="Geolocation - stops the generation of updates that report the current location" version="Gideros 2012.8"><![CDATA[<br />
+Stops the generation of updates that report the current location.<br />
+<br />
+]]></method>
+  <method name="Geolocation:startUpdatingHeading" page="startUpdatingHeading" shortdesc="Geolocation - starts the generation of updates that report the heading" version="Gideros 2012.8"><![CDATA[<br />
+Starts the generation of updates that report the heading.<br />
+<br />
+]]></method>
+  <method name="Geolocation:stopUpdatingHeading" page="stopUpdatingHeading" shortdesc="Geolocation - stops the generation of updates that report the heading" version="Gideros 2012.8"><![CDATA[<br />
+Stops the generation of updates that report the heading.<br />
+<br />
+]]></method>
+  <method name="Geolocation.new" page="new" shortdesc="Creates new Geolocation instance" version="Gideros 2012.8"><![CDATA[Creates new Geolocation instance]]></method>
+  <event name="Event.LOCATION_UPDATE" page="Event.LOCATION_UPDATE" value="locationUpdate" version="Gideros 2011.6"><![CDATA[This event is dispatched on each user location update]]>
+    <parameter name="latitude" type="number"><![CDATA[The latitude of current user position]]></parameter>
+    <parameter name="longitude" type="number"><![CDATA[The longitude of current user position]]></parameter>
+    <parameter name="altitude" type="number"><![CDATA[The possible altitude of user]]></parameter>
+  </event>
+  <event name="Event.HEADING_UPDATE" page="Event.HEADING_UPDATE" value="headingUpdate" version="Gideros 2011.6"><![CDATA[This event is dispatched on each user heading direction update]]>
+    <parameter name="magneticHeading" type="number"><![CDATA[The value in this property represents the heading relative to the magnetic North Pole, which is different from the geographic North Pole. The value 0 means the device is pointed toward magnetic north, 90 means it is pointed east, 180 means it is pointed south, and so on.]]></parameter>
+    <parameter name="trueHeading" type="number"><![CDATA[The value in this property represents the heading relative to the geographic North Pole. The value 0 means the device is pointed toward true north, 90 means it is pointed due east, 180 means it is pointed due south, and so on. A negative value indicates that the heading could not be determined.]]></parameter>
+  </event>
+  <event name="Event.ERROR" page="Event.ERROR" value="error" version="Gideros 2011.6"><![CDATA[This event is dispatched, when there is an error and `Geolocation` can not be used currently]]></event>
+  <example name=""><![CDATA[geolocation = Geolocation.new()<br />
+<br />
+local function onLocationUpdate(event)<br />
+	print(&quot;location: &quot;, event.latitude, event.longitude, event.altitude)<br />
+end<br />
+<br />
+local function onHeadingUpdate(event)<br />
+	print(&quot;heading: &quot;, event.magneticHeading, event.trueHeading)<br />
+end<br />
+<br />
+geolocation:addEventListener(Event.LOCATION_UPDATE, onLocationUpdate)<br />
+geolocation:addEventListener(Event.HEADING_UPDATE, onHeadingUpdate)<br />
+geolocation:start()
+]]></example>
+</object>

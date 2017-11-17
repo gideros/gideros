@@ -29,6 +29,7 @@ struct ProjectProperties
 
 	void loadXml(QDomElement xml);
 	void toXml(QDomDocument doc,QDomElement xml) const;
+	static QMap<QString, QString> availablePlugins();
 
 	void clear()
 	{
@@ -66,6 +67,8 @@ struct ProjectProperties
         osx_org = "GiderosMobile";
         osx_domain = "giderosmobile.com";
         osx_bundle = "com.yourdomain.";
+        osx_signingId = "";
+        osx_installerId = "";
         osx_category = 5;
         win_org = "GiderosMobile";
         win_domain = "giderosmobile.com";
@@ -120,6 +123,8 @@ struct ProjectProperties
     QString osx_org;
     QString osx_domain;
     QString osx_bundle;
+    QString osx_signingId;
+    QString osx_installerId;
     int osx_category;
     QString win_org;
     QString win_domain;

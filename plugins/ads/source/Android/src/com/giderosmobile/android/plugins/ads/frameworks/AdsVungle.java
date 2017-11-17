@@ -2,13 +2,15 @@ package com.giderosmobile.android.plugins.ads.frameworks;
 
 import java.lang.ref.WeakReference;
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 
 import com.giderosmobile.android.plugins.ads.*;
 
 import com.vungle.publisher.AdConfig;
-import com.vungle.publisher.EventListener;
+import com.vungle.publisher.VungleAdEventListener;
+import com.vungle.publisher.VungleInitListener;
 import com.vungle.publisher.VunglePub;
 
 
@@ -18,6 +20,7 @@ public class AdsVungle implements AdsInterface {
 	private AdsManager mngr;
 	private static AdsVungle me;// get the VunglePub instance
 	final com.vungle.publisher.VunglePub vunglePub = com.vungle.publisher.VunglePub.getInstance();
+	private String user;
 
 	public void onCreate(WeakReference<Activity> activity)
 	{
@@ -26,42 +29,31 @@ public class AdsVungle implements AdsInterface {
 		mngr = new AdsManager();
 	}
 
-	private final EventListener vungleListener = new EventListener() {
+	private final VungleAdEventListener vungleListener = new VungleAdEventListener() {
 		@Override
-		public void onVideoView(boolean isCompletedView, int watchedMillis, int videoDurationMillis) {
-			// Called each time a video completes.  isCompletedView is true if >= 80% of the video was watched.
-			if (isCompletedView) {
-				Ads.adActionEnd(this, "");
+		public void onAdEnd(@NonNull String s, boolean wasViewed, boolean wasClicked) {
+			if (wasViewed) {
+				Ads.adActionEnd(this, s);
 			} else {
-				Ads.adDismissed(this, "");
+				Ads.adDismissed(this, s);
 			}
 		}
 
 		@Override
-		public void onAdStart() {
-			// Called before playing an ad.
-			Ads.adDisplayed(this, "");
+		public void onAdStart(@NonNull String s) {
+			Ads.adDisplayed(this, s);
 		}
 
 		@Override
-		public void onAdUnavailable(String reason) {
-			// Called when VunglePub.playAd() was called but no ad is available to show to the user.
+		public void onUnableToPlayAd(@NonNull String s, String reason) {
 			Ads.adError(this, reason);
 		}
 
 		@Override
-		public void onAdEnd(boolean wasCallToActionClicked) {
-			// Called when the user leaves the ad and control is returned to your application.
-			if (wasCallToActionClicked) {
-				Ads.adActionEnd(this, "video");
-			}
-		}
-
-		@Override
-		public void onAdPlayableChanged(boolean isAdPlayable) {
-			// Called when ad playability changes.
+		public void onAdAvailabilityUpdate(@NonNull String s, boolean isAdPlayable) {
 			if (isAdPlayable) {
-				Ads.adReceived(this, String.valueOf(isAdPlayable));
+				Ads.adReceived(this, s);
+				mngr.load(s);
 			}
 		}
 	};
@@ -89,23 +81,41 @@ public class AdsVungle implements AdsInterface {
 
 	public void setKey(final Object parameters){
 		SparseArray<String> param = (SparseArray<String>)parameters;
-		vunglePub.init(sActivity.get(), param.get(0));
-		vunglePub.setEventListeners(vungleListener);
+		if (param.size()>1)
+			user=param.get(1);
+		String[] placements=new String[] { "Default" };
+		if (param.size()>2)
+		{
+			placements=new String[param.size()-2];
+			for (int k=0;k<placements.length;k++)
+				placements[k]=param.get(k+2);
+		}
+		vunglePub.init(sActivity.get(), param.get(0), placements, new VungleInitListener() {
+			@Override
+			public void onSuccess() {
+			}
+
+			@Override
+			public void onFailure(Throwable throwable) {
+				Ads.adError(this, throwable.getMessage());
+			}
+		});
+		vunglePub.clearAndSetEventListeners(vungleListener);
 	}
 
-	private void playAdIncentivized() {
+	private void playAd(String s,String user) {
 		// create a new AdConfig object
 		final AdConfig overrideConfig = new AdConfig();
 
 		// set incentivized option on
-		overrideConfig.setIncentivized(true);
+		overrideConfig.setIncentivizedUserId(user);
 		overrideConfig.setIncentivizedCancelDialogTitle("Careful!");
 		overrideConfig.setIncentivizedCancelDialogBodyText("If the video isn't completed you won't get your reward! Are you sure you want to close early?");
 		overrideConfig.setIncentivizedCancelDialogCloseButtonText("Close");
 		overrideConfig.setIncentivizedCancelDialogKeepWatchingButtonText("Keep Watching");
 
 		// the overrideConfig object will only affect this ad play.
-		vunglePub.playAd(overrideConfig);
+		vunglePub.playAd(s,overrideConfig);
 	}
 
 	//load an Ad
@@ -113,12 +123,14 @@ public class AdsVungle implements AdsInterface {
 	{
 		final SparseArray<String> param = (SparseArray<String>)parameters;
 		final String type = param.get(0);
-		if(type.equals("video"))
-		{
+		String user=this.user;
+		if (param.size()>1)
+			user=param.get(1);
+		final String adUser=user;
 			mngr.set(VunglePub.class, type, new AdsStateChangeListener(){
 				@Override
 				public void onShow() {
-					vunglePub.playAd();
+					playAd(type,adUser);
 				}
 				@Override
 				public void onDestroy() {}
@@ -127,30 +139,7 @@ public class AdsVungle implements AdsInterface {
 				@Override
                 public void onRefresh() {}
 			});
-			mngr.load(type);
-		}
-		else if(type.equals("v4vc"))
-		{
-			mngr.set(VunglePub.class, type, new AdsStateChangeListener(){
-
-				@Override
-				public void onShow() {
-					playAdIncentivized();
-				}
-
-				@Override
-				public void onDestroy() {}
-				@Override
-				public void onHide() {}
-				@Override
-                public void onRefresh() {}
-			});
-			mngr.load(type);
-		}
-		else
-		{
-			Ads.adError(this, "Unknown type: " + type);
-		}
+		vunglePub.loadAd(type);
 	}
 
 	public void showAd(final Object parameters)

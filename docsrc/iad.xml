@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="iad" page="iad" parent="" type="plugin" version="Gideros 2012.8"><![CDATA[<br />
+iAd module for iOS allows you to use iAd framework that was introduced in iOS 4.0. To load the iAd module, call `require &quot;iad&quot;`. After loading iAd module, `iad` table stores all <br />
+classes and functions related to iAd framework.<br />
+<br />
+]]>
+  <platform>ios</platform>
+  <method name="iad.isAvailable" page="isAvailable" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Returns `true` if iAd framework is available for this platform, `false` otherwise. For iOS 4.0 , this function returns `true`.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if iAd framework is available for this platform, `false` otherwise]]></return>
+  </method>
+</object>

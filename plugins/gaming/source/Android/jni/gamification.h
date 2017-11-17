@@ -188,6 +188,7 @@ G_API void game_logout(const char *game);
 
 G_API void game_reportScore(const char *game, const char *id, long score, int immediate);
 G_API void game_showAchievements(const char *game);
+G_API void game_getPlayerInfo(const char *game);
 G_API void game_showLeaderboard(const char *game, const char *id);
 G_API void game_reportAchievement(const char *game, const char *id, double steps, int immediate);
 G_API void game_revealAchievement(const char *game, const char *id, int immediate);

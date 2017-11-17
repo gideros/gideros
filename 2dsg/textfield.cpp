@@ -3,66 +3,26 @@
 #include <utf8.h>
 #include <application.h>
 
-TextField::TextField(Application *application) : TextFieldBase(application)
+TextField::TextField(Application *application, BMFontBase* font, const char* text, const char* sample, FontBase::TextLayoutParameters *params) : TextFieldBase(application)
 {
-	font_ = 0;
+	if (text) {
+		text_ = text;
+	}
 
-	setTextColor(0x000000);
-
-	letterSpacing_ = 0;
-
-    sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
-
-	createGraphics();
-}
-
-TextField::TextField(Application *application, BMFontBase* font) : TextFieldBase(application)
-{
 	font_ = font;
 	if (font_ != 0)
 		font_->ref();
 
-	setTextColor(0x000000);
-
-	letterSpacing_ = 0;
 
     sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
 
-	createGraphics();
-}
+	if (sample)
+		setSample(sample);
 
-TextField::TextField(Application *application, BMFontBase* font, const char* text) : TextFieldBase(application)
-{
-    text_ = text;
-    updateWide();
-
-    font_ = font;
-    if (font_ != 0)
-        font_->ref();
+	if (params)
+        layout_=*params;
 
     setTextColor(0x000000);
-
-    letterSpacing_ = 0;
-
-    sminx = 0, sminy = 0, smaxx = 0, smaxy = 0;
-
-    createGraphics();
-}
-
-TextField::TextField(Application *application, BMFontBase* font, const char* text, const char* sample) : TextFieldBase(application)
-{
-	text_ = text;
-	updateWide();
-
-	font_ = font;
-	if (font_ != 0)
-		font_->ref();
-
-	setTextColor(0x000000);
-
-	letterSpacing_ = 0;
-
-    setSample(sample);
 }
 
 /*
@@ -93,7 +53,6 @@ void TextField::setText(const char* text)
 		return;
 
 	text_ = text;
-	updateWide();
 
 	createGraphics();
 }
@@ -140,14 +99,14 @@ unsigned int TextField::textColor() const
 
 void TextField::setLetterSpacing(float letterSpacing)
 {
-	letterSpacing_ = letterSpacing;
+	layout_.letterSpacing = letterSpacing;
 	
 	createGraphics();
 }
 
 float TextField::letterSpacing() const
 {
-	return letterSpacing_;
+    return layout_.letterSpacing;
 }
 
 float TextField::lineHeight() const
@@ -167,13 +126,19 @@ void TextField::setSample(const char* sample)
 
     graphicsBase_.clear();
 
-    size_t wsize = utf8_to_wchar(sample_.c_str(), sample_.size(), NULL, 0, 0);
-    wsample_.resize(wsize);
-    utf8_to_wchar(sample_.c_str(), sample_.size(), &wsample_[0], wsize, 0);
-
-    font_->drawText(&graphicsBase_, wsample_.c_str(), r_, g_, b_, letterSpacing_, false, 0, 0);
+    FontBase::TextLayoutParameters empty;
+    font_->drawText(&graphicsBase_, sample, r_, g_, b_, &empty, false, 0, 0);
     float minx, miny, maxx, maxy;
-    graphicsBase_.getBounds(&minx, &miny, &maxx, &maxy);
+    minx = 1e30;    miny = 1e30;    maxx = -1e30;    maxy = -1e30;
+	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
+	{
+		float lminx_, lminy_, lmaxx_, lmaxy_;
+		(*it).getBounds(&lminx_, &lminy_, &lmaxx_, &lmaxy_);
+		minx = std::min(minx, lminx_);
+		miny = std::min(miny, lminy_);
+		maxx = std::max(maxx, lmaxx_);
+		maxy = std::max(maxy, lmaxy_);
+	}
 
     sminx = (int) minx;
     sminy = (int) miny;
@@ -190,15 +155,36 @@ const char* TextField::sample() const
 
 void TextField::createGraphics()
 {
+	scaleChanged(); //Mark current scale as graphics scale
     if (font_ == NULL)
         graphicsBase_.clear();
     else
-        font_->drawText(&graphicsBase_, wtext_.c_str(), r_, g_, b_, letterSpacing_, !sample_.empty(), sminx, sminy);
+        font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, &layout_, !sample_.empty(), sminx, sminy);
 
-    graphicsBase_.getBounds(&minx_, &miny_, &maxx_, &maxy_);
+    minx_ = 1e30;    miny_ = 1e30;    maxx_ = -1e30;    maxy_ = -1e30;
+	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
+	{
+		float lminx_, lminy_, lmaxx_, lmaxy_;
+		(*it).getBounds(&lminx_, &lminy_, &lmaxx_, &lmaxy_);
+		minx_ = std::min(minx_, lminx_);
+		miny_ = std::min(miny_, lminy_);
+		maxx_ = std::max(maxx_, lmaxx_);
+		maxy_ = std::max(maxy_, lmaxy_);
+	}
 }
 
 void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
-	graphicsBase_.draw(shader_);
+	if (scaleChanged()) createGraphics();
+	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
+		(*it).draw(shader_);
+}
+
+void TextField::setLayout(FontBase::TextLayoutParameters *l)
+{
+	if (l)
+	{
+		layout_=*l;
+		createGraphics();
+	}
 }

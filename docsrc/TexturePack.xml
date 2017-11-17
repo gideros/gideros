@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="TexturePack" page="TexturePack" parent="TextureBase" type="gideros" version="Gideros 2011.6"><![CDATA[The `TexturePack` class specifies a texture pack (or texture atlas). A texture atlas is a large image which contains many smaller sub-images.<br />
+Gideros supports dynamic creation of texture atlases and pre-packed texture atlasses by using &quot;Gideros Texture Packer&quot; tool.<br />
+<br />
+<br />
+&lt;h3&gt;Dynamic Creation of Texture Packs&lt;/h3&gt;<br />
+<br />
+To create a texture pack dynamically (at run-time), create `TexturePack` object with a table of file names of textures.<br />
+<br />
+&lt;pre&gt;&lt;code&gt;local pack = TexturePack.new({&quot;1.png&quot;, &quot;2.png&quot;, &quot;3.png&quot;, &quot;4.png&quot;)}&lt;/code&gt;&lt;/pre&gt;<br />
+&lt;h3&gt;Static Creation of Texture Packs&lt;/h3&gt;<br />
+<br />
+To create a pre-packed texture atlas, use &quot;Gideros Texture Packer&quot; tool:<br />
+<br />
+![images/texture_packer.png]
+<br />
+<br />
+This tool exports two files: A `.txt` file that specifes the positions of texture regions and a `.png` file of packed texture.<br />
+Use these two files to create texture pack:<br />
+&lt;pre&gt;&lt;code&gt;local pack = TexturePack.new(&quot;pack.txt&quot;, &quot;pack.png&quot;)&lt;/code&gt;&lt;/pre&gt;<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="TexturePack.new" page="new" shortdesc="creates a new TexturePack object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `TexturePack` object. This function creates the texture pack at runtime.<br />
+<br />
+]]>
+    <parameter name="textures" optional="false" type="table"><![CDATA[file names of textures.]]></parameter>
+    <parameter name="padding" optional="false" type="number"><![CDATA[the spacing between textures in pixels]]></parameter>
+    <parameter name="filtering" optional="false" type="boolean, default = false"><![CDATA[Whether or not the texture is filtered.]]></parameter>
+    <parameter name="options" optional="false" type="table, optional"><![CDATA[A table that specifies optional paramaters. Currently, &quot;transparentColor&quot; and &quot;format&quot fields are supported.]]></parameter>
+  </method>
+  <method name="TexturePack.new" page="new2" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `TexturePack` object. This function loads the pre-packed texture atlas created by &quot;Gideros Texture Packer&quot; tool.<br />
+<br />
+]]>
+    <parameter name="txtfile" optional="false" type="string"/>
+    <parameter name="imagefile" optional="false" type="string"/>
+    <parameter name="filtering" optional="false" type="boolean, default = false"><![CDATA[Whether or not the texture is filtered.]]></parameter>
+    <parameter name="options" optional="false" type="table, optional"><![CDATA[A table that specifies optional paramaters. Currently, &quot;transparentColor&quot; and &quot;format&quot fields are supported.]]></parameter>
+  </method>
+  <method name="TexturePack:getTextureRegion" page="getTextureRegion" shortdesc="returns the texture region of texture pack" version="Gideros 2011.6"><![CDATA[<br />
+Returns the texture region of texture pack.<br />
+<br />
+]]>
+    <parameter name="texturename" optional="false" type="string"/>
+    <return type="TextureRegion"><![CDATA[TextureRegion by specified name]]></return>
+    <example><![CDATA[local pack = TexturePack.new({&quot;gfx/1.png&quot;, &quot;gfx/2.png&quot;, &quot;gfx/3.png&quot;, &quot;gfx/4.png&quot;})<br />
+<br />
+local region1 = pack:getTextureRegion(&quot;gfx/1.png&quot;)<br />
+local region2 = pack:getTextureRegion(&quot;gfx/2.png&quot;)<br />
+local region3 = pack:getTextureRegion(&quot;gfx/3.png&quot;)<br />
+local region4 = pack:getTextureRegion(&quot;gfx/4.png&quot;)<br />
+]]></example>
+  </method>
+</object>

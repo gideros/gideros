@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Timer" page="Timer" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The `Timer` class is used to execute a code at specified intervals. The listener functions are registered<br />
+through `Event.TIMER` and `Event.TIMER_COMPLETE` events.<br />]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Timer.new" page="new" shortdesc="creates a new Timer object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `Timer` object with the specified delay and repeatCount states.<br />
+<br />
+]]>
+    <parameter name="delay" optional="false" type="any"><![CDATA[The time interval between timer events in milliseconds.]]></parameter>
+    <parameter name="repeatCount" optional="false" type="default = 0"><![CDATA[The number of repetitions. A value of 0 runs the timer infinitely. If nonzero, the timer runs the specified number of times and then stops.]]></parameter>
+  </method>
+  <method name="Timer:start" page="start" shortdesc="starts the timer" version="Gideros 2011.6"><![CDATA[<br />
+Starts the timer.<br />
+<br />
+]]></method>
+  <method name="Timer:stop" page="stop" shortdesc="stops the timer" version="Gideros 2011.6"><![CDATA[<br />
+Stops the timer. This function doesn&#039;t change the `currentCount` property.<br />
+<br />
+]]></method>
+  <method name="Timer:reset" page="reset" shortdesc="stops the timer and sets the currentCount property to 0" version="Gideros 2011.6"><![CDATA[<br />
+Stops the timer and sets the `currentCount` property to 0.<br />
+<br />
+]]></method>
+  <method name="Timer:getDelay" page="getDelay" shortdesc="returns the time interval between timer events in milliseconds" version="Gideros 2011.6"><![CDATA[<br />
+Returns the time interval between timer events in milliseconds.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The time interval between timer events in milliseconds.]]></return>
+  </method>
+  <method name="Timer:getCurrentCount" page="getCurrentCount" shortdesc="returns the current trigger count of the timer" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current trigger count of the timer. It starts with 0 and if it reaches `repeatCount` value, timer stops.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current repeat count.]]></return>
+  </method>
+  <method name="Timer:getRepeatCount" page="getRepeatCount" shortdesc="returns the number of repetitions the timer will make" version="Gideros 2011.6"><![CDATA[<br />
+Returns the number of repetitions the timer will make. A value of 0 means the timer runs infinitely. If nonzero, the timer runs the specified number of times and then stops.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The number of repetitions.]]></return>
+  </method>
+  <method name="Timer:isRunning" page="isRunning" shortdesc="returns the current running status of timer" version="Gideros 2011.6"><![CDATA[<br />
+Returns the current running status of timer.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if the timer is running, `false` otherwise.]]></return>
+  </method>
+  <method name="Timer:setDelay" page="setDelay" shortdesc="sets the time interval between timer events in milliseconds" version="Gideros 2011.6"><![CDATA[<br />
+Sets the time interval between timer events in milliseconds.<br />
+<br />
+]]>
+    <parameter name="delay" optional="false" type="number"><![CDATA[The time interval between timer events in milliseconds.]]></parameter>
+  </method>
+  <method name="Timer:setRepeatCount" page="setRepeatCount" shortdesc="sets the number of repetitions the timer will make" version="Gideros 2011.6"><![CDATA[<br />
+Sets the number of repetitions the timer will make. A value of 0 means the timer runs infinitely. If nonzero, the timer runs the specified number of times and then stops.<br />
+<br />
+]]>
+    <parameter name="repeatCount" optional="false" type="number"><![CDATA[the number of repetitions the timer will make]]></parameter>
+  </method>
+  <method name="Timer.delayedCall" page="delayedCall" shortdesc="delayed call a function after a set amount of time" version="Gideros 2011.6"><![CDATA[<br />
+Provides a simple way to call a function after a set amount of time. This function returns the<br />
+`Timer` object created inside.<br />
+<br />
+]]>
+    <parameter name="delay" optional="false" type="number"><![CDATA[Delay in miliseconds before the function is called]]></parameter>
+    <parameter name="func" optional="false" type="function"><![CDATA[Function to call]]></parameter>
+    <parameter name="data" optional="true" type="any"><![CDATA[An optional data parameter that is passed as a first argument to the function]]></parameter>
+    <return type="Timer"><![CDATA[The `Timer` object]]></return>
+  </method>
+  <method name="Timer.pauseAll" page="pauseAll" shortdesc="pause all timers" version="Gideros 2011.6"><![CDATA[<br />
+Pause all timers. Suitable for temporarily pausing all timers when application is paused.<br />
+<br />
+]]></method>
+  <method name="Timer.resumeAll" page="resumeAll" shortdesc="resume all timers" version="Gideros 2011.6"><![CDATA[<br />
+Resume all timers.<br />
+<br />
+]]></method>
+  <method name="Timer.stopAll" page="stopAll" shortdesc="stop all timers" version="Gideros 2011.6"><![CDATA[<br />
+Stop all timers.<br />
+<br />
+]]></method>
+  <event name="Event.TIMER" page="Event.TIMER" value="timer" version="Gideros 2011.6"><![CDATA[This event is dispatched on every `Timer` repeat until timer is stopped or the provided amount of repeat count is reached]]></event>
+  <event name="Event.TIMER_COMPLETE" page="Event.TIMER_COMPLETE" value="timerComplete" version="Gideros 2011.6"><![CDATA[This event is dispatched only when `Timer` reached the provided amount of repeat count.]]></event>
+</object>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.DebugDraw" page="b2DebugDraw" parent="Sprite" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+The `b2.DebugDraw` class is used to provide debug drawing of physical entities in your application. <br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <constant name="b2.DebugDraw.CENTER_OF_MASS_BIT" page="b2.DebugDraw.CENTER_OF_MASS_BIT" value="16" version="Gideros 2011.6"><![CDATA[Draw center of the mass of bodies]]></constant>
+  <constant name="b2.DebugDraw.PAIR_BIT" page="b2.DebugDraw.PAIR_BIT" value="8" version="Gideros 2011.6"><![CDATA[Draw pair information]]></constant>
+  <constant name="b2.DebugDraw.AABB_BIT" page="b2.DebugDraw.AABB_BIT" value="4" version="Gideros 2011.6"><![CDATA[Draw bounding boxes of bodies]]></constant>
+  <constant name="b2.DebugDraw.JOINT_BIT" page="b2.DebugDraw.JOINT_BIT" value="2" version="Gideros 2011.6"><![CDATA[Draw joint information]]></constant>
+  <constant name="b2.DebugDraw.SHAPE_BIT" page="b2.DebugDraw.SHAPE_BIT" value="1" version="Gideros 2011.6"><![CDATA[Draw shapes of bodies]]></constant>
+  <method name="b2.DebugDraw.new" page="new" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `b2.DebugDraw` instance.<br />
+<br />
+]]></method>
+  <method name="b2.DebugDraw:setFlags" page="setFlags" shortdesc="sets the debug drawing flags" version="Gideros 2011.6"><![CDATA[<br />
+Sets the debug drawing flags. These flags are available:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;`b2.DebugDraw.SHAPE_BIT`&lt;/li&gt;<br />
+&lt;li&gt;`b2.DebugDraw.JOINT_BIT`&lt;/li&gt;<br />
+&lt;li&gt;`b2.DebugDraw.AABB_BIT`&lt;/li&gt;<br />
+&lt;li&gt;`b2.DebugDraw.PAIR_BIT`&lt;/li&gt;<br />
+&lt;li&gt;`b2.DebugDraw.CENTER_OF_MASS_BIT`&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+`b2.DebugDraw.SHAPE_BIT` is set by default. <br />
+<br />
+Because Lua doesn&#039;t support bitwise operations by default, you can use ` ` operator to combine flags.<br />
+<br />
+]]>
+    <parameter name="flags" optional="false" type="number"><![CDATA[debug draw flags]]></parameter>
+    <example><![CDATA[local debugDraw = b2.DebugDraw.new()<br />
+debugDraw:setFlags(b2.DebugDraw.SHAPE_BIT   b2.DebugDraw.JOINT_BIT)<br />
+]]></example>
+  </method>
+  <method name="b2.DebugDraw:getFlags" page="getFlags" shortdesc="returns the debug drawing flags" version="Gideros 2011.6"><![CDATA[<br />
+Returns the debug drawing flags.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The debug drawing flags]]></return>
+  </method>
+  <method name="b2.DebugDraw:appendFlags" page="appendFlags" shortdesc="append flags to the current flags" version="Gideros 2011.6"><![CDATA[<br />
+Append flags to the current flags.<br />
+<br />
+]]>
+    <parameter name="flags" optional="false" type="number"><![CDATA[debug draw flags]]></parameter>
+  </method>
+  <method name="b2.DebugDraw:clearFlags" page="clearFlags" shortdesc="clear flags from the current flags" version="Gideros 2011.6"><![CDATA[<br />
+Clear flags from the current flags.<br />
+<br />
+]]>
+    <parameter name="flags" optional="false" type="number"><![CDATA[debug draw flags]]></parameter>
+  </method>
+  <example name=""><![CDATA[local debugDraw = b2.DebugDraw.new()<br />
+world:setDebugDraw(debugDraw)<br />
+stage:addChild(debugDraw)]]></example>
+</object>

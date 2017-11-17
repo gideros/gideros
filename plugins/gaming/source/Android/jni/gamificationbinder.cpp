@@ -123,6 +123,11 @@ public:
 		game_showAchievements(type_);
 	}
 	
+	void getPlayerInfo()
+	{
+		game_getPlayerInfo(type_);
+	}
+
 	void showLeaderboard(const char *id)
 	{
 		game_showLeaderboard(type_, id);
@@ -699,6 +704,13 @@ static int showAchievements(lua_State *L)
     return 0;
 }
 
+static int getPlayerInfo(lua_State *L)
+{
+	Game *game = getInstance(L, 1);
+	game->getPlayerInfo();
+    return 0;
+}
+
 static int reportAchievement(lua_State* L)
 {
 	Game *game = getInstance(L, 1);
@@ -851,6 +863,7 @@ static int loader(lua_State *L)
 		{"showLeaderboard", showLeaderboard},
         {"reportScore", reportScore},
         {"showAchievements", showAchievements},
+        {"getPlayerInfo", getPlayerInfo},
         {"reportAchievement", reportAchievement},
         {"incrementAchievement", incrementAchievement},
         {"revealAchievement", revealAchievement},

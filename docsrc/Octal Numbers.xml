@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Octal Numbers" page="octal" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
+Octal number representation.<br /><br />
+
+<b>0o</b>OctalPattern &emsp; Enter a number in octal format.<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+
+  <example name="Simple examples"><![CDATA[<br /> 
+a=0o10 -- a = 8
+a=0o112 -- a = 74
+]]></example>
+
+</object>

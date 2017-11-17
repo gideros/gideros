@@ -18,8 +18,16 @@
 
 #include "addnewfiledialog.h"
 #include "projectpropertiesdialog.h"
+#include "pluginselector.h"
+#include "plugineditor.h"
 #include "qtutils.h"
 
+#define NODETYPE_PROJECT	1
+#define NODETYPE_FILE		2
+#define NODETYPE_FOLDER		4
+#define NODETYPE_PLUGINS	8
+#define NODETYPE_FILES		16
+#define NODETYPE_PLUGIN		32
 
 LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 	: QTreeWidget(parent)
@@ -41,6 +49,9 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 
 	importToLibraryAction_ = new QAction(tr("Add Existing Files..."), this);
 	connect(importToLibraryAction_, SIGNAL(triggered()), this, SLOT(importToLibrary()));
+
+	importFolderAction_ = new QAction(tr("Add folder content..."), this);
+	connect(importFolderAction_, SIGNAL(triggered()), this, SLOT(importFolder()));
 
 //	newFontAction_ = new QAction(tr("New Font..."), this);
 //	connect(newFontAction_, SIGNAL(triggered()), this, SLOT(newFont()));
@@ -84,8 +95,12 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
 #else
     showInFindeAction_ = new QAction(tr("Show in Finder"), this);
 #endif
+	connect(showInFindeAction_, SIGNAL(triggered()), this, SLOT(showInFinder()));
 
-    connect(showInFindeAction_, SIGNAL(triggered()), this, SLOT(showInFinder()));
+	addPluginAction_ = new QAction(tr("Add plugin"), this);
+	connect(addPluginAction_, SIGNAL(triggered()), this, SLOT(addPlugin()));
+	propPluginAction_ = new QAction(tr("Properties..."), this);
+	connect(propPluginAction_, SIGNAL(triggered()), this, SLOT(propPlugin()));
 
     setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, SIGNAL(customContextMenuRequested  (const QPoint&)),
@@ -114,50 +129,39 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 {
 	QMenu menu(this);
 
-	bool file = false;
-	bool folder = false;
-	bool project = false;
+	int nodetype=0;
 
 	int size = selectedItems().size();
 
 	for (int i = 0; i < selectedItems().size(); ++i)
 	{
-		if (selectedItems()[i]->parent() == NULL)
-		{
-			project = true;
-		}
-		else
-		{
-			QString fileName = selectedItems()[i]->data(0, Qt::UserRole).toMap()["filename"].toString();
-
-			if (fileName.isEmpty() == true)
-				folder = true;
-			else
-				file = true;
-		}
+		QMap<QString, QVariant> data=selectedItems()[i]->data(0, Qt::UserRole).toMap();
+		nodetype |=data ["nodetype"].toInt();
 	}
 
     //add "show in finder" in the first position just as Xcode did
-    if (size == 1 && (file || project))
-    {
+    if (size == 1 && ((nodetype&NODETYPE_PROJECT) || (nodetype&NODETYPE_FILE)))
         menu.addAction(showInFindeAction_);
-    }
 
-	if (size == 1 && (folder || project))
+    if (size == 1 && (nodetype&NODETYPE_PLUGINS))
+        menu.addAction(addPluginAction_);
+
+	if (size == 1 && ((nodetype&NODETYPE_FOLDER) || (nodetype&NODETYPE_FILES)))
 	{
 		menu.addAction(addNewFileAction_);
 		menu.addAction(importToLibraryAction_);
 		menu.addAction(newFolderAction_);
+		menu.addAction(importFolderAction_);
 	}
 
-	if (size > 0 && !project)
+	if (size > 0 && (nodetype&(NODETYPE_FILE|NODETYPE_FOLDER|NODETYPE_PLUGIN)))
 		menu.addAction(removeAction_);
-	if (size == 1 && folder)
+	if (size == 1 && (nodetype&NODETYPE_FOLDER))
 		menu.addAction(renameAction_);
-	if (size == 1 && (folder || project))
+	if (size == 1 && ((nodetype&NODETYPE_FOLDER) || (nodetype&NODETYPE_FILES)))
 		menu.addAction(sortAction_);
 
-	if (size == 1 && file)
+	if (size == 1 && (nodetype&NODETYPE_FILE))
 	{
 		menu.addAction(insertIntoDocumentAction_);
 
@@ -189,8 +193,10 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
         menu.addAction(excludeFromEncryptionAction_);
 	}
 
-	if (size == 1 && project)
+	if (size == 1 && (nodetype&NODETYPE_PROJECT))
 		menu.addAction(projectPropertiesAction_);
+	if (size == 1 && (nodetype&NODETYPE_PLUGIN))
+		menu.addAction(propPluginAction_);
 
 	if (!menu.isEmpty())
 		menu.exec(QCursor::pos());
@@ -232,6 +238,77 @@ void LibraryTreeWidget::importToLibrary()
 	checkModification();
 }
 
+void LibraryTreeWidget::importFolder()
+{
+	QTreeWidgetItem* root = invisibleRootItem();
+
+	if (selectedItems().empty() == false)
+		root = selectedItems().front();
+
+	QString path = QFileInfo(projectFileName_).path();
+	QDir dir(path);
+
+	QString basedir = QFileDialog::getExistingDirectory(this, tr("Import folder content"), path);
+	if(basedir.isEmpty())
+		return;
+
+	struct _Folder {
+		QString basedir;
+		QTreeWidgetItem *root;
+		_Folder(QString d,QTreeWidgetItem *i) : basedir(d), root(i) { };
+	};
+
+	std::vector<_Folder> stack;
+	stack.push_back(_Folder(basedir,root));
+
+	while (stack.size()>0)
+	{
+		_Folder f=stack.back();
+		stack.pop_back();
+		basedir=f.basedir;
+		root=f.root;
+		QFileInfoList entryList=QDir(basedir).entryInfoList( QStringList() << "*", QDir::Dirs|QDir::Files|QDir::NoSymLinks|QDir::NoDotAndDotDot|QDir::Readable );
+
+		QFileInfoList::Iterator it = entryList.begin();
+		while(it != entryList.end())
+		{
+			if ((*it).isFile())
+			{
+				QString fileName = dir.relativeFilePath((*it).absoluteFilePath());
+
+				if (isFileAlreadyImported(fileName))
+				{
+					//QMessageBox::information(this, tr("Gideros"), tr("The file '%1' cannot be added to the library because it is already a member of the library.").arg(fileName));
+				}
+				else
+				{
+					QTreeWidgetItem *item = createFileItem(fileName);
+					if (root == invisibleRootItem())
+						root->addChild(item);
+					else
+						root->insertChild(0, item);
+					root->setExpanded(true);
+				}
+			}
+			else if ((*it).isDir())
+			{
+				QTreeWidgetItem *item = createFolderItem((*it).fileName());
+
+				root->setExpanded(true);
+				if (root == invisibleRootItem())
+					root->addChild(item);
+				else
+					root->insertChild(0, item);
+
+				stack.push_back(_Folder((*it).filePath(),item));
+			}
+
+			++it;
+		}
+	}
+	checkModification();
+}
+
 /*
 void LibraryTreeWidget::newFont()
 {
@@ -264,6 +341,69 @@ void LibraryTreeWidget::showInFinder()
     doShowInFinder(path);
 }
 
+void LibraryTreeWidget::addPlugin()
+{
+    if (selectedItems().empty() == true)
+        return;
+	QTreeWidgetItem* pluginFolder = selectedItems()[0];
+    PluginSelector dialog(properties_.plugins, this);
+	if (dialog.exec() == QDialog::Accepted)
+	{
+		QString plugin=dialog.selection();
+		if (!plugin.isEmpty())
+		{
+			ProjectProperties::Plugin m;
+			bool found=false;
+			for (QSet<ProjectProperties::Plugin>::iterator it=properties_.plugins.begin();it!=properties_.plugins.end(); it++)
+			{
+				if ((*it).name==plugin)
+				{
+					m=*it;
+					properties_.plugins.erase(it);
+					found=true;
+					break;
+				}
+			}
+			if (!found)
+				m.name=plugin;
+			m.enabled=true;
+			properties_.plugins.insert(m);
+			pluginFolder->addChild(createPluginItem(plugin));
+		}
+	}
+}
+
+void LibraryTreeWidget::propPlugin()
+{
+    if (selectedItems().empty() == true)
+        return;
+	QMap<QString, QVariant> data=selectedItems()[0]->data(0, Qt::UserRole).toMap();
+	int nodetype = data ["nodetype"].toInt();
+	QString fileName = data["filename"].toString();
+
+	if (nodetype==NODETYPE_PLUGIN) {
+
+		ProjectProperties::Plugin m;
+		bool found=false;
+		for (QSet<ProjectProperties::Plugin>::iterator it=properties_.plugins.begin();it!=properties_.plugins.end(); it++)
+		{
+			if ((*it).name==selectedItems()[0]->text(0))
+			{
+				m=*it;
+				properties_.plugins.erase(it);
+				found=true;
+				break;
+			}
+		}
+		if (found)
+		{
+		    PluginEditor dialog(&m, this);
+			dialog.exec();
+			properties_.plugins.insert(m);
+		}
+	}
+}
+
 void LibraryTreeWidget::remove()
 {
 	QList<QTreeWidgetItem*> selectedItems = this->selectedItems();
@@ -285,7 +425,30 @@ void LibraryTreeWidget::remove()
 		QTreeWidgetItem* item = stack.top();
 		stack.pop();
 
-		QString fileName = item->data(0, Qt::UserRole).toMap()["filename"].toString();
+		QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
+		int nodetype = data ["nodetype"].toInt();
+		QString fileName = data["filename"].toString();
+
+		if (nodetype==NODETYPE_PLUGIN) {
+
+			ProjectProperties::Plugin m;
+			bool found=false;
+			for (QSet<ProjectProperties::Plugin>::iterator it=properties_.plugins.begin();it!=properties_.plugins.end(); it++)
+			{
+				if ((*it).name==item->text(0))
+				{
+					m=*it;
+					properties_.plugins.erase(it);
+					found=true;
+					break;
+				}
+			}
+			if (found)
+			{
+				m.enabled=false;
+				properties_.plugins.insert(m);
+			}
+		}
 
 		QFileInfo fileInfo(fileName);
 
@@ -341,9 +504,13 @@ void LibraryTreeWidget::newFolder()
 
 void LibraryTreeWidget::onItemDoubleClicked(QTreeWidgetItem* item, int column)
 {
-	QString fileName = item->data(0, Qt::UserRole).toMap()["filename"].toString();
+	QMap<QString, QVariant> data=item->data(0, Qt::UserRole).toMap();
+	int nodetype = data ["nodetype"].toInt();
+	QString fileName = data["filename"].toString();
 
-	if (fileName.isEmpty() == false)
+	if (nodetype==NODETYPE_PLUGIN)
+		propPlugin();
+	else if (fileName.isEmpty() == false)
 	{
 		QDir dir = QFileInfo(projectFileName_).dir();
 		emit openRequest(item->text(0), QDir::cleanPath(dir.absoluteFilePath(fileName)));
@@ -367,6 +534,7 @@ void LibraryTreeWidget::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidg
 QDomDocument LibraryTreeWidget::toXml() const
 {
 	QDomDocument doc;
+	doc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"utf-8\"");
 	QDomElement root = doc.createElement("project");
 
 	QDomElement properties = doc.createElement("properties");
@@ -377,11 +545,15 @@ QDomDocument LibraryTreeWidget::toXml() const
 	doc.appendChild(root);
 
 	QTreeWidgetItem* rootitem = invisibleRootItem();
-	if (rootitem->childCount())
-		rootitem = rootitem->child(0);
+	rootitem = rootitem->child(0);
+	if (!rootitem) return doc;
+	QTreeWidgetItem *pluginsFolder=rootitem->child(0);
+	if (!pluginsFolder) return doc;
+	QTreeWidgetItem *filesFolder=rootitem->child(1);
+	if (!filesFolder) return doc;
 
 	std::stack<std::pair<QTreeWidgetItem*, QDomElement> > stack;
-	stack.push(std::make_pair(rootitem, root));
+	stack.push(std::make_pair(filesFolder, root));
 
 	while (stack.empty() == false)
 	{
@@ -480,7 +652,24 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 
 	QTreeWidgetItem* rootitem = createProjectItem(QFileInfo(projectFileName).completeBaseName());
 	addTopLevelItem(rootitem);
+	QTreeWidgetItem* pluginsFolder = createCatFolderItem("Plugins","folder plugins",NODETYPE_PLUGINS);
+	rootitem->addChild(pluginsFolder);
+	QTreeWidgetItem* filesFolder = createCatFolderItem("Files","folder files",NODETYPE_FILES,true);
+	rootitem->addChild(filesFolder);
 
+	//Fill in plugins
+	QList<ProjectProperties::Plugin> pl=properties_.plugins.toList();
+	qSort(pl);
+	for (QList<ProjectProperties::Plugin>::const_iterator it=pl.begin();it!=pl.end(); it++)
+	{
+		ProjectProperties::Plugin p=*it;
+		if (p.enabled)
+		{
+			QTreeWidgetItem* plugin = createPluginItem(p.name);
+			pluginsFolder->addChild(plugin );
+		}
+	}
+	//Fill in files
 	std::deque<std::pair<QTreeWidgetItem*, QDomNode> > stack;
 	stack.push_back(std::make_pair(static_cast<QTreeWidgetItem*>(0), doc.documentElement()));
 
@@ -493,7 +682,7 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 		QTreeWidgetItem* item = 0;
 		if (parent == 0)
 		{
-			item = rootitem;//invisibleRootItem();
+			item = filesFolder;//invisibleRootItem();
 		}
 		else
 		{
@@ -532,6 +721,7 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 	}
 
 	rootitem->setExpanded(true);
+	filesFolder->setExpanded(true);
 
 	for (std::size_t i = 0; i < dependencies.size(); ++i)
 		dependencyGraph_.addDependency(dependencies[i].first, dependencies[i].second);
@@ -574,6 +764,7 @@ QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool dow
 	QMap<QString, QVariant> data;
 
 	data["filename"] = file;
+	data["nodetype"] = NODETYPE_FILE;
 
     if (downsizing)
         data["downsizing"] = true;
@@ -592,6 +783,26 @@ QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool dow
 	return item;
 }
 
+QTreeWidgetItem* LibraryTreeWidget::createPluginItem(const QString& name)
+{
+	QIcon icon = IconLibrary::instance().icon(0, "plugin");
+
+	QStringList strings;
+	strings << name;
+	QTreeWidgetItem *item = new QTreeWidgetItem(strings);
+	item->setIcon(0, icon);
+	item->setFlags(
+		Qt::ItemIsSelectable |
+		Qt::ItemIsEnabled);
+
+	QMap<QString, QVariant> data;
+
+	data["filename"] = QString();
+	data["nodetype"] = NODETYPE_PLUGIN;
+	item->setData(0, Qt::UserRole, data);
+	return item;
+}
+
 QTreeWidgetItem* LibraryTreeWidget::createFolderItem(const QString& name)
 {
 	QStringList strings;
@@ -607,6 +818,7 @@ QTreeWidgetItem* LibraryTreeWidget::createFolderItem(const QString& name)
 
 	QMap<QString, QVariant> data;
 	data["filename"] = QString();
+	data["nodetype"] = NODETYPE_FOLDER;
 
 	item->setData(0, Qt::UserRole, data);
 
@@ -624,11 +836,34 @@ QTreeWidgetItem* LibraryTreeWidget::createProjectItem(const QString& name)
 	item->setIcon(0, IconLibrary::instance().icon(0, "project"));
 	item->setFlags(
 		Qt::ItemIsSelectable |
-		Qt::ItemIsDropEnabled |
 		Qt::ItemIsEnabled);
 
 	QMap<QString, QVariant> data;
 	data["filename"] = QString();
+	data["nodetype"] = NODETYPE_PROJECT;
+
+	item->setData(0, Qt::UserRole, data);
+
+	return item;
+}
+
+QTreeWidgetItem* LibraryTreeWidget::createCatFolderItem(const QString& name, const QString& icon, int nodetype, bool drop)
+{
+	QStringList strings;
+	strings << name;
+	QTreeWidgetItem *item = new QTreeWidgetItem(strings);
+	QFont font = item->font(0);
+	font.setBold(true);
+	item->setFont(0, font);
+	item->setIcon(0, IconLibrary::instance().icon(0, icon));
+	item->setFlags(
+		Qt::ItemIsSelectable |
+		(drop?Qt::ItemIsDropEnabled:(Qt::ItemFlag)0) |
+		Qt::ItemIsEnabled);
+
+	QMap<QString, QVariant> data;
+	data["filename"] = QString();
+	data["nodetype"] = nodetype;
 
 	item->setData(0, Qt::UserRole, data);
 
@@ -645,6 +880,13 @@ void LibraryTreeWidget::newProject(const QString& projectFileName)
 
 	QTreeWidgetItem* rootitem = createProjectItem(QFileInfo(projectFileName).completeBaseName());
 	addTopLevelItem(rootitem);
+	QTreeWidgetItem* pluginsFolder = createCatFolderItem("Plugins","folder plugins", NODETYPE_PLUGINS);
+	rootitem->addChild(pluginsFolder);
+	QTreeWidgetItem* filesFolder = createCatFolderItem("Files","folder files",NODETYPE_FILES, true);
+	rootitem->addChild(filesFolder);
+
+	rootitem->setExpanded(true);
+	filesFolder->setExpanded(true);
 
 	projectFileName_ = projectFileName;
 
@@ -821,8 +1063,10 @@ QString LibraryTreeWidget::fileName(const QString& itemName) const
 		return QString();
 
 	QTreeWidgetItem* item = invisibleRootItem();
-	if (item->childCount())
-		item = item->child(0);
+	if (!item->childCount()) return QString();
+	item = item->child(0);
+	if (item->childCount()<2) return QString();
+	item = item->child(1);
 
 	for (int i = 0; i < items.size(); ++i)
 	{
@@ -841,7 +1085,7 @@ void LibraryTreeWidget::insertIntoDocument()
 
 	QString result;
 	QTreeWidgetItem* item = selectedItems()[0];
-	while (item->parent())
+	while (item->parent()&&item->parent()->parent())
 	{
 		if (result.isEmpty())
 			result = item->text(0);
@@ -857,6 +1101,23 @@ void LibraryTreeWidget::projectProperties()
 {
 	ProjectPropertiesDialog dialog(projectFileName_,&properties_, this);
 	dialog.exec();
+}
+
+QMap<QString, QString> LibraryTreeWidget::usedPlugins()
+{
+	QMap<QString, QString> usedPlugins;
+	QMap<QString, QString> allPlugins=ProjectProperties::availablePlugins();
+	for (QSet<ProjectProperties::Plugin>::const_iterator it=properties_.plugins.begin();it!=properties_.plugins.end(); it++)
+	{
+		ProjectProperties::Plugin p=*it;
+		if (p.enabled)
+		{
+			QString path=allPlugins[p.name];
+			if (!path.isEmpty())
+				usedPlugins[p.name]=path;
+		}
+	}
+	return usedPlugins;
 }
 
 void LibraryTreeWidget::automaticDownsizing(bool checked)

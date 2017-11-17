@@ -29,6 +29,7 @@ private:
     static int SoundChannel_setLooping(lua_State *L);
     static int SoundChannel_isLooping(lua_State *L);
     static int SoundChannel_setWorldPosition(lua_State *L);
+    static int SoundChannel_getStreamId(lua_State *L);
 };
 
 

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.Fixture" page="b2Fixture" parent="" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A fixture is used to attach a shape to a body for collision detection. A fixture inherits its<br />
+transform from its parent. Fixtures hold additional non-geometric data such as friction, collision filters, etc.<br />
+Fixtures are created via `b2.Body:createFixture`.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.Fixture:getBody" page="getBody" shortdesc="returns the parent body of this fixture" version="Gideros 2011.6"><![CDATA[<br />
+Returns the parent body of this fixture. This is `nil` if the fixture is not attached.<br />
+<br />
+]]>
+    <return type="b2.Body"><![CDATA[body that created the fixture]]></return>
+  </method>
+  <method name="b2.Fixture:setSensor" page="setSensor" shortdesc="sets if this fixture is a sensor" version="Gideros 2011.6"><![CDATA[<br />
+Sets if this fixture is a sensor.<br />
+<br />
+]]>
+    <parameter name="sensor" optional="false" type="boolean"/>
+  </method>
+  <method name="b2.Fixture:isSensor" page="isSensor" shortdesc="is this fixture a sensor (non-solid)?" version="Gideros 2011.6"><![CDATA[<br />
+Is this fixture a sensor (non-solid)?<br />
+<br />
+]]>
+    <return type="any"><![CDATA[`true` if the shape is a sensor, `false` otherwise.]]></return>
+    <return type="any"><![CDATA[`true` if the shape is a sensor, `false` otherwise.]]></return>
+  </method>
+  <method name="b2.Fixture:setFilterData" page="setFilterData" shortdesc="sets the contact filtering data" version="Gideros 2011.6"><![CDATA[<br />
+Sets the contact filtering data. This will not update contacts until the next time step<br />
+when either parent body is active and awake. The filter data definition is given<br />
+as a ordinary table. The fields of the filter data table are:<br />
+<br />
+<ul><br />
+<li>`categoryBits`: (number) The collision category bits. Normally you would just set one bit.</li><br />
+<li>`maskBits`: (number) The collision mask bits. This states the categories that this shape would accept for collision.</li><br />
+<li>`groupIndex`: (number) Collision groups allow a certain group of objects to never collide (negative) or always collide (positive). Zero means no collision group. Non-zero group filtering always wins against the mask bits.</li><br />
+</ul><br />
+<br />
+]]>
+    <parameter name="filterData" optional="false" type="table"/>
+    <example name="Example of fixtures collision filtering"><![CDATA[local BALL_MASK = 1
+local CRATE_MASK = 2
+local WALL_MASK = 4
+ 
+-- ball
+local body = world:createBody{type = b2.DYNAMIC_BODY}
+local circle = b2.CircleShape.new(0, 0, radius)
+local fixture = body:createFixture{shape = circle, density = 1.0, 
+friction = 0.1, restitution = 0.2}
+-- ball will collide with other ball and wall
+fixture:setFilterData({categoryBits = BALL_MASK, maskBits = BALL_MASK + WALL_MASK, groupIndex = 0})
+
+local body = world:createBody{type = b2.DYNAMIC_BODY}
+local poly = b2.PolygonShape.new()
+poly:setAsBox(width, height)
+local fixture = body:createFixture{shape = poly, density = 1.0, 
+friction = 0.1, restitution = 0.2}
+-- crate will collide with other crate and wall
+fixture:setFilterData({categoryBits = CRATE_MASK, maskBits = CRATE_MASK + WALL_MASK, groupIndex = 0})
+
+local body = world:createBody{type = b2.STATIC_BODY}
+local chain = b2.ChainShape.new()
+chain:createLoop(
+	0,0,
+	application:getContentWidth(), 0,
+	application:getContentWidth(), application:getContentHeight(),
+	0, application:getContentHeight()
+)
+local fixture = body:createFixture{shape = chain, density = 1.0, 
+friction = 1, restitution = 0.3}
+-- walls will collide with both balls and crates
+fixture:setFilterData({categoryBits = WALL_MASK, maskBits = CRATE_MASK + BALL_MASK, groupIndex = 0})]]></example>
+  </method>
+  <method name="b2.Fixture:getFilterData" page="getFilterData" shortdesc="returns the contact filtering data" version="Gideros 2011.6"><![CDATA[<br />
+Returns the contact filtering data.<br />
+<br />
+]]>
+    <return type="table"><![CDATA[contact filtering data table]]></return>
+  </method>
+  <example name="Example of fixtures collision filtering"><![CDATA[local BALL_MASK = 1
+local CRATE_MASK = 2
+local WALL_MASK = 4
+ 
+-- ball
+local body = world:createBody{type = b2.DYNAMIC_BODY}
+local circle = b2.CircleShape.new(0, 0, radius)
+local fixture = body:createFixture{shape = circle, density = 1.0, 
+friction = 0.1, restitution = 0.2}
+-- ball will collide with other ball and wall
+fixture:setFilterData({categoryBits = BALL_MASK, maskBits = BALL_MASK + WALL_MASK, groupIndex = 0})
+
+local body = world:createBody{type = b2.DYNAMIC_BODY}
+local poly = b2.PolygonShape.new()
+poly:setAsBox(width, height)
+local fixture = body:createFixture{shape = poly, density = 1.0, 
+friction = 0.1, restitution = 0.2}
+-- crate will collide with other crate and wall
+fixture:setFilterData({categoryBits = CRATE_MASK, maskBits = CRATE_MASK + WALL_MASK, groupIndex = 0})
+
+local body = world:createBody{type = b2.STATIC_BODY}
+local chain = b2.ChainShape.new()
+chain:createLoop(
+	0,0,
+	application:getContentWidth(), 0,
+	application:getContentWidth(), application:getContentHeight(),
+	0, application:getContentHeight()
+)
+local fixture = body:createFixture{shape = chain, density = 1.0, 
+friction = 1, restitution = 0.3}
+-- walls will collide with both balls and crates
+fixture:setFilterData({categoryBits = WALL_MASK, maskBits = CRATE_MASK + BALL_MASK, groupIndex = 0})]]></example>
+</object>

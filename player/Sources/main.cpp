@@ -24,7 +24,7 @@
 #include <glog.h>
 #include "constants.cpp"
 //#include <curl/curl.h>
-
+#include <QSurfaceFormat>
 
 
 static void loadPlugins(){
@@ -59,6 +59,13 @@ int main(int argc, char *argv[]){
     QCoreApplication::setOrganizationDomain(Constants::ORGANIZATION_DOMAIN);
     QCoreApplication::setApplicationName(Constants::PLAYER_APPLICATION_NAME);
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+
+    QSurfaceFormat formatGL;
+	formatGL.setSwapInterval(0);
+	formatGL.setStencilBufferSize(8);
+	formatGL.setDepthBufferSize(16);
+	formatGL.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+	QSurfaceFormat::setDefaultFormat(formatGL);
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 

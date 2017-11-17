@@ -17,6 +17,24 @@
         </replacelist>
     </template>
  </target>
+ <target name="iOS">
+   <mkdir>[[[project.name]]]/Plugins/luasocket</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="[[[project.name]]]/Plugins/luasocket" include="*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
+   <mkdir>AppleTV/Plugins/luasocket</mkdir>
+   <template name="sources" path="[[[sys.pluginDir]]]/source"  dest="AppleTV/Plugins/luasocket" include="*.cpp" exclude="emscripten;win32;jni;iOS;Android"/>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("luasocket","Plugins/luasocket","GroupLuasocket_ios","GroupPlugins_ios")
+iOSProject.addGroup("luasocket","luasocket","GroupLuasocket_atv","GroupPlugins_atv")
+iOSProject.addSources({ "luasocket_stub.cpp"  }, "GroupLuasocket", "ios")
+iOSProject.addSources({ "luasocket_stub.cpp"  }, "GroupLuasocket", "atv")
+iOSProject.addSources({ "Plugins/libluasocket.ios.a"  }, "GroupPlugins", "ios")
+iOSProject.addSources({ "libluasocket.atv.a"  }, "GroupPlugins", "atv")
+iOSProject.commit()
+	]]></lua>
+ </target>
  <target name="Html5">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
     <template name="Activity" path="">
@@ -40,7 +58,7 @@
         <append>
             <orig><![CDATA[<!--GIDEROS-LINK-SHARED-->]]></orig>
             <by><![CDATA[
-      <AdditionalDependencies>luasocket.$(GidProjectType).lib</AdditionalDependencies>]]></by>
+      <AdditionalDependencies>%(AdditionalDependencies);luasocket.$(GidProjectType).lib</AdditionalDependencies>]]></by>
         </append> 
         </replacelist>
     </template>

@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.World" page="b2World" parent="EventDispatcher" type="physics" version="Gideros 2011.6"><![CDATA[The `b2.World` class inherits from the following class: `EventDispatcher`.<br />
+<br />
+The `b2.World` class manages all physics entities and dynamic simulation. It is possible to create and manage more than one `b2.World` instance.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.World.new" page="new" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `b2.World` object. You can create more then one `b2.World` object to manage independent worlds.<br />
+<br />
+]]>
+    <parameter name="gravityx" optional="false" type="number"><![CDATA[the x component the gravity]]></parameter>
+    <parameter name="gravityy" optional="false" type="number"><![CDATA[the y component the gravity]]></parameter>
+    <parameter name="doSleep" optional="false" type="boolean, default = true"><![CDATA[improve performance by not simulating inactive bodies]]></parameter>
+    <return type="any"><![CDATA[A new `b2.World` object.]]></return>
+    <return type="any"><![CDATA[A new `b2.World` object.]]></return>
+  </method>
+  <method name="b2.World:createBody" page="createBody" shortdesc="creates a rigid body given a definition" version="Gideros 2011.6"><![CDATA[<br />
+Creates a rigid body given a definition. The body definition is given as an ordinary table. The fields of the body definition table are:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) The body type: `b2.STATIC_BODY`, `b2.KINEMATIC_BODY`, or `b2.DYNAMIC_BODY`. Note: if a dynamic body would have zero mass, the mass is set to one.&lt;/li&gt;<br />
+&lt;li&gt;**position**: (table) The world position of the body (see the example below to understand how this table is set). Avoid creating bodies at the origin since this can lead to many overlapping shapes.&lt;/li&gt;<br />
+&lt;li&gt;**angle**: (number) The world angle of the body in radians.&lt;/li&gt;<br />
+&lt;li&gt;**linearVelocity**: (table) The linear velocity of the body&#039;s origin in world co-ordinates (see the example below to understand how this table is set).&lt;/li&gt;<br />
+&lt;li&gt;**angularVelocity**: (number) The angular velocity of the body.&lt;/li&gt;<br />
+&lt;li&gt;**linearDamping**: (number) Linear damping is use to reduce the linear velocity. The damping parameter can be larger than 1.0 but the damping effect becomes sensitive to the time step when the damping parameter is large.&lt;/li&gt;<br />
+&lt;li&gt;**angularDamping**: (number) Angular damping is use to reduce the angular velocity. The damping parameter can be larger than 1.0 but the damping effect becomes sensitive to the time step when the damping parameter is large.&lt;/li&gt;<br />
+&lt;li&gt;**allowSleep**: (boolean) Set this flag to false if this body should never fall asleep. Note that this increases CPU usage.&lt;/li&gt;<br />
+&lt;li&gt;**awake**: (boolean) Is this body initially awake or sleeping?&lt;/li&gt;<br />
+&lt;li&gt;**fixedRotation**: (boolean) Should this body be prevented from rotating? Useful for characters.&lt;/li&gt;<br />
+&lt;li&gt;**bullet**: (boolean) Is this a fast moving body that should be prevented from tunneling through other moving bodies? Note that all bodies are prevented from tunneling through kinematic and static bodies. This setting is only considered on dynamic bodies. **Warning:** You should use this flag sparingly since it increases processing time.&lt;/li&gt;<br />
+&lt;li&gt;**active**: (boolean) Does this body start out active?&lt;/li&gt;<br />
+&lt;li&gt;**gravityScale**: (number) Scale the gravity applied to this body.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+The unset fields gets default values.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;*Warning:** This function is locked during callbacks.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+    <parameter name="bodyDef" optional="false" type="table"/>
+    <return type="b2.Body"><![CDATA[created body.]]></return>
+    <example><![CDATA[local body = world:createBody{<br />
+	type = b2.STATIC_BODY,<br />
+	position = {x=0, y=0.5},<br />
+	angle = math.pi/4,<br />
+	linearVelocity = {x=0.1, y=0.2},<br />
+}<br />
+]]></example>
+  </method>
+  <method name="b2.World:destroyBody" page="destroyBody" shortdesc="destroys a rigid body" version="Gideros 2011.6"><![CDATA[<br />
+Destroys a rigid body. This function is locked during callbacks.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;*Warning:**&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;This automatically deletes all associated shapes and joints.&lt;/li&gt;<br />
+&lt;li&gt;This function is locked during callbacks.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+    <parameter name="body" optional="false" type="b2.Body"><![CDATA[body to be destroyed]]></parameter>
+  </method>
+  <method name="b2.World:step" page="step" shortdesc="takes a time step" version="Gideros 2011.6"><![CDATA[<br />
+Take a time step. This performs collision detection, integration, and constraint solution.<br />
+<br />
+]]>
+    <parameter name="timeStep" optional="false" type="number"><![CDATA[the amount of time to simulate, this should not vary]]></parameter>
+    <parameter name="velocityIterations" optional="false" type="number"><![CDATA[for the velocity constraint solver]]></parameter>
+    <parameter name="positionIterations" optional="false" type="number"><![CDATA[for the position constraint solver]]></parameter>
+    <example name="Creating Box2d body and moving Bitmap along the body"><![CDATA[require "box2d"
+local world = b2.World.new(0, 10, true)
+
+--create ball bitmap object from ball graphic
+local ball = Bitmap.new(Texture.new("ball.png"))
+--reference center of the ball for positioning
+ball:setAnchorPoint(0.5,0.5)
+ 
+ball:setPosition(100,100)
+ 
+--get radius
+local radius = ball:getWidth()/2
+ 
+--create box2d physical object
+local body = world:createBody{type = b2.DYNAMIC_BODY}
+local circle = b2.CircleShape.new(0, 0, radius)
+local fixture = body:createFixture{shape = circle, density = 1.0, 
+friction = 0.1, restitution = 0.2}
+ball.body = body
+ 
+--add to scene
+stage:addChild(ball)
+
+stage:addEventListener(Event.ENTER_FRAME, function()
+	-- edit the step values if required. These are good defaults!
+    world:step(1/60, 8, 3)
+	ball:setPosition(ball.body:getPosition())
+	ball:setRotation(math.rad(ball.body:getAngle()))
+end)]]></example>
+  </method>
+  <method name="b2.World:clearForces" page="clearForces" shortdesc="call this after you are done with time steps to clear the forces" version="Gideros 2011.6"><![CDATA[<br />
+Call this after you are done with time steps to clear the forces. You normally call this after each call to `b2.World:step`,<br />
+unless you are performing sub-steps. By default, forces will be automatically cleared, so you don&#039;t need to call this function.<br />
+<br />
+]]></method>
+  <method name="b2.World:setGravity" page="setGravity" shortdesc="sets the gravity vector" version="Gideros 2011.6"><![CDATA[<br />
+Sets the gravity vector.<br />
+<br />
+]]>
+    <parameter name="gravityx" optional="false" type="number"><![CDATA[the x component the gravity]]></parameter>
+    <parameter name="gravityy" optional="false" type="number"><![CDATA[the y component the gravity]]></parameter>
+  </method>
+  <method name="b2.World:getGravity" page="getGravity" shortdesc="returns the gravity vector" version="Gideros 2011.6"><![CDATA[<br />
+Returns the gravity vector.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[x component of gravity vector.]]></return>
+    <return type="number"><![CDATA[y component of gravity vector.]]></return>
+  </method>
+  <method name="b2.World:queryAABB" page="queryAABB" shortdesc="query the world for all fixtures that potentially overlap the provided AABB" version="Gideros 2011.6"><![CDATA[<br />
+Query the world for all fixtures that potentially overlap the provided AABB.<br />
+<br />
+]]>
+    <parameter name="minx" optional="false" type="number"><![CDATA[the minimal x coordinate of the query box]]></parameter>
+    <parameter name="miny" optional="false" type="number"><![CDATA[the minimal y coordinate of the query box]]></parameter>
+    <parameter name="maxx" optional="false" type="number"><![CDATA[the maximal x coordinate of the query box]]></parameter>
+    <parameter name="maxy" optional="false" type="number"><![CDATA[the maximal y coordinate of the query box]]></parameter>
+    <return type="table"><![CDATA[Indexed array of fixtures that potentially overlaps the provided AABB]]></return>
+    <example name="Query specific area for bodies"><![CDATA[--get all fixtures in this area
+local fixtures = world:queryAABB(0, 0, 100, 10)
+--check if there are any fixture
+if #fixtures > 0 then
+	for i = 1, #fixtures do
+		--getting body of fixture
+		local body = fixtures[i]:getBody()
+	end
+end]]></example>
+  </method>
+  <method name="b2.World:rayCast" page="rayCast" shortdesc="raycast the world for all fixtures in the path of the ray" version="Gideros 2011.6"><![CDATA[<br />
+Ray-cast the world for all fixtures in the path of the ray. Your callback controls whether you get the closest point, any point, or n-points. The ray-cast ignores shapes that contain the starting point. <br />
+<br />
+Listener function is called for each fixture found in the query and accepts 6 parameters (7 if data parameter is provided):<br />
+<br />
+1. the fixture hit by the ray<br />
+2. the x coordinate of the point of initial intersection <br />
+3. the y coordinate of the point of initial intersection<br />
+4. the x coordinate of the normal vector at the point of intersection <br />
+5. the y coordinate of the normal vector at the point of intersection <br />
+6. fraction<br />
+<br />
+You control how the ray cast proceeds by returning a number:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;return no value or -1: ignore this fixture and continue&lt;/li&gt;<br />
+&lt;li&gt;return 0: terminate the ray cast&lt;/li&gt;<br />
+&lt;li&gt;return fraction: clip the ray to this point&lt;/li&gt;<br />
+&lt;li&gt;return 1: don&#039;t clip the ray and continue&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+<br />
+]]>
+    <parameter name="x1" optional="false" type="number"><![CDATA[the x coordinate of the ray starting point]]></parameter>
+    <parameter name="y1" optional="false" type="number"><![CDATA[the y coordinate of the ray starting point]]></parameter>
+    <parameter name="x2" optional="false" type="number"><![CDATA[the x coordinate of the ray ending point]]></parameter>
+    <parameter name="y2" optional="false" type="number"><![CDATA[the y coordinate of the ray ending point]]></parameter>
+    <parameter name="listener" optional="false" type="function"><![CDATA[the listener function that processes the results]]></parameter>
+    <parameter name="data" optional="true" type="any"><![CDATA[an optional data parameter that is passed as a first argument to the listener function]]></parameter>
+    <example name="Detecting bodies with raycasting"><![CDATA[local raycastCallback function(fixture, hitX, hitY, vectX, vectY, fration)
+    --so if this function is called, it means we hit some kind of object
+    --and it's fixture is stored in first variable we named "fixture"
+    --so we can for example get body
+    local body = fixture:getBody()
+ 
+end
+ 
+--now we add callback function for projected raycast above body
+--Parameters:
+--object x coordinate
+--object y coordinate
+--projection vector on x axis
+--projection vector on y axis
+--callback function
+local x, y = body:getPosition()
+world:rayCast(x, y, x, y-100, raycastCallback)]]></example>
+  </method>
+  <method name="b2.World:createJoint" page="createJoint" shortdesc="creates a joint given a definition" version="Gideros 2011.6"><![CDATA[<br />
+Creates a joint given a definition. All 10 types of joints is created by using this function:<br />
+<br />
+<br />
+&lt;h3&gt;Revolute Joint&lt;/h3&gt;<br />
+<br />
+Revolute joint definition. This requires defining an anchor point where the bodies are joined. The definition uses<br />
+local anchor points so that the initial configuration can violate the constraint slightly. You also need to specify the<br />
+initial relative angle for joint limits. This helps when saving and loading a game. The local anchor points are measured from<br />
+the body&#039;s origin rather than the center of mass because:<br />
+<br />
+1. you might not know where the center of mass will be.<br />
+2. if you add/remove shapes from a body<br />
+<br />
+and recompute the mass, the joints will be broken.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) b2.REVOLUTE_JOINT&lt;/li&gt;<br />
+&lt;li&gt;**bodyA**: (b2.Body) The first attached body.&lt;/li&gt;<br />
+&lt;li&gt;**bodyB**: (b2.Body) The second attached body.&lt;/li&gt;<br />
+&lt;li&gt;**collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorA**: (table) The local anchor point relative to bodyA&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorB**: (table) The local anchor point relative to bodyB&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**referenceAngle**: (number) The bodyB angle minus bodyA angle in the reference state (radians).&lt;/li&gt;<br />
+&lt;li&gt;**enableLimit**: (boolean) A flag to enable joint limits.&lt;/li&gt;<br />
+&lt;li&gt;**lowerAngle**: (number) The lower angle for the joint limit (radians).&lt;/li&gt;<br />
+&lt;li&gt;**upperAngle**: (number) The upper angle for the joint limit (radians).&lt;/li&gt;<br />
+&lt;li&gt;**enableMotor**: (boolean) A flag to enable the joint motor.&lt;/li&gt;<br />
+&lt;li&gt;**motorSpeed**: (number) The desired motor speed. Usually in radians per second.&lt;/li&gt;<br />
+&lt;li&gt;**maxMotorTorque**: (number) The maximum motor torque used to achieve the desired motor speed. Usually in N-m.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+Also, you can use [[b2.createRevoluteJointDef]] function to create a revolute joint definiton table easier.<br />
+<br />
+<br />
+&lt;h3&gt;Prismatic Joint&lt;/h3&gt;<br />
+<br />
+Prismatic joint definition. This requires defining a line of motion using an axis and an anchor point. The definition uses<br />
+local anchor points and a local axis so that the initial configuration can violate the constraint slightly. The joint translation is<br />
+zero when the local anchor points coincide in world space. Using local anchors and a local axis helps when saving and loading a game.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) b2.PRISMATIC_JOINT&lt;/li&gt;<br />
+&lt;li&gt;**bodyA**: (b2.Body) The first attached body.&lt;/li&gt;<br />
+&lt;li&gt;**bodyB**: (b2.Body) The second attached body.&lt;/li&gt;<br />
+&lt;li&gt;**collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorA**: (table) The local anchor point relative to bodyA&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorB**: (table) The local anchor point relative to bodyB&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**localAxisA**: (table) The local translation axis in bodyA.&lt;/li&gt;<br />
+&lt;li&gt;**referenceAngle**: (number) The body2 angle minus body1 angle in the reference state (radians).&lt;/li&gt;<br />
+&lt;li&gt;**enableLimit**: (boolean) A flag to enable joint limits.&lt;/li&gt;<br />
+&lt;li&gt;**lowerTranslation**: (number) The lower translation limit, usually in meters.&lt;/li&gt;<br />
+&lt;li&gt;**upperTranslation**: (number) The upper translation limit, usually in meters.&lt;/li&gt;<br />
+&lt;li&gt;**enableMotor**: (boolean) A flag to enable the joint motor.&lt;/li&gt;<br />
+&lt;li&gt;**maxMotorForce**: (number) The maximum motor torque, usually in N-m.&lt;/li&gt;<br />
+&lt;li&gt;**motorSpeed**: (number) The desired motor speed in radians per second.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+Also, you can use [[b2.createPrismaticJointDef]] function to create a prismatic joint definiton table easier.<br />
+<br />
+<br />
+&lt;h3&gt;Distance Joint&lt;/h3&gt;<br />
+<br />
+Distance joint definition. This requires defining an anchor point on both bodies and the non-zero length of the distance joint.<br />
+The definition uses local anchor points so that the initial configuration can violate the constraint slightly.<br />
+This helps when saving and loading a game.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) b2.DISTANCE_JOINT&lt;/li&gt;<br />
+&lt;li&gt;**bodyA**: (b2.Body) The first attached body.&lt;/li&gt;<br />
+&lt;li&gt;**bodyB**: (b2.Body) The second attached body.&lt;/li&gt;<br />
+&lt;li&gt;**collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorA**: (table) The local anchor point relative to bodyA&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorB**: (table) The local anchor point relative to bodyB&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**length**: (number) The natural length between the anchor points. Do not use a zero or short length.&lt;/li&gt;<br />
+&lt;li&gt;**frequencyHz**: (number) The mass-spring-damper frequency in Hertz.&lt;/li&gt;<br />
+&lt;li&gt;**dampingRatio**: (number) The damping ratio. 0 = no damping, 1 = critical damping.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+Also, you can use [[b2.createDistanceJointDef]] function to create a distance joint definiton table easier.<br />
+<br />
+<br />
+&lt;h3&gt;Pulley Joint&lt;/h3&gt;<br />
+<br />
+Pulley joint definition. This requires two ground anchors, two dynamic body anchor points, max lengths for each side, and a pulley ratio.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) b2.PULLEY_JOINT&lt;/li&gt;<br />
+&lt;li&gt;**bodyA**: (b2.Body) The first attached body.&lt;/li&gt;<br />
+&lt;li&gt;**bodyB**: (b2.Body) The second attached body.&lt;/li&gt;<br />
+&lt;li&gt;**collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.&lt;/li&gt;<br />
+&lt;li&gt;**groundAnchorA**: (table) The first ground anchor in world coordinates. This point never moves.&lt;/li&gt;<br />
+&lt;li&gt;**groundAnchorB**: (table) The second ground anchor in world coordinates. This point never moves.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorA**: (table) The local anchor point relative to bodyA&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorB**: (table) The local anchor point relative to bodyB&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**lengthA**: (number) The a reference length for the segment attached to bodyA.&lt;/li&gt;<br />
+&lt;li&gt;**lengthB**: (number) The a reference length for the segment attached to bodyB.&lt;/li&gt;<br />
+&lt;li&gt;**ratio**: (number) The pulley ratio, used to simulate a block-and-tackle.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+Also, you can use [[b2.createPulleyJointDef]] function to create a pulley joint definiton table easier.<br />
+<br />
+<br />
+&lt;h3&gt;Mouse Joint&lt;/h3&gt;<br />
+<br />
+Mouse joint definition. This requires a world target point, tuning parameters, and the time step.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) b2.MOUSE_JOINT&lt;/li&gt;<br />
+&lt;li&gt;**bodyA**: (b2.Body) The first attached body.&lt;/li&gt;<br />
+&lt;li&gt;**bodyB**: (b2.Body) The second attached body.&lt;/li&gt;<br />
+&lt;li&gt;**collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.&lt;/li&gt;<br />
+&lt;li&gt;**target**: (table) The initial world target point. This is assumed to coincide with the body anchor initially.&lt;/li&gt;<br />
+&lt;li&gt;**maxForce**: (number) The maximum constraint force that can be exerted to move the candidate body. Usually you will express as some multiple of the weight (multiplier * mass * gravity).&lt;/li&gt;<br />
+&lt;li&gt;**frequencyHz**: (number) The response speed.&lt;/li&gt;<br />
+&lt;li&gt;**dampingRatio**: (number) The damping ratio. 0 = no damping, 1 = critical damping.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+Also, you can use [[b2.createMouseJointDef]] function to create a mouse joint definiton table easier.<br />
+<br />
+&lt;h3&gt;Gear Joint&lt;/h3&gt;<br />
+<br />
+Gear joint definition. This definition requires two existing revolute or prismatic joints (any combination will work). The provided joints<br />
+must attach a dynamic body to a static body.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) b2.GEAR_JOINT&lt;/li&gt;<br />
+&lt;li&gt;**bodyA**: (b2.Body) The first attached body.&lt;/li&gt;<br />
+&lt;li&gt;**bodyB**: (b2.Body) The second attached body.&lt;/li&gt;<br />
+&lt;li&gt;**collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.&lt;/li&gt;<br />
+&lt;li&gt;**joint1**: (b2.Joint) The first revolute/prismatic joint attached to the gear joint.&lt;/li&gt;<br />
+&lt;li&gt;**joint2**: (b2.Joint) The second revolute/prismatic joint attached to the gear joint.&lt;/li&gt;<br />
+&lt;li&gt;**ratio**: (number) The gear ratio.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+Also, you can use [[b2.createGearJointDef]] function to create a gear joint definiton table easier.<br />
+<br />
+&lt;h3&gt;Wheel Joint&lt;/h3&gt;<br />
+<br />
+Wheel joint definition. This requires defining a line of motion using an axis and an anchor point. <br />
+The definition uses local anchor points and a local axis so that the initial configuration can violate <br />
+the constraint slightly. The joint translation is zero when the local anchor points coincide in world space. <br />
+Using local anchors and a local axis helps when saving and loading a game.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) b2.WHEEL_JOINT&lt;/li&gt;<br />
+&lt;li&gt;**bodyA**: (b2.Body) The first attached body.&lt;/li&gt;<br />
+&lt;li&gt;**bodyB**: (b2.Body) The second attached body.&lt;/li&gt;<br />
+&lt;li&gt;**collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorA**: (table) The local anchor point relative to bodyA&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorB**: (table) The local anchor point relative to bodyB&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**localAxisA**: (table) The local translation axis in bodyA.&lt;/li&gt;<br />
+&lt;li&gt;**enableMotor**: (boolean) A flag to enable the joint motor.&lt;/li&gt;<br />
+&lt;li&gt;**maxMotorTorque**: (number) The maximum motor torque, usually in N-m.&lt;/li&gt;<br />
+&lt;li&gt;**motorSpeed**: (number) The desired motor speed in radians per second.&lt;/li&gt;<br />
+&lt;li&gt;**frequencyHz**: (number) Suspension frequency, zero indicates no suspension.&lt;/li&gt;<br />
+&lt;li&gt;**dampingRatio**: (number) Suspension damping ratio, one indicates critical damping.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+Also, you can use [[b2.createWheelJointDef]] function to create a wheel joint definiton table easier.<br />
+<br />
+&lt;h3&gt;Weld Joint&lt;/h3&gt;<br />
+<br />
+Weld joint definition. You need to specify local anchor points where they are attached and the relative<br />
+body angle. The position of the anchor points is important for computing the reaction torque.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) b2.WELD_JOINT&lt;/li&gt;<br />
+&lt;li&gt;**bodyA**: (b2.Body) The first attached body.&lt;/li&gt;<br />
+&lt;li&gt;**bodyB**: (b2.Body) The second attached body.&lt;/li&gt;<br />
+&lt;li&gt;**collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorA**: (table) The local anchor point relative to bodyA&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorB**: (table) The local anchor point relative to bodyB&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**referenceAngle**: (number) The bodyB angle minus bodyA angle in the reference state (radians).&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+Also, you can use [[b2.createWeldJointDef]] function to create a weld joint definiton table easier.<br />
+<br />
+&lt;h3&gt;Friction Joint&lt;/h3&gt;<br />
+<br />
+Friction joint definition.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) b2.LINE_JOINT&lt;/li&gt;<br />
+&lt;li&gt;**bodyA**: (b2.Body) The first attached body.&lt;/li&gt;<br />
+&lt;li&gt;**bodyB**: (b2.Body) The second attached body.&lt;/li&gt;<br />
+&lt;li&gt;**collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorA**: (table) The local anchor point relative to bodyA&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorB**: (table) The local anchor point relative to bodyB&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**maxForce**: (number) The maximum friction force in N.&lt;/li&gt;<br />
+&lt;li&gt;**maxTorque**: (number) The maximum friction torque in N-m.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+<br />
+&lt;h3&gt;Rope Joint&lt;/h3&gt;<br />
+<br />
+Rope joint definition. This requires two body anchor points and a maximum length.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;**type**: (number) b2.ROPE_JOINT&lt;/li&gt;<br />
+&lt;li&gt;**bodyA**: (b2.Body) The first attached body.&lt;/li&gt;<br />
+&lt;li&gt;**bodyB**: (b2.Body) The second attached body.&lt;/li&gt;<br />
+&lt;li&gt;**collideConnected**: (boolean) Set this flag to true if the attached bodies should collide.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorA**: (table) The local anchor point relative to bodyA&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**localAnchorB**: (table) The local anchor point relative to bodyB&#039;s origin.&lt;/li&gt;<br />
+&lt;li&gt;**maxLength**: (number) The maximum length of the rope.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+Also, you can use [[b2.createRopeJointDef]] function to create a rope joint definiton table easier.<br />
+<br />
+]]>
+    <parameter name="jointDef" optional="false" type="table"/>
+    <return type="b2.Joint"><![CDATA[created joint]]></return>
+  </method>
+  <method name="b2.World:destroyJoint" page="destroyJoint" shortdesc="destroys a joint" version="Gideros 2011.6"><![CDATA[<br />
+Destroy a joint. This may cause the connected bodies to begin colliding. <br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;*Warning:** This function is locked during callbacks.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+    <parameter name="joint" optional="false" type="b2.Joint"><![CDATA[joint to be destroyed]]></parameter>
+  </method>
+  <method name="b2.World:setDebugDraw" page="setDebugDraw" shortdesc="registers a b2.DebugDraw instance for debug drawing" version="Gideros 2011.6"><![CDATA[<br />
+Registers a b2.DebugDraw instance for debug drawing.<br />
+<br />
+]]>
+    <example name=""><![CDATA[local debugDraw = b2.DebugDraw.new()<br />
+world:setDebugDraw(debugDraw)<br />
+stage:addChild(debugDraw)]]></example>
+  </method>
+  <method name="b2.World:createParticleSystem" page="createParticleSystem" shortdesc="create particle system" version="Gideros 2015.06.30"><![CDATA[Creats new particle system, which will use Liquid fun.
+Parameters that you can provide in table:
+"pressureStrength", 
+"dampingStrength", 
+"elaticStrength", 
+"springStrength", 
+"viscousStrength", 
+"surfaceTensionPressureStrength", 
+"surfaceTensionNormalStrength", 
+"repulsiveStrength", 
+"powderStrength", 
+"ejectionStrength", 
+"staticPressureStrength", 
+"staticPressureRelaxation", 
+"colorMixingStrength", 
+"lifetimeGranularity",
+"radius",
+"staticPressureIterations",
+"destroyByAge"]]>
+    <parameter name="particleSysDef" optional="false" type="table"><![CDATA[parameters that define particle system]]></parameter>
+    <return type="b2.ParticleSystem"><![CDATA[new particle system]]></return>
+  </method>
+  <event name="Event.BEGIN_CONTACT" page="Event.BEGIN_CONTACT" value="beginContact" version="Gideros 2011.6"><![CDATA[This event is dispatched when contact between box2d bodies begin.]]>
+    <parameter name="contact" type="b2.Contact"><![CDATA[Contains instance of `b2.Contact` holding information about this collision]]></parameter>
+    <parameter name="fixtureA" type="b2.Fixture"><![CDATA[Contains instance of `b2.Fixture` of first colliding body]]></parameter>
+    <parameter name="fixtureB" type="b2.Fixture"><![CDATA[Contains instance of `b2.Fixture` of second colliding body]]></parameter>
+  </event>
+  <event name="Event.PRE_SOLVE" page="Event.PRE_SOLVE" value="preSolve" version="Gideros 2011.6"><![CDATA[This event is usually dispatched after `Event.BEGIN_CONTACT` and can be dispatched multiple times on each reaction between objects. 
+Usually in this event you can cancel or modify collisions in other ways using `event.contact` object.]]>
+    <parameter name="contact" type="b2.Contact"><![CDATA[Contains instance of `b2.Contact` holding information about this collision]]></parameter>
+    <parameter name="fixtureA" type="b2.Fixture"><![CDATA[Contains instance of `b2.Fixture` of first colliding body]]></parameter>
+    <parameter name="fixtureB" type="b2.Fixture"><![CDATA[Contains instance of `b2.Fixture` of second colliding body]]></parameter>
+  </event>
+  <event name="Event.POST_SOLVE" page="Event.POST_SOLVE" value="postSolve" version="Gideros 2011.6"><![CDATA[This event is dispatched after the reaction between box2d objects and contains some additional information which has been calculated, like, maximal impulse of collision in `e.maxImpulse`.]]>
+    <parameter name="contact" type="b2.Contact"><![CDATA[Contains instance of `b2.Contact` holding information about this collision]]></parameter>
+    <parameter name="fixtureA" type="b2.Fixture"><![CDATA[Contains instance of `b2.Fixture` of first colliding body]]></parameter>
+    <parameter name="fixtureB" type="b2.Fixture"><![CDATA[Contains instance of `b2.Fixture` of second colliding body]]></parameter>
+    <parameter name="maxImpulse" type="number"><![CDATA[The maximal impulse (strength) of collision]]></parameter>
+  </event>
+  <event name="Event.END_CONTACT" page="Event.END_CONTACT" value="endContact" version="Gideros 2011.6"><![CDATA[This event is dispatched when collision is ended and objects have been separated.]]>
+    <parameter name="contact" type="b2.Contact"><![CDATA[Contains instance of `b2.Contact` holding information about this collision]]></parameter>
+    <parameter name="fixtureA" type="b2.Fixture"><![CDATA[Contains instance of `b2.Fixture` of first colliding body]]></parameter>
+    <parameter name="fixtureB" type="b2.Fixture"><![CDATA[Contains instance of `b2.Fixture` of second colliding body]]></parameter>
+  </event>
+  <event name="Event.BEGIN_CONTACT_PARTICLE" page="Event.BEGIN_CONTACT_PARTICLE" value="beginContactParticle" version="Gideros 2011.6"><![CDATA[Fires when a collision begins between particles within a ParticleSystem]]>
+    <parameter name="fixture" type="b2.Fixture"><![CDATA[The fixture which is colliding]]></parameter>
+    <parameter name="index" type="number"><![CDATA[The index number of the particle colliding]]></parameter>
+    <parameter name="system" type="ParticleSystem"><![CDATA[The ParticleSystem involved in the collision]]></parameter>
+  </event>
+  <example name="Creating Box2d body and moving Bitmap along the body"><![CDATA[require "box2d"
+local world = b2.World.new(0, 10, true)
+
+--create ball bitmap object from ball graphic
+local ball = Bitmap.new(Texture.new("ball.png"))
+--reference center of the ball for positioning
+ball:setAnchorPoint(0.5,0.5)
+ 
+ball:setPosition(100,100)
+ 
+--get radius
+local radius = ball:getWidth()/2
+ 
+--create box2d physical object
+local body = world:createBody{type = b2.DYNAMIC_BODY}
+local circle = b2.CircleShape.new(0, 0, radius)
+local fixture = body:createFixture{shape = circle, density = 1.0, 
+friction = 0.1, restitution = 0.2}
+ball.body = body
+ 
+--add to scene
+stage:addChild(ball)
+
+stage:addEventListener(Event.ENTER_FRAME, function()
+	-- edit the step values if required. These are good defaults!
+    world:step(1/60, 8, 3)
+	ball:setPosition(ball.body:getPosition())
+	ball:setRotation(math.rad(ball.body:getAngle()))
+end)]]></example>
+  <example name="Detecting collisions between bodies"><![CDATA[--add collision event listener
+world:addEventListener(Event.BEGIN_CONTACT, function(e)
+    --getting contact bodies
+    local fixtureA = e.fixtureA
+    local fixtureB = e.fixtureB
+    local bodyA = fixtureA:getBody()
+    local bodyB = fixtureB:getBody()
+     
+    --do what you need with colliding bodies
+end)
+
+--add collision event listener
+world:addEventListener(Event.END_CONTACT, function(e)
+    --getting contact bodies
+    local fixtureA = e.fixtureA
+    local fixtureB = e.fixtureB
+    local bodyA = fixtureA:getBody()
+    local bodyB = fixtureB:getBody()
+     
+    --do what you need with colliding bodies
+end)
+
+--add collision event listener
+world:addEventListener(Event.PRE_SOLVE, function(e)
+    --getting contact bodies
+    local fixtureA = e.fixtureA
+    local fixtureB = e.fixtureB
+    local bodyA = fixtureA:getBody()
+    local bodyB = fixtureB:getBody()
+     
+    --do what you need with colliding bodies
+end)
+
+--add collision event listener
+world:addEventListener(Event.POST_SOLVE, function(e)
+    --getting contact bodies
+    local fixtureA = e.fixtureA
+    local fixtureB = e.fixtureB
+    local bodyA = fixtureA:getBody()
+    local bodyB = fixtureB:getBody()
+     
+    --do what you need with colliding bodies
+	
+	--additionally get collision force
+	print(event.maxImpulse)
+end)]]></example>
+</object>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="TextField" page="TextField" parent="Sprite" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The `TextField` class is used to create display objects for text display.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="TextField.new" page="new" shortdesc="creates a new TextField object with the specified font and text" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `TextField` object with the specified font and text. Gideros runtime includes a<br />
+default font. If you specify `nil` for the font parameter while creating the `TextField` object, default font is used.<br />
+<br />
+]]>
+    <parameter name="font" optional="false" type="FontBase"><![CDATA[The font used for displaying this `TextField` object. If nil, default font is used.]]></parameter>
+    <parameter name="text" optional="false" type="string, optional"><![CDATA[The text to be displayed.]]></parameter>
+    <parameter name="sample" optional="true" type="string"><![CDATA[sample to determine line height]]></parameter>
+    <parameter name="layout" optional="true" type="table"><![CDATA[Layout parameters, see `TextField:setLayout`]]></parameter>
+  </method>
+  <method name="TextField:setText" page="setText" shortdesc="sets the text to be displayed" version="Gideros 2011.6"><![CDATA[<br />
+Sets the text to be displayed.<br />
+<br />
+]]>
+    <parameter name="text" optional="false" type="string"><![CDATA[The text to be displayed.]]></parameter>
+  </method>
+  <method name="TextField:getText" page="getText" shortdesc="returns the text displayed" version="Gideros 2011.6"><![CDATA[<br />
+Returns the text displayed.<br />
+<br />
+]]>
+    <return type="string"><![CDATA[The text displayed.]]></return>
+  </method>
+  <method name="TextField:setTextColor" page="setTextColor" shortdesc="sets the color of the text in a text field in hexadecimal format" version="Gideros 2011.6"><![CDATA[<br />
+<br />
+Sets the color of the text in a text field in hexadecimal format.<br />
+<br />
+<br />
+]]>
+    <parameter name="color" optional="false" type="number"><![CDATA[color of the text in hexadecimal format.]]></parameter>
+    <example><![CDATA[textfield:setTextColor(0xff0000)	-- red<br />
+textfield:setTextColor(0x00ff00)	-- green<br />
+textfield:setTextColor(0x0000ff)	-- blue<br />
+]]></example>
+  </method>
+  <method name="TextField:getTextColor" page="getTextColor" shortdesc="returns the color of the text in a text field in hexadecimal format" version="Gideros 2011.6"><![CDATA[<br />
+]]>
+    <return type="number"><![CDATA[The color of the text in a text field, in hexadecimal format.]]></return>
+  </method>
+  <method name="TextField:setLetterSpacing" page="setLetterSpacing" shortdesc="sets the letter-spacing property which is used to increase or decrease the space between characters in a text" version="Gideros 2011.6"><![CDATA[<br />
+Sets the letter-spacing property which is used to increase or decrease the space between characters in a text.<br />
+<br />
+]]>
+    <parameter name="spacing" optional="false" type="number"/>
+  </method>
+  <method name="TextField:getLetterSpacing" page="getLetterSpacing" shortdesc="returns the letter-spacing property which is used to increase or decrease the space between characters in a text" version="Gideros 2011.6"><![CDATA[<br />
+Returns the letter-spacing property which is used to increase or decrease the space between characters in a text.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The letter-spacing property of the text field.]]></return>
+  </method>
+  <method name="TextField:setFont" page="setFont" shortdesc="set font to use" version="Gideros 2016.08"><![CDATA[set font to use]]>
+    <parameter name="font" optional="false" type="FontBase"><![CDATA[font to use]]></parameter>
+  </method>
+  <method name="TextField:getLineHeight" page="getLineHeight" shortdesc="Get line height" version="Gideros 2016.08"><![CDATA[Get line height]]>
+    <return type="number"><![CDATA[line height in pixels]]></return>
+  </method>
+  <method name="TextField:getSample" page="getSample" shortdesc="get string that was used as sample for determining line height" version="Gideros 2016.08"><![CDATA[get string that was used as sample for determining line height]]>
+    <return type="string"><![CDATA[string used as sample]]></return>
+  </method>
+  <method name="TextField:setSample" page="setSample" shortdesc="Set string that will be used as sample for determining text's line height" version="Gideros 2016.08"><![CDATA[Set string that will be used as sample for determining text's line height]]>
+    <parameter name="sample" optional="false" type="string"><![CDATA[string to use as sample]]></parameter>
+  </method>
+  <method name="TextField:getLayout" page="getLayout" shortdesc="Retrieve the layout parameters of this Textfield" version="Gideros 2017.10"><![CDATA[Retrieve the layout parameters of this TextField]]>
+    <return type="table"><![CDATA[Layout parameters]]></return>
+  </method>
+  <method name="TextField:setLayout" page="setLayout" shortdesc="Change the layout parameters for this TextField" version="Gideros 2017.10"><![CDATA[Change the layout parameters for this TextField]]><![CDATA[
+    Layout parameters can contain the following fields:
+    - w,h: Width/height of the area to layout the text in
+    - flags: A or combination of `FontBase`.TLF_xxx constants instructing how to layout the text
+    - letterSpacing: The space to add between each letter of the text
+    - lineSpacing: The space to add between each line of the text
+    - tabSpace: The size of a tab in space characters increment, default to 4 if unspecified
+    ]]>
+    <parameter name="layout" optional="false" type="table"><![CDATA[Layout parameters]]></parameter>
+  </method>
+  <example name=""><![CDATA[local font = Font.new(&quot;myfont.txt&quot;, &quot;myfont.png&quot;)<br />
+<br />
+local textfield = TextField.new(font, &quot;some text&quot;)<br />
+<br />
+stage:addChild(textfield)<br />
+<br />
+textfield:setText(&quot;some other text&quot;)		-- change the text<br />
+<br />
+-- to use the default font, pass nil value for the font parameter<br />
+local textfield2 = TextField.new(nil, &quot;some other text with default font&quot;)]]></example>
+</object>

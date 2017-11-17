@@ -1012,7 +1012,7 @@ void MovieClip::addFrame(int start, int end, Sprite* sprite, const std::vector<P
 	frames_.push_back(frame);
 }
 
-void MovieClip::finalize()
+void MovieClip::finalize(bool play)
 {
     switch (type_)
     {
@@ -1023,22 +1023,19 @@ void MovieClip::finalize()
         maxframe_ = 0;
         break;
     }
+    minframe_=maxframe_;
 
     for (std::size_t i = 0; i < frames_.size(); ++i)
 	{
 		allFrames_[frames_[i].start].push_back(&frames_[i]);
+		revFrames_[frames_[i].end].push_back(&frames_[i]);
 		maxframe_ = std::max(maxframe_, frames_[i].end);
 	}
 
-    switch (type_)
-    {
-    case eFrame:
-        gotoAndPlay(1);
-        break;
-    case eTime:
-        gotoAndPlay(0);
-        break;
-    }
+    if (play)
+     	gotoAndPlay(minframe_,false);
+    else
+      	gotoAndStop(minframe_);
 }
 
 bool MovieClip::oneFrame()
@@ -1058,19 +1055,30 @@ bool MovieClip::oneFrame()
 	if (iter2 != actions_.end())
 	{
 		bool unref=false;
+		bool quit=false;
         if (iter2->second == -1)
         {
 			unref=stop(false);
             CompleteEvent event(CompleteEvent::COMPLETE);
             dispatchEvent(&event);
+            quit=true;
+        }
+        else if (iter2->second == -2)
+        {
+        	reverse_=!reverse_;
+        	gotoFrame(frame_);
         }
 		else
+		{
 			gotoFrame(iter2->second);
-
-		return unref;
+			quit=true;
+		}
+        if (quit)
+        	return unref;
 	}
 
-	if (frame_ == maxframe_)
+	if (((!reverse_)&&(frame_ == maxframe_))||
+			((reverse_)&&(frame_ == minframe_)))
 	{
 		bool unref=stop(false);
         CompleteEvent event(CompleteEvent::COMPLETE);
@@ -1089,16 +1097,32 @@ bool MovieClip::oneFrame()
 		activeFrames_.erase(iter);
 	}
 
-	frame_ = frame_ + 1;
-
-	iter = allFrames_.find(frame_);
-	if (iter != allFrames_.end())
+	if (reverse_)
 	{
-		const std::vector<Frame*>& frames = iter->second;
-		for (std::size_t i = 0; i < frames.size(); ++i)
+		frame_ = frame_ - 1;
+		iter = revFrames_.find(frame_);
+		if (iter != revFrames_.end())
 		{
-			activeFrames_[frames[i]->end].push_back(frames[i]);
-			addChild2(frames[i]->sprite);
+			const std::vector<Frame*>& frames = iter->second;
+			for (std::size_t i = 0; i < frames.size(); ++i)
+			{
+				activeFrames_[frames[i]->start].push_back(frames[i]);
+				addChild2(frames[i]->sprite);
+			}
+		}
+	}
+	else
+	{
+		frame_ = frame_ + 1;
+		iter = allFrames_.find(frame_);
+		if (iter != allFrames_.end())
+		{
+			const std::vector<Frame*>& frames = iter->second;
+			for (std::size_t i = 0; i < frames.size(); ++i)
+			{
+				activeFrames_[frames[i]->end].push_back(frames[i]);
+				addChild2(frames[i]->sprite);
+			}
 		}
 	}
 	
@@ -1156,7 +1180,7 @@ void MovieClip::gotoFrame(int frame)
 
 		if (start <= frame_ && frame_ <= end)
 		{
-			activeFrames_[end].push_back(&frames_[i]);
+			activeFrames_[reverse_?start:end].push_back(&frames_[i]);
 			addChild2(frames_[i].sprite);
 		}
 	}
@@ -1206,10 +1230,11 @@ float MovieClip::getField(int frmIndex,Parameter param)
 	return frames_[frmIndex].sprite->get(param.param);
 }
 
-void MovieClip::gotoAndPlay(int frame)
+void MovieClip::gotoAndPlay(int frame, bool reverse)
 {
+	reverse_=reverse;
 	gotoFrame(frame);
-	play();
+	play(reverse);
 }
 
 void MovieClip::gotoAndStop(int frame)
@@ -1218,10 +1243,13 @@ void MovieClip::gotoAndStop(int frame)
 	stop();
 }
 
-void MovieClip::play()
+void MovieClip::play(bool reverse)
 {
 	passoneframe_ = true;
     prevClock_ = iclock();
+    if (reverse_!=reverse)
+    	gotoFrame(frame_);
+    reverse_=reverse;
     if (!playing_)
     {
     	playing_ = true;
@@ -1251,6 +1279,11 @@ bool MovieClip::stop(bool unrefNow)
 void MovieClip::setStopAction(int frame)
 {
     actions_[frame] = -1;
+}
+
+void MovieClip::setReverseAction(int frame)
+{
+    actions_[frame] = -2;
 }
 
 void MovieClip::setGotoAction(int frame, int destframe)

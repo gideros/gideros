@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="NotificationManager" page="NotificationManager" parent="EventDispatcher" type="labs" version="Gideros 2011.6"><![CDATA[NotificationManager is the class that allows you to manage scheduled and received notifications. This is a class with a single instance which can be retrieved using getSharedInstance() and can not have any new instances.
+
+With NotificationManager you can retrieve information about all scheduled local notifications, all received local notifications and all received push notifications. As well as clear all type of notifications and cancel scheduled notifications.
+
+NotificationManager instance also receives events about notification being clicked and app opened through that specific notification. As well as registration for push notification event or registration error.]]>
+  <method name="NotificationManager.getSharedInstance" page="getSharedInstance" shortdesc="get NotificationManager instance" version="Gideros 2011.6"><![CDATA[Returns the shared instance of NotificationManager class. There can be no other instance.]]></method>
+  <method name="NotificationManager:getLocalNotifications" page="getLocalNotifications" shortdesc="get local notifications" version="Gideros 2011.6"><![CDATA[Retrieves the lua table of already displayed local notifications. The table uses notification ids as keys and table with information about notification as value.]]>
+    <example name="Here is an example structure of returned table:"><![CDATA[Table {
+	[2] => Table {
+		{
+			[message] => Do you see me?
+			[title] => Test from Server1
+			[id] => 2
+			[number] => 0
+			[sound] => "somesound.wav"
+		}
+	[10] => Table {
+		{
+			[message] => Do you see me?
+			[title] => Test from Server2
+			[id] => 10
+			[number] => 0
+			[sound] => ""
+		}
+}]]></example>
+  </method>
+  <method name="NotificationManager:getScheduledNotifications" page="getScheduledNotifications" shortdesc="get schedule notifications" version="Gideros 2011.6"><![CDATA[Retrieves the lua table of scheduled local notifications, that were not yet displayed. The table uses notification ids as keys and table with information about notification as value.]]>
+    <example name="Here is an example structure of returned table:"><![CDATA[Table {
+	[2] => Table {
+		{
+			[message] => Do you see me?
+			[title] => Test from Server1
+			[id] => 2
+			[number] => 0
+			[sound] => "somesound.wav"
+		}
+	[10] => Table {
+		{
+			[message] => Do you see me?
+			[title] => Test from Server2
+			[id] => 10
+			[number] => 0
+			[sound] => ""
+		}
+}]]></example>
+  </method>
+  <method name="NotificationManager:getPushNotifications" page="getPushNotifications" shortdesc="get push notification" version="Gideros 2011.6"><![CDATA[Retrieves the lua table of received push notifications. On Android all pushed notifications appear here, but on IOS only pushed notifications that user clicked on or that were received while application was in foreground appear here.
+
+You must provide an ID on the server to identify your push notification in this list.]]>
+    <example name="Here is an example structure of returned table:"><![CDATA[Table {
+	[2] => Table {
+		{
+			[message] => Do you see me?
+			[title] => Test from Server1
+			[id] => 2
+			[number] => 0
+			[sound] => "somesound.wav"
+		}
+	[10] => Table {
+		{
+			[message] => Do you see me?
+			[title] => Test from Server2
+			[id] => 10
+			[number] => 0
+			[sound] => ""
+		}
+}]]></example>
+  </method>
+  <method name="NotificationManager:clearLocalNotifications" page="clearLocalNotifications" shortdesc="clear local notifications" version="Gideros 2011.6"><![CDATA[Clears the data about already displayed local notifications that can be retrieved using `NotificationManager:getLocalNotifications` method.]]></method>
+  <method name="NotificationManager:clearPushNotifications" page="clearPushNotifications" shortdesc="clear push notifications" version="Gideros 2011.6"><![CDATA[Clears the data about received push notifications that can be retrieved using `NotificationManager:getPushNotifications` method.]]></method>
+  <method name="NotificationManager:cancelAllNotifications" page="cancelAllNotifications" shortdesc="cancel scheduled notification" version="Gideros 2011.6"><![CDATA[Cancels all currently scheduled but not yet displayed local notifications.]]></method>
+  <method name="NotificationManager:cancelNotification" page="cancelNotification" shortdesc="cancel specified notification" version="Gideros 2011.6"><![CDATA[Cancel specific scheduled notification by it's ID.
+
+Basically it's the same as creating new notification with same ID and cancelling it:]]>
+    <example name="Cancel notification"><![CDATA[--id of notification to cancel
+local id = 1
+
+--cancel through notification isntance
+local notification = Notification.new(id)
+notification:cancel()
+
+--cancel through NotificationManager
+local mngr = NotificationManager:getSharedInstance()
+mngr:cancelNotification(id)]]></example>
+  </method>
+  <method name="NotificationManager:registerForPushNotifications" page="registerForPushNotifications" shortdesc="register for push notifications" version="Gideros 2011.6"><![CDATA[Register device for receiveng push notifications.
+
+On Android this method accepts the string value of project ID in Google API console.
+
+On IOS this method does not require any input, but for compatability purpose, you may pass same string as for Android or any other string, as it won't do any harm.
+
+Before calling this method you should register for two events: 
+ for successful registration
+ for registration error
+
+Upon successful registration you will receive the device token with the event object, that you should pass to your server, which will be sending push notifications.
+
+Although this method can be called multiple times, and even if already registered it will still return same device token with the event object, but it is still recommended to persistant store device token if you'll be needing it later.]]>
+    <example name="Registering for push notifications"><![CDATA[--retrieve shared instance
+local mngr = NotificationManager.getSharedInstance()
+
+--if registration completed succesfully
+mngr:addEventListener(Event.PUSH_REGISTRATION, function(e)
+	--getting device token
+	local token = e.deviceToken
+	
+	--sending token to your server
+	local loader = UrlLoader.new("http://yourdomain.com/register.php?token="..token)
+	loader:addEventListener(Event.COMPLETE, function()
+		--token succesfuly deliverd
+	end)
+end)
+
+--if registration failed
+mngr:addEventListener(Event.PUSH_REGISTRATION_ERROR, function(e)
+	--device could not been registered now
+	--try again later
+	print(e.error)
+end)
+
+
+--try to register for push notifications
+mngr:registerForPushNotifications("953841987672")]]></example>
+  </method>
+  <method name="NotificationManager:unregisterForPushNotifications" page="unregisterForPushNotifications" shortdesc="unregister from notifications" version="Gideros 2011.6"><![CDATA[Unregister device from receiving push notifications. Basically this method invalidates the deviceToken. You still need to remove the token from your server by yourself, or else using invalidated tokens may lead to errors in some push notification services.]]></method>
+  <event name="Event.LOCAL_NOTIFICATION" page="Event.LOCAL_NOTIFICATION" value="localNotification" version="Gideros 2011.6"><![CDATA[Event is dispatched when application is opened by clicking on local notification.
+
+Or when notification is received while application is in foreground (because in this case notification will not be displayed on the device).]]></event>
+  <event name="Event.PUSH_NOTIFICATION" page="Event.PUSH_NOTIFICATION" value="pushNotification" version="Gideros 2011.6"><![CDATA[Event is received when application is opened by clicking on push notification.
+
+Or when notification is received while application is in foreground (because in this case notification will not be displayed on the device).]]></event>
+  <event name="Event.PUSH_REGISTRATION" page="Event.PUSH_REGISTRATION" value="pushRegistration" version="Gideros 2011.6"><![CDATA[Event is received when application is successfully registered for push notifications, after calling `registerForPushNotifications`]]></event>
+  <event name="Event.PUSH_REGISTRATION_ERROR" page="Event.PUSH_REGISTRATION_ERROR" value="pushRegistrationError" version="Gideros 2011.6"><![CDATA[Event is received when application failed to register for push notifications, after calling `registerForPushNotifications`, which means you should retry later.
+
+There might be different reasons, but most common is that server was unavailable or there was no Internet connection.]]></event>
+  <example name="Modifying existing scheduled notification"><![CDATA[--id of notification to modify
+local id = 1
+
+--retrieve shared instance
+local mngr = NotificationManager.getSharedInstance()
+
+--retrieve table with scheduled notifications
+local t = mngr:getScheduledNotifications()
+
+--check if id is in it
+if t[id] then
+	--notification is still scheduled
+	--let's modify it by creating new instance with same id
+	local note = Notification.new(id)
+	note:setTitle("New title")
+	note:setMessage("New message")
+	--if we want to modify dispatch time we need to redispatch it
+	note:dispatchAfter({day = 1})
+end]]></example>
+  <example name="Checking if notification is stil scheduled"><![CDATA[--id of notification to check
+local id = 1
+
+--retrieve shared instance
+local mngr = NotificationManager.getSharedInstance()
+
+--retrieve table with scheduled notifications
+local t = mngr:getScheduledNotifications()
+
+--check if id is in it
+if t[id] then
+	--notification is still scheduled
+end]]></example>
+  <example name="Catching event if app opened from local notification or notification received in background"><![CDATA[--retrieve shared instance
+local mngr = NotificationManager.getSharedInstance()
+
+mngr:addEventListener(Event.LOCAL_NOTIFICATION, function(e)
+	--getting id of notification
+	local id = e.id
+	
+	--printing other information
+	print("Title: "..e.title)
+	print("Text: "..e.message)
+	print("Number: "..e.number)
+end)]]></example>
+  <example name="Registering for push notifications"><![CDATA[--retrieve shared instance
+local mngr = NotificationManager.getSharedInstance()
+
+--if registration completed succesfully
+mngr:addEventListener(Event.PUSH_REGISTRATION, function(e)
+	--getting device token
+	local token = e.deviceToken
+	
+	--sending token to your server
+	local loader = UrlLoader.new("http://yourdomain.com/register.php?token="..token)
+	loader:addEventListener(Event.COMPLETE, function()
+		--token succesfuly deliverd
+	end)
+end)
+
+--if registration failed
+mngr:addEventListener(Event.PUSH_REGISTRATION_ERROR, function(e)
+	--device could not been registered now
+	--try again later
+	print(e.error)
+end)
+
+
+--try to register for push notifications
+mngr:registerForPushNotifications("953841987672")]]></example>
+</object>

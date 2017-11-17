@@ -12,6 +12,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        //TAG-TOP-GRADLE-ALLREPOS//
     }
 }
 

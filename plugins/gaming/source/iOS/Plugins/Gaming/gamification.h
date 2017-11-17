@@ -15,6 +15,10 @@ enum
 	GAME_LOAD_SCORES_ERROR_EVENT,
 	GAME_REPORT_SCORE_COMPLETE_EVENT,
 	GAME_REPORT_SCORE_ERROR_EVENT,
+	GAME_PLAYER_INFORMATION_COMPLETE_EVENT,
+	GAME_PLAYER_INFORMATION_ERROR_EVENT,
+	GAME_PLAYER_SCORE_COMPLETE_EVENT,
+	GAME_PLAYER_SCORE_ERROR_EVENT,
 	GAME_STATE_LOADED_EVENT,
 	GAME_STATE_ERROR_EVENT,
 	GAME_STATE_CONFLICT_EVENT,
@@ -84,6 +88,7 @@ typedef struct Score
 	std::string score;
 	std::string name;
 	std::string playerId;
+	std::string pic;
 	int timestamp;
 } Score;
 
@@ -93,6 +98,7 @@ typedef struct game_Score
 	const char *score;
 	const char *name;
 	const char *playerId;
+	const char *pic;
 	int timestamp;
 } game_Score;
 
@@ -104,6 +110,23 @@ typedef struct game_Leaderboard
 	int count;
 	game_Score *scores;
 } game_Leaderboard;
+
+typedef struct game_Player
+{
+	const char *caller;
+	const char *playerId;
+	const char *name;
+	const char *pic;
+} game_Player;
+
+typedef struct game_PlayerScore
+{
+	const char *caller;
+	const char *id;
+	int rank;
+	long score;
+	int timestamp;
+} game_PlayerScore;
 
 typedef struct game_SimpleEvent
 {
@@ -164,8 +187,9 @@ G_API void game_logout(const char *game);
 
 G_API void game_reportScore(const char *game, const char *id, long score, int immediate);
 G_API void game_showAchievements(const char *game);
+G_API void game_getPlayerInfo(const char *game);
 G_API void game_showLeaderboard(const char *game, const char *id);
-G_API void game_reportAchievement(const char *game, const char *id, int steps, int immediate);
+G_API void game_reportAchievement(const char *game, const char *id, double steps, int immediate);
 G_API void game_revealAchievement(const char *game, const char *id, int immediate);
 G_API void game_loadAchievements(const char *game);
 G_API void game_loadScores(const char *game, const char *id, int span, int collection, int maxResults);
@@ -177,6 +201,10 @@ G_API void game_deleteState(const char *game, int key);
     
 G_API void game_onLoginComplete(const char *caller);
 G_API void game_onLoginError(const char *caller, const char *value);
+G_API void game_onPlayerInfoComplete(const char *caller,const char *id, const char *name,const char *pic);
+G_API void game_onPlayerInfoError(const char *caller, const char *error);
+G_API void game_onPlayerScoreComplete(const char *caller, const char *id, int rank, long score, int timestamp);
+G_API void game_onPlayerScoreError(const char *caller, const char *id, const char *error);
 G_API void game_onReportAchievementComplete(const char *caller, const char *value);
 G_API void game_onReportAchievementError(const char *caller, const char *value, const char *error);
 G_API void game_onReportScoreComplete(const char *caller, const char *value, long score);

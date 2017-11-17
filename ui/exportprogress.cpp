@@ -5,6 +5,7 @@
 #include <QInputDialog>
 #include "qtutils.h"
 
+static QMap<QString,QString> responseCache;
 ExportProgress::ExportProgress(QProcess *exportProcess_, QString& out, QWidget *parent) :
     _out(out),
     QDialog(parent),
@@ -33,7 +34,10 @@ void ExportProgress::onStandardError()
 		QString line=QString(errorLog.left(sepPos+1)).trimmed();
 		errorLog.remove(0,sepPos+1);
 		QColor col=ui->lbExport->palette().color(QPalette::Text);
-		ui->lbExport->setTextColor(QColor("red"));
+		if (line.startsWith("note",Qt::CaseInsensitive))
+			ui->lbExport->setTextColor(QColor("blue"));
+		else
+			ui->lbExport->setTextColor(QColor("red"));
 		ui->lbExport->append(line);
 		ui->lbExport->setTextColor(col);
 	}
@@ -78,13 +82,29 @@ void ExportProgress::onStandardOutput()
 				int s2=line.indexOf("|",s1+1);
 				if (s2>=0)
 				{
-					bool ok;
-					QString text = QInputDialog::getText(this, line.mid(4,s1-4),
-				                                         line.mid(s1+1,s2-s1-1), (type=='K')?QLineEdit::Password:QLineEdit::Normal,
-				                                         line.mid(s2+1), &ok);
-					if (!ok)
-						text=line.mid(s2+1);
-					exportProcess->write((text+"\n").toUtf8());
+					int s3=line.indexOf("|",s2+1);
+					if (s3>=0)
+					{
+						bool ok;
+						QString title=line.mid(4,s1-4);
+						QString question=line.mid(s1+1,s2-s1-1);
+						QString def=line.mid(s2+1,s3-s2-1);
+						QString uid=line.mid(s3+1);
+						QString text;
+						if ((!uid.isEmpty())&&(responseCache.contains(uid)))
+							def=responseCache[uid];
+						text = QInputDialog::getText(this, title, question,
+									(type=='K')?QLineEdit::Password:QLineEdit::Normal,
+									def, &ok);
+						if (ok)
+						{
+							if (!uid.isEmpty())
+								responseCache[uid]=text;
+						}
+						else
+							text=def;
+						exportProcess->write((text+"\n").toUtf8());
+					}
 				}
 			}
 		}
@@ -106,17 +126,17 @@ void ExportProgress::onShowInFinder()
 
 void ExportProgress::onFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-	if (exitStatus==QProcess::NormalExit)
+	if ((exitStatus==QProcess::NormalExit)&&(exitCode==0))
 	{
 		ui->lbExport->append("Export done.");
+		ui->btEnd->setText("Done");
 	}
 	else
 	{
 		ui->lbExport->setTextColor(QColor("red"));
 		ui->lbExport->append("Export failed! See details above.");
+		ui->btEnd->setText("Failed!");
 	}
-
-	ui->btEnd->setText("Done");
 }
 
 ExportProgress::~ExportProgress()

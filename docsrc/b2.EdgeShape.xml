@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="b2.EdgeShape" page="b2EdgeShape" parent="b2.Shape" type="physics" version="Gideros 2011.6"><![CDATA[<br />
+A line segment (edge) shape. These can be connected in chains or loops to other edge shapes.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="b2.EdgeShape.new" page="new" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `b2.EdgeShape` instance and optionally sets its 2 vertices. <br />
+If this function is called with more than 4 parameters, `b2.EdgeShape` instance<br />
+is created and its 2 vertices are set. If this function is called without any <br />
+paramaters, only `b2.EdgeShape` instance is created and you should set the 2 <br />
+vertices with [[b2.EdgeShape:set]] function. <br />
+<br />
+]]>
+    <parameter name="v1x" optional="false" type="number, optional"><![CDATA[- the x coordinate of 1st point of edge]]></parameter>
+    <parameter name="v1y" optional="false" type="number, optional"><![CDATA[- the y coordinate of 1st point of edge]]></parameter>
+    <parameter name="v2x" optional="false" type="number, optional"><![CDATA[- the x coordinate of 2nd point of edge]]></parameter>
+    <parameter name="v2y" optional="false" type="number, optional"><![CDATA[- the y coordinate of 2nd point of edge]]></parameter>
+  </method>
+  <method name="b2.EdgeShape:set" page="set" shortdesc="sets the two vertices" version="Gideros 2011.6"><![CDATA[<br />
+Sets the two vertices of this instance.<br />
+<br />
+]]>
+    <parameter name="v1x" optional="false" type="number"><![CDATA[- the x coordinate of 1st point of edge]]></parameter>
+    <parameter name="v1y" optional="false" type="number"><![CDATA[- the y coordinate of 1st point of edge]]></parameter>
+    <parameter name="v2x" optional="false" type="number"><![CDATA[- the x coordinate of 2nd point of edge]]></parameter>
+    <parameter name="v2y" optional="false" type="number"><![CDATA[- the y coordinate of 2nd point of edge]]></parameter>
+  </method>
+</object>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Bitmap" page="Bitmap" parent="Sprite" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The `Bitmap` class is used to display texture related objects in the scene tree. It is possible to create Bitmap object from `TextureBase` or `TextureRegion` instances.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Bitmap.new" page="new" shortdesc="creates a new Bitmap object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new `Bitmap` object.<br />
+<br />
+<br />
+]]>
+    <parameter name="texture" optional="false" type="TextureBase or TextureRegion"/>
+    <example><![CDATA[local texture = Texture.new(&quot;image.png&quot;)<br />
+<br />
+local region = TextureRegion.new(texture, 0, 0, 100, 50)<br />
+<br />
+local bitmap1 = Bitmap.new(texture)<br />
+local bitmap2 = Bitmap.new(region)<br />
+<br />
+stage:addChild(bitmap1)<br />
+stage:addChild(bitmap2)<br />
+]]></example>
+  </method>
+  <method name="Bitmap:setAnchorPoint" page="setAnchorPoint" shortdesc="sets the anchor point" version="Gideros 2011.6"><![CDATA[<br />
+Sets the anchor point of `Bitmap` object. <br />
+<br />
+Each `Bitmap` object has an anchor point that affects the positioning of the texture displayed. By modifying the anchor point, you change the origin of the texture. For example, setting the anchor point to (0.5, 0.5) moves the center of the texture to the origin. If you set the anchor point to (1, 1) instead, the bottom-right corner of the texture will be the origin. The default value of anchor point is (0, 0) which means top-left of the texture is the origin by default.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[The x coordinate of anchor point. Usually between [0, 1].]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[The y coordinate of anchor point. Usually between [0, 1].]]></parameter>
+  </method>
+  <method name="Bitmap:getAnchorPoint" page="getAnchorPoint" shortdesc="returns the x and y coordinates of the anchor point" version="Gideros 2011.6"><![CDATA[<br />
+Returns the x and y coordinates of the anchor point.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The x coordinate of the anchor point.]]></return>
+    <return type="number"><![CDATA[The y coordinate of the anchor point.]]></return>
+  </method>
+  <method name="Bitmap:setTexture" page="setTexture" shortdesc="sets the texture" version="Gideros 2012.08.2"><![CDATA[<br />
+Sets the texture.<br />
+<br />
+]]>
+    <parameter name="texture" optional="false" type="TextureBase"/>
+  </method>
+  <method name="Bitmap:setTextureRegion" page="setTextureRegion" shortdesc="sets the texture region" version="Gideros 2012.08.2"><![CDATA[<br />
+Sets the texture region.<br />
+<br />
+]]>
+    <parameter name="textureRegion" optional="false" type="TextureRegion"/>
+  </method>
+</object>

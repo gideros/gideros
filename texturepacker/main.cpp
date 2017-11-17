@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationName("GiderosMobile");
 	QCoreApplication::setOrganizationDomain("giderosmobile.com");
 	QCoreApplication::setApplicationName("GiderosTexturePacker");
+	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
 

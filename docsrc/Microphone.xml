@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Microphone" page="Microphone" parent="" type="plugin" version="Gideros 2013.06"><![CDATA[Use this plugin to record to an audio clip using a connected microphone.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Microphone.new" page="new" shortdesc="Creates a new Microphone object." version="Gideros 2013.06"><![CDATA[Creates a new Microphone object.]]>
+    <parameter name="deviceName" optional="false" type="string"><![CDATA[The name of the device. Passing nil or an empty string will pick the default device.]]></parameter>
+    <parameter name="sampleRate" optional="false" type="number"><![CDATA[Sample rate of the recording. This value should be between 4000 and 44100.]]></parameter>
+    <parameter name="numChannels" optional="false" type="number"><![CDATA[Number of channels. This value can be 1 for mono and 2 for stereo.]]></parameter>
+    <parameter name="bitsPerSample" optional="false" type="number"><![CDATA[Bits per sample. This value can be 8 or 16.]]></parameter>
+  </method>
+  <method name="Microphone:setOutputFile" page="setOutputFile" shortdesc="Sets the output file" version="Gideros 2013.06"><![CDATA[Sets the output file. If an output file is specified, captured audio is recorded to this file. You cannot set output file while recording.]]>
+    <parameter name="fileName" optional="false" type="string"><![CDATA[The filename. It should be on documents or temporary directory.]]></parameter>
+  </method>
+  <method name="Microphone:start" page="start" shortdesc="Start recording with device." version="Gideros 2013.06"><![CDATA[Start recording with device.]]></method>
+  <method name="Microphone:stop" page="stop" shortdesc="Stop recording" version="Gideros 2013.06"><![CDATA[Stop recording.]]></method>
+  <event name="Event.DATA_AVAILABLE" page="Event.DATA_AVAILABLE" value="dataAvailable" version="Gideros 2013.06"><![CDATA[Dispatched as audio samples become available.]]>
+    <parameter name="peakAmplitude" type="number"><![CDATA[The audio channel's peak amplitute.]]></parameter>
+    <parameter name="averageAmplitude" type="number"><![CDATA[The audio channel's average RMS amplitute.]]></parameter>
+  </event>
+</object>

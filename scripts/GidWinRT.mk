@@ -1,4 +1,4 @@
-WINRT_SHADERS=Basic Color Texture TextureAlpha TextureColor Particle Particles PathFillC PathStrokeC PathStrokeLC
+WINRT_SHADERS=Basic Color Texture TextureAlpha TextureColor TextureAlphaColor Particle Particles PathFillC PathStrokeC PathStrokeLC
 WINRT_SHADERS_PATH=2dsg/gfxbackends/dx11
 WINRT_SHADERS_FILE=dx11_shaders.c
 BIN2C=$(ROOT)/scripts/bin2c
@@ -56,17 +56,31 @@ winrt.libs: winrt.lua winrt.gvfs
 
 winrt.libs.clean: winrt.lua.clean winrt.gvfs.clean
 
-winrt.plugins:
+%.plugin.winrt:
+	$(call WINRT_BUILD_WIN,plugins/$*/source/winrt,$*)
+	$(call WINRT_BUILD_WP,plugins/$*/source/winrt,$*)
+	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/WinRT
+	cp plugins/$*/source/winrt/$*/$*.WindowsPhone/ARM/Release/$*.WindowsPhone/*.WindowsPhone.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/
+	cp plugins/$*/source/winrt/$*/$*.Windows/Release/$*.Windows/*.Windows.lib $(RELEASE)/All\ Plugins/$*/bin/WinRT/
+
+luasocket.plugin.winrt:
 	$(call WINRT_BUILD_WIN,plugins/luasocket/source/winrt/luasocket,luasocket)
 	$(call WINRT_BUILD_WP,plugins/luasocket/source/winrt/luasocket,luasocket)
 	mkdir -p $(RELEASE)/All\ Plugins/luasocket/bin/WinRT
-	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/ARM/*.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
-	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/Win32/*.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
+	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/ARM/*.WindowsPhone.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
+	cp Release/All\ Plugins/luasocket/bin/WinRT/Release/Win32/*.Windows.lib $(RELEASE)/All\ Plugins/luasocket/bin/WinRT/
 
-winrt.plugins.clean:
+%.plugin.winrt.clean:
+	$(call WINRT_CLEAN,plugins/$*/source/winrt,$*)
+
+luasocket.plugin.winrt.clean:
 	$(call WINRT_CLEAN,plugins/luasocket/source/winrt/luasocket,luasocket)
+
+winrt.plugins: $(addsuffix .plugin.winrt,$(PLUGINS_WINRT))
 	
-winrt.core: winrt.libs winrt.shaders
+winrt.plugins.clean: $(addsuffix .plugin.winrt.clean,$(PLUGINS_WINRT))
+	
+winrt.core: versioning winrt.libs winrt.shaders
 	$(call WINRT_BUILD_WIN,winrt,gideros)
 	#X86 Release version for Windows
 	mkdir -p winrt/Release/gideros.Windows
@@ -98,6 +112,7 @@ winrt.template: winrt.core winrt.plugins
 	mkdir -p "$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	cd $(WINRT_PLAYERDIR); git archive master | tar -x -C "../$(RELEASE)/Templates/VisualStudio/WinRT Template"
 	rm -rf "$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/Plugins/"*
+	cp $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/Plugins/plugins.cpp "$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/Plugins/" 
 	sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2' $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/$(WINRT_PLAYERSUBDIR).Shared.vcxitems | sed -e 's/$$(GidLibsPath)/\.\.\\\.\./' >"$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Shared/$(WINRT_PLAYERSUBDIR).Shared.vcxitems"
 	sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2' $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj >"$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).Windows/$(WINRT_PLAYERSUBDIR).Windows.vcxproj"
 	sed -e ':1;s/PLUGINS-START/ /;t2;:3;n;b1;:2;g;n;s/PLUGINS-END/ /;t3;b2' $(WINRT_PLAYERDIR)/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/$(WINRT_PLAYERSUBDIR).WindowsPhone.vcxproj >"$(RELEASE)/Templates/VisualStudio/WinRT Template/$(WINRT_PLAYERSUBDIR)/$(WINRT_PLAYERSUBDIR).WindowsPhone/$(WINRT_PLAYERSUBDIR).WindowsPhone.vcxproj"

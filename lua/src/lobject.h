@@ -263,6 +263,9 @@ typedef struct LocVar {
   TString *varname;
   int startpc;  /* first point where variable is active */
   int endpc;    /* first point where variable is dead */
+  int line;		/* line where the local was defined */
+  int isfunction; /* !0 if this is a local function */
+  int level; /* Scope level */
 } LocVar;
 
 

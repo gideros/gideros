@@ -21,7 +21,7 @@ LSUP_SRCS+=$(addprefix external/glu/libtess/,$(notdir $(basename $(wildcard ../e
 LSUP_SRCS+=$(addprefix external/minizip-1.1/source/,ioapi unzip)
 LGID_SRCS=$(addprefix libgid/src/,aes md5 platformutil utf8 drawinfo gtimer \
 	gimage gimage-png gimage-jpg gtexture gevent glog gglobal gaudio \
-	gaudio-loader-wav gaudio-loader-mp3 \
+	gaudio-loader-wav gaudio-loader-mp3 gaudio-loader-xmp \
 	gvfs-native)
 LGID_SRCS+=$(addprefix libgideros/,event eventdispatcher eventvisitor refptr stringid luautil pluginmanager binderutil)
 
@@ -47,7 +47,7 @@ JPEGFILES=jaricom jdapimin jdapistd jdarith jdatadst jdatasrc jdcoefct jdcolor j
 	jdmainct jdmarker jdmaster jdmerge jdpostct jdsample jdtrans jerror jfdctflt jfdctfst jfdctint \
 	jidctflt jidctfst jidctint jquant1 jquant2 jutils jmemmgr jmemnobs jcomapi \
 	jcapimin jcapistd jcarith jccoefct jccolor jcdctmgr jchuff jcinit jcmainct \
-	jcmaster jcparam jcprepct jcsample jctrans
+	jcmarker jcmaster jcparam jcprepct jcsample jctrans
 LJPG_SRCS=$(addprefix libgid/external/jpeg-9/,$(JPEGFILES))
 LSUP_SRCS+=$(addprefix libgid/external/snappy-1.1.0/,snappy snappy-c snappy-sinksource snappy-stubs-internal)
 MP3FILES=compat dct64 dither equalizer feature format frame icy icy2utf8 id3 index layer1 layer2 layer3 \
@@ -57,6 +57,19 @@ CORE_SRCS+=$(addprefix emscripten/,applicationmanager gapplication-js \
 	ginput-js gaudio-js gaudio-stream-openal-js gaudio-sample-openal-js platform-js ghttp-js \
 	gui-js ggeolocation-js main jsnative netplayer)   
 
+LOCAL_CFLAGS+=-D_REENTRANT -DLIBXMP_CORE_PLAYER
+XMP_SRC=virtual period player read_event dataio lfo envelope \
+		scan control filter effects mixer mix_all load_helpers load \
+		hio smix memio
+XMP_HDR=common effects envelope format lfo list mixer period player \
+		virtual precomp_lut hio memio mdataio tempfile 
+XMP_LOADERS=xm_load s3m_load it_load \
+			common itsex sample
+XMP_LOADERS_HDR=it loader mod s3m xm
+LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/src/,$(XMP_SRC))
+LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/src/loaders/,$(XMP_LOADERS))
+LXMP_SRCS+=$(addprefix libgid/external/libxmp-4.3/lite/src/,format loaders/mod_load)
+					
 
 
 INCS=2dsg libgideros libgid/include libgvfs libpystring
@@ -68,7 +81,10 @@ INCS+=libgid/external/zlib-1.2.8 libgid/external/libpng-1.6.2 \
 	$(addprefix libgid/external/openal-soft-1.13/,include/AL OpenAL32/Include) \
 	libgid/external/snappy-1.1.0 libgid/external/jpeg-9 \
 	libgid/external/mpg123-1.15.3/src \
-	libgid/external/mpg123-1.15.3/src/libmpg123
+	libgid/external/mpg123-1.15.3/src/libmpg123 \
+	libgid/external/libxmp-4.3/include \
+	libgid/external/libxmp-4.3/src \
+	libgid/external/libxmp-4.3/src/loaders 
 INCS+=lua/src
 INCS+=libgvfs/private
 INCS+=emscripten
@@ -82,7 +98,10 @@ CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
 OPTS+=-O2 --bind
+LOPTS+= --separate-asm
 
+#LINE BELOW FOR WASM
+#EOPTS+=MAIN_MODULE=2 WASM=1 TOTAL_MEMORY=512*1024*1024
 EOPTS+=MAIN_MODULE=1 
 EOPTS+=FULL_ES2=1 
 EOPTS+=DISABLE_EXCEPTION_CATCHING=0
@@ -91,11 +110,14 @@ EOPTS+=DISABLE_EXCEPTION_CATCHING=0
 ifneq ($(DEBUG),)
 OPTS+=-g4
 EOPTS+=ASSERTIONS=2
+else
+OPTS+=--emit-symbol-map
 endif
 
 CINCS=$(addprefix -I../,$(INCS))
 CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
 	-DOPT_GENERIC -DREAL_IS_FLOAT \
+	-D_REENTRANT -DLIBXMP_CORE_PLAYER \
 	$(OPTS)
 TEMPLATE=$(BUILD)/Html5/Html5
 
@@ -114,11 +136,12 @@ plugins.clean:
 	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE) clean; cd -; done
 
 
-SUBLIBS=CORE B2D LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3 LFRT
-SUBLIBS_AR=$(addprefix $(BUILD)/lib,$(addsuffix .a,$(SUBLIBS)))
+SUBLIBS=CORE B2D LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3 LFRT LXMP
+SUBLIBS_AR=$(addprefix $(BUILD)/lib,$(addsuffix .bc,$(SUBLIBS)))
 
 define SUB_template
 $$(BUILD)/lib$(1).a: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
+$$(BUILD)/lib$(1).bc: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
 SUBLIBS_SRCS+=$$($(1)_SRCS)
 endef
 
@@ -129,18 +152,27 @@ SUBLIBS_OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SUBLIBS_SRCS)))
 $(BUILD)/lib%.a:
 	@echo "EMAR" $@
 	@$(EMAR) r $@ $^
+
+$(BUILD)/lib%.bc:
+	@echo "EMLD" $@
+	@$(EMCC) -o $@ $^
 			
-$(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidshell.html
+$(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.html
 	@echo "EMLINK gideros"
-	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --shell-file gidshell.html
+	@$(EMCC) $(OBJS) $(LIBS) $(addprefix -s ,$(EOPTS)) $(OPTS) $(LOPTS) $(SUBLIBS_AR) -o $(BUILD)/gideros.html --pre-js gidjs.js --pre-js gui.js --post-js gidpost.js --shell-file gidshell.html
 
 main: path $(BUILD)/gideros.js
 	cp gideros.png $(TEMPLATE)
 	cp gideros.css pace.css $(TEMPLATE)
 	cp $(BUILD)/gideros.html $(TEMPLATE) 
-	cp $(BUILD)/gideros.html.mem $(TEMPLATE) 
+	-cp $(BUILD)/gideros.html.mem $(TEMPLATE) 
+	-cp $(BUILD)/gideros.wasm $(TEMPLATE) 
+	-cp $(BUILD)/gideros.wast $(TEMPLATE) 
 	cp pace.min.js $(TEMPLATE)/pace.js
 	cp $(BUILD)/gideros.js $(TEMPLATE)
+	cp $(BUILD)/gideros.asm.js $(TEMPLATE)
+	-cp $(BUILD)/gideros.html.symbols $(TEMPLATE)
+	-cp $(BUILD)/gideros.js.map $(TEMPLATE)
 	cp pace.ldr.js $(TEMPLATE)
 	cp gideros.ldr.js $(TEMPLATE)
 	cp jzptool.js $(TEMPLATE)

@@ -1,5 +1,8 @@
 #include "../ads.h"
 #include "../AdsAbstract.h"
+
+using namespace Microsoft::Advertising::WinRT::UI;
+
 class AdsPubcenter : public AdsAbstract
 {
 	public:
@@ -18,6 +21,7 @@ class AdsPubcenter : public AdsAbstract
 		virtual int getWidth();
 		virtual int getHeight();
 	private:
+		InterstitialAd ^interstitialAd = nullptr;
 		std::string key;
 		std::map<std::string, std::pair<int, int>> adSizes;
 		bool test = false;

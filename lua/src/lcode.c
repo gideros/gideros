@@ -690,6 +690,71 @@ static void codearith (FuncState *fs, OpCode op, expdesc *e1, expdesc *e2) {
   }
 }
 
+static void codecompound (FuncState *fs, OpCode op, expdesc *e1, expdesc *e2) {
+  int o1;
+  int o2;
+
+  /* load expresion 2 into a register. */
+  o2 = luaK_exp2RK(fs, e2);
+
+  switch (e1->k) {
+    case VLOCAL: {
+      // compound opcode
+      luaK_codeABC(fs, op, e1->u.s.info, o2, 0);
+      return;
+    }
+    case VUPVAL: {
+      // allocate temp. register
+      o1 = fs->freereg;
+      luaK_reserveregs(fs, 1);
+      // load upval into temp. register
+      luaK_codeABC(fs, OP_GETUPVAL, o1, e1->u.s.info, 0);
+      // compound opcode
+      luaK_codeABC(fs, op, o1, o2, 0);
+      // store results back to upval
+      luaK_codeABC(fs, OP_SETUPVAL, o1, e1->u.s.info, 0);
+      // free temp. register
+      freereg(fs, o1);
+      break;
+    }
+    case VGLOBAL: {
+      // allocate temp. register
+      o1 = fs->freereg;
+      luaK_reserveregs(fs, 1);
+      // load global into temp. register
+      luaK_codeABx(fs, OP_GETGLOBAL, o1, e1->u.s.info);
+      // compound opcode
+      luaK_codeABC(fs, op, o1, o2, 0);
+      // store results back to global
+      luaK_codeABx(fs, OP_SETGLOBAL, o1, e1->u.s.info);
+      // free temp. register
+      freereg(fs, o1);
+      break;
+    }
+    case VINDEXED: {
+      // allocate temp. register
+      o1 = fs->freereg;
+      luaK_reserveregs(fs, 1);
+      // load indexed value into temp. register
+      luaK_codeABC(fs, OP_GETTABLE, o1, e1->u.s.info, e1->u.s.aux);
+      // compound opcode
+      luaK_codeABC(fs, op, o1, o2, 0);
+      // store results back to indexed value
+      luaK_codeABC(fs, OP_SETTABLE, e1->u.s.info, e1->u.s.aux, o1);
+      // free temp. register
+      freereg(fs, o1);
+      freereg(fs, e1->u.s.aux);
+      freereg(fs, e1->u.s.info);
+      break;
+    }
+    default: {
+      lua_assert(0);  /* invalid var kind to store */
+      break;
+    }
+  }
+  /* free register for expression 2 */
+  freeexp(fs, e2);
+}
 
 static void codecomp (FuncState *fs, OpCode op, int cond, expdesc *e1,
                                                           expdesc *e2) {
@@ -817,6 +882,12 @@ void luaK_posfix (FuncState *fs, BinOpr op, expdesc *e1, expdesc *e2) {
     case OPR_INTDIV: codearith(fs, OP_INTDIV, e1, e2); break;
 	case OPR_MAX: codearith(fs, OP_MAX, e1, e2); break;
 	case OPR_MIN: codearith(fs, OP_MIN, e1, e2); break;
+	case OPR_ADD_EQ: codecompound(fs, OP_ADD_EQ, e1, e2); break;
+	case OPR_SUB_EQ: codecompound(fs, OP_SUB_EQ, e1, e2); break;
+	case OPR_MUL_EQ: codecompound(fs, OP_MUL_EQ, e1, e2); break;
+	case OPR_DIV_EQ: codecompound(fs, OP_DIV_EQ, e1, e2); break;
+	case OPR_MOD_EQ: codecompound(fs, OP_MOD_EQ, e1, e2); break;
+	case OPR_POW_EQ: codecompound(fs, OP_POW_EQ, e1, e2); break;
     case OPR_EQ: codecomp(fs, OP_EQ, 1, e1, e2); break;
     case OPR_NE: codecomp(fs, OP_EQ, 0, e1, e2); break;
     case OPR_LT: codecomp(fs, OP_LT, 1, e1, e2); break;

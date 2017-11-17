@@ -51,6 +51,7 @@ static double GetCounter() {
 #endif
 }
 
+static SpriteProxyFactory *spriteFactory=NULL;
 Application::Application() :
 		textureManager_(this), timerContainer_(this) {
 	stage_ = 0;
@@ -79,6 +80,10 @@ Application::Application() :
 	fov_ = 0;
 	farplane_ = 0;
 	nearplane_ = 0;
+
+	if (!spriteFactory)
+		spriteFactory=new SpriteProxyFactory();
+	gtexture_set_spritefactory(spriteFactory);
 }
 
 Application::~Application() {

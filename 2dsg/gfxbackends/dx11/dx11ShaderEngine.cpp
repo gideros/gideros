@@ -96,7 +96,8 @@ void dx11SetupShaders()
     ShaderProgram::stdTexture = new dx11ShaderProgram(vTexture_cso,sizeof(vTexture_cso),pTexture_cso,sizeof(pTexture_cso),0,stdConstants,stdTAttributes);
     ShaderProgram::stdTextureAlpha = new dx11ShaderProgram(vTextureAlpha_cso,sizeof(vTextureAlpha_cso),pTextureAlpha_cso,sizeof(pTextureAlpha_cso),0,stdConstants,stdTAttributes);
 	ShaderProgram::stdTextureColor = new dx11ShaderProgram(vTextureColor_cso, sizeof(vTextureColor_cso), pTextureColor_cso, sizeof(pTextureColor_cso), 0, stdConstants, stdTCAttributes);
-	ShaderProgram::stdParticles = new dx11ShaderProgram(vParticles_cso, sizeof(vParticles_cso), pParticles_cso, sizeof(pParticles_cso), (int)(ShaderProgram::Flag_PointShader), stdPSConstants, stdPSAttributes);
+	ShaderProgram::stdTextureAlphaColor = new dx11ShaderProgram(vTextureAlphaColor_cso, sizeof(vTextureAlphaColor_cso), pTextureAlphaColor_cso, sizeof(pTextureAlphaColor_cso), 0, stdConstants, stdTCAttributes);
+	ShaderProgram::stdParticles = new dx11ShaderProgram(vParticles_cso, sizeof(vParticles_cso), pParticles_cso, sizeof(pParticles_cso), 0, stdPSConstants, stdPSAttributes);
 
 	const ShaderProgram::ConstantDesc stdPConstants[]={
 			{"vMatrix",ShaderProgram::CMATRIX,1,ShaderProgram::SysConst_WorldViewProjectionMatrix,true,0,NULL},
@@ -541,7 +542,7 @@ void dx11ShaderEngine::setDepthStencil(DepthStencil state)
 		// Stencil test parameters
 		dsDesc.StencilEnable = (state.sFunc != STENCIL_DISABLE);
 		dsDesc.StencilReadMask = state.sMask;
-		dsDesc.StencilWriteMask = state.sMask;
+		dsDesc.StencilWriteMask = state.sWMask;
 
 		// Stencil operations if pixel is front-facing
 		dsDesc.FrontFace.StencilFailOp = stencilopToDX11(state.sFail);

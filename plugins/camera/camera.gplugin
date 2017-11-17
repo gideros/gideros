@@ -22,13 +22,16 @@
             <append>
             	<orig><![CDATA[<!-- TAG:MANIFEST-EXTRA -->]]></orig>
             	<by><![CDATA[
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="[[[local.required]]]"/>
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />            	
             	]]></by>
             </append>
         </replacelist>
     </template>
+    <lua>
+    local ap=require("Tools/export_android")
+    ap.usePermission("android.permission.CAMERA")
+    </lua>
  </target>
  <target name="Android">
     <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
@@ -53,19 +56,19 @@
     </template>
  </target>
  <target name="iOS">
-    <template name="binaries" path="[[[sys.pluginDir]]]/bin/iOS" dest="[[[project.namews]]]/Plugins" />
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/iOS" dest="[[[project.name]]]/Plugins" />
     <template name="Activity" path="">
         <replacelist wildcards="plugins.cpp">
            <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Camera) "/>
         </replacelist>
     </template>
    <template name="Project" path="">
-        <replacelist wildcards="project.pbxproj;EAGLView.m;[[[project.namews]]]-Info.plist">
+        <replacelist wildcards="project.pbxproj;EAGLView.m;[[[project.name]]]-Info.plist">
             <prepend>
             	<orig>/* End PBXFileReference section */</orig>
             	<by><![CDATA[
 		000000001BAC10CC005599BD = {isa = PBXBuildFile; fileRef = 000000011BAC10CC005599BD ; };
-		000000011BAC10CC005599BD = {isa = PBXFileReference; lastKnownFileType = archive.ar; name=libcamera.ios.a; path = [[[project.namews]]]/Plugins/libcamera.ios.a; sourceTree = "<group>"; };
+		000000011BAC10CC005599BD = {isa = PBXFileReference; lastKnownFileType = archive.ar; name=libcamera.ios.a; path = [[[project.name]]]/Plugins/libcamera.ios.a; sourceTree = "<group>"; };
             	]]></by>
             </prepend>
             <prepend>
@@ -95,6 +98,24 @@
 			<string>[[[plugin.camUsageDesc]]]</string>
 		]]></by>
 	    </prepend>
+        </replacelist>
+    </template>
+ </target>
+  <target name="WinRT">
+    <mkdir>giderosgame/giderosgame.Shared/Plugins/camera</mkdir>
+    <template name="sources" path="[[[sys.pluginDir]]]/source/WinRT"  dest="giderosgame/giderosgame.Shared/Plugins/camera"/>
+    <template name="sources" path="[[[sys.pluginDir]]]/source/common"  dest="giderosgame/giderosgame.Shared/Plugins/camera"/>
+    <template name="project" path="">
+        <replacelist wildcards="giderosgame.Shared.vcxitems;*.vcxproj">
+        <append>
+            <orig><![CDATA[<!--GIDEROS-PLUGIN-FILES-->]]></orig>
+            <by><![CDATA[
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\camera\camerabinder.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Plugins\camera\CameraPlugin.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Plugins\camera\camerabinder.h" />]]></by>
+            </append>
         </replacelist>
     </template>
  </target>

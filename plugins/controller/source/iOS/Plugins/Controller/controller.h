@@ -5,10 +5,10 @@
 #include <gevent.h>
 
 static const int BUTTON_B = 97;
-static const int DPAD_DOWN = 20;
+static const int DPAD_DOWN = 19;
+static const int DPAD_UP = 20;
 static const int DPAD_LEFT = 21;
 static const int DPAD_RIGHT = 22;
-static const int DPAD_UP = 19;
 static const int BUTTON_L1 = 102;
 static const int BUTTON_L2 = 104;
 static const int BUTTON_L3 = 106;

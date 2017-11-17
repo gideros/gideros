@@ -21,6 +21,7 @@
 +(void)showLeaderboard:(NSString*)provider with:(NSString*)Id;
 +(void)reportScore:(NSString*)provider with:(NSString*)Id andScore:(long)score with:(int)immediate;
 +(void)showAchievements:(NSString*)provider;
++(void)getPlayerInfo:(NSString*)provider;
 +(void)reportAchievement:(NSString*)provider with:(NSString*)Id andSteps:(int)steps with:(int)immediate;
 +(void)revealAchievement:(NSString*)provider with:(NSString*)Id with:(int)immediate;
 +(void)loadAchievements:(NSString*)provider;
@@ -44,4 +45,9 @@
 +(void)stateError:(Class)provider with:(int) key with:(NSString*) error;
 +(void)stateConflict:(Class)provider with:(int)key with:(NSString*) ver with:(NSData*)localData with:(NSData*)serverData;
 +(void)stateDeleted:(Class)provider with:(int) key;
++(void)playerInfoComplete:(Class)provider with:(NSString*)lId with:(NSString*)name with:(NSString*)pic;
++(void)playerInfoError:(Class)provider with:(NSString*)error;
++(void)playerScoreComplete:(Class)provider with:(NSString*)lId with:(int)rank with:(long)score with:(int)timeout;
++(void)playerScoreError:(Class)provider with:(NSString*)lId with:(NSString*)error;
+
 @end

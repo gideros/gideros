@@ -10,6 +10,10 @@
 #include <QFile>
 #include "ExportCommon.h"
 
+#ifdef Q_OS_MACX
+#include <unistd.h>
+#endif
+
 QString Utilities::RemoveSpaces(QString text,bool allowUnderscore)
 {
 	QString res;
@@ -223,7 +227,7 @@ void Utilities::copyFolder(	const QDir& sourceDir,
 
     QStringList files;
 
-    files = sourceDir.entryList(QDir::Files | QDir::Hidden);
+    files = sourceDir.entryList(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
     ExportCommon::progressSteps(files.count());
     for(int i = 0; i < files.count(); i++)
     {
@@ -237,7 +241,7 @@ void Utilities::copyFolder(	const QDir& sourceDir,
         ExportCommon::progressStep(files[i].toUtf8().constData());
     }
 
-    files = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    files = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
     ExportCommon::progressSteps(files.count());
     for(int i = 0; i < files.count(); i++)
     {
@@ -261,6 +265,42 @@ void Utilities::copyFolder(	const QDir& sourceDir,
                        exclude);
         ExportCommon::progressStep(files[i].toUtf8().constData());
     }
+
+    QFileInfoList syms = sourceDir.entryInfoList(QDir::Files | QDir::Hidden | QDir::AllDirs | QDir::NoDotAndDotDot);
+    for(int i = 0; i < syms.count(); i++)
+    {
+    	if (syms[i].isSymLink())
+    	{
+            QString srcName = sourceDir.absoluteFilePath(syms[i].fileName());
+            ExportCommon::exportInfo("Processing symlink %s\n",srcName.toStdString().c_str());
+            if (shouldCopy(srcName, include, exclude))
+            {
+                QString destFile = syms[i].fileName();
+                for (int i = 0; i < renameList.size(); ++i)
+                    destFile.replace(renameList[i].first, renameList[i].second);
+                QString destName = destDir.absoluteFilePath(destFile);
+                QString target;
+#ifdef Q_OS_MACX
+                char buffer[1024];
+                int linkLen=readlink(srcName.toUtf8().constData(),buffer,1024);
+                if (linkLen>=0)
+                {
+                    buffer[linkLen]=0;
+                	target=QString::fromUtf8(buffer);
+                }
+                else
+#else
+                	target = syms[i].symLinkTarget();
+#endif
+                for (int i = 0; i < renameList.size(); ++i)
+                    target.replace(renameList[i].first, renameList[i].second);
+                ExportCommon::exportInfo("Link %s -> %s\n",destName.toStdString().c_str(),target.toStdString().c_str());
+                QFile::remove(destName);
+                QFile::link(target,destName);
+            }
+    	}
+    }
+
 }
 
 int Utilities::processOutput(QString command, QString dir, QProcessEnvironment env, bool cmdlog){

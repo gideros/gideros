@@ -427,7 +427,8 @@ static ALvoid CalcListenerParams(ALlistener *Listener)
     Listener->Params.Velocity = aluMatrixdVector(&Listener->Params.Matrix, &Listener->Velocity);
 }
 
-ALvoid CalcNonAttnSourceParams(ALvoice *voice, const ALsource *ALSource, const ALCcontext *ALContext)
+//GIDEROS:hgy29: remove const to ALSource because ATOMIC_LOAD erroneously require non-const
+ALvoid CalcNonAttnSourceParams(ALvoice *voice, ALsource *ALSource, const ALCcontext *ALContext)
 {
     static const struct ChanMap MonoMap[1] = {
         { FrontCenter, 0.0f, 0.0f }
@@ -824,7 +825,8 @@ ALvoid CalcNonAttnSourceParams(ALvoice *voice, const ALsource *ALSource, const A
     }
 }
 
-ALvoid CalcSourceParams(ALvoice *voice, const ALsource *ALSource, const ALCcontext *ALContext)
+//GIDEROS:hgy29: remove const to ALSource because ATOMIC_LOAD erroneously require non-const
+ALvoid CalcSourceParams(ALvoice *voice, ALsource *ALSource, const ALCcontext *ALContext)
 {
     ALCdevice *Device = ALContext->Device;
     aluVector Position, Velocity, Direction, SourceToListener;

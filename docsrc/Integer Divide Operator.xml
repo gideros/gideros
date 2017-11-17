@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Integer Divide Operator" page="intdiv" parent="" type="enhancement" version="Gideros 2017.10"><![CDATA[<br />
+Divide a number to a whole number.<br /><br />
+
+a=b<b> // </b>c &emsp; Put the integer result of divide 'b' by 'c' into 'a'.<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+
+  <example name="Simple example"><![CDATA[<br /> 
+a=b//c -- faster than a=math.floor(b/c)
+]]></example>
+
+</object>

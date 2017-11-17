@@ -89,13 +89,14 @@ public:
 
 	void setStopAction(int frame);
 	void setGotoAction(int frame, int destframe);
+	void setReverseAction(int frame);
 	void clearAction(int frame);
 
-	void finalize();
+	void finalize(bool play);
 	
-	void play();
+	void play(bool reverse);
 	bool stop(bool unrefNow=true);
-	void gotoAndPlay(int frame);
+	void gotoAndPlay(int frame, bool reverse);
 	void gotoAndStop(int frame);
 	int getFrame();
 
@@ -126,12 +127,15 @@ private:
 
 	int frame_;
 	int maxframe_;
+	int minframe_;
 	bool playing_;
+	bool reverse_;
 	bool passoneframe_;
 	bool holdWhilePlaying_;
 
 	std::map<int, std::vector<Frame*> > allFrames_;			// indexed with start
-	std::map<int, std::vector<Frame*> > activeFrames_;		// indexed with end
+	std::map<int, std::vector<Frame*> > revFrames_;			// indexed with end
+	std::map<int, std::vector<Frame*> > activeFrames_;		// indexed with end or start
 
 	std::map<int, int> actions_;
 

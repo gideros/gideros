@@ -1,7 +1,7 @@
 #ifndef GLCANVAS_H
 #define GLCANVAS_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QDir>
 
 class LuaApplication;
@@ -14,7 +14,7 @@ class Server;
 #include <gfile_p.h>
 #include <gstatus.h>
 
-class GLCanvas : public QGLWidget{
+class GLCanvas : public QOpenGLWidget{
 	Q_OBJECT
 
 public:
@@ -53,6 +53,8 @@ private:
     int width_, height_;
     bool isPlayer_;
     std::string resourceDirectory_;
+    std::string documentsDirectory_;
+    std::string temporaryDirectory_;
     std::string md5filename_;
     int fps_;
     double clock_;
@@ -66,6 +68,8 @@ private:
     float infoColor_[3];
     bool exportedApp_;
     bool mouseButtonPressed_[5];
+    QMap<int,int> touchIdMap;
+    quint32 touchIdUsed;
     //	PlatformImplementation* platformImplementation_;
 
     void setupProperties();

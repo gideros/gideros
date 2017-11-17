@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Matrix" page="Matrix" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The Matrix class specifies transformation from one coordinate space to another.<br />
+These transformations include translation, rotation, scaling and skewing.<br />
+<br />
+A 2D transformation matrix is a 3 x 3 matrix in homogenous coordinate system:<br />
+<br />
+![images/matrix_props.png]<br />
+<br />
+You can get and set the values of all six of the properties in a<br />
+Matrix object: `m11`, `m12`, `m21`, `m22`, `tx`, and `ty`.<br />
+<br />
+
+Since Gideros 2016.6, Matrix can also hold 3D (4x4) matrices.]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="Matrix.new" page="new" shortdesc="creates a new Matrix object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new Matrix object with the specified parameters.<br />
+<br />
+]]>
+    <parameter name="m11" optional="false" type="number, default = 1"/>
+    <parameter name="m12" optional="false" type="number, default = 0"/>
+    <parameter name="m21" optional="false" type="number, default = 0"/>
+    <parameter name="m22" optional="false" type="number, default = 1"/>
+    <parameter name="tx" optional="false" type="number, default = 0"/>
+    <parameter name="ty" optional="false" type="number, default = 0"/>
+    <return type="any"><![CDATA[New `Matrix` object.]]></return>
+    <return type="any"><![CDATA[New `Matrix` object.]]></return>
+  </method>
+  <method name="Matrix:getM11" page="getM11" shortdesc="returns the value of the m11 component" version="Gideros 2011.6"><![CDATA[<br />
+Returns the value of the `m11` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current `m11` parameter.]]></return>
+  </method>
+  <method name="Matrix:getM12" page="getM12" shortdesc="returns the value of the m12 component" version="Gideros 2011.6"><![CDATA[<br />
+Returns the value of the `m12` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current `m12` parameter.]]></return>
+  </method>
+  <method name="Matrix:getM21" page="getM21" shortdesc="returns the value of the m21 component" version="Gideros 2011.6"><![CDATA[<br />
+Returns the value of the `m21` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current `m21` parameter.]]></return>
+  </method>
+  <method name="Matrix:getM22" page="getM22" shortdesc="returns the value of the m22 component" version="Gideros 2011.6"><![CDATA[<br />
+Returns the value of the `m22` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current `m22` parameter.]]></return>
+  </method>
+  <method name="Matrix:getTx" page="getTx" shortdesc="returns the value of the tx component" version="Gideros 2011.6"><![CDATA[<br />
+Returns the value of the `tx` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current `tx` parameter.]]></return>
+  </method>
+  <method name="Matrix:getTy" page="getTy" shortdesc="returns the value of the ty component" version="Gideros 2011.6"><![CDATA[<br />
+Returns the value of the `ty` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current `ty` parameter.]]></return>
+  </method>
+  <method name="Matrix:setM11" page="setM11" shortdesc="sets the value of the m11 component" version="Gideros 2011.6"><![CDATA[<br />
+Sets the value of the `m11` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <parameter name="m11" optional="false" type="number"/>
+  </method>
+  <method name="Matrix:setM12" page="setM12" shortdesc="sets the value of the m22 component" version="Gideros 2011.6"><![CDATA[<br />
+Sets the value of the `m12` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <parameter name="m12" optional="false" type="number"/>
+  </method>
+  <method name="Matrix:setM21" page="setM21" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Sets the value of the `m21` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <parameter name="m21" optional="false" type="number"/>
+  </method>
+  <method name="Matrix:setM22" page="setM22" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Sets the value of the `m22` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <parameter name="m22" optional="false" type="number"/>
+  </method>
+  <method name="Matrix:setTx" page="setTx" shortdesc="sets the value of the tx component" version="Gideros 2011.6"><![CDATA[<br />
+Sets the value of the `tx` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <parameter name="tx" optional="false" type="number"/>
+  </method>
+  <method name="Matrix:setTy" page="setTy" shortdesc="sets the value of the ty component" version="Gideros 2011.6"><![CDATA[<br />
+Sets the value of the `ty` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <parameter name="ty" optional="false" type="number"/>
+  </method>
+  <method name="Matrix:getElements" page="getElements" shortdesc="returns the elements of this matrix instance" version="Gideros 2011.6"><![CDATA[<br />
+Returns the elements of the matrix.<br />
+![images/matrix_props.png]<br />
+<br />
+]]>
+    <return type="number"><![CDATA[m11 element]]></return>
+    <return type="number"><![CDATA[m12 element]]></return>
+    <return type="number"><![CDATA[m21 element]]></return>
+    <return type="number"><![CDATA[m22 element]]></return>
+    <return type="number"><![CDATA[tx element]]></return>
+    <return type="number"><![CDATA[ty element]]></return>
+  </method>
+  <method name="Matrix:setElements" page="setElements" shortdesc="sets all 6 elements of this matrix instance" version="Gideros 2011.6"><![CDATA[<br />
+Sets all 6 elements of the matrix.<br />
+<br />
+]]>
+    <parameter name="m11" optional="false" type="number, default = 1"/>
+    <parameter name="m12" optional="false" type="number, default = 0"/>
+    <parameter name="m21" optional="false" type="number, default = 0"/>
+    <parameter name="m22" optional="false" type="number, default = 1"/>
+    <parameter name="tx" optional="false" type="number, default = 0"/>
+    <parameter name="ty" optional="false" type="number, default = 0"/>
+  </method>
+  <method name="Matrix:getTz" page="getTz" shortdesc="returns the value of the tz component" version="Gideros 2016.06"><![CDATA[<br />
+Returns the value of the `tz` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[The current `tz` parameter.]]></return>
+  </method>
+  <method name="Matrix:setTz" page="setTz" shortdesc="sets the value of the tz component" version="Gideros 2016.06"><![CDATA[<br />
+Sets the value of the `tz` component for this `Matrix` instance.<br />
+<br />
+]]>
+    <parameter name="tz" optional="false" type="number"/>
+  </method>
+  <method name="Matrix:getX" page="getX" shortdesc="get x position" version="Gideros 2016.06"><![CDATA[get x position]]>
+    <return type="number"><![CDATA[x position]]></return>
+  </method>
+  <method name="Matrix:getY" page="getY" shortdesc="get y position" version="Gideros 2016.06"><![CDATA[get y position]]>
+    <return type="number"><![CDATA[y position]]></return>
+  </method>
+  <method name="Matrix:getZ" page="getZ" shortdesc="get z position" version="Gideros 2016.06"><![CDATA[get z position]]>
+    <return type="number"><![CDATA[z position]]></return>
+  </method>
+  <method name="Matrix:getRotationZ" page="getRotationZ" shortdesc="get rotation for z axis" version="Gideros 2016.06"><![CDATA[get rotation for z axis]]>
+    <return type="number"><![CDATA[rotation around z axis]]></return>
+  </method>
+  <method name="Matrix:getRotationX" page="getRotationX" shortdesc="get rotation for x axis" version="Gideros 2016.06"><![CDATA[get rotation for x axis]]>
+    <return type="number"><![CDATA[rotation on x axis]]></return>
+  </method>
+  <method name="Matrix:getRotationY" page="getRotationY" shortdesc="get rotation on y axis" version="Gideros 2016.06"><![CDATA[get rotation on y axis]]>
+    <return type="number"><![CDATA[rotation on y axis]]></return>
+  </method>
+  <method name="Matrix:getScaleX" page="getScaleX" shortdesc="get scale on x axis" version="Gideros 2016.06"><![CDATA[get scale on x axis]]>
+    <return type="number"><![CDATA[scale on x axis]]></return>
+  </method>
+  <method name="Matrix:getScaleY" page="getScaleY" shortdesc="get scale on y axis" version="Gideros 2016.06"><![CDATA[get scale on y axis]]>
+    <return type="number"><![CDATA[scale on y axis]]></return>
+  </method>
+  <method name="Matrix:getScaleZ" page="getScaleZ" shortdesc="get scale on z axis" version="Gideros 2016.06"><![CDATA[get scale on z axis]]>
+    <return type="number"><![CDATA[scale on z axis]]></return>
+  </method>
+  <method name="Matrix:setX" page="setX" shortdesc="set x position" version="Gideros 2016.06"><![CDATA[set x position]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x position]]></parameter>
+  </method>
+  <method name="Matrix:setY" page="setY" shortdesc="set y position" version="Gideros 2016.06"><![CDATA[set y position]]>
+    <parameter name="y" optional="false" type="number"><![CDATA[y position]]></parameter>
+  </method>
+  <method name="Matrix:setZ" page="setZ" shortdesc="set z position" version="Gideros 2016.06"><![CDATA[set z position]]>
+    <parameter name="z" optional="false" type="number"><![CDATA[z position]]></parameter>
+  </method>
+  <method name="Matrix:setRotationX" page="setRotationX" shortdesc="set rotation on x axis" version="Gideros 2016.06"><![CDATA[set rotation on x axis]]>
+    <parameter name="x rotation" optional="false" type="number"><![CDATA[rotation on x axis]]></parameter>
+  </method>
+  <method name="Matrix:setRotationY" page="setRotationY" shortdesc="set rotation on y axis" version="Gideros 2016.06"><![CDATA[set rotation on y axis]]>
+    <parameter name="y rotation" optional="false" type="number"><![CDATA[rotation on y axis]]></parameter>
+  </method>
+  <method name="Matrix:setRotationZ" page="setRotationZ" shortdesc="set rotation on z axis" version="Gideros 2016.06"><![CDATA[set rotation on z axis]]>
+    <parameter name="z rotation" optional="false" type="number"><![CDATA[rotation on z axis]]></parameter>
+  </method>
+  <method name="Matrix:setScaleX" page="setScaleX" shortdesc="set scale on x axis" version="Gideros 2016.06"><![CDATA[set scale on x axis]]>
+    <parameter name="x scale" optional="false" type="number"><![CDATA[scale on x axis]]></parameter>
+  </method>
+  <method name="Matrix:setScaleY" page="setScaleY" shortdesc="set scale on y axis" version="Gideros 2016.06"><![CDATA[set scale on y axis]]>
+    <parameter name="y scale" optional="false" type="number"><![CDATA[set scale on y axis]]></parameter>
+  </method>
+  <method name="Matrix:setScaleZ" page="setScaleZ" shortdesc="set scale on z axis" version="Gideros 2016.06"><![CDATA[set scale on z axis]]>
+    <parameter name="z scale" optional="false" type="number"><![CDATA[scale on z axis]]></parameter>
+  </method>
+  <method name="Matrix:setPosition" page="setPosition" shortdesc="transform matrix for setting position" version="Gideros 2016.06"><![CDATA[transform matrix for setting position]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x position]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y position]]></parameter>
+    <parameter name="z" optional="true" type="number"><![CDATA[z position]]></parameter>
+  </method>
+  <method name="Matrix:getPosition" page="getPosition" shortdesc="get position from matrix transformation" version="Gideros 2016.06"><![CDATA[get position from matrix transformation]]>
+    <return type="number"><![CDATA[x position]]></return>
+    <return type="number"><![CDATA[y position]]></return>
+    <return type="number"><![CDATA[z position]]></return>
+  </method>
+  <method name="Matrix:setAnchorPosition" page="setAnchorPosition" shortdesc="transform matrix for setting anchor position" version="Gideros 2016.06"><![CDATA[transform matrix for setting anchor position]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[x anchor position]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[y anchor position]]></parameter>
+    <parameter name="z" optional="true" type="number"><![CDATA[z anchor position]]></parameter>
+  </method>
+  <method name="Matrix:getAnchorPosition" page="getAnchorPosition" shortdesc="get anchor position from matrix transformation" version="Gideros 2016.06"><![CDATA[get anchor position from matrix transformation]]>
+    <return type="number"><![CDATA[x anchor position]]></return>
+    <return type="number"><![CDATA[y anchor position]]></return>
+    <return type="number"><![CDATA[z anchor position]]></return>
+  </method>
+  <method name="Matrix:setScale" page="setScale" shortdesc="transform matrix for setting scale" version="Gideros 2016.06"><![CDATA[transform matrix for setting scale]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[scale on x axis]]></parameter>
+    <parameter name="y" optional="true" type="number"><![CDATA[scale on y axis]]></parameter>
+    <parameter name="z" optional="true" type="number"><![CDATA[scale on z axis]]></parameter>
+  </method>
+  <method name="Matrix:getScale" page="getScale" shortdesc="get scale from matrix transformation" version="Gideros 2016.06"><![CDATA[get scale from matrix transformation]]>
+    <return type="number"><![CDATA[scale on x axis]]></return>
+    <return type="number"><![CDATA[scale on y axis]]></return>
+    <return type="number"><![CDATA[scale on z axis]]></return>
+  </method>
+  <method name="Matrix:multiply" page="multiply" shortdesc="Multiply current matrix with new one" version="Gideros 2016.06"><![CDATA[Multiply current matrix with new one]]>
+    <parameter name="matrix" optional="false" type="Matrix"><![CDATA[matrix with which to multiply current matrix]]></parameter>
+  </method>
+  <method name="Matrix:scale" page="scale" shortdesc="combine existing scale with provided scale" version="Gideros 2016.06"><![CDATA[combine existing scale with provided scale]]>
+    <parameter name="x scale" optional="false" type="number"><![CDATA[scale on x axis]]></parameter>
+    <parameter name="y scale" optional="true" type="number"><![CDATA[scale on y axis]]></parameter>
+    <parameter name="z scale" optional="true" type="number"><![CDATA[scale on z axis]]></parameter>
+  </method>
+  <method name="Matrix:rotate" page="rotate" shortdesc="combine existing rotation with provided" version="Gideros 2016.06"><![CDATA[Combine existing rotation with provided.
+It takes a x,y,z vector and an angle, and rotate the matrix around the given vector by the specified angle]]>
+    <parameter name="angle" optional="false" type="number"><![CDATA[angle of rotation in radians]]></parameter>
+    <parameter name="x vector" optional="false" type="number"><![CDATA[x axis vector]]></parameter>
+    <parameter name="y vector" optional="false" type="number"><![CDATA[y axis vector]]></parameter>
+    <parameter name="z vector" optional="false" type="number"><![CDATA[z axis vector]]></parameter>
+  </method>
+  <method name="Matrix:translate" page="translate" shortdesc="combine existing translation with provided translation" version="Gideros 2016.06"><![CDATA[combine existing translation with provided translation]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[translate on x axis]]></parameter>
+    <parameter name="y" optional="true" type="number"><![CDATA[translate on y axis]]></parameter>
+    <parameter name="z" optional="true" type="number"><![CDATA[translate on z axis]]></parameter>
+  </method>
+  <method name="Matrix:setMatrix" page="setMatrix" shortdesc="set all 16 elements of 4x4 matrix" version="Gideros 2016.06"><![CDATA[set all 16 elements of 4x4 matrix]]>
+    <parameter name="m11" optional="true" type="number"/>
+    <parameter name="m12" optional="true" type="number"/>
+    <parameter name="m13" optional="true" type="number"/>
+    <parameter name="m14" optional="true" type="number"/>
+    <parameter name="m21" optional="true" type="number"/>
+    <parameter name="m22" optional="true" type="number"/>
+    <parameter name="m23" optional="true" type="number"/>
+    <parameter name="m24" optional="true" type="number"/>
+    <parameter name="m31" optional="true" type="number"/>
+    <parameter name="m32" optional="true" type="number"/>
+    <parameter name="m33" optional="true" type="number"/>
+    <parameter name="m34" optional="true" type="number"/>
+    <parameter name="m41" optional="true" type="number"/>
+    <parameter name="m42" optional="true" type="number"/>
+    <parameter name="m43" optional="true" type="number"/>
+    <parameter name="m44" optional="true" type="number"/>
+  </method>
+  <method name="Matrix:getMatrix" page="getMatrix" shortdesc="get all 16 elements of 4x4 matrix" version="Gideros 2016.06"><![CDATA[get all 16 elements of 4x4 matrix]]>
+    <return type="number"><![CDATA[m11]]></return>
+    <return type="number"><![CDATA[m12]]></return>
+    <return type="number"><![CDATA[m13]]></return>
+    <return type="number"><![CDATA[m14]]></return>
+    <return type="number"><![CDATA[m21]]></return>
+    <return type="number"><![CDATA[m22]]></return>
+    <return type="number"><![CDATA[m23]]></return>
+    <return type="number"><![CDATA[m24]]></return>
+    <return type="number"><![CDATA[m31]]></return>
+    <return type="number"><![CDATA[m32]]></return>
+    <return type="number"><![CDATA[m33]]></return>
+    <return type="number"><![CDATA[m34]]></return>
+    <return type="number"><![CDATA[m41]]></return>
+    <return type="number"><![CDATA[m42]]></return>
+    <return type="number"><![CDATA[m43]]></return>
+    <return type="number"><![CDATA[m44]]></return>
+  </method>
+  <method name="Matrix:orthographicProjection" page="orthographicProjection" shortdesc="" version="Gideros 2016.06"><![CDATA[Replace this matrix by an orthographic projection suitable for the current 3D engine]]>
+    <parameter name="left" optional="false" type="number"><![CDATA[left plane distance]]></parameter>
+    <parameter name="right" optional="false" type="number"><![CDATA[right plane distance]]></parameter>
+    <parameter name="bottom" optional="false" type="number"><![CDATA[bottom plane distance]]></parameter>
+    <parameter name="top" optional="false" type="number"><![CDATA[top plane distance]]></parameter>
+    <parameter name="near" optional="false" type="number"><![CDATA[near plane distance]]></parameter>
+    <parameter name="far" optional="false" type="number"><![CDATA[far plane distance]]></parameter>
+  </method>
+  <method name="Matrix:perspectiveProjection" page="perspectiveProjection" shortdesc="" version="Gideros 2016.06"><![CDATA[replace this matrix by a perspective projection matrix suitable for the current 3D engine]]>
+    <parameter name="left" optional="false" type="number"><![CDATA[left plane distance]]></parameter>
+    <parameter name="right" optional="false" type="number"><![CDATA[right plane distance]]></parameter>
+    <parameter name="bottom" optional="false" type="number"><![CDATA[bottom plane distance]]></parameter>
+    <parameter name="top" optional="false" type="number"><![CDATA[top plane distance]]></parameter>
+    <parameter name="near" optional="false" type="number"><![CDATA[near plane distance]]></parameter>
+    <parameter name="far" optional="false" type="number"><![CDATA[far plane distance]]></parameter>
+  </method>
+  <method name="Matrix:perspectiveProjection" page="perspectiveProjection2" shortdesc="" version="Gideros 2016.06"><![CDATA[replace this matrix by a perspective projection matrix suitable for this 3D engine (simplified form)]]>
+    <parameter name="fov" optional="false" type="number"><![CDATA[field of view angle]]></parameter>
+    <parameter name="aspect" optional="false" type="number"><![CDATA[aspect ratio (width/height)]]></parameter>
+    <parameter name="near" optional="false" type="number"><![CDATA[near plane distance]]></parameter>
+    <parameter name="far" optional="false" type="number"><![CDATA[far plane distance]]></parameter>
+  </method>
+  <method name="Matrix:invert" page="invert" shortdesc="" version="in development"><![CDATA[Inverts the matrix]]></method>
+  <method name="Matrix:transformPoint" page="transformPoint" shortdesc="" version="in development"><![CDATA[Transforms the matrix]]></method>
+  <example name="Applying matrix to Sprite objects"><![CDATA[local angle = math.rad(30)
+-- create skew matrix
+local m = Matrix.new(1, math.tan(angle), math.tan(angle), 1, 0, 0)
+--aply to Sprite
+local sprite = Sprite.new()
+sprite:setMatrix(m)]]></example>
+</object>

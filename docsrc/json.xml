@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="json" page="json" parent="" type="plugin" version="Gideros 2013.09"><![CDATA[Provides Lua table serialization and deserialization to and from string in json format]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="json.encode" page="encode" shortdesc="Returns encoded json string from provided Lua table" version="Gideros 2013.09"><![CDATA[Returns encoded json string from provided Lua table]]>
+    <parameter name="data" optional="false" type="table"><![CDATA[Lua table which to serialize to json]]></parameter>
+  </method>
+  <method name="json.decode" page="decode" shortdesc="Returns Lua table from provided json encoded string" version="Gideros 2013.09"><![CDATA[Returns Lua table from provided json encoded string]]>
+    <parameter name="jsondata" optional="false" type="string"><![CDATA[Data in json format which to deserialize to Lua table]]></parameter>
+  </method>
+</object>

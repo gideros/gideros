@@ -389,6 +389,11 @@ public:
         localTransform_ = transform;
 	}
 
+    void setStencilOperation(const ShaderEngine::DepthStencil ds)
+    {
+    	stencil_=ds;
+    }
+
 
 
 protected:
@@ -440,12 +445,34 @@ protected:
 
 protected:
 	ShaderProgram *shader_;
+	ShaderEngine::DepthStencil stencil_;
 	std::map<std::string,ShaderParam> shaderParams_;
 //	typedef std::list<GraphicsBase, Gideros::STLAllocator<GraphicsBase, StdAllocator> > GraphicsBaseList;
 //	GraphicsBaseList graphicsBases_;
 
 protected:
 	virtual void eventListenersChanged();
+};
+
+typedef void (*SpriteProxyDraw)(void *,const CurrentTransform& , float sx, float sy, float ex, float ey);
+typedef void (*SpriteProxyDestroy)(void *);
+class SpriteProxy: public Sprite {
+private:
+	void *context;
+	SpriteProxyDraw drawF;
+	SpriteProxyDestroy destroyF;
+public:
+	SpriteProxy(Application* application,void *c,SpriteProxyDraw df,SpriteProxyDestroy kf);
+	~SpriteProxy();
+	void doDraw(const CurrentTransform& m, float sx, float sy, float ex, float ey);
+    void *getContext() { return context; };
+};
+
+class SpriteProxyFactory {
+public:
+	SpriteProxyFactory() {};
+	virtual ~SpriteProxyFactory() { };
+	virtual SpriteProxy *createProxy(Application* application,void *c,SpriteProxyDraw df,SpriteProxyDestroy kf);
 };
 
 #endif

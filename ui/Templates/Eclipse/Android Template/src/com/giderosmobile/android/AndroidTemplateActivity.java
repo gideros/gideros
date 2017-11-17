@@ -323,7 +323,7 @@ class GiderosGLSurfaceView extends GLSurfaceView
 	{
 		super(context);
 		setEGLContextClientVersion(2);
-		setEGLConfigChooser(8,8,8,0,16,8);
+		setEGLConfigChooser(new GiderosConfigChooser());
 		mRenderer = new GiderosRenderer();
 		setRenderer(mRenderer);
 		if (android.os.Build.VERSION.SDK_INT >= 11)

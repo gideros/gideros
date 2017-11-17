@@ -244,6 +244,17 @@ float GGSoundManager::ChannelGetVolume(g_id channel)
     return channel2->interface->ChannelGetVolume(channel);
 }
 
+g_id GGSoundManager::ChannelGetStreamId(g_id channel)
+{
+    std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
+    if (iter == channels_.end())
+        return 0;
+
+    Channel *channel2 = iter->second;
+
+    return channel2->interface->ChannelGetStreamId(channel);
+}
+
 void GGSoundManager::ChannelSetPitch(g_id channel, float pitch)
 {
     std::map<g_id, Channel*>::iterator iter = channels_.find(channel);
@@ -330,6 +341,16 @@ void GGSoundManager::ChannelRemoveCallbackWithGid(g_id channel, g_id gid)
     Channel *channel2 = iter->second;
 
     channel2->interface->ChannelRemoveCallbackWithGid(channel, gid);
+}
+
+void GGSoundManager::registerLoader(const char *name, GGAudioLoader &loader)
+{
+	loaders_[name]=loader;
+}
+
+void GGSoundManager::unregisterLoader(const char *name)
+{
+	loaders_.erase(name);
 }
 
 void GGSoundManager::preTick()
@@ -448,6 +469,11 @@ void GGAudioManager::ChannelSetVolume(g_id channel, float volume)
 float GGAudioManager::ChannelGetVolume(g_id channel)
 {
     return soundManager_->ChannelGetVolume(channel);
+}
+
+g_id GGAudioManager::ChannelGetStreamId(g_id channel)
+{
+    return soundManager_->ChannelGetStreamId(channel);
 }
 
 void GGAudioManager::ChannelSetPitch(g_id channel, float pitch)
@@ -655,6 +681,16 @@ void GGAudioManager::postTick()
         backgroundMusicInterface_->postTick();
 }
 
+void GGAudioManager::RegisterType(const char *name,GGAudioLoader &loader)
+{
+	soundManager_->registerLoader(name, loader);
+}
+
+void GGAudioManager::UnregisterType(const char *name)
+{
+	soundManager_->unregisterLoader(name);
+}
+
 static GGAudioManager *s_manager = NULL;
 
 extern "C" {
@@ -735,6 +771,11 @@ void gaudio_ChannelSetVolume(g_id channel, float volume)
 float gaudio_ChannelGetVolume(g_id channel)
 {
     return s_manager->ChannelGetVolume(channel);
+}
+
+g_id gaudio_ChannelGetStreamId(g_id channel)
+{
+    return s_manager->ChannelGetStreamId(channel);
 }
 
 void gaudio_ChannelSetPitch(g_id channel, float pitch)
@@ -872,5 +913,12 @@ void gaudio_AdvanceStreamBuffers()
 	s_manager->AdvanceStreamBuffers();
 }
 
+void gaudio_registerType(const char *name,GGAudioLoader &loader) {
+	s_manager->RegisterType(name,loader);
+}
+
+void gaudio_unregisterType(const char *name) {
+	s_manager->UnregisterType(name);
+}
 
 }

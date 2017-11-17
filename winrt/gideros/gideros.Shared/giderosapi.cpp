@@ -386,8 +386,9 @@ public:
 	void foreground();
 	void background();
 	void resize(int width, int height, int orientation);
+	void scaleChanged(float scale);
 
-	Windows::UI::Xaml::Controls::SwapChainPanel^ getRoot();
+	static Windows::UI::Xaml::Controls::SwapChainPanel^ getRoot();
 
 private:
 	void loadProperties();
@@ -419,10 +420,11 @@ private:
 
 	int nframe_;
 
-	Platform::WeakReference xamlRoot_;
+	static Platform::WeakReference xamlRoot_;
 	bool xaml;
 };
 
+Platform::WeakReference ApplicationManager::xamlRoot_;
 
 NetworkManager::NetworkManager(ApplicationManager* application)
 {
@@ -470,7 +472,7 @@ void NetworkManager::tick()
 				const char* absfilename = g_pathForFile("../luafiles.txt");
 				FILE* fos = fopen(absfilename, "wb");
 				fwrite(&data[0], data.size(), 1, fos);
-				+fclose(fos);
+				fclose(fos);
 				play(data);
 			}
 				   break;
@@ -725,12 +727,20 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 #if WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 		contentScaleFactor = dinfo->RawPixelsPerViewPixel; // Windows phone
 #else
-		contentScaleFactor = ((int)dinfo->ResolutionScale)*0.01f*dinfo->LogicalDpi/96.0f;   // Windows 8 PC
+		contentScaleFactor = /*((int)dinfo->ResolutionScale)*0.01f;// */dinfo->LogicalDpi / 96.0f;   // Windows 8 PC
+		glog_i("Display Scale=%d, Logical DPI=%f, Selected Scale=%f\n", (int)dinfo->ResolutionScale, dinfo->LogicalDpi, contentScaleFactor);
 #endif
 	}
 
-	width_ = width;
-	height_ = height;
+	if (xaml) {
+		width_ = width * contentScaleFactor;
+		height_ = height * contentScaleFactor;
+	}
+	else
+	{
+		width_ = width;
+		height_ = height;
+	}
 	player_ = player;
 	resourcePath_ =_wcsdup( resourcePath);
 	docsPath_ = _wcsdup(docsPath);
@@ -798,7 +808,10 @@ ApplicationManager::ApplicationManager(bool useXaml, CoreWindow^ Window, Windows
 
 	application_->enableExceptions();
 	application_->initialize();
-	application_->setResolution(width_* contentScaleFactor, height_* contentScaleFactor);
+	if (xaml)
+		application_->setResolution(width_, height_);
+	else
+		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 
 	Binder::disableTypeChecking();
 
@@ -916,6 +929,11 @@ ApplicationManager::~ApplicationManager()
 
 Windows::UI::Xaml::Controls::SwapChainPanel^ ApplicationManager::getRoot(){
 	return xamlRoot_.Resolve<Windows::UI::Xaml::Controls::SwapChainPanel>();
+}
+
+void ApplicationManager::scaleChanged(float s)
+{
+	contentScaleFactor = s;
 }
 
 void ApplicationManager::getStdCoords(float xp, float yp, float &x, float &y)
@@ -1247,7 +1265,9 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	application_->deinitialize();
 	application_->initialize();
 
-	if (xaml||(width_ < height_))
+	if (xaml)
+		application_->setResolution(width_, height_);
+	else if (width_ < height_)
 		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	else
 		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
@@ -1346,7 +1366,7 @@ void ApplicationManager::loadProperties()
 	buffer >> properties_.mouseTouchOrder;
 
 	if (xaml||(width_ < height_))
-		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
+		application_->setResolution(width_, height_);
 	else
 		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
 
@@ -1488,13 +1508,22 @@ void ApplicationManager::resize(int width, int height,int orientation)
 
 	//if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
 
-	width_ = width;
-	height_ = height;
+	if (xaml) {
+		width_ = width * contentScaleFactor;
+		height_ = height * contentScaleFactor;
+	}
+	else
+	{ 
+		width_ = width;
+		height_ = height;
+	}
 
 	hardwareOrientation_ = xaml?eFixed:(Orientation) orientation;
 	deviceOrientation_ = (Orientation) orientation;
 
-	if (xaml||(width_ < height_))
+	if (xaml)
+		application_->setResolution(width_, height_);
+	else if (width_ < height_)
 		application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	else
 		application_->setResolution(height_ * contentScaleFactor, width_ * contentScaleFactor);
@@ -1517,7 +1546,7 @@ extern "C" {
 	}
 
 	Windows::UI::Xaml::Controls::SwapChainPanel^ gdr_getRootView(){
-		return s_manager->getRoot();
+		return ApplicationManager::getRoot();
 	}
 
 	void gdr_drawFrame(bool useXaml)
@@ -1640,6 +1669,11 @@ extern "C" {
 	void gdr_resize(int width, int height, int orientation)
 	{
 		s_manager->resize(width, height, orientation);
+	}
+
+	void gdr_scaleChanged(float scale)
+	{
+		s_manager->scaleChanged(scale);
 	}
 
 }

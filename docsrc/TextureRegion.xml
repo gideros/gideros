@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="TextureRegion" page="TextureRegion" parent="Object" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
+The `TextureRegion` class specifies a texture and a rectangular region in it. It is used to define independent texture regions<br />
+within a texture atlas which is a large image, which contains many smaller sub-images.<br />
+<br />
+]]>
+  <platform>android</platform>
+  <platform>ios</platform>
+  <platform>mac</platform>
+  <platform>pc</platform>
+  <method name="TextureRegion.new" page="new" shortdesc="creates a new TextureRegion object" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new TextureRegion object.<br />
+<br />
+]]>
+    <parameter name="texture" optional="false" type="TextureBase"><![CDATA[texture object]]></parameter>
+  </method>
+  <method name="TextureRegion.new" page="new2" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
+Creates a new TextureRegion object.<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;If TextureRegion object is created with 1 parameter (texture), it specifies the whole texture.&lt;/li&gt;<br />
+&lt;li&gt;If TextureRegion object is created with 5 parameters (texture, x, y, width, height), if specifies a rectangular region within texture.&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+]]>
+    <parameter name="texture" optional="false" type="TextureBase"><![CDATA[texture object]]></parameter>
+    <parameter name="x" optional="false" type="number"><![CDATA[left coordinate of the region]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[top coordinate of the region]]></parameter>
+    <parameter name="width" optional="false" type="number"><![CDATA[width of the region]]></parameter>
+    <parameter name="height" optional="false" type="number"><![CDATA[height of the region]]></parameter>
+  </method>
+  <method name="TextureRegion:setRegion" page="setRegion" shortdesc="sets the coordinates of the region" version="Gideros 2012.08.2"><![CDATA[<br />
+Sets the coordinates of the region.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="number"><![CDATA[left coordinate of the region]]></parameter>
+    <parameter name="y" optional="false" type="number"><![CDATA[top coordinate of the region]]></parameter>
+    <parameter name="width" optional="false" type="number"><![CDATA[width of the region]]></parameter>
+    <parameter name="height" optional="false" type="number"><![CDATA[height of the region]]></parameter>
+  </method>
+  <method name="TextureRegion:getRegion" page="getRegion" shortdesc="returns the coordinates of the region" version="Gideros 2012.08.2"><![CDATA[<br />
+Returns the coordinates of the region.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[x coordinate from texture]]></return>
+    <return type="number"><![CDATA[y coordinate from texture]]></return>
+    <return type="number"><![CDATA[width of region]]></return>
+    <return type="number"><![CDATA[height of region]]></return>
+  </method>
+  <example name=""><![CDATA[local texture = Texture.new(&quot;atlas.png&quot;)<br />
+<br />
+-- define 4 equal regions of size 100x100 from &quot;atlas.png&quot;<br />
+local region1 = TextureRegion.new(texture, 0,   0,   100, 100)<br />
+local region2 = TextureRegion.new(texture, 100, 0,   100, 100)<br />
+local region3 = TextureRegion.new(texture, 100, 100, 100, 100)<br />
+local region4 = TextureRegion.new(texture, 0,   100, 100, 100)<br />
+<br />
+-- add these regions to scene tree<br />
+local bitmap1 = Bitmap.new(region1)<br />
+local bitmap2 = Bitmap.new(region2)<br />
+local bitmap3 = Bitmap.new(region3)<br />
+local bitmap4 = Bitmap.new(region4)<br />
+<br />
+stage:addChild(bitmap1)<br />
+stage:addChild(bitmap2)<br />
+stage:addChild(bitmap3)<br />
+stage:addChild(bitmap4)
+]]></example>
+</object>

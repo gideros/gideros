@@ -6,14 +6,12 @@
 
 #include "luaapplication.h"
 #include <application.h>
+#include <gapplication-win32.h>
 
 extern HWND hwndcopy;
 extern char commandLine[];
 // extern int dxChrome,dyChrome;
 extern LuaApplication *application_;
-
-static RECT winRect;
-static bool isFullScreen=false;
 
 void GetDesktopResolution(int& horizontal, int& vertical)
 {
@@ -71,6 +69,14 @@ std::string getLanguage()
   return szBuff;
 }
 
+std::string getAppId(){
+	return "";
+}
+
+void getSafeDisplayArea(int &x,int &y,int &w,int &h)
+{
+}
+
 void setWindowSize(int width, int height)
 {
   printf("setWindowSize: %d x %d. hwndcopy=%p\n",width,height,hwndcopy);
@@ -102,26 +108,74 @@ void setWindowSize(int width, int height)
     printf("SetWindowPos: %d %d\n",rect.right-rect.left, rect.bottom-rect.top);
   }
 
-  application_->setHardwareOrientation(app_orient);   // previously eFixed
-  application_->getApplication()->setDeviceOrientation(app_orient);
+  //application_->setHardwareOrientation(app_orient);   // previously eFixed
+  //application_->getApplication()->setDeviceOrientation(app_orient);
 }
+
+void W32SetFullScreen(bool fullScreen,HWND wnd,W32FullScreen *save)
+{
+  bool for_metro=false;
+  if (fullScreen==save->isFullScreen) return;
+
+  // Save current window state if not already fullscreen.
+  if (!save->isFullScreen) {
+      // Save current window information.  We force the window into restored mode
+      // before going fullscreen because Windows doesn't seem to hide the
+      // taskbar if the window is in the maximized state.
+	  save->maximized = !!::IsZoomed(wnd);
+      if (save->maximized)
+        ::SendMessage(wnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+      save->style = GetWindowLong(wnd, GWL_STYLE);
+      save->ex_style = GetWindowLong(wnd, GWL_EXSTYLE);
+      GetWindowRect(wnd, &save->window_rect);
+    }
+
+    if (fullScreen) {
+      // Set new window style and size.
+      SetWindowLong(wnd, GWL_STYLE,
+    		  save->style & ~(WS_CAPTION | WS_THICKFRAME));
+      SetWindowLong(wnd, GWL_EXSTYLE,
+    		  save->ex_style & ~(WS_EX_DLGMODALFRAME |
+                    WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE));
+
+      // On expand, if we're given a window_rect, grow to it, otherwise do
+      // not resize.
+      if (!for_metro) {
+        MONITORINFO monitor_info;
+        monitor_info.cbSize = sizeof(monitor_info);
+        GetMonitorInfo(MonitorFromWindow(wnd, MONITOR_DEFAULTTONEAREST),
+                       &monitor_info);
+        SetWindowPos(wnd, NULL, monitor_info.rcMonitor.left, monitor_info.rcMonitor.top,
+        		monitor_info.rcMonitor.right-monitor_info.rcMonitor.left,
+				monitor_info.rcMonitor.bottom-monitor_info.rcMonitor.top,
+                     SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+      }
+    } else {
+      // Reset original window style and size.  The multiple window size/moves
+      // here are ugly, but if SetWindowPos() doesn't redraw, the taskbar won't be
+      // repainted.  Better-looking methods welcome.
+      SetWindowLong(wnd, GWL_STYLE, save->style);
+      SetWindowLong(wnd, GWL_EXSTYLE, save->ex_style);
+
+      if (!for_metro) {
+        // On restore, resize to the previous saved rect size.
+        SetWindowPos(wnd, NULL, save->window_rect.left,save->window_rect.top,
+        		save->window_rect.right-save->window_rect.left,
+				save->window_rect.bottom-save->window_rect.top,
+                     SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+      }
+      if (save->maximized)
+        SendMessage(wnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+    }
+
+  save->isFullScreen=fullScreen;
+}
+
+static W32FullScreen saved_window_info_;
 
 void setFullScreen(bool fullScreen)
 {
-
-  if (fullScreen==isFullScreen) return;
-
-  if (fullScreen){
-    GetWindowRect(hwndcopy,&winRect);    // store the current windows rectangle
-
-    int horizontal,vertical;
-    GetDesktopResolution(horizontal,vertical);
-    SetWindowPos(hwndcopy,HWND_TOPMOST,0,0,horizontal,vertical,0);
-  }
-  else {
-    SetWindowPos(hwndcopy,HWND_NOTOPMOST,0,0,winRect.right,winRect.bottom,0);
-  }
-  isFullScreen=fullScreen;
+	W32SetFullScreen(fullScreen,hwndcopy,&saved_window_info_);
 }
 
 void vibrate(int ms)

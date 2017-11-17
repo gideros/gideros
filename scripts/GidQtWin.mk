@@ -4,8 +4,19 @@ qtapp.install: qtlibs.install qtplugins.install qt.install
 
 qtapp.clean: qtlibs.clean qtplugins.clean qt.clean
 
+QTDLLEXT?=
 
-vpath %.a libgideros/release:libgvfs/release:libgid/release:lua/release:libgid/external/openal-soft-1.13/build/mingw48_32
+ifneq ($(DEBUG),)
+QTTGT_EXT=dbg
+QTDLLEXT=d
+QTTGT_DIR=debug
+else
+QTTGT_EXT=rel
+QTTGT_DIR=release
+endif
+
+
+vpath %.a libgideros/$(QTTGT_DIR):libgvfs/$(QTTGT_DIR):libgid/$(QTTGT_DIR):lua/$(QTTGT_DIR):libgid/external/openal-soft-1.13/build/mingw48_32
 
 $(SDK)/lib/desktop/%: %
 	cp $^ $(SDK)/lib/desktop
@@ -18,20 +29,20 @@ sdk.qtlibs.dir:
 
 sdk.qtlibs: sdk.headers sdk.qtlibs.dir $(addprefix $(SDK)/lib/desktop/,$(SDK_LIBS_QT))			
 			
-buildqtlibs: $(addsuffix .qmake.rel,libpystring libgvfs) libgid.qmake5.rel $(addsuffix .qmake.rel,lua libgideros) sdk.qtlibs
+buildqtlibs: $(addsuffix .qmake.$(QTTGT_EXT),libpystring libgvfs) libgid.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),lua libgideros) sdk.qtlibs
 
 
 qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
-	cp $(ROOT)/libgid/release/gid.dll $(RELEASE)
-	cp $(ROOT)/libgvfs/release/gvfs.dll $(RELEASE)
-	cp $(ROOT)/lua/release/lua.dll $(RELEASE)
-	cp $(ROOT)/libgideros/release/gideros.dll $(RELEASE)
-	cp $(ROOT)/libpystring/release/pystring.dll $(RELEASE)
+	cp $(ROOT)/libgid/$(QTTGT_DIR)/gid.dll $(RELEASE)
+	cp $(ROOT)/libgvfs/$(QTTGT_DIR)/gvfs.dll $(RELEASE)
+	cp $(ROOT)/lua/$(QTTGT_DIR)/lua.dll $(RELEASE)
+	cp $(ROOT)/libgideros/$(QTTGT_DIR)/gideros.dll $(RELEASE)
+	cp $(ROOT)/libpystring/$(QTTGT_DIR)/pystring.dll $(RELEASE)
 
 %.qtplugin:
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro
-	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) release
+	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) $(QTTGT_DIR)
 
 %.qtplugin.clean:
 	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MINGWMAKE) clean
@@ -40,21 +51,21 @@ qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)/Plugins
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/Windows
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp release/*.dll $$R/$(RELEASE)/Plugins	 
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp release/*.dll $$R/$(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins	 
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp release/*.dll $$R/$(RELEASE)/All\ Plugins/$*/bin/Windows	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp $(QTTGT_DIR)/*.dll $$R/$(RELEASE)/Plugins	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp $(QTTGT_DIR)/*.dll $$R/$(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp $(QTTGT_DIR)/*.dll $$R/$(RELEASE)/All\ Plugins/$*/bin/Windows	 
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 
-buildqt: $(addsuffix .qmake.rel,texturepacker fontcreator ui) player.qmake5.rel $(addsuffix .qmake.rel,gdrdeamon gdrbridge gdrexport desktop)
+buildqt: versioning $(addsuffix .qmake.$(QTTGT_EXT),texturepacker fontcreator ui) player.qmake5.$(QTTGT_EXT) $(addsuffix .qmake.$(QTTGT_EXT),gdrdeamon gdrbridge gdrexport desktop)
 
 qt.clean: $(addsuffix .qmake.clean,texturepacker fontcreator ui player gdrdeamon gdrbridge gdrexport desktop)
 
 qt.install: buildqt qt5.install qt.player tools html5.tools
-	cp $(ROOT)/ui/release/GiderosStudio.exe $(RELEASE)
-	cp $(ROOT)/player/release/GiderosPlayer.exe $(RELEASE)
-	cp $(ROOT)/texturepacker/release/GiderosTexturePacker.exe $(RELEASE)
-	cp $(ROOT)/fontcreator/release/GiderosFontCreator.exe $(RELEASE)
+	cp $(ROOT)/ui/$(QTTGT_DIR)/GiderosStudio.exe $(RELEASE)
+	cp $(ROOT)/player/$(QTTGT_DIR)/GiderosPlayer.exe $(RELEASE)
+	cp $(ROOT)/texturepacker/$(QTTGT_DIR)/GiderosTexturePacker.exe $(RELEASE)
+	cp $(ROOT)/fontcreator/$(QTTGT_DIR)/GiderosFontCreator.exe $(RELEASE)
 	cp -R $(ROOT)/ui/Resources $(RELEASE)
 	cd $(ROOT)/ui/;tar cf - --exclude=Tools/lua --exclude Tools/luac --exclude Tools/make Tools | (cd ../$(RELEASE) && tar xvf - )
 	cp $(ROOT)/lua/src/lua.exe $(RELEASE)/Tools
@@ -85,29 +96,23 @@ QT5DLLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 lib
 QT5DLLTOOLS=icudt$(QT5ICUVER) icuin$(QT5ICUVER) icuuc$(QT5ICUVER) libgcc_s_dw2-1 libstdc++-6 libwinpthread-1 \
 		Qt5Core Qt5Network Qt5Xml Qt5WebSockets
 QT5PLATFORM=qminimal qoffscreen qwindows
-QTDLLEXT?=
+QT5PLUGINS=$(addprefix mediaservice/,dsengine qtmedia_audioengine) $(addprefix platforms/,$(QT5PLATFORM)) imageformats/qjpeg
 
 qt.player:
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
 	cp $(ROOT)/desktop/release/WindowsDesktopTemplate.exe $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
 	for f in gid gvfs lua gideros pystring; do cp $(RELEASE)/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate; done
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate; done
-	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/imageformats
-	cp $(QT)/plugins/imageformats/qjpeg.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/imageformats
-	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/platforms
-	for f in $(addsuffix $(QTDLLEXT),$(QT5PLATFORM)); do cp $(QT)/plugins/platforms/$$f.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/platforms; done
-	cp $(ROOT)/libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
+	mkdir -p $(addprefix $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/,$(dir $(QT5PLUGINS)))
+	for a in $(QT5PLUGINS); do cp $(QT)/plugins/$$a.dll$(QTDLLEXT) $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/$$a.dll$(QTDLLEXT); done
 	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(RELEASE)/Templates/Qt/WindowsDesktopTemplate
 	mkdir -p $(RELEASE)/Templates/Qt/WindowsDesktopTemplate/Plugins
 
 qt5.install:
 	for f in $(addsuffix $(QTDLLEXT),$(QT5DLLS)); do cp $(QT)/bin/$$f.dll $(RELEASE); done
-	mkdir -p $(RELEASE)/imageformats
-	cp $(QT)/plugins/imageformats/qjpeg.dll $(RELEASE)/imageformats
-	mkdir -p $(RELEASE)/platforms
-	for f in $(addsuffix $(QTDLLEXT),$(QT5PLATFORM)); do cp $(QT)/plugins/platforms/$$f.dll $(RELEASE)/platforms; done
+	mkdir -p $(addprefix $(RELEASE)/,$(dir $(QT5PLUGINS)))
+	for a in $(QT5PLUGINS); do cp $(QT)/plugins/$$a.dll$(QTDLLEXT) $(RELEASE)/$$a.dll$(QTDLLEXT); done
 	cp $(QT)/lib/qscintilla2.dll $(RELEASE)
-	cp $(ROOT)/libgid/external/glew-1.10.0/lib/mingw48_32/glew32.dll $(RELEASE)
 	cp $(ROOT)/libgid/external/openal-soft-1.13/build/mingw48_32/OpenAL32.dll $(RELEASE)
 	mkdir -p $(RELEASE)/Tools
 	for f in $(QT5DLLTOOLS); do cp $(QT)/bin/$$f.dll $(RELEASE)/Tools; done
@@ -161,8 +166,13 @@ bundle.win:
 	-cd plugins; git archive master | tar -x -C ../$(RELEASE)/All\ Plugins
 	
 bundle.installer: bundle
-	cp $(ROOT)\Release\gideros_mui2.nsi $(RELEASE).Final
+	cp $(ROOT)/Release/*.nsi $(RELEASE).Final
+	cp $(ROOT)/Release/*.nsh $(RELEASE).Final
 	cd $(RELEASE).Final; $(NSIS) gideros_mui2.nsi
 	mv $(RELEASE).Final/Gideros.exe $(ROOT)/
-	
-	
+	if [ -f $(WIN_SIGN) ]; then $(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //t $(WIN_KEYTSS) $(ROOT)/Gideros.exe; fi
+	if [ -f $(WIN_SIGN) ]; then $(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //fd sha256 //tr $(WIN_KEYTSS) //td sha256 //as $(ROOT)/Gideros.exe; fi
+
+bundle.sign:
+	if [ -f $(WIN_SIGN) ]; then $(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //t $(WIN_KEYTSS) $(ROOT)/Gideros.exe; fi
+	if [ -f $(WIN_SIGN) ]; then $(WIN_SIGN) sign //v //f $(WIN_KEYSTORE) //p $(WIN_KEYPASS) //fd sha256 //tr $(WIN_KEYTSS) //td sha256 //as $(ROOT)/Gideros.exe; fi

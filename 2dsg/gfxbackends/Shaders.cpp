@@ -16,6 +16,7 @@ ShaderProgram *ShaderProgram::stdColor=NULL;
 ShaderProgram *ShaderProgram::stdTexture=NULL;
 ShaderProgram *ShaderProgram::stdTextureAlpha=NULL;
 ShaderProgram *ShaderProgram::stdTextureColor=NULL;
+ShaderProgram *ShaderProgram::stdTextureAlphaColor=NULL;
 ShaderProgram *ShaderProgram::stdParticle=NULL;
 ShaderProgram *ShaderProgram::stdParticles=NULL;
 ShaderProgram *ShaderProgram::pathShaderFillC=NULL;
@@ -102,6 +103,7 @@ void ShaderEngine::reset(bool reinit)
     dsCurrent.dTest=false;
     dsCurrent.sRef=0;
     dsCurrent.sMask=0xFF;
+    dsCurrent.sWMask=0xFF;
     dsCurrent.sClear=false;
     dsCurrent.sFail=STENCIL_KEEP;
     dsCurrent.dFail=STENCIL_KEEP;
@@ -259,6 +261,28 @@ void ShaderEngine::setColor(float r,float g,float b,float a)
     constCol[1]=g;
     constCol[2]=b;
     constCol[3]=a;
+}
+
+void ShaderEngine::getColor(float &r,float &g,float &b,float &a)
+{
+    r=constCol[0];
+    g=constCol[1];
+    b=constCol[2];
+    a=constCol[3];
+}
+
+ShaderProgram *ShaderEngine::getDefault(StandardProgram id)
+{
+	switch (id) {
+	case STDP_BASIC: return ShaderProgram::stdBasic;
+	case STDP_COLOR: return ShaderProgram::stdColor;
+	case STDP_TEXTURE: return ShaderProgram::stdTexture;
+	case STDP_TEXTUREALPHA: return ShaderProgram::stdTextureAlpha;
+	case STDP_TEXTURECOLOR: return ShaderProgram::stdTextureColor;
+	case STDP_PARTICLE: return ShaderProgram::stdParticle;
+	case STDP_PARTICLES: return ShaderProgram::stdParticles;
+	default: return NULL;
+	}
 }
 
 void ShaderEngine::setModel(const Matrix4 m)

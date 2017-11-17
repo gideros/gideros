@@ -6,6 +6,24 @@
 #include <stdlib.h>
 #include "netplayer.h"
 
+#include <exception>
+
+using namespace std;
+
+class luaException: public exception
+{
+public:
+   luaException(const char *trace) throw()
+         :trace(trace) {}
+     virtual const char* what() const throw()
+     {
+         return trace.c_str();
+     }
+    virtual ~luaException() throw() {}
+private:
+    string trace;
+};
+
 struct ProjectProperties {
 	ProjectProperties() {
 		scaleMode = 0;

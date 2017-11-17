@@ -1,4 +1,10 @@
+#if TARGET_OS_OSX
+#import <Cocoa/Cocoa.h>
+#define UIApplication NSApplication
+#define UIViewController NSViewController
+#else
 #import <UIKit/UIKit.h>
+#endif
 #import <AudioToolbox/AudioToolbox.h>
 
 #include <vector>
@@ -29,6 +35,11 @@ std::vector<std::string> getDeviceInfo()
 {
 	std::vector<std::string> result;
 
+#if TARGET_OS_OSX
+    result.push_back("MacOS");
+    result.push_back([[[NSProcessInfo processInfo] operatingSystemVersionString] UTF8String]);
+    result.push_back([getSysInfoByName("hw.model") UTF8String]);
+#else
 	UIDevice* device = [UIDevice currentDevice];
 
 	result.push_back("iOS");
@@ -50,7 +61,8 @@ std::vector<std::string> getDeviceInfo()
 		default:
 			result.push_back("");
 	}	
-	result.push_back([getSysInfoByName("hw.machine") UTF8String]);
+#endif
+    result.push_back([getSysInfoByName("hw.machine") UTF8String]);
 	
 	return result;
 }
@@ -64,22 +76,38 @@ void setFullScreen(bool fullScreen){
 }
 
 std::string getDeviceName(){
+#if TARGET_OS_OSX
+    return [[[NSHost currentHost] localizedName] UTF8String];
+#else
     return [[[UIDevice currentDevice] name] UTF8String];
+#endif
 }
 
 void vibrate(int ms)
 {
+#if TARGET_OS_OSX
+#else
 	AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+#endif
 }
 
 void openUrl(const char* url)
 {
+#if TARGET_OS_OSX
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
+#else
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
+#endif
 }
 
 bool canOpenUrl(const char *url)
 {
+#if TARGET_OS_OSX
+    return true;
+    //[[NSWorkspace sharedWorkspace] canOpenURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
+#else
 	return [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[NSString stringWithUTF8String:url]]];
+#endif
 }
 
 std::string getLocale()
@@ -98,12 +126,29 @@ std::string getLanguage()
 
 void setKeepAwake(bool awake)
 {
+#if TARGET_OS_OSX
+#else
 	[[UIApplication sharedApplication] setIdleTimerDisabled:(awake ? YES : NO)];
+#endif
 }
 
+std::string getAppId(){
+	return [[[NSBundle mainBundle] bundleIdentifier] UTF8String];
+}
 
 extern "C" {
 UIViewController *g_getRootViewController();
+}
+
+void getSafeDisplayArea(int &l,int &t,int &r,int &b)
+{
+		UIViewController *viewController = g_getRootViewController();
+		CGRect sa;
+		[viewController getSafeArea:&sa];
+		l=sa.origin.x;
+		t=sa.origin.y;
+		r=sa.size.width;
+		b=sa.size.height;
 }
 
 static int s_fps = 60;

@@ -1,16 +1,22 @@
 .PHONY: html5.clean html5.libs html5.install html5
 
-HTML5_PLUGINS=bitop luasocket json ads Facebook lsqlite3 lfs
+HTML5_PLUGINS=$(PLUGINS_HTML5)
 
 export EMSDK_PREFIX
 export CRUNCHME
 export HTML5_PLUGINS
 export DEBUG
 
+html5.setup:
+	$(EMSDK_PREFIX) emsdk.bat activate latest
+	
 html5.clean:
 	cd emscripten; $(MAKE) clean plugins.clean
 
-html5.libs:
+html5.main:  
+	cd emscripten; $(MAKE) -j 4 main
+
+html5.libs: versioning 
 	cd emscripten; $(MAKE) -j 4
 	
 html5.template: html5.libs
@@ -34,12 +40,12 @@ CRUNCHME_SRCS+=$(addprefix src/zlib/,adler32 compress crc32 deflate inftrees tre
 CRUNCHME_SRCS+=$(addprefix src/,crunchme png)
 
 html5.crunchme: $(addprefix emscripten/crunchme-0.4/,$(addsuffix .co,$(CRUNCHME_SRCS)))
-	$(CXX)  -o $(ROOT)/ui/Tools/crunchme $^
+	$(CXX) -o $(ROOT)/ui/Tools/crunchme $^
 	
 %.co: %.cpp
-	$(CXX) -c $< -Iemscripten/crunchme-0.4/src/liblzg/include -o $@
+	$(CXX) -c -o $@ -Iemscripten/crunchme-0.4/src/liblzg/include $< 
 
 %.co: %.c
-	$(CC) -c $< -o $@
+	$(CC) -c -o $@ $<
 
 	

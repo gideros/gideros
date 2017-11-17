@@ -166,6 +166,25 @@ std::string getDeviceName(){
 	return sresult;
 }
 
+std::string getAppId(){
+    JNIEnv *env = g_getJNIEnv();
+
+	jclass localRefCls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+	jmethodID getMethodID = env->GetStaticMethodID(localRefCls, "getAppId", "()Ljava/lang/String;");
+	jstring jresult = (jstring)env->CallStaticObjectMethod(localRefCls, getMethodID);
+	const char *result = env->GetStringUTFChars(jresult, NULL);
+	std::string sresult = result;
+	env->ReleaseStringUTFChars(jresult, result);
+	env->DeleteLocalRef(jresult);
+	env->DeleteLocalRef(localRefCls);
+
+	return sresult;
+}
+
+void getSafeDisplayArea(int &x,int &y,int &w,int &h)
+{
+}
+
 void g_exit()
 {
 	JNIEnv *env = g_getJNIEnv();

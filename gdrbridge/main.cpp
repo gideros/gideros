@@ -21,7 +21,7 @@ static bool sendData(const QByteArray &out, QByteArray *in)
     socket.connectToServer("gdrdeamon");
 #else
     QTcpSocket socket;
-    socket.connectToHost("127.0.0.1", 15001);
+    socket.connectToHost("127.0.0.1", 15011);
 #endif
     if (!socket.waitForConnected(1000))
         return false;
@@ -42,7 +42,7 @@ static void usage()
 {
     fprintf(stderr, "Gideros Player Bridge v1.02\n\n");
     fprintf(stderr, "usage:\n");
-    fprintf(stderr, "gdrbridge setip 127.0.0.1\n");
+    fprintf(stderr, "gdrbridge setip 127.0.0.1 [port]\n");
     fprintf(stderr, "gdrbridge play mygame.gproj\n");
     fprintf(stderr, "gdrbridge stop\n");
     fprintf(stderr, "gdrbridge isconnected\n");
@@ -69,7 +69,7 @@ static bool isDeamonRunning()
     socket.connectToServer("gdrdeamon2");
 #else
     QTcpSocket socket;
-    socket.connectToHost("127.0.0.1", 15002);
+    socket.connectToHost("127.0.0.1", 15012);
 #endif
     return socket.waitForConnected(1000);
 }
@@ -79,7 +79,7 @@ static bool startDeamon(const QString &applicationDirPath)
     if (isDeamonRunning())
         return true;
 
-    fprintf(stderr, "* daemon not running. starting it now on port 15001 *\n");
+    fprintf(stderr, "* daemon not running. starting it now on port 15011 *\n");
 #if defined(Q_OS_WIN)
     QString program = QDir(applicationDirPath).absoluteFilePath("gdrdeamon.exe");
 #else
@@ -148,8 +148,11 @@ int main(int argc, char *argv[])
             usage();
             return EXIT_FAILURE;
         }
+        QString port="15000";
+        if (arguments.size() >= 4)
+            port= arguments[3];
 
-        outstream << QString("setip") << arguments[2];
+        outstream << QString("setip") << arguments[2] << port;
     }
     else if (arguments[1] == "isconnected")
     {

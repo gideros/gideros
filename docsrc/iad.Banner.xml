@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="iad.Banner" page="iadBanner" parent="EventDispatcher" type="plugin" version="Gideros 2012.8"><![CDATA[<br />
+The `iad.Banner` class provides a view that displays banner advertisements to the user. When the user taps a banner view, the view triggers an action <br />
+programmed into the advertisement. For example, an advertisement might show a movie, present a modal advertisement, or launch Safari to show a webpage.<br />
+Your application is notified when an action starts and stops, but does not otherwise interact with the advertisement. <br />
+<br />
+]]>
+  <platform>ios</platform>
+  <constant name="iad.Banner.TOP" page="iad.Banner.TOP" value="top" version="Gideros 2012.8"><![CDATA[Top position of vertical alignment of banner]]></constant>
+  <constant name="iad.Banner.BOTTOM" page="iad.Banner.BOTTOM" value="bottom" version="Gideros 2012.8"><![CDATA[Bottom position of vertical alignment of banner]]></constant>
+  <constant name="iad.Banner.PORTRAIT" page="iad.Banner.PORTRAIT" value="portrait" version="Gideros 2012.8"><![CDATA[Portrait orientation of ad]]></constant>
+  <constant name="iad.Banner.LANDSCAPE" page="iad.Banner.LANDSCAPE" value="landscape" version="Gideros 2012.8"><![CDATA[Landscape orientation of ad]]></constant>
+  <method name="iad.Banner.new" page="new" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Creates an `iad.Banner` instance. If iAd framework is not available, this function gives an error.<br />
+<br />
+The alignment and the orientation of the ad banner are defined by these 4 string constants:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;`iad.Banner.TOP = &quot;top&quot;`&lt;/li&gt;<br />
+&lt;li&gt;`iad.Banner.BOTTOM = &quot;bottom&quot;`&lt;/li&gt;<br />
+&lt;li&gt;`iad.Banner.PORTRAIT = &quot;portrait&quot;`&lt;/li&gt;<br />
+&lt;li&gt;`iad.Banner.LANDSCAPE = &quot;landscape&quot;`&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+And `iad.Banner` class dispatches these 4 events:<br />
+<br />
+&lt;ul&gt;<br />
+&lt;li&gt;`Event.BANNER_AD_LOADED = &quot;bannerAdLoaded&quot;`&lt;/li&gt;<br />
+&lt;li&gt;`Event.BANNER_AD_FAILED = &quot;bannerAdFailed&quot;`&lt;/li&gt;<br />
+&lt;li&gt;`Event.BANNER_ACTION_BEGIN = &quot;bannerActionBegin&quot;`&lt;/li&gt;<br />
+&lt;li&gt;`Event.BANNER_ACTION_FINISHED = &quot;bannerActionFinished&quot;`&lt;/li&gt;<br />
+&lt;/ul&gt;<br />
+<br />
+When an ad banner is created, iAd will start requesting ads. Apple serves ads, and refreshes with new ads, on an automatic timer.<br />
+Apple also requires that the ad area be hidden when no ad is available to display. iAd module manages all this behavior for you automatically.<br />
+<br />
+When an ad becomes available, it will be displayed on the screen, the event `Event.BANNER_AD_LOADED` is dispatched when one is about to be displayed,<br />
+or the event `Event.BANNER_AD_FAILED` is dispatched when the loading has failed. If the loading has failed, the fields `event.errorCode` and `event.errorDescription` <br />
+contains information about the failure reason.<br />
+<br />
+When the user clicks on an ad, the event `Event.BANNER_ACTION_BEGIN` is dispatched. At this time, the user will either be taken out of your application <br />
+to view the app store (in this case `event.willLeaveApplication` field will be true), or they will be presented with a fullscreen advertisement to interact with, <br />
+and `event.willLeaveApplication` will be false. In the latter case, you may decide to pause the application until the event `Event.BANNER_ACTION_FINISHED` is dispatched. <br />
+<br />
+]]>
+    <parameter name="alignment" optional="false" type="string"><![CDATA[whether you want ads to show top or bottom of the screen. It can be either iad.Banner.TOP or iad.Banner.BOTTOM.]]></parameter>
+    <parameter name="orientation" optional="false" type="string"><![CDATA[orientation of the banner. It can be either iad.Banner.PORTRAIT or iad.Banner.LANDSCAPE.]]></parameter>
+    <example><![CDATA[-- if the platform is iOS, load the iAd module<br />
+if application:getDeviceInfo() == &quot;iOS&quot; then<br />
+	require &quot;iad&quot;<br />
+	end<br />
+<br />
+-- 4 event listeners for debug print<br />
+local function onBannerAdLoaded()<br />
+	print(&quot;banner ad loaded&quot;)<br />
+end<br />
+<br />
+local function onBannerAdFailed(event)<br />
+	print(&quot;banner ad failed&quot;, event.errorCode, event.errorDescription)<br />
+end<br />
+<br />
+local function onBannerActionBegin(event)<br />
+	print(&quot;banner action begin&quot;, event.willLeaveApplication)<br />
+end<br />
+<br />
+local function onBannerActionFinished()<br />
+	print(&quot;banner action finished&quot;)<br />
+end<br />
+<br />
+-- if iAd module is loaded and iAd framework is available, create an ad banner and then show it<br />
+local banner = nil<br />
+if iad and iad.isAvailable() then<br />
+	banner = iad.Banner.new(iad.Banner.TOP, iad.Banner.PORTRAIT)<br />
+	banner:addEventListener(Event.BANNER_AD_LOADED, onBannerAdLoaded)<br />
+	banner:addEventListener(Event.BANNER_AD_FAILED, onBannerAdFailed)<br />
+	banner:addEventListener(Event.BANNER_ACTION_BEGIN, onBannerActionBegin)<br />
+	banner:addEventListener(Event.BANNER_ACTION_FINISHED, onBannerActionFinished)<br />
+	banner:show()  -- show it because newly created banners are not visible by default<br />
+end<br />
+<br />
+-- show the banner (if it exists)<br />
+function showBanner()<br />
+	if banner ~= nil then<br />
+		banner:show()<br />
+	end<br />
+end<br />
+<br />
+-- hide the banner (if it exists)<br />
+function hideBanner()<br />
+	if banner ~= nil then<br />
+		banner:hide()<br />
+	end<br />
+end<br />
+]]></example>
+  </method>
+  <method name="iad.Banner:show" page="show" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Shows the ad banner if an ad is currently available or when an ad becomes available.<br />
+<br />
+]]></method>
+  <method name="iad.Banner:hide" page="hide" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Hides the ad banner.<br />
+<br />
+]]></method>
+  <method name="iad.Banner:setAlignment" page="setAlignment" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Sets the alignment of the banner as the top or bottom.<br />
+<br />
+]]>
+    <parameter name="alignment" optional="false" type="string"><![CDATA[whether you want ads to show top or bottom of the screen. It can be either iad.Banner.TOP or iad.Banner.BOTTOM.]]></parameter>
+  </method>
+  <method name="iad.Banner:isBannerLoaded" page="isBannerLoaded" shortdesc="" version="Gideros 2012.8"><![CDATA[<br />
+Returns `true` if the ad banner has downloaded an advertisement, `false` otherwise.<br />
+<br />
+]]>
+    <return type="bool"><![CDATA[`true` if the ad banner has downloaded an advertisement, `false` otherwise]]></return>
+  </method>
+  <event name="Event.BANNER_AD_LOADED" page="Event.BANNER_AD_LOADED" value="bannerAdLoaded" version="Gideros 2012.8"><![CDATA[This event is dispatched when an ad becomes available, and will be displayed on the screen]]></event>
+  <event name="Event.BANNER_AD_FAILED" page="Event.BANNER_AD_FAILED" value="bannerAdFailed" version="Gideros 2012.8"><![CDATA[This event is dispatched when the loading of ad has failed.]]>
+    <parameter name="errorCode" type="number"><![CDATA[code of the error]]></parameter>
+    <parameter name="errorDescription" type="string"><![CDATA[description of the error]]></parameter>
+  </event>
+  <event name="Event.BANNER_ACTION_BEGIN" page="Event.BANNER_ACTION_BEGIN" value="bannerActionBegin" version="Gideros 2012.8"><![CDATA[This event is dispatched when the user clicks on an ad. At this time, the user will either be taken out of your application to view the app store (in this case `event.willLeaveApplication` field will be true), or they will be presented with a fullscreen advertisement to interact with, and `event.willLeaveApplication` will be false.]]>
+    <parameter name="willLeaveApplication" type="bool"><![CDATA[true if user will leave the app, false if user will not leave the app]]></parameter>
+  </event>
+  <event name="Event.BANNER_ACTION_FINISHED" page="Event.BANNER_ACTION_FINISHED" value="bannerActionFinished" version="Gideros 2012.8"><![CDATA[This event is dispatched when the user gets back to app after interaction with the ad.]]></event>
+</object>

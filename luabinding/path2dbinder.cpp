@@ -204,9 +204,9 @@ int Path2DBinder::setFontPath(lua_State* L)
 	}
 	int ch= luaL_checkinteger(L,3);
     TTFont *tf=static_cast<TTFont*>(font);
-    FT_Face face=(FT_Face)tf->getFace();
+    FT_UInt glyphIndex;
+    FT_Face face=tf->getFace(ch,glyphIndex);
 
-    FT_UInt glyphIndex = FT_Get_Char_Index(face, ch);
     if ((glyphIndex != 0)&&(!FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT)))
     {
         if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE)

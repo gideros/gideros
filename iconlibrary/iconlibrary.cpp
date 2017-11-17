@@ -15,6 +15,9 @@ IconLibrary::IconLibrary()
     iconMap_["lua with stop"] = icon(14, 18, 4, 0, 4, 4);
     iconMap_["file"] = icon(14, 32);
 	iconMap_["folder"] = icon(11, 12);
+	iconMap_["folder plugins"] = icon(13, 12);
+	iconMap_["folder files"] = icon(6, 13);
+	iconMap_["plugin"] = icon(2, 6);
 	iconMap_["sound"] = icon(14, 16);
 
 	iconMap_["new"] = icon(3, 272 / 16);
@@ -34,8 +37,15 @@ IconLibrary::IconLibrary()
 	iconMap_["previous bookmark"] = icon(2, 400 / 16, 1, 0, -3, 3);
 	iconMap_["clear bookmarks"] = icon(2, 400 / 16, 4, 0, 4, 4);
 
-	iconMap_["green dot"] = icon(11, 0);
-	iconMap_["red dot"] = icon(7, 1);
+    iconMap_["dot list"] = icon(12, 27);
+    iconMap_["num list"] = icon(13, 27);
+
+    iconMap_["blue dot"] = icon(3, 0);
+    iconMap_["green dot"] = icon(11, 0);
+    iconMap_["red dot"] = icon(7, 1);
+    iconMap_["purple dot"] = icon(5, 1);
+    iconMap_["yellow dot"] = icon(15, 1);
+    iconMap_["orange dot"] = icon(1, 1);
 
 	iconMap_["project"] = icon(2, 17);
 
@@ -71,7 +81,7 @@ const QIcon& IconLibrary::icon(int category, const QString& name) const
 	else if (category == 1)
 	{
 		std::map<QString, QIcon>::const_iterator iter = danish_.find(name);
-		if (iter != iconMap_.end())
+		if (iter != danish_.end())
 			return iter->second;
 	}
 

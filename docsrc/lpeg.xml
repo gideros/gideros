@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="lpeg" page="lpeg" parent="" type="plugin" version="Gideros 2012.8"><![CDATA[LPeg is a pattern-matching library for Lua, based on  Parsing Expression Grammars (PEGs).
+For more information and detailed documentation, please visit [http://www.inf.puc-rio.br/~roberto/lpeg/](http://www.inf.puc-rio.br/~roberto/lpeg/)
+]]>
+  <platform>mac</platform>
+  <platform>pc</platform>
+</object>

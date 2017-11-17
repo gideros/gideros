@@ -144,6 +144,10 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     completionHandler(result);
 }
 
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(nonnull NSData *)deviceToken {
+    //GIDEROS-TAG-IOS:NOTIFICATION-TOKEN//
+}
+
 - (void)dealloc
 {
     [viewController release];

@@ -13,6 +13,7 @@ public:
 
 	void setWidget(QWidget *widget);
 	QWidget *widget() const;
+	virtual void background() { };
 
 signals:
 	void windowTitleChanged(const QString& title);
