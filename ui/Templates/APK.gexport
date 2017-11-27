@@ -7,10 +7,10 @@
 	<property name="deployApk" type="boolean" title="Install APK to device" description="Try to deploy APK to connected device" default="0" />	
 	<property name="keyStore" type="file" title="Key store" description="Path to keystore for signing" default="" />
 	<property name="keyAlias" type="string" title="Key alias" description="Alias of the key to use" default="" />
-	<property name="androidPath" type="dir" title="Android SDK Directory" description="Directory of your Android SDK (optional)" default="" />
-	<property name="javaPath" type="dir" title="JDK Directory" description="Directory of your JDK installation (optional)" default="" />
-	<property name="androidSdk" type="string" title="Android SDK Version" description="The android SDK version to be used for compiling (optional)" default="" />
-	<property name="androidTools" type="string" title="Android Tools Version" description="The android tools version to be used for compiling (optional)" default="" />
+	<property name="androidPath" type="dir" title="Android SDK Directory (optional)" description="Directory of your Android SDK (optional)" default="" />
+	<property name="javaPath" type="dir" title="JDK Directory (optional)" description="Directory of your JDK installation (optional)" default="" />
+	<property name="androidSdk" type="string" title="Android SDK Version (optional)" description="The android SDK version to be used for compiling (optional)" default="" />
+	<property name="androidTools" type="string" title="Android Tools Version (optional)" description="The android tools version to be used for compiling (optional)" default="" />
 	<rules>
 	<lua>
 require "lfs"
@@ -55,7 +55,7 @@ print("Android SDK Version:"..sdkVer)
 
 local tools=home.."/build-tools"
 local buildVer=Export.getProperty("export.androidTools")
-if lfs.attributes(tools.."/"..buildVer,"mode")~="directory" then
+if lfs.attributes(tools.."/"..buildVer,"mode")~="directory" or buildVer=="" then
 	buildVer=""
 	for adir in lfs.dir(tools) do
 		if lfs.attributes(tools.."/"..adir,"mode")=="directory" then
