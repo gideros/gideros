@@ -53,7 +53,7 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.addGroup("Facebook","Plugins/Facebook","GroupFacebook_ios","GroupPlugins_ios")
 iOSProject.addGroup("Facebook","Plugins/Facebook","GroupFacebook_atv","GroupPlugins_atv")
 iOSProject.addSources({ "GFBook.h", "GFBook.mm", "gfacebook.h", "gfacebook.mm", "facebookbinder.cpp", "FacebookSDK.framework" }, "GroupFacebook", "ios")
---[[iOSProject.addSources({ "GFBook.h", "GFBook.mm", "gfacebook.h", "gfacebook.mm", "facebookbinder.cpp", "FBSDKCoreKit.framework", "FBSDKLoginKit.framework", "FBSDKShareKit.framework" }, "GroupFacebook", "ios")]]
+--iOSProject.addSources({ "GFBook.h", "GFBook.mm", "gfacebook.h", "gfacebook.mm", "facebookbinder.cpp", "FBSDKCoreKit.framework", "FBSDKLoginKit.framework", "FBSDKShareKit.framework" }, "GroupFacebook", "ios")
 iOSProject.addFrameworkPath(Export.getProperty("project.name").."/Plugins/Facebook")
 iOSProject.commit()
 	]]></lua>
