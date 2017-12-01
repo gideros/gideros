@@ -600,11 +600,11 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			x += kerning(prev, wtext[i]) >> 6;
 			prev = wtext[i];
 
-			float x0 = x + left;
-			float y0 = y - top;
+			float x0 = x + left-1;
+			float y0 = y - top-1;
 
-			float x1 = x0 + width;
-			float y1 = y0 + height;
+			float x1 = x0 + width+2;
+			float y1 = y0 + height+2;
 			int vi = gfxMap2[gfx];
 			gfxMap2[gfx] = vi + 1;
 
@@ -617,13 +617,13 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 			graphicsBase->vertices[vi * 4 + 3] = Point2f(sizescalex_ * x0,
 					sizescaley_ * y1);
 
-			float u0 = (float) textureGlyph.x
+			float u0 = ((float) textureGlyph.x-1.0)
 					/ (float) textureData_[textureGlyph.texture]->exwidth;
-			float v0 = (float) textureGlyph.y
+			float v0 = ((float) textureGlyph.y-1.0)
 					/ (float) textureData_[textureGlyph.texture]->exheight;
-			float u1 = (float) (textureGlyph.x + width)
+			float u1 = (float) (textureGlyph.x + width + 1)
 					/ (float) textureData_[textureGlyph.texture]->exwidth;
-			float v1 = (float) (textureGlyph.y + height)
+			float v1 = (float) (textureGlyph.y + height + 1)
 					/ (float) textureData_[textureGlyph.texture]->exheight;
 
 			u0 *= uvscalex_;

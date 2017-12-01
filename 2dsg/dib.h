@@ -73,6 +73,11 @@ public:
 		return baseOriginalHeight_;
 	}
 
+	float scale() const
+	{
+		return scale_;
+	}
+
 	const unsigned char* data() const
 	{
 		return &data_[0];
@@ -145,6 +150,7 @@ private:
 
 	int baseOriginalWidth_;
 	int baseOriginalHeight_;
+	float scale_;
 };
 
 #endif

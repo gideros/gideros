@@ -368,10 +368,11 @@ MainWindow::MainWindow(QWidget *parent)
 		connect(ui.actionClear_Bookmarks, SIGNAL(triggered()), this, SLOT(clearBookmarks()));
 	}
 
-	// undo-redo
+	// undo-redo-indent
 	{
 		connect(ui.actionUndo, SIGNAL(triggered()), this, SLOT(undo()));
 		connect(ui.actionRedo, SIGNAL(triggered()), this, SLOT(redo()));
+		connect(ui.actionAuto_indent, SIGNAL(triggered()), this, SLOT(autoIndent()));
 	}
 
 	connect(ui.actionGo_To_Line, SIGNAL(triggered()), this, SLOT(goToLine()));
@@ -1199,6 +1200,11 @@ void MainWindow::onOpenRequest(const QString& itemName, const QString& fileName)
 		openFile(fileName);
 	else
 		QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
+}
+
+void MainWindow::autoIndent()
+{
+
 }
 
 void MainWindow::updateUI()

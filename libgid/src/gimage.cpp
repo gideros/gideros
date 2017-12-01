@@ -20,7 +20,7 @@ static int getTypeFromPath(const char *pathname)
     if (strcasecmp(dot + 1, "png") == 0)
         return GIMAGE_PNG;
 
-    if (strcasecmp(dot + 1, "jpg") == 0 || strcasecmp(dot + 1, "jpegg") == 0)
+    if (strcasecmp(dot + 1, "jpg") == 0 || strcasecmp(dot + 1, "jpeg") == 0)
         return GIMAGE_JPG;
 
     return GIMAGE_UNKNOWN;
