@@ -85,6 +85,7 @@ public:
 	};
 	virtual TextLayout layoutText(const char *text, TextLayoutParameters *params);
 protected:
+	void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped=false);
     Application *application_;
 };
 

@@ -359,6 +359,8 @@ void OutlineWidget::reportError(const QString error)
         s->SendScintilla(QsciScintillaBase::SCI_STYLESETBACK,stylenum,QColor("darkred"));
         s->setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
         s->annotate(lineNum-1,err,stylenum);
+        if (s->SendScintilla(QsciScintillaBase::SCI_AUTOCACTIVE))
+        		return;
         if (lineNum>=s->lines()) //Last line has error
         {
             int cline,cindex;

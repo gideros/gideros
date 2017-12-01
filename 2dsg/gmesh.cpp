@@ -395,6 +395,16 @@ void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float
 
     if (texture_[0] && !textureCoordinates_.empty())
     {
+    	int sc=p->getSystemConstant(ShaderProgram::SysConst_TextureInfo);
+    	if (sc>=0)
+    	{
+        	float textureInfo[4]={0,0,0,0};
+       		textureInfo[0]=(float)texture_[0]->data->width / (float)texture_[0]->data->exwidth;
+        	textureInfo[1]=(float)texture_[0]->data->height / (float)texture_[0]->data->exheight;
+        	textureInfo[2]=1.0/texture_[0]->data->exwidth;
+        	textureInfo[3]=1.0/texture_[0]->data->exheight;
+    		p->setConstant(sc,ShaderProgram::CFLOAT4,1,textureInfo);
+    	}
         p->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2, &textureCoordinates_[0],textureCoordinates_.size()/2,textureCoordinates_.modified,&textureCoordinates_.bufferCache);
         textureCoordinates_.modified=false;
     }

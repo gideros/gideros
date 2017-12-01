@@ -56,7 +56,7 @@ NSMutableArray *tableData;
         r.origin.x=sa.left;
         r.origin.y=sa.top;
         r.size.height=sa.bottom;
-        r.size.width=sa.top;
+        r.size.width=sa.right;
     }
     else
         r=CGRectMake(0,0,0,0);

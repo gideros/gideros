@@ -205,6 +205,7 @@ TextureData* TextureManager::createTextureFromFile(const char* filename, const T
     data->exheight = dib.height();
     data->baseWidth = dib.baseOriginalWidth();
     data->baseHeight = dib.baseOriginalHeight();
+    data->scale = dib.scale();
 
     TextureData* internal = new TextureData(*data);
     gtexture_setUserData(gid, internal);
@@ -345,6 +346,7 @@ TextureData* TextureManager::createTextureFromDib(const Dib& dib, const TextureP
     data->exheight = dib.height();
     data->baseWidth = dib.baseOriginalWidth();
     data->baseHeight = dib.baseOriginalHeight();
+    data->scale = dib.scale();
 
     return data;
 }
@@ -476,6 +478,7 @@ void TextureManager::updateTextureFromDib(TextureData* data, const Dib& dib)
     data->exheight = dib.height();
     data->baseWidth = dib.baseOriginalWidth();
     data->baseHeight = dib.baseOriginalHeight();
+    data->scale = dib.scale();
 }
 
 static unsigned int nextpow2(unsigned int v)
@@ -534,6 +537,7 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
     data->exheight = exheight;
     data->baseWidth = baseWidth;
     data->baseHeight = baseHeight;
+    data->scale = 1.0;
 
     return data;
 }

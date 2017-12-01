@@ -3,17 +3,53 @@
 #include <algorithm>
 #include <stdlib.h>
 
-static void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags, bool wrapped=false)
+void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped)
 {
 	size_t cur=tl->parts.size();
 	size_t cnt=cur-start;
 	float ox=0;
+	bool justified=false;
 	if ((flags&FontBase::TLF_JUSTIFIED)&&wrapped)
+	{
         sw+=(cnt>1)?((w-cw)/(cnt-1)):0;
+        justified=true;
+	}
 	else if (flags&FontBase::TLF_RIGHT)
 		ox=w-cw;
 	else if (flags&FontBase::TLF_CENTER)
 		ox=(w-cw)/2;
+	if (!justified) //Not justified, try to merge space separated chunks together
+	{
+		bool merged=false;
+		for (size_t i=start;i<(cur-1);i++)
+		{
+			if (tl->parts[i].sep==' ')
+			{
+				tl->parts[i].text=tl->parts[i].text+" "+tl->parts[i+1].text;
+				tl->parts[i].sep=tl->parts[i+1].sep;
+				tl->parts.erase(tl->parts.begin()+i+1);
+				cur--;
+				merged=true;
+                i--;
+			}
+            if (merged)
+			{
+	            getBounds(tl->parts[i].text.c_str(),letterSpacing,&tl->parts[i].x,&tl->parts[i].y,&tl->parts[i].w,&tl->parts[i].h);
+	            tl->parts[i].w=tl->parts[i].w-tl->parts[i].x+1;
+	            tl->parts[i].h=tl->parts[i].h-tl->parts[i].y+1;
+				tl->parts[i].y+=tl->parts[i].dy;
+				merged=false;
+			}
+		}
+		if (merged)
+		{
+			size_t i=cur-1;
+            getBounds(tl->parts[i].text.c_str(),letterSpacing,&tl->parts[i].x,&tl->parts[i].y,&tl->parts[i].w,&tl->parts[i].h);
+            tl->parts[i].w=tl->parts[i].w-tl->parts[i].x+1;
+            tl->parts[i].h=tl->parts[i].h-tl->parts[i].y+1;
+			tl->parts[i].y+=tl->parts[i].dy;
+		}
+	}
 	for (size_t i=start;i<cur;i++)
 	{
 		tl->parts[i].x+=ox;
@@ -69,7 +105,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		if (wrap&&cw&&((*rt)!='\e')&&((cw+cl.w+ns)>params->w))
 		{
 			//The current line will exceed max width (and is not empty): wrap
-			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,true);
+			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,true);
 			st=tl.parts.size();
 			y+=lh;
 			cl.y+=lh;
@@ -84,7 +120,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		if ((*rt)=='\n')
 		{
 			//Line break
-			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags);
+			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing);
 			st=tl.parts.size();
 			y+=lh;
 			cw=0;
@@ -161,7 +197,7 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	//Layout final line
 	if (cw)
 	{
-		layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags);
+		layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing);
 		st=tl.parts.size();
 		y+=lh;
 		cw=0;

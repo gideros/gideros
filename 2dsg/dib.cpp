@@ -87,6 +87,7 @@ Dib::Dib(Application* application,
 
         float scale;
         const char *suffix = application->getImageSuffix(file, &scale);
+        scale_=scale;
 
         filename = std::string(file, ext - file) + (suffix ? suffix : "") + ext;
 
@@ -110,6 +111,7 @@ Dib::Dib(Application* application,
         filename = file;
         width2 = width1;
         height2 = height1;
+        scale_=1.0;
     }
 
     originalWidth_ = width2;

@@ -330,6 +330,7 @@ private slots:
 private slots:
 	void undo();
 	void redo();
+	void autoIndent();
 
 private slots:
 	void goToLine();

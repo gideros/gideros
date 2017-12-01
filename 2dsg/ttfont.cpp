@@ -423,7 +423,7 @@ float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 	FT_UInt prev = 0;
 	for (int i = 0; i < size; ++i) {
 		FT_UInt glyphIndex;
-		FT_Face face = getFace(text[i], glyphIndex);
+		FT_Face face = getFace(wtext[i], glyphIndex);
 		if (glyphIndex == 0)
 			continue;
 
@@ -441,7 +441,7 @@ float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 	}
 
     if (prevFace)
-        x += kerning(prevFace, prev, FT_Get_Char_Index(prevFace, text[size])) >> 6;
+        x += kerning(prevFace, prev, FT_Get_Char_Index(prevFace, wtext[size])) >> 6;
 
 	return x / scalex;
 }

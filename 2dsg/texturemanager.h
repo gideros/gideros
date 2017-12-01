@@ -59,6 +59,7 @@ struct TextureData
     int width, height;
     int exwidth, exheight;
     int baseWidth, baseHeight;
+    float scale;
 };
 
 

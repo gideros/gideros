@@ -33,7 +33,7 @@ QMainWindow::separator {
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -94,6 +94,7 @@ QMainWindow::separator {
     <addaction name="actionGo_To_Line"/>
     <addaction name="actionFold_Unfold_All"/>
     <addaction name="actionFold_Unfold_Top"/>
+    <addaction name="actionAuto_indent"/>
    </widget>
    <widget class="QMenu" name="menuCompile">
     <property name="title">
@@ -214,7 +215,7 @@ QMainWindow::separator {
     <string>Start</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string>F5, Ctrl+R</string>
    </property>
   </action>
   <action name="actionStop">
@@ -628,6 +629,17 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="text">
     <string>Macro Support</string>
+   </property>
+  </action>
+  <action name="actionAuto_indent">
+   <property name="text">
+    <string>Auto indent</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
  </widget>

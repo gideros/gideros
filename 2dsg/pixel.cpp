@@ -53,6 +53,16 @@ void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float 
     ShaderProgram *shp=(texture_[0])?ShaderProgram::stdTexture:(
         colors_.empty()?ShaderProgram::stdBasic:ShaderProgram::stdColor);
     if (shader_) shp=shader_;
+	int sc=shp->getSystemConstant(ShaderProgram::SysConst_TextureInfo);
+	if ((sc>=0)&&texture_[0])
+	{
+    	float textureInfo[4]={0,0,0,0};
+   		textureInfo[0]=(float)texture_[0]->data->width / (float)texture_[0]->data->exwidth;
+    	textureInfo[1]=(float)texture_[0]->data->height / (float)texture_[0]->data->exheight;
+    	textureInfo[2]=1.0/texture_[0]->data->exwidth;
+    	textureInfo[3]=1.0/texture_[0]->data->exheight;
+		shp->setConstant(sc,ShaderProgram::CFLOAT4,1,textureInfo);
+	}
 
     shp->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2,&vertices[0],vertices.size(),vertices.modified,&vertices.bufferCache);
     shp->setData(ShaderProgram::DataTexture,ShaderProgram::DFLOAT,2,&texcoords[0],texcoords.size(),texcoords.modified,&texcoords.bufferCache);
