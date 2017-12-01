@@ -34,7 +34,8 @@
  </target>
  <target name="iOS">
    <template name="binaries" path="[[[sys.pluginDir]]]/source/iOS/Plugins/" dest="[[[project.name]]]/Plugins/" />
-    	<download source="http://apps.giderosmobile.com/ext/ios/FacebookSDK.framework-3.24.4.zip" dest="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" />
+	<download source="http://apps.giderosmobile.com/ext/ios/FacebookSDK.framework-3.24.4.zip" dest="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" />
+<!-- <download source="http://apps.giderosmobile.com/ext/ios/FacebookSDKs-iOS-4.28.0.zip" dest="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" /> -->
     	<unzip source="[[[sys.cacheDir]]]/FacebookSDK.framework.zip" dest="[[[project.name]]]/Plugins/Facebook" />
 	<template name="Project" path="">
         <replacelist wildcards="project.pbxproj;EAGLView.m;[[[project.name]]]-Info.plist">
@@ -52,6 +53,7 @@ local iOSProject=require("Tools/export_ios")
 iOSProject.addGroup("Facebook","Plugins/Facebook","GroupFacebook_ios","GroupPlugins_ios")
 iOSProject.addGroup("Facebook","Plugins/Facebook","GroupFacebook_atv","GroupPlugins_atv")
 iOSProject.addSources({ "GFBook.h", "GFBook.mm", "gfacebook.h", "gfacebook.mm", "facebookbinder.cpp", "FacebookSDK.framework" }, "GroupFacebook", "ios")
+--[[iOSProject.addSources({ "GFBook.h", "GFBook.mm", "gfacebook.h", "gfacebook.mm", "facebookbinder.cpp", "FBSDKCoreKit.framework", "FBSDKLoginKit.framework", "FBSDKShareKit.framework" }, "GroupFacebook", "ios")]]
 iOSProject.addFrameworkPath(Export.getProperty("project.name").."/Plugins/Facebook")
 iOSProject.commit()
 	]]></lua>
