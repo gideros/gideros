@@ -213,8 +213,8 @@
    	<template name="Project" path="">
         	<replacelist wildcards="Contents.json">
 	    		<replace>
-				<orig><![CDATA["subtype" : "2436h",]]></orig>
-				<by><![CDATA["subtype" : "2436hUnused",]]></by>
+				<orig><![CDATA["subtype" : "2436hUnused",]]></orig>
+				<by><![CDATA["subtype" : "2436h",]]></by>
 	    		</replace>
         	</replacelist>
        </template>

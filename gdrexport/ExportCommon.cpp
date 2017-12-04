@@ -141,24 +141,23 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
 	if (ctx->appicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.app_icon.isEmpty())
-		{
-			ctx->appicon = new QImage("gideros-mobile-icon.png");
-			return true;
-		}
-		QString appicon = ctx->properties.app_icon;
-		for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
-			const QString& s1 = ctx->fileQueue[i].first;
-			const QString& s2 = ctx->fileQueue[i].second;
-			if (s1 == appicon) {
-				appicon = s2;
-				break;
+			ctx->appicon = new QImage("Tools/gideros-mobile-icon.png");
+		else {
+			QString appicon = ctx->properties.app_icon;
+			for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
+				const QString& s1 = ctx->fileQueue[i].first;
+				const QString& s2 = ctx->fileQueue[i].second;
+				if (s1 == appicon) {
+					appicon = s2;
+					break;
+				}
 			}
+			QString src = path.absoluteFilePath(appicon);
+			ctx->appicon = new QImage(src);
+			if (ctx->appicon->isNull())
+				fprintf(stderr, "App icon %s not found or not readable\n",
+						src.toStdString().c_str());
 		}
-		QString src = path.absoluteFilePath(appicon);
-		ctx->appicon = new QImage(src);
-		if (ctx->appicon->isNull())
-			fprintf(stderr, "App icon %s not found or not readable\n",
-					src.toStdString().c_str());
 	}
 	if (ctx->appicon->isNull())
 		return false;
@@ -173,24 +172,23 @@ bool ExportCommon::tvIcon(ExportContext *ctx, int width, int height,
 	if (ctx->tvicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.tv_icon.isEmpty())
-		{
-			ctx->tvicon = new QImage("gideros-mobile-icon.png");
-			return true;
-		}
-		QString tvicon = ctx->properties.tv_icon;
-		for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
-			const QString& s1 = ctx->fileQueue[i].first;
-			const QString& s2 = ctx->fileQueue[i].second;
-			if (s1 == tvicon) {
-				tvicon = s2;
-				break;
+			ctx->tvicon = new QImage("Tools/gideros-mobile-icon.png");
+		else {
+			QString tvicon = ctx->properties.tv_icon;
+			for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
+				const QString& s1 = ctx->fileQueue[i].first;
+				const QString& s2 = ctx->fileQueue[i].second;
+				if (s1 == tvicon) {
+					tvicon = s2;
+					break;
+				}
 			}
+			QString src = path.absoluteFilePath(tvicon);
+			ctx->tvicon = new QImage(src);
+			if (ctx->tvicon->isNull())
+				fprintf(stderr, "TV icon %s not found or not readable\n",
+						src.toStdString().c_str());
 		}
-		QString src = path.absoluteFilePath(tvicon);
-		ctx->tvicon = new QImage(src);
-		if (ctx->tvicon->isNull())
-			fprintf(stderr, "TV icon %s not found or not readable\n",
-					src.toStdString().c_str());
 	}
 	if (ctx->tvicon->isNull())
 		return false;
@@ -205,24 +203,24 @@ bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height,
 	if (ctx->splash_h_image == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.splash_h_image.isEmpty())
-		{
-			ctx->splash_h_image = new QImage("gideros-mobile-splash.png");
-			return true;
-		}
-		QString appicon = ctx->properties.splash_h_image;
-		for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
-			const QString& s1 = ctx->fileQueue[i].first;
-			const QString& s2 = ctx->fileQueue[i].second;
-			if (s1 == appicon) {
-				appicon = s2;
-				break;
+			ctx->splash_h_image = new QImage("Tools/gideros-mobile-splash.png");
+		else {
+			QString appicon = ctx->properties.splash_h_image;
+			for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
+				const QString& s1 = ctx->fileQueue[i].first;
+				const QString& s2 = ctx->fileQueue[i].second;
+				if (s1 == appicon) {
+					appicon = s2;
+					break;
+				}
 			}
+			QString src = path.absoluteFilePath(appicon);
+			ctx->splash_h_image = new QImage(src);
+			if (ctx->splash_h_image->isNull())
+				fprintf(stderr,
+						"Splash horizontal %s not found or not readable\n",
+						src.toStdString().c_str());
 		}
-		QString src = path.absoluteFilePath(appicon);
-		ctx->splash_h_image = new QImage(src);
-		if (ctx->splash_h_image->isNull())
-			fprintf(stderr, "Splash horizontal %s not found or not readable\n",
-					src.toStdString().c_str());
 	}
 	if (ctx->splash_h_image->isNull())
 		return false;
@@ -242,24 +240,24 @@ bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
 	if (ctx->splash_v_image == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.splash_v_image.isEmpty())
+			ctx->splash_v_image = new QImage("Tools/gideros-mobile-splash.png");
 		{
-			ctx->splash_v_image = new QImage("gideros-mobile-splash.png");
-			return true;
-		}
-		QString appicon = ctx->properties.splash_v_image;
-		for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
-			const QString& s1 = ctx->fileQueue[i].first;
-			const QString& s2 = ctx->fileQueue[i].second;
-			if (s1 == appicon) {
-				appicon = s2;
-				break;
+			QString appicon = ctx->properties.splash_v_image;
+			for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
+				const QString& s1 = ctx->fileQueue[i].first;
+				const QString& s2 = ctx->fileQueue[i].second;
+				if (s1 == appicon) {
+					appicon = s2;
+					break;
+				}
 			}
+			QString src = path.absoluteFilePath(appicon);
+			ctx->splash_v_image = new QImage(src);
+			if (ctx->splash_v_image->isNull())
+				fprintf(stderr,
+						"Splash vertical %s not found or not readable\n",
+						src.toStdString().c_str());
 		}
-		QString src = path.absoluteFilePath(appicon);
-		ctx->splash_v_image = new QImage(src);
-		if (ctx->splash_v_image->isNull())
-			fprintf(stderr, "Splash vertical %s not found or not readable\n",
-					src.toStdString().c_str());
 	}
 	if (ctx->splash_v_image->isNull())
 		return false;
@@ -427,7 +425,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			if (!fis.open(QIODevice::ReadOnly)) {
 				exportError("Failed to open %s\n",
 						filename.toUtf8().constData());
-				ctx->exportError=true;
+				ctx->exportError = true;
 				continue;
 			}
 			QByteArray data = fis.readAll();
@@ -452,7 +450,7 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 			if (!fos.open(QIODevice::WriteOnly)) {
 				exportError("Failed to save %s\n",
 						filename.toUtf8().constData());
-				ctx->exportError=true;
+				ctx->exportError = true;
 				continue;
 			}
 			fos.write(data);
@@ -748,9 +746,9 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 	int eocd = lastBytes.lastIndexOf(eocdMarker);
 
 	if (eocd > 0) //If central dir was found, just get it
-	{
+			{
 		quint32 cdoff;
-		memcpy(&cdoff,lastBytes.constData()+eocd+16,4);
+		memcpy(&cdoff, lastBytes.constData() + eocd + 16, 4);
 		zfile.seek(_letohl(cdoff));
 		//Scan central directory
 		while (true) {
@@ -801,7 +799,7 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 						file.toStdString().c_str(), _letohs(Hdr.Version));
 				return false;
 			}
-			if ((Hdr.Flags&(~8)) != 0) {
+			if ((Hdr.Flags & (~8)) != 0) {
 				exportError("Unsupported flags for %s [%04x]\n",
 						file.toStdString().c_str(), Hdr.Flags);
 				return false;
@@ -819,7 +817,7 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 
 			exportInfo("Extracting %s\n", lname.toStdString().c_str());
 			//Grab file data
-			qint64 fpos=zfile.pos();
+			qint64 fpos = zfile.pos();
 			zfile.seek(_letohl(Hdr.Offset));
 			if (zfile.read((char *) &FHdr, sizeof(FHdr)) != sizeof(FHdr))
 				break;
@@ -840,24 +838,23 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 				}
 				fcont = decomp;
 			}
-			int unixattr=-1;
+			int unixattr = -1;
 			if ((_letohs(Hdr.VMade) >> 8) == 3) //Unix
 					{
 				unixattr = _letohl(Hdr.ExtAttr) >> 16;
 			}
 
-			if ((unixattr>=0)&&((unixattr & 0120000) == 0120000)) //SymLink
-			{
+			if ((unixattr >= 0) && ((unixattr & 0120000) == 0120000)) //SymLink
+					{
 				exportInfo("Link %s\n", lname.toStdString().c_str());
 				QFile ofile(toPath.absoluteFilePath(lname));
-				ofile.remove();				
-				QString tgt=QString(fcont);
+				ofile.remove();
+				QString tgt = QString(fcont);
 				if (!QFile::link(tgt, toPath.absoluteFilePath(lname)))
-						exportError("Can't make link %s to %s\n",
-								lname.toStdString().c_str(),
-								tgt.toStdString().c_str());
-			}
-			else if (lname.endsWith("/"))
+					exportError("Can't make link %s to %s\n",
+							lname.toStdString().c_str(),
+							tgt.toStdString().c_str());
+			} else if (lname.endsWith("/"))
 				toPath.mkpath(lname);
 			else {
 				QFile ofile(toPath.absoluteFilePath(lname));
@@ -870,10 +867,12 @@ bool ExportCommon::unzip(ExportContext *ctx, QString file, QString dest) {
 					break;
 				}
 			}
-			if ((unixattr>=0)&&(unixattr&1))
-			{
+			if ((unixattr >= 0) && (unixattr & 1)) {
 				QFile ofile(toPath.absoluteFilePath(lname));
-			    ofile.setPermissions(QFile::ReadOwner|QFile::WriteOwner|QFile::ExeOwner|QFile::ReadGroup|QFile::ExeGroup|QFile::ReadOther|QFile::ExeOther);
+				ofile.setPermissions(
+						QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner
+								| QFile::ReadGroup | QFile::ExeGroup
+								| QFile::ReadOther | QFile::ExeOther);
 			}
 		}
 	} else
@@ -955,7 +954,7 @@ void ExportCommon::exportInfo(const char *fmt, ...) {
 	va_start(va, fmt);
 	vfprintf(stdout, fmt, va);
 	va_end(va);
-	fflush (stdout);
+	fflush(stdout);
 }
 
 void ExportCommon::exportError(const char *fmt, ...) {
@@ -963,7 +962,7 @@ void ExportCommon::exportError(const char *fmt, ...) {
 	va_start(va, fmt);
 	vfprintf(stderr, fmt, va);
 	va_end(va);
-	fflush (stderr);
+	fflush(stderr);
 }
 
 int ExportCommon::progressMax = 0;
@@ -981,7 +980,8 @@ void ExportCommon::progressStep(const char *title) {
 
 char *ExportCommon::askString(const char *title, const char *question,
 		const char *def, bool key, const char *uid) {
-	exportInfo("?:?%c%s|%s|%s|%s\n", key ? 'K' : 'S', title, question, def, uid);
+	exportInfo("?:?%c%s|%s|%s|%s\n", key ? 'K' : 'S', title, question, def,
+			uid);
 	char str[512];
 	fgets(str, 511, stdin);
 	int i = strlen(str) - 1;
