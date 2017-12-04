@@ -105,14 +105,13 @@ ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 USE_NEON:=y
 endif
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-USE_NEON:=y
+USE_NEON:=n
 endif
-USE_NEON:=n # Disable
 ifeq ($(USE_NEON),y)
 LOCAL_SRC_FILES += \
 	../liquidfun/Box2D/Box2D/Particle/b2ParticleAssembly.cpp \
 	../liquidfun/Box2D/Box2D/Particle/b2ParticleAssembly.neon.s
-LOCAL_CFLAGS   += -DLIQUIDFUN_SIMD_NEON
+LOCAL_CFLAGS   += -DLIQUIDFUN_SIMD_NEON -mfpu=neon
 endif
 
 include $(BUILD_SHARED_LIBRARY)

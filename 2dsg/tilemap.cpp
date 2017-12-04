@@ -292,10 +292,10 @@ void TileMap::doDraw(const CurrentTransform& transform, float hsx, float hsy, fl
 				int u1 = marginx_ + tx * (tilewidth_ + spacingx_) + tilewidth_;
 				int v1 = marginy_ + ty * (tileheight_ + spacingy_) + tileheight_;
 
-                float fu0 = (textureMargin+u0) / (float)texture_->data->exwidth;
-                float fv0 = (textureMargin+v0) / (float)texture_->data->exheight;
-                float fu1 = (-textureMargin+u1) / (float)texture_->data->exwidth;
-                float fv1 = (-textureMargin+v1) / (float)texture_->data->exheight;
+                float fu0 = (textureMargin+u0*texture_->data->scale) / (float)texture_->data->exwidth;
+                float fv0 = (textureMargin+v0*texture_->data->scale) / (float)texture_->data->exheight;
+                float fu1 = (-textureMargin+u1*texture_->data->scale) / (float)texture_->data->exwidth;
+                float fv1 = (-textureMargin+v1*texture_->data->scale) / (float)texture_->data->exheight;
 
                 fu0 *= texture_->uvscalex;
                 fv0 *= texture_->uvscaley;

@@ -14,6 +14,7 @@
  <property name="reqNoVibrator" type="boolean" title="Vibrator not used in this app"/>
  <property name="reqFullOrientation" type="boolean" title="Game can be both portrait and landscape"/>
  <property name="reqMaxAspect" type="boolean" title="Support aspect ratios of 2.1 or higher"/>
+ <property name="reqScreenShape" type="boolean" title="Support non rectangular screen shapes (iOS, notch ready)"/>
  <property name="reqWriteExternalStorage" type="boolean" title="App needs to to write external storage"/>
  <property name="reqPhoneOnly" type="boolean" title="This app is targeting phones only, no tablets"/>
  <property name="reqExpRegCompliance" type="boolean" title="This app conforms to US Export regulations relative to encryption"/> 
@@ -112,7 +113,7 @@
         	</replacelist>
     	</template>
     </if>
-	
+
     <if condition="[[[plugin.reqGps]]]">
     	<template name="AndroidManifest" path="">
 	        <replacelist wildcards="AndroidManifest.xml">
@@ -208,6 +209,16 @@
         	</replacelist>
        </template>
     </if>
+    <if condition="[[[plugin.reqScreenShape]]]">
+   	<template name="Project" path="">
+        	<replacelist wildcards="Contents.json">
+	    		<replace>
+				<orig><![CDATA["subtype" : "2436h",]]></orig>
+				<by><![CDATA["subtype" : "2436hUnused",]]></by>
+	    		</replace>
+        	</replacelist>
+       </template>
+    </if>	
     <if condition="[[[plugin.reqExpRegCompliance]]]">
    	<template name="Project" path="">
        	<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">

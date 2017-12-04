@@ -141,7 +141,10 @@ bool ExportCommon::appIcon(ExportContext *ctx, int width, int height,
 	if (ctx->appicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.app_icon.isEmpty())
+		{
+			ctx->appicon = new QImage("gideros-mobile-icon.png");
 			return true;
+		}
 		QString appicon = ctx->properties.app_icon;
 		for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
 			const QString& s1 = ctx->fileQueue[i].first;
@@ -170,7 +173,10 @@ bool ExportCommon::tvIcon(ExportContext *ctx, int width, int height,
 	if (ctx->tvicon == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.tv_icon.isEmpty())
+		{
+			ctx->tvicon = new QImage("gideros-mobile-icon.png");
 			return true;
+		}
 		QString tvicon = ctx->properties.tv_icon;
 		for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
 			const QString& s1 = ctx->fileQueue[i].first;
@@ -199,7 +205,10 @@ bool ExportCommon::splashHImage(ExportContext *ctx, int width, int height,
 	if (ctx->splash_h_image == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.splash_h_image.isEmpty())
+		{
+			ctx->splash_h_image = new QImage("gideros-mobile-splash.png");
 			return true;
+		}
 		QString appicon = ctx->properties.splash_h_image;
 		for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
 			const QString& s1 = ctx->fileQueue[i].first;
@@ -233,7 +242,10 @@ bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
 	if (ctx->splash_v_image == NULL) {
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.splash_v_image.isEmpty())
+		{
+			ctx->splash_v_image = new QImage("gideros-mobile-splash.png");
 			return true;
+		}
 		QString appicon = ctx->properties.splash_v_image;
 		for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
 			const QString& s1 = ctx->fileQueue[i].first;
