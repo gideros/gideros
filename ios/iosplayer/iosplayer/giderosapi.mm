@@ -1603,6 +1603,8 @@ extern "C" {
 UIViewController *g_getRootViewController();
 }
 
+static ApplicationManager *s_manager = NULL;
+
 void getSafeDisplayArea(int &l,int &t,int &r,int &b)
 {
 		UIViewController *viewController = g_getRootViewController();
@@ -1623,7 +1625,7 @@ void ApplicationManager::surfaceChanged(int width,int height)
     application_->setResolution(width_, height_);
 #endif
 	int sl,st,sr,sb;
-	getSafeDisplayArea(&sl,&st,&sr,&sb);
+	getSafeDisplayArea(sl,st,sr,sb);
 	drawInfoMargins(sl,st);
     if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
     Event event(Event::APPLICATION_RESIZE);
@@ -1647,8 +1649,6 @@ bool ApplicationManager::setKeyboardVisibility(bool visible)
         [view_ resignFirstResponder];
     return true;
 }
-
-static ApplicationManager *s_manager = NULL;
 
 bool setKeyboardVisibility(bool visible){
     if (s_manager)
