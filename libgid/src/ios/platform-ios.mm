@@ -140,17 +140,6 @@ extern "C" {
 UIViewController *g_getRootViewController();
 }
 
-void getSafeDisplayArea(int &l,int &t,int &r,int &b)
-{
-		UIViewController *viewController = g_getRootViewController();
-		CGRect sa;
-		[viewController getSafeArea:&sa];
-		l=sa.origin.x;
-		t=sa.origin.y;
-		r=sa.size.width;
-		b=sa.size.height;
-}
-
 static int s_fps = 60;
 
 extern "C" {

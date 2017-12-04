@@ -109,6 +109,7 @@ void g_setFps(int);
 int g_getFps();
 }
 void drawInfo();
+void drawInfoMargins(int xm,int ym);
 void refreshLocalIPs();
 void g_exit();
 
@@ -317,6 +318,8 @@ private:
 #endif
 	
 	int nframe_;
+public:
+	float scaleFactor_;
 };
 
 
@@ -1165,6 +1168,7 @@ void ApplicationManager::play(const std::vector<std::string>& luafiles)
 	if ([view_ respondsToSelector:@selector(contentScaleFactor)] == YES)
 		contentScaleFactor = view_.contentScaleFactor;
 #endif
+	scaleFactor_=contentScaleFactor;
 	application_->setResolution(width_ * contentScaleFactor, height_ * contentScaleFactor);
 	application_->setHardwareOrientation(hardwareOrientation_);
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
@@ -1595,6 +1599,22 @@ void ApplicationManager::background()
 #endif
 }
 
+extern "C" {
+UIViewController *g_getRootViewController();
+}
+
+void getSafeDisplayArea(int &l,int &t,int &r,int &b)
+{
+		UIViewController *viewController = g_getRootViewController();
+		CGRect sa;
+		[viewController getSafeArea:&sa];
+		float scale=s_manager->scaleFactor_;
+		l=sa.origin.x*scale;
+		t=sa.origin.y*scale;
+		r=sa.size.width*scale;
+		b=sa.size.height*scale;
+}
+
 void ApplicationManager::surfaceChanged(int width,int height)
 {
 #if TARGET_OS_OSX
@@ -1602,6 +1622,9 @@ void ApplicationManager::surfaceChanged(int width,int height)
     height_ = height;
     application_->setResolution(width_, height_);
 #endif
+	int sl,st,sr,sb;
+	getSafeDisplayArea(&sl,&st,&sr,&sb);
+	drawInfoMargins(sl,st);
     if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
     Event event(Event::APPLICATION_RESIZE);
     GStatus status;

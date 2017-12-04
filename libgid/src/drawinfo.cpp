@@ -9,6 +9,13 @@
 
 float infoColor_[3];
 
+static int drawMarginX=0;
+static int drawMarginY=0;
+void drawInfoMargins(int xm,int ym)
+{
+	drawMarginX=xm; drawMarginY=ym;
+}
+
 static void drawIP(const char* ip, int size, int xx, int yy)
 {
     static const char* chardot = " "
@@ -295,10 +302,10 @@ static void drawIP(const char* ip, int size, int xx, int yy)
 					//glVertex2i((x + xx)     * size, (y + yy + 1) * size);
 					//glEnd();
 
-					v[0] = (x + xx)     * size; v[1] = (y + yy)     * size;
-					v[2] = (x + xx + 1) * size; v[3] = (y + yy)     * size;
-					v[4] = (x + xx)     * size; v[5] = (y + yy + 1) * size;
-					v[6] = (x + xx + 1) * size; v[7] = (y + yy + 1) * size;
+					v[0] = (x + xx)     * size + drawMarginX; v[1] = (y + yy)     * size + drawMarginY;
+					v[2] = (x + xx + 1) * size + drawMarginX; v[3] = (y + yy)     * size + drawMarginY;
+					v[4] = (x + xx)     * size + drawMarginX; v[5] = (y + yy + 1) * size + drawMarginY;
+					v[6] = (x + xx + 1) * size + drawMarginX; v[7] = (y + yy + 1) * size + drawMarginY;
 
 					ShaderProgram::stdBasic->setData(ShaderProgram::DataVertex,ShaderProgram::DFLOAT,2, v,4, true, NULL);
 					ShaderProgram::stdBasic->drawArrays(ShaderProgram::TriangleStrip, 0, 4);
