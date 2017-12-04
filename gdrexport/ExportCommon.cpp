@@ -241,6 +241,7 @@ bool ExportCommon::splashVImage(ExportContext *ctx, int width, int height,
 		QDir path(QFileInfo(ctx->projectFileName_).path());
 		if (ctx->properties.splash_v_image.isEmpty())
 			ctx->splash_v_image = new QImage("Tools/gideros-mobile-splash.png");
+		else
 		{
 			QString appicon = ctx->properties.splash_v_image;
 			for (std::size_t i = 0; i < ctx->fileQueue.size(); ++i) {
