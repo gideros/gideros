@@ -613,6 +613,29 @@ void NetworkManager::calculateMD5(const char* file)
 
 extern void eventFlush();
 
+extern "C" {
+UIViewController *g_getRootViewController();
+}
+
+static ApplicationManager *s_manager = NULL;
+
+void getSafeDisplayArea(int &l,int &t,int &r,int &b)
+{
+		UIViewController *viewController = g_getRootViewController();
+		CGRect sa;
+		if (![[NSThread currentThread] isMainThread])
+				dispatch_sync(dispatch_get_main_queue(), ^{
+				[viewController getSafeArea:&sa];
+			});
+		else
+			[viewController getSafeArea:&sa];
+		float scale=s_manager->scaleFactor_;
+		l=sa.origin.x*scale;
+		t=sa.origin.y*scale;
+		r=sa.size.width*scale;
+		b=sa.size.height*scale;
+}
+
 ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool player)
 {
 	view_ = view;
@@ -686,6 +709,9 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
 #endif
+	int sl,st,sr,sb;
+	getSafeDisplayArea(sl,st,sr,sb);
+	drawInfoMargins(sl,st);
 
 	Binder::disableTypeChecking();
 	
@@ -1597,24 +1623,6 @@ void ApplicationManager::background()
 #if THREADED_RENDER_LOOP
     [renderCond_ unlock];
 #endif
-}
-
-extern "C" {
-UIViewController *g_getRootViewController();
-}
-
-static ApplicationManager *s_manager = NULL;
-
-void getSafeDisplayArea(int &l,int &t,int &r,int &b)
-{
-		UIViewController *viewController = g_getRootViewController();
-		CGRect sa;
-		[viewController getSafeArea:&sa];
-		float scale=s_manager->scaleFactor_;
-		l=sa.origin.x*scale;
-		t=sa.origin.y*scale;
-		r=sa.size.width*scale;
-		b=sa.size.height*scale;
 }
 
 void ApplicationManager::surfaceChanged(int width,int height)
