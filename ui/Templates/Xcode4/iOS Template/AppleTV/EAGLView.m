@@ -167,8 +167,23 @@
 
 - (void)layoutSubviews
 {
+    if (@available (tvOS 11,*)) {
+        UIEdgeInsets sa=[[self superview] safeAreaInsets];
+        safeArea.origin.x=sa.left;
+        safeArea.origin.y=sa.top;
+        safeArea.size.height=sa.bottom;
+        safeArea.size.width=sa.right;
+    }
+    else
+        safeArea=CGRectMake(0,0,0,0);
+    
     // The framebuffer will be re-created at the beginning of the next setFramebuffer method call.
     framebufferDirty=TRUE;
+}
+
+- (void) getSafeArea:(CGRect *) sa
+{
+    *sa=safeArea;
 }
 
 - (void)enableRetinaDisplay:(BOOL)enable

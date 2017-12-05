@@ -286,7 +286,6 @@ private:
 	int convertKeyCode(int keyCode);
 	
 private:
-	UIView *view_;
 	bool player_;
     bool keyboardVisible_;
 	LuaApplication *application_;
@@ -320,6 +319,7 @@ private:
 	int nframe_;
 public:
 	float scaleFactor_;
+    UIView *view_;
 };
 
 
@@ -619,21 +619,21 @@ UIViewController *g_getRootViewController();
 
 static ApplicationManager *s_manager = NULL;
 
-void getSafeDisplayArea(int &l,int &t,int &r,int &b)
+void getSafeDisplayArea(int &l,int &t,int &r,int &b,ApplicationManager *app)
 {
-		UIViewController *viewController = g_getRootViewController();
 		CGRect sa;
-		if (![[NSThread currentThread] isMainThread])
-				dispatch_sync(dispatch_get_main_queue(), ^{
-				[viewController getSafeArea:&sa];
-			});
-		else
-			[viewController getSafeArea:&sa];
-		float scale=s_manager->scaleFactor_;
+        [app->view_ getSafeArea:&sa];
+		float scale=app->scaleFactor_;
 		l=sa.origin.x*scale;
 		t=sa.origin.y*scale;
 		r=sa.size.width*scale;
 		b=sa.size.height*scale;
+}
+
+void getSafeDisplayArea(int &l,int &t,int &r,int &b)
+{
+    if (s_manager)
+        getSafeDisplayArea(l,t,r,b,s_manager);
 }
 
 ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool player)
@@ -709,8 +709,9 @@ ApplicationManager::ApplicationManager(UIView *view, int width, int height, bool
 #else
     willRotateToInterfaceOrientationHelperTV(eLandscapeRight);
 #endif
+    scaleFactor_=1;
 	int sl,st,sr,sb;
-	getSafeDisplayArea(sl,st,sr,sb);
+	getSafeDisplayArea(sl,st,sr,sb,this);
 	drawInfoMargins(sl,st);
 
 	Binder::disableTypeChecking();
@@ -1633,7 +1634,7 @@ void ApplicationManager::surfaceChanged(int width,int height)
     application_->setResolution(width_, height_);
 #endif
 	int sl,st,sr,sb;
-	getSafeDisplayArea(sl,st,sr,sb);
+	getSafeDisplayArea(sl,st,sr,sb,this);
 	drawInfoMargins(sl,st);
     if (ShaderEngine::Engine) ShaderEngine::Engine->resizeFramebuffer(width, height);
     Event event(Event::APPLICATION_RESIZE);

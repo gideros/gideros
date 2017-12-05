@@ -48,21 +48,6 @@ NSMutableArray *tableData;
 	self.view = rootView;
 }
 
-- (void) getSafeArea:(CGRect *) sa 
-{
- 	CGRect r;
-    if (@available (iOS 11,*)) {
-        UIEdgeInsets sa=[self.view safeAreaInsets];
-        r.origin.x=sa.left;
-        r.origin.y=sa.top;
-        r.size.height=sa.bottom;
-        r.size.width=sa.right;
-    }
-    else
-        r=CGRectMake(0,0,0,0);
- 	*sa=r;
-}
-
 - (void)viewDidLoad
 {
     EAGLContext *aContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];

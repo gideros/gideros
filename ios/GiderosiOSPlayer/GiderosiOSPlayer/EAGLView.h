@@ -28,6 +28,7 @@
 
 	BOOL retinaDisplay;
 	CAEAGLLayer *eaglLayer;
+    CGRect safeArea;
 }
 
 @property (nonatomic, retain) EAGLContext *context;
