@@ -283,8 +283,13 @@ int ApplicationBinder::getDeviceSafeArea(lua_State* L)
 		}
 		dsl=(dsl-lox)/lsx;
 		dst=(dst-loy)/lsy;
-		dsr=(-dsl-lox+dsw)/lsx;
-		dsb=(-dst-loy+dsh)/lsy;
+		dsr=(-dsr-lox+dsw)/lsx;
+		dsb=(-dsb-loy+dsh)/lsy;
+	}
+	else
+	{
+		dsr=dsw-dsr;
+		dsb=dsh-dsb;
 	}
 
 	lua_pushnumber(L,dsl);

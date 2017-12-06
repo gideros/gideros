@@ -81,15 +81,6 @@ returns the application identifier or bundle identifier.<br />
 ]]>
     <return type="string"><![CDATA[App id]]></return>
   </method>
-  <method name="Application:getDeviceSafeArea" page="getDeviceSafeArea" shortdesc="Application - returns the safe area insets" version="Gideros 2017.11.2"><![CDATA[<br />
-Returns the insets defining the safe display area in device coordinates<br />
-<br />
-]]>
-    <return type="number"><![CDATA[Left margin]]></return>
-    <return type="number"><![CDATA[Top margin]]></return>
-    <return type="number"><![CDATA[Right margin]]></return>
-    <return type="number"><![CDATA[Bottom margin]]></return>
-  </method>
   <method name="Application:setKeepAwake" page="setKeepAwake" shortdesc="Application - enables/disables screen dimming and device sleeping" version="Gideros 2011.6"><![CDATA[<br />
 Controls the screen dimming and device sleeping of the device. When the application has no touches as user input for some period,<br />
 the system puts the device into a sleep state where the screen dims. However some applications have no input and controlled<br />
@@ -309,16 +300,16 @@ Returns the minimum and maximum logical space coordinates to cover full screen.<
     <return type="number"><![CDATA[Maximum x]]></return>
     <return type="number"><![CDATA[Maximum y]]></return>
   </method>
-  <method name="Application:getSafeDisplayArea" page="getSafeDisplayArea" shortdesc="Application - returns the margins to use to get the safe display area" version="Gideros 2017.11.3"><![CDATA[<br />
-Some screens have non rectangular shapes, in which case it is useful to know the bounds of the safe area, that is area that is guaranteed to be visible and user accessible. This functions returns the left,top,right and bottom margins to use, 
+  <method name="Application:getDeviceSafeArea" page="getDeviceSafeArea" shortdesc="Application - returns the safe display area bounds" version="Gideros 2017.11.3"><![CDATA[<br />
+Some screens have non rectangular shapes, in which case it is useful to know the bounds of the safe area, that is area that is guaranteed to be visible and user accessible. This functions returns the minimum and maximum coordinates to use, 
 either in physical coordinates or in logical coordinates.<br />
 <br />
 ]]>
     <parameter name="logical" optional="true" type="boolean"><![CDATA[Returns the margin in logical scale if set to true.]]></parameter>
-    <return type="number"><![CDATA[Left margin]]></return>
-    <return type="number"><![CDATA[Top margin]]></return>
-    <return type="number"><![CDATA[Right margin]]></return>
-    <return type="number"><![CDATA[Bottom margin]]></return>
+    <return type="number"><![CDATA[Minimum x]]></return>
+    <return type="number"><![CDATA[Minimum y]]></return>
+    <return type="number"><![CDATA[Maximum x]]></return>
+    <return type="number"><![CDATA[Maximum y]]></return>
   </method>
   <method name="Application:canOpenUrl" page="canOpenUrl" shortdesc="Tests if it is possible to open provided url" version="Gideros 2013.06"><![CDATA[Tests if it is possible to open provided url using `Application:openUrl` method]]>
     <parameter name="url" optional="false" type="string"><![CDATA[url to test if can be opened]]></parameter>
