@@ -300,6 +300,26 @@ Returns the screen density in pixels per inch. If screen density information is 
 ]]>
     <return type="number"><![CDATA[If available returns the screen density in pixels per inch, otherwise returns `nil`.]]></return>
   </method>
+  <method name="Application:getLogicalBounds" page="getLogicalBounds" shortdesc="Application - returns the physical screen bounds in logical space" version="Gideros 2017.11.3"><![CDATA[<br />
+Returns the minimum and maximum logical space coordinates to cover full screen.<br />
+<br />
+]]>
+    <return type="number"><![CDATA[Minimum x]]></return>
+    <return type="number"><![CDATA[Minimum y]]></return>
+    <return type="number"><![CDATA[Maximum x]]></return>
+    <return type="number"><![CDATA[Maximum y]]></return>
+  </method>
+  <method name="Application:getSafeDisplayArea" page="getSafeDisplayArea" shortdesc="Application - returns the margins to use to get the safe display area" version="Gideros 2017.11.3"><![CDATA[<br />
+Some screens have non rectangular shapes, in which case it is useful to know the bounds of the safe area, that is area that is guaranteed to be visible and user accessible. This functions returns the left,top,right and bottom margins to use, 
+either in physical coordinates or in logical coordinates.<br />
+<br />
+]]>
+    <parameter name="logical" optional="true" type="boolean"><![CDATA[Returns the margin in logical scale if set to true.]]></parameter>
+    <return type="number"><![CDATA[Left margin]]></return>
+    <return type="number"><![CDATA[Top margin]]></return>
+    <return type="number"><![CDATA[Right margin]]></return>
+    <return type="number"><![CDATA[Bottom margin]]></return>
+  </method>
   <method name="Application:canOpenUrl" page="canOpenUrl" shortdesc="Tests if it is possible to open provided url" version="Gideros 2013.06"><![CDATA[Tests if it is possible to open provided url using `Application:openUrl` method]]>
     <parameter name="url" optional="false" type="string"><![CDATA[url to test if can be opened]]></parameter>
   </method>

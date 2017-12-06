@@ -54,6 +54,7 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 		{"getLogicalTranslateY", ApplicationBinder::getLogicalTranslateY},
 		{"getLogicalScaleX", ApplicationBinder::getLogicalScaleX},
 		{"getLogicalScaleY", ApplicationBinder::getLogicalScaleY},
+		{"getLogicalBounds", ApplicationBinder::getLogicalBounds},
 		{"getDeviceInfo", ApplicationBinder::getDeviceInfo},
 		{"getContentWidth", ApplicationBinder::getContentWidth},
 		{"getContentHeight", ApplicationBinder::getContentHeight},
@@ -243,12 +244,77 @@ int ApplicationBinder::getDeviceSafeArea(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
-	int l=0,t=0,r=0,b=0;
-	getSafeDisplayArea(l,t,r,b);
-	lua_pushnumber(L,l);
-	lua_pushnumber(L,t);
-	lua_pushnumber(L,r);
-	lua_pushnumber(L,b);
+	bool logical=lua_toboolean(L,2);
+
+	int idsl=0,idst=0,idsr=0,idsb=0;
+	float dsl=0,dst=0,dsr=0,dsb=0;
+	getSafeDisplayArea(idsl,idst,idsr,idsb);
+	dsl=idsl; dst=idst; dsr=idsr; dsb=idsb;
+	int dsw=application->getHardwareWidth();
+	int dsh=application->getHardwareHeight();
+	Orientation lor = application->orientation();
+	Orientation hor = application->hardwareOrientation();
+	Orientation dor = application->deviceOrientation();
+
+	if ((lor == eLandscapeLeft || lor == eLandscapeRight) && (hor==eFixed))
+		std::swap(dsw,dsh);
+
+	float lsx=application->getLogicalScaleX();
+	float lsy=application->getLogicalScaleY();
+	float lox=application->getLogicalTranslateX();
+	float loy=application->getLogicalTranslateY();
+
+	Orientation rot=logical?hor:dor;
+	int l;
+	switch (rot) {
+	case eLandscapeRight: l=dsl; dsl=dst; dst=dsr; dsr=dsb; dsb=l; break;
+	case eLandscapeLeft: l=dsl; dsl=dsb; dsb=dsr; dsr=dst; dst=l; break;
+	case ePortraitUpsideDown: l=dsl; dsl=dsr; dsr=l; l=dst; dst=dsb; dsb=l; break;
+	default: break;
+	}
+
+	if (logical) {
+		switch (lor) {
+		case eLandscapeLeft: l=dsl; dsl=dst; dst=dsr; dsr=dsb; dsb=l; l=dsw; dsw=dsh; dsh=l; break;
+		case eLandscapeRight: l=dsl; dsl=dsb; dsb=dsr; dsr=dst; dst=l; l=dsw; dsw=dsh; dsh=l; break;
+		case ePortraitUpsideDown: l=dsl; dsl=dsr; dsr=l; l=dst; dst=dsb; dsb=l; break;
+		default: break;
+		}
+		dsl=(dsl-lox)/lsx;
+		dst=(dst-loy)/lsy;
+		dsr=(-dsl-lox+dsw)/lsx;
+		dsb=(-dst-loy+dsh)/lsy;
+	}
+
+	lua_pushnumber(L,dsl);
+	lua_pushnumber(L,dst);
+	lua_pushnumber(L,dsr);
+	lua_pushnumber(L,dsb);
+
+	return 4;
+}
+
+int ApplicationBinder::getLogicalBounds(lua_State* L)
+{
+	Binder binder(L);
+	(void)binder.getInstance("Application", 1);
+
+	int dsw=application->getHardwareWidth();
+	int dsh=application->getHardwareHeight();
+	Orientation lor = application->orientation();
+
+	if ((lor == eLandscapeLeft || lor == eLandscapeRight))
+		std::swap(dsw,dsh);
+
+	float lsx=application->getLogicalScaleX();
+	float lsy=application->getLogicalScaleY();
+	float lox=application->getLogicalTranslateX();
+	float loy=application->getLogicalTranslateY();
+
+	lua_pushnumber(L,-lox/lsx);
+	lua_pushnumber(L,-loy/lsy);
+	lua_pushnumber(L,(-lox+dsw)/lsx);
+	lua_pushnumber(L,(-loy+dsh)/lsy);
 
 	return 4;
 }

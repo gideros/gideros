@@ -26,6 +26,7 @@ private:
 	static int getLogicalTranslateY(lua_State* L);
 	static int getLogicalScaleX(lua_State* L);
 	static int getLogicalScaleY(lua_State* L);
+	static int getLogicalBounds(lua_State* L);
 	static int getDeviceInfo(lua_State* L);
 	static int getContentWidth(lua_State* L);
 	static int getContentHeight(lua_State* L);
