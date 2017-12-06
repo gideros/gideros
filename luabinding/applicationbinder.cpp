@@ -244,6 +244,7 @@ int ApplicationBinder::getDeviceSafeArea(lua_State* L)
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
 
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 	bool logical=lua_toboolean(L,2);
 
 	int idsl=0,idst=0,idsr=0,idsb=0;
@@ -254,7 +255,7 @@ int ApplicationBinder::getDeviceSafeArea(lua_State* L)
 	int dsh=application->getHardwareHeight();
 	Orientation lor = application->orientation();
 	Orientation hor = application->hardwareOrientation();
-	Orientation dor = application->deviceOrientation();
+	Orientation dor = application->getApplication()->getDeviceOrientation();
 
 	if ((lor == eLandscapeLeft || lor == eLandscapeRight) && (hor==eFixed))
 		std::swap(dsw,dsh);
@@ -298,6 +299,8 @@ int ApplicationBinder::getLogicalBounds(lua_State* L)
 {
 	Binder binder(L);
 	(void)binder.getInstance("Application", 1);
+
+	LuaApplication* application = static_cast<LuaApplication*>(luaL_getdata(L));
 
 	int dsw=application->getHardwareWidth();
 	int dsh=application->getHardwareHeight();
