@@ -479,8 +479,11 @@ void Application::setResolution(int width, int height) {
 	width_ = width;
 	height_ = height;
 
-	if (ShaderEngine::Engine)
-		ShaderEngine::Engine->resizeFramebuffer(width_, height_);
+    if (ShaderEngine::Engine) {
+        if (hardwareOrientation_==eLandscapeLeft||hardwareOrientation_==eLandscapeRight)
+            std::swap(width,height);
+		ShaderEngine::Engine->resizeFramebuffer(width, height);
+    }
 
 	calculateLogicalTransformation();
 }
