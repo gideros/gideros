@@ -61,9 +61,10 @@ for iPhone 3GS this function returns 480 and for iPhone 4 (with retina display e
   </method>
   <method name="Application:vibrate" page="vibrate" shortdesc="Application - vibrates the device" version="Gideros 2011.6"><![CDATA[<br />
 Vibrates the device. If the device doesn&#039;t support vibration, this function has no effect.<br />
-<br />
-    <parameter name="ms" optional="true" type="number"><![CDATA[time in ms for vibration, if supported by the platform. (Android)]]></parameter>
-]]></method>
+<br />    
+]]>
+<parameter name="ms" optional="true" type="number"><![CDATA[time in ms for vibration, if supported by the platform. (Android)]]></parameter>
+</method>
   <method name="Application:getLocale" page="getLocale" shortdesc="Application - returns the device locale" version="Gideros 2011.6"><![CDATA[<br />
 Returns the device locale. The locale string is a combination of ISO 639-1 and ISO 3166-1. For example, en_US, ja_JP.<br />
 <br />
