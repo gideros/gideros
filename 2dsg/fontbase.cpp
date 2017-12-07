@@ -31,6 +31,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
 				cur--;
 				merged=true;
                 i--;
+                continue;
 			}
             if (merged)
 			{
