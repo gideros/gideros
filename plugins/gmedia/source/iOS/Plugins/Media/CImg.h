@@ -78,6 +78,8 @@
 #include <ctime>
 #include <exception>
 
+#define cimg_no_system_calls
+
 // Detect/configure OS variables.
 //
 // Define 'cimg_OS' to: '0' for an unknown OS (will try to minize library dependencies).
