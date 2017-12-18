@@ -257,7 +257,11 @@ public class GControllerDefault implements GControllerInterface {
 	
 	private static boolean checkName(String name, InputDevice device){
 		//try getVendorId() and getProductId()
-		return device.getName().toLowerCase().contains(name.toLowerCase());
+		if (device != null)
+		{
+			return device.getName().toLowerCase().contains(name.toLowerCase());
+		}
+		else return false;
 	}
 	
 	private static void checkForDevices(){
