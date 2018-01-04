@@ -103,6 +103,7 @@ QMainWindow::separator {
     <addaction name="actionCheck_Syntax"/>
     <addaction name="actionCheck_Syntax_All"/>
     <addaction name="actionClear_Output"/>
+    <addaction name="actionLive_syntax_checking"/>
    </widget>
    <widget class="QMenu" name="menuPlayer">
     <property name="title">
@@ -640,6 +641,17 @@ Gideros Player, Play button is enabled.</string>
    </property>
    <property name="visible">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionLive_syntax_checking">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Live syntax checking</string>
    </property>
   </action>
  </widget>

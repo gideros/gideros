@@ -268,6 +268,7 @@ MainWindow::MainWindow(QWidget *parent)
     //QSettings settings;
 	QString playerip = settings.value("player ip", QString("127.0.0.1")).toString();
     ui.actionLocalhostToggle->setChecked(settings.value("player localhost", true).toBool());
+    ui.actionLive_syntax_checking->setChecked(settings.value("syntaxcheck_live",true).toBool());
 
 #ifndef NEW_CLIENT
 	client_ = new Client(qPrintable(playerip), 15000);
@@ -1241,7 +1242,7 @@ void MainWindow::updateUI()
 	ui.actionFind_Previous->setEnabled(hasMdiChild);
 	ui.actionGo_To_Line->setEnabled(hasMdiChild);
 
-    outlineWidget_->setDocument(textEdit);
+    outlineWidget_->setDocument(textEdit,ui.actionLive_syntax_checking->isChecked());
     outlineDock_->setVisible(isProjectOpen);
 }
 

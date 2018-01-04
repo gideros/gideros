@@ -58,7 +58,7 @@ class OutlineWidget : public QWidget
 public:
 	OutlineWidget(QWidget *parent=0);
 	~OutlineWidget();
-	void setDocument(TextEdit *doc);
+	void setDocument(TextEdit *doc,bool checkSyntax);
 private:
     TextEdit *doc_;
     QTime refresh_;
@@ -66,6 +66,7 @@ private:
     QStandardItemModel *model_;
     bool working_;
     bool needParse_;
+    bool checkSyntax_;
     void parse();
     void sort();
     QAction *actType_;

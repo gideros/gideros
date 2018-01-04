@@ -347,7 +347,7 @@ void OutlineWidget::reportError(const QString error)
     if (!doc_) return;
     QsciScintilla *s=doc_->sciScintilla();
     s->clearAnnotations();
-    if (error.isEmpty()) return;
+    if (error.isEmpty()||(!checkSyntax_)) return;
     QRegularExpression re("\\[string [^\\]]+\\]:(\\d+):(.*)");
     QRegularExpressionMatch match = re.match(error);
     if (match.hasMatch()) {
@@ -403,10 +403,11 @@ void OutlineWidget::checkParse() {
         parse();
 }
 
-void OutlineWidget::setDocument(TextEdit *doc)
+void OutlineWidget::setDocument(TextEdit *doc,bool checkSyntax)
 {
     bool docChanged=(doc_!=doc);
     doc_=doc;
+    checkSyntax_=checkSyntax;
     if (docChanged)
         parse();
     else
