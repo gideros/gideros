@@ -369,6 +369,7 @@ public:
 		std::vector<float> data;
 	};
 	void setShader(ShaderProgram *shader);
+	virtual ShaderProgram *getShader() { return shader_; };
 	void setShaderConstant(ShaderParam p)
 	{
 		shaderParams_[p.name]=p;

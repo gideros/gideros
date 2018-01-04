@@ -19,6 +19,12 @@ public:
 		headingStartCount_ = 0;
 
         gid_ = g_NextId();
+
+		JNIEnv *env = g_getJNIEnv();
+        jclass cls = env->FindClass("com/giderosmobile/android/GiderosSettings");
+		jfieldID fid = env->GetStaticFieldID(cls, "backgroundLocation", "Z");
+		backgroundLocation = env->GetStaticBooleanField(cls, fid);
+		env->DeleteLocalRef(cls);
 	}
 
 	virtual ~GGGeolocationManager()
@@ -89,6 +95,7 @@ public:
 	}	
 
 private:
+	bool backgroundLocation;
 	void startUpdatingLocationHelper()
 	{
 		JNIEnv *env = g_getJNIEnv();
@@ -153,7 +160,8 @@ public:
     void enqueueEvent(int type, void *event, int free)
     {
         gevent_EnqueueEvent(gid_, callback_s, type, event, free, this);
-        gevent_Flush();
+        if (backgroundLocation)
+        	gevent_Flush();
     }
     
 private:

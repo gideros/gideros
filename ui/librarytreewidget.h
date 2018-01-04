@@ -80,6 +80,7 @@ private:
 	QTreeWidgetItem* createProjectItem(const QString& name);
 	QTreeWidgetItem* createCatFolderItem(const QString& name, const QString& icon, int nodetype, bool drop=false);
     QTreeWidgetItem* createPluginItem(const QString& name);
+    bool hasItemNamed(QTreeWidgetItem* root,QString name);
 
 private:
 	QAction* addNewFileAction_;

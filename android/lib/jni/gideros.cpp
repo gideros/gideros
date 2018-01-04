@@ -64,6 +64,7 @@ void g_exit();
 static volatile const char* licenseKey_ = "9852564f4728e0c11e34ca3eb5fe20b2";
 //-----------------------------------------01234567890123456------------------
 
+
 struct ProjectProperties
 {
 	ProjectProperties()
@@ -156,6 +157,41 @@ private:
 	std::string resourceDirectory_;
 };
 
+class CThreadLock
+{
+public:
+    CThreadLock();
+    virtual ~CThreadLock();
+
+    void Lock();
+    void Unlock();
+private:
+    pthread_mutex_t mutexlock;
+};
+
+CThreadLock::CThreadLock()
+{
+    // init lock here
+    pthread_mutex_init(&mutexlock, 0);
+}
+
+CThreadLock::~CThreadLock()
+{
+    // deinit lock here
+    pthread_mutex_destroy(&mutexlock);
+}
+void CThreadLock::Lock()
+{
+    // lock
+    pthread_mutex_lock(&mutexlock);
+}
+void CThreadLock::Unlock()
+{
+    // unlock
+    pthread_mutex_unlock(&mutexlock);
+}
+
+
 class ApplicationManager
 {
 public:
@@ -203,6 +239,7 @@ private:
 	void loadLuaFiles();
 	void drawIPs();
 	int convertKeyCode(int keyCode);
+	CThreadLock tickLock;
 	
 private:
 	bool player_;
@@ -765,6 +802,7 @@ void ApplicationManager::updateHardwareOrientation()
 
 void ApplicationManager::drawFrame()
 {
+	tickLock.Lock();
 	if (networkManager_)
 		networkManager_->tick();
 
@@ -778,6 +816,7 @@ void ApplicationManager::drawFrame()
 			glClearColor(0, 0, 0, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			tickLock.Unlock();
 			return;
 		}
 	}
@@ -841,6 +880,7 @@ void ApplicationManager::drawFrame()
 	application_->clearBuffers();
 	application_->renderScene(1);
 	drawIPs();
+	tickLock.Unlock();
 }
 
 void ApplicationManager::loadProperties()
@@ -922,7 +962,7 @@ void ApplicationManager::loadLuaFiles()
 
 		g_fclose(fis);
 	}
-	
+
 	GStatus status;
 	for (size_t i = 0; i < luafiles.size(); ++i)
 	{
@@ -1094,8 +1134,10 @@ void ApplicationManager::stop()
 	{
         gapplication_enqueueEvent(GAPPLICATION_EXIT_EVENT, NULL, 0);
 
+    	tickLock.Lock();
 		GStatus status;
 		application_->tick(&status);
+    	tickLock.Unlock();
 		if (status.error())
 			luaError(status.errorString());
 	}
@@ -1229,8 +1271,10 @@ void ApplicationManager::pause()
 
 	if (running_ == true)
 	{
+    	tickLock.Lock();
 		GStatus status;
 		application_->tick(&status);
+    	tickLock.Unlock();
 		if (status.error())
 			luaError(status.errorString());
 	}
@@ -1246,8 +1290,10 @@ void ApplicationManager::resume()
 
 	if (running_ == true)
 	{
+    	tickLock.Lock();
 		GStatus status;
 		application_->tick(&status);
+    	tickLock.Unlock();
 		if (status.error())
 			luaError(status.errorString());
 	}
@@ -1259,8 +1305,10 @@ void ApplicationManager::lowMemory()
 
 	if (running_ == true)
 	{
+    	tickLock.Lock();
 		GStatus status;
 		application_->tick(&status);
+    	tickLock.Unlock();
 		if (status.error())
 			luaError(status.errorString());
 	}
@@ -1272,8 +1320,10 @@ void ApplicationManager::background()
 
 	if (running_ == true)
 	{
+    	tickLock.Lock();
 		GStatus status;
 		application_->tick(&status);
+    	tickLock.Unlock();
 		if (status.error())
 			luaError(status.errorString());
 	}
@@ -1285,8 +1335,10 @@ void ApplicationManager::foreground()
 
 	if (running_ == true)
 	{
+    	tickLock.Lock();
 		GStatus status;
 		application_->tick(&status);
+    	tickLock.Unlock();
 		if (status.error())
 			luaError(status.errorString());
 	}
@@ -1296,8 +1348,10 @@ void ApplicationManager::forceTick()
 {
  	if (paused_&&running_)
 	{
+    	tickLock.Lock();
 		GStatus status;
 		application_->tick(&status);
+    	tickLock.Unlock();
 		if (status.error())
 			luaError(status.errorString());
 	}

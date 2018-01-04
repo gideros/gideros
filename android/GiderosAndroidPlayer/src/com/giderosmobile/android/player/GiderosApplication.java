@@ -1076,7 +1076,25 @@ public class GiderosApplication
 
 	static public void openUrl(String url)
 	{
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		Uri uri=Uri.parse(url);
+		String scheme=uri.getScheme();
+		Intent intent=null;
+		if (scheme!=null)
+		{
+			if (scheme.equals("LAUNCH"))
+			{
+				PackageManager manager = WeakActivityHolder.get().getPackageManager();
+		        Intent i = manager.getLaunchIntentForPackage(uri.getSchemeSpecificPart());
+		        if (i != null) {
+			        i.addCategory(Intent.CATEGORY_LAUNCHER);
+			        intent=i;
+		        }
+			}
+			else if (scheme.equals("INTENT"))
+				intent=new Intent(uri.getSchemeSpecificPart());
+		}
+		if (intent==null)
+			intent = new Intent(Intent.ACTION_VIEW, uri);
 
 		try
 		{

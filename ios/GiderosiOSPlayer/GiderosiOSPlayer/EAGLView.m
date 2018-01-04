@@ -171,7 +171,7 @@
         safeArea=CGRectMake(0,0,0,0);
     
     // The framebuffer will be re-created at the beginning of the next setFramebuffer method call.
-    framebufferDirty=TRUE;
+    //framebufferDirty=TRUE;
 }
 
 - (void) getSafeArea:(CGRect *) sa

@@ -202,6 +202,14 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 		menu.exec(QCursor::pos());
 }
 
+bool LibraryTreeWidget::hasItemNamed(QTreeWidgetItem* root,QString name)
+{
+	for (int i = 0; i < root->childCount(); ++i)
+		if (!name.compare(root->child(i)->text(0)))
+			return true;
+	return false;
+}
+
 void LibraryTreeWidget::importToLibrary()
 {
 	QTreeWidgetItem* root = invisibleRootItem();
@@ -225,12 +233,18 @@ void LibraryTreeWidget::importToLibrary()
 		}
 		else
 		{
-			QTreeWidgetItem *item = createFileItem(fileName);
-			if (root == invisibleRootItem())
-				root->addChild(item);
+			QString name=QFileInfo(fileName).fileName();
+			if (hasItemNamed(root,name))
+				QMessageBox::information(this, tr("Gideros"), tr("The file '%1' cannot be added here because there is already a file named '%2' in this folder.").arg(fileName).arg(name));
 			else
-				root->insertChild(0, item);
-			root->setExpanded(true);
+			{
+				QTreeWidgetItem *item = createFileItem(fileName);
+				if (root == invisibleRootItem())
+					root->addChild(item);
+				else
+					root->insertChild(0, item);
+				root->setExpanded(true);
+			}
 		}
 
 		++it;
@@ -275,8 +289,9 @@ void LibraryTreeWidget::importFolder()
 			if ((*it).isFile())
 			{
 				QString fileName = dir.relativeFilePath((*it).absoluteFilePath());
+				QString name=QFileInfo(fileName).fileName();
 
-				if (isFileAlreadyImported(fileName))
+				if (isFileAlreadyImported(fileName)||hasItemNamed(root,name))
 				{
 					//QMessageBox::information(this, tr("Gideros"), tr("The file '%1' cannot be added to the library because it is already a member of the library.").arg(fileName));
 				}

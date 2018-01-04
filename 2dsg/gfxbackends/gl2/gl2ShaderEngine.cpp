@@ -115,7 +115,8 @@ static const char *stdPVShaderCode = "attribute lowp vec4 vColor;\n"
 		"  highp vec4 vertex = vec4(vVertex,1.0);\n"
 		"  gl_Position = vMatrix*vertex;\n"
 		"  fInColor=vColor;\n"
-		"  mediump vec4 xpsize=vWorldMatrix*vec4(vPSize,0.0,0.0,1.0);\n"
+		"  mediump vec4 xpsize=(vWorldMatrix*vec4(vPSize,0.0,0.0,1.0))-(vWorldMatrix*vec4(0.0,0.0,0.0,1.0));\n"
+//		"  mediump vec4 xpsize=vWorldMatrix*vec4(vPSize,0.0,0.0,1.0);\n"
 		"  gl_PointSize=length(xpsize.xyz);\n"
 		"}\n";
 

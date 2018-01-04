@@ -139,6 +139,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	ui.actionStart->setIcon(IconLibrary::instance().icon(0, "start"));
 	ui.actionStart->setEnabled(false);
+	ui.actionStart->setShortcuts( QList<QKeySequence>() << tr("Ctrl+R") << tr("F5") );
 	connect(ui.actionStart, SIGNAL(triggered()), this, SLOT(start()));
 
 	ui.actionStartAll->setIcon(IconLibrary::instance().icon(0, "start all"));

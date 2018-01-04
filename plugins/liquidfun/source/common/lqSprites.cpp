@@ -281,7 +281,7 @@ void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float _UNUSED(sx),
 		scaledMat.scale(physicsScale,physicsScale,1);
 		gtexture_get_engine()->setModel(scaledMat);
 
-		ShaderProgram *p=NULL; //XXX get specific shader ???
+		ShaderProgram *p=proxy_->getShader(); //XXX get specific shader ???
 		if (!p)
 			p=gtexture_get_engine()->getDefault(ShaderEngine::STDP_PARTICLE);
 		if (p)
