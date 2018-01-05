@@ -70,6 +70,9 @@ sprite:setShader(shader)
   <method name="Shader:getEngineVersion" page="getEngineVersion" shortdesc="get shader version" version="Gideros 2015.06.30"><![CDATA[Returns the version of the shader engine]]>
     <return type="string"><![CDATA[shader engine version]]></return>
   </method>
+  <method name="Shader:getProperties" page="getProperties" shortdesc="get graphics engine properties" version="Gideros 2018.1"><![CDATA[Returns a table containing various characteristics of the graphics engine]]>
+    <return type="string"><![CDATA[graphics engine properties]]></return>
+  </method>
   <method name="Shader:getShaderLanguage" page="getShaderLanguage" shortdesc="Get shader language" version="Gideros 2016.08"><![CDATA[Get shader language, returns string with values as: glsl or hlsl]]></method>
   <example name="Shader example"><![CDATA[--Shaders are in vShader.glsl and fShader.glsl files
 

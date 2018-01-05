@@ -15,6 +15,7 @@ ShaderBinder::ShaderBinder(lua_State* L)
 	    	{"getEngineVersion",getEngineVersion},
 	    	{"getShaderLanguage",getShaderLanguage},
 			{"enableVBO",enableVBO},
+			{"getProperties",getProperties},
         {NULL, NULL},
 	};
 
@@ -288,4 +289,20 @@ int ShaderBinder::isValid(lua_State* L)
 	lua_pushstring(L,shd->compilationLog());
 
 	return 2;
+}
+
+int ShaderBinder::getProperties(lua_State* L)
+{
+	StackChecker checker(L, "ShaderBinder::getProperties", 1);
+	std::map<std::string,std::string> props;
+	ShaderEngine::Engine->getProperties(props);
+	lua_newtable(L);
+	for (std::map<std::string,std::string>::iterator it=props.begin();it!=props.end();it++)
+	{
+		lua_pushstring(L,it->first.c_str());
+		lua_pushstring(L,it->second.c_str());
+		lua_rawset(L,-3);
+	}
+
+	return 1;
 }

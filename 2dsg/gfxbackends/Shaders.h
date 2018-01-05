@@ -5,6 +5,7 @@
 #include <stack>
 #include <vector>
 #include <string>
+#include <map>
 
 class ShaderBufferCache
 {
@@ -286,6 +287,7 @@ public:
 	virtual void prepareDraw(ShaderProgram *program);
 	//Parameters
 	virtual void setVBOThreshold(int freeze,int unfreeze) { G_UNUSED(freeze); G_UNUSED(unfreeze); };
+	virtual void getProperties(std::map<std::string,std::string> &props) { G_UNUSED(props); };
 };
 
 #endif

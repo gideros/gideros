@@ -9,6 +9,7 @@
 #include "gtexture.h"
 #include "glog.h"
 #include "ogl.h"
+#include <sstream>
 
 #ifdef OPENGL_ES0
 /* Vertex shader*/
@@ -708,3 +709,30 @@ void ogl2ShaderEngine::setBlendFunc(BlendFactor sfactor, BlendFactor dfactor) {
 	GLCALL glBlendFunc(blendFactor2GLenum(sfactor), blendFactor2GLenum(dfactor));
 }
 
+void ogl2ShaderEngine::getProperties(std::map<std::string,std::string> &props)
+{
+	GLCALL_INIT;
+	GLboolean bv;
+	GLCALL glGetBooleanv(GL_SHADER_COMPILER,&bv);
+	props["shader_compiler"]=bv?"1":"0";
+	GLint range[2];
+	GLint precision[2];
+	std::ostringstream s;
+#ifdef GL_MEDIUM_FLOAT
+	{ std::ostringstream s; GLCALL glGetShaderPrecisionFormat(GL_VERTEX_SHADER,GL_MEDIUM_FLOAT,range,precision);
+	s << precision[0]; props["vertex_float_medium_precision"]=s.str(); }
+	{ std::ostringstream s; GLCALL glGetShaderPrecisionFormat(GL_VERTEX_SHADER,GL_HIGH_FLOAT,range,precision);
+	s << precision[0]; props["vertex_float_high_precision"]=s.str(); }
+	{ std::ostringstream s; GLCALL glGetShaderPrecisionFormat(GL_FRAGMENT_SHADER,GL_MEDIUM_FLOAT,range,precision);
+	s << precision[0]; props["fragment_float_medium_precision"]=s.str(); }
+	{ std::ostringstream s; GLCALL glGetShaderPrecisionFormat(GL_FRAGMENT_SHADER,GL_HIGH_FLOAT,range,precision);
+	s << precision[0]; props["fragment_float_high_precision"]=s.str(); }
+#endif
+	{ std::ostringstream s; GLCALL glGetIntegerv(GL_MAX_TEXTURE_SIZE,range);
+	s << range[0]; props["max_texture_size"]=s.str(); }
+	props["version"]=(const char *) GLCALL glGetString(GL_VERSION);
+	props["glsl_version"]=(const char *) GLCALL glGetString(GL_SHADING_LANGUAGE_VERSION);
+	props["vendor"]=(const char *) GLCALL glGetString(GL_VENDOR);
+	props["renderer"]=(const char *) GLCALL glGetString(GL_RENDERER);
+	props["extensions"]=(const char *) GLCALL glGetString(GL_EXTENSIONS);
+}

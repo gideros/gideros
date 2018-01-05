@@ -17,6 +17,7 @@ private:
 	static int getEngineVersion(lua_State* L);
 	static int getShaderLanguage(lua_State* L);
 	static int enableVBO(lua_State* L);
+	static int getProperties(lua_State* L);
 };
 
 #endif

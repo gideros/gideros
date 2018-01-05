@@ -202,6 +202,7 @@ public:
 	void setBlendFunc(BlendFactor sfactor, BlendFactor dfactor);
 	void setDepthStencil(DepthStencil state);
 	void setVBOThreshold(int freeze,int unfreeze) { ogl2ShaderProgram::vboFreeze=freeze; ogl2ShaderProgram::vboUnfreeze=unfreeze; };
+	void getProperties(std::map<std::string,std::string> &props);
 };
 
 
