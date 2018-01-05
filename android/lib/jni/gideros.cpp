@@ -783,6 +783,14 @@ void ApplicationManager::surfaceChanged(int width, int height, int rotation)
 	application_->getApplication()->setDeviceOrientation(deviceOrientation_);
 	
 	updateHardwareOrientation();
+
+	tickLock.Lock();
+	Event event(Event::APPLICATION_RESIZE);
+	GStatus status;
+	application_->broadcastEvent(&event, &status);
+   	tickLock.Unlock();
+	if (status.error())
+		luaError(status.errorString());
 }
 
 void ApplicationManager::updateHardwareOrientation()

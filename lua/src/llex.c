@@ -345,8 +345,8 @@ static void read_string (LexState *ls, int del, SemInfo *seminfo) {
 static int insert_string(LexState *ls, const char* s) {
     luaZ_resetbuffer(ls->buff);
     if (ls->mpos < ls->mlen) {
-      int len = strlen(s) + ls->mlen - ls->mpos + 1;
-      char *res = (char*) malloc(len);
+      int len = strlen(s) + ls->mlen - ls->mpos + 2;
+      char *res = (char*) malloc(len+1);
       strcpy(res, s);
       strcat(res, &ls->mstr[ls->mpos-1]);
       strcat(res, " ");
