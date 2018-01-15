@@ -13,6 +13,7 @@
 
 #include "lua.h"
 #include "lauxlib.h"
+#include "lualib.h"
 
 #include "ldo.h"
 #include "lfunc.h"
@@ -161,6 +162,10 @@ static int pmain(lua_State* L)
  char** argv=s->argv;
  const Proto* f;
  int i;
+ lua_gc(L, LUA_GCSTOP, 0);  /* stop collector during initialization */
+ luaL_openlibs(L);  /* open libraries */
+ lua_gc(L, LUA_GCRESTART, 0);
+
  if (!lua_checkstack(L,argc)) fatal("too many input files");
  for (i=0; i<argc; i++)
  {

@@ -193,7 +193,7 @@ int Box2DBinder2::b2ParticleSystem_setTexture(lua_State *L)
 
     b2ParticleSystemSprite* ps = static_cast<b2ParticleSystemSprite*>(static_cast<SpriteProxy *>(binder.getInstance("b2ParticleSystem", 1))->getContext());
     TextureBase *textureBase = static_cast<TextureBase*>(binder.getInstance("TextureBase", 2));
-    ps->SetTexture(textureBase);
+    ps->SetTexture(textureBase,luaL_optnumber(L,3,0.0));
 
     return 0;
 }

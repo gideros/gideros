@@ -167,12 +167,14 @@ public:
     void Unlock();
 private:
     pthread_mutex_t mutexlock;
+    pthread_mutexattr_t attr;
 };
 
 CThreadLock::CThreadLock()
 {
-    // init lock here
-    pthread_mutex_init(&mutexlock, 0);
+	pthread_mutexattr_init(&attr);
+	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&mutexlock, &attr);
 }
 
 CThreadLock::~CThreadLock()

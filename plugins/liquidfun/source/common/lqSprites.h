@@ -80,7 +80,7 @@ public:
 	virtual ~b2ParticleSystemSprite();
 	b2ParticleSystem* GetSystem() { return ps_; }
 	b2WorldED* GetWorld() { return world_; }
-	void SetTexture(TextureBase *texture);
+	void SetTexture(TextureBase *texture,float psize);
 	SpriteProxy *proxy_;
     void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 private:
@@ -88,6 +88,7 @@ private:
 	b2ParticleSystem* ps_;
 	b2WorldED *world_;
 	TextureBase* texturebase_;
+	float psize_;
 };
 
 

@@ -251,16 +251,21 @@ b2ParticleSystemSprite::b2ParticleSystemSprite(LuaApplication* application,b2Par
 	world_=world;
 	application_=application;
 	texturebase_=NULL;
+	psize_=0;
 	proxy_=gtexture_get_spritefactory()->createProxy(application->getApplication(), this, b2PSS_Draw, b2PSS_Destroy);
 }
 
-void b2ParticleSystemSprite::SetTexture(TextureBase *texturebase)
+void b2ParticleSystemSprite::SetTexture(TextureBase *texturebase,float psize)
 {
 	TextureBase *originaltexturebase = texturebase_;
-	texturebase_ = texturebase;
-	texturebase_->ref();
+	if (texturebase)
+	{
+		texturebase_ = texturebase;
+		texturebase_->ref();
+	}
 	if (originaltexturebase)
 		originaltexturebase->unref();
+	psize_=psize;
 }
 
 b2ParticleSystemSprite::~b2ParticleSystemSprite()
@@ -277,11 +282,15 @@ void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float _UNUSED(sx),
 		float physicsScale = application_->getPhysicsScale();
 
 		Matrix4 modelMat=gtexture_get_engine()->getModel();
-		Matrix4 scaledMat=modelMat;
-		scaledMat.scale(physicsScale,physicsScale,1);
+		float mc[16];
+		memcpy(mc,modelMat.get(),16*sizeof(float));
+		mc[0]*=physicsScale;
+		mc[5]*=physicsScale;
+		Matrix4 scaledMat;
+		scaledMat.set(mc);
 		gtexture_get_engine()->setModel(scaledMat);
 
-		ShaderProgram *p=proxy_->getShader(); //XXX get specific shader ???
+		ShaderProgram *p=proxy_->getShader();
 		if (!p)
 			p=gtexture_get_engine()->getDefault(ShaderEngine::STDP_PARTICLE);
 		if (p)
@@ -305,7 +314,7 @@ void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float _UNUSED(sx),
 			sc = p->getSystemConstant(ShaderProgram::SysConst_ParticleSize);
 			if (sc>=0)
 			{
-				float rad=ps_->GetRadius()*2; //Point Size is width, e.q diameter
+				float rad=((psize_==0)?ps_->GetRadius():psize_)*2; //Point Size is width, e.q diameter
 				p->setConstant(sc,ShaderProgram::CFLOAT,1,&rad);
 			}
 			p->drawArrays(ShaderProgram::Point, 0, pc);
