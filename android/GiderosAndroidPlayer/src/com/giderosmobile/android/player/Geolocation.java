@@ -125,9 +125,9 @@ public class Geolocation
 				    public void onProviderEnabled(String arg0) {}
 				};
 				if (gps_enabled)
-					locationManager_.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, locThreshold, locationListener_);
+					locationManager_.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, (float) locThreshold, locationListener_);
 				if (network_enabled)
-					locationManager_.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, locThreshold, locationListener_);
+					locationManager_.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, (float) locThreshold, locationListener_);
 
 				if (gps_enabled) {
 					Location location = locationManager_.getLastKnownLocation(LocationManager.GPS_PROVIDER);
