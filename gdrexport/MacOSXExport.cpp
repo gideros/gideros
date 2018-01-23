@@ -139,6 +139,18 @@ void MacOSXExport::CodeSignMacOSX(ExportContext *ctx) {
 			ctx->outputDir.cdUp();
 		}
 
+		if (ctx->outputDir.cd("styles")) {
+			dylibs = ctx->outputDir.entryList(QStringList() << "*.dylib");
+			for (int i = 0; i < dylibs.size(); ++i) {
+				QString filename = ctx->outputDir.absoluteFilePath(dylibs[i]);
+				cmd = "codesign -f -s \"" + signingId + "\" \"" + filename
+						+ "\"";
+				script += cmd + "\n";
+				Utilities::processOutput(cmd);
+			}
+			ctx->outputDir.cdUp();
+		}
+
 		ctx->outputDir.cdUp();
 	}
 

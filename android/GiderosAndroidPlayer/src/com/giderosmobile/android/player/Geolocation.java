@@ -25,6 +25,7 @@ public class Geolocation
 	private SensorEventListener magneticListener_ = null;
 	boolean gps_enabled = false;
 	boolean network_enabled = false;
+	private double locThreshold = 0;
 
 	Geolocation()
 	{
@@ -70,7 +71,6 @@ public class Geolocation
 
 	public void setAccuracy(double accuracy)
 	{
-		
 	}
 	
 	public double getAccuracy()
@@ -80,11 +80,15 @@ public class Geolocation
 	
 	public void setThreshold(double threshold)
 	{
-			
+			locThreshold=threshold;
+			if (locationListener_ != null) {
+				stopUpdatingLocation();
+				startUpdatingLocation();
+			}
 	}
 	public double getThreshold()
 	{
-		return 0;		
+		return locThreshold;		
 	}
 	public void start()
 	{
@@ -121,9 +125,9 @@ public class Geolocation
 				    public void onProviderEnabled(String arg0) {}
 				};
 				if (gps_enabled)
-					locationManager_.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener_);
+					locationManager_.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, locThreshold, locationListener_);
 				if (network_enabled)
-					locationManager_.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener_);
+					locationManager_.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, locThreshold, locationListener_);
 
 				if (gps_enabled) {
 					Location location = locationManager_.getLastKnownLocation(LocationManager.GPS_PROVIDER);
