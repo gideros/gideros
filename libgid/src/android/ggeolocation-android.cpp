@@ -94,6 +94,25 @@ public:
 		}
 	}	
 
+	void setThreshold(double threshold)
+	{
+		JNIEnv *env = g_getJNIEnv();
+
+		jclass cls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+		env->CallStaticVoidMethod(cls, env->GetStaticMethodID(cls, "setGeolocationThreshold_s", "(D)V"),threshold);
+		env->DeleteLocalRef(cls);
+	}
+
+	double getThreshold()
+	{
+		JNIEnv *env = g_getJNIEnv();
+
+		jclass cls = env->FindClass("com/giderosmobile/android/player/GiderosApplication");
+		jdouble threshold=env->CallStaticDoubleMethod(cls, env->GetStaticMethodID(cls, "getGeolocationThreshold_s", "()D"));
+		env->DeleteLocalRef(cls);
+		return threshold;
+	}
+
 private:
 	bool backgroundLocation;
 	void startUpdatingLocationHelper()
@@ -237,12 +256,12 @@ double ggeolocation_getAccuracy()
 
 void ggeolocation_setThreshold(double threshold)
 {
-
+	s_manager->setThreshold(threshold);
 }
 
 double ggeolocation_getThreshold()
 {
-    return 0;
+    return s_manager->getThreshold();
 }
 
 void ggeolocation_startUpdatingLocation()
