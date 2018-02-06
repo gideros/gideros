@@ -6,6 +6,7 @@
  <property name="reqNoGps" type="boolean" title="Gps is not used in this app"/>
  <property name="reqGps" type="boolean" title="Gps is mandatory"/>
  <property name="reqGpsBackground" type="boolean" title="Gps shall be available in background"/>
+ <property name="reqGpsReason" type="string" title="Explain why you need GPS (iOS)"/> 
  <property name="reqGyro" type="boolean" title="Gyroscope is mandatory"/>
  <property name="reqTouch" type="boolean" title="Touchscreen is mandatory"/>
  <property name="reqTVCompat" type="boolean" title="Android TV compatibility"/>
@@ -237,26 +238,21 @@
 			local t,pattern = {},urls.format("([^%s]+)", ",")
 			urls:gsub(pattern, function(s) t[#t+1] = s end)
 			if #t>0 then
-				local keys = ""
+				local urls=iOSProject.InfoPlist.LSApplicationQueriesSchemes or { }
+				iOSProject.InfoPlist.LSApplicationQueriesSchemes=urls
 				for i,v in ipairs(t) do
-					local key = v and "<string>"..v.."</string>" or ""
-					keys = keys..key
+					table.insert(urls,v)
 				end
-				Export.setProperty("plugin.reqCanOpenUrl",keys)
 			end
 		end
+		if Export.getProperty("plugin.reqNoGps")==0 then
+			iOSProject.InfoPlist.NSLocationUsageDescription=Export.getProperty("plugin.reqGpsReason")
+			iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription=Export.getProperty("plugin.reqGpsReason")
+		else
+			iOSProject.InfoPlist.NSLocationUsageDescription==nil
+			iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription=nil
+		end
 	]]></lua>
-	<template name="Project" path="">
-		<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">
-			<prepend>
-				<orig><![CDATA[<key>CFBundleDisplayName</key>]]></orig>
-				<by><![CDATA[
-					<key>LSApplicationQueriesSchemes</key>
-					<array>[[[plugin.reqCanOpenUrl]]]</array>
-				]]></by>
-			</prepend>
-		</replacelist>
-	</template>
 	   <if condition="[[[plugin.reqGpsBackground]]]">
     	<template name="Project" path="">
 		<replacelist wildcards="[[[project.name]]]-Info.plist;Info.plist">
