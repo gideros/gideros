@@ -26,7 +26,7 @@ you can stop the sound and monitor the position.<br />
     <return type="SoundChannel"><![CDATA[A `SoundChannel` object, which you use to control the sound. This function returns `nil` if you run out of available sound channels.]]></return>
   </method>
   <method name="Sound:getLength" page="getLength" shortdesc="" version="Gideros 2011.6"><![CDATA[<br />
-Returns the duration of the sound in miliseconds.<br />
+Returns the duration of the sound in milliseconds.<br />
 <br />
 ]]>
     <return type="number"><![CDATA[The duration of the sound in miliseconds.]]></return>
