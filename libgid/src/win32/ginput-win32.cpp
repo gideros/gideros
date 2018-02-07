@@ -6,6 +6,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <map>
+#include <windows.h>
 
 struct Pointer{
 	int x;
@@ -26,10 +27,10 @@ public:
         isTouchToMouseEnabled_ = 0;
         mouseTouchOrder_= 0;
 
-        keyMap_[GINPUT_KEY_LEFT] = GINPUT_KEY_LEFT;
-        keyMap_[GINPUT_KEY_RIGHT] = GINPUT_KEY_RIGHT;
-        keyMap_[GINPUT_KEY_UP] = GINPUT_KEY_UP;
-        keyMap_[GINPUT_KEY_DOWN] = GINPUT_KEY_DOWN;
+        keyMap_[VK_LEFT] = GINPUT_KEY_LEFT;
+        keyMap_[VK_RIGHT] = GINPUT_KEY_RIGHT;
+        keyMap_[VK_UP] = GINPUT_KEY_UP;
+        keyMap_[VK_DOWN] = GINPUT_KEY_DOWN;
 
         keyMap_[GINPUT_KEY_0] = GINPUT_KEY_0;
         keyMap_[GINPUT_KEY_1] = GINPUT_KEY_1;
@@ -69,14 +70,23 @@ public:
         keyMap_[GINPUT_KEY_Y] = GINPUT_KEY_Y;
         keyMap_[GINPUT_KEY_Z] = GINPUT_KEY_Z;
 
-	keyMap_[GINPUT_KEY_SHIFT] = GINPUT_KEY_SHIFT;
-	keyMap_[GINPUT_KEY_SPACE] = GINPUT_KEY_SPACE;
-	keyMap_[GINPUT_KEY_BACKSPACE] = GINPUT_KEY_BACKSPACE;
+	keyMap_[VK_SHIFT] = GINPUT_KEY_SHIFT;
+	keyMap_[VK_SPACE] = GINPUT_KEY_SPACE;
+	keyMap_[VK_BACK] = GINPUT_KEY_BACKSPACE;
 
-	keyMap_[GINPUT_KEY_CTRL] = GINPUT_KEY_CTRL;
-	keyMap_[GINPUT_KEY_ALT] = GINPUT_KEY_ALT;
-	keyMap_[GINPUT_KEY_ESC] = GINPUT_KEY_ESC;
-	keyMap_[GINPUT_KEY_TAB] = GINPUT_KEY_TAB;
+	keyMap_[VK_CONTROL] = GINPUT_KEY_CTRL;
+	keyMap_[VK_MENU] = GINPUT_KEY_ALT;
+	keyMap_[VK_ESCAPE] = GINPUT_KEY_ESC;
+	keyMap_[VK_TAB] = GINPUT_KEY_TAB;
+
+    keyMap_[VK_HOME] = GINPUT_KEY_HOME;
+    keyMap_[VK_END] = GINPUT_KEY_END;
+    keyMap_[VK_INSERT] = GINPUT_KEY_INSERT;
+    keyMap_[VK_DELETE] = GINPUT_KEY_DELETE;
+    keyMap_[VK_PRIOR] = GINPUT_KEY_PAGEUP;
+    keyMap_[VK_NEXT] = GINPUT_KEY_PAGEDOWN;
+    keyMap_[VK_RETURN] = GINPUT_KEY_ENTER;
+
 
         pthread_mutex_init(&touchPoolMutex_, NULL);
 

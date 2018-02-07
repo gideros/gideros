@@ -97,12 +97,21 @@ CRUNCHME?=crunchme-linux-amd64
 CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
-OPTS+=-O2 --bind
+OPTS+=-O2 --bind 
 LOPTS+= --separate-asm
 
+POPTS=
+BUILD_WASM:=
+export POPTS
+export BUILD_WASM
+
 #LINE BELOW FOR WASM
-#EOPTS+=MAIN_MODULE=2 WASM=1 TOTAL_MEMORY=512*1024*1024
-EOPTS+=MAIN_MODULE=1 
+ifneq ($(BUILD_WASM),)
+EOPTS+= WASM=1 TOTAL_MEMORY=512*1024*1024 'BINARYEN_METHOD="native-wasm,asmjs"' 'BINARYEN_TRAP_MODE="clamp"'
+endif
+EOPTS+='EXTRA_EXPORTED_RUNTIME_METHODS=["addRunDependency","removeRunDependency","ccall","cwrap"]'
+EOPTS+=MAIN_MODULE=1  
+#EOPTS+=ASSERTIONS=1
 EOPTS+=FULL_ES2=1 
 EOPTS+=DISABLE_EXCEPTION_CATCHING=0
 #EOPTS+=ALLOW_MEMORY_GROWTH=1
@@ -175,6 +184,7 @@ main: path $(BUILD)/gideros.js
 	-cp $(BUILD)/gideros.js.map $(TEMPLATE)
 	cp pace.ldr.js $(TEMPLATE)
 	cp gideros.ldr.js $(TEMPLATE)
+	cp gideros.ldr.asm.js $(TEMPLATE)
 	cp jzptool.js $(TEMPLATE)
 	#$(CRUNCHME_TOOL) -nostrip -i pace.min.js $(TEMPLATE)/pace.js.png
 	#$(CRUNCHME_TOOL) -nostrip -i $(BUILD)/gideros.js $(TEMPLATE)/gideros.js.png
@@ -189,7 +199,7 @@ clean:
 
 $(BUILD)/%.em.o: ../%.cpp
 	@echo "EMCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
+	@$(EMCC) $(CINCS) $(CFLGS) -std=c++11 -c $< --default-obj-ext .em.o -o $@
 
 $(BUILD)/%.em.o: ../%.c
 	@echo "EMCC $<"

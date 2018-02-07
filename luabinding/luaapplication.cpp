@@ -549,6 +549,20 @@ static int bindAll(lua_State* L)
 	lua_setfield(L, -2, "ESC");
 	lua_pushinteger(L, GINPUT_KEY_TAB);
 	lua_setfield(L, -2, "TAB");
+	lua_pushinteger(L, GINPUT_KEY_DELETE);
+	lua_setfield(L, -2, "DELETE");
+	lua_pushinteger(L, GINPUT_KEY_INSERT);
+	lua_setfield(L, -2, "INSERT");
+	lua_pushinteger(L, GINPUT_KEY_END);
+	lua_setfield(L, -2, "END");
+	lua_pushinteger(L, GINPUT_KEY_HOME);
+	lua_setfield(L, -2, "HOME");
+	lua_pushinteger(L, GINPUT_KEY_PAGEUP);
+	lua_setfield(L, -2, "PAGE_UP");
+	lua_pushinteger(L, GINPUT_KEY_PAGEDOWN);
+	lua_setfield(L, -2, "PAGE_DOWN");
+	lua_pushinteger(L, GINPUT_KEY_ENTER);
+	lua_setfield(L, -2, "ENTER");
 
     lua_pushinteger(L, GINPUT_NO_BUTTON);
     lua_setfield(L, -2, "MOUSE_NONE");

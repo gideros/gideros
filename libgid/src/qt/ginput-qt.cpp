@@ -70,6 +70,15 @@ public:
         keyMap_[Qt::Key_Escape] = GINPUT_KEY_ESC;
         keyMap_[Qt::Key_Tab] = GINPUT_KEY_TAB;
 
+        keyMap_[Qt::Key_Home] = GINPUT_KEY_HOME;
+        keyMap_[Qt::Key_End] = GINPUT_KEY_END;
+        keyMap_[Qt::Key_Insert] = GINPUT_KEY_INSERT;
+        keyMap_[Qt::Key_Delete] = GINPUT_KEY_DELETE;
+        keyMap_[Qt::Key_PageUp] = GINPUT_KEY_PAGEUP;
+        keyMap_[Qt::Key_PageDown] = GINPUT_KEY_PAGEDOWN;
+        keyMap_[Qt::Key_Return] = GINPUT_KEY_ENTER;
+        keyMap_[Qt::Key_Enter] = GINPUT_KEY_ENTER;
+
         pthread_mutex_init(&touchPoolMutex_, NULL);
 
         gevent_AddCallback(posttick_s, this);

@@ -14,6 +14,7 @@ ExportProgress::ExportProgress(QProcess *exportProcess_, QString& out, QWidget *
 	ui->setupUi(this);
 	connect(ui->btEnd, SIGNAL(clicked()), this, SLOT(onEnd()));
     connect(ui->btShow, SIGNAL(clicked()), this, SLOT(onShowInFinder()));
+    ui->btShow->setEnabled(false);
 
 	exportProcess=exportProcess_;
 
@@ -130,12 +131,14 @@ void ExportProgress::onFinished(int exitCode, QProcess::ExitStatus exitStatus)
 	{
 		ui->lbExport->append("Export done.");
 		ui->btEnd->setText("Done");
+	    ui->btShow->setEnabled(true);
 	}
 	else
 	{
 		ui->lbExport->setTextColor(QColor("red"));
 		ui->lbExport->append("Export failed! See details above.");
 		ui->btEnd->setText("Failed!");
+	    ui->btShow->setEnabled(true);
 	}
 }
 

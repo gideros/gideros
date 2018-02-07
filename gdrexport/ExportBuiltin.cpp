@@ -353,14 +353,19 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 			QDir::setCurrent(ctx->outputDir.path());
 			QProcess::execute(quote(pack) + " -nostrip -i pace.js pace.js.png");
 			QProcess::execute(quote(pack) + " -nostrip -i gideros.js gideros.js.png");
+			//QProcess::execute(quote(pack) + " -nostrip -i gideros.asm.js gideros.asm.js.png");
 			QDir::setCurrent(old.path());
+			//ctx->outputDir.remove("gideros.asm.js");
 			ctx->outputDir.remove("gideros.js");
 			ctx->outputDir.remove("pace.js");
+			//ctx->outputDir.rename("gideros.ldr.asm.js","gideros.asm.js");
 			ctx->outputDir.rename("gideros.ldr.js","gideros.js");
 			ctx->outputDir.rename("pace.ldr.js","pace.js");
+		   ctx->outputDir.remove("gideros.ldr.asm.js");
 	   }
 	   else
 	   {
+		   ctx->outputDir.remove("gideros.ldr.asm.js");
 		   ctx->outputDir.remove("gideros.ldr.js");
 		   ctx->outputDir.remove("pace.ldr.js");
 		   ctx->outputDir.remove("jzptool.js");

@@ -44,12 +44,29 @@ public:
 
 		//keyMap_[GINPUT_KEY_BACK] = GINPUT_KEY_BACK;
 
-	keyMap_["Shift"] = GINPUT_KEY_SHIFT;
+   	keyMap_["Shift"] = GINPUT_KEY_SHIFT;
+   	keyMap_["ShiftLeft"] = GINPUT_KEY_SHIFT;
+   	keyMap_["ShiftRight"] = GINPUT_KEY_SHIFT;
 	keyMap_["\x10"] = GINPUT_KEY_SHIFT;
 	keyMap_["Backspace"] = GINPUT_KEY_BACKSPACE;
 	keyMap_["\x08"] = GINPUT_KEY_BACKSPACE;
 	keyMap_["Space"] = GINPUT_KEY_SPACE;
 	keyMap_["Control"] = GINPUT_KEY_CTRL;
+
+	keyMap_["AltLeft"] = GINPUT_KEY_ALT;
+	keyMap_["AltRight"] = GINPUT_KEY_ALT;
+	keyMap_["Escape"] = GINPUT_KEY_ESC;
+	keyMap_["Tab"] = GINPUT_KEY_TAB;
+
+    keyMap_["Home"] = GINPUT_KEY_HOME;
+    keyMap_["End"] = GINPUT_KEY_END;
+    keyMap_["Insert"] = GINPUT_KEY_INSERT;
+    keyMap_["Delete"] = GINPUT_KEY_DELETE;
+    keyMap_["PageUp"] = GINPUT_KEY_PAGEUP;
+    keyMap_["PageDown"] = GINPUT_KEY_PAGEDOWN;
+    keyMap_["Enter"] = GINPUT_KEY_ENTER;
+    keyMap_["NumpadEnter"] = GINPUT_KEY_ENTER;
+
 
 
         pthread_mutex_init(&touchPoolMutex_, NULL);

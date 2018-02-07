@@ -2,35 +2,11 @@ TARGET=Ads
 SRCS=$(addprefix emscripten/,adsbinder ads)
 INCS=../../../Sdk/include
 
-EMCC=$(EMSDK_PREFIX) emcc
-BUILD=Build
-
-OPTS=-O2 
-ifneq ($(DEBUG),)
-OPTS+=-g4 -s ASSERTIONS=1
-endif
-
-OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SRCS)))
-CINCS=$(addprefix -I../,$(INCS))
-CFLGS=-DFT2_BUILD_LIBRARY -DDARWIN_NO_CARBON -DHAVE_UNISTD_H \
-	-DOPT_GENERIC -DREAL_IS_FLOAT \
-	$(OPTS) --bind
-
-all: path $(OBJS)
-	@echo "EMLINK" $(TARGET)
-	@$(EMCC) $(OBJS) -s SIDE_MODULE=1 -s DISABLE_EXCEPTION_CATCHING=0 $(OPTS) --pre-js ads.js -o $(BUILD)/$(TARGET).js
+build: all
+	@mv $(BUILD)/Ads.js $(BUILD)/Ads2.js
+	@cat ads.js $(BUILD)/Ads2.js >$(BUILD)/Ads.js
+	@rm $(BUILD)/Ads2.js
 	@cp AdsAdSense.js $(BUILD)
 
-path:
-	mkdir -p $(sort $(dir $(OBJS)))
+include ../../../../emscripten/Plugin.mk
 
-clean:
-	rm -rf $(BUILD)
-
-$(BUILD)/%.em.o: ../%.cpp
-	@echo "EMCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@
-
-$(BUILD)/%.em.o: ../%.c
-	@echo "EMCC $<"
-	@$(EMCC) $(CINCS) $(CFLGS) -c $< --default-obj-ext .em.o -o $@

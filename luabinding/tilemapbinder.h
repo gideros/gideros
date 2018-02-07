@@ -18,6 +18,8 @@ private:
 	static int clearTile(lua_State* L);
 
 	static int shift(lua_State* L);
+	static int setRepeat(lua_State* L);
+	static int setTexture(lua_State* L);
 };
 
 

@@ -13,12 +13,14 @@ public:
 	{
 		gid_ = g_NextId();
 		
-		EM_ASM(GiderosAds.Init(););
+	    val gfb = val::global("GiderosAds");
+	    gfb.call<void>("Init");
 	}
 
 	~GAds()
 	{
-		EM_ASM(GiderosAds.Deinit(););
+	    val gfb = val::global("GiderosAds");
+	    gfb.call<void>("Deinit");
 		
 		gevent_RemoveEventsWithGid(gid_);
 	}

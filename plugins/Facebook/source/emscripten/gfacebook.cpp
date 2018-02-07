@@ -81,14 +81,16 @@ public:
     GGFacebook()
     {
 		gid_ = g_NextId();
-		EM_ASM(GiderosFB.Init(););
+	    val gfb = val::global("GiderosFB");
+	    gfb.call<void>("Init");
         gapplication_addCallback(openUrl_s, this);
     }
     
     ~GGFacebook()
     {
         gapplication_removeCallback(openUrl_s, this);
-		EM_ASM(GiderosFB.Deinit(););
+	    val gfb = val::global("GiderosFB");
+	    gfb.call<void>("Deinit");
 		gevent_RemoveEventsWithGid(gid_);
     }
 	
@@ -108,7 +110,8 @@ public:
     
     void logout()
     {
-		EM_ASM(GiderosFB.Logout(););
+	    val gfb = val::global("GiderosFB");
+	    gfb.call<void>("Logout");
     }
     
     void upload(const char *path, const char *orig)

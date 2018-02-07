@@ -13,6 +13,8 @@ TileMapBinder::TileMapBinder(lua_State* L)
 		{"setTile", TileMapBinder::setTile},
 		{"clearTile", TileMapBinder::clearTile},
 		{"shift", TileMapBinder::shift},
+		{"setRepeat", TileMapBinder::setRepeat},
+		{"setTexture", TileMapBinder::setTexture},
 		{NULL, NULL},
 	};
 	
@@ -72,7 +74,7 @@ int TileMapBinder::destruct(lua_State* L)
 
 int TileMapBinder::getTile(lua_State* L)
 {
-    StackChecker checker(L, "TileMapBinder::getTile", 3);
+    StackChecker checker(L, "TileMapBinder::getTile", 5);
 	
 	Binder binder(L);
 	TileMap* tilemap = static_cast<TileMap*>(binder.getInstance("TileMap", 1));	 
@@ -80,20 +82,24 @@ int TileMapBinder::getTile(lua_State* L)
 	
 	int x = luaL_checkinteger(L, 2) - 1;
 	int y = luaL_checkinteger(L, 3) - 1;
-    int tx, ty, flip;
+    int flip;
+    uint16_t tx,ty;
+    uint32_t tint;
 
 	GStatus status;
-    tilemap->get(x, y, &tx, &ty, &flip, &status);
+    tilemap->get(x, y, &tx, &ty, &flip, &tint, &status);
 	if (status.error() == true)
 	{
 		luaL_error(L, status.errorString());
 		return 0;
 	}
 
-	if (TileMap::isEmpty(tx, ty))
+	if (flip&TileMap::FLIP_EMPTY)
 	{
 		lua_pushnil(L);
 		lua_pushnil(L);
+        lua_pushnil(L);
+        lua_pushnil(L);
         lua_pushnil(L);
 	}
 	else
@@ -101,9 +107,11 @@ int TileMapBinder::getTile(lua_State* L)
 		lua_pushinteger(L, tx + 1);
         lua_pushinteger(L, ty + 1);
         lua_pushinteger(L, flip);
+        lua_pushinteger(L, tint&0xFFFFFF);
+        lua_pushnumber(L,(1.0/255)*((tint>>24)&0xFF));
     }
 	
-    return 3;
+    return 5;
 }
 
 int TileMapBinder::setTile(lua_State* L)
@@ -118,10 +126,13 @@ int TileMapBinder::setTile(lua_State* L)
 	int tx = luaL_checkinteger(L, 4) - 1;
 	int ty = luaL_checkinteger(L, 5) - 1;
     int flip = luaL_optinteger(L, 6, 0);
+    unsigned int color = luaL_optinteger(L, 7, 0xFFFFFF);
+    lua_Number alpha = luaL_optnumber(L, 8, 1.0);
+    uint32_t tint = color|((((int)(255*alpha))&0xFF)<<24);
 
 
 	GStatus status;
-    tilemap->set(x, y, tx, ty, flip, &status);
+    tilemap->set(x, y, tx, ty, flip&(~TileMap::FLIP_EMPTY), tint, &status);
 	if (status.error() == true)
 	{
 		luaL_error(L, status.errorString());
@@ -158,12 +169,51 @@ int TileMapBinder::clearTile(lua_State* L)
 	int y = luaL_checkinteger(L, 3) - 1;
 
 	GStatus status;
-    tilemap->set(x, y, TileMap::EMPTY_TILE, TileMap::EMPTY_TILE, 0, &status);
+    tilemap->set(x, y, 0,0,TileMap::FLIP_EMPTY, 0xFFFFFFFF, &status);
 	if (status.error() == true)
 	{
 		luaL_error(L, status.errorString());
 		return 0;
 	}
+
+	return 0;
+}
+
+int TileMapBinder::setRepeat(lua_State* L)
+{
+	StackChecker checker(L, "TileMapBinder::setRepeat", 0);
+
+	Binder binder(L);
+	TileMap* tilemap = static_cast<TileMap*>(binder.getInstance("TileMap", 1));
+
+	int x = lua_toboolean(L,2);
+	int y = lua_isnoneornil(L,3)?x:lua_toboolean(L,3);
+
+	GStatus status;
+    tilemap->setRepeat(x,y);
+
+	return 0;
+}
+
+int TileMapBinder::setTexture(lua_State* L)
+{
+	StackChecker checker(L, "TileMapBinder::setTexture", 0);
+
+	Binder binder(L);
+	TileMap* tilemap = static_cast<TileMap*>(binder.getInstance("TileMap", 1));
+
+	TextureBase* texturebase = static_cast<TextureBase*>(binder.getInstance("TextureBase", 2));
+	int tilewidth = luaL_checkinteger(L, 3);
+	int tileheight = luaL_checkinteger(L, 4);
+	int spacingx = luaL_optinteger(L, 5, 0);
+	int spacingy = luaL_optinteger(L, 6, 0);
+	int marginx = luaL_optinteger(L, 7, 0);
+	int marginy = luaL_optinteger(L, 8, 0);
+
+	tilemap->setTexture(texturebase,
+								   tilewidth, tileheight,
+								   spacingx, spacingy,
+								   marginx, marginy);
 
 	return 0;
 }

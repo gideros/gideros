@@ -22,6 +22,8 @@ ResourceBuild_atv={ tag="B2E3EFE31BAC1249005599BD /* assets in Resources */,", d
 --Paths
 FrameworksPaths={ tag="FRAMEWORK_SEARCH_PATHS = (", data={}},
 }
+iOSProject.InfoPlist={}
+
 iOSProject.XML_TEMPLATE=
 [[<template name="iOS Project file" path=""><replacelist wildcards="project.pbxproj">%s</replacelist></template>]]
 iOSProject.XML_PREPEND="<prepend><orig>%s</orig><by><![CDATA[%s]]></by></prepend>"
@@ -202,8 +204,44 @@ OTHER_LDFLAGS = "-ObjC";</by>
     </append>
     </replacelist></template>]])
   end
+  
+  local function plistValue(v)
+    if type(v)=="table" then
+      if #v>0 then
+       local d="<array>\n"
+       for n,v2 in ipairs(v) do d=d..plistValue(v2).."\n"
+       d=d.."</array>"
+       return d
+      elseif next(v,nil) then
+       local d="<dict>\n"
+       for k,v2 in pairs(v) do d=d.."<key>"..k.."</key>\n"..plistValue(v2).."\n"
+       d=d.."</dict>"
+       return d
+      else
+        return "<array></array>"
+      end
+    else
+      return "<string>"..v.."</string>"
+    end
+  end
+  
+  local dic=""
+  for k,v in pairs(iOSProject.InfoPlist)
+   dic=dic.."<key>"..k.."</key>\n"..plistValue(v).."\n"
+  end
+    
+    Export.callXml([[<template name="Project" path="">
+    <replacelist wildcards="]]..Export.getProperty("project.name")..[[-Info.plist;Info.plist">
+      <prepend>
+        <orig>]].."<![CDATA[<key>CFBundleDisplayName</key>]]></orig><by><![CDATA["..dic.."]]></by>"..[[
+      </prepend>
+    </replacelist>
+  </template>]])
 end
 
 Export.registerPreFinish(apply)
+
+iOSProject.InfoPlist.NSLocationUsageDescription=Do you accept to share your position?
+iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription=Do you accept to share your position in background?
 
 return iOSProject

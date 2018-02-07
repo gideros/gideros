@@ -3,17 +3,16 @@
 
 #include "sprite.h"
 #include "texturebase.h"
-
+#include <stdint.h>
 class Application;
 
 class TileMap : public Sprite
 {
 public:
-	static const int EMPTY_TILE = -2147483647 - 1;
-
     static const int FLIP_HORIZONTAL = 4;
     static const int FLIP_VERTICAL   = 2;
     static const int FLIP_DIAGONAL   = 1;
+    static const int FLIP_EMPTY      = 8;
 
 	TileMap(Application* application,
 			int width, int height,
@@ -26,17 +25,17 @@ public:
 	virtual ~TileMap();
 	
 	
-    void set(int x, int y, int tx, int ty, int flip, GStatus* status = NULL);
-    void get(int x, int y, int* tx, int* ty, int *flip, GStatus* status = NULL) const;
+    void set(int x, int y, uint16_t tx, uint16_t ty, int flip, uint32_t tint, GStatus* status = NULL);
+    void get(int x, int y, uint16_t* tx, uint16_t* ty, int *flip, uint32_t *tint, GStatus* status = NULL) const;
+    void setRepeat(bool x,bool y) { repeatx_=x; repeaty_=y; }
+    void setTexture(TextureBase* texture,
+			int tilewidth, int tileheight,
+			int spacingx, int spacingy,
+			int marginx, int marginy);
 
 	// TODO:
 //	void rotate(int dx, int dy);
 	void shift(int dx, int dy);
-
-	static bool isEmpty(int x, int y)
-	{
-		return (x == EMPTY_TILE) && (y == EMPTY_TILE);
-	}
 
 private:
 	void shiftleft();
@@ -50,6 +49,7 @@ private:
 	int spacingx_, spacingy_;
 	int marginx_, marginy_;
 	int displaywidth_, displayheight_;
+	bool repeatx_,repeaty_;
 
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
@@ -59,18 +59,20 @@ private:
 
     struct TileId
     {
-        TileId() : x(EMPTY_TILE), y(EMPTY_TILE), flip(0) {}
-        TileId(int x, int y) : x(x), y(y), flip(0) {}
-        TileId(int x, int y, int flip) : x(x), y(y), flip(flip) {}
+        TileId() : x(0), y(0), flip(FLIP_EMPTY), tint(0xFFFFFFFF) {}
+        TileId(int x, int y) : x(x), y(y), flip(0), tint(0xFFFFFFFF) {}
+        TileId(int x, int y, int flip) : x(x), y(y), flip(flip), tint(0xFFFFFFFF) {}
 
-        int x;
-        int y;
+        uint16_t x;
+        uint16_t y;
         int flip;
+        uint32_t tint;
     };
 
     std::vector<TileId> tileids_;
 	std::vector<float> vertices;
 	std::vector<float> texcoords;
+	std::vector<unsigned char> colors;
 };
 
 

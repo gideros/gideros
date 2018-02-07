@@ -296,13 +296,7 @@ char *url=(char *) EM_ASM_INT_V({
   allowed|=!strncmp(s1,hostname,strlen(hostname));
   if (s2) *s2='/';
  }
- /*
- allowed|=!strncmp(url,"http://hieroglyphe.net/",23);
- allowed|=!strncmp(url,"http://www.geopisteur.com/",26);
- allowed|=!strncmp(url,"http://apps.giderosmobile.com/",30); 
- allowed|=!strncmp(url,"http://www.totebogames.com/",27); 
- allowed|=!strncmp(url,"http://www.miniclip.com/",24); 
- */
+
  if (!allowed)
  {
   printf("Sorry: location %s not allowed\n",url);

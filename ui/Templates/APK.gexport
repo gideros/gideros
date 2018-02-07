@@ -104,8 +104,10 @@ print("Android Build Tools:"..buildVer)
 			</if>
 		</if>		
 		<set key="local.showSplash" value="true"/>
+		<set key="local.splashTheme" value="@style/Theme.Splash"/>
 		<if condition="[[[eq:[[[project.disableSplash]]]:1]]]">
 			<set key="local.showSplash" value="false"/>
+			<set key="local.splashTheme" value="@style/Theme"/>
 		</if>
 		<template name="Android Template" path="[[[sys.giderosDir]]]/Templates/AndroidStudio/Android Template">
 			<replacelist wildcards="*.xml;*.java;*.gradle">
@@ -118,6 +120,8 @@ print("Android Build Tools:"..buildVer)
         		<replace orig="android:versionName=&quot;1.0&quot;" by="android:versionName=&quot;[[[project.version]]]&quot;"/>
         		<replace orig="android:screenOrientation=&quot;portrait&quot;" by="android:screenOrientation=&quot;[[[local.orientation]]]&quot;"/>
         		<replace orig="boolean showSplash = true;" by="boolean showSplash = [[[local.showSplash]]];"/>
+        		<replace orig="android:theme=&quot;@style/Theme&quot;" by="android:theme=&quot;[[[local.splashTheme]]]&quot;"/>
+        		<replace orig="android:color=&quot;#123456&quot;" by="android:color=&quot;[[[project.backgroundColor]]]&quot;"/>
         		<replace orig="Color.parseColor(&quot;#ffffff&quot;)" by="Color.parseColor(&quot;[[[project.backgroundColor]]]&quot;)"/>
         		<replace orig="compileSdkVersion 23" by="compileSdkVersion [[[export.androidSdk]]]" />
         		<replace orig="buildToolsVersion &quot;23.0.2&quot;" by="buildToolsVersion &quot;[[[export.androidTools]]]&quot;" />

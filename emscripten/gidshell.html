@@ -176,6 +176,10 @@
       };
       Module.dynamicLibraries.pop();
       Module.JSPlugins.pop();
+      if (WebAssembly) /*GIDEROS_WEBASSEMBLY*/
+      for (var i = 0; i < Module.dynamicLibraries.length; i++) {
+    	  Module.dynamicLibraries[i]=Module.dynamicLibraries[i].split(".")[0]+".wasm"   	   
+      }
       Module.setStatus('Preparing...');
       window.addEventListener('click',function(){
           window.focus();
