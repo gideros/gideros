@@ -82,11 +82,11 @@ Starts playing the movie clip.<br />
 Stops playing the movie clip.<br />
 <br />
 ]]></method>
-	  <method name="MovieClip:getFrame" page="getFrame" shortdesc="returns the current frame." version="Gideros 2011.6"><![CDATA[<br />
+	  <method name="MovieClip:getFrame" page="getFrame" shortdesc="Returns the current frame." version="Gideros 2011.6"><![CDATA[<br />
 <br />
 <br />
 ]]>
-    <parameter name="frame" optional="false" type="int"><![CDATA[the frame number]]></parameter>
+<return type="number"><![CDATA[The current frame number.]]></return>		  
   </method>
   <method name="MovieClip:gotoAndPlay" page="gotoAndPlay" shortdesc="goes to the specified frame and starts playing" version="Gideros 2011.6"><![CDATA[<br />
 Goes to the specified frame and starts playing.<br />
