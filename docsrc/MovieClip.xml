@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <object name="MovieClip" page="MovieClip" parent="Sprite" type="gideros" version="Gideros 2011.6"><![CDATA[<br />
-The `MovieClip` class inherits from the following classes: `Sprite` &gt; `EventDispatcher`.<br />
+The `MovieClip` class inherits from the following classes: `Sprite` > `EventDispatcher`.<br />
 <br />
 The `MovieClip` class is used create static timedlined animations. The timeline parameters are given as an array. <br />
 Each array element specifies one timeline element and consists of the starting frame, ending frame, sprite and <br />
@@ -11,54 +11,54 @@ it dispatches an `Event.COMPLETE` event.<br />
 <br />
 The following properties can be tweened:<br />
 <br />
-&lt;ul&gt;
-&lt;li&gt;`x`&lt;/li&gt;
-&lt;li&gt;`y`&lt;/li&gt;
-&lt;li&gt;`rotation`&lt;/li&gt;
-&lt;li&gt;`scale`&lt;/li&gt;
-&lt;li&gt;`scaleX`&lt;/li&gt;
-&lt;li&gt;`scaleY`&lt;/li&gt;
-&lt;li&gt;`alpha`&lt;/li&gt;
-&lt;/ul&gt;
+<ul>
+<li>`x`</li>
+<li>`y`</li>
+<li>`rotation`</li>
+<li>`scale`</li>
+<li>`scaleX`</li>
+<li>`scaleY`</li>
+<li>`alpha`</li>
+</ul>
 <br />
 
 Additionally `MovieClip` uses set function to tween properties, so if you override provided object's set function by adding new parameters it can accept, then you can tween those new parameters too.
 
 
-&lt;br /&gt;
+<br />
 The following easing functions can be used:<br />
 <br />
- * `&quot;inBack&quot;`<br />
- * `&quot;outBack&quot;`<br />
- * `&quot;inOutBack&quot;`<br />
- * `&quot;inBounce&quot;`<br />
- * `&quot;outBounce&quot;`<br />
- * `&quot;inOutBounce&quot;`<br />
- * `&quot;inCircular&quot;`<br />
- * `&quot;outCircular&quot;`<br />
- * `&quot;inOutCircular&quot;`<br />
- * `&quot;inCubic&quot;`<br />
- * `&quot;outCubic&quot;`<br />
- * `&quot;inOutCubic&quot;`<br />
- * `&quot;inElastic&quot;`<br />
- * `&quot;outElastic&quot;`<br />
- * `&quot;inOutElastic&quot;`<br />
- * `&quot;inExponential&quot;`<br />
- * `&quot;outExponential&quot;`<br />
- * `&quot;inOutExponential&quot;`<br />
- * `&quot;linear&quot;`<br />
- * `&quot;inQuadratic&quot;`<br />
- * `&quot;outQuadratic&quot;`<br />
- * `&quot;inOutQuadratic&quot;`<br />
- * `&quot;inQuartic&quot;`<br />
- * `&quot;outQuartic&quot;`<br />
- * `&quot;inOutQuartic&quot;`<br />
- * `&quot;inQuintic&quot;`<br />
- * `&quot;outQuintic&quot;`<br />
- * `&quot;inOutQuintic&quot;`<br />
- * `&quot;inSine&quot;`<br />
- * `&quot;outSine&quot;`<br />
- * `&quot;inOutSine&quot;`<br />
+ * `"inBack"`<br />
+ * `"outBack"`<br />
+ * `"inOutBack"`<br />
+ * `"inBounce"`<br />
+ * `"outBounce"`<br />
+ * `"inOutBounce"`<br />
+ * `"inCircular"`<br />
+ * `"outCircular"`<br />
+ * `"inOutCircular"`<br />
+ * `"inCubic"`<br />
+ * `"outCubic"`<br />
+ * `"inOutCubic"`<br />
+ * `"inElastic"`<br />
+ * `"outElastic"`<br />
+ * `"inOutElastic"`<br />
+ * `"inExponential"`<br />
+ * `"outExponential"`<br />
+ * `"inOutExponential"`<br />
+ * `"linear"`<br />
+ * `"inQuadratic"`<br />
+ * `"outQuadratic"`<br />
+ * `"inOutQuadratic"`<br />
+ * `"inQuartic"`<br />
+ * `"outQuartic"`<br />
+ * `"inOutQuartic"`<br />
+ * `"inQuintic"`<br />
+ * `"outQuintic"`<br />
+ * `"inOutQuintic"`<br />
+ * `"inSine"`<br />
+ * `"outSine"`<br />
+ * `"inOutSine"`<br />
 <br />
 Following examples demonstrates the possible uses of MovieClip class.<br />
 <br />
