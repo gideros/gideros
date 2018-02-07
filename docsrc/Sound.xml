@@ -29,7 +29,7 @@ you can stop the sound and monitor the position.<br />
 Returns the duration of the sound in milliseconds.<br />
 <br />
 ]]>
-    <return type="number"><![CDATA[The duration of the sound in miliseconds.]]></return>
+    <return type="number"><![CDATA[The duration of the sound in milliseconds.]]></return>
   </method>
   <method name="Sound.setListenerPosition" page="setListenerPosition" shortdesc="" version="in development"><![CDATA[Sets the position of the listener in a 3D environment]]>
     <parameter name="x" optional="false" type="number"><![CDATA[X coordinate of the listener]]></parameter>
