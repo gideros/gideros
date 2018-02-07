@@ -64,7 +64,7 @@
 local iOSProject=require("Tools/export_ios")
 iOSProject.exportPluginFiles("iab",
 	"[[[sys.pluginDir]]]/source/IOS/Plugins/iab",
-	{ "iab.mm", "IabIos.mm "iabbinder.cpp" },
+	{ "iab.mm", "IabIos.mm", "iabbinder.cpp" },
 	true, false)
 	]]></lua>
 	</if>
