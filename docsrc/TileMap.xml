@@ -36,6 +36,8 @@ Returns the index of the tile. The tile indices are starting from 1.<br />
     <return type="number"><![CDATA[x tile position of texture or nil if tile is not set]]></return>
     <return type="number"><![CDATA[y tile position of texture or nil if tile is not set]]></return>
     <return type="number"><![CDATA[flip flag (TileMap.FLIP_DIAGONAL, TileMap.FLIP_HORIZONTAL, TileMap.FLIP_VERTICAL) of tile or nil if tile is not set]]></return>
+    <return type="number"><![CDATA[Color tint of the tile]]></return>
+    <return type="number"><![CDATA[Alpha tint of the tile]]></return>
   </method>
   <method name="TileMap:setTile" page="setTile" shortdesc="sets the index of the tile" version="Gideros 2011.6"><![CDATA[<br />
 Sets the index of the tile. The tile indices are starting from 1.<br />
@@ -46,6 +48,27 @@ Sets the index of the tile. The tile indices are starting from 1.<br />
     <parameter name="tx" optional="false" type="number"><![CDATA[The x-index of the tile]]></parameter>
     <parameter name="ty" optional="false" type="number"><![CDATA[The y-index of the tile]]></parameter>
     <parameter name="flip" optional="false" type="number, default = 0"><![CDATA[flip flag of tile. Can be combination of TileMap.FLIP_HORIZONTAL, TileMap.FLIP_VERTICAL and TileMap.FLIP_DIAGONAL]]></parameter>
+    <parameter name="color" optional="true" type="number"><![CDATA[Color tint of the tile, default to white (0xFFFFFF)]]></parameter>
+    <parameter name="alpha" optional="true" type="number"><![CDATA[Alpha tint of the tile, default to opaque (1.0)]]></parameter>
+  </method>
+  <method name="TileMap:setRepeat" page="setRepeat" shortdesc="Indicate if the tilemap should repeat itself" version="Gideros 2018.2"><![CDATA[<br />
+Indicate if the tilemap should repeat itself.<br />
+<br />
+]]>
+    <parameter name="x" optional="false" type="boolean"><![CDATA[Tilemap is repeating along x axis]]></parameter>
+    <parameter name="y" optional="false" type="boolean"><![CDATA[Tilemap is repeating along y axis]]></parameter>
+  </method>
+  <method name="TileMap:setTexture" page="setTexture" shortdesc="Change the tile texture/atlas used by the tilemap" version="Gideros 2018.2"><![CDATA[<br />
+Change the tile texture/atlas used by the tilemap.<br />
+<br />
+]]>
+    <parameter name="texture" optional="false" type="TextureBase"><![CDATA[The texture used in rendering tile map]]></parameter>
+    <parameter name="tilewidth" optional="false" type="number"><![CDATA[The width of a tile in pixels]]></parameter>
+    <parameter name="tileheight" optional="false" type="number"><![CDATA[The height of a tile in pixels]]></parameter>
+    <parameter name="spacingx" optional="false" type="number, default = 0"><![CDATA[The x-spacing in pixels between the tiles in this tileset]]></parameter>
+    <parameter name="spacingy" optional="false" type="number, default = 0"><![CDATA[The y-spacing in pixels between the tiles in this tileset]]></parameter>
+    <parameter name="marginx" optional="false" type="number, default = 0"><![CDATA[The x-margin from the top-left of the texture]]></parameter>
+    <parameter name="marginy" optional="false" type="number, default = 0"><![CDATA[The y-margin from the top-left of the texture]]></parameter>
   </method>
   <method name="TileMap:clearTile" page="clearTile" shortdesc="set an empty tile at given indices" version="Gideros 2011.6"><![CDATA[<br />
 Set an empty tile at given indices. The tile indices are starting from 1.<br />
