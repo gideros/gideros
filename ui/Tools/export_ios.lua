@@ -205,28 +205,37 @@ OTHER_LDFLAGS = "-ObjC";</by>
     </replacelist></template>]])
   end
   
+  local function xmlEscape(s)
+	s = string.gsub(s, "&", "&amp;")
+	s = string.gsub(s, "<", "&lt;")
+	s = string.gsub(s, ">", "&gt;")
+	s = string.gsub(s, "'", "&apos;")
+	s = string.gsub(s, '"', "&quot;")
+	return s
+  end
+
   local function plistValue(v)
     if type(v)=="table" then
       if #v>0 then
        local d="<array>\n"
-       for n,v2 in ipairs(v) do d=d..plistValue(v2).."\n"
+       for n,v2 in ipairs(v) do d=d..plistValue(v2).."\n" end
        d=d.."</array>"
        return d
       elseif next(v,nil) then
        local d="<dict>\n"
-       for k,v2 in pairs(v) do d=d.."<key>"..k.."</key>\n"..plistValue(v2).."\n"
+       for k,v2 in pairs(v) do d=d.."<key>"..k.."</key>\n"..plistValue(v2).."\n" end
        d=d.."</dict>"
        return d
       else
         return "<array></array>"
       end
     else
-      return "<string>"..v.."</string>"
+      return "<string>"..xmlEscape(v).."</string>"
     end
   end
   
   local dic=""
-  for k,v in pairs(iOSProject.InfoPlist)
+  for k,v in pairs(iOSProject.InfoPlist) do
    dic=dic.."<key>"..k.."</key>\n"..plistValue(v).."\n"
   end
     
@@ -241,7 +250,7 @@ end
 
 Export.registerPreFinish(apply)
 
-iOSProject.InfoPlist.NSLocationUsageDescription=Do you accept to share your position?
-iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription=Do you accept to share your position in background?
+iOSProject.InfoPlist.NSLocationUsageDescription="Do you accept to share your position?"
+iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription="Do you accept to share your position in background?"
 
 return iOSProject

@@ -273,11 +273,11 @@
 				end
 			end
 		end
-		if Export.getProperty("plugin.reqNoGps")==0 then
+		if tonumber(Export.getProperty("plugin.reqNoGps"))==0 then
 			iOSProject.InfoPlist.NSLocationUsageDescription=Export.getProperty("plugin.reqGpsReason")
 			iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription=Export.getProperty("plugin.reqGpsReason")
 		else
-			iOSProject.InfoPlist.NSLocationUsageDescription==nil
+			iOSProject.InfoPlist.NSLocationUsageDescription=nil
 			iOSProject.InfoPlist.NSLocationWhenInUseUsageDescription=nil
 		end
 	]]></lua>
