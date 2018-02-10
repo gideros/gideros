@@ -1258,7 +1258,6 @@ int worldQuerySegment(lua_State *L) {
 		luaL_checktype(L, 6, LUA_TFUNCTION);
 		hasFilter=true;
 	}
-	assertIsRect(L, 2, 3, 4, 5);
 	lua_getfield(L, 1, "__itemsr");
 
 	double x1 = luaL_checknumber(L, 2);
@@ -1293,7 +1292,6 @@ int worldQuerySegmentWithCoords(lua_State *L) {
 		luaL_checktype(L, 6, LUA_TFUNCTION);
 		hasFilter=true;
 	}
-	assertIsRect(L, 2, 3, 4, 5);
 	lua_getfield(L, 1, "__itemsr");
 
 	double x1 = luaL_checknumber(L, 2);
