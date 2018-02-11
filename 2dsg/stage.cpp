@@ -165,6 +165,7 @@ void Stage::populateSpritesWithListeners()
             sprite->hasEventListener(MouseEvent::MOUSE_MOVE)     ||
             sprite->hasEventListener(MouseEvent::MOUSE_UP)       ||
             sprite->hasEventListener(MouseEvent::MOUSE_WHEEL)    ||
+            sprite->hasEventListener(MouseEvent::MOUSE_HOVER)    ||
             sprite->hasEventListener(TouchEvent::TOUCHES_BEGIN)  ||
             sprite->hasEventListener(TouchEvent::TOUCHES_MOVE)   ||
             sprite->hasEventListener(TouchEvent::TOUCHES_END)    ||
