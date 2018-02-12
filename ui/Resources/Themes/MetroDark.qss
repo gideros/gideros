@@ -1027,3 +1027,52 @@ AboutDialog QTextEdit {
 ViewCert {
   min-height: 600px;
 }
+
+QTableView
+{
+    border: 1px solid #444;
+    gridline-color: #6c6c6c;
+    background-color: #201F1F;
+}
+
+
+QTableView, QHeaderView
+{
+    border-radius: 0px;
+}
+
+QTableView::item:pressed, QListView::item:pressed, QTreeView::item:pressed  {
+    background: #78879b;
+    color: #FFFFFF;
+}
+
+QTableView::item:selected:active, QTreeView::item:selected:active, QListView::item:selected:active  {
+    background: #3d8ec9;
+    color: #FFFFFF;
+}
+
+QTableCornerButton::section {
+    background-color: #3A3939;
+    border: 1px solid #3A3939;
+    border-radius: 2px;
+}
+
+QToolBox  {
+    padding: 3px;
+    border: 1px transparent black;
+}
+
+QToolBox::tab {
+    color: #b1b1b1;
+    background-color: #302F2F;
+    border: 1px solid #4A4949;
+    border-bottom: 1px transparent #302F2F;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+ QToolBox::tab:selected { /* italicize selected tabs */
+    font: italic;
+    background-color: #302F2F;
+    border-color: #3d8ec9;
+ }
