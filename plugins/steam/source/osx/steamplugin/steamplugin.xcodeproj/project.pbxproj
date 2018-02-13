@@ -1,0 +1,320 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EB5067AD2032E7C900D7F26E /* steamplugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB5067AC2032E7C900D7F26E /* steamplugin.cpp */; };
+		EB5067B02032EC4400D7F26E /* libsteam_api.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5067AF2032EC4300D7F26E /* libsteam_api.dylib */; };
+		EB5067B22032EC6C00D7F26E /* liblua.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5067B12032EC6B00D7F26E /* liblua.1.dylib */; };
+		EB5067B42032EC8300D7F26E /* libgideros.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5067B32032EC8300D7F26E /* libgideros.1.dylib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		EB50679E2032E37400D7F26E /* libsteamplugin.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libsteamplugin.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB5067AC2032E7C900D7F26E /* steamplugin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = steamplugin.cpp; path = ../../../common/steamplugin.cpp; sourceTree = "<group>"; };
+		EB5067AF2032EC4300D7F26E /* libsteam_api.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsteam_api.dylib; path = ../../../../../../../steamworks_sdk_142/sdk/redistributable_bin/osx32/libsteam_api.dylib; sourceTree = "<group>"; };
+		EB5067B12032EC6B00D7F26E /* liblua.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua.1.dylib; path = ../../../../../Sdk/lib/desktop/liblua.1.dylib; sourceTree = "<group>"; };
+		EB5067B32032EC8300D7F26E /* libgideros.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgideros.1.dylib; path = ../../../../../Sdk/lib/desktop/libgideros.1.dylib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EB50679B2032E37400D7F26E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB5067B42032EC8300D7F26E /* libgideros.1.dylib in Frameworks */,
+				EB5067B22032EC6C00D7F26E /* liblua.1.dylib in Frameworks */,
+				EB5067B02032EC4400D7F26E /* libsteam_api.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EB5067952032E37400D7F26E = {
+			isa = PBXGroup;
+			children = (
+				EB5067A02032E37400D7F26E /* steamplugin */,
+				EB50679F2032E37400D7F26E /* Products */,
+				EB5067AE2032EC4300D7F26E /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		EB50679F2032E37400D7F26E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EB50679E2032E37400D7F26E /* libsteamplugin.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EB5067A02032E37400D7F26E /* steamplugin */ = {
+			isa = PBXGroup;
+			children = (
+				EB5067AC2032E7C900D7F26E /* steamplugin.cpp */,
+			);
+			path = steamplugin;
+			sourceTree = "<group>";
+		};
+		EB5067AE2032EC4300D7F26E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EB5067B32032EC8300D7F26E /* libgideros.1.dylib */,
+				EB5067B12032EC6B00D7F26E /* liblua.1.dylib */,
+				EB5067AF2032EC4300D7F26E /* libsteam_api.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		EB50679C2032E37400D7F26E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		EB50679D2032E37400D7F26E /* steamplugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB5067A92032E37400D7F26E /* Build configuration list for PBXNativeTarget "steamplugin" */;
+			buildPhases = (
+				EB50679A2032E37400D7F26E /* Sources */,
+				EB50679B2032E37400D7F26E /* Frameworks */,
+				EB50679C2032E37400D7F26E /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = steamplugin;
+			productName = steamplugin;
+			productReference = EB50679E2032E37400D7F26E /* libsteamplugin.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EB5067962032E37400D7F26E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = "Gideros Mobile";
+				TargetAttributes = {
+					EB50679D2032E37400D7F26E = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = EB5067992032E37400D7F26E /* Build configuration list for PBXProject "steamplugin" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EB5067952032E37400D7F26E;
+			productRefGroup = EB50679F2032E37400D7F26E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EB50679D2032E37400D7F26E /* steamplugin */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EB50679A2032E37400D7F26E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB5067AD2032E7C900D7F26E /* steamplugin.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		EB5067A72032E37400D7F26E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					/Users/clement/steamworks_sdk_142/sdk/public/steam,
+					../../../../../Sdk/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					../../../../../Sdk/lib/desktop,
+					/Users/clement/steamworks_sdk_142/sdk/redistributable_bin/osx32,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		EB5067A82032E37400D7F26E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					/Users/clement/steamworks_sdk_142/sdk/public/steam,
+					../../../../../Sdk/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					../../../../../Sdk/lib/desktop,
+					/Users/clement/steamworks_sdk_142/sdk/redistributable_bin/osx32,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		EB5067AA2032E37400D7F26E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = A24C796X42;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EB5067AB2032E37400D7F26E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = A24C796X42;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EB5067992032E37400D7F26E /* Build configuration list for PBXProject "steamplugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB5067A72032E37400D7F26E /* Debug */,
+				EB5067A82032E37400D7F26E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EB5067A92032E37400D7F26E /* Build configuration list for PBXNativeTarget "steamplugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB5067AA2032E37400D7F26E /* Debug */,
+				EB5067AB2032E37400D7F26E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EB5067962032E37400D7F26E /* Project object */;
+}
