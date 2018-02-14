@@ -38,7 +38,7 @@ qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)/Plugins
 	mkdir -p $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/MacOSX
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; $(MAKE); \
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; \
 		else if [ -d "Desktop" ]; then cd Desktop; fi; \
 		for fl in *.1.0.0.dylib; do fl2=`echo $$fl | sed -e 's/\\..*//'`; echo $$fl $$fl2; cp  -L $$fl ../$$fl2.dylib; rm *.dylib; mv ../*.dylib .; done; fi; \
 	cp *.dylib $$R/$(RELEASE)/Plugins; \
