@@ -28,20 +28,22 @@ qtlibs.install: buildqtlibs
 	mkdir -p $(RELEASE)
 
 %.qtplugin:
-	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro
-	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MAKE) 
+	cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; $(MAKE); \
+		else if [ -d "Desktop" ]; then cd Desktop; fi; $(QMAKE) *.pro; $(MAKE); fi 
 
 %.qtplugin.clean:
-	cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; $(MAKE) clean
+	cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; elif [ -d "Desktop" ]; then cd Desktop; fi; $(MAKE) clean
 
 %.qtplugin.install:
 	mkdir -p $(RELEASE)/Plugins
 	mkdir -p $(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins
 	mkdir -p $(RELEASE)/All\ Plugins/$*/bin/MacOSX
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; for fl in *.1.0.0.dylib; do fl2=`echo $$fl | sed -e 's/\\..*//'`; echo $$fl $$fl2; cp  -L $$fl ../$$fl2.dylib; rm *.dylib; mv ../*.dylib .; done	 
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp *.dylib $$R/$(RELEASE)/Plugins	 
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp *.dylib $$R/$(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins	 
-	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "Desktop" ]; then cd Desktop; fi; cp *.dylib $$R/$(RELEASE)/All\ Plugins/$*/bin/MacOSX	 
+	R=$(PWD); cd $(ROOT)/plugins/$*/source; if [ -d "osx" ]; then cd osx; $(MAKE); \
+		else if [ -d "Desktop" ]; then cd Desktop; fi; \
+		for fl in *.1.0.0.dylib; do fl2=`echo $$fl | sed -e 's/\\..*//'`; echo $$fl $$fl2; cp  -L $$fl ../$$fl2.dylib; rm *.dylib; mv ../*.dylib .; done; fi; \
+	cp *.dylib $$R/$(RELEASE)/Plugins; \
+	cp *.dylib $$R/$(RELEASE)/Templates/Qt/MacOSXDesktopTemplate/MacOSXDesktopTemplate.app/Contents/Plugins; \
+	cp *.dylib $$R/$(RELEASE)/All\ Plugins/$*/bin/MacOSX	
 
 qtlibs.clean: $(addsuffix .qmake.clean,libpystring libgvfs libgid lua libgideros)
 
