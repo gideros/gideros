@@ -100,7 +100,7 @@ target platform to export the application source.</string>
    <item>
     <widget class="QTabWidget" name="architectureTab">
      <property name="currentIndex">
-      <number>0</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -475,6 +475,13 @@ win32.exe and win32console.exe in export are identical except the latter runs wi
          </property>
          <property name="wordWrap">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="html5_fbinstant">
+         <property name="text">
+          <string>Facebook Instant Game</string>
          </property>
         </widget>
        </item>

@@ -147,6 +147,10 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         if (!ctx->player)
         	replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("GAPP_URL=\""+ctx->base+".GApp\"").toUtf8());
         replaceList1 << qMakePair(QString("GIDEROS_MEMORY_MB=128").toUtf8(),QString("GIDEROS_MEMORY_MB=%1").arg(ctx->properties.html5_mem).toUtf8());
+        if (ctx->properties.html5_fbinstant) {
+            replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-START").toUtf8(),QString("GIDEROS-FBINSTANT-START -->").toUtf8());
+            replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-END").toUtf8(),QString("<!-- GIDEROS-FBINSTANT-END").toUtf8());
+        }
     }
     ctx->replaceList << replaceList1;
 }

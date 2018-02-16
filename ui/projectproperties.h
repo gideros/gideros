@@ -77,6 +77,7 @@ struct ProjectProperties
         html5_host = "";
         html5_mem = 256;
         html5_pack = false;
+        html5_fbinstant = false;
         encryptCode = false;
         encryptAssets = false;
         app_icon="";
@@ -133,6 +134,7 @@ struct ProjectProperties
     QString html5_host;
     int html5_mem;
     bool html5_pack;
+    bool html5_fbinstant;
     QString app_icon;
     QString tv_icon;
     QString splash_h_image;
