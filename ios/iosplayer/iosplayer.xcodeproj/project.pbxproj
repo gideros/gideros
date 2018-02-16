@@ -362,6 +362,8 @@
 		EB35B49A1C1190C200227849 /* ft-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4971C1190C200227849 /* ft-path.c */; };
 		EB35B49B1C1190C200227849 /* prpath.h in Headers */ = {isa = PBXBuildFile; fileRef = EB35B4981C1190C200227849 /* prpath.h */; };
 		EB35B49C1C1190C200227849 /* svg-path.c in Sources */ = {isa = PBXBuildFile; fileRef = EB35B4991C1190C200227849 /* svg-path.c */; };
+		EB5067B720372B3F00D7F26E /* layoutevent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB5067B520372B3E00D7F26E /* layoutevent.cpp */; };
+		EB5067B820372B3F00D7F26E /* gridbaglayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB5067B620372B3E00D7F26E /* gridbaglayout.cpp */; };
 		EB7A5EA51C9BE7D70068EFCA /* viewportbinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */; };
 		EB7A5EA71C9BE8080068EFCA /* viewport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB7A5EA61C9BE8080068EFCA /* viewport.cpp */; };
 		EB82BDCE1B29606C00281732 /* gl2ShaderBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */; };
@@ -789,6 +791,8 @@
 		EB35B4971C1190C200227849 /* ft-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "ft-path.c"; sourceTree = "<group>"; };
 		EB35B4981C1190C200227849 /* prpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prpath.h; sourceTree = "<group>"; };
 		EB35B4991C1190C200227849 /* svg-path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "svg-path.c"; sourceTree = "<group>"; };
+		EB5067B520372B3E00D7F26E /* layoutevent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = layoutevent.cpp; path = ../../2dsg/layoutevent.cpp; sourceTree = "<group>"; };
+		EB5067B620372B3E00D7F26E /* gridbaglayout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gridbaglayout.cpp; path = ../../2dsg/gridbaglayout.cpp; sourceTree = "<group>"; };
 		EB7A5EA41C9BE7D70068EFCA /* viewportbinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = viewportbinder.cpp; path = ../../luabinding/viewportbinder.cpp; sourceTree = "<group>"; };
 		EB7A5EA61C9BE8080068EFCA /* viewport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = viewport.cpp; path = ../../2dsg/viewport.cpp; sourceTree = "<group>"; };
 		EB82BDC21B29606C00281732 /* gl2ShaderBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gl2ShaderBuffer.cpp; sourceTree = "<group>"; };
@@ -1298,6 +1302,8 @@
 		5F321EAD15BBC3EF00542289 /* 2dsg */ = {
 			isa = PBXGroup;
 			children = (
+				EB5067B620372B3E00D7F26E /* gridbaglayout.cpp */,
+				EB5067B520372B3E00D7F26E /* layoutevent.cpp */,
 				EBD9AC641B99EEF2006C8316 /* paths */,
 				EB82BDBA1B29606C00281732 /* gfxbackends */,
 				EB08A3501AAA06F900D8F27D /* Matrices.cpp */,
@@ -1802,6 +1808,7 @@
 				5F0CD89F15BB112300479287 /* jfdctflt.c in Sources */,
 				5F0CD8A015BB112300479287 /* jfdctfst.c in Sources */,
 				5F0CD8A115BB112300479287 /* jfdctint.c in Sources */,
+				EB5067B720372B3F00D7F26E /* layoutevent.cpp in Sources */,
 				5F0CD8A215BB112300479287 /* jidctflt.c in Sources */,
 				5F0CD8A315BB112300479287 /* jidctfst.c in Sources */,
 				5F0CD8A415BB112300479287 /* jidctint.c in Sources */,
@@ -1883,6 +1890,7 @@
 				5F321EEE15BBC3FC00542289 /* mouseevent.cpp in Sources */,
 				5F276F7718F4020E00D78AE4 /* b2BlockAllocator.cpp in Sources */,
 				5F321EEF15BBC3FC00542289 /* movieclip2.cpp in Sources */,
+				EB5067B820372B3F00D7F26E /* gridbaglayout.cpp in Sources */,
 				5F276FA118F4020E00D78AE4 /* b2Contact.cpp in Sources */,
 				5F276F9718F4020E00D78AE4 /* b2World.cpp in Sources */,
 				5F276F8A18F4020E00D78AE4 /* b2TrackedBlock.cpp in Sources */,
