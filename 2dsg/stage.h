@@ -59,6 +59,7 @@ private:
     std::vector<Sprite*> spritesWithListeners_;
     bool isSpritesWithListenersDirty_;
     void dispatchToSpritesWithListeners(Event *event);
+    void getDimensions(float& w,float &h);
 };
 
 #endif

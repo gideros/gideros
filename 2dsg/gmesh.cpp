@@ -335,7 +335,8 @@ void GMesh::clearTexture(int slot)
 
 void GMesh::doDraw(const CurrentTransform &, float sx, float sy, float ex, float ey)
 {
-	if (mesh3d_)
+    G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
+    if (mesh3d_)
 	{
 		 ShaderEngine::DepthStencil stencil=ShaderEngine::Engine->pushDepthStencil();
 		 stencil.dTest=true;

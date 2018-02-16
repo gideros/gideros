@@ -83,7 +83,8 @@ b2ParticleSystemSprite::~b2ParticleSystemSprite()
 
 void b2ParticleSystemSprite::doDraw(const CurrentTransform& , float sx, float sy, float ex, float ey)
 {
-	if (ps_)
+    G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
+    if (ps_)
 	{
 		float physicsScale = application_->getPhysicsScale();
 
@@ -5123,7 +5124,8 @@ void b2DebugDraw::DrawTransform(const b2Transform& xf)
 
 void b2DebugDraw::doDraw(const CurrentTransform& , float sx, float sy, float ex, float ey)
 {
-	if (world_)
+    G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
+    if (world_)
 	{
 
 		float physicsScale = application_->getPhysicsScale();

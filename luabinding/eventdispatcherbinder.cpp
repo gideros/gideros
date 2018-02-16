@@ -13,6 +13,7 @@
 #include "progressevent.h"
 #include "keyboardevent.h"
 #include "completeevent.h"
+#include "layoutevent.h"
 #include "luaapplication.h"
 #include <glog.h>
 #include <algorithm>
@@ -124,62 +125,67 @@ class EventTypeVisitor : public EventVisitor
 public:
 	virtual void visit(Event* v)
 	{
-		type = eEvent;
+        G_UNUSED(v); type = eEvent;
 	}
 
 	virtual void visit(EnterFrameEvent* v)
 	{
-		type = eEnterFrameEvent;
+        G_UNUSED(v); type = eEnterFrameEvent;
 	}
 
 	virtual void visit(MouseEvent* v)
 	{
-		type = eMouseEvent;
+        G_UNUSED(v); type = eMouseEvent;
 	}
 
 	virtual void visit(TouchEvent* v)
 	{
-		type = eTouchEvent;
+        G_UNUSED(v); type = eTouchEvent;
 	}
 
 	virtual void visit(TimerEvent* v)
 	{
-		type = eTimerEvent;
+        G_UNUSED(v); type = eTimerEvent;
 	}
 
 	virtual void visit(AccelerometerEvent* v)
 	{
-		type = eAccelerometerEvent;
+        G_UNUSED(v); type = eAccelerometerEvent;
 	}
 
 	virtual void visit(StageOrientationEvent* v)
 	{
-		type = eStageOrientationEvent;
+        G_UNUSED(v); type = eStageOrientationEvent;
 	}
 
 	virtual void visit(ErrorEvent* v)
 	{
-		type = eErrorEvent;
+        G_UNUSED(v); type = eErrorEvent;
 	}
 
 	virtual void visit(ProgressEvent* v)
 	{
-		type = eProgressEvent;
+        G_UNUSED(v); type = eProgressEvent;
 	}
 
 	virtual void visit(KeyboardEvent* v)
 	{
-		type = eKeyboardEvent;
+        G_UNUSED(v); type = eKeyboardEvent;
 	}
 
     virtual void visit(CompleteEvent* v)
     {
-        type = eCompleteEvent;
+        G_UNUSED(v); type = eCompleteEvent;
     }
 
-	virtual void visitOther(Event* v, void* data)
+    virtual void visit(LayoutEvent* v)
+    {
+        G_UNUSED(v); type = eLayoutEvent;
+    }
+
+    virtual void visitOther(Event* v, void* data)
 	{
-		type = eLuaEvent;
+        G_UNUSED(v); G_UNUSED(data); type = eLuaEvent;
 	}
 
 	enum Type
@@ -195,6 +201,7 @@ public:
 		eProgressEvent,
 		eKeyboardEvent,
         eCompleteEvent,
+        eLayoutEvent,
 		eLuaEvent,
 	};
 
@@ -563,6 +570,7 @@ public:
 
 	virtual void visit(AccelerometerEvent* v)
 	{
+        G_UNUSED(v);
 		//TODO
 
 	}
@@ -605,27 +613,53 @@ public:
 		lua_call(L, 1, 0);
 	}
 
-	virtual void visit(ErrorEvent* v)
-	{
-		StackChecker checker(L, "visit(ErrorEvent* v)", 0);
+    virtual void visit(ErrorEvent* v)
+    {
+        StackChecker checker(L, "visit(ErrorEvent* v)", 0);
 
-		// get closure
-		luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_eventClosures);
-		lua_pushlightuserdata(L, bridge_);
-		lua_rawget(L, -2);
-		lua_remove(L, -2);		// remove env["eventClosures"]
+        // get closure
+        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_eventClosures);
+        lua_pushlightuserdata(L, bridge_);
+        lua_rawget(L, -2);
+        lua_remove(L, -2);		// remove env["eventClosures"]
 
-		bool newTable = pushEventTable(v, "Event");
+        bool newTable = pushEventTable(v, "Event");
 
-		if (newTable == true)
-		{
-			lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
-			lua_setfield(L, -2, "type");
-		}
+        if (newTable == true)
+        {
+            lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
+            lua_setfield(L, -2, "type");
+        }
 
-		lua_call(L, 1, 0);
-	}
+        lua_call(L, 1, 0);
+    }
 
+    virtual void visit(LayoutEvent* v)
+    {
+        StackChecker checker(L, "visit(LayoutEvent* v)", 0);
+
+        // get closure
+        luaL_rawgetptr(L, LUA_REGISTRYINDEX, &key_eventClosures);
+        lua_pushlightuserdata(L, bridge_);
+        lua_rawget(L, -2);
+        lua_remove(L, -2);		// remove env["eventClosures"]
+
+        bool newTable = pushEventTable(v, "Event");
+
+        if (newTable == true)
+        {
+            lua_pushstring(L, v->type()); // TODO: buna artik ihtiyac yok. direk Event'te getType() fonksiyonu var
+            lua_setfield(L, -2, "type");
+
+            lua_pushnumber(L, v->width);
+            lua_setfield(L, -2, "width");
+
+            lua_pushnumber(L, v->height);
+            lua_setfield(L, -2, "height");
+        }
+
+        lua_call(L, 1, 0);
+    }
 
 	virtual void visit(ProgressEvent* v)
 	{

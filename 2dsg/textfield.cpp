@@ -127,7 +127,8 @@ void TextField::setSample(const char* sample)
     graphicsBase_.clear();
 
     FontBase::TextLayoutParameters empty;
-    font_->drawText(&graphicsBase_, sample, r_, g_, b_, &empty, false, 0, 0);
+    FontBase::TextLayout l;
+    font_->drawText(&graphicsBase_, sample, r_, g_, b_, &empty, false, 0, 0, l);
     float minx, miny, maxx, maxy;
     minx = 1e30;    miny = 1e30;    maxx = -1e30;    maxy = -1e30;
 	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
@@ -159,7 +160,12 @@ void TextField::createGraphics()
     if (font_ == NULL)
         graphicsBase_.clear();
     else
-        font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, &layout_, !sample_.empty(), sminx, sminy);
+    {
+        FontBase::TextLayout l;
+        font_->drawText(&graphicsBase_, text_.c_str(), r_, g_, b_, &layout_, !sample_.empty(), sminx, sminy, l);
+        textwidth_=l.w;
+        textheight_=l.bh;
+    }
 
     minx_ = 1e30;    miny_ = 1e30;    maxx_ = -1e30;    maxy_ = -1e30;
 	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
@@ -175,7 +181,11 @@ void TextField::createGraphics()
 
 void TextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
-	if (scaleChanged()) createGraphics();
+    G_UNUSED(sx);
+    G_UNUSED(sy);
+    G_UNUSED(ex);
+    G_UNUSED(ey);
+    if (scaleChanged()) createGraphics();
 	for (std::vector<GraphicsBase>::iterator it=graphicsBase_.begin();it!=graphicsBase_.end();it++)
 		(*it).draw(shader_);
 }

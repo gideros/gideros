@@ -248,12 +248,12 @@ void TTFont::getBounds(const wchar32_t *text, float letterSpacing, int *pminx,
 }
 
 Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
-		int *pminx, int *pminy, int *pmaxx, int *pmaxy, unsigned int color, bool &isRGB) {
+        int *pminx, int *pminy, int *pmaxx, int *pmaxy, unsigned int color, bool &isRGB, TextLayout &l) {
 	checkLogicalScale();
     float scalex = currentLogicalScaleX_;
     float scaley = currentLogicalScaleY_;
 
-	TextLayout l = layoutText(text, layout);
+    l = layoutText(text, layout);
 
     Dib dib(application_, l.w*scalex + 2, l.h*scaley + 2, true);
 	unsigned char rgba[] = { 255, 255, 255, 0 };

@@ -7,6 +7,7 @@
 #include "blendfunc.h"
 #include "stage.h"
 #include <application.h>
+#include "layoutevent.h"
 
 std::set<Sprite*> Sprite::allSprites_;
 std::set<Sprite*> Sprite::allSpritesWithListeners_;
@@ -31,6 +32,8 @@ Sprite::Sprite(Application* application) :
 
 	shader_ = NULL;
 	stencil_.dTest=false;
+	layoutState=NULL;
+	layoutConstraints=NULL;
 }
 
 Sprite::~Sprite() {
@@ -47,6 +50,9 @@ Sprite::~Sprite() {
 
 	if (shader_)
 		shader_->Release();
+
+	clearLayoutState();
+	clearLayoutConstraints();
 }
 
 void Sprite::setShader(ShaderProgram *shader) {
@@ -60,7 +66,36 @@ void Sprite::setShader(ShaderProgram *shader) {
 
 void Sprite::doDraw(const CurrentTransform&, float sx, float sy, float ex,
 		float ey) {
+ G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
+}
 
+GridBagLayout *Sprite::getLayoutState()
+{
+	if (!layoutState)
+		layoutState=new GridBagLayout();
+	return layoutState;
+}
+
+void Sprite::clearLayoutState() {
+	if (layoutState)
+		delete layoutState;
+	layoutState=NULL;
+}
+
+GridBagConstraints *Sprite::getLayoutConstraints()
+{
+	if (!layoutConstraints)
+		layoutConstraints=new GridBagConstraints();
+    if (parent_&&parent_->layoutState)
+        parent_->layoutState->dirty=true;
+	return layoutConstraints;
+}
+
+void Sprite::clearLayoutConstraints()
+{
+	if (layoutConstraints)
+		delete layoutConstraints;
+	layoutConstraints=NULL;
 }
 
 void Sprite::childrenDrawn() {
@@ -159,8 +194,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 		static GGPool<std::stack<Sprite*> > stackPool;
 		std::stack<Sprite*> &stack = *stackPool.create();
 
-		for (size_t i = 0; i < children_.size(); ++i)
-			stack.push(children_[i]);
+        stack.push(this);
 
 		while (!stack.empty()) {
 			Sprite *sprite = stack.top();
@@ -170,6 +204,17 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 				continue;
 			}
 
+            if (sprite->layoutState&&sprite->layoutState->dirty)
+            {
+                int loops=100; //Detect endless loops
+                while(sprite->layoutState->dirty&&(loops--))
+                {
+                    sprite->layoutState->dirty=false;
+                    sprite->layoutState->ArrangeGrid(sprite);
+                }
+            }
+
+            if (sprite->parent_)
 			sprite->worldTransform_ = sprite->parent_->worldTransform_
 					* sprite->localTransform_.matrix();
 
@@ -207,7 +252,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
 			continue;
 		}
 
-		ShaderEngine::Engine->setModel(sprite->worldTransform_);
+        ShaderEngine::Engine->setModel(sprite->worldTransform_);
 
 		if (sprite->colorTransform_ != 0 || sprite->alpha_ != 1) {
 			glPushColor();
@@ -719,6 +764,14 @@ float Sprite::height() const {
 	return maxy - miny;
 }
 
+void Sprite::getDimensions(float& w,float &h)
+{
+	float minx,miny,maxx,maxy;
+    extraBounds(&minx, &miny, &maxx, &maxy);
+    w=1+(maxx>minx?maxx-minx:minx-maxx);
+    h=1+(maxy>miny?maxy-miny:miny-maxy);
+}
+
 bool Sprite::hitTestPoint(float x, float y, bool visible) const {
 	if (visible & (!isVisible_))
 		return false;
@@ -1103,6 +1156,25 @@ void Sprite::eventListenersChanged() {
 		allSpritesWithListeners_.insert(this);
 	else
 		allSpritesWithListeners_.erase(this);
+}
+
+void Sprite::setDimensions(float w,float h)
+{
+    bool changed=((reqWidth_!=w)||(reqHeight_!=h));
+    if (changed) {
+        reqWidth_=w;
+        reqHeight_=h;
+        if (layoutState)
+            layoutState->dirty=true;
+        if (parent_&&parent_->layoutState)
+            parent_->layoutState->dirty=true;
+
+        if (hasEventListener(LayoutEvent::RESIZED))
+        {
+            LayoutEvent event(LayoutEvent::RESIZED,w,h);
+            dispatchEvent(&event);
+        }
+    }
 }
 
 void Sprite::set(const char* param, float value, GStatus* status) {

@@ -498,14 +498,14 @@ void TTBMFont::checkLogicalScale() {
 
 void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 		const char* text, float r, float g, float b,
-		TextLayoutParameters *layout, bool hasSample, float minx, float miny) {
+        TextLayoutParameters *layout, bool hasSample, float minx, float miny,TextLayout &l) {
 
 	if (strlen(text) == 0) {
 		vGraphicsBase->clear();
 		return;
 	}
 
-	TextLayout l = layoutText(text, layout);
+    l = layoutText(text, layout);
 
 	std::map<int, int> layerMap;
 	std::map<int, int> gfxMap;

@@ -55,7 +55,7 @@ void GBitmapArray::setAlpha(int i, float a)
 
 void GBitmapArray::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
-
+    G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
 }
 
 void GBitmapArray::extraBounds(float* minx, float* miny, float* maxx, float* maxy) const

@@ -40,6 +40,7 @@ Pixel::~Pixel()
 
 void Pixel::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
+    G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
     if (!a_ && !shader_) return;
 	if (isWhite_ == false)
 	{
@@ -189,6 +190,7 @@ void Pixel::setDimensions(float width,float height)
     vertices[3] = Point2f(0,height_);
 	vertices.Update();
     if (texture_[0]) updateTexture();
+    Sprite::setDimensions(width, height);
 }
 
 void Pixel::setTexture(TextureBase *texture,int slot, const Matrix4* matrix)

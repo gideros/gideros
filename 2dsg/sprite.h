@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include "gridbaglayout.h"
 
 typedef Matrix4 CurrentTransform;
 typedef Matrix4 Matrix;
@@ -395,7 +396,23 @@ public:
     	stencil_=ds;
     }
 
+    void setBounds(float x,float y,float w,float h)
+    {
+    	setXY(x,y);
+    	setDimensions(w,h);
+    }
 
+    virtual void setDimensions(float w,float h);
+    virtual void getDimensions(float &w,float &h);
+
+    GridBagLayout *getLayoutState();
+    void clearLayoutState();
+    GridBagConstraints *getLayoutConstraints();
+    void clearLayoutConstraints();
+
+public:
+    GridBagConstraints *layoutConstraints;
+    GridBagLayout *layoutState;
 
 protected:
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const
@@ -435,6 +452,7 @@ private:
 	mutable ColorTransform* colorTransform_;
 	float alpha_;
 	float clipx_,clipy_,clipw_,cliph_;
+    float reqWidth_,reqHeight_;
 
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);

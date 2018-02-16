@@ -55,7 +55,14 @@
     <hr>-->
     <script src='jzptool.js'></script>
     <script data-pace-options='{ "elements": false, "target": "#progress_box" }' src='pace.js'></script>
+<!-- GIDEROS-FBINSTANT-START
+    <script src="https://connect.facebook.net/en_US/fbinstant.4.1.js"></script>
+GIDEROS-FBINSTANT-END -->
     <script type='text/javascript'>
+    if (FBInstant) {
+    	Pace.stop();
+    	FBInstant.initializeAsync();
+    }
 	function getParameterByName(name, url) {
 		if (!url) url = window.location.href;
         	name = name.replace(/[\[\]]/g, "\\$&");
@@ -81,6 +88,10 @@
       var infopaneElement = document.getElementById('infopane');
       var errDetailsElement = document.getElementById('errDetails');
       var oopsElement = document.getElementById('oops');
+      if (FBInstant) {
+      	spinnerElement.hidden = true;
+    	infopaneElement.display="none";
+      }
 
       var Module = {
         preRun: [],
@@ -151,10 +162,17 @@
             text = m[1];
             progressElement.value = parseInt(m[2])*100;
             progressElement.max = parseInt(m[4])*100;
+            canvas.hidden=true;
+        	if (FBInstant) {
+        		var pro=100*parseInt(m[2])/parseInt(m[4])
+        		FBInstant.setLoadingProgress(pro);
+  			}
+        	else
+        	{
             progressElement.hidden = false;
             spinnerElement.hidden = false;
             infopaneElement.display="flex";
-            canvas.hidden=true;
+        	}
           } else {
             progressElement.value = null;
             progressElement.max = null;
@@ -162,24 +180,36 @@
             if (text=="Running") {
             	spinnerElement.hidden = true;
             	infopaneElement.display="none";
-            	canvas.hidden = false;
             	Pace.stop();
+            	if (FBInstant)
+            		FBInstant.startGameAsync().then(function () {
+                    	canvas.hidden = false;
+            			})
+				else {
+                	canvas.hidden = false;					            			
             }
+          }
           }
           statusElement.innerHTML = text;
         },
         totalDependencies: 0,
         monitorRunDependencies: function(left) {
           this.totalDependencies = Math.max(this.totalDependencies, left);
+      		if (FBInstant) {
+    			var pro=100*(1-(left/this.totalDependencies));
+    			FBInstant.setLoadingProgress(pro);
+			}
           //Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         }
       };
       Module.dynamicLibraries.pop();
       Module.JSPlugins.pop();
-      if (WebAssembly) /*GIDEROS_WEBASSEMBLY*/
+      /*GIDEROS_WEBASSEMBLY_START
+      if (WebAssembly)
       for (var i = 0; i < Module.dynamicLibraries.length; i++) {
     	  Module.dynamicLibraries[i]=Module.dynamicLibraries[i].split(".")[0]+".wasm"   	   
       }
+      GIDEROS_WEBASSEMBLY_END*/
       Module.setStatus('Preparing...');
       window.addEventListener('click',function(){
           window.focus();

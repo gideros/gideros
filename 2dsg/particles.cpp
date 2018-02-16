@@ -378,7 +378,8 @@ void Particles::clearTexture() {
 
 void Particles::doDraw(const CurrentTransform &, float sx, float sy, float ex,
 		float ey) {
-	if (ttl_.size() == 0)
+    G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
+    if (ttl_.size() == 0)
 		return;
 
 	ShaderProgram *p = ShaderProgram::stdParticles;

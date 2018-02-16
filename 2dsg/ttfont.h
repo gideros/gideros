@@ -24,7 +24,7 @@ public:
 
     void getBounds(const wchar32_t *text, float letterSpacing, int *pminx, int *pminy, int *pmaxx, int *pmaxy);
 
-    Dib renderFont(const char *text, TextLayoutParameters *layout, int *pminx, int *pminy, int *pmaxx, int *pmaxy,unsigned int color, bool &isRGB);
+    Dib renderFont(const char *text, TextLayoutParameters *layout, int *pminx, int *pminy, int *pmaxx, int *pmaxy,unsigned int color, bool &isRGB,TextLayout &l);
 
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy);
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);

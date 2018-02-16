@@ -53,7 +53,7 @@ public:
 	};
 	struct TextLayout {
 		float x,y;
-		float w,h;
+        float w,h,bh;
 		int lines;
 		int styleFlags;
 		std::vector<struct ChunkLayout> parts;
@@ -96,7 +96,7 @@ public:
     {
     }
 
-    virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, TextLayoutParameters *layout, bool hasSample, float minx, float miny) = 0;
+    virtual void drawText(std::vector<GraphicsBase> *graphicsBase, const char *text, float r, float g, float b, TextLayoutParameters *layout, bool hasSample, float minx, float miny, TextLayout &l) = 0;
 };
 
 

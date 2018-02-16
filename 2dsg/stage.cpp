@@ -211,3 +211,9 @@ void Stage::dispatchToSpritesWithListeners(Event *event)
     application_->deleteAutounrefPool(pool);
 }
 
+void Stage::getDimensions(float& w,float &h)
+{
+    w=application_->getLogicalWidth();
+    h=application_->getLogicalHeight();
+}
+

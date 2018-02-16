@@ -10,6 +10,7 @@
 #include "progressevent.h"
 #include "keyboardevent.h"
 #include "completeevent.h"
+#include "layoutevent.h"
 
 EventBinder::EventBinder(lua_State* L)
 {
@@ -120,6 +121,8 @@ EventBinder::EventBinder(lua_State* L)
 	lua_pushstring(L, ProgressEvent::PROGRESS.type());
 	lua_setfield(L, -2, "PROGRESS");
 
+    lua_pushstring(L, LayoutEvent::RESIZED.type());
+    lua_setfield(L, -2, "LAYOUT_RESIZED");
 
 	lua_pushstring(L, KeyboardEvent::KEY_UP.type());
 	lua_setfield(L, -2, "KEY_UP");

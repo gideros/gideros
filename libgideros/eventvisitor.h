@@ -1,6 +1,10 @@
 #ifndef EVENTVISITOR_H
 #define EVENTVISITOR_H
 
+#ifndef G_UNUSED
+#define G_UNUSED(x) (void)(x)
+#endif
+
 class Event;
 class EnterFrameEvent;
 class MouseEvent;
@@ -12,6 +16,7 @@ class ErrorEvent;
 class ProgressEvent;
 class KeyboardEvent;
 class CompleteEvent;
+class LayoutEvent;
 
 class EventVisitor
 {
@@ -26,9 +31,10 @@ public:
 	virtual void visit(ErrorEvent* v) = 0;
 	virtual void visit(ProgressEvent* v) = 0;
 	virtual void visit(KeyboardEvent* v) = 0;
-    virtual void visit(CompleteEvent* v) = 0;
+        virtual void visit(CompleteEvent* v) = 0;
+        virtual void visit(LayoutEvent* v) = 0;
 
-	virtual void visitOther(Event* v, void* data) {}
+        virtual void visitOther(Event* v, void* data) { G_UNUSED(v); G_UNUSED(data); }
 };
 
 #endif

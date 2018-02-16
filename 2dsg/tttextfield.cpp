@@ -28,8 +28,9 @@ TTTextField::TTTextField(Application* application, TTFont* font, const char* tex
 		layout_=*layout;
 
     FontBase::TextLayoutParameters empty;
+    FontBase::TextLayout l;
     bool isRGB;
-    font_->renderFont(sample_.c_str(), &empty, &sminx, &sminy, &smaxx, &smaxy, textColor_, isRGB);
+    font_->renderFont(sample_.c_str(), &empty, &sminx, &sminy, &smaxx, &smaxy, textColor_, isRGB, l);
     sminx = sminx/scalex;
     sminy = sminy/scaley;
     smaxx = smaxx/scalex;
@@ -81,7 +82,10 @@ void TTTextField::createGraphics()
 
     int minx, miny, maxx, maxy;
     bool isRGB;
-    Dib dib = font_->renderFont(text_.c_str(), &layout_, &minx, &miny, &maxx, &maxy,textColor_,isRGB);
+    FontBase::TextLayout l;
+    Dib dib = font_->renderFont(text_.c_str(), &layout_, &minx, &miny, &maxx, &maxy,textColor_,isRGB,l);
+    textwidth_=l.w;
+    textheight_=l.bh;
     parameters.format=isRGB?eRGBA8888:eA8;
 
 
@@ -154,7 +158,11 @@ void TTTextField::extraBounds(float* minx, float* miny, float* maxx, float* maxy
 
 void TTTextField::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
-	if (scaleChanged()) createGraphics();
+    G_UNUSED(sx);
+    G_UNUSED(sy);
+    G_UNUSED(ex);
+    G_UNUSED(ey);
+    if (scaleChanged()) createGraphics();
 	graphicsBase_.draw(shader_);
 }
 
@@ -234,8 +242,9 @@ void TTTextField::setSample(const char* sample)
     }
 
     FontBase::TextLayoutParameters empty;
+    FontBase::TextLayout l;
     bool isRGB;
-    font_->renderFont(sample, &empty, &sminx, &sminy, &smaxx, &smaxy,textColor_,isRGB);
+    font_->renderFont(sample, &empty, &sminx, &sminy, &smaxx, &smaxy,textColor_,isRGB,l);
     sminx = sminx/scalex;
     sminy = sminy/scaley;
     smaxx = smaxx/scalex;

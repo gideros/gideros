@@ -234,10 +234,12 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	}
 	tl.w=mx-tl.x+1;
 	tl.h=my-tl.y+1;
+    tl.bh=y;
     if (tl.parts.size()==0)
     {
         tl.x=tl.y=0;
         tl.w=tl.h=0;
+        tl.bh=0;
     }
 	tl.lines=lines;
 

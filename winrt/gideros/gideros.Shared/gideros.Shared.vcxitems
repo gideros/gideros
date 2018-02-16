@@ -45,8 +45,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gmesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\graphicsbase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\grendertarget.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gridbaglayout.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gstatus.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\keyboardevent.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\layoutevent.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\Matrices.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\matrix.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\MaxRectsBinPack.cpp" />
@@ -543,9 +545,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gmesh.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\graphicsbase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\grendertarget.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gridbaglayout.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gstatus.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\keyboardevent.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\keycode.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\layoutevent.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\matrix.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\MaxRectsBinPack.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\mouseevent.h" />

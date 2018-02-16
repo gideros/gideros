@@ -25,6 +25,8 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"removeFromParent", SpriteBinder::removeFromParent},
 		{"setClip", SpriteBinder::setClip},
         {"getClip", SpriteBinder::getClip},
+		{"setLayoutParameters", SpriteBinder::setLayoutParameters},
+		{"setLayoutConstraints", SpriteBinder::setLayoutConstraints},
 		{"getX", SpriteBinder::getX},
 		{"getY", SpriteBinder::getY},
 		{"getZ", SpriteBinder::getZ},
@@ -467,6 +469,67 @@ int SpriteBinder::getClip(lua_State* L)
 
     return 4;
 }
+
+#define FILL_NUM_ARRAY(n,f) \
+		lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) { \
+			luaL_checktype(L,-1, LUA_TTABLE); \
+			p->f.resize(lua_objlen(L,-1)); \
+			for (size_t k=1;k<=lua_objlen(L,-1);k++) { lua_rawgeti(L,-1,k); p->f[k-1]=luaL_checknumber(L,-1); lua_pop(L,1); } \
+		} lua_pop(L,1);
+#define FILL_INT(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=luaL_checkinteger(L,-1); lua_pop(L,1);
+#define FILL_INTT(n,f,t) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=(t) luaL_checkinteger(L,-1); lua_pop(L,1);
+#define FILL_NUM(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=luaL_checknumber(L,-1); lua_pop(L,1);
+
+int SpriteBinder::setLayoutParameters(lua_State *L)
+{
+    StackChecker checker(L, "SpriteBinder::setLayoutParameters", 0);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+	if (lua_isnoneornil(L,2))
+		sprite->clearLayoutState();
+	else {
+		luaL_checktype(L, 2, LUA_TTABLE);
+		GridBagLayout *p=sprite->getLayoutState();
+		FILL_NUM_ARRAY("columnWidths",columnWidths);
+		FILL_NUM_ARRAY("rowHeights",rowHeights);
+		FILL_NUM_ARRAY("columnWeights",columnWeights);
+		FILL_NUM_ARRAY("rowWeights",rowWeights);
+        FILL_NUM("insetTop",pInsets.top); FILL_NUM("insetLeft",pInsets.left);
+        FILL_NUM("insetBottom",pInsets.bottom); FILL_NUM("insetRight",pInsets.right);
+        p->dirty=true;
+	}
+	return 0;
+}
+
+int SpriteBinder::setLayoutConstraints(lua_State *L)
+{
+    StackChecker checker(L, "SpriteBinder::setLayoutConstraints", 0);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+	if (lua_isnoneornil(L,2))
+		sprite->clearLayoutConstraints();
+	else {
+		luaL_checktype(L, 2, LUA_TTABLE);
+		GridBagConstraints *p=sprite->getLayoutConstraints();
+
+		FILL_INT("gridx",gridx); FILL_INT("gridy",gridy);
+		FILL_INT("gridwidth",gridwidth); FILL_INT("gridheight",gridheight);
+		FILL_NUM("weightx",weightx); FILL_NUM("weighty",weighty);
+		FILL_INTT("anchor",anchor,GridBagConstraints::_Anchor); FILL_INTT("fill",fill,GridBagConstraints::_FillMode);
+		FILL_NUM("ipadx",ipadx); FILL_NUM("ipady",ipady);
+		FILL_NUM("minWidth",aminWidth); FILL_NUM("minHeight",aminHeight);
+		FILL_NUM("prefWidth",prefWidth); FILL_NUM("prefHeight",prefHeight);
+		FILL_NUM("insetTop",insets.top); FILL_NUM("insetLeft",insets.left);
+		FILL_NUM("insetBottom",insets.bottom); FILL_NUM("insetRight",insets.right);
+	}
+	return 0;
+}
+
+#undef FILL_INT
+#undef FILL_NUM
+#undef FILL_NUM_ARRAY
 
 int SpriteBinder::getX(lua_State* L)
 {

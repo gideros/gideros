@@ -1106,6 +1106,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\particlesbinder.cpp">
       <Filter>luabinding</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gridbaglayout.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\layoutevent.cpp">
+      <Filter>2dsg</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\application.h">
@@ -1747,6 +1753,12 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\luabinding\particlesbinder.h">
       <Filter>luabinding</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\gridbaglayout.h">
+      <Filter>2dsg</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\2dsg\layoutevent.h">
+      <Filter>2dsg</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

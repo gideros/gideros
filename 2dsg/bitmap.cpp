@@ -4,6 +4,7 @@
 VertexBuffer<unsigned short> Bitmap::quad;
 void Bitmap::doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey)
 {
+    G_UNUSED(sx); G_UNUSED(sy); G_UNUSED(ex); G_UNUSED(ey);
 	if (quad.empty())
 	{
 		quad.resize(4);

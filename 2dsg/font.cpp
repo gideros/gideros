@@ -139,7 +139,7 @@ void Font::constructor(const char *glympfile, const char *imagefile,
 
 void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 		float r, float g, float b, TextLayoutParameters *layout, bool hasSample,
-		float minx, float miny) {
+        float minx, float miny, TextLayout &l) {
     size_t size = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
 
 	if (size == 0) {
@@ -147,7 +147,7 @@ void Font::drawText(std::vector<GraphicsBase> * vGraphicsBase, const char* text,
 		return;
 	}
 
-	TextLayout l = layoutText(text, layout);
+    l = layoutText(text, layout);
 
 	vGraphicsBase->resize(1);
 	GraphicsBase *graphicsBase = &((*vGraphicsBase)[0]);

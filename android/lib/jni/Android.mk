@@ -302,6 +302,8 @@ LOCAL_SRC_FILES += \
     ../../../2dsg/screen.cpp \
 	../../../2dsg/pixel.cpp \
 	../../../2dsg/particles.cpp \
+	../../../2dsg/layoutevent.cpp \
+	../../../2dsg/gridbaglayout.cpp \
 	../../../libgideros/luautil.cpp
 	
 # LOCAL_SRC_FILES += ../../../2dsg/clipper.cpp
