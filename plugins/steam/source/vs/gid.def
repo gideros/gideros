@@ -1,0 +1,3 @@
+EXPORTS
+gevent_AddCallback
+gevent_RemoveCallbackWithGid
