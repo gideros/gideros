@@ -25,7 +25,8 @@ static bool readProjectFile(const QString& fileName,
                             std::vector<std::pair<QString, QString> > &fileList,
                             std::vector<QString> &folderList,
                             DependencyGraph &dependencyGraph,
-							std::set<QString> &noEncryption)
+							std::set<QString> &noEncryption,
+							ExportContext &ctx)
 {
     ProjectProperties &properties_ = properties;
     std::vector<std::pair<QString, QString> > &fileList_ = fileList;
@@ -486,7 +487,7 @@ int main(int argc, char *argv[])
     }
 
     DependencyGraph dependencyGraph;
-    if (readProjectFile(projectFileName, ctx.properties, ctx.fileQueue, ctx.folderList, dependencyGraph, ctx.noEncryption) == false)
+    if (readProjectFile(projectFileName, ctx.properties, ctx.fileQueue, ctx.folderList, dependencyGraph, ctx.noEncryption,ctx) == false)
     {
         // error is displayed at readProjectFile function
         return 1;
