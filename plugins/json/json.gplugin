@@ -29,7 +29,7 @@ iOSProject.exportPluginFiles("json",
  <target name="Html5">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
     <template name="Activity" path="">
-        <replacelist wildcards="gideros.html">
+        <replacelist wildcards="index.html">
             <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;json.js&quot;,"/>
         </replacelist>
     </template>

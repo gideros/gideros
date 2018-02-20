@@ -190,6 +190,14 @@ void ExportBuiltin::prepareAssetFolder(ExportContext *ctx)
     	ctx->outputDir.cd("giderosgame.Windows");
     	ctx->outputDir.cd("Assets");
     }
+    else if (ctx->deviceFamily == e_Html5)
+    {
+    	if (ctx->properties.html5_fbinstant) {
+        	ctx->outputDir.mkdir("package");
+        	ctx->outputDir.cd("package");
+    	}
+    }
+
 
     if (ctx->deviceFamily != e_WinRT){
     	ctx->outputDir.mkdir("assets");
@@ -347,6 +355,9 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
    if (ctx->deviceFamily == e_Html5)
    {
+	   if (ctx->properties.html5_fbinstant) {
+		   ctx->outputDir.cd("package");
+	   }
 	   if (ctx->properties.html5_pack)
 	   {
 			QDir toolsDir = QDir(
@@ -374,7 +385,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 	   {
 		   ctx->outputDir.remove("gideros.ldr.asm.js");
 		   ctx->outputDir.remove("gideros.ldr.js");
-		   ctx->outputDir.remove("pace.ldr.js");
+		  // ctx->outputDir.remove("pace.ldr.js");
 		   ctx->outputDir.remove("jzptool.js");
 	   }
    }
@@ -399,8 +410,17 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    //exporting icons
    if (ctx->deviceFamily == e_Html5)
    {
-       ExportCommon::splashHImage(ctx,615,215,QString("gideros.png"));
-	   ExportCommon::appIcon(ctx,64,64,QString("favicon.png"));
+	   ExportCommon::splashHImage(ctx,615,215,QString("gideros.png"));
+       if (ctx->properties.html5_fbinstant) {
+           ctx->outputDir.cdUp();
+	   	   ExportCommon::appIcon(ctx,1024,1024,QString("appicon.png"));
+	   	   ExportCommon::appIcon(ctx,16,16,QString("appicon-small.png"));
+           ExportCommon::tvIcon(ctx,1200,627,QString("banner.png"));
+		   ExportCommon::splashHImage(ctx,800,150,QString("cover.png"));
+       }
+       else {
+	   	   ExportCommon::appIcon(ctx,64,64,QString("favicon.png"));
+       }
    }
    else if(ctx->deviceFamily == e_Android){
        if(templatedir.compare("Eclipse") == 0){

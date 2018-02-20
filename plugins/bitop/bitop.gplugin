@@ -29,7 +29,7 @@ iOSProject.exportPluginFiles("bit",
  <target name="Html5">
     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
     <template name="Activity" path="">
-        <replacelist wildcards="gideros.html">
+        <replacelist wildcards="index.html">
             <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;bit.js&quot;,"/>
         </replacelist>
     </template>
