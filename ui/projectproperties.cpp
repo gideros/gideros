@@ -267,7 +267,7 @@ void ProjectProperties::loadXml(QDomElement properties)
         if (!properties.attribute("html5_pack").isEmpty())
             this->html5_pack = properties.attribute("html5_pack").toInt() != 0;
         if (!properties.attribute("html5_fbinstant").isEmpty())
-            this->html5_pack = properties.attribute("html5_fbinstant").toInt() != 0;
+            this->html5_fbinstant = properties.attribute("html5_fbinstant").toInt() != 0;
         if (!properties.attribute("encryptCode").isEmpty())
             this->encryptCode = properties.attribute("encryptCode").toInt() != 0;
         if (!properties.attribute("encryptAssets").isEmpty())

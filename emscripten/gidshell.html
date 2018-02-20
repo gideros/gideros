@@ -59,7 +59,7 @@
     <script src="https://connect.facebook.net/en_US/fbinstant.6.0.js"></script>
 GIDEROS-FBINSTANT-END -->
     <script type='text/javascript'>
-    if (FBInstant) {
+    if (FBInstant !== undefined) {
     	Pace.stop();
     	FBInstant.initializeAsync();
     }
@@ -88,7 +88,7 @@ GIDEROS-FBINSTANT-END -->
       var infopaneElement = document.getElementById('infopane');
       var errDetailsElement = document.getElementById('errDetails');
       var oopsElement = document.getElementById('oops');
-      if (FBInstant) {
+      if (FBInstant !== undefined) {
       	spinnerElement.hidden = true;
     	infopaneElement.display="none";
       }
@@ -163,7 +163,7 @@ GIDEROS-FBINSTANT-END -->
             progressElement.value = parseInt(m[2])*100;
             progressElement.max = parseInt(m[4])*100;
             canvas.hidden=true;
-        	if (FBInstant) {
+        	if (FBInstant !== undefined) {
         		var pro=100*parseInt(m[2])/parseInt(m[4])
         		FBInstant.setLoadingProgress(pro);
   			}
@@ -181,21 +181,21 @@ GIDEROS-FBINSTANT-END -->
             	spinnerElement.hidden = true;
             	infopaneElement.display="none";
             	Pace.stop();
-            	if (FBInstant)
+            	if (FBInstant !== undefined)
             		FBInstant.startGameAsync().then(function () {
                     	canvas.hidden = false;
             			})
 				else {
                 	canvas.hidden = false;					            			
-            }
-          }
+            	}
+          	}
           }
           statusElement.innerHTML = text;
         },
         totalDependencies: 0,
         monitorRunDependencies: function(left) {
           this.totalDependencies = Math.max(this.totalDependencies, left);
-      		if (FBInstant) {
+      		if (FBInstant !== undefined) {
     			var pro=100*(1-(left/this.totalDependencies));
     			FBInstant.setLoadingProgress(pro);
 			}

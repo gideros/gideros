@@ -97,7 +97,7 @@ CRUNCHME?=crunchme-linux-amd64
 CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
-OPTS+=-O2 --bind 
+OPTS+=-Os --bind 
 LOPTS+= --separate-asm
 
 POPTS=
@@ -173,7 +173,7 @@ $(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.h
 main: path $(BUILD)/gideros.js
 	cp gideros.png $(TEMPLATE)
 	cp gideros.css pace.css $(TEMPLATE)
-	cp $(BUILD)/gideros.html $(TEMPLATE) 
+	cp $(BUILD)/gideros.html $(TEMPLATE)/index.html
 	-cp $(BUILD)/gideros.html.mem $(TEMPLATE) 
 	-cp $(BUILD)/gideros.wasm $(TEMPLATE) 
 	-cp $(BUILD)/gideros.wast $(TEMPLATE) 

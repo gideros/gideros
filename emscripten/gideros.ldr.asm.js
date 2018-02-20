@@ -1,1 +1,4 @@
-JPZLoad("gideros.asm.js.png",eval);
+JPZLoad("gideros.asm.js.png",function (code) {
+	eval(code);
+	GiderosAsmJSLoaded();		
+});
