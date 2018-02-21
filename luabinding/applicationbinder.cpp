@@ -97,7 +97,16 @@ ApplicationBinder::ApplicationBinder(lua_State* L)
 
 	lua_pushstring(L, LANDSCAPE_RIGHT);
 	lua_setfield(L, -2, "LANDSCAPE_RIGHT");
-
+#define CONSTANT(value,name)	lua_pushstring(L, value); lua_setfield(L, -2, name);
+	CONSTANT(CENTER,"CENTER");
+	CONSTANT(CROP,"CROP");
+	CONSTANT(FIT_HEIGHT,"FIT_HEIGHT");
+	CONSTANT(FIT_WIDTH,"FIT_WIDTH");
+	CONSTANT(LETTERBOX,"LETTERBOX");
+	CONSTANT(NO_SCALE,"NO_SCALE");
+	CONSTANT(PIXEL_PERFECT,"PIXEL_PERFECT");
+	CONSTANT(STRETCH,"STRETCH");
+#undef CONSTANT
 	lua_pop(L, 1);
 
 	binder.pushInstance("Application", NULL);
