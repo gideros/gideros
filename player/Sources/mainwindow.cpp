@@ -70,6 +70,7 @@ void MainWindow::setupUiActions(){
     connect(ui.action768x1024,  SIGNAL(triggered()), this, SLOT(actionResolution()));
     connect(ui.action640x960,   SIGNAL(triggered()), this, SLOT(actionResolution()));
     connect(ui.action1536x2048, SIGNAL(triggered()), this, SLOT(actionResolution()));
+    connect(ui.action1125x2436, SIGNAL(triggered()), this, SLOT(actionResolution()));
     connect(ui.action320x568,   SIGNAL(triggered()), this, SLOT(actionResolution()));
     connect(ui.action640x1136,  SIGNAL(triggered()), this, SLOT(actionResolution()));
     connect(ui.action480x800,   SIGNAL(triggered()), this, SLOT(actionResolution()));
@@ -115,6 +116,9 @@ void MainWindow::setupUiProperties(){
 
     ui.action1536x2048->setProperty("width",  1536);
     ui.action1536x2048->setProperty("height", 2048);
+
+    ui.action1125x2436->setProperty("width",  1125);
+    ui.action1125x2436->setProperty("height", 2436);
 
     ui.action320x568->setProperty("width",  320);
     ui.action320x568->setProperty("height", 568);

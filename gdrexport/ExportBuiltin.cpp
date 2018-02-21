@@ -190,14 +190,6 @@ void ExportBuiltin::prepareAssetFolder(ExportContext *ctx)
     	ctx->outputDir.cd("giderosgame.Windows");
     	ctx->outputDir.cd("Assets");
     }
-    else if (ctx->deviceFamily == e_Html5)
-    {
-    	if (ctx->properties.html5_fbinstant) {
-        	ctx->outputDir.mkdir("package");
-        	ctx->outputDir.cd("package");
-    	}
-    }
-
 
     if (ctx->deviceFamily != e_WinRT){
     	ctx->outputDir.mkdir("assets");
@@ -331,6 +323,14 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 
     ctx->basews=Utilities::RemoveSpaces(ctx->base,underscore);
     ExportBuiltin::fillTargetReplacements(ctx);
+
+    if (ctx->deviceFamily == e_Html5)
+    {
+    	if (ctx->properties.html5_fbinstant) {
+        	ctx->outputDir.mkdir("package");
+        	ctx->outputDir.cd("package");
+    	}
+    }
 
    // copy template
    if (templatedir.length()>0)

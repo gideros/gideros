@@ -58,7 +58,7 @@
      <x>0</x>
      <y>0</y>
      <width>320</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="palette">
@@ -134,6 +134,7 @@
      <addaction name="action640x1136"/>
      <addaction name="action750x1334"/>
      <addaction name="action1242x2208"/>
+     <addaction name="action1125x2436"/>
      <addaction name="action768x1024"/>
      <addaction name="action1536x2048"/>
      <addaction name="separator"/>
@@ -609,6 +610,11 @@
    </property>
    <property name="shortcut">
     <string>Alt+F</string>
+   </property>
+  </action>
+  <action name="action1125x2436">
+   <property name="text">
+    <string>1125x2436 (iPhone X)</string>
    </property>
   </action>
   <addaction name="actionExit"/>

@@ -242,6 +242,7 @@ private:
 #else
 	GiderosNetworkClient* client_;
 #endif
+	bool clientIsWeb_;
 //	std::map<int, QString> sentMap_;
 	std::deque<QPair<QString, QString> > fileQueue_;
 

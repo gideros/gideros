@@ -103,7 +103,7 @@ static bool readProjectFile(const QString& fileName,
         if ((ctx.deviceFamily == e_Html5)&&properties_.html5_fbinstant) {
 			QFileInfo f=QFileInfo("Tools/FBInstant.lua");
 			hasLuaPlugin=true;
-			fileList_.push_back(std::make_pair("_LuaPlugins_/FBInstant.lua", f.filePath()));
+			fileList_.push_back(std::make_pair("_LuaPlugins_/FBInstant.lua", f.absoluteFilePath()));
 			dependencyGraph_.addCode(f.filePath(),true);
  	    }
     	if (hasLuaPlugin)

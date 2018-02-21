@@ -524,6 +524,7 @@ void MainWindow::playerChanged(const QString & text)
 		client_->connectToHost(parts[0],15000);
 	else
 		client_->connectToHost(parts[0],parts[1].toInt());
+	clientIsWeb_=(parts[0]=="[ws]");
 }
 
 void MainWindow::start()
@@ -600,6 +601,7 @@ void MainWindow::startNextPlayer()
 		client_->connectToHost(parts[0],15000);
 	else
 		client_->connectToHost(parts[0],parts[1].toInt());
+	clientIsWeb_=(parts[0]=="[ws]");
 }
 
 void MainWindow::playStarted()
@@ -2540,6 +2542,11 @@ std::vector<std::pair<QString, QString> > MainWindow::libraryFileList(bool downs
 			for (int i = 0; i < files.count(); i++)
 				result.push_back(std::make_pair("_LuaPlugins_/"+files[i].fileName(), files[i].filePath()));
 		}
+	}
+	if (clientIsWeb_)
+	{
+		QFileInfo f=QFileInfo("Tools/FBInstant.lua");
+		result.push_back(std::make_pair("_LuaPlugins_/FBInstant.lua", f.absoluteFilePath()));
 	}
 
 	QDomDocument doc = libraryWidget_->toXml();
