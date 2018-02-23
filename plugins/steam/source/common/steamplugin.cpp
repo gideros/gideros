@@ -68,7 +68,11 @@ public:
 	virtual ~LuaCallbackBase() { };
 	static lua_State *statL;
 	static std::vector<LuaCallbackBase *> cleanup;
-	static void revoke(LuaCallbackBase *c) { cleanup.push_back(c); };
+	static void revoke(LuaCallbackBase *c) {
+		for (std::vector<LuaCallbackBase *>::iterator it = LuaCallbackBase::cleanup.begin(); it != LuaCallbackBase::cleanup.end(); it++)
+			if ((*it)==c) return;
+		cleanup.push_back(c);
+	};
 };
 
 template <typename T> class LuaCallreturn : public LuaCallbackBase
@@ -90,7 +94,7 @@ public:
 		else
 			UnpackResult(statL, r);
 		lua_call(statL, 1, 0);
-		cleanup.push_back(this);
+		LuaCallbackBase::revoke((LuaCallbackBase *)this);
 	}
 	virtual void UnpackResult(lua_State *L, T* r) = 0;
 	virtual ~LuaCallreturn() {
@@ -115,7 +119,7 @@ public:
 		bool last=UnpackResult(statL, r);
 		lua_call(statL, 1, 0);
 		if (last)
-			cleanup.push_back(this);
+			LuaCallbackBase::revoke((LuaCallbackBase *)this);
 	}
 	virtual bool UnpackResult(lua_State *L, T* r) = 0;
 	virtual ~LuaCallback() {
@@ -373,7 +377,7 @@ static int requestCurrentStats(lua_State *L) {
 		lua_pushboolean(L,true);
 	else {
 		lua_pushboolean(L,false);
-		LuaCallbackBase::revoke(t);
+		delete t;
 	}
 	return 1;
 }
@@ -410,8 +414,8 @@ static int storeStats(lua_State *L) {
 	if (!SteamUserStats()->StoreStats())
 	{
 		lua_pushboolean(L,false);
-		LuaCallbackBase::revoke(t2);
-		LuaCallbackBase::revoke(token);
+		delete t2;
+		delete token;
 	}
 	else
 		lua_pushboolean(L,true);
@@ -475,8 +479,8 @@ static int indicateAchievementProgress(lua_State *L) {
 	if (!SteamUserStats()->IndicateAchievementProgress(luaL_checkstring(L,1),luaL_checkinteger(L,2),luaL_checkinteger(L,3)))
 	{
 		lua_pushboolean(L,false);
-		LuaCallbackBase::revoke(t2);
-		LuaCallbackBase::revoke(token);
+		delete t2;
+		delete token;
 	}
 	else
 		lua_pushboolean(L,true);
