@@ -11,6 +11,7 @@
 		EB5067B02032EC4400D7F26E /* libsteam_api.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5067AF2032EC4300D7F26E /* libsteam_api.dylib */; };
 		EB5067B22032EC6C00D7F26E /* liblua.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5067B12032EC6B00D7F26E /* liblua.1.dylib */; };
 		EB5067B42032EC8300D7F26E /* libgideros.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5067B32032EC8300D7F26E /* libgideros.1.dylib */; };
+		EB5067BA203B241600D7F26E /* libgid.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5067B9203B241600D7F26E /* libgid.1.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		EB5067AF2032EC4300D7F26E /* libsteam_api.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsteam_api.dylib; path = "$(STEAMSDK)/sdk/redistributable_bin/osx32/libsteam_api.dylib"; sourceTree = "<group>"; };
 		EB5067B12032EC6B00D7F26E /* liblua.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblua.1.dylib; path = ../../../../../Sdk/lib/desktop/liblua.1.dylib; sourceTree = "<group>"; };
 		EB5067B32032EC8300D7F26E /* libgideros.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgideros.1.dylib; path = ../../../../../Sdk/lib/desktop/libgideros.1.dylib; sourceTree = "<group>"; };
+		EB5067B9203B241600D7F26E /* libgid.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgid.1.dylib; path = ../../../../../Sdk/lib/desktop/libgid.1.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB5067BA203B241600D7F26E /* libgid.1.dylib in Frameworks */,
 				EB5067B42032EC8300D7F26E /* libgideros.1.dylib in Frameworks */,
 				EB5067B22032EC6C00D7F26E /* liblua.1.dylib in Frameworks */,
 				EB5067B02032EC4400D7F26E /* libsteam_api.dylib in Frameworks */,
@@ -63,6 +66,7 @@
 		EB5067AE2032EC4300D7F26E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EB5067B9203B241600D7F26E /* libgid.1.dylib */,
 				EB5067B32032EC8300D7F26E /* libgideros.1.dylib */,
 				EB5067B12032EC6B00D7F26E /* liblua.1.dylib */,
 				EB5067AF2032EC4300D7F26E /* libsteam_api.dylib */,

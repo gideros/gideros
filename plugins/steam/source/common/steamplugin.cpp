@@ -419,7 +419,7 @@ static int storeStats(lua_State *L) {
 }
 
 static int setIntStat(lua_State *L) {
-	lua_pushboolean(L,SteamUserStats()->SetStat(luaL_checkstring(L,1),luaL_checkinteger(L,2)));
+	lua_pushboolean(L,SteamUserStats()->SetStat(luaL_checkstring(L,1),(int32) luaL_checkinteger(L,2)));
 	return 1;
 }
 
