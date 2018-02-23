@@ -70,12 +70,15 @@ extern "C" void serverTick(NetworkEvent *event)
 	if (srvOn)
 	EM_ASM({
         try {
-            if (GiderosNetplayerWS==null)
+        	if (typeof GiderosNetplayerWSHost === 'undefined') {
+        		GiderosNetplayerWSHost="127.0.0.1";
+        	}
+            if ((GiderosNetplayerWS==null)&&(GiderosNetplayerWSHost!=null))
             {
             if (typeof MozWebSocket == 'function')
                 WebSocket = MozWebSocket;
             GiderosNetplayerWSQ=[];
-            GiderosNetplayerWS = new WebSocket( "ws://127.0.0.1:15001" );
+            GiderosNetplayerWS = new WebSocket( "ws://"+GiderosNetplayerWSHost+":15001" );
             GiderosNetplayerWS.binaryType = 'arraybuffer';
             GiderosNetplayerWS.onmessage = function (evt) {
             	GiderosNetplayerWSQ.push(evt.data);

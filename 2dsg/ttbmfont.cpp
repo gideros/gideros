@@ -345,6 +345,7 @@ void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 					kernings[std::make_pair(lchar, chr)] = delta.x;
 			}
 		}
+		lchar=chr;
 		if (newGlyph) {
 			if (!currentPacker_->addTexture(g.width, g.height)) {
 				//Build a new layer
@@ -443,8 +444,8 @@ void TTBMFont::checkLogicalScale() {
     }
 
 	float RESOLUTION = 72;
-	if ((scalex != currentLogicalScaleX_)
-			|| (scaley != currentLogicalScaleY_)) {
+	if ((fabs(scalex-currentLogicalScaleX_)>0.01)
+			|| (fabs(scaley-currentLogicalScaleY_)>0.01)) {
 		sizescalex_ = 1 / scalex;
 		sizescaley_ = 1 / scaley;
 

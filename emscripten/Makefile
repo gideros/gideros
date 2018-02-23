@@ -97,10 +97,10 @@ CRUNCHME?=crunchme-linux-amd64
 CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
-OPTS+=-Os --bind 
+OPTS+=-Os --bind --profiling -s PRECISE_F32=1
 LOPTS+= --separate-asm
 
-POPTS=
+POPTS=-s PRECISE_F32=1
 BUILD_WASM:=
 export POPTS
 export BUILD_WASM
