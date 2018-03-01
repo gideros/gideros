@@ -3,6 +3,7 @@ local contexts={}
 local contextid=0
 local player={}
 function player.getID() return JS.eval([[FBInstant.player.getID()]]) end
+-- getSignedPlayerInfoAsync
 function player.getName() return JS.eval([[FBInstant.player.getName()]]) end
 function player.getPhoto() return JS.eval([[FBInstant.player.getPhoto()]]) end
 function player.getDataAsync(keys,cb)
@@ -30,6 +31,21 @@ function player.flushDataAsync(cb)
     Module.GiderosJSEvent("FBInstantFDA",]]..contextid..[[,0,"");
   })]])
 end
+
+--getStatsAsync
+--setStatsAsync
+--incrementStatsAsync
+
+function player.getConnectedPlayersAsync(cb)
+  contextid=contextid+1
+  contexts[contextid]=cb
+  JS.eval([[FBInstant.player.getConnectedPlayersAsync().then(function (players) {
+    Module.GiderosJSEvent("FBInstantGPA",]]..contextid..[[,1,JSON.stringify(players));
+  },function (err) {
+    Module.GiderosJSEvent("FBInstantGPA",]]..contextid..[[,0,err.code);
+  })]])
+end
+
 
 local context={}
 function context.getID() return JS.eval([[FBInstant.context.getID()]]) end
@@ -72,6 +88,13 @@ function context.getPlayersAsync(cb)
   })]])
 end
 
+--payments
+-- getCatalogAsync
+-- purchaseAsync
+-- getPurchasesAsync
+-- consumePurchaseAsync
+-- onReady
+
 local FBInstant={
   player=player,
   context=context
@@ -81,30 +104,10 @@ local onPause_=nil
 function FBInstant.getLocale() return JS.eval([[FBInstant.getLocale()]]) end
 function FBInstant.getPlatform() return JS.eval([[FBInstant.getPlatform()]]) end
 function FBInstant.getSDKVersion() return JS.eval([[FBInstant.getSDKVersion()]]) end
-function FBInstant.quit() return JS.eval([[FBInstant.quit()]]) end
-function FBInstant.logEvent(name,val,props) return JS.eval("FBInstant.logEvent('"..name.."',"..val..","..json.encode(props)..");") end
-function FBInstant.onPause(f) onPause_=f end
-JS.eval("FBInstant.onPause(function () { Module.GiderosJSEvent('FBInstantPause',0,0,''); })")
-function FBInstant.updateAsync(props,cb) 
-  contextid=contextid+1
-  contexts[contextid]=cb
-  JS.eval("FBInstant.updateAsync("..json.encode(props)..[[).then(function () {
-    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
-  },function (err) {
-    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
-  })]])
-end
-function FBInstant.shareAsync(props,cb) 
-  contextid=contextid+1
-  contexts[contextid]=cb
-  JS.eval("FBInstant.shareAsync("..json.encode(props)..[[).then(function () {
-    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
-  },function (err) {
-    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
-  })]])
-end
-function FBInstant.setSessionData(props) 
-  JS.eval("FBInstant.setSessionData("..json.encode(props)..[[)]])
+-- initializeAsync (done by init code)
+-- setLoadingProgress (done by init code)
+function FBInstant.getSupportedAPIs()
+  return json.decode(JS.eval("JSON.stringify(FBInstant.getSupportedAPIs())"))
 end
 function FBInstant.getEntryPointData() 
   return json.decode(JS.eval("JSON.stringify(FBInstant.getEntryPointData())"))
@@ -116,9 +119,32 @@ function FBInstant.getEntryPointAsync(cb)
     Module.GiderosJSEvent("FBInstantGEA",]]..contextid..[[,1,e);
   })]])
 end
-function FBInstant.getSupportedAPIs()
-  return json.decode(JS.eval("JSON.stringify(FBInstant.getSupportedAPIs())"))
+function FBInstant.setSessionData(props) 
+  JS.eval("FBInstant.setSessionData("..json.encode(props)..[[)]])
 end
+function FBInstant.shareAsync(props,cb) 
+  contextid=contextid+1
+  contexts[contextid]=cb
+  JS.eval("FBInstant.shareAsync("..json.encode(props)..[[).then(function () {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
+  },function (err) {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
+  })]])
+end
+function FBInstant.updateAsync(props,cb) 
+  contextid=contextid+1
+  contexts[contextid]=cb
+  JS.eval("FBInstant.updateAsync("..json.encode(props)..[[).then(function () {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
+  },function (err) {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
+  })]])
+end
+-- switchGameAsync
+function FBInstant.quit() return JS.eval([[FBInstant.quit()]]) end
+function FBInstant.logEvent(name,val,props) return JS.eval("FBInstant.logEvent('"..name.."',"..val..","..json.encode(props)..");") end
+function FBInstant.onPause(f) onPause_=f end
+JS.eval("FBInstant.onPause(function () { Module.GiderosJSEvent('FBInstantPause',0,0,''); })")
 
 JS:addEventListener("FBInstantGPA",function (e)
   if contexts[e.context] then 
@@ -211,6 +237,10 @@ JS:addEventListener("FBInstantAdsSA",function (e)
   contexts[e.context]=nil
 end)
 
+
+-- matchPlayerAsync
+-- checkCanPlayerMatchAsync
+-- getLeaderboardAsync
 
 return FBInstant
   

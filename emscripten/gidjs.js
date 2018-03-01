@@ -152,6 +152,7 @@ Module.ghttpjs_urlload=function(url, request, rhdr, param, arg, free, onload, on
 
 Module.checkALMuted=function()
 {
+	/* TODO no longer works in current emscripten, see how this can be ported
  if (window.AL&&window.AL.currentContext&&(!window.AL.currentContext.unmuted))
  {
   // create empty buffer and play it
@@ -169,6 +170,7 @@ Module.checkALMuted=function()
            }, 0);
                  
  }
+ */
 }
 
 Module.GiderosJSEvent=function(type,context,value,data)
@@ -176,7 +178,10 @@ Module.GiderosJSEvent=function(type,context,value,data)
 	var etype='number';
 	var len=data.length;
 	if (typeof data == 'string')
+	{
 		etype='string';
+		len=-1;
+	}
 	else
 	{
 		var dataPtr = Module._malloc(len);

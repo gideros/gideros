@@ -307,7 +307,6 @@ void OutlineWidget::sort()
 
 void OutlineWidget::updateOutline(QList<OutLineItem> s)
 {
-    if (!doc_) return;
     currentOutline_=s;
     bool sAlpha=actSort_->isChecked();
     bool sGroup=actType_->isChecked();

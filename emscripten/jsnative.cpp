@@ -70,6 +70,7 @@ static void JSNative_callback(int type, void *event, void *udata)
 
 extern "C" void JSNative_enqueueEvent(const char *type,int context, int value, const char *data, int datasize)
 {
+	if (datasize==-1) datasize=strlen(data);
 	struct JSNative_Event *event = (struct JSNative_Event *)malloc(sizeof(struct JSNative_Event)+strlen(type)+1+datasize);
 	event->eventType=(char *)(event+1);
 	event->eventData=event->eventType+strlen(type)+1;

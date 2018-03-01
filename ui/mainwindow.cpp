@@ -330,6 +330,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(ui.actionPlayer_Settings, SIGNAL(triggered()), this, SLOT(playerSettings()));
     connect(ui.actionLocalhostToggle, SIGNAL(triggered(bool)), this, SLOT(actionLocalhostToggle(bool)));
+    connect(ui.actionLive_syntax_checking, SIGNAL(triggered(bool)), this, SLOT(actionLiveSyntaxChecking(bool)));
 	connect(ui.actionAbout_Gideros_Studio, SIGNAL(triggered()), this, SLOT(openAboutDialog()));
 	connect(ui.actionDeveloper_Center, SIGNAL(triggered()), this, SLOT(developerCenter()));
 	connect(ui.actionHelp_Support, SIGNAL(triggered()), this, SLOT(helpAndSupport()));
@@ -1810,6 +1811,11 @@ void MainWindow::actionLocalhostToggle(bool checked){
     #else
         client_->connectToHost(playerip, 15000);
     #endif
+}
+
+void MainWindow::actionLiveSyntaxChecking(bool checked){
+    QSettings settings;
+    settings.setValue("syntaxcheck_live", checked);
 }
 
 void MainWindow::playerSettings()

@@ -319,6 +319,7 @@ private slots:
 	void findInFiles();
 
     void actionLocalhostToggle(bool checked);
+    void actionLiveSyntaxChecking(bool checked);
     void clearOutput();
     void searchOutput( const QString &text);
 
