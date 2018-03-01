@@ -104,7 +104,7 @@ static bool readProjectFile(const QString& fileName,
 			QFileInfo f=QFileInfo("Tools/FBInstant.lua");
 			hasLuaPlugin=true;
 			fileList_.push_back(std::make_pair("_LuaPlugins_/FBInstant.lua", f.absoluteFilePath()));
-			dependencyGraph_.addCode(f.filePath(),true);
+			dependencyGraph_.addCode(f.absolutefilePath(),true);
  	    }
     	if (hasLuaPlugin)
             folderList.push_back("_LuaPlugins_/");
