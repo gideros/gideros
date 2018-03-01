@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
     }
 
     QSurfaceFormat formatGL;
-	formatGL.setSwapInterval(0);
+	//formatGL.setSwapInterval(0);
 	formatGL.setStencilBufferSize(8);
 	formatGL.setDepthBufferSize(16);
 	formatGL.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
