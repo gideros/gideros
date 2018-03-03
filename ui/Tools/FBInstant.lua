@@ -181,7 +181,7 @@ end
 function FBInstant.Ad:loadAsync(cb)
   contextid=contextid+1
   contexts[contextid]={self,cb}
-  JS.eval([[FBInstant.GideroAds["]]..aid..[["].loadAsync().then(function () {
+  JS.eval([[FBInstant.GiderosAds["]]..self.aid..[["].loadAsync().then(function () {
     Module.GiderosJSEvent("FBInstantAdsLA",]]..contextid..[[,1,"");
   },function () {
     Module.GiderosJSEvent("FBInstantAdsLA",]]..contextid..[[,0,"");
@@ -190,7 +190,7 @@ end
 function FBInstant.Ad:showAsync(cb)
   contextid=contextid+1
   contexts[contextid]={self,cb}
-  JS.eval([[FBInstant.GideroAds["]]..aid..[["].showAsync().then(function () {
+  JS.eval([[FBInstant.GiderosAds["]]..self.aid..[["].showAsync().then(function () {
     Module.GiderosJSEvent("FBInstantAdsSA",]]..contextid..[[,1,"");
   },function () {
     Module.GiderosJSEvent("FBInstantAdsSA",]]..contextid..[[,0,"");
@@ -203,7 +203,7 @@ function FBInstant.getInterstitialAdAsync(placement,cb)
   JS.eval([[FBInstant.getInterstitialAdAsync("]]..placement..[[").then(function (ad) {
     if (FBInstant.GiderosAds === undefined) { FBInstant.GiderosAds={} };
     var pid="I"+ad.getPlacementID();
-    FBInstant.GideroAds[pid]=ad;
+    FBInstant.GiderosAds[pid]=ad;
     Module.GiderosJSEvent("FBInstantAdsGIA",]]..contextid..[[,1,pid);
   },function (err) {
     Module.GiderosJSEvent("FBInstantAdsGIA",]]..contextid..[[,0,err.code);
@@ -215,7 +215,7 @@ function FBInstant.getRewardedVideoAsync(placement,cb)
   JS.eval([[FBInstant.getRewardedVideoAsync("]]..placement..[[",).then(function (ad) {
     if (FBInstant.GiderosAds === undefined) { FBInstant.GiderosAds={} };
     var pid="V"+ad.getPlacementID();
-    FBInstant.GideroAds[pid]=ad;
+    FBInstant.GiderosAds[pid]=ad;
     Module.GiderosJSEvent("FBInstantAdsGIA",]]..contextid..[[,1,pid);
   },function (err) {
     Module.GiderosJSEvent("FBInstantAdsGIA",]]..contextid..[[,0,err.code);
@@ -229,11 +229,11 @@ JS:addEventListener("FBInstantAdsGIA",function (e)
   contexts[e.context]=nil
 end)
 JS:addEventListener("FBInstantAdsLA",function (e)
-  if contexts[e.context] then contexts[e.context][1](contexts[e.context][0],e.value>0) end
+  if contexts[e.context] then contexts[e.context][2](contexts[e.context][1],e.value>0) end
   contexts[e.context]=nil
 end)
 JS:addEventListener("FBInstantAdsSA",function (e)
-  if contexts[e.context] then contexts[e.context][1](contexts[e.context][0],e.value>0) end
+  if contexts[e.context] then contexts[e.context][2](contexts[e.context][1],e.value>0) end
   contexts[e.context]=nil
 end)
 

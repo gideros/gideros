@@ -8,7 +8,10 @@ export HTML5_PLUGINS
 export DEBUG
 
 html5.setup:
-	$(EMSDK_PREFIX) emsdk.bat activate latest
+	cd emscripten; $(MAKE) setup
+
+html5.init:
+	cd emscripten; $(MAKE) init
 	
 html5.clean:
 	cd emscripten; $(MAKE) clean plugins.clean

@@ -97,7 +97,8 @@ CRUNCHME?=crunchme-linux-amd64
 CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
-OPTS+=-Os --bind -s PRECISE_F32=1
+OPTS+=-Os --bind 
+#OPTS+=-s PRECISE_F32=1
 LOPTS+= --separate-asm
 
 POPTS=-s PRECISE_F32=1
@@ -196,6 +197,12 @@ path:
 
 clean:
 	rm -rf $(BUILD)
+
+setup:
+	$(EMSDK_PREFIX) emsdk.bat activate latest
+	
+init:
+	$(EMSDK_PREFIX) emcc
 
 $(BUILD)/%.em.o: ../%.cpp
 	@echo "EMCC $<"
