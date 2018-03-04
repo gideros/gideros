@@ -5,6 +5,7 @@ HTML5_PLUGINS=$(PLUGINS_HTML5)
 export EMSDK_PREFIX
 export CRUNCHME
 export HTML5_PLUGINS
+export PROFILING
 export DEBUG
 
 html5.setup:

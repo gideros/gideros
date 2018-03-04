@@ -105,7 +105,9 @@ function FBInstant.getLocale() return JS.eval([[FBInstant.getLocale()]]) end
 function FBInstant.getPlatform() return JS.eval([[FBInstant.getPlatform()]]) end
 function FBInstant.getSDKVersion() return JS.eval([[FBInstant.getSDKVersion()]]) end
 -- initializeAsync (done by init code)
--- setLoadingProgress (done by init code)
+function FBInstant.getLoadingProgress(pct)
+  JS.eval("FBInstant.setLoadingProgress("..pct..")")
+end
 function FBInstant.getSupportedAPIs()
   return json.decode(JS.eval("JSON.stringify(FBInstant.getSupportedAPIs())"))
 end
@@ -121,6 +123,15 @@ function FBInstant.getEntryPointAsync(cb)
 end
 function FBInstant.setSessionData(props) 
   JS.eval("FBInstant.setSessionData("..json.encode(props)..[[)]])
+end
+function FBInstant.startGameAsync(cb) 
+  contextid=contextid+1
+  contexts[contextid]=cb
+  JS.eval([[FBInstant.startGameAsync().then(function () {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,1,"");
+  },function (err) {
+    Module.GiderosJSEvent("FBInstantUpdAsync",]]..contextid..[[,0,err.code);
+  })]])
 end
 function FBInstant.shareAsync(props,cb) 
   contextid=contextid+1

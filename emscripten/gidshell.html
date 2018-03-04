@@ -183,9 +183,10 @@ GIDEROS-FBINSTANT-END -->
             	infopaneElement.display="none";
             	Pace.stop();
             	if (hasFBInstant)
-            		FBInstant.startGameAsync().then(function () {
+                	canvas.hidden = false;
+            		/*FBInstant.startGameAsync().then(function () {
                     	canvas.hidden = false;
-            			})
+            			})*/
 				else {
                 	canvas.hidden = false;					            			
             	}

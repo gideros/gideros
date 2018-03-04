@@ -101,6 +101,7 @@ class ogl2ShaderProgram : public ShaderProgram
     unsigned long uninit_uniforms;
     void *cbData;
     int cbsData;
+    GLuint genVBO[16+1];
     static GLint curProg;
     static ShaderProgram *current;
     static std::vector<ogl2ShaderProgram *> shaders;
@@ -108,6 +109,7 @@ class ogl2ShaderProgram : public ShaderProgram
     void buildProgram(const char *vshader1,const char *vshader2,
                      const char *fshader1, const char *fshader2,
 					 const ConstantDesc *uniforms, const DataDesc *attributes);
+    GLuint getGenericVBO(int index);
 public:
 	static int vboFreeze, vboUnfreeze;
     virtual void activate();

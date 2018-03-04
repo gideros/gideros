@@ -97,11 +97,15 @@ CRUNCHME?=crunchme-linux-amd64
 CRUNCHME_TOOL=crunchme-0.4/bin/$(CRUNCHME)
 BUILD=Build
 
-OPTS+=-Os --bind 
-#OPTS+=-s PRECISE_F32=1
+POPTS=
+#POPTS+= -s PRECISE_F32=1
+ifneq ($(PROFILING),)
+POPTS+=--profiling
+endif
+
+OPTS+=-Os --bind $(POPTS)
 LOPTS+= --separate-asm
 
-POPTS=-s PRECISE_F32=1
 BUILD_WASM:=
 export POPTS
 export BUILD_WASM
@@ -113,7 +117,7 @@ endif
 EOPTS+='EXTRA_EXPORTED_RUNTIME_METHODS=["addRunDependency","removeRunDependency","ccall","cwrap"]'
 EOPTS+=MAIN_MODULE=1  
 #EOPTS+=ASSERTIONS=1
-EOPTS+=FULL_ES2=1 
+#EOPTS+=FULL_ES2=1 
 EOPTS+=DISABLE_EXCEPTION_CATCHING=0
 #EOPTS+=ALLOW_MEMORY_GROWTH=1
 
