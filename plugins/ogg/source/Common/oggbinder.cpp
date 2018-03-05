@@ -676,8 +676,8 @@ static void g_deinitializePlugin(lua_State *L)
 	gaudio_unregisterType("ogv");
 }
 
-#if defined(TARGET_OS_MAC) || defined(_MSC_VER)
+#if defined(_MSC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("Ogg", "1.0",Ogg)
 #else
-REGISTER_PLUGIN("Ogg", "1.0")
+REGISTER_PLUGIN_NAMED("Ogg", "1.0", Ogg)
 #endif
