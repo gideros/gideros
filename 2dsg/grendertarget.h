@@ -10,7 +10,7 @@ class GRenderTarget : public TextureBase
 {
     ShaderBuffer *prepareForDraw();
 public:
-    GRenderTarget(Application *application, int width, int height, Filter filter, Wrap wrap);
+    GRenderTarget(Application *application, int width, int height, Filter filter, Wrap wrap, bool selectScale=false);
     virtual ~GRenderTarget();
 
     void clear(unsigned int color, float a, int x, int y, int w, int h);

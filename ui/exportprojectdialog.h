@@ -39,6 +39,7 @@ public:
 
 private slots:
 	void onAccepted();
+	void actionHtml5FbInstant(int);
 	//void onSelectPlugins();
 
 private:

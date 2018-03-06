@@ -153,6 +153,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         if (ctx->properties.html5_fbinstant) {
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-START").toUtf8(),QString("GIDEROS-FBINSTANT-START -->").toUtf8());
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-END").toUtf8(),QString("<!-- GIDEROS-FBINSTANT-END").toUtf8());
+            replaceList1 << qMakePair(QString("setLoadingProgress(pro)").toUtf8(),QString("setLoadingProgress(%1*pro/100)").arg(ctx->properties.html5_fbload).toUtf8());
         }
     }
     ctx->replaceList << replaceList1;

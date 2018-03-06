@@ -494,7 +494,7 @@ static unsigned int nextpow2(unsigned int v)
     return v;
 }
 
-TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParameters& parameters)
+TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParameters& parameters, bool selectScale)
 {
     int wrap = 0;
     switch (parameters.wrap)
@@ -518,8 +518,16 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
         break;
     }
 
+    float scale=1.0;
+    if (selectScale)
+    	application_->getImageSuffix(&scale);
+
     int baseWidth = w;
     int baseHeight = h;
+
+    w*=scale;
+    h*=scale;
+
     int width = w;
     int height = h;
     int exwidth = nextpow2(w);
@@ -537,7 +545,7 @@ TextureData* TextureManager::createRenderTarget(int w, int h, const TextureParam
     data->exheight = exheight;
     data->baseWidth = baseWidth;
     data->baseHeight = baseHeight;
-    data->scale = 1.0;
+    data->scale = scale;
 
     return data;
 }

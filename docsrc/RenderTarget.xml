@@ -5,6 +5,8 @@ It can be used in any case in which Texture can be used.]]>
     <parameter name="width" optional="false" type="number"><![CDATA[width of rendered texture]]></parameter>
     <parameter name="height" optional="false" type="number"><![CDATA[height of rendered texture]]></parameter>
     <parameter name="filtering" optional="false" type="boolean, default = false"><![CDATA[Whether or not the texture is filtered.]]></parameter>
+    <parameter name="repeat" optional="false" type="boolean, default = false"><![CDATA[Whether or not the texture is repeating.]]></parameter>
+    <parameter name="autoscale" optional="false" type="boolean, default = false"><![CDATA[Whether or not the actual texture size should be scaled to match display resolution.]]></parameter>
   </method>
   <method name="RenderTarget:clear" page="clear" shortdesc="Clears rendered texture" version="Gideros 2013.06"><![CDATA[Clears rendered texture with provided color and opacity]]>
     <parameter name="color" optional="false" type="number"><![CDATA[color using which to clear the texture]]></parameter>

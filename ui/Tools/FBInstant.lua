@@ -252,6 +252,32 @@ end)
 -- matchPlayerAsync
 -- checkCanPlayerMatchAsync
 -- getLeaderboardAsync
+FBInstant.Leaderboard=Core.class(Object)
+function FBInstant.Leaderboard:init(aid)
+  self.aid=aid
+end
+function FBInstant.Leaderboard:loadAsync(cb)
+  contextid=contextid+1
+  contexts[contextid]={self,cb}
+  JS.eval([[FBInstant.GiderosAds["]]..self.aid..[["].loadAsync().then(function () {
+    Module.GiderosJSEvent("FBInstantAdsLA",]]..contextid..[[,1,"");
+  },function () {
+    Module.GiderosJSEvent("FBInstantAdsLA",]]..contextid..[[,0,"");
+  })]])
+end
+
+function FBInstant.getLeaderboardAsync(placement,cb)
+  contextid=contextid+1
+  contexts[contextid]=cb
+  JS.eval([[FBInstant.getInterstitialAdAsync("]]..placement..[[").then(function (ad) {
+    if (FBInstant.GiderosAds === undefined) { FBInstant.GiderosAds={} };
+    var pid="I"+ad.getPlacementID();
+    FBInstant.GiderosAds[pid]=ad;
+    Module.GiderosJSEvent("FBInstantAdsGIA",]]..contextid..[[,1,pid);
+  },function (err) {
+    Module.GiderosJSEvent("FBInstantAdsGIA",]]..contextid..[[,0,err.code);
+  })]])
+end
 
 return FBInstant
   

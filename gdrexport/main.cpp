@@ -450,7 +450,7 @@ int main(int argc, char *argv[])
 
     if (ctx.deviceFamily==e_Html5)
     {
-    	if (!(ctx.args["hostname"].isEmpty()))
+    	if ((!(ctx.args["hostname"].isEmpty()))&&(!ctx.properties.html5_fbinstant))
     	{
         	encryptAssets=true;
         	encryptCode=true;

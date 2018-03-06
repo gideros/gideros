@@ -4,13 +4,13 @@
 #include "ogl.h"
 #include <gimage.h>
 
-GRenderTarget::GRenderTarget(Application *application, int width, int height, Filter filter, Wrap wrap) :
+GRenderTarget::GRenderTarget(Application *application, int width, int height, Filter filter, Wrap wrap, bool selectScale) :
     TextureBase(application)
 {
     TextureParameters parameters;
     parameters.filter = filter;
     parameters.wrap = wrap;
-    data = application->getTextureManager()->createRenderTarget(width, height, parameters);
+    data = application->getTextureManager()->createRenderTarget(width, height, parameters, selectScale);
 
     sizescalex = 1;
     sizescaley = 1;

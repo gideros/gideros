@@ -66,6 +66,7 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 
 	connect(ui->architecture, SIGNAL(currentIndexChanged(int)), ui->architectureTab, SLOT(setCurrentIndex(int)));
 	connect(ui->architectureTab, SIGNAL(currentChanged(int)), ui->architecture, SLOT(setCurrentIndex(int)));
+	connect(ui->html5_fbinstant, SIGNAL(stateChanged(int)), this, SLOT(actionHtml5FbInstant(int)));
 	//connect(ui->plugins_choose, SIGNAL(clicked()), this, SLOT(onSelectPlugins()));
 
     ui->android_template->setCurrentIndex(properties_->android_template);
@@ -86,6 +87,8 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
     ui->html5_mem->setText(QString::number(properties->html5_mem));
     ui->html5_pack->setChecked(properties_->html5_pack);
     ui->html5_fbinstant->setChecked(properties_->html5_fbinstant);
+    ui->html5_fbload->setValue(properties_->html5_fbload);
+    actionHtml5FbInstant(0);
     //plugins=properties->plugins;
 
     if (licensed)
@@ -149,6 +152,13 @@ ExportProjectDialog::ExportProjectDialog(ProjectProperties* properties, bool lic
 ExportProjectDialog::~ExportProjectDialog()
 {
     delete ui;
+}
+
+void ExportProjectDialog::actionHtml5FbInstant(int)
+{
+	bool en=ui->html5_fbinstant->isChecked();
+	ui->html5_host->setEnabled(!en);
+	ui->html5_fbload->setEnabled(en);
 }
 
 QString ExportProjectDialog::exportType() const
@@ -264,6 +274,7 @@ void ExportProjectDialog::onAccepted()
     properties_->html5_mem = ui->html5_mem->text().toInt();
     properties_->html5_pack = ui->html5_pack->isChecked();
     properties_->html5_fbinstant = ui->html5_fbinstant->isChecked();
+    properties_->html5_fbload = ui->html5_fbload->value();
     //properties_->plugins=plugins;
 
     for (int tab=0;tab<xmlTabCount;tab++)
