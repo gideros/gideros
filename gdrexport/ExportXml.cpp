@@ -88,6 +88,7 @@ void ExportXml::SetupProperties(ExportContext *ctx)
 	ctx->props["project.disableSplash"] = QString::number(ctx->properties.disableSplash?1:0);
 	ctx->props["project.backgroundColor"] = ctx->properties.backgroundColor;
 	ctx->props["project.ios_bundle"] = ctx->properties.ios_bundle;
+	ctx->props["project.html5_fbinstant"] = QString::number(ctx->properties.html5_fbinstant?1:0);
 
 	//Fill in passed arguments
     QHash<QString, QString>::iterator i;

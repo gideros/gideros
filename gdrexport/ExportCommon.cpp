@@ -565,7 +565,11 @@ bool ExportCommon::applyPlugins(ExportContext *ctx) {
 			ctx->properties.plugins.begin();
 			it != ctx->properties.plugins.end(); it++) {
 		QString xml = allplugins[(*it).name];
-		if ((!xml.isEmpty()) && ((*it).enabled))
+		bool en=((*it).enabled);
+        if ((ctx->deviceFamily == e_Html5)&&ctx->properties.html5_fbinstant) {
+         	if ((*it).name=="JSON") en=true;
+        }
+		if ((!xml.isEmpty()) && en)
 			if (!ExportXml::exportXml(xml, true, ctx))
 				return false;
 	}
