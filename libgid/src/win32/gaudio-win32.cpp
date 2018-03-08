@@ -72,6 +72,7 @@ void GGSoundManager::interfacesInit()
 {
     loaders_["wav"] = GGAudioLoader(gaudio_WavOpen, gaudio_WavClose, gaudio_WavRead, gaudio_WavSeek, gaudio_WavTell);
     loaders_["mp3"] = GGAudioLoader(gaudio_Mp3Open, gaudio_Mp3Close, gaudio_Mp3Read, gaudio_Mp3Seek, gaudio_Mp3Tell);
+    loaders_["sfx"] = GGAudioLoader(gaudio_SFXOpen, gaudio_SFXClose, gaudio_SFXRead, gaudio_SFXSeek, gaudio_SFXTell);
 
     sampleInterface_ = GGSampleOpenALManagerCreate();
     streamInterface_ = GGStreamOpenALManagerCreate();
