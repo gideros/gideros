@@ -1,0 +1,21 @@
+<project>
+ <properties ios_bundle="com.yourdomain." osx_signingId="" app_name="" splashScaleMode="0" version_code="1" encryptCode="0" packageName="com.yourdomain.yourapp" build_number="1" win_org="GiderosMobile" logicalHeight="720" mouseToTouch="1" disableSplash="0" android_template="0" html5_pack="0" tv_icon="" osx_bundle="com.yourdomain." autorotation="0" win_domain="giderosmobile.com" architecture="0" encryptAssets="0" splash_h_image="" orientation="0" windowHeight="0" winrt_package="com.yourdomain.yourapp" logicalWidth="1280" iosDevice="0" fps="60" backgroundColor="#ffffff" windowWidth="0" version="1.0" osx_org="GiderosMobile" html5_host="" app_icon="" scaleMode="0" winrt_org="GiderosMobile" mouseTouchOrder="0" osx_domain="giderosmobile.com" osx_installerId="" html5_mem="256" splash_v_image="" osx_category="5" touchToMouse="1" retinaDisplay="0" exportMode="0">
+  <imageScales/>
+  <plugins/>
+  <exports/>
+ </properties>
+ <file source="testfx10.sfx"/>
+ <file source="testfx9.sfx"/>
+ <file source="testfx8.sfx"/>
+ <file source="testfx7.sfx"/>
+ <file source="testfx6.sfx"/>
+ <file source="testfx5.sfx"/>
+ <file source="testfx4.sfx"/>
+ <file source="testfx3.sfx"/>
+ <file source="testfx2.sfx"/>
+ <file source="testfx1.sfx"/>
+ <file source="button_down.png"/>
+ <file source="button_up.png"/>
+ <file source="button.lua"/>
+ <file source="main.lua"/>
+</project>
