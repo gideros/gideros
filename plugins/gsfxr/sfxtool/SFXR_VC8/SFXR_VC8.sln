@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SFXR_VC8", "SFXR_VC8.vcxproj", "{425D9B13-A7BF-4500-BC9F-9E9013A0526C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{425D9B13-A7BF-4500-BC9F-9E9013A0526C}.Debug|x86.ActiveCfg = Debug|Win32
+		{425D9B13-A7BF-4500-BC9F-9E9013A0526C}.Debug|x86.Build.0 = Debug|Win32
+		{425D9B13-A7BF-4500-BC9F-9E9013A0526C}.Release|x86.ActiveCfg = Release|Win32
+		{425D9B13-A7BF-4500-BC9F-9E9013A0526C}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

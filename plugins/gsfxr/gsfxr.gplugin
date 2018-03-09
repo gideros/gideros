@@ -1,0 +1,50 @@
+<plugin
+ name="GSFXR"
+ description="Make sound effects without taking up much space">
+  <target name="AndroidStudio,APK">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Android/libs" dest="app/src/main/jniLibs"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;gsfxr&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Android">
+    <template name="binares" path="[[[sys.pluginDir]]]/bin/Android"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="[[[project.namews]]]Activity.java">
+            <append orig="//GIDEROS-STATIC-INIT//" by="		System.loadLibrary(&quot;gsfxr&quot;);"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="iOS">
+   <mkdir>[[[project.name]]]/Plugins/gsfxr</mkdir>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="[[[project.name]]]/Plugins" include="*.ios.a" />
+   <mkdir>AppleTV/Plugins/gsfxr</mkdir>
+   <template name="bin" path="[[[sys.pluginDir]]]/bin/iOS"  dest="AppleTV/Plugins" include="*.atv.a" />
+	<lua><![CDATA[
+local iOSProject=require("Tools/export_ios")
+iOSProject.addGroup("gsfxr","Plugins/gsfxr","GroupGsfxr_ios","GroupPlugins_ios")
+iOSProject.addGroup("gsfxr","gsfxr","GroupGsfxr_atv","GroupPlugins_atv")
+iOSProject.addSources({ "Plugins/libgsfxr.ios.a"  }, "GroupPlugins", "ios")
+iOSProject.addSources({ "libgsfxr.atv.a"  }, "GroupPlugins", "atv")
+iOSProject.commit()
+	]]></lua>
+    <template name="Activity" path="">
+        <replacelist wildcards="plugins.cpp">
+           <append orig="//GIDEROS-TAG-IOS:IMPORTPLUGIN//" by="		IMPORT_PLUGIN(Gsfxr) "/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Html5">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/Html5"/>
+    <template name="Activity" path="">
+        <replacelist wildcards="index.html">
+            <append orig="/*GIDEROS_DYNLIB_PLUGIN*/" by="&quot;gsfxr.js&quot;,"/>
+        </replacelist>
+    </template>
+ </target>
+ <target name="Win32">
+    <template name="binaries" path="[[[sys.pluginDir]]]/bin/win32" dest="plugins"/>
+ </target>
+</plugin>
