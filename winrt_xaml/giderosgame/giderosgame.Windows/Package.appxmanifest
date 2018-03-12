@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="8c0c5d57-e808-4cb1-a76b-f499b5b87e45" Publisher="CN=Gideros Mobile" Version="2017.3.1.0" />
+  <Identity Name="8c0c5d57-e808-4cb1-a76b-f499b5b87e45" Publisher="CN=Gideros Mobile" Version="2018.3.0.0" />
   <Properties>
     <DisplayName>Gideros Player</DisplayName>
     <PublisherDisplayName>Gideros Mobile</PublisherDisplayName>
