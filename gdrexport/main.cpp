@@ -448,6 +448,33 @@ int main(int argc, char *argv[])
         assetsPrefixRnd=randomData.mid(32,32);
     }
 
+    DependencyGraph dependencyGraph;
+    if (readProjectFile(projectFileName, ctx.properties, ctx.fileQueue, ctx.folderList, dependencyGraph, ctx.noEncryption,ctx) == false)
+    {
+        // error is displayed at readProjectFile function
+        return 1;
+    }
+    std::vector<std::pair<QString, bool> > topologicalSort = dependencyGraph.topologicalSort();
+     for (std::size_t i = 0; i < topologicalSort.size(); ++i)
+     {
+         int index = -1;
+         for (std::size_t j = 0; j < ctx.fileQueue.size(); ++j)
+         {
+             if (ctx.fileQueue[j].second == topologicalSort[i].first)
+             {
+                 index = j;
+                 break;
+             }
+         }
+
+         if (index != -1)
+         {
+             std::pair<QString, QString> item = ctx.fileQueue[index];
+             ctx.fileQueue.erase(ctx.fileQueue.begin() + index);
+             ctx.fileQueue.push_back(item);
+         }
+     }
+
     if (ctx.deviceFamily==e_Html5)
     {
     	if ((!(ctx.args["hostname"].isEmpty()))&&(!ctx.properties.html5_fbinstant))
@@ -486,32 +513,6 @@ int main(int argc, char *argv[])
     	}
     }
 
-    DependencyGraph dependencyGraph;
-    if (readProjectFile(projectFileName, ctx.properties, ctx.fileQueue, ctx.folderList, dependencyGraph, ctx.noEncryption,ctx) == false)
-    {
-        // error is displayed at readProjectFile function
-        return 1;
-    }
-    std::vector<std::pair<QString, bool> > topologicalSort = dependencyGraph.topologicalSort();
-     for (std::size_t i = 0; i < topologicalSort.size(); ++i)
-     {
-         int index = -1;
-         for (std::size_t j = 0; j < ctx.fileQueue.size(); ++j)
-         {
-             if (ctx.fileQueue[j].second == topologicalSort[i].first)
-             {
-                 index = j;
-                 break;
-             }
-         }
-
-         if (index != -1)
-         {
-             std::pair<QString, QString> item = ctx.fileQueue[index];
-             ctx.fileQueue.erase(ctx.fileQueue.begin() + index);
-             ctx.fileQueue.push_back(item);
-         }
-     }
      ctx.assetsOnly=assetsOnly;
      ctx.player=player;
      ctx.codeKey=codeKey;
