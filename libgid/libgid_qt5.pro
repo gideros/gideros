@@ -40,10 +40,8 @@ SOURCES += \
     src/gaudio-sample-openal.cpp \
     src/gaudio-stream-openal.cpp \
     src/gaudio-loader-wav.cpp \
-    src/gaudio-loader-sfx.cpp \
     src/gaudio-loader-xmp.cpp \
-    src/gaudio-loader-mp3.cpp \
-    src/retrosfxvoice.cpp 
+    src/gaudio-loader-mp3.cpp
 	
 #HEADERS += src/ggaudiomanager.h
 

@@ -76,8 +76,7 @@ void GGSoundManager::interfacesInit()
     loaders_["xm"] = GGAudioLoader(gaudio_XmpOpen, gaudio_XmpClose, gaudio_XmpRead, gaudio_XmpSeek, gaudio_XmpTell);
     loaders_["it"] = GGAudioLoader(gaudio_XmpOpen, gaudio_XmpClose, gaudio_XmpRead, gaudio_XmpSeek, gaudio_XmpTell);
     loaders_["s3m"] = GGAudioLoader(gaudio_XmpOpen, gaudio_XmpClose, gaudio_XmpRead, gaudio_XmpSeek, gaudio_XmpTell);
-    loaders_["sfx"] = GGAudioLoader(gaudio_SFXOpen, gaudio_SFXClose, gaudio_SFXRead, gaudio_SFXSeek, gaudio_SFXTell);
-	
+
     sampleInterface_ = GGSampleOpenALManagerCreate();
     streamInterface_ = GGStreamOpenALManagerCreate();
 }
