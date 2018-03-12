@@ -175,7 +175,7 @@ size_t gaudio_SFXRead(g_id id, size_t size, void *data)
 
 }
 
-#ifdef SFXR_EXTERNAL_TOOL
+#ifndef SFXR_EXTERNAL_TOOL
 GGAudioLoader audioSfx(gaudio_SFXOpen, gaudio_SFXClose, gaudio_SFXRead, gaudio_SFXSeek, gaudio_SFXTell);
 
 static void g_initializePlugin(lua_State *L)

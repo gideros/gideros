@@ -1,7 +1,9 @@
 <project>
- <properties ios_bundle="com.yourdomain." osx_signingId="" app_name="" splashScaleMode="0" version_code="1" encryptCode="0" packageName="com.yourdomain.yourapp" build_number="1" win_org="GiderosMobile" logicalHeight="720" mouseToTouch="1" disableSplash="0" android_template="0" html5_pack="0" tv_icon="" osx_bundle="com.yourdomain." autorotation="0" win_domain="giderosmobile.com" architecture="0" encryptAssets="0" splash_h_image="" orientation="0" windowHeight="0" winrt_package="com.yourdomain.yourapp" logicalWidth="1280" iosDevice="0" fps="60" backgroundColor="#ffffff" windowWidth="0" version="1.0" osx_org="GiderosMobile" html5_host="" app_icon="" scaleMode="0" winrt_org="GiderosMobile" mouseTouchOrder="0" osx_domain="giderosmobile.com" osx_installerId="" html5_mem="256" splash_v_image="" osx_category="5" touchToMouse="1" retinaDisplay="0" exportMode="0">
+ <properties ios_bundle="com.yourdomain." scaleMode="0" encryptAssets="0" splash_v_image="" packageName="com.yourdomain.yourapp" disableSplash="0" osx_bundle="com.yourdomain." mouseTouchOrder="0" win_org="GiderosMobile" windowHeight="0" fps="60" orientation="0" osx_domain="giderosmobile.com" html5_fbload="100" html5_mem="256" splash_h_image="" encryptCode="0" exportMode="0" osx_org="GiderosMobile" build_number="1" splashScaleMode="0" osx_signingId="" winrt_package="com.yourdomain.yourapp" version="1.0" logicalHeight="720" mouseToTouch="1" html5_host="" html5_pack="0" app_name="" vsync="0" osx_installerId="" autorotation="0" architecture="0" windowWidth="0" winrt_org="GiderosMobile" html5_fbinstant="0" win_domain="giderosmobile.com" android_template="0" app_icon="" tv_icon="" backgroundColor="#ffffff" version_code="1" touchToMouse="1" iosDevice="0" retinaDisplay="0" logicalWidth="1280" osx_category="5">
   <imageScales/>
-  <plugins/>
+  <plugins>
+   <plugin enabled="1" name="GSFXR"/>
+  </plugins>
   <exports/>
  </properties>
  <file source="testfx10.sfx"/>

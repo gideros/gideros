@@ -191,6 +191,11 @@
 				path="Audio/Moving sound/Moving sound.gproj"
 				image="touch explorer.png" 
 				/>
+	<example 	name="Procedural Sound Effects"
+				description="Demonstrate GSFXR plugin"
+				path="Audio/Procedural Sound Effects/ProceduralSoundEffects.gproj"
+				image="music_player.png" 
+				/>
 </category>
 
 <category name="Hardware">

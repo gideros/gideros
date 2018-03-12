@@ -40,12 +40,6 @@ G_API size_t gaudio_WavRead(g_id id, size_t size, void *data);
 G_API int gaudio_WavSeek(g_id id, long int offset, int whence);
 G_API long int gaudio_WavTell(g_id id);
 
-G_API g_id gaudio_SFXOpen(const char *fileName, int *numChannels, int *sampleRate, int *bitsPerSample, int *numSamples, gaudio_Error *error);
-G_API void gaudio_SFXClose(g_id id);
-G_API size_t gaudio_SFXRead(g_id id, size_t size, void *data);
-G_API int gaudio_SFXSeek(g_id id, long int offset, int whence);
-G_API long int gaudio_SFXTell(g_id id);
-
 // simdilik mpg123'u 16 bit output verecek sekilde ayarladik ve bitsPerSample'i her zaman 16 olarak dondurduk
 G_API g_id gaudio_Mp3Open(const char *fileName, int *numChannels, int *sampleRate, int *bitsPerSample, int *numSamples, gaudio_Error *error);
 G_API void gaudio_Mp3Close(g_id id);
