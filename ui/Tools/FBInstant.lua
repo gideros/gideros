@@ -440,7 +440,7 @@ function FBInstant.getLeaderboardAsync(name,cb)
   JS.eval([[FBInstant.getLeaderboardAsync("]]..name..[[").then(function (ldb) {
     if (FBInstant.GiderosLdb === undefined) { FBInstant.GiderosLdb={} };
     var pid=ldb.getName();
-    FBInstant.GiderosLdb[pid]=ad;
+    FBInstant.GiderosLdb[pid]=ldb;
     Module.GiderosJSEvent("FBInstantLdbGIA",]]..contextid..[[,1,pid);
   },function (err) {
     Module.GiderosJSEvent("FBInstantLdbGIA",]]..contextid..[[,0,err.code);
