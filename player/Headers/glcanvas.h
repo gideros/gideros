@@ -19,6 +19,7 @@ class GLCanvas : public QOpenGLWidget{
 
 public:
 	GLCanvas(QWidget *parent);
+	void setupCanvas();
 	~GLCanvas();
 
     QString projectDir_;
@@ -56,6 +57,7 @@ private:
     std::string documentsDirectory_;
     std::string temporaryDirectory_;
     std::string md5filename_;
+    int sync_;
     int fps_;
     double clock_;
     QString projectName_;

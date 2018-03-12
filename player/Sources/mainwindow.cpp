@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <algorithm>
 #include <QPalette>
+#include <QMessageBox>
 #include "libnetwork.h"
 #include "applicationwrapper.h"
 #include "glcanvas.h"
@@ -33,6 +34,7 @@ MainWindow::~MainWindow(){}
 
 void MainWindow::setupUiActions(){
     ui.setupUi(this);
+    ui.glCanvas->setupCanvas();
 
     connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui.actionRestart, SIGNAL(triggered()), this, SLOT(actionRestart()));
@@ -57,6 +59,7 @@ void MainWindow::setupUiActions(){
     connect(ui.actionDraw_Infos, SIGNAL(triggered(bool)), this, SLOT(actionDraw_Infos(bool)));
 
     connect(ui.actionAuto_Scale, SIGNAL(triggered(bool)), this, SLOT(actionAuto_Scale(bool)));
+    connect(ui.actionUse_VSYNC, SIGNAL(triggered(bool)), this, SLOT(actionUse_VSYNC(bool)));
 
     connect(ui.actionRotate_Left,  SIGNAL(triggered()), this, SLOT(actionRotate()));
     connect(ui.actionRotate_Right, SIGNAL(triggered()), this, SLOT(actionRotate()));
@@ -273,6 +276,7 @@ void MainWindow::loadSettings(){
     setDrawInfos(settings.value("drawInfos",     false).toBool());
     setAutoScale(settings.value("autoScale",     false).toBool());
     setAlwaysOnTop(settings.value("alwaysOnTop", false).toBool());
+    ui.actionUse_VSYNC->setChecked(settings.value("vsync",0).toInt());
 
     checkLoadedSettings();
 
@@ -360,6 +364,7 @@ void MainWindow::saveSettings(){
     settings.setValue("fps",         fps());
     settings.setValue("scale",       scale());
     settings.setValue("drawInfos",   drawInfos());
+    settings.setValue("vsync",ui.actionUse_VSYNC->isChecked()?1:0);
 
     if(fullScreen())
         this->showFullScreen();
@@ -434,6 +439,10 @@ void MainWindow::actionAuto_Scale(bool checked){
     setAutoScale(checked);
 
     updateAutoScale();
+}
+
+void MainWindow::actionUse_VSYNC(bool checked){
+	QMessageBox::information(this, tr("Gideros Player"), tr("You will need to restart the player for this change to take effect."));
 }
 
 void MainWindow::actionResolution(){

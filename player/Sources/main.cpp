@@ -60,8 +60,11 @@ int main(int argc, char *argv[]){
     QCoreApplication::setApplicationName(Constants::PLAYER_APPLICATION_NAME);
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 
+    QSettings settings(Constants::SETTINGS_FOLDER + "/" + Constants::PLAYER_SETTINGS_FILE, QSettings::IniFormat);
+    int fps=settings.value("fps",60).toInt();
+    int vsync=settings.value("vsync",0).toInt();
     QSurfaceFormat formatGL;
-	formatGL.setSwapInterval(0);
+	formatGL.setSwapInterval(vsync?(60/fps):0);
 	formatGL.setStencilBufferSize(8);
 	formatGL.setDepthBufferSize(16);
 	formatGL.setSwapBehavior(QSurfaceFormat::DoubleBuffer);

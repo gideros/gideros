@@ -217,6 +217,8 @@ void ExportBuiltin::prepareAssetFolder(ExportContext *ctx)
                 buffer << org.toStdString().c_str();
                 buffer << domain.toStdString().c_str();
                 buffer << ctx->base.toStdString().c_str();
+                buffer << ctx->properties.vsync;
+                buffer << ctx->properties.fps;
 
                 file.write(buffer.data(), buffer.size());
             }

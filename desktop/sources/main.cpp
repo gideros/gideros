@@ -56,6 +56,8 @@ int main(int argc, char *argv[]){
     #endif
 
     QFile file(dir.absolutePath()+"/assets/data.bin");
+    int vsync=0;
+    int fps=60;
     if(file.exists()){
         file.open(QIODevice::ReadOnly);
         QByteArray ba = file.readAll();
@@ -68,6 +70,8 @@ int main(int argc, char *argv[]){
         buffer >> ORGANIZATION_NAME;
         buffer >> ORGANIZATION_DOMAIN;
         buffer >> DESK_APPLICATION_NAME;
+        buffer >> vsync;
+        buffer >> fps;
         QCoreApplication::setOrganizationName(QString::fromStdString(ORGANIZATION_NAME));
         QCoreApplication::setOrganizationDomain(QString::fromStdString(ORGANIZATION_DOMAIN));
         QCoreApplication::setApplicationName(QString::fromStdString(DESK_APPLICATION_NAME));
@@ -79,7 +83,7 @@ int main(int argc, char *argv[]){
     }
 
     QSurfaceFormat formatGL;
-	//formatGL.setSwapInterval(0);
+	formatGL.setSwapInterval(vsync?(60/fps):0);
 	formatGL.setStencilBufferSize(8);
 	formatGL.setDepthBufferSize(16);
 	formatGL.setSwapBehavior(QSurfaceFormat::DoubleBuffer);

@@ -52,6 +52,7 @@ ProjectPropertiesDialog::ProjectPropertiesDialog(QString projectFileName,Project
 			ui->fps->setCurrentIndex(1);
 			break;
 	}
+    ui->vsync->setChecked(properties_->vsync!=0);
 
     ui->retinaDisplay->setCurrentIndex(properties_->retinaDisplay);
 	ui->autorotation->setCurrentIndex(properties_->autorotation);
@@ -137,6 +138,7 @@ void ProjectPropertiesDialog::onAccepted()
 		properties_->fps = 30;
 		break;
 	}
+    properties_->vsync = ui->vsync->isChecked()?1:0;
 
     properties_->retinaDisplay = ui->retinaDisplay->currentIndex();
 	properties_->autorotation = ui->autorotation->currentIndex();

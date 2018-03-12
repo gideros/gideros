@@ -90,6 +90,7 @@ void ProjectProperties::toXml(QDomDocument doc,QDomElement properties) const
 	properties.appendChild(imageScales);
 	properties.setAttribute("orientation", this->orientation);
 	properties.setAttribute("fps", this->fps);
+	properties.setAttribute("vsync", this->vsync);
     properties.setAttribute("version", this->version);
     properties.setAttribute("version_code", this->version_code);
     properties.setAttribute("build_number", this->build_number);
@@ -205,6 +206,8 @@ void ProjectProperties::loadXml(QDomElement properties)
 			this->orientation = properties.attribute("orientation").toInt();
 		if (!properties.attribute("fps").isEmpty())
 			this->fps = properties.attribute("fps").toInt();
+		if (!properties.attribute("vsync").isEmpty())
+			this->vsync = properties.attribute("vsync").toInt();
 
 		// iOS options
 		if (!properties.attribute("retinaDisplay").isEmpty())

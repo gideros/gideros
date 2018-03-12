@@ -42,6 +42,7 @@ struct ProjectProperties
 		imageScales.clear();
 		orientation = 0;
 		fps = 60;
+		vsync = 0;
 
 		// iOS options
         retinaDisplay = 0;
@@ -101,6 +102,7 @@ struct ProjectProperties
 	std::vector<std::pair<QString, double> > imageScales;
 	int orientation;
 	int fps;
+	int vsync;
 
 	// iOS options
     int retinaDisplay;

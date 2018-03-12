@@ -652,6 +652,16 @@ portrait or landscape.</string>
               </widget>
              </item>
              <item>
+              <widget class="QCheckBox" name="vsync">
+               <property name="toolTip">
+                <string>Synchronize FPS to monitor vertical refresh, if applicable</string>
+               </property>
+               <property name="text">
+                <string>VSync</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <spacer name="horizontalSpacer_5">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>

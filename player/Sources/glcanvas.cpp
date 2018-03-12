@@ -253,12 +253,6 @@ GLCanvas::GLCanvas(QWidget *parent) :
     //setUpdateBehavior(QOpenGLWidget::PartialUpdate); // Prevent QT from calling glClear by itself
     isPlayer_ = true;
 
-	setupProperties();
-
-	QTimer* timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
-	timer->start(1);
-
 	/*
 	 startTimer(1);
 	 setAccessFileCallback(accessFileCallback_s, this);
@@ -266,6 +260,14 @@ GLCanvas::GLCanvas(QWidget *parent) :
 	 platformImplementation_ = new PlatformImplementation(application_);
 	 setPlatformInterface(platformImplementation_);
 	 */
+}
+
+void GLCanvas::setupCanvas() {
+	setupProperties();
+
+	QTimer* timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
+	timer->start(1);
 	ScreenManager::manager=new QtScreenManager(this);
 }
 
@@ -343,15 +345,13 @@ void GLCanvas::setupProperties() {
 
 	clock_ = iclock();
 
-	if (!exportedApp_) {
-		deviceScale_ = devicePixelRatio();
+	deviceScale_ = devicePixelRatio();
 
-		setHardwareOrientation(ePortrait);
-		setResolution(320, 480, false);
-		setFps(60);
-		setScale(1);
-		setDrawInfos(false);
-	}
+	setHardwareOrientation(ePortrait);
+	setResolution(320, 480, false);
+	setFps(60);
+	setScale(1);
+	setDrawInfos(false);
 
 	float canvasColor[3] = { 1, 1, 1 };
 	setCanvasColor(canvasColor);
@@ -367,6 +367,22 @@ void GLCanvas::setupApplicationProperties() {
 }
 
 void GLCanvas::initializeGL() {
+	QSurfaceFormat f=QOpenGLContext::currentContext()->format();
+	sync_=f.swapInterval();
+	qDebug() << "GLFMT:SWAP:" << sync_;
+	qDebug() << "GLFMT:STENCIL:" << f.stencilBufferSize();
+	qDebug() << "GLFMT:DEPTH:" << f.depthBufferSize();
+	qDebug() << "GLFMT:BUFFER:" << f.swapBehavior();
+	QFunctionPointer getSwapInterval= QOpenGLContext::currentContext()->getProcAddress("wglGetSwapIntervalEXT");
+	QFunctionPointer setSwapInterval= QOpenGLContext::currentContext()->getProcAddress("wglSwapIntervalEXT");
+	qDebug() << "GLFMT:FSWAP:" << ((void *)getSwapInterval) << ((void *)setSwapInterval);
+	if (getSwapInterval&&setSwapInterval)
+	{
+		int (*getSwap)()=(int (*)())getSwapInterval;
+		qDebug() << "GLFMT:NSWAP:" << getSwap();
+		sync_=getSwap();
+
+	}
 	application_->initialize();
 	setupApplicationProperties();
 }
@@ -1318,6 +1334,8 @@ bool GLCanvas::event(QEvent *event){
 
 void GLCanvas::onTimer() {
 	double deltat = 1.0 / fps_;
+	if (sync_) //if we are synced, try to go a little faster and let vsync regulate things for us
+		deltat-=0.005;
 
 	/*
 	 if(deltat == 0){

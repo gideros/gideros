@@ -39,7 +39,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     ui.glCanvas->setExportedApp(true);
     ui.glCanvas->projectDir_ = QDir("assets").absolutePath();
 
-    
+    ui.glCanvas->setupCanvas();
+
     width0_ = 320;
     height0_ = 480;
     scaleModeNum_ = 0;
@@ -84,6 +85,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
 
         int fps;
         buffer >> fps;
+        ui.glCanvas->setFps(fps);
 
         int retinaDisplay;
         buffer >> retinaDisplay;

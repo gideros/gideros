@@ -168,6 +168,7 @@
     <addaction name="menuOrientation"/>
     <addaction name="menuResolution"/>
     <addaction name="menuFrame_Rate"/>
+    <addaction name="actionUse_VSYNC"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -615,6 +616,14 @@
   <action name="action1125x2436">
    <property name="text">
     <string>1125x2436 (iPhone X)</string>
+   </property>
+  </action>
+  <action name="actionUse_VSYNC">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use VSYNC</string>
    </property>
   </action>
   <addaction name="actionExit"/>
