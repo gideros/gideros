@@ -6,7 +6,7 @@ You need to do two things to target Facebook Instant Games:<br /><br />
 <br />
 You can upload, debug and test your game by creating a player and uploading to Facebook servers as a game.   The player will interact with the Gideros Studio similar to any other player.<br />
 <br />
-The only restriction with the player is that it only works on the computer viewing the html5 game (localhost) - this would normally rule out actual phones but there is a workaround for Android:<<br />
+The only restriction with the player is that it only works on the computer viewing the html5 game (localhost) - this would normally rule out actual phones but there is a workaround for Android:<br />
 <br />
 1. Connect your Android phone to your computer using ADB.<br />
 2. Type in this command in a command console shell (Windows) or terminal (Mac):     <b>abd reverse tcp:15001 tcp:15001</b><br />
