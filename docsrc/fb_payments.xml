@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<object name="Payments" page="Payments" parent="" type="fbinstant" version="Gideros 2018.3"><![CDATA[<br />
+<object name="Payments" page="fbPayments" parent="" type="fbinstant" version="Gideros 2018.3"><![CDATA[<br />
 Contains functions and properties related to payments and purchases of game products.<br />
 ]]>
 <platform>html5</platform>
@@ -8,7 +8,7 @@ Fetches the game's product catalog.<br />
 <br />
 ]]>
 <parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a set of key-value pairs that are the products that are registered to the game or nil if the operation failed, and an error code if the function failed.]]></parameter>
-<example name=""><![CDATA[<br />
+<example name="Example 1"><![CDATA[<br />
 FBInstant.payments.getCatalogAsync(function(result,error)
     if result then
 		for key,value in pairs(result) do
@@ -17,7 +17,7 @@ FBInstant.payments.getCatalogAsync(function(result,error)
 	end
 end)
 <br/>]]></example>
-<example name=""><![CDATA[<br />
+<example name="Example 2"><![CDATA[<br />
 FBInstant.payments.getCatalogAsync(function(result,error)
     if result then
 		for loop=1,#result do
@@ -35,7 +35,7 @@ Begins the purchase flow for a specific product.<br />
 ]]>
 <parameter name="purchaseConfig" optional="false" type="table"><![CDATA[The purchase's configuration details.]]></parameter>
 <parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: True when the product is successfully purchased by the player. Otherwise, it rejects if the operation failed, and an error code if the function failed.]]></parameter>
-<example name=""><![CDATA[<br />
+<example name="Example 1"><![CDATA[<br />
 FBInstant.payments.purchaseAsync({productID="12345", developerPayload="foobar"}, function(result,error)
     if result then
 		print("Purchased!")
@@ -45,7 +45,7 @@ FBInstant.payments.purchaseAsync({productID="12345", developerPayload="foobar"},
 	end
 end)
 <br/>]]></example>
-<example name=""><![CDATA[<br />
+<example name="Example 2"><![CDATA[<br />
 FBInstant.payments.purchaseAsync({productID="12345", developerPayload="foobar"}, function(result,error)
     if result then
 		print("Purchased!")

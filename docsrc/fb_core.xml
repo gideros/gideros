@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<object name="* Initialisation and Core" page="core" parent="" type="fbinstant" version="Gideros 2018.3"><![CDATA[<br />
+<object name="* Initialisation and Core" page="fbcore" parent="" type="fbinstant" version="Gideros 2018.3"><![CDATA[<br />
 You need to do two things to target Facebook Instant Games:<br /><br />
 1. Tick the Facebook Instant Game tickbox when exporting to HTML5, you can also specify the percentage indicator that the game will show it has loaded before you take control.<br />
 2. Require the FBInstant library code, see the example below.<br/>

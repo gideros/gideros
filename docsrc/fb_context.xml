@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<object name="Context" page="Context" parent="" type="fbinstant" version="Gideros 2018.3"><![CDATA[<br />
+<object name="Context" page="fbContext" parent="" type="fbinstant" version="Gideros 2018.3"><![CDATA[<br />
 Contains functions and properties related to the current game context.<br />
 ]]>
 <platform>html5</platform>
@@ -99,7 +99,7 @@ Gets an table of #contextplayer tables containing information about active playe
 <br />
 ]]>
 <parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a set of key-value pairs or nil is the operation failed, and an error code if the function failed.]]></parameter>
-<example name=""><![CDATA[<br />
+<example name="Example 1"><![CDATA[<br />
 FBInstant.context.getPlayersAsync(function(result,error)
     if result then
 		print("Active players:",#result)
@@ -112,7 +112,7 @@ FBInstant.context.getPlayersAsync(function(result,error)
 	end
 end)
 <br/>]]></example>
-<example name=""><![CDATA[<br />
+<example name="Example 2"><![CDATA[<br />
 FBInstant.context.getPlayersAsync(function(result,error)
     if result then
 		print("Active players:",#result)
