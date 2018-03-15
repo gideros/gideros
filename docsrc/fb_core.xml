@@ -55,13 +55,7 @@ The platform on which the game is currently running.<br />
 <method name="FBInstant.setLoadingProgress" page="setLoadingProgress" shortdesc="Report the game's initial loading progress." version="Gideros 2018.3"><![CDATA[<br />
 Report the game's initial loading progress.<br />
 ]]>
-<parameter name="percentage" optional="false" type="tnumber"><![CDATA[A number between 0 and 100.]]></parameter>
-</method>
-
-<method name="FBInstant.setLoadingProgress" page="setLoadingProgress" shortdesc="Report the game's initial loading progress." version="Gideros 2018.3"><![CDATA[<br />
-Report the game's initial loading progress.<br />
-]]>
-<parameter name="percentage" optional="false" type="table"><![CDATA[Provides a list of API functions that are supported by the client.]]></parameter>
+<parameter name="percentage" optional="false" type="number"><![CDATA[A number between 0 and 100.]]></parameter>
 </method>
 
 <method name="FBInstant.getSupportedAPIs" page="getSupportedAPIs" shortdesc="Provides a list of API functions that are supported by the client." version="Gideros 2018.3"><![CDATA[<br />
@@ -231,7 +225,7 @@ FBInstant.getInterstitialAdAsync("my_placement_ad", function(result,error)
 	print("getInterstitialAdAsync result:",result)
 end)
 <br/>]]></example>
-<example name=""><![CDATA[<br />
+<example name="Example 2"><![CDATA[<br />
 FBInstant.getInterstitialAdAsync("my_placement_ad", function(result,error)
 	print("id:",result.getPlacementID()) -- the Audience Network placement ID of this ad instance.
 	result:loadAsync( function ()  -- Preload the ad. The returned promise resolves when the preload completes, and rejects if it failed.
@@ -252,7 +246,7 @@ FBInstant.getRewardedVideoAsync("my_placement_ad", function(result,error)
 	print("getRewardedVideoAsync result:",result)
 end)
 <br/>]]></example>
-<example name=""><![CDATA[<br />
+<example name="Example 2"><![CDATA[<br />
 FBInstant.getRewardedVideoAsync("my_placement_ad", function(result,error)
 	advert = result -- make a global of the result
 	advert:loadAsync( function ()  -- Preload the reward advert.
@@ -276,7 +270,7 @@ FBInstant.matchPlayerAsync("level1", function(result,error)
 	print(FBInstant.context.getID()) -- eg 12345
 end)
 <br/>]]></example>
-<example name=""><![CDATA[<br />
+<example name="Example 2"><![CDATA[<br />
 FBInstant.matchPlayerAsync(nil, function(result,error)
 	print(FBInstant.context.getID()) -- eg 34567
 end)
@@ -310,7 +304,7 @@ FBInstant.getLeaderboardAsync("my_aweome_leaderboard", function(result,error)
 	print("getLeaderboardAsync result:",result)
 end)
 <br/>]]></example>
-<example name=""><![CDATA[<br />
+<example name="Example 2"><![CDATA[<br />
 FBInstant.getLeaderboardAsync("my_aweome_leaderboard", function(result,error)
 	print("name",result:getName()) -- should display 'my__awesome_leaderboard'
 	print("context id",result:getContextID()) -- eg 12345678 or null if not tied to a context

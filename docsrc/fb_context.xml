@@ -64,7 +64,7 @@ FBInstant.context.chooseAsync(nil, function(result,error)
 end)
 <br/>]]></example>
 
-<example name=""><![CDATA[<br />
+<example name="Example 2"><![CDATA[<br />
 print(FBInstant.context.getID()) -- eg returns 1122334455
 -- A filter that may be applied to a Context Choose operation:
 -- 'NEW_CONTEXT_ONLY' - Prefer to only surface contexts the game has not been played in before. 
