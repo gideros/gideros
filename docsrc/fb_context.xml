@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Context" page="Context" parent="" type="fbinstant" version="Gideros 2018.3"><![CDATA[<br />
+Contains functions and properties related to the current game context.<br />
+]]>
+<platform>html5</platform>
+<method name="FBInstant.context.getID" page="getID" shortdesc="A unique identifier for the current game context." version="Gideros 2018.3"><![CDATA[<br />
+A unique identifier for the current game context. This represents a specific context that the game is being played in (for example, a particular messenger conversation or facebook post). The identifier will be null if game is being played in a solo context. The result is not guaranteed to be correct until FBInstant.startGameAsync has resolved.<br />
+<br />
+]]>
+<return name="contextID" type="string"><![CDATA[A unique identifier for the current game context.]]></return>
+</method>
+
+<method name="FBInstant.context.getType" page="getType" shortdesc="The type of the current game context." version="Gideros 2018.3"><![CDATA[<br />
+The type of the current game context. POST - A facebook post. THREAD - A messenger thread. GROUP - A facebook group. SOLO - Default context, where the player is the only participant.<br />
+<br />
+]]>
+<return name="contextType" type="string"><![CDATA[Type of the current game context.]]></return>
+</method>
+
+<method name="FBInstant.context.isSizeBetween" page="isSizeBetween" shortdesc="Determines whether the number of participants in the current game context is between a given minimum and maximum." version="Gideros 2018.3"><![CDATA[<br />
+This function determines whether the number of participants in the current game context is between a given minimum and maximum, inclusive. If one of the bounds is null only the other bound will be checked against. It will always return the original result for the first call made in a context in a given game play session. Subsequent calls, regardless of arguments, will return the answer to the original query until a context change occurs and the query result is reset.<br />
+<br />
+]]>
+<parameter name="minSize" optional="false" type="number"><![CDATA[The minimum bound of the context size query.]]></parameter>
+<parameter name="maxSize" optional="false" type="number"><![CDATA[The maximum bound of the context size query.]]></parameter>
+<return name="contextSizeResponse" type="table"><![CDATA[Table containing answers to the query.]]></return>
+<example name=""><![CDATA[<br />
+result=FBInstant.context.isSizeBetween(3,5)
+if result then
+	print("Answer",result.answer)
+	print("MinSize",result.minSize)
+	print("MaxSize",result.maxSize)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.context.switchAsync" page="switchAsync" shortdesc="Request a switch into a specific context." version="Gideros 2018.3"><![CDATA[<br />
+Request a switch into a specific context. If the player does not have permission to enter that context, or if the player does not provide permission for the game to enter that context, this will reject. Otherwise, the promise will resolve when the game has switched into the specified context.<br />
+<br />
+]]>
+<parameter name="id" optional="false" type="string"><![CDATA[ID of the desired context.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: true when the game has switched into the specified context or nil if the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+print(FBInstant.context.getID()) -- eg returns 1122334455
+FBInstant.context.switchAsync("1234567890", function(result,error)
+    if result then
+		print(FBInstant.context.getID()) -- eg returns 1234567890
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.context.chooseAsync" page="chooseAsync" shortdesc="Opens a context selection dialog for the player." version="Gideros 2018.3"><![CDATA[<br />
+Opens a context selection dialog for the player. If the player selects an available context, the client will attempt to switch into that context, and resolve if successful. Otherwise, if the player exits the menu or the client fails to switch into the new context, this function will reject.<br />
+<br />
+]]>
+<parameter name="options" optional="true" type="table"><![CDATA[ A table specifying conditions on the contexts that should be offered.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: true when the game has switched into the context chosen by the user. Otherwise, the promise will reject (if the user cancels out of the dialog, for example) and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+print(FBInstant.context.getID()) -- eg returns 1122334455
+FBInstant.context.chooseAsync(nil, function(result,error)
+    if result then
+		print(FBInstant.context.getID()) -- eg returns 1234567890
+	end
+end)
+<br/>]]></example>
+
+<example name=""><![CDATA[<br />
+print(FBInstant.context.getID()) -- eg returns 1122334455
+-- A filter that may be applied to a Context Choose operation:
+-- 'NEW_CONTEXT_ONLY' - Prefer to only surface contexts the game has not been played in before. 
+-- 'INCLUDE_EXISTING_CHALLENGES' - Include the "Existing Challenges" section, which surfaces actively played-in contexts that the player is a part of. 
+-- 'NEW_PLAYERS_ONLY' - In sections containing individuals, prefer people who have not played the game.
+FBInstant.context.chooseAsync({filters={"NEW_CONTENT_ONLY"},minSize=3,maxSize=5}, function(result,error)
+    if result then
+		print(FBInstant.context.getID()) -- eg returns 1234567890
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.context.createAsync" page="createAsync" shortdesc="Attempts to create or switch into a context between a specified player and the current player." version="Gideros 2018.3"><![CDATA[<br />
+Attempts to create or switch into a context between a specified player and the current player. The returned promise will reject if the player listed is not a Connected Player of the current player or if the player does not provide permission to enter the new context. Otherwise, the promise will resolve when the game has switched into the new context.<br />
+<br />
+]]>
+<parameter name="id" optional="false" type="string"><![CDATA[ID of the player.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: true when the game has switched into the new context or nil if the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+print(FBInstant.context.getID()) -- eg returns 1122334455
+FBInstant.context.createAsync("12345678", function(result,error)
+    if result then
+		print(FBInstant.context.getID()) -- eg returns 5544332211
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.context.getPlayersAsync" page="getPlayersAsync" shortdesc="Gets an table of #contextplayer objects containing information about active players." version="Gideros 2018.3"><![CDATA[<br />
+Gets an table of #contextplayer tables containing information about active players (people who played the game in the last 90 days) that are associated with the current context. This may include the current player.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a set of key-value pairs or nil is the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.context.getPlayersAsync(function(result,error)
+    if result then
+		print("Active players:",#result)
+		for loop=1,#result do
+			local player=result[loop]
+			for key,value in pairs(player) do
+				print(key,value)
+			end
+		end
+	end
+end)
+<br/>]]></example>
+<example name=""><![CDATA[<br />
+FBInstant.context.getPlayersAsync(function(result,error)
+    if result then
+		print("Active players:",#result)
+		for loop=1,#result do
+			local player=result[loop]
+			print("id,name,photo",player.getID(),player.getName(),player.getPhoto())
+		end
+	end
+end)
+<br/>]]></example>
+</method>
+</object>

@@ -173,7 +173,7 @@ function FBInstant.getLocale() return JS.eval([[FBInstant.getLocale()]]) end
 function FBInstant.getPlatform() return JS.eval([[FBInstant.getPlatform()]]) end
 function FBInstant.getSDKVersion() return JS.eval([[FBInstant.getSDKVersion()]]) end
 -- initializeAsync (done by init code)
-function FBInstant.getLoadingProgress(pct)
+function FBInstant.setLoadingProgress(pct)
   JS.eval("FBInstant.setLoadingProgress("..pct..")")
 end
 function FBInstant.getSupportedAPIs()

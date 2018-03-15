@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="* Initialisation and Core" page="core" parent="" type="fbinstant" version="Gideros 2018.3"><![CDATA[<br />
+You need to do two things to target Facebook Instant Games:<br /><br />
+1. Tick the Facebook Instant Game tickbox when exporting to HTML5, you can also specify the percentage indicator that the game will show it has loaded before you take control.<br />
+2. Require the FBInstant library code, see the example below.<br/>
+<br />
+You can upload, debug and test your game by creating a player and uploading to Facebook servers as a game.   The player will interact with the Gideros Studio similar to any other player.<br />
+<br />
+The only restriction with the player is that it only works on the computer viewing the html5 game (localhost) - this would normally rule out actual phones but there is a workaround for Android:<<br />
+<br />
+1. Connect your Android phone to your computer using ADB.<br />
+2. Type in this command in a command console shell (Windows) or terminal (Mac):     <b>abd reverse tcp:15001 tcp:15001</b><br />
+3. The Android device now will see the Gideros Studio when testing the game when a player is launched from within Facebook Messenger.<br />
+<br />
+Please refer to the <a href="https://developers.facebook.com/docs/games/instant-games/getting-started/quickstart">original Facebook documentation</a> for more information about testing and uploading.<br /><br/>
+Please note that the offical Facebook documentation mentions having to wait for initializeAsync, with Gideros this has already been done for you before your game starts.
+]]>
+<platform>html5</platform>
+<example name="Initialisation and removal of the Facebook loading progress indicator."><![CDATA[<br /> 
+pcall(function() FBInstant=require "FBInstant" end)
+if FBInstant then
+	FBInstant.startGameAsync(function() 
+		print("Loading screen removed")
+	end)
+else
+	print("FBInstant not loaded")
+end
+]]></example>
+
+<method name="FBInstant.getLocale" page="getLocale" shortdesc="The current locale." version="Gideros 2018.3"><![CDATA[<br />
+The current locale. See https://www.facebook.com/translations/FacebookLocales.xml for a complete list of supported locale values. Use this to determine what language the current game should be localized with.<br />
+<br />
+The locale string returned is a five-character Facebook locale code of the form xx_XX.
+<br />
+]]>
+<return name="locale" type="string"><![CDATA[The current locale.]]></return>
+</method>
+
+<method name="FBInstant.getPlatform" page="getPlatform" shortdesc="The platform on which the game is currently running." version="Gideros 2018.3"><![CDATA[<br />
+The platform on which the game is currently running.<br />
+<br />
+Can be "IOS", "ANDROID", "WEB" or "MOBILE_WEB".
+<br />
+]]>
+<return name="platform" type="string"><![CDATA[The current platform.]]></return>
+</method>
+
+<method name="FBInstant.getSDKVersion" page="getSDKVersion" shortdesc="The string representation of this SDK version." version="Gideros 2018.3"><![CDATA[<br />
+The platform on which the game is currently running.<br />
+<br />
+]]>
+<return name="sdkVersion" type="string"><![CDATA[The SDK version.]]></return>
+</method>
+
+<method name="FBInstant.setLoadingProgress" page="setLoadingProgress" shortdesc="Report the game's initial loading progress." version="Gideros 2018.3"><![CDATA[<br />
+Report the game's initial loading progress.<br />
+]]>
+<parameter name="percentage" optional="false" type="tnumber"><![CDATA[A number between 0 and 100.]]></parameter>
+</method>
+
+<method name="FBInstant.setLoadingProgress" page="setLoadingProgress" shortdesc="Report the game's initial loading progress." version="Gideros 2018.3"><![CDATA[<br />
+Report the game's initial loading progress.<br />
+]]>
+<parameter name="percentage" optional="false" type="table"><![CDATA[Provides a list of API functions that are supported by the client.]]></parameter>
+</method>
+
+<method name="FBInstant.getSupportedAPIs" page="getSupportedAPIs" shortdesc="Provides a list of API functions that are supported by the client." version="Gideros 2018.3"><![CDATA[<br />
+Provides a table of API functions that are supported by the client.<br />
+<br />
+]]>
+<return name="apiFunctions" type="table"><![CDATA[Table of API functions that the client explicitly supports.]]></return>
+<example name=""><![CDATA[<br />
+FBInstant.getSupportedAPIs( function(result,error)
+    if result then
+		print("Number of functions:",#result)
+		for loop=1,#result do
+			print(result[loop])
+		end
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.getEntryPointData" page="getEntryPointData" shortdesc="Returns any data object associated with the entry point that the game was launched from." version="Gideros 2018.3"><![CDATA[<br />
+Returns any data object associated with the entry point that the game was launched from.
+
+The contents of the object are developer-defined, and can occur from entry points on different platforms. This will return null for older mobile clients, as well as when there is no data associated with the particular entry point.<br />
+<br />
+]]>
+<return name="entryPointData" type="table"><![CDATA[Data associated with the current entry point.]]></return>
+</method>
+
+<method name="FBInstant.getEntryPointAsync" page="getEntryPointAsync" shortdesc="Returns the entry point that the game was launched from." version="Gideros 2018.3"><![CDATA[<br />
+Returns the entry point that the game was launched from.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: The name of the entry point from which the user started the game or nil if the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.getEntryPointAsync( function(result,error)
+    if result then
+		print("Entry point:",result)
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.setSessionData" page="setSessionData" shortdesc="Sets the data associated with the individual gameplay session for the current context." version="Gideros 2018.3"><![CDATA[<br />
+Sets the data associated with the individual gameplay session for the current context.
+
+This function should be called whenever the game would like to update the current session data. This session data may be used to populate a variety of payloads, such as game play webhooks.<br />
+]]>
+<parameter name="sessionData" optional="false" type="table"><![CDATA[An arbitrary data table, which must be less than or equal to 1000 characters when stringified.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.setSessionData({coinsEarned=10,eventsSeen={"start","middle"}})
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.startGameAsync" page="startGameAsync" shortdesc="This indicates that the game has finished initial loading and is ready to start." version="Gideros 2018.3"><![CDATA[<br />
+This indicates that the game has finished initial loading and is ready to start. Context information will be up-to-date when the returned promise resolves.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: True when the game should start or nil if the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.startGameAsync( function(result,error)
+    if result then
+		-- don't call context api until here!
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.shareAsync" page="shareAsync" shortdesc="This invokes a dialog to let the user share specified content." version="Gideros 2018.3"><![CDATA[<br />
+This invokes a dialog to let the user share specified content, either as a message in Messenger or as a post on the user's timeline. A blob of data can be attached to the share which every game session launched from the share will be able to access from FBInstant.getEntryPointData(). This data must be less than or equal to 1000 characters when stringified. The user may choose to cancel the share action and close the dialog, and the returned promise will resolve when the dialog is closed regardless if the user actually shared the content or not.<br />
+<br />
+]]>
+<parameter name="payload" optional="false" type="table"><![CDATA[Specify what to share.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: True when the share is completed or nil if the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+-- intent can be "INVITE", "REQUEST", "CHALLENGE" or "SHARE"
+FBInstant.shareAsync({intent="REQUEST",image=base64Picture,text="X is asking for your help!",data={myReplyData="..."}}, function(result,error)
+    if result then
+		-- continue with the game.
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.updateAsync" page="updateAsync" shortdesc="Informs Facebook of an update that occurred in the game." version="Gideros 2018.3"><![CDATA[<br />
+Informs Facebook of an update that occurred in the game. This will temporarily yield control to Facebook and Facebook will decide what to do based on what the update is. The returned promise will resolve/reject when Facebook returns control to the game.<br />
+<br />
+]]>
+<parameter name="payload" optional="false" type="table"><![CDATA[A payload that describes the update.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: True when Facebook gives control back to the game or nil if the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+-- This will post a custom update. If the game is played in a messenger
+-- chat thread, this will post a message into the thread with the specified
+-- image and text message. And when people launch the game from this
+-- message, those game sessions will be able to access the specified blob
+-- of data through FBInstant.getEntryPointData().
+FBInstant.supdateAsync({action="CUSTOM",
+	cta="Join The Fight",
+	image=base64Picture,
+	test={default="X just invased Y\'s village!",
+		localizations={	ar_AR="X \u0641\u0642\u0637 \u063A\u0632\u062A \u0642\u0631\u064A\u0629 Y!",
+						en_US="X just invaded Y\'s village!",
+						el_LA="\u00A1X acaba de invadir el pueblo de Y!"}
+		},
+	template="VILLAGE_INVASION",
+	data={myReplayData="..."+,
+	strategy="IMMEDIATE",
+	notification="NO_PUSH"}, function(result,error)
+    if result then
+		-- closes the game after the update is posted.
+		FBInstant.quit()
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.switchGameAsync" page="switchGameAsync" shortdesc="Request that the client switch to a different Instant Game." version="Gideros 2018.3"><![CDATA[<br />
+Request that the client switch to a different Instant Game. The API will reject if the switch fails - else, the client will load the new game.<br />
+<br />
+]]>
+<parameter name="appID" optional="false" type="string"><![CDATA[The Application ID of the Instant Game to switch to. The application must be an Instant Game, and must belong to the same business as the current game. To associate different games with the same business, you can use Business Manager: https://developers.facebook.com/docs/apps/business-manager#update-business.]]></parameter>
+<parameter name="data" optional="true" type="string"><![CDATA[An optional data payload. This will be set as the entrypoint data for the game being switched to. Must be less than or equal to 1000 characters when stringified.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with one argument: An error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.switchGameAsync("12345678",nil, function(error)
+	print("Handle game change failure")
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.quit" page="quit" shortdesc="Quits the game." version="Gideros 2018.3"><![CDATA[<br />
+Quits the game.<br />
+<br />
+]]>
+</method>
+
+<method name="FBInstant.logEvent" page="logEvent" shortdesc="Log an app event with FB Analytics." version="Gideros 2018.3"><![CDATA[<br />
+Log an app event with FB Analytics. See https://developers.facebook.com/docs/javascript/reference/v2.8#app_events for more details about FB Analytics.<br />
+]]>
+<parameter name="eventName" optional="false" type="string"><![CDATA[Name of the event. Must be 2 to 40 characters, and can only contain '_', '-', ' ', and alphanumeric characters.]]></parameter>
+<parameter name="valueToSum" optional="true" type="numbere"><![CDATA[An optional numeric value that FB Analytics can calculate a sum with.]]></parameter>
+<parameter name="parameters" optional="true" type="table"><![CDATA[An optional table that can contain up to 25 key-value pairs to be logged with the event. Keys must be 2 to 40 characters, and can only contain '_', '-', ' ', and alphanumeric characters. Values must be less than 100 characters in length.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.logEvent("my_custom_event",42,{custom_property="custom_value"})
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.onPause" page="onPause" shortdesc="Set a callback to be fired when a pause event is triggered." version="Gideros 2018.3"><![CDATA[<br />
+Set a callback to be fired when a pause event is triggered.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function to call when a pause event occurs.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.onPause( function()
+	print("Pause event was triggered.")
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.getInterstitialAdAsync" page="getInterstitialAdAsync" shortdesc="Attempt to create an instance of interstitial ad." version="Gideros 2018.3"><![CDATA[<br />
+Attempt to create an instance of interstitial ad. This instance can then be preloaded and presented.<br />
+<br />
+]]>
+<parameter name="placementID" optional="false" type="string"><![CDATA[The placement ID that's been setup in your Audience Network settings.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: Resolves with a #adinstance, or rejects with a #apierror if it couldn't be created.  An error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.getInterstitialAdAsync("my_placement_ad", function(result,error)
+	print("getInterstitialAdAsync result:",result)
+end)
+<br/>]]></example>
+<example name=""><![CDATA[<br />
+FBInstant.getInterstitialAdAsync("my_placement_ad", function(result,error)
+	print("id:",result.getPlacementID()) -- the Audience Network placement ID of this ad instance.
+	result:loadAsync( function ()  -- Preload the ad. The returned promise resolves when the preload completes, and rejects if it failed.
+		print("Advert loaded!")
+	end)
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.getRewardedVideoAsync" page="getRewardedVideoAsync" shortdesc="Attempt to create an instance of rewarded video." version="Gideros 2018.3"><![CDATA[<br />
+Attempt to create an instance of rewarded video. This instance can then be preloaded and presented.<br />
+<br />
+]]>
+<parameter name="placementID" optional="false" type="string"><![CDATA[The placement ID that's been setup in your Audience Network settings.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: Resolves with a #adinstance, or rejects with a #apierror if it couldn't be created.  An error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.getRewardedVideoAsync("my_placement_ad", function(result,error)
+	print("getRewardedVideoAsync result:",result)
+end)
+<br/>]]></example>
+<example name=""><![CDATA[<br />
+FBInstant.getRewardedVideoAsync("my_placement_ad", function(result,error)
+	advert = result -- make a global of the result
+	advert:loadAsync( function ()  -- Preload the reward advert.
+		print("Advert loaded!")
+		advert:showAsync( function () -- show the reward advert.
+			print("Reward advert watched!")
+		end)
+	end)
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.matchPlayerAsync" page="matchPlayerAsync" shortdesc="Attempts to match the current player with other users looking for people to play with." version="Gideros 2018.3"><![CDATA[<br />
+Attempts to match the current player with other users looking for people to play with. If successful the a new Messenger group thread will be created containing the matched players and the player will be context switched to that thread.<br />
+<br />
+]]>
+<parameter name="matchTag" optional="true" type="string"><![CDATA[Optional extra information about the player used to group them with similar players. Players will only be grouped with other players with exactly the same tag. The tag must only include letters, numbers, and underscores and be 100 characters or less in length.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: True when the player has been added to a group thread and switched into the thread's context.  An error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.matchPlayerAsync("level1", function(result,error)
+	print(FBInstant.context.getID()) -- eg 12345
+end)
+<br/>]]></example>
+<example name=""><![CDATA[<br />
+FBInstant.matchPlayerAsync(nil, function(result,error)
+	print(FBInstant.context.getID()) -- eg 34567
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.checkCanPlayerMatchAsync" page="checkCanPlayerMatchAsync" shortdesc="Checks if the current player is eligible for the matchPlayerAsync API." version="Gideros 2018.3"><![CDATA[<br />
+Checks if the current player is eligible for the matchPlayerAsync API.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: True  if the player is eligible to match with other players and false otherwise.  An error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.checkCanPlayerMatchAsync( function(result,error)
+	if result then
+		FBInstant.matchPlayerAsync("level1", function(result,error)
+			print(FBInstant.context.getID()) -- eg 12345
+		end)
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.getLeaderboardAsync" page="getLeaderboardAsync" shortdesc="Fetch a specific leaderboard belonging to this Instant Game." version="Gideros 2018.3"><![CDATA[<br />
+Fetch a specific leaderboard belonging to this Instant Game.<br />
+<br />
+]]>
+<parameter name="name" optional="false" type="string"><![CDATA[The name of the leaderboard. Each leaderboard for an Instant Game must have its own distinct name.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: Result with the matching leaderboard, rejecting if one is not found.  An error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.getLeaderboardAsync("my_aweome_leaderboard", function(result,error)
+	print("getLeaderboardAsync result:",result)
+end)
+<br/>]]></example>
+<example name=""><![CDATA[<br />
+FBInstant.getLeaderboardAsync("my_aweome_leaderboard", function(result,error)
+	print("name",result:getName()) -- should display 'my__awesome_leaderboard'
+	print("context id",result:getContextID()) -- eg 12345678 or null if not tied to a context
+	result:getEntryCountAsync( function (result,error) -- Fetches the total number of player entries in the leaderboard.
+		if result then
+			print("Count",result)
+		end
+	end)
+	
+--Update the player's score. If the player has an existing score, the old score will only be replaced if the new score is better than it.
+-- NOTE: If the leaderboard is associated with a specific context, the game must be in that context to set a score for the player.
+	result:setScoreScoreAsync(42,{race="elf",level=3}, function (entry,error)
+		if entry then
+			print("score",entry:getScore()) -- 42
+			print("data",entry:getExtraData()) -- table like {race="elf",level=3}
+		end
+	end)
+	
+-- Retrieves the leaderboard's entry for the current player, or null if the player has not set one yet.
+	result:getPlayerEntryAsync( function (entry,error)
+		if entry then
+			print("rank",entry:getRank()) -- eg 2
+			print("score",entry:getScore()) -- 42
+			print("data",entry:getExtraData()) -- table like {race="elf",level=3}
+		end
+	end)
+	
+-- Retrieve a set of leaderboard entries, ordered by score ranking in the leaderboard.	
+-- parameter: count number The number of entries to attempt to fetch from the leaderboard. Defaults to 10 if not specified. Up to a maximum of 100 entries may be fetched per query.
+-- parameter: offset number The offset from the top of the leaderboard that entries will be fetched from.
+	result:getEntriesAsync(5,3, function(entry,error)
+		for loop=1,entry.length do
+			local e=entry[loop]
+			print("rank",e:getRank())
+			print("score",e:getScore())
+		end
+	end)
+end)
+<br/>]]></example>
+</method>
+
+</object>

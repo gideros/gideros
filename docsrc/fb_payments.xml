@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Payments" page="Payments" parent="" type="fbinstant" version="Gideros 2018.3"><![CDATA[<br />
+Contains functions and properties related to payments and purchases of game products.<br />
+]]>
+<platform>html5</platform>
+<method name="FBInstant.payments.getCatalogAsync" page="getCatalogAsync" shortdesc="Fetches the game's product catalog." version="Gideros 2018.3"><![CDATA[<br />
+Fetches the game's product catalog.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a set of key-value pairs that are the products that are registered to the game or nil if the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.payments.getCatalogAsync(function(result,error)
+    if result then
+		for key,value in pairs(result) do
+			print(key,value)
+		end
+	end
+end)
+<br/>]]></example>
+<example name=""><![CDATA[<br />
+FBInstant.payments.getCatalogAsync(function(result,error)
+    if result then
+		for loop=1,#result do
+			local p=result[loop]
+			print("title,id,description,umage,price,currency",p.title,p.productID,p.description,p.imageURI,p.price,p.priceCurrencyCode)
+		end
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.payments.purchaseAsync" page="purchaseAsync" shortdesc="Begins the purchase flow for a specific product." version="Gideros 2018.3"><![CDATA[<br />
+Begins the purchase flow for a specific product.<br />
+<br />
+]]>
+<parameter name="purchaseConfig" optional="false" type="table"><![CDATA[The purchase's configuration details.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: True when the product is successfully purchased by the player. Otherwise, it rejects if the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.payments.purchaseAsync({productID="12345", developerPayload="foobar"}, function(result,error)
+    if result then
+		print("Purchased!")
+		for key,value in pairs(result) do
+			print(key,value)
+		end
+	end
+end)
+<br/>]]></example>
+<example name=""><![CDATA[<br />
+FBInstant.payments.purchaseAsync({productID="12345", developerPayload="foobar"}, function(result,error)
+    if result then
+		print("Purchased!")
+		print("developer string",result.developerPayload)
+		print("payment id",result.paymentID)
+		print("product id",result.productID)
+		print("purchaseTime",result.purchaseTime)
+		print("puchaseToken",result.purchaseToken)
+		print("signedRequest",result.signedRequest)
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.payments.getPurchasesAsync" page="getPurchasesAsync" shortdesc="Fetches all of the player's unconsumed purchases." version="Gideros 2018.3"><![CDATA[<br />
+Fetches all of the player's unconsumed purchases. As a best practice, the game should fetch the current player's purchases as soon as the client indicates that it is ready to perform payments-related operations. The game can then process and consume any purchases that are waiting to be consumed.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a set of key-value pairs that purchases that the player has made for the game or nil if the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.payments.getPurchasesAsync(function(result,error)
+    if result then
+		print("Unconsumed purchases:",#result)
+		for loop=1,#result do
+			local item=result[loop]
+			for key,value in pairs(item) do
+				print(key,value)
+			end
+		end
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.payments.consumePurchaseAsync" page="consumePurchaseAsync" shortdesc="Consumes a specific purchase belonging to the current player." version="Gideros 2018.3"><![CDATA[<br />
+Consumes a specific purchase belonging to the current player. Before provisioning a product's effects to the player, the game should request the consumption of the purchased product. Once the purchase is successfully consumed, the game should immediately provide the player with the effects of their purchase.<br />
+<br />
+]]>
+<parameter name="purchaseToken" optional="false" type="string"><![CDATA[The purchase token of the purchase that should be consumed.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: True when the purchase has been consumed successfully otherwise the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.payments.consumePurchaseAsync("54321", function(result,error)
+    if result then
+		print("Consumed!")
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.payments.onReady" page="onReady" shortdesc="Sets a callback to be triggered when Payments operations are available." version="Gideros 2018.3"><![CDATA[<br />
+Sets a callback to be triggered when Payments operations are available.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A functionto be executed when Payments are available]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.payments.onReady(function()
+	print("Payments Ready!")
+end)
+<br/>]]></example>
+</method>
+</object>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<object name="Player" page="Player" parent="" type="fbinstant" version="Gideros 2018.3"><![CDATA[<br />
+Contains functions and properties related to the current player.<br />
+]]>
+<platform>html5</platform>
+<method name="FBInstant.player.getID" page="getID" shortdesc="A unique identifier for the player." version="Gideros 2018.3"><![CDATA[<br />
+A unique identifier for the player. A Facebook user's player ID will remain constant, and is scoped to a specific game. This means that different games will have different player IDs for the same user.<br />
+]]>
+<return name="playerID" type="string"><![CDATA[A unique identifier for the player.]]></return>
+</method>
+
+<method name="FBInstant.player.getSignedPlayerInfoAsync" page="getSignedPlayerInfoAsync" shortdesc="Fetch the player's unique identifier along with a signature." version="Gideros 2018.3"><![CDATA[<br />
+Fetch the player's unique identifier along with a signature that verifies that the identifier indeed comes from Facebook without being tampered with.<br />
+]]>
+<parameter name="requestPayload" optional="false" type="string"><![CDATA[A developer-specified payload to include in the signed response.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a SignedPlayerInfo object or nil is the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.player.getSignedPlayerInfoAsync("my_metadata", function(result,error)
+    SendToMyServer(
+      result.getPlayerID(), -- same value as FBInstant.player.getID()
+      result.getSignature(),
+      "GAIN_COINS",
+      100)
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.player.getPhoto" page="getPhoto" shortdesc="A url to the player's public profile photo." version="Gideros 2018.3"><![CDATA[<br />
+A url to the player's public profile photo. The photo will always be a square, and with dimensions of at least 200x200. When rendering it in the game, the exact dimensions should never be assumed to be constant. It's recommended to always scale the image to a desired size before rendering. The value will always be null until FBInstant.startGameAsync() resolves.<br /><br />
+WARNING: Due to CORS, using these photos in the game canvas can cause it to be tainted, which will prevent the canvas data from being extracted. To prevent this, set the cross-origin attribute of the images you use to 'anonymous'.<br />
+<br />
+]]>
+<return name="playerImage" type="string"><![CDATA[Url to the player's public profile photo.]]></return>
+</method>
+  
+<method name="FBInstant.player.getDataAsync" page="getDataAsync" shortdesc="Retrieve data from the designated cloud storage of the current player." version="Gideros 2018.3"><![CDATA[<br />
+Retrieve data from the designated cloud storage of the current player.<br />
+<br />
+]]>
+<parameter name="keys" optional="false" type="table"><![CDATA[An array of unique keys to retrieve data for.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a set of key-value pairs or nil is the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.player.getDataAsync({"achievements","currentLife"}, function(result,error)
+    if result then
+		for key,value in pairs(result) do
+			print(key,value)
+		end
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.player.setDataAsync" page="setDataAsync" shortdesc="Set data to be saved to the designated cloud storage of the current player." version="Gideros 2018.3"><![CDATA[<br />
+Set data to be saved to the designated cloud storage of the current player. The game can store up to 1MB of data for each unique player.<br />
+<br />
+]]>
+<parameter name="keys-value-pairs" optional="false" type="table"><![CDATA[A table containing a set of key-value pairs that should be persisted to cloud storage. The object must contain only serializable values - any non-serializable values will cause the entire modification to be rejected.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: true or nil if the operation failed, and an error code if the function failed.  NOTE: True does not necessarily mean that the input has already been persisted. Rather, it means that the data was valid and has been scheduled to be saved. It also guarantees that all values that were set are now available in player.getDataAsync]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.player.setDataAsync({achievements={"medal1","medal2","medal3"},currentLife=300}, function(result,error)
+    if result then
+		print("data is set")
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.player.flushDataAsync" page="flushDataAsync" shortdesc="Immediately flushes any changes to the player data to the designated cloud storage." version="Gideros 2018.3"><![CDATA[<br />
+Immediately flushes any changes to the player data to the designated cloud storage. This function is expensive, and should primarily be used for critical changes where persistence needs to be immediate and known by the game. Non-critical changes should rely on the platform to persist them in the background. NOTE: Calls to player.setDataAsync will be rejected while this function's result is pending.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: true when changes have been persisted successfully or nil if the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.player.setDataAsync({achievements={"medal1","medal2","medal3"},currentLife=300}, function(result,error)
+    if result then
+		FBInstant.player.flushDataAsync(function (result,error)
+			if result then
+				print("Data persisted to FB!")
+			end
+		end)
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.player.getStatsAsync" page="getStatsAsync" shortdesc="Retrieve stats from the designated cloud storage of the current player." version="Gideros 2018.3"><![CDATA[<br />
+Retrieve stats from the designated cloud storage of the current player.<br />
+<br />
+]]>
+<parameter name="keys" optional="false" type="table"><![CDATA[An optional table of unique keys to retrieve stats for. If the function is called with it nil, it will fetch all stats.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a set of key-value pairs or nil is the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.player.getDataAsync({"level","zombiesSlain"}, function(result,error)
+    if result then
+		print("stats are loaded")
+		for key,value in pairs(result) do
+			print(key,value)
+		end
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.player.setStatsAsync" page="setStatsAsync" shortdesc="Set stats to be saved to the designated cloud storage of the current player." version="Gideros 2018.3"><![CDATA[<br />
+Set stats to be saved to the designated cloud storage of the current player.<br />
+<br />
+]]>
+<parameter name="keys-value-pairs" optional="false" type="table"><![CDATA[A table containing a set of key-value pairs that should be persisted to cloud storage as stats, which can be surfaced or used in a variety of ways to benefit player engagement. The object must contain only numerical values - any non-numerical values will cause the entire modification to be rejected.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: true or nil if the operation failed, and an error code if the function failed.  NOTE: True does not necessarily mean that the input has already been persisted. Rather, it means that the data was valid and has been scheduled to be saved. It also guarantees that all values that were set are now available in player.getDataAsync]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.player.setStatsAsync({level=5,zombiesSlain=27}, function(result,error)
+    if result then
+		print("data is set")
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.player.incrementStatsAsync" page="incrementStatsAsync" shortdesc="Increment stats saved in the designated cloud storage of the current player." version="Gideros 2018.3"><![CDATA[<br />
+Increment stats saved in the designated cloud storage of the current player.<br />
+<br />
+]]>
+<parameter name="keys-value-pairs" optional="false" type="table"><![CDATA[A table containing a set of key-value pairs  indicating how much to increment each stat in cloud storage.  The object must contain only numerical values - any non-numerical values will cause the entire modification to be rejected.]]></parameter>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a table which contains the updated key-value pairs for each key specified in the input dictionary or nil if the operation failed, and an error code if the function failed.  NOTE: The table does not necessarily mean that the changes have already been persisted. Rather, it means that the increments were valid and have been scheduled to be performed. It also guarantees that all values that were incremented are now available in player.getStatsAsync.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.player.incrementStatsAsync({level=1,zombiesSlain=17,rank=-1}, function(result,error)
+    if result then
+		print("increments have been made! New values:")
+		for key,value in pairs(result) do
+			print(key,value)
+		end
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.player.getConnectedPlayersAsync" page="getConnectedPlayersAsync" shortdesc="Fetches a table of ConnectedPlayer tables." version="Gideros 2018.3"><![CDATA[<br />
+Fetches a table of ConnectedPlayer tables containing information about players that are connected to the current player.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a set of key-value pairs or nil is the operation failed, and an error code if the function failed.  NOTE: This promise will not resolve until FBInstant.startGameAsync() has resolved.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.player.getConnectedPlayersAsync(function(result,error)
+    if result then
+		print("Connected players:",#result)
+		for loop=1,#result do
+			local player=result[loop]
+			for key,value in pairs(player) do
+				print(key,value)
+			end
+		end
+	end
+end)
+<br/>]]></example>
+
+<example name=""><![CDATA[<br />
+FBInstant.player.getConnectedPlayersAsync(function(result,error)
+    if result then
+		print("Connected players:",#result)
+		for loop=1,#result do
+			local player=result[loop]
+			print("id, name, photo:",player.getID(),player.getName(),player.getPhoto())
+		end
+	end
+end)
+<br/>]]></example>
+</method>
+  
+</object>
