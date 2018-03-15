@@ -358,6 +358,30 @@ FBInstant.getLeaderboardAsync("my_aweome_leaderboard", function(result,error)
 	end)
 end)
 <br/>]]></example>
+<example name="Example 3 - global leaderboard"><![CDATA[<br />
+	FBInstant.getLeaderboardAsync("my_aweome_leaderboard",function (e,error)
+		print("global leaderboard event",e)
+		if e then
+			for key,value in pairs(e) do
+				print(key,value)
+			end
+		else
+			print("global leaderboard error",error)
+		end
+	end)
+<br/>]]></example>
+<example name="Example 4 - group leaderboard"><![CDATA[<br />
+	fbContextId=FBInstant.context.getID()
+	if fbContextId~="null" then
+		print("context",fbContextId)
+		FBInstant.getLeaderboardAsync("Highest Level Achievers."..fbContextId,function (e,error)
+			print("group leaderboard event",e)
+			print("group leaderboard error",error)
+		end)
+	else
+		print("You may have tried to access a context high score in solo mode!")
+	end
+<br/>]]></example>
 </method>
 
 </object>

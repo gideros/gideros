@@ -8,6 +8,18 @@ A unique identifier for the current game context. This represents a specific con
 <br />
 ]]>
 <return name="contextID" type="string"><![CDATA[A unique identifier for the current game context.]]></return>
+<example name=""><![CDATA[<br />
+	fbContextId=FBInstant.context.getID()
+	if fbContextId~="null" then
+		print("context",fbContextId)
+		FBInstant.getLeaderboardAsync("Highest Level Achievers."..fbContextId,function (e,error)
+			print("group leaderboard event",e)
+			print("group leaderboard error",error)
+		end)
+	else
+		print("You may have tried to access a context high score in solo mode!")
+	end
+<br/>]]></example>
 </method>
 
 <method name="FBInstant.context.getType" page="getType" shortdesc="The type of the current game context." version="Gideros 2018.3"><![CDATA[<br />
