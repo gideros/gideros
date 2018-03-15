@@ -56,6 +56,20 @@ The platform on which the game is currently running.<br />
 Report the game's initial loading progress.<br />
 ]]>
 <parameter name="percentage" optional="false" type="number"><![CDATA[A number between 0 and 100.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.getSupportedAPIs( function(result,error)
+local progressCount=0
+function progress()
+	progressCount+=1
+	local steps=9 -- set to the number of times progress() called
+	local percent=70+((30/steps)*progressCount)  -- on export set the % to 70
+	print("Progress",progressCount,percent.."%")
+	if FBInstant then FBInstant.setLoadingProgress(percent) end
+end
+progress() -- do this multiple times as you load images, process data, etc
+-- eventually call FBInstant.startGameAsync(function) just before starting the game proper.
+end)
+<br/>]]></example>
 </method>
 
 <method name="FBInstant.getSupportedAPIs" page="getSupportedAPIs" shortdesc="Provides a list of API functions that are supported by the client." version="Gideros 2018.3"><![CDATA[<br />
