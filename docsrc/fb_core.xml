@@ -199,6 +199,38 @@ end)
 <br/>]]></example>
 </method>
 
+<method name="FBInstant.canCreateShortcutAsync" page="canCreateShortcutAsync" shortdesc="Returns whether or not the user is eligible to have shortcut creation requested." version="Gideros 2018.3.1"><![CDATA[<br />
+Returns whether or not the user is eligible to have shortcut creation requested.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: Will return true if the game can request the player create a shortcut to the game, and false otherwise and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.canCreateShortcutAsync(function(result,error)
+	if result then
+		print("Can creater shortcut")
+	else
+		print("Can't create shortcut")
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.createShortcutAsync" page="createShortcutAsync" shortdesc="Prompts the user to create a shortcut to the game." version="Gideros 2018.3.1"><![CDATA[<br />
+Prompts the user to create a shortcut to the game if they are eligible to Can only be called once per session.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: Will return false if createShortcutAsync was already called this session or the user is ineligible for shortcut creation and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.createShortcutAsync(function(result,error)
+	if result then
+		print("Created shortcut")
+	else
+		print("Can't create shortcut")
+	end
+end)
+<br/>]]></example>
+</method>
+
 <method name="FBInstant.quit" page="quit" shortdesc="Quits the game." version="Gideros 2018.3"><![CDATA[<br />
 Quits the game.<br />
 <br />
@@ -273,11 +305,12 @@ end)
 <br/>]]></example>
 </method>
 
-<method name="FBInstant.matchPlayerAsync" page="matchPlayerAsync" shortdesc="Attempts to match the current player with other users looking for people to play with." version="Gideros 2018.3"><![CDATA[<br />
-Attempts to match the current player with other users looking for people to play with. If successful the a new Messenger group thread will be created containing the matched players and the player will be context switched to that thread.<br />
+<method name="FBInstant.matchPlayerAsync" page="matchPlayerAsync" shortdesc="Attempts to match the current player with other users looking for people to play with." version="Gideros 2018.3.1"><![CDATA[<br />
+Attempts to match the current player with other users looking for people to play with. If successful, a new Messenger group thread will be created containing the matched players and the player will be context switched to that thread. The default minimum and maximum number of players in one matched thread are 2 and 20 respectively, depending on how many players are trying to get matched around the same time. The values can be changed in fbapp-config.json. See the [Bundle Config documentation]https://developers.facebook.com/docs/games/instant-games/bundle-config for documentation about fbapp-config.json.<br />
 <br />
 ]]>
 <parameter name="matchTag" optional="true" type="string"><![CDATA[Optional extra information about the player used to group them with similar players. Players will only be grouped with other players with exactly the same tag. The tag must only include letters, numbers, and underscores and be 100 characters or less in length.]]></parameter>
+<parameter name="switchContextWhenMatched" optional="true" type="boolean"><![CDATA[Optional extra parameter that specifies whether the player should be immediately switched to the new context when a match is found. By default this will be false which will mean the player needs explicitly press play after being matched to switch to the new context.]]></parameter>
 <parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: True when the player has been added to a group thread and switched into the thread's context.  An error code if the function failed.]]></parameter>
 <example name=""><![CDATA[<br />
 FBInstant.matchPlayerAsync("level1", function(result,error)
