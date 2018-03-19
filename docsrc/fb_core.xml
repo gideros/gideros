@@ -9,7 +9,7 @@ You can upload, debug and test your game by creating a player and uploading to F
 The only restriction with the player is that it only works on the computer viewing the html5 game (localhost) - this would normally rule out actual phones but there is a workaround for Android:<br />
 <br />
 1. Connect your Android phone to your computer using ADB.<br />
-2. Type in this command in a command console shell (Windows) or terminal (Mac):     <b>abd reverse tcp:15001 tcp:15001</b><br />
+2. Type in this command in a command console shell (Windows) or terminal (Mac):     <b>adb reverse tcp:15001 tcp:15001</b><br />
 3. The Android device now will see the Gideros Studio when testing the game when a player is launched from within Facebook Messenger.<br />
 <br />
 Please refer to the <a href="https://developers.facebook.com/docs/games/instant-games/getting-started/quickstart">original Facebook documentation</a> for more information about testing and uploading.<br /><br/>
