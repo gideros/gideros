@@ -363,10 +363,10 @@ FBInstant.getLeaderboardAsync("my_aweome_leaderboard", function(result,error)
 	
 --Update the player's score. If the player has an existing score, the old score will only be replaced if the new score is better than it.
 -- NOTE: If the leaderboard is associated with a specific context, the game must be in that context to set a score for the player.
-	result:setScoreScoreAsync(42,{race="elf",level=3}, function (entry,error)
+	result:setScoreAsync(42,"{race="elf",level=3}", function (entry,error)
 		if entry then
 			print("score",entry:getScore()) -- 42
-			print("data",entry:getExtraData()) -- table like {race="elf",level=3}
+			print("data",entry:getExtraData()) -- string like "{race="elf",level=3}"
 		end
 	end)
 	
@@ -375,7 +375,7 @@ FBInstant.getLeaderboardAsync("my_aweome_leaderboard", function(result,error)
 		if entry then
 			print("rank",entry:getRank()) -- eg 2
 			print("score",entry:getScore()) -- 42
-			print("data",entry:getExtraData()) -- table like {race="elf",level=3}
+			print("data",entry:getExtraData()) -- string like "{race="elf",level=3}"
 		end
 	end)
 	
