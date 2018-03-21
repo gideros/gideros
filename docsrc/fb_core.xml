@@ -9,7 +9,7 @@ You can upload, debug and test your game by creating a player and uploading to F
 The only restriction with the player is that it only works on the computer viewing the html5 game (localhost) - this would normally rule out actual phones but there is a workaround for Android:<br />
 <br />
 1. Connect your Android phone to your computer using ADB.<br />
-2. Type in this command in a command console shell (Windows) or terminal (Mac):     <b>abd reverse tcp:15001 tcp:15001</b><br />
+2. Type in this command in a command console shell (Windows) or terminal (Mac):     <b>adb reverse tcp:15001 tcp:15001</b><br />
 3. The Android device now will see the Gideros Studio when testing the game when a player is launched from within Facebook Messenger.<br />
 <br />
 Please refer to the <a href="https://developers.facebook.com/docs/games/instant-games/getting-started/quickstart">original Facebook documentation</a> for more information about testing and uploading.<br /><br/>
@@ -199,6 +199,38 @@ end)
 <br/>]]></example>
 </method>
 
+<method name="FBInstant.canCreateShortcutAsync" page="canCreateShortcutAsync" shortdesc="Returns whether or not the user is eligible to have shortcut creation requested." version="Gideros 2018.3.1"><![CDATA[<br />
+Returns whether or not the user is eligible to have shortcut creation requested.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: Will return true if the game can request the player create a shortcut to the game, and false otherwise and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.canCreateShortcutAsync(function(result,error)
+	if result then
+		print("Can creater shortcut")
+	else
+		print("Can't create shortcut")
+	end
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.createShortcutAsync" page="createShortcutAsync" shortdesc="Prompts the user to create a shortcut to the game." version="Gideros 2018.3.1"><![CDATA[<br />
+Prompts the user to create a shortcut to the game if they are eligible to Can only be called once per session.<br />
+<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: Will return false if createShortcutAsync was already called this session or the user is ineligible for shortcut creation and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.createShortcutAsync(function(result,error)
+	if result then
+		print("Created shortcut")
+	else
+		print("Can't create shortcut")
+	end
+end)
+<br/>]]></example>
+</method>
+
 <method name="FBInstant.quit" page="quit" shortdesc="Quits the game." version="Gideros 2018.3"><![CDATA[<br />
 Quits the game.<br />
 <br />
@@ -273,11 +305,12 @@ end)
 <br/>]]></example>
 </method>
 
-<method name="FBInstant.matchPlayerAsync" page="matchPlayerAsync" shortdesc="Attempts to match the current player with other users looking for people to play with." version="Gideros 2018.3"><![CDATA[<br />
-Attempts to match the current player with other users looking for people to play with. If successful the a new Messenger group thread will be created containing the matched players and the player will be context switched to that thread.<br />
+<method name="FBInstant.matchPlayerAsync" page="matchPlayerAsync" shortdesc="Attempts to match the current player with other users looking for people to play with." version="Gideros 2018.3.1"><![CDATA[<br />
+Attempts to match the current player with other users looking for people to play with. If successful, a new Messenger group thread will be created containing the matched players and the player will be context switched to that thread. The default minimum and maximum number of players in one matched thread are 2 and 20 respectively, depending on how many players are trying to get matched around the same time. The values can be changed in fbapp-config.json. See the [Bundle Config documentation]https://developers.facebook.com/docs/games/instant-games/bundle-config for documentation about fbapp-config.json.<br />
 <br />
 ]]>
 <parameter name="matchTag" optional="true" type="string"><![CDATA[Optional extra information about the player used to group them with similar players. Players will only be grouped with other players with exactly the same tag. The tag must only include letters, numbers, and underscores and be 100 characters or less in length.]]></parameter>
+<parameter name="switchContextWhenMatched" optional="true" type="boolean"><![CDATA[Optional extra parameter that specifies whether the player should be immediately switched to the new context when a match is found. By default this will be false which will mean the player needs explicitly press play after being matched to switch to the new context.]]></parameter>
 <parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: True when the player has been added to a group thread and switched into the thread's context.  An error code if the function failed.]]></parameter>
 <example name=""><![CDATA[<br />
 FBInstant.matchPlayerAsync("level1", function(result,error)
@@ -330,10 +363,10 @@ FBInstant.getLeaderboardAsync("my_aweome_leaderboard", function(result,error)
 	
 --Update the player's score. If the player has an existing score, the old score will only be replaced if the new score is better than it.
 -- NOTE: If the leaderboard is associated with a specific context, the game must be in that context to set a score for the player.
-	result:setScoreScoreAsync(42,{race="elf",level=3}, function (entry,error)
+	result:setScoreAsync(42,"{race="elf",level=3}", function (entry,error)
 		if entry then
 			print("score",entry:getScore()) -- 42
-			print("data",entry:getExtraData()) -- table like {race="elf",level=3}
+			print("data",entry:getExtraData()) -- string like "{race="elf",level=3}"
 		end
 	end)
 	
@@ -342,7 +375,7 @@ FBInstant.getLeaderboardAsync("my_aweome_leaderboard", function(result,error)
 		if entry then
 			print("rank",entry:getRank()) -- eg 2
 			print("score",entry:getScore()) -- 42
-			print("data",entry:getExtraData()) -- table like {race="elf",level=3}
+			print("data",entry:getExtraData()) -- string like "{race="elf",level=3}"
 		end
 	end)
 	

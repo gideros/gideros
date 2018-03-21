@@ -25,6 +25,43 @@ end)
 <br/>]]></example>
 </method>
 
+<method name="FBInstant.player.canSubscribeBotAsync" page="canSubscribeBotAsync" shortdesc="Whether a player can subscribe to the game bot or not." version="Gideros 2018.3.1"><![CDATA[<br />
+Whether a player can subscribe to the game bot or not. Developer can only call subscribeBotAsync() after checking canSubscribeBotAsync(), and the player will only be able to see this bot subscription dialog once for a specific game.<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a boolean or nil is the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.player.canSubscribeBotAsync(function(result,error)
+	if result then
+		print("Can subscribe")
+	else
+		print("Can't subscribe")
+	end	
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.player.subscribeBotAsync" page="subscribeBotAsync" shortdesc="Request that the player subscribe the bot associated to the game." version="Gideros 2018.3.1"><![CDATA[<br />
+Request that the player subscribe the bot associated to the game. The API will reject if the subscription fails - else, the player will subscribe the game bot.<br />
+]]>
+<parameter name="callback" optional="false" type="function"><![CDATA[A function that will be called with two arguments: a boolean or nil is the operation failed, and an error code if the function failed.]]></parameter>
+<example name=""><![CDATA[<br />
+FBInstant.player.subscribeBotAsync(function(result,error)
+	if result then
+		print("Did subscribe")
+	else
+		print("Failed subscribe")
+	end	
+end)
+<br/>]]></example>
+</method>
+
+<method name="FBInstant.player.getName" page="getName" shortdesc="The player's localized display name." version="Gideros 2018.3"><![CDATA[<br />
+The player's localized display name.<br />
+<br />
+]]>
+<return name="playerName" type="string"><![CDATA[The player's localized display name.]]></return>
+</method>
+
 <method name="FBInstant.player.getPhoto" page="getPhoto" shortdesc="A url to the player's public profile photo." version="Gideros 2018.3"><![CDATA[<br />
 A url to the player's public profile photo. The photo will always be a square, and with dimensions of at least 200x200. When rendering it in the game, the exact dimensions should never be assumed to be constant. It's recommended to always scale the image to a desired size before rendering. The value will always be null until FBInstant.startGameAsync() resolves.<br /><br />
 WARNING: Due to CORS, using these photos in the game canvas can cause it to be tainted, which will prevent the canvas data from being extracted. To prevent this, set the cross-origin attribute of the images you use to 'anonymous'.<br />
