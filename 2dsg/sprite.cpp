@@ -214,7 +214,7 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
                 }
             }
 
-            if (sprite->parent_)
+            if ((sprite!=this)&&(sprite->parent_))
 			sprite->worldTransform_ = sprite->parent_->worldTransform_
 					* sprite->localTransform_.matrix();
 
