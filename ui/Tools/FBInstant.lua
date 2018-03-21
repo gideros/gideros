@@ -398,7 +398,7 @@ function FBInstant.Leaderboard:setScoreAsync(score,data,cb)
   contexts[contextid]={self,cb}
   JS.eval([[FBInstant.GiderosLdb["]]..self.aid..[["].setScoreAsync(]]..score..[[,']]..escapeString(data)..[[').then(function (entry) {
     var e={ score: entry.getScore(), formattedScore: entry.getFormattedScore(), timestamp: entry.getTimestamp(), rank: entry.getRank(), extraData: entry.getExtraData(),
-            player: { name: entry.getPlayer().getName(), photo: entry.getPlayer().getPhoto(), id: entry.getPlayer.getId() }};
+            player: { name: entry.getPlayer().getName(), photo: entry.getPlayer().getPhoto(), id: entry.getPlayer().getID() }};
     Module.GiderosJSEvent("FBInstantLdbSSA",]]..contextid..[[,1,JSON.stringify(e));
   },function (err) {
     Module.GiderosJSEvent("FBInstantLdbSSA",]]..contextid..[[,0,err.code);
@@ -409,7 +409,7 @@ function FBInstant.Leaderboard:getPlayerEntryAsync(cb)
   contexts[contextid]={self,cb}
   JS.eval([[FBInstant.GiderosLdb["]]..self.aid..[["].getPlayerEntryAsync().then(function (entry) {
     var e={ score: entry.getScore(), formattedScore: entry.getFormattedScore(), timestamp: entry.getTimestamp(), rank: entry.getRank(), extraData: entry.getExtraData(),
-            player: { name: entry.getPlayer().getName(), photo: entry.getPlayer().getPhoto(), id: entry.getPlayer.getId() }};
+            player: { name: entry.getPlayer().getName(), photo: entry.getPlayer().getPhoto(), id: entry.getPlayer().getID() }};
     Module.GiderosJSEvent("FBInstantLdbSSA",]]..contextid..[[,1,JSON.stringify(e));
   },function (err) {
     Module.GiderosJSEvent("FBInstantLdbSSA",]]..contextid..[[,0,err.code);
@@ -425,7 +425,7 @@ function FBInstant.Leaderboard:getEntriesAsync(count,offset,cb)
     for (k=0;k<entries.length;k++) {
       var entry=entries[k];
       var e={ score: entry.getScore(), formattedScore: entry.getFormattedScore(), timestamp: entry.getTimestamp(), rank: entry.getRank(), extraData: entry.getExtraData(),
-            player: { name: entry.getPlayer().getName(), photo: entry.getPlayer().getPhoto(), id: entry.getPlayer.getId() }};
+            player: { name: entry.getPlayer().getName(), photo: entry.getPlayer().getPhoto(), id: entry.getPlayer().getID() }};
       ea.push(e);
     }
     Module.GiderosJSEvent("FBInstantLdbGEA",]]..contextid..[[,1,JSON.stringify(ea));
@@ -449,17 +449,16 @@ end
 JS:addEventListener("FBInstantLdbSSA",function (e)
   if contexts[e.context] then
     local d=e.data
-    if e.value>0 then d=FBInstant.LeaderboardEntry.new(d) end 
+    if e.value>0 then d=FBInstant.LeaderboardEntry.new(json.decode(d)) end 
     contexts[e.context][2](contexts[e.context][1],e.value>0,d) 
   end
   contexts[e.context]=nil
 end)
 JS:addEventListener("FBInstantLdbGEA",function (e)
   if contexts[e.context] then
-    local d=e.data
+    local d={}
     if e.value>0 then
-      local d={}
-      for k,v in ipairs(e.data) do table.insert(d,FBInstant.LeaderboardEntry.new(v)) end 
+      for k,v in ipairs(json.decode(e.data)) do table.insert(d,FBInstant.LeaderboardEntry.new(v)) end 
     end 
     contexts[e.context][2](contexts[e.context][1],e.value>0,d) 
   end
