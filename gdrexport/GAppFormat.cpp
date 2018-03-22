@@ -18,6 +18,13 @@ void GAppFormat::buildGApp(QString gappfile_, ExportContext *ctx) {
 		quint32 cbuf;
 		char cpbuf[4096];
 		for (int k = 0; k < ctx->allfiles.size(); k++) {
+			if (ctx->noPackage.count(ctx->allfiles[k])) {
+				QString tfile=ctx->outputDir.absoluteFilePath(ctx->allfiles[k]);
+				QFileInfo fi(tfile);
+				ctx->outputDir.mkpath(fi.absolutePath());
+				QFile::copy(ctx->allfiles_abs[k],tfile);
+				continue;
+			}
 			buffer.append(ctx->allfiles[k].toStdString());
 			cbuf = _htonl(offset);
 			buffer.append((unsigned char *) &cbuf, 4);

@@ -63,6 +63,8 @@ struct ExportContext
     std::vector<std::pair<QString, bool> > topologicalSort;
     std::set<QString> noEncryption;
     std::set<QString> noEncryptionExt;
+    std::set<QString> noPackage;
+    std::set<QString> noPackageAbs;
     QStringList allfiles;
     QStringList allfiles_abs;
     QStringList assetfiles;

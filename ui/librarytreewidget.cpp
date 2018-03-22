@@ -90,6 +90,10 @@ LibraryTreeWidget::LibraryTreeWidget(QWidget *parent)
     excludeFromEncryptionAction_->setCheckable(true);
     connect(excludeFromEncryptionAction_, SIGNAL(triggered(bool)), this, SLOT(excludeFromEncryption(bool)));
 
+    excludeFromPackageAction_ = new QAction(tr("Don't package"), this);
+    excludeFromPackageAction_->setCheckable(true);
+    connect(excludeFromPackageAction_, SIGNAL(triggered(bool)), this, SLOT(excludeFromPackage(bool)));
+
 #if defined(Q_OS_WIN)
     showInFindeAction_ = new QAction(tr("Show in Explorer"), this);
 #else
@@ -190,7 +194,10 @@ void LibraryTreeWidget::onCustomContextMenuRequested(const QPoint& pos)
 
         bool excludeFromEncryption = data.contains("excludeFromEncryption") && data["excludeFromEncryption"].toBool();
         excludeFromEncryptionAction_->setChecked(excludeFromEncryption);
+        bool excludeFromPackage = data.contains("excludeFromPackage") && data["excludeFromPackage"].toBool();
+        excludeFromPackageAction_->setChecked(excludeFromPackage);
         menu.addAction(excludeFromEncryptionAction_);
+        menu.addAction(excludeFromPackageAction_);
 	}
 
 	if (size == 1 && (nodetype&NODETYPE_PROJECT))
@@ -593,6 +600,8 @@ QDomDocument LibraryTreeWidget::toXml() const
                     childElement.setAttribute("excludeFromExecution", 1);
                 if (data.contains("excludeFromEncryption") && data["excludeFromEncryption"].toBool())
                     childElement.setAttribute("excludeFromEncryption", 1);
+                if (data.contains("excludeFromPackage") && data["excludeFromPackage"].toBool())
+                    childElement.setAttribute("excludeFromPackage", 1);
             }
 			else
 				childElement.setAttribute("name", childItem->text(0));
@@ -711,7 +720,8 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
                 bool downsizing = e.hasAttribute("downsizing") && e.attribute("downsizing").toInt();
                 bool excludeFromExecution = e.hasAttribute("excludeFromExecution") && e.attribute("excludeFromExecution").toInt();
                 bool excludeFromEncryption = e.hasAttribute("excludeFromEncryption") && e.attribute("excludeFromEncryption").toInt();
-                item = createFileItem(file, downsizing, excludeFromExecution, excludeFromEncryption);
+                bool excludeFromPackage = e.hasAttribute("excludeFromPackage") && e.attribute("excludeFromPackage").toInt();
+                item = createFileItem(file, downsizing, excludeFromExecution, excludeFromEncryption,excludeFromPackage);
 			}
 			else if (type == "folder")
 			{
@@ -752,7 +762,7 @@ void LibraryTreeWidget::loadXml(const QString& projectFileName, const QDomDocume
 		emit modificationChanged(isModifed_);
 }
 
-QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool downsizing, bool excludeFromExecution, bool excludeFromEncryption)
+QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool downsizing, bool excludeFromExecution, bool excludeFromEncryption, bool excludeFromPackage)
 {
 	QString name = QFileInfo(file).fileName();
 	QString ext = QFileInfo(file).suffix().toLower();
@@ -789,6 +799,9 @@ QTreeWidgetItem* LibraryTreeWidget::createFileItem(const QString& file, bool dow
 
     if (excludeFromEncryption)
         data["excludeFromEncryption"] = true;
+
+    if (excludeFromPackage)
+        data["excludeFromPackage"] = true;
 
 	item->setData(0, Qt::UserRole, data);
 
@@ -1183,4 +1196,19 @@ void LibraryTreeWidget::excludeFromEncryption(bool checked)
 
     //item->setIcon(0, IconLibrary::instance().icon(0, checked ? "lua with stop" : "lua"));
     //XXX would be good to overlay a little icon symbol saying that the file won't be encrypted
+}
+
+void LibraryTreeWidget::excludeFromPackage(bool checked)
+{
+    if (selectedItems().empty() == true)
+        return;
+
+    QTreeWidgetItem* item = selectedItems()[0];
+
+    QMap<QString, QVariant> data = item->data(0, Qt::UserRole).toMap();
+    data["excludeFromPackage"] = checked;
+    item->setData(0, Qt::UserRole, data);
+
+    //item->setIcon(0, IconLibrary::instance().icon(0, checked ? "lua with stop" : "lua"));
+    //XXX would be good to overlay a little icon symbol saying that the file won't be packaged
 }

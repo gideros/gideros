@@ -66,6 +66,7 @@ static bool readProjectFile(const QString& fileName,
         fileList_.clear();
         dependencyGraph_.clear();
         noEncryption.clear();
+        ctx.noPackage.clear();
         std::vector<std::pair<QString, QString> > dependencies_;
 
     	//Add lua plugins
@@ -147,6 +148,8 @@ static bool readProjectFile(const QString& fileName,
 
                 if (e.hasAttribute("excludeFromEncryption") && e.attribute("excludeFromEncryption").toInt())
                 	noEncryption.insert(n);
+                if (e.hasAttribute("excludeFromPackage") && e.attribute("excludeFromPackage").toInt())
+                	ctx.noPackage.insert(n);
 
                 continue;
             }

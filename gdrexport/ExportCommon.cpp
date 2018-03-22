@@ -275,6 +275,8 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 	if ((ctx->fileQueue.size() == 0) || (ctx->player)) //No assets -> Player
 		return;
 
+	ctx->noPackageAbs.clear();
+
 	exportInfo("Exporting assets\n");
 	for (std::size_t i = 0; i < ctx->folderList.size(); ++i)
 		ctx->outputDir.mkdir(ctx->folderList[i]);
@@ -403,6 +405,8 @@ void ExportCommon::exportAssets(ExportContext *ctx, bool compileLua) {
 		for (int i = 0; i < ctx->allfiles_abs.size(); ++i) {
 			ExportCommon::progressStep(
 					ctx->allfiles_abs[i].toUtf8().constData());
+			if (ctx->noPackage.count(ctx->allfiles[i]))
+				ctx->noPackageAbs.insert(ctx->allfiles_abs[i]);
 			if (ctx->noEncryption.count(ctx->allfiles[i]))
 				continue; //File marked as non encryotable
 			QString filename = ctx->allfiles_abs[i];

@@ -118,7 +118,9 @@ unsigned int png::deflate(const char *in, unsigned int inSize, char *out,
 
 static void calcBmpSize(unsigned int size, unsigned int &w, unsigned int &h)
 {
-    w = size < 4096 ? ((size+2)/3) : 4096;
+	int pixels=(size+2)/3;
+	w= sqrt(pixels)+1;
+    //w = size < 4096 ? ((size+2)/3) : 4096;
     h = (size + w*3 - 1) / (w*3);
     if (w * h*3 < size) ++h;
 }

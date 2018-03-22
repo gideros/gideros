@@ -391,6 +391,9 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 		  // ctx->outputDir.remove("pace.ldr.js");
 		   ctx->outputDir.remove("jzptool.js");
 	   }
+	   if (ctx->properties.html5_fbinstant) {
+		   ctx->outputDir.rename("gideros.html.symbols","../gideros.html.symbols");
+	   }
    }
 
    //install plugins

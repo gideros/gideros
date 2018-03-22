@@ -456,8 +456,9 @@ JS:addEventListener("FBInstantLdbSSA",function (e)
 end)
 JS:addEventListener("FBInstantLdbGEA",function (e)
   if contexts[e.context] then
-    local d={}
+    local d=e.data
     if e.value>0 then
+      d={}
       for k,v in ipairs(json.decode(e.data)) do table.insert(d,FBInstant.LeaderboardEntry.new(v)) end 
     end 
     contexts[e.context][2](contexts[e.context][1],e.value>0,d) 
