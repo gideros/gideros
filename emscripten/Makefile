@@ -178,17 +178,15 @@ $(BUILD)/gideros.js: $(SUBLIBS_AR) $(OBJS) gidjs.js gui.js gidpost.js gidshell.h
 
 main: path $(BUILD)/gideros.js
 	cp gideros.png $(TEMPLATE)
-	cp gideros.css pace.css $(TEMPLATE)
+	cp gideros.css $(TEMPLATE)
 	cp $(BUILD)/gideros.html $(TEMPLATE)/index.html
 	-cp $(BUILD)/gideros.html.mem $(TEMPLATE) 
 	-cp $(BUILD)/gideros.wasm $(TEMPLATE) 
 	-cp $(BUILD)/gideros.wast $(TEMPLATE) 
-	cp pace.min.js $(TEMPLATE)/pace.js
 	cp $(BUILD)/gideros.js $(TEMPLATE)
 	cp $(BUILD)/gideros.asm.js $(TEMPLATE)
 	-cp $(BUILD)/gideros.html.symbols $(TEMPLATE)
 	-cp $(BUILD)/gideros.js.map $(TEMPLATE)
-	cp pace.ldr.js $(TEMPLATE)
 	cp gideros.ldr.js $(TEMPLATE)
 	cp gideros.ldr.asm.js $(TEMPLATE)
 	cp jzptool.js $(TEMPLATE)

@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link href="gideros.css" rel="stylesheet">
-    <link href="pace.css" rel="stylesheet">
     <link href="favicon.png" rel="icon">
     <title>Gideros</title>
   </head>
@@ -41,28 +40,29 @@
   <!-- Put canvas on top of everything so that it catches events -->
   <canvas class="fullscreen" id="canvas" oncontextmenu="event.preventDefault()"
   hidden=1></canvas>
-    
-    
-<!--    <div class="emscripten">
-      <input type="checkbox" id="resize">Resize canvas
-      <input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer
-      &nbsp;&nbsp;&nbsp;
-      <input type="button" value="Fullscreen" onclick="Module.requestFullScreen(document.getElementById('pointerLock').checked,                                                                                 document.getElementById('resize').checked)">
-    </div>
--->    
-<!--    <hr/>
-    <textarea class="emscripten" id="output" rows="8"></textarea>
-    <hr>-->
+        
     <script src='jzptool.js'></script>
-    <script data-pace-options='{ "elements": false, "target": "#progress_box" }' src='pace.js'></script>
 <!-- GIDEROS-FBINSTANT-START
     <script src="https://connect.facebook.net/en_US/fbinstant.6.0.js"></script>
 GIDEROS-FBINSTANT-END -->
     <script type='text/javascript'>
     var hasFBInstant = (typeof FBInstant !== 'undefined');
     if (hasFBInstant) {
-    	Pace.stop();
     	FBInstant.initializeAsync();
+    }
+    var progressCur=0;
+    var progressMax=1000000;
+    function downloadProgress(diff) {
+    	progressCur+=diff;
+		var pro=100*progressCur/progressMax;
+	    if (hasFBInstant)
+			FBInstant.setLoadingProgress(pro);
+	    else {
+            progressElement.value = pro;
+            progressElement.hidden = false;
+            canvas.hidden=true;	    	
+	    }
+    	//console.log("Progress "+progressCur+"/"+progressMax);
     }
 	function getParameterByName(name, url) {
 		if (!url) url = window.location.href;
@@ -156,56 +156,35 @@ GIDEROS-FBINSTANT-END -->
         setStatus: function(text) {
           if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
           if (text === Module.setStatus.text) return;
-          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-          var now = Date.now();
-          if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
-          if (m) {
-            text = m[1];
-            progressElement.value = parseInt(m[2])*100;
-            progressElement.max = parseInt(m[4])*100;
-            canvas.hidden=true;
-        	if (hasFBInstant) {
-        		var pro=100*parseInt(m[2])/parseInt(m[4])
-        		FBInstant.setLoadingProgress(pro);
-  			}
-        	else
-        	{
-            progressElement.hidden = false;
-            spinnerElement.hidden = false;
-            infopaneElement.display="flex";
-        	}
-          } else {
             progressElement.value = null;
-            progressElement.max = null;
             progressElement.hidden = true;
             if (text=="Running") {
             	spinnerElement.hidden = true;
             	infopaneElement.display="none";
-            	Pace.stop();
-            	if (hasFBInstant)
-                	canvas.hidden = false;
-            		/*FBInstant.startGameAsync().then(function () {
-                    	canvas.hidden = false;
-            			})*/
-				else {
-                	canvas.hidden = false;					            			
-            	}
+               	canvas.hidden = false;
           	}
-          }
           statusElement.innerHTML = text;
         },
         totalDependencies: 0,
         monitorRunDependencies: function(left) {
           this.totalDependencies = Math.max(this.totalDependencies, left);
-      		if (hasFBInstant) {
-    			var pro=100*(1-(left/this.totalDependencies));
-    			FBInstant.setLoadingProgress(pro);
-			}
           //Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         }
       };
       Module.dynamicLibraries.pop();
       Module.JSPlugins.pop();
+      Module.XMLHttpRequest= function(flags) {
+          var req = new XMLHttpRequest(flags);
+          req._curLoaded=0;
+          req.onprogress=function (event) {
+              req.onprogress=function (event) {
+     		        var diff=event.loaded-req._curLoaded;
+     		        req._curLoaded=event.loaded;
+  				downloadProgress(diff);
+            }
+          }
+          return req;
+  	  };
       /*GIDEROS_WEBASSEMBLY_START
       if (WebAssembly)
       for (var i = 0; i < Module.dynamicLibraries.length; i++) {

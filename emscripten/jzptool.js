@@ -1,4 +1,38 @@
-// Create a 2D canvas
+function JZPLoadAsync(imageUrl, onprogress) {
+	  return new Promise((resolve, reject) => {
+	    var xhr = new XMLHttpRequest();
+	    var notifiedNotComputable = false;
+
+	    xhr.open('GET', imageUrl, true);
+	    xhr.responseType = 'arraybuffer';
+
+	    xhr.onprogress = function(ev) {
+          onprogress(xhr,ev.loaded);
+	    }
+
+	    xhr.onloadend = function() {
+	      if (!xhr.status.toString().match(/^2/)) {
+	        reject(xhr);
+	      } else {
+	        var options = {}
+	        var headers = xhr.getAllResponseHeaders();
+	        var m = headers.match(/^Content-Type\:\s*(.*?)$/mi);
+
+	        if (m && m[1]) {
+	          options.type = m[1];
+	        }
+
+	        var blob = new Blob([this.response], options);
+
+	        resolve(window.URL.createObjectURL(blob));
+	      }
+	    }
+
+	    xhr.send();
+	  });
+	}
+
+
 JPZConvert=function (fl,cb)
 {
 var doc = document, canv = doc.createElement("canvas"), ctx = canv.getContext("2d");
@@ -54,7 +88,19 @@ img.onload = function()
     ev(dataStr);
     */
 }
-img.src = fl;
+
+JZPLoadAsync(fl, (ctx,ratio) => {
+	  var diff=ratio-(ctx.loadPoint||0);
+	  ctx.loadPoint=ratio;
+	  downloadProgress(diff)
+	})
+	.then(imgSrc => {
+	  // Loading successfuly complete; set the image and probably do other stuff.
+		img.src = imgSrc;
+	}, xhr => {
+	  // An error occured. We have the XHR object to see what happened.
+		console.error("Failed to load:"+fl)
+	});
 }
 
 JPZLoad=function (fl,ev)

@@ -416,6 +416,22 @@ void ExportBuiltin::doExport(ExportContext *ctx)
    //exporting icons
    if (ctx->deviceFamily == e_Html5)
    {
+	   qint64 initsize=0;
+	   QFileInfoList files=ctx->outputDir.entryInfoList(QStringList() << "*.js" << "*.js.png" << "*.mem" << "*.GApp" << "*.mem.png");
+	   for( int i=0; i<files.count(); ++i )
+		   initsize+=files[i].size();
+
+	   QByteArray fileData;
+	   QFile file(ctx->outputDir.filePath("index.html"));
+	   file.open(QIODevice::ReadWrite); // open for read and write
+	   fileData = file.readAll(); // read all the data into the byte array
+	   QString text(fileData); // add to text string for easy string replace
+	   text.replace(QString("var progressMax=1000000;"), QString("var progressMax=%1;").arg(initsize)); // replace text in string
+	   file.seek(0); // go to the beginning of the file
+	   file.write(text.toUtf8()); // write the new text back to the file
+	   file.resize(file.pos());
+	   file.close(); // close the file handle.
+
 	   ExportCommon::splashHImage(ctx,615,215,QString("gideros.png"));
        if (ctx->properties.html5_fbinstant) {
            ctx->outputDir.cdUp();
