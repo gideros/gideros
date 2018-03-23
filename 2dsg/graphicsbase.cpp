@@ -12,6 +12,7 @@ void GraphicsBase::clear()
 	indices.clear();
 	vertices.clear();
 	texcoords.clear();
+	colors.clear();
 }
 
 void GraphicsBase::draw(ShaderProgram *shp, VertexBuffer<unsigned short> *commonIndices)

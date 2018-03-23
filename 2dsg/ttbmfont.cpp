@@ -561,7 +561,10 @@ void TTBMFont::drawText(std::vector<GraphicsBase>* vGraphicsBase,
 				graphicsBase->colors.Update();
 			}
 			else
+			{
+				graphicsBase->colors.clear();
 				graphicsBase->setColor(r, g, b, 1);
+			}
 			graphicsBase->vertices.resize(size * 4);
 			graphicsBase->texcoords.resize(size * 4);
 			graphicsBase->indices.resize(size * 6);
