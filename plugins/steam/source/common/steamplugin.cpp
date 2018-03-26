@@ -159,6 +159,11 @@ static int getAppID(lua_State *L) {
 	return 1;
 }
 
+static int getCurrentGameLanguage(lua_State *L) {
+	lua_pushstring(L, SteamApps()->GetCurrentGameLanguage());
+	return 1;
+}
+
 static int getSteamName(lua_State *L) {
 	lua_pushstring(L,SteamFriends()->GetPersonaName());
 	return 1;
@@ -536,6 +541,7 @@ static int loader(lua_State* L)
 		{ "getAchievementName", getAchievementName },
 		{ "getAchievementDisplayAttribute", getAchievementDisplayAttribute },
 		{ "getAchievementAchievedPercent", getAchievementAchievedPercent },
+		{ "getCurrentGameLanguage", getCurrentGameLanguage },
 		{ NULL, NULL },
 	};
 

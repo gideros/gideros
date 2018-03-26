@@ -397,7 +397,9 @@ function FBInstant.Leaderboard:setScoreAsync(score,data,cb)
   contextid=contextid+1
   contexts[contextid]={self,cb}
   JS.eval([[FBInstant.GiderosLdb["]]..self.aid..[["].setScoreAsync(]]..score..[[,']]..escapeString(data)..[[').then(function (entry) {
-    var e={ score: entry.getScore(), formattedScore: entry.getFormattedScore(), timestamp: entry.getTimestamp(), rank: entry.getRank(), extraData: entry.getExtraData(),
+    var e=null;
+    if (entry)
+      e={ score: entry.getScore(), formattedScore: entry.getFormattedScore(), timestamp: entry.getTimestamp(), rank: entry.getRank(), extraData: entry.getExtraData(),
             player: { name: entry.getPlayer().getName(), photo: entry.getPlayer().getPhoto(), id: entry.getPlayer().getID() }};
     Module.GiderosJSEvent("FBInstantLdbSSA",]]..contextid..[[,1,JSON.stringify(e));
   },function (err) {
@@ -408,7 +410,9 @@ function FBInstant.Leaderboard:getPlayerEntryAsync(cb)
   contextid=contextid+1
   contexts[contextid]={self,cb}
   JS.eval([[FBInstant.GiderosLdb["]]..self.aid..[["].getPlayerEntryAsync().then(function (entry) {
-    var e={ score: entry.getScore(), formattedScore: entry.getFormattedScore(), timestamp: entry.getTimestamp(), rank: entry.getRank(), extraData: entry.getExtraData(),
+    var e=null;
+    if (entry)
+      e={ score: entry.getScore(), formattedScore: entry.getFormattedScore(), timestamp: entry.getTimestamp(), rank: entry.getRank(), extraData: entry.getExtraData(),
             player: { name: entry.getPlayer().getName(), photo: entry.getPlayer().getPhoto(), id: entry.getPlayer().getID() }};
     Module.GiderosJSEvent("FBInstantLdbSSA",]]..contextid..[[,1,JSON.stringify(e));
   },function (err) {
@@ -449,7 +453,14 @@ end
 JS:addEventListener("FBInstantLdbSSA",function (e)
   if contexts[e.context] then
     local d=e.data
-    if e.value>0 then d=FBInstant.LeaderboardEntry.new(json.decode(d)) end 
+    if e.value>0 then
+      d=json.decode(d)
+      if d==json.null or type(d)~="table" then
+        d=nil
+      else
+        d=FBInstant.LeaderboardEntry.new(d)
+      end 
+    end 
     contexts[e.context][2](contexts[e.context][1],e.value>0,d) 
   end
   contexts[e.context]=nil

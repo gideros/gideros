@@ -392,6 +392,7 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 		   ctx->outputDir.remove("jzptool.js");
 	   }
 	   if (ctx->properties.html5_fbinstant) {
+		   ctx->outputDir.remove("../gideros.html.symbols");
 		   ctx->outputDir.rename("gideros.html.symbols","../gideros.html.symbols");
 	   }
    }

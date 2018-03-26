@@ -1,0 +1,10 @@
+<plugin
+ name="Steam"
+ description="Integrate with Steam platform">
+ <target name="WindowsDesktop">
+     <template name="binaries" path="[[[sys.pluginDir]]]/bin/Windows" dest="Plugins"/>
+ </target>
+ <target name="MacOSXDesktop">
+     <template name="binaries" path="[[[sys.pluginDir]]]/bin/MacOSX" dest="[[[project.name]]].app/Contents/Plugins"/>
+ </target>
+</plugin>
