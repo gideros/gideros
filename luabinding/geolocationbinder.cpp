@@ -135,6 +135,16 @@ private:
             lua_setfield(L, -2, "longitude");
             lua_pushnumber(L, event2->altitude);
             lua_setfield(L, -2, "altitude");
+            if (event2->speed<0)
+            	lua_pushnil(L);
+            else
+            	lua_pushnumber(L, event2->speed);
+            lua_setfield(L, -2, "speed");
+            if (event2->course<0)
+            	lua_pushnil(L);
+            else
+            	lua_pushnumber(L, event2->course);
+            lua_setfield(L, -2, "course");
         }
         else if (type == GGEOLOCATION_HEADING_UPDATE_EVENT)
         {

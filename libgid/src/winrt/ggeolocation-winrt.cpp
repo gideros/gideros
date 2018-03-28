@@ -20,6 +20,8 @@ static void gps_update(Geolocator^ gl,
 	event->latitude = pos->Position->Coordinate->Latitude;
 	event->longitude = pos->Position->Coordinate->Longitude;
 	event->altitude = pos->Position->Coordinate->Altitude->Value;
+	event->speed = pos->Position->Coordinate->Speed->Value;
+	event->course = pos->Position->Coordinate->Heading->Value;
 
 	gevent_EnqueueEvent(gid_, callback_s, GGEOLOCATION_LOCATION_UPDATE_EVENT, event, 1, NULL);
 }

@@ -193,7 +193,7 @@ static bool s_acceptEvents = false;
 
 extern "C" {
 
-void Java_com_giderosmobile_android_player_Geolocation_onLocationChanged(JNIEnv *env, jclass clz, jdouble latitude, jdouble longitude, jdouble altitude)
+void Java_com_giderosmobile_android_player_Geolocation_onLocationChanged(JNIEnv *env, jclass clz, jdouble latitude, jdouble longitude, jdouble altitude, jdouble speed, jdouble course)
 {
 	if (!s_acceptEvents)
 		return;
@@ -202,6 +202,8 @@ void Java_com_giderosmobile_android_player_Geolocation_onLocationChanged(JNIEnv 
 	event->latitude = latitude;
 	event->longitude = longitude;
 	event->altitude = altitude;
+	event->speed = speed;
+	event->course = course;
 
 	s_manager->enqueueEvent(GGEOLOCATION_LOCATION_UPDATE_EVENT, event, 1);
 }

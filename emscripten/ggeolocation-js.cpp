@@ -8,18 +8,6 @@ static void callback_s(int type, void *event, void *udata)
 	callbackList_.dispatchEvent(type, event);
 }
 
-
-/*static void gps_update(Geolocator^ gl,
-	PositionChangedEventArgs^ pos)
-{
-	ggeolocation_LocationUpdateEvent *event = (ggeolocation_LocationUpdateEvent*)malloc(sizeof(ggeolocation_LocationUpdateEvent));
-	event->latitude = pos->Position->Coordinate->Latitude;
-	event->longitude = pos->Position->Coordinate->Longitude;
-	event->altitude = pos->Position->Coordinate->Altitude->Value;
-
-	gevent_EnqueueEvent(gid_, callback_s, GGEOLOCATION_LOCATION_UPDATE_EVENT, event, 1, NULL);
-}*/
-
 #ifdef __cplusplus
 extern "C" {
 #endif

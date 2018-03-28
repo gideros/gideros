@@ -213,8 +213,10 @@ public class Geolocation
 		double latitude = location.getLatitude();
 		double longitude = location.getLongitude();
 		double altitude = location.getAltitude();
+		double speed = location.hasSpeed()?location.getSpeed():-1;
+		double course = location.hasBearing()?location.getBearing():-1;
 			
-		onLocationChanged(latitude, longitude, altitude);
+		onLocationChanged(latitude, longitude, altitude, speed, course);
 	}
 	
     private static final int TWO_MINUTES = 1000 * 60 * 2;
@@ -273,6 +275,6 @@ public class Geolocation
         return provider1.equals(provider2);
     }
 
-	private static native void onLocationChanged(double latitude, double longitude, double altitude);
+	private static native void onLocationChanged(double latitude, double longitude, double altitude, double speed, double course);
 	private static native void onHeadingChanged(double magneticHeading, double trueHeading);
 }

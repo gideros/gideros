@@ -234,6 +234,8 @@ private:
 	event->latitude = newLocation.coordinate.latitude;
 	event->longitude = newLocation.coordinate.longitude;
 	event->altitude = newLocation.altitude;
+	event->speed = newLocation.speed;
+	event->course = newLocation.course;
 
 	manager_->enqueueEvent(GGEOLOCATION_LOCATION_UPDATE_EVENT, event, 1);
 }

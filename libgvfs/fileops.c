@@ -8,6 +8,7 @@ static g_Vfs s_vfs = {NULL, NULL, NULL, NULL, NULL};
 
 void g_setVfs(g_Vfs vfs)
 {
+	g_fflush(NULL); //Ensure all files are flushed before changing vfs
     s_vfs = vfs;
 }
 

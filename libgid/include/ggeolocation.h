@@ -10,6 +10,8 @@ typedef struct ggeolocation_LocationUpdateEvent
     double latitude;
     double longitude;
     double altitude;
+    double speed;
+    double course;
 } ggeolocation_LocationUpdateEvent;
 
 typedef struct ggeolocation_HeadingUpdateEvent

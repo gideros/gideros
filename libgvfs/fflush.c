@@ -74,6 +74,7 @@ __sflush(FILE *fp)
 	 */
 	fp->_p = p;
 	fp->_w = t & (__SLBF|__SNBF) ? 0 : fp->_bf._size;
+	if (!n) return 0; //Ensure no attempt to call write is made if there is nothing to write anyhow
 
 	for (; n > 0; n -= t, p += t) {
 		t = (*fp->_write)(fp->_cookie, (char *)p, n);

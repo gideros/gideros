@@ -73,6 +73,8 @@ Stops the generation of updates that report the heading.<br />
     <parameter name="latitude" type="number"><![CDATA[The latitude of current user position]]></parameter>
     <parameter name="longitude" type="number"><![CDATA[The longitude of current user position]]></parameter>
     <parameter name="altitude" type="number"><![CDATA[The possible altitude of user]]></parameter>
+    <parameter name="speed" type="number"><![CDATA[The possible speed of user in m/s]]></parameter>
+    <parameter name="course" type="number"><![CDATA[The possible course of user in degrees]]></parameter>
   </event>
   <event name="Event.HEADING_UPDATE" page="Event.HEADING_UPDATE" value="headingUpdate" version="Gideros 2011.6"><![CDATA[This event is dispatched on each user heading direction update]]>
     <parameter name="magneticHeading" type="number"><![CDATA[The value in this property represents the heading relative to the magnetic North Pole, which is different from the geographic North Pole. The value 0 means the device is pointed toward magnetic north, 90 means it is pointed east, 180 means it is pointed south, and so on.]]></parameter>
