@@ -279,6 +279,8 @@ void ogl2ShaderEngine::resizeFramebuffer(int width,int height)
     GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 	GLCALL glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, _depthRenderBuffer);
 #endif
+#else
+    GLCALL glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFramebuffer);
 #endif
 }
 
