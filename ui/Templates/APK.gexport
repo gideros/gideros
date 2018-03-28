@@ -196,7 +196,7 @@ print("Android Build Tools:"..buildVer)
 					<set key="local.adbCmd" value="[[[export.androidPath]]]/platform-tools/adb"/>
         		</if>
 				<exec>
-					[[[local.adbCmd]]] install -rt [[[project.namews]]][[[local.isUnsigned]]].apk
+					[[[local.adbCmd]]] install -r [[[project.namews]]][[[local.isUnsigned]]].apk
 				</exec>
 			</if>
 		</if>
