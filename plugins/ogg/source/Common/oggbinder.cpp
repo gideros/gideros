@@ -675,8 +675,7 @@ static void g_deinitializePlugin(lua_State *L)
 	gaudio_unregisterType("oga");
 	gaudio_unregisterType("ogv");
 }
-
-#if defined(_MSC_VER)
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("Ogg", "1.0",Ogg)
 #else
 REGISTER_PLUGIN_NAMED("Ogg", "1.0", Ogg)

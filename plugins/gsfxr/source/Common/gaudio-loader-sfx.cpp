@@ -188,7 +188,7 @@ static void g_deinitializePlugin(lua_State *L)
 	gaudio_unregisterType("sfx");
 }
 
-#if defined(_MSC_VER)
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR || defined(_MSC_VER)
 REGISTER_PLUGIN_STATICNAMED_CPP("GSFXR", "1.0",Gsfxr)
 #else
 REGISTER_PLUGIN_NAMED("GSFXR", "1.0", Gsfxr)
