@@ -19,6 +19,7 @@
   <constant name="FontBase.TLF_REF_TOP" page="FontBase.TLF_REF_TOP" value="TLF_REF_TOP" version="Gideros 2017.10"><![CDATA[Use top of line as reference.]]></constant>
   <constant name="FontBase.TLF_REF_MIDDLE" page="FontBase.TLF_REF_MIDDLE" value="TLF_REF_MIDDLE" version="Gideros 2017.10"><![CDATA[Use middle of line as reference.]]></constant>
   <constant name="FontBase.TLF_REF_BOTTOM" page="FontBase.TLF_REF_BOTTOM" value="TLF_REF_BOTTOM" version="Gideros 2017.10"><![CDATA[Use bottom of line as reference.]]></constant>
+  <constant name="FontBase.TLF_BREAKWORDS" page="FontBase.TLF_BREAKWORDS" value="TLF_BREAKWORDS" version="Gideros 2018.3.2"><![CDATA[Allow Gideros to break words that exceed required width.]]></constant>
   <method name="FontBase:getBounds" page="getBounds" shortdesc="returns the tight bounding rectangle of the characters in the string specified by text" version="Gideros 2011.6"><![CDATA[<br />
 Returns the tight bounding rectangle of the characters in the string specified by `text`.<br />
 <br />
@@ -40,6 +41,16 @@ whereas `getAdvanceX()` returns the distance to where the next string should be 
     <parameter name="letterSpacing" optional="false" type="number, default = 0"/>
     <parameter name="size" optional="false" type="number, optional"/>
     <return type="number"><![CDATA[The width of the first size characters of text.]]></return>
+  </method>
+  <method name="FontBase:getCharIndexAtOffset" page="getCharIndexAtOffset" shortdesc="" version="Gideros 2018.3.1"><![CDATA[<br />
+Returns the the offset within the given text string to which correponds the given X offset in the drawn text. <br />
+<br />
+]]>
+    <parameter name="text" optional="false" type="string"/>
+    <parameter name="offset" optional="false" type="number"/>
+    <parameter name="letterSpacing" optional="false" type="number, default = 0"/>
+    <parameter name="size" optional="false" type="number, optional"/>
+    <return type="number"><![CDATA[The offset within the text string. The decimal part indicate the relative distance throughout the character itself.]]></return>
   </method>
   <method name="FontBase:getAscender" page="getAscender" shortdesc="returns the ascender of the font" version="Gideros 2011.6"><![CDATA[<br />
 Returns the ascender of the font. The ascender of a font is the distance from the baseline to the highest position characters extend to.<br />
@@ -76,6 +87,7 @@ Each table in the part field of the returned table describe the placement of chu
     <parameter name="letterSpacing" optional="false" type="number, default = 0"/>
     <parameter name="lineSpacing" optional="false" type="number, default = 0"/>
     <parameter name="tabSpace" optional="false" type="number, default = 4"/>
+    <parameter name="breakChar" optional="true" type="string"/>
     <return type="table"><![CDATA[A table describing how to draw the given text.]]></return>
   </method>
 </object>

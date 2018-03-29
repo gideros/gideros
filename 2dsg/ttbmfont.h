@@ -31,6 +31,7 @@ public:
 
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy);
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);
+    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1);
     virtual float getAscender();
     virtual float getLineHeight();
 

@@ -11,6 +11,7 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
         {"getAscender", getAscender},
         {"getLineHeight", getLineHeight},
         {"layoutText", layoutText},
+		{"getCharIndexAtOffset", getCharIndexAtOffset},
         {NULL, NULL},
 	};
 
@@ -28,7 +29,24 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
     lua_pushinteger(L,FontBase::TLF_REF_TOP); lua_setfield(L,-2,"TLF_REF_TOP");
     lua_pushinteger(L,FontBase::TLF_REF_MIDDLE); lua_setfield(L,-2,"TLF_REF_MIDDLE");
     lua_pushinteger(L,FontBase::TLF_REF_BOTTOM); lua_setfield(L,-2,"TLF_REF_BOTTOM");
+	lua_pushinteger(L,FontBase::TLF_BREAKWORDS); lua_setfield(L,-2,"TLF_BREAKWORDS");
     lua_pop(L,1);
+}
+
+int FontBaseBinder::getCharIndexAtOffset(lua_State *L)
+{
+    Binder binder(L);
+
+    FontBase *font = static_cast<FontBase*>(binder.getInstance("FontBase", 1));
+
+    const char *text = luaL_checkstring(L, 2);
+    lua_Number offset = luaL_checknumber(L, 3);
+    lua_Number letterSpacing = luaL_optnumber(L, 4, 0);
+
+    float co=font->getCharIndexAtOffset(text,offset,letterSpacing);
+    lua_pushnumber(L,co);
+
+    return 1;
 }
 
 int FontBaseBinder::getBounds(lua_State *L)
@@ -111,6 +129,7 @@ int FontBaseBinder::layoutText(lua_State *L)
     tp.letterSpacing=luaL_optnumber(L,6,0);
     tp.lineSpacing=luaL_optnumber(L,7,0);
     tp.tabSpace=luaL_optnumber(L,8,4);
+    tp.breakchar=luaL_optstring(L,9,"");
 
     FontBase::TextLayout tl=font->layoutText(luaL_checkstring(L,2),&tp);
     lua_createtable(L,0,6);
@@ -146,6 +165,8 @@ int FontBaseBinder::layoutText(lua_State *L)
         lua_setfield(L,-2,"text");
         lua_pushlstring(L,&cl.sep,1);
         lua_setfield(L,-2,"sep");
+        lua_pushnumber(L,cl.sepl);
+        lua_setfield(L,-2,"sepl");
         lua_pushinteger(L,cl.line);
         lua_setfield(L,-2,"line");
 

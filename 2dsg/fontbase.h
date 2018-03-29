@@ -29,6 +29,7 @@ public:
 
     virtual void getBounds(const char *text, float letterSpacing, float *minx, float *miny, float *maxx, float *maxy) = 0;
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1) = 0;
+    virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1) = 0;
     virtual float getAscender() = 0;
     virtual float getLineHeight() = 0;
 
@@ -47,6 +48,7 @@ public:
 		float dx,dy;
 		int line;
 		char sep;
+		float sepl;
 		//Styling
 		int styleFlags;
 		unsigned int color;
@@ -72,20 +74,22 @@ public:
         TLF_REF_BASELINE=0,
         TLF_REF_TOP=128,
         TLF_REF_MIDDLE=256,
-        TLF_REF_BOTTOM=512
+        TLF_REF_BOTTOM=512,
+		TLF_BREAKWORDS=1024
 	};
 
 	struct TextLayoutParameters {
-		TextLayoutParameters() : w(0),h(0),flags(TLF_NOWRAP),letterSpacing(0),lineSpacing(0),tabSpace(4) {};
+        TextLayoutParameters() : w(0),h(0),flags(TLF_NOWRAP),letterSpacing(0),lineSpacing(0),tabSpace(4),breakchar("") {};
 		float w,h;
 		int flags;
 		float letterSpacing;
 		float lineSpacing;
 		float tabSpace;
+		std::string breakchar;
 	};
 	virtual TextLayout layoutText(const char *text, TextLayoutParameters *params);
 protected:
-	void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped=false);
+	void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped=false, int end=-1);
     Application *application_;
 };
 

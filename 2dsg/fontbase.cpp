@@ -3,9 +3,9 @@
 #include <algorithm>
 #include <stdlib.h>
 
-void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped)
+void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped, int end)
 {
-	size_t cur=tl->parts.size();
+	size_t cur=(end>=0)?end+1:tl->parts.size();
 	size_t cnt=cur-start;
 	float ox=0;
 	bool justified=false;
@@ -70,6 +70,10 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
     float as=getAscender();
     float ds=getLineHeight()-as;
 	bool wrap=!(params->flags&TLF_NOWRAP);
+	bool breakwords=(params->flags&TLF_BREAKWORDS);
+	int breaksize=0;
+	if (breakwords&&params->breakchar.size())
+		breaksize=getAdvanceX(params->breakchar.c_str(),params->letterSpacing,-1);
 	const char *bt=text;
 	const char *rt=bt;
 	ChunkLayout styles; //To hold styling info
@@ -102,22 +106,99 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 		cl.line=lines+1;
 		cl.styleFlags=styles.styleFlags;
 		cl.color=styles.color;
-		float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):sw;
+		float ns=(cl.sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):((cl.sep=='\e')?0:sw);
+		cl.sepl=ns;
 		if (wrap&&cw&&((*rt)!='\e')&&((cw+cl.w+ns)>params->w))
 		{
-			//The current line will exceed max width (and is not empty): wrap
-			layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,true);
-			st=tl.parts.size();
-			y+=lh;
-			cl.y+=lh;
-			cl.dy=y;
-			cw=0;
-			lines++;
-			cl.line=lines+1;
+            if (breakwords&&(cl.w>params->w)&&(cw<(params->w/2)))
+            {
+                // Next word is too long to fit into a line no matter what,
+                // and we have still more than half a line space to fill up.
+                // Don't break now for better looking
+            }
+            else
+            {
+                //The current line will exceed max width (and is not empty): wrap
+                layoutHorizontal(&tl,st, params->w, cw, sw, tabSpace, params->flags,params->letterSpacing,true);
+                st=tl.parts.size();
+                y+=lh;
+                cl.y+=lh;
+                cl.dy=y;
+                cw=0;
+                lines++;
+                cl.line=lines+1;
+            }
 		}
 		tl.parts.push_back(cl);
-		if (cw) cw+=sw;
+		if (cw) cw+=ns;
 		cw+=cl.w;
+        while (wrap&&breakwords&&(cw>params->w))
+		{
+			//Last line is too long but can't be cut at a space boundary: cut in as appropriate and add breakchar
+			size_t pmax=tl.parts.size();
+			size_t cur=st;
+			float wmax=params->w-breaksize;
+			float ccw=0;
+			//Locate the exceeding chunk
+			while ((cur<pmax)&&(wmax>(tl.parts[cur].w+tl.parts[cur].sepl))) {
+				wmax-=tl.parts[cur].w+tl.parts[cur].sepl;
+				ccw+=tl.parts[cur].w+tl.parts[cur].sepl;
+                cur++;
+            }
+			if ((cur<pmax)&&(wmax>0)) //Should always happen, but better check anyhow
+			{
+				size_t brk=cur;
+                float bsize=0;
+				int cpos=getCharIndexAtOffset(tl.parts[cur].text.c_str(),wmax,params->letterSpacing,-1);
+				if (cpos>tl.parts[cur].text.size())
+					brk++;
+				else if (cpos>0)
+				{
+					float x,y,w,h;
+					cl=tl.parts[cur];
+					//Cut first part
+					tl.parts[cur].text=cl.text.substr(0,cpos);
+					tl.parts[cur].text+=params->breakchar;
+					tl.parts[cur].sepl=0;
+					tl.parts[cur].sep=0;
+		            getBounds(tl.parts[cur].text.c_str(),params->letterSpacing,&x,&y,&w,&h);
+		            tl.parts[cur].w=w-x+1;
+		            ccw+=w-x+1;
+                    bsize=breaksize;
+		            //Compute second part
+					cl.text=cl.text.substr(cpos);
+		            getBounds(cl.text.c_str(),params->letterSpacing,&x,&y,&w,&h);
+		            cl.w=w-x+1;
+		            //Insert second part
+					brk++;
+					tl.parts.insert(tl.parts.begin()+brk,cl);
+					pmax++;
+				}
+				if ((brk<pmax)&&(brk>st)) {
+                    if (brk>st) {
+                        int ln=pmax-brk;
+						layoutHorizontal(&tl,st, params->w, ccw, sw, tabSpace, params->flags,params->letterSpacing,true,brk-1);
+                        pmax=tl.parts.size();
+                        brk=pmax-ln;
+                    }
+					st=brk;
+					y+=lh;
+					cl.y+=lh;
+					cl.dy=y;
+                    cw-=(ccw-bsize);
+					lines++;
+					cl.line=lines+1;
+					for (size_t n=brk;n<pmax;n++)
+					{
+						tl.parts[n].line=cl.line;
+						tl.parts[n].y=cl.y;
+						tl.parts[n].dy=cl.dy;
+					}
+                    continue;
+				}
+			}
+            break;
+		}
 		if ((*rt)=='\n')
 		{
 			//Line break

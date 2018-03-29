@@ -79,6 +79,7 @@ Returns the letter-spacing property which is used to increase or decrease the sp
     - letterSpacing: The space to add between each letter of the text
     - lineSpacing: The space to add between each line of the text
     - tabSpace: The size of a tab in space characters increment, default to 4 if unspecified
+    - breakChar: A string the will be inserted to indicated broken words
     ]]>
     <parameter name="layout" optional="false" type="table"><![CDATA[Layout parameters]]></parameter>
   </method>

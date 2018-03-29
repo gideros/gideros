@@ -446,6 +446,64 @@ float TTFont::getAdvanceX(const char *text, float letterSpacing, int size) {
 	return x / scalex;
 }
 
+float TTFont::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size)
+{
+	checkLogicalScale();
+	float scalex = currentLogicalScaleX_;
+	offset*=scalex;
+
+	std::vector<wchar32_t> wtext;
+	size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
+	if (len != 0) {
+		wtext.resize(len);
+		utf8_to_wchar(text, strlen(text), &wtext[0], len, 0);
+	}
+
+	if (size < 0 || size > (int) (wtext.size()))
+		size = wtext.size();
+
+	wtext.push_back(0);
+
+	int x = 0;
+	FT_Face prevFace = NULL;
+	FT_UInt prev = 0;
+	int px=0;
+	for (int i = 0; i < size; ++i) {
+		FT_UInt glyphIndex;
+		FT_Face face = getFace(wtext[i], glyphIndex);
+		if (glyphIndex == 0)
+			continue;
+
+		if (FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT))
+			continue;
+
+		if (prevFace == face)
+			x += kerning(face, prev, glyphIndex) >> 6;
+		prev = glyphIndex;
+		prevFace = face;
+
+		x += face->glyph->advance.x >> 6;
+
+		x += (int) (letterSpacing * scalex);
+		if ((x>px)&&(offset>=px)&&(offset<x))
+		{
+			const char *tp=text;
+			while (i--)
+			{
+				char fc=*(tp++);
+				if ((fc&0xE0)==0xC0) tp++;
+				if ((fc&0xF0)==0xE0) tp+=2;
+				if ((fc&0xF8)==0xF0) tp+=3;
+			}
+			float rv=tp-text;
+			return rv+(offset-px)/(x-px);
+		}
+	}
+
+	return strlen(text);
+}
+
+
 int TTFont::kerning(FT_Face face, FT_UInt left, FT_UInt right) const {
 	if (FT_HAS_KERNING(face)) {
 		FT_Vector delta;

@@ -580,6 +580,57 @@ float Font::getAdvanceX(const char *text, float letterSpacing, int size) {
 	return x * sizescalex_;
 }
 
+float Font::getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size)
+{
+	std::vector<wchar32_t> wtext;
+	size_t len = utf8_to_wchar(text, strlen(text), NULL, 0, 0);
+	if (len != 0) {
+		wtext.resize(len);
+		utf8_to_wchar(text, strlen(text), &wtext[0], len, 0);
+	}
+
+	if (size < 0 || size > wtext.size())
+		size = wtext.size();
+
+	wtext.push_back(0);
+	offset*=sizescalex_;
+
+	float x = 0;
+	float px = 0;
+	wchar32_t prev = 0;
+	for (int i = 0; i < size; ++i) {
+		std::map<wchar32_t, TextureGlyph>::const_iterator iter =
+				fontInfo_.textureGlyphs.find(wtext[i]);
+
+		if (iter == fontInfo_.textureGlyphs.end())
+			continue;
+
+		const TextureGlyph &textureGlyph = iter->second;
+
+		x += kerning(prev, wtext[i]) >> 6;
+		prev = wtext[i];
+
+		x += textureGlyph.advancex >> 6;
+
+		x += letterSpacing / sizescalex_;
+		if ((x>px)&&(offset>=px)&&(offset<x))
+		{
+			const char *tp=text;
+			while (i--)
+			{
+				char fc=*(tp++);
+				if ((fc&0xE0)==0xC0) tp++;
+				if ((fc&0xF0)==0xE0) tp+=2;
+				if ((fc&0xF8)==0xF0) tp+=3;
+			}
+			float rv=tp-text;
+			return rv+(offset-px)/(x-px);
+		}
+	}
+
+	return strlen(text);
+}
+
 int Font::kerning(wchar32_t left, wchar32_t right) const {
 	std::map<std::pair<wchar32_t, wchar32_t>, int>::const_iterator iter;
 	iter = fontInfo_.kernings.find(std::make_pair(left, right));

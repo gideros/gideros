@@ -14,6 +14,7 @@ private:
     static int getLineHeight(lua_State *L);
     static int getAdvanceX(lua_State *L);
     static int layoutText(lua_State *L);
+    static int getCharIndexAtOffset(lua_State *L);
 };
 
 #endif

@@ -40,6 +40,7 @@ static void populateLayout(lua_State* L,int index,FontBase::TextLayoutParameters
     lua_getfield(L,index,"letterSpacing");  tp->letterSpacing=luaL_optnumber(L,-1,0); lua_pop(L,1);
     lua_getfield(L,index,"lineSpacing"); tp->lineSpacing=luaL_optnumber(L,-1,0); lua_pop(L,1);
     lua_getfield(L,index,"tabSpace"); tp->tabSpace=luaL_optnumber(L,-1,4); lua_pop(L,1);
+    lua_getfield(L,index,"breakChar"); tp->breakchar=luaL_optstring(L,-1,""); lua_pop(L,1);
 }
 
 int TextFieldBinder::create(lua_State* L)
@@ -282,6 +283,7 @@ int TextFieldBinder::getLayout(lua_State *L)
     lua_pushnumber(L,tp.lineSpacing); lua_setfield(L,-2,"lineSpacing");
     lua_pushnumber(L,tp.letterSpacing); lua_setfield(L,-2,"letterSpacing");
     lua_pushnumber(L,tp.tabSpace); lua_setfield(L,-2,"tabSpace");
+    lua_pushstring(L,tp.breakchar.c_str()); lua_setfield(L,-2,"breakChar");
 
     return 1;
 }
