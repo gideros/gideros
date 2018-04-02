@@ -13,7 +13,17 @@ The only restriction with the player is that it only works on the computer viewi
 3. The Android device now will see the Gideros Studio when testing the game when a player is launched from within Facebook Messenger.<br />
 <br />
 Please refer to the <a href="https://developers.facebook.com/docs/games/instant-games/getting-started/quickstart">original Facebook documentation</a> for more information about testing and uploading.<br /><br/>
-Please note that the offical Facebook documentation mentions having to wait for initializeAsync, with Gideros this has already been done for you before your game starts.
+Please note that the offical Facebook documentation mentions having to wait for initializeAsync, with Gideros this has already been done for you before your game starts.<br /><br />
+It is very important that the only the following API calles are made before startGameAsync has resolved:<br />
+FBInstant.getSDKVersion()<br />
+FBInstant.initializeAsync()<br />
+FBInstant.getPlatform()<br />
+FBInstant.setLoadingProgress()<br />
+FBInstant.getSupportedAPIs()<br />
+FBInstant.quit()<br />
+FBInstant.onPause()<br />
+FBInstant.player.getID()<br /><br />
+To help do this you could create a variable called FBInstantAPI and set it to true once startGameAsync has been resolved - then only call other API commands if FBInstant is true and then if FBInstantAPI is true.
 ]]>
 <platform>html5</platform>
 <example name="Initialisation and removal of the Facebook loading progress indicator."><![CDATA[<br /> 
@@ -21,6 +31,7 @@ pcall(function() FBInstant=require "FBInstant" end)
 if FBInstant then
 	FBInstant.startGameAsync(function() 
 		print("Loading screen removed")
+		FBInstantAPI=true
 	end)
 else
 	print("FBInstant not loaded")
