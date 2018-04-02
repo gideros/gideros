@@ -14,7 +14,7 @@ The only restriction with the player is that it only works on the computer viewi
 <br />
 Please refer to the <a href="https://developers.facebook.com/docs/games/instant-games/getting-started/quickstart">original Facebook documentation</a> for more information about testing and uploading.<br /><br/>
 Please note that the offical Facebook documentation mentions having to wait for initializeAsync, with Gideros this has already been done for you before your game starts.<br /><br />
-It is very important that the only the following API calles are made before startGameAsync has resolved:<br />
+It is very important that the only the following API calls are made before startGameAsync has resolved:<br />
 FBInstant.getSDKVersion()<br />
 FBInstant.initializeAsync()<br />
 FBInstant.getPlatform()<br />
