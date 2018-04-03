@@ -152,6 +152,8 @@ int QtScreen::getId()
 void QtScreen::setVisible(bool visible)
 {
 	if (visible) show(); else hide();
+    QOpenGLContext *c=((QtScreenManager *)(ScreenManager::manager))->master_->context();
+    c->makeCurrent(this);
 }
 
 QtScreen::QtScreen(Application *application) : Screen(application), QOpenGLWindow()
@@ -178,7 +180,9 @@ void QtScreenManager::screenDestroyed()
 
 Screen *QtScreenManager::openScreen(Application *application,int id)
 {
-	return new QtScreen(application);
+    Screen *s=new QtScreen(application);
+    master_->makeCurrent();
+    return s;
 }
 
 static int __mkdir(const char* path) {
