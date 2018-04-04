@@ -564,19 +564,29 @@ bool ExportCommon::applyPlugins(ExportContext *ctx) {
 		return true;
 	}
 	exportInfo("Applying plugins\n");
+	bool jsonDone=false;
 	QMap < QString, QString > allplugins = ExportXml::availablePlugins();
 	for (QSet<ProjectProperties::Plugin>::const_iterator it =
 			ctx->properties.plugins.begin();
 			it != ctx->properties.plugins.end(); it++) {
 		QString xml = allplugins[(*it).name];
 		bool en=((*it).enabled);
-        if ((ctx->deviceFamily == e_Html5)&&ctx->properties.html5_fbinstant) {
-         	if ((*it).name=="JSON") en=true;
-        }
 		if ((!xml.isEmpty()) && en)
+		{
+			if ((*it).name=="JSON") jsonDone=true;
 			if (!ExportXml::exportXml(xml, true, ctx))
 				return false;
+		}
 	}
+	//Add JSON automatically if not already done for FBInstant
+    if ((!jsonDone)&&(ctx->deviceFamily == e_Html5)&&ctx->properties.html5_fbinstant) {
+		QString xml = allplugins["JSON"];
+		if (!xml.isEmpty())
+		{
+			if (!ExportXml::exportXml(xml, true, ctx))
+				return false;
+		}
+    }
 	ExportLUA_DonePlugins(ctx);
 	return true;
 }

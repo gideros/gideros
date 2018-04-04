@@ -160,7 +160,15 @@ static int getAppID(lua_State *L) {
 }
 
 static int getCurrentGameLanguage(lua_State *L) {
-	lua_pushstring(L, SteamApps()->GetCurrentGameLanguage());
+	if (!SteamApps())
+		lua_pushnil(L);
+	else {
+		const char *lang=SteamApps()->GetCurrentGameLanguage();
+		if (lang)
+			lua_pushstring(L, lang);
+		else
+			lua_pushnil(L);
+	}
 	return 1;
 }
 
