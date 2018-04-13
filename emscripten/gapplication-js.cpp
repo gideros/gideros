@@ -1,5 +1,7 @@
 #include <gapplication.h>
 #include <gapplication-js.h>
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 
 class GGApplicationManager
 {
@@ -17,7 +19,7 @@ public:
     
 	int getScreenDensity()
 	{
-		return -1; //Default for now, maybe use window.devicePixelRatio ?
+		return 96*emscripten_get_device_pixel_ratio();
 	}
 
     g_id addCallback(gevent_Callback callback, void *udata)

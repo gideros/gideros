@@ -119,10 +119,6 @@ EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *e, void *userDat
  int defWidth=e->windowInnerWidth;
  int defHeight=e->windowInnerHeight;	
 // printf("Resize:%d,%d\n",e->windowInnerWidth,e->windowInnerHeight);
- float ratio=emscripten_get_device_pixel_ratio();
- defWidth*=ratio;
- defHeight*=ratio;
- pixelRatio=ratio;
 // printf("CanvasSize: %d,%d (%f)\n",defWidth,defHeight,ratio);
  
  //emscripten_set_canvas_size(width*ratio,height*ratio);
@@ -315,10 +311,6 @@ char *url=(char *) EM_ASM_INT_V({
   int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
    int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
    int fullScreen;
- float ratio=emscripten_get_device_pixel_ratio();
- defWidth*=ratio;
- defHeight*=ratio;
- pixelRatio=ratio;
 // printf("CanvasSize: %d,%d (%f)\n",defWidth,defHeight,ratio);
 //   emscripten_get_canvas_size(&defWidth,&defHeight,&fullScreen);
     initGL(defWidth,defHeight);    
