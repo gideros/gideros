@@ -19,6 +19,7 @@ static ApplicationManager *s_applicationManager = NULL;
 EGLDisplay display;
 #endif
 float pixelRatio=1.0;
+int lastGLWidth=0,lastGLHeight=0;
 
 static void errorAbort(const char *detail)
 {
@@ -34,7 +35,7 @@ static void errorLua(const char *detail)
 	emscripten_force_exit(1);
 }
 
-int initGL(int width, int height)
+int initGL(int &width, int &height)
 {
  //emscripten_set_canvas_size(width,height);
 #ifndef EGL
@@ -43,13 +44,20 @@ int initGL(int width, int height)
   return GL_FALSE;
  }
  
+ pixelRatio=emscripten_get_device_pixel_ratio();
+ printf("Resize:%d,%d\n",width,height);
+ lastGLWidth=width;
+ lastGLHeight=height;
+ width*=pixelRatio;
+ height*=pixelRatio;
+ printf("CanvasSize: %d,%d (%f)\n",width,height,pixelRatio);
                       
  if (glfwOpenWindow(width, height, 8, 8, 8, 0, 16, 8, GLFW_WINDOW) != GL_TRUE) {
     printf("glfwOpenWindow() failed\n");
     return GL_FALSE;
  }
  
-/* float ratio=1.0;//emscripten_get_device_pixel_ratio();
+/* float ratio=1.0;//
  EM_ASM_({
    var canvas = Module['canvas'];
    canvas.width=$0;
@@ -93,6 +101,14 @@ extern "C" void GGStreamOpenALTick();
 void looptick()
 {
 	try {
+		// Check for size change in main loop, due to buggy iOS behavior
+		  int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
+		  int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
+		  if (defWidth!=lastGLWidth || defHeight!=lastGLHeight) {
+			  glfwCloseWindow();
+			  initGL(defWidth,defHeight);
+			  s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
+		  }
 		s_applicationManager->drawFrame();
 #ifndef EGL
     glfwSwapBuffers();
@@ -113,22 +129,6 @@ void looptick()
 		errorAbort("Generic error");
 	}
 }
-
-EM_BOOL resize_callback(int eventType, const EmscriptenUiEvent *e, void *userData)
-{
- int defWidth=e->windowInnerWidth;
- int defHeight=e->windowInnerHeight;	
-// printf("Resize:%d,%d\n",e->windowInnerWidth,e->windowInnerHeight);
-// printf("CanvasSize: %d,%d (%f)\n",defWidth,defHeight,ratio);
- 
- //emscripten_set_canvas_size(width*ratio,height*ratio);
- glfwCloseWindow();
-  initGL(defWidth,defHeight);   
-//glfwSetWindowSize(defWidth,defHeight); 
-    s_applicationManager->surfaceChanged(defWidth,defHeight,(defWidth>defHeight)?90:0);
- return false;
-}
-
 
 // returns the number of utf8 code points in the buffer at s
 size_t utf8len(const char *s)
@@ -248,9 +248,9 @@ EM_BOOL touch_callback(int eventType, const EmscriptenTouchEvent *e, void *userD
 		 ginputp_touchBegin(x,y,i,m);
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHEND)
 	 {
-	         EM_ASM( Module.checkALMuted(); );	         
+	     EM_ASM( Module.checkALMuted(); );
 		 ginputp_touchEnd(x,y,i,m);
-         }
+     }
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHMOVE)
 		 ginputp_touchMove(x,y,i,m);
 	 else if (eventType == EMSCRIPTEN_EVENT_TOUCHCANCEL)
@@ -309,11 +309,8 @@ char *url=(char *) EM_ASM_INT_V({
   EM_ASM(Module.registerPlugins());
 
   int defWidth=EM_ASM_INT_V({ return window.innerWidth; });
-   int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
-   int fullScreen;
-// printf("CanvasSize: %d,%d (%f)\n",defWidth,defHeight,ratio);
-//   emscripten_get_canvas_size(&defWidth,&defHeight,&fullScreen);
-    initGL(defWidth,defHeight);    
+  int defHeight=EM_ASM_INT_V({ return window.innerHeight; });
+  initGL(defWidth,defHeight);
 //    glog_setLevel(0);
     bool hasGApp=EM_ASM_INT_V({ return Module.hasGApp; });
     s_applicationManager=new ApplicationManager(!hasGApp,hasGApp?"main.gapp":"",url);
@@ -321,7 +318,7 @@ char *url=(char *) EM_ASM_INT_V({
 
     EMSCRIPTEN_RESULT ret;
     bool capture=false;
-    ret = emscripten_set_resize_callback(0, 0, true, resize_callback);
+    //ret = emscripten_set_resize_callback(0, 0, true, resize_callback);
     ret = emscripten_set_mousedown_callback(0, 0, capture, mouse_callback);
     ret = emscripten_set_mouseup_callback(0, 0, capture, mouse_callback);
     ret = emscripten_set_mousemove_callback(0, 0, capture, mouse_callback);

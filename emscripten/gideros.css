@@ -3,6 +3,10 @@ padding-left:0; padding-top:0; padding-bottom:0; margin-top:0;
 margin-bottom:0; position: absolute; width:100%; height: 100%;
 border: 0px none;
 }
+.toplevel {
+	position:fixed !important;
+	-webkit-overflow-scrolling: touch
+}
 textarea.emscripten { font-family: Arial; width: 80%; }
 div.emscripten { text-align: center; }
 div.emscripten_border { border: 0px solid black; }

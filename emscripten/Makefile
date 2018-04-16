@@ -150,7 +150,6 @@ plugins:
 plugins.clean:
 	R=$(PWD); for p in $(PLUGINS); do cd ../plugins/$$p/source/emscripten; $(MAKE) clean; cd -; done
 
-
 SUBLIBS=CORE B2D LBND LGID LGVFS LZIP LPNG LJPG LSUP LMP3 LFRT LXMP
 SUBLIBS_AR=$(addprefix $(BUILD)/lib,$(addsuffix .bc,$(SUBLIBS)))
 
@@ -160,6 +159,16 @@ $$(BUILD)/lib$(1).bc: $$(addprefix $(BUILD)/,$$(addsuffix .em.o,$$($(1)_SRCS)))
 SUBLIBS_SRCS+=$$($(1)_SRCS)
 endef
 
+define SUB_fileopt
+$(1): $(2)
+endef
+
+define SUB_libopt
+$(foreach src,$($(1)),$(eval $(call SUB_fileopt,$(addprefix $(BUILD)/,$(addsuffix .em.o,$(src))),$(2))))
+endef
+
+$(call SUB_libopt,B2D_SRCS,CFLGS+=-fno-rtti -fno-exceptions)
+ 
 $(foreach sub,$(SUBLIBS),$(eval $(call SUB_template,$(sub))))
 
 SUBLIBS_OBJS=$(addprefix $(BUILD)/,$(addsuffix .em.o,$(SUBLIBS_SRCS)))
