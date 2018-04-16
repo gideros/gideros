@@ -156,6 +156,7 @@ void TTFont::checkLogicalScale() {
 			}
 		}
 		height_ = ascender_ + descender;
+		cacheVersion_++;
 	}
 }
 

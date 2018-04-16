@@ -12,7 +12,7 @@ class GraphicsBase;
 class FontBase : public GReferenced
 {
 public:
-    FontBase(Application *application) : application_(application)
+    FontBase(Application *application) : application_(application), cacheVersion_(0)
 	{
 	}
 
@@ -34,6 +34,7 @@ public:
     virtual float getLineHeight() = 0;
 
 	virtual Type getType() const = 0;
+	int getCacheVersion() { return cacheVersion_; };
 
 	struct FontSpec {
 		std::string filename;
@@ -91,6 +92,7 @@ public:
 protected:
 	void layoutHorizontal(FontBase::TextLayout *tl,int start, float w, float cw, float sw, float tabSpace, int flags,float letterSpacing, bool wrapped=false, int end=-1);
     Application *application_;
+	int cacheVersion_;
 };
 
 class BMFontBase : public FontBase

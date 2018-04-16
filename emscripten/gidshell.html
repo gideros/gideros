@@ -47,6 +47,10 @@
     <script src="https://connect.facebook.net/en_US/fbinstant.6.1.js"></script>
 GIDEROS-FBINSTANT-END -->
     <script type='text/javascript'>
+    <!-- Fix for WebKit/ iOS 11.3 issue -->
+    window.addEventListener('touchmove', function (event) {
+    	event.preventDefault();
+    	}, { passive: false, capture: false });    
     var hasFBInstant = (typeof FBInstant !== 'undefined');
     if (hasFBInstant) {
     	FBInstant.initializeAsync();

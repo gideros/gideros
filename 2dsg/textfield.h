@@ -22,6 +22,7 @@ public:
 	}
 
     virtual void setFont(FontBase* font);
+    FontBase *getFont() { return font_; };
 
 	virtual void setText(const char* text);
 	virtual const char* text() const;

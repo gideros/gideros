@@ -4,9 +4,12 @@
 bool TextFieldBase::scaleChanged() {
 	float scalex = application_->getLogicalScaleX();
 	float scaley = application_->getLogicalScaleY();
-	bool changed=(scalex!=lscalex_)||(scaley!=lscaley_);
+	FontBase *font=getFont();
+	int fontver = (font==NULL)?-1:font->getCacheVersion();
+	bool changed=(scalex!=lscalex_)||(scaley!=lscaley_)||(fontver!=lfontCacheVersion_);
 	lscalex_=scalex;
 	lscaley_=scaley;
+	lfontCacheVersion_=fontver;
 	return changed;
 }
 

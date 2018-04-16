@@ -12,10 +12,13 @@ class Application;
 class TextFieldBase : public Sprite
 {
 public:
-    TextFieldBase(Application *application) : Sprite(application), layout_(), lscalex_(0),lscaley_(0) {}
+    TextFieldBase(Application *application) : Sprite(application), layout_(),
+		textheight_(0), textwidth_(0),
+		lscalex_(0),lscaley_(0),lfontCacheVersion_(-1) {}
     virtual ~TextFieldBase() {}
 
     virtual void setFont(FontBase* font) = 0;
+    virtual FontBase *getFont() = 0;
 
 	virtual void setText(const char* text) = 0;
 	virtual const char* text() const = 0;
@@ -43,6 +46,7 @@ protected:
     std::string sample_;
     FontBase::TextLayoutParameters layout_;
     float lscalex_,lscaley_;
+    int lfontCacheVersion_;
     float textwidth_,textheight_; //Currently displayed text size incl. letter/line spacing
 };
 

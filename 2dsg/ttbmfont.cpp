@@ -494,6 +494,7 @@ void TTBMFont::checkLogicalScale() {
 							*currentDib_, parameters));
 		}
 		fontInfo_.height = fontInfo_.ascender + fontInfo_.descender;
+		cacheVersion_++;
 	}
 }
 

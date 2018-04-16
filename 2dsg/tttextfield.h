@@ -2,8 +2,8 @@
 #define TTTEXTFIELD_H
 
 #include "textfieldbase.h"
+#include "ttfont.h"
 
-class TTFont;
 struct TextureData;
 class Application;
 
@@ -14,6 +14,7 @@ public:
 	virtual ~TTTextField();
 
     virtual void setFont(FontBase *font);
+    FontBase *getFont() { return font_; };
 
 	virtual void setText(const char* text);
 	virtual const char* text() const;
