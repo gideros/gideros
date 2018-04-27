@@ -33,6 +33,7 @@ public:
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);
     virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1);
     virtual float getAscender();
+    virtual float getDescender();
     virtual float getLineHeight();
 
 private:

@@ -66,14 +66,6 @@ void GridBagLayout::preInitMaximumArraySizes(Sprite *parent, size_t &a0,
 	a1 = preMaximumArrayYIndex;
 } //PreInitMaximumSizes
 
-/**
- * This method is obsolete and supplied for backwards
- * compatibility only; new code should call {@link
- * #getLayoutInfo(java.awt.Container, int) getLayoutInfo} instead.
- * This method is the same as <code>getLayoutInfo</code>;
- * refer to <code>getLayoutInfo</code> for details on parameters
- * and return value.
- */
 GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	Sprite *comp;
 	GridBagConstraints *constraints;
@@ -124,10 +116,14 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 			(EMPIRICMULTIPLIER * arraySizes1 > INT_MAX) ?
 					INT_MAX : EMPIRICMULTIPLIER * (int) arraySizes1;
 
-	if (maximumArrayXIndex < rowHeights.size())
-		maximumArrayXIndex = rowHeights.size();
-	if (maximumArrayYIndex < columnWidths.size())
-		maximumArrayYIndex = columnWidths.size();
+    if (maximumArrayXIndex < rowHeights.size())
+        maximumArrayXIndex = rowHeights.size();
+    if (maximumArrayYIndex < columnWidths.size())
+        maximumArrayYIndex = columnWidths.size();
+    if (maximumArrayXIndex < rowWeights.size())
+        maximumArrayXIndex = rowWeights.size();
+    if (maximumArrayYIndex < columnWeights.size())
+        maximumArrayYIndex = columnWeights.size();
 
 	std::vector<int> xMaxArray(maximumArrayXIndex);
 	std::vector<int> yMaxArray(maximumArrayYIndex);
@@ -240,10 +236,14 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	/*
 	 * Apply minimum row/column dimensions
 	 */
-	if (layoutWidth < columnWidths.size())
-		layoutWidth = columnWidths.size();
-	if (layoutHeight < rowHeights.size())
-		layoutHeight = rowHeights.size();
+    if (layoutWidth < columnWidths.size())
+        layoutWidth = columnWidths.size();
+    if (layoutHeight < rowHeights.size())
+        layoutHeight = rowHeights.size();
+    if (layoutWidth < columnWeights.size())
+        layoutWidth = columnWeights.size();
+    if (layoutHeight < rowWeights.size())
+        layoutHeight = rowWeights.size();
 
 	GridBagLayoutInfo r = GridBagLayoutInfo(layoutWidth, layoutHeight);
 
@@ -620,14 +620,6 @@ void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,
 	h = t + insets.top + insets.bottom;
 }
 
-/**
- * This method is obsolete and supplied for backwards
- * compatibility only; new code should call {@link
- * #arrangeGrid(Container) arrangeGrid} instead.
- * This method is the same as <code>arrangeGrid</code>;
- * refer to <code>arrangeGrid</code> for details on the
- * parameter.
- */
 void GridBagLayout::ArrangeGrid(Sprite *parent)  {
 	Sprite *comp;
 	int compindex;
@@ -639,7 +631,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent)  {
 	float diffw, diffh;
 	double weight;
 	GridBagLayoutInfo info;
-	float pwidth, pheight; //Parent size TODO
+	float pwidth, pheight;
 
 	/*
 	 * If the parent has no slaves anymore, then don't do anything
@@ -666,7 +658,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent)  {
         getMinSize(parent, info, dw, dh, insets);
 	}
 
-	layoutInfo = info;
 	r.width = dw;
 	r.height = dh;
 
@@ -751,7 +742,8 @@ void GridBagLayout::ArrangeGrid(Sprite *parent)  {
 	info.startx = diffw / 2 + insets.left;
 	info.starty = diffh / 2 + insets.top;
 
-	for (compindex = 0; compindex < parent->childCount(); compindex++) {
+    layoutInfo = info;
+    for (compindex = 0; compindex < parent->childCount(); compindex++) {
 		comp = parent->child(compindex);
 		if (!comp->visible())
 			continue;

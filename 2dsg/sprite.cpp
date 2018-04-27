@@ -13,7 +13,7 @@ std::set<Sprite*> Sprite::allSprites_;
 std::set<Sprite*> Sprite::allSpritesWithListeners_;
 
 Sprite::Sprite(Application* application) :
-		application_(application), parent_(NULL), isVisible_(true) {
+		application_(application), parent_(NULL), isVisible_(true), reqHeight_(0), reqWidth_(0) {
 	allSprites_.insert(this);
 
 //	graphicsBases_.push_back(GraphicsBase());

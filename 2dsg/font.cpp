@@ -43,6 +43,7 @@ Font::Font(Application* application) :
 	fontInfo_.isSetTextColorAvailable = true;
 	fontInfo_.height = 10;
 	fontInfo_.ascender = 8;
+	fontInfo_.descender = 2;
 
 	sizescalex_ = 1;
 	sizescaley_ = 1;
@@ -398,6 +399,7 @@ void Font::readTextureGlyphsOld(const char* file) {
 
 	fontInfo_.height = (ascender + descender) * 1.25;
 	fontInfo_.ascender = ascender * 1.25;
+	fontInfo_.descender = descender * 1.25;
 }
 
 void Font::readTextureGlyphsNew(const char *file) {
@@ -413,6 +415,7 @@ void Font::readTextureGlyphsNew(const char *file) {
 				goto error;
 			if (!getArg(line, "base", &fontInfo_.ascender))
 				goto error;
+			fontInfo_.descender=fontInfo_.height-fontInfo_.ascender;
 
 			fontInfo_.isSetTextColorAvailable = false;
 			int alphaChnl, redChnl, greenChnl, blueChnl;
@@ -639,6 +642,10 @@ int Font::kerning(wchar32_t left, wchar32_t right) const {
 
 float Font::getAscender() {
 	return fontInfo_.ascender * sizescaley_;
+}
+
+float Font::getDescender() {
+	return fontInfo_.descender * sizescaley_;
 }
 
 float Font::getLineHeight() {

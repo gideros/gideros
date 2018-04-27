@@ -68,7 +68,8 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
 	float lh=getLineHeight()+params->lineSpacing;
 	float sw=getAdvanceX(" ",params->letterSpacing,-1);
     float as=getAscender();
-    float ds=getLineHeight()-as;
+    float ds=getDescender();
+    float bb=(getLineHeight()-as-ds)/2;
 	bool wrap=!(params->flags&TLF_NOWRAP);
 	bool breakwords=(params->flags&TLF_BREAKWORDS);
 	int breaksize=0;
@@ -298,6 +299,10 @@ FontBase::TextLayout FontBase::layoutText(const char *text, FontBase::TextLayout
         yo-=ds;
     else if (params->flags&TLF_REF_MIDDLE)
         yo+=(as-ds)/2;
+    else if (params->flags&TLF_REF_LINETOP)
+        yo+=as+bb;
+    else if (params->flags&TLF_REF_LINEBOTTOM)
+        yo-=ds+bb;
 
 	tl.x = 1e30;
 	tl.y = 1e30;

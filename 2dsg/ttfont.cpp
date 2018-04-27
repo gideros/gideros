@@ -65,6 +65,7 @@ void TTFont::constructor(std::vector<FontSpec> filenames, float size,
 	}
 
 	ascender_ = 0;
+	descender_ = 10000000;
 	int descender = 0;
 	fontFaces_.resize(filenames.size());
 	int nf = 0;
@@ -109,6 +110,8 @@ void TTFont::constructor(std::vector<FontSpec> filenames, float size,
 
 		ascender_ = std::max(ascender_,
 				(int) (ff.face->size->metrics.ascender >> 6));
+		descender_ = std::min(descender_,
+				(int) (ff.face->size->metrics.descender >> 6));
 		descender = std::max(descender,
 				(int) ((ff.face->size->metrics.height
 						- ff.face->size->metrics.ascender) >> 6));
@@ -138,6 +141,7 @@ void TTFont::checkLogicalScale() {
 		glyphCache_.clear();
 		float RESOLUTION = 72;
 		ascender_ = 0;
+		descender_ = 10000000;
 		int descender = 0;
 		for (std::vector<FontFace>::iterator it = fontFaces_.begin();
 				it != fontFaces_.end(); it++) {
@@ -150,6 +154,8 @@ void TTFont::checkLogicalScale() {
 				currentLogicalScaleY_ = scaley;
 				ascender_ = std::max(ascender_,
 						(int) (face->size->metrics.ascender >> 6));
+				descender_ = std::min(descender_,
+						(int) (face->size->metrics.descender >> 6));
 				descender = std::max(descender,
 						(int) ((face->size->metrics.height
 								- face->size->metrics.ascender) >> 6));
@@ -519,6 +525,12 @@ float TTFont::getAscender() {
 	checkLogicalScale();
 	float scaley = currentLogicalScaleY_;
 	return ascender_ / scaley;
+}
+
+float TTFont::getDescender() {
+	checkLogicalScale();
+	float scaley = currentLogicalScaleY_;
+	return -descender_ / scaley;
 }
 
 float TTFont::getLineHeight() {

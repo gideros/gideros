@@ -29,6 +29,8 @@ FontBaseBinder::FontBaseBinder(lua_State *L)
     lua_pushinteger(L,FontBase::TLF_REF_TOP); lua_setfield(L,-2,"TLF_REF_TOP");
     lua_pushinteger(L,FontBase::TLF_REF_MIDDLE); lua_setfield(L,-2,"TLF_REF_MIDDLE");
     lua_pushinteger(L,FontBase::TLF_REF_BOTTOM); lua_setfield(L,-2,"TLF_REF_BOTTOM");
+    lua_pushinteger(L,FontBase::TLF_REF_LINETOP); lua_setfield(L,-2,"TLF_REF_LINETOP");
+    lua_pushinteger(L,FontBase::TLF_REF_LINEBOTTOM); lua_setfield(L,-2,"TLF_REF_LINEBOTTOM");
 	lua_pushinteger(L,FontBase::TLF_BREAKWORDS); lua_setfield(L,-2,"TLF_BREAKWORDS");
     lua_pop(L,1);
 }
@@ -101,6 +103,17 @@ int FontBaseBinder::getAscender(lua_State *L)
     FontBase *font = static_cast<FontBase*>(binder.getInstance("FontBase", 1));
 
     lua_pushnumber(L, font->getAscender());
+
+    return 1;
+}
+
+int FontBaseBinder::getDescender(lua_State *L)
+{
+    Binder binder(L);
+
+    FontBase *font = static_cast<FontBase*>(binder.getInstance("FontBase", 1));
+
+    lua_pushnumber(L, font->getDescender());
 
     return 1;
 }

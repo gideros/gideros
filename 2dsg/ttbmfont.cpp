@@ -211,7 +211,8 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
     currentPacker_ = NULL;
 
 	fontInfo_.ascender = 0;
-	fontInfo_.descender = 0;
+	fontInfo_.descender = 1000000;
+	fontInfo_.height = 0;
 	defaultSize_ = size;
 	FT_Error error;
 
@@ -273,12 +274,14 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 
 		fontInfo_.ascender = std::max(fontInfo_.ascender,
 				(int) (ff.face->size->metrics.ascender >> 6));
-		fontInfo_.descender = std::max(fontInfo_.descender,
+		fontInfo_.descender = std::min(fontInfo_.descender,
+				(int) (ff.face->size->metrics.descender >> 6));
+		fontInfo_.height = std::max(fontInfo_.height,
 				(int) ((ff.face->size->metrics.height
 						- ff.face->size->metrics.ascender) >> 6));
 	}
 
-	fontInfo_.height = fontInfo_.ascender + fontInfo_.descender;
+	fontInfo_.height = fontInfo_.ascender + fontInfo_.height;
 
 	charset_ = chars;
 
@@ -458,7 +461,8 @@ void TTBMFont::checkLogicalScale() {
 		textureData_.clear();
 
 		fontInfo_.ascender = 0;
-		fontInfo_.descender = 0;
+		fontInfo_.descender = 1000000;
+		fontInfo_.height = 0;
 
 		for (std::vector<FontFace>::iterator it = fontFaces_.begin();
 				it != fontFaces_.end(); it++) {
@@ -470,7 +474,9 @@ void TTBMFont::checkLogicalScale() {
 			}
 			fontInfo_.ascender = std::max(fontInfo_.ascender,
 					(int) ((*it).face->size->metrics.ascender >> 6));
-			fontInfo_.descender = std::max(fontInfo_.descender,
+			fontInfo_.descender = std::min(fontInfo_.descender,
+					(int) ((*it).face->size->metrics.descender >> 6));
+			fontInfo_.height = std::max(fontInfo_.descender,
 					(int) (((*it).face->size->metrics.height
 							- (*it).face->size->metrics.ascender) >> 6));
 		}
@@ -493,7 +499,7 @@ void TTBMFont::checkLogicalScale() {
 					application_->getTextureManager()->createTextureFromDib(
 							*currentDib_, parameters));
 		}
-		fontInfo_.height = fontInfo_.ascender + fontInfo_.descender;
+		fontInfo_.height = fontInfo_.ascender + fontInfo_.height;
 		cacheVersion_++;
 	}
 }
@@ -830,6 +836,10 @@ int TTBMFont::kerning(wchar32_t left, wchar32_t right) const {
 
 float TTBMFont::getAscender() {
 	return fontInfo_.ascender * sizescaley_;
+}
+
+float TTBMFont::getDescender() {
+	return -fontInfo_.descender * sizescaley_;
 }
 
 float TTBMFont::getLineHeight() {

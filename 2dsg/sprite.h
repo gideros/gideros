@@ -407,8 +407,10 @@ public:
 
     GridBagLayout *getLayoutState();
     void clearLayoutState();
+    bool hasLayoutState() { return layoutState!=NULL; };
     GridBagConstraints *getLayoutConstraints();
     void clearLayoutConstraints();
+    bool hasLayoutConstraints() { return layoutConstraints!=NULL; };
 
 public:
     GridBagConstraints *layoutConstraints;

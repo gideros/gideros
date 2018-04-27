@@ -31,6 +31,7 @@ public:
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1) = 0;
     virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1) = 0;
     virtual float getAscender() = 0;
+    virtual float getDescender() = 0;
     virtual float getLineHeight() = 0;
 
 	virtual Type getType() const = 0;
@@ -76,7 +77,9 @@ public:
         TLF_REF_TOP=128,
         TLF_REF_MIDDLE=256,
         TLF_REF_BOTTOM=512,
-		TLF_BREAKWORDS=1024
+		TLF_BREAKWORDS=1024,
+        TLF_REF_LINEBOTTOM=2048,
+        TLF_REF_LINETOP=4096
 	};
 
 	struct TextLayoutParameters {

@@ -27,6 +27,7 @@ public:
     virtual float getAdvanceX(const char *text, float letterSpacing, int size = -1);
     virtual float getCharIndexAtOffset(const char *text, float offset, float letterSpacing, int size = -1);
     virtual float getAscender();
+    virtual float getDescender();
     virtual float getLineHeight();
 
 private:
@@ -47,6 +48,7 @@ private:
     {
         int height;
         int ascender;
+        int descender;
         bool isSetTextColorAvailable;
         std::map<wchar32_t, TextureGlyph> textureGlyphs;
         std::map<std::pair<wchar32_t, wchar32_t>, int> kernings;

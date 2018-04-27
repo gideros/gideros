@@ -25,9 +25,12 @@ SpriteBinder::SpriteBinder(lua_State* L)
 		{"removeFromParent", SpriteBinder::removeFromParent},
 		{"setClip", SpriteBinder::setClip},
         {"getClip", SpriteBinder::getClip},
-		{"setLayoutParameters", SpriteBinder::setLayoutParameters},
-		{"setLayoutConstraints", SpriteBinder::setLayoutConstraints},
-		{"getX", SpriteBinder::getX},
+        {"setLayoutParameters", SpriteBinder::setLayoutParameters},
+        {"setLayoutConstraints", SpriteBinder::setLayoutConstraints},
+        {"getLayoutParameters", SpriteBinder::getLayoutParameters},
+        {"getLayoutConstraints", SpriteBinder::getLayoutConstraints},
+        {"getLayoutInfo", SpriteBinder::getLayoutInfo},
+        {"getX", SpriteBinder::getX},
 		{"getY", SpriteBinder::getY},
 		{"getZ", SpriteBinder::getZ},
 		{"getRotation", SpriteBinder::getRotation},
@@ -479,6 +482,13 @@ int SpriteBinder::getClip(lua_State* L)
 #define FILL_INT(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=luaL_checkinteger(L,-1); lua_pop(L,1);
 #define FILL_INTT(n,f,t) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=(t) luaL_checkinteger(L,-1); lua_pop(L,1);
 #define FILL_NUM(n,f) lua_getfield(L,2,n); if (!lua_isnoneornil(L,-1)) p->f=luaL_checknumber(L,-1); lua_pop(L,1);
+#define STOR_NUM_ARRAY(n,f) \
+		lua_newtable(L); \
+		for (size_t k=0;k<p->f.size();k++) { lua_pushinteger(L,p->f[k]); lua_rawseti(L,-2,k+1); }\
+		lua_setfield(L,-2,n);
+#define STOR_INT(n,f) lua_pushinteger(L,p->f); lua_setfield(L,-2,n);
+#define STOR_INTT(n,f,t) lua_pushinteger(L,(int)p->f); lua_setfield(L,-2,n);
+#define STOR_NUM(n,f) lua_pushnumber(L,p->f); lua_setfield(L,-2,n);
 
 int SpriteBinder::setLayoutParameters(lua_State *L)
 {
@@ -527,9 +537,85 @@ int SpriteBinder::setLayoutConstraints(lua_State *L)
 	return 0;
 }
 
+int SpriteBinder::getLayoutParameters(lua_State *L)
+{
+    StackChecker checker(L, "SpriteBinder::getLayoutParameters", 1);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+	if (sprite->hasLayoutState())
+	{
+		GridBagLayout *p=sprite->getLayoutState();
+		lua_newtable(L);
+		STOR_NUM_ARRAY("columnWidths",columnWidths);
+		STOR_NUM_ARRAY("rowHeights",rowHeights);
+		STOR_NUM_ARRAY("columnWeights",columnWeights);
+		STOR_NUM_ARRAY("rowWeights",rowWeights);
+        STOR_NUM("insetTop",pInsets.top); STOR_NUM("insetLeft",pInsets.left);
+        STOR_NUM("insetBottom",pInsets.bottom); STOR_NUM("insetRight",pInsets.right);
+	}
+	else
+		lua_pushnil(L);
+	return 1;
+}
+
+int SpriteBinder::getLayoutConstraints(lua_State *L)
+{
+    StackChecker checker(L, "SpriteBinder::getLayoutConstraints", 1);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+	if (sprite->hasLayoutConstraints())
+	{
+		GridBagConstraints *p=sprite->getLayoutConstraints();
+		lua_newtable(L);
+		STOR_INT("gridx",gridx); STOR_INT("gridy",gridy);
+		STOR_INT("gridwidth",gridwidth); STOR_INT("gridheight",gridheight);
+		STOR_NUM("weightx",weightx); STOR_NUM("weighty",weighty);
+		STOR_INTT("anchor",anchor,GridBagConstraints::_Anchor); STOR_INTT("fill",fill,GridBagConstraints::_FillMode);
+		STOR_NUM("ipadx",ipadx); STOR_NUM("ipady",ipady);
+		STOR_NUM("minWidth",aminWidth); STOR_NUM("minHeight",aminHeight);
+		STOR_NUM("prefWidth",prefWidth); STOR_NUM("prefHeight",prefHeight);
+		STOR_NUM("insetTop",insets.top); STOR_NUM("insetLeft",insets.left);
+		STOR_NUM("insetBottom",insets.bottom); STOR_NUM("insetRight",insets.right);
+	}
+	else
+		lua_pushnil(L);
+	return 1;
+}
+
+int SpriteBinder::getLayoutInfo(lua_State *L)
+{
+    StackChecker checker(L, "SpriteBinder::getLayoutInfo", 1);
+
+	Binder binder(L);
+	Sprite* sprite = static_cast<Sprite*>(binder.getInstance("Sprite"));
+	if (sprite->hasLayoutState())
+	{
+		GridBagLayout *sp=sprite->getLayoutState();
+		GridBagLayoutInfo *p=sp->getCurrentLayoutInfo();
+		lua_newtable(L);
+
+		STOR_INT("width",width); STOR_INT("height",height);
+		STOR_INT("startx",startx); STOR_INT("starty",starty);
+		STOR_NUM_ARRAY("minWidth",minWidth);
+		STOR_NUM_ARRAY("minHeight",minHeight);
+		STOR_NUM_ARRAY("weightX",weightX);
+		STOR_NUM_ARRAY("weightY",weightY);
+	}
+	else
+		lua_pushnil(L);
+	return 1;
+}
+
 #undef FILL_INT
 #undef FILL_NUM
 #undef FILL_NUM_ARRAY
+#undef FILL_INTT
+#undef STOR_INT
+#undef STOR_NUM
+#undef STOR_NUM_ARRAY
+#undef STOR_INTT
 
 int SpriteBinder::getX(lua_State* L)
 {

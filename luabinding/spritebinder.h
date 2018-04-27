@@ -29,6 +29,9 @@ private:
     static int getClip(lua_State* L);
     static int setLayoutParameters(lua_State *L);
     static int setLayoutConstraints(lua_State *L);
+    static int getLayoutParameters(lua_State *L);
+    static int getLayoutConstraints(lua_State *L);
+    static int getLayoutInfo(lua_State *L);
 
 	static int getX(lua_State* L);
 	static int getY(lua_State* L);

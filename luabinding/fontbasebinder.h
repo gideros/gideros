@@ -11,6 +11,7 @@ public:
 private:
     static int getBounds(lua_State *L);
     static int getAscender(lua_State *L);
+    static int getDescender(lua_State *L);
     static int getLineHeight(lua_State *L);
     static int getAdvanceX(lua_State *L);
     static int layoutText(lua_State *L);
