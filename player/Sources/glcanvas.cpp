@@ -1303,6 +1303,7 @@ bool GLCanvas::event(QEvent *event){
     }
     else if(event->type() == QEvent::FocusIn){
         if(running_){
+        	makeCurrent();
             Event event(Event::APPLICATION_RESUME);
             GStatus status;
             application_->broadcastEvent(&event, &status);
@@ -1311,6 +1312,7 @@ bool GLCanvas::event(QEvent *event){
     }
     else if(event->type() == QEvent::WindowUnblocked){
         if(running_){
+        	makeCurrent();
             Event event(Event::APPLICATION_RESUME);
             GStatus status;
             application_->broadcastEvent(&event, &status);
@@ -1319,6 +1321,7 @@ bool GLCanvas::event(QEvent *event){
     }
     else if(event->type() == QEvent::FocusOut){
         if(running_){
+        	makeCurrent();
             Event event(Event::APPLICATION_SUSPEND);
             GStatus status;
             application_->broadcastEvent(&event, &status);
@@ -1327,6 +1330,7 @@ bool GLCanvas::event(QEvent *event){
     }
     else if(event->type() == QEvent::WindowBlocked){
         if(running_){
+        	makeCurrent();
             Event event(Event::APPLICATION_SUSPEND);
             GStatus status;
             application_->broadcastEvent(&event, &status);
