@@ -1201,14 +1201,14 @@ void LuaApplication::enterFrame(GStatus *status)
         lua_pop(L, 1);
     }
 
-    //Schedule Tasks, at least one task should be runn no matter if there is enough time or not
+    //Schedule Tasks, at least one task should be run no matter if there is enough time or not
 	if ((meanFrameTime_ >= 0.01)&&(meanFrameTime_<=0.1)) //If frame rate is between 10Hz and 100Hz
 	{
 		double taskStart = iclock();
 		double timeLimit = taskStart + meanFreeTime_*0.9; //Limit ourselves t 90% of free time
 		yieldHookLimit = timeLimit;
 		int loops = 0;
-		while (!tasks_.empty())
+		while ((!tasks_.empty())&&(!status->error()))
 		{
 			AsyncLuaTask t = tasks_.front();
 			tasks_.pop_front();
@@ -1238,6 +1238,7 @@ void LuaApplication::enterFrame(GStatus *status)
 				tasks_.pop_back(); //Error: Dequeue
 				if (exceptionsEnabled_ == true)
 				{
+					lua_traceback(t.L);
 					if (status)
 						*status = GStatus(1, lua_tostring(t.L, -1));
 				}

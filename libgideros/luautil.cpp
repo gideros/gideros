@@ -176,6 +176,16 @@ int lua_pcall_traceback(lua_State* L, int nargs, int nresults, int unused)
 	return status;
 }
 
+void lua_traceback(lua_State* L)
+{
+	if (!lua_isstring(L, -1))  /* 'message' not a string? */
+		return;  /* keep it intact */
+	lua_pushcfunction(L, db_errorfb);
+	lua_pushvalue(L, -2);  /* pass error message */
+	lua_pushinteger(L, 1);  /* skip this function */
+	lua_call(L, 2, 1);  /* call debug.traceback */
+}
+
 
 void luaL_rawgetptr(lua_State *L, int idx, void* ptr)
 {
