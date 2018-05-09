@@ -92,7 +92,7 @@ public:
 private:
     virtual void doDraw(const CurrentTransform&, float sx, float sy, float ex, float ey);
 	virtual void extraBounds(float* minx, float* miny, float* maxx, float* maxy) const;
-    int getMixedColor(int c1, int c2, float a);
+    int getMixedColor(int c1, int c2, float a1, float a2, float a, float &ao);
 
 	VertexBuffer<Point2f> vertices;
 	VertexBuffer<Point2f> texcoords;

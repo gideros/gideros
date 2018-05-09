@@ -114,10 +114,12 @@ void Pixel::updateTexture()
             x = 0.5 * w * (sx_ - 1) - x_ * w;
             y = 0.5 * h * (sy_ - 1) - y_ * h;
         } else {
-            w = width_ / (etw * sx_);
-            h = height_ / (eth * sy_);
-            x = -x_ / etw * tw;
-            y = -y_ / eth * th;
+            float tsx = texture->uvscalex;
+            float tsy = texture->uvscaley;
+            w = width_*tsx / (etw * sx_);
+            h = height_*tsy / (eth * sy_);
+            x = -x_*tsx / etw;
+            y = -y_*tsy / eth;
         }
 
         texcoords[0] = Point2f(x,y);
@@ -256,7 +258,7 @@ void Pixel::setGradient(int c1, float a1, int c2, float a2, int c3, float a3, in
     colors_.Update();
 }
 
-int Pixel::getMixedColor(int c1, int c2, float a)
+int Pixel::getMixedColor(int c1, int c2, float a1,float a2,float a,float &am)
 {
     int b1 = c1 % 256;
     int g1 = int(c1/256)%256;
@@ -267,6 +269,7 @@ int Pixel::getMixedColor(int c1, int c2, float a)
     int r = r1*a+r2*(1-a);
     int g = g1*a+g2*(1-a);
     int b = b1*a+b2*(1-a);
+    am= a1*a+a2*(1-a);
     return int(r)*65536+int(g)*256+int(b);
 }
 
@@ -296,10 +299,11 @@ void Pixel::setGradientWithAngle(int co1, float a1, int co2, float a2, float ang
     f3 = (f3-fmin)*fscl;
     f4 = (f4-fmin)*fscl;
 
-    float c1 = getMixedColor(co1,co2,f1);
-    float c2 = getMixedColor(co1,co2,f2);
-    float c3 = getMixedColor(co1,co2,f3);
-    float c4 = getMixedColor(co1,co2,f4);
+    float ao1,ao2,ao3,ao4;
+    float c1 = getMixedColor(co1,co2,a1,a2,f1,ao1);
+    float c2 = getMixedColor(co1,co2,a1,a2,f2,ao2);
+    float c3 = getMixedColor(co1,co2,a1,a2,f3,ao3);
+    float c4 = getMixedColor(co1,co2,a1,a2,f4,ao4);
 
-    setGradient(c1, 1.0, c2, 1.0, c3, 1.0, c4, 1.0);
+    setGradient(c1, ao1, c2, ao2, c3, ao3, c4, ao4);
 }
