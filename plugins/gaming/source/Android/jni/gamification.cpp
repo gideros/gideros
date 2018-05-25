@@ -527,15 +527,15 @@ public:
 		// and copy the data into it
 		char *ptr = (char*)event + sizeof(game_Achievements);
 		
-		event->caller = ptr;
-		strcpy(ptr, caller.c_str());
-		ptr += caller.size() + 1;
-		
 		event->count = count;
 		event->achievements = (game_Achievement*)ptr;
 		
 		ptr += achievements.size() * sizeof(game_Achievement);
-		 
+
+		event->caller = ptr;
+		strcpy(ptr, caller.c_str());
+		ptr += caller.size() + 1;
+
 		for (std::size_t i = 0; i < count; ++i)
 		{	
 			event->achievements[i].id = ptr;
