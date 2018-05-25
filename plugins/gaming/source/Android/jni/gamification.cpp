@@ -607,6 +607,11 @@ public:
 		// and copy the data into it
 		char *ptr = (char*)event + sizeof(game_Leaderboard);
 		
+		event->count = count;
+		event->scores = (game_Score*)ptr;
+
+		ptr += scores.size() * sizeof(game_Score);
+
 		event->caller = ptr;
 		strcpy(ptr, caller.c_str());
 		ptr += caller.size() + 1;
@@ -618,12 +623,7 @@ public:
 		event->name = ptr;
 		strcpy(ptr, name.c_str());
 		ptr += name.size() + 1;
-		
-		event->count = count;
-		event->scores = (game_Score*)ptr;
-		
-		ptr += scores.size() * sizeof(game_Score);
-		
+
 		for (std::size_t i = 0; i < count; ++i)
 		{	
 			event->scores[i].rank = ptr;
