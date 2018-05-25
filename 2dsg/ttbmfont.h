@@ -11,6 +11,7 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_STROKER_H
 
 class GStatus;
 class GraphicsBase;
@@ -19,7 +20,7 @@ struct TextureData;
 class TTBMFont : public BMFontBase
 {
 public:
-    TTBMFont(Application *application, std::vector<FontSpec> filenames, float size, const char *chars, float filtering, GStatus *status);
+    TTBMFont(Application *application, std::vector<FontSpec> filenames, float size, const char *chars, float filtering, float outline, GStatus *status);
     virtual ~TTBMFont();
 
     virtual Type getType() const
@@ -37,7 +38,7 @@ public:
     virtual float getLineHeight();
 
 private:
-    void constructor(std::vector<FontSpec> filenames, float size, const char *chars, float filtering);
+    void constructor(std::vector<FontSpec> filenames, float size, const char *chars, float filtering, float outline);
     int kerning(wchar32_t left, wchar32_t right) const;
     bool addGlyph(const wchar32_t chr);
     void ensureChars(const wchar32_t *text, int size);
@@ -81,12 +82,14 @@ private:
     std::string charset_;
 
     FontInfo fontInfo_;
+    FT_Stroker stroker;
 
     float sizescalex_;
     float sizescaley_;
     float uvscalex_;
     float uvscaley_;
     float defaultSize_;
+    float outlineSize_;
     float currentLogicalScaleX_,currentLogicalScaleY_;
 
 };

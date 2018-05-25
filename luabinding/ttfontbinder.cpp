@@ -71,7 +71,8 @@ int TTFontBinder::create(lua_State* L)
         	smoothing = lua_tonumber(L, 4);
         else if (lua_toboolean(L,4))
         	smoothing=1;
-        font = new TTBMFont(application, filenames, size, chars, smoothing, &status);
+        float outline=luaL_optnumber(L, 5, 0);
+        font = new TTBMFont(application, filenames, size, chars, smoothing, outline, &status);
     }
     else
     {
@@ -80,7 +81,8 @@ int TTFontBinder::create(lua_State* L)
         	smoothing = lua_tonumber(L, 3);
         else if (lua_toboolean(L,3))
         	smoothing=1;
-        font = new TTFont(application, filenames, size, smoothing, &status);
+        float outline=luaL_optnumber(L, 4, 0);
+        font = new TTFont(application, filenames, size, smoothing, outline, &status);
     }
 
     if (status.error())

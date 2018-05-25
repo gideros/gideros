@@ -1,3 +1,5 @@
+JZPLoaded={}
+
 function JZPLoadAsync(imageUrl, onprogress) {
 	  return new Promise((resolve, reject) => {
 	    var xhr = new XMLHttpRequest();
@@ -21,10 +23,7 @@ function JZPLoadAsync(imageUrl, onprogress) {
 	        if (m && m[1]) {
 	          options.type = m[1];
 	        }
-
-	        var blob = new Blob([this.response], options);
-
-	        resolve(window.URL.createObjectURL(blob));
+	        resolve({ data: this.response, options:options});
 	      }
 	    }
 
@@ -94,9 +93,10 @@ JZPLoadAsync(fl, (ctx,ratio) => {
 	  ctx.loadPoint=ratio;
 	  downloadProgress(diff)
 	})
-	.then(imgSrc => {
+	.then(res => {
 	  // Loading successfuly complete; set the image and probably do other stuff.
-		img.src = imgSrc;
+        var blob = new Blob([res.data], res.options);
+		img.src = window.URL.createObjectURL(blob);
 	}, xhr => {
 	  // An error occured. We have the XHR object to see what happened.
 		console.error("Failed to load:"+fl)
@@ -109,6 +109,32 @@ JPZLoad=function (fl,ev)
 	{
 		 setTimeout(function() { 
 			 ev(code)
+			 if (typeof JZPLoaded[fl] =="function") {
+					 JZPLoaded[fl]();
+			 }
 		},1)
 	})
+}
+
+JPZMALoad=function (fl,ev)
+{
+	JZPLoadAsync(fl, (ctx,ratio) => {
+		  var diff=ratio-(ctx.loadPoint||0);
+		  ctx.loadPoint=ratio;
+		  downloadProgress(diff)
+		})
+		.then(res => {
+			  var inStream = new LZMA.iStream(res.data);
+			  var outStream = LZMA.decompressFile(inStream);
+			  var result = outStream.toUint8Array();
+			 setTimeout(function() { 
+					 ev(result);
+					 if (typeof JZPLoaded[fl] =="function") {
+							 JZPLoaded[fl]();
+					 }
+				},1);
+		}, xhr => {
+		  // An error occured. We have the XHR object to see what happened.
+			console.error("Failed to load:"+fl)
+		});
 }

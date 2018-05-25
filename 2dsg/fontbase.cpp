@@ -58,7 +58,7 @@ void FontBase::layoutHorizontal(FontBase::TextLayout *tl,int start, float w, flo
         char sep=tl->parts[i].sep;
         float ns=(sep=='\t')?(tabSpace*(1+floor(cw/tabSpace))-cw):sw;
         if (sep=='\e') ns=0;
-		ox+=tl->parts[i].w+ns;
+		ox+=getAdvanceX(tl->parts[i].text.c_str(),letterSpacing,-1)+ns;
 	}
 }
 

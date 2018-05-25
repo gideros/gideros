@@ -39,19 +39,24 @@ html5.install: html5.template html5.player
 
 html5: html5.install
 
-html5.tools: html5.crunchme
+html5.tools: html5.crunchme html5.lzma
 
 CRUNCHME_SRCS=$(addprefix src/liblzg/lib/,checksum decode encode version)
 CRUNCHME_SRCS+=$(addprefix src/zlib/,adler32 compress crc32 deflate inftrees trees zutil)
 CRUNCHME_SRCS+=$(addprefix src/,crunchme png)
 
+LZMA_SRCS=LzFind LzmaEnc Lzma2Enc lzma
+
 html5.crunchme: $(addprefix emscripten/crunchme-0.4/,$(addsuffix .co,$(CRUNCHME_SRCS)))
 	$(CXX) -o $(ROOT)/ui/Tools/crunchme $^
+
+html5.lzma: $(addprefix emscripten/lzma/,$(addsuffix .co,$(LZMA_SRCS)))
+	$(CXX) -o $(ROOT)/ui/Tools/lzma $^
 	
 %.co: %.cpp
-	$(CXX) -c -o $@ -Iemscripten/crunchme-0.4/src/liblzg/include $< 
+	$(CXX) -c -o $@ -D_7ZIP_ST -Iemscripten/crunchme-0.4/src/liblzg/include $< 
 
 %.co: %.c
-	$(CC) -c -o $@ $<
+	$(CC) -c -o $@ -D_7ZIP_ST $<
 
 	

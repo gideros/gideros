@@ -78,7 +78,8 @@ GridBagLayoutInfo GridBagLayout::getLayoutInfo(Sprite *parent, int sizeflag) {
 	// EmpericMultier equals 2 because of this.
 
 	int layoutWidth, layoutHeight;
-	int compindex, i, k, px, py, pixels_diff, nextSize;
+    int compindex, i, k, nextSize;
+    float px,py,pixels_diff;
 	int curX = 0; // constraints.gridx
 	int curY = 0; // constraints.gridy
 	int curWidth = 1;  // constraints.gridwidth
@@ -620,7 +621,7 @@ void GridBagLayout::getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,
 	h = t + insets.top + insets.bottom;
 }
 
-void GridBagLayout::ArrangeGrid(Sprite *parent)  {
+void GridBagLayout::ArrangeGrid(Sprite *parent,float pwidth,float pheight)  {
 	Sprite *comp;
 	int compindex;
 	GridBagConstraints *constraints;
@@ -631,7 +632,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent)  {
 	float diffw, diffh;
 	double weight;
 	GridBagLayoutInfo info;
-	float pwidth, pheight;
 
 	/*
 	 * If the parent has no slaves anymore, then don't do anything
@@ -641,9 +641,6 @@ void GridBagLayout::ArrangeGrid(Sprite *parent)  {
 			&& (columnWidths.size() == 0 || rowHeights.size() == 0)) {
 		return;
 	}
-
-	// figure out available space
-    parent->getDimensions(pwidth, pheight);
 
 	/*
 	 * Pass #1: scan all the slaves to figure out the total amount
@@ -688,7 +685,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent)  {
 			weight += info.weightX[i];
 		if (weight > 0.0) {
 			for (i = 0; i < info.width; i++) {
-				int dx = (int) ((((double) diffw) * info.weightX[i]) / weight);
+                float dx = (float) ((((double) diffw) * info.weightX[i]) / weight);
 				info.minWidth[i] += dx;
 				r.width += dx;
 				if (info.minWidth[i] < 0) {
@@ -711,7 +708,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent)  {
 			weight += info.weightY[i];
 		if (weight > 0.0) {
 			for (i = 0; i < info.height; i++) {
-				int dy = (int) ((((double) diffh) * info.weightY[i]) / weight);
+                float dy = (float) ((((double) diffh) * info.weightY[i]) / weight);
 				info.minHeight[i] += dy;
 				r.height += dy;
 				if (info.minHeight[i] < 0) {
@@ -797,7 +794,7 @@ void GridBagLayout::ArrangeGrid(Sprite *parent)  {
             if (comp->layoutState&&comp->layoutState->dirty)
             {
                 comp->layoutState->dirty=false;
-                comp->layoutState->ArrangeGrid(comp);
+                comp->layoutState->ArrangeGrid(comp,r.width,r.height);
             }
         }
 	}

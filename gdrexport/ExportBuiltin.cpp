@@ -148,7 +148,7 @@ void ExportBuiltin::fillTargetReplacements(ExportContext *ctx)
         	replaceList1 << qMakePair(QString("//GAPP_URL=\"gideros.GApp\"").toUtf8(), ("GAPP_URL=\""+ctx->base+".GApp\"").toUtf8());
         replaceList1 << qMakePair(QString("GIDEROS_MEMORY_MB=128").toUtf8(),QString("GIDEROS_MEMORY_MB=%1").arg(ctx->properties.html5_mem).toUtf8());
         if (ctx->properties.html5_pack) {
-        	replaceList1 << qMakePair(QString("script.onload").toUtf8(),QString("GiderosAsmJSLoaded").toUtf8());
+        	replaceList1 << qMakePair(QString("script.onload").toUtf8(),QString("JZPLoaded['gideros.asm.js']").toUtf8());
         }
         if (ctx->properties.html5_fbinstant) {
             replaceList1 << qMakePair(QString("GIDEROS-FBINSTANT-START").toUtf8(),QString("GIDEROS-FBINSTANT-START -->").toUtf8());
@@ -365,30 +365,31 @@ void ExportBuiltin::doExport(ExportContext *ctx)
 	   {
 			QDir toolsDir = QDir(
 					QCoreApplication::applicationDirPath());
+			QString pext;
+#if 0
+			pext="lzma";
+#if defined(Q_OS_WIN)
+			QString pack = toolsDir.filePath("lzma.exe");
+#else
+			QString pack = toolsDir.filePath("lzma");
+#endif
+#else
+			pext="png";
 #if defined(Q_OS_WIN)
 			QString pack = toolsDir.filePath("crunchme.exe");
 #else
 			QString pack = toolsDir.filePath("crunchme");
 #endif
+#endif
 			QDir old = QDir::current();
 			QDir::setCurrent(ctx->outputDir.path());
-			//QProcess::execute(quote(pack) + " -nostrip -i pace.js pace.js.png");
-			QProcess::execute(quote(pack) + " -nostrip -i gideros.js gideros.js.png");
-			QProcess::execute(quote(pack) + " -nostrip -i gideros.asm.js gideros.asm.js.png");
+			QProcess::execute(quote(pack) + " -wrapper -nostrip -i gideros.js gideros.js."+pext);
+			QProcess::execute(quote(pack) + " -wrapper -i gideros.asm.js gideros.asm.js."+pext);
 			QDir::setCurrent(old.path());
-			ctx->outputDir.remove("gideros.asm.js");
-			ctx->outputDir.remove("gideros.js");
-			//ctx->outputDir.remove("pace.js");
-			ctx->outputDir.rename("gideros.ldr.asm.js","gideros.asm.js");
-			ctx->outputDir.rename("gideros.ldr.js","gideros.js");
-			//ctx->outputDir.rename("pace.ldr.js","pace.js");
-		   ctx->outputDir.remove("gideros.ldr.asm.js");
+		    ctx->outputDir.remove("lzma.js");
 	   }
 	   else
 	   {
-		   ctx->outputDir.remove("gideros.ldr.asm.js");
-		   ctx->outputDir.remove("gideros.ldr.js");
-		  // ctx->outputDir.remove("pace.ldr.js");
 		   ctx->outputDir.remove("jzptool.js");
 	   }
 	   if (ctx->properties.html5_fbinstant) {

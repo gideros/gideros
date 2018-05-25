@@ -124,7 +124,7 @@ public:
     bool dirty;
     GridBagLayoutInfo getLayoutInfo(Sprite *parent, int sizeflag);
     void getMinSize(Sprite *parent, GridBagLayoutInfo info, float &w,float &h, GridInsets &insets);
-    void ArrangeGrid(Sprite *parent);
+    void ArrangeGrid(Sprite *parent,float pw,float ph);
     GridBagLayoutInfo *getCurrentLayoutInfo() { return &layoutInfo; }
 };
 

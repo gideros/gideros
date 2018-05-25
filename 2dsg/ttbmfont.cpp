@@ -2,6 +2,7 @@
 
 #include <ft2build.h>
 #include FT_OUTLINE_H
+#include FT_STROKER_H
 
 #include <ftlibrarysingleton.h>
 
@@ -31,10 +32,10 @@ static void close(FT_Stream stream) {
 }
 
 TTBMFont::TTBMFont(Application *application, std::vector<FontSpec> filenames,
-		float size, const char *chars, float filtering, GStatus *status) :
+		float size, const char *chars, float filtering, float outline, GStatus *status) :
 		BMFontBase(application) {
 	try {
-		constructor(filenames, size, chars, filtering);
+		constructor(filenames, size, chars, filtering, outline);
 	} catch (GiderosException &e) {
 		if (status)
 			*status = e.status();
@@ -62,7 +63,20 @@ bool TTBMFont::addGlyph(const wchar32_t chr) {
 	int top, left, width, height;
 	if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE) {
 		FT_BBox bbox;
-		FT_Outline_Get_CBox(&face->glyph->outline, &bbox);
+		if (stroker) {
+			FT_Glyph glyph;
+			error = FT_Get_Glyph(face->glyph, &glyph);
+			if (error)
+				return false;
+			error = FT_Glyph_StrokeBorder(&glyph, stroker, false, true);
+			if (error)
+				return false;
+			FT_OutlineGlyph oGlyph = reinterpret_cast<FT_OutlineGlyph>(glyph);
+			FT_Outline_Get_CBox(&oGlyph->outline, &bbox);
+			FT_Done_Glyph(glyph);
+		}
+		else
+			FT_Outline_Get_CBox(&face->glyph->outline, &bbox);
 
 		bbox.xMin &= ~63;
 		bbox.yMin &= ~63;
@@ -170,26 +184,43 @@ bool TTBMFont::staticCharsetInit() {
 		if (error)
 			continue;
 
-		error = FT_Render_Glyph(g1.face->glyph, FT_RENDER_MODE_NORMAL);
-		if (error)
-			continue;
-
-		FT_Bitmap &bitmap = g1.face->glyph->bitmap;
+		FT_Bitmap *bitmap=NULL;
+		FT_Glyph glyph=nullptr;
+		if (stroker) {
+			error = FT_Get_Glyph(g1.face->glyph, &glyph);
+			if (error)
+				continue;
+			error = FT_Glyph_StrokeBorder(&glyph, stroker, false, true);
+			if (error)
+				continue;
+			error = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, nullptr, true);
+			if (error)
+				continue;
+			FT_BitmapGlyph bitmapGlyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
+			bitmap=&(bitmapGlyph->bitmap);
+		}
+		else {
+			error = FT_Render_Glyph(g1.face->glyph, FT_RENDER_MODE_NORMAL);
+			if (error)
+				continue;
+			 bitmap = &(g1.face->glyph->bitmap);
+		}
 
 		iter->second.x = xo;
 		iter->second.y = yo;
 		iter->second.texture = 0;
 
-		width = std::min(width, (int) bitmap.width);
-		height = std::min(height, (int) bitmap.rows);
+		width = std::min(width, (int) bitmap->width);
+		height = std::min(height, (int) bitmap->rows);
 
 		for (int y = 0; y < height; ++y)
 			for (int x = 0; x < width; ++x) {
-				int index = x + y * bitmap.pitch;
-				int c = bitmap.buffer[index];
+				int index = x + y * bitmap->pitch;
+				int c = bitmap->buffer[index];
 
 				dib.setAlpha(xo + x, yo + y, c);
 			}
+		if (glyph) FT_Done_Glyph(glyph);
 	}
 
 	releaseTexturePacker(tp);
@@ -205,7 +236,7 @@ bool TTBMFont::staticCharsetInit() {
 }
 
 void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
-		const char *chars, float filtering) {
+		const char *chars, float filtering, float outline) {
 
     currentDib_ = NULL;
     currentPacker_ = NULL;
@@ -214,6 +245,13 @@ void TTBMFont::constructor(std::vector<FontSpec> filenames, float size,
 	fontInfo_.descender = 1000000;
 	fontInfo_.height = 0;
 	defaultSize_ = size;
+	outlineSize_ = outline;
+	stroker=NULL;
+	if (outline>0)
+	{
+		FT_Stroker_New(FT_Library_Singleton::instance(), &stroker);
+		FT_Stroker_Set(stroker, (FT_Fixed)(outline * 64), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+	}
 	FT_Error error;
 
 	float scalex = application_->getLogicalScaleX();
@@ -385,26 +423,43 @@ void TTBMFont::ensureChars(const wchar32_t *text, int size) {
 			if (error)
 				continue;
 
-			error = FT_Render_Glyph(g.face->glyph, FT_RENDER_MODE_NORMAL);
-			if (error)
-				continue;
-
-			FT_Bitmap &bitmap = g.face->glyph->bitmap;
+			FT_Bitmap *bitmap=NULL;
+			FT_Glyph glyph=nullptr;
+			if (stroker) {
+				error = FT_Get_Glyph(g.face->glyph, &glyph);
+				if (error)
+					continue;
+				error = FT_Glyph_StrokeBorder(&glyph, stroker, false, true);
+				if (error)
+					continue;
+				error = FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, nullptr, true);
+				if (error)
+					continue;
+				FT_BitmapGlyph bitmapGlyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
+				bitmap=&(bitmapGlyph->bitmap);
+			}
+			else {
+				error = FT_Render_Glyph(g.face->glyph, FT_RENDER_MODE_NORMAL);
+				if (error)
+					continue;
+				 bitmap = &(g.face->glyph->bitmap);
+			}
 
 			textureGlyphs[chr].x = xo;
 			textureGlyphs[chr].y = yo;
 			textureGlyphs[chr].texture = textureData_.size() - 1;
 
-			width = std::min(width, (int) bitmap.width);
-			height = std::min(height, (int) bitmap.rows);
+			width = std::min(width, (int) bitmap->width);
+			height = std::min(height, (int) bitmap->rows);
 
 			for (int y = 0; y < height; ++y)
 				for (int x = 0; x < width; ++x) {
-					int index = x + y * bitmap.pitch;
-					int c = bitmap.buffer[index];
+					int index = x + y * bitmap->pitch;
+					int c = bitmap->buffer[index];
 
 					currentDib_->setAlpha(xo + x, yo + y, c);
 				}
+			if (glyph) FT_Done_Glyph(glyph);
 			updateTexture = true;
 		}
 	}
@@ -430,6 +485,8 @@ TTBMFont::~TTBMFont() {
 		releaseTexturePacker(currentPacker_);
 	fontInfo_.kernings.clear();
 	fontInfo_.textureGlyphs.clear();
+	if (stroker)
+		FT_Stroker_Done(stroker);
 }
 
 void TTBMFont::checkLogicalScale() {

@@ -341,6 +341,12 @@ public:
 	void setVisible(bool visible)
 	{
 		isVisible_ = visible;
+        Sprite *h=parent_;
+        while (h&&(h->layoutState))
+        {
+        	h->layoutState->dirty=true;
+        	h=h->parent_;
+        }
 	}
 
 	// Evaluates the sprite to see if its bounds overlaps or intersects with the point specified by the x and y parameters.

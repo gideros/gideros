@@ -112,7 +112,7 @@ export BUILD_WASM
 
 #LINE BELOW FOR WASM
 ifneq ($(BUILD_WASM),)
-EOPTS+= WASM=1 TOTAL_MEMORY=512*1024*1024 'BINARYEN_METHOD="native-wasm,asmjs"' 'BINARYEN_TRAP_MODE="clamp"'
+EOPTS+= WASM=1 TOTAL_MEMORY=512*1024*1024 'BINARYEN_METHOD="native-wasm"' 'BINARYEN_TRAP_MODE="clamp"'
 endif
 EOPTS+='EXTRA_EXPORTED_RUNTIME_METHODS=["addRunDependency","removeRunDependency","ccall","cwrap"]'
 EOPTS+=MAIN_MODULE=1  
@@ -196,9 +196,8 @@ main: path $(BUILD)/gideros.js
 	cp $(BUILD)/gideros.asm.js $(TEMPLATE)
 	-cp $(BUILD)/gideros.html.symbols $(TEMPLATE)
 	-cp $(BUILD)/gideros.js.map $(TEMPLATE)
-	cp gideros.ldr.js $(TEMPLATE)
-	cp gideros.ldr.asm.js $(TEMPLATE)
 	cp jzptool.js $(TEMPLATE)
+	cp lzma.js $(TEMPLATE)
 	#$(CRUNCHME_TOOL) -nostrip -i pace.min.js $(TEMPLATE)/pace.js.png
 	#$(CRUNCHME_TOOL) -nostrip -i $(BUILD)/gideros.js $(TEMPLATE)/gideros.js.png
 	

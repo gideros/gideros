@@ -8,6 +8,7 @@
 
 #include <ft2build.h>
 #include FT_OUTLINE_H
+#include FT_STROKER_H
 
 #include <utf8.h>
 #include <algorithm>
@@ -43,10 +44,10 @@ FT_Face TTFont::getFace(int chr, FT_UInt &glyphIndex) {
 }
 
 TTFont::TTFont(Application *application, std::vector<FontSpec> filenames,
-		float size, float smoothing, GStatus *status) :
+		float size, float smoothing, float outline, GStatus *status) :
 		FontBase(application) {
 	try {
-		constructor(filenames, size, smoothing);
+		constructor(filenames, size, smoothing, outline);
 	} catch (GiderosException &e) {
 		if (status)
 			*status = e.status();
@@ -54,7 +55,7 @@ TTFont::TTFont(Application *application, std::vector<FontSpec> filenames,
 }
 
 void TTFont::constructor(std::vector<FontSpec> filenames, float size,
-		float smoothing) {
+		float smoothing, float outline) {
 	float scalex = application_->getLogicalScaleX();
 	float scaley = application_->getLogicalScaleY();
 
@@ -122,6 +123,14 @@ void TTFont::constructor(std::vector<FontSpec> filenames, float size,
 	currentLogicalScaleX_ = scalex;
 	currentLogicalScaleY_ = scaley;
 	defaultSize_ = size;
+	outlineSize_ = outline;
+
+	stroker=NULL;
+	if (outline>0)
+	{
+		FT_Stroker_New(FT_Library_Singleton::instance(), &stroker);
+		FT_Stroker_Set(stroker, (FT_Fixed)(outline * 64), FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0);
+	}
 }
 
 void TTFont::checkLogicalScale() {
@@ -309,15 +318,49 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 				} else
 					continue;
 
-				if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
-					continue;
+				FT_Bitmap *bitmap=NULL;
+				FT_Glyph glyph=nullptr;
+				if (stroker) {
+					if (FT_Get_Glyph(g.face->glyph, &glyph))
+						continue;
+					if (FT_Glyph_StrokeBorder(&glyph, stroker, false, true))
+					{
+						FT_Done_Glyph(glyph); continue;
+					}
 
-				FT_Bitmap &bitmap = face->glyph->bitmap;
-				width = std::min(width, (int) bitmap.width);
-				height = std::min(height, (int) bitmap.rows);
+					FT_BBox bbox;
+					FT_OutlineGlyph oGlyph = reinterpret_cast<FT_OutlineGlyph>(glyph);
+					FT_Outline_Get_CBox(&oGlyph->outline, &bbox);
+
+					bbox.xMin &= ~63;
+					bbox.yMin &= ~63;
+					bbox.xMax = (bbox.xMax + 63) & ~63;
+					bbox.yMax = (bbox.yMax + 63) & ~63;
+
+					width = (bbox.xMax - bbox.xMin) >> 6;
+					height = (bbox.yMax - bbox.yMin) >> 6;
+					top = bbox.yMax >> 6;
+					left = bbox.xMin >> 6;
+
+					if (FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, nullptr, true))
+					{
+						FT_Done_Glyph(glyph); continue;
+					}
+
+					FT_BitmapGlyph bitmapGlyph = reinterpret_cast<FT_BitmapGlyph>(glyph);
+					bitmap=&(bitmapGlyph->bitmap);
+				}
+				else {
+					if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
+						continue;
+					 bitmap = &(g.face->glyph->bitmap);
+				}
+
+				width = std::min(width, (int) bitmap->width);
+				height = std::min(height, (int) bitmap->rows);
 
 				g.face = face;
-				g.pitch = bitmap.pitch;
+				g.pitch = bitmap->pitch;
 				g.height = height;
 				g.width = width;
 				g.top = top;
@@ -325,8 +368,9 @@ Dib TTFont::renderFont(const char *text, TextLayoutParameters *layout,
 				g.glyph = glyphIndex;
 				g.advX = face->glyph->advance.x >> 6;
 				g.bitmap = (unsigned char *) malloc(g.height * g.pitch);
-				memcpy(g.bitmap, bitmap.buffer, g.height * g.pitch);
+				memcpy(g.bitmap, bitmap->buffer, g.height * g.pitch);
                 glyphCache_[wtext[i]] = g;
+    			if (glyph) FT_Done_Glyph(glyph);
 			}
 
 			if (prevFace == g.face)

@@ -309,6 +309,7 @@ int main(int argc, char **argv)
     bool verbose = true;
     bool strip = true;
     bool imageOnly=false;
+    bool wrapper=false;
     
     enc_t encoding = ENC_UTF16;
     comp_t compression = COMP_PNG;
@@ -331,6 +332,8 @@ int main(int argc, char **argv)
             compression = COMP_PNG;
         else if (arg == "-i")
             imageOnly=true;
+        else if (arg == "-wrapper")
+            wrapper=true;
         else if (arg == "-V")
         {
             cout << "CrunchMe version: " << CRUNCHME_VERSION << endl;
@@ -591,6 +594,15 @@ int main(int argc, char **argv)
                             outFile.write((char*)sfxBuf, encSize);
                             failed = outFile.fail();
                             outFile.close();
+                            if (wrapper&&!failed) {
+                            	cout << "Writing wrapper" << endl;
+                                ofstream outFile(inName, ios_base::out );
+                                if (outFile.fail())
+                                    cerr << "Unable to open file \"" << inName << "\"." << endl;
+                                outFile << "JPZLoad(\"" << outName << "\",eval);" << endl;
+                                failed = outFile.fail();
+                                outFile.close();
+                            }
                         }
                         else
                         {

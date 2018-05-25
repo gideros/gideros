@@ -13,7 +13,7 @@ std::set<Sprite*> Sprite::allSprites_;
 std::set<Sprite*> Sprite::allSpritesWithListeners_;
 
 Sprite::Sprite(Application* application) :
-		application_(application), parent_(NULL), isVisible_(true), reqHeight_(0), reqWidth_(0) {
+		application_(application), isVisible_(true), parent_(NULL), reqWidth_(0), reqHeight_(0) {
 	allSprites_.insert(this);
 
 //	graphicsBases_.push_back(GraphicsBase());
@@ -210,7 +210,9 @@ void Sprite::draw(const CurrentTransform& transform, float sx, float sy,
                 while(sprite->layoutState->dirty&&(loops--))
                 {
                     sprite->layoutState->dirty=false;
-                    sprite->layoutState->ArrangeGrid(sprite);
+                    float pwidth,pheight;
+                    sprite->getDimensions(pwidth, pheight);
+                    sprite->layoutState->ArrangeGrid(sprite,pwidth,pheight);
                 }
             }
 
@@ -768,8 +770,10 @@ void Sprite::getDimensions(float& w,float &h)
 {
 	float minx,miny,maxx,maxy;
     extraBounds(&minx, &miny, &maxx, &maxy);
-    w=1+(maxx>minx?maxx-minx:minx-maxx);
-    h=1+(maxy>miny?maxy-miny:miny-maxy);
+    w=(maxx>=minx)?1+maxx-minx:0;
+    h=(maxy>=miny)?1+maxy-miny:0;
+    if (w<reqWidth_) w=reqWidth_;
+    if (h<reqHeight_) h=reqHeight_;
 }
 
 bool Sprite::hitTestPoint(float x, float y, bool visible) const {
@@ -1166,8 +1170,12 @@ void Sprite::setDimensions(float w,float h)
         reqHeight_=h;
         if (layoutState)
             layoutState->dirty=true;
-        if (parent_&&parent_->layoutState)
-            parent_->layoutState->dirty=true;
+        Sprite *p=parent_;
+        while (p&&(p->layoutState))
+        {
+        	p->layoutState->dirty=true;
+        	p=p->parent_;
+        }
 
         if (hasEventListener(LayoutEvent::RESIZED))
         {

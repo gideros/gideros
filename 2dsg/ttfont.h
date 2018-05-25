@@ -3,6 +3,7 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_STROKER_H
 
 #include <fontbase.h>
 #include <dib.h>
@@ -14,7 +15,7 @@
 class TTFont : public FontBase
 {
 public:
-    TTFont(Application *application, std::vector<FontSpec> filenames, float size, float smoothing, GStatus *status);
+    TTFont(Application *application, std::vector<FontSpec> filenames, float size, float smoothing, float outline, GStatus *status);
     virtual ~TTFont();
 
 	virtual Type getType() const
@@ -39,7 +40,7 @@ public:
     }
     FT_Face getFace(int chr, FT_UInt &glpyhIndex);
 private:
-    void constructor(std::vector<FontSpec> filenames, float size, float smoothing);
+    void constructor(std::vector<FontSpec> filenames, float size, float smoothing, float outline);
     int kerning(FT_Face face, FT_UInt left, FT_UInt right) const;
 
 private:
@@ -56,6 +57,7 @@ private:
     float smoothing_;
     float currentLogicalScaleX_,currentLogicalScaleY_;
     float defaultSize_;
+    float outlineSize_;
     void checkLogicalScale();
     struct GlyphData
     {
@@ -70,6 +72,7 @@ private:
     	int             pitch;
     };
     std::map<wchar32_t,GlyphData> glyphCache_;
+    FT_Stroker stroker;
 };
 
 #endif
