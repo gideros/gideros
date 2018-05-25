@@ -1,12 +1,4 @@
 VPATH = \
-../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common:\
-../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision:\
-../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes:\
-../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics:\
-../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts:\
-../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints:\
-../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Rope:\
-../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle:\
 ../2dsg:\
 ../2dsg/gfxbackends:\
 ../2dsg/gfxbackends/gl2:\
@@ -37,7 +29,6 @@ INCLUDEPATHS = \
 -I../libgid/external/freetype-2.4.12/include \
 -I../libgid/external/freetype-2.4.12/include/freetype \
 -I../libgid/external/mpg123-1.15.3/src \
--I../external/liquidfun-1.0.0/liquidfun/Box2D \
 -I../libgid/include/pi \
 -I../libgid/external/snappy-1.1.0 \
 -I../libgid/external/libpng-1.6.2 \
@@ -82,37 +73,10 @@ OBJFILES = pi.o \
 accelerometerbinder.o         alertdialogbinder.o \
 application.o                 applicationbinder.o \
 asyncloader.o                 audiobinder.o \
-b2BlockAllocator.o \
-b2Body.o                      b2BroadPhase.o \
-b2ChainAndCircleContact.o     b2ChainAndPolygonContact.o \
-b2ChainShape.o                b2CircleContact.o \
-b2CircleShape.o               b2CollideCircle.o \
-b2CollideEdge.o               b2CollidePolygon.o \
-b2Collision.o                 b2Contact.o \
-b2ContactManager.o            b2ContactSolver.o \
-b2Distance.o                  b2DistanceJoint.o \
-b2Draw.o                      b2DynamicTree.o \
-b2EdgeAndCircleContact.o      b2EdgeAndPolygonContact.o \
-b2EdgeShape.o                 b2Fixture.o \
-b2FreeList.o                  b2FrictionJoint.o \
-b2GearJoint.o                 b2Island.o \
-b2Joint.o                     b2Math.o \
-b2MotorJoint.o                b2MouseJoint.o \
-b2Particle.o                  b2ParticleGroup.o \
-b2ParticleSystem.o            b2PolygonAndCircleContact.o \
-b2PolygonContact.o            b2PolygonShape.o \
-b2PrismaticJoint.o            b2PulleyJoint.o \
-b2RevoluteJoint.o             b2Rope.o \
-b2RopeJoint.o                 b2Settings.o \
-b2StackAllocator.o            b2Stat.o \
-b2TimeOfImpact.o              b2Timer.o \
-b2TrackedBlock.o              b2VoronoiDiagram.o \
-b2WeldJoint.o                 b2WheelJoint.o \
-b2World.o                     b2WorldCallbacks.o \
 binder.o                      bitmap.o \
 bitmapbinder.o                bitmapdata.o \
 bitmapdatabinder.o            blendfunc.o \
-box2dbinder2.o                bytebuffer.o \
+bytebuffer.o \
 color.o \
 colortransform.o              completeevent.o \
 dib.o                         dibbinder.o \

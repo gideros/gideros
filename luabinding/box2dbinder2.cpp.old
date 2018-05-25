@@ -1,4 +1,3 @@
-#include "box2dbinder2.h"
 #include <Box2D/Box2D.h>
 #include "stackchecker.h"
 #include <eventdispatcher.h>
@@ -10,6 +9,7 @@
 #include <color.h>
 #include <sprite.h>
 #include <texturebase.h>
+#include "box2dbinder2.h.old"
 
 #include "keys.h"
 #include "luautil.h"

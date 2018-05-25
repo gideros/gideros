@@ -1,6 +1,9 @@
 <project>
  <properties scaleMode="0" logicalHeight="480" logicalWidth="320" orientation="0">
   <imageScales/>
+  <plugins>
+   <plugin name="LiquidFun" enabled="1"/>
+  </plugins>
  </properties>
  <file file="grass.png"/>
  <file file="sky.png"/>

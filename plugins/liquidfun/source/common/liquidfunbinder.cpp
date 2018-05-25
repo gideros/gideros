@@ -96,6 +96,9 @@ Box2DBinder2::Box2DBinder2(lua_State* L)
 	lua_pushcfunction(L, loader);
 	lua_setfield(L, -2, "liquidfun");
 
+	lua_pushcfunction(L, loader);
+	lua_setfield(L, -2, "box2d");
+
 	lua_pop(L, 2);
 }
 

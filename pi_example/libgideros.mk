@@ -8,7 +8,6 @@ INCLUDEPATHS = \
 -I../libgid/external/freetype-2.4.12/src \
 -I../libgid/external/freetype-2.4.12/include \
 -I../libgid/external/mpg123-1.15.3/src \
--I../external/liquidfun-1.0.0/liquidfun/Box2D \
 -I../libgid/include/pi \
 -I../libgid/external/snappy-1.1.0 \
 -I../libgid/external/libpng-1.6.2 \

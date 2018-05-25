@@ -27,7 +27,6 @@
 #include "ttfontbinder.h"
 #include "textfieldbinder.h"
 #include "accelerometerbinder.h"
-#include "box2dbinder2.h"
 #include "dibbinder.h"
 #include "applicationbinder.h"
 #include "tilemapbinder.h"
@@ -352,7 +351,7 @@ static int bindAll(lua_State* L)
 #if TARGET_OS_TV == 0
     AccelerometerBinder accelerometerBinder(L);
 #endif
-	Box2DBinder2 box2DBinder2(L);
+	//Box2DBinder2 box2DBinder2(L);
 	DibBinder dibBinder(L);
 	TileMapBinder tileMapBinder(L);
 	ApplicationBinder applicationBinder(L);

@@ -68,7 +68,6 @@ INCLUDEPATH += \
     ../libgideros \
     ../libpystring \
     ../external/glu \
-    ../external/liquidfun-1.0.0/liquidfun/Box2D \
     ../external/minizip-1.1/source \
     ../libraries/themes \
     ../libraries/constants \
@@ -82,14 +81,6 @@ SOURCES += \
     ../player/sources/glcanvas.cpp \
     ../player/sources/errordialog.cpp \
 #    ../player/sources/settingsdialog.cpp \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Rope/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/*.cpp) \
     $$files(../luabinding/*.cpp)	../luabinding/tlsf.c \
     $$files(../libnetwork/*.cpp) \
     $$files(../2dsg/*.cpp) \

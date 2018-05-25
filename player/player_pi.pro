@@ -43,7 +43,6 @@ INCLUDEPATH += \
     ../libgideros \
     ../libpystring \
     "../external/glu" \
-    ../external/liquidfun-1.0.0/liquidfun/Box2D \
     "../external/minizip-1.1/source" \
     ../libraries/themes \
     ../libraries/constants \
@@ -54,14 +53,6 @@ SOURCES += \
     Sources/errordialog.cpp \
     Sources/glcanvas.cpp \
     Sources/settingsdialog.cpp \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Common/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Collision/Shapes/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Contacts/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Dynamics/Joints/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Rope/*.cpp) \
-    $$files(../external/liquidfun-1.0.0/liquidfun/Box2D/Box2D/Particle/*.cpp) \
     $$files(../luabinding/*.cpp)	../luabinding/tlsf.c \
     $$files(../libnetwork/*.cpp) \
     ../libgid/src/aes.c \
@@ -101,15 +92,6 @@ HEADERS += \
 DEFINES += USE_FILE32API
 
 LIBS += -lpthread
-
-#INCLUDEPATH += ../external/Box2D_v2.3.0/Box2D
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Common/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Collision/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Collision/Shapes/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Contacts/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Dynamics/Joints/*.cpp)
-#SOURCES += $$files(../external/Box2D_v2.3.0/Box2D/Box2D/Rope/*.cpp)
 
 
 # modified from http://source-android.frandroid.com/external/freetype/Android.mk
