@@ -298,6 +298,15 @@ public class GCamera {
 	
 	public static boolean isCameraAvailable(){
 		PackageManager pm = sActivity.get().getPackageManager();
-		return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA);
+		if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA))
+			return false;
+		if (android.os.Build.VERSION.SDK_INT >= 23) {
+			Activity activity = sActivity.get();
+			if ((activity!=null)&&activity.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+					activity.requestPermissions(new String[]{Manifest.permission.CAMERA},	0);
+					return false;
+			}				
+		}
+		return true;
 	}	
 }
