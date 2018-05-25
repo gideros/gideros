@@ -247,6 +247,9 @@ static int create(lua_State *L)
     case GMICROPHONE_UNSUPPORTED_FORMAT:
         delete microphone;
         return luaL_error(L, "Unsupported microphone format.");
+    case GMICROPHONE_PROMPTING_PERMISSION:
+        delete microphone;
+        return luaL_error(L, "Permission requested.");
     }
 
     g_pushInstance(L, "Microphone", microphone->object());

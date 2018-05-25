@@ -11,12 +11,15 @@ class GMicrophone {
 	private static GMicrophone sInstance;
 	private static long sData;
 	private static boolean sActive = true;
+	private static WeakReference<Activity> sActivity;
 
 	private static int GMICROPHONE_NO_ERROR = 0;
 	private static int GMICROPHONE_CANNOT_OPEN_DEVICE = 1;
 	private static int GMICROPHONE_UNSUPPORTED_FORMAT = 2;
+	private static int GMICROPHONE_PROMPTING_PERMISSION = 3;
 
 	public static void onCreate(Activity activity) {
+		sActivity =  new WeakReference<Activity>(activity);
 	}
 
 	synchronized public static void onPause() {
@@ -83,6 +86,14 @@ class GMicrophone {
 
 		int bufferSize = (sampleRate / 10) * bytesPerSample;
 
+		if (android.os.Build.VERSION.SDK_INT >= 23) {
+			Activity activity = sActivity.get();
+			if ((activity!=null)&&activity.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+					activity.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},	0);
+					return GMICROPHONE_PROMPTING_PERMISSION;
+			}				
+		}
+		
 		AudioRecord audioRecord;
 		try {
 			audioRecord = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, sampleRate, channelConfig, audioFormat, bufferSize);
